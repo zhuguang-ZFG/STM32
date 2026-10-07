@@ -10,20 +10,25 @@
 
 <!-- video:ch06 -->
 <p align="center">
-  <img src="../../assets/video/ch06-uart.gif" width="640" alt="Chapter 06 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a live shot). The narration matches the five frames one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch06-uart.png">
+    <source src="../../assets/video/ch06-uart.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch06-uart.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. A UART frame starts on the falling edge of the start bit, then 8 data bits, optional parity, and finally the stop bit.
-2. Baud rate is the step both sides agreed on. If the error is large, the sample point slides out of the data bit.
-3. An idle interrupt plus DMA fits a frame whose length you do not know. For ORE, read SR first and DR second.
-4. RS485 changes direction on TC, not on TXE. TXE only means the data has entered the shift register.
-5. Motto: ORE is SR first, then DR. Self-test: in 115200 8N1, what is the 8?
+1. 115200 8N1 里的 8，是数据位，不是波特率的一部分。一帧通常是起始位、八位数据、没有校验、一位停止。位数说错，对方会一直解出错帧。
+2. 波特率是双方约好的速度，由总线时钟分频得到。F103 上 APB 时钟不对，分频再准也会偏。一边 115200，另一边 9600，你只能看到乱码。
+3. 溢出错误 ORE 表示你来不及把数据取走。清除时要先读状态寄存器，再读数据寄存器。顺序反了，标志清不掉，后面的字节会全部卡住。
+4. 这一帧是仓库画的串口帧，一位一位排开。看图时对照你的初始化：数据位、停止位、校验，要和上位机软件里的设置逐项相同。差一项就乱码。
+5. 不定长的一包数据，可以用 DMA 接着收，再用空闲线判断对方说完了。别在中断里一个字节一个字节地阻塞等待。Wokwi 里这套 DMA 目前对不上，接线可以看，收包要上真板。
+6. RS485 要控制收发方向。最后一个字节离开移位寄存器，发送完成标志才会起来。标志没起来就转身去收，最后一个字节会被你自己截掉。
+7. TX 接对方的 RX，RX 接对方的 TX，地必须连在一起。只接两根信号、不共地，电平没有参考，有时能蒙对，有时完全没字。先共地，再谈波特率。
+8. 口诀：ORE 要先读状态再读数据；RS485 等发送完成再转身。这两句能省掉一半「串口偶发丢字」的下午。
+9. 实验可以先把 TX 和 RX 短接，确认自己能收到自己发出的字，再接到电脑。短接都收不到，就先别怀疑 USB 转串口线。
+10. 合上书，三问。8N1 的 8 是什么？清除溢出时先读哪个寄存器？RS485 为什么要等发送完成才能转换方向？
 <!-- /video:ch06 -->
-
-
 ## 📌 Learning goals
 - [ ] Describe a UART frame (start / data / parity / stop)
 - [ ] Compute baud-rate error, and understand BRR and OVER8

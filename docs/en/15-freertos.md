@@ -10,20 +10,25 @@
 
 <!-- video:ch15 -->
 <p align="center">
-  <img src="../../assets/video/ch15-rtos.gif" width="640" alt="Chapter 15 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a generated GIF (tools/gen_videos.py, reproducible, not a live recording). The narration lines up with the five frames, one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch15-rtos.png">
+    <source src="../../assets/video/ch15-rtos.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch15-rtos.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. A task has only a few states: running, ready, blocked, and suspended. The scheduler picks the highest-priority task that is ready.
-2. A semaphore is a notification. A queue moves data. A mutex means "I am holding this, do not touch it." Do not pick the wrong object.
-3. Delay means "wait a bit longer." DelayUntil means "wake at this next time." A periodic task uses the second one.
-4. A timer callback must not sleep, and it must not wait on a queue. That time belongs to the other tasks.
-5. Self-test: two tasks share a priority. What happens when the time slice runs out?
+1. 单核上没有真正的同时。FreeRTOS 让每件要长期做的事变成一个任务，各自有栈。调度器决定这一毫秒谁占用 CPU。你要为每个任务留够栈。
+2. 两个任务优先级相同，时间片用完就换另一个。更高优先级的任务一旦就绪，可以抢过来。所以不是谁先创建谁就永远占着。
+3. 普通延时是从现在起再睡一会儿，执行时间会累进误差。周期任务要用「下次几点醒」，把已经花掉的时间扣掉。节拍因此才稳。
+4. 这一帧是仓库画的调度。任务在就绪、运行和阻塞之间转。阻塞往往是因为在等队列、信号量或延时。一直就绪又永远轮不到，先看有没有人优先级更高还不让出 CPU。
+5. 信号量告诉你事情发生了。队列把数据搬过去。互斥量表示这会儿归我用。事件组用来等好几面旗一起到齐。够用时，任务通知可以少建一个对象。
+6. 软件定时器的回调里不准睡觉，也不准等队列。它跑在定时器任务的上下文里，你一阻塞，别的定时器也停。需要等待的活，通知一个普通任务去做。
+7. HAL 的延时默认也用 SysTick。FreeRTOS 也要这个节拍。两个都当主人，延时会卡住。用 Cube 时把 HAL 的时基改到别的定时器，这件事要在创建任务之前做完。
+8. 口诀：相对延时是再等一会儿，绝对延时是下次几点醒。定时器回调里不准睡觉。信号量、队列、互斥，不要拿一个去代替另一个。
+9. 实验做两个任务，两颗灯用不同的周期闪。如果一创建任务就进故障，先把栈调大，再看优先级。不要一开始就上五个队列。
+10. 合上书，三问。两个同优先级任务，时间片用完会发生什么？周期任务该用哪种延时？软件定时器回调里可以等待队列吗？
 <!-- /video:ch15 -->
-
-
 ## 📌 Learning goals
 
 - [ ] Explain the difference between "bare-metal foreground/background" and "an RTOS with several tasks," and decide whether a project should use an RTOS.

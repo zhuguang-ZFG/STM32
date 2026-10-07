@@ -10,20 +10,25 @@
 
 <!-- video:ch09 -->
 <p align="center">
-  <img src="../../assets/video/ch09-adc.gif" width="640" alt="Chapter 09 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a generated GIF (tools/gen_videos.py, reproducible, not a live recording). The narration lines up with the five frames, one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch09-adc.png">
+    <source src="../../assets/video/ch09-adc.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch09-adc.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. SAR starts guessing from the highest bit. Each step, the comparator decides whether that bit stays 1 or becomes 0.
-2. Sample time has to cover the source impedance. If the potentiometer resistance is too high, the result drifts.
-3. Turn a 12-bit result into a voltage: multiply the code by Vref, then divide by 4096. The divisor is 4096, not 4095.
-4. The F103C8 has no DAC. To output an analog voltage, switch to a part that has a DAC, or add an external chip.
-5. Motto: sample time follows impedance, conversion divides by 4096, and the C8 has no DAC.
+1. 逐次逼近之前，要先让采样电容充满。源阻抗越大，需要的采样时间越长。充不满就转换，读数会偏向你上一次采过的电压。
+2. F1 的 ADC 是 12 位。换算时用读数除以 4096，再乘参考电压。用 4095 做口算会有一个最小步长的差别。参考电压不是想当然的 3.3，要看你接到哪。
+3. STM32F103C8 有 ADC，没有 DAC。把 F4 的 DAC 例程抄过来，编译或许能过，引脚上不会出现你要的模拟电压。换芯片前先看数据手册的功能表。
+4. 这一帧是仓库画的逐次逼近：从最高位开始试，比参考大了就清掉，再试下一位。它帮助你记得，转换需要时间，不是把引脚读进来就结束。
+5. 引脚要设成模拟输入，ADC 时钟要开，规则通道和采样时间都要写上。少一项，读数会停在一个奇怪的常数。先读一个已知电压，比如分压后的参考，再去测传感器。
+6. 连续采样不要在每个转换完成里做重活。让 DMA 把结果搬进数组，半满和全满时再去算。Wokwi 的 BluePill 模型没有 DMA，这章的连续采样要在真板上对。
+7. 读数乱跳时，先看参考电压和模拟地，再谈软件平均。平均能盖住一点噪声，盖不住一根飞线当成天线。实验板上，传感器线短一点，结果会诚实很多。
+8. 口诀：采样看阻抗，换算除以 4096，C8 没有 DAC。三句分别挡住采不准、算不准、抄错芯片这三件最常见的事。
+9. 实验用电位器做分压，两端接地和参考，中间进 ADC。慢慢旋转，读数应该单调变化。跳变或反向，先查接线和参考，不要先改分辨率。
+10. 合上书，三问。采样时间主要看什么？12 位换算要除以多少？STM32F103C8 有没有 DAC？
 <!-- /video:ch09 -->
-
-
 ## 📌 Learning goals
 
 - [ ] Know the quantitative relationship among resolution, reference voltage, and quantization error, and be able to estimate the voltage of 1 LSB.

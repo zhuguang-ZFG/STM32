@@ -280,7 +280,7 @@ python3 tools/check_assets.py
 - [x] 7 张板卡实物结构图 + LQFP48 全引脚图
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 13 个可编译示例 + 4 份速查表（含 bxCAN 与 USB CDC/HID）
-- [x] 每章讲解幻灯（`assets/video/`，脚本可复现的 GIF + 旁白，不是实拍）
+- [x] 每章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
 - [x] 英文版（[docs/en/](docs/en/README.md)，含章节与四份速查表）

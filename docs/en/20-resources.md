@@ -11,20 +11,25 @@
 
 <!-- video:ch20 -->
 <p align="center">
-  <img src="../../assets/video/ch20-refs.gif" width="640" alt="Chapter 20 lecture slides">
-  <br><sub>▲ Lecture strip for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a photograph). The narration matches the five frames one by one.</sub>
+  <video width="640" controls poster="../../assets/video/ch20-refs.png">
+    <source src="../../assets/video/ch20-refs.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch20-refs.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. The datasheet covers pins and electrical limits. The reference manual covers registers. The programming manual covers the core.
-2. You can read the filename: DS is the datasheet, RM is the reference manual, PM is the programming manual.
-3. A Cube firmware pack is an example, not the law. When the example and the manual disagree, the manual wins.
-4. Check the part number on a community post. An answer written for an F1 is often wrong on an H7.
-5. Self-test: to look up the CAN filter bits, do you open the DS or the RM?
+1. 学习用的官方资料不用找网盘。从 ST 的网站下载数据手册和参考手册。配置用 CubeMX，编译调试用 CubeIDE，烧录和选项字节用 CubeProgrammer。
+2. 查引脚和电气参数，翻数据手册。查寄存器每一位，翻参考手册。查内核指令和故障，翻编程手册。应用笔记讲一种做法，用户手册讲一种工具。
+3. 想查 CAN 过滤器的位，打开参考手册，不是数据手册。数据手册会告诉你这颗芯片有没有 CAN、引脚叫什么。两本同时开着，比靠记忆力可靠。
+4. 这一帧还是仓库的分层图。你读例程时，先找它停在哪一层。停在 HAL，就去看函数的返回值；停在寄存器，就去参考手册对那一位。不要拿应用笔记的图去代替参考手册的位定义。
+5. 各系列的 HAL 包里有现成例程。先跑和你的外设最接近的那个，确认板子和工具链是通的，再把需要的文件剪进自己的工程。整包复制，你会分不清哪些文件真的在编译。
+6. STM32、Nucleo 这些名字是厂商的商标。本仓库用来学习，和厂商没有隶属关系。这里的图都是程序画的，不是产品照片，不要拿去当官方宣传图。
+7. 例程能跑、你的工程不能跑，经常是包的版本不同。把 Cube 版本、固件包版本和板子丝印写进笔记。问人的时候带上这三样，回答会具体很多。
+8. 口诀：寄存器的位去参考手册，引脚和电气去数据手册，内核去编程手册。先选对书，再搜索关键词。
+9. 今天就给你的芯片下载数据手册和参考手册，文件名要对上型号和修订号。以后章节里写的 DS 和 RM，指的就是这两本，不是搜索引擎的第一篇文章。
+10. 合上书，三问。CAN 过滤器的位定义在数据手册还是参考手册？引脚电气在哪本？读写选项字节用 Cube 家族里的哪一个工具？
 <!-- /video:ch20 -->
-
-
 ## 📌 Learning goals
 
 - [ ] Recognize the official ST set: the website, CubeMX, CubeIDE, CubeProgrammer, and CubeMonitor.

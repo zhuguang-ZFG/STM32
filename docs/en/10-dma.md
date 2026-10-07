@@ -10,20 +10,25 @@
 
 <!-- video:ch10 -->
 <p align="center">
-  <img src="../../assets/video/ch10-dma.gif" width="640" alt="Chapter 10 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a generated GIF (tools/gen_videos.py, reproducible, not a live recording). The narration lines up with the five frames, one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch10-dma.png">
+    <source src="../../assets/video/ch10-dma.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch10-dma.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. DMA moves the data for the CPU. The CPU keeps computing, and peripheral data walks into memory by itself.
-2. F1 calls them channels. F4 calls them streams. The map is in the reference manual. Do not pick one by feel.
-3. Circular mode treats the buffer as a ring. The count left in NDTR tells you where the write has reached.
-4. On a half-word transfer, the half-full interrupt is counted in elements. Multiply by 2 to get bytes.
-5. Motto: what is left is in NDTR. Self-test: in circular mode, who rewinds the pointer?
+1. DMA 是搬运工。外设来了新数据，或者内存里有一包要送出去，它可以自己搬，CPU 继续算别的。前提是你把源、目的和数量写对。
+2. 剩余数量记在 NDTR 里。它减到 0，这一轮就搬完了。循环模式下，硬件会把数量装回去，指针也回到起点。你不用在中断里手动重置。
+3. 半传输标志按元素个数算。如果每个元素是半字，两个字节，你要再乘 2 才是字节数。用字节去切半字数组，后半段会从奇数地址开始，读出来是错的。
+4. 这一帧是仓库画的循环搬运。写指针走到头就绕回来，旧数据会被新数据盖住。你如果处理得比 DMA 慢，就会丢一圈。速度要算得过，不能只看灯还在闪。
+5. 外设数据宽度、内存宽度、地址增不增加，三项要和真实的寄存器一致。ADC 结果是半字，你却按字节去增地址，内存里会插进一堆空隙。
+6. 半满的时候可以处理前半段，全满的时候处理后半段。中断里只做这个切换和必要的计算，不要阻塞。一阻塞，下一圈 DMA 已经把你还没看的数据盖掉了。
+7. F103 没有数据缓存，DMA 和 CPU 看的是同一份内存。到了带缓存的 H7，CPU 看到的数组可能和总线上的不一样。那一章会再提，这里先把 F1 的搬运做对。
+8. 口诀：剩下的在 NDTR；半字的半传输按元素算，再乘 2 才是字节。调试时把 NDTR 打出来，比猜「DMA 是不是坏了」快得多。
+9. 实验让 DMA 把一串数搬进数组，断点时后半段应该已经变了，NDTR 也在减小。数组纹丝不动，先查通道、方向和使能，别先改算法。
+10. 合上书，三问。NDTR 里装的是地址还是剩余数量？循环模式谁把指针拨回去？半字传输的半满，怎样换成字节数？
 <!-- /video:ch10 -->
-
-
 ## 📌 Learning goals
 
 - [ ] Describe the DMA controller layout: the F1 "channel" model, and the F4 "stream × channel" model.

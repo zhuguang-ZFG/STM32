@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import os
 import struct
+import subprocess
 import sys
 import xml.dom.minidom
 
@@ -260,22 +261,136 @@ def check_gif():
 
 
 def check_videos():
-    """章节讲解幻灯：像素回验，并确认对应章节引用了这个 GIF。"""
-    import gen_videos
-    ok = _check_gif_builders(gen_videos.BUILDERS, "video", "video")
+    """讲解 MP4：海报可重画、时长在 2–4 分钟、字幕与旁白稿一致、有人声。"""
+    import gen_narrated
+    from PIL import Image
+    ok = True
+    video = os.path.join(ROOT, "assets", "video")
     docs = os.path.join(ROOT, "docs")
-    for ch in gen_videos.CHAPTERS:
-        gif = f"ch{ch['id']}-{ch['slug']}.gif"
-        hit = False
-        for fn in os.listdir(docs):
-            if fn.startswith(ch["id"] + "-") and fn.endswith(".md"):
-                text = open(os.path.join(docs, fn), encoding="utf-8").read()
-                hit = gif in text and f"<!-- video:ch{ch['id']} -->" in text
-                break
-        if not hit:
-            print(f"[FAIL] 章节 {ch['id']} 未引用 {gif}")
+    for ch in gen_narrated.CHAPTERS:
+        name = gen_narrated.chapter_name(ch)
+        png = os.path.join(video, name + ".png")
+        mp4 = os.path.join(video, name + ".mp4")
+        srt = os.path.join(video, name + ".srt")
+        gif = os.path.join(video, name + ".gif")
+        if os.path.isfile(gif):
+            print(f"[FAIL] {name}.gif 仍在，讲解已改为 MP4")
             ok = False
+        if not os.path.isfile(png):
+            print(f"[FAIL] 缺少海报 {name}.png")
+            ok = False
+        else:
+            got = Image.open(png).convert("RGB")
+            want = gen_narrated.render_poster(ch)
+            if got.size != (gen_narrated.W, gen_narrated.H) or got.tobytes() != want.tobytes():
+                print(f"[FAIL] {name}.png 与脚本画出的海报不一致")
+                ok = False
+            got.close()
+        if not os.path.isfile(mp4) or not os.path.isfile(srt):
+            print(f"[FAIL] 缺少 {name} 的 mp4 或 srt")
+            ok = False
+            continue
+        dur, streams = _probe_av(mp4)
+        if streams.get("v") != ("h264", gen_narrated.W, gen_narrated.H):
+            print(f"[FAIL] {name} 视频流不是 960×540 H.264：{streams.get('v')}")
+            ok = False
+        if streams.get("a") != "aac":
+            print(f"[FAIL] {name} 没有 AAC 音轨")
+            ok = False
+        if not 120 <= dur <= 240:
+            print(f"[FAIL] {name} 时长 {dur:.1f}s 不在 2–4 分钟")
+            ok = False
+        cues = _parse_srt(open(srt, encoding="utf-8").read())
+        says = [s["say"] for s in ch["segments"]]
+        if len(cues) != len(says):
+            print(f"[FAIL] {name} 字幕 {len(cues)} 条，旁白 {len(says)} 段")
+            ok = False
+        else:
+            for i, (cue, say) in enumerate(zip(cues, says), start=1):
+                if _flat(cue[2]) != _flat(say):
+                    print(f"[FAIL] {name} 第 {i} 条字幕和旁白稿不一致")
+                    ok = False
+                    break
+            if cues and (cues[0][0] > 0.05 or abs(cues[-1][1] - dur) > 1.0):
+                print(f"[FAIL] {name} 字幕没有盖住成片 "
+                      f"({cues[0][0]:.2f}–{cues[-1][1]:.2f}s，片长 {dur:.2f}s)")
+                ok = False
+            for prev, cur in zip(cues, cues[1:]):
+                if cur[0] + 0.05 < prev[1] or cur[0] - prev[1] > 0.05:
+                    print(f"[FAIL] {name} 字幕时间不连续")
+                    ok = False
+                    break
+        if not _has_voice(mp4):
+            print(f"[FAIL] {name} 前 20 秒几乎没有人声")
+            ok = False
+        else:
+            print(f"[ok] {name}.mp4  {dur:.0f}s  字幕 {len(cues)} 条")
+        for folder in (docs, os.path.join(docs, "en")):
+            hit = False
+            for fn in os.listdir(folder):
+                if fn.startswith(ch["id"] + "-") and fn.endswith(".md"):
+                    text = open(os.path.join(folder, fn), encoding="utf-8").read()
+                    hit = (name + ".mp4") in text and (name + ".srt") in text
+                    break
+            if not hit:
+                print(f"[FAIL] {folder} 章节 {ch['id']} 未引用 {name}.mp4")
+                ok = False
+    if ok:
+        print(f"讲解视频检查完成：{len(gen_narrated.CHAPTERS)} 章 MP4 + SRT + 海报")
     return ok
+
+
+def _flat(text):
+    return "".join(text.split())
+
+
+def _parse_srt(text):
+    import re
+    cues = []
+    blocks = re.split(r"\n\s*\n", text.strip())
+    for block in blocks:
+        lines = block.splitlines()
+        if len(lines) < 3 or "-->" not in lines[1]:
+            continue
+        a, b = [p.strip() for p in lines[1].split("-->")]
+        cues.append((_srt_sec(a), _srt_sec(b), "\n".join(lines[2:])))
+    return cues
+
+
+def _srt_sec(stamp):
+    hms, ms = stamp.split(",")
+    h, m, s = [int(x) for x in hms.split(":")]
+    return h * 3600 + m * 60 + s + int(ms) / 1000
+
+
+def _probe_av(path):
+    import json
+    raw = subprocess.check_output(
+        ["ffprobe", "-v", "error", "-show_streams", "-show_format",
+         "-of", "json", path],
+        text=True,
+    )
+    data = json.loads(raw)
+    streams = {}
+    for st in data.get("streams", []):
+        if st.get("codec_type") == "video":
+            streams["v"] = (st.get("codec_name"), st.get("width"), st.get("height"))
+        elif st.get("codec_type") == "audio":
+            streams["a"] = st.get("codec_name")
+    return float(data["format"]["duration"]), streams
+
+
+def _has_voice(path):
+    proc = subprocess.run(
+        ["ffmpeg", "-v", "info", "-t", "20", "-i", path,
+         "-af", "volumedetect", "-f", "null", "-"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True,
+    )
+    for line in proc.stderr.splitlines():
+        if "mean_volume:" in line:
+            db = float(line.split("mean_volume:")[1].split("dB")[0])
+            return db > -40
+    return False
 
 
 def check_sim():

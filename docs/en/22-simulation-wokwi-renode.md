@@ -11,19 +11,25 @@
 
 <!-- video:ch22 -->
 <p align="center">
-  <img src="../../assets/video/ch22-sim.gif" width="640" alt="Chapter 22 lecture slides">
-  <br><sub>▲ Lecture strip for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a photograph). The narration matches the five frames one by one.</sub>
+  <video width="640" controls poster="../../assets/video/ch22-sim.png">
+    <source src="../../assets/video/ch22-sim.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.7 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch22-sim.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. Simulation comes in two flavors. Wokwi wires the circuit in the browser. Renode runs the same Cortex-M3 from the command line.
-2. Every core example directory has a `diagram.json` and a `wokwi.toml`. Pin names follow the Wokwi board definition. `A0` is PA0.
-3. The Renode script loads the official platform `platforms/cpus/stm32f103.repl`. USART1 is on PA9/PA10.
-4. The current Wokwi BluePill model has no DMA. An idle-line UART frame and an ADC transfer belong on a real board, or you only look at the wiring.
-5. Motto: simulation shows the behavior; the real board checks the timing. Self-test: in Wokwi, do you still need to wire an extra LED for the lamp on PC13?
+1. Wokwi 适合在浏览器里看灯和接线。Renode 适合在命令行里加载程序、看串口字节。口诀：浏览器里看灯，命令行里看字节。两家都代替不了真板的时序。
+2. Wokwi 的 BluePill 上，引脚键名是 A0、C13 这种。A0 接到 PA0，C13 接到 PC13。写成 PA0 这样的芯片名，图会接不上。依据是板子自己的描述文件。
+3. 仿真图里 PC13 的灯已经在板上，低电平亮。练习点灯时不必再外接一颗。你如果再接，要分清看的是哪一颗，不然会以为极性反了。
+4. 这一帧是仓库画的 BluePill 结构，不是照片。拿它和 Wokwi 的图对照：先找 C13 的灯，再找你例程用的 A0、A9 那些键名。对上键名，再谈固件。
+5. 仓库里不预置编译好的 ELF。配置文件指向 build 目录下的固件，要你自己编译出来再仿真。没有这文件时，打开图只能看接线，灯不会按程序闪。
+6. Wokwi 的这块 BluePill 模型，DMA 还没有实现。串口空闲线收包和 ADC 连续采样的示例，在这里只能核对接线。要看 DMA 真的在搬，请上真板。
+7. Renode 的两条脚本都引用官方的 F103 平台描述。串口那条把 USART1 接到一个套接字，端口是 3456。你用网络终端连上去，才能看见字节。这也要有你自己编译的程序。
+8. 口诀：仿真看现象，真板对时序。仿真里的灯会亮，不代表上升沿在真板上也那么干净。结论要回到板子上再确认一次。
+9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
+10. 合上书，三问。Wokwi 里 PC13 的灯还要再外接一颗吗？A0 接到芯片的哪只脚？串口 DMA 收包能在这个模型里验证吗？
 <!-- /video:ch22 -->
-
 ## 📌 Learning goals
 
 - [ ] Open this repo's BluePill diagram in Wokwi, and explain the pin aliases.

@@ -10,20 +10,25 @@
 
 <!-- video:ch02 -->
 <p align="center">
-  <img src="../../assets/video/ch02-clock.gif" width="640" alt="Chapter 02 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a live shot). The narration matches the five frames one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch02-clock.png">
+    <source src="../../assets/video/ch02-clock.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch02-clock.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. The letters in the part number are package and memory size, not mysticism. Read the first page of the datasheet, then the pins.
-2. The memory map splits Flash, SRAM, and peripherals into three regions. A peripheral is a register at a fixed address.
-3. The usual F103 path: an 8 MHz crystal into the PLL, times 9, gives 72 MHz. APB1 is divided by two again.
-4. You have already met the motto: turn the clock on before you touch a register. If the clock is off, a write goes into the void.
-5. Self-test: at 72 MHz, how many Flash wait states? Which is slower, AHB or APB1?
+1. 型号上的字母不是玄学。F103 告诉你系列，C8 这类字母看闪存容量，T6 这类看封装。先读数据手册封面和订购信息，再去数引脚。
+2. 存储器地图把闪存、内存和外设分成几段。外设的本质，就是固定地址上的一排寄存器。地址抄错系列，写进去的就不是你要的那个外设。
+3. F103 常见的一条路：外部 8 兆进 PLL，乘 9，系统时钟 72 兆。APB1 最高 36 兆，所以再除以 2。这条路径后面串口和 CAN 的波特率都靠它。
+4. 这一帧是仓库画的时钟树。口诀你要刻进手上：先开时钟，再摸寄存器。时钟没开，写入就像写进虚空，调试器里看起来还像成功了。
+5. 主频拉到 72 兆时，闪存要加等待。这一章写的是 48 到 72 兆用两个等待周期。只改 PLL、不改等待，常见的下场就是一跑就死。
+6. APB 分频大于 1 的时候，定时器时钟还会再乘 2。算 PWM 前先问 HAL 要到的 PCLK，不要把 36 兆当成定时器的输入。差一倍，频率就差一倍。
+7. 外部晶振起不来时，先退回内部时钟，证明芯片还活着，再查负载电容和焊点。一上来就把 PLL 乘到很高，是在用死机练习耐心。
+8. 口诀再念一遍：先开时钟再摸寄存器。HSE 掉了靠时钟安全系统，想看频率可以走到时钟输出脚。别用Delay 的感觉去猜主频。
+9. 动手时让串口打出主频、闪存容量和两条 APB。BluePill 上常见的是 72 兆和 64 KB 闪存。对不上，先别做后面的外设实验。
+10. 合上书，三问。72 兆时闪存要几个等待？AHB 和 APB1 谁更慢？外设时钟门控没开时，写入会发生什么？
 <!-- /video:ch02 -->
-
-
 ## 📌 Learning goals
 - [ ] Split an STM32 part number piece by piece (what every character of STM32F103C8T6 means)
 - [ ] Pick among F0/F1/F3/F4/F7/G0/G4/H7/L0/L4 for a real need

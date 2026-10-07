@@ -80,11 +80,14 @@ python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
 > 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
-## 四·补 章节讲解幻灯 `assets/video/`
+## 四·补 章节讲解 `assets/video/`
 
-每章一张 5 帧循环 GIF（约 7 秒一轮），由 `python3 tools/gen_videos.py` 生成。
-画面是原理示意，中文旁白写在对应章节的 `<!-- video:chNN -->` 块里，逐帧对应。
-不是实拍，也不含版权素材。单张控制在几十 KB。
+每章一条 MP4，大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
+画面是脚本用文泉驿微米黑画的标题卡，并贴上本仓库自己的 SVG，不是实拍。
+配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
+edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
+仓库里放的是合成后的 MP4，单章不到 2 MB，26 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
+重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 
 ## 五、引用方式
 

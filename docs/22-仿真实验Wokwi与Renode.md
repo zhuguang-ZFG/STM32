@@ -11,19 +11,25 @@
 
 <!-- video:ch22 -->
 <p align="center">
-  <img src="../assets/video/ch22-sim.gif" width="640" alt="第 22 章讲解幻灯">
-  <br><sub>▲ 本章讲解幻灯：程序生成的 GIF（tools/gen_videos.py，可复现，不是实拍）。旁白与五帧一一对应。</sub>
+  <video width="640" controls poster="../assets/video/ch22-sim.png">
+    <source src="../assets/video/ch22-sim.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ 本章讲解 2.7 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面用文泉驿微米黑绘制，插图是本仓库 SVG，不是实拍。 字幕：<a href="../assets/video/ch22-sim.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
 </p>
 
-**旁白（跟着画面读，大约一分钟）**
+**旁白（与字幕、配音同一份稿）**
 
-1. 仿真分两家：Wokwi 在浏览器里接线，Renode 在命令行里跑同一颗 Cortex-M3。
-2. 每个核心示例目录里有 diagram.json 和 wokwi.toml。引脚名跟 Wokwi 板定义走，A0 就是 PA0。
-3. Renode 脚本加载官方平台 platforms/cpus/stm32f103.repl，USART1 在 PA9/PA10。
-4. 当前 Wokwi 的 BluePill 模型没有 DMA。串口空闲帧和 ADC 搬运要上真板，或只看接线。
-5. 口诀：仿真看现象，真板对时序。自测：PC13 的灯在 Wokwi 里要不要再外接一颗？
+1. Wokwi 适合在浏览器里看灯和接线。Renode 适合在命令行里加载程序、看串口字节。口诀：浏览器里看灯，命令行里看字节。两家都代替不了真板的时序。
+2. Wokwi 的 BluePill 上，引脚键名是 A0、C13 这种。A0 接到 PA0，C13 接到 PC13。写成 PA0 这样的芯片名，图会接不上。依据是板子自己的描述文件。
+3. 仿真图里 PC13 的灯已经在板上，低电平亮。练习点灯时不必再外接一颗。你如果再接，要分清看的是哪一颗，不然会以为极性反了。
+4. 这一帧是仓库画的 BluePill 结构，不是照片。拿它和 Wokwi 的图对照：先找 C13 的灯，再找你例程用的 A0、A9 那些键名。对上键名，再谈固件。
+5. 仓库里不预置编译好的 ELF。配置文件指向 build 目录下的固件，要你自己编译出来再仿真。没有这文件时，打开图只能看接线，灯不会按程序闪。
+6. Wokwi 的这块 BluePill 模型，DMA 还没有实现。串口空闲线收包和 ADC 连续采样的示例，在这里只能核对接线。要看 DMA 真的在搬，请上真板。
+7. Renode 的两条脚本都引用官方的 F103 平台描述。串口那条把 USART1 接到一个套接字，端口是 3456。你用网络终端连上去，才能看见字节。这也要有你自己编译的程序。
+8. 口诀：仿真看现象，真板对时序。仿真里的灯会亮，不代表上升沿在真板上也那么干净。结论要回到板子上再确认一次。
+9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
+10. 合上书，三问。Wokwi 里 PC13 的灯还要再外接一颗吗？A0 接到芯片的哪只脚？串口 DMA 收包能在这个模型里验证吗？
 <!-- /video:ch22 -->
-
 ## 📌 学习目标
 
 - [ ] 能在 Wokwi 里打开本仓库的 BluePill 图，并说清引脚别名。

@@ -10,20 +10,25 @@
 
 <!-- video:ch01 -->
 <p align="center">
-  <img src="../../assets/video/ch01-env.gif" width="640" alt="Chapter 01 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a live shot). The narration matches the five frames one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch01-env.png">
+    <source src="../../assets/video/ch01-env.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch01-env.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. Source code becomes a blinking LED in four steps only: compile, link, flash, reset and run.
-2. Keil, CubeIDE, and PlatformIO can all walk those four steps. The difference is who fills in the startup file for you.
-3. Vector-table entry 0 is the top of the stack. Entry 1 is the reset handler. Clock first, then copy `.data`, then clear `.bss`.
-4. Two SWD wires are enough to download. Give PA13 and PA14 to some other function, and next time you will not connect.
-5. Self-test: after reset, which address does the CPU read first? Which two pins does the programming port use?
+1. 环境这章只追一个问题：你写下的 C，怎样变成芯片里正在跑的程序。中间就是编译、链接、烧录、复位运行。工具可以换，这四步不会换。
+2. Keil、CubeIDE、PlatformIO 都能走完这四步。差别只是谁帮你填启动文件和链接脚本。先选一个能单步的，不要三个一起装到怀疑人生。
+3. 复位之后，内核先读向量表。第零个字是栈顶，第一个字才是复位入口。进 main 之前，启动文件还要配时钟、搬数据段、清 BSS。
+4. 这一帧是仓库里的启动顺序动画，不是芯片照片。你只要记住：还没进 main，该做的家务启动文件已经做完一轮。单步时别以为第一行就是上电第一件事。
+5. 下载靠 SWD。F103 上 PA13 是数据线，PA14 是时钟。把这两只脚让给别的功能，下次探针就连不上。救砖时先把 BOOT0 拉高，再重新接上。
+6. Cube 生成的工程，用户代码写在它留的标记中间。时钟改了就重新生成，不要在启动文件里打补丁。临时文件和编译产物不要提交进版本库。
+7. 第一次下载只做三件事：接上调试器，确认软件认出芯片型号，再下一个只点灯的空工程。连芯片都认不出，就先别查业务代码。
+8. 口诀：先认出芯片，再谈业务。调试器连不上的时候，查线、查供电、查 BOOT，不要先重写 main。线都没通，改代码是在安慰自己。
+9. 这章结束，你的文件夹里应该有一个能单步的工程。你要能说出向量表前两个字是什么，也要能指出 SWD 占用的两只脚。
+10. 合上书，三问。向量表第零个字是什么？第一个字是什么？SWD 占哪两只脚？答不上来，就把启动文件再单步一遍。
 <!-- /video:ch01 -->
-
-
 ## 📌 Learning goals
 - [ ] See how Keil MDK, STM32CubeIDE, VS Code + PlatformIO, and CLion differ, and pick one
 - [ ] Use STM32CubeMX to generate a project that compiles immediately (clock, SWD, code-generation options)

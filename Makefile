@@ -25,8 +25,9 @@ diagrams:
 gifs:
 	$(PY) tools/gen_gifs.py
 
+# 海报是确定性的。配音成片用 python3 tools/gen_narrated.py --speak（要联网）。
 videos:
-	$(PY) tools/gen_videos.py
+	$(PY) tools/gen_narrated.py --posters
 
 check:
 	$(PY) tools/check_assets.py
@@ -49,5 +50,5 @@ stats:
 	@echo "速查表 : $$(ls cheatsheets/*.md 2>/dev/null | wc -l) 份"
 	@echo "SVG    : $$(find assets -name '*.svg' | wc -l) 张（动画 $$(ls assets/animations/*.svg | wc -l)）"
 	@echo "GIF    : $$(find assets/gif -name '*.gif' | wc -l) 个"
-	@echo "讲解片 : $$(find assets/video -name '*.gif' 2>/dev/null | wc -l) 个"
+	@echo "讲解片 : $$(find assets/video -name '*.mp4' 2>/dev/null | wc -l) 个 MP4"
 	@echo "体积   : $$(du -sh assets | cut -f1) (assets/)"

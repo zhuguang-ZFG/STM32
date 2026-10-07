@@ -10,20 +10,25 @@
 
 <!-- video:ch00 -->
 <p align="center">
-  <img src="../../assets/video/ch00-learn.gif" width="640" alt="Chapter 00 lecture slides">
-  <br><sub>▲ Lecture slides for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a live shot). The narration matches the five frames one to one.</sub>
+  <video width="640" controls poster="../../assets/video/ch00-learn.png">
+    <source src="../../assets/video/ch00-learn.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.3 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch00-learn.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. Pin the path down first: four weeks to get a foundation, six weeks to chew through peripherals, eight weeks to build something you can show someone else.
-2. Do not skip ahead: environment, clocks, GPIO, and only then the UART and a project. Skipping is how people trip on the clock.
-3. A BluePill is enough to start. The three manuals are the datasheet, the reference manual, and the programming manual.
-4. Do not copy a whole example pack on day one. First make one LED blink at a frequency you calculated yourself.
-5. Close the book: with BOOT0 pulled low, where do you boot? Which layer is the difference between HAL and registers?
+1. 欢迎来到第零章。先别急着买一堆模块。把路线钉死：入门四周打底，进阶六周啃外设，实战八周做出能给人看的东西。
+2. 顺序别跳。先把环境和时钟踩实，再碰 GPIO，然后才轮到串口。跳步的人，最容易摔在时钟没开、寄存器像写进虚空。
+3. 板子用 BluePill 就够起步。手册请备三本：数据手册查引脚和电气，参考手册查寄存器，编程手册查内核。缺一本，后面就会靠猜。
+4. 画面是本仓库画的工具链，不是实拍。源码要过编译、链接、烧录，复位之后程序才听你的。中间任何一步含糊，灯都不会按你的意思闪。
+5. 别一上来就抄整套例程。第一场胜利只要一颗灯，按你自己算过的频率闪。抄来的工程，时钟或引脚一变，就会整片熄火。
+6. 寄存器、标准库、HAL 都能点灯。入门先用 HAL 把下载和调试跑通，再回头看它改了哪几个寄存器。别同时学三套语法。
+7. 常见的劝退是一次打开十个外设，或者仿真和真板打架就怀疑人生。这一章允许你慢，不允许你跳。跳过去的坑，会在项目里排队等你。
+8. 口诀送你一句：先让一颗灯按你算过的频率闪。频率对了，说明时钟、引脚和延时你都真的算过，不是看视频看会的。
+9. 四周结束时，你应该能独立新建工程、下载、单步，并讲清启动后先干什么。讲不清这些，先别翻串口那一章，回去把灯做稳。
+10. 合上书，三问。BOOT0 拉低进哪里？HAL 比直接写寄存器多了哪一层？你的第一场胜利到底是什么？答案都在这一章正文里。
 <!-- /video:ch00 -->
-
-
 ## 📌 Learning goals
 - [ ] Know the minimum C, digital, and analog you need before studying STM32
 - [ ] Assemble a hardware kit you can use immediately, including price ranges

@@ -216,7 +216,7 @@ python3 tools/gen_boards.py
 python3 tools/gen_pinouts.py
 python3 tools/gen_diagrams.py
 python3 tools/gen_gifs.py
-python3 tools/gen_videos.py
+python3 tools/gen_narrated.py --speak   # narrated MP4s; needs network, edge-tts, ffmpeg
 python3 tools/check_assets.py
 ```
 
@@ -243,7 +243,7 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 - [x] Seven board drawings plus the LQFP48 pinout
 - [x] Six generated GIFs and the asset checker
 - [x] 13 HAL examples (including bxCAN and USB CDC/HID) and 4 cheatsheets
-- [x] A reproducible slideshow per chapter (`assets/video/`)
+- [x] A narrated MP4 per chapter (`assets/video/`, Chinese voice-over plus SRT)
 - [x] Wokwi projects and Renode `.resc` scripts (chapter 22)
 - [x] H7 / G0 / L4 pinouts from DS12232, DS10198, and DS12110 (chapters 23–25)
 - [x] English edition in `docs/en/`

@@ -11,20 +11,25 @@
 
 <!-- video:ch18 -->
 <p align="center">
-  <img src="../../assets/video/ch18-faq.gif" width="640" alt="Chapter 18 lecture slides">
-  <br><sub>▲ Lecture strip for this chapter: a program-generated GIF (tools/gen_videos.py, reproducible, not a photograph). The narration matches the five frames one by one.</sub>
+  <video width="640" controls poster="../../assets/video/ch18-faq.png">
+    <source src="../../assets/video/ch18-faq.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch18-faq.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
-**Narration (read along with the frames, about one minute)**
+**Narration script (Chinese, same text as the subtitles)**
 
-1. If the LED stays dark, check three things first: is the clock on, is the level inverted, and is the resistor there?
-2. If download fails, check whether SWD is still connected, whether BOOT0 has been pulled high, and whether a wire is loose.
-3. If the serial port is garbage, check the baud rate, the common ground, and whether TX and RX are swapped.
-4. If the interrupt never enters, check the NVIC enable, the priority, and whether a higher-priority handler is stuck in a loop.
-5. Treat this table as a clinic. Match the symptom first, then change the code.
+1. 排错不要从改代码开始。先让现象稳定复现，再退到只点灯或只回环的最小工程。最小工程是好的，问题就在你后来加的那一块里。
+2. 这一章的五步是：复现，最小化，二分，看证据，对照手册。前两步能解决大多数问题。一上来就二分一大坨新代码，你会把时间花在来回编译上。
+3. 编译报一长串时，先看第一处真正的错误。找不到头文件，多半是包含路径，不是语法突然坏了。链接报未定义的符号，再去看你有没有把对应的源文件加进工程。
+4. 这一帧是仓库画的分层。现象在引脚上，就同时怀疑引脚模式和接线。现象在 HAL 返回值里，就打印那个状态码，再对照它碰过的寄存器。不要每一层同时盲改。
+5. 下载失败时，先看供电、地、SWD 两根线和复位。芯片认不出，就不要查优化等级。BOOT0 被拉高时，它跑的是系统存储器，你的程序看起来像没烧进去。
+6. 外设完全没反应，老三样：时钟开了没有，引脚复用对不对，该清的标志清了没有。这三样过完，再去看波特率、过滤器和采样时间。顺序反了，会在细节里耗掉一个晚上。
+7. 三条铁律：能测就别猜，先共地再看信号，一次只改一处。猜测式修改会让两个错误叠在一起，最后谁也不认领。
+8. 这一章建议你故意制造一次错误，比如删掉一个头文件路径，看编译器怎么说，再改回来。见过真实报错的人，下次不会从最后一行开始慌。
+9. 口诀：先复现，再缩到最小。前两步走完还不知道范围，再去二分和看证据。能测就别猜。
+10. 合上书，三问。排错五步的前两步是什么？调试器认不出芯片时，先查代码还是先查线和 BOOT？为什么一次只改一处？
 <!-- /video:ch18 -->
-
-
 ## 📌 Learning goals
 
 - [ ] Build the habit of searching by symptom, instead of editing code at random.

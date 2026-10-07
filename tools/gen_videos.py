@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-gen_videos.py —— 每章一张可复现的讲解幻灯 GIF。
+gen_videos.py —— 旧的五帧 ASCII 幻灯。
 
-GIF 里的字只能是 ASCII（minigfx 的 5×7 点阵）。中文旁白写在各章
-``<!-- video:chNN -->`` 标记里，由本脚本 ``--patch-docs`` 写入，
-和画面逐帧对应。不使用版权素材，也不生成「实拍」画面。
+章节讲解已经改成带配音的 MP4，见 gen_narrated.py。
+本脚本仍可单独生成 GIF，但 make assets 不再调用它。
+GIF 里的字只能是 ASCII（minigfx 的 5×7 点阵）。
 
 用法::
 
     python3 tools/gen_videos.py              # 写 assets/video/*.gif
-    python3 tools/gen_videos.py --patch-docs # 同时刷新章节里的嵌入与旁白
     python3 tools/gen_videos.py 03           # 只生成某一章
 """
 
