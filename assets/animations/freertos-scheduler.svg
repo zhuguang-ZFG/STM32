@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="FreeRTOS 任务调度：状态机 + 甘特图">
 <style>
-@keyframes st就绪-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
-.st就绪{animation:st就绪-fade 4s ease-in-out infinite 0s;}
-@keyframes st运行-fade{0%,100%{opacity:0.45}50%{opacity:0.1}}
-.st运行{animation:st运行-fade 4s ease-in-out infinite 1s;}
-@keyframes st阻塞-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
-.st阻塞{animation:st阻塞-fade 4s ease-in-out infinite 2s;}
-@keyframes st挂起-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
-.st挂起{animation:st挂起-fade 4s ease-in-out infinite 3s;}
+@keyframes stReady-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
+.stReady{animation:stReady-fade 4s ease-in-out infinite 0s;}
+@keyframes stRun-fade{0%,100%{opacity:0.45}50%{opacity:0.1}}
+.stRun{animation:stRun-fade 4s ease-in-out infinite 1s;}
+@keyframes stBlock-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
+.stBlock{animation:stBlock-fade 4s ease-in-out infinite 2s;}
+@keyframes stSusp-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
+.stSusp{animation:stSusp-fade 4s ease-in-out infinite 3s;}
 
 .e1{stroke-dasharray:6 8;animation:e1-flow 1.4s linear infinite;}@keyframes e1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
 @keyframes cursor-tx{0%{transform:translateX(0px)}100%{transform:translateX(700px)}}
@@ -25,19 +25,19 @@
 <rect x="80" y="110" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#34d399" stroke-width="1.5"/>
 <text x="165" y="136" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">就绪 Ready</text>
 <text x="165" y="156" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优先级越高越先运行</text>
-<rect x="80" y="110" width="170" height="62" fill="#34d399" opacity="0.15" rx="12" class="st就绪"/>
+<rect x="80" y="110" width="170" height="62" fill="#34d399" opacity="0.15" rx="12" class="stReady"/>
 <rect x="400" y="110" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5"/>
 <text x="485" y="136" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">运行 Running</text>
 <text x="485" y="156" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优先级越高越先运行</text>
-<rect x="400" y="110" width="170" height="62" fill="#22d3ee" opacity="0.15" rx="12" class="st运行"/>
+<rect x="400" y="110" width="170" height="62" fill="#22d3ee" opacity="0.15" rx="12" class="stRun"/>
 <rect x="400" y="226" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#fbbf24" stroke-width="1.5"/>
 <text x="485" y="252" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">阻塞 Blocked</text>
 <text x="485" y="272" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优先级越高越先运行</text>
-<rect x="400" y="226" width="170" height="62" fill="#fbbf24" opacity="0.15" rx="12" class="st阻塞"/>
+<rect x="400" y="226" width="170" height="62" fill="#fbbf24" opacity="0.15" rx="12" class="stBlock"/>
 <rect x="80" y="226" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#a78bfa" stroke-width="1.5"/>
 <text x="165" y="252" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">挂起 Suspended</text>
 <text x="165" y="272" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优先级越高越先运行</text>
-<rect x="80" y="226" width="170" height="62" fill="#a78bfa" opacity="0.15" rx="12" class="st挂起"/>
+<rect x="80" y="226" width="170" height="62" fill="#a78bfa" opacity="0.15" rx="12" class="stSusp"/>
 <line x1="252" y1="128" x2="389" y2="128" stroke="#34d399" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="e1"/>
 <polygon points="396.00,128.00 389.00,131.50 389.00,124.50" fill="#34d399" opacity="1"/>
 <text x="324" y="120" font-size="10" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调度器选中</text>

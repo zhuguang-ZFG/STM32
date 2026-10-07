@@ -434,20 +434,21 @@ def freertos_scheduler() -> Svg:
             "SysTick 每 1 ms 打断一次，调度器挑出「就绪队列里优先级最高」的任务")
     s.header(tag="15 FreeRTOS", tag_color=T.PINK)
 
-    states = [("就绪 Ready", 80, 110, T.GREEN), ("运行 Running", 400, 110, T.CYAN),
-              ("阻塞 Blocked", 400, 226, T.AMBER),
-              ("挂起 Suspended", 80, 226, T.VIOLET)]
-    for name, x, y, color in states:
+    states = [("就绪 Ready", 80, 110, T.GREEN, "stReady"),
+              ("运行 Running", 400, 110, T.CYAN, "stRun"),
+              ("阻塞 Blocked", 400, 226, T.AMBER, "stBlock"),
+              ("挂起 Suspended", 80, 226, T.VIOLET, "stSusp")]
+    for name, x, y, color, cls in states:
         s.rect(x, y, 170, 62, fill=T.PANEL, stroke=color, rx=12)
         s.text(x + 85, y + 26, name, size=13, anchor="middle", fill=T.TEXT,
                weight="600")
         s.text(x + 85, y + 46, "优先级越高越先运行", size=9, anchor="middle",
                fill=T.MUTED)
-        s.rect(x, y, 170, 62, fill=color, rx=12, opacity=0.15, cls=f"st{name[:2]}")
-    s.add_style(anim_fade(".st就绪", dur="4s", a=0.1, b=0.45))
-    s.add_style(anim_fade(".st运行", dur="4s", a=0.45, b=0.1, delay="1s"))
-    s.add_style(anim_fade(".st阻塞", dur="4s", a=0.1, b=0.45, delay="2s"))
-    s.add_style(anim_fade(".st挂起", dur="4s", a=0.1, b=0.45, delay="3s"))
+        s.rect(x, y, 170, 62, fill=color, rx=12, opacity=0.15, cls=cls)
+    s.add_style(anim_fade(".stReady", dur="4s", a=0.1, b=0.45))
+    s.add_style(anim_fade(".stRun", dur="4s", a=0.45, b=0.1, delay="1s"))
+    s.add_style(anim_fade(".stBlock", dur="4s", a=0.1, b=0.45, delay="2s"))
+    s.add_style(anim_fade(".stSusp", dur="4s", a=0.1, b=0.45, delay="3s"))
 
     s.arrow(252, 128, 396, 128, color=T.GREEN, sw=2, dash="6 8", cls="e1")
     s.text(324, 120, "调度器选中", size=10, anchor="middle", fill=T.GREEN)
