@@ -4,12 +4,12 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：22 篇文档 · 21 个原理动画 · 7 张板卡实物结构图 · 5 个光栅动画 · 10 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：22 篇文档 · 21 个原理动画 · 7 张板卡实物结构图 · 6 个光栅动画 · 10 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-22_篇-60a5fa?style=flat-square)](docs/)
 [![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
-[![gif](https://img.shields.io/badge/GIF_动画-5_个-f87171?style=flat-square)](assets/gif/)
+[![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
 [![examples](https://img.shields.io/badge/可编译示例-10_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
@@ -66,7 +66,7 @@
 </tr>
 </table>
 
-完整清单（21 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 5 个**纯 Python 生成的光栅动画**：
+完整清单（21 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -74,6 +74,9 @@
 <br>
 <img src="assets/gif/uart-bits.gif" width="330" alt="UART 逐位发送 GIF">
 <img src="assets/gif/sar-adc.gif" width="330" alt="SAR ADC 逐次逼近 GIF">
+<br>
+<img src="assets/gif/i2c-timing.gif" width="330" alt="I2C 时序 GIF">
+<img src="assets/gif/dma-ring.gif" width="330" alt="DMA 环形缓冲 GIF">
 <br>
 <sub>▲ GIF 用标准库手写的 GIF89a/LZW 编码器生成，帧间差分 + 透明索引压缩；文字为 ASCII（内置点阵字体限制）</sub>
 </div>

@@ -128,6 +128,70 @@ def pwm_breath():
     return g
 
 
+# --------------------------------------------------------------------------- I2C 时序
+
+
+def i2c_timing():
+    """I2C 一次写事务：START / 地址 / R-W / ACK / 数据 / ACK / STOP 逐段高亮。"""
+    g = Gif(W, H, delay=10)
+    sda = [1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1]
+    phases = [(0, 1, "START"), (1, 8, "ADDR 0x3C"), (8, 9, "R/W"),
+              (9, 10, "ACK"), (10, 18, "DATA"), (18, 19, "ACK"),
+              (19, 20, "STOP")]
+    x0, pw = 20, 22
+    total = len(phases)
+    for f in range(total):
+        c = Canvas(W, H)
+        chrome(c, "I2C TIMING", "400 KHZ",
+               "START: SDA FALLS WHILE SCL HIGH   STOP: SDA RISES WHILE SCL HIGH")
+        for i, (a, b, name) in enumerate(phases):
+            x = x0 + a * pw
+            w = (b - a) * pw - 4
+            cur = (i == f)
+            c.panel(x, 40, w, 22, C.PANEL2 if cur else C.PANEL,
+                    C.GREEN if cur else C.STROKE)
+            c.text_c(name, x + w / 2, 46, C.GREEN if cur else C.MUTED, 1)
+
+        a, b, name = phases[f]
+        c.text("SCL", 20, 92, C.CYAN, 1)
+        y_hi, y_lo = 100, 128
+        for i in range(20):
+            x = x0 + i * pw
+            col = C.CYAN if a <= i < b else dim(C.CYAN, 0.4)
+            c.line(x, y_lo, x, y_hi, col, 2)
+            c.line(x, y_hi, x + pw / 2, y_hi, col, 2)
+            c.line(x + pw / 2, y_hi, x + pw / 2, y_lo, col, 2)
+            c.line(x + pw / 2, y_lo, x + pw, y_lo, col, 2)
+        c.text("SDA", 20, 160, C.AMBER, 1)
+        y1, y0 = 168, 196
+        for i, bit in enumerate(sda):
+            x = x0 + i * pw
+            col = C.AMBER if a <= i < b else dim(C.AMBER, 0.4)
+            yy = y1 if bit else y0
+            c.line(x, yy, x + pw, yy, col, 2)
+            if i < 19:
+                nxt = y1 if sda[i + 1] else y0
+                if nxt != yy:
+                    c.line(x + pw, yy, x + pw, nxt, col, 2)
+        c.rect(x0 + a * pw - 2, 88, (b - a) * pw + 2, 116, C.GREEN, 1)
+        c.text(f"PHASE {f + 1}/{total}: {name}", 20, 226, C.GREEN, 1)
+        tips = [
+            "SCL HIGH + SDA HIGH->LOW = START",
+            "7 BIT ADDRESS THEN R/W BIT (0 = WRITE)",
+            "RECEIVER PULLS SDA LOW = ACK",
+            "DATA 8 BIT, MSB FIRST",
+            "EACH ACK IS THE 9TH CLOCK PULSE",
+            "SCL HIGH + SDA LOW->HIGH = STOP",
+            "PULL-UP 4.7K ON BOTH LINES",
+        ]
+        c.text(tips[f], 20, 244, C.TEXT, 1)
+        c.text("HAL_I2C_Mem_Write(&hi2c1, 0x3C<<1, reg, 1, buf, len, 100)",
+               20, 262, C.CYAN, 1)
+        c.text("BUS STUCK? SEND 9 CLOCKS MANUALLY THEN A STOP", 20, 278, C.DIM, 1)
+        g.add(c)
+    return g
+
+
 BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
@@ -284,6 +348,7 @@ BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
     "uart-bits": uart_bits,
+    "i2c-timing": i2c_timing,
     "dma-ring": dma_ring,
     "sar-adc": sar_adc,
 }

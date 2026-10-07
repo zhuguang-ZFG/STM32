@@ -240,9 +240,44 @@ def check_gif():
     return ok
 
 
+def check_links():
+    """校验 Markdown 里的相对链接与图片引用是否真实存在。"""
+    import re
+    pat_md = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)")
+    pat_html = re.compile(r'(?:src|href)="([^"]+)"')
+    bad, total = 0, 0
+
+    for root, dirs, files in os.walk(ROOT):
+        for f in sorted(files):
+            if not f.endswith(".md"):
+                continue
+            p = os.path.join(root, f)
+            with open(p, encoding="utf-8") as fh:
+                text = fh.read()
+            # 去掉围栏代码块里的示例链接，避免误报
+            text = re.sub(r"```.*?```", "", text, flags=re.S)
+            urls = [m.group(1) for m in pat_md.finditer(text)]
+            urls += [m.group(1) for m in pat_html.finditer(text)]
+            for url in urls:
+                if url.startswith(("http://", "https://", "#", "mailto:")):
+                    continue
+                total += 1
+                target = url.split("#")[0]
+                if not target:
+                    continue
+                full = os.path.normpath(os.path.join(root, target))
+                if not os.path.exists(full):
+                    print(f"[FAIL] {os.path.relpath(p, ROOT)} -> {url} 不存在")
+                    bad += 1
+    print(f"链接检查完成：{total - bad}/{total} 有效")
+    return bad == 0
+
+
 if __name__ == "__main__":
     a = check_svg()
     b = check_gif()
-    print("结果：", "全部通过 ✅" if (a and b) else "存在问题 ❌")
-    sys.exit(0 if (a and b) else 1)
+    c = check_links()
+    ok = a and b and c
+    print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
+    sys.exit(0 if ok else 1)
 

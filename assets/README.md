@@ -68,8 +68,13 @@
 | `led-blink.gif` | 1 Hz LED 闪烁 + 引脚电平波形 | 由 `tools/minigfx.py` 纯 Python 渲染 |
 | `pwm-breath.gif` | PWM 呼吸灯 + 占空比实时显示 | 同上 |
 | `uart-bits.gif` | UART 逐位发送（含波特率时间轴） | 同上 |
+| `i2c-timing.gif` | I2C 一次写事务：START/地址/ACK/数据/STOP 逐段高亮 | 同上 |
 | `dma-ring.gif` | DMA 循环搬运 ADC 数据到数组 | 同上 |
 | `sar-adc.gif` | SAR ADC 逐次逼近比较过程 | 同上 |
+
+> ⚠️ GIF 里的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形，
+> 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
+> 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
 ## 五、引用方式
 
