@@ -8,7 +8,7 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams gifs check clean stats
+.PHONY: assets animations boards diagrams gifs check verify clean stats
 
 assets: animations boards diagrams gifs
 
@@ -25,6 +25,14 @@ gifs:
 	$(PY) tools/gen_gifs.py
 
 check:
+	$(PY) tools/check_assets.py
+
+# 一键验证「素材可由脚本复现」：重新生成后检查工作区是否有差异
+verify: assets
+	@if [ -n "$$(git status --porcelain assets/)" ]; then \
+		echo "素材与脚本生成结果不一致，请提交生成结果："; \
+		git --no-pager diff --stat assets/; exit 1; \
+	else echo "素材与脚本一致 ✅"; fi
 	$(PY) tools/check_assets.py
 
 clean:
