@@ -1,5 +1,7 @@
 # 14 USB
 
+> English: [USB](en/14-usb.md)
+
 > USB 让 STM32 用一根线同时供电与通信，枚举成功后能变成虚拟串口(CDC)、键盘(HID)或 U 盘(MSC)。
 
 <p align="center">
@@ -7,6 +9,27 @@
   <br><sub>▲ 动画：USB 设备枚举全过程（复位 → 取描述符 → 分配地址 → 配置）（作者自绘矢量动画，非实拍）</sub>
 </p>
 
+<!-- video:ch14 -->
+<p align="center">
+  <video width="640" controls poster="../assets/video/ch14-usb.png">
+    <source src="../assets/video/ch14-usb.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面用文泉驿微米黑绘制，插图是本仓库 SVG，不是实拍。 字幕：<a href="../assets/video/ch14-usb.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+</p>
+
+**旁白（与字幕、配音同一份稿）**
+
+1. F103 的 USB 全速要 48 兆时钟。常见做法是 PLL 先到 72 兆，再除以 1.5。时钟差一点，主机会在读描述符时失败，设备管理器里就是未知设备。
+2. 全速设备用 D+ 上的 1.5 千欧上拉告诉主机：我是全速。BluePill 上这颗电阻常常已经在了。没有上拉，主机根本不知道你插上来了。
+3. 枚举是主机在提问。它先在地址 0 要设备描述符的前 8 个字节，再给你分配地址，再要整份配置，最后选择配置。卡在哪一步，口诀在这一章的正文里。
+4. 这一帧是仓库画的枚举过程，不是分析仪抓的真实波形。对照它看你的描述符长度。配置描述符的总长度算错，常常卡在选择配置之前。
+5. CDC 插上像一个串口，适合传字节流。HID 插上像键盘或鼠标，系统自带驱动，但每次只能按报告格式送很少的字节。数据采集走 CDC，按键走 HID。
+6. 在 F103 上，USB 的低优先级中断和 CAN 接收邮箱 0 共用一个入口。两套一起开的时候，服务函数里要分清是谁在叫。只复制一个空的中断函数，另一边就会丢。
+7. 示例里 CDC 的配置描述符是 67 个字节。HID 的报告描述符也要自己数，别让总长度字段和真实字节数打架。设置地址要等这一次状态传输走完再生效。
+8. 示例用的厂商号是 0x1209，产品号只是实验占位，并没有在 pid.codes 注册。可以在自己的电脑上认设备，不要把这组号印到准备送人的产品上。
+9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
+10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
+<!-- /video:ch14 -->
 ## 📌 学习目标
 
 - [ ] 分清 USB 2.0 低速(1.5 Mbps)/全速(12 Mbps)/高速(480 Mbps)，以及 STM32 各型号支持哪种。
@@ -250,6 +273,13 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 2. **CDC 定时上报**：每秒把 ADC 采到的电压（见第 09 章）通过 `CDC_Transmit_FS` 上报。预期：上位机收到连续数值。
 3. **自定义 HID**：把设备改成 HID，用一个按键触发上报，用「Windows 游戏控制器」属性页查看。预期：按键时属性页里的坐标/按钮状态变化。
 4. **（进阶）枚举抓包**：用 Wireshark + USBPcap（或硬件 USB 分析仪）抓取枚举过程，逐条对照第 5 节的 7 步。预期：能看到 GET_DESCRIPTOR / SET_ADDRESS / SET_CONFIGURATION 的完整交互。
+
+仓库里的两个示例不附带 ST USB 中间件，直接用 HAL PCD 完成枚举：
+
+- [examples/usb-cdc](../examples/usb-cdc/)：虚拟串口，回显，DTR 有效后每秒一行 `cdc tick`。
+- [examples/usb-hid](../examples/usb-hid/)：启动式键盘，PA0 按下送一个字母 `a`。
+
+两份都把 PLL 设成 72 MHz，USB 时钟选 PLL/1.5。F103 的 `USB_LP_CAN1_RX0` 与 bxCAN 接收是同一条中断，不要和 CAN 示例编进同一个工程。
 
 ## 🔗 相关资源
 

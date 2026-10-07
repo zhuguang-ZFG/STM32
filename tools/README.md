@@ -1,16 +1,20 @@
 # 素材生成工具
 
-本目录的脚本用**纯 Python 标准库**（零第三方依赖）生成 `assets/` 下的全部图片。
-设计目标是：任何环境 `git clone` 之后都能一键复现素材，不需要装 PIL、ImageMagick 或浏览器。
+本目录里画 SVG 和 GIF 的脚本只用 Python 标准库。
+`gen_narrated.py` 是例外：海报要 Pillow，成片还要 edge-tts、ffmpeg，以及能访问微软语音服务的网络。
+`make assets` 只重画海报，不重跑配音（在线语音不是逐比特稳定的）。
 
 ## 快速开始
 
 ```bash
 python3 tools/gen_animations.py     # 21 个 SVG 动画（CSS @keyframes / SMIL）
-python3 tools/gen_boards.py         # 7 张板卡实物结构图
+python3 tools/gen_boards.py         # 板卡实物结构图
+python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 4 张静态框图
 python3 tools/gen_gifs.py           # 6 个光栅 GIF
-python3 tools/check_assets.py       # 自检：SVG 合法性/超界/死类 + GIF 逐像素回验 + 链接校验
+python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
+python3 tools/gen_narrated.py --speak     # 配音 MP4 + SRT（还需 edge-tts、ffmpeg、联网）
+python3 tools/check_assets.py       # 自检：SVG、GIF 回验、讲解 MP4、链接校验
 ```
 
 只生成某一个：
@@ -30,11 +34,15 @@ python3 tools/gen_gifs.py led-blink
 | `anim_comm.py` | UART 帧、I2C 事务、SPI 移位、CAN 仲裁、USB 枚举 |
 | `anim_sys.py` | 定时器/PWM、定时器模式、SAR ADC、DMA 循环、看门狗、IAP、FreeRTOS、低功耗 |
 | `gen_boards.py` | BluePill / BlackPill / Nucleo-F411RE / F4-Discovery / F103ZET6 大板 / LQFP48 引脚图 / 外设接线总览 |
+| `gen_pinouts.py` | G071 / L476 / H743 的 LQFP 引脚图（脚序来自数据手册，不补脚） |
 | `gen_diagrams.py` | 分层架构、工程目录结构、外设总线、中断优先级 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
+| `gen_videos.py` | 旧的 5 帧 ASCII 幻灯，章节讲解已改由 `gen_narrated.py` 生成 |
+| `narration.py` | 第 00–25 章的分镜、口诀和旁白稿 |
+| `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
-| `check_assets.py` | 自检工具：SVG XML 校验、元素超界检测、动画 class 死链检测、GIF 解码逐像素回验、Markdown 链接与图片引用校验、体积告警 |
+| `check_assets.py` | 自检：SVG、GIF 回验、章节幻灯、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
 
 ## 设计约定
 

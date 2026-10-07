@@ -1,0 +1,7 @@
+# Wokwi 工程配置。firmware / elf 相对本文件。
+# STM32 接受 .elf / .hex / .bin（见 https://docs.wokwi.com/vscode/project-config ）。
+# 本仓库示例是 HAL 源码，需先用 CubeIDE 或 PlatformIO 编出 ELF，再把路径改到这里。
+[wokwi]
+version = 1
+firmware = 'build/firmware.elf'
+elf = 'build/firmware.elf'

@@ -1,7 +1,10 @@
 # 章节目录
 
+> English: [Contents](en/contents.md)
+
 > 建议阅读顺序：**00 → 01 → 02**（打基础）→ 按兴趣挑外设章节 → **18**（排错手册随时查）→ **19**（做项目）。
 > 每篇末尾都有「动手实验」与「常见坑排查」，做完实验再往下走。
+> 每章开头有一段中文配音讲解（`assets/video/`，MP4 + SRT），由 `tools/gen_narrated.py` 用 ffmpeg 合成。
 
 ## 基础篇
 
@@ -31,7 +34,7 @@
 | 16 | [低功耗设计](16-低功耗设计.md) | Sleep/Stop/Standby、WFI、唤醒源 | [lowpower-wakeup](../assets/animations/lowpower-wakeup.svg) |
 | 17 | [调试与性能优化](17-调试与性能优化.md) | SWD/SWO、HardFault 定位、DWT 计时 | [debug-swo](../assets/animations/debug-swo.svg) |
 
-## 实战与工具篇
+## 实战、仿真与系列引脚
 
 | # | 章节 | 一句话 |
 | --- | --- | --- |
@@ -39,6 +42,10 @@
 | 19 | [项目实战合集](19-项目实战合集.md) | 10 个递进项目：蓝牙小车、示波器、数据采集卡… |
 | 20 | [学习资源与工具链](20-学习资源与工具链.md) | 官方手册命名规则、社区、开源固件库 |
 | 21 | [原理图与实物图鉴](21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
+| 22 | [仿真实验 Wokwi 与 Renode](22-仿真实验Wokwi与Renode.md) | 浏览器接线、命令行加载 ELF、DMA 模型的边界 |
+| 23 | [STM32G0 引脚](23-STM32G0引脚.md) | G071RB LQFP64、BOOT0 与 SWCLK 共用、没有 bxCAN |
+| 24 | [STM32L4 引脚](24-STM32L4引脚.md) | L476RG 引脚、VDDUSB、封面低功耗典型值 |
+| 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI LQFP144、FDCAN、VCAP 与三个电源域 |
 
 ## 相关目录
 

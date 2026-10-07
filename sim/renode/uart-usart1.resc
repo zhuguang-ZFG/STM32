@@ -1,0 +1,21 @@
+# BluePill USART1 终端脚本
+# 平台：Renode platforms/cpus/stm32f103.repl 里的 usart1（0x40013800，PA9/PA10）。
+# 用法：
+#   renode sim/renode/uart-usart1.resc
+# 然后另开终端：telnet localhost 3456
+# 固件需往 USART1 收发。本仓库 uart-dma-idle 依赖 DMA，
+# 若所用 Renode 版本的 DMA 模型不完整，请先换轮询收发再看这个终端。
+
+using sysbus
+
+mach create "bluepill"
+machine LoadPlatformDescription @platforms/cpus/stm32f103.repl
+
+$bin ?= @firmware.elf
+sysbus LoadELF $bin
+
+emulation CreateServerSocketTerminal 3456 "uart1term" false
+connector Connect usart1 uart1term
+showAnalyzer usart1
+
+start

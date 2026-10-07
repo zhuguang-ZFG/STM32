@@ -1,0 +1,22 @@
+# BluePill GPIO 观察脚本
+# 平台描述来自 Renode 仓库 platforms/cpus/stm32f103.repl（外设名 usart1 / gpioPortC）。
+# 用法（在装有 Renode 的机器上）：
+#   renode sim/renode/gpio-blink.resc
+# 固件路径可覆盖：
+#   renode -e '$bin=@/绝对路径/firmware.elf' sim/renode/gpio-blink.resc
+
+using sysbus
+
+mach create "bluepill"
+machine LoadPlatformDescription @platforms/cpus/stm32f103.repl
+
+$bin ?= @firmware.elf
+sysbus LoadELF $bin
+
+# USART1 在 PA9/PA10。点灯示例本身不打印，分析器留着给改过串口的固件。
+showAnalyzer usart1
+
+# 打开 GPIO C 的访问日志。BluePill 板载灯在 PC13，低电平点亮。
+logLevel 1 gpioPortC
+
+start

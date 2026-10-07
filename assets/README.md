@@ -6,6 +6,7 @@
 > ```bash
 > python3 tools/gen_animations.py   # assets/animations/*.svg（SMIL/CSS 动画）
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
+python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
@@ -51,6 +52,9 @@
 | `f103zet6-dev.svg` | 战舰/正点原子风格大板 | STM32F103ZET6 |
 | `pinout-bluepill.svg` | BluePill 双排针引脚全标注图（静态） | STM32F103C8T6 |
 | `peripheral-wiring.svg` | 常用外设接线总览（LED/按键/OLED/传感器） | — |
+| `pinout-stm32g071rb-lqfp64.svg` | G071RB LQFP64 引脚（DS12232 Rev 5 Table 12） | STM32G071RB |
+| `pinout-stm32l476rg-lqfp64.svg` | L476Rx LQFP64 引脚（DS10198 Rev 11 Figure 16） | STM32L476RG |
+| `pinout-stm32h743zi-lqfp144.svg` | H743xI LQFP144 引脚（DS12110 Rev 11 Figure 7） | STM32H743ZI |
 
 ## 三、静态框图 `assets/diagrams/`
 
@@ -75,6 +79,15 @@
 > ⚠️ GIF 里的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形，
 > 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
 > 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
+
+## 四·补 章节讲解 `assets/video/`
+
+每章一条 MP4，大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
+画面是脚本用文泉驿微米黑画的标题卡，并贴上本仓库自己的 SVG，不是实拍。
+配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
+edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
+仓库里放的是合成后的 MP4，单章不到 2 MB，26 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
+重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 
 ## 五、引用方式
 

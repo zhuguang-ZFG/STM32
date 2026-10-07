@@ -1,5 +1,7 @@
 # 13 CAN 总线
 
+> English: [CAN](en/13-can.md)
+
 > CAN 用差分信号与无损仲裁实现多节点可靠通信，是汽车与工控领域最经典的总线之一。
 
 <p align="center">
@@ -7,6 +9,27 @@
   <br><sub>▲ 动画：CAN 非破坏性仲裁与位填充（作者自绘矢量动画，非实拍）</sub>
 </p>
 
+<!-- video:ch13 -->
+<p align="center">
+  <video width="640" controls poster="../assets/video/ch13-can.png">
+    <source src="../assets/video/ch13-can.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ 本章讲解 2.8 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面用文泉驿微米黑绘制，插图是本仓库 SVG，不是实拍。 字幕：<a href="../assets/video/ch13-can.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+</p>
+
+**旁白（与字幕、配音同一份稿）**
+
+1. CAN 发出去要有人应答。只有一个节点、又不是回环时，错误计数会一直涨。发送错误计数到 256，节点进入总线关闭，它就闭嘴了。这不是收发器坏了。
+2. 先把控制器配成回环，自己发给自己。能收到，说明波特率和过滤器大体对了。再接到真正的总线。示例工程默认就是这条回环路。
+3. F103 的 APB1 若是 36 兆，500 千比特要用预分频 9、位段 1 是 5、位段 2 是 2。一共 8 个时间份额，采样点在 75%。原先那组除不尽，实际只有 450 千比特。
+4. 这一帧是仓库画的仲裁。线上是线与，显性位能盖过隐性位。标识更小的那一帧会留下来，输的那一方安静地改去接收。所以标识不是随便填的装饰。
+5. 过滤器决定哪些标识能进接收邮箱。掩码模式里，掩码为 1 的位必须相同。标准标识在 32 位过滤器里要左移到正确的位置。放错一位，总线上有帧，你的邮箱仍是空的。
+6. CAN1 默认在 PA11 和 PA12，和 USB 撞车。BluePill 上改到 PB8 接收、PB9 发送，用的是 CAN1 的第一种重映射。不要配成去 PD0、PD1 的那一种，C8 没有那两只脚。
+7. 自动总线恢复可以让控制器自己试着回来。关掉它，就要在错误回调里停掉再重新启动。不管哪一种，总线上的接线、终端电阻和波特率得先改对，不然它还会再闭嘴。
+8. 两块板子练习时，关掉回环，两边标识对调，总线两端各放 120 欧。收发器的电平要和模块匹配。单看回环全绿，不代表两块板子已经能对话。
+9. 口诀：发送错误计数到 256 就闭嘴。单节点不要用正常模式考验自己。500 千比特在 36 兆上，记预分频 9 和一共 8 个时间份额。
+10. 合上书，三问。为什么只有一个节点、又不是回环时会进总线关闭？36 兆下 500 千比特的预分频是多少？PB8 和 PB9 哪只是接收？
+<!-- /video:ch13 -->
 ## 📌 学习目标
 
 - [ ] 理解差分电平、显性/隐性、位填充、CRC、ACK 的作用。
@@ -80,11 +103,13 @@ Tq = Prescaler / f_APB1
 
 | 目标波特率 | Prescaler | BS1 | BS2 | 采样点 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 短距离 |
-| 500 kbps | 8 | 6 Tq | 3 Tq | 70% | 常用 |
-| 250 kbps | 16 | 6 Tq | 3 Tq | 70% | 工控常用 |
-| 125 kbps | 32 | 6 Tq | 3 Tq | 70% | 长距离 |
-| 100 kbps | 40 | 6 Tq | 3 Tq | 70% | — |
+| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 36 MHz / (4×9) = 1 MHz，短距离 |
+| 500 kbps | 9 | 5 Tq | 2 Tq | 75% | 36 MHz / (9×8) = 500 kHz |
+| 250 kbps | 18 | 5 Tq | 2 Tq | 75% | 分频再翻一倍 |
+| 125 kbps | 36 | 5 Tq | 2 Tq | 75% | 长距离 |
+| 100 kbps | 45 | 5 Tq | 2 Tq | 75% | 36 MHz / (45×8) = 100 kHz |
+
+> 采样点想卡在 70%（BS1=6、BS2=3，一共 10 个 TQ）时，500 kbit/s 需要的预分频是 7.2，不是整数。上面改成能整除的 8 个 TQ、75% 采样点。示例 [`examples/can-bxcan`](../examples/can-bxcan/) 用的就是 500 kbit/s 这一行。
 
 > **SJW（再同步跳转宽度）** 用于吸收各节点时钟误差，一般取 1~2 Tq。采样点不一致是 CAN 通信偶发错误的首要原因，多节点必须统一。
 
@@ -124,11 +149,11 @@ CAN_HandleTypeDef hcan;
 static void MX_CAN_Init(void)
 {
     hcan.Instance                  = CAN1;
-    hcan.Init.Prescaler            = 8;                 /* 36MHz/(8×(1+6+3))=500k */
+    hcan.Init.Prescaler            = 9;                 /* 36MHz/(9×(1+5+2))=500k */
     hcan.Init.Mode                 = CAN_MODE_NORMAL;
     hcan.Init.SyncJumpWidth        = CAN_SJW_1TQ;
-    hcan.Init.TimeSeg1             = CAN_BS1_6TQ;
-    hcan.Init.TimeSeg2             = CAN_BS2_3TQ;
+    hcan.Init.TimeSeg1             = CAN_BS1_5TQ;
+    hcan.Init.TimeSeg2             = CAN_BS2_2TQ;
     hcan.Init.TimeTriggeredMode    = DISABLE;
     hcan.Init.AutoBusOff           = ENABLE;
     hcan.Init.AutoWakeUp           = DISABLE;
@@ -227,3 +252,4 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM：数够 128×11 个隐性位后自动�
 - ISO 11898-1（CAN 数据链路层）与 ISO 11898-2（物理层）。
 - 收发器数据手册：TJA1050、SN65HVD230。
 - 配图：`../assets/animations/can-arbitration.svg`（作者自绘矢量图）。
+- 可编译示例：[examples/can-bxcan](../examples/can-bxcan/)（环回、双节点、过滤器、ABOM 与软件恢复）。BluePill 上请重映射到 PB8/PB9，不要占用板载 USB 的 PA11/PA12。

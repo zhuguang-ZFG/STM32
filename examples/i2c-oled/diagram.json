@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "author": "STM32 知识库",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-stm32-bluepill",
+      "id": "mcu",
+      "top": 40,
+      "left": 40,
+      "attrs": {}
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled",
+      "top": 0,
+      "left": 280,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rSCL",
+      "top": 40,
+      "left": 200,
+      "attrs": {
+        "value": "4700"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rSDA",
+      "top": 90,
+      "left": 200,
+      "attrs": {
+        "value": "4700"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "mcu:B6",
+      "oled:SCL",
+      "cyan",
+      []
+    ],
+    [
+      "mcu:B7",
+      "oled:SDA",
+      "green",
+      []
+    ],
+    [
+      "mcu:3V3.1",
+      "oled:VCC",
+      "red",
+      []
+    ],
+    [
+      "mcu:GND.1",
+      "oled:GND",
+      "black",
+      []
+    ],
+    [
+      "mcu:3V3.1",
+      "rSCL:1",
+      "red",
+      []
+    ],
+    [
+      "rSCL:2",
+      "mcu:B6",
+      "cyan",
+      []
+    ],
+    [
+      "mcu:3V3.1",
+      "rSDA:1",
+      "red",
+      []
+    ],
+    [
+      "rSDA:2",
+      "mcu:B7",
+      "green",
+      []
+    ]
+  ]
+}

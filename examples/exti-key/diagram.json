@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "STM32 知识库",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-stm32-bluepill",
+      "id": "mcu",
+      "top": 40,
+      "left": 40,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn",
+      "top": 180,
+      "left": 260,
+      "attrs": {
+        "color": "green"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "mcu:A0",
+      "btn:1.l",
+      "green",
+      []
+    ],
+    [
+      "btn:2.l",
+      "mcu:GND.1",
+      "black",
+      []
+    ]
+  ]
+}

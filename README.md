@@ -2,15 +2,17 @@
 
 # STM32 学习知识库
 
+> English: [English edition](docs/en/README.md)
+
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：22 篇文档 · 21 个原理动画 · 7 张板卡实物结构图 · 6 个光栅动画 · 10 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 13 个可编译示例 · 4 份速查表
 
-[![docs](https://img.shields.io/badge/文档-22_篇-60a5fa?style=flat-square)](docs/)
+[![docs](https://img.shields.io/badge/文档-26_篇-60a5fa?style=flat-square)](docs/)
 [![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
-[![examples](https://img.shields.io/badge/可编译示例-10_个-34d399?style=flat-square)](examples/)
+[![examples](https://img.shields.io/badge/可编译示例-13_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
@@ -153,7 +155,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 </details>
 
 <details open>
-<summary><b>实战与工具篇（18 ~ 21）</b></summary>
+<summary><b>实战、仿真与系列引脚（18 ~ 25）</b></summary>
 
 | # | 章节 | 关键词 |
 | --- | --- | --- |
@@ -161,6 +163,10 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 19 | [项目实战合集](docs/19-项目实战合集.md) | 10 个递进项目：蓝牙小车、示波器、数据采集卡… |
 | 20 | [学习资源与工具链](docs/20-学习资源与工具链.md) | 官方手册命名规则 · 中文社区 · 开源固件库 |
 | 21 | [原理图与实物图鉴](docs/21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
+| 22 | [仿真实验 Wokwi 与 Renode](docs/22-仿真实验Wokwi与Renode.md) | 浏览器接线 · Renode 加载 ELF · DMA 模型边界 |
+| 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB LQFP64 · PA14 兼 BOOT0 · 无 bxCAN |
+| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · 封面低功耗典型值 |
+| 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
 
 </details>
 
@@ -184,6 +190,9 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | [rtc-alarm](examples/rtc-alarm/) | ★★ | RTC + 闹钟 + 备份域 | 11 |
 | [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | 15 |
 | [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | 12 |
+| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | 13 |
+| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | 14 |
+| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | 14 |
 
 速查表（打印出来贴显示器旁边那种）：
 
@@ -199,8 +208,8 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```text
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
-├── docs/                     ← 22 篇知识文档（含 CONTENT_GUIDE.md 写作规范）
-├── examples/                 ← 10 个可编译示例（main.c + README.md）
+├── docs/                     ← 00–25 章 + CONTENT_GUIDE.md 写作规范
+├── examples/                 ← 13 个可编译示例（main.c + README.md）
 ├── cheatsheets/              ← 4 份速查表
 ├── assets/
 │   ├── animations/           ← 21 个 SVG 动画（CSS @keyframes / SMIL）
@@ -270,11 +279,11 @@ python3 tools/check_assets.py
 - [x] 21 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS …）
 - [x] 7 张板卡实物结构图 + LQFP48 全引脚图
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
-- [x] 10 个可编译示例 + 4 份速查表
-- [ ] 视频版讲解（每章 5 分钟，配合动画录制）
-- [ ] 交互式在线实验（Wokwi / Renode 仿真链接）
-- [ ] H7 / G0 / L4 系列的引脚图与低功耗专题
-- [ ] 英文版（i18n/ 目录）
+- [x] 13 个可编译示例 + 4 份速查表（含 bxCAN 与 USB CDC/HID）
+- [x] 每章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
+- [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
+- [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
+- [x] 英文版（[docs/en/](docs/en/README.md)，含章节与四份速查表）
 
 ---
 

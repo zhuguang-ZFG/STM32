@@ -1,5 +1,7 @@
 # 内容风格指南（贡献者必读）
 
+> English: [Writing guide](en/CONTENT_GUIDE.md)
+
 本仓库定位：**面向中文学习者的 STM32 知识库**，参考 [通往AGI之路](https://github.com/waytoagi/WaytoAGI) 的组织方式——
 门户首页 + 分章知识库 + 可视化（动画/图示/实物图）+ 可运行代码 + 速查表。
 
