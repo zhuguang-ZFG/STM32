@@ -140,4 +140,100 @@ VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 - 噪声来源：VDDA 纹波、数字开关耦合、缓冲器噪声、LSB 量化噪声。精密场合建议外部加 RC 低通或运放缓冲。
 - 产生正弦/任意波形：定时器触发 + DMA 循环搬运查找表，触发频率决定输出频率。
 
-<!--APPEND-->
+> F103C8（BluePill 常见型号）**没有 DAC**。DAC 从 F103 大容量（xC/xD/xE）和 F4 才有。中容量片子要模拟电压，用 PWM 加 RC，或者外接 DAC 芯片。
+
+## 🛠️ 硬件与接线
+
+| 开发板 | 功能 | 引脚 | 备注 |
+| --- | --- | --- | --- |
+| BluePill / Nucleo F103 | ADC1_IN0 | PA0 | 模拟输入，别再当 GPIO 用 |
+| 同上 | 内部温度 / Vrefint | 无外部脚 | F1 通道 16 / 17，先开 TSVREFE |
+| 有 DAC 的型号 | DAC_OUT1 | PA4 | F103C8 没有这个脚的 DAC 功能 |
+
+信号源阻抗按上一节的采样时间表来选。高阻传感器先加跟随器，不要靠把采样时间拉到 239.5 周期硬撑。
+
+## 💻 代码实现
+
+**结论**：F1 在启动转换前必须做一次校准；多通道连续采集用 DMA，单次慢信号用轮询就够。
+
+```c
+HAL_ADCEx_Calibration_Start(&hadc1);          /* F1 必做；F4 没有这一步 */
+HAL_ADC_Start(&hadc1);
+HAL_ADC_PollForConversion(&hadc1, 10);
+uint16_t code = HAL_ADC_GetValue(&hadc1);
+/* 电压 = code * VDDA / 4096 ，分母是 4096 不是 4095 */
+```
+
+多通道循环搬运见 [`examples/adc-dma/`](../examples/adc-dma/)：`HAL_ADC_Start_DMA` 之前同样要先校准。半传输回调里处理前一半，完成回调里处理后一半。
+
+定时器触发（TRGO）让采样间隔不依赖主循环：
+
+```c
+TIM_MasterConfigTypeDef mst = {0};
+mst.MasterOutputTrigger = TIM_TRGO_UPDATE;
+mst.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
+HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
+/* ADC 外部触发源选 TIM3_TRGO，再 HAL_ADC_Start */
+```
+
+有 DAC 的芯片才写下面这段。F103C8 调用会落空，不要在 BluePill 上照抄：
+
+```c
+HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 约 VREF/2 */
+```
+
+## ⚠️ 常见坑与排查
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| 读数整体偏低、乱跳 | 采样时间短于源阻抗 | 加长采样，或加跟随器 |
+| 换算比万用表高一截 | 用了 /4095 | 改成 code × VREF / 4096 |
+| F1 上电第一次就偏 | 没校准 | `HAL_ADCEx_Calibration_Start` 放在 Start 之前 |
+| 通道互相串扰 | 扫描时前一通道还没放完电 | 高阻通道加长采样，或插入间隔 |
+| 以为 BluePill 能出模拟电压 | C8 没有 DAC | 改 PWM+RC，或换大容量 / F4 |
+| DMA 缓冲区只有新的一半 | 半字传输却按字节数理解 HT | 4 个半字 = 8 字节，见第 10 章 |
+
+## 🧪 动手实验
+
+1. **电位器**：PA0 接 10 kΩ 电位器中间抽头，两端接 3.3 V 和 GND。串口打印码值和 `code * 3.3f / 4096`。预期：拧到头接近 0 和 3.3 V，中间约 1.65 V（码值约 2048）。
+2. **内部基准**：读 Vrefint，用 `VDDA = 1.20f * 4096 / code` 反推。预期：USB 供电时 VDDA 在 3.3 V 附近，具体数字以你的表为准，这里不给“标准实测值”。
+3. **采样时间对比**：同一高阻分压，分别用 1.5 和 239.5 周期各读 100 次。预期：短采样均值偏低、方差大。
+
+### 7. 校准、模拟看门狗、注入通道
+
+**结论**：校准只在 F1 上电后做一次；模拟看门狗负责“越界才打断 CPU”；注入通道可以插队，不打乱规则组的 DMA。
+
+| 功能 | 什么时候用 | HAL |
+| --- | --- | --- |
+| 校准 | F1 每次上电、Start 之前 | `HAL_ADCEx_Calibration_Start` |
+| 模拟看门狗 | 电压超窗再进中断 | `HAL_ADC_AnalogWDGConfig` |
+| 注入组 | 规则组 DMA 跑着，偶尔插一个通道 | `HAL_ADCEx_InjectedStart_IT` |
+
+注入组最多 4 个通道。规则组的 DMA 缓冲不要和注入结果混在同一个数组里。
+
+### 8. 通道和引脚（F103 ADC1）
+
+| 通道 | 引脚 / 来源 |
+| --- | --- |
+| IN0 ~ IN7 | PA0 ~ PA7 |
+| IN8、IN9 | PB0、PB1 |
+| IN16 | 片内温度传感器 |
+| IN17 | Vrefint（约 1.20 V） |
+
+别的封装和 F4 的通道表以数据手册的 Pinout 为准，不要拿这张表去套 H7。
+
+### 9. 自测
+
+1. 12 位、VREF = 3.3 V，码值 2048 对应多少伏？为什么不是 `2048/4095*3.3`？
+2. SAR 试探 bit10 时，已经保留 bit11，试探值应该是 3072 还是 1024？
+3. 为什么 F103C8 的工程里不该出现 `HAL_DAC_Start`？
+
+口诀：**采样看阻抗，换算除 4096，C8 没有 DAC。**
+
+## 🔗 相关资源
+
+- RM0008 第 11 章 ADC、第 12 章 DAC（大容量才有 DAC）。
+- 数据手册 DS5319：ADC 引脚、采样时间与源阻抗。
+- 示例：[`examples/adc-dma/`](../examples/adc-dma/)。
+- 配图：[`assets/animations/adc-sar.svg`](../assets/animations/adc-sar.svg)、[`assets/gif/sar-adc.gif`](../assets/gif/sar-adc.gif)（作者自绘 / 程序生成，不是实拍）。

@@ -236,6 +236,7 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 - 只写器件（如屏幕）可不接 MISO，用 `HAL_SPI_Transmit` 即可。
 - 读器件（如 Flash）必须接 MISO，用 `HAL_SPI_TransmitReceive`。
 - 全双工时发送的同时就在接收，收到的可能是上一次的残留数据。
+- 只想读一个字节，也必须同时发出时钟。主机常发 dummy `0xFF`，从机才有机会把数据移出来。
 
 ### 10. SPI / I2C / UART 对比
 

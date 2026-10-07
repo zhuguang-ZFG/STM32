@@ -249,6 +249,34 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 | 输出低电平 VOL | 0.4V |
 | 内部上拉阻值 | 30~50kΩ |
 
+### 11. 重映射、5 V 容忍和锁定
+
+**结论**：F1 改脚位走 AFIO 重映射，F4 每个引脚自己选 AF 号。能不能接 5 V，只看数据手册那一列有没有 FT，不是“STM32 都耐 5 V”。
+
+| 系列 | 怎么换功能 | 先决条件 |
+| --- | --- | --- |
+| F1 | `AFIO->MAPR` 整组重映射（如 USART1 从 PA9/10 到 PB6/7） | 先 `__HAL_RCC_AFIO_CLK_ENABLE()` |
+| F4 | `GPIOx->AFR` 按引脚填 AF 编号 | 模式先设成复用 |
+
+5 V 容忍（FT）的脚在数据手册引脚表里单独标。普通脚直接接 5 V 会损坏，本仓库不给“大概没事”的电流。
+
+锁定某一脚，避免后面的初始化再改它。序列是写 1、写 0、再写 1，然后读一次：
+
+```c
+GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
+GPIOA->LCKR = GPIO_LCKR_LCK5;
+GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
+(void)GPIOA->LCKR;   /* 读回后 LCKK 才真正锁住，直到复位 */
+```
+
+口诀：**F1 重映射先开 AFIO；5 V 只认 FT；锁定是 1-0-1 再读。**
+
+自测：
+
+1. F103 把 USART1 重映射到 PB6/PB7，忘了开 AFIO 时钟，现象是什么？
+2. 数据手册没标 FT 的 PA0，能不能直接接 5 V 传感器？
+3. `LCKR` 写完不读，锁有没有生效？
+
 ## 🔗 相关资源
 
 - 官方手册：**RM0008** 第 9 章（GPIO）及第 9.2 节（寄存器描述）；**DS5319** 引脚定义

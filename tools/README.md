@@ -9,7 +9,7 @@
 python3 tools/gen_animations.py     # 21 个 SVG 动画（CSS @keyframes / SMIL）
 python3 tools/gen_boards.py         # 7 张板卡实物结构图
 python3 tools/gen_diagrams.py       # 4 张静态框图
-python3 tools/gen_gifs.py           # 5 个光栅 GIF
+python3 tools/gen_gifs.py           # 6 个光栅 GIF
 python3 tools/check_assets.py       # 自检：SVG 合法性/超界/死类 + GIF 逐像素回验 + 链接校验
 ```
 

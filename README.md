@@ -206,7 +206,7 @@ STM32/
 │   ├── animations/           ← 21 个 SVG 动画（CSS @keyframes / SMIL）
 │   ├── boards/               ← 7 张板卡实物结构图
 │   ├── diagrams/             ← 4 张静态框图
-│   ├── gif/                  ← 5 个程序生成的光栅动画
+│   ├── gif/                  ← 6 个程序生成的光栅动画
 │   └── README.md             ← 素材清单与引用方式
 └── tools/                    ← 素材生成脚本（纯标准库，零依赖）
     ├── svgkit.py             ← SVG 画布 + 动画片段库
@@ -235,7 +235,7 @@ python3 tools/gen_animations.py
 python3 tools/gen_boards.py
 python3 tools/gen_diagrams.py
 
-# 生成 5 个光栅 GIF（内置 5×7 点阵字体 + 手写 GIF89a/LZW 编码器）
+# 生成 6 个光栅 GIF（内置 5×7 点阵字体 + 手写 GIF89a/LZW 编码器）
 python3 tools/gen_gifs.py
 
 # 自检：SVG 是否合法 XML、GIF 解码回来是否与源帧逐像素一致
@@ -269,7 +269,7 @@ python3 tools/check_assets.py
 - [x] 21 章知识文档 + 写作规范
 - [x] 21 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS …）
 - [x] 7 张板卡实物结构图 + LQFP48 全引脚图
-- [x] 5 个零依赖生成的 GIF 动画 + 素材自检工具
+- [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 10 个可编译示例 + 4 份速查表
 - [ ] 视频版讲解（每章 5 分钟，配合动画录制）
 - [ ] 交互式在线实验（Wokwi / Renode 仿真链接）

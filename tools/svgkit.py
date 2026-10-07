@@ -431,8 +431,8 @@ def anim_tx(selector: str, dur="4s", x1=0, x2=200, delay="0s",
 
 def anim_rotate(selector: str, dur="3s", cx=0, cy=0, ccw=False) -> str:
     n = _n(selector)
-    end = "rotate(-360deg)" if ccw else "rotate(360deg)"
-    return (css_kf(f"{n}-rot", [("from", "rotate(0deg)"), ("to", end)])
+    spin = "transform:rotate(-360deg)" if ccw else "transform:rotate(360deg)"
+    return (css_kf(f"{n}-rot", [("from", "transform:rotate(0deg)"), ("to", spin)])
             + f"\n{selector}{{animation:{n}-rot {dur} linear infinite;"
               f"transform-origin:{cx}px {cy}px;}}")
 

@@ -303,6 +303,29 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 4. **（进阶）栈溢出复现**：把某任务栈设为 64 字并在函数里放一个 200 字节局部数组，触发 `vApplicationStackOverflowHook`。预期：钩子被调用，据此学会估栈。
 5. **（进阶）优先级反转**：用二值信号量保护资源制造反转，再换成互斥量对比耗时。预期：互斥量的继承机制显著缩短高任务等待时间。
 
+### 11. 相对延时、绝对周期，和软件定时器
+
+**结论**：`vTaskDelay(n)` 从**这一次调用**再等 n 个 tick，任务自己干活的时间会把周期越拖越长。要固定周期，用 `vTaskDelayUntil`。
+
+```c
+TickType_t last = xTaskGetTickCount();
+for (;;)
+{
+    do_work();                                   /* 这里花掉的时间不算进周期误差 */
+    vTaskDelayUntil(&last, pdMS_TO_TICKS(10));   /* 每 10 ms 醒一次 */
+}
+```
+
+软件定时器用 `xTimerCreate`。回调跑在定时器服务任务里，里面不能再 `vTaskDelay`，也不能拿一个可能被别人占用的互斥量。优先级数字越大越先跑，这和 NVIC“数字越小越优先”相反。同一时刻只有一个任务占着 CPU。
+
+口诀：**Delay 是“再等一会儿”，DelayUntil 是“下次几点醒”；定时器回调里不准睡觉。**
+
+自测：
+
+1. 任务里先干 3 ms 再 `vTaskDelay(10)`，实际周期更接近 10 ms 还是 13 ms？
+2. 软件定时器回调里调用 `vTaskDelay`，会卡住谁？
+3. 优先级 3 的任务和优先级 1 的任务同时就绪，FreeRTOS 先跑哪一个？
+
 ## 🔗 相关资源
 
 - FreeRTOS 官方文档与《Mastering the FreeRTOS Real Time Kernel》（任务、队列、信号量、调度章节）。

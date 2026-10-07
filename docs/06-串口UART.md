@@ -257,6 +257,34 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 | 发送新行 | 视协议加 CRLF |
 | 编码 | 与 MCU 端一致 |
 
+### 7. 溢出错误，和 RS485 的方向脚
+
+**结论**：ORE 置位之后，新字节不再进 DR，直到你**先读 SR 再读 DR**。只读 DR 清不掉 ORE，接收就这么停死。
+
+| 标志 | 含义 | 怎么清 |
+| --- | --- | --- |
+| ORE | 上一字节还没读，下一字节又到了 | 读 SR，再读 DR |
+| FE | 停止位不是 1，通常是波特率错 | 读 SR，再读 DR |
+| NE | 采样窗口里电平不干净 | 读 SR，再读 DR |
+| PE | 校验位不符 | 读 SR，再读 DR |
+
+RS485 的方向脚（DE）在发送期间为高。`TXE` 只说明数据进了移位寄存器，线上还在发。切回接收必须等 `TC`：
+
+```c
+HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_SET);
+HAL_UART_Transmit(&huart1, buf, len, 20);
+while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET) { }
+HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_RESET);
+```
+
+口诀：**ORE 要先 SR 后 DR；RS485 等 TC 再转身。**
+
+自测：
+
+1. 中断里只读了 DR，ORE 还会不会留着？
+2. `TXE` 已经是 1，为什么示波器上还看得到最后几位？
+3. 8N1 的停止位在图上为什么标 SP，不标 P？
+
 ## 🔗 相关资源
 
 - 官方手册：**RM0008** 第 27 章（USART）；**DS5319** USART 引脚复用表

@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Cortex-M 存储器映射">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="Cortex-M 存储器映射">
 <style>
 @keyframes ptr-scan{0%{transform:translateY(0)}100%{transform:translateY(330px)}}.ptr{animation:ptr-scan 5s ease-in-out infinite alternate;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#fbbf24" opacity="1"/>
@@ -19,8 +19,8 @@
 <rect x="40" y="172" width="820" height="62" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <rect x="40" y="172" width="6" height="62" fill="#fbbf24" opacity="1" rx="3"/>
 <text x="60" y="198" font-size="14" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">0x1FFF_0000</text>
-<text x="200" y="198" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">System memory</text>
-<text x="200" y="219" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">出厂 Bootloader（DFU / 串口下载）</text>
+<text x="200" y="198" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">系统存储（Code 区内）</text>
+<text x="200" y="219" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F411 出厂 Bootloader；F1 在 0x1FFFF000</text>
 <rect x="40" y="244" width="820" height="62" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <rect x="40" y="244" width="6" height="62" fill="#34d399" opacity="1" rx="3"/>
 <text x="60" y="270" font-size="14" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">0x2000_0000</text>
@@ -39,11 +39,11 @@
 <circle cx="872" cy="131" r="7" fill="#f8fafc" opacity="0.85" class="ptr"/>
 <rect x="40" y="458" width="400" height="54" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="58" y="481" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Flash 页 / 扇区大小不一样</text>
-<text x="58" y="501" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F103：1 KB/页 · F4：16/64/128 KB/扇区（擦除单位）</text>
+<text x="58" y="501" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F103 中容量 1 KB/页，大容量 2 KB/页；F4 按扇区擦</text>
 <rect x="460" y="458" width="400" height="54" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="478" y="481" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">地址 = 基址 + 偏移</text>
-<text x="478" y="501" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA_ODR = 0x4002_0000 + 0x0C（见参考手册）</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">小端模式：0x12345678 在内存里存成 78 56 34 12</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<text x="478" y="501" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">F411：GPIOA=0x40020000，ODR 在 +0x14（+0x0C 是 PUPDR）</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">小端模式：0x12345678 在内存里存成 78 56 34 12</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

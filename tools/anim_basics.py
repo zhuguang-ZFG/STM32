@@ -6,19 +6,23 @@ from __future__ import annotations
 
 from svgkit import (Svg, T, anim_flow, anim_tx)
 
-W, H = 900, 560
+W, H = 900, 620
 
 
-def _step_highlight(prefix: str, n: int, period=6.0, window=0.14) -> str:
-    """给 n 个步骤生成依次高亮的 CSS（每步亮 window*period 秒）。"""
+def _step_highlight(prefix: str, n: int, period=6.0, window=0.22,
+                    peak=0.42, rest=0.08) -> str:
+    """依次高亮。窗口内才变亮，其余时间保持很淡，避免色块盖住文字。"""
     css = []
+    step = 100.0 / n
     for i in range(n):
-        p = 100.0 / n
-        a = i * p
-        b = a + p * window
+        a = i * step
+        b = min(a + step * window, 99.2)
         name = f"{prefix}{i}-flash"
-        css.append(f"@keyframes {name}{{0%,{a:.2f}%{{opacity:1}}"
-                   f"{b:.2f}%,100%{{opacity:.18}}}}")
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.3:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.3, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
         css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
     return "\n".join(css)
 
@@ -61,13 +65,13 @@ def toolchain_flow() -> Svg:
     y1 = 260
     last_x = x0 + 4 * (bw + gap) + bw / 2
     s.arrow(last_x, y0 + bh, last_x, y1 - 6, color=T.GREEN, sw=2.4)
-    s.text(last_x + 10, y0 + bh + 62, "SWD 2 线：SWCLK / SWDIO", size=11,
-           fill=T.GREEN)
+    s.text(last_x - 14, y0 + bh + 44, "SWD：SWCLK + SWDIO", size=11,
+           anchor="end", fill=T.GREEN)
 
     row2 = [
         ("内部 Flash", "0x0800_0000 起", "程序常住地，掉电不丢"),
         ("复位 → 取向量表", "MSP / Reset_Handler", "启动文件 startup_xxx.s"),
-        ("Cortex-M 内核", "取指 / 译码 / 执行", "72 MHz ≈ 1.25 DMIPS/MHz"),
+        ("Cortex-M 内核", "约 1.25 DMIPS/MHz", "M3 @ 72 MHz ≈ 90 DMIPS"),
         ("外设寄存器", "0x4000_0000 起", "GPIO / TIM / USART ..."),
     ]
     bw2 = 190
@@ -90,8 +94,8 @@ def toolchain_flow() -> Svg:
     s.title_block(40, 420, "常见命令（命令行 + Makefile 方式）", color=T.GREEN)
     s.rect(40, 432, 820, 84, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.code(56, 456, [
-        "arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -O2 -c main.c -o main.o",
-        "arm-none-eabi-gcc -T STM32F411CEUx_FLASH.ld *.o -o build/app.elf",
+        "arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -O2 -c main.c -o main.o",
+        "arm-none-eabi-gcc -T STM32F103C8Tx_FLASH.ld *.o -o build/app.elf",
         "arm-none-eabi-objcopy -O binary build/app.elf build/app.bin",
         "STM32_Programmer_CLI -c port=SWD -w build/app.bin 0x08000000 -rst",
     ], size=12.5, lh=19)
@@ -105,13 +109,13 @@ def boot_sequence() -> Svg:
 
     steps = [
         ("① 上电/复位", "NRST 释放，CPU 复位", T.RED),
-        ("② 读向量表", "0x0800_0000 取 MSP 初值", T.ORANGE),
-        ("③ 取复位向量", "0x0800_0004 → Reset_Handler", T.AMBER),
-        ("④ SystemInit()", "配置 HSE/PLL → 72/100 MHz", T.GREEN),
-        ("⑤ 拷贝 .data", "Flash → SRAM 已初始化变量", T.CYAN),
+        ("② 读向量表", "从 0x0000_0000 取 MSP", T.ORANGE),
+        ("③ 取复位向量", "下一字 → Reset_Handler", T.AMBER),
+        ("④ SystemInit()", "配 HSE/PLL，改 VTOR", T.GREEN),
+        ("⑤ 拷贝 .data", "Flash 初值 → SRAM", T.CYAN),
         ("⑥ 清零 .bss", "未初始化变量置 0", T.BLUE),
-        ("⑦ 调用 main()", "C 运行时环境就绪", T.VIOLET),
-        ("⑧ while(1)", "超级循环 / 启动 RTOS", T.PINK),
+        ("⑦ 库初始化", "__libc_init_array", T.VIOLET),
+        ("⑧ main()", "超级循环或启动 RTOS", T.PINK),
     ]
     x0, y0, bw, bh, gap = 40, 108, 196, 84, 18
     for i, (label, sub, color) in enumerate(steps):
@@ -139,23 +143,23 @@ def boot_sequence() -> Svg:
     s.title_block(40, 400, "向量表（前 8 个字节决定 CPU 从哪里开始）", color=T.CYAN)
     s.rect(40, 406, 470, 104, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.code(56, 436, [
-        "0x0800_0000  __initial_sp    ; 栈顶 = SRAM 末地址 + 1",
-        "0x0800_0004  Reset_Handler   ; 复位入口",
-        "0x0800_0008  NMI_Handler",
-        "0x0800_000C  HardFault_Handler",
-        "0x0800_0010  MemManage_Handler ; 之后是外设中断",
+        "0x0000_0000  MSP 初值     ; Flash 启动时别名到 0x0800_0000",
+        "0x0000_0004  Reset_Handler",
+        "0x0000_0008  NMI_Handler",
+        "0x0000_000C  HardFault_Handler",
+        "; 外设 IRQn 的入口 = VTOR + 4×(IRQn+16)",
     ], size=12, lh=19)
 
     s.rect(530, 406, 330, 104, fill=T.PANEL, stroke=T.STROKE, rx=10)
     s.text(548, 428, "BOOT0 / BOOT1 决定启动映射", size=13, fill=T.TEXT,
            weight="600")
-    rows = [("BOOT0=0", "从 Flash 启动（正常）", T.GREEN),
-            ("BOOT0=1,BOOT1=0", "系统存储器（出厂 Bootloader，串口下载）", T.AMBER),
-            ("BOOT0=1,BOOT1=1", "从 SRAM 启动（调试用）", T.CYAN)]
+    rows = [("BOOT0=0", "主 Flash，正常运行", T.GREEN),
+            ("BOOT0=1 BOOT1=0", "系统区，出厂下载", T.AMBER),
+            ("BOOT0=1 BOOT1=1", "SRAM，掉电即丢", T.CYAN)]
     for i, (k, v, c) in enumerate(rows):
         s.text(548, 452 + i * 20, k, size=11, mono=True, fill=c)
-        s.text(662, 452 + i * 20, v, size=10.5, fill=T.MUTED)
-    s.footer("参考：RM 参考手册「System and memory overview」章节")
+        s.text(700, 452 + i * 20, v, size=11, fill=T.MUTED)
+    s.footer("Cube 启动文件先 SystemInit 再搬 .data；CPU 读的是 0x0000_0000 别名，不是写死 0x0800_0000")
     return s
 
 
@@ -165,7 +169,7 @@ def memory_map() -> Svg:
 
     regions = [
         ("0x0000_0000", "Code / Flash 别名", "512 KB Flash（F411CE）", T.BLUE),
-        ("0x1FFF_0000", "System memory", "出厂 Bootloader（DFU / 串口下载）", T.AMBER),
+        ("0x1FFF_0000", "系统存储（Code 区内）", "F411 出厂 Bootloader；F1 在 0x1FFFF000", T.AMBER),
         ("0x2000_0000", "SRAM", "128 KB，栈 / 堆 / 全局变量", T.GREEN),
         ("0x4000_0000", "Peripheral", "GPIO / TIM / USART … 寄存器", T.CYAN),
         ("0xE000_0000", "Cortex-M 内部", "NVIC / SysTick / SCB / MPU", T.VIOLET),
@@ -190,12 +194,12 @@ def memory_map() -> Svg:
     s.rect(40, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.text(58, 481, "Flash 页 / 扇区大小不一样", size=12.5, fill=T.TEXT,
            weight="600")
-    s.text(58, 501, "F103：1 KB/页 · F4：16/64/128 KB/扇区（擦除单位）", size=11.5,
+    s.text(58, 501, "F103 中容量 1 KB/页，大容量 2 KB/页；F4 按扇区擦", size=11.5,
            fill=T.MUTED)
     s.rect(460, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.text(478, 481, "地址 = 基址 + 偏移", size=12.5, fill=T.TEXT, weight="600")
-    s.text(478, 501, "GPIOA_ODR = 0x4002_0000 + 0x0C（见参考手册）", size=11.5,
-           fill=T.MUTED, mono=True)
+    s.text(478, 501, "F411：GPIOA=0x40020000，ODR 在 +0x14（+0x0C 是 PUPDR）",
+           size=11, fill=T.MUTED, mono=True)
     s.footer("小端模式：0x12345678 在内存里存成 78 56 34 12")
     return s
 
@@ -208,7 +212,7 @@ def clock_tree() -> Svg:
 
     nodes = [
         ("HSE", "8 MHz 外部晶振", T.AMBER, 40, 150),
-        ("PREDIV", "F1 固定 ÷1", T.STROKE, 210, 140),
+        ("PLLXTPRE", "本例 ÷1（也可 ÷2）", T.STROKE, 200, 150),
         ("PLL", "PLLMUL = ×9", T.ORANGE, 370, 140),
         ("SYSCLK", "72 MHz", T.GREEN, 560, 140),
         ("HCLK", "AHB ÷1 = 72 MHz", T.CYAN, 720, 140),
@@ -219,18 +223,19 @@ def clock_tree() -> Svg:
         s.text(x + w / 2, y + 28, label, size=15, anchor="middle", fill=T.TEXT,
                weight="700")
         s.text(x + w / 2, y + 50, sub, size=11, anchor="middle", fill=color)
-    for (a, b) in ((190, 210), (350, 370), (510, 560), (700, 720)):
+    gaps = ((190, 200), (350, 370), (510, 560), (700, 720))
+    for i, (a, b) in enumerate(gaps):
         s.line(a, y + 36, b, y + 36, stroke=T.CYAN, sw=2.4, cls="clk")
-        s.circle(a, y + 36, 4.5, fill=T.CYAN, cls="pulse")
+        s.circle(a, y + 36, 4.5, fill=T.CYAN, cls=f"pulse{i}")
+        s.add_style(anim_tx(f".pulse{i}", dur="1.2s", x1=0, x2=max(8, b - a - 8)))
     s.add_style(anim_flow(".clk", dur="1.2s", dash="5 11", shift=-16))
-    s.add_style(anim_tx(".pulse", dur="1.2s", x1=0, x2=160))
 
     y2 = 244
     s.line(790, y + 72, 790, y2, stroke=T.CYAN, sw=2.2)
     s.arrow(790, y2 - 34, 790, y2 - 2, color=T.CYAN, sw=2.2, head=6)
     buses = [
         ("APB2", "÷1 = 72 MHz", "GPIOA~E / USART1 / SPI1 / ADC1 / TIM1", T.VIOLET, 40),
-        ("APB1", "÷2 = 36 MHz", "USART2/3 / I2C1/2 / TIM2~7 / SPI2 / CAN / USB",
+        ("APB1", "÷2 = 36 MHz", "USART2/3 · I2C · TIM2~7 · SPI2 · CAN",
          T.PINK, 460),
     ]
     for label, sub, note, color, x in buses:
@@ -238,8 +243,9 @@ def clock_tree() -> Svg:
         s.text(x + 18, y2 + 30, label, size=15, fill=color, weight="700")
         s.text(x + 96, y2 + 30, sub, size=13, fill=T.TEXT)
         s.text(x + 18, y2 + 54, note, size=11.5, fill=T.MUTED)
-        s.text(x + 18, y2 + 76, "超频后果：外设时序错乱、通信失败", size=11,
-               fill=T.DIM)
+        extra = ("ADC 另有分频，最高 14 MHz" if label == "APB2"
+                 else "TIM2~7 时钟 ×2 = 72 MHz；USB 另要 48 MHz")
+        s.text(x + 18, y2 + 76, extra, size=11, fill=T.DIM)
     s.line(790, y2 + 46, 860, y2 + 46, stroke=T.CYAN, sw=1.6, dash="4 6")
 
     s.title_block(40, 372, "CubeMX 里对应的三处配置", color=T.AMBER)
@@ -252,7 +258,7 @@ def clock_tree() -> Svg:
         "RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;    // PCLK2 = 72 MHz",
         "SystemCoreClockUpdate();   // 更新 SystemCoreClock，否则延时/波特率全错",
     ], size=12.5, lh=20)
-    s.footer("F4 系列用 PLLM/PLLN/PLLP：100 MHz = 25 MHz ÷ 25 × 400 ÷ 2（见 02 章表格）")
+    s.footer("F411 例：25 MHz ÷ 25 × 200 ÷ 2 = 100 MHz（÷25×400÷2 会得到 200 MHz，超出上限）")
     return s
 
 

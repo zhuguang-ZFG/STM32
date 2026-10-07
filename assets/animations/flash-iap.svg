@@ -1,25 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="IAP 在线升级：Bootloader + APP 双区">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="IAP：Bootloader + APP 双区（需要 ≥256 KB Flash）">
 <style>
-@keyframes fb0-sq{0%,0.00%{opacity:1}17.50%,100%{opacity:.2f}}
+@keyframes fb0-sq{0%,0.00%{opacity:0.06}0.30%,13.75%{opacity:0.3}14.05%,100%{opacity:0.06}}
 .fb0{animation:fb0-sq 5.0s linear infinite;}
-@keyframes fb1-sq{0%,25.00%{opacity:1}42.50%,100%{opacity:.2f}}
+@keyframes fb1-sq{0%,25.00%{opacity:0.06}25.30%,38.75%{opacity:0.3}39.05%,100%{opacity:0.06}}
 .fb1{animation:fb1-sq 5.0s linear infinite;}
-@keyframes fb2-sq{0%,50.00%{opacity:1}67.50%,100%{opacity:.2f}}
+@keyframes fb2-sq{0%,50.00%{opacity:0.06}50.30%,63.75%{opacity:0.3}64.05%,100%{opacity:0.06}}
 .fb2{animation:fb2-sq 5.0s linear infinite;}
-@keyframes fb3-sq{0%,75.00%{opacity:1}92.50%,100%{opacity:.2f}}
+@keyframes fb3-sq{0%,75.00%{opacity:0.06}75.30%,88.75%{opacity:0.3}89.05%,100%{opacity:0.06}}
 .fb3{animation:fb3-sq 5.0s linear infinite;}
-@keyframes fw0-mv{0%{translateX(0)}60%{translateX(92px)}61%,100%{translateX(92px)}}.fw0{animation:fw0-mv 2.4s linear infinite 0.0s;}
-@keyframes fw1-mv{0%{translateX(0)}60%{translateX(92px)}61%,100%{translateX(92px)}}.fw1{animation:fw1-mv 2.4s linear infinite 0.6s;}
-@keyframes fw2-mv{0%{translateX(0)}60%{translateX(92px)}61%,100%{translateX(92px)}}.fw2{animation:fw2-mv 2.4s linear infinite 1.2s;}
-@keyframes fw3-mv{0%{translateX(0)}60%{translateX(92px)}61%,100%{translateX(92px)}}.fw3{animation:fw3-mv 2.4s linear infinite 1.8s;}
+@keyframes fw0-mv{0%{transform:translateX(0)}60%{transform:translateX(92px)}61%,100%{transform:translateX(92px)}}.fw0{animation:fw0-mv 2.4s linear infinite 0.0s;}
+@keyframes fw1-mv{0%{transform:translateX(0)}60%{transform:translateX(92px)}61%,100%{transform:translateX(92px)}}.fw1{animation:fw1-mv 2.4s linear infinite 0.6s;}
+@keyframes fw2-mv{0%{transform:translateX(0)}60%{transform:translateX(92px)}61%,100%{transform:translateX(92px)}}.fw2{animation:fw2-mv 2.4s linear infinite 1.2s;}
+@keyframes fw3-mv{0%{transform:translateX(0)}60%{transform:translateX(92px)}61%,100%{transform:translateX(92px)}}.fw3{animation:fw3-mv 2.4s linear infinite 1.8s;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IAP 在线升级：Bootloader + APP 双区</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">固件从串口/网络进来 → 写进 APP B → 校验 → 改跳转标志 → 复位生效</text>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IAP：Bootloader + APP 双区（需要 ≥256 KB Flash）</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F103C8 只有 64 KB，放不下这张图；它的单区划分见第 12 章</text>
 <rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <text x="844" y="33.32" font-size="12" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">12 IAP</text>
 <rect x="40" y="92" width="500" height="50" fill="#111c31" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
@@ -58,22 +58,23 @@
 <text x="578" y="210" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ 校验通过 → 参数区写跳转标志</text>
 <text x="578" y="232" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑤ 软复位 → Bootloader 跳 APP B</text>
 <text x="578" y="254" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑥ 新固件启动成功 → 标志回写有效</text>
-<rect x="40" y="319" width="3" height="18" fill="#f87171" opacity="1"/>
-<text x="52" y="332" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">跳转前必须做的三件事（漏一件就 HardFault）</text>
-<rect x="40" y="344" width="820" height="96" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="56" y="368" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">__disable_irq();                    // 1. 关所有中断，别让 ISR 在跳转中途触发</text>
-<text x="56" y="389" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_RCC_DeInit(); HAL_DeInit();     // 2. 把外设与时钟复位到默认状态</text>
-<text x="56" y="410" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCB-&gt;VTOR = APP_ADDR;               // 3. APP 里把向量表搬到自己的起始地址</text>
-<text x="56" y="428" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">跳转代码：设置 MSP = *(uint32_t*)APP_ADDR，再 ((void(*)(void))*(uint32_t*)(APP_ADDR+4))();</text>
-<rect x="40" y="458" width="400" height="82" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="482" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 擦写规则</text>
-<text x="58" y="504" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1：1 KB/页按页擦；F4：16/64/128 KB 扇区</text>
-<text x="58" y="522" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写之前必须擦除，且只能按半字/字写入</text>
-<rect x="460" y="458" width="400" height="82" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="478" y="482" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别把砖刷出来</text>
-<text x="478" y="504" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">升级失败要能回滚：APP A 保持可用直到校验通过</text>
-<text x="478" y="522" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">参数区「先擦后写」，并做双份冗余</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完整代码见 examples/iap-bootloader；串口升级常用 YMODEM 协议（带文件名与校验）</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="40" y="335" width="3" height="18" fill="#f87171" opacity="1"/>
+<text x="52" y="348" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">跳转前四件事（漏一件就 HardFault）</text>
+<rect x="40" y="360" width="820" height="118" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="382" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">__disable_irq();                         // 1. 关中断</text>
+<text x="56" y="400" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_RCC_DeInit(); HAL_DeInit();          // 2. 外设和时钟回到默认</text>
+<text x="56" y="418" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">__set_MSP(*(uint32_t *)APP_ADDR);        // 3. 栈顶改成 APP 的 MSP</text>
+<text x="56" y="436" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCB-&gt;VTOR = APP_ADDR;                    // 4. 向量表改到 APP（APP 里再设一次）</text>
+<text x="56" y="454" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">((void(*)(void))(*(uint32_t *)(APP_ADDR + 4)))();  // Reset_Handler</text>
+<rect x="40" y="492" width="400" height="82" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="516" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 擦写规则</text>
+<text x="58" y="538" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 中容量 1 KB/页，大容量 2 KB/页；F4 按扇区</text>
+<text x="58" y="556" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先擦后写。F4 参数区必须独占一个扇区</text>
+<rect x="460" y="492" width="400" height="82" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="478" y="516" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别把砖刷出来</text>
+<text x="478" y="538" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">校验通过前不要动 APP A，失败还能回滚</text>
+<text x="478" y="556" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">参数区先擦后写，并做双份冗余</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完整代码见 examples/iap-bootloader；串口升级常用 YMODEM 协议（带文件名与校验）</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

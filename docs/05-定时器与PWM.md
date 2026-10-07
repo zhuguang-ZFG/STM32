@@ -172,11 +172,25 @@ HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);   /* HAL 内部会置 MOE */
 /* 若用寄存器：__HAL_TIM_MOE_ENABLE(&htim1); */
 ```
 
-输入捕获测频要点：
+输入捕获要真的把通道配出来。上升沿锁存 CCR，下降沿再锁一次，差值乘计数周期就是脉宽：
 
 ```c
-/* 配置通道为输入捕获，上升沿，预分频后进中断读 CCR */
-/* ISR 中：f_in = fCK_CNT / (CCR2 - CCR1)  */
+TIM_IC_InitTypeDef ic = {0};
+ic.ICPolarity  = TIM_INPUTCHANNELPOLARITY_RISING;
+ic.ICSelection = TIM_ICSELECTION_DIRECTTI;
+ic.ICPrescaler = TIM_ICPSC_DIV1;
+ic.ICFilter    = 0;
+HAL_TIM_IC_ConfigChannel(&htim2, &ic, TIM_CHANNEL_1);
+HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
+    {
+        uint32_t ccr = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+        (void)ccr; /* 脉宽 = (CCR2 - CCR1) / fCK_CNT，溢出时补一个 ARR+1 */
+    }
+}
 ```
 
 完整工程见 [`examples/timer-pwm/`](../examples/timer-pwm/)。
@@ -242,6 +256,27 @@ HAL_TIM_Base_Start_IT(&htim2);
 | 仅做时基 | TIM6/TIM7 |
 | 32 位长定时 | TIM2/TIM5（F4） |
 | 系统节拍 | SysTick |
+
+### 9. 输入捕获和 TRGO
+
+**结论**：测脉宽用输入捕获；要让 ADC 按固定间隔采样，用主模式把更新事件送出去（TRGO），不要在主循环里软件触发。
+
+```c
+TIM_MasterConfigTypeDef mst = {0};
+mst.MasterOutputTrigger = TIM_TRGO_UPDATE;          /* 每次溢出送一个脉冲 */
+mst.MasterSlaveMode     = TIM_MASTERSLAVEMODE_DISABLE;
+HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
+```
+
+正交编码看两相：B 比 A 落后约 90° 是一个方向，超前是另一个方向。只有一路方波时，硬件分不清正反转。
+
+口诀：**捕获锁的是 CNT，TRGO 送的是节拍；编码器必须有 A 和 B。**
+
+自测：
+
+1. 只捕获了上升沿，能不能算出占空比？
+2. ADC 想每 1 ms 转一次，该让定时器的 TRGO 选什么事件？
+3. 编码器只接了 A 相，反转时计数会怎样？
 
 ## 🔗 相关资源
 

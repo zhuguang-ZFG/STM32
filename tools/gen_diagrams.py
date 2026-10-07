@@ -199,12 +199,12 @@ def peripheral_bus() -> Svg:
 
 def interrupt_priority() -> Svg:
     s = Svg(W, H, "抢占优先级与中断嵌套",
-            "同抢占优先级不能互相打断；数值越小优先级越高")
+            "图中 A 的抢占号是 1，B 是 2；数字越小越先打断")
     s.header(tag="中断优先级", tag_color=T.VIOLET)
 
     s.axis(80, 110, 780, 200, ylabel="CPU 执行", xlabel="时间 →")
-    rows = [("主循环", T.MUTED, 0), ("IRQ A（抢占 1）", T.CYAN, 1),
-            ("IRQ B（抢占 2）", T.AMBER, 2)]
+    rows = [("主循环", T.MUTED, 0), ("IRQ A", T.CYAN, 1),
+            ("IRQ B", T.AMBER, 2)]
     for i, (name, color, _) in enumerate(rows):
         s.text(74, 152 + i * 50, name, size=11, anchor="end", fill=color)
 
@@ -262,3 +262,24 @@ NAMES = {
     "peripheral_bus": "peripheral-bus",
     "interrupt_priority": "interrupt-priority",
 }
+
+
+def main(argv):
+    import os
+    import xml.dom.minidom
+    here = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.join(os.path.dirname(here), "assets", "diagrams")
+    os.makedirs(out_dir, exist_ok=True)
+    only = set(argv[1:])
+    for fn in ALL:
+        name = NAMES[fn.__name__]
+        if only and name not in only:
+            continue
+        path = os.path.join(out_dir, name + ".svg")
+        fn().save(path)
+        xml.dom.minidom.parse(path)
+        print(f"[ok] {name}.svg")
+
+
+if __name__ == "__main__":
+    main(__import__("sys").argv)

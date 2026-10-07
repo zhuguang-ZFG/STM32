@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from svgkit import Svg, T, anim_blink, anim_fade, anim_flow, anim_tx
 
-W, H = 900, 560
+W, H = 900, 620
 
 
 def gpio_blink() -> Svg:
@@ -15,8 +15,8 @@ def gpio_blink() -> Svg:
 
     # ---------------- 左：电路 ----------------
     s.rect(40, 80, 470, 262, fill=T.PANEL, stroke=T.STROKE, rx=12)
-    s.text(58, 106, "电路（拉电流接法：高电平点亮）", size=13, fill=T.TEXT,
-           weight="600")
+    s.text(58, 106, "外接 LED：高电平点亮（BluePill 板载灯是 PC13，低电平才亮）",
+           size=12, fill=T.TEXT, weight="600")
 
     # MCU
     s.rect(62, 130, 150, 150, fill=T.PANEL2, stroke=T.CYAN, rx=10)
@@ -44,8 +44,8 @@ def gpio_blink() -> Svg:
 
     # 电流箭头 + 流动动画
     s.line(392, 140, 392, 166, stroke=T.RED, sw=1.6, dash="3 3")
-    for x in (250, 300, 340, 390):
-        s.circle(x, 170, 3.2, fill=T.RED, cls="dot")
+    for i, x in enumerate((230, 270, 320, 360)):
+        s.circle(x, 170, 3.2, fill=T.RED, cls=f"dot{i}")
     # 地
     s.line(410, 170, 410, 232, stroke=T.MUTED, sw=2.4)
     s.line(392, 232, 428, 232, stroke=T.MUTED, sw=2.4)
@@ -62,11 +62,11 @@ def gpio_blink() -> Svg:
     s.add_style(
         "@keyframes dot-run{0%{transform:translateX(0);opacity:0}"
         "20%{opacity:1}80%{opacity:1}"
-        "100%{transform:translateX(150px);opacity:0}}"
-        ".dot{animation:dot-run 1.4s linear infinite;}"
-        ".dot:nth-of-type(2){animation-delay:.35s}"
-        ".dot:nth-of-type(3){animation-delay:.7s}"
-        ".dot:nth-of-type(4){animation-delay:1.05s}"
+        "100%{transform:translateX(48px);opacity:0}}"
+        ".dot0{animation:dot-run 1.4s linear infinite;}"
+        ".dot1{animation:dot-run 1.4s linear infinite .35s;}"
+        ".dot2{animation:dot-run 1.4s linear infinite .7s;}"
+        ".dot3{animation:dot-run 1.4s linear infinite 1.05s;}"
     )
 
     # ---------------- 右：波形 ----------------
@@ -189,8 +189,8 @@ def nvic_interrupt_flow() -> Svg:
     steps = [
         ("① 外设置标志", "SR 寄存器的某位置 1", T.BLUE),
         ("② NVIC 仲裁", "比较抢占优先级，数值小者先响应", T.CYAN),
-        ("③ 硬件自动入栈", "xPSR/PC/LR/R12/R3~R0 压栈", T.VIOLET),
-        ("④ 取向量表", "0x0800_0000 + 4×IRQn → ISR 地址", T.AMBER),
+        ("③ 硬件自动入栈", "先压 xPSR，SP 停在 R0", T.VIOLET),
+        ("④ 取向量表", "VTOR + 4×(IRQn+16)", T.AMBER),
         ("⑤ 执行 ISR", "清标志、处理数据、越短越好", T.GREEN),
         ("⑥ 出栈返回", "恢复现场，继续被打断的指令", T.PINK),
     ]
@@ -217,13 +217,13 @@ def nvic_interrupt_flow() -> Svg:
     s.add_style(anim_flow(".fl4", dur="1.2s", dash="7 10", shift=-17))
 
     # 栈帧
-    s.title_block(40, 348, "硬件入栈的 8 个寄存器（栈帧，共 32 字节）", color=T.VIOLET)
-    regs = ["xPSR", "PC", "LR", "R12", "R3", "R2", "R1", "R0"]
+    s.title_block(40, 348, "硬件栈帧 32 字节：低地址在左，SP 指向 R0", color=T.VIOLET)
+    regs = ["R0", "R1", "R2", "R3", "R12", "LR", "PC", "xPSR"]
     for i, r in enumerate(regs):
         x = 40 + i * 62
         s.rect(x, 360, 56, 40, fill=T.PANEL2, stroke=T.VIOLET, rx=6)
         s.text(x + 28, 385, r, size=12, anchor="middle", fill=T.TEXT, mono=True)
-    s.text(552, 385, "← 由硬件自动完成，ISR 里可直接用 C 函数", size=11.5,
+    s.text(548, 385, "高地址 →  硬件自动入栈，ISR 直接写 C", size=11,
            fill=T.MUTED)
 
     # 优先级分组
@@ -258,21 +258,25 @@ def debug_swo() -> Svg:
     s.text(375, 154, "STM32", size=13, anchor="middle", fill=T.GREEN,
            weight="600")
     s.text(375, 174, "Cortex-M", size=11, anchor="middle", fill=T.MUTED)
-    wires = [("SWCLK", T.BLUE, 196), ("SWDIO", T.CYAN, 218),
-             ("SWO", T.AMBER, 240), ("NRST", T.RED, 262)]
+    wires = [("SWCLK", T.BLUE, 188), ("SWDIO", T.CYAN, 210),
+             ("SWO", T.AMBER, 232), ("NRST", T.RED, 254),
+             ("GND", T.MUTED, 276)]
     for name, color, y in wires:
         s.line(172, y, 310, y, stroke=color, sw=2)
         s.text(241, y - 6, name, size=10.5, anchor="middle", fill=color,
                mono=True)
-        s.circle(180, y, 3.4, fill=color, cls=f"w{name}")
-    s.text(58, 320, "SWO 单向输出：MCU → 调试器 → IDE 的 SWV Console", size=11,
-           fill=T.AMBER)
+        s.circle(292 if name == "SWO" else 180, y, 3.4, fill=color,
+                 cls=None if name == "GND" else f"w{name}")
+    s.text(58, 314, "SWO=PB3，方向是 MCU → 调试器；必须共地。廉价 ST-Link 常没接 SWO",
+           size=11, fill=T.AMBER)
     s.add_style(
         "@keyframes swd-run{0%{transform:translateX(0);opacity:0}"
-        "15%{opacity:1}85%{opacity:1}100%{transform:translateX(120px);opacity:0}}"
+        "15%{opacity:1}85%{opacity:1}100%{transform:translateX(110px);opacity:0}}"
+        "@keyframes swo-run{0%{transform:translateX(0);opacity:0}"
+        "15%{opacity:1}85%{opacity:1}100%{transform:translateX(-110px);opacity:0}}"
         ".wSWDIO{animation:swd-run 1.6s linear infinite;}"
         ".wSWCLK{animation:swd-run 1.6s linear infinite .4s;}"
-        ".wSWO{animation:swd-run 1.2s linear infinite .2s;}"
+        ".wSWO{animation:swo-run 1.2s linear infinite .2s;}"
         ".wNRST{animation:swd-run 2s linear infinite .8s;}"
     )
 
@@ -291,7 +295,7 @@ def debug_swo() -> Svg:
         "@keyframes itm-fade{0%,10%{opacity:.15}40%,100%{opacity:1}}"
         ".itm{animation:itm-fade 3s linear infinite;}"
     )
-    s.text(498, 300, "带宽：SWO 最高约 2 MB/s（F4 常用 2 MHz 分频）", size=11,
+    s.text(498, 300, "异步 SWO 常见 2 MHz（约 2 Mbit/s，不是 2 MB/s）", size=11,
            fill=T.MUTED)
     s.text(498, 320, "比 UART 少占一个串口，且不干扰被测程序时序", size=11,
            fill=T.MUTED)
@@ -299,10 +303,10 @@ def debug_swo() -> Svg:
     # 下：HardFault 定位
     s.title_block(40, 364, "HardFault 四步定位法", color=T.RED)
     steps = [
-        ("① 看 CFSR/HFSR", "0xE000ED28 / 0xE000ED2C", "判断是总线错误、用法错误还是取指错误"),
-        ("② 看 BFAR/MMFAR", "0xE000ED38 / 0xE000ED34", "非法访问的地址是多少"),
-        ("③ 反查 PC", "栈帧里的 PC → addr2line", "定位到出错的那一行 C 代码"),
-        ("④ 常见原因", "空指针 / 栈溢出 / 未对齐", "数组越界、递归过深、中断里用浮点"),
+        ("① CFSR / HFSR", "0xE000ED28 / ED2C", "总线、用法还是取指错误"),
+        ("② BFAR / MMFAR", "0xE000ED38 / ED34", "非法访问落到哪个地址"),
+        ("③ 反查 PC", "栈帧 PC → addr2line", "对应到哪一行 C"),
+        ("④ 常见原因", "空指针 / 栈溢出", "越界、递归、中断里用浮点"),
     ]
     for i, (t, sub, note) in enumerate(steps):
         x = 40 + i * 206

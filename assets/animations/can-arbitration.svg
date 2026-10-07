@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="CAN 非破坏性仲裁：ID 越小优先级越高">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="CAN 非破坏性仲裁：ID 越小优先级越高">
 <style>
-@keyframes c0-sq{0%,0.00%{opacity:1}30.00%,100%{opacity:.22}}
+@keyframes c0-sq{0%,0.00%{opacity:0.55}0.30%,23.33%{opacity:1}23.63%,100%{opacity:0.55}}
 .c0{animation:c0-sq 5.0s linear infinite;}
-@keyframes c1-sq{0%,33.33%{opacity:1}63.33%,100%{opacity:.22}}
+@keyframes c1-sq{0%,33.33%{opacity:0.55}33.63%,56.67%{opacity:1}56.97%,100%{opacity:0.55}}
 .c1{animation:c1-sq 5.0s linear infinite;}
-@keyframes c2-sq{0%,66.67%{opacity:1}96.67%,100%{opacity:.22}}
+@keyframes c2-sq{0%,66.67%{opacity:0.55}66.97%,90.00%{opacity:1}90.30%,100%{opacity:0.55}}
 .c2{animation:c2-sq 5.0s linear infinite;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#fb923c" opacity="1"/>
@@ -35,9 +35,9 @@
 <rect x="192" y="132" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="220" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">0</text>
 <rect x="254" y="132" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="282" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">0</text>
+<text x="282" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">1</text>
 <rect x="316" y="132" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="344" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">1</text>
+<text x="344" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">0</text>
 <rect x="378" y="132" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="406" y="158" font-size="14" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c0">0</text>
 <rect x="440" y="132" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
@@ -57,10 +57,10 @@
 <text x="40" y="236" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x200</text>
 <rect x="130" y="194" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="158" y="220" font-size="14" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">0</text>
-<rect x="192" y="194" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="220" y="220" font-size="14" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">0</text>
-<rect x="254" y="194" width="56" height="40" fill="#111c31" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="282" y="220" font-size="14" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">1</text>
+<rect x="192" y="194" width="56" height="40" fill="#111c31" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="220" y="220" font-size="14" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">1</text>
+<rect x="254" y="194" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="282" y="220" font-size="14" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">0</text>
 <rect x="316" y="194" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="344" y="220" font-size="14" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c1">0</text>
 <rect x="378" y="194" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
@@ -82,12 +82,12 @@
 <text x="40" y="298" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x300</text>
 <rect x="130" y="256" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="158" y="282" font-size="14" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">0</text>
-<rect x="192" y="256" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="220" y="282" font-size="14" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">0</text>
+<rect x="192" y="256" width="56" height="40" fill="#111c31" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="220" y="282" font-size="14" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">1</text>
 <rect x="254" y="256" width="56" height="40" fill="#111c31" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="282" y="282" font-size="14" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">1</text>
-<rect x="316" y="256" width="56" height="40" fill="#111c31" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
-<text x="344" y="282" font-size="14" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">1</text>
+<rect x="316" y="256" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="344" y="282" font-size="14" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">0</text>
 <rect x="378" y="256" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
 <text x="406" y="282" font-size="14" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="c2">0</text>
 <rect x="440" y="256" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
@@ -105,7 +105,7 @@
 <text x="820" y="282" font-size="11" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">退出</text>
 <rect x="40" y="326" width="820" height="96" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="58" y="350" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">为什么叫「非破坏性」仲裁</text>
-<text x="58" y="374" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 每个节点一边发一边读总线：发现读回的位与发出的位不同，就立刻停止发送</text>
+<text x="58" y="374" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· B、C 在 bit9 发隐性 1，读回 A 的显性 0，立刻退出；0x100 最小所以 A 赢</text>
 <text x="58" y="394" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 退出的节点不会丢失数据，等总线空闲后自动重发（硬件自动完成）</text>
 <text x="58" y="414" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 因此 CAN 不会像以太网那样「碰撞后随机退避」，实时性可预测</text>
 <rect x="40" y="429" width="3" height="18" fill="#22d3ee" opacity="1"/>
@@ -135,7 +135,7 @@
 <text x="676" y="513" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">EOF</text>
 <text x="676" y="527" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">7 位隐性结束</text>
 <text x="40" y="544" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">位填充：连续 5 个相同位后必须插入 1 个相反位，保证接收方能持续同步；差分电平 CANH−CANL ≈ 2 V（显性）/ 0 V（隐性）</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">波特率 = 1 / (tq × (1 + BS1 + BS2))，采样点建议放在 75%~87.5% 处</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">波特率 = 1 / (tq × (1 + BS1 + BS2))，采样点建议放在 75%~87.5% 处</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

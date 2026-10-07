@@ -440,7 +440,7 @@ def f4_discovery() -> Svg:
         ("主控", "STM32F407VGT6", T.ORANGE),
         ("主频 / 内核", "168 MHz · Cortex-M4F", T.CYAN),
         ("存储", "1 MB Flash · 192 KB SRAM", T.GREEN),
-        ("板载外设", "加速度计 / 音频 / 麦克风 / 4LED", T.VIOLET),
+        ("板载外设", "加速度计 · 音频 · 麦克风", T.VIOLET),
     ])
     s.rect(60, 512, 500, 56, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.text(76, 534, "适合学什么：DMA 音频播放、I2S、USB、传感器融合、FFT/滤波（有 FPU）",
@@ -735,3 +735,25 @@ NAMES = {
     "pinout_bluepill": "pinout-bluepill",
     "peripheral_wiring": "peripheral-wiring",
 }
+
+
+def main(argv):
+    import os
+    import sys
+    import xml.dom.minidom
+    here = os.path.dirname(os.path.abspath(__file__))
+    out_dir = os.path.join(os.path.dirname(here), "assets", "boards")
+    os.makedirs(out_dir, exist_ok=True)
+    only = set(argv[1:])
+    for fn in ALL:
+        name = NAMES[fn.__name__]
+        if only and name not in only:
+            continue
+        path = os.path.join(out_dir, name + ".svg")
+        fn().save(path)
+        xml.dom.minidom.parse(path)
+        print(f"[ok] {name}.svg")
+
+
+if __name__ == "__main__":
+    main(__import__("sys").argv)

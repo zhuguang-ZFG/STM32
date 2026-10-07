@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="中断响应全流程">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="中断响应全流程">
 <style>
 
 .fl0{stroke-dasharray:7 10;animation:fl0-flow 1.2s linear infinite;}@keyframes fl0-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
@@ -10,7 +10,7 @@
 .fl4{stroke-dasharray:7 10;animation:fl4-flow 1.2s linear infinite;}@keyframes fl4-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
@@ -30,12 +30,12 @@
 <polygon points="592.00,140.00 585.00,143.50 585.00,136.50" fill="#22d3ee" opacity="1"/>
 <rect x="596" y="100" width="196" height="80" fill="#111c31" opacity="1" rx="10" stroke="#a78bfa" stroke-width="1.5"/>
 <text x="610" y="128" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 硬件自动入栈</text>
-<text x="610" y="152" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">xPSR/PC/LR/R12/R3~R0 压栈</text>
+<text x="610" y="152" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先压 xPSR，SP 停在 R0</text>
 <line x1="694" y1="182" x2="694" y2="213" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
 <polygon points="694.00,220.00 690.50,213.00 697.50,213.00" fill="#22d3ee" opacity="1"/>
 <rect x="40" y="236" width="196" height="80" fill="#111c31" opacity="1" rx="10" stroke="#fbbf24" stroke-width="1.5"/>
 <text x="54" y="264" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ 取向量表</text>
-<text x="54" y="288" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0800_0000 + 4×IRQn → ISR 地址</text>
+<text x="54" y="288" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">VTOR + 4×(IRQn+16)</text>
 <line x1="240" y1="276" x2="307" y2="276" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1" class="fl3"/>
 <polygon points="314.00,276.00 307.00,279.50 307.00,272.50" fill="#22d3ee" opacity="1"/>
 <line x1="240" y1="276" x2="307" y2="276" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
@@ -51,24 +51,24 @@
 <text x="610" y="264" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑥ 出栈返回</text>
 <text x="610" y="288" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">恢复现场，继续被打断的指令</text>
 <rect x="40" y="335" width="3" height="18" fill="#a78bfa" opacity="1"/>
-<text x="52" y="348" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">硬件入栈的 8 个寄存器（栈帧，共 32 字节）</text>
+<text x="52" y="348" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">硬件栈帧 32 字节：低地址在左，SP 指向 R0</text>
 <rect x="40" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="68" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">xPSR</text>
+<text x="68" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R0</text>
 <rect x="102" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="130" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC</text>
+<text x="130" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R1</text>
 <rect x="164" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="192" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LR</text>
+<text x="192" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R2</text>
 <rect x="226" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="254" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R12</text>
+<text x="254" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R3</text>
 <rect x="288" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="316" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R3</text>
+<text x="316" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R12</text>
 <rect x="350" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="378" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R2</text>
+<text x="378" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LR</text>
 <rect x="412" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="440" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R1</text>
+<text x="440" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC</text>
 <rect x="474" y="360" width="56" height="40" fill="#16233c" opacity="1" rx="6" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="502" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R0</text>
-<text x="552" y="385" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">← 由硬件自动完成，ISR 里可直接用 C 函数</text>
+<text x="502" y="385" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">xPSR</text>
+<text x="548" y="385" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高地址 →  硬件自动入栈，ISR 直接写 C</text>
 <rect x="40" y="415" width="3" height="18" fill="#fbbf24" opacity="1"/>
 <text x="52" y="428" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">优先级分组：谁可以打断谁</text>
 <text x="52" y="444" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NVIC_PRIORITYGROUP_4</text>
@@ -80,7 +80,7 @@
 <text x="52" y="492" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">同抢占优先级</text>
 <text x="280" y="492" font-size="11.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不能互相打断</text>
 <text x="500" y="492" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">会按子优先级排队执行</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISR 里禁止 HAL_Delay / 浮点运算 / printf，必要时只置标志交给主循环处理</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISR 里禁止 HAL_Delay / 浮点运算 / printf，必要时只置标志交给主循环处理</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

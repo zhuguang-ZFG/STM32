@@ -1,14 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="定时器的四种典型用法">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="定时器的四种典型用法">
 <style>
 @keyframes mk0-fade{0%,100%{opacity:0.2}50%{opacity:1.0}}
 .mk0{animation:mk0-fade 1.6s ease-in-out infinite 0s;}
 @keyframes mk1-fade{0%,100%{opacity:0.15}50%{opacity:0.6}}
 .mk1{animation:mk1-fade 2s ease-in-out infinite 0s;}
-@keyframes mk3-rot{from{rotate(0deg)}to{rotate(360deg)}}
-.mk3{animation:mk3-rot 3s linear infinite;transform-origin:800px 368px;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
@@ -42,17 +40,16 @@
 <path d="M 58 372.64 L 58.00 372.64 L 103.50 372.64 L 103.50 341.36 L 149.00 341.36 L 149.00 341.36 L 194.50 341.36 L 194.50 341.36 L 240.00 341.36 L 240.00 372.64 L 285.50 372.64 L 285.50 372.64 L 331.00 372.64 L 331.00 372.64 L 376.50 372.64 L 376.50 372.64 L 422.00 372.64" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#fbbf24" stroke-width="2.2"/>
 <line x1="103.5" y1="326" x2="103.5" y2="398" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="1" stroke-dasharray="4 4"/>
 <line x1="240" y1="326" x2="240" y2="398" stroke="#fbbf24" stroke-width="1.4" stroke-linecap="round" opacity="1" stroke-dasharray="4 4"/>
-<text x="58" y="414" font-size="10" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">脉宽 = (CCR2 − CCR1) × tCK</text>
+<text x="58" y="414" font-size="10" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">上升沿锁 CCR1，下降沿锁 CCR2，脉宽 = ΔCCR × tCK</text>
 <rect x="460" y="268" width="400" height="152" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
 <rect x="460" y="268" width="4" height="152" fill="#f472b6" opacity="1" rx="2"/>
 <text x="478" y="294" font-size="13.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ 编码器接口</text>
 <text x="478" y="314" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">A/B 相正交自动加减计数</text>
-<line x1="478" y1="330" x2="478" y2="384" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
-<line x1="478" y1="384" x2="842" y2="384" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
-<path d="M 478 341.36 L 478.00 341.36 L 523.50 341.36 L 523.50 372.64 L 569.00 372.64 L 569.00 341.36 L 614.50 341.36 L 614.50 372.64 L 660.00 372.64 L 660.00 341.36 L 705.50 341.36 L 705.50 372.64 L 751.00 372.64 L 751.00 341.36 L 796.50 341.36 L 796.50 372.64 L 842.00 372.64" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#f472b6" stroke-width="2.2"/>
-<circle cx="800" cy="368" r="22" fill="none" opacity="1" stroke="#f472b6" stroke-width="2" class="mk3"/>
-<circle cx="800" cy="346" r="5" fill="#f472b6" opacity="1" class="mk3"/>
-<text x="660" y="414" font-size="10" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">正转加、反转减，硬件自动计数</text>
+<text x="478" y="338" font-size="11" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A</text>
+<path d="M 496 329.52 L 496.00 329.52 L 533.50 329.52 L 533.50 329.52 L 571.00 329.52 L 571.00 344.48 L 608.50 344.48 L 608.50 344.48 L 646.00 344.48 L 646.00 329.52 L 683.50 329.52 L 683.50 329.52 L 721.00 329.52 L 721.00 344.48 L 758.50 344.48 L 758.50 344.48 L 796.00 344.48" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#f472b6" stroke-width="2.2"/>
+<text x="478" y="372" font-size="11" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B</text>
+<path d="M 496 378.48 L 496.00 378.48 L 533.50 378.48 L 533.50 363.52 L 571.00 363.52 L 571.00 363.52 L 608.50 363.52 L 608.50 378.48 L 646.00 378.48 L 646.00 378.48 L 683.50 378.48 L 683.50 363.52 L 721.00 363.52 L 721.00 363.52 L 758.50 363.52 L 758.50 378.48 L 796.00 378.48" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#f472b6" stroke-width="2.2"/>
+<text x="478" y="408" font-size="10" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 比 A 落后 90° 为正转，超前为反转（正交两相）</text>
 <rect x="40" y="435" width="3" height="18" fill="#22d3ee" opacity="1"/>
 <text x="52" y="448" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">选型速查</text>
 <rect x="40" y="462" width="400" height="30" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
@@ -67,7 +64,7 @@
 <rect x="460" y="496" width="400" height="30" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <text x="474" y="516" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">要精确延时/定时中断</text>
 <text x="668" y="516" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">基本定时器 TIM6/7 或 SysTick</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高级定时器 TIM1/TIM8 还要额外使能 MOE（HAL_TIM_PWM_Start 内部已处理）</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高级定时器 TIM1/TIM8 还要额外使能 MOE（HAL_TIM_PWM_Start 内部已处理）</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

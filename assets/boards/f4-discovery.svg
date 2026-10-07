@@ -194,7 +194,7 @@
 <rect x="696" y="442" width="200" height="58" fill="#111c31" opacity="1" rx="9" stroke="#243354" stroke-width="1.5"/>
 <rect x="696" y="442" width="200" height="3" fill="#a78bfa" opacity="1" rx="2"/>
 <text x="708" y="468" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载外设</text>
-<text x="708" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">加速度计 / 音频 / 麦克风 / 4LED</text>
+<text x="708" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">加速度计 · 音频 · 麦克风</text>
 <rect x="60" y="512" width="500" height="56" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="76" y="534" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">适合学什么：DMA 音频播放、I2S、USB、传感器融合、FFT/滤波（有 FPU）</text>
 <text x="76" y="554" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">注意：F4 系列 Flash 是「扇区擦除」，写之前先看 docs/12 章</text>

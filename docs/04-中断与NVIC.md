@@ -245,6 +245,26 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 | 晚到（Late-arriving） | 入栈期间更高优先级抢占 |
 | 优化建议 | ISR 尽量短，耗时操作交给主循环 |
 
+### 11. 三把总闸，和共用的 EXTI 线
+
+**结论**：`PRIMASK` 关掉除 NMI 和 HardFault 以外的全部中断；`FAULTMASK` 连 HardFault 也关，只留 NMI；`BASEPRI` 只挡住“优先级数值 ≥ 阈值”的那一截（数值越大，优先级越低）。
+
+| 寄存器 | 挡住谁 | 常见写法 |
+| --- | --- | --- |
+| PRIMASK | 全部可屏蔽中断 | `__disable_irq()` / `__enable_irq()` |
+| FAULTMASK | 再加 HardFault | `__disable_fault_irq()` |
+| BASEPRI | 数值不够优先的那些 | `__set_BASEPRI(prio << (8 - __NVIC_PRIO_BITS))` |
+
+EXTI 线是按**引脚号**共用的：PA0 和 PB0 都连在 EXTI0 上，不能同时做外部中断。要换端口，改 `AFIO->EXTICR`（F1）或 `SYSCFG->EXTICR`（F4），不是两条线并行。
+
+口诀：**总闸分三档；同一编号的脚，EXTI 只能留一个端口。**
+
+自测：
+
+1. `__disable_irq()` 之后，HardFault 还能进来吗？
+2. PA0 已经接了按键中断，PB0 还能再挂一个 EXTI 下降沿吗？
+3. BASEPRI 的阈值是“数值更大更优先”还是相反？
+
 ## 🔗 相关资源
 
 - 官方手册：**RM0008** 第 10 章（中断与事件 EXTI）、第 9.2.7 节（AFIO_EXTICR）；《Cortex-M3 权威指南》（NVIC/异常处理）

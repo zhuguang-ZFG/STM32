@@ -238,6 +238,36 @@ int main(void)
 2. **最小 IAP**：Bootloader 上电打印倒计时，期间收到字符 `'U'` 则进入接收模式；把编译好的 APP bin 通过串口发过去，跳转运行。预期：设备跑起 APP，串口打印 APP 的心跳。
 3. **（进阶）A/B 双区升级**：把 Flash 分为 APP_A/APP_B 两区，交替写入，用参数区记录「当前有效区」。预期：升级失败也能回退到旧版本，避免变砖。
 
+### 6. 选项字节：读保护、写保护和硬件看门狗
+
+**结论**：选项字节不在普通 Flash 页里。改读保护会整片擦除用户 Flash。先备份，再动手。
+
+| 字节 | F1 | F4 |
+| --- | --- | --- |
+| RDP | `0xA5` 不保护；其他值都是读保护。没有 Level 2 | `0xAA` Level 0；其他非 `0xCC` 是 Level 1；`0xCC` 是 Level 2，不可逆 |
+| USER | `nRST_STOP`、`nRST_STDBY`、`WDG_SW` | 同样管停机复位和硬件看门狗 |
+| WRP | 按页写保护 | 按扇区写保护 |
+
+`WDG_SW = 0` 时上电就启动硬件 IWDG，软件停不掉。F4 的参数区如果和 Bootloader 挤在同一个扇区，擦参数会把 Bootloader 一起擦掉，所以参数区要独占一个扇区。
+
+只读当前配置是安全的：
+
+```c
+HAL_FLASH_OB_Unlock();
+FLASH_OBProgramInitTypeDef ob = {0};
+HAL_FLASHEx_OBGetConfig(&ob);   /* 看 RDPLevel / WRP，先别写 */
+```
+
+写 RDP 的调用这里不贴。它会擦整片，复制进示例工程很容易把板子锁到读保护。
+
+口诀：**0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票；改保护先备份。**
+
+自测：
+
+1. F103 的 RDP 从 0xA5 改成别的值，Flash 里的程序还在吗？
+2. F4 写成 0xCC 之后，还能用 ST-Link 恢复吗？
+3. 为什么 F4 的 2 KB 参数区不能随便放在 Bootloader 那个扇区的尾巴上？
+
 ## 🔗 相关资源
 
 - RM0008《STM32F10xxx 参考手册》第 3 章 Embedded Flash memory（页结构、KEY、编程流程）。

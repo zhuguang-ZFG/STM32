@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="GPIO 推挽输出点亮 LED">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="GPIO 推挽输出点亮 LED">
 <style>
 @keyframes led-blink{0%,48%{opacity:1;filter:drop-shadow(0 0 9px currentColor)}50%,98%{opacity:0.12;filter:none}}
 .led{animation:led-blink 1s steps(1,end) infinite 0s;}
 
 .wire{stroke-dasharray:7 9;animation:wire-flow 1.4s linear infinite;}@keyframes wire-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
-@keyframes dot-run{0%{transform:translateX(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(150px);opacity:0}}.dot{animation:dot-run 1.4s linear infinite;}.dot:nth-of-type(2){animation-delay:.35s}.dot:nth-of-type(3){animation-delay:.7s}.dot:nth-of-type(4){animation-delay:1.05s}
+@keyframes dot-run{0%{transform:translateX(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(48px);opacity:0}}.dot0{animation:dot-run 1.4s linear infinite;}.dot1{animation:dot-run 1.4s linear infinite .35s;}.dot2{animation:dot-run 1.4s linear infinite .7s;}.dot3{animation:dot-run 1.4s linear infinite 1.05s;}
 @keyframes cur-run{0%{transform:translateX(0)}100%{transform:translateX(268px)}}.cursor{animation:cur-run 1s linear infinite;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#34d399" opacity="1"/>
@@ -17,7 +17,7 @@
 <rect x="801" y="15" width="77" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <text x="839.5" y="33.32" font-size="12" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">03 GPIO</text>
 <rect x="40" y="80" width="470" height="262" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="106" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">电路（拉电流接法：高电平点亮）</text>
+<text x="58" y="106" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">外接 LED：高电平点亮（BluePill 板载灯是 PC13，低电平才亮）</text>
 <rect x="62" y="130" width="150" height="150" fill="#16233c" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
 <text x="137" y="160" font-size="15" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32</text>
 <text x="137" y="182" font-size="12" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA</text>
@@ -37,10 +37,10 @@
 <circle cx="388.1" cy="113.45" r="3.64" fill="#ffffff" opacity="0.7"/>
 <text x="392" y="96" font-size="11" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED 亮 / 灭</text>
 <line x1="392" y1="140" x2="392" y2="166" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="3 3"/>
-<circle cx="250" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
-<circle cx="300" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
-<circle cx="340" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
-<circle cx="390" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
+<circle cx="230" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot0"/>
+<circle cx="270" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot1"/>
+<circle cx="320" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot2"/>
+<circle cx="360" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot3"/>
 <line x1="410" y1="170" x2="410" y2="232" stroke="#93a4c0" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
 <line x1="392" y1="232" x2="428" y2="232" stroke="#93a4c0" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
 <line x1="398" y1="240" x2="422" y2="240" stroke="#93a4c0" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
@@ -82,7 +82,7 @@
 <text x="476" y="476" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Pull = GPIO_NOPULL;</text>
 <text x="476" y="493" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Speed= GPIO_SPEED_FREQ_LOW;</text>
 <text x="476" y="510" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_Init(GPIOA, &amp;i);</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先确认时钟已使能（__HAL_RCC_GPIOA_CLK_ENABLE()），否则写寄存器没有任何反应</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先确认时钟已使能（__HAL_RCC_GPIOA_CLK_ENABLE()），否则写寄存器没有任何反应</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

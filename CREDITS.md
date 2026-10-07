@@ -10,7 +10,7 @@
 | SVG 原理动画（21 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡实物结构图（7 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量结构图**，脚本见 `tools/gen_boards.py`。**不是厂商实拍照片** |
 | 静态框图（4 张） | `assets/diagrams/` | 同上，脚本见 `tools/gen_diagrams.py` |
-| 光栅动画（5 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
+| 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 因此本仓库**没有**再分发任何第三方图片，也不存在图片版权风险。
 > 想查看真实照片、官方原理图与 Gerber，请看下面的官方链接。

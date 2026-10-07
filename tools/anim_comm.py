@@ -6,19 +6,23 @@ from __future__ import annotations
 
 from svgkit import Svg, T, anim_fade, anim_flow, anim_tx, css_kf
 
-W, H = 900, 560
+W, H = 900, 620
 
 
-def _seq_flash(prefix: str, n: int, period=4.4, window=0.5) -> str:
-    """n 个元素依次高亮（每步亮 window*period 秒，其余时间暗）。"""
+def _seq_flash(prefix: str, n: int, period=4.4, window=0.5,
+               peak=1.0, rest=0.22) -> str:
+    """依次高亮：窗口内为 peak，其余时间为 rest（不要在窗口之前就铺满不透明）。"""
     css = []
     step = 100.0 / n
     for i in range(n):
         a = i * step
-        b = a + step * window
+        b = min(a + step * window, 99.2)
         name = f"{prefix}{i}-sq"
-        css.append(f"@keyframes {name}{{0%,{a:.2f}%{{opacity:1}}"
-                   f"{b:.2f}%,100%{{opacity:.22}}}}")
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.3:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.3, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
         css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
     return "\n".join(css)
 
@@ -44,7 +48,7 @@ def uart_frame() -> Svg:
         s.text(x + (cw - 6) / 2, 132, str(b), size=15, anchor="middle",
                fill=color, weight="700", mono=True)
         s.rect(x, 92, cw - 6, 46, fill=color, rx=8, opacity=0.16, cls=f"b{i}")
-    s.add_style(_seq_flash("b", len(bits), period=4.4))
+    s.add_style(_seq_flash("b", len(bits), period=4.4, peak=0.42, rest=0.1))
 
     # 波形
     s.axis(40, 176, 800, 90, ylabel="3.3V")
@@ -57,8 +61,8 @@ def uart_frame() -> Svg:
     s.add_style(anim_tx(".cursor", dur="4.4s", x1=0, x2=800))
 
     # 时间标注
-    s.text(40, 292, "每格 = 1 位 = 1 / 115200 s ≈ 8.68 µs；"
-                    "整帧 10 位 ≈ 86.8 µs → 理论最高约 11.5 KB/s",
+    s.text(40, 292, "每格 = 1 位 = 1/115200 s ≈ 8.68 µs；整帧 10 位 ≈ 86.8 µs。"
+                    "上图是 0xA5，低位 D0 先发（和 SPI 相反）",
            size=12, fill=T.AMBER)
 
     # 波特率表
@@ -69,23 +73,22 @@ def uart_frame() -> Svg:
         ("921600", "1.085 µs", "±1.5%", "高速数据采集，注意线材与干扰"),
         ("2000000", "0.5 µs", "±1%", "F4/H7 才稳，建议改用 USB/SPI"),
     ]
-    s.rect(40, 344, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 344, 820, 128, fill=T.BG2, stroke=T.STROKE, rx=10)
     heads = ["波特率", "位时间", "允许误差", "典型用途"]
     for i, hd in enumerate(heads):
-        s.text(60 + i * 200, 366, hd, size=11.5, fill=T.CYAN, weight="600")
+        s.text(60 + i * 200, 364, hd, size=11.5, fill=T.CYAN, weight="600")
     for r, row in enumerate(rows):
         for i, v in enumerate(row):
-            s.text(60 + i * 200, 390 + r * 20, v, size=11,
+            s.text(60 + i * 200, 384 + r * 18, v, size=11,
                    fill=T.MUTED if i else T.TEXT, mono=(i < 2))
-    s.text(60, 452, "BRR = fCK / baud（16 倍过采样）：72 MHz / 115200 = 625 = 0x271",
-           size=11, mono=True, fill=T.GREEN)
+    s.text(60, 458, "16 倍过采样：USARTDIV = 39.0625，BRR = (39<<4)|1 = 0x271",
+           size=11, fill=T.GREEN)
 
     # 三种收发方式
-    s.rect(40, 472, 820, 58, fill=T.PANEL, stroke=T.STROKE, rx=10)
-    s.text(58, 496, "阻塞 / 中断 / DMA 怎么选", size=12, fill=T.TEXT,
-           weight="700")
-    s.text(58, 516, "阻塞：适合调试打印；中断：适合不定长指令；"
-                    "DMA + IDLE：适合高速连续数据（详见 06 章与 examples/uart-dma-idle）",
+    s.rect(40, 484, 820, 58, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.text(58, 506, "别把 BRR 背成 fCK/波特率；阻塞适合打印，中断适合指令，DMA+IDLE 适合连收",
+           size=12, fill=T.TEXT, weight="700")
+    s.text(58, 526, "数值上 0x271 碰巧等于 72000000/115200，是因为小数分到了低 4 位",
            size=11, fill=T.MUTED)
     s.footer("常见坑：TX/RX 接反、没共地、波特率不匹配（乱码）、"
              "电平不是 3.3 V（用 USB-TTL 而不是 RS232）")
@@ -100,41 +103,40 @@ def i2c_transaction() -> Svg:
             "START → 7 位地址 + R/W → ACK → 数据字节 → ACK → STOP")
     s.header(tag="07 I2C", tag_color=T.GREEN)
 
-    # SCL：9 个时钟脉冲
-    s.text(40, 96, "SCL", size=12, fill=T.CYAN, mono=True)
-    s.axis(40, 104, 800, 70)
-    clk = []
-    for _ in range(9):
-        clk += [1, 0]
-    s.waveform(40, 108, 800, 62, clk, color=T.CYAN, sw=2.2)
-    s.text(40, 190, "SDA", size=12, fill=T.AMBER, mono=True)
-    s.axis(40, 198, 800, 70)
-    data = [1, 0]                       # START：SCL 高时 SDA 下降
-    addr = [0, 0, 1, 1, 1, 1, 0, 0]     # 0x3C 的高 7 位（这里示意位序）
-    data += addr + [0] + [1] + [0] + [0, 1]   # R/W=0(写) ACK 数据 0xA5 ACK STOP
-    s.waveform(40, 202, 800, 62, data, color=T.AMBER, sw=2.4)
-
-    # 阶段标注
-    phases = [
-        (40, 96, "START", T.RED),
-        (128, 300, "7 位从机地址 0x3C", T.VIOLET),
-        (440, 40, "R/W", T.CYAN),
-        (488, 44, "ACK", T.GREEN),
-        (540, 130, "数据字节", T.AMBER),
-        (680, 44, "ACK", T.GREEN),
-        (732, 100, "STOP", T.RED),
+    # 写 0xA5 到地址 0x3C：7 位地址是 0111100，不是 8 位写法 0x78
+    cells = [
+        ("ST", "", T.RED),
+        ("0", "A6", T.VIOLET), ("1", "A5", T.VIOLET), ("1", "A4", T.VIOLET),
+        ("1", "A3", T.VIOLET), ("1", "A2", T.VIOLET), ("0", "A1", T.VIOLET),
+        ("0", "A0", T.VIOLET),
+        ("0", "W", T.CYAN), ("0", "AK", T.GREEN),
+        ("1", "D7", T.AMBER), ("0", "D6", T.AMBER), ("1", "D5", T.AMBER),
+        ("0", "D4", T.AMBER), ("0", "D3", T.AMBER), ("1", "D2", T.AMBER),
+        ("0", "D1", T.AMBER), ("1", "D0", T.AMBER),
+        ("0", "AK", T.GREEN), ("SP", "", T.RED),
     ]
-    for x, w, label, color in phases:
-        s.line(x, 104, x, 264, stroke=color, sw=1, dash="4 5", opacity=0.6)
-        s.text(x + 4, 288, label, size=11, fill=color)
-    s.text(40, 312, "START = SCL 为高时 SDA 由高变低；STOP = SCL 为高时 SDA 由低变高",
+    x0, cw = 28, 42
+    s.text(28, 96, "SDA 位（0x3C = 0111100，写 0xA5；数据在 SCL 为低时才允许变化）",
+           size=12, fill=T.MUTED)
+    for i, (bit, tag, color) in enumerate(cells):
+        x = x0 + i * cw
+        s.rect(x, 108, cw - 4, 44, fill=T.PANEL, stroke=color, rx=6)
+        s.text(x + (cw - 4) / 2, 126, bit, size=13, anchor="middle",
+               fill=color, weight="700", mono=True)
+        if tag:
+            s.text(x + (cw - 4) / 2, 144, tag, size=9, anchor="middle",
+                   fill=T.DIM)
+    s.text(28, 172, "ST/SP：SCL 为高时 SDA 下降=START、上升=STOP。AK 是第 9 拍，由从机拉低。",
            size=11, fill=T.MUTED)
-
-    # ACK 闪烁
-    s.circle(510, 240, 7, fill=T.GREEN, cls="ack")
-    s.circle(702, 240, 7, fill=T.GREEN, cls="ack")
-    s.add_style(anim_fade(".ack", dur="1.6s", a=0.2, b=1.0))
-    s.text(508, 336, "从机把 SDA 拉低 = ACK（应答）", size=10.5, fill=T.GREEN)
+    # SCL 示意：数据位期间先低后高，SDA 在低电平区变化
+    s.text(28, 198, "SCL", size=12, fill=T.CYAN, mono=True)
+    scl = []
+    for bit, tag, _c in cells:
+        if tag in ("",):
+            scl += [1, 1]
+        else:
+            scl += [0, 1]
+    s.waveform(28, 206, 20 * cw, 36, scl, color=T.CYAN, sw=2.2)
 
     # 右侧要点
     s.rect(40, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=12)
@@ -151,9 +153,9 @@ def i2c_transaction() -> Svg:
     s.text(478, 380, "地址陷阱：0x3C 还是 0x78？", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
-        "7 位地址 0x3C = 8 位地址 0x78（左移一位）",
-        "HAL 的 HAL_I2C_Mem_Read 用 7 位地址",
-        "扫描到 0x78 说明代码里没右移",
+        "7 位 0x3C 左移 1 位 = 8 位写地址 0x78",
+        "HAL 的 DevAddress 要传 0x3C<<1，不是 0x3C",
+        "扫描器若打印 0x78，右移才是手册上的 0x3C",
         "总线上所有设备地址不能重复",
     ]):
         s.text(478, 404 + i * 20, "· " + t, size=11, fill=T.MUTED)
@@ -207,11 +209,14 @@ def spi_transfer() -> Svg:
         for i in range(4)))
 
     # SCK 波形
-    s.text(40, 224, "SCK（8 个脉冲，CPOL=0 / CPHA=0）", size=11, fill=T.MUTED)
+    s.text(60, 168, "0xA5 高位先出", size=11, fill=T.CYAN)
+    s.text(556, 168, "0x69 同时移入", size=11, fill=T.GREEN)
+    s.text(40, 224, "SCK（8 个上升沿，CPOL=0 / CPHA=0，空闲为低）", size=11,
+           fill=T.MUTED)
     s.axis(40, 236, 800, 60)
-    s.waveform(40, 240, 800, 54, [0, 1, 0] * 8, color=T.AMBER, sw=2.2)
-    s.text(40, 320, "采样发生在 SCK 的上升沿（第一个边沿），"
-                    "移位发生在下降沿 —— 这样数据在采样时是稳定的",
+    s.waveform(40, 240, 800, 54, [0, 1] * 8, color=T.AMBER, sw=2.2)
+    s.text(40, 318, "Mode 0：上升沿采样，下降沿移位。SPI 高位先出（和 UART 相反）。"
+                    "想读 1 字节必须同时发 1 字节，没数据就发 0xFF。",
            size=11, fill=T.MUTED)
 
     # 模式表
@@ -255,9 +260,10 @@ def can_arbitration() -> Svg:
             "三个节点同时发送，逐位比较：显性 0 覆盖隐性 1，输了的一方自动退出且不丢帧")
     s.header(tag="13 CAN", tag_color=T.ORANGE)
 
-    ids = [("节点 A", "0x100", "00010000000", T.CYAN),
-           ("节点 B", "0x200", "00100000000", T.GREEN),
-           ("节点 C", "0x300", "00110000000", T.VIOLET)]
+    # 11 位 ID，左边是 bit10。0x100=0b00100000000，比 0x200/0x300 更小
+    ids = [("节点 A", "0x100", "00100000000", T.CYAN),
+           ("节点 B", "0x200", "01000000000", T.GREEN),
+           ("节点 C", "0x300", "01100000000", T.VIOLET)]
     bits = 11
     cw = 62
     x0 = 130
@@ -282,13 +288,13 @@ def can_arbitration() -> Svg:
         s.text(x0 + bits * cw + 8, y + 26, "仲裁中" if i == 0 else "退出",
                size=11, fill=T.GREEN if i == 0 else T.RED)
     # 高亮逐位扫描 + 失败节点变暗
-    s.add_style(_seq_flash("c", 3, period=5.0, window=0.9))
+    s.add_style(_seq_flash("c", 3, period=5.0, window=0.7, peak=1, rest=0.55))
 
     s.rect(40, 326, 820, 96, fill=T.BG2, stroke=T.STROKE, rx=10)
     s.text(58, 350, "为什么叫「非破坏性」仲裁", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
-        "每个节点一边发一边读总线：发现读回的位与发出的位不同，就立刻停止发送",
+        "B、C 在 bit9 发隐性 1，读回 A 的显性 0，立刻退出；0x100 最小所以 A 赢",
         "退出的节点不会丢失数据，等总线空闲后自动重发（硬件自动完成）",
         "因此 CAN 不会像以太网那样「碰撞后随机退避」，实时性可预测",
     ]):
@@ -332,25 +338,22 @@ def usb_enumeration() -> Svg:
     s.text(785, 156, "Device", size=11, anchor="middle", fill=T.MUTED)
 
     steps = [
-        ("① 总线复位", "主机把 D+ / D− 拉低 ≥ 10 ms", T.RED),
-        ("② 分配地址", "SET_ADDRESS → 0x01（之后所有通信都用新地址）", T.AMBER),
-        ("③ 取设备描述符", "VID / PID / 版本 / 端点 0 最大包长", T.GREEN),
-        ("④ 取配置描述符", "接口数量、供电电流、端点属性", T.CYAN),
-        ("⑤ 取字符串描述符", "厂商 / 产品 / 序列号（可选）", T.BLUE),
-        ("⑥ SET_CONFIGURATION", "选择配置 1，设备进入就绪状态", T.VIOLET),
-        ("⑦ 就绪", "可以开始传输数据（CDC/HID 等类驱动接管）", T.PINK),
+        ("① 检测到设备", "全速：D+ 经 1.5 kΩ 上拉，主机据此识别速率", T.RED, False),
+        ("② 总线复位", "D+ 与 D− 同时拉低（SE0）≥ 10 ms", T.ORANGE, True),
+        ("③ 读前 8 字节", "地址仍是 0，只为拿到 bMaxPacketSize0", T.AMBER, True),
+        ("④ 再读设备描述符", "18 字节：VID / PID。不少主机还会再复位一次", T.GREEN, True),
+        ("⑤ SET_ADDRESS", "分配 1~127，之后不再使用地址 0", T.CYAN, True),
+        ("⑥ 读配置描述符", "先读 9 字节，再按 wTotalLength 读完", T.BLUE, True),
+        ("⑦ SET_CONFIGURATION", "选配置 1，CDC / HID 开始工作", T.VIOLET, True),
     ]
-    for i, (title, sub, color) in enumerate(steps):
+    for i, (title, sub, color, from_host) in enumerate(steps):
         y = 96 + i * 52
         s.rect(210, y, 480, 42, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.rect(210, y, 4, 42, fill=color, rx=2)
         s.text(226, y + 18, title, size=12, fill=T.TEXT, weight="600")
         s.text(226, y + 34, sub, size=10, fill=T.MUTED)
         cls = f"p{i}"
-        if i % 2 == 0:
-            s.circle(196, y + 21, 5, fill=color, cls=cls)
-        else:
-            s.circle(704, y + 21, 5, fill=color, cls=cls)
+        s.circle(196 if from_host else 704, y + 21, 5, fill=color, cls=cls)
     s.add_style("\n".join(
         css_kf(f"p{i}-mv", [("0%,100%", "opacity:.15"),
                             (f"{i * 13}%,{i * 13 + 12}%", "opacity:1")])

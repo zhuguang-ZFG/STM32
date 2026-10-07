@@ -1,32 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="ADC 逐次逼近（SAR）到底在做什么">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="ADC 逐次逼近（SAR）到底在做什么">
 <style>
-@keyframes s0-sq{0%,0.00%{opacity:1}4.17%,100%{opacity:.2f}}
+@keyframes s0-sq{0%,0.00%{opacity:0.08}0.30%,3.75%{opacity:0.4}4.05%,100%{opacity:0.08}}
 .s0{animation:s0-sq 6.0s linear infinite;}
-@keyframes s1-sq{0%,8.33%{opacity:1}12.50%,100%{opacity:.2f}}
+@keyframes s1-sq{0%,8.33%{opacity:0.08}8.63%,12.08%{opacity:0.4}12.38%,100%{opacity:0.08}}
 .s1{animation:s1-sq 6.0s linear infinite;}
-@keyframes s2-sq{0%,16.67%{opacity:1}20.83%,100%{opacity:.2f}}
+@keyframes s2-sq{0%,16.67%{opacity:0.08}16.97%,20.42%{opacity:0.4}20.72%,100%{opacity:0.08}}
 .s2{animation:s2-sq 6.0s linear infinite;}
-@keyframes s3-sq{0%,25.00%{opacity:1}29.17%,100%{opacity:.2f}}
+@keyframes s3-sq{0%,25.00%{opacity:0.08}25.30%,28.75%{opacity:0.4}29.05%,100%{opacity:0.08}}
 .s3{animation:s3-sq 6.0s linear infinite;}
-@keyframes s4-sq{0%,33.33%{opacity:1}37.50%,100%{opacity:.2f}}
+@keyframes s4-sq{0%,33.33%{opacity:0.08}33.63%,37.08%{opacity:0.4}37.38%,100%{opacity:0.08}}
 .s4{animation:s4-sq 6.0s linear infinite;}
-@keyframes s5-sq{0%,41.67%{opacity:1}45.83%,100%{opacity:.2f}}
+@keyframes s5-sq{0%,41.67%{opacity:0.08}41.97%,45.42%{opacity:0.4}45.72%,100%{opacity:0.08}}
 .s5{animation:s5-sq 6.0s linear infinite;}
-@keyframes s6-sq{0%,50.00%{opacity:1}54.17%,100%{opacity:.2f}}
+@keyframes s6-sq{0%,50.00%{opacity:0.08}50.30%,53.75%{opacity:0.4}54.05%,100%{opacity:0.08}}
 .s6{animation:s6-sq 6.0s linear infinite;}
-@keyframes s7-sq{0%,58.33%{opacity:1}62.50%,100%{opacity:.2f}}
+@keyframes s7-sq{0%,58.33%{opacity:0.08}58.63%,62.08%{opacity:0.4}62.38%,100%{opacity:0.08}}
 .s7{animation:s7-sq 6.0s linear infinite;}
-@keyframes s8-sq{0%,66.67%{opacity:1}70.83%,100%{opacity:.2f}}
+@keyframes s8-sq{0%,66.67%{opacity:0.08}66.97%,70.42%{opacity:0.4}70.72%,100%{opacity:0.08}}
 .s8{animation:s8-sq 6.0s linear infinite;}
-@keyframes s9-sq{0%,75.00%{opacity:1}79.17%,100%{opacity:.2f}}
+@keyframes s9-sq{0%,75.00%{opacity:0.08}75.30%,78.75%{opacity:0.4}79.05%,100%{opacity:0.08}}
 .s9{animation:s9-sq 6.0s linear infinite;}
-@keyframes s10-sq{0%,83.33%{opacity:1}87.50%,100%{opacity:.2f}}
+@keyframes s10-sq{0%,83.33%{opacity:0.08}83.63%,87.08%{opacity:0.4}87.38%,100%{opacity:0.08}}
 .s10{animation:s10-sq 6.0s linear infinite;}
-@keyframes s11-sq{0%,91.67%{opacity:1}95.83%,100%{opacity:.2f}}
+@keyframes s11-sq{0%,91.67%{opacity:0.08}91.97%,95.42%{opacity:0.4}95.72%,100%{opacity:0.08}}
 .s11{animation:s11-sq 6.0s linear infinite;}
 </style>
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
 <rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#fbbf24" opacity="1"/>
@@ -102,27 +102,27 @@
 <rect x="40" y="353" width="3" height="18" fill="#22d3ee" opacity="1"/>
 <text x="52" y="366" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">采样时间怎么定</text>
 <rect x="40" y="378" width="500" height="116" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="400" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源阻抗 &lt; 1 kΩ</text>
+<text x="58" y="400" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源阻抗 ≤ 1 kΩ</text>
 <text x="216" y="400" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1.5 周期</text>
-<text x="316" y="400" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">跟随器 / 低阻信号源</text>
-<text x="58" y="424" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1 ~ 10 kΩ</text>
-<text x="216" y="424" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">7.5 周期</text>
-<text x="316" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">大多数传感器</text>
-<text x="58" y="448" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10 ~ 50 kΩ</text>
-<text x="216" y="448" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">41.5 周期</text>
-<text x="316" y="448" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电位器、分压采样</text>
-<text x="58" y="472" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源阻抗很高</text>
-<text x="216" y="472" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先加运放缓冲</text>
-<text x="316" y="472" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">否则采样电容充不满，读数偏小</text>
+<text x="316" y="400" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">运放直驱 / 小电阻分压</text>
+<text x="58" y="424" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 10 kΩ</text>
+<text x="216" y="424" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">13.5 周期</text>
+<text x="316" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">常见电位器</text>
+<text x="58" y="448" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 50 kΩ</text>
+<text x="216" y="448" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">55.5 周期</text>
+<text x="316" y="448" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高阻传感器</text>
+<text x="58" y="472" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≥ 100 kΩ</text>
+<text x="216" y="472" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">239.5 周期</text>
+<text x="316" y="472" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">或加跟随器，否则偏低</text>
 <rect x="560" y="378" width="300" height="116" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="578" y="402" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">误差与换算</text>
-<text x="578" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 量化误差 = VREF / 4096（±0.5 LSB）</text>
-<text x="578" y="442" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 3.3 V 参考 → 每 LSB ≈ 0.806 mV</text>
-<text x="578" y="460" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 电压 = ADC值 × 3.3 / 4095</text>
-<text x="578" y="478" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 读 VREFINT 可反推真实 VDDA</text>
+<text x="578" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 1 LSB = VREF / 4096</text>
+<text x="578" y="442" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 量化误差是 ±0.5 LSB</text>
+<text x="578" y="460" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 电压 = 码值 × VREF / 4096</text>
+<text x="578" y="478" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 分母是 4096，不是 4095</text>
 <rect x="40" y="504" width="820" height="28" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="523" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读数跳动的三板斧：加去耦电容、延长采样时间、软件滑动平均 / 中值滤波</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的 ADC 时钟最高 14 MHz、F4 最高 36 MHz；时钟超了读数会明显失真</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<text x="58" y="523" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读数跳动：去耦、加长采样、滑动平均。读 Vrefint 可反推真实 VDDA</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的 ADC 时钟最高 14 MHz、F4 最高 36 MHz；时钟超了读数会明显失真</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>
