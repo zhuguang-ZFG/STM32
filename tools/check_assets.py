@@ -219,11 +219,10 @@ def _overflow(root_el, w, h, tol=2.0):
     return out
 
 
-def check_gif():
-    import gen_gifs
+def _check_gif_builders(builders, folder, label):
     ok = True
-    for name, builder in gen_gifs.BUILDERS.items():
-        path = os.path.join(ROOT, "assets", "gif", name + ".gif")
+    for name, builder in builders.items():
+        path = os.path.join(ROOT, "assets", folder, name + ".gif")
         if not os.path.exists(path):
             print(f"[FAIL] 缺少 {path}")
             ok = False
@@ -250,8 +249,32 @@ def check_gif():
                 break
         size = os.path.getsize(path) / 1024
         flag = "ok" if size <= 500 else "WARN"
-        print(f"[{flag}] {name}.gif  {w}×{h}  {len(frames)} 帧  "
+        print(f"[{flag}] {label}/{name}.gif  {w}×{h}  {len(frames)} 帧  "
               f"{size:6.1f} KB  每帧 {frames[0][1] / 100:.2f}s")
+    return ok
+
+
+def check_gif():
+    import gen_gifs
+    return _check_gif_builders(gen_gifs.BUILDERS, "gif", "gif")
+
+
+def check_videos():
+    """章节讲解幻灯：像素回验，并确认对应章节引用了这个 GIF。"""
+    import gen_videos
+    ok = _check_gif_builders(gen_videos.BUILDERS, "video", "video")
+    docs = os.path.join(ROOT, "docs")
+    for ch in gen_videos.CHAPTERS:
+        gif = f"ch{ch['id']}-{ch['slug']}.gif"
+        hit = False
+        for fn in os.listdir(docs):
+            if fn.startswith(ch["id"] + "-") and fn.endswith(".md"):
+                text = open(os.path.join(docs, fn), encoding="utf-8").read()
+                hit = gif in text and f"<!-- video:ch{ch['id']} -->" in text
+                break
+        if not hit:
+            print(f"[FAIL] 章节 {ch['id']} 未引用 {gif}")
+            ok = False
     return ok
 
 
@@ -291,8 +314,9 @@ def check_links():
 if __name__ == "__main__":
     a = check_svg()
     b = check_gif()
+    d = check_videos()
     c = check_links()
-    ok = a and b and c
+    ok = a and b and c and d
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
     sys.exit(0 if ok else 1)
 

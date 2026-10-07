@@ -8,9 +8,9 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams gifs check verify clean stats
+.PHONY: assets animations boards diagrams gifs videos check verify clean stats
 
-assets: animations boards diagrams gifs
+assets: animations boards diagrams gifs videos
 
 animations:
 	$(PY) tools/gen_animations.py
@@ -23,6 +23,9 @@ diagrams:
 
 gifs:
 	$(PY) tools/gen_gifs.py
+
+videos:
+	$(PY) tools/gen_videos.py
 
 check:
 	$(PY) tools/check_assets.py
@@ -45,4 +48,5 @@ stats:
 	@echo "速查表 : $$(ls cheatsheets/*.md 2>/dev/null | wc -l) 份"
 	@echo "SVG    : $$(find assets -name '*.svg' | wc -l) 张（动画 $$(ls assets/animations/*.svg | wc -l)）"
 	@echo "GIF    : $$(find assets/gif -name '*.gif' | wc -l) 个"
+	@echo "讲解片 : $$(find assets/video -name '*.gif' 2>/dev/null | wc -l) 个"
 	@echo "体积   : $$(du -sh assets | cut -f1) (assets/)"

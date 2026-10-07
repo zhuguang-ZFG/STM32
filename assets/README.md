@@ -76,6 +76,12 @@
 > 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
 > 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
+## 四·补 章节讲解幻灯 `assets/video/`
+
+每章一张 5 帧循环 GIF（约 7 秒一轮），由 `python3 tools/gen_videos.py` 生成。
+画面是原理示意，中文旁白写在对应章节的 `<!-- video:chNN -->` 块里，逐帧对应。
+不是实拍，也不含版权素材。单张控制在几十 KB。
+
 ## 五、引用方式
 
 ```markdown
