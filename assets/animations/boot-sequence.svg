@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="上电之后发生了什么">
+<style>
+@keyframes b0-flash{0%,0.00%{opacity:1}1.75%,100%{opacity:.18}}
+.b0{animation:b0-flash 7.2s linear infinite;}
+@keyframes b1-flash{0%,12.50%{opacity:1}14.25%,100%{opacity:.18}}
+.b1{animation:b1-flash 7.2s linear infinite;}
+@keyframes b2-flash{0%,25.00%{opacity:1}26.75%,100%{opacity:.18}}
+.b2{animation:b2-flash 7.2s linear infinite;}
+@keyframes b3-flash{0%,37.50%{opacity:1}39.25%,100%{opacity:.18}}
+.b3{animation:b3-flash 7.2s linear infinite;}
+@keyframes b4-flash{0%,50.00%{opacity:1}51.75%,100%{opacity:.18}}
+.b4{animation:b4-flash 7.2s linear infinite;}
+@keyframes b5-flash{0%,62.50%{opacity:1}64.25%,100%{opacity:.18}}
+.b5{animation:b5-flash 7.2s linear infinite;}
+@keyframes b6-flash{0%,75.00%{opacity:1}76.75%,100%{opacity:.18}}
+.b6{animation:b6-flash 7.2s linear infinite;}
+@keyframes b7-flash{0%,87.50%{opacity:1}89.25%,100%{opacity:.18}}
+.b7{animation:b7-flash 7.2s linear infinite;}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">上电之后发生了什么</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从复位向量到 main() 的 8 个步骤</text>
+<rect x="801" y="15" width="77" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="839.5" y="33.32" font-size="12" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01 启动流程</text>
+<rect x="40" y="108" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="108" width="4" height="84" fill="#f87171" opacity="1" rx="2"/>
+<text x="56" y="138" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 上电/复位</text>
+<text x="56" y="162" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST 释放，CPU 复位</text>
+<line x1="238" y1="150" x2="246" y2="150" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="252.00,150.00 246.00,153.00 246.00,147.00" fill="#243354" opacity="1"/>
+<rect x="254" y="108" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="254" y="108" width="4" height="84" fill="#fb923c" opacity="1" rx="2"/>
+<text x="270" y="138" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 读向量表</text>
+<text x="270" y="162" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0800_0000 取 MSP 初值</text>
+<line x1="452" y1="150" x2="460" y2="150" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="466.00,150.00 460.00,153.00 460.00,147.00" fill="#243354" opacity="1"/>
+<rect x="468" y="108" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="468" y="108" width="4" height="84" fill="#fbbf24" opacity="1" rx="2"/>
+<text x="484" y="138" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 取复位向量</text>
+<text x="484" y="162" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0800_0004 → Reset_Handler</text>
+<line x1="666" y1="150" x2="674" y2="150" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="680.00,150.00 674.00,153.00 674.00,147.00" fill="#243354" opacity="1"/>
+<rect x="682" y="108" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="682" y="108" width="4" height="84" fill="#34d399" opacity="1" rx="2"/>
+<text x="698" y="138" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ SystemInit()</text>
+<text x="698" y="162" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">配置 HSE/PLL → 72/100 MHz</text>
+<line x1="780" y1="194" x2="780" y2="230" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="780.00,236.00 777.00,230.00 783.00,230.00" fill="#243354" opacity="1"/>
+<text x="790" y="222" font-size="11" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">换行继续</text>
+<rect x="40" y="258" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="258" width="4" height="84" fill="#22d3ee" opacity="1" rx="2"/>
+<text x="56" y="288" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑤ 拷贝 .data</text>
+<text x="56" y="312" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Flash → SRAM 已初始化变量</text>
+<line x1="238" y1="300" x2="246" y2="300" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="252.00,300.00 246.00,303.00 246.00,297.00" fill="#243354" opacity="1"/>
+<rect x="254" y="258" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="254" y="258" width="4" height="84" fill="#60a5fa" opacity="1" rx="2"/>
+<text x="270" y="288" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑥ 清零 .bss</text>
+<text x="270" y="312" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">未初始化变量置 0</text>
+<line x1="452" y1="300" x2="460" y2="300" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="466.00,300.00 460.00,303.00 460.00,297.00" fill="#243354" opacity="1"/>
+<rect x="468" y="258" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="468" y="258" width="4" height="84" fill="#a78bfa" opacity="1" rx="2"/>
+<text x="484" y="288" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑦ 调用 main()</text>
+<text x="484" y="312" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">C 运行时环境就绪</text>
+<line x1="666" y1="300" x2="674" y2="300" stroke="#243354" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="680.00,300.00 674.00,303.00 674.00,297.00" fill="#243354" opacity="1"/>
+<rect x="682" y="258" width="196" height="84" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="682" y="258" width="4" height="84" fill="#f472b6" opacity="1" rx="2"/>
+<text x="698" y="288" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑧ while(1)</text>
+<text x="698" y="312" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超级循环 / 启动 RTOS</text>
+<rect x="40" y="108" width="196" height="84" fill="#f87171" opacity="0.12" rx="10" class="b0"/>
+<rect x="254" y="108" width="196" height="84" fill="#fb923c" opacity="0.12" rx="10" class="b1"/>
+<rect x="468" y="108" width="196" height="84" fill="#fbbf24" opacity="0.12" rx="10" class="b2"/>
+<rect x="682" y="108" width="196" height="84" fill="#34d399" opacity="0.12" rx="10" class="b3"/>
+<rect x="40" y="258" width="196" height="84" fill="#22d3ee" opacity="0.12" rx="10" class="b4"/>
+<rect x="254" y="258" width="196" height="84" fill="#60a5fa" opacity="0.12" rx="10" class="b5"/>
+<rect x="468" y="258" width="196" height="84" fill="#a78bfa" opacity="0.12" rx="10" class="b6"/>
+<rect x="682" y="258" width="196" height="84" fill="#f472b6" opacity="0.12" rx="10" class="b7"/>
+<rect x="40" y="387" width="3" height="18" fill="#22d3ee" opacity="1"/>
+<text x="52" y="400" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">向量表（前 8 个字节决定 CPU 从哪里开始）</text>
+<rect x="40" y="412" width="470" height="106" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="436" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0000  __initial_sp    ; 栈顶 = SRAM 末地址 + 1</text>
+<text x="56" y="455" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0004  Reset_Handler   ; 复位入口</text>
+<text x="56" y="474" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0008  NMI_Handler</text>
+<text x="56" y="493" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_000C  HardFault_Handler</text>
+<text x="56" y="512" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0010  MemManage_Handler ; 之后是外设中断</text>
+<rect x="530" y="412" width="330" height="106" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="548" y="434" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">BOOT0 / BOOT1 决定启动映射</text>
+<text x="548" y="458" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=0</text>
+<text x="662" y="458" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 Flash 启动（正常）</text>
+<text x="548" y="478" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=0</text>
+<text x="662" y="478" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统存储器（出厂 Bootloader，串口下载）</text>
+<text x="548" y="498" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=1</text>
+<text x="662" y="498" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 SRAM 启动（调试用）</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">参考：RM 参考手册「System and memory overview」章节</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

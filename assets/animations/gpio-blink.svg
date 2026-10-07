@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="GPIO 推挽输出点亮 LED">
+<style>
+@keyframes led-blink{0%,48%{opacity:1;filter:drop-shadow(0 0 9px currentColor)}50%,98%{opacity:0.12;filter:none}}
+.led{animation:led-blink 1s steps(1,end) infinite 0s;}
+
+.wire{stroke-dasharray:7 9;animation:wire-flow 1.4s linear infinite;}@keyframes wire-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
+@keyframes dot-run{0%{transform:translateX(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(150px);opacity:0}}.dot{animation:dot-run 1.4s linear infinite;}.dot:nth-of-type(2){animation-delay:.35s}.dot:nth-of-type(3){animation-delay:.7s}.dot:nth-of-type(4){animation-delay:1.05s}
+@keyframes cur-run{0%{transform:translateX(0)}100%{transform:translateX(268px)}}.cursor{animation:cur-run 1s linear infinite;}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#34d399" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">GPIO 推挽输出点亮 LED</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA5 每 500 ms 翻转一次，电流路径与波形同步演示</text>
+<rect x="801" y="15" width="77" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="839.5" y="33.32" font-size="12" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">03 GPIO</text>
+<rect x="40" y="80" width="470" height="262" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="106" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">电路（拉电流接法：高电平点亮）</text>
+<rect x="62" y="130" width="150" height="150" fill="#16233c" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="137" y="160" font-size="15" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32</text>
+<text x="137" y="182" font-size="12" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA</text>
+<text x="137" y="204" font-size="16" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA5</text>
+<text x="137" y="226" font-size="10.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">推挽 / 50 MHz</text>
+<text x="232" y="152" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5</text>
+<line x1="212" y1="170" x2="268" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1" class="wire"/>
+<circle cx="212" cy="170" r="4" fill="#fbbf24" opacity="1" class="cur"/>
+<rect x="268" y="158" width="56" height="24" fill="#0e1626" opacity="1" rx="4" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="296" y="176" font-size="11" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">330Ω</text>
+<line x1="324" y1="170" x2="352" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1"/>
+<polygon points="352.00,158.00 352.00,182.00 376.00,170.00" fill="#f87171" opacity="1" stroke="#f87171" stroke-width="1.5"/>
+<line x1="376" y1="156" x2="376" y2="184" stroke="#f87171" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="376" y1="170" x2="410" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1"/>
+<circle cx="392" cy="118" r="27.3" fill="#f87171" opacity="0.16" class="led-glow"/>
+<circle cx="392" cy="118" r="13" fill="#f87171" opacity="1" stroke="#00000066" stroke-width="1" class="led"/>
+<circle cx="388.1" cy="113.45" r="3.64" fill="#ffffff" opacity="0.7"/>
+<text x="392" y="96" font-size="11" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED 亮 / 灭</text>
+<line x1="392" y1="140" x2="392" y2="166" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="3 3"/>
+<circle cx="250" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
+<circle cx="300" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
+<circle cx="340" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
+<circle cx="390" cy="170" r="3.2" fill="#f87171" opacity="1" class="dot"/>
+<line x1="410" y1="170" x2="410" y2="232" stroke="#93a4c0" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
+<line x1="392" y1="232" x2="428" y2="232" stroke="#93a4c0" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
+<line x1="398" y1="240" x2="422" y2="240" stroke="#93a4c0" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
+<line x1="404" y1="248" x2="416" y2="248" stroke="#93a4c0" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="436" y="236" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GND</text>
+<text x="58" y="300" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流路径：PA5 → 330Ω → LED → GND</text>
+<text x="58" y="322" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">R = (3.3 V − 2.0 V) / 5 mA ≈ 260 Ω，取 330 Ω 更安全</text>
+<rect x="530" y="80" width="330" height="262" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="548" y="106" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">PA5 输出电平（1 Hz）</text>
+<line x1="568" y1="130" x2="568" y2="260" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
+<line x1="568" y1="260" x2="836" y2="260" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
+<text x="560" y="140" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3V</text>
+<text x="836" y="276" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时间</text>
+<text x="568" y="148" font-size="10" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1</text>
+<text x="568" y="250" font-size="10" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0</text>
+<path d="M 568 156.88 L 568.00 156.88 L 601.50 156.88 L 601.50 156.88 L 635.00 156.88 L 635.00 156.88 L 668.50 156.88 L 668.50 156.88 L 702.00 156.88 L 702.00 237.12 L 735.50 237.12 L 735.50 237.12 L 769.00 237.12 L 769.00 237.12 L 802.50 237.12 L 802.50 237.12 L 836.00 237.12" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#34d399" stroke-width="2.6"/>
+<text x="568" y="274" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0</text>
+<text x="635" y="274" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">250</text>
+<text x="702" y="274" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">500</text>
+<text x="769" y="274" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">750</text>
+<text x="702" y="292" font-size="10.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ms（高 500 ms + 低 500 ms）</text>
+<line x1="568" y1="130" x2="568" y2="262" stroke="#f87171" stroke-width="1.4" stroke-linecap="round" opacity="1" class="cursor"/>
+<text x="548" y="320" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_Delay(500) 阻塞式延时；实际项目请用定时器中断</text>
+<rect x="40" y="359" width="3" height="18" fill="#22d3ee" opacity="1"/>
+<text x="52" y="372" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">三种写法（效果相同，抽象层次不同）</text>
+<rect x="40" y="384" width="400" height="122" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="408" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 1) HAL 库</text>
+<text x="56" y="425" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);</text>
+<text x="56" y="442" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_Delay(500);</text>
+<text x="56" y="459" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
+<text x="56" y="476" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 2) 寄存器（BSRR 原子操作）</text>
+<text x="56" y="493" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = GPIO_PIN_5;      // 置 1</text>
+<text x="56" y="510" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = GPIO_PIN_5 &lt;&lt; 16; // 清 0</text>
+<rect x="460" y="384" width="400" height="122" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="476" y="408" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 3) CubeMX 生成的初始化</text>
+<text x="476" y="425" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIO_InitTypeDef i = {0};</text>
+<text x="476" y="442" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Pin  = GPIO_PIN_5;</text>
+<text x="476" y="459" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Mode = GPIO_MODE_OUTPUT_PP;</text>
+<text x="476" y="476" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Pull = GPIO_NOPULL;</text>
+<text x="476" y="493" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">i.Speed= GPIO_SPEED_FREQ_LOW;</text>
+<text x="476" y="510" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_Init(GPIOA, &amp;i);</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先确认时钟已使能（__HAL_RCC_GPIOA_CLK_ENABLE()），否则写寄存器没有任何反应</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

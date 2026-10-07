@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="时钟树：8 MHz 晶振如何变成 72 MHz">
+<style>
+
+.clk{stroke-dasharray:5 11;animation:clk-flow 1.2s linear infinite;}@keyframes clk-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
+@keyframes pulse-tx{0%{transform:translateX(0px)}100%{transform:translateX(160px)}}
+.pulse{animation:pulse-tx 1.2s linear infinite 0s;}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#34d399" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">时钟树：8 MHz 晶振如何变成 72 MHz</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">以 STM32F103（HSE 8 MHz × 9 = 72 MHz）为例</text>
+<rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="844" y="33.32" font-size="12" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">02 时钟树</text>
+<rect x="40" y="108" width="150" height="72" fill="#111c31" opacity="1" rx="10" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="115" y="136" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HSE</text>
+<text x="115" y="158" font-size="11" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8 MHz 外部晶振</text>
+<rect x="210" y="108" width="140" height="72" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="280" y="136" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PREDIV</text>
+<text x="280" y="158" font-size="11" fill="#243354" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 固定 ÷1</text>
+<rect x="370" y="108" width="140" height="72" fill="#111c31" opacity="1" rx="10" stroke="#fb923c" stroke-width="1.5"/>
+<text x="440" y="136" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PLL</text>
+<text x="440" y="158" font-size="11" fill="#fb923c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PLLMUL = ×9</text>
+<rect x="560" y="108" width="140" height="72" fill="#111c31" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
+<text x="630" y="136" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SYSCLK</text>
+<text x="630" y="158" font-size="11" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">72 MHz</text>
+<rect x="720" y="108" width="140" height="72" fill="#111c31" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="790" y="136" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HCLK</text>
+<text x="790" y="158" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">AHB ÷1 = 72 MHz</text>
+<line x1="190" y1="144" x2="210" y2="144" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1" class="clk"/>
+<circle cx="190" cy="144" r="4.5" fill="#22d3ee" opacity="1" class="pulse"/>
+<line x1="350" y1="144" x2="370" y2="144" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1" class="clk"/>
+<circle cx="350" cy="144" r="4.5" fill="#22d3ee" opacity="1" class="pulse"/>
+<line x1="510" y1="144" x2="560" y2="144" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1" class="clk"/>
+<circle cx="510" cy="144" r="4.5" fill="#22d3ee" opacity="1" class="pulse"/>
+<line x1="700" y1="144" x2="720" y2="144" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1" class="clk"/>
+<circle cx="700" cy="144" r="4.5" fill="#22d3ee" opacity="1" class="pulse"/>
+<line x1="790" y1="180" x2="790" y2="244" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
+<line x1="790" y1="210" x2="790" y2="236" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
+<polygon points="790.00,242.00 787.00,236.00 793.00,236.00" fill="#22d3ee" opacity="1"/>
+<rect x="40" y="244" width="400" height="92" fill="#16233c" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="274" font-size="15" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB2</text>
+<text x="136" y="274" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">÷1 = 72 MHz</text>
+<text x="58" y="298" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA~E / USART1 / SPI1 / ADC1 / TIM1</text>
+<text x="58" y="320" font-size="11" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超频后果：外设时序错乱、通信失败</text>
+<rect x="460" y="244" width="400" height="92" fill="#16233c" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="478" y="274" font-size="15" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB1</text>
+<text x="556" y="274" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">÷2 = 36 MHz</text>
+<text x="478" y="298" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART2/3 / I2C1/2 / TIM2~7 / SPI2 / CAN / USB</text>
+<text x="478" y="320" font-size="11" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超频后果：外设时序错乱、通信失败</text>
+<line x1="790" y1="290" x2="860" y2="290" stroke="#22d3ee" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="4 6"/>
+<rect x="40" y="359" width="3" height="18" fill="#fbbf24" opacity="1"/>
+<text x="52" y="372" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CubeMX 里对应的三处配置</text>
+<rect x="40" y="384" width="820" height="126" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="408" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_OscInitStruct.HSEState = RCC_HSE_ON;             // 打开 8 MHz 晶振</text>
+<text x="56" y="428" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;         // 8 MHz × 9 = 72 MHz</text>
+<text x="56" y="448" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;  // HCLK  = 72 MHz</text>
+<text x="56" y="468" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;    // PCLK1 = 36 MHz</text>
+<text x="56" y="488" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;    // PCLK2 = 72 MHz</text>
+<text x="56" y="508" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SystemCoreClockUpdate();   // 更新 SystemCoreClock，否则延时/波特率全错</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F4 系列用 PLLM/PLLN/PLLP：100 MHz = 25 MHz ÷ 25 × 400 ÷ 2（见 02 章表格）</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
