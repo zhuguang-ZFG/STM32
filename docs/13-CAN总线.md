@@ -101,4 +101,111 @@ Tq = Prescaler / f_APB1
 
 > F4 的 bxCAN 结构与之类似（也是 14 组过滤器 + 2 FIFO，见 RM0090 第 32 章 Controller area network），寄存器命名基本一致。
 
-<!--APPEND-->
+## 🛠️ 硬件与接线
+
+| 开发板 | 外设 | 引脚 | 备注 |
+| --- | --- | --- | --- |
+| BluePill (F103) | CAN1 | PA11=CAN_RX、PA12=CAN_TX | 外接 TJA1050/SN65HVD230 收发器 |
+| BluePill | 收发器 | CANH/CANL | 两端各 120 Ω 终端电阻 |
+| Nucleo-F411RE | CAN1 | PD0=CAN_RX、PD1=CAN_TX | 需外接收发器 |
+| 任意 | 调试 | USART1 | 打印收发结果 |
+
+接线：`CAN_TX → 收发器 TXD`，`CAN_RX → 收发器 RXD`，收发器 `CANH/CANL` 接总线；**收发器供电注意电平**（SN65HVD230 是 3.3 V，TJA1050 是 5 V）。
+
+## 💻 代码实现
+
+**① CAN 初始化（F1，500 kbps）**
+
+```c
+#include "stm32f1xx_hal.h"
+
+CAN_HandleTypeDef hcan;
+
+static void MX_CAN_Init(void)
+{
+    hcan.Instance                  = CAN1;
+    hcan.Init.Prescaler            = 8;                 /* 36MHz/(8×(1+6+3))=500k */
+    hcan.Init.Mode                 = CAN_MODE_NORMAL;
+    hcan.Init.SyncJumpWidth        = CAN_SJW_1TQ;
+    hcan.Init.TimeSeg1             = CAN_BS1_6TQ;
+    hcan.Init.TimeSeg2             = CAN_BS2_3TQ;
+    hcan.Init.TimeTriggeredMode    = DISABLE;
+    hcan.Init.AutoBusOff           = ENABLE;
+    hcan.Init.AutoWakeUp           = DISABLE;
+    hcan.Init.AutoRetransmission   = ENABLE;
+    hcan.Init.ReceiveFifoLocked    = DISABLE;
+    hcan.Init.TransmitFifoPriority = DISABLE;
+    HAL_CAN_Init(&hcan);
+}
+```
+
+**② 过滤器：只收 0x123（掩码模式）**
+
+```c
+static void CAN_Filter_Init(void)
+{
+    CAN_FilterTypeDef f = {0};
+    f.FilterBank           = 0;
+    f.FilterMode           = CAN_FILTERMODE_IDMASK;
+    f.FilterScale          = CAN_FILTERSCALE_32BIT;
+    f.FilterIdHigh         = 0x123 << 5;   /* 标准帧 ID 左移 5 位 */
+    f.FilterIdLow          = 0x0000;
+    f.FilterMaskIdHigh     = 0x7FF << 5;   /* 11 位全部必须匹配 */
+    f.FilterMaskIdLow      = 0x0000;
+    f.FilterFIFOAssignment = CAN_RX_FIFO0;
+    f.FilterActivation     = ENABLE;
+    HAL_CAN_ConfigFilter(&hcan, &f);
+    HAL_CAN_Start(&hcan);
+    HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
+}
+```
+
+**③ 发送与接收**
+
+```c
+void CAN_Send(uint16_t std_id, uint8_t *data, uint8_t len)
+{
+    CAN_TxHeaderTypeDef tx = {0};
+    uint32_t mailbox;
+    tx.StdId = std_id;
+    tx.IDE   = CAN_ID_STD;
+    tx.RTR   = CAN_RTR_DATA;
+    tx.DLC   = len;
+    HAL_CAN_AddTxMessage(&hcan, &tx, data, &mailbox);
+}
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+    CAN_RxHeaderTypeDef rx;
+    uint8_t data[8];
+    HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &rx, data);
+    /* 处理 rx.StdId / data */
+}
+```
+
+## ⚠️ 常见坑与排查
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| 完全通信不上 | 收发器未接 / 供电错 | 检查 TXD/RXD 与 3.3V/5V |
+| 偶发错误、重传多 | 采样点不一致 / 无终端电阻 | 统一 BS1/BS2；两端加 120 Ω |
+| 收不到指定 ID | 过滤器配置错（ID 未左移） | 标准帧 ID 左移 5 位 |
+| 只能发不能收 | RXD 接错或过滤器未激活 | 核对引脚与 `FilterActivation` |
+| 进入 Bus-Off | 短路 / 无其他节点 ACK | 检查总线，`AutoBusOff` 恢复 |
+| 长距离丢帧 | 波特率过高 | 降速（≤125 kbps 可到 500 m） |
+| 扩展帧 ID 错 | 未分基础/扩展 ID | `IDE=CAN_ID_EXT`，填 `ExtId` |
+
+## 🧪 动手实验
+
+1. **单节点自测（回环模式）**：把 CAN 配成 `CAN_MODE_LOOPBACK`，自发自收，串口打印收到的 ID 与数据。预期：能收到自己发出的帧，无需收发器和总线。
+2. **双节点通信**：两块 BluePill + 收发器，A 发 B 收，总线两端各接 120 Ω。预期：B 稳定收到 A 的报文，串口打印一致。
+3. **过滤器验证**：节点配「只收 0x123」，另一个节点分别发 0x123 与 0x456。预期：只打印 0x123 的帧，0x456 被过滤掉。
+4. **（进阶）优先级观察**：两个节点同时发送不同 ID，用逻辑分析仪抓总线，验证 ID 小的先胜出。
+
+## 🔗 相关资源
+
+- RM0008《STM32F10xxx 参考手册》第 21 章 Controller area network (bxCAN)（含 `CAN_BTR` 位定义、过滤器、双 FIFO）。
+- RM0090《STM32F4 参考手册》第 32 章 Controller area network (bxCAN)。
+- ISO 11898-1（CAN 数据链路层）与 ISO 11898-2（物理层）。
+- 收发器数据手册：TJA1050、SN65HVD230。
+- 配图：`../assets/animations/can-arbitration.svg`（作者自绘矢量图）。

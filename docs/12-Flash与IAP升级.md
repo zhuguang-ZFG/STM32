@@ -123,4 +123,126 @@ SCB->VTOR = 0x08004800UL;   /* 必须与 Bootloader 约定一致 */
 3. 设备分配 APP 地址、擦除对应页，逐包接收 **128 或 1024 字节** 数据，校验 CRC16 后写 Flash，回 `ACK`。
 4. 传输结束（空包）后校验整包 CRC，置「APP 有效」标志并复位/跳转。
 
-<!--APPEND-->
+## 🛠️ 硬件与接线
+
+| 开发板 | 用途 | 引脚 | 备注 |
+| --- | --- | --- | --- |
+| BluePill (F103) | 串口 IAP | PA9/PA10 → USB-TTL | 用 UART1 收升级包 |
+| Nucleo-F411RE | 串口 IAP | USART2（ST-Link 虚拟串口） | 免额外 USB-TTL |
+| 任意 | 调试观察 | SWD（SWDIO/SWCLK） | 掉进 Bootloader 也能连 |
+
+> IAP 不需要额外硬件，只需一个能发文件的串口工具（SecureCRT / Xshell / 自写上位机）。
+
+## 💻 代码实现
+
+**① Flash 擦除 + 编程（F1，按页）**
+
+```c
+#include "stm32f1xx_hal.h"
+
+#define APP_ADDR     0x08004800UL
+#define FLASH_PAGE   1024U        /* F103C8 小容量 1KB/页 */
+
+/* 擦除覆盖 [addr, addr+len) 的页 */
+int Flash_EraseRange(uint32_t addr, uint32_t len)
+{
+    FLASH_EraseInitTypeDef er = {0};
+    uint32_t page_err = 0;
+
+    HAL_FLASH_Unlock();
+    er.TypeErase   = FLASH_TYPEERASE_PAGES;
+    er.PageAddress = addr;
+    er.NbPages     = (len + FLASH_PAGE - 1) / FLASH_PAGE;
+    if (HAL_FLASHEx_Erase(&er, &page_err) != HAL_OK) {
+        HAL_FLASH_Lock();
+        return -1;
+    }
+    HAL_FLASH_Lock();
+    return 0;
+}
+
+/* 按半字写入缓冲区 */
+int Flash_WriteBuf(uint32_t addr, const uint16_t *data, uint32_t halfwords)
+{
+    HAL_FLASH_Unlock();
+    for (uint32_t i = 0; i < halfwords; i++) {
+        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD,
+                              addr + i * 2, data[i]) != HAL_OK) {
+            HAL_FLASH_Lock();
+            return -1;
+        }
+    }
+    HAL_FLASH_Lock();
+    return 0;
+}
+```
+
+**② 跳转 APP**
+
+```c
+typedef void (*pFunction)(void);
+
+void JumpToApp(uint32_t app_addr)
+{
+    uint32_t sp    = *(volatile uint32_t *)app_addr;
+    uint32_t entry = *(volatile uint32_t *)(app_addr + 4);
+
+    __disable_irq();
+    SysTick->CTRL = 0; SysTick->LOAD = 0; SysTick->VAL = 0;
+    HAL_RCC_DeInit();
+    HAL_DeInit();
+
+    __set_MSP(sp);
+    SCB->VTOR = app_addr;
+    __enable_irq();
+    ((pFunction)entry)();
+}
+```
+
+**③ Bootloader 主流程（框架）**
+
+```c
+int main(void)
+{
+    HAL_Init();
+    SystemClock_Config();
+    MX_USART1_UART_Init();
+
+    /* 上电 500ms 内收到 'U' 命令则进入升级，否则跳 APP */
+    if (Uart_WaitForUpgrade(500)) {
+        Ymodem_Receive(APP_ADDR);        /* 收包→校验→写 Flash */
+    }
+    JumpToApp(APP_ADDR);
+    for (;;) { }                         /* 不会执行到这里 */
+}
+```
+
+> APP 工程要修改链接脚本：Flash 起始 `0x08004800`、长度相应减少；并在 `main()` 开头 `SCB->VTOR = 0x08004800;`。
+
+## ⚠️ 常见坑与排查
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| 跳转后死机 | 未设 MSP / 未设 VTOR | 跳转前 `__set_MSP` + `SCB->VTOR` |
+| 中断跳回 Bootloader | 跳转时没关中断 | `__disable_irq()` 并复位 SysTick |
+| 擦除返回错误 | 地址不是页边界 / 未解锁 | 页对齐；先 `HAL_FLASH_Unlock` |
+| 编程后数据错 | 未按半字对齐写 | 地址 2 字节对齐，写 16 位 |
+| APP 被 Bootloader 覆盖 | 参数区与 APP 重叠 | 重新规划内存划分 |
+| F4 参数区被误擦 | 参数区与 Bootloader 同扇区 | 参数区独占一个扇区 |
+| 升级后不运行 | APP 大小超区 / CRC 错 | 校验大小与 CRC，失败保留旧 APP |
+| 掉电升级变砖 | 升级中被断电 | 用双 APP 区（A/B）+ 引导标志 |
+
+## 🧪 动手实验
+
+1. **读写 Flash**：把一个 32 位变量写入 `0x0800FC00`（最后一页），复位后读出验证。预期：复位后数据仍在。
+2. **最小 IAP**：Bootloader 上电打印倒计时，期间收到字符 `'U'` 则进入接收模式；把编译好的 APP bin 通过串口发过去，跳转运行。预期：设备跑起 APP，串口打印 APP 的心跳。
+3. **（进阶）A/B 双区升级**：把 Flash 分为 APP_A/APP_B 两区，交替写入，用参数区记录「当前有效区」。预期：升级失败也能回退到旧版本，避免变砖。
+
+## 🔗 相关资源
+
+- RM0008《STM32F10xxx 参考手册》第 3 章 Embedded Flash memory（页结构、KEY、编程流程）。
+- RM0090《STM32F4 参考手册》第 3 章 FLASH（扇区结构、SER/SNB、编程位宽）。
+- 数据手册 DS：擦写寿命、数据保持时间、编程/擦除时间。
+- 应用笔记 AN2557《STM32F10xxx in-application programming using the USART》。
+- Cortex-M3/M4 权威指南：向量表、`SCB->VTOR`、异常模型。
+- 配图：`../assets/animations/flash-iap.svg`（作者自绘矢量图）。

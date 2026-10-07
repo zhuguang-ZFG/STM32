@@ -75,4 +75,136 @@
 - **多任务各喂一次**：RTOS 中让每个关键任务都喂，任一任务卡死即复位。
 - **WWDG 窗口**：强制在「不太早、不太晚」的窗口内喂，能发现「跑太快」（如时钟异常）和「跑太慢」。
 
-<!--APPEND-->
+## 🛠️ 硬件与接线
+
+| 开发板 | 外设 | 引脚 | 备注 |
+| --- | --- | --- | --- |
+| BluePill (F103) | LSE 晶振 | PC14=OSC32_IN、PC15=OSC32_OUT | 焊 32.768 kHz 晶振 + 2×负载电容（~6 pF） |
+| BluePill | VBAT | VBAT 脚 | 接 3 V 纽扣电池（CR2032）维持走时 |
+| BluePill | 备用 LED | PC13 | 常用于心跳指示 |
+| Nucleo-F411RE | LSE | PC14/PC15 | 板上已焊 32.768 kHz |
+| 任意 | 看门狗 | 无需引脚 | 纯片内 |
+
+> ⚠️ 负载电容要按晶振手册选（常见 6 pF / 12.5 pF），**电容过大 LSE 不起振**，是「RTC 不走时」的头号原因。
+
+## 💻 代码实现
+
+**① RTC 初始化 + 读时间（F1，LSE 源）**
+
+```c
+#include "stm32f1xx_hal.h"
+
+RTC_HandleTypeDef hrtc;
+
+static void MX_RTC_Init(void)
+{
+    __HAL_RCC_PWR_CLK_ENABLE();
+    __HAL_RCC_BKP_CLK_ENABLE();
+
+    hrtc.Instance          = RTC;
+    hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;   /* F1 预分频到 1Hz */
+    hrtc.Init.OutPut       = RTC_OUTPUTSOURCE_NONE;
+    HAL_RTC_Init(&hrtc);
+
+    /* 首次上电（BKP 无魔法值）才设置时间 */
+    if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR1) != 0xA5A5) {
+        RTC_TimeTypeDef t = { .Hours = 12, .Minutes = 0, .Seconds = 0 };
+        RTC_DateTypeDef d = { .Year = 26, .Month = RTC_MONTH_JANUARY,
+                              .Date = 7, .WeekDay = RTC_WEEKDAY_WEDNESDAY };
+        HAL_RTC_SetTime(&hrtc, &t, RTC_FORMAT_BIN);
+        HAL_RTC_SetDate(&hrtc, &d, RTC_FORMAT_BIN);
+        HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, 0xA5A5);   /* 存魔法值 */
+    }
+}
+
+void RTC_PrintTime(void)
+{
+    RTC_TimeTypeDef t; RTC_DateTypeDef d;
+    HAL_RTC_GetTime(&hrtc, &t, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &d, RTC_FORMAT_BIN);   /* 读日期会锁存时间寄存器 */
+    printf("20%02d-%02d-%02d %02d:%02d:%02d\r\n",
+           d.Year, d.Month, d.Date, t.Hours, t.Minutes, t.Seconds);
+}
+```
+
+**② 闹钟中断**
+
+```c
+void MX_RTC_Alarm_Init(void)
+{
+    RTC_AlarmTypeDef alarm = {0};
+    alarm.AlarmTime.Hours   = 8;
+    alarm.AlarmTime.Minutes = 30;
+    alarm.AlarmTime.Seconds = 0;
+    alarm.AlarmMask         = RTC_ALARMMASK_DATEWEEKDAY;  /* 每天触发 */
+    HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN);
+}
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+{
+    /* 到点回调，可置标志唤醒主循环 */
+}
+```
+
+**③ 独立看门狗 IWDG**
+
+```c
+IWDG_HandleTypeDef hiwdg;
+
+static void MX_IWDG_Init(void)
+{
+    hiwdg.Instance       = IWDG;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_64;   /* LSI≈40kHz /64 = 625Hz */
+    hiwdg.Init.Reload    = 4095;                /* 超时 ≈ 4095/625 ≈ 6.55 s */
+    HAL_IWDG_Init(&hiwdg);
+}
+
+/* 主循环里定期喂狗（不要放在中断里，否则中断卡死也救不了） */
+HAL_IWDG_Refresh(&hiwdg);
+```
+
+**④ 窗口看门狗 WWDG**
+
+```c
+WWDG_HandleTypeDef hwwdg;
+
+static void MX_WWDG_Init(void)
+{
+    hwwdg.Instance       = WWDG;
+    hwwdg.Init.Prescaler = WWDG_PRESCALER_8;    /* PCLK1/4096/8 */
+    hwwdg.Init.Window    = 0x50;                /* 窗口上界 */
+    hwwdg.Init.Counter   = 0x7F;                /* 初值，超时 ≈ 58.25ms @36MHz */
+    hwwdg.Init.EWIMode   = WWDG_EWI_ENABLE;     /* 使能早唤醒中断 */
+    HAL_WWDG_Init(&hwwdg);
+}
+
+/* 必须落在 [0x40, 0x50] 窗口内喂狗 */
+HAL_WWDG_Refresh(&hwwdg);
+```
+
+## ⚠️ 常见坑与排查
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| RTC 时间不走/上电归零 | LSE 未起振、VBAT 未接 | 检查晶振负载电容；VBAT 接电池 |
+| LSE 起振失败 | 负载电容过大/晶振质量差 | 换 6 pF 电容，走线尽量短 |
+| 年份/月份错乱 | F1 日历需软件换算，公式写错 | 用标准 32 位秒数↔日历换算库 |
+| 读时间后日期变了 | 读 `TR` 会锁存，未及时读 `DR` | 先读时间再读日期 |
+| 看门狗频繁复位 | 喂狗间隔 > 超时 | 算清超时时间；循环里定期喂 |
+| WWDG 一使能就复位 | 初值 < 窗口上界或喂太早 | 令 `Counter > Window`，且只在窗口内喂 |
+| 低功耗下看门狗误复位 | STOP 模式 LSI 仍计数 | 停止前 `HAL_IWDG_Refresh` 并规划唤醒 |
+
+## 🧪 动手实验
+
+1. **掉电走时**：焊上 LSE 晶振与 VBAT 纽扣电池，串口每秒打印时间；断电再上电。预期：时间连续，不会归零。
+2. **每天定时闹钟**：设置每天 08:30 闹钟，到点在回调里点亮 LED。预期：到点触发一次，其余时间不动作。
+3. **看门狗压力测试**：IWDG 超时设为 6.5 s；在代码里故意 `while(1)` 死循环不喂狗。预期：约 6.5 s 后芯片自动复位。
+4. **（进阶）窗口看门狗检测时序**：用 WWDG 窗口检测一个周期性任务；把任务延迟调大到超时，观察复位；把任务改得过快（喂太早），同样复位。
+
+## 🔗 相关资源
+
+- RM0008《STM32F10xxx 参考手册》第 16 章 RTC、第 17 章 IWDG、第 18 章 WWDG、第 5 章 PWR、第 6 章 BKP、第 7 章 RCC（LSE/LSI 配置）。
+- RM0090《STM32F4 参考手册》第 26 章 RTC、IWDG/WWDG 对应章节。
+- 数据手册 DS：LSE 起振条件、LSI 频率范围、VBAT 工作电压。
+- 应用笔记 AN4759《Using the hardware real-time clock (RTC) in STM32》。
+- 配图：`../assets/animations/iwdg-window.svg`（作者自绘矢量图）。

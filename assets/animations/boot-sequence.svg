@@ -83,20 +83,20 @@
 <rect x="682" y="258" width="196" height="84" fill="#f472b6" opacity="0.12" rx="10" class="b7"/>
 <rect x="40" y="387" width="3" height="18" fill="#22d3ee" opacity="1"/>
 <text x="52" y="400" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">向量表（前 8 个字节决定 CPU 从哪里开始）</text>
-<rect x="40" y="412" width="470" height="106" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="406" width="470" height="104" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
 <text x="56" y="436" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0000  __initial_sp    ; 栈顶 = SRAM 末地址 + 1</text>
 <text x="56" y="455" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0004  Reset_Handler   ; 复位入口</text>
 <text x="56" y="474" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0008  NMI_Handler</text>
 <text x="56" y="493" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_000C  HardFault_Handler</text>
 <text x="56" y="512" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0800_0010  MemManage_Handler ; 之后是外设中断</text>
-<rect x="530" y="412" width="330" height="106" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="548" y="434" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">BOOT0 / BOOT1 决定启动映射</text>
-<text x="548" y="458" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=0</text>
-<text x="662" y="458" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 Flash 启动（正常）</text>
-<text x="548" y="478" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=0</text>
-<text x="662" y="478" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统存储器（出厂 Bootloader，串口下载）</text>
-<text x="548" y="498" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=1</text>
-<text x="662" y="498" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 SRAM 启动（调试用）</text>
+<rect x="530" y="406" width="330" height="104" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="548" y="428" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">BOOT0 / BOOT1 决定启动映射</text>
+<text x="548" y="452" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=0</text>
+<text x="662" y="452" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 Flash 启动（正常）</text>
+<text x="548" y="472" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=0</text>
+<text x="662" y="472" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统存储器（出厂 Bootloader，串口下载）</text>
+<text x="548" y="492" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=1,BOOT1=1</text>
+<text x="662" y="492" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从 SRAM 启动（调试用）</text>
 <line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">参考：RM 参考手册「System and memory overview」章节</text>
 <text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>

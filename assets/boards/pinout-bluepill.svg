@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="STM32F103C8T6（LQFP48）引脚全图">
+
+
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#fbbf24" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6（LQFP48）引脚全图</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量结构图（非实拍照片）：48 脚编号、名称与常用复用功能</text>
+<rect x="837" y="15" width="41" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="857.5" y="33.32" font-size="12" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">引脚图</text>
+<rect x="300" y="200" width="200" height="200" fill="#1b1f28" opacity="1" rx="6" stroke="#39424f" stroke-width="1.5"/>
+<circle cx="314" cy="214" r="5" fill="#5b6472" opacity="1"/>
+<text x="400" y="276" font-size="14" fill="#dfe6f0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STM32F103C8T6</text>
+<text x="400" y="300" font-size="10" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LQFP48 · 7 × 7 mm</text>
+<text x="400" y="322" font-size="10" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cortex-M3 · 72 MHz</text>
+<text x="400" y="344" font-size="10" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">64 KB Flash / 20 KB SRAM</text>
+<line x1="284" y1="208.333" x2="300" y2="208.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="211.333" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<text x="266" y="211.333" font-size="8.5" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VBAT</text>
+<line x1="284" y1="225" x2="300" y2="225" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="228" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<text x="266" y="228" font-size="8.5" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC13</text>
+<line x1="284" y1="241.667" x2="300" y2="241.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="244.667" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<text x="266" y="244.667" font-size="8.5" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC14</text>
+<line x1="284" y1="258.333" x2="300" y2="258.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="261.333" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<text x="266" y="261.333" font-size="8.5" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC15</text>
+<line x1="284" y1="275" x2="300" y2="275" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="278" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<text x="266" y="278" font-size="8.5" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PD0/OSC_IN</text>
+<line x1="284" y1="291.667" x2="300" y2="291.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="294.667" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<text x="266" y="294.667" font-size="8.5" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PD1/OSC_OUT</text>
+<line x1="284" y1="308.333" x2="300" y2="308.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="311.333" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<text x="266" y="311.333" font-size="8.5" fill="#fbbf24" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NRST</text>
+<line x1="284" y1="325" x2="300" y2="325" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="328" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8</text>
+<text x="266" y="328" font-size="8.5" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSSA</text>
+<line x1="284" y1="341.667" x2="300" y2="341.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="344.667" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9</text>
+<text x="266" y="344.667" font-size="8.5" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDDA</text>
+<line x1="284" y1="358.333" x2="300" y2="358.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="361.333" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10</text>
+<text x="266" y="361.333" font-size="8.5" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0</text>
+<line x1="284" y1="375" x2="300" y2="375" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="378" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">11</text>
+<text x="266" y="378" font-size="8.5" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA1</text>
+<line x1="284" y1="391.667" x2="300" y2="391.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="280" y="394.667" font-size="8" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12</text>
+<text x="266" y="394.667" font-size="8.5" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA2</text>
+<line x1="308.333" y1="400" x2="308.333" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="308.333" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">13</text>
+<text x="308.333" y="444" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA3</text>
+<line x1="325" y1="400" x2="325" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="325" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14</text>
+<text x="325" y="444" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA4</text>
+<line x1="341.667" y1="400" x2="341.667" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="341.667" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">15</text>
+<text x="341.667" y="444" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5</text>
+<line x1="358.333" y1="400" x2="358.333" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="358.333" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">16</text>
+<text x="358.333" y="444" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA6</text>
+<line x1="375" y1="400" x2="375" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="375" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">17</text>
+<text x="375" y="444" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA7</text>
+<line x1="391.667" y1="400" x2="391.667" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="391.667" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">18</text>
+<text x="391.667" y="444" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB0</text>
+<line x1="408.333" y1="400" x2="408.333" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="408.333" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">19</text>
+<text x="408.333" y="444" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB1</text>
+<line x1="425" y1="400" x2="425" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="425" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">20</text>
+<text x="425" y="444" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB2/BOOT1</text>
+<line x1="441.667" y1="400" x2="441.667" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="441.667" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">21</text>
+<text x="441.667" y="444" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB10</text>
+<line x1="458.333" y1="400" x2="458.333" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="458.333" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">22</text>
+<text x="458.333" y="444" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB11</text>
+<line x1="475" y1="400" x2="475" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="475" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">23</text>
+<text x="475" y="444" font-size="8.5" fill="#f87171" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSS_1</text>
+<line x1="491.667" y1="400" x2="491.667" y2="416" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="491.667" y="428" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24</text>
+<text x="491.667" y="444" font-size="8.5" fill="#f87171" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD_1</text>
+<line x1="500" y1="391.667" x2="516" y2="391.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="394.667" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">25</text>
+<text x="534" y="394.667" font-size="8.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB12</text>
+<line x1="500" y1="375" x2="516" y2="375" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="378" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">26</text>
+<text x="534" y="378" font-size="8.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB13</text>
+<line x1="500" y1="358.333" x2="516" y2="358.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="361.333" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">27</text>
+<text x="534" y="361.333" font-size="8.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB14</text>
+<line x1="500" y1="341.667" x2="516" y2="341.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="344.667" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">28</text>
+<text x="534" y="344.667" font-size="8.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB15</text>
+<line x1="500" y1="325" x2="516" y2="325" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="328" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">29</text>
+<text x="534" y="328" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA8</text>
+<line x1="500" y1="308.333" x2="516" y2="308.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="311.333" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">30</text>
+<text x="534" y="311.333" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA9</text>
+<line x1="500" y1="291.667" x2="516" y2="291.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="294.667" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">31</text>
+<text x="534" y="294.667" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA10</text>
+<line x1="500" y1="275" x2="516" y2="275" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="278" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">32</text>
+<text x="534" y="278" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA11</text>
+<line x1="500" y1="258.333" x2="516" y2="258.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="261.333" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">33</text>
+<text x="534" y="261.333" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA12</text>
+<line x1="500" y1="241.667" x2="516" y2="241.667" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="244.667" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">34</text>
+<text x="534" y="244.667" font-size="8.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA13</text>
+<line x1="500" y1="225" x2="516" y2="225" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="228" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">35</text>
+<text x="534" y="228" font-size="8.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSS_2</text>
+<line x1="500" y1="208.333" x2="516" y2="208.333" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="211.333" font-size="8" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">36</text>
+<text x="534" y="211.333" font-size="8.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD_2</text>
+<line x1="491.667" y1="184" x2="491.667" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="491.667" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">37</text>
+<text x="491.667" y="166" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA14</text>
+<line x1="475" y1="184" x2="475" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="475" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">38</text>
+<text x="475" y="166" font-size="8.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA15</text>
+<line x1="458.333" y1="184" x2="458.333" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="458.333" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">39</text>
+<text x="458.333" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB3</text>
+<line x1="441.667" y1="184" x2="441.667" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="441.667" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">40</text>
+<text x="441.667" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB4</text>
+<line x1="425" y1="184" x2="425" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="425" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">41</text>
+<text x="425" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB5</text>
+<line x1="408.333" y1="184" x2="408.333" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="408.333" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">42</text>
+<text x="408.333" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB6</text>
+<line x1="391.667" y1="184" x2="391.667" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="391.667" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">43</text>
+<text x="391.667" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB7</text>
+<line x1="375" y1="184" x2="375" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="375" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">44</text>
+<text x="375" y="166" font-size="8.5" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0</text>
+<line x1="358.333" y1="184" x2="358.333" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="358.333" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">45</text>
+<text x="358.333" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB8</text>
+<line x1="341.667" y1="184" x2="341.667" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="341.667" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">46</text>
+<text x="341.667" y="166" font-size="8.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB9</text>
+<line x1="325" y1="184" x2="325" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="325" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">47</text>
+<text x="325" y="166" font-size="8.5" fill="#f87171" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSS_3</text>
+<line x1="308.333" y1="184" x2="308.333" y2="200" stroke="#e2b23c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="308.333" y="178" font-size="8" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">48</text>
+<text x="308.333" y="166" font-size="8.5" fill="#f87171" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD_3</text>
+<rect x="570" y="130" width="290" height="320" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="584" y="156" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常用复用功能（AF）</text>
+<text x="584" y="182" font-size="9.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA9 / PA10</text>
+<text x="702" y="182" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1_TX / RX（默认下载口）</text>
+<text x="584" y="201" font-size="9.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA2 / PA3</text>
+<text x="702" y="201" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART2_TX / RX</text>
+<text x="584" y="220" font-size="9.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB6 / PB7</text>
+<text x="702" y="220" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">I2C1_SCL / SDA（接 OLED）</text>
+<text x="584" y="239" font-size="9.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5 / PA6 / PA7</text>
+<text x="702" y="239" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1_SCK / MISO / MOSI</text>
+<text x="584" y="258" font-size="9.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA4</text>
+<text x="702" y="258" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1_NSS 或 ADC_IN4</text>
+<text x="584" y="277" font-size="9.5" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA11 / PA12</text>
+<text x="702" y="277" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB_DM / DP（同时是 CAN_RX/TX）</text>
+<text x="584" y="296" font-size="9.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA13 / PA14</text>
+<text x="702" y="296" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWDIO / SWCLK（调试口，别复用）</text>
+<text x="584" y="315" font-size="9.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0 ~ PA7</text>
+<text x="702" y="315" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC1_IN0 ~ IN7</text>
+<text x="584" y="334" font-size="9.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB0 / PB1</text>
+<text x="702" y="334" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC1_IN8 / IN9，TIM3_CH3/CH4</text>
+<text x="584" y="353" font-size="9.5" fill="#f472b6" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA8 ~ PA11</text>
+<text x="702" y="353" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM1_CH1 ~ CH4（PWM / 舵机）</text>
+<text x="584" y="372" font-size="9.5" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC13</text>
+<text x="702" y="372" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载用户 LED（低电平点亮）</text>
+<text x="584" y="391" font-size="9.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PD0 / PD1</text>
+<text x="702" y="391" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8 MHz 晶振输入 / 输出</text>
+<text x="584" y="410" font-size="9.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB2</text>
+<text x="702" y="410" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT1（默认下拉）</text>
+<text x="584" y="429" font-size="9.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0</text>
+<text x="702" y="429" font-size="9" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动模式选择，需外部 10 kΩ 下拉</text>
+<rect x="40" y="470" width="820" height="100" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="496" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">看引脚图的 5 个要点</text>
+<text x="58" y="518" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 电源：VDD_1/2/3 各配 100 nF 去耦电容，VDDA 加 10 nF + 1 µF，VBAT 接 3.3 V 或纽扣电池</text>
+<text x="58" y="536" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② NRST 内部已有上拉，外部只需 100 nF 到地，不必再并 10 kΩ</text>
+<text x="58" y="554" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ BOOT0 必须有 10 kΩ 下拉，否则上电可能进入系统存储器（串口下载）模式</text>
+<text x="58" y="572" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ 5 V 容忍：数据手册标 FT 的引脚可接 5 V 数字信号；VDDA / 模拟输入不能超 3.3 V</text>
+<text x="58" y="590" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑤ 未使用的 IO 建议配成模拟输入或输出低，可显著降低功耗（见 docs/16 章）</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚编号以 ST 官方数据手册 DS5319（F103x8/B）第 4 章 Pinouts 为准</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="常用外设接线总览">
+<style>
+
+.wf140{stroke-dasharray:6 8;animation:wf140-flow 1.8s linear infinite;}@keyframes wf140-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf214{stroke-dasharray:6 8;animation:wf214-flow 1.8s linear infinite;}@keyframes wf214-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf288{stroke-dasharray:6 8;animation:wf288-flow 1.8s linear infinite;}@keyframes wf288-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf362{stroke-dasharray:6 8;animation:wf362-flow 1.8s linear infinite;}@keyframes wf362-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf140{stroke-dasharray:6 8;animation:wf140-flow 1.8s linear infinite;}@keyframes wf140-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf214{stroke-dasharray:6 8;animation:wf214-flow 1.8s linear infinite;}@keyframes wf214-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf288{stroke-dasharray:6 8;animation:wf288-flow 1.8s linear infinite;}@keyframes wf288-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+
+.wf362{stroke-dasharray:6 8;animation:wf362-flow 1.8s linear infinite;}@keyframes wf362-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#f472b6" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常用外设接线总览</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">以 BluePill 为例：8 个入门外设的引脚分配与总线归属</text>
+<rect x="837" y="15" width="41" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="857.5" y="33.32" font-size="12" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">接线图</text>
+<rect x="360" y="205" width="180" height="190" fill="#16233c" opacity="1" rx="12" stroke="#22d3ee" stroke-width="2"/>
+<text x="450" y="240" font-size="15" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103</text>
+<text x="450" y="262" font-size="12" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">C8T6</text>
+<text x="450" y="296" font-size="10.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5  PB6  PA9</text>
+<text x="450" y="314" font-size="10.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0  PB7  PA10</text>
+<text x="450" y="332" font-size="10.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA1  PA6  PB0</text>
+<text x="450" y="350" font-size="10.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA7  PA4  PB12</text>
+<text x="450" y="378" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V / GND 共用</text>
+<rect x="40" y="140" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
+<text x="56" y="164" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">LED + 330Ω</text>
+<text x="56" y="182" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5 · 推挽输出</text>
+<line x1="244" y1="167" x2="349" y2="167" stroke="#34d399" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf140"/>
+<polygon points="356.00,167.00 349.00,170.50 349.00,163.50" fill="#34d399" opacity="1"/>
+<rect x="40" y="214" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="56" y="238" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">按键（对地）</text>
+<text x="56" y="256" font-size="10" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0 · 上拉输入 + EXTI</text>
+<line x1="244" y1="241" x2="349" y2="241" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf214"/>
+<polygon points="356.00,241.00 349.00,244.50 349.00,237.50" fill="#a78bfa" opacity="1"/>
+<rect x="40" y="288" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="56" y="312" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">电位器 / 光敏</text>
+<text x="56" y="330" font-size="10" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA1 · ADC1_IN1</text>
+<line x1="244" y1="315" x2="349" y2="315" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf288"/>
+<polygon points="356.00,315.00 349.00,318.50 349.00,311.50" fill="#fbbf24" opacity="1"/>
+<rect x="40" y="362" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#f472b6" stroke-width="1.5"/>
+<text x="56" y="386" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">SG90 舵机</text>
+<text x="56" y="404" font-size="10" fill="#f472b6" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB0 · TIM3_CH3 PWM</text>
+<line x1="244" y1="389" x2="349" y2="389" stroke="#f472b6" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf362"/>
+<polygon points="356.00,389.00 349.00,392.50 349.00,385.50" fill="#f472b6" opacity="1"/>
+<rect x="660" y="140" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="676" y="164" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">SSD1306 OLED</text>
+<text x="676" y="182" font-size="10" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB6 SCL / PB7 SDA · I2C1</text>
+<line x1="544" y1="167" x2="649" y2="167" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf140"/>
+<polygon points="656.00,167.00 649.00,170.50 649.00,163.50" fill="#22d3ee" opacity="1"/>
+<rect x="660" y="214" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
+<text x="676" y="238" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">W25Q64 Flash</text>
+<text x="676" y="256" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5/6/7 + PA4 CS · SPI1</text>
+<line x1="544" y1="241" x2="649" y2="241" stroke="#34d399" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf214"/>
+<polygon points="656.00,241.00 649.00,244.50 649.00,237.50" fill="#34d399" opacity="1"/>
+<rect x="660" y="288" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="676" y="312" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">HC-05 蓝牙</text>
+<text x="676" y="330" font-size="10" fill="#60a5fa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA9 TX / PA10 RX · USART1</text>
+<line x1="544" y1="315" x2="649" y2="315" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf288"/>
+<polygon points="656.00,315.00 649.00,318.50 649.00,311.50" fill="#60a5fa" opacity="1"/>
+<rect x="660" y="362" width="200" height="54" fill="#111c31" opacity="1" rx="10" stroke="#fb923c" stroke-width="1.5"/>
+<text x="676" y="386" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">DHT11 温湿度</text>
+<text x="676" y="404" font-size="10" fill="#fb923c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB12 · 单总线时序</text>
+<line x1="544" y1="389" x2="649" y2="389" stroke="#fb923c" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="wf362"/>
+<polygon points="656.00,389.00 649.00,392.50 649.00,385.50" fill="#fb923c" opacity="1"/>
+<rect x="40" y="452" width="258" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="452" width="3" height="76" fill="#f87171" opacity="1" rx="2"/>
+<text x="54" y="476" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">资源冲突要先查</text>
+<text x="54" y="494" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1 的 PA5~PA7 与 ADC、TIM2 复用；一</text>
+<text x="54" y="510" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">个引脚同一时刻只能有一个功能</text>
+<rect x="314" y="452" width="258" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="314" y="452" width="3" height="76" fill="#fbbf24" opacity="1" rx="2"/>
+<text x="328" y="476" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">电平要匹配</text>
+<text x="328" y="494" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HC-05、OLED、W25Q64 都是 3.3 V 器件，</text>
+<text x="328" y="510" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">5 V 模块（如继电器）需电平转换或三极管驱动</text>
+<rect x="588" y="452" width="258" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<rect x="588" y="452" width="3" height="76" fill="#34d399" opacity="1" rx="2"/>
+<text x="602" y="476" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">共地是前提</text>
+<text x="602" y="494" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">所有外设必须与开发板 GND 相连；只接信号线不接地是最常见</text>
+<text x="602" y="510" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">的「玄学故障」</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完整接线表见各章「硬件与接线」小节与 examples/*/README.md</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
