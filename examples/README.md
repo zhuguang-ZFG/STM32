@@ -65,6 +65,12 @@ examples/
 3. 编译下载（Keil / CubeIDE / PlatformIO 均可）。
 4. 对照 README 的「预期现象」验证；不通过时查「常见问题」表。
 
+## 仿真（可选，见第 22 章）
+
+核心示例目录里有 `diagram.json` 和 `wokwi.toml`，Renode 脚本在
+[`sim/renode/`](../sim/renode/)。怎么跑、哪些外设当前模型跑不完，写在
+[22 仿真实验](../docs/22-仿真实验Wokwi与Renode.md)。
+
 ## 五、通用注意事项
 
 | 项 | 说明 |

@@ -278,6 +278,55 @@ def check_videos():
     return ok
 
 
+def check_sim():
+    """Wokwi 图必须是合法 JSON，Renode 脚本必须点名官方 repl。"""
+    import json
+    ok = True
+    examples = os.path.join(ROOT, "examples")
+    required = [
+        "gpio-blink", "exti-key", "timer-pwm",
+        "uart-dma-idle", "i2c-oled", "adc-dma",
+    ]
+    for name in required:
+        folder = os.path.join(examples, name)
+        diagram = os.path.join(folder, "diagram.json")
+        toml = os.path.join(folder, "wokwi.toml")
+        if not os.path.isfile(diagram) or not os.path.isfile(toml):
+            print(f"[FAIL] {name} 缺少 diagram.json 或 wokwi.toml")
+            ok = False
+            continue
+        try:
+            data = json.load(open(diagram, encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"[FAIL] {name}/diagram.json 不是合法 JSON：{exc}")
+            ok = False
+            continue
+        if data.get("version") != 1 or "parts" not in data or "connections" not in data:
+            print(f"[FAIL] {name}/diagram.json 缺少 version/parts/connections")
+            ok = False
+        types = [p.get("type") for p in data["parts"]]
+        if "board-stm32-bluepill" not in types:
+            print(f"[FAIL] {name} 没有 board-stm32-bluepill")
+            ok = False
+        text = open(toml, encoding="utf-8").read()
+        if "[wokwi]" not in text or "firmware" not in text:
+            print(f"[FAIL] {name}/wokwi.toml 缺少 [wokwi] 或 firmware")
+            ok = False
+    for name in ("gpio-blink.resc", "uart-usart1.resc"):
+        path = os.path.join(ROOT, "sim", "renode", name)
+        if not os.path.isfile(path):
+            print(f"[FAIL] 缺少 {path}")
+            ok = False
+            continue
+        body = open(path, encoding="utf-8").read()
+        if "platforms/cpus/stm32f103.repl" not in body or "usart1" not in body:
+            print(f"[FAIL] {name} 未引用 stm32f103.repl / usart1")
+            ok = False
+    if ok:
+        print(f"仿真配置检查完成：{len(required)} 个 Wokwi 工程 + 2 个 Renode 脚本")
+    return ok
+
+
 def check_links():
     """校验 Markdown 里的相对链接与图片引用是否真实存在。"""
     import re
@@ -315,8 +364,9 @@ if __name__ == "__main__":
     a = check_svg()
     b = check_gif()
     d = check_videos()
+    e = check_sim()
     c = check_links()
-    ok = a and b and c and d
+    ok = a and b and c and d and e
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
     sys.exit(0 if ok else 1)
 

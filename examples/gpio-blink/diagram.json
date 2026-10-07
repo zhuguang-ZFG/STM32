@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "author": "STM32 知识库",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-stm32-bluepill",
+      "id": "mcu",
+      "top": 40,
+      "left": 40,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 20,
+      "left": 250,
+      "attrs": {
+        "value": "270"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -20,
+      "left": 340,
+      "attrs": {
+        "color": "red"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "mcu:A0",
+      "r1:1",
+      "green",
+      []
+    ],
+    [
+      "r1:2",
+      "led1:A",
+      "green",
+      []
+    ],
+    [
+      "led1:C",
+      "mcu:GND.1",
+      "black",
+      []
+    ]
+  ]
+}

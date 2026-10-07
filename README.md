@@ -272,7 +272,7 @@ python3 tools/check_assets.py
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 10 个可编译示例 + 4 份速查表
 - [x] 每章讲解幻灯（`assets/video/`，脚本可复现的 GIF + 旁白，不是实拍）
-- [ ] 交互式在线实验（Wokwi / Renode 仿真链接）
+- [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [ ] H7 / G0 / L4 系列的引脚图与低功耗专题
 - [ ] 英文版（i18n/ 目录）
 

@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "author": "STM32 知识库",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-stm32-bluepill",
+      "id": "mcu",
+      "top": 40,
+      "left": 40,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot0",
+      "top": 20,
+      "left": 280,
+      "attrs": {
+        "value": "512"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 120,
+      "left": 280,
+      "attrs": {
+        "value": "512"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot4",
+      "top": 220,
+      "left": 280,
+      "attrs": {
+        "value": "512"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "mcu:3V3.1",
+      "pot0:VCC",
+      "red",
+      []
+    ],
+    [
+      "pot0:GND",
+      "mcu:GND.1",
+      "black",
+      []
+    ],
+    [
+      "pot0:SIG",
+      "mcu:A0",
+      "orange",
+      []
+    ],
+    [
+      "mcu:3V3.1",
+      "pot1:VCC",
+      "red",
+      []
+    ],
+    [
+      "pot1:GND",
+      "mcu:GND.2",
+      "black",
+      []
+    ],
+    [
+      "pot1:SIG",
+      "mcu:A1",
+      "orange",
+      []
+    ],
+    [
+      "mcu:3V3.2",
+      "pot4:VCC",
+      "red",
+      []
+    ],
+    [
+      "pot4:GND",
+      "mcu:GND.3",
+      "black",
+      []
+    ],
+    [
+      "pot4:SIG",
+      "mcu:A4",
+      "orange",
+      []
+    ]
+  ]
+}

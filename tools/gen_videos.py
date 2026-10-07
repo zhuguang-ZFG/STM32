@@ -535,6 +535,24 @@ CHAPTERS = [
             ("quiz", ["PHOTO OR SVG?", "BOOT0 FLOAT?", "HSE VALUE?"]),
         ],
     },
+    {
+        "id": "22", "slug": "sim", "title": "22 SIMULATE",
+        "narr": [
+            "仿真分两家：Wokwi 在浏览器里接线，Renode 在命令行里跑同一颗 Cortex-M3。",
+            "每个核心示例目录里有 diagram.json 和 wokwi.toml。引脚名跟 Wokwi 板定义走，A0 就是 PA0。",
+            "Renode 脚本加载官方平台 platforms/cpus/stm32f103.repl，USART1 在 PA9/PA10。",
+            "当前 Wokwi 的 BluePill 模型没有 DMA。串口空闲帧和 ADC 搬运要上真板，或只看接线。",
+            "口诀：仿真看现象，真板对时序。自测：PC13 的灯在 Wokwi 里要不要再外接一颗？",
+        ],
+        "frames": [
+            ("cols", "TWO SIMS", ("WOKWI", ["BROWSER", "WIRES"], C.CYAN),
+             ("RENODE", ["MONITOR", "ELF"], C.AMBER)),
+            ("lines", "PIN ALIAS", ["A0 MEANS PA0", "C13 MEANS PC13", "SEE BOARD.JSON"]),
+            ("lines", "RENODE F103", ["stm32f103.repl", "USART1 PA9 PA10", "PORT 3456"]),
+            ("lines", "NO DMA YET", ["WOKWI DMA OFF", "UART IDLE WAITS", "ADC DMA WAITS"]),
+            ("quiz", ["A6 IS WHICH?", "PC13 EXTRA LED?", "REPL FILE?"]),
+        ],
+    },
 ]
 
 

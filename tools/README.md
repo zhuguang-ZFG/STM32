@@ -36,7 +36,7 @@ python3 tools/gen_gifs.py led-blink
 | `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
 | `gen_videos.py` | 每章 5 帧讲解幻灯（ASCII 画面 + 章节旁白标记） |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
-| `check_assets.py` | 自检工具：SVG XML 校验、元素超界检测、动画 class 死链检测、GIF 解码逐像素回验、Markdown 链接与图片引用校验、体积告警 |
+| `check_assets.py` | 自检：SVG、GIF 回验、章节幻灯、Wokwi/Renode 配置、Markdown 链接 |
 
 ## 设计约定
 
