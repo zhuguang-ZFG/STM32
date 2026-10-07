@@ -267,6 +267,13 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 3. **自定义 HID**：把设备改成 HID，用一个按键触发上报，用「Windows 游戏控制器」属性页查看。预期：按键时属性页里的坐标/按钮状态变化。
 4. **（进阶）枚举抓包**：用 Wireshark + USBPcap（或硬件 USB 分析仪）抓取枚举过程，逐条对照第 5 节的 7 步。预期：能看到 GET_DESCRIPTOR / SET_ADDRESS / SET_CONFIGURATION 的完整交互。
 
+仓库里的两个示例不附带 ST USB 中间件，直接用 HAL PCD 完成枚举：
+
+- [examples/usb-cdc](../examples/usb-cdc/)：虚拟串口，回显，DTR 有效后每秒一行 `cdc tick`。
+- [examples/usb-hid](../examples/usb-hid/)：启动式键盘，PA0 按下送一个字母 `a`。
+
+两份都把 PLL 设成 72 MHz，USB 时钟选 PLL/1.5。F103 的 `USB_LP_CAN1_RX0` 与 bxCAN 接收是同一条中断，不要和 CAN 示例编进同一个工程。
+
 ## 🔗 相关资源
 
 - RM0008《STM32F10xxx 参考手册》第 23 章 USB device（`USB_EPnR`、PMA、`BTABLE`）。

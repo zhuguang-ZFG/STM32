@@ -19,6 +19,9 @@
 | [rtc-alarm](rtc-alarm/) | ★★ | RTC + PWR(STOP) + 备份域 | [11 RTC与看门狗](../docs/11-RTC与看门狗.md) | BluePill + 32.768kHz 晶振 + 纽扣电池 |
 | [freertos-task](freertos-task/) | ★★★★ | GPIO/EXTI/USART + FreeRTOS | [15 FreeRTOS入门](../docs/15-FreeRTOS入门.md) | BluePill + 按键 + USB-TTL |
 | [iap-bootloader](iap-bootloader/) | ★★★★ | USART + Flash | [12 Flash与IAP升级](../docs/12-Flash与IAP升级.md) | BluePill + USB-TTL |
+| [can-bxcan](can-bxcan/) | ★★★★ | bxCAN 环回 / 双节点 / 过滤器 / Bus-Off | [13 CAN总线](../docs/13-CAN总线.md) | 环回只需 BluePill；双节点再加两只 3.3 V 收发器 |
+| [usb-cdc](usb-cdc/) | ★★★★ | USB Device CDC | [14 USB](../docs/14-USB.md) | BluePill 板载 USB（D+ 1.5 kΩ） |
+| [usb-hid](usb-hid/) | ★★★★ | USB Device HID 键盘 | [14 USB](../docs/14-USB.md) | BluePill 板载 USB + PA0 按键 |
 
 > 难度说明：★ 入门（单外设、几十行）→ ★★★★ 进阶（多外设联动、需理解时序/内存布局）。
 
@@ -36,8 +39,8 @@
 | 10 | [10-DMA.md](../docs/10-DMA.md) | uart-dma-idle / adc-dma |
 | 11 | [11-RTC与看门狗.md](../docs/11-RTC与看门狗.md) | rtc-alarm |
 | 12 | [12-Flash与IAP升级.md](../docs/12-Flash与IAP升级.md) | iap-bootloader |
-| 13 | [13-CAN总线.md](../docs/13-CAN总线.md) | —（CAN 收发器需外接） |
-| 14 | [14-USB.md](../docs/14-USB.md) | —（USB 库工程另行提供） |
+| 13 | [13-CAN总线.md](../docs/13-CAN总线.md) | can-bxcan |
+| 14 | [14-USB.md](../docs/14-USB.md) | usb-cdc / usb-hid |
 | 15 | [15-FreeRTOS入门.md](../docs/15-FreeRTOS入门.md) | freertos-task |
 
 ## 三、目录结构
@@ -54,7 +57,10 @@ examples/
 ├── adc-dma/
 ├── rtc-alarm/
 ├── freertos-task/
-└── iap-bootloader/
+├── iap-bootloader/
+├── can-bxcan/             ← 环回、双节点、过滤器、Bus-Off
+├── usb-cdc/               ← HAL PCD 虚拟串口（不含 ST 中间件）
+└── usb-hid/               ← HAL PCD 键盘
 ```
 
 ## 四、如何把示例跑起来

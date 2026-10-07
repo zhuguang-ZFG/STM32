@@ -96,11 +96,13 @@ Tq = Prescaler / f_APB1
 
 | 目标波特率 | Prescaler | BS1 | BS2 | 采样点 | 说明 |
 | --- | --- | --- | --- | --- | --- |
-| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 短距离 |
-| 500 kbps | 8 | 6 Tq | 3 Tq | 70% | 常用 |
-| 250 kbps | 16 | 6 Tq | 3 Tq | 70% | 工控常用 |
-| 125 kbps | 32 | 6 Tq | 3 Tq | 70% | 长距离 |
-| 100 kbps | 40 | 6 Tq | 3 Tq | 70% | — |
+| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 36 MHz / (4×9) = 1 MHz，短距离 |
+| 500 kbps | 9 | 5 Tq | 2 Tq | 75% | 36 MHz / (9×8) = 500 kHz |
+| 250 kbps | 18 | 5 Tq | 2 Tq | 75% | 分频再翻一倍 |
+| 125 kbps | 36 | 5 Tq | 2 Tq | 75% | 长距离 |
+| 100 kbps | 45 | 5 Tq | 2 Tq | 75% | 36 MHz / (45×8) = 100 kHz |
+
+> 采样点想卡在 70%（BS1=6、BS2=3，一共 10 个 TQ）时，500 kbit/s 需要的预分频是 7.2，不是整数。上面改成能整除的 8 个 TQ、75% 采样点。示例 [`examples/can-bxcan`](../examples/can-bxcan/) 用的就是 500 kbit/s 这一行。
 
 > **SJW（再同步跳转宽度）** 用于吸收各节点时钟误差，一般取 1~2 Tq。采样点不一致是 CAN 通信偶发错误的首要原因，多节点必须统一。
 
@@ -140,11 +142,11 @@ CAN_HandleTypeDef hcan;
 static void MX_CAN_Init(void)
 {
     hcan.Instance                  = CAN1;
-    hcan.Init.Prescaler            = 8;                 /* 36MHz/(8×(1+6+3))=500k */
+    hcan.Init.Prescaler            = 9;                 /* 36MHz/(9×(1+5+2))=500k */
     hcan.Init.Mode                 = CAN_MODE_NORMAL;
     hcan.Init.SyncJumpWidth        = CAN_SJW_1TQ;
-    hcan.Init.TimeSeg1             = CAN_BS1_6TQ;
-    hcan.Init.TimeSeg2             = CAN_BS2_3TQ;
+    hcan.Init.TimeSeg1             = CAN_BS1_5TQ;
+    hcan.Init.TimeSeg2             = CAN_BS2_2TQ;
     hcan.Init.TimeTriggeredMode    = DISABLE;
     hcan.Init.AutoBusOff           = ENABLE;
     hcan.Init.AutoWakeUp           = DISABLE;
@@ -243,3 +245,4 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM：数够 128×11 个隐性位后自动�
 - ISO 11898-1（CAN 数据链路层）与 ISO 11898-2（物理层）。
 - 收发器数据手册：TJA1050、SN65HVD230。
 - 配图：`../assets/animations/can-arbitration.svg`（作者自绘矢量图）。
+- 可编译示例：[examples/can-bxcan](../examples/can-bxcan/)（环回、双节点、过滤器、ABOM 与软件恢复）。BluePill 上请重映射到 PB8/PB9，不要占用板载 USB 的 PA11/PA12。

@@ -367,6 +367,43 @@ def check_pinouts():
     return ok
 
 
+def check_examples():
+    """CAN / USB 示例要带上关键路径，避免只留一个空目录。"""
+    ok = True
+    root = os.path.join(ROOT, "examples")
+    need = {
+        "can-bxcan/main.c": (
+            "CAN_MODE_LOOPBACK",
+            "CAN_MODE_NORMAL",
+            "FilterIdHigh",
+            "AutoBusOff",
+            "HAL_CAN_Stop",
+            "__HAL_AFIO_REMAP_CAN1_1",
+        ),
+        "can-bxcan/README.md": ("500 kbit/s", "PB8", "PB9"),
+        "usb-cdc/usb_cdc.c": ("0x43", "0x20U", "0x02, 0x02", "0x0A"),
+        "usb-cdc/main.c": ("RCC_USBCLKSOURCE_PLL_DIV1_5", "usb_cdc_init"),
+        "usb-cdc/README.md": ("48", "stm32f1xx_hal_pcd.c"),
+        "usb-hid/usb_hid.c": ("0x3F", "0x09, 0x06", "0x0AU"),
+        "usb-hid/main.c": ("0x04U", "RCC_USBCLKSOURCE_PLL_DIV1_5"),
+        "usb-hid/README.md": ("PA0", "48"),
+    }
+    for rel, needles in need.items():
+        path = os.path.join(root, rel)
+        if not os.path.isfile(path):
+            print(f"[FAIL] 缺少示例 {rel}")
+            ok = False
+            continue
+        text = open(path, encoding="utf-8").read()
+        for needle in needles:
+            if needle not in text:
+                print(f"[FAIL] {rel} 未包含 {needle}")
+                ok = False
+    if ok:
+        print("示例检查完成：can-bxcan、usb-cdc、usb-hid")
+    return ok
+
+
 def check_links():
     """校验 Markdown 里的相对链接与图片引用是否真实存在。"""
     import re
@@ -406,8 +443,9 @@ if __name__ == "__main__":
     d = check_videos()
     e = check_sim()
     f = check_pinouts()
+    g = check_examples()
     c = check_links()
-    ok = a and b and c and d and e and f
+    ok = a and b and c and d and e and f and g
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
     sys.exit(0 if ok else 1)
 

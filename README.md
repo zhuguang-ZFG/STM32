@@ -4,13 +4,13 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 10 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 13 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-26_篇-60a5fa?style=flat-square)](docs/)
 [![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
-[![examples](https://img.shields.io/badge/可编译示例-10_个-34d399?style=flat-square)](examples/)
+[![examples](https://img.shields.io/badge/可编译示例-13_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
@@ -188,6 +188,9 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | [rtc-alarm](examples/rtc-alarm/) | ★★ | RTC + 闹钟 + 备份域 | 11 |
 | [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | 15 |
 | [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | 12 |
+| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | 13 |
+| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | 14 |
+| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | 14 |
 
 速查表（打印出来贴显示器旁边那种）：
 
@@ -204,7 +207,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
 ├── docs/                     ← 00–25 章 + CONTENT_GUIDE.md 写作规范
-├── examples/                 ← 10 个可编译示例（main.c + README.md）
+├── examples/                 ← 13 个可编译示例（main.c + README.md）
 ├── cheatsheets/              ← 4 份速查表
 ├── assets/
 │   ├── animations/           ← 21 个 SVG 动画（CSS @keyframes / SMIL）
@@ -274,7 +277,7 @@ python3 tools/check_assets.py
 - [x] 21 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS …）
 - [x] 7 张板卡实物结构图 + LQFP48 全引脚图
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
-- [x] 10 个可编译示例 + 4 份速查表
+- [x] 13 个可编译示例 + 4 份速查表（含 bxCAN 与 USB CDC/HID）
 - [x] 每章讲解幻灯（`assets/video/`，脚本可复现的 GIF + 旁白，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
