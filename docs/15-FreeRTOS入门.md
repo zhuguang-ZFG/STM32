@@ -1,5 +1,7 @@
 # 15 FreeRTOS 入门
 
+> English: [FreeRTOS](en/15-freertos.md)
+
 > FreeRTOS 把「一个大循环」拆成多个并发任务，用队列/信号量在任务间传递数据，让复杂项目的时序和逻辑不再互相打架。
 
 <p align="center">

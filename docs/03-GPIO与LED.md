@@ -1,5 +1,7 @@
 # 03 GPIO 与 LED
 
+> English: [GPIO and the LED](en/03-gpio-and-led.md)
+
 > GPIO 是最基础的外设，用它输出电平、读取按键，是一切外设的入口。
 
 <p align="center">

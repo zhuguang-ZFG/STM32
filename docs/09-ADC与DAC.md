@@ -1,5 +1,7 @@
 # 09 ADC 与 DAC
 
+> English: [ADC and DAC](en/09-adc-dac.md)
+
 > ADC 把模拟电压量化成数字量，DAC 把数字量还原成模拟电压，它们是 STM32 连接真实世界的两端。
 
 <p align="center">

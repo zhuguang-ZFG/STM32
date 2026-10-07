@@ -1,5 +1,7 @@
 # 08 SPI 总线
 
+> English: [SPI](en/08-spi.md)
+
 > SPI 用四根线实现高速全双工通信，常用于 Flash、屏幕、传感器。
 
 <p align="center">

@@ -2,6 +2,8 @@
 
 # STM32 学习知识库
 
+> English: [English edition](docs/en/README.md)
+
 **像查手册一样查知识，像看动画一样学原理。**
 
 面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 13 个可编译示例 · 4 份速查表
@@ -281,7 +283,7 @@ python3 tools/check_assets.py
 - [x] 每章讲解幻灯（`assets/video/`，脚本可复现的 GIF + 旁白，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
-- [ ] 英文版（i18n/ 目录）
+- [x] 英文版（[docs/en/](docs/en/README.md)，含章节与四份速查表）
 
 ---
 

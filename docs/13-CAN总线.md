@@ -1,5 +1,7 @@
 # 13 CAN 总线
 
+> English: [CAN](en/13-can.md)
+
 > CAN 用差分信号与无损仲裁实现多节点可靠通信，是汽车与工控领域最经典的总线之一。
 
 <p align="center">

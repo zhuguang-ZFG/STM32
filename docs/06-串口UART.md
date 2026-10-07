@@ -1,5 +1,7 @@
 # 06 串口 UART
 
+> English: [UART](en/06-uart.md)
+
 > UART 是最常用的异步串行通信接口，用于打印日志、连接模块与上位机。
 
 <p align="center">

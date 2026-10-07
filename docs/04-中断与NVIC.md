@@ -1,5 +1,7 @@
 # 04 中断与 NVIC
 
+> English: [Interrupts and the NVIC](en/04-interrupts-nvic.md)
+
 > 中断让 CPU 不必死等外设，事件到来时自动跳转处理，是实时系统的核心机制。
 
 <p align="center">

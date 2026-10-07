@@ -1,5 +1,7 @@
 # 05 定时器与 PWM
 
+> English: [Timers and PWM](en/05-timer-pwm.md)
+
 > 定时器负责精确计时、产生 PWM 和捕获外部信号，是控制类应用的心脏。
 
 <p align="center">

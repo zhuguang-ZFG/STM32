@@ -1,5 +1,7 @@
 # 22 仿真实验：Wokwi 与 Renode
 
+> English: [Wokwi and Renode](en/22-simulation-wokwi-renode.md)
+
 > 没有板子也能把灯点亮、把按键按下去。仿真是预习，不是代替焊接。
 
 <p align="center">

@@ -1,5 +1,7 @@
 # 11 RTC 与看门狗
 
+> English: [RTC and the watchdog](en/11-rtc-watchdog.md)
+
 > RTC 提供掉电仍走时的日历时钟，独立/窗口看门狗保证程序跑飞后能自动复位，是产品可靠性的两大基石。
 
 <p align="center">

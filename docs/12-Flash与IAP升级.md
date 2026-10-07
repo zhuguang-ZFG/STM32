@@ -1,5 +1,7 @@
 # 12 Flash 与 IAP 升级
 
+> English: [Flash and IAP](en/12-flash-iap.md)
+
 > 内部 Flash 存放并可在线擦写程序，IAP（在应用编程）让设备通过串口/CAN 自我升级固件，无需拆机接下载器。
 
 <p align="center">

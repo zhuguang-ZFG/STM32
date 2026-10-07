@@ -1,5 +1,7 @@
 # 14 USB
 
+> English: [USB](en/14-usb.md)
+
 > USB 让 STM32 用一根线同时供电与通信，枚举成功后能变成虚拟串口(CDC)、键盘(HID)或 U 盘(MSC)。
 
 <p align="center">

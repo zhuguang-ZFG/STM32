@@ -1,5 +1,7 @@
 # HAL 速查表
 
+> English: [HAL cheatsheet](../docs/en/cheatsheets/hal.md)
+
 > 常用 HAL 库函数按模块分类。列含义：**函数原型 / 作用 / 常用参数 / 返回值与错误码**。
 > 返回值统一为 `HAL_StatusTypeDef`：`HAL_OK` / `HAL_ERROR` / `HAL_BUSY` / `HAL_TIMEOUT`（详见[错误码与排查速查表](错误码与排查速查表.md)）。
 > 以 STM32F1 HAL 为准；F4 差异在备注中标注。

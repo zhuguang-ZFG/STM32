@@ -1,5 +1,7 @@
 # 10 DMA
 
+> English: [DMA](en/10-dma.md)
+
 > DMA（直接存储器访问）让外设与内存之间的数据自动搬运，CPU 不必逐字节参与，从而把算力留给计算本身。
 
 <p align="center">
