@@ -10,7 +10,7 @@ python3 tools/gen_animations.py     # 21 个 SVG 动画（CSS @keyframes / SMIL�
 python3 tools/gen_boards.py         # 7 张板卡实物结构图
 python3 tools/gen_diagrams.py       # 4 张静态框图
 python3 tools/gen_gifs.py           # 5 个光栅 GIF
-python3 tools/check_assets.py       # 自检：SVG 合法性 + GIF 逐像素回验
+python3 tools/check_assets.py       # 自检：SVG 合法性/超界/死类 + GIF 逐像素回验 + 链接校验
 ```
 
 只生成某一个：
@@ -34,7 +34,7 @@ python3 tools/gen_gifs.py led-blink
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
-| `check_assets.py` | 自检工具：SVG XML 校验、GIF 解码回验、体积告警 |
+| `check_assets.py` | 自检工具：SVG XML 校验、元素超界检测、动画 class 死链检测、GIF 解码逐像素回验、Markdown 链接与图片引用校验、体积告警 |
 
 ## 设计约定
 

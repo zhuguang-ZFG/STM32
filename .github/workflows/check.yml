@@ -1,0 +1,37 @@
+name: 素材与链接自检
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 重新生成全部素材（验证脚本可复现）
+        run: |
+          python3 tools/gen_animations.py
+          python3 tools/gen_boards.py
+          python3 tools/gen_diagrams.py
+          python3 tools/gen_gifs.py
+
+      - name: 确认生成结果与提交内容一致
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::生成结果与仓库内容不一致，请本地运行 make assets 后提交"
+            git --no-pager diff --stat
+            exit 1
+          fi
+
+      - name: 自检（SVG 合法性 / 超界 / 死类 / GIF 逐像素回验 / 链接与图片引用）
+        run: python3 tools/check_assets.py
+
+      - name: 素材体积统计
+        run: make stats
