@@ -181,4 +181,29 @@ HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);   /* HAL 内部会置 MOE */
 
 完整工程见 [`examples/timer-pwm/`](../examples/timer-pwm/)。
 
-<!--MORE-->
+## ⚠️ 常见坑与排查
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| PWM 完全没输出 | TIM1/TIM8 没使能 MOE | `HAL_TIM_PWM_Start` 会置 MOE，或手动 `__HAL_TIM_MOE_ENABLE` |
+| 有波形但占空比不动 | 没调用 `HAL_TIM_PWM_Start` | 启动 PWM 通道 |
+| 改了 CCR 不生效 | 没使能 CCR 预装载 | 设 `oc.OCPreload` 或开 `OCxPE` |
+| 中断只进一次 | 忘了清更新标志 | ISR 里 `__HAL_TIM_CLEAR_FLAG(..., TIM_FLAG_UPDATE)` |
+| ARR 改小后占空比异常 | 只改了 ARR 没同步 CCR | 保证 CCR ≤ ARR，改 ARR 后重设 CCR |
+| PWM 频率差一倍 | 忘了 APB 分频>1 定时器时钟 ×2 | 用实际定时器时钟算 PSC/ARR |
+| 呼吸灯闪跳 | 更新 CCR 时撕裂 | 开 ARR/CCR 预装载，或一次写入 |
+
+## 🧪 动手实验
+
+1. **实验一（PWM 输出）**：TIM3_CH1 输出 1kHz、50% 方波，用示波器/逻辑分析仪确认频率与占空比。
+2. **实验二（呼吸灯）**：按上面代码让占空比 0→100% 往返，观察 LED 渐亮渐灭（对照 `pwm-breath.gif`）。
+3. **实验三（输入捕获）**：把实验一的 PWM 接到另一路输入捕获通道，测量频率与占空比，与设定值比对误差。
+
+## 🔗 相关资源
+
+- 官方手册：**RM0008** 第 14 章（高级定时器 TIM1/8）、第 15 章（通用定时器 TIM2~5）、第 16 章（基本定时器 TIM6/7）
+- 上一篇：[04 中断与NVIC](04-中断与NVIC.md)｜下一篇：[06 串口UART](06-串口UART.md)
+- 相关图：[`assets/animations/timer-pwm.svg`](../assets/animations/timer-pwm.svg)、[`assets/animations/timer-modes.svg`](../assets/animations/timer-modes.svg)、[`assets/gif/pwm-breath.gif`](../assets/gif/pwm-breath.gif)
+- 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
+
+

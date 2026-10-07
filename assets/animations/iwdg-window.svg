@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="看门狗：喂早了、喂晚了都会复位">
+<style>
+@keyframes dec-w{0%{transform:scaleX(1)}100%{transform:scaleX(0.02)}}.dec{animation:dec-w 3s linear infinite;transform-box:fill-box;transform-origin:right center;}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#f87171" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">看门狗：喂早了、喂晚了都会复位</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">独立看门狗（IWDG）用内部 40 kHz 时钟计数，溢出就复位 CPU</text>
+<rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="844" y="33.32" font-size="12" fill="#f87171" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">11 看门狗</text>
+<text x="40" y="96" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位递减计数器（0xFFF → 0）</text>
+<rect x="40" y="108" width="820" height="34" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<rect x="41" y="109" width="818" height="32" fill="#f87171" opacity="0.35" rx="8" class="dec"/>
+<text x="48" y="132" font-size="10" fill="#f8fafc" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xFFF</text>
+<text x="820" y="132" font-size="10" fill="#f8fafc" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0</text>
+<rect x="40" y="160" width="400" height="110" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="186" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正常喂狗</text>
+<text x="58" y="210" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">在计数器归零之前重装（写 0xAAAA）</text>
+<text x="58" y="232" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_IWDG_Refresh(&amp;hiwdg) 放在主循环里</text>
+<text x="58" y="254" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超时公式：T = (4 × 2^PR) × (RLR+1) / 40 kHz</text>
+<rect x="460" y="160" width="400" height="110" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="478" y="186" font-size="12.5" fill="#fb923c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">WWDG 的「窗口」</text>
+<text x="478" y="210" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">喂太早（计数器还大于窗口值）→ 立刻复位</text>
+<text x="478" y="232" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">窗口内喂狗才有效，能发现「跑太快」的异常</text>
+<text x="478" y="254" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">WWDG 时钟来自 PCLK1，精度更高但时间更短</text>
+<rect x="40" y="279" width="3" height="18" fill="#22d3ee" opacity="1"/>
+<text x="52" y="292" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">IWDG 与 WWDG 怎么选</text>
+<rect x="40" y="304" width="820" height="116" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="60" y="326" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600"></text>
+<text x="220" y="326" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">时钟源</text>
+<text x="380" y="326" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">超时范围</text>
+<text x="540" y="326" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">能发现「跑太快」</text>
+<text x="700" y="326" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">适用场景</text>
+<text x="60" y="350" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">IWDG</text>
+<text x="220" y="350" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI 40 kHz</text>
+<text x="380" y="350" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 0.1 ms ~ 26 s</text>
+<text x="540" y="350" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不能</text>
+<text x="700" y="350" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">独立性强，主时钟挂了也能复位</text>
+<text x="60" y="376" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">WWDG</text>
+<text x="220" y="376" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PCLK1 分频</text>
+<text x="380" y="376" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 1 ms ~ 100 ms</text>
+<text x="540" y="376" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">能</text>
+<text x="700" y="376" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">需要严格时间窗口的安全场合</text>
+<text x="60" y="404" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调试建议：把 IWDG 超时设长一点，或调试时先关掉它，否则单步调试必然被复位</text>
+<rect x="40" y="434" width="820" height="106" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="458" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">hiwdg.Instance       = IWDG;</text>
+<text x="56" y="477" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">hiwdg.Init.Prescaler = IWDG_PRESCALER_64;   // 40 kHz / 64 = 625 Hz</text>
+<text x="56" y="496" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">hiwdg.Init.Reload    = 625;                 // 625 / 625 Hz = 1 s 超时</text>
+<text x="56" y="515" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_IWDG_Init(&amp;hiwdg);      // 一旦启动就无法关闭（只能复位）</text>
+<text x="56" y="534" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_IWDG_Refresh(&amp;hiwdg);   // 主循环里定期喂狗</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">喂狗要放在「确认所有任务都跑过一圈」的位置，而不是无脑塞进定时中断里</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
