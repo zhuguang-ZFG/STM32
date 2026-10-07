@@ -151,14 +151,57 @@ def check_svg():
             p = os.path.join(root, f)
             total += 1
             try:
-                xml.dom.minidom.parse(p)
+                tree = xml.dom.minidom.parse(p)
             except Exception as e:            # noqa: BLE001
                 print(f"[FAIL] {p}: {e}")
                 bad += 1
+                continue
+            root_el = tree.documentElement
+            try:
+                w = float(root_el.getAttribute("width"))
+                h = float(root_el.getAttribute("height"))
+            except ValueError:
+                print(f"[FAIL] {p}: 缺少 width/height")
+                bad += 1
+                continue
+            over = _overflow(root_el, w, h)
+            if over:
+                print(f"[WARN] {p}: {len(over)} 个元素超出画布 {w:g}x{h:g}"
+                      f"（示例：{over[0]}）")
             if os.path.getsize(p) > 500 * 1024:
                 print(f"[WARN] {p} 体积过大")
     print(f"SVG 检查完成：{total - bad}/{total} 合法")
     return bad == 0
+
+
+def _num(el, name, default=0.0):
+    try:
+        return float(el.getAttribute(name) or default)
+    except ValueError:
+        return default
+
+
+def _overflow(root_el, w, h, tol=2.0):
+    """找出明显超出画布的元素（自绘图的常见低级错误）。"""
+    out = []
+    for el in root_el.getElementsByTagName("*"):
+        tag = el.tagName
+        if tag in ("rect", "image", "use"):
+            x, y = _num(el, "x"), _num(el, "y")
+            ww, hh = _num(el, "width"), _num(el, "height")
+            if (x < -tol or y < -tol or x + ww > w + tol or y + hh > h + tol):
+                out.append((tag, x, y, ww, hh))
+        elif tag == "text":
+            x, y = _num(el, "x"), _num(el, "y")
+            if x < -tol or y < -tol or x > w + tol or y > h + tol:
+                out.append((tag, x, y))
+        elif tag == "line":
+            xs = (_num(el, "x1"), _num(el, "x2"))
+            ys = (_num(el, "y1"), _num(el, "y2"))
+            if (min(xs) < -tol or max(xs) > w + tol or min(ys) < -tol
+                    or max(ys) > h + tol):
+                out.append((tag, min(xs), min(ys), max(xs), max(ys)))
+    return out
 
 
 def check_gif():
