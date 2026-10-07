@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="620" height="750" viewBox="0 0 620 750" role="img" aria-label="STM32L476RG LQFP64 引脚">
+
+
+<rect x="0" y="0" width="620" height="750" fill="#0b1220"/>
+<rect x="0" y="0" width="620" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="620" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#fbbf24" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32L476RG LQFP64 引脚</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DS10198 Rev 11 · Figure 16，已与 Table 16 的 LQFP64 列核对</text>
+<rect x="557" y="15" width="41" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="577.5" y="33.32" font-size="12" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">引脚图</text>
+<rect x="150" y="228" width="320" height="320" fill="#1b1f28" opacity="1" rx="6" stroke="#39424f" stroke-width="1.5"/>
+<circle cx="162" cy="240" r="4" fill="#5b6472" opacity="1"/>
+<text x="310" y="380" font-size="13" fill="#dfe6f0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STM32L476Rx</text>
+<text x="310" y="402" font-size="10" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LQFP64 · 10 x 10 mm</text>
+<text x="310" y="418" font-size="10" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cortex-M4F · 最高 80 MHz</text>
+<line x1="136" y1="238" x2="150" y2="238" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="241" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<text x="119" y="241" font-size="9" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VBAT</text>
+<line x1="136" y1="258" x2="150" y2="258" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="261" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<text x="119" y="261" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC13</text>
+<line x1="136" y1="278" x2="150" y2="278" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="281" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<text x="119" y="281" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC14-OSC32_IN</text>
+<line x1="136" y1="298" x2="150" y2="298" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="301" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<text x="119" y="301" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC15-OSC32_OUT</text>
+<line x1="136" y1="318" x2="150" y2="318" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="321" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<text x="119" y="321" font-size="9" fill="#fbbf24" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PH0-OSC_IN</text>
+<line x1="136" y1="338" x2="150" y2="338" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="341" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<text x="119" y="341" font-size="9" fill="#fbbf24" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PH1-OSC_OUT</text>
+<line x1="136" y1="358" x2="150" y2="358" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="361" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<text x="119" y="361" font-size="9" fill="#fbbf24" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NRST</text>
+<line x1="136" y1="378" x2="150" y2="378" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="381" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8</text>
+<text x="119" y="381" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC0</text>
+<line x1="136" y1="398" x2="150" y2="398" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="401" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9</text>
+<text x="119" y="401" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC1</text>
+<line x1="136" y1="418" x2="150" y2="418" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="421" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10</text>
+<text x="112" y="421" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC2</text>
+<line x1="136" y1="438" x2="150" y2="438" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="441" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">11</text>
+<text x="112" y="441" font-size="9" fill="#a78bfa" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC3</text>
+<line x1="136" y1="458" x2="150" y2="458" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="461" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12</text>
+<text x="112" y="461" font-size="9" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSSA/VREF-</text>
+<line x1="136" y1="478" x2="150" y2="478" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="481" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">13</text>
+<text x="112" y="481" font-size="9" fill="#f87171" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDDA/VREF+</text>
+<line x1="136" y1="498" x2="150" y2="498" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="501" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14</text>
+<text x="112" y="501" font-size="9" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0</text>
+<line x1="136" y1="518" x2="150" y2="518" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="521" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">15</text>
+<text x="112" y="521" font-size="9" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA1</text>
+<line x1="136" y1="538" x2="150" y2="538" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="132" y="541" font-size="7" fill="#64748b" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">16</text>
+<text x="112" y="541" font-size="9" fill="#22d3ee" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA2</text>
+<line x1="160" y1="548" x2="160" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="160" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">17</text>
+<text x="163" y="582" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 163 582)">PA3</text>
+<line x1="180" y1="548" x2="180" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="180" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">18</text>
+<text x="183" y="582" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 183 582)">VSS</text>
+<line x1="200" y1="548" x2="200" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="200" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">19</text>
+<text x="203" y="582" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 203 582)">VDD</text>
+<line x1="220" y1="548" x2="220" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="220" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">20</text>
+<text x="223" y="582" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 223 582)">PA4</text>
+<line x1="240" y1="548" x2="240" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="240" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">21</text>
+<text x="243" y="582" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 243 582)">PA5</text>
+<line x1="260" y1="548" x2="260" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="260" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">22</text>
+<text x="263" y="582" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 263 582)">PA6</text>
+<line x1="280" y1="548" x2="280" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="280" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">23</text>
+<text x="283" y="582" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 283 582)">PA7</text>
+<line x1="300" y1="548" x2="300" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="300" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24</text>
+<text x="303" y="582" font-size="9" fill="#a78bfa" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 303 582)">PC4</text>
+<line x1="320" y1="548" x2="320" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="320" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">25</text>
+<text x="323" y="582" font-size="9" fill="#a78bfa" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 323 582)">PC5</text>
+<line x1="340" y1="548" x2="340" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="340" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">26</text>
+<text x="343" y="582" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 343 582)">PB0</text>
+<line x1="360" y1="548" x2="360" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="360" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">27</text>
+<text x="363" y="582" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 363 582)">PB1</text>
+<line x1="380" y1="548" x2="380" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="380" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">28</text>
+<text x="383" y="582" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 383 582)">PB2</text>
+<line x1="400" y1="548" x2="400" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="400" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">29</text>
+<text x="403" y="582" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 403 582)">PB10</text>
+<line x1="420" y1="548" x2="420" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="420" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">30</text>
+<text x="423" y="582" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 423 582)">PB11</text>
+<line x1="440" y1="548" x2="440" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="440" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">31</text>
+<text x="443" y="582" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 443 582)">VSS</text>
+<line x1="460" y1="548" x2="460" y2="562" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="460" y="574" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">32</text>
+<text x="463" y="582" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(90 463 582)">VDD</text>
+<line x1="470" y1="538" x2="484" y2="538" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="541" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">33</text>
+<text x="506" y="541" font-size="9" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB12</text>
+<line x1="470" y1="518" x2="484" y2="518" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="521" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">34</text>
+<text x="506" y="521" font-size="9" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB13</text>
+<line x1="470" y1="498" x2="484" y2="498" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="501" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">35</text>
+<text x="506" y="501" font-size="9" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB14</text>
+<line x1="470" y1="478" x2="484" y2="478" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="481" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">36</text>
+<text x="506" y="481" font-size="9" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB15</text>
+<line x1="470" y1="458" x2="484" y2="458" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="461" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">37</text>
+<text x="506" y="461" font-size="9" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC6</text>
+<line x1="470" y1="438" x2="484" y2="438" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="441" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">38</text>
+<text x="506" y="441" font-size="9" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC7</text>
+<line x1="470" y1="418" x2="484" y2="418" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="421" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">39</text>
+<text x="506" y="421" font-size="9" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC8</text>
+<line x1="470" y1="398" x2="484" y2="398" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="401" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">40</text>
+<text x="506" y="401" font-size="9" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC9</text>
+<line x1="470" y1="378" x2="484" y2="378" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="381" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">41</text>
+<text x="506" y="381" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA8</text>
+<line x1="470" y1="358" x2="484" y2="358" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="361" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">42</text>
+<text x="506" y="361" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA9</text>
+<line x1="470" y1="338" x2="484" y2="338" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="341" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">43</text>
+<text x="506" y="341" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA10</text>
+<line x1="470" y1="318" x2="484" y2="318" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="321" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">44</text>
+<text x="506" y="321" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA11</text>
+<line x1="470" y1="298" x2="484" y2="298" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="301" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">45</text>
+<text x="506" y="301" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA12</text>
+<line x1="470" y1="278" x2="484" y2="278" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="281" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">46</text>
+<text x="506" y="281" font-size="9" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA13</text>
+<line x1="470" y1="258" x2="484" y2="258" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="261" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">47</text>
+<text x="506" y="261" font-size="9" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VSS</text>
+<line x1="470" y1="238" x2="484" y2="238" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="488" y="241" font-size="7" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">48</text>
+<text x="506" y="241" font-size="9" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDDUSB</text>
+<line x1="460" y1="214" x2="460" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="460" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">49</text>
+<text x="457" y="198" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 457 198)">PA14</text>
+<line x1="440" y1="214" x2="440" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="440" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">50</text>
+<text x="437" y="198" font-size="9" fill="#22d3ee" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 437 198)">PA15</text>
+<line x1="420" y1="214" x2="420" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="420" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">51</text>
+<text x="417" y="198" font-size="9" fill="#a78bfa" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 417 198)">PC10</text>
+<line x1="400" y1="214" x2="400" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="400" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">52</text>
+<text x="397" y="198" font-size="9" fill="#a78bfa" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 397 198)">PC11</text>
+<line x1="380" y1="214" x2="380" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="380" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">53</text>
+<text x="377" y="198" font-size="9" fill="#a78bfa" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 377 198)">PC12</text>
+<line x1="360" y1="214" x2="360" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="360" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">54</text>
+<text x="357" y="198" font-size="9" fill="#f472b6" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 357 198)">PD2</text>
+<line x1="340" y1="214" x2="340" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="340" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">55</text>
+<text x="337" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 337 198)">PB3</text>
+<line x1="320" y1="214" x2="320" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="320" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">56</text>
+<text x="317" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 317 198)">PB4</text>
+<line x1="300" y1="214" x2="300" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="300" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">57</text>
+<text x="297" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 297 198)">PB5</text>
+<line x1="280" y1="214" x2="280" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="280" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">58</text>
+<text x="277" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 277 198)">PB6</text>
+<line x1="260" y1="214" x2="260" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="260" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">59</text>
+<text x="257" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 257 198)">PB7</text>
+<line x1="240" y1="214" x2="240" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="240" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">60</text>
+<text x="237" y="198" font-size="9" fill="#fbbf24" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 237 198)">BOOT0</text>
+<line x1="220" y1="214" x2="220" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="220" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">61</text>
+<text x="217" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 217 198)">PB8</text>
+<line x1="200" y1="214" x2="200" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="200" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">62</text>
+<text x="197" y="198" font-size="9" fill="#34d399" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 197 198)">PB9</text>
+<line x1="180" y1="214" x2="180" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="180" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">63</text>
+<text x="177" y="198" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 177 198)">VSS</text>
+<line x1="160" y1="214" x2="160" y2="228" stroke="#e2b23c" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
+<text x="160" y="210" font-size="7" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">64</text>
+<text x="157" y="198" font-size="9" fill="#f87171" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" transform="rotate(-90 157 198)">VDD</text>
+<line x1="24" y1="708" x2="596" y2="708" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="732" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DS10198 Rev 11 Figure 16</text>
+<text x="596" y="732" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

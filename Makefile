@@ -17,6 +17,7 @@ animations:
 
 boards:
 	$(PY) tools/gen_boards.py
+	$(PY) tools/gen_pinouts.py
 
 diagrams:
 	$(PY) tools/gen_diagrams.py

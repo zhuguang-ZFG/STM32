@@ -6,6 +6,7 @@
 > ```bash
 > python3 tools/gen_animations.py   # assets/animations/*.svg（SMIL/CSS 动画）
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
+python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
@@ -51,6 +52,9 @@
 | `f103zet6-dev.svg` | 战舰/正点原子风格大板 | STM32F103ZET6 |
 | `pinout-bluepill.svg` | BluePill 双排针引脚全标注图（静态） | STM32F103C8T6 |
 | `peripheral-wiring.svg` | 常用外设接线总览（LED/按键/OLED/传感器） | — |
+| `pinout-stm32g071rb-lqfp64.svg` | G071RB LQFP64 引脚（DS12232 Rev 5 Table 12） | STM32G071RB |
+| `pinout-stm32l476rg-lqfp64.svg` | L476Rx LQFP64 引脚（DS10198 Rev 11 Figure 16） | STM32L476RG |
+| `pinout-stm32h743zi-lqfp144.svg` | H743xI LQFP144 引脚（DS12110 Rev 11 Figure 7） | STM32H743ZI |
 
 ## 三、静态框图 `assets/diagrams/`
 

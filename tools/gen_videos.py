@@ -553,6 +553,60 @@ CHAPTERS = [
             ("quiz", ["A6 IS WHICH?", "PC13 EXTRA LED?", "REPL FILE?"]),
         ],
     },
+    {
+        "id": "23", "slug": "g0-pins", "title": "23 G0 PINS",
+        "narr": [
+            "G071RB 是 LQFP64。左上角第 1 脚是 PC11，不是 F103 那种 VBAT。出处是 DS12232 Rev 5 的 Table 12。",
+            "BOOT0 和 SWCLK 焊在同一只脚 PA14 上。复位后这只脚内部下拉，既是调试时钟，也是启动选择。",
+            "封面特性里有 UCPD，没有 bxCAN，也没有 USB 全速设备。不要在这张图上找 CAN_TX。",
+            "PC13 到 PC15 只能灌大约 3 mA，输出别超过 2 MHz。这颗料不适合用 PC13 点灯。",
+            "口诀：G071 的 R 是 64 只脚，B 是 128 KB。自测：第 1 脚叫什么？USB 外设叫 UCPD 还是 Device FS？",
+        ],
+        "frames": [
+            ("lines", "PIN 1 = PC11", ["LQFP64 G071RB", "NOT VBAT", "DS12232 TBL 12"]),
+            ("cols", "BOOT0", ("F103", ["OWN BOOT0", "SWD FREE"], C.CYAN),
+             ("G071", ["PA14 = SWCLK", "AND BOOT0"], C.AMBER)),
+            ("lines", "NO bxCAN", ["UCPD NOT USB FS", "PA8 = CC1", "PB15 = CC2"]),
+            ("lines", "PC13 IS WEAK", ["ABOUT 3 mA", "MAX 2 MHz", "DO NOT DRIVE LED"]),
+            ("quiz", ["PIN 1 NAME?", "BOOT0 WITH SWCLK?", "USB NAME?"]),
+        ],
+    },
+    {
+        "id": "24", "slug": "l4-pins", "title": "24 L4 PINS",
+        "narr": [
+            "L476 的 LQFP64 第 1 脚回到 VBAT。旁边有独立的 VDDUSB，BOOT0 也不再和 SWCLK 共用。顺序来自 DS10198 Rev 11 Figure 16。",
+            "PA11 和 PA12 同时是 CAN1 和 OTG_FS 的脚。两家只能留一家，另一家换到 PB8、PB9。",
+            "高速晶振在 PH0 和 PH1，不是 F1 那种 PD0、PD1。数脚时不要把 F103 的晶振位置抄过来。",
+            "封面写了 Stop 2 约 1.1 微安、Shutdown 30 纳安。那是家族典型值，不是你这块板的万用表读数。",
+            "口诀：L4 第 1 脚是 VBAT，USB 另有供电脚。自测：PA11 被哪两个外设同时看上？",
+        ],
+        "frames": [
+            ("lines", "PIN 1 = VBAT", ["VDDUSB IS OWN", "BOOT0 IS OWN", "DS10198 FIG 16"]),
+            ("cols", "PA11 / PA12", ("CAN1", ["RX AND TX", "ONE PAIR"], C.AMBER),
+             ("OTG FS", ["DM AND DP", "SAME PINS"], C.CYAN)),
+            ("lines", "HSE ON PH0", ["PH0 OSC_IN", "PH1 OSC_OUT", "NOT PD0 PD1"]),
+            ("lines", "COVER CURRENT", ["STOP2 1.1 uA", "FAMILY TYPICAL", "NOT YOUR METER"]),
+            ("quiz", ["PIN 1 NAME?", "PA11 SHARED?", "HSE ON PH?"]),
+        ],
+    },
+    {
+        "id": "25", "slug": "h7-pins", "title": "25 H7 PINS",
+        "narr": [
+            "H743 的 LQFP144 从左上角的 PE2 开始数。左边向下，底边向右，右边向上，顶边向左。出处是 DS12110 Rev 11 Figure 7。",
+            "图上脚 71 是 VCAP1，脚 106 是 VCAP2。电容值本章不写，封面摘录里没有一条可以单独引用的数字。",
+            "CAN 换成 FDCAN，不再是 F1 的 bxCAN。FDCAN1 仍能放在 PA11、PA12，也能改到 PD0、PD1 或 PB8、PB9。",
+            "电源分成 D1、D2、D3 三个域。USB 有自己的 VDD33USB。本章不写待机电流，避免凭印象填微安。",
+            "口诀：144 脚先找 PE2，两只 VCAP 分开标。自测：第 1 脚叫什么？CAN 控制器叫 bxCAN 还是 FDCAN？",
+        ],
+        "frames": [
+            ("lines", "PIN 1 = PE2", ["LQFP144", "LEFT SIDE DOWN", "DS12110 FIG 7"]),
+            ("lines", "TWO VCAP", ["VCAP1 = PIN 71", "VCAP2 = PIN 106", "NO CAP VALUE"]),
+            ("cols", "CAN NAME", ("F1", ["bxCAN", "PA11 PA12"], C.CYAN),
+             ("H743", ["FDCAN1", "PA11 OR PD0"], C.AMBER)),
+            ("lines", "3 POWER DOMAINS", ["D1  D2  D3", "VDD33USB OWN", "NO uA GUESS"]),
+            ("quiz", ["PIN 1 NAME?", "VCAP2 PIN?", "CAN NAME?"]),
+        ],
+    },
 ]
 
 

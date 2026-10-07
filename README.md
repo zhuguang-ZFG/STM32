@@ -4,9 +4,9 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：22 篇文档 · 21 个原理动画 · 7 张板卡实物结构图 · 6 个光栅动画 · 10 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 10 个可编译示例 · 4 份速查表
 
-[![docs](https://img.shields.io/badge/文档-22_篇-60a5fa?style=flat-square)](docs/)
+[![docs](https://img.shields.io/badge/文档-26_篇-60a5fa?style=flat-square)](docs/)
 [![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
@@ -153,7 +153,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 </details>
 
 <details open>
-<summary><b>实战与工具篇（18 ~ 21）</b></summary>
+<summary><b>实战、仿真与系列引脚（18 ~ 25）</b></summary>
 
 | # | 章节 | 关键词 |
 | --- | --- | --- |
@@ -161,6 +161,10 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 19 | [项目实战合集](docs/19-项目实战合集.md) | 10 个递进项目：蓝牙小车、示波器、数据采集卡… |
 | 20 | [学习资源与工具链](docs/20-学习资源与工具链.md) | 官方手册命名规则 · 中文社区 · 开源固件库 |
 | 21 | [原理图与实物图鉴](docs/21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
+| 22 | [仿真实验 Wokwi 与 Renode](docs/22-仿真实验Wokwi与Renode.md) | 浏览器接线 · Renode 加载 ELF · DMA 模型边界 |
+| 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB LQFP64 · PA14 兼 BOOT0 · 无 bxCAN |
+| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · 封面低功耗典型值 |
+| 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
 
 </details>
 
@@ -199,7 +203,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```text
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
-├── docs/                     ← 22 篇知识文档（含 CONTENT_GUIDE.md 写作规范）
+├── docs/                     ← 00–25 章 + CONTENT_GUIDE.md 写作规范
 ├── examples/                 ← 10 个可编译示例（main.c + README.md）
 ├── cheatsheets/              ← 4 份速查表
 ├── assets/
@@ -273,7 +277,7 @@ python3 tools/check_assets.py
 - [x] 10 个可编译示例 + 4 份速查表
 - [x] 每章讲解幻灯（`assets/video/`，脚本可复现的 GIF + 旁白，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
-- [ ] H7 / G0 / L4 系列的引脚图与低功耗专题
+- [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
 - [ ] 英文版（i18n/ 目录）
 
 ---

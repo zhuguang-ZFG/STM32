@@ -327,6 +327,46 @@ def check_sim():
     return ok
 
 
+def check_pinouts():
+    """H7/G0/L4 引脚图必须在，且页脚带上数据手册编号。"""
+    ok = True
+    expect = {
+        "pinout-stm32g071rb-lqfp64.svg": ("DS12232", "PC11", "G071"),
+        "pinout-stm32l476rg-lqfp64.svg": ("DS10198", "VBAT", "L476"),
+        "pinout-stm32h743zi-lqfp144.svg": ("DS12110", "PE2", "H743"),
+    }
+    boards = os.path.join(ROOT, "assets", "boards")
+    for name, needles in expect.items():
+        path = os.path.join(boards, name)
+        if not os.path.isfile(path):
+            print(f"[FAIL] 缺少引脚图 {name}")
+            ok = False
+            continue
+        text = open(path, encoding="utf-8").read()
+        for needle in needles:
+            if needle not in text:
+                print(f"[FAIL] {name} 未包含 {needle}")
+                ok = False
+    docs = os.path.join(ROOT, "docs")
+    for ch, svg in (
+        ("23-", "pinout-stm32g071rb-lqfp64.svg"),
+        ("24-", "pinout-stm32l476rg-lqfp64.svg"),
+        ("25-", "pinout-stm32h743zi-lqfp144.svg"),
+    ):
+        hit = False
+        for fn in os.listdir(docs):
+            if fn.startswith(ch) and fn.endswith(".md"):
+                body = open(os.path.join(docs, fn), encoding="utf-8").read()
+                hit = svg in body
+                break
+        if not hit:
+            print(f"[FAIL] 章节 {ch} 未引用 {svg}")
+            ok = False
+    if ok:
+        print("引脚图检查完成：G0 / L4 / H7 三张，页脚含手册号")
+    return ok
+
+
 def check_links():
     """校验 Markdown 里的相对链接与图片引用是否真实存在。"""
     import re
@@ -365,8 +405,9 @@ if __name__ == "__main__":
     b = check_gif()
     d = check_videos()
     e = check_sim()
+    f = check_pinouts()
     c = check_links()
-    ok = a and b and c and d and e
+    ok = a and b and c and d and e and f
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
     sys.exit(0 if ok else 1)
 
