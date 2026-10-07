@@ -200,6 +200,51 @@ __enable_irq();           /* 开总中断 */
 2. **实验二**：去掉软件消抖，快速按键观察多次翻转；再加上消抖对比。
 3. **实验三（优先级）**：增加第二个定时器中断，设不同抢占优先级，验证高抢占能打断低抢占 ISR。
 
+### 6. NVIC 相关寄存器与函数
+
+| 项目 | 说明 |
+| --- | --- |
+| ISER | 中断使能置位寄存器 |
+| ICER | 中断使能清除寄存器 |
+| ISPR/ICPR | 挂起/解挂 |
+| IPR | 优先级寄存器（每 8 位一个） |
+| `HAL_NVIC_SetPriority` | 设置抢占/子优先级 |
+| `HAL_NVIC_EnableIRQ` | 使能中断 |
+| `HAL_NVIC_SetPriorityGrouping` | 设置分组 |
+
+### 7. SysTick 与 HAL 时基
+
+- `HAL_Init()` 会把 SysTick 配置为 1ms 中断，`HAL_Delay()` 依赖它。
+- SysTick 优先级通常设为最低（`TICK_INT_PRIORITY`），避免打断业务中断。
+- 若在 ISR 中调用 `HAL_Delay()`，且该 ISR 优先级高于 SysTick，则计数不前进 → 死等。
+
+### 8. 中断嵌套与优先级示例
+
+```c
+/* 高抢占（数值小）可打断低抢占；同抢占不可打断 */
+HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);   /* 抢占 1 */
+HAL_NVIC_SetPriority(TIM2_IRQn, 2, 0);    /* 抢占 2，会被 EXTI0 打断 */
+HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+HAL_NVIC_EnableIRQ(TIM2_IRQn);
+```
+
+### 9. 优先级分组选择建议
+
+| 场景 | 建议分组 |
+| --- | --- |
+| 不用 RTOS | GROUP_4（全抢占） |
+| 用 FreeRTOS | GROUP_4（RTOS 要求全抢占） |
+| 需要子优先级仲裁 | GROUP_2 |
+
+### 10. 中断响应开销与优化机制
+
+| 机制 | 说明 |
+| --- | --- |
+| 硬件入栈 | 自动保存 8 个寄存器，约 12 个时钟周期 |
+| 尾链（Tail-chaining） | 连续中断省去出栈再入栈 |
+| 晚到（Late-arriving） | 入栈期间更高优先级抢占 |
+| 优化建议 | ISR 尽量短，耗时操作交给主循环 |
+
 ## 🔗 相关资源
 
 - 官方手册：**RM0008** 第 10 章（中断与事件 EXTI）、第 9.2.7 节（AFIO_EXTICR）；《Cortex-M3 权威指南》（NVIC/异常处理）

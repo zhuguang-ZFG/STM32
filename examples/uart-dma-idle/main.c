@@ -71,7 +71,6 @@ static void error_handler(void);
 static void   rb_init(ring_buf_t *rb);
 static void   rb_push(ring_buf_t *rb, const uint8_t *data, uint16_t len);
 static int    rb_pop(ring_buf_t *rb, uint8_t *out);
-static uint16_t rb_used(const ring_buf_t *rb);
 
 static void   cmd_process_char(char c);
 static void   cmd_execute(char *line);
@@ -112,11 +111,6 @@ static void rb_init(ring_buf_t *rb)
 {
     rb->head = 0U;
     rb->tail = 0U;
-}
-
-static uint16_t rb_used(const ring_buf_t *rb)
-{
-    return (uint16_t)((rb->head - rb->tail) & (RING_BUF_SIZE - 1U));
 }
 
 static void rb_push(ring_buf_t *rb, const uint8_t *data, uint16_t len)

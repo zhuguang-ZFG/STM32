@@ -199,6 +199,50 @@ HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);   /* HAL 内部会置 MOE */
 2. **实验二（呼吸灯）**：按上面代码让占空比 0→100% 往返，观察 LED 渐亮渐灭（对照 `pwm-breath.gif`）。
 3. **实验三（输入捕获）**：把实验一的 PWM 接到另一路输入捕获通道，测量频率与占空比，与设定值比对误差。
 
+### 6. 互补输出与死区（高级定时器）
+
+| 概念 | 说明 |
+| --- | --- |
+| 互补输出 | CH1/CH1N 一对，用于 H 桥 |
+| 死区 | 上下桥臂切换时插入的空白时间，防止直通短路 |
+| 刹车 | BKIN 触发立即关输出 |
+| MOE | 主输出使能，必须置位才有输出 |
+
+```c
+/* 配置死区与互补输出 */
+TIM_BreakDeadTimeConfigTypeDef bd = {0};
+bd.OffStateRunMode = TIM_OSSR_ENABLE;
+bd.DeadTime        = 0x10;        /* 死区时间 */
+bd.BreakState      = TIM_BREAK_DISABLE;
+HAL_TIMEx_ConfigBreakDeadTime(&htim1, &bd);
+```
+
+### 7. 定时器中断实例（1Hz 翻转 LED）
+
+```c
+/* TIM2 每 1s 触发更新中断翻转 PC13 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM2)
+    {
+        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    }
+}
+
+/* 启动：用 Start_IT 而非 Start */
+HAL_TIM_Base_Start_IT(&htim2);
+```
+
+### 8. 定时器选型速查
+
+| 需求 | 推荐定时器 |
+| --- | --- |
+| 通用定时 | TIM2~5 |
+| 高级 PWM（互补） | TIM1/TIM8 |
+| 仅做时基 | TIM6/TIM7 |
+| 32 位长定时 | TIM2/TIM5（F4） |
+| 系统节拍 | SysTick |
+
 ## 🔗 相关资源
 
 - 官方手册：**RM0008** 第 14 章（高级定时器 TIM1/8）、第 15 章（通用定时器 TIM2~5）、第 16 章（基本定时器 TIM6/7）
