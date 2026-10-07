@@ -28,7 +28,7 @@ def gpio_blink() -> Svg:
     # 引脚
     s.text(232, 152, "PA5", size=12, mono=True, fill=T.TEXT, anchor="middle")
     s.line(212, 170, 268, 170, stroke=T.AMBER, sw=2.6, cls="wire")
-    s.circle(212, 170, 4, fill=T.AMBER, cls="cur")
+    s.circle(212, 170, 4, fill=T.AMBER)
 
     # 电阻
     s.rect(268, 158, 56, 24, fill=T.BG2, stroke=T.AMBER, rx=4)

@@ -25,14 +25,14 @@
 <text x="137" y="226" font-size="10.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">推挽 / 50 MHz</text>
 <text x="232" y="152" font-size="12" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5</text>
 <line x1="212" y1="170" x2="268" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1" class="wire"/>
-<circle cx="212" cy="170" r="4" fill="#fbbf24" opacity="1" class="cur"/>
+<circle cx="212" cy="170" r="4" fill="#fbbf24" opacity="1"/>
 <rect x="268" y="158" width="56" height="24" fill="#0e1626" opacity="1" rx="4" stroke="#fbbf24" stroke-width="1.5"/>
 <text x="296" y="176" font-size="11" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">330Ω</text>
 <line x1="324" y1="170" x2="352" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1"/>
 <polygon points="352.00,158.00 352.00,182.00 376.00,170.00" fill="#f87171" opacity="1" stroke="#f87171" stroke-width="1.5"/>
 <line x1="376" y1="156" x2="376" y2="184" stroke="#f87171" stroke-width="3" stroke-linecap="round" opacity="1"/>
 <line x1="376" y1="170" x2="410" y2="170" stroke="#fbbf24" stroke-width="2.6" stroke-linecap="round" opacity="1"/>
-<circle cx="392" cy="118" r="27.3" fill="#f87171" opacity="0.16" class="led-glow"/>
+<circle cx="392" cy="118" r="27.3" fill="#f87171" opacity="0.16"/>
 <circle cx="392" cy="118" r="13" fill="#f87171" opacity="1" stroke="#00000066" stroke-width="1" class="led"/>
 <circle cx="388.1" cy="113.45" r="3.64" fill="#ffffff" opacity="0.7"/>
 <text x="392" y="96" font-size="11" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED 亮 / 灭</text>

@@ -164,6 +164,10 @@ def check_svg():
                 print(f"[FAIL] {p}: 缺少 width/height")
                 bad += 1
                 continue
+            dead = _dead_classes(open(p, encoding="utf-8").read())
+            if dead:
+                print(f"[WARN] {p}: {len(dead)} 个 class 没有对应样式"
+                      f"（动画不会播放）：{sorted(dead)[:4]}")
             over = _overflow(root_el, w, h)
             if over:
                 print(f"[WARN] {p}: {len(over)} 个元素超出画布 {w:g}x{h:g}"
@@ -172,6 +176,17 @@ def check_svg():
                 print(f"[WARN] {p} 体积过大")
     print(f"SVG 检查完成：{total - bad}/{total} 合法")
     return bad == 0
+
+
+def _dead_classes(svg_text):
+    """找出「用了 class 但 <style> 里没定义」的元素 —— 这类动画不会播放。"""
+    import re
+    style = "".join(re.findall(r"<style>(.*?)</style>", svg_text, flags=re.S))
+    defined = set(re.findall(r"\.([A-Za-z0-9_-]+)", style))
+    used = set()
+    for attr in re.findall(r'class="([^"]+)"', svg_text):
+        used.update(attr.split())
+    return {c for c in used if c not in defined}
 
 
 def _num(el, name, default=0.0):

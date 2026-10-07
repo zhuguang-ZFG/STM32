@@ -253,8 +253,7 @@ class Svg:
 
     def led(self, cx, cy, r=12, color=T.RED, cls=None, glow=True) -> "Svg":
         if glow:
-            self.circle(cx, cy, r * 2.1, fill=color, opacity=0.16,
-                        cls=(cls + "-glow") if cls else None)
+            self.circle(cx, cy, r * 2.1, fill=color, opacity=0.16)
         self.circle(cx, cy, r, fill=color, stroke="#00000066", sw=1, cls=cls)
         self.circle(cx - r * 0.3, cy - r * 0.35, r * 0.28, fill="#ffffff",
                     opacity=0.7)
