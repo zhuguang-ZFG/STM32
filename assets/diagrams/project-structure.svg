@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="一个标准 STM32 工程长什么样">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一个标准 STM32 工程长什么样</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CubeMX + Makefile / Keil / CubeIDE 生成的结构基本一致</text>
+<rect x="828" y="15" width="50" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="853" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">工程结构</text>
+<text x="40" y="92" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">MyProject/</text>
+<line x1="54" y1="113" x2="54" y2="123" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="118" x2="64" y2="118" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="118" font-size="11.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MyProject.ioc</text>
+<line x1="54" y1="139" x2="54" y2="149" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="144" x2="64" y2="144" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="144" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Core/</text>
+<line x1="82" y1="165" x2="82" y2="175" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="170" x2="92" y2="170" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="170" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Inc/  main.h · stm32f1xx_hal_conf.h · stm32f1xx_it.h</text>
+<line x1="82" y1="191" x2="82" y2="201" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="196" x2="92" y2="196" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="196" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Src/  main.c · stm32f1xx_it.c · stm32f1xx_hal_msp.c</text>
+<line x1="54" y1="217" x2="54" y2="227" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="222" x2="64" y2="222" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="222" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Drivers/</text>
+<line x1="82" y1="243" x2="82" y2="253" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="248" x2="92" y2="248" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="248" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">STM32F1xx_HAL_Driver/  HAL 外设驱动（只读，别改）</text>
+<line x1="82" y1="269" x2="82" y2="279" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="274" x2="92" y2="274" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="274" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CMSIS/  Device/ 内核定义与 startup_stm32f103xb.s</text>
+<line x1="54" y1="295" x2="54" y2="305" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="300" x2="64" y2="300" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="300" font-size="11.5" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Middlewares/</text>
+<line x1="82" y1="321" x2="82" y2="331" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="326" x2="92" y2="326" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="326" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Third_Party/FreeRTOS / FatFs / USB_Device …</text>
+<line x1="54" y1="347" x2="54" y2="357" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="352" x2="64" y2="352" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="352" font-size="11.5" fill="#f472b6" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">BSP/  （自己写）</text>
+<line x1="82" y1="373" x2="82" y2="383" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="378" x2="92" y2="378" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="378" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">led.c/.h · key.c/.h · oled.c/.h · delay.c/.h</text>
+<line x1="54" y1="399" x2="54" y2="409" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="404" x2="64" y2="404" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="404" font-size="11.5" fill="#fb923c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">MDK-ARM/ 或 build/</text>
+<line x1="82" y1="425" x2="82" y2="435" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="82" y1="430" x2="92" y2="430" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="96" y="430" font-size="11.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">链接脚本 STM32F103C8Tx_FLASH.ld、输出 .hex/.bin</text>
+<line x1="54" y1="451" x2="54" y2="461" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="456" x2="64" y2="456" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="456" font-size="11.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Makefile / CMakeLists.txt</text>
+<line x1="54" y1="477" x2="54" y2="487" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="482" x2="64" y2="482" stroke="#243354" stroke-width="1.2" stroke-linecap="round" opacity="1"/>
+<text x="68" y="482" font-size="11.5" fill="#64748b" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">.mxproject · .gitignore · README.md</text>
+<rect x="520" y="92" width="340" height="210" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="538" y="118" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">四条铁律</text>
+<text x="538" y="142" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1. 不要修改 Drivers/ 里的 HAL 源码</text>
+<text x="538" y="161" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   （升级 CubeMX 时会被覆盖）</text>
+<text x="538" y="180" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2. 自己的外设驱动统一放 BSP/</text>
+<text x="538" y="199" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3. 中断服务函数只写在 it.c 里</text>
+<text x="538" y="218" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4. .ioc 要提交到 Git，build/ 不要</text>
+<rect x="520" y="316" width="340" height="136" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="538" y="342" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">编译产物</text>
+<text x="538" y="366" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">.elf</text>
+<text x="578" y="366" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">带调试信息，用于下载/仿真</text>
+<text x="538" y="388" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">.hex</text>
+<text x="578" y="388" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Intel HEX，文本格式，含地址</text>
+<text x="538" y="410" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">.bin</text>
+<text x="578" y="410" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">纯二进制，用于 IAP/OTA</text>
+<text x="538" y="432" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">.map</text>
+<text x="578" y="432" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">各段大小，排查 RAM 溢出必看</text>
+<rect x="40" y="480" width="820" height="50" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="510" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">小技巧：把 BSP 目录做成 Git 子模块或独立仓库，换芯片时只需改初始化，业务代码可整体复用。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完整示例见 examples/ 目录，每个示例都给出 CubeMX 配置要点与文件清单</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

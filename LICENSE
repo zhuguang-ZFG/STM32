@@ -1,0 +1,54 @@
+# 许可协议（License）
+
+本仓库采用**双许可**，按内容类型区分：
+
+## 1. 代码部分 —— MIT License
+
+适用范围：`examples/`、`tools/`、以及文档中出现的代码片段。
+
+```
+MIT License
+
+Copyright (c) 2024-2025 zhuguang-ZFG and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## 2. 文档与图片部分 —— CC BY 4.0
+
+适用范围：`docs/`、`assets/`（含 `animations/`、`boards/`、`diagrams/`、`gif/`）。
+
+你可以自由地共享（复制、发行）与演绎（修改、二次创作），包括商业用途，
+但必须**署名**（注明来源仓库与作者），并标明是否做了修改。
+
+署名示例：
+
+> 图片/内容来自 [STM32 学习知识库](https://github.com/zhuguang-ZFG/STM32)（作者 zhuguang-ZFG），
+> 采用 CC BY 4.0 许可，本文对原图做了 XX 修改。
+
+## 3. 关于图片的重要说明
+
+本仓库**所有插图都是作者用代码自绘的矢量图（SVG）或程序生成的光栅动画（GIF）**，
+不是厂商实拍照片，也不是厂商官方资料的截图或再分发。生成脚本在 `tools/` 目录，
+可完全复现。想查看实拍照片与官方原理图，请前往 ST 官方网站（链接见第 21 章）。
+
+## 4. 商标声明
+
+STM32、STM32Cube、Nucleo、Discovery、Keil、IAR、FreeRTOS 等名称与标识归各自
+权利人所有。本仓库仅用于学习与技术交流，与上述公司无隶属或合作关系。

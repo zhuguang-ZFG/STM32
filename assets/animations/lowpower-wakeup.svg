@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="三种低功耗模式与唤醒方式">
+<style>
+@keyframes pw0-f{0%,100%{opacity:.35}50%{opacity:1}}.pw0{animation:pw0-f 2.4s ease-in-out infinite 0.0s;}
+@keyframes pw1-f{0%,100%{opacity:.35}50%{opacity:1}}.pw1{animation:pw1-f 2.4s ease-in-out infinite 0.4s;}
+@keyframes pw2-f{0%,100%{opacity:.35}50%{opacity:1}}.pw2{animation:pw2-f 2.4s ease-in-out infinite 0.8s;}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三种低功耗模式与唤醒方式</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32 的低功耗只有三件事：关时钟、关电源域、留一个唤醒源</text>
+<rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="844" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16 低功耗</text>
+<rect x="40" y="92" width="820" height="84" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="92" width="5" height="84" fill="#34d399" opacity="1" rx="3"/>
+<text x="60" y="118" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Sleep 睡眠</text>
+<text x="60" y="140" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">WFI / WFE</text>
+<text x="60" y="160" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">内核停，外设继续跑。不要记成固定的 1 mA</text>
+<text x="470" y="118" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">唤醒源：任意中断</text>
+<text x="470" y="140" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">典型电流：外设时钟还在，电流仍高（查 DS）</text>
+<rect x="470" y="150" width="120" height="12" fill="#0e1626" opacity="1" rx="3" stroke="#243354" stroke-width="1.5"/>
+<rect x="471" y="151" width="108" height="10" fill="#34d399" opacity="1" rx="3" class="pw0"/>
+<rect x="40" y="188" width="820" height="84" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="188" width="5" height="84" fill="#fbbf24" opacity="1" rx="3"/>
+<text x="60" y="214" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 停止</text>
+<text x="60" y="236" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_PWR_EnterSTOPMode</text>
+<text x="60" y="256" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SRAM 与 RTC 保持，唤醒后必须重配时钟</text>
+<text x="470" y="214" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">唤醒源：EXTI / RTC / 唤醒脚</text>
+<text x="470" y="236" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">典型电流：主时钟停振后降到 µA 级（查 DS）</text>
+<rect x="470" y="246" width="120" height="12" fill="#0e1626" opacity="1" rx="3" stroke="#243354" stroke-width="1.5"/>
+<rect x="471" y="247" width="66" height="10" fill="#fbbf24" opacity="1" rx="3" class="pw1"/>
+<rect x="40" y="284" width="820" height="84" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="284" width="5" height="84" fill="#f87171" opacity="1" rx="3"/>
+<text x="60" y="310" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Standby 待机</text>
+<text x="60" y="332" font-size="10.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_PWR_EnterSTANDBYMode</text>
+<text x="60" y="352" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只留备份域，唤醒等于复位，程序从头跑</text>
+<text x="470" y="310" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">唤醒源：WKUP 脚 / RTC 闹钟</text>
+<text x="470" y="332" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">典型电流：F103 DS 典型值约 2 µA（非本仓库实测）</text>
+<rect x="470" y="342" width="120" height="12" fill="#0e1626" opacity="1" rx="3" stroke="#243354" stroke-width="1.5"/>
+<rect x="471" y="343" width="24" height="10" fill="#f87171" opacity="1" rx="3" class="pw2"/>
+<rect x="40" y="384" width="400" height="148" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="410" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">省电的五个动作（按收益排序）</text>
+<text x="58" y="434" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 未使用的 GPIO 配成模拟输入或输出低</text>
+<text x="58" y="454" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② 关掉用不到的外设时钟（__HAL_RCC_*_CLK_DISABLE）</text>
+<text x="58" y="474" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ 降低主频：功耗与频率基本成正比</text>
+<text x="58" y="494" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ 用 DMA 搬数据，减少 CPU 唤醒次数</text>
+<text x="58" y="514" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑤ 传感器分时供电（用 MOSFET 控制电源）</text>
+<rect x="460" y="384" width="400" height="148" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="478" y="410" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">进入 Stop 模式的代码骨架</text>
+<text x="478" y="434" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_SuspendTick();          // 先停 SysTick</text>
+<text x="478" y="452" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON,</text>
+<text x="478" y="470" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">                       PWR_STOPENTRY_WFI);</text>
+<text x="478" y="488" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SystemClock_Config();       // 唤醒后必须重配时钟！</text>
+<text x="478" y="506" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_ResumeTick();</text>
+<rect x="40" y="534" width="820" height="22" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="550" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">测功耗要用 µA 档万用表串在电源上；USB 调试器反向供电会污染测量结果</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 唤醒后 HSE 需要重新起振，务必重新调用 SystemClock_Config()，否则串口全乱码</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

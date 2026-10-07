@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="定时器怎么产生 PWM">
+<style>
+@keyframes cnt-tx{0%{transform:translateX(0px)}100%{transform:translateX(812px)}}
+.cnt{animation:cnt-tx 3s linear infinite 0s;}
+@keyframes duty-w{0%,100%{transform:scaleX(0.08)}50%{transform:scaleX(1)}}.duty{animation:duty-w 4s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">定时器怎么产生 PWM</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CNT 从 0 数到 ARR；CNT &lt; CCR 输出高，CNT ≥ CCR 输出低</text>
+<rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="844" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">05 定时器</text>
+<text x="40" y="100" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CNT 计数（ARR = 999）</text>
+<rect x="40" y="112" width="820" height="30" fill="#0e1626" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<rect x="40" y="112" width="250" height="30" fill="#22d3ee" opacity="0.25" rx="6"/>
+<line x1="290" y1="104" x2="290" y2="148" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="290" y="164" font-size="11" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CCR = 300（比较点）</text>
+<rect x="44" y="116" width="20" height="22" fill="#22d3ee" opacity="1" rx="4" class="cnt"/>
+<text x="54" y="132" font-size="9" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CNT</text>
+<text x="40" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0</text>
+<text x="204" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">199</text>
+<text x="368" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">399</text>
+<text x="532" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">599</text>
+<text x="696" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">799</text>
+<text x="860" y="186" font-size="10" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">999</text>
+<text x="40" y="216" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">比较结果</text>
+<rect x="40" y="228" width="400" height="46" fill="#111c31" opacity="1" rx="8" stroke="#34d399" stroke-width="1.5"/>
+<text x="58" y="256" font-size="12" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CNT &lt; CCR → 输出高电平（点亮）</text>
+<rect x="460" y="228" width="400" height="46" fill="#111c31" opacity="1" rx="8" stroke="#f87171" stroke-width="1.5"/>
+<text x="478" y="256" font-size="12" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CNT ≥ CCR → 输出低电平（熄灭）</text>
+<text x="40" y="306" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">输出波形：CCR = 300 的定格（30%）</text>
+<line x1="40" y1="318" x2="40" y2="388" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
+<line x1="40" y1="388" x2="600" y2="388" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
+<path d="M 40 331.92 L 40.00 331.92 L 54.00 331.92 L 54.00 331.92 L 68.00 331.92 L 68.00 331.92 L 82.00 331.92 L 82.00 374.08 L 96.00 374.08 L 96.00 374.08 L 110.00 374.08 L 110.00 374.08 L 124.00 374.08 L 124.00 374.08 L 138.00 374.08 L 138.00 374.08 L 152.00 374.08 L 152.00 374.08 L 166.00 374.08 L 166.00 374.08 L 180.00 374.08 L 180.00 331.92 L 194.00 331.92 L 194.00 331.92 L 208.00 331.92 L 208.00 331.92 L 222.00 331.92 L 222.00 374.08 L 236.00 374.08 L 236.00 374.08 L 250.00 374.08 L 250.00 374.08 L 264.00 374.08 L 264.00 374.08 L 278.00 374.08 L 278.00 374.08 L 292.00 374.08 L 292.00 374.08 L 306.00 374.08 L 306.00 374.08 L 320.00 374.08 L 320.00 331.92 L 334.00 331.92 L 334.00 331.92 L 348.00 331.92 L 348.00 331.92 L 362.00 331.92 L 362.00 374.08 L 376.00 374.08 L 376.00 374.08 L 390.00 374.08 L 390.00 374.08 L 404.00 374.08 L 404.00 374.08 L 418.00 374.08 L 418.00 374.08 L 432.00 374.08 L 432.00 374.08 L 446.00 374.08 L 446.00 374.08 L 460.00 374.08 L 460.00 331.92 L 474.00 331.92 L 474.00 331.92 L 488.00 331.92 L 488.00 331.92 L 502.00 331.92 L 502.00 374.08 L 516.00 374.08 L 516.00 374.08 L 530.00 374.08 L 530.00 374.08 L 544.00 374.08 L 544.00 374.08 L 558.00 374.08 L 558.00 374.08 L 572.00 374.08 L 572.00 374.08 L 586.00 374.08 L 586.00 374.08 L 600.00 374.08" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#22d3ee" stroke-width="2.4"/>
+<rect x="620" y="318" width="240" height="70" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="638" y="340" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">呼吸色条（不是左边那一帧）</text>
+<rect x="638" y="350" width="200" height="18" fill="#0e1626" opacity="1" rx="4" stroke="#243354" stroke-width="1.5"/>
+<rect x="639" y="351" width="200" height="16" fill="#22d3ee" opacity="1" rx="3" class="duty"/>
+<text x="638" y="382" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">色条 8%→100%：示意不断改 CCR</text>
+<rect x="40" y="395" width="3" height="18" fill="#34d399" opacity="1"/>
+<text x="52" y="408" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">公式（72 MHz 已是定时器时钟）</text>
+<rect x="40" y="420" width="820" height="132" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="56" y="444" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">定时器时钟 = APB 时钟 ×2（预分频 &gt;1 时）     // APB1=36 → 定时器 72 MHz</text>
+<text x="56" y="466" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">计数时钟：fCK_CNT = 72 MHz / (PSC + 1)         // PSC = 71 → 1 MHz</text>
+<text x="56" y="488" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PWM 频率：fPWM   = fCK_CNT / (ARR + 1)         // ARR = 999 → 1 kHz</text>
+<text x="56" y="510" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">占空比  ：Duty   = CCR / (ARR + 1)             // CCR = 300 → 30%</text>
+<text x="56" y="532" font-size="12.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">溢出时间：T      = (ARR + 1)(PSC + 1) / 72 MHz // 1 ms 定时中断</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">频率与分辨率互相矛盾：ARR 越大分辨率越高但频率越低（见 05 章权衡表）</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
