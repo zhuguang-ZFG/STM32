@@ -16,12 +16,24 @@
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
+[![wechat](https://img.shields.io/badge/公众号-SIAI小宇宙-07C160?style=flat-square&logo=wechat&logoColor=white)](#公众号连载版)
 
 <img src="assets/animations/gpio-blink.svg" width="860" alt="GPIO 推挽输出点亮 LED 动画演示">
 
 <sub>▲ 动画：GPIO 推挽输出的电流路径与电平波形同步演示（想看大图可直接打开 SVG 文件）</sub>
 
 </div>
+
+---
+
+> ### 📣 公众号连载版
+>
+> 本教程正在微信公众号「**SIAI小宇宙**」同步连载：26 章**图文 + 每章配套讲解视频** + 速查表，
+> 手机随时翻。微信搜索「**SIAI小宇宙**」或扫文末二维码关注，关注后回复「**资料**」直达本仓库。
+>
+> （图文版针对手机阅读重新排版，动画与代码块已适配微信公众号渲染。）
+
+<p align="center"><img src="assets/boards/wechat-mp-qr.png" width="220" alt="公众号 SIAI小宇宙 二维码"></p>
 
 ---
 
