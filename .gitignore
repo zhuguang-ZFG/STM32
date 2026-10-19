@@ -7,3 +7,9 @@ build/
 *.bin
 MDK-ARM/*/
 .mxproject
+
+# 本地运营产物（不随仓库发布）
+.omp/
+.playwright-mcp/
+wechat-mp/
+final-videos/
