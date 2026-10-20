@@ -25,7 +25,9 @@ gen_narrated.py —— 把每章讲解做成带中文配音和字幕的 MP4。
 from __future__ import annotations
 
 import asyncio
+import glob
 import io
+import math
 import os
 import shutil
 import subprocess
@@ -35,18 +37,25 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from narration import CHAPTERS  # noqa: E402
+from importlib import import_module  # noqa: E402
 
-W, H = 960, 540
-BAND_TOP = 448
+CHAPTERS = import_module(os.environ.get("NARRATED_MODULE", "narration")).CHAPTERS  # noqa: E402
+
+SCALE = float(os.environ.get("NARRATED_SCALE", "1"))
+if SCALE < 1:
+    raise ValueError("NARRATED_SCALE 必须 >= 1")
+W, H = int(round(960 * SCALE)), int(round(540 * SCALE))
+BAND_TOP = int(round(448 * SCALE))
 PAD = 0.35
 VOICE = "zh-CN-XiaoxiaoNeural"
 RATE = "-6%"
-FONT = "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc"
+FONT = os.environ.get("NARRATED_FONT", "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc")
 
 # 校准自本机 edge-tts 7.2.8、rate=-8% 的一次短句（51 字 / 13.27 秒）。
 # --check 只用它估算，成片时长以 ffprobe 为准。
 EST_SEC_PER_CHAR = 13.27 / 51
+MIN_SEC = float(os.environ.get("NARRATED_MIN_SEC", "120"))
+MAX_SEC = float(os.environ.get("NARRATED_MAX_SEC", "240"))
 
 BG = (23, 26, 36)
 BG2 = (32, 37, 54)
@@ -67,7 +76,7 @@ VOICE_NOTE = (
 
 def _font(size):
     from PIL import ImageFont
-    return ImageFont.truetype(FONT, size, index=0)
+    return ImageFont.truetype(FONT, int(round(size * SCALE)), index=0)
 
 
 def _width(text, font):
@@ -95,10 +104,204 @@ def wrap_text(text, font, max_w, max_lines, what):
     return lines
 
 
-def render_card(ch, seg, index):
-    """画一帧。字幕画在底部深色带里，正文停在带子上方。"""
+_BADGES = (
+    ("口诀", "口诀", AMBER),
+    ("最常忘", "坑", (255, 120, 96)),
+    ("坑", "坑", (255, 120, 96)),
+    ("下一集", "下集", CYAN),
+    ("合上书", "自测", (150, 210, 255)),
+    ("收尾", "完", (150, 255, 190)),
+)
+
+
+def _badge_for(head):
+    for key, label, col in _BADGES:
+        if key in head:
+            return label, col
+    return None
+
+
+def _mascot(draw, cx, cy, mood, t, k=1.0):
+    """小芯：一块带眼睛的芯片。mood = calm / happy / worried；t 驱动轻微上下浮动。"""
+    sc = lambda v: int(round(v * k))
+    lw = max(1, sc(3))
+    cy += int(3 * math.sin(t * 6.28318))
+    draw.line((cx, cy - sc(44), cx, cy - sc(56)), fill=CYAN, width=lw)
+    draw.ellipse((cx - sc(5), cy - sc(64), cx + sc(5), cy - sc(54)), fill=AMBER)
+    draw.rounded_rectangle((cx - sc(44), cy - sc(38), cx + sc(44), cy + sc(38)), radius=sc(10),
+                           fill=(38, 44, 62), outline=CYAN, width=lw)
+    for i in range(4):
+        yy = cy - sc(24) + i * sc(16)
+        draw.line((cx - sc(44), yy, cx - sc(56), yy), fill=LINE, width=lw)
+        draw.line((cx + sc(44), yy, cx + sc(56), yy), fill=LINE, width=lw)
+    ex = sc(18)
+    if mood == "happy":
+        draw.arc((cx - ex - sc(11), cy - sc(20), cx - ex + sc(11), cy + sc(2)), 200, 340, fill=TEXT, width=lw)
+        draw.arc((cx + ex - sc(11), cy - sc(20), cx + ex + sc(11), cy + sc(2)), 200, 340, fill=TEXT, width=lw)
+        draw.arc((cx - sc(11), cy + sc(8), cx + sc(11), cy + sc(24)), 0, 180, fill=AMBER, width=lw)
+    elif mood == "worried":
+        draw.line((cx - ex - sc(9), cy - sc(12), cx - ex + sc(9), cy - sc(2)), fill=TEXT, width=lw)
+        draw.line((cx + ex - sc(9), cy - sc(12), cx + ex + sc(9), cy - sc(2)), fill=TEXT, width=lw)
+        draw.arc((cx - sc(10), cy + sc(18), cx + sc(10), cy + sc(30)), 200, 340, fill=MUTED, width=lw)
+    else:
+        draw.ellipse((cx - ex - sc(6), cy - sc(10), cx - ex + sc(6), cy + sc(2)), fill=TEXT)
+        draw.ellipse((cx + ex - sc(6), cy - sc(10), cx + ex + sc(6), cy + sc(2)), fill=TEXT)
+        draw.line((cx - sc(9), cy + sc(16), cx + sc(9), cy + sc(16)), fill=MUTED, width=lw)
+
+
+_HD_BG_CACHE = {}
+
+
+def _hd_background():
+    """缓存的深色渐变底 + 极浅斜线纹理；避免逐帧重复绘制。"""
+    from PIL import Image, ImageDraw
+    key = (W, H)
+    if key not in _HD_BG_CACHE:
+        img = Image.new("RGB", (W, H), BG)
+        d = ImageDraw.Draw(img)
+        bottom = (29, 34, 48)
+        for yy in range(H):
+            q = yy / max(1, H - 1)
+            col = tuple(int(round(BG[i] * (1 - q) + bottom[i] * q)) for i in range(3))
+            d.line((0, yy, W, yy), fill=col)
+        step = max(80, int(round(120 * SCALE)))
+        for xx in range(-H, W + H, step):
+            d.line((xx, 0, xx + H, H), fill=(26, 31, 44), width=max(1, int(SCALE)))
+        _HD_BG_CACHE[key] = img
+    return _HD_BG_CACHE[key].copy()
+
+
+def _render_card_hd(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
+    """高清版式：更大正文/字幕、要点面板、真实逐条高亮、更大的小芯。"""
+    from PIL import Image, ImageDraw
+    sc = lambda v: int(round(v * SCALE))
+    t = 0.0 if t < 0 else (1.0 if t > 1 else float(t))
+    img = _hd_background()
+    draw = ImageDraw.Draw(img)
+    draw.rectangle((0, 0, W, sc(46)), fill=BG2)
+    draw.rectangle((0, 0, sc(6), sc(46)), fill=CYAN)
+    title_font = _font(20)
+    title = f"{ch['id']}  {ch['title']}"
+    wrap_text(title, title_font, W - sc(120), 1, f"{ch['id']} 标题")
+    draw.text((sc(16), sc(12)), title, font=title_font, fill=TEXT)
+    step = f"{index}/{len(ch['segments'])}"
+    sw = _width(step, title_font)
+    draw.text((W - sc(16) - sw, sc(12)), step, font=title_font, fill=CYAN)
+
+    head_font = _font(34)
+    head_lines = wrap_text(seg["head"], head_font, W - sc(64), 1, f"{ch['id']} 卡标题")
+    slide = int(sc(18) * (1.0 - min(1.0, t / 0.4)))
+    typed = head_lines[0]
+    if t < 0.6:
+        typed = typed[: max(1, int(len(typed) * t / 0.6))]
+    draw.text((sc(32) - slide, sc(62)), typed, font=head_font, fill=AMBER)
+    bar_w = int(sc(96) * min(1.0, t / 0.55))
+    if bar_w > 0:
+        draw.rectangle((sc(32), sc(100), sc(32) + bar_w, sc(103)), fill=CYAN)
+    badge = _badge_for(seg["head"])
+    if badge:
+        label, col = badge
+        bf = _font(18)
+        bw = _width(label, bf) + sc(22)
+        draw.rounded_rectangle((W - sc(34) - bw, sc(56), W - sc(34), sc(90)), radius=sc(8), fill=col)
+        draw.text((W - sc(34) - bw + sc(11), sc(60)), label, font=bf, fill=BG)
+
+    if seg.get("svg"):
+        shot = _svg_png(seg["svg"])
+        box = (sc(32), sc(108), W - sc(32), BAND_TOP - sc(36))
+        pasted = _fit(shot, box[2] - box[0], box[3] - box[1])
+        zoom = 1.0 + 0.04 * max(0.0, min(1.0, u))
+        if zoom > 1.001:
+            zw, zh = int(pasted.width * zoom), int(pasted.height * zoom)
+            z = pasted.resize((zw, zh), Image.Resampling.LANCZOS)
+            ox, oy = (zw - pasted.width) // 2, (zh - pasted.height) // 2
+            pasted = z.crop((ox, oy, ox + pasted.width, oy + pasted.height))
+        px = box[0] + (box[2] - box[0] - pasted.width) // 2
+        py = box[1] + (box[3] - box[1] - pasted.height) // 2
+        if t >= 1.0:
+            img.paste(pasted, (px, py))
+        else:
+            region = img.crop((px, py, px + pasted.width, py + pasted.height))
+            img.paste(Image.blend(region, pasted, max(0.0, (t - 0.35) / 0.65)), (px, py))
+    else:
+        lines = seg["lines"]
+        body_font = _font(27)
+        panel_x0, panel_x1 = sc(28), W - sc(270)
+        panel_y0 = sc(132)
+        max_text_w = panel_x1 - panel_x0 - sc(48)
+        wrapped = [wrap_text(txt, body_font, max_text_w, 1, f"{ch['id']} 要点")[0]
+                   for txt in lines]
+        panel_y1 = panel_y0 + sc(48) + len(lines) * sc(58)
+        if panel_y1 > BAND_TOP - sc(24):
+            raise ValueError(f"{ch['id']} 要点面板叠进字幕带：{seg['head']}")
+        shift = max(0, min(sc(30), (BAND_TOP - sc(24) - panel_y1) // 2))
+        panel_y0 += shift
+        panel_y1 += shift
+        draw.rounded_rectangle((panel_x0, panel_y0, panel_x1, panel_y1), radius=sc(18),
+                               fill=(27, 32, 46), outline=LINE, width=max(1, sc(1)))
+        y = panel_y0 + sc(24)
+        for i, txt in enumerate(lines):
+            shown = t >= 1.0 or t >= 0.22 + 0.24 * i
+            if shown:
+                dx = int(sc(12) * (1.0 - min(1.0, max(0.0, (t - (0.22 + 0.24 * i)) / 0.3))))
+                active = line is None or i == line
+                if line is not None and active:
+                    draw.rounded_rectangle((panel_x0 + sc(12), y - sc(6),
+                                            panel_x1 - sc(12), y + sc(42)),
+                                           radius=sc(8), fill=(35, 47, 60))
+                    draw.rectangle((panel_x0 + sc(12), y - sc(6),
+                                    panel_x0 + sc(16), y + sc(42)), fill=CYAN)
+                draw.text((panel_x0 + sc(28) + dx, y), wrapped[i], font=body_font,
+                          fill=TEXT if active else MUTED)
+            y += sc(58)
+        mood = ("happy" if (badge and badge[0] == "口诀")
+                else "worried" if (badge and badge[0] == "坑") else "calm")
+        _mascot(draw, W - sc(165), sc(275) + shift, mood, u, k=1.4 * SCALE)
+
+    draw.rectangle((0, BAND_TOP, W, H), fill=BAND)
+    draw.line((0, BAND_TOP, W, BAND_TOP), fill=LINE, width=max(1, sc(2)))
+    sub_font = None
+    sub_lines = None
+    for sub_size in (23, 22, 21, 20, 19, 18):
+        candidate = _font(sub_size)
+        try:
+            sub_lines = wrap_text(seg["say"], candidate, W - sc(64), 2, f"{ch['id']} 字幕")
+            sub_font = candidate
+            break
+        except ValueError:
+            continue
+    if sub_font is None:
+        sub_lines = wrap_text(seg["say"], _font(18), W - sc(64), 2, f"{ch['id']} 字幕")
+        sub_font = _font(18)
+    sy = BAND_TOP + sc(14)
+    for txt in sub_lines:
+        draw.text((sc(32), sy), txt, font=sub_font, fill=TEXT)
+        sy += sc(30)
+    note_font = _font(14)
+    note = "程序生成画面 · 不是实拍"
+    nw = _width(note, note_font)
+    draw.text((W - sc(16) - nw, BAND_TOP - sc(20)), note, font=note_font, fill=MUTED)
+    if gprog is not None:
+        gp = 0.0 if gprog < 0 else (1.0 if gprog > 1 else float(gprog))
+        draw.rectangle((0, H - sc(4), W, H), fill=BG2)
+        if gp > 0:
+            draw.rectangle((0, H - sc(4), int(W * gp), H), fill=CYAN)
+    return img
+
+
+def render_card(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
+    """画一帧。字幕画在底部深色带里，正文停在带子上方。
+
+    t      —— 入场进度（0→1）：卡标题从左滑入、要点逐条出现、插图渐显、青条扫过；
+    line   —— 当前正在讲第几条要点（其余条变淡），None 表示不高亮；
+    gprog  —— 整集进度（0→1），画在最底部一条细进度条。
+    t=1、line=None 就是完整帧（海报用它）。
+    """
+    if SCALE != 1:
+        return _render_card_hd(ch, seg, index, t, gprog, line, u)
     from PIL import Image, ImageDraw
 
+    t = 0.0 if t < 0 else (1.0 if t > 1 else float(t))
     img = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img)
     draw.rectangle((0, 0, W, 46), fill=BG2)
@@ -113,25 +316,56 @@ def render_card(ch, seg, index):
 
     head_font = _font(32)
     head_lines = wrap_text(seg["head"], head_font, W - 64, 1, f"{ch['id']} 卡标题")
-    draw.text((32, 62), head_lines[0], font=head_font, fill=AMBER)
+    slide = int(18 * (1.0 - min(1.0, t / 0.4)))
+    typed = head_lines[0]
+    if t < 0.6:
+        typed = typed[: max(1, int(len(typed) * t / 0.6))]      # 打字机式出现
+    draw.text((32 - slide, 62), typed, font=head_font, fill=AMBER)
+    bar_w = int(96 * min(1.0, t / 0.55))
+    if bar_w > 0:
+        draw.rectangle((32, 100, 32 + bar_w, 103), fill=CYAN)
+    badge = _badge_for(seg["head"])
+    if badge:
+        label, col = badge
+        bf = _font(18)
+        bw = _width(label, bf) + 22
+        draw.rounded_rectangle((W - 34 - bw, 56, W - 34, 90), radius=8, fill=col)
+        draw.text((W - 34 - bw + 11, 60), label, font=bf, fill=BG)
 
     y = 112
     if seg.get("svg"):
         shot = _svg_png(seg["svg"])
         box = (32, 108, W - 32, BAND_TOP - 36)
         pasted = _fit(shot, box[2] - box[0], box[3] - box[1])
+        zoom = 1.0 + 0.04 * max(0.0, min(1.0, u))               # 缓慢推近
+        if zoom > 1.001:
+            zw, zh = int(pasted.width * zoom), int(pasted.height * zoom)
+            z = pasted.resize((zw, zh), Image.Resampling.LANCZOS)
+            ox, oy = (zw - pasted.width) // 2, (zh - pasted.height) // 2
+            pasted = z.crop((ox, oy, ox + pasted.width, oy + pasted.height))
         px = box[0] + (box[2] - box[0] - pasted.width) // 2
         py = box[1] + (box[3] - box[1] - pasted.height) // 2
-        img.paste(pasted, (px, py))
+        if t >= 1.0:
+            img.paste(pasted, (px, py))
+        else:
+            region = img.crop((px, py, px + pasted.width, py + pasted.height))
+            img.paste(Image.blend(region, pasted, max(0.0, (t - 0.35) / 0.65)), (px, py))
         y = BAND_TOP - 8
     else:
         body_font = _font(26)
-        for line in seg["lines"]:
+        for i, line in enumerate(seg["lines"]):
+            shown = t >= 1.0 or t >= 0.22 + 0.24 * i
             wrapped = wrap_text(line, body_font, W - 80, 1, f"{ch['id']} 要点")
             if y + 34 > BAND_TOP - 16:
                 raise ValueError(f"{ch['id']} 要点叠进字幕带：{line}")
-            draw.text((40, y), wrapped[0], font=body_font, fill=TEXT)
+            if shown:
+                dx = int(12 * (1.0 - min(1.0, max(0.0, (t - (0.22 + 0.24 * i)) / 0.3))))
+                col = TEXT if (line is None or i == line) else MUTED
+                draw.text((40 + dx, y), wrapped[0], font=body_font, fill=col)
             y += 40
+        mood = ("happy" if (badge and badge[0] == "口诀")
+                else "worried" if (badge and badge[0] == "坑") else "calm")
+        _mascot(draw, W - 132, 248, mood, u)
 
     draw.rectangle((0, BAND_TOP, W, H), fill=BAND)
     draw.line((0, BAND_TOP, W, BAND_TOP), fill=LINE, width=2)
@@ -146,6 +380,11 @@ def render_card(ch, seg, index):
     draw.text((32, 28), "", font=note_font, fill=MUTED)
     nw = _width(note, note_font)
     draw.text((W - 16 - nw, BAND_TOP - 20), note, font=note_font, fill=MUTED)
+    if gprog is not None:
+        gp = 0.0 if gprog < 0 else (1.0 if gprog > 1 else float(gprog))
+        draw.rectangle((0, H - 4, W, H), fill=BG2)
+        if gp > 0:
+            draw.rectangle((0, H - 4, int(W * gp), H), fill=CYAN)
     return img
 
 
@@ -171,23 +410,24 @@ def _svg_png(rel):
     tmp = tempfile.mkdtemp(prefix="stm32svg-")
     html = os.path.join(tmp, "card.html")
     out = os.path.join(tmp, "card.png")
+    rw, rh = int(round(880 * SCALE)), int(round(300 * SCALE))
     # 深色底，避免白边被当成「照片」。SVG 用仓库原文件。
     page = (
         "<!doctype html><meta charset=utf-8><style>"
-        "html,body{margin:0;background:#171a24;width:880px;height:300px;overflow:hidden}"
-        "img{width:880px;height:300px;object-fit:contain}"
+        f"html,body{{margin:0;background:#171a24;width:{rw}px;height:{rh}px;overflow:hidden}}"
+        f"img{{width:{rw}px;height:{rh}px;object-fit:contain}}"
         f"</style><img src='file://{svg}'>"
     )
     open(html, "w", encoding="utf-8").write(page)
     ud = os.path.join(tmp, "chrome")
     cmd = [
-        "google-chrome", "--headless=new", "--disable-gpu", "--no-sandbox",
+        os.environ.get("NARRATED_CHROME", "google-chrome"), "--headless=new", "--disable-gpu", "--no-sandbox",
         "--hide-scrollbars", "--no-first-run", "--disable-extensions",
         "--force-device-scale-factor=1",
         "--allow-file-access-from-files",
         f"--user-data-dir={ud}",
         "--virtual-time-budget=8000",
-        "--window-size=880,300",
+        f"--window-size={rw},{rh}",
         f"--screenshot={out}",
         "file://" + html,
     ]
@@ -258,7 +498,7 @@ def check_layout(chapters):
                     "say": seg["say"],
                 }
                 render_card(ch, probe, i)
-            flag = "ok" if 120 <= est <= 240 else "SHORT" if est < 120 else "LONG"
+            flag = "ok" if MIN_SEC <= est <= MAX_SEC else "SHORT" if est < MIN_SEC else "LONG"
             print(f"[{flag}] {chapter_name(ch)}  {len(ch['segments'])} 段  "
                   f"{chars} 字  估算 {est:.0f}s")
             if flag != "ok":
@@ -322,22 +562,34 @@ async def _tts(text, dest, sem):
     raise RuntimeError(f"配音失败：{last}")
 
 
-def _segment_mp4(png, mp3, dest, dur):
+FPS = int(os.environ.get("NARRATED_FPS", "8"))  # 每段整段逐帧（入场 1.5 秒走完，其余时间缓慢推进）
+CRF = os.environ.get("NARRATED_CRF", "30")
+REVEAL = 1.5
+
+
+def _segment_mp4_anim(work, idx, mp3, dest, dur):
+    """整段逐帧 + 音频，一次 ffmpeg 合成（帧序列 f{idx:02d}_%04d.png）。"""
+    pattern = os.path.join(work, f"f{idx:02d}_%04d.png")
     subprocess.check_call(
         [
             "ffmpeg", "-y", "-loglevel", "error",
-            "-loop", "1", "-framerate", "8", "-i", png,
+            "-framerate", str(FPS), "-i", pattern,
             "-i", mp3,
             "-filter_complex", f"[1:a]apad=pad_dur={PAD}[a]",
             "-map", "0:v", "-map", "[a]",
             "-t", f"{dur:.3f}",
-            "-c:v", "libx264", "-preset", "veryfast", "-tune", "stillimage",
-            "-crf", "32", "-pix_fmt", "yuv420p", "-r", "8",
+            "-c:v", "libx264", "-preset", "veryfast", "-crf", CRF,
+            "-pix_fmt", "yuv420p", "-r", str(FPS),
             "-c:a", "aac", "-b:a", "40k", "-ac", "1", "-ar", "44100",
             dest,
         ],
         stdout=subprocess.DEVNULL,
     )
+    for f in glob.glob(os.path.join(work, f"f{idx:02d}_*.png")):
+        try:
+            os.remove(f)
+        except OSError:
+            pass
 
 
 def _concat(segs, dest):
@@ -372,17 +624,28 @@ async def speak_one(ch, out_dir):
         jobs.append(_tts(seg["say"], dest, sem))
     await asyncio.gather(*jobs)
 
+    durs = [_probe_duration(m) + PAD for m in mp3s]
+    total = sum(durs) or 1.0
     cues = []
     cursor = 0.0
     segs = []
     for i, seg in enumerate(ch["segments"]):
-        audio = _probe_duration(mp3s[i])
-        dur = audio + PAD
+        dur = durs[i]
         png = os.path.join(work, f"{i:02d}.png")
-        card = render_card(ch, seg, i + 1)
-        card.save(png, "PNG")
+        render_card(ch, seg, i + 1).save(png, "PNG")   # t=1 完整帧（也是海报形态）
+        n_frames = max(2, int(round(dur * FPS)))
+        nline = max(1, len(seg.get("lines") or []))
+        for k in range(n_frames):
+            elapsed = dur * (k / float(n_frames - 1))
+            tk = min(1.0, elapsed / REVEAL)
+            uk = min(1.0, elapsed / max(0.001, dur))
+            line_k = min(nline - 1, int(max(0.0, (uk - 0.12)) * nline / 0.88))
+            render_card(ch, seg, i + 1, t=tk, u=uk,
+                        gprog=(cursor + elapsed) / total,
+                        line=(line_k if uk > 0.10 else None)).save(
+                os.path.join(work, f"f{i:02d}_{k + 1:04d}.png"), "PNG")
         mp4 = os.path.join(work, f"{i:02d}.mp4")
-        _segment_mp4(png, mp3s[i], mp4, dur)
+        _segment_mp4_anim(work, i, mp3s[i], mp4, dur)
         cues.append({"start": cursor, "end": cursor + dur, "say": seg["say"]})
         cursor += dur
         segs.append(mp4)
@@ -397,12 +660,12 @@ async def speak_one(ch, out_dir):
         os.remove(gif)
     got = _probe_duration(final)
     size = os.path.getsize(final)
-    flag = "ok" if 120 <= got <= 240 else "RANGE"
+    flag = "ok" if MIN_SEC <= got <= MAX_SEC else "RANGE"
     print(f"[{flag}] {name}.mp4  {got:.1f}s  {size / 1048576:.2f} MB  "
           f"字幕 {len(cues)} 条")
     shutil.rmtree(work, ignore_errors=True)
-    if not 120 <= got <= 240:
-        raise SystemExit(f"{name} 时长 {got:.1f}s 不在 2–4 分钟")
+    if not MIN_SEC <= got <= MAX_SEC:
+        raise SystemExit(f"{name} 时长 {got:.1f}s 不在 {MIN_SEC / 60:g}–{MAX_SEC / 60:g} 分钟")
     if size > 12 * 1024 * 1024:
         raise SystemExit(f"{name} 超过 12 MB，不适合直接进 git")
     return got, size
@@ -499,7 +762,7 @@ def patch_docs(root, chapters):
 def main(argv):
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.dirname(here)
-    out_dir = os.path.join(root, "assets", "video")
+    out_dir = os.environ.get("NARRATED_OUT", os.path.join(root, "assets", "video"))
     os.makedirs(out_dir, exist_ok=True)
     chapters = selected(argv[1:])
     if "--check" in argv:
