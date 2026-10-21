@@ -31,6 +31,10 @@
 > 本教程正在微信公众号「**SIAI小宇宙**」同步连载：26 章**图文 + 每章配套讲解视频** + 速查表，
 > 手机随时翻。微信搜索「**SIAI小宇宙**」或扫文末二维码关注，关注后回复「**资料**」直达本仓库。
 >
+> 另外在公众号上单独发了一套「**按报错原文查**」竖版图解（No target / Flash 下载失败 /
+> 串口乱码 / 烧完变砖 等），手机上照着现象查比翻 Markdown 快——入口见下面
+> [「卡住了？按报错原文查」](#卡住了按报错原文查)表格的「手机版图解」列。
+>
 > （图文版针对手机阅读重新排版，动画与代码块已适配微信公众号渲染。）
 
 <p align="center"><img src="assets/boards/wechat-mp-qr.png" width="220" alt="公众号 SIAI小宇宙 二维码"></p>
@@ -54,16 +58,18 @@
 
 新手跑不起来的 90% 都落在这几类。找到你屏幕上那句原话：
 
-| 你看到的现象 | 真正的原因 | 看这里 |
-| --- | --- | --- |
-| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) |
-| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) |
-| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) |
-| 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [17 调试与性能优化](docs/17-调试与性能优化.md) |
-| I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [07 I2C 总线](docs/07-I2C总线.md) |
-| 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [04 中断与 NVIC](docs/04-中断与NVIC.md) |
+| 你看到的现象 | 真正的原因 | 看这里 | 手机版图解 |
+| --- | --- | --- | --- |
+| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) | [📱 三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
+| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
+| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [📱 三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
+| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
+| 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [17 调试与性能优化](docs/17-调试与性能优化.md) | — |
+| I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [07 I2C 总线](docs/07-I2C总线.md) | — |
+| 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [04 中断与 NVIC](docs/04-中断与NVIC.md) | — |
 
 > 完整 30+ 条「现象 / 原因 / 解决」在 [18 常见问题 FAQ](docs/18-常见问题FAQ.md)。
+> 「手机版图解」是公众号上逐条排过版的竖版长图，手机上照着查比翻 Markdown 快。
 
 ## 快速导航
 
