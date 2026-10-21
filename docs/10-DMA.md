@@ -249,3 +249,5 @@ uint16_t got  = ADC_BUF_SIZE - left;
 - 应用笔记 AN4031《Using the STM32F2/F4 DMA controller》。
 - 本仓库相关章节：第 09 章 ADC+DMA、第 17 章 DWT 计时。
 - 配图：`../assets/animations/dma-circular.svg`、`../assets/gif/dma-ring.gif`（均为作者自绘/程序生成）。
+
+- 📱 手机阅读版：[第 10 章 · DMA（公众号图文）](https://mp.weixin.qq.com/s/KaH4f8tRlMPmGxHsF6qmTQ)

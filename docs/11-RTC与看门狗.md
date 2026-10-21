@@ -259,3 +259,5 @@ IWDG 一旦 `HAL_IWDG_Init` 成功就停不下来，只有复位能关。选项�
 - 数据手册 DS：LSE 起振条件、LSI 频率范围、VBAT 工作电压。
 - 应用笔记 AN4759《Using the hardware real-time clock (RTC) in STM32》。
 - 配图：`../assets/animations/iwdg-window.svg`（作者自绘矢量图）。
+
+- 📱 手机阅读版：[第 11 章 · RTC与看门狗（公众号图文）](https://mp.weixin.qq.com/s/MSNJ-MdVM15opQi3W20V1g)

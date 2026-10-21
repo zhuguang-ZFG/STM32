@@ -290,3 +290,6 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 - 数据手册 DS：USB 电气参数、PA11/PA12 复用。
 - 配图：`../assets/animations/usb-enumeration.svg`（作者自绘矢量图）。
 
+
+
+- 📱 手机阅读版：[第 14 章 · USB（公众号图文）](https://mp.weixin.qq.com/s/iSVv3wSvz9Rl4LOVxeOfdg)

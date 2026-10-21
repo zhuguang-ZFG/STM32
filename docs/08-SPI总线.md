@@ -274,5 +274,6 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 
 - 官方手册：**RM0008** 第 25 章（SPI）；W25Q64、ST7789 数据手册
 - 上一篇：[07 I2C总线](07-I2C总线.md)
+- 📱 手机阅读版：[第 08 章 · SPI总线（公众号图文）](https://mp.weixin.qq.com/s/FOR_DIzh4qdzByi0qAI1Jg)
 - 相关图：[`assets/animations/spi-transfer.svg`](../assets/animations/spi-transfer.svg)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。

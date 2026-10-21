@@ -312,6 +312,7 @@ HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_RESET);
 
 - 官方手册：**RM0008** 第 27 章（USART）；**DS5319** USART 引脚复用表
 - 上一篇：[05 定时器与PWM](05-定时器与PWM.md)｜下一篇：[07 I2C总线](07-I2C总线.md)
+- 📱 手机阅读版：[第 06 章 · 串口UART（公众号图文）](https://mp.weixin.qq.com/s/_hR9mWbVJJp8_d05jBnA9w)
 - 相关图：[`assets/animations/uart-frame.svg`](../assets/animations/uart-frame.svg)、[`assets/gif/uart-bits.gif`](../assets/gif/uart-bits.gif)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
 

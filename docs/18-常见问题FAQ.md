@@ -270,3 +270,6 @@
 - 相关章节：第 01 章开发环境搭建、第 17 章调试与性能优化、第 20 章学习资源与工具链。
 - 配图：`../assets/animations/toolchain-flow.svg`（作者自绘矢量图）。
 
+
+
+- 📱 手机阅读版：[第 18 章 · 常见问题FAQ（公众号图文）](https://mp.weixin.qq.com/s/sbFdlK69-8L85F2KzWdTjg)

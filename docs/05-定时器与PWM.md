@@ -305,6 +305,7 @@ HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
 
 - 官方手册：**RM0008** 第 14 章（高级定时器 TIM1/8）、第 15 章（通用定时器 TIM2~5）、第 16 章（基本定时器 TIM6/7）
 - 上一篇：[04 中断与NVIC](04-中断与NVIC.md)｜下一篇：[06 串口UART](06-串口UART.md)
+- 📱 手机阅读版：[第 05 章 · 定时器与PWM（公众号图文）](https://mp.weixin.qq.com/s/Jutp6HD4eo8bV0QcXWJ_pw)
 - 相关图：[`assets/animations/timer-pwm.svg`](../assets/animations/timer-pwm.svg)、[`assets/animations/timer-modes.svg`](../assets/animations/timer-modes.svg)、[`assets/gif/pwm-breath.gif`](../assets/gif/pwm-breath.gif)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
 

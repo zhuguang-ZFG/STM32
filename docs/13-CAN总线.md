@@ -253,3 +253,5 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM：数够 128×11 个隐性位后自动�
 - 收发器数据手册：TJA1050、SN65HVD230。
 - 配图：`../assets/animations/can-arbitration.svg`（作者自绘矢量图）。
 - 可编译示例：[examples/can-bxcan](../examples/can-bxcan/)（环回、双节点、过滤器、ABOM 与软件恢复）。BluePill 上请重映射到 PB8/PB9，不要占用板载 USB 的 PA11/PA12。
+
+- 📱 手机阅读版：[第 13 章 · CAN总线（公众号图文）](https://mp.weixin.qq.com/s/KvjVL15tp4MOqeR_5rxUbA)

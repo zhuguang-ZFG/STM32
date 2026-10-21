@@ -304,6 +304,7 @@ GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 
 - 官方手册：**RM0008** 第 9 章（GPIO）及第 9.2 节（寄存器描述）；**DS5319** 引脚定义
 - 上一篇：[02 芯片选型与存储器时钟](02-芯片选型与存储器时钟.md)｜下一篇：[04 中断与NVIC](04-中断与NVIC.md)
+- 📱 手机阅读版：[第 03 章 · GPIO与LED（公众号图文）](https://mp.weixin.qq.com/s/G8szO2UDufAHY9vJYDpYFA)
 - 相关图：[`assets/animations/gpio-blink.svg`](../assets/animations/gpio-blink.svg)、[`assets/gif/led-blink.gif`](../assets/gif/led-blink.gif)
 - 实物与资料：ST 官网 Nucleo 板原理图（LED 接法参考）
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。

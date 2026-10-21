@@ -356,3 +356,6 @@ for (;;)
 - 本仓库示例：[`examples/freertos-task/`](../examples/freertos-task/)（含 CubeMX 配置与完整 `main.c`）。
 - 相关章节：第 04 章中断与 NVIC、第 17 章调试与性能优化（DWT 计时）。
 - 配图：`../assets/animations/freertos-scheduler.svg`（作者自绘矢量图）。
+
+
+- 📱 手机阅读版：[第 15 章 · FreeRTOS入门（公众号图文）](https://mp.weixin.qq.com/s/uw4_JRCRLkRFQ1EoezUXHg)

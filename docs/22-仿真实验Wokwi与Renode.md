@@ -129,4 +129,5 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
 - 板脚定义原文：[wokwi-boards `board.json`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json)
 - Renode 平台原文：`platforms/cpus/stm32f103.repl`（`usart1` @ `0x40013800`，`gpioPortC` @ `0x40011000`）
 - 示例索引：[examples/README.md](../examples/README.md)
+- 📱 手机阅读版：[第 22 章 · 仿真实验Wokwi与Renode（公众号图文）](https://mp.weixin.qq.com/s/l4umxuun79wKPeHBQtq6rQ)
 - 免责声明：这里没有仿真器截图。接线以 JSON 为准，能力以两家文档的支持表为准。

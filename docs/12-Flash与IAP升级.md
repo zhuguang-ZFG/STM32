@@ -299,3 +299,5 @@ HAL_FLASHEx_OBGetConfig(&ob);   /* 看 RDPLevel / WRP，先别写 */
 - 应用笔记 AN2557《STM32F10xxx in-application programming using the USART》。
 - Cortex-M3/M4 权威指南：向量表、`SCB->VTOR`、异常模型。
 - 配图：`../assets/animations/flash-iap.svg`（作者自绘矢量图）。
+
+- 📱 手机阅读版：[第 12 章 · Flash与IAP升级（公众号图文）](https://mp.weixin.qq.com/s/_pvTj84j-zOem8Iawpqiyw)

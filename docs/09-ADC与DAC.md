@@ -260,3 +260,5 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 约 VREF/2 */
 - 数据手册 DS5319：ADC 引脚、采样时间与源阻抗。
 - 示例：[`examples/adc-dma/`](../examples/adc-dma/)。
 - 配图：[`assets/animations/adc-sar.svg`](../assets/animations/adc-sar.svg)、[`assets/gif/sar-adc.gif`](../assets/gif/sar-adc.gif)（作者自绘 / 程序生成，不是实拍）。
+
+- 📱 手机阅读版：[第 09 章 · ADC与DAC（公众号图文）](https://mp.weixin.qq.com/s/GCSYHfF66I5Qr88pK4rXIA)
