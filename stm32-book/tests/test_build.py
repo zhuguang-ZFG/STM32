@@ -277,10 +277,17 @@ class BookBuildContractTests(unittest.TestCase):
             document.new_page()  # chapter 01 opening
             toc = document[1]
             toc.insert_text((50, 50), "目录与分部目标", fontname="china-s", fontsize=12)
-            toc.insert_text((50, 82), "00 系统", fontname="china-s", fontsize=10)
-            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(45, 66, 240, 88), "page": 2})
-            toc.insert_text((320, 82), "01 下一章", fontname="china-s", fontsize=10)
-            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(315, 66, 510, 88), "page": 4})
+            toc.insert_text(
+                (50, 82),
+                "第一部分 很长的全宽目录标题必须为右侧页码保留空间",
+                fontname="china-s",
+                fontsize=12,
+            )
+            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(45, 66, 520, 88), "page": 3})
+            toc.insert_text((70, 116), "00 系统", fontname="china-s", fontsize=8)
+            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(65, 100, 250, 122), "page": 2})
+            toc.insert_text((325, 116), "01 下一章", fontname="china-s", fontsize=8)
+            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(320, 100, 510, 122), "page": 4})
             document.set_toc([[1, "00 系统", 3], [1, "01 下一章", 5]])
             document.save(raw)
             document.close()
@@ -294,9 +301,19 @@ class BookBuildContractTests(unittest.TestCase):
             finally:
                 stamped.close()
 
+        heading_reference_words = [
+            word for word in toc_words
+            if word[4] == "3" and 70 < word[1] < 100
+        ]
+        self.assertEqual(1, len(heading_reference_words))
+        self.assertGreater(
+            heading_reference_words[0][0],
+            500,
+            "full-width TOC headings must keep page references in the page gutter",
+        )
         page_reference_words = [
             word for word in toc_words
-            if word[4] in {"2", "4"} and 70 < word[1] < 100
+            if word[4] in {"2", "4"} and 104 < word[1] < 135
         ]
         self.assertEqual({"2", "4"}, {word[4] for word in page_reference_words})
         self.assertGreater(
