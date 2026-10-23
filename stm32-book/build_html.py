@@ -675,7 +675,7 @@ def _pdf_running_sections(document) -> list[tuple[int, str]]:
 
 
 def _stamp_toc_page_references(document, fitz) -> None:
-    """Right-align physical page references beside Chrome's internal TOC links."""
+    """Right-align physical page references in each rendered TOC column."""
     in_contents = False
     for page in document:
         text = page.get_text()
@@ -692,16 +692,27 @@ def _stamp_toc_page_references(document, fitz) -> None:
             in_contents = False
             continue
 
-        right = page.rect.width - 42
-        for link in links:
+        link_rects = [(link, fitz.Rect(link["from"])) for link in links]
+        midpoint = page.rect.width / 2
+        has_two_columns = (
+            any(rect.x0 < midpoint for _link, rect in link_rects)
+            and any(rect.x0 >= midpoint for _link, rect in link_rects)
+        )
+        page_right = page.rect.width - 42
+        left_column_right = midpoint - 18
+        for link, link_rect in link_rects:
             destination = link.get("page", -1)
             if destination < 1:  # cover has no printed page number
                 continue
             label = str(destination)
             width = fitz.get_text_length(label, fontname="helv", fontsize=8)
-            link_rect = fitz.Rect(link["from"])
+            column_right = (
+                left_column_right
+                if has_two_columns and link_rect.x0 < midpoint
+                else page_right
+            )
             page.insert_text(
-                fitz.Point(right - width, link_rect.y1 - 2),
+                fitz.Point(column_right - width, link_rect.y1 - 2),
                 label,
                 fontname="helv",
                 fontsize=8,
