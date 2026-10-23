@@ -62,10 +62,11 @@ class BookBuildContractTests(unittest.TestCase):
         cls.builder = load_builder()
         cls.manifest = json.loads((BOOK_DIR / "manifest.json").read_text(encoding="utf-8"))
 
-    def test_manifest_covers_exactly_the_27_source_chapters(self) -> None:
+    def test_manifest_covers_exactly_the_28_source_chapters(self) -> None:
         self.builder.validate_manifest(self.manifest)
         files = [name for part in self.manifest["parts"] for name in part["files"]]
         expected = [path.name for path in sorted((BOOK_DIR.parent / "docs").glob("[0-2][0-9]-*.md"))]
+        self.assertEqual(28, len(expected))
         self.assertEqual(expected, files)
         self.assertEqual(set(expected), set(self.manifest["chapter_guides"]))
         for name, guide in self.manifest["chapter_guides"].items():
@@ -82,8 +83,8 @@ class BookBuildContractTests(unittest.TestCase):
 
         parsed = BookHTMLParser()
         parsed.feed(html)
-        self.assertEqual([f"{index:02d}" for index in range(27)], parsed.chapter_numbers)
-        self.assertEqual(27, parsed.compasses)
+        self.assertEqual([f"{index:02d}" for index in range(28)], parsed.chapter_numbers)
+        self.assertEqual(28, parsed.compasses)
         self.assertEqual(
             {
                 "appendix-engineering",
