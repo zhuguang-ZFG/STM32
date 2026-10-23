@@ -698,17 +698,40 @@ def _stamp_toc_page_references(document, fitz) -> None:
             any(rect.x0 < midpoint for _link, rect in link_rects)
             and any(rect.x0 >= midpoint for _link, rect in link_rects)
         )
+        text_spans = [
+            (fitz.Rect(span["bbox"]), float(span["size"]))
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip()
+        ]
+        links_with_size = [
+            (
+                link,
+                rect,
+                max(
+                    (size for span_rect, size in text_spans if span_rect.intersects(rect)),
+                    default=0.0,
+                ),
+            )
+            for link, rect in link_rects
+        ]
+        body_sizes = [size for _link, _rect, size in links_with_size if size > 0]
+        body_size = min(body_sizes, default=0.0)
         page_right = page.rect.width - 42
         left_column_right = midpoint - 18
-        for link, link_rect in link_rects:
+        for link, link_rect, font_size in links_with_size:
             destination = link.get("page", -1)
             if destination < 1:  # cover has no printed page number
                 continue
             label = str(destination)
             width = fitz.get_text_length(label, fontname="helv", fontsize=8)
+            is_full_width_heading = body_size > 0 and font_size > body_size * 1.2
             column_right = (
                 left_column_right
-                if has_two_columns and link_rect.x0 < midpoint
+                if has_two_columns
+                and link_rect.x0 < midpoint
+                and not is_full_width_heading
                 else page_right
             )
             page.insert_text(
