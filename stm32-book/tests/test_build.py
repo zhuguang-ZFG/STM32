@@ -262,6 +262,43 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual(metadata, actual)
         self.assertIn("1 / 1", page_label)
 
+    def test_pdf_stamping_adds_running_headers_and_toc_page_numbers(self) -> None:
+        import fitz
+
+        metadata = {"title": "STM32 实战", "author": "作者", "subject": "主题", "keywords": "STM32"}
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = Path(tmp) / "raw.pdf"
+            output = Path(tmp) / "book.pdf"
+            document = fitz.open()
+            document.new_page()  # cover
+            document.new_page()  # contents
+            document.new_page()  # chapter 00 opening
+            document.new_page()  # chapter 00 continuation
+            document.new_page()  # chapter 01 opening
+            toc = document[1]
+            toc.insert_text((50, 50), "目录与分部目标", fontname="china-s", fontsize=12)
+            toc.insert_text((50, 82), "00 系统", fontname="china-s", fontsize=10)
+            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(45, 66, 240, 88), "page": 2})
+            document.set_toc([[1, "00 系统", 3], [1, "01 下一章", 5]])
+            document.save(raw)
+            document.close()
+
+            self.builder._stamp_page_numbers(raw, output, metadata)
+            stamped = fitz.open(output)
+            try:
+                toc_words = stamped[1].get_text("words")
+                continuation = stamped[3].get_text()
+                opening = stamped[2].get_text()
+            finally:
+                stamped.close()
+
+        right_margin_numbers = [
+            word[4] for word in toc_words if word[0] > 500 and word[1] < 100
+        ]
+        self.assertIn("2", right_margin_numbers)
+        self.assertIn("00 系统", continuation)
+        self.assertNotIn("00 系统", opening)
+
     def test_manifest_rejects_a_missing_chapter_guide(self) -> None:
         broken = copy.deepcopy(self.manifest)
         broken["chapter_guides"].pop(next(iter(broken["chapter_guides"])))
