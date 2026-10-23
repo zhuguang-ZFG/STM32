@@ -233,6 +233,35 @@ class BookBuildContractTests(unittest.TestCase):
         with self.assertRaisesRegex(self.builder.BuildError, "missing local image"):
             self.builder.embed_local_images('<img src="../assets/no-such-image.svg">', source)
 
+    def test_pdf_stamping_preserves_publication_metadata(self) -> None:
+        import fitz
+
+        metadata = {
+            "title": "STM32 实战",
+            "author": "zhuguang-ZFG 与贡献者",
+            "subject": "证据驱动的嵌入式入门与工程手册",
+            "keywords": "STM32, Cortex-M, lwIP, FreeRTOS, embedded systems",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = Path(tmp) / "raw.pdf"
+            output = Path(tmp) / "book.pdf"
+            document = fitz.open()
+            document.new_page()
+            document.new_page()
+            document.save(raw)
+            document.close()
+
+            self.builder._stamp_page_numbers(raw, output, metadata)
+            stamped = fitz.open(output)
+            try:
+                actual = {key: stamped.metadata.get(key) for key in metadata}
+                page_label = stamped[1].get_text()
+            finally:
+                stamped.close()
+
+        self.assertEqual(metadata, actual)
+        self.assertIn("1 / 1", page_label)
+
     def test_manifest_rejects_a_missing_chapter_guide(self) -> None:
         broken = copy.deepcopy(self.manifest)
         broken["chapter_guides"].pop(next(iter(broken["chapter_guides"])))
