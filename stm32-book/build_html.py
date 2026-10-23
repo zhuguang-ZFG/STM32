@@ -684,7 +684,10 @@ def _stamp_toc_page_references(document, fitz) -> None:
         if not in_contents:
             continue
 
-        links = [link for link in page.get_links() if link.get("kind") == fitz.LINK_GOTO]
+        links = [
+            link for link in page.get_links()
+            if isinstance(link.get("page"), int) and link["page"] >= 1
+        ]
         if not links:
             in_contents = False
             continue

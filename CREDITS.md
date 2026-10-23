@@ -7,7 +7,7 @@
 
 | 类型 | 位置 | 来源 |
 | --- | --- | --- |
-| SVG 原理动画（23 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
+| SVG 原理动画（24 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
 | 静态框图（6 张） | `assets/diagrams/` | 本仓库作者用代码绘制，脚本见 `tools/gen_diagrams.py`，采用 CC BY 4.0 |
@@ -39,6 +39,15 @@
 ST 官网文档中心：<https://www.st.com/resource/en/>
 
 协议语义优先查 [IETF RFC Editor](https://www.rfc-editor.org/)（TCP/UDP/DHCP/DNS/TLS）与 [OASIS MQTT 5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html)；库的执行上下文与 API 边界查 [lwIP upstream](https://www.nongnu.org/lwip/2_1_x/) 和 [Mbed TLS 官方文档](https://mbed-tls.readthedocs.io/)。
+
+系统与 RTOS 章节冻结到官方发布：
+
+- [FreeRTOS Kernel V11.3.2](https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2)；
+- [RT-Thread v5.3.0](https://github.com/RT-Thread/rt-thread/releases/tag/v5.3.0)；
+- [Zephyr v4.4.2](https://github.com/zephyrproject-rtos/zephyr/releases/tag/v4.4.2)；
+- [CMSIS 6.4.0 / CMSIS-RTOS2 2.3.0](https://github.com/ARM-software/CMSIS_6/releases/tag/v6.4.0)。
+
+以上来源用于核对调度、IPC、设备模型、构建配置和 API 边界；本书不再分发其源码或文档。
 
 ## 三、社区与开源项目
 

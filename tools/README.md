@@ -7,7 +7,7 @@
 ## 快速开始
 
 ```bash
-python3 tools/gen_animations.py     # 23 个 SVG 动画（CSS @keyframes / SMIL）
+python3 tools/gen_animations.py     # 24 个 SVG 动画（CSS @keyframes / SMIL）
 python3 tools/gen_boards.py         # 板卡实物结构图
 python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 6 张静态框图
@@ -32,17 +32,18 @@ python3 tools/gen_gifs.py led-blink
 | `anim_basics.py` | 工具链流程、启动流程、存储器映射、时钟树 |
 | `anim_gpio.py` | GPIO 点灯、轮询 vs 中断、NVIC 中断流程、SWD/SWO 调试 |
 | `anim_comm.py` | UART 帧、I2C 事务、SPI 移位、CAN 仲裁、USB 枚举、Ethernet/lwIP/MQTT 分层 |
-| `anim_sys.py` | 定时器/PWM、定时器模式、SAR ADC、DMA 循环、看门狗、IAP、FreeRTOS、低功耗与 L4 Stop 2 证据链 |
+| `anim_sys.py` | 定时器/PWM、定时器模式、SAR ADC、DMA 循环、看门狗、IAP、FreeRTOS、低功耗、L4 Stop 2 证据链与 RTOS 系统分层 |
 | `gen_boards.py` | BluePill / BlackPill / Nucleo-F411RE / F4-Discovery / F103ZET6 大板 / LQFP48 引脚图 / 外设接线总览 |
 | `gen_pinouts.py` | G071 / L476 / H743 的 LQFP 引脚图（脚序来自数据手册，不补脚） |
 | `gen_diagrams.py` | 分层架构、工程目录、外设总线、中断优先级、L4 JP6 IDD 接线、网络排错阶梯 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
 | `gen_videos.py` | 旧的 5 帧 ASCII 幻灯，章节讲解已改由 `gen_narrated.py` 生成 |
-| `narration.py` | 第 00–25 章的分镜、口诀和旁白稿 |
+| `narration.py` | 第 00–27 章的分镜、口诀和旁白稿 |
 | `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
 | `check_assets.py` | 自检：SVG、GIF 回验、CC0 实拍哈希/尺寸、章节幻灯、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
+| `ethernet_soak.py` | 共享单调截止点的 TCP echo 长稳探针，以及 close/stall/delay 故障注入对端；协议与 24 h 验收见 `labs/ethernet-24h/` |
 
 ## 设计约定
 

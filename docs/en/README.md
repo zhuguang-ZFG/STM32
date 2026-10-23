@@ -6,10 +6,10 @@
 
 **Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
 
-An STM32 notebook in English, translated from the Chinese edition: 26 chapters (00–25) · 23 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 13 examples that compile against HAL · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 28 chapters (00–27) · 24 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 14 buildable examples · 4 cheatsheets
 
-[![docs](https://img.shields.io/badge/chapters-26-60a5fa?style=flat-square)](contents.md)
-[![animations](https://img.shields.io/badge/SVG_animations-23-22d3ee?style=flat-square)](../../assets/animations/)
+[![docs](https://img.shields.io/badge/chapters-28-60a5fa?style=flat-square)](contents.md)
+[![animations](https://img.shields.io/badge/SVG_animations-24-22d3ee?style=flat-square)](../../assets/animations/)
 [![boards](https://img.shields.io/badge/board_drawings-7-fbbf24?style=flat-square)](../../assets/boards/)
 [![gif](https://img.shields.io/badge/GIF-6-f87171?style=flat-square)](../../assets/gif/)
 [![examples](https://img.shields.io/badge/examples-13-34d399?style=flat-square)](../../examples/)
@@ -69,7 +69,7 @@ The chapter index, with one-line summaries, is [contents.md](contents.md).
 </tr>
 </table>
 
-The full list of 23 SVG animations is in [assets/README.md](../../assets/README.md). Six more GIFs are generated in pure Python:
+The full list of 24 SVG animations is in [assets/README.md](../../assets/README.md). Six more GIFs are generated in pure Python:
 
 <div align="center">
 <img src="../../assets/gif/led-blink.gif" width="330" alt="LED blink GIF">
@@ -158,7 +158,7 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 </details>
 
 <details open>
-<summary><b>Projects, simulation, family pinouts (18–25)</b></summary>
+<summary><b>Projects, simulation, family pinouts, SPL, and networking (18–27)</b></summary>
 
 | # | Chapter | Keywords |
 | --- | --- | --- |
@@ -170,6 +170,8 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 | 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB LQFP64 · PA14 is also BOOT0 · no bxCAN |
 | 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG · VDDUSB · cover typicals for low power |
 | 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI LQFP144 · FDCAN · VCAP |
+| 26 | [STM32F10x SPL](26-spl.md) | V3.5.0 project skeleton · API boundaries · HAL migration |
+| 27 | [Networking and protocol stacks](27-network.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · layered diagnosis |
 
 </details>
 
@@ -177,10 +179,11 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 
 ## Examples and cheatsheets
 
-Every example is HAL you can compile (`main.c` plus `README.md`): wiring, CubeMX, the few lines that matter, what you should see, and what usually goes wrong.
+The examples are complete buildable HAL projects, plus one frozen SPL V3.5.0 CMake project. Each README gives wiring, configuration, the lines that matter, expected behavior, and common failures.
 
 | Example | Level | Peripheral | Chapter |
 | --- | --- | --- | --- |
+| [spl-f1-blink](../../examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake | 01 / 26 |
 | [gpio-blink](../../examples/gpio-blink/) | ★ | Push-pull GPIO | 03 |
 | [exti-key](../../examples/exti-key/) | ★★ | EXTI + NVIC + debounce | 04 |
 | [timer-pwm](../../examples/timer-pwm/) | ★★ | TIM PWM | 05 |

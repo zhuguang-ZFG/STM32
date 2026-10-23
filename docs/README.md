@@ -48,6 +48,7 @@
 | 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI LQFP144、FDCAN、VCAP 与三个电源域 |
 | 26 | [STM32F10x 标准外设库 SPL](26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架、关键 API、HAL/寄存器映射与迁移边界 |
 | 27 | [网络与协议栈](27-网络与协议栈.md) | Ethernet/RMII、lwIP 线程边界、TCP/UDP、MQTT/TLS、分层排错与断网恢复 |
+| 28 | [嵌入式系统与 RTOS 生态](28-嵌入式系统与RTOS生态.md) | FreeRTOS、RT-Thread、Zephyr、CMSIS-RTOS2、任务所有权、截止点与资源预算 |
 
 ## 相关目录
 

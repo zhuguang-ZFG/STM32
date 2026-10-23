@@ -38,6 +38,7 @@
 | `debug-swo.svg` | SWD 调试 + SWO/ITM 打印跟踪 | 17 |
 | `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
 | `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
+| `rtos-system-layers.svg` | 从硬件、设备、内核、系统服务到应用的系统分层，以及 FreeRTOS/RT-Thread/Zephyr 选型边界 | 28 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -99,7 +100,7 @@
 画面是脚本用文泉驿微米黑画的标题卡，并贴上本仓库自己的 SVG，不是实拍。
 配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
 edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
-仓库里放的是合成后的 MP4，单章不到 2 MB，26 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
+仓库里放的是合成后的 MP4，28 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
 重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 
 ## 七、引用方式

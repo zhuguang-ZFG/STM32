@@ -184,7 +184,7 @@ HAL_ADCEx_Calibration_Start(&hadc1);          /* F1 必做；F4 没有这一步 
 HAL_ADC_Start(&hadc1);
 HAL_ADC_PollForConversion(&hadc1, 10);
 uint16_t code = HAL_ADC_GetValue(&hadc1);
-/* 电压 = code * VDDA / 4096 ，分母是 4096 不是 4095 */
+/* 电压 = code * VDDA / 4096，分母是 4096 不是 4095 */
 ```
 
 多通道循环搬运见 [`examples/adc-dma/`](../examples/adc-dma/)：`HAL_ADC_Start_DMA` 之前同样要先校准。半传输回调里处理前一半，完成回调里处理后一半。

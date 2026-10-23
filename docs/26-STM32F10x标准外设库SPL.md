@@ -2,6 +2,27 @@
 
 > 标准外设库不是 HAL 的另一种拼写。它是 STM32F1 时代的独立驱动体系：没有 Handle、没有 CubeMX 生成流程，也不会替你完成超时、状态机和回调管理。
 
+<!-- video:ch26 -->
+<p align="center">
+  <video width="640" controls poster="../assets/video/ch26-spl.png">
+    <source src="../assets/video/ch26-spl.mp4" type="video/mp4">
+  </video>
+  <br><sub>▲ 本章讲解 2.9 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面用文泉驿微米黑绘制，插图是本仓库 SVG，不是实拍。 字幕：<a href="../assets/video/ch26-spl.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+</p>
+
+**旁白（与字幕、配音同一份稿）**
+
+1. 本章只认 STM32F10x SPL V3.5.0。F103C8、CB 使用中容量设备宏，启动文件和链接脚本也要匹配。只复制 main，工程不会一致。
+2. SPL 工程至少包含 CMSIS、设备头、驱动、启动文件、SystemInit 和应用。缺 SystemInit，时钟假设不成立；缺启动文件，向量表和初始栈没有入口。
+3. USE_STDPERIPH_DRIVER 载入标准库配置，STM32F10X_MD 选择中容量设备。两者必须进入真实编译命令，写在 IDE 截图里不会影响预处理。
+4. 这一帧是仓库画的启动路径。复位后取栈顶，进入 Reset Handler，搬数据并清 BSS，调用 SystemInit，再到 main。SPL 不改变 Cortex-M 启动链。
+5. SPL 常见顺序是先用 RCC 打开外设和 GPIO 时钟，再填初始化结构体，最后使能外设。时钟没开时，后面的寄存器写入不会形成你期待的硬件状态。这个规则和 HAL 工程完全相同。
+6. USART SendData 只把一个数据写进数据寄存器。它不帮你发送整个缓冲，也不替你定义 TXE、TC 和超时。任何轮询等待都要有单调时钟截止点，超时后把原因交给上层策略。
+7. 中断不来时按三张表排查：启动文件里的向量名字是否匹配，NVIC 是否使能且优先级合法，外设状态位和中断使能位是否同时成立。不要先把所有优先级都改成零。
+8. SPL 和 HAL 会写同一组寄存器，却各自维护状态。双重初始化会覆盖波特率、DMA 和中断。迁移时一次只换一个外设，用同一波形对照。
+9. 仓库示例在固定的 GNU Arm 工具链和冻结源码上编译。编译通过只证明接口和链接闭合；还要从 map 文件核对存储边界，再在真板上观察引脚、时钟和故障路径。
+10. 合上书，三问。USE STDPERIPH DRIVER 和 STM32F10X MD 各管什么？USART SendData 到底保证什么？同一个串口为什么不能先用 SPL 初始化、再让 HAL 接管？
+<!-- /video:ch26 -->
 ## 📌 学习目标
 
 - [ ] 说清 SPL V3.5.0 的适用范围、工程目录和两个关键编译宏。
