@@ -574,8 +574,83 @@ def lowpower_wakeup() -> Svg:
     return s
 
 
+
+# --------------------------------------------------------------------------- L4 Stop2 唤醒证据
+
+
+def l4_stop2_evidence() -> Svg:
+    s = Svg(W, H, "L476 Stop 2：先在 IRQ 入口留证据，再让 HAL 清标志",
+            "RTC/EXTI/PWR 原始位只在中断入口可靠；HAL handler 清位后从保留 SRAM 消费记录")
+    s.header(tag="24 L4 Stop2", tag_color=T.CYAN)
+
+    stages = [
+        ("准备", "清旧标志 · 使能 RTC", T.GREEN),
+        ("Stop 2", "WFI · SRAM 保持", T.VIOLET),
+        ("IRQ 入口", "先读 3 组原始寄存器", T.AMBER),
+        ("HAL handler", "清 EXTI → 清 WUTF", T.RED),
+        ("回到 main", "恢复时钟 · 消费记录", T.CYAN),
+    ]
+    x0, y, bw, gap = 32, 102, 152, 24
+    for i, (title, note, color) in enumerate(stages):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 92, fill=T.PANEL, stroke=color, rx=12, cls=f"ev{i}")
+        s.rect(x, y, bw, 5, fill=color, rx=3)
+        s.text(x + bw / 2, y + 34, title, size=14, anchor="middle",
+               fill=T.TEXT, weight="700")
+        s.text(x + bw / 2, y + 61, note, size=9.5, anchor="middle", fill=T.MUTED)
+        if i < len(stages) - 1:
+            s.arrow(x + bw + 4, y + 46, x + bw + gap - 4, y + 46,
+                    color=T.CYAN, sw=2.2, head=6, cls="ev-flow")
+    s.add_style(_seq_flash("ev", 5, period=6.0, window=0.78, peak=1.0, rest=0.42))
+    s.add_style(anim_flow(".ev-flow", dur="1.2s", dash="5 8", shift=-13))
+
+    s.rect(40, 226, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.text(58, 252, "IRQ 入口写入 Stop 2 保持的 SRAM", size=13, fill=T.TEXT,
+           weight="700")
+    fields = [
+        ("rtc_isr", "RTC->ISR", "WUTF 仍为 1", T.AMBER),
+        ("exti_pr1", "EXTI->PR1", "line 20 pending", T.CYAN),
+        ("pwr_sr1", "PWR->SR1", "WKUP 原始状态", T.VIOLET),
+        ("sequence", "+1", "最后发布记录", T.GREEN),
+    ]
+    for i, (name, reg, note, color) in enumerate(fields):
+        x = 58 + i * 198
+        s.rect(x, 270, 182, 54, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 10, 291, name, size=10.5, mono=True, fill=color, weight="700")
+        s.text(x + 172, 291, reg, size=9.5, mono=True, anchor="end", fill=T.TEXT)
+        s.text(x + 10, 311, note, size=9.5, fill=T.MUTED)
+
+    s.rect(40, 364, 388, 150, fill=T.PANEL, stroke=T.AMBER, rx=12)
+    s.text(58, 390, "为什么不能在 Stop 返回后再读？", size=12.5,
+           fill=T.TEXT, weight="700")
+    rows = [
+        ("IRQ entry", "EXTI=1 · WUTF=1", T.GREEN),
+        ("HAL clear", "EXTI=0 · WUTF=0", T.RED),
+        ("callback", "原始位已经消失", T.RED),
+        ("main resume", "只能读 WakeEvidence", T.CYAN),
+    ]
+    for i, (k, v, color) in enumerate(rows):
+        yy = 417 + i * 23
+        s.text(58, yy, k, size=10.5, mono=True, fill=color)
+        s.text(180, yy, v, size=10.5, fill=T.MUTED)
+
+    s.rect(452, 364, 408, 150, fill=T.BG2, stroke=T.CYAN, rx=12)
+    s.text(470, 390, "消费记录的顺序", size=12.5, fill=T.TEXT, weight="700")
+    steps = [
+        "① IRQ 入口：写 rtc_isr / exti_pr1 / pwr_sr1",
+        "② __DMB() 后 sequence++，再调用 HAL handler",
+        "③ Stop 返回：稳定复制 retained record",
+        "④ 恢复 PLL/SYSCLK 后再打印和清软件记录",
+    ]
+    for i, text in enumerate(steps):
+        s.text(470, 418 + i * 24, text, size=10.5, fill=T.MUTED)
+
+    s.footer("不变量：先记录，后清硬件标志；先恢复时钟，后输出证据")
+    return s
+
+
 ALL = [timer_pwm, timer_modes, adc_sar, dma_circular, iwdg_window, flash_iap,
-       freertos_scheduler, lowpower_wakeup]
+       freertos_scheduler, lowpower_wakeup, l4_stop2_evidence]
 
 NAMES = {
     "timer_pwm": "timer-pwm",
@@ -586,4 +661,5 @@ NAMES = {
     "flash_iap": "flash-iap",
     "freertos_scheduler": "freertos-scheduler",
     "lowpower_wakeup": "lowpower-wakeup",
+    "l4_stop2_evidence": "l4-stop2-evidence",
 }

@@ -6,12 +6,13 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：27 篇文档（00–26）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：27 篇文档（00–26）· 22 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-27_篇-60a5fa?style=flat-square)](docs/)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
-[![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
+[![animations](https://img.shields.io/badge/SVG_动画-22_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
+[![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
 [![examples](https://img.shields.io/badge/可编译示例-14_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
@@ -105,7 +106,7 @@
 </tr>
 </table>
 
-完整清单（21 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
+完整清单（22 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -202,7 +203,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 21 | [原理图与实物图鉴](docs/21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
 | 22 | [仿真实验 Wokwi 与 Renode](docs/22-仿真实验Wokwi与Renode.md) | 浏览器接线 · Renode 加载 ELF · DMA 模型边界 |
 | 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB LQFP64 · PA14 兼 BOOT0 · 无 bxCAN |
-| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · Stop 2 恢复链 · 可复算功耗测量 |
+| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · Nucleo-64 实拍 · Stop 2 IRQ 留证据 · JP6 功耗测量 |
 | 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
 | 26 | [STM32F10x 标准外设库 SPL](docs/26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架 · HAL/SPL/寄存器映射 · 旧工程迁移 |
 
@@ -252,9 +253,10 @@ STM32/
 ├── cheatsheets/              ← 4 份速查表
 ├── stm32-book/               ← 27 章整书版：manifest、五份附录、离线 HTML/PDF 构建
 ├── assets/
-│   ├── animations/           ← 21 个 SVG 动画（CSS @keyframes / SMIL）
-│   ├── boards/               ← 7 张板卡实物结构图
-│   ├── diagrams/             ← 4 张静态框图
+│   ├── animations/           ← 22 个 SVG 动画（CSS @keyframes / SMIL）
+│   ├── boards/               ← 7 张板卡结构图 + 3 张芯片引脚图
+│   ├── photos/               ← 2 张带完整来源记录的 CC0 Nucleo-64 实拍
+│   ├── diagrams/             ← 5 张静态框图
 │   ├── gif/                  ← 6 个程序生成的光栅动画
 │   └── README.md             ← 素材清单与引用方式
 └── tools/                    ← 素材生成脚本（纯标准库，零依赖）
@@ -273,11 +275,11 @@ STM32/
 
 ## 素材是怎么来的（可复现）
 
-所有图片都是**代码生成**的，clone 下来就能重新生成，不需要任何第三方库
-（没有 PIL、没有 ImageMagick、没有浏览器也能验证）：
+SVG、引脚图和 GIF 都是**代码生成**的，clone 下来就能重新生成，不需要任何第三方库。
+`assets/photos/` 的两张 CC0 实拍不由脚本生成，来源页、处理方式与 SHA-256 记录在该目录的 README：
 
 ```bash
-# 生成 21 个 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
+# 生成 22 个 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
 python3 tools/gen_animations.py
 
 # 生成板卡实物结构图与静态框图
@@ -309,15 +311,14 @@ python3 tools/check_assets.py
 ## 许可与声明
 
 - **代码**（`examples/`、`tools/`）采用 [MIT License](LICENSE)。
-- **文档与图片**（`docs/`、`assets/`）采用 **CC BY 4.0**，转载/二次创作请注明来源。
-- 所有图片均为作者自绘/程序生成，**非厂商实拍照片**；STM32、Nucleo、Discovery 等
-  是 STMicroelectronics 的商标，本仓库仅用于学习交流，与 ST 官方无隶属关系。
+- **文档与仓库原创图片**采用 **CC BY 4.0**；`assets/photos/` 中两张第三方实拍保持其 **CC0 1.0** 许可。转载/二次创作请按对应资产的来源记录署名。
+- SVG / GIF / 引脚图均为作者自绘或程序生成；`assets/photos/` 的两张 Nucleo-64 实拍来自 Wikimedia Commons，采用 CC0 1.0，作者、原图页与处理记录见 [照片清单](assets/photos/README.md)。STM32、Nucleo、Discovery 等是 STMicroelectronics 的商标，本仓库仅用于学习交流，与 ST 官方无隶属关系。
 
 ## Roadmap
 
-- [x] 21 章知识文档 + 写作规范
-- [x] 21 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS …）
-- [x] 7 张板卡实物结构图 + LQFP48 全引脚图
+- [x] 27 章知识文档 + 写作规范
+- [x] 22 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS / Stop 2 证据链）
+- [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
 - [x] 每章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）

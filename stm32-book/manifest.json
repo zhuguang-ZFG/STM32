@@ -228,9 +228,9 @@
     },
     "24-STM32L4引脚.md": {
       "question": "L476RG 的引脚、电源域和低功耗模式怎样影响 Stop 2 进入、唤醒恢复与真实平均电流？",
-      "deliverable": "一张 LQFP64 关键脚表、一张模式/状态保持表、一条可验证的 Stop 2 时钟恢复链，以及含原始波形与积分公式的功耗账。",
-      "boundary": "典型低功耗数字不是整板保证值；模式能力、唤醒源、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。",
-      "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "es0250"]
+      "deliverable": "一张 LQFP64 关键脚表、一条在 HAL 清位前发布的 IRQ 入口唤醒证据链、一条可验证的 Stop 2 时钟恢复链，以及含接线图、原始波形与积分公式的功耗账。",
+      "boundary": "原始唤醒位必须在 HAL handler 之前捕获；典型低功耗数字不是整板保证值；模式能力、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。",
+      "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "stm32l4-hal-rtc", "commons-nucleo-f411re", "commons-nucleo-f401re", "es0250"]
     },
     "25-STM32H7引脚.md": {
       "question": "迁到 H743ZI 后，电源域、VCAP、FDCAN、内存可达性与 Cache 怎样改变旧工程假设？",
@@ -459,6 +459,33 @@
       "accessed": "2026-10-23",
       "license": "仓库 LICENSE（本书不再分发其源码）",
       "scope": "SysTick 暂停/恢复、MSI 唤醒、PLL/SYSCLK 恢复和 GPIO 重新初始化的具体 HAL 顺序。"
+    },
+    "stm32l4-hal-rtc": {
+      "title": "STM32L4 HAL RTCEx IRQ handler — pinned source",
+      "authority": "ST 官方 GitHub HAL driver",
+      "url": "https://github.com/STMicroelectronics/stm32l4xx-hal-driver/blob/71a58f9d417139d332e448a46c9e6ba5181181dc/Src/stm32l4xx_hal_rtc_ex.c",
+      "snapshot": "commit 71a58f9d417139d332e448a46c9e6ba5181181dc；HAL_RTCEx_WakeUpTimerIRQHandler",
+      "accessed": "2026-10-23",
+      "license": "BSD-3-Clause（本书仅链接并独立给出捕获模式）",
+      "scope": "RTC wake-up IRQ 中清 EXTI、清 WUTF、调用 callback 的先后次序。"
+    },
+    "commons-nucleo-f411re": {
+      "title": "Embedded World 2016, Stm32 Nucleo — Nucleo-F411RE photograph",
+      "authority": "Wikimedia Commons 文件元数据",
+      "url": "https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg",
+      "snapshot": "Ordercrazy / Thomas Springer 摄影；本书使用 760×884 处理副本",
+      "accessed": "2026-10-23",
+      "license": "CC0 1.0",
+      "scope": "Nucleo-64 家族实物布局示例；不是 NUCLEO-L476RG。"
+    },
+    "commons-nucleo-f401re": {
+      "title": "Embedded World 2016, STM Nucleo 401 — Nucleo-F401RE photograph",
+      "authority": "Wikimedia Commons 文件元数据",
+      "url": "https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg",
+      "snapshot": "Ordercrazy / Thomas Springer 摄影；本书使用 760×852 处理副本",
+      "accessed": "2026-10-23",
+      "license": "CC0 1.0",
+      "scope": "Nucleo-64 家族实物布局示例；不是 NUCLEO-L476RG。"
     },
     "es0250": {
       "title": "ES0250 — STM32L471/L475/L476/L486 device errata",

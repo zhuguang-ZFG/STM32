@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="NUCLEO-L476RG：JP6 IDD 动态功耗测量接线">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#34d399" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">NUCLEO-L476RG：JP6 IDD 动态功耗测量接线</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流通道串入 JP6；电压通道直接测 MCU 端 VDD；两条线必须同时记录</text>
+<rect x="792" y="15" width="86" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="835" y="33.32" font-size="12" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">24 L4 测量</text>
+<rect x="40" y="112" width="170" height="126" fill="#111c31" opacity="1" rx="12" stroke="#34d399" stroke-width="1.5"/>
+<text x="125" y="142" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">动态功耗仪</text>
+<text x="125" y="168" font-size="11" fill="#34d399" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SOURCE 3.3 V</text>
+<text x="125" y="190" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">I(t) 高速采样</text>
+<text x="125" y="214" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">记录 burden / range</text>
+<line x1="214" y1="164" x2="323" y2="164" stroke="#34d399" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<polygon points="330.00,164.00 323.00,167.50 323.00,160.50" fill="#34d399" opacity="1"/>
+<text x="270" y="151" font-size="10" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流路径</text>
+<circle cx="348" cy="164" r="9" fill="#0e1626" opacity="1" stroke="#fbbf24" stroke-width="2"/>
+<circle cx="392" cy="164" r="9" fill="#0e1626" opacity="1" stroke="#fbbf24" stroke-width="2"/>
+<line x1="357" y1="164" x2="383" y2="142" stroke="#f87171" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<text x="370" y="122" font-size="11.5" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">JP6 (IDD) 拔下</text>
+<line x1="401" y1="164" x2="477" y2="164" stroke="#34d399" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<polygon points="484.00,164.00 477.00,167.50 477.00,160.50" fill="#34d399" opacity="1"/>
+<rect x="486" y="92" width="374" height="238" fill="#123a2e" opacity="1" rx="16" stroke="#0d2b22" stroke-width="1.5"/>
+<rect x="500" y="108" width="346" height="68" fill="#0d2b22" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
+<text x="673" y="134" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-LINK 区</text>
+<text x="673" y="158" font-size="9.5" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">功能调试可接；功耗测量需排查回灌</text>
+<rect x="500" y="190" width="346" height="122" fill="#123057" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="673" y="216" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">目标 MCU 供电域</text>
+<rect x="620" y="236" width="106" height="52" fill="#151922" opacity="1" rx="5" stroke="#808a9a" stroke-width="1.5"/>
+<text x="673" y="260" font-size="10.5" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STM32L476RG</text>
+<text x="673" y="279" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD / VSS</text>
+<rect x="40" y="278" width="170" height="98" fill="#0e1626" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="125" y="307" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">电压通道</text>
+<text x="125" y="332" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD at MCU</text>
+<text x="125" y="354" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同步观察压降/复位</text>
+<line x1="210" y1="326" x2="580" y2="326" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
+<line x1="580" y1="326" x2="615.407" y2="285.282" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
+<polygon points="620.00,280.00 618.05,287.58 612.77,282.99" fill="#22d3ee" opacity="1"/>
+<line x1="210" y1="350" x2="760" y2="350" stroke="#93a4c0" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="5 6"/>
+<line x1="760" y1="350" x2="728.621" y2="285.397" stroke="#93a4c0" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="726.00,280.00 731.32,284.09 725.92,286.71" fill="#93a4c0" opacity="1"/>
+<rect x="40" y="404" width="820" height="92" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="430" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">测量前四项断言</text>
+<text x="58" y="454" font-size="10.2" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① JP6 已拔：电流只经过仪器，不跨接跳线</text>
+<text x="458" y="454" font-size="10.2" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② MCU 端 VDD 在活动峰值期间仍高于允许下限</text>
+<text x="58" y="477" font-size="10.2" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ SWD/USB/外设 GPIO 不形成旁路或反向供电</text>
+<text x="458" y="477" font-size="10.2" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ 采样率 &gt;= 10 / t_min，至少捕获 10 个完整周期</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">静态 µA 平台 + 唤醒电荷积分 + MCU 端 VDD，三项缺一不可</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

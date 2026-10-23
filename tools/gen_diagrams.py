@@ -254,13 +254,79 @@ def interrupt_priority() -> Svg:
     return s
 
 
-ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority]
+
+
+def l4_idd_bench() -> Svg:
+    s = Svg(W, H, "NUCLEO-L476RG：JP6 IDD 动态功耗测量接线",
+            "电流通道串入 JP6；电压通道直接测 MCU 端 VDD；两条线必须同时记录")
+    s.header(tag="24 L4 测量", tag_color=T.GREEN)
+
+    # 左：电源与功耗仪
+    s.rect(40, 112, 170, 126, fill=T.PANEL, stroke=T.GREEN, rx=12)
+    s.text(125, 142, "动态功耗仪", size=14, anchor="middle", fill=T.TEXT, weight="700")
+    s.text(125, 168, "SOURCE 3.3 V", size=11, anchor="middle", mono=True, fill=T.GREEN)
+    s.text(125, 190, "I(t) 高速采样", size=11, anchor="middle", mono=True, fill=T.CYAN)
+    s.text(125, 214, "记录 burden / range", size=9.5, anchor="middle", fill=T.MUTED)
+
+    # 中：JP6 断点
+    s.arrow(214, 164, 330, 164, color=T.GREEN, sw=3, head=7)
+    s.text(270, 151, "电流路径", size=10, anchor="middle", fill=T.GREEN)
+    s.circle(348, 164, 9, fill=T.BG2, stroke=T.AMBER, sw=2)
+    s.circle(392, 164, 9, fill=T.BG2, stroke=T.AMBER, sw=2)
+    s.line(357, 164, 383, 142, stroke=T.RED, sw=3)
+    s.text(370, 122, "JP6 (IDD) 拔下", size=11.5, anchor="middle", fill=T.AMBER,
+           weight="700")
+    s.arrow(401, 164, 484, 164, color=T.GREEN, sw=3, head=7)
+
+    # 右：Nucleo 目标区
+    s.rect(486, 92, 374, 238, fill="#123a2e", stroke="#0d2b22", rx=16)
+    s.rect(500, 108, 346, 68, fill="#0d2b22", stroke=T.STROKE, rx=10)
+    s.text(673, 134, "ST-LINK 区", size=13, anchor="middle", fill=T.TEXT, weight="700")
+    s.text(673, 158, "功能调试可接；功耗测量需排查回灌", size=9.5,
+           anchor="middle", fill=T.AMBER)
+    s.rect(500, 190, 346, 122, fill="#123057", stroke=T.CYAN, rx=10)
+    s.text(673, 216, "目标 MCU 供电域", size=13, anchor="middle", fill=T.TEXT,
+           weight="700")
+    s.rect(620, 236, 106, 52, fill="#151922", stroke="#808a9a", rx=5)
+    s.text(673, 260, "STM32L476RG", size=10.5, anchor="middle", mono=True,
+           fill=T.TEXT, weight="700")
+    s.text(673, 279, "VDD / VSS", size=9, anchor="middle", mono=True, fill=T.MUTED)
+
+    # 电压 sense 独立通道
+    s.rect(40, 278, 170, 98, fill=T.BG2, stroke=T.CYAN, rx=12)
+    s.text(125, 307, "电压通道", size=13, anchor="middle", fill=T.TEXT, weight="700")
+    s.text(125, 332, "VDD at MCU", size=11, anchor="middle", mono=True, fill=T.CYAN)
+    s.text(125, 354, "同步观察压降/复位", size=9.5, anchor="middle", fill=T.MUTED)
+    s.line(210, 326, 580, 326, stroke=T.CYAN, sw=2.4)
+    s.arrow(580, 326, 620, 280, color=T.CYAN, sw=2.4, head=7)
+    s.line(210, 350, 760, 350, stroke=T.MUTED, sw=2, dash="5 6")
+    s.arrow(760, 350, 726, 280, color=T.MUTED, sw=2, head=6)
+
+    s.rect(40, 404, 820, 92, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.text(58, 430, "测量前四项断言", size=12.5, fill=T.TEXT, weight="700")
+    notes = [
+        "① JP6 已拔：电流只经过仪器，不跨接跳线",
+        "② MCU 端 VDD 在活动峰值期间仍高于允许下限",
+        "③ SWD/USB/外设 GPIO 不形成旁路或反向供电",
+        "④ 采样率 >= 10 / t_min，至少捕获 10 个完整周期",
+    ]
+    for i, note in enumerate(notes):
+        x = 58 + (i % 2) * 400
+        y = 454 + (i // 2) * 23
+        s.text(x, y, note, size=10.2, fill=T.MUTED)
+    s.footer("静态 µA 平台 + 唤醒电荷积分 + MCU 端 VDD，三项缺一不可")
+    return s
+
+
+ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
+       l4_idd_bench]
 
 NAMES = {
     "layers_hal_ll_reg": "layers-hal-ll-reg",
     "project_structure": "project-structure",
     "peripheral_bus": "peripheral-bus",
     "interrupt_priority": "interrupt-priority",
+    "l4_idd_bench": "l4-idd-bench",
 }
 
 

@@ -6,10 +6,10 @@
 
 **Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
 
-An STM32 notebook in English, translated from the Chinese edition: 26 chapters (00–25) · 21 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 13 examples that compile against HAL · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 26 chapters (00–25) · 22 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 13 examples that compile against HAL · 4 cheatsheets
 
 [![docs](https://img.shields.io/badge/chapters-26-60a5fa?style=flat-square)](contents.md)
-[![animations](https://img.shields.io/badge/SVG_animations-21-22d3ee?style=flat-square)](../../assets/animations/)
+[![animations](https://img.shields.io/badge/SVG_animations-22-22d3ee?style=flat-square)](../../assets/animations/)
 [![boards](https://img.shields.io/badge/board_drawings-7-fbbf24?style=flat-square)](../../assets/boards/)
 [![gif](https://img.shields.io/badge/GIF-6-f87171?style=flat-square)](../../assets/gif/)
 [![examples](https://img.shields.io/badge/examples-13-34d399?style=flat-square)](../../examples/)
@@ -69,7 +69,7 @@ The chapter index, with one-line summaries, is [contents.md](contents.md).
 </tr>
 </table>
 
-The full list of 21 SVG animations is in [assets/README.md](../../assets/README.md). Six more GIFs are generated in pure Python:
+The full list of 22 SVG animations is in [assets/README.md](../../assets/README.md). Six more GIFs are generated in pure Python:
 
 <div align="center">
 <img src="../../assets/gif/led-blink.gif" width="330" alt="LED blink GIF">
@@ -239,7 +239,7 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 ## Roadmap
 
 - [x] The chapter set plus the writing guide
-- [x] 21 SVG mechanism animations
+- [x] 22 SVG mechanism animations
 - [x] Seven board drawings plus the LQFP48 pinout
 - [x] Six generated GIFs and the asset checker
 - [x] 13 HAL examples (including bxCAN and USB CDC/HID) and 4 cheatsheets

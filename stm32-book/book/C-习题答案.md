@@ -155,6 +155,7 @@
 5. 平均电流由各段电荷除以完整周期：`I_avg = Σ(I_i × t_i) / T_cycle`。活动与睡眠持续时间通常差几个数量级，不能做算术平均。
 6. 小量程常带来更大的分流压降或自动换挡瞬态，即负担电压；唤醒毫安峰值可能拉低 MCU 端 VDD 并触发复位。
 7. DS10198 给料号/引脚/电气和典型值；RM0351 给 PWR/RCC 状态机与寄存器；AN4746 给功耗优化方法；UM1724 给 Nucleo 板与 JP6 测量路径；ES0250 给指定 silicon revision 的已知限制和 workaround。
+8. 固定的 HAL RTC wake-up handler 在调用 callback 前已经清掉 EXTI pending 与 `RTC_FLAG_WUTF`；callback 或 Stop 返回后再读只能看到清零结果。应在 `RTC_WKUP_IRQHandler()` 入口、调用 HAL handler 前把 RTC/EXTI/PWR 原始位发布到 Stop 2 保持的 SRAM，返回后消费该软件记录。
 
 ## 25 STM32H7 引脚
 

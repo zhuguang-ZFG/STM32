@@ -7,13 +7,14 @@
 
 | 类型 | 位置 | 来源 |
 | --- | --- | --- |
-| SVG 原理动画（21 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
-| 板卡实物结构图（7 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量结构图**，脚本见 `tools/gen_boards.py`。**不是厂商实拍照片** |
-| 静态框图（4 张） | `assets/diagrams/` | 同上，脚本见 `tools/gen_diagrams.py` |
+| SVG 原理动画（22 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
+| 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
+| Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
+| 静态框图（5 张） | `assets/diagrams/` | 本仓库作者用代码绘制，脚本见 `tools/gen_diagrams.py`，采用 CC BY 4.0 |
 | 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
-> 因此本仓库**没有**再分发任何第三方图片，也不存在图片版权风险。
-> 想查看真实照片、官方原理图与 Gerber，请看下面的官方链接。
+> 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
+> 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
 
 ## 二、官方手册（本仓库反复引用）
 

@@ -1,12 +1,12 @@
 # 可视化资产清单
 
-> 本目录所有图片都是**本项目自绘的矢量图 / 程序生成的动画**，版权归本仓库所有（见 `LICENSE`）。
+> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的两张实拍来自 Wikimedia Commons，均为 CC0，作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
 > ```bash
 > python3 tools/gen_animations.py   # assets/animations/*.svg（SMIL/CSS 动画）
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
-python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
+> python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
@@ -36,6 +36,7 @@ python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 | `freertos-scheduler.svg` | FreeRTOS 任务状态迁移与抢占式调度 | 15 |
 | `lowpower-wakeup.svg` | 睡眠/停止/待机三种低功耗模式与唤醒源 | 16 |
 | `debug-swo.svg` | SWD 调试 + SWO/ITM 打印跟踪 | 17 |
+| `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -56,7 +57,16 @@ python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 | `pinout-stm32l476rg-lqfp64.svg` | L476Rx LQFP64 引脚（DS10198 Rev 11 Figure 16） | STM32L476RG |
 | `pinout-stm32h743zi-lqfp144.svg` | H743xI LQFP144 引脚（DS12110 Rev 11 Figure 7） | STM32H743ZI |
 
-## 三、静态框图 `assets/diagrams/`
+## 三、实拍照片 `assets/photos/`
+
+| 文件 | 实拍对象 | 许可与用途边界 |
+| --- | --- | --- |
+| `nucleo-f411re-embedded-world.jpg` | Nucleo-F411RE | Ordercrazy / Thomas Springer，CC0；用于识别 Nucleo-64 布局，不得标成 L476RG |
+| `nucleo-f401re-embedded-world.jpg` | Nucleo-F401RE | Ordercrazy / Thomas Springer，CC0；用于识别 Nucleo-64 布局，不得标成 L476RG |
+
+完整来源、原图页、处理尺寸和 SHA-256 见 [`photos/README.md`](photos/README.md)。NUCLEO-L476RG 的具体焊桥、跳线和硬件版本以 ST 官方产品页与 UM1724 为准。
+
+## 四、静态框图 `assets/diagrams/`
 
 | 文件 | 内容 |
 | --- | --- |
@@ -64,8 +74,9 @@ python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 | `project-structure.svg` | 一个标准 STM32 工程目录结构 |
 | `peripheral-bus.svg` | 外设挂在哪条总线上（AHB1/AHB2/APB1/APB2） |
 | `interrupt-priority.svg` | 抢占优先级 vs 子优先级的仲裁示意 |
+| `l4-idd-bench.svg` | NUCLEO-L476RG 的 JP6 IDD 串联测流与 MCU 端 VDD 同步测量 |
 
-## 四、光栅动画 `assets/gif/`
+## 五、光栅动画 `assets/gif/`
 
 | 文件 | 内容 | 说明 |
 | --- | --- | --- |
@@ -80,7 +91,7 @@ python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
 > 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
-## 四·补 章节讲解 `assets/video/`
+## 六、章节讲解 `assets/video/`
 
 每章一条 MP4，大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
 画面是脚本用文泉驿微米黑画的标题卡，并贴上本仓库自己的 SVG，不是实拍。
@@ -89,7 +100,7 @@ edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线�
 仓库里放的是合成后的 MP4，单章不到 2 MB，26 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
 重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 
-## 五、引用方式
+## 七、引用方式
 
 ```markdown
 <p align="center">

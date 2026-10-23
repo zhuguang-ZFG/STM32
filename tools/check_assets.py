@@ -5,11 +5,12 @@
 
 check_assets.py —— 素材自检工具（不需要任何第三方库，也不用打开图片）。
 
-做三件事：
+做四件事：
 1. 校验 assets/ 下所有 SVG 是合法 XML；
 2. 用自己实现的 GIF 解码器把 assets/gif/*.gif 解回来，逐像素与「重新生成的帧」比对，
    确保 LZW 编码、差分帧、透明索引都正确（沙箱里没有浏览器也能验证）；
-3. 打印体积统计，超过 500 KB 的 GIF 会告警。
+3. 锁定已核验许可的实拍 JPEG 的 SHA-256 与像素尺寸；
+4. 打印体积统计，超过 500 KB 的 GIF 会告警。
 
 用法::
 
@@ -18,6 +19,7 @@ check_assets.py —— 素材自检工具（不需要任何第三方库，也不
 
 from __future__ import annotations
 
+import hashlib
 import os
 import struct
 import subprocess
@@ -519,6 +521,72 @@ def check_examples():
     return ok
 
 
+
+
+def _jpeg_size(raw):
+    """从 JPEG SOF 段读取 (width, height)，不依赖 Pillow。"""
+    if raw[:2] != b"\xff\xd8":
+        raise ValueError("不是 JPEG 文件")
+    pos = 2
+    sof = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
+           0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+    while pos + 8 < len(raw):
+        if raw[pos] != 0xFF:
+            pos += 1
+            continue
+        while pos < len(raw) and raw[pos] == 0xFF:
+            pos += 1
+        marker = raw[pos]
+        pos += 1
+        if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
+            continue
+        if pos + 2 > len(raw):
+            break
+        seg_len = struct.unpack(">H", raw[pos:pos + 2])[0]
+        if marker in sof and pos + 7 <= len(raw):
+            height, width = struct.unpack(">HH", raw[pos + 3:pos + 7])
+            return width, height
+        if seg_len < 2:
+            break
+        pos += seg_len
+    raise ValueError("找不到 JPEG SOF 尺寸段")
+
+
+def check_photos():
+    """锁定已核验许可的实拍副本，避免误替换、错型号或无意重压缩。"""
+    expected = {
+        "nucleo-f411re-embedded-world.jpg": (
+            "f023915c238b9ca49ce68b349542b2a2ecae377f14c28b4e4334292f09c4a5e8",
+            (760, 884),
+        ),
+        "nucleo-f401re-embedded-world.jpg": (
+            "4fdea7be65c35d96ee9dbeebfc1a5475dcb65b758b5c0dea3cc5a529fe093815",
+            (760, 852),
+        ),
+    }
+    ok = True
+    for name, (want_hash, want_size) in expected.items():
+        path = os.path.join(ROOT, "assets", "photos", name)
+        if not os.path.isfile(path):
+            print(f"[FAIL] 缺少实拍照片 {path}")
+            ok = False
+            continue
+        raw = open(path, "rb").read()
+        got_hash = hashlib.sha256(raw).hexdigest()
+        try:
+            got_size = _jpeg_size(raw)
+        except ValueError as exc:
+            print(f"[FAIL] {name}: {exc}")
+            ok = False
+            continue
+        if got_hash != want_hash or got_size != want_size:
+            print(f"[FAIL] {name}: SHA-256/尺寸不符 {got_hash} {got_size}")
+            ok = False
+    if ok:
+        print(f"实拍照片检查完成：{len(expected)}/{len(expected)} 哈希与尺寸匹配")
+    return ok
+
+
 def check_links():
     """校验 Markdown 里的相对链接与图片引用是否真实存在。"""
     import re
@@ -559,8 +627,9 @@ if __name__ == "__main__":
     e = check_sim()
     f = check_pinouts()
     g = check_examples()
+    h = check_photos()
     c = check_links()
-    ok = a and b and c and d and e and f and g
+    ok = a and b and c and d and e and f and g and h
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
     sys.exit(0 if ok else 1)
 

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="L476 Stop 2：先在 IRQ 入口留证据，再让 HAL 清标志">
+<style>
+@keyframes ev0-sq{0%,0.00%{opacity:0.42}0.30%,15.60%{opacity:1.0}15.90%,100%{opacity:0.42}}
+.ev0{animation:ev0-sq 6.0s linear infinite;}
+@keyframes ev1-sq{0%,20.00%{opacity:0.42}20.30%,35.60%{opacity:1.0}35.90%,100%{opacity:0.42}}
+.ev1{animation:ev1-sq 6.0s linear infinite;}
+@keyframes ev2-sq{0%,40.00%{opacity:0.42}40.30%,55.60%{opacity:1.0}55.90%,100%{opacity:0.42}}
+.ev2{animation:ev2-sq 6.0s linear infinite;}
+@keyframes ev3-sq{0%,60.00%{opacity:0.42}60.30%,75.60%{opacity:1.0}75.90%,100%{opacity:0.42}}
+.ev3{animation:ev3-sq 6.0s linear infinite;}
+@keyframes ev4-sq{0%,80.00%{opacity:0.42}80.30%,95.60%{opacity:1.0}95.90%,100%{opacity:0.42}}
+.ev4{animation:ev4-sq 6.0s linear infinite;}
+
+.ev-flow{stroke-dasharray:5 8;animation:ev-flow-flow 1.2s linear infinite;}@keyframes ev-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-13px}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">L476 Stop 2：先在 IRQ 入口留证据，再让 HAL 清标志</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RTC/EXTI/PWR 原始位只在中断入口可靠；HAL handler 清位后从保留 SRAM 消费记录</text>
+<rect x="765" y="15" width="113" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="821.5" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">24 L4 Stop2</text>
+<rect x="32" y="102" width="152" height="92" fill="#111c31" opacity="1" rx="12" stroke="#34d399" stroke-width="1.5" class="ev0"/>
+<rect x="32" y="102" width="152" height="5" fill="#34d399" opacity="1" rx="3"/>
+<text x="108" y="136" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">准备</text>
+<text x="108" y="163" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清旧标志 · 使能 RTC</text>
+<line x1="188" y1="148" x2="198" y2="148" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1" class="ev-flow"/>
+<polygon points="204.00,148.00 198.00,151.00 198.00,145.00" fill="#22d3ee" opacity="1"/>
+<rect x="208" y="102" width="152" height="92" fill="#111c31" opacity="1" rx="12" stroke="#a78bfa" stroke-width="1.5" class="ev1"/>
+<rect x="208" y="102" width="152" height="5" fill="#a78bfa" opacity="1" rx="3"/>
+<text x="284" y="136" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 2</text>
+<text x="284" y="163" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">WFI · SRAM 保持</text>
+<line x1="364" y1="148" x2="374" y2="148" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1" class="ev-flow"/>
+<polygon points="380.00,148.00 374.00,151.00 374.00,145.00" fill="#22d3ee" opacity="1"/>
+<rect x="384" y="102" width="152" height="92" fill="#111c31" opacity="1" rx="12" stroke="#fbbf24" stroke-width="1.5" class="ev2"/>
+<rect x="384" y="102" width="152" height="5" fill="#fbbf24" opacity="1" rx="3"/>
+<text x="460" y="136" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IRQ 入口</text>
+<text x="460" y="163" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读 3 组原始寄存器</text>
+<line x1="540" y1="148" x2="550" y2="148" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1" class="ev-flow"/>
+<polygon points="556.00,148.00 550.00,151.00 550.00,145.00" fill="#22d3ee" opacity="1"/>
+<rect x="560" y="102" width="152" height="92" fill="#111c31" opacity="1" rx="12" stroke="#f87171" stroke-width="1.5" class="ev3"/>
+<rect x="560" y="102" width="152" height="5" fill="#f87171" opacity="1" rx="3"/>
+<text x="636" y="136" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HAL handler</text>
+<text x="636" y="163" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清 EXTI → 清 WUTF</text>
+<line x1="716" y1="148" x2="726" y2="148" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" opacity="1" class="ev-flow"/>
+<polygon points="732.00,148.00 726.00,151.00 726.00,145.00" fill="#22d3ee" opacity="1"/>
+<rect x="736" y="102" width="152" height="92" fill="#111c31" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5" class="ev4"/>
+<rect x="736" y="102" width="152" height="5" fill="#22d3ee" opacity="1" rx="3"/>
+<text x="812" y="136" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">回到 main</text>
+<text x="812" y="163" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">恢复时钟 · 消费记录</text>
+<rect x="40" y="226" width="820" height="116" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
+<text x="58" y="252" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IRQ 入口写入 Stop 2 保持的 SRAM</text>
+<rect x="58" y="270" width="182" height="54" fill="#111c31" opacity="1" rx="8" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="68" y="291" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">rtc_isr</text>
+<text x="230" y="291" font-size="9.5" fill="#e6edf3" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RTC-&gt;ISR</text>
+<text x="68" y="311" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">WUTF 仍为 1</text>
+<rect x="256" y="270" width="182" height="54" fill="#111c31" opacity="1" rx="8" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="266" y="291" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">exti_pr1</text>
+<text x="428" y="291" font-size="9.5" fill="#e6edf3" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">EXTI-&gt;PR1</text>
+<text x="266" y="311" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">line 20 pending</text>
+<rect x="454" y="270" width="182" height="54" fill="#111c31" opacity="1" rx="8" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="464" y="291" font-size="10.5" fill="#a78bfa" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">pwr_sr1</text>
+<text x="626" y="291" font-size="9.5" fill="#e6edf3" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PWR-&gt;SR1</text>
+<text x="464" y="311" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">WKUP 原始状态</text>
+<rect x="652" y="270" width="182" height="54" fill="#111c31" opacity="1" rx="8" stroke="#34d399" stroke-width="1.5"/>
+<text x="662" y="291" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">sequence</text>
+<text x="824" y="291" font-size="9.5" fill="#e6edf3" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+1</text>
+<text x="662" y="311" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">最后发布记录</text>
+<rect x="40" y="364" width="388" height="150" fill="#111c31" opacity="1" rx="12" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="58" y="390" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">为什么不能在 Stop 返回后再读？</text>
+<text x="58" y="417" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">IRQ entry</text>
+<text x="180" y="417" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">EXTI=1 · WUTF=1</text>
+<text x="58" y="440" font-size="10.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL clear</text>
+<text x="180" y="440" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">EXTI=0 · WUTF=0</text>
+<text x="58" y="463" font-size="10.5" fill="#f87171" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">callback</text>
+<text x="180" y="463" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原始位已经消失</text>
+<text x="58" y="486" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">main resume</text>
+<text x="180" y="486" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只能读 WakeEvidence</text>
+<rect x="452" y="364" width="408" height="150" fill="#0e1626" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="470" y="390" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">消费记录的顺序</text>
+<text x="470" y="418" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① IRQ 入口：写 rtc_isr / exti_pr1 / pwr_sr1</text>
+<text x="470" y="442" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② __DMB() 后 sequence++，再调用 HAL handler</text>
+<text x="470" y="466" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ Stop 返回：稳定复制 retained record</text>
+<text x="470" y="490" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ 恢复 PLL/SYSCLK 后再打印和清软件记录</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不变量：先记录，后清硬件标志；先恢复时钟，后输出证据</text>
+<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
