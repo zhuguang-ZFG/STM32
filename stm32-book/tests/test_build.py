@@ -179,6 +179,46 @@ class BookBuildContractTests(unittest.TestCase):
                 self.assertGreater(table["wrapperScrollWidth"], table["wrapperClientWidth"])
                 self.assertGreaterEqual(table["narrowestHeader"], 72)
 
+    def test_print_layout_keeps_reading_units_together(self) -> None:
+        from playwright.sync_api import sync_playwright
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(Path(tmp))
+            candidates = self.builder._browser_candidates(None)
+            launch_args = {"headless": True}
+            if candidates:
+                launch_args["executable_path"] = str(candidates[0])
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch(**launch_args)
+                try:
+                    page = browser.new_page(viewport={"width": 1280, "height": 900})
+                    page.emulate_media(media="print")
+                    page.goto(output.resolve().as_uri() + "#chapter-27", wait_until="load")
+                    styles = page.evaluate(
+                        """() => {
+                            const chapter = document.querySelector('#chapter-27');
+                            const css = selector => getComputedStyle(chapter.querySelector(selector));
+                            const body = getComputedStyle(document.body);
+                            return {
+                                headingBreakAfter: css('h2').breakAfter,
+                                mediaBreakInside: css('p[align="center"]').breakInside,
+                                rowBreakInside: css('tr').breakInside,
+                                preWhiteSpace: css('pre').whiteSpace,
+                                orphans: Number(body.orphans),
+                                widows: Number(body.widows),
+                            };
+                        }"""
+                    )
+                finally:
+                    browser.close()
+
+        self.assertIn(styles["headingBreakAfter"], {"avoid", "avoid-page"})
+        self.assertIn(styles["mediaBreakInside"], {"avoid", "avoid-page"})
+        self.assertIn(styles["rowBreakInside"], {"avoid", "avoid-page"})
+        self.assertEqual("pre-wrap", styles["preWhiteSpace"])
+        self.assertGreaterEqual(styles["orphans"], 3)
+        self.assertGreaterEqual(styles["widows"], 3)
+
     def test_rendered_table_without_cells_is_a_build_error(self) -> None:
         with self.assertRaisesRegex(self.builder.BuildError, "rendered table has no cells"):
             self.builder.wrap_tables("<table><caption>empty</caption></table>")
