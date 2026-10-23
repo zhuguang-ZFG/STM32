@@ -100,7 +100,7 @@
 画面是脚本用文泉驿微米黑画的标题卡，并贴上本仓库自己的 SVG，不是实拍。
 配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
 edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
-仓库里放的是合成后的 MP4，28 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
+仓库里放的是合成后的 MP4，29 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
 重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 
 ## 七、引用方式

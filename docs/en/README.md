@@ -6,13 +6,13 @@
 
 **Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
 
-An STM32 notebook in English, translated from the Chinese edition: 28 chapters (00–27) · 24 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 14 buildable examples · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 24 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 14 buildable examples · 4 cheatsheets
 
-[![docs](https://img.shields.io/badge/chapters-28-60a5fa?style=flat-square)](contents.md)
+[![docs](https://img.shields.io/badge/chapters-29-60a5fa?style=flat-square)](contents.md)
 [![animations](https://img.shields.io/badge/SVG_animations-24-22d3ee?style=flat-square)](../../assets/animations/)
 [![boards](https://img.shields.io/badge/board_drawings-7-fbbf24?style=flat-square)](../../assets/boards/)
 [![gif](https://img.shields.io/badge/GIF-6-f87171?style=flat-square)](../../assets/gif/)
-[![examples](https://img.shields.io/badge/examples-13-34d399?style=flat-square)](../../examples/)
+[![examples](https://img.shields.io/badge/examples-14-34d399?style=flat-square)](../../examples/)
 [![cheatsheets](https://img.shields.io/badge/cheatsheets-4-a78bfa?style=flat-square)](cheatsheets/hal.md)
 [![tools](https://img.shields.io/badge/generators-Python_stdlib-f472b6?style=flat-square)](../../tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](../../LICENSE)
@@ -35,7 +35,7 @@ Tutorials are easy to find and still fail in the same three ways:
 | **You do not know the board or the pins.** | **Structure drawings**, a full pinout, and a wiring overview. All drawn, not photographed. |
 | **Copied examples do not build.** | Each example is HAL you can compile, plus the CubeMX settings and the usual traps. |
 
-> **Honest note:** every figure here is a **vector drawing (SVG) or a generated raster animation (GIF)**. None of them is a vendor photograph. For a real photo or the official schematic, use the links in [chapter 21](21-board-maps.md).
+> **Honest note:** mechanism figures are original vector drawings or generated GIFs, not vendor product photographs. Two Nucleo-64 photos are CC0 assets with provenance recorded in [`assets/photos/README.md`](../../assets/photos/README.md). For official schematics, use the links in [chapter 21](21-board-maps.md).
 
 ## Start here
 
@@ -158,7 +158,7 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 </details>
 
 <details open>
-<summary><b>Projects, simulation, family pinouts, SPL, and networking (18–27)</b></summary>
+<summary><b>Projects, simulation, family pinouts, SPL, networking, and systems (18–28)</b></summary>
 
 | # | Chapter | Keywords |
 | --- | --- | --- |
@@ -172,6 +172,7 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 | 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI LQFP144 · FDCAN · VCAP |
 | 26 | [STM32F10x SPL](26-spl.md) | V3.5.0 project skeleton · API boundaries · HAL migration |
 | 27 | [Networking and protocol stacks](27-network.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · layered diagnosis |
+| 28 | [Embedded systems and the RTOS ecosystem](28-system-rtos.md) | ownership · deadlines · FreeRTOS / RT-Thread / Zephyr · startup and watchdog health |
 
 </details>
 
@@ -242,11 +243,11 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 ## Roadmap
 
 - [x] The chapter set plus the writing guide
-- [x] 23 SVG mechanism animations
-- [x] Seven board drawings plus the LQFP48 pinout
+- [x] 24 SVG mechanism animations
+- [x] Seven board drawings plus three G0/L4/H7 package pinouts
 - [x] Six generated GIFs and the asset checker
-- [x] 13 HAL examples (including bxCAN and USB CDC/HID) and 4 cheatsheets
-- [x] A narrated MP4 per chapter (`assets/video/`, Chinese voice-over plus SRT)
+- [x] 14 buildable examples (including frozen SPL, bxCAN, and USB CDC/HID) and 4 cheatsheets
+- [x] A narrated MP4 for chapters 00–28 (`assets/video/`, Chinese voice-over plus SRT)
 - [x] Wokwi projects and Renode `.resc` scripts (chapter 22)
 - [x] H7 / G0 / L4 pinouts from DS12232, DS10198, and DS12110 (chapters 23–25)
 - [x] English edition in `docs/en/`

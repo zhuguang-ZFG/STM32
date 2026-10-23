@@ -39,7 +39,7 @@ python3 tools/gen_gifs.py led-blink
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
 | `gen_videos.py` | 旧的 5 帧 ASCII 幻灯，章节讲解已改由 `gen_narrated.py` 生成 |
-| `narration.py` | 第 00–27 章的分镜、口诀和旁白稿 |
+| `narration.py` | 第 00–28 章的分镜、口诀和旁白稿 |
 | `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
 | `check_assets.py` | 自检：SVG、GIF 回验、CC0 实拍哈希/尺寸、章节幻灯、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
