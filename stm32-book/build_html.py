@@ -462,18 +462,25 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
 @media (prefers-color-scheme: dark) {
   :root { --paper: #11171b; --ink: #e9eef1; --muted: #acb7bf; --line: #3a454d; --panel: #1c252b; --accent: #78c8e8; --accent-soft: #17313c; --code: #080c0f; --code-ink: #edf6f9; }
 }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 @media print {
   :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #444; --line: #bbb; --panel: #f4f4f4; --accent: #075e84; --accent-soft: #edf6f9; }
   @page { size: A4; margin: 16mm 15mm 18mm; }
-  body { font-size: 9.5pt; line-height: 1.55; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; }
   .frontmatter, .contents, .part-divider, .chapter, .appendix { padding: 0; }
   .frontmatter, .contents, .part-divider, .chapter, .appendix { page-break-before: always; }
   .part-divider { min-height: 220mm; }
+  h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
   .table-scroll { overflow: visible; }
   .table-scroll table { min-width: 0; }
-  .chapter-compass, .quick-check, table, pre, blockquote, .source-card, img { break-inside: avoid; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid-page; page-break-inside: avoid; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid-page; page-break-inside: avoid; }
   .source-registry { grid-template-columns: 1fr; }
   a { color: inherit; text-decoration: none; }
   .back-to-toc, .skip-link { display: none; }
