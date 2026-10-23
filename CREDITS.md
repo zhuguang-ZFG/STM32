@@ -7,10 +7,10 @@
 
 | 类型 | 位置 | 来源 |
 | --- | --- | --- |
-| SVG 原理动画（22 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
+| SVG 原理动画（23 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（5 张） | `assets/diagrams/` | 本仓库作者用代码绘制，脚本见 `tools/gen_diagrams.py`，采用 CC BY 4.0 |
+| 静态框图（6 张） | `assets/diagrams/` | 本仓库作者用代码绘制，脚本见 `tools/gen_diagrams.py`，采用 CC BY 4.0 |
 | 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
@@ -23,16 +23,22 @@
 | **RM0008** | STM32F101/102/103/105/107 | F1 参考手册（寄存器、外设、时钟树） |
 | **RM0383** | STM32F411xC/E | F411 参考手册 |
 | **RM0090** | STM32F405/407/415/417 | F4 参考手册 |
+| **RM0433** | STM32H742/H743/H750/H753 | H7 总线矩阵与 Ethernet MAC/MTL/DMA |
 | **PM0214** | Cortex-M4 | 内核编程手册（NVIC、SysTick、SCB、MPU） |
 | **PM0056** | Cortex-M3 | 内核编程手册 |
 | **DS5319** | STM32F103x8/B | F103C8T6 数据手册（引脚定义、电气特性） |
 | **DS10314** | STM32F411xC/E | F411 数据手册 |
 | **AN2606** | 全系列 | 出厂 Bootloader 与启动模式说明 |
 | **AN3965/AN4657** | F1/F4 | IAP 应用笔记 |
+| **AN4839** | Cortex-M7 / STM32F7/H7 | L1 Cache、MPU 属性与 DMA 一致性 |
 | **UM1724** | Nucleo-64 | Nucleo 用户手册（跳线、SB 电阻、引脚映射） |
+| **UM2407** | STM32H7 Nucleo-144 (MB1364) | H743ZI2 Ethernet PHY、RJ45 与板级配置 |
+| **UM1713** | STM32Cube + lwIP | Ethernet HAL、lwIP 与有/无 RTOS 应用结构 |
 | **UM1472** | STM32F4DISCOVERY | Discovery 用户手册 |
 
 ST 官网文档中心：<https://www.st.com/resource/en/>
+
+协议语义优先查 [IETF RFC Editor](https://www.rfc-editor.org/)（TCP/UDP/DHCP/DNS/TLS）与 [OASIS MQTT 5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html)；库的执行上下文与 API 边界查 [lwIP upstream](https://www.nongnu.org/lwip/2_1_x/) 和 [Mbed TLS 官方文档](https://mbed-tls.readthedocs.io/)。
 
 ## 三、社区与开源项目
 

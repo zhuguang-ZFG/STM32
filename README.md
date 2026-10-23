@@ -6,11 +6,11 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：27 篇文档（00–26）· 22 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：28 篇文档（00–27）· 23 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
 
-[![docs](https://img.shields.io/badge/文档-27_篇-60a5fa?style=flat-square)](docs/)
+[![docs](https://img.shields.io/badge/文档-28_篇-60a5fa?style=flat-square)](docs/)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
-[![animations](https://img.shields.io/badge/SVG_动画-22_个-22d3ee?style=flat-square)](assets/animations/)
+[![animations](https://img.shields.io/badge/SVG_动画-23_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
@@ -106,7 +106,7 @@
 </tr>
 </table>
 
-完整清单（22 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
+完整清单（23 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -193,7 +193,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 </details>
 
 <details open>
-<summary><b>实战、仿真、系列引脚与 SPL（18 ~ 26）</b></summary>
+<summary><b>实战、仿真、系列引脚、SPL 与网络（18 ~ 27）</b></summary>
 
 | # | 章节 | 关键词 |
 | --- | --- | --- |
@@ -206,6 +206,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · Nucleo-64 实拍 · Stop 2 IRQ 留证据 · JP6 功耗测量 |
 | 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
 | 26 | [STM32F10x 标准外设库 SPL](docs/26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架 · HAL/SPL/寄存器映射 · 旧工程迁移 |
+| 27 | [网络与协议栈](docs/27-网络与协议栈.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · 分层排错与断网恢复 |
 
 </details>
 
@@ -248,25 +249,25 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```text
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
-├── docs/                     ← 00–26 章 + CONTENT_GUIDE.md 写作规范
+├── docs/                     ← 00–27 章 + CONTENT_GUIDE.md 写作规范
 ├── examples/                 ← 14 个可编译示例（含 SPL/CMake 与 HAL 示例）
 ├── cheatsheets/              ← 4 份速查表
-├── stm32-book/               ← 27 章整书版：manifest、五份附录、离线 HTML/PDF 构建
+├── stm32-book/               ← 28 章整书版：manifest、五份附录、离线 HTML/PDF 构建
 ├── assets/
-│   ├── animations/           ← 22 个 SVG 动画（CSS @keyframes / SMIL）
+│   ├── animations/           ← 23 个 SVG 动画（CSS @keyframes / SMIL）
 │   ├── boards/               ← 7 张板卡结构图 + 3 张芯片引脚图
 │   ├── photos/               ← 2 张带完整来源记录的 CC0 Nucleo-64 实拍
-│   ├── diagrams/             ← 5 张静态框图
+│   ├── diagrams/             ← 6 张静态框图
 │   ├── gif/                  ← 6 个程序生成的光栅动画
 │   └── README.md             ← 素材清单与引用方式
 └── tools/                    ← 素材生成脚本（纯标准库，零依赖）
     ├── svgkit.py             ← SVG 画布 + 动画片段库
     ├── anim_basics.py        ← 工具链/启动/存储器/时钟树动画
     ├── anim_gpio.py          ← GPIO/中断/NVIC/调试动画
-    ├── anim_comm.py          ← UART/I2C/SPI/CAN/USB 动画
+    ├── anim_comm.py          ← UART/I2C/SPI/CAN/USB/网络分层动画
     ├── anim_sys.py           ← 定时器/ADC/DMA/看门狗/IAP/RTOS/低功耗动画
     ├── gen_boards.py         ← 板卡实物结构图
-    ├── gen_diagrams.py       ← 静态框图
+    ├── gen_diagrams.py       ← 静态框图（含功耗接线与网络排错）
     ├── minigfx.py            ← 位图绘制 + GIF89a/LZW 编码器
     ├── gen_gifs.py           ← 光栅动画
     ├── gen_animations.py     ← 一键生成全部动画
@@ -279,7 +280,7 @@ SVG、引脚图和 GIF 都是**代码生成**的，clone 下来就能重新生�
 `assets/photos/` 的两张 CC0 实拍不由脚本生成，来源页、处理方式与 SHA-256 记录在该目录的 README：
 
 ```bash
-# 生成 22 个 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
+# 生成 23 个 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
 python3 tools/gen_animations.py
 
 # 生成板卡实物结构图与静态框图
@@ -316,12 +317,12 @@ python3 tools/check_assets.py
 
 ## Roadmap
 
-- [x] 27 章知识文档 + 写作规范
-- [x] 22 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS / Stop 2 证据链）
+- [x] 28 章知识文档 + 写作规范
+- [x] 23 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 通信 / DMA / RTOS / Stop 2 / 网络分层）
 - [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
-- [x] 每章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
+- [x] 第 00–25 章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
 - [x] 英文版（[docs/en/](docs/en/README.md)，含章节与四份速查表）

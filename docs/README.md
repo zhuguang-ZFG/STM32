@@ -47,6 +47,7 @@
 | 24 | [STM32L4 引脚](24-STM32L4引脚.md) | L476RG 引脚、Nucleo-64 实拍、Stop 2 IRQ 留证据与 JP6 功耗测量 |
 | 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI LQFP144、FDCAN、VCAP 与三个电源域 |
 | 26 | [STM32F10x 标准外设库 SPL](26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架、关键 API、HAL/寄存器映射与迁移边界 |
+| 27 | [网络与协议栈](27-网络与协议栈.md) | Ethernet/RMII、lwIP 线程边界、TCP/UDP、MQTT/TLS、分层排错与断网恢复 |
 
 ## 相关目录
 

@@ -37,6 +37,7 @@
 | `lowpower-wakeup.svg` | 睡眠/停止/待机三种低功耗模式与唤醒源 | 16 |
 | `debug-swo.svg` | SWD 调试 + SWO/ITM 打印跟踪 | 17 |
 | `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
+| `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -75,6 +76,7 @@
 | `peripheral-bus.svg` | 外设挂在哪条总线上（AHB1/AHB2/APB1/APB2） |
 | `interrupt-priority.svg` | 抢占优先级 vs 子优先级的仲裁示意 |
 | `l4-idd-bench.svg` | NUCLEO-L476RG 的 JP6 IDD 串联测流与 MCU 端 VDD 同步测量 |
+| `network-debug-ladder.svg` | 从 PHY/ARP/IP/TCP 到 TLS/MQTT 的分层排错阶梯 |
 
 ## 五、光栅动画 `assets/gif/`
 
