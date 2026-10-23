@@ -649,8 +649,64 @@ def l4_stop2_evidence() -> Svg:
     return s
 
 
+
+# --------------------------------------------------------------------------- RTOS 系统分层
+
+
+def rtos_system_layers() -> Svg:
+    s = Svg(W, H, "嵌入式系统不只是一颗 RTOS 内核",
+            "从硬件、驱动和内核，到服务与应用；每层都要有所有权、超时和故障边界")
+    s.header(tag="28 系统", tag_color=T.VIOLET)
+
+    layers = [
+        ("应用", "控制回路 · 数据采集 · 人机界面 · 升级策略", T.CYAN),
+        ("系统服务", "网络 · 文件系统 · 日志 · Shell · 时间 · OTA", T.GREEN),
+        ("OS API", "原生 API / CMSIS-RTOS2；只统一接口，不抹平语义", T.AMBER),
+        ("内核", "调度 · IPC · 定时器 · 内存 · 低功耗 · 故障钩子", T.VIOLET),
+        ("BSP / 设备", "HAL/LL · RT-Thread device · Zephyr device model", T.PINK),
+        ("硬件", "Cortex-M · NVIC · DMA · Cache · 外设 · PHY", T.RED),
+    ]
+    x, y, bw, bh, gap = 42, 92, 548, 62, 12
+    for i, (name, detail, color) in enumerate(layers):
+        yy = y + i * (bh + gap)
+        s.rect(x, yy, bw, bh, fill=T.PANEL, stroke=color, rx=11, cls=f"sl{i}")
+        s.rect(x, yy, 7, bh, fill=color, rx=4)
+        s.text(x + 24, yy + 27, name, size=14, fill=color, weight="700")
+        s.text(x + 132, yy + 27, detail, size=10.5, fill=T.MUTED)
+        s.text(x + 24, yy + 49, "入口有前置条件 · 出口有结果码 · 等待有截止点", size=9.5,
+               fill=T.DIM)
+        if i < len(layers) - 1:
+            s.arrow(x + bw / 2, yy + bh + 3, x + bw / 2,
+                    yy + bh + gap - 3, color=T.CYAN, sw=2, head=6, cls="sl-flow")
+    s.add_style(_seq_flash("sl", len(layers), period=7.2, window=0.72,
+                           peak=1.0, rest=0.48))
+    s.add_style(anim_flow(".sl-flow", dur="1.1s", dash="4 7", shift=-11))
+
+    s.text(626, 102, "怎么选系统", size=14, fill=T.TEXT, weight="700")
+    cards = [
+        ("裸机", "状态机明确\n资源极紧", T.DIM),
+        ("FreeRTOS", "小内核\n自己组合服务", T.CYAN),
+        ("RT-Thread", "设备框架 + 组件\n中文生态", T.GREEN),
+        ("Zephyr", "Kconfig + Devicetree\n跨厂商子系统", T.AMBER),
+    ]
+    for i, (name, detail, color) in enumerate(cards):
+        yy = 122 + i * 94
+        s.rect(618, yy, 242, 76, fill=T.BG2, stroke=color, rx=10)
+        s.text(634, yy + 25, name, size=13, fill=color, weight="700")
+        for j, line in enumerate(detail.split("\n")):
+            s.text(730, yy + 25 + j * 21, line, size=10.5, fill=T.MUTED)
+
+    s.rect(618, 506, 242, 48, fill=T.PANEL, stroke=T.RED, rx=10)
+    s.text(739, 526, "先列约束，再选生态", size=12, anchor="middle",
+           fill=T.RED, weight="700")
+    s.text(739, 545, "不要用 API 熟悉度代替需求", size=9.5,
+           anchor="middle", fill=T.MUTED)
+    s.footer("不变量：ISR 只发布事件；资源只有一个所有者；每个阻塞都有截止点；证据能定位到第一处分歧")
+    return s
+
+
 ALL = [timer_pwm, timer_modes, adc_sar, dma_circular, iwdg_window, flash_iap,
-       freertos_scheduler, lowpower_wakeup, l4_stop2_evidence]
+       freertos_scheduler, lowpower_wakeup, l4_stop2_evidence, rtos_system_layers]
 
 NAMES = {
     "timer_pwm": "timer-pwm",
@@ -662,4 +718,5 @@ NAMES = {
     "freertos_scheduler": "freertos-scheduler",
     "lowpower_wakeup": "lowpower-wakeup",
     "l4_stop2_evidence": "l4-stop2-evidence",
+    "rtos_system_layers": "rtos-system-layers",
 }

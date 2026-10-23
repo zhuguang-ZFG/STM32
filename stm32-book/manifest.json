@@ -1,9 +1,9 @@
 {
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
-  "subtitle": "28 章证据驱动的嵌入式入门与工程手册",
-  "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.0-rc.4",
-  "date": "2026-10-23",
+  "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
+  "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
+  "version": "1.0.0-rc.5",
+  "date": "2026-10-24",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
   "repository": "https://github.com/zhuguang-ZFG/STM32",
@@ -81,6 +81,14 @@
         "25-STM32H7引脚.md",
         "26-STM32F10x标准外设库SPL.md",
         "27-网络与协议栈.md"
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "第七部分 系统架构：从内核对象到可交付产品",
+      "goal": "把调度、设备、服务、故障和资源预算放进同一张系统图，并按约束选择 FreeRTOS、RT-Thread、Zephyr 或裸机。",
+      "files": [
+        "28-嵌入式系统与RTOS生态.md"
       ]
     }
   ],
@@ -252,6 +260,12 @@
       "deliverable": "一张分层数据路径图、一张网络排错阶梯、一个带长度字段与业务序号的 TCP 协议，以及覆盖 DHCP/DNS/MQTT/TLS 的故障注入记录。",
       "boundary": "link、ping、TCP ACK、MQTT QoS 与业务落盘是不同证据层；H7 DMA 内存域/Cache、lwIP 线程上下文、证书时间与业务幂等必须分别验收。",
       "sources": ["rm0433", "um2407", "um1713", "an4839", "stm32cube-h7-lwip", "lwip-pitfalls", "mqtt-v5", "mbedtls-networking", "rfc9293", "es0392"]
+    },
+    "28-嵌入式系统与RTOS生态.md": {
+      "question": "怎样把内核、驱动、系统服务和产品状态机连成有所有权、截止点、资源预算与恢复证据的完整系统？",
+      "deliverable": "一张系统分层图、一份任务/中断/IPC/内存预算、一张 OS 选型表，以及覆盖队列满、任务冻结和驱动超时的故障注入记录。",
+      "boundary": "FreeRTOS、RT-Thread、Zephyr 和 CMSIS-RTOS2 的 API 名称不能替代目标版本、BSP、执行上下文和最坏时延验证；示例预算不是硬件实测。",
+      "sources": ["freertos-1132", "rtthread-530", "zephyr-442", "cmsis-640", "pm0056"]
     }
   },
   "appendices": [
@@ -639,6 +653,42 @@
       "accessed": "2026-10-23",
       "license": "上游 ST 固件条款；本书不再分发其源码",
       "scope": "冻结核对 V3.5.0 目录、头文件 API 原型与官方示例；结论仍回到 ST 产品页和 RM0008。"
+    },
+    "freertos-1132": {
+      "title": "FreeRTOS Kernel V11.3.2 and developer documentation",
+      "authority": "FreeRTOS 官方 release 与开发者文档",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "V11.3.2，2026-10-16 发布；功能语义同时核对 freertos.org Kernel Developer Docs",
+      "accessed": "2026-10-24",
+      "license": "MIT 内核；官方文档仅链接与独立讲解",
+      "scope": "任务调度、IPC、静态/动态内存、tickless、钩子与 SMP 能力边界。"
+    },
+    "rtthread-530": {
+      "title": "RT-Thread v5.3.0 and official document center",
+      "authority": "RT-Thread 官方 release 与文档中心",
+      "url": "https://github.com/RT-Thread/rt-thread/releases/tag/v5.3.0",
+      "snapshot": "v5.3.0，2026-09-10 发布",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0 项目；文档仅链接与独立讲解",
+      "scope": "内核 IPC、设备框架、组件初始化、FinSH、DFS、SAL、软件包与 STM32 BSP。"
+    },
+    "zephyr-442": {
+      "title": "Zephyr v4.4.2 and versioned documentation",
+      "authority": "Zephyr Project 官方 bugfix release 与文档",
+      "url": "https://github.com/zephyrproject-rtos/zephyr/releases/tag/v4.4.2",
+      "snapshot": "v4.4.2，2026-08-07 发布；target commit dccb09599635bdff17633fa7e9dab014b91dce90",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0 主项目及各模块许可；文档仅链接与独立讲解",
+      "scope": "Kernel Services、Kconfig、Devicetree、device model、workqueue 与 west 多仓库冻结。"
+    },
+    "cmsis-640": {
+      "title": "CMSIS 6.4.0 — CMSIS-RTOS2 API 2.3.0",
+      "authority": "Arm 官方 release 与 API 文档",
+      "url": "https://github.com/ARM-software/CMSIS_6/releases/tag/v6.4.0",
+      "snapshot": "CMSIS 6.4.0，CMSIS-RTOS2 2.3.0，2026-10-08 发布",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0；API 文档仅链接与独立讲解",
+      "scope": "线程、flags、event、mutex、semaphore、message queue 与 ISR 调用边界的通用接口。"
     }
   }
 }
