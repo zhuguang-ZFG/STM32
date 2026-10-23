@@ -224,7 +224,7 @@ Freeze and review at least:
 - tickless-idle prerequisites and wake timebase;
 - whether the runtime-statistics clock is independent of the kernel tick.
 
-V11 includes SMP scheduling support, but most STM32 Cortex-M projects still use a single-core port. An STM32H745 M7+M4 normally runs independent firmware on unlike cores and communicates through shared memory/IPCC. Two cores do not make it symmetric multiprocessing.
+V11 includes SMP scheduling support, but most STM32 Cortex-M projects still use a single-core port. An STM32H745 M7+M4 normally runs independent firmware on unlike cores, exchanges data through shared memory, and uses HSEM hardware semaphores for inter-core synchronization. Two cores do not make it symmetric multiprocessing.
 
 ## 🟩 RT-Thread v5.3.0: kernel, device framework, and components
 
