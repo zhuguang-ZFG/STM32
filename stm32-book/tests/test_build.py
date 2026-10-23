@@ -76,6 +76,14 @@ class BookBuildContractTests(unittest.TestCase):
                 self.assertTrue(guide["boundary"].strip())
                 self.assertGreaterEqual(len(guide["sources"]), 1)
 
+    def test_english_edition_covers_all_29_source_chapters(self) -> None:
+        docs = BOOK_DIR.parent / "docs"
+        chinese_numbers = [path.name[:2] for path in sorted(docs.glob("[0-2][0-9]-*.md"))]
+        english_numbers = [path.name[:2] for path in sorted((docs / "en").glob("[0-2][0-9]-*.md"))]
+
+        self.assertEqual([f"{index:02d}" for index in range(29)], chinese_numbers)
+        self.assertEqual(chinese_numbers, english_numbers)
+
     def test_build_produces_one_complete_offline_book(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = self.builder.build_html(Path(tmp))
