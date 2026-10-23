@@ -373,8 +373,77 @@ def usb_enumeration() -> Svg:
     return s
 
 
+
+
+# --------------------------------------------------------------------------- Ethernet / lwIP / MQTT
+
+
+def network_packet_journey() -> Svg:
+    s = Svg(W, H, "一条 MQTT 消息怎样穿过 STM32 网络栈",
+            "每层只解决自己的问题：消息语义、可靠字节流、寻址、帧传输与物理链路")
+    s.header(tag="27 网络", tag_color=T.CYAN)
+
+    layers = [
+        ("APP", "{temp: 23.6}", "业务序号 / 幂等键", T.PINK),
+        ("MQTT", "PUBLISH · QoS 1", "可能重复，不等于业务只执行一次", T.VIOLET),
+        ("TLS", "record + tag", "CA / 主机名 / 时间 / RNG", T.AMBER),
+        ("TCP", "seq · ACK · retransmit", "字节流没有消息边界", T.GREEN),
+        ("IP", "src / dst / route", "地址、掩码、网关", T.CYAN),
+        ("Ethernet", "dst MAC · EtherType · FCS", "ARP 与二层广播域", T.BLUE),
+        ("DMA / MAC", "descriptor → RMII → PHY", "可达 SRAM · 32 B 对齐 · Cache", T.ORANGE),
+    ]
+    x, y0, bw, bh, gap = 56, 90, 500, 54, 10
+    for i, (name, payload, boundary, color) in enumerate(layers):
+        y = y0 + i * (bh + gap)
+        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=9, cls=f"net{i}")
+        s.rect(x, y, 84, bh, fill=T.BG2, stroke=color, rx=9)
+        s.text(x + 42, y + 32, name, size=12, anchor="middle", fill=color, weight="700")
+        s.text(x + 102, y + 22, payload, size=11, mono=True, fill=T.TEXT, weight="600")
+        s.text(x + 102, y + 42, boundary, size=9.8, fill=T.MUTED)
+        if i < len(layers) - 1:
+            s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + gap - 2,
+                    color=T.CYAN, sw=2, head=5, cls="net-flow")
+    s.add_style(_seq_flash("net", len(layers), period=7.0, window=.82,
+                           peak=1.0, rest=.42))
+    s.add_style(anim_flow(".net-flow", dur="1.0s", dash="4 7", shift=-11))
+
+    s.rect(584, 90, 276, 182, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.text(604, 118, "链路建立的证据顺序", size=13, fill=T.TEXT, weight="700")
+    proof = [
+        ("1", "PHY link", "读 PHY BSR，不只看 LED", T.ORANGE),
+        ("2", "ARP", "看到 who-has / is-at", T.BLUE),
+        ("3", "IP", "ping 只证明到 ICMP", T.CYAN),
+        ("4", "TCP", "SYN → SYN/ACK → ACK", T.GREEN),
+        ("5", "TLS/MQTT", "分别记录握手与 CONNACK", T.VIOLET),
+    ]
+    for i, (n, key, note, color) in enumerate(proof):
+        yy = 146 + i * 25
+        s.circle(614, yy - 4, 8, fill=color)
+        s.text(614, yy, n, size=8.5, anchor="middle", fill=T.BG, weight="700")
+        s.text(632, yy, key, size=10, mono=True, fill=color, weight="700")
+        s.text(684, yy, note, size=9.2, fill=T.MUTED)
+
+    s.rect(584, 292, 276, 198, fill=T.PANEL, stroke=T.RED, rx=12)
+    s.text(604, 320, "三个不能混为一谈", size=13, fill=T.TEXT, weight="700")
+    warnings = [
+        ("TCP 已 ACK", "不代表业务已经落盘"),
+        ("MQTT QoS 1", "保证至少一次，重复要幂等"),
+        ("ping 成功", "不证明 DNS/TCP/TLS/MQTT 正常"),
+        ("link up", "不证明 DMA/Cache 与 IP 配置正确"),
+        ("收到一帧", "不代表流式协议分帧完整"),
+    ]
+    for i, (claim, truth) in enumerate(warnings):
+        yy = 350 + i * 27
+        s.text(604, yy, "×", size=13, fill=T.RED, weight="700")
+        s.text(624, yy, claim, size=10, mono=True, fill=T.TEXT)
+        s.text(704, yy, truth, size=9.2, fill=T.MUTED)
+
+    s.footer("分层验收：先 PHY，再 ARP/IP，再 TCP，再 TLS，最后才是 MQTT 与业务语义")
+    return s
+
+
 ALL = [uart_frame, i2c_transaction, spi_transfer, can_arbitration,
-       usb_enumeration]
+       usb_enumeration, network_packet_journey]
 
 NAMES = {
     "uart_frame": "uart-frame",
@@ -382,5 +451,6 @@ NAMES = {
     "spi_transfer": "spi-transfer",
     "can_arbitration": "can-arbitration",
     "usb_enumeration": "usb-enumeration",
+    "network_packet_journey": "network-packet-journey",
 }
 

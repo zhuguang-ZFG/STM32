@@ -168,3 +168,16 @@
 1. `USE_STDPERIPH_DRIVER` 让设备头文件引入 `stm32f10x_conf.h` 和驱动声明；`STM32F10X_MD` 选择 F103C8/B 一类中容量设备定义，必须与料号、启动文件和链接布局一致。
 2. `USART_SendData()` 只写数据寄存器，不负责完整缓冲发送、等待边界和超时；调用方还要检查 TXE/TC，并为等待定义截止时间与失败处理。
 3. SPL 与 HAL 都会配置同一组 USART 寄存器，但各自不知道对方的状态和所有权；双重初始化会让波特率、IRQ、DMA 和状态机互相覆盖。
+
+## 27 STM32 网络与协议栈
+
+1. link LED 通常只说明 PHY 检测到链路脉冲；它不证明 MDIO 配置、MAC/DMA 描述符、Cache 一致性、lwIP 输入路径和 IP 参数正确。
+2. H7 的 Ethernet DMA 不能访问 `0x20000000` 的 DTCM；描述符与数据缓冲必须放在 DMA 可达的 D1/D2 SRAM，并从 map 文件核对最终地址。
+3. invalidate 以 Cache line 为单位。若 RX 缓冲与别的脏变量共享首尾 line，invalidate 会把那些未写回的数据一起丢掉，因此缓冲区要独占并按 32 字节对齐。
+4. `NO_SYS` 主循环或 `tcpip_thread` 才能直接调用 raw API；Netconn/socket 是给应用任务使用的 sequential API。中断不能直接调用 raw `tcp_write()` / `udp_send()`。
+5. TCP 只提供有序可靠字节流，会拆分或合并应用写入；应用必须用长度、分隔符或固定尺寸自行恢复消息边界。
+6. TCP ACK 证明字节到达对端 TCP 栈，不证明应用读取、校验、执行或持久化。业务完成需要带业务序号的应用 ACK。
+7. MQTT QoS 1 是至少一次，断线重发可产生重复 PUBLISH；执行器和写入服务必须用业务幂等键去重。
+8. CA 建立信任根，主机名防止合法证书被用于错误服务，随机数保护握手密钥，可信时间用于证书有效期判断；缺一项都会削弱认证。
+9. 按 DNS 结果 → TCP 三次握手 → TLS 验证 → MQTT CONNECT/CONNACK → 订阅/发布逐层定位，保留对应 PCAP 和错误码。
+10. 仍需维护 AT transaction/URC 解析、deadline、UART 流控、模组复位、网络注册、socket 生命周期、指数退避、离线队列与业务幂等状态机。

@@ -1,13 +1,14 @@
 {
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
-  "subtitle": "27 章证据驱动的嵌入式入门与工程手册",
-  "version": "1.0.0-rc.3",
+  "subtitle": "28 章证据驱动的嵌入式入门与工程手册",
+  "version": "1.0.0-rc.4",
   "date": "2026-10-23",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
   "repository": "https://github.com/zhuguang-ZFG/STM32",
   "license": {
-    "prose_and_images": "CC BY 4.0",
+    "prose_and_original_images": "CC BY 4.0",
+    "third_party_images": "CC0 1.0（仅逐项标注的 assets/photos）",
     "code": "MIT"
   },
   "parts": [
@@ -71,13 +72,14 @@
     },
     {
       "id": "p5",
-      "title": "第六部分 迁移与遗留工程：从 F1 走向 G0、L4 与 H7",
-      "goal": "按封装、电源、复用、时钟、内存和 Cache 完成系列迁移，并能维护或迁出锁定版本的 F1 SPL 遗留工程。",
+      "title": "第六部分 迁移、遗留工程与联网：从芯片边界走向完整系统",
+      "goal": "按封装、电源、时钟、内存、Cache 与网络分层完成迁移，维护遗留 SPL 工程，并把设备接入可诊断、可恢复、可认证的网络。",
       "files": [
         "23-STM32G0引脚.md",
         "24-STM32L4引脚.md",
         "25-STM32H7引脚.md",
-        "26-STM32F10x标准外设库SPL.md"
+        "26-STM32F10x标准外设库SPL.md",
+        "27-网络与协议栈.md"
       ]
     }
   ],
@@ -243,6 +245,12 @@
       "deliverable": "一份锁定 V3.5.0 的工程清单、一张 HAL/SPL/寄存器映射表，以及一次只迁一个外设的波形对照记录。",
       "boundary": "本章只讲 STM32F10x SPL V3.5.0；不把旧 F1 API 当成 G0、L4、H7 的推荐驱动，也不授权混用 SPL/HAL 双重初始化。",
       "sources": ["stsw-stm32054", "spl-f1-mirror", "rm0008"]
+    },
+    "27-网络与协议栈.md": {
+      "question": "STM32 怎样从 PHY/RMII 和 DMA/Cache 走到 lwIP、TCP/UDP、MQTT/TLS，并在断网后可诊断地恢复？",
+      "deliverable": "一张分层数据路径图、一张网络排错阶梯、一个带长度字段与业务序号的 TCP 协议，以及覆盖 DHCP/DNS/MQTT/TLS 的故障注入记录。",
+      "boundary": "link、ping、TCP ACK、MQTT QoS 与业务落盘是不同证据层；H7 DMA 内存域/Cache、lwIP 线程上下文、证书时间与业务幂等必须分别验收。",
+      "sources": ["rm0433", "um2407", "um1713", "an4839", "stm32cube-h7-lwip", "lwip-pitfalls", "mqtt-v5", "mbedtls-networking", "rfc9293", "es0392"]
     }
   },
   "appendices": [
@@ -504,6 +512,96 @@
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
       "scope": "H743ZI 封装、VCAP、电源域、FDCAN 和引脚复用。"
+    },
+    "rm0433": {
+      "title": "RM0433 — STM32H742/H743/H753/H750 Reference Manual",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/dm00314099-stm32h742-stm32h743-753-and-stm32h750-value-line-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对；使用时同时核对目标器件勘误",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "H7 总线矩阵、Ethernet MAC/MTL/DMA、描述符、时钟与寄存器。"
+    },
+    "um2407": {
+      "title": "UM2407 — STM32H7 Nucleo-144 boards (MB1364)",
+      "authority": "ST 官方用户手册",
+      "url": "https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-boards-mb1364-stmicroelectronics.pdf",
+      "snapshot": "NUCLEO-H743ZI2 的 10/100 Ethernet PHY、RJ45、焊桥与板卡 revision",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与引用接口名称）",
+      "scope": "MB1364 Ethernet 硬件路径和板级配置边界。"
+    },
+    "um1713": {
+      "title": "UM1713 — Developing applications on STM32Cube with lwIP TCP/IP stack",
+      "authority": "ST 官方用户手册",
+      "url": "https://www.st.com/resource/en/user_manual/um1713-developing-applications-on-stm32cube-with-lwip-tcpip-stack-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "Ethernet HAL、lwIP middleware 与有/无 RTOS 应用结构。"
+    },
+    "an4839": {
+      "title": "AN4839 — Level 1 cache on STM32F7 Series and STM32H7 Series",
+      "authority": "ST 官方应用笔记",
+      "url": "https://www.st.com/resource/en/application_note/an4839-level-1-cache-on-stm32f7-series-and-stm32h7-series-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "Cortex-M7 L1 Cache、MPU 属性、DMA 一致性与 Cache line 边界。"
+    },
+    "stm32cube-h7-lwip": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI LwIP HTTP Server Netconn RTOS",
+      "authority": "ST 官方 GitHub 固件包",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/tree/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Applications/LwIP/LwIP_HTTP_Server_Netconn_RTOS",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06；lwIP 07680c8172fa5fc135adefa3f7711c14f4938dc9；mbedTLS cdadeb9ba09fd4e913f0f8599832e960545a367d",
+      "accessed": "2026-10-23",
+      "license": "仓库及子模块各自 LICENSE（本书不再分发其源码）",
+      "scope": "Netconn/FreeRTOS HTTP 示例、DTCM 不可达、D1/D2 SRAM、32 B Cache line 与 DMA 缓冲边界。"
+    },
+    "lwip-pitfalls": {
+      "title": "lwIP 2.1.x — Common pitfalls",
+      "authority": "lwIP upstream 官方 Doxygen 文档",
+      "url": "https://www.nongnu.org/lwip/2_1_x/pitfalls.html",
+      "snapshot": "lwIP 2.1.0 文档；2026-10-23 读取",
+      "accessed": "2026-10-23",
+      "license": "lwIP BSD-3-Clause；文档仅链接引用",
+      "scope": "NO_SYS/OS 执行上下文、raw API 线程边界、DMA zero-copy 与 Cache line 风险。"
+    },
+    "mqtt-v5": {
+      "title": "MQTT Version 5.0 — OASIS Standard",
+      "authority": "OASIS 正式标准",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+      "snapshot": "OASIS Standard, 2019-03-07",
+      "accessed": "2026-10-23",
+      "license": "OASIS 文档条款（本书仅链接与独立讲解）",
+      "scope": "MQTT QoS、会话、Keep Alive、Last Will、错误处理与安全语义。"
+    },
+    "mbedtls-networking": {
+      "title": "Mbed TLS tutorial — secure client integration",
+      "authority": "Mbed TLS 官方文档",
+      "url": "https://mbed-tls.readthedocs.io/en/latest/kb/how-to/mbedtls-tutorial/",
+      "snapshot": "2026-10-23 读取；STM32CubeH7 mbedTLS 子模块另固定为 cdadeb9ba09fd4e913f0f8599832e960545a367d",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0 项目文档条款（链接引用）",
+      "scope": "TLS context、RNG、认证模式、主机名、CA 链、BIO 回调与资源释放。"
+    },
+    "rfc9293": {
+      "title": "RFC 9293 — Transmission Control Protocol (TCP)",
+      "authority": "IETF Internet Standard",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293",
+      "snapshot": "RFC 9293, 2022-08；相关 UDP/DHCP/DNS/TLS RFC 在章节中列出",
+      "accessed": "2026-10-23",
+      "license": "IETF Trust 文档条款（链接引用）",
+      "scope": "TCP 可靠有序字节流、连接状态与应用分帧边界。"
+    },
+    "es0392": {
+      "title": "ES0392 — STM32H742/H743/H750/H753 device errata",
+      "authority": "ST 官方器件勘误",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0392-stm32h742xig-stm32h743xig-stm32h750xb-stm32h753xi-device-errata-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对；按目标 silicon revision 重查",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与引用文档号）",
+      "scope": "H7 Ethernet MAC/DMA 与其他目标器件限制、workaround 和 revision 边界。"
     },
     "clion-embedded": {
       "title": "CLion Embedded Development and OpenOCD Support",

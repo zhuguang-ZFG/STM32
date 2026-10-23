@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="STM32 网络排错阶梯：在哪一层第一次偏离？">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
+<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32 网络排错阶梯：在哪一层第一次偏离？</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每次只验证一层；下层证据没成立，不要继续改上层协议参数</text>
+<rect x="801" y="15" width="77" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="839.5" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">27 网络排错</text>
+<rect x="44" y="94" width="812" height="50" fill="#111c31" opacity="1" rx="8" stroke="#fb923c" stroke-width="1.5"/>
+<rect x="44" y="94" width="54" height="50" fill="#fb923c" opacity="1" rx="8"/>
+<text x="71" y="124" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L1</text>
+<text x="116" y="115" font-size="11.5" fill="#fb923c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PHY / RMII</text>
+<text x="116" y="134" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">link=1 · 50 MHz REF_CLK · MDIO 可读</text>
+<rect x="626" y="103" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="123" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">示波器 + PHY BSR</text>
+<line x1="72" y1="146" x2="72" y2="149" stroke="#93a4c0" stroke-width="1.8" stroke-linecap="round" opacity="1"/>
+<polygon points="72.00,154.00 69.50,149.00 74.50,149.00" fill="#93a4c0" opacity="1"/>
+<rect x="44" y="156" width="812" height="50" fill="#0e1626" opacity="1" rx="8" stroke="#60a5fa" stroke-width="1.5"/>
+<rect x="44" y="156" width="54" height="50" fill="#60a5fa" opacity="1" rx="8"/>
+<text x="71" y="186" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L2</text>
+<text x="116" y="177" font-size="11.5" fill="#60a5fa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Ethernet / ARP</text>
+<text x="116" y="196" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">本机发 ARP，能收到目标 MAC</text>
+<rect x="626" y="165" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="185" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Wireshark: arp</text>
+<line x1="72" y1="208" x2="72" y2="211" stroke="#93a4c0" stroke-width="1.8" stroke-linecap="round" opacity="1"/>
+<polygon points="72.00,216.00 69.50,211.00 74.50,211.00" fill="#93a4c0" opacity="1"/>
+<rect x="44" y="218" width="812" height="50" fill="#111c31" opacity="1" rx="8" stroke="#22d3ee" stroke-width="1.5"/>
+<rect x="44" y="218" width="54" height="50" fill="#22d3ee" opacity="1" rx="8"/>
+<text x="71" y="248" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L3</text>
+<text x="116" y="239" font-size="11.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IPv4 / ICMP</text>
+<text x="116" y="258" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IP/掩码/网关正确，同网段可 ping</text>
+<rect x="626" y="227" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="247" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ipconfig · ping</text>
+<line x1="72" y1="270" x2="72" y2="273" stroke="#93a4c0" stroke-width="1.8" stroke-linecap="round" opacity="1"/>
+<polygon points="72.00,278.00 69.50,273.00 74.50,273.00" fill="#93a4c0" opacity="1"/>
+<rect x="44" y="280" width="812" height="50" fill="#0e1626" opacity="1" rx="8" stroke="#34d399" stroke-width="1.5"/>
+<rect x="44" y="280" width="54" height="50" fill="#34d399" opacity="1" rx="8"/>
+<text x="71" y="310" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L4</text>
+<text x="116" y="301" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">UDP / TCP</text>
+<text x="116" y="320" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">端口可达；TCP 完成三次握手</text>
+<rect x="626" y="289" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="309" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Wireshark: tcp.flags.syn</text>
+<line x1="72" y1="332" x2="72" y2="335" stroke="#93a4c0" stroke-width="1.8" stroke-linecap="round" opacity="1"/>
+<polygon points="72.00,340.00 69.50,335.00 74.50,335.00" fill="#93a4c0" opacity="1"/>
+<rect x="44" y="342" width="812" height="50" fill="#111c31" opacity="1" rx="8" stroke="#fbbf24" stroke-width="1.5"/>
+<rect x="44" y="342" width="54" height="50" fill="#fbbf24" opacity="1" rx="8"/>
+<text x="71" y="372" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L5</text>
+<text x="116" y="363" font-size="11.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DNS / TLS</text>
+<text x="116" y="382" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DNS 得到预期地址；证书链与主机名通过</text>
+<rect x="626" y="351" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="371" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">nslookup · TLS error</text>
+<line x1="72" y1="394" x2="72" y2="397" stroke="#93a4c0" stroke-width="1.8" stroke-linecap="round" opacity="1"/>
+<polygon points="72.00,402.00 69.50,397.00 74.50,397.00" fill="#93a4c0" opacity="1"/>
+<rect x="44" y="404" width="812" height="50" fill="#0e1626" opacity="1" rx="8" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="44" y="404" width="54" height="50" fill="#a78bfa" opacity="1" rx="8"/>
+<text x="71" y="434" font-size="12" fill="#0b1220" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">L7</text>
+<text x="116" y="425" font-size="11.5" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HTTP / MQTT</text>
+<text x="116" y="444" font-size="9.7" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">状态码/CONNACK/QoS 与业务序号可追踪</text>
+<rect x="626" y="413" width="210" height="32" fill="#0b1220" opacity="1" rx="6" stroke="#243354" stroke-width="1.5"/>
+<text x="731" y="433" font-size="9.2" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">curl · mosquitto_sub</text>
+<rect x="44" y="478" width="812" height="48" fill="#0e1626" opacity="1" rx="10" stroke="#f87171" stroke-width="1.5"/>
+<text x="62" y="499" font-size="11.5" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">止损规则</text>
+<text x="126" y="499" font-size="10" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第一次失败层就是当前边界：保留 PCAP、寄存器/错误码和配置快照，再改一个变量</text>
+<text x="126" y="517" font-size="9.4" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要用“重启后偶尔能通”替代可重复证据；不要在 ping 不通时先调 MQTT keepalive</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">link → ARP → IP → TCP/UDP → DNS/TLS → 应用协议；自下而上，逐层留证据</text>
+<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

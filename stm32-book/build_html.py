@@ -27,7 +27,7 @@ DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
 OUTPUT_NAME = "stm32-practical-book.html"
 PDF_NAME = "stm32-practical-book.pdf"
-CHAPTER_NAME = re.compile(r"^(?:0\d|1\d|2[0-6])-.+\.md$")
+CHAPTER_NAME = re.compile(r"^(?:0\d|1\d|2[0-7])-.+\.md$")
 VIDEO_OPEN = re.compile(r"<!--\s*video:(ch\d+)\s*-->")
 VIDEO_CLOSE = re.compile(r"<!--\s*/video:(ch\d+)\s*-->")
 VIDEO_BLOCK = re.compile(
@@ -507,7 +507,8 @@ class _AuditParser(HTMLParser):
 def audit_html(document: str) -> None:
     parser = _AuditParser()
     parser.feed(document)
-    if parser.chapters != [f"{number:02d}" for number in range(27)]:
+    expected_chapters = [name[:2] for name in source_chapters()]
+    if parser.chapters != expected_chapters:
         raise BuildError(f"built chapter order is wrong: {parser.chapters}")
     broken = sorted({fragment for fragment in parser.fragments if fragment not in parser.ids})
     if broken:
@@ -522,6 +523,7 @@ def audit_html(document: str) -> None:
 def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PATH) -> Path:
     manifest = load_manifest(manifest_path)
     validate_manifest(manifest)
+    chapter_count = len(source_chapters())
     destination = (output_dir or DIST_DIR).resolve()
     destination.mkdir(parents=True, exist_ok=True)
 
@@ -540,7 +542,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
   <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
   <p class="edition">v{html.escape(manifest['version'])} · {html.escape(manifest['date'])}<br>
   {html.escape(manifest['author'])}<br>
-  正文与图片 {html.escape(manifest['license']['prose_and_images'])} · 代码 {html.escape(manifest['license']['code'])}</p>
+  原创正文/图片 {html.escape(manifest['license']['prose_and_original_images'])} · 第三方实拍 {html.escape(manifest['license']['third_party_images'])} · 代码 {html.escape(manifest['license']['code'])}</p>
 </section>
 <section class="frontmatter" id="how-to-read">
   <h1>这不是文章合集</h1>
@@ -617,7 +619,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 <body>
 <a class="skip-link" href="#contents">跳到目录</a>
 <main class="book">{''.join(body)}</main>
-<footer class="book-footer">本书由 <code>stm32-book/build_html.py</code> 从 27 章源文档构建；来源、冻结点与许可见附录 E。</footer>
+<footer class="book-footer">本书由 <code>stm32-book/build_html.py</code> 从 {chapter_count} 章源文档构建；来源、冻结点与许可见附录 E。</footer>
 </body>
 </html>
 """

@@ -318,8 +318,50 @@ def l4_idd_bench() -> Svg:
     return s
 
 
+
+
+def network_debug_ladder() -> Svg:
+    s = Svg(W, H, "STM32 网络排错阶梯：在哪一层第一次偏离？",
+            "每次只验证一层；下层证据没成立，不要继续改上层协议参数")
+    s.header(tag="27 网络排错", tag_color=T.CYAN)
+
+    rows = [
+        ("L1", "PHY / RMII", "link=1 · 50 MHz REF_CLK · MDIO 可读", "示波器 + PHY BSR", T.ORANGE),
+        ("L2", "Ethernet / ARP", "本机发 ARP，能收到目标 MAC", "Wireshark: arp", T.BLUE),
+        ("L3", "IPv4 / ICMP", "IP/掩码/网关正确，同网段可 ping", "ipconfig · ping", T.CYAN),
+        ("L4", "UDP / TCP", "端口可达；TCP 完成三次握手", "Wireshark: tcp.flags.syn", T.GREEN),
+        ("L5", "DNS / TLS", "DNS 得到预期地址；证书链与主机名通过", "nslookup · TLS error", T.AMBER),
+        ("L7", "HTTP / MQTT", "状态码/CONNACK/QoS 与业务序号可追踪", "curl · mosquitto_sub", T.VIOLET),
+    ]
+    x0, y0, row_h = 44, 94, 62
+    for i, (level, name, assertion, evidence, color) in enumerate(rows):
+        y = y0 + i * row_h
+        s.rect(x0, y, 812, 50, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.rect(x0, y, 54, 50, fill=color, rx=8)
+        s.text(x0 + 27, y + 30, level, size=12, anchor="middle", fill=T.BG,
+               weight="800", mono=True)
+        s.text(116, y + 21, name, size=11.5, fill=color, weight="700")
+        s.text(116, y + 40, assertion, size=9.7, fill=T.MUTED)
+        s.rect(626, y + 9, 210, 32, fill=T.BG, stroke=T.STROKE, rx=6)
+        s.text(731, y + 29, evidence, size=9.2, anchor="middle", mono=True,
+               fill=T.TEXT)
+        if i < len(rows) - 1:
+            s.arrow(72, y + 52, 72, y + row_h - 2, color=T.MUTED, sw=1.8,
+                    head=5)
+
+    s.rect(44, 478, 812, 48, fill=T.BG2, stroke=T.RED, rx=10)
+    s.text(62, 499, "止损规则", size=11.5, fill=T.RED, weight="700")
+    s.text(126, 499, "第一次失败层就是当前边界：保留 PCAP、寄存器/错误码和配置快照，再改一个变量",
+           size=10, fill=T.TEXT)
+    s.text(126, 517, "不要用“重启后偶尔能通”替代可重复证据；不要在 ping 不通时先调 MQTT keepalive",
+           size=9.4, fill=T.MUTED)
+    s.footer("link → ARP → IP → TCP/UDP → DNS/TLS → 应用协议；自下而上，逐层留证据")
+    return s
+
+
 ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
-       l4_idd_bench]
+       l4_idd_bench, network_debug_ladder]
 
 NAMES = {
     "layers_hal_ll_reg": "layers-hal-ll-reg",
@@ -327,6 +369,7 @@ NAMES = {
     "peripheral_bus": "peripheral-bus",
     "interrupt_priority": "interrupt-priority",
     "l4_idd_bench": "l4-idd-bench",
+    "network_debug_ladder": "network-debug-ladder",
 }
 
 
