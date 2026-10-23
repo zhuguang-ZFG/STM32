@@ -84,6 +84,20 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], chinese_numbers)
         self.assertEqual(chinese_numbers, english_numbers)
 
+    def test_narrated_blocks_include_direct_mp4_links(self) -> None:
+        generator_path = BOOK_DIR.parent / "tools" / "gen_narrated.py"
+        spec = importlib.util.spec_from_file_location("narrated_generator_test", generator_path)
+        if spec is None or spec.loader is None:
+            self.fail(f"cannot load narration generator: {generator_path}")
+        generator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(generator)
+        chapter = {"id": "28", "slug": "rtos-system", "segments": []}
+
+        chinese = generator._doc_block(chapter, "../assets/video", "zh", 180)
+        english = generator._doc_block(chapter, "../../assets/video", "en", 180)
+        self.assertIn('href="../assets/video/ch28-rtos-system.mp4"', chinese)
+        self.assertIn('href="../../assets/video/ch28-rtos-system.mp4"', english)
+
     def test_build_produces_one_complete_offline_book(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = self.builder.build_html(Path(tmp))
