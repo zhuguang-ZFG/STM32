@@ -1,6 +1,7 @@
 {
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "28 章证据驱动的嵌入式入门与工程手册",
+  "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, lwIP, Ethernet, MQTT, TLS",
   "version": "1.0.0-rc.4",
   "date": "2026-10-23",
   "language": "zh-CN",

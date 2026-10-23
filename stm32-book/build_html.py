@@ -66,6 +66,7 @@ def validate_manifest(manifest: dict) -> None:
         "parts",
         "chapter_guides",
         "appendices",
+        "keywords",
         "sources",
     }
     missing_keys = sorted(required - set(manifest))
@@ -662,7 +663,7 @@ def _browser_candidates(override: str | None) -> list[Path]:
     return result
 
 
-def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, title: str) -> None:
+def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str]) -> None:
     try:
         import fitz
     except ImportError as exc:
@@ -670,7 +671,7 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, title: str) -> None:
 
     document = fitz.open(raw_pdf)
     try:
-        document.set_metadata({**document.metadata, "title": title})
+        document.set_metadata({**document.metadata, **metadata})
         total = max(0, document.page_count - 1)
         for index in range(1, document.page_count):
             page = document[index]
@@ -720,7 +721,13 @@ def build_pdf(html_path: Path, browser_override: str | None = None) -> Path:
                 )
             finally:
                 browser.close()
-        _stamp_page_numbers(raw_pdf, output, manifest["title"])
+        publication_metadata = {
+            "title": manifest["title"],
+            "author": manifest["author"],
+            "subject": manifest["subtitle"],
+            "keywords": manifest["keywords"],
+        }
+        _stamp_page_numbers(raw_pdf, output, publication_metadata)
     except Exception as exc:
         raise BuildError(f"PDF build failed: {exc}") from exc
     finally:
