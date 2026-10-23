@@ -8,9 +8,20 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams gifs videos check verify clean stats
+.PHONY: assets animations boards diagrams gifs videos book book-pdf book-check check verify clean stats
 
 assets: animations boards diagrams gifs videos
+
+# 整书版：离线单文件 HTML；book-pdf 还需要 Chrome/Edge、Playwright 与 PyMuPDF。
+book:
+	$(PY) stm32-book/build_html.py
+
+book-pdf:
+	$(PY) stm32-book/build_html.py --pdf
+
+book-check:
+	$(PY) -m unittest discover stm32-book/tests -v
+	$(PY) stm32-book/build_html.py --check
 
 animations:
 	$(PY) tools/gen_animations.py

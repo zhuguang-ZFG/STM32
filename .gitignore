@@ -6,6 +6,7 @@ build/
 *.hex
 *.bin
 MDK-ARM/*/
+stm32-book/dist/
 .mxproject
 
 # 本地运营产物（不随仓库发布）

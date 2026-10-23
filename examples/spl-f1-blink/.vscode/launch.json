@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "BluePill SPL: OpenOCD",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/debug/spl-f1-blink.elf",
+      "request": "launch",
+      "type": "cortex-debug",
+      "servertype": "openocd",
+      "gdbPath": "arm-none-eabi-gdb",
+      "configFiles": ["${workspaceFolder}/openocd/bluepill-stlink.cfg"],
+      "runToEntryPoint": "main",
+      "preLaunchTask": "cmake: build SPL blink"
+    }
+  ]
+}

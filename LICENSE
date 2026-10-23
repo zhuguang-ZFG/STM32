@@ -4,7 +4,7 @@
 
 ## 1. 代码部分 —— MIT License
 
-适用范围：`examples/`、`tools/`、以及文档中出现的代码片段。
+适用范围：`examples/`、`tools/`、`stm32-book/build_html.py`、`stm32-book/tests/`，以及文档中出现的代码片段。
 
 ```
 MIT License
@@ -32,7 +32,7 @@ SOFTWARE.
 
 ## 2. 文档与图片部分 —— CC BY 4.0
 
-适用范围：`docs/`、`assets/`（含 `animations/`、`boards/`、`diagrams/`、`gif/`）。
+适用范围：`docs/`、`assets/`（含 `animations/`、`boards/`、`diagrams/`、`gif/`），以及 `stm32-book/book/`、`stm32-book/manifest.json` 与书籍说明/版式。
 
 你可以自由地共享（复制、发行）与演绎（修改、二次创作），包括商业用途，
 但必须**署名**（注明来源仓库与作者），并标明是否做了修改。

@@ -6,13 +6,14 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：26 篇文档（00–25）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 13 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：27 篇文档（00–26）· 21 个原理动画 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
 
-[![docs](https://img.shields.io/badge/文档-26_篇-60a5fa?style=flat-square)](docs/)
+[![docs](https://img.shields.io/badge/文档-27_篇-60a5fa?style=flat-square)](docs/)
+[![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
 [![animations](https://img.shields.io/badge/SVG_动画-21_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
 [![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
-[![examples](https://img.shields.io/badge/可编译示例-13_个-34d399?style=flat-square)](examples/)
+[![examples](https://img.shields.io/badge/可编译示例-14_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
@@ -76,6 +77,7 @@
 | 想做什么 | 去哪里 |
 | --- | --- |
 | 从零开始，不知道先学什么 | [第 0 章 · 如何学习 STM32](docs/00-如何学习STM32.md) |
+| 想按一本书连续阅读 / 下载离线版 | [整书构建与交付](stm32-book/)（单文件 HTML + PDF） |
 | 装环境 / 连不上板子 | [第 1 章 · 开发环境搭建](docs/01-开发环境搭建.md) |
 | 选芯片、看懂时钟树 | [第 2 章 · 芯片选型与存储器时钟](docs/02-芯片选型与存储器时钟.md) |
 | 点亮第一颗 LED | [第 3 章 · GPIO 与 LED](docs/03-GPIO与LED.md) + [examples/gpio-blink](examples/gpio-blink/) |
@@ -190,7 +192,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 </details>
 
 <details open>
-<summary><b>实战、仿真与系列引脚（18 ~ 25）</b></summary>
+<summary><b>实战、仿真、系列引脚与 SPL（18 ~ 26）</b></summary>
 
 | # | 章节 | 关键词 |
 | --- | --- | --- |
@@ -202,6 +204,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB LQFP64 · PA14 兼 BOOT0 · 无 bxCAN |
 | 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · 封面低功耗典型值 |
 | 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
+| 26 | [STM32F10x 标准外设库 SPL](docs/26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架 · HAL/SPL/寄存器映射 · 旧工程迁移 |
 
 </details>
 
@@ -210,11 +213,12 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 
 ## 示例代码与速查表
 
-每个示例都是**完整可编译**的 HAL 代码（`main.c` + 说明 `README.md`），
-说明里给出硬件接线表、CubeMX 配置要点、关键代码解读、预期现象与排错方法。
+示例以**完整可编译**的 HAL 代码为主；`spl-f1-blink` 是冻结 SPL V3.5.0 的 CMake 工程。
+每个 README 给出硬件接线、配置边界、关键代码、构建/烧录、预期现象与排错方法。
 
 | 示例 | 难度 | 涉及外设 | 对应章节 |
 | --- | --- | --- | --- |
+| [spl-f1-blink](examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake/OpenOCD | 01 / 26 |
 | [gpio-blink](examples/gpio-blink/) | ★ | GPIO 推挽输出 | 03 |
 | [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | 04 |
 | [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | 05 |
@@ -243,9 +247,10 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```text
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
-├── docs/                     ← 00–25 章 + CONTENT_GUIDE.md 写作规范
-├── examples/                 ← 13 个可编译示例（main.c + README.md）
+├── docs/                     ← 00–26 章 + CONTENT_GUIDE.md 写作规范
+├── examples/                 ← 14 个可编译示例（含 SPL/CMake 与 HAL 示例）
 ├── cheatsheets/              ← 4 份速查表
+├── stm32-book/               ← 27 章整书版：manifest、五份附录、离线 HTML/PDF 构建
 ├── assets/
 │   ├── animations/           ← 21 个 SVG 动画（CSS @keyframes / SMIL）
 │   ├── boards/               ← 7 张板卡实物结构图
@@ -314,7 +319,7 @@ python3 tools/check_assets.py
 - [x] 21 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 定时器 / 通信 / DMA / RTOS …）
 - [x] 7 张板卡实物结构图 + LQFP48 全引脚图
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
-- [x] 13 个可编译示例 + 4 份速查表（含 bxCAN 与 USB CDC/HID）
+- [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
 - [x] 每章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
 - [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）

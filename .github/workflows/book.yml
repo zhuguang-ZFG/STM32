@@ -1,0 +1,70 @@
+name: Book CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: book-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Arm toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y gcc-arm-none-eabi ninja-build
+
+      - name: Check out frozen STM32F10x SPL V3.5.0
+        run: |
+          git clone --filter=blob:none https://github.com/wajatimur/stm32f10x-stdperiph-lib.git "$RUNNER_TEMP/stm32f10x-spl"
+          git -C "$RUNNER_TEMP/stm32f10x-spl" checkout afa743577f2784e95be2d5003380fdb84a702519
+          echo "SPL_ROOT=$RUNNER_TEMP/stm32f10x-spl" >> "$GITHUB_ENV"
+
+      - name: Build frozen SPL example
+        working-directory: examples/spl-f1-blink
+        run: |
+          cmake --preset debug
+          cmake --build --preset debug
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: stm32-book/requirements.txt
+
+      - name: Install book dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r stm32-book/requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run whole-book regressions
+        run: python -m unittest discover stm32-book/tests -v
+
+      - name: Audit offline HTML contract
+        run: python stm32-book/build_html.py --check
+
+      - name: Build HTML and PDF deliverables
+        run: python stm32-book/build_html.py --pdf
+
+      - name: Upload offline book
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32-practical-book
+          path: |
+            stm32-book/dist/stm32-practical-book.html
+            stm32-book/dist/stm32-practical-book.pdf
+          if-no-files-found: error
+          retention-days: 14

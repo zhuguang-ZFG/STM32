@@ -46,6 +46,7 @@
 | 23 | [STM32G0 引脚](23-STM32G0引脚.md) | G071RB LQFP64、BOOT0 与 SWCLK 共用、没有 bxCAN |
 | 24 | [STM32L4 引脚](24-STM32L4引脚.md) | L476RG 引脚、VDDUSB、封面低功耗典型值 |
 | 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI LQFP144、FDCAN、VCAP 与三个电源域 |
+| 26 | [STM32F10x 标准外设库 SPL](26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架、关键 API、HAL/寄存器映射与迁移边界 |
 
 ## 相关目录
 

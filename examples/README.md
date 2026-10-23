@@ -1,7 +1,7 @@
 # 示例代码总索引
 
-> 每个示例都是**完整可编译**的 HAL 库代码（`main.c` + 说明 `README.md`）。
-> 说明里给出：功能、硬件接线表、CubeMX 配置要点、关键代码解读、编译烧录步骤、预期现象、常见问题。
+> 示例以**完整可编译**的 HAL 工程为主；`spl-f1-blink` 是独立的 SPL V3.5.0 + CMake 工程。
+> 每个说明给出功能、硬件接线、配置要点、关键代码、编译烧录、预期现象和常见问题。
 >
 > 目标平台以 **STM32F103C8T6（BluePill）** 为主，涉及 F4 的差异在正文中单独标注。
 
@@ -9,6 +9,7 @@
 
 | 示例 | 难度 | 涉及外设 | 对应文档章节 | 硬件需求 |
 | --- | --- | --- | --- | --- |
+| [spl-f1-blink](spl-f1-blink/) | ★★ | SPL V3.5.0 GPIO + SysTick + CMake/OpenOCD | [01 开发环境](../docs/01-开发环境搭建.md) / [26 SPL](../docs/26-STM32F10x标准外设库SPL.md) | BluePill + ST-Link |
 | [gpio-blink](gpio-blink/) | ★ | GPIO 推挽输出 | [03 GPIO与LED](../docs/03-GPIO与LED.md) | BluePill（板载 LED + 可选外接 LED/270Ω） |
 | [exti-key](exti-key/) | ★★ | GPIO + EXTI + NVIC | [04 中断与NVIC](../docs/04-中断与NVIC.md) | BluePill + 按键（或杜邦线碰 GND） |
 | [timer-pwm](timer-pwm/) | ★★ | TIM（PWM 输出） | [05 定时器与PWM](../docs/05-定时器与PWM.md) | BluePill + LED + 270Ω（可选示波器） |
@@ -42,12 +43,14 @@
 | 13 | [13-CAN总线.md](../docs/13-CAN总线.md) | can-bxcan |
 | 14 | [14-USB.md](../docs/14-USB.md) | usb-cdc / usb-hid |
 | 15 | [15-FreeRTOS入门.md](../docs/15-FreeRTOS入门.md) | freertos-task |
+| 26 | [26-STM32F10x标准外设库SPL.md](../docs/26-STM32F10x标准外设库SPL.md) | spl-f1-blink |
 
 ## 三、目录结构
 
 ```text
 examples/
 ├── README.md              ← 本文件（总索引）
+├── spl-f1-blink/          ← SPL V3.5.0 + CMake + CLion/VS Code/OpenOCD
 ├── gpio-blink/            ← main.c + README.md
 ├── exti-key/
 ├── timer-pwm/
@@ -64,6 +67,8 @@ examples/
 ```
 
 ## 四、如何把示例跑起来
+
+`spl-f1-blink` 不走 CubeMX 覆盖流程；按其 README 设置冻结 SPL 源码的 `SPL_ROOT`，再用 CMake Preset 构建。其命令行、CLion 与 VS Code 入口引用同一个 ELF、链接脚本和 OpenOCD 配置。
 
 1. 用 STM32CubeMX 新建对应型号（F103C8T6）的工程，按下例 README 的「CubeMX 关键配置」勾选外设。
 2. 用示例的 `main.c` 覆盖生成的 `Core/Src/main.c`；

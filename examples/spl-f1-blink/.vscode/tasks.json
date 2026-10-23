@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "cmake: configure SPL blink",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--preset", "debug"],
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "cmake: build SPL blink",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "--preset", "debug"],
+      "dependsOn": "cmake: configure SPL blink",
+      "problemMatcher": ["$gcc"],
+      "group": {"kind": "build", "isDefault": true}
+    }
+  ]
+}
