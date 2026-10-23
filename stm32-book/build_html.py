@@ -663,6 +663,49 @@ def _browser_candidates(override: str | None) -> list[Path]:
     return result
 
 
+def _pdf_running_sections(document) -> list[tuple[int, str]]:
+    """Return zero-based PDF page starts for chapters and appendices."""
+    sections: list[tuple[int, str]] = []
+    for level, title, page_number in document.get_toc():
+        if level != 1 or page_number < 1:
+            continue
+        if re.fullmatch(r"\d{2}\s+.+", title) or title.startswith("附录 "):
+            sections.append((page_number - 1, title))
+    return sections
+
+
+def _stamp_toc_page_references(document, fitz) -> None:
+    """Right-align physical page references beside Chrome's internal TOC links."""
+    in_contents = False
+    for page in document:
+        text = page.get_text()
+        if "目录与分部目标" in text:
+            in_contents = True
+        if not in_contents:
+            continue
+
+        links = [link for link in page.get_links() if link.get("kind") == fitz.LINK_GOTO]
+        if not links:
+            in_contents = False
+            continue
+
+        right = page.rect.width - 42
+        for link in links:
+            destination = link.get("page", -1)
+            if destination < 1:  # cover has no printed page number
+                continue
+            label = str(destination)
+            width = fitz.get_text_length(label, fontname="helv", fontsize=8)
+            link_rect = fitz.Rect(link["from"])
+            page.insert_text(
+                fitz.Point(right - width, link_rect.y1 - 2),
+                label,
+                fontname="helv",
+                fontsize=8,
+                color=(0.38, 0.42, 0.45),
+            )
+
+
 def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str]) -> None:
     try:
         import fitz
@@ -672,13 +715,44 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str
     document = fitz.open(raw_pdf)
     try:
         document.set_metadata({**document.metadata, **metadata})
+        sections = _pdf_running_sections(document)
+        section_starts = {start for start, _title in sections}
         total = max(0, document.page_count - 1)
+        current_title: str | None = None
+        next_section = 0
+        short_title = metadata.get("title", "STM32 实战").split("：", 1)[0]
+
         for index in range(1, document.page_count):
+            while next_section < len(sections) and sections[next_section][0] <= index:
+                current_title = sections[next_section][1]
+                next_section += 1
+
             page = document[index]
             label = f"{index} / {total}"
             width = fitz.get_text_length(label, fontname="helv", fontsize=8)
             point = fitz.Point((page.rect.width - width) / 2, page.rect.height - 8)
             page.insert_text(point, label, fontname="helv", fontsize=8, color=(0.38, 0.42, 0.45))
+
+            if current_title is None or index in section_starts:
+                continue
+            header = short_title if index % 2 == 0 else current_title
+            header_width = fitz.get_text_length(header, fontname="china-s", fontsize=7.5)
+            x = 42 if index % 2 == 0 else page.rect.width - 42 - header_width
+            page.insert_text(
+                fitz.Point(x, 20),
+                header,
+                fontname="china-s",
+                fontsize=7.5,
+                color=(0.38, 0.42, 0.45),
+            )
+            page.draw_line(
+                fitz.Point(42, 27),
+                fitz.Point(page.rect.width - 42, 27),
+                color=(0.72, 0.74, 0.76),
+                width=0.35,
+            )
+
+        _stamp_toc_page_references(document, fitz)
         document.save(output_pdf, garbage=3, deflate=True)
     finally:
         document.close()
