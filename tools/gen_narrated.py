@@ -700,7 +700,7 @@ def _doc_block(ch, prefix, lang, duration):
             f"    <source src=\"{prefix}/{name}.mp4\" type=\"video/mp4\">\n"
             "  </video>\n"
             f"  <br><sub>▲ 本章讲解 {minutes}。{VOICE_NOTE} "
-            f"字幕：<a href=\"{prefix}/{name}.srt\">SRT</a>。"
+            f'视频：<a href="{prefix}/{name}.mp4">MP4</a> · 字幕：<a href="{prefix}/{name}.srt">SRT</a>。'
             "由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>\n"
             "</p>\n\n"
             "**旁白（与字幕、配音同一份稿）**\n\n"
@@ -717,7 +717,7 @@ def _doc_block(ch, prefix, lang, duration):
         "Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts "
         "(library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). "
         "Pictures are generated from this repo's SVGs, not photographs. "
-        f"Subtitles: <a href=\"{prefix}/{name}.srt\">SRT</a>. "
+        f'Video: <a href="{prefix}/{name}.mp4">MP4</a> · subtitles: <a href="{prefix}/{name}.srt">SRT</a>. '
         "Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>\n"
         "</p>\n\n"
         "**Narration script (Chinese, same text as the subtitles)**\n\n"
