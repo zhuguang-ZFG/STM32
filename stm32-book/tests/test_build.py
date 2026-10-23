@@ -279,6 +279,8 @@ class BookBuildContractTests(unittest.TestCase):
             toc.insert_text((50, 50), "目录与分部目标", fontname="china-s", fontsize=12)
             toc.insert_text((50, 82), "00 系统", fontname="china-s", fontsize=10)
             toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(45, 66, 240, 88), "page": 2})
+            toc.insert_text((320, 82), "01 下一章", fontname="china-s", fontsize=10)
+            toc.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(315, 66, 510, 88), "page": 4})
             document.set_toc([[1, "00 系统", 3], [1, "01 下一章", 5]])
             document.save(raw)
             document.close()
@@ -292,10 +294,16 @@ class BookBuildContractTests(unittest.TestCase):
             finally:
                 stamped.close()
 
-        right_margin_numbers = [
-            word[4] for word in toc_words if word[0] > 500 and word[1] < 100
+        page_reference_words = [
+            word for word in toc_words
+            if word[4] in {"2", "4"} and 70 < word[1] < 100
         ]
-        self.assertIn("2", right_margin_numbers)
+        self.assertEqual({"2", "4"}, {word[4] for word in page_reference_words})
+        self.assertGreater(
+            abs(page_reference_words[0][0] - page_reference_words[1][0]),
+            100,
+            "same-row TOC page references must use separate column gutters",
+        )
         self.assertIn("00 系统", continuation)
         self.assertNotIn("00 系统", opening)
 
