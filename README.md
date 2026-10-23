@@ -202,7 +202,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | 21 | [原理图与实物图鉴](docs/21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
 | 22 | [仿真实验 Wokwi 与 Renode](docs/22-仿真实验Wokwi与Renode.md) | 浏览器接线 · Renode 加载 ELF · DMA 模型边界 |
 | 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB LQFP64 · PA14 兼 BOOT0 · 无 bxCAN |
-| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · 封面低功耗典型值 |
+| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · VDDUSB · Stop 2 恢复链 · 可复算功耗测量 |
 | 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI LQFP144 · FDCAN · VCAP |
 | 26 | [STM32F10x 标准外设库 SPL](docs/26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架 · HAL/SPL/寄存器映射 · 旧工程迁移 |
 

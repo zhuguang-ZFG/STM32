@@ -1,7 +1,7 @@
 {
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "27 章证据驱动的嵌入式入门与工程手册",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "date": "2026-10-23",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
@@ -227,10 +227,10 @@
       "sources": ["ds12232", "rm0444"]
     },
     "24-STM32L4引脚.md": {
-      "question": "L476RG 的独立 USB 电源、低功耗能力和 PA11/PA12 复用冲突怎样影响板级设计？",
-      "deliverable": "一张 LQFP64 电源/启动/调试/通信关键脚表和一份 PA11/PA12 资源分配决定。",
-      "boundary": "封面典型低功耗数字不是整板保证值；条件、温度和外部负载必须随测量记录。",
-      "sources": ["ds10198"]
+      "question": "L476RG 的引脚、电源域和低功耗模式怎样影响 Stop 2 进入、唤醒恢复与真实平均电流？",
+      "deliverable": "一张 LQFP64 关键脚表、一张模式/状态保持表、一条可验证的 Stop 2 时钟恢复链，以及含原始波形与积分公式的功耗账。",
+      "boundary": "典型低功耗数字不是整板保证值；模式能力、唤醒源、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。",
+      "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "es0250"]
     },
     "25-STM32H7引脚.md": {
       "question": "迁到 H743ZI 后，电源域、VCAP、FDCAN、内存可达性与 Cache 怎样改变旧工程假设？",
@@ -423,6 +423,51 @@
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
       "scope": "L476RG 封装、复用、电源与低功耗典型条件。"
+    },
+    "rm0351": {
+      "title": "RM0351 — STM32L47/L48/L49/L4A Reference Manual",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0351-stm32l47xxx-stm32l48xxx-stm32l49xxx-and-stm32l4axxx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与引用文档号）",
+      "scope": "L476 PWR/RCC、Stop 0/1/2、Standby/Shutdown、唤醒时钟、状态保持与外设低功耗边界。"
+    },
+    "an4746": {
+      "title": "AN4746 — How to optimize power and performance on STM32L4/L4+",
+      "authority": "ST 官方应用笔记",
+      "url": "https://www.st.com/resource/en/application_note/an4746-how-to-optimize-power-and-performance-on-stm32l4-and-stm32l4-mcus-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接并独立给出计算）",
+      "scope": "L4/L4+ 模式选择、Stop 2、唤醒延迟与功耗/性能优化方法。"
+    },
+    "um1724": {
+      "title": "UM1724 — STM32 Nucleo-64 boards (MB1136)",
+      "authority": "ST 官方用户手册",
+      "url": "https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf",
+      "snapshot": "NUCLEO-L476RG 的 MB1136 板卡与 JP6 (IDD) 测量路径",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与引用接口名称）",
+      "scope": "JP6 IDD 跳线、板级供电路径以及 MCU 电流测量边界。"
+    },
+    "stm32cube-l4-stop2": {
+      "title": "STM32CubeL4 — NUCLEO-L476RG PWR_STOP2 examples",
+      "authority": "ST 官方 GitHub 固件包",
+      "url": "https://github.com/STMicroelectronics/STM32CubeL4/tree/485c092549f9495079fcb39f17f66cbaa0930118/Projects/NUCLEO-L476RG/Examples/PWR",
+      "snapshot": "commit 485c092549f9495079fcb39f17f66cbaa0930118；PWR_STOP2 与 PWR_STOP2_RTC",
+      "accessed": "2026-10-23",
+      "license": "仓库 LICENSE（本书不再分发其源码）",
+      "scope": "SysTick 暂停/恢复、MSI 唤醒、PLL/SYSCLK 恢复和 GPIO 重新初始化的具体 HAL 顺序。"
+    },
+    "es0250": {
+      "title": "ES0250 — STM32L471/L475/L476/L486 device errata",
+      "authority": "ST 官方器件勘误",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0250-stm32l471xx475xx476xx486xx-device-errata-stmicroelectronics.pdf",
+      "snapshot": "2026-10-23 从 ST 当前文档入口核对；使用时按芯片 revision 重查",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接与引用文档号）",
+      "scope": "L476 硬件限制、低功耗/唤醒相关勘误与 workaround 入口。"
     },
     "ds12110": {
       "title": "DS12110 Rev 11 — STM32H743xI Datasheet",
