@@ -4,7 +4,7 @@
 gen_narrated.py —— 把每章讲解做成带中文配音和字幕的 MP4。
 
 画面：Pillow 绘制的标题卡 / 步骤卡，并贴上本仓库自己的 SVG（动画或引脚图的一帧）。
-不是实拍，不含版权素材。字体是系统里的文泉驿微米黑（GPL-3，带字体嵌入例外）。
+画面字体由 ``NARRATED_FONT`` 指定；默认使用文泉驿微米黑（GPL-3，带字体嵌入例外）。
 
 配音：微软 Edge 在线神经语音 zh-CN-XiaoxiaoNeural（「晓晓」），
 经 edge-tts 调用。edge-tts 大部分源码是 LGPLv3，srt_composer.py 是 MIT
@@ -70,7 +70,7 @@ VOICE_NOTE = (
     "配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），"
     "经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；"
     "声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。"
-    "重新生成需要联网。画面用文泉驿微米黑绘制，插图是本仓库 SVG，不是实拍。"
+    "重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。"
 )
 
 

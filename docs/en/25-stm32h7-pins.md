@@ -14,7 +14,7 @@
   <video width="640" controls poster="../../assets/video/ch25-h7-pins.png">
     <source src="../../assets/video/ch25-h7-pins.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 3.1 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch25-h7-pins.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chinese voice-over, 2.9 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Subtitles: <a href="../../assets/video/ch25-h7-pins.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
 </p>
 
 **Narration script (Chinese, same text as the subtitles)**
@@ -26,7 +26,7 @@
 5. H7 的 CAN 控制器叫 FDCAN，不是 F1 的 bxCAN。FDCAN1 可以在 PA11 和 PA12，也可以在 PD0 和 PD1，还可以在 PB8 和 PB9。名字抄错，Cube 里你会对不上外设。
 6. 芯片分成 D1、D2、D3 三个电源域，可以分别关时钟或断电。这一章不写待机多少微安，因为封面摘录里没有一条可以单独引用的数字。要电流，去电气特性，不要估。
 7. 内核最高 480 兆，还有 16 KB 指令和数据缓存。DMA 搬过的缓冲，CPU 可能还看着旧数据，调试器里的数组会和总线上的不一致。
-8. SWD 仍然是 PA13 和 PA14，脚号是 105 和 109，和 BOOT0 分开。高速晶振在 PH0 和 PH1，脚号 23 和 24。低速晶振在 PC14 和 PC15。这些都写在表 9 里，不要凭 F4 的脚号迁移。
+8. SWD 仍是 PA13 和 PA14，脚号 105 和 109，和 BOOT0 分开。高速晶振在 PH0 和 PH1，脚号 23 和 24。
 9. 口诀：144 脚从 PE2 数起；VCAP 有两只；USB 电源不叫 VDD。CAN 的名字是 FDCAN。电容值和待机电流，图上没有的就不编。
 10. 合上书，三问。第 1 脚叫什么？第二只 VCAP 是第几脚？这里的 CAN 控制器叫 bxCAN 还是 FDCAN？
 <!-- /video:ch25 -->
