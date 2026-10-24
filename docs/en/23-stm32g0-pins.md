@@ -36,7 +36,7 @@
 - [ ] Point at the default USART, I2C, SPI, and SWD pins on this part.
 - [ ] Name three differences from F1: no bxCAN, no USB full-speed device, BOOT0 shared with SWCLK.
 - [ ] Determine Main Flash, System memory, or SRAM from `BOOT_LOCK`, `nBOOT1`, PA14, `nBOOT_SEL`, and `nBOOT0`.
-- [ ] Recover SWD with Under Reset, option-byte readback, and post-reset verification when the application reassigns PA13/PA14 or startup is abnormal.
+- [ ] Determine connection and recovery reachability from RDP/`DBG_SWEN` when the application reassigns PA13/PA14 or startup is abnormal, then verify successful operations with readback.
 
 ## 🧠 Which part this is
 
@@ -70,7 +70,7 @@ F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS1
 
 <p align="center">
   <img src="../../assets/animations/g0-boot-swd.svg" width="860" alt="STM32G071 boot latch, nBOOT_SEL source selection, and Under Reset recovery workflow">
-  <br><sub>▲ Animation: boot configuration is latched on the fourth SYSCLK rising edge after reset; nBOOT_SEL selects the pin or option-bit path, while Under Reset stops the application from running first. Generated illustration, not an oscilloscope capture.</sub>
+  <br><sub>▲ Animation: boot configuration is latched on the fourth SYSCLK rising edge after reset; nBOOT_SEL selects the pin or option-bit path. Under Reset is only a controlled connection attempt; RDP and DBG_SWEN also constrain recovery. Generated illustration, not an oscilloscope capture.</sub>
 </p>
 
 **PA14 is the shared boot input and debug clock, not the boot result itself.** ST's boot FAQ states that boot configuration is latched on the fourth SYSCLK rising edge after reset release. Normal SWCLK activity after that point cannot retroactively change the selected target. The risk is an external pull-up, jumper, or debug probe holding PA14 at an unintended level inside the sampling window.
@@ -99,15 +99,18 @@ Keep three boundaries attached to this table:
 - When PA14 selects boot, check pull resistors, series resistance, and jumpers against AN5096 and the probe's drive capability. Do not clamp SWCLK with a strong pull-up. If a product does not need a field boot pin, `nBOOT_SEL=1, nBOOT0=1` selects Main Flash without depending on PA14 at boot.
 - The application can still break post-boot SWD by reassigning PA13/PA14 as GPIO, disabling debug, or entering low power. That is a different failure boundary from selecting the wrong boot area; diagnose them separately.
 
-### SWD loss: an Under Reset recovery loop
+### SWD loss: controlled connection and protection branches
 
 1. **Preserve the scene:** record the observed boot target, whether the system bootloader is reachable, and recent changes to PA13/PA14, low power, or option bytes. Connect SWDIO, SWCLK, NRST, GND, and the target supply reference.
-2. **Stop the application first:** select **Under Reset** in STM32CubeProgrammer, or the probe's equivalent mode, and connect while NRST holds the device in reset. Do not replace a controlled reset with random rapid power cycling.
-3. **Read before writing:** read and save `BOOT_LOCK`, `nBOOT1`, `nBOOT_SEL`, `nBOOT0`, RDP, and related boot configuration. The first divergence is “boot-table inputs differ from intent,” not “the MCU must be defective.”
-4. **Write only a known target:** for normal Main Flash startup, use `BOOT_LOCK=0, nBOOT_SEL=1, nBOOT0=1`. If PA14 legacy selection is required, use `BOOT_LOCK=0, nBOOT_SEL=0`, then set `nBOOT1` and the external level from the truth table. Do not overwrite unrelated option bits in bulk.
-5. **Read back after reset:** perform the tool's option-byte launch or specified reset flow, read the option bytes again, then verify both Main Flash startup and SWD hot attach. A successful write response does not prove the new values were active for the current boot.
+2. **Try a controlled connection without assuming it must work:** select **Under Reset** in STM32CubeProgrammer, or the probe's equivalent, and connect while NRST holds reset. With `BOOT_LOCK=1` and RDP Level 1, RM0444 stops debug capability and makes `FLASH_ACR.DBG_SWEN` reset to 0. If the application does not set it after reset, the manual states there is no recovery from this situation. Do not repeatedly reconnect or treat Under Reset as guaranteed.
+3. **Read before writing:** if connection is possible, read and save `BOOT_LOCK`, `nBOOT1`, `nBOOT_SEL`, `nBOOT0`, RDP, and related boot configuration. If not, record protection state and whether the application sets `DBG_SWEN` as unresolved evidence. The first divergence is “boot/protection inputs differ from intent,” not “the MCU must be defective.”
+4. **Branch on RDP and protection state; do not promise an in-place repair:**
+   - RDP Level 0: clear or retain `BOOT_LOCK` as required. For normal Main Flash startup, use `BOOT_LOCK=0, nBOOT_SEL=1, nBOOT0=1`. If PA14 legacy selection is required, use `BOOT_LOCK=0, nBOOT_SEL=0`, then set `nBOOT1` and the external level from the truth table.
+   - RDP Level 1: `BOOT_LOCK=1` cannot simply be cleared in place. RM0444 permits clearing only when already at Level 0, or after **Level 1 → Level 0 with a full mass-erase**. The erase destroys user contents and requires explicit authorization, backup, and a maintenance procedure. Confirm that a path to request it actually exists; never present it as a default recovery button.
+   - RDP Level 2: irreversible; no RDP-downgrade recovery path exists. With `BOOT_LOCK=1 + RDP Level 1` and no application-set `DBG_SWEN`, do not claim that Under Reset, a bootloader, or mass-erase is necessarily reachable.
+5. **Read back after reset only if the operation actually succeeded:** perform the tool's option-byte launch or specified reset flow, read the option bytes again, then verify Main Flash startup and SWD hot attach. A successful write response does not prove the new values were active for the current boot. A failed write or connection remains a failed outcome, not a “recovered” result.
 
-> **RDP boundary:** never lower RDP blindly to “unlock” a board. Level 2 is irreversible, and Level 1 → Level 0 triggers a mass erase. Read the protection state and preserve required data first; mass erase is not a default repair button.
+> **RDP and complement boundary:** never lower RDP blindly to “unlock” a board. Level 2 is irreversible, and Level 1 → Level 0 triggers a mass erase. `BOOT_LOCK` can always be set, but clearing it is restricted by the RDP conditions above. **An option-byte/complement mismatch forces `BOOT_LOCK=1`, and an RDP mismatch defaults to Level 1**. Readback must therefore check values and complements, not just one field. Preserve the scene and required data first; mass erase is not a default repair button.
 
 
 ## 🛠️ Alternate functions that Table 12 / 13 / 14 actually name
@@ -151,10 +154,12 @@ Self-test:
 3. Is the USB peripheral on this part called UCPD or USB Device FS?
 4. Which boot-selection paths do `nBOOT_SEL=0` and `=1` choose?
 5. Where does `BOOT_LOCK=0, nBOOT_SEL=1, nBOOT0=1` boot? With `nBOOT0=0`, where do `nBOOT1=1` and `=0` boot?
-6. Why does pulling PA14 high not necessarily enter System memory, and why can a successful option-byte write still leave the next boot unchanged?
-7. What are the first two recovery steps after an application breaks SWD through PA13/PA14, and why is lowering RDP not a default answer?
+6. Why does pulling PA14 high not necessarily enter System memory, why can a successful option-byte write still leave the next boot unchanged, and what happens on an option-byte/complement mismatch?
+7. What are the first two recovery steps after an application breaks SWD through PA13/PA14, why are Under Reset and clearing `BOOT_LOCK` not unconditionally available, and why is lowering RDP not a default answer?
 
 ## 🔗 Further reading
+
+- RM0444 Rev 5 section 2.5 and its FLASH_SECR/option-byte descriptions: boot truth table, `DBG_SWEN` restriction with `BOOT_LOCK + RDP Level 1`, clearing conditions, and complement-mismatch rules. AN5096 Table 3 cross-checks the boot table; AN2606 covers system bootloader activation patterns and additional empty-flash boundaries.
 
 - DS12232 Rev 5: cover features, Table 1, Table 2, Tables 11–14, ordering information in chapter 7, Figure 9, PA14 reset pull-down, and the empty-flash boundary.
 - RM0444 section 2.5 and AN5096 Table 3: the boot truth table; AN2606: system bootloader activation patterns and additional empty-flash boundaries.

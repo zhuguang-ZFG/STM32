@@ -147,8 +147,8 @@
 3. 其 USB-C 相关能力是 UCPD，不是 F103 那种 USB Device FS 控制器。
 4. `nBOOT_SEL=0` 选择 PA14 引脚路径；`=1` 选择 `nBOOT0/nBOOT1` 选项位路径。它不是 System memory 开关。
 5. 该配置启动到 Main Flash。`nBOOT_SEL=1, nBOOT0=0` 时，`nBOOT1=1` 选 System memory，`nBOOT1=0` 选 Embedded SRAM；前提均为 `BOOT_LOCK=0`。
-6. `BOOT_LOCK=1` 会强制 Main Flash，`nBOOT_SEL=1` 会排除 PA14；空 Flash 检查也能改变实际去向。选项字节还需规定的复位/加载流程并读回，写入返回值本身不证明已生效。
-7. 先保留现场并接好 SWD/NRST/供电参考，再用 Under Reset 阻止应用运行并读取选项字节。RDP Level 2 不可逆，Level 1 → 0 会整片擦除，不能把降级当默认恢复。
+6. `BOOT_LOCK=1` 会强制 Main Flash，`nBOOT_SEL=1` 会排除 PA14；空 Flash 检查也能改变实际去向。选项字节还需规定的复位/加载流程并读回，写入返回值本身不证明已生效。选项字节与互补值不匹配会强制 `BOOT_LOCK=1`，RDP 不匹配默认进入 Level 1。
+7. 先保留现场并接好 SWD/NRST/供电参考，再尝试 Under Reset 并在可连接时读取选项字节。`BOOT_LOCK=1 + RDP Level 1` 会停止调试并令 `DBG_SWEN` 复位为 0；应用不置位时手册不允许承诺恢复。清除 `BOOT_LOCK` 仅在 RDP Level 0，或 Level 1 → 0 且 full mass-erase 后可行；Level 2 不可逆，不能把降级或擦除当默认恢复。
 
 ## 24 STM32L4 引脚
 

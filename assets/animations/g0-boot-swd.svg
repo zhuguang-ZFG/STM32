@@ -17,7 +17,7 @@
 <line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
 <text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先分清锁存时刻与选择来源，再用 Under Reset 恢复调试；不要靠反复断电猜</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先分清锁存时刻与选择来源，再按 RDP/DBG_SWEN 判定恢复；不要假设 Under Reset 必通</text>
 <rect x="720" y="15" width="158" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
 <text x="799" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">23 G0 Boot / SWD</text>
 <rect x="35" y="104" width="190" height="88" fill="#111c31" opacity="1" rx="12" stroke="#34d399" stroke-width="1.5" class="g0s0"/>
@@ -58,22 +58,22 @@
 <text x="610" y="313" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">改看 nBOOT0 / nBOOT1</text>
 <text x="480" y="350" font-size="11.5" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT_LOCK=1：强制 Main Flash</text>
 <rect x="40" y="404" width="820" height="128" fill="#111c31" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="60" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1  Under Reset</text>
-<text x="60" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST 阻止应用运行</text>
+<text x="60" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1  保留现场</text>
+<text x="60" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST / 供电 / 保护证据</text>
 <line x1="224" y1="456" x2="239" y2="456" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" opacity="1" class="g0-flow"/>
 <polygon points="244.00,456.00 239.00,458.50 239.00,453.50" fill="#22d3ee" opacity="1"/>
-<text x="260" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2  读取证据</text>
-<text x="260" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT_LOCK / nBOOT* / RDP</text>
+<text x="260" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2  受控连接</text>
+<text x="260" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Under Reset 非万能</text>
 <line x1="424" y1="456" x2="439" y2="456" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" opacity="1" class="g0-flow"/>
 <polygon points="444.00,456.00 439.00,458.50 439.00,453.50" fill="#22d3ee" opacity="1"/>
-<text x="460" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3  写已知配置</text>
-<text x="460" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只改启动相关位</text>
+<text x="460" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3  判定可写性</text>
+<text x="460" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RDP / DBG_SWEN 分支</text>
 <line x1="624" y1="456" x2="639" y2="456" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round" opacity="1" class="g0-flow"/>
 <polygon points="644.00,456.00 639.00,458.50 639.00,453.50" fill="#22d3ee" opacity="1"/>
 <text x="660" y="442" font-size="12" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4  复位并读回</text>
 <text x="660" y="470" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">确认 Main Flash 与 SWD</text>
 <text x="60" y="510" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">恢复目标：让启动源可解释、可复现，而不是碰巧进入一次 Bootloader</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要为恢复盲目降低 RDP：Level 2 不可逆；Level 1 → 0 会触发整片擦除</text>
+<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT_LOCK 清除受 RDP 限制；Level 2 不可逆；Level 1 → 0 整片擦除</text>
 <text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

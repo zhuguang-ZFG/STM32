@@ -233,8 +233,8 @@
     },
     "23-STM32G0引脚.md": {
       "question": "从 F1 迁到 G071RB 时，封装脚序、BOOT/SWCLK 共脚、选项字节和外设集合有哪些不能照抄？",
-      "deliverable": "一张 G071RB LQFP64 关键脚表、一幅启动锁存与恢复图解、一张完整启动真值表，以及一条 Under Reset 读回验证闭环。",
-      "boundary": "本章只对 G071RB 指定封装和所引手册修订负责；空 Flash 检查、RDP、Bootloader pattern 与生产选项字节必须另行核对。恢复操作先读后写，不默认降低 RDP 或整片擦除。",
+      "deliverable": "一张 G071RB LQFP64 关键脚表、一幅启动锁存与保护分支图解、一张完整启动真值表，以及一条按 RDP/DBG_SWEN 判定可达性并读回验证的恢复闭环。",
+      "boundary": "本章只对 G071RB 指定封装和所引手册修订负责；空 Flash 检查、RDP、DBG_SWEN、Bootloader pattern 与生产选项字节必须另行核对。Under Reset 不保证可连接；BOOT_LOCK 清除受 RDP 限制，不默认降级 RDP 或整片擦除。",
       "sources": ["ds12232", "rm0444", "an5096", "an2606", "st-boot-faq"]
     },
     "24-STM32L4引脚.md": {
@@ -436,7 +436,7 @@
       "snapshot": "文档号 RM0444；使用时核对当前修订版",
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "G0 外设、启动选择、选项字节和 RTC 域限制。"
+      "scope": "G0 外设、启动选择、BOOT_LOCK/DBG_SWEN、RDP 清除条件、互补值不匹配、选项字节和 RTC 域限制。"
     },
     "an5096": {
       "title": "AN5096 — Getting started with STM32G0 MCUs hardware development",
@@ -634,7 +634,7 @@
       "snapshot": "commit e3c518ebda3e00c8e52b1625ca44fba65da3b63e；VOS0 前置条件与 SYSCFG->PWRCR.ODEN 宏实现",
       "accessed": "2026-10-24",
       "license": "仓库 LICENSE（本书不再分发其源码）",
-      "scope": "H743 VOS0 必须启用 SYSCFG、从已就绪 VOS1 进入，并在每次换挡后等待 VOSRDY。"
+      "scope": "H743 VOS0 必须启用 SYSCFG、从已就绪 VOS1 进入；每次换挡后等待 VOSRDY；VOS0 进入低功耗前必须经 VOS1 退出。"
     },
     "um2407": {
       "title": "UM2407 — STM32H7 Nucleo-144 boards (MB1364)",

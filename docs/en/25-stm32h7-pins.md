@@ -164,6 +164,8 @@ static HAL_StatusTypeDef SystemClock_Config480(void)
 
 On H743, the SCALE0 macro writes `SYSCFG->PWRCR.ODEN`. If the SYSCFG clock is gated, that write is not evidence of a successful transition. The frozen template's `HAL_MspInit()` is empty, so no implicit initialization can be assumed. Enable SYSCFG explicitly, prove VOS1 readiness, request VOS0, then wait for the second VOSRDY. A timeout in either wait must prevent configuration of the 480 MHz PLL.
 
+The reverse transition is also mandatory: **before entering Stop/Standby from VOS0, call `__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1)`, then wait with `WaitVosReady()` and check its result.** This H743 macro branch clears `SYSCFG->PWRCR.ODEN`; do not enter a low-power mode while VOS0 is still active.
+
 Call and check `SystemClock_Config480()` before initializing UART, timers, FDCAN, USB, or other peripherals. On failure, record the failing step, supply macro, silicon revision, and clock source; do not continue peripheral initialization in a partially configured state. Rev Y/W must not take this path: use the official VOS1 + `PLLN=400` baseline, yielding 400/200/100 MHz with the same bus dividers. If a product permits automatic downshifting, report the selected mode and recalculate every peripheral explicitly; never report a requested 480 MHz configuration as successful after silently falling back.
 
 | Node | Rev V example | Rev Y/W baseline | Calculation |

@@ -711,7 +711,7 @@ def rtos_system_layers() -> Svg:
 
 def g0_boot_swd() -> Svg:
     s = Svg(W, H, "G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定",
-            "先分清锁存时刻与选择来源，再用 Under Reset 恢复调试；不要靠反复断电猜")
+            "先分清锁存时刻与选择来源，再按 RDP/DBG_SWEN 判定恢复；不要假设 Under Reset 必通")
     s.header(tag="23 G0 Boot / SWD", tag_color=T.CYAN)
 
     stages = [
@@ -761,9 +761,9 @@ def g0_boot_swd() -> Svg:
 
     s.rect(40, 404, 820, 128, fill=T.PANEL, stroke=T.CYAN, rx=12)
     recovery = [
-        ("1  Under Reset", "NRST 阻止应用运行"),
-        ("2  读取证据", "BOOT_LOCK / nBOOT* / RDP"),
-        ("3  写已知配置", "只改启动相关位"),
+        ("1  保留现场", "NRST / 供电 / 保护证据"),
+        ("2  受控连接", "Under Reset 非万能"),
+        ("3  判定可写性", "RDP / DBG_SWEN 分支"),
         ("4  复位并读回", "确认 Main Flash 与 SWD"),
     ]
     for i, (title, note) in enumerate(recovery):
@@ -776,7 +776,7 @@ def g0_boot_swd() -> Svg:
     s.text(60, 510, "恢复目标：让启动源可解释、可复现，而不是碰巧进入一次 Bootloader",
            size=11, fill=T.TEXT, weight="700")
 
-    s.footer("不要为恢复盲目降低 RDP：Level 2 不可逆；Level 1 → 0 会触发整片擦除")
+    s.footer("BOOT_LOCK 清除受 RDP 限制；Level 2 不可逆；Level 1 → 0 整片擦除")
     return s
 
 ALL = [timer_pwm, timer_modes, adc_sar, dma_circular, iwdg_window, flash_iap,
