@@ -42,12 +42,25 @@ HEADING_EMOJI = re.compile(
 RESOURCE_HEADING = re.compile(
     r"^##(?!#)[ \t]+"
     r"(?:[\U0001F300-\U0001FAFF\u2600-\u27BF]\uFE0F?[ \t]*)*"
-    r"相关资源[ \t]*$",
+    r"(?P<title>相关资源|权威来源与冻结点|Related resources|Further reading|Sources"
+    r"|Authoritative sources and frozen versions)"
+    r"[ \t]*$",
     re.MULTILINE,
 )
 PROMO_RESOURCE_LINE = re.compile(
     r"mp\.weixin\.qq\.com|手机阅读版|(?:上一篇|下一篇)\s*[:：]"
     r"|免责声明：本仓库插画均为作者自绘"
+    r"|(?:Previous|Next)\s*:"
+    r"|Disclaimer:\s*every illustration"
+    r"|^\s*-\s*Related\s*:",
+    re.IGNORECASE,
+)
+CENTERED_FIGURE = re.compile(
+    r"<p\s+align=[\"']center[\"']>\s*"
+    r"(?P<images>(?:\s*<img\b[^>]*>\s*)+)"
+    r"(?:<br\s*/?>\s*<sub>(?P<caption>.*?)</sub>\s*)?"
+    r"</p>",
+    re.IGNORECASE | re.DOTALL,
 )
 HREF_ATTR = re.compile(r"(?P<prefix>\bhref\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
 SRC_ATTR = re.compile(r"(?P<prefix>\bsrc\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
@@ -69,8 +82,14 @@ def load_manifest(path: Path = MANIFEST_PATH) -> dict:
         raise BuildError(f"cannot read manifest {path}: {exc}") from exc
 
 
-def source_chapters() -> list[str]:
-    return sorted(path.name for path in DOCS_DIR.glob("*.md") if CHAPTER_NAME.match(path.name))
+def source_chapters(docs_dir: Path = DOCS_DIR) -> list[str]:
+    return sorted(path.name for path in docs_dir.glob("*.md") if CHAPTER_NAME.match(path.name))
+
+
+def edition_dirs(manifest: dict) -> tuple[Path, Path]:
+    docs_dir = (REPO_ROOT / manifest.get("docs_dir", "docs")).resolve()
+    book_dir = (ROOT / manifest.get("book_dir", "book")).resolve()
+    return docs_dir, book_dir
 
 
 def validate_manifest(manifest: dict) -> None:
@@ -92,8 +111,9 @@ def validate_manifest(manifest: dict) -> None:
     parts = manifest["parts"]
     if not isinstance(parts, list) or not parts:
         raise BuildError("manifest parts must be a non-empty list")
+    docs_dir, book_dir = edition_dirs(manifest)
     flattened = [name for part in parts for name in part.get("files", [])]
-    expected = source_chapters()
+    expected = source_chapters(docs_dir)
     if flattened != expected or len(flattened) != len(set(flattened)):
         raise BuildError(f"chapter list mismatch: expected={expected}, actual={flattened}")
 
@@ -139,7 +159,7 @@ def validate_manifest(manifest: dict) -> None:
             or filename in flattened
         ):
             raise BuildError(f"invalid part closing manuscript: {part_id}:{filename}")
-        if not (BOOK_DIR / filename).is_file():
+        if not (book_dir / filename).is_file():
             raise BuildError(f"missing part closing manuscript: {filename}")
 
     appendix_ids: set[str] = set()
@@ -153,7 +173,7 @@ def validate_manifest(manifest: dict) -> None:
             raise BuildError(f"duplicate appendix entry: {appendix}")
         appendix_ids.add(appendix_id)
         appendix_files.add(filename)
-        if not (BOOK_DIR / filename).is_file():
+        if not (book_dir / filename).is_file():
             raise BuildError(f"missing appendix manuscript: {filename}")
 
     for source_id, source in manifest["sources"].items():
@@ -196,6 +216,7 @@ def extract_quick_questions(text: str) -> list[str]:
 def remove_chapter_frontmatter(text: str) -> str:
     text = re.sub(r"^#\s+.+?\s*$", "", text, count=1, flags=re.MULTILINE)
     text = re.sub(r"^>\s*English:\s*.+?\s*$", "", text, count=1, flags=re.MULTILINE)
+    text = re.sub(r"^>\s*中文:\s*.+?\s*$", "", text, count=1, flags=re.MULTILINE)
     return text.strip()
 
 
@@ -229,8 +250,9 @@ def strip_serial_resources(text: str) -> str:
     kept = [line for line in section.splitlines() if not PROMO_RESOURCE_LINE.search(line)]
     body = "\n".join(kept).strip()
     head = text[: match.start()].rstrip()
+    title = match.group("title")
     if body:
-        rebuilt = f"{head}\n\n## 相关资源\n\n{body}\n"
+        rebuilt = f"{head}\n\n## {title}\n\n{body}\n"
     else:
         rebuilt = head + "\n"
     if tail.strip():
@@ -238,13 +260,32 @@ def strip_serial_resources(text: str) -> str:
     return rebuilt
 
 
-def prepare_chapter_markdown(raw: str, source_label: str) -> tuple[str, str, list[str]]:
+def prepare_chapter_markdown(
+    raw: str,
+    source_label: str,
+    language: str = "zh-CN",
+) -> tuple[str, str, list[str]]:
     title = extract_title(raw, source_label)
-    questions = extract_quick_questions(raw)
+    # English chapters repeat the Chinese narration, including 三问, inside the video block.
+    questions = [] if str(language).lower().startswith("en") else extract_quick_questions(raw)
     text = strip_video_blocks(raw, source_label)
     text = strip_serial_resources(text)
     text = strip_heading_emoji(text)
     return title, remove_chapter_frontmatter(text), questions
+
+
+def semanticize_figures(rendered: str) -> str:
+    """Turn the known centered image + sub caption into figure/figcaption."""
+
+    def replace(match: re.Match[str]) -> str:
+        images = match.group("images").strip()
+        caption = match.group("caption")
+        if caption and caption.strip():
+            text = re.sub(r"^\s*▲\s*", "", caption.strip())
+            return f"<figure>{images}<figcaption>{text}</figcaption></figure>"
+        return f"<figure>{images}</figure>"
+
+    return CENTERED_FIGURE.sub(replace, rendered)
 
 
 def _safe_local_path(source_file: Path, raw_path: str) -> Path:
@@ -372,7 +413,7 @@ def render_markdown(source: str) -> str:
     )
     return renderer.convert(source)
 
-def wrap_tables(rendered: str) -> str:
+def wrap_tables(rendered: str, table_label: str = "数据表，可横向滚动") -> str:
     def replace_table(match: re.Match[str]) -> str:
         table = match.group(0)
         first_row = TABLE_ROW.search(table)
@@ -381,7 +422,7 @@ def wrap_tables(rendered: str) -> str:
             raise BuildError("rendered table has no cells")
         return (
             '<div class="table-scroll" role="region" tabindex="0" '
-            'aria-label="数据表，可横向滚动" '
+            f'aria-label="{html.escape(table_label, quote=True)}" '
             f'style="--table-columns: {columns}">{table}</div>'
         )
 
@@ -394,63 +435,163 @@ def render_document(
     source_file: Path,
     prefix: str,
     chapter_anchors: dict[Path, str],
+    table_label: str = "数据表，可横向滚动",
 ) -> str:
     rendered = render_markdown(source_text)
-    rendered = wrap_tables(rendered)
+    rendered = semanticize_figures(rendered)
+    rendered = wrap_tables(rendered, table_label)
     rendered = rewrite_local_links(rendered, source_file, chapter_anchors)
     rendered = embed_local_images(rendered, source_file)
     return prefix_local_ids(rendered, prefix)
 
 
-def compass_html(guide: dict) -> str:
+UI = {
+    "zh-CN": {
+        "cover_kicker": "STM32 实战手册",
+        "imprint_kicker": "版权页",
+        "imprint_title": "版本与许可",
+        "imprint_lead": "这一页记录本次构建的版本、日期和许可。引脚、时序和电气参数仍以目标型号手册为准。",
+        "license_labels": ("版本", "版本日期", "构建日期", "作者", "原创正文与原创图片", "第三方实拍", "代码"),
+        "repository_label": "仓库",
+        "trademark": "STM32、STM32Cube、Nucleo、Discovery 是 STMicroelectronics 的商标。本书用于学习，与 ST 没有隶属关系。外部手册只作链接和事实引用，不随本书再分发。",
+        "companion_title": "配套资源",
+        "companion_body": "网页版、动画、示例和速查表在仓库里。手机连载在微信公众号「SIAI小宇宙」。书稿不逐章重复公众号链接，也不保留上一篇 / 下一篇导航。",
+        "companion_note": "各章末仍保留手册编号和图示引用。插画是作者自绘或程序生成，不是厂商实拍。",
+        "read_title": "这不是文章合集",
+        "read_lead": "全书沿“开发闭环 → 引脚与时间 → 数据搬运 → 系统可靠性 → 项目交付 → 跨系列迁移 → 系统收束”推进。每章先用罗盘约定问题、交付和边界，再进入原章节；章末三问把结论拉回可检查的工程状态。",
+        "routes": (
+            ("第一次上手", "00–05 → 06/07/08 任一通信章 → 17 排错。"),
+            ("做数据采集", "02 → 05 → 09 → 10 → 06/14 → 15。"),
+            ("做可升级设备", "11 → 12 → 17 → 附录 A/B，补齐失败路径。"),
+            ("迁移到新系列", "20/21 → 23/24/25；每次重新核对电源、复用、时钟、内存。"),
+        ),
+        "evidence": "证据口径：手册参数写文档号/修订点；GitHub 实现冻结 tag/commit；社区内容只作线索；“能跑”必须附期望、实际、测量条件和未覆盖边界。",
+        "toc_title": "目录与分部目标",
+        "appendix_heading": "附录",
+        "toc_closing_note": "",
+        "compass_label": "本章罗盘",
+        "compass_question": "问题",
+        "compass_deliverable": "交付",
+        "compass_boundary": "边界",
+        "compass_sources": "来源锚点",
+        "quick_title": "合上书，三问",
+        "quick_link": "做完再看附录 C 的参考答案",
+        "back_to_toc": "返回目录 ↑",
+        "closing_kicker": "收束",
+        "footer": "本书由 stm32-book/build_html.py 从 {count} 章源文档构建；来源、冻结点与许可见附录 E。",
+        "table_label": "数据表，可横向滚动",
+        "skip": "跳到目录",
+        "source_id": "标识",
+        "source_authority": "权威层级",
+        "source_snapshot": "冻结点",
+        "source_accessed": "访问日期",
+        "source_license": "许可边界",
+        "source_scope": "适用范围",
+        "source_open": "打开来源",
+    },
+    "en": {
+        "cover_kicker": "STM32 PRACTICAL BOOK",
+        "imprint_kicker": "COLOPHON",
+        "imprint_title": "Version and license",
+        "imprint_lead": "This page records the version, dates, and license of this build. Pin, timing, and electrical values still come from the manual for the exact part.",
+        "license_labels": ("Version", "Edition date", "Build date", "Author", "Original prose and drawings", "Third-party photos", "Code"),
+        "repository_label": "Repository",
+        "trademark": "STM32, STM32Cube, Nucleo, and Discovery are trademarks of STMicroelectronics. This book is for study and is not affiliated with ST. External manuals are linked and cited, not redistributed.",
+        "companion_title": "Companion material",
+        "companion_body": "The website, animations, examples, and cheatsheets live in the repository. The phone serialization is the WeChat account SIAI小宇宙. This book does not repeat those links, or the previous/next chapter navigation, at the end of every chapter.",
+        "companion_note": "Handbook numbers and figure references stay at the end of a chapter. Drawings are by the author or generated; they are not vendor photographs.",
+        "read_title": "This is not a pile of articles",
+        "read_lead": "The book moves from a closed development loop, to pins and time, to moving data, to reliability, to delivery, to a new family, and then to a system. Each chapter opens with a compass — question, deliverable, boundary — and then the original chapter.",
+        "routes": (
+            ("First board", "00–05, then any of 06/07/08, then 17 when something breaks."),
+            ("Data in and out", "02 → 05 → 09 → 10 → 06/14 → 15."),
+            ("A device you can update", "11 → 12 → 17, then appendices A and B, including the failure path."),
+            ("A different family", "20/21 → 23/24/25. Recheck power, alternate functions, clocks, and memory every time."),
+        ),
+        "evidence": "Evidence: cite a document number or revision for manual values; freeze a tag or commit for code; treat community posts as clues; a claim that it works needs the expected value, the measured value, the conditions, and what was not covered.",
+        "toc_title": "Contents and part goals",
+        "appendix_heading": "Appendices",
+        "toc_closing_note": "",
+        "compass_label": "Chapter compass",
+        "compass_question": "Question",
+        "compass_deliverable": "Deliverable",
+        "compass_boundary": "Boundary",
+        "compass_sources": "Sources",
+        "quick_title": "Close the book: three questions",
+        "quick_link": "Then compare with the answers in Appendix C",
+        "back_to_toc": "Back to contents ↑",
+        "closing_kicker": "CLOSE",
+        "footer": "Built by stm32-book/build_html.py from {count} source chapters. Sources, frozen versions, and the license are in Appendix E.",
+        "table_label": "Data table, scroll sideways",
+        "skip": "Skip to contents",
+        "source_id": "Id",
+        "source_authority": "Authority",
+        "source_snapshot": "Snapshot",
+        "source_accessed": "Accessed",
+        "source_license": "License",
+        "source_scope": "Scope",
+        "source_open": "Open source",
+    },
+}
+
+
+def ui(manifest: dict, key: str):
+    language = str(manifest.get("language", "zh-CN"))
+    table = UI["en"] if language.lower().startswith("en") else UI["zh-CN"]
+    return table[key]
+
+
+def compass_html(guide: dict, manifest: dict) -> str:
     source_links = " · ".join(
         f'<a href="#source-{html.escape(source_id)}">{html.escape(source_id)}</a>'
         for source_id in guide["sources"]
     )
     return f"""
-<aside class="chapter-compass" aria-label="本章罗盘">
-  <h2>本章罗盘</h2>
-  <div><strong>问题</strong><p>{html.escape(guide['question'])}</p></div>
-  <div><strong>交付</strong><p>{html.escape(guide['deliverable'])}</p></div>
-  <div><strong>边界</strong><p>{html.escape(guide['boundary'])}</p></div>
-  <p class="source-anchors"><strong>来源锚点</strong> {source_links}</p>
+<aside class="chapter-compass" aria-label="{html.escape(ui(manifest, 'compass_label'))}">
+  <h2>{html.escape(ui(manifest, 'compass_label'))}</h2>
+  <div><strong>{html.escape(ui(manifest, 'compass_question'))}</strong><p>{html.escape(guide['question'])}</p></div>
+  <div><strong>{html.escape(ui(manifest, 'compass_deliverable'))}</strong><p>{html.escape(guide['deliverable'])}</p></div>
+  <div><strong>{html.escape(ui(manifest, 'compass_boundary'))}</strong><p>{html.escape(guide['boundary'])}</p></div>
+  <p class="source-anchors"><strong>{html.escape(ui(manifest, 'compass_sources'))}</strong> {source_links}</p>
 </aside>"""
 
 
-def quick_check_html(questions: list[str]) -> str:
+def quick_check_html(questions: list[str], manifest: dict) -> str:
     if not questions:
         return ""
     items = "".join(f"<li>{html.escape(question)}</li>" for question in questions)
     return f"""
 <section class="quick-check">
-  <h2>合上书，三问</h2>
+  <h2>{html.escape(ui(manifest, 'quick_title'))}</h2>
   <ol>{items}</ol>
-  <p><a href="#appendix-exercises">做完再看附录 C 的参考答案</a></p>
+  <p><a href="#appendix-exercises">{html.escape(ui(manifest, 'quick_link'))}</a></p>
 </section>"""
 
 
 def imprint_html(manifest: dict, built_on: str) -> str:
+    labels = ui(manifest, "license_labels")
+    values = (
+        manifest["version"],
+        manifest["date"],
+        built_on,
+        manifest["author"],
+        manifest["license"]["prose_and_original_images"],
+        manifest["license"]["third_party_images"],
+        manifest["license"]["code"],
+    )
     license_rows = "".join(
         f"<dt>{html.escape(label)}</dt><dd>{html.escape(value)}</dd>"
-        for label, value in (
-            ("版本", manifest["version"]),
-            ("版本日期", manifest["date"]),
-            ("构建日期", built_on),
-            ("作者", manifest["author"]),
-            ("原创正文与原创图片", manifest["license"]["prose_and_original_images"]),
-            ("第三方实拍", manifest["license"]["third_party_images"]),
-            ("代码", manifest["license"]["code"]),
-        )
+        for label, value in zip(labels, values, strict=True)
     )
     repository = html.escape(manifest["repository"], quote=True)
     return f"""
 <section class="imprint" id="imprint">
-  <p class="kicker">版权页</p>
-  <h1>版本与许可</h1>
-  <p class="imprint-lead">这一页记录本次构建的版本、日期和许可。引脚、时序和电气参数仍以目标型号手册为准。</p>
+  <p class="kicker">{html.escape(ui(manifest, 'imprint_kicker'))}</p>
+  <h1>{html.escape(ui(manifest, 'imprint_title'))}</h1>
+  <p class="imprint-lead">{html.escape(ui(manifest, 'imprint_lead'))}</p>
   <dl>{license_rows}</dl>
-  <p class="colophon">仓库：<a href="{repository}">{html.escape(manifest["repository"])}</a></p>
-  <p class="colophon">STM32、STM32Cube、Nucleo、Discovery 是 STMicroelectronics 的商标。本书用于学习，与 ST 没有隶属关系。外部手册只作链接和事实引用，不随本书再分发。</p>
+  <p class="colophon">{html.escape(ui(manifest, 'repository_label'))}: <a href="{repository}">{html.escape(manifest["repository"])}</a></p>
+  <p class="colophon">{html.escape(ui(manifest, 'trademark'))}</p>
 </section>"""
 
 
@@ -458,9 +599,9 @@ def companion_html(manifest: dict) -> str:
     repository = html.escape(manifest["repository"], quote=True)
     return f"""
 <aside class="companion" id="companion">
-  <h2>配套资源</h2>
-  <p>网页版、动画、示例和速查表在 <a href="{repository}">{html.escape(manifest["repository"])}</a>。手机连载在微信公众号「SIAI小宇宙」。书稿不逐章重复公众号链接，也不保留上一篇 / 下一篇导航。</p>
-  <p>各章末仍保留手册编号和图示引用。插画是作者自绘或程序生成，不是厂商实拍。</p>
+  <h2>{html.escape(ui(manifest, 'companion_title'))}</h2>
+  <p>{html.escape(ui(manifest, 'companion_body'))} <a href="{repository}">{html.escape(manifest["repository"])}</a></p>
+  <p>{html.escape(ui(manifest, 'companion_note'))}</p>
 </aside>"""
 
 
@@ -472,25 +613,26 @@ def source_registry_html(manifest: dict) -> str:
 <article class="source-card" id="source-{html.escape(source_id)}">
   <h2>{html.escape(source['title'])}</h2>
   <dl>
-    <dt>标识</dt><dd><code>{html.escape(source_id)}</code></dd>
-    <dt>权威层级</dt><dd>{html.escape(source['authority'])}</dd>
-    <dt>冻结点</dt><dd>{html.escape(source['snapshot'])}</dd>
-    <dt>访问日期</dt><dd>{html.escape(source['accessed'])}</dd>
-    <dt>许可边界</dt><dd>{html.escape(source['license'])}</dd>
-    <dt>适用范围</dt><dd>{html.escape(source['scope'])}</dd>
+    <dt>{html.escape(ui(manifest, 'source_id'))}</dt><dd><code>{html.escape(source_id)}</code></dd>
+    <dt>{html.escape(ui(manifest, 'source_authority'))}</dt><dd>{html.escape(source['authority'])}</dd>
+    <dt>{html.escape(ui(manifest, 'source_snapshot'))}</dt><dd>{html.escape(source['snapshot'])}</dd>
+    <dt>{html.escape(ui(manifest, 'source_accessed'))}</dt><dd>{html.escape(source['accessed'])}</dd>
+    <dt>{html.escape(ui(manifest, 'source_license'))}</dt><dd>{html.escape(source['license'])}</dd>
+    <dt>{html.escape(ui(manifest, 'source_scope'))}</dt><dd>{html.escape(source['scope'])}</dd>
   </dl>
-  <p><a href="{html.escape(source['url'], quote=True)}">打开来源</a></p>
+  <p><a href="{html.escape(source['url'], quote=True)}">{html.escape(ui(manifest, 'source_open'))}</a></p>
 </article>"""
         )
     return '<section class="source-registry">' + "".join(cards) + "</section>"
 
 
 def toc_html(manifest: dict) -> str:
+    docs_dir, book_dir = edition_dirs(manifest)
     sections: list[str] = []
     for part in manifest["parts"]:
         items: list[str] = []
         for name in part["files"]:
-            title = extract_title((DOCS_DIR / name).read_text(encoding="utf-8"), name)
+            title = extract_title((docs_dir / name).read_text(encoding="utf-8"), name)
             items.append(
                 f'<li><a href="#chapter-{name[:2]}">{html.escape(title)}</a></li>'
             )
@@ -499,7 +641,7 @@ def toc_html(manifest: dict) -> str:
         closing_html = ""
         if closing:
             closing_title = extract_title(
-                (BOOK_DIR / closing["file"]).read_text(encoding="utf-8"),
+                (book_dir / closing["file"]).read_text(encoding="utf-8"),
                 closing["file"],
             )
             closing_html = (
@@ -515,7 +657,8 @@ def toc_html(manifest: dict) -> str:
         f'<li><a href="#{html.escape(item["id"])}">{html.escape(item["title"])}</a></li>'
         for item in manifest["appendices"]
     )
-    return "".join(sections) + f"<section><h2>附录</h2><ol>{appendices}</ol></section>"
+    heading = html.escape(ui(manifest, "appendix_heading"))
+    return "".join(sections) + f"<section><h2>{heading}</h2><ol>{appendices}</ol></section>"
 
 
 CSS = r"""
@@ -540,15 +683,18 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 20; padding: .6rem 1rem; background: var(--ink); color: var(--paper); }
 .skip-link:focus { top: 1rem; }
 .book { width: min(100% - 2rem, 980px); margin: 0 auto; }
-.cover { position: relative; isolation: isolate; overflow: hidden; min-height: 92vh; display: grid; align-content: center; padding: 12vh 8% 10vh; background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 16rem), var(--paper); }
-.cover::before { content: ""; position: absolute; inset: 0 auto 0 0; width: .45rem; background: var(--accent); }
-.cover-mark { position: absolute; top: 8vh; right: 8%; width: 7.5rem; height: 7.5rem; color: var(--accent); opacity: .5; }
-.cover .eyebrow { margin: 0; font-weight: 700; letter-spacing: .18em; font-size: .82rem; color: var(--accent); }
-.cover h1 { font-size: clamp(2.6rem, 8vw, 5.8rem); line-height: 1.06; margin: 0; max-width: 12ch; }
-.cover .rule { width: 4.2rem; height: .18rem; margin: 1.15rem 0 1.35rem; border: 0; background: var(--accent); }
-.cover .subtitle { margin: 0; font-size: clamp(1.15rem, 3vw, 1.7rem); max-width: 30em; }
-.cover .edition { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; align-items: baseline; max-width: 36rem; margin: 2.8rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); }
-.cover .edition strong { color: var(--ink); font-weight: 700; }
+.cover { min-height: 92vh; padding: 0; background: #10242e; color: #f4f1ea; }
+.cover-sheet { min-height: 92vh; display: grid; grid-template-rows: minmax(42vh, 1.05fr) auto; }
+.cover-art { background: #0c1c24; overflow: hidden; }
+.cover-art svg { display: block; width: 100%; height: 100%; }
+.cover-panel { position: relative; padding: 1.8rem 8% 2.6rem; background: #f7f4ee; color: #17202a; }
+.cover-panel::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: .45rem; background: #c4552a; }
+.cover .eyebrow { margin: 0; font-weight: 700; letter-spacing: .18em; font-size: .78rem; color: #9a3d1c; }
+.cover h1 { font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 1.02; margin: .35rem 0 .6rem; max-width: 14ch; color: #10242e; }
+.cover .rule { width: 4.2rem; height: .18rem; margin: 0 0 1rem; border: 0; background: #c4552a; }
+.cover .subtitle { margin: 0; font-size: clamp(1.05rem, 2.4vw, 1.35rem); max-width: 34em; color: #24323c; }
+.cover .edition { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; align-items: baseline; max-width: 36rem; margin: 1.6rem 0 0; padding-top: .8rem; border-top: 1px solid #d7d0c4; color: #5c6570; }
+.cover .edition strong { color: #10242e; font-weight: 700; }
 .imprint, .frontmatter, .contents { padding: 4rem 6%; }
 .imprint { padding: 4.5rem 6% 5rem; border-bottom: 1px solid var(--line); }
 .imprint .kicker { margin: 0 0 .35rem; color: var(--accent); font-weight: 700; letter-spacing: .16em; font-size: .82rem; }
@@ -586,6 +732,9 @@ h3 { margin-top: 1.8rem; }
 .quick-check h2 { margin-top: 0; }
 blockquote { margin: 1.4rem 0; padding: .25rem 1.2rem; border-left: 4px solid var(--accent); color: var(--muted); }
 img { display: block; max-width: 100%; height: auto; margin: 1.2rem auto .4rem; }
+figure { margin: 1.4rem auto 1.8rem; }
+figure img { margin: 0 auto .45rem; }
+figcaption { color: var(--muted); text-align: center; font-size: .9rem; line-height: 1.45; }
 sub { display: block; color: var(--muted); text-align: center; font-size: .88rem; }
 table { width: 100%; border-collapse: collapse; font-size: .94rem; }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1.25rem 0 2rem; overscroll-behavior-inline: contain; }
@@ -609,9 +758,10 @@ p, li, dd { overflow-wrap: anywhere; }
 footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; }
 @media (max-width: 720px) {
   .book { width: min(100% - 1rem, 980px); }
-  .cover, .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
-  .cover { padding-top: 4.5rem; padding-bottom: 3rem; }
-  .cover-mark { top: 1.2rem; right: 1rem; width: 4.5rem; height: 4.5rem; }
+  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
+  .cover { padding: 0; }
+  .cover-sheet { min-height: auto; grid-template-rows: 220px auto; }
+  .cover-panel { padding: 1.3rem 1rem 1.8rem; }
   .frontmatter .routes, .chapter-compass, .source-registry { grid-template-columns: minmax(0, 1fr); }
   .chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1; }
   .contents ol { columns: 1; }
@@ -630,13 +780,13 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   @page { size: A4; margin: 16mm 15mm 18mm; }
   body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
-  .cover { min-height: 245mm; page-break-after: always; }
+  .cover { min-height: 245mm; page-break-after: always; background: #10242e; }
+  .cover-sheet { min-height: 245mm; }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding: 0; }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { page-break-before: always; }
-  .cover-mark { opacity: .85; }
   .part-divider { min-height: 220mm; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
-  p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
+  p[align="center"], figure, figcaption, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
   .table-scroll { overflow: visible; }
   .table-scroll table { min-width: 0; }
   thead { display: table-header-group; }
@@ -672,10 +822,10 @@ class _AuditParser(HTMLParser):
             self.chapters.append(values.get("data-chapter") or "")
 
 
-def audit_html(document: str) -> None:
+def audit_html(document: str, docs_dir: Path = DOCS_DIR) -> None:
     parser = _AuditParser()
     parser.feed(document)
-    expected_chapters = [name[:2] for name in source_chapters()]
+    expected_chapters = [name[:2] for name in source_chapters(docs_dir)]
     if parser.chapters != expected_chapters:
         raise BuildError(f"built chapter order is wrong: {parser.chapters}")
     broken = sorted({fragment for fragment in parser.fragments if fragment not in parser.ids})
@@ -688,66 +838,83 @@ def audit_html(document: str) -> None:
         raise BuildError("video content remains in offline book")
 
 
-def part_closing_html(part: dict, chapter_anchors: dict[Path, str]) -> str:
+def cover_art_svg() -> str:
+    path = ROOT / "cover.svg"
+    if not path.is_file():
+        raise BuildError(f"missing cover art: {path}")
+    raw = path.read_text(encoding="utf-8")
+    raw = re.sub(r"<\?xml[^>]*\?>", "", raw).strip()
+    if "<svg" not in raw:
+        raise BuildError("cover art is not an SVG")
+    return raw
+
+
+def part_closing_html(part: dict, manifest: dict, chapter_anchors: dict[Path, str]) -> str:
     closing = part.get("closing")
     if not closing:
         return ""
-    path = BOOK_DIR / closing["file"]
+    book_dir = edition_dirs(manifest)[1]
+    path = book_dir / closing["file"]
     raw = path.read_text(encoding="utf-8")
     title = extract_title(raw, closing["file"])
     content = strip_heading_emoji(remove_chapter_frontmatter(raw))
-    rendered = render_document(content, path, closing["id"], chapter_anchors)
+    rendered = render_document(
+        content, path, closing["id"], chapter_anchors, ui(manifest, "table_label")
+    )
     return f"""
 <article class="part-closing" id="{html.escape(closing['id'])}">
-  <header><span class="chapter-number">收束</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="chapter-number">{html.escape(ui(manifest, 'closing_kicker'))}</span><h1>{html.escape(title)}</h1></header>
   {rendered}
-  <a class="back-to-toc" href="#contents">返回目录 ↑</a>
+  <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
 </article>"""
 
 
 def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PATH) -> Path:
     manifest = load_manifest(manifest_path)
     validate_manifest(manifest)
-    chapter_count = len(source_chapters())
+    docs_dir, book_dir = edition_dirs(manifest)
+    chapter_count = len(source_chapters(docs_dir))
     destination = (output_dir or DIST_DIR).resolve()
     destination.mkdir(parents=True, exist_ok=True)
+    table_label = ui(manifest, "table_label")
 
     chapter_anchors = {
-        (DOCS_DIR / filename).resolve(): f"chapter-{filename[:2]}"
+        (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
         for part in manifest["parts"]
         for filename in part["files"]
     }
 
     built_on = dt.date.today().isoformat()
+    routes = "".join(
+        f'<div class="route"><strong>{html.escape(title)}</strong><p>{html.escape(text)}</p></div>'
+        for title, text in ui(manifest, "routes")
+    )
     body: list[str] = []
     body.append(
         f"""
 <section class="cover" id="cover">
-  <svg class="cover-mark" viewBox="0 0 120 120" aria-hidden="true">
-    <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="2"></circle>
-    <path d="M30 74h60M30 48h36" fill="none" stroke="currentColor" stroke-width="2"></path>
-    <circle cx="78" cy="48" r="4" fill="currentColor"></circle>
-  </svg>
-  <p class="eyebrow">STM32 · 离线整书</p>
-  <hr class="rule">
-  <h1>{html.escape(manifest['title'])}</h1>
-  <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
-  <p class="edition"><strong>v{html.escape(manifest['version'])}</strong><span>{html.escape(manifest['date'])} · {html.escape(manifest['author'])}</span></p>
+  <div class="cover-sheet">
+    <div class="cover-art" aria-hidden="true">{cover_art_svg()}</div>
+    <div class="cover-panel">
+      <p class="eyebrow">{html.escape(ui(manifest, 'cover_kicker'))}</p>
+      <hr class="rule">
+      <h1>{html.escape(manifest['title'])}</h1>
+      <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
+      <p class="edition"><strong>v{html.escape(manifest['version'])}</strong><span>{html.escape(manifest['date'])} · {html.escape(manifest['author'])}</span></p>
+    </div>
+  </div>
 </section>
 {imprint_html(manifest, built_on)}
 <section class="frontmatter" id="how-to-read">
-  <h1>这不是文章合集</h1>
-  <p>全书沿“开发闭环 → 引脚与时间 → 数据搬运 → 系统可靠性 → 项目交付 → 跨系列迁移 → 系统收束”推进。每章先用罗盘约定问题、交付和边界，再进入原章节；章末三问把结论拉回可检查的工程状态。</p>
+  <h1>{html.escape(ui(manifest, 'read_title'))}</h1>
+  <p>{html.escape(ui(manifest, 'read_lead'))}</p>
   {companion_html(manifest)}
   <div class="routes">
-    <div class="route"><strong>第一次上手</strong><p>00–05 → 06/07/08 任一通信章 → 17 排错。</p></div>
-    <div class="route"><strong>做数据采集</strong><p>02 → 05 → 09 → 10 → 06/14 → 15。</p></div>
-    <div class="route"><strong>做可升级设备</strong><p>11 → 12 → 17 → 附录 A/B，补齐失败路径。</p></div>
-    <div class="route"><strong>迁移到新系列</strong><p>20/21 → 23/24/25；每次重新核对电源、复用、时钟、内存。</p></div>
+    {routes}
   </div>
-  <p><strong>证据口径：</strong>手册参数写文档号/修订点；GitHub 实现冻结 tag/commit；社区内容只作线索；“能跑”必须附期望、实际、测量条件和未覆盖边界。</p>
+  <p>{html.escape(ui(manifest, 'evidence'))}</p>
 </section>
-<section class="contents" id="contents"><h1>目录与分部目标</h1>{toc_html(manifest)}</section>"""
+<section class="contents" id="contents"><h1>{html.escape(ui(manifest, 'toc_title'))}</h1>{toc_html(manifest)}</section>"""
     )
 
     chapter_index = 0
@@ -761,30 +928,34 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 </section>"""
         )
         for filename in part["files"]:
-            path = DOCS_DIR / filename
+            path = docs_dir / filename
             raw = path.read_text(encoding="utf-8")
-            title, content, questions = prepare_chapter_markdown(raw, filename)
-            rendered = render_document(content, path, f"ch{filename[:2]}", chapter_anchors)
+            title, content, questions = prepare_chapter_markdown(
+                raw, filename, manifest.get("language", "zh-CN")
+            )
+            rendered = render_document(
+                content, path, f"ch{filename[:2]}", chapter_anchors, table_label
+            )
             guide = manifest["chapter_guides"][filename]
             body.append(
                 f"""
 <article class="chapter" id="chapter-{filename[:2]}" data-chapter="{filename[:2]}">
   <header><span class="chapter-number">CHAPTER {filename[:2]}</span><h1>{html.escape(title)}</h1></header>
-  {compass_html(guide)}
+  {compass_html(guide, manifest)}
   {rendered}
-  {quick_check_html(questions)}
-  <a class="back-to-toc" href="#contents">返回目录 ↑</a>
+  {quick_check_html(questions, manifest)}
+  <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
 </article>"""
             )
             chapter_index += 1
-        body.append(part_closing_html(part, chapter_anchors))
+        body.append(part_closing_html(part, manifest, chapter_anchors))
 
     for appendix in manifest["appendices"]:
-        path = BOOK_DIR / appendix["file"]
+        path = book_dir / appendix["file"]
         raw = path.read_text(encoding="utf-8")
         title = extract_title(raw, appendix["file"])
         content = strip_heading_emoji(remove_chapter_frontmatter(raw))
-        rendered = render_document(content, path, appendix["id"], chapter_anchors)
+        rendered = render_document(content, path, appendix["id"], chapter_anchors, table_label)
         registry = source_registry_html(manifest) if appendix["id"] == "appendix-references" else ""
         body.append(
             f"""
@@ -792,7 +963,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
   <header><span class="chapter-number">APPENDIX</span><h1>{html.escape(title)}</h1></header>
   {rendered}
   {registry}
-  <a class="back-to-toc" href="#contents">返回目录 ↑</a>
+  <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
 </article>"""
         )
 
@@ -807,14 +978,14 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 <style>{CSS}</style>
 </head>
 <body>
-<a class="skip-link" href="#contents">跳到目录</a>
+<a class="skip-link" href="#contents">{html.escape(ui(manifest, 'skip'))}</a>
 <main class="book">{''.join(body)}</main>
-<footer class="book-footer">本书由 <code>stm32-book/build_html.py</code> 从 {chapter_count} 章源文档构建；来源、冻结点与许可见附录 E。</footer>
+<footer class="book-footer">{html.escape(ui(manifest, 'footer').format(count=chapter_count))}</footer>
 </body>
 </html>
 """
-    audit_html(document)
-    output = destination / OUTPUT_NAME
+    audit_html(document, docs_dir)
+    output = destination / manifest.get("output_name", OUTPUT_NAME)
     output.write_text(document, encoding="utf-8", newline="\n")
     print(f"html  {output} ({output.stat().st_size} bytes, {chapter_index} chapters)")
     return output
@@ -861,7 +1032,7 @@ def _stamp_toc_page_references(document, fitz) -> None:
     in_contents = False
     for page in document:
         text = page.get_text()
-        if "目录与分部目标" in text:
+        if "目录与分部目标" in text or "Contents and part goals" in text:
             in_contents = True
         if not in_contents:
             continue
@@ -977,7 +1148,11 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str
         document.close()
 
 
-def build_pdf(html_path: Path, browser_override: str | None = None) -> Path:
+def build_pdf(
+    html_path: Path,
+    browser_override: str | None = None,
+    manifest_path: Path = MANIFEST_PATH,
+) -> Path:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as exc:
@@ -988,9 +1163,9 @@ def build_pdf(html_path: Path, browser_override: str | None = None) -> Path:
     if browser_override and executable is None:
         raise BuildError(f"browser does not exist: {browser_override}")
 
-    output = html_path.with_name(PDF_NAME)
+    manifest = load_manifest(manifest_path)
+    output = html_path.with_name(manifest.get("pdf_name", PDF_NAME))
     raw_pdf = html_path.with_name(".stm32-book.raw.pdf")
-    manifest = load_manifest()
     try:
         with sync_playwright() as playwright:
             launch_args = {"headless": True}
@@ -1035,17 +1210,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pdf", action="store_true", help="also print an A4 PDF")
     parser.add_argument("--browser", help="Chrome/Edge executable for PDF output")
     parser.add_argument("--check", action="store_true", help="validate by building in a temporary directory")
+    parser.add_argument("--lang", choices=("zh", "en"), default="zh", help="edition to build")
     options = parser.parse_args(argv)
+    manifest_path = ROOT / ("manifest-en.json" if options.lang == "en" else "manifest.json")
 
     try:
         if options.check:
             with tempfile.TemporaryDirectory(prefix="stm32-book-check-") as temporary:
-                build_html(Path(temporary))
-            print("check whole-book HTML contract: PASS")
+                build_html(Path(temporary), manifest_path)
+            print(f"check whole-book HTML contract ({options.lang}): PASS")
             return 0
-        html_path = build_html(options.out_dir)
+        html_path = build_html(options.out_dir, manifest_path)
         if options.pdf:
-            build_pdf(html_path, options.browser)
+            build_pdf(html_path, options.browser, manifest_path)
         return 0
     except BuildError as exc:
         print(f"book build error: {exc}", file=sys.stderr)

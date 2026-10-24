@@ -6,13 +6,14 @@
 - 29 章逐章加入“问题 / 交付 / 边界 / 来源锚点”；
 - 视频、字幕与重复旁白不进入书稿，原 `docs/` 保持不变；
 - 构建时去掉二级、三级标题开头的表情符号；章末「相关资源」里的公众号链接、上一篇 / 下一篇和重复免责声明不进书，手册编号保留；
-- 封面用版式和一行装饰，不引用外部字体；封面后有一页版本与许可；文前有一处「配套资源」；
+- 封面是内嵌的 `cover.svg` 插画加书名页，不引用外部字体；封面后有一页版本与许可；文前有一处「配套资源」；
+- 构建时把已知的居中 `<img>` + `<sub>` 图注收成 `<figure>` / `<figcaption>`，不改 `docs/` 正文；
 - 目录用每章 Markdown 的一级标题，仍按七个分部排列；目录不展开章内二级标题，以免 PDF 页码目录过长；
 - 附录包含 UART+DMA 工程深读、14 例验证索引、29 章答案、按主题加厚的术语表、来源与许可；
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印，保留标题书签、完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.0.0-rc.7 · 2026-10-24**。这还不是 GitHub Release。
+当前版本：**v1.0.0-rc.8 · 2026-10-24**。这还不是 GitHub Release。中文整书和英文整书共用这一版号。
 
 ## 构建
 
@@ -21,13 +22,19 @@
 ```bash
 python stm32-book/build_html.py
 python stm32-book/build_html.py --pdf
+python stm32-book/build_html.py --lang en
+python stm32-book/build_html.py --lang en --pdf
 ```
+
+`--lang` 默认 `zh`。英文版读 `manifest-en.json`、`docs/en/` 和 `stm32-book/book/en/`。
 
 默认输出：
 
 ```text
 stm32-book/dist/stm32-practical-book.html
 stm32-book/dist/stm32-practical-book.pdf
+stm32-book/dist/stm32-practical-book-en.html
+stm32-book/dist/stm32-practical-book-en.pdf
 ```
 
 PDF 需要本机 Chrome 或 Edge；也可显式指定：
@@ -43,6 +50,7 @@ python stm32-book/build_html.py --pdf --browser "C:/Program Files (x86)/Microsof
 ```bash
 python -m unittest discover stm32-book/tests -v
 python stm32-book/build_html.py --check
+python stm32-book/build_html.py --lang en --check
 ```
 
 检查项包括：
@@ -59,24 +67,33 @@ python stm32-book/build_html.py --check
 - 书稿不含 `mp.weixin.qq.com`、手机阅读版和章节间的上一篇 / 下一篇导航；
 - 目录条目是章节一级标题，第七部分目录含「学习路线收束」；
 - 术语表按主题覆盖时钟、引脚、中断、定时器、总线、采样、Flash、低功耗、RTOS、网络和调试；
-- 版本页带 manifest 版本号，封面不请求外部字体；
+- 版本页带 manifest 版本号，封面插画内嵌，不请求外部字体；
+- 已知居中图注变成 `figure` / `figcaption`，正文里不再留下 `align="center"`；
+- `--lang en` 产出 29 章英文书，章末的 Previous / Next 和插画免责声明不进书；
 - 缺图、漏罗盘、坏锚点和未闭合视频块会让构建失败。
 
 ## 离正式 1.0.0 还差
 
-rc.7 加厚了术语表，并给第七部分加了收束页。发 GitHub Release 之前还要：
+rc.8 把已知图注收成语义化 figure，换上内嵌封面插画，并加上英文离线整书。这一版停在 rc.8。构建脚本不会自己创建 GitHub Release。
 
-1. 英文整书仍未做，不在这一版的交付里。
-2. 在 `main` 上确认 Book CI 的 `stm32-practical-book` 产物是绿的。
-3. 由有权限的人打 tag `v1.0.0`，把同一份 HTML 和 PDF 挂到 GitHub Release。构建脚本不会自己创建 Release。
+rc.8 合并进 `main` 并且 Book CI 绿了之后，由有权限的人再发 1.0.0：
+
+1. 另开一个版本提交，把 `stm32-book/manifest.json`、`stm32-book/manifest-en.json` 的 `version`，以及本 README 的版本行，从 `1.0.0-rc.8` 改成 `1.0.0`。不要把 rc.8 的产物标成 1.0.0。
+2. 等这次提交在 `main` 上的 Book CI 变绿。它会给出两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
+3. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
+4. 在该提交上打 tag `v1.0.0`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 
 | 内容 | 唯一维护位置 |
 | --- | --- |
-| 29 章正文 | `docs/00–28` |
-| 分部顺序、章节罗盘、来源快照 | `stm32-book/manifest.json` |
-| 五份附录，以及第七部分收束页 | `stm32-book/book/` |
+| 29 章中文正文 | `docs/00–28` |
+| 29 章英文正文 | `docs/en/00–28` |
+| 中文分部、罗盘、来源快照 | `stm32-book/manifest.json` |
+| 英文分部、罗盘、来源快照 | `stm32-book/manifest-en.json` |
+| 中文附录与第七部分收束页 | `stm32-book/book/` |
+| 英文附录与收束页 | `stm32-book/book/en/` |
+| 封面插画 | `stm32-book/cover.svg` |
 | 构建与 PDF 输出 | `stm32-book/build_html.py` |
 | 整书契约回归 | `stm32-book/tests/test_build.py` |
 
