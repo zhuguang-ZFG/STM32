@@ -133,9 +133,16 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("1.0.0-rc.6", html)
+        self.assertIn("1.0.0-rc.7", html)
         self.assertIn('id="imprint"', html)
+        self.assertIn("版权页", html)
+        self.assertIn('class="cover-mark"', html)
+        self.assertNotIn("fonts.googleapis", html)
+        self.assertNotIn("fonts.gstatic", html)
         self.assertIn("配套资源", html)
+        self.assertIn('id="part-closing-p6"', html)
+        self.assertIn("学习路线收束", html)
+        self.assertIn('class="part-closing"', html)
         self.assertIn("00 如何学习 STM32", html)
         self.assertNotIn("00-如何学习STM32", html)
         self.assertNotIn("mp.weixin.qq.com", html)
@@ -175,6 +182,41 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("mp.weixin.qq.com", content)
         self.assertNotIn("下一篇", content)
         self.assertNotIn("免责声明", content)
+
+    def test_glossary_covers_terms_from_all_seven_parts(self) -> None:
+        text = (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8")
+        rows = [
+            line
+            for line in text.splitlines()
+            if line.startswith("| ") and not line.startswith("| 术语") and not line.startswith("| ---")
+        ]
+        self.assertGreaterEqual(len(rows), 120)
+        for heading in (
+            "## 时钟与复位",
+            "## 引脚、GPIO 与复用",
+            "## 中断与内核异常",
+            "## 定时器与 PWM",
+            "## UART、I2C、SPI、CAN 与 USB",
+            "## ADC、DAC 与 DMA",
+            "## Flash、启动与低功耗",
+            "## RTOS 与并发",
+            "## 以太网、lwIP 与 MQTT",
+            "## 调试",
+        ):
+            self.assertIn(heading, text)
+        for term in ("TIMCLK", "AF", "NVIC", "DMA", "SAR ADC", "PWM", "lwIP", "SWDIO / SWCLK"):
+            self.assertIn(term, text)
+
+    def test_part_seven_closing_stays_out_of_the_docs_tree(self) -> None:
+        closing = self.manifest["parts"][-1]["closing"]
+        self.assertEqual("part-closing-p6", closing["id"])
+        self.assertEqual("F-学习路线收束.md", closing["file"])
+        self.assertTrue((BOOK_DIR / "book" / closing["file"]).is_file())
+        self.assertFalse((BOOK_DIR.parent / "docs" / closing["file"]).exists())
+        broken = copy.deepcopy(self.manifest)
+        broken["parts"][-1]["closing"] = {"id": "part-closing-p6", "file": "missing.md"}
+        with self.assertRaisesRegex(self.builder.BuildError, "missing part closing manuscript"):
+            self.builder.validate_manifest(broken)
 
     def test_mobile_layout_has_no_page_level_horizontal_overflow(self) -> None:
         from playwright.sync_api import sync_playwright

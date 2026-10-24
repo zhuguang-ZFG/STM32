@@ -114,6 +114,34 @@ def validate_manifest(manifest: dict) -> None:
         if unknown:
             raise BuildError(f"unknown chapter sources: {name}:{unknown}")
 
+    closing_ids: set[str] = set()
+    for part in parts:
+        closing = part.get("closing")
+        if closing is None:
+            continue
+        part_id = part.get("id", "")
+        if not isinstance(closing, dict):
+            raise BuildError(f"part closing must be an object: {part_id}")
+        closing_id = closing.get("id", "")
+        filename = closing.get("file", "")
+        if (
+            not isinstance(closing_id, str)
+            or not closing_id.startswith("part-closing-")
+            or closing_id in closing_ids
+        ):
+            raise BuildError(f"invalid part closing id: {part_id}:{closing_id}")
+        closing_ids.add(closing_id)
+        if (
+            not isinstance(filename, str)
+            or "/" in filename
+            or "\\" in filename
+            or not filename.endswith(".md")
+            or filename in flattened
+        ):
+            raise BuildError(f"invalid part closing manuscript: {part_id}:{filename}")
+        if not (BOOK_DIR / filename).is_file():
+            raise BuildError(f"missing part closing manuscript: {filename}")
+
     appendix_ids: set[str] = set()
     appendix_files: set[str] = set()
     for appendix in manifest["appendices"]:
@@ -417,10 +445,12 @@ def imprint_html(manifest: dict, built_on: str) -> str:
     repository = html.escape(manifest["repository"], quote=True)
     return f"""
 <section class="imprint" id="imprint">
+  <p class="kicker">版权页</p>
   <h1>版本与许可</h1>
+  <p class="imprint-lead">这一页记录本次构建的版本、日期和许可。引脚、时序和电气参数仍以目标型号手册为准。</p>
   <dl>{license_rows}</dl>
-  <p>仓库：<a href="{repository}">{html.escape(manifest["repository"])}</a></p>
-  <p>STM32、STM32Cube、Nucleo、Discovery 是 STMicroelectronics 的商标。本书用于学习，与 ST 没有隶属关系。外部手册只作链接和事实引用，不随本书再分发。</p>
+  <p class="colophon">仓库：<a href="{repository}">{html.escape(manifest["repository"])}</a></p>
+  <p class="colophon">STM32、STM32Cube、Nucleo、Discovery 是 STMicroelectronics 的商标。本书用于学习，与 ST 没有隶属关系。外部手册只作链接和事实引用，不随本书再分发。</p>
 </section>"""
 
 
@@ -465,10 +495,21 @@ def toc_html(manifest: dict) -> str:
                 f'<li><a href="#chapter-{name[:2]}">{html.escape(title)}</a></li>'
             )
         chapters = "".join(items)
+        closing = part.get("closing")
+        closing_html = ""
+        if closing:
+            closing_title = extract_title(
+                (BOOK_DIR / closing["file"]).read_text(encoding="utf-8"),
+                closing["file"],
+            )
+            closing_html = (
+                f'<p class="toc-closing"><a href="#{html.escape(closing["id"])}">'
+                f"{html.escape(closing_title)}</a></p>"
+            )
         sections.append(
             f'<section><h2><a href="#part-{html.escape(part["id"])}">'
             f'{html.escape(part["title"])}</a></h2><p>{html.escape(part["goal"])}</p>'
-            f"<ol>{chapters}</ol></section>"
+            f"<ol>{chapters}</ol>{closing_html}</section>"
         )
     appendices = "".join(
         f'<li><a href="#{html.escape(item["id"])}">{html.escape(item["title"])}</a></li>'
@@ -499,14 +540,25 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 20; padding: .6rem 1rem; background: var(--ink); color: var(--paper); }
 .skip-link:focus { top: 1rem; }
 .book { width: min(100% - 2rem, 980px); margin: 0 auto; }
-.cover { min-height: 92vh; display: grid; align-content: center; padding: 5rem 7%; border-bottom: 4px solid var(--accent); }
-.cover .eyebrow { font-weight: 700; letter-spacing: .16em; color: var(--accent); }
-.cover h1 { font-size: clamp(2.6rem, 8vw, 5.8rem); line-height: 1.06; margin: .25em 0; max-width: 12ch; }
-.cover .subtitle { font-size: clamp(1.15rem, 3vw, 1.7rem); max-width: 30em; }
-.cover .edition { color: var(--muted); margin-top: 3rem; }
+.cover { position: relative; isolation: isolate; overflow: hidden; min-height: 92vh; display: grid; align-content: center; padding: 12vh 8% 10vh; background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 16rem), var(--paper); }
+.cover::before { content: ""; position: absolute; inset: 0 auto 0 0; width: .45rem; background: var(--accent); }
+.cover-mark { position: absolute; top: 8vh; right: 8%; width: 7.5rem; height: 7.5rem; color: var(--accent); opacity: .5; }
+.cover .eyebrow { margin: 0; font-weight: 700; letter-spacing: .18em; font-size: .82rem; color: var(--accent); }
+.cover h1 { font-size: clamp(2.6rem, 8vw, 5.8rem); line-height: 1.06; margin: 0; max-width: 12ch; }
+.cover .rule { width: 4.2rem; height: .18rem; margin: 1.15rem 0 1.35rem; border: 0; background: var(--accent); }
+.cover .subtitle { margin: 0; font-size: clamp(1.15rem, 3vw, 1.7rem); max-width: 30em; }
+.cover .edition { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; align-items: baseline; max-width: 36rem; margin: 2.8rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); }
+.cover .edition strong { color: var(--ink); font-weight: 700; }
 .imprint, .frontmatter, .contents { padding: 4rem 6%; }
-.imprint { border-bottom: 1px solid var(--line); }
+.imprint { padding: 4.5rem 6% 5rem; border-bottom: 1px solid var(--line); }
+.imprint .kicker { margin: 0 0 .35rem; color: var(--accent); font-weight: 700; letter-spacing: .16em; font-size: .82rem; }
 .imprint h1, .companion h2 { margin-top: 0; }
+.imprint h1 { margin-bottom: .4rem; }
+.imprint-lead, .imprint .colophon { max-width: 40em; }
+.imprint-lead { color: var(--muted); }
+.imprint dl { max-width: 42rem; margin: 1.5rem 0 0; padding-top: 1.05rem; border-top: 3px solid var(--accent); grid-template-columns: 11rem minmax(0, 1fr); }
+.imprint .colophon { color: var(--muted); }
+.toc-closing { margin: .2rem 0 0; font-weight: 700; }
 .companion { margin-top: 2rem; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); }
 .frontmatter { border-bottom: 1px solid var(--line); }
 .frontmatter .routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -517,9 +569,10 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider { min-height: 45vh; display: grid; align-content: center; padding: 5rem 7%; margin-top: 3rem; border-top: 4px solid var(--accent); border-bottom: 1px solid var(--line); }
 .part-divider .part-label { color: var(--accent); font-weight: 800; letter-spacing: .12em; }
 .part-divider h1 { font-size: clamp(2rem, 5vw, 3.7rem); line-height: 1.15; }
-.chapter, .appendix { padding: 4rem 6%; border-bottom: 1px solid var(--line); }
-.chapter > header, .appendix > header { margin-bottom: 2.2rem; }
-.chapter > header h1, .appendix > header h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; margin: .2em 0; }
+.chapter, .appendix, .part-closing { padding: 4rem 6%; border-bottom: 1px solid var(--line); }
+.part-closing { background: linear-gradient(180deg, var(--accent-soft), transparent 9rem); }
+.chapter > header, .appendix > header, .part-closing > header { margin-bottom: 2.2rem; }
+.chapter > header h1, .appendix > header h1, .part-closing > header h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; margin: .2em 0; }
 .chapter-number { color: var(--accent); font-weight: 800; letter-spacing: .12em; }
 h2, h3, h4 { line-height: 1.35; scroll-margin-top: 1.5rem; }
 h2 { margin-top: 2.4rem; }
@@ -556,7 +609,9 @@ p, li, dd { overflow-wrap: anywhere; }
 footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; }
 @media (max-width: 720px) {
   .book { width: min(100% - 1rem, 980px); }
-  .cover, .imprint, .frontmatter, .contents, .part-divider, .chapter, .appendix { padding-left: 1rem; padding-right: 1rem; }
+  .cover, .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
+  .cover { padding-top: 4.5rem; padding-bottom: 3rem; }
+  .cover-mark { top: 1.2rem; right: 1rem; width: 4.5rem; height: 4.5rem; }
   .frontmatter .routes, .chapter-compass, .source-registry { grid-template-columns: minmax(0, 1fr); }
   .chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1; }
   .contents ol { columns: 1; }
@@ -576,8 +631,9 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; }
-  .imprint, .frontmatter, .contents, .part-divider, .chapter, .appendix { padding: 0; }
-  .imprint, .frontmatter, .contents, .part-divider, .chapter, .appendix { page-break-before: always; }
+  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding: 0; }
+  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { page-break-before: always; }
+  .cover-mark { opacity: .85; }
   .part-divider { min-height: 220mm; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
   p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
@@ -632,6 +688,23 @@ def audit_html(document: str) -> None:
         raise BuildError("video content remains in offline book")
 
 
+def part_closing_html(part: dict, chapter_anchors: dict[Path, str]) -> str:
+    closing = part.get("closing")
+    if not closing:
+        return ""
+    path = BOOK_DIR / closing["file"]
+    raw = path.read_text(encoding="utf-8")
+    title = extract_title(raw, closing["file"])
+    content = strip_heading_emoji(remove_chapter_frontmatter(raw))
+    rendered = render_document(content, path, closing["id"], chapter_anchors)
+    return f"""
+<article class="part-closing" id="{html.escape(closing['id'])}">
+  <header><span class="chapter-number">收束</span><h1>{html.escape(title)}</h1></header>
+  {rendered}
+  <a class="back-to-toc" href="#contents">返回目录 ↑</a>
+</article>"""
+
+
 def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PATH) -> Path:
     manifest = load_manifest(manifest_path)
     validate_manifest(manifest)
@@ -650,16 +723,21 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     body.append(
         f"""
 <section class="cover" id="cover">
-  <p class="eyebrow">STM32 · OFFLINE BOOK</p>
+  <svg class="cover-mark" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="2"></circle>
+    <path d="M30 74h60M30 48h36" fill="none" stroke="currentColor" stroke-width="2"></path>
+    <circle cx="78" cy="48" r="4" fill="currentColor"></circle>
+  </svg>
+  <p class="eyebrow">STM32 · 离线整书</p>
+  <hr class="rule">
   <h1>{html.escape(manifest['title'])}</h1>
   <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
-  <p class="edition">v{html.escape(manifest['version'])} · {html.escape(manifest['date'])}<br>
-  {html.escape(manifest['author'])}</p>
+  <p class="edition"><strong>v{html.escape(manifest['version'])}</strong><span>{html.escape(manifest['date'])} · {html.escape(manifest['author'])}</span></p>
 </section>
 {imprint_html(manifest, built_on)}
 <section class="frontmatter" id="how-to-read">
   <h1>这不是文章合集</h1>
-  <p>全书沿“开发闭环 → 引脚与时间 → 数据搬运 → 系统可靠性 → 项目交付 → 跨系列迁移”推进。每章先用罗盘约定问题、交付和边界，再进入原章节；章末三问把结论拉回可检查的工程状态。</p>
+  <p>全书沿“开发闭环 → 引脚与时间 → 数据搬运 → 系统可靠性 → 项目交付 → 跨系列迁移 → 系统收束”推进。每章先用罗盘约定问题、交付和边界，再进入原章节；章末三问把结论拉回可检查的工程状态。</p>
   {companion_html(manifest)}
   <div class="routes">
     <div class="route"><strong>第一次上手</strong><p>00–05 → 06/07/08 任一通信章 → 17 排错。</p></div>
@@ -699,6 +777,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 </article>"""
             )
             chapter_index += 1
+        body.append(part_closing_html(part, chapter_anchors))
 
     for appendix in manifest["appendices"]:
         path = BOOK_DIR / appendix["file"]
