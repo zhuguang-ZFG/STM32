@@ -458,6 +458,7 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   .chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1; }
   .contents ol { columns: 1; }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
+  .table-scroll th, .table-scroll td { min-width: 4.5rem; }
   dl { grid-template-columns: 1fr; }
 }
 @media (prefers-color-scheme: dark) {
