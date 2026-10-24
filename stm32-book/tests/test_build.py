@@ -133,6 +133,48 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
+        self.assertIn("1.0.0-rc.6", html)
+        self.assertIn('id="imprint"', html)
+        self.assertIn("配套资源", html)
+        self.assertIn("00 如何学习 STM32", html)
+        self.assertNotIn("00-如何学习STM32", html)
+        self.assertNotIn("mp.weixin.qq.com", html)
+        self.assertNotIn("手机阅读版", html)
+        self.assertNotIn("上一篇：", html)
+        self.assertNotIn("下一篇：", html)
+        self.assertNotIn("📌", html)
+        self.assertIn("FAQ STM32 boot process", html)
+        self.assertIn("mp.weixin.qq.com", (BOOK_DIR.parent / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8"))
+
+    def test_book_mode_strips_promo_without_touching_fenced_headings(self) -> None:
+        raw = """# 00 标题
+
+## 📌 学习目标
+
+正文
+
+```
+## 📌 不要改代码围栏
+```
+
+## 🔗 相关资源
+
+- 官方手册：**RM0008** 第 9 章
+- 下一篇：[01 标题](01.md)
+- 📱 手机阅读版：[章](https://mp.weixin.qq.com/s/abc)
+- 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
+"""
+        title, content, questions = self.builder.prepare_chapter_markdown(raw, "sample")
+        self.assertEqual("00 标题", title)
+        self.assertEqual([], questions)
+        self.assertIn("## 学习目标", content)
+        self.assertNotIn("📌 学习目标", content)
+        self.assertIn("## 📌 不要改代码围栏", content)
+        self.assertIn("**RM0008**", content)
+        self.assertIn("## 相关资源", content)
+        self.assertNotIn("mp.weixin.qq.com", content)
+        self.assertNotIn("下一篇", content)
+        self.assertNotIn("免责声明", content)
 
     def test_mobile_layout_has_no_page_level_horizontal_overflow(self) -> None:
         from playwright.sync_api import sync_playwright
