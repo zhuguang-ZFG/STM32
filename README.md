@@ -6,14 +6,14 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 24 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 25 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-29_篇-60a5fa?style=flat-square)](docs/)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
-[![animations](https://img.shields.io/badge/SVG_动画-24_个-22d3ee?style=flat-square)](assets/animations/)
-[![boards](https://img.shields.io/badge/实物结构图-7_张-fbbf24?style=flat-square)](assets/boards/)
+[![animations](https://img.shields.io/badge/SVG_动画-25_个-22d3ee?style=flat-square)](assets/animations/)
+[![boards](https://img.shields.io/badge/板卡与引脚图-10_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
-[![gif](https://img.shields.io/badge/GIF_动画-6_个-f87171?style=flat-square)](assets/gif/)
+[![gif](https://img.shields.io/badge/教学_GIF-6_个-f87171?style=flat-square)](assets/gif/)
 [![examples](https://img.shields.io/badge/可编译示例-14_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
@@ -85,9 +85,12 @@
 | 程序卡死 / 编译不过 | [第 18 章 · 常见问题 FAQ](docs/18-常见问题FAQ.md) |
 | 想选 FreeRTOS / RT-Thread / Zephyr 或设计任务架构 | [第 28 章 · 嵌入式系统与 RTOS 生态](docs/28-嵌入式系统与RTOS生态.md) |
 | 想做 Ethernet 24 小时与故障注入验收 | [Ethernet 长稳证据实验](labs/ethernet-24h/) |
-| 只想要速查表 | [cheatsheets/](cheatsheets/) |
+| 没有板子，先仿真 | [sim/](sim/README.md) · [第 22 章](docs/22-仿真实验Wokwi与Renode.md) |
+| 只想要速查表 | [cheatsheets/](cheatsheets/README.md) |
 | 想看所有动画和实物图 | [assets/README.md](assets/README.md) |
+| 想看讲解视频怎么编号 | [assets/video/](assets/video/README.md) |
 | 想自己改图 / 生成素材 | [tools/](tools/)（纯 Python，零依赖） |
+| 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
 
 > 🔗 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
 
@@ -108,7 +111,7 @@
 </tr>
 </table>
 
-完整清单（24 个 SVG 动画）见 [assets/README.md](assets/README.md)。此外还有 6 个**纯 Python 生成的光栅动画**：
+完整清单（25 个 SVG 动画）见 [assets/README.md](assets/README.md)。下面 6 个是标准库生成的教学 GIF。`assets/gif/` 里另有 20 个 `*-zh.gif`，由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，不是这 6 张的译文：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -139,6 +142,9 @@
 | [f103zet6-dev.svg](assets/boards/f103zet6-dev.svg) | F103ZET6 大板：FSMC LCD、SD 卡、CAN/RS485/RS232、双 Flash |
 | [pinout-bluepill.svg](assets/boards/pinout-bluepill.svg) | **LQFP48 全 48 脚编号图** + 复用功能对照 + 看引脚图的 5 个要点 |
 | [peripheral-wiring.svg](assets/boards/peripheral-wiring.svg) | 8 个入门外设的接线总览与资源冲突提示 |
+| [pinout-stm32g071rb-lqfp64.svg](assets/boards/pinout-stm32g071rb-lqfp64.svg) | G071RB LQFP64，脚序来自 DS12232 Rev 5 Table 12 |
+| [pinout-stm32l476rg-lqfp64.svg](assets/boards/pinout-stm32l476rg-lqfp64.svg) | L476Rx LQFP64，脚序来自 DS10198 Rev 11 Figure 16 |
+| [pinout-stm32h743zi-lqfp144.svg](assets/boards/pinout-stm32h743zi-lqfp144.svg) | H743xI LQFP144，脚序来自 DS12110 Rev 11 Figure 7 |
 
 ## 学习路线图
 
@@ -252,43 +258,35 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```text
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
-├── docs/                     ← 00–28 章 + CONTENT_GUIDE.md 写作规范
-├── examples/                 ← 14 个可编译示例（含 SPL/CMake 与 HAL 示例）
-├── labs/                     ← Ethernet 24 h 长稳与故障注入证据协议
-├── cheatsheets/              ← 4 份速查表
-├── stm32-book/               ← 29 章整书版：manifest、五份附录、离线 HTML/PDF 构建
-├── assets/
-│   ├── animations/           ← 24 个 SVG 动画（CSS @keyframes / SMIL）
-│   ├── boards/               ← 7 张板卡结构图 + 3 张芯片引脚图
-│   ├── photos/               ← 2 张带完整来源记录的 CC0 Nucleo-64 实拍
-│   ├── diagrams/             ← 6 张静态框图
-│   ├── gif/                  ← 6 个程序生成的光栅动画
-│   └── README.md             ← 素材清单与引用方式
-└── tools/                    ← 素材生成脚本（纯标准库，零依赖）
-    ├── svgkit.py             ← SVG 画布 + 动画片段库
-    ├── anim_basics.py        ← 工具链/启动/存储器/时钟树动画
-    ├── anim_gpio.py          ← GPIO/中断/NVIC/调试动画
-    ├── anim_comm.py          ← UART/I2C/SPI/CAN/USB/网络分层动画
-    ├── anim_sys.py           ← 定时器/ADC/DMA/看门狗/IAP/RTOS/低功耗动画
-    ├── gen_boards.py         ← 板卡实物结构图
-    ├── gen_diagrams.py       ← 静态框图（含功耗接线与网络排错）
-    ├── minigfx.py            ← 位图绘制 + GIF89a/LZW 编码器
-    ├── gen_gifs.py           ← 光栅动画
-    ├── gen_animations.py     ← 一键生成全部动画
-    └── check_assets.py       ← 素材自检（解码 GIF 逐像素回验 + SVG 校验）
+├── STRUCTURE.md              ← 目录约定、本轮改动、后续事项
+├── Makefile                  ← make assets / check / book / book-check
+├── docs/                     ← 中文 00–28 + CONTENT_GUIDE.md
+│   └── en/                   ← 英文 00–28、英文速查表
+├── examples/                 ← 14 个可编译示例（Wokwi 工程在示例目录内）
+├── labs/                     ← 真板证据协议（目前：ethernet-24h）
+├── sim/renode/               ← Renode .resc
+├── cheatsheets/              ← 4 份中文速查表
+├── stm32-book/               ← 整书：manifest、附录、离线 HTML/PDF
+├── assets/                   ← 动画、板卡图、实拍、GIF、讲解视频
+└── tools/                    ← 生成脚本（清单见 tools/README.md）
+
+不入库（.gitignore，只在作者本机）：wechat-mp/ 、 final-videos/
 ```
+
+各目录的入口文件和「不要混放」的边界写在 [STRUCTURE.md](STRUCTURE.md)。
 
 ## 素材是怎么来的（可复现）
 
-SVG、引脚图和 GIF 都是**代码生成**的，clone 下来就能重新生成，不需要任何第三方库。
+板卡图、引脚图和下面命令里的教学 GIF 用 Python 标准库就能重新生成。`assets/gif/*-zh.gif` 由 `tools/svg2gif.py` 从 SVG 采样，需要本机 Chrome 和 Pillow。
 `assets/photos/` 的两张 CC0 实拍不由脚本生成，来源页、处理方式与 SHA-256 记录在该目录的 README：
 
 ```bash
-# 生成 24 个 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
+# 生成 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
 python3 tools/gen_animations.py
 
-# 生成板卡实物结构图与静态框图
+# 生成板卡实物结构图、系列引脚图与静态框图
 python3 tools/gen_boards.py
+python3 tools/gen_pinouts.py
 python3 tools/gen_diagrams.py
 
 # 生成 6 个光栅 GIF（内置 5×7 点阵字体 + 手写 GIF89a/LZW 编码器）
@@ -322,7 +320,7 @@ python3 tools/check_assets.py
 ## Roadmap
 
 - [x] 29 章知识文档 + 写作规范
-- [x] 24 个 SVG 原理动画（工具链 / 时钟 / GPIO / 中断 / 通信 / DMA / RTOS / Stop 2 / 网络 / 系统分层）
+- [x] 25 个 SVG 原理动画（清单见 [assets/README.md](assets/README.md)，含 G0 启动与 SWD 恢复）
 - [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
 - [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
 - [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）

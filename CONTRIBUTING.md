@@ -14,7 +14,7 @@
 
 ## 二、动手前的三条约定
 
-1. **先读规范**：[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)（文章骨架、命名、图片引用方式）。
+1. **先读规范**：[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)（文章骨架、命名、图片引用方式）。目录各管什么见 [STRUCTURE.md](STRUCTURE.md)。
 2. **图片只能用仓库内的**：引用 `../assets/...` 下的相对路径，不要外链图床（GitHub 会代理失败）。
 3. **诚实标注**：自绘矢量图不能说成「实拍照片」；数据要能追溯到手册章节。
 
@@ -30,9 +30,14 @@ python3 tools/gen_gifs.py
 # 2) 自检：SVG 是否为合法 XML、GIF 解码回验是否逐像素一致
 python3 tools/check_assets.py
 
-# 3) 检查有没有死链（示例）
-grep -rhoE '\((\.\./|\./)?(docs|assets|examples|cheatsheets)/[^)]+' README.md docs/*.md | sort -u
+# 3) 改了章节正文时，再跑整书契约（只改导航文档可以跳过）
+python3 -m unittest discover stm32-book/tests -v
+python3 stm32-book/build_html.py --check
 ```
+
+相对链接由 `tools/check_assets.py` 检查。它还会检查讲解正片，因此需要本机有 Pillow、ffmpeg、ffprobe。只改了 Markdown 导航时，至少确认新链接指向的文件存在。
+
+`tools/md2mp.py`、`gen_mp_covers.py`、`gen_tietu.py` 会把产物写到 `.gitignore` 里的 `wechat-mp/` 和 `final-videos/`。不要把这两个目录提交上来。
 
 ## 四、提交规范
 

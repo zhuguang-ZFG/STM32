@@ -1,5 +1,7 @@
 # STM32 Ethernet 24-hour evidence run
 
+Folder index: [../README.md](../README.md).
+
 This lab turns chapter 27's long-run requirement into a reproducible evidence package. It does **not** contain a claimed hardware result: a run is complete only when the target board, PHY, firmware commit, topology, PCAP, JSONL, resource telemetry, and fault timestamps are all present.
 
 ## Acceptance boundary

@@ -91,18 +91,26 @@
 | `dma-ring.gif` | DMA 循环搬运 ADC 数据到数组 | 同上 |
 | `sar-adc.gif` | SAR ADC 逐次逼近比较过程 | 同上 |
 
-> ⚠️ GIF 里的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形，
-> 中文讲解统一放在 SVG 动画与文档里。所有 GIF 都可以用 `python3 tools/gen_gifs.py` 重新生成，
-> 并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
+> ⚠️ 上面 6 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
+> 用 `python3 tools/gen_gifs.py` 重新生成，并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
+
+### 公众号动图 `*-zh.gif`
+
+同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 6 张的中文翻译，也不由 `gen_gifs.py` 生成。
+
+文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
 
 ## 六、章节讲解 `assets/video/`
 
-每章一条 MP4，大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
+正片 29 章是 `ch00`–`ch28`，AI 续集是 `chs01`–`chs12`，另有一条未挂脚本的 `chai01-ai-gpio`。文件名和标题对照见 [video/README.md](video/README.md)。
+
+每条正片大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
 画面是脚本绘制的标题卡，并贴上本仓库自己的 SVG，不是实拍；字体由 `NARRATED_FONT` 指定。
 配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
 edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
-仓库里放的是合成后的 MP4，29 章一共几十 MB，所以直接进 git，不用 Git LFS，也不另开 Release。
-重新生成：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
+仓库里放的是合成后的 MP4，直接进 git，不用 Git LFS，也不另开 Release。
+重新生成正片：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
+续集把环境变量 `NARRATED_MODULE` 设为 `narration_ai` 再跑同一条命令。
 
 ## 七、引用方式
 

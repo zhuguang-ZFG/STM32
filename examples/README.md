@@ -79,7 +79,8 @@ examples/
 ## 仿真（可选，见第 22 章）
 
 核心示例目录里有 `diagram.json` 和 `wokwi.toml`，Renode 脚本在
-[`sim/renode/`](../sim/renode/)。怎么跑、哪些外设当前模型跑不完，写在
+[`sim/renode/`](../sim/renode/)。入口说明见 [sim/README.md](../sim/README.md)。
+怎么跑、哪些外设当前模型跑不完，写在
 [22 仿真实验](../docs/22-仿真实验Wokwi与Renode.md)。
 
 ## 五、通用注意事项

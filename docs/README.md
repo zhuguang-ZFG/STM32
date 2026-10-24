@@ -53,7 +53,13 @@
 ## 相关目录
 
 - [写作规范 CONTENT_GUIDE.md](CONTENT_GUIDE.md) —— 想贡献内容前请先读
+- [英文版 docs/en/](en/README.md)
+- [整书 stm32-book/](../stm32-book/)（离线 HTML / PDF）
 - [示例代码 examples/](../examples/)
-- [速查表 cheatsheets/](../cheatsheets/)
+- [仿真 sim/](../sim/README.md)（Renode；Wokwi 工程在示例目录里）
+- [证据实验 labs/](../labs/README.md)
+- [速查表 cheatsheets/](../cheatsheets/README.md)
 - [可视化素材 assets/](../assets/)
+- [讲解视频 assets/video/](../assets/video/README.md)
 - [生成脚本 tools/](../tools/)
+- [仓库目录约定 STRUCTURE.md](../STRUCTURE.md)

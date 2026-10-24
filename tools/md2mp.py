@@ -11,7 +11,7 @@
 - 每张图带一行灰色小字标注插图文件名，丢图时按名字从 images/ 补
 
 用法：
-    python tools/md2mp.py                 # 全部 26 章 + 4 速查表
+    python tools/md2mp.py                 # docs/NN-*.md 全部章节 + 4 份中文速查表
     python tools/md2mp.py --only 00       # 只转某一章（调试用）
 """
 import argparse

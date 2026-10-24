@@ -7,11 +7,11 @@
 ## 快速开始
 
 ```bash
-python3 tools/gen_animations.py     # 24 个 SVG 动画（CSS @keyframes / SMIL）
+python3 tools/gen_animations.py     # SVG 动画（CSS @keyframes / SMIL）
 python3 tools/gen_boards.py         # 板卡实物结构图
 python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 6 张静态框图
-python3 tools/gen_gifs.py           # 6 个光栅 GIF
+python3 tools/gen_gifs.py           # 6 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
 python3 tools/gen_narrated.py --speak     # 配音 MP4 + SRT（还需 edge-tts、ffmpeg、联网）
 python3 tools/check_assets.py       # 自检：SVG、GIF、实拍哈希、讲解 MP4、链接
@@ -37,20 +37,27 @@ python3 tools/gen_gifs.py led-blink
 | `gen_pinouts.py` | G071 / L476 / H743 的 LQFP 引脚图（脚序来自数据手册，不补脚） |
 | `gen_diagrams.py` | 分层架构、工程目录、外设总线、中断优先级、L4 JP6 IDD 接线、网络排错阶梯 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
-| `gen_gifs.py` | LED 闪烁、PWM 呼吸灯、UART 逐位、DMA 环形缓冲、SAR ADC |
+| `gen_gifs.py` | 6 个教学 GIF：LED 闪烁、PWM 呼吸灯、UART 逐位、I2C 时序、DMA 环形缓冲、SAR ADC |
 | `gen_videos.py` | 旧的 5 帧 ASCII 幻灯，章节讲解已改由 `gen_narrated.py` 生成 |
-| `narration.py` | 第 00–28 章的分镜、口诀和旁白稿 |
+| `narration.py` | 第 00–28 章的分镜、口诀和旁白稿，输出 `assets/video/chNN-*.mp4` |
+| `narration_ai.py` | AI 续集分镜。`NARRATED_MODULE=narration_ai` 时输出 `assets/video/chsNN-*.mp4` |
 | `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |
+| `svg2gif.py` | 把动画 SVG 采样成 `assets/gif/<名字>-zh.gif`（需本机 Chrome、Pillow） |
+| `md2mp.py` | 把 `docs/NN-*.md` 和中文速查表转成公众号 HTML，写到 `wechat-mp/`（该目录不进 git） |
+| `gen_mp_covers.py` | 从 `final-videos/` 的封面裁公众号头图，写到 `wechat-mp/covers/` |
+| `gen_tietu.py` | 公众号竖版贴图，写到 `final-videos/`（该目录不进 git） |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
-| `check_assets.py` | 自检：SVG、GIF 回验、CC0 实拍哈希/尺寸、章节幻灯、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
+| `check_assets.py` | 自检：SVG、教学 GIF 回验、CC0 实拍哈希/尺寸、正片 MP4、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
 | `ethernet_soak.py` | 共享单调截止点的 TCP echo 长稳探针，以及 close/stall/delay 故障注入对端；协议与 24 h 验收见 `labs/ethernet-24h/` |
+
+`wechat-mp/` 和 `final-videos/` 在根目录 `.gitignore` 里。克隆下来的仓库没有这两个目录；要跑公众号脚本，先在本机准备它们的输入（封面在 `final-videos/`）。目录怎么分，见 [STRUCTURE.md](../STRUCTURE.md)。
 
 ## 设计约定
 
 1. **自包含 SVG**：样式写在 `<style>` 里，动画只用 CSS `@keyframes` 或 SMIL，
    不含 `<script>`、外链资源、外部字体 —— 这样用 `<img>` 引用也能播放动画。
 2. **深色卡片主题**：在 GitHub 亮色/暗色主题下都可读。
-3. **GIF 文字只能是 ASCII**：位图字体只覆盖 5×7 英文字形（中文讲解放在 SVG 与文档里）。
+3. **教学 GIF 的文字只能是 ASCII**：`gen_gifs.py` 的位图字体只覆盖 5×7 英文字形。`*-zh.gif` 是 SVG 截帧，可以有中文，不要把它改回 ASCII。
 4. **诚实标注**：所有图都是自绘/程序生成，页脚统一标注「自绘矢量图 · STM32 知识库」。
 
 ## 想加一张新图？
