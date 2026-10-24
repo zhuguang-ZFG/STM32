@@ -6,12 +6,12 @@
 
 **Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
 
-An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 24 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 raster GIFs · 14 buildable examples · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 25 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 teaching GIFs · 14 buildable examples · 4 cheatsheets
 
 [![docs](https://img.shields.io/badge/chapters-29-60a5fa?style=flat-square)](contents.md)
-[![animations](https://img.shields.io/badge/SVG_animations-24-22d3ee?style=flat-square)](../../assets/animations/)
-[![boards](https://img.shields.io/badge/board_drawings-7-fbbf24?style=flat-square)](../../assets/boards/)
-[![gif](https://img.shields.io/badge/GIF-6-f87171?style=flat-square)](../../assets/gif/)
+[![animations](https://img.shields.io/badge/SVG_animations-25-22d3ee?style=flat-square)](../../assets/animations/)
+[![boards](https://img.shields.io/badge/boards_and_pinouts-10-fbbf24?style=flat-square)](../../assets/boards/)
+[![gif](https://img.shields.io/badge/teaching_GIF-6-f87171?style=flat-square)](../../assets/gif/)
 [![examples](https://img.shields.io/badge/examples-14-34d399?style=flat-square)](../../examples/)
 [![cheatsheets](https://img.shields.io/badge/cheatsheets-4-a78bfa?style=flat-square)](cheatsheets/hal.md)
 [![tools](https://img.shields.io/badge/generators-Python_stdlib-f472b6?style=flat-square)](../../tools/)
@@ -46,9 +46,14 @@ Tutorials are easy to find and still fail in the same three ways:
 | Pick a part and read a clock tree | [Chapter 2 · Part, memory, clocks](02-part-and-clock.md) |
 | Light the first LED | [Chapter 3 · GPIO](03-gpio-and-led.md) + [examples/gpio-blink](../../examples/gpio-blink/) |
 | The program is stuck, or it will not build | [Chapter 18 · FAQ](18-faq.md) |
+| Read the chapters as one offline book | [stm32-book/](../../stm32-book/) |
+| Run the Ethernet 24-hour evidence lab | [labs/ethernet-24h](../../labs/ethernet-24h/) |
+| Simulate before you have a board | [sim/](../../sim/README.md) · [chapter 22](22-simulation-wokwi-renode.md) |
 | Just the cheatsheets | [HAL](cheatsheets/hal.md), [registers](cheatsheets/registers.md), [bus and pins](cheatsheets/bus-and-pins.md), [errors](cheatsheets/errors.md) |
 | Every animation and board drawing | [assets/README.md](../../assets/README.md) |
+| Narrated videos (chapter films and the AI sequel) | [assets/video/](../../assets/video/README.md) |
 | Change a drawing | [tools/](../../tools/) (Python standard library only) |
+| See how the repository is laid out | [STRUCTURE.md](../../STRUCTURE.md) |
 
 The chapter index, with one-line summaries, is [contents.md](contents.md).
 
@@ -69,7 +74,7 @@ The chapter index, with one-line summaries, is [contents.md](contents.md).
 </tr>
 </table>
 
-The full list of 24 SVG animations is in [assets/README.md](../../assets/README.md). Six more GIFs are generated in pure Python:
+The full list of 25 SVG animations is in [assets/README.md](../../assets/README.md). The six GIFs below are the teaching set, generated in pure Python. `assets/gif/` also has 20 `*-zh.gif` files sampled from the SVGs for the WeChat edition:
 
 <div align="center">
 <img src="../../assets/gif/led-blink.gif" width="330" alt="LED blink GIF">
@@ -243,7 +248,7 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 ## Roadmap
 
 - [x] The chapter set plus the writing guide
-- [x] 24 SVG mechanism animations
+- [x] 25 SVG mechanism animations (inventory in `assets/README.md`, including the G0 boot and SWD recovery diagram)
 - [x] Seven board drawings plus three G0/L4/H7 package pinouts
 - [x] Six generated GIFs and the asset checker
 - [x] 14 buildable examples (including frozen SPL, bxCAN, and USB CDC/HID) and 4 cheatsheets

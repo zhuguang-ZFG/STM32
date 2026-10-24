@@ -53,7 +53,12 @@
 ## Related directories
 
 - [Writing guide, CONTENT_GUIDE.md](CONTENT_GUIDE.md) — read this before you contribute
+- [Whole book, stm32-book/](../../stm32-book/) (offline HTML / PDF)
 - [Example code, examples/](../../examples/)
-- English cheatsheets: [HAL](cheatsheets/hal.md), [registers](cheatsheets/registers.md), [bus and pins](cheatsheets/bus-and-pins.md), [error codes](cheatsheets/errors.md). The Chinese cheatsheets are at [`../../cheatsheets/`](../../cheatsheets/) ([HAL速查表](../../cheatsheets/HAL速查表.md), [寄存器速查表](../../cheatsheets/寄存器速查表.md), [外设总线与引脚速查表](../../cheatsheets/外设总线与引脚速查表.md), [错误码与排查速查表](../../cheatsheets/错误码与排查速查表.md)).
+- [Simulation, sim/](../../sim/README.md) (Renode scripts; Wokwi projects sit next to the examples)
+- [Evidence labs, labs/](../../labs/README.md)
+- English cheatsheets: [HAL](cheatsheets/hal.md), [registers](cheatsheets/registers.md), [bus and pins](cheatsheets/bus-and-pins.md), [error codes](cheatsheets/errors.md). The Chinese cheatsheets are indexed at [`../../cheatsheets/README.md`](../../cheatsheets/README.md).
 - [Visual assets, assets/](../../assets/)
+- [Narrated videos, assets/video/](../../assets/video/README.md)
 - [Generator scripts, tools/](../../tools/)
+- [Repository map, STRUCTURE.md](../../STRUCTURE.md)

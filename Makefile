@@ -56,10 +56,11 @@ clean:
 	find . -name '*.pyc' -delete
 
 stats:
-	@echo "文档   : $$(ls docs/*.md | wc -l) 篇，共 $$(cat docs/*.md | wc -l) 行"
+	@echo "章节   : $$(ls docs/[0-9][0-9]-*.md | wc -l) 章中文 + $$(ls docs/en/[0-9][0-9]-*.md | wc -l) 章英文，中文正文 $$(cat docs/[0-9][0-9]-*.md | wc -l) 行"
 	@echo "示例   : $$(ls -d examples/*/ | wc -l) 个"
-	@echo "速查表 : $$(ls cheatsheets/*.md 2>/dev/null | wc -l) 份"
+	@echo "速查表 : $$(ls cheatsheets/*速查表.md 2>/dev/null | wc -l) 份中文 + $$(ls docs/en/cheatsheets/*.md 2>/dev/null | wc -l) 份英文"
 	@echo "SVG    : $$(find assets -name '*.svg' | wc -l) 张（动画 $$(ls assets/animations/*.svg | wc -l)）"
 	@echo "GIF    : $$(find assets/gif -name '*.gif' | wc -l) 个"
 	@echo "讲解片 : $$(find assets/video -name '*.mp4' 2>/dev/null | wc -l) 个 MP4"
+	@echo "Renode : $$(ls sim/renode/*.resc 2>/dev/null | wc -l) 个脚本"
 	@echo "体积   : $$(du -sh assets | cut -f1) (assets/)"
