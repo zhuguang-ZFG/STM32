@@ -128,60 +128,15 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 
 ## Chapters
 
-<details open>
-<summary><b>Foundations (00–08)</b></summary>
+One-line summaries and animation links live in [contents.md](contents.md). The Chinese index is [docs/README.md](../README.md).
 
-| # | Chapter | Keywords | Animation |
-| --- | --- | --- | --- |
-| 00 | [How to learn STM32](00-how-to-learn-stm32.md) | roadmap · kit · three styles | `toolchain-flow` |
-| 01 | [Environment](01-dev-environment.md) | Keil / CubeIDE / PlatformIO · ST-Link · SWD | `boot-sequence` |
-| 02 | [Part, memory, clocks](02-part-and-clock.md) | part number · memory map · clock tree | `memory-map` `clock-tree` |
-| 03 | [GPIO and the LED](03-gpio-and-led.md) | 8 modes · push-pull / open-drain · resistor | `gpio-blink` `led-blink.gif` |
-| 04 | [Interrupts and the NVIC](04-interrupts-nvic.md) | priority group · EXTI | `nvic-interrupt-flow` |
-| 05 | [Timers and PWM](05-timer-pwm.md) | time base · duty · capture | `timer-pwm` `pwm-breath.gif` |
-| 06 | [UART](06-uart.md) | frame · baud error · DMA+IDLE | `uart-frame` `uart-bits.gif` |
-| 07 | [I2C](07-i2c.md) | open-drain · ACK · stuck bus | `i2c-transaction` |
-| 08 | [SPI](08-spi.md) | full duplex · CPOL/CPHA · chip select | `spi-transfer` |
-
-</details>
-
-<details open>
-<summary><b>The next layer (09–17)</b></summary>
-
-| # | Chapter | Keywords | Animation |
-| --- | --- | --- | --- |
-| 09 | [ADC and DAC](09-adc-dac.md) | SAR · sample time · internal temperature | `adc-sar` |
-| 10 | [DMA](10-dma.md) | channel / stream · circular · cache | `dma-circular` |
-| 11 | [RTC and the watchdog](11-rtc-watchdog.md) | LSE · alarm · IWDG/WWDG | `iwdg-window` |
-| 12 | [Flash and IAP](12-flash-iap.md) | sector erase · unlock · two slots | `flash-iap` |
-| 13 | [CAN](13-can.md) | arbitration · stuffing · filters | `can-arbitration` |
-| 14 | [USB](14-usb.md) | enumeration · descriptors · CDC / HID | `usb-enumeration` |
-| 15 | [FreeRTOS](15-freertos.md) | task state · priority · queue | `freertos-scheduler` |
-| 16 | [Low power](16-low-power.md) | Sleep / Stop / Standby · WFI | `lowpower-wakeup` |
-| 17 | [Debug](17-debug.md) | SWD/SWO · HardFault · DWT | `debug-swo` |
-
-</details>
-
-<details open>
-<summary><b>Projects, simulation, family pinouts, SPL, networking, and systems (18–28)</b></summary>
-
-| # | Chapter | Keywords |
+| Part | Chapters | Start |
 | --- | --- | --- |
-| 18 | [FAQ](18-faq.md) | 30+ rows of symptom / cause / fix |
-| 19 | [Projects](19-projects.md) | 10 projects that stack: car, scope, logger… |
-| 20 | [Resources](20-resources.md) | how ST names manuals · community · firmware libs |
-| 21 | [Board maps](21-board-maps.md) | five boards and how to read a minimum system |
-| 22 | [Wokwi and Renode](22-simulation-wokwi-renode.md) | browser wiring · load an ELF · where DMA stops |
-| 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB · BOOT0/SWCLK truth table · option bytes · Under Reset recovery |
-| 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG · VDDUSB · cover typicals for low power |
-| 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI pins/supply · Rev Y/W vs V · 400/480 MHz clocks · MCO verification |
-| 26 | [STM32F10x SPL](26-spl.md) | V3.5.0 project skeleton · API boundaries · HAL migration |
-| 27 | [Networking and protocol stacks](27-network.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · layered diagnosis |
-| 28 | [Embedded systems and the RTOS ecosystem](28-system-rtos.md) | ownership · deadlines · FreeRTOS / RT-Thread / Zephyr · startup and watchdog health |
+| Foundations | 00–08 | [00 How to learn STM32](00-how-to-learn-stm32.md) |
+| The next layer | 09–17 | [09 ADC and DAC](09-adc-dac.md) |
+| Projects, pins, SPL, networking, systems | 18–28 | [18 FAQ](18-faq.md) |
 
-</details>
-
-> Before you add a chapter, read [CONTENT_GUIDE.md](CONTENT_GUIDE.md).
+Before you add a chapter, read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) and edit the row in `contents.md` only.
 
 ## Examples and cheatsheets
 

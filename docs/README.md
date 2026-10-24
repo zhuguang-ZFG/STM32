@@ -1,5 +1,7 @@
 # 章节目录
 
+> 这是中文章节目录的唯一维护处。首页只留分段入口，不另写一份关键词表。
+>
 > English: [Contents](en/contents.md)
 
 > 建议阅读顺序：**00 → 01 → 02**（打基础）→ 按兴趣挑外设章节 → **18**（排错手册随时查）→ **19**（做项目）。
@@ -34,7 +36,7 @@
 | 16 | [低功耗设计](16-低功耗设计.md) | Sleep/Stop/Standby、WFI、唤醒源 | [lowpower-wakeup](../assets/animations/lowpower-wakeup.svg) |
 | 17 | [调试与性能优化](17-调试与性能优化.md) | SWD/SWO、HardFault 定位、DWT 计时 | [debug-swo](../assets/animations/debug-swo.svg) |
 
-## 实战、仿真与系列引脚
+## 实战、仿真、引脚、SPL、网络与系统
 
 | # | 章节 | 一句话 |
 | --- | --- | --- |

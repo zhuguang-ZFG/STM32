@@ -1,5 +1,7 @@
 # Contents
 
+> This is the only English chapter index. [docs/en/README.md](README.md) keeps a three-row summary and links here.
+>
 > 中文：[章节目录](../README.md)
 
 > Suggested reading order: **[00](00-how-to-learn-stm32.md) → [01](01-dev-environment.md) → [02](02-part-and-clock.md)** (build the foundation) → pick peripheral chapters by interest → **[18](18-faq.md)** (the troubleshooting manual, open it any time) → **[19](19-projects.md)** (build a project).
