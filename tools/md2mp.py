@@ -297,7 +297,7 @@ def convert(md_path: Path, prefix: str, tmp_profile: Path) -> dict:
         f'<p style="{STYLES["p"]}font-size:14px;color:{MUTED};">'
         f'本文配套源码、速查表与可视化动画都在开源仓库（已公开），点左下角「阅读原文」直达 GitHub。</p>'
         f'<p style="{STYLES["p"]}font-size:14px;color:{MUTED};">'
-        f'📌 <strong>关注「SIAI小宇宙」</strong>：26 章图文 + 每章讲解视频持续连载；'
+        f'📌 <strong>关注「SIAI小宇宙」</strong>：00–28 共 29 章图文 + 每章讲解视频持续连载；'
         f'进入合集「STM32零基础自学」从第 00 章连续看，回复「资料」可领速查表。</p>'
     )
     html = (
@@ -334,7 +334,7 @@ def main() -> int:
     targets: list[tuple[Path, str]] = []
     for p in sorted((ROOT / "docs").glob("[0-9][0-9]-*.md")):
         targets.append((p, f"ch{p.name[:2]}"))
-    for p in sorted((ROOT / "cheatsheets").glob("*.md")):
+    for p in sorted((ROOT / "cheatsheets").glob("*速查表.md")):
         targets.append((p, f"cs-{p.stem[:6]}"))
 
     with tempfile.TemporaryDirectory() as tmp:

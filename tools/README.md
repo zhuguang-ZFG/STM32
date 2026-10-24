@@ -38,7 +38,7 @@ python3 tools/gen_gifs.py led-blink
 | `gen_diagrams.py` | 分层架构、工程目录、外设总线、中断优先级、L4 JP6 IDD 接线、网络排错阶梯 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | 6 个教学 GIF：LED 闪烁、PWM 呼吸灯、UART 逐位、I2C 时序、DMA 环形缓冲、SAR ADC |
-| `gen_videos.py` | 旧的 5 帧 ASCII 幻灯，章节讲解已改由 `gen_narrated.py` 生成 |
+| `gen_videos.py` | **已停用。** 五帧 ASCII 幻灯。`make assets` 不调用它。直接运行会写出 `assets/video/chNN-*.gif`（自检会失败），`--patch-docs` 会改写章节里的讲解视频。要重放旧幻灯才设 `GEN_VIDEOS_I_KNOW=1` |
 | `narration.py` | 第 00–28 章的分镜、口诀和旁白稿，输出 `assets/video/chNN-*.mp4` |
 | `narration_ai.py` | AI 续集分镜。`NARRATED_MODULE=narration_ai` 时输出 `assets/video/chsNN-*.mp4` |
 | `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |

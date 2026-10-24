@@ -16,7 +16,7 @@
 | `sim/` | Renode 脚本。和 Wokwi 工程分开 | [sim/README.md](sim/README.md) |
 | `cheatsheets/` | 4 份中文速查表。英文在 `docs/en/cheatsheets/` | [cheatsheets/README.md](cheatsheets/README.md) |
 | `assets/` | 动画、板卡图、实拍、GIF、讲解视频 | [assets/README.md](assets/README.md) |
-| `assets/video/` | 正片、AI 续集、一部未挂脚本的旧片 | [assets/video/README.md](assets/video/README.md) |
+| `assets/video/` | 正片与 AI 续集。早期成片在 `superseded/` | [assets/video/README.md](assets/video/README.md) |
 | `tools/` | 生成图片、讲解片、公众号稿的脚本 | [tools/README.md](tools/README.md) |
 | `Makefile` | `assets` / `check` / `book` / `book-pdf` / `book-check` / `stats` | 文件头注释 |
 | `.github/workflows/book.yml` | 在 CI 里编 SPL 示例，并构建整书 HTML/PDF | — |
@@ -33,27 +33,20 @@
 - 改章节：只改 `docs/`（以及对应的 `docs/en/`）。整书通过 `stm32-book/manifest.json` 引用这些文件。
 - `examples/` 要能编译。`labs/` 记录一次真板实验怎样才算完成，里面没有固件工程。
 - 6 个教学 GIF 由 `tools/gen_gifs.py` 用标准库生成，文字是 ASCII。`assets/gif/*-zh.gif` 由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，已经提交进 git。
-- 讲解正片由 `tools/narration.py` + `tools/gen_narrated.py` 生成，文件名是 `ch{章号}-{slug}`。AI 续集把 `NARRATED_MODULE=narration_ai`，文件名是 `chs{集号}-{slug}`。
-- 中文速查表留在仓库根的 `cheatsheets/`。英文速查表留在 `docs/en/cheatsheets/`。两处都已经有链接，这一轮不合并目录。
+- 讲解正片由 `tools/narration.py` + `tools/gen_narrated.py` 生成，文件名是 `ch{章号}-{slug}`。AI 续集把 `NARRATED_MODULE=narration_ai`，文件名是 `chs{集号}-{slug}`。`chai01-ai-gpio` 是续集第一集的早期成片，在 `assets/video/superseded/`。
+- 对外讲章节范围时用 **00–28，共 29 章**。`tools/gen_mp_covers.py` 仍只裁 ch00–ch25，因为封面源在不入库的 `final-videos/`。
+- 中文速查表留在仓库根的 `cheatsheets/`。英文速查表留在 `docs/en/cheatsheets/`。两处都已经有链接，不合并目录。
 
 ## 这一轮改了什么
 
-- 补上 `sim/`、`labs/`、`cheatsheets/`、`assets/video/` 的索引，打开目录不再只有散文件。
-- 首页「仓库结构」补上英文版、仿真、讲解视频，以及两个不入库的本机目录。原先把 `tools/` 里每个脚本都列在首页，和 `tools/README.md` 重复，而且漏了公众号脚本，现已改成指到工具说明。
-- 中文首页的板卡表补上 G0 / L4 / H7 三张引脚图。英文首页原来就有。
-- 原理动画按目录实数改为 25（含 `g0-boot-swd.svg`）。首页徽章、英文首页、`CREDITS.md`、`tools/README.md` 一起改。
-- `tools/README.md` 写明 `md2mp.py`、`svg2gif.py`、`gen_mp_covers.py`、`gen_tietu.py`、`narration_ai.py` 的产出位置。
-- 中英文章节目录加上整书、实验、仿真和本文件的入口。
-- `make stats` 只数 `docs/NN-*.md`，不再把 `docs/README.md` 和 `CONTENT_GUIDE.md` 算进章节篇数。
-- `tools/md2mp.py` 的用法注释改为「转换全部编号章节」。页脚里面向读者的「26 章」没有改，见下方后续。
+- `chai01-ai-gpio` 与 `chs01-ai-basics` 字幕逐段对照后，确认是同一集的早期成片（两处用词不同，时间轴是重新配音的）。三个文件移到 `assets/video/superseded/`，主目录只留现行续集。没有删除。
+- 首页公众号导语和 `tools/md2mp.py` 页脚改为「00–28 共 29 章」。`md2mp.py` 本来就会转换全部编号章节；「26 章」是系列还停在 ch25 时留下的。`narration_ai.py` 的模块说明改为「正片 00–28 之后」。
+- `tools/gen_videos.py` 确认没有被 Makefile、CI 或 `check_assets.py` 调用。文件保留，默认直接运行会退出，避免写出旧 GIF 或改写章节。说明写在 `tools/README.md`。
+- `md2mp.py` 只转换文件名以「速查表」结尾的中文速查表，不再把 `cheatsheets/README.md` 当成一篇公众号稿。
 
-没有移动或删除图片、视频和示例。没有改章节教什么。远程分支 `cursor/roadmap-finish-cac9` 和 `cline/2r69bzmk` 没有并进来。
+## 后续
 
-## 后续（这一轮不做）
-
-1. `assets/video/chai01-ai-gpio.*` 对不上当前 `narration_ai.py`（续集文件名是 `chsNN-*`）。确认它是否已被 `chs01-ai-basics` 取代后，再决定保留、改名或移出。不要当垃圾直接删。
-2. 这 5 张 SVG 还没有 `*-zh.gif`：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。`svg2gif.py` 依赖本机 Chrome，这里不生成。
-3. 首页公众号导语和 `md2mp.py` 页脚仍写「26 章」，仓库正文已是 00–28。先确认公众号实际连载到哪一章，再改对外句子。
-4. `assets/boards/wechat-mp-qr.png` 和板卡图放在同一目录。挪走会改首页图片地址，单独做。
-5. 首页和 `docs/README.md` 各有一份章节关键词表。首页适合扫读，所以这次两份都留着。若以后只维护一份，以 `docs/README.md` 为准。
-6. `tools/gen_videos.py` 是旧的五帧幻灯，正片已改走 `gen_narrated.py`。确认没有人再跑它之后，再从主路径拿掉。
+1. 这 5 张 SVG 还没有 `*-zh.gif`：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。`svg2gif.py` 依赖本机 Chrome，这里不生成。
+2. `tools/gen_mp_covers.py` 仍只裁 ch00–ch25。封面源在不入库的 `final-videos/`。本地有 ch26–ch28 封面后再把循环改成 29。
+3. `assets/boards/wechat-mp-qr.png` 和板卡图放在同一目录。挪走会改首页图片地址，单独做。
+4. 首页和 `docs/README.md` 各有一份章节关键词表。首页适合扫读，所以两份都留着。若以后只维护一份，以 `docs/README.md` 为准。

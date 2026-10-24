@@ -102,7 +102,7 @@
 
 ## 六、章节讲解 `assets/video/`
 
-正片 29 章是 `ch00`–`ch28`，AI 续集是 `chs01`–`chs12`，另有一条未挂脚本的 `chai01-ai-gpio`。文件名和标题对照见 [video/README.md](video/README.md)。
+正片 29 章是 `ch00`–`ch28`，AI 续集是 `chs01`–`chs12`。`chai01-ai-gpio` 是续集第一集的早期成片，在 [video/superseded/](video/superseded/README.md)，现行文件是 `chs01-ai-basics`。文件名对照见 [video/README.md](video/README.md)。
 
 每条正片大约 2 到 4 分钟，外加同名 SRT 和一张 PNG 海报。
 画面是脚本绘制的标题卡，并贴上本仓库自己的 SVG，不是实拍；字体由 `NARRATED_FONT` 指定。
