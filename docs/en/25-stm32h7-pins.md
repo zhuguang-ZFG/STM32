@@ -35,6 +35,8 @@
 - [ ] Count from pin 1, PE2, down the left side to NRST, without reversing the numbers along the top.
 - [ ] Point at one pin pair each for FDCAN1, OTG_FS, USART1, I2C1, and SWD.
 - [ ] State the structural differences from F1/F4: three power domains, FDCAN rather than bxCAN, and external capacitors on VCAP for the core.
+- [ ] Identify the silicon revision against ES0392 before choosing the 400 MHz path for Rev Y/W or the 480 MHz path for Rev V.
+- [ ] Recalculate HSE → PLL1P → SYSCLK → HCLK/PCLK, then cross-check it with MCO, HAL frequency readback, and a peripheral waveform.
 
 ## 🧠 Which part this is
 
@@ -69,6 +71,110 @@ Motto: **Count 144 pins from PE2. There are two VCAP pins. The USB supply is not
 
 Pin numbers along the top increase from right to left: pin 109 is near the right, and the top-left corner is pin 144 (VDD). The left side is where pin 1 counts downward. G0 and L4 use the same counting rule.
 
+## ⚡ Select the supply and voltage scale before 480 MHz
+
+**“H743 up to 480 MHz” is a conditional ceiling, not a frequency available on every H743ZI after reset.** ES0392 states that revisions Y and W have no VOS0 and are limited to a 400 MHz CPU clock. Revision V supports the 480 MHz conditions in DS12110/RM0433 with VOS0. Check the device marking first; if needed, read `REV_ID` in `DBGMCU->IDCODE` and decode it against RM0433/ES0392. Do not infer the revision from the board's product name.
+
+| Item | What to confirm before startup | What it does not mean |
+| --- | --- | --- |
+| LDO / SMPS | The schematic, inductor, VCAP components, and other external parts must match the selected DS12110/AN4938 supply scheme; `HAL_PWREx_ConfigSupply()` must match it too | Changing one macro cannot turn an LDO board into an SMPS board |
+| VOS1 / VOS0 | Use VOS1 on Rev Y/W, up to 400 MHz; use VOS0 for 480 MHz on Rev V and wait for `VOSRDY` | Writing VOS0 on Rev Y/W does not unlock 480 MHz |
+| D1 / D2 / D3 | Internal MCU power/clock domains managed through PWR/RCC and low-power transitions | Not three independent VDD rails that can be wired arbitrarily |
+| VCAP1 / VCAP2 | Capacitors required by the core regulator, as specified by the datasheet | Not ordinary decoupling pins; never tie them directly to VDD or omit the capacitors |
+| VDD33USB | Supply connection required by the USB PHY | Neither the core supply nor a GPIO |
+| PDR_ON | Hardware boundary between the internal supply supervisor and an external supervisor | Not a generic chip-enable pin or an NRST substitute |
+
+Configure the supply scheme once during early startup. The example below explicitly defines `BOARD_POWER_SUPPLY` for an **LDO board**. On an SMPS design, change the board-level design and software selection together according to ST's hardware documentation; do not copy this line blindly.
+
+## 🕐 From 8 MHz HSE to 480 MHz: a reproducible clock chain
+
+The frozen STM32CubeH7 `RCC_ClockConfig` example provides a 400 MHz NUCLEO-H743ZI baseline: the ST-LINK supplies an **8 MHz HSE bypass clock**, with `PLLM=4`, `PLLN=400`, and `PLLP=2`, giving `8 / 4 × 400 / 2 = 400 MHz`. The following changes that topology only for **Rev V + 8 MHz HSE bypass + an LDO board**: select VOS0 and set `PLLN=480`. A crystal is not HSE bypass. Recalculate everything for a different HSE frequency instead of copying these values.
+
+```c
+/* main.c: startup path only for Rev V, 8 MHz HSE bypass, and an LDO board. */
+#define BOARD_POWER_SUPPLY        PWR_LDO_SUPPLY
+#define CLOCK_STARTUP_TIMEOUT_MS  100U
+
+static HAL_StatusTypeDef SystemClock_Config480(void)
+{
+    RCC_OscInitTypeDef osc = {0};
+    RCC_ClkInitTypeDef clk = {0};
+    HAL_StatusTypeDef status;
+    uint32_t started;
+
+    status = HAL_PWREx_ConfigSupply(BOARD_POWER_SUPPLY);
+    if (status != HAL_OK) {
+        return status;                 /* Never continue with a supply mismatch. */
+    }
+
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+    started = HAL_GetTick();
+    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
+        if ((HAL_GetTick() - started) > CLOCK_STARTUP_TIMEOUT_MS) {
+            return HAL_TIMEOUT;        /* Preserve a failure instead of hanging. */
+        }
+    }
+
+    osc.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    osc.HSEState = RCC_HSE_BYPASS;     /* Nucleo ST-LINK MCO, not crystal mode. */
+    osc.PLL.PLLState = RCC_PLL_ON;
+    osc.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    osc.PLL.PLLM = 4U;                 /* 8 MHz / 4 = 2 MHz */
+    osc.PLL.PLLN = 480U;               /* VCO = 960 MHz */
+    osc.PLL.PLLP = 2U;                 /* PLL1P = 480 MHz */
+    osc.PLL.PLLQ = 4U;                 /* This example does not assign PLL1Q. */
+    osc.PLL.PLLR = 2U;
+    osc.PLL.PLLFRACN = 0U;
+    osc.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+    osc.PLL.PLLRGE = RCC_PLL1VCIRANGE_1;
+    status = HAL_RCC_OscConfig(&osc);
+    if (status != HAL_OK) {
+        return status;
+    }
+
+    clk.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK |
+                    RCC_CLOCKTYPE_D1PCLK1 | RCC_CLOCKTYPE_PCLK1 |
+                    RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1;
+    clk.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    clk.SYSCLKDivider = RCC_SYSCLK_DIV1;
+    clk.AHBCLKDivider = RCC_HCLK_DIV2;
+    clk.APB3CLKDivider = RCC_APB3_DIV2;
+    clk.APB1CLKDivider = RCC_APB1_DIV2;
+    clk.APB2CLKDivider = RCC_APB2_DIV2;
+    clk.APB4CLKDivider = RCC_APB4_DIV2;
+    return HAL_RCC_ClockConfig(&clk, FLASH_LATENCY_4);
+}
+```
+
+Call and check `SystemClock_Config480()` before initializing UART, timers, FDCAN, USB, or other peripherals. On failure, record the failing step, supply macro, silicon revision, and clock source; do not continue peripheral initialization in a partially configured state. Rev Y/W must not take this path: use the official VOS1 + `PLLN=400` baseline, yielding 400/200/100 MHz with the same bus dividers. If a product permits automatic downshifting, report the selected mode and recalculate every peripheral explicitly; never report a requested 480 MHz configuration as successful after silently falling back.
+
+| Node | Rev V example | Rev Y/W baseline | Calculation |
+| --- | ---: | ---: | --- |
+| PLL input | 2 MHz | 2 MHz | `HSE / PLLM = 8 / 4` |
+| VCO | 960 MHz | 800 MHz | `PLL input × PLLN` |
+| CPU / SYSCLK | 480 MHz | 400 MHz | `VCO / PLLP` |
+| HCLK (AXI/AHB) | 240 MHz | 200 MHz | `SYSCLK / 2` |
+| PCLK1/2/3/4 | 120 MHz | 100 MHz | `HCLK / 2` |
+| APB timer clock (APB divider other than 1) | 240 MHz | 200 MHz | `2 × PCLK` |
+| MCO2 = SYSCLK/5 | 96 MHz | 80 MHz | Expected instrument reading |
+
+Only **PLL1P drives SYSCLK** here. `PLL1Q = 960 / 4 = 240 MHz`; it is not the 48 MHz USB clock. Select PLL2/PLL3 and the FDCAN, ADC, SPI, USART, and USB kernel clocks separately for each peripheral. An APB divider of 2 doubles the timer clock, not PCLK itself, so UART baud-rate calculations must not reuse the timer formula.
+
+### Collect three kinds of evidence after startup
+
+1. **Software readback:** require `HAL_RCC_GetSysClockFreq()` to report 480000000 and `HAL_RCC_GetHCLKFreq()` to report 240000000. This HAL's `HAL_RCC_ClockConfig()` updates `SystemCoreClock` and the HAL tick. On H7, `SystemCoreClock` is **HCLK = 240 MHz**, not the 480 MHz CPU clock.
+2. **Independent clock output:** after confirming that PC9 is available and does not conflict on the target board, output MCO2:
+
+```c
+/* Board code must confirm PC9 and its alternate function; expected: 480 / 5 = 96 MHz. */
+HAL_RCC_MCOConfig(RCC_MCO2, RCC_MCO2SOURCE_SYSCLK, RCC_MCODIV_5);
+```
+
+96 MHz is the **calculated expectation**, not a measurement made by this repository. Agreement between the instrument and software readback validates both PLL selection and division. Software variables alone can reproduce the same incorrect assumptions that produced the configuration.
+
+3. **Peripheral closure:** revalidate SysTick/RTOS tick, UART baud rate, timer periods, Flash latency, and every peripheral kernel clock. Finish with a UART frame at a known baud rate or a PWM waveform at a known period. `HAL_Delay(1000)` taking about one second is only one check; it does not prove the independent USB or FDCAN clocks.
+
+
 ## 🛠️ Alternate functions (only names that appear in DS12110 Table 9)
 
 | Function | Pins | LQFP144 pin | Name in Table 9 |
@@ -97,21 +203,32 @@ PC2_C and PC3_C (pins 28 and 29) keep the `_C` from the datasheet figure. It mar
 | USB never enumerates | Pin 95, VDD33USB, is not powered | That is the USB supply, not "any VDD" |
 | "CAN" init fails | The peripheral is FDCAN. The registers are not the bxCAN chapter | Open the FDCAN chapter of the reference manual. Do not paste bxCAN code from an F407 |
 | A DMA buffer looks stale in the debugger | D1 has a cache | Do the cache maintenance from [chapter 10](10-dma.md) |
+| Startup fails after requesting 480 MHz on Rev Y/W | These revisions have no VOS0 and are limited to 400 MHz | Use the ES0392-compliant VOS1 + 400 MHz baseline; do not retry an out-of-spec configuration |
+| The board still fails after changing the supply macro | Software supply selection disagrees with the LDO/SMPS schematic, or VOS is not ready | Check board supply, supply macro, `VOSRDY`, and startup status together; do not change only the PLL |
+| UART/PWM frequencies are wrong after the frequency increase | Old HCLK/PCLK assumptions remain, or `SystemCoreClock` is treated as 480 MHz | Recalculate peripheral clocks; here `SystemCoreClock` is HCLK = 240 MHz, then validate with a waveform |
 
 ## 🧪 Try it
 
 1. Circle pins 1, 71, 95, 103, 104, 105, 106, 138, and 143. Write the function in one short line beside each.
 2. Open the PA12 row of Table 9 and confirm that the same row lists both FDCAN1_TX and OTG_FS_DP.
 3. Answer: why is pin 1 of an H743 not VBAT? Which pin is VBAT?
+4. With 8 MHz HSE and `PLLM=4`, calculate SYSCLK, HCLK, PCLK, and MCO2/5 for both `PLLN=400` and `PLLN=480`; compare every result with the table.
+5. If PC9 is free, output MCO2 = SYSCLK/5. Record silicon revision, supply macro, software readback, and instrument measurement; if any disagree, debug the clock layer first.
 
 Self-test:
 
 1. What is pin 1 of the LQFP144 called?
 2. Which pins are VCAP1 and VCAP2?
 3. If FDCAN1 must not use PA11, which other pair does Table 9 still list?
+4. Why does “up to 480 MHz” in DS12110 not permit VOS0 + 480 MHz on Rev Y/W?
+5. With 8 MHz HSE bypass, `PLLM=4`, `PLLN=480`, `PLLP=2`, and the chapter's bus dividers, what are SYSCLK, HCLK, PCLK, the APB timer clock, and MCO2/5?
+6. Why is a 480 MHz software readback insufficient, and why is `SystemCoreClock` not 480 MHz in this example?
 
 ## 🔗 Further reading
 
 - DS12110 Rev 11: cover (core, power domains, CAN FD, USB), Figure 7, Table 9, and the letters Z and I in the ordering information.
+- RM0433: PWR/RCC, clock sources, voltage scaling, bus dividers, and `DBGMCU->IDCODE`; ES0392: the Rev Y/W lack of VOS0 and their 400 MHz limit.
+- ST's official *How to reach 480MHz for STM32H7xx MCUs*: the Rev V, VOS0, and CubeMX selection path. It is an operating guide; DS12110 and ES0392 remain authoritative for device limits.
+- STM32CubeH7 commit `8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06`, `Projects/NUCLEO-H743ZI/Examples/RCC/RCC_ClockConfig`: the official 400 MHz baseline, 8 MHz HSE bypass, VOS1, Flash latency 4, and MCO2 usage. The 480 MHz path above is an independently derived, explicitly scoped adaptation, not a quotation from that example.
 - Compare with [23 G0](23-stm32g0-pins.md), [24 L4](24-stm32l4-pins.md), and the cache note in [10 DMA](10-dma.md).
 - The drawing is generated by `tools/gen_pinouts.py`. Change a pin name only in the script's list, which is kept identical to the manual. Do not hand-edit the SVG.

@@ -244,10 +244,10 @@
       "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "stm32l4-hal-rtc", "commons-nucleo-f411re", "commons-nucleo-f401re", "es0250"]
     },
     "25-STM32H7引脚.md": {
-      "question": "迁到 H743ZI 后，电源域、VCAP、FDCAN、内存可达性与 Cache 怎样改变旧工程假设？",
-      "deliverable": "一张 LQFP144 关键脚/电源域图和一份 DMA 缓冲的内存域、对齐与 Cache 策略。",
-      "boundary": "引脚表不等于完整 H7 迁移；时钟树、链接脚本、MPU、Cache 和外设域都需单独验收。",
-      "sources": ["ds12110", "st-h7-dma"]
+      "question": "迁到 H743ZI 后，供电方案、硅片 revision、VCAP、FDCAN、Cache 与 400/480 MHz 时钟树怎样改变旧工程假设？",
+      "deliverable": "一张 LQFP144 关键脚表、一条与板级供电和 revision 匹配的 400/480 MHz 配置链，以及 MCO、频率读回和外设波形三类验收证据；DMA 缓冲继续沿用第 10 章的内存域、对齐与 Cache 策略。",
+      "boundary": "Rev Y/W 无 VOS0，最高 400 MHz；480 MHz 示例仅适用于 Rev V、8 MHz HSE bypass 和匹配的 LDO 板。供电宏不能替代原理图，MCO 数值是计算预期而非本仓库实测；其他外设内核时钟、MPU 和 DMA 内存布局仍需单独验收。",
+      "sources": ["ds12110", "rm0433", "es0392", "an4938", "st-h7-480mhz", "stm32cube-h7-clock", "st-h7-dma"]
     },
     "26-STM32F10x标准外设库SPL.md": {
       "question": "面对一个 STM32F10x SPL 旧工程，怎样确认版本、还原工程骨架、读懂 API 并安全迁到 HAL/LL？",
@@ -522,11 +522,11 @@
     "ds12110": {
       "title": "DS12110 Rev 11 — STM32H743xI Datasheet",
       "authority": "ST 官方数据手册",
-      "url": "https://www.st.com/resource/en/",
+      "url": "https://www.st.com/resource/en/datasheet/stm32h743vi.pdf",
       "snapshot": "DS12110 Rev 11",
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "H743ZI 封装、VCAP、电源域、FDCAN 和引脚复用。"
+      "scope": "H743ZI 封装、VCAP、供电方案、电源域、频率条件、FDCAN 和引脚复用。"
     },
     "rm0399": {
       "title": "RM0399 — STM32H745/755 and STM32H747/757 Reference Manual",
@@ -554,6 +554,33 @@
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与独立讲解）",
       "scope": "H7 总线矩阵、Ethernet MAC/MTL/DMA、描述符、时钟与寄存器。"
+    },
+    "an4938": {
+      "title": "AN4938 — Getting started with STM32H74xI/G and STM32H75xI/G MCU hardware development",
+      "authority": "ST 官方应用笔记",
+      "url": "https://www.st.com/resource/en/application_note/an4938-getting-started-with-stm32h74xig-and-stm32h75xig-mcu-hardware-development-stmicroelectronics.pdf",
+      "snapshot": "2026-10-24 从 ST 当前文档入口核对；硬件设计以目标料号和板卡原理图为准",
+      "accessed": "2026-10-24",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "H743 的 LDO/SMPS、VCAP 与最小硬件供电设计边界。"
+    },
+    "st-h7-480mhz": {
+      "title": "How to reach 480MHz for STM32H7xx MCUs",
+      "authority": "ST 官方知识文章（ST 员工 Foued_KH）",
+      "url": "https://community.st.com/stm32-mcus-60/how-to-reach-480mhz-for-stm32h7xx-mcus-260",
+      "snapshot": "2023-05-22 发布；2026-10-24 读取 Rev V、VOS0 与 CubeMX 操作路径",
+      "accessed": "2026-10-24",
+      "license": "ST Community 条款（本书仅链接与独立讲解）",
+      "scope": "480 MHz 配置入口；具体硅片限制以 DS12110 与 ES0392 为准。"
+    },
+    "stm32cube-h7-clock": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI RCC_ClockConfig",
+      "authority": "ST 官方 GitHub 固件包",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/tree/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Examples/RCC/RCC_ClockConfig",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06；400 MHz、HSE 8 MHz bypass、VOS1、Flash latency 4 与 MCO2 示例",
+      "accessed": "2026-10-24",
+      "license": "仓库 LICENSE（本书不再分发其源码）",
+      "scope": "H743 400 MHz 官方基线和时钟验证方法；书中 480 MHz 代码为注明前提的独立改写。"
     },
     "um2407": {
       "title": "UM2407 — STM32H7 Nucleo-144 boards (MB1364)",

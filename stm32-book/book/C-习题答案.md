@@ -162,6 +162,9 @@
 1. H743ZI LQFP144 的第 1 脚是 PE2。
 2. 第二只 VCAP（VCAP2）是第 106 脚；VCAP1 是第 71 脚。
 3. 控制器叫 FDCAN；FDCAN1 还可按 Table 9 选择 PD0/PD1 或 PB8/PB9 等复用组合。
+4. ES0392 规定 Rev Y/W 没有 VOS0，CPU 上限 400 MHz；只有确认 Rev V 后，才能按 DS12110/RM0433 的条件走 VOS0 + 480 MHz 路径。数据手册封面是家族上限，不能覆盖具体硅片勘误。
+5. `8 / 4 × 480 / 2 = 480 MHz` SYSCLK；HCLK 为 240 MHz；PCLK 为 120 MHz；APB 分频不为 1 时定时器时钟为 240 MHz；MCO2/5 为 96 MHz。
+6. 软件读回和配置公式可能共享同一错误假设，MCO 仪器测量与 UART/PWM 波形才能提供独立证据。H7 的 `SystemCoreClock` 表示 HCLK，本例为 240 MHz，不是 CPU/SYSCLK 的 480 MHz。
 
 ## 26 STM32F10x 标准外设库（SPL）
 

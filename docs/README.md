@@ -45,7 +45,7 @@
 | 22 | [仿真实验 Wokwi 与 Renode](22-仿真实验Wokwi与Renode.md) | 浏览器接线、命令行加载 ELF、DMA 模型的边界 |
 | 23 | [STM32G0 引脚](23-STM32G0引脚.md) | G071RB LQFP64、BOOT0 与 SWCLK 共用、没有 bxCAN |
 | 24 | [STM32L4 引脚](24-STM32L4引脚.md) | L476RG 引脚、Nucleo-64 实拍、Stop 2 IRQ 留证据与 JP6 功耗测量 |
-| 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI LQFP144、FDCAN、VCAP 与三个电源域 |
+| 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI 引脚/供电、Rev Y/W 与 V、400/480 MHz 时钟链及 MCO 验证 |
 | 26 | [STM32F10x 标准外设库 SPL](26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架、关键 API、HAL/寄存器映射与迁移边界 |
 | 27 | [网络与协议栈](27-网络与协议栈.md) | Ethernet/RMII、lwIP 线程边界、TCP/UDP、MQTT/TLS、分层排错与断网恢复 |
 | 28 | [嵌入式系统与 RTOS 生态](28-嵌入式系统与RTOS生态.md) | FreeRTOS、RT-Thread、Zephyr、CMSIS-RTOS2、任务所有权、截止点与资源预算 |

@@ -169,7 +169,7 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 | 22 | [Wokwi and Renode](22-simulation-wokwi-renode.md) | browser wiring · load an ELF · where DMA stops |
 | 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB LQFP64 · PA14 is also BOOT0 · no bxCAN |
 | 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG · VDDUSB · cover typicals for low power |
-| 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI LQFP144 · FDCAN · VCAP |
+| 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI pins/supply · Rev Y/W vs V · 400/480 MHz clocks · MCO verification |
 | 26 | [STM32F10x SPL](26-spl.md) | V3.5.0 project skeleton · API boundaries · HAL migration |
 | 27 | [Networking and protocol stacks](27-network.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · layered diagnosis |
 | 28 | [Embedded systems and the RTOS ecosystem](28-system-rtos.md) | ownership · deadlines · FreeRTOS / RT-Thread / Zephyr · startup and watchdog health |

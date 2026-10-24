@@ -45,7 +45,7 @@
 | 22 | [Simulation labs: Wokwi and Renode](22-simulation-wokwi-renode.md) | Wiring in the browser, loading an ELF from the command line, and where the DMA model stops |
 | 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB in LQFP64, BOOT0 shared with SWCLK, and no bxCAN |
 | 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG pins, VDDUSB, and the low-power typical values on the cover |
-| 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI in LQFP144, FDCAN, VCAP, and three power domains |
+| 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI pins and supply, revision-specific 400/480 MHz configuration, and MCO/peripheral clock verification |
 | 26 | [STM32F10x Standard Peripheral Library](26-spl.md) | V3.5.0 project skeleton, build macros, API boundaries, and one-peripheral migration |
 | 27 | [STM32 networking and protocol stacks](27-network.md) | Ethernet/RMII hardware, H7 DMA/cache, lwIP threading, TCP/UDP, MQTT/TLS, and PCAP diagnosis |
 | 28 | [Embedded systems and the RTOS ecosystem](28-system-rtos.md) | Ownership, deadlines, resource budgets, FreeRTOS/RT-Thread/Zephyr boundaries, startup, and watchdog health |
