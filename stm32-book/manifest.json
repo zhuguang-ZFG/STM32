@@ -247,7 +247,7 @@
       "question": "迁到 H743ZI 后，供电方案、硅片 revision、VCAP、FDCAN、Cache 与 400/480 MHz 时钟树怎样改变旧工程假设？",
       "deliverable": "一张 LQFP144 关键脚表、一条与板级供电和 revision 匹配的 400/480 MHz 配置链，以及 MCO、频率读回和外设波形三类验收证据；DMA 缓冲继续沿用第 10 章的内存域、对齐与 Cache 策略。",
       "boundary": "Rev Y/W 无 VOS0，最高 400 MHz；480 MHz 示例仅适用于 Rev V、8 MHz HSE bypass 和匹配的 LDO 板。供电宏不能替代原理图，MCO 数值是计算预期而非本仓库实测；其他外设内核时钟、MPU 和 DMA 内存布局仍需单独验收。",
-      "sources": ["ds12110", "rm0433", "es0392", "an4938", "st-h7-480mhz", "stm32cube-h7-clock", "stm32cube-h7-system", "st-h7-dma"]
+      "sources": ["ds12110", "rm0433", "es0392", "an4938", "st-h7-480mhz", "stm32cube-h7-clock", "stm32cube-h7-system", "stm32cube-h7-msp", "stm32h7-hal-pwr", "st-h7-dma"]
     },
     "26-STM32F10x标准外设库SPL.md": {
       "question": "面对一个 STM32F10x SPL 旧工程，怎样确认版本、还原工程骨架、读懂 API 并安全迁到 HAL/LL？",
@@ -590,6 +590,24 @@
       "accessed": "2026-10-24",
       "license": "仓库 LICENSE（本书不再分发其源码）",
       "scope": "H743 单核 CPU/SystemCoreClock 与 AXI/AHB SystemD2Clock 的实现边界；文件顶部注释不替代实际计算路径。"
+    },
+    "stm32cube-h7-msp": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI stm32h7xx_hal_msp.c",
+      "authority": "ST 官方 GitHub 固件包",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/blob/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Templates/Src/stm32h7xx_hal_msp.c",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06；HAL_MspInit() 为空，未隐式启用 SYSCFG",
+      "accessed": "2026-10-24",
+      "license": "仓库 LICENSE（本书不再分发其源码）",
+      "scope": "H743 启动时钟门不能依赖默认 MSP 隐式初始化的反证。"
+    },
+    "stm32h7-hal-pwr": {
+      "title": "STM32H7xx HAL Driver — stm32h7xx_hal_pwr.h",
+      "authority": "ST 官方 GitHub HAL 驱动",
+      "url": "https://github.com/STMicroelectronics/stm32h7xx-hal-driver/blob/e3c518ebda3e00c8e52b1625ca44fba65da3b63e/Inc/stm32h7xx_hal_pwr.h",
+      "snapshot": "commit e3c518ebda3e00c8e52b1625ca44fba65da3b63e；VOS0 前置条件与 SYSCFG->PWRCR.ODEN 宏实现",
+      "accessed": "2026-10-24",
+      "license": "仓库 LICENSE（本书不再分发其源码）",
+      "scope": "H743 VOS0 必须启用 SYSCFG、从已就绪 VOS1 进入，并在每次换挡后等待 VOSRDY。"
     },
     "um2407": {
       "title": "UM2407 — STM32H7 Nucleo-144 boards (MB1364)",

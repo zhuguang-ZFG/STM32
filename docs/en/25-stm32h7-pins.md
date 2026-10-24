@@ -78,7 +78,7 @@ Pin numbers along the top increase from right to left: pin 109 is near the right
 | Item | What to confirm before startup | What it does not mean |
 | --- | --- | --- |
 | LDO / SMPS | The schematic, inductor, VCAP components, and other external parts must match the selected DS12110/AN4938 supply scheme; `HAL_PWREx_ConfigSupply()` must match it too | Changing one macro cannot turn an LDO board into an SMPS board |
-| VOS1 / VOS0 | Use VOS1 on Rev Y/W, up to 400 MHz; use VOS0 for 480 MHz on Rev V and wait for `VOSRDY` | Writing VOS0 on Rev Y/W does not unlock 480 MHz |
+| VOS1 / VOS0 | Use VOS1 on Rev Y/W, up to 400 MHz. For 480 MHz on Rev V, enable SYSCFG, start from ready VOS1, then enter VOS0; wait for `VOSRDY` after every transition | Writing VOS0 on Rev Y/W does not unlock 480 MHz; calling the SCALE0 macro alone does not prove ODEN took effect |
 | D1 / D2 / D3 | Internal MCU power/clock domains managed through PWR/RCC and low-power transitions | Not three independent VDD rails that can be wired arbitrarily |
 | VCAP1 / VCAP2 | Capacitors required by the core regulator, as specified by the datasheet | Not ordinary decoupling pins; never tie them directly to VDD or omit the capacitors |
 | VDD33USB | Supply connection required by the USB PHY | Neither the core supply nor a GPIO |
@@ -95,24 +95,40 @@ The frozen STM32CubeH7 `RCC_ClockConfig` example provides a 400 MHz NUCLEO-H743Z
 #define BOARD_POWER_SUPPLY        PWR_LDO_SUPPLY
 #define CLOCK_STARTUP_TIMEOUT_MS  100U
 
+static HAL_StatusTypeDef WaitVosReady(void)
+{
+    uint32_t started = HAL_GetTick();
+
+    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
+        if ((HAL_GetTick() - started) > CLOCK_STARTUP_TIMEOUT_MS) {
+            return HAL_TIMEOUT;        /* Each transition has its own deadline. */
+        }
+    }
+    return HAL_OK;
+}
+
 static HAL_StatusTypeDef SystemClock_Config480(void)
 {
     RCC_OscInitTypeDef osc = {0};
     RCC_ClkInitTypeDef clk = {0};
     HAL_StatusTypeDef status;
-    uint32_t started;
 
     status = HAL_PWREx_ConfigSupply(BOARD_POWER_SUPPLY);
     if (status != HAL_OK) {
         return status;                 /* Never continue with a supply mismatch. */
     }
 
+    __HAL_RCC_SYSCFG_CLK_ENABLE();     /* SCALE0 writes SYSCFG->PWRCR.ODEN. */
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+    status = WaitVosReady();           /* Prove VOS1 before requesting VOS0. */
+    if (status != HAL_OK) {
+        return status;
+    }
+
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
-    started = HAL_GetTick();
-    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
-        if ((HAL_GetTick() - started) > CLOCK_STARTUP_TIMEOUT_MS) {
-            return HAL_TIMEOUT;        /* Preserve a failure instead of hanging. */
-        }
+    status = WaitVosReady();           /* Wait for ODEN/VOS0 readiness. */
+    if (status != HAL_OK) {
+        return status;
     }
 
     osc.OscillatorType = RCC_OSCILLATORTYPE_HSE;
@@ -145,6 +161,8 @@ static HAL_StatusTypeDef SystemClock_Config480(void)
     return HAL_RCC_ClockConfig(&clk, FLASH_LATENCY_4);
 }
 ```
+
+On H743, the SCALE0 macro writes `SYSCFG->PWRCR.ODEN`. If the SYSCFG clock is gated, that write is not evidence of a successful transition. The frozen template's `HAL_MspInit()` is empty, so no implicit initialization can be assumed. Enable SYSCFG explicitly, prove VOS1 readiness, request VOS0, then wait for the second VOSRDY. A timeout in either wait must prevent configuration of the 480 MHz PLL.
 
 Call and check `SystemClock_Config480()` before initializing UART, timers, FDCAN, USB, or other peripherals. On failure, record the failing step, supply macro, silicon revision, and clock source; do not continue peripheral initialization in a partially configured state. Rev Y/W must not take this path: use the official VOS1 + `PLLN=400` baseline, yielding 400/200/100 MHz with the same bus dividers. If a product permits automatic downshifting, report the selected mode and recalculate every peripheral explicitly; never report a requested 480 MHz configuration as successful after silently falling back.
 
@@ -229,6 +247,6 @@ Self-test:
 - DS12110 Rev 11: cover (core, power domains, CAN FD, USB), Figure 7, Table 9, and the letters Z and I in the ordering information.
 - RM0433: PWR/RCC, clock sources, voltage scaling, bus dividers, and `DBGMCU->IDCODE`; ES0392: the Rev Y/W lack of VOS0 and their 400 MHz limit.
 - ST's official *How to reach 480MHz for STM32H7xx MCUs*: the Rev V, VOS0, and CubeMX selection path. It is an operating guide; DS12110 and ES0392 remain authoritative for device limits.
-- STM32CubeH7 commit `8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06`, `Projects/NUCLEO-H743ZI/Examples/RCC/RCC_ClockConfig`: the official 400 MHz baseline, 8 MHz HSE bypass, VOS1, Flash latency 4, and MCO2 usage. The 480 MHz path above is an independently derived, explicitly scoped adaptation, not a quotation from that example. At the same commit, `Projects/NUCLEO-H743ZI/Templates/Src/system_stm32h7xx.c` establishes `SystemCoreClock` as the CM7 CPU frequency and `SystemD2Clock` as the AXI/AHB frequency. Where its header comments and implementation terminology differ, use the actual calculation path to distinguish the variables.
+- STM32CubeH7 commit `8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06`, `Projects/NUCLEO-H743ZI/Examples/RCC/RCC_ClockConfig`: the official 400 MHz baseline, 8 MHz HSE bypass, VOS1, Flash latency 4, and MCO2 usage. The 480 MHz path above is an independently derived, explicitly scoped adaptation, not a quotation from that example. At the same commit, `Templates/Src/system_stm32h7xx.c` establishes the CPU/D2 clock distinction, while the empty `Templates/Src/stm32h7xx_hal_msp.c:HAL_MspInit()` rules out assumed implicit SYSCFG initialization. In `stm32h7xx-hal-driver` commit `e3c518ebda3e00c8e52b1625ca44fba65da3b63e`, `Inc/stm32h7xx_hal_pwr.h` specifies the SYSCFG gate, ready VOS1 prerequisite and VOSRDY wait after each transition, and shows the actual `SYSCFG->PWRCR.ODEN` write.
 - Compare with [23 G0](23-stm32g0-pins.md), [24 L4](24-stm32l4-pins.md), and the cache note in [10 DMA](10-dma.md).
 - The drawing is generated by `tools/gen_pinouts.py`. Change a pin name only in the script's list, which is kept identical to the manual. Do not hand-edit the SVG.
