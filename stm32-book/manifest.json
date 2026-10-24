@@ -265,7 +265,7 @@
       "question": "怎样把内核、驱动、系统服务和产品状态机连成有所有权、截止点、资源预算与恢复证据的完整系统？",
       "deliverable": "一张系统分层图、一份任务/中断/IPC/内存预算、一张 OS 选型表，以及覆盖队列满、任务冻结和驱动超时的故障注入记录。",
       "boundary": "FreeRTOS、RT-Thread、Zephyr 和 CMSIS-RTOS2 的 API 名称不能替代目标版本、BSP、执行上下文和最坏时延验证；示例预算不是硬件实测。",
-      "sources": ["freertos-1132", "rtthread-530", "zephyr-442", "cmsis-640", "pm0056"]
+      "sources": ["freertos-1132", "rtthread-530", "zephyr-442", "cmsis-640", "pm0056", "rm0399", "stm32h745-header"]
     }
   },
   "appendices": [
@@ -527,6 +527,24 @@
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
       "scope": "H743ZI 封装、VCAP、电源域、FDCAN 和引脚复用。"
+    },
+    "rm0399": {
+      "title": "RM0399 — STM32H745/755 and STM32H747/757 Reference Manual",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32h745-755/documentation.html",
+      "snapshot": "2026-10-24 从 STM32H745/755 官方文档页核对文档号和适用器件；寄存器细节以下载时当前修订为准",
+      "accessed": "2026-10-24",
+      "license": "ST 文档条款（本书仅链接、引用文档号并独立讲解）",
+      "scope": "H745/755 与 H747/757 双核架构、共享存储、HSEM、启动和复位边界。"
+    },
+    "stm32h745-header": {
+      "title": "STM32H745 CMSIS device header — frozen official source",
+      "authority": "ST 官方源码",
+      "url": "https://github.com/STMicroelectronics/cmsis_device_h7/blob/81db1ec63cdc191fae1565b772da3ea5aa29a683/Include/stm32h745xx.h",
+      "snapshot": "STM32CubeH7 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06 → cmsis_device_h7 81db1ec63cdc191fae1565b772da3ea5aa29a683",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0；本书仅链接并独立讲解外设边界",
+      "scope": "HSEM 中断、寄存器位、双核条件定义和 STM32H745 外设清单。"
     },
     "rm0433": {
       "title": "RM0433 — STM32H742/H743/H753/H750 Reference Manual",

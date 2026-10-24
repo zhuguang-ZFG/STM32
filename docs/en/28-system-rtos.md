@@ -226,6 +226,20 @@ Freeze and review at least:
 
 V11 includes SMP scheduling support, but most STM32 Cortex-M projects still use a single-core port. An STM32H745 M7+M4 normally runs independent firmware on unlike cores, exchanges data through shared memory, and uses HSEM hardware semaphores for inter-core synchronization. Two cores do not make it symmetric multiprocessing.
 
+### H745 inter-core collaboration: five contracts, not one “inter-core API”
+
+HSEM provides atomic ownership and interrupt notification. It neither carries the payload nor maintains the Cortex-M7 data cache. Review an inter-core channel as five separate contracts:
+
+| Layer | Freeze explicitly | Minimal fault injection and evidence |
+| --- | --- | --- |
+| Shared storage | An SRAM region reachable by both cores, its base, length, alignment, and structure layout; shared state must not hide in one core's private stack or linker section | Inject an out-of-range length, bad alignment, and illegal state; the receiver must reject them rather than continue dereferencing |
+| Ownership and visibility | Single-writer/reader handoff; either map the shared region non-cacheable or perform target-specific clean/invalidate operations and memory barriers at publish/read boundaries | Update sequence and payload repeatedly; the reader may accept only data from one generation, and the cache policy must appear in the linker, MPU, and review record |
+| Synchronization | HSEM ID allocation, owner, maximum hold time, notification path, timeout, and degradation action; releasing HSEM does not mean the business message was processed | Hold one HSEM deliberately or drop one notification; the peer must time out by its deadline and record a distinguishable cause |
+| Message protocol | `magic`, version, length, sequence, state, and compatibility rules; a shared C structure is still an on-wire protocol | Inject an unknown version, truncated length, and duplicate sequence; the receiver should reject each with a distinguishable result |
+| Startup and recovery | Which core initializes shared state, `ready`/generation values, heartbeat, resynchronization after one-core reset, and responsibility for whole-device reset | Freeze or reset M7 and M4 separately; the surviving core enters the specified degraded/safe state instead of waiting forever on an old generation |
+
+This table is a design and acceptance protocol, not a claim that this repository has completed H745 hardware measurements. An HSEM or heartbeat timeout must choose an explicit retry, one-core restart, whole-device reset, or safe-output action; “keep waiting” is not a default recovery policy.
+
 ## 🟩 RT-Thread v5.3.0: kernel, device framework, and components
 
 This chapter freezes **RT-Thread v5.3.0**. Its value to an STM32 project is not only its thread API: device access, component startup, shell, filesystems, and network abstraction can follow one framework.
@@ -520,4 +534,6 @@ Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Imp
 - **Zephyr v4.4.2:** official bugfix release; Kernel Services, Kconfig, Devicetree, Device Driver Model, and the west manifest are frozen to 4.4.x documentation/source.
 - **CMSIS 6.4.0 / CMSIS-RTOS2 2.3.0:** Arm official release and RTOS2 API documentation.
 - **PM0056:** Cortex-M3 NVIC, exception model, and hardware priority boundary; other Cortex-M cores require their corresponding programming manuals.
+- **RM0399:** dual-core architecture, shared memory, HSEM, startup, and reset boundaries for STM32H745/755 and STM32H747/757; register details must follow the target's current revision and errata.
+- **Frozen `stm32h745xx.h`:** STM32CubeH7 commit `8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06` points to CMSIS Device H7 commit `81db1ec63cdc191fae1565b772da3ea5aa29a683`; used to check HSEM interrupts, registers, and the peripheral inventory.
 - Related chapters: [interrupts and NVIC](04-interrupts-nvic.md), [DMA](10-dma.md), [FreeRTOS](15-freertos.md), [low power](16-low-power.md), [debug](17-debug.md), and [networking](27-network.md).

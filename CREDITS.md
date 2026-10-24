@@ -23,6 +23,7 @@
 | **RM0008** | STM32F101/102/103/105/107 | F1 参考手册（寄存器、外设、时钟树） |
 | **RM0383** | STM32F411xC/E | F411 参考手册 |
 | **RM0090** | STM32F405/407/415/417 | F4 参考手册 |
+| **RM0399** | STM32H745/755、STM32H747/757 | 双核架构、共享存储、HSEM、启动与复位 |
 | **RM0433** | STM32H742/H743/H750/H753 | H7 总线矩阵与 Ethernet MAC/MTL/DMA |
 | **PM0214** | Cortex-M4 | 内核编程手册（NVIC、SysTick、SCB、MPU） |
 | **PM0056** | Cortex-M3 | 内核编程手册 |
@@ -45,7 +46,8 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 - [FreeRTOS Kernel V11.3.2](https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2)；
 - [RT-Thread v5.3.0](https://github.com/RT-Thread/rt-thread/releases/tag/v5.3.0)；
 - [Zephyr v4.4.2](https://github.com/zephyrproject-rtos/zephyr/releases/tag/v4.4.2)；
-- [CMSIS 6.4.0 / CMSIS-RTOS2 2.3.0](https://github.com/ARM-software/CMSIS_6/releases/tag/v6.4.0)。
+- [CMSIS 6.4.0 / CMSIS-RTOS2 2.3.0](https://github.com/ARM-software/CMSIS_6/releases/tag/v6.4.0)；
+- [STM32H745 CMSIS device header](https://github.com/STMicroelectronics/cmsis_device_h7/blob/81db1ec63cdc191fae1565b772da3ea5aa29a683/Include/stm32h745xx.h)，由 STM32CubeH7 commit `8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06` 冻结到子模块 commit `81db1ec63cdc191fae1565b772da3ea5aa29a683`。
 
 以上来源用于核对调度、IPC、设备模型、构建配置和 API 边界；本书不再分发其源码或文档。
 
