@@ -133,10 +133,13 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("1.0.0-rc.7", html)
+        self.assertIn("1.0.0-rc.8", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
-        self.assertIn('class="cover-mark"', html)
+        self.assertIn('class="cover-art"', html)
+        self.assertIn("<figcaption>", html)
+        body = html.split("</style>", 1)[1]
+        self.assertNotIn('align="center"', body)
         self.assertNotIn("fonts.googleapis", html)
         self.assertNotIn("fonts.gstatic", html)
         self.assertIn("配套资源", html)
@@ -182,6 +185,99 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("mp.weixin.qq.com", content)
         self.assertNotIn("下一篇", content)
         self.assertNotIn("免责声明", content)
+
+    def test_semanticize_figures_wraps_the_known_caption(self) -> None:
+        rendered = '<p align="center"><img src="a.svg"><br><sub>▲ 图 1 接线</sub></p>'
+        converted = self.builder.semanticize_figures(rendered)
+        self.assertEqual(
+            "<figure><img src=\"a.svg\"><figcaption>图 1 接线</figcaption></figure>",
+            converted,
+        )
+        untouched = self.builder.semanticize_figures("<p>plain</p>")
+        self.assertEqual("<p>plain</p>", untouched)
+
+    def test_english_book_mode_drops_serial_footer_lines(self) -> None:
+        raw = """# 00 Title
+
+> 中文: 对应章节
+
+## Related resources
+
+- **RM0008**, chapter 9
+- Next: [01 Title](01-dev-environment.md)
+- Previous: [start](start.md)
+- Disclaimer: every illustration in this repo is a vector drawing.
+- Related: [board](21-board-maps.md)
+"""
+        title, content, questions = self.builder.prepare_chapter_markdown(raw, "sample", "en")
+        self.assertEqual("00 Title", title)
+        self.assertEqual([], questions)
+        self.assertNotIn("中文:", content)
+        self.assertIn("**RM0008**", content)
+        self.assertIn("## Related resources", content)
+        self.assertNotIn("Next:", content)
+        self.assertNotIn("Previous:", content)
+        self.assertNotIn("Disclaimer:", content)
+        self.assertNotIn("Related:", content)
+
+    def test_english_book_is_a_separate_offline_edition(self) -> None:
+        manifest = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+        self.builder.validate_manifest(manifest)
+        self.assertEqual("en", manifest["language"])
+        self.assertEqual("docs/en", manifest["docs_dir"])
+        self.assertEqual("book/en", manifest["book_dir"])
+        self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
+        self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
+        self.assertEqual("1.0.0-rc.8", manifest["version"])
+        zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
+        for name, guide in manifest["chapter_guides"].items():
+            self.assertEqual(zh_sources[name[:2]], guide["sources"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(Path(tmp), BOOK_DIR / "manifest-en.json")
+            self.assertEqual("stm32-practical-book-en.html", output.name)
+            html = output.read_text(encoding="utf-8")
+
+        parsed = BookHTMLParser()
+        parsed.feed(html)
+        self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
+        self.assertEqual(29, parsed.compasses)
+        self.assertIn('<html lang="en">', html)
+        self.assertIn("<figcaption>", html)
+        self.assertIn('class="cover-art"', html)
+        self.assertIn('id="part-closing-p6"', html)
+        self.assertIn("Where the road goes next", html)
+        self.assertIn("STM32CubeF4 v1.28.3", html)
+        self.assertNotIn("Next:", html)
+        self.assertNotIn("Previous:", html)
+        self.assertNotIn("mp.weixin.qq.com", html)
+        self.assertNotIn("合上书，三问", html)
+        self.assertNotIn("学习路线收束", html)
+        source = (BOOK_DIR.parent / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
+        self.assertIn("Next:", source)
+        self.assertIn("Disclaimer: every illustration", source)
+
+    def test_english_glossary_covers_the_same_themes(self) -> None:
+        text = (BOOK_DIR / "book" / "en" / "D-glossary.md").read_text(encoding="utf-8")
+        rows = [
+            line
+            for line in text.splitlines()
+            if line.startswith("| ") and not line.startswith("| Term") and not line.startswith("| ---")
+        ]
+        self.assertGreaterEqual(len(rows), 120)
+        for heading in (
+            "## Clocks and reset",
+            "## Pins, GPIO, and alternate functions",
+            "## Interrupts and core exceptions",
+            "## Timers and PWM",
+            "## UART, I2C, SPI, CAN, and USB",
+            "## ADC, DAC, and DMA",
+            "## Flash, boot, and low power",
+            "## RTOS and concurrency",
+            "## Ethernet, lwIP, and MQTT",
+            "## Debug",
+        ):
+            self.assertIn(heading, text)
 
     def test_glossary_covers_terms_from_all_seven_parts(self) -> None:
         text = (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8")
@@ -346,7 +442,7 @@ class BookBuildContractTests(unittest.TestCase):
                             const body = getComputedStyle(document.body);
                             return {
                                 headingBreakAfter: css('h2').breakAfter,
-                                mediaBreakInside: css('p[align="center"]').breakInside,
+                                mediaBreakInside: css('figure').breakInside,
                                 rowBreakInside: css('tr').breakInside,
                                 preWhiteSpace: css('pre').whiteSpace,
                                 orphans: Number(body.orphans),

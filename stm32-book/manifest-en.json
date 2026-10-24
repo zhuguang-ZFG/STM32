@@ -1,0 +1,936 @@
+{
+  "title": "STM32 in Practice: From One LED to a System You Can Ship",
+  "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
+  "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
+  "version": "1.0.0-rc.8",
+  "date": "2026-10-24",
+  "language": "en",
+  "author": "zhuguang-ZFG and contributors",
+  "repository": "https://github.com/zhuguang-ZFG/STM32",
+  "license": {
+    "prose_and_original_images": "CC BY 4.0",
+    "third_party_images": "CC0 1.0 (only the assets/photos items that are labeled)",
+    "code": "MIT"
+  },
+  "docs_dir": "docs/en",
+  "book_dir": "book/en",
+  "output_name": "stm32-practical-book-en.html",
+  "pdf_name": "stm32-practical-book-en.pdf",
+  "parts": [
+    {
+      "id": "p0",
+      "title": "Part 1  Start: a development loop you can repeat",
+      "goal": "Write the learning route, the toolchain, the chip boundary, and the clock assumptions down as an engineering record you can reproduce.",
+      "files": [
+        "00-how-to-learn-stm32.md",
+        "01-dev-environment.md",
+        "02-part-and-clock.md"
+      ]
+    },
+    {
+      "id": "p1",
+      "title": "Part 2  GPIO, interrupts, and time",
+      "goal": "Go from one pin to asynchronous events and a hardware time base, and prove the configuration with a waveform instead of guessing by eye.",
+      "files": [
+        "03-gpio-and-led.md",
+        "04-interrupts-nvic.md",
+        "05-timer-pwm.md"
+      ]
+    },
+    {
+      "id": "p2",
+      "title": "Part 3  Serial buses, sampling, and DMA",
+      "goal": "Reconcile level, frame, buffer, and memory consistency, and explain where every byte comes from and where it goes.",
+      "files": [
+        "06-uart.md",
+        "07-i2c.md",
+        "08-spi.md",
+        "09-adc-dac.md",
+        "10-dma.md"
+      ]
+    },
+    {
+      "id": "p3",
+      "title": "Part 4  Reliability, links, scheduling, and debug",
+      "goal": "Put power loss, updates, networks, USB, real-time scheduling, low power, and fault finding inside one engineering boundary.",
+      "files": [
+        "11-rtc-watchdog.md",
+        "12-flash-iap.md",
+        "13-can.md",
+        "14-usb.md",
+        "15-freertos.md",
+        "16-low-power.md",
+        "17-debug.md"
+      ]
+    },
+    {
+      "id": "p4",
+      "title": "Part 5  Delivery: troubleshooting, projects, sources, and simulation",
+      "goal": "Turn scattered peripherals into a project you can reproduce, and state the limits of the document layers, the board evidence, and the simulation model.",
+      "files": [
+        "18-faq.md",
+        "19-projects.md",
+        "20-resources.md",
+        "21-board-maps.md",
+        "22-simulation-wokwi-renode.md"
+      ]
+    },
+    {
+      "id": "p5",
+      "title": "Part 6  Migration, legacy projects, and networks",
+      "goal": "Migrate by package, supply, clock, memory, cache, and network layer; keep a legacy SPL project maintainable; and put the device on a network you can diagnose, recover, and authenticate.",
+      "files": [
+        "23-stm32g0-pins.md",
+        "24-stm32l4-pins.md",
+        "25-stm32h7-pins.md",
+        "26-spl.md",
+        "27-network.md"
+      ]
+    },
+    {
+      "id": "p6",
+      "title": "Part 7  System architecture: from kernel objects to a product you can ship",
+      "goal": "Put scheduling, devices, services, faults, and the resource budget on one system diagram, and choose FreeRTOS, RT-Thread, Zephyr, or bare metal against those constraints.",
+      "files": [
+        "28-system-rtos.md"
+      ],
+      "closing": {
+        "id": "part-closing-p6",
+        "file": "F-closing.md"
+      }
+    }
+  ],
+  "chapter_guides": {
+    "00-how-to-learn-stm32.md": {
+      "question": "How does a beginner build a learning path that is not drowned by tools, jargon, and the number of tutorials?",
+      "deliverable": "A personal learning route, a minimum hardware list, and a first blink record of expected versus measured values.",
+      "boundary": "This chapter only sets the order of entry. It does not replace C, electrical safety, or the target chip manual.",
+      "sources": [
+        "project-guide",
+        "rm0008",
+        "ds5319"
+      ]
+    },
+    "01-dev-environment.md": {
+      "question": "How does source become machine state you can single-step, after compile, link, flash, and reset?",
+      "deliverable": "A minimal project that rebuilds, downloads, and hits a breakpoint, with the IDE, compiler, firmware package, and board versions recorded.",
+      "boundary": "A working toolchain does not mean the peripherals are configured correctly. Clock, pins, and electrical conditions still need to be checked one by one.",
+      "sources": [
+        "project-guide",
+        "pm0056",
+        "stm32cube-f4",
+        "clion-embedded",
+        "platformio-vscode"
+      ]
+    },
+    "02-part-and-clock.md": {
+      "question": "How do the part number, the memory map, and the clock tree together decide whether a program can run on the target chip?",
+      "deliverable": "A breakdown of the target part, a Flash/SRAM address map, and a SYSCLK/APB/timer clock ledger.",
+      "boundary": "The examples are mainly F103. Any production choice must go back to the exact order code, revision, and temperature grade.",
+      "sources": [
+        "rm0008",
+        "ds5319"
+      ]
+    },
+    "03-gpio-and-led.md": {
+      "question": "How do a pin's input structure, output drive, and external load together decide the real level?",
+      "deliverable": "A pin-mode, wiring, and expected-level table, with both output states checked on a meter or a logic analyzer.",
+      "boundary": "A GPIO mode does not change the absolute maximum ratings. 5 V tolerance and sink/source current must be checked for the specific pin.",
+      "sources": [
+        "rm0008",
+        "ds5319"
+      ]
+    },
+    "04-interrupts-nvic.md": {
+      "question": "How does an asynchronous event travel from a pin through EXTI and the NVIC, and how does the ISR exit safely in a bounded time?",
+      "deliverable": "An event-path diagram, a priority table, and a worst-case ISR execution-time budget.",
+      "boundary": "A bare-metal priority setup does not automatically meet an RTOS FromISR constraint. Chapter 15 adds the kernel boundary.",
+      "sources": [
+        "pm0056",
+        "rm0008",
+        "freertos-priority"
+      ]
+    },
+    "05-timer-pwm.md": {
+      "question": "How do the clock, PSC, ARR, and CCR become a measurable period, frequency, and duty cycle?",
+      "deliverable": "A calculation from the timer input clock to the target waveform, and a table of instrument measurements beside it.",
+      "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked.",
+      "sources": [
+        "rm0008"
+      ]
+    },
+    "06-uart.md": {
+      "question": "How do UART bit timing, error flags, the DMA buffer, and the frame boundary become a reliable receive path?",
+      "deliverable": "An 8N1 waveform, a handling table for ORE/FE/NE, and a receive scheme whose buffer invariant is written down.",
+      "boundary": "IDLE only means the line is idle. It is not one frame of an application protocol. In circular DMA, Size is the write position, not the increment of this transfer.",
+      "sources": [
+        "rm0008",
+        "stm32cube-f4",
+        "st-uart-idle",
+        "majerle-uart"
+      ]
+    },
+    "07-i2c.md": {
+      "question": "How do open-drain electricals, pull-up time, and START/ACK/repeated start together decide one I2C transaction?",
+      "deliverable": "A wiring and address table, one logic-analyzer decode, and a recovery record after the bus is held low.",
+      "boundary": "Seeing an address only proves a device ACKed. It does not prove the register protocol, the supply, or the data meaning.",
+      "sources": [
+        "rm0008"
+      ]
+    },
+    "08-spi.md": {
+      "question": "How do CPOL, CPHA, chip select, and full-duplex shifting decide when each bit is driven and sampled?",
+      "deliverable": "A comparison of the target device's timing with the MCU mode, and a read-back of a read-only register with a known reset value.",
+      "boundary": "A value that is not all 0s or all 1s does not prove the mode is correct. It must match the device manual's ID or reset value.",
+      "sources": [
+        "rm0008"
+      ]
+    },
+    "09-adc-dac.md": {
+      "question": "How do source impedance, sample-and-hold, the reference, and quantization together decide an ADC code?",
+      "deliverable": "An error chain from input voltage to code and back to voltage, with endpoint, midpoint, and internal-reference readings recorded.",
+      "boundary": "The example formula uses a nominal reference. A precision claim must include VDDA, calibration, sample time, and the exact part.",
+      "sources": [
+        "rm0008",
+        "ds5319"
+      ]
+    },
+    "10-dma.md": {
+      "question": "How do you check, separately, the DMA request, reachable memory, transfer width, ring position, and cache coherence?",
+      "deliverable": "A request map, a buffer ownership and placement invariant, and an H7 decision on memory reachability and cache maintenance.",
+      "boundary": "A DMA-complete interrupt only proves the controller finished the request. It does not prove the CPU read the latest data, or that the application dropped no frame.",
+      "sources": [
+        "rm0008",
+        "stm32cube-f4",
+        "st-h7-dma",
+        "majerle-uart"
+      ]
+    },
+    "11-rtc-watchdog.md": {
+      "question": "How does time survive loss of the main supply, and how does a watchdog prove the main loop is actually healthy rather than merely being fed?",
+      "deliverable": "A power-loss timekeeping record, a reset-reason record after a deliberate missed feed, and an explicit healthy-feed condition.",
+      "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design.",
+      "sources": [
+        "rm0008"
+      ]
+    },
+    "12-flash-iap.md": {
+      "question": "How do you hand a new firmware image to the application safely, under erase limits, address boundaries, and power-loss risk?",
+      "deliverable": "A Boot/APP memory map, an image-integrity check, and a state diagram for falling back when an update fails.",
+      "boundary": "Being able to jump to the application is not a production update. Signature, anti-rollback, power-loss recovery, and key management need their own argument.",
+      "sources": [
+        "rm0008",
+        "an2606",
+        "an3965"
+      ]
+    },
+    "13-can.md": {
+      "question": "How do physical termination, bit timing, arbitration, filters, and error counters together decide whether a CAN frame can be trusted?",
+      "deliverable": "A bit-timing ledger, a loopback self-test, and a captured frame from two nodes with termination resistors.",
+      "boundary": "This chapter covers bxCAN basics. It is not CANopen or J1939, and H7 FDCAN registers cannot be substituted as-is.",
+      "sources": [
+        "rm0008"
+      ]
+    },
+    "14-usb.md": {
+      "question": "How does the host finish enumeration through reset, descriptors, address, and configuration, and where does the class protocol take over the data?",
+      "deliverable": "An enumeration request sequence, a full descriptor-length check, and a host-visible result for CDC or HID.",
+      "boundary": "Successful enumeration only proves the control transfers are basically correct. Throughput, compatibility, suspend/resume, and compliance still need their own tests.",
+      "sources": [
+        "rm0008",
+        "usb20"
+      ]
+    },
+    "15-freertos.md": {
+      "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",
+      "deliverable": "A task-state diagram, a stack and queue budget, and an NVIC table that shows the FromISR priority is legal.",
+      "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements.",
+      "sources": [
+        "freertos-priority",
+        "pm0056"
+      ]
+    },
+    "16-low-power.md": {
+      "question": "When entering and leaving Sleep, Stop, or Standby, which clocks, state, and wake sources must be restored explicitly?",
+      "deliverable": "A mode, wake, and retained-state table, and a current measurement that records board load, instrument bandwidth, and temperature.",
+      "boundary": "A typical value in the datasheet is the chip under stated conditions. It is not the power of the whole board.",
+      "sources": [
+        "rm0008",
+        "ds5319"
+      ]
+    },
+    "17-debug.md": {
+      "question": "Faced with a crash or a slowdown, how do you go from a repeatable symptom to the fault registers, the call site, and cycle evidence?",
+      "deliverable": "A minimal reproduction, a record of CFSR/HFSR/BFAR/MMFAR and the stack, and one DWT comparison before and after an optimization.",
+      "boundary": "The optimizer, the debugger, and logging all change timing. A speedup without a baseline and a retest under the same conditions is not evidence.",
+      "sources": [
+        "pm0056"
+      ]
+    },
+    "18-faq.md": {
+      "question": "How do you split \"it does not work\" into something you can observe, bisect, and change one cause at a time?",
+      "deliverable": "A record of expected, actual, and the first point they diverge, plus a minimal project that reproduces the problem on its own.",
+      "boundary": "The FAQ is an index, not a patch library. The same symptom can have several root causes, and the evidence has to come from this machine.",
+      "sources": [
+        "project-examples",
+        "project-guide"
+      ]
+    },
+    "19-projects.md": {
+      "question": "How do you cut a multi-peripheral project into milestones you can accept one at a time, instead of integrating every uncertainty at once?",
+      "deliverable": "A project boundary, module interfaces, a visible result for each stage, a fallback point, and a reproduction note.",
+      "boundary": "The project list is a learning path. It is not a claim of safety, EMC, production test, or regulatory compliance.",
+      "sources": [
+        "project-examples"
+      ]
+    },
+    "20-resources.md": {
+      "question": "When the question is a parameter, a register, the core, an application, or a tool, how do you pick the right document layer and freeze the version?",
+      "deliverable": "An environment list with document number and revision, firmware-package tag or commit, compiler, and the board silkscreen.",
+      "boundary": "Community answers are for finding a lead. A conclusion that changes product behavior must go back to primary material for that version, and to a measurement.",
+      "sources": [
+        "project-credits",
+        "stm32cube-f4",
+        "clion-embedded",
+        "platformio-vscode"
+      ]
+    },
+    "21-board-maps.md": {
+      "question": "How do you confirm supply, reset, boot, clock, debug, and peripheral wiring from the schematic, instead of trusting the silkscreen?",
+      "deliverable": "An annotated minimum-system drawing of the board in hand, and a pre-power checklist for supply, ground, and the debug port.",
+      "boundary": "The board drawings in this book are reading diagrams drawn from the material. They are not manufacturing files, official photographs, or schematics you can send to fabrication.",
+      "sources": [
+        "ds5319",
+        "project-credits"
+      ]
+    },
+    "22-simulation-wokwi-renode.md": {
+      "question": "Which behavior can you watch in Wokwi or Renode, and which conclusions must go back to a real board and instruments?",
+      "deliverable": "One visible GPIO result, one USART byte result, and a boundary table of what the model supports, does not support, and leaves unknown.",
+      "boundary": "Passing in simulation does not prove analog behavior, the DMA model, timing margin, power, or board-level signal integrity.",
+      "sources": [
+        "wokwi-bluepill",
+        "renode-stm32"
+      ]
+    },
+    "23-stm32g0-pins.md": {
+      "question": "When moving from F1 to G071RB, which package pin order, shared BOOT/SWCLK pin, option bytes, and peripheral set must not be copied across?",
+      "deliverable": "A critical-pin table for G071RB LQFP64, a diagram of the boot latch and protection branches, a complete boot truth table, and a recovery loop that judges reachability from RDP/DBG_SWEN and reads it back.",
+      "boundary": "This chapter answers only for the stated G071RB package and the manual revisions it cites. The empty-Flash check, RDP, DBG_SWEN, the bootloader pattern, and production option bytes must be checked separately. Under Reset does not guarantee a connection. Clearing BOOT_LOCK is limited by RDP. This chapter does not assume an RDP downgrade or a full erase.",
+      "sources": [
+        "ds12232",
+        "rm0444",
+        "an5096",
+        "an2606",
+        "st-boot-faq"
+      ]
+    },
+    "24-stm32l4-pins.md": {
+      "question": "How do the L476RG pins, power domains, and low-power modes affect entering Stop 2, recovering after wake, and the real average current?",
+      "deliverable": "A critical-pin table for LQFP64, a wake evidence chain captured at the IRQ entry before HAL clears the bits, a Stop 2 clock-recovery chain you can verify, and a power ledger with the wiring, the raw waveform, and the integration formula.",
+      "boundary": "The raw wake bits must be captured before the HAL handler. A typical low-power number is not a whole-board guarantee. Mode capability, chip revision, VDD, temperature, instrument bandwidth, burden voltage, and board load must be recorded with the result.",
+      "sources": [
+        "ds10198",
+        "rm0351",
+        "an4746",
+        "um1724",
+        "stm32cube-l4-stop2",
+        "stm32l4-hal-rtc",
+        "commons-nucleo-f411re",
+        "commons-nucleo-f401re",
+        "es0250"
+      ]
+    },
+    "25-stm32h7-pins.md": {
+      "question": "After moving to H743ZI, how do the supply scheme, silicon revision, VCAP, FDCAN, cache, and the 400/480 MHz clock tree change the assumptions of an older project?",
+      "deliverable": "A critical-pin table for LQFP144, a 400/480 MHz configuration chain that matches the board supply and the revision, and three kinds of acceptance evidence: MCO, a frequency read-back, and a peripheral waveform. DMA buffers keep the memory-domain, alignment, and cache policy from chapter 10.",
+      "boundary": "Rev Y and W have no VOS0 and top out at 400 MHz. The 480 MHz example applies only to Rev V, 8 MHz HSE bypass, and a matching LDO board. A supply macro does not replace the schematic. The MCO number is a calculated expectation, not a measurement from this repository. Other peripheral kernel clocks, the MPU, and the DMA memory layout still need their own acceptance.",
+      "sources": [
+        "ds12110",
+        "rm0433",
+        "es0392",
+        "an4938",
+        "st-h7-480mhz",
+        "stm32cube-h7-clock",
+        "stm32cube-h7-system",
+        "stm32cube-h7-msp",
+        "stm32h7-hal-pwr",
+        "st-h7-dma"
+      ]
+    },
+    "26-spl.md": {
+      "question": "Faced with an old STM32F10x SPL project, how do you confirm the version, recover the project skeleton, read the API, and move to HAL or LL safely?",
+      "deliverable": "A project list locked to V3.5.0, a HAL/SPL/register map, and a waveform comparison that moves only one peripheral at a time.",
+      "boundary": "This chapter covers only STM32F10x SPL V3.5.0. It does not treat the old F1 API as the recommended driver for G0, L4, or H7, and it does not authorize initializing the same peripheral from both SPL and HAL.",
+      "sources": [
+        "stsw-stm32054",
+        "spl-f1-mirror",
+        "rm0008"
+      ]
+    },
+    "27-network.md": {
+      "question": "How does an STM32 go from PHY/RMII and DMA/cache to lwIP, TCP/UDP, and MQTT/TLS, and recover in a way you can diagnose after the link drops?",
+      "deliverable": "A layered data-path diagram, a network debug ladder, a TCP protocol with a length field and an application sequence number, and a fault-injection record covering DHCP, DNS, MQTT, and TLS.",
+      "boundary": "Link, ping, a TCP ACK, MQTT QoS, and data committed to storage are different evidence layers. H7 DMA memory domain and cache, the lwIP thread context, certificate time, and application idempotence must each be accepted on their own.",
+      "sources": [
+        "rm0433",
+        "um2407",
+        "um1713",
+        "an4839",
+        "stm32cube-h7-lwip",
+        "lwip-pitfalls",
+        "mqtt-v5",
+        "mbedtls-networking",
+        "rfc9293",
+        "es0392"
+      ]
+    },
+    "28-system-rtos.md": {
+      "question": "How do you connect the kernel, drivers, system services, and the product state machine into one system with ownership, deadlines, a resource budget, and recovery evidence?",
+      "deliverable": "A system layer diagram, a task/interrupt/IPC/memory budget, an OS selection table, and a fault-injection record covering a full queue, a frozen task, and a driver timeout.",
+      "boundary": "The API names of FreeRTOS, RT-Thread, Zephyr, and CMSIS-RTOS2 do not replace the target version, the BSP, the execution context, or a worst-case latency check. The example budget is not a hardware measurement.",
+      "sources": [
+        "freertos-1132",
+        "rtthread-530",
+        "zephyr-442",
+        "cmsis-640",
+        "pm0056",
+        "rm0399",
+        "stm32h745-header"
+      ]
+    }
+  },
+  "appendices": [
+    {
+      "id": "appendix-engineering",
+      "title": "Appendix A  UART + DMA + IDLE",
+      "file": "A-uart-dma.md"
+    },
+    {
+      "id": "appendix-examples",
+      "title": "Appendix B  Verification index for the 14 examples",
+      "file": "B-examples.md"
+    },
+    {
+      "id": "appendix-exercises",
+      "title": "Appendix C  Answers",
+      "file": "C-answers.md"
+    },
+    {
+      "id": "appendix-glossary",
+      "title": "Appendix D  Glossary",
+      "file": "D-glossary.md"
+    },
+    {
+      "id": "appendix-references",
+      "title": "Appendix E  Sources, versions, and license",
+      "file": "E-sources.md"
+    }
+  ],
+  "sources": {
+    "project-guide": {
+      "title": "STM32 knowledge-base content style guide",
+      "authority": "Primary project material",
+      "url": "https://github.com/zhuguang-ZFG/STM32/tree/main/docs",
+      "snapshot": "As of this build: docs/CONTENT_GUIDE.md",
+      "accessed": "2026-10-23",
+      "license": "CC BY 4.0",
+      "scope": "Chapter skeleton, terminology, and what a reproducible experiment requires."
+    },
+    "project-examples": {
+      "title": "The 14 companion examples in the STM32 knowledge base",
+      "authority": "Primary project material",
+      "url": "https://github.com/zhuguang-ZFG/STM32/tree/main/examples",
+      "snapshot": "As of this build: examples/",
+      "accessed": "2026-10-23",
+      "license": "MIT",
+      "scope": "Example goals, wiring, expected behavior, and code."
+    },
+    "project-credits": {
+      "title": "Sources and acknowledgements for the STM32 knowledge base",
+      "authority": "Primary project material",
+      "url": "https://github.com/zhuguang-ZFG/STM32",
+      "snapshot": "As of this build: CREDITS.md and LICENSE",
+      "accessed": "2026-10-23",
+      "license": "CC BY 4.0 / MIT",
+      "scope": "The list of primary material, figure sources, license, and trademark statements."
+    },
+    "rm0008": {
+      "title": "RM0008 — STM32F101/102/103/105/107 Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "Document number RM0008; recheck the current revision in the ST document center",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "F1 clocks, GPIO, DMA, timers, communication peripherals, and register definitions."
+    },
+    "ds5319": {
+      "title": "DS5319 — STM32F103x8/B Datasheet",
+      "authority": "ST official datasheet",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "Document number DS5319; recheck the current revision in the ST document center",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "F103C8/B pins, packages, electrical parameters, memory, and peripheral capability."
+    },
+    "pm0056": {
+      "title": "PM0056 — STM32F10xxx Cortex-M3 Programming Manual",
+      "authority": "ST official programming manual",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "Document number PM0056; recheck the current revision in the ST document center",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "Cortex-M3 exceptions, NVIC, SCB, fault registers, and core behavior."
+    },
+    "an2606": {
+      "title": "AN2606 — STM32 microcontroller system memory boot mode",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/application_note/an2606-introduction-to-system-memory-boot-mode-on-stm32-mcus-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-24; recheck for the exact part and bootloader version",
+      "accessed": "2026-10-24",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "G071 system bootloader, activation patterns, interfaces, and extra boot limits such as empty Flash."
+    },
+    "an3965": {
+      "title": "AN3965 / AN4657 — STM32 IAP application notes",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "Document numbers AN3965 and AN4657",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "How F1/F4 IAP is organized. It does not replace a product secure-update design."
+    },
+    "stm32cube-f4": {
+      "title": "STM32CubeF4 v1.28.3 — UART ReceptionToIdle CircularDMA example",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeF4/tree/v1.28.3/Projects/STM32446E-Nucleo/Examples/UART/UART_ReceptionToIdle_CircularDMA",
+      "snapshot": "tag v1.28.3, commit 94cae6e83f00e276a11957e7833c01ac3d0bd7af",
+      "accessed": "2026-10-23",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "HT/TC/IDLE events and the position meaning of Size in circular DMA."
+    },
+    "majerle-uart": {
+      "title": "MaJerle stm32-usart-uart-dma-rx-tx",
+      "authority": "Community reference implementation",
+      "url": "https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx/commit/c242589d766eada3ad1d795630f2b1c2482a2af8",
+      "snapshot": "commit c242589d766eada3ad1d795630f2b1c2482a2af8",
+      "accessed": "2026-10-23",
+      "license": "Repository LICENSE (this book only links and restates independently)",
+      "scope": "Continuous UART DMA reception, the ring position, and the application's read boundary."
+    },
+    "st-uart-idle": {
+      "title": "HAL_UARTEx_ReceiveToIdle_DMA / RxEventCallback Size semantics",
+      "authority": "ST community post (not normative)",
+      "url": "https://community.st.com/stm32-mcus-products-25/issues-using-hal-uartex-receivetoidle-dma-and-hal-uartex-rxeventcallback-19767",
+      "snapshot": "Thread opened 2022-12-05; read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "Link citation",
+      "scope": "Size is the first unwritten position, and HT and IDLE can fire back to back. The HAL source for that version is the authority."
+    },
+    "st-h7-dma": {
+      "title": "DMA is not working on STM32H7 devices",
+      "authority": "ST community knowledge article",
+      "url": "https://community.st.com/stm32-mcus-60/dma-is-not-working-on-stm32h7-devices-97",
+      "snapshot": "Article dated 2018-07-23; read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "Link citation",
+      "scope": "Which memory H7 DMA can reach, and D-Cache coherence."
+    },
+    "freertos-priority": {
+      "title": "Running FreeRTOS on an ARM Cortex-M Core",
+      "authority": "FreeRTOS official documentation",
+      "url": "https://freertos.org/Documentation/02-Kernel/03-Supported-devices/04-Demos/ARM-Cortex/RTOS-Cortex-M3-M4",
+      "snapshot": "Read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "FreeRTOS website terms (link citation)",
+      "scope": "The direction of Cortex-M priority numbers, BASEPRI, and configMAX_SYSCALL_INTERRUPT_PRIORITY."
+    },
+    "usb20": {
+      "title": "Universal Serial Bus Specification Revision 2.0",
+      "authority": "USB-IF specification",
+      "url": "https://www.usb.org/document-library/usb-20-specification",
+      "snapshot": "USB 2.0 specification entry",
+      "accessed": "2026-10-23",
+      "license": "USB-IF document terms (link citation)",
+      "scope": "Protocol background for control transfers, descriptors, and enumeration."
+    },
+    "wokwi-bluepill": {
+      "title": "Wokwi STM32 Blue Pill board definition",
+      "authority": "Wokwi official docs and open board definition",
+      "url": "https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json",
+      "snapshot": "main branch as read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "Upstream repository license (link citation)",
+      "scope": "Wokwi board pin keys and what the model can do."
+    },
+    "renode-stm32": {
+      "title": "Renode STM32 platform documentation",
+      "authority": "Renode official documentation",
+      "url": "https://renode.readthedocs.io/en/latest/introduction/supported-boards.html",
+      "snapshot": "Read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "Renode documentation terms (link citation)",
+      "scope": "Platform description, ELF loading, and model limits."
+    },
+    "ds12232": {
+      "title": "DS12232 Rev 5 — STM32G071x8/xB Datasheet",
+      "authority": "ST official datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32g071c8.pdf",
+      "snapshot": "DS12232 Rev 5",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "G071RB package, pins, the PA14 reset pull, the empty-Flash check, peripherals, and electrical limits."
+    },
+    "rm0444": {
+      "title": "RM0444 — STM32G0x1 Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0444-stm32g0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "Document number RM0444; recheck the current revision",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "G0 peripherals, boot selection, BOOT_LOCK/DBG_SWEN, RDP clear conditions, complement mismatch, option bytes, and RTC-domain limits."
+    },
+    "an5096": {
+      "title": "AN5096 — Getting started with STM32G0 MCUs hardware development",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/application_note/an5096-getting-started-with-stm32g0-mcus-hardware-development-stmicroelectronics.pdf",
+      "snapshot": "On 2026-10-24 the search index was checked for the Table 3 boot truth table and the latch on the fourth SYSCLK rising edge",
+      "accessed": "2026-10-24",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "G0 boot combinations of BOOT_LOCK, nBOOT1, BOOT0, nBOOT_SEL, and nBOOT0, and the shared-pin hardware."
+    },
+    "st-boot-faq": {
+      "title": "FAQ STM32 boot process",
+      "authority": "ST knowledge article (ST Technical Moderator)",
+      "url": "https://community.st.com/stm32-mcus-60/faq-stm32-boot-process-37",
+      "snapshot": "Published 2021-04-28; on 2026-10-24 the G071 boot table, the fourth-SYSCLK-edge latch, and the RDP notes were read",
+      "accessed": "2026-10-24",
+      "license": "ST Community terms (this book only links and explains independently)",
+      "scope": "G071 boot latch and recovery. Normative detail still follows RM0444, DS12232, and AN5096/AN2606."
+    },
+    "ds10198": {
+      "title": "DS10198 Rev 11 — STM32L476xx Datasheet",
+      "authority": "ST official datasheet",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "DS10198 Rev 11",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "L476RG package, alternate functions, supply, and the typical conditions for low power."
+    },
+    "rm0351": {
+      "title": "RM0351 — STM32L47/L48/L49/L4A Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0351-stm32l47xxx-stm32l48xxx-stm32l49xxx-and-stm32l4axxx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "L476 PWR/RCC, Stop 0/1/2, Standby/Shutdown, wake clock, retained state, and peripheral low-power limits."
+    },
+    "an4746": {
+      "title": "AN4746 — How to optimize power and performance on STM32L4/L4+",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/application_note/an4746-how-to-optimize-power-and-performance-on-stm32l4-and-stm32l4-mcus-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and gives its own calculation)",
+      "scope": "Choosing an L4/L4+ mode, Stop 2, wake latency, and ways to trade power against performance."
+    },
+    "um1724": {
+      "title": "UM1724 — STM32 Nucleo-64 boards (MB1136)",
+      "authority": "ST official user manual",
+      "url": "https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf",
+      "snapshot": "The MB1136 board on NUCLEO-L476RG and the JP6 (IDD) measurement path",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites interface names)",
+      "scope": "The JP6 IDD jumper, the board supply path, and the boundary of an MCU current measurement."
+    },
+    "stm32cube-l4-stop2": {
+      "title": "STM32CubeL4 — NUCLEO-L476RG PWR_STOP2 examples",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeL4/tree/485c092549f9495079fcb39f17f66cbaa0930118/Projects/NUCLEO-L476RG/Examples/PWR",
+      "snapshot": "commit 485c092549f9495079fcb39f17f66cbaa0930118; PWR_STOP2 and PWR_STOP2_RTC",
+      "accessed": "2026-10-23",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "The HAL order for pausing and restoring SysTick, waking on MSI, restoring PLL/SYSCLK, and reinitializing GPIO."
+    },
+    "stm32l4-hal-rtc": {
+      "title": "STM32L4 HAL RTCEx IRQ handler — pinned source",
+      "authority": "ST official GitHub HAL driver",
+      "url": "https://github.com/STMicroelectronics/stm32l4xx-hal-driver/blob/71a58f9d417139d332e448a46c9e6ba5181181dc/Src/stm32l4xx_hal_rtc_ex.c",
+      "snapshot": "commit 71a58f9d417139d332e448a46c9e6ba5181181dc；HAL_RTCEx_WakeUpTimerIRQHandler",
+      "accessed": "2026-10-23",
+      "license": "BSD-3-Clause (this book only links and states its own capture pattern)",
+      "scope": "The order, inside the RTC wake-up IRQ, of clearing EXTI, clearing WUTF, and calling the callback."
+    },
+    "commons-nucleo-f411re": {
+      "title": "Embedded World 2016, Stm32 Nucleo — Nucleo-F411RE photograph",
+      "authority": "Wikimedia Commons file metadata",
+      "url": "https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg",
+      "snapshot": "Photograph by Ordercrazy / Thomas Springer; this book uses a 760×884 processed copy",
+      "accessed": "2026-10-23",
+      "license": "CC0 1.0",
+      "scope": "An example of Nucleo-64 physical layout. It is not a NUCLEO-L476RG."
+    },
+    "commons-nucleo-f401re": {
+      "title": "Embedded World 2016, STM Nucleo 401 — Nucleo-F401RE photograph",
+      "authority": "Wikimedia Commons file metadata",
+      "url": "https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg",
+      "snapshot": "Photograph by Ordercrazy / Thomas Springer; this book uses a 760×852 processed copy",
+      "accessed": "2026-10-23",
+      "license": "CC0 1.0",
+      "scope": "An example of Nucleo-64 physical layout. It is not a NUCLEO-L476RG."
+    },
+    "es0250": {
+      "title": "ES0250 — STM32L471/L475/L476/L486 device errata",
+      "authority": "ST official device errata",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0250-stm32l471xx475xx476xx486xx-device-errata-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23; recheck against the chip revision in use",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "L476 hardware limits and the entry point for low-power and wake errata and workarounds."
+    },
+    "ds12110": {
+      "title": "DS12110 Rev 11 — STM32H743xI Datasheet",
+      "authority": "ST official datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32h743vi.pdf",
+      "snapshot": "DS12110 Rev 11",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "H743ZI package, VCAP, supply scheme, power domains, frequency conditions, FDCAN, and pin alternate functions."
+    },
+    "rm0399": {
+      "title": "RM0399 — STM32H745/755 and STM32H747/757 Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32h745-755/documentation.html",
+      "snapshot": "On 2026-10-24 the STM32H745/755 document page was checked for the document number and the parts it covers; register detail follows the revision downloaded at the time",
+      "accessed": "2026-10-24",
+      "license": "ST document terms (this book only links, cites the document number, and explains independently)",
+      "scope": "Dual-core architecture, shared memory, HSEM, startup, and reset limits for H745/755 and H747/757."
+    },
+    "stm32h745-header": {
+      "title": "STM32H745 CMSIS device header — frozen official source",
+      "authority": "ST official source",
+      "url": "https://github.com/STMicroelectronics/cmsis_device_h7/blob/81db1ec63cdc191fae1565b772da3ea5aa29a683/Include/stm32h745xx.h",
+      "snapshot": "STM32CubeH7 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06 → cmsis_device_h7 81db1ec63cdc191fae1565b772da3ea5aa29a683",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0; this book only links and explains peripheral boundaries independently",
+      "scope": "HSEM interrupts, register bits, dual-core conditional definitions, and the STM32H745 peripheral list."
+    },
+    "rm0433": {
+      "title": "RM0433 — STM32H742/H743/H753/H750 Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/dm00314099-stm32h742-stm32h743-753-and-stm32h750-value-line-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23; also check the errata for the target part",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "H7 bus matrix, Ethernet MAC/MTL/DMA, descriptors, clocks, and registers."
+    },
+    "an4938": {
+      "title": "AN4938 — Getting started with STM32H74xI/G and STM32H75xI/G MCU hardware development",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/application_note/an4938-getting-started-with-stm32h74xig-and-stm32h75xig-mcu-hardware-development-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-24; hardware design follows the target part and the board schematic",
+      "accessed": "2026-10-24",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "LDO/SMPS, VCAP, and the minimum power-design boundary for H743."
+    },
+    "st-h7-480mhz": {
+      "title": "How to reach 480MHz for STM32H7xx MCUs",
+      "authority": "ST knowledge article (ST employee Foued_KH)",
+      "url": "https://community.st.com/stm32-mcus-60/how-to-reach-480mhz-for-stm32h7xx-mcus-260",
+      "snapshot": "Published 2023-05-22; on 2026-10-24 the Rev V, VOS0, and CubeMX path was read",
+      "accessed": "2026-10-24",
+      "license": "ST Community terms (this book only links and explains independently)",
+      "scope": "An entry point for a 480 MHz configuration. Silicon limits follow DS12110 and ES0392."
+    },
+    "stm32cube-h7-clock": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI RCC_ClockConfig",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/tree/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Examples/RCC/RCC_ClockConfig",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06; the 400 MHz example with 8 MHz HSE bypass, VOS1, Flash latency 4, and MCO2",
+      "accessed": "2026-10-24",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "The official H743 400 MHz baseline and a way to check the clock. The 480 MHz code in the book is a separate rewrite with its assumptions stated."
+    },
+    "stm32cube-h7-system": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI system_stm32h7xx.c",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/blob/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Templates/Src/system_stm32h7xx.c",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06; SystemCoreClockUpdate() computes the CM7 CPU clock first, then SystemD2Clock from HPRE",
+      "accessed": "2026-10-24",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "The boundary between the H743 single-core CPU/SystemCoreClock and AXI/AHB SystemD2Clock. The comment at the top of the file does not replace the calculation path."
+    },
+    "stm32cube-h7-msp": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI stm32h7xx_hal_msp.c",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/blob/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Templates/Src/stm32h7xx_hal_msp.c",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06; HAL_MspInit() is empty and does not enable SYSCFG implicitly",
+      "accessed": "2026-10-24",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "Evidence that H743 startup clock gates cannot rely on a default MSP to initialize them implicitly."
+    },
+    "stm32h7-hal-pwr": {
+      "title": "STM32H7xx HAL Driver — stm32h7xx_hal_pwr.h",
+      "authority": "ST official GitHub HAL driver",
+      "url": "https://github.com/STMicroelectronics/stm32h7xx-hal-driver/blob/e3c518ebda3e00c8e52b1625ca44fba65da3b63e/Inc/stm32h7xx_hal_pwr.h",
+      "snapshot": "commit e3c518ebda3e00c8e52b1625ca44fba65da3b63e; the VOS0 precondition and the SYSCFG->PWRCR.ODEN macro",
+      "accessed": "2026-10-24",
+      "license": "Repository LICENSE (this book does not redistribute the source)",
+      "scope": "H743 VOS0 requires SYSCFG and entry from VOS1 already ready. Wait for VOSRDY after each scale change. Leave VOS0 through VOS1 before low power."
+    },
+    "um2407": {
+      "title": "UM2407 — STM32H7 Nucleo-144 boards (MB1364)",
+      "authority": "ST official user manual",
+      "url": "https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-boards-mb1364-stmicroelectronics.pdf",
+      "snapshot": "The 10/100 Ethernet PHY, RJ45, solder bridges, and board revision of NUCLEO-H743ZI2",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites interface names)",
+      "scope": "The MB1364 Ethernet hardware path and board-configuration limits."
+    },
+    "um1713": {
+      "title": "UM1713 — Developing applications on STM32Cube with lwIP TCP/IP stack",
+      "authority": "ST official user manual",
+      "url": "https://www.st.com/resource/en/user_manual/um1713-developing-applications-on-stm32cube-with-lwip-tcpip-stack-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "Ethernet HAL, lwIP middleware, and application structure with and without an RTOS."
+    },
+    "an4839": {
+      "title": "AN4839 — Level 1 cache on STM32F7 Series and STM32H7 Series",
+      "authority": "ST official application note",
+      "url": "https://www.st.com/resource/en/application_note/an4839-level-1-cache-on-stm32f7-series-and-stm32h7-series-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and explains independently)",
+      "scope": "Cortex-M7 L1 cache, MPU attributes, DMA coherence, and cache-line boundaries."
+    },
+    "stm32cube-h7-lwip": {
+      "title": "STM32CubeH7 — NUCLEO-H743ZI LwIP HTTP Server Netconn RTOS",
+      "authority": "ST official GitHub firmware package",
+      "url": "https://github.com/STMicroelectronics/STM32CubeH7/tree/8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06/Projects/NUCLEO-H743ZI/Applications/LwIP/LwIP_HTTP_Server_Netconn_RTOS",
+      "snapshot": "commit 8ec3113d4039d30ba9dc2bf0cb6eefc756b48d06；lwIP 07680c8172fa5fc135adefa3f7711c14f4938dc9；mbedTLS cdadeb9ba09fd4e913f0f8599832e960545a367d",
+      "accessed": "2026-10-23",
+      "license": "Each repository and submodule LICENSE (this book does not redistribute the source)",
+      "scope": "The Netconn/FreeRTOS HTTP example, DTCM being unreachable, D1/D2 SRAM, 32-byte cache lines, and DMA buffer limits."
+    },
+    "lwip-pitfalls": {
+      "title": "lwIP 2.1.x — Common pitfalls",
+      "authority": "lwIP upstream official Doxygen documentation",
+      "url": "https://www.nongnu.org/lwip/2_1_x/pitfalls.html",
+      "snapshot": "lwIP 2.1.0 documentation; read on 2026-10-23",
+      "accessed": "2026-10-23",
+      "license": "lwIP BSD-3-Clause; documentation is cited by link only",
+      "scope": "NO_SYS versus OS execution context, the raw-API thread boundary, DMA zero-copy, and cache-line risk."
+    },
+    "mqtt-v5": {
+      "title": "MQTT Version 5.0 — OASIS Standard",
+      "authority": "OASIS Standard",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+      "snapshot": "OASIS Standard, 2019-03-07",
+      "accessed": "2026-10-23",
+      "license": "OASIS document terms (this book only links and explains independently)",
+      "scope": "MQTT QoS, sessions, Keep Alive, Last Will, error handling, and security semantics."
+    },
+    "mbedtls-networking": {
+      "title": "Mbed TLS tutorial — secure client integration",
+      "authority": "Mbed TLS official documentation",
+      "url": "https://mbed-tls.readthedocs.io/en/latest/kb/how-to/mbedtls-tutorial/",
+      "snapshot": "Read on 2026-10-23; the STM32CubeH7 mbedTLS submodule is also pinned at cdadeb9ba09fd4e913f0f8599832e960545a367d",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0 project documentation terms (link citation)",
+      "scope": "TLS context, RNG, authentication mode, host name, CA chain, BIO callbacks, and releasing resources."
+    },
+    "rfc9293": {
+      "title": "RFC 9293 — Transmission Control Protocol (TCP)",
+      "authority": "IETF Internet Standard",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293",
+      "snapshot": "RFC 9293, 2022-08; the related UDP, DHCP, DNS, and TLS RFCs are named in the chapter",
+      "accessed": "2026-10-23",
+      "license": "IETF Trust document terms (link citation)",
+      "scope": "TCP as a reliable ordered byte stream, connection state, and the application's framing boundary."
+    },
+    "es0392": {
+      "title": "ES0392 — STM32H742/H743/H750/H753 device errata",
+      "authority": "ST official device errata",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0392-stm32h742xig-stm32h743xig-stm32h750xb-stm32h753xi-device-errata-stmicroelectronics.pdf",
+      "snapshot": "Checked from the current ST document entry on 2026-10-23; recheck for the target silicon revision",
+      "accessed": "2026-10-23",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "H7 Ethernet MAC/DMA and other target-part limits, workarounds, and revision boundaries."
+    },
+    "clion-embedded": {
+      "title": "CLion Embedded Development and OpenOCD Support",
+      "authority": "JetBrains official documentation",
+      "url": "https://www.jetbrains.com/help/clion/embedded-overview.html",
+      "snapshot": "Read on 2026-10-23; the OpenOCD subpage moves with the product documentation",
+      "accessed": "2026-10-23",
+      "license": "JetBrains documentation terms (link citation)",
+      "scope": "CMake projects, the GNU Arm toolchain, OpenOCD Download & Run, and the GDB entry point."
+    },
+    "platformio-vscode": {
+      "title": "PlatformIO IDE for VS Code and ST-LINK debugging",
+      "authority": "PlatformIO official documentation",
+      "url": "https://docs.platformio.org/en/stable/integration/ide/vscode.html",
+      "snapshot": "Read on 2026-10-23; the ST-LINK debug-tool subpage moves with the documentation",
+      "accessed": "2026-10-23",
+      "license": "PlatformIO documentation terms (link citation)",
+      "scope": "VS Code integration, the PlatformIO Core boundary, and ST-LINK upload/debug configuration."
+    },
+    "stsw-stm32054": {
+      "title": "STSW-STM32054 — STM32F10x standard peripheral library",
+      "authority": "ST official product page",
+      "url": "https://www.st.com/en/embedded-software/stsw-stm32054.html",
+      "snapshot": "Product identity of STM32F10x Standard Peripheral Library V3.5.0",
+      "accessed": "2026-10-23",
+      "license": "ST firmware and document terms (this book only links and explains the API independently)",
+      "scope": "SPL product identity, the series it covers, and the official place to obtain it."
+    },
+    "spl-f1-mirror": {
+      "title": "STM32F10x Standard Peripheral Library V3.5 frozen source mirror",
+      "authority": "Community source mirror (not a normative source)",
+      "url": "https://github.com/wajatimur/stm32f10x-stdperiph-lib/commit/afa743577f2784e95be2d5003380fdb84a702519",
+      "snapshot": "commit afa743577f2784e95be2d5003380fdb84a702519",
+      "accessed": "2026-10-23",
+      "license": "Upstream ST firmware terms; this book does not redistribute the source",
+      "scope": "A frozen check of the V3.5.0 tree, header API prototypes, and official examples. Conclusions still go back to the ST product page and RM0008."
+    },
+    "freertos-1132": {
+      "title": "FreeRTOS Kernel V11.3.2 and developer documentation",
+      "authority": "FreeRTOS official release and developer documentation",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "V11.3.2, released 2026-10-16; behavior was also checked against the freertos.org Kernel Developer Docs",
+      "accessed": "2026-10-24",
+      "license": "MIT kernel; official documentation is linked and explained independently",
+      "scope": "Task scheduling, IPC, static and dynamic memory, tickless operation, hooks, and the SMP boundary."
+    },
+    "rtthread-530": {
+      "title": "RT-Thread v5.3.0 and official document center",
+      "authority": "RT-Thread official release and documentation center",
+      "url": "https://github.com/RT-Thread/rt-thread/releases/tag/v5.3.0",
+      "snapshot": "v5.3.0, released 2026-09-10",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0 project; documentation is linked and explained independently",
+      "scope": "Kernel IPC, the device framework, component init, FinSH, DFS, SAL, packages, and the STM32 BSP."
+    },
+    "zephyr-442": {
+      "title": "Zephyr v4.4.2 and versioned documentation",
+      "authority": "Zephyr Project official bugfix release and documentation",
+      "url": "https://github.com/zephyrproject-rtos/zephyr/releases/tag/v4.4.2",
+      "snapshot": "v4.4.2, released 2026-08-07; target commit dccb09599635bdff17633fa7e9dab014b91dce90",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0 for the main project and each module license; documentation is linked and explained independently",
+      "scope": "Kernel Services, Kconfig, Devicetree, the device model, workqueues, and freezing the west multi-repository set."
+    },
+    "cmsis-640": {
+      "title": "CMSIS 6.4.0 — CMSIS-RTOS2 API 2.3.0",
+      "authority": "Arm official release and API documentation",
+      "url": "https://github.com/ARM-software/CMSIS_6/releases/tag/v6.4.0",
+      "snapshot": "CMSIS 6.4.0 and CMSIS-RTOS2 2.3.0, released 2026-10-08",
+      "accessed": "2026-10-24",
+      "license": "Apache-2.0; API documentation is linked and explained independently",
+      "scope": "The common interface for threads, flags, events, mutexes, semaphores, message queues, and what an ISR may call."
+    }
+  }
+}
