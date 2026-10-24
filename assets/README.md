@@ -15,7 +15,7 @@
 
 | 文件 | 演示内容 | 关联章节 |
 | --- | --- | --- |
-| `toolchain-flow.svg` | 编译 → 链接 → 烧录 → 运行 的完整数据流 | 01 |
+| `toolchain-flow.svg` | 编译 → 链接 → 烧录 → 运行 的完整数据流 | 00 |
 | `boot-sequence.svg` | 上电复位后 CPU 取向量表、启动流程 | 01 / 21 |
 | `memory-map.svg` | Cortex-M 存储器映射（Flash/SRAM/外设） | 02 |
 | `clock-tree.svg` | HSE → PLL → SYSCLK → AHB/APB 时钟树倍频过程 | 02 |
@@ -112,7 +112,11 @@ edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线�
 重新生成正片：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 续集把环境变量 `NARRATED_MODULE` 设为 `narration_ai` 再跑同一条命令。
 
-## 七、引用方式
+## 七、公众号二维码 `assets/wechat/`
+
+[wechat/wechat-mp-qr.png](wechat/wechat-mp-qr.png) 是「SIAI小宇宙」的关注二维码，首页在用。它不是板卡图，也不由 `gen_boards.py` 生成。公众号 HTML 和封面写到不入库的 `wechat-mp/`。
+
+## 八、引用方式
 
 ```markdown
 <p align="center">

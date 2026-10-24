@@ -39,7 +39,7 @@
 >
 > （图文版针对手机阅读重新排版，动画与代码块已适配微信公众号渲染。）
 
-<p align="center"><img src="assets/boards/wechat-mp-qr.png" width="220" alt="公众号 SIAI小宇宙 二维码"></p>
+<p align="center"><img src="assets/wechat/wechat-mp-qr.png" width="220" alt="公众号 SIAI小宇宙 二维码"></p>
 
 ---
 
@@ -166,60 +166,15 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 
 ## 章节目录
 
-<details open>
-<summary><b>基础篇（00 ~ 08）</b></summary>
+逐章的一句话摘要和配套动画只维护在 [docs/README.md](docs/README.md)。英文目录在 [docs/en/contents.md](docs/en/contents.md)。
 
-| # | 章节 | 关键词 | 配套动画 |
-| --- | --- | --- | --- |
-| 00 | [如何学习 STM32](docs/00-如何学习STM32.md) | 路线图 · 硬件清单 · 三种开发方式 | `toolchain-flow` |
-| 01 | [开发环境搭建](docs/01-开发环境搭建.md) | Keil / CubeIDE / PlatformIO · ST-Link · SWD | `boot-sequence` |
-| 02 | [芯片选型与存储器时钟](docs/02-芯片选型与存储器时钟.md) | 命名规则 · 存储器映射 · 时钟树 | `memory-map` `clock-tree` |
-| 03 | [GPIO 与 LED](docs/03-GPIO与LED.md) | 8 种模式 · 推挽/开漏 · 限流电阻 | `gpio-blink` `led-blink.gif` |
-| 04 | [中断与 NVIC](docs/04-中断与NVIC.md) | 优先级分组 · EXTI · 中断安全 | `nvic-interrupt-flow` `gpio-input-interrupt` |
-| 05 | [定时器与 PWM](docs/05-定时器与PWM.md) | 时基公式 · 占空比 · 输入捕获 | `timer-pwm` `timer-modes` `pwm-breath.gif` |
-| 06 | [串口 UART](docs/06-串口UART.md) | 帧格式 · 波特率误差 · DMA+IDLE | `uart-frame` `uart-bits.gif` |
-| 07 | [I2C 总线](docs/07-I2C总线.md) | 开漏上拉 · ACK · 总线死锁恢复 | `i2c-transaction` |
-| 08 | [SPI 总线](docs/08-SPI总线.md) | 全双工移位 · CPOL/CPHA · 片选 | `spi-transfer` |
-
-</details>
-
-<details open>
-<summary><b>进阶篇（09 ~ 17）</b></summary>
-
-| # | 章节 | 关键词 | 配套动画 |
-| --- | --- | --- | --- |
-| 09 | [ADC 与 DAC](docs/09-ADC与DAC.md) | 逐次逼近 · 采样时间 · 内部温度传感器 | `adc-sar` `sar-adc.gif` |
-| 10 | [DMA](docs/10-DMA.md) | 通道/流映射 · 循环模式 · Cache 一致性 | `dma-circular` `dma-ring.gif` |
-| 11 | [RTC 与看门狗](docs/11-RTC与看门狗.md) | LSE 备份域 · 闹钟 · IWDG/WWDG | `iwdg-window` |
-| 12 | [Flash 与 IAP 升级](docs/12-Flash与IAP升级.md) | 扇区擦除 · 解锁序列 · 双区跳转 | `flash-iap` |
-| 13 | [CAN 总线](docs/13-CAN总线.md) | 非破坏性仲裁 · 位填充 · 过滤器 | `can-arbitration` |
-| 14 | [USB](docs/14-USB.md) | 枚举 · 描述符 · CDC / HID | `usb-enumeration` |
-| 15 | [FreeRTOS 入门](docs/15-FreeRTOS入门.md) | 任务状态 · 优先级 · 队列/信号量 | `freertos-scheduler` |
-| 16 | [低功耗设计](docs/16-低功耗设计.md) | Sleep/Stop/Standby · WFI · 唤醒源 | `lowpower-wakeup` |
-| 17 | [调试与性能优化](docs/17-调试与性能优化.md) | SWD/SWO · HardFault 定位 · DWT 计时 | `debug-swo` |
-
-</details>
-
-<details open>
-<summary><b>实战、仿真、系列引脚、SPL、网络与系统（18 ~ 28）</b></summary>
-
-| # | 章节 | 关键词 |
+| 篇 | 范围 | 从这里进 |
 | --- | --- | --- |
-| 18 | [常见问题 FAQ](docs/18-常见问题FAQ.md) | 30+ 条「现象 / 原因 / 解决」 |
-| 19 | [项目实战合集](docs/19-项目实战合集.md) | 10 个递进项目：蓝牙小车、示波器、数据采集卡… |
-| 20 | [学习资源与工具链](docs/20-学习资源与工具链.md) | 官方手册命名规则 · 中文社区 · 开源固件库 |
-| 21 | [原理图与实物图鉴](docs/21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
-| 22 | [仿真实验 Wokwi 与 Renode](docs/22-仿真实验Wokwi与Renode.md) | 浏览器接线 · Renode 加载 ELF · DMA 模型边界 |
-| 23 | [STM32G0 引脚](docs/23-STM32G0引脚.md) | G071RB · BOOT0/SWCLK 真值表 · 选项字节 · Under Reset 恢复 |
-| 24 | [STM32L4 引脚](docs/24-STM32L4引脚.md) | L476RG · Nucleo-64 实拍 · Stop 2 IRQ 留证据 · JP6 功耗测量 |
-| 25 | [STM32H7 引脚](docs/25-STM32H7引脚.md) | H743ZI 引脚/供电 · Rev Y/W 与 V · 400/480 MHz 时钟链 · MCO 验证 |
-| 26 | [STM32F10x 标准外设库 SPL](docs/26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架 · HAL/SPL/寄存器映射 · 旧工程迁移 |
-| 27 | [网络与协议栈](docs/27-网络与协议栈.md) | Ethernet/RMII · lwIP · TCP/UDP · MQTT/TLS · 分层排错与断网恢复 |
-| 28 | [嵌入式系统与 RTOS 生态](docs/28-嵌入式系统与RTOS生态.md) | FreeRTOS · RT-Thread · Zephyr · CMSIS-RTOS2 · 所有权/截止点/资源预算 |
+| 基础 | 00–08 | [00 如何学习 STM32](docs/00-如何学习STM32.md) |
+| 进阶 | 09–17 | [09 ADC 与 DAC](docs/09-ADC与DAC.md) |
+| 实战、仿真、引脚、SPL、网络与系统 | 18–28 | [18 常见问题 FAQ](docs/18-常见问题FAQ.md) |
 
-</details>
-
-> 写新章节前请先读 [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)（统一骨架与图文规范）。
+写新章节前先读 [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)，并只改 `docs/README.md` 里的目录行。
 
 
 ## 示例代码与速查表
@@ -267,7 +222,7 @@ STM32/
 ├── sim/renode/               ← Renode .resc
 ├── cheatsheets/              ← 4 份中文速查表
 ├── stm32-book/               ← 整书：manifest、附录、离线 HTML/PDF
-├── assets/                   ← 动画、板卡图、实拍、GIF、讲解视频
+├── assets/                   ← 动画、板卡图、实拍、GIF、讲解视频、公众号二维码
 └── tools/                    ← 生成脚本（清单见 tools/README.md）
 
 不入库（.gitignore，只在作者本机）：wechat-mp/ 、 final-videos/
