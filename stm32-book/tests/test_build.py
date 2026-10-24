@@ -201,6 +201,45 @@ class BookBuildContractTests(unittest.TestCase):
                 self.assertGreater(table["wrapperScrollWidth"], table["wrapperClientWidth"])
                 self.assertGreaterEqual(table["narrowestHeader"], 72)
 
+    def test_mobile_three_column_tables_keep_readable_columns(self) -> None:
+        from playwright.sync_api import sync_playwright
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(Path(tmp))
+            candidates = self.builder._browser_candidates(None)
+            launch_args = {"headless": True}
+            if candidates:
+                launch_args["executable_path"] = str(candidates[0])
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch(**launch_args)
+                try:
+                    page = browser.new_page(
+                        viewport={"width": 390, "height": 844},
+                        is_mobile=True,
+                        color_scheme="light",
+                    )
+                    page.goto(output.resolve().as_uri() + "#chapter-28", wait_until="load")
+                    tables = page.locator("#chapter-28 table").evaluate_all(
+                        """tables => tables
+                            .filter(table => table.rows[0]?.cells.length === 3)
+                            .map(table => ({
+                                wrapperClientWidth: table.parentElement.clientWidth,
+                                wrapperScrollWidth: table.parentElement.scrollWidth,
+                                narrowestHeader: Math.min(
+                                    ...Array.from(table.rows[0].cells, cell =>
+                                        cell.getBoundingClientRect().width)
+                                ),
+                            }))"""
+                    )
+                finally:
+                    browser.close()
+
+        self.assertGreater(len(tables), 0)
+        for table in tables:
+            with self.subTest(table=table):
+                self.assertGreater(table["wrapperScrollWidth"], table["wrapperClientWidth"])
+                self.assertGreaterEqual(table["narrowestHeader"], 72)
+
     def test_print_layout_keeps_reading_units_together(self) -> None:
         from playwright.sync_api import sync_playwright
 
