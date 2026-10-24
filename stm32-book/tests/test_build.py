@@ -133,7 +133,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("1.0.0-rc.8", html)
+        self.assertIn("<strong>v1.0.0</strong>", html)
+        self.assertNotIn("1.0.0-rc", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
         self.assertIn('class="cover-art"', html)
@@ -228,7 +229,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.0-rc.8", manifest["version"])
+        self.assertEqual("1.0.0", manifest["version"])
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
         for name, guide in manifest["chapter_guides"].items():
             self.assertEqual(zh_sources[name[:2]], guide["sources"])
@@ -243,6 +244,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
+        self.assertIn("<strong>v1.0.0</strong>", html)
+        self.assertNotIn("1.0.0-rc", html)
         self.assertIn("<figcaption>", html)
         self.assertIn('class="cover-art"', html)
         self.assertIn('id="part-closing-p6"', html)

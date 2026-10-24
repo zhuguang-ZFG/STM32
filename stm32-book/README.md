@@ -13,7 +13,7 @@
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印，保留标题书签、完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.0.0-rc.8 · 2026-10-24**。这还不是 GitHub Release。中文整书和英文整书共用这一版号。
+当前版本：**v1.0.0 · 2026-10-24**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
 
 ## 构建
 
@@ -72,16 +72,15 @@ python stm32-book/build_html.py --lang en --check
 - `--lang en` 产出 29 章英文书，章末的 Previous / Next 和插画免责声明不进书；
 - 缺图、漏罗盘、坏锚点和未闭合视频块会让构建失败。
 
-## 离正式 1.0.0 还差
+## 发布 GitHub Release
 
-rc.8 把已知图注收成语义化 figure，换上内嵌封面插画，并加上英文离线整书。这一版停在 rc.8。构建脚本不会自己创建 GitHub Release。
+版本号已经是 1.0.0。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0。
 
-rc.8 合并进 `main` 并且 Book CI 绿了之后，由有权限的人再发 1.0.0：
+这次提交进入 `main` 并且 Book CI 变绿之后，由有权限的人：
 
-1. 另开一个版本提交，把 `stm32-book/manifest.json`、`stm32-book/manifest-en.json` 的 `version`，以及本 README 的版本行，从 `1.0.0-rc.8` 改成 `1.0.0`。不要把 rc.8 的产物标成 1.0.0。
-2. 等这次提交在 `main` 上的 Book CI 变绿。它会给出两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
-3. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
-4. 在该提交上打 tag `v1.0.0`，创建 GitHub Release，并附上这四份文件。
+1. 下载这次 `main` 运行的两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
+2. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
+3. 在该提交上打 tag `v1.0.0`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 
