@@ -27,6 +27,6 @@
 | [chs11-ai-templates.mp4](chs11-ai-templates.mp4) | 提示词模板总集 |
 | [chs12-ai-capstone.mp4](chs12-ai-capstone.mp4) | 毕业项目：AI 协作写小产品 |
 
-## 未挂到当前脚本
+## 已取代
 
-[chai01-ai-gpio.mp4](chai01-ai-gpio.mp4)（同名 `.srt`、`.png`）在目录里，但 `narration.py` 和 `narration_ai.py` 都不会生成这个文件名。它不是续集的第一集；续集第一集是 `chs01-ai-basics`。在确认它是否被取代之前，先留在这里。
+`chai01-ai-gpio` 是上面第一集的早期成片，已移到 [superseded/](superseded/README.md)。续集第一集只认 `chs01-ai-basics`。

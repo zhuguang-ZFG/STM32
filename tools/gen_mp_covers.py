@@ -72,6 +72,8 @@ def avatar() -> None:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    # 封面源在不入库的 final-videos/chNN/。这里仍只裁 ch00–ch25。
+    # 仓库正文已是 00–28；本地有 ch26、ch27、ch28 封面后再把 range 改成 29。
     for i in range(26):
         ch = f"ch{i:02d}"
         chapter_cover(ch)

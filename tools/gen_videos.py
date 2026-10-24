@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-gen_videos.py —— 旧的五帧 ASCII 幻灯。
+gen_videos.py —— 已停用的五帧 ASCII 幻灯。
 
-章节讲解已经改成带配音的 MP4，见 gen_narrated.py。
-本脚本仍可单独生成 GIF，但 make assets 不再调用它。
-GIF 里的字只能是 ASCII（minigfx 的 5×7 点阵）。
+正片讲解由 gen_narrated.py 生成 MP4。Makefile、CI 和 check_assets 都不调用本文件。
+直接运行会把 chNN-*.gif 写进 assets/video/，check_assets 会把这种 GIF 判失败。
+--patch-docs 还会用旧幻灯替换章节里的讲解视频。
 
-用法::
+只有在明确要重放旧幻灯时才运行::
 
-    python3 tools/gen_videos.py              # 写 assets/video/*.gif
-    python3 tools/gen_videos.py 03           # 只生成某一章
+    GEN_VIDEOS_I_KNOW=1 python3 tools/gen_videos.py
+    GEN_VIDEOS_I_KNOW=1 python3 tools/gen_videos.py 03
 """
 
 from __future__ import annotations
@@ -664,6 +664,15 @@ def patch_docs(root):
 
 
 def main(argv):
+    if os.environ.get("GEN_VIDEOS_I_KNOW") != "1":
+        print(
+            "gen_videos.py 已停用。正片讲解由 gen_narrated.py 生成 MP4。\n"
+            "直接运行会把 chNN-*.gif 写进 assets/video/，check_assets 会判失败；\n"
+            "--patch-docs 还会用旧幻灯替换章节里的讲解视频。\n"
+            "确认要重放旧幻灯时再设 GEN_VIDEOS_I_KNOW=1。",
+            file=sys.stderr,
+        )
+        return 2
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.dirname(here)
     out_dir = os.path.join(root, "assets", "video")
@@ -681,4 +690,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    sys.exit(main(sys.argv))
