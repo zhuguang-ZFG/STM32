@@ -43,7 +43,7 @@
 | 20 | [Learning resources and the toolchain](20-resources.md) | How official manuals are named, the community, and open-source firmware libraries |
 | 21 | [Schematics and board maps](21-board-maps.md) | Structure drawings of 5 boards, plus how to read a minimum-system schematic |
 | 22 | [Simulation labs: Wokwi and Renode](22-simulation-wokwi-renode.md) | Wiring in the browser, loading an ELF from the command line, and where the DMA model stops |
-| 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB in LQFP64, BOOT0 shared with SWCLK, and no bxCAN |
+| 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB pins, BOOT0/SWCLK truth table, option bytes, and a polished Under Reset recovery workflow |
 | 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG pins, VDDUSB, and the low-power typical values on the cover |
 | 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI pins and supply, revision-specific 400/480 MHz configuration, and MCO/peripheral clock verification |
 | 26 | [STM32F10x Standard Peripheral Library](26-spl.md) | V3.5.0 project skeleton, build macros, API boundaries, and one-peripheral migration |

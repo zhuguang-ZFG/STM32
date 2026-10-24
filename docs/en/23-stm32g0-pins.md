@@ -35,6 +35,8 @@
 - [ ] Count from the top-left corner of the LQFP64 to pin 1 and recognize PC11, not VBAT.
 - [ ] Point at the default USART, I2C, SPI, and SWD pins on this part.
 - [ ] Name three differences from F1: no bxCAN, no USB full-speed device, BOOT0 shared with SWCLK.
+- [ ] Determine Main Flash, System memory, or SRAM from `BOOT_LOCK`, `nBOOT1`, PA14, `nBOOT_SEL`, and `nBOOT0`.
+- [ ] Recover SWD with Under Reset, option-byte readback, and post-reset verification when the application reassigns PA13/PA14 or startup is abnormal.
 
 ## 🧠 Which part this is
 
@@ -64,6 +66,50 @@ Motto: **On a G071, R is 64 pins and B is 128 KB. There is no CAN. Do not hunt f
 
 F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS12232 Table 13 (port A) and Table 14 (port B)**. Do not copy AF numbers from an F407.
 
+## 🧭 BOOT0 shares SWCLK: determine the boot source first
+
+<p align="center">
+  <img src="../../assets/animations/g0-boot-swd.svg" width="860" alt="STM32G071 boot latch, nBOOT_SEL source selection, and Under Reset recovery workflow">
+  <br><sub>▲ Animation: boot configuration is latched on the fourth SYSCLK rising edge after reset; nBOOT_SEL selects the pin or option-bit path, while Under Reset stops the application from running first. Generated illustration, not an oscilloscope capture.</sub>
+</p>
+
+**PA14 is the shared boot input and debug clock, not the boot result itself.** ST's boot FAQ states that boot configuration is latched on the fourth SYSCLK rising edge after reset release. Normal SWCLK activity after that point cannot retroactively change the selected target. The risk is an external pull-up, jumper, or debug probe holding PA14 at an unintended level inside the sampling window.
+
+This is the G0x1 table from RM0444/AN5096. `X` means the value does not affect that row. Do not misread `nBOOT_SEL` as a “system bootloader enable”; it selects **the pin path or the option-bit path**.
+
+| BOOT_LOCK | nBOOT1 | BOOT0 pin (PA14) | nBOOT_SEL | nBOOT0 | Selected boot area |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | X | X | X | X | **Main Flash** |
+| 0 | X | 0 | 0 | X | Main Flash |
+| 0 | 1 | 1 | 0 | X | System memory |
+| 0 | 0 | 1 | 0 | X | Embedded SRAM |
+| 0 | X | X | 1 | 1 | Main Flash |
+| 0 | 1 | X | 1 | 0 | System memory |
+| 0 | 0 | X | 1 | 0 | Embedded SRAM |
+
+Keep three boundaries attached to this table:
+
+1. `BOOT_LOCK=1` forces Main Flash with priority; pulling PA14 cannot override it.
+2. `nBOOT_SEL=0` selects PA14; `=1` selects the `nBOOT0/nBOOT1` path. Factory defaults do not replace field readback because a bootloader, old project, or production step may have changed them.
+3. If Main Flash is selected while the empty-flash checker finds the user area empty, the device can enter the system bootloader instead. This additional DS12232/AN2606 path means “Main in the table” does not guarantee execution from 0x08000000 on an empty device.
+
+### Shared-pin hardware: stable sampling and debug drive must coexist
+
+- DS12232 Table 12 note 6: after reset, PA13 has its internal pull-up, PA14 its internal pull-down, and both enter the SWD alternate function. The internal pull-down does not cancel an arbitrary strong external pull-up.
+- When PA14 selects boot, check pull resistors, series resistance, and jumpers against AN5096 and the probe's drive capability. Do not clamp SWCLK with a strong pull-up. If a product does not need a field boot pin, `nBOOT_SEL=1, nBOOT0=1` selects Main Flash without depending on PA14 at boot.
+- The application can still break post-boot SWD by reassigning PA13/PA14 as GPIO, disabling debug, or entering low power. That is a different failure boundary from selecting the wrong boot area; diagnose them separately.
+
+### SWD loss: an Under Reset recovery loop
+
+1. **Preserve the scene:** record the observed boot target, whether the system bootloader is reachable, and recent changes to PA13/PA14, low power, or option bytes. Connect SWDIO, SWCLK, NRST, GND, and the target supply reference.
+2. **Stop the application first:** select **Under Reset** in STM32CubeProgrammer, or the probe's equivalent mode, and connect while NRST holds the device in reset. Do not replace a controlled reset with random rapid power cycling.
+3. **Read before writing:** read and save `BOOT_LOCK`, `nBOOT1`, `nBOOT_SEL`, `nBOOT0`, RDP, and related boot configuration. The first divergence is “boot-table inputs differ from intent,” not “the MCU must be defective.”
+4. **Write only a known target:** for normal Main Flash startup, use `BOOT_LOCK=0, nBOOT_SEL=1, nBOOT0=1`. If PA14 legacy selection is required, use `BOOT_LOCK=0, nBOOT_SEL=0`, then set `nBOOT1` and the external level from the truth table. Do not overwrite unrelated option bits in bulk.
+5. **Read back after reset:** perform the tool's option-byte launch or specified reset flow, read the option bytes again, then verify both Main Flash startup and SWD hot attach. A successful write response does not prove the new values were active for the current boot.
+
+> **RDP boundary:** never lower RDP blindly to “unlock” a board. Level 2 is irreversible, and Level 1 → Level 0 triggers a mass erase. Read the protection state and preserve required data first; mass erase is not a default repair button.
+
+
 ## 🛠️ Alternate functions that Table 12 / 13 / 14 actually name
 
 | Function | Pins | Source |
@@ -80,29 +126,38 @@ F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS1
 
 After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can remap PA9/PA10 onto the PA11/PA12 positions. Until that register changes, do not call PA11 "PA9".
 
-## ⚠️ Three ways an F1 port falls over
+## ⚠️ Common ways an F1 port falls over
 
 | What you see | Why | Fix |
 | --- | --- | --- |
-| The part boots into system memory and SWD looks wrong | PA14 is both SWCLK and BOOT0 | Read note 6's pull resistors before you change the alternate function |
+| The part boots into system memory and SWD looks wrong | PA14 is both SWCLK and BOOT0 | Read `BOOT_LOCK/nBOOT_SEL/nBOOT0/nBOOT1`; distinguish a boot-source error from an application reassigning debug pins before choosing recovery |
 | No CANH anywhere on the drawing | A G071 has no CAN | Use a G0 sub-family that has FDCAN, or use a USART |
 | A push-pull LED on PC13 is dim and the edges are soft | Note 1's current and speed limits | Move the LED to a normal GPIO |
+| Pulling PA14 high still does not enter the bootloader | `BOOT_LOCK=1`, or `nBOOT_SEL=1` excludes the pin from selection | Read every truth-table input first instead of repeatedly changing the level |
+| The old boot area remains after writing option bytes | The new values have not passed the required reset/load sequence, or only the write return value was checked | Run the specified option-byte launch/reset, then read back after reset and verify startup plus SWD |
 
 ## 🧪 Try it
 
 1. Print the drawing. Count with a pencil from pin 1 to PF2-NRST and check that it is pin 12.
 2. In datasheet Table 13, find the AF list for PA9 and circle USART1_TX.
 3. Answer: if a schematic ties an LED to PC13, why is this part a bad fit?
+4. Without writing anything, record `BOOT_LOCK/nBOOT1/nBOOT_SEL/nBOOT0` and the external PA14 level, then substitute every value into the truth table.
+5. On a recoverable board you own, rehearse an Under Reset connection. Prove option-byte readback first; only then decide whether to modify anything. Record values before/after reset, Main Flash startup, and SWD hot attach.
 
 Self-test:
 
 1. What is pin 1 of a G071RB called?
 2. Which debug wire shares a pin with BOOT0?
 3. Is the USB peripheral on this part called UCPD or USB Device FS?
+4. Which boot-selection paths do `nBOOT_SEL=0` and `=1` choose?
+5. Where does `BOOT_LOCK=0, nBOOT_SEL=1, nBOOT0=1` boot? With `nBOOT0=0`, where do `nBOOT1=1` and `=0` boot?
+6. Why does pulling PA14 high not necessarily enter System memory, and why can a successful option-byte write still leave the next boot unchanged?
+7. What are the first two recovery steps after an application breaks SWD through PA13/PA14, and why is lowering RDP not a default answer?
 
 ## 🔗 Further reading
 
-- DS12232 Rev 5: cover features, Table 1, Table 2, Tables 11–14, ordering information in chapter 7, Figure 9.
-- Reference manual RM0444 (the RTC domain note for PC13–PC15; Table 12 note 2 points at it).
+- DS12232 Rev 5: cover features, Table 1, Table 2, Tables 11–14, ordering information in chapter 7, Figure 9, PA14 reset pull-down, and the empty-flash boundary.
+- RM0444 section 2.5 and AN5096 Table 3: the boot truth table; AN2606: system bootloader activation patterns and additional empty-flash boundaries.
+- ST's official *FAQ STM32 boot process*: fourth-SYSCLK-edge boot latch, option-byte loading, and RDP boundaries. It supplements rather than replaces RM0444.
 - Comparison drawing: [BluePill LQFP48](../../assets/boards/pinout-bluepill.svg).
 - The cover names the low-power modes. We do not quote a current, because the cover does not give a typical microamp value for the G071. Guessing one would be worse.

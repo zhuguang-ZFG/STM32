@@ -43,7 +43,7 @@
 | 20 | [学习资源与工具链](20-学习资源与工具链.md) | 官方手册命名规则、社区、开源固件库 |
 | 21 | [原理图与实物图鉴](21-原理图与实物图鉴.md) | 5 块板卡结构图 + 如何看懂最小系统原理图 |
 | 22 | [仿真实验 Wokwi 与 Renode](22-仿真实验Wokwi与Renode.md) | 浏览器接线、命令行加载 ELF、DMA 模型的边界 |
-| 23 | [STM32G0 引脚](23-STM32G0引脚.md) | G071RB LQFP64、BOOT0 与 SWCLK 共用、没有 bxCAN |
+| 23 | [STM32G0 引脚](23-STM32G0引脚.md) | G071RB 引脚、BOOT0/SWCLK 真值表、选项字节与 Under Reset 恢复图解 |
 | 24 | [STM32L4 引脚](24-STM32L4引脚.md) | L476RG 引脚、Nucleo-64 实拍、Stop 2 IRQ 留证据与 JP6 功耗测量 |
 | 25 | [STM32H7 引脚](25-STM32H7引脚.md) | H743ZI 引脚/供电、Rev Y/W 与 V、400/480 MHz 时钟链及 MCO 验证 |
 | 26 | [STM32F10x 标准外设库 SPL](26-STM32F10x标准外设库SPL.md) | V3.5.0 工程骨架、关键 API、HAL/寄存器映射与迁移边界 |

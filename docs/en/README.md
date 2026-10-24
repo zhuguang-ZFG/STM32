@@ -167,7 +167,7 @@ Each chapter ends with a lab and a self-test. The longer version is [chapter 0](
 | 20 | [Resources](20-resources.md) | how ST names manuals · community · firmware libs |
 | 21 | [Board maps](21-board-maps.md) | five boards and how to read a minimum system |
 | 22 | [Wokwi and Renode](22-simulation-wokwi-renode.md) | browser wiring · load an ELF · where DMA stops |
-| 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB LQFP64 · PA14 is also BOOT0 · no bxCAN |
+| 23 | [STM32G0 pins](23-stm32g0-pins.md) | G071RB · BOOT0/SWCLK truth table · option bytes · Under Reset recovery |
 | 24 | [STM32L4 pins](24-stm32l4-pins.md) | L476RG · VDDUSB · cover typicals for low power |
 | 25 | [STM32H7 pins](25-stm32h7-pins.md) | H743ZI pins/supply · Rev Y/W vs V · 400/480 MHz clocks · MCO verification |
 | 26 | [STM32F10x SPL](26-spl.md) | V3.5.0 project skeleton · API boundaries · HAL migration |

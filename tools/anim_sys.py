@@ -705,8 +705,83 @@ def rtos_system_layers() -> Svg:
     return s
 
 
+
+# --------------------------------------------------------------------------- G0 启动与 SWD 共脚
+
+
+def g0_boot_swd() -> Svg:
+    s = Svg(W, H, "G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定",
+            "先分清锁存时刻与选择来源，再用 Under Reset 恢复调试；不要靠反复断电猜")
+    s.header(tag="23 G0 Boot / SWD", tag_color=T.CYAN)
+
+    stages = [
+        ("① 复位释放", "选项字节已加载", T.GREEN),
+        ("② 第 4 个 SYSCLK 沿", "锁存启动配置", T.AMBER),
+        ("③ nBOOT_SEL", "0=PA14 · 1=nBOOT0", T.VIOLET),
+        ("④ 启动目标", "Main / System / SRAM", T.CYAN),
+    ]
+    x0, y, bw, gap = 35, 104, 190, 20
+    for i, (title, note, color) in enumerate(stages):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 88, fill=T.PANEL, stroke=color, rx=12, cls=f"g0s{i}")
+        s.rect(x, y, bw, 5, fill=color, rx=3)
+        s.text(x + bw / 2, y + 36, title, size=13, anchor="middle",
+               fill=T.TEXT, weight="700")
+        s.text(x + bw / 2, y + 63, note, size=10, anchor="middle", fill=T.MUTED)
+        if i < len(stages) - 1:
+            s.arrow(x + bw + 3, y + 44, x + bw + gap - 3, y + 44,
+                    color=T.CYAN, sw=2.2, head=6, cls="g0-flow")
+    s.add_style(_seq_flash("g0s", 4, period=5.2, window=0.9, peak=1.0, rest=0.5))
+    s.add_style(anim_flow(".g0-flow", dur="1.2s", dash="5 8", shift=-13))
+
+    s.rect(40, 222, 400, 158, fill=T.PANEL, stroke=T.AMBER, rx=12)
+    s.text(60, 250, "PA14-BOOT0 = SWCLK", size=16, mono=True,
+           fill=T.AMBER, weight="700")
+    notes = [
+        ("采样窗口", "外部上拉/调试器不得干扰锁存", T.RED),
+        ("启动以后", "SWCLK 翻转不会反改启动目标", T.GREEN),
+        ("复位默认", "PA14 内部下拉 · PA13 内部上拉", T.CYAN),
+    ]
+    for i, (label, note, color) in enumerate(notes):
+        yy = 278 + i * 31
+        s.text(60, yy, label, size=10.5, fill=color, weight="700")
+        s.text(142, yy, note, size=10.5, fill=T.MUTED)
+
+    s.rect(460, 222, 400, 158, fill=T.BG2, stroke=T.VIOLET, rx=12)
+    s.text(480, 250, "两种启动来源，不要混读", size=14,
+           fill=T.TEXT, weight="700")
+    s.text(480, 281, "nBOOT_SEL=0", size=11, mono=True, fill=T.VIOLET,
+           weight="700")
+    s.text(610, 281, "PA14 参与选择", size=11, fill=T.MUTED)
+    s.text(480, 313, "nBOOT_SEL=1", size=11, mono=True, fill=T.VIOLET,
+           weight="700")
+    s.text(610, 313, "改看 nBOOT0 / nBOOT1", size=11, fill=T.MUTED)
+    s.text(480, 350, "BOOT_LOCK=1：强制 Main Flash", size=11.5,
+           fill=T.RED, weight="700")
+
+    s.rect(40, 404, 820, 128, fill=T.PANEL, stroke=T.CYAN, rx=12)
+    recovery = [
+        ("1  Under Reset", "NRST 阻止应用运行"),
+        ("2  读取证据", "BOOT_LOCK / nBOOT* / RDP"),
+        ("3  写已知配置", "只改启动相关位"),
+        ("4  复位并读回", "确认 Main Flash 与 SWD"),
+    ]
+    for i, (title, note) in enumerate(recovery):
+        x = 60 + i * 200
+        s.text(x, 442, title, size=12, fill=T.CYAN, weight="700")
+        s.text(x, 470, note, size=10, fill=T.MUTED)
+        if i < 3:
+            s.arrow(x + 164, 456, x + 184, 456, color=T.CYAN,
+                    sw=1.8, head=5, cls="g0-flow")
+    s.text(60, 510, "恢复目标：让启动源可解释、可复现，而不是碰巧进入一次 Bootloader",
+           size=11, fill=T.TEXT, weight="700")
+
+    s.footer("不要为恢复盲目降低 RDP：Level 2 不可逆；Level 1 → 0 会触发整片擦除")
+    return s
+
 ALL = [timer_pwm, timer_modes, adc_sar, dma_circular, iwdg_window, flash_iap,
-       freertos_scheduler, lowpower_wakeup, l4_stop2_evidence, rtos_system_layers]
+       freertos_scheduler, lowpower_wakeup, l4_stop2_evidence, rtos_system_layers,
+       g0_boot_swd]
 
 NAMES = {
     "timer_pwm": "timer-pwm",
@@ -719,4 +794,5 @@ NAMES = {
     "lowpower_wakeup": "lowpower-wakeup",
     "l4_stop2_evidence": "l4-stop2-evidence",
     "rtos_system_layers": "rtos-system-layers",
+    "g0_boot_swd": "g0-boot-swd",
 }

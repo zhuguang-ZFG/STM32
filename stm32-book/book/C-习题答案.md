@@ -145,6 +145,10 @@
 1. G071RB LQFP64 的第 1 脚是 PC11。
 2. 该具体料号没有 bxCAN；不能从 F1 的 CAN 工程直接推断。
 3. 其 USB-C 相关能力是 UCPD，不是 F103 那种 USB Device FS 控制器。
+4. `nBOOT_SEL=0` 选择 PA14 引脚路径；`=1` 选择 `nBOOT0/nBOOT1` 选项位路径。它不是 System memory 开关。
+5. 该配置启动到 Main Flash。`nBOOT_SEL=1, nBOOT0=0` 时，`nBOOT1=1` 选 System memory，`nBOOT1=0` 选 Embedded SRAM；前提均为 `BOOT_LOCK=0`。
+6. `BOOT_LOCK=1` 会强制 Main Flash，`nBOOT_SEL=1` 会排除 PA14；空 Flash 检查也能改变实际去向。选项字节还需规定的复位/加载流程并读回，写入返回值本身不证明已生效。
+7. 先保留现场并接好 SWD/NRST/供电参考，再用 Under Reset 阻止应用运行并读取选项字节。RDP Level 2 不可逆，Level 1 → 0 会整片擦除，不能把降级当默认恢复。
 
 ## 24 STM32L4 引脚
 

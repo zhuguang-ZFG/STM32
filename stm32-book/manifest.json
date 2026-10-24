@@ -232,10 +232,10 @@
       "sources": ["wokwi-bluepill", "renode-stm32"]
     },
     "23-STM32G0引脚.md": {
-      "question": "从 F1 迁到 G071RB 时，封装脚序、BOOT/SWCLK 共脚和外设集合有哪些不能照抄？",
-      "deliverable": "一张 G071RB LQFP64 关键脚表，并为启动、调试与外设复用逐项核对数据手册。",
-      "boundary": "本章只对指定封装和修订版负责；同系列不同料号、封装和芯片修订必须重新核对。",
-      "sources": ["ds12232", "rm0444"]
+      "question": "从 F1 迁到 G071RB 时，封装脚序、BOOT/SWCLK 共脚、选项字节和外设集合有哪些不能照抄？",
+      "deliverable": "一张 G071RB LQFP64 关键脚表、一幅启动锁存与恢复图解、一张完整启动真值表，以及一条 Under Reset 读回验证闭环。",
+      "boundary": "本章只对 G071RB 指定封装和所引手册修订负责；空 Flash 检查、RDP、Bootloader pattern 与生产选项字节必须另行核对。恢复操作先读后写，不默认降低 RDP 或整片擦除。",
+      "sources": ["ds12232", "rm0444", "an5096", "an2606", "st-boot-faq"]
     },
     "24-STM32L4引脚.md": {
       "question": "L476RG 的引脚、电源域和低功耗模式怎样影响 Stop 2 进入、唤醒恢复与真实平均电流？",
@@ -423,20 +423,47 @@
     "ds12232": {
       "title": "DS12232 Rev 5 — STM32G071x8/xB Datasheet",
       "authority": "ST 官方数据手册",
-      "url": "https://www.st.com/resource/en/",
+      "url": "https://www.st.com/resource/en/datasheet/stm32g071c8.pdf",
       "snapshot": "DS12232 Rev 5",
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "G071RB 封装、引脚、外设与电气边界。"
+      "scope": "G071RB 封装、引脚、PA14 复位上下拉、空 Flash 检查、外设与电气边界。"
     },
     "rm0444": {
       "title": "RM0444 — STM32G0x1 Reference Manual",
       "authority": "ST 官方参考手册",
-      "url": "https://www.st.com/resource/en/",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0444-stm32g0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
       "snapshot": "文档号 RM0444；使用时核对当前修订版",
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "G0 外设、启动和 RTC 域限制。"
+      "scope": "G0 外设、启动选择、选项字节和 RTC 域限制。"
+    },
+    "an5096": {
+      "title": "AN5096 — Getting started with STM32G0 MCUs hardware development",
+      "authority": "ST 官方应用笔记",
+      "url": "https://www.st.com/resource/en/application_note/an5096-getting-started-with-stm32g0-mcus-hardware-development-stmicroelectronics.pdf",
+      "snapshot": "2026-10-24 搜索索引核对 Table 3 启动真值表与第四个 SYSCLK 上升沿锁存",
+      "accessed": "2026-10-24",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "G0 BOOT_LOCK、nBOOT1、BOOT0、nBOOT_SEL、nBOOT0 启动组合与共脚硬件设计。"
+    },
+    "an2606": {
+      "title": "AN2606 — STM32 microcontroller system memory boot mode",
+      "authority": "ST 官方应用笔记",
+      "url": "https://www.st.com/resource/en/application_note/an2606-introduction-to-system-memory-boot-mode-on-stm32-mcus-stmicroelectronics.pdf",
+      "snapshot": "2026-10-24 从 ST 当前文档入口核对；按具体料号与 Bootloader 版本重查",
+      "accessed": "2026-10-24",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "G071 系统 Bootloader、激活 pattern、接口与空 Flash 等附加启动边界。"
+    },
+    "st-boot-faq": {
+      "title": "FAQ STM32 boot process",
+      "authority": "ST 官方知识文章（ST Technical Moderator）",
+      "url": "https://community.st.com/stm32-mcus-60/faq-stm32-boot-process-37",
+      "snapshot": "2021-04-28 发布；2026-10-24 读取 G071 启动表、第四个 SYSCLK 上升沿锁存与 RDP 说明",
+      "accessed": "2026-10-24",
+      "license": "ST Community 条款（本书仅链接与独立讲解）",
+      "scope": "G071 启动锁存与恢复方法；规范细节仍以 RM0444、DS12232 和 AN5096/AN2606 为准。"
     },
     "ds10198": {
       "title": "DS10198 Rev 11 — STM32L476xx Datasheet",
