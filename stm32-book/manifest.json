@@ -146,7 +146,7 @@
       "question": "开漏电气、上拉时间和 START/ACK/重复起始怎样共同决定一次 I2C 事务？",
       "deliverable": "一张接线与地址表、一帧逻辑分析仪解码，以及一次总线被拉低后的恢复记录。",
       "boundary": "扫描到地址只证明有设备应答，不证明寄存器协议、供电和数据语义正确。SSD1306 的 7 位地址 0x3C 在 HAL 里是 0x78；短总线用 4.7 kΩ，不要靠约 30–50 kΩ 的片内上拉跑 400 kHz。",
-      "sources": ["rm0008"]
+      "sources": ["rm0008", "ds5319-i2c", "rm0008-i2c", "project-examples"]
     },
     "08-SPI总线.md": {
       "question": "CPOL、CPHA、片选和全双工移位怎样决定每一位在何时被推出与采样？",
@@ -961,6 +961,24 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 01 章的两字和 IRQ 入口。向量表第 0 项是 MSP 初值，第 1 项是 Reset。外设中断入口是 VTOR + 4×(IRQn + 16)。不改 pm0056 和 pm0056-nvic。不把 167 ns 写进这一章。"
+    },
+    "ds5319-i2c": {
+      "title": "DS5319 Rev 20 的 I2C1 脚、CCR 与上升时间",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Tables 5, 41, and 42. Pin 42 PB6 default alternate function includes I2C1_SCL. Pin 43 PB7 default alternate function includes I2C1_SDA. The remap column's USART1 is not the reset default. Pins 45 PB8 and 46 PB9 are the I2C1 remap. At fPCLK1 = 36 MHz, VDD_I2C = 3.3 V, Rp = 4.7 kΩ, Table 42 prints 400 kHz as I2C_CCR = 0x801E and 100 kHz as I2C_CCR = 0x00B4. Table 41: standard-mode rise-time limit 1000 ns, fast-mode 300 ns. Reaching the 400 kHz ceiling wants fPCLK1 to be an integer multiple of 10 MHz. Table 42 note 2: achieved-rate tolerance is ±5% near 200 kHz and ±2% otherwise. 1 MHz is not in these tables.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 07 章。第 42 脚 PB6 默认含 I2C1_SCL，第 43 脚 PB7 默认含 I2C1_SDA。表 42 在 36 MHz、3.3 V、4.7 kΩ 下把 400 kHz 印成 0x801E，100 kHz 印成 0x00B4。标准模式上升时间上限 1000 ns，快速模式 300 ns。1 MHz 在这颗料上作废。不吸收屏厂手册。"
+    },
+    "rm0008-i2c": {
+      "title": "RM0008 Rev 21 I2C 地址字节与 ACK",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 26. A 7-bit address plus one R/W bit. SDA low on the 9th clock is ACK. SDA staying high is NACK. I2C1 is on APB1. In fast mode with DUTY = 0, SCL is high for one CCR and low for two CCR counts. The low 12 bits of 0x801E are 30. If chapter 26 prints a different CCR bit layout, use the printed bits; the 400 kHz row remains Table 42's 0x801E. This snapshot does not include an I2C base address.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 07 章。7 位地址加 1 位 R/W。线上写地址 0x78，读地址 0x79。第 9 个时钟 SDA 拉低是 ACK，保持高是 NACK。0x3C 原样送出变成 7 位地址 0x1E。不编 I2C 基址。"
     }
   }
 }

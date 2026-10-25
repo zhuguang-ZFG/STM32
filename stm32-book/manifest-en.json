@@ -184,9 +184,7 @@
       "question": "How do open-drain electricals, pull-up time, and START/ACK/repeated start together decide one I2C transaction?",
       "deliverable": "A wiring and address table, one logic-analyzer decode, and a recovery record after the bus is held low.",
       "boundary": "Seeing an address only proves a device ACKed. It does not prove the register protocol, the supply, or the data meaning. The SSD1306 7-bit address 0x3C is 0x78 in HAL. A short bus wants 4.7 kΩ; the on-chip pull-up, about 30–50 kΩ, will not carry 400 kHz.",
-      "sources": [
-        "rm0008"
-      ]
+      "sources": ["rm0008", "ds5319-i2c", "rm0008-i2c", "project-examples"]
     },
     "08-spi.md": {
       "question": "How do CPOL, CPHA, chip select, and full-duplex shifting decide when each bit is driven and sampled?",
@@ -1116,6 +1114,24 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 01's two words and the IRQ entry. Vector-table item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4×(IRQn + 16). Does not change pm0056 or pm0056-nvic. Does not put 167 ns in this chapter."
+    },
+    "ds5319-i2c": {
+      "title": "DS5319 Rev 20 I2C1 pins, CCR, and rise time",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Tables 5, 41, and 42. Pin 42 PB6 default alternate function includes I2C1_SCL. Pin 43 PB7 default alternate function includes I2C1_SDA. The remap column's USART1 is not the reset default. Pins 45 PB8 and 46 PB9 are the I2C1 remap. At fPCLK1 = 36 MHz, VDD_I2C = 3.3 V, Rp = 4.7 kΩ, Table 42 prints 400 kHz as I2C_CCR = 0x801E and 100 kHz as I2C_CCR = 0x00B4. Table 41: standard-mode rise-time limit 1000 ns, fast-mode 300 ns. Reaching the 400 kHz ceiling wants fPCLK1 to be an integer multiple of 10 MHz. Table 42 note 2: achieved-rate tolerance is ±5% near 200 kHz and ±2% otherwise. 1 MHz is not in these tables.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 07. Pin 42 PB6 default alternate function includes I2C1_SCL and pin 43 PB7 includes I2C1_SDA. Table 42 at 36 MHz, 3.3 V, and 4.7 kΩ prints 400 kHz as 0x801E and 100 kHz as 0x00B4. The standard-mode rise-time limit is 1000 ns and the fast-mode limit is 300 ns. 1 MHz is void on this part. Does not absorb a display-vendor manual."
+    },
+    "rm0008-i2c": {
+      "title": "RM0008 Rev 21 I2C address byte and ACK",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 26. A 7-bit address plus one R/W bit. SDA low on the 9th clock is ACK. SDA staying high is NACK. I2C1 is on APB1. In fast mode with DUTY = 0, SCL is high for one CCR and low for two CCR counts. The low 12 bits of 0x801E are 30. If chapter 26 prints a different CCR bit layout, use the printed bits; the 400 kHz row remains Table 42's 0x801E. This snapshot does not include an I2C base address.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 07. A 7-bit address plus one R/W bit. The write byte on the wire is 0x78 and the read byte is 0x79. SDA low on the 9th clock is ACK and SDA high is NACK. Sending 0x3C unchanged addresses 0x1E. Does not invent an I2C base address."
     }
   }
 }

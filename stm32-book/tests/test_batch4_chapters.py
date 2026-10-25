@@ -372,5 +372,100 @@ class Batch4SwdChapterTests(unittest.TestCase):
             self.assertEqual(obj, en_manifest["sources"][source_id])
 
 
+class Batch4I2cChapterTests(unittest.TestCase):
+    def test_i2c_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "07-I2C总线.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "07-i2c.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core ideas", en)
+        for text in (zh, en):
+            for token in (
+                "0x3C",
+                "0x78",
+                "0x79",
+                "0x801E",
+                "30",
+                "0x00B4",
+                "180",
+                "400",
+                "4.7",
+                "36",
+                "PB6",
+                "PB7",
+                "1000",
+                "300",
+                "#source-ds5319-i2c",
+                "#source-rm0008-i2c",
+                "#source-project-examples",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("第 42 脚", zh)
+        self.assertIn("第 43 脚", zh)
+        self.assertIn("pin 42", en)
+        self.assertIn("pin 43", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            self.assertNotIn("300ns / Cb", blocks)
+            self.assertNotIn("300 ns / Cb", blocks)
+            self.assertIn("1 MHz", blocks)
+        self.assertIn("作废", zh_blocks)
+        self.assertIn("void", en_blocks.lower())
+        self.assertNotIn("可达 400kHz/1MHz", zh_blocks)
+        self.assertNotIn("Up to 400 kHz / 1 MHz", en_blocks)
+        self.assertIn("../assets/diagrams/sample-07-i2c-addr.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-07-i2c-addr.svg", en)
+        self.assertIn("../assets/gif/i2c-addr.gif", zh)
+        self.assertIn("../../assets/gif/i2c-addr.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-07-i2c-addr.svg"), zh_key.index("i2c-addr.gif"))
+        self.assertLess(en_key.index("sample-07-i2c-addr.svg"), en_key.index("i2c-addr.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertNotIn("schematic", en_key.lower())
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "ds5319-i2c": (
+                "第 07 章。第 42 脚 PB6 默认含 I2C1_SCL，第 43 脚 PB7 默认含 I2C1_SDA。表 42 在 36 MHz、3.3 V、4.7 kΩ 下把 400 kHz 印成 0x801E，100 kHz 印成 0x00B4。标准模式上升时间上限 1000 ns，快速模式 300 ns。1 MHz 在这颗料上作废。不吸收屏厂手册。",
+                "Chapter 07. Pin 42 PB6 default alternate function includes I2C1_SCL and pin 43 PB7 includes I2C1_SDA. Table 42 at 36 MHz, 3.3 V, and 4.7 kΩ prints 400 kHz as 0x801E and 100 kHz as 0x00B4. The standard-mode rise-time limit is 1000 ns and the fast-mode limit is 300 ns. 1 MHz is void on this part. Does not absorb a display-vendor manual.",
+            ),
+            "rm0008-i2c": (
+                "第 07 章。7 位地址加 1 位 R/W。线上写地址 0x78，读地址 0x79。第 9 个时钟 SDA 拉低是 ACK，保持高是 NACK。0x3C 原样送出变成 7 位地址 0x1E。不编 I2C 基址。",
+                "Chapter 07. A 7-bit address plus one R/W bit. The write byte on the wire is 0x78 and the read byte is 0x79. SDA low on the 9th clock is ACK and SDA high is NACK. Sending 0x3C unchanged addresses 0x1E. Does not invent an I2C base address.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "ds5319-i2c", "rm0008-i2c", "project-examples"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["07-I2C总线.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["07-i2c.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        self.assertEqual(
+            baseline_manifests()[0]["sources"]["project-examples"],
+            zh_manifest["sources"]["project-examples"],
+        )
+        self.assertEqual(
+            baseline_manifests()[1]["sources"]["project-examples"],
+            en_manifest["sources"]["project-examples"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
