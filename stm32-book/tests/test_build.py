@@ -1176,6 +1176,13 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("#c4552a", svg)
         self.assertIn("#8ecae6", svg)
         self.assertNotIn("#9fd7c4", svg)
+        self.assertIn('transform="translate(148 114)"', svg)
+        self.assertNotIn('transform="translate(118 100)"', svg)
+        self.assertIn('<text x="112" y="62"', svg)
+        self.assertNotIn('<text x="72" y="62"', svg)
+        self.assertNotIn("<style", svg)
+        self.assertIn('fill="#1b5c45"', svg)
+        self.assertIn('fill="#ffb020"', svg)
         self.assertIn("--spine: #c4552a", self.builder.CSS)
 
     def test_running_headers_follow_appendices_and_shorten_long_titles(self) -> None:
