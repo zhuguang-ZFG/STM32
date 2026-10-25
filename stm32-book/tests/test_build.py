@@ -1132,10 +1132,252 @@ class BookBuildContractTests(unittest.TestCase):
             ("#111", "#fff"),
             ("#075e84", "#fff"),
             ("#444", "#fff"),
+            ("#eef6f8", "#101820"),
+            ("#edf6f9", "#0a141c"),
+            ("#111", "#f6f6f6"),
+            ("#075e84", "#e5f3f8"),
         )
         for foreground, background in pairs:
             with self.subTest(foreground=foreground, background=background):
                 self.assertGreaterEqual(_contrast_ratio(foreground, background), 4.5)
+
+    def test_typography_e_css_contract(self) -> None:
+        css = self.builder.CSS
+        screen = css.split("@media", 1)[0]
+        dark = css.split("@media (prefers-color-scheme: dark)", 1)[1].split("@media", 1)[0]
+        printed = css.split("@media print", 1)[1]
+        narrow = css.split("@media (max-width: 720px)", 1)[1].split("@media", 1)[0]
+
+        def custom_value(block: str, name: str) -> str:
+            match = re.search(rf"{re.escape(name)}:\s*([^;]+);", block)
+            self.assertIsNotNone(match, name)
+            return match.group(1).strip()
+
+        for token in (
+            "--font-sans:",
+            "--font-mono:",
+            "--type-body: 1.0625rem",
+            "--type-h1: clamp(1.85rem, 4.2vw, 2.7rem)",
+            "--type-h2: 1.55rem",
+            "--type-h3: 1.35rem",
+            "--type-h4: 1.2rem",
+            "--type-kicker: 0.78rem",
+            "--type-small: 0.9375rem",
+            "--type-code: 0.92em",
+            "--leading-heading: 1.35",
+            "--leading-caption: 1.55",
+            "--leading-toc: 1.45",
+            "--leading-code: 1.65",
+        ):
+            self.assertIn(token, screen, token)
+
+        sans = custom_value(screen, "--font-sans")
+        self.assertTrue(
+            sans.startswith('"Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC"'),
+            sans,
+        )
+        for face in ('"Noto Sans SC"', '"Source Han Sans SC"', '"Segoe UI"'):
+            self.assertIn(face, sans)
+        mono = custom_value(screen, "--font-mono")
+        self.assertTrue(
+            mono.startswith('"Cascadia Mono", "SFMono-Regular", Consolas'),
+            mono,
+        )
+        for face in (
+            '"Noto Sans Mono CJK SC"',
+            '"Source Han Mono SC"',
+            '"Sarasa Mono SC"',
+            '"Liberation Mono"',
+            "ui-monospace",
+        ):
+            self.assertIn(face, mono)
+
+        self.assertIn("font-family: var(--font-sans)", self._css_rule(screen, ":root"))
+        self.assertNotIn("font-size", self._css_rule(screen, "html"))
+        self.assertIn("font-size: var(--type-body)", self._css_rule(screen, "body"))
+        self.assertIn("line-height: var(--leading-body)", self._css_rule(screen, "body"))
+        self.assertNotIn("--font-sans", dark)
+        self.assertNotIn("--type-body", dark)
+        self.assertIn("--code: #0a141c", dark)
+        self.assertIn("--code-ink: #edf6f9", dark)
+        self.assertIn("--code: #101820", screen)
+        self.assertIn("--code-ink: #eef6f8", screen)
+
+        code_rule = re.search(r"(?m)^code\s*\{([^}]*)\}", screen)
+        self.assertIsNotNone(code_rule)
+        self.assertIn("font-family: var(--font-mono)", code_rule.group(1))
+        self.assertIn("font-size: var(--type-code)", code_rule.group(1))
+        pre_code = self._css_rule(screen, "pre code")
+        self.assertNotIn("font-size", pre_code)
+        self.assertIn("color: inherit", pre_code)
+        self.assertIn("background: transparent", pre_code)
+        self.assertIn("padding: 0", pre_code)
+        self.assertIn("white-space: inherit", pre_code)
+        self.assertIn("user-select: text", pre_code)
+
+        inline = self._css_rule(screen, ":not(pre) > code")
+        self.assertIn("color-mix(in srgb, var(--accent) 18%, var(--paper))", inline)
+        self.assertIn("padding: .12em .35em", inline)
+        self.assertIn("border-radius: .3em", inline)
+        names = [part.split(":", 1)[0].strip() for part in inline.split(";") if part.strip()]
+        self.assertNotIn("border", names)
+        self.assertIn("border-radius", names)
+        self.assertIn("background: var(--accent-soft)", self._css_rule(screen, ".source-id code"))
+
+        pre = self._css_rule(screen, "pre")
+        self.assertIn("line-height: var(--leading-code)", pre)
+        self.assertIn("margin: var(--space-paragraph) 0 var(--space-figure)", pre)
+        self.assertIn("border-left: 3px solid var(--accent)", pre)
+        self.assertIn("border-radius: var(--radius)", pre)
+        self.assertIn("tab-size: 4", pre)
+        self.assertIn("user-select: text", pre)
+        self.assertNotIn("box-shadow", pre)
+
+        for selector in ("figcaption", "sub"):
+            block = self._css_rule(screen, selector)
+            self.assertIn("font-size: var(--type-small)", block, selector)
+            self.assertIn("line-height: var(--leading-caption)", block, selector)
+        self.assertIn("margin: 0 auto .55rem", self._css_rule(screen, "figure img"))
+        self.assertIn("font-size: var(--type-small)", self._css_rule(screen, "table"))
+        self.assertIn("font-size: var(--type-small)", self._css_rule(screen, ".source-card dl"))
+
+        self.assertIn("line-height: var(--leading-toc)", self._css_rule(screen, ".contents li"))
+        self.assertIn("margin: .28rem 0", self._css_rule(screen, ".contents li"))
+        self.assertIn("break-inside: avoid", self._css_rule(screen, ".contents li"))
+        goal = self._css_rule(screen, ".contents > section > p:not(.toc-closing)")
+        self.assertIn("color: var(--muted)", goal)
+        self.assertIn("font-size: var(--type-small)", goal)
+        self.assertIn("line-height: var(--leading-caption)", goal)
+        self.assertIn("max-width: var(--measure)", goal)
+        closing = self._css_rule(screen, ".toc-closing")
+        self.assertIn("border-top: 1px solid var(--line)", closing)
+        self.assertIn("margin: var(--space-bar) 0 0", closing)
+        self.assertIn("font-weight: 700", closing)
+        self.assertNotIn("font-size", closing)
+        contents_h2 = self._css_rule(screen, ".contents > section > h2")
+        self.assertIn("font-size: var(--type-h3)", contents_h2)
+        self.assertIn("line-height: var(--leading-heading)", contents_h2)
+        self.assertIn("position: sticky", contents_h2)
+        self.assertIn("background: var(--paper)", contents_h2)
+        self.assertIn("box-shadow: 0 1px 0 var(--line)", contents_h2)
+        self.assertIn("columns: 2", self._css_rule(screen, ".contents ol"))
+        self.assertIn("column-gap: 3rem", self._css_rule(screen, ".contents ol"))
+        self.assertIn("columns: 1", self._css_rule(narrow, ".contents ol"))
+
+        self.assertIn(
+            "h2, h3, h4 { line-height: var(--leading-heading); scroll-margin-top: 1.25rem; }",
+            screen,
+        )
+        self.assertIn(
+            "h2 { font-size: var(--type-h2); margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); }",
+            screen,
+        )
+        self.assertIn(
+            "h3 { font-size: var(--type-h3); margin: var(--space-figure) 0 calc(var(--space-bar) / 2); }",
+            screen,
+        )
+        self.assertIn(
+            "h4 { font-size: var(--type-h4); margin: var(--space-paragraph) 0 calc(var(--space-bar) / 2); }",
+            screen,
+        )
+        self.assertIn(
+            ".chapter > h2, .appendix > h2, .part-closing > h2 { margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); padding-left: var(--space-bar); border-left: 3px solid var(--accent); }",
+            screen,
+        )
+        self.assertIn(
+            ".chapter > header h1, .appendix > header h1, .part-closing > header h1, .back-matter > header h1 { font-size: var(--type-h1); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }",
+            screen,
+        )
+        self.assertIn("font-size: var(--type-h4)", self._css_rule(screen, ".quick-title"))
+        source_h2 = self._css_rule(screen, ".source-card h2")
+        self.assertIn("font-size: var(--type-h4)", source_h2)
+        self.assertIn("line-height: var(--leading-heading)", source_h2)
+        self.assertIn("margin: 0 0 .3rem", source_h2)
+        self.assertNotIn("padding-left", source_h2)
+        self.assertIn("margin-top: 0", self._css_rule(screen, ".imprint h1, .companion h2"))
+
+        for selector in (
+            ".compass-role",
+            ".callout-label",
+            ".source-card dt",
+            ".part-label",
+            ".cover .eyebrow",
+            ".closing-banner",
+            ".chapter-number",
+            ".compass-title",
+            ".source-id",
+            ".imprint .kicker",
+            ".index-letter",
+            ".revision-history .kicker, .subject-index .kicker",
+        ):
+            self.assertIn("font-size: var(--type-kicker)", self._css_rule(screen, selector), selector)
+        self.assertIn("letter-spacing: .04em", self._css_rule(screen, ".source-id"))
+        self.assertIn("letter-spacing: .04em", self._css_rule(screen, ".source-card dt"))
+
+        self.assertIn("clamp(2.15rem, 5.6vw, 3.7rem)", self._css_rule(screen, ".cover h1"))
+        self.assertIn("clamp(1.05rem, 2.4vw, 1.35rem)", self._css_rule(screen, ".cover .subtitle"))
+        self.assertIn("clamp(2rem, 5vw, 3.35rem)", self._css_rule(screen, ".part-divider h1"))
+        part_goal = self._css_rule(screen, ".part-goal")
+        self.assertIn("font-size: 1.12rem", part_goal)
+        self.assertIn("line-height: 1.6", part_goal)
+        self.assertIn("clamp(4.5rem, 14vw, 8.5rem)", self._css_rule(screen, ".part-index"))
+        self.assertIn("font-size: 3rem", self._css_rule(narrow, ".part-index"))
+        jump = self._css_rule(screen, ".toc-jump")
+        self.assertIn("font-size: .85rem", jump)
+        self.assertIn("box-shadow: 0 .45rem 1.2rem rgba(16, 24, 32, .18)", jump)
+        self.assertIn(".book { width: min(100% - 2rem, 980px); margin: 0 auto; }", screen)
+        self.assertIn(".book { width: min(100% - 1rem, 980px); }", narrow)
+
+        for retired in (
+            "font-size: .72rem",
+            "font-size: .74rem",
+            "font-size: .75rem",
+            "font-size: .78rem",
+            "font-size: .82rem",
+            "font-size: .88rem",
+            "font-size: .9rem",
+            "font-size: .91em",
+            "font-size: .92em",
+            "font-size: .94rem",
+            "font-size: 1.02rem",
+            "font-size: 1.05rem",
+            "font-size: 1.16rem",
+            "font-size: 1.42rem",
+            "margin: 2.35rem 0 .6rem",
+            "line-height: 1.35;",
+            "line-height: 1.45;",
+        ):
+            self.assertNotIn(retired, screen, retired)
+
+        self.assertNotIn("@font-face", css)
+        self.assertNotIn("url(", css)
+
+        print_root = self._css_rule(printed, ":root")
+        self.assertIn("--code: #f6f6f6", print_root)
+        self.assertIn("--code-ink: #111", print_root)
+        self.assertNotIn("--font-sans", printed)
+        self.assertNotIn("--type-body", printed)
+        self.assertIn("font-size: 9.5pt; line-height: 1.55", printed)
+        pre_print = self._css_rule(printed, "pre")
+        self.assertIn("line-height: 1.45", pre_print)
+        self.assertIn("white-space: pre-wrap", pre_print)
+        self.assertIn("overflow-wrap: anywhere", pre_print)
+        self.assertIn("break-inside: auto", pre_print)
+        self.assertIn("page-break-inside: auto", pre_print)
+        self.assertNotIn("avoid", pre_print)
+        caption = self._css_rule(printed, "figcaption")
+        self.assertIn("font-size: 9pt", caption)
+        self.assertIn("line-height: 1.4", caption)
+        self.assertIn("break-before: avoid-page", caption)
+        self.assertIn("page-break-before: avoid", caption)
+        self.assertIn("break-inside: avoid-page", caption)
+        self.assertIn("page-break-inside: avoid", caption)
+        printed_sub = self._css_rule(printed, "sub")
+        self.assertIn("font-size: 9pt", printed_sub)
+        self.assertIn("line-height: 1.4", printed_sub)
+        self.assertIn("position: static", self._css_rule(printed, ".contents > section > h2"))
+        self.assertIn("figure { background: transparent; }", printed)
+        self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
 
     def test_visual_polish_version_is_1_2_0(self) -> None:
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
