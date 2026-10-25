@@ -111,7 +111,8 @@
       "sources": [
         "project-guide",
         "rm0008",
-        "ds5319"
+        "ds5319",
+        "rm0008-boot"
       ]
     },
     "01-dev-environment.md": {
@@ -970,6 +971,15 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 03 principle, key figures, and source cards. Restates LQFP48 pin 10 PA0, pin 2 PC13, and note 5: 3 mA, 2 MHz, 30 pF. Does not copy note 5 and does not trace Figure 8."
+    },
+    "rm0008-boot": {
+      "title": "RM0008 Rev 21 boot configuration",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 3.4 Table 9",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 00 boot states and the failure path. Restates RM0008 Rev 21 section 3.4 Table 9. The connectivity-line address and the XL-density Bank2 row are void on STM32F103C8T6. Does not copy that section."
     }
   }
 }

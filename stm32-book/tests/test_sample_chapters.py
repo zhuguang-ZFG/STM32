@@ -116,5 +116,70 @@ class SampleGpioChapterTests(unittest.TestCase):
             self.assertEqual(obj, en_manifest["sources"][source_id])
 
 
+class SampleFoundationChapterTests(unittest.TestCase):
+    def test_foundation_chapters_have_four_blocks_and_the_same_addresses(self) -> None:
+        zh = (ROOT / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core ideas", en)
+        for text in (zh, en):
+            for token in ("STM32F103C8T6", "0x08000000", "0x00000000", "0x00000004", "0x1FFFF000", "0x1FFFB000", "0x08080000", "BOOT0", "BOOT1", "SYSCLK", "#source-rm0008-boot"):
+                self.assertIn(token, text)
+        self.assertIn("../assets/diagrams/sample-00-boot-state.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-00-boot-state.svg", en)
+        self.assertIn("自绘", zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0])
+        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0])
+        for start, end in (
+            ("## 原理与边界", "## 关键插图"),
+            ("## 关键插图", "## 时序或状态"),
+            ("## 时序或状态", "## 坑与出处卡"),
+            ("## 坑与出处卡", "## 📌 学习目标"),
+        ):
+            self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
+        for start, end in (
+            ("## Principle and boundary", "## Key figures"),
+            ("## Key figures", "## Timing or state"),
+            ("## Timing or state", "## Pitfalls and source cards"),
+            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+        ):
+            self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
+        listed = json.loads((ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        self.assertEqual(
+            ["project-guide", "rm0008", "ds5319", "rm0008-boot"],
+            zh_manifest["chapter_guides"]["00-如何学习STM32.md"]["sources"],
+        )
+        self.assertEqual(
+            ["project-guide", "rm0008", "ds5319", "rm0008-boot"],
+            en_manifest["chapter_guides"]["00-how-to-learn-stm32.md"]["sources"],
+        )
+        card_zh = zh_manifest["sources"]["rm0008-boot"]
+        card_en = en_manifest["sources"]["rm0008-boot"]
+        for key in ("url", "snapshot", "license"):
+            self.assertEqual(by_id["rm0008-boot"][key], card_zh[key])
+            self.assertEqual(card_zh[key], card_en[key])
+        self.assertEqual(card_zh["accessed"], card_en["accessed"])
+        self.assertEqual(
+            "第 00 章的启动状态与失败路径。只改写 RM0008 Rev 21 第 3.4 节表 9；互联型地址和 XL 密度 Bank2 在这颗 STM32F103C8T6 上作废。不复制该节原文。",
+            card_zh["scope"],
+        )
+        self.assertEqual(
+            "Chapter 00 boot states and the failure path. Restates RM0008 Rev 21 section 3.4 Table 9. The connectivity-line address and the XL-density Bank2 row are void on STM32F103C8T6. Does not copy that section.",
+            card_en["scope"],
+        )
+        baseline = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest.json"], cwd=ROOT, text=True))
+        baseline_en = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest-en.json"], cwd=ROOT, text=True))
+        self.assertEqual(set(zh_manifest["sources"]) - set(baseline["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
+        self.assertEqual(set(en_manifest["sources"]) - set(baseline_en["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
+
+
 if __name__ == "__main__":
     unittest.main()

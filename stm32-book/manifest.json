@@ -104,7 +104,7 @@
       "question": "零基础怎样建立一条不会被工具、术语和教程数量淹没的学习路径？",
       "deliverable": "一份个人学习路线、最低硬件清单，以及第一次点灯的期望值—实测值记录。",
       "boundary": "本章只定义入门顺序，不替代 C 语言、电路安全和目标芯片手册。",
-      "sources": ["project-guide", "rm0008", "ds5319"]
+      "sources": ["project-guide", "rm0008", "ds5319", "rm0008-boot"]
     },
     "01-开发环境搭建.md": {
       "question": "源码怎样经过编译、链接、烧录和复位，最终变成可单步观察的机器状态？",
@@ -813,6 +813,15 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 03 章原理与边界、关键插图、坑与出处卡。只改写 LQFP48 第 10 脚 PA0、第 2 脚 PC13，以及注 5 的 3 mA、2 MHz、30 pF。不复制注 5 原文，不描图 8。"
+    },
+    "rm0008-boot": {
+      "title": "RM0008 Rev 21 启动配置",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 3.4 Table 9",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 00 章的启动状态与失败路径。只改写 RM0008 Rev 21 第 3.4 节表 9；互联型地址和 XL 密度 Bank2 在这颗 STM32F103C8T6 上作废。不复制该节原文。"
     }
   }
 }
