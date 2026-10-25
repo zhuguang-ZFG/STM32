@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import unittest
 from pathlib import Path
@@ -12,6 +13,72 @@ ROOT = Path(__file__).resolve().parents[2]
 DIAGRAMS = ROOT / "assets" / "diagrams"
 BOOT = DIAGRAMS / "sample-00-boot-state.svg"
 GPIO = DIAGRAMS / "sample-03-gpio-led.svg"
+LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-chapter-lock.json"
+_BASELINE_MANIFESTS: dict[str, dict] | None = None
+
+
+def baseline_manifests() -> tuple[dict, dict]:
+    """Pre-sample manifests.
+
+    PR checkouts on Actions are shallow and do not have ``origin/main``.
+    The lock file records the commit the sample was cut from. Use that
+    object when it is already local; otherwise fetch that one commit.
+    """
+    global _BASELINE_MANIFESTS
+    if _BASELINE_MANIFESTS is not None:
+        return _BASELINE_MANIFESTS["zh"], _BASELINE_MANIFESTS["en"]
+    rev = json.loads(LOCK.read_text(encoding="utf-8"))["baseline"]
+    paths = ("stm32-book/manifest.json", "stm32-book/manifest-en.json")
+    blobs = [_git_show(rev, path) for path in paths]
+    if any(blob is None for blob in blobs):
+        _fetch_baseline(rev)
+        blobs = [_git_show(rev, path) for path in paths]
+        if any(blob is None for blob in blobs):
+            raise AssertionError(
+                f"pre-sample baseline {rev} is not in this checkout and could not be fetched"
+            )
+    _BASELINE_MANIFESTS = {
+        "zh": json.loads(blobs[0]),
+        "en": json.loads(blobs[1]),
+    }
+    return _BASELINE_MANIFESTS["zh"], _BASELINE_MANIFESTS["en"]
+
+
+def _fetch_baseline(rev: str) -> None:
+    """Bring the pinned pre-sample commit into a shallow checkout.
+
+    Actions does not advertise ``origin/main``. Fetch that commit directly,
+    then the base branch deeply enough that the same commit is still present
+    after this pull request lands on main.
+    """
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    base = os.environ.get("GITHUB_BASE_REF", "main")
+    commands = (
+        ["git", "-C", str(ROOT), "fetch", "--depth=1", "origin", rev],
+        [
+            "git", "-C", str(ROOT), "fetch", "--depth=50", "origin",
+            f"+refs/heads/{base}:refs/remotes/origin/{base}",
+        ],
+    )
+    errors: list[str] = []
+    for command in commands:
+        if _git_show(rev, "stm32-book/manifest.json") is not None:
+            return
+        got = subprocess.run(command, capture_output=True, text=True, env=env)
+        if got.returncode != 0:
+            errors.append((got.stderr or got.stdout or command[-1]).strip())
+    if _git_show(rev, "stm32-book/manifest.json") is None and errors:
+        raise AssertionError("; ".join(errors))
+
+
+def _git_show(rev: str, path: str) -> str | None:
+    got = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{rev}:{path}"],
+        capture_output=True,
+    )
+    if got.returncode != 0:
+        return None
+    return got.stdout.decode("utf-8")
 
 
 class SampleFigureTests(unittest.TestCase):
@@ -108,8 +175,7 @@ class SampleGpioChapterTests(unittest.TestCase):
             self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
             self.assertEqual(scope_zh, card_zh["scope"])
             self.assertEqual(scope_en, card_en["scope"])
-        baseline = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest.json"], cwd=ROOT, text=True))
-        baseline_en = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest-en.json"], cwd=ROOT, text=True))
+        baseline, baseline_en = baseline_manifests()
         for source_id, obj in baseline["sources"].items():
             self.assertEqual(obj, zh_manifest["sources"][source_id])
         for source_id, obj in baseline_en["sources"].items():
@@ -175,8 +241,7 @@ class SampleFoundationChapterTests(unittest.TestCase):
             "Chapter 00 boot states and the failure path. Restates RM0008 Rev 21 section 3.4 Table 9. The connectivity-line address and the XL-density Bank2 row are void on STM32F103C8T6. Does not copy that section.",
             card_en["scope"],
         )
-        baseline = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest.json"], cwd=ROOT, text=True))
-        baseline_en = json.loads(subprocess.check_output(["git", "show", "origin/main:stm32-book/manifest-en.json"], cwd=ROOT, text=True))
+        baseline, baseline_en = baseline_manifests()
         self.assertEqual(set(zh_manifest["sources"]) - set(baseline["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
         self.assertEqual(set(en_manifest["sources"]) - set(baseline_en["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
 
