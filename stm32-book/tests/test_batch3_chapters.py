@@ -338,5 +338,93 @@ class Batch3ClockChapterTests(unittest.TestCase):
         for source_id, obj in baseline_en["sources"].items():
             self.assertEqual(obj, en_manifest["sources"][source_id])
 
+class Batch3PwmChapterTests(unittest.TestCase):
+    def test_pwm_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "05-定时器与PWM.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "05-timer-pwm.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("16/32", zh)
+        self.assertNotIn("16/32", en)
+        self.assertNotIn("PWM_ARR / 2", zh)
+        self.assertNotIn("PWM_ARR / 2", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        self.assertNotIn("0x10", zh_blocks)
+        self.assertNotIn("0x10", en_blocks)
+        for text in (zh, en):
+            for token in (
+                "PSC = 71",
+                "ARR = 999",
+                "CCR = 500",
+                "1000 Hz",
+                "500 Hz",
+                "999999",
+                "7199",
+                "9999",
+                "PA6",
+                "MOE",
+                "0x44",
+                "0x0000",
+                "#source-rm0008-tim",
+                "#source-ds5319-tim",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("第 16 脚", zh)
+        self.assertIn("pin 16", en)
+        self.assertIn("../assets/diagrams/sample-05-pwm-1khz.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-05-pwm-1khz.svg", en)
+        self.assertIn("../assets/gif/pwm-1khz.gif", zh)
+        self.assertIn("../../assets/gif/pwm-1khz.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-05-pwm-1khz.svg"), zh_key.index("pwm-1khz.gif"))
+        self.assertLess(en_key.index("sample-05-pwm-1khz.svg"), en_key.index("pwm-1khz.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertIn("另一组高分辨率", zh)
+        self.assertIn("Not the Appendix D 1 kHz cell", en)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-tim": (
+                "第 05 章原理与边界、时序或状态、坑与出处卡。PSC = 71、ARR = 999、计数时钟 72 MHz 是 1000 Hz。同一组数用 36 MHz 得到 500 Hz。这颗料的 TIM2–TIM5 是 16 位，装不下 999999。能装下的 1 秒是 PSC = 7199、ARR = 9999。TIMx_BDTR 偏移 0x44，复位值 0x0000，位 15 是 MOE。不把 DeadTime 0x10 换成纳秒。不改附录 D 的 1 kHz 格子。",
+                "Chapter 05 principle, timing, and source cards. PSC = 71 and ARR = 999 at a 72 MHz counter clock is 1000 Hz. The same numbers divided by 36 MHz are 500 Hz. TIM2–TIM5 on this part are 16-bit and cannot hold 999999. The 1 second that fits is PSC = 7199 and ARR = 9999. TIMx_BDTR is at offset 0x44, resets to 0x0000, and bit 15 is MOE. Does not turn DeadTime 0x10 into a nanosecond. Does not change the Appendix D 1 kHz cell.",
+            ),
+            "ds5319-tim": (
+                "第 05 章关键插图和坑与出处卡。LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1。同一格也含 SPI1_MISO，这张图不把它画成同时有效。不把重映射到 PB4 或 PC6 画进正常路径。",
+                "Chapter 05 key figure and source cards. LQFP48 pin 16 is PA6, and the default alternate function includes TIM3_CH1. The same cell also includes SPI1_MISO, and this figure does not draw both as active. Does not draw a remap onto PB4 or PC6 on the normal path.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "rm0008-tim", "ds5319-tim"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["05-定时器与PWM.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["05-timer-pwm.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(card_zh["accessed"], card_en["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(by_id[source_id]["authority_zh"], card_zh["authority"])
+            self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        baseline, baseline_en = baseline_manifests()
+        for source_id, obj in baseline["sources"].items():
+            self.assertEqual(obj, zh_manifest["sources"][source_id])
+        for source_id, obj in baseline_en["sources"].items():
+            self.assertEqual(obj, en_manifest["sources"][source_id])
+
 if __name__ == "__main__":
     unittest.main()

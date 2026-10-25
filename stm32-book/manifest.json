@@ -134,7 +134,7 @@
       "question": "时钟、PSC、ARR 与 CCR 怎样变成可测的周期、频率和占空比？",
       "deliverable": "一笔从定时器输入时钟到目标波形的计算，以及一张仪器实测对照表。",
       "boundary": "公式只对选定计数模式和时钟路径成立；高级定时器还要核对 MOE、死区与互补输出。这颗 F103 上 APB1 为 36 MHz 时，TIM2–TIM7 的计数时钟仍是 72 MHz。PSC 为 71、ARR 为 999 时，72 MHz / (72 × 1000) = 1 kHz。同一组 PSC、ARR 用 36 MHz 去除会算出 500 Hz。16 位定时器装不下 ARR 999999。",
-      "sources": ["rm0008"]
+      "sources": ["rm0008", "rm0008-tim", "ds5319-tim"]
     },
     "06-串口UART.md": {
       "question": "UART 的位时序、错误标志、DMA 缓冲和帧边界怎样连成可靠的接收路径？",
@@ -877,6 +877,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 02 章关键插图。LQFP48 第 5 脚是 PD0-OSC_IN，第 6 脚是 PD1-OSC_OUT，第 29 脚 PA8 的复用含 MCO。不编负载电容的皮法。不改 ds5319-gpio。"
+    }
+,
+    "rm0008-tim": {
+      "title": "RM0008 Rev 21 通用定时器时基与 TIM1 的 MOE",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. General-purpose timer time base is chapter 15. AFIO_MAPR TIM3_REMAP=00 places CH1 on PA6. Advanced-timer TIMx_BDTR offset 0x44, bit 15 is MOE, reset value 0x0000.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 05 章原理与边界、时序或状态、坑与出处卡。PSC = 71、ARR = 999、计数时钟 72 MHz 是 1000 Hz。同一组数用 36 MHz 得到 500 Hz。这颗料的 TIM2–TIM5 是 16 位，装不下 999999。能装下的 1 秒是 PSC = 7199、ARR = 9999。TIMx_BDTR 偏移 0x44，复位值 0x0000，位 15 是 MOE。不把 DeadTime 0x10 换成纳秒。不改附录 D 的 1 kHz 格子。"
+    },
+    "ds5319-tim": {
+      "title": "DS5319 Rev 20 LQFP48 第 16 脚的 TIM3_CH1",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5. LQFP48 pin 16 is PA6. The default alternate function includes TIM3_CH1. The same cell also includes SPI1_MISO.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 05 章关键插图和坑与出处卡。LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1。同一格也含 SPI1_MISO，这张图不把它画成同时有效。不把重映射到 PB4 或 PC6 画进正常路径。"
     }
   }
 }

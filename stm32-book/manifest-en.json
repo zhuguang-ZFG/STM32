@@ -161,9 +161,7 @@
       "question": "How do the clock, PSC, ARR, and CCR become a measurable period, frequency, and duty cycle?",
       "deliverable": "A calculation from the timer input clock to the target waveform, and a table of instrument measurements beside it.",
       "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked. On this F103, when APB1 is 36 MHz, TIM2–TIM7 still count at 72 MHz. With PSC 71 and ARR 999, 72 MHz / (72 × 1000) = 1 kHz. The same PSC and ARR divided by 36 MHz produce 500 Hz. A 16-bit timer cannot hold ARR 999999.",
-      "sources": [
-        "rm0008"
-      ]
+      "sources": ["rm0008", "rm0008-tim", "ds5319-tim"]
     },
     "06-uart.md": {
       "question": "How do UART bit timing, error flags, the DMA buffer, and the frame boundary become a reliable receive path?",
@@ -1036,6 +1034,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 02 key figure. LQFP48 pin 5 is PD0-OSC_IN, pin 6 is PD1-OSC_OUT, and pin 29 PA8 includes MCO in its alternate function. Does not invent a load-capacitor value. Does not change ds5319-gpio."
+    }
+,
+    "rm0008-tim": {
+      "title": "RM0008 Rev 21 general-purpose time base and TIM1 MOE",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. General-purpose timer time base is chapter 15. AFIO_MAPR TIM3_REMAP=00 places CH1 on PA6. Advanced-timer TIMx_BDTR offset 0x44, bit 15 is MOE, reset value 0x0000.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 05 principle, timing, and source cards. PSC = 71 and ARR = 999 at a 72 MHz counter clock is 1000 Hz. The same numbers divided by 36 MHz are 500 Hz. TIM2–TIM5 on this part are 16-bit and cannot hold 999999. The 1 second that fits is PSC = 7199 and ARR = 9999. TIMx_BDTR is at offset 0x44, resets to 0x0000, and bit 15 is MOE. Does not turn DeadTime 0x10 into a nanosecond. Does not change the Appendix D 1 kHz cell."
+    },
+    "ds5319-tim": {
+      "title": "DS5319 Rev 20 LQFP48 pin 16 TIM3_CH1",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5. LQFP48 pin 16 is PA6. The default alternate function includes TIM3_CH1. The same cell also includes SPI1_MISO.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 05 key figure and source cards. LQFP48 pin 16 is PA6, and the default alternate function includes TIM3_CH1. The same cell also includes SPI1_MISO, and this figure does not draw both as active. Does not draw a remap onto PB4 or PC6 on the normal path."
     }
   }
 }
