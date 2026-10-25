@@ -14,12 +14,12 @@ def gpio_blink() -> Svg:
     s.header(tag="03 GPIO", tag_color=T.GREEN)
 
     # ---------------- 左：电路 ----------------
-    s.rect(40, 80, 470, 262, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 80, 470, 262, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 106, "外接 LED：高电平点亮（BluePill 板载灯是 PC13，低电平才亮）",
            size=12, fill=T.TEXT, weight="600")
 
     # MCU
-    s.rect(62, 130, 150, 150, fill=T.PANEL2, stroke=T.CYAN, rx=10)
+    s.rect(62, 130, 150, 150, fill=T.PANEL2, stroke=T.CYAN, rx=8)
     s.text(137, 160, "STM32", size=15, anchor="middle", fill=T.CYAN, weight="700")
     s.text(137, 182, "GPIOA", size=12, anchor="middle", fill=T.MUTED)
     s.text(137, 204, "PA5", size=16, anchor="middle", fill=T.TEXT, mono=True,
@@ -27,7 +27,7 @@ def gpio_blink() -> Svg:
     s.text(137, 226, "推挽 / 50 MHz", size=10.5, anchor="middle", fill=T.DIM)
     # 引脚
     s.text(232, 152, "PA5", size=12, mono=True, fill=T.TEXT, anchor="middle")
-    s.line(212, 170, 268, 170, stroke=T.AMBER, sw=2.6, cls="wire")
+    s.line(212, 170, 268, 170, stroke=T.AMBER, sw=2, cls="wire")
     s.circle(212, 170, 4, fill=T.AMBER)
 
     # 电阻
@@ -35,21 +35,21 @@ def gpio_blink() -> Svg:
     s.text(296, 176, "330Ω", size=11, anchor="middle", fill=T.AMBER, mono=True)
 
     # LED
-    s.line(324, 170, 352, 170, stroke=T.AMBER, sw=2.6)
+    s.line(324, 170, 352, 170, stroke=T.AMBER, sw=2)
     s.poly([(352, 158), (352, 182), (376, 170)], fill=T.RED, stroke=T.RED)
-    s.line(376, 156, 376, 184, stroke=T.RED, sw=3)
-    s.line(376, 170, 410, 170, stroke=T.AMBER, sw=2.6)
+    s.line(376, 156, 376, 184, stroke=T.RED, sw=2)
+    s.line(376, 170, 410, 170, stroke=T.AMBER, sw=2)
     s.led(392, 118, 13, color=T.RED, cls="led")
     s.text(392, 96, "LED 亮 / 灭", size=11, anchor="middle", fill=T.MUTED)
 
     # 电流箭头 + 流动动画
-    s.line(392, 140, 392, 166, stroke=T.RED, sw=1.6, dash="3 3")
+    s.line(392, 140, 392, 166, stroke=T.RED, sw=1.5, dash="3 3")
     for i, x in enumerate((230, 270, 320, 360)):
         s.circle(x, 170, 3.2, fill=T.RED, cls=f"dot{i}")
     # 地
-    s.line(410, 170, 410, 232, stroke=T.MUTED, sw=2.4)
-    s.line(392, 232, 428, 232, stroke=T.MUTED, sw=2.4)
-    s.line(398, 240, 422, 240, stroke=T.MUTED, sw=2.2)
+    s.line(410, 170, 410, 232, stroke=T.MUTED, sw=2)
+    s.line(392, 232, 428, 232, stroke=T.MUTED, sw=2)
+    s.line(398, 240, 422, 240, stroke=T.MUTED, sw=2)
     s.line(404, 248, 416, 248, stroke=T.MUTED, sw=2)
     s.text(436, 236, "GND", size=11, fill=T.MUTED)
 
@@ -70,19 +70,19 @@ def gpio_blink() -> Svg:
     )
 
     # ---------------- 右：波形 ----------------
-    s.rect(530, 80, 330, 262, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(530, 80, 330, 262, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(548, 106, "PA5 输出电平（1 Hz）", size=13, fill=T.TEXT, weight="600")
     s.axis(568, 130, 268, 130, ylabel="3.3V", xlabel="时间")
     s.text(568, 148, "1", size=10, fill=T.DIM)
     s.text(568, 250, "0", size=10, fill=T.DIM)
     s.waveform(568, 138, 268, 118, [1, 1, 1, 1, 0, 0, 0, 0], color=T.GREEN,
-               sw=2.6)
+               sw=2)
     for i in range(4):
         s.text(568 + 268 / 4 * i, 274, f"{i * 250}", size=10, fill=T.DIM,
                anchor="middle")
     s.text(702, 292, "ms（高 500 ms + 低 500 ms）", size=10.5, fill=T.DIM,
            anchor="middle")
-    s.line(568, 130, 568, 262, stroke=T.RED, sw=1.4, cls="cursor")
+    s.line(568, 130, 568, 262, stroke=T.RED, sw=1.5, cls="cursor")
     s.add_style(
         "@keyframes cur-run{0%{transform:translateX(0)}"
         "100%{transform:translateX(268px)}}"
@@ -93,7 +93,7 @@ def gpio_blink() -> Svg:
 
     # ---------------- 下：代码 ----------------
     s.title_block(40, 372, "三种写法（效果相同，抽象层次不同）", color=T.CYAN)
-    s.rect(40, 384, 400, 122, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 384, 400, 122, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 408, [
         "// 1) HAL 库",
         "HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);",
@@ -103,7 +103,7 @@ def gpio_blink() -> Svg:
         "GPIOA->BSRR = GPIO_PIN_5;      // 置 1",
         "GPIOA->BSRR = GPIO_PIN_5 << 16; // 清 0",
     ], size=11.5, lh=17)
-    s.rect(460, 384, 400, 122, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(460, 384, 400, 122, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(476, 408, [
         "// 3) CubeMX 生成的初始化",
         "GPIO_InitTypeDef i = {0};",
@@ -125,38 +125,38 @@ def gpio_input_interrupt() -> Svg:
     s.text(40, 96, "按键按下事件（t = 0）", size=12.5, fill=T.MUTED)
 
     # --- 方案 A：轮询 ---
-    s.rect(40, 108, 820, 130, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 108, 820, 130, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 134, "① 轮询（Polling）", size=14, fill=T.AMBER, weight="700")
     s.text(240, 134, "while (1) { if (HAL_GPIO_ReadPin(...) == 0) ... }",
            size=11.5, mono=True, fill=T.MUTED)
     y = 176
     s.rect(58, y - 14, 784, 40, fill=T.BG2, stroke=T.GRID, rx=8)
     for i in range(14):
-        s.rect(62 + i * 56, y - 10, 52, 32, fill=T.PANEL2, stroke=T.STROKE, rx=5)
+        s.rect(62 + i * 56, y - 10, 52, 32, fill=T.PANEL2, stroke=T.STROKE, rx=4)
         s.text(88 + i * 56, y + 10, "读", size=11, anchor="middle", fill=T.MUTED)
-    s.rect(62 + 6 * 56, y - 10, 52, 32, fill=T.AMBER, rx=5, opacity=0.85,
+    s.rect(62 + 6 * 56, y - 10, 52, 32, fill=T.AMBER, rx=4, opacity=0.85,
            cls="hit")
-    s.text(88 + 6 * 56, y + 10, "命中", size=11, anchor="middle", fill="#0b1220",
+    s.text(88 + 6 * 56, y + 10, "命中", size=11, anchor="middle", fill="#fbfaf7",
            weight="700")
     s.text(58, 226, "缺点：CPU 全程被占用（99% 时间在空转）；按键抖动会被读成多次按下",
            size=11.5, fill=T.RED)
     s.add_style(anim_fade(".hit", dur="2s", a=0.35, b=1.0))
 
     # --- 方案 B：中断 ---
-    s.rect(40, 252, 820, 130, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 252, 820, 130, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 278, "② 外部中断（EXTI + NVIC）", size=14, fill=T.GREEN,
            weight="700")
     s.text(300, 278, "按下瞬间硬件自动打断主程序，执行 ISR", size=11.5,
            fill=T.MUTED)
     y2 = 320
     s.rect(58, y2 - 14, 784, 40, fill=T.BG2, stroke=T.GRID, rx=8)
-    s.rect(62, y2 - 10, 300, 32, fill=T.PANEL2, stroke=T.STROKE, rx=5)
+    s.rect(62, y2 - 10, 300, 32, fill=T.PANEL2, stroke=T.STROKE, rx=4)
     s.text(212, y2 + 10, "主程序继续干别的事（低功耗、算数据…）", size=11,
            anchor="middle", fill=T.MUTED)
-    s.rect(366, y2 - 10, 56, 32, fill=T.GREEN, rx=5, cls="isr")
-    s.text(394, y2 + 10, "ISR", size=11, anchor="middle", fill="#0b1220",
+    s.rect(366, y2 - 10, 56, 32, fill=T.GREEN, rx=4, cls="isr")
+    s.text(394, y2 + 10, "ISR", size=11, anchor="middle", fill="#fbfaf7",
            weight="700")
-    s.rect(426, y2 - 10, 416, 32, fill=T.PANEL2, stroke=T.STROKE, rx=5)
+    s.rect(426, y2 - 10, 416, 32, fill=T.PANEL2, stroke=T.STROKE, rx=4)
     s.text(634, y2 + 10, "恢复现场，继续原来的循环", size=11, anchor="middle",
            fill=T.MUTED)
     s.text(58, 370, "优点：响应延迟只有十几个时钟周期；CPU 可进 Sleep 模式省电",
@@ -199,18 +199,18 @@ def nvic_interrupt_flow() -> Svg:
         r, c = divmod(i, 3)
         x = x0 + c * (bw + 82)
         y = y0 + r * (bh + 56)
-        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=10)
+        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=8)
         s.text(x + 14, y + 28, label, size=14, fill=T.TEXT, weight="700")
         s.text(x + 14, y + 52, sub, size=10.5, fill=T.MUTED)
         if c < 2:
             s.arrow(x + bw + 4, y + bh / 2, x + bw + 78, y + bh / 2,
-                    color=T.CYAN, sw=2.2, head=7, cls=f"fl{i}")
+                    color=T.CYAN, sw=2, head=7, cls=f"fl{i}")
         if c == 2 and r == 0:
             s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + 40,
-                    color=T.CYAN, sw=2.2, head=7)
+                    color=T.CYAN, sw=2, head=7)
         if r == 1 and c < 2:
             s.arrow(x + bw + 4, y + bh / 2, x + bw + 78, y + bh / 2,
-                    color=T.CYAN, sw=2.2, head=7)
+                    color=T.CYAN, sw=2, head=7)
     s.add_style(anim_flow(".fl0", dur="1.2s", dash="7 10", shift=-17))
     s.add_style(anim_flow(".fl1", dur="1.2s", dash="7 10", shift=-17, ))
     s.add_style(anim_flow(".fl3", dur="1.2s", dash="7 10", shift=-17))
@@ -221,7 +221,7 @@ def nvic_interrupt_flow() -> Svg:
     regs = ["R0", "R1", "R2", "R3", "R12", "LR", "PC", "xPSR"]
     for i, r in enumerate(regs):
         x = 40 + i * 62
-        s.rect(x, 360, 56, 40, fill=T.PANEL2, stroke=T.VIOLET, rx=6)
+        s.rect(x, 360, 56, 40, fill=T.PANEL2, stroke=T.VIOLET, rx=4)
         s.text(x + 28, 385, r, size=12, anchor="middle", fill=T.TEXT, mono=True)
     s.text(548, 385, "高地址 →  硬件自动入栈，ISR 直接写 C", size=11,
            fill=T.MUTED)
@@ -247,7 +247,7 @@ def debug_swo() -> Svg:
     s.header(tag="17 调试", tag_color=T.ORANGE)
 
     # 左：连线
-    s.rect(40, 82, 420, 250, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 82, 420, 250, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 108, "接线（4 线 SWD + 1 线 SWO）", size=13, fill=T.TEXT,
            weight="600")
     s.rect(62, 130, 110, 170, fill=T.PANEL2, stroke=T.CYAN, rx=8)
@@ -281,7 +281,7 @@ def debug_swo() -> Svg:
     )
 
     # 右：ITM 输出
-    s.rect(480, 82, 380, 250, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(480, 82, 380, 250, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(498, 108, "ITM 输出（SWV Console）", size=13, fill=T.TEXT, weight="600")
     s.code(498, 136, [
         "ITM_SendChar('T');        // 重定向 printf",
@@ -310,7 +310,7 @@ def debug_swo() -> Svg:
     ]
     for i, (t, sub, note) in enumerate(steps):
         x = 40 + i * 206
-        s.rect(x, 376, 196, 82, fill=T.PANEL, stroke=T.STROKE, rx=10)
+        s.rect(x, 376, 196, 82, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.text(x + 14, 400, t, size=12.5, fill=T.TEXT, weight="700")
         s.text(x + 14, 420, sub, size=10.5, mono=True, fill=T.CYAN)
         s.text(x + 14, 442, note, size=10, fill=T.MUTED)

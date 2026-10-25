@@ -41,7 +41,7 @@ def toolchain_flow() -> Svg:
     bw, gap, x0, y0, bh = 120, 50, 40, 120, 76
     for i, (label, sub, color, note) in enumerate(boxes):
         x = x0 + i * (bw + gap)
-        s.rect(x, y0, bw, bh, fill=T.PANEL, stroke=color, rx=10)
+        s.rect(x, y0, bw, bh, fill=T.PANEL, stroke=color, rx=8)
         s.text(x + bw / 2, y0 + 30, label, size=13, anchor="middle",
                fill=T.TEXT, weight="600")
         s.text(x + bw / 2, y0 + 50, sub, size=11, anchor="middle", fill=color)
@@ -51,7 +51,7 @@ def toolchain_flow() -> Svg:
             ax1, ax2 = x + bw + 6, x + bw + gap - 6
             s.arrow(ax1, y0 + bh / 2, ax2, y0 + bh / 2, color=T.STROKE, sw=2,
                     marker=True)
-            s.line(ax1, y0 + bh / 2, ax2, y0 + bh / 2, stroke=T.CYAN, sw=2.4,
+            s.line(ax1, y0 + bh / 2, ax2, y0 + bh / 2, stroke=T.CYAN, sw=2,
                    cls=f"f{i}")
             s.circle(ax1, y0 + bh / 2, 4, fill=T.CYAN, cls=f"p{i}")
 
@@ -64,7 +64,7 @@ def toolchain_flow() -> Svg:
 
     y1 = 260
     last_x = x0 + 4 * (bw + gap) + bw / 2
-    s.arrow(last_x, y0 + bh, last_x, y1 - 6, color=T.GREEN, sw=2.4)
+    s.arrow(last_x, y0 + bh, last_x, y1 - 6, color=T.GREEN, sw=2)
     s.text(last_x - 14, y0 + bh + 44, "SWD：SWCLK + SWDIO", size=11,
            anchor="end", fill=T.GREEN)
 
@@ -77,7 +77,7 @@ def toolchain_flow() -> Svg:
     bw2 = 190
     for i, (label, sub, note) in enumerate(row2):
         x = 40 + i * (bw2 + 18)
-        s.rect(x, y1, bw2, 74, fill=T.PANEL2, stroke=T.STROKE, rx=10)
+        s.rect(x, y1, bw2, 74, fill=T.PANEL2, stroke=T.STROKE, rx=8)
         s.text(x + bw2 / 2, y1 + 28, label, size=14, anchor="middle",
                fill=T.TEXT, weight="600")
         s.text(x + bw2 / 2, y1 + 48, sub, size=11, anchor="middle", fill=T.CYAN,
@@ -88,11 +88,11 @@ def toolchain_flow() -> Svg:
                     color=T.STROKE, sw=2, head=5)
     s.add_style(_step_highlight("t", 4, period=4.0))
     for i in range(4):
-        s.rect(40 + i * (bw2 + 18), y1, bw2, 74, fill=T.CYAN, rx=10,
+        s.rect(40 + i * (bw2 + 18), y1, bw2, 74, fill=T.CYAN, rx=8,
                cls=f"t{i}", opacity=0.1)
 
     s.title_block(40, 420, "常见命令（命令行 + Makefile 方式）", color=T.GREEN)
-    s.rect(40, 432, 820, 84, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 432, 820, 84, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 456, [
         "arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -O2 -c main.c -o main.o",
         "arm-none-eabi-gcc -T STM32F103C8Tx_FLASH.ld *.o -o build/app.elf",
@@ -122,7 +122,7 @@ def boot_sequence() -> Svg:
         r, c = divmod(i, 4)
         x = x0 + c * (bw + gap)
         y = y0 + r * (bh + 66)
-        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=T.STROKE, rx=10)
+        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.rect(x, y, 4, bh, fill=color, rx=2)
         s.text(x + 16, y + 30, label, size=15, fill=T.TEXT, weight="700")
         s.text(x + 16, y + 54, sub, size=11, fill=T.MUTED)
@@ -138,10 +138,10 @@ def boot_sequence() -> Svg:
         r, c = divmod(i, 4)
         x = x0 + c * (bw + gap)
         y = y0 + r * (bh + 66)
-        s.rect(x, y, bw, bh, fill=color, rx=10, cls=f"b{i}", opacity=0.12)
+        s.rect(x, y, bw, bh, fill=color, rx=8, cls=f"b{i}", opacity=0.12)
 
     s.title_block(40, 400, "向量表（前 8 个字节决定 CPU 从哪里开始）", color=T.CYAN)
-    s.rect(40, 406, 470, 104, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 406, 470, 104, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 436, [
         "0x0000_0000  MSP 初值     ; Flash 启动时别名到 0x0800_0000",
         "0x0000_0004  Reset_Handler",
@@ -150,7 +150,7 @@ def boot_sequence() -> Svg:
         "; 外设 IRQn 的入口 = VTOR + 4×(IRQn+16)",
     ], size=12, lh=19)
 
-    s.rect(530, 406, 330, 104, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(530, 406, 330, 104, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(548, 428, "BOOT0 / BOOT1 决定启动映射", size=13, fill=T.TEXT,
            weight="600")
     rows = [("BOOT0=0", "主 Flash，正常运行", T.GREEN),
@@ -178,25 +178,25 @@ def memory_map() -> Svg:
     for i, (addr, name, note, color) in enumerate(regions):
         h = 62
         s.rect(40, y, 820, h, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.rect(40, y, 6, h, fill=color, rx=3)
+        s.rect(40, y, 6, h, fill=color, rx=2)
         s.text(60, y + 26, addr, size=14, mono=True, fill=color, weight="700")
         s.text(200, y + 26, name, size=14, fill=T.TEXT, weight="600")
         s.text(200, y + 47, note, size=11.5, fill=T.MUTED)
         y += h + 10
 
-    s.circle(872, 131, 7, fill=T.WHITE, opacity=0.85, cls="ptr")
+    s.circle(872, 131, 7, fill=T.TEXT, opacity=0.85, cls="ptr")
     s.add_style(
         "@keyframes ptr-scan{0%{transform:translateY(0)}"
         "100%{transform:translateY(330px)}}"
         ".ptr{animation:ptr-scan 5s ease-in-out infinite alternate;}"
     )
 
-    s.rect(40, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 481, "Flash 页 / 扇区大小不一样", size=12.5, fill=T.TEXT,
            weight="600")
     s.text(58, 501, "F103 中容量 1 KB/页，大容量 2 KB/页；F4 按扇区擦", size=11.5,
            fill=T.MUTED)
-    s.rect(460, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(460, 458, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(478, 481, "地址 = 基址 + 偏移", size=12.5, fill=T.TEXT, weight="600")
     s.text(478, 501, "F411：GPIOA=0x40020000，ODR 在 +0x14（+0x0C 是 PUPDR）",
            size=11, fill=T.MUTED, mono=True)
@@ -219,37 +219,37 @@ def clock_tree() -> Svg:
     ]
     y = 108
     for label, sub, color, x, w in nodes:
-        s.rect(x, y, w, 72, fill=T.PANEL, stroke=color, rx=10)
+        s.rect(x, y, w, 72, fill=T.PANEL, stroke=color, rx=8)
         s.text(x + w / 2, y + 28, label, size=15, anchor="middle", fill=T.TEXT,
                weight="700")
         s.text(x + w / 2, y + 50, sub, size=11, anchor="middle", fill=color)
     gaps = ((190, 200), (350, 370), (510, 560), (700, 720))
     for i, (a, b) in enumerate(gaps):
-        s.line(a, y + 36, b, y + 36, stroke=T.CYAN, sw=2.4, cls="clk")
+        s.line(a, y + 36, b, y + 36, stroke=T.CYAN, sw=2, cls="clk")
         s.circle(a, y + 36, 4.5, fill=T.CYAN, cls=f"pulse{i}")
         s.add_style(anim_tx(f".pulse{i}", dur="1.2s", x1=0, x2=max(8, b - a - 8)))
     s.add_style(anim_flow(".clk", dur="1.2s", dash="5 11", shift=-16))
 
     y2 = 244
-    s.line(790, y + 72, 790, y2, stroke=T.CYAN, sw=2.2)
-    s.arrow(790, y2 - 34, 790, y2 - 2, color=T.CYAN, sw=2.2, head=6)
+    s.line(790, y + 72, 790, y2, stroke=T.CYAN, sw=2)
+    s.arrow(790, y2 - 34, 790, y2 - 2, color=T.CYAN, sw=2, head=6)
     buses = [
         ("APB2", "÷1 = 72 MHz", "GPIOA~E / USART1 / SPI1 / ADC1 / TIM1", T.VIOLET, 40),
         ("APB1", "÷2 = 36 MHz", "USART2/3 · I2C · TIM2~7 · SPI2 · CAN",
          T.PINK, 460),
     ]
     for label, sub, note, color, x in buses:
-        s.rect(x, y2, 400, 92, fill=T.PANEL2, stroke=T.STROKE, rx=10)
+        s.rect(x, y2, 400, 92, fill=T.PANEL2, stroke=T.STROKE, rx=8)
         s.text(x + 18, y2 + 30, label, size=15, fill=color, weight="700")
         s.text(x + 96, y2 + 30, sub, size=13, fill=T.TEXT)
         s.text(x + 18, y2 + 54, note, size=11.5, fill=T.MUTED)
         extra = ("ADC 另有分频，最高 14 MHz" if label == "APB2"
                  else "TIM2~7 时钟 ×2 = 72 MHz；USB 另要 48 MHz")
         s.text(x + 18, y2 + 76, extra, size=11, fill=T.DIM)
-    s.line(790, y2 + 46, 860, y2 + 46, stroke=T.CYAN, sw=1.6, dash="4 6")
+    s.line(790, y2 + 46, 860, y2 + 46, stroke=T.CYAN, sw=1.5, dash="4 6")
 
     s.title_block(40, 372, "CubeMX 里对应的三处配置", color=T.AMBER)
-    s.rect(40, 384, 820, 126, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 384, 820, 126, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 408, [
         "RCC_OscInitStruct.HSEState = RCC_HSE_ON;             // 打开 8 MHz 晶振",
         "RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;         // 8 MHz × 9 = 72 MHz",

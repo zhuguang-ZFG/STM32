@@ -14,107 +14,107 @@
 .cursor{animation:cursor-tx 5s linear infinite 0s;}
 </style>
 
-<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#f472b6" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS 任务调度：状态机 + 甘特图</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 每 1 ms 打断一次，调度器挑出「就绪队列里优先级最高」的任务</text>
-<rect x="765" y="15" width="113" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="821.5" y="33.32" font-size="12" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">15 FreeRTOS</text>
-<rect x="80" y="110" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#34d399" stroke-width="1.5"/>
-<text x="165" y="136" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">就绪 Ready</text>
-<text x="165" y="156" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等调度器挑选</text>
-<rect x="80" y="110" width="170" height="62" fill="#34d399" opacity="0.15" rx="12" class="stReady"/>
-<rect x="400" y="110" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="485" y="136" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">运行 Running</text>
-<text x="485" y="156" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">正在占用 CPU</text>
-<rect x="400" y="110" width="170" height="62" fill="#22d3ee" opacity="0.15" rx="12" class="stRun"/>
-<rect x="400" y="226" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="485" y="252" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">阻塞 Blocked</text>
-<text x="485" y="272" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等延时 / 队列 / 信号量</text>
-<rect x="400" y="226" width="170" height="62" fill="#fbbf24" opacity="0.15" rx="12" class="stBlock"/>
-<rect x="80" y="226" width="170" height="62" fill="#111c31" opacity="1" rx="12" stroke="#a78bfa" stroke-width="1.5"/>
-<text x="165" y="252" font-size="13" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">挂起 Suspended</text>
-<text x="165" y="272" font-size="9" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskSuspend 挂起</text>
-<rect x="80" y="226" width="170" height="62" fill="#a78bfa" opacity="0.15" rx="12" class="stSusp"/>
-<line x1="252" y1="128" x2="389" y2="128" stroke="#34d399" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="e1"/>
-<polygon points="396.00,128.00 389.00,131.50 389.00,124.50" fill="#34d399" opacity="1"/>
-<text x="324" y="120" font-size="10" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调度器选中</text>
-<line x1="568" y1="128" x2="694" y2="128" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="700.00,128.00 694.00,131.00 694.00,125.00" fill="#22d3ee" opacity="1"/>
-<text x="634" y="118" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">被抢占 / 时间片到</text>
-<line x1="700" y1="128" x2="700" y2="96" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="700" y1="96" x2="258" y2="96" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="252.00,96.00 258.00,93.00 258.00,99.00" fill="#22d3ee" opacity="1"/>
-<line x1="252" y1="96" x2="252" y2="128" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="485" y1="176" x2="485" y2="216" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="485.00,222.00 482.00,216.00 488.00,216.00" fill="#fbbf24" opacity="1"/>
-<text x="492" y="200" font-size="10" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelay / 等队列</text>
-<line x1="400" y1="257" x2="252" y2="257" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="252" y1="257" x2="171" y2="257" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="165.00,257.00 171.00,254.00 171.00,260.00" fill="#fbbf24" opacity="1"/>
-<text x="292" y="276" font-size="10" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超时 / 事件到达</text>
-<line x1="80" y1="226" x2="80" y2="176" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="20" y="205" font-size="10" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskSuspend</text>
-<text x="40" y="314" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 时间轴（单核：同一时刻只有一根色条）</text>
-<text x="40" y="348" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task1 高</text>
-<rect x="150" y="328" width="700" height="26" fill="#0e1626" opacity="1" rx="6" stroke="#1a2742" stroke-width="1.5"/>
-<rect x="150" y="330" width="174" height="22" fill="#22d3ee" opacity="0.85" rx="4"/>
-<rect x="675" y="330" width="130.25" height="22" fill="#22d3ee" opacity="0.85" rx="4"/>
-<line x1="150" y1="328" x2="150" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="237.5" y1="328" x2="237.5" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="325" y1="328" x2="325" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="412.5" y1="328" x2="412.5" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="500" y1="328" x2="500" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="587.5" y1="328" x2="587.5" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="675" y1="328" x2="675" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="762.5" y1="328" x2="762.5" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="850" y1="328" x2="850" y2="354" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="40" y="382" font-size="10.5" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task2 中</text>
-<rect x="150" y="362" width="700" height="26" fill="#0e1626" opacity="1" rx="6" stroke="#1a2742" stroke-width="1.5"/>
-<rect x="325" y="364" width="174" height="22" fill="#34d399" opacity="0.85" rx="4"/>
-<line x1="150" y1="362" x2="150" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="237.5" y1="362" x2="237.5" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="325" y1="362" x2="325" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="412.5" y1="362" x2="412.5" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="500" y1="362" x2="500" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="587.5" y1="362" x2="587.5" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="675" y1="362" x2="675" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="762.5" y1="362" x2="762.5" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="850" y1="362" x2="850" y2="388" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="40" y="416" font-size="10.5" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task3 低</text>
-<rect x="150" y="396" width="700" height="26" fill="#0e1626" opacity="1" rx="6" stroke="#1a2742" stroke-width="1.5"/>
-<rect x="500" y="398" width="174" height="22" fill="#fbbf24" opacity="0.85" rx="4"/>
-<line x1="150" y1="396" x2="150" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="237.5" y1="396" x2="237.5" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="325" y1="396" x2="325" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="412.5" y1="396" x2="412.5" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="500" y1="396" x2="500" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="587.5" y1="396" x2="587.5" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="675" y1="396" x2="675" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="762.5" y1="396" x2="762.5" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="850" y1="396" x2="850" y2="422" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="40" y="450" font-size="10.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Idle</text>
-<rect x="150" y="430" width="700" height="26" fill="#0e1626" opacity="1" rx="6" stroke="#1a2742" stroke-width="1.5"/>
-<rect x="806.25" y="432" width="42.75" height="22" fill="#64748b" opacity="0.85" rx="4"/>
-<line x1="150" y1="430" x2="150" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="237.5" y1="430" x2="237.5" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="325" y1="430" x2="325" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="412.5" y1="430" x2="412.5" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="500" y1="430" x2="500" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="587.5" y1="430" x2="587.5" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="675" y1="430" x2="675" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="762.5" y1="430" x2="762.5" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="850" y1="430" x2="850" y2="456" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<line x1="150" y1="320" x2="150" y2="468" stroke="#f87171" stroke-width="1.6" stroke-linecap="round" opacity="1" class="cursor"/>
-<text x="150" y="482" font-size="9" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 ms</text>
-<text x="850" y="482" font-size="9" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">32 ms</text>
-<rect x="40" y="496" width="820" height="64" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="516" font-size="11.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三条铁律</text>
-<text x="58" y="536" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 数字越大优先级越高（和 NVIC 相反）；② 中断里只用 FromISR API</text>
-<text x="58" y="552" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ 栈不够会 HardFault，用 uxTaskGetStackHighWaterMark 看剩余</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">常见坑：忘记在 vTaskStartScheduler 之前创建任务、在中断里调用阻塞 API 触发断言</text>
-<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#8e2f5b" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS 任务调度：状态机 + 甘特图</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 每 1 ms 打断一次，调度器挑出「就绪队列里优先级最高」的任务</text>
+<rect x="765" y="15" width="113" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="821.5" y="33.32" font-size="12" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">15 FreeRTOS</text>
+<rect x="80" y="110" width="170" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="165" y="136" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">就绪 Ready</text>
+<text x="165" y="156" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等调度器挑选</text>
+<rect x="80" y="110" width="170" height="62" fill="#1b5c45" opacity="0.15" rx="8" class="stReady"/>
+<rect x="400" y="110" width="170" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="485" y="136" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">运行 Running</text>
+<text x="485" y="156" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">正在占用 CPU</text>
+<rect x="400" y="110" width="170" height="62" fill="#075e84" opacity="0.15" rx="8" class="stRun"/>
+<rect x="400" y="226" width="170" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="485" y="252" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">阻塞 Blocked</text>
+<text x="485" y="272" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等延时 / 队列 / 信号量</text>
+<rect x="400" y="226" width="170" height="62" fill="#7a4e00" opacity="0.15" rx="8" class="stBlock"/>
+<rect x="80" y="226" width="170" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="165" y="252" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">挂起 Suspended</text>
+<text x="165" y="272" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskSuspend 挂起</text>
+<rect x="80" y="226" width="170" height="62" fill="#5b3a8c" opacity="0.15" rx="8" class="stSusp"/>
+<line x1="252" y1="128" x2="389" y2="128" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8" class="e1"/>
+<polygon points="396.00,128.00 389.00,131.50 389.00,124.50" fill="#1b5c45" opacity="1"/>
+<text x="324" y="120" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调度器选中</text>
+<line x1="568" y1="128" x2="694" y2="128" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="700.00,128.00 694.00,131.00 694.00,125.00" fill="#075e84" opacity="1"/>
+<text x="634" y="118" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">被抢占 / 时间片到</text>
+<line x1="700" y1="128" x2="700" y2="96" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="700" y1="96" x2="258" y2="96" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="252.00,96.00 258.00,93.00 258.00,99.00" fill="#075e84" opacity="1"/>
+<line x1="252" y1="96" x2="252" y2="128" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="485" y1="176" x2="485" y2="216" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="485.00,222.00 482.00,216.00 488.00,216.00" fill="#7a4e00" opacity="1"/>
+<text x="492" y="200" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelay / 等队列</text>
+<line x1="400" y1="257" x2="252" y2="257" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="252" y1="257" x2="171" y2="257" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="165.00,257.00 171.00,254.00 171.00,260.00" fill="#7a4e00" opacity="1"/>
+<text x="292" y="276" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">超时 / 事件到达</text>
+<line x1="80" y1="226" x2="80" y2="176" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="20" y="205" font-size="10" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskSuspend</text>
+<text x="40" y="314" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 时间轴（单核：同一时刻只有一根色条）</text>
+<text x="40" y="348" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task1 高</text>
+<rect x="150" y="328" width="700" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="150" y="330" width="174" height="22" fill="#075e84" opacity="0.85" rx="4"/>
+<rect x="675" y="330" width="130.25" height="22" fill="#075e84" opacity="0.85" rx="4"/>
+<line x1="150" y1="328" x2="150" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="237.5" y1="328" x2="237.5" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="325" y1="328" x2="325" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="412.5" y1="328" x2="412.5" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="500" y1="328" x2="500" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="587.5" y1="328" x2="587.5" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="675" y1="328" x2="675" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="762.5" y1="328" x2="762.5" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="850" y1="328" x2="850" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="382" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task2 中</text>
+<rect x="150" y="362" width="700" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="325" y="364" width="174" height="22" fill="#1b5c45" opacity="0.85" rx="4"/>
+<line x1="150" y1="362" x2="150" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="237.5" y1="362" x2="237.5" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="325" y1="362" x2="325" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="412.5" y1="362" x2="412.5" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="500" y1="362" x2="500" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="587.5" y1="362" x2="587.5" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="675" y1="362" x2="675" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="762.5" y1="362" x2="762.5" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="850" y1="362" x2="850" y2="388" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="416" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Task3 低</text>
+<rect x="150" y="396" width="700" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="500" y="398" width="174" height="22" fill="#7a4e00" opacity="0.85" rx="4"/>
+<line x1="150" y1="396" x2="150" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="237.5" y1="396" x2="237.5" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="325" y1="396" x2="325" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="412.5" y1="396" x2="412.5" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="500" y1="396" x2="500" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="587.5" y1="396" x2="587.5" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="675" y1="396" x2="675" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="762.5" y1="396" x2="762.5" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="850" y1="396" x2="850" y2="422" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="450" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Idle</text>
+<rect x="150" y="430" width="700" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="806.25" y="432" width="42.75" height="22" fill="#5e6872" opacity="0.85" rx="4"/>
+<line x1="150" y1="430" x2="150" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="237.5" y1="430" x2="237.5" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="325" y1="430" x2="325" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="412.5" y1="430" x2="412.5" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="500" y1="430" x2="500" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="587.5" y1="430" x2="587.5" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="675" y1="430" x2="675" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="762.5" y1="430" x2="762.5" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="850" y1="430" x2="850" y2="456" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="150" y1="320" x2="150" y2="468" stroke="#8f2d2d" stroke-width="1.5" stroke-linecap="round" opacity="1" class="cursor"/>
+<text x="150" y="482" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 ms</text>
+<text x="850" y="482" font-size="9" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">32 ms</text>
+<rect x="40" y="496" width="820" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="516" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三条铁律</text>
+<text x="58" y="536" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 数字越大优先级越高（和 NVIC 相反）；② 中断里只用 FromISR API</text>
+<text x="58" y="552" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ 栈不够会 HardFault，用 uxTaskGetStackHighWaterMark 看剩余</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">常见坑：忘记在 vTaskStartScheduler 之前创建任务、在中断里调用阻塞 API 触发断言</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

@@ -53,11 +53,11 @@ def uart_frame() -> Svg:
     # 波形
     s.axis(40, 176, 800, 90, ylabel="3.3V")
     s.text(40, 168, "TX 线电平（空闲为高）", size=11, fill=T.MUTED)
-    s.waveform(40, 176, 800, 90, bits, color=T.CYAN, sw=2.6)
+    s.waveform(40, 176, 800, 90, bits, color=T.CYAN, sw=2)
     for i in range(len(bits) + 1):
         s.line(x0 + i * cw - 3, 176, x0 + i * cw - 3, 266, stroke=T.GRID, sw=1,
                dash="3 4")
-    s.line(40, 176, 40, 266, stroke=T.RED, sw=1.4, cls="cursor")
+    s.line(40, 176, 40, 266, stroke=T.RED, sw=1.5, cls="cursor")
     s.add_style(anim_tx(".cursor", dur="4.4s", x1=0, x2=800))
 
     # 时间标注
@@ -73,7 +73,7 @@ def uart_frame() -> Svg:
         ("921600", "1.085 µs", "±1.5%", "高速数据采集，注意线材与干扰"),
         ("2000000", "0.5 µs", "±1%", "F4/H7 才稳，建议改用 USB/SPI"),
     ]
-    s.rect(40, 344, 820, 128, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 344, 820, 128, fill=T.BG2, stroke=T.STROKE, rx=8)
     heads = ["波特率", "位时间", "允许误差", "典型用途"]
     for i, hd in enumerate(heads):
         s.text(60 + i * 200, 364, hd, size=11.5, fill=T.CYAN, weight="600")
@@ -85,7 +85,7 @@ def uart_frame() -> Svg:
            size=11, fill=T.GREEN)
 
     # 三种收发方式
-    s.rect(40, 484, 820, 58, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(40, 484, 820, 58, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 506, "别把 BRR 背成 fCK/波特率；阻塞适合打印，中断适合指令，DMA+IDLE 适合连收",
            size=12, fill=T.TEXT, weight="700")
     s.text(58, 526, "数值上 0x271 碰巧等于 72000000/115200，是因为小数分到了低 4 位",
@@ -120,7 +120,7 @@ def i2c_transaction() -> Svg:
            size=12, fill=T.MUTED)
     for i, (bit, tag, color) in enumerate(cells):
         x = x0 + i * cw
-        s.rect(x, 108, cw - 4, 44, fill=T.PANEL, stroke=color, rx=6)
+        s.rect(x, 108, cw - 4, 44, fill=T.PANEL, stroke=color, rx=4)
         s.text(x + (cw - 4) / 2, 126, bit, size=13, anchor="middle",
                fill=color, weight="700", mono=True)
         if tag:
@@ -136,10 +136,10 @@ def i2c_transaction() -> Svg:
             scl += [1, 1]
         else:
             scl += [0, 1]
-    s.waveform(28, 206, 20 * cw, 36, scl, color=T.CYAN, sw=2.2)
+    s.waveform(28, 206, 20 * cw, 36, scl, color=T.CYAN, sw=2)
 
     # 右侧要点
-    s.rect(40, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 380, "为什么必须加上拉电阻", size=12.5, fill=T.TEXT, weight="700")
     for i, t in enumerate([
         "I2C 是开漏输出：只能拉低，不能拉高",
@@ -149,7 +149,7 @@ def i2c_transaction() -> Svg:
     ]):
         s.text(58, 404 + i * 20, "· " + t, size=11, fill=T.MUTED)
 
-    s.rect(460, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(460, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(478, 380, "地址陷阱：0x3C 还是 0x78？", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
@@ -182,18 +182,18 @@ def spi_transfer() -> Svg:
     mbits = [1, 0, 1, 0, 0, 1, 0, 1]
     sbits = [0, 1, 1, 0, 1, 0, 0, 1]
     for i, b in enumerate(mbits):
-        s.rect(60 + i * 44, 112, 38, 38, fill=T.PANEL2, stroke=T.CYAN, rx=6)
+        s.rect(60 + i * 44, 112, 38, 38, fill=T.PANEL2, stroke=T.CYAN, rx=4)
         s.text(79 + i * 44, 137, str(b), size=14, anchor="middle", fill=T.CYAN,
                mono=True)
     for i, b in enumerate(sbits):
-        s.rect(556 + i * 42, 112, 36, 38, fill=T.PANEL2, stroke=T.GREEN, rx=6)
+        s.rect(556 + i * 42, 112, 36, 38, fill=T.PANEL2, stroke=T.GREEN, rx=4)
         s.text(574 + i * 42, 137, str(b), size=14, anchor="middle", fill=T.GREEN,
                mono=True)
 
     # 数据线
-    s.arrow(420, 150, 554, 150, color=T.CYAN, sw=2.4, cls="mosi")
+    s.arrow(420, 150, 554, 150, color=T.CYAN, sw=2, cls="mosi")
     s.text(499, 142, "MOSI 主 → 从", size=11, anchor="middle", fill=T.CYAN)
-    s.arrow(554, 172, 420, 172, color=T.GREEN, sw=2.4, cls="miso")
+    s.arrow(554, 172, 420, 172, color=T.GREEN, sw=2, cls="miso")
     s.text(499, 192, "MISO 从 → 主", size=11, anchor="middle", fill=T.GREEN)
     s.add_style(anim_flow(".mosi", dur="1.4s", dash="8 12", shift=-20))
     s.add_style(anim_flow(".miso", dur="1.4s", dash="8 12", shift=-20))
@@ -214,14 +214,14 @@ def spi_transfer() -> Svg:
     s.text(40, 224, "SCK（8 个上升沿，CPOL=0 / CPHA=0，空闲为低）", size=11,
            fill=T.MUTED)
     s.axis(40, 236, 800, 60)
-    s.waveform(40, 240, 800, 54, [0, 1] * 8, color=T.AMBER, sw=2.2)
+    s.waveform(40, 240, 800, 54, [0, 1] * 8, color=T.AMBER, sw=2)
     s.text(40, 318, "Mode 0：上升沿采样，下降沿移位。SPI 高位先出（和 UART 相反）。"
                     "想读 1 字节必须同时发 1 字节，没数据就发 0xFF。",
            size=11, fill=T.MUTED)
 
     # 模式表
     s.title_block(40, 356, "CPOL / CPHA 四种模式（选错就读不到数据）", color=T.CYAN)
-    s.rect(40, 368, 500, 120, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 368, 500, 120, fill=T.BG2, stroke=T.STROKE, rx=8)
     heads = ["模式", "CPOL", "CPHA", "空闲电平", "采样边沿"]
     for i, hd in enumerate(heads):
         s.text(60 + i * 96, 390, hd, size=11, fill=T.CYAN, weight="600")
@@ -236,7 +236,7 @@ def spi_transfer() -> Svg:
             s.text(60 + i * 96, 412 + r * 20, v, size=10.5,
                    fill=T.TEXT if i == 0 else T.MUTED, mono=(i < 3))
 
-    s.rect(560, 368, 300, 120, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(560, 368, 300, 120, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(578, 392, "常见器件的模式", size=12, fill=T.TEXT, weight="700")
     for i, t in enumerate(["W25Q64 / W25Q128：Mode 0 或 3",
                            "ST7789 / ILI9341：Mode 0",
@@ -282,7 +282,7 @@ def can_arbitration() -> Svg:
             x = x0 + j * cw
             win = (ch == "0") or (i == 0)
             s.rect(x, y, cw - 6, 40, fill=T.PANEL2 if win else T.PANEL,
-                   stroke=T.STROKE, rx=6)
+                   stroke=T.STROKE, rx=4)
             s.text(x + (cw - 6) / 2, y + 26, ch, size=14, anchor="middle",
                    fill=color if win else T.DIM, mono=True, cls=f"c{i}")
         s.text(x0 + bits * cw + 8, y + 26, "仲裁中" if i == 0 else "退出",
@@ -290,7 +290,7 @@ def can_arbitration() -> Svg:
     # 高亮逐位扫描 + 失败节点变暗
     s.add_style(_seq_flash("c", 3, period=5.0, window=0.7, peak=1, rest=0.55))
 
-    s.rect(40, 326, 820, 96, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 326, 820, 96, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 350, "为什么叫「非破坏性」仲裁", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
@@ -326,12 +326,12 @@ def usb_enumeration() -> Svg:
             "插上 USB 之后，主机和设备之间到底交换了什么")
     s.header(tag="14 USB", tag_color=T.BLUE)
 
-    s.rect(40, 84, 150, 380, fill=T.PANEL, stroke=T.CYAN, rx=12)
+    s.rect(40, 84, 150, 380, fill=T.PANEL, stroke=T.CYAN, rx=8)
     s.text(115, 112, "主机", size=14, anchor="middle", fill=T.CYAN,
            weight="700")
     s.text(115, 134, "PC / 树莓派", size=11, anchor="middle", fill=T.MUTED)
     s.text(115, 156, "Host", size=11, anchor="middle", fill=T.MUTED)
-    s.rect(710, 84, 150, 380, fill=T.PANEL, stroke=T.GREEN, rx=12)
+    s.rect(710, 84, 150, 380, fill=T.PANEL, stroke=T.GREEN, rx=8)
     s.text(785, 112, "设备", size=14, anchor="middle", fill=T.GREEN,
            weight="700")
     s.text(785, 134, "STM32", size=11, anchor="middle", fill=T.MUTED)
@@ -360,11 +360,11 @@ def usb_enumeration() -> Svg:
         + f".p{i}{{animation:p{i}-mv 4.2s linear infinite;}}"
         for i in range(7)))
 
-    s.rect(40, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 500, "描述符是「层层套娃」", size=12, fill=T.TEXT, weight="700")
     s.text(58, 518, "设备 → 配置 → 接口 → 端点，主机逐层索取", size=10.5,
            fill=T.MUTED)
-    s.rect(460, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(460, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(478, 500, "CDC 还是 HID？", size=12, fill=T.TEXT, weight="700")
     s.text(478, 518, "要虚拟串口选 CDC，要免驱键鼠/自定义选 HID", size=10.5,
            fill=T.MUTED)
@@ -395,8 +395,8 @@ def network_packet_journey() -> Svg:
     x, y0, bw, bh, gap = 56, 90, 500, 54, 10
     for i, (name, payload, boundary, color) in enumerate(layers):
         y = y0 + i * (bh + gap)
-        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=9, cls=f"net{i}")
-        s.rect(x, y, 84, bh, fill=T.BG2, stroke=color, rx=9)
+        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=8, cls=f"net{i}")
+        s.rect(x, y, 84, bh, fill=T.BG2, stroke=color, rx=8)
         s.text(x + 42, y + 32, name, size=12, anchor="middle", fill=color, weight="700")
         s.text(x + 102, y + 22, payload, size=11, mono=True, fill=T.TEXT, weight="600")
         s.text(x + 102, y + 42, boundary, size=9.8, fill=T.MUTED)
@@ -407,7 +407,7 @@ def network_packet_journey() -> Svg:
                            peak=1.0, rest=.42))
     s.add_style(anim_flow(".net-flow", dur="1.0s", dash="4 7", shift=-11))
 
-    s.rect(584, 90, 276, 182, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(584, 90, 276, 182, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(604, 118, "链路建立的证据顺序", size=13, fill=T.TEXT, weight="700")
     proof = [
         ("1", "PHY link", "读 PHY BSR，不只看 LED", T.ORANGE),
@@ -423,7 +423,7 @@ def network_packet_journey() -> Svg:
         s.text(632, yy, key, size=10, mono=True, fill=color, weight="700")
         s.text(684, yy, note, size=9.2, fill=T.MUTED)
 
-    s.rect(584, 292, 276, 198, fill=T.PANEL, stroke=T.RED, rx=12)
+    s.rect(584, 292, 276, 198, fill=T.PANEL, stroke=T.RED, rx=8)
     s.text(604, 320, "三个不能混为一谈", size=13, fill=T.TEXT, weight="700")
     warnings = [
         ("TCP 已 ACK", "不代表业务已经落盘"),

@@ -26,103 +26,103 @@
 .s11{animation:s11-sq 6.0s linear infinite;}
 </style>
 
-<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#fbbf24" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ADC 逐次逼近（SAR）到底在做什么</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位精度 = 12 次「猜一半 + 比较」，硬件在几微秒内完成</text>
-<rect x="810" y="15" width="68" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="844" y="33.32" font-size="12" fill="#fbbf24" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">09 ADC</text>
-<text x="40" y="96" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位 SAR 寄存器：从 bit11 开始逐位试填</text>
-<rect x="40" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="71" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit11</text>
-<text x="71" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="40" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s0"/>
-<rect x="108" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="139" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit10</text>
-<text x="139" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="108" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s1"/>
-<rect x="176" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="207" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit9</text>
-<text x="207" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="176" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s2"/>
-<rect x="244" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="275" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit8</text>
-<text x="275" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="244" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s3"/>
-<rect x="312" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="343" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit7</text>
-<text x="343" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="312" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s4"/>
-<rect x="380" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="411" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit6</text>
-<text x="411" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="380" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s5"/>
-<rect x="448" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="479" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit5</text>
-<text x="479" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="448" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s6"/>
-<rect x="516" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="547" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit4</text>
-<text x="547" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="516" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s7"/>
-<rect x="584" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="615" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit3</text>
-<text x="615" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="584" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s8"/>
-<rect x="652" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="683" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit2</text>
-<text x="683" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="652" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s9"/>
-<rect x="720" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="751" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit1</text>
-<text x="751" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="720" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s10"/>
-<rect x="788" y="108" width="62" height="42" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="819" y="126" font-size="10" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit0</text>
-<text x="819" y="142" font-size="13" fill="#64748b" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
-<rect x="788" y="108" width="62" height="42" fill="#fbbf24" opacity="0.18" rx="8" class="s11"/>
-<text x="40" y="172" font-size="11" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当前正在比较的位会被点亮；比较完就固定下来（1 或 0）</text>
-<rect x="40" y="194" width="400" height="150" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="220" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">比较器在比较什么</text>
-<text x="58" y="246" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC 输出（当前猜测值）</text>
-<text x="58" y="266" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">VIN（采样保持电容上的电压）</text>
-<line x1="58" y1="286" x2="420" y2="286" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="58" y="308" font-size="11.5" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC &gt; VIN → 清掉这一位</text>
-<text x="58" y="328" font-size="11.5" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC ≤ VIN → 保留这一位</text>
-<rect x="460" y="194" width="400" height="150" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="478" y="220" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">例：VIN = 0.5 × VREF → 结果 0x800</text>
-<text x="478" y="244" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit11: 猜 2048  → 2048 &lt;= 2048  保留 1</text>
-<text x="478" y="261" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit10: 猜 3072  → 3072 &gt;  2048  清零 0</text>
-<text x="478" y="278" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit9 : 猜 2560  → 2560 &gt;  2048  清零 0</text>
-<text x="478" y="295" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit8 : 猜 2304  → 2304 &gt;  2048  清零 0</text>
-<text x="478" y="312" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit7 : 猜 2176  → 2176 &gt;  2048  清零 0</text>
-<text x="478" y="329" font-size="11" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">…最终 0b1000_0000_0000 = 2048</text>
-<rect x="40" y="353" width="3" height="18" fill="#22d3ee" opacity="1"/>
-<text x="52" y="366" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">采样时间怎么定</text>
-<rect x="40" y="378" width="500" height="116" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="400" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源阻抗 ≤ 1 kΩ</text>
-<text x="216" y="400" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1.5 周期</text>
-<text x="316" y="400" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">运放直驱 / 小电阻分压</text>
-<text x="58" y="424" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 10 kΩ</text>
-<text x="216" y="424" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">13.5 周期</text>
-<text x="316" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">常见电位器</text>
-<text x="58" y="448" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 50 kΩ</text>
-<text x="216" y="448" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">55.5 周期</text>
-<text x="316" y="448" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高阻传感器</text>
-<text x="58" y="472" font-size="11" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≥ 100 kΩ</text>
-<text x="216" y="472" font-size="11" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">239.5 周期</text>
-<text x="316" y="472" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">或加跟随器，否则偏低</text>
-<rect x="560" y="378" width="300" height="116" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="578" y="402" font-size="12" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">误差与换算</text>
-<text x="578" y="424" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 1 LSB = VREF / 4096</text>
-<text x="578" y="442" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 量化误差是 ±0.5 LSB</text>
-<text x="578" y="460" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 电压 = 码值 × VREF / 4096</text>
-<text x="578" y="478" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 分母是 4096，不是 4095</text>
-<rect x="40" y="504" width="820" height="28" fill="#0e1626" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="523" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读数跳动：去耦、加长采样、滑动平均。读 Vrefint 可反推真实 VDDA</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的 ADC 时钟最高 14 MHz、F4 最高 36 MHz；时钟超了读数会明显失真</text>
-<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ADC 逐次逼近（SAR）到底在做什么</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位精度 = 12 次「猜一半 + 比较」，硬件在几微秒内完成</text>
+<rect x="810" y="15" width="68" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="844" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">09 ADC</text>
+<text x="40" y="96" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位 SAR 寄存器：从 bit11 开始逐位试填</text>
+<rect x="40" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="71" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit11</text>
+<text x="71" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="40" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s0"/>
+<rect x="108" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="139" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit10</text>
+<text x="139" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="108" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s1"/>
+<rect x="176" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="207" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit9</text>
+<text x="207" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="176" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s2"/>
+<rect x="244" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="275" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit8</text>
+<text x="275" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="244" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s3"/>
+<rect x="312" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="343" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit7</text>
+<text x="343" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="312" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s4"/>
+<rect x="380" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="411" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit6</text>
+<text x="411" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="380" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s5"/>
+<rect x="448" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="479" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit5</text>
+<text x="479" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="448" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s6"/>
+<rect x="516" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="547" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit4</text>
+<text x="547" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="516" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s7"/>
+<rect x="584" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="615" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit3</text>
+<text x="615" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="584" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s8"/>
+<rect x="652" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="683" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit2</text>
+<text x="683" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="652" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s9"/>
+<rect x="720" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="751" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit1</text>
+<text x="751" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="720" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s10"/>
+<rect x="788" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="819" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit0</text>
+<text x="819" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<rect x="788" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s11"/>
+<text x="40" y="172" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当前正在比较的位会被点亮；比较完就固定下来（1 或 0）</text>
+<rect x="40" y="194" width="400" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="220" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">比较器在比较什么</text>
+<text x="58" y="246" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC 输出（当前猜测值）</text>
+<text x="58" y="266" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">VIN（采样保持电容上的电压）</text>
+<line x1="58" y1="286" x2="420" y2="286" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="58" y="308" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC &gt; VIN → 清掉这一位</text>
+<text x="58" y="328" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC ≤ VIN → 保留这一位</text>
+<rect x="460" y="194" width="400" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="478" y="220" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">例：VIN = 0.5 × VREF → 结果 0x800</text>
+<text x="478" y="244" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit11: 猜 2048  → 2048 &lt;= 2048  保留 1</text>
+<text x="478" y="261" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit10: 猜 3072  → 3072 &gt;  2048  清零 0</text>
+<text x="478" y="278" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit9 : 猜 2560  → 2560 &gt;  2048  清零 0</text>
+<text x="478" y="295" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit8 : 猜 2304  → 2304 &gt;  2048  清零 0</text>
+<text x="478" y="312" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bit7 : 猜 2176  → 2176 &gt;  2048  清零 0</text>
+<text x="478" y="329" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">…最终 0b1000_0000_0000 = 2048</text>
+<rect x="40" y="353" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="366" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">采样时间怎么定</text>
+<rect x="40" y="378" width="500" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="400" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源阻抗 ≤ 1 kΩ</text>
+<text x="216" y="400" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1.5 周期</text>
+<text x="316" y="400" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">运放直驱 / 小电阻分压</text>
+<text x="58" y="424" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 10 kΩ</text>
+<text x="216" y="424" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">13.5 周期</text>
+<text x="316" y="424" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">常见电位器</text>
+<text x="58" y="448" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">约 50 kΩ</text>
+<text x="216" y="448" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">55.5 周期</text>
+<text x="316" y="448" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高阻传感器</text>
+<text x="58" y="472" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≥ 100 kΩ</text>
+<text x="216" y="472" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">239.5 周期</text>
+<text x="316" y="472" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">或加跟随器，否则偏低</text>
+<rect x="560" y="378" width="300" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="578" y="402" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">误差与换算</text>
+<text x="578" y="424" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 1 LSB = VREF / 4096</text>
+<text x="578" y="442" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 量化误差是 ±0.5 LSB</text>
+<text x="578" y="460" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 电压 = 码值 × VREF / 4096</text>
+<text x="578" y="478" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 分母是 4096，不是 4095</text>
+<rect x="40" y="504" width="820" height="28" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="523" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读数跳动：去耦、加长采样、滑动平均。读 Vrefint 可反推真实 VDDA</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的 ADC 时钟最高 14 MHz、F4 最高 36 MHz；时钟超了读数会明显失真</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>
