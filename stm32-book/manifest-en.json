@@ -124,7 +124,11 @@
         "pm0056",
         "stm32cube-f4",
         "clion-embedded",
-        "platformio-vscode"
+        "platformio-vscode",
+        "ds5319-swd",
+        "pm0075-rdp",
+        "pm0056-vector",
+        "rm0008-boot"
       ]
     },
     "02-part-and-clock.md": {
@@ -1085,6 +1089,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 09 principle and source cards. Medium-density devices have two 12-bit ADCs. STM32F103C8 has ADC1 and ADC2, and it has no ADC3 and no DAC. LQFP48 pin 10 PA0 is ADC12_IN0, and pin 9 VDDA is the reference. Pin 14 is not DAC_OUT1. Does not change ds5319-gpio and does not change the chapter 03 LED figure."
+    },
+    "ds5319-swd": {
+      "title": "DS5319 Rev 20 LQFP48 SWD pins and memory sizes",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. Pin 1 VBAT, pin 7 NRST, pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 39 PB3 is JTDO after reset and TRACESWO only in the remap column, pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB Flash is void on C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01 principle, key figures, timing, and source cards. Restates LQFP48 pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 7 NRST, and pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB is void on C8T6. Pin 39 PB3 stays in the boundary and off the normal path. Does not change ds5319-gpio."
+    },
+    "pm0075-rdp": {
+      "title": "PM0075 option-byte RDP and WDG_SW",
+      "authority": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf",
+      "snapshot": "PM0075, Doc ID 17863 Rev 2, August 2012 (revision history 27 August 2012). Option bytes at 0x1FFFF800: bits [7:0] are RDP. The manual prints the readout-allowed key as 0x00A5, which is the low byte 0xA5. Programming that key back first forces a mass erase of main Flash. USER bit WDG_SW (bit 16 of the word, bit 0 of the USER byte): 0 hardware watchdog, 1 software watchdog. The erased RDP value 0xFF stays protected. This snapshot does not use 0xAA.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01 readout protection, and the chapter 11 cross-reference for WDG_SW. Option bytes sit at 0x1FFFF800. The readout-allowed RDP byte is 0xA5 (the manual prints 0x00A5). Programming that key back mass-erases main Flash first. WDG_SW = 0 is the hardware watchdog and WDG_SW = 1 is the software watchdog. Does not call 0xAA the unprotected key and does not write 0xCC. Does not expand watchdog feeding inside chapter 01."
+    },
+    "pm0056-vector": {
+      "title": "PM0056 Rev 7 vector-table words and the IRQ entry",
+      "authority": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024. Default section 2.3.4 for the vector table. Item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4 times (IRQn + 16). If the printed title of section 2.3.4 is not the vector table, replace this section number with the printed section that states those two items. The claim does not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01's two words and the IRQ entry. Vector-table item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4×(IRQn + 16). Does not change pm0056 or pm0056-nvic. Does not put 167 ns in this chapter."
     }
   }
 }

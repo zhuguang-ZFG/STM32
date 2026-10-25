@@ -110,7 +110,7 @@
       "question": "源码怎样经过编译、链接、烧录和复位，最终变成可单步观察的机器状态？",
       "deliverable": "一个能重建、能下载、能断点的最小工程，并记录 IDE、编译器、固件包和板卡版本。",
       "boundary": "工具链跑通不等于外设配置正确；时钟、引脚和电气条件仍需逐项验证。",
-      "sources": ["project-guide", "pm0056", "stm32cube-f4", "clion-embedded", "platformio-vscode"]
+      "sources": ["project-guide", "pm0056", "stm32cube-f4", "clion-embedded", "platformio-vscode", "ds5319-swd", "pm0075-rdp", "pm0056-vector", "rm0008-boot"]
     },
     "02-芯片选型与存储器时钟.md": {
       "question": "型号、存储器映射和时钟树怎样共同决定一份代码能否在目标芯片上工作？",
@@ -934,6 +934,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 09 章原理与边界和坑与出处卡。中密度有两个 12 位 ADC。STM32F103C8 有 ADC1 和 ADC2，没有 ADC3，没有 DAC。LQFP48 第 10 脚 PA0 是 ADC12_IN0，第 9 脚 VDDA 是参考。第 14 脚不是 DAC_OUT1。不改 ds5319-gpio，也不改第 03 章的 LED 图。"
+    },
+    "ds5319-swd": {
+      "title": "DS5319 Rev 20 LQFP48 的 SWD 脚与容量",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. Pin 1 VBAT, pin 7 NRST, pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 39 PB3 is JTDO after reset and TRACESWO only in the remap column, pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB Flash is void on C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章原理与边界、关键插图、时序或状态、坑与出处卡。只改写 LQFP48 第 34 脚 PA13 = JTMS/SWDIO、第 35 脚 VSS_2、第 36 脚 VDD_2、第 37 脚 PA14 = JTCK/SWCLK、第 7 脚 NRST、第 44 脚 BOOT0。STM32F103x8 闪存 64 KB、SRAM 20 KB。xB 的 128 KB 在 C8T6 上作废。第 39 脚 PB3 只写进边界，不进主图正常路径。不改 ds5319-gpio。"
+    },
+    "pm0075-rdp": {
+      "title": "PM0075 选项字节里的 RDP 与 WDG_SW",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf",
+      "snapshot": "PM0075, Doc ID 17863 Rev 2, August 2012 (revision history 27 August 2012). Option bytes at 0x1FFFF800: bits [7:0] are RDP. The manual prints the readout-allowed key as 0x00A5, which is the low byte 0xA5. Programming that key back first forces a mass erase of main Flash. USER bit WDG_SW (bit 16 of the word, bit 0 of the USER byte): 0 hardware watchdog, 1 software watchdog. The erased RDP value 0xFF stays protected. This snapshot does not use 0xAA.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章读保护，以及第 11 章对 WDG_SW 的交叉引用。选项字节在 0x1FFFF800，低字节 RDP 的读允许键是 0xA5（手册印成 0x00A5）。编程回这个键会先整片擦除主闪存。USER 里 WDG_SW 为 0 是硬件看门狗，为 1 是软件看门狗。不把 0xAA 写成无保护键，不写 0xCC。不在第 01 章展开喂狗。"
+    },
+    "pm0056-vector": {
+      "title": "PM0056 Rev 7 向量表的两字与 IRQ 入口",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024. Default section 2.3.4 for the vector table. Item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4 times (IRQn + 16). If the printed title of section 2.3.4 is not the vector table, replace this section number with the printed section that states those two items. The claim does not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章的两字和 IRQ 入口。向量表第 0 项是 MSP 初值，第 1 项是 Reset。外设中断入口是 VTOR + 4×(IRQn + 16)。不改 pm0056 和 pm0056-nvic。不把 167 ns 写进这一章。"
     }
   }
 }

@@ -4,10 +4,69 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
+import subprocess
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch4-01-07-10-11-lock.json"
+SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch4-01-07-10-11-source-list.json"
+_BASELINE_MANIFESTS: dict[str, dict] | None = None
+
+
+def baseline_manifests() -> tuple[dict, dict]:
+    """Manifests at the lock file's baseline, before batch-4 sources exist."""
+    global _BASELINE_MANIFESTS
+    if _BASELINE_MANIFESTS is not None:
+        return _BASELINE_MANIFESTS["zh"], _BASELINE_MANIFESTS["en"]
+    rev = json.loads(LOCK.read_text(encoding="utf-8"))["baseline"]
+    paths = ("stm32-book/manifest.json", "stm32-book/manifest-en.json")
+    blobs = [_git_show(rev, path) for path in paths]
+    if any(blob is None for blob in blobs):
+        _fetch_baseline(rev)
+        blobs = [_git_show(rev, path) for path in paths]
+        if any(blob is None for blob in blobs):
+            raise AssertionError(
+                f"batch-4 baseline {rev} is not in this checkout and could not be fetched"
+            )
+    _BASELINE_MANIFESTS = {
+        "zh": json.loads(blobs[0]),
+        "en": json.loads(blobs[1]),
+    }
+    return _BASELINE_MANIFESTS["zh"], _BASELINE_MANIFESTS["en"]
+
+
+def _fetch_baseline(rev: str) -> None:
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    base = os.environ.get("GITHUB_BASE_REF", "main")
+    commands = (
+        ["git", "-C", str(ROOT), "fetch", "--depth=1", "origin", rev],
+        [
+            "git", "-C", str(ROOT), "fetch", "--depth=50", "origin",
+            f"+refs/heads/{base}:refs/remotes/origin/{base}",
+        ],
+    )
+    errors: list[str] = []
+    for command in commands:
+        if _git_show(rev, "stm32-book/manifest.json") is not None:
+            return
+        got = subprocess.run(command, capture_output=True, text=True, env=env)
+        if got.returncode != 0:
+            errors.append((got.stderr or got.stdout or command[-1]).strip())
+    if _git_show(rev, "stm32-book/manifest.json") is None and errors:
+        raise AssertionError("; ".join(errors))
+
+
+def _git_show(rev: str, path: str) -> str | None:
+    got = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{rev}:{path}"],
+        capture_output=True,
+    )
+    if got.returncode != 0:
+        return None
+    return got.stdout.decode("utf-8")
 DIAGRAMS = ROOT / "assets" / "diagrams"
 SWD = DIAGRAMS / "sample-01-swd-vectors.svg"
 I2C = DIAGRAMS / "sample-07-i2c-addr.svg"
@@ -182,6 +241,135 @@ class Batch4GifTests(unittest.TestCase):
             self.assertLessEqual(len(gif.frames), 12)
             path = ROOT / "assets" / "gif" / f"{name}.gif"
             self.assertLess(path.stat().st_size, 500 * 1024, path.name)
+
+
+class Batch4SwdChapterTests(unittest.TestCase):
+    def test_swd_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "01-开发环境搭建.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "01-dev-environment.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 📌 学习目标", zh)
+        self.assertIn("## 📌 Learning goals", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core ideas", en)
+        self.assertIn("stm32f1x unlock 0", zh)
+        self.assertIn("stm32f1x unlock 0", en)
+        self.assertIn("LENGTH = 64K", zh)
+        self.assertIn("LENGTH = 20K", zh)
+        self.assertNotIn("从 SRAM 启动", zh)
+        self.assertNotIn("boot from SRAM", en)
+        self.assertNotIn("选 `AA`", zh)
+        self.assertNotIn("set Read Out Protection to `AA`", en)
+        for text in (zh, en):
+            for token in (
+                "STM32F103C8T6",
+                "PA13",
+                "PA14",
+                "VSS_2",
+                "VDD_2",
+                "NRST",
+                "BOOT0",
+                "0x08000000",
+                "0x00000000",
+                "0x00000004",
+                "0x1FFFF000",
+                "0xA5",
+                "64",
+                "20",
+                "#source-ds5319-swd",
+                "#source-pm0075-rdp",
+                "#source-pm0056-vector",
+                "#source-rm0008-boot",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("第 34 脚", zh)
+        self.assertIn("第 35 脚", zh)
+        self.assertIn("第 37 脚", zh)
+        self.assertIn("第 7 脚", zh)
+        self.assertIn("第 44 脚", zh)
+        self.assertIn("pin 34", en)
+        self.assertIn("pin 35", en)
+        self.assertIn("pin 37", en)
+        self.assertIn("pin 7", en)
+        self.assertIn("pin 44", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            self.assertIn("0xA5", blocks)
+            self.assertIn("0xAA", blocks)
+            self.assertNotIn("167 ns", blocks)
+            self.assertNotIn("Level 2", blocks)
+        self.assertIn("作废", zh_blocks)
+        self.assertIn("void", en_blocks.lower())
+        self.assertIn("../assets/diagrams/sample-01-swd-vectors.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-01-swd-vectors.svg", en)
+        self.assertIn("../assets/gif/swd-fetch.gif", zh)
+        self.assertIn("../../assets/gif/swd-fetch.gif", en)
+        self.assertIn("../assets/animations/boot-sequence.svg", zh)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-01-swd-vectors.svg"), zh_key.index("swd-fetch.gif"))
+        self.assertLess(en_key.index("sample-01-swd-vectors.svg"), en_key.index("swd-fetch.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertNotIn("schematic", en_key.lower())
+        self.assertNotIn("矢量动画", zh_key)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "ds5319-swd": (
+                "第 01 章原理与边界、关键插图、时序或状态、坑与出处卡。只改写 LQFP48 第 34 脚 PA13 = JTMS/SWDIO、第 35 脚 VSS_2、第 36 脚 VDD_2、第 37 脚 PA14 = JTCK/SWCLK、第 7 脚 NRST、第 44 脚 BOOT0。STM32F103x8 闪存 64 KB、SRAM 20 KB。xB 的 128 KB 在 C8T6 上作废。第 39 脚 PB3 只写进边界，不进主图正常路径。不改 ds5319-gpio。",
+                "Chapter 01 principle, key figures, timing, and source cards. Restates LQFP48 pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 7 NRST, and pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB is void on C8T6. Pin 39 PB3 stays in the boundary and off the normal path. Does not change ds5319-gpio.",
+            ),
+            "pm0075-rdp": (
+                "第 01 章读保护，以及第 11 章对 WDG_SW 的交叉引用。选项字节在 0x1FFFF800，低字节 RDP 的读允许键是 0xA5（手册印成 0x00A5）。编程回这个键会先整片擦除主闪存。USER 里 WDG_SW 为 0 是硬件看门狗，为 1 是软件看门狗。不把 0xAA 写成无保护键，不写 0xCC。不在第 01 章展开喂狗。",
+                "Chapter 01 readout protection, and the chapter 11 cross-reference for WDG_SW. Option bytes sit at 0x1FFFF800. The readout-allowed RDP byte is 0xA5 (the manual prints 0x00A5). Programming that key back mass-erases main Flash first. WDG_SW = 0 is the hardware watchdog and WDG_SW = 1 is the software watchdog. Does not call 0xAA the unprotected key and does not write 0xCC. Does not expand watchdog feeding inside chapter 01.",
+            ),
+            "pm0056-vector": (
+                "第 01 章的两字和 IRQ 入口。向量表第 0 项是 MSP 初值，第 1 项是 Reset。外设中断入口是 VTOR + 4×(IRQn + 16)。不改 pm0056 和 pm0056-nvic。不把 167 ns 写进这一章。",
+                "Chapter 01's two words and the IRQ entry. Vector-table item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4×(IRQn + 16). Does not change pm0056 or pm0056-nvic. Does not put 167 ns in this chapter.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "project-guide",
+            "pm0056",
+            "stm32cube-f4",
+            "clion-embedded",
+            "platformio-vscode",
+            "ds5319-swd",
+            "pm0075-rdp",
+            "pm0056-vector",
+            "rm0008-boot",
+        ]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["01-开发环境搭建.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["01-dev-environment.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(card_zh["accessed"], card_en["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(by_id[source_id]["authority_zh"], card_zh["authority"])
+            self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        baseline, baseline_en = baseline_manifests()
+        for source_id, obj in baseline["sources"].items():
+            self.assertEqual(obj, zh_manifest["sources"][source_id])
+        for source_id, obj in baseline_en["sources"].items():
+            self.assertEqual(obj, en_manifest["sources"][source_id])
 
 
 if __name__ == "__main__":
