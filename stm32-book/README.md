@@ -14,7 +14,7 @@
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印。书签只保留分部、章、附录、版本与修订和主题索引，不展开章内二、三级标题；另有完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.2.4 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后，由有权限的人另行处理。
+当前版本：**v1.2.5 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后，由有权限的人另行处理。
 
 ## 构建
 
@@ -28,6 +28,8 @@ python stm32-book/build_html.py --lang en --pdf
 ```
 
 `--lang` 默认 `zh`。英文版读 `manifest-en.json`、`docs/en/` 和 `stm32-book/book/en/`。
+
+样式来自 `stm32-book/styles/tokens.json` 和 `stm32-book/styles/book.css`，构建时拼进 HTML 的 `<style>`，`dist/` 里不另放 CSS。
 
 默认输出：
 
@@ -87,13 +89,13 @@ python stm32-book/build_html.py --lang en --check
 
 ## 发布 GitHub Release
 
-版本号已经是 1.2.4。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.7 的产物标成 1.0.8，也不要把 1.0.8 的产物标成 1.1.0，也不要把 1.1.0 的产物标成 1.1.1，也不要把 1.1.1 的产物标成 1.2.0，也不要把 1.2.0 的产物标成 1.2.1，也不要把 1.2.1 的产物标成 1.2.2，也不要把 1.2.2 的产物标成 1.2.3，也不要把 1.2.3 的产物标成 1.2.4。
+版本号已经是 1.2.5。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.7 的产物标成 1.0.8，也不要把 1.0.8 的产物标成 1.1.0，也不要把 1.1.0 的产物标成 1.1.1，也不要把 1.1.1 的产物标成 1.2.0，也不要把 1.2.0 的产物标成 1.2.1，也不要把 1.2.1 的产物标成 1.2.2，也不要把 1.2.2 的产物标成 1.2.3，也不要把 1.2.3 的产物标成 1.2.4，也不要把 1.2.4 的产物标成 1.2.5。
 
 这次提交进入 `main` 并且 Book CI 变绿之后，由有权限的人：
 
 1. 下载这次 `main` 运行的两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
 2. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
-3. 在该提交上打 tag `v1.2.4`，创建 GitHub Release，并附上这四份文件。
+3. 在该提交上打 tag `v1.2.5`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 
