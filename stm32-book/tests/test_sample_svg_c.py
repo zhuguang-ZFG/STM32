@@ -190,15 +190,15 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "a4ccd1403ab742e82f67c39053c2609da1c9a8afa126d4f6b988a5b9559a5ac4",
+            "aacd30dcb0efbff80d004295338c9be99b35e19cb744d6f4b1e662a0b8f31baf",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
-            "c5bb7846ed74c394f59634b1b40c99d1264c9dd41b018dfb7bfad8a08bea014b",
+            "9d07dad497b824c9e2038ddf1e28cb77974451acb6c3b9773863df7c8c90d0bd",
             hashlib.sha256((BOOK_DIR / "styles" / "tokens.json").read_bytes()).hexdigest(),
         )
         self.assertEqual(
-            "7c821dba13bebb86123def3f243a480af460d897358d548c364860038fb563f5",
+            "cc2656e9c7e0ea311fc79d36c920c20d82012d8907b000ec940a93095845e480",
             hashlib.sha256((BOOK_DIR / "styles" / "book.css").read_bytes()).hexdigest(),
         )
         self.assertEqual(

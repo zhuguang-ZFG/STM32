@@ -1030,12 +1030,13 @@ class BookBuildContractTests(unittest.TestCase):
             "--warn: #9a3d1c",
             "--tip: #1b5c45",
             "--spine: #c4552a",
-            "--space-bar: 0.75rem",
-            "--space-paragraph: 1.25rem",
-            "--space-figure: 1.5rem",
-            "--space-chapter: 3.5rem",
-            "--inset: 6%",
-            "--leading-body: 1.75",
+            "--space-bar: 0.625rem",
+            "--space-paragraph: 1rem",
+            "--space-figure: 1.25rem",
+            "--space-chapter: 2.75rem",
+            "--inset: 4.5%",
+            "--leading-body: 1.65",
+            "--measure: 42rem",
             "--tracking-body: 0.01em",
             "--tracking-kicker: 0.14em",
             "--radius: 0.7rem",
@@ -1074,7 +1075,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("margin: var(--space-figure) auto", figure)
         self.assertIn("color-mix(in srgb, var(--panel) 70%, var(--paper))", figure)
         self.assertIn("margin: var(--space-figure) auto", self._css_rule(screen, "img"))
-        self.assertIn("margin: 0 auto .55rem", self._css_rule(screen, "figure img"))
+        self.assertIn("margin: 0 auto .4rem", self._css_rule(screen, "figure img"))
         self.assertIn("border-left: 4px solid var(--accent)", self._css_rule(screen, "blockquote.callout"))
         pre = self._css_rule(screen, "pre")
         self.assertIn("border-radius: var(--radius)", pre)
@@ -1115,7 +1116,7 @@ class BookBuildContractTests(unittest.TestCase):
         panel = self._css_rule(screen, ".cover-panel")
         self.assertIn("background: var(--paper)", panel)
         self.assertIn("color: var(--ink)", panel)
-        self.assertIn("padding: 1.8rem var(--inset) 2.6rem", panel)
+        self.assertIn("padding: 1.8rem 6% 2.6rem", panel)
         self.assertIn("background: var(--spine)", self._css_rule(screen, ".cover-panel::before"))
         self.assertIn("background: var(--spine)", self._css_rule(screen, ".cover .rule"))
         self.assertIn("color: var(--warn)", self._css_rule(screen, ".cover .eyebrow"))
@@ -1289,12 +1290,12 @@ class BookBuildContractTests(unittest.TestCase):
             block = self._css_rule(screen, selector)
             self.assertIn("font-size: var(--type-small)", block, selector)
             self.assertIn("line-height: var(--leading-caption)", block, selector)
-        self.assertIn("margin: 0 auto .55rem", self._css_rule(screen, "figure img"))
+        self.assertIn("margin: 0 auto .4rem", self._css_rule(screen, "figure img"))
         self.assertIn("font-size: var(--type-small)", self._css_rule(screen, "table"))
         self.assertIn("font-size: var(--type-small)", self._css_rule(screen, ".source-card dl"))
 
         self.assertIn("line-height: var(--leading-toc)", self._css_rule(screen, ".contents li"))
-        self.assertIn("margin: .28rem 0", self._css_rule(screen, ".contents li"))
+        self.assertIn("margin: .2rem 0", self._css_rule(screen, ".contents li"))
         self.assertIn("break-inside: avoid", self._css_rule(screen, ".contents li"))
         goal = self._css_rule(screen, ".contents > section > p:not(.toc-closing)")
         self.assertIn("color: var(--muted)", goal)
@@ -1313,7 +1314,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("background: var(--paper)", contents_h2)
         self.assertIn("box-shadow: 0 1px 0 var(--line)", contents_h2)
         self.assertIn("columns: 2", self._css_rule(screen, ".contents ol"))
-        self.assertIn("column-gap: 3rem", self._css_rule(screen, ".contents ol"))
+        self.assertIn("column-gap: 2.25rem", self._css_rule(screen, ".contents ol"))
         self.assertIn("columns: 1", self._css_rule(narrow, ".contents ol"))
 
         self.assertIn(
@@ -1496,7 +1497,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "a4ccd1403ab742e82f67c39053c2609da1c9a8afa126d4f6b988a5b9559a5ac4",
+            "aacd30dcb0efbff80d004295338c9be99b35e19cb744d6f4b1e662a0b8f31baf",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
