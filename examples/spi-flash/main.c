@@ -187,7 +187,7 @@ static uint8_t w25x_wait_busy(void)
 }
 
 /**
- * @brief  读 JEDEC ID（3 字节：厂商 0xEF + 容量 0x40 + 型号 0x17）
+ * @brief  读 JEDEC ID（3 字节：厂商 0xEF、存储器类型 0x40、容量 0x17）
  */
 static void w25x_read_jedec_id(uint8_t id[3])
 {

@@ -103,7 +103,9 @@ Device Descriptor                         (VID / PID / how many configurations)
 | Configuration | `bMaxPower` | Unit is 2 mA (0x32 = 100 mA) |
 | Interface | `bInterfaceClass` | 0x02 CDC, 0x03 HID, 0x08 MSC, 0xFF vendor |
 | Endpoint | `bmAttributes` | 0 control, 1 isochronous, 2 bulk, 3 interrupt |
-| Endpoint | `wMaxPacketSize` | 64 bytes max at full speed (isochronous/interrupt can be 1023) |
+| Endpoint | `wMaxPacketSize` | 64 bytes maximum for full-speed bulk and interrupt; 1023 is full-speed isochronous only |
+
+A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is the full-speed isochronous ceiling, not the interrupt ceiling. In this repository's `examples/usb-cdc`, the bulk endpoints are 64 bytes and the notification endpoint is 8 bytes.
 
 ### 5. Seven enumeration steps
 

@@ -54,8 +54,8 @@ static void w25x_read_jedec_id(uint8_t id[3]) {
     CS_LOW;
     w25x_spi_txrx(0x9F);          /* 命令：读 JEDEC ID */
     id[0] = w25x_spi_txrx(0xFF);  /* 厂商 0xEF */
-    id[1] = w25x_spi_txrx(0xFF);  /* 容量 0x40（=8MB） */
-    id[2] = w25x_spi_txrx(0xFF);  /* 型号 0x17 */
+    id[1] = w25x_spi_txrx(0xFF);  /* 存储器类型 0x40 */
+    id[2] = w25x_spi_txrx(0xFF);  /* 容量 0x17（64 Mbit = 8 MB） */
     CS_HIGH;
 }
 ```

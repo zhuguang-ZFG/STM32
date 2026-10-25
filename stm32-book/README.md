@@ -13,7 +13,7 @@
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印，保留标题书签、完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.0.4 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
+当前版本：**v1.0.5 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
 
 ## 构建
 
@@ -80,18 +80,19 @@ python stm32-book/build_html.py --lang en --check
 - 代码块两端的滚动提示用浅色，在深色代码底上能看见；选中文字用强调色的浅底；
 - 附录 D 文末有 BluePill（STM32F103C8T6）的数字账；附录 A、B、E、F 用同一组订货号、BRR 和微秒，不改 `docs/`；
 - 附录 D 还有一页换系列的账：1 kHz 的 PSC/ARR、约 167 ns 的入栈、FromISR 的 `0x50`、500 与 450 kbit/s、1 KB 页与两把钥匙、G0 第四个 SYSCLK 上升沿、L4 封面 1.1 µA、H7 的 400/480 MHz。附录 E 用同一笔 CAN 账填过一张证据格子。附录 F 在第一块板的四行之后有换芯片的三行；
+- 附录 D 还有第三张账：SPI 的 9 MHz 与 `0xEF4017`、F103 的 DMA1 通道与半字 NDTR、USB 的 48 MHz 与 67 字节、`0xE000ED28` 起的故障寄存器、17.2% 的示例利用率、RMII 的 50 MHz 与 MSS 1460。附录 A 第 8 节和附录 C 的对账用同一组数；
 - `--lang en` 产出 29 章英文书，章末的 Previous / Next 和插画免责声明不进书；
 - 缺图、漏罗盘、坏锚点和未闭合视频块会让构建失败。
 
 ## 发布 GitHub Release
 
-版本号已经是 1.0.4。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.3 的产物标成 1.0.4。
+版本号已经是 1.0.5。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.4 的产物标成 1.0.5。
 
 这次提交进入 `main` 并且 Book CI 变绿之后，由有权限的人：
 
 1. 下载这次 `main` 运行的两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
 2. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
-3. 在该提交上打 tag `v1.0.4`，创建 GitHub Release，并附上这四份文件。
+3. 在该提交上打 tag `v1.0.5`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 

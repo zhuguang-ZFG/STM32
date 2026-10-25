@@ -9,19 +9,19 @@ An example is not finished when it compiles. Each one needs an observable result
 | 3 | `timer-pwm` | 05 | PA6 is 1 kHz; the duty changes continuously as CCR changes | Scope or logic analyzer | LED brightness is linear with duty |
 | 4 | `uart-dma-idle` | 06, 10 | Commands of several lengths enqueue intact, and reception recovers after ORE | USB-TTL and a byte compare or counter | IDLE is a business frame; a continuous stream never overflows |
 | 5 | `i2c-oled` | 07 | The OLED displays and keeps refreshing; an address scan hits only the target | Logic analyzer, I2C decode | Every OLED uses the same address and init table |
-| 6 | `spi-flash` | 08 | The JEDEC ID matches the part; a cross-page write matches byte for byte | Logic analyzer and `memcmp` | Endurance and power-loss atomicity meet a product requirement |
+| 6 | `spi-flash` | 08 | The JEDEC ID is `0xEF4017` (manufacturer `0xEF`, type `0x40`, capacity `0x17`); a cross-page write matches byte for byte | Logic analyzer and `memcmp` | Endurance and power-loss atomicity meet a product requirement |
 | 7 | `adc-dma` | 09, 10 | Three channels sample continuously, and a change appears on the matching channel | Meter and the DMA buffer | A nominal 3.3 V is a precision reference |
 | 8 | `rtc-alarm` | 11, 16 | After Stop, wake-up follows the plan; with VBAT the time stays continuous | Current meter and serial timestamps | The whole board meets a datasheet's typical chip current |
 | 9 | `iap-bootloader` | 12 | A valid image jumps; a damaged image does not | Serial port, reset, and a power-cut injection | Signatures, anti-rollback, and secure boot are done |
 | 10 | `can-bxcan` | 13 | Loopback receives; with two nodes there is an ACK and the filter works | CAN analyzer or the error counters | FDCAN can reuse the same register setup |
-| 11 | `usb-cdc` | 14 | The host enumerates a CDC port and bytes travel both ways | USB capture or the OS device list | Every host, cable, and suspend/resume path is compatible |
+| 11 | `usb-cdc` | 14 | The host enumerates CDC. This example's `wTotalLength` is 67 (`0x43`), the VID/PID is `0x1209/0x0001`, and bytes travel both ways | USB capture or the OS device list | Every host, cable, and suspend/resume path is compatible. The VID is also not the `0x0483` common in ST's examples |
 | 12 | `usb-hid` | 14 | An edge on PA0 produces one press and one all-zero release report | A text field and a USB capture | It is a safe input device or has passed USB-IF |
 | 13 | `freertos-task` | 15 | Three tasks run; an empty queue blocks; a key event wakes a task | Trace or runtime stats, plus serial output | Worst-case response and stack margin are proven |
 | 14 | `spl-f1-blink` | 01, 26 | ELF/HEX/BIN/MAP close; on a board, PC13 blinks at about 1 Hz | GNU Arm size/nm, ST-Link, logic analyzer | A successful link means the board clock, wiring, and runtime are verified |
 
 ## Four rows to match before you run the list
 
-Before the order in the table, match these four rows to the two ledgers at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
+Before the order in the table, match these four rows to the first two ledgers at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
 
 | Example | Match this first | What a mismatch means |
 | --- | --- | --- |
@@ -29,6 +29,16 @@ Before the order in the table, match these four rows to the two ledgers at the e
 | `timer-pwm` | Compute the timer clock at 72 MHz. PSC 71 and ARR 999 produce 1 kHz. The same pair divided by 36 MHz produces 500 Hz | The scope shows 500 Hz or 2 kHz |
 | `uart-dma-idle` | USART1, 115200, BRR `0x271`. IDLE is about 86.8 µs, not a protocol frame boundary | The 0.16% in the chapter 06 table is being treated as this USART's error |
 | `can-bxcan` | APB1 at 36 MHz, prescaler 9, BS1 5, and BS2 2 are exactly 500 kbit/s. Prescaler 8 and 10 time quanta are 450 kbit/s | The analyzer sits at 450 kbit/s, or a loopback frame is being treated as an ACK from a second board |
+
+## Three more rows for the channel and the descriptor
+
+The four rows above match clocks and bit time. These three are in the third ledger of [Appendix D](#appendix-glossary). They match a request number, a descriptor length, and the unit of a stack.
+
+| Example | Match this first | What a mismatch means |
+| --- | --- | --- |
+| `spi-flash` | `0x9F` reads back `0xEF 0x40 0x17`. At 72 MHz and `BR = 010`, SCK is 9 MHz | The ID is all 0s or all `FF`, or `0x40` is being treated as the capacity |
+| `usb-cdc` | `USBPRE = 0` turns 72 MHz into 48 MHz. The configuration set is 67 bytes. The VID/PID is `0x1209/0x0001` | Enumeration sticks on the descriptor, or this firmware is being checked against ST's `0x0483/0x5740` |
+| `freertos-task` | Stack depth is in words: 128, 192, and 256 words are 512, 768, and 1024 bytes. The tick is 1 ms | 128 was treated as bytes, and the task enters HardFault as soon as it is created |
 
 ## A useful order
 

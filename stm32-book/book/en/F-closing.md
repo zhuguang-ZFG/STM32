@@ -16,7 +16,7 @@ This page exists only in the book. It gathers the seven parts into one path you 
 
 ## Four lines for the first board
 
-The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are in the first ledger at the end of [Appendix D](#appendix-glossary). The next ledger is the one you use when the chip changes.
+The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are in the first ledger at the end of [Appendix D](#appendix-glossary). The next ledger is the one you use when the chip changes. Channels, descriptors, and fault registers are in the third ledger.
 
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |

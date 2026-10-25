@@ -240,3 +240,17 @@
 | 启动或电压档 | BOOT0 与选项字节，组合见 RM0008 | 复位释放后，启动配置在第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。锁存之后 SWCLK 翻转不会改掉这次的启动目标。`BOOT_LOCK=1` 且 RDP Level 1 时调试停住，`FLASH_ACR.DBG_SWEN` 复位值为 0 | Stop 2 之后的临时时钟是 MSI 或 HSI16 | 先开 SYSCFG 时钟。VOS1 的 `VOSRDY` 到了，才请求 VOS0，再等一次 `VOSRDY`。从 VOS0 进 Stop 或 Standby 之前，先回到 VOS1 并再等一次就绪。官方 400 MHz 示例的 Flash 等待参数是 4。第 25 章的 480 MHz 路径把同一个 HAL 参数传了进去，这一档的访问时间仍要对照 DS12110 |
 | 时钟算式 | 见上一张表 | 见第 23 章的启动真值表，不把 F1 的 AFIO 重映射抄过来 | 醒后 CPU 已经继续执行时，PLL 仍可能关着 | 8 MHz HSE bypass，`PLLM=4`，PLL 输入 2 MHz。`PLLN=400`、`PLLP=2`：SYSCLK 400 MHz，HCLK 200 MHz，PCLK 100 MHz，APB 定时器时钟 200 MHz，MCO2÷5 期望 80 MHz。`PLLN=480`：VCO 960 MHz，SYSCLK 480 MHz，HCLK 240 MHz，PCLK 120 MHz，定时器时钟 240 MHz，MCO2÷5 期望 96 MHz。`PLL1Q = 960/4 = 240 MHz`。USB 要的 48 MHz 另选 PLL 和分频。MCO 是计算预期 |
 | 内存 | SRAM 20 KB。DMA 按 RM0008 的通道表 | 见第 23 章，按该封装重核复用 | 唤醒证据放在 Stop 2 仍保持的 SRAM | 第 27 章：Ethernet DMA 不能访问 `0x20000000` 的 DTCM。描述符放在它能到达的 D1 或 D2 SRAM，并按 32 字节缓存行对齐 |
+
+## 通道、描述符与故障寄存器
+
+前两张账钉的是时钟、位时间和换系列。下面这些数已经写在第 08、10、14、15、17、27、28 章和本仓库例程里，这里收成还能手算的一页。换订货号、换 DMA 请求表或换描述符，整行作废。
+
+| 账 | 钉在哪 | 数 | 写错时长什么样 |
+| --- | --- | --- | --- |
+| SPI 9 MHz | 第 08 章。SPI1 在 APB2，72 MHz。`BR[2:0]` 只有 2/4/8/16/32/64/128/256 | `BR = 010` 是 ÷8，SCK = 9 MHz。`BR = 001` 是 18 MHz。JEDEC 命令 `0x9F`。`spi-flash` 期待厂商 `0xEF`、类型 `0x40`、容量 `0x17`，常写成 `0xEF4017`。页 256 字节 | 把 `0x40` 当成容量，或用 ÷3 这种不存在的分频 |
+| DMA 通道 | 第 10 章，RM0008。F103C8 只有 DMA1，7 条通道。F4 见 RM0090 | USART1_TX = Channel 4，USART1_RX = Channel 5，ADC1 = Channel 1。长度 8 个半字、`CNDTR = 3`：已写 `8 − 3 = 5` 个采样，即 10 字节。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4×32 位 | 把 F4 的 Stream 号写进 F1，或把半字 NDTR 当成字节。半传输是 4 个采样、8 字节，不是 4 字节 |
+| USB 67 字节 | 第 14 章与 `examples/usb-cdc`。RM0008 的 USB 预分频 | PLL 72 MHz 且 `USBPRE = 0` 时，`72 / 1.5 = 48` MHz。设备描述符 18 字节，`bMaxPacketSize0 = 64`。本例 VID/PID 是 `0x1209/0x0001`。`wTotalLength = 0x0043 = 67`。`bMaxPower` 的 `0x32` 是 100 mA。全速批量和中断最大都是 64 字节；1023 只属于全速等时 | 把 ST 例程的 `0x0483/0x5740` 写进这份描述符，或把全速中断包长写成 1023 |
+| 栈的单位 | 第 15 章与 `freertos-task`。`xTaskCreate` 的深度是字 | LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。`configTICK_RATE_HZ = 1000` 时 1 tick = 1 ms | 把 128 当成 128 字节。第一次 `printf` 就溢出。短于 1 ms 的期限被写成内核保证 |
+| 故障寄存器 | 第 17 章，PM0056 | `CFSR` `0xE000ED28`，`HFSR` `0xE000ED2C`，`MMFAR` `0xE000ED34`，`BFAR` `0xE000ED38`。`FORCED` 是 HFSR bit 30，值 `0x40000000`。`BFARVALID` 是 CFSR bit 15。先置 `DEMCR` `0xE000EDFC` 的 bit 24，再读 `DWT_CYCCNT` `0xE0001004`。72 MHz 时 72 周期 = 1 µs。SWO 在 PB3。M3/M4 硬件断点 6 个，M7 为 8 个 | `BFARVALID` 为 0 时仍把 `BFAR` 里的旧值当成这次的地址 |
+| 17.2% | 第 28 章的示例预算，不是测量 | `80/1000 = 8%`，`420/10000 = 4.2%`，`70/2000 = 3.5%`，`1500/100000 = 1.5%`，合计 17.2% | 把 17.2% 写成这块板已经满足截止时间 |
+| RMII 与 MSS | 第 27 章。`REF_CLK`。DHCP/DNS 端口。IPv4 无选项 | `REF_CLK = 50 MHz`。DHCP 是 UDP 67/68，DNS 是端口 53。MTU 1500 时 MSS 上限 `1500 − 20 − 20 = 1460`。对端 SYN 里更小的 MSS 优先。DTCM 仍是 `0x20000000`，行长 32 字节 | 用 25 MHz 的 MII 时钟去对 RMII，或把 1460 当成对端已经同意的 MSS |
