@@ -31,7 +31,7 @@
 
 | 要写下来的 | 这本书里的期望 | 你要填的实测 |
 | --- | --- | --- |
-| G0 的启动锁存 | 第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。`DBG_SWEN` 的复位值是 0 | 采样窗口里 PA14 的电平，以及调试器能否连上 |
+| G0 的启动锁存 | 第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。`BOOT_LOCK=1` 且 RDP Level 1 时调试停住，`FLASH_ACR.DBG_SWEN` 复位值为 0 | 采样窗口里 PA14 的电平，以及调试器能否连上 |
 | L4 醒来的时钟 | Stop 2 之后的临时时钟是 MSI 或 HSI16。封面 1.1 µA、带 RTC 1.4 µA、唤醒 4 µs 是芯片典型值 | 醒后第一帧的位宽；拔掉调试器和 LED 之后的电流 |
 | H7 的硅片和 VOS | Rev Y/W 停在 VOS1 和 400 MHz。Rev V 从已经就绪的 VOS1 进入 VOS0，再到 480 MHz。MCO2÷5 在 400 MHz 时期望 80 MHz，在 480 MHz 时期望 96 MHz | `REV_ID`、两次 `VOSRDY`、MCO 的仪器读数 |
 

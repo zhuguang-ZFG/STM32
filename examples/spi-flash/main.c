@@ -87,9 +87,9 @@ int main(void)
     /* 1) 读 JEDEC ID 确认芯片在位：W25Q64 应为 EF 40 17 */
     uint8_t id[3] = {0};
     w25x_read_jedec_id(id);
-    if (id[0] != 0xEFU)
+    if (id[0] != 0xEFU || id[1] != 0x40U || id[2] != 0x17U)
     {
-        error_handler();                /* 读不到芯片：接线/供电/片选问题 */
+        error_handler();                /* 期望 EF 40 17：接线、供电、片选或型号不对 */
     }
 
     /* 2) 准备测试数据：0,1,2,...,299 */

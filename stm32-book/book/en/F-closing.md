@@ -31,7 +31,7 @@ Match the four lines for the first board, then change family. The expected value
 
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |
-| The G0 boot latch | Latched on the fourth rising edge of SYSCLK. PA14 is both the boot input and SWCLK. `DBG_SWEN` resets to 0 | The level on PA14 during the sample window, and whether the debugger connects |
+| The G0 boot latch | Latched on the fourth rising edge of SYSCLK. PA14 is both the boot input and SWCLK. With `BOOT_LOCK=1` and RDP level 1, debug stops, and `FLASH_ACR.DBG_SWEN` resets to 0 | The level on PA14 during the sample window, and whether the debugger connects |
 | The clock an L4 wakes on | After Stop 2 the temporary clock is MSI or HSI16. The cover's 1.1 µA, 1.4 µA with the RTC, and 4 µs wake are chip typicals | The bit width of the first frame after wake-up, and the current with the debugger and the LED removed |
 | H7 silicon and VOS | Rev Y/W stay on VOS1 at 400 MHz. Rev V enters VOS0 from a VOS1 that has already reported ready, and only then 480 MHz. MCO2÷5 expects 80 MHz at 400 MHz and 96 MHz at 480 MHz | `REV_ID`, both `VOSRDY` waits, and the MCO reading on an instrument |
 
