@@ -216,10 +216,7 @@
       "question": "How does time survive loss of the main supply, and how does a watchdog prove the main loop is actually healthy rather than merely being fed?",
       "deliverable": "A power-loss timekeeping record, a reset-reason record after a deliberate missed feed, and an explicit healthy-feed condition.",
       "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design. A nominal 1 second is prescaler 64 and Reload 624, taking LSI as 40 kHz. The manual range is about 30–60 kHz, so that second is not a guarantee.",
-      "sources": [
-        "rm0008",
-        "ds5319"
-      ]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
     },
     "12-flash-iap.md": {
       "question": "How do you hand a new firmware image to the application safely, under erase limits, address boundaries, and power-loss risk?",
@@ -1152,6 +1149,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 10. Medium-density parts have one 7-channel DMA1. DMA2 is void on STM32F103C8T6."
+    },
+    "rm0008-wdg": {
+      "title": "RM0008 Rev 21 independent-watchdog second and the window watchdog",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 17 and 18. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. A debug-freeze bit name is added here only if chapter 17 prints it. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's one second and the window. Prescaler 64 at 40 kHz counts at 625 Hz. Reload 624 is 1 second and Reload 625 is one extra count. The IWDG resets only at 0. The WWDG at 36 MHz, prescaler 8, and 0x7F times out in 58.25 ms, and feeding while the counter is above the window resets it. Does not treat the 40 kHz second as a guarantee. Does not change Appendix D."
+    },
+    "rm0008-rtc": {
+      "title": "RM0008 Rev 21 RTC prescaler and backup-domain unlock",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 16, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's 1 Hz time base. The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. Set DBP in PWR_CR before writing the backup domain. Does not import F4 keys 0xCA and 0x53 or call TR/DR the calendar on this part."
+    },
+    "ds5319-rtc": {
+      "title": "DS5319 Rev 20 LSI, LSE pins, and ten backup registers",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 25 and sections 2.3.12, 2.3.14, and 2.3.15, plus Table 5. fLSI is 30 / 40 / 60 kHz. There are ten 16-bit backup registers, 20 bytes. The default time base is 32.768 kHz giving 1 second. The IWDG uses an independent 40 kHz, keeps running in Stop and Standby, and can be frozen while debugging. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, pin 4 is PC15-OSC32_OUT.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's crystal pins, ten backup registers, and the LSI range. Table 25 prints fLSI as 30 / 40 / 60 kHz. Ten 16-bit backup registers are 20 bytes. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, and pin 4 is PC15-OSC32_OUT. The independent watchdog can be frozen while debugging. Does not invent a load-capacitor picofarad. Does not put ±20 ppm or ±50% in the snapshot."
     }
   }
 }

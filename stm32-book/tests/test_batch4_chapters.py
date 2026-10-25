@@ -547,5 +547,108 @@ class Batch4DmaChapterTests(unittest.TestCase):
         self.assertEqual(baseline_manifests()[0]["sources"]["rm0090"], zh_manifest["sources"]["rm0090"])
 
 
+class Batch4WatchdogChapterTests(unittest.TestCase):
+    def test_watchdog_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "11-RTC与看门狗.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "11-rtc-watchdog.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("6 pF", zh)
+        self.assertNotIn("6 pF", en)
+        self.assertNotIn("过早/过晚都触发复位", zh)
+        self.assertNotIn("too early and too late both reset", en)
+        self.assertIn("6.5536", zh)
+        self.assertIn("6.5536", en)
+        self.assertNotIn("4095/625", zh)
+        self.assertNotIn("4095/625", en)
+        for text in (zh, en):
+            for token in (
+                "624",
+                "625",
+                "32767",
+                "32768",
+                "58.25",
+                "0x7F",
+                "0x50",
+                "40",
+                "30",
+                "60",
+                "#source-rm0008-wdg",
+                "#source-rm0008-rtc",
+                "#source-ds5319-rtc",
+                "#source-pm0075-rdp",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("第 1 脚", zh)
+        self.assertIn("第 3 脚", zh)
+        self.assertIn("第 4 脚", zh)
+        self.assertIn("pin 1", en)
+        self.assertIn("pin 3", en)
+        self.assertIn("pin 4", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            self.assertNotIn("6 pF", blocks)
+            self.assertNotIn("±20 ppm", blocks)
+            self.assertNotIn("±50%", blocks)
+            self.assertNotIn("0xA5A5", blocks)
+        self.assertIn("喂早不复位", zh_blocks)
+        self.assertIn("does not reset", en_blocks)
+        self.assertIn("作废", zh_blocks)
+        self.assertIn("void", en_blocks.lower())
+        self.assertIn("../assets/diagrams/sample-11-iwdg-1s.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-11-iwdg-1s.svg", en)
+        self.assertIn("../assets/gif/iwdg-1s.gif", zh)
+        self.assertIn("../../assets/gif/iwdg-1s.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        self.assertLess(zh_key.index("sample-11-iwdg-1s.svg"), zh_key.index("iwdg-1s.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0])
+        self.assertNotIn("示意图", zh_key)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-wdg": (
+                "第 11 章的 1 秒和窗口。预分频 64、f_LSI 按 40 kHz 时计数频率 625 Hz。Reload 624 是 1 秒，Reload 625 多一个计数。IWDG 减到 0 才复位。WWDG 在 36 MHz、预分频 8、初值 0x7F 时超时 58.25 ms；计数器大于窗口值时喂狗会复位。不把 40 kHz 的秒数写成保证值。不改附录 D。",
+                "Chapter 11's one second and the window. Prescaler 64 at 40 kHz counts at 625 Hz. Reload 624 is 1 second and Reload 625 is one extra count. The IWDG resets only at 0. The WWDG at 36 MHz, prescaler 8, and 0x7F times out in 58.25 ms, and feeding while the counter is above the window resets it. Does not treat the 40 kHz second as a guarantee. Does not change Appendix D.",
+            ),
+            "rm0008-rtc": (
+                "第 11 章的 1 Hz 时基。RTC 时钟除以 (PRL + 1)。32.768 kHz 配 PRL = 32767 得到 1 Hz。PRL = 32768 不是 1 Hz。写备份域之前置 PWR_CR 的 DBP。不把 F4 的 0xCA、0x53 或 TR/DR 写进来。",
+                "Chapter 11's 1 Hz time base. The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. Set DBP in PWR_CR before writing the backup domain. Does not import F4 keys 0xCA and 0x53 or call TR/DR the calendar on this part.",
+            ),
+            "ds5319-rtc": (
+                "第 11 章主图的晶振脚、10 个备份寄存器和 LSI 范围。表 25 的 fLSI 是 30 / 40 / 60 kHz。备份寄存器 10 个 16 位，共 20 字节。第 1 脚 VBAT，第 3 脚 PC14-OSC32_IN，第 4 脚 PC15-OSC32_OUT。调试时可以冻住独立看门狗。不编负载电容的皮法。不把 ±20 ppm 或 ±50% 写进 snapshot。",
+                "Chapter 11's crystal pins, ten backup registers, and the LSI range. Table 25 prints fLSI as 30 / 40 / 60 kHz. Ten 16-bit backup registers are 20 bytes. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, and pin 4 is PC15-OSC32_OUT. The independent watchdog can be frozen while debugging. Does not invent a load-capacitor picofarad. Does not put ±20 ppm or ±50% in the snapshot.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["11-RTC与看门狗.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["11-rtc-watchdog.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        self.assertEqual(
+            zh_manifest["sources"]["pm0075-rdp"],
+            zh_manifest["sources"]["pm0075-rdp"],
+        )
+        baseline_zh, _baseline_en = baseline_manifests()
+        self.assertNotIn("pm0075-rdp", baseline_zh["sources"])
+        self.assertEqual(
+            baseline_zh["sources"]["ds5319"],
+            zh_manifest["sources"]["ds5319"],
+        )
+
 if __name__ == "__main__":
     unittest.main()

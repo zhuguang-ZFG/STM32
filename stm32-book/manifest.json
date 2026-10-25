@@ -170,7 +170,7 @@
       "question": "时间怎样跨主电源保持，看门狗又怎样证明主循环真的健康而不是只会喂狗？",
       "deliverable": "一份掉电走时记录、一份故意漏喂后的复位原因记录和明确的健康喂狗条件。",
       "boundary": "看门狗复位不是故障恢复策略本身；状态持久化、故障计数和安全降级仍需系统设计。名义 1 秒是预分频 64、Reload 624、LSI 按 40 kHz；手册范围大约 30–60 kHz，这个秒数不是保证值。",
-      "sources": ["rm0008", "ds5319"]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
     },
     "12-Flash与IAP升级.md": {
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
@@ -997,6 +997,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 10 章。中密度是一个 7 通道的 DMA1。DMA2 在 STM32F103C8T6 上作废。"
+    },
+    "rm0008-wdg": {
+      "title": "RM0008 Rev 21 独立看门狗的 1 秒与窗口看门狗",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 17 and 18. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. A debug-freeze bit name is added here only if chapter 17 prints it. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章的 1 秒和窗口。预分频 64、f_LSI 按 40 kHz 时计数频率 625 Hz。Reload 624 是 1 秒，Reload 625 多一个计数。IWDG 减到 0 才复位。WWDG 在 36 MHz、预分频 8、初值 0x7F 时超时 58.25 ms；计数器大于窗口值时喂狗会复位。不把 40 kHz 的秒数写成保证值。不改附录 D。"
+    },
+    "rm0008-rtc": {
+      "title": "RM0008 Rev 21 RTC 预分频与备份域解锁",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 16, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章的 1 Hz 时基。RTC 时钟除以 (PRL + 1)。32.768 kHz 配 PRL = 32767 得到 1 Hz。PRL = 32768 不是 1 Hz。写备份域之前置 PWR_CR 的 DBP。不把 F4 的 0xCA、0x53 或 TR/DR 写进来。"
+    },
+    "ds5319-rtc": {
+      "title": "DS5319 Rev 20 的 LSI、LSE 脚与 10 个备份寄存器",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 25 and sections 2.3.12, 2.3.14, and 2.3.15, plus Table 5. fLSI is 30 / 40 / 60 kHz. There are ten 16-bit backup registers, 20 bytes. The default time base is 32.768 kHz giving 1 second. The IWDG uses an independent 40 kHz, keeps running in Stop and Standby, and can be frozen while debugging. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, pin 4 is PC15-OSC32_OUT.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章主图的晶振脚、10 个备份寄存器和 LSI 范围。表 25 的 fLSI 是 30 / 40 / 60 kHz。备份寄存器 10 个 16 位，共 20 字节。第 1 脚 VBAT，第 3 脚 PC14-OSC32_IN，第 4 脚 PC15-OSC32_OUT。调试时可以冻住独立看门狗。不编负载电容的皮法。不把 ±20 ppm 或 ±50% 写进 snapshot。"
     }
   }
 }
