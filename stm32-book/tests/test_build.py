@@ -94,9 +94,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.2.4<"), history.index(">1.2.3<"))
         self.assertLess(history.index(">1.2.3<"), history.index(">1.2.2<"))
         self.assertLess(history.index(">1.2.2<"), history.index(">1.2.1<"))
         self.assertLess(history.index(">1.2.1<"), history.index(">1.2.0<"))
@@ -130,7 +131,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -224,7 +225,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.2.3</strong>", html)
+        self.assertIn("<strong>v1.2.4</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -364,7 +365,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.2.3", manifest["version"])
+        self.assertEqual("1.2.4", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -381,7 +382,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.2.3</strong>", html)
+        self.assertIn("<strong>v1.2.4</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
@@ -1384,28 +1385,45 @@ class BookBuildContractTests(unittest.TestCase):
         english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
         readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
         entry = revisions["entries"][0]
-        batch3 = revisions["entries"][1]
-        guide = revisions["entries"][2]
-        previous = revisions["entries"][3]
-        self.assertEqual("1.2.3", self.manifest["version"])
+        batch4 = revisions["entries"][1]
+        batch3 = revisions["entries"][2]
+        guide = revisions["entries"][3]
+        previous = revisions["entries"][4]
+        self.assertEqual("1.2.4", self.manifest["version"])
         self.assertEqual("2026-10-25", self.manifest["date"])
-        self.assertEqual("1.2.3", english["version"])
+        self.assertEqual("1.2.4", english["version"])
         self.assertEqual("2026-10-25", english["date"])
-        self.assertEqual("1.2.3", entry["version"])
+        self.assertEqual("1.2.4", entry["version"])
         self.assertEqual("2026-10-25", entry["date"])
+        self.assertEqual(
+            [
+                "正文、标题和眉题改用一组字号；目录里的分部目标改成次要色，分部收束行加上分隔线。",
+                "代码块补上能显示中文的等宽字体，行距略增；图注行距加大。印刷时代码块改为浅底，图注改为 9pt，不再大于正文。",
+            ],
+            entry["zh"],
+        )
+        self.assertEqual(
+            [
+                "Body, headings, and kickers use one type scale. Part goals in the contents are muted, and each part-closing line has a divider.",
+                "Code blocks gain a monospace stack that can show Chinese, with a slightly looser line-height. Captions gain line-height. In print, code blocks are light and captions are 9pt, no longer larger than the body.",
+            ],
+            entry["en"],
+        )
+        self.assertEqual("1.2.3", batch4["version"])
+        self.assertEqual("2026-10-25", batch4["date"])
         self.assertEqual(
             [
                 "第 01 章写上 SWD 在第 34 脚 PA13 和第 37 脚 PA14，读保护解除写 0xA5，BOOT0=1 且 BOOT1=0 进的是系统存储器。第 07 章写上 0x3C 在 HAL 里是 0x78，表 42 的 400 kHz 行是 0x801E 和 4.7 kΩ。",
                 "第 10 章写上只有 DMA1，8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节。第 11 章写上预分频 64、Reload 624 在 40 kHz 典型值下是 1 秒，LSI 是 30–60 kHz，备份寄存器是 10 个。",
             ],
-            entry["zh"],
+            batch4["zh"],
         )
         self.assertEqual(
             [
                 "Chapter file 01 records SWD on pin 34 PA13 and pin 37 PA14, readout protection level 0 as 0xA5, and BOOT0=1 with BOOT1=0 entering system memory. Chapter file 07 records that 0x3C is 0x78 in HAL, and that Table 42's 400 kHz row is 0x801E with 4.7 kΩ.",
                 "Chapter file 10 records DMA1 only, and that eight half-words with CNDTR 3 means 5 samples and 10 bytes written. Chapter file 11 records prescaler 64 and Reload 624 as 1 second at a typical 40 kHz, LSI as 30–60 kHz, and ten backup registers.",
             ],
-            entry["en"],
+            batch4["en"],
         )
         self.assertEqual("1.2.2", batch3["version"])
         self.assertEqual(
@@ -1452,15 +1470,16 @@ class BookBuildContractTests(unittest.TestCase):
             ],
             previous["en"],
         )
-        self.assertIn("当前版本：**v1.2.3 · 2026-10-25**", readme)
-        self.assertIn("版本号已经是 1.2.3。", readme)
+        self.assertIn("当前版本：**v1.2.4 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.2.4。", readme)
         self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
         self.assertIn("也不要把 1.2.0 的产物标成 1.2.1，", readme)
         self.assertIn("也不要把 1.2.1 的产物标成 1.2.2，", readme)
-        self.assertIn("也不要把 1.2.2 的产物标成 1.2.3。", readme)
-        self.assertIn("打 tag `v1.2.3`", readme)
-        self.assertNotIn("当前版本：**v1.2.2", readme)
-        self.assertNotIn("打 tag `v1.2.2`", readme)
+        self.assertIn("也不要把 1.2.2 的产物标成 1.2.3，", readme)
+        self.assertIn("也不要把 1.2.3 的产物标成 1.2.4。", readme)
+        self.assertIn("打 tag `v1.2.4`", readme)
+        self.assertNotIn("当前版本：**v1.2.3", readme)
+        self.assertNotIn("打 tag `v1.2.3`", readme)
 
     def test_cover_svg_stays_self_contained(self) -> None:
         svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")

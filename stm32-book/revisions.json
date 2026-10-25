@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.4",
+      "date": "2026-10-25",
+      "zh": [
+        "正文、标题和眉题改用一组字号；目录里的分部目标改成次要色，分部收束行加上分隔线。",
+        "代码块补上能显示中文的等宽字体，行距略增；图注行距加大。印刷时代码块改为浅底，图注改为 9pt，不再大于正文。"
+      ],
+      "en": [
+        "Body, headings, and kickers use one type scale. Part goals in the contents are muted, and each part-closing line has a divider.",
+        "Code blocks gain a monospace stack that can show Chinese, with a slightly looser line-height. Captions gain line-height. In print, code blocks are light and captions are 9pt, no longer larger than the body."
+      ]
+    },
+    {
       "version": "1.2.3",
       "date": "2026-10-25",
       "zh": [
