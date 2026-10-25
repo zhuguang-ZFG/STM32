@@ -521,5 +521,98 @@ class Batch3SpiChapterTests(unittest.TestCase):
         for source_id, obj in baseline["sources"].items():
             self.assertEqual(obj, zh_manifest["sources"][source_id])
 
+class Batch3AdcChapterTests(unittest.TestCase):
+    def test_adc_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "09-ADC与DAC.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "09-adc-dac.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("F1 只有 1 个 ADC", zh)
+        self.assertNotIn("only one ADC", en)
+        self.assertNotIn("约 VREF/2", zh)
+        self.assertNotIn("about VREF/2", en)
+        for text in (zh, en):
+            for token in (
+                "12 MHz",
+                "14 MHz",
+                "18 MHz",
+                "21 µs",
+                "4096",
+                "239.5",
+                "12.5",
+                "252",
+                "17.1",
+                "125 ns",
+                "2048",
+                "1.65",
+                "VDDA",
+                "PA0",
+                "ADC1",
+                "ADC2",
+                "205.2",
+                "5.958",
+                "#source-rm0008-adc",
+                "#source-ds5319-adc",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("没有 DAC", zh)
+        self.assertIn("no DAC", en)
+        self.assertIn("第 9 脚", zh)
+        self.assertIn("第 10 脚", zh)
+        self.assertIn("pin 9", en)
+        self.assertIn("pin 10", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        self.assertNotIn("CNDTR", zh_blocks)
+        self.assertNotIn("CNDTR", en_blocks)
+        self.assertIn("../assets/diagrams/sample-09-adc-sar.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-09-adc-sar.svg", en)
+        self.assertIn("../assets/gif/adc-sample.gif", zh)
+        self.assertIn("../../assets/gif/adc-sample.gif", en)
+        self.assertIn("../assets/animations/adc-sar.svg", zh)
+        self.assertIn("../assets/gif/sar-adc.gif", zh)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-09-adc-sar.svg"), zh_key.index("adc-sample.gif"))
+        self.assertLess(en_key.index("sample-09-adc-sar.svg"), en_key.index("adc-sample.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-adc": (
+                "第 09 章原理与边界、时序或状态、坑与出处卡。转换时间 = 采样 + 12.5。12 MHz 下 252 周期是 21 µs，1.5 周期是 125 ns。17.1 µs 在 12 MHz 上是 205.2 个周期，通道是 ADC1 输入 16。VREFINT 是 ADC1 输入 17。双 ADC 器件上 TSVREFE 只在 ADC1。ADC2 的 16 和 17 接到 VSS。第 11.4 节：CAL 之前 ADON 已为 1 至少两个 ADC 时钟。1 µs 那个例子是 14 MHz 上的。不写 F4 的 TS_CAL1 或 VREFINT_CAL。",
+                "Chapter 09 principle, timing, and source cards. Conversion time is the sample time plus 12.5 cycles. At 12 MHz, 252 cycles is 21 µs and 1.5 cycles is 125 ns. 17.1 µs is 205.2 cycles at 12 MHz, on ADC1 input 16. VREFINT is ADC1 input 17. On a dual-ADC device TSVREFE is only in ADC1. ADC2 inputs 16 and 17 are tied to VSS. Section 11.4: ADON has been 1 for at least two ADC clocks before CAL. The 1 µs example is at 14 MHz. Does not import F4 TS_CAL1 or VREFINT_CAL.",
+            ),
+            "ds5319-adc": (
+                "第 09 章原理与边界和坑与出处卡。中密度有两个 12 位 ADC。STM32F103C8 有 ADC1 和 ADC2，没有 ADC3，没有 DAC。LQFP48 第 10 脚 PA0 是 ADC12_IN0，第 9 脚 VDDA 是参考。第 14 脚不是 DAC_OUT1。不改 ds5319-gpio，也不改第 03 章的 LED 图。",
+                "Chapter 09 principle and source cards. Medium-density devices have two 12-bit ADCs. STM32F103C8 has ADC1 and ADC2, and it has no ADC3 and no DAC. LQFP48 pin 10 PA0 is ADC12_IN0, and pin 9 VDDA is the reference. Pin 14 is not DAC_OUT1. Does not change ds5319-gpio and does not change the chapter 03 LED figure.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["09-ADC与DAC.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["09-adc-dac.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        baseline, _baseline_en = baseline_manifests()
+        for source_id, obj in baseline["sources"].items():
+            self.assertEqual(obj, zh_manifest["sources"][source_id])
+        self.assertIn("rm0008-adc", zh_manifest["sources"])
+        self.assertIn("ds5319-adc", zh_manifest["sources"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -158,7 +158,7 @@
       "question": "源阻抗、采样保持、参考电压和量化怎样共同决定一个 ADC 码值？",
       "deliverable": "一条从输入电压到码值再回算电压的误差链，并记录端点、中点和内部参考三组读数。",
       "boundary": "示例公式使用名义参考值；精度结论必须包含 VDDA、校准、采样时间和具体型号。F103 在 PCLK2 = 72 MHz 时 ADC 预分频取 ÷6，得到 12 MHz，不得超过 14 MHz。",
-      "sources": ["rm0008", "ds5319"]
+      "sources": ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc"]
     },
     "10-DMA.md": {
       "question": "DMA 请求、可达内存、传输宽度、环形位置和 Cache 一致性怎样分别验证？",
@@ -915,6 +915,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 08 章关键插图和坑与出处卡。LQFP48 第 14 脚 PA4 是 SPI1_NSS，第 15 脚 PA5 是 SPI1_SCK，第 16 脚 PA6 是 SPI1_MISO，第 17 脚 PA7 是 SPI1_MOSI。不把重映射画成复位后的默认脚。不把第 14 脚画成 DAC。不把 TIM3_CH1 画成与 MISO 同时有效。"
+    }
+,
+    "rm0008-adc": {
+      "title": "RM0008 Rev 21 ADC 转换时间、温度通道与校准",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 11. Tconv equals the sampling time plus 12.5 cycles. The 1 µs example is 14 MHz and 1.5 cycles, an example at the ceiling. The temperature sensor's recommended sampling time is 17.1 µs on ADC1_IN16. VREFINT is ADC1_IN17. TSVREFE in ADC_CR2 enables both, and on a dual-ADC device that bit is only in ADC1. ADC2 channels 16 and 17 are tied to VSS. Section 11.4: ADON has been 1 for at least two ADC clocks before CAL is set. This snapshot does not include R_ADC or C_ADC.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 09 章原理与边界、时序或状态、坑与出处卡。转换时间 = 采样 + 12.5。12 MHz 下 252 周期是 21 µs，1.5 周期是 125 ns。17.1 µs 在 12 MHz 上是 205.2 个周期，通道是 ADC1 输入 16。VREFINT 是 ADC1 输入 17。双 ADC 器件上 TSVREFE 只在 ADC1。ADC2 的 16 和 17 接到 VSS。第 11.4 节：CAL 之前 ADON 已为 1 至少两个 ADC 时钟。1 µs 那个例子是 14 MHz 上的。不写 F4 的 TS_CAL1 或 VREFINT_CAL。"
+    },
+    "ds5319-adc": {
+      "title": "DS5319 Rev 20 中密度的两只 ADC 与没有 DAC",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025. Medium-density devices all have two 12-bit ADCs. Figure 8: LQFP48 pin 9 is VDDA, pin 10 is PA0-WKUP = ADC12_IN0. Table 5: pin 14 PA4 analog function is ADC12_IN4. ADC3 and the DAC exist on high-density devices.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 09 章原理与边界和坑与出处卡。中密度有两个 12 位 ADC。STM32F103C8 有 ADC1 和 ADC2，没有 ADC3，没有 DAC。LQFP48 第 10 脚 PA0 是 ADC12_IN0，第 9 脚 VDDA 是参考。第 14 脚不是 DAC_OUT1。不改 ds5319-gpio，也不改第 03 章的 LED 图。"
     }
   }
 }

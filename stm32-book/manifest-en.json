@@ -194,10 +194,7 @@
       "question": "How do source impedance, sample-and-hold, the reference, and quantization together decide an ADC code?",
       "deliverable": "An error chain from input voltage to code and back to voltage, with endpoint, midpoint, and internal-reference readings recorded.",
       "boundary": "The example formula uses a nominal reference. A precision claim must include VDDA, calibration, sample time, and the exact part. With PCLK2 at 72 MHz, the F103 ADC prescaler is ÷6, which is 12 MHz, and must not exceed 14 MHz.",
-      "sources": [
-        "rm0008",
-        "ds5319"
-      ]
+      "sources": ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc"]
     },
     "10-dma.md": {
       "question": "How do you check, separately, the DMA request, reachable memory, transfer width, ring position, and cache coherence?",
@@ -1069,6 +1066,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 08 key figure and source cards. LQFP48 pin 14 PA4 is SPI1_NSS, pin 15 PA5 is SPI1_SCK, pin 16 PA6 is SPI1_MISO, and pin 17 PA7 is SPI1_MOSI. Does not draw the remap as the reset default. Does not draw pin 14 as DAC. Does not draw TIM3_CH1 as active together with MISO."
+    }
+,
+    "rm0008-adc": {
+      "title": "RM0008 Rev 21 ADC conversion time, temperature channel, and calibration",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 11. Tconv equals the sampling time plus 12.5 cycles. The 1 µs example is 14 MHz and 1.5 cycles, an example at the ceiling. The temperature sensor's recommended sampling time is 17.1 µs on ADC1_IN16. VREFINT is ADC1_IN17. TSVREFE in ADC_CR2 enables both, and on a dual-ADC device that bit is only in ADC1. ADC2 channels 16 and 17 are tied to VSS. Section 11.4: ADON has been 1 for at least two ADC clocks before CAL is set. This snapshot does not include R_ADC or C_ADC.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 09 principle, timing, and source cards. Conversion time is the sample time plus 12.5 cycles. At 12 MHz, 252 cycles is 21 µs and 1.5 cycles is 125 ns. 17.1 µs is 205.2 cycles at 12 MHz, on ADC1 input 16. VREFINT is ADC1 input 17. On a dual-ADC device TSVREFE is only in ADC1. ADC2 inputs 16 and 17 are tied to VSS. Section 11.4: ADON has been 1 for at least two ADC clocks before CAL. The 1 µs example is at 14 MHz. Does not import F4 TS_CAL1 or VREFINT_CAL."
+    },
+    "ds5319-adc": {
+      "title": "DS5319 Rev 20 medium-density ADCs and the missing DAC",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025. Medium-density devices all have two 12-bit ADCs. Figure 8: LQFP48 pin 9 is VDDA, pin 10 is PA0-WKUP = ADC12_IN0. Table 5: pin 14 PA4 analog function is ADC12_IN4. ADC3 and the DAC exist on high-density devices.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 09 principle and source cards. Medium-density devices have two 12-bit ADCs. STM32F103C8 has ADC1 and ADC2, and it has no ADC3 and no DAC. LQFP48 pin 10 PA0 is ADC12_IN0, and pin 9 VDDA is the reference. Pin 14 is not DAC_OUT1. Does not change ds5319-gpio and does not change the chapter 03 LED figure."
     }
   }
 }
