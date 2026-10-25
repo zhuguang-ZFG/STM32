@@ -1,0 +1,104 @@
+{
+  "chapters": ["04", "06"],
+  "community": [],
+  "reuse_existing": [
+    {
+      "id": "freertos-priority",
+      "claim": "A bare-metal priority setup does not automatically meet the chapter 15 FromISR constraint.",
+      "do_not_copy": "Do not copy 0x50 into chapter 04. Leave that cell in chapter 15 and Appendix D."
+    },
+    {
+      "id": "majerle-uart",
+      "claim": "On a continuous DMA receive, the application reads up to the DMA write position. The buffer is not one flat frame.",
+      "do_not_copy": "MIT commit c242589d766eada3ad1d795630f2b1c2482a2af8. Restate in our own words. Do not paste functions, and do not promote that repository's register values into a new norm."
+    },
+    {
+      "id": "st-uart-idle",
+      "claim": "Experience only, not promoted to a specification: someone reported HT and IDLE arriving close together.",
+      "do_not_copy": "Link only. Do not copy sentences from the post. This row introduces no new register value and no new microsecond number."
+    },
+    {
+      "id": "stm32cube-f4",
+      "claim": "In the v1.28.3 circular DMA example, Size is the write position, not the increment of this transfer.",
+      "do_not_copy": "BSD-3-Clause HAL. Stay inside tag v1.28.3 of the F446 example. Do not call its pins an F103 proof. Do not add a row that HT and IDLE always arrive as a pair."
+    }
+  ],
+  "absorb": [
+    {
+      "id": "rm0008-exti",
+      "chapters": ["04"],
+      "title_zh": "RM0008 Rev 21 EXTI 与 AFIO_EXTICR",
+      "title_en": "RM0008 Rev 21 EXTI and AFIO_EXTICR",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.4.3-9.4.6 AFIO_EXTICR1-4, section 10.2.5 line mapping, section 10.3.6 EXTI_PR",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "9.4.3",
+      "do_not_copy": "Do not paste chapter 10 or the EXTICR registers. Do not call section 9.2.7 EXTICR. Do not trace the official line-mapping figure.",
+      "points": [
+        "PA0 and PB0 share EXTI0; one pin number keeps one port",
+        "On F1, enable the AFIO clock before writing EXTICR",
+        "EXTI_PR is cleared by writing 1 to the pending bit"
+      ]
+    },
+    {
+      "id": "pm0056-nvic",
+      "chapters": ["04"],
+      "title_zh": "PM0056 异常入栈、尾链与 PRIMASK",
+      "title_en": "PM0056 exception stack, tail-chaining, and PRIMASK",
+      "authority_zh": "ST 官方编程手册",
+      "authority_en": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024, section 2.3.6 priority grouping, section 2.3.7 exception entry and return, PRIMASK Table 7 in section 2.1.3. Section 2.3.7 does not print a tail-chain clock tally.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "2.3.7",
+      "do_not_copy": "Do not paste section 2.3.7. Do not import a tail-chain cycle count from another manual. Do not change the existing pm0056 CFSR/HFSR object. Do not treat 167 ns as the ISR body budget.",
+      "points": [
+        "The stack frame is eight words: xPSR, return address, LR, R12, R3, R2, R1, R0, with SP at the lowest address",
+        "Tail-chaining skips a stack pop and does not change who may preempt",
+        "PRIMASK blocks configurable-priority exceptions and does not block NMI"
+      ]
+    },
+    {
+      "id": "rm0008-usart",
+      "chapters": ["06"],
+      "title_zh": "RM0008 Rev 21 USART 采样、BRR 与帧错误",
+      "title_en": "RM0008 Rev 21 USART sampling, BRR, and framing error",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 27.3.3 receiver, section 27.6.3 USART_BRR, section 27.6.4 USART_CR1 bits 31:14 reserved",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "27.3.3",
+      "do_not_copy": "Do not paste section 27.3.3. Do not trace the official sampling figure. Do not invent an 8x BRR. OVER8 is not a bit on this F103.",
+      "points": [
+        "16x sampling; stop bit voted at samples 8, 9, and 10; start bit checked at samples 3, 5, 7 and 8, 9, 10",
+        "USARTDIV = fPCLK / (16 x baud). At 72 MHz and 115200, USARTDIV is 39.0625, BRR is 0x271, divider error is 0",
+        "FE is set when the stop samples are not high; the data byte still enters DR; clear by reading SR then DR",
+        "USART_CR1 offset 0x0C, bits 31:14 reserved, so this part has no OVER8"
+      ]
+    },
+    {
+      "id": "ds5319-usart",
+      "chapters": ["06"],
+      "title_zh": "DS5319 Rev 20 LQFP48 的 USART1 脚",
+      "title_en": "DS5319 Rev 20 LQFP48 USART1 pins",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5, LQFP48 pins 30 and 31",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "Figure 8",
+      "do_not_copy": "Do not trace Figure 8 or Table 5. Do not call PB6/PB7 the reset default.",
+      "points": [
+        "LQFP48 pin 30 is PA9 USART1_TX and pin 31 is PA10 USART1_RX",
+        "Remap onto PB6/PB7 is not the reset default and needs AFIO"
+      ]
+    }
+  ]
+}
