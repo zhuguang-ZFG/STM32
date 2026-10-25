@@ -1,6 +1,6 @@
 # Answers to the chapter self-tests
 
-Answer on your own first. These notes only give the reason. Register bits and electrical values still go back to the manual for the exact part.
+Answer on your own first. These notes only give the reason. Register bits and electrical values still go back to the manual for the exact part. The arithmetic for the dividers, BRR, the sample time, and the watchdog reload is at the end of [Appendix D](#appendix-glossary). Do not generalize one sentence from an answer onto another family.
 
 ## 00 How to Learn STM32
 

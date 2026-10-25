@@ -30,6 +30,12 @@ The way the book is organized borrows a method used for another book in the same
 - Material from ST, Arm, FreeRTOS, USB-IF, IETF, OASIS, Wokwi, Renode, and other third-party repositories: this book supplies links, document numbers, a few necessary facts, and its own wording. It does not redistribute their manuals, specifications, or source. Those rights stay with the owners.
 - STM32, STM32Cube, Nucleo, Discovery, Keil, IAR, FreeRTOS, and similar names belong to their owners. This project is not affiliated with those companies.
 
+## When a number is actually pinned
+
+The ledger at the end of [Appendix D](#appendix-glossary) uses the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue.
+
+The 115200 cell is the pattern. The part is an STM32F103C8T6, and USART1's clock is APB2, not APB1. The document is the USART baud-rate register in [RM0008](#source-rm0008); the worked formula is in chapter 06. The formula is `fPCLK / (16 × baud)`. Substituting 72 MHz gives 39.0625, the low 4 bits of BRR are 1, the register is `0x271`, and the divider error is 0. A note that says only "0.16% error", with no USART number and no BRR, has not pinned the cell. That 0.16% is the 36 MHz row, or what you get by dropping the fraction on the 72 MHz row.
+
 ## Source register
 
 The register below is generated from `manifest-en.json` at build time. Each entry has an authority, a frozen point, an access date, a license boundary, and the scope used in this book. A chapter's source anchors link to these entries.

@@ -9,7 +9,7 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 | AHB / APB | On-chip bus levels. The CPU and fast peripherals usually sit on AHB. Most peripherals sit on APB. Clocks divide down from SYSCLK | After an APB divider, every timer clock simply equals PCLK |
 | BOR | Brown-out reset. Below a threshold the part resets instead of executing at too low a voltage | A BOR setting means the board power design is already acceptable |
 | CSS | Clock security system. When HSE fails, the part switches to an internal high-speed clock and reports the fault. Which clock, and which exception, is in that series' manual | Enabling CSS means the crystal can be left off the board |
-| Flash wait state | Extra cycles inserted so a Flash read meets its access time | Raising the CPU clock never requires a wait-state change |
+| Flash wait state | Extra cycles inserted so a Flash read meets its access time. On F103 they are the LATENCY field of `FLASH_ACR`. At 2.7–3.6 V and 48–72 MHz the value is 2. The steps are in the ledger at the end | Raising the CPU clock never requires a wait-state change |
 | HCLK | The AHB clock. The CPU and AHB peripherals commonly use it. An AHB prescaler may sit between it and SYSCLK | HCLK, SYSCLK, and the timer clock are one number |
 | HSE / HSI | External high-speed clock / internal high-speed RC. HSE may be a crystal or an external clock | HSE is always more accurate than HSI, and the board always has a crystal |
 | HSE bypass | The external clock enters on OSC_IN and the on-chip crystal oscillator is bypassed. That is for a clock source, not the default crystal connection | A fitted crystal means bypass should be on |
@@ -74,7 +74,7 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
-| 7-bit address | The common I2C slave address width. The first byte on the wire is those 7 bits plus the read/write bit | The 7-bit value a scanner prints is the 8-bit frame on the wire |
+| 7-bit address | The common I2C slave address width. The first byte on the wire is those 7 bits plus the read/write bit. HAL's DevAddress is shifted left by 1: the SSD1306's `0x3C` is written `0x78` | The 7-bit value a scanner prints is the 8-bit frame on the wire |
 | ACK / NACK | On the 9th I2C clock the receiver decides whether to pull low. NACK means this byte is not acknowledged | An ACK proves the register address and the data mean what you think |
 | bxCAN | The classic CAN controller on parts such as F1 | Its registers match H7 FDCAN |
 | Clock stretching | An I2C slave holds SCL so the master waits. Whether the master allows it, and for how long, is in both manuals | Every STM32 master waits forever while a slave stretches |
@@ -89,13 +89,15 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 | Repeated START | A second start that does not release the bus. A register read is often "write the pointer, repeated start, read" | Two transfers require STOP between them or the slave ignores the second |
 | TC / TXE | Transmission complete / transmit data register empty. TXE means another byte may be written. TC means the last bit has left the pin | TXE=1 means the last bit has left the pin |
 | UART 8N1 | Eight data bits, no parity, one stop bit. The frame still has a start bit and a stop bit | The 8 already includes the start bit |
+| USARTDIV / BRR | On F1 with 16× oversampling, `USARTDIV = fPCLK / (16 × baud)`. The high bits of BRR are the integer; the low 4 bits are the fraction. USART1 sits on APB2: at 72 MHz and 115200 the divider is 39.0625, BRR is `0x271`, and the divider error is 0 | The 0.16% printed on that same row is the error already programmed into BRR |
 | USB CDC / HID | Communications class (a virtual serial port) / human-interface class | Enumeration means every host and every application is compatible |
 
 ## ADC, DAC, and DMA
 
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
-| Cache coherency | The CPU cache and DMA see the same bytes. On a core with a D-Cache, clean or invalidate by cache line | The DMA-complete interrupt refreshes D-Cache |
+| ADCCLK | The ADC clock on an F103, divided down from APB2. RM0008 caps it at 14 MHz. APB2 at 72 MHz divided by 6 is 12 MHz. A 12-bit conversion adds 12.5 of these cycles on top of the sample time | The ADC clock equals SYSCLK, and a prescaler of ÷2 or ÷4 is always legal |
+| Cache coherency | The CPU cache and DMA see the same bytes. On a core with a D-Cache, clean or invalidate by cache line. The H7 D-Cache line is 32 bytes; the range and the buffer are aligned to that length | The DMA-complete interrupt refreshes D-Cache |
 | Calibration | ADC calibration. Many series require it after power-up or a clock change. Codes before it finishes are not results | Calibration is done once at the factory |
 | Circular mode | When the transfer count expires, DMA reloads and continues. That does not define where an application frame starts | Every circular-DMA interrupt is one new business frame |
 | D-Cache | The data cache on a core such as Cortex-M7. An M4 does not have this same maintenance problem | Every STM32 needs a D-Cache clean after DMA |
@@ -192,3 +194,18 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 | Ring buffer | A bounded queue whose read and write positions wrap. The capacity, and the full and empty tests, belong in the design | Adding volatile makes it thread-safe and unable to overflow |
 | SPL | The standard peripheral library commonly used on F1: a thin wrapper over registers. The names are not HAL's | An SPL example and a Cube HAL project can share one peripheral without a seam |
 | `volatile` | Tells the compiler to keep accesses to an object that can change outside the current code, following the abstract machine | It also provides atomicity, mutual exclusion, a memory barrier, and a bound on a queue |
+
+## Numbers you will actually use
+
+Each row above is only a working definition. This table pins the numbers you keep recalculating on a BluePill to an orderable part and a manual path. Change the package or the family, and the whole row is void: recalculate from that part's manual. The arithmetic is already in chapters 02, 03, 06, 07, 09, 11, and 21. This page only gathers it so a measurement has something to stand next to.
+
+| Ledger | Where it is pinned | The number | What it looks like when it is wrong |
+| --- | --- | --- | --- |
+| This part | Silkscreen STM32F103C8T6, LQFP48. Chapter 21: micro-USB 5 V through an RT9193-33 to 3.3 V, and the PC13 LED is on when the pin is low. Capacity is the low 16 bits at `0x1FFFF7E0`, in KB. The medium-density DevID is `0x410`. DS5319 | The datasheet says 64 KB of Flash and 20 KB of SRAM. If the read is not 64, do not keep calculating as a C8 | The silkscreen or the seller says 128 KB, and the linker script uses all 128 KB |
+| Clock tree | On-board 8 MHz HSE, PLL ×9. The RM0008 clock tree, and the table in chapter 02 | SYSCLK = HCLK = 72 MHz. APB1 ÷2 so PCLK1 = 36 MHz; APB2 ÷1 so PCLK2 = 72 MHz. When the APB prescaler is not 1, timers on that bus clock at twice PCLK, so TIM2–TIM7 still run at 72 MHz. TIM1 is on APB2 with a prescaler of 1, so it is not doubled again | Dividing PSC and ARR by 36 MHz, so the PWM frequency is off by two |
+| Flash wait | LATENCY in `FLASH_ACR`. The RM0008 access table, at 2.7–3.6 V. Chapter 02 | 0–24 MHz is 0 wait states, 24–48 MHz is 1, 48–72 MHz is 2. The 72 MHz example writes 2 | PLL is switched to ×9 while LATENCY is still 0, and instruction fetches fail as soon as it runs |
+| 115200 | The BRR formula in chapter 06. USART1 is on APB2, so fPCLK = 72 MHz, with 16× oversampling | `72e6 / (16 × 115200) = 39.0625`. The fraction `0.0625 × 16 = 1`, so BRR = `0x271`. `72e6 / (16 × 39.0625) = 115200`, and the divider error is 0. USART2 is on APB1, so fPCLK = 36 MHz; the BRR `0x138` in that same chapter is the one that sits about 0.16% off. Dropping the fraction on the 72 MHz row and dividing by 39 also produces about 0.16% | Treating the printed 0.16% as the error of USART1, or treating USART2's clock as 72 MHz |
+| One bit and one frame | Chapter 06: at 115200 one bit is about 8.68 µs. 8N1 is a start bit, 8 data bits, and a stop bit: 10 bits. RM0008 sets IDLE only after RX has been idle for one frame time | One frame is about 86.8 µs. That is an idle line, not a length field in a protocol | Treating the IDLE interrupt as proof that the other side closed a protocol packet |
+| ADC | Chapter 02: APB2 at 72 MHz, then ÷6. RM0008: the ADC clock must not exceed 14 MHz. Chapter 09: a 12-bit conversion adds 12.5 cycles, and the sample settings run from 1.5 to 239.5 | ADCCLK = 12 MHz. The longest setting is `239.5 + 12.5 = 252` cycles, and `252 / 12e6 = 21 µs`. ÷4 would be 18 MHz, past the 14 MHz cap | Dividing the sample time by the CPU clock, or choosing ÷2 or ÷4 to go faster |
+| I2C address and pull-up | The address and pull-up tables in chapter 07. Chapter 03: an F1 internal pull-up or pull-down is about 30–50 kΩ | The SSD1306 7-bit address is `0x3C`; HAL's DevAddress is `0x78`. A short bus uses an external 4.7 kΩ to 3.3 V | Copying the scanner's `0x3C` into `HAL_I2C_Mem_Read`, or enabling only the internal pull-up and then running 400 kHz |
+| IWDG, 1 second | Chapter 11: `T = prescaler / f_LSI × (Reload + 1)`. LSI is typically 40 kHz, and the manual range is about 30–60 kHz | With prescaler 64 the nominal count rate is 625 Hz. A 1 second timeout writes Reload as 624; 625 adds one extra count. With the same prescaler and reload, an LSI of 60 kHz yields about half as many seconds as 30 kHz. The longest nominal setting is about 26 s | Writing the seconds computed at 40 kHz down as a guarantee, and debugging without freezing the IWDG |

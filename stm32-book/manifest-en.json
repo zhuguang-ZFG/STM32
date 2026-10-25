@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "date": "2026-10-25",
   "language": "en",
   "author": "zhuguang-ZFG and contributors",
@@ -126,7 +126,7 @@
     "02-part-and-clock.md": {
       "question": "How do the part number, the memory map, and the clock tree together decide whether a program can run on the target chip?",
       "deliverable": "A breakdown of the target part, a Flash/SRAM address map, and a SYSCLK/APB/timer clock ledger.",
-      "boundary": "The examples are mainly F103. Any production choice must go back to the exact order code, revision, and temperature grade.",
+      "boundary": "The examples are mainly F103. Any production choice must go back to the exact order code, revision, and temperature grade. The BluePill example is an STM32F103C8T6 in LQFP48: an 8 MHz HSE times 9 is 72 MHz, and the Flash wait for 48–72 MHz is 2. Check the kilobytes at 0x1FFFF7E0 against the 64 KB in DS5319.",
       "sources": [
         "rm0008",
         "ds5319"
@@ -135,7 +135,7 @@
     "03-gpio-and-led.md": {
       "question": "How do a pin's input structure, output drive, and external load together decide the real level?",
       "deliverable": "A pin-mode, wiring, and expected-level table, with both output states checked on a meter or a logic analyzer.",
-      "boundary": "A GPIO mode does not change the absolute maximum ratings. 5 V tolerance and sink/source current must be checked for the specific pin.",
+      "boundary": "A GPIO mode does not change the absolute maximum ratings. 5 V tolerance and sink/source current must be checked for the specific pin. On the BluePill, PC13's LED is on when the pin is low. An F1 internal pull-up is about 30–50 kΩ and does not replace an I2C resistor.",
       "sources": [
         "rm0008",
         "ds5319"
@@ -154,7 +154,7 @@
     "05-timer-pwm.md": {
       "question": "How do the clock, PSC, ARR, and CCR become a measurable period, frequency, and duty cycle?",
       "deliverable": "A calculation from the timer input clock to the target waveform, and a table of instrument measurements beside it.",
-      "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked.",
+      "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked. On this F103, when APB1 is 36 MHz, TIM2–TIM7 still count at 72 MHz.",
       "sources": [
         "rm0008"
       ]
@@ -162,7 +162,7 @@
     "06-uart.md": {
       "question": "How do UART bit timing, error flags, the DMA buffer, and the frame boundary become a reliable receive path?",
       "deliverable": "An 8N1 waveform, a handling table for ORE/FE/NE, and a receive scheme whose buffer invariant is written down.",
-      "boundary": "IDLE only means the line is idle. It is not one frame of an application protocol. In circular DMA, Size is the write position, not the increment of this transfer.",
+      "boundary": "IDLE only means the line is idle. It is not one frame of an application protocol. In circular DMA, Size is the write position, not the increment of this transfer. USART1 is on APB2: at 115200, 72 MHz, and 16× oversampling, BRR is 0x271 and the divider error is 0. One bit is about 8.68 µs, so an 8N1 frame is about 86.8 µs.",
       "sources": [
         "rm0008",
         "stm32cube-f4",
@@ -173,7 +173,7 @@
     "07-i2c.md": {
       "question": "How do open-drain electricals, pull-up time, and START/ACK/repeated start together decide one I2C transaction?",
       "deliverable": "A wiring and address table, one logic-analyzer decode, and a recovery record after the bus is held low.",
-      "boundary": "Seeing an address only proves a device ACKed. It does not prove the register protocol, the supply, or the data meaning.",
+      "boundary": "Seeing an address only proves a device ACKed. It does not prove the register protocol, the supply, or the data meaning. The SSD1306 7-bit address 0x3C is 0x78 in HAL. A short bus wants 4.7 kΩ; the on-chip pull-up, about 30–50 kΩ, will not carry 400 kHz.",
       "sources": [
         "rm0008"
       ]
@@ -189,7 +189,7 @@
     "09-adc-dac.md": {
       "question": "How do source impedance, sample-and-hold, the reference, and quantization together decide an ADC code?",
       "deliverable": "An error chain from input voltage to code and back to voltage, with endpoint, midpoint, and internal-reference readings recorded.",
-      "boundary": "The example formula uses a nominal reference. A precision claim must include VDDA, calibration, sample time, and the exact part.",
+      "boundary": "The example formula uses a nominal reference. A precision claim must include VDDA, calibration, sample time, and the exact part. With PCLK2 at 72 MHz, the F103 ADC prescaler is ÷6, which is 12 MHz, and must not exceed 14 MHz.",
       "sources": [
         "rm0008",
         "ds5319"
@@ -209,9 +209,10 @@
     "11-rtc-watchdog.md": {
       "question": "How does time survive loss of the main supply, and how does a watchdog prove the main loop is actually healthy rather than merely being fed?",
       "deliverable": "A power-loss timekeeping record, a reset-reason record after a deliberate missed feed, and an explicit healthy-feed condition.",
-      "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design.",
+      "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design. A nominal 1 second is prescaler 64 and Reload 624, taking LSI as 40 kHz. The manual range is about 30–60 kHz, so that second is not a guarantee.",
       "sources": [
-        "rm0008"
+        "rm0008",
+        "ds5319"
       ]
     },
     "12-flash-iap.md": {

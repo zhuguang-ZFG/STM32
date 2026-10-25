@@ -133,7 +133,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.2</strong>", html)
+        self.assertIn("<strong>v1.0.3</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertIn('<span class="chapter-number">第 00 章</span>', html)
@@ -164,6 +164,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("配套资源", html)
         self.assertIn('id="part-closing-p6"', html)
         self.assertIn("学习路线收束", html)
+        self.assertIn("会上手的几笔账", html)
+        self.assertIn("0x271", html)
+        self.assertIn("0x1FFFF7E0", html)
+        self.assertNotIn("英文整书不在这一版", html)
         self.assertIn('class="part-closing"', html)
         self.assertIn("00 如何学习 STM32", html)
         self.assertNotIn("00-如何学习STM32", html)
@@ -247,7 +251,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.2", manifest["version"])
+        self.assertEqual("1.0.3", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -264,7 +268,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.2</strong>", html)
+        self.assertIn("<strong>v1.0.3</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
@@ -283,6 +287,9 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="cover-art"', html)
         self.assertIn('id="part-closing-p6"', html)
         self.assertIn("Where the road goes next", html)
+        self.assertIn("Numbers you will actually use", html)
+        self.assertIn("0x271", html)
+        self.assertIn("0x1FFFF7E0", html)
         self.assertIn("STM32CubeF4 v1.28.3", html)
         self.assertNotIn("Next:", html)
         self.assertNotIn("Previous:", html)
@@ -312,8 +319,23 @@ class BookBuildContractTests(unittest.TestCase):
             "## RTOS and concurrency",
             "## Ethernet, lwIP, and MQTT",
             "## Debug",
+            "## Numbers you will actually use",
         ):
             self.assertIn(heading, text)
+
+    def test_number_ledger_is_the_same_arithmetic_in_both_editions(self) -> None:
+        chinese = (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8")
+        english = (BOOK_DIR / "book" / "en" / "D-glossary.md").read_text(encoding="utf-8")
+        for token in ("STM32F103C8T6", "0x1FFFF7E0", "0x410", "0x271", "86.8", "624", "21 µs", "32"):
+            with self.subTest(token=token):
+                self.assertIn(token, chinese)
+                self.assertIn(token, english)
+        self.assertIn("会上手的几笔账", chinese)
+        self.assertNotIn("英文整书不在这一版", (BOOK_DIR / "book" / "F-学习路线收束.md").read_text(encoding="utf-8"))
+        for name in ("A-工程深读.md", "B-例程索引.md", "E-参考资料.md", "F-学习路线收束.md"):
+            self.assertIn("0x271", (BOOK_DIR / "book" / name).read_text(encoding="utf-8"))
+        for name in ("A-uart-dma.md", "B-examples.md", "E-sources.md", "F-closing.md"):
+            self.assertIn("0x271", (BOOK_DIR / "book" / "en" / name).read_text(encoding="utf-8"))
 
     def test_glossary_covers_terms_from_all_seven_parts(self) -> None:
         text = (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8")
@@ -334,6 +356,7 @@ class BookBuildContractTests(unittest.TestCase):
             "## RTOS 与并发",
             "## 以太网、lwIP 与 MQTT",
             "## 调试",
+            "## 会上手的几笔账",
         ):
             self.assertIn(heading, text)
         for term in ("TIMCLK", "AF", "NVIC", "DMA", "SAR ADC", "PWM", "lwIP", "SWDIO / SWCLK"):
@@ -741,7 +764,19 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("tab-size: 4", screen_css)
         self.assertIn("scrollbar-color:", screen_css)
         self.assertIn("user-select: text", screen_css)
-        self.assertIn("#appendix-glossary td:nth-child(3)", screen_css)
+        self.assertIn(
+            '#appendix-glossary .table-scroll[style*="--table-columns: 3"] td:nth-child(3)',
+            screen_css,
+        )
+        self.assertIn(
+            '#appendix-glossary .table-scroll[style*="--table-columns: 4"] td:nth-child(4)',
+            screen_css,
+        )
+        self.assertIn("li::marker", screen_css)
+        self.assertIn("border-left: 3px solid var(--accent)", screen_css)
+        self.assertIn("color-mix(in srgb, var(--code-ink) 28%, transparent)", screen_css)
+        self.assertNotIn("rgba(0, 0, 0, .4)", screen_css)
+        self.assertIn("position: sticky; left: 0", screen_css)
         self.assertIn("@media (max-width: 960px)", screen_css)
         self.assertIn(".part-index", screen_css)
         pre_rule = re.search(r"\bpre \{([^}]+)\}", print_css)
@@ -755,6 +790,8 @@ class BookBuildContractTests(unittest.TestCase):
             r"\.chapter > header[^{]*\{[^}]*page-break-after:\s*avoid",
         )
         self.assertIn("--spine: #c4552a", print_css)
+        self.assertIn("figure { background: transparent; }", print_css)
+        self.assertIn("position: static", print_css)
 
     def test_narrow_desktop_stacks_compass_without_part_number_collision(self) -> None:
         from playwright.sync_api import sync_playwright
@@ -783,6 +820,9 @@ class BookBuildContractTests(unittest.TestCase):
                                 const preStyle = getComputedStyle(pre);
                                 const term = document.querySelector('#appendix-glossary td');
                                 const mixup = document.querySelector('#appendix-glossary td:nth-child(3)');
+                                const section = document.querySelector('#chapter-00 h2');
+                                const plate = document.querySelector('figure');
+                                const marker = getComputedStyle(document.querySelector('#chapter-00 li'), '::marker');
                                 const divider = document.querySelector('#part-p0');
                                 const index = divider.querySelector('.part-index').getBoundingClientRect();
                                 const title = divider.querySelector('h1').getBoundingClientRect();
@@ -802,6 +842,11 @@ class BookBuildContractTests(unittest.TestCase):
                                         getComputedStyle(term).fontWeight !== getComputedStyle(mixup).fontWeight
                                         || getComputedStyle(term).backgroundColor !== getComputedStyle(mixup).backgroundColor,
                                     mixupBackground: getComputedStyle(mixup).backgroundColor,
+                                    glossarySticky: getComputedStyle(term).position,
+                                    sectionRule: section ? getComputedStyle(section).borderLeftWidth : '',
+                                    figureBorder: plate ? getComputedStyle(plate).borderTopWidth : '',
+                                    figureFill: plate ? getComputedStyle(plate).backgroundColor : '',
+                                    markerColor: marker.color,
                                     imprintColumns: columns(getComputedStyle(document.querySelector('.imprint dl')).gridTemplateColumns),
                                     sourceColumns: columns(getComputedStyle(document.querySelector('.source-registry')).gridTemplateColumns),
                                     titleHitsIndex: overlaps(title),
@@ -823,12 +868,16 @@ class BookBuildContractTests(unittest.TestCase):
                             const header = getComputedStyle(document.querySelector('#chapter-00 > header'));
                             const imprint = getComputedStyle(document.querySelector('.imprint'));
                             const cover = getComputedStyle(document.querySelector('.cover'));
+                            const term = getComputedStyle(document.querySelector('#appendix-glossary td'));
+                            const plate = getComputedStyle(document.querySelector('figure'));
                             return {
                                 preBreakInside: pre.breakInside,
                                 preWhiteSpace: pre.whiteSpace,
                                 headerBreakAfter: header.breakAfter,
                                 imprintBreakBefore: imprint.breakBefore,
                                 coverBreakAfter: cover.breakAfter,
+                                glossarySticky: term.position,
+                                figureFill: plate.backgroundColor,
                             };
                         }"""
                     )
@@ -858,6 +907,14 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual(0, wide["pageOverflow"])
         self.assertEqual(0, narrow["pageOverflow"])
         self.assertEqual(0, phone["pageOverflow"])
+        self.assertEqual("static", wide["glossarySticky"])
+        self.assertEqual("sticky", phone["glossarySticky"])
+        self.assertEqual("3px", wide["sectionRule"])
+        self.assertEqual("1px", wide["figureBorder"])
+        self.assertNotIn("rgba(0, 0, 0, 0)", wide["figureFill"])
+        self.assertEqual("rgb(7, 94, 132)", wide["markerColor"])
+        self.assertEqual("static", printed["glossarySticky"])
+        self.assertIn("rgba(0, 0, 0, 0)", printed["figureFill"])
         self.assertEqual("auto", printed["preBreakInside"])
         self.assertEqual("pre-wrap", printed["preWhiteSpace"])
         self.assertIn(printed["headerBreakAfter"], {"avoid", "avoid-page"})
