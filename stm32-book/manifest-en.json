@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "Subject index", "file": "subject-index.json"}

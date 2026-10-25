@@ -94,9 +94,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.2.2<"), history.index(">1.2.1<"))
         self.assertLess(history.index(">1.2.1<"), history.index(">1.2.0<"))
         self.assertLess(history.index(">1.2.0<"), history.index(">1.1.1<"))
         self.assertLess(history.index(">1.1.1<"), history.index(">1.1.0<"))
@@ -128,7 +129,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -222,7 +223,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.2.1</strong>", html)
+        self.assertIn("<strong>v1.2.2</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -362,7 +363,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.2.1", manifest["version"])
+        self.assertEqual("1.2.2", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -379,7 +380,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.2.1</strong>", html)
+        self.assertIn("<strong>v1.2.2</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
@@ -1140,26 +1141,42 @@ class BookBuildContractTests(unittest.TestCase):
         english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
         readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
         entry = revisions["entries"][0]
-        previous = revisions["entries"][1]
-        self.assertEqual("1.2.1", self.manifest["version"])
+        guide = revisions["entries"][1]
+        previous = revisions["entries"][2]
+        self.assertEqual("1.2.2", self.manifest["version"])
         self.assertEqual("2026-10-25", self.manifest["date"])
-        self.assertEqual("1.2.1", english["version"])
+        self.assertEqual("1.2.2", english["version"])
         self.assertEqual("2026-10-25", english["date"])
-        self.assertEqual("1.2.1", entry["version"])
+        self.assertEqual("1.2.2", entry["version"])
         self.assertEqual("2026-10-25", entry["date"])
+        self.assertEqual(
+            [
+                "第 02 章把 CFGR 改回第 7.3.2 节，并写上 72 MHz 要 2 个等待、CSS 回到 HSI。第 05 章写上 1 kHz 和 500 Hz 两条路径。",
+                "第 08 章写上 Mode 0、9 MHz，以及 0x9F 之后的 0xEF、0x40、0x17。第 09 章写上 12 MHz 下的 21 µs、除以 4096，以及 C8 有 ADC1/ADC2、没有 DAC。",
+            ],
+            entry["zh"],
+        )
+        self.assertEqual(
+            [
+                "Chapter file 02 moves CFGR back to section 7.3.2, with two Flash wait states at 72 MHz and CSS falling back to HSI. Chapter file 05 records both the 1 kHz path and the 500 Hz path.",
+                "Chapter file 08 records Mode 0 at 9 MHz and, after 0x9F, the bytes 0xEF, 0x40, and 0x17. Chapter file 09 records 21 µs at 12 MHz, division by 4096, and that the C8 has ADC1 and ADC2 and no DAC.",
+            ],
+            entry["en"],
+        )
+        self.assertEqual("1.2.1", guide["version"])
         self.assertEqual(
             [
                 "贡献指南把大典四块写成每章必选，放在视频块之后、学习目标之前。",
                 "旧的常见坑与排查迁入坑与出处卡，并用 `#source-` 链到附录 E。这一版不改正文章。",
             ],
-            entry["zh"],
+            guide["zh"],
         )
         self.assertEqual(
             [
                 "The contributor guide requires the four compendium sections after the video block and before the learning goals.",
                 "The old pitfalls section moves into Pitfalls and source cards, with `#source-` links to Appendix E. This edition does not rewrite chapter prose.",
             ],
-            entry["en"],
+            guide["en"],
         )
         self.assertEqual("1.2.0", previous["version"])
         self.assertEqual(
@@ -1176,13 +1193,14 @@ class BookBuildContractTests(unittest.TestCase):
             ],
             previous["en"],
         )
-        self.assertIn("当前版本：**v1.2.1 · 2026-10-25**", readme)
-        self.assertIn("版本号已经是 1.2.1。", readme)
+        self.assertIn("当前版本：**v1.2.2 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.2.2。", readme)
         self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
-        self.assertIn("也不要把 1.2.0 的产物标成 1.2.1。", readme)
-        self.assertIn("打 tag `v1.2.1`", readme)
-        self.assertNotIn("当前版本：**v1.2.0", readme)
-        self.assertNotIn("打 tag `v1.2.0`", readme)
+        self.assertIn("也不要把 1.2.0 的产物标成 1.2.1，", readme)
+        self.assertIn("也不要把 1.2.1 的产物标成 1.2.2。", readme)
+        self.assertIn("打 tag `v1.2.2`", readme)
+        self.assertNotIn("当前版本：**v1.2.1", readme)
+        self.assertNotIn("打 tag `v1.2.1`", readme)
 
     def test_cover_svg_stays_self_contained(self) -> None:
         svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
