@@ -1,6 +1,6 @@
 # Where the road goes next
 
-This page exists only in the book. It gathers the seven parts into one path you can keep walking. It adds no new register facts, and it does not change chapter 28 in `docs/en/`.
+This page exists only in the book. It gathers the seven parts into one path you can keep walking. It does not change chapter 28 in `docs/en/`. The numbers below are the ledger already stated in earlier chapters, gathered here so a measurement has a column to stand in.
 
 ## What each part should leave you
 
@@ -13,6 +13,17 @@ This page exists only in the book. It gathers the seven parts into one path you 
 | Delivery | A reproduction note for a small project, with manuals, examples, and community posts kept apart |
 | Migration and networks | Power, alternate functions, clocks, and memory rechecked on a new family; network faults split by link, address, transport, and application |
 | System | One diagram with an owner, a deadline, and evidence of recovery — not only a different RTOS name |
+
+## Four lines for the first board
+
+The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are at the end of [Appendix D](#appendix-glossary).
+
+| Write this down | What this book expects | What you measure |
+| --- | --- | --- |
+| Capacity | Read `0x1FFFF7E0`. A genuine C8 reports 64 KB. The medium-density DevID is `0x410` | The reading, and whether it matches the silkscreen |
+| Clock | 8 MHz HSE ×9 = 72 MHz. APB1 is 36 MHz, and TIM2–TIM7 are still computed at 72 MHz. Flash wait states are 2 | `HAL_RCC_GetPCLK1Freq()`, plus one PWM period |
+| One UART frame | USART1, 115200, 8N1, BRR `0x271`. One bit is about 8.68 µs, and one frame is about 86.8 µs | The bit width on a logic analyzer |
+| One failure boundary | IWDG: prescaler 64 and Reload 624 are the 1 second computed at 40 kHz. LSI is about 30–60 kHz, so that second is not a guarantee | The reset flag and a stopwatch when you deliberately stop feeding |
 
 ## When this book is finished
 
@@ -39,6 +50,6 @@ Look up terms in [Appendix D](#appendix-glossary). What counts as evidence, and 
 - Do not copy F1 register addresses onto a G0, L4, or H7.
 - Do not treat a passing simulation as proof of the board's electrical behavior.
 - Do not treat a parameter from a social post as a manual.
-- The Chinese book is a separate build from `docs/`. This English edition is built from `docs/en/`.
+- The Chinese book and this English book are two builds. English comes from `docs/en/` and `stm32-book/book/en/`. A sentence on the Chinese page is not, by itself, a register fact this edition has checked.
 
 If you do only one thing after this page: pick one behavior you must deliver, and write its expected value, the measurement, and the next way it can fail.

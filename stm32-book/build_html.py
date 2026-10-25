@@ -753,6 +753,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.72; }
 a { color: var(--accent); text-underline-offset: .18em; }
 a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+::selection { background: var(--accent-soft); color: var(--ink); }
 .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 20; padding: .6rem 1rem; background: var(--ink); color: var(--paper); }
 .skip-link:focus { top: 1rem; }
 .book { width: min(100% - 2rem, 980px); margin: 0 auto; }
@@ -799,10 +800,14 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .chapter-number { display: block; color: var(--accent); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
 h2, h3, h4 { line-height: 1.35; scroll-margin-top: 1.25rem; }
 h2 { font-size: 1.42rem; margin: 2.35rem 0 .6rem; }
+.chapter > h2, .appendix > h2, .part-closing > h2 { padding-left: .7rem; border-left: 3px solid var(--accent); }
 h3 { font-size: 1.16rem; margin: 1.7rem 0 .4rem; }
 h4 { font-size: 1.02rem; margin: 1.3rem 0 .3rem; }
 .chapter > p, .appendix > p, .part-closing > p, .frontmatter > p, .imprint-lead, .imprint .colophon,
 .chapter li, .appendix li, .part-closing li { max-width: var(--measure); }
+.chapter li::marker, .appendix li::marker, .part-closing li::marker, .contents li::marker { color: var(--accent); font-weight: 700; }
+.chapter ul, .appendix ul, .part-closing ul, .chapter ol, .appendix ol, .part-closing ol { padding-left: 1.35rem; }
+.chapter li > ul, .chapter li > ol, .appendix li > ul, .appendix li > ol, .part-closing li > ul, .part-closing li > ol { margin: .2rem 0 .35rem; }
 .chapter-compass { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1.5rem 0 2.6rem; padding: .95rem; background: var(--panel); border: 1px solid var(--line); border-radius: .75rem; }
 .chapter-compass .compass-title, .chapter-compass .source-anchors { grid-column: 1 / -1; margin: 0; }
 .compass-title { color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
@@ -827,7 +832,7 @@ blockquote.callout { max-width: var(--measure); margin: 1.25rem 0 1.45rem; paddi
 .callout-tip { border-left-color: var(--tip); background: var(--tip-soft); }
 .callout-tip .callout-label { color: var(--tip); }
 img { display: block; max-width: 100%; height: auto; margin: 1.2rem auto .4rem; }
-figure { margin: 1.5rem auto 1.7rem; }
+figure { margin: 1.5rem auto 1.7rem; padding: .75rem .75rem .65rem; border: 1px solid var(--line); border-radius: .75rem; background: color-mix(in srgb, var(--panel) 70%, var(--paper)); }
 figure img { margin: 0 auto .55rem; }
 figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--muted); text-align: center; font-size: .9rem; line-height: 1.45; }
 sub { display: block; color: var(--muted); text-align: center; font-size: .88rem; }
@@ -837,6 +842,7 @@ table { width: 100%; border-collapse: collapse; font-size: .94rem; }
 .table-scroll table { margin: 0; }
 th, td { border: 1px solid var(--line); padding: .55rem .7rem; vertical-align: top; text-align: left; }
 th { background: var(--panel); font-weight: 700; }
+tbody tr:nth-child(even) > td { background: color-mix(in srgb, var(--panel) 62%, var(--paper)); }
 code { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; font-size: .91em; }
 :not(pre) > code { padding: .12em .35em; border-radius: .3em; background: var(--panel); }
 pre {
@@ -856,16 +862,18 @@ pre {
   background-image:
     linear-gradient(to right, var(--code), transparent),
     linear-gradient(to left, var(--code), transparent) 100% 0,
-    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .4), transparent),
-    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .4), transparent) 100% 0;
+    radial-gradient(farthest-side at 0 50%, color-mix(in srgb, var(--code-ink) 28%, transparent), transparent),
+    radial-gradient(farthest-side at 100% 50%, color-mix(in srgb, var(--code-ink) 28%, transparent), transparent) 100% 0;
   background-repeat: no-repeat;
   background-size: 1.5rem 100%, 1.5rem 100%, .75rem 100%, .75rem 100%;
   background-attachment: local, local, scroll, scroll;
 }
 pre code { font-size: .92em; color: inherit; background: transparent; padding: 0; white-space: inherit; user-select: text; }
 #appendix-glossary td:first-child, #appendix-glossary th:first-child { font-weight: 700; white-space: nowrap; }
-#appendix-glossary td:nth-child(3) { background: var(--warn-soft); }
-#appendix-glossary th:nth-child(3) { color: var(--warn); }
+#appendix-glossary .table-scroll[style*="--table-columns: 3"] td:nth-child(3),
+#appendix-glossary .table-scroll[style*="--table-columns: 4"] td:nth-child(4) { background: var(--warn-soft); }
+#appendix-glossary .table-scroll[style*="--table-columns: 3"] th:nth-child(3),
+#appendix-glossary .table-scroll[style*="--table-columns: 4"] th:nth-child(4) { color: var(--warn); }
 dl { display: grid; grid-template-columns: 8rem 1fr; gap: .35rem 1rem; }
 dt { font-weight: 700; }
 dd { margin: 0; }
@@ -897,6 +905,10 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
   .contents ol { columns: 1; }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
   .table-scroll th, .table-scroll td { min-width: 4.5rem; }
+  #appendix-glossary .table-scroll th:first-child,
+  #appendix-glossary .table-scroll td:first-child { position: sticky; left: 0; z-index: 1; background: var(--paper); box-shadow: 1px 0 0 var(--line); }
+  #appendix-glossary .table-scroll tbody tr:nth-child(even) > td:first-child { background: color-mix(in srgb, var(--panel) 62%, var(--paper)); }
+  #appendix-glossary .table-scroll thead th:first-child { z-index: 2; background: var(--panel); }
   dl { grid-template-columns: 1fr; }
   pre { padding: .8rem .85rem; }
 }
@@ -928,6 +940,10 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
   thead { display: table-header-group; break-after: avoid-page; page-break-after: avoid; }
   tr { break-inside: avoid-page; page-break-inside: avoid; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: auto; page-break-inside: auto; }
+  figure { background: transparent; }
+  tbody tr:nth-child(even) > td { background: transparent; }
+  #appendix-glossary .table-scroll th:first-child,
+  #appendix-glossary .table-scroll td:first-child { position: static; left: auto; box-shadow: none; }
   #appendix-glossary td:first-child, #appendix-glossary th:first-child { white-space: normal; }
   .source-registry { grid-template-columns: 1fr; }
   a { color: inherit; text-decoration: none; }

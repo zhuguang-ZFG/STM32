@@ -121,3 +121,15 @@ Changing only the linker script, or only adding a cache operation, can fix just 
 | H7 with cache on and off | Bytes match, or the failure is explicit | Memory section, cache operation, byte compare |
 
 "The serial terminal showed something" is not the finish line. Each input should be explainable by length, position, error counts, and a byte compare.
+
+## 7. Count the time in microseconds
+
+A contract is not finished until you can say how long one event is. The first three numbers are pinned to an STM32F103C8T6, SYSCLK at 72 MHz, 115200, and 8N1. The last one belongs only to an H7 with a D-Cache. The steps and the BRR arithmetic are in the ledger at the end of [Appendix D](#appendix-glossary).
+
+**One bit, and IDLE.** At 115200 bit/s one bit is about 8.68 µs. An 8N1 frame is 10 bits, about 86.8 µs. RM0008 sets IDLE when RX has been idle for one frame time, so one IDLE event means the line has been idle for about 86.8 µs. It does not mean a length field in the other side's protocol has arrived.
+
+**NDTR is not a byte progress bar.** In normal mode, with a byte width and a buffer of 128, NDTR = 100 means `128 − 100 = 28` bytes have been written. Do not subtract like that in circular mode: NDTR reloads itself. Use `Size` and `old_pos` from the callback. If the width is a half-word, NDTR counts half-words, not bytes.
+
+**The BRR fraction has to be in the division.** USART1 is on APB2, so its clock is 72 MHz, not APB1's 36 MHz. At 16× oversampling and 115200, `USARTDIV = 72e6 / (16 × 115200) = 39.0625`. The low 4 bits round to 1, BRR is `0x271`, and the divider lands on 115200 exactly. Drop that one fraction bit and the error becomes about 0.16%. The table in chapter 06 prints 39.0625 and 0.16% on the same row. The BRR `0x138` for USART2 at 36 MHz is the row that really is about 0.16% off. A note names which USART, and which 4 fraction bits, went into BRR.
+
+**32 bytes on H7.** The D-Cache line is 32 bytes. Clean or invalidate a range aligned to that line, and align the buffer to 32 bytes. Invalidating only the few bytes just written drops or writes back the rest of the same line. Whether that memory can be reached by the DMA controller you chose is still a separate question.
