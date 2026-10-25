@@ -353,13 +353,13 @@ def render_card(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
         y = BAND_TOP - 8
     else:
         body_font = _font(26)
-        for i, line in enumerate(seg["lines"]):
+        for i, txt in enumerate(seg["lines"]):
             shown = t >= 1.0 or t >= 0.22 + 0.24 * i
-            wrapped = wrap_text(line, body_font, W - 80, 1, f"{ch['id']} 要点")
+            wrapped = wrap_text(txt, body_font, W - 80, 1, f"{ch['id']} 要点")
             if y + 34 > BAND_TOP - 16:
-                raise ValueError(f"{ch['id']} 要点叠进字幕带：{line}")
+                raise ValueError(f"{ch['id']} 要点叠进字幕带：{txt}")
             if shown:
-                dx = int(12 * (1.0 - min(1.0, max(0.0, (t - (0.22 + 0.24 * i)) / 0.3))))
+                dx = 0 if t >= 1.0 else int(12 * (1.0 - min(1.0, max(0.0, (t - (0.22 + 0.24 * i)) / 0.3))))
                 col = TEXT if (line is None or i == line) else MUTED
                 draw.text((40 + dx, y), wrapped[0], font=body_font, fill=col)
             y += 40
