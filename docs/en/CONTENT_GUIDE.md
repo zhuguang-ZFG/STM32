@@ -27,6 +27,19 @@ This file is the English edition of that guide. Please follow the rules below so
   <br><sub>▲ Animation: xxx (a GIF or an SVG both play directly on the GitHub page)</sub>
 </p>
 
+## Principle and boundary
+Pin the conclusion to one orderable part, one clock, and one manual revision; say which sentence is void when the family changes.
+
+## Key figures
+Put the key figures in this section.
+
+## Timing or state
+One timing table or state table you can calculate back from. If there is no electrical timing, write the state transitions, and do not leave the heading empty.
+
+## Pitfalls and source cards
+| Symptom | Cause | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+
 ## 📌 Learning goals
 - [ ] Goal 1
 - [ ] Goal 2
@@ -41,16 +54,18 @@ This file is the English edition of that guide. Please follow the rules below so
 ## 💻 Code
 The important fragment (HAL first, with a register or LL counterpart beside it). The full project is under `../../examples/...`.
 
-## ⚠️ Common traps and how to check them
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-
 ## 🧪 Hands-on labs
 1 to 3 labs, easy then harder, each with the result you should see.
 
 ## 🔗 Related resources
 - The official reference-manual chapter, the datasheet chapter, and links to related chapters
 ```
+
+If a chapter has `<!-- video: -->` … `<!-- /video: -->`, the four sections still go after that comment ends and before the learning goals, the same place as chapters 00, 03, 04, and 06. Those chapters are the examples. This edition does not rewrite chapter prose. The skeleton above does not include the narration script or the `<!-- video: -->` comment.
+
+- "Pitfalls and troubleshooting" is no longer a skeleton heading. Move the rows that used to sit in that section into "Pitfalls and source cards". Do not keep two names, and do not leave an empty heading. Chapters that are not thickened yet keep the old heading until a later batch.
+- Each row states one claim. The source cell is a link to `#source-{id}`. `{id}` is an id already listed under `sources` in both manifests. After the build, the target is the Appendix E card `id="source-{id}"`.
+- This guide does not open a second source table. New ids are still appended to `sources` under the existing thickening design. This edition does not add an id.
 
 ## 3. How to write
 
