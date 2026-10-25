@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
+import inspect
 import json
 import re
 import tempfile
@@ -76,6 +78,52 @@ class BookHTMLParser(HTMLParser):
             self.compasses += 1
         if tag == "meta" and values.get("name") == "viewport":
             self.has_viewport = True
+
+
+_TOKEN_LIGHT_KEYS = (
+    "--paper",
+    "--ink",
+    "--muted",
+    "--line",
+    "--panel",
+    "--accent",
+    "--accent-soft",
+    "--warn",
+    "--warn-soft",
+    "--tip",
+    "--tip-soft",
+    "--spine",
+    "--spine-soft",
+    "--code",
+    "--code-ink",
+    "--measure",
+    "--space-bar",
+    "--space-paragraph",
+    "--space-figure",
+    "--space-chapter",
+    "--inset",
+    "--leading-body",
+    "--tracking-body",
+    "--tracking-kicker",
+    "--radius",
+    "--elev",
+    "--font-sans",
+    "--font-mono",
+    "--type-body",
+    "--type-h1",
+    "--type-h2",
+    "--type-h3",
+    "--type-h4",
+    "--type-kicker",
+    "--type-small",
+    "--type-code",
+    "--leading-heading",
+    "--leading-caption",
+    "--leading-toc",
+    "--leading-code",
+)
+_TOKEN_COLOR_KEYS = _TOKEN_LIGHT_KEYS[:15]
+_TOKEN_COVER_LOCK = ("--paper", "--ink", "--muted", "--warn", "--line", "--spine")
 
 
 class BookBuildContractTests(unittest.TestCase):
@@ -1379,6 +1427,192 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("position: static", self._css_rule(printed, ".contents > section > h2"))
         self.assertIn("figure { background: transparent; }", printed)
         self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
+
+    def test_css_token_extract_contract(self) -> None:
+        tokens_path = BOOK_DIR / "styles" / "tokens.json"
+        css_path = BOOK_DIR / "styles" / "book.css"
+        self.assertTrue(tokens_path.is_file(), tokens_path)
+        self.assertTrue(css_path.is_file(), css_path)
+        raw_tokens = tokens_path.read_bytes()
+        self.assertFalse(raw_tokens.startswith(b"\xef\xbb\xbf"), "tokens.json BOM")
+        token_text = raw_tokens.decode("utf-8")
+        self.assertTrue(token_text.endswith("\n"))
+        tokens = json.loads(token_text)
+        self.assertEqual(
+            ["schema", "light", "dark", "print", "coverLock"],
+            list(tokens),
+        )
+        self.assertIs(type(tokens["schema"]), int)
+        self.assertEqual(1, tokens["schema"])
+        self.assertEqual(list(_TOKEN_LIGHT_KEYS), list(tokens["light"]))
+        self.assertEqual(list(_TOKEN_COLOR_KEYS), list(tokens["dark"]))
+        self.assertEqual(list(_TOKEN_COLOR_KEYS), list(tokens["print"]))
+        self.assertEqual(list(_TOKEN_COVER_LOCK), tokens["coverLock"])
+
+        css_source = css_path.read_text(encoding="utf-8")
+        self.assertTrue(css_source.startswith("\n"))
+        for sentinel in (
+            "  /* @tokens light */",
+            "  /* @tokens dark */",
+            "/* @tokens print */",
+            "  /* @tokens cover */",
+        ):
+            self.assertEqual(1, css_source.count(sentinel), sentinel)
+        self.assertIn(
+            "  color-scheme: light dark;\n  /* @tokens light */\n  font-family: var(--font-sans);",
+            css_source,
+        )
+        self.assertIn(
+            "@media (prefers-color-scheme: dark) {\n  /* @tokens dark */\n}",
+            css_source,
+        )
+        self.assertIn(
+            "  :root { color-scheme: light; /* @tokens print */ }",
+            css_source,
+        )
+        self.assertIn(
+            "  background: #10242e;\n  color: #f4f1ea;\n  /* @tokens cover */\n",
+            css_source,
+        )
+        names = set(tokens["light"]) | set(tokens["dark"]) | set(tokens["print"])
+        for name in names:
+            self.assertNotIn(f"{name}:", css_source, name)
+        self.assertEqual(
+            {"#10242e", "#f4f1ea", "#0c1c24"},
+            set(re.findall(r"#[0-9A-Fa-f]{3,8}", css_source)),
+        )
+        self.assertIn("rgba(16, 24, 32, .18)", css_source)
+        self.assertIn("--table-columns", css_source)
+        self.assertNotIn("@font-face", css_source)
+        self.assertNotIn("url(", css_source)
+
+        self.assertEqual(
+            ("tokens_path", "css_path"),
+            tuple(inspect.signature(self.builder.load_css).parameters),
+        )
+        self.assertIsInstance(self.builder.CSS, str)
+        self.assertEqual(self.builder.load_css(), self.builder.CSS)
+        self.assertEqual(
+            "e0fb660584f1833e8a6d419ba78ed9d56e4e92e51cbb533430ac8833bcca6bf4",
+            hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
+        )
+        css = self.builder.CSS
+        self.assertNotIn("/* @tokens", css)
+        medias = [item.strip() for item in re.findall(r"@media[^{]+", css)]
+        self.assertEqual(
+            [
+                "@media (max-width: 960px)",
+                "@media (max-width: 720px)",
+                "@media (prefers-color-scheme: dark)",
+                "@media (prefers-reduced-motion: reduce)",
+                "@media print",
+            ],
+            medias,
+        )
+        screen = css.split("@media", 1)[0]
+        dark = css.split("@media (prefers-color-scheme: dark)", 1)[1].split("@media", 1)[0]
+        printed = css.split("@media print", 1)[1]
+        for name, value in tokens["light"].items():
+            self.assertIn(f"{name}: {value}", screen, name)
+        for name, value in tokens["dark"].items():
+            self.assertIn(f"{name}: {value}", dark, name)
+        print_root = self._css_rule(printed, ":root")
+        for name, value in tokens["print"].items():
+            self.assertIn(f"{name}: {value}", print_root, name)
+        cover = self._css_rule(screen, ".cover")
+        for name in tokens["coverLock"]:
+            self.assertIn(f"{name}: {tokens['light'][name]}", cover, name)
+
+        def embedded(html: str) -> None:
+            self.assertEqual(1, html.count("<style>"))
+            self.assertEqual(1, html.count("</style>"))
+            self.assertNotIn("<link", html)
+            inner = html.split("<style>", 1)[1].split("</style>", 1)[0]
+            self.assertEqual(self.builder.CSS, inner)
+            self.assertNotIn("fonts.googleapis", html)
+            self.assertNotIn("fonts.gstatic", html)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            chinese = self.builder.build_html(root / "zh")
+            english = self.builder.build_html(root / "en", BOOK_DIR / "manifest-en.json")
+            embedded(chinese.read_text(encoding="utf-8"))
+            embedded(english.read_text(encoding="utf-8"))
+
+    def test_css_token_extract_rejects_bad_tokens(self) -> None:
+        before = self.builder.CSS
+
+        def legal() -> dict:
+            light = {key: "1" for key in _TOKEN_LIGHT_KEYS}
+            colors = {key: "1" for key in _TOKEN_COLOR_KEYS}
+            return {
+                "schema": 1,
+                "light": light,
+                "dark": dict(colors),
+                "print": dict(colors),
+                "coverLock": list(_TOKEN_COVER_LOCK),
+            }
+
+        sheet = (
+            "\n:root {\n"
+            "  color-scheme: light dark;\n"
+            "  /* @tokens light */\n"
+            "  font-family: var(--font-sans);\n"
+            "}\n"
+            ".cover {\n"
+            "  background: #10242e;\n"
+            "  color: #f4f1ea;\n"
+            "  /* @tokens cover */\n"
+            "}\n"
+            "@media (prefers-color-scheme: dark) {\n"
+            "  /* @tokens dark */\n"
+            "}\n"
+            "@media print {\n"
+            "  :root { color-scheme: light; /* @tokens print */ }\n"
+            "}\n"
+        )
+
+        def write_pair(directory: Path, document: str) -> tuple[Path, Path]:
+            directory.mkdir(parents=True, exist_ok=True)
+            tokens_path = directory / "tokens.json"
+            css_path = directory / "book.css"
+            tokens_path.write_text(document, encoding="utf-8", newline="\n")
+            css_path.write_text(sheet, encoding="utf-8", newline="\n")
+            return tokens_path, css_path
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            missing = legal()
+            del missing["light"]["--ink"]
+            tokens_path, css_path = write_pair(
+                root / "missing",
+                json.dumps(missing, indent=2, ensure_ascii=False) + "\n",
+            )
+            with self.assertRaisesRegex(self.builder.BuildError, "--ink"):
+                self.builder.load_css(tokens_path, css_path)
+
+            poisoned = legal()
+            poisoned["light"]["--paper"] = "url("
+            tokens_path, css_path = write_pair(
+                root / "url",
+                json.dumps(poisoned, indent=2, ensure_ascii=False) + "\n",
+            )
+            with self.assertRaisesRegex(self.builder.BuildError, r"url\("):
+                self.builder.load_css(tokens_path, css_path)
+
+            duplicate = json.dumps(legal(), indent=2, ensure_ascii=False) + "\n"
+            duplicate = duplicate.replace(
+                '"--paper": "1"',
+                '"--paper": "1",\n    "--paper": "#fff"',
+                1,
+            )
+            light_text, _, _rest = duplicate.partition('\n  "dark"')
+            self.assertEqual(2, light_text.count('"--paper"'))
+            tokens_path, css_path = write_pair(root / "duplicate", duplicate)
+            with self.assertRaisesRegex(self.builder.BuildError, "--paper"):
+                self.builder.load_css(tokens_path, css_path)
+
+        self.assertIs(before, self.builder.CSS)
 
     def test_visual_polish_version_is_1_2_0(self) -> None:
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
