@@ -417,6 +417,120 @@ def uart_idle():
     return g
 
 
+def clock_css():
+    """HSE enters the PLL, SYSCLK sits at 72 MHz, then HSE vanishes and SYSCLK returns to HSI.
+
+    The fetch failure stays on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    lines = (
+        "HSE 8 MHz INTO PLL",
+        "PLL x9 LOCKS",
+        "SYSCLK 72 MHz",
+        "HSE GONE",
+        "PLL OFF",
+        "SYSCLK IS HSI 8 MHz",
+    )
+    for index, line in enumerate(lines):
+        c = Canvas(W, H)
+        chrome(c, "CLOCK CSS", "HSE", "AUX GIF  STATIC SVG HAS THE FAILURE")
+        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
+        c.text("HSE 8 MHz", 28, 60, C.CYAN, 1)
+        c.panel(16, 96, 448, 36, C.PANEL, C.GREEN if index >= 2 else C.STROKE)
+        c.text("72 MHz" if index < 4 else "HSI 8 MHz", 28, 108, C.AMBER, 1)
+        c.text(line, 28, 160, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
+        c.text("CSS RETURNS SYSCLK TO HSI", 28, 214, C.GREEN, 1)
+        c.text("PRINT THE FETCH FAILURE ON THE SVG", 28, 232, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def pwm_1khz():
+    """CNT walks to ARR and the level flips at CCR=500.
+
+    The slow path stays on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "CNT 0  HIGH",
+        "CNT 250  HIGH",
+        "CCR=500  EDGE",
+        "CNT 750  LOW",
+        "CNT 999  LOW",
+        "1000 Hz  500 us HIGH",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "PWM 1 KHZ", "TIM3", "AUX GIF  1000 Hz")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("PSC=71 ARR=999 CCR=500", 28, 58, C.MUTED, 1)
+        level = C.GREEN if index < 2 else C.AMBER
+        c.hline(24, 120, 200 if index < 2 else 432, level, 2)
+        c.text(note, 28, 160, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
+        c.text("1000 Hz FROM A 72 MHz CLOCK", 28, 214, C.CYAN, 1)
+        c.text("500 us HIGH THEN LOW", 28, 232, C.GREEN, 1)
+        c.text("PRINT THE SLOW PATH ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def spi_jedec():
+    """CS falls, MOSI shifts 0x9F, then MISO returns 0xEF 0x40 0x17 at 9 MHz.
+
+    The swapped-wire failure stays on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "CS LOW",
+        "MOSI 0x9F",
+        "MISO 0xEF",
+        "MISO 0x40",
+        "MISO 0x17",
+        "CS HIGH  9 MHz",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "SPI JEDEC", "MODE 0", "AUX GIF  9 MHz")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("PA5 SCK  PA7 MOSI  PA6 MISO", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("0x9F THEN 0xEF 0x40 0x17", 28, 200, C.GREEN, 1)
+        c.text("9 MHz  BR=010", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE SWAP ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def adc_sample():
+    """One successful sample, then the MSB compare, at 12 MHz.
+
+    The short-sample failure stays on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "SWITCH CLOSED",
+        "CAP CHARGES",
+        "SWITCH OPENS",
+        "HOLD",
+        "MSB COMPARE",
+        "ADCCLK 12 MHz",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "ADC SAMPLE", "12 MHZ", "AUX GIF  ONE CONVERSION")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("PA0  ADC12_IN0  VDDA", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("12 MHz SAMPLE THEN MSB", 28, 200, C.GREEN, 1)
+        c.text("PRINT THE SHORT SAMPLE ON THE SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
 BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
@@ -426,6 +540,10 @@ BUILDERS = {
     "sar-adc": sar_adc,
     "nvic-preempt": nvic_preempt,
     "uart-idle": uart_idle,
+    "clock-css": clock_css,
+    "pwm-1khz": pwm_1khz,
+    "spi-jedec": spi_jedec,
+    "adc-sample": adc_sample,
 }
 
 

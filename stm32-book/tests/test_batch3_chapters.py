@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import unittest
 from pathlib import Path
 
@@ -120,6 +121,60 @@ class Batch3FigureTests(unittest.TestCase):
         self.assertNotIn("0x40013000", spi)
         adc = ADC.read_text(encoding="utf-8")
         self.assertNotIn("270", adc)
+
+
+def load_gen_gifs():
+    path = ROOT / "tools" / "gen_gifs.py"
+    spec = importlib.util.spec_from_file_location("gen_gifs_batch3", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Batch3GifTests(unittest.TestCase):
+    def test_new_gifs_are_short_auxiliaries(self) -> None:
+        gifs = load_gen_gifs()
+        for name in (
+            "led-blink",
+            "pwm-breath",
+            "uart-bits",
+            "i2c-timing",
+            "dma-ring",
+            "sar-adc",
+            "nvic-preempt",
+            "uart-idle",
+            "clock-css",
+            "pwm-1khz",
+            "spi-jedec",
+            "adc-sample",
+        ):
+            self.assertIn(name, gifs.BUILDERS)
+        source = (ROOT / "tools" / "gen_gifs.py").read_text(encoding="utf-8")
+        clock_src = source.split("def clock_css", 1)[1].split("def pwm_1khz", 1)[0]
+        pwm_src = source.split("def pwm_1khz", 1)[1].split("def spi_jedec", 1)[0]
+        spi_src = source.split("def spi_jedec", 1)[1].split("def adc_sample", 1)[0]
+        adc_src = source.split("def adc_sample", 1)[1].split("BUILDERS", 1)[0]
+        self.assertIn("HSE 8 MHz", clock_src)
+        self.assertIn("72 MHz", clock_src)
+        self.assertIn("HSI 8 MHz", clock_src)
+        self.assertNotIn("LATENCY", clock_src)
+        self.assertIn("1000 Hz", pwm_src)
+        self.assertIn("500 us", pwm_src)
+        self.assertIn("CCR=500", pwm_src)
+        self.assertNotIn("500 Hz", pwm_src)
+        self.assertIn("0x9F", spi_src)
+        self.assertIn("0xEF", spi_src)
+        self.assertIn("9 MHz", spi_src)
+        self.assertNotIn("36 MHz", spi_src)
+        self.assertIn("12 MHz", adc_src)
+        self.assertIn("MSB", adc_src)
+        self.assertNotIn("18 MHz", adc_src)
+        for name in ("clock-css", "pwm-1khz", "spi-jedec", "adc-sample"):
+            gif = gifs.BUILDERS[name]()
+            self.assertGreaterEqual(len(gif.frames), 3)
+            self.assertLessEqual(len(gif.frames), 12)
+            path = ROOT / "assets" / "gif" / f"{name}.gif"
+            self.assertLess(path.stat().st_size, 500 * 1024, path.name)
 
 
 if __name__ == "__main__":
