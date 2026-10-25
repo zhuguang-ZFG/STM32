@@ -32,9 +32,24 @@ The way the book is organized borrows a method used for another book in the same
 
 ## When a number is actually pinned
 
-The ledger at the end of [Appendix D](#appendix-glossary) uses the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue.
+The two ledgers at the end of [Appendix D](#appendix-glossary) use the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue. When the second ledger changes the part to a G0, an L4, or an H7, the clock and the registers are rewritten for the whole row.
 
 The 115200 cell is the pattern. The part is an STM32F103C8T6, and USART1's clock is APB2, not APB1. The document is the USART baud-rate register in [RM0008](#source-rm0008); the worked formula is in chapter 06. The formula is `fPCLK / (16 × baud)`. Substituting 72 MHz gives 39.0625, the low 4 bits of BRR are 1, the register is `0x271`, and the divider error is 0. A note that says only "0.16% error", with no USART number and no BRR, has not pinned the cell. That 0.16% is the 36 MHz row, or what you get by dropping the fraction on the 72 MHz row.
+
+## What fills one cell
+
+Before changing a number, copy one row of this blank table. The right-hand column is the 500 kbit/s cell already filled, matching the second ledger in [Appendix D](#appendix-glossary).
+
+| Cell | What to write | The 500 kbit/s cell |
+| --- | --- | --- |
+| Orderable part | The full part from the silkscreen. An H7 also needs the revision | bxCAN on an STM32F103C8T6. FDCAN gets its own cell |
+| Clock | The clock that enters the formula, with its value | APB1 = 36 MHz. 72 MHz is the APB2 and timer path |
+| Register | The name and the fields you will write | Prescaler 9, BS1 = 5, BS2 = 2, SJW = 1 quantum |
+| Arithmetic | One division. If it does not divide evenly, write the fraction | `36e6 / (9 × 8) = 500000`. Sample point `(1+5)/8 = 75%` |
+| What falsifies it | The instrument reading that throws the cell out | A bit rate of 450 kbit/s matches 10 quanta and prescaler 8: `36e6 / 80 = 450000`. That cell's prescaler was 7.2 |
+| What stays out of the design | What this cell does not prove | A loopback frame shows the controller accepted this bit timing. The two 120 Ω resistors, the ACK, and the error counters are a separate note |
+
+> ⚠️ 7.2 does not fit in the prescaler field. After writing the neighboring integer 8, the bus rate is 450 kbit/s, and loopback can still look green.
 
 ## Source register
 

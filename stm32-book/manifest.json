@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "date": "2026-10-25",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
@@ -124,13 +124,13 @@
     "04-中断与NVIC.md": {
       "question": "异步事件怎样从引脚进入 EXTI 和 NVIC，又怎样在有限时间内安全退出 ISR？",
       "deliverable": "一张事件路径图、一份优先级表和一笔 ISR 最坏执行时间预算。",
-      "boundary": "裸机优先级配置不自动满足 RTOS 的 FromISR 约束；第 15 章再加入内核边界。",
+      "boundary": "裸机优先级配置不自动满足 RTOS 的 FromISR 约束；第 15 章再加入内核边界。硬件入栈 8 个寄存器，大约 12 个 HCLK；在 72 MHz 上约 167 ns，不含 ISR 正文。HAL 默认分组是 GROUP_4：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高。",
       "sources": ["pm0056", "rm0008", "freertos-priority"]
     },
     "05-定时器与PWM.md": {
       "question": "时钟、PSC、ARR 与 CCR 怎样变成可测的周期、频率和占空比？",
       "deliverable": "一笔从定时器输入时钟到目标波形的计算，以及一张仪器实测对照表。",
-      "boundary": "公式只对选定计数模式和时钟路径成立；高级定时器还要核对 MOE、死区与互补输出。这颗 F103 上 APB1 为 36 MHz 时，TIM2–TIM7 的计数时钟仍是 72 MHz。",
+      "boundary": "公式只对选定计数模式和时钟路径成立；高级定时器还要核对 MOE、死区与互补输出。这颗 F103 上 APB1 为 36 MHz 时，TIM2–TIM7 的计数时钟仍是 72 MHz。PSC 为 71、ARR 为 999 时，72 MHz / (72 × 1000) = 1 kHz。同一组 PSC、ARR 用 36 MHz 去除会算出 500 Hz。16 位定时器装不下 ARR 999999。",
       "sources": ["rm0008"]
     },
     "06-串口UART.md": {
@@ -172,13 +172,13 @@
     "12-Flash与IAP升级.md": {
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
       "deliverable": "一张 Boot/APP 内存布局、镜像完整性检查和升级失败回退状态图。",
-      "boundary": "能跳转 APP 不等于可量产升级；签名、反回滚、掉电恢复和密钥管理需单独论证。",
-      "sources": ["rm0008", "an2606", "an3965"]
+      "boundary": "能跳转 APP 不等于可量产升级；签名、反回滚、掉电恢复和密钥管理需单独论证。F103 中容量按 1 KB 页擦除、按半字编程。解锁先写 KEY1 0x45670123，再写 KEY2 0xCDEF89AB。大容量才是 2 KB/页。F407 的扇区是 16 KB、64 KB 或 128 KB。",
+      "sources": ["rm0008", "an2606", "an3965", "rm0090"]
     },
     "13-CAN总线.md": {
       "question": "物理终端、位时序、仲裁、过滤器和错误计数怎样共同决定一条 CAN 报文能否可信到达？",
       "deliverable": "一笔位时序账、一个环回自测和一份双节点含终端电阻的抓帧记录。",
-      "boundary": "本章讲 bxCAN 基础，不等于 CANopen/J1939，也不能把 H7 的 FDCAN 寄存器原样替换。",
+      "boundary": "本章讲 bxCAN 基础，不等于 CANopen/J1939，也不能把 H7 的 FDCAN 寄存器原样替换。APB1 为 36 MHz 时，预分频 9、BS1 为 5、BS2 为 2：8 个时间份额，采样点 75%，36 MHz / (9 × 8) = 500 kbit/s。10 个时间份额、目标同样是 500 kbit/s 时预分频是 7.2；写成 8 得到 450 kbit/s。发送错误计数到 256 进入总线关闭。",
       "sources": ["rm0008"]
     },
     "14-USB.md": {
@@ -190,13 +190,13 @@
     "15-FreeRTOS入门.md": {
       "question": "任务、队列、互斥量与 ISR 怎样在优先级规则下协作而不阻塞错误的执行上下文？",
       "deliverable": "一张任务状态图、一份栈与队列预算，以及能证明 FromISR 优先级合法的 NVIC 配置表。",
-      "boundary": "示例只建立内核基本契约；实时性必须用最坏执行时间、阻塞链和测量数据证明。",
+      "boundary": "示例只建立内核基本契约；实时性必须用最坏执行时间、阻塞链和测量数据证明。FreeRTOS 要求分组 GROUP_4。4 位优先级时，5 << (8-4) = 0x50，能调用 FromISR 的中断优先级数值要大于等于 5。NVIC 数值 0 是最高优先级，调用这些 API 会停在 configASSERT。任务优先级的方向相反。",
       "sources": ["freertos-priority", "pm0056"]
     },
     "16-低功耗设计.md": {
       "question": "进入与退出 Sleep/Stop/Standby 时，哪些时钟、状态和唤醒源必须显式恢复？",
       "deliverable": "一张模式—唤醒—状态保持表和注明板级负载、仪器带宽与温度的电流实测记录。",
-      "boundary": "数据手册典型值是芯片在指定条件下的数值，不能直接当成整块开发板功耗。",
+      "boundary": "数据手册典型值是芯片在指定条件下的数值，不能直接当成整块开发板功耗。F103 的 Stop 典型值约 14~20 µA。从 Stop 醒来先回到 HSI；第 02 章写明 F1 上电默认的 HSI 是 8 MHz，72 MHz 的 PLL 要重新装回。",
       "sources": ["rm0008", "ds5319"]
     },
     "17-调试与性能优化.md": {
@@ -238,19 +238,19 @@
     "23-STM32G0引脚.md": {
       "question": "从 F1 迁到 G071RB 时，封装脚序、BOOT/SWCLK 共脚、选项字节和外设集合有哪些不能照抄？",
       "deliverable": "一张 G071RB LQFP64 关键脚表、一幅启动锁存与保护分支图解、一张完整启动真值表，以及一条按 RDP/DBG_SWEN 判定可达性并读回验证的恢复闭环。",
-      "boundary": "本章只对 G071RB 指定封装和所引手册修订负责；空 Flash 检查、RDP、DBG_SWEN、Bootloader pattern 与生产选项字节必须另行核对。Under Reset 不保证可连接；BOOT_LOCK 清除受 RDP 限制，不默认降级 RDP 或整片擦除。",
+      "boundary": "本章只对 G071RB 指定封装和所引手册修订负责；空 Flash 检查、RDP、DBG_SWEN、Bootloader pattern 与生产选项字节必须另行核对。Under Reset 不保证可连接；BOOT_LOCK 清除受 RDP 限制，不默认降级 RDP 或整片擦除。家族最高 64 MHz，Cortex-M0+。启动配置在第四个 SYSCLK 上升沿锁存；PA14 同时是启动输入和 SWCLK。BOOT_LOCK 为 1 且 RDP 为 Level 1 时，FLASH_ACR.DBG_SWEN 的复位值是 0。",
       "sources": ["ds12232", "rm0444", "an5096", "an2606", "st-boot-faq"]
     },
     "24-STM32L4引脚.md": {
       "question": "L476RG 的引脚、电源域和低功耗模式怎样影响 Stop 2 进入、唤醒恢复与真实平均电流？",
       "deliverable": "一张 LQFP64 关键脚表、一条在 HAL 清位前发布的 IRQ 入口唤醒证据链、一条可验证的 Stop 2 时钟恢复链，以及含接线图、原始波形与积分公式的功耗账。",
-      "boundary": "原始唤醒位必须在 HAL handler 之前捕获；典型低功耗数字不是整板保证值；模式能力、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。",
+      "boundary": "原始唤醒位必须在 HAL handler 之前捕获；典型低功耗数字不是整板保证值；模式能力、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。封面 Stop 2 典型值是 1.1 µA，带 RTC 为 1.4 µA，从 Stop 唤醒 4 µs；这是芯片数，不是本仓库实测。醒后临时时钟是 MSI 或 HSI16。SysTick 若不停，1 ms 节拍会反复唤醒。限值还要对照该 revision 的 ES0250。",
       "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "stm32l4-hal-rtc", "commons-nucleo-f411re", "commons-nucleo-f401re", "es0250"]
     },
     "25-STM32H7引脚.md": {
       "question": "迁到 H743ZI 后，供电方案、硅片 revision、VCAP、FDCAN、Cache 与 400/480 MHz 时钟树怎样改变旧工程假设？",
       "deliverable": "一张 LQFP144 关键脚表、一条与板级供电和 revision 匹配的 400/480 MHz 配置链，以及 MCO、频率读回和外设波形三类验收证据；DMA 缓冲继续沿用第 10 章的内存域、对齐与 Cache 策略。",
-      "boundary": "Rev Y/W 无 VOS0，最高 400 MHz；480 MHz 示例仅适用于 Rev V、8 MHz HSE bypass 和匹配的 LDO 板。供电宏不能替代原理图，MCO 数值是计算预期而非本仓库实测；其他外设内核时钟、MPU 和 DMA 内存布局仍需单独验收。",
+      "boundary": "Rev Y/W 无 VOS0，最高 400 MHz；480 MHz 示例仅适用于 Rev V、8 MHz HSE bypass 和匹配的 LDO 板。供电宏不能替代原理图，MCO 数值是计算预期而非本仓库实测；其他外设内核时钟、MPU 和 DMA 内存布局仍需单独验收。8 MHz bypass、PLLM=4、PLLN=400、PLLP=2 得到 400 MHz，官方示例的 Flash 等待参数是 4。PLLN=480 只在 Rev V 上、VOS1 已经就绪之后进入 VOS0 的路径。MCO2 再除以 5：400 MHz 时期望 80 MHz，480 MHz 时期望 96 MHz。",
       "sources": ["ds12110", "rm0433", "es0392", "an4938", "st-h7-480mhz", "stm32cube-h7-clock", "stm32cube-h7-system", "stm32cube-h7-msp", "stm32h7-hal-pwr", "st-h7-dma"]
     },
     "26-STM32F10x标准外设库SPL.md": {
@@ -315,6 +315,15 @@
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
       "scope": "F1 时钟、GPIO、DMA、定时器、通信外设和寄存器定义。"
+    },
+    "rm0090": {
+      "title": "RM0090 — STM32F405/415, STM32F407/417, STM32F427/437 and STM32F429/439 Reference Manual",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "文档号 RM0090；第 12 章用它核对 F407VG 扇区，使用时核对当前修订版",
+      "accessed": "2026-10-25",
+      "license": "ST 文档条款（本书仅链接与引用文档号）",
+      "scope": "F407 Flash 扇区：S0–S3 为 16 KB，S4 为 64 KB，S5–S7 为 128 KB。"
     },
     "ds5319": {
       "title": "DS5319 — STM32F103x8/B Datasheet",
