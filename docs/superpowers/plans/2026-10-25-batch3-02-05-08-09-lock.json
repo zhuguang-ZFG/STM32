@@ -1,0 +1,46 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-batch3-02-05-08-09",
+  "baseline": "d08235d54e1f4632b4c2133cb0c334e030c10119",
+  "chapters": [
+    "02",
+    "05",
+    "08",
+    "09"
+  ],
+  "four_blocks_absent": true,
+  "old_pitfall_heading_present": true,
+  "files": {
+    "02": {
+      "zh": "docs/02-芯片选型与存储器时钟.md",
+      "en": "docs/en/02-part-and-clock.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "05": {
+      "zh": "docs/05-定时器与PWM.md",
+      "en": "docs/en/05-timer-pwm.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "08": {
+      "zh": "docs/08-SPI总线.md",
+      "en": "docs/en/08-spi.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "09": {
+      "zh": "docs/09-ADC与DAC.md",
+      "en": "docs/en/09-adc-dac.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    }
+  }
+}
