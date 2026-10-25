@@ -94,9 +94,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.2.4<"), history.index(">1.2.3<"))
         self.assertLess(history.index(">1.2.3<"), history.index(">1.2.2<"))
         self.assertLess(history.index(">1.2.2<"), history.index(">1.2.1<"))
         self.assertLess(history.index(">1.2.1<"), history.index(">1.2.0<"))
@@ -130,7 +131,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -224,7 +225,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.2.3</strong>", html)
+        self.assertIn("<strong>v1.2.4</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -364,7 +365,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.2.3", manifest["version"])
+        self.assertEqual("1.2.4", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -381,7 +382,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.2.3</strong>", html)
+        self.assertIn("<strong>v1.2.4</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
@@ -1132,38 +1133,297 @@ class BookBuildContractTests(unittest.TestCase):
             ("#111", "#fff"),
             ("#075e84", "#fff"),
             ("#444", "#fff"),
+            ("#eef6f8", "#101820"),
+            ("#edf6f9", "#0a141c"),
+            ("#111", "#f6f6f6"),
+            ("#075e84", "#e5f3f8"),
         )
         for foreground, background in pairs:
             with self.subTest(foreground=foreground, background=background):
                 self.assertGreaterEqual(_contrast_ratio(foreground, background), 4.5)
+
+    def test_typography_e_css_contract(self) -> None:
+        css = self.builder.CSS
+        screen = css.split("@media", 1)[0]
+        dark = css.split("@media (prefers-color-scheme: dark)", 1)[1].split("@media", 1)[0]
+        printed = css.split("@media print", 1)[1]
+        narrow = css.split("@media (max-width: 720px)", 1)[1].split("@media", 1)[0]
+
+        def custom_value(block: str, name: str) -> str:
+            match = re.search(rf"{re.escape(name)}:\s*([^;]+);", block)
+            self.assertIsNotNone(match, name)
+            return match.group(1).strip()
+
+        for token in (
+            "--font-sans:",
+            "--font-mono:",
+            "--type-body: 1.0625rem",
+            "--type-h1: clamp(1.85rem, 4.2vw, 2.7rem)",
+            "--type-h2: 1.55rem",
+            "--type-h3: 1.35rem",
+            "--type-h4: 1.2rem",
+            "--type-kicker: 0.78rem",
+            "--type-small: 0.9375rem",
+            "--type-code: 0.92em",
+            "--leading-heading: 1.35",
+            "--leading-caption: 1.55",
+            "--leading-toc: 1.45",
+            "--leading-code: 1.65",
+        ):
+            self.assertIn(token, screen, token)
+
+        sans = custom_value(screen, "--font-sans")
+        self.assertTrue(
+            sans.startswith('"Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC"'),
+            sans,
+        )
+        for face in ('"Noto Sans SC"', '"Source Han Sans SC"', '"Segoe UI"'):
+            self.assertIn(face, sans)
+        mono = custom_value(screen, "--font-mono")
+        self.assertTrue(
+            mono.startswith('"Cascadia Mono", "SFMono-Regular", Consolas'),
+            mono,
+        )
+        for face in (
+            '"Noto Sans Mono CJK SC"',
+            '"Source Han Mono SC"',
+            '"Sarasa Mono SC"',
+            '"Liberation Mono"',
+            "ui-monospace",
+        ):
+            self.assertIn(face, mono)
+
+        self.assertIn("font-family: var(--font-sans)", self._css_rule(screen, ":root"))
+        self.assertNotIn("font-size", self._css_rule(screen, "html"))
+        self.assertIn("font-size: var(--type-body)", self._css_rule(screen, "body"))
+        self.assertIn("line-height: var(--leading-body)", self._css_rule(screen, "body"))
+        self.assertNotIn("--font-sans", dark)
+        self.assertNotIn("--type-body", dark)
+        self.assertIn("--code: #0a141c", dark)
+        self.assertIn("--code-ink: #edf6f9", dark)
+        self.assertIn("--code: #101820", screen)
+        self.assertIn("--code-ink: #eef6f8", screen)
+
+        code_rule = re.search(r"(?m)^code\s*\{([^}]*)\}", screen)
+        self.assertIsNotNone(code_rule)
+        self.assertIn("font-family: var(--font-mono)", code_rule.group(1))
+        self.assertIn("font-size: var(--type-code)", code_rule.group(1))
+        pre_code = self._css_rule(screen, "pre code")
+        self.assertNotIn("font-size", pre_code)
+        self.assertIn("color: inherit", pre_code)
+        self.assertIn("background: transparent", pre_code)
+        self.assertIn("padding: 0", pre_code)
+        self.assertIn("white-space: inherit", pre_code)
+        self.assertIn("user-select: text", pre_code)
+
+        inline = self._css_rule(screen, ":not(pre) > code")
+        self.assertIn("color-mix(in srgb, var(--accent) 18%, var(--paper))", inline)
+        self.assertIn("padding: .12em .35em", inline)
+        self.assertIn("border-radius: .3em", inline)
+        names = [part.split(":", 1)[0].strip() for part in inline.split(";") if part.strip()]
+        self.assertNotIn("border", names)
+        self.assertIn("border-radius", names)
+        self.assertIn("background: var(--accent-soft)", self._css_rule(screen, ".source-id code"))
+
+        pre = self._css_rule(screen, "pre")
+        self.assertIn("line-height: var(--leading-code)", pre)
+        self.assertIn("margin: var(--space-paragraph) 0 var(--space-figure)", pre)
+        self.assertIn("border-left: 3px solid var(--accent)", pre)
+        self.assertIn("border-radius: var(--radius)", pre)
+        self.assertIn("tab-size: 4", pre)
+        self.assertIn("user-select: text", pre)
+        self.assertNotIn("box-shadow", pre)
+
+        for selector in ("figcaption", "sub"):
+            block = self._css_rule(screen, selector)
+            self.assertIn("font-size: var(--type-small)", block, selector)
+            self.assertIn("line-height: var(--leading-caption)", block, selector)
+        self.assertIn("margin: 0 auto .55rem", self._css_rule(screen, "figure img"))
+        self.assertIn("font-size: var(--type-small)", self._css_rule(screen, "table"))
+        self.assertIn("font-size: var(--type-small)", self._css_rule(screen, ".source-card dl"))
+
+        self.assertIn("line-height: var(--leading-toc)", self._css_rule(screen, ".contents li"))
+        self.assertIn("margin: .28rem 0", self._css_rule(screen, ".contents li"))
+        self.assertIn("break-inside: avoid", self._css_rule(screen, ".contents li"))
+        goal = self._css_rule(screen, ".contents > section > p:not(.toc-closing)")
+        self.assertIn("color: var(--muted)", goal)
+        self.assertIn("font-size: var(--type-small)", goal)
+        self.assertIn("line-height: var(--leading-caption)", goal)
+        self.assertIn("max-width: var(--measure)", goal)
+        closing = self._css_rule(screen, ".toc-closing")
+        self.assertIn("border-top: 1px solid var(--line)", closing)
+        self.assertIn("margin: var(--space-bar) 0 0", closing)
+        self.assertIn("font-weight: 700", closing)
+        self.assertNotIn("font-size", closing)
+        contents_h2 = self._css_rule(screen, ".contents > section > h2")
+        self.assertIn("font-size: var(--type-h3)", contents_h2)
+        self.assertIn("line-height: var(--leading-heading)", contents_h2)
+        self.assertIn("position: sticky", contents_h2)
+        self.assertIn("background: var(--paper)", contents_h2)
+        self.assertIn("box-shadow: 0 1px 0 var(--line)", contents_h2)
+        self.assertIn("columns: 2", self._css_rule(screen, ".contents ol"))
+        self.assertIn("column-gap: 3rem", self._css_rule(screen, ".contents ol"))
+        self.assertIn("columns: 1", self._css_rule(narrow, ".contents ol"))
+
+        self.assertIn(
+            "h2, h3, h4 { line-height: var(--leading-heading); scroll-margin-top: 1.25rem; }",
+            screen,
+        )
+        self.assertIn(
+            "h2 { font-size: var(--type-h2); margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); }",
+            screen,
+        )
+        self.assertIn(
+            "h3 { font-size: var(--type-h3); margin: var(--space-figure) 0 calc(var(--space-bar) / 2); }",
+            screen,
+        )
+        self.assertIn(
+            "h4 { font-size: var(--type-h4); margin: var(--space-paragraph) 0 calc(var(--space-bar) / 2); }",
+            screen,
+        )
+        self.assertIn(
+            ".chapter > h2, .appendix > h2, .part-closing > h2 { margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); padding-left: var(--space-bar); border-left: 3px solid var(--accent); }",
+            screen,
+        )
+        self.assertIn(
+            ".chapter > header h1, .appendix > header h1, .part-closing > header h1, .back-matter > header h1 { font-size: var(--type-h1); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }",
+            screen,
+        )
+        self.assertIn("font-size: var(--type-h4)", self._css_rule(screen, ".quick-title"))
+        source_h2 = self._css_rule(screen, ".source-card h2")
+        self.assertIn("font-size: var(--type-h4)", source_h2)
+        self.assertIn("line-height: var(--leading-heading)", source_h2)
+        self.assertIn("margin: 0 0 .3rem", source_h2)
+        self.assertNotIn("padding-left", source_h2)
+        self.assertIn("margin-top: 0", self._css_rule(screen, ".imprint h1, .companion h2"))
+
+        for selector in (
+            ".compass-role",
+            ".callout-label",
+            ".source-card dt",
+            ".part-label",
+            ".cover .eyebrow",
+            ".closing-banner",
+            ".chapter-number",
+            ".compass-title",
+            ".source-id",
+            ".imprint .kicker",
+            ".index-letter",
+            ".revision-history .kicker, .subject-index .kicker",
+        ):
+            self.assertIn("font-size: var(--type-kicker)", self._css_rule(screen, selector), selector)
+        self.assertIn("letter-spacing: .04em", self._css_rule(screen, ".source-id"))
+        self.assertIn("letter-spacing: .04em", self._css_rule(screen, ".source-card dt"))
+
+        self.assertIn("clamp(2.15rem, 5.6vw, 3.7rem)", self._css_rule(screen, ".cover h1"))
+        self.assertIn("clamp(1.05rem, 2.4vw, 1.35rem)", self._css_rule(screen, ".cover .subtitle"))
+        self.assertIn("clamp(2rem, 5vw, 3.35rem)", self._css_rule(screen, ".part-divider h1"))
+        part_goal = self._css_rule(screen, ".part-goal")
+        self.assertIn("font-size: 1.12rem", part_goal)
+        self.assertIn("line-height: 1.6", part_goal)
+        self.assertIn("clamp(4.5rem, 14vw, 8.5rem)", self._css_rule(screen, ".part-index"))
+        self.assertIn("font-size: 3rem", self._css_rule(narrow, ".part-index"))
+        jump = self._css_rule(screen, ".toc-jump")
+        self.assertIn("font-size: .85rem", jump)
+        self.assertIn("box-shadow: 0 .45rem 1.2rem rgba(16, 24, 32, .18)", jump)
+        self.assertIn(".book { width: min(100% - 2rem, 980px); margin: 0 auto; }", screen)
+        self.assertIn(".book { width: min(100% - 1rem, 980px); }", narrow)
+
+        for retired in (
+            "font-size: .72rem",
+            "font-size: .74rem",
+            "font-size: .75rem",
+            "font-size: .78rem",
+            "font-size: .82rem",
+            "font-size: .88rem",
+            "font-size: .9rem",
+            "font-size: .91em",
+            "font-size: .92em",
+            "font-size: .94rem",
+            "font-size: 1.02rem",
+            "font-size: 1.05rem",
+            "font-size: 1.16rem",
+            "font-size: 1.42rem",
+            "margin: 2.35rem 0 .6rem",
+            "line-height: 1.35;",
+            "line-height: 1.45;",
+        ):
+            self.assertNotIn(retired, screen, retired)
+
+        self.assertNotIn("@font-face", css)
+        self.assertNotIn("url(", css)
+
+        print_root = self._css_rule(printed, ":root")
+        self.assertIn("--code: #f6f6f6", print_root)
+        self.assertIn("--code-ink: #111", print_root)
+        self.assertNotIn("--font-sans", printed)
+        self.assertNotIn("--type-body", printed)
+        self.assertIn("font-size: 9.5pt; line-height: 1.55", printed)
+        pre_print = self._css_rule(printed, "pre")
+        self.assertIn("line-height: 1.45", pre_print)
+        self.assertIn("white-space: pre-wrap", pre_print)
+        self.assertIn("overflow-wrap: anywhere", pre_print)
+        self.assertIn("break-inside: auto", pre_print)
+        self.assertIn("page-break-inside: auto", pre_print)
+        self.assertNotIn("avoid", pre_print)
+        caption = self._css_rule(printed, "figcaption")
+        self.assertIn("font-size: 9pt", caption)
+        self.assertIn("line-height: 1.4", caption)
+        self.assertIn("break-before: avoid-page", caption)
+        self.assertIn("page-break-before: avoid", caption)
+        self.assertIn("break-inside: avoid-page", caption)
+        self.assertIn("page-break-inside: avoid", caption)
+        printed_sub = self._css_rule(printed, "sub")
+        self.assertIn("font-size: 9pt", printed_sub)
+        self.assertIn("line-height: 1.4", printed_sub)
+        self.assertIn("position: static", self._css_rule(printed, ".contents > section > h2"))
+        self.assertIn("figure { background: transparent; }", printed)
+        self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
 
     def test_visual_polish_version_is_1_2_0(self) -> None:
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
         readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
         entry = revisions["entries"][0]
-        batch3 = revisions["entries"][1]
-        guide = revisions["entries"][2]
-        previous = revisions["entries"][3]
-        self.assertEqual("1.2.3", self.manifest["version"])
+        batch4 = revisions["entries"][1]
+        batch3 = revisions["entries"][2]
+        guide = revisions["entries"][3]
+        previous = revisions["entries"][4]
+        self.assertEqual("1.2.4", self.manifest["version"])
         self.assertEqual("2026-10-25", self.manifest["date"])
-        self.assertEqual("1.2.3", english["version"])
+        self.assertEqual("1.2.4", english["version"])
         self.assertEqual("2026-10-25", english["date"])
-        self.assertEqual("1.2.3", entry["version"])
+        self.assertEqual("1.2.4", entry["version"])
         self.assertEqual("2026-10-25", entry["date"])
+        self.assertEqual(
+            [
+                "正文、标题和眉题改用一组字号；目录里的分部目标改成次要色，分部收束行加上分隔线。",
+                "代码块补上能显示中文的等宽字体，行距略增；图注行距加大。印刷时代码块改为浅底，图注改为 9pt，不再大于正文。",
+            ],
+            entry["zh"],
+        )
+        self.assertEqual(
+            [
+                "Body, headings, and kickers use one type scale. Part goals in the contents are muted, and each part-closing line has a divider.",
+                "Code blocks gain a monospace stack that can show Chinese, with a slightly looser line-height. Captions gain line-height. In print, code blocks are light and captions are 9pt, no longer larger than the body.",
+            ],
+            entry["en"],
+        )
+        self.assertEqual("1.2.3", batch4["version"])
+        self.assertEqual("2026-10-25", batch4["date"])
         self.assertEqual(
             [
                 "第 01 章写上 SWD 在第 34 脚 PA13 和第 37 脚 PA14，读保护解除写 0xA5，BOOT0=1 且 BOOT1=0 进的是系统存储器。第 07 章写上 0x3C 在 HAL 里是 0x78，表 42 的 400 kHz 行是 0x801E 和 4.7 kΩ。",
                 "第 10 章写上只有 DMA1，8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节。第 11 章写上预分频 64、Reload 624 在 40 kHz 典型值下是 1 秒，LSI 是 30–60 kHz，备份寄存器是 10 个。",
             ],
-            entry["zh"],
+            batch4["zh"],
         )
         self.assertEqual(
             [
                 "Chapter file 01 records SWD on pin 34 PA13 and pin 37 PA14, readout protection level 0 as 0xA5, and BOOT0=1 with BOOT1=0 entering system memory. Chapter file 07 records that 0x3C is 0x78 in HAL, and that Table 42's 400 kHz row is 0x801E with 4.7 kΩ.",
                 "Chapter file 10 records DMA1 only, and that eight half-words with CNDTR 3 means 5 samples and 10 bytes written. Chapter file 11 records prescaler 64 and Reload 624 as 1 second at a typical 40 kHz, LSI as 30–60 kHz, and ten backup registers.",
             ],
-            entry["en"],
+            batch4["en"],
         )
         self.assertEqual("1.2.2", batch3["version"])
         self.assertEqual(
@@ -1210,15 +1470,16 @@ class BookBuildContractTests(unittest.TestCase):
             ],
             previous["en"],
         )
-        self.assertIn("当前版本：**v1.2.3 · 2026-10-25**", readme)
-        self.assertIn("版本号已经是 1.2.3。", readme)
+        self.assertIn("当前版本：**v1.2.4 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.2.4。", readme)
         self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
         self.assertIn("也不要把 1.2.0 的产物标成 1.2.1，", readme)
         self.assertIn("也不要把 1.2.1 的产物标成 1.2.2，", readme)
-        self.assertIn("也不要把 1.2.2 的产物标成 1.2.3。", readme)
-        self.assertIn("打 tag `v1.2.3`", readme)
-        self.assertNotIn("当前版本：**v1.2.2", readme)
-        self.assertNotIn("打 tag `v1.2.2`", readme)
+        self.assertIn("也不要把 1.2.2 的产物标成 1.2.3，", readme)
+        self.assertIn("也不要把 1.2.3 的产物标成 1.2.4。", readme)
+        self.assertIn("打 tag `v1.2.4`", readme)
+        self.assertNotIn("当前版本：**v1.2.3", readme)
+        self.assertNotIn("打 tag `v1.2.3`", readme)
 
     def test_cover_svg_stays_self_contained(self) -> None:
         svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
