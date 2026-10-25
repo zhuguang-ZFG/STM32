@@ -72,9 +72,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.0.8<"), history.index(">1.0.7<"))
         self.assertLess(history.index(">1.0.7<"), history.index(">1.0.0<"))
         self.assertIn("DBG_SWEN", history)
         self.assertIn("USBPRE", history)
@@ -91,6 +92,7 @@ class BookBuildContractTests(unittest.TestCase):
 
         index_html = html.split('id="subject-index"', 1)[1]
         self.assertGreaterEqual(index_html.count('class="index-entry"'), 60)
+        self.assertGreaterEqual(len(re.findall(r'class="index-letter">[A-Z]<', index_html)), 8)
         for marker in ("GPIO", "NVIC", "DMA", "BRR", "CFSR", "FreeRTOS", "lwIP", "USBPRE", "DBG_SWEN"):
             self.assertIn(marker, index_html)
         for chapter in ("03", "06", "10", "15", "17", "23", "27"):
@@ -100,7 +102,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -194,11 +196,23 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.7</strong>", html)
+        self.assertIn("<strong>v1.0.8</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
-        self.assertIn('<span class="chapter-number">第 00 章</span>', html)
+        self.assertIn('id="chapter-00" data-chapter="00"', html)
+        self.assertIn('id="chapter-28" data-chapter="28"', html)
+        self.assertIn('<span class="chapter-number">第 1 章</span><h1>如何学习 STM32</h1>', html)
+        self.assertIn(
+            'href="#chapter-00">第 1 章 如何学习 STM32</a>',
+            html,
+        )
+        self.assertIn(
+            'href="#chapter-28">第 29 章 嵌入式系统与 RTOS 生态：FreeRTOS、RT-Thread、Zephyr</a>',
+            html,
+        )
+        self.assertNotIn('<span class="chapter-number">第 00 章</span>', html)
+        self.assertNotIn('href="#chapter-00">00 ', html)
         self.assertIn('<span class="chapter-number">附录</span>', html)
         self.assertNotIn(">PART 0<", html)
         self.assertNotIn(">CHAPTER 00<", html)
@@ -240,7 +254,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("把一格填满", html)
         self.assertNotIn("英文整书不在这一版", html)
         self.assertIn('class="part-closing"', html)
-        self.assertIn("00 如何学习 STM32", html)
+        self.assertNotIn(">00 如何学习 STM32</h1>", html)
         self.assertNotIn("00-如何学习STM32", html)
         self.assertNotIn("mp.weixin.qq.com", html)
         self.assertNotIn("手机阅读版", html)
@@ -322,7 +336,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.7", manifest["version"])
+        self.assertEqual("1.0.8", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -339,11 +353,20 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.7</strong>", html)
+        self.assertIn("<strong>v1.0.8</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
-        self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
+        self.assertIn('id="chapter-00" data-chapter="00"', html)
+        self.assertIn('id="chapter-28" data-chapter="28"', html)
+        self.assertIn('<span class="chapter-number">Chapter 1</span><h1>How to Learn STM32</h1>', html)
+        self.assertIn('href="#chapter-00">Chapter 1 How to Learn STM32</a>', html)
+        self.assertIn(
+            'href="#chapter-28">Chapter 29 Embedded systems and the RTOS ecosystem: FreeRTOS, RT-Thread, and Zephyr</a>',
+            html,
+        )
+        self.assertNotIn('<span class="chapter-number">Chapter 00</span>', html)
+        self.assertNotIn('href="#chapter-00">00 ', html)
         self.assertIn('<span class="chapter-number">Appendix</span>', html)
         self.assertNotIn(">PART 0<", html)
         self.assertNotIn(">CHAPTER 00<", html)
@@ -680,6 +703,87 @@ class BookBuildContractTests(unittest.TestCase):
         with self.assertRaisesRegex(self.builder.BuildError, "missing local image"):
             self.builder.embed_local_images('<img src="../assets/no-such-image.svg">', source)
 
+    def _exploded_heading_outline(self, manifest: dict) -> list[list]:
+        toc: list[list] = []
+        for _level, _label, source in self.builder.outline_lookup_headings(manifest):
+            toc.append([1, source, 2])
+            for number in range(8):
+                toc.append([2, f"{source} section {number}", 3])
+                toc.append([3, f"{source} detail {number}", 3])
+        return toc
+
+    def test_publication_outline_keeps_parts_chapters_and_appendices(self) -> None:
+        import fitz
+
+        for manifest_name in ("manifest.json", "manifest-en.json"):
+            manifest = json.loads((BOOK_DIR / manifest_name).read_text(encoding="utf-8"))
+            fat = self._exploded_heading_outline(manifest)
+            self.assertGreater(len(fat), 600)
+            outline = self.builder.publication_outline(manifest, fat)
+            self.assertEqual(44, len(outline))
+            self.assertTrue(all(item[0] <= 2 for item in outline))
+            self.assertFalse(any(item[0] >= 3 for item in outline))
+            titles = [item[1] for item in outline]
+            self.assertFalse(any(re.match(r"^\d{2}\s", title) for title in titles))
+            self.assertLess(len(outline), 80)
+            if str(manifest["language"]).lower().startswith("zh"):
+                self.assertIn("第 1 章 如何学习 STM32", titles)
+                self.assertTrue(any(title.startswith("第 29 章 ") for title in titles))
+                self.assertIn("版本与修订", titles)
+                self.assertIn("主题索引", titles)
+                self.assertTrue(any(title.startswith("附录 A") for title in titles))
+                chapter_prefix = "第 1 章"
+            else:
+                self.assertIn("Chapter 1 How to Learn STM32", titles)
+                self.assertTrue(any(title.startswith("Chapter 29 ") for title in titles))
+                self.assertIn("Version history", titles)
+                self.assertIn("Subject index", titles)
+                self.assertTrue(any(title.startswith("Appendix A") for title in titles))
+                chapter_prefix = "Chapter 1 "
+            part = manifest["parts"][0]["title"]
+            part_at = next(index for index, item in enumerate(outline) if item[1] == part)
+            self.assertEqual(1, outline[part_at][0])
+            self.assertEqual(2, outline[part_at + 1][0])
+            self.assertTrue(outline[part_at + 1][1].startswith(chapter_prefix))
+            self.assertIsNotNone(self.builder._CHAPTER_RUNNING_TITLE.fullmatch(outline[part_at + 1][1]))
+            self.assertIsNone(self.builder._CHAPTER_RUNNING_TITLE.fullmatch(part))
+
+            with tempfile.TemporaryDirectory() as tmp:
+                raw = Path(tmp) / "raw.pdf"
+                output = Path(tmp) / "book.pdf"
+                document = fitz.open()
+                for _ in range(4):
+                    document.new_page()
+                document.set_toc(fat)
+                document.save(raw)
+                document.close()
+                self.builder._stamp_page_numbers(
+                    raw,
+                    output,
+                    {
+                        "title": manifest["title"],
+                        "author": manifest["author"],
+                        "subject": manifest["subtitle"],
+                        "keywords": manifest["keywords"],
+                    },
+                    manifest,
+                )
+                stamped = fitz.open(output)
+                try:
+                    toc = stamped.get_toc()
+                finally:
+                    stamped.close()
+            self.assertEqual([item[:3] for item in outline], [item[:3] for item in toc])
+            self.assertTrue(all(item[0] <= 2 for item in toc))
+            self.assertLess(len(toc), 80)
+
+            wrapped = [
+                [level, source.replace(" ", ""), 2]
+                for level, _label, source in self.builder.outline_lookup_headings(manifest)
+            ]
+            recovered = self.builder.publication_outline(manifest, wrapped)
+            self.assertEqual([item[1] for item in outline], [item[1] for item in recovered])
+
     def test_pdf_stamping_preserves_publication_metadata(self) -> None:
         import fitz
 
@@ -961,6 +1065,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("--spine: #c4552a", print_css)
         self.assertIn("figure { background: transparent; }", print_css)
         self.assertIn("position: static", print_css)
+        self.assertIn("bookmark-level: none", print_css)
 
     def test_narrow_desktop_stacks_compass_without_part_number_collision(self) -> None:
         from playwright.sync_api import sync_playwright

@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.0.8",
+      "date": "2026-10-25",
+      "zh": [
+        "目录、章首和页眉改用第 1–29 章。源文件和章锚点仍是 00–28。",
+        "PDF 书签只保留分部、章、附录，以及已经单独成页的版本与修订和主题索引。"
+      ],
+      "en": [
+        "Contents, chapter openers, and running heads use Chapter 1–29. Source files and chapter anchors stay 00–28.",
+        "The PDF outline keeps parts, chapters, appendices, and the version-history and subject-index pages that already had bookmarks."
+      ]
+    },
+    {
       "version": "1.0.7",
       "date": "2026-10-25",
       "zh": [
