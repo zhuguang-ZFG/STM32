@@ -4,7 +4,7 @@
     <path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M0 400H1200M0 480H1200M0 560H1200M0 640H1200M0 720H1200"/>
     <path d="M80 0V760M160 0V760M240 0V760M320 0V760M400 0V760M480 0V760M560 0V760M640 0V760M720 0V760M800 0V760M880 0V760M960 0V760M1040 0V760M1120 0V760"/>
   </g>
-  <text x="72" y="62" fill="#9fd7c4" font-family="ui-sans-serif, sans-serif" font-size="18" letter-spacing="3.5">OFFLINE EDITION</text>
+  <text x="72" y="62" fill="#8ecae6" font-family="ui-sans-serif, sans-serif" font-size="18" letter-spacing="3.5">OFFLINE EDITION</text>
   <g transform="translate(118 100)">
     <rect x="16" y="28" width="940" height="508" rx="32" fill="#07141a" opacity="0.45"/>
     <rect x="0" y="12" width="940" height="508" rx="32" fill="#1b5c45"/>
@@ -64,7 +64,7 @@
       <rect x="0" y="44" width="14" height="14"/>
       <rect x="22" y="44" width="14" height="14"/>
     </g>
-    <path d="M78 446H300" stroke="#9fd7c4" stroke-width="2" fill="none"/>
+    <path d="M78 446H300" stroke="#8ecae6" stroke-width="2" fill="none"/>
     <path d="M78 446V404H118V446H158V372H198V446H238V414H300" stroke="#f4f1ea" stroke-width="3" fill="none"/>
   </g>
 </svg>

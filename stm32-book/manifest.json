@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "date": "2026-10-25",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
