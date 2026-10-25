@@ -10,8 +10,8 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（14 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
-| 光栅动画（12 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
+| 静态框图（18 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 光栅动画（16 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
 > 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
@@ -102,3 +102,15 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | RM0008 Rev 21（2021-02），中密度第 7.2 节、第 7.2.7 节、第 7.3.2 节，第 15 章，第 25.5.1 节，第 11 章与第 11.4 节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 02 章 72 MHz、2 个等待和 CSS；第 05 章 1 kHz 与 MOE；第 08 章 Mode 0 与 9 MHz；第 09 章 12 MHz 下的 21 µs 和校准 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
 | DS5319 Rev 20（2025-07），图 8 与表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 02 章第 5、6、29 脚；第 05 章第 16 脚 PA6；第 08 章第 14–17 脚；第 09 章第 9 脚 VDDA、第 10 脚 PA0，以及 C8 有两只 ADC、没有 DAC | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
 | 本仓库 `examples/spi-flash` | MIT | 第 08 章坑卡：0x9F 之后的三字节是 0xEF、0x40、0x17，页 256 字节，状态字节位 0 在例程里当成忙 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
+
+### 第 01、07、10、11 章（v1.2.3）
+
+第 01、07、10、11 章用改写吸收补了同样的四块。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图和厂商数据手册不放进仓库。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| DS5319 Rev 20（2025-07），表 5、表 25、表 41、表 42，第 2.3.13、2.3.14、2.3.15 节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章第 34 脚和第 37 脚；第 07 章第 42、43 脚与 0x801E；第 10 章只有 DMA1；第 11 章 LSI 30/40/60 kHz、第 1/3/4 脚和 10 个备份寄存器 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| RM0008 Rev 21（2021-02），第 10、16、17、18、26 章 | ST 文档条款；只链接并改写事实，不转载手册 | 第 07 章地址字节与 ACK；第 10 章 CNDTR；第 11 章 1 秒、窗口和 PRL | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| PM0075，Doc ID 17863 Rev 2（2012-08） | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章读保护键 0xA5 与整片擦除；第 11 章 WDG_SW | https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf |
+| PM0056 Rev 7（2024-12），向量表 | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章第 0 字是 MSP，第 1 字是复位 | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
+| 本仓库 `examples/i2c-oled` | MIT | 第 07 章坑卡：器件地址宏是 0x78 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
