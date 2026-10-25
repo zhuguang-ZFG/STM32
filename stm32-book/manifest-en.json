@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "Subject index", "file": "subject-index.json"}
@@ -124,7 +124,11 @@
         "pm0056",
         "stm32cube-f4",
         "clion-embedded",
-        "platformio-vscode"
+        "platformio-vscode",
+        "ds5319-swd",
+        "pm0075-rdp",
+        "pm0056-vector",
+        "rm0008-boot"
       ]
     },
     "02-part-and-clock.md": {
@@ -180,9 +184,7 @@
       "question": "How do open-drain electricals, pull-up time, and START/ACK/repeated start together decide one I2C transaction?",
       "deliverable": "A wiring and address table, one logic-analyzer decode, and a recovery record after the bus is held low.",
       "boundary": "Seeing an address only proves a device ACKed. It does not prove the register protocol, the supply, or the data meaning. The SSD1306 7-bit address 0x3C is 0x78 in HAL. A short bus wants 4.7 kΩ; the on-chip pull-up, about 30–50 kΩ, will not carry 400 kHz.",
-      "sources": [
-        "rm0008"
-      ]
+      "sources": ["rm0008", "ds5319-i2c", "rm0008-i2c", "project-examples"]
     },
     "08-spi.md": {
       "question": "How do CPOL, CPHA, chip select, and full-duplex shifting decide when each bit is driven and sampled?",
@@ -205,17 +207,16 @@
         "stm32cube-f4",
         "st-h7-dma",
         "majerle-uart",
-        "rm0090"
+        "rm0090",
+        "rm0008-dma",
+        "ds5319-dma"
       ]
     },
     "11-rtc-watchdog.md": {
       "question": "How does time survive loss of the main supply, and how does a watchdog prove the main loop is actually healthy rather than merely being fed?",
       "deliverable": "A power-loss timekeeping record, a reset-reason record after a deliberate missed feed, and an explicit healthy-feed condition.",
       "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design. A nominal 1 second is prescaler 64 and Reload 624, taking LSI as 40 kHz. The manual range is about 30–60 kHz, so that second is not a guarantee.",
-      "sources": [
-        "rm0008",
-        "ds5319"
-      ]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
     },
     "12-flash-iap.md": {
       "question": "How do you hand a new firmware image to the application safely, under erase limits, address boundaries, and power-loss risk?",
@@ -1085,6 +1086,96 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 09 principle and source cards. Medium-density devices have two 12-bit ADCs. STM32F103C8 has ADC1 and ADC2, and it has no ADC3 and no DAC. LQFP48 pin 10 PA0 is ADC12_IN0, and pin 9 VDDA is the reference. Pin 14 is not DAC_OUT1. Does not change ds5319-gpio and does not change the chapter 03 LED figure."
+    },
+    "ds5319-swd": {
+      "title": "DS5319 Rev 20 LQFP48 SWD pins and memory sizes",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. Pin 1 VBAT, pin 7 NRST, pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 39 PB3 is JTDO after reset and TRACESWO only in the remap column, pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB Flash is void on C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01 principle, key figures, timing, and source cards. Restates LQFP48 pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 7 NRST, and pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB is void on C8T6. Pin 39 PB3 stays in the boundary and off the normal path. Does not change ds5319-gpio."
+    },
+    "pm0075-rdp": {
+      "title": "PM0075 option-byte RDP and WDG_SW",
+      "authority": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf",
+      "snapshot": "PM0075, Doc ID 17863 Rev 2, August 2012 (revision history 27 August 2012). Option bytes at 0x1FFFF800: bits [7:0] are RDP. The manual prints the readout-allowed key as 0x00A5, which is the low byte 0xA5. Programming that key back first forces a mass erase of main Flash. USER bit WDG_SW (bit 16 of the word, bit 0 of the USER byte): 0 hardware watchdog, 1 software watchdog. The erased RDP value 0xFF stays protected. This snapshot does not use 0xAA.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01 readout protection, and the chapter 11 cross-reference for WDG_SW. Option bytes sit at 0x1FFFF800. The readout-allowed RDP byte is 0xA5 (the manual prints 0x00A5). Programming that key back mass-erases main Flash first. WDG_SW = 0 is the hardware watchdog and WDG_SW = 1 is the software watchdog. Does not call 0xAA the unprotected key and does not write 0xCC. Does not expand watchdog feeding inside chapter 01."
+    },
+    "pm0056-vector": {
+      "title": "PM0056 Rev 7 vector-table words and the IRQ entry",
+      "authority": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024. Default section 2.3.4 for the vector table. Item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4 times (IRQn + 16). If the printed title of section 2.3.4 is not the vector table, replace this section number with the printed section that states those two items. The claim does not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 01's two words and the IRQ entry. Vector-table item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4×(IRQn + 16). Does not change pm0056 or pm0056-nvic. Does not put 167 ns in this chapter."
+    },
+    "ds5319-i2c": {
+      "title": "DS5319 Rev 20 I2C1 pins, CCR, and rise time",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Tables 5, 41, and 42. Pin 42 PB6 default alternate function includes I2C1_SCL. Pin 43 PB7 default alternate function includes I2C1_SDA. The remap column's USART1 is not the reset default. Pins 45 PB8 and 46 PB9 are the I2C1 remap. At fPCLK1 = 36 MHz, VDD_I2C = 3.3 V, Rp = 4.7 kΩ, Table 42 prints 400 kHz as I2C_CCR = 0x801E and 100 kHz as I2C_CCR = 0x00B4. Table 41: standard-mode rise-time limit 1000 ns, fast-mode 300 ns. Reaching the 400 kHz ceiling wants fPCLK1 to be an integer multiple of 10 MHz. Table 42 note 2: achieved-rate tolerance is ±5% near 200 kHz and ±2% otherwise. 1 MHz is not in these tables.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 07. Pin 42 PB6 default alternate function includes I2C1_SCL and pin 43 PB7 includes I2C1_SDA. Table 42 at 36 MHz, 3.3 V, and 4.7 kΩ prints 400 kHz as 0x801E and 100 kHz as 0x00B4. The standard-mode rise-time limit is 1000 ns and the fast-mode limit is 300 ns. 1 MHz is void on this part. Does not absorb a display-vendor manual."
+    },
+    "rm0008-i2c": {
+      "title": "RM0008 Rev 21 I2C address byte and ACK",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 26. A 7-bit address plus one R/W bit. SDA low on the 9th clock is ACK. SDA staying high is NACK. I2C1 is on APB1. In fast mode with DUTY = 0, SCL is high for one CCR and low for two CCR counts. The low 12 bits of 0x801E are 30. If chapter 26 prints a different CCR bit layout, use the printed bits; the 400 kHz row remains Table 42's 0x801E. This snapshot does not include an I2C base address.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 07. A 7-bit address plus one R/W bit. The write byte on the wire is 0x78 and the read byte is 0x79. SDA low on the 9th clock is ACK and SDA high is NACK. Sending 0x3C unchanged addresses 0x1E. Does not invent an I2C base address."
+    },
+    "rm0008-dma": {
+      "title": "RM0008 Rev 21 DMA1 channels and CNDTR",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 13. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 10. CNDTR counts data items. Eight half-words with CNDTR = 3 means 5 samples and 10 bytes. Half-transfer is 4 samples, 8 bytes. ADC1 is channel 1, USART1_TX is channel 4, and USART1_RX is channel 5. Circular mode reloads at zero. Does not put 21 µs here. Does not change rm0090."
+    },
+    "ds5319-dma": {
+      "title": "DS5319 Rev 20 medium-density has one 7-channel DMA",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, section 2.3.13. Medium-density devices have one 7-channel DMA. DMA2 exists on high-density devices. STM32F103C8T6 has no DMA2.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 10. Medium-density parts have one 7-channel DMA1. DMA2 is void on STM32F103C8T6."
+    },
+    "rm0008-wdg": {
+      "title": "RM0008 Rev 21 independent-watchdog second and the window watchdog",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 19 and 20. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. Section 19.3.3 prints the debug-mode configuration bit name DBG_IWDG_STOP. That bit can freeze the IWDG counter while debugging. This snapshot does not record a bit number. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's one second and the window. Prescaler 64 at 40 kHz counts at 625 Hz. Reload 624 is 1 second and Reload 625 is one extra count. The IWDG resets only at 0. The WWDG at 36 MHz, prescaler 8, and 0x7F times out in 58.25 ms, and feeding while the counter is above the window resets it. Section 19.3.3 prints the configuration bit name DBG_IWDG_STOP and records no bit number. Does not treat the 40 kHz second as a guarantee. Does not change Appendix D."
+    },
+    "rm0008-rtc": {
+      "title": "RM0008 Rev 21 RTC prescaler and backup-domain unlock",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 18, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's 1 Hz time base. The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. Set DBP in PWR_CR before writing the backup domain. Does not import F4 keys 0xCA and 0x53 or call TR/DR the calendar on this part."
+    },
+    "ds5319-rtc": {
+      "title": "DS5319 Rev 20 LSI, LSE pins, and ten backup registers",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 25 and sections 2.3.12, 2.3.14, and 2.3.15, plus Table 5. fLSI is 30 / 40 / 60 kHz. There are ten 16-bit backup registers, 20 bytes. The default time base is 32.768 kHz giving 1 second. The IWDG uses an independent 40 kHz, keeps running in Stop and Standby, and can be frozen while debugging. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, pin 4 is PC15-OSC32_OUT.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 11's crystal pins, ten backup registers, and the LSI range. Table 25 prints fLSI as 30 / 40 / 60 kHz. Ten 16-bit backup registers are 20 bytes. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, and pin 4 is PC15-OSC32_OUT. The independent watchdog can be frozen while debugging. Does not invent a load-capacitor picofarad. Does not put ±20 ppm or ±50% in the snapshot."
     }
   }
 }

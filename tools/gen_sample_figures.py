@@ -297,6 +297,135 @@ def adc_sample() -> Svg:
     return canvas
 
 
+def swd_vectors() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "SWCLK 在第 37 脚；BOOT0=0 时第 0 字是栈、第 1 字是复位；无保护字节是 0xA5",
+        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 表 5",
+    )
+    canvas.header(tag="01", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "pin 35 VSS_2    pin 36 VDD_2    pin 44 BOOT0 = 0", size=14, fill=T.AMBER)
+    canvas.text(40, 164, "程序写入 0x08000000。0x00000000 别名到这块闪存", size=14, fill=T.TEXT)
+    canvas.text(40, 196, "正常路径  第 0 字 MSP，第 1 字 Reset_Handler，然后才到 main", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 210, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 240, "读 0x00000000 得到 MSP", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 266, "读 0x00000004 得到 Reset_Handler", size=14, fill=T.GREEN)
+    canvas.text(56, 292, "物理存储器是 0x08000000 起的 64 KB。SRAM 是 20 KB，从 0x20000000 起", size=14, fill=T.TEXT)
+    canvas.text(56, 318, "无保护字节是 0xA5。RDP 编程回 0xA5 会先整片擦除主闪存", size=14, fill=T.AMBER)
+    canvas.text(56, 344, "IRQ 入口是 VTOR + 4×(IRQn + 16)", size=13, fill=T.MUTED)
+    canvas.text(40, 386, "失败路径  同一对 PA13/PA14 被配成 GPIO", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 400, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 430, "Debug 关掉之后，下一次探针在这两只脚上连不上", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 456, "pin 34 和 pin 37 不再是 SWDIO / SWCLK", size=14, fill=T.RED)
+    canvas.text(56, 482, "SYS Debug 要留在 Serial Wire", size=14, fill=T.AMBER)
+    canvas.rect(40, 540, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 570, "旁注  pin 35 被当成 SWCLK 会接空", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 596, "BOOT1=0 且 BOOT0=1 时取到 0x1FFFF000，不是 SRAM", size=14, fill=T.TEXT)
+    canvas.text(56, 622, "0xAA 不是这颗料的无保护。128 KB 在 C8T6 上作废", size=14, fill=T.AMBER)
+    canvas.text(56, 648, "第 39 脚 PB3 默认是 JTDO。SWO 不在正常路径上", size=13, fill=T.MUTED)
+    canvas.text(56, 672, "不把第 00 章的整张启动表再画一遍", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。脚位来自 DS5319 Rev 20 表 5；两字来自 PM0056；0xA5 来自 PM0075。")
+    return canvas
+
+
+def i2c_addr() -> Svg:
+    canvas = Svg(
+        960,
+        920,
+        "HAL 送出的写地址是 0x78；0x801E 是 36 MHz 下表 42 的 400 kHz 行；0x3C 原样送出时第 9 个时钟没有 ACK",
+        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 表 42",
+    )
+    canvas.header(tag="07", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  I2C1  APB1", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "pin 42 PB6 = SCL    pin 43 PB7 = SDA", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "两只 4.7 kΩ 接到 3.3 V    PCLK1 = 36 MHz    I2C_CCR = 0x801E", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  START 之后线上第一字节是 0x78", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "第 9 个时钟 SDA 为低，ACK", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "目标速率 400 kHz，旁边是表 42 的 ±2%，不是保证值", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "0x801E：快速模式，DUTY = 0，CCR 字段 = 30", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "3 × 30 / 36e6 = 2.5 µs", size=14, fill=T.AMBER)
+    canvas.text(56, 316, "100 kHz 那一行是 0x00B4。PB8/PB9 不在这条路径上", size=13, fill=T.MUTED)
+    canvas.text(40, 360, "失败路径  DevAddress 填了 0x3C", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 374, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 404, "线上第一字节是 0x3C，7 位地址变成 0x1E", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 430, "第 9 个时钟 SDA 仍为高，NACK", size=14, fill=T.RED)
+    canvas.text(56, 456, "读方向的线上字节是 0x79，不占这条失败路径", size=14, fill=T.AMBER)
+    canvas.rect(40, 514, 880, 110, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 544, "旁注  只有片内上拉时，不把这张图画成 400 kHz", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 570, "1 MHz 不在表 41、表 42 里", size=14, fill=T.TEXT)
+    canvas.text(56, 596, "USART1 的重映射不是复位默认。不画推挽片选", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。CCR 与脚位来自 DS5319 Rev 20 表 42 和表 5；地址字节来自 RM0008 Rev 21 第 26 章。")
+    return canvas
+
+
+def dma_cndtr() -> Svg:
+    canvas = Svg(
+        960,
+        900,
+        "8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节；把剩余计数当成字节会切错",
+        "STM32F103C8T6 · RM0008 Rev 21 第 13 章",
+    )
+    canvas.header(tag="10", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  只有 DMA1，7 条通道", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "USART1_TX 走 channel 4。宽度是半字。缓冲区长度 8", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "TX 仍从 pin 30 PA9 出去。不重画 8N1 帧", size=14, fill=T.MUTED)
+    canvas.text(40, 170, "正常路径  CNDTR = 3", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "已写 5 samples，10 bytes", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "8 − 3 = 5，再乘 2 才是字节", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "半传输刻度在第 4 samples，8 bytes，不是 4 字节", size=14, fill=T.AMBER)
+    canvas.text(56, 292, "ADC1 = channel 1。USART1_RX = channel 5", size=14, fill=T.TEXT)
+    canvas.text(56, 316, "归零后硬件重装 CNDTR。长度减 CNDTR 不是累计", size=13, fill=T.MUTED)
+    canvas.text(40, 360, "失败路径  同一读数被当成字节", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 374, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 404, "还剩 3 字节、已写 5 字节。后一半从错误的边界切开", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 430, "CNDTR 数的是数据项，不是字节", size=14, fill=T.RED)
+    canvas.text(56, 456, "半字数组会从奇数边界切开", size=14, fill=T.AMBER)
+    canvas.rect(40, 504, 880, 100, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 534, "旁注  DMA2 Stream 5 在这颗 C8 上没有计数器", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 560, "F4 的那一组号留在 F4。不画采样电容", size=14, fill=T.TEXT)
+    canvas.text(56, 584, "内存到内存若占用通道 1，它和 ADC1 抢同一条通道", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。CNDTR 来自 RM0008 Rev 21 第 13 章；只有 DMA1 来自 DS5319 Rev 20 第 2.3.13 节。")
+    return canvas
+
+
+def iwdg_1s() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "Reload 624 在 40 kHz 典型值下是 1 秒；减到 0 才复位；LSE 要 PRL = 32767 才是 1 Hz",
+        "STM32F103C8T6 · DS5319 Rev 20 表 25",
+    )
+    canvas.header(tag="11", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  IWDG  典型 40 kHz，范围 30 kHz 到 60 kHz", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "prescaler 64    计数频率 625 Hz    Reload = 624", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "64 / 40000 × (624 + 1) = 1 s。这是典型值，不是保证值", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  计数器还大于 0 时喂狗，不复位", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 130, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "这一次喂狗发生在超时之前", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "喂早对 IWDG 不是复位条件", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "30 kHz 时同一套数是 4/3 s。60 kHz 时是 2/3 s", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "Stop 和 Standby 里计数不停。调试时可以冻住", size=13, fill=T.MUTED)
+    canvas.text(40, 340, "失败路径  同一条计数减到 0，没有喂狗，复位", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 354, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 384, "Reload = 625 会多一个计数", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 410, "(625 + 1) / 625 比 1 秒多一拍", size=14, fill=T.RED)
+    canvas.text(56, 436, "不把 6.55 s 画成第二套规范", size=14, fill=T.AMBER)
+    canvas.rect(40, 484, 880, 160, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 514, "备份域  pin 1 VBAT    pin 3 PC14    pin 4 PC15", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 540, "32.768 kHz，PRL = 32767，10 个 16 位寄存器，20 字节", size=14, fill=T.TEXT)
+    canvas.text(56, 566, "PRL = 32768 不是 1 Hz。42 个备份寄存器在这颗料上作废", size=14, fill=T.AMBER)
+    canvas.text(56, 592, "窗口看门狗：计数器大于 0x50 时喂狗会复位", size=14, fill=T.TEXT)
+    canvas.text(56, 618, "超时尺度是 58.25 ms，不和 IWDG 的 1 秒画成同一种狗", size=13, fill=T.MUTED)
+    canvas.text(56, 642, "不画负载电容的皮法，也不画 PC13 的 LED", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。LSI 与备份寄存器来自 DS5319 Rev 20 表 25、第 2.3.14 节和第 2.3.15 节；1 秒来自 RM0008 Rev 21 第 19 章。")
+    return canvas
+
+
 def main() -> None:
     out_dir = os.path.join(ROOT, "assets", "diagrams")
     os.makedirs(out_dir, exist_ok=True)
@@ -308,6 +437,10 @@ def main() -> None:
     pwm_1khz().save(os.path.join(out_dir, "sample-05-pwm-1khz.svg"))
     spi_jedec().save(os.path.join(out_dir, "sample-08-spi-jedec.svg"))
     adc_sample().save(os.path.join(out_dir, "sample-09-adc-sar.svg"))
+    swd_vectors().save(os.path.join(out_dir, "sample-01-swd-vectors.svg"))
+    i2c_addr().save(os.path.join(out_dir, "sample-07-i2c-addr.svg"))
+    dma_cndtr().save(os.path.join(out_dir, "sample-10-dma-cndtr.svg"))
+    iwdg_1s().save(os.path.join(out_dir, "sample-11-iwdg-1s.svg"))
 
 
 if __name__ == "__main__":

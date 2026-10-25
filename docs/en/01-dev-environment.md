@@ -29,6 +29,62 @@
 9. 这章结束，你的文件夹里应该有一个能单步的工程。你要能说出向量表前两个字是什么，也要能指出 SWD 占用的两只脚。
 10. 合上书，三问。向量表第零个字是什么？第一个字是什么？SWD 占哪两只脚？答不上来，就把启动文件再单步一遍。
 <!-- /video:ch01 -->
+
+## Principle and boundary
+
+The debug and boot conclusion in this chapter is pinned to order code STM32F103C8T6 in LQFP48. Flash and SRAM are the same ledger as chapter file 02: 64 KB from `0x08000000`, 20 KB from `0x20000000`. The boot alias is the same ledger as chapter file 00. This chapter does not draw another BOOT table.
+
+After reset the debug port is pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 VSS_2 and pin 36 VDD_2 sit between them. Counting pin 35 as SWCLK is the failure path on the key figure. Pin 7 NRST is worth connecting. It is not a third SWD signal. Pin 44 is BOOT0. The signal names PA13/PA14 match chapter file 03. The package pin numbers are expanded only here. Leave SYS Debug on Serial Wire. After it is turned off, those two pins become ordinary GPIO and the next SWD connection fails. Pins: [DS5319 Rev 20 Table 5](#source-ds5319-swd).
+
+With BOOT0=0, what the CPU reads at `0x00000000` is an alias of Flash at `0x08000000`. Word 0 is the initial MSP. Word 1, at `0x00000004`, is `Reset_Handler`. A peripheral IRQ entry is not `0x08000000 + 4×IRQn`. It is `VTOR + 4×(IRQn + 16)`. Keeping `.isr_vector` with `KEEP` stays in the core ideas. The two words: [PM0056 vector table](#source-pm0056-vector).
+
+BOOT1=0 and BOOT0=1: the CPU still reads `0x00000000` and gets system memory at `0x1FFFF000`. The program in Flash is still there. It is just not being fetched. SRAM boot needs BOOT1=1 and BOOT0=1, from `0x20000000`. The sentence "BOOT0=1 boots from SRAM" is void. Replace it with these two lines. Do not redraw the chapter 00 figure. Alias: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
+
+Unprotected readout is RDP = `0xA5`, not `0xAA`. The manual prints that key as `0x00A5`. The low byte is still `0xA5`. Clearing protection mass-erases main Flash. `0xAA` and `0xCC` are void on this part. If the option-byte screen only shows Level 0, still write that the byte is `0xA5`. See [PM0075](#source-pm0075-rdp).
+
+This C8 is 64 KB of Flash and 20 KB of SRAM. The xB 128 KB is void. `LENGTH = 64K` and `LENGTH = 20K` in the linker script are the same ledger.
+
+The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only in the remap column. It is not PA13 and it is not PA14. ITM printing stays in the core ideas and off the normal path of the key figure. Do not redraw chapter 17's `debug-swo.svg`.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-swd-vectors.svg" width="760" alt="SWCLK is on pin 37; with BOOT0=0 word 0 is the stack and word 1 is reset; the unprotected byte is 0xA5">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 is VSS_2 and pin 36 is VDD_2. With pin 44 BOOT0 = 0, 0x00000000 aliases 0x08000000. Word 0 is the MSP and word 1 is Reset_Handler. The failure is those two pins reused as GPIO, or pin 35 counted as SWCLK. BOOT1=0 and BOOT0=1 fetches 0x1FFFF000, not SRAM. The unprotected byte is 0xA5. 0xAA is void. Sources: [DS5319 Rev 20 Table 5](#source-ds5319-swd), [the PM0056 vector table](#source-pm0056-vector), and [PM0075's 0xA5](#source-pm0075-rdp).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/swd-fetch.gif" width="640" alt="After SWD writes Flash, the CPU reads the MSP and Reset_Handler">
+  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path: SWD finishes writing Flash, the CPU reads the MSP and Reset_Handler, and pins 34 and 37 are marked. Print uses the static figure. GPIO reuse and 0xAA are not on this GIF.</sub>
+</p>
+
+`boot-sequence.svg` stays a side figure. Without playing it, the pin numbers, the two words, and the failed connection are all on the static figure.
+
+## Timing or state
+
+| Phase | BOOT / Debug | Address read | State |
+| --- | --- | --- | --- |
+| Reset, BOOT0=0 | Pin 44 BOOT0 = 0 | `0x00000000` aliases `0x08000000` | The physical memory is 64 KB of Flash |
+| Word 0 | Vector item 0 | `0x00000000` | Initial MSP |
+| Word 1 | Vector item 1 | `0x00000004` | `Reset_Handler`, then `main` |
+| Failure: Debug off | Pins 34 and 37 become GPIO | PA13 / PA14 are no longer SWD | The SWD connection fails |
+| Failure: system memory | BOOT1=0 and BOOT0=1 | `0x1FFFF000` | Not SRAM. The program in Flash is still there and is not fetched |
+| SRAM | BOOT1=1 and BOOT0=1 | `0x20000000` | Both BOOT pins must be 1 |
+| IRQ | Peripheral interrupt | `VTOR + 4×(IRQn + 16)` | Not `0x08000000 + 4×IRQn` |
+| Size | C8 | 64 KB Flash, 20 KB SRAM | 128 KB is void on this part |
+
+This table does not include toolchain menus. Pin 35 is VSS_2, pin 36 is VDD_2, and pin 7 is NRST.
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| After one flash you can never connect | PA13/PA14 were set as GPIO | Leave Debug on Serial Wire, on pin 34 and pin 37 | [DS5319](#source-ds5319-swd) | LQFP48 pin 34 is PA13/SWDIO and pin 37 is PA14/SWCLK. Pin 35 is VSS_2 |
+| The probe is on the pin next to PA13 and there is no clock | Pin 35 was counted as SWCLK | Keep the probe off pins 35 and 36 (VSS_2/VDD_2 stay on ground and supply); move SWCLK to pin 37 | [DS5319](#source-ds5319-swd) | Pin 35 is VSS_2, pin 36 is VDD_2, and pin 37 is SWCLK. Those two supply pins must not float |
+| BOOT0 high runs neither the Flash program nor SRAM | BOOT1 is still 0 | That is system memory while BOOT1=0. SRAM needs both BOOT pins high | [RM0008](#source-rm0008-boot) | BOOT1=0 and BOOT0=1 aliases `0x1FFFF000`. SRAM boot also needs BOOT1=1 |
+| Choosing `AA` leaves the part protected, or the erase does not match | The unprotected key is not `0xAA` | Write the unprotected key as `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` is what allows readout. Programming it back mass-erases first. `0xAA` is void on this part |
+| Word 0 of the vector table was treated as the reset entry | Word 0 is the stack | Word 0 is the MSP. Word 1 is `Reset_Handler` | [PM0056](#source-pm0056-vector) | Item 0 is the initial stack. Item 1 is reset. An IRQ entry adds the 16 system exceptions first |
+
 ## 📌 Learning goals
 - [ ] See how Keil MDK, STM32CubeIDE, VS Code + PlatformIO, and CLion differ, and pick one
 - [ ] Use STM32CubeMX to generate a project that compiles immediately (clock, SWD, code-generation options)
@@ -117,6 +173,22 @@ The tree is drawn in [`assets/diagrams/project-structure.svg`](../../assets/diag
 | Debug | Ctrl+F5 / Start Debug | F11 / Debug |
 | Reset and run | Reset button | Run button |
 
+### Clearing readout protection
+
+Toolchain menus stay here and do not enter the four blocks. The unprotected byte is `0xA5`, not `0xAA`. `0xAA` is void on STM32F103C8T6. Clearing protection mass-erases main Flash.
+
+1. STM32CubeProgrammer → choose ST-LINK, then Connect.
+2. On the left, `Option bytes` → write Read Out Protection as `0xA5`. If the UI only shows Level 0, still write that the byte is `0xA5`.
+3. Click `Apply`. **Clearing readout protection mass-erases main Flash.**
+4. Download the program again.
+
+The same thing from the command line (OpenOCD):
+
+```bash
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
+  -c "init; reset halt; stm32f1x unlock 0; reset; shutdown"
+```
+
 ## 🛠️ Hardware and wiring
 
 ### SWD wiring (ST-Link V2 ↔ BluePill)
@@ -186,31 +258,6 @@ pio run
 # 2) flash the .elf into Flash with OpenOCD
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
   -c "program build/firmware.elf verify reset exit"
-```
-
-## ⚠️ Pitfalls and troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| No target connected | SWDIO and SWCLK are swapped, or there is no common ground | Check the four wires; power the board on its own; press NRST and connect again |
-| Flash Download failed – "Cortex-M3" | The chip is read-protected, or the clock never started | Clear read protection in CubeProgrammer, then flash again |
-| After one flash you can never connect | PA13/PA14 were set as ordinary GPIO (CubeMX was not set to Serial Wire) | Hold NRST, click Connect, and release to "connect under reset"; or set BOOT0=1, boot from SRAM, and erase |
-| Compile says "No such file" | Include path or library was not added | Check Include Paths, and that the HAL sources are in the project |
-| ST-Link says the firmware is old | The firmware version is too low | Upgrade it with ST-Link Upgrade |
-| The program does not run | You forgot `HAL_Init()`, or clock setup failed | Single-step, and check `HAL_RCC_GetSysClockFreq()` |
-
-### Clearing read protection (Read Protection)
-
-1. STM32CubeProgrammer → choose ST-LINK, then Connect.
-2. On the left, `Option bytes` → set Read Out Protection to `AA` (Level 0, no protection).
-3. Click `Apply`. **Clearing read protection mass-erases the Flash.**
-4. Download the program again.
-
-The same thing from the command line (OpenOCD):
-
-```bash
-openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
-  -c "init; reset halt; stm32f1x unlock 0; reset; shutdown"
 ```
 
 ## 🧪 Hands-on labs

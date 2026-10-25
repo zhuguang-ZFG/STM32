@@ -30,6 +30,60 @@
 9. 实验让 DMA 把一串数搬进数组，断点时后半段应该已经变了，NDTR 也在减小。数组纹丝不动，先查通道、方向和使能，别先改算法。
 10. 合上书，三问。NDTR 里装的是地址还是剩余数量？循环模式谁把指针拨回去？半字传输的半满，怎样换成字节数？
 <!-- /video:ch10 -->
+
+## 原理与边界
+
+这一章的 DMA 结论只钉在订货号 STM32F103C8T6 上。通道号和半字账整格照抄附录 D。
+
+这颗中密度有一个 DMA，7 条通道。分类表里「DMA2（5 通道，大容量）」在 STM32F103C8T6 上作废。见 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。F4 的 Stream 和 Channel 是另一本手册：USART1_RX 在 DMA2 Stream 5、Channel 4，FIFO 是 4 个 32 位字。把这组号写进 C8，计数器不动。见 [RM0090](#source-rm0090)。不改那条已有对象。
+
+ADC1 = DMA1 通道 1。USART1_TX = DMA1 通道 4。USART1_RX = DMA1 通道 5。四块只主张附录 D 这三行。见 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)。
+
+缓冲区 8 个半字，`CNDTR` 读回 3：已经写入 `8 − 3 = 5` 个采样，字节数是 `5 × 2 = 10`。半传输发生在 4 个采样，也就是 8 字节，不是 4 字节。把 `CNDTR` 当成剩余字节，会把「还剩 3」读成 3 字节。这是主图的失败路径。
+
+计数归零后硬件重装 `CNDTR`。`长度 − CNDTR` 不是累计进度。位置仍用回调里的 `Size` 和 `old_pos`，这句与附录 A 同一笔，不改附录 A。
+
+F1 的 DMA 控制器是 AHB 主机，外设寄存器在 APB。F1 没有 D-Cache。H7 的 Cache 维护留在核心原理，不进这颗料的四块规范主张。
+
+USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重画那一帧。ADC 的采样时间留在第 09 章。
+
+## 关键插图
+
+<p align="center">
+  <img src="../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节；把剩余计数当成字节会切错">
+  <br><sub>▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。失败路径把同一读数当成字节。TX 仍从第 30 脚 PA9 出去。DMA2 Stream 5 在这颗 C8 上没有计数器。出处是 [RM0008 Rev 21 第 13 章](#source-rm0008-dma) 和 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/gif/dma-cndtr.gif" width="640" alt="8 个半字的缓冲区里 CNDTR 减到 3，已写 5 个采样、10 字节">
+  <br><sub>▲ 网页和公众号辅图。只播放正常路径：CNDTR 减到 3，标出已写 5 个采样、10 字节。印刷以静态主图为准。把剩余计数当成字节不在这条 GIF 上。</sub>
+</p>
+
+`dma-circular.svg` 和 `dma-ring.gif` 留在原节，标成辅图。
+
+## 时序或状态
+
+| 长度 | 宽度 | CNDTR | 已写采样 | 已写字节 |
+| --- | --- | --- | --- | --- |
+| 8 | 半字 | 3 | 5 | 10 |
+| 8 | 半字 | 半传输 | 4 | 8，不是 4 字节 |
+| 8 | 被当成字节 | 3 | 错切 | 还剩 3 被读成 3 字节 |
+| USART1_TX | DMA1 通道 4 | — | — | 第 30 脚 PA9 |
+| USART1_RX | DMA1 通道 5 | — | — | 不是 DMA2 Stream 5 |
+| ADC1 | DMA1 通道 1 | — | — | 和内存到内存示例抢这一条通道 |
+| 作废 | DMA2 Stream 5 | 这颗料上没有计数器 | — | F4 的 FIFO 是 4 个 32 位字，不证明 C8 有 DMA2 |
+| 循环 | 归零后重装 | 重装后的 CNDTR | 不是累计 | `长度 − CNDTR` 不是进度 |
+
+## 坑与出处卡
+
+| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| --- | --- | --- | --- | --- |
+| 半字数组后一半看起来像新数据 | 半传输被当成 4 字节 | 半传输按 4 个采样、8 字节处理 | [RM0008](#source-rm0008-dma) | `CNDTR` 数的是数据项。8 个半字里已写 5 个是 10 字节。半传输不是 4 字节 |
+| `CNDTR` 读回 3，字节数却对不上 | 剩余计数被当成字节 | 先减采样个数，再乘 2 | [RM0008](#source-rm0008-dma) | 剩余 3 个半字不是剩余 3 字节 |
+| 配了 DMA2 Stream 5，C8 上不动 | 这颗料没有 DMA2 | USART1_RX 改用 DMA1 通道 5 | [DS5319](#source-ds5319-dma) | 这颗中密度只有一个 7 通道的 DMA1。DMA2 在 C8 上作废 |
+| 对照 F4 例程时通道号能对上，板上不对 | F4 的编号被写进了 C8 | F4 那一组号留在 F4 | [RM0090](#source-rm0090) | F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4 个 32 位字。这条不证明 C8 有 DMA2 |
+| 循环模式下进度越算越大 | 用了 `长度 − CNDTR` 当累计 | 进度用回调里的写位置 | [RM0008](#source-rm0008-dma) | 计数归零后硬件重装。进度用回调里的写位置 |
+
 ## 📌 学习目标
 
 - [ ] 说清 DMA 控制器结构：F1 的「通道」模型与 F4 的「流（Stream）× 通道（Channel）」模型。
@@ -44,9 +98,9 @@
 
 **结论**：F1 一个外设请求固定绑到某条 DMA 通道；F4 先把请求绑到「流」，再用 `CHSEL` 选通道，灵活性更高。
 
-| 项 | STM32F1（RM0008 第 10 章 DMA 控制器） | STM32F4（RM0090 第 9 章 DMA 控制器） |
+| 项 | STM32F1（RM0008 第 13 章 DMA 控制器） | STM32F4（RM0090 第 9 章 DMA 控制器） |
 | --- | --- | --- |
-| 控制器 | DMA1（7 通道）、DMA2（5 通道，大容量） | DMA1/DMA2 各 8 个 Stream |
+| 控制器 | DMA1（7 通道）。DMA2（5 通道）是大容量的句子，在 STM32F103C8T6 上作废 | DMA1/DMA2 各 8 个 Stream |
 | 请求绑定 | 每通道固定服务若干外设（查映射表） | 每个 Stream 有 8 个 Channel，`SxCR.CHSEL` 选择 |
 | 优先级 | 通道间固定优先级 + 软件优先级 | 软件优先级 4 级 + 流编号仲裁 |
 | FIFO | 无 | 有（4×32 位），支持突发（burst） |
@@ -62,11 +116,11 @@
 | --- | --- |
 | CH1 | ADC1、TIM2_CH3、TIM4_CH1 |
 | CH2 | SPI1_RX、USART3_TX、TIM1_CH1、TIM3_CH3 |
-| CH3 | SPI1_TX、USART3_RX、TIM1_CH2、TIM3_CH4 |
+| CH3 | SPI1_TX、USART3_RX、TIM3_CH4、TIM3_UP |
 | CH4 | SPI2/I2S2_RX、USART1_TX、I2C2_TX、TIM1_CH4 |
 | CH5 | SPI2/I2S2_TX、USART1_RX、I2C2_RX、TIM1_UP |
 | CH6 | USART2_RX、I2C1_TX、TIM1_CH3、TIM3_CH1 |
-| CH7 | USART2_TX、I2C1_RX、TIM2_UP、TIM4_CH2 |
+| CH7 | USART2_TX、I2C1_RX、TIM2_CH2、TIM2_CH4、TIM4_UP |
 
 **F4 典型请求（RM0090 表 42 / 表 43）**：
 
@@ -111,6 +165,8 @@
 
 - **总线争抢**：DMA 与 CPU 共享总线矩阵。DMA 搬运时会周期性占用总线，极端情况下拖慢 CPU。F4 的 FIFO/突发模式能把多次小传输合并，减少总线占用。
 - **Cache 一致性（H7/F7）**：若内存开了 D-Cache，DMA 直接写内存可能绕过 Cache，导致 CPU 读到旧值；CPU 写内存也可能还停在 Cache 里没落到 RAM，DMA 读到旧值。解决办法：把 DMA 缓冲区放到 **非 Cache 区（MPU 配 Non-Cacheable）**，或搬运前后调用 `SCB_CleanDCache_by_Addr` / `SCB_InvalidateDCache_by_Addr`。**F1/F4 无 D-Cache，不存在此问题。**
+- **FIFO 阈值**：F4 上偶发数据错，是因为 FIFO 未配置或突发不匹配。设 FIFO 阈值、突发大小。
+- **局部变量缓冲区**：串口发一半就卡，是因为缓冲区是局部变量，函数返回后失效。用 `static` 或全局缓冲区。
 
 ## 🛠️ 硬件与接线
 
@@ -182,6 +238,8 @@ static void DMA_MemCopy(const uint8_t *src, uint8_t *dst, uint16_t len)
 }
 ```
 
+这条示例占用 DMA1 通道 1，和 ADC1 的请求抢同一条通道。它不是 USART1_TX 的正常路径。
+
 **③ 半传输 + 循环（双缓冲思想，F1）**
 
 ```c
@@ -200,20 +258,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* 后半满 */
 ```
 
 > F4 还可直接用硬件**双缓冲模式**（`DBM`），两个内存指针 `M0AR`/`M1AR` 由硬件自动切换，`CT` 位指示当前使用哪块。
-
-## ⚠️ 常见坑与排查
-
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| DMA 完全不搬 | 请求映射选错通道/流 | 查映射表；F4 还要对 `CHSEL` |
-| 只搬一次就停 | 需要循环却配了普通模式 | 改 `DMA_CIRCULAR` |
-| 搬的数据错位/乱序 | 地址未递增或宽度不匹配 | 检查 `MINC`/`PINC` 与 `PSIZE`/`MSIZE` |
-| 数据宽度不一致时高字节丢 | 源/目标宽度不同但未对齐 | 统一宽度或用 FIFO |
-| 进不了中断 | 没使能 DMA 通道中断 / NVIC 未开 | 使能 TC/HT 中断 + `HAL_NVIC_EnableIRQ` |
-| 串口发一半就卡 | 缓冲区是局部变量，函数返回后失效 | 用 `static`/全局缓冲区 |
-| F4 上偶发数据错 | FIFO 未配置或突发不匹配 | 设 FIFO 阈值、突发大小 |
-| H7 上 DMA 数据不更新 | D-Cache 未维护 | MPU 非 Cache 区或 clean/invalidate |
-| 传输错误中断 | 访问了未使能时钟的外设 | 先 `__HAL_RCC_xxx_CLK_ENABLE` |
 
 ## 🧪 动手实验
 
@@ -244,7 +288,7 @@ uint16_t got  = ADC_BUF_SIZE - left;
 
 ## 🔗 相关资源
 
-- RM0008《STM32F10xxx 参考手册》第 10 章 DMA 控制器（含请求映射表 78/79）。
+- RM0008《STM32F10xxx 参考手册》第 13 章 DMA 控制器（含请求映射表 78/79）。
 - RM0090《STM32F4 参考手册》第 9 章 DMA 控制器（Stream/Channel、FIFO、双缓冲）。
 - 应用笔记 AN4031《Using the STM32F2/F4 DMA controller》。
 - 本仓库相关章节：第 09 章 ADC+DMA、第 17 章 DWT 计时。

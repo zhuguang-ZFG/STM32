@@ -500,6 +500,116 @@ def adc_sample():
     return g
 
 
+def swd_fetch():
+    """SWD writes Flash, then the CPU reads MSP and Reset_Handler.
+
+    Pin reuse and the failure byte stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    lines = (
+        "WRITE 0x08000000",
+        "pin 34 SWDIO",
+        "pin 37 SWCLK",
+        "READ MSP",
+        "READ Reset_Handler",
+        "BOOT0 = 0",
+    )
+    for index, line in enumerate(lines):
+        c = Canvas(W, H)
+        chrome(c, "SWD FETCH", "BOOT0=0", "AUX GIF  STATIC SVG HAS THE FAILURE")
+        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
+        c.text("pin 34  pin 37", 28, 60, C.CYAN, 1)
+        c.text(line, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("MSP THEN Reset_Handler", 28, 200, C.GREEN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def i2c_addr():
+    """START, shift 0x78, then ACK on the 9th clock.
+
+    A raw address byte and a missing pull-up stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "START",
+        "SHIFT 0x78",
+        "BIT 7 TO BIT 0",
+        "9TH CLOCK",
+        "SDA LOW  ACK",
+        "0x801E  4.7 k",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "I2C ADDR", "0x78", "AUX GIF  ACK")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("PB6 SCL  PB7 SDA", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("0x78 THEN ACK", 28, 200, C.GREEN, 1)
+        c.text("0x801E AND 4.7 k", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE NACK ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def dma_cndtr():
+    """Eight half-words, CNDTR falls to 3: 5 samples, 10 bytes.
+
+    Treating the remainder as bytes stays on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "8 HALF-WORDS",
+        "CNDTR 8",
+        "CNDTR 6",
+        "CNDTR 4",
+        "CNDTR 3",
+        "5 samples  10 bytes",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "DMA CNDTR", "DMA1", "AUX GIF  HALF-WORDS")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("channel 4  HALF-WORD", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("5 samples IS 10 bytes", 28, 200, C.GREEN, 1)
+        c.text("PRINT THE BYTE CUT ON THE SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def iwdg_1s():
+    """A 625 Hz count is fed before it reaches 0.
+
+    Off-by-one reload and the window watchdog stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "40 kHz TYPICAL",
+        "prescaler 64",
+        "625 Hz",
+        "COUNT DOWN",
+        "FEED BEFORE ZERO",
+        "Reload = 624",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "IWDG 1S", "624", "AUX GIF  TYPICAL 40 kHz")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("NOT A GUARANTEE", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("Reload = 624", 28, 200, C.GREEN, 1)
+        c.text("625 Hz UNTIL THE FEED", 28, 222, C.CYAN, 1)
+        c.text("PRINT ZERO AND THE WINDOW ON THE SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
 def uart_idle():
     """After one frame, RX stays high for one frame time, then IDLE is marked.
 
@@ -544,6 +654,10 @@ BUILDERS = {
     "pwm-1khz": pwm_1khz,
     "spi-jedec": spi_jedec,
     "adc-sample": adc_sample,
+    "swd-fetch": swd_fetch,
+    "i2c-addr": i2c_addr,
+    "dma-cndtr": dma_cndtr,
+    "iwdg-1s": iwdg_1s,
 }
 
 

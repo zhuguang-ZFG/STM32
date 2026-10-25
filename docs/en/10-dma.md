@@ -29,6 +29,60 @@
 9. 实验让 DMA 把一串数搬进数组，断点时后半段应该已经变了，NDTR 也在减小。数组纹丝不动，先查通道、方向和使能，别先改算法。
 10. 合上书，三问。NDTR 里装的是地址还是剩余数量？循环模式谁把指针拨回去？半字传输的半满，怎样换成字节数？
 <!-- /video:ch10 -->
+
+## Principle and boundary
+
+The DMA conclusion in this chapter is pinned to order code STM32F103C8T6. The channel numbers and the half-word ledger are copied whole from Appendix D.
+
+This medium-density part has one DMA and 7 channels. The classification cell "DMA2 (5 channels, high-density)" is void on STM32F103C8T6. See [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma). F4 streams and channels are another manual: USART1_RX is DMA2 Stream 5, Channel 4, and the FIFO is four 32-bit words. Writing that set onto a C8 leaves the counter still. See [RM0090](#source-rm0090). Do not edit that existing object.
+
+ADC1 = DMA1 channel 1. USART1_TX = DMA1 channel 4. USART1_RX = DMA1 channel 5. The four blocks claim only these three Appendix D rows. See [RM0008 Rev 21 chapter 13](#source-rm0008-dma).
+
+Eight half-words with `CNDTR` reading 3: `8 − 3 = 5` samples have been written, and the byte count is `5 × 2 = 10`. Half-transfer is at 4 samples, which is 8 bytes, not 4 bytes. Treating `CNDTR` as remaining bytes reads "3 left" as 3 bytes. That is the failure path.
+
+When the count reaches zero, hardware reloads `CNDTR`. `length − CNDTR` is not cumulative progress. The position still comes from `Size` and `old_pos` in the callback, the same ledger as Appendix A. Do not edit Appendix A.
+
+The F1 DMA controller is an AHB master. Peripheral registers sit on APB. F1 has no D-Cache. H7 cache maintenance stays in the core ideas and out of this part's four-block claims.
+
+USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the channel number. It does not redraw that frame. ADC sample time stays in chapter file 09.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="Eight half-words with CNDTR at 3 means 5 samples and 10 bytes written; treating the remaining count as bytes cuts the buffer wrong">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The failure treats that same reading as bytes. TX still leaves on pin 30 PA9. DMA2 Stream 5 has no counter on this C8. Sources: [RM0008 Rev 21 chapter 13](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/dma-cndtr.gif" width="640" alt="In an 8-half-word buffer CNDTR falls to 3: 5 samples and 10 bytes written">
+  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path: CNDTR falls to 3, marked as 5 samples and 10 bytes. Print uses the static figure. Treating the remaining count as bytes is not on this GIF.</sub>
+</p>
+
+`dma-circular.svg` and `dma-ring.gif` stay in their original section and are marked as side figures.
+
+## Timing or state
+
+| Length | Width | CNDTR | Samples written | Bytes written |
+| --- | --- | --- | --- | --- |
+| 8 | half-word | 3 | 5 | 10 |
+| 8 | half-word | half-transfer | 4 | 8, not 4 bytes |
+| 8 | treated as bytes | 3 | cut wrong | "3 left" was read as 3 bytes |
+| USART1_TX | DMA1 channel 4 | — | — | Pin 30 PA9 |
+| USART1_RX | DMA1 channel 5 | — | — | Not DMA2 Stream 5 |
+| ADC1 | DMA1 channel 1 | — | — | The memory-to-memory example contends for this channel |
+| Void | DMA2 Stream 5 | no counter on this part | — | The F4 FIFO is four 32-bit words and does not prove the C8 has DMA2 |
+| Circular | reload at zero | the reloaded CNDTR | not a cumulative total | `length − CNDTR` is not progress |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The second half of a half-word array looks like new data | Half-transfer was treated as 4 bytes | Handle half-transfer as 4 samples, 8 bytes | [RM0008](#source-rm0008-dma) | `CNDTR` counts data items. 5 of 8 half-words is 10 bytes. Half-transfer is not 4 bytes |
+| `CNDTR` reads 3 and the byte count does not match | The remaining count was treated as bytes | Subtract samples first, then multiply by 2 | [RM0008](#source-rm0008-dma) | 3 half-words left is not 3 bytes left |
+| DMA2 Stream 5 was configured and the C8 does not move | This part has no DMA2 | Use DMA1 channel 5 for USART1_RX | [DS5319](#source-ds5319-dma) | This medium-density part has one 7-channel DMA1. DMA2 is void on the C8 |
+| An F4 example's channel numbers match the text and not the board | The F4 numbers were written onto the C8 | Leave that set of numbers on F4 | [RM0090](#source-rm0090) | F4 USART1_RX is DMA2 Stream 5, Channel 4. The FIFO is four 32-bit words. This does not prove the C8 has DMA2 |
+| Progress in circular mode keeps growing | `length − CNDTR` was used as a cumulative total | Use the write position from the callback | [RM0008](#source-rm0008-dma) | Hardware reloads the count at zero. Progress uses the write position in the callback |
+
 ## 📌 Learning goals
 
 - [ ] Describe the DMA controller layout: the F1 "channel" model, and the F4 "stream × channel" model.
@@ -43,9 +97,9 @@
 
 **Conclusion**: On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
 
-| Item | STM32F1 (RM0008, Chapter 10, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
+| Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
 | --- | --- | --- |
-| Controllers | DMA1 (7 channels), DMA2 (5 channels, high-density) | DMA1 and DMA2, 8 streams each |
+| Controllers | DMA1 (7 channels). "DMA2 (5 channels)" is the high-density sentence and is void on STM32F103C8T6 | DMA1 and DMA2, 8 streams each |
 | Request binding | Each channel serves a fixed set of peripherals (see the map) | Each stream has 8 channels; `SxCR.CHSEL` selects one |
 | Priority | Fixed priority between channels, plus a software priority | 4 software priority levels, plus arbitration by stream number |
 | FIFO | None | Yes (4 × 32-bit), with burst support |
@@ -61,11 +115,11 @@
 | --- | --- |
 | CH1 | ADC1, TIM2_CH3, TIM4_CH1 |
 | CH2 | SPI1_RX, USART3_TX, TIM1_CH1, TIM3_CH3 |
-| CH3 | SPI1_TX, USART3_RX, TIM1_CH2, TIM3_CH4 |
+| CH3 | SPI1_TX, USART3_RX, TIM3_CH4, TIM3_UP |
 | CH4 | SPI2/I2S2_RX, USART1_TX, I2C2_TX, TIM1_CH4 |
 | CH5 | SPI2/I2S2_TX, USART1_RX, I2C2_RX, TIM1_UP |
 | CH6 | USART2_RX, I2C1_TX, TIM1_CH3, TIM3_CH1 |
-| CH7 | USART2_TX, I2C1_RX, TIM2_UP, TIM4_CH2 |
+| CH7 | USART2_TX, I2C1_RX, TIM2_CH2, TIM2_CH4, TIM4_UP |
 
 **Typical F4 requests (RM0090 Table 42 and Table 43)**:
 
@@ -110,6 +164,8 @@
 
 - **Bus contention**: DMA and the CPU share the bus matrix. While DMA is moving data it periodically occupies the bus, and in the extreme it slows the CPU. The F4 FIFO and burst mode can merge many small transfers and occupy the bus less often.
 - **Cache coherency (H7 / F7)**: if D-Cache is on, a DMA write into memory can bypass the cache, so the CPU reads a stale value. A CPU write can also still be sitting in the cache and not in RAM, so DMA reads a stale value. The fix: put the DMA buffer in a **non-cacheable region (MPU set to Non-Cacheable)**, or call `SCB_CleanDCache_by_Addr` / `SCB_InvalidateDCache_by_Addr` around the transfer. **F1 and F4 have no D-Cache, so this problem does not exist there.**
+- **FIFO threshold**: Occasional bad data on F4 means the FIFO is not configured, or the burst does not match. Set the FIFO threshold and the burst size.
+- **Local-variable buffer**: The UART sends half the buffer and then stalls because the buffer is a local variable and dies when the function returns. Use a `static` or global buffer.
 
 ## 🛠️ Hardware and wiring
 
@@ -181,6 +237,8 @@ static void DMA_MemCopy(const uint8_t *src, uint8_t *dst, uint16_t len)
 }
 ```
 
+This example takes DMA1 channel 1 and contends with ADC1's request. It is not the USART1_TX normal path.
+
 **③ Half-transfer plus circular (the double-buffer idea, on F1)**
 
 ```c
@@ -199,20 +257,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 ```
 
 > F4 can also use hardware **double-buffer mode** (`DBM`). The two memory pointers `M0AR` and `M1AR` switch automatically, and the `CT` bit tells you which block is in use.
-
-## ⚠️ Pitfalls and troubleshooting
-
-| What you see | Cause | Fix |
-| --- | --- | --- |
-| DMA does not move anything | The request is mapped to the wrong channel or stream | Check the map; on F4 also set `CHSEL` |
-| It moves once and stops | You wanted circular mode but configured normal mode | Change it to `DMA_CIRCULAR` |
-| The data is shifted or scrambled | The address does not increment, or the width does not match | Check `MINC` / `PINC` and `PSIZE` / `MSIZE` |
-| The high byte disappears when widths differ | Source and destination widths differ and the transfer is not aligned | Use one width, or use the FIFO |
-| The interrupt never runs | The DMA channel interrupt is not enabled, or NVIC is off | Enable the TC/HT interrupt and call `HAL_NVIC_EnableIRQ` |
-| The UART sends half the buffer and then stalls | The buffer is a local variable and dies when the function returns | Use a `static` or global buffer |
-| Occasional bad data on F4 | The FIFO is not configured, or the burst does not match | Set the FIFO threshold and the burst size |
-| DMA data never updates on H7 | D-Cache is not maintained | A non-cacheable MPU region, or clean / invalidate |
-| Transfer-error interrupt | The peripheral's clock was never enabled | Call `__HAL_RCC_xxx_CLK_ENABLE` first |
 
 ## 🧪 Hands-on labs
 
@@ -243,7 +287,7 @@ Self-test:
 
 ## 🔗 Related resources
 
-- RM0008, *STM32F10xxx Reference Manual*, Chapter 10, DMA controller (including request-map tables 78 and 79).
+- RM0008, *STM32F10xxx Reference Manual*, Chapter 13, DMA controller (including request-map tables 78 and 79).
 - RM0090, *STM32F4 Reference Manual*, Chapter 9, DMA controller (stream / channel, FIFO, double buffer).
 - Application note AN4031, *Using the STM32F2/F4 DMA controller*.
 - Related chapters in this repo: [Chapter 09](09-adc-dac.md) ADC + DMA, and [Chapter 17](17-debug.md) DWT timing.

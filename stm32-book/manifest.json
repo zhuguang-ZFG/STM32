@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "主题索引", "file": "subject-index.json"}
@@ -110,7 +110,7 @@
       "question": "源码怎样经过编译、链接、烧录和复位，最终变成可单步观察的机器状态？",
       "deliverable": "一个能重建、能下载、能断点的最小工程，并记录 IDE、编译器、固件包和板卡版本。",
       "boundary": "工具链跑通不等于外设配置正确；时钟、引脚和电气条件仍需逐项验证。",
-      "sources": ["project-guide", "pm0056", "stm32cube-f4", "clion-embedded", "platformio-vscode"]
+      "sources": ["project-guide", "pm0056", "stm32cube-f4", "clion-embedded", "platformio-vscode", "ds5319-swd", "pm0075-rdp", "pm0056-vector", "rm0008-boot"]
     },
     "02-芯片选型与存储器时钟.md": {
       "question": "型号、存储器映射和时钟树怎样共同决定一份代码能否在目标芯片上工作？",
@@ -146,7 +146,7 @@
       "question": "开漏电气、上拉时间和 START/ACK/重复起始怎样共同决定一次 I2C 事务？",
       "deliverable": "一张接线与地址表、一帧逻辑分析仪解码，以及一次总线被拉低后的恢复记录。",
       "boundary": "扫描到地址只证明有设备应答，不证明寄存器协议、供电和数据语义正确。SSD1306 的 7 位地址 0x3C 在 HAL 里是 0x78；短总线用 4.7 kΩ，不要靠约 30–50 kΩ 的片内上拉跑 400 kHz。",
-      "sources": ["rm0008"]
+      "sources": ["rm0008", "ds5319-i2c", "rm0008-i2c", "project-examples"]
     },
     "08-SPI总线.md": {
       "question": "CPOL、CPHA、片选和全双工移位怎样决定每一位在何时被推出与采样？",
@@ -164,13 +164,13 @@
       "question": "DMA 请求、可达内存、传输宽度、环形位置和 Cache 一致性怎样分别验证？",
       "deliverable": "一张请求映射表、一份缓冲区所有权/位置不变量，以及 H7 上的内存可达性与 Cache 维护决策。",
       "boundary": "DMA 完成中断只证明控制器完成请求，不证明 CPU 读到的是最新数据，也不证明业务未丢帧。F103C8 只有 DMA1 的 7 条通道，没有 DMA2。USART1_TX 是 Channel 4，USART1_RX 是 Channel 5，ADC1 是 Channel 1。缓冲区 8 个半字、CNDTR 读回 3 时，已写入 5 个采样，也就是 10 字节。半传输按项目数的一半，不是字节数的一半。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4；FIFO 是 4 个 32 位字。",
-      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090"]
+      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090", "rm0008-dma", "ds5319-dma"]
     },
     "11-RTC与看门狗.md": {
       "question": "时间怎样跨主电源保持，看门狗又怎样证明主循环真的健康而不是只会喂狗？",
       "deliverable": "一份掉电走时记录、一份故意漏喂后的复位原因记录和明确的健康喂狗条件。",
       "boundary": "看门狗复位不是故障恢复策略本身；状态持久化、故障计数和安全降级仍需系统设计。名义 1 秒是预分频 64、Reload 624、LSI 按 40 kHz；手册范围大约 30–60 kHz，这个秒数不是保证值。",
-      "sources": ["rm0008", "ds5319"]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
     },
     "12-Flash与IAP升级.md": {
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
@@ -934,6 +934,96 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 09 章原理与边界和坑与出处卡。中密度有两个 12 位 ADC。STM32F103C8 有 ADC1 和 ADC2，没有 ADC3，没有 DAC。LQFP48 第 10 脚 PA0 是 ADC12_IN0，第 9 脚 VDDA 是参考。第 14 脚不是 DAC_OUT1。不改 ds5319-gpio，也不改第 03 章的 LED 图。"
+    },
+    "ds5319-swd": {
+      "title": "DS5319 Rev 20 LQFP48 的 SWD 脚与容量",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. Pin 1 VBAT, pin 7 NRST, pin 34 PA13 = JTMS/SWDIO, pin 35 VSS_2, pin 36 VDD_2, pin 37 PA14 = JTCK/SWCLK, pin 39 PB3 is JTDO after reset and TRACESWO only in the remap column, pin 44 BOOT0. STM32F103x8 Flash is 64 KB and SRAM is 20 KB. The xB 128 KB Flash is void on C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章原理与边界、关键插图、时序或状态、坑与出处卡。只改写 LQFP48 第 34 脚 PA13 = JTMS/SWDIO、第 35 脚 VSS_2、第 36 脚 VDD_2、第 37 脚 PA14 = JTCK/SWCLK、第 7 脚 NRST、第 44 脚 BOOT0。STM32F103x8 闪存 64 KB、SRAM 20 KB。xB 的 128 KB 在 C8T6 上作废。第 39 脚 PB3 只写进边界，不进主图正常路径。不改 ds5319-gpio。"
+    },
+    "pm0075-rdp": {
+      "title": "PM0075 选项字节里的 RDP 与 WDG_SW",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf",
+      "snapshot": "PM0075, Doc ID 17863 Rev 2, August 2012 (revision history 27 August 2012). Option bytes at 0x1FFFF800: bits [7:0] are RDP. The manual prints the readout-allowed key as 0x00A5, which is the low byte 0xA5. Programming that key back first forces a mass erase of main Flash. USER bit WDG_SW (bit 16 of the word, bit 0 of the USER byte): 0 hardware watchdog, 1 software watchdog. The erased RDP value 0xFF stays protected. This snapshot does not use 0xAA.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章读保护，以及第 11 章对 WDG_SW 的交叉引用。选项字节在 0x1FFFF800，低字节 RDP 的读允许键是 0xA5（手册印成 0x00A5）。编程回这个键会先整片擦除主闪存。USER 里 WDG_SW 为 0 是硬件看门狗，为 1 是软件看门狗。不把 0xAA 写成无保护键，不写 0xCC。不在第 01 章展开喂狗。"
+    },
+    "pm0056-vector": {
+      "title": "PM0056 Rev 7 向量表的两字与 IRQ 入口",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024. Default section 2.3.4 for the vector table. Item 0 is the initial MSP and item 1 is Reset. A peripheral IRQ entry is VTOR + 4 times (IRQn + 16). If the printed title of section 2.3.4 is not the vector table, replace this section number with the printed section that states those two items. The claim does not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 01 章的两字和 IRQ 入口。向量表第 0 项是 MSP 初值，第 1 项是 Reset。外设中断入口是 VTOR + 4×(IRQn + 16)。不改 pm0056 和 pm0056-nvic。不把 167 ns 写进这一章。"
+    },
+    "ds5319-i2c": {
+      "title": "DS5319 Rev 20 的 I2C1 脚、CCR 与上升时间",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Tables 5, 41, and 42. Pin 42 PB6 default alternate function includes I2C1_SCL. Pin 43 PB7 default alternate function includes I2C1_SDA. The remap column's USART1 is not the reset default. Pins 45 PB8 and 46 PB9 are the I2C1 remap. At fPCLK1 = 36 MHz, VDD_I2C = 3.3 V, Rp = 4.7 kΩ, Table 42 prints 400 kHz as I2C_CCR = 0x801E and 100 kHz as I2C_CCR = 0x00B4. Table 41: standard-mode rise-time limit 1000 ns, fast-mode 300 ns. Reaching the 400 kHz ceiling wants fPCLK1 to be an integer multiple of 10 MHz. Table 42 note 2: achieved-rate tolerance is ±5% near 200 kHz and ±2% otherwise. 1 MHz is not in these tables.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 07 章。第 42 脚 PB6 默认含 I2C1_SCL，第 43 脚 PB7 默认含 I2C1_SDA。表 42 在 36 MHz、3.3 V、4.7 kΩ 下把 400 kHz 印成 0x801E，100 kHz 印成 0x00B4。标准模式上升时间上限 1000 ns，快速模式 300 ns。1 MHz 在这颗料上作废。不吸收屏厂手册。"
+    },
+    "rm0008-i2c": {
+      "title": "RM0008 Rev 21 I2C 地址字节与 ACK",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 26. A 7-bit address plus one R/W bit. SDA low on the 9th clock is ACK. SDA staying high is NACK. I2C1 is on APB1. In fast mode with DUTY = 0, SCL is high for one CCR and low for two CCR counts. The low 12 bits of 0x801E are 30. If chapter 26 prints a different CCR bit layout, use the printed bits; the 400 kHz row remains Table 42's 0x801E. This snapshot does not include an I2C base address.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 07 章。7 位地址加 1 位 R/W。线上写地址 0x78，读地址 0x79。第 9 个时钟 SDA 拉低是 ACK，保持高是 NACK。0x3C 原样送出变成 7 位地址 0x1E。不编 I2C 基址。"
+    },
+    "rm0008-dma": {
+      "title": "RM0008 Rev 21 DMA1 通道与 CNDTR",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 13. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 10 章。CNDTR 数的是数据项。8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节。半传输是 4 个采样、8 字节。ADC1 通道 1，USART1_TX 通道 4，USART1_RX 通道 5。循环模式归零后重装。不把 21 µs 写进来。不改 rm0090。"
+    },
+    "ds5319-dma": {
+      "title": "DS5319 Rev 20 中密度只有一个 7 通道 DMA",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, section 2.3.13. Medium-density devices have one 7-channel DMA. DMA2 exists on high-density devices. STM32F103C8T6 has no DMA2.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 10 章。中密度是一个 7 通道的 DMA1。DMA2 在 STM32F103C8T6 上作废。"
+    },
+    "rm0008-wdg": {
+      "title": "RM0008 Rev 21 独立看门狗的 1 秒与窗口看门狗",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 19 and 20. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. Section 19.3.3 prints the debug-mode configuration bit name DBG_IWDG_STOP. That bit can freeze the IWDG counter while debugging. This snapshot does not record a bit number. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章的 1 秒和窗口。预分频 64、f_LSI 按 40 kHz 时计数频率 625 Hz。Reload 624 是 1 秒，Reload 625 多一个计数。IWDG 减到 0 才复位。WWDG 在 36 MHz、预分频 8、初值 0x7F 时超时 58.25 ms；计数器大于窗口值时喂狗会复位。§19.3.3 印出配置位名 DBG_IWDG_STOP，不编位号。不把 40 kHz 的秒数写成保证值。不改附录 D。"
+    },
+    "rm0008-rtc": {
+      "title": "RM0008 Rev 21 RTC 预分频与备份域解锁",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 18, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章的 1 Hz 时基。RTC 时钟除以 (PRL + 1)。32.768 kHz 配 PRL = 32767 得到 1 Hz。PRL = 32768 不是 1 Hz。写备份域之前置 PWR_CR 的 DBP。不把 F4 的 0xCA、0x53 或 TR/DR 写进来。"
+    },
+    "ds5319-rtc": {
+      "title": "DS5319 Rev 20 的 LSI、LSE 脚与 10 个备份寄存器",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 25 and sections 2.3.12, 2.3.14, and 2.3.15, plus Table 5. fLSI is 30 / 40 / 60 kHz. There are ten 16-bit backup registers, 20 bytes. The default time base is 32.768 kHz giving 1 second. The IWDG uses an independent 40 kHz, keeps running in Stop and Standby, and can be frozen while debugging. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, pin 4 is PC15-OSC32_OUT.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 11 章主图的晶振脚、10 个备份寄存器和 LSI 范围。表 25 的 fLSI 是 30 / 40 / 60 kHz。备份寄存器 10 个 16 位，共 20 字节。第 1 脚 VBAT，第 3 脚 PC14-OSC32_IN，第 4 脚 PC15-OSC32_OUT。调试时可以冻住独立看门狗。不编负载电容的皮法。不把 ±20 ppm 或 ±50% 写进 snapshot。"
     }
   }
 }
