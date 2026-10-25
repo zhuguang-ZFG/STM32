@@ -10,7 +10,7 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（6 张） | `assets/diagrams/` | 本仓库作者用代码绘制，脚本见 `tools/gen_diagrams.py`，采用 CC BY 4.0 |
+| 静态框图（8 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
 | 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
@@ -71,3 +71,12 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 
 感谢 STMicroelectronics 提供详尽的公开文档，感谢所有开源固件库与社区作者 —— 
 正是因为这些资料是公开的，学习嵌入式才不需要任何门槛。
+
+## 六、样本章的改写吸收（v1.1.0）
+
+第 00 章和第 03 章用改写吸收补了四块：原理与边界、关键插图、时序或状态、坑与出处卡。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图和 PDF 不放进仓库。社区原文这一对样本没有吸收；GPL、LGPL 和未写许可的材料仍只留在上面的索引里。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| RM0008 Rev 21（2021-02），第 3.4 节表 9，以及第 9.2.7 节、第 9.3.5 节表 36 | ST 文档条款；只链接并改写事实，不转载手册 | 第 00 章启动状态；第 03 章 LCKR 与 SWD 脚 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| DS5319 Rev 20（2025-07），表 5、图 8、注 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 03 章 LQFP48 的 PA0 第 10 脚、PC13 第 2 脚，以及 3 mA / 2 MHz / 30 pF | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |

@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.1.0",
+      "date": "2026-10-25",
+      "zh": [
+        "第 00 章写上 STM32F103C8T6 的启动状态：BOOT0=0 时 0x00000000 别名到 0x08000000，并加了一张不播放也能读的静态图。",
+        "第 03 章写上 PA0 与 PC13 的电流界限、GPIOx_LCKR 序列和出处卡，并加了一张静态主图。"
+      ],
+      "en": [
+        "Chapter 00 records the STM32F103C8T6 boot state: with BOOT0=0, 0x00000000 aliases 0x08000000, plus a static figure that stays readable in print.",
+        "Chapter 03 records the PA0 versus PC13 current limit, the GPIOx_LCKR sequence, and source cards, plus a static key figure."
+      ]
+    },
+    {
       "version": "1.0.8",
       "date": "2026-10-25",
       "zh": [
