@@ -520,10 +520,10 @@ UI = {
         "callout_tip": "提示",
         "callout_note": "说明",
         "closing_kicker": "收束",
+        "closing_banner": "本部分到此结束",
         "footer": "本书由 stm32-book/build_html.py 从 {count} 章源文档构建；来源、冻结点与许可见附录 E。",
         "table_label": "数据表，可横向滚动",
         "skip": "跳到目录",
-        "source_id": "标识",
         "source_authority": "权威层级",
         "source_snapshot": "冻结点",
         "source_accessed": "访问日期",
@@ -570,10 +570,10 @@ UI = {
         "callout_tip": "Tip",
         "callout_note": "Note",
         "closing_kicker": "CLOSE",
+        "closing_banner": "End of this part",
         "footer": "Built by stm32-book/build_html.py from {count} source chapters. Sources, frozen versions, and the license are in Appendix E.",
         "table_label": "Data table, scroll sideways",
         "skip": "Skip to contents",
-        "source_id": "Id",
         "source_authority": "Authority",
         "source_snapshot": "Snapshot",
         "source_accessed": "Accessed",
@@ -603,13 +603,22 @@ def compass_html(guide: dict, manifest: dict) -> str:
         f'<a href="#source-{html.escape(source_id)}">{html.escape(source_id)}</a>'
         for source_id in guide["sources"]
     )
+    cards = (
+        ("question", "compass_question", guide["question"]),
+        ("deliverable", "compass_deliverable", guide["deliverable"]),
+        ("boundary", "compass_boundary", guide["boundary"]),
+    )
+    card_html = "".join(
+        f'<div class="compass-card compass-{role}">'
+        f'<p class="compass-role">{html.escape(ui(manifest, key))}</p>'
+        f"<p>{html.escape(text)}</p></div>"
+        for role, key, text in cards
+    )
     return f"""
 <aside class="chapter-compass" aria-label="{html.escape(ui(manifest, 'compass_label'))}">
-  <h2>{html.escape(ui(manifest, 'compass_label'))}</h2>
-  <div><strong>{html.escape(ui(manifest, 'compass_question'))}</strong><p>{html.escape(guide['question'])}</p></div>
-  <div><strong>{html.escape(ui(manifest, 'compass_deliverable'))}</strong><p>{html.escape(guide['deliverable'])}</p></div>
-  <div><strong>{html.escape(ui(manifest, 'compass_boundary'))}</strong><p>{html.escape(guide['boundary'])}</p></div>
-  <p class="source-anchors"><strong>{html.escape(ui(manifest, 'compass_sources'))}</strong> {source_links}</p>
+  <p class="compass-title">{html.escape(ui(manifest, 'compass_label'))}</p>
+  {card_html}
+  <p class="source-anchors"><span class="compass-role">{html.escape(ui(manifest, 'compass_sources'))}</span> {source_links}</p>
 </aside>"""
 
 
@@ -619,7 +628,7 @@ def quick_check_html(questions: list[str], manifest: dict) -> str:
     items = "".join(f"<li>{html.escape(question)}</li>" for question in questions)
     return f"""
 <section class="quick-check">
-  <h2>{html.escape(ui(manifest, 'quick_title'))}</h2>
+  <p class="quick-title">{html.escape(ui(manifest, 'quick_title'))}</p>
   <ol>{items}</ol>
   <p><a href="#appendix-exercises">{html.escape(ui(manifest, 'quick_link'))}</a></p>
 </section>"""
@@ -668,16 +677,16 @@ def source_registry_html(manifest: dict) -> str:
         cards.append(
             f"""
 <article class="source-card" id="source-{html.escape(source_id)}">
+  <p class="source-id"><code>{html.escape(source_id)}</code></p>
   <h2>{html.escape(source['title'])}</h2>
   <dl>
-    <dt>{html.escape(ui(manifest, 'source_id'))}</dt><dd><code>{html.escape(source_id)}</code></dd>
     <dt>{html.escape(ui(manifest, 'source_authority'))}</dt><dd>{html.escape(source['authority'])}</dd>
     <dt>{html.escape(ui(manifest, 'source_snapshot'))}</dt><dd>{html.escape(source['snapshot'])}</dd>
     <dt>{html.escape(ui(manifest, 'source_accessed'))}</dt><dd>{html.escape(source['accessed'])}</dd>
     <dt>{html.escape(ui(manifest, 'source_license'))}</dt><dd>{html.escape(source['license'])}</dd>
     <dt>{html.escape(ui(manifest, 'source_scope'))}</dt><dd>{html.escape(source['scope'])}</dd>
   </dl>
-  <p><a href="{html.escape(source['url'], quote=True)}">{html.escape(ui(manifest, 'source_open'))}</a></p>
+  <p class="source-link"><a href="{html.escape(source['url'], quote=True)}">{html.escape(ui(manifest, 'source_open'))}</a></p>
 </article>"""
         )
     return '<section class="source-registry">' + "".join(cards) + "</section>"
@@ -732,6 +741,8 @@ CSS = r"""
   --warn-soft: #f8efe8;
   --tip: #1b5c45;
   --tip-soft: #e7f4ee;
+  --spine: #c4552a;
+  --spine-soft: #f8efe8;
   --code: #101820;
   --code-ink: #eef6f8;
   --measure: 40rem;
@@ -764,7 +775,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .imprint h1 { margin-bottom: .4rem; }
 .imprint-lead, .imprint .colophon { max-width: 40em; }
 .imprint-lead { color: var(--muted); }
-.imprint dl { max-width: 42rem; margin: 1.5rem 0 0; padding-top: 1.05rem; border-top: 3px solid var(--accent); grid-template-columns: 11rem minmax(0, 1fr); }
+.imprint dl { max-width: 46rem; margin: 1.5rem 0 0; padding-top: 1.05rem; border-top: 3px solid var(--accent); grid-template-columns: minmax(11rem, 16rem) minmax(0, 1fr); }
 .imprint .colophon { color: var(--muted); }
 .toc-closing { margin: .2rem 0 0; font-weight: 700; }
 .companion { margin-top: 2rem; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); }
@@ -777,11 +788,12 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .contents > section > h2 { position: sticky; top: 0; z-index: 2; margin: 0; padding: .85rem 0 .45rem; background: var(--paper); box-shadow: 0 1px 0 var(--line); }
 .part-divider { position: relative; overflow: hidden; min-height: 52vh; display: grid; align-content: center; gap: .35rem; padding: 4.5rem 8% 4.2rem; margin-top: 3rem; background: linear-gradient(180deg, var(--accent-soft), transparent 72%); border-top: 4px solid var(--accent); border-bottom: 1px solid var(--line); }
 .part-divider .part-label { position: relative; z-index: 1; margin: 0; color: var(--accent); font-weight: 800; letter-spacing: .16em; font-size: .82rem; }
-.part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 5.5rem)); }
-.part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 5.5rem)); font-size: 1.12rem; line-height: 1.6; }
-.part-divider::after { content: attr(data-part-index); position: absolute; right: 5%; top: 1rem; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
+.part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 9.5rem)); }
+.part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 9.5rem)); font-size: 1.12rem; line-height: 1.6; }
+.part-index { position: absolute; right: 5%; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
 .chapter, .appendix, .part-closing { padding: 3.4rem 6% 3.6rem; border-bottom: 1px solid var(--line); }
-.part-closing { background: linear-gradient(180deg, var(--accent-soft), transparent 9rem); }
+.part-closing { background: linear-gradient(180deg, var(--spine-soft), transparent 12rem); border-top: 4px solid var(--spine); }
+.closing-banner { margin: .8rem 0 0; color: var(--spine); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
 .chapter > header, .appendix > header, .part-closing > header { margin-bottom: 1.6rem; padding-bottom: .95rem; border-bottom: 1px solid var(--line); }
 .chapter > header h1, .appendix > header h1, .part-closing > header h1 { font-size: clamp(1.85rem, 4.2vw, 2.7rem); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }
 .chapter-number { display: block; color: var(--accent); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
@@ -791,14 +803,22 @@ h3 { font-size: 1.16rem; margin: 1.7rem 0 .4rem; }
 h4 { font-size: 1.02rem; margin: 1.3rem 0 .3rem; }
 .chapter > p, .appendix > p, .part-closing > p, .frontmatter > p, .imprint-lead, .imprint .colophon,
 .chapter li, .appendix li, .part-closing li { max-width: var(--measure); }
-.chapter-compass { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin: 1.8rem 0 3rem; padding: 1rem; background: var(--accent-soft); border-left: 5px solid var(--accent); border-radius: .6rem; }
-.chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1 / -1; margin: 0; }
-.chapter-compass h2 { font-size: 1rem; }
-.chapter-compass div { background: color-mix(in srgb, var(--paper) 72%, transparent); padding: .8rem; border-radius: .45rem; }
-.chapter-compass div p { margin: .35rem 0 0; }
-.chapter-compass strong { color: var(--accent); }
+.chapter-compass { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1.5rem 0 2.6rem; padding: .95rem; background: var(--panel); border: 1px solid var(--line); border-radius: .75rem; }
+.chapter-compass .compass-title, .chapter-compass .source-anchors { grid-column: 1 / -1; margin: 0; }
+.compass-title { color: var(--accent); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
+.compass-card { min-width: 0; padding: .75rem .8rem .85rem; border-radius: .5rem; background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--accent); }
+.compass-card p { margin: .35rem 0 0; }
+.compass-role { margin: 0; font-size: .72rem; font-weight: 800; letter-spacing: .12em; color: var(--muted); }
+.compass-question { border-top-color: var(--accent); }
+.compass-question .compass-role { color: var(--accent); }
+.compass-deliverable { border-top-color: var(--tip); }
+.compass-deliverable .compass-role { color: var(--tip); }
+.compass-boundary { border-top-color: var(--spine); }
+.compass-boundary .compass-role { color: var(--spine); }
+.chapter-compass .source-anchors { margin-top: .15rem; padding-top: .7rem; border-top: 1px solid var(--line); }
+.source-anchors .compass-role { margin-right: .35rem; }
 .quick-check { margin: 3rem 0 1rem; padding: 1rem 1.4rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); }
-.quick-check h2 { margin-top: 0; }
+.quick-title { margin: 0 0 .35rem; color: var(--accent); font-weight: 800; font-size: 1.05rem; }
 blockquote.callout { max-width: var(--measure); margin: 1.25rem 0 1.45rem; padding: .8rem 1rem .9rem 1.05rem; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: .55rem; background: var(--panel); color: var(--ink); }
 .callout p { margin: .35rem 0 0; }
 .callout-label { margin: 0; font-size: .74rem; font-weight: 800; letter-spacing: .14em; color: var(--accent); }
@@ -819,48 +839,84 @@ th, td { border: 1px solid var(--line); padding: .55rem .7rem; vertical-align: t
 th { background: var(--panel); font-weight: 700; }
 code { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; font-size: .91em; }
 :not(pre) > code { padding: .12em .35em; border-radius: .3em; background: var(--panel); }
-pre { overflow-x: auto; margin: 1.1rem 0 1.45rem; padding: 1rem 1.15rem; background: var(--code); color: var(--code-ink); border-radius: .65rem; border-left: 3px solid var(--accent); line-height: 1.55; }
-pre code { font-size: .86rem; }
+pre {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 1.15rem 0 1.5rem;
+  padding: .95rem 1.05rem;
+  tab-size: 4;
+  color: var(--code-ink);
+  background-color: var(--code);
+  border: 1px solid color-mix(in srgb, var(--code-ink) 16%, var(--code));
+  border-left: 3px solid var(--accent);
+  border-radius: .65rem;
+  line-height: 1.6;
+  user-select: text;
+  scrollbar-color: color-mix(in srgb, var(--code-ink) 42%, transparent) transparent;
+  background-image:
+    linear-gradient(to right, var(--code), transparent),
+    linear-gradient(to left, var(--code), transparent) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .4), transparent),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .4), transparent) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 1.5rem 100%, 1.5rem 100%, .75rem 100%, .75rem 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+pre code { font-size: .92em; color: inherit; background: transparent; padding: 0; white-space: inherit; user-select: text; }
+#appendix-glossary td:first-child, #appendix-glossary th:first-child { font-weight: 700; white-space: nowrap; }
+#appendix-glossary td:nth-child(3) { background: var(--warn-soft); }
+#appendix-glossary th:nth-child(3) { color: var(--warn); }
 dl { display: grid; grid-template-columns: 8rem 1fr; gap: .35rem 1rem; }
 dt { font-weight: 700; }
 dd { margin: 0; }
 p, li, dd { overflow-wrap: anywhere; }
 .source-registry { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
-.source-card { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: .7rem; padding: 1rem 1.2rem; break-inside: avoid; }
-.source-card h2 { min-width: 0; font-size: 1.15rem; margin-top: 0; }
-.source-card dl { min-width: 0; grid-template-columns: 5rem minmax(0, 1fr); font-size: .9rem; }
+.source-card { min-width: 0; display: flex; flex-direction: column; gap: .3rem; overflow-wrap: anywhere; border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: .7rem; padding: .9rem 1.1rem 1rem; background: color-mix(in srgb, var(--panel) 72%, var(--paper)); break-inside: avoid; }
+.source-id { margin: 0; color: var(--accent); font-weight: 800; letter-spacing: .04em; font-size: .78rem; }
+.source-id code { color: var(--accent); background: var(--accent-soft); }
+.source-card h2 { min-width: 0; font-size: 1.12rem; line-height: 1.35; margin: 0 0 .3rem; }
+.source-card dl { min-width: 0; grid-template-columns: minmax(5.5rem, max-content) minmax(0, 1fr); gap: .28rem .75rem; font-size: .9rem; }
+.source-card dt { color: var(--muted); font-weight: 700; font-size: .75rem; letter-spacing: .04em; }
+.source-link { margin: .5rem 0 0; }
 .back-to-toc { display: inline-block; margin-top: 2.2rem; font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--accent); }
 .toc-jump { position: fixed; right: 1.15rem; bottom: 1.15rem; z-index: 30; padding: .55rem .95rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 .45rem 1.2rem rgba(16, 24, 32, .18); }
 .toc-jump:hover, .toc-jump:focus-visible { color: var(--paper); }
 footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: center; }
+@media (max-width: 960px) {
+  .chapter-compass, .source-registry, .imprint dl { grid-template-columns: minmax(0, 1fr); }
+  .frontmatter .routes { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 720px) {
   .book { width: min(100% - 1rem, 980px); }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
   .cover { padding: 0; }
   .cover-sheet { min-height: auto; grid-template-rows: 220px auto; }
   .cover-panel { padding: 1.3rem 1rem 1.8rem; }
-  .frontmatter .routes, .chapter-compass, .source-registry { grid-template-columns: minmax(0, 1fr); }
-  .chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1; }
+  .part-index { font-size: 3rem; top: .55rem; }
+  .part-divider h1, .part-goal { max-width: calc(100% - 4.8rem); }
   .contents ol { columns: 1; }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
   .table-scroll th, .table-scroll td { min-width: 4.5rem; }
   dl { grid-template-columns: 1fr; }
+  pre { padding: .8rem .85rem; }
 }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #11171b; --ink: #e9eef1; --muted: #acb7bf; --line: #3a454d; --panel: #1c252b; --accent: #78c8e8; --accent-soft: #17313c; --warn: #f0b090; --warn-soft: #3a241c; --tip: #8fd4b4; --tip-soft: #163028; --code: #080c0f; --code-ink: #edf6f9; }
+  :root { --paper: #11171b; --ink: #e9eef1; --muted: #acb7bf; --line: #3a454d; --panel: #1c252b; --accent: #78c8e8; --accent-soft: #17313c; --warn: #f0b090; --warn-soft: #3a241c; --tip: #8fd4b4; --tip-soft: #163028; --spine: #f0b090; --spine-soft: #3a241c; --code: #0a141c; --code-ink: #edf6f9; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
 @media print {
-  :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #444; --line: #bbb; --panel: #f4f4f4; --accent: #075e84; --accent-soft: #edf6f9; --warn: #8a3418; --warn-soft: #f8f1ec; --tip: #1b5c45; --tip-soft: #eef6f2; }
+  :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #444; --line: #bbb; --panel: #f4f4f4; --accent: #075e84; --accent-soft: #edf6f9; --warn: #8a3418; --warn-soft: #f8f1ec; --tip: #1b5c45; --tip-soft: #eef6f2; --spine: #c4552a; --spine-soft: #f8efe8; }
   @page { size: A4; margin: 16mm 15mm 18mm; }
   body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; background: #10242e; }
   .cover-sheet { min-height: 245mm; }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding: 0; }
-  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { page-break-before: always; }
+  .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { break-before: page; page-break-before: always; }
+  .imprint { break-before: auto; page-break-before: auto; }
+  .chapter > header, .appendix > header, .part-closing > header, .chapter-compass { break-after: avoid-page; page-break-after: avoid; }
   .part-divider { min-height: 220mm; align-content: center; }
   .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
@@ -871,7 +927,8 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
   .table-scroll table { min-width: 0; }
   thead { display: table-header-group; break-after: avoid-page; page-break-after: avoid; }
   tr { break-inside: avoid-page; page-break-inside: avoid; }
-  pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid-page; page-break-inside: avoid; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: auto; page-break-inside: auto; }
+  #appendix-glossary td:first-child, #appendix-glossary th:first-child { white-space: normal; }
   .source-registry { grid-template-columns: 1fr; }
   a { color: inherit; text-decoration: none; }
   .toc-jump, .back-to-toc, .skip-link { display: none; }
@@ -948,7 +1005,7 @@ def part_closing_html(part: dict, manifest: dict, chapter_anchors: dict[Path, st
     )
     return f"""
 <article class="part-closing" id="{html.escape(closing['id'])}">
-  <header><span class="chapter-number">{html.escape(ui(manifest, 'closing_kicker'))}</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="chapter-number">{html.escape(ui(manifest, 'closing_kicker'))}</span><h1>{html.escape(title)}</h1><p class="closing-banner">{html.escape(ui(manifest, 'closing_banner'))}</p></header>
   {rendered}
   <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
 </article>"""
@@ -1008,6 +1065,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
         body.append(
             f"""
 <section class="part-divider" id="part-{html.escape(part['id'])}" data-part-index="{index:02d}">
+  <p class="part-index" aria-hidden="true">{index:02d}</p>
   <p class="part-label">{html.escape(ui(manifest, 'part_kicker').format(n=index))}</p>
   <h1>{html.escape(part['title'])}</h1>
   <p class="part-goal">{html.escape(part['goal'])}</p>

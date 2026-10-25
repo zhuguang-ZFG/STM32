@@ -133,13 +133,18 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.1</strong>", html)
+        self.assertIn("<strong>v1.0.2</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertIn('<span class="chapter-number">第 00 章</span>', html)
         self.assertIn('<span class="chapter-number">附录</span>', html)
         self.assertNotIn(">PART 0<", html)
         self.assertNotIn(">CHAPTER 00<", html)
+        self.assertIn('class="compass-card compass-boundary"', html)
+        self.assertNotIn("<h2>本章罗盘</h2>", html)
+        self.assertNotIn("<h2>合上书，三问</h2>", html)
+        self.assertIn("本部分到此结束", html)
+        self.assertIn('class="source-id"', html)
         self.assertIn('<p class="callout-label">注意</p>', html)
         self.assertIn('<p class="callout-label">提示</p>', html)
         self.assertIn('<p class="callout-label">说明</p>', html)
@@ -242,7 +247,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.1", manifest["version"])
+        self.assertEqual("1.0.2", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -259,13 +264,17 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.1</strong>", html)
+        self.assertIn("<strong>v1.0.2</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
         self.assertIn('<span class="chapter-number">Appendix</span>', html)
         self.assertNotIn(">PART 0<", html)
         self.assertNotIn(">CHAPTER 00<", html)
+        self.assertIn('class="compass-card compass-question"', html)
+        self.assertNotIn("<h2>Chapter compass</h2>", html)
+        self.assertIn("End of this part", html)
+        self.assertIn('class="source-id"', html)
         self.assertIn('<p class="callout-label">Warning</p>', html)
         self.assertIn('<p class="callout-label">Tip</p>', html)
         self.assertIn('<p class="callout-label">Note</p>', html)
@@ -632,6 +641,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("@font-face", svg)
         self.assertNotRegex(svg, r"https?://(?!www\.w3\.org/)")
         self.assertNotRegex(svg, r"<(?:image|use)\b[^>]*\b(?:href|xlink:href)=")
+        self.assertIn("#c4552a", svg)
+        self.assertIn("#8ecae6", svg)
+        self.assertNotIn("#9fd7c4", svg)
+        self.assertIn("--spine: #c4552a", self.builder.CSS)
 
     def test_running_headers_follow_appendices_and_shorten_long_titles(self) -> None:
         import fitz
@@ -678,6 +691,178 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("A close reading", appendix_open)
         self.assertIn("A close reading: two valid contracts", appendix_cont)
         self.assertGreaterEqual(len(drawings), 1)
+
+    def test_compass_and_closing_chrome_are_labeled_without_fake_headings(self) -> None:
+        guide = {
+            "question": "问题句",
+            "deliverable": "交付句",
+            "boundary": "边界句",
+            "sources": ["rm0008"],
+        }
+        en_manifest = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+        for manifest, question, deliverable, boundary in (
+            (self.manifest, "问题", "交付", "边界"),
+            (en_manifest, "Question", "Deliverable", "Boundary"),
+        ):
+            fragment = self.builder.compass_html(guide, manifest)
+            self.assertNotIn("<h2", fragment)
+            self.assertIn('class="compass-card compass-question"', fragment)
+            self.assertIn('class="compass-card compass-deliverable"', fragment)
+            self.assertIn('class="compass-card compass-boundary"', fragment)
+            self.assertIn(f'class="compass-role">{question}</p>', fragment)
+            self.assertIn(f'class="compass-role">{deliverable}</p>', fragment)
+            self.assertIn(f'class="compass-role">{boundary}</p>', fragment)
+            self.assertIn('href="#source-rm0008"', fragment)
+            self.assertIn("问题句", fragment)
+
+        questions = self.builder.quick_check_html(["第一问？"], self.manifest)
+        self.assertNotIn("<h2", questions)
+        self.assertIn('class="quick-title">合上书，三问</p>', questions)
+        english_questions = self.builder.quick_check_html(["One?"], en_manifest)
+        self.assertIn('class="quick-title">Close the book: three questions</p>', english_questions)
+        self.assertEqual("", self.builder.quick_check_html([], self.manifest))
+
+        closing = self.builder.part_closing_html(self.manifest["parts"][-1], self.manifest, {})
+        self.assertIn('class="closing-banner">本部分到此结束</p>', closing)
+        english_closing = self.builder.part_closing_html(en_manifest["parts"][-1], en_manifest, {})
+        self.assertIn('class="closing-banner">End of this part</p>', english_closing)
+
+        card = self.builder.source_registry_html(self.manifest)
+        self.assertIn('class="source-id"><code>rm0008</code>', card)
+        self.assertIn('class="source-link"', card)
+        self.assertIn(">打开来源</a>", card)
+        english_card = self.builder.source_registry_html(en_manifest)
+        self.assertIn(">Open source</a>", english_card)
+        self.assertNotIn("<dt>标识</dt>", card)
+        self.assertNotIn("<dt>Id</dt>", english_card)
+
+    def test_code_glossary_and_print_css_keep_reading_units_movable(self) -> None:
+        screen_css, print_css = self.builder.CSS.split("@media print", 1)
+        self.assertIn("tab-size: 4", screen_css)
+        self.assertIn("scrollbar-color:", screen_css)
+        self.assertIn("user-select: text", screen_css)
+        self.assertIn("#appendix-glossary td:nth-child(3)", screen_css)
+        self.assertIn("@media (max-width: 960px)", screen_css)
+        self.assertIn(".part-index", screen_css)
+        pre_rule = re.search(r"\bpre \{([^}]+)\}", print_css)
+        self.assertIsNotNone(pre_rule)
+        self.assertIn("white-space: pre-wrap", pre_rule.group(1))
+        self.assertIn("break-inside: auto", pre_rule.group(1))
+        self.assertNotIn("avoid", pre_rule.group(1))
+        self.assertNotRegex(print_css, r"\.imprint[^{}]*\{[^}]*page-break-before:\s*always")
+        self.assertRegex(
+            print_css,
+            r"\.chapter > header[^{]*\{[^}]*page-break-after:\s*avoid",
+        )
+        self.assertIn("--spine: #c4552a", print_css)
+
+    def test_narrow_desktop_stacks_compass_without_part_number_collision(self) -> None:
+        from playwright.sync_api import sync_playwright
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(Path(tmp))
+            candidates = self.builder._browser_candidates(None)
+            launch_args = {"headless": True}
+            if candidates:
+                launch_args["executable_path"] = str(candidates[0])
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch(**launch_args)
+                try:
+                    page = browser.new_page(viewport={"width": 1200, "height": 900})
+                    page.goto(output.resolve().as_uri() + "#part-p0", wait_until="load")
+                    page.wait_for_function(
+                        "Array.from(document.images).every(img => img.complete && img.naturalWidth > 0)"
+                    )
+
+                    def measure():
+                        return page.evaluate(
+                            """() => {
+                                const columns = value => value.trim().split(/\\s+/).filter(Boolean).length;
+                                const compass = document.querySelector('#chapter-00 .chapter-compass');
+                                const pre = document.querySelector('pre');
+                                const preStyle = getComputedStyle(pre);
+                                const term = document.querySelector('#appendix-glossary td');
+                                const mixup = document.querySelector('#appendix-glossary td:nth-child(3)');
+                                const divider = document.querySelector('#part-p0');
+                                const index = divider.querySelector('.part-index').getBoundingClientRect();
+                                const title = divider.querySelector('h1').getBoundingClientRect();
+                                const goal = divider.querySelector('.part-goal').getBoundingClientRect();
+                                const overlaps = (box) =>
+                                    box.right > index.left + 1
+                                    && box.bottom > index.top + 1
+                                    && box.top < index.bottom - 1;
+                                return {
+                                    compassColumns: columns(getComputedStyle(compass).gridTemplateColumns),
+                                    fakeHeadings: document.querySelectorAll('.chapter-compass h2, .quick-check h2').length,
+                                    tabSize: preStyle.tabSize,
+                                    overflowX: preStyle.overflowX,
+                                    whiteSpace: preStyle.whiteSpace,
+                                    userSelect: preStyle.userSelect,
+                                    glossaryWeightsDiffer:
+                                        getComputedStyle(term).fontWeight !== getComputedStyle(mixup).fontWeight
+                                        || getComputedStyle(term).backgroundColor !== getComputedStyle(mixup).backgroundColor,
+                                    mixupBackground: getComputedStyle(mixup).backgroundColor,
+                                    imprintColumns: columns(getComputedStyle(document.querySelector('.imprint dl')).gridTemplateColumns),
+                                    sourceColumns: columns(getComputedStyle(document.querySelector('.source-registry')).gridTemplateColumns),
+                                    titleHitsIndex: overlaps(title),
+                                    goalHitsIndex: overlaps(goal),
+                                    pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+                                };
+                            }"""
+                        )
+
+                    wide = measure()
+                    page.set_viewport_size({"width": 840, "height": 900})
+                    narrow = measure()
+                    page.set_viewport_size({"width": 390, "height": 844})
+                    phone = measure()
+                    page.emulate_media(media="print")
+                    printed = page.evaluate(
+                        """() => {
+                            const pre = getComputedStyle(document.querySelector('pre'));
+                            const header = getComputedStyle(document.querySelector('#chapter-00 > header'));
+                            const imprint = getComputedStyle(document.querySelector('.imprint'));
+                            const cover = getComputedStyle(document.querySelector('.cover'));
+                            return {
+                                preBreakInside: pre.breakInside,
+                                preWhiteSpace: pre.whiteSpace,
+                                headerBreakAfter: header.breakAfter,
+                                imprintBreakBefore: imprint.breakBefore,
+                                coverBreakAfter: cover.breakAfter,
+                            };
+                        }"""
+                    )
+                finally:
+                    browser.close()
+
+        self.assertEqual(3, wide["compassColumns"])
+        self.assertEqual(1, narrow["compassColumns"])
+        self.assertEqual(0, wide["fakeHeadings"])
+        self.assertEqual("4", wide["tabSize"])
+        self.assertEqual("auto", wide["overflowX"])
+        self.assertEqual("pre", wide["whiteSpace"])
+        self.assertEqual("text", wide["userSelect"])
+        self.assertTrue(wide["glossaryWeightsDiffer"])
+        self.assertNotIn("rgba(0, 0, 0, 0)", wide["mixupBackground"])
+        self.assertGreaterEqual(wide["imprintColumns"], 2)
+        self.assertEqual(1, narrow["imprintColumns"])
+        self.assertEqual(2, wide["sourceColumns"])
+        self.assertEqual(1, narrow["sourceColumns"])
+        self.assertFalse(wide["titleHitsIndex"])
+        self.assertFalse(wide["goalHitsIndex"])
+        self.assertFalse(narrow["titleHitsIndex"])
+        self.assertFalse(narrow["goalHitsIndex"])
+        self.assertFalse(phone["titleHitsIndex"])
+        self.assertFalse(phone["goalHitsIndex"])
+        self.assertEqual(1, phone["compassColumns"])
+        self.assertEqual(0, wide["pageOverflow"])
+        self.assertEqual(0, narrow["pageOverflow"])
+        self.assertEqual(0, phone["pageOverflow"])
+        self.assertEqual("auto", printed["preBreakInside"])
+        self.assertEqual("pre-wrap", printed["preWhiteSpace"])
+        self.assertIn(printed["headerBreakAfter"], {"avoid", "avoid-page"})
+        self.assertEqual("auto", printed["imprintBreakBefore"])
+        self.assertIn(printed["coverBreakAfter"], {"page", "always"})
 
     def test_manifest_rejects_a_missing_chapter_guide(self) -> None:
         broken = copy.deepcopy(self.manifest)
