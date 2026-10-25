@@ -12,6 +12,8 @@
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
+图内纸色、墨色和语义色写在 tools/svgkit.py 的字面量里，数值与整书亮色令牌相同，生成时不读 stm32-book/styles/tokens.json。
+
 ## 一、动画演示 `assets/animations/`
 
 | 文件 | 演示内容 | 关联章节 |

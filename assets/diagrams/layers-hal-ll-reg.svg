@@ -1,60 +1,60 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="四种代码风格的分层关系">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">四种代码风格的分层关系</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源</text>
-<rect x="846" y="15" width="32" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="862" y="33.32" font-size="12" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">架构</text>
-<rect x="40" y="92" width="470" height="62" fill="#111c31" opacity="1" rx="10" stroke="#f472b6" stroke-width="1.5"/>
-<rect x="40" y="92" width="5" height="62" fill="#f472b6" opacity="1" rx="3"/>
-<text x="60" y="119" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用 / 业务逻辑</text>
-<text x="60" y="139" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">你的 main.c、状态机、协议解析</text>
-<rect x="40" y="164" width="470" height="62" fill="#111c31" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
-<rect x="40" y="164" width="5" height="62" fill="#22d3ee" opacity="1" rx="3"/>
-<text x="60" y="191" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HAL 库</text>
-<text x="60" y="211" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_GPIO_Init / HAL_UART_Transmit …（可移植性最好）</text>
-<rect x="40" y="236" width="470" height="62" fill="#111c31" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
-<rect x="40" y="236" width="5" height="62" fill="#34d399" opacity="1" rx="3"/>
-<text x="60" y="263" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LL 库</text>
-<text x="60" y="283" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LL_GPIO_SetOutputPin / LL_TIM_EnableCounter …（轻量、贴近寄存器）</text>
-<rect x="40" y="308" width="470" height="62" fill="#111c31" opacity="1" rx="10" stroke="#fbbf24" stroke-width="1.5"/>
-<rect x="40" y="308" width="5" height="62" fill="#fbbf24" opacity="1" rx="3"/>
-<text x="60" y="335" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">寄存器</text>
-<text x="60" y="355" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA-&gt;BSRR = GPIO_PIN_5（CMSIS 定义，最快最省）</text>
-<rect x="40" y="380" width="470" height="62" fill="#111c31" opacity="1" rx="10" stroke="#f87171" stroke-width="1.5"/>
-<rect x="40" y="380" width="5" height="62" fill="#f87171" opacity="1" rx="3"/>
-<text x="60" y="407" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">外设硬件</text>
-<text x="60" y="427" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIO / TIM / USART / SPI / ADC … 硅片上的电路</text>
-<line x1="524" y1="92" x2="524" y2="452" stroke="#243354" stroke-width="1.6" stroke-linecap="round" opacity="1"/>
-<polygon points="524.00,452.00 521.00,445.00 527.00,445.00" fill="#243354" opacity="1"/>
-<polygon points="524.00,92.00 527.00,99.00 521.00,99.00" fill="#243354" opacity="1"/>
-<text x="540" y="270" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抽象层次提高 →</text>
-<rect x="600" y="92" width="260" height="150" fill="#16233c" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="618" y="118" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">怎么选？</text>
-<text x="618" y="140" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">学习 / 做项目：HAL + CubeMX</text>
-<text x="618" y="158" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">资源紧张：关键路径用 LL</text>
-<text x="618" y="176" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">极致性能：直接写寄存器</text>
-<text x="618" y="194" font-size="10" fill="#34d399" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">看懂底层：对照 RM 读寄存器</text>
-<rect x="600" y="258" width="260" height="194" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="618" y="284" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">性能对照（72 MHz 下）</text>
-<text x="618" y="308" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_TogglePin</text>
-<text x="842" y="308" font-size="10.5" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 40 周期</text>
-<text x="618" y="332" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LL_GPIO_TogglePin</text>
-<text x="842" y="332" font-size="10.5" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 10 周期</text>
-<text x="618" y="356" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = ...</text>
-<text x="842" y="356" font-size="10.5" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 2 周期</text>
-<text x="618" y="380" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">中断响应（硬件）</text>
-<text x="842" y="380" font-size="10.5" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 周期</text>
-<text x="618" y="404" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DMA 搬 1 字节</text>
-<text x="842" y="404" font-size="10.5" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 周期（不占 CPU）</text>
-<rect x="40" y="468" width="820" height="62" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="492" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三者可以混用</text>
-<text x="58" y="512" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CubeMX 生成的工程本身就是「HAL 初始化 + LL/寄存器加速」的混合体；不要因为「用了库」就觉得不底层。</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">结论：先用 HAL 把功能跑通，再用 DWT 测出瓶颈，最后只优化瓶颈处的几行代码</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">四种代码风格的分层关系</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">架构</text>
+<rect x="40" y="92" width="470" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
+<rect x="40" y="92" width="5" height="62" fill="#8e2f5b" opacity="1" rx="2"/>
+<text x="60" y="119" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用 / 业务逻辑</text>
+<text x="60" y="139" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">你的 main.c、状态机、协议解析</text>
+<rect x="40" y="164" width="470" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="40" y="164" width="5" height="62" fill="#075e84" opacity="1" rx="2"/>
+<text x="60" y="191" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HAL 库</text>
+<text x="60" y="211" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_GPIO_Init / HAL_UART_Transmit …（可移植性最好）</text>
+<rect x="40" y="236" width="470" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="40" y="236" width="5" height="62" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="60" y="263" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LL 库</text>
+<text x="60" y="283" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LL_GPIO_SetOutputPin / LL_TIM_EnableCounter …（轻量、贴近寄存器）</text>
+<rect x="40" y="308" width="470" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="40" y="308" width="5" height="62" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="60" y="335" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">寄存器</text>
+<text x="60" y="355" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA-&gt;BSRR = GPIO_PIN_5（CMSIS 定义，最快最省）</text>
+<rect x="40" y="380" width="470" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="40" y="380" width="5" height="62" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="60" y="407" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">外设硬件</text>
+<text x="60" y="427" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIO / TIM / USART / SPI / ADC … 硅片上的电路</text>
+<line x1="524" y1="92" x2="524" y2="452" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="524.00,452.00 521.00,445.00 527.00,445.00" fill="#5e6872" opacity="1"/>
+<polygon points="524.00,92.00 527.00,99.00 521.00,99.00" fill="#5e6872" opacity="1"/>
+<text x="540" y="270" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抽象层次提高 →</text>
+<rect x="600" y="92" width="260" height="150" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="618" y="118" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">怎么选？</text>
+<text x="618" y="140" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">学习 / 做项目：HAL + CubeMX</text>
+<text x="618" y="158" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">资源紧张：关键路径用 LL</text>
+<text x="618" y="176" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">极致性能：直接写寄存器</text>
+<text x="618" y="194" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">看懂底层：对照 RM 读寄存器</text>
+<rect x="600" y="258" width="260" height="194" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="618" y="284" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">性能对照（72 MHz 下）</text>
+<text x="618" y="308" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_TogglePin</text>
+<text x="842" y="308" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 40 周期</text>
+<text x="618" y="332" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LL_GPIO_TogglePin</text>
+<text x="842" y="332" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 10 周期</text>
+<text x="618" y="356" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = ...</text>
+<text x="842" y="356" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≈ 2 周期</text>
+<text x="618" y="380" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">中断响应（硬件）</text>
+<text x="842" y="380" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 周期</text>
+<text x="618" y="404" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DMA 搬 1 字节</text>
+<text x="842" y="404" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 周期（不占 CPU）</text>
+<rect x="40" y="468" width="820" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="492" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三者可以混用</text>
+<text x="58" y="512" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CubeMX 生成的工程本身就是「HAL 初始化 + LL/寄存器加速」的混合体；不要因为「用了库」就觉得不底层。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">结论：先用 HAL 把功能跑通，再用 DWT 测出瓶颈，最后只优化瓶颈处的几行代码</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

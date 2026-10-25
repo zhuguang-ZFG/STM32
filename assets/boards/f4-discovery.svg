@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="STM32F4-Discovery（F407VG）">
 
 
-<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#fb923c" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F4-Discovery（F407VG）</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量结构图（非实拍照片）：官方评估板，传感器 + 音频 + 4 颗 LED</text>
-<rect x="819" y="15" width="59" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="848.5" y="33.32" font-size="12" fill="#fb923c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">实物结构图</text>
-<rect x="65" y="103" width="500" height="330" fill="#00000055" opacity="1" rx="14"/>
-<rect x="60" y="96" width="500" height="330" fill="#0e3b6e" opacity="1" rx="14" stroke="#0a2a52" stroke-width="2"/>
-<rect x="66" y="102" width="488" height="318" fill="none" opacity="1" rx="10" stroke="#ffffff22" stroke-width="1"/>
-<circle cx="74" cy="110" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.6"/>
-<circle cx="546" cy="110" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.6"/>
-<circle cx="74" cy="412" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.6"/>
-<circle cx="546" cy="412" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.6"/>
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#9a3412" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F4-Discovery（F407VG）</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量结构图（非实拍照片）：官方评估板，传感器 + 音频 + 4 颗 LED</text>
+<rect x="819" y="15" width="59" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="848.5" y="33.32" font-size="12" fill="#9a3412" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">实物结构图</text>
+<rect x="65" y="103" width="500" height="330" fill="#00000055" opacity="1" rx="8"/>
+<rect x="60" y="96" width="500" height="330" fill="#0e3b6e" opacity="1" rx="8" stroke="#0a2a52" stroke-width="2"/>
+<rect x="66" y="102" width="488" height="318" fill="none" opacity="1" rx="4" stroke="#ffffff22" stroke-width="1"/>
+<circle cx="74" cy="110" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.5"/>
+<circle cx="546" cy="110" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.5"/>
+<circle cx="74" cy="412" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.5"/>
+<circle cx="546" cy="412" r="5" fill="#0a2a52" opacity="1" stroke="#e2b23c" stroke-width="1.5"/>
 <text x="310" y="122" font-size="13" fill="#bcd8ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F4DISCOVERY</text>
 <rect x="72" y="140" width="120" height="132" fill="#08214a" opacity="1" rx="8" stroke="#7aa2ff" stroke-width="1.5"/>
 <text x="132" y="164" font-size="10" fill="#cfe0ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link/V2-A</text>
@@ -53,152 +53,152 @@
 <rect x="372" y="288.571" width="9" height="4" fill="#9aa4b2" opacity="1"/>
 <rect x="362.571" y="185" width="4" height="9" fill="#9aa4b2" opacity="1"/>
 <rect x="362.571" y="298" width="4" height="9" fill="#9aa4b2" opacity="1"/>
-<rect x="268" y="194" width="104" height="104" fill="#1b1f28" opacity="1" rx="3" stroke="#39424f" stroke-width="1.5"/>
+<rect x="268" y="194" width="104" height="104" fill="#1b1f28" opacity="1" rx="2" stroke="#39424f" stroke-width="1.5"/>
 <circle cx="277" cy="203" r="3.4" fill="#5b6472" opacity="1"/>
 <text x="320" y="244" font-size="11.5" fill="#dfe6f0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STM32F407</text>
 <text x="320" y="259" font-size="9" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VGT6 · LQFP100</text>
 <text x="320" y="318" font-size="9" fill="#dbeafe" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">168 MHz · 1 MB Flash · 192 KB SRAM</text>
-<rect x="260" y="156" width="40" height="18" fill="#c9ced6" opacity="1" rx="5" stroke="#8d949e" stroke-width="1.5"/>
-<rect x="265" y="160" width="30" height="10" fill="#e7ebf0" opacity="1" rx="3"/>
+<rect x="260" y="156" width="40" height="18" fill="#c9ced6" opacity="1" rx="4" stroke="#8d949e" stroke-width="1.5"/>
+<rect x="265" y="160" width="30" height="10" fill="#e7ebf0" opacity="1" rx="2"/>
 <text x="280" y="186" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8 MHz</text>
-<rect x="390" y="156" width="40" height="18" fill="#c9ced6" opacity="1" rx="5" stroke="#8d949e" stroke-width="1.5"/>
-<rect x="395" y="160" width="30" height="10" fill="#e7ebf0" opacity="1" rx="3"/>
+<rect x="390" y="156" width="40" height="18" fill="#c9ced6" opacity="1" rx="4" stroke="#8d949e" stroke-width="1.5"/>
+<rect x="395" y="160" width="30" height="10" fill="#e7ebf0" opacity="1" rx="2"/>
 <text x="410" y="186" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">32.768 kHz</text>
-<rect x="210" y="364" width="12" height="8" fill="#34d399" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
+<rect x="210" y="364" width="12" height="8" fill="#1b5c45" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
 <text x="216" y="359" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LD3</text>
-<rect x="256" y="364" width="12" height="8" fill="#fb923c" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
+<rect x="256" y="364" width="12" height="8" fill="#9a3412" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
 <text x="262" y="359" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LD4</text>
-<rect x="302" y="364" width="12" height="8" fill="#f87171" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
+<rect x="302" y="364" width="12" height="8" fill="#8f2d2d" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
 <text x="308" y="359" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LD5</text>
-<rect x="348" y="364" width="12" height="8" fill="#60a5fa" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
+<rect x="348" y="364" width="12" height="8" fill="#1e4d63" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
 <text x="354" y="359" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LD6</text>
 <text x="300" y="388" font-size="8" fill="#dbeafe" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4 颗用户 LED：PD12~PD15</text>
 <circle cx="210" cy="340" r="11" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
-<circle cx="210" cy="340" r="6" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1.2"/>
+<circle cx="210" cy="340" r="6" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
 <text x="210" y="363" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B1 PA0</text>
 <circle cx="120" cy="396" r="11" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
-<circle cx="120" cy="396" r="6" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1.2"/>
+<circle cx="120" cy="396" r="6" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
 <text x="120" y="419" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RESET</text>
-<rect x="260" y="332" width="96" height="26" fill="#08214a" opacity="1" rx="5" stroke="#7aa2ff" stroke-width="1.5"/>
+<rect x="260" y="332" width="96" height="26" fill="#08214a" opacity="1" rx="4" stroke="#7aa2ff" stroke-width="1.5"/>
 <text x="308" y="350" font-size="8" fill="#9db8ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LIS3DSH 加速度计</text>
-<rect x="400" y="328" width="120" height="44" fill="#08214a" opacity="1" rx="5" stroke="#7aa2ff" stroke-width="1.5"/>
+<rect x="400" y="328" width="120" height="44" fill="#08214a" opacity="1" rx="4" stroke="#7aa2ff" stroke-width="1.5"/>
 <text x="460" y="346" font-size="8.5" fill="#9db8ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CS43L22 音频 DAC</text>
 <text x="460" y="362" font-size="8" fill="#9db8ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.5 mm 耳机座</text>
-<rect x="400" y="392" width="120" height="24" fill="#08214a" opacity="1" rx="5" stroke="#7aa2ff" stroke-width="1.5"/>
+<rect x="400" y="392" width="120" height="24" fill="#08214a" opacity="1" rx="4" stroke="#7aa2ff" stroke-width="1.5"/>
 <text x="460" y="409" font-size="8" fill="#9db8ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">MP45DT02 MEMS 麦克风</text>
 <rect x="522" y="206" width="44" height="40" fill="#c9ced6" opacity="1" rx="4" stroke="#8d949e" stroke-width="1.5"/>
 <rect x="527" y="211" width="34" height="30" fill="#8d949e" opacity="1" rx="2"/>
 <rect x="530" y="219" width="30" height="14" fill="#5d6470" opacity="1" rx="2"/>
 <text x="544" y="198" font-size="9" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">micro USB</text>
 <text x="560" y="204" font-size="8.5" fill="#dbeafe" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB OTG FS</text>
-<rect x="68" y="296" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="296" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="301" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="301" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="306" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="306" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="311" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="311" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="316" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="316" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="321" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="321" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="326" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="326" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="331" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="331" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="336" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="336" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="341" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="341" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="346" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="346" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="351" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="351" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="356" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="356" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="361" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="361" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="366" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="366" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="371" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="371" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="376" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="376" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="381" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="381" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="386" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="386" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="391" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="391" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="396" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="396" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="401" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="401" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="406" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="406" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="68" y="411" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<rect x="544" y="411" width="8" height="4" fill="#e2b23c" opacity="1" rx="1"/>
-<circle cx="320" cy="246" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="320" y="250" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<circle cx="132" cy="164" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="132" y="168" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<circle cx="560" cy="216" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="560" y="220" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
-<circle cx="308" cy="345" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="308" y="349" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
-<circle cx="460" cy="344" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="460" y="348" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
-<circle cx="460" cy="404" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="460" y="408" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">6</text>
-<circle cx="280" cy="364" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="280" y="368" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
-<circle cx="260" cy="156" r="10" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="2"/>
-<text x="260" y="160" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">8</text>
-<circle cx="600" cy="126" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="130" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<text x="616" y="130" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主控 STM32F407VGT6：168 MHz，带 FPU/DSP</text>
-<circle cx="600" cy="162" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="166" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<text x="616" y="166" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载 ST-Link/V2-A：SWD 调试 + 虚拟串口</text>
-<circle cx="600" cy="198" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="202" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
-<text x="616" y="202" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB OTG FS（micro-AB）：可做主/从机</text>
-<circle cx="600" cy="234" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="238" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
-<text x="616" y="238" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LIS3DSH 三轴加速度计（SPI1）</text>
-<circle cx="600" cy="270" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="274" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
-<text x="616" y="274" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CS43L22 音频 DAC + 3.5 mm 耳机输出</text>
-<circle cx="600" cy="306" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="310" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">6</text>
-<text x="616" y="310" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">MP45DT02 MEMS 麦克风（I2S/PDM）</text>
-<circle cx="600" cy="342" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="346" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
-<text x="616" y="346" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4 颗用户 LED（PD12~PD15）+ 用户按键（PA0）</text>
-<circle cx="600" cy="378" r="8" fill="#0b1220" opacity="1" stroke="#22d3ee" stroke-width="1.6"/>
-<text x="600" y="382" font-size="9.5" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">8</text>
-<text x="616" y="382" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8 MHz HSE + 32.768 kHz LSE 晶振</text>
-<rect x="60" y="442" width="200" height="58" fill="#111c31" opacity="1" rx="9" stroke="#243354" stroke-width="1.5"/>
-<rect x="60" y="442" width="200" height="3" fill="#fb923c" opacity="1" rx="2"/>
-<text x="72" y="468" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主控</text>
-<text x="72" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F407VGT6</text>
-<rect x="272" y="442" width="200" height="58" fill="#111c31" opacity="1" rx="9" stroke="#243354" stroke-width="1.5"/>
-<rect x="272" y="442" width="200" height="3" fill="#22d3ee" opacity="1" rx="2"/>
-<text x="284" y="468" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主频 / 内核</text>
-<text x="284" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">168 MHz · Cortex-M4F</text>
-<rect x="484" y="442" width="200" height="58" fill="#111c31" opacity="1" rx="9" stroke="#243354" stroke-width="1.5"/>
-<rect x="484" y="442" width="200" height="3" fill="#34d399" opacity="1" rx="2"/>
-<text x="496" y="468" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">存储</text>
-<text x="496" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1 MB Flash · 192 KB SRAM</text>
-<rect x="696" y="442" width="200" height="58" fill="#111c31" opacity="1" rx="9" stroke="#243354" stroke-width="1.5"/>
-<rect x="696" y="442" width="200" height="3" fill="#a78bfa" opacity="1" rx="2"/>
-<text x="708" y="468" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载外设</text>
-<text x="708" y="488" font-size="13" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">加速度计 · 音频 · 麦克风</text>
-<rect x="60" y="512" width="500" height="56" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="76" y="534" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">适合学什么：DMA 音频播放、I2S、USB、传感器融合、FFT/滤波（有 FPU）</text>
-<text x="76" y="554" font-size="11" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">注意：F4 系列 Flash 是「扇区擦除」，写之前先看 docs/12 章</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">官方产品页：st.com → STM32F4DISCOVERY（含实拍照片、原理图与 Gerber）</text>
-<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="68" y="296" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="296" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="301" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="301" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="306" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="306" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="311" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="311" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="316" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="316" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="321" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="321" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="326" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="326" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="331" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="331" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="336" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="336" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="341" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="341" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="346" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="346" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="351" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="351" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="356" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="356" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="361" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="361" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="366" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="366" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="371" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="371" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="376" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="376" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="381" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="381" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="386" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="386" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="391" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="391" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="396" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="396" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="401" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="401" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="406" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="406" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="68" y="411" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<rect x="544" y="411" width="8" height="4" fill="#e2b23c" opacity="1" rx="2"/>
+<circle cx="320" cy="246" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="320" y="250" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<circle cx="132" cy="164" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="132" y="168" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<circle cx="560" cy="216" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="560" y="220" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<circle cx="308" cy="345" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="308" y="349" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
+<circle cx="460" cy="344" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="460" y="348" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
+<circle cx="460" cy="404" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="460" y="408" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">6</text>
+<circle cx="280" cy="364" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="280" y="368" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
+<circle cx="260" cy="156" r="10" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<text x="260" y="160" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">8</text>
+<circle cx="600" cy="126" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="130" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="616" y="130" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主控 STM32F407VGT6：168 MHz，带 FPU/DSP</text>
+<circle cx="600" cy="162" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="166" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="616" y="166" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载 ST-Link/V2-A：SWD 调试 + 虚拟串口</text>
+<circle cx="600" cy="198" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="202" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="616" y="202" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB OTG FS（micro-AB）：可做主/从机</text>
+<circle cx="600" cy="234" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="238" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
+<text x="616" y="238" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LIS3DSH 三轴加速度计（SPI1）</text>
+<circle cx="600" cy="270" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="274" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
+<text x="616" y="274" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CS43L22 音频 DAC + 3.5 mm 耳机输出</text>
+<circle cx="600" cy="306" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="310" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">6</text>
+<text x="616" y="310" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">MP45DT02 MEMS 麦克风（I2S/PDM）</text>
+<circle cx="600" cy="342" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="346" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
+<text x="616" y="346" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4 颗用户 LED（PD12~PD15）+ 用户按键（PA0）</text>
+<circle cx="600" cy="378" r="8" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="600" y="382" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">8</text>
+<text x="616" y="382" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8 MHz HSE + 32.768 kHz LSE 晶振</text>
+<rect x="60" y="442" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="60" y="442" width="200" height="3" fill="#9a3412" opacity="1" rx="2"/>
+<text x="72" y="468" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主控</text>
+<text x="72" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F407VGT6</text>
+<rect x="272" y="442" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="272" y="442" width="200" height="3" fill="#075e84" opacity="1" rx="2"/>
+<text x="284" y="468" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主频 / 内核</text>
+<text x="284" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">168 MHz · Cortex-M4F</text>
+<rect x="484" y="442" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="484" y="442" width="200" height="3" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="496" y="468" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">存储</text>
+<text x="496" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1 MB Flash · 192 KB SRAM</text>
+<rect x="696" y="442" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="696" y="442" width="200" height="3" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="708" y="468" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">板载外设</text>
+<text x="708" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">加速度计 · 音频 · 麦克风</text>
+<rect x="60" y="512" width="500" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="76" y="534" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">适合学什么：DMA 音频播放、I2S、USB、传感器融合、FFT/滤波（有 FPU）</text>
+<text x="76" y="554" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">注意：F4 系列 Flash 是「扇区擦除」，写之前先看 docs/12 章</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">官方产品页：st.com → STM32F4DISCOVERY（含实拍照片、原理图与 Gerber）</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

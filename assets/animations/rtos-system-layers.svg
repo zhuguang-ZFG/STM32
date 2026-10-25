@@ -16,75 +16,75 @@
 .sl-flow{stroke-dasharray:4 7;animation:sl-flow-flow 1.1s linear infinite;}@keyframes sl-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11px}}
 </style>
 
-<rect x="0" y="0" width="900" height="620" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">嵌入式系统不只是一颗 RTOS 内核</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从硬件、驱动和内核，到服务与应用；每层都要有所有权、超时和故障边界</text>
-<rect x="819" y="15" width="59" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="848.5" y="33.32" font-size="12" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">28 系统</text>
-<rect x="42" y="92" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#22d3ee" stroke-width="1.5" class="sl0"/>
-<rect x="42" y="92" width="7" height="62" fill="#22d3ee" opacity="1" rx="4"/>
-<text x="66" y="119" font-size="14" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用</text>
-<text x="174" y="119" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">控制回路 · 数据采集 · 人机界面 · 升级策略</text>
-<text x="66" y="141" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<line x1="316" y1="157" x2="316" y2="157" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
-<polygon points="316.00,163.00 313.00,157.00 319.00,157.00" fill="#22d3ee" opacity="1"/>
-<rect x="42" y="166" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#34d399" stroke-width="1.5" class="sl1"/>
-<rect x="42" y="166" width="7" height="62" fill="#34d399" opacity="1" rx="4"/>
-<text x="66" y="193" font-size="14" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">系统服务</text>
-<text x="174" y="193" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">网络 · 文件系统 · 日志 · Shell · 时间 · OTA</text>
-<text x="66" y="215" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<line x1="316" y1="231" x2="316" y2="231" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
-<polygon points="316.00,237.00 313.00,231.00 319.00,231.00" fill="#22d3ee" opacity="1"/>
-<rect x="42" y="240" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#fbbf24" stroke-width="1.5" class="sl2"/>
-<rect x="42" y="240" width="7" height="62" fill="#fbbf24" opacity="1" rx="4"/>
-<text x="66" y="267" font-size="14" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OS API</text>
-<text x="174" y="267" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原生 API / CMSIS-RTOS2；只统一接口，不抹平语义</text>
-<text x="66" y="289" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<line x1="316" y1="305" x2="316" y2="305" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
-<polygon points="316.00,311.00 313.00,305.00 319.00,305.00" fill="#22d3ee" opacity="1"/>
-<rect x="42" y="314" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#a78bfa" stroke-width="1.5" class="sl3"/>
-<rect x="42" y="314" width="7" height="62" fill="#a78bfa" opacity="1" rx="4"/>
-<text x="66" y="341" font-size="14" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">内核</text>
-<text x="174" y="341" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调度 · IPC · 定时器 · 内存 · 低功耗 · 故障钩子</text>
-<text x="66" y="363" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<line x1="316" y1="379" x2="316" y2="379" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
-<polygon points="316.00,385.00 313.00,379.00 319.00,379.00" fill="#22d3ee" opacity="1"/>
-<rect x="42" y="388" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#f472b6" stroke-width="1.5" class="sl4"/>
-<rect x="42" y="388" width="7" height="62" fill="#f472b6" opacity="1" rx="4"/>
-<text x="66" y="415" font-size="14" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BSP / 设备</text>
-<text x="174" y="415" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL/LL · RT-Thread device · Zephyr device model</text>
-<text x="66" y="437" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<line x1="316" y1="453" x2="316" y2="453" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
-<polygon points="316.00,459.00 313.00,453.00 319.00,453.00" fill="#22d3ee" opacity="1"/>
-<rect x="42" y="462" width="548" height="62" fill="#111c31" opacity="1" rx="11" stroke="#f87171" stroke-width="1.5" class="sl5"/>
-<rect x="42" y="462" width="7" height="62" fill="#f87171" opacity="1" rx="4"/>
-<text x="66" y="489" font-size="14" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件</text>
-<text x="174" y="489" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cortex-M · NVIC · DMA · Cache · 外设 · PHY</text>
-<text x="66" y="511" font-size="9.5" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
-<text x="626" y="102" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">怎么选系统</text>
-<rect x="618" y="122" width="242" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#64748b" stroke-width="1.5"/>
-<text x="634" y="147" font-size="13" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">裸机</text>
-<text x="730" y="147" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">状态机明确</text>
-<text x="730" y="168" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">资源极紧</text>
-<rect x="618" y="216" width="242" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="634" y="241" font-size="13" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS</text>
-<text x="730" y="241" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">小内核</text>
-<text x="730" y="262" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自己组合服务</text>
-<rect x="618" y="310" width="242" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
-<text x="634" y="335" font-size="13" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RT-Thread</text>
-<text x="730" y="335" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">设备框架 + 组件</text>
-<text x="730" y="356" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">中文生态</text>
-<rect x="618" y="404" width="242" height="76" fill="#0e1626" opacity="1" rx="10" stroke="#fbbf24" stroke-width="1.5"/>
-<text x="634" y="429" font-size="13" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Zephyr</text>
-<text x="730" y="429" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Kconfig + Devicetree</text>
-<text x="730" y="450" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">跨厂商子系统</text>
-<rect x="618" y="506" width="242" height="48" fill="#111c31" opacity="1" rx="10" stroke="#f87171" stroke-width="1.5"/>
-<text x="739" y="526" font-size="12" fill="#f87171" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先列约束，再选生态</text>
-<text x="739" y="545" font-size="9.5" fill="#93a4c0" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要用 API 熟悉度代替需求</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不变量：ISR 只发布事件；资源只有一个所有者；每个阻塞都有截止点；证据能定位到第一处分歧</text>
-<text x="876" y="602" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">嵌入式系统不只是一颗 RTOS 内核</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从硬件、驱动和内核，到服务与应用；每层都要有所有权、超时和故障边界</text>
+<rect x="819" y="15" width="59" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="848.5" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">28 系统</text>
+<rect x="42" y="92" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5" class="sl0"/>
+<rect x="42" y="92" width="7" height="62" fill="#075e84" opacity="1" rx="4"/>
+<text x="66" y="119" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用</text>
+<text x="174" y="119" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">控制回路 · 数据采集 · 人机界面 · 升级策略</text>
+<text x="66" y="141" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<line x1="316" y1="157" x2="316" y2="157" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
+<polygon points="316.00,163.00 313.00,157.00 319.00,157.00" fill="#075e84" opacity="1"/>
+<rect x="42" y="166" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5" class="sl1"/>
+<rect x="42" y="166" width="7" height="62" fill="#1b5c45" opacity="1" rx="4"/>
+<text x="66" y="193" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">系统服务</text>
+<text x="174" y="193" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">网络 · 文件系统 · 日志 · Shell · 时间 · OTA</text>
+<text x="66" y="215" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<line x1="316" y1="231" x2="316" y2="231" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
+<polygon points="316.00,237.00 313.00,231.00 319.00,231.00" fill="#075e84" opacity="1"/>
+<rect x="42" y="240" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5" class="sl2"/>
+<rect x="42" y="240" width="7" height="62" fill="#7a4e00" opacity="1" rx="4"/>
+<text x="66" y="267" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OS API</text>
+<text x="174" y="267" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原生 API / CMSIS-RTOS2；只统一接口，不抹平语义</text>
+<text x="66" y="289" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<line x1="316" y1="305" x2="316" y2="305" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
+<polygon points="316.00,311.00 313.00,305.00 319.00,305.00" fill="#075e84" opacity="1"/>
+<rect x="42" y="314" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5" class="sl3"/>
+<rect x="42" y="314" width="7" height="62" fill="#5b3a8c" opacity="1" rx="4"/>
+<text x="66" y="341" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">内核</text>
+<text x="174" y="341" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调度 · IPC · 定时器 · 内存 · 低功耗 · 故障钩子</text>
+<text x="66" y="363" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<line x1="316" y1="379" x2="316" y2="379" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
+<polygon points="316.00,385.00 313.00,379.00 319.00,379.00" fill="#075e84" opacity="1"/>
+<rect x="42" y="388" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5" class="sl4"/>
+<rect x="42" y="388" width="7" height="62" fill="#8e2f5b" opacity="1" rx="4"/>
+<text x="66" y="415" font-size="14" fill="#8e2f5b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BSP / 设备</text>
+<text x="174" y="415" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL/LL · RT-Thread device · Zephyr device model</text>
+<text x="66" y="437" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<line x1="316" y1="453" x2="316" y2="453" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="sl-flow"/>
+<polygon points="316.00,459.00 313.00,453.00 319.00,453.00" fill="#075e84" opacity="1"/>
+<rect x="42" y="462" width="548" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5" class="sl5"/>
+<rect x="42" y="462" width="7" height="62" fill="#8f2d2d" opacity="1" rx="4"/>
+<text x="66" y="489" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件</text>
+<text x="174" y="489" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cortex-M · NVIC · DMA · Cache · 外设 · PHY</text>
+<text x="66" y="511" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">入口有前置条件 · 出口有结果码 · 等待有截止点</text>
+<text x="626" y="102" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">怎么选系统</text>
+<rect x="618" y="122" width="242" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="634" y="147" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">裸机</text>
+<text x="730" y="147" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">状态机明确</text>
+<text x="730" y="168" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">资源极紧</text>
+<rect x="618" y="216" width="242" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="634" y="241" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS</text>
+<text x="730" y="241" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">小内核</text>
+<text x="730" y="262" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自己组合服务</text>
+<rect x="618" y="310" width="242" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="634" y="335" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RT-Thread</text>
+<text x="730" y="335" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">设备框架 + 组件</text>
+<text x="730" y="356" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">中文生态</text>
+<rect x="618" y="404" width="242" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="634" y="429" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Zephyr</text>
+<text x="730" y="429" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Kconfig + Devicetree</text>
+<text x="730" y="450" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">跨厂商子系统</text>
+<rect x="618" y="506" width="242" height="48" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="739" y="526" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先列约束，再选生态</text>
+<text x="739" y="545" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要用 API 熟悉度代替需求</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不变量：ISR 只发布事件；资源只有一个所有者；每个阻塞都有截止点；证据能定位到第一处分歧</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

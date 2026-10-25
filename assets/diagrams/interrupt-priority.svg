@@ -1,67 +1,67 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="抢占优先级与中断嵌套">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#a78bfa" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">抢占优先级与中断嵌套</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">图中 A 的抢占号是 1，B 是 2；数字越小越先打断</text>
-<rect x="819" y="15" width="59" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="848.5" y="33.32" font-size="12" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">中断优先级</text>
-<line x1="80" y1="110" x2="80" y2="310" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
-<line x1="80" y1="310" x2="860" y2="310" stroke="#243354" stroke-width="1.4" stroke-linecap="round" opacity="1"/>
-<text x="72" y="120" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 执行</text>
-<text x="860" y="326" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时间 →</text>
-<text x="74" y="152" font-size="11" fill="#93a4c0" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主循环</text>
-<text x="74" y="202" font-size="11" fill="#22d3ee" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IRQ A</text>
-<text x="74" y="252" font-size="11" fill="#fbbf24" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IRQ B</text>
-<rect x="80" y="130" width="90" height="32" fill="#93a4c0" opacity="0.85" rx="6"/>
-<text x="125" y="151" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
-<rect x="170" y="180" width="60" height="32" fill="#22d3ee" opacity="0.85" rx="6"/>
-<text x="200" y="201" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A</text>
-<rect x="230" y="230" width="50" height="32" fill="#fbbf24" opacity="0.85" rx="6"/>
-<text x="255" y="251" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B</text>
-<rect x="280" y="180" width="60" height="32" fill="#22d3ee" opacity="0.85" rx="6"/>
-<text x="310" y="201" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A 继续</text>
-<rect x="340" y="130" width="120" height="32" fill="#93a4c0" opacity="0.85" rx="6"/>
-<text x="400" y="151" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
-<rect x="460" y="230" width="70" height="32" fill="#fbbf24" opacity="0.85" rx="6"/>
-<text x="495" y="251" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B</text>
-<rect x="530" y="180" width="90" height="32" fill="#22d3ee" opacity="0.85" rx="6"/>
-<text x="575" y="201" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A</text>
-<rect x="620" y="130" width="240" height="32" fill="#93a4c0" opacity="0.85" rx="6"/>
-<text x="740" y="151" font-size="10.5" fill="#0b1220" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
-<line x1="170" y1="112" x2="170" y2="330" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
-<text x="170" y="106" font-size="9.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">A 触发</text>
-<line x1="230" y1="112" x2="230" y2="330" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
-<text x="230" y="106" font-size="9.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 抢占 A</text>
-<line x1="280" y1="112" x2="280" y2="330" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
-<text x="280" y="106" font-size="9.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 返回</text>
-<line x1="460" y1="112" x2="460" y2="330" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
-<text x="460" y="106" font-size="9.5" fill="#64748b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 触发</text>
-<rect x="40" y="350" width="400" height="156" fill="#111c31" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="376" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">优先级分组表</text>
-<text x="58" y="402" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_0</text>
-<text x="158" y="402" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 位抢占 / 4 位子优先级</text>
-<text x="322" y="402" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">几乎不嵌套</text>
-<text x="58" y="428" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_2</text>
-<text x="158" y="428" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2 位抢占 / 2 位子优先级</text>
-<text x="322" y="428" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">最常用</text>
-<text x="58" y="454" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_4</text>
-<text x="158" y="454" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4 位抢占 / 0 位子优先级</text>
-<text x="322" y="454" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只用抢占，最直观</text>
-<text x="58" y="480" font-size="10.5" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">数值范围</text>
-<text x="158" y="480" font-size="10.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0（最高）~ 15（最低）</text>
-<text x="322" y="480" font-size="9.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_NVIC_SetPriority</text>
-<rect x="460" y="350" width="400" height="156" fill="#0e1626" opacity="1" rx="12" stroke="#243354" stroke-width="1.5"/>
-<text x="478" y="376" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见错误</text>
-<text x="478" y="400" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 在 ISR 里调用 HAL_Delay（死等，因为 SysTick 优先级更低）</text>
-<text x="478" y="421" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 忘记清中断标志 → 出中断立刻又进，表现为程序卡死</text>
-<text x="478" y="442" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 把 EXTI 优先级设得比 DMA 低，导致数据被覆盖</text>
-<text x="478" y="463" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 在 ISR 里做耗时运算（浮点、printf）导致丢中断</text>
-<text x="478" y="484" font-size="10" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· FreeRTOS 中改优先级后忘记同步 configMAX_SYSCALL_INTERRUPT_PRIORITY</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抢占优先级相同的中断不能互相打断，只能排队；子优先级只决定排队顺序</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">抢占优先级与中断嵌套</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">图中 A 的抢占号是 1，B 是 2；数字越小越先打断</text>
+<rect x="819" y="15" width="59" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="848.5" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">中断优先级</text>
+<line x1="80" y1="110" x2="80" y2="310" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="80" y1="310" x2="860" y2="310" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="72" y="120" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 执行</text>
+<text x="860" y="326" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时间 →</text>
+<text x="74" y="152" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主循环</text>
+<text x="74" y="202" font-size="11" fill="#075e84" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IRQ A</text>
+<text x="74" y="252" font-size="11" fill="#7a4e00" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IRQ B</text>
+<rect x="80" y="130" width="90" height="32" fill="#5e6872" opacity="0.85" rx="4"/>
+<text x="125" y="151" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
+<rect x="170" y="180" width="60" height="32" fill="#075e84" opacity="0.85" rx="4"/>
+<text x="200" y="201" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A</text>
+<rect x="230" y="230" width="50" height="32" fill="#7a4e00" opacity="0.85" rx="4"/>
+<text x="255" y="251" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B</text>
+<rect x="280" y="180" width="60" height="32" fill="#075e84" opacity="0.85" rx="4"/>
+<text x="310" y="201" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A 继续</text>
+<rect x="340" y="130" width="120" height="32" fill="#5e6872" opacity="0.85" rx="4"/>
+<text x="400" y="151" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
+<rect x="460" y="230" width="70" height="32" fill="#7a4e00" opacity="0.85" rx="4"/>
+<text x="495" y="251" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B</text>
+<rect x="530" y="180" width="90" height="32" fill="#075e84" opacity="0.85" rx="4"/>
+<text x="575" y="201" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A</text>
+<rect x="620" y="130" width="240" height="32" fill="#5e6872" opacity="0.85" rx="4"/>
+<text x="740" y="151" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环</text>
+<line x1="170" y1="112" x2="170" y2="330" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
+<text x="170" y="106" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">A 触发</text>
+<line x1="230" y1="112" x2="230" y2="330" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
+<text x="230" y="106" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 抢占 A</text>
+<line x1="280" y1="112" x2="280" y2="330" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
+<text x="280" y="106" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 返回</text>
+<line x1="460" y1="112" x2="460" y2="330" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="3 4"/>
+<text x="460" y="106" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 触发</text>
+<rect x="40" y="350" width="400" height="156" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="376" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">优先级分组表</text>
+<text x="58" y="402" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_0</text>
+<text x="158" y="402" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0 位抢占 / 4 位子优先级</text>
+<text x="322" y="402" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">几乎不嵌套</text>
+<text x="58" y="428" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_2</text>
+<text x="158" y="428" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2 位抢占 / 2 位子优先级</text>
+<text x="322" y="428" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">最常用</text>
+<text x="58" y="454" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GROUP_4</text>
+<text x="158" y="454" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4 位抢占 / 0 位子优先级</text>
+<text x="322" y="454" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只用抢占，最直观</text>
+<text x="58" y="480" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">数值范围</text>
+<text x="158" y="480" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0（最高）~ 15（最低）</text>
+<text x="322" y="480" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_NVIC_SetPriority</text>
+<rect x="460" y="350" width="400" height="156" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="478" y="376" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见错误</text>
+<text x="478" y="400" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 在 ISR 里调用 HAL_Delay（死等，因为 SysTick 优先级更低）</text>
+<text x="478" y="421" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 忘记清中断标志 → 出中断立刻又进，表现为程序卡死</text>
+<text x="478" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 把 EXTI 优先级设得比 DMA 低，导致数据被覆盖</text>
+<text x="478" y="463" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 在 ISR 里做耗时运算（浮点、printf）导致丢中断</text>
+<text x="478" y="484" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· FreeRTOS 中改优先级后忘记同步 configMAX_SYSCALL_INTERRUPT_PRIORITY</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抢占优先级相同的中断不能互相打断，只能排队；子优先级只决定排队顺序</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

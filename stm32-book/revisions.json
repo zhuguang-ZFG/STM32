@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.7",
+      "date": "2026-10-25",
+      "zh": [
+        "仓库里的样本图、框图、动画和板卡图改成浅色纸底，语义色与正文的强调色、提示色对齐。描边只留 1、1.5 和 2，圆角只留 2、4 和 8。",
+        "封面、样式令牌和章节正文不改。光栅 GIF 仍是原来的深色，不随这批矢量图重画。"
+      ],
+      "en": [
+        "The sample drawings, diagrams, animations, and board drawings in the repository now use light paper. Their semantic colors line up with the text accent and tip. Strokes are only 1, 1.5, and 2. Corners are only 2, 4, and 8.",
+        "The cover, the style tokens, and the chapter text stay as they are. The raster GIFs keep the previous dark palette and are not redrawn with these vectors."
+      ]
+    },
+    {
       "version": "1.2.6",
       "date": "2026-10-25",
       "zh": [

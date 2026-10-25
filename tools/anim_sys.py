@@ -36,13 +36,13 @@ def timer_pwm() -> Svg:
     s.header(tag="05 定时器", tag_color=T.CYAN)
 
     s.text(40, 100, "CNT 计数（ARR = 999）", size=12, fill=T.MUTED)
-    s.rect(40, 112, 820, 30, fill=T.BG2, stroke=T.STROKE, rx=6)
-    s.rect(40, 112, 250, 30, fill=T.CYAN, rx=6, opacity=0.25)
+    s.rect(40, 112, 820, 30, fill=T.BG2, stroke=T.STROKE, rx=4)
+    s.rect(40, 112, 250, 30, fill=T.CYAN, rx=4, opacity=0.25)
     s.line(290, 104, 290, 148, stroke=T.AMBER, sw=2)
     s.text(290, 164, "CCR = 300（比较点）", size=11, anchor="middle",
            fill=T.AMBER)
     s.rect(44, 116, 20, 22, fill=T.CYAN, rx=4, cls="cnt")
-    s.text(54, 132, "CNT", size=9, anchor="middle", fill="#0b1220", weight="700")
+    s.text(54, 132, "CNT", size=9, anchor="middle", fill="#fbfaf7", weight="700")
     s.add_style(anim_tx(".cnt", dur="3s", x1=0, x2=812))
     for i in range(6):
         s.text(40 + i * 164, 186, str(int(999 * i / 5)), size=10, fill=T.DIM,
@@ -59,12 +59,12 @@ def timer_pwm() -> Svg:
     bits = []
     for _ in range(4):
         bits += [1] * 3 + [0] * 7
-    s.waveform(40, 322, 560, 62, bits, color=T.CYAN, sw=2.4)
+    s.waveform(40, 322, 560, 62, bits, color=T.CYAN, sw=2)
 
-    s.rect(620, 318, 240, 70, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(620, 318, 240, 70, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(638, 340, "呼吸色条（不是左边那一帧）", size=11, fill=T.MUTED)
     s.rect(638, 350, 200, 18, fill=T.BG2, stroke=T.STROKE, rx=4)
-    s.rect(639, 351, 200, 16, fill=T.CYAN, rx=3, cls="duty")
+    s.rect(639, 351, 200, 16, fill=T.CYAN, rx=2, cls="duty")
     s.add_style(
         css_kf("duty-w", [("0%,100%", "transform:scaleX(0.08)"),
                           ("50%", "transform:scaleX(1)")])
@@ -73,7 +73,7 @@ def timer_pwm() -> Svg:
     s.text(638, 382, "色条 8%→100%：示意不断改 CCR", size=10.5, fill=T.AMBER)
 
     s.title_block(40, 408, "公式（72 MHz 已是定时器时钟）", color=T.GREEN)
-    s.rect(40, 420, 820, 132, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 420, 820, 132, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 444, [
         "定时器时钟 = APB 时钟 ×2（预分频 >1 时）     // APB1=36 → 定时器 72 MHz",
         "计数时钟：fCK_CNT = 72 MHz / (PSC + 1)         // PSC = 71 → 1 MHz",
@@ -105,35 +105,35 @@ def timer_modes() -> Svg:
         r, c = divmod(i, 2)
         x = 40 + c * 420
         y = 92 + r * 176
-        s.rect(x, y, 400, 152, fill=T.PANEL, stroke=T.STROKE, rx=12)
+        s.rect(x, y, 400, 152, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.rect(x, y, 4, 152, fill=color, rx=2)
         s.text(x + 18, y + 26, title, size=13.5, fill=T.TEXT, weight="700")
         s.text(x + 18, y + 46, sub, size=11, fill=T.MUTED)
         if i != 3:
             s.axis(x + 18, y + 62, 364, 54)
-            s.waveform(x + 18, y + 66, 364, 46, bits, color=color, sw=2.2)
+            s.waveform(x + 18, y + 66, 364, 46, bits, color=color, sw=2)
         if i == 0:
             s.circle(x + 18 + 364 * 0.25, y + 92, 5, fill=color, cls="mk0")
             s.circle(x + 18 + 364 * 0.75, y + 92, 5, fill=color, cls="mk0")
             s.add_style(anim_fade(".mk0", dur="1.6s", a=0.2, b=1.0))
         elif i == 1:
-            s.rect(x + 18, y + 66, 46, 22, fill=color, rx=3, opacity=0.2,
+            s.rect(x + 18, y + 66, 46, 22, fill=color, rx=2, opacity=0.2,
                    cls="mk1")
             s.add_style(anim_fade(".mk1", dur="2s", a=0.15, b=0.6))
         elif i == 2:
             s.line(x + 18 + 364 * 0.125, y + 58, x + 18 + 364 * 0.125,
-                   y + 130, stroke=color, sw=1.4, dash="4 4")
+                   y + 130, stroke=color, sw=1.5, dash="4 4")
             s.line(x + 18 + 364 * 0.5, y + 58, x + 18 + 364 * 0.5, y + 130,
-                   stroke=color, sw=1.4, dash="4 4")
+                   stroke=color, sw=1.5, dash="4 4")
             s.text(x + 18, y + 146, "上升沿锁 CCR1，下降沿锁 CCR2，脉宽 = ΔCCR × tCK",
                    size=10, fill=T.AMBER)
         else:
             s.text(x + 18, y + 70, "A", size=11, fill=color, weight="700")
             s.waveform(x + 36, y + 58, 300, 22,
-                       [1, 1, 0, 0, 1, 1, 0, 0], color=color, sw=2.2)
+                       [1, 1, 0, 0, 1, 1, 0, 0], color=color, sw=2)
             s.text(x + 18, y + 104, "B", size=11, fill=color, weight="700")
             s.waveform(x + 36, y + 92, 300, 22,
-                       [0, 1, 1, 0, 0, 1, 1, 0], color=color, sw=2.2)
+                       [0, 1, 1, 0, 0, 1, 1, 0], color=color, sw=2)
             s.text(x + 18, y + 140, "B 比 A 落后 90° 为正转，超前为反转（正交两相）",
                    size=10, fill=T.PINK)
 
@@ -173,7 +173,7 @@ def adc_sar() -> Svg:
     s.text(40, 172, "当前正在比较的位会被点亮；比较完就固定下来（1 或 0）",
            size=11, fill=T.DIM)
 
-    s.rect(40, 194, 400, 150, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 194, 400, 150, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 220, "比较器在比较什么", size=12.5, fill=T.TEXT, weight="700")
     s.text(58, 246, "DAC 输出（当前猜测值）", size=11, fill=T.MUTED)
     s.text(58, 266, "VIN（采样保持电容上的电压）", size=11, fill=T.MUTED)
@@ -181,7 +181,7 @@ def adc_sar() -> Svg:
     s.text(58, 308, "DAC > VIN → 清掉这一位", size=11.5, fill=T.RED)
     s.text(58, 328, "DAC ≤ VIN → 保留这一位", size=11.5, fill=T.GREEN)
 
-    s.rect(460, 194, 400, 150, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(460, 194, 400, 150, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(478, 220, "例：VIN = 0.5 × VREF → 结果 0x800", size=12, fill=T.TEXT,
            weight="700")
     s.code(478, 244, [
@@ -198,14 +198,14 @@ def adc_sar() -> Svg:
             ("约 10 kΩ", "13.5 周期", "常见电位器"),
             ("约 50 kΩ", "55.5 周期", "高阻传感器"),
             ("≥ 100 kΩ", "239.5 周期", "或加跟随器，否则偏低")]
-    s.rect(40, 378, 500, 116, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 378, 500, 116, fill=T.BG2, stroke=T.STROKE, rx=8)
     for i, (k, v, note) in enumerate(rows):
         y = 400 + i * 24
         s.text(58, y, k, size=11, fill=T.TEXT)
         s.text(216, y, v, size=11, fill=T.CYAN)
         s.text(316, y, note, size=10.5, fill=T.MUTED)
 
-    s.rect(560, 378, 300, 116, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(560, 378, 300, 116, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(578, 402, "误差与换算", size=12, fill=T.TEXT, weight="700")
     for i, t in enumerate(["1 LSB = VREF / 4096",
                            "量化误差是 ±0.5 LSB",
@@ -230,21 +230,21 @@ def dma_circular() -> Svg:
             "ADC 每采一个数，DMA 写入数组；半满 HT、写满 TC，各进一次中断")
     s.header(tag="10 DMA", tag_color=T.GREEN)
 
-    s.rect(40, 96, 150, 90, fill=T.PANEL, stroke=T.AMBER, rx=12)
+    s.rect(40, 96, 150, 90, fill=T.PANEL, stroke=T.AMBER, rx=8)
     s.text(115, 124, "ADC1", size=14, anchor="middle", fill=T.AMBER,
            weight="700")
     s.text(115, 146, "CH0 · PA0", size=11, anchor="middle", fill=T.MUTED)
     s.text(115, 168, "DR 寄存器", size=11, anchor="middle", fill=T.DIM)
 
-    s.rect(300, 96, 170, 90, fill=T.PANEL, stroke=T.CYAN, rx=12)
+    s.rect(300, 96, 170, 90, fill=T.PANEL, stroke=T.CYAN, rx=8)
     s.text(385, 122, "DMA1 CH1", size=14, anchor="middle", fill=T.CYAN,
            weight="700")
     s.text(385, 144, "循环模式 / 半字", size=11, anchor="middle", fill=T.MUTED)
     s.text(385, 166, "MINC = 1（地址自增）", size=10, anchor="middle",
            fill=T.DIM)
 
-    s.arrow(194, 141, 296, 141, color=T.AMBER, sw=2.4, cls="w1")
-    s.arrow(474, 141, 636, 141, color=T.CYAN, sw=2.4, cls="w2")
+    s.arrow(194, 141, 296, 141, color=T.AMBER, sw=2, cls="w1")
+    s.arrow(474, 141, 636, 141, color=T.CYAN, sw=2, cls="w2")
     s.add_style(anim_flow(".w1", dur="1.2s", dash="7 10", shift=-17))
     s.add_style(anim_flow(".w2", dur="1.2s", dash="7 10", shift=-17))
     for i in range(3):
@@ -267,7 +267,7 @@ def dma_circular() -> Svg:
         s.rect(x, y, 52, 40, fill=T.CYAN, rx=8, opacity=0.2, cls=f"b{i}")
     s.add_style(_seq_flash("b", 8, period=4.0, window=0.55, peak=0.48, rest=0.1))
 
-    s.rect(40, 214, 820, 88, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 214, 820, 88, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 240, "CPU 同时在干什么？", size=12.5, fill=T.TEXT, weight="700")
     s.text(58, 262, "滤波 / 通信 / 刷屏 / 跑 PID —— 一次搬运都不参与，"
                     "总线空闲时 DMA 自动抢占一个周期", size=11, fill=T.MUTED)
@@ -281,11 +281,11 @@ def dma_circular() -> Svg:
              ("④ 开中断", "半传输 + 传输完成 + 错误")]
     for i, (k, v) in enumerate(steps):
         x = 40 + i * 208
-        s.rect(x, 336, 196, 56, fill=T.PANEL, stroke=T.STROKE, rx=10)
+        s.rect(x, 336, 196, 56, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.text(x + 14, 360, k, size=11.5, fill=T.CYAN, weight="600")
         s.text(x + 14, 380, v, size=10, fill=T.MUTED)
 
-    s.rect(40, 408, 820, 132, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 408, 820, 132, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 432, [
         "HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buf, 8);   // 8 个半字，循环",
         "",
@@ -314,10 +314,10 @@ def iwdg_window() -> Svg:
                          ("100%", "transform:scaleX(0.02)")])
         + ".dec{animation:dec-w 3s linear infinite;"
           "transform-box:fill-box;transform-origin:right center;}")
-    s.text(48, 132, "0xFFF", size=10, fill=T.WHITE, mono=True)
-    s.text(820, 132, "0", size=10, fill=T.WHITE, anchor="end", mono=True)
+    s.text(48, 132, "0xFFF", size=10, fill=T.TEXT, mono=True)
+    s.text(820, 132, "0", size=10, fill=T.TEXT, anchor="end", mono=True)
 
-    s.rect(40, 160, 400, 110, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(40, 160, 400, 110, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 186, "正常喂狗", size=12.5, fill=T.GREEN, weight="700")
     s.text(58, 210, "在计数器归零之前重装（写 0xAAAA）", size=11, fill=T.MUTED)
     s.text(58, 232, "HAL_IWDG_Refresh(&hiwdg) 放在主循环里", size=11,
@@ -325,7 +325,7 @@ def iwdg_window() -> Svg:
     s.text(58, 254, "超时公式：T = (4 × 2^PR) × (RLR+1) / 40 kHz", size=10.5,
            fill=T.AMBER)
 
-    s.rect(460, 160, 400, 110, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(460, 160, 400, 110, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(478, 186, "WWDG 的「窗口」", size=12.5, fill=T.ORANGE, weight="700")
     s.text(478, 210, "喂太早（计数器还大于窗口值）→ 立刻复位", size=11,
            fill=T.MUTED)
@@ -335,7 +335,7 @@ def iwdg_window() -> Svg:
            fill=T.AMBER)
 
     s.title_block(40, 292, "IWDG 与 WWDG 怎么选", color=T.CYAN)
-    s.rect(40, 304, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 304, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=8)
     heads = ["", "时钟源", "超时范围", "能发现「跑太快」", "适用场景"]
     for i, hd in enumerate(heads):
         s.text(60 + i * 160, 326, hd, size=11, fill=T.CYAN, weight="600")
@@ -350,7 +350,7 @@ def iwdg_window() -> Svg:
     s.text(60, 404, "单步会被 IWDG 复位：调试时打开 DBGMCU 的 IWDG_STOP / WWDG_STOP，"
                     "让计数器在 halt 时冻住", size=10.5, fill=T.AMBER)
 
-    s.rect(40, 434, 820, 106, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 434, 820, 106, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 458, [
         "hiwdg.Instance       = IWDG;",
         "hiwdg.Init.Prescaler = IWDG_PRESCALER_64;   // 40 kHz / 64 = 625 Hz",
@@ -380,12 +380,12 @@ def flash_iap() -> Svg:
     ]
     for i, (name, addr, note, color) in enumerate(blocks):
         y = 92 + i * 60
-        s.rect(40, y, 500, 50, fill=T.PANEL, stroke=color, rx=10)
-        s.rect(40, y, 5, 50, fill=color, rx=3)
+        s.rect(40, y, 500, 50, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(40, y, 5, 50, fill=color, rx=2)
         s.text(58, y + 22, name, size=12.5, fill=T.TEXT, weight="600")
         s.text(58, y + 40, note, size=10, fill=T.MUTED)
         s.text(352, y + 30, addr, size=9.5, mono=True, fill=color)
-        s.rect(40, y, 500, 50, fill=color, rx=10, opacity=0.14, cls=f"fb{i}")
+        s.rect(40, y, 500, 50, fill=color, rx=8, opacity=0.14, cls=f"fb{i}")
     s.add_style(_seq_flash("fb", 4, period=5.0, window=0.55, peak=0.3, rest=0.06))
 
     for i in range(4):
@@ -397,7 +397,7 @@ def flash_iap() -> Svg:
         + f".fw{i}{{animation:fw{i}-mv 2.4s linear infinite {i * 0.6:.1f}s;}}"
         for i in range(4)))
 
-    s.rect(560, 92, 300, 190, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(560, 92, 300, 190, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(578, 118, "升级流程", size=12.5, fill=T.TEXT, weight="700")
     for i, t in enumerate([
         "① 收到升级指令 → 复位进 Bootloader",
@@ -410,7 +410,7 @@ def flash_iap() -> Svg:
         s.text(578, 144 + i * 22, t, size=10.5, fill=T.MUTED)
 
     s.title_block(40, 348, "跳转前四件事（漏一件就 HardFault）", color=T.RED)
-    s.rect(40, 360, 820, 118, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 360, 820, 118, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.code(56, 382, [
         "__disable_irq();                         // 1. 关中断",
         "HAL_RCC_DeInit(); HAL_DeInit();          // 2. 外设和时钟回到默认",
@@ -419,13 +419,13 @@ def flash_iap() -> Svg:
         "((void(*)(void))(*(uint32_t *)(APP_ADDR + 4)))();  // Reset_Handler",
     ], size=12, lh=18)
 
-    s.rect(40, 492, 400, 82, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(40, 492, 400, 82, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 516, "Flash 擦写规则", size=12, fill=T.TEXT, weight="700")
     s.text(58, 538, "F1 中容量 1 KB/页，大容量 2 KB/页；F4 按扇区", size=10.5,
            fill=T.MUTED)
     s.text(58, 556, "先擦后写。F4 参数区必须独占一个扇区", size=10.5, fill=T.MUTED)
 
-    s.rect(460, 492, 400, 82, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(460, 492, 400, 82, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(478, 516, "别把砖刷出来", size=12, fill=T.TEXT, weight="700")
     s.text(478, 538, "校验通过前不要动 APP A，失败还能回滚", size=10.5,
            fill=T.MUTED)
@@ -447,11 +447,11 @@ def freertos_scheduler() -> Svg:
               ("阻塞 Blocked", 400, 226, T.AMBER, "stBlock", "等延时 / 队列 / 信号量"),
               ("挂起 Suspended", 80, 226, T.VIOLET, "stSusp", "vTaskSuspend 挂起")]
     for name, x, y, color, cls, sub in states:
-        s.rect(x, y, 170, 62, fill=T.PANEL, stroke=color, rx=12)
+        s.rect(x, y, 170, 62, fill=T.PANEL, stroke=color, rx=8)
         s.text(x + 85, y + 26, name, size=13, anchor="middle", fill=T.TEXT,
                weight="600")
         s.text(x + 85, y + 46, sub, size=9, anchor="middle", fill=T.MUTED)
-        s.rect(x, y, 170, 62, fill=color, rx=12, opacity=0.15, cls=cls)
+        s.rect(x, y, 170, 62, fill=color, rx=8, opacity=0.15, cls=cls)
     s.add_style(anim_fade(".stReady", dur="4s", a=0.1, b=0.45))
     s.add_style(anim_fade(".stRun", dur="4s", a=0.45, b=0.1, delay="1s"))
     s.add_style(anim_fade(".stBlock", dur="4s", a=0.1, b=0.45, delay="2s"))
@@ -484,19 +484,19 @@ def freertos_scheduler() -> Svg:
     for i, (name, color, spans) in enumerate(rows):
         y = 328 + i * 34
         s.text(40, y + 20, name, size=10.5, fill=color)
-        s.rect(150, y, 700, 26, fill=T.BG2, stroke=T.GRID, rx=6)
+        s.rect(150, y, 700, 26, fill=T.BG2, stroke=T.GRID, rx=4)
         for x0, w in spans:
             s.rect(150 + x0 * scale, y + 2, w * scale - 1, 22, fill=color,
                    rx=4, opacity=0.85)
         for t in range(0, 33, 4):
             s.line(150 + t * scale, y, 150 + t * scale, y + 26,
                    stroke=T.GRID, sw=1)
-    s.line(150, 320, 150, 468, stroke=T.RED, sw=1.6, cls="cursor")
+    s.line(150, 320, 150, 468, stroke=T.RED, sw=1.5, cls="cursor")
     s.add_style(anim_tx(".cursor", dur="5s", x1=0, x2=700))
     s.text(150, 482, "0 ms", size=9, fill=T.DIM)
     s.text(850, 482, "32 ms", size=9, fill=T.DIM, anchor="end")
 
-    s.rect(40, 496, 820, 64, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 496, 820, 64, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 516, "三条铁律", size=11.5, fill=T.TEXT, weight="700")
     s.text(58, 536, "① 数字越大优先级越高（和 NVIC 相反）；② 中断里只用 FromISR API",
            size=11, fill=T.MUTED)
@@ -529,22 +529,22 @@ def lowpower_wakeup() -> Svg:
     ]
     for i, (name, api, wake, cur, note, color) in enumerate(modes):
         y = 92 + i * 96
-        s.rect(40, y, 820, 84, fill=T.PANEL, stroke=T.STROKE, rx=12)
-        s.rect(40, y, 5, 84, fill=color, rx=3)
+        s.rect(40, y, 820, 84, fill=T.PANEL, stroke=T.STROKE, rx=8)
+        s.rect(40, y, 5, 84, fill=color, rx=2)
         s.text(60, y + 26, name, size=14, fill=T.TEXT, weight="700")
         s.text(60, y + 48, api, size=10.5, mono=True, fill=color)
         s.text(60, y + 68, note, size=10, fill=T.MUTED)
         s.text(470, y + 26, "唤醒源：" + wake, size=11, fill=T.CYAN)
         s.text(470, y + 48, "典型电流：" + cur, size=11, fill=T.AMBER)
         w = int(120 * (0.9 - i * 0.35))
-        s.rect(470, y + 58, 120, 12, fill=T.BG2, stroke=T.STROKE, rx=3)
-        s.rect(471, y + 59, w, 10, fill=color, rx=3, cls=f"pw{i}")
+        s.rect(470, y + 58, 120, 12, fill=T.BG2, stroke=T.STROKE, rx=2)
+        s.rect(471, y + 59, w, 10, fill=color, rx=2, cls=f"pw{i}")
     s.add_style("\n".join(
         css_kf(f"pw{i}-f", [("0%,100%", "opacity:.35"), ("50%", "opacity:1")])
         + f".pw{i}{{animation:pw{i}-f 2.4s ease-in-out infinite {i * 0.4:.1f}s;}}"
         for i in range(3)))
 
-    s.rect(40, 384, 400, 148, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(40, 384, 400, 148, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 410, "省电的五个动作（按收益排序）", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
@@ -556,7 +556,7 @@ def lowpower_wakeup() -> Svg:
     ]):
         s.text(58, 434 + i * 20, t, size=10.5, fill=T.MUTED)
 
-    s.rect(460, 384, 400, 148, fill=T.PANEL, stroke=T.STROKE, rx=10)
+    s.rect(460, 384, 400, 148, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(478, 410, "进入 Stop 模式的代码骨架", size=12.5, fill=T.TEXT,
            weight="700")
     s.code(478, 434, [
@@ -593,18 +593,18 @@ def l4_stop2_evidence() -> Svg:
     x0, y, bw, gap = 32, 102, 152, 24
     for i, (title, note, color) in enumerate(stages):
         x = x0 + i * (bw + gap)
-        s.rect(x, y, bw, 92, fill=T.PANEL, stroke=color, rx=12, cls=f"ev{i}")
-        s.rect(x, y, bw, 5, fill=color, rx=3)
+        s.rect(x, y, bw, 92, fill=T.PANEL, stroke=color, rx=8, cls=f"ev{i}")
+        s.rect(x, y, bw, 5, fill=color, rx=2)
         s.text(x + bw / 2, y + 34, title, size=14, anchor="middle",
                fill=T.TEXT, weight="700")
         s.text(x + bw / 2, y + 61, note, size=9.5, anchor="middle", fill=T.MUTED)
         if i < len(stages) - 1:
             s.arrow(x + bw + 4, y + 46, x + bw + gap - 4, y + 46,
-                    color=T.CYAN, sw=2.2, head=6, cls="ev-flow")
+                    color=T.CYAN, sw=2, head=6, cls="ev-flow")
     s.add_style(_seq_flash("ev", 5, period=6.0, window=0.78, peak=1.0, rest=0.42))
     s.add_style(anim_flow(".ev-flow", dur="1.2s", dash="5 8", shift=-13))
 
-    s.rect(40, 226, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(40, 226, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 252, "IRQ 入口写入 Stop 2 保持的 SRAM", size=13, fill=T.TEXT,
            weight="700")
     fields = [
@@ -620,7 +620,7 @@ def l4_stop2_evidence() -> Svg:
         s.text(x + 172, 291, reg, size=9.5, mono=True, anchor="end", fill=T.TEXT)
         s.text(x + 10, 311, note, size=9.5, fill=T.MUTED)
 
-    s.rect(40, 364, 388, 150, fill=T.PANEL, stroke=T.AMBER, rx=12)
+    s.rect(40, 364, 388, 150, fill=T.PANEL, stroke=T.AMBER, rx=8)
     s.text(58, 390, "为什么不能在 Stop 返回后再读？", size=12.5,
            fill=T.TEXT, weight="700")
     rows = [
@@ -634,7 +634,7 @@ def l4_stop2_evidence() -> Svg:
         s.text(58, yy, k, size=10.5, mono=True, fill=color)
         s.text(180, yy, v, size=10.5, fill=T.MUTED)
 
-    s.rect(452, 364, 408, 150, fill=T.BG2, stroke=T.CYAN, rx=12)
+    s.rect(452, 364, 408, 150, fill=T.BG2, stroke=T.CYAN, rx=8)
     s.text(470, 390, "消费记录的顺序", size=12.5, fill=T.TEXT, weight="700")
     steps = [
         "① IRQ 入口：写 rtc_isr / exti_pr1 / pwr_sr1",
@@ -669,7 +669,7 @@ def rtos_system_layers() -> Svg:
     x, y, bw, bh, gap = 42, 92, 548, 62, 12
     for i, (name, detail, color) in enumerate(layers):
         yy = y + i * (bh + gap)
-        s.rect(x, yy, bw, bh, fill=T.PANEL, stroke=color, rx=11, cls=f"sl{i}")
+        s.rect(x, yy, bw, bh, fill=T.PANEL, stroke=color, rx=8, cls=f"sl{i}")
         s.rect(x, yy, 7, bh, fill=color, rx=4)
         s.text(x + 24, yy + 27, name, size=14, fill=color, weight="700")
         s.text(x + 132, yy + 27, detail, size=10.5, fill=T.MUTED)
@@ -691,12 +691,12 @@ def rtos_system_layers() -> Svg:
     ]
     for i, (name, detail, color) in enumerate(cards):
         yy = 122 + i * 94
-        s.rect(618, yy, 242, 76, fill=T.BG2, stroke=color, rx=10)
+        s.rect(618, yy, 242, 76, fill=T.BG2, stroke=color, rx=8)
         s.text(634, yy + 25, name, size=13, fill=color, weight="700")
         for j, line in enumerate(detail.split("\n")):
             s.text(730, yy + 25 + j * 21, line, size=10.5, fill=T.MUTED)
 
-    s.rect(618, 506, 242, 48, fill=T.PANEL, stroke=T.RED, rx=10)
+    s.rect(618, 506, 242, 48, fill=T.PANEL, stroke=T.RED, rx=8)
     s.text(739, 526, "先列约束，再选生态", size=12, anchor="middle",
            fill=T.RED, weight="700")
     s.text(739, 545, "不要用 API 熟悉度代替需求", size=9.5,
@@ -723,18 +723,18 @@ def g0_boot_swd() -> Svg:
     x0, y, bw, gap = 35, 104, 190, 20
     for i, (title, note, color) in enumerate(stages):
         x = x0 + i * (bw + gap)
-        s.rect(x, y, bw, 88, fill=T.PANEL, stroke=color, rx=12, cls=f"g0s{i}")
-        s.rect(x, y, bw, 5, fill=color, rx=3)
+        s.rect(x, y, bw, 88, fill=T.PANEL, stroke=color, rx=8, cls=f"g0s{i}")
+        s.rect(x, y, bw, 5, fill=color, rx=2)
         s.text(x + bw / 2, y + 36, title, size=13, anchor="middle",
                fill=T.TEXT, weight="700")
         s.text(x + bw / 2, y + 63, note, size=10, anchor="middle", fill=T.MUTED)
         if i < len(stages) - 1:
             s.arrow(x + bw + 3, y + 44, x + bw + gap - 3, y + 44,
-                    color=T.CYAN, sw=2.2, head=6, cls="g0-flow")
+                    color=T.CYAN, sw=2, head=6, cls="g0-flow")
     s.add_style(_seq_flash("g0s", 4, period=5.2, window=0.9, peak=1.0, rest=0.5))
     s.add_style(anim_flow(".g0-flow", dur="1.2s", dash="5 8", shift=-13))
 
-    s.rect(40, 222, 400, 158, fill=T.PANEL, stroke=T.AMBER, rx=12)
+    s.rect(40, 222, 400, 158, fill=T.PANEL, stroke=T.AMBER, rx=8)
     s.text(60, 250, "PA14-BOOT0 = SWCLK", size=16, mono=True,
            fill=T.AMBER, weight="700")
     notes = [
@@ -747,7 +747,7 @@ def g0_boot_swd() -> Svg:
         s.text(60, yy, label, size=10.5, fill=color, weight="700")
         s.text(142, yy, note, size=10.5, fill=T.MUTED)
 
-    s.rect(460, 222, 400, 158, fill=T.BG2, stroke=T.VIOLET, rx=12)
+    s.rect(460, 222, 400, 158, fill=T.BG2, stroke=T.VIOLET, rx=8)
     s.text(480, 250, "两种启动来源，不要混读", size=14,
            fill=T.TEXT, weight="700")
     s.text(480, 281, "nBOOT_SEL=0", size=11, mono=True, fill=T.VIOLET,
@@ -759,7 +759,7 @@ def g0_boot_swd() -> Svg:
     s.text(480, 350, "BOOT_LOCK=1：强制 Main Flash", size=11.5,
            fill=T.RED, weight="700")
 
-    s.rect(40, 404, 820, 128, fill=T.PANEL, stroke=T.CYAN, rx=12)
+    s.rect(40, 404, 820, 128, fill=T.PANEL, stroke=T.CYAN, rx=8)
     recovery = [
         ("1  保留现场", "NRST / 供电 / 保护证据"),
         ("2  受控连接", "Under Reset 非万能"),
@@ -772,7 +772,7 @@ def g0_boot_swd() -> Svg:
         s.text(x, 470, note, size=10, fill=T.MUTED)
         if i < 3:
             s.arrow(x + 164, 456, x + 184, 456, color=T.CYAN,
-                    sw=1.8, head=5, cls="g0-flow")
+                    sw=2, head=5, cls="g0-flow")
     s.text(60, 510, "恢复目标：让启动源可解释、可复现，而不是碰巧进入一次 Bootloader",
            size=11, fill=T.TEXT, weight="700")
 

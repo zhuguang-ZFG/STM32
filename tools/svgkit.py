@@ -24,26 +24,25 @@ import os
 class T:
     """配色 / 尺寸常量。"""
 
-    BG = "#0b1220"
-    BG2 = "#0e1626"
-    PANEL = "#111c31"
-    PANEL2 = "#16233c"
-    STROKE = "#243354"
-    GRID = "#1a2742"
+    BG = "#fbfaf7"
+    BG2 = "#f1f5f7"
+    PANEL = "#f1f5f7"
+    PANEL2 = "#e5f3f8"
+    STROKE = "#5e6872"
+    GRID = "#d7dce1"
 
-    TEXT = "#e6edf3"
-    MUTED = "#93a4c0"
-    DIM = "#64748b"
+    TEXT = "#17202a"
+    MUTED = "#5e6872"
+    DIM = "#5e6872"
 
-    CYAN = "#22d3ee"
-    BLUE = "#60a5fa"
-    GREEN = "#34d399"
-    AMBER = "#fbbf24"
-    ORANGE = "#fb923c"
-    RED = "#f87171"
-    VIOLET = "#a78bfa"
-    PINK = "#f472b6"
-    WHITE = "#f8fafc"
+    CYAN = "#075e84"
+    BLUE = "#1e4d63"
+    GREEN = "#1b5c45"
+    AMBER = "#7a4e00"
+    ORANGE = "#9a3412"
+    RED = "#8f2d2d"
+    VIOLET = "#5b3a8c"
+    PINK = "#8e2f5b"
 
     FONT = ("'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,"
             "-apple-system,'Segoe UI',sans-serif")
@@ -110,7 +109,7 @@ class Svg:
         self.parts.append(el)
         return el
 
-    def panel(self, x, y, w, h, rx=12, fill=T.PANEL, stroke=T.STROKE) -> "Svg":
+    def panel(self, x, y, w, h, rx=8, fill=T.PANEL, stroke=T.STROKE) -> "Svg":
         self.rect(x, y, w, h, fill=fill, stroke=stroke, rx=rx)
         return self
 
@@ -195,7 +194,7 @@ class Svg:
     # ---------------- 组合元件 ----------------
 
     def box(self, x, y, w, h, label="", sub="", fill=T.PANEL, stroke=T.STROKE,
-            color=T.TEXT, rx=10, size=15, cls=None, mono=False,
+            color=T.TEXT, rx=8, size=15, cls=None, mono=False,
             icon=None) -> "Svg":
         self.rect(x, y, w, h, fill=fill, stroke=stroke, rx=rx, cls=cls)
         cy = y + h / 2
@@ -259,7 +258,7 @@ class Svg:
                     opacity=0.7)
         return self
 
-    def waveform(self, x, y, w, h, bits, color=T.GREEN, sw=2.4, cls=None,
+    def waveform(self, x, y, w, h, bits, color=T.GREEN, sw=2, cls=None,
                  label=None, label_color=None) -> "Svg":
         """数字波形：bits 为 0/1 序列，等宽绘制。"""
         n = len(bits)
@@ -286,8 +285,8 @@ class Svg:
         return self
 
     def axis(self, x, y, w, h, ylabel="", xlabel="", color=T.STROKE):
-        self.line(x, y, x, y + h, stroke=color, sw=1.4)
-        self.line(x, y + h, x + w, y + h, stroke=color, sw=1.4)
+        self.line(x, y, x, y + h, stroke=color, sw=1.5)
+        self.line(x, y + h, x + w, y + h, stroke=color, sw=1.5)
         if ylabel:
             self.text(x - 8, y + 10, ylabel, size=11, fill=T.DIM, anchor="end")
         if xlabel:
@@ -320,7 +319,7 @@ class Svg:
     def legend(self, x, y, items, size=12, dx=130) -> "Svg":
         """items: [(color, label), ...]"""
         for i, (c, lab) in enumerate(items):
-            self.rect(x + i * dx, y - 10, 12, 12, fill=c, rx=3)
+            self.rect(x + i * dx, y - 10, 12, 12, fill=c, rx=2)
             self.text(x + i * dx + 18, y + 1, lab, size=size, fill=T.MUTED)
         return self
 
