@@ -148,7 +148,7 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 | IRQ | NVIC → USB_LP / OTG_FS | Keep it fairly high |
 | Clock | RCC | Full speed wants a **48 MHz** USB clock (F1 divides the PLL; F4 uses PLL48CLK) |
 
-> **48 MHz is not optional.** On F1, `USBCLK = 48 MHz`. With a 72 MHz PLL that is a divide by 1.5 (`USBPRE`). A wrong clock fails enumeration or drops the link at random.
+> **48 MHz is not optional.** On F1, `USBCLK = 48 MHz`. With the PLL at 72 MHz, register bit `USBPRE = 0` means ÷1.5, so `72 / 1.5 = 48` MHz. A wrong clock fails enumeration or drops the link at random.
 
 ## 🛠️ Wiring
 

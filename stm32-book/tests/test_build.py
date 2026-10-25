@@ -133,7 +133,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.5</strong>", html)
+        self.assertIn("<strong>v1.0.6</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertIn('<span class="chapter-number">第 00 章</span>', html)
@@ -260,7 +260,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.5", manifest["version"])
+        self.assertEqual("1.0.6", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -277,7 +277,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.5</strong>", html)
+        self.assertIn("<strong>v1.0.6</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
@@ -372,6 +372,46 @@ class BookBuildContractTests(unittest.TestCase):
             self.assertIn("0x271", (BOOK_DIR / "book" / name).read_text(encoding="utf-8"))
         for name in ("A-uart-dma.md", "B-examples.md", "E-sources.md", "F-closing.md"):
             self.assertIn("0x271", (BOOK_DIR / "book" / "en" / name).read_text(encoding="utf-8"))
+
+    def test_dbg_swen_usbpre_and_jedec_facts_stay_scoped(self) -> None:
+        for path in (
+            BOOK_DIR / "book" / "F-学习路线收束.md",
+            BOOK_DIR / "book" / "en" / "F-closing.md",
+        ):
+            line = next(row for row in path.read_text(encoding="utf-8").splitlines() if "DBG_SWEN" in row)
+            self.assertTrue("BOOT_LOCK" in line or "RDP" in line, path.name)
+            self.assertTrue("复位值为 0" in line or "resets to 0" in line, line)
+
+        usb_texts = [
+            (BOOK_DIR.parent / "docs" / "14-USB.md").read_text(encoding="utf-8"),
+            (BOOK_DIR.parent / "docs" / "en" / "14-usb.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "B-例程索引.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "en" / "B-examples.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "C-习题答案.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "en" / "C-answers.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8"),
+            (BOOK_DIR / "book" / "en" / "D-glossary.md").read_text(encoding="utf-8"),
+        ]
+        bad_usbpre = re.compile(r"USBPRE\s*=\s*1\.5")
+        for text in usb_texts:
+            self.assertIsNone(bad_usbpre.search(text))
+        for text in usb_texts[:2]:
+            self.assertRegex(text, r"USBPRE\s*=\s*0")
+            self.assertIn("1.5", text)
+        for text in usb_texts[-2:]:
+            self.assertIn("0xEF4017", text)
+            self.assertIn("1023", text)
+            self.assertTrue("等时" in text or "isochronous" in text)
+
+        for name in ("08-SPI总线.md", "en/08-spi.md"):
+            self.assertIn("0xEF4017", (BOOK_DIR.parent / "docs" / name).read_text(encoding="utf-8"))
+        for name in ("14-USB.md", "en/14-usb.md"):
+            chapter = (BOOK_DIR.parent / "docs" / name).read_text(encoding="utf-8")
+            self.assertIn("1023", chapter)
+            self.assertTrue("等时" in chapter or "isochronous" in chapter)
+
+        spi = (BOOK_DIR.parent / "examples" / "spi-flash" / "main.c").read_text(encoding="utf-8")
+        self.assertRegex(spi, r"id\[0\]\s*!=\s*0xEFU\s*\|\|\s*id\[1\]\s*!=\s*0x40U\s*\|\|\s*id\[2\]\s*!=\s*0x17U")
 
     def test_glossary_covers_terms_from_all_seven_parts(self) -> None:
         text = (BOOK_DIR / "book" / "D-术语表.md").read_text(encoding="utf-8")

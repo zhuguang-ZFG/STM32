@@ -148,7 +148,7 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 | 中断优先级 | NVIC → USB_LP / OTG_FS | 建议较高优先级 |
 | 时钟 | RCC | FS 要求 USB 时钟 **48 MHz**（F1 由 PLL 分频；F4 由 PLL48CLK） |
 
-> **48 MHz 时钟是硬性要求**：F1 全速 USB 需要 `USBCLK = 48 MHz`（PLL 72 MHz 时用 `USBPRE=1.5` 分频）；时钟不准会导致枚举失败或随机掉线。
+> **48 MHz 时钟是硬性要求**：F1 全速 USB 需要 `USBCLK = 48 MHz`。PLL 72 MHz 且寄存器位 `USBPRE = 0` 表示 ÷1.5，`72 / 1.5 = 48` MHz。时钟不准会导致枚举失败或随机掉线。
 
 ## 🛠️ 硬件与接线
 
