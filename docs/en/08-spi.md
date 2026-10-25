@@ -29,6 +29,61 @@
 9. 实验找一个带只读寄存器的器件，用正确的模式读回来。数值和手册复位值一致，这章才算过。读出全是 FF 或 00，先查模式和进出线。
 10. 合上书，三问。模式 0 时空闲时钟是高还是低？主机输出和主机输入能不能接反？一次事务结束时片选应该怎样？
 <!-- /video:ch08 -->
+
+## Principle and boundary
+
+The SPI conclusion in this chapter is pinned to order code STM32F103C8T6. SPI1 is on APB2 and the kernel clock is 72 MHz. The working point is copied whole from Appendix D: Mode 0, `BR=010`, SCK = 9 MHz. On the remapped pins, the PA5/PA6/PA7 sentence below is void.
+
+The reset-default pins are LQFP48 pin 15 PA5 = SPI1_SCK, pin 17 PA7 = SPI1_MOSI, pin 16 PA6 = SPI1_MISO, and pin 14 PA4 = SPI1_NSS. This chapter does not use hardware NSS. PA4 is a push-pull GPIO, driven low and then high in software. That is not the open-drain of chapter file 07. The remap onto PB3/PB4/PB5 is not on the normal path. Pin 16 is also TIM3_CH1 in chapter file 05. This figure draws only MISO. Source: [DS5319 Rev 20 Table 5](#source-ds5319-spi).
+
+Mode 0 is CPOL = 0 and CPHA = 0. SCK idles low, and the data is sampled on the first edge, which is the rising edge. The chapter code uses `SPI_POLARITY_LOW`, `SPI_PHASE_1EDGE`, `SPI_NSS_SOFT`, `SPI_FIRSTBIT_MSB`, and `SPI_BAUDRATEPRESCALER_8`.
+
+`BR[2:0]` has only the eight dividers 2, 4, 8, 16, 32, 64, 128, and 256. `010` is ÷8, and `72 / 8 = 9` MHz. `001` is ÷4, 18 MHz. `000` is ÷2, 36 MHz. 36 MHz is the too-fast failure next to the 9 MHz working point. There is no second ledger. There is no ÷3. Do not invent an SPI base address. Source: [RM0008 Rev 21 section 25.5.1](#source-rm0008-spi).
+
+The master sends `{0x9F, 0xFF, 0xFF, 0xFF}`. In full duplex, the eight SCK edges that shift out `0x9F` also shift `rx[0]` in, and that byte is not the manufacturer id. The next three bytes are `rx[1]=0xEF`, `rx[2]=0x40`, and `rx[3]=0x17`. The assembly is `rx[1] << 16 | rx[2] << 8 | rx[3]`, which is `0xEF4017`. `0x40` is the memory type, not the capacity. The page is 256 bytes. Those two sentences link the [existing example](#source-project-examples) and Appendix D. The example treats bit 0 of the status byte as busy. `0x05`, `0x06`, `0x02`, and `0x03` stay in the core ideas.
+
+After MOSI and MISO are swapped, the three bytes do not match `0xEF 0x40 0x17`. That is the failure path on the key figure. While chip select stays low, the next command is glued to the previous one. A Transmit that never reads MISO leaves a stale byte for the next read. CPHA on the second edge shifts the byte. The stuck chip select and `BR=000` at 36 MHz stay in the margin.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-spi-jedec.svg" width="760" alt="Mode 0 at divide-by-8 is 9 MHz; the three bytes after 0x9F are 0xEF, 0x40, and 0x17; swapping MOSI and MISO makes them miss">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 14 PA4 = CS (push-pull, low during the transaction), pin 15 PA5 = SCK, pin 16 PA6 = MISO, pin 17 PA7 = MOSI. CPOL = 0, CPHA = 0, BR=010, SCK = 9 MHz. On the normal path MOSI sends 0x9F and then three 0xFF bytes; rx[1] through rx[3] are 0xEF, 0x40, and 0x17. The failure path swaps PA6 and PA7. In the margin, a PA4 that stays low glues two transactions, and BR=000 makes SCK = 36 MHz. Pin 14 is not drawn as DAC. Sources: [RM0008 Rev 21 section 25.5.1](#source-rm0008-spi) and [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/spi-jedec.gif" width="640" alt="Chip select falls, 0x9F shifts out, then 0xEF, 0x40, and 0x17 shift in">
+  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path and marks 9 MHz. Print uses the static figure. The swapped wires and 36 MHz are not on this GIF.</sub>
+</p>
+
+The opening `spi-transfer.svg` stays a side figure. Without playing it, the pins, 9 MHz, and the three ID bytes are all on the static figure.
+
+## Timing or state
+
+| Row | Byte | MOSI | MISO | CS | SCK |
+| --- | --- | --- | --- | --- | --- |
+| Normal | 1 | 0x9F | rx[0], not the manufacturer id | low | sample on the rising edge |
+| Normal | 2 | 0xFF | 0xEF | low | sample on the rising edge |
+| Normal | 3 | 0xFF | 0x40 | low | sample on the rising edge |
+| Normal | 4 | 0xFF | 0x17 | low | sample on the rising edge |
+| End | — | — | — | returns high | idle low |
+| Mode | — | — | — | — | CPOL = 0, CPHA = 0 |
+| Rate | — | — | — | — | BR=010 is 9 MHz, BR=001 is 18 MHz, BR=000 is 36 MHz |
+| Failure | 2 through 4 | — | not 0xEF 0x40 0x17 | low | PA6 and PA7 swapped |
+
+The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#source-project-examples).
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The ID that comes back is not 0xEF4017 | PA7 is not MOSI, or PA6 is not MISO, or the mode is not 0 | Keep Mode 0, and check that PA7 is MOSI and PA6 is MISO | [DS5319](#source-ds5319-spi) | LQFP48 pin 16 is MISO and pin 17 is MOSI. The three bytes themselves are the next row |
+| rx[0] was treated as the manufacturer id | The eight SCK edges of the command also shift rx[0] in | The manufacturer id is rx[1], the type is rx[2], and the capacity is rx[3] | [example](#source-project-examples) | The command is 0x9F. The three bytes are 0xEF, 0x40, and 0x17. 0x40 is not the capacity. The page is 256 bytes |
+| SCK runs at 36 MHz | BR was written as 000 | Use BR 010, which is 9 MHz | [RM0008](#source-rm0008-spi) | Among the eight dividers, 010 is ÷8. 000 is ÷2 = 36 MHz. There is no ÷3 |
+| Two commands are glued together | PA4 stayed low | Drive PA4 high at the end of each transaction | [DS5319](#source-ds5319-spi) | Pin 14 is SPI1_NSS. This chapter uses it as a push-pull chip select. On the C8 it is not a DAC output |
+| The ID shows up on PB3/PB4/PB5 | A remap was treated as the reset default | The reset-default pins are PA5/PA6/PA7 | [DS5319](#source-ds5319-spi) | Pin 15 is SCK, pin 16 is MISO, and pin 17 is MOSI |
+| Bit 0 of the status byte is treated as a protocol busy flag | That is what the example does | Wait on that bit only as the example does | [example](#source-project-examples) | The example treats bit 0 of the status byte as busy |
+
 ## 📌 Learning goals
 - [ ] Understand the four SPI wires and full-duplex shifting
 - [ ] Know the four CPOL/CPHA modes, and which mode common parts use
@@ -74,6 +129,9 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 | 010 | 8 | 9 MHz |
 | 011 | 16 | 4.5 MHz |
 | 100 | 32 | 2.25 MHz |
+| 101 | 64 | 1.125 MHz |
+| 110 | 128 | 0.5625 MHz |
+| 111 | 256 | 0.28125 MHz |
 
 ### 4. NSS, and more than one slave
 
@@ -196,17 +254,6 @@ static void w25q_wait_busy(void)
 The idea of a DMA display refresh: send a whole frame buffer in one `HAL_SPI_Transmit_DMA`. The CPU goes off to prepare the next frame, and the refresh gets much faster.
 
 The full project is in [`examples/spi-flash/`](../../examples/spi-flash/).
-
-## ⚠️ Pitfalls and troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| The ID reads all 0xFF | MISO is floating or not connected | Check the MISO wire, or add a pull-down |
-| The ID reads all 0x00 | The mode is wrong, or CS was never pulled low | Try Mode 0 or 3, and check the chip-select timing |
-| The data is shifted | CPHA is wrong | Pick Mode 0 or 3 from the part's datasheet |
-| A garbled display | SPI is too fast, or the wires are too long | Lower the clock (raise the divider) |
-| A Flash write fails | No write enable, or you did not wait for busy | WREN before every write, then wait until BUSY clears |
-| Several slaves disturb each other | Chip selects are not separate | One CS per slave, held high when that slave is not selected |
 
 ## 🧪 Hands-on labs
 

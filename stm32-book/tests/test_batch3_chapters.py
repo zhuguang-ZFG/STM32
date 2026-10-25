@@ -426,5 +426,100 @@ class Batch3PwmChapterTests(unittest.TestCase):
         for source_id, obj in baseline_en["sources"].items():
             self.assertEqual(obj, en_manifest["sources"][source_id])
 
+class Batch3SpiChapterTests(unittest.TestCase):
+    def test_spi_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "08-SPI总线.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "08-spi.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        for text in (zh, en):
+            for token in (
+                "010",
+                "9 MHz",
+                "001",
+                "18 MHz",
+                "000",
+                "36 MHz",
+                "0x9F",
+                "0xEF",
+                "0x40",
+                "0x17",
+                "256",
+                "PA4",
+                "PA5",
+                "PA6",
+                "PA7",
+                "CPOL",
+                "CPHA",
+                "rx[1]",
+                "SPI_POLARITY_LOW",
+                "SPI_PHASE_1EDGE",
+                "SPI_BAUDRATEPRESCALER_8",
+                "#source-rm0008-spi",
+                "#source-ds5319-spi",
+                "#source-project-examples",
+            ):
+                self.assertIn(token, text)
+            self.assertIn("111", text)
+        self.assertIn("第 14 脚", zh)
+        self.assertIn("第 17 脚", zh)
+        self.assertIn("pin 14", en)
+        self.assertIn("pin 17", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            self.assertNotIn("0x3A", blocks)
+            self.assertNotIn("4.7", blocks)
+            self.assertNotIn("0x40013000", blocks)
+        self.assertIn("../assets/diagrams/sample-08-spi-jedec.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-08-spi-jedec.svg", en)
+        self.assertIn("../assets/gif/spi-jedec.gif", zh)
+        self.assertIn("../../assets/gif/spi-jedec.gif", en)
+        self.assertIn("../assets/animations/spi-transfer.svg", zh)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-08-spi-jedec.svg"), zh_key.index("spi-jedec.gif"))
+        self.assertLess(en_key.index("sample-08-spi-jedec.svg"), en_key.index("spi-jedec.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-spi": (
+                "第 08 章原理与边界、时序或状态、坑与出处卡。全双工在每个 SCK 上同时移出和移入。八档分频只有 2、4、8、16、32、64、128、256。BR 010 是 ÷8 = 9 MHz，001 是 ÷4 = 18 MHz，000 是 ÷2 = 36 MHz。Mode 0 是 CPOL = 0、CPHA = 0。发 0x9F 的那一字节同时移入的不是厂商号。不编 SPI 基址。",
+                "Chapter 08 principle, timing, and source cards. Full duplex shifts out and in on each SCK. The only dividers are 2, 4, 8, 16, 32, 64, 128, and 256. BR 010 is ÷8 = 9 MHz, 001 is ÷4 = 18 MHz, and 000 is ÷2 = 36 MHz. Mode 0 is CPOL = 0 and CPHA = 0. The byte shifted in while 0x9F shifts out is not the manufacturer id. Does not invent an SPI base address.",
+            ),
+            "ds5319-spi": (
+                "第 08 章关键插图和坑与出处卡。LQFP48 第 14 脚 PA4 是 SPI1_NSS，第 15 脚 PA5 是 SPI1_SCK，第 16 脚 PA6 是 SPI1_MISO，第 17 脚 PA7 是 SPI1_MOSI。不把重映射画成复位后的默认脚。不把第 14 脚画成 DAC。不把 TIM3_CH1 画成与 MISO 同时有效。",
+                "Chapter 08 key figure and source cards. LQFP48 pin 14 PA4 is SPI1_NSS, pin 15 PA5 is SPI1_SCK, pin 16 PA6 is SPI1_MISO, and pin 17 PA7 is SPI1_MOSI. Does not draw the remap as the reset default. Does not draw pin 14 as DAC. Does not draw TIM3_CH1 as active together with MISO.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "project-examples", "rm0008-spi", "ds5319-spi"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["08-SPI总线.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["08-spi.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        baseline, baseline_en = baseline_manifests()
+        self.assertEqual(baseline["sources"]["project-examples"], zh_manifest["sources"]["project-examples"])
+        self.assertEqual(baseline_en["sources"]["project-examples"], en_manifest["sources"]["project-examples"])
+        for source_id, obj in baseline["sources"].items():
+            self.assertEqual(obj, zh_manifest["sources"][source_id])
+
 if __name__ == "__main__":
     unittest.main()

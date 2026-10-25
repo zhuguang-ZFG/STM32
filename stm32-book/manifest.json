@@ -152,7 +152,7 @@
       "question": "CPOL、CPHA、片选和全双工移位怎样决定每一位在何时被推出与采样？",
       "deliverable": "一张目标器件时序与 MCU 模式对照，并读回一个有明确复位值的只读寄存器。",
       "boundary": "读出非全 0/全 1 也不等于模式正确；必须与器件手册的 ID 或复位值对账。SPI1 在 APB2。72 MHz 下 BR 为 010 时分频 8，SCK 为 9 MHz；BR 为 001 时为 18 MHz。分频只有 2、4、8、16、32、64、128、256。JEDEC 命令是 0x9F。本仓库 spi-flash 期待的三字节是厂商 0xEF、存储器类型 0x40、容量 0x17。页大小 256 字节。Mode 0 是 CPOL 为 0、CPHA 为 0。",
-      "sources": ["rm0008", "project-examples"]
+      "sources": ["rm0008", "project-examples", "rm0008-spi", "ds5319-spi"]
     },
     "09-ADC与DAC.md": {
       "question": "源阻抗、采样保持、参考电压和量化怎样共同决定一个 ADC 码值？",
@@ -896,6 +896,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 05 章关键插图和坑与出处卡。LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1。同一格也含 SPI1_MISO，这张图不把它画成同时有效。不把重映射到 PB4 或 PC6 画进正常路径。"
+    }
+,
+    "rm0008-spi": {
+      "title": "RM0008 Rev 21 SPI 全双工与 BR",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 25, SPI_CR1 in section 25.5.1. Full duplex shifts out and in on each SCK. The frozen working points from Appendix D are BR 010 = divide by 8 = 9 MHz, 001 = divide by 4 = 18 MHz, 000 = divide by 2 = 36 MHz. If section 25.5.1 prints a different BR encoding, use the printed encoding; 9 MHz remains divide by 8 and 18 MHz remains divide by 4.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 08 章原理与边界、时序或状态、坑与出处卡。全双工在每个 SCK 上同时移出和移入。八档分频只有 2、4、8、16、32、64、128、256。BR 010 是 ÷8 = 9 MHz，001 是 ÷4 = 18 MHz，000 是 ÷2 = 36 MHz。Mode 0 是 CPOL = 0、CPHA = 0。发 0x9F 的那一字节同时移入的不是厂商号。不编 SPI 基址。"
+    },
+    "ds5319-spi": {
+      "title": "DS5319 Rev 20 LQFP48 的 SPI1 脚",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5. LQFP48 pin 14 PA4 = SPI1_NSS (also USART2_CK and ADC12_IN4), pin 15 PA5 = SPI1_SCK, pin 16 PA6 = SPI1_MISO, pin 17 PA7 = SPI1_MOSI.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 08 章关键插图和坑与出处卡。LQFP48 第 14 脚 PA4 是 SPI1_NSS，第 15 脚 PA5 是 SPI1_SCK，第 16 脚 PA6 是 SPI1_MISO，第 17 脚 PA7 是 SPI1_MOSI。不把重映射画成复位后的默认脚。不把第 14 脚画成 DAC。不把 TIM3_CH1 画成与 MISO 同时有效。"
     }
   }
 }

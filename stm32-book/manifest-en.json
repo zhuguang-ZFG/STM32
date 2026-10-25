@@ -188,10 +188,7 @@
       "question": "How do CPOL, CPHA, chip select, and full-duplex shifting decide when each bit is driven and sampled?",
       "deliverable": "A comparison of the target device's timing with the MCU mode, and a read-back of a read-only register with a known reset value.",
       "boundary": "A value that is not all 0s or all 1s does not prove the mode is correct. It must match the device manual's ID or reset value. SPI1 is on APB2. At 72 MHz, BR 010 divides by 8 and SCK is 9 MHz; BR 001 is 18 MHz. The only dividers are 2, 4, 8, 16, 32, 64, 128, and 256. The JEDEC command is 0x9F. This repository's spi-flash example expects manufacturer 0xEF, memory type 0x40, and capacity 0x17. The page is 256 bytes. Mode 0 is CPOL 0 and CPHA 0.",
-      "sources": [
-        "rm0008",
-        "project-examples"
-      ]
+      "sources": ["rm0008", "project-examples", "rm0008-spi", "ds5319-spi"]
     },
     "09-adc-dac.md": {
       "question": "How do source impedance, sample-and-hold, the reference, and quantization together decide an ADC code?",
@@ -1053,6 +1050,25 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 05 key figure and source cards. LQFP48 pin 16 is PA6, and the default alternate function includes TIM3_CH1. The same cell also includes SPI1_MISO, and this figure does not draw both as active. Does not draw a remap onto PB4 or PC6 on the normal path."
+    }
+,
+    "rm0008-spi": {
+      "title": "RM0008 Rev 21 SPI full duplex and BR",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 25, SPI_CR1 in section 25.5.1. Full duplex shifts out and in on each SCK. The frozen working points from Appendix D are BR 010 = divide by 8 = 9 MHz, 001 = divide by 4 = 18 MHz, 000 = divide by 2 = 36 MHz. If section 25.5.1 prints a different BR encoding, use the printed encoding; 9 MHz remains divide by 8 and 18 MHz remains divide by 4.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 08 principle, timing, and source cards. Full duplex shifts out and in on each SCK. The only dividers are 2, 4, 8, 16, 32, 64, 128, and 256. BR 010 is ÷8 = 9 MHz, 001 is ÷4 = 18 MHz, and 000 is ÷2 = 36 MHz. Mode 0 is CPOL = 0 and CPHA = 0. The byte shifted in while 0x9F shifts out is not the manufacturer id. Does not invent an SPI base address."
+    },
+    "ds5319-spi": {
+      "title": "DS5319 Rev 20 LQFP48 SPI1 pins",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5. LQFP48 pin 14 PA4 = SPI1_NSS (also USART2_CK and ADC12_IN4), pin 15 PA5 = SPI1_SCK, pin 16 PA6 = SPI1_MISO, pin 17 PA7 = SPI1_MOSI.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 08 key figure and source cards. LQFP48 pin 14 PA4 is SPI1_NSS, pin 15 PA5 is SPI1_SCK, pin 16 PA6 is SPI1_MISO, and pin 17 PA7 is SPI1_MOSI. Does not draw the remap as the reset default. Does not draw pin 14 as DAC. Does not draw TIM3_CH1 as active together with MISO."
     }
   }
 }
