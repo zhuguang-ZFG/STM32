@@ -6,14 +6,15 @@
 - 29 章逐章加入“问题 / 交付 / 边界 / 来源锚点”；
 - 视频、字幕与重复旁白不进入书稿，原 `docs/` 保持不变；
 - 构建时去掉二级、三级标题开头的表情符号；章末「相关资源」里的公众号链接、上一篇 / 下一篇和重复免责声明不进书，手册编号保留；
-- 封面是内嵌的 `cover.svg` 插画加书名页，不引用外部字体；封面后有一页版本与许可；文前有一处「配套资源」；
+- 封面是内嵌的 `cover.svg` 插画加书名页，不引用外部字体；封面后有一页版本与许可，接着是版本与修订；文前有一处「配套资源」；
+- 附录和第七部分收束页之后有书末主题索引，条目链到章内小节；PDF 在索引条目旁盖上物理页码；
 - 构建时把已知的居中 `<img>` + `<sub>` 图注收成 `<figure>` / `<figcaption>`，不改 `docs/` 正文；
 - 目录用每章 Markdown 的一级标题，仍按七个分部排列；目录不展开章内二级标题，以免 PDF 页码目录过长；
 - 附录包含 UART+DMA 工程深读、14 例验证索引、29 章答案、按主题加厚的术语表、来源与许可；术语表文末先是 BluePill 的数字账，接着是换系列时要重算的时序、寄存器和勘误级边界；第七部分收束页用前一张账写第一块板，再用后一张账写换芯片时的三行；
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印，保留标题书签、完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.0.6 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
+当前版本：**v1.0.7 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
 
 ## 构建
 
@@ -86,13 +87,13 @@ python stm32-book/build_html.py --lang en --check
 
 ## 发布 GitHub Release
 
-版本号已经是 1.0.6。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.4 的产物标成 1.0.5，也不要把 1.0.5 的产物标成 1.0.6。
+版本号已经是 1.0.7。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.6 的产物标成 1.0.7。
 
 这次提交进入 `main` 并且 Book CI 变绿之后，由有权限的人：
 
 1. 下载这次 `main` 运行的两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
 2. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
-3. 在该提交上打 tag `v1.0.6`，创建 GitHub Release，并附上这四份文件。
+3. 在该提交上打 tag `v1.0.7`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 
@@ -107,6 +108,8 @@ python stm32-book/build_html.py --lang en --check
 | 封面插画 | `stm32-book/cover.svg` |
 | 构建与 PDF 输出 | `stm32-book/build_html.py` |
 | 整书契约回归 | `stm32-book/tests/test_build.py` |
+| 版本与修订条目 | `stm32-book/revisions.json` |
+| 书末主题索引 | `stm32-book/subject-index.json` |
 
 新增或重命名章节时，构建器会要求同时更新 manifest；不能通过漏掉章节来让构建继续。GitHub 参考实现必须登记 tag 或完整 commit，社区文章必须标注其非规范边界和访问日期。
 

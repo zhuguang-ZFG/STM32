@@ -176,6 +176,9 @@ def validate_manifest(manifest: dict) -> None:
         if not (book_dir / filename).is_file():
             raise BuildError(f"missing appendix manuscript: {filename}")
 
+    validate_back_matter(manifest)
+    validate_revisions(manifest)
+
     for source_id, source in manifest["sources"].items():
         if not re.fullmatch(r"[a-z0-9-]+", source_id):
             raise BuildError(f"invalid source id: {source_id}")
@@ -521,6 +524,13 @@ UI = {
         "callout_note": "说明",
         "closing_kicker": "收束",
         "closing_banner": "本部分到此结束",
+        "revision_kicker": "文前",
+        "revision_title": "版本与修订",
+        "revision_lead": "这一页只记已经合并进书稿的版本。引脚、时序和电气参数仍以目标型号手册为准。",
+        "front_heading": "文前",
+        "back_matter_heading": "书末",
+        "index_kicker": "书末",
+        "index_lead": "这是书末主题索引，不是附录 D 的术语定义。条目按拉丁字母排列，链到章内小节。PDF 在该行右侧印出页码。",
         "footer": "本书由 stm32-book/build_html.py 从 {count} 章源文档构建；来源、冻结点与许可见附录 E。",
         "table_label": "数据表，可横向滚动",
         "skip": "跳到目录",
@@ -571,6 +581,13 @@ UI = {
         "callout_note": "Note",
         "closing_kicker": "CLOSE",
         "closing_banner": "End of this part",
+        "revision_kicker": "FRONT",
+        "revision_title": "Version history",
+        "revision_lead": "This page records editions that have already been merged. Pin, timing, and electrical values still come from the manual for the exact part.",
+        "front_heading": "Front matter",
+        "back_matter_heading": "Back matter",
+        "index_kicker": "BACK MATTER",
+        "index_lead": "This is the subject index, not the definitions in Appendix D. Entries are alphabetical and link to a chapter section. The PDF prints the page number at the right of the row.",
         "footer": "Built by stm32-book/build_html.py from {count} source chapters. Sources, frozen versions, and the license are in Appendix E.",
         "table_label": "Data table, scroll sideways",
         "skip": "Skip to contents",
@@ -634,6 +651,89 @@ def quick_check_html(questions: list[str], manifest: dict) -> str:
 </section>"""
 
 
+_REVISION_VERSION = re.compile(r"^\d+\.\d+\.\d+$")
+_REVISION_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def edition_language(manifest: dict) -> str:
+    return "en" if str(manifest.get("language", "zh-CN")).lower().startswith("en") else "zh"
+
+
+def resolve_book_asset(filename: str) -> Path:
+    if (
+        not isinstance(filename, str)
+        or "/" in filename
+        or "\\" in filename
+        or not filename.endswith(".json")
+    ):
+        raise BuildError(f"invalid book asset name: {filename}")
+    candidate = ROOT / filename
+    if not candidate.is_file():
+        raise BuildError(f"missing book asset: {filename}")
+    return candidate
+
+
+def validate_back_matter(manifest: dict) -> None:
+    items = manifest.get("back_matter")
+    if not isinstance(items, list) or not items:
+        raise BuildError("manifest back_matter must list the subject index")
+    seen: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict):
+            raise BuildError(f"invalid back matter entry: {item}")
+        item_id = item.get("id", "")
+        title = item.get("title", "")
+        filename = item.get("file", "")
+        if not isinstance(item_id, str) or not item_id or item_id in seen:
+            raise BuildError(f"invalid back matter id: {item_id}")
+        if not isinstance(title, str) or not title.strip():
+            raise BuildError(f"empty back matter title: {item_id}")
+        seen.add(item_id)
+        resolve_book_asset(str(filename))
+    if "subject-index" not in seen:
+        raise BuildError("manifest back_matter is missing subject-index")
+
+
+def load_revisions() -> list[dict]:
+    path = ROOT / "revisions.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise BuildError(f"cannot read revisions: {exc}") from exc
+    entries = data.get("entries") if isinstance(data, dict) else None
+    if not isinstance(entries, list) or not entries:
+        raise BuildError("revisions.json has no entries")
+    seen: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise BuildError(f"invalid revision entry: {entry}")
+        version = entry.get("version", "")
+        date = entry.get("date", "")
+        if not isinstance(version, str) or not _REVISION_VERSION.fullmatch(version) or version in seen:
+            raise BuildError(f"invalid revision version: {version}")
+        seen.add(version)
+        if not isinstance(date, str) or not _REVISION_DATE.fullmatch(date):
+            raise BuildError(f"invalid revision date: {version}")
+        for language in ("zh", "en"):
+            notes = entry.get(language)
+            if (
+                not isinstance(notes, list)
+                or not notes
+                or not all(isinstance(note, str) and note.strip() for note in notes)
+            ):
+                raise BuildError(f"empty revision notes: {version}:{language}")
+    return entries
+
+
+def validate_revisions(manifest: dict) -> list[dict]:
+    entries = load_revisions()
+    if entries[0]["version"] != manifest["version"]:
+        raise BuildError(
+            f"revision history starts at {entries[0]['version']}, manifest is {manifest['version']}"
+        )
+    return entries
+
+
 def imprint_html(manifest: dict, built_on: str) -> str:
     labels = ui(manifest, "license_labels")
     values = (
@@ -658,6 +758,26 @@ def imprint_html(manifest: dict, built_on: str) -> str:
   <dl>{license_rows}</dl>
   <p class="colophon">{html.escape(ui(manifest, 'repository_label'))}: <a href="{repository}">{html.escape(manifest["repository"])}</a></p>
   <p class="colophon">{html.escape(ui(manifest, 'trademark'))}</p>
+</section>"""
+
+
+def revision_history_html(manifest: dict) -> str:
+    language = edition_language(manifest)
+    items: list[str] = []
+    for entry in load_revisions():
+        notes = "".join(f"<li>{html.escape(note)}</li>" for note in entry[language])
+        items.append(
+            "<li>"
+            f'<p class="revision-version"><strong>{html.escape(entry["version"])}</strong>'
+            f"<span>{html.escape(entry['date'])}</span></p>"
+            f"<ul>{notes}</ul></li>"
+        )
+    return f"""
+<section class="frontmatter revision-history" id="version-history">
+  <p class="kicker">{html.escape(ui(manifest, 'revision_kicker'))}</p>
+  <h1>{html.escape(ui(manifest, 'revision_title'))}</h1>
+  <p>{html.escape(ui(manifest, 'revision_lead'))}</p>
+  <ol class="revision-list">{''.join(items)}</ol>
 </section>"""
 
 
@@ -694,7 +814,11 @@ def source_registry_html(manifest: dict) -> str:
 
 def toc_html(manifest: dict) -> str:
     docs_dir, book_dir = edition_dirs(manifest)
-    sections: list[str] = []
+    sections: list[str] = [
+        f'<section><h2>{html.escape(ui(manifest, "front_heading"))}</h2><ol>'
+        f'<li><a href="#version-history">{html.escape(ui(manifest, "revision_title"))}</a></li>'
+        "</ol></section>"
+    ]
     for part in manifest["parts"]:
         items: list[str] = []
         for name in part["files"]:
@@ -724,7 +848,16 @@ def toc_html(manifest: dict) -> str:
         for item in manifest["appendices"]
     )
     heading = html.escape(ui(manifest, "appendix_heading"))
-    return "".join(sections) + f"<section><h2>{heading}</h2><ol>{appendices}</ol></section>"
+    back_items = "".join(
+        f'<li><a href="#{html.escape(item["id"])}">{html.escape(item["title"])}</a></li>'
+        for item in manifest["back_matter"]
+    )
+    back_heading = html.escape(ui(manifest, "back_matter_heading"))
+    return (
+        "".join(sections)
+        + f"<section><h2>{heading}</h2><ol>{appendices}</ol></section>"
+        + f"<section><h2>{back_heading}</h2><ol>{back_items}</ol></section>"
+    )
 
 
 CSS = r"""
@@ -779,6 +912,19 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .imprint dl { max-width: 46rem; margin: 1.5rem 0 0; padding-top: 1.05rem; border-top: 3px solid var(--accent); grid-template-columns: minmax(11rem, 16rem) minmax(0, 1fr); }
 .imprint .colophon { color: var(--muted); }
 .toc-closing { margin: .2rem 0 0; font-weight: 700; }
+.revision-history .kicker, .subject-index .kicker { margin: 0 0 .35rem; color: var(--accent); font-weight: 700; letter-spacing: .16em; font-size: .82rem; }
+.revision-history h1, .subject-index h1 { margin-top: 0; }
+.revision-history > p, .index-lead { max-width: 40rem; color: var(--muted); }
+.revision-list { list-style: none; margin: 1.4rem 0 0; padding: 0; }
+.revision-list > li { break-inside: avoid; margin: 0 0 1.1rem; padding-top: .85rem; border-top: 1px solid var(--line); }
+.revision-version { margin: 0; }
+.revision-version span { margin-left: .75rem; color: var(--muted); }
+.revision-list ul { margin: .35rem 0 0; padding-left: 1.2rem; }
+.subject-index .index-columns { columns: 2; column-gap: 2.4rem; }
+.index-group { margin: 0 0 .85rem; }
+.index-letter { margin: 0 0 .15rem; color: var(--accent); font-weight: 800; letter-spacing: .14em; font-size: .82rem; break-after: avoid; }
+.subject-index ol { list-style: none; margin: 0; padding: 0; }
+.subject-index li { break-inside: avoid; margin: .12rem 0; }
 .companion { margin-top: 2rem; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); }
 .frontmatter { border-bottom: 1px solid var(--line); }
 .frontmatter .routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
@@ -792,11 +938,11 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 9.5rem)); }
 .part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 9.5rem)); font-size: 1.12rem; line-height: 1.6; }
 .part-index { position: absolute; right: 5%; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
-.chapter, .appendix, .part-closing { padding: 3.4rem 6% 3.6rem; border-bottom: 1px solid var(--line); }
+.chapter, .appendix, .part-closing, .back-matter { padding: 3.4rem 6% 3.6rem; border-bottom: 1px solid var(--line); }
 .part-closing { background: linear-gradient(180deg, var(--spine-soft), transparent 12rem); border-top: 4px solid var(--spine); }
 .closing-banner { margin: .8rem 0 0; color: var(--spine); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
-.chapter > header, .appendix > header, .part-closing > header { margin-bottom: 1.6rem; padding-bottom: .95rem; border-bottom: 1px solid var(--line); }
-.chapter > header h1, .appendix > header h1, .part-closing > header h1 { font-size: clamp(1.85rem, 4.2vw, 2.7rem); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }
+.chapter > header, .appendix > header, .part-closing > header, .back-matter > header { margin-bottom: 1.6rem; padding-bottom: .95rem; border-bottom: 1px solid var(--line); }
+.chapter > header h1, .appendix > header h1, .part-closing > header h1, .back-matter > header h1 { font-size: clamp(1.85rem, 4.2vw, 2.7rem); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }
 .chapter-number { display: block; color: var(--accent); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
 h2, h3, h4 { line-height: 1.35; scroll-margin-top: 1.25rem; }
 h2 { font-size: 1.42rem; margin: 2.35rem 0 .6rem; }
@@ -896,7 +1042,8 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
 }
 @media (max-width: 720px) {
   .book { width: min(100% - 1rem, 980px); }
-  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
+  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix, .back-matter { padding-left: 1rem; padding-right: 1rem; }
+  .subject-index .index-columns { columns: 1; }
   .cover { padding: 0; }
   .cover-sheet { min-height: auto; grid-template-rows: 220px auto; }
   .cover-panel { padding: 1.3rem 1rem 1.8rem; }
@@ -925,10 +1072,10 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; background: #10242e; }
   .cover-sheet { min-height: 245mm; }
-  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding: 0; }
-  .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { break-before: page; page-break-before: always; }
+  .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix, .back-matter { padding: 0; }
+  .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix, .back-matter { break-before: page; page-break-before: always; }
   .imprint { break-before: auto; page-break-before: auto; }
-  .chapter > header, .appendix > header, .part-closing > header, .chapter-compass { break-after: avoid-page; page-break-after: avoid; }
+  .chapter > header, .appendix > header, .part-closing > header, .back-matter > header, .chapter-compass { break-after: avoid-page; page-break-after: avoid; }
   .part-divider { min-height: 220mm; align-content: center; }
   .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
@@ -1002,6 +1149,129 @@ def cover_art_svg() -> str:
     return raw
 
 
+class _HeadingParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._tag: str | None = None
+        self._buf: list[str] = []
+        self._id = ""
+        self.found: list[tuple[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in {"h2", "h3"}:
+            self._tag = tag
+            self._buf = []
+            self._id = dict(attrs).get("id") or ""
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._tag and tag == self._tag:
+            text = " ".join("".join(self._buf).split())
+            if self._id and text:
+                self.found.append((self._id, text))
+            self._tag = None
+
+    def handle_data(self, data: str) -> None:
+        if self._tag:
+            self._buf.append(data)
+
+
+def collect_headings(rendered: str) -> list[tuple[str, str]]:
+    parser = _HeadingParser()
+    parser.feed(rendered)
+    return parser.found
+
+
+def resolve_index_heading(
+    container: str,
+    query: str,
+    headings: dict[str, list[tuple[str, str]]],
+) -> str:
+    hits = [(anchor, text) for anchor, text in headings.get(container, []) if query in text]
+    if len(hits) != 1:
+        shown = "; ".join(text for _anchor, text in hits[:6])
+        raise BuildError(f"index heading {query!r} in {container} matched {len(hits)}: {shown}")
+    return hits[0][0]
+
+
+def index_lookup_letter(term: str) -> str:
+    match = re.search(r"[A-Za-z]", term)
+    if not match:
+        raise BuildError(f"index term has no Latin letter: {term}")
+    return match.group(0).upper()
+
+
+def index_sort_token(term: str) -> str:
+    match = re.search(r"[A-Za-z0-9]+", term)
+    return match.group(0).casefold() if match else term.casefold()
+
+
+def load_subject_index() -> list[dict]:
+    data = json.loads(resolve_book_asset("subject-index.json").read_text(encoding="utf-8"))
+    entries = data.get("entries") if isinstance(data, dict) else None
+    if not isinstance(entries, list) or len(entries) < 60:
+        raise BuildError("subject index needs at least 60 entries")
+    keys = [entry.get("key") for entry in entries]
+    if any(not isinstance(key, str) or not key for key in keys) or len(keys) != len(set(keys)):
+        raise BuildError("subject index keys must be unique")
+    for entry in entries:
+        letter = entry.get("letter")
+        if not isinstance(letter, str) or not re.fullmatch(r"[A-Z]", letter):
+            raise BuildError(f"index letter must be A–Z: {entry.get('key')}")
+        for language in ("zh", "en"):
+            localized = entry.get(language)
+            term = localized.get("term") if isinstance(localized, dict) else None
+            refs = localized.get("refs") if isinstance(localized, dict) else None
+            if not isinstance(term, str) or not term.strip() or not isinstance(refs, list) or not refs:
+                raise BuildError(f"index entry is incomplete: {entry.get('key')}:{language}")
+            if index_lookup_letter(term) != letter:
+                raise BuildError(
+                    f"index letter {letter} does not match {language} term {term!r}"
+                )
+    return entries
+
+
+def subject_index_html(
+    manifest: dict,
+    headings: dict[str, list[tuple[str, str]]],
+) -> str:
+    language = edition_language(manifest)
+    item = next(piece for piece in manifest["back_matter"] if piece["id"] == "subject-index")
+    grouped: dict[str, list[str]] = {}
+    order: list[str] = []
+    for entry in sorted(
+        load_subject_index(),
+        key=lambda piece: (
+            piece["letter"],
+            index_sort_token(piece[language]["term"]),
+            piece["key"],
+        ),
+    ):
+        localized = entry[language]
+        letter = str(entry["letter"])
+        if letter not in grouped:
+            grouped[letter] = []
+            order.append(letter)
+        for ref in localized["refs"]:
+            chapter = str(ref["chapter"])
+            anchor = resolve_index_heading(f"chapter-{chapter}", str(ref["heading"]), headings)
+            text = f"{html.escape(str(localized['term']))} · {html.escape(str(ref['label']))}"
+            grouped[letter].append(
+                f'<li class="index-entry"><a href="#{html.escape(anchor)}">{text}</a></li>'
+            )
+    groups = "".join(
+        f'<section class="index-group"><p class="index-letter">{html.escape(letter)}</p>'
+        f"<ol>{''.join(grouped[letter])}</ol></section>"
+        for letter in order
+    )
+    return f"""
+<article class="back-matter subject-index" id="subject-index">
+  <header><span class="chapter-number">{html.escape(ui(manifest, 'index_kicker'))}</span><h1>{html.escape(item['title'])}</h1></header>
+  <p class="index-lead">{html.escape(ui(manifest, 'index_lead'))}</p>
+  <div class="index-columns">{groups}</div>
+  <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
+</article>"""
+
+
 def part_closing_html(part: dict, manifest: dict, chapter_anchors: dict[Path, str]) -> str:
     closing = part.get("closing")
     if not closing:
@@ -1064,6 +1334,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
   </div>
 </section>
 {imprint_html(manifest, built_on)}
+{revision_history_html(manifest)}
 <section class="frontmatter" id="how-to-read">
   <h1>{html.escape(ui(manifest, 'read_title'))}</h1>
   <p>{html.escape(ui(manifest, 'read_lead'))}</p>
@@ -1077,6 +1348,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     )
 
     chapter_index = 0
+    headings: dict[str, list[tuple[str, str]]] = {}
     for index, part in enumerate(manifest["parts"], start=1):
         body.append(
             f"""
@@ -1096,6 +1368,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             rendered = render_document(
                 content, path, f"ch{filename[:2]}", chapter_anchors, table_label, labels
             )
+            headings[f"chapter-{filename[:2]}"] = collect_headings(rendered)
             guide = manifest["chapter_guides"][filename]
             chapter_kicker = ui(manifest, "chapter_kicker").format(n=filename[:2])
             body.append(
@@ -1129,6 +1402,8 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
   <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
 </article>"""
         )
+
+    body.append(subject_index_html(manifest, headings))
 
     document = f"""<!doctype html>
 <html lang="{html.escape(manifest['language'])}">
@@ -1228,13 +1503,15 @@ def _fit_running_header(text: str, *, fontname: str, fontsize: float, max_width:
 
 
 def _stamp_toc_page_references(document, fitz) -> None:
-    """Right-align physical page references in each rendered TOC column."""
-    in_contents = False
+    """Right-align physical page references in the contents and the subject index."""
+    mode = None
     for page in document:
         text = page.get_text()
         if "目录与分部目标" in text or "Contents and part goals" in text:
-            in_contents = True
-        if not in_contents:
+            mode = "toc"
+        elif "这是书末主题索引" in text or "This is the subject index" in text:
+            mode = "index"
+        if mode is None:
             continue
 
         links = [
@@ -1242,7 +1519,7 @@ def _stamp_toc_page_references(document, fitz) -> None:
             if isinstance(link.get("page"), int) and link["page"] >= 1
         ]
         if not links:
-            in_contents = False
+            mode = None
             continue
 
         link_rects = [(link, fitz.Rect(link["from"])) for link in links]

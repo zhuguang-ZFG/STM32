@@ -1,0 +1,2374 @@
+{
+  "entries": [
+    {
+      "key": "ack",
+      "letter": "A",
+      "zh": {
+        "term": "ACK",
+        "refs": [
+          {
+            "chapter": "07",
+            "heading": "时序与协议",
+            "label": "07 时序"
+          },
+          {
+            "chapter": "13",
+            "heading": "CRC 与 ACK",
+            "label": "13 CRC"
+          }
+        ]
+      },
+      "en": {
+        "term": "ACK",
+        "refs": [
+          {
+            "chapter": "07",
+            "heading": "Timing and the protocol",
+            "label": "07 timing"
+          },
+          {
+            "chapter": "13",
+            "heading": "CRC, ACK",
+            "label": "13 CRC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "adc",
+      "letter": "A",
+      "zh": {
+        "term": "ADC",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "分辨率、参考电压",
+            "label": "09 分辨率"
+          }
+        ]
+      },
+      "en": {
+        "term": "ADC",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "Resolution, reference",
+            "label": "09 resolution"
+          }
+        ]
+      }
+    },
+    {
+      "key": "af",
+      "letter": "A",
+      "zh": {
+        "term": "复用 AF",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "重映射、5 V",
+            "label": "03 重映射"
+          }
+        ]
+      },
+      "en": {
+        "term": "Alternate function",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "Remap, 5 V",
+            "label": "03 remap"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ahb",
+      "letter": "A",
+      "zh": {
+        "term": "AHB / APB",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "时钟树与分频",
+            "label": "02 时钟树"
+          }
+        ]
+      },
+      "en": {
+        "term": "AHB / APB",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "Clock tree and dividers",
+            "label": "02 clock tree"
+          }
+        ]
+      }
+    },
+    {
+      "key": "arr",
+      "letter": "A",
+      "zh": {
+        "term": "ARR",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "时基公式",
+            "label": "05 时基"
+          }
+        ]
+      },
+      "en": {
+        "term": "ARR",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "Time-base formulas",
+            "label": "05 time base"
+          }
+        ]
+      }
+    },
+    {
+      "key": "bfar",
+      "letter": "B",
+      "zh": {
+        "term": "BFAR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "三件套",
+            "label": "17 三件套"
+          }
+        ]
+      },
+      "en": {
+        "term": "BFAR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "three-piece",
+            "label": "17 fault kit"
+          }
+        ]
+      }
+    },
+    {
+      "key": "bluepill",
+      "letter": "B",
+      "zh": {
+        "term": "BluePill",
+        "refs": [
+          {
+            "chapter": "21",
+            "heading": "STM32F103C8T6",
+            "label": "21 BluePill"
+          }
+        ]
+      },
+      "en": {
+        "term": "BluePill",
+        "refs": [
+          {
+            "chapter": "21",
+            "heading": "STM32F103C8T6",
+            "label": "21 BluePill"
+          }
+        ]
+      }
+    },
+    {
+      "key": "boot-lock",
+      "letter": "B",
+      "zh": {
+        "term": "BOOT_LOCK",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "SWD 失联",
+            "label": "23 SWD"
+          }
+        ]
+      },
+      "en": {
+        "term": "BOOT_LOCK",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "SWD loss",
+            "label": "23 SWD"
+          }
+        ]
+      }
+    },
+    {
+      "key": "boot0",
+      "letter": "B",
+      "zh": {
+        "term": "BOOT0",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "BOOT0 / BOOT1",
+            "label": "02 启动"
+          },
+          {
+            "chapter": "23",
+            "heading": "BOOT0 与 SWCLK",
+            "label": "23 共脚"
+          }
+        ]
+      },
+      "en": {
+        "term": "BOOT0",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "BOOT0 / BOOT1",
+            "label": "02 boot"
+          },
+          {
+            "chapter": "23",
+            "heading": "BOOT0 shares SWCLK",
+            "label": "23 shared pin"
+          }
+        ]
+      }
+    },
+    {
+      "key": "brr",
+      "letter": "B",
+      "zh": {
+        "term": "BRR",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "波特率与误差",
+            "label": "06 波特率"
+          }
+        ]
+      },
+      "en": {
+        "term": "BRR",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "Baud rate and error",
+            "label": "06 baud"
+          }
+        ]
+      }
+    },
+    {
+      "key": "bsrr",
+      "letter": "B",
+      "zh": {
+        "term": "BSRR",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "GPIO 寄存器（F1）",
+            "label": "03 寄存器"
+          }
+        ]
+      },
+      "en": {
+        "term": "BSRR",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "GPIO registers (F1)",
+            "label": "03 registers"
+          }
+        ]
+      }
+    },
+    {
+      "key": "bxcan",
+      "letter": "B",
+      "zh": {
+        "term": "bxCAN",
+        "refs": [
+          {
+            "chapter": "13",
+            "heading": "物理层",
+            "label": "13 物理层"
+          }
+        ]
+      },
+      "en": {
+        "term": "bxCAN",
+        "refs": [
+          {
+            "chapter": "13",
+            "heading": "Physical layer",
+            "label": "13 physical"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cache",
+      "letter": "C",
+      "zh": {
+        "term": "Cache 一致性",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "Cache 一致性",
+            "label": "10 Cache"
+          },
+          {
+            "chapter": "27",
+            "heading": "Cache 维护",
+            "label": "27 Cache"
+          }
+        ]
+      },
+      "en": {
+        "term": "Cache coherency",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "cache coherency",
+            "label": "10 cache"
+          },
+          {
+            "chapter": "27",
+            "heading": "Cache maintenance",
+            "label": "27 cache"
+          }
+        ]
+      }
+    },
+    {
+      "key": "can",
+      "letter": "C",
+      "zh": {
+        "term": "CAN 位时间",
+        "refs": [
+          {
+            "chapter": "13",
+            "heading": "波特率与采样点",
+            "label": "13 采样点"
+          }
+        ]
+      },
+      "en": {
+        "term": "CAN bit timing",
+        "refs": [
+          {
+            "chapter": "13",
+            "heading": "Baud rate and sample point",
+            "label": "13 sample point"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ccr",
+      "letter": "C",
+      "zh": {
+        "term": "CCR",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "PWM 模式",
+            "label": "05 PWM"
+          }
+        ]
+      },
+      "en": {
+        "term": "CCR",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "PWM modes",
+            "label": "05 PWM"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cdc",
+      "letter": "U",
+      "zh": {
+        "term": "USB CDC",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "CDC",
+            "label": "14 CDC"
+          }
+        ]
+      },
+      "en": {
+        "term": "USB CDC",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "CDC versus",
+            "label": "14 CDC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cfsr",
+      "letter": "C",
+      "zh": {
+        "term": "CFSR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "三件套",
+            "label": "17 三件套"
+          }
+        ]
+      },
+      "en": {
+        "term": "CFSR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "three-piece",
+            "label": "17 fault kit"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cmsis-rtos2",
+      "letter": "C",
+      "zh": {
+        "term": "CMSIS-RTOS2",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "CMSIS-RTOS2",
+            "label": "28 接口"
+          }
+        ]
+      },
+      "en": {
+        "term": "CMSIS-RTOS2",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "CMSIS-RTOS2",
+            "label": "28 interface"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cpol",
+      "letter": "C",
+      "zh": {
+        "term": "CPOL / CPHA",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "CPOL/CPHA",
+            "label": "08 模式"
+          }
+        ]
+      },
+      "en": {
+        "term": "CPOL / CPHA",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "CPOL/CPHA",
+            "label": "08 modes"
+          }
+        ]
+      }
+    },
+    {
+      "key": "css",
+      "letter": "C",
+      "zh": {
+        "term": "CSS",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "CSS 和 MCO",
+            "label": "02 CSS"
+          }
+        ]
+      },
+      "en": {
+        "term": "CSS",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "CSS and MCO",
+            "label": "02 CSS"
+          }
+        ]
+      }
+    },
+    {
+      "key": "cubemx",
+      "letter": "C",
+      "zh": {
+        "term": "CubeMX",
+        "refs": [
+          {
+            "chapter": "01",
+            "heading": "STM32CubeMX",
+            "label": "01 CubeMX"
+          }
+        ]
+      },
+      "en": {
+        "term": "CubeMX",
+        "refs": [
+          {
+            "chapter": "01",
+            "heading": "STM32CubeMX",
+            "label": "01 CubeMX"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dac",
+      "letter": "D",
+      "zh": {
+        "term": "DAC",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "DAC 输出",
+            "label": "09 DAC"
+          }
+        ]
+      },
+      "en": {
+        "term": "DAC",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "DAC output",
+            "label": "09 DAC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dbg-swen",
+      "letter": "D",
+      "zh": {
+        "term": "DBG_SWEN",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "SWD 失联",
+            "label": "23 SWD"
+          }
+        ]
+      },
+      "en": {
+        "term": "DBG_SWEN",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "SWD loss",
+            "label": "23 SWD"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dead-time",
+      "letter": "D",
+      "zh": {
+        "term": "死区 dead time",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "互补输出与死区",
+            "label": "05 死区"
+          }
+        ]
+      },
+      "en": {
+        "term": "Dead time",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "Complementary outputs",
+            "label": "05 dead time"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dhcp",
+      "letter": "D",
+      "zh": {
+        "term": "DHCP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "静态地址",
+            "label": "27 DHCP"
+          }
+        ]
+      },
+      "en": {
+        "term": "DHCP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "static addressing",
+            "label": "27 DHCP"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dma",
+      "letter": "D",
+      "zh": {
+        "term": "DMA",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "请求映射",
+            "label": "10 请求"
+          },
+          {
+            "chapter": "10",
+            "heading": "「通道」",
+            "label": "10 通道"
+          }
+        ]
+      },
+      "en": {
+        "term": "DMA",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "request map",
+            "label": "10 request map"
+          },
+          {
+            "chapter": "10",
+            "heading": "channels",
+            "label": "10 channels"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dtcm",
+      "letter": "D",
+      "zh": {
+        "term": "DTCM",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "DMA 看见的内存",
+            "label": "27 内存"
+          }
+        ]
+      },
+      "en": {
+        "term": "DTCM",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "DMA may see different",
+            "label": "27 memory"
+          }
+        ]
+      }
+    },
+    {
+      "key": "dwt",
+      "letter": "D",
+      "zh": {
+        "term": "DWT",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "代码优化",
+            "label": "17 DWT"
+          }
+        ]
+      },
+      "en": {
+        "term": "DWT",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "speed the code",
+            "label": "17 DWT"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ethernet",
+      "letter": "E",
+      "zh": {
+        "term": "Ethernet",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "硬件闭环",
+            "label": "27 RMII"
+          }
+        ]
+      },
+      "en": {
+        "term": "Ethernet",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "Hardware loop",
+            "label": "27 RMII"
+          }
+        ]
+      }
+    },
+    {
+      "key": "exti",
+      "letter": "E",
+      "zh": {
+        "term": "EXTI",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "EXTI 外部中断",
+            "label": "04 EXTI"
+          }
+        ]
+      },
+      "en": {
+        "term": "EXTI",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "EXTI external",
+            "label": "04 EXTI"
+          }
+        ]
+      }
+    },
+    {
+      "key": "flash",
+      "letter": "F",
+      "zh": {
+        "term": "Flash",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "Flash 组织结构",
+            "label": "12 组织"
+          }
+        ]
+      },
+      "en": {
+        "term": "Flash",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "How Flash is organized",
+            "label": "12 layout"
+          }
+        ]
+      }
+    },
+    {
+      "key": "flash-acr",
+      "letter": "F",
+      "zh": {
+        "term": "FLASH_ACR",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "Flash 等待周期",
+            "label": "02 等待"
+          }
+        ]
+      },
+      "en": {
+        "term": "FLASH_ACR",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "Flash wait states",
+            "label": "02 wait states"
+          }
+        ]
+      }
+    },
+    {
+      "key": "flash-keyr",
+      "letter": "F",
+      "zh": {
+        "term": "FLASH_KEYR",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "解锁与编程",
+            "label": "12 解锁"
+          }
+        ]
+      },
+      "en": {
+        "term": "FLASH_KEYR",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "Unlock and the programming",
+            "label": "12 unlock"
+          }
+        ]
+      }
+    },
+    {
+      "key": "freertos",
+      "letter": "F",
+      "zh": {
+        "term": "FreeRTOS",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "裸机前后台",
+            "label": "15 入门"
+          },
+          {
+            "chapter": "28",
+            "heading": "FreeRTOS V11.3.2",
+            "label": "28 V11.3.2"
+          }
+        ]
+      },
+      "en": {
+        "term": "FreeRTOS",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "Bare-metal",
+            "label": "15 start"
+          },
+          {
+            "chapter": "28",
+            "heading": "FreeRTOS V11.3.2",
+            "label": "28 V11.3.2"
+          }
+        ]
+      }
+    },
+    {
+      "key": "fromisr",
+      "letter": "F",
+      "zh": {
+        "term": "FromISR",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "FromISR",
+            "label": "15 FromISR"
+          }
+        ]
+      },
+      "en": {
+        "term": "FromISR",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "FromISR",
+            "label": "15 FromISR"
+          }
+        ]
+      }
+    },
+    {
+      "key": "g071",
+      "letter": "G",
+      "zh": {
+        "term": "G071",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "这颗料是谁",
+            "label": "23 料号"
+          }
+        ]
+      },
+      "en": {
+        "term": "G071",
+        "refs": [
+          {
+            "chapter": "23",
+            "heading": "Which part this is",
+            "label": "23 part"
+          }
+        ]
+      }
+    },
+    {
+      "key": "gpio",
+      "letter": "G",
+      "zh": {
+        "term": "GPIO",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "模式详解",
+            "label": "03 模式"
+          }
+        ]
+      },
+      "en": {
+        "term": "GPIO",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "The 8 GPIO modes",
+            "label": "03 modes"
+          }
+        ]
+      }
+    },
+    {
+      "key": "h743",
+      "letter": "H",
+      "zh": {
+        "term": "H743",
+        "refs": [
+          {
+            "chapter": "25",
+            "heading": "这颗料是谁",
+            "label": "25 料号"
+          }
+        ]
+      },
+      "en": {
+        "term": "H743",
+        "refs": [
+          {
+            "chapter": "25",
+            "heading": "Which part this is",
+            "label": "25 part"
+          }
+        ]
+      }
+    },
+    {
+      "key": "hal",
+      "letter": "H",
+      "zh": {
+        "term": "HAL",
+        "refs": [
+          {
+            "chapter": "26",
+            "heading": "HAL、SPL",
+            "label": "26 HAL"
+          }
+        ]
+      },
+      "en": {
+        "term": "HAL",
+        "refs": [
+          {
+            "chapter": "26",
+            "heading": "HAL, SPL",
+            "label": "26 HAL"
+          }
+        ]
+      }
+    },
+    {
+      "key": "hardfault",
+      "letter": "H",
+      "zh": {
+        "term": "HardFault",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "三件套",
+            "label": "17 三件套"
+          },
+          {
+            "chapter": "17",
+            "heading": "常见原因",
+            "label": "17 原因"
+          }
+        ]
+      },
+      "en": {
+        "term": "HardFault",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "three-piece",
+            "label": "17 fault kit"
+          },
+          {
+            "chapter": "17",
+            "heading": "Common HardFault",
+            "label": "17 causes"
+          }
+        ]
+      }
+    },
+    {
+      "key": "heap",
+      "letter": "H",
+      "zh": {
+        "term": "堆 heap",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "heap_1",
+            "label": "15 heap"
+          }
+        ]
+      },
+      "en": {
+        "term": "Heap",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "heap_1",
+            "label": "15 heap"
+          }
+        ]
+      }
+    },
+    {
+      "key": "hfsr",
+      "letter": "H",
+      "zh": {
+        "term": "HFSR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "三件套",
+            "label": "17 三件套"
+          }
+        ]
+      },
+      "en": {
+        "term": "HFSR",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "three-piece",
+            "label": "17 fault kit"
+          }
+        ]
+      }
+    },
+    {
+      "key": "hse",
+      "letter": "H",
+      "zh": {
+        "term": "HSE / HSI",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "时钟树与分频",
+            "label": "02 时钟树"
+          }
+        ]
+      },
+      "en": {
+        "term": "HSE / HSI",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "Clock tree and dividers",
+            "label": "02 clock tree"
+          }
+        ]
+      }
+    },
+    {
+      "key": "hsem",
+      "letter": "H",
+      "zh": {
+        "term": "HSEM",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "H745",
+            "label": "28 双核"
+          }
+        ]
+      },
+      "en": {
+        "term": "HSEM",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "H745",
+            "label": "28 dual core"
+          }
+        ]
+      }
+    },
+    {
+      "key": "i2c",
+      "letter": "I",
+      "zh": {
+        "term": "I2C",
+        "refs": [
+          {
+            "chapter": "07",
+            "heading": "1. 电气特性",
+            "label": "07 电气"
+          },
+          {
+            "chapter": "07",
+            "heading": "重复起始",
+            "label": "07 Sr"
+          }
+        ]
+      },
+      "en": {
+        "term": "I2C",
+        "refs": [
+          {
+            "chapter": "07",
+            "heading": "Electrical behavior",
+            "label": "07 electrical"
+          },
+          {
+            "chapter": "07",
+            "heading": "Repeated start",
+            "label": "07 Sr"
+          }
+        ]
+      }
+    },
+    {
+      "key": "iap",
+      "letter": "I",
+      "zh": {
+        "term": "IAP",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "IAP 原理",
+            "label": "12 IAP"
+          }
+        ]
+      },
+      "en": {
+        "term": "IAP",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "How IAP works",
+            "label": "12 IAP"
+          }
+        ]
+      }
+    },
+    {
+      "key": "idle",
+      "letter": "I",
+      "zh": {
+        "term": "IDLE",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "代码实现",
+            "label": "06 IDLE"
+          }
+        ]
+      },
+      "en": {
+        "term": "IDLE",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "Code",
+            "label": "06 IDLE"
+          }
+        ]
+      }
+    },
+    {
+      "key": "iwdg",
+      "letter": "I",
+      "zh": {
+        "term": "IWDG / WWDG",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "IWDG",
+            "label": "11 看门狗"
+          }
+        ]
+      },
+      "en": {
+        "term": "IWDG / WWDG",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "IWDG",
+            "label": "11 watchdog"
+          }
+        ]
+      }
+    },
+    {
+      "key": "jedec",
+      "letter": "J",
+      "zh": {
+        "term": "JEDEC ID",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "代码实现",
+            "label": "08 JEDEC"
+          }
+        ]
+      },
+      "en": {
+        "term": "JEDEC ID",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "Code",
+            "label": "08 JEDEC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "jtag",
+      "letter": "J",
+      "zh": {
+        "term": "JTAG",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "SWD vs JTAG",
+            "label": "17 JTAG"
+          }
+        ]
+      },
+      "en": {
+        "term": "JTAG",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "SWD vs JTAG",
+            "label": "17 JTAG"
+          }
+        ]
+      }
+    },
+    {
+      "key": "l476",
+      "letter": "L",
+      "zh": {
+        "term": "L476",
+        "refs": [
+          {
+            "chapter": "24",
+            "heading": "这颗料是谁",
+            "label": "24 料号"
+          }
+        ]
+      },
+      "en": {
+        "term": "L476",
+        "refs": [
+          {
+            "chapter": "24",
+            "heading": "Which part this is",
+            "label": "24 part"
+          }
+        ]
+      }
+    },
+    {
+      "key": "linker",
+      "letter": "L",
+      "zh": {
+        "term": "链接脚本 linker",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "内存划分",
+            "label": "12 布局"
+          }
+        ]
+      },
+      "en": {
+        "term": "Linker script",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "split the memory",
+            "label": "12 layout"
+          }
+        ]
+      }
+    },
+    {
+      "key": "low-power",
+      "letter": "S",
+      "zh": {
+        "term": "Sleep / Stop / Standby",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "三种低功耗",
+            "label": "16 模式"
+          }
+        ]
+      },
+      "en": {
+        "term": "Sleep / Stop / Standby",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "three low-power",
+            "label": "16 modes"
+          }
+        ]
+      }
+    },
+    {
+      "key": "lwip",
+      "letter": "L",
+      "zh": {
+        "term": "lwIP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "lwIP",
+            "label": "27 API"
+          }
+        ]
+      },
+      "en": {
+        "term": "lwIP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "lwIP",
+            "label": "27 API"
+          }
+        ]
+      }
+    },
+    {
+      "key": "mco",
+      "letter": "M",
+      "zh": {
+        "term": "MCO",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "CSS 和 MCO",
+            "label": "02 MCO"
+          }
+        ]
+      },
+      "en": {
+        "term": "MCO",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "CSS and MCO",
+            "label": "02 MCO"
+          }
+        ]
+      }
+    },
+    {
+      "key": "mqtt",
+      "letter": "M",
+      "zh": {
+        "term": "MQTT",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "QoS",
+            "label": "27 QoS"
+          }
+        ]
+      },
+      "en": {
+        "term": "MQTT",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "QoS",
+            "label": "27 QoS"
+          }
+        ]
+      }
+    },
+    {
+      "key": "mss",
+      "letter": "M",
+      "zh": {
+        "term": "MSS",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "字节流",
+            "label": "27 TCP"
+          }
+        ]
+      },
+      "en": {
+        "term": "MSS",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "byte stream",
+            "label": "27 TCP"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ndtr",
+      "letter": "N",
+      "zh": {
+        "term": "NDTR / CNDTR",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "NDTR",
+            "label": "10 NDTR"
+          }
+        ]
+      },
+      "en": {
+        "term": "NDTR / CNDTR",
+        "refs": [
+          {
+            "chapter": "10",
+            "heading": "NDTR",
+            "label": "10 NDTR"
+          }
+        ]
+      }
+    },
+    {
+      "key": "nss",
+      "letter": "N",
+      "zh": {
+        "term": "NSS",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "NSS",
+            "label": "08 片选"
+          }
+        ]
+      },
+      "en": {
+        "term": "NSS",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "NSS",
+            "label": "08 chip select"
+          }
+        ]
+      }
+    },
+    {
+      "key": "nvic",
+      "letter": "N",
+      "zh": {
+        "term": "NVIC",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "NVIC 优先级",
+            "label": "04 优先级"
+          }
+        ]
+      },
+      "en": {
+        "term": "NVIC",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "NVIC priority",
+            "label": "04 priority"
+          }
+        ]
+      }
+    },
+    {
+      "key": "open-drain",
+      "letter": "O",
+      "zh": {
+        "term": "开漏 open-drain",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "推挽 vs 开漏",
+            "label": "03 开漏"
+          }
+        ]
+      },
+      "en": {
+        "term": "Open-drain",
+        "refs": [
+          {
+            "chapter": "03",
+            "heading": "Push-pull versus open-drain",
+            "label": "03 open-drain"
+          }
+        ]
+      }
+    },
+    {
+      "key": "option-bytes",
+      "letter": "O",
+      "zh": {
+        "term": "选项字节 option bytes",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "选项字节",
+            "label": "12 选项字节"
+          }
+        ]
+      },
+      "en": {
+        "term": "Option bytes",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "Option bytes",
+            "label": "12 option bytes"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ore",
+      "letter": "O",
+      "zh": {
+        "term": "ORE",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "溢出错误",
+            "label": "06 溢出"
+          }
+        ]
+      },
+      "en": {
+        "term": "ORE",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "Overrun",
+            "label": "06 overrun"
+          }
+        ]
+      }
+    },
+    {
+      "key": "pendsv",
+      "letter": "P",
+      "zh": {
+        "term": "PendSV",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "临界区与中断优先级",
+            "label": "15 PendSV"
+          }
+        ]
+      },
+      "en": {
+        "term": "PendSV",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "Critical sections and interrupt priority",
+            "label": "15 PendSV"
+          }
+        ]
+      }
+    },
+    {
+      "key": "phy",
+      "letter": "P",
+      "zh": {
+        "term": "PHY",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "硬件闭环",
+            "label": "27 PHY"
+          }
+        ]
+      },
+      "en": {
+        "term": "PHY",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "Hardware loop",
+            "label": "27 PHY"
+          }
+        ]
+      }
+    },
+    {
+      "key": "pll",
+      "letter": "P",
+      "zh": {
+        "term": "PLL",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "时钟树与分频",
+            "label": "02 PLL"
+          }
+        ]
+      },
+      "en": {
+        "term": "PLL",
+        "refs": [
+          {
+            "chapter": "02",
+            "heading": "Clock tree and dividers",
+            "label": "02 PLL"
+          }
+        ]
+      }
+    },
+    {
+      "key": "priority-grouping",
+      "letter": "P",
+      "zh": {
+        "term": "优先级分组 priority",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "优先级分组",
+            "label": "04 分组"
+          }
+        ]
+      },
+      "en": {
+        "term": "Priority grouping",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "Which grouping",
+            "label": "04 grouping"
+          }
+        ]
+      }
+    },
+    {
+      "key": "priority-inversion",
+      "letter": "P",
+      "zh": {
+        "term": "优先级反转 priority inversion",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "优先级反转",
+            "label": "15 反转"
+          }
+        ]
+      },
+      "en": {
+        "term": "Priority inversion",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "Priority inversion",
+            "label": "15 inversion"
+          }
+        ]
+      }
+    },
+    {
+      "key": "psc",
+      "letter": "P",
+      "zh": {
+        "term": "PSC",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "时基公式",
+            "label": "05 PSC"
+          }
+        ]
+      },
+      "en": {
+        "term": "PSC",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "Time-base formulas",
+            "label": "05 PSC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "pvd",
+      "letter": "P",
+      "zh": {
+        "term": "PVD",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "PVD",
+            "label": "16 PVD"
+          }
+        ]
+      },
+      "en": {
+        "term": "PVD",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "PVD",
+            "label": "16 PVD"
+          }
+        ]
+      }
+    },
+    {
+      "key": "pwm",
+      "letter": "P",
+      "zh": {
+        "term": "PWM",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "PWM 模式",
+            "label": "05 PWM"
+          }
+        ]
+      },
+      "en": {
+        "term": "PWM",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "PWM modes",
+            "label": "05 PWM"
+          }
+        ]
+      }
+    },
+    {
+      "key": "rdp",
+      "letter": "R",
+      "zh": {
+        "term": "RDP",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "选项字节",
+            "label": "12 读保护"
+          },
+          {
+            "chapter": "01",
+            "heading": "读保护",
+            "label": "01 解锁"
+          }
+        ]
+      },
+      "en": {
+        "term": "RDP",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "Option bytes",
+            "label": "12 readout"
+          },
+          {
+            "chapter": "01",
+            "heading": "read protection",
+            "label": "01 unlock"
+          }
+        ]
+      }
+    },
+    {
+      "key": "renode",
+      "letter": "R",
+      "zh": {
+        "term": "Renode",
+        "refs": [
+          {
+            "chapter": "22",
+            "heading": "Renode",
+            "label": "22 Renode"
+          }
+        ]
+      },
+      "en": {
+        "term": "Renode",
+        "refs": [
+          {
+            "chapter": "22",
+            "heading": "Renode",
+            "label": "22 Renode"
+          }
+        ]
+      }
+    },
+    {
+      "key": "rmii",
+      "letter": "R",
+      "zh": {
+        "term": "RMII",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "硬件闭环",
+            "label": "27 RMII"
+          }
+        ]
+      },
+      "en": {
+        "term": "RMII",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "Hardware loop",
+            "label": "27 RMII"
+          }
+        ]
+      }
+    },
+    {
+      "key": "rtc",
+      "letter": "R",
+      "zh": {
+        "term": "RTC",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "RTC 与备份",
+            "label": "11 RTC"
+          }
+        ]
+      },
+      "en": {
+        "term": "RTC",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "RTC and the backup",
+            "label": "11 RTC"
+          }
+        ]
+      }
+    },
+    {
+      "key": "rt-thread",
+      "letter": "R",
+      "zh": {
+        "term": "RT-Thread",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "RT-Thread",
+            "label": "28 RT-Thread"
+          }
+        ]
+      },
+      "en": {
+        "term": "RT-Thread",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "RT-Thread",
+            "label": "28 RT-Thread"
+          }
+        ]
+      }
+    },
+    {
+      "key": "sampling",
+      "letter": "S",
+      "zh": {
+        "term": "采样时间 sampling",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "逐次逼近",
+            "label": "09 采样"
+          }
+        ]
+      },
+      "en": {
+        "term": "Sampling time",
+        "refs": [
+          {
+            "chapter": "09",
+            "heading": "Successive approximation",
+            "label": "09 sample"
+          }
+        ]
+      }
+    },
+    {
+      "key": "spi",
+      "letter": "S",
+      "zh": {
+        "term": "SPI",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "四根线",
+            "label": "08 移位"
+          }
+        ]
+      },
+      "en": {
+        "term": "SPI",
+        "refs": [
+          {
+            "chapter": "08",
+            "heading": "Four wires",
+            "label": "08 shift"
+          }
+        ]
+      }
+    },
+    {
+      "key": "spl",
+      "letter": "S",
+      "zh": {
+        "term": "SPL",
+        "refs": [
+          {
+            "chapter": "26",
+            "heading": "先钉死版本",
+            "label": "26 V3.5.0"
+          }
+        ]
+      },
+      "en": {
+        "term": "SPL",
+        "refs": [
+          {
+            "chapter": "26",
+            "heading": "Freeze the version",
+            "label": "26 V3.5.0"
+          }
+        ]
+      }
+    },
+    {
+      "key": "stack",
+      "letter": "S",
+      "zh": {
+        "term": "任务栈 stack",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "任务栈",
+            "label": "15 栈"
+          }
+        ]
+      },
+      "en": {
+        "term": "Stack",
+        "refs": [
+          {
+            "chapter": "15",
+            "heading": "task stack",
+            "label": "15 stack"
+          }
+        ]
+      }
+    },
+    {
+      "key": "stop2",
+      "letter": "S",
+      "zh": {
+        "term": "Stop 2",
+        "refs": [
+          {
+            "chapter": "24",
+            "heading": "Stop 2",
+            "label": "24 Stop 2"
+          }
+        ]
+      },
+      "en": {
+        "term": "Stop 2",
+        "refs": [
+          {
+            "chapter": "24",
+            "heading": "Versus F1 / F4",
+            "label": "24 Stop 2"
+          }
+        ]
+      }
+    },
+    {
+      "key": "swd",
+      "letter": "S",
+      "zh": {
+        "term": "SWD",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "SWD vs JTAG",
+            "label": "17 SWD"
+          }
+        ]
+      },
+      "en": {
+        "term": "SWD",
+        "refs": [
+          {
+            "chapter": "17",
+            "heading": "SWD vs JTAG",
+            "label": "17 SWD"
+          }
+        ]
+      }
+    },
+    {
+      "key": "systick",
+      "letter": "S",
+      "zh": {
+        "term": "SysTick",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "SysTick 与 HAL",
+            "label": "04 时基"
+          },
+          {
+            "chapter": "15",
+            "heading": "SysTick 与调度器",
+            "label": "15 时基"
+          }
+        ]
+      },
+      "en": {
+        "term": "SysTick",
+        "refs": [
+          {
+            "chapter": "04",
+            "heading": "SysTick and the HAL",
+            "label": "04 time base"
+          },
+          {
+            "chapter": "15",
+            "heading": "SysTick and the scheduler",
+            "label": "15 tick"
+          }
+        ]
+      }
+    },
+    {
+      "key": "tcp",
+      "letter": "T",
+      "zh": {
+        "term": "TCP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "字节流",
+            "label": "27 分帧"
+          }
+        ]
+      },
+      "en": {
+        "term": "TCP",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "byte stream",
+            "label": "27 framing"
+          }
+        ]
+      }
+    },
+    {
+      "key": "tls",
+      "letter": "T",
+      "zh": {
+        "term": "TLS",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "能握手",
+            "label": "27 握手"
+          }
+        ]
+      },
+      "en": {
+        "term": "TLS",
+        "refs": [
+          {
+            "chapter": "27",
+            "heading": "handshake",
+            "label": "27 handshake"
+          }
+        ]
+      }
+    },
+    {
+      "key": "trgo",
+      "letter": "T",
+      "zh": {
+        "term": "TRGO",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "TRGO",
+            "label": "05 TRGO"
+          }
+        ]
+      },
+      "en": {
+        "term": "TRGO",
+        "refs": [
+          {
+            "chapter": "05",
+            "heading": "TRGO",
+            "label": "05 TRGO"
+          }
+        ]
+      }
+    },
+    {
+      "key": "uart",
+      "letter": "U",
+      "zh": {
+        "term": "UART",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "帧格式详解",
+            "label": "06 帧"
+          }
+        ]
+      },
+      "en": {
+        "term": "UART",
+        "refs": [
+          {
+            "chapter": "06",
+            "heading": "The frame",
+            "label": "06 frame"
+          }
+        ]
+      }
+    },
+    {
+      "key": "usb",
+      "letter": "U",
+      "zh": {
+        "term": "USB",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "枚举",
+            "label": "14 枚举"
+          }
+        ]
+      },
+      "en": {
+        "term": "USB",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "enumeration",
+            "label": "14 enumeration"
+          }
+        ]
+      }
+    },
+    {
+      "key": "usbpre",
+      "letter": "U",
+      "zh": {
+        "term": "USBPRE",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "CubeMX",
+            "label": "14 48 MHz"
+          }
+        ]
+      },
+      "en": {
+        "term": "USBPRE",
+        "refs": [
+          {
+            "chapter": "14",
+            "heading": "CubeMX",
+            "label": "14 48 MHz"
+          }
+        ]
+      }
+    },
+    {
+      "key": "vos",
+      "letter": "V",
+      "zh": {
+        "term": "VOS",
+        "refs": [
+          {
+            "chapter": "25",
+            "heading": "电压档",
+            "label": "25 VOS"
+          }
+        ]
+      },
+      "en": {
+        "term": "VOS",
+        "refs": [
+          {
+            "chapter": "25",
+            "heading": "voltage scale",
+            "label": "25 VOS"
+          }
+        ]
+      }
+    },
+    {
+      "key": "vtor",
+      "letter": "V",
+      "zh": {
+        "term": "VTOR",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "跳转到 APP",
+            "label": "12 向量表"
+          }
+        ]
+      },
+      "en": {
+        "term": "VTOR",
+        "refs": [
+          {
+            "chapter": "12",
+            "heading": "jumping to the app",
+            "label": "12 vector table"
+          }
+        ]
+      }
+    },
+    {
+      "key": "watchdog",
+      "letter": "W",
+      "zh": {
+        "term": "看门狗 watchdog",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "IWDG",
+            "label": "11 看门狗"
+          }
+        ]
+      },
+      "en": {
+        "term": "Watchdog",
+        "refs": [
+          {
+            "chapter": "11",
+            "heading": "IWDG",
+            "label": "11 watchdog"
+          }
+        ]
+      }
+    },
+    {
+      "key": "wfi",
+      "letter": "W",
+      "zh": {
+        "term": "WFI / WFE",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "WFI",
+            "label": "16 WFI"
+          }
+        ]
+      },
+      "en": {
+        "term": "WFI / WFE",
+        "refs": [
+          {
+            "chapter": "16",
+            "heading": "WFI",
+            "label": "16 WFI"
+          }
+        ]
+      }
+    },
+    {
+      "key": "wokwi",
+      "letter": "W",
+      "zh": {
+        "term": "Wokwi",
+        "refs": [
+          {
+            "chapter": "22",
+            "heading": "Wokwi",
+            "label": "22 Wokwi"
+          }
+        ]
+      },
+      "en": {
+        "term": "Wokwi",
+        "refs": [
+          {
+            "chapter": "22",
+            "heading": "Wokwi",
+            "label": "22 Wokwi"
+          }
+        ]
+      }
+    },
+    {
+      "key": "zephyr",
+      "letter": "Z",
+      "zh": {
+        "term": "Zephyr",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "Zephyr",
+            "label": "28 Zephyr"
+          }
+        ]
+      },
+      "en": {
+        "term": "Zephyr",
+        "refs": [
+          {
+            "chapter": "28",
+            "heading": "Zephyr",
+            "label": "28 Zephyr"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -62,6 +62,67 @@ class BookBuildContractTests(unittest.TestCase):
         cls.builder = load_builder()
         cls.manifest = json.loads((BOOK_DIR / "manifest.json").read_text(encoding="utf-8"))
 
+    def assert_version_history_and_index(self, html: str, language: str) -> None:
+        """Front matter lists real editions; the subject index is back matter and in the TOC."""
+        self.assertLess(html.index('id="imprint"'), html.index('id="version-history"'))
+        self.assertLess(html.index('id="version-history"'), html.index('id="how-to-read"'))
+        self.assertLess(html.index('id="part-closing-p6"'), html.index('id="subject-index"'))
+        self.assertLess(html.index('id="appendix-references"'), html.index('id="subject-index"'))
+        self.assertNotIn('class="appendix" id="subject-index"', html)
+        self.assertIn('class="back-matter subject-index"', html)
+
+        history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
+        versions = ("1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        for version in versions:
+            self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.0.7<"), history.index(">1.0.0<"))
+        self.assertIn("DBG_SWEN", history)
+        self.assertIn("USBPRE", history)
+        self.assertIn("1.0.0-rc.8", history)
+        if language == "zh":
+            self.assertIn("版本与修订", history)
+            self.assertIn("主题索引", html.split('id="contents"', 1)[1].split('id="part-p0"', 1)[0])
+        else:
+            self.assertIn("Version history", history)
+            self.assertIn("Subject index", html.split('id="contents"', 1)[1].split('id="part-p0"', 1)[0])
+        contents = html.split('id="contents"', 1)[1].split('id="part-p0"', 1)[0]
+        self.assertIn('href="#version-history"', contents)
+        self.assertIn('href="#subject-index"', contents)
+
+        index_html = html.split('id="subject-index"', 1)[1]
+        self.assertGreaterEqual(index_html.count('class="index-entry"'), 60)
+        for marker in ("GPIO", "NVIC", "DMA", "BRR", "CFSR", "FreeRTOS", "lwIP", "USBPRE", "DBG_SWEN"):
+            self.assertIn(marker, index_html)
+        for chapter in ("03", "06", "10", "15", "17", "23", "27"):
+            self.assertIn(f'href="#ch{chapter}-', index_html)
+
+    def test_revision_file_lists_1_0_0_through_manifest_version(self) -> None:
+        revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
+        versions = [entry["version"] for entry in revisions["entries"]]
+        self.assertEqual(
+            ["1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            versions,
+        )
+        self.assertEqual(versions[0], self.manifest["version"])
+        english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+        self.assertEqual(versions[0], english["version"])
+        index = json.loads((BOOK_DIR / "subject-index.json").read_text(encoding="utf-8"))
+        keys = [entry["key"] for entry in index["entries"]]
+        self.assertGreaterEqual(len(keys), 60)
+        self.assertEqual(len(keys), len(set(keys)))
+        for key in ("gpio", "nvic", "dma", "brr", "cfsr", "freertos", "lwip", "usbpre", "dbg-swen"):
+            self.assertIn(key, keys)
+        for entry in index["entries"]:
+            for language in ("zh", "en"):
+                term = entry[language]["term"]
+                letter = re.search(r"[A-Za-z]", term)
+                self.assertIsNotNone(letter, entry["key"])
+                self.assertEqual(entry["letter"], letter.group(0).upper(), entry["key"])
+        titles = {item["id"]: item["title"] for item in self.manifest["back_matter"]}
+        self.assertEqual("主题索引", titles["subject-index"])
+        english_titles = {item["id"]: item["title"] for item in english["back_matter"]}
+        self.assertEqual("Subject index", english_titles["subject-index"])
+
     def test_manifest_covers_exactly_the_29_source_chapters(self) -> None:
         self.builder.validate_manifest(self.manifest)
         files = [name for part in self.manifest["parts"] for name in part["files"]]
@@ -133,8 +194,9 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.6</strong>", html)
-        self.assertNotIn("1.0.0-rc", html)
+        self.assertIn("<strong>v1.0.7</strong>", html)
+        self.assertNotIn("<strong>v1.0.0-rc", html)
+        self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertIn('<span class="chapter-number">第 00 章</span>', html)
         self.assertIn('<span class="chapter-number">附录</span>', html)
@@ -260,7 +322,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.6", manifest["version"])
+        self.assertEqual("1.0.7", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -277,8 +339,9 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.6</strong>", html)
-        self.assertNotIn("1.0.0-rc", html)
+        self.assertIn("<strong>v1.0.7</strong>", html)
+        self.assertNotIn("<strong>v1.0.0-rc", html)
+        self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
         self.assertIn('<span class="chapter-number">Appendix</span>', html)
@@ -707,6 +770,34 @@ class BookBuildContractTests(unittest.TestCase):
         )
         self.assertIn("00 系统", continuation)
         self.assertNotIn("00 系统", opening)
+
+    def test_pdf_stamping_adds_index_page_numbers_beside_entries(self) -> None:
+        import fitz
+
+        metadata = {"title": "STM32 实战", "author": "作者", "subject": "主题", "keywords": "STM32"}
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = Path(tmp) / "raw.pdf"
+            output = Path(tmp) / "book.pdf"
+            document = fitz.open()
+            document.new_page()  # cover
+            document.new_page()  # index
+            document.new_page()  # target section
+            index = document[1]
+            index.insert_text((50, 50), "这是书末主题索引", fontname="china-s", fontsize=12)
+            index.insert_text((50, 90), "ADC · 09 分辨率", fontname="china-s", fontsize=9)
+            index.insert_link({"kind": fitz.LINK_GOTO, "from": fitz.Rect(48, 76, 180, 96), "page": 2})
+            document.save(raw)
+            document.close()
+
+            self.builder._stamp_page_numbers(raw, output, metadata)
+            stamped = fitz.open(output)
+            try:
+                words = stamped[1].get_text("words")
+            finally:
+                stamped.close()
+
+        page_numbers = [word for word in words if word[4] == "2" and word[0] > 400]
+        self.assertEqual(1, len(page_numbers))
 
     def test_callout_classifier_marks_warning_tip_and_note(self) -> None:
         rendered = (
