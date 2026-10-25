@@ -207,6 +207,96 @@ def extract_title(text: str, source_label: str) -> str:
     return match.group(1).strip()
 
 
+_SOURCE_CHAPTER_PREFIX = re.compile(r"^\d{2}\s+")
+
+
+def display_chapter_number(filename: str) -> int:
+    """Reader-facing chapter number. Source files stay 00–28; the book shows 1–29."""
+    match = re.match(r"(\d{2})", filename)
+    if match is None:
+        raise BuildError(f"chapter file is missing an index: {filename}")
+    return int(match.group(1)) + 1
+
+
+def source_chapter_heading(title: str) -> str:
+    """Drop the file index that source chapters put on the Markdown H1."""
+    stripped = _SOURCE_CHAPTER_PREFIX.sub("", title.strip(), count=1)
+    if not stripped or stripped == title.strip():
+        raise BuildError(f"chapter title is missing a file index: {title}")
+    return stripped
+
+
+def reader_chapter_title(manifest: dict, filename: str, source_title: str) -> str:
+    label = ui(manifest, "chapter_kicker").format(n=display_chapter_number(filename))
+    return f"{label} {source_chapter_heading(source_title)}"
+
+
+def _outline_key(title: str) -> str:
+    # Chromium drops a space when a heading wraps in the PDF outline, so
+    # "Development Environment" can arrive as "DevelopmentEnvironment".
+    return re.sub(r"\s+", "", title)
+
+
+def outline_lookup_headings(manifest: dict) -> list[tuple[int, str, str]]:
+    """Publication outline rows: level, bookmark label, heading text Chromium records.
+
+    Chapters nest under their part. Appendices stay at the top level. The
+    version history and subject index stay only because the book already
+    bookmarks those pages. In-chapter H2/H3 headings are not rows.
+    """
+    docs_dir, book_dir = edition_dirs(manifest)
+    rows: list[tuple[int, str, str]] = []
+    revision = str(ui(manifest, "revision_title"))
+    rows.append((1, revision, revision))
+    for part in manifest["parts"]:
+        part_title = str(part["title"])
+        rows.append((1, part_title, part_title))
+        for filename in part["files"]:
+            raw = extract_title((docs_dir / filename).read_text(encoding="utf-8"), filename)
+            rows.append((2, reader_chapter_title(manifest, filename, raw), source_chapter_heading(raw)))
+        closing = part.get("closing")
+        if closing:
+            closing_title = extract_title(
+                (book_dir / closing["file"]).read_text(encoding="utf-8"),
+                closing["file"],
+            )
+            rows.append((2, closing_title, closing_title))
+    for appendix in manifest["appendices"]:
+        raw = extract_title(
+            (book_dir / appendix["file"]).read_text(encoding="utf-8"),
+            appendix["file"],
+        )
+        rows.append((1, str(appendix["title"]), raw))
+    for item in manifest.get("back_matter") or []:
+        title = str(item["title"])
+        rows.append((1, title, title))
+    keys = [_outline_key(source) for _level, _label, source in rows]
+    if len(keys) != len(set(keys)):
+        raise BuildError("publication outline headings are not unique")
+    return rows
+
+
+def publication_outline(manifest: dict, toc: list) -> list[list]:
+    """Replace a heading-per-section outline with parts, chapters, and appendices."""
+    pages: dict[str, tuple[int, int]] = {}
+    for item in toc:
+        level = int(item[0])
+        title = _outline_key(str(item[1]))
+        page = int(item[2])
+        if page < 1 or not title:
+            continue
+        previous = pages.get(title)
+        if previous is None or level < previous[0]:
+            pages[title] = (level, page)
+    outline: list[list] = []
+    for level, label, source in outline_lookup_headings(manifest):
+        found = pages.get(_outline_key(source))
+        if found is None:
+            raise BuildError(f"PDF outline is missing a bookmark for {source!r}")
+        outline.append([level, label, found[1]])
+    return outline
+
+
 def extract_quick_questions(text: str) -> list[str]:
     match = re.search(r"^\s*10\.\s*合上书，三问。(.+?)\s*$", text, re.MULTILINE)
     if not match:
@@ -823,8 +913,9 @@ def toc_html(manifest: dict) -> str:
         items: list[str] = []
         for name in part["files"]:
             title = extract_title((docs_dir / name).read_text(encoding="utf-8"), name)
+            label = reader_chapter_title(manifest, name, title)
             items.append(
-                f'<li><a href="#chapter-{name[:2]}">{html.escape(title)}</a></li>'
+                f'<li><a href="#chapter-{name[:2]}">{html.escape(label)}</a></li>'
             )
         chapters = "".join(items)
         closing = part.get("closing")
@@ -1079,6 +1170,7 @@ footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: c
   .part-divider { min-height: 220mm; align-content: center; }
   .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+  h2, h3, h4, h5, h6 { bookmark-level: none; }
   p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
   figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; }
   img { max-height: 200mm; }
@@ -1370,11 +1462,12 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             )
             headings[f"chapter-{filename[:2]}"] = collect_headings(rendered)
             guide = manifest["chapter_guides"][filename]
-            chapter_kicker = ui(manifest, "chapter_kicker").format(n=filename[:2])
+            chapter_kicker = ui(manifest, "chapter_kicker").format(n=display_chapter_number(filename))
+            heading = source_chapter_heading(title)
             body.append(
                 f"""
 <article class="chapter" id="chapter-{filename[:2]}" data-chapter="{filename[:2]}">
-  <header><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(heading)}</h1></header>
   {compass_html(guide, manifest)}
   {rendered}
   {quick_check_html(questions, manifest)}
@@ -1455,7 +1548,9 @@ def _browser_candidates(override: str | None) -> list[Path]:
     return result
 
 
-_CHAPTER_RUNNING_TITLE = re.compile(r"\d{2}\s+.+")
+_CHAPTER_RUNNING_TITLE = re.compile(
+    r"(?:\d{2}\s+.+|第\s*\d+\s*章(?:\s+.+)?|Chapter\s+\d+\b.*)"
+)
 _PART_RUNNING_TITLE = re.compile(r"第[一二三四五六七八九十0-9]+部分|Part \d+\b")
 
 
@@ -1464,12 +1559,14 @@ def _pdf_running_sections(document) -> list[tuple[int, str]]:
 
     Numbered chapters, the part closing, and appendices qualify. Part-divider
     titles are full pages, and front matter before the first chapter stays bare.
+    Chapters may sit at outline level 2 under a part.
     """
     raw: list[tuple[int, str]] = []
-    for level, title, page_number in document.get_toc():
-        if level != 1 or page_number < 1:
+    for item in document.get_toc():
+        _level, title, page_number = item[0], item[1], item[2]
+        if page_number < 1:
             continue
-        raw.append((page_number - 1, title.strip()))
+        raw.append((page_number - 1, str(title).strip()))
     first_chapter = next(
         (index for index, (_page, title) in enumerate(raw) if _CHAPTER_RUNNING_TITLE.fullmatch(title)),
         None,
@@ -1573,7 +1670,12 @@ def _stamp_toc_page_references(document, fitz) -> None:
             )
 
 
-def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str]) -> None:
+def _stamp_page_numbers(
+    raw_pdf: Path,
+    output_pdf: Path,
+    metadata: dict[str, str],
+    manifest: dict | None = None,
+) -> None:
     try:
         import fitz
     except ImportError as exc:
@@ -1582,6 +1684,8 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str
     document = fitz.open(raw_pdf)
     try:
         document.set_metadata({**document.metadata, **metadata})
+        if manifest is not None:
+            document.set_toc(publication_outline(manifest, document.get_toc()))
         sections = _pdf_running_sections(document)
         section_starts = {start for start, _title in sections}
         total = max(0, document.page_count - 1)
@@ -1688,7 +1792,7 @@ def build_pdf(
             "subject": manifest["subtitle"],
             "keywords": manifest["keywords"],
         }
-        _stamp_page_numbers(raw_pdf, output, publication_metadata)
+        _stamp_page_numbers(raw_pdf, output, publication_metadata, manifest)
     except Exception as exc:
         raise BuildError(f"PDF build failed: {exc}") from exc
     finally:
