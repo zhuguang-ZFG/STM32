@@ -131,10 +131,7 @@
       "question": "How do the part number, the memory map, and the clock tree together decide whether a program can run on the target chip?",
       "deliverable": "A breakdown of the target part, a Flash/SRAM address map, and a SYSCLK/APB/timer clock ledger.",
       "boundary": "The examples are mainly F103. Any production choice must go back to the exact order code, revision, and temperature grade. The BluePill example is an STM32F103C8T6 in LQFP48: an 8 MHz HSE times 9 is 72 MHz, and the Flash wait for 48–72 MHz is 2. Check the kilobytes at 0x1FFFF7E0 against the 64 KB in DS5319.",
-      "sources": [
-        "rm0008",
-        "ds5319"
-      ]
+      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock"]
     },
     "03-gpio-and-led.md": {
       "question": "How do a pin's input structure, output drive, and external load together decide the real level?",
@@ -1021,7 +1018,24 @@
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 06 key figure. Restates LQFP48 pin 30 PA9 as USART1_TX and pin 31 PA10 as USART1_RX. The reset default is not PB6/PB7. Does not trace Figure 8."
     }
+,
+    "rm0008-rcc": {
+      "title": "RM0008 Rev 21 medium-density clocks, CFGR, and CSS",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Medium-density section 7.2 clocks, section 7.2.7 CSS, section 7.3.2 RCC_CFGR. Flash wait states are in the access-time text of chapter 3: 0 / 24 / 48 / 72 MHz in three steps. Timer times 2 is in section 7.2. Section 8.3.2 is the connectivity line and is void on STM32F103C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 02 principle, key figures, timing, and source cards. Restates medium-density RCC_CFGR section 7.3.2: HSE 8 MHz and PLLMUL=0111 give 72 MHz, LATENCY is 2 from 48 to 72 MHz, timers clock at twice PCLK when APB1 is 36 MHz, USBPRE=0 gives 48 MHz, ADCPRE=10 gives 12 MHz, ADCPRE=01 gives 18 MHz and crosses 14 MHz, CSS falls back to HSI and software writes CSSC, and the clock sent to MCO stays at or below 50 MHz. Section 8.3.2 is void on STM32F103C8T6. Does not put the sample time in this chapter. Does not change the existing rm0008 object."
+    },
+    "ds5319-clock": {
+      "title": "DS5319 Rev 20 LQFP48 oscillator pins and the MCO pin",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5. LQFP48 pin 5 is PD0-OSC_IN, pin 6 is PD1-OSC_OUT, pin 29 is PA8 (alternate function includes MCO).",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 02 key figure. LQFP48 pin 5 is PD0-OSC_IN, pin 6 is PD1-OSC_OUT, and pin 29 PA8 includes MCO in its alternate function. Does not invent a load-capacitor value. Does not change ds5319-gpio."
+    }
   }
 }
-
-

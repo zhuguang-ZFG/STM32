@@ -116,7 +116,7 @@
       "question": "型号、存储器映射和时钟树怎样共同决定一份代码能否在目标芯片上工作？",
       "deliverable": "一张目标型号拆解表、一张 Flash/SRAM 地址图和一份 SYSCLK/APB/定时器时钟账。",
       "boundary": "示例以 F103 为主；任何量产选型必须回到确切订货号、修订版和温度等级。BluePill 示例是 STM32F103C8T6（LQFP48）：HSE 8 MHz ×9 = 72 MHz，48–72 MHz 档的 Flash 等待是 2；容量用 0x1FFFF7E0 的读数和 DS5319 的 64 KB 对账。",
-      "sources": ["rm0008", "ds5319"]
+      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock"]
     },
     "03-GPIO与LED.md": {
       "question": "一只引脚的输入结构、输出驱动和外部负载怎样共同决定真实电平？",
@@ -859,7 +859,24 @@
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 06 章关键插图。只改写 LQFP48 第 30 脚 PA9 为 USART1_TX、第 31 脚 PA10 为 USART1_RX。复位后不是 PB6/PB7。不描图 8。"
     }
+,
+    "rm0008-rcc": {
+      "title": "RM0008 Rev 21 中密度时钟、CFGR 与 CSS",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Medium-density section 7.2 clocks, section 7.2.7 CSS, section 7.3.2 RCC_CFGR. Flash wait states are in the access-time text of chapter 3: 0 / 24 / 48 / 72 MHz in three steps. Timer times 2 is in section 7.2. Section 8.3.2 is the connectivity line and is void on STM32F103C8T6.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 02 章原理与边界、关键插图、时序或状态、坑与出处卡。只改写中密度 RCC_CFGR 第 7.3.2 节：HSE 8 MHz、PLLMUL=0111 得到 72 MHz、48–72 MHz 的 LATENCY 是 2、APB1 为 36 MHz 时定时器再 ×2、USBPRE=0 得到 48 MHz、ADCPRE=10 得到 12 MHz、ADCPRE=01 得到 18 MHz 并越过 14 MHz、CSS 回到 HSI 并要写 CSSC、送到 MCO 的时钟不得超过 50 MHz。第 8.3.2 节在 STM32F103C8T6 上作废。不把采样时间写进这一章。不改已有 rm0008。"
+    },
+    "ds5319-clock": {
+      "title": "DS5319 Rev 20 LQFP48 的晶振脚与 MCO 脚",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5. LQFP48 pin 5 is PD0-OSC_IN, pin 6 is PD1-OSC_OUT, pin 29 is PA8 (alternate function includes MCO).",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 02 章关键插图。LQFP48 第 5 脚是 PD0-OSC_IN，第 6 脚是 PD1-OSC_OUT，第 29 脚 PA8 的复用含 MCO。不编负载电容的皮法。不改 ds5319-gpio。"
+    }
   }
 }
-
-
