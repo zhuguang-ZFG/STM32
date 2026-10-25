@@ -1,0 +1,46 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-batch4-01-07-10-11",
+  "baseline": "ea11ce7b2dd02cec4e46a6abcb701a0286faef4a",
+  "chapters": [
+    "01",
+    "07",
+    "10",
+    "11"
+  ],
+  "four_blocks_absent": true,
+  "old_pitfall_heading_present": true,
+  "files": {
+    "01": {
+      "zh": "docs/01-开发环境搭建.md",
+      "en": "docs/en/01-dev-environment.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "07": {
+      "zh": "docs/07-I2C总线.md",
+      "en": "docs/en/07-i2c.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "10": {
+      "zh": "docs/10-DMA.md",
+      "en": "docs/en/10-dma.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "11": {
+      "zh": "docs/11-RTC与看门狗.md",
+      "en": "docs/en/11-rtc-watchdog.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    }
+  }
+}
