@@ -164,7 +164,7 @@
       "question": "DMA 请求、可达内存、传输宽度、环形位置和 Cache 一致性怎样分别验证？",
       "deliverable": "一张请求映射表、一份缓冲区所有权/位置不变量，以及 H7 上的内存可达性与 Cache 维护决策。",
       "boundary": "DMA 完成中断只证明控制器完成请求，不证明 CPU 读到的是最新数据，也不证明业务未丢帧。F103C8 只有 DMA1 的 7 条通道，没有 DMA2。USART1_TX 是 Channel 4，USART1_RX 是 Channel 5，ADC1 是 Channel 1。缓冲区 8 个半字、CNDTR 读回 3 时，已写入 5 个采样，也就是 10 字节。半传输按项目数的一半，不是字节数的一半。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4；FIFO 是 4 个 32 位字。",
-      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090"]
+      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090", "rm0008-dma", "ds5319-dma"]
     },
     "11-RTC与看门狗.md": {
       "question": "时间怎样跨主电源保持，看门狗又怎样证明主循环真的健康而不是只会喂狗？",
@@ -979,6 +979,24 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 07 章。7 位地址加 1 位 R/W。线上写地址 0x78，读地址 0x79。第 9 个时钟 SDA 拉低是 ACK，保持高是 NACK。0x3C 原样送出变成 7 位地址 0x1E。不编 I2C 基址。"
+    },
+    "rm0008-dma": {
+      "title": "RM0008 Rev 21 DMA1 通道与 CNDTR",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 10. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 10 章。CNDTR 数的是数据项。8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节。半传输是 4 个采样、8 字节。ADC1 通道 1，USART1_TX 通道 4，USART1_RX 通道 5。循环模式归零后重装。不把 21 µs 写进来。不改 rm0090。"
+    },
+    "ds5319-dma": {
+      "title": "DS5319 Rev 20 中密度只有一个 7 通道 DMA",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, section 2.3.13. Medium-density devices have one 7-channel DMA. DMA2 exists on high-density devices. STM32F103C8T6 has no DMA2.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 10 章。中密度是一个 7 通道的 DMA1。DMA2 在 STM32F103C8T6 上作废。"
     }
   }
 }

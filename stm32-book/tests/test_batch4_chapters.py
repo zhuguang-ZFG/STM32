@@ -467,5 +467,85 @@ class Batch4I2cChapterTests(unittest.TestCase):
         )
 
 
+class Batch4DmaChapterTests(unittest.TestCase):
+    def test_dma_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh = (ROOT / "docs" / "10-DMA.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "10-dma.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        for text in (zh, en):
+            for token in (
+                "DMA1",
+                "CNDTR",
+                "10",
+                "#source-rm0008-dma",
+                "#source-ds5319-dma",
+                "#source-rm0090",
+            ):
+                self.assertIn(token, text)
+        self.assertIn("通道 4", zh)
+        self.assertIn("通道 5", zh)
+        self.assertIn("通道 1", zh)
+        self.assertIn("channel 4", en)
+        self.assertIn("channel 5", en)
+        self.assertIn("channel 1", en)
+        self.assertIn("7", zh)
+        self.assertIn("7", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            self.assertIn("DMA1", blocks)
+            self.assertIn("CNDTR", blocks)
+            self.assertIn("10", blocks)
+            self.assertIn("8", blocks)
+            self.assertNotIn("21 µs", blocks)
+            self.assertNotIn("21 us", blocks)
+        self.assertIn("没有 DMA2", zh_blocks)
+        self.assertIn("no DMA2", en_blocks)
+        self.assertIn("作废", zh)
+        self.assertIn("../assets/diagrams/sample-10-dma-cndtr.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-10-dma-cndtr.svg", en)
+        self.assertIn("../assets/gif/dma-cndtr.gif", zh)
+        self.assertIn("../../assets/gif/dma-cndtr.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-10-dma-cndtr.svg"), zh_key.index("dma-cndtr.gif"))
+        self.assertLess(en_key.index("sample-10-dma-cndtr.svg"), en_key.index("dma-cndtr.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-dma": (
+                "第 10 章。CNDTR 数的是数据项。8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节。半传输是 4 个采样、8 字节。ADC1 通道 1，USART1_TX 通道 4，USART1_RX 通道 5。循环模式归零后重装。不把 21 µs 写进来。不改 rm0090。",
+                "Chapter 10. CNDTR counts data items. Eight half-words with CNDTR = 3 means 5 samples and 10 bytes. Half-transfer is 4 samples, 8 bytes. ADC1 is channel 1, USART1_TX is channel 4, and USART1_RX is channel 5. Circular mode reloads at zero. Does not put 21 µs here. Does not change rm0090.",
+            ),
+            "ds5319-dma": (
+                "第 10 章。中密度是一个 7 通道的 DMA1。DMA2 在 STM32F103C8T6 上作废。",
+                "Chapter 10. Medium-density parts have one 7-channel DMA1. DMA2 is void on STM32F103C8T6.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090", "rm0008-dma", "ds5319-dma"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["10-DMA.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["10-dma.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        self.assertEqual(baseline_manifests()[0]["sources"]["rm0090"], zh_manifest["sources"]["rm0090"])
+
+
 if __name__ == "__main__":
     unittest.main()

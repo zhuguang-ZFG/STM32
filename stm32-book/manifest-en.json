@@ -207,7 +207,9 @@
         "stm32cube-f4",
         "st-h7-dma",
         "majerle-uart",
-        "rm0090"
+        "rm0090",
+        "rm0008-dma",
+        "ds5319-dma"
       ]
     },
     "11-rtc-watchdog.md": {
@@ -1132,6 +1134,24 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 07. A 7-bit address plus one R/W bit. The write byte on the wire is 0x78 and the read byte is 0x79. SDA low on the 9th clock is ACK and SDA high is NACK. Sending 0x3C unchanged addresses 0x1E. Does not invent an I2C base address."
+    },
+    "rm0008-dma": {
+      "title": "RM0008 Rev 21 DMA1 channels and CNDTR",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 10. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 10. CNDTR counts data items. Eight half-words with CNDTR = 3 means 5 samples and 10 bytes. Half-transfer is 4 samples, 8 bytes. ADC1 is channel 1, USART1_TX is channel 4, and USART1_RX is channel 5. Circular mode reloads at zero. Does not put 21 µs here. Does not change rm0090."
+    },
+    "ds5319-dma": {
+      "title": "DS5319 Rev 20 medium-density has one 7-channel DMA",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, section 2.3.13. Medium-density devices have one 7-channel DMA. DMA2 exists on high-density devices. STM32F103C8T6 has no DMA2.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 10. Medium-density parts have one 7-channel DMA1. DMA2 is void on STM32F103C8T6."
     }
   }
 }
