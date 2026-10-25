@@ -1,0 +1,945 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-sample-chapters",
+  "baseline": "da5b4e8061bb3e198205887b4aa638440d39db5e",
+  "peripheral": "03",
+  "foundation": "00",
+  "peripheral_tied": [
+    "03"
+  ],
+  "foundation_tied": [
+    "00"
+  ],
+  "peripheral_missing_count": 3,
+  "rows": [
+    {
+      "prefix": "00",
+      "zh": "/workspace/docs/00-如何学习STM32.md",
+      "en": "/workspace/docs/en/00-how-to-learn-stm32.md",
+      "zh_lines": 283,
+      "en_lines": 278,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/toolchain-flow.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/toolchain-flow.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": true
+      },
+      "principle_boundary": false,
+      "timing_or_state": false,
+      "pitfall_source_link": false,
+      "missing_count": 3,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": true
+      }
+    },
+    {
+      "prefix": "01",
+      "zh": "/workspace/docs/01-开发环境搭建.md",
+      "en": "/workspace/docs/en/01-dev-environment.md",
+      "zh_lines": 345,
+      "en_lines": 314,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/boot-sequence.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/boot-sequence.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "02",
+      "zh": "/workspace/docs/02-芯片选型与存储器时钟.md",
+      "en": "/workspace/docs/en/02-part-and-clock.md",
+      "zh_lines": 294,
+      "en_lines": 291,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 3
+      },
+      "en_local_images": {
+        ".svg": 3
+      },
+      "local_image_count": 3,
+      "en_local_image_count": 3,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/clock-tree.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        },
+        {
+          "src": "../assets/animations/memory-map.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../assets/diagrams/peripheral-bus.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/clock-tree.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        },
+        {
+          "src": "../../assets/animations/memory-map.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../../assets/diagrams/peripheral-bus.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": true,
+        "L4": true,
+        "H7": true
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": true,
+        "L4": true,
+        "H7": true
+      }
+    },
+    {
+      "prefix": "03",
+      "zh": "/workspace/docs/03-GPIO与LED.md",
+      "en": "/workspace/docs/en/03-gpio-and-led.md",
+      "zh_lines": 311,
+      "en_lines": 308,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/gpio-blink.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/gpio-blink.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": false,
+      "pitfall_source_link": false,
+      "missing_count": 3,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "04",
+      "zh": "/workspace/docs/04-中断与NVIC.md",
+      "en": "/workspace/docs/en/04-interrupts-nvic.md",
+      "zh_lines": 298,
+      "en_lines": 295,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 3
+      },
+      "en_local_images": {
+        ".svg": 3
+      },
+      "local_image_count": 3,
+      "en_local_image_count": 3,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/nvic-interrupt-flow.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../assets/diagrams/interrupt-priority.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../assets/animations/gpio-input-interrupt.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/nvic-interrupt-flow.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../../assets/diagrams/interrupt-priority.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../../assets/animations/gpio-input-interrupt.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "05",
+      "zh": "/workspace/docs/05-定时器与PWM.md",
+      "en": "/workspace/docs/en/05-timer-pwm.md",
+      "zh_lines": 312,
+      "en_lines": 308,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/timer-pwm.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/timer-pwm.svg",
+          "roles": [
+            "带数字的时序或状态",
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "06",
+      "zh": "/workspace/docs/06-串口UART.md",
+      "en": "/workspace/docs/en/06-uart.md",
+      "zh_lines": 318,
+      "en_lines": 316,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "en_local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "local_image_count": 2,
+      "en_local_image_count": 2,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/uart-frame.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../assets/gif/uart-bits.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/uart-frame.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../../assets/gif/uart-bits.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "07",
+      "zh": "/workspace/docs/07-I2C总线.md",
+      "en": "/workspace/docs/en/07-i2c.md",
+      "zh_lines": 297,
+      "en_lines": 295,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "en_local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "local_image_count": 2,
+      "en_local_image_count": 2,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/i2c-transaction.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../assets/gif/i2c-timing.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/i2c-transaction.svg",
+          "roles": [
+            "简化示意"
+          ]
+        },
+        {
+          "src": "../../assets/gif/i2c-timing.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": false,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": false,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "08",
+      "zh": "/workspace/docs/08-SPI总线.md",
+      "en": "/workspace/docs/en/08-spi.md",
+      "zh_lines": 279,
+      "en_lines": 277,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/spi-transfer.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/spi-transfer.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": false,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": false,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "09",
+      "zh": "/workspace/docs/09-ADC与DAC.md",
+      "en": "/workspace/docs/en/09-adc-dac.md",
+      "zh_lines": 264,
+      "en_lines": 261,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "en_local_images": {
+        ".svg": 1,
+        ".gif": 1
+      },
+      "local_image_count": 2,
+      "en_local_image_count": 2,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/adc-sar.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        },
+        {
+          "src": "../assets/gif/sar-adc.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/adc-sar.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        },
+        {
+          "src": "../../assets/gif/sar-adc.gif",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": true,
+        "H7": true
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": true,
+        "H7": true
+      }
+    },
+    {
+      "prefix": "10",
+      "zh": "/workspace/docs/10-DMA.md",
+      "en": "/workspace/docs/en/10-dma.md",
+      "zh_lines": 253,
+      "en_lines": 250,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/dma-circular.svg",
+          "roles": [
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/dma-circular.svg",
+          "roles": [
+            "板卡/引脚结构"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": true
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": true
+      }
+    },
+    {
+      "prefix": "11",
+      "zh": "/workspace/docs/11-RTC与看门狗.md",
+      "en": "/workspace/docs/en/11-rtc-watchdog.md",
+      "zh_lines": 263,
+      "en_lines": 260,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/iwdg-window.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/iwdg-window.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "12",
+      "zh": "/workspace/docs/12-Flash与IAP升级.md",
+      "en": "/workspace/docs/en/12-flash-iap.md",
+      "zh_lines": 303,
+      "en_lines": 300,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/flash-iap.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/flash-iap.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "13",
+      "zh": "/workspace/docs/13-CAN总线.md",
+      "en": "/workspace/docs/en/13-can.md",
+      "zh_lines": 257,
+      "en_lines": 255,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/can-arbitration.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/can-arbitration.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    },
+    {
+      "prefix": "14",
+      "zh": "/workspace/docs/14-USB.md",
+      "en": "/workspace/docs/en/14-usb.md",
+      "zh_lines": 297,
+      "en_lines": 293,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": true,
+      "en_numbered_timing_or_state_figure": true,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/usb-enumeration.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/usb-enumeration.svg",
+          "roles": [
+            "带数字的时序或状态"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": true,
+        "H7": true
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": true,
+        "H7": true
+      }
+    },
+    {
+      "prefix": "16",
+      "zh": "/workspace/docs/16-低功耗设计.md",
+      "en": "/workspace/docs/en/16-low-power.md",
+      "zh_lines": 300,
+      "en_lines": 296,
+      "translation_gap": false,
+      "local_images": {
+        ".svg": 1
+      },
+      "en_local_images": {
+        ".svg": 1
+      },
+      "local_image_count": 1,
+      "en_local_image_count": 1,
+      "numbered_timing_or_state_figure": false,
+      "en_numbered_timing_or_state_figure": false,
+      "figures_zh": [
+        {
+          "src": "../assets/animations/lowpower-wakeup.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "figures_en": [
+        {
+          "src": "../../assets/animations/lowpower-wakeup.svg",
+          "roles": [
+            "简化示意"
+          ]
+        }
+      ],
+      "series_en": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      },
+      "principle_boundary": false,
+      "timing_or_state": true,
+      "pitfall_source_link": false,
+      "missing_count": 2,
+      "series_zh": {
+        "F1": true,
+        "F4": true,
+        "G0": false,
+        "L4": false,
+        "H7": false
+      }
+    }
+  ]
+}
