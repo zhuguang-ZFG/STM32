@@ -13,7 +13,7 @@
 - HTML 把本地图片内嵌为 data URI，断网后仍可单文件阅读；
 - PDF 使用同一份 HTML 打印，保留标题书签、完整出版元数据、奇偶页眉、带页码目录和页脚页码。
 
-当前版本：**v1.0.0 · 2026-10-24**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
+当前版本：**v1.0.1 · 2026-10-25**。中文整书和英文整书共用这一版号。GitHub Release 仍要等这次提交进入 `main` 且 Book CI 产出四份文件之后再打。
 
 ## 构建
 
@@ -69,18 +69,21 @@ python stm32-book/build_html.py --lang en --check
 - 术语表按主题覆盖时钟、引脚、中断、定时器、总线、采样、Flash、低功耗、RTOS、网络和调试；
 - 版本页带 manifest 版本号，封面插画内嵌，不请求外部字体；
 - 已知居中图注变成 `figure` / `figcaption`，正文里不再留下 `align="center"`；
+- 已有的引用块分成注意、提示、说明三种 callout，中英文标签成对；
+- 分部、章节、附录的眉题用对应语言；屏幕上目录分部标题滚动时贴顶，并有固定的「目录 / Contents」；
+- 打印时图注跟着图，过高的图限制在一页高度内；页眉页脚共用细线，英文书名在冒号处截成短页眉，附录续页也有页眉；
 - `--lang en` 产出 29 章英文书，章末的 Previous / Next 和插画免责声明不进书；
 - 缺图、漏罗盘、坏锚点和未闭合视频块会让构建失败。
 
 ## 发布 GitHub Release
 
-版本号已经是 1.0.0。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0。
+版本号已经是 1.0.1。构建脚本不会自己创建 GitHub Release。不要把 rc.8（`0c24f76`）的产物标成 1.0.0，也不要把 1.0.0 的产物标成 1.0.1。
 
 这次提交进入 `main` 并且 Book CI 变绿之后，由有权限的人：
 
 1. 下载这次 `main` 运行的两个 artifact：`stm32-practical-book` 和 `stm32-practical-book-en`，各含 HTML 与 PDF，保留 14 天。
 2. 核对四份文件来自同一次绿色构建，文件名是 `stm32-practical-book.html`、`stm32-practical-book.pdf`、`stm32-practical-book-en.html`、`stm32-practical-book-en.pdf`。
-3. 在该提交上打 tag `v1.0.0`，创建 GitHub Release，并附上这四份文件。
+3. 在该提交上打 tag `v1.0.1`，创建 GitHub Release，并附上这四份文件。
 
 ## 内容维护
 

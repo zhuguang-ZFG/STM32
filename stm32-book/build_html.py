@@ -288,6 +288,39 @@ def semanticize_figures(rendered: str) -> str:
     return CENTERED_FIGURE.sub(replace, rendered)
 
 
+_CALLOUT_TIP = re.compile(
+    r"^(?:提示|检索技巧|记忆[:：]|Tip\b|A tip\b|Search tip\b|A measuring tip\b|Remember\b)",
+    re.IGNORECASE,
+)
+
+
+def classify_callouts(rendered: str, labels: dict[str, str] | None = None) -> str:
+    """Turn plain Markdown blockquotes into note, tip, or warning callouts.
+
+    The manuscript already uses ⚠️, 提示, and ordinary lead quotes. This only
+    adds a class and a label; it does not rewrite the quoted text.
+    """
+    chosen = labels or {"warning": "注意", "tip": "提示", "note": "说明"}
+
+    def replace(match: re.Match[str]) -> str:
+        inner = match.group(1)
+        text = re.sub(r"<[^>]+>", "", inner)
+        text = html.unescape(text).replace("\xa0", " ").strip()
+        if text.startswith("⚠") or text.startswith("警告") or text.lower().startswith("warning"):
+            kind = "warning"
+        elif _CALLOUT_TIP.match(text):
+            kind = "tip"
+        else:
+            kind = "note"
+        label = html.escape(chosen[kind])
+        return (
+            f'<blockquote class="callout callout-{kind}">'
+            f'<p class="callout-label">{label}</p>{inner}</blockquote>'
+        )
+
+    return re.sub(r"<blockquote>(.*?)</blockquote>", replace, rendered, flags=re.DOTALL)
+
+
 def _safe_local_path(source_file: Path, raw_path: str) -> Path:
     decoded = unquote(raw_path.replace("\\", "/"))
     target = (source_file.parent / decoded).resolve()
@@ -436,9 +469,11 @@ def render_document(
     prefix: str,
     chapter_anchors: dict[Path, str],
     table_label: str = "数据表，可横向滚动",
+    callout_labels: dict[str, str] | None = None,
 ) -> str:
     rendered = render_markdown(source_text)
     rendered = semanticize_figures(rendered)
+    rendered = classify_callouts(rendered, callout_labels)
     rendered = wrap_tables(rendered, table_label)
     rendered = rewrite_local_links(rendered, source_file, chapter_anchors)
     rendered = embed_local_images(rendered, source_file)
@@ -477,6 +512,13 @@ UI = {
         "quick_title": "合上书，三问",
         "quick_link": "做完再看附录 C 的参考答案",
         "back_to_toc": "返回目录 ↑",
+        "toc_jump": "目录",
+        "part_kicker": "第 {n} 部",
+        "chapter_kicker": "第 {n} 章",
+        "appendix_kicker": "附录",
+        "callout_warning": "注意",
+        "callout_tip": "提示",
+        "callout_note": "说明",
         "closing_kicker": "收束",
         "footer": "本书由 stm32-book/build_html.py 从 {count} 章源文档构建；来源、冻结点与许可见附录 E。",
         "table_label": "数据表，可横向滚动",
@@ -520,6 +562,13 @@ UI = {
         "quick_title": "Close the book: three questions",
         "quick_link": "Then compare with the answers in Appendix C",
         "back_to_toc": "Back to contents ↑",
+        "toc_jump": "Contents",
+        "part_kicker": "Part {n}",
+        "chapter_kicker": "Chapter {n}",
+        "appendix_kicker": "Appendix",
+        "callout_warning": "Warning",
+        "callout_tip": "Tip",
+        "callout_note": "Note",
         "closing_kicker": "CLOSE",
         "footer": "Built by stm32-book/build_html.py from {count} source chapters. Sources, frozen versions, and the license are in Appendix E.",
         "table_label": "Data table, scroll sideways",
@@ -539,6 +588,14 @@ def ui(manifest: dict, key: str):
     language = str(manifest.get("language", "zh-CN"))
     table = UI["en"] if language.lower().startswith("en") else UI["zh-CN"]
     return table[key]
+
+
+def callout_label_map(manifest: dict) -> dict[str, str]:
+    return {
+        "warning": ui(manifest, "callout_warning"),
+        "tip": ui(manifest, "callout_tip"),
+        "note": ui(manifest, "callout_note"),
+    }
 
 
 def compass_html(guide: dict, manifest: dict) -> str:
@@ -671,13 +728,18 @@ CSS = r"""
   --panel: #f1f5f7;
   --accent: #075e84;
   --accent-soft: #e5f3f8;
+  --warn: #9a3d1c;
+  --warn-soft: #f8efe8;
+  --tip: #1b5c45;
+  --tip-soft: #e7f4ee;
   --code: #101820;
   --code-ink: #eef6f8;
+  --measure: 40rem;
   font-family: "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.78; }
+body { margin: 0; background: var(--paper); color: var(--ink); line-height: 1.72; }
 a { color: var(--accent); text-underline-offset: .18em; }
 a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 20; padding: .6rem 1rem; background: var(--ink); color: var(--paper); }
@@ -690,7 +752,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .cover-panel { position: relative; padding: 1.8rem 8% 2.6rem; background: #f7f4ee; color: #17202a; }
 .cover-panel::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: .45rem; background: #c4552a; }
 .cover .eyebrow { margin: 0; font-weight: 700; letter-spacing: .18em; font-size: .78rem; color: #9a3d1c; }
-.cover h1 { font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 1.02; margin: .35rem 0 .6rem; max-width: 14ch; color: #10242e; }
+.cover h1 { font-size: clamp(2.15rem, 5.6vw, 3.7rem); line-height: 1.12; margin: .35rem 0 .7rem; max-width: 12em; color: #10242e; }
 .cover .rule { width: 4.2rem; height: .18rem; margin: 0 0 1rem; border: 0; background: #c4552a; }
 .cover .subtitle { margin: 0; font-size: clamp(1.05rem, 2.4vw, 1.35rem); max-width: 34em; color: #24323c; }
 .cover .edition { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; align-items: baseline; max-width: 36rem; margin: 1.6rem 0 0; padding-top: .8rem; border-top: 1px solid #d7d0c4; color: #5c6570; }
@@ -712,39 +774,52 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .contents > section { border-top: 1px solid var(--line); padding: 1.2rem 0; }
 .contents ol { columns: 2; column-gap: 3rem; }
 .contents li { break-inside: avoid; margin: .28rem 0; }
-.part-divider { min-height: 45vh; display: grid; align-content: center; padding: 5rem 7%; margin-top: 3rem; border-top: 4px solid var(--accent); border-bottom: 1px solid var(--line); }
-.part-divider .part-label { color: var(--accent); font-weight: 800; letter-spacing: .12em; }
-.part-divider h1 { font-size: clamp(2rem, 5vw, 3.7rem); line-height: 1.15; }
-.chapter, .appendix, .part-closing { padding: 4rem 6%; border-bottom: 1px solid var(--line); }
+.contents > section > h2 { position: sticky; top: 0; z-index: 2; margin: 0; padding: .85rem 0 .45rem; background: var(--paper); box-shadow: 0 1px 0 var(--line); }
+.part-divider { position: relative; overflow: hidden; min-height: 52vh; display: grid; align-content: center; gap: .35rem; padding: 4.5rem 8% 4.2rem; margin-top: 3rem; background: linear-gradient(180deg, var(--accent-soft), transparent 72%); border-top: 4px solid var(--accent); border-bottom: 1px solid var(--line); }
+.part-divider .part-label { position: relative; z-index: 1; margin: 0; color: var(--accent); font-weight: 800; letter-spacing: .16em; font-size: .82rem; }
+.part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 5.5rem)); }
+.part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 5.5rem)); font-size: 1.12rem; line-height: 1.6; }
+.part-divider::after { content: attr(data-part-index); position: absolute; right: 5%; top: 1rem; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
+.chapter, .appendix, .part-closing { padding: 3.4rem 6% 3.6rem; border-bottom: 1px solid var(--line); }
 .part-closing { background: linear-gradient(180deg, var(--accent-soft), transparent 9rem); }
-.chapter > header, .appendix > header, .part-closing > header { margin-bottom: 2.2rem; }
-.chapter > header h1, .appendix > header h1, .part-closing > header h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; margin: .2em 0; }
-.chapter-number { color: var(--accent); font-weight: 800; letter-spacing: .12em; }
-h2, h3, h4 { line-height: 1.35; scroll-margin-top: 1.5rem; }
-h2 { margin-top: 2.4rem; }
-h3 { margin-top: 1.8rem; }
+.chapter > header, .appendix > header, .part-closing > header { margin-bottom: 1.6rem; padding-bottom: .95rem; border-bottom: 1px solid var(--line); }
+.chapter > header h1, .appendix > header h1, .part-closing > header h1 { font-size: clamp(1.85rem, 4.2vw, 2.7rem); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }
+.chapter-number { display: block; color: var(--accent); font-weight: 800; letter-spacing: .14em; font-size: .78rem; }
+h2, h3, h4 { line-height: 1.35; scroll-margin-top: 1.25rem; }
+h2 { font-size: 1.42rem; margin: 2.35rem 0 .6rem; }
+h3 { font-size: 1.16rem; margin: 1.7rem 0 .4rem; }
+h4 { font-size: 1.02rem; margin: 1.3rem 0 .3rem; }
+.chapter > p, .appendix > p, .part-closing > p, .frontmatter > p, .imprint-lead, .imprint .colophon,
+.chapter li, .appendix li, .part-closing li { max-width: var(--measure); }
 .chapter-compass { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin: 1.8rem 0 3rem; padding: 1rem; background: var(--accent-soft); border-left: 5px solid var(--accent); border-radius: .6rem; }
 .chapter-compass h2, .chapter-compass .source-anchors { grid-column: 1 / -1; margin: 0; }
+.chapter-compass h2 { font-size: 1rem; }
 .chapter-compass div { background: color-mix(in srgb, var(--paper) 72%, transparent); padding: .8rem; border-radius: .45rem; }
 .chapter-compass div p { margin: .35rem 0 0; }
 .chapter-compass strong { color: var(--accent); }
 .quick-check { margin: 3rem 0 1rem; padding: 1rem 1.4rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--panel); }
 .quick-check h2 { margin-top: 0; }
-blockquote { margin: 1.4rem 0; padding: .25rem 1.2rem; border-left: 4px solid var(--accent); color: var(--muted); }
+blockquote.callout { max-width: var(--measure); margin: 1.25rem 0 1.45rem; padding: .8rem 1rem .9rem 1.05rem; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: .55rem; background: var(--panel); color: var(--ink); }
+.callout p { margin: .35rem 0 0; }
+.callout-label { margin: 0; font-size: .74rem; font-weight: 800; letter-spacing: .14em; color: var(--accent); }
+.callout-warning { border-left-color: var(--warn); background: var(--warn-soft); }
+.callout-warning .callout-label { color: var(--warn); }
+.callout-tip { border-left-color: var(--tip); background: var(--tip-soft); }
+.callout-tip .callout-label { color: var(--tip); }
 img { display: block; max-width: 100%; height: auto; margin: 1.2rem auto .4rem; }
-figure { margin: 1.4rem auto 1.8rem; }
-figure img { margin: 0 auto .45rem; }
-figcaption { color: var(--muted); text-align: center; font-size: .9rem; line-height: 1.45; }
+figure { margin: 1.5rem auto 1.7rem; }
+figure img { margin: 0 auto .55rem; }
+figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--muted); text-align: center; font-size: .9rem; line-height: 1.45; }
 sub { display: block; color: var(--muted); text-align: center; font-size: .88rem; }
 table { width: 100%; border-collapse: collapse; font-size: .94rem; }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1.25rem 0 2rem; overscroll-behavior-inline: contain; }
 .table-scroll:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .table-scroll table { margin: 0; }
-th, td { border: 1px solid var(--line); padding: .55rem .65rem; vertical-align: top; text-align: left; }
-th { background: var(--panel); }
+th, td { border: 1px solid var(--line); padding: .55rem .7rem; vertical-align: top; text-align: left; }
+th { background: var(--panel); font-weight: 700; }
 code { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; font-size: .91em; }
 :not(pre) > code { padding: .12em .35em; border-radius: .3em; background: var(--panel); }
-pre { overflow-x: auto; padding: 1rem 1.15rem; background: var(--code); color: var(--code-ink); border-radius: .65rem; line-height: 1.55; }
+pre { overflow-x: auto; margin: 1.1rem 0 1.45rem; padding: 1rem 1.15rem; background: var(--code); color: var(--code-ink); border-radius: .65rem; border-left: 3px solid var(--accent); line-height: 1.55; }
 pre code { font-size: .86rem; }
 dl { display: grid; grid-template-columns: 8rem 1fr; gap: .35rem 1rem; }
 dt { font-weight: 700; }
@@ -754,8 +829,10 @@ p, li, dd { overflow-wrap: anywhere; }
 .source-card { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: .7rem; padding: 1rem 1.2rem; break-inside: avoid; }
 .source-card h2 { min-width: 0; font-size: 1.15rem; margin-top: 0; }
 .source-card dl { min-width: 0; grid-template-columns: 5rem minmax(0, 1fr); font-size: .9rem; }
-.back-to-toc { display: inline-block; margin-top: 2rem; }
-footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; }
+.back-to-toc { display: inline-block; margin-top: 2.2rem; font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--accent); }
+.toc-jump { position: fixed; right: 1.15rem; bottom: 1.15rem; z-index: 30; padding: .55rem .95rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 .45rem 1.2rem rgba(16, 24, 32, .18); }
+.toc-jump:hover, .toc-jump:focus-visible { color: var(--paper); }
+footer.book-footer { padding: 3rem 6% 5.2rem; color: var(--muted); text-align: center; }
 @media (max-width: 720px) {
   .book { width: min(100% - 1rem, 980px); }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding-left: 1rem; padding-right: 1rem; }
@@ -770,13 +847,13 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   dl { grid-template-columns: 1fr; }
 }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #11171b; --ink: #e9eef1; --muted: #acb7bf; --line: #3a454d; --panel: #1c252b; --accent: #78c8e8; --accent-soft: #17313c; --code: #080c0f; --code-ink: #edf6f9; }
+  :root { --paper: #11171b; --ink: #e9eef1; --muted: #acb7bf; --line: #3a454d; --panel: #1c252b; --accent: #78c8e8; --accent-soft: #17313c; --warn: #f0b090; --warn-soft: #3a241c; --tip: #8fd4b4; --tip-soft: #163028; --code: #080c0f; --code-ink: #edf6f9; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
 @media print {
-  :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #444; --line: #bbb; --panel: #f4f4f4; --accent: #075e84; --accent-soft: #edf6f9; }
+  :root { color-scheme: light; --paper: #fff; --ink: #111; --muted: #444; --line: #bbb; --panel: #f4f4f4; --accent: #075e84; --accent-soft: #edf6f9; --warn: #8a3418; --warn-soft: #f8f1ec; --tip: #1b5c45; --tip-soft: #eef6f2; }
   @page { size: A4; margin: 16mm 15mm 18mm; }
   body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
@@ -784,17 +861,20 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   .cover-sheet { min-height: 245mm; }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { padding: 0; }
   .imprint, .frontmatter, .contents, .part-divider, .chapter, .part-closing, .appendix { page-break-before: always; }
-  .part-divider { min-height: 220mm; }
+  .part-divider { min-height: 220mm; align-content: center; }
+  .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
-  p[align="center"], figure, figcaption, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
-  .table-scroll { overflow: visible; }
+  p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
+  figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; }
+  img { max-height: 200mm; }
+  .table-scroll { overflow: visible; break-inside: auto; }
   .table-scroll table { min-width: 0; }
-  thead { display: table-header-group; }
+  thead { display: table-header-group; break-after: avoid-page; page-break-after: avoid; }
   tr { break-inside: avoid-page; page-break-inside: avoid; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: avoid-page; page-break-inside: avoid; }
   .source-registry { grid-template-columns: 1fr; }
   a { color: inherit; text-decoration: none; }
-  .back-to-toc, .skip-link { display: none; }
+  .toc-jump, .back-to-toc, .skip-link { display: none; }
 }
 """
 
@@ -859,7 +939,12 @@ def part_closing_html(part: dict, manifest: dict, chapter_anchors: dict[Path, st
     title = extract_title(raw, closing["file"])
     content = strip_heading_emoji(remove_chapter_frontmatter(raw))
     rendered = render_document(
-        content, path, closing["id"], chapter_anchors, ui(manifest, "table_label")
+        content,
+        path,
+        closing["id"],
+        chapter_anchors,
+        ui(manifest, "table_label"),
+        callout_label_map(manifest),
     )
     return f"""
 <article class="part-closing" id="{html.escape(closing['id'])}">
@@ -877,6 +962,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     destination = (output_dir or DIST_DIR).resolve()
     destination.mkdir(parents=True, exist_ok=True)
     table_label = ui(manifest, "table_label")
+    labels = callout_label_map(manifest)
 
     chapter_anchors = {
         (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
@@ -918,13 +1004,13 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     )
 
     chapter_index = 0
-    for part in manifest["parts"]:
+    for index, part in enumerate(manifest["parts"], start=1):
         body.append(
             f"""
-<section class="part-divider" id="part-{html.escape(part['id'])}">
-  <p class="part-label">PART {html.escape(part['id'][1:])}</p>
+<section class="part-divider" id="part-{html.escape(part['id'])}" data-part-index="{index:02d}">
+  <p class="part-label">{html.escape(ui(manifest, 'part_kicker').format(n=index))}</p>
   <h1>{html.escape(part['title'])}</h1>
-  <p>{html.escape(part['goal'])}</p>
+  <p class="part-goal">{html.escape(part['goal'])}</p>
 </section>"""
         )
         for filename in part["files"]:
@@ -934,13 +1020,14 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
                 raw, filename, manifest.get("language", "zh-CN")
             )
             rendered = render_document(
-                content, path, f"ch{filename[:2]}", chapter_anchors, table_label
+                content, path, f"ch{filename[:2]}", chapter_anchors, table_label, labels
             )
             guide = manifest["chapter_guides"][filename]
+            chapter_kicker = ui(manifest, "chapter_kicker").format(n=filename[:2])
             body.append(
                 f"""
 <article class="chapter" id="chapter-{filename[:2]}" data-chapter="{filename[:2]}">
-  <header><span class="chapter-number">CHAPTER {filename[:2]}</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(title)}</h1></header>
   {compass_html(guide, manifest)}
   {rendered}
   {quick_check_html(questions, manifest)}
@@ -955,12 +1042,14 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
         raw = path.read_text(encoding="utf-8")
         title = extract_title(raw, appendix["file"])
         content = strip_heading_emoji(remove_chapter_frontmatter(raw))
-        rendered = render_document(content, path, appendix["id"], chapter_anchors, table_label)
+        rendered = render_document(
+            content, path, appendix["id"], chapter_anchors, table_label, labels
+        )
         registry = source_registry_html(manifest) if appendix["id"] == "appendix-references" else ""
         body.append(
             f"""
 <article class="appendix" id="{html.escape(appendix['id'])}">
-  <header><span class="chapter-number">APPENDIX</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="chapter-number">{html.escape(ui(manifest, 'appendix_kicker'))}</span><h1>{html.escape(title)}</h1></header>
   {rendered}
   {registry}
   <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>
@@ -981,6 +1070,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 <a class="skip-link" href="#contents">{html.escape(ui(manifest, 'skip'))}</a>
 <main class="book">{''.join(body)}</main>
 <footer class="book-footer">{html.escape(ui(manifest, 'footer').format(count=chapter_count))}</footer>
+<a class="toc-jump" href="#contents">{html.escape(ui(manifest, 'toc_jump'))}</a>
 </body>
 </html>
 """
@@ -1016,15 +1106,51 @@ def _browser_candidates(override: str | None) -> list[Path]:
     return result
 
 
+_CHAPTER_RUNNING_TITLE = re.compile(r"\d{2}\s+.+")
+_PART_RUNNING_TITLE = re.compile(r"第[一二三四五六七八九十0-9]+部分|Part \d+\b")
+
+
 def _pdf_running_sections(document) -> list[tuple[int, str]]:
-    """Return zero-based PDF page starts for chapters and appendices."""
-    sections: list[tuple[int, str]] = []
+    """Return zero-based page starts whose following pages get a running header.
+
+    Numbered chapters, the part closing, and appendices qualify. Part-divider
+    titles are full pages, and front matter before the first chapter stays bare.
+    """
+    raw: list[tuple[int, str]] = []
     for level, title, page_number in document.get_toc():
         if level != 1 or page_number < 1:
             continue
-        if re.fullmatch(r"\d{2}\s+.+", title) or title.startswith("附录 "):
-            sections.append((page_number - 1, title))
+        raw.append((page_number - 1, title.strip()))
+    first_chapter = next(
+        (index for index, (_page, title) in enumerate(raw) if _CHAPTER_RUNNING_TITLE.fullmatch(title)),
+        None,
+    )
+    sections: list[tuple[int, str]] = []
+    for index, (page, title) in enumerate(raw):
+        numbered = _CHAPTER_RUNNING_TITLE.fullmatch(title) is not None
+        if not numbered and (first_chapter is None or index <= first_chapter):
+            continue
+        if _PART_RUNNING_TITLE.match(title):
+            continue
+        sections.append((page, title))
     return sections
+
+
+def _short_running_title(title: str) -> str:
+    for separator in ("：", ":"):
+        if separator in title:
+            return title.split(separator, 1)[0].strip()
+    return title.strip()
+
+
+def _fit_running_header(text: str, *, fontname: str, fontsize: float, max_width: float, fitz) -> str:
+    if fitz.get_text_length(text, fontname=fontname, fontsize=fontsize) <= max_width:
+        return text
+    ellipsis = "..."
+    trimmed = text
+    while trimmed and fitz.get_text_length(trimmed + ellipsis, fontname=fontname, fontsize=fontsize) > max_width:
+        trimmed = trimmed[:-1]
+    return f"{trimmed}{ellipsis}" if trimmed else ellipsis
 
 
 def _stamp_toc_page_references(document, fitz) -> None:
@@ -1110,7 +1236,10 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str
         total = max(0, document.page_count - 1)
         current_title: str | None = None
         next_section = 0
-        short_title = metadata.get("title", "STM32 实战").split("：", 1)[0]
+        short_title = _short_running_title(metadata.get("title") or "STM32")
+        rule = (0.72, 0.74, 0.76)
+        header_font = "china-s"
+        header_size = 7.5
 
         for index in range(1, document.page_count):
             while next_section < len(sections) and sections[next_section][0] <= index:
@@ -1122,23 +1251,36 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, metadata: dict[str, str
             width = fitz.get_text_length(label, fontname="helv", fontsize=8)
             point = fitz.Point((page.rect.width - width) / 2, page.rect.height - 8)
             page.insert_text(point, label, fontname="helv", fontsize=8, color=(0.38, 0.42, 0.45))
+            page.draw_line(
+                fitz.Point(42, page.rect.height - 22),
+                fitz.Point(page.rect.width - 42, page.rect.height - 22),
+                color=rule,
+                width=0.35,
+            )
 
             if current_title is None or index in section_starts:
                 continue
             header = short_title if index % 2 == 0 else current_title
-            header_width = fitz.get_text_length(header, fontname="china-s", fontsize=7.5)
+            header = _fit_running_header(
+                header,
+                fontname=header_font,
+                fontsize=header_size,
+                max_width=page.rect.width - 84,
+                fitz=fitz,
+            )
+            header_width = fitz.get_text_length(header, fontname=header_font, fontsize=header_size)
             x = 42 if index % 2 == 0 else page.rect.width - 42 - header_width
             page.insert_text(
                 fitz.Point(x, 20),
                 header,
-                fontname="china-s",
-                fontsize=7.5,
+                fontname=header_font,
+                fontsize=header_size,
                 color=(0.38, 0.42, 0.45),
             )
             page.draw_line(
                 fitz.Point(42, 27),
                 fitz.Point(page.rect.width - 42, 27),
-                color=(0.72, 0.74, 0.76),
+                color=rule,
                 width=0.35,
             )
 
