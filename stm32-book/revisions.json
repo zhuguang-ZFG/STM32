@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.8",
+      "date": "2026-10-25",
+      "zh": [
+        "章距、段距、图距、左右页边和正文行高各收一档，行长从 40rem 调到 42rem。字号和颜色不变。",
+        "封面标题板的左右页边仍是 6%。暗色和印刷的颜色不改。样本图、封面图和 GIF 不重画。"
+      ],
+      "en": [
+        "Chapter, paragraph, and figure spacing, the side inset, and the body line-height each move one step tighter. The measure moves from 40rem to 42rem. Type size and colors stay.",
+        "The cover title plate keeps a 6% side inset. The dark palette and the print palette stay. Sample drawings, the cover drawing, and GIFs are not redrawn."
+      ]
+    },
+    {
       "version": "1.2.7",
       "date": "2026-10-25",
       "zh": [
