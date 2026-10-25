@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "date": "2026-10-25",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
@@ -148,8 +148,8 @@
     "08-SPI总线.md": {
       "question": "CPOL、CPHA、片选和全双工移位怎样决定每一位在何时被推出与采样？",
       "deliverable": "一张目标器件时序与 MCU 模式对照，并读回一个有明确复位值的只读寄存器。",
-      "boundary": "读出非全 0/全 1 也不等于模式正确；必须与器件手册的 ID 或复位值对账。",
-      "sources": ["rm0008"]
+      "boundary": "读出非全 0/全 1 也不等于模式正确；必须与器件手册的 ID 或复位值对账。SPI1 在 APB2。72 MHz 下 BR 为 010 时分频 8，SCK 为 9 MHz；BR 为 001 时为 18 MHz。分频只有 2、4、8、16、32、64、128、256。JEDEC 命令是 0x9F。本仓库 spi-flash 期待的三字节是厂商 0xEF、存储器类型 0x40、容量 0x17。页大小 256 字节。Mode 0 是 CPOL 为 0、CPHA 为 0。",
+      "sources": ["rm0008", "project-examples"]
     },
     "09-ADC与DAC.md": {
       "question": "源阻抗、采样保持、参考电压和量化怎样共同决定一个 ADC 码值？",
@@ -160,8 +160,8 @@
     "10-DMA.md": {
       "question": "DMA 请求、可达内存、传输宽度、环形位置和 Cache 一致性怎样分别验证？",
       "deliverable": "一张请求映射表、一份缓冲区所有权/位置不变量，以及 H7 上的内存可达性与 Cache 维护决策。",
-      "boundary": "DMA 完成中断只证明控制器完成请求，不证明 CPU 读到的是最新数据，也不证明业务未丢帧。",
-      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart"]
+      "boundary": "DMA 完成中断只证明控制器完成请求，不证明 CPU 读到的是最新数据，也不证明业务未丢帧。F103C8 只有 DMA1 的 7 条通道，没有 DMA2。USART1_TX 是 Channel 4，USART1_RX 是 Channel 5，ADC1 是 Channel 1。缓冲区 8 个半字、CNDTR 读回 3 时，已写入 5 个采样，也就是 10 字节。半传输按项目数的一半，不是字节数的一半。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4；FIFO 是 4 个 32 位字。",
+      "sources": ["rm0008", "stm32cube-f4", "st-h7-dma", "majerle-uart", "rm0090"]
     },
     "11-RTC与看门狗.md": {
       "question": "时间怎样跨主电源保持，看门狗又怎样证明主循环真的健康而不是只会喂狗？",
@@ -184,14 +184,14 @@
     "14-USB.md": {
       "question": "主机怎样沿复位、描述符、地址和配置完成枚举，类协议又在哪里接管数据？",
       "deliverable": "一张枚举请求序列、完整描述符长度核对和 CDC 或 HID 的主机侧可见结果。",
-      "boundary": "枚举成功只证明控制传输基本正确；吞吐、兼容性、挂起恢复和合规仍需独立测试。",
-      "sources": ["rm0008", "usb20"]
+      "boundary": "枚举成功只证明控制传输基本正确；吞吐、兼容性、挂起恢复和合规仍需独立测试。F103 全速要 48 MHz：PLL 为 72 MHz 时 RCC_CFGR.USBPRE 写 0，72 / 1.5 = 48。PA11 是 DM，PA12 是 DP，全速在 D+ 上拉 1.5 kΩ。本仓库 usb-cdc 的设备描述符是 18 字节，bMaxPacketSize0 是 64，VID/PID 是 0x1209/0x0001，不是 ST 例程常见的 0x0483/0x5740。配置集合 wTotalLength 是 0x0043，也就是 67 字节；bMaxPower 0x32 表示 100 mA。全速批量和中断的包上限都是 64 字节；1023 只属于全速等时。",
+      "sources": ["rm0008", "usb20", "project-examples"]
     },
     "15-FreeRTOS入门.md": {
       "question": "任务、队列、互斥量与 ISR 怎样在优先级规则下协作而不阻塞错误的执行上下文？",
       "deliverable": "一张任务状态图、一份栈与队列预算，以及能证明 FromISR 优先级合法的 NVIC 配置表。",
-      "boundary": "示例只建立内核基本契约；实时性必须用最坏执行时间、阻塞链和测量数据证明。FreeRTOS 要求分组 GROUP_4。4 位优先级时，5 << (8-4) = 0x50，能调用 FromISR 的中断优先级数值要大于等于 5。NVIC 数值 0 是最高优先级，调用这些 API 会停在 configASSERT。任务优先级的方向相反。",
-      "sources": ["freertos-priority", "pm0056"]
+      "boundary": "示例只建立内核基本契约；实时性必须用最坏执行时间、阻塞链和测量数据证明。FreeRTOS 要求分组 GROUP_4。4 位优先级时，5 << (8-4) = 0x50，能调用 FromISR 的中断优先级数值要大于等于 5。NVIC 数值 0 是最高优先级，调用这些 API 会停在 configASSERT。任务优先级的方向相反。xTaskCreate 的栈深度单位是字。本仓库 freertos-task 里 LED 是 128 字，等于 512 字节；KEY 是 192 字，等于 768 字节；UART 是 256 字，等于 1024 字节。configTICK_RATE_HZ 默认 1000，一个 tick 是 1 ms。HAL_Delay 也占用 SysTick，上内核时把 HAL 时基改到别的定时器。",
+      "sources": ["freertos-priority", "pm0056", "project-examples"]
     },
     "16-低功耗设计.md": {
       "question": "进入与退出 Sleep/Stop/Standby 时，哪些时钟、状态和唤醒源必须显式恢复？",
@@ -202,7 +202,7 @@
     "17-调试与性能优化.md": {
       "question": "面对崩溃或变慢，怎样从可重复现象走到故障寄存器、调用位置和周期证据？",
       "deliverable": "一份最小复现、CFSR/HFSR/BFAR/MMFAR/堆栈记录和一次优化前后 DWT 对照。",
-      "boundary": "优化器、调试器和日志都会改变时序；没有基线与同条件复测的加速不算证据。",
+      "boundary": "优化器、调试器和日志都会改变时序；没有基线与同条件复测的加速不算证据。CFSR 在 0xE000ED28，HFSR 在 0xE000ED2C，MMFAR 在 0xE000ED34，BFAR 在 0xE000ED38。HFSR.FORCED 是 bit 30，值是 0x40000000。BFAR 只有 CFSR 的 bit 15（BFARVALID）为 1 时才有效。F103 的 SWO 在 PB3。72 MHz 时 DWT 的 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。",
       "sources": ["pm0056"]
     },
     "18-常见问题FAQ.md": {
@@ -262,13 +262,13 @@
     "27-网络与协议栈.md": {
       "question": "STM32 怎样从 PHY/RMII 和 DMA/Cache 走到 lwIP、TCP/UDP、MQTT/TLS，并在断网后可诊断地恢复？",
       "deliverable": "一张分层数据路径图、一张网络排错阶梯、一个带长度字段与业务序号的 TCP 协议，以及覆盖 DHCP/DNS/MQTT/TLS 的故障注入记录。",
-      "boundary": "link、ping、TCP ACK、MQTT QoS 与业务落盘是不同证据层；H7 DMA 内存域/Cache、lwIP 线程上下文、证书时间与业务幂等必须分别验收。",
+      "boundary": "link、ping、TCP ACK、MQTT QoS 与业务落盘是不同证据层；H7 DMA 内存域/Cache、lwIP 线程上下文、证书时间与业务幂等必须分别验收。RMII 的 REF_CLK 是 50 MHz。Ethernet DMA 不能访问 0x20000000 的 DTCM，缓冲按 32 字节对齐。DHCP 用 UDP 67（服务器）和 68（客户端），DNS 用端口 53。IPv4 无选项、以太网 MTU 1500 时，TCP MSS 的上限是 1500 − 20 − 20 = 1460；对端 SYN 里更小的 MSS 优先。这些数不能互相代替。",
       "sources": ["rm0433", "um2407", "um1713", "an4839", "stm32cube-h7-lwip", "lwip-pitfalls", "mqtt-v5", "mbedtls-networking", "rfc9293", "es0392"]
     },
     "28-嵌入式系统与RTOS生态.md": {
       "question": "怎样把内核、驱动、系统服务和产品状态机连成有所有权、截止点、资源预算与恢复证据的完整系统？",
       "deliverable": "一张系统分层图、一份任务/中断/IPC/内存预算、一张 OS 选型表，以及覆盖队列满、任务冻结和驱动超时的故障注入记录。",
-      "boundary": "FreeRTOS、RT-Thread、Zephyr 和 CMSIS-RTOS2 的 API 名称不能替代目标版本、BSP、执行上下文和最坏时延验证；示例预算不是硬件实测。",
+      "boundary": "FreeRTOS、RT-Thread、Zephyr 和 CMSIS-RTOS2 的 API 名称不能替代目标版本、BSP、执行上下文和最坏时延验证；示例预算不是硬件实测。这一页的示例账是 80 µs/1 ms = 8%，420 µs/10 ms = 4.2%，70 µs/2 ms = 3.5%，1.5 ms/100 ms = 1.5%，合计 17.2%。它只说明这四项没有占满单核。",
       "sources": ["freertos-1132", "rtthread-530", "zephyr-442", "cmsis-640", "pm0056", "rm0399", "stm32h745-header"]
     }
   },
@@ -323,7 +323,7 @@
       "snapshot": "文档号 RM0090；第 12 章用它核对 F407VG 扇区，使用时核对当前修订版",
       "accessed": "2026-10-25",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "F407 Flash 扇区：S0–S3 为 16 KB，S4 为 64 KB，S5–S7 为 128 KB。"
+      "scope": "F407 Flash 扇区：S0–S3 为 16 KB，S4 为 64 KB，S5–S7 为 128 KB。第 9 章 DMA：每个控制器 8 个 Stream；USART1_RX 在 DMA2 Stream 5、Channel 4，FIFO 为 4 个 32 位字。"
     },
     "ds5319": {
       "title": "DS5319 — STM32F103x8/B Datasheet",
@@ -341,16 +341,16 @@
       "snapshot": "文档号 PM0056；使用时核对 ST 文档中心当前修订版",
       "accessed": "2026-10-23",
       "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "Cortex-M3 异常、NVIC、SCB、故障寄存器与内核行为。"
+      "scope": "Cortex-M3 异常、NVIC、SCB 与内核行为。CFSR 在 0xE000ED28，HFSR 在 0xE000ED2C，MMFAR 在 0xE000ED34，BFAR 在 0xE000ED38。HFSR.FORCED 是 bit 30，值为 0x40000000。BFARVALID 是 CFSR 的 bit 15。"
     },
     "an2606": {
-      "title": "AN2606 — STM32 system memory boot mode",
+      "title": "AN2606 — STM32 microcontroller system memory boot mode",
       "authority": "ST 官方应用笔记",
-      "url": "https://www.st.com/resource/en/",
-      "snapshot": "文档号 AN2606；目标芯片支持项以当前修订版为准",
-      "accessed": "2026-10-23",
-      "license": "ST 文档条款（本书仅链接与引用文档号）",
-      "scope": "出厂 Bootloader、启动模式和支持的接口。"
+      "url": "https://www.st.com/resource/en/application_note/an2606-introduction-to-system-memory-boot-mode-on-stm32-mcus-stmicroelectronics.pdf",
+      "snapshot": "2026-10-24 从 ST 当前文档入口核对；按具体料号与 Bootloader 版本重查",
+      "accessed": "2026-10-24",
+      "license": "ST 文档条款（本书仅链接与独立讲解）",
+      "scope": "出厂系统存储器 Bootloader 和支持的接口。第 12 章用它看系统存储器启动；第 23 章用它看 G071 的激活 pattern、空 Flash 等附加启动边界。"
     },
     "an3965": {
       "title": "AN3965 / AN4657 — STM32 IAP application notes",
@@ -459,15 +459,6 @@
       "accessed": "2026-10-24",
       "license": "ST 文档条款（本书仅链接与独立讲解）",
       "scope": "G0 BOOT_LOCK、nBOOT1、BOOT0、nBOOT_SEL、nBOOT0 启动组合与共脚硬件设计。"
-    },
-    "an2606": {
-      "title": "AN2606 — STM32 microcontroller system memory boot mode",
-      "authority": "ST 官方应用笔记",
-      "url": "https://www.st.com/resource/en/application_note/an2606-introduction-to-system-memory-boot-mode-on-stm32-mcus-stmicroelectronics.pdf",
-      "snapshot": "2026-10-24 从 ST 当前文档入口核对；按具体料号与 Bootloader 版本重查",
-      "accessed": "2026-10-24",
-      "license": "ST 文档条款（本书仅链接与独立讲解）",
-      "scope": "G071 系统 Bootloader、激活 pattern、接口与空 Flash 等附加启动边界。"
     },
     "st-boot-faq": {
       "title": "FAQ STM32 boot process",

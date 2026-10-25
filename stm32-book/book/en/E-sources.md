@@ -32,7 +32,7 @@ The way the book is organized borrows a method used for another book in the same
 
 ## When a number is actually pinned
 
-The two ledgers at the end of [Appendix D](#appendix-glossary) use the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue. When the second ledger changes the part to a G0, an L4, or an H7, the clock and the registers are rewritten for the whole row.
+The first two ledgers at the end of [Appendix D](#appendix-glossary) use the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue. When the second ledger changes the part to a G0, an L4, or an H7, the clock and the registers are rewritten for the whole row. The third ledger pins the DMA channel, the USB descriptor length, and the `CFSR`/`HFSR` addresses. A new request map or a new descriptor rewrites those rows as well.
 
 The 115200 cell is the pattern. The part is an STM32F103C8T6, and USART1's clock is APB2, not APB1. The document is the USART baud-rate register in [RM0008](#source-rm0008); the worked formula is in chapter 06. The formula is `fPCLK / (16 × baud)`. Substituting 72 MHz gives 39.0625, the low 4 bits of BRR are 1, the register is `0x271`, and the divider error is 0. A note that says only "0.16% error", with no USART number and no BRR, has not pinned the cell. That 0.16% is the 36 MHz row, or what you get by dropping the fraction on the 72 MHz row.
 

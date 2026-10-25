@@ -56,6 +56,8 @@ Answer on your own first. These notes only give the reason. Register bits and el
 2. MOSI and MISO are opposite directions. The master's MOSI goes to the slave's input, and the master's MISO to the slave's output.
 3. At the end of a transaction, release that slave's CS to the inactive level and meet the part's hold time.
 
+Check: SPI1 is on APB2. At 72 MHz, `BR = 010` divides by 8 and SCK is 9 MHz; `BR = 001` is 18 MHz. The only steps are 2, 4, 8, 16, 32, 64, 128, and 256. The W25Q64 JEDEC command is `0x9F`. This repository's `spi-flash` example expects manufacturer `0xEF`, memory type `0x40`, and capacity `0x17` (64 Mbit), often written `0xEF4017`. `0x40` is not the capacity. The page is 256 bytes. Mode 0 is CPOL = 0 and CPHA = 0.
+
 ## 09 ADC and DAC
 
 1. Sampling time is set mainly by source impedance, the sampling capacitor, the accuracy you need, and the ADC clock.
@@ -67,6 +69,8 @@ Answer on your own first. These notes only give the reason. Register bits and el
 1. NDTR/CNDTR holds the number of transfers still to do, not an address. The width of each item sets the byte count.
 2. In circular mode the DMA hardware reloads the count at zero and returns the address to the start.
 3. A half-word item is 2 bytes. Half-full is half the item count times 2 bytes. The item count is not already a byte count.
+
+Check: an F103C8 has only DMA1, seven channels, and no DMA2. USART1_TX is channel 4, USART1_RX is channel 5, and ADC1 is channel 1. A buffer of 8 half-words with `CNDTR` reading 3 has written `8 − 3 = 5` samples, `5 × 2 = 10` bytes. Half-transfer is 4 samples, which is 8 bytes, not 4. The F1 DMA controller is an AHB master; the peripheral registers are on the APB. On F4, USART1_RX is DMA2 stream 5, channel 4, and the FIFO is four 32-bit words.
 
 ## 11 RTC and the Watchdog
 
@@ -92,11 +96,15 @@ Answer on your own first. These notes only give the reason. Register bits and el
 2. A 72 MHz system clock yields 48 MHz through the USB prescaler. Check the RCC setup and the crystal error.
 3. CDC looks more like a serial port on the host. HID looks like a keyboard, a mouse, or another human-interface device.
 
+Check: with the PLL at 72 MHz and `RCC_CFGR.USBPRE = 0`, the USB clock is `72 / 1.5 = 48` MHz. A full-speed device pulls D+ up with 1.5 kΩ. This repository's `usb-cdc` device descriptor is 18 bytes, `bMaxPacketSize0` is 64, and the VID/PID is `0x1209/0x0001`, not the `0x0483/0x5740` common in ST's examples. `wTotalLength` is `0x0043`, which is 67 bytes. `bMaxPower` of `0x32` means 100 mA. Full-speed bulk and interrupt both top out at 64 bytes. 1023 belongs only to full-speed isochronous.
+
 ## 15 FreeRTOS
 
 1. Ready tasks of equal priority rotate on a tick boundary when time-slicing is on.
 2. A fixed-period task uses `vTaskDelayUntil`, because it anchors an absolute wake-up time and does not add this round's runtime onto the period.
 3. A software-timer callback must not block the timer service task. Post an event and return.
+
+Check: with 4 priority bits, `5 << (8 − 4) = 0x50`. An interrupt that calls `FromISR` needs a numeric priority of at least 5. The value 0 stops in `configASSERT`. Task priority runs the other way: the idle task is 0. The stack argument of `xTaskCreate` is in words. In this repository's `freertos-task` example, LED is 128 words (512 bytes), KEY is 192 words (768 bytes), and UART is 256 words (1024 bytes). With `configTICK_RATE_HZ` at 1000, one tick is 1 ms. The kernel does not promise a deadline shorter than one tick. If `HAL_Delay` still owns SysTick, move the HAL time base to another timer first.
 
 ## 16 Low Power
 
@@ -109,6 +117,8 @@ Answer on your own first. These notes only give the reason. Register bits and el
 1. On F103, SWO/JTDO is multiplexed on PB3. Check the debug-port remap before you use it.
 2. Save the stacked PC/LR and SCB's CFSR/HFSR first. Read BFAR/MMFAR only when the valid bit says the address means something.
 3. Without a cycle baseline under the same input and the same compiler flags, you cannot tell whether a change helped or only changed the test.
+
+Check: `CFSR` is at `0xE000ED28`, `HFSR` at `0xE000ED2C`, `MMFAR` at `0xE000ED34`, and `BFAR` at `0xE000ED38`. `HFSR.FORCED` is bit 30, value `0x40000000`: the fault was escalated into HardFault. `BFAR` is this fault's address only when bit 15 of `CFSR` (`BFARVALID`) is 1. `MMFAR` needs bit 7 (`MMARVALID`). The stacked PC is `stack[6]`. Set `TRCENA` (bit 24) in `DEMCR` at `0xE000EDFC`, enable `DWT_CTRL.CYCCNTENA`, then read `0xE0001004`. At 72 MHz, 72 cycles are 1 µs. M3 and M4 have 6 hardware breakpoint comparators; M7 has 8.
 
 ## 18 FAQ
 
@@ -189,11 +199,13 @@ Answer on your own first. These notes only give the reason. Register bits and el
 9. Walk DNS result, TCP handshake, TLS verification, MQTT CONNECT/CONNACK, then subscribe/publish. Keep the matching capture and error code.
 10. An AT modem that owns TCP/IP still needs a transaction/URC parser, deadlines, UART flow control, modem reset, network registration, socket lifetime, backoff, an offline queue, and a business idempotency state machine.
 
+Check: RMII `REF_CLK` is 50 MHz, not the 25 MHz of MII. DHCP is UDP 67 (server) and 68 (client). DNS is port 53. With a 20-byte IPv4 header, a 20-byte TCP header, and an Ethernet MTU of 1500, the MSS ceiling is `1500 − 20 − 20 = 1460`. A smaller MSS in the peer's SYN wins. 1460 is not a value that has already been negotiated.
+
 ## 28 Systems and the RTOS Landscape
 
 1. The FreeRTOS kernel mainly provides scheduling, IPC, timers, and memory. RT-Thread and Zephyr also organize a device framework, the build configuration, networking, a file system, and a shell. Product policy and acceptance stay with the project.
 2. A mutex only serializes the code it wraps. Chip-select, DMA completion, timeout recovery, and driver state can still be split across critical sections. An owner task keeps the whole transaction and its state with one writer.
-3. `U < 1` only says the execution time you counted does not exceed one core. Blocking on a shared resource, ISRs, priority, cache, and Flash wait states can still miss a deadline.
+3. `U < 1` only says the execution time you counted does not exceed one core. Blocking on a shared resource, ISRs, priority, cache, and Flash wait states can still miss a deadline. The worked example on this page is `80 µs / 1 ms = 8%`, `420 µs / 10 ms = 4.2%`, `70 µs / 2 ms = 3.5%`, `1.5 ms / 100 ms = 1.5%`, and 17.2% together. That is not a measurement of any STM32 board.
 4. Keep at least a monotonic timestamp, a boot id, an event or business sequence number, the ISR enqueue result, the target thread's state, the scheduling point, and a stable result code.
 5. A binary semaphore signals an event and has no resource owner. A mutex expresses ownership and usually priority inheritance. Do not hold a mutex in an ISR.
 6. Devicetree describes hardware instances and hardware properties known at boot. Kconfig selects software features, dependencies, and configuration. Kconfig does not replace the wiring on the board, and runtime policy does not belong in the devicetree.

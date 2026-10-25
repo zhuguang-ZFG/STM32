@@ -133,7 +133,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.4</strong>", html)
+        self.assertIn("<strong>v1.0.5</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertIn('<span class="chapter-number">第 00 章</span>', html)
@@ -166,6 +166,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("学习路线收束", html)
         self.assertIn("会上手的几笔账", html)
         self.assertIn("换系列之前先对的账", html)
+        self.assertIn("通道、描述符与故障寄存器", html)
+        self.assertIn("0xE000ED28", html)
+        self.assertIn("0x1209", html)
+        self.assertIn("17.2%", html)
         self.assertIn("0x271", html)
         self.assertIn("0x1FFFF7E0", html)
         self.assertIn("0x50", html)
@@ -256,7 +260,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.4", manifest["version"])
+        self.assertEqual("1.0.5", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -273,7 +277,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.4</strong>", html)
+        self.assertIn("<strong>v1.0.5</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
@@ -294,6 +298,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("Where the road goes next", html)
         self.assertIn("Numbers you will actually use", html)
         self.assertIn("Numbers to reconcile before changing family", html)
+        self.assertIn("Channels, descriptors, and fault registers", html)
+        self.assertIn("0xE000ED28", html)
+        self.assertIn("0x1209", html)
+        self.assertIn("17.2%", html)
         self.assertIn("0x271", html)
         self.assertIn("0x1FFFF7E0", html)
         self.assertIn("0x50", html)
@@ -331,6 +339,7 @@ class BookBuildContractTests(unittest.TestCase):
             "## Debug",
             "## Numbers you will actually use",
             "## Numbers to reconcile before changing family",
+            "## Channels, descriptors, and fault registers",
         ):
             self.assertIn(heading, text)
 
@@ -345,9 +354,19 @@ class BookBuildContractTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, chinese)
                 self.assertIn(token, english)
+        for token in ("0xEF4017", "0xE000ED28", "0x40000000", "0x1209", "0x0043", "17.2%", "1460", "50 MHz", "Channel 5"):
+            with self.subTest(token=token):
+                self.assertIn(token, chinese)
+                self.assertIn(token, english)
         self.assertIn("会上手的几笔账", chinese)
         self.assertIn("换系列之前先对的账", chinese)
+        self.assertIn("通道、描述符与故障寄存器", chinese)
         self.assertIn("Numbers to reconcile before changing family", english)
+        self.assertIn("Channels, descriptors, and fault registers", english)
+        self.assertEqual(1, (BOOK_DIR / "manifest.json").read_text(encoding="utf-8").count('"an2606":'))
+        self.assertEqual(1, (BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8").count('"an2606":'))
+        self.assertIn("rm0090", self.manifest["chapter_guides"]["10-DMA.md"]["sources"])
+        self.assertIn("project-examples", self.manifest["chapter_guides"]["14-USB.md"]["sources"])
         self.assertNotIn("英文整书不在这一版", (BOOK_DIR / "book" / "F-学习路线收束.md").read_text(encoding="utf-8"))
         for name in ("A-工程深读.md", "B-例程索引.md", "E-参考资料.md", "F-学习路线收束.md"):
             self.assertIn("0x271", (BOOK_DIR / "book" / name).read_text(encoding="utf-8"))
@@ -375,6 +394,7 @@ class BookBuildContractTests(unittest.TestCase):
             "## 调试",
             "## 会上手的几笔账",
             "## 换系列之前先对的账",
+            "## 通道、描述符与故障寄存器",
         ):
             self.assertIn(heading, text)
         for term in ("TIMCLK", "AF", "NVIC", "DMA", "SAR ADC", "PWM", "lwIP", "SWDIO / SWCLK"):

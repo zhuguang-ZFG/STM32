@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "date": "2026-10-25",
   "language": "en",
   "author": "zhuguang-ZFG and contributors",
@@ -181,9 +181,10 @@
     "08-spi.md": {
       "question": "How do CPOL, CPHA, chip select, and full-duplex shifting decide when each bit is driven and sampled?",
       "deliverable": "A comparison of the target device's timing with the MCU mode, and a read-back of a read-only register with a known reset value.",
-      "boundary": "A value that is not all 0s or all 1s does not prove the mode is correct. It must match the device manual's ID or reset value.",
+      "boundary": "A value that is not all 0s or all 1s does not prove the mode is correct. It must match the device manual's ID or reset value. SPI1 is on APB2. At 72 MHz, BR 010 divides by 8 and SCK is 9 MHz; BR 001 is 18 MHz. The only dividers are 2, 4, 8, 16, 32, 64, 128, and 256. The JEDEC command is 0x9F. This repository's spi-flash example expects manufacturer 0xEF, memory type 0x40, and capacity 0x17. The page is 256 bytes. Mode 0 is CPOL 0 and CPHA 0.",
       "sources": [
-        "rm0008"
+        "rm0008",
+        "project-examples"
       ]
     },
     "09-adc-dac.md": {
@@ -198,12 +199,13 @@
     "10-dma.md": {
       "question": "How do you check, separately, the DMA request, reachable memory, transfer width, ring position, and cache coherence?",
       "deliverable": "A request map, a buffer ownership and placement invariant, and an H7 decision on memory reachability and cache maintenance.",
-      "boundary": "A DMA-complete interrupt only proves the controller finished the request. It does not prove the CPU read the latest data, or that the application dropped no frame.",
+      "boundary": "A DMA-complete interrupt only proves the controller finished the request. It does not prove the CPU read the latest data, or that the application dropped no frame. An F103C8 has only DMA1, seven channels, and no DMA2. USART1_TX is channel 4, USART1_RX is channel 5, and ADC1 is channel 1. Eight half-words with CNDTR reading 3 means 5 samples have been written, which is 10 bytes. Half-transfer is half the item count, not half the byte count. On F4, USART1_RX is DMA2 stream 5, channel 4. The FIFO is four 32-bit words.",
       "sources": [
         "rm0008",
         "stm32cube-f4",
         "st-h7-dma",
-        "majerle-uart"
+        "majerle-uart",
+        "rm0090"
       ]
     },
     "11-rtc-watchdog.md": {
@@ -237,19 +239,21 @@
     "14-usb.md": {
       "question": "How does the host finish enumeration through reset, descriptors, address, and configuration, and where does the class protocol take over the data?",
       "deliverable": "An enumeration request sequence, a full descriptor-length check, and a host-visible result for CDC or HID.",
-      "boundary": "Successful enumeration only proves the control transfers are basically correct. Throughput, compatibility, suspend/resume, and compliance still need their own tests.",
+      "boundary": "Successful enumeration only proves the control transfers are basically correct. Throughput, compatibility, suspend/resume, and compliance still need their own tests. F103 full-speed needs 48 MHz: with the PLL at 72 MHz, RCC_CFGR.USBPRE is 0, and 72 / 1.5 = 48. PA11 is DM and PA12 is DP. Full-speed pulls D+ up with 1.5 kΩ. This repository's usb-cdc device descriptor is 18 bytes, bMaxPacketSize0 is 64, and the VID/PID is 0x1209/0x0001, not the 0x0483/0x5740 common in ST's examples. wTotalLength is 0x0043, which is 67 bytes. bMaxPower 0x32 means 100 mA. Full-speed bulk and interrupt both top out at 64 bytes. 1023 belongs only to full-speed isochronous.",
       "sources": [
         "rm0008",
-        "usb20"
+        "usb20",
+        "project-examples"
       ]
     },
     "15-freertos.md": {
       "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",
       "deliverable": "A task-state diagram, a stack and queue budget, and an NVIC table that shows the FromISR priority is legal.",
-      "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements. FreeRTOS requires GROUP_4. With 4 priority bits, 5 << (8-4) = 0x50, so an interrupt that calls FromISR needs a numeric priority of at least 5. NVIC priority 0 is the highest; calling those APIs stops in configASSERT. Task priority runs in the opposite direction.",
+      "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements. FreeRTOS requires GROUP_4. With 4 priority bits, 5 << (8-4) = 0x50, so an interrupt that calls FromISR needs a numeric priority of at least 5. NVIC priority 0 is the highest; calling those APIs stops in configASSERT. Task priority runs in the opposite direction. The stack depth passed to xTaskCreate is in words. In this repository's freertos-task example the LED task is 128 words, which is 512 bytes; KEY is 192 words, 768 bytes; UART is 256 words, 1024 bytes. The default configTICK_RATE_HZ is 1000, so one tick is 1 ms. HAL_Delay also uses SysTick. When the kernel is on, move the HAL time base to another timer.",
       "sources": [
         "freertos-priority",
-        "pm0056"
+        "pm0056",
+        "project-examples"
       ]
     },
     "16-low-power.md": {
@@ -264,7 +268,7 @@
     "17-debug.md": {
       "question": "Faced with a crash or a slowdown, how do you go from a repeatable symptom to the fault registers, the call site, and cycle evidence?",
       "deliverable": "A minimal reproduction, a record of CFSR/HFSR/BFAR/MMFAR and the stack, and one DWT comparison before and after an optimization.",
-      "boundary": "The optimizer, the debugger, and logging all change timing. A speedup without a baseline and a retest under the same conditions is not evidence.",
+      "boundary": "The optimizer, the debugger, and logging all change timing. A speedup without a baseline and a retest under the same conditions is not evidence. CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. HFSR.FORCED is bit 30, value 0x40000000. BFAR is valid only when bit 15 of CFSR (BFARVALID) is 1. On F103, SWO is PB3. At 72 MHz, 72 DWT cycles are 1 µs. M3 and M4 have 6 hardware breakpoint comparators; M7 has 8.",
       "sources": [
         "pm0056"
       ]
@@ -373,7 +377,7 @@
     "27-network.md": {
       "question": "How does an STM32 go from PHY/RMII and DMA/cache to lwIP, TCP/UDP, and MQTT/TLS, and recover in a way you can diagnose after the link drops?",
       "deliverable": "A layered data-path diagram, a network debug ladder, a TCP protocol with a length field and an application sequence number, and a fault-injection record covering DHCP, DNS, MQTT, and TLS.",
-      "boundary": "Link, ping, a TCP ACK, MQTT QoS, and data committed to storage are different evidence layers. H7 DMA memory domain and cache, the lwIP thread context, certificate time, and application idempotence must each be accepted on their own.",
+      "boundary": "Link, ping, a TCP ACK, MQTT QoS, and data committed to storage are different evidence layers. H7 DMA memory domain and cache, the lwIP thread context, certificate time, and application idempotence must each be accepted on their own. RMII REF_CLK is 50 MHz. Ethernet DMA cannot reach DTCM at 0x20000000, and buffers are aligned to 32 bytes. DHCP uses UDP 67 (server) and 68 (client). DNS uses port 53. With no IPv4 options and an Ethernet MTU of 1500, the TCP MSS ceiling is 1500 − 20 − 20 = 1460. A smaller MSS in the peer's SYN wins. These numbers do not stand in for each other.",
       "sources": [
         "rm0433",
         "um2407",
@@ -390,7 +394,7 @@
     "28-system-rtos.md": {
       "question": "How do you connect the kernel, drivers, system services, and the product state machine into one system with ownership, deadlines, a resource budget, and recovery evidence?",
       "deliverable": "A system layer diagram, a task/interrupt/IPC/memory budget, an OS selection table, and a fault-injection record covering a full queue, a frozen task, and a driver timeout.",
-      "boundary": "The API names of FreeRTOS, RT-Thread, Zephyr, and CMSIS-RTOS2 do not replace the target version, the BSP, the execution context, or a worst-case latency check. The example budget is not a hardware measurement.",
+      "boundary": "The API names of FreeRTOS, RT-Thread, Zephyr, and CMSIS-RTOS2 do not replace the target version, the BSP, the execution context, or a worst-case latency check. The example budget is not a hardware measurement. The worked example on this page is 80 µs/1 ms = 8%, 420 µs/10 ms = 4.2%, 70 µs/2 ms = 3.5%, 1.5 ms/100 ms = 1.5%, and 17.2% together. That only says these four items do not fill one core.",
       "sources": [
         "freertos-1132",
         "rtthread-530",
@@ -473,7 +477,7 @@
       "snapshot": "Document number RM0090; chapter 12 uses it for the F407VG sectors. Recheck the current revision",
       "accessed": "2026-10-25",
       "license": "ST document terms (this book only links and cites the document number)",
-      "scope": "F407 Flash sectors: S0–S3 are 16 KB, S4 is 64 KB, and S5–S7 are 128 KB."
+      "scope": "F407 Flash sectors: S0–S3 are 16 KB, S4 is 64 KB, and S5–S7 are 128 KB. Chapter 9 DMA: eight streams per controller. USART1_RX is DMA2 stream 5, channel 4. The FIFO is four 32-bit words."
     },
     "ds5319": {
       "title": "DS5319 — STM32F103x8/B Datasheet",
@@ -491,7 +495,7 @@
       "snapshot": "Document number PM0056; recheck the current revision in the ST document center",
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
-      "scope": "Cortex-M3 exceptions, NVIC, SCB, fault registers, and core behavior."
+      "scope": "Cortex-M3 exceptions, NVIC, SCB, and core behavior. CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. HFSR.FORCED is bit 30, value 0x40000000. BFARVALID is bit 15 of CFSR."
     },
     "an2606": {
       "title": "AN2606 — STM32 microcontroller system memory boot mode",
@@ -500,7 +504,7 @@
       "snapshot": "Checked from the current ST document entry on 2026-10-24; recheck for the exact part and bootloader version",
       "accessed": "2026-10-24",
       "license": "ST document terms (this book only links and explains independently)",
-      "scope": "G071 system bootloader, activation patterns, interfaces, and extra boot limits such as empty Flash."
+      "scope": "Factory system-memory bootloader and the interfaces it supports. Chapter 12 uses it for system-memory boot. Chapter 23 uses it for the G071 activation pattern and extra limits such as empty Flash."
     },
     "an3965": {
       "title": "AN3965 / AN4657 — STM32 IAP application notes",

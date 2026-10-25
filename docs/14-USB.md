@@ -103,7 +103,9 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 | 配置 | `bMaxPower` | 最大电流，单位 2 mA（0x32 = 100 mA） |
 | 接口 | `bInterfaceClass` | 0x02=CDC、0x03=HID、0x08=MSC、0xFF=厂商自定义 |
 | 端点 | `bmAttributes` | 传输类型：0=控制 2=批量 3=中断 1=等时 |
-| 端点 | `wMaxPacketSize` | FS 最大 64 字节（等时/中断可 1023） |
+| 端点 | `wMaxPacketSize` | 全速批量和中断最大都是 64 字节；1023 只属于全速等时 |
+
+全速中断的 `wMaxPacketSize` 最大是 64 字节。1023 是全速等时的上限，不是中断的上限。本仓库 `examples/usb-cdc` 的批量端点是 64 字节，通知端点是 8 字节。
 
 ### 5. 枚举 7 步
 

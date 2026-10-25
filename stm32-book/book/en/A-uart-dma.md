@@ -133,3 +133,19 @@ A contract is not finished until you can say how long one event is. The first th
 **The BRR fraction has to be in the division.** USART1 is on APB2, so its clock is 72 MHz, not APB1's 36 MHz. At 16× oversampling and 115200, `USARTDIV = 72e6 / (16 × 115200) = 39.0625`. The low 4 bits round to 1, BRR is `0x271`, and the divider lands on 115200 exactly. Drop that one fraction bit and the error becomes about 0.16%. The table in chapter 06 prints 39.0625 and 0.16% on the same row. The BRR `0x138` for USART2 at 36 MHz is the row that really is about 0.16% off. A note names which USART, and which 4 fraction bits, went into BRR.
 
 **32 bytes on H7.** The D-Cache line is 32 bytes. Clean or invalidate a range aligned to that line, and align the buffer to 32 bytes. Invalidating only the few bytes just written drops or writes back the rest of the same line. Whether that memory can be reached by the DMA controller you chose is still a separate question.
+
+## 8. Which channel the request actually lands on
+
+`Size` in contract B means something only after the request has entered that DMA channel. An STM32F103C8 is medium-density: DMA1 only, seven channels, no DMA2. A channel number copied from a high-density DMA2 does not move the counter on a C8.
+
+| Request | F103C8 (RM0008, DMA1 only) | F4 (RM0090) |
+| --- | --- | --- |
+| USART1_TX | Channel 4 | DMA2 stream 7, channel 4 |
+| USART1_RX | Channel 5 | DMA2 stream 5, channel 4 |
+| ADC1 | Channel 1 | DMA2 stream 0 or stream 4, channel 0 |
+
+On F4 you pick the stream first, then `CHSEL` picks the channel. TX and RX of one peripheral are often different streams and the same channel. The FIFO is four 32-bit words. F1 has no such FIFO, so a width mismatch is not packed on the way through.
+
+Do not subtract half-words as if they were bytes. A buffer of 8 half-words with `CNDTR` reading 3 has written `8 − 3 = 5` samples, which is `5 × 2 = 10` bytes. Half-transfer on that buffer is 4 samples, 8 bytes. Handling it as "every 4 bytes" treats the second half as new data. In circular mode, `length − CNDTR` is not a running total: the hardware reloads the count at zero. Keep using `Size` and `old_pos` from the callback.
+
+The F1 DMA controller is a master on the AHB. The peripheral registers it touches sit on the APB, across a bridge. A peripheral whose clock gate is still off never raises a request. That is a different fault from picking the wrong channel.
