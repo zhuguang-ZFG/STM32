@@ -141,7 +141,10 @@
       "boundary": "A GPIO mode does not change the absolute maximum ratings. 5 V tolerance and sink/source current must be checked for the specific pin. On the BluePill, PC13's LED is on when the pin is low. An F1 internal pull-up is about 30–50 kΩ and does not replace an I2C resistor.",
       "sources": [
         "rm0008",
-        "ds5319"
+        "ds5319",
+        "rm0008-gpio",
+        "ds5319-gpio",
+        "project-examples"
       ]
     },
     "04-interrupts-nvic.md": {
@@ -949,6 +952,24 @@
       "accessed": "2026-10-24",
       "license": "Apache-2.0; API documentation is linked and explained independently",
       "scope": "The common interface for threads, flags, events, mutexes, semaphores, message queues, and what an ISR may call."
+    },
+    "rm0008-gpio": {
+      "title": "RM0008 Rev 21 GPIO lock and SWD pins",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.2.7 and 9.3.5 Table 36",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 03 principle, timing, and source cards. Restates the GPIOx_LCKR lock at offset 0x18 and SWDIO=PA13, SWCLK=PA14. Does not copy manual prose and does not cover F4 AFR."
+    },
+    "ds5319-gpio": {
+      "title": "DS5319 Rev 20 LQFP48 pins PA0 and PC13",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5, Figure 8, note 5",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 03 principle, key figures, and source cards. Restates LQFP48 pin 10 PA0, pin 2 PC13, and note 5: 3 mA, 2 MHz, 30 pF. Does not copy note 5 and does not trace Figure 8."
     }
   }
 }
