@@ -1340,8 +1340,8 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     <div class="cover-art" aria-hidden="true">{cover_art_svg()}</div>
     <div class="cover-panel">
       <p class="eyebrow">{html.escape(ui(manifest, 'cover_kicker'))}</p>
-      <hr class="rule">
       <h1>{html.escape(manifest['title'])}</h1>
+      <hr class="rule">
       <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
       <p class="edition"><strong>v{html.escape(manifest['version'])}</strong><span>{html.escape(manifest['date'])} · {html.escape(manifest['author'])}</span></p>
     </div>

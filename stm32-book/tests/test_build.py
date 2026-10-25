@@ -142,9 +142,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.2.6<"), history.index(">1.2.5<"))
         self.assertLess(history.index(">1.2.5<"), history.index(">1.2.4<"))
         self.assertLess(history.index(">1.2.4<"), history.index(">1.2.3<"))
         self.assertLess(history.index(">1.2.3<"), history.index(">1.2.2<"))
@@ -180,7 +181,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -274,7 +275,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.2.5</strong>", html)
+        self.assertIn("<strong>v1.2.6</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -414,7 +415,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.2.5", manifest["version"])
+        self.assertEqual("1.2.6", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -431,7 +432,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.2.5</strong>", html)
+        self.assertIn("<strong>v1.2.6</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
@@ -1494,7 +1495,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "e0fb660584f1833e8a6d419ba78ed9d56e4e92e51cbb533430ac8833bcca6bf4",
+            "a4ccd1403ab742e82f67c39053c2609da1c9a8afa126d4f6b988a5b9559a5ac4",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
@@ -1620,30 +1621,47 @@ class BookBuildContractTests(unittest.TestCase):
         english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
         readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
         entry = revisions["entries"][0]
-        typography = revisions["entries"][1]
-        batch4 = revisions["entries"][2]
-        batch3 = revisions["entries"][3]
-        guide = revisions["entries"][4]
-        previous = revisions["entries"][5]
-        self.assertEqual("1.2.5", self.manifest["version"])
+        tokens = revisions["entries"][1]
+        typography = revisions["entries"][2]
+        batch4 = revisions["entries"][3]
+        batch3 = revisions["entries"][4]
+        guide = revisions["entries"][5]
+        previous = revisions["entries"][6]
+        self.assertEqual("1.2.6", self.manifest["version"])
         self.assertEqual("2026-10-25", self.manifest["date"])
-        self.assertEqual("1.2.5", english["version"])
+        self.assertEqual("1.2.6", english["version"])
         self.assertEqual("2026-10-25", english["date"])
-        self.assertEqual("1.2.5", entry["version"])
+        self.assertEqual("1.2.6", entry["version"])
         self.assertEqual("2026-10-25", entry["date"])
+        self.assertEqual(
+            [
+                "封面图不再写英文眉题，板卡外框加了一道内线；发光的灯点改成平涂。中英文仍共用这一张图。",
+                "标题板把书名放在书脊短线上面。扉页标题改用章标题的字号，并在标题下重复这条书脊短线。",
+            ],
+            entry["zh"],
+        )
+        self.assertEqual(
+            [
+                "The cover drawing no longer carries an English kicker. The board frame gains an inner rule, and the glowing lamp is flat. Both languages still share this drawing.",
+                "The title plate places the title above the spine rule. The imprint heading uses the chapter title size and repeats that spine rule.",
+            ],
+            entry["en"],
+        )
+        self.assertEqual("1.2.5", tokens["version"])
+        self.assertEqual("2026-10-25", tokens["date"])
         self.assertEqual(
             [
                 "整书样式的颜色、字号、间距、圆角和阴影改由一份令牌表提供，组件继续引用它们。屏幕、暗色和印刷的观感与 1.2.4 相同。",
                 "中文和英文 HTML 仍把样式内嵌在单个文件里，不引用外部字体。",
             ],
-            entry["zh"],
+            tokens["zh"],
         )
         self.assertEqual(
             [
                 "Colors, type, spacing, radius, and shadow now come from a token file. Components still reference them. Screen, dark, and print look the same as 1.2.4.",
                 "Chinese and English HTML still embed the stylesheet in a single file and do not load a font from the network.",
             ],
-            entry["en"],
+            tokens["en"],
         )
         self.assertEqual("1.2.4", typography["version"])
         self.assertEqual("2026-10-25", typography["date"])
@@ -1722,18 +1740,19 @@ class BookBuildContractTests(unittest.TestCase):
             ],
             previous["en"],
         )
-        self.assertIn("当前版本：**v1.2.5 · 2026-10-25**", readme)
-        self.assertIn("版本号已经是 1.2.5。", readme)
+        self.assertIn("当前版本：**v1.2.6 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.2.6。", readme)
         self.assertIn("样式来自 `stm32-book/styles/tokens.json` 和 `stm32-book/styles/book.css`，构建时拼进 HTML 的 `<style>`，`dist/` 里不另放 CSS。", readme)
         self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
         self.assertIn("也不要把 1.2.0 的产物标成 1.2.1，", readme)
         self.assertIn("也不要把 1.2.1 的产物标成 1.2.2，", readme)
         self.assertIn("也不要把 1.2.2 的产物标成 1.2.3，", readme)
         self.assertIn("也不要把 1.2.3 的产物标成 1.2.4，", readme)
-        self.assertIn("也不要把 1.2.4 的产物标成 1.2.5。", readme)
-        self.assertIn("打 tag `v1.2.5`", readme)
-        self.assertNotIn("当前版本：**v1.2.4", readme)
-        self.assertNotIn("打 tag `v1.2.4`", readme)
+        self.assertIn("也不要把 1.2.4 的产物标成 1.2.5，", readme)
+        self.assertIn("也不要把 1.2.5 的产物标成 1.2.6。", readme)
+        self.assertIn("打 tag `v1.2.6`", readme)
+        self.assertNotIn("当前版本：**v1.2.5", readme)
+        self.assertNotIn("打 tag `v1.2.5`", readme)
 
     def test_cover_svg_stays_self_contained(self) -> None:
         svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
@@ -1747,12 +1766,124 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("#9fd7c4", svg)
         self.assertIn('transform="translate(148 114)"', svg)
         self.assertNotIn('transform="translate(118 100)"', svg)
-        self.assertIn('<text x="112" y="62"', svg)
-        self.assertNotIn('<text x="72" y="62"', svg)
+        self.assertNotIn("<text", svg)
+        self.assertNotIn("OFFLINE EDITION", svg)
+        self.assertNotIn('opacity="0.18"', svg)
         self.assertNotIn("<style", svg)
         self.assertIn('fill="#1b5c45"', svg)
         self.assertIn('fill="#ffb020"', svg)
         self.assertIn("--spine: #c4552a", self.builder.CSS)
+
+    def test_cover_imprint_d_contract(self) -> None:
+        svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
+        self.assertIn('viewBox="0 0 1200 760"', svg)
+        self.assertIn(
+            '<rect x="22" y="32" width="896" height="468" rx="18" fill="none" stroke="#d7c4a3" stroke-width="4"/>',
+            svg,
+        )
+        self.assertIn(
+            '<rect x="34" y="44" width="872" height="444" rx="12" fill="none" stroke="#d7c4a3" stroke-width="1"/>',
+            svg,
+        )
+        self.assertIn('stroke="#8ecae6"', svg)
+        self.assertIn('<circle r="22" fill="#ffb020"/>', svg)
+        self.assertNotIn("<text", svg)
+        self.assertNotIn("font-family", svg)
+        self.assertNotIn("font-size", svg)
+        self.assertNotIn("<filter", svg)
+        self.assertNotIn("<foreignObject", svg)
+        self.assertNotIn('opacity="0.18"', svg)
+        found = re.findall(r"#[0-9A-Fa-f]{3,8}", svg)
+        self.assertEqual(
+            {
+                "#07141a",
+                "#0c1c24",
+                "#14181c",
+                "#1b5c45",
+                "#1e4d63",
+                "#5c6770",
+                "#8d99a3",
+                "#8ecae6",
+                "#c4552a",
+                "#c5ced6",
+                "#d7c4a3",
+                "#d9dde2",
+                "#e7d7a1",
+                "#f4f1ea",
+                "#ffb020",
+                "#fff4d2",
+            },
+            set(found),
+        )
+        self.assertTrue(all(item == item.lower() for item in found))
+        self.assertEqual(["0.28", "0.45"], re.findall(r'opacity="([^"]*)"', svg))
+        self.assertLessEqual(len(svg.encode("utf-8")), 8192)
+
+        def panel_of(html: str) -> str:
+            start = html.index('<div class="cover-panel">')
+            end = html.index("</div>", start)
+            return html[start:end]
+
+        def heading_text(panel: str) -> str:
+            match = re.search(r"<h1>(.*?)</h1>", panel, re.S)
+            self.assertIsNotNone(match)
+            return match.group(1)
+
+        def assert_plate(html: str, title: str) -> None:
+            panel = panel_of(html)
+            self.assertLess(panel.index('class="eyebrow"'), panel.index("<h1>"))
+            self.assertLess(panel.index("<h1>"), panel.index('class="rule"'))
+            self.assertLess(panel.index('class="rule"'), panel.index('class="subtitle"'))
+            self.assertEqual(title, heading_text(panel))
+            self.assertNotIn("OFFLINE EDITION", html)
+            self.assertNotIn("fonts.googleapis", html)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            chinese = self.builder.build_html(root / "zh")
+            english = self.builder.build_html(root / "en", BOOK_DIR / "manifest-en.json")
+            zh = json.loads((BOOK_DIR / "manifest.json").read_text(encoding="utf-8"))
+            en = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+            assert_plate(chinese.read_text(encoding="utf-8"), zh["title"])
+            assert_plate(english.read_text(encoding="utf-8"), en["title"])
+
+        css = self.builder.CSS
+        screen = css.split("@media", 1)[0]
+        dark = css.split("@media (prefers-color-scheme: dark)", 1)[1].split("@media", 1)[0]
+        printed = css.split("@media print", 1)[1]
+        imprint = self._css_rule(screen, ".imprint h1")
+        self.assertIn("margin-bottom: .4rem", imprint)
+        self.assertIn("font-size: var(--type-h1)", imprint)
+        self.assertIn("line-height: 1.22", imprint)
+        companion = self._css_rule(screen, ".imprint h1, .companion h2")
+        self.assertIn("margin-top: 0", companion)
+        self.assertNotIn("font-size", companion)
+        rule = self._css_rule(screen, ".imprint h1::after")
+        self.assertIn('content: ""', rule)
+        self.assertIn("width: 4.2rem", rule)
+        self.assertIn("height: .18rem", rule)
+        self.assertIn("background: var(--spine)", rule)
+        self.assertNotIn("url(", rule)
+        self.assertIn("clamp(2.15rem, 5.6vw, 3.7rem)", self._css_rule(screen, ".cover h1"))
+        self.assertIn("clamp(1.05rem, 2.4vw, 1.35rem)", self._css_rule(screen, ".cover .subtitle"))
+        self.assertIn("clamp(2rem, 5vw, 3.35rem)", self._css_rule(screen, ".part-divider h1"))
+        self.assertIn("font-size: 9.5pt", printed)
+        self.assertIn("font-size: 9pt", printed)
+        self.assertIn(".imprint { break-before: auto; page-break-before: auto; }", printed)
+        self.assertIn("background: #10242e", self._css_rule(printed, ".cover"))
+        self.assertNotIn(".cover", dark)
+
+        tokens = json.loads((BOOK_DIR / "styles" / "tokens.json").read_text(encoding="utf-8"))
+        self.assertEqual(1, tokens["schema"])
+        self.assertEqual(
+            ["--paper", "--ink", "--muted", "--warn", "--line", "--spine"],
+            tokens["coverLock"],
+        )
+        css_source = (BOOK_DIR / "styles" / "book.css").read_text(encoding="utf-8")
+        self.assertEqual(
+            {"#10242e", "#f4f1ea", "#0c1c24"},
+            set(re.findall(r"#[0-9A-Fa-f]{3,8}", css_source)),
+        )
 
     def test_running_headers_follow_appendices_and_shorten_long_titles(self) -> None:
         import fitz

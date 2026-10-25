@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.6",
+      "date": "2026-10-25",
+      "zh": [
+        "封面图不再写英文眉题，板卡外框加了一道内线；发光的灯点改成平涂。中英文仍共用这一张图。",
+        "标题板把书名放在书脊短线上面。扉页标题改用章标题的字号，并在标题下重复这条书脊短线。"
+      ],
+      "en": [
+        "The cover drawing no longer carries an English kicker. The board frame gains an inner rule, and the glowing lamp is flat. Both languages still share this drawing.",
+        "The title plate places the title above the spine rule. The imprint heading uses the chapter title size and repeats that spine rule."
+      ]
+    },
+    {
       "version": "1.2.5",
       "date": "2026-10-25",
       "zh": [
