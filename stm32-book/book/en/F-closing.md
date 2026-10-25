@@ -16,7 +16,7 @@ This page exists only in the book. It gathers the seven parts into one path you 
 
 ## Four lines for the first board
 
-The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are at the end of [Appendix D](#appendix-glossary).
+The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are in the first ledger at the end of [Appendix D](#appendix-glossary). The next ledger is the one you use when the chip changes.
 
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |
@@ -24,6 +24,16 @@ The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you ch
 | Clock | 8 MHz HSE ×9 = 72 MHz. APB1 is 36 MHz, and TIM2–TIM7 are still computed at 72 MHz. Flash wait states are 2 | `HAL_RCC_GetPCLK1Freq()`, plus one PWM period |
 | One UART frame | USART1, 115200, 8N1, BRR `0x271`. One bit is about 8.68 µs, and one frame is about 86.8 µs | The bit width on a logic analyzer |
 | One failure boundary | IWDG: prescaler 64 and Reload 624 are the 1 second computed at 40 kHz. LSI is about 30–60 kHz, so that second is not a guarantee | The reset flag and a stopwatch when you deliberately stop feeding |
+
+## Three more lines when you change chips
+
+Match the four lines for the first board, then change family. The expected values are in the second ledger of [Appendix D](#appendix-glossary). The measurement is still yours to fill in.
+
+| Write this down | What this book expects | What you measure |
+| --- | --- | --- |
+| The G0 boot latch | Latched on the fourth rising edge of SYSCLK. PA14 is both the boot input and SWCLK. `DBG_SWEN` resets to 0 | The level on PA14 during the sample window, and whether the debugger connects |
+| The clock an L4 wakes on | After Stop 2 the temporary clock is MSI or HSI16. The cover's 1.1 µA, 1.4 µA with the RTC, and 4 µs wake are chip typicals | The bit width of the first frame after wake-up, and the current with the debugger and the LED removed |
+| H7 silicon and VOS | Rev Y/W stay on VOS1 at 400 MHz. Rev V enters VOS0 from a VOS1 that has already reported ready, and only then 480 MHz. MCO2÷5 expects 80 MHz at 400 MHz and 96 MHz at 480 MHz | `REV_ID`, both `VOSRDY` waits, and the MCO reading on an instrument |
 
 ## When this book is finished
 
@@ -48,6 +58,7 @@ Look up terms in [Appendix D](#appendix-glossary). What counts as evidence, and 
 ## Leave these for later
 
 - Do not copy F1 register addresses onto a G0, L4, or H7.
+- Do not copy the F103 1 KB page, prescaler 9, or BRR `0x271` onto a family whose clock is different.
 - Do not treat a passing simulation as proof of the board's electrical behavior.
 - Do not treat a parameter from a social post as a manual.
 - The Chinese book and this English book are two builds. English comes from `docs/en/` and `stm32-book/book/en/`. A sentence on the Chinese page is not, by itself, a register fact this edition has checked.

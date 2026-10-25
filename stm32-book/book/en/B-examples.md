@@ -19,15 +19,16 @@ An example is not finished when it compiles. Each one needs an observable result
 | 13 | `freertos-task` | 15 | Three tasks run; an empty queue blocks; a key event wakes a task | Trace or runtime stats, plus serial output | Worst-case response and stack margin are proven |
 | 14 | `spl-f1-blink` | 01, 26 | ELF/HEX/BIN/MAP close; on a board, PC13 blinks at about 1 Hz | GNU Arm size/nm, ST-Link, logic analyzer | A successful link means the board clock, wiring, and runtime are verified |
 
-## Three rows to match before you run the list
+## Four rows to match before you run the list
 
-Before the order in the table, match these three rows to the ledger at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
+Before the order in the table, match these four rows to the two ledgers at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
 
 | Example | Match this first | What a mismatch means |
 | --- | --- | --- |
 | `gpio-blink` | PC13 is on when low. That LED's current does not stand for any other pin | The polarity is reversed, or PC13's brightness is being required of an ordinary pin |
-| `timer-pwm` | Compute the timer clock at 72 MHz. Do not divide TIM2–TIM7 by PCLK1's 36 MHz | The scope shows half or twice the frequency from the formula |
+| `timer-pwm` | Compute the timer clock at 72 MHz. PSC 71 and ARR 999 produce 1 kHz. The same pair divided by 36 MHz produces 500 Hz | The scope shows 500 Hz or 2 kHz |
 | `uart-dma-idle` | USART1, 115200, BRR `0x271`. IDLE is about 86.8 µs, not a protocol frame boundary | The 0.16% in the chapter 06 table is being treated as this USART's error |
+| `can-bxcan` | APB1 at 36 MHz, prescaler 9, BS1 5, and BS2 2 are exactly 500 kbit/s. Prescaler 8 and 10 time quanta are 450 kbit/s | The analyzer sits at 450 kbit/s, or a loopback frame is being treated as an ACK from a second board |
 
 ## A useful order
 

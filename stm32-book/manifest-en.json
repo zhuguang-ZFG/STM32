@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "date": "2026-10-25",
   "language": "en",
   "author": "zhuguang-ZFG and contributors",
@@ -144,7 +144,7 @@
     "04-interrupts-nvic.md": {
       "question": "How does an asynchronous event travel from a pin through EXTI and the NVIC, and how does the ISR exit safely in a bounded time?",
       "deliverable": "An event-path diagram, a priority table, and a worst-case ISR execution-time budget.",
-      "boundary": "A bare-metal priority setup does not automatically meet an RTOS FromISR constraint. Chapter 15 adds the kernel boundary.",
+      "boundary": "A bare-metal priority setup does not automatically meet an RTOS FromISR constraint. Chapter 15 adds the kernel boundary. Hardware stacking saves 8 registers in about 12 HCLK cycles; at 72 MHz that is about 167 ns, and the ISR body is extra. HAL's default grouping is GROUP_4: 4 preemption bits and 0 subpriority bits. A smaller number is a higher logical priority.",
       "sources": [
         "pm0056",
         "rm0008",
@@ -154,7 +154,7 @@
     "05-timer-pwm.md": {
       "question": "How do the clock, PSC, ARR, and CCR become a measurable period, frequency, and duty cycle?",
       "deliverable": "A calculation from the timer input clock to the target waveform, and a table of instrument measurements beside it.",
-      "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked. On this F103, when APB1 is 36 MHz, TIM2–TIM7 still count at 72 MHz.",
+      "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked. On this F103, when APB1 is 36 MHz, TIM2–TIM7 still count at 72 MHz. With PSC 71 and ARR 999, 72 MHz / (72 × 1000) = 1 kHz. The same PSC and ARR divided by 36 MHz produce 500 Hz. A 16-bit timer cannot hold ARR 999999.",
       "sources": [
         "rm0008"
       ]
@@ -218,17 +218,18 @@
     "12-flash-iap.md": {
       "question": "How do you hand a new firmware image to the application safely, under erase limits, address boundaries, and power-loss risk?",
       "deliverable": "A Boot/APP memory map, an image-integrity check, and a state diagram for falling back when an update fails.",
-      "boundary": "Being able to jump to the application is not a production update. Signature, anti-rollback, power-loss recovery, and key management need their own argument.",
+      "boundary": "Being able to jump to the application is not a production update. Signature, anti-rollback, power-loss recovery, and key management need their own argument. A medium-density F103 erases 1 KB pages and programs half-words. Unlock writes KEY1 0x45670123, then KEY2 0xCDEF89AB. High-density pages are 2 KB. An F407 sector is 16 KB, 64 KB, or 128 KB.",
       "sources": [
         "rm0008",
         "an2606",
-        "an3965"
+        "an3965",
+        "rm0090"
       ]
     },
     "13-can.md": {
       "question": "How do physical termination, bit timing, arbitration, filters, and error counters together decide whether a CAN frame can be trusted?",
       "deliverable": "A bit-timing ledger, a loopback self-test, and a captured frame from two nodes with termination resistors.",
-      "boundary": "This chapter covers bxCAN basics. It is not CANopen or J1939, and H7 FDCAN registers cannot be substituted as-is.",
+      "boundary": "This chapter covers bxCAN basics. It is not CANopen or J1939, and H7 FDCAN registers cannot be substituted as-is. With APB1 at 36 MHz, prescaler 9, BS1 5, and BS2 2 give 8 time quanta, a 75% sample point, and 36 MHz / (9 × 8) = 500 kbit/s. Ten quanta at the same target need a prescaler of 7.2; writing 8 yields 450 kbit/s. A transmit error count of 256 enters bus-off.",
       "sources": [
         "rm0008"
       ]
@@ -245,7 +246,7 @@
     "15-freertos.md": {
       "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",
       "deliverable": "A task-state diagram, a stack and queue budget, and an NVIC table that shows the FromISR priority is legal.",
-      "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements.",
+      "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements. FreeRTOS requires GROUP_4. With 4 priority bits, 5 << (8-4) = 0x50, so an interrupt that calls FromISR needs a numeric priority of at least 5. NVIC priority 0 is the highest; calling those APIs stops in configASSERT. Task priority runs in the opposite direction.",
       "sources": [
         "freertos-priority",
         "pm0056"
@@ -254,7 +255,7 @@
     "16-low-power.md": {
       "question": "When entering and leaving Sleep, Stop, or Standby, which clocks, state, and wake sources must be restored explicitly?",
       "deliverable": "A mode, wake, and retained-state table, and a current measurement that records board load, instrument bandwidth, and temperature.",
-      "boundary": "A typical value in the datasheet is the chip under stated conditions. It is not the power of the whole board.",
+      "boundary": "A typical value in the datasheet is the chip under stated conditions. It is not the power of the whole board. On an F103 the Stop typical is about 14 to 20 µA. Wake-up returns to HSI. Chapter 02 puts that HSI at 8 MHz on F1; the 72 MHz PLL has to be programmed again.",
       "sources": [
         "rm0008",
         "ds5319"
@@ -317,7 +318,7 @@
     "23-stm32g0-pins.md": {
       "question": "When moving from F1 to G071RB, which package pin order, shared BOOT/SWCLK pin, option bytes, and peripheral set must not be copied across?",
       "deliverable": "A critical-pin table for G071RB LQFP64, a diagram of the boot latch and protection branches, a complete boot truth table, and a recovery loop that judges reachability from RDP/DBG_SWEN and reads it back.",
-      "boundary": "This chapter answers only for the stated G071RB package and the manual revisions it cites. The empty-Flash check, RDP, DBG_SWEN, the bootloader pattern, and production option bytes must be checked separately. Under Reset does not guarantee a connection. Clearing BOOT_LOCK is limited by RDP. This chapter does not assume an RDP downgrade or a full erase.",
+      "boundary": "This chapter answers only for the stated G071RB package and the manual revisions it cites. The empty-Flash check, RDP, DBG_SWEN, the bootloader pattern, and production option bytes must be checked separately. Under Reset does not guarantee a connection. Clearing BOOT_LOCK is limited by RDP. This chapter does not assume an RDP downgrade or a full erase. The family maximum is 64 MHz, on a Cortex-M0+. Boot configuration is latched on the fourth rising edge of SYSCLK. PA14 is both the boot input and SWCLK. When BOOT_LOCK is 1 and RDP is level 1, FLASH_ACR.DBG_SWEN resets to 0.",
       "sources": [
         "ds12232",
         "rm0444",
@@ -329,7 +330,7 @@
     "24-stm32l4-pins.md": {
       "question": "How do the L476RG pins, power domains, and low-power modes affect entering Stop 2, recovering after wake, and the real average current?",
       "deliverable": "A critical-pin table for LQFP64, a wake evidence chain captured at the IRQ entry before HAL clears the bits, a Stop 2 clock-recovery chain you can verify, and a power ledger with the wiring, the raw waveform, and the integration formula.",
-      "boundary": "The raw wake bits must be captured before the HAL handler. A typical low-power number is not a whole-board guarantee. Mode capability, chip revision, VDD, temperature, instrument bandwidth, burden voltage, and board load must be recorded with the result.",
+      "boundary": "The raw wake bits must be captured before the HAL handler. A typical low-power number is not a whole-board guarantee. Mode capability, chip revision, VDD, temperature, instrument bandwidth, burden voltage, and board load must be recorded with the result. The cover's Stop 2 typicals are 1.1 µA, 1.4 µA with the RTC, and 4 µs to wake from Stop. Those are the chip under the stated conditions, and they are not a measurement from this repository. The temporary clock after wake-up is MSI or HSI16. A running SysTick wakes the core every 1 ms. Read ES0250 for that revision before turning 1.1 µA into a limit.",
       "sources": [
         "ds10198",
         "rm0351",
@@ -345,7 +346,7 @@
     "25-stm32h7-pins.md": {
       "question": "After moving to H743ZI, how do the supply scheme, silicon revision, VCAP, FDCAN, cache, and the 400/480 MHz clock tree change the assumptions of an older project?",
       "deliverable": "A critical-pin table for LQFP144, a 400/480 MHz configuration chain that matches the board supply and the revision, and three kinds of acceptance evidence: MCO, a frequency read-back, and a peripheral waveform. DMA buffers keep the memory-domain, alignment, and cache policy from chapter 10.",
-      "boundary": "Rev Y and W have no VOS0 and top out at 400 MHz. The 480 MHz example applies only to Rev V, 8 MHz HSE bypass, and a matching LDO board. A supply macro does not replace the schematic. The MCO number is a calculated expectation, not a measurement from this repository. Other peripheral kernel clocks, the MPU, and the DMA memory layout still need their own acceptance.",
+      "boundary": "Rev Y and W have no VOS0 and top out at 400 MHz. The 480 MHz example applies only to Rev V, 8 MHz HSE bypass, and a matching LDO board. A supply macro does not replace the schematic. The MCO number is a calculated expectation, not a measurement from this repository. Other peripheral kernel clocks, the MPU, and the DMA memory layout still need their own acceptance. With 8 MHz bypass, PLLM=4, PLLN=400, and PLLP=2, SYSCLK is 400 MHz, and the official example passes Flash wait 4. PLLN=480 belongs only to Rev V, after VOS1 has reported ready and VOS0 is then requested. MCO2 divided by 5 expects 80 MHz at 400 MHz and 96 MHz at 480 MHz.",
       "sources": [
         "ds12110",
         "rm0433",
@@ -464,6 +465,15 @@
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
       "scope": "F1 clocks, GPIO, DMA, timers, communication peripherals, and register definitions."
+    },
+    "rm0090": {
+      "title": "RM0090 — STM32F405/415, STM32F407/417, STM32F427/437 and STM32F429/439 Reference Manual",
+      "authority": "ST official reference manual",
+      "url": "https://www.st.com/resource/en/",
+      "snapshot": "Document number RM0090; chapter 12 uses it for the F407VG sectors. Recheck the current revision",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (this book only links and cites the document number)",
+      "scope": "F407 Flash sectors: S0–S3 are 16 KB, S4 is 64 KB, and S5–S7 are 128 KB."
     },
     "ds5319": {
       "title": "DS5319 — STM32F103x8/B Datasheet",
