@@ -23,6 +23,28 @@ def load_builder():
     return module
 
 
+def _relative_luminance(hex_color: str) -> float:
+    """WCAG 2.x sRGB relative luminance. Accepts #RGB and #RRGGBB."""
+    text = hex_color.removeprefix("#")
+    if len(text) == 3:
+        text = "".join(character * 2 for character in text)
+    red, green, blue = (int(text[index:index + 2], 16) for index in (0, 2, 4))
+
+    def channel(value: int) -> float:
+        unit = value / 255
+        if unit <= 0.04045:
+            return unit / 12.92
+        return ((unit + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue)
+
+
+def _contrast_ratio(foreground: str, background: str) -> float:
+    lighter = max(_relative_luminance(foreground), _relative_luminance(background))
+    darker = min(_relative_luminance(foreground), _relative_luminance(background))
+    return (lighter + 0.05) / (darker + 0.05)
+
+
 class BookHTMLParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
@@ -931,6 +953,218 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('<p class="callout-label">Tip</p>', english)
         self.assertIn('<p class="callout-label">Note</p>', english)
         self.assertEqual("<p>plain</p>", self.builder.classify_callouts("<p>plain</p>"))
+
+    def _css_rule(self, css: str, selector: str) -> str:
+        match = re.search(rf"{re.escape(selector)}\s*\{{([^}}]*)\}}", css)
+        self.assertIsNotNone(match, selector)
+        return match.group(1)
+
+    def test_visual_polish_css_contract(self) -> None:
+        css = self.builder.CSS
+        screen = css.split("@media", 1)[0]
+        dark = css.split("@media (prefers-color-scheme: dark)", 1)[1].split("@media", 1)[0]
+        printed = css.split("@media print", 1)[1]
+        narrow = css.split("@media (max-width: 720px)", 1)[1].split("@media", 1)[0]
+
+        for token in (
+            "--paper: #fbfaf7",
+            "--ink: #17202a",
+            "--accent: #075e84",
+            "--muted: #5e6872",
+            "--warn: #9a3d1c",
+            "--tip: #1b5c45",
+            "--spine: #c4552a",
+            "--space-bar: 0.75rem",
+            "--space-paragraph: 1.25rem",
+            "--space-figure: 1.5rem",
+            "--space-chapter: 3.5rem",
+            "--inset: 6%",
+            "--leading-body: 1.75",
+            "--tracking-body: 0.01em",
+            "--tracking-kicker: 0.14em",
+            "--radius: 0.7rem",
+            "--elev: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent)",
+        ):
+            self.assertIn(token, screen)
+
+        self.assertIn("line-height: var(--leading-body)", self._css_rule(screen, "body"))
+        paragraphs = self._css_rule(screen, ".chapter > p, .appendix > p, .part-closing > p")
+        self.assertIn("margin-top: var(--space-paragraph)", paragraphs)
+        self.assertIn("margin-bottom: var(--space-paragraph)", paragraphs)
+        self.assertIn("letter-spacing: var(--tracking-body)", paragraphs)
+        headings = self._css_rule(screen, ".chapter > h2, .appendix > h2, .part-closing > h2")
+        self.assertIn("border-left: 3px solid var(--accent)", headings)
+        self.assertIn("padding-left: var(--space-bar)", headings)
+        self.assertIn(
+            "margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar)",
+            headings,
+        )
+        self.assertNotIn("padding-left: var(--space-bar)", self._css_rule(screen, ".source-card h2"))
+
+        for selector in (
+            ".chapter-compass",
+            "blockquote.callout",
+            ".source-card",
+            "figure",
+            ".quick-check",
+            ".companion",
+            ".route",
+        ):
+            block = self._css_rule(screen, selector)
+            self.assertIn("border-radius: var(--radius)", block, selector)
+            self.assertIn("box-shadow: var(--elev)", block, selector)
+            self.assertIn("border: 1px solid var(--line)", block, selector)
+        figure = self._css_rule(screen, "figure")
+        self.assertIn("margin: var(--space-figure) auto", figure)
+        self.assertIn("color-mix(in srgb, var(--panel) 70%, var(--paper))", figure)
+        self.assertIn("margin: var(--space-figure) auto", self._css_rule(screen, "img"))
+        self.assertIn("margin: 0 auto .55rem", self._css_rule(screen, "figure img"))
+        self.assertIn("border-left: 4px solid var(--accent)", self._css_rule(screen, "blockquote.callout"))
+        pre = self._css_rule(screen, "pre")
+        self.assertIn("border-radius: var(--radius)", pre)
+        self.assertNotIn("box-shadow", pre)
+        self.assertIn("border-left: 3px solid var(--accent)", pre)
+        self.assertIn("tab-size: 4", pre)
+        self.assertIn("user-select: text", pre)
+
+        divider = self._css_rule(screen, ".part-divider")
+        self.assertIn("padding: 4.5rem var(--inset) 4.5rem", divider)
+        self.assertIn("margin-top: var(--space-chapter)", divider)
+        self.assertIn("min-height: 52vh", divider)
+        self.assertNotIn("border-radius", divider)
+        self.assertNotIn("--elev", divider)
+        self.assertIn("border-top: 4px solid var(--accent)", divider)
+
+        self.assertIn("color: var(--warn)", self._css_rule(screen, ".closing-banner"))
+        self.assertIn("color: var(--warn)", self._css_rule(screen, ".compass-boundary .compass-role"))
+        self.assertIn("border-top-color: var(--spine)", self._css_rule(screen, ".compass-boundary"))
+        self.assertNotRegex(css, r"letter-spacing:\s*\.(?:12|14|16|18)em")
+        self.assertIn("letter-spacing: .04em", css)
+        self.assertIn("text-underline-offset: .18em", css)
+        self.assertIn("box-shadow: 0 .45rem 1.2rem rgba(16, 24, 32, .18)", css)
+        self.assertIn("border-radius: .5rem", self._css_rule(screen, ".compass-card"))
+
+        cover = self._css_rule(screen, ".cover")
+        self.assertIn("background: #10242e", cover)
+        self.assertIn("color: #f4f1ea", cover)
+        for token in (
+            "--paper: #fbfaf7",
+            "--ink: #17202a",
+            "--muted: #5e6872",
+            "--warn: #9a3d1c",
+            "--line: #d7dce1",
+            "--spine: #c4552a",
+        ):
+            self.assertIn(token, cover)
+        panel = self._css_rule(screen, ".cover-panel")
+        self.assertIn("background: var(--paper)", panel)
+        self.assertIn("color: var(--ink)", panel)
+        self.assertIn("padding: 1.8rem var(--inset) 2.6rem", panel)
+        self.assertIn("background: var(--spine)", self._css_rule(screen, ".cover-panel::before"))
+        self.assertIn("background: var(--spine)", self._css_rule(screen, ".cover .rule"))
+        self.assertIn("color: var(--warn)", self._css_rule(screen, ".cover .eyebrow"))
+        self.assertIn("color: var(--ink)", self._css_rule(screen, ".cover h1"))
+        self.assertIn("color: var(--ink)", self._css_rule(screen, ".cover .subtitle"))
+        self.assertIn("color: var(--muted)", self._css_rule(screen, ".cover .edition"))
+        self.assertIn("color: var(--muted)", self._css_rule(screen, ".cover .edition strong"))
+        self.assertIn("border-top: 1px solid var(--line)", self._css_rule(screen, ".cover .edition"))
+        self.assertIn("background: #0c1c24", self._css_rule(screen, ".cover-art"))
+        for gone in ("#f7f4ee", "#d7d0c4", "#5c6570", "#24323c"):
+            self.assertNotIn(gone, css)
+
+        self.assertIn(".cover-panel { padding: 1.3rem 1rem 1.8rem; }", narrow)
+        self.assertNotIn("var(--inset)", narrow)
+        self.assertIn("padding-left: 1rem; padding-right: 1rem", narrow)
+
+        for token in (
+            "--paper: #11171b",
+            "--ink: #e9eef1",
+            "--accent: #78c8e8",
+            "--muted: #acb7bf",
+            "--warn: #f0b090",
+            "--tip: #8fd4b4",
+            "--spine: #f0b090",
+        ):
+            self.assertIn(token, dark)
+
+        self.assertIn("orphans: 3", printed)
+        self.assertIn("widows: 3", printed)
+        self.assertIn("--spine: #c4552a", printed)
+        self.assertIn("--paper: #fff", printed)
+        self.assertIn("--ink: #111", printed)
+        self.assertIn("--muted: #444", printed)
+        self.assertIn("--accent: #075e84", printed)
+        self.assertIn("figure { background: transparent; }", printed)
+        self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
+        self.assertIn("h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }", printed)
+        caption = self._css_rule(printed, "figcaption")
+        self.assertIn("break-before: avoid-page", caption)
+        self.assertIn("page-break-before: avoid", caption)
+        self.assertIn("break-inside: avoid-page", caption)
+        self.assertIn("page-break-inside: avoid", caption)
+        self.assertIn("box-shadow: none", self._css_rule(
+            printed,
+            ".chapter-compass,\n  blockquote.callout,\n  .source-card,\n  figure,\n  .quick-check,\n  .companion,\n  .route",
+        ))
+        pre_print = self._css_rule(printed, "pre")
+        self.assertIn("white-space: pre-wrap", pre_print)
+        self.assertIn("break-inside: auto", pre_print)
+        self.assertNotIn("avoid", pre_print)
+        self.assertIn(".imprint { break-before: auto; page-break-before: auto; }", printed)
+
+    def test_visual_polish_contrast_clears_4_5(self) -> None:
+        # spine 对纸色不在这张表里。#c4552a 对 #fbfaf7 约 4.30，规格不把它当正文门槛。
+        pairs = (
+            ("#17202a", "#fbfaf7"),
+            ("#075e84", "#fbfaf7"),
+            ("#5e6872", "#fbfaf7"),
+            ("#9a3d1c", "#fbfaf7"),
+            ("#1b5c45", "#fbfaf7"),
+            ("#e9eef1", "#11171b"),
+            ("#78c8e8", "#11171b"),
+            ("#acb7bf", "#11171b"),
+            ("#f0b090", "#11171b"),
+            ("#8fd4b4", "#11171b"),
+            ("#111", "#fff"),
+            ("#075e84", "#fff"),
+            ("#444", "#fff"),
+        )
+        for foreground, background in pairs:
+            with self.subTest(foreground=foreground, background=background):
+                self.assertGreaterEqual(_contrast_ratio(foreground, background), 4.5)
+
+    def test_visual_polish_version_is_1_2_0(self) -> None:
+        revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
+        english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+        readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
+        entry = revisions["entries"][0]
+        self.assertEqual("1.2.0", self.manifest["version"])
+        self.assertEqual("2026-10-25", self.manifest["date"])
+        self.assertEqual("1.2.0", english["version"])
+        self.assertEqual("2026-10-25", english["date"])
+        self.assertEqual("1.2.0", entry["version"])
+        self.assertEqual("2026-10-25", entry["date"])
+        self.assertEqual("1.1.1", revisions["entries"][1]["version"])
+        self.assertEqual(
+            [
+                "整书样式收到同一组纸色、墨色和强调色，章距、段距、图距使用固定阶梯。",
+                "章首罗盘、提示框、出处卡和插图共用一档圆角和轻阴影；印刷时的孤行、寡行和图注不断页仍按原规则。",
+            ],
+            entry["zh"],
+        )
+        self.assertEqual(
+            [
+                "The book stylesheet uses one paper, ink, and accent set, with a fixed step for chapter, paragraph, and figure spacing.",
+                "Chapter compasses, callouts, source cards, and figures share one radius and a light shadow; print orphans, widows, and caption keep-together rules stay as they were.",
+            ],
+            entry["en"],
+        )
+        self.assertIn("当前版本：**v1.2.0 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.2.0。", readme)
+        self.assertIn("也不要把 1.1.1 的产物标成 1.2.0。", readme)
+        self.assertIn("打 tag `v1.2.0`", readme)
+        self.assertNotIn("当前版本：**v1.1.1", readme)
+        self.assertNotIn("打 tag `v1.1.1`", readme)
 
     def test_cover_svg_stays_self_contained(self) -> None:
         svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
