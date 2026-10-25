@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.9",
+      "date": "2026-10-25",
+      "zh": [
+        "29 张讲解海报按当前完整帧重画：标题下有青条，无插图的卡有小芯，要点用正文色。",
+        "样式令牌、封面、样本图和旁白成片不改。"
+      ],
+      "en": [
+        "The 29 lecture posters are redrawn from the current finished frame: a cyan rule under the title, a mascot on cards without a figure, and bullet text in the body color.",
+        "Style tokens, the cover, the sample drawings, and the narrated videos stay."
+      ]
+    },
+    {
       "version": "1.2.8",
       "date": "2026-10-25",
       "zh": [
