@@ -10,7 +10,7 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（8 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 静态框图（10 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
 | 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
@@ -80,3 +80,15 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | --- | --- | --- | --- |
 | RM0008 Rev 21（2021-02），第 3.4 节表 9，以及第 9.2.7 节、第 9.3.5 节表 36 | ST 文档条款；只链接并改写事实，不转载手册 | 第 00 章启动状态；第 03 章 LCKR 与 SWD 脚 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
 | DS5319 Rev 20（2025-07），表 5、图 8、注 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 03 章 LQFP48 的 PA0 第 10 脚、PC13 第 2 脚，以及 3 mA / 2 MHz / 30 pF | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+
+### 第 04 章与第 06 章（v1.1.1）
+
+第 04 章和第 06 章用改写吸收补了同样的四块。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图、社区原文和 MaJerle 的函数不放进仓库。论坛帖只留链接。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| RM0008 Rev 21（2021-02），第 9.4.3 到 9.4.6 节、第 10.3.6 节，以及第 27.3.3 节、第 27.6.3 节、第 27.6.4 节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 04 章 EXTI 与 EXTICR；第 06 章 16 倍采样、BRR `0x271` 误差 0、FE 的清除顺序 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| PM0056 Rev 7（2024-12），第 2.3.6 节、第 2.3.7 节，以及第 2.1.3 节 Table 7 | ST 文档条款；只链接并改写事实，不转载手册 | 第 04 章 8 寄存器入栈、尾链不改变抢占权、PRIMASK 挡不住 NMI | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
+| DS5319 Rev 20（2025-07），图 8 与表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 06 章 LQFP48 第 30 脚 PA9、第 31 脚 PA10 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| MaJerle stm32-usart-uart-dma-rx-tx | MIT | 第 06 章坑卡：持续 DMA 接收时读到写位置为止，缓冲区不是一条拍平的帧 | https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx/commit/c242589d766eada3ad1d795630f2b1c2482a2af8 |
+| STM32CubeF4 v1.28.3 的 UART_ReceptionToIdle_CircularDMA | BSD-3-Clause | 第 06 章坑卡：循环 DMA 的 Size 是写位置。范围停在这个 F446 例程，不把它的引脚说成 F103 | https://github.com/STMicroelectronics/STM32CubeF4/tree/v1.28.3/Projects/STM32446E-Nucleo/Examples/UART/UART_ReceptionToIdle_CircularDMA |
