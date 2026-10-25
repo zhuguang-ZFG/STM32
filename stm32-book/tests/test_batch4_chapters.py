@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import unittest
 from pathlib import Path
 
@@ -117,6 +118,70 @@ class Batch4FigureTests(unittest.TestCase):
         self.assertNotIn("21 µs", dma)
         iwdg = IWDG.read_text(encoding="utf-8")
         self.assertNotIn("6 pF", iwdg)
+
+
+def load_gen_gifs():
+    path = ROOT / "tools" / "gen_gifs.py"
+    spec = importlib.util.spec_from_file_location("gen_gifs_batch4", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Batch4GifTests(unittest.TestCase):
+    def test_new_gifs_are_short_auxiliaries(self) -> None:
+        gifs = load_gen_gifs()
+        for name in (
+            "led-blink",
+            "pwm-breath",
+            "uart-bits",
+            "i2c-timing",
+            "dma-ring",
+            "sar-adc",
+            "nvic-preempt",
+            "uart-idle",
+            "clock-css",
+            "pwm-1khz",
+            "spi-jedec",
+            "adc-sample",
+            "swd-fetch",
+            "i2c-addr",
+            "dma-cndtr",
+            "iwdg-1s",
+        ):
+            self.assertIn(name, gifs.BUILDERS)
+        source = (ROOT / "tools" / "gen_gifs.py").read_text(encoding="utf-8")
+        swd_src = source.split("def swd_fetch", 1)[1].split("def i2c_addr", 1)[0]
+        i2c_src = source.split("def i2c_addr", 1)[1].split("def dma_cndtr", 1)[0]
+        dma_src = source.split("def dma_cndtr", 1)[1].split("def iwdg_1s", 1)[0]
+        iwdg_src = source.split("def iwdg_1s", 1)[1].split("BUILDERS", 1)[0]
+        self.assertIn("pin 34", swd_src)
+        self.assertIn("pin 37", swd_src)
+        self.assertIn("MSP", swd_src)
+        self.assertIn("Reset_Handler", swd_src)
+        self.assertNotIn("0xAA", swd_src)
+        self.assertNotIn("GPIO", swd_src)
+        self.assertIn("0x78", i2c_src)
+        self.assertIn("0x801E", i2c_src)
+        self.assertIn("4.7", i2c_src)
+        self.assertIn("ACK", i2c_src)
+        self.assertNotIn("0x3C", i2c_src)
+        self.assertIn("CNDTR", dma_src)
+        self.assertIn("5 samples", dma_src)
+        self.assertIn("10 bytes", dma_src)
+        self.assertNotIn("DMA2", dma_src)
+        self.assertNotIn("3 bytes", dma_src)
+        self.assertIn("Reload = 624", iwdg_src)
+        self.assertIn("40 kHz", iwdg_src)
+        self.assertIn("625 Hz", iwdg_src)
+        self.assertNotIn("Reload = 625", iwdg_src)
+        self.assertNotIn("0x50", iwdg_src)
+        for name in ("swd-fetch", "i2c-addr", "dma-cndtr", "iwdg-1s"):
+            gif = gifs.BUILDERS[name]()
+            self.assertGreaterEqual(len(gif.frames), 3)
+            self.assertLessEqual(len(gif.frames), 12)
+            path = ROOT / "assets" / "gif" / f"{name}.gif"
+            self.assertLess(path.stat().st_size, 500 * 1024, path.name)
 
 
 if __name__ == "__main__":
