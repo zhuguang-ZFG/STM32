@@ -29,9 +29,63 @@
 9. 实验可以先把 TX 和 RX 短接，确认自己能收到自己发出的字，再接到电脑。短接都收不到，就先别怀疑 USB 转串口线。
 10. 合上书，三问。8N1 的 8 是什么？清除溢出时先读哪个寄存器？RS485 为什么要等发送完成才能转换方向？
 <!-- /video:ch06 -->
+## Principle and boundary
+
+The frame in this chapter holds for orderable STM32F103C8T6 in LQFP48. USART1 is on APB2. When the core clock is 72 MHz, PCLK2 is 72 MHz, and the peripheral base is `0x40013800`. The default pins are PA9 = USART1_TX = pin 30 and PA10 = USART1_RX = pin 31, from [DS5319 Rev 20 Figure 8](#source-ds5319-usart). After reset the pins are not PB6/PB7. A remap needs AFIO as well, and the remapped pins are not on the normal path.
+
+The receiver on this part samples with a 16× baud clock. One stop bit is voted at samples 8, 9, and 10. The start bit is checked at samples 3, 5, and 7 and at samples 8, 9, and 10, as written in [RM0008 27.3.3](#source-rm0008-usart). Data bits use the middle three samples.
+
+At 16×, `USARTDIV = fPCLK / (16 × baud)`. At 72 MHz and 115200, `72e6 / (16 × 115200) = 39.0625`, the fraction `0.0625 × 16 = 1`, BRR = `0x271`, `72e6 / (16 × 39.0625) = 115200`, and the divider error is 0. `USART_BRR` is at offset `0x08`, and the low 4 bits are the fraction. Copy this cell from Appendix D. The error on the 72 MHz row is 0%. About 0.16% stays on the 36 MHz row, BRR `0x138`, and that row is USART2 on APB1, not this USART1. Dropping the fraction and dividing by 39 also yields about 0.16%. That is not what writing `0x271` does. Do not edit Appendix A or Appendix D.
+
+8× oversampling is void on this F103. `USART_CR1` is at offset `0x0C`, and bits 31:14 are reserved, so there is no OVER8. F103 has only 16×. 8× means a family that has OVER8. This chapter does not invent an 8× BRR and does not add `rm0090-usart-over8`.
+
+At 115200 and 8N1, one bit is about 8.68 µs and a 10-bit frame is about 86.8 µs. In RM0008 an idle line is a whole frame of high. One IDLE means the line has been idle for about one frame time. It does not mean the length field of the other side's protocol has arrived. In circular DMA, `Size` is still the write position, not the increment of this transfer.
+
+When the stop bit is not high at the expected samples, hardware sets `USART_SR.FE`. The invalid byte still enters `USART_DR`. Clearing it is a read of SR and then a read of DR. Reading only DR does not clear it. Whether an interrupt arrives still depends on RXNE or on EIE in CR3. In a one-byte exchange, FE itself is not the only interrupt source. Do not write "FE always enters the service routine."
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-06-uart-frame.svg" width="760" alt="A stop bit sampled as 0 is a framing error, and 0x271 has zero divider error at 72 MHz and 16×">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 30 PA9 = USART1_TX, pin 31 PA10 = USART1_RX. The frame is 0xA5, LSB first. One bit is about 8.68 µs and 10 bits are about 86.8 µs. BRR `0x271`, 39.0625, 16×, error 0. Offsets: USART_SR 0x00, USART_DR 0x04, USART_BRR 0x08, USART_CR1 0x0C. Normal path: stop-bit samples 8, 9, and 10 are 1, and FE stays clear. Failure path: those three samples are 0, FE is set, the byte remains in DR, and the clear order is SR then DR. Side note: on this F103, CR1 bits 31:14 are reserved, there is no OVER8, and the figure does not compute an 8× BRR. Pins are [DS5319 Rev 20 Figure 8](#source-ds5319-usart). Sampling and BRR are [RM0008 Rev 21 chapter 27](#source-rm0008-usart).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/uart-idle.gif" width="640" alt="After one frame, RX stays high, and IDLE plus 86.8 microseconds is marked after one frame time">
+  <br><sub>▲ Auxiliary figure for the web and the article channel. It only marks the idle line and 86.8 µs. Print uses the static figure. The three framing-error samples are not on this GIF.</sub>
+</p>
+
+`uart-frame.svg` and `uart-bits.gif` stay in the frame section as side figures. When a PDF does not play the GIF, the start bit, the stop bit, samples 8, 9, and 10, and the FE path are all on the static figure.
+
+## Timing or state
+
+| Phase | Line | Bits of 0xA5 | Samples 8, 9, 10 | FE | Time | BRR |
+| --- | --- | --- | --- | --- | --- | --- |
+| Idle | High | — | — | 0 | — | — |
+| Start bit | 0 | — | The start bit is also checked at samples 3, 5, and 7 | 0 | about 8.68 µs | — |
+| Data, LSB first | 1 0 1 0 0 1 0 1 | 0xA5 | Data bits use the middle three samples | 0 | 8 bits | — |
+| Normal stop | 1 | Stop | Voted as 1 | 0 | about 8.68 µs | USART1, 72 MHz, `0x271`, error 0% |
+| Failed stop | 0 | Stop | The three samples are 0 | 1 | about 8.68 µs | Clear by reading SR, then DR |
+| Whole frame | — | 10 bits | — | — | about 86.8 µs | 39.0625 |
+| USART2 contrast | — | — | — | — | — | APB1, 36 MHz, `0x138`, about 0.16%. Not this USART1 |
+| IDLE | Stays high after the stop bit | — | — | 0 | One full frame, about 86.8 µs | Not the end of a protocol frame |
+
+Do not put 0.16% back into the `0x271` cell. Source: [RM0008 section 27.3.3](#source-rm0008-usart).
+
+## Pitfalls and source cards
+
+| Symptom | Cause | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The table says USART1 `0x271` is already off | That cell dropped the fraction, or it copied the USART2 row | At 72 MHz and 16×, with the fraction kept, the error is 0% | [RM0008 BRR](#source-rm0008-usart) | The divider result of `0x271` is 115200. This cell's error is 0% |
+| A bad stop bit still yields a byte, and then reception sticks | FE is set and the byte is still in DR; reading only DR does not clear the flag | Read SR, then DR, to clear FE | [RM0008 27.3.3](#source-rm0008-usart) | When FE is set the byte still enters DR; reading only DR does not clear the flag |
+| IDLE is treated as the end of the other side's packet | An idle line only means the wire is idle | Use a length or a protocol, not 86.8 µs as the frame boundary | [RM0008](#source-rm0008-usart) | IDLE is the line staying idle for one full frame time |
+| OVER8 is turned on to fix high-baud errors on F103 | This part does not have that bit | Check 72 MHz and `0x271` first; the error is 0% | [RM0008 CR1](#source-rm0008-usart) | CR1 bits 31:14 are reserved |
+| Circular DMA treats `Size` as the new bytes of this transfer | `Size` is the write position | Save the previous position, subtract, and handle the wrap | [STM32CubeF4 v1.28.3](#source-stm32cube-f4) | Only that Size is the write position in the v1.28.3 example. Not an F103 pin proof |
+| The application reads the DMA buffer once as one flat frame | The buffer is not one flat frame | Read only up to the DMA write position | [MaJerle USART DMA](#source-majerle-uart) | The restated ring-position boundary. Not a new baud rate or a new pin |
+| Half-transfer and IDLE seem to arrive as a pair every time | The timing in the post was not promoted to a manual number | Do not write the post's timing as a manual number; the idle length stays the 86.8 µs cell | [ST community thread](#source-st-uart-idle) | Experience only, not promoted to a specification. No new register value |
 ## 📌 Learning goals
 - [ ] Describe a UART frame (start / data / parity / stop)
-- [ ] Compute baud-rate error, and understand BRR and OVER8
+- [ ] Compute BRR for 16× oversampling on this F103. This part has no OVER8
 - [ ] Choose among blocking, interrupt, and DMA
 - [ ] Redirect printf, and stay out of the semihosting trap
 - [ ] Understand a ring buffer, and variable-length receive with DMA+IDLE
@@ -66,13 +120,13 @@ One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit 
 
 BRR on F1, 16× oversampling: `USARTDIV = fPCLK / (16 × baud)`, and BRR = integer part << 4 | fractional part × 16
 
-| Target baud | PCLK | USARTDIV | BRR (hex) | Error |
-| --- | --- | --- | --- | --- |
-| 9600 | 72 MHz | 468.75 | 0x1D4C | 0% |
-| 115200 | 72 MHz | 39.0625 | 0x271 | 0.16% |
-| 115200 | 36 MHz | 19.531 | 0x138 | 0.16% |
+| USART | Target baud | Bus | PCLK | USARTDIV | BRR (hex) | Error |
+| --- | --- | --- | --- | --- | --- | --- |
+| USART1 | 9600 | APB2 | 72 MHz | 468.75 | 0x1D4C | 0% |
+| USART1 | 115200 | APB2 | 72 MHz | 39.0625 | 0x271 | 0% |
+| USART2 | 115200 | APB1 | 36 MHz | 19.531 | 0x138 | about 0.16% |
 
-> F1 and F4 have the OVER8 bit (8× oversampling), which improves the divider at high baud rates. In HAL, `HAL_UART_Init` computes BRR for you.
+> On this STM32F103C8T6, USART_CR1 bits 31:14 are reserved, so there is no OVER8. 8× oversampling means moving to a family that has that bit. On F103, do not switch OVER8 on to chase high-baud errors; check 72 MHz and BRR `0x271` first. `HAL_UART_Init` still computes BRR at 16×.
 
 ### 3. Three ways to send and receive
 
@@ -188,8 +242,8 @@ void log_printf(const char *fmt, ...)
 Variable-length receive with DMA + IDLE:
 
 ```c
-/* idea: DMA fills the buffer in a circle; bus idle (IDLE) raises the interrupt.
-   The Size argument is how many bytes arrived, and the application parses them. */
+/* In circular DMA, Size in the callback is the write position, not this transfer's increment.
+   The call below starts the reception again. The position difference is in the source cards. */
 #define RX_BUF_SIZE 128
 uint8_t rx_buf[RX_BUF_SIZE];
 volatile uint16_t rx_len = 0;
@@ -205,7 +259,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == USART1)
     {
-        rx_len = Size;                                 /* Size = bytes received */
+        rx_len = Size;                                 /* write position; subtract the previous one and handle wrap */
         HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buf, RX_BUF_SIZE);  /* start receiving again */
     }
 }
@@ -222,18 +276,6 @@ static uint8_t ring[256];
 ```
 
 The full project is in [`examples/uart-dma-idle/`](../../examples/uart-dma-idle/).
-
-## ⚠️ Pitfalls and troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| Everything is garbage | Baud rates do not match | Use the same baud on both sides, and check the crystal frequency |
-| Nothing arrives at all | TX and RX are not crossed | Cross them: board TX → module RX |
-| The level is wrong, or something is damaged | The USB-TTL was set to 5 V | Use 3.3 V (or add a level shifter) |
-| Chinese text is garbled | Encoding or font does not match | Agree on UTF-8 or GBK, or use a bitmap font |
-| DMA receive is occasionally scrambled | The buffer is not `volatile`, or it is not aligned | Mark the buffer `volatile`, and align it to 4 bytes |
-| printf prints nothing | Keil MicroLIB is off (semihosting) | Check MicroLIB, or use the method-2 log function |
-| Errors at a high baud rate | The clock error is large | Use OVER8, check BRR, or lower the baud rate |
 
 ## 🧪 Hands-on labs
 

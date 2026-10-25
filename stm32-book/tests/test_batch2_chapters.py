@@ -292,5 +292,140 @@ class Batch2NvicChapterTests(unittest.TestCase):
         self.assertNotIn("rm0090-usart-over8", zh_manifest["sources"])
 
 
+
+class Batch2UartChapterTests(unittest.TestCase):
+    def test_uart_chapters_fix_the_brr_cell_and_keep_four_blocks(self) -> None:
+        zh = (ROOT / "docs" / "06-串口UART.md").read_text(encoding="utf-8")
+        en = (ROOT / "docs" / "en" / "06-uart.md").read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 📌 学习目标", zh)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertNotIn("F1/F4 支持 OVER8", zh)
+        self.assertNotIn("F1 and F4 have the OVER8 bit", en)
+        self.assertNotIn("8 × 115200", zh)
+        self.assertNotIn("8 × 115200", en)
+        self.assertNotIn("8 x 115200", zh)
+        self.assertNotIn("8 x 115200", en)
+        for text in (zh, en):
+            for token in (
+                "STM32F103C8T6",
+                "PA9",
+                "PA10",
+                "30",
+                "31",
+                "0xA5",
+                "0x271",
+                "39.0625",
+                "8.68",
+                "86.8",
+                "0x138",
+                "FE",
+                "#source-rm0008-usart",
+                "#source-majerle-uart",
+                "#source-st-uart-idle",
+                "#source-stm32cube-f4",
+                "#source-ds5319-usart",
+            ):
+                self.assertIn(token, text)
+            rows_271 = [line for line in text.splitlines() if line.startswith("|") and "0x271" in line]
+            self.assertGreaterEqual(len(rows_271), 1)
+            for line in rows_271:
+                self.assertIn("0%", line)
+                self.assertNotIn("0.16%", line)
+            rows_138 = [line for line in text.splitlines() if line.startswith("|") and "0x138" in line]
+            self.assertGreaterEqual(len(rows_138), 1)
+            for line in rows_138:
+                self.assertIn("0.16%", line)
+                self.assertIn("USART2", line)
+        self.assertIn("位 31:14", zh)
+        self.assertIn("bits 31:14", en)
+        self.assertIn("那不是写进 `0x271` 的结果", zh)
+        self.assertIn("That is not what writing `0x271` does.", en)
+        self.assertIn("经验线索，未升格为规范", zh)
+        self.assertIn("experience only", en.lower())
+        self.assertIn("../assets/diagrams/sample-06-uart-frame.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-06-uart-frame.svg", en)
+        self.assertIn("../assets/gif/uart-idle.gif", zh)
+        self.assertIn("../../assets/gif/uart-idle.gif", en)
+        self.assertIn("../assets/animations/uart-frame.svg", zh)
+        self.assertIn("../assets/gif/uart-bits.gif", zh)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-06-uart-frame.svg"), zh_key.index("uart-idle.gif"))
+        self.assertLess(en_key.index("sample-06-uart-frame.svg"), en_key.index("uart-idle.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertNotIn("schematic", en_key.lower())
+        for needle in ("8", "9", "10"):
+            self.assertIn(needle, zh_key)
+            self.assertIn(needle, en_key)
+        zh_cards = zh.split("## 坑与出处卡", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_cards = en.split("## Pitfalls and source cards", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for cards in (zh_cards, en_cards):
+            self.assertGreaterEqual(cards.count("#source-rm0008-usart"), 4)
+            self.assertEqual(1, cards.count("#source-stm32cube-f4"))
+            self.assertEqual(1, cards.count("#source-st-uart-idle"))
+            self.assertEqual(1, cards.count("#source-majerle-uart"))
+        for start, end in (
+            ("## 原理与边界", "## 关键插图"),
+            ("## 关键插图", "## 时序或状态"),
+            ("## 时序或状态", "## 坑与出处卡"),
+            ("## 坑与出处卡", "## 📌 学习目标"),
+        ):
+            self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
+        for start, end in (
+            ("## Principle and boundary", "## Key figures"),
+            ("## Key figures", "## Timing or state"),
+            ("## Timing or state", "## Pitfalls and source cards"),
+            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+        ):
+            self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
+        listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-usart": (
+                "第 06 章原理与边界、时序或状态、坑与出处卡。只改写 16 倍采样、BRR 0x271 在 72 MHz 下误差为 0、IDLE 是满一个帧时间、以及先读 SR 再读 DR 清 FE。F103 的 USART_CR1 位 31:14 保留，没有 OVER8。不复制 27.3.3，不描官方采样图，不编 8 倍的 BRR。",
+                "Chapter 06 principle, timing, and source cards. Restates 16× sampling, BRR 0x271 with divider error 0 at 72 MHz, IDLE as one full frame of idle line, and clearing FE by reading SR then DR. On F103, USART_CR1 bits 31:14 are reserved, so there is no OVER8. Does not copy section 27.3.3, does not trace the official sampling figure, and does not invent an 8× BRR.",
+            ),
+            "ds5319-usart": (
+                "第 06 章关键插图。只改写 LQFP48 第 30 脚 PA9 为 USART1_TX、第 31 脚 PA10 为 USART1_RX。复位后不是 PB6/PB7。不描图 8。",
+                "Chapter 06 key figure. Restates LQFP48 pin 30 PA9 as USART1_TX and pin 31 PA10 as USART1_RX. The reset default is not PB6/PB7. Does not trace Figure 8.",
+            ),
+        }
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["rm0008", "stm32cube-f4", "st-uart-idle", "majerle-uart", "rm0008-usart", "ds5319-usart"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["06-串口UART.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["06-uart.md"]["sources"])
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual(card_zh["accessed"], card_en["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+        baseline, baseline_en = baseline_manifests()
+        self.assertEqual(
+            set(zh_manifest["sources"]) - set(baseline["sources"]),
+            {"rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+        )
+        self.assertEqual(
+            set(en_manifest["sources"]) - set(baseline_en["sources"]),
+            {"rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+        )
+        for source_id in ("majerle-uart", "st-uart-idle", "stm32cube-f4", "pm0056", "rm0090"):
+            self.assertEqual(baseline["sources"][source_id], zh_manifest["sources"][source_id])
+            self.assertEqual(baseline_en["sources"][source_id], en_manifest["sources"][source_id])
+
 if __name__ == "__main__":
     unittest.main()
