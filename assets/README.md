@@ -8,7 +8,7 @@
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
-> python3 tools/gen_sample_figures.py   # 第 00、02、03、04、05、06、08、09 章的静态主图
+> python3 tools/gen_sample_figures.py   # 第 00、01、02、03、04、05、06、07、08、09、10、11 章的静态主图
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -30,7 +30,7 @@
 | `spi-transfer.svg` | SPI 全双工移位：CPOL/CPHA 四种模式时序 | 08 |
 | `adc-sar.svg` | ADC 采样保持 + 逐次逼近（SAR）比较过程 | 09 |
 | `dma-circular.svg` | DMA 循环模式：CPU 与 DMA 并行搬运数据 | 10 |
-| `iwdg-window.svg` | 独立看门狗计数与喂狗窗口（过早/过晚都复位） | 11 |
+| `iwdg-window.svg` | 辅图：独立看门狗只惩罚喂晚，喂早也复位的是窗口看门狗。文件不重画 | 11 |
 | `flash-iap.svg` | IAP 在线升级：Bootloader + APP 双区跳转 | 12 |
 | `can-arbitration.svg` | CAN 非破坏性仲裁与位填充 | 13 |
 | `usb-enumeration.svg` | USB 设备枚举：复位 → 描述符 → 配置 | 14 |
@@ -88,6 +88,10 @@
 | `sample-05-pwm-1khz.svg` | 第 05 章静态主图：PA6 上 TIM3_CH1 的 1 kHz，以及用 36 MHz 去除得到的 500 Hz。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-08-spi-jedec.svg` | 第 08 章静态主图：LQFP48 第 14–17 脚、Mode 0、9 MHz，以及 MOSI/MISO 对调后读不到 0xEF 0x40 0x17。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-09-adc-sar.svg` | 第 09 章静态主图：12 MHz 下一次采样和 MSB 比较，最长转换 21 µs，采样太短时电容上仍是上一次的电压。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-01-swd-vectors.svg` | 第 01 章静态主图：第 34 脚 PA13 与第 37 脚 PA14 上的取指，以及这两只脚被配成 GPIO、第 35 脚被当成 SWCLK。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-07-i2c-addr.svg` | 第 07 章静态主图：第 42、43 脚上的写地址 0x78 与 ACK，以及 DevAddress 填 0x3C 时的 NACK。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-10-dma-cndtr.svg` | 第 10 章静态主图：8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节，以及把剩余计数当成字节。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-11-iwdg-1s.svg` | 第 11 章静态主图：预分频 64、Reload 624 在 40 kHz 典型值下的 1 秒，以及减到 0 才复位。由 `tools/gen_sample_figures.py` 生成 |
 
 ## 五、光栅动画 `assets/gif/`
 
