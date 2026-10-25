@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.5",
+      "date": "2026-10-25",
+      "zh": [
+        "整书样式的颜色、字号、间距、圆角和阴影改由一份令牌表提供，组件继续引用它们。屏幕、暗色和印刷的观感与 1.2.4 相同。",
+        "中文和英文 HTML 仍把样式内嵌在单个文件里，不引用外部字体。"
+      ],
+      "en": [
+        "Colors, type, spacing, radius, and shadow now come from a token file. Components still reference them. Screen, dark, and print look the same as 1.2.4.",
+        "Chinese and English HTML still embed the stylesheet in a single file and do not load a font from the network."
+      ]
+    },
+    {
       "version": "1.2.4",
       "date": "2026-10-25",
       "zh": [
