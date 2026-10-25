@@ -35,7 +35,8 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .imprint { padding: var(--space-chapter) var(--inset); border-bottom: 1px solid var(--line); }
 .imprint .kicker { margin: 0 0 .35rem; color: var(--accent); font-weight: 700; letter-spacing: var(--tracking-kicker); font-size: var(--type-kicker); }
 .imprint h1, .companion h2 { margin-top: 0; }
-.imprint h1 { margin-bottom: .4rem; }
+.imprint h1 { margin-bottom: .4rem; font-size: var(--type-h1); line-height: 1.22; }
+.imprint h1::after { content: ""; display: block; width: 4.2rem; height: .18rem; margin-top: .85rem; background: var(--spine); }
 .imprint-lead, .imprint .colophon { max-width: 40em; }
 .imprint-lead { color: var(--muted); }
 .imprint dl { max-width: 46rem; margin: 1.5rem 0 0; padding-top: 1.05rem; border-top: 3px solid var(--accent); grid-template-columns: minmax(11rem, 16rem) minmax(0, 1fr); }
