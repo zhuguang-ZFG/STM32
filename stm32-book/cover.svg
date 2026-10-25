@@ -4,12 +4,12 @@
     <path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M0 400H1200M0 480H1200M0 560H1200M0 640H1200M0 720H1200"/>
     <path d="M80 0V760M160 0V760M240 0V760M320 0V760M400 0V760M480 0V760M560 0V760M640 0V760M720 0V760M800 0V760M880 0V760M960 0V760M1040 0V760M1120 0V760"/>
   </g>
-  <text x="112" y="62" fill="#8ecae6" font-family="ui-sans-serif, sans-serif" font-size="18" letter-spacing="3.5">OFFLINE EDITION</text>
   <g transform="translate(148 114)">
     <rect x="16" y="28" width="940" height="508" rx="32" fill="#07141a" opacity="0.45"/>
     <rect x="0" y="12" width="940" height="508" rx="32" fill="#1b5c45"/>
     <rect x="0" y="12" width="12" height="508" rx="6" fill="#c4552a"/>
     <rect x="22" y="32" width="896" height="468" rx="18" fill="none" stroke="#d7c4a3" stroke-width="4"/>
+    <rect x="34" y="44" width="872" height="444" rx="12" fill="none" stroke="#d7c4a3" stroke-width="1"/>
     <rect x="-36" y="168" width="54" height="96" rx="8" fill="#c5ced6"/>
     <rect x="-28" y="182" width="14" height="68" rx="2" fill="#8d99a3"/>
     <g fill="#d9dde2" stroke="#8d99a3" stroke-width="1.5">
@@ -43,7 +43,6 @@
     <path d="M456 280H690" fill="none" stroke="#e7d7a1" stroke-width="4"/>
     <path d="M560 280V168H690" fill="none" stroke="#e7d7a1" stroke-width="3"/>
     <g transform="translate(718 280)">
-      <circle r="42" fill="#ffb020" opacity="0.18"/>
       <circle r="22" fill="#ffb020"/>
       <circle cx="-6" cy="-6" r="7" fill="#fff4d2"/>
     </g>
