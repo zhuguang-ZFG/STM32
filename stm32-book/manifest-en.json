@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "Subject index", "file": "subject-index.json"}
@@ -155,7 +155,9 @@
       "sources": [
         "pm0056",
         "rm0008",
-        "freertos-priority"
+        "freertos-priority",
+        "rm0008-exti",
+        "pm0056-nvic"
       ]
     },
     "05-timer-pwm.md": {
@@ -174,7 +176,9 @@
         "rm0008",
         "stm32cube-f4",
         "st-uart-idle",
-        "majerle-uart"
+        "majerle-uart",
+        "rm0008-usart",
+        "ds5319-usart"
       ]
     },
     "07-i2c.md": {
@@ -980,6 +984,44 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 00 boot states and the failure path. Restates RM0008 Rev 21 section 3.4 Table 9. The connectivity-line address and the XL-density Bank2 row are void on STM32F103C8T6. Does not copy that section."
+    },
+    "rm0008-exti": {
+      "title": "RM0008 Rev 21 EXTI and AFIO_EXTICR",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.4.3-9.4.6 AFIO_EXTICR1-4, section 10.2.5 line mapping, section 10.3.6 EXTI_PR",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 04 principle, key figures, and source cards. Restates that one EXTI line is shared by pin number, that F1 enables the AFIO clock before writing EXTICR, and that EXTI_PR must be cleared. EXTICR is RM0008 Rev 21 sections 9.4.3 through 9.4.6, not section 9.2.7. Does not copy manual prose and does not trace the official figure."
+    },
+    "pm0056-nvic": {
+      "title": "PM0056 exception stack, tail-chaining, and PRIMASK",
+      "authority": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024, section 2.3.6 priority grouping, section 2.3.7 exception entry and return, PRIMASK Table 7 in section 2.1.3. Section 2.3.7 does not print a tail-chain clock tally.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 04 principle, timing, and source cards. Restates the eight-register stack, that tail-chaining does not change who may preempt, and that PRIMASK does not stop NMI. Does not treat 167 ns as the ISR body budget and does not add a tail-chain cycle count to Appendix D. Does not change the existing pm0056 CFSR/HFSR scope."
+    },
+    "rm0008-usart": {
+      "title": "RM0008 Rev 21 USART sampling, BRR, and framing error",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 27.3.3 receiver, section 27.6.3 USART_BRR, section 27.6.4 USART_CR1 bits 31:14 reserved",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 06 principle, timing, and source cards. Restates 16× sampling, BRR 0x271 with divider error 0 at 72 MHz, IDLE as one full frame of idle line, and clearing FE by reading SR then DR. On F103, USART_CR1 bits 31:14 are reserved, so there is no OVER8. Does not copy section 27.3.3, does not trace the official sampling figure, and does not invent an 8× BRR."
+    },
+    "ds5319-usart": {
+      "title": "DS5319 Rev 20 LQFP48 USART1 pins",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5, LQFP48 pins 30 and 31",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter 06 key figure. Restates LQFP48 pin 30 PA9 as USART1_TX and pin 31 PA10 as USART1_RX. The reset default is not PB6/PB7. Does not trace Figure 8."
     }
   }
 }
+
+

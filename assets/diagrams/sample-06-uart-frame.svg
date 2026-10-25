@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="820" viewBox="0 0 960 820" role="img" aria-label="停止位采到 0 就是帧错误；0x271 在 72 MHz、16 倍下误差是 0">
+
+
+<rect x="0" y="0" width="960" height="820" fill="#0b1220"/>
+<rect x="0" y="0" width="960" height="58" fill="#0e1626" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#22d3ee" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停止位采到 0 就是帧错误；0x271 在 72 MHz、16 倍下误差是 0</text>
+<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · RM0008 Rev 21 第 27 章</text>
+<rect x="906" y="15" width="32" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">06</text>
+<text x="40" y="86" font-size="16" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LQFP48  USART1  APB2  72 MHz</text>
+<text x="40" y="112" font-size="14" fill="#22d3ee" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 30 脚 PA9 = USART1_TX     第 31 脚 PA10 = USART1_RX     空闲为高</text>
+<text x="40" y="138" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0xA5  LSB 先发：起始位 0，数据 1 0 1 0 0 1 0 1，停止位 1</text>
+<text x="40" y="164" font-size="14" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一位约 8.68 µs，10 位约 86.8 µs。BRR 0x271，16 倍，39.0625，误差 0</text>
+<text x="40" y="190" font-size="14" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART_SR 0x00    USART_DR 0x04    USART_BRR 0x08    USART_CR1 0x0C</text>
+<rect x="40" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="48" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ST</text>
+<text x="48" y="260" font-size="18" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0</text>
+<rect x="130" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="138" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b0</text>
+<text x="138" y="260" font-size="18" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<rect x="220" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="228" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b1</text>
+<text x="228" y="260" font-size="18" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0</text>
+<rect x="310" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="318" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b2</text>
+<text x="318" y="260" font-size="18" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<rect x="400" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="408" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b3</text>
+<text x="408" y="260" font-size="18" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0</text>
+<rect x="490" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="498" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b4</text>
+<text x="498" y="260" font-size="18" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0</text>
+<rect x="580" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="588" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b5</text>
+<text x="588" y="260" font-size="18" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<rect x="670" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="678" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b6</text>
+<text x="678" y="260" font-size="18" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0</text>
+<rect x="760" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="768" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">b7</text>
+<text x="768" y="260" font-size="18" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<rect x="850" y="210" width="80" height="64" fill="#111c31" opacity="1" rx="6" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="858" y="236" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SP</text>
+<text x="858" y="260" font-size="18" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="40" y="300" font-size="16" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正常路径  停止位为高</text>
+<rect x="40" y="314" width="880" height="120" fill="#111c31" opacity="1" rx="8" stroke="#34d399" stroke-width="1.5"/>
+<text x="56" y="344" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停止位上的第 8、第 9、第 10 个采样点表决为 1</text>
+<text x="56" y="370" font-size="14" fill="#34d399" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FE 不置位。数据位用中间那三个点。</text>
+<text x="56" y="396" font-size="13" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">起始位的确认序列是第 3、5、7 点和第 8、9、10 点。RM0008 27.3.3</text>
+<text x="40" y="460" font-size="16" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败路径  停止位三点采到 0</text>
+<rect x="40" y="474" width="880" height="130" fill="#111c31" opacity="1" rx="8" stroke="#f87171" stroke-width="1.5"/>
+<text x="56" y="504" font-size="15" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第 8、9、10 点为 0，FE 置位，数据仍在 USART_DR</text>
+<text x="56" y="530" font-size="14" fill="#f87171" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清除顺序：先读 USART_SR，再读 USART_DR。只读 DR 清不掉。</text>
+<text x="56" y="556" font-size="13" fill="#fbbf24" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">中断是否到来还要看 RXNE 或 CR3 的 EIE。FE 本身不是唯一的中断源。</text>
+<text x="56" y="582" font-size="13" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要写成「FE 一定进中断服务」</text>
+<rect x="40" y="624" width="880" height="100" fill="#0e1626" opacity="1" rx="8" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="56" y="654" font-size="15" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  OVER8 / 8 倍  不占帧错误那条路径</text>
+<text x="56" y="680" font-size="14" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这颗 F103 的 USART_CR1 位 31:14 保留，没有这个位。</text>
+<text x="56" y="706" font-size="13" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不在这张图上算 8 倍的 BRR。重映射的 PB6/PB7 不在正常路径上。</text>
+<line x1="24" y1="784" x2="936" y2="784" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="804" font-size="11" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。脚位来自 DS5319 Rev 20 图 8；采样与 BRR 来自 RM0008 Rev 21 第 27 章。</text>
+<text x="936" y="804" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

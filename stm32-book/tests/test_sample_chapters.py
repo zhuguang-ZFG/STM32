@@ -242,8 +242,14 @@ class SampleFoundationChapterTests(unittest.TestCase):
             card_en["scope"],
         )
         baseline, baseline_en = baseline_manifests()
-        self.assertEqual(set(zh_manifest["sources"]) - set(baseline["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
-        self.assertEqual(set(en_manifest["sources"]) - set(baseline_en["sources"]), {"rm0008-boot", "rm0008-gpio", "ds5319-gpio"})
+        self.assertEqual(
+            set(zh_manifest["sources"]) - set(baseline["sources"]),
+            {"rm0008-boot", "rm0008-gpio", "ds5319-gpio", "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+        )
+        self.assertEqual(
+            set(en_manifest["sources"]) - set(baseline_en["sources"]),
+            {"rm0008-boot", "rm0008-gpio", "ds5319-gpio", "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+        )
 
 
 if __name__ == "__main__":

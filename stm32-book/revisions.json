@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.1.1",
+      "date": "2026-10-25",
+      "zh": [
+        "第 04 章写上 STM32F103C8T6 的抢占边界：GROUP_4 下抢占 1 可以打断抢占 2，同抢占不能嵌套，并加了一张不播放也能读的静态图。",
+        "第 06 章把 USART1 在 72 MHz、16 倍下的 BRR 0x271 误差改成 0，并写上停止位采样和帧错误路径。"
+      ],
+      "en": [
+        "Chapter file 04 records the STM32F103C8T6 preemption boundary: under GROUP_4, preemption 1 can interrupt preemption 2, equal preemption does not nest, plus a static figure that stays readable in print.",
+        "Chapter file 06 changes the USART1 BRR 0x271 error at 72 MHz and 16× to 0, and records stop-bit sampling and the framing-error path."
+      ]
+    },
+    {
       "version": "1.1.0",
       "date": "2026-10-25",
       "zh": [

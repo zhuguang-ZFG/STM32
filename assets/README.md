@@ -8,7 +8,7 @@
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
-> python3 tools/gen_sample_figures.py   # 第 00、03 章的静态主图
+> python3 tools/gen_sample_figures.py   # 第 00、03、04、06 章的静态主图
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -82,6 +82,8 @@
 | `network-debug-ladder.svg` | 从 PHY/ARP/IP/TCP 到 TLS/MQTT 的分层排错阶梯 |
 | `sample-00-boot-state.svg` | 第 00 章静态主图：BOOT0=0 的闪存别名，以及 BOOT0=1 时 CPU 取到系统存储器。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-03-gpio-led.svg` | 第 03 章静态主图：PA0 经 270 Ω 点灯，PC13 不能当电流源，并画出 LCKR 序列。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-04-exception-stack.svg` | 第 04 章静态主图：GROUP_4 下抢占 1 打断抢占 2 的 8 寄存器入栈，以及同抢占不能嵌套。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-06-uart-frame.svg` | 第 06 章静态主图：PA9/PA10 上 0xA5 的 8N1 帧、停止位采样和 FE 清除顺序。由 `tools/gen_sample_figures.py` 生成 |
 
 ## 五、光栅动画 `assets/gif/`
 
@@ -93,13 +95,15 @@
 | `i2c-timing.gif` | I2C 一次写事务：START/地址/ACK/数据/STOP 逐段高亮 | 同上 |
 | `dma-ring.gif` | DMA 循环搬运 ADC 数据到数组 | 同上 |
 | `sar-adc.gif` | SAR ADC 逐次逼近比较过程 | 同上 |
+| `nvic-preempt.gif` | NVIC 抢占的短循环：TIM2 正在执行，EXTI0 以更高抢占打断，然后返回 | 由 `tools/gen_gifs.py` 生成。辅图。同抢占失败只在静态主图上 |
+| `uart-idle.gif` | 一帧结束后 RX 保持高，满一个帧时间后标出 IDLE 和 86.8 µs | 由 `tools/gen_gifs.py` 生成。辅图。帧错误的三点采样只在静态主图上 |
 
-> ⚠️ 上面 6 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
+> ⚠️ 上面 8 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
 > 用 `python3 tools/gen_gifs.py` 重新生成，并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
 ### 公众号动图 `*-zh.gif`
 
-同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 6 张的中文翻译，也不由 `gen_gifs.py` 生成。
+同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 8 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
 文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
 

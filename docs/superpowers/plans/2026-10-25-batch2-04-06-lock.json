@@ -1,0 +1,28 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-batch2-04-06",
+  "baseline": "5d2a67ef773c47a9b6d3b3251ceefe37cd4f6321",
+  "chapters": [
+    "04",
+    "06"
+  ],
+  "four_blocks_absent": true,
+  "old_pitfall_heading_present": true,
+  "files": {
+    "04": {
+      "zh": "docs/04-中断与NVIC.md",
+      "en": "docs/en/04-interrupts-nvic.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    },
+    "06": {
+      "zh": "docs/06-串口UART.md",
+      "en": "docs/en/06-uart.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "主题索引", "file": "subject-index.json"}
@@ -128,7 +128,7 @@
       "question": "异步事件怎样从引脚进入 EXTI 和 NVIC，又怎样在有限时间内安全退出 ISR？",
       "deliverable": "一张事件路径图、一份优先级表和一笔 ISR 最坏执行时间预算。",
       "boundary": "裸机优先级配置不自动满足 RTOS 的 FromISR 约束；第 15 章再加入内核边界。硬件入栈 8 个寄存器，大约 12 个 HCLK；在 72 MHz 上约 167 ns，不含 ISR 正文。HAL 默认分组是 GROUP_4：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高。",
-      "sources": ["pm0056", "rm0008", "freertos-priority"]
+      "sources": ["pm0056", "rm0008", "freertos-priority", "rm0008-exti", "pm0056-nvic"]
     },
     "05-定时器与PWM.md": {
       "question": "时钟、PSC、ARR 与 CCR 怎样变成可测的周期、频率和占空比？",
@@ -140,7 +140,7 @@
       "question": "UART 的位时序、错误标志、DMA 缓冲和帧边界怎样连成可靠的接收路径？",
       "deliverable": "一张 8N1 波形、一份 ORE/FE/NE 处置表，以及一种明确写出缓冲区不变量的收包方案。",
       "boundary": "IDLE 只表示线路空闲，不等于业务协议的一帧；循环 DMA 的 Size 是写入位置而非本次增量。USART1 在 APB2：115200、72 MHz、16 倍过采样时 BRR 为 0x271，分频误差为 0；一位约 8.68 µs，8N1 一帧约 86.8 µs。",
-      "sources": ["rm0008", "stm32cube-f4", "st-uart-idle", "majerle-uart"]
+      "sources": ["rm0008", "stm32cube-f4", "st-uart-idle", "majerle-uart", "rm0008-usart", "ds5319-usart"]
     },
     "07-I2C总线.md": {
       "question": "开漏电气、上拉时间和 START/ACK/重复起始怎样共同决定一次 I2C 事务？",
@@ -822,6 +822,44 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 00 章的启动状态与失败路径。只改写 RM0008 Rev 21 第 3.4 节表 9；互联型地址和 XL 密度 Bank2 在这颗 STM32F103C8T6 上作废。不复制该节原文。"
+    },
+    "rm0008-exti": {
+      "title": "RM0008 Rev 21 EXTI 与 AFIO_EXTICR",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.4.3-9.4.6 AFIO_EXTICR1-4, section 10.2.5 line mapping, section 10.3.6 EXTI_PR",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 04 章原理与边界、关键插图、坑与出处卡。只改写 EXTI 线按脚号共用、F1 上先开 AFIO 时钟再写 EXTICR，以及 EXTI_PR 要清。EXTICR 在 RM0008 Rev 21 第 9.4.3 到 9.4.6 节，不是第 9.2.7 节。不复制手册段落，不描官方图。"
+    },
+    "pm0056-nvic": {
+      "title": "PM0056 异常入栈、尾链与 PRIMASK",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056 Rev 7, December 2024, section 2.3.6 priority grouping, section 2.3.7 exception entry and return, PRIMASK Table 7 in section 2.1.3. Section 2.3.7 does not print a tail-chain clock tally.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 04 章原理与边界、时序或状态、坑与出处卡。只改写 8 个寄存器的入栈、尾链不改变抢占权，以及 PRIMASK 挡不住 NMI。不把 167 ns 写成 ISR 正文的预算，不把尾链周期数补进附录 D。不改已有 pm0056 的 CFSR/HFSR 范围。"
+    },
+    "rm0008-usart": {
+      "title": "RM0008 Rev 21 USART 采样、BRR 与帧错误",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 27.3.3 receiver, section 27.6.3 USART_BRR, section 27.6.4 USART_CR1 bits 31:14 reserved",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 06 章原理与边界、时序或状态、坑与出处卡。只改写 16 倍采样、BRR 0x271 在 72 MHz 下误差为 0、IDLE 是满一个帧时间、以及先读 SR 再读 DR 清 FE。F103 的 USART_CR1 位 31:14 保留，没有 OVER8。不复制 27.3.3，不描官方采样图，不编 8 倍的 BRR。"
+    },
+    "ds5319-usart": {
+      "title": "DS5319 Rev 20 LQFP48 的 USART1 脚",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 8 and Table 5, LQFP48 pins 30 and 31",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 06 章关键插图。只改写 LQFP48 第 30 脚 PA9 为 USART1_TX、第 31 脚 PA10 为 USART1_RX。复位后不是 PB6/PB7。不描图 8。"
     }
   }
 }
+
+
