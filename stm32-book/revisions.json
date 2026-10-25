@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.0",
+      "date": "2026-10-25",
+      "zh": [
+        "整书样式收到同一组纸色、墨色和强调色，章距、段距、图距使用固定阶梯。",
+        "章首罗盘、提示框、出处卡和插图共用一档圆角和轻阴影；印刷时的孤行、寡行和图注不断页仍按原规则。"
+      ],
+      "en": [
+        "The book stylesheet uses one paper, ink, and accent set, with a fixed step for chapter, paragraph, and figure spacing.",
+        "Chapter compasses, callouts, source cards, and figures share one radius and a light shadow; print orphans, widows, and caption keep-together rules stay as they were."
+      ]
+    },
+    {
       "version": "1.1.1",
       "date": "2026-10-25",
       "zh": [
