@@ -417,11 +417,19 @@ class Batch2UartChapterTests(unittest.TestCase):
         baseline, baseline_en = baseline_manifests()
         self.assertEqual(
             set(zh_manifest["sources"]) - set(baseline["sources"]),
-            {"rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+            {
+                "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart",
+                "rm0008-rcc", "ds5319-clock", "rm0008-tim", "ds5319-tim",
+                "rm0008-spi", "ds5319-spi", "rm0008-adc", "ds5319-adc",
+            },
         )
         self.assertEqual(
             set(en_manifest["sources"]) - set(baseline_en["sources"]),
-            {"rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart"},
+            {
+                "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart",
+                "rm0008-rcc", "ds5319-clock", "rm0008-tim", "ds5319-tim",
+                "rm0008-spi", "ds5319-spi", "rm0008-adc", "ds5319-adc",
+            },
         )
         for source_id in ("majerle-uart", "st-uart-idle", "stm32cube-f4", "pm0056", "rm0090"):
             self.assertEqual(baseline["sources"][source_id], zh_manifest["sources"][source_id])

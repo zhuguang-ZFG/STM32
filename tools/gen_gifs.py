@@ -386,37 +386,6 @@ def nvic_preempt():
     return g
 
 
-def uart_idle():
-    """After one frame, RX stays high for one frame time, then IDLE is marked.
-
-    Framing-error samples stay on the static SVG. This GIF does not replay 0xA5 bit by bit.
-    """
-    g = Gif(W, H, delay=12)
-    notes = (
-        "FRAME END  STOP HIGH",
-        "RX STAYS HIGH",
-        "RX STAYS HIGH",
-        "RX STAYS HIGH",
-        "ONE FRAME OF IDLE",
-        "IDLE  86.8 us",
-    )
-    for index, note in enumerate(notes):
-        c = Canvas(W, H)
-        chrome(c, "UART IDLE", "8N1", "AUX GIF  86.8 us IS ONE FRAME")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("RX LINE HIGH AFTER THE FRAME", 28, 58, C.MUTED, 1)
-        c.hline(24, 120, 432, C.GREEN, 2)
-        mark = 24 + int(432 * index / 5)
-        c.vline(mark, 100, 40, C.AMBER, 1)
-        c.text(note, 28, 160, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
-        c.text("IDLE IS THE LINE HIGH FOR 86.8 us", 28, 214, C.CYAN, 1)
-        c.text("NOT A PROTOCOL LENGTH FIELD", 28, 232, C.AMBER, 1)
-        c.text("FRAMING ERROR STAYS ON THE STATIC SVG", 28, 254, C.DIM, 1)
-        g.add(c)
-    return g
-
-
 def clock_css():
     """HSE enters the PLL, SYSCLK sits at 72 MHz, then HSE vanishes and SYSCLK returns to HSI.
 
@@ -527,6 +496,37 @@ def adc_sample():
         c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
         c.text("12 MHz SAMPLE THEN MSB", 28, 200, C.GREEN, 1)
         c.text("PRINT THE SHORT SAMPLE ON THE SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def uart_idle():
+    """After one frame, RX stays high for one frame time, then IDLE is marked.
+
+    Framing-error samples stay on the static SVG. This GIF does not replay 0xA5 bit by bit.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "FRAME END  STOP HIGH",
+        "RX STAYS HIGH",
+        "RX STAYS HIGH",
+        "RX STAYS HIGH",
+        "ONE FRAME OF IDLE",
+        "IDLE  86.8 us",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "UART IDLE", "8N1", "AUX GIF  86.8 us IS ONE FRAME")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("RX LINE HIGH AFTER THE FRAME", 28, 58, C.MUTED, 1)
+        c.hline(24, 120, 432, C.GREEN, 2)
+        mark = 24 + int(432 * index / 5)
+        c.vline(mark, 100, 40, C.AMBER, 1)
+        c.text(note, 28, 160, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
+        c.text("IDLE IS THE LINE HIGH FOR 86.8 us", 28, 214, C.CYAN, 1)
+        c.text("NOT A PROTOCOL LENGTH FIELD", 28, 232, C.AMBER, 1)
+        c.text("FRAMING ERROR STAYS ON THE STATIC SVG", 28, 254, C.DIM, 1)
         g.add(c)
     return g
 
