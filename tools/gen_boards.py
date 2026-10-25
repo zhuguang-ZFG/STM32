@@ -28,7 +28,7 @@ PAD = "#c8a02c"
 # --------------------------------------------------------------------------- 通用零件
 
 
-def board(s, x, y, w, h, fill=PCB, dark=PCB_DARK, r=14, holes=True):
+def board(s, x, y, w, h, fill=PCB, dark=PCB_DARK, r=8, holes=True):
     """画一块 PCB：阴影 + 板体 + 四角安装孔 + 丝印边框。"""
     s.rect(x + 5, y + 7, w, h, fill="#00000055", rx=r)
     s.rect(x, y, w, h, fill=fill, stroke=dark, rx=r, sw=2)
@@ -37,7 +37,7 @@ def board(s, x, y, w, h, fill=PCB, dark=PCB_DARK, r=14, holes=True):
     if holes:
         for hx, hy in ((x + 14, y + 14), (x + w - 14, y + 14), (x + 14, y + h - 14),
                        (x + w - 14, y + h - 14)):
-            s.circle(hx, hy, 5, fill=dark, stroke=GOLD, sw=1.6)
+            s.circle(hx, hy, 5, fill=dark, stroke=GOLD, sw=1.5)
 
 
 def header(s, x, y, n, pitch, side="top", labels=None, label_size=9,
@@ -47,15 +47,15 @@ def header(s, x, y, n, pitch, side="top", labels=None, label_size=9,
     for i in range(n):
         px = x + i * pitch
         if side == "top":
-            s.rect(px, y - 16, pitch - 3, 16, fill=color, rx=2.5)
-            s.rect(px + 3, y - 12, pitch - 9, 8, fill="#00000066", rx=1.5)
+            s.rect(px, y - 16, pitch - 3, 16, fill=color, rx=2)
+            s.rect(px + 3, y - 12, pitch - 9, 8, fill="#00000066", rx=2)
         else:
-            s.rect(px, y, pitch - 3, 16, fill=color, rx=2.5)
-            s.rect(px + 3, y + 4, pitch - 9, 8, fill="#00000066", rx=1.5)
+            s.rect(px, y, pitch - 3, 16, fill=color, rx=2)
+            s.rect(px + 3, y + 4, pitch - 9, 8, fill="#00000066", rx=2)
         if i < len(labels):
             dy = label_dy if label_dy is not None else (-24 if side == "top" else 34)
             s.text(px + (pitch - 3) / 2, y + dy, labels[i], size=label_size,
-                   anchor="middle", fill=SILK)
+                   anchor="middle", fill=T.TEXT)
 
 
 def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10):
@@ -69,7 +69,7 @@ def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10):
             s.rect(cx + w / 2, cy - h / 2 + t * h - 2, 9, 4, fill="#9aa4b2")
         s.rect(cx - w / 2 + t * w - 2, cy - h / 2 - 9, 4, 9, fill="#9aa4b2")
         s.rect(cx - w / 2 + t * w - 2, cy + h / 2, 4, 9, fill="#9aa4b2")
-    s.rect(cx - w / 2, cy - h / 2, w, h, fill=color, stroke="#39424f", rx=3)
+    s.rect(cx - w / 2, cy - h / 2, w, h, fill=color, stroke="#39424f", rx=2)
     s.circle(cx - w / 2 + 9, cy - h / 2 + 9, 3.4, fill="#5b6472")
     s.text(cx, cy - 2, name, size=11.5, anchor="middle", fill="#dfe6f0",
            weight="700", mono=True)
@@ -79,14 +79,14 @@ def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10):
 
 
 def crystal(s, x, y, w=46, h=20, label="8 MHz"):
-    s.rect(x, y, w, h, fill="#c9ced6", stroke="#8d949e", rx=5)
-    s.rect(x + 5, y + 4, w - 10, h - 8, fill="#e7ebf0", rx=3)
+    s.rect(x, y, w, h, fill="#c9ced6", stroke="#8d949e", rx=4)
+    s.rect(x + 5, y + 4, w - 10, h - 8, fill="#e7ebf0", rx=2)
     s.text(x + w / 2, y + h + 12, label, size=8.5, anchor="middle", fill=SILK)
 
 
 def button(s, cx, cy, r=13, label="RST"):
     s.circle(cx, cy, r, fill="#2b3038", stroke="#59606c", sw=2)
-    s.circle(cx, cy, r - 5, fill="#d8b23a", stroke="#8d7420", sw=1.2)
+    s.circle(cx, cy, r - 5, fill="#d8b23a", stroke="#8d7420", sw=1)
     s.text(cx, cy + r + 12, label, size=8.5, anchor="middle", fill=SILK)
 
 
@@ -97,7 +97,7 @@ def usb(s, x, y, w=54, h=44, kind="micro", side="left"):
     if kind == "micro":
         s.rect(x + 8, y + h / 2 - 7, w - 14, 14, fill="#5d6470", rx=2)
     elif kind == "type-c":
-        s.rect(x + 8, y + h / 2 - 5, w - 14, 10, fill="#5d6470", rx=5)
+        s.rect(x + 8, y + h / 2 - 5, w - 14, 10, fill="#5d6470", rx=4)
     s.text(x + w / 2, y - 8, f"{kind} USB", size=9, anchor="middle", fill=SILK)
 
 
@@ -126,7 +126,7 @@ def legend(s, x, y, items, cols=2, colw=430, dy=25, size=11.5):
         r, c = divmod(i, cols)
         xx = x + c * colw
         yy = y + r * dy
-        s.circle(xx + 8, yy - 4, 8, fill=T.BG, stroke=T.CYAN, sw=1.6)
+        s.circle(xx + 8, yy - 4, 8, fill=T.BG, stroke=T.CYAN, sw=1.5)
         s.text(xx + 8, yy, str(n), size=9.5, anchor="middle", fill=T.CYAN,
                weight="700")
         s.text(xx + 24, yy, text_, size=size, fill=T.MUTED)
@@ -135,7 +135,7 @@ def legend(s, x, y, items, cols=2, colw=430, dy=25, size=11.5):
 def specs(s, x, y, items, w=200, h=58, gap=12):
     for i, (k, v, color) in enumerate(items):
         xx = x + i * (w + gap)
-        s.rect(xx, y, w, h, fill=T.PANEL, stroke=T.STROKE, rx=9)
+        s.rect(xx, y, w, h, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.rect(xx, y, w, 3, fill=color, rx=2)
         s.text(xx + 12, y + 26, k, size=11, fill=T.MUTED)
         s.text(xx + 12, y + 46, v, size=13, fill=T.TEXT, weight="700")
@@ -179,12 +179,12 @@ def bluepill() -> Svg:
     # BOOT 跳线
     for i, name in enumerate(("BOOT0", "BOOT1")):
         y = 290 + i * 30
-        s.rect(300, y, 60, 20, fill="#0a0d13", stroke=GOLD, rx=3)
+        s.rect(300, y, 60, 20, fill="#0a0d13", stroke=GOLD, rx=2)
         for j in range(3):
             s.circle(310 + j * 20, y + 10, 5, fill=GOLD)
         s.text(300, y - 6, name, size=8.5, fill=SILK)
-    s.rect(306, 292, 18, 14, fill="#1b1f28", rx=3)
-    s.rect(306, 322, 18, 14, fill="#1b1f28", rx=3)
+    s.rect(306, 292, 18, 14, fill="#1b1f28", rx=2)
+    s.rect(306, 322, 18, 14, fill="#1b1f28", rx=2)
     s.text(370, 300, "跳线帽短接 1-2：从 Flash 启动", size=8.5, fill=SILK)
 
     # 编号标注
@@ -243,11 +243,11 @@ def blackpill() -> Svg:
     led_smd(s, 610, 138, T.RED, "PWR")
     button(s, 690, 330, 12, "NRST")
     button(s, 620, 330, 12, "BOOT0")
-    s.rect(300, 300, 60, 18, fill="#0a0d13", stroke=GOLD, rx=3)
+    s.rect(300, 300, 60, 18, fill="#0a0d13", stroke=GOLD, rx=2)
     for j in range(3):
         s.circle(310 + j * 20, 309, 5, fill=GOLD)
     s.text(300, 294, "BOOT0", size=8.5, fill=SILK)
-    s.rect(330, 300, 18, 14, fill="#1b1f28", rx=3)
+    s.rect(330, 300, 18, 14, fill="#1b1f28", rx=2)
 
     # 排针（只标功能组，不臆造顺序）
     header(s, 196, by + 16, 20, 27, side="top", labels=[""] * 20)
@@ -296,7 +296,7 @@ def nucleo_f411re() -> Svg:
     s.text(bx + 89, by + 58, "调试器 + 虚拟串口", size=8.5, anchor="middle",
            fill="#9db8ff")
     usb(s, bx - 44, by + 40, 44, 36, "mini")
-    s.rect(bx + 24, by + 76, 130, 52, fill="#0a1f5e", stroke="#7aa2ff", rx=6)
+    s.rect(bx + 24, by + 76, 130, 52, fill="#0a1f5e", stroke="#7aa2ff", rx=4)
     s.text(bx + 89, by + 96, "SWD 跳线 SB", size=8.5, anchor="middle",
            fill="#9db8ff")
     s.text(bx + 89, by + 112, "断开后可用外部 ST-Link", size=8, anchor="middle",
@@ -313,7 +313,7 @@ def nucleo_f411re() -> Svg:
     led_smd(s, bx + 300, by + 60, T.GREEN, "LD2 PA5")
     led_smd(s, bx + 250, by + 60, T.RED, "LD1 PWR")
     led_smd(s, bx + 350, by + 60, T.AMBER, "LD3 COM")
-    s.rect(bx + 330, by + 300, 90, 46, fill="#0a1f5e", stroke="#7aa2ff", rx=6)
+    s.rect(bx + 330, by + 300, 90, 46, fill="#0a1f5e", stroke="#7aa2ff", rx=4)
     s.text(bx + 375, by + 322, "Arduino", size=9.5, anchor="middle",
            fill="#9db8ff")
     s.text(bx + 375, by + 336, "UNO R3 接口", size=8, anchor="middle",
@@ -334,7 +334,7 @@ def nucleo_f411re() -> Svg:
     callout(s, bx + 375, by + 322, 6)
 
     px = 540
-    s.rect(px, 96, 320, 232, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(px, 96, 320, 232, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(px + 16, 122, "板载资源", size=13.5, fill=T.TEXT, weight="700")
     rows = [
         ("主控", "STM32F411RET6（LQFP64）"),
@@ -351,7 +351,7 @@ def nucleo_f411re() -> Svg:
         s.text(px + 16, yy, k, size=10.5, fill=T.CYAN)
         s.text(px + 76, yy, v, size=10.5, fill=T.MUTED)
 
-    s.rect(px, 340, 320, 128, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(px, 340, 320, 128, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(px + 16, 366, "和 BluePill 怎么选？", size=13, fill=T.TEXT,
            weight="700")
     s.code(px + 16, 390, [
@@ -398,23 +398,23 @@ def f4_discovery() -> Svg:
     button(s, bx + 150, by + 244, 11, "B1 PA0")
     button(s, bx + 60, by + 300, 11, "RESET")
 
-    s.rect(bx + 200, by + 236, 96, 26, fill="#08214a", stroke="#7aa2ff", rx=5)
+    s.rect(bx + 200, by + 236, 96, 26, fill="#08214a", stroke="#7aa2ff", rx=4)
     s.text(bx + 248, by + 254, "LIS3DSH 加速度计", size=8, anchor="middle",
            fill="#9db8ff")
-    s.rect(bx + 340, by + 232, 120, 44, fill="#08214a", stroke="#7aa2ff", rx=5)
+    s.rect(bx + 340, by + 232, 120, 44, fill="#08214a", stroke="#7aa2ff", rx=4)
     s.text(bx + 400, by + 250, "CS43L22 音频 DAC", size=8.5, anchor="middle",
            fill="#9db8ff")
     s.text(bx + 400, by + 266, "3.5 mm 耳机座", size=8, anchor="middle",
            fill="#9db8ff")
-    s.rect(bx + 340, by + 296, 120, 24, fill="#08214a", stroke="#7aa2ff", rx=5)
+    s.rect(bx + 340, by + 296, 120, 24, fill="#08214a", stroke="#7aa2ff", rx=4)
     s.text(bx + 400, by + 313, "MP45DT02 MEMS 麦克风", size=8, anchor="middle",
            fill="#9db8ff")
     usb(s, bx + 462, by + 110, 44, 40, "micro")
     s.text(bx + 500, by + 108, "USB OTG FS", size=8.5, anchor="middle",
            fill="#dbeafe")
     for i in range(24):
-        s.rect(bx + 8, by + 200 + i * 5, 8, 4, fill=GOLD, rx=1)
-        s.rect(bx + bw - 16, by + 200 + i * 5, 8, 4, fill=GOLD, rx=1)
+        s.rect(bx + 8, by + 200 + i * 5, 8, 4, fill=GOLD, rx=2)
+        s.rect(bx + bw - 16, by + 200 + i * 5, 8, 4, fill=GOLD, rx=2)
 
     callout(s, bx + 260, by + 150, 1)
     callout(s, bx + 72, by + 68, 2)
@@ -442,7 +442,7 @@ def f4_discovery() -> Svg:
         ("存储", "1 MB Flash · 192 KB SRAM", T.GREEN),
         ("板载外设", "加速度计 · 音频 · 麦克风", T.VIOLET),
     ])
-    s.rect(60, 512, 500, 56, fill=T.BG2, stroke=T.STROKE, rx=10)
+    s.rect(60, 512, 500, 56, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(76, 534, "适合学什么：DMA 音频播放、I2S、USB、传感器融合、FFT/滤波（有 FPU）",
            size=11, fill=T.MUTED)
     s.text(76, 554, "注意：F4 系列 Flash 是「扇区擦除」，写之前先看 docs/12 章",
@@ -480,7 +480,7 @@ def f103zet6_dev() -> Svg:
         ("有源蜂鸣器", bx + 220, by + 258, 140, 30, T.PINK),
     ]
     for label, x, y, w, h, color in blocks:
-        s.rect(x, y, w, h, fill="#08224a", stroke=color, rx=5, sw=1.2)
+        s.rect(x, y, w, h, fill="#08224a", stroke=color, rx=4, sw=1)
         s.text(x + w / 2, y + h / 2 + 4, label, size=8.5, anchor="middle",
                fill="#cfe0ff")
 
@@ -492,20 +492,20 @@ def f103zet6_dev() -> Svg:
     for i, name in enumerate(("KEY0", "KEY1", "WK_UP")):
         button(s, bx + 40 + i * 46, by + 190, 10, name)
     button(s, bx + 150, by + 200, 10, "RESET")
-    s.rect(bx + 380, by + 320, 150, 40, fill="#08224a", stroke=T.AMBER, rx=5)
+    s.rect(bx + 380, by + 320, 150, 40, fill="#08224a", stroke=T.AMBER, rx=4)
     s.text(bx + 455, by + 344, "JTAG/SWD 20 pin", size=9, anchor="middle",
            fill="#cfe0ff")
-    s.rect(bx + 60, by + 340, 130, 30, fill="#08224a", stroke=T.RED, rx=5)
+    s.rect(bx + 60, by + 340, 130, 30, fill="#08224a", stroke=T.RED, rx=4)
     s.text(bx + 125, by + 360, "DC 5V 输入 + 3.3V LDO", size=8.5,
            anchor="middle", fill="#cfe0ff")
     for i in range(24):
-        s.rect(bx + 8, by + 150 + i * 6, 10, 4, fill=GOLD, rx=1)
-        s.rect(bx + bw - 18, by + 150 + i * 6, 10, 4, fill=GOLD, rx=1)
+        s.rect(bx + 8, by + 150 + i * 6, 10, 4, fill=GOLD, rx=2)
+        s.rect(bx + bw - 18, by + 150 + i * 6, 10, 4, fill=GOLD, rx=2)
     s.text(bx + 14, by + 146, "2 × 24 pin 排针（144 脚全引出）", size=8.5,
            fill="#dbeafe")
 
     px = 620
-    s.rect(px, 92, 240, 190, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(px, 92, 240, 190, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(px + 14, 118, "为什么买大板？", size=13, fill=T.TEXT, weight="700")
     s.code(px + 14, 142, [
         "144 脚全引出，外设一次配齐：",
@@ -518,7 +518,7 @@ def f103zet6_dev() -> Svg:
         "缺点：体积大、贵、例程容易「跑马灯化」",
     ], size=10, lh=17, color=T.GREEN)
 
-    s.rect(px, 296, 240, 176, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(px, 296, 240, 176, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(px + 14, 322, "板载总线一览", size=13, fill=T.TEXT, weight="700")
     rows = [("I2C1", "AT24C02（PB6/PB7）"),
             ("SPI1", "W25Q128（PA5~PA7）"),
@@ -554,7 +554,7 @@ def pinout_bluepill() -> Svg:
 
     cx, cy, cs = 400, 300, 200
     s.rect(cx - cs / 2, cy - cs / 2, cs, cs, fill="#1b1f28", stroke="#39424f",
-           rx=6)
+           rx=4)
     s.circle(cx - cs / 2 + 14, cy - cs / 2 + 14, 5, fill="#5b6472")
     s.text(cx, cy - 24, "STM32F103C8T6", size=14, anchor="middle",
            fill="#dfe6f0", weight="700", mono=True)
@@ -615,7 +615,7 @@ def pinout_bluepill() -> Svg:
                fill=style(nm), mono=True)
 
     px = 570
-    s.rect(px, 130, 290, 320, fill=T.PANEL, stroke=T.STROKE, rx=12)
+    s.rect(px, 130, 290, 320, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(px + 14, 156, "常用复用功能（AF）", size=13, fill=T.TEXT,
            weight="700")
     rows = [
@@ -639,7 +639,7 @@ def pinout_bluepill() -> Svg:
         s.text(px + 14, yy, k, size=9.5, mono=True, fill=c)
         s.text(px + 132, yy, v, size=9, fill=T.MUTED)
 
-    s.rect(40, 470, 820, 100, fill=T.BG2, stroke=T.STROKE, rx=12)
+    s.rect(40, 470, 820, 100, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 496, "看引脚图的 5 个要点", size=12.5, fill=T.TEXT, weight="700")
     notes = [
         "① 电源：VDD_1/2/3 各配 100 nF 去耦电容，VDDA 加 10 nF + 1 µF，VBAT 接 3.3 V 或纽扣电池",
@@ -662,7 +662,7 @@ def peripheral_wiring() -> Svg:
     s = Svg(W, H, "常用外设接线总览", "以 BluePill 为例：8 个入门外设的引脚分配与总线归属")
     s.header(tag="接线图", tag_color=T.PINK)
 
-    s.rect(360, 205, 180, 190, fill=T.PANEL2, stroke=T.CYAN, rx=12, sw=2)
+    s.rect(360, 205, 180, 190, fill=T.PANEL2, stroke=T.CYAN, rx=8, sw=2)
     s.text(450, 240, "STM32F103", size=15, anchor="middle", fill=T.TEXT,
            weight="700")
     s.text(450, 262, "C8T6", size=12, anchor="middle", fill=T.MUTED)
@@ -689,13 +689,13 @@ def peripheral_wiring() -> Svg:
         ("DHT11 温湿度", "PB12 · 单总线时序", T.ORANGE, 362),
     ]
     for label, sub, color, y in left:
-        s.rect(40, y, 200, 54, fill=T.PANEL, stroke=color, rx=10)
+        s.rect(40, y, 200, 54, fill=T.PANEL, stroke=color, rx=8)
         s.text(56, y + 24, label, size=12, fill=T.TEXT, weight="600")
         s.text(56, y + 42, sub, size=10, fill=color, mono=True)
         s.arrow(244, y + 27, 356, y + 27, color=color, sw=2, dash="6 8",
                 cls=f"wf{y}")
     for label, sub, color, y in right:
-        s.rect(660, y, 200, 54, fill=T.PANEL, stroke=color, rx=10)
+        s.rect(660, y, 200, 54, fill=T.PANEL, stroke=color, rx=8)
         s.text(676, y + 24, label, size=12, fill=T.TEXT, weight="600")
         s.text(676, y + 42, sub, size=10, fill=color, mono=True)
         s.arrow(544, y + 27, 656, y + 27, color=color, sw=2, dash="6 8",
@@ -713,7 +713,7 @@ def peripheral_wiring() -> Svg:
     ]
     for i, (t, note, color) in enumerate(tips):
         x = 40 + i * 274
-        s.rect(x, 452, 258, 76, fill=T.BG2, stroke=T.STROKE, rx=10)
+        s.rect(x, 452, 258, 76, fill=T.BG2, stroke=T.STROKE, rx=8)
         s.rect(x, 452, 3, 76, fill=color, rx=2)
         s.text(x + 14, 476, t, size=12, fill=T.TEXT, weight="700")
         s.text(x + 14, 494, note[:30], size=9.5, fill=T.MUTED)

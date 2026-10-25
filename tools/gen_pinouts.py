@@ -74,7 +74,7 @@ def lqfp(title, subtitle, pins, cite, chip_lines):
     cx = w / 2
     cy = header_h + label_room + cs / 2
     x0, y0 = cx - cs / 2, cy - cs / 2
-    s.rect(x0, y0, cs, cs, fill="#1b1f28", stroke="#39424f", rx=6)
+    s.rect(x0, y0, cs, cs, fill="#1b1f28", stroke="#39424f", rx=4)
     s.circle(x0 + 12, y0 + 12, 4, fill="#5b6472")
     s.text(cx, cy - 8, chip_lines[0], size=13 if n <= 16 else 12,
            anchor="middle", fill="#dfe6f0", weight="700", mono=True)
@@ -82,10 +82,10 @@ def lqfp(title, subtitle, pins, cite, chip_lines):
         s.text(cx, cy + 14 + i * 16, line, size=10, anchor="middle", fill="#8b98b0")
 
     def stub_h(x1, x2, y):
-        s.line(x1, y, x2, y, stroke="#e2b23c", sw=1.6)
+        s.line(x1, y, x2, y, stroke="#e2b23c", sw=1.5)
 
     def stub_v(x, y1, y2):
-        s.line(x, y1, x, y2, stroke="#e2b23c", sw=1.6)
+        s.line(x, y1, x, y2, stroke="#e2b23c", sw=1.5)
 
     for i, name in enumerate(left):
         y = y0 + (i + 0.5) * pitch
