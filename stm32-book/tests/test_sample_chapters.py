@@ -249,6 +249,9 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart",
                 "rm0008-rcc", "ds5319-clock", "rm0008-tim", "ds5319-tim",
                 "rm0008-spi", "ds5319-spi", "rm0008-adc", "ds5319-adc",
+                "ds5319-swd", "pm0075-rdp", "pm0056-vector",
+                "ds5319-i2c", "rm0008-i2c", "rm0008-dma", "ds5319-dma",
+                "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
             },
         )
         self.assertEqual(
@@ -258,6 +261,9 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "rm0008-exti", "pm0056-nvic", "rm0008-usart", "ds5319-usart",
                 "rm0008-rcc", "ds5319-clock", "rm0008-tim", "ds5319-tim",
                 "rm0008-spi", "ds5319-spi", "rm0008-adc", "ds5319-adc",
+                "ds5319-swd", "pm0075-rdp", "pm0056-vector",
+                "ds5319-i2c", "rm0008-i2c", "rm0008-dma", "ds5319-dma",
+                "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
             },
         )
 
