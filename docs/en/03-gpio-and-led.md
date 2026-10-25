@@ -29,6 +29,50 @@
 9. 实验让 PC13 以 1 赫兹翻转。眼睛只能看出大概，频率要用你算过的延时或定时器来对。对上了，这章才算过关。
 10. 合上书，三问。PC13 写高还是写低才会亮？按键接 GND 该上拉还是下拉？F1 重映射之前必须先开哪个时钟？
 <!-- /video:ch03 -->
+## Principle and boundary
+
+The LED conclusion of this chapter holds for orderable STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
+
+PA0 may source current. As a push-pull output written to 1, current leaves the pin from 3.3 V through the internal PMOS, then through the resistor and the LED to ground. The example arithmetic is `(3.3 − 2.0) / 0.005 = 260`, fitted as 270 Ω. The [example](#source-project-examples) supports those three inputs and that quotient. It does not support calling 270 Ω a datasheet recommendation.
+
+PC13, PC14, and PC15 sit behind the power switch. Note 5 of the same datasheet limits them to 3 mA of sink current, 2 MHz, and 30 pF, and they must not source an LED. The BluePill onboard LED can still use PC13 because its anode is at 3.3 V and the pin only sinks; writing 0 lights it. Copying the PA0 "write 1 to light" circuit onto PC13 makes that row void.
+
+The 25 mA and 50 MHz cells in the speed table are void for these three pins. A different package or orderable rewrites pin 2 and pin 10 as a whole row. F4 per-pin AFR is outside RM0008. The older sentence "F1 remaps through AFIO MAPR" holds on F1; on F4 that row is void.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-03-gpio-led.svg" width="760" alt="On STM32F103C8T6, PA0 lights an external LED through 270 ohms; PC13 must not source that current">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48: PA0 is pin 10 and PC13 is pin 2. The normal path is 3.3 V through a push-pull pin and 270 Ω into the LED; 260 Ω is the quotient (3.3 − 2.0) / 0.005. The failure path copies that circuit onto PC13: note 5 allows 3 mA sink, at most 2 MHz, into 30 pF. The lock sequence is GPIOx_LCKR at offset 0x18. Pin and current facts are [DS5319 Rev 20](#source-ds5319-gpio) Table 5, Figure 8, and note 5. The lock and SWD pins are [RM0008 Rev 21](#source-rm0008-gpio) section 9.2.7 and section 9.3.5 Table 36.</sub>
+</p>
+
+The opening `gpio-blink.svg` stays an animated side figure. This key figure still shows the failure on PC13 when the animation is not playing.
+
+## Timing or state
+
+The 1 Hz high and low times are not a GPIO speed-bit result. High 500 ms and low 500 ms come from the [gpio-blink example](#source-project-examples) `HAL_Delay(500)`. Writing the speed bits as 50 MHz does not turn PC13 into a pin that may source an LED.
+
+| Step | LCK[15:0] | LCKK | Read-back | Result |
+| --- | --- | --- | --- | --- |
+| 1 | Hold the pins to lock | Write 1 | — | Sequence starts |
+| 2 | Same mask | Write 0 | — | Sequence continues |
+| 3 | Same mask | Write 1 | — | Writes are done |
+| 4 | Same mask | — | Read again and see 1 | Locked until reset |
+| Failure | Mask changes, or a write is skipped | — | Confirming read is not 1 | Lock aborts; the configuration can still change |
+
+The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.2.7](#source-rm0008-gpio).
+
+## Pitfalls and source cards
+
+| Symptom | Cause | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| An external LED on PC13 does not behave like PA0 when the pin is written 1 | PC13 must not source the LED | Move the external LED to PA0 with 270 Ω | [DS5319 Rev 20 note 5](#source-ds5319-gpio) | LQFP48 pin 2 is PC13; PC13–PC15 sink at most 3 mA, at or below 2 MHz, into 30 pF |
+| The onboard LED stays dark when PC13 is written 1 | The onboard LED is common-anode; PC13 lights it by sinking | Write 0 | [gpio-blink example](#source-project-examples) | Only the BluePill wiring. Not the 3 mA datasheet limit |
+| An ODR write does nothing on the pin | The port clock is still off | Enable that GPIO port clock, then write CRL/CRH | [RM0008 GPIO](#source-rm0008-gpio) | Enable the port clock before writing the section 9 configuration registers |
+| Three writes to LCKR still leave the pin editable | The sequence was broken, or the confirming read was not 1 | Keep the mask, write 1, write 0, write 1, and read 1 | [RM0008 section 9.2.7](#source-rm0008-gpio) | A finished lock holds until reset; one bad step aborts it |
+| The probe never connects after a flash | PA13 and PA14 were configured as ordinary GPIO | Leave SWD on PA13 and PA14 | [RM0008 Table 36](#source-rm0008-gpio) | SWDIO is PA13 and SWCLK is PA14 |
+
+The old debounce row stays out of this card. A 10 ms to 20 ms debounce is not pinned to RM0008 or DS5319. The lab may still debounce a button without calling that interval a manual number.
 ## 📌 Learning goals
 - [ ] Remember the 8 GPIO modes and where each one belongs
 - [ ] Understand the current path of push-pull versus open-drain, and what the pull-up resistor is doing
@@ -59,9 +103,9 @@
 
 | Parameter | Value | Notes |
 | --- | --- | --- |
-| Output speed (F1) | 2/10/50 MHz | Faster edges are steeper, and EMI is worse. Use only what you need |
+| Output speed (F1) | 2/10/50 MHz | Steeper edges cost more EMI. PC13, PC14, and PC15 do not use this row; their limit is in Principle and boundary. |
 | Output speed (F4 and later) | Low/Medium/High/Very High | These are different drive strengths |
-| Sink or source, one pin | 25 mA (F103) | More than that damages the pin |
+| Sink or source, one pin | 25 mA (F103) | Other pins still use this row. PC13, PC14, and PC15 do not use this row; their limit is in Principle and boundary. |
 | Current for the whole port | 150 mA (F103) | The sum of every IO |
 | Internal pull-up / pull-down | 30–50 kΩ (F1) | A weak pull. The drive is limited |
 
@@ -86,7 +130,7 @@
 | Vf (green / blue / white) | 2.8–3.2 V | Blue and white are higher, and on 3.3 V they can look dim |
 | I (target) | 5–10 mA | Enough for an ordinary indicator LED |
 
-Example: 3.3 V, red LED Vf=2.0 V, I=5 mA → R=(3.3−2.0)/0.005 = **260 Ω**. Take the standard value 270 Ω.
+The worked example for this orderable is in Principle and boundary, and it is an example-project fact rather than a datasheet cell. This section keeps only the formula.
 
 ### 5. GPIO registers (F1)
 
@@ -185,18 +229,6 @@ PC13_OUT = 0;   /* write 0 or 1 directly, no read-modify-write, same effect as O
 ```
 
 The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
-
-## ⚠️ Pitfalls and troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| The LED never lights | CubeMX never enabled the GPIO clock | Add `__HAL_RCC_GPIOx_CLK_ENABLE()` |
-| The LED stays on, or on and off are swapped | Common-anode and common-cathode were mixed up | The onboard LED lights when low. Wire an external LED by its polarity |
-| The button chatters, and one press fires many times | No debounce | Add a 10–20 ms debounce delay, or an RC filter |
-| After a flash you can never connect again | SWD pins PA13/PA14 were set as ordinary GPIO | In CubeMX, set SYS to Serial Wire; or recover with connect-under-reset |
-| A high output is only a volt or so | Open-drain with no pull-up | Use push-pull, or add an external pull-up |
-| The LED flickers or gets hot | The series resistor is too small, or missing | Compute R=(Vcc−Vf)/I and aim for 5–10 mA |
-| The pin level you read never changes | Input mode has no pull, and the pin is floating | Set PULLUP or PULLDOWN, or add an external pull |
 
 ## 🧪 Hands-on labs
 

@@ -29,6 +29,43 @@
 9. 四周结束时，你应该能独立新建工程、下载、单步，并讲清启动后先干什么。讲不清这些，先别翻串口那一章，回去把灯做稳。
 10. 合上书，三问。BOOT0 拉低进哪里？HAL 比直接写寄存器多了哪一层？你的第一场胜利到底是什么？答案都在这一章正文里。
 <!-- /video:ch00 -->
+## Principle and boundary
+
+Record the first board as orderable STM32F103C8T6. The boot conclusion is [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot). Do not fill this row from a G0 or H7 boot table.
+
+The BOOT pins latch on the 4th rising edge of SYSCLK after reset. They are sampled again when leaving Standby. Changing them later inside `main` misses that edge. The CPU then reads the stack pointer from `0x00000000` and the reset vector from `0x00000004`.
+
+When BOOT0=0, main Flash is aliased at `0x00000000` for either BOOT1 value, and the array itself stays at `0x08000000`. A program that was just flashed is fetched on this row.
+
+When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T6 is not a connectivity-line part, so that memory is at `0x1FFFF000`. The connectivity-line address `0x1FFFB000` is void here. When BOOT1=1 and BOOT0=1 the core boots from embedded SRAM at `0x20000000`; that does not become the image at `0x08000000`. The XL-density Bank2 address `0x08080000` is void on this 64 KB C8.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-00-boot-state.svg" width="760" alt="With BOOT0 at 0 the CPU fetches Flash at 0x08000000 through 0x00000000; with BOOT0 at 1 and BOOT1 at 0 it fetches system memory">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path writes the image through SWDIO (PA13) and SWCLK (PA14) at 0x08000000, and BOOT0=0 aliases 0x00000000 onto that Flash. The failure path is BOOT1=0 and BOOT0=1: the CPU still reads 0x00000000, but the alias is system memory at 0x1FFFF000. The flashed image is still in Flash and is simply not fetched. The BOOT pins latch on the 4th rising edge of SYSCLK. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
+</p>
+
+The opening `toolchain-flow.svg` stays a side figure of the tools. This key figure shows the BOOT0=1 failure without playing an animation.
+
+## Timing or state
+
+| State | BOOT1 | BOOT0 | What the CPU fetches from 0x00000000 | On STM32F103C8T6 |
+| --- | --- | --- | --- | --- |
+| Normal: the flashed program runs | x | 0 | The main-Flash alias; the array remains at 0x08000000 | Holds. The next word is at 0x00000004 |
+| Failure: the chip stays in system memory | 0 | 1 | The system-memory alias | The address that holds is 0x1FFFF000. 0x1FFFB000 is void |
+| Failure: boot from SRAM | 1 | 1 | Not the program in Flash | SRAM is at 0x20000000. 0x08080000 is void |
+
+The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
+
+## Pitfalls and source cards
+
+| Symptom | Cause | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The image is at 0x08000000, and reset runs something else | BOOT1=0 and BOOT0=1, so the boot alias is system memory | Pull BOOT0 to 0 and reset | [RM0008 Table 9](#source-rm0008-boot) | Flash itself remains at 0x08000000; this part's system memory is 0x1FFFF000 |
+| BOOT pins changed inside main, and this reset already went the wrong way | The pins latched on the 4th rising edge of SYSCLK | Set BOOT0 and BOOT1 before reset | [RM0008 section 3.4](#source-rm0008-boot) | The latch is the 4th rising edge of SYSCLK; Standby exit samples them again |
+| A connectivity-line or XL-density boot address was copied into the C8 project | 0x1FFFB000 and 0x08080000 are not rows for this part | Use 0x1FFFF000 for system memory and 0x08000000 for Flash | [RM0008 section 3.4](#source-rm0008-boot) | Those two rows are void on STM32F103C8T6 |
+
 ## 📌 Learning goals
 - [ ] Know the minimum C, digital, and analog you need before studying STM32
 - [ ] Assemble a hardware kit you can use immediately, including price ranges
@@ -215,18 +252,6 @@ GPIOC->ODR ^= GPIO_ODR_ODR13;               /* toggle PC13 */
 ```
 
 The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
-
-## ⚠️ Pitfalls and troubleshooting
-
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| Compile error: cannot find `stm32f1xx_hal.h` | The include path was not added | Add HAL/Inc to the project Include Paths |
-| Download says "No target connected" | SWD wires swapped, or the board has no power | Check SWDIO/SWCLK/GND, and power the board on its own |
-| The program is flashed and nothing happens | The peripheral clock was never enabled | Add `__HAL_RCC_GPIOx_CLK_ENABLE()` |
-| You start by reading a 1000-page reference manual | The method is wrong | Run an example first, then look up the page you need |
-| You study RTOS, bare metal, and a PC app at once | Too much at once, none of it digested | Get the bare-metal peripherals firm, then add an RTOS |
-| You only copy code and never understand the registers | The foundation is hollow | For every HAL call, look up the matching register at least once |
-| The LED stays on or stays off and never blinks | The delay is a busy wait, or SysTick was never started | Confirm `HAL_Init()` has been called |
 
 ## 🧪 Hands-on labs
 

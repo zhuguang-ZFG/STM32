@@ -1,0 +1,69 @@
+{
+  "chapters": ["00", "03"],
+  "community": [],
+  "reuse_existing": [
+    {
+      "id": "project-examples",
+      "claim": "3.3 V, Vf 2.0 V, 5 mA gives 260 ohm, fitted as 270 ohm. The BluePill onboard LED on PC13 is common-anode and lights when the pin is low.",
+      "do_not_copy": "Do not treat that resistor arithmetic or the board LED polarity as a DS5319 cell."
+    }
+  ],
+  "absorb": [
+    {
+      "id": "rm0008-boot",
+      "chapters": ["00"],
+      "title_zh": "RM0008 Rev 21 启动配置",
+      "title_en": "RM0008 Rev 21 boot configuration",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 3.4 Table 9",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "3.4",
+      "do_not_copy": "Do not paste section 3.4 or Table 9. Do not commit the PDF.",
+      "points": [
+        "BOOT0=0 aliases main Flash at 0x00000000; the Flash array remains at 0x08000000",
+        "BOOT1=0 and BOOT0=1 alias system memory; STM32F103C8 uses 0x1FFFF000, not the connectivity-line address 0x1FFFB000",
+        "BOOT pins latch on the 4th rising edge of SYSCLK and are sampled again when leaving Standby"
+      ]
+    },
+    {
+      "id": "rm0008-gpio",
+      "chapters": ["03"],
+      "title_zh": "RM0008 Rev 21 GPIO 锁定与 SWD 脚",
+      "title_en": "RM0008 Rev 21 GPIO lock and SWD pins",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.2.7 and 9.3.5 Table 36",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "9.2.7",
+      "do_not_copy": "Do not paste the LCKR sequence or Table 36. F4 AFR is outside this manual.",
+      "points": [
+        "GPIOx_LCKR offset 0x18; write 1, write 0, write 1, then read; a confirming read of 1 means the lock holds until reset",
+        "Any error in that sequence aborts the lock",
+        "SWDIO is PA13 and SWCLK is PA14"
+      ]
+    },
+    {
+      "id": "ds5319-gpio",
+      "chapters": ["03"],
+      "title_zh": "DS5319 Rev 20 LQFP48 的 PA0 与 PC13",
+      "title_en": "DS5319 Rev 20 LQFP48 pins PA0 and PC13",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5, Figure 8, note 5",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "note 5",
+      "do_not_copy": "Do not paste note 5, Table 5, or Figure 8. Do not trace the pinout drawing.",
+      "points": [
+        "LQFP48 pin 2 is PC13-TAMPER-RTC and pin 10 is PA0-WKUP",
+        "PC13, PC14, and PC15 sink at most 3 mA, must not source an LED, and stay at or below 2 MHz into 30 pF"
+      ]
+    }
+  ]
+}

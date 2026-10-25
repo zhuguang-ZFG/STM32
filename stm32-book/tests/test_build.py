@@ -72,9 +72,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.1.0<"), history.index(">1.0.8<"))
         self.assertLess(history.index(">1.0.8<"), history.index(">1.0.7<"))
         self.assertLess(history.index(">1.0.7<"), history.index(">1.0.0<"))
         self.assertIn("DBG_SWEN", history)
@@ -102,7 +103,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -196,7 +197,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.8</strong>", html)
+        self.assertIn("<strong>v1.1.0</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -336,7 +337,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.8", manifest["version"])
+        self.assertEqual("1.1.0", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -353,7 +354,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.8</strong>", html)
+        self.assertIn("<strong>v1.1.0</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)

@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "主题索引", "file": "subject-index.json"}
@@ -104,7 +104,7 @@
       "question": "零基础怎样建立一条不会被工具、术语和教程数量淹没的学习路径？",
       "deliverable": "一份个人学习路线、最低硬件清单，以及第一次点灯的期望值—实测值记录。",
       "boundary": "本章只定义入门顺序，不替代 C 语言、电路安全和目标芯片手册。",
-      "sources": ["project-guide", "rm0008", "ds5319"]
+      "sources": ["project-guide", "rm0008", "ds5319", "rm0008-boot"]
     },
     "01-开发环境搭建.md": {
       "question": "源码怎样经过编译、链接、烧录和复位，最终变成可单步观察的机器状态？",
@@ -122,7 +122,7 @@
       "question": "一只引脚的输入结构、输出驱动和外部负载怎样共同决定真实电平？",
       "deliverable": "一张引脚模式—接线—期望电平表，并用万用表或逻辑分析仪验证两种输出状态。",
       "boundary": "GPIO 模式不会改变芯片绝对最大额定值；5 V 容忍与灌拉电流必须查具体引脚。BluePill 的 PC13 低电平点亮；F1 片内上拉约 30–50 kΩ，不能代替 I2C 的外部电阻。",
-      "sources": ["rm0008", "ds5319"]
+      "sources": ["rm0008", "ds5319", "rm0008-gpio", "ds5319-gpio", "project-examples"]
     },
     "04-中断与NVIC.md": {
       "question": "异步事件怎样从引脚进入 EXTI 和 NVIC，又怎样在有限时间内安全退出 ISR？",
@@ -795,6 +795,33 @@
       "accessed": "2026-10-24",
       "license": "Apache-2.0；API 文档仅链接与独立讲解",
       "scope": "线程、flags、event、mutex、semaphore、message queue 与 ISR 调用边界的通用接口。"
+    },
+    "rm0008-gpio": {
+      "title": "RM0008 Rev 21 GPIO 锁定与 SWD 脚",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, sections 9.2.7 and 9.3.5 Table 36",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 03 章原理与边界、时序或状态、坑与出处卡。只改写 GPIOx_LCKR 偏移 0x18 的锁定序列，以及 SWDIO=PA13、SWCLK=PA14。不复制手册段落，不覆盖 F4 的 AFR。"
+    },
+    "ds5319-gpio": {
+      "title": "DS5319 Rev 20 LQFP48 的 PA0 与 PC13",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5, Figure 8, note 5",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 03 章原理与边界、关键插图、坑与出处卡。只改写 LQFP48 第 10 脚 PA0、第 2 脚 PC13，以及注 5 的 3 mA、2 MHz、30 pF。不复制注 5 原文，不描图 8。"
+    },
+    "rm0008-boot": {
+      "title": "RM0008 Rev 21 启动配置",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021, section 3.4 Table 9",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 00 章的启动状态与失败路径。只改写 RM0008 Rev 21 第 3.4 节表 9；互联型地址和 XL 密度 Bank2 在这颗 STM32F103C8T6 上作废。不复制该节原文。"
     }
   }
 }
