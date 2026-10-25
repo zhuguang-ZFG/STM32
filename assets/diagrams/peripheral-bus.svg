@@ -1,84 +1,84 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="外设挂在哪条总线上（以 STM32F411 为例）">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#0b1220"/>
-<rect x="0" y="0" width="900" height="58" fill="#0e1626" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#243354" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#34d399" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">外设挂在哪条总线上（以 STM32F411 为例）</text>
-<text x="22" y="50" font-size="12" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">AHB/APB 分频决定外设能跑多快，也决定波特率、PWM 频率的上限</text>
-<rect x="846" y="15" width="32" height="28" fill="#16233c" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="862" y="33.32" font-size="12" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">总线</text>
-<rect x="40" y="88" width="180" height="60" fill="#111c31" opacity="1" rx="10" stroke="#22d3ee" stroke-width="1.5"/>
-<text x="130" y="112" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SYSCLK</text>
-<text x="130" y="132" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">100 MHz</text>
-<line x1="222" y1="118" x2="293" y2="118" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
-<polygon points="300.00,118.00 293.00,121.50 293.00,114.50" fill="#22d3ee" opacity="1"/>
-<rect x="302" y="88" width="200" height="60" fill="#111c31" opacity="1" rx="10" stroke="#60a5fa" stroke-width="1.5"/>
-<text x="402" y="112" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">AHB 总线</text>
-<text x="402" y="132" font-size="11" fill="#60a5fa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HCLK = 100 MHz（÷1）</text>
-<line x1="402" y1="150" x2="402" y2="167" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" opacity="1"/>
-<polygon points="402.00,174.00 398.50,167.00 405.50,167.00" fill="#60a5fa" opacity="1"/>
-<rect x="302" y="176" width="200" height="50" fill="#16233c" opacity="1" rx="10" stroke="#60a5fa" stroke-width="1.5"/>
-<text x="402" y="206" font-size="12.5" fill="#60a5fa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">AHB1 / AHB2</text>
-<rect x="40" y="250" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="120" y="270" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA~H</text>
-<rect x="216" y="250" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="296" y="270" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA1/2</text>
-<rect x="392" y="250" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="472" y="270" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRC / RNG</text>
-<rect x="40" y="288" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="120" y="308" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB OTG FS</text>
-<rect x="216" y="288" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="296" y="308" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FSMC</text>
-<rect x="392" y="288" width="160" height="30" fill="#111c31" opacity="1" rx="8" stroke="#243354" stroke-width="1.5"/>
-<text x="472" y="308" font-size="11" fill="#22d3ee" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DCMI</text>
-<line x1="300" y1="202" x2="300" y2="232" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
-<line x1="120" y1="232" x2="646" y2="232" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
-<line x1="120" y1="232" x2="120" y2="250" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
-<line x1="646" y1="232" x2="646" y2="250" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
-<line x1="504" y1="118" x2="593" y2="118" stroke="#34d399" stroke-width="2.4" stroke-linecap="round" opacity="1"/>
-<polygon points="600.00,118.00 593.00,121.50 593.00,114.50" fill="#34d399" opacity="1"/>
-<rect x="602" y="88" width="258" height="60" fill="#111c31" opacity="1" rx="10" stroke="#34d399" stroke-width="1.5"/>
-<text x="731" y="112" font-size="14" fill="#e6edf3" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB1 / APB2</text>
-<text x="731" y="132" font-size="10.5" fill="#34d399" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PCLK1 = 50 MHz · PCLK2 = 100 MHz</text>
-<text x="602" y="194" font-size="12" fill="#a78bfa" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB1（最高 50 MHz）</text>
-<text x="602" y="338" font-size="12" fill="#f472b6" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB2（最高 100 MHz）</text>
-<rect x="602" y="204" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="223" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART2/3</text>
-<rect x="734" y="204" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="223" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">I2C1/2/3</text>
-<rect x="602" y="238" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="257" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI2/3</text>
-<rect x="734" y="238" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="257" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM2~5</text>
-<rect x="602" y="272" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="291" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CAN1</text>
-<rect x="734" y="272" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="291" font-size="10.5" fill="#a78bfa" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB 48M</text>
-<rect x="602" y="348" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="367" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1/6</text>
-<rect x="734" y="348" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="367" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1</text>
-<rect x="602" y="382" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="401" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC1</text>
-<rect x="734" y="382" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="401" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM1/9/10/11</text>
-<rect x="602" y="416" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="665" y="435" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SDIO</text>
-<rect x="734" y="416" width="126" height="28" fill="#16233c" opacity="1" rx="7" stroke="#243354" stroke-width="1.5"/>
-<text x="797" y="435" font-size="10.5" fill="#f472b6" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYSCFG</text>
-<rect x="40" y="348" width="520" height="160" fill="#0e1626" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="58" y="374" font-size="12.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">为什么必须记住总线？</text>
-<text x="58" y="398" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 波特率算错：USART2 在 APB1（50 MHz），USART1 在 APB2（100 MHz）</text>
-<text x="58" y="420" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② PWM 频率上限：TIM2 挂 APB1，但定时器时钟有 ×2 倍频（50→100 MHz）</text>
-<text x="58" y="442" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ 超频红线：APB1 不能超 50 MHz，APB2 不能超 100 MHz</text>
-<text x="58" y="464" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ ADC 时钟：由 APB2 分频，F4 最高 36 MHz，超过则采样不准</text>
-<text x="58" y="486" font-size="10.5" fill="#93a4c0" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑤ 时钟使能宏（__HAL_RCC_*_CLK_ENABLE）忘记调用 = 外设完全没反应</text>
-<rect x="560" y="462" width="300" height="46" fill="#111c31" opacity="1" rx="10" stroke="#243354" stroke-width="1.5"/>
-<text x="578" y="482" font-size="11.5" fill="#e6edf3" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">查表工具</text>
-<text x="578" y="500" font-size="10" fill="#22d3ee" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">cheatsheets/外设总线与引脚速查表.md</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#1a2742" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#64748b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数据来源：RM0383（F411 参考手册）「Reset and clock control」框图</text>
-<text x="876" y="542" font-size="11" fill="#64748b" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">外设挂在哪条总线上（以 STM32F411 为例）</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">AHB/APB 分频决定外设能跑多快，也决定波特率、PWM 频率的上限</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">总线</text>
+<rect x="40" y="88" width="180" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="130" y="112" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SYSCLK</text>
+<text x="130" y="132" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">100 MHz</text>
+<line x1="222" y1="118" x2="293" y2="118" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="300.00,118.00 293.00,121.50 293.00,114.50" fill="#075e84" opacity="1"/>
+<rect x="302" y="88" width="200" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="402" y="112" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">AHB 总线</text>
+<text x="402" y="132" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HCLK = 100 MHz（÷1）</text>
+<line x1="402" y1="150" x2="402" y2="167" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="402.00,174.00 398.50,167.00 405.50,167.00" fill="#1e4d63" opacity="1"/>
+<rect x="302" y="176" width="200" height="50" fill="#e5f3f8" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="402" y="206" font-size="12.5" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">AHB1 / AHB2</text>
+<rect x="40" y="250" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="120" y="270" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIOA~H</text>
+<rect x="216" y="250" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="296" y="270" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA1/2</text>
+<rect x="392" y="250" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="472" y="270" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRC / RNG</text>
+<rect x="40" y="288" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="120" y="308" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB OTG FS</text>
+<rect x="216" y="288" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="296" y="308" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FSMC</text>
+<rect x="392" y="288" width="160" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="472" y="308" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DCMI</text>
+<line x1="300" y1="202" x2="300" y2="232" stroke="#1e4d63" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
+<line x1="120" y1="232" x2="646" y2="232" stroke="#1e4d63" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
+<line x1="120" y1="232" x2="120" y2="250" stroke="#1e4d63" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
+<line x1="646" y1="232" x2="646" y2="250" stroke="#1e4d63" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="4 5"/>
+<line x1="504" y1="118" x2="593" y2="118" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="600.00,118.00 593.00,121.50 593.00,114.50" fill="#1b5c45" opacity="1"/>
+<rect x="602" y="88" width="258" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="731" y="112" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB1 / APB2</text>
+<text x="731" y="132" font-size="10.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PCLK1 = 50 MHz · PCLK2 = 100 MHz</text>
+<text x="602" y="194" font-size="12" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB1（最高 50 MHz）</text>
+<text x="602" y="338" font-size="12" fill="#8e2f5b" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APB2（最高 100 MHz）</text>
+<rect x="602" y="204" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="223" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART2/3</text>
+<rect x="734" y="204" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="223" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">I2C1/2/3</text>
+<rect x="602" y="238" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="257" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI2/3</text>
+<rect x="734" y="238" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="257" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM2~5</text>
+<rect x="602" y="272" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="291" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CAN1</text>
+<rect x="734" y="272" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="291" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB 48M</text>
+<rect x="602" y="348" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="367" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1/6</text>
+<rect x="734" y="348" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="367" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1</text>
+<rect x="602" y="382" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="401" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC1</text>
+<rect x="734" y="382" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="401" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM1/9/10/11</text>
+<rect x="602" y="416" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="665" y="435" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SDIO</text>
+<rect x="734" y="416" width="126" height="28" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="797" y="435" font-size="10.5" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYSCFG</text>
+<rect x="40" y="348" width="520" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="374" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">为什么必须记住总线？</text>
+<text x="58" y="398" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">① 波特率算错：USART2 在 APB1（50 MHz），USART1 在 APB2（100 MHz）</text>
+<text x="58" y="420" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">② PWM 频率上限：TIM2 挂 APB1，但定时器时钟有 ×2 倍频（50→100 MHz）</text>
+<text x="58" y="442" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">③ 超频红线：APB1 不能超 50 MHz，APB2 不能超 100 MHz</text>
+<text x="58" y="464" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">④ ADC 时钟：由 APB2 分频，F4 最高 36 MHz，超过则采样不准</text>
+<text x="58" y="486" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">⑤ 时钟使能宏（__HAL_RCC_*_CLK_ENABLE）忘记调用 = 外设完全没反应</text>
+<rect x="560" y="462" width="300" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="578" y="482" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">查表工具</text>
+<text x="578" y="500" font-size="10" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">cheatsheets/外设总线与引脚速查表.md</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数据来源：RM0383（F411 参考手册）「Reset and clock control」框图</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>
