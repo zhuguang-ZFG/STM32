@@ -1,0 +1,92 @@
+{
+  "entries": [
+    {
+      "version": "1.0.7",
+      "date": "2026-10-25",
+      "zh": [
+        "版权页之后增加「版本与修订」，按合并说明记下 1.0.0 至 1.0.7。",
+        "附录和第七部分收束页之后增加书末主题索引，目录同时列出这一页。"
+      ],
+      "en": [
+        "A version-history page follows the imprint and records 1.0.0 through 1.0.7 from the squash-merge notes.",
+        "A subject index follows the appendices and the Part 7 closing page, and the contents lists it."
+      ]
+    },
+    {
+      "version": "1.0.6",
+      "date": "2026-10-25",
+      "zh": [
+        "附录 F 不再把 DBG_SWEN 复位为 0 写成无条件事实，改为与附录 D 相同的 BOOT_LOCK=1 且 RDP Level 1。",
+        "USB 文档改用寄存器位 USBPRE=0 表示 ÷1.5。spi-flash 核对完整 JEDEC ID。"
+      ],
+      "en": [
+        "Appendix F no longer states that DBG_SWEN resets to 0 unconditionally. It uses the same condition as Appendix D: BOOT_LOCK is 1 and RDP is level 1.",
+        "The USB chapters write register bit USBPRE=0 for ÷1.5. spi-flash checks the full JEDEC ID."
+      ]
+    },
+    {
+      "version": "1.0.5",
+      "date": "2026-10-25",
+      "zh": [
+        "通道号、描述符长度、栈的单位、RMII/MSS 和 CFSR 地址写入中英文罗盘与附录，并去掉重复的 AN2606 登记。"
+      ],
+      "en": [
+        "Channel numbers, descriptor length, stack units, RMII/MSS, and the CFSR address are in both editions' compasses and appendices. The duplicate AN2606 entry is gone."
+      ]
+    },
+    {
+      "version": "1.0.4",
+      "date": "2026-10-25",
+      "zh": [
+        "1 kHz、入栈、FromISR、CAN 位时间和 G0/L4/H7 不能照搬的数写入中英文附录，并登记 RM0090。"
+      ],
+      "en": [
+        "1 kHz, stacking, FromISR, CAN bit timing, and the G0/L4/H7 numbers that must not be copied are in both appendices. RM0090 is registered."
+      ]
+    },
+    {
+      "version": "1.0.3",
+      "date": "2026-10-25",
+      "zh": [
+        "BluePill 上会反复手算的时钟、BRR、采样和看门狗写入附录，并补上章内标题、列表、图版和窄屏术语列。"
+      ],
+      "en": [
+        "The BluePill clock, BRR, sampling, and watchdog figures that get recomputed by hand are in the appendix, with reading detail for headings, lists, figures, and the narrow glossary column."
+      ]
+    },
+    {
+      "version": "1.0.2",
+      "date": "2026-10-25",
+      "zh": [
+        "章首罗盘改为问题、交付、边界三张卡片。罗盘和章末三问不再占用标题，避免 PDF 书签每章重复。",
+        "代码块在屏幕上保留缩进并可横向滚动，打印时允许跨页。窄屏不再把三列罗盘和分部大号挤在一起。"
+      ],
+      "en": [
+        "The compass is three cards: question, deliverable, and boundary. Those titles are not headings, so the PDF outline does not repeat them in every chapter.",
+        "Code keeps its indent and scrolls sideways on screen, and may break across pages in print. Narrow screens no longer crowd the three cards against the part number."
+      ]
+    },
+    {
+      "version": "1.0.1",
+      "date": "2026-10-25",
+      "zh": [
+        "已有引用块收成注意、提示和说明，并补齐中英文眉题、目录跳转和打印页眉页脚。"
+      ],
+      "en": [
+        "Existing quotations become warning, tip, and note callouts, with running heads, a contents jump, and print headers and footers in both languages."
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-10-24",
+      "zh": [
+        "版本号从 1.0.0-rc.8 定为 1.0.0，日期仍是 2026-10-24。不把 rc.8 的构建产物标成 1.0.0。",
+        "在此之前已经进入书稿的有版权页、插画封面与语义化图注、英文整书、加厚术语表和第七部分收束页。"
+      ],
+      "en": [
+        "The version leaves 1.0.0-rc.8 and becomes 1.0.0. The date stays 2026-10-24. The rc.8 build artifacts are not labeled 1.0.0.",
+        "Already in the manuscript before that bump: the imprint, the illustrated cover and semantic figures, the English edition, the thicker glossary, and the Part 7 closing page."
+      ]
+    }
+  ]
+}
