@@ -259,6 +259,16 @@ class Batch4SwdChapterTests(unittest.TestCase):
         self.assertIn("## 🧠 Core ideas", en)
         self.assertIn("stm32f1x unlock 0", zh)
         self.assertIn("stm32f1x unlock 0", en)
+        self.assertIn(
+            "探针不要落在第 35、36 脚（VSS_2、VDD_2 仍接地和电源），SWCLK 改接第 37 脚",
+            zh,
+        )
+        self.assertIn(
+            "Keep the probe off pins 35 and 36 (VSS_2/VDD_2 stay on ground and supply); move SWCLK to pin 37",
+            en,
+        )
+        self.assertNotIn("空开第 35、36 脚", zh)
+        self.assertNotIn("Leave pins 35 and 36 open", en)
         self.assertIn("LENGTH = 64K", zh)
         self.assertIn("LENGTH = 20K", zh)
         self.assertNotIn("从 SRAM 启动", zh)
@@ -598,6 +608,10 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
             self.assertNotIn("0xA5A5", blocks)
         self.assertIn("喂早不复位", zh_blocks)
         self.assertIn("does not reset", en_blocks)
+        self.assertIn("DBG_IWDG_STOP", zh_blocks)
+        self.assertIn("DBG_IWDG_STOP", en_blocks)
+        self.assertIn("19.3.3", zh_blocks)
+        self.assertIn("19.3.3", en_blocks)
         self.assertIn("作废", zh_blocks)
         self.assertIn("void", en_blocks.lower())
         self.assertIn("../assets/diagrams/sample-11-iwdg-1s.svg", zh)
@@ -613,8 +627,8 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
         by_id = {item["id"]: item for item in listed["absorb"]}
         scopes = {
             "rm0008-wdg": (
-                "第 11 章的 1 秒和窗口。预分频 64、f_LSI 按 40 kHz 时计数频率 625 Hz。Reload 624 是 1 秒，Reload 625 多一个计数。IWDG 减到 0 才复位。WWDG 在 36 MHz、预分频 8、初值 0x7F 时超时 58.25 ms；计数器大于窗口值时喂狗会复位。不把 40 kHz 的秒数写成保证值。不改附录 D。",
-                "Chapter 11's one second and the window. Prescaler 64 at 40 kHz counts at 625 Hz. Reload 624 is 1 second and Reload 625 is one extra count. The IWDG resets only at 0. The WWDG at 36 MHz, prescaler 8, and 0x7F times out in 58.25 ms, and feeding while the counter is above the window resets it. Does not treat the 40 kHz second as a guarantee. Does not change Appendix D.",
+                "第 11 章的 1 秒和窗口。预分频 64、f_LSI 按 40 kHz 时计数频率 625 Hz。Reload 624 是 1 秒，Reload 625 多一个计数。IWDG 减到 0 才复位。WWDG 在 36 MHz、预分频 8、初值 0x7F 时超时 58.25 ms；计数器大于窗口值时喂狗会复位。§19.3.3 印出配置位名 DBG_IWDG_STOP，不编位号。不把 40 kHz 的秒数写成保证值。不改附录 D。",
+                "Chapter 11's one second and the window. Prescaler 64 at 40 kHz counts at 625 Hz. Reload 624 is 1 second and Reload 625 is one extra count. The IWDG resets only at 0. The WWDG at 36 MHz, prescaler 8, and 0x7F times out in 58.25 ms, and feeding while the counter is above the window resets it. Section 19.3.3 prints the configuration bit name DBG_IWDG_STOP and records no bit number. Does not treat the 40 kHz second as a guarantee. Does not change Appendix D.",
             ),
             "rm0008-rtc": (
                 "第 11 章的 1 Hz 时基。RTC 时钟除以 (PRL + 1)。32.768 kHz 配 PRL = 32767 得到 1 Hz。PRL = 32768 不是 1 Hz。写备份域之前置 PWR_CR 的 DBP。不把 F4 的 0xCA、0x53 或 TR/DR 写进来。",

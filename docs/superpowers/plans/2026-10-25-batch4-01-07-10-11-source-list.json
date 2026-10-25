@@ -121,11 +121,11 @@
       "authority_zh": "ST 官方参考手册",
       "authority_en": "ST reference manual",
       "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
-      "snapshot": "RM0008 Rev 21, February 2021, chapter 10. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 13. CNDTR counts data items, not bytes. Medium-density requests: ADC1 is channel 1, USART1_TX is channel 4, USART1_RX is channel 5. Circular mode reloads the counter when it reaches zero. The DMA controller is an AHB master. Eight half-words with CNDTR = 3 means 5 samples, 10 bytes. Half-transfer is 4 samples, 8 bytes.",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "license_class": "ST-facts-restated",
-      "section": "10",
-      "do_not_copy": "Do not put 21 µs in this snapshot. Do not invent a DMA base address. Do not change rm0090. Do not paste chapter 10.",
+      "section": "13",
+      "do_not_copy": "Do not put 21 µs in this snapshot. Do not invent a DMA base address. Do not change rm0090. Do not paste chapter 13.",
       "points": [
         "CNDTR counts data items. Eight half-words with CNDTR = 3 means 5 samples have been written, which is 10 bytes",
         "Half-transfer is 4 samples, 8 bytes, not 4 bytes. A remaining count of 3 is not 3 bytes",
@@ -158,15 +158,16 @@
       "authority_zh": "ST 官方参考手册",
       "authority_en": "ST reference manual",
       "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
-      "snapshot": "RM0008 Rev 21, February 2021, chapters 17 and 18. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. A debug-freeze bit name is added here only if chapter 17 prints it. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 19 and 20. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. Section 19.3.3 prints the debug-mode configuration bit name DBG_IWDG_STOP. That bit can freeze the IWDG counter while debugging. This snapshot does not record a bit number. This snapshot does not treat the 40 kHz second as a guarantee.",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "license_class": "ST-facts-restated",
-      "section": "17",
+      "section": "19",
       "do_not_copy": "Do not treat the 40 kHz second as a guaranteed value. Do not change the Appendix D 1-second cell. Do not invent a debug-freeze bit number. Do not open a new id for that bit name.",
       "points": [
         "Prescaler 64 at a typical 40 kHz is 625 Hz. Reload 624 with (Reload + 1) is 1 second. Reload 625 is one extra count",
         "The IWDG resets only when the counter reaches 0. An early feed does not reset it",
-        "At 36 MHz, WWDG prescaler 8 and counter 0x7F time out in 58.25 ms. Feeding while the counter is above the window, including 0x50, resets the WWDG"
+        "At 36 MHz, WWDG prescaler 8 and counter 0x7F time out in 58.25 ms. Feeding while the counter is above the window, including 0x50, resets the WWDG",
+        "Section 19.3.3 names the configuration bit DBG_IWDG_STOP. No bit number is recorded"
       ]
     },
     {
@@ -177,11 +178,11 @@
       "authority_zh": "ST 官方参考手册",
       "authority_en": "ST reference manual",
       "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
-      "snapshot": "RM0008 Rev 21, February 2021, chapter 16, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
+      "snapshot": "RM0008 Rev 21, February 2021, chapter 18, and the backup-domain unlock in the PWR chapter (PWR_CR DBP). The RTC clock is divided by (PRL + 1). 32.768 kHz with PRL = 32767 is 1 Hz. PRL = 32768 is not 1 Hz. The F1 calendar is a 32-bit counter, not F4 BCD registers.",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "license_class": "ST-facts-restated",
-      "section": "16",
-      "do_not_copy": "Do not import the F4 write-protect keys 0xCA and 0x53. Do not call TR or DR the calendar registers on this part. Do not paste chapter 16.",
+      "section": "18",
+      "do_not_copy": "Do not import the F4 write-protect keys 0xCA and 0x53. Do not call TR or DR the calendar registers on this part. Do not paste chapter 18.",
       "points": [
         "The divider is (PRL + 1). 32768 Hz becomes 1 Hz only when PRL is 32767",
         "PRL = 32768 is not 1 Hz",

@@ -36,7 +36,7 @@ The DMA conclusion in this chapter is pinned to order code STM32F103C8T6. The ch
 
 This medium-density part has one DMA and 7 channels. The classification cell "DMA2 (5 channels, high-density)" is void on STM32F103C8T6. See [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma). F4 streams and channels are another manual: USART1_RX is DMA2 Stream 5, Channel 4, and the FIFO is four 32-bit words. Writing that set onto a C8 leaves the counter still. See [RM0090](#source-rm0090). Do not edit that existing object.
 
-ADC1 = DMA1 channel 1. USART1_TX = DMA1 channel 4. USART1_RX = DMA1 channel 5. The four blocks claim only these three Appendix D rows. See [RM0008 Rev 21 chapter 10](#source-rm0008-dma).
+ADC1 = DMA1 channel 1. USART1_TX = DMA1 channel 4. USART1_RX = DMA1 channel 5. The four blocks claim only these three Appendix D rows. See [RM0008 Rev 21 chapter 13](#source-rm0008-dma).
 
 Eight half-words with `CNDTR` reading 3: `8 − 3 = 5` samples have been written, and the byte count is `5 × 2 = 10`. Half-transfer is at 4 samples, which is 8 bytes, not 4 bytes. Treating `CNDTR` as remaining bytes reads "3 left" as 3 bytes. That is the failure path.
 
@@ -50,7 +50,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 <p align="center">
   <img src="../../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="Eight half-words with CNDTR at 3 means 5 samples and 10 bytes written; treating the remaining count as bytes cuts the buffer wrong">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The failure treats that same reading as bytes. TX still leaves on pin 30 PA9. DMA2 Stream 5 has no counter on this C8. Sources: [RM0008 Rev 21 chapter 10](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The failure treats that same reading as bytes. TX still leaves on pin 30 PA9. DMA2 Stream 5 has no counter on this C8. Sources: [RM0008 Rev 21 chapter 13](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
 </p>
 
 <p align="center">
@@ -97,7 +97,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 **Conclusion**: On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
 
-| Item | STM32F1 (RM0008, Chapter 10, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
+| Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
 | --- | --- | --- |
 | Controllers | DMA1 (7 channels). "DMA2 (5 channels)" is the high-density sentence and is void on STM32F103C8T6 | DMA1 and DMA2, 8 streams each |
 | Request binding | Each channel serves a fixed set of peripherals (see the map) | Each stream has 8 channels; `SxCR.CHSEL` selects one |
@@ -287,7 +287,7 @@ Self-test:
 
 ## 🔗 Related resources
 
-- RM0008, *STM32F10xxx Reference Manual*, Chapter 10, DMA controller (including request-map tables 78 and 79).
+- RM0008, *STM32F10xxx Reference Manual*, Chapter 13, DMA controller (including request-map tables 78 and 79).
 - RM0090, *STM32F4 Reference Manual*, Chapter 9, DMA controller (stream / channel, FIFO, double buffer).
 - Application note AN4031, *Using the STM32F2/F4 DMA controller*.
 - Related chapters in this repo: [Chapter 09](09-adc-dac.md) ADC + DMA, and [Chapter 17](17-debug.md) DWT timing.

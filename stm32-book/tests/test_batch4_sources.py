@@ -79,10 +79,10 @@ class Batch4SourceListTests(unittest.TestCase):
         self.assertEqual("2.3.4", by_id["pm0056-vector"]["section"])
         self.assertEqual("Table 42", by_id["ds5319-i2c"]["section"])
         self.assertEqual("26", by_id["rm0008-i2c"]["section"])
-        self.assertEqual("10", by_id["rm0008-dma"]["section"])
+        self.assertEqual("13", by_id["rm0008-dma"]["section"])
         self.assertEqual("2.3.13", by_id["ds5319-dma"]["section"])
-        self.assertEqual("17", by_id["rm0008-wdg"]["section"])
-        self.assertEqual("16", by_id["rm0008-rtc"]["section"])
+        self.assertEqual("19", by_id["rm0008-wdg"]["section"])
+        self.assertEqual("18", by_id["rm0008-rtc"]["section"])
         self.assertEqual("Table 25", by_id["ds5319-rtc"]["section"])
         rdp = by_id["pm0075-rdp"]["snapshot"]
         self.assertIn("0x00A5", rdp)
@@ -95,8 +95,20 @@ class Batch4SourceListTests(unittest.TestCase):
         i2c = by_id["rm0008-i2c"]["snapshot"]
         self.assertNotIn("0x40005400", i2c)
         dma = by_id["rm0008-dma"]["snapshot"]
+        self.assertIn("chapter 13", dma)
+        self.assertNotIn("chapter 10", dma)
         self.assertNotIn("21 µs", dma)
         self.assertNotIn("21 us", dma)
+        wdg = by_id["rm0008-wdg"]["snapshot"]
+        self.assertIn("chapters 19 and 20", wdg)
+        self.assertIn("DBG_IWDG_STOP", wdg)
+        self.assertIn("19.3.3", wdg)
+        self.assertIn("does not record a bit number", wdg)
+        self.assertNotIn("DBGMCU_CR", wdg)
+        self.assertNotIn("chapter 17", wdg)
+        rtc_rm = by_id["rm0008-rtc"]["snapshot"]
+        self.assertIn("chapter 18", rtc_rm)
+        self.assertNotIn("chapter 16", rtc_rm)
         vector = by_id["pm0056-vector"]["snapshot"]
         self.assertNotIn("167 ns", vector)
         reused = [item["id"] for item in payload["reuse_existing"]]

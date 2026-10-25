@@ -367,7 +367,7 @@ def dma_cndtr() -> Svg:
         960,
         900,
         "8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节；把剩余计数当成字节会切错",
-        "STM32F103C8T6 · RM0008 Rev 21 第 10 章",
+        "STM32F103C8T6 · RM0008 Rev 21 第 13 章",
     )
     canvas.header(tag="10", tag_color=T.CYAN)
     canvas.text(40, 86, "STM32F103C8T6  只有 DMA1，7 条通道", size=16, fill=T.TEXT, weight="700")
@@ -389,7 +389,7 @@ def dma_cndtr() -> Svg:
     canvas.text(56, 534, "旁注  DMA2 Stream 5 在这颗 C8 上没有计数器", size=15, fill=T.VIOLET, weight="700")
     canvas.text(56, 560, "F4 的那一组号留在 F4。不画采样电容", size=14, fill=T.TEXT)
     canvas.text(56, 584, "内存到内存若占用通道 1，它和 ADC1 抢同一条通道", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。CNDTR 来自 RM0008 Rev 21 第 10 章；只有 DMA1 来自 DS5319 Rev 20 第 2.3.13 节。")
+    _credit(canvas, "自绘。CNDTR 来自 RM0008 Rev 21 第 13 章；只有 DMA1 来自 DS5319 Rev 20 第 2.3.13 节。")
     return canvas
 
 
@@ -422,7 +422,7 @@ def iwdg_1s() -> Svg:
     canvas.text(56, 592, "窗口看门狗：计数器大于 0x50 时喂狗会复位", size=14, fill=T.TEXT)
     canvas.text(56, 618, "超时尺度是 58.25 ms，不和 IWDG 的 1 秒画成同一种狗", size=13, fill=T.MUTED)
     canvas.text(56, 642, "不画负载电容的皮法，也不画 PC13 的 LED", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。LSI 与备份寄存器来自 DS5319 Rev 20 表 25、第 2.3.14 节和第 2.3.15 节；1 秒来自 RM0008 Rev 21 第 17 章。")
+    _credit(canvas, "自绘。LSI 与备份寄存器来自 DS5319 Rev 20 表 25、第 2.3.14 节和第 2.3.15 节；1 秒来自 RM0008 Rev 21 第 19 章。")
     return canvas
 
 

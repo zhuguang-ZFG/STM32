@@ -110,7 +110,7 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | 作品 | 许可证 | 用在 | 链接 |
 | --- | --- | --- | --- |
 | DS5319 Rev 20（2025-07），表 5、表 25、表 41、表 42，第 2.3.13、2.3.14、2.3.15 节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章第 34 脚和第 37 脚；第 07 章第 42、43 脚与 0x801E；第 10 章只有 DMA1；第 11 章 LSI 30/40/60 kHz、第 1/3/4 脚和 10 个备份寄存器 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
-| RM0008 Rev 21（2021-02），第 10、16、17、18、26 章 | ST 文档条款；只链接并改写事实，不转载手册 | 第 07 章地址字节与 ACK；第 10 章 CNDTR；第 11 章 1 秒、窗口和 PRL | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| RM0008 Rev 21（2021-02），第 13、18、19、20、26 章 | ST 文档条款；只链接并改写事实，不转载手册 | 第 07 章地址字节与 ACK；第 10 章 CNDTR；第 11 章 1 秒、窗口和 PRL | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
 | PM0075，Doc ID 17863 Rev 2（2012-08） | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章读保护键 0xA5 与整片擦除；第 11 章 WDG_SW | https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf |
 | PM0056 Rev 7（2024-12），向量表 | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章第 0 字是 MSP，第 1 字是复位 | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
 | 本仓库 `examples/i2c-oled` | MIT | 第 07 章坑卡：器件地址宏是 0x78 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
