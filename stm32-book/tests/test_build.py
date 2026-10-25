@@ -1178,7 +1178,7 @@ class BookBuildContractTests(unittest.TestCase):
         )
         self.assertIn("当前版本：**v1.2.1 · 2026-10-25**", readme)
         self.assertIn("版本号已经是 1.2.1。", readme)
-        self.assertIn("也不要把 1.1.1 的产物标成 1.2.0。", readme)
+        self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
         self.assertIn("也不要把 1.2.0 的产物标成 1.2.1。", readme)
         self.assertIn("打 tag `v1.2.1`", readme)
         self.assertNotIn("当前版本：**v1.2.0", readme)
