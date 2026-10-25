@@ -356,6 +356,67 @@ def sar_adc():
     return g
 
 
+def nvic_preempt():
+    """TIM2 is running. EXTI0 at a higher preemption interrupts it, then returns.
+
+    The equal-preemption failure stays on the static SVG. This GIF does not draw it.
+    """
+    g = Gif(W, H, delay=12)
+    lines = (
+        "TIM2 RUN  PREEMPT 2",
+        "EXTI0 ARRIVES  PREEMPT 1",
+        "STACK EIGHT REGS",
+        "EXTI0 ISR RUNS",
+        "UNSTACK AND RETURN",
+        "TIM2 RESUMES",
+    )
+    for index, line in enumerate(lines):
+        c = Canvas(W, H)
+        chrome(c, "NVIC PREEMPT", "GROUP4", "AUX GIF  STATIC SVG HAS THE FAILURE")
+        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
+        c.text("TIM2  PREEMPT 2", 28, 60, C.AMBER, 1)
+        c.panel(16, 96, 448, 36, C.PANEL, C.CYAN if index else C.STROKE)
+        c.text("EXTI0  PREEMPT 1", 28, 108, C.GREEN if index else C.DIM, 1)
+        c.text(line, 28, 160, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
+        c.text("HIGHER PREEMPTION INTERRUPTS TIM2", 28, 214, C.GREEN, 1)
+        c.text("THEN THE CORE RETURNS", 28, 232, C.MUTED, 1)
+        c.text("PRINT THE FAILURE ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def uart_idle():
+    """After one frame, RX stays high for one frame time, then IDLE is marked.
+
+    Framing-error samples stay on the static SVG. This GIF does not replay 0xA5 bit by bit.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "FRAME END  STOP HIGH",
+        "RX STAYS HIGH",
+        "RX STAYS HIGH",
+        "RX STAYS HIGH",
+        "ONE FRAME OF IDLE",
+        "IDLE  86.8 us",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "UART IDLE", "8N1", "AUX GIF  86.8 us IS ONE FRAME")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("RX LINE HIGH AFTER THE FRAME", 28, 58, C.MUTED, 1)
+        c.hline(24, 120, 432, C.GREEN, 2)
+        mark = 24 + int(432 * index / 5)
+        c.vline(mark, 100, 40, C.AMBER, 1)
+        c.text(note, 28, 160, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
+        c.text("IDLE IS THE LINE HIGH FOR 86.8 us", 28, 214, C.CYAN, 1)
+        c.text("NOT A PROTOCOL LENGTH FIELD", 28, 232, C.AMBER, 1)
+        c.text("FRAMING ERROR STAYS ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        g.add(c)
+    return g
+
+
 BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
@@ -363,6 +424,8 @@ BUILDERS = {
     "i2c-timing": i2c_timing,
     "dma-ring": dma_ring,
     "sar-adc": sar_adc,
+    "nvic-preempt": nvic_preempt,
+    "uart-idle": uart_idle,
 }
 
 

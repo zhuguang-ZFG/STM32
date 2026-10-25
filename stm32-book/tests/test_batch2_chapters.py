@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import unittest
 from pathlib import Path
 
@@ -74,6 +75,45 @@ class Batch2FigureTests(unittest.TestCase):
                 self.assertIn(token, raw)
             self.assertIn("自绘", raw)
             self.assertNotIn("Svg.footer", raw)
+
+
+def load_gen_gifs():
+    path = ROOT / "tools" / "gen_gifs.py"
+    spec = importlib.util.spec_from_file_location("gen_gifs_batch2", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Batch2GifTests(unittest.TestCase):
+    def test_new_gifs_are_short_auxiliaries(self) -> None:
+        gifs = load_gen_gifs()
+        for name in (
+            "led-blink",
+            "pwm-breath",
+            "uart-bits",
+            "i2c-timing",
+            "dma-ring",
+            "sar-adc",
+            "nvic-preempt",
+            "uart-idle",
+        ):
+            self.assertIn(name, gifs.BUILDERS)
+        source = (ROOT / "tools" / "gen_gifs.py").read_text(encoding="utf-8")
+        nvic_src = source.split("def nvic_preempt", 1)[1].split("def uart_idle", 1)[0]
+        idle_src = source.split("def uart_idle", 1)[1].split("BUILDERS", 1)[0]
+        self.assertIn("TIM2", nvic_src)
+        self.assertIn("EXTI0", nvic_src)
+        self.assertNotIn("SAME PREEMPT", nvic_src)
+        self.assertIn("86.8 us", idle_src)
+        self.assertIn("IDLE", idle_src)
+        self.assertNotIn("FE", idle_src)
+        for name in ("nvic-preempt", "uart-idle"):
+            gif = gifs.BUILDERS[name]()
+            self.assertGreaterEqual(len(gif.frames), 3)
+            self.assertLessEqual(len(gif.frames), 12)
+            path = ROOT / "assets" / "gif" / f"{name}.gif"
+            self.assertLess(path.stat().st_size, 500 * 1024, path.name)
 
 
 if __name__ == "__main__":
