@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.2.1",
+      "date": "2026-10-25",
+      "zh": [
+        "贡献指南把大典四块写成每章必选，放在视频块之后、学习目标之前。",
+        "旧的常见坑与排查迁入坑与出处卡，并用 `#source-` 链到附录 E。这一版不改正文章。"
+      ],
+      "en": [
+        "The contributor guide requires the four compendium sections after the video block and before the learning goals.",
+        "The old pitfalls section moves into Pitfalls and source cards, with `#source-` links to Appendix E. This edition does not rewrite chapter prose."
+      ]
+    },
+    {
       "version": "1.2.0",
       "date": "2026-10-25",
       "zh": [
