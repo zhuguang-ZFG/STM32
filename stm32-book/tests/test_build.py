@@ -133,8 +133,21 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.0.0</strong>", html)
+        self.assertIn("<strong>v1.0.1</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
+        self.assertIn('<p class="part-label">第 1 部</p>', html)
+        self.assertIn('<span class="chapter-number">第 00 章</span>', html)
+        self.assertIn('<span class="chapter-number">附录</span>', html)
+        self.assertNotIn(">PART 0<", html)
+        self.assertNotIn(">CHAPTER 00<", html)
+        self.assertIn('<p class="callout-label">注意</p>', html)
+        self.assertIn('<p class="callout-label">提示</p>', html)
+        self.assertIn('<p class="callout-label">说明</p>', html)
+        self.assertIn('class="toc-jump"', html)
+        self.assertIn(">目录</a>", html)
+        self.assertIn("position: sticky", html)
+        self.assertIn("max-height: 200mm", html)
+        self.assertIn("break-before: avoid-page", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
         self.assertIn('class="cover-art"', html)
@@ -229,7 +242,9 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.0.0", manifest["version"])
+        self.assertEqual("1.0.1", manifest["version"])
+        self.assertEqual(self.manifest["version"], manifest["version"])
+        self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
         for name, guide in manifest["chapter_guides"].items():
             self.assertEqual(zh_sources[name[:2]], guide["sources"])
@@ -244,8 +259,17 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.0.0</strong>", html)
+        self.assertIn("<strong>v1.0.1</strong>", html)
         self.assertNotIn("1.0.0-rc", html)
+        self.assertIn('<p class="part-label">Part 1</p>', html)
+        self.assertIn('<span class="chapter-number">Chapter 00</span>', html)
+        self.assertIn('<span class="chapter-number">Appendix</span>', html)
+        self.assertNotIn(">PART 0<", html)
+        self.assertNotIn(">CHAPTER 00<", html)
+        self.assertIn('<p class="callout-label">Warning</p>', html)
+        self.assertIn('<p class="callout-label">Tip</p>', html)
+        self.assertIn('<p class="callout-label">Note</p>', html)
+        self.assertIn(">Contents</a>", html)
         self.assertIn("<figcaption>", html)
         self.assertIn('class="cover-art"', html)
         self.assertIn('id="part-closing-p6"', html)
@@ -446,10 +470,13 @@ class BookBuildContractTests(unittest.TestCase):
                             return {
                                 headingBreakAfter: css('h2').breakAfter,
                                 mediaBreakInside: css('figure').breakInside,
+                                captionBreakBefore: css('figcaption').breakBefore,
+                                imageMaxHeight: css('img').maxHeight,
                                 rowBreakInside: css('tr').breakInside,
                                 preWhiteSpace: css('pre').whiteSpace,
                                 orphans: Number(body.orphans),
                                 widows: Number(body.widows),
+                                tocJumpPosition: getComputedStyle(document.querySelector('.toc-jump')).position,
                             };
                         }"""
                     )
@@ -458,10 +485,13 @@ class BookBuildContractTests(unittest.TestCase):
 
         self.assertIn(styles["headingBreakAfter"], {"avoid", "avoid-page"})
         self.assertIn(styles["mediaBreakInside"], {"avoid", "avoid-page"})
+        self.assertIn(styles["captionBreakBefore"], {"avoid", "avoid-page"})
+        self.assertNotEqual("none", styles["imageMaxHeight"])
         self.assertIn(styles["rowBreakInside"], {"avoid", "avoid-page"})
         self.assertEqual("pre-wrap", styles["preWhiteSpace"])
         self.assertGreaterEqual(styles["orphans"], 3)
         self.assertGreaterEqual(styles["widows"], 3)
+        self.assertEqual("fixed", styles["tocJumpPosition"])
 
     def test_rendered_table_without_cells_is_a_build_error(self) -> None:
         with self.assertRaisesRegex(self.builder.BuildError, "rendered table has no cells"):
@@ -567,6 +597,87 @@ class BookBuildContractTests(unittest.TestCase):
         )
         self.assertIn("00 系统", continuation)
         self.assertNotIn("00 系统", opening)
+
+    def test_callout_classifier_marks_warning_tip_and_note(self) -> None:
+        rendered = (
+            "<blockquote><p>⚠️ 不要关掉 SWD。</p></blockquote>"
+            "<blockquote><p>⚠️ <strong>重要说明</strong>：第一行。</p><p>第二行仍是同一条注意。</p></blockquote>"
+            "<blockquote><p>提示：<strong>用命令行</strong>。</p></blockquote>"
+            "<blockquote><p>记忆：<strong>R 看寄存器</strong>。</p></blockquote>"
+            "<blockquote><p>Search tip: use the manual number.</p></blockquote>"
+            "<blockquote><p>GPIO 是一切外设的入口。</p></blockquote>"
+        )
+        chinese = self.builder.classify_callouts(
+            rendered, {"warning": "注意", "tip": "提示", "note": "说明"}
+        )
+        self.assertEqual(2, chinese.count("callout-warning"))
+        self.assertEqual(3, chinese.count("callout-tip"))
+        self.assertEqual(1, chinese.count("callout-note"))
+        self.assertIn('<p class="callout-label">注意</p>', chinese)
+        self.assertIn("不要关掉 SWD", chinese)
+        self.assertIn("<strong>用命令行</strong>", chinese)
+        self.assertIn("第二行仍是同一条注意。", chinese)
+        english = self.builder.classify_callouts(
+            rendered, {"warning": "Warning", "tip": "Tip", "note": "Note"}
+        )
+        self.assertIn('<p class="callout-label">Warning</p>', english)
+        self.assertIn('<p class="callout-label">Tip</p>', english)
+        self.assertIn('<p class="callout-label">Note</p>', english)
+        self.assertEqual("<p>plain</p>", self.builder.classify_callouts("<p>plain</p>"))
+
+    def test_cover_svg_stays_self_contained(self) -> None:
+        svg = (BOOK_DIR / "cover.svg").read_text(encoding="utf-8")
+        self.assertIn("<svg", svg)
+        self.assertIn('aria-label="STM32 board"', svg)
+        self.assertNotIn("@font-face", svg)
+        self.assertNotRegex(svg, r"https?://(?!www\.w3\.org/)")
+        self.assertNotRegex(svg, r"<(?:image|use)\b[^>]*\b(?:href|xlink:href)=")
+
+    def test_running_headers_follow_appendices_and_shorten_long_titles(self) -> None:
+        import fitz
+
+        metadata = {
+            "title": "STM32 in Practice: From One LED to a System You Can Ship",
+            "author": "author",
+            "subject": "subject",
+            "keywords": "STM32",
+        }
+        long_chapter = "00 " + ("寄存器" * 40)
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = Path(tmp) / "raw.pdf"
+            output = Path(tmp) / "book.pdf"
+            document = fitz.open()
+            for _ in range(6):
+                document.new_page()
+            document.set_toc(
+                [
+                    [1, long_chapter, 2],
+                    [1, "Part 2  GPIO, interrupts, and time", 4],
+                    [1, "A close reading: two valid contracts", 5],
+                ]
+            )
+            document.save(raw)
+            document.close()
+
+            self.builder._stamp_page_numbers(raw, output, metadata)
+            stamped = fitz.open(output)
+            try:
+                even_page = stamped[2].get_text()
+                continued = stamped[3].get_text()
+                appendix_open = stamped[4].get_text()
+                appendix_cont = stamped[5].get_text()
+                drawings = stamped[1].get_drawings()
+            finally:
+                stamped.close()
+
+        self.assertIn("STM32 in Practice", even_page)
+        self.assertNotIn("From One LED", even_page)
+        self.assertNotIn(long_chapter, continued)
+        self.assertIn("...", continued)
+        self.assertNotIn("Part 2", continued)
+        self.assertNotIn("A close reading", appendix_open)
+        self.assertIn("A close reading: two valid contracts", appendix_cont)
+        self.assertGreaterEqual(len(drawings), 1)
 
     def test_manifest_rejects_a_missing_chapter_guide(self) -> None:
         broken = copy.deepcopy(self.manifest)
