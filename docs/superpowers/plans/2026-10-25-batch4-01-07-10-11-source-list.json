@@ -158,7 +158,7 @@
       "authority_zh": "ST 官方参考手册",
       "authority_en": "ST reference manual",
       "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
-      "snapshot": "RM0008 Rev 21, February 2021, chapters 17 and 18. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. The IWDG debug-mode section prints the configuration bit name DBG_IWDG_STOP. This snapshot does not treat the 40 kHz second as a guarantee.",
+      "snapshot": "RM0008 Rev 21, February 2021, chapters 17 and 18. IWDG: T = prescaler / f_LSI × (Reload + 1). Prescaler 64 and f_LSI taken as 40 kHz give a 625 Hz count. Reload 624 is 1 second. Reload 625 is one extra count. The counter resets only when it reaches 0. An early feed does not reset the IWDG. WWDG is 7 bits and clocks from APB1. At PCLK1 = 36 MHz, prescaler 8, and counter 0x7F, the timeout is (1/36e6) × 4096 × 8 × 64 = 58.25 ms. Feeding while the counter is still above the window value resets the WWDG. A debug-freeze bit name is added here only if chapter 17 prints it. This snapshot does not treat the 40 kHz second as a guarantee.",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "license_class": "ST-facts-restated",
       "section": "17",
