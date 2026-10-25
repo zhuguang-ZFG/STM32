@@ -30,6 +30,56 @@
 9. 实验输出大约 1 千赫、占空比三成的 PWM。用逻辑分析仪或示波器对一下。对不上时，先核对定时器时钟，再核对 ARR 和 CCR，别先怀疑探头。
 10. 合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？
 <!-- /video:ch05 -->
+
+## 原理与边界
+
+这一章的波形结论只钉在订货号 STM32F103C8T6 上。计数时钟用附录 D 的 72 MHz，不用 36 MHz。换到 32 位定时器的系列时，「这颗料是 16 位」那一句作废。
+
+TIM3 在 APB1。PCLK1 = 36 MHz，预分频不是 1，所以 TIM3 的计数时钟是 72 MHz。PSC = 71，ARR = 999。`72e6 / ((71+1) × (999+1)) = 1000` Hz。计数时钟先被分成 1 MHz，再数 1000 下，周期 1 ms。同一组 PSC、ARR 用 36 MHz 去除，得到 500 Hz。这是主图的失败路径。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim)。
+
+PWM 模式 1：CNT < CCR 时输出有效电平。CCR = 500 时，`500 / (999+1) = 50%`，高电平 500 µs。
+
+这颗料的 TIM2–TIM5 是 16 位。PSC = 71、ARR = 999999 装不下。能装下的 1 秒是 PSC = 7199、ARR = 9999，`72e6 / (7200 × 10000) = 1` Hz。32 位的 TIM2/TIM5 是别的系列上的句子。
+
+默认不重映射时 TIM3_CH1 在 PA6。DS5319 Rev 20 表 5：LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1，同一格也含 SPI1_MISO。本图只画定时器。SPI 对这只脚的用法在第 08 章，两章的主图不把两种功能画成同时有效。重映射到 PB4 或 PC6 要另写 `TIM3_REMAP`，不画进正常路径。出处是 [DS5319 Rev 20 表 5](#source-ds5319-tim)。
+
+TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 时主输出关着。`HAL_TIM_PWM_Start` 会置 MOE。通用定时器 TIM3 没有这一位。
+
+## 关键插图
+
+<p align="center">
+  <img src="../assets/diagrams/sample-05-pwm-1khz.svg" width="760" alt="72 MHz 计数时钟下这组 PSC/ARR 是 1 kHz；改用 36 MHz 去除得到 500 Hz">
+  <br><sub>▲ 自绘。STM32F103C8T6，LQFP48 第 16 脚 PA6 = TIM3_CH1。计数时钟 72 MHz，PSC = 71，ARR = 999，CCR = 500。正常路径周期 1 ms，高电平 500 µs，频率 1000 Hz。失败路径用 36 MHz 去除，周期 2 ms，频率 500 Hz。ARR = 999999 在 16 位计数器里装不下。TIM1 的 MOE 在偏移 0x44，复位值 0x0000，不占这条波形。SPI1_MISO 不画进这条波形。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/gif/pwm-1khz.gif" width="640" alt="CNT 走到 CCR = 500 时电平翻转，频率 1000 Hz">
+  <br><sub>▲ 网页和公众号辅图。只播放 1000 Hz 和 500 µs 的正常路径。印刷以静态主图为准。500 Hz 的失败不在这条 GIF 上。</sub>
+</p>
+
+章首的 `timer-pwm.svg` 和 `pwm-breath.gif` 留在原节，标成辅图。不播放它们，1 kHz 和 500 Hz 都在静态主图上。
+
+## 时序或状态
+
+| 行 | 计数时钟 | PSC | ARR | CCR | CNT | 输出 | 时间 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 正常，高 | 72 MHz | 71 | 999 | 500 | 0 到 499 | 高 | 500 µs |
+| 正常，低 | 72 MHz | 71 | 999 | 500 | 500 到 999 | 低 | 再 500 µs，周期 1000 µs，1000 Hz |
+| 失败 | 36 MHz | 71 | 999 | 500 | 0 到 999 | 同一比较 | 周期 2000 µs，500 Hz |
+| 装不下 | 72 MHz | 71 | 999999 | — | — | 不作为 1 秒 | 16 位截断，不算成 1 秒 |
+| 1 秒 | 72 MHz | 7199 | 9999 | — | 0 到 9999 | — | 1 Hz |
+
+出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim)。
+
+## 坑与出处卡
+
+| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| --- | --- | --- | --- | --- |
+| 示波器上是 500 Hz | 用 36 MHz 去除了 | 用 72 MHz 去除，PSC = 71，ARR = 999 | [RM0008](#source-rm0008-tim) | 这组数在 72 MHz 下是 1000 Hz。36 MHz 去除得到 500 Hz |
+| 想要 1 秒，ARR 写成 999999 | 16 位装不下 | 改成 PSC = 7199、ARR = 9999 | [RM0008](#source-rm0008-tim) | 这颗料的通用定时器是 16 位，装不下 999999 |
+| TIM1 完全没有波形 | BDTR 位 15 的 MOE 还是 0 | 置上 MOE | [RM0008](#source-rm0008-tim) | 复位值 0x0000，MOE 为 0 时主输出关闭。偏移 0x44。TIM3 没有这一位 |
+| PWM 出现在别的脚上 | TIM3_REMAP 不是 00 | 保持 TIM3_REMAP=00，用 PA6 | [DS5319](#source-ds5319-tim) | LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1 |
+
 ## 📌 学习目标
 - [ ] 分清 STM32 各类定时器（高级/通用/基本/看门狗/SysTick）
 - [ ] 会用时基公式算出任意定时周期的 PSC/ARR
@@ -46,7 +96,7 @@
 | 类别 | 型号 | 位宽 | 特点 | 典型用途 |
 | --- | --- | --- | --- | --- |
 | 高级 | TIM1/TIM8 | 16 位 | 互补输出、死区、刹车、MOE | 电机、三相 PWM |
-| 通用 | TIM2~TIM5 | 16/32 位 | 4 通道，PWM/捕获/编码器 | 通用定时/PWM |
+| 通用 | TIM2~TIM5 | 16 位 | 4 通道，PWM/捕获/编码器 | 这颗 STM32F103C8T6 上是 16 位。32 位的 TIM2/TIM5 是别的系列，换到那一系列时这一句作废 |
 | 基本 | TIM6/TIM7 | 16 位 | 仅计数，无外部通道 | 时基、触发 DAC |
 | 看门狗 | IWDG/WWDG | 12/7 位 | 独立/窗口看门狗 | 程序跑飞复位 |
 | 系统 | SysTick | 24 位 | 内核自带 | HAL 时基、RTOS 节拍 |
@@ -65,7 +115,7 @@
 | 10ms | 7199 | 99 | 10.00ms | 100Hz |
 | 100ms | 7199 | 999 | 100.0ms | 10Hz |
 | 1s | 7199 | 9999 | 1.000s | 1Hz |
-| 1s（大 ARR） | 71 | 999999 | 1.000s | 需 32 位定时器 |
+| 1s（大 ARR） | 71 | 999999 | 装不下 | 这颗料的 TIM2–TIM5 是 16 位，装不下 999999。能装下的 1 秒是上一行 PSC = 7199、ARR = 9999 |
 
 > 结论：先定 `fCK_CNT`（选 PSC），再定 `ARR+1 = T × fCK_CNT`。
 
@@ -98,7 +148,7 @@
 
 | 目标 PWM 频率 | ARR+1 | 占空比分辨率 | 说明 |
 | --- | --- | --- | --- |
-| 1kHz | 72000 | 1/72000 | 高分辨率，适合调光 |
+| 1kHz | 72000 | 1/72000 | 另一组高分辨率参数（PSC = 0 时 ARR+1 = 72000）。不是附录 D 的 1 kHz 格子（PSC = 71，ARR = 999） |
 | 10kHz | 7200 | 1/7200 | 常用电机 PWM |
 | 50Hz（舵机） | 1440000 | — | 需配合 PSC 凑 20ms |
 | 20kHz | 3600 | 1/3600 | 无 audible 噪音 |
@@ -160,7 +210,7 @@ static void pwm_init(void)
 
     TIM_OC_InitTypeDef oc = {0};
     oc.OCMode     = TIM_OCMODE_PWM1;
-    oc.Pulse      = PWM_ARR / 2;                     /* 初始 50% 占空比 = CCR */
+    oc.Pulse      = 500;                             /* CCR = 500。500 / (ARR + 1) = 50%，高电平 500 µs */
     oc.OCPolarity = TIM_OCPOLARITY_HIGH;
     oc.OCFastMode = TIM_OCFAST_DISABLE;
     HAL_TIM_PWM_ConfigChannel(&htim3, &oc, PWM_CH);
@@ -217,18 +267,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 ```
 
 完整工程见 [`examples/timer-pwm/`](../examples/timer-pwm/)。
-
-## ⚠️ 常见坑与排查
-
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| PWM 完全没输出 | TIM1/TIM8 没使能 MOE | `HAL_TIM_PWM_Start` 会置 MOE，或手动 `__HAL_TIM_MOE_ENABLE` |
-| 有波形但占空比不动 | 没调用 `HAL_TIM_PWM_Start` | 启动 PWM 通道 |
-| 改了 CCR 不生效 | 没使能 CCR 预装载 | 设 `oc.OCPreload` 或开 `OCxPE` |
-| 中断只进一次 | 忘了清更新标志 | ISR 里 `__HAL_TIM_CLEAR_FLAG(..., TIM_FLAG_UPDATE)` |
-| ARR 改小后占空比异常 | 只改了 ARR 没同步 CCR | 保证 CCR ≤ ARR，改 ARR 后重设 CCR |
-| PWM 频率差一倍 | 忘了 APB 分频>1 定时器时钟 ×2 | 用实际定时器时钟算 PSC/ARR |
-| 呼吸灯闪跳 | 更新 CCR 时撕裂 | 开 ARR/CCR 预装载，或一次写入 |
 
 ## 🧪 动手实验
 

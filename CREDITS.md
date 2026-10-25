@@ -10,8 +10,8 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（10 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
-| 光栅动画（6 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
+| 静态框图（14 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 光栅动画（12 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
 > 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
@@ -92,3 +92,13 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | DS5319 Rev 20（2025-07），图 8 与表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 06 章 LQFP48 第 30 脚 PA9、第 31 脚 PA10 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
 | MaJerle stm32-usart-uart-dma-rx-tx | MIT | 第 06 章坑卡：持续 DMA 接收时读到写位置为止，缓冲区不是一条拍平的帧 | https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx/commit/c242589d766eada3ad1d795630f2b1c2482a2af8 |
 | STM32CubeF4 v1.28.3 的 UART_ReceptionToIdle_CircularDMA | BSD-3-Clause | 第 06 章坑卡：循环 DMA 的 Size 是写位置。范围停在这个 F446 例程，不把它的引脚说成 F103 | https://github.com/STMicroelectronics/STM32CubeF4/tree/v1.28.3/Projects/STM32446E-Nucleo/Examples/UART/UART_ReceptionToIdle_CircularDMA |
+
+### 第 02、05、08、09 章（v1.2.2）
+
+第 02、05、08、09 章用改写吸收补了同样的四块。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图和厂商数据手册不放进仓库。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| RM0008 Rev 21（2021-02），中密度第 7.2 节、第 7.2.7 节、第 7.3.2 节，第 15 章，第 25.5.1 节，第 11 章与第 11.4 节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 02 章 72 MHz、2 个等待和 CSS；第 05 章 1 kHz 与 MOE；第 08 章 Mode 0 与 9 MHz；第 09 章 12 MHz 下的 21 µs 和校准 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| DS5319 Rev 20（2025-07），图 8 与表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 02 章第 5、6、29 脚；第 05 章第 16 脚 PA6；第 08 章第 14–17 脚；第 09 章第 9 脚 VDDA、第 10 脚 PA0，以及 C8 有两只 ADC、没有 DAC | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| 本仓库 `examples/spi-flash` | MIT | 第 08 章坑卡：0x9F 之后的三字节是 0xEF、0x40、0x17，页 256 字节，状态字节位 0 在例程里当成忙 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |

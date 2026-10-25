@@ -30,6 +30,61 @@
 9. 实验找一个带只读寄存器的器件，用正确的模式读回来。数值和手册复位值一致，这章才算过。读出全是 FF 或 00，先查模式和进出线。
 10. 合上书，三问。模式 0 时空闲时钟是高还是低？主机输出和主机输入能不能接反？一次事务结束时片选应该怎样？
 <!-- /video:ch08 -->
+
+## 原理与边界
+
+这一章的 SPI 结论只钉在订货号 STM32F103C8T6 上。SPI1 在 APB2，内核时钟 72 MHz。工作点整格照抄附录 D：Mode 0，`BR=010`，SCK = 9 MHz。换到重映射脚时，下面的 PA5/PA6/PA7 作废。
+
+复位后的默认脚是 LQFP48 第 15 脚 PA5 = SPI1_SCK，第 17 脚 PA7 = SPI1_MOSI，第 16 脚 PA6 = SPI1_MISO，第 14 脚 PA4 = SPI1_NSS。本章片选不用硬件 NSS，PA4 配成推挽 GPIO，软件拉低再拉高。这不是第 07 章的开漏。重映射到 PB3/PB4/PB5 不画进正常路径。第 16 脚同时是第 05 章的 TIM3_CH1；本图只画 MISO。出处是 [DS5319 Rev 20 表 5](#source-ds5319-spi)。
+
+Mode 0 是 CPOL = 0、CPHA = 0。空闲时 SCK 为低，数据在第一个边沿（上升沿）采样。章内代码是 `SPI_POLARITY_LOW`、`SPI_PHASE_1EDGE`、`SPI_NSS_SOFT`、`SPI_FIRSTBIT_MSB`、`SPI_BAUDRATEPRESCALER_8`。
+
+`BR[2:0]` 只有 2、4、8、16、32、64、128、256 这八档。`010` 是 ÷8，`72 / 8 = 9` MHz。`001` 是 ÷4，18 MHz。`000` 是 ÷2，36 MHz。36 MHz 是相对 9 MHz 工作点的过快失败，不另开一套账。不支持 ÷3。不编 SPI 基址。出处是 [RM0008 Rev 21 第 25.5.1 节](#source-rm0008-spi)。
+
+主机发出 `{0x9F, 0xFF, 0xFF, 0xFF}`。全双工下，发 `0x9F` 的那 8 个 SCK 同时移进 `rx[0]`，这一字节不是厂商号。接下来三字节是 `rx[1]=0xEF`、`rx[2]=0x40`、`rx[3]=0x17`。拼法是 `rx[1] << 16 | rx[2] << 8 | rx[3]`，也就是 `0xEF4017`。`0x40` 是存储器类型，不是容量。页大小 256 字节。这两句链接 [已有例程](#source-project-examples) 和附录 D。状态字节的位 0 在例程里当成忙。`0x05`、`0x06`、`0x02`、`0x03` 留在核心原理。
+
+MOSI 和 MISO 对调之后，三字节对不上 `0xEF 0x40 0x17`。这是主图的失败路径。片选一直为低时，下一条命令接在上一条后面。只调用 Transmit、不读 MISO 时，下一次读到的是残留。CPHA 配成第二沿时，字节会错位。片选不释放和 `BR=000` 的 36 MHz 放在旁注。
+
+## 关键插图
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-spi-jedec.svg" width="760" alt="Mode 0、除以 8 得到 9 MHz；0x9F 之后的三字节是 0xEF、0x40、0x17；MOSI 和 MISO 对调之后对不上">
+  <br><sub>▲ 自绘。STM32F103C8T6，LQFP48。第 14 脚 PA4 = CS（推挽，事务期间为低），第 15 脚 PA5 = SCK，第 16 脚 PA6 = MISO，第 17 脚 PA7 = MOSI。CPOL = 0，CPHA = 0，BR=010，SCK = 9 MHz。正常路径 MOSI 先送 0x9F，随后三个 0xFF；rx[1] 到 rx[3] 是 0xEF、0x40、0x17。失败路径是 PA6 与 PA7 对调。旁注：PA4 一直为低时两条事务粘成一条；BR=000 时 SCK = 36 MHz。不把第 14 脚画成 DAC。出处是 [RM0008 Rev 21 第 25.5.1 节](#source-rm0008-spi) 和 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/gif/spi-jedec.gif" width="640" alt="片选拉低后移出 0x9F，再移入 0xEF、0x40、0x17">
+  <br><sub>▲ 网页和公众号辅图。只播放正常路径，并标出 9 MHz。印刷以静态主图为准。对调线和 36 MHz 不在这条 GIF 上。</sub>
+</p>
+
+章首的 `spi-transfer.svg` 留作辅图。不播放它，脚位、9 MHz 和 ID 三字节都在静态主图上。
+
+## 时序或状态
+
+| 行 | 字节序号 | MOSI | MISO | CS | SCK |
+| --- | --- | --- | --- | --- | --- |
+| 正常 | 1 | 0x9F | rx[0]，不是厂商号 | 低 | 上升沿采样 |
+| 正常 | 2 | 0xFF | 0xEF | 低 | 上升沿采样 |
+| 正常 | 3 | 0xFF | 0x40 | 低 | 上升沿采样 |
+| 正常 | 4 | 0xFF | 0x17 | 低 | 上升沿采样 |
+| 结束 | — | — | — | 回到高 | 空闲为低 |
+| 模式 | — | — | — | — | CPOL = 0，CPHA = 0 |
+| 速率 | — | — | — | — | BR=010 为 9 MHz，BR=001 为 18 MHz，BR=000 为 36 MHz |
+| 失败 | 2 到 4 | — | 不是 0xEF 0x40 0x17 | 低 | PA6 与 PA7 对调 |
+
+页大小 256 字节。出处是 [RM0008](#source-rm0008-spi) 与 [例程](#source-project-examples)。
+
+## 坑与出处卡
+
+| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| --- | --- | --- | --- | --- |
+| 读回的 ID 不是 0xEF4017 | PA7 不是 MOSI，或 PA6 不是 MISO，或模式不是 0 | 保持 Mode 0，并核对 PA7 是 MOSI、PA6 是 MISO | [DS5319](#source-ds5319-spi) | LQFP48 第 16 脚是 MISO，第 17 脚是 MOSI。三字节本身见下一行 |
+| 把 rx[0] 当成厂商号 | 发命令的那 8 个 SCK 同时移进了 rx[0] | 厂商号在 rx[1]，类型在 rx[2]，容量在 rx[3] | [例程](#source-project-examples) | 命令是 0x9F。三字节是 0xEF、0x40、0x17。0x40 不是容量。页大小 256 字节 |
+| SCK 跑到 36 MHz | BR 写成了 000 | BR 用 010，得到 9 MHz | [RM0008](#source-rm0008-spi) | 八档分频里 010 是 ÷8。000 是 ÷2 = 36 MHz。不支持 ÷3 |
+| 两条命令粘在一起 | PA4 一直为低 | 每条事务结束把 PA4 拉高 | [DS5319](#source-ds5319-spi) | 第 14 脚是 SPI1_NSS。本章把它当推挽片选。它在 C8 上不是 DAC 输出 |
+| ID 出现在 PB3/PB4/PB5 | 用了重映射，还当成复位默认 | 复位后的默认脚是 PA5/PA6/PA7 | [DS5319](#source-ds5319-spi) | 第 15 脚 SCK，第 16 脚 MISO，第 17 脚 MOSI |
+| 状态字节的位 0 被当成协议里的忙 | 这是例程的做法 | 只按例程去等这一位 | [例程](#source-project-examples) | 例程把状态字节的位 0 当成忙 |
+
 ## 📌 学习目标
 - [ ] 理解 SPI 四线制与全双工移位原理
 - [ ] 掌握 CPOL/CPHA 四种模式与常用器件模式
@@ -75,6 +130,9 @@
 | 010 | 8 | 9MHz |
 | 011 | 16 | 4.5MHz |
 | 100 | 32 | 2.25MHz |
+| 101 | 64 | 1.125MHz |
+| 110 | 128 | 0.5625MHz |
+| 111 | 256 | 0.28125MHz |
 
 ### 4. NSS 管理与多从机
 
@@ -197,17 +255,6 @@ static void w25q_wait_busy(void)
 DMA 刷屏思路：把整屏像素缓冲通过 `HAL_SPI_Transmit_DMA` 一次性发出，CPU 去准备下一帧，大幅提速。
 
 完整工程见 [`examples/spi-flash/`](../examples/spi-flash/)。
-
-## ⚠️ 常见坑与排查
-
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| 读 ID 全 0xFF | MISO 悬空/没接 | 检查 MISO 接线，或加下拉 |
-| 读 ID 全 0x00 | 模式不对/CS 没拉低 | 换 Mode 0/3；确认片选时序 |
-| 数据错位 | CPHA 不对 | 对照器件手册选 Mode 0 或 3 |
-| 花屏 | SPI 速率过高/线太长 | 降分频（提高分频系数） |
-| 写 Flash 失败 | 没写使能或没等忙 | 每次写前 WREN，写后等 BUSY 清零 |
-| 多从机互相干扰 | 片选没独立 | 每个从机独立 CS，未选中保持高 |
 
 ## 🧪 动手实验
 
