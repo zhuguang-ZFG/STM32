@@ -673,5 +673,139 @@ class Batch6BootChapterTests(unittest.TestCase):
         self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
         self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(en_manifest["sources"])[-2:])
 
+class Batch6FlashFitChapterTests(unittest.TestCase):
+    def test_project_chapters_keep_one_slot_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "19-项目实战合集.md"
+        en_path = ROOT / "docs" / "en" / "19-projects.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        self.assertTrue(zh.startswith("# 19 项目实战合集\n"))
+        self.assertTrue(en.startswith("# 19 A set of real projects\n"))
+        self.assertNotIn("上册", zh)
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 🧠 核心原理", zh)
+        self.assertNotIn("## 🧠 Core ideas", en)
+        for heading in (
+            "## 1. 蓝牙小车（★★ 入门级）",
+            "## 2. 温湿度记录仪（★★ 入门级）",
+            "## 3. DMA + ADC 迷你示波器（★★★ 进阶）",
+            "## 4. USB 数据采集卡（★★★ 进阶）",
+            "## 5. IAP 远程升级（★★★ 进阶）",
+            "## 6. WS2812 灯带控制器（★★ 进阶）",
+            "## 7. 简易逻辑分析仪（★★★★ 挑战）",
+            "## 8. 多机 CAN 网络（★★★★ 挑战）",
+            "## 9. 自平衡小车（★★★★ 挑战）",
+            "## 10. FreeRTOS 智能网关（★★★★ 挑战）",
+        ):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## 1. Bluetooth car (★★ beginner)",
+            "## 2. Temperature and humidity logger (★★ beginner)",
+            "## 3. DMA + ADC mini oscilloscope (★★★ intermediate)",
+            "## 4. USB data-acquisition card (★★★ intermediate)",
+            "## 5. Remote IAP update (★★★ intermediate)",
+            "## 6. WS2812 LED-strip controller (★★ intermediate)",
+            "## 7. A simple logic analyzer (★★★★ a challenge)",
+            "## 8. A multi-node CAN network (★★★★ a challenge)",
+            "## 9. A self-balancing car (★★★★ a challenge)",
+            "## 10. A FreeRTOS smart gateway (★★★★ a challenge)",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("APP_A + APP_B", zh)
+        self.assertNotIn("APP_A, and APP_B", en)
+        self.assertNotIn("4095.0f", zh)
+        self.assertNotIn("4095.0f", en)
+        self.assertNotIn("GPIO_PIN_0", zh)
+        self.assertNotIn("GPIO_PIN_0", en)
+        self.assertIn("4096.0f", zh)
+        self.assertIn("4096.0f", en)
+        self.assertIn("0x5A5A0001", zh)
+        self.assertIn("0x5A5A0001", en)
+        self.assertIn("MOTOR_DIR_PIN", zh)
+        self.assertIn("MOTOR_DIR_PIN", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "0x08000000",
+                "0x08004000",
+                "0x08004800",
+                "0x08010000",
+                "0x0801B800",
+                "0xB800",
+                "110",
+                "20480",
+                "65536",
+                "4096",
+                "2048",
+                "1.65",
+                "133",
+                "PB8",
+                "PB9",
+                "PA0",
+                "#source-project-examples",
+                "#source-ds5319-swd",
+                "#source-rm0008-adc",
+                "#source-ds5319-adc",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("0x5A5A0001", blocks)
+            self.assertNotIn("★", blocks)
+            self.assertNotIn("0.4", blocks)
+            self.assertNotIn("1.25", blocks)
+            self.assertNotIn("F411", blocks)
+            self.assertNotIn("F407", blocks)
+        self.assertIn("../assets/diagrams/sample-19-flash-fit.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-19-flash-fit.svg", en)
+        self.assertIn("../assets/gif/one-slot.gif", zh)
+        self.assertIn("../../assets/gif/one-slot.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-19-flash-fit.svg"), zh_key.index("one-slot.gif"))
+        self.assertLess(en_key.index("sample-19-flash-fit.svg"), en_key.index("one-slot.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertIn("peripheral-wiring.svg", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path in (zh_path, en_path):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = baseline_chapter(lock["baseline"], rel)
+            now_video = zh if path == zh_path else en
+            marker = "<!-- video:ch19 -->"
+            end = "<!-- /video:ch19 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now_video.split(marker, 1)[1].split(end, 1)[0],
+            )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["project-examples", "ds5319-swd", "rm0008-adc", "ds5319-adc"]
+        guide = zh_manifest["chapter_guides"]["19-项目实战合集.md"]
+        guide_en = en_manifest["chapter_guides"]["19-projects.md"]
+        self.assertEqual(compass, guide["sources"])
+        self.assertEqual(compass, guide_en["sources"])
+        self.assertEqual(
+            "怎样把多外设题目切成可独立验收的里程碑，而不是一次集成全部不确定性？",
+            guide["question"],
+        )
+        self.assertEqual("项目清单给出学习路径，不构成安全、EMC、量产测试或法规符合性声明。", guide["boundary"])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
+        self.assertNotIn("ds5319-flash", zh_manifest["sources"])
+
 if __name__ == "__main__":
     unittest.main()

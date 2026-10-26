@@ -274,9 +274,7 @@
       "question": "How do you cut a multi-peripheral project into milestones you can accept one at a time, instead of integrating every uncertainty at once?",
       "deliverable": "A project boundary, module interfaces, a visible result for each stage, a fallback point, and a reproduction note.",
       "boundary": "The project list is a learning path. It is not a claim of safety, EMC, production test, or regulatory compliance.",
-      "sources": [
-        "project-examples"
-      ]
+      "sources": ["project-examples", "ds5319-swd", "rm0008-adc", "ds5319-adc"]
     },
     "20-resources.md": {
       "question": "When the question is a parameter, a register, the core, an application, or a tool, how do you pick the right document layer and freeze the version?",

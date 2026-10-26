@@ -30,6 +30,64 @@
 9. 做完不是指灯亮过一次。别人按你的说明能复现，你能说出还没做的部分。仓库里的十个题目，选一个做到这个程度，比十个都开了头有用。
 10. 合上书，三问。你下一轮只允许新加哪一个外设？怎样算做完？板上的时钟和示例不一致时，你先改哪一部分？
 <!-- /video:ch19 -->
+## Principle and boundary
+
+This chapter stays on STM32F103C8T6. All ten projects stay. The four sections do not design an eleventh project. A number written for this part has to fit in this part, and it has to be the same ledger as chapter files 12 and 09. The file name and the title stay "A set of real projects".
+
+One application. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` for 46 KB, length `0xB800`, ending before `0x08010000`. `16 + 2 + 46 = 64`. That is the map in chapter file 12 and in `examples/iap-bootloader`. See [repository examples](#source-project-examples).
+
+A second image of the same `0xB800` is `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, past `0x08010000`. Chapter file 12 has no second slot. Cutting the 46 KB into two 23 KB images is a different design, and it is not the normal path of this figure. Flash ends at `0x08010000`. See [DS5319](#source-ds5319-swd).
+
+`64 * 1024 = 65536`. SRAM on the C8 is 20 KB, which is 20480 bytes. 65536 is larger than 20480. This array is void on STM32F103C8T6. This section does not invent another part's SRAM size.
+
+The denominator is 4096. Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. That is the same sentence as chapter file 09. See [RM0008 ADC](#source-rm0008-adc). This chapter does not redraw the sampling capacitor.
+
+The application frame is `4 + 128 + 1 = 133` bytes. Chapter file 14's full-speed bulk packet limit is 64 bytes. 133 has to be split. Do not write 133 as `wMaxPacketSize`. 48 MHz and `0x1209/0x0001` are cross-references only. Do not redraw chapter file 14.
+
+Project 8 uses 120 Ω at each end, pins PB8 and PB9, and 500 kbit/s, the same ledger as chapter file 13. Whether the transceiver is 5 V or 3.3 V stays in the bill of materials and does not enter a source card. See [repository examples](#source-project-examples).
+
+Do not put the direction pin on pin 10 PA0. That pin is PA0-WKUP and also ADC12_IN0. See [DS5319 ADC](#source-ds5319-adc). The four sections do not name a replacement pin.
+
+Add one new peripheral per pass. That is a method, not a new electrical limit. Hours and star ratings do not enter this section. If the LED microseconds stay in project 6, label them as the LED vendor's numbers, not RM0008, and do not copy them into this section.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-19-flash-fit.svg" width="760" alt="The C8 has one application of length 0xB800. Two of them are 110 KB. 65536 bytes is larger than 20 KB of SRAM.">
+  <br><sub>▲ Drawn for this book. The normal path is 16 KB, 2 KB, and one 0xB800 image ending before 0x08010000. SRAM is 20 KB, which is 20480 bytes. The failure path draws a second 0xB800 from 0x08010000 to 0x0801B800, and a 65536-byte array past 20480. The notes are a denominator of 4095, and treating 133 bytes as one USB packet. Sources: the map already frozen in chapter file 12, and the 64 KB / 20 KB cells in [DS5319](#source-ds5319-swd).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/one-slot.gif" width="640" alt="16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000">
+  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000. Print from the static figure. The second application and the 65536-byte array are not on this GIF.</sub>
+</p>
+
+`peripheral-wiring.svg` stays as an auxiliary figure. The wiring overview does not replace this map.
+
+## Timing or state
+
+| Object | Length | Ends at | Fits |
+| --- | --- | --- | --- |
+| Bootloader | 16 KB | `0x08004000` | fits |
+| Parameter block | 2 KB | `0x08004800` | fits |
+| One application | `0xB800` | `0x08010000` | fits |
+| Two `0xB800` images | 110 KB | `0x0801B800` | does not fit. This is not the chapter 12 map |
+| SRAM | 20480 bytes | on chip | fits |
+| A 65536-byte array | `64 * 1024` | past SRAM | does not fit on the C8 |
+| ADC | denominator 4096 | code 2048 is 1.65 V | denominator 4095 fails |
+| USB | application frame of 133 bytes | packet limit 64 bytes | 133 has to be split |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The update plan says two applications and cites chapter 12 | A different design was written as this chapter's map | Bring up one `0xB800` application on the C8 first | [repository examples](#source-project-examples) | The application length in `examples/iap-bootloader` is `0xB800`. Chapter 12 has no second slot |
+| The second image is linked past `0x08010000` | The 64 KB already ended | Stop at `0x08010000` | [DS5319](#source-ds5319-swd) | STM32F103x8 Flash is 64 KB. Two 46 KB images plus 16 KB and 2 KB are 110 KB |
+| The logic-analyzer buffer does not link on the C8 | `64 * 1024` is larger than this part's SRAM | Do not compile 65536 bytes into the C8 | [DS5319](#source-ds5319-swd) | SRAM is 20 KB, which is 20480 bytes. 65536 is larger. This row does not give another part's capacity |
+| The scope voltage is off by one LSB | The denominator was 4095 | Use 4096 | [RM0008 ADC](#source-rm0008-adc) | Code 2048 is 1.65 V at a nominal 3.3 V. 4095 is off by one LSB |
+| The acquisition card writes 133 bytes as the endpoint packet length | The application frame was treated as the packet limit | A full-speed bulk packet is at most 64 bytes | [repository examples](#source-project-examples) | 133 is `4 + 128 + 1`. It is not the chapter 14 packet limit |
+| The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0. This row does not assign a motor pin |
+| Two CAN nodes do not agree on the rate | They are not on the chapter 13 ledger | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9. This row does not set the transceiver to 5 V or to 3.3 V |
 ## 📌 Learning goals
 
 - [ ] Turn "an idea" into the engineering path: requirements, then hardware, then approach, then modules, then tests.
@@ -74,7 +132,8 @@ static void SetMotor(uint8_t id, int8_t duty)
 {
     uint32_t pwm = (uint32_t)((duty < 0 ? -duty : duty) * 999 / 100); /* 0~999 */
     if (id == 1) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, duty >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+        /* Do not put the direction pin on pin 10 PA0. It collides with the lamp, the ADC, and WKUP. This snippet does not name a replacement pin. */
+        HAL_GPIO_WritePin(MOTOR_DIR_PORT, MOTOR_DIR_PIN, duty >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
         __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm);
     } else {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, duty >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
@@ -151,10 +210,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
     Scope_Draw(&adc_buf[ADC_BUF_LEN / 2], ADC_BUF_LEN / 2);
 }
 
-/* Voltage conversion: V = code × Vref / 4095 (12-bit ADC) */
+/* Voltage conversion: V = code × Vref / 4096 (12-bit ADC). Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. */
 static float Code2Volt(uint16_t code)
 {
-    return (float)code * 3.3f / 4095.0f;
+    return (float)code * 3.3f / 4096.0f;
 }
 ```
 
@@ -189,7 +248,7 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
         frame[4 + i * 2 + 1] = (uint8_t)(samples[i] >> 8);
     }
     frame[4 + FRAME_N * 2] = Checksum8(frame, 4 + FRAME_N * 2);
-    CDC_Transmit_FS(frame, sizeof(frame));   /* see chapter 14 */
+    CDC_Transmit_FS(frame, sizeof(frame));   /* 4 + 128 + 1 = 133. This is not the 64-byte full-speed bulk packet limit in chapter 14 */
 }
 ```
 
@@ -206,14 +265,14 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 | Time | 1~2 weeks |
 | Difficulty | ★★★ |
 
-**Approach**: split Flash into a bootloader, a parameter block, APP_A, and APP_B (see [chapter 12](12-flash-iap.md)). During an update, write the new image into the idle slot, check the CRC, write the "boot flag", and reset. The bootloader jumps to the slot the flag names. If that image is bad, it falls back.
+**Approach**: on the C8, bring up the one application from chapter 12 first. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` with length `0xB800`, ending before `0x08010000`. Chapter 12 has no second slot. A second image of the same `0xB800` is 110 KB and ends at `0x0801B800`. Cutting the 46 KB into two 23 KB images is a different design. Do not write it as "see chapter 12".
 
 **Key code**:
 
 ```c
 /* Parameter block: the slot that is valid now, and any upgrade request */
 typedef struct {
-    uint32_t magic;       /* 0x5A5A0001 means valid */
+    uint32_t magic;       /* 0x5A5A0001 means valid. The number stays in this draft. It is not a chapter 12 key, and it does not enter a source card. The C8 has no second slot. */
     uint32_t active;      /* 0 = slot A, 1 = slot B */
     uint32_t pending;     /* the slot requested for the switch */
     uint32_t app_size[2];
@@ -247,7 +306,7 @@ uint32_t Boot_SelectApp(void)
 | Time | 3~5 days |
 | Difficulty | ★★ |
 
-**Approach**: a WS2812 uses a **single-wire return-to-zero code** (`T0H=0.4µs`, `T1H=0.8µs`, period 1.25µs) to send 24-bit GRB. **TIM+DMA** produces that waveform: encode each bit as two compare values, and let DMA stream them out.
+**Approach**: a WS2812 uses a **single-wire return-to-zero code** (`T0H=0.4µs`, `T1H=0.8µs`, period 1.25µs) to send 24-bit GRB. **TIM+DMA** produces that waveform: encode each bit as two compare values, and let DMA stream them out. `T0H=0.4µs`, `T1H=0.8µs`, and the 1.25µs period are the LED vendor's timing, not RM0008.
 
 **Key code**:
 
@@ -292,6 +351,7 @@ void WS2812_Encode(const uint8_t *grb, uint16_t n)
 **Key code**:
 
 ```c
+/* 64 * 1024 = 65536, which is larger than the C8 SRAM of 20480 bytes. This array is void on STM32F103C8T6. This note does not invent an F411 or F407 SRAM size. */
 #define LA_DEPTH  (64 * 1024)
 static uint8_t la_buf[LA_DEPTH];
 static volatile uint32_t la_wr = 0;
