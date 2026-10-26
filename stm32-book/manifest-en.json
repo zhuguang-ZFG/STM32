@@ -268,10 +268,7 @@
       "question": "How do you split \"it does not work\" into something you can observe, bisect, and change one cause at a time?",
       "deliverable": "A record of expected, actual, and the first point they diverge, plus a minimal project that reproduces the problem on its own.",
       "boundary": "The FAQ is an index, not a patch library. The same symptom can have several root causes, and the evidence has to come from this machine.",
-      "sources": [
-        "project-examples",
-        "project-guide"
-      ]
+      "sources": ["project-examples", "project-guide", "pm0056", "pm0056-dwt", "ds5319-swd", "rm0008-boot", "ds5319-nrst", "ds5319-lse", "rm0008-usart", "freertos-syscall", "ds5319-gpio"]
     },
     "19-projects.md": {
       "question": "How do you cut a multi-peripheral project into milestones you can accept one at a time, instead of integrating every uncertainty at once?",
@@ -1238,6 +1235,24 @@
         "accessed": "2026-10-25",
         "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
         "scope": "Chapter file 17 DWT enable order and hardware-breakpoint count. Set DEMCR 0xE000EDFC bit 24 before reading DWT_CYCCNT at 0xE0001004. At 72 MHz, 72 counts are 1 µs. A clear bit 24 reads a delta of 0. This M3 has 6 hardware breakpoints. Does not restate the four CFSR addresses. Does not include 167 ns."
+      },
+    "ds5319-nrst": {
+        "title": "DS5319 Rev 20 Figure 31 NRST capacitor",
+        "authority": "ST datasheet",
+        "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+        "snapshot": "DS5319 Rev 20, July 2025, Figure 31. The external reset circuit prints 0.1 µF on NRST. 0.1 µF is 100 nF. Pin 7 remains the cross-reference already in ds5319-swd and is not renumbered here. If the printed capacitor is not 0.1 µF, use the printed value. This snapshot does not include the internal pull-up in kilohms. Add that typical value only after opening Table 39 of this same datasheet, and do not open a second id for it.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "Chapter file 18, row H4. Figure 31 puts 0.1 µF on NRST. 0.1 µF is 100 nF. Pin 7 stays the cross-reference already on the SWD card. This card does not write a pull-up in kilohms until Table 39 is opened."
+      },
+      "ds5319-lse": {
+        "title": "DS5319 Rev 20 LSE load-capacitor range",
+        "authority": "ST datasheet",
+        "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+        "snapshot": "DS5319 Rev 20, July 2025, LSE oscillator section. CL1 and CL2 are chosen from the 5 pF to 15 pF ceramic range to match the crystal, and the two capacitors are usually equal. 6 pF is not a required value printed in that section. 32.768 kHz, pin 3, pin 4, and PRL = 32767 stay on ds5319-rtc and rm0008-rtc. This snapshot does not copy 6 pF in as a requirement and does not copy a ppm tolerance.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "Chapter file 18, row P9. Choose the LSE load capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. 32.768 kHz, pins 3 and 4, and PRL = 32767 stay with chapter file 11."
       }
   }
 }

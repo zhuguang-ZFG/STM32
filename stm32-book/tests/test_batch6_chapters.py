@@ -515,5 +515,163 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         self.assertEqual(by_id["pm0056-dwt"]["title_en"], card_en["title"])
         self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-1:])
 
+class Batch6BootChapterTests(unittest.TestCase):
+    def test_boot_chapters_keep_38_rows_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "18-常见问题FAQ.md"
+        en_path = ROOT / "docs" / "en" / "18-faq.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 🧠 核心原理", zh)
+        self.assertNotIn("## 🧠 Core ideas", en)
+        self.assertNotIn("90%", zh)
+        self.assertNotIn("90%", en)
+        self.assertNotIn("220~1", zh)
+        self.assertNotIn("220~1", en)
+        self.assertNotIn("6 pF 电容", zh)
+        self.assertNotIn("6 pF capacitors", en)
+        self.assertNotIn("改为 TIMx", zh)
+        self.assertNotIn("to a TIMx", en)
+        row_ids = [f"{letter}{index}" for letter, count in (("C", 8), ("D", 7), ("P", 9), ("H", 7), ("R", 7)) for index in range(1, count + 1)]
+        self.assertEqual(38, len(row_ids))
+        for row_id in row_ids:
+            self.assertIn(f"**{row_id} ", zh)
+            self.assertIn(f"**{row_id} ", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "38",
+                "PA13",
+                "PA14",
+                "BOOT0",
+                "0x08000000",
+                "0x1FFFF000",
+                "0x1FFFB000",
+                "12800",
+                "TIM4",
+                "0x50",
+                "0.1",
+                "270",
+                "PC13",
+                "#source-ds5319-swd",
+                "#source-rm0008-boot",
+                "#source-ds5319-nrst",
+                "#source-ds5319-lse",
+                "#source-rm0008-usart",
+                "#source-project-examples",
+                "#source-freertos-syscall",
+                "#source-ds5319-gpio",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("90%", blocks)
+            self.assertNotIn("220~1", blocks)
+            self.assertNotIn("kΩ", blocks)
+        self.assertIn("6 pF", zh_blocks)
+        self.assertIn("不是必须", zh_blocks)
+        self.assertIn("6 pF", en_blocks)
+        self.assertIn("not required", en_blocks)
+        self.assertIn("bit 15", zh)
+        self.assertIn("bit 15", en)
+        self.assertIn("../assets/diagrams/sample-18-boot-triage.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-18-boot-triage.svg", en)
+        self.assertIn("../assets/gif/boot0-low.gif", zh)
+        self.assertIn("../../assets/gif/boot0-low.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-18-boot-triage.svg"), zh_key.index("boot0-low.gif"))
+        self.assertLess(en_key.index("sample-18-boot-triage.svg"), en_key.index("boot0-low.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertIn("toolchain-flow.svg", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path in (zh_path, en_path):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = baseline_chapter(lock["baseline"], rel)
+            now_video = zh if path == zh_path else en
+            marker = "<!-- video:ch18 -->"
+            end = "<!-- /video:ch18 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now_video.split(marker, 1)[1].split(end, 1)[0],
+            )
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scope_nrst_zh = (
+            "第 18 章 H4。图 31 的外部复位电容是 0.1 µF。0.1 µF 就是 100 nF。第 7 脚仍交叉引用已有的 SWD 卡片。"
+            "没打开表 39 之前，这一条不写上拉的千欧。"
+        )
+        scope_nrst_en = (
+            "Chapter file 18, row H4. Figure 31 puts 0.1 µF on NRST. 0.1 µF is 100 nF. Pin 7 stays the cross-reference "
+            "already on the SWD card. This card does not write a pull-up in kilohms until Table 39 is opened."
+        )
+        scope_lse_zh = (
+            "第 18 章 P9。LSE 负载电容在 5 pF 到 15 pF 里按晶振选。6 pF 不是必须值。32.768 kHz、第 3 脚、第 4 脚和 PRL = 32767 仍以第 11 章为准。"
+        )
+        scope_lse_en = (
+            "Chapter file 18, row P9. Choose the LSE load capacitors in the 5 pF to 15 pF range with the crystal. "
+            "6 pF is not required. 32.768 kHz, pins 3 and 4, and PRL = 32767 stay with chapter file 11."
+        )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "project-examples",
+            "project-guide",
+            "pm0056",
+            "pm0056-dwt",
+            "ds5319-swd",
+            "rm0008-boot",
+            "ds5319-nrst",
+            "ds5319-lse",
+            "rm0008-usart",
+            "freertos-syscall",
+            "ds5319-gpio",
+        ]
+        guide = zh_manifest["chapter_guides"]["18-常见问题FAQ.md"]
+        guide_en = en_manifest["chapter_guides"]["18-faq.md"]
+        self.assertEqual(compass, guide["sources"])
+        self.assertEqual(compass, guide_en["sources"])
+        self.assertEqual("怎样把‘不工作’拆成可观察、可二分、一次只改一个原因的排错过程？", guide["question"])
+        self.assertEqual(
+            "How do you split \"it does not work\" into something you can observe, bisect, and change one cause at a time?",
+            guide_en["question"],
+        )
+        self.assertEqual("FAQ 是索引不是补丁库；同一现象可由多个根因造成，必须回到本机证据。", guide["boundary"])
+        for source_id, scope_zh, scope_en in (
+            ("ds5319-nrst", scope_nrst_zh, scope_nrst_en),
+            ("ds5319-lse", scope_lse_zh, scope_lse_en),
+        ):
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(en_manifest["sources"])[-2:])
+
 if __name__ == "__main__":
     unittest.main()
