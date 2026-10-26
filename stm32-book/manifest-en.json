@@ -238,9 +238,7 @@
       "question": "How do physical termination, bit timing, arbitration, filters, and error counters together decide whether a CAN frame can be trusted?",
       "deliverable": "A bit-timing ledger, a loopback self-test, and a captured frame from two nodes with termination resistors.",
       "boundary": "This chapter covers bxCAN basics. It is not CANopen or J1939, and H7 FDCAN registers cannot be substituted as-is. With APB1 at 36 MHz, prescaler 9, BS1 5, and BS2 2 give 8 time quanta, a 75% sample point, and 36 MHz / (9 × 8) = 500 kbit/s. Ten quanta at the same target need a prescaler of 7.2; writing 8 yields 450 kbit/s. A transmit error count of 256 enters bus-off.",
-      "sources": [
-        "rm0008"
-      ]
+      "sources": ["rm0008", "rm0008-can", "ds5319-usbcan", "rm0008-usb", "project-examples", "ds5319-clock", "ds5319-i2c"]
     },
     "14-usb.md": {
       "question": "How does the host finish enumeration through reset, descriptors, address, and configuration, and where does the class protocol take over the data?",
@@ -1190,6 +1188,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter file 12 pages, half-words, and the two keys. Medium-density parts erase 1 KB pages. Programming granularity is 16 bits. The erased state is 0xFFFF. Unlock writes 0x45670123 and then 0xCDEF89AB. The high-density 2 KB page is void on the C8. Byte programming is void on this part. Does not rewrite the chapter 02 wait states. Does not call 0xAA the unprotected key."
+    },
+    "rm0008-can": {
+      "title": "RM0008 Rev 21 bxCAN bit time, bus-off, and filters",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 24, Controller area network (bxCAN). Bit time is one synchronization quantum plus BS1 plus BS2. The CAN_BTR prescaler field uses the printed bits. The Bus-Off state is reached when TEC is greater than 255, so the counter value that enters bus-off is 256. Recovery requires 128 occurrences of 11 consecutive recessive bits. Other STM32F10xxx devices, including this medium-density part, have 14 filter banks. There are 2 receive FIFOs. A 32-bit filter includes STDID[10:0]. This repository places that standard identifier in FilterIdHigh shifted left by 5, which lines those 11 bits up with the high half-word. AFIO_MAPR encoding 10 maps CAN_RX to PB8 and CAN_TX to PB9. Encoding 11 maps CAN_RX to PD0 and CAN_TX to PD1. Section 9.3.3 says the port D remap is not possible on 36-, 48-, and 64-pin packages. 500 kbit/s remains prescaler 9 and 8 time quanta. This snapshot does not include a CAN base address and does not call 450 kbit/s the working point.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter file 13 bit time, bus-off, and filters. At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. A transmit error counter of 256 enters bus-off. Recovery is 128 times 11 recessive bits. Does not invent a CAN base address. Does not call 450 kbit/s the working point."
+    },
+    "ds5319-usbcan": {
+      "title": "DS5319 Rev 20 Table 5 USB and CAN pins",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. pin 31 is PA10 and pin 34 is PA13. pin 32 is PA11 and pin 33 is PA12. PA11 alternate functions include USBDM and CANRX. PA12 alternate functions include USBDP and CANTX. pin 45 is PB8 and pin 46 is PB9. PB8 remap includes I2C1_SCL and CANRX. PB9 remap includes I2C1_SDA and CANTX. Footnote 7: pins 5 and 6 on LQFP48 are OSC_IN and OSC_OUT, and PD0 and PD1 can be remapped onto them. Table 45 note 2 prints a 1.5 kilohm pull-up on USBDP (D+) to a 3.0 to 3.6 V range for USB 2.0 full-speed compliance. This snapshot does not trace the package drawing and does not assign a transceiver pinout.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Pins for chapter files 13 and 14. Pin 32 PA11 includes USB_DM and CAN_RX. Pin 33 PA12 includes USB_DP and CAN_TX. Pin 45 PB8 and pin 46 PB9 are the CAN remap. Pin 5 and pin 6 exist. PA11/PA12 cannot be CAN and USB at the same time."
+    },
+    "rm0008-usb": {
+      "title": "RM0008 Rev 21 USB full-speed device and the shared interrupt",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 23, Universal serial bus full-speed device interface (USB). On STM32F103 this block is a full-speed device, not a host. The USB clock must be 48 MHz. Table 63, vector table for other STM32F10xxx devices, which covers medium-density STM32F103, prints USB_LP_CAN_RX0. The pre-check default USB_LP_CAN1_RX0 is not the acronym in that table. Use the printed name USB_LP_CAN_RX0. RM0008 mentions an external pull-up resistor and does not print its ohms. The 48 MHz claim and the device-not-host claim do not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "The device boundary for chapter file 14, and the chapter file 13 cross-reference to the same interrupt. F103 USB is a full-speed device, not a host. The USB clock must be 48 MHz. The default vector name is USB_LP_CAN1_RX0. Does not write 480 Mbit/s onto this part."
     }
   }
 }

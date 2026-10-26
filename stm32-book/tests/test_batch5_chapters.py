@@ -330,10 +330,177 @@ class Batch5IapChapterTests(unittest.TestCase):
         self.assertEqual(by_id["rm0008-flash"]["authority_en"], card_en["authority"])
         self.assertEqual(scope_zh, card_zh["scope"])
         self.assertEqual(scope_en, card_en["scope"])
-        self.assertEqual(
-            ["rm0008-flash"],
-            list(zh_manifest["sources"])[-1:],
+        order = list(zh_manifest["sources"])
+        self.assertIn("rm0008-flash", order)
+        later = [
+            name
+            for name in ("rm0008-can", "ds5319-usbcan", "rm0008-usb", "freertos-syscall")
+            if name in order
+        ]
+        if later:
+            self.assertLess(order.index("rm0008-flash"), order.index(later[0]))
+        else:
+            self.assertEqual("rm0008-flash", order[-1])
+
+
+class Batch5CanChapterTests(unittest.TestCase):
+    def test_can_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "13-CAN总线.md"
+        en_path = ROOT / "docs" / "en" / "13-can.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls\n", en)
+        self.assertIn("## 📌 学习目标", zh)
+        self.assertIn("## 📌 Goals", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core idea", en)
+        self.assertNotIn("## 📌 Learning goals", en)
+        zh_video, zh_rest = _split_video(zh, "ch13")
+        en_video, en_rest = _split_video(en, "ch13")
+        self.assertIn("C8 没有那两只脚", zh_video)
+        self.assertIn("C8 没有那两只脚", en_video)
+        self.assertNotIn("C8 没有那两只脚", zh_rest)
+        self.assertNotIn("C8 没有那两只脚", en_rest)
+        self.assertNotIn("差分阻抗约 60", zh_rest)
+        self.assertNotIn("differential impedance near 60", en_rest)
+        self.assertIn("PB8=CAN_RX、PB9=CAN_TX", zh_rest)
+        self.assertIn("PB8 = CAN_RX, PB9 = CAN_TX", en_rest)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "36",
+                "250",
+                "500",
+                "450",
+                "75",
+                "70",
+                "256",
+                "128",
+                "11",
+                "120",
+                "PB8",
+                "PB9",
+                "PA11",
+                "PA12",
+                "PD0",
+                "PD1",
+                "#source-rm0008-can",
+                "#source-project-examples",
+                "#source-ds5319-usbcan",
+                "#source-ds5319-clock",
+                "#source-ds5319-i2c",
+                "#source-rm0008-usb",
+            ):
+                self.assertIn(token, blocks)
+        self.assertIn("第 45 脚", zh_blocks)
+        self.assertIn("第 46 脚", zh_blocks)
+        self.assertIn("第 5 脚", zh_blocks)
+        self.assertIn("第 6 脚", zh_blocks)
+        self.assertIn("pin 45", en_blocks)
+        self.assertIn("pin 46", en_blocks)
+        self.assertIn("pin 5", en_blocks)
+        self.assertIn("pin 6", en_blocks)
+        self.assertIn("不是电缆", zh_blocks)
+        self.assertIn("not the cable", en_blocks)
+        self.assertIn("../assets/diagrams/sample-13-can-bit.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-13-can-bit.svg", en)
+        self.assertIn("../assets/gif/can-500k.gif", zh)
+        self.assertIn("../../assets/gif/can-500k.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-13-can-bit.svg"), zh_key.index("can-500k.gif"))
+        self.assertLess(en_key.index("sample-13-can-bit.svg"), en_key.index("can-500k.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+                encoding="utf-8"
+            )
         )
+        for path, now in ((zh_path, zh), (en_path, en)):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = subprocess.check_output(
+                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
+            ).decode("utf-8")
+            marker = "<!-- video:ch13 -->"
+            end = "<!-- /video:ch13 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now.split(marker, 1)[1].split(end, 1)[0],
+            )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "rm0008",
+            "rm0008-can",
+            "ds5319-usbcan",
+            "rm0008-usb",
+            "project-examples",
+            "ds5319-clock",
+            "ds5319-i2c",
+        ]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["13-CAN总线.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["13-can.md"]["sources"])
+        self.assertEqual(
+            ["rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb"],
+            list(zh_manifest["sources"])[-4:],
+        )
+        self.assertEqual(list(zh_manifest["sources"])[-4:], list(en_manifest["sources"])[-4:])
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scopes = {
+            "rm0008-can": (
+                "第 13 章的位时间、总线关闭和过滤器。36 MHz 下预分频 9、8 个时间份额是 500 kbit/s。预分频 8、10 个时间份额是 450 kbit/s。发送错误计数到 256 进入总线关闭。恢复是 128 次、每次 11 个隐性位。不编 CAN 基址。不把 450 kbit/s 写成工作点。",
+                "Chapter file 13 bit time, bus-off, and filters. At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. A transmit error counter of 256 enters bus-off. Recovery is 128 times 11 recessive bits. Does not invent a CAN base address. Does not call 450 kbit/s the working point.",
+            ),
+            "ds5319-usbcan": (
+                "第 13 章和第 14 章的脚。第 32 脚 PA11 的复用含 USB_DM 和 CAN_RX，第 33 脚 PA12 的复用含 USB_DP 和 CAN_TX。第 45 脚 PB8、第 46 脚 PB9 是 CAN 重映射。第 5 脚和第 6 脚存在。同一对 PA11/PA12 不能同时当 CAN 和 USB。",
+                "Pins for chapter files 13 and 14. Pin 32 PA11 includes USB_DM and CAN_RX. Pin 33 PA12 includes USB_DP and CAN_TX. Pin 45 PB8 and pin 46 PB9 are the CAN remap. Pin 5 and pin 6 exist. PA11/PA12 cannot be CAN and USB at the same time.",
+            ),
+            "rm0008-usb": (
+                "第 14 章的设备边界，以及第 13 章对同一条中断的交叉引用。F103 的 USB 是全速设备，不是主机。USB 时钟要 48 MHz。默认向量名是 USB_LP_CAN1_RX0。不把 480 Mbit/s 写进这颗料。",
+                "The device boundary for chapter file 14, and the chapter file 13 cross-reference to the same interrupt. F103 USB is a full-speed device, not a host. The USB clock must be 48 MHz. The default vector name is USB_LP_CAN1_RX0. Does not write 480 Mbit/s onto this part.",
+            ),
+        }
+        for source_id, (scope_zh, scope_en) in scopes.items():
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(card_zh["accessed"], card_en["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(by_id[source_id]["authority_zh"], card_zh["authority"])
+            self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
+            self.assertEqual(scope_zh, card_zh["scope"])
+            self.assertEqual(scope_en, card_en["scope"])
+
+
+def _split_video(text: str, slug: str) -> tuple[str, str]:
+    marker = f"<!-- video:{slug} -->"
+    end = f"<!-- /video:{slug} -->"
+    video = text.split(marker, 1)[1].split(end, 1)[0]
+    rest = text.split(marker, 1)[0] + text.split(end, 1)[1]
+    return video, rest
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -182,7 +182,7 @@
       "question": "物理终端、位时序、仲裁、过滤器和错误计数怎样共同决定一条 CAN 报文能否可信到达？",
       "deliverable": "一笔位时序账、一个环回自测和一份双节点含终端电阻的抓帧记录。",
       "boundary": "本章讲 bxCAN 基础，不等于 CANopen/J1939，也不能把 H7 的 FDCAN 寄存器原样替换。APB1 为 36 MHz 时，预分频 9、BS1 为 5、BS2 为 2：8 个时间份额，采样点 75%，36 MHz / (9 × 8) = 500 kbit/s。10 个时间份额、目标同样是 500 kbit/s 时预分频是 7.2；写成 8 得到 450 kbit/s。发送错误计数到 256 进入总线关闭。",
-      "sources": ["rm0008"]
+      "sources": ["rm0008", "rm0008-can", "ds5319-usbcan", "rm0008-usb", "project-examples", "ds5319-clock", "ds5319-i2c"]
     },
     "14-USB.md": {
       "question": "主机怎样沿复位、描述符、地址和配置完成枚举，类协议又在哪里接管数据？",
@@ -1033,6 +1033,33 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 12 章的页、半字和两把钥匙。中容量按 1 KB 擦除。编程粒度是 16 位。擦除态是 0xFFFF。解锁先写 0x45670123，再写 0xCDEF89AB。大容量的 2 KB/页在 C8 上作废。按字节编程在这颗料上作废。不重写第 02 章的等待周期。不把 0xAA 写成无保护键。"
+    },
+    "rm0008-can": {
+      "title": "RM0008 Rev 21 bxCAN 的位时间、总线关闭和过滤器",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 24, Controller area network (bxCAN). Bit time is one synchronization quantum plus BS1 plus BS2. The CAN_BTR prescaler field uses the printed bits. The Bus-Off state is reached when TEC is greater than 255, so the counter value that enters bus-off is 256. Recovery requires 128 occurrences of 11 consecutive recessive bits. Other STM32F10xxx devices, including this medium-density part, have 14 filter banks. There are 2 receive FIFOs. A 32-bit filter includes STDID[10:0]. This repository places that standard identifier in FilterIdHigh shifted left by 5, which lines those 11 bits up with the high half-word. AFIO_MAPR encoding 10 maps CAN_RX to PB8 and CAN_TX to PB9. Encoding 11 maps CAN_RX to PD0 and CAN_TX to PD1. Section 9.3.3 says the port D remap is not possible on 36-, 48-, and 64-pin packages. 500 kbit/s remains prescaler 9 and 8 time quanta. This snapshot does not include a CAN base address and does not call 450 kbit/s the working point.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 13 章的位时间、总线关闭和过滤器。36 MHz 下预分频 9、8 个时间份额是 500 kbit/s。预分频 8、10 个时间份额是 450 kbit/s。发送错误计数到 256 进入总线关闭。恢复是 128 次、每次 11 个隐性位。不编 CAN 基址。不把 450 kbit/s 写成工作点。"
+    },
+    "ds5319-usbcan": {
+      "title": "DS5319 Rev 20 表 5 的 USB 与 CAN 脚",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. pin 31 is PA10 and pin 34 is PA13. pin 32 is PA11 and pin 33 is PA12. PA11 alternate functions include USBDM and CANRX. PA12 alternate functions include USBDP and CANTX. pin 45 is PB8 and pin 46 is PB9. PB8 remap includes I2C1_SCL and CANRX. PB9 remap includes I2C1_SDA and CANTX. Footnote 7: pins 5 and 6 on LQFP48 are OSC_IN and OSC_OUT, and PD0 and PD1 can be remapped onto them. Table 45 note 2 prints a 1.5 kilohm pull-up on USBDP (D+) to a 3.0 to 3.6 V range for USB 2.0 full-speed compliance. This snapshot does not trace the package drawing and does not assign a transceiver pinout.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 13 章和第 14 章的脚。第 32 脚 PA11 的复用含 USB_DM 和 CAN_RX，第 33 脚 PA12 的复用含 USB_DP 和 CAN_TX。第 45 脚 PB8、第 46 脚 PB9 是 CAN 重映射。第 5 脚和第 6 脚存在。同一对 PA11/PA12 不能同时当 CAN 和 USB。"
+    },
+    "rm0008-usb": {
+      "title": "RM0008 Rev 21 USB 全速设备与共享中断",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 23, Universal serial bus full-speed device interface (USB). On STM32F103 this block is a full-speed device, not a host. The USB clock must be 48 MHz. Table 63, vector table for other STM32F10xxx devices, which covers medium-density STM32F103, prints USB_LP_CAN_RX0. The pre-check default USB_LP_CAN1_RX0 is not the acronym in that table. Use the printed name USB_LP_CAN_RX0. RM0008 mentions an external pull-up resistor and does not print its ohms. The 48 MHz claim and the device-not-host claim do not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 14 章的设备边界，以及第 13 章对同一条中断的交叉引用。F103 的 USB 是全速设备，不是主机。USB 时钟要 48 MHz。默认向量名是 USB_LP_CAN1_RX0。不把 480 Mbit/s 写进这颗料。"
     }
   }
 }
