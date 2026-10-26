@@ -807,5 +807,44 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
         self.assertNotIn("ds5319-flash", zh_manifest["sources"])
 
+class Batch6GlossaryTests(unittest.TestCase):
+    def test_only_the_f103_stop_current_cell_changes(self) -> None:
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        pairs = (
+            (
+                "stm32-book/book/D-术语表.md",
+                "约 14~20 µA",
+                "低功耗稳压器典型 14 µA，主稳压器那一格是 24 µA，两格都不含独立看门狗",
+            ),
+            (
+                "stm32-book/book/en/D-glossary.md",
+                "about 14 to 20 µA",
+                "14 µA on the low-power regulator and 24 µA on the main regulator",
+            ),
+        )
+        for rel, old_phrase, new_phrase in pairs:
+            now = (ROOT / rel).read_text(encoding="utf-8")
+            base = baseline_chapter(lock["baseline"], rel)
+            old_lines = base.splitlines()
+            new_lines = now.splitlines()
+            self.assertEqual(len(old_lines), len(new_lines))
+            changed = [index for index, (before, after) in enumerate(zip(old_lines, new_lines)) if before != after]
+            self.assertEqual([229], changed)
+            row = new_lines[229]
+            self.assertIn(new_phrase, row)
+            self.assertNotIn(old_phrase, row)
+            self.assertNotIn(old_phrase, now)
+            for token in ("8 MHz", "1.1 µA", "1.4 µA", "4 µs"):
+                self.assertIn(token, row)
+                self.assertIn(token, old_lines[229])
+        for rel in ("stm32-book/book/A-工程深读.md", "stm32-book/book/en/A-uart-dma.md"):
+            now = (ROOT / rel).read_text(encoding="utf-8")
+            self.assertEqual(baseline_chapter(lock["baseline"], rel), now)
+
+
 if __name__ == "__main__":
     unittest.main()
