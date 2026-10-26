@@ -1,0 +1,12 @@
+<svg viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M18 42h18v16h18V42h18M18 70h12l8-12 12 25 10-13h12M18 98h54"/>
+  <path d="M82 34v70M88 98l7-12 8 7 8-24 8 10 9-34" opacity=".55"/>
+  <rect x="140" y="36" width="38" height="20" rx="3"/>
+  <rect x="140" y="62" width="38" height="20" rx="3"/>
+  <rect x="140" y="88" width="38" height="20" rx="3"/>
+  <path d="M116 70h18M127 62l8 8-8 8"/>
+  <path d="M16 122h168" opacity=".3"/>
+  <circle cx="18" cy="42" r="2.4" fill="currentColor" stroke="none"/>
+  <circle cx="18" cy="70" r="2.4" fill="currentColor" stroke="none"/>
+  <circle cx="18" cy="98" r="2.4" fill="currentColor" stroke="none"/>
+</svg>

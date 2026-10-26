@@ -27,6 +27,7 @@ BOOK_DIR = ROOT / "book"
 DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
 ILLUSTRATIONS_DIR = ROOT / "book" / "illustrations"
+ART_MAX_BYTES = 6000
 TOKENS_PATH = ROOT / "styles" / "tokens.json"
 BOOK_CSS_PATH = ROOT / "styles" / "book.css"
 OUTPUT_NAME = "stm32-practical-book.html"
@@ -708,22 +709,56 @@ def callout_label_map(manifest: dict) -> dict[str, str]:
     }
 
 
-_EMBLEM_BANNED = re.compile(r"(<\s*(script|style|image|filter)|\bid\s*=|href\s*=|url\s*\()", re.I)
+_ART_BANNED = (
+    (re.compile(r"<\s*(?:script|style|iframe|image|filter)\b", re.I), "active or embedded content"),
+    (re.compile(r"\bid\s*=", re.I), "an id attribute"),
+    (re.compile(r"\bhref\s*=", re.I), "an href attribute"),
+    (re.compile(r"\burl\s*\(", re.I), "a url() reference"),
+)
+
+
+def _read_inline_art(name: str, expected_view_box: str) -> str:
+    path = ILLUSTRATIONS_DIR / f"{name}.svg"
+    if not path.is_file():
+        raise BuildError(f"missing inline illustration: {path}")
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise BuildError(f"cannot read inline illustration {path}: {exc}") from exc
+    if len(raw) > ART_MAX_BYTES:
+        raise BuildError(f"inline illustration exceeds {ART_MAX_BYTES} bytes: {path}")
+    try:
+        svg = raw.decode("utf-8").strip()
+    except UnicodeDecodeError as exc:
+        raise BuildError(f"inline illustration is not UTF-8: {path}") from exc
+    opener = svg.split(">", 1)[0]
+    expected_double = f'viewBox="{expected_view_box}"'
+    expected_single = f"viewBox='{expected_view_box}'"
+    if (
+        not svg.startswith("<svg")
+        or not svg.endswith("</svg>")
+        or svg.count("<svg") != 1
+        or (expected_double not in opener and expected_single not in opener)
+    ):
+        raise BuildError(f"inline illustration has the wrong SVG root or viewBox: {path}")
+    for pattern, reason in _ART_BANNED:
+        if pattern.search(svg):
+            raise BuildError(f"inline illustration contains {reason}: {path}")
+    if "currentColor" not in svg:
+        raise BuildError(f"inline illustration cannot re-ink with currentColor: {path}")
+    return svg
 
 
 def chapter_emblem(filename: str) -> str:
-    """章首手绘徽章：book/illustrations/chNN.svg 存在即内联，缺失静默跳过。
-
-    参考《御舆笔记》的徽章习语：64×64、currentColor（暗色模式自动换色）、
-    无 id（同文档内联重名会撞车）、无滤镜（印前不落位图）。
-    """
-    path = ILLUSTRATIONS_DIR / f"ch{filename[:2]}.svg"
-    if not path.is_file():
-        return ""
-    svg = path.read_text(encoding="utf-8").strip()
-    if _EMBLEM_BANNED.search(svg) or 'viewBox="0 0 64 64"' not in svg:
-        raise BuildError(f"illustration violates the emblem contract: {path}")
+    """Return the required 64×64 chapter emblem as safe inline SVG."""
+    svg = _read_inline_art(f"ch{filename[:2]}", "0 0 64 64")
     return f'<span class="ch-emblem" aria-hidden="true">{svg}</span>'
+
+
+def part_headpiece(part_id: str) -> str:
+    """Return the required 200×140 part-divider drawing as safe inline SVG."""
+    svg = _read_inline_art(f"part-{part_id}", "0 0 200 140")
+    return f'<div class="part-art" aria-hidden="true">{svg}</div>'
 
 
 def compass_html(guide: dict, manifest: dict) -> str:
@@ -1387,6 +1422,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             f"""
 <section class="part-divider" id="part-{html.escape(part['id'])}" data-part-index="{index:02d}">
   <p class="part-index" aria-hidden="true">{index:02d}</p>
+  {part_headpiece(part['id'])}
   <p class="part-label">{html.escape(ui(manifest, 'part_kicker').format(n=index))}</p>
   <h1>{html.escape(part['title'])}</h1>
   <p class="part-goal">{html.escape(part['goal'])}</p>

@@ -69,6 +69,8 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 9.5rem)); }
 .part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 9.5rem)); font-size: 1.12rem; line-height: 1.6; }
 .part-index { position: absolute; right: 5%; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
+.part-art { position: absolute; right: clamp(2.5rem, 8vw, 5.5rem); bottom: clamp(1.8rem, 4vw, 3.5rem); z-index: 0; width: min(13.5rem, 30%); color: var(--accent); opacity: .62; pointer-events: none; }
+.part-art svg { display: block; width: 100%; height: auto; }
 .chapter, .appendix, .part-closing, .back-matter { padding: var(--space-chapter) var(--inset); border-bottom: 1px solid var(--line); }
 .part-closing { background: linear-gradient(180deg, var(--spine-soft), transparent 12rem); border-top: 4px solid var(--spine); }
 .closing-banner { margin: .8rem 0 0; color: var(--warn); font-weight: 800; letter-spacing: var(--tracking-kicker); font-size: var(--type-kicker); }
@@ -186,6 +188,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .cover-sheet { min-height: auto; grid-template-rows: 220px auto; }
   .cover-panel { padding: 1.3rem 1rem 1.8rem; }
   .part-index { font-size: 3rem; top: .55rem; }
+  .part-art { position: static; width: 8rem; margin-top: .65rem; justify-self: end; order: 4; opacity: .55; }
   .part-divider h1, .part-goal { max-width: calc(100% - 4.8rem); }
   .contents ol { columns: 1; }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
@@ -215,6 +218,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .imprint { break-before: auto; page-break-before: auto; }
   .chapter > header, .appendix > header, .part-closing > header, .back-matter > header, .chapter-compass { break-after: avoid-page; page-break-after: avoid; }
   .part-divider { min-height: 220mm; align-content: center; }
+  .part-art { right: 0; bottom: 18mm; width: 45mm; opacity: .62; }
   .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
   h2, h3, h4, h5, h6 { bookmark-level: none; }

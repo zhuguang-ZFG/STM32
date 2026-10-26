@@ -1,0 +1,10 @@
+<svg viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="70" y="40" width="60" height="44" rx="6"/>
+  <path d="M82 40v-8M94 40v-8M106 40v-8M118 40v-8M82 84v8M94 84v8M106 84v8M118 84v8M70 50h-8M70 62h-8M70 74h-8M130 50h8M130 62h8M130 74h8" opacity=".55"/>
+  <path d="M88 53l-8 9 8 9M100 71h15"/>
+  <path d="M45 49C56 22 91 12 122 23c14 5 25 14 32 25M151 38l3 10-10-1"/>
+  <path d="M155 88c-14 29-51 39-83 27-13-5-23-14-29-25M46 101l-3-11 11 2"/>
+  <path d="M28 126h144" opacity=".3"/>
+  <circle cx="45" cy="49" r="2.5" fill="currentColor" stroke="none"/>
+  <circle cx="155" cy="88" r="2.5" fill="currentColor" stroke="none"/>
+</svg>
