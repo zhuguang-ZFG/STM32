@@ -26,6 +26,7 @@ DOCS_DIR = REPO_ROOT / "docs"
 BOOK_DIR = ROOT / "book"
 DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
+ILLUSTRATIONS_DIR = ROOT / "book" / "illustrations"
 TOKENS_PATH = ROOT / "styles" / "tokens.json"
 BOOK_CSS_PATH = ROOT / "styles" / "book.css"
 OUTPUT_NAME = "stm32-practical-book.html"
@@ -705,6 +706,24 @@ def callout_label_map(manifest: dict) -> dict[str, str]:
         "tip": ui(manifest, "callout_tip"),
         "note": ui(manifest, "callout_note"),
     }
+
+
+_EMBLEM_BANNED = re.compile(r"(<\s*(script|style|image|filter)|\bid\s*=|href\s*=|url\s*\()", re.I)
+
+
+def chapter_emblem(filename: str) -> str:
+    """章首手绘徽章：book/illustrations/chNN.svg 存在即内联，缺失静默跳过。
+
+    参考《御舆笔记》的徽章习语：64×64、currentColor（暗色模式自动换色）、
+    无 id（同文档内联重名会撞车）、无滤镜（印前不落位图）。
+    """
+    path = ILLUSTRATIONS_DIR / f"ch{filename[:2]}.svg"
+    if not path.is_file():
+        return ""
+    svg = path.read_text(encoding="utf-8").strip()
+    if _EMBLEM_BANNED.search(svg) or 'viewBox="0 0 64 64"' not in svg:
+        raise BuildError(f"illustration violates the emblem contract: {path}")
+    return f'<span class="ch-emblem" aria-hidden="true">{svg}</span>'
 
 
 def compass_html(guide: dict, manifest: dict) -> str:
@@ -1389,7 +1408,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             body.append(
                 f"""
 <article class="chapter" id="chapter-{filename[:2]}" data-chapter="{filename[:2]}">
-  <header><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(heading)}</h1></header>
+  <header class="ch-head"><span class="ch-head-text"><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(heading)}</h1></span>{chapter_emblem(filename)}</header>
   {compass_html(guide, manifest)}
   {rendered}
   {quick_check_html(questions, manifest)}

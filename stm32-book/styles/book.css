@@ -75,6 +75,12 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .chapter > header, .appendix > header, .part-closing > header, .back-matter > header { margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1px solid var(--line); }
 .chapter > header h1, .appendix > header h1, .part-closing > header h1, .back-matter > header h1 { font-size: var(--type-h1); line-height: 1.22; margin: .28em 0 0; max-width: 18em; }
 .chapter-number { display: block; color: var(--accent); font-weight: 800; letter-spacing: var(--tracking-kicker); font-size: var(--type-kicker); }
+/* 章首手绘徽章：内联 SVG，随 currentColor 换色（暗色模式自动反转） */
+.ch-head { display: flex; align-items: center; gap: 1rem; }
+.ch-head-text { flex: 1 1 auto; }
+.ch-emblem { flex: 0 0 auto; margin-inline-start: auto; width: 4.2rem; height: 4.2rem; color: var(--accent); opacity: .92; }
+.ch-emblem svg { width: 100%; height: 100%; display: block; }
+
 h2, h3, h4 { line-height: var(--leading-heading); scroll-margin-top: 1.25rem; }
 h2 { font-size: var(--type-h2); margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); }
 .chapter > h2, .appendix > h2, .part-closing > h2 { margin: calc(var(--space-figure) + var(--space-paragraph)) 0 var(--space-bar); padding-left: var(--space-bar); border-left: 3px solid var(--accent); }

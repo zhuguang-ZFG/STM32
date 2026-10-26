@@ -1507,7 +1507,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "aacd30dcb0efbff80d004295338c9be99b35e19cb744d6f4b1e662a0b8f31baf",
+            "f8dc34881a21080e1b0622df3922d7b094c92e549d595773fd6f6610f181e09c",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
