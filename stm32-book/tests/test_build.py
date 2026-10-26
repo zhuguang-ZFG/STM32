@@ -142,9 +142,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="back-matter subject-index"', html)
 
         history = html.split('id="version-history"', 1)[1].split('id="how-to-read"', 1)[0]
-        versions = ("1.3.0", "1.2.9", "1.2.8", "1.2.7", "1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
+        versions = ("1.3.1", "1.3.0", "1.2.9", "1.2.8", "1.2.7", "1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0")
         for version in versions:
             self.assertIn(f">{version}<", history)
+        self.assertLess(history.index(">1.3.1<"), history.index(">1.3.0<"))
         self.assertLess(history.index(">1.3.0<"), history.index(">1.2.9<"))
         self.assertLess(history.index(">1.2.9<"), history.index(">1.2.8<"))
         self.assertLess(history.index(">1.2.8<"), history.index(">1.2.7<"))
@@ -185,7 +186,7 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         versions = [entry["version"] for entry in revisions["entries"]]
         self.assertEqual(
-            ["1.3.0", "1.2.9", "1.2.8", "1.2.7", "1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
+            ["1.3.1", "1.3.0", "1.2.9", "1.2.8", "1.2.7", "1.2.6", "1.2.5", "1.2.4", "1.2.3", "1.2.2", "1.2.1", "1.2.0", "1.1.1", "1.1.0", "1.0.8", "1.0.7", "1.0.6", "1.0.5", "1.0.4", "1.0.3", "1.0.2", "1.0.1", "1.0.0"],
             versions,
         )
         self.assertEqual(versions[0], self.manifest["version"])
@@ -279,7 +280,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([], missing)
         local_markdown = [href for href in parsed.hrefs if re.search(r"\.md(?:#|$)", href)]
         self.assertEqual([], local_markdown)
-        self.assertIn("<strong>v1.3.0</strong>", html)
+        self.assertIn("<strong>v1.3.1</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
@@ -419,7 +420,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual("book/en", manifest["book_dir"])
         self.assertEqual("stm32-practical-book-en.html", manifest["output_name"])
         self.assertEqual("stm32-practical-book-en.pdf", manifest["pdf_name"])
-        self.assertEqual("1.3.0", manifest["version"])
+        self.assertEqual("1.3.1", manifest["version"])
         self.assertEqual(self.manifest["version"], manifest["version"])
         self.assertEqual(set(self.builder.UI["zh-CN"]), set(self.builder.UI["en"]))
         zh_sources = {name[:2]: guide["sources"] for name, guide in self.manifest["chapter_guides"].items()}
@@ -436,7 +437,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
         self.assertEqual(29, parsed.compasses)
         self.assertIn('<html lang="en">', html)
-        self.assertIn("<strong>v1.3.0</strong>", html)
+        self.assertIn("<strong>v1.3.1</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
@@ -1625,21 +1626,40 @@ class BookBuildContractTests(unittest.TestCase):
         revisions = json.loads((BOOK_DIR / "revisions.json").read_text(encoding="utf-8"))
         english = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
         readme = (BOOK_DIR / "README.md").read_text(encoding="utf-8")
-        batch5 = revisions["entries"][0]
-        posters = revisions["entries"][1]
-        density = revisions["entries"][2]
-        entry = revisions["entries"][3]
-        cover = revisions["entries"][4]
-        tokens = revisions["entries"][5]
-        typography = revisions["entries"][6]
-        batch4 = revisions["entries"][7]
-        batch3 = revisions["entries"][8]
-        guide = revisions["entries"][9]
-        previous = revisions["entries"][10]
-        self.assertEqual("1.3.0", self.manifest["version"])
+        batch6 = revisions["entries"][0]
+        batch5 = revisions["entries"][1]
+        posters = revisions["entries"][2]
+        density = revisions["entries"][3]
+        entry = revisions["entries"][4]
+        cover = revisions["entries"][5]
+        tokens = revisions["entries"][6]
+        typography = revisions["entries"][7]
+        batch4 = revisions["entries"][8]
+        batch3 = revisions["entries"][9]
+        guide = revisions["entries"][10]
+        previous = revisions["entries"][11]
+        self.assertEqual("1.3.1", self.manifest["version"])
         self.assertEqual("2026-10-25", self.manifest["date"])
-        self.assertEqual("1.3.0", english["version"])
+        self.assertEqual("1.3.1", english["version"])
         self.assertEqual("2026-10-25", english["date"])
+        self.assertEqual("1.3.1", batch6["version"])
+        self.assertEqual("2026-10-25", batch6["date"])
+        self.assertEqual(batch6["date"], self.manifest["date"])
+        self.assertEqual(batch6["date"], english["date"])
+        self.assertEqual(
+            [
+                "第 16 章写上 Stop 低功耗稳压器在 3.3 V、25°C 是 14 µA，主稳压器那一格是 24 µA；醒来是 HSI 8 MHz，BRR 仍为 0x271 时线上是 12800 bit/s。第 17 章写上先看 CFSR，BFAR 要 bit 15 为 1 才有效；72 个 DWT 周期是 1 µs，要先置 DEMCR bit 24。",
+                "第 18 章写上认不出芯片时先看第 34 脚、第 37 脚和第 44 脚 BOOT0；BOOT0=1 且 BOOT1=0 进的是 0x1FFFF000。第 19 章写上 C8 的一张 APP 是 0xB800，两张 0xB800 是 110 KB；64×1024 字节大于 20 KB SRAM。",
+            ],
+            batch6["zh"],
+        )
+        self.assertEqual(
+            [
+                "Chapter file 16 records the Stop low-power regulator at 14 µA at 3.3 V and 25°C, and the main-regulator cell at 24 µA. Wake-up is the 8 MHz HSI, and BRR left at 0x271 is 12800 bit/s on the wire. Chapter file 17 records reading CFSR first, with BFAR valid only when bit 15 is 1. 72 DWT cycles are 1 µs after DEMCR bit 24 is set.",
+                "Chapter file 18 records the first look at pins 34 and 37 and at BOOT0 on pin 44. BOOT0=1 with BOOT1=0 enters 0x1FFFF000. Chapter file 19 records one C8 application of length 0xB800. Two images of 0xB800 are 110 KB. 64×1024 bytes is larger than 20 KB of SRAM.",
+            ],
+            batch6["en"],
+        )
         self.assertEqual("1.3.0", batch5["version"])
         self.assertEqual("2026-10-25", batch5["date"])
         self.assertEqual(batch5["date"], self.manifest["date"])
@@ -1817,8 +1837,8 @@ class BookBuildContractTests(unittest.TestCase):
             ],
             previous["en"],
         )
-        self.assertIn("当前版本：**v1.3.0 · 2026-10-25**", readme)
-        self.assertIn("版本号已经是 1.3.0。", readme)
+        self.assertIn("当前版本：**v1.3.1 · 2026-10-25**", readme)
+        self.assertIn("版本号已经是 1.3.1。", readme)
         self.assertIn("样式来自 `stm32-book/styles/tokens.json` 和 `stm32-book/styles/book.css`，构建时拼进 HTML 的 `<style>`，`dist/` 里不另放 CSS。", readme)
         self.assertIn("也不要把 1.1.1 的产物标成 1.2.0，", readme)
         self.assertIn("也不要把 1.2.0 的产物标成 1.2.1，", readme)
@@ -1831,7 +1851,10 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("也不要把 1.2.7 的产物标成 1.2.8。", readme)
         self.assertIn("也不要把 1.2.8 的产物标成 1.2.9。", readme)
         self.assertIn("也不要把 1.2.9 的产物标成 1.3.0。", readme)
-        self.assertIn("打 tag `v1.3.0`", readme)
+        self.assertIn("也不要把 1.3.0 的产物标成 1.3.1。", readme)
+        self.assertIn("打 tag `v1.3.1`", readme)
+        self.assertNotIn("当前版本：**v1.3.0", readme)
+        self.assertNotIn("打 tag `v1.3.0`", readme)
         self.assertNotIn("当前版本：**v1.2.9", readme)
         self.assertNotIn("打 tag `v1.2.9`", readme)
 

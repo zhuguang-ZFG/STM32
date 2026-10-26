@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "1.3.1",
+      "date": "2026-10-25",
+      "zh": [
+        "第 16 章写上 Stop 低功耗稳压器在 3.3 V、25°C 是 14 µA，主稳压器那一格是 24 µA；醒来是 HSI 8 MHz，BRR 仍为 0x271 时线上是 12800 bit/s。第 17 章写上先看 CFSR，BFAR 要 bit 15 为 1 才有效；72 个 DWT 周期是 1 µs，要先置 DEMCR bit 24。",
+        "第 18 章写上认不出芯片时先看第 34 脚、第 37 脚和第 44 脚 BOOT0；BOOT0=1 且 BOOT1=0 进的是 0x1FFFF000。第 19 章写上 C8 的一张 APP 是 0xB800，两张 0xB800 是 110 KB；64×1024 字节大于 20 KB SRAM。"
+      ],
+      "en": [
+        "Chapter file 16 records the Stop low-power regulator at 14 µA at 3.3 V and 25°C, and the main-regulator cell at 24 µA. Wake-up is the 8 MHz HSI, and BRR left at 0x271 is 12800 bit/s on the wire. Chapter file 17 records reading CFSR first, with BFAR valid only when bit 15 is 1. 72 DWT cycles are 1 µs after DEMCR bit 24 is set.",
+        "Chapter file 18 records the first look at pins 34 and 37 and at BOOT0 on pin 44. BOOT0=1 with BOOT1=0 enters 0x1FFFF000. Chapter file 19 records one C8 application of length 0xB800. Two images of 0xB800 are 110 KB. 64×1024 bytes is larger than 20 KB of SRAM."
+      ]
+    },
+    {
       "version": "1.3.0",
       "date": "2026-10-25",
       "zh": [
