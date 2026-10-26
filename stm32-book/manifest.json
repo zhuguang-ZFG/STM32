@@ -280,7 +280,8 @@
     {"id": "appendix-examples", "title": "附录 B 14 个例程的验证索引", "file": "B-例程索引.md"},
     {"id": "appendix-exercises", "title": "附录 C 章末自测参考答案", "file": "C-习题答案.md"},
     {"id": "appendix-glossary", "title": "附录 D 术语表", "file": "D-术语表.md"},
-    {"id": "appendix-references", "title": "附录 E 来源、版本与许可", "file": "E-参考资料.md"}
+    {"id": "appendix-references", "title": "附录 E 来源、版本与许可", "file": "E-参考资料.md"},
+    {"id": "appendix-oss-map", "title": "附录 F 开源项目与社区地图", "file": "F-开源地图.md"}
   ],
   "sources": {
     "project-guide": {

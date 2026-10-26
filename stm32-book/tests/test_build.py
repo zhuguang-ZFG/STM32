@@ -261,6 +261,7 @@ class BookBuildContractTests(unittest.TestCase):
                 "appendix-exercises",
                 "appendix-glossary",
                 "appendix-references",
+                "appendix-oss-map",
             },
             parsed.appendices,
         )
@@ -804,7 +805,12 @@ class BookBuildContractTests(unittest.TestCase):
             fat = self._exploded_heading_outline(manifest)
             self.assertGreater(len(fat), 600)
             outline = self.builder.publication_outline(manifest, fat)
-            self.assertEqual(44, len(outline))
+            # 目录项 = 前置页 3 项 + 部 + 章 + 附录；逐项都必须在场，
+            # 硬写总数会让"增删一附录"变成改字面量而不是核结构。
+            expected = (3 + len(manifest["parts"])
+                        + sum(len(part["files"]) for part in manifest["parts"])
+                        + len(manifest["appendices"]))
+            self.assertEqual(expected, len(outline))
             self.assertTrue(all(item[0] <= 2 for item in outline))
             self.assertFalse(any(item[0] >= 3 for item in outline))
             titles = [item[1] for item in outline]
