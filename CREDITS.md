@@ -10,8 +10,8 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（18 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
-| 光栅动画（16 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
+| 静态框图（22 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 光栅动画（20 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
 > 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
@@ -114,3 +114,14 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | PM0075，Doc ID 17863 Rev 2（2012-08） | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章读保护键 0xA5 与整片擦除；第 11 章 WDG_SW | https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf |
 | PM0056 Rev 7（2024-12），向量表 | ST 文档条款；只链接并改写事实，不转载手册 | 第 01 章第 0 字是 MSP，第 1 字是复位 | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
 | 本仓库 `examples/i2c-oled` | MIT | 第 07 章坑卡：器件地址宏是 0x78 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
+
+### 第 12、13、14、15 章（v1.3.0）
+
+第 12、13、14、15 章用改写吸收补了同样的四块。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图、USB-IF 原文、ISO 原文和厂商数据手册不放进仓库。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| RM0008 Rev 21（2021-02），闪存、bxCAN、USB 设备 | ST 文档条款；只链接并改写事实，不转载手册 | 第 12 章 1 KB 页和两把钥匙；第 13 章 500 kbit/s 与总线关闭；第 14 章全速设备。中容量表印 USB_LP_CAN_RX0，互联型表才印 USB_LP_CAN1_RX0 | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| DS5319 Rev 20（2025-07），表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 13 章第 45、46 脚和第 5、6 脚；第 14 章第 32、33 脚 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| FreeRTOS Kernel V11.3.2 | MIT | 第 15 章 0x50、字栈和互斥量。不吸收网站正文 | https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2 |
+| 本仓库 `examples/iap-bootloader`、`examples/can-bxcan`、`examples/usb-cdc`、`examples/freertos-task` | MIT | 第 12 章 0xB800；第 13 章预分频 9 和左移 5；第 14 章 0x1209/0x0001；第 15 章 TIM4 和 128/192/256 字 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
