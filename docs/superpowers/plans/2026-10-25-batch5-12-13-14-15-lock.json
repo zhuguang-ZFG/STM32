@@ -1,0 +1,50 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-batch5-12-13-14-15",
+  "baseline": "e57dc14f0adaf4b7e54bf2763434cb19aa90560b",
+  "chapters": [
+    "12",
+    "13",
+    "14",
+    "15"
+  ],
+  "four_blocks_absent": true,
+  "old_pitfall_heading_present": true,
+  "files": {
+    "12": {
+      "zh": "docs/12-Flash与IAP升级.md",
+      "en": "docs/en/12-flash-iap.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    },
+    "13": {
+      "zh": "docs/13-CAN总线.md",
+      "en": "docs/en/13-can.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls"
+    },
+    "14": {
+      "zh": "docs/14-USB.md",
+      "en": "docs/en/14-usb.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls"
+    },
+    "15": {
+      "zh": "docs/15-FreeRTOS入门.md",
+      "en": "docs/en/15-freertos.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    }
+  }
+}
