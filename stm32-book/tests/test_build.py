@@ -285,6 +285,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
+        self.assertEqual(7, html.count('class="part-art"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">第 1 章</span><h1>如何学习 STM32</h1>', html)
@@ -348,6 +349,50 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("📌", html)
         self.assertIn("FAQ STM32 boot process", html)
         self.assertIn("mp.weixin.qq.com", (BOOK_DIR.parent / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8"))
+
+    def test_part_headpieces_are_complete_safe_and_inlined(self) -> None:
+        expected = [f"part-{part['id']}.svg" for part in self.manifest["parts"]]
+        actual = sorted(path.name for path in self.builder.ILLUSTRATIONS_DIR.glob("part-*.svg"))
+        self.assertEqual(expected, actual)
+
+        for part in self.manifest["parts"]:
+            markup = self.builder.part_headpiece(part["id"])
+            self.assertIn('class="part-art"', markup)
+            self.assertEqual(1, markup.count("<svg"))
+            self.assertIn('viewBox="0 0 200 140"', markup)
+
+        safe = (
+            '<svg viewBox="0 0 200 140" fill="none" stroke="currentColor">'
+            '<path d="M10 10h20"/></svg>'
+        )
+        rejected = {
+            "oversize": safe.replace("</svg>", f'<path d="M0 0h1"/> {" " * 6000}</svg>'),
+            "wrong-viewbox": safe.replace("0 0 200 140", "0 0 64 64"),
+            "fixed-color": safe.replace("currentColor", "#000"),
+            "script": safe.replace("</svg>", "<script></script></svg>"),
+            "style": safe.replace("</svg>", "<style></style></svg>"),
+            "image": safe.replace("</svg>", '<image href="x"/></svg>'),
+            "filter": safe.replace("</svg>", "<filter></filter></svg>"),
+            "id": safe.replace("<path", '<path id="x"'),
+            "href": safe.replace("<path", '<path href="#x"'),
+            "url": safe.replace("currentColor", "url(#x)"),
+        }
+        original = self.builder.ILLUSTRATIONS_DIR
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.builder.ILLUSTRATIONS_DIR = root
+            try:
+                (root / "part-safe.svg").write_text(safe, encoding="utf-8", newline="\n")
+                self.assertIn('class="part-art"', self.builder.part_headpiece("safe"))
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.part_headpiece("missing")
+                for name, svg in rejected.items():
+                    with self.subTest(name=name):
+                        (root / "part-test.svg").write_text(svg, encoding="utf-8", newline="\n")
+                        with self.assertRaises(self.builder.BuildError):
+                            self.builder.part_headpiece("test")
+            finally:
+                self.builder.ILLUSTRATIONS_DIR = original
 
     def test_book_mode_strips_promo_without_touching_fenced_headings(self) -> None:
         raw = """# 00 标题
@@ -442,6 +487,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
+        self.assertEqual(7, html.count('class="part-art"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">Chapter 1</span><h1>How to Learn STM32</h1>', html)
