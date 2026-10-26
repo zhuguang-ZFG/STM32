@@ -426,6 +426,7 @@ class Batch2UartChapterTests(unittest.TestCase):
                 "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
                 "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
                 "freertos-syscall",
+                "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
             },
         )
         self.assertEqual(
@@ -439,6 +440,7 @@ class Batch2UartChapterTests(unittest.TestCase):
                 "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
                 "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
                 "freertos-syscall",
+                "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
             },
         )
         for source_id in ("majerle-uart", "st-uart-idle", "stm32cube-f4", "pm0056", "rm0090"):

@@ -497,7 +497,7 @@ class Batch5CanChapterTests(unittest.TestCase):
         order = list(zh_manifest["sources"])
         self.assertEqual(
             ["rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb"],
-            order[-5:-1],
+            order[-10:-6],
         )
         self.assertEqual(order[-5:], list(en_manifest["sources"])[-5:])
         listed = json.loads(
@@ -727,7 +727,7 @@ class Batch5RtosChapterTests(unittest.TestCase):
                 "rm0008-usb",
                 "freertos-syscall",
             ],
-            list(zh_manifest["sources"])[-5:],
+            list(zh_manifest["sources"])[-10:-5],
         )
         listed = json.loads(
             (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(

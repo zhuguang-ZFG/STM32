@@ -400,8 +400,8 @@ class Batch6StopChapterTests(unittest.TestCase):
             self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
             self.assertEqual(scope_pair[0], card_zh["scope"])
             self.assertEqual(scope_pair[1], card_en["scope"])
-        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-2:])
-        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-2:])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-5:-3])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-5:-3])
 
 class Batch6CfsrChapterTests(unittest.TestCase):
     def test_cfsr_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
@@ -513,7 +513,7 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         self.assertEqual(scope_en, card_en["scope"])
         self.assertEqual(by_id["pm0056-dwt"]["title_zh"], card_zh["title"])
         self.assertEqual(by_id["pm0056-dwt"]["title_en"], card_en["title"])
-        self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-1:])
+        self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-3:-2])
 
 class Batch6BootChapterTests(unittest.TestCase):
     def test_boot_chapters_keep_38_rows_and_the_same_numbers(self) -> None:
