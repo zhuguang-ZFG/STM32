@@ -641,6 +641,116 @@ def uart_idle():
     return g
 
 
+def iap_jump():
+    """Write the two keys in order, then read MSP and Reset_Handler.
+
+    A reversed key and the address past 64 KB stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "KEY1 0x45670123",
+        "KEY2 0xCDEF89AB",
+        "HALF-WORD IN APP",
+        "READ MSP",
+        "READ Reset_Handler",
+        "VTOR 0x08004800",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "IAP JUMP", "APP", "AUX GIF  KEY ORDER")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("0x08004800  0xB800", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("MSP THEN Reset_Handler", 28, 200, C.GREEN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def can_500k():
+    """Eight 250 ns quanta make one 2 us bit at 500 kbit/s.
+
+    The failed prescaler row and the crystal pins stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "TQ 1  250 ns",
+        "TQ 2  250 ns",
+        "TQ 3  250 ns",
+        "TQ 6  SAMPLE 75%",
+        "TQ 8  2 us",
+        "500 kbit/s",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "CAN 500K", "36 MHz", "AUX GIF  8 QUANTA")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("prescaler 9", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("75% AT 1.5 us", 28, 200, C.GREEN, 1)
+        c.text("250 ns TIMES 8 IS 2 us", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def usb_48m():
+    """D+ is pulled up, the clock is 48 MHz, then 18 and 67 bytes.
+
+    The undivided clock and the pull-up on DM stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "D+ PULL-UP",
+        "HOST SEES D+",
+        "USBPRE = 0",
+        "48 MHz",
+        "18 bytes",
+        "67 bytes",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "USB 48M", "FS", "AUX GIF  D+")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("PA12 DP", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("18 bytes THEN 67 bytes", 28, 200, C.GREEN, 1)
+        c.text("48 MHz", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def rtos_tick():
+    """A 1 ms tick keeps priority 2 on the CPU and priority 1 waiting.
+
+    The assert stop and a SysTick clash stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "TICK 1 ms",
+        "TICK 1 ms",
+        "priority 2 RUNS",
+        "priority 1 WAITS",
+        "128 words",
+        "512 bytes",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "RTOS TICK", "1 ms", "AUX GIF  WORDS")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("1000 Hz", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("priority 2 BEFORE priority 1", 28, 200, C.GREEN, 1)
+        c.text("128 words = 512 bytes", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE ASSERT ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
 BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
@@ -658,6 +768,10 @@ BUILDERS = {
     "i2c-addr": i2c_addr,
     "dma-cndtr": dma_cndtr,
     "iwdg-1s": iwdg_1s,
+    "iap-jump": iap_jump,
+    "can-500k": can_500k,
+    "usb-48m": usb_48m,
+    "rtos-tick": rtos_tick,
 }
 
 

@@ -119,13 +119,17 @@
 | `i2c-addr.gif` | START 之后移出 0x78，第 9 个时钟 ACK，标出 0x801E 和 4.7 kΩ | 由 `tools/gen_gifs.py` 生成。辅图。0x3C 被原样送出和缺上拉只在静态主图上 |
 | `dma-cndtr.gif` | 8 个半字的缓冲区里 CNDTR 减到 3，标出已写 5 个采样、10 字节 | 由 `tools/gen_gifs.py` 生成。辅图。把剩余计数当成字节只在静态主图上 |
 | `iwdg-1s.gif` | 625 Hz 的计数在减到 0 之前被喂狗，标出 Reload = 624 和 40 kHz 典型值 | 由 `tools/gen_gifs.py` 生成。辅图。减到 0、Reload = 625 和窗口看门狗的早喂只在静态主图上 |
+| `iap-jump.gif` | 两把钥匙按顺序写完，CPU 读出 MSP 和复位。标出 0x08004800 | 由 `tools/gen_gifs.py` 生成。辅图。反序钥匙和 0x0801FC00 只在静态主图上 |
+| `can-500k.gif` | 8 个 250 ns 的时间份额走过 2 µs，采样点 75%，标出 500 kbit/s | 由 `tools/gen_gifs.py` 生成。辅图。450 kbit/s 和晶振脚只在静态主图上 |
+| `usb-48m.gif` | D+ 上拉被主机看见，时钟 48 MHz，随后标出 18 字节和 67 字节 | 由 `tools/gen_gifs.py` 生成。辅图。72 MHz 和接错的上拉只在静态主图上 |
+| `rtos-tick.gif` | 节拍每 1 ms 走一格，优先级 2 占着 CPU，栈标成 128 words = 512 bytes | 由 `tools/gen_gifs.py` 生成。辅图。configASSERT 和 SysTick 冲突只在静态主图上 |
 
-> ⚠️ 上面 16 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
+> ⚠️ 上面 20 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
 > 用 `python3 tools/gen_gifs.py` 重新生成，并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
 ### 公众号动图 `*-zh.gif`
 
-同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 16 张的中文翻译，也不由 `gen_gifs.py` 生成。
+同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 20 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
 文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
 

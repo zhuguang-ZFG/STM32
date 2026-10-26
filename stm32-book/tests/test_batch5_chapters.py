@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import unittest
 from pathlib import Path
 
@@ -126,6 +127,76 @@ class Batch5FigureTests(unittest.TestCase):
         self.assertNotIn("167 ns", rtos)
         self.assertNotIn("17.2", rtos)
 
+
+def _load_gifs():
+    path = ROOT / "tools" / "gen_gifs.py"
+    spec = importlib.util.spec_from_file_location("gen_gifs_batch5", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class Batch5GifTests(unittest.TestCase):
+    def test_four_auxiliary_gifs_are_short_and_ascii(self) -> None:
+        gifs = _load_gifs()
+        for name in (
+            "led-blink",
+            "pwm-breath",
+            "uart-bits",
+            "i2c-timing",
+            "dma-ring",
+            "sar-adc",
+            "nvic-preempt",
+            "uart-idle",
+            "clock-css",
+            "pwm-1khz",
+            "spi-jedec",
+            "adc-sample",
+            "swd-fetch",
+            "i2c-addr",
+            "dma-cndtr",
+            "iwdg-1s",
+            "iap-jump",
+            "can-500k",
+            "usb-48m",
+            "rtos-tick",
+        ):
+            self.assertIn(name, gifs.BUILDERS)
+        source = (ROOT / "tools" / "gen_gifs.py").read_text(encoding="utf-8")
+        iap_src = source.split("def iap_jump", 1)[1].split("def can_500k", 1)[0]
+        can_src = source.split("def can_500k", 1)[1].split("def usb_48m", 1)[0]
+        usb_src = source.split("def usb_48m", 1)[1].split("def rtos_tick", 1)[0]
+        rtos_src = source.split("def rtos_tick", 1)[1].split("BUILDERS", 1)[0]
+        self.assertIn("0x45670123", iap_src)
+        self.assertIn("0xCDEF89AB", iap_src)
+        self.assertIn("MSP", iap_src)
+        self.assertIn("Reset_Handler", iap_src)
+        self.assertNotIn("0x0801FC00", iap_src)
+        self.assertNotIn("LOCK", iap_src)
+        self.assertIn("250 ns", can_src)
+        self.assertIn("2 us", can_src)
+        self.assertIn("75%", can_src)
+        self.assertIn("500 kbit/s", can_src)
+        self.assertNotIn("450", can_src)
+        self.assertNotIn("PD0", can_src)
+        self.assertIn("48 MHz", usb_src)
+        self.assertIn("18 bytes", usb_src)
+        self.assertIn("67 bytes", usb_src)
+        self.assertIn("D+", usb_src)
+        self.assertNotIn("72 MHz", usb_src)
+        self.assertNotIn("1023", usb_src)
+        self.assertIn("1 ms", rtos_src)
+        self.assertIn("priority 2", rtos_src)
+        self.assertIn("128 words", rtos_src)
+        self.assertIn("512 bytes", rtos_src)
+        self.assertNotIn("configASSERT", rtos_src)
+        self.assertNotIn("167 ns", rtos_src)
+        for name in ("iap-jump", "can-500k", "usb-48m", "rtos-tick"):
+            gif = gifs.BUILDERS[name]()
+            self.assertGreaterEqual(len(gif.frames), 3)
+            self.assertLessEqual(len(gif.frames), 12)
+            path = ROOT / "assets" / "gif" / f"{name}.gif"
+            self.assertLess(path.stat().st_size, 500 * 1024, path.name)
 
 if __name__ == "__main__":
     unittest.main()
