@@ -176,7 +176,7 @@
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
       "deliverable": "一张 Boot/APP 内存布局、镜像完整性检查和升级失败回退状态图。",
       "boundary": "能跳转 APP 不等于可量产升级；签名、反回滚、掉电恢复和密钥管理需单独论证。F103 中容量按 1 KB 页擦除、按半字编程。解锁先写 KEY1 0x45670123，再写 KEY2 0xCDEF89AB。大容量才是 2 KB/页。F407 的扇区是 16 KB、64 KB 或 128 KB。",
-      "sources": ["rm0008", "an2606", "an3965", "rm0090"]
+      "sources": ["rm0008", "an2606", "an3965", "rm0090", "rm0008-flash", "pm0056-vector", "project-examples", "ds5319-swd", "pm0075-rdp"]
     },
     "13-CAN总线.md": {
       "question": "物理终端、位时序、仲裁、过滤器和错误计数怎样共同决定一条 CAN 报文能否可信到达？",
@@ -1024,6 +1024,15 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 11 章主图的晶振脚、10 个备份寄存器和 LSI 范围。表 25 的 fLSI 是 30 / 40 / 60 kHz。备份寄存器 10 个 16 位，共 20 字节。第 1 脚 VBAT，第 3 脚 PC14-OSC32_IN，第 4 脚 PC15-OSC32_OUT。调试时可以冻住独立看门狗。不编负载电容的皮法。不把 ±20 ppm 或 ±50% 写进 snapshot。"
+    },
+    "rm0008-flash": {
+      "title": "RM0008 Rev 21 中容量闪存的页、半字和两把钥匙",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 3 is titled Memory and bus architecture. Embedded Flash memory is section 3.3.3. Table 5 prints 1 KB pages for medium-density devices. Page 0 starts at 0x08000000. The same table's page 127 starts at 0x0801FC00, which is the 128 KB end, not a 64 KB page. Table 6 prints 2 KB pages for high-density devices. That 2 KB page is void on STM32F103C8T6. This chapter points the Flash interface registers to PM0075 and does not print the key values. The claim stays: unlock FLASH_KEYR by writing 0x45670123 and then 0xCDEF89AB. Programming granularity is a half-word. An erased half-word reads back 0xFFFF. Programming can change a 1 only to a 0. This snapshot does not include an erase-time estimate and does not name an unprotected key from another family.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 12 章的页、半字和两把钥匙。中容量按 1 KB 擦除。编程粒度是 16 位。擦除态是 0xFFFF。解锁先写 0x45670123，再写 0xCDEF89AB。大容量的 2 KB/页在 C8 上作废。按字节编程在这颗料上作废。不重写第 02 章的等待周期。不把 0xAA 写成无保护键。"
     }
   }
 }

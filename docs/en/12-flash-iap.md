@@ -29,6 +29,60 @@
 9. 实验选一页确定不会踩到当前程序的闪存，擦掉、写几个字、再读回来。和程序区叠在一起的实验，做完这章你就没有调试器可以后悔了。
 10. 合上书，三问。擦除之前为什么必须解锁？F103 的 0xA5 表示保护还是不保护？F4 写进 0xCC 之后还能不能恢复调试？
 <!-- /video:ch12 -->
+
+## Principle and boundary
+
+Page size, half-word programming, and the jump are fixed on STM32F103C8T6. This part is medium-density. Flash is 64 KB, from `0x08000000` up to but not including `0x08010000`, in 1 KB pages, 64 pages. Page numbers run from 0 to 63. Page 63 starts at `0x0800FC00`. `0x0801FC00` is outside this 64 KB. A 2 KB page is the high-density sentence and is void on this part. See [RM0008 Rev 21 chapter 3](#source-rm0008-flash).
+
+Program addresses are aligned to 2 bytes and write 16 bits. An erased half-word reads back `0xFFFF`. A bit already written to 0 does not return to 1 without erasing the page. Byte programming is an F4 sentence and is void on the C8. A 32-bit value takes two half-word writes.
+
+The two keys are written to `FLASH_KEYR` in this order: `0x45670123`, then `0xCDEF89AB`. Only then does `CR.LOCK` clear. The reverse order leaves the lock set and the erase returns an error. Lock again when the write is done.
+
+This map is the one already used by the book and by `examples/iap-bootloader`. It is not the only split the manual allows. Bootloader: `0x08000000`, 16 KB, 16 pages, ending before `0x08004000`. Parameters: `0x08004000`, 2 KB, 2 pages, ending before `0x08004800`. Application: `0x08004800`, 46 KB, 46 pages, length `0xB800`, ending before `0x08010000`. The three regions add up to 64 KB. The link script origin and `SCB->VTOR` are both `0x08004800`. Changing only one of them still enters the bootloader's vectors.
+
+Word 0 of the application is the MSP. Word 1, at `0x08004804`, is `Reset_Handler`. Read both words, write the MSP, write `VTOR`, then jump. Leaving `VTOR` at 0 still delivers interrupts to the bootloader. That is the same pair of words as chapter file 01. See [PM0056](#source-pm0056-vector).
+
+The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [PM0075](#source-pm0075-rdp). This chapter's bootloader lives in user Flash. The UART stays on pin 30 PA9 and pin 31 PA10 from chapter file 06. That is only a side note here.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-12-iap-map.svg" width="760" alt="Medium-density Flash uses 1 KB pages. The application starts at 0x08004800 and is 0xB800 bytes long. The jump loads word 0 and word 1.">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, medium-density, 64 KB, 1 KB pages. The normal path writes 0x45670123, then 0xCDEF89AB, programs a half-word into the application, loads the MSP from 0x08004800 and the reset word from 0x08004804, and sets VTOR to 0x08004800. The failure path is a reversed key, a last page at 0x0801FC00, or VTOR left at 0. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/iap-jump.gif" width="640" alt="The two keys are written in order, then the CPU reads the MSP and the reset word">
+  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 0x45670123, then 0xCDEF89AB, one half-word into the application, then the MSP and the reset word. Print from the static figure. The reversed key and 0x0801FC00 are not on this GIF.</sub>
+</p>
+
+`flash-iap.svg` stays as an auxiliary figure. Do not play it for the page boundaries, the two keys, or the two words. Those are on the static figure.
+
+## Timing or state
+
+| Region | Start | Length | Pages | Ends at |
+| --- | --- | --- | --- | --- |
+| Bootloader | `0x08000000` | 16 KB | 16 | `0x08004000` |
+| Parameters | `0x08004000` | 2 KB | 2 | `0x08004800` |
+| Application | `0x08004800` | 46 KB, `0xB800` | 46 | `0x08010000` |
+| Last page | `0x0800FC00` | 1 KB | page 63 | inside the application |
+| Failure address | `0x0801FC00` | — | — | not in this 64 KB |
+| Keys | `0x45670123` first | `0xCDEF89AB` second | — | the reverse order leaves LOCK set |
+| Half-word | address aligned to 2 bytes | 16 bits | erased state `0xFFFF` | byte programming is void on the C8 |
+| Jump | word at `0x08004800` is the MSP | word at `0x08004804` is reset | `VTOR = 0x08004800` | `VTOR` left at 0 still enters the bootloader |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The comment says low density, but the page size is right | The density name is wrong | Call this part medium-density. The page stays 1 KB, 64 pages | [RM0008](#source-rm0008-flash) | Medium-density parts erase 1 KB pages. The high-density 2 KB page is void on the C8 |
+| The erase returns an error | The keys are reversed, or the address is not on a page boundary | Write KEY1, then KEY2. Keep the address on a page boundary | [RM0008](#source-rm0008-flash) | The order is `0x45670123` then `0xCDEF89AB`. The reverse order does not clear LOCK |
+| A written byte reads back wrong | The program was not a half-word, or a 0 was asked to become 1 | Write half-words on even addresses. Erase the page before turning a 0 back into a 1 | [RM0008](#source-rm0008-flash) | Programming granularity is 16 bits. The erased state is `0xFFFF`. Byte programming is void on this part |
+| The jump dies, or interrupts return to the bootloader | The two words were not loaded, or VTOR is still 0 | Load the MSP and the reset word from `0x08004800`, and write `VTOR` | [PM0056](#source-pm0056-vector) | Word 0 is the initial stack. Word 1 is reset. This claim does not add a new alignment rule |
+| The application length does not match the link script | The length is not 46 KB | Origin `0x08004800`, length `0xB800` | [examples in this repo](#source-project-examples) | `examples/iap-bootloader` sizes the application at 46 KB, which is `0xB800` |
+| The experiment writes `0x0801FC00` | That is the last page of a 128 KB part | The last page on this C8 is `0x0800FC00` | [DS5319](#source-ds5319-swd) | That source already says STM32F103x8 Flash is 64 KB. The 128 KB last page is void on this part |
+| Readout protection is cleared with another family's unprotected key | This part does not use that key | The unprotected value is `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` allows readout. Programming `0xA5` back mass-erases first |
+
 ## 📌 Learning goals
 
 - [ ] Know the F1 "page" and F4 "sector" Flash layout, the erase/write endurance, and the programming granularity.
@@ -163,7 +217,7 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 #include "stm32f1xx_hal.h"
 
 #define APP_ADDR     0x08004800UL
-#define FLASH_PAGE   1024U        /* F103C8 small-capacity, 1 KB per page */
+#define FLASH_PAGE   1024U        /* F103C8 medium-density, 1 KB per page */
 
 /* Erase the pages covering [addr, addr+len) */
 int Flash_EraseRange(uint32_t addr, uint32_t len)
@@ -241,22 +295,9 @@ int main(void)
 
 > The app project has to change the linker script: Flash origin `0x08004800`, and the length reduced to match. At the top of `main()`, set `SCB->VTOR = 0x08004800;`.
 
-## ⚠️ Pitfalls and troubleshooting
-
-| What you see | Cause | Fix |
-| --- | --- | --- |
-| The chip hangs after the jump | MSP was not set, or VTOR was not set | Call `__set_MSP` and set `SCB->VTOR` before the jump |
-| Interrupts jump back into the bootloader | Interrupts were still enabled at the jump | `__disable_irq()` and reset SysTick |
-| Erase returns an error | The address is not on a page boundary, or Flash was not unlocked | Align to a page; call `HAL_FLASH_Unlock` first |
-| The data is wrong after programming | The write was not half-word aligned | Align the address to 2 bytes and write 16 bits |
-| The app is overwritten by the bootloader | The parameter region overlaps the app | Draw the memory map again |
-| The F4 parameter region is erased by mistake | It shares a sector with the bootloader | Give the parameter region a sector of its own |
-| It does not run after the update | The app is larger than its region, or the CRC is wrong | Check the size and the CRC; on failure keep the old app |
-| Power loss during the update bricks the device | Power dropped in the middle of the update | Use two app regions (A/B) plus a boot flag |
-
 ## 🧪 Hands-on labs
 
-1. **Read and write Flash**: write a 32-bit variable to `0x0800FC00` (the last page) and read it back after reset. Expected: the data is still there after reset.
+1. **Read and write Flash**: write a 32-bit variable to `0x0800FC00` (the last page) and read it back after reset. Expected: the data is still there after reset. Use that page for an erase-program experiment only when this map is not in use and the program does not already occupy the last page. Once the map is bootloader 16 KB, parameters 2 KB, and application 46 KB, that page belongs to the application.
 2. **A minimal IAP**: the bootloader prints a countdown at power-up. If it receives the character `'U'` during that window, it enters receive mode. Send the compiled app bin over the UART and jump to it. Expected: the device runs the app, and the UART prints the app's heartbeat.
 3. **(Further) A/B dual-region update**: split Flash into APP_A and APP_B, write them in turn, and record "which region is valid" in the parameter region. Expected: a failed update can fall back to the old version, so the device is not bricked.
 
@@ -269,6 +310,8 @@ int main(void)
 | RDP | `0xA5` means no protection; any other value is readout protection. There is no Level 2 | `0xAA` is Level 0; any other value that is not `0xCC` is Level 1; `0xCC` is Level 2, and it is irreversible |
 | USER | `nRST_STOP`, `nRST_STDBY`, `WDG_SW` | The same bits cover reset-on-stop and the hardware watchdog |
 | WRP | Write protection by page | Write protection by sector |
+
+`0xAA` and `0xCC` are void on STM32F103C8T6. The unprotected value remains `0xA5`. Clearing protection mass-erases main Flash. This sentence stays in the core ideas. The four sections do not call `0xAA` the unprotected value.
 
 When `WDG_SW = 0`, the hardware IWDG starts at power-up and software cannot stop it. On F4, if the parameter region is squeezed into the same sector as the bootloader, erasing the parameters erases the bootloader with them, so the parameter region has to own a sector of its own.
 

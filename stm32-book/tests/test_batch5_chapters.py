@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -197,6 +199,141 @@ class Batch5GifTests(unittest.TestCase):
             self.assertLessEqual(len(gif.frames), 12)
             path = ROOT / "assets" / "gif" / f"{name}.gif"
             self.assertLess(path.stat().st_size, 500 * 1024, path.name)
+
+class Batch5IapChapterTests(unittest.TestCase):
+    def test_iap_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "12-Flash与IAP升级.md"
+        en_path = ROOT / "docs" / "en" / "12-flash-iap.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 📌 学习目标", zh)
+        self.assertIn("## 📌 Learning goals", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core ideas", en)
+        self.assertIn("/* F103C8 中容量 1KB/页 */", zh)
+        self.assertIn("/* F103C8 medium-density, 1 KB per page */", en)
+        self.assertNotIn("F103C8 小容量", zh)
+        self.assertNotIn("small-capacity", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "0x08000000",
+                "0x08004000",
+                "0x08004800",
+                "0x08004804",
+                "0x0800FC00",
+                "0x08010000",
+                "0xB800",
+                "0x45670123",
+                "0xCDEF89AB",
+                "0x0801FC00",
+                "0xFFFF",
+                "#source-rm0008-flash",
+                "#source-pm0056-vector",
+                "#source-project-examples",
+                "#source-ds5319-swd",
+                "#source-pm0075-rdp",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("0xAA", blocks)
+            self.assertNotIn("0x1FFFF000", blocks)
+            self.assertNotIn("20~40", blocks)
+            self.assertNotIn("167 ns", blocks)
+        self.assertIn("中容量", zh_blocks)
+        self.assertIn("medium-density", en_blocks)
+        self.assertIn("1 KB", zh_blocks)
+        self.assertIn("1 KB", en_blocks)
+        self.assertIn("../assets/diagrams/sample-12-iap-map.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-12-iap-map.svg", en)
+        self.assertIn("../assets/gif/iap-jump.gif", zh)
+        self.assertIn("../../assets/gif/iap-jump.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-12-iap-map.svg"), zh_key.index("iap-jump.gif"))
+        self.assertLess(en_key.index("sample-12-iap-map.svg"), en_key.index("iap-jump.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertNotIn("schematic", en_key.lower())
+        self.assertIn("flash-iap.svg", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path in (zh_path, en_path):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = subprocess.check_output(
+                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
+            ).decode("utf-8")
+            now_video = zh if path == zh_path else en
+            marker = "<!-- video:ch12 -->"
+            end = "<!-- /video:ch12 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now_video.split(marker, 1)[1].split(end, 1)[0],
+            )
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scope_zh = (
+            "第 12 章的页、半字和两把钥匙。中容量按 1 KB 擦除。编程粒度是 16 位。"
+            "擦除态是 0xFFFF。解锁先写 0x45670123，再写 0xCDEF89AB。大容量的 2 KB/页在 C8 上作废。"
+            "按字节编程在这颗料上作废。不重写第 02 章的等待周期。不把 0xAA 写成无保护键。"
+        )
+        scope_en = (
+            "Chapter file 12 pages, half-words, and the two keys. Medium-density parts erase 1 KB pages. "
+            "Programming granularity is 16 bits. The erased state is 0xFFFF. Unlock writes 0x45670123 and then 0xCDEF89AB. "
+            "The high-density 2 KB page is void on the C8. Byte programming is void on this part. "
+            "Does not rewrite the chapter 02 wait states. Does not call 0xAA the unprotected key."
+        )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "rm0008",
+            "an2606",
+            "an3965",
+            "rm0090",
+            "rm0008-flash",
+            "pm0056-vector",
+            "project-examples",
+            "ds5319-swd",
+            "pm0075-rdp",
+        ]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["12-Flash与IAP升级.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["12-flash-iap.md"]["sources"])
+        card_zh = zh_manifest["sources"]["rm0008-flash"]
+        card_en = en_manifest["sources"]["rm0008-flash"]
+        for key in ("url", "snapshot", "license"):
+            self.assertEqual(by_id["rm0008-flash"][key], card_zh[key])
+            self.assertEqual(card_zh[key], card_en[key])
+        self.assertEqual("2026-10-25", card_zh["accessed"])
+        self.assertEqual(card_zh["accessed"], card_en["accessed"])
+        self.assertEqual(by_id["rm0008-flash"]["title_zh"], card_zh["title"])
+        self.assertEqual(by_id["rm0008-flash"]["title_en"], card_en["title"])
+        self.assertEqual(by_id["rm0008-flash"]["authority_zh"], card_zh["authority"])
+        self.assertEqual(by_id["rm0008-flash"]["authority_en"], card_en["authority"])
+        self.assertEqual(scope_zh, card_zh["scope"])
+        self.assertEqual(scope_en, card_en["scope"])
+        self.assertEqual(
+            ["rm0008-flash"],
+            list(zh_manifest["sources"])[-1:],
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -226,7 +226,12 @@
         "rm0008",
         "an2606",
         "an3965",
-        "rm0090"
+        "rm0090",
+        "rm0008-flash",
+        "pm0056-vector",
+        "project-examples",
+        "ds5319-swd",
+        "pm0075-rdp"
       ]
     },
     "13-can.md": {
@@ -1176,6 +1181,15 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 11's crystal pins, ten backup registers, and the LSI range. Table 25 prints fLSI as 30 / 40 / 60 kHz. Ten 16-bit backup registers are 20 bytes. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, and pin 4 is PC15-OSC32_OUT. The independent watchdog can be frozen while debugging. Does not invent a load-capacitor picofarad. Does not put ±20 ppm or ±50% in the snapshot."
+    },
+    "rm0008-flash": {
+      "title": "RM0008 Rev 21 medium-density Flash pages, half-words, and the two keys",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 3 is titled Memory and bus architecture. Embedded Flash memory is section 3.3.3. Table 5 prints 1 KB pages for medium-density devices. Page 0 starts at 0x08000000. The same table's page 127 starts at 0x0801FC00, which is the 128 KB end, not a 64 KB page. Table 6 prints 2 KB pages for high-density devices. That 2 KB page is void on STM32F103C8T6. This chapter points the Flash interface registers to PM0075 and does not print the key values. The claim stays: unlock FLASH_KEYR by writing 0x45670123 and then 0xCDEF89AB. Programming granularity is a half-word. An erased half-word reads back 0xFFFF. Programming can change a 1 only to a 0. This snapshot does not include an erase-time estimate and does not name an unprotected key from another family.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter file 12 pages, half-words, and the two keys. Medium-density parts erase 1 KB pages. Programming granularity is 16 bits. The erased state is 0xFFFF. Unlock writes 0x45670123 and then 0xCDEF89AB. The high-density 2 KB page is void on the C8. Byte programming is void on this part. Does not rewrite the chapter 02 wait states. Does not call 0xAA the unprotected key."
     }
   }
 }
