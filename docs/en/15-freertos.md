@@ -29,6 +29,59 @@
 9. 实验做两个任务，两颗灯用不同的周期闪。如果一创建任务就进故障，先把栈调大，再看优先级。不要一开始就上五个队列。
 10. 合上书，三问。两个同优先级任务，时间片用完会发生什么？周期任务该用哪种延时？软件定时器回调里可以等待队列吗？
 <!-- /video:ch15 -->
+
+## Principle and boundary
+
+The tick and FromISR are fixed on STM32F103C8T6. The group matches chapter file 04: `NVIC_PRIORITYGROUP_4`, 4 preemption bits, and 0 subpriority bits.
+
+`configTICK_RATE_HZ = 1000`, so one tick is 1 ms. A deadline shorter than 1 ms is not a kernel guarantee. SysTick belongs to the kernel. The HAL time base is TIM4, the timer already named in the `examples/freertos-task` README. If both sides take SysTick, `HAL_Delay` sticks. See [examples in this repo](#source-project-examples).
+
+A numerically larger task priority runs first. KEY is 2. LED and UART are 1. When both are ready, KEY runs first. Treating task priority like the NVIC, and expecting 1 to beat 2, is the failure path. The NVIC still treats a smaller number as more urgent. The idle task is 0. This part has no FPU.
+
+`5 << (8 − 4) = 0x50`. An interrupt that calls FromISR needs a preemption priority number greater than or equal to 5, that is 5 or a larger number. The example sets `EXTI0` to 5. Setting it to 0 stops in `configASSERT`. The number 4 is also too urgent. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
+
+The `xTaskCreate` depth is in words, and one word is 4 bytes. LED is 128 words = 512 bytes. KEY is 192 words = 768 bytes. UART is 256 words = 1024 bytes. Reading 128 as 128 bytes is the failure note.
+
+Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, so the period is near 13 ms. `vTaskDelayUntil` of 10 ms keeps the period at 10 ms. A mutex protects a shared resource and has priority inheritance. A binary semaphore does not. heap_4 coalesces adjacent free blocks. Do not import the budget from chapter file 28.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="One tick is 1 ms. Task priority 2 runs before priority 1. 128 words are 512 bytes. FromISR needs a numeric priority of 5 or a larger number.">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is a 1 ms SysTick, HAL time base TIM4, priority 2 running, priority 1 waiting, an LED stack of 128 words = 512 bytes, and EXTI0 preemption priority 5. The failure path writes that EXTI preemption priority as 0 and stops in configASSERT on FromISR. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/rtos-tick.gif" width="640" alt="The tick advances 1 ms at a time, priority 2 holds the CPU, and 128 words equal 512 bytes">
+  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 1 ms steps, priority 2 running, priority 1 waiting, 128 words = 512 bytes. Print from the static figure. configASSERT and the SysTick clash are not on this GIF.</sub>
+</p>
+
+`freertos-scheduler.svg` stays as an auxiliary figure.
+
+## Timing or state
+
+| Object | Value | Who goes first |
+| --- | --- | --- |
+| tick | 1000 Hz | 1 ms |
+| Tasks | priority 2 and priority 1 | 2 before 1. The direction is the opposite of the NVIC |
+| Stacks | 128 words = 512 bytes | KEY 192 words = 768 bytes. UART 256 words = 1024 bytes |
+| Interrupt | number 5 may call FromISR | number 0 stops in `configASSERT`. `0x50 = 5 << 4` |
+| Time base | the kernel uses SysTick | HAL uses TIM4 |
+| Delay | 3 ms of work, then `vTaskDelay(10)` | the period is near 13 ms. `vTaskDelayUntil` of 10 ms stays 10 ms |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| `HAL_Delay` sticks, or the scheduler does not start | HAL and the kernel both want SysTick | Move the HAL time base to TIM4 | [examples in this repo](#source-project-examples) | The `examples/freertos-task` README names TIM4 as the time base |
+| The interrupt stops in `configASSERT` | The preemption number is smaller than 5 | Write `EXTI0` as 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | With 4 priority bits, 5 shifted left by 4 is `0x50`. A numerically smaller interrupt must not call FromISR |
+| A priority 1 task runs over a priority 2 task | Task priority was treated like the NVIC | A numerically larger task priority runs first | [FreeRTOS](#source-freertos-syscall) | A numerically larger task priority runs first |
+| KEY does not run ahead of LED in the example | Both tasks were given the same priority | Write KEY as 2, and LED and UART as 1 | [examples in this repo](#source-project-examples) | In `examples/freertos-task`, KEY's task priority is 2 and LED and UART are 1 |
+| The stack note says 128 and a print overflows | A word was read as a byte | 128 is in words, which is 512 bytes | [examples in this repo](#source-project-examples) | LED is 128 words, KEY is 192 words, UART is 256 words |
+| The key interrupt asserts as soon as it is entered | The EXTI preemption priority is too urgent | Write the `EXTI0` preemption priority as 5 | [examples in this repo](#source-project-examples) | The example sets the `EXTI0` preemption priority to 5 |
+| Two tasks interleave on the UART | A binary semaphore was used to protect the resource | Use a mutex | [FreeRTOS](#source-freertos-syscall) | A mutex has priority inheritance. A binary semaphore does not |
+| The period grows | `vTaskDelay(10)` does not include the time already spent before the call | Use `vTaskDelayUntil` for a fixed period | [FreeRTOS](#source-freertos-syscall) | When one tick is 1 ms, time already spent before the call is not inside `vTaskDelay` |
+
 ## 📌 Learning goals
 
 - [ ] Explain the difference between "bare-metal foreground/background" and "an RTOS with several tasks," and decide whether a project should use an RTOS.
@@ -85,13 +138,15 @@ Suspended          Running ──────────────► Blocked
 
 | Conflict | What you see | Fix |
 | --- | --- | --- |
-| FreeRTOS and HAL both want SysTick | `HAL_Delay` hangs, and the tick misbehaves | In CubeMX: SYS → Timebase Source, change it to **TIMx** |
+| FreeRTOS and HAL both want SysTick | `HAL_Delay` hangs, and the tick misbehaves | In CubeMX: SYS → Timebase Source, change it to **TIM4** |
 | Tick rate | `configTICK_RATE_HZ` defaults to 1000 (1 ms) | A shorter slice is more responsive and costs more |
 | Time slicing | Tasks at the same priority share the CPU | `configUSE_TIME_SLICING=1` (on by default) |
 
 ### 4. Priority and preemption
 
 **Conclusion**: In FreeRTOS, **a larger number is a higher priority** (the opposite of a Cortex-M interrupt). With `configUSE_PREEMPTION=1`, a higher-priority task that becomes ready preempts the current task immediately.
+
+STM32F103C8T6 is a Cortex-M3 and has no FPU. A port built for an FPU is void on this part.
 
 | Item | Rule |
 | --- | --- |
@@ -301,22 +356,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 }
 ```
 
-> **The single most important CubeMX step**: change `SYS → Timebase Source` from **SysTick to TIMx**. Otherwise HAL and FreeRTOS fight over SysTick, and `HAL_Delay` hangs.
-
-## ⚠️ Pitfalls and troubleshooting
-
-| What you see | Cause | Fix |
-| --- | --- | --- |
-| It stalls before `vTaskStartScheduler` | The HAL timebase and the RTOS both want SysTick | Change Timebase Source to TIMx |
-| `configASSERT` dead loop | The interrupt priority number is too small (priority too high) | Interrupt priority ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY` |
-| Task creation fails | The heap is too small | Increase `configTOTAL_HEAP_SIZE` |
-| UART output is interleaved | Several tasks write the UART at once | Protect it with a mutex |
-| A random HardFault | A task stack overflowed | Enlarge the stack and watch `uxTaskGetStackHighWaterMark` |
-| A crash inside an interrupt | A non-FromISR API was used | Inside an interrupt, only `xxxFromISR` |
-| One task never runs | Its priority is so low it starves, or it has no blocking point | Check the priority, and make sure the task has a blocking call |
-| Key events are lost | The queue filled and new items were dropped | Deepen the queue, or use a task notification |
-| `HAL_Delay` hangs | The timebase is still SysTick | Move the timebase to TIMx |
-| A floating-point task computes the wrong result | FPU context save is not enabled | Use the port that includes the FPU |
+> **The single most important CubeMX step**: change `SYS → Timebase Source` from **SysTick to TIM4**. Otherwise HAL and FreeRTOS fight over SysTick, and `HAL_Delay` hangs.
 
 ## 🧪 Hands-on labs
 

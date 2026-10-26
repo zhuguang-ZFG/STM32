@@ -2,7 +2,7 @@
   "title": "STM32 in Practice: From One LED to a System You Can Ship",
   "subtitle": "A 29-chapter evidence-driven introduction and engineering handbook",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "Subject index", "file": "subject-index.json"}
@@ -226,36 +226,31 @@
         "rm0008",
         "an2606",
         "an3965",
-        "rm0090"
+        "rm0090",
+        "rm0008-flash",
+        "pm0056-vector",
+        "project-examples",
+        "ds5319-swd",
+        "pm0075-rdp"
       ]
     },
     "13-can.md": {
       "question": "How do physical termination, bit timing, arbitration, filters, and error counters together decide whether a CAN frame can be trusted?",
       "deliverable": "A bit-timing ledger, a loopback self-test, and a captured frame from two nodes with termination resistors.",
       "boundary": "This chapter covers bxCAN basics. It is not CANopen or J1939, and H7 FDCAN registers cannot be substituted as-is. With APB1 at 36 MHz, prescaler 9, BS1 5, and BS2 2 give 8 time quanta, a 75% sample point, and 36 MHz / (9 × 8) = 500 kbit/s. Ten quanta at the same target need a prescaler of 7.2; writing 8 yields 450 kbit/s. A transmit error count of 256 enters bus-off.",
-      "sources": [
-        "rm0008"
-      ]
+      "sources": ["rm0008", "rm0008-can", "ds5319-usbcan", "rm0008-usb", "project-examples", "ds5319-clock", "ds5319-i2c"]
     },
     "14-usb.md": {
       "question": "How does the host finish enumeration through reset, descriptors, address, and configuration, and where does the class protocol take over the data?",
       "deliverable": "An enumeration request sequence, a full descriptor-length check, and a host-visible result for CDC or HID.",
       "boundary": "Successful enumeration only proves the control transfers are basically correct. Throughput, compatibility, suspend/resume, and compliance still need their own tests. F103 full-speed needs 48 MHz: with the PLL at 72 MHz, RCC_CFGR.USBPRE is 0, and 72 / 1.5 = 48. PA11 is DM and PA12 is DP. Full-speed pulls D+ up with 1.5 kΩ. This repository's usb-cdc device descriptor is 18 bytes, bMaxPacketSize0 is 64, and the VID/PID is 0x1209/0x0001, not the 0x0483/0x5740 common in ST's examples. wTotalLength is 0x0043, which is 67 bytes. bMaxPower 0x32 means 100 mA. Full-speed bulk and interrupt both top out at 64 bytes. 1023 belongs only to full-speed isochronous.",
-      "sources": [
-        "rm0008",
-        "usb20",
-        "project-examples"
-      ]
+      "sources": ["rm0008", "usb20", "project-examples", "rm0008-rcc", "ds5319-usbcan", "rm0008-usb"]
     },
     "15-freertos.md": {
       "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",
       "deliverable": "A task-state diagram, a stack and queue budget, and an NVIC table that shows the FromISR priority is legal.",
       "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements. FreeRTOS requires GROUP_4. With 4 priority bits, 5 << (8-4) = 0x50, so an interrupt that calls FromISR needs a numeric priority of at least 5. NVIC priority 0 is the highest; calling those APIs stops in configASSERT. Task priority runs in the opposite direction. The stack depth passed to xTaskCreate is in words. In this repository's freertos-task example the LED task is 128 words, which is 512 bytes; KEY is 192 words, 768 bytes; UART is 256 words, 1024 bytes. The default configTICK_RATE_HZ is 1000, so one tick is 1 ms. HAL_Delay also uses SysTick. When the kernel is on, move the HAL time base to another timer.",
-      "sources": [
-        "freertos-priority",
-        "pm0056",
-        "project-examples"
-      ]
+      "sources": ["freertos-priority", "pm0056", "project-examples", "freertos-syscall"]
     },
     "16-low-power.md": {
       "question": "When entering and leaving Sleep, Stop, or Standby, which clocks, state, and wake sources must be restored explicitly?",
@@ -1176,6 +1171,51 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter 11's crystal pins, ten backup registers, and the LSI range. Table 25 prints fLSI as 30 / 40 / 60 kHz. Ten 16-bit backup registers are 20 bytes. Pin 1 is VBAT, pin 3 is PC14-OSC32_IN, and pin 4 is PC15-OSC32_OUT. The independent watchdog can be frozen while debugging. Does not invent a load-capacitor picofarad. Does not put ±20 ppm or ±50% in the snapshot."
+    },
+    "rm0008-flash": {
+      "title": "RM0008 Rev 21 medium-density Flash pages, half-words, and the two keys",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 3 is titled Memory and bus architecture. Embedded Flash memory is section 3.3.3. Table 5 prints 1 KB pages for medium-density devices. Page 0 starts at 0x08000000. The same table's page 127 starts at 0x0801FC00, which is the 128 KB end, not a 64 KB page. Table 6 prints 2 KB pages for high-density devices. That 2 KB page is void on STM32F103C8T6. This chapter points the Flash interface registers to PM0075 and does not print the key values. The claim stays: unlock FLASH_KEYR by writing 0x45670123 and then 0xCDEF89AB. Programming granularity is a half-word. An erased half-word reads back 0xFFFF. Programming can change a 1 only to a 0. This snapshot does not include an erase-time estimate and does not name an unprotected key from another family.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter file 12 pages, half-words, and the two keys. Medium-density parts erase 1 KB pages. Programming granularity is 16 bits. The erased state is 0xFFFF. Unlock writes 0x45670123 and then 0xCDEF89AB. The high-density 2 KB page is void on the C8. Byte programming is void on this part. Does not rewrite the chapter 02 wait states. Does not call 0xAA the unprotected key."
+    },
+    "rm0008-can": {
+      "title": "RM0008 Rev 21 bxCAN bit time, bus-off, and filters",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 24, Controller area network (bxCAN). Bit time is one synchronization quantum plus BS1 plus BS2. The CAN_BTR prescaler field uses the printed bits. The Bus-Off state is reached when TEC is greater than 255, so the counter value that enters bus-off is 256. Recovery requires 128 occurrences of 11 consecutive recessive bits. Other STM32F10xxx devices, including this medium-density part, have 14 filter banks. There are 2 receive FIFOs. A 32-bit filter includes STDID[10:0]. This repository places that standard identifier in FilterIdHigh shifted left by 5, which lines those 11 bits up with the high half-word. AFIO_MAPR encoding 10 maps CAN_RX to PB8 and CAN_TX to PB9. Encoding 11 maps CAN_RX to PD0 and CAN_TX to PD1. Section 9.3.3 says the port D remap is not possible on 36-, 48-, and 64-pin packages. 500 kbit/s remains prescaler 9 and 8 time quanta. This snapshot does not include a CAN base address and does not call 450 kbit/s the working point.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Chapter file 13 bit time, bus-off, and filters. At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. A transmit error counter of 256 enters bus-off. Recovery is 128 times 11 recessive bits. Does not invent a CAN base address. Does not call 450 kbit/s the working point."
+    },
+    "ds5319-usbcan": {
+      "title": "DS5319 Rev 20 Table 5 USB and CAN pins",
+      "authority": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. pin 31 is PA10 and pin 34 is PA13. pin 32 is PA11 and pin 33 is PA12. PA11 alternate functions include USBDM and CANRX. PA12 alternate functions include USBDP and CANTX. pin 45 is PB8 and pin 46 is PB9. PB8 remap includes I2C1_SCL and CANRX. PB9 remap includes I2C1_SDA and CANTX. Footnote 7: pins 5 and 6 on LQFP48 are OSC_IN and OSC_OUT, and PD0 and PD1 can be remapped onto them. Table 45 note 2 prints a 1.5 kilohm pull-up on USBDP (D+) to a 3.0 to 3.6 V range for USB 2.0 full-speed compliance. This snapshot does not trace the package drawing and does not assign a transceiver pinout.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "Pins for chapter files 13 and 14. Pin 32 PA11 includes USB_DM and CAN_RX. Pin 33 PA12 includes USB_DP and CAN_TX. Pin 45 PB8 and pin 46 PB9 are the CAN remap. Pin 5 and pin 6 exist. PA11/PA12 cannot be CAN and USB at the same time."
+    },
+    "rm0008-usb": {
+      "title": "RM0008 Rev 21 USB full-speed device and the shared interrupt",
+      "authority": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 23, Universal serial bus full-speed device interface (USB). On STM32F103 this block is a full-speed device, not a host. The USB clock must be 48 MHz. Table 63, vector table for other STM32F10xxx devices, which covers medium-density STM32F103, prints USB_LP_CAN_RX0. The pre-check default USB_LP_CAN1_RX0 is not the acronym in that table. Use the printed name USB_LP_CAN_RX0. RM0008 mentions an external pull-up resistor and does not print its ohms. The 48 MHz claim and the device-not-host claim do not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "The device boundary for chapter file 14, and the chapter file 13 cross-reference to the same interrupt. F103 USB is a full-speed device, not a host. The USB clock must be 48 MHz. The default vector name is USB_LP_CAN1_RX0. Does not write 480 Mbit/s onto this part."
+    },
+    "freertos-syscall": {
+      "title": "FreeRTOS Kernel V11.3.2 FromISR shift, word stacks, and mutexes",
+      "authority": "FreeRTOS kernel",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "FreeRTOS Kernel V11.3.2, the same release tag as freertos-1132. MIT. The Cortex-M port shifts the library priority left by (8 minus the number of priority bits) before the value used with BASEPRI. With 4 priority bits and library priority 5, the shifted value is 0x50. An interrupt with a numerically smaller priority must not call FromISR. A numerically larger task priority runs first. The xTaskCreate depth is in words. heap_4 coalesces adjacent free blocks. A mutex has priority inheritance and a binary semaphore does not. If a demo in this tag prints a library priority other than 5, record the printed formula here. This repository's EXTI priority stays 5. V11.3.2 portable/GCC/ARM_CM3/port.c does not print a library priority other than 5. This snapshot does not include the later-chapter CPU budget.",
+      "accessed": "2026-10-25",
+      "license": "MIT",
+      "scope": "Chapter file 15 for 0x50, the word-stack direction, and mutexes. With 4 priority bits, 5 shifted left by 4 is 0x50. A numerically larger task priority runs first. The xTaskCreate depth is in words. A mutex has priority inheritance and a binary semaphore does not. Does not cover chapter file 28. Does not bring in 17.2 percent."
     }
   }
 }

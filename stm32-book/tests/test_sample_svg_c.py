@@ -65,6 +65,10 @@ diagrams/sample-08-spi-jedec.svg 960x860 6850 717ba67544302d5517bffdbfe23deec414
 diagrams/sample-09-adc-sar.svg 960x860 6656 3d193aa429c4f707ea7f82cf4e6e44c2f128bc032e59d43a7e2334c5882dc65e
 diagrams/sample-10-dma-cndtr.svg 960x900 6552 6a887f553de8b9d8744527a71b0c86217ccbea32b2f4f65ff3519f519cfb92f5
 diagrams/sample-11-iwdg-1s.svg 960x980 7169 226d77d6f316c4b5ce1a1580507c95b96d69a8c3a35f7601475794dc279b18eb
+diagrams/sample-12-iap-map.svg 960x980 7450 017cfc1406a5ad4843bcdf80666eaa5636e3186fa60008f61cef514cf26f60dd
+diagrams/sample-13-can-bit.svg 960x980 7175 0e1da8a54f67b46946b959799eb301cf07baa63b6494fd196c00cc6514654cc8
+diagrams/sample-14-usb-enum.svg 960x980 7101 a6cf18d79c5d09d0257f7c8a210c9a82df4387dfac9b1239fdc1df46359bd93b
+diagrams/sample-15-rtos-prio.svg 960x960 6794 a6c5ccb5affa24af61ec70b68a8fff13810af20309f0a3cf1549a59b3b24a842
 """.strip().splitlines()
 
 SEMANTIC = {
@@ -249,20 +253,20 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(53, len(found))
+        self.assertEqual(57, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)
         self.assertNotIn("<animate", i2c)
 
         gifs = sorted((REPO / "assets" / "gif").glob("*.gif"), key=lambda path: path.name)
-        self.assertEqual(40, len(gifs))
+        self.assertEqual(44, len(gifs))
         listing = "".join(
             f"{path.name} {hashlib.sha256(path.read_bytes()).hexdigest()}\n"
             for path in gifs
         )
         self.assertEqual(
-            "bd674b4aaf427c36ec54f92853f13d52cf160e41acd2a06f89c2479b9f31c26f",
+            "33b3cf25eeedfc824c35571727a82e490fdb8ce22583605479e72825a399d2e4",
             hashlib.sha256(listing.encode("utf-8")).hexdigest(),
         )
 

@@ -2,7 +2,7 @@
   "title": "STM32 实战：从点亮一颗灯到交付一个系统",
   "subtitle": "29 章证据驱动的嵌入式入门与工程手册",
   "keywords": "STM32, Cortex-M, embedded systems, FreeRTOS, RT-Thread, Zephyr, CMSIS-RTOS2, lwIP, Ethernet, MQTT, TLS",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "date": "2026-10-25",
   "back_matter": [
     {"id": "subject-index", "title": "主题索引", "file": "subject-index.json"}
@@ -176,25 +176,25 @@
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
       "deliverable": "一张 Boot/APP 内存布局、镜像完整性检查和升级失败回退状态图。",
       "boundary": "能跳转 APP 不等于可量产升级；签名、反回滚、掉电恢复和密钥管理需单独论证。F103 中容量按 1 KB 页擦除、按半字编程。解锁先写 KEY1 0x45670123，再写 KEY2 0xCDEF89AB。大容量才是 2 KB/页。F407 的扇区是 16 KB、64 KB 或 128 KB。",
-      "sources": ["rm0008", "an2606", "an3965", "rm0090"]
+      "sources": ["rm0008", "an2606", "an3965", "rm0090", "rm0008-flash", "pm0056-vector", "project-examples", "ds5319-swd", "pm0075-rdp"]
     },
     "13-CAN总线.md": {
       "question": "物理终端、位时序、仲裁、过滤器和错误计数怎样共同决定一条 CAN 报文能否可信到达？",
       "deliverable": "一笔位时序账、一个环回自测和一份双节点含终端电阻的抓帧记录。",
       "boundary": "本章讲 bxCAN 基础，不等于 CANopen/J1939，也不能把 H7 的 FDCAN 寄存器原样替换。APB1 为 36 MHz 时，预分频 9、BS1 为 5、BS2 为 2：8 个时间份额，采样点 75%，36 MHz / (9 × 8) = 500 kbit/s。10 个时间份额、目标同样是 500 kbit/s 时预分频是 7.2；写成 8 得到 450 kbit/s。发送错误计数到 256 进入总线关闭。",
-      "sources": ["rm0008"]
+      "sources": ["rm0008", "rm0008-can", "ds5319-usbcan", "rm0008-usb", "project-examples", "ds5319-clock", "ds5319-i2c"]
     },
     "14-USB.md": {
       "question": "主机怎样沿复位、描述符、地址和配置完成枚举，类协议又在哪里接管数据？",
       "deliverable": "一张枚举请求序列、完整描述符长度核对和 CDC 或 HID 的主机侧可见结果。",
       "boundary": "枚举成功只证明控制传输基本正确；吞吐、兼容性、挂起恢复和合规仍需独立测试。F103 全速要 48 MHz：PLL 为 72 MHz 时 RCC_CFGR.USBPRE 写 0，72 / 1.5 = 48。PA11 是 DM，PA12 是 DP，全速在 D+ 上拉 1.5 kΩ。本仓库 usb-cdc 的设备描述符是 18 字节，bMaxPacketSize0 是 64，VID/PID 是 0x1209/0x0001，不是 ST 例程常见的 0x0483/0x5740。配置集合 wTotalLength 是 0x0043，也就是 67 字节；bMaxPower 0x32 表示 100 mA。全速批量和中断的包上限都是 64 字节；1023 只属于全速等时。",
-      "sources": ["rm0008", "usb20", "project-examples"]
+      "sources": ["rm0008", "usb20", "project-examples", "rm0008-rcc", "ds5319-usbcan", "rm0008-usb"]
     },
     "15-FreeRTOS入门.md": {
       "question": "任务、队列、互斥量与 ISR 怎样在优先级规则下协作而不阻塞错误的执行上下文？",
       "deliverable": "一张任务状态图、一份栈与队列预算，以及能证明 FromISR 优先级合法的 NVIC 配置表。",
       "boundary": "示例只建立内核基本契约；实时性必须用最坏执行时间、阻塞链和测量数据证明。FreeRTOS 要求分组 GROUP_4。4 位优先级时，5 << (8-4) = 0x50，能调用 FromISR 的中断优先级数值要大于等于 5。NVIC 数值 0 是最高优先级，调用这些 API 会停在 configASSERT。任务优先级的方向相反。xTaskCreate 的栈深度单位是字。本仓库 freertos-task 里 LED 是 128 字，等于 512 字节；KEY 是 192 字，等于 768 字节；UART 是 256 字，等于 1024 字节。configTICK_RATE_HZ 默认 1000，一个 tick 是 1 ms。HAL_Delay 也占用 SysTick，上内核时把 HAL 时基改到别的定时器。",
-      "sources": ["freertos-priority", "pm0056", "project-examples"]
+      "sources": ["freertos-priority", "pm0056", "project-examples", "freertos-syscall"]
     },
     "16-低功耗设计.md": {
       "question": "进入与退出 Sleep/Stop/Standby 时，哪些时钟、状态和唤醒源必须显式恢复？",
@@ -1024,6 +1024,51 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "第 11 章主图的晶振脚、10 个备份寄存器和 LSI 范围。表 25 的 fLSI 是 30 / 40 / 60 kHz。备份寄存器 10 个 16 位，共 20 字节。第 1 脚 VBAT，第 3 脚 PC14-OSC32_IN，第 4 脚 PC15-OSC32_OUT。调试时可以冻住独立看门狗。不编负载电容的皮法。不把 ±20 ppm 或 ±50% 写进 snapshot。"
+    },
+    "rm0008-flash": {
+      "title": "RM0008 Rev 21 中容量闪存的页、半字和两把钥匙",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 3 is titled Memory and bus architecture. Embedded Flash memory is section 3.3.3. Table 5 prints 1 KB pages for medium-density devices. Page 0 starts at 0x08000000. The same table's page 127 starts at 0x0801FC00, which is the 128 KB end, not a 64 KB page. Table 6 prints 2 KB pages for high-density devices. That 2 KB page is void on STM32F103C8T6. This chapter points the Flash interface registers to PM0075 and does not print the key values. The claim stays: unlock FLASH_KEYR by writing 0x45670123 and then 0xCDEF89AB. Programming granularity is a half-word. An erased half-word reads back 0xFFFF. Programming can change a 1 only to a 0. This snapshot does not include an erase-time estimate and does not name an unprotected key from another family.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 12 章的页、半字和两把钥匙。中容量按 1 KB 擦除。编程粒度是 16 位。擦除态是 0xFFFF。解锁先写 0x45670123，再写 0xCDEF89AB。大容量的 2 KB/页在 C8 上作废。按字节编程在这颗料上作废。不重写第 02 章的等待周期。不把 0xAA 写成无保护键。"
+    },
+    "rm0008-can": {
+      "title": "RM0008 Rev 21 bxCAN 的位时间、总线关闭和过滤器",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 24, Controller area network (bxCAN). Bit time is one synchronization quantum plus BS1 plus BS2. The CAN_BTR prescaler field uses the printed bits. The Bus-Off state is reached when TEC is greater than 255, so the counter value that enters bus-off is 256. Recovery requires 128 occurrences of 11 consecutive recessive bits. Other STM32F10xxx devices, including this medium-density part, have 14 filter banks. There are 2 receive FIFOs. A 32-bit filter includes STDID[10:0]. This repository places that standard identifier in FilterIdHigh shifted left by 5, which lines those 11 bits up with the high half-word. AFIO_MAPR encoding 10 maps CAN_RX to PB8 and CAN_TX to PB9. Encoding 11 maps CAN_RX to PD0 and CAN_TX to PD1. Section 9.3.3 says the port D remap is not possible on 36-, 48-, and 64-pin packages. 500 kbit/s remains prescaler 9 and 8 time quanta. This snapshot does not include a CAN base address and does not call 450 kbit/s the working point.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 13 章的位时间、总线关闭和过滤器。36 MHz 下预分频 9、8 个时间份额是 500 kbit/s。预分频 8、10 个时间份额是 450 kbit/s。发送错误计数到 256 进入总线关闭。恢复是 128 次、每次 11 个隐性位。不编 CAN 基址。不把 450 kbit/s 写成工作点。"
+    },
+    "ds5319-usbcan": {
+      "title": "DS5319 Rev 20 表 5 的 USB 与 CAN 脚",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. pin 31 is PA10 and pin 34 is PA13. pin 32 is PA11 and pin 33 is PA12. PA11 alternate functions include USBDM and CANRX. PA12 alternate functions include USBDP and CANTX. pin 45 is PB8 and pin 46 is PB9. PB8 remap includes I2C1_SCL and CANRX. PB9 remap includes I2C1_SDA and CANTX. Footnote 7: pins 5 and 6 on LQFP48 are OSC_IN and OSC_OUT, and PD0 and PD1 can be remapped onto them. Table 45 note 2 prints a 1.5 kilohm pull-up on USBDP (D+) to a 3.0 to 3.6 V range for USB 2.0 full-speed compliance. This snapshot does not trace the package drawing and does not assign a transceiver pinout.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 13 章和第 14 章的脚。第 32 脚 PA11 的复用含 USB_DM 和 CAN_RX，第 33 脚 PA12 的复用含 USB_DP 和 CAN_TX。第 45 脚 PB8、第 46 脚 PB9 是 CAN 重映射。第 5 脚和第 6 脚存在。同一对 PA11/PA12 不能同时当 CAN 和 USB。"
+    },
+    "rm0008-usb": {
+      "title": "RM0008 Rev 21 USB 全速设备与共享中断",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 23, Universal serial bus full-speed device interface (USB). On STM32F103 this block is a full-speed device, not a host. The USB clock must be 48 MHz. Table 63, vector table for other STM32F10xxx devices, which covers medium-density STM32F103, prints USB_LP_CAN_RX0. The pre-check default USB_LP_CAN1_RX0 is not the acronym in that table. Use the printed name USB_LP_CAN_RX0. RM0008 mentions an external pull-up resistor and does not print its ohms. The 48 MHz claim and the device-not-host claim do not change.",
+      "accessed": "2026-10-25",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "scope": "第 14 章的设备边界，以及第 13 章对同一条中断的交叉引用。F103 的 USB 是全速设备，不是主机。USB 时钟要 48 MHz。默认向量名是 USB_LP_CAN1_RX0。不把 480 Mbit/s 写进这颗料。"
+    },
+    "freertos-syscall": {
+      "title": "FreeRTOS Kernel V11.3.2 的 FromISR 移位、字栈和互斥量",
+      "authority": "FreeRTOS 内核",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "FreeRTOS Kernel V11.3.2, the same release tag as freertos-1132. MIT. The Cortex-M port shifts the library priority left by (8 minus the number of priority bits) before the value used with BASEPRI. With 4 priority bits and library priority 5, the shifted value is 0x50. An interrupt with a numerically smaller priority must not call FromISR. A numerically larger task priority runs first. The xTaskCreate depth is in words. heap_4 coalesces adjacent free blocks. A mutex has priority inheritance and a binary semaphore does not. If a demo in this tag prints a library priority other than 5, record the printed formula here. This repository's EXTI priority stays 5. V11.3.2 portable/GCC/ARM_CM3/port.c does not print a library priority other than 5. This snapshot does not include the later-chapter CPU budget.",
+      "accessed": "2026-10-25",
+      "license": "MIT",
+      "scope": "第 15 章的 0x50、字栈方向和互斥量。4 位优先级时 5 左移 4 位是 0x50。任务优先级数值更大的先跑。xTaskCreate 的深度单位是字。互斥量有优先级继承，二值信号量没有。不覆盖第 28 章。不把 17.2% 写进来。"
     }
   }
 }

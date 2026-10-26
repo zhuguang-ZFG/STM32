@@ -30,6 +30,57 @@
 9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
 10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
 <!-- /video:ch14 -->
+
+## Principle and boundary
+
+The clock and the descriptor are fixed on STM32F103C8T6. The USB clock is copied from chapter file 02 and from the compass. The PLL is 72 MHz. `USBPRE = 0` divides by 1.5, so the USB clock is 48 MHz. `USBPRE = 1` does not divide, so the USB clock is 72 MHz and the host fails while reading the descriptor. See [RM0008](#source-rm0008-rcc). Do not redraw the clock tree.
+
+Pin 32 PA11 = USB_DM. Pin 33 PA12 = USB_DP. The full-speed 1.5 kΩ pull-up sits between D+ and 3.3 V, on the pin 33 side. Tied to pin 32, the host does not see this full-speed device. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan). Table 45 note 2 prints that 1.5 kΩ pull-up on D+. RM0008 mentions an external pull-up and does not print the ohms. The 1.5 kΩ on the figure is the same number as that note and the compass.
+
+USB on this part is a full-speed device, not a host. 12 Mbit/s is its full-speed rate. 1.5 Mbit/s low speed is not its working mode. See [RM0008](#source-rm0008-usb).
+
+The device descriptor length is `0x12`, 18 bytes. `bMaxPacketSize0` is 64. VID is `0x1209` and PID is `0x0001`. That pair is this repository's experiment id. `0x0483/0x5740` is not this descriptor. The configuration set `wTotalLength` is `0x0043`, which is 67, not 18. `bMaxPower = 0x32` is in units of 2 mA, so it is 100 mA. See [examples in this repo](#source-project-examples).
+
+The full-speed bulk and interrupt ceiling is 64 bytes. 1023 belongs only to full-speed isochronous. The example notification endpoint is 8 bytes and the bulk endpoints are 64. 8 does not exceed the ceiling of 64.
+
+Chapter file 13 already moved the default CAN function off PA11/PA12. This figure draws only USB. The medium-density table prints `USB_LP_CAN_RX0` for the same interrupt as CAN receive. The connectivity table prints `USB_LP_CAN1_RX0`. Do not build the two examples together.
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-14-usb-enum.svg" width="760" alt="Full speed needs 48 MHz. The D+ pull-up is on pin 33. This descriptor is an 18-byte device plus a 67-byte configuration set, VID/PID 0x1209/0x0001.">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is USBPRE = 0, 48 MHz, 1.5 kΩ on D+ at pin 33, 18 bytes, and 67 bytes. The failure path is USBPRE = 1, and the clock becomes 72 MHz. 0x0483/0x5740 is not this descriptor. Sources: [RM0008](#source-rm0008-rcc), [DS5319](#source-ds5319-usbcan), and [usb-cdc](#source-project-examples).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/usb-48m.gif" width="640" alt="D+ is pulled up, the clock is 48 MHz, then 18 bytes and 67 bytes">
+  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: the D+ pull-up, 48 MHz, 18 bytes, and 67 bytes. Print from the static figure. 72 MHz and the pull-up on the wrong pin are not on this GIF.</sub>
+</p>
+
+`usb-enumeration.svg` stays as an auxiliary figure.
+
+## Timing or state
+
+| Item | Value | Right or wrong |
+| --- | --- | --- |
+| `USBPRE = 0` | 48 MHz | Normal. 72 / 1.5 = 48 |
+| `USBPRE = 1` | 72 MHz | Failure |
+| Device descriptor | length 18, `bMaxPacketSize0` 64 | VID `0x1209`, PID `0x0001` |
+| Configuration set | `wTotalLength` 67, which is `0x0043` | `bMaxPower` `0x32` = 100 mA |
+| Packet length | bulk and interrupt ceiling 64 | 1023 is isochronous only. A notification endpoint of 8 is allowed |
+| Pins | pin 32 is DM, pin 33 is DP | The pull-up is on DP. On DM it is not this normal path |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| Device Manager fails the descriptor request | The USB clock is not 48 MHz | Keep `USBPRE` at 0 | [RM0008](#source-rm0008-rcc) | `USBPRE=0` makes 72 MHz ÷ 1.5 = 48 MHz. `USBPRE=1` yields 72 MHz |
+| The host does not see the device at all | The pull-up is not on D+ | Tie the pull-up to D+ on pin 33, not to DM. The resistance is 1.5 kΩ | [DS5319](#source-ds5319-usbcan) | Pin 32 PA11 includes USB_DM. Pin 33 PA12 includes USB_DP. Table 45 note 2 prints 1.5 kΩ on D+. Tied to DM, this is not the normal path |
+| Enumeration shows someone else's VID | The ST example pair was copied | Use this repository's `0x1209/0x0001`. `0x0483/0x5740` is not this descriptor | [examples in this repo](#source-project-examples) | `examples/usb-cdc` has an 18-byte device descriptor. VID/PID is `0x1209/0x0001`. The PID is only a placeholder for the experiment board |
+| The configuration length does not match the bytes | 18 was written as the total length | Write `wTotalLength` as 67 | [examples in this repo](#source-project-examples) | The total length in the configuration descriptor is `0x0043`. `bMaxPower` `0x32` is 100 mA |
+| An interrupt or bulk endpoint is set to 1023 | That ceiling belongs to isochronous | The ceiling for those two classes at full speed is 64. 1023 is isochronous only | [examples in this repo](#source-project-examples) | The example bulk endpoint is 64 bytes and the notification endpoint is 8 bytes |
+| Linked with the CAN example, the receive interrupt is shared | The two examples use one vector | Keep the examples apart. Do not leave CAN on PA11/PA12 | [RM0008](#source-rm0008-usb) | The printed medium-density name is `USB_LP_CAN_RX0`. The connectivity table prints `USB_LP_CAN1_RX0`. USB on this part is a device, not a host |
+
 ## 📌 Goals
 
 - [ ] Separate USB 2.0 low-speed (1.5 Mbps), full-speed (12 Mbps), and high-speed (480 Mbps), and know which STM32 parts do which.
@@ -98,7 +149,7 @@ Device Descriptor                         (VID / PID / how many configurations)
 
 | Descriptor | Field | Meaning |
 | --- | --- | --- |
-| Device | `idVendor` / `idProduct` | VID/PID. ST's own examples often use 0x0483/0x5740 |
+| Device | `idVendor` / `idProduct` | ST examples often use 0x0483/0x5740. This repository's examples/usb-cdc does not. It uses 0x1209/0x0001 |
 | Device | `bNumConfigurations` | Usually 1 |
 | Configuration | `bMaxPower` | Unit is 2 mA (0x32 = 100 mA) |
 | Interface | `bInterfaceClass` | 0x02 CDC, 0x03 HID, 0x08 MSC, 0xFF vendor |
@@ -253,21 +304,6 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc[] __ALIGN_END =
 /* 4-byte report on the interrupt IN endpoint */
 USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 ```
-
-## ⚠️ Pitfalls
-
-| What you see | Why | Fix |
-| --- | --- | --- |
-| Unknown USB device (device descriptor request failed) | 48 MHz is off, or the descriptor is wrong | Check the USB clock and the length fields |
-| The host sees nothing | No D+ pull-up, D+/D− swapped, or a charge-only cable | 1.5 kΩ on D+; do not swap DM/DP |
-| Code 43 | Enumeration died, often in the configuration descriptor | Check `wTotalLength` against the real interface and endpoint count |
-| Old Windows ignores CDC | No .inf | Use Windows 10+, or switch to HID |
-| Only the first packet arrives | Receive was not armed again | `USBD_CDC_ReceivePacket` in the callback |
-| Transmit returns BUSY | Previous packet still in flight | Retry, or wait for the complete callback |
-| Drops after a while | USB IRQ too low, or you blocked inside it | Keep the USB interrupt short and high priority |
-| USB and CAN fight on F4 | Both want PA11/PA12 | Pick one, or move CAN |
-| VBUS sensing error | Self-powered, VBUS not wired | Turn sensing off in CubeMX |
-| DFU or a custom device never enters | BOOT pins or the descriptor | Start from the official DFU descriptor template |
 
 ## 🧪 Try it
 
