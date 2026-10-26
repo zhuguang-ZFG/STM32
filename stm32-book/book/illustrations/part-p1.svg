@@ -1,0 +1,10 @@
+<svg viewBox="0 0 200 140" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M25 70h18M43 57v26l22-13zM65 57v26M65 70h18"/>
+  <path d="M35 48l-7-7M46 44l-2-10" opacity=".55"/>
+  <path d="M83 70h12v-20h16v40h15"/>
+  <path d="M105 30l-9 17h10l-7 18 18-23h-10l7-12z"/>
+  <circle cx="151" cy="70" r="27"/>
+  <path d="M151 70V52M151 70l14 9M143 38h16M151 43v-5"/>
+  <path d="M23 113h154M30 118h140" opacity=".3"/>
+  <circle cx="151" cy="70" r="2.4" fill="currentColor" stroke="none"/>
+</svg>

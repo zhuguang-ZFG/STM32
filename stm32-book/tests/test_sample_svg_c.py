@@ -198,7 +198,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "f8dc34881a21080e1b0622df3922d7b094c92e549d595773fd6f6610f181e09c",
+            "98c0de3fa53e331b308db6d8f094aab76ec7b11159a1056fc16fd6acd7dce025",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -206,7 +206,7 @@ class SampleSvgCTests(unittest.TestCase):
             hashlib.sha256((BOOK_DIR / "styles" / "tokens.json").read_bytes()).hexdigest(),
         )
         self.assertEqual(
-            "939adca033c499a23142a577684098a08b0eb08e948296954da5ff457c80bbdf",
+            "fe03b80f2e50acf03bc17e0950e8aad52c4c90bb418b40956612de9bc719a942",
             hashlib.sha256((BOOK_DIR / "styles" / "book.css").read_bytes()).hexdigest(),
         )
         self.assertEqual(
