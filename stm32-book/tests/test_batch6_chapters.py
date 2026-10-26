@@ -4,10 +4,62 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
+import subprocess
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+def _fetch_baseline(rev: str) -> None:
+    """Shallow CI checkouts do not contain the lock baseline. Match batch 5.
+
+    actions/checkout on Book CI uses the default depth of 1. A regression that
+    runs ``git show <lock baseline>:<path>`` cannot see that commit until this
+    function fetches it. Do not widen the workflow checkout instead.
+    """
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    base = os.environ.get("GITHUB_BASE_REF", "main")
+    commands = (
+        ["git", "-C", str(ROOT), "fetch", "--depth=1", "origin", rev],
+        [
+            "git", "-C", str(ROOT), "fetch", "--depth=50", "origin",
+            f"+refs/heads/{base}:refs/remotes/origin/{base}",
+        ],
+    )
+    errors: list[str] = []
+    for command in commands:
+        if _git_show(rev, "stm32-book/manifest.json") is not None:
+            return
+        got = subprocess.run(command, capture_output=True, text=True, env=env)
+        if got.returncode != 0:
+            errors.append((got.stderr or got.stdout or command[-1]).strip())
+    if _git_show(rev, "stm32-book/manifest.json") is None and errors:
+        raise AssertionError("; ".join(errors))
+
+
+def _git_show(rev: str, path: str) -> str | None:
+    got = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{rev}:{path}"],
+        capture_output=True,
+    )
+    if got.returncode != 0:
+        return None
+    return got.stdout.decode("utf-8")
+
+
+def baseline_chapter(rev: str, path: str) -> str:
+    blob = _git_show(rev, path)
+    if blob is None:
+        _fetch_baseline(rev)
+        blob = _git_show(rev, path)
+    if blob is None:
+        raise AssertionError(
+            f"batch-6 baseline {rev}:{path} is not in this checkout and could not be fetched"
+        )
+    return blob
+
 DIAGRAMS = ROOT / "assets" / "diagrams"
 STOP = DIAGRAMS / "sample-16-stop-wake.svg"
 CFSR = DIAGRAMS / "sample-17-cfsr.svg"
@@ -182,6 +234,174 @@ class Batch6GifTests(unittest.TestCase):
             path = ROOT / "assets" / "gif" / f"{name}.gif"
             self.assertLess(path.stat().st_size, 500 * 1024, path.name)
 
+
+class Batch6StopChapterTests(unittest.TestCase):
+    def test_stop_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "16-低功耗设计.md"
+        en_path = ROOT / "docs" / "en" / "16-low-power.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 📌 学习目标", zh)
+        self.assertIn("## 📌 Learning goals", en)
+        self.assertIn("## 🧠 核心原理", zh)
+        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("HAL_RTCEx_SetWakeUpTimer_IT", zh)
+        self.assertNotIn("HAL_RTCEx_SetWakeUpTimer_IT", en)
+        self.assertNotIn("每秒唤醒一次", zh)
+        self.assertNotIn("once a second", en)
+        self.assertNotIn("14~20", zh)
+        self.assertNotIn("14 to 20", en)
+        self.assertNotIn("8/16", zh)
+        self.assertNotIn("8 or 16 MHz", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "14 µA",
+                "24 µA",
+                "3.4 µA",
+                "3.2 µA",
+                "2 µA",
+                "1.4 µA",
+                "14.4 mA",
+                "5.5 mA",
+                "5.4 µs",
+                "3.6 µs",
+                "1.8 µs",
+                "50 µs",
+                "8 MHz",
+                "72 MHz",
+                "0x271",
+                "12800",
+                "115200",
+                "1 ms",
+                "PA0",
+                "#source-ds5319-pwr",
+                "#source-rm0008-usart",
+                "#source-rm0008-rcc",
+                "#source-project-examples",
+                "#source-rm0008-rtc",
+                "#source-rm0008-wdg",
+                "#source-ds5319-adc",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("780", blocks)
+            self.assertNotIn("14~20", blocks)
+            self.assertNotIn("14 to 20", blocks)
+            self.assertNotIn("167 ns", blocks)
+            self.assertNotIn("21 µs", blocks)
+            self.assertNotIn("17.2%", blocks)
+        self.assertIn("第 10 脚", zh_blocks)
+        self.assertIn("pin 10", en_blocks)
+        self.assertIn("../assets/diagrams/sample-16-stop-wake.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-16-stop-wake.svg", en)
+        self.assertIn("../assets/gif/stop-wake.gif", zh)
+        self.assertIn("../../assets/gif/stop-wake.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-16-stop-wake.svg"), zh_key.index("stop-wake.gif"))
+        self.assertLess(en_key.index("sample-16-stop-wake.svg"), en_key.index("stop-wake.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertNotIn("schematic", en_key.lower())
+        self.assertIn("lowpower-wakeup.svg", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path in (zh_path, en_path):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = baseline_chapter(lock["baseline"], rel)
+            now_video = zh if path == zh_path else en
+            marker = "<!-- video:ch16 -->"
+            end = "<!-- /video:ch16 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now_video.split(marker, 1)[1].split(end, 1)[0],
+            )
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scope_zh = (
+            "第 16 章的两格微安和唤醒微秒。3.3 V、25°C 下，低功耗稳压器、无独立看门狗是 14 µA，"
+            "主稳压器那一格是 24 µA。Standby 按 LSI 和 IWDG 写成 3.4、3.2 或 2 µA。1.4 µA 是备份域。"
+            "Sleep 是 14.4 mA 或 5.5 mA。醒来先是 8 MHz 的 HSI。不把 14~20 µA 写成表 16 的格子。"
+        )
+        scope_en = (
+            "Chapter file 16 cells and wake-up times. At 3.3 V and 25°C, Stop with the low-power regulator "
+            "and the independent watchdog off is 14 µA. The main-regulator cell is 24 µA. Standby is 3.4, 3.2, "
+            "or 2 µA according to LSI and IWDG. 1.4 µA is the backup domain. Sleep is 14.4 mA or 5.5 mA. "
+            "Wake-up starts on the 8 MHz HSI. Does not call 14 to 20 µA a Table 16 cell."
+        )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "rm0008",
+            "ds5319",
+            "ds5319-pwr",
+            "rm0008-pwr",
+            "rm0008-rcc",
+            "rm0008-usart",
+            "ds5319-adc",
+            "project-examples",
+            "rm0008-rtc",
+            "rm0008-wdg",
+        ]
+        guide = zh_manifest["chapter_guides"]["16-低功耗设计.md"]
+        guide_en = en_manifest["chapter_guides"]["16-low-power.md"]
+        self.assertEqual(compass, guide["sources"])
+        self.assertEqual(compass, guide_en["sources"])
+        self.assertEqual(
+            "进入与退出 Sleep/Stop/Standby 时，哪些时钟、状态和唤醒源必须显式恢复？",
+            guide["question"],
+        )
+        self.assertIn("14 µA", guide["boundary"])
+        self.assertIn("24 µA", guide["boundary"])
+        self.assertIn("8 MHz", guide["boundary"])
+        self.assertNotIn("14~20", guide["boundary"])
+        self.assertIn("14 µA", guide_en["boundary"])
+        self.assertNotIn("14 to 20", guide_en["boundary"])
+        for source_id, scope_pair in (
+            ("ds5319-pwr", (scope_zh, scope_en)),
+            (
+                "rm0008-pwr",
+                (
+                    "第 16 章醒来先是 HSI，串口之前要重配时钟。PDDS=0 且 SLEEPDEEP=1 是 Stop。PDDS=1 且 SLEEPDEEP=1 是 Standby。不把 F4 的周期唤醒定时器写进来。",
+                    "Chapter file 16 returns to HSI and must restore the clock before the next byte. PDDS=0 with SLEEPDEEP=1 is Stop. PDDS=1 with SLEEPDEEP=1 is Standby. Does not include the F4 periodic wake-up timer.",
+                ),
+            ),
+        ):
+            card_zh = zh_manifest["sources"][source_id]
+            card_en = en_manifest["sources"][source_id]
+            for key in ("url", "snapshot", "license"):
+                self.assertEqual(by_id[source_id][key], card_zh[key])
+                self.assertEqual(card_zh[key], card_en[key])
+            self.assertEqual("2026-10-25", card_zh["accessed"])
+            self.assertEqual(card_zh["accessed"], card_en["accessed"])
+            self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
+            self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
+            self.assertEqual(by_id[source_id]["authority_zh"], card_zh["authority"])
+            self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
+            self.assertEqual(scope_pair[0], card_zh["scope"])
+            self.assertEqual(scope_pair[1], card_en["scope"])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-2:])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-2:])
 
 if __name__ == "__main__":
     unittest.main()

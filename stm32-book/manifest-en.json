@@ -255,11 +255,8 @@
     "16-low-power.md": {
       "question": "When entering and leaving Sleep, Stop, or Standby, which clocks, state, and wake sources must be restored explicitly?",
       "deliverable": "A mode, wake, and retained-state table, and a current measurement that records board load, instrument bandwidth, and temperature.",
-      "boundary": "A typical value in the datasheet is the chip under stated conditions. It is not the power of the whole board. On an F103 the Stop typical is about 14 to 20 µA. Wake-up returns to HSI. Chapter 02 puts that HSI at 8 MHz on F1; the 72 MHz PLL has to be programmed again.",
-      "sources": [
-        "rm0008",
-        "ds5319"
-      ]
+      "boundary": "A typical value in the datasheet is the chip under stated conditions. It is not the power of the whole board. Stop with the low-power regulator is 14 µA typical at 3.3 V and 25°C with the independent watchdog off. The regulator-on cell is 24 µA. Wake-up returns to HSI. Chapter 02 puts that HSI at 8 MHz on F1; the 72 MHz PLL has to be programmed again.",
+      "sources": ["rm0008", "ds5319", "ds5319-pwr", "rm0008-pwr", "rm0008-rcc", "rm0008-usart", "ds5319-adc", "project-examples", "rm0008-rtc", "rm0008-wdg"]
     },
     "17-debug.md": {
       "question": "Faced with a crash or a slowdown, how do you go from a repeatable symptom to the fault registers, the call site, and cycle evidence?",
@@ -1216,6 +1213,24 @@
       "accessed": "2026-10-25",
       "license": "MIT",
       "scope": "Chapter file 15 for 0x50, the word-stack direction, and mutexes. With 4 priority bits, 5 shifted left by 4 is 0x50. A numerically larger task priority runs first. The xTaskCreate depth is in words. A mutex has priority inheritance and a binary semaphore does not. Does not cover chapter file 28. Does not bring in 17.2 percent."
-    }
+    },
+    "ds5319-pwr": {
+        "title": "DS5319 Rev 20 Tables 16, 18, and 26 current and wake-up time",
+        "authority": "ST datasheet",
+        "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+        "snapshot": "DS5319 Rev 20, July 2025. Table 16 typical values at TA = 25°C and VDD = 3.3 V, in this condition order: Stop with the main regulator running, internal RC and HSE off, and no independent watchdog, 24 µA; the same conditions with the regulator in low-power mode, 14 µA; Standby with LSI and IWDG on, 3.4 µA; Standby with LSI on and IWDG off, 3.2 µA; Standby with LSI, IWDG, LSE, and RTC off, 2 µA; backup domain with LSE and RTC on, 1.4 µA, which is IDD_VBAT and not the whole-chip Standby current. The 85°C Stop maximums are the printed 200 µA and 180 µA, not typical values. Table 18: Sleep at 72 MHz is 14.4 mA typical with all peripherals on and 5.5 mA typical with all peripherals off, at 25°C and 3.3 V. Table 26: Sleep 1.8 µs on the clock that was already running; Stop with the main regulator 3.6 µs; Stop with the low-power regulator 5.4 µs; Standby 50 µs. Stop and Standby times are measured on the 8 MHz HSI until the first user instruction. Sleep keeps the clock from before the sleep. Table 27 tLOCK maximum is 200 µs and is not added to 5.4 µs. Section 2.3.12: Stop exits on EXTI; Standby exits on NRST, IWDG, a rising edge on WKUP, or the RTC alarm; SRAM is lost in Standby. If a printed cell differs, replace the cell and say so in the implementation PR. This snapshot does not record a combined Stop range, and does not call 1.4 µA the whole-chip standby current.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "Chapter file 16 cells and wake-up times. At 3.3 V and 25°C, Stop with the low-power regulator and the independent watchdog off is 14 µA. The main-regulator cell is 24 µA. Standby is 3.4, 3.2, or 2 µA according to LSI and IWDG. 1.4 µA is the backup domain. Sleep is 14.4 mA or 5.5 mA. Wake-up starts on the 8 MHz HSI. Does not call 14 to 20 µA a Table 16 cell."
+      },
+      "rm0008-pwr": {
+        "title": "RM0008 Rev 21 returns to HSI when Stop exits",
+        "authority": "ST reference manual",
+        "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+        "snapshot": "RM0008 Rev 21, February 2021. Default the power-control chapter. After entering Stop, clocks in the 1.8 V domain stop and HSI, HSE, and the PLL are off. On leaving Stop the system clock is HSI and the clock configuration has to be programmed again. PDDS = 0 and SLEEPDEEP = 1 is Stop. PDDS = 1 and SLEEPDEEP = 1 is Standby. The low-power regulator is the printed LPDS bit. If the printed chapter title or bit names differ, use the printed text. The claim does not change: exit from Stop is HSI, and the clock setup must be restored before the next USART byte. This snapshot does not restate the 8 MHz HSI calibration from chapter 02 and does not include an F4 periodic wake-up timer.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "Chapter file 16 returns to HSI and must restore the clock before the next byte. PDDS=0 with SLEEPDEEP=1 is Stop. PDDS=1 with SLEEPDEEP=1 is Standby. Does not include the F4 periodic wake-up timer."
+      }
   }
 }

@@ -199,8 +199,8 @@
     "16-低功耗设计.md": {
       "question": "进入与退出 Sleep/Stop/Standby 时，哪些时钟、状态和唤醒源必须显式恢复？",
       "deliverable": "一张模式—唤醒—状态保持表和注明板级负载、仪器带宽与温度的电流实测记录。",
-      "boundary": "数据手册典型值是芯片在指定条件下的数值，不能直接当成整块开发板功耗。F103 的 Stop 典型值约 14~20 µA。从 Stop 醒来先回到 HSI；第 02 章写明 F1 上电默认的 HSI 是 8 MHz，72 MHz 的 PLL 要重新装回。",
-      "sources": ["rm0008", "ds5319"]
+      "boundary": "数据手册典型值是芯片在指定条件下的数值，不能直接当成整块开发板功耗。Stop 低功耗稳压器在 3.3 V、25°C、无独立看门狗时典型值是 14 µA；主稳压器仍开的那一格是 24 µA。从 Stop 醒来先回到 HSI；第 02 章写明 F1 上电默认的 HSI 是 8 MHz，72 MHz 的 PLL 要重新装回。",
+      "sources": ["rm0008", "ds5319", "ds5319-pwr", "rm0008-pwr", "rm0008-rcc", "rm0008-usart", "ds5319-adc", "project-examples", "rm0008-rtc", "rm0008-wdg"]
     },
     "17-调试与性能优化.md": {
       "question": "面对崩溃或变慢，怎样从可重复现象走到故障寄存器、调用位置和周期证据？",
@@ -1069,6 +1069,24 @@
       "accessed": "2026-10-25",
       "license": "MIT",
       "scope": "第 15 章的 0x50、字栈方向和互斥量。4 位优先级时 5 左移 4 位是 0x50。任务优先级数值更大的先跑。xTaskCreate 的深度单位是字。互斥量有优先级继承，二值信号量没有。不覆盖第 28 章。不把 17.2% 写进来。"
-    }
+    },
+    "ds5319-pwr": {
+        "title": "DS5319 Rev 20 表 16、表 18 和表 26 的电流与唤醒时间",
+        "authority": "ST 官方数据手册",
+        "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+        "snapshot": "DS5319 Rev 20, July 2025. Table 16 typical values at TA = 25°C and VDD = 3.3 V, in this condition order: Stop with the main regulator running, internal RC and HSE off, and no independent watchdog, 24 µA; the same conditions with the regulator in low-power mode, 14 µA; Standby with LSI and IWDG on, 3.4 µA; Standby with LSI on and IWDG off, 3.2 µA; Standby with LSI, IWDG, LSE, and RTC off, 2 µA; backup domain with LSE and RTC on, 1.4 µA, which is IDD_VBAT and not the whole-chip Standby current. The 85°C Stop maximums are the printed 200 µA and 180 µA, not typical values. Table 18: Sleep at 72 MHz is 14.4 mA typical with all peripherals on and 5.5 mA typical with all peripherals off, at 25°C and 3.3 V. Table 26: Sleep 1.8 µs on the clock that was already running; Stop with the main regulator 3.6 µs; Stop with the low-power regulator 5.4 µs; Standby 50 µs. Stop and Standby times are measured on the 8 MHz HSI until the first user instruction. Sleep keeps the clock from before the sleep. Table 27 tLOCK maximum is 200 µs and is not added to 5.4 µs. Section 2.3.12: Stop exits on EXTI; Standby exits on NRST, IWDG, a rising edge on WKUP, or the RTC alarm; SRAM is lost in Standby. If a printed cell differs, replace the cell and say so in the implementation PR. This snapshot does not record a combined Stop range, and does not call 1.4 µA the whole-chip standby current.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "第 16 章的两格微安和唤醒微秒。3.3 V、25°C 下，低功耗稳压器、无独立看门狗是 14 µA，主稳压器那一格是 24 µA。Standby 按 LSI 和 IWDG 写成 3.4、3.2 或 2 µA。1.4 µA 是备份域。Sleep 是 14.4 mA 或 5.5 mA。醒来先是 8 MHz 的 HSI。不把 14~20 µA 写成表 16 的格子。"
+      },
+      "rm0008-pwr": {
+        "title": "RM0008 Rev 21 退出 Stop 后回到 HSI",
+        "authority": "ST 官方参考手册",
+        "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+        "snapshot": "RM0008 Rev 21, February 2021. Default the power-control chapter. After entering Stop, clocks in the 1.8 V domain stop and HSI, HSE, and the PLL are off. On leaving Stop the system clock is HSI and the clock configuration has to be programmed again. PDDS = 0 and SLEEPDEEP = 1 is Stop. PDDS = 1 and SLEEPDEEP = 1 is Standby. The low-power regulator is the printed LPDS bit. If the printed chapter title or bit names differ, use the printed text. The claim does not change: exit from Stop is HSI, and the clock setup must be restored before the next USART byte. This snapshot does not restate the 8 MHz HSI calibration from chapter 02 and does not include an F4 periodic wake-up timer.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "第 16 章醒来先是 HSI，串口之前要重配时钟。PDDS=0 且 SLEEPDEEP=1 是 Stop。PDDS=1 且 SLEEPDEEP=1 是 Standby。不把 F4 的周期唤醒定时器写进来。"
+      }
   }
 }
