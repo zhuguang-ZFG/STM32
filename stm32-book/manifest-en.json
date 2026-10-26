@@ -250,11 +250,7 @@
       "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",
       "deliverable": "A task-state diagram, a stack and queue budget, and an NVIC table that shows the FromISR priority is legal.",
       "boundary": "The example only establishes the kernel's basic contract. Real-time behavior must be shown with worst-case execution time, the blocking chain, and measurements. FreeRTOS requires GROUP_4. With 4 priority bits, 5 << (8-4) = 0x50, so an interrupt that calls FromISR needs a numeric priority of at least 5. NVIC priority 0 is the highest; calling those APIs stops in configASSERT. Task priority runs in the opposite direction. The stack depth passed to xTaskCreate is in words. In this repository's freertos-task example the LED task is 128 words, which is 512 bytes; KEY is 192 words, 768 bytes; UART is 256 words, 1024 bytes. The default configTICK_RATE_HZ is 1000, so one tick is 1 ms. HAL_Delay also uses SysTick. When the kernel is on, move the HAL time base to another timer.",
-      "sources": [
-        "freertos-priority",
-        "pm0056",
-        "project-examples"
-      ]
+      "sources": ["freertos-priority", "pm0056", "project-examples", "freertos-syscall"]
     },
     "16-low-power.md": {
       "question": "When entering and leaving Sleep, Stop, or Standby, which clocks, state, and wake sources must be restored explicitly?",
@@ -1211,6 +1207,15 @@
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "The device boundary for chapter file 14, and the chapter file 13 cross-reference to the same interrupt. F103 USB is a full-speed device, not a host. The USB clock must be 48 MHz. The default vector name is USB_LP_CAN1_RX0. Does not write 480 Mbit/s onto this part."
+    },
+    "freertos-syscall": {
+      "title": "FreeRTOS Kernel V11.3.2 FromISR shift, word stacks, and mutexes",
+      "authority": "FreeRTOS kernel",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "FreeRTOS Kernel V11.3.2, the same release tag as freertos-1132. MIT. The Cortex-M port shifts the library priority left by (8 minus the number of priority bits) before the value used with BASEPRI. With 4 priority bits and library priority 5, the shifted value is 0x50. An interrupt with a numerically smaller priority must not call FromISR. A numerically larger task priority runs first. The xTaskCreate depth is in words. heap_4 coalesces adjacent free blocks. A mutex has priority inheritance and a binary semaphore does not. If a demo in this tag prints a library priority other than 5, record the printed formula here. This repository's EXTI priority stays 5. V11.3.2 portable/GCC/ARM_CM3/port.c does not print a library priority other than 5. This snapshot does not include the later-chapter CPU budget.",
+      "accessed": "2026-10-25",
+      "license": "MIT",
+      "scope": "Chapter file 15 for 0x50, the word-stack direction, and mutexes. With 4 priority bits, 5 shifted left by 4 is 0x50. A numerically larger task priority runs first. The xTaskCreate depth is in words. A mutex has priority inheritance and a binary semaphore does not. Does not cover chapter file 28. Does not bring in 17.2 percent."
     }
   }
 }

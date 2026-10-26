@@ -591,6 +591,131 @@ class Batch5UsbChapterTests(unittest.TestCase):
         self.assertNotIn("rm0008-rcc-pullup", zh_manifest["sources"])
 
 
+class Batch5RtosChapterTests(unittest.TestCase):
+    def test_rtos_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "15-FreeRTOS入门.md"
+        en_path = ROOT / "docs" / "en" / "15-freertos.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("## 📌 Learning goals", en)
+        self.assertIn("## 🧠 Core ideas", en)
+        self.assertIn("TIM4", zh)
+        self.assertIn("TIM4", en)
+        self.assertNotIn("改为 **TIMx**", zh)
+        self.assertNotIn("改成 TIMx", zh)
+        self.assertNotIn("改 TIMx", zh)
+        self.assertNotIn("to **TIMx**", en)
+        self.assertNotIn("to TIMx", en)
+        self.assertIn("没有 FPU", zh)
+        self.assertIn("no FPU", en)
+        self.assertNotIn("选带 FPU 的移植（", zh)
+        self.assertNotIn("Use the port that includes the FPU", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "1000",
+                "0x50",
+                "128",
+                "512",
+                "192",
+                "768",
+                "256",
+                "1024",
+                "TIM4",
+                "13",
+                "GROUP_4",
+                "#source-project-examples",
+                "#source-freertos-syscall",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("167 ns", blocks)
+            self.assertNotIn("17.2", blocks)
+        self.assertIn("大于等于 5", zh_blocks)
+        self.assertIn("5 or a larger number", en_blocks)
+        self.assertIn("../assets/diagrams/sample-15-rtos-prio.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-15-rtos-prio.svg", en)
+        self.assertIn("../assets/gif/rtos-tick.gif", zh)
+        self.assertIn("../../assets/gif/rtos-tick.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-15-rtos-prio.svg"), zh_key.index("rtos-tick.gif"))
+        self.assertLess(en_key.index("sample-15-rtos-prio.svg"), en_key.index("rtos-tick.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path, now in ((zh_path, zh), (en_path, en)):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = subprocess.check_output(
+                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
+            ).decode("utf-8")
+            marker = "<!-- video:ch15 -->"
+            end = "<!-- /video:ch15 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now.split(marker, 1)[1].split(end, 1)[0],
+            )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "freertos-priority",
+            "pm0056",
+            "project-examples",
+            "freertos-syscall",
+        ]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["15-FreeRTOS入门.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["15-freertos.md"]["sources"])
+        self.assertEqual(
+            [
+                "rm0008-flash",
+                "rm0008-can",
+                "ds5319-usbcan",
+                "rm0008-usb",
+                "freertos-syscall",
+            ],
+            list(zh_manifest["sources"])[-5:],
+        )
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        card_zh = zh_manifest["sources"]["freertos-syscall"]
+        card_en = en_manifest["sources"]["freertos-syscall"]
+        for key in ("url", "snapshot", "license"):
+            self.assertEqual(by_id["freertos-syscall"][key], card_zh[key])
+            self.assertEqual(card_zh[key], card_en[key])
+        self.assertEqual("2026-10-25", card_zh["accessed"])
+        self.assertEqual("MIT", card_zh["license"])
+        self.assertEqual(by_id["freertos-syscall"]["title_zh"], card_zh["title"])
+        self.assertEqual(by_id["freertos-syscall"]["title_en"], card_en["title"])
+        self.assertEqual(
+            "第 15 章的 0x50、字栈方向和互斥量。4 位优先级时 5 左移 4 位是 0x50。任务优先级数值更大的先跑。xTaskCreate 的深度单位是字。互斥量有优先级继承，二值信号量没有。不覆盖第 28 章。不把 17.2% 写进来。",
+            card_zh["scope"],
+        )
+        self.assertEqual(
+            "Chapter file 15 for 0x50, the word-stack direction, and mutexes. With 4 priority bits, 5 shifted left by 4 is 0x50. A numerically larger task priority runs first. The xTaskCreate depth is in words. A mutex has priority inheritance and a binary semaphore does not. Does not cover chapter file 28. Does not bring in 17.2 percent.",
+            card_en["scope"],
+        )
+
+
 def _split_video(text: str, slug: str) -> tuple[str, str]:
     marker = f"<!-- video:{slug} -->"
     end = f"<!-- /video:{slug} -->"

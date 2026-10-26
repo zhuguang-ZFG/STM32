@@ -30,6 +30,59 @@
 9. 实验做两个任务，两颗灯用不同的周期闪。如果一创建任务就进故障，先把栈调大，再看优先级。不要一开始就上五个队列。
 10. 合上书，三问。两个同优先级任务，时间片用完会发生什么？周期任务该用哪种延时？软件定时器回调里可以等待队列吗？
 <!-- /video:ch15 -->
+
+## 原理与边界
+
+这一章的节拍和 FromISR 只钉在订货号 STM32F103C8T6 上。分组跟第 04 章同一笔：`NVIC_PRIORITYGROUP_4`，4 位抢占，0 位子优先级。
+
+`configTICK_RATE_HZ = 1000`，一个 tick 是 1 ms。短于 1 ms 的期限不是内核保证。SysTick 归内核。HAL 的时基是 TIM4，这是 `examples/freertos-task` 的 README 已经写明的那一只。两家都占 SysTick 时，`HAL_Delay` 卡住。见 [本仓库例程](#source-project-examples)。
+
+任务优先级数值大的先跑。KEY 是 2，LED 和 UART 是 1，同时就绪时先跑 KEY。把任务优先级当成 NVIC、以为 1 比 2 更优先，是失败路径。NVIC 仍是数值小的更优先。空闲任务是 0。这颗料没有 FPU。
+
+`5 << (8 − 4) = 0x50`。调用 FromISR 的中断，抢占优先级数值要大于等于 5。例程把 `EXTI0` 设成 5。设成 0 会停在 `configASSERT`。数值 4 同样过急。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
+
+`xTaskCreate` 的栈深度是字，一字 4 字节。LED 128 字 = 512 字节。KEY 192 字 = 768 字节。UART 256 字 = 1024 字节。把 128 当成 128 字节，是失败旁注。
+
+先干 3 ms 再 `vTaskDelay(10)`，从调用时再等 10 个 tick，周期接近 13 ms。`vTaskDelayUntil` 的 10 ms 把周期钉在 10 ms。保护共享资源用互斥量，有优先级继承。二值信号量没有继承。heap_4 会合并相邻空闲块。不搬第 28 章的预算。
+
+## 关键插图
+
+<p align="center">
+  <img src="../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="一个 tick 是 1 ms；任务优先级 2 先于 1；128 字是 512 字节；FromISR 的数值优先级要大于等于 5">
+  <br><sub>▲ 自绘。STM32F103C8T6。正常路径是 SysTick 1 ms、HAL 时基 TIM4、优先级 2 在跑、优先级 1 在等、LED 栈 128 字 = 512 字节、EXTI0 抢占优先级 5。失败路径是同一条 EXTI 的抢占优先级写成 0，调用 FromISR 后停在 configASSERT。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/gif/rtos-tick.gif" width="640" alt="节拍每 1 ms 走一格，优先级 2 占着 CPU，128 字等于 512 字节">
+  <br><sub>▲ 网页和公众号辅图。只播放正常路径：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷以静态主图为准。configASSERT 和 SysTick 冲突不在这条 GIF 上。</sub>
+</p>
+
+`freertos-scheduler.svg` 留作辅图。
+
+## 时序或状态
+
+| 对象 | 数值 | 谁先走 |
+| --- | --- | --- |
+| tick | 1000 Hz | 1 ms |
+| 任务 | 优先级 2 与优先级 1 | 2 先于 1。方向和 NVIC 相反 |
+| 栈 | 128 字 = 512 字节 | KEY 192 字 = 768 字节。UART 256 字 = 1024 字节 |
+| 中断 | 数值 5 可以调用 FromISR | 数值 0 停在 `configASSERT`。`0x50 = 5 << 4` |
+| 时基 | 内核用 SysTick | HAL 用 TIM4 |
+| 延时 | 工作 3 ms 再 `vTaskDelay(10)` | 周期接近 13 ms。`vTaskDelayUntil` 的 10 ms 仍是 10 ms |
+
+## 坑与出处卡
+
+| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| --- | --- | --- | --- | --- |
+| `HAL_Delay` 卡住，或调度器起不来 | HAL 和内核抢 SysTick | HAL 时基改到 TIM4 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 的 README 把时基源写成 TIM4 |
+| 一进中断就停在 `configASSERT` | 抢占优先级数值比 5 更小 | `EXTI0` 写成 5 或更靠后的数 | [FreeRTOS](#source-freertos-syscall) | 4 位优先级时，5 左移 4 位是 `0x50`。数值更小的中断不得调用 FromISR |
+| 优先级 1 的任务压过优先级 2 | 把任务优先级当成了 NVIC | 任务优先级数值大的先跑 | [FreeRTOS](#source-freertos-syscall) | 任务优先级数值更大的先跑 |
+| 例程里 KEY 没有压过 LED | 两个任务写成了同一个优先级 | KEY 写 2，LED 和 UART 写 1 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 里 KEY 的任务优先级是 2，LED 和 UART 是 1 |
+| 栈说明书写 128，一打印就溢出 | 把字当成了字节 | 128 的单位是字，等于 512 字节 | [本仓库例程](#source-project-examples) | LED 128 字，KEY 192 字，UART 256 字 |
+| 按键中断一进来就断言 | EXTI 抢占优先级过急 | `EXTI0` 的抢占优先级写成 5 | [本仓库例程](#source-project-examples) | 例程把 `EXTI0` 的抢占优先级设成 5 |
+| 两个任务的串口叠在一起 | 用二值信号量保护了资源 | 用互斥量 | [FreeRTOS](#source-freertos-syscall) | 互斥量有优先级继承。二值信号量没有 |
+| 周期越来越长 | `vTaskDelay(10)` 不包含调用前已经花掉的时间 | 固定周期用 `vTaskDelayUntil` | [FreeRTOS](#source-freertos-syscall) | 一个 tick 是 1 ms 时，调用前已经花掉的时间不包含在 `vTaskDelay` 里 |
+
 ## 📌 学习目标
 
 - [ ] 说清「裸机前后台」与「RTOS 多任务」的差异，判断项目该不该上 RTOS。
@@ -85,13 +138,15 @@ Suspended       Running ─────────► Blocked
 
 | 冲突点 | 现象 | 解决 |
 | --- | --- | --- |
-| FreeRTOS 与 HAL 抢 SysTick | `HAL_Delay` 卡死、tick 异常 | CubeMX：SYS → Timebase Source 改为 **TIMx** |
+| FreeRTOS 与 HAL 抢 SysTick | `HAL_Delay` 卡死、tick 异常 | CubeMX：SYS → Timebase Source 改为 **TIM4** |
 | 节拍频率 | `configTICK_RATE_HZ` 默认 1000（1 ms） | 时间片越小实时性越好、开销越大 |
 | 时间片轮转 | 同优先级任务共享 CPU | `configUSE_TIME_SLICING=1`（默认开） |
 
 ### 4. 优先级与抢占
 
 **结论**：FreeRTOS 中**数值越大优先级越高**（与 Cortex-M 中断相反！）；`configUSE_PREEMPTION=1` 时高优先级就绪会立即抢占当前任务。
+
+STM32F103C8T6 是 Cortex-M3，没有 FPU。选带 FPU 的移植在这颗料上作废。
 
 | 项 | 规则 |
 | --- | --- |
@@ -301,22 +356,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 }
 ```
 
-> **CubeMX 最关键一步**：`SYS → Timebase Source` 从 **SysTick 改成 TIMx**，否则 HAL 和 FreeRTOS 抢 SysTick，`HAL_Delay` 会卡死。
-
-## ⚠️ 常见坑与排查
-
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| 卡在 `vTaskStartScheduler` 前 | HAL 时基与 RTOS 抢 SysTick | Timebase Source 改 TIMx |
-| `configASSERT` 死循环 | 中断优先级数值太小（太高） | 中断优先级 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY` |
-| 任务创建失败 | 堆空间不足 | 调大 `configTOTAL_HEAP_SIZE` |
-| 串口输出互相穿插 | 多任务同时写串口 | 用互斥量保护 |
-| 随机 HardFault | 任务栈溢出 | 加大栈 + `uxTaskGetStackHighWaterMark` 观察 |
-| 中断里崩溃 | 用了非 FromISR API | 中断内一律 `xxxFromISR` |
-| 某任务一直不跑 | 优先级太低被饿死 / 无阻塞点 | 检查优先级；确保任务里有阻塞调用 |
-| 按键丢事件 | 队列满了覆盖 | 加大队列深度或用任务通知 |
-| `HAL_Delay` 卡死 | 时基仍是 SysTick | 改 TIMx 时基 |
-| 浮点任务算错 | 未开 FPU 上下文保存 | 选带 FPU 的移植（`port` 的 FPU 版本） |
+> **CubeMX 最关键一步**：`SYS → Timebase Source` 从 **SysTick 改成 TIM4**，否则 HAL 和 FreeRTOS 抢 SysTick，`HAL_Delay` 会卡死。
 
 ## 🧪 动手实验
 
