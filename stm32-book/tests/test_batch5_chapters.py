@@ -5,12 +5,57 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DIAGRAMS = ROOT / "assets" / "diagrams"
+
+
+def _fetch_baseline(rev: str) -> None:
+    """Shallow CI checkouts do not contain the lock baseline. Match batch 4."""
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    base = os.environ.get("GITHUB_BASE_REF", "main")
+    commands = (
+        ["git", "-C", str(ROOT), "fetch", "--depth=1", "origin", rev],
+        [
+            "git", "-C", str(ROOT), "fetch", "--depth=50", "origin",
+            f"+refs/heads/{base}:refs/remotes/origin/{base}",
+        ],
+    )
+    errors: list[str] = []
+    for command in commands:
+        if _git_show(rev, "stm32-book/manifest.json") is not None:
+            return
+        got = subprocess.run(command, capture_output=True, text=True, env=env)
+        if got.returncode != 0:
+            errors.append((got.stderr or got.stdout or command[-1]).strip())
+    if _git_show(rev, "stm32-book/manifest.json") is None and errors:
+        raise AssertionError("; ".join(errors))
+
+
+def _git_show(rev: str, path: str) -> str | None:
+    got = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{rev}:{path}"],
+        capture_output=True,
+    )
+    if got.returncode != 0:
+        return None
+    return got.stdout.decode("utf-8")
+
+
+def baseline_chapter(rev: str, path: str) -> str:
+    blob = _git_show(rev, path)
+    if blob is None:
+        _fetch_baseline(rev)
+        blob = _git_show(rev, path)
+    if blob is None:
+        raise AssertionError(
+            f"batch-5 baseline {rev}:{path} is not in this checkout and could not be fetched"
+        )
+    return blob
 IAP = DIAGRAMS / "sample-12-iap-map.svg"
 CAN = DIAGRAMS / "sample-13-can-bit.svg"
 USB = DIAGRAMS / "sample-14-usb-enum.svg"
@@ -275,9 +320,7 @@ class Batch5IapChapterTests(unittest.TestCase):
         )
         for path in (zh_path, en_path):
             rel = path.relative_to(ROOT).as_posix()
-            baseline = subprocess.check_output(
-                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
-            ).decode("utf-8")
+            baseline = baseline_chapter(lock["baseline"], rel)
             now_video = zh if path == zh_path else en
             marker = "<!-- video:ch12 -->"
             end = "<!-- /video:ch12 -->"
@@ -431,9 +474,7 @@ class Batch5CanChapterTests(unittest.TestCase):
         )
         for path, now in ((zh_path, zh), (en_path, en)):
             rel = path.relative_to(ROOT).as_posix()
-            baseline = subprocess.check_output(
-                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
-            ).decode("utf-8")
+            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch13 -->"
             end = "<!-- /video:ch13 -->"
             self.assertEqual(
@@ -568,9 +609,7 @@ class Batch5UsbChapterTests(unittest.TestCase):
         )
         for path, now in ((zh_path, zh), (en_path, en)):
             rel = path.relative_to(ROOT).as_posix()
-            baseline = subprocess.check_output(
-                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
-            ).decode("utf-8")
+            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch14 -->"
             end = "<!-- /video:ch14 -->"
             self.assertEqual(
@@ -663,9 +702,7 @@ class Batch5RtosChapterTests(unittest.TestCase):
         )
         for path, now in ((zh_path, zh), (en_path, en)):
             rel = path.relative_to(ROOT).as_posix()
-            baseline = subprocess.check_output(
-                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
-            ).decode("utf-8")
+            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch15 -->"
             end = "<!-- /video:ch15 -->"
             self.assertEqual(
