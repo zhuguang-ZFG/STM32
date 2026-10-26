@@ -244,11 +244,7 @@
       "question": "How does the host finish enumeration through reset, descriptors, address, and configuration, and where does the class protocol take over the data?",
       "deliverable": "An enumeration request sequence, a full descriptor-length check, and a host-visible result for CDC or HID.",
       "boundary": "Successful enumeration only proves the control transfers are basically correct. Throughput, compatibility, suspend/resume, and compliance still need their own tests. F103 full-speed needs 48 MHz: with the PLL at 72 MHz, RCC_CFGR.USBPRE is 0, and 72 / 1.5 = 48. PA11 is DM and PA12 is DP. Full-speed pulls D+ up with 1.5 kΩ. This repository's usb-cdc device descriptor is 18 bytes, bMaxPacketSize0 is 64, and the VID/PID is 0x1209/0x0001, not the 0x0483/0x5740 common in ST's examples. wTotalLength is 0x0043, which is 67 bytes. bMaxPower 0x32 means 100 mA. Full-speed bulk and interrupt both top out at 64 bytes. 1023 belongs only to full-speed isochronous.",
-      "sources": [
-        "rm0008",
-        "usb20",
-        "project-examples"
-      ]
+      "sources": ["rm0008", "usb20", "project-examples", "rm0008-rcc", "ds5319-usbcan", "rm0008-usb"]
     },
     "15-freertos.md": {
       "question": "How do tasks, queues, mutexes, and ISRs cooperate under the priority rules without blocking the wrong execution context?",

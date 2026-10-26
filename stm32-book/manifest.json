@@ -188,7 +188,7 @@
       "question": "主机怎样沿复位、描述符、地址和配置完成枚举，类协议又在哪里接管数据？",
       "deliverable": "一张枚举请求序列、完整描述符长度核对和 CDC 或 HID 的主机侧可见结果。",
       "boundary": "枚举成功只证明控制传输基本正确；吞吐、兼容性、挂起恢复和合规仍需独立测试。F103 全速要 48 MHz：PLL 为 72 MHz 时 RCC_CFGR.USBPRE 写 0，72 / 1.5 = 48。PA11 是 DM，PA12 是 DP，全速在 D+ 上拉 1.5 kΩ。本仓库 usb-cdc 的设备描述符是 18 字节，bMaxPacketSize0 是 64，VID/PID 是 0x1209/0x0001，不是 ST 例程常见的 0x0483/0x5740。配置集合 wTotalLength 是 0x0043，也就是 67 字节；bMaxPower 0x32 表示 100 mA。全速批量和中断的包上限都是 64 字节；1023 只属于全速等时。",
-      "sources": ["rm0008", "usb20", "project-examples"]
+      "sources": ["rm0008", "usb20", "project-examples", "rm0008-rcc", "ds5319-usbcan", "rm0008-usb"]
     },
     "15-FreeRTOS入门.md": {
       "question": "任务、队列、互斥量与 ISR 怎样在优先级规则下协作而不阻塞错误的执行上下文？",

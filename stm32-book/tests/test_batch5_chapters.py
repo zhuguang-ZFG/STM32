@@ -494,6 +494,103 @@ class Batch5CanChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
 
 
+class Batch5UsbChapterTests(unittest.TestCase):
+    def test_usb_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "14-USB.md"
+        en_path = ROOT / "docs" / "en" / "14-usb.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls\n", en)
+        self.assertIn("## 📌 Goals", en)
+        self.assertIn("## 🧠 Core idea", en)
+        self.assertIn("0x1209/0x0001", zh)
+        self.assertIn("0x1209/0x0001", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "USBPRE",
+                "48",
+                "72",
+                "18",
+                "67",
+                "0x0043",
+                "0x1209",
+                "0x0001",
+                "64",
+                "0x32",
+                "100",
+                "1023",
+                "1.5",
+                "#source-rm0008-rcc",
+                "#source-ds5319-usbcan",
+                "#source-project-examples",
+                "#source-rm0008-usb",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("10 ms", blocks)
+            self.assertNotIn("90 Ω", blocks)
+            self.assertNotIn("90 ohm", blocks.lower())
+        self.assertIn("是设备", zh_blocks)
+        self.assertIn("not a host", en_blocks)
+        self.assertIn("不是这份", zh_blocks)
+        self.assertIn("not this descriptor", en_blocks)
+        self.assertIn("第 32 脚", zh_blocks)
+        self.assertIn("第 33 脚", zh_blocks)
+        self.assertIn("pin 32", en_blocks)
+        self.assertIn("pin 33", en_blocks)
+        self.assertIn("../assets/diagrams/sample-14-usb-enum.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-14-usb-enum.svg", en)
+        self.assertIn("../assets/gif/usb-48m.gif", zh)
+        self.assertIn("../../assets/gif/usb-48m.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-14-usb-enum.svg"), zh_key.index("usb-48m.gif"))
+        self.assertLess(en_key.index("sample-14-usb-enum.svg"), en_key.index("usb-48m.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path, now in ((zh_path, zh), (en_path, en)):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = subprocess.check_output(
+                ["git", "-C", str(ROOT), "show", f"{lock['baseline']}:{rel}"],
+            ).decode("utf-8")
+            marker = "<!-- video:ch14 -->"
+            end = "<!-- /video:ch14 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now.split(marker, 1)[1].split(end, 1)[0],
+            )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = [
+            "rm0008",
+            "usb20",
+            "project-examples",
+            "rm0008-rcc",
+            "ds5319-usbcan",
+            "rm0008-usb",
+        ]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["14-USB.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["14-usb.md"]["sources"])
+        self.assertNotIn("rm0008-rcc-pullup", zh_manifest["sources"])
+
+
 def _split_video(text: str, slug: str) -> tuple[str, str]:
     marker = f"<!-- video:{slug} -->"
     end = f"<!-- /video:{slug} -->"

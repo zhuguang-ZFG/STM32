@@ -30,6 +30,57 @@
 9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
 10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
 <!-- /video:ch14 -->
+
+## 原理与边界
+
+这一章的时钟和描述符只钉在订货号 STM32F103C8T6 上。USB 时钟整格照抄第 02 章和罗盘。PLL 是 72 MHz。`USBPRE = 0` 再除以 1.5，USB 时钟是 48 MHz。`USBPRE = 1` 不除，USB 时钟是 72 MHz，主机在读描述符时失败。见 [RM0008](#source-rm0008-rcc)。不重画时钟树。
+
+第 32 脚 PA11 = USB_DM，第 33 脚 PA12 = USB_DP。全速的 1.5 kΩ 上拉接在 D+ 和 3.3 V 之间，也就是第 33 脚这一侧。接到第 32 脚上，主机不会按这颗全速设备来认。见 [DS5319 Rev 20 表 5](#source-ds5319-usbcan)。表 45 注 2 印出 D+ 上这只 1.5 kΩ。RM0008 只提到外接上拉，不印欧姆。图上的 1.5 kΩ 与表 45 注 2 和罗盘是同一笔。
+
+这颗料的 USB 是全速设备，不是主机。12 Mbit/s 是它的全速档。低速 1.5 Mbit/s 不是它的工作模式。见 [RM0008](#source-rm0008-usb)。
+
+设备描述符长度 `0x12`，共 18 字节。`bMaxPacketSize0` 是 64。VID 是 `0x1209`，PID 是 `0x0001`。这是本仓库实验号。`0x0483/0x5740` 不是这份描述符。配置集合的 `wTotalLength` 是 `0x0043`，即 67，不是 18。`bMaxPower = 0x32`，单位 2 mA，所以是 100 mA。见 [本仓库例程](#source-project-examples)。
+
+全速批量和中断的上限都是 64 字节。1023 只属于全速等时。例程的通知端点是 8 字节，批量端点是 64 字节。8 没有超出 64 的上限。
+
+PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中容量表印刷的向量名是 `USB_LP_CAN_RX0`，与 CAN 接收是同一条中断。互联型表才印 `USB_LP_CAN1_RX0`。两个例程不要编在一起。
+
+## 关键插图
+
+<p align="center">
+  <img src="../assets/diagrams/sample-14-usb-enum.svg" width="760" alt="全速要 48 MHz；D+ 上拉在第 33 脚；这份描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001">
+  <br><sub>▲ 自绘。STM32F103C8T6。正常路径是 USBPRE = 0、48 MHz、第 33 脚 D+ 上的 1.5 kΩ、18 字节和 67 字节。失败路径是 USBPRE = 1，时钟变成 72 MHz。0x0483/0x5740 不是这份描述符。出处是 [RM0008](#source-rm0008-rcc)、[DS5319](#source-ds5319-usbcan) 和 [usb-cdc](#source-project-examples)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/gif/usb-48m.gif" width="640" alt="D+ 被拉高，时钟是 48 MHz，随后是 18 字节和 67 字节">
+  <br><sub>▲ 网页和公众号辅图。只播放正常路径：D+ 上拉、48 MHz、18 字节、67 字节。印刷以静态主图为准。72 MHz 和接错的上拉不在这条 GIF 上。</sub>
+</p>
+
+`usb-enumeration.svg` 留作辅图。
+
+## 时序或状态
+
+| 项目 | 值 | 对错 |
+| --- | --- | --- |
+| `USBPRE = 0` | 48 MHz | 正常。72 / 1.5 = 48 |
+| `USBPRE = 1` | 72 MHz | 失败 |
+| 设备描述符 | 长度 18，`bMaxPacketSize0` 64 | VID `0x1209`，PID `0x0001` |
+| 配置集合 | `wTotalLength` 67，即 `0x0043` | `bMaxPower` `0x32` = 100 mA |
+| 包长 | 批量和中断上限 64 | 1023 只属于等时。通知端点 8 是允许的 |
+| 脚位 | 第 32 脚 DM，第 33 脚 DP | 上拉在 DP。接到 DM 不是这条正常路径 |
+
+## 坑与出处卡
+
+| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| --- | --- | --- | --- | --- |
+| 设备管理器里描述符请求失败 | USB 时钟不是 48 MHz | `USBPRE` 保持 0 | [RM0008](#source-rm0008-rcc) | `USBPRE=0` 时 72 MHz ÷1.5 = 48 MHz。`USBPRE=1` 得到 72 MHz |
+| 主机完全看不到设备 | 上拉不在 D+ | 上拉接在第 33 脚 D+，不要接到 DM。阻值是 1.5 kΩ | [DS5319](#source-ds5319-usbcan) | 第 32 脚 PA11 的复用含 USB_DM，第 33 脚 PA12 的复用含 USB_DP。表 45 注 2 印出 D+ 上的 1.5 kΩ。接到 DM 不是这条正常路径 |
+| 枚举到的是别人的 VID | 抄了 ST 例程那一对 | 用本仓库的 `0x1209/0x0001`。`0x0483/0x5740` 不是这份描述符 | [本仓库例程](#source-project-examples) | `examples/usb-cdc` 的设备描述符是 18 字节。VID/PID 是 `0x1209/0x0001`。PID 只给实验板占位 |
+| 配置集合长度和字节数对不上 | 把 18 写成了总长 | `wTotalLength` 写成 67 | [本仓库例程](#source-project-examples) | 配置描述符里的总长是 `0x0043`。`bMaxPower` 的 `0x32` 是 100 mA |
+| 中断或批量端点写成 1023 | 用了等时的上限 | 全速这两类的上限是 64。1023 只给等时 | [本仓库例程](#source-project-examples) | 例程批量端点是 64 字节，通知端点是 8 字节 |
+| 和 CAN 例程链在一起，接收中断串了 | 两条例程共用一条向量 | 两个例程分开。CAN 不要留在 PA11/PA12 | [RM0008](#source-rm0008-usb) | 向量名以印刷为准。中容量表印 `USB_LP_CAN_RX0`。互联型表印 `USB_LP_CAN1_RX0`。这颗料的 USB 是设备，不是主机 |
+
 ## 📌 学习目标
 
 - [ ] 分清 USB 2.0 低速(1.5 Mbps)/全速(12 Mbps)/高速(480 Mbps)，以及 STM32 各型号支持哪种。
@@ -98,7 +149,7 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 
 | 描述符 | 关键字段 | 说明 |
 | --- | --- | --- |
-| 设备 | `idVendor`/`idProduct` | VID/PID，ST 官方例程常用 0x0483/0x5740 |
+| 设备 | `idVendor`/`idProduct` | ST 官方例程常用 0x0483/0x5740。本仓库 examples/usb-cdc 不是这一对，用 0x1209/0x0001 |
 | 设备 | `bNumConfigurations` | 配置数量，一般 1 |
 | 配置 | `bMaxPower` | 最大电流，单位 2 mA（0x32 = 100 mA） |
 | 接口 | `bInterfaceClass` | 0x02=CDC、0x03=HID、0x08=MSC、0xFF=厂商自定义 |
@@ -253,21 +304,6 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc[] __ALIGN_END =
 /* 把 4 字节报告通过中断端点 IN 发出 */
 USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 ```
-
-## ⚠️ 常见坑与排查
-
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| 设备管理器「未知 USB 设备（设备描述符请求失败）」 | 48 MHz 时钟不准 / 描述符错 | 核对 USB 时钟；检查设备描述符长度字段 |
-| 完全不被识别 | D+ 无上拉 / 差分线接反 / 未连接 | 检查 1.5 kΩ 上拉；DM/DP 别接反 |
-| 识别但报错码 43 | 枚举中途失败（多为配置描述符） | 核对 `wTotalLength` 与接口/端点数量 |
-| 老 Windows 认不到 CDC | 缺 .inf 驱动 | 用 Win10+，或改 HID（免驱） |
-| 只能收到第一包数据 | 未重新挂载接收 | 回调里 `USBD_CDC_ReceivePacket` |
-| 发送返回 BUSY | 上一包未发完 | 判返回值重试，或加发送完成标志 |
-| 运行一会儿掉线 | 中断优先级低 / 阻塞太久 | 别在 USB 中断里长时间操作；提高中断优先级 |
-| F4 上 USB 和 CAN 冲突 | PA11/PA12 复用 | 二选一，或改用 CAN2/其他引脚 |
-| VBUS sensing 报错 | 自供电未接 VBUS | CubeMX 关闭 VBUS sensing |
-| DFU/自定义设备进不去 | BOOT 配置/描述符不符 | 用官方 DFU 描述符模板 |
 
 ## 🧪 动手实验
 
