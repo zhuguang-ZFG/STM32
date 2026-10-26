@@ -8,7 +8,7 @@
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
-> python3 tools/gen_sample_figures.py   # 第 00 到第 15 章的静态主图
+> python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -18,7 +18,7 @@
 
 | 文件 | 演示内容 | 关联章节 |
 | --- | --- | --- |
-| `toolchain-flow.svg` | 编译 → 链接 → 烧录 → 运行 的完整数据流 | 00 |
+| `toolchain-flow.svg` | 辅图：编译箭头。文件不重画。认不出芯片时先看的脚在静态主图上 | 00 / 18 |
 | `boot-sequence.svg` | 上电复位后 CPU 取向量表、启动流程 | 01 / 21 |
 | `memory-map.svg` | Cortex-M 存储器映射（Flash/SRAM/外设） | 02 |
 | `clock-tree.svg` | HSE → PLL → SYSCLK → AHB/APB 时钟树倍频过程 | 02 |
@@ -37,8 +37,8 @@
 | `can-arbitration.svg` | 辅图：CAN 仲裁与位填充。文件不重画。500 kbit/s 和 450 kbit/s 在静态主图上 | 13 |
 | `usb-enumeration.svg` | 辅图：USB 枚举。文件不重画。48 MHz 和描述符长度在静态主图上 | 14 |
 | `freertos-scheduler.svg` | 辅图：任务状态。文件不重画。1 ms、优先级和字栈在静态主图上 | 15 |
-| `lowpower-wakeup.svg` | 睡眠/停止/待机三种低功耗模式与唤醒源 | 16 |
-| `debug-swo.svg` | SWD 调试 + SWO/ITM 打印跟踪 | 17 |
+| `lowpower-wakeup.svg` | 辅图：三种低功耗模式。文件不重画。14 µA、8 MHz 和 12800 在静态主图上 | 16 |
+| `debug-swo.svg` | 辅图：SWO。文件不重画。CFSR、bit 15 和 1 µs 在静态主图上 | 17 |
 | `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
 | `g0-boot-swd.svg` | G071 启动锁存、PA14/选项位来源选择与 Under Reset 调试恢复 | 23 |
 | `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
@@ -58,7 +58,7 @@
 | `f4-discovery.svg` | STM32F4-Discovery | STM32F407VGT6 |
 | `f103zet6-dev.svg` | 战舰/正点原子风格大板 | STM32F103ZET6 |
 | `pinout-bluepill.svg` | BluePill 双排针引脚全标注图（静态） | STM32F103C8T6 |
-| `peripheral-wiring.svg` | 常用外设接线总览（LED/按键/OLED/传感器） | — |
+| `peripheral-wiring.svg` | 辅图：接线总览。文件不重画。一张 APP 和放不下的第二张在静态主图上 | — |
 | `pinout-stm32g071rb-lqfp64.svg` | G071RB LQFP64 引脚（DS12232 Rev 5 Table 12） | STM32G071RB |
 | `pinout-stm32l476rg-lqfp64.svg` | L476Rx LQFP64 引脚（DS10198 Rev 11 Figure 16） | STM32L476RG |
 | `pinout-stm32h743zi-lqfp144.svg` | H743xI LQFP144 引脚（DS12110 Rev 11 Figure 7） | STM32H743ZI |
@@ -98,6 +98,10 @@
 | `sample-13-can-bit.svg` | 第 13 章静态主图：预分频 9 的 500 kbit/s，以及预分频 8 的 450 kbit/s。工作脚是第 45 脚和第 46 脚。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-14-usb-enum.svg` | 第 14 章静态主图：USBPRE=0 的 48 MHz、第 33 脚上的 1.5 kΩ，以及 USBPRE=1 的 72 MHz。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-15-rtos-prio.svg` | 第 15 章静态主图：1 ms 节拍上优先级 2 先于 1，以及抢占优先级 0 调用 FromISR。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-16-stop-wake.svg` | 第 16 章静态主图：低功耗稳压器的 Stop 是 14 µA，醒来是 HSI 8 MHz；不重配时钟时 0x271 变成 12800。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-17-cfsr.svg` | 第 17 章静态主图：BFAR 要 bit 15 为 1；72 个 DWT 周期是 1 µs，要先置 DEMCR bit 24。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-18-boot-triage.svg` | 第 18 章静态主图：先看第 34 脚、第 37 脚和第 44 脚；BOOT0 为 1 且 BOOT1 为 0 时 CPU 在 0x1FFFF000。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-19-flash-fit.svg` | 第 19 章静态主图：一张 0xB800 停在 0x08010000 之前；两张是 110 KB，65536 字节大于 20 KB SRAM。由 `tools/gen_sample_figures.py` 生成 |
 
 ## 五、光栅动画 `assets/gif/`
 
@@ -123,13 +127,17 @@
 | `can-500k.gif` | 8 个 250 ns 的时间份额走过 2 µs，采样点 75%，标出 500 kbit/s | 由 `tools/gen_gifs.py` 生成。辅图。450 kbit/s 和晶振脚只在静态主图上 |
 | `usb-48m.gif` | D+ 上拉被主机看见，时钟 48 MHz，随后标出 18 字节和 67 字节 | 由 `tools/gen_gifs.py` 生成。辅图。72 MHz 和接错的上拉只在静态主图上 |
 | `rtos-tick.gif` | 节拍每 1 ms 走一格，优先级 2 占着 CPU，栈标成 128 words = 512 bytes | 由 `tools/gen_gifs.py` 生成。辅图。configASSERT 和 SysTick 冲突只在静态主图上 |
+| `stop-wake.gif` | 从 Stop 醒来，时钟从 HSI 8 MHz 装回 72 MHz，然后标出 115200 | 由 `tools/gen_gifs.py` 生成。辅图。12800 和 24 µA 只在静态主图上 |
+| `cfsr-read.gif` | 读 CFSR，bit 15 为 1，然后 72 个计数走完 1 µs | 由 `tools/gen_gifs.py` 生成。辅图。bit 15 为 0 和周期差为 0 只在静态主图上 |
+| `boot0-low.gif` | 第 44 脚为 0，探针接在第 34 脚和第 37 脚，目标出现 | 由 `tools/gen_gifs.py` 生成。辅图。BOOT0 为 1 和先改优化等级只在静态主图上 |
+| `one-slot.gif` | 16 KB、2 KB 和一张 0xB800 依次填到 0x08010000 为止 | 由 `tools/gen_gifs.py` 生成。辅图。第二张 APP 和 65536 字节只在静态主图上 |
 
-> ⚠️ 上面 20 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
+> ⚠️ 上面 24 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
 > 用 `python3 tools/gen_gifs.py` 重新生成，并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
 ### 公众号动图 `*-zh.gif`
 
-同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 20 张的中文翻译，也不由 `gen_gifs.py` 生成。
+同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
 文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
 

@@ -1,0 +1,183 @@
+{
+  "chapters": ["16", "17", "18", "19"],
+  "community": [],
+  "reuse_existing": [
+    {
+      "id": "rm0008-rcc",
+      "claim": "Power-up HSI and the HSI after an HSE failure are 8 MHz. PCLK2 is not divided on this book's clock tree.",
+      "do_not_copy": "Do not edit the existing rm0008-rcc object. Do not redraw sample-02-clock-tree.svg. Do not call the HSI 16 MHz."
+    },
+    {
+      "id": "rm0008-usart",
+      "claim": "BRR 0x271 is a divider of 39.0625. At 8 MHz that is 12800 bit/s. At 72 MHz it is 115200.",
+      "do_not_copy": "Do not edit the existing rm0008-usart object. Do not redraw sample-06-uart-frame.svg."
+    },
+    {
+      "id": "ds5319-usart",
+      "claim": "USART1 stays on pin 30 PA9 and pin 31 PA10. Chapter 16 only points at those pins.",
+      "do_not_copy": "Do not edit the existing ds5319-usart object. Do not redraw the UART frame."
+    },
+    {
+      "id": "ds5319-adc",
+      "claim": "Pin 10 is PA0-WKUP and also ADC12_IN0. Chapter 16 draws a key. Chapter 19 says the motor direction pin must not be this pin.",
+      "do_not_copy": "Do not edit the existing ds5319-adc object. Do not redraw sample-09-adc-sar.svg. Do not assign a new motor pin."
+    },
+    {
+      "id": "ds5319-gpio",
+      "claim": "Pin 2 PC13 cannot source current. The external lamp's 270 ohm resistor is already in chapter 03.",
+      "do_not_copy": "Do not edit the existing ds5319-gpio object. Do not redraw sample-03-gpio-led.svg. Do not put 220 ohm to 1 kilohm in the four sections."
+    },
+    {
+      "id": "ds5319-swd",
+      "claim": "Pin 34 is PA13, pin 37 is PA14, pin 7 is NRST, pin 39 is PB3, and pin 44 is BOOT0. Flash is 64 KB. SRAM is 20 KB.",
+      "do_not_copy": "Do not edit the existing ds5319-swd object. Do not redraw sample-01-swd-vectors.svg. Do not draw pin 35 as SWCLK."
+    },
+    {
+      "id": "ds5319-rtc",
+      "claim": "LSE is 32.768 kHz on pin 3 and pin 4. Pin 1 is VBAT. Load capacitance in picofarads stays out of this object.",
+      "do_not_copy": "Do not edit the existing ds5319-rtc object. Do not write 6 pF into it."
+    },
+    {
+      "id": "rm0008-rtc",
+      "claim": "32.768 kHz with PRL = 32767 is 1 Hz. Timed wake on this part is the alarm in chapter 11, not the F4 wake-up timer.",
+      "do_not_copy": "Do not edit the existing rm0008-rtc object. Do not redraw the chapter 11 figure."
+    },
+    {
+      "id": "rm0008-wdg",
+      "claim": "The independent watchdog keeps counting in Stop and Standby. The 14 µA cell does not include it.",
+      "do_not_copy": "Do not edit the existing rm0008-wdg object. Do not invent a Stop-plus-IWDG microamp."
+    },
+    {
+      "id": "pm0075-rdp",
+      "claim": "Chapter 16 only cross-references readout protection. It does not redraw the chapter 01 keys.",
+      "do_not_copy": "Do not edit the existing pm0075-rdp object."
+    },
+    {
+      "id": "pm0056",
+      "claim": "CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. BFAR is valid only when CFSR bit 15 is 1. FORCED is bit 30, value 0x40000000.",
+      "do_not_copy": "Do not edit the existing pm0056 object. Do not put 167 ns in chapter 17."
+    },
+    {
+      "id": "rm0008-boot",
+      "claim": "BOOT0 = 0 enters main Flash at 0x08000000. BOOT1 = 0 and BOOT0 = 1 enter system memory at 0x1FFFF000. The connectivity address 0x1FFFB000 is void on this C8. The pins are latched on the fourth rising edge of SYSCLK.",
+      "do_not_copy": "Do not edit the existing rm0008-boot object. Do not redraw sample-00-boot-state.svg."
+    },
+    {
+      "id": "project-examples",
+      "claim": "examples/freertos-task documents a 1000 Hz tick and TIM4 as the HAL time base. examples/iap-bootloader sizes one application as 0xB800. The CAN example uses 120 ohm at each end.",
+      "do_not_copy": "Do not edit the existing project-examples object. Do not open a new example id. Do not change the example trees."
+    },
+    {
+      "id": "rm0008-adc",
+      "claim": "The conversion denominator is 4096. Code 2048 at a nominal 3.3 V is 1.65 V.",
+      "do_not_copy": "Do not edit the existing rm0008-adc object. Do not redraw the chapter 09 figure."
+    },
+    {
+      "id": "rm0008-flash",
+      "claim": "This C8 has 64 KB of Flash and programs by half-word. Chapter 19 only cross-references that map.",
+      "do_not_copy": "Do not edit the existing rm0008-flash object. Do not redraw sample-12-iap-map.svg."
+    },
+    {
+      "id": "freertos-syscall",
+      "claim": "With 4 priority bits, 5 shifted left by 4 is 0x50. Chapter 18 only cross-references that value and TIM4.",
+      "do_not_copy": "Do not edit the existing freertos-syscall object. Do not redraw sample-15-rtos-prio.svg. Do not put 17.2 percent in chapter 18."
+    }
+  ],
+  "absorb": [
+    {
+      "id": "ds5319-pwr",
+      "chapters": ["16"],
+      "title_zh": "DS5319 Rev 20 表 16、表 18 和表 26 的电流与唤醒时间",
+      "title_en": "DS5319 Rev 20 Tables 16, 18, and 26 current and wake-up time",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025. Table 16 typical values at TA = 25°C and VDD = 3.3 V, in this condition order: Stop with the main regulator running, internal RC and HSE off, and no independent watchdog, 24 µA; the same conditions with the regulator in low-power mode, 14 µA; Standby with LSI and IWDG on, 3.4 µA; Standby with LSI on and IWDG off, 3.2 µA; Standby with LSI, IWDG, LSE, and RTC off, 2 µA; backup domain with LSE and RTC on, 1.4 µA, which is IDD_VBAT and not the whole-chip Standby current. The 85°C Stop maximums are the printed 200 µA and 180 µA, not typical values. Table 18: Sleep at 72 MHz is 14.4 mA typical with all peripherals on and 5.5 mA typical with all peripherals off, at 25°C and 3.3 V. Table 26: Sleep 1.8 µs on the clock that was already running; Stop with the main regulator 3.6 µs; Stop with the low-power regulator 5.4 µs; Standby 50 µs. Stop and Standby times are measured on the 8 MHz HSI until the first user instruction. Sleep keeps the clock from before the sleep. Table 27 tLOCK maximum is 200 µs and is not added to 5.4 µs. Section 2.3.12: Stop exits on EXTI; Standby exits on NRST, IWDG, a rising edge on WKUP, or the RTC alarm; SRAM is lost in Standby. If a printed cell differs, replace the cell and say so in the implementation PR. This snapshot does not record a combined Stop range, and does not call 1.4 µA the whole-chip standby current.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "Table 16",
+      "do_not_copy": true,
+      "points": [
+        "At 3.3 V and 25°C the low-power-regulator Stop cell is 14 µA and the main-regulator cell is 24 µA. Both cells exclude the independent watchdog",
+        "Standby is 3.4, 3.2, or 2 µA according to LSI and IWDG. 1.4 µA is the backup domain",
+        "Sleep is 14.4 mA or 5.5 mA. Wake-up is 1.8, 3.6, 5.4, or 50 µs. tLOCK at 200 µs is not the wake-up time"
+      ]
+    },
+    {
+      "id": "rm0008-pwr",
+      "chapters": ["16"],
+      "title_zh": "RM0008 Rev 21 退出 Stop 后回到 HSI",
+      "title_en": "RM0008 Rev 21 returns to HSI when Stop exits",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Default the power-control chapter. After entering Stop, clocks in the 1.8 V domain stop and HSI, HSE, and the PLL are off. On leaving Stop the system clock is HSI and the clock configuration has to be programmed again. PDDS = 0 and SLEEPDEEP = 1 is Stop. PDDS = 1 and SLEEPDEEP = 1 is Standby. The low-power regulator is the printed LPDS bit. If the printed chapter title or bit names differ, use the printed text. The claim does not change: exit from Stop is HSI, and the clock setup must be restored before the next USART byte. This snapshot does not restate the 8 MHz HSI calibration from chapter 02 and does not include an F4 periodic wake-up timer.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "power control",
+      "do_not_copy": true,
+      "points": [
+        "Leaving Stop returns the system clock to HSI. Program the PLL again before the next byte",
+        "PDDS = 0 and SLEEPDEEP = 1 is Stop. PDDS = 1 and SLEEPDEEP = 1 is Standby",
+        "The F4 periodic wake-up timer is not in this chapter"
+      ]
+    },
+    {
+      "id": "pm0056-dwt",
+      "chapters": ["17", "18"],
+      "title_zh": "PM0056 的 DEMCR bit 24 与 DWT 周期计数",
+      "title_en": "PM0056 DEMCR bit 24 and the DWT cycle counter",
+      "authority_zh": "ST 官方编程手册",
+      "authority_en": "ST programming manual",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "PM0056, the same PDF as pm0056-nvic. DEMCR is at 0xE000EDFC. Bit 24 enables trace. After that bit is set, DWT_CYCCNT at 0xE0001004 counts. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the counter stays at 0 and a delta reads 0. If the printed bit is not 24, record the printed bit and keep the printed addresses. Cortex-M3 hardware breakpoint comparators default to 6. The M7 count of 8 is void on this C8. This snapshot does not restate the four fault addresses already in pm0056, does not copy the tail-chaining interval from chapter 04, and does not invent a data-watchpoint count or an FPB base address.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "DWT",
+      "do_not_copy": true,
+      "points": [
+        "Set DEMCR bit 24 before reading DWT_CYCCNT. A clear bit reads a delta of 0",
+        "At 72 MHz, 72 counts are 1 µs",
+        "This Cortex-M3 has 6 hardware breakpoint comparators. 8 is void on the C8"
+      ]
+    },
+    {
+      "id": "ds5319-nrst",
+      "chapters": ["18"],
+      "title_zh": "DS5319 Rev 20 图 31 的 NRST 电容",
+      "title_en": "DS5319 Rev 20 Figure 31 NRST capacitor",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Figure 31. The external reset circuit prints 0.1 µF on NRST. 0.1 µF is 100 nF. Pin 7 remains the cross-reference already in ds5319-swd and is not renumbered here. If the printed capacitor is not 0.1 µF, use the printed value. This snapshot does not include the internal pull-up in kilohms. Add that typical value only after opening Table 39 of this same datasheet, and do not open a second id for it.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "Figure 31",
+      "do_not_copy": true,
+      "points": [
+        "Figure 31 puts 0.1 µF on NRST",
+        "0.1 µF and 100 nF are the same capacitor. Write the figure's 0.1 µF",
+        "Do not write a pull-up in kilohms until Table 39 of this datasheet is opened"
+      ]
+    },
+    {
+      "id": "ds5319-lse",
+      "chapters": ["18"],
+      "title_zh": "DS5319 Rev 20 的 LSE 负载电容范围",
+      "title_en": "DS5319 Rev 20 LSE load-capacitor range",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, LSE oscillator section. CL1 and CL2 are chosen from the 5 pF to 15 pF ceramic range to match the crystal, and the two capacitors are usually equal. 6 pF is not a required value printed in that section. 32.768 kHz, pin 3, pin 4, and PRL = 32767 stay on ds5319-rtc and rm0008-rtc. This snapshot does not copy 6 pF in as a requirement and does not copy a ppm tolerance.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "LSE oscillator",
+      "do_not_copy": true,
+      "points": [
+        "CL1 and CL2 are chosen in the 5 pF to 15 pF range with the crystal",
+        "6 pF is not a required value",
+        "32.768 kHz and PRL = 32767 stay on the existing RTC ids"
+      ]
+    }
+  ]
+}

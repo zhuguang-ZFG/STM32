@@ -557,6 +557,133 @@ def rtos_prio() -> Svg:
     _credit(canvas, "自绘。移位来自 FreeRTOS Kernel V11.3.2；栈和 TIM4 来自本仓库 freertos-task。")
     return canvas
 
+def stop_wake() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "低功耗稳压器的 Stop 典型值是 14 µA；醒来先是 HSI 8 MHz；不重配时钟时 0x271 变成 12800 bit/s",
+        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 16 / Table 26",
+    )
+    canvas.header(tag="16", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  Stop  low-power regulator", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "SLEEPDEEP=1  PDDS=0  14 uA at 3.3 V, 25 C, no IWDG", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "pin 10 PA0 is the Stop key. The lamp and ADC are not drawn on this pin", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  EXTI wakes the core, then the PLL returns to 72 MHz", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "first instruction on HSI 8 MHz. Table 26 says 5.4 us", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "SystemClock_Config() restores the PLL to 72 MHz", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "USART1 still uses 0x271. The line is 115200", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "5.4 us does not include the 200 us PLL lock maximum", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "the main-regulator cell is 3.6 us, not this path", size=13, fill=T.MUTED)
+    canvas.text(40, 370, "失败路径  the same 0x271 is left on the 8 MHz HSI", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 414, "8e6 / (16 x 39.0625) = 12800 bit/s", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 440, "the host is still at 115200. The ratio is 9", size=14, fill=T.RED)
+    canvas.text(56, 466, "16 MHz is void on this C8", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  quoting 14 uA while the main regulator is on is the 24 uA cell", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "the F4 periodic wake-up timer is void on this C8", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "pin 10 is not drawn as a lamp at the same time", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "Standby currents stay off this sheet unless it is split", size=13, fill=T.MUTED)
+    canvas.text(56, 656, "do not draw the chapter 06 bit frame", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。电流和 5.4 us 来自 DS5319 Rev 20 表 16 与表 26。8 MHz 来自第 02 章。")
+    return canvas
+
+
+def cfsr_read() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "BFAR 要 bit 15 为 1 才有效；72 MHz 下 72 个周期是 1 µs，而且要先打开 DEMCR bit 24",
+        "STM32F103C8T6 · PM0056",
+    )
+    canvas.header(tag="17", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  Cortex-M3  no FPU", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "CFSR 0xE000ED28    HFSR 0xE000ED2C    BFAR 0xE000ED38", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "FORCED is bit 30, value 0x40000000. PC is stacked word 6", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  bit 15 is 1, and DEMCR bit 24 is already 1", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "bit 15 = 1, so BFAR is this access", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "DEMCR 0xE000EDFC bit 24, then DWT_CYCCNT 0xE0001004", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "72 counts at 72 MHz are 1 us", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "this M3 has 6 hardware breakpoints", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "PC is the 6th stacked word", size=13, fill=T.MUTED)
+    canvas.text(40, 370, "失败路径  bit 15 is 0, or bit 24 was never set", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 414, "bit 15 = 0. The value in BFAR is not this access", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 440, "bit 24 = 0. The cycle delta is 0", size=14, fill=T.RED)
+    canvas.text(56, 466, "8 hardware breakpoints are the M7 count and are void here", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  pin 39 is still JTDO after reset", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "TRACESWO is the remap column, not the power-up name", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "do not draw an SWO waveform on this figure", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "do not draw the 8-register timing waveform", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。故障地址来自 PM0056。DWT 使能顺序是先 0xE000EDFC bit 24，再 0xE0001004。")
+    return canvas
+
+
+def boot_triage() -> Svg:
+    canvas = Svg(
+        960,
+        960,
+        "认不出芯片时先看第 34 脚、第 37 脚和第 44 脚；BOOT0 为 1 且 BOOT1 为 0 时跑的是 0x1FFFF000",
+        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 Figure 31 / Table 5",
+    )
+    canvas.header(tag="18", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  first look when the probe sees no target", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "pin 7 NRST has 0.1 uF. pin 44 is BOOT0", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  BOOT0 = 0, the CPU starts at 0x08000000", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "probe on pin 34 and pin 37, common ground, 3.3 V", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "BOOT0 = 0 selects main Flash at 0x08000000", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "Flash is 64 KB. SRAM is 20 KB", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "look at the wires before the optimizer", size=13, fill=T.MUTED)
+    canvas.text(40, 360, "失败路径  BOOT0 = 1 and BOOT1 = 0", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 374, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 404, "the CPU is in system memory at 0x1FFFF000", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 430, "the image in Flash looks as if it was never programmed", size=14, fill=T.RED)
+    canvas.text(56, 456, "changing -O2 before checking these pins is the other miss", size=14, fill=T.AMBER)
+    canvas.rect(40, 514, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 544, "旁注  pin 35 is VSS_2, not SWCLK", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 570, "that mistake is already drawn in chapter 01", size=14, fill=T.TEXT)
+    canvas.text(56, 596, "do not draw 38 icons on this figure", size=14, fill=T.AMBER)
+    canvas.text(56, 622, "do not draw CFSR bits here", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。0.1 uF 来自 DS5319 Rev 20 图 31。启动地址来自 RM0008。")
+    return canvas
+
+
+def flash_fit() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "C8 只有一张 0xB800 的 APP；两张是 110 KB；65536 字节大于 20 KB SRAM",
+        "STM32F103C8T6 · chapter 12 map · DS5319 64 KB / 20 KB",
+    )
+    canvas.header(tag="19", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  Flash 0x08000000 to 0x08010000  SRAM 20 KB", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "16 KB + 2 KB + 46 KB = 64 KB. APP length 0xB800", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "SRAM 20 KB = 20480 bytes", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  one application ends before 0x08010000", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "bootloader 0x08000000, 16 KB, ends at 0x08004000", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "parameters 0x08004000, 2 KB, ends at 0x08004800", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "one APP at 0x08004800, 0xB800, ends at 0x08010000", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "denominator 4096. Code 2048 is 1.65 V", size=13, fill=T.MUTED)
+    canvas.text(40, 360, "失败路径  a second 0xB800 and a 65536-byte array", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 374, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 404, "16 + 2 + 46 + 46 = 110 KB, drawn out to 0x0801B800", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 430, "that end is outside this 64 KB", size=14, fill=T.RED)
+    canvas.text(56, 456, "65536 bytes is larger than 20480 bytes of SRAM", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  denominator 4095 is the miss, not this path", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "133 bytes is an application frame, not one 64-byte USB packet", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "do not draw a motor pin. Do not draw a WS2812 waveform", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "chapter 12 does not have a second slot", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。地图来自第 12 章。64 KB 与 20 KB 来自 DS5319。")
+    return canvas
+
+
 def main() -> None:
     out_dir = os.path.join(ROOT, "assets", "diagrams")
     os.makedirs(out_dir, exist_ok=True)
@@ -576,6 +703,10 @@ def main() -> None:
     can_bit().save(os.path.join(out_dir, "sample-13-can-bit.svg"))
     usb_enum().save(os.path.join(out_dir, "sample-14-usb-enum.svg"))
     rtos_prio().save(os.path.join(out_dir, "sample-15-rtos-prio.svg"))
+    stop_wake().save(os.path.join(out_dir, "sample-16-stop-wake.svg"))
+    cfsr_read().save(os.path.join(out_dir, "sample-17-cfsr.svg"))
+    boot_triage().save(os.path.join(out_dir, "sample-18-boot-triage.svg"))
+    flash_fit().save(os.path.join(out_dir, "sample-19-flash-fit.svg"))
 
 
 if __name__ == "__main__":

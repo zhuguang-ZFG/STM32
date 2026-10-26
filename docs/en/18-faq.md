@@ -30,6 +30,64 @@
 9. 口诀：先复现，再缩到最小。前两步走完还不知道范围，再去二分和看证据。能测就别猜。
 10. 合上书，三问。排错五步的前两步是什么？调试器认不出芯片时，先查代码还是先查线和 BOOT？为什么一次只改一处？
 <!-- /video:ch18 -->
+## Principle and boundary
+
+This chapter is an index, not a second peripheral tutorial. The orderable part is still STM32F103C8T6. All 38 rows stay. C1 through C8 is 8, D1 through D7 is 7, P1 through P9 is 9, H1 through H7 is 7, and R1 through R7 is 7. `8 + 7 + 9 + 7 + 7 = 38`.
+
+When the probe reports no target, look first at pin 34 PA13 = SWDIO, pin 37 PA14 = SWCLK, a shared ground, 3.3 V, and pin 7 NRST. Figure 31's external reset capacitor is 0.1 µF. Then look at the code and the optimization level. Editing `-O2` before those wires are checked is the failure path. See [DS5319 SWD](#source-ds5319-swd).
+
+Pin 44 BOOT0 = 0 starts from main Flash at `0x08000000`. BOOT1 = 0 and BOOT0 = 1 enters system memory at `0x1FFFF000`. The connectivity-line address `0x1FFFB000` is void on this C8. The pins are latched on the 4th SYSCLK rising edge after reset, the same note as chapter file 00. Pin 35 is VSS_2, not SWCLK. That old drawing is in chapter file 01, and this chapter does not redraw it. See [RM0008 boot](#source-rm0008-boot).
+
+Flash is 64 KB and SRAM is 20 KB, the same cells as the existing SWD card. When HSE does not start, SYSCLK is the 8 MHz HSI. USART1 with `0x271` on that clock is 12800, not 115200. That is the same sentence as chapter file 16. This chapter does not draw another bit frame. See [RM0008 USART](#source-rm0008-usart).
+
+LSE stays 32.768 kHz, pins 3 and 4, pin 1 VBAT, and PRL = 32767. Choose the capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. See [DS5319 LSE](#source-ds5319-lse).
+
+The repository example puts the HAL time base on TIM4, not a generic TIMx. Leave SysTick to the kernel. One tick is 1 ms. See [repository examples](#source-project-examples). A FromISR call needs a numeric priority of 5 or a larger number. `5 << 4 = 0x50`. That is the same sentence as chapter file 15. Do not redraw that priority figure. See [FreeRTOS](#source-freertos-syscall).
+
+The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not a current source. See [DS5319 GPIO](#source-ds5319-gpio).
+
+## Key figures
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-18-boot-triage.svg" width="760" alt="When the probe cannot see the chip, look at pins 34, 37, and 44 first. BOOT0 = 1 and BOOT1 = 0 runs from 0x1FFFF000.">
+  <br><sub>▲ Drawn for this book. The normal path is pin 44 BOOT0 = 0, starting at 0x08000000, with the probe on pin 34 PA13 and pin 37 PA14. Pin 7 NRST carries the 0.1 µF from Figure 31. The failure path is BOOT0 = 1 and BOOT1 = 0, with the CPU at 0x1FFFF000, or an optimization edit before those four pins are checked. Pin 35 is VSS_2 and points at chapter file 01. Sources: [DS5319](#source-ds5319-swd) Figure 31 and Table 5, and [RM0008 boot](#source-rm0008-boot).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/gif/boot0-low.gif" width="640" alt="Pin 44 is 0, the probe is on pins 34 and 37, and the target appears">
+  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: pin 44 is 0, the probe is on pins 34 and 37, and the target appears. Print from the static figure. BOOT0 = 1 and an optimizer edit are not on this GIF.</sub>
+</p>
+
+`toolchain-flow.svg` stays as an auxiliary figure. The compile arrows are not on this static figure.
+
+## Timing or state
+
+| Look at this first | Value | Next step |
+| --- | --- | --- |
+| Pins 34 and 37 | PA13 = SWDIO, PA14 = SWCLK, shared ground, 3.3 V | Do not edit code until these are connected |
+| NRST | Pin 7, 0.1 µF | Figure 31. This row does not write a pull-up in kilohms |
+| BOOT | BOOT0 = 0, main Flash `0x08000000` | Normal path |
+| Failure | BOOT0 = 1 and BOOT1 = 0, `0x1FFFF000` | The user program looks unprogrammed. `0x1FFFB000` is void on the C8 |
+| Optimization | `-O2` before the wires are checked | Failure |
+| Capacity | 64 KB Flash, 20 KB SRAM | The same cells as the SWD card |
+| UART | HSI at 8 MHz and `0x271` still loaded | 12800 |
+| Time base | TIM4, 1 ms | Not a generic TIMx |
+| Priority | A number of 5 or larger | `5 << 4 = 0x50` |
+| Crystal | 5 pF to 15 pF, chosen with the crystal | 6 pF is not required |
+
+## Pitfalls and source cards
+
+| What you see | Why | What to do | Source | Claim this source may support |
+| --- | --- | --- | --- | --- |
+| The probe reports no target | The wires were not checked | Look at pins 34 and 37, ground, and 3.3 V first | [DS5319 SWD](#source-ds5319-swd) | Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 35 is VSS_2 |
+| The program looks unprogrammed | Pin 44 is pulled high | Put BOOT0 back to 0 | [RM0008 boot](#source-rm0008-boot) | BOOT1=0 and BOOT0=1 enters `0x1FFFF000`. The C8 is not a connectivity-line part |
+| The reset pin is open and the board resets itself | The capacitor is not the Figure 31 cell | Add 0.1 µF as Figure 31 draws it | [DS5319 NRST](#source-ds5319-nrst) | Figure 31's external reset circuit is 0.1 µF. This row does not add a pull-up in kilohms |
+| The link says Flash or RAM is too small | The estimate used a larger part | Use the C8 cells, 64 KB and 20 KB | [DS5319 SWD](#source-ds5319-swd) | The xB 128 KB is void on the C8T6 |
+| Serial data is garbage and the clock was not checked | The clock fell back to HSI | Confirm it is not sitting at 8 MHz | [RM0008 USART](#source-rm0008-usart) | `0x271` is 115200 at 72 MHz and 12800 at 8 MHz |
+| Row P9 was built with 6 pF | One capacitor was treated as required | Choose the capacitors with the crystal, from 5 pF to 15 pF | [DS5319 LSE](#source-ds5319-lse) | 6 pF is not a required value printed in the LSE section. 32.768 kHz and PRL = 32767 stay with chapter file 11 |
+| `HAL_Delay` does not return after FreeRTOS is added | The time base is still SysTick | Move the time base to TIM4 | [repository examples](#source-project-examples) | The time base in `examples/freertos-task` is TIM4. Do not write a generic TIMx |
+| An interrupt stops in `configASSERT` | The numeric priority is too urgent | Use 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | `5 << 4 = 0x50`. A smaller number must not call FromISR |
+| An external lamp stays dark while the resistor is guessed inside a range | The pin and the resistor were not pinned | Use pin 10 and 270 Ω from chapter file 03 | [DS5319 GPIO](#source-ds5319-gpio) | Pin 2 PC13 cannot source the current. This row does not invent another resistor |
 ## 📌 Learning goals
 
 - [ ] Build the habit of searching by symptom, instead of editing code at random.
@@ -116,7 +174,7 @@
 **D7 The program stops in `HardFault_Handler` as soon as you start debugging**
 - **Symptom**: a debug session starts already in HardFault.
 - **Cause**: clock or peripheral init walked off the end of a structure, the vector table is wrong, or the stack is too small.
-- **Fix**: read `CFSR`/`BFAR` and the faulting PC (see [chapter 17](17-debug.md)). Check the linker script.
+- **Fix**: read `CFSR` first. `BFAR` is this access only when bit 15 is 1 (see [chapter 17](17-debug.md)). Check the linker script.
 
 ## 3. Peripherals
 
@@ -133,7 +191,7 @@
 **P3 Serial garbage**
 - **Symptom**: everything you receive is garbage.
 - **Cause**: the baud rates do not match, ground is not shared, or the clock is not the frequency you planned.
-- **Fix**: use the same baud rate on both ends. Share ground. Confirm SYSCLK (if HSE fails to start, the chip falls back to HSI).
+- **Fix**: use the same baud rate on both ends. Share ground. Confirm SYSCLK. If HSE fails to start, SYSCLK is the 8 MHz HSI, and USART1 with `0x271` is 12800 bit/s, not 115200.
 
 **P4 I2C stalls inside `HAL_I2C_Master_Transmit`**
 - **Symptom**: the program hangs, or the call times out.
@@ -163,14 +221,14 @@
 **P9 The RTC resets at power-up, or does not advance**
 - **Symptom**: the time is gone after power is removed.
 - **Cause**: LSE never started, VBAT has no battery, or the load capacitors are too large.
-- **Fix**: fit a 32.768 kHz crystal, 6 pF capacitors, and a battery on VBAT.
+- **Fix**: fit a 32.768 kHz crystal and a battery on VBAT. Choose the load capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. Pins 3 and 4, and PRL = 32767, stay with chapter 11.
 
 ## 4. Hardware
 
 **H1 The LED stays dark**
 - **Symptom**: the LED does not react when you connect it.
 - **Cause**: the polarity is reversed, the series resistor is too large, or the pin cannot source the current.
-- **Fix**: check anode and cathode. Use a resistor in the 220~1 kΩ range. For a large current, drive the LED with a transistor or a MOSFET.
+- **Fix**: check anode and cathode. The external lamp is pin 10 and 270 Ω, the same as chapter 3. Pin 2 PC13 cannot source the current. For a large current, drive the LED with a transistor or a MOSFET.
 
 **H2 The chip gets very hot**
 - **Symptom**: it is hot to the touch.
@@ -185,7 +243,7 @@
 **H4 Reset keeps chattering**
 - **Symptom**: the chip resets over and over.
 - **Cause**: NRST is floating and picking up noise, or the watchdog is resetting the chip.
-- **Fix**: put 100 nF from NRST to ground. Check that the watchdog is being fed.
+- **Fix**: follow Figure 31 and put 0.1 µF from pin 7 NRST to ground. The watchdog points at chapter 11. Do not recompute the 1 second here.
 
 **H5 The external crystal does not start**
 - **Symptom**: HSE or LSE times out, and the chip falls back to the internal clock.
@@ -207,12 +265,12 @@
 **R1 After you add an RTOS, `HAL_Delay` hangs**
 - **Symptom**: `HAL_Delay` never returns.
 - **Cause**: FreeRTOS and HAL are both claiming SysTick.
-- **Fix**: in CubeMX, change Timebase Source to a TIMx.
+- **Fix**: the repository example puts the HAL time base on TIM4, not a generic TIMx. Leave SysTick to the kernel. One tick is 1 ms.
 
 **R2 `configASSERT` spins forever**
 - **Symptom**: the program stops in an assertion.
 - **Cause**: an interrupt priority number is too small (that priority is too high), or a null pointer was passed in.
-- **Fix**: keep interrupt priority numerically at or above `configMAX_SYSCALL_INTERRUPT_PRIORITY`. Check the arguments.
+- **Fix**: a FromISR call needs a numeric priority of 5 or a larger number. `5 << 4 = 0x50`. A smaller number must not call FromISR.
 
 **R3 Task creation returns failure**
 - **Symptom**: `xTaskCreate` fails.

@@ -1,0 +1,58 @@
+{
+  "rubric": "2026-10-25-classic-encyclopedia-batch6-16-17-18-19",
+  "baseline": "5e2544509f91619abf28a9eab3db4d8b675bbd2a",
+  "chapters": [
+    "16",
+    "17",
+    "18",
+    "19"
+  ],
+  "four_blocks_absent": true,
+  "old_pitfall_heading_present": true,
+  "chapters_without_old_pitfall": [
+    "18",
+    "19"
+  ],
+  "files": {
+    "16": {
+      "zh": "docs/16-低功耗设计.md",
+      "en": "docs/en/16-low-power.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "expects_old_pitfall": true,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    },
+    "17": {
+      "zh": "docs/17-调试与性能优化.md",
+      "en": "docs/en/17-debug.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "expects_old_pitfall": true,
+      "zh_old_pitfall": true,
+      "en_old_pitfall": true,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    },
+    "18": {
+      "zh": "docs/18-常见问题FAQ.md",
+      "en": "docs/en/18-faq.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "expects_old_pitfall": false,
+      "zh_old_pitfall": false,
+      "en_old_pitfall": false,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    },
+    "19": {
+      "zh": "docs/19-项目实战合集.md",
+      "en": "docs/en/19-projects.md",
+      "zh_four_blocks": false,
+      "en_four_blocks": false,
+      "expects_old_pitfall": false,
+      "zh_old_pitfall": false,
+      "en_old_pitfall": false,
+      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+    }
+  }
+}

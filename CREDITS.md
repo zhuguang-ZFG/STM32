@@ -10,8 +10,8 @@
 | SVG 原理动画（25 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（22 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
-| 光栅动画（20 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
+| 静态框图（26 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 光栅动画（24 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
 > 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
@@ -125,3 +125,14 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | DS5319 Rev 20（2025-07），表 5 | ST 文档条款；只链接并改写事实，不转载手册 | 第 13 章第 45、46 脚和第 5、6 脚；第 14 章第 32、33 脚 | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
 | FreeRTOS Kernel V11.3.2 | MIT | 第 15 章 0x50、字栈和互斥量。不吸收网站正文 | https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2 |
 | 本仓库 `examples/iap-bootloader`、`examples/can-bxcan`、`examples/usb-cdc`、`examples/freertos-task` | MIT | 第 12 章 0xB800；第 13 章预分频 9 和左移 5；第 14 章 0x1209/0x0001；第 15 章 TIM4 和 128/192/256 字 | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
+
+### 第 16、17、18、19 章（v1.3.1）
+
+第 16、17、18、19 章用改写吸收补了同样的四块。吸收的是事实，用本书的句子重写，并配上自绘静态图。手册正文、官方插图、灯珠厂商手册和 CAN 收发器厂商手册不放进仓库。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| DS5319 Rev 20（2025-07），表 16、表 18、表 26，图 31，LSE 振荡器节 | ST 文档条款；只链接并改写事实，不转载手册 | 第 16 章 14 µA 与 24 µA；第 18 章 0.1 µF 和 5 pF 到 15 pF | https://www.st.com/resource/en/datasheet/stm32f103c8.pdf |
+| RM0008 Rev 21（2021-02），电源控制 | ST 文档条款；只链接并改写事实，不转载手册 | 第 16 章退出 Stop 后回到 HSI | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
+| PM0056，DEMCR bit 24 与 DWT_CYCCNT | ST 文档条款；只链接并改写事实，不转载手册 | 第 17 章 72 个计数是 1 µs，硬件断点是 6 个 | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
+| 本仓库 `examples/freertos-task`、`examples/iap-bootloader` | MIT | 第 18 章 TIM4；第 19 章一张 `0xB800` | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
