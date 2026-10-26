@@ -426,6 +426,137 @@ def iwdg_1s() -> Svg:
     return canvas
 
 
+def iap_map() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "中容量 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字",
+        "STM32F103C8T6 LQFP48 · RM0008 Rev 21 chapter 3",
+    )
+    canvas.header(tag="12", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  medium-density  64 KB", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "1 KB pages. page 0 at 0x08000000. page 63 at 0x0800FC00", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "map ends before 0x08010000. 16 KB + 2 KB + 46 KB = 64 KB", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  KEY1 then KEY2, then a half-word, then the two words", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 170, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "write 0x45670123, then 0xCDEF89AB. LOCK clears", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "program a half-word on an even address inside the APP", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "Bootloader 0x08000000, 16 KB, 16 pages, ends at 0x08004000", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "parameters 0x08004000, 2 KB, 2 pages, ends at 0x08004800", size=14, fill=T.TEXT)
+    canvas.text(56, 318, "APP 0x08004800, 46 KB, 0xB800, ends at 0x08010000", size=14, fill=T.AMBER)
+    canvas.text(56, 340, "MSP at 0x08004800. Reset_Handler at 0x08004804. VTOR = 0x08004800", size=13, fill=T.MUTED)
+    canvas.text(40, 380, "失败路径  reversed keys, a last page past 64 KB, or VTOR left at 0", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 394, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 424, "KEY2 before KEY1 leaves LOCK set. The erase returns an error", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 450, "0x0801FC00 is outside this 64 KB", size=14, fill=T.RED)
+    canvas.text(56, 476, "VTOR left at 0 still vectors interrupts into the bootloader", size=14, fill=T.AMBER)
+    canvas.text(56, 502, "an erased half-word reads 0xFFFF. programming only turns 1 into 0", size=13, fill=T.MUTED)
+    canvas.rect(40, 544, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 574, "旁注  byte programming is void on this C8", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 600, "0xA5 stays in chapter 01. This figure does not draw option bytes", size=14, fill=T.TEXT)
+    canvas.text(56, 626, "USART on pin 30 PA9 and pin 31 PA10 is a side note, not a frame", size=14, fill=T.AMBER)
+    canvas.text(56, 652, "do not draw system memory on this user-Flash map", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。页和钥匙来自 RM0008 Rev 21 第 3 章；两字来自 PM0056。")
+    return canvas
+
+
+def can_bit() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "36 MHz 下预分频 9、8 个时间份额是 500 kbit/s；预分频 8 和 10 个时间份额是 450 kbit/s；工作脚是第 45 脚和第 46 脚",
+        "STM32F103C8T6 LQFP48 · RM0008 Rev 21 bxCAN",
+    )
+    canvas.header(tag="13", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  CAN1 on APB1  36 MHz", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "pin 45 PB8 = CAN_RX    pin 46 PB9 = CAN_TX", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "MCU pins enter the transceiver. 120 ohm sits on CANH and CANL, at each end", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  prescaler 9, eight quanta, 2 us, 500 kbit/s", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "Tq = 250 ns. SYNC 1 + BS1 5 + BS2 2 = 8", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "sample at 1.5 us, 75%. SJW = 1", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "8 x 250 ns = 2 us", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "the resistor is not tied to PB8 or PB9", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "two 120 ohm parts in parallel are a 60 ohm DC load, not a cable impedance", size=13, fill=T.MUTED)
+    canvas.text(40, 370, "失败路径  prescaler 8, BS1 6, BS2 3, ten quanta, 450 kbit/s", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 414, "36e6 / (8 x 10) = 450 kbit/s. sample point 70%", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 440, "the bit is no longer 2 us", size=14, fill=T.RED)
+    canvas.text(56, 466, "1 Mbit/s stays off this figure", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  pin 32 PA11 and pin 33 PA12 stay with USB", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "pin 5 PD0 and pin 6 PD1 exist. Remapping CAN there stops the HSE", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "pin 45 and pin 46 are not drawn as I2C at the same time", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "bus-off at 256 and 128 x 11 recessive bits stay in the table, not as a second waveform", size=13, fill=T.MUTED)
+    canvas.text(56, 656, "do not draw the 4.7 kilohm I2C pull-ups on this figure", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。位时间来自 RM0008 Rev 21 bxCAN；脚位来自 DS5319 Rev 20 表 5。")
+    return canvas
+
+
+def usb_enum() -> Svg:
+    canvas = Svg(
+        960,
+        980,
+        "全速要 48 MHz；D+ 上拉在第 33 脚；描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001",
+        "STM32F103C8T6 LQFP48 · RM0008 Rev 21 USB device",
+    )
+    canvas.header(tag="14", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48  USB device, not a host", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "pin 32 PA11 = DM    pin 33 PA12 = DP", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "1.5 kilohm from 3.3 V to DP. USBPRE = 0. clock 48 MHz", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  the host sees D+ pulled up", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 170, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "device descriptor 18 bytes. bMaxPacketSize0 = 64", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "VID/PID 0x1209/0x0001", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "configuration set length 67. wTotalLength 0x0043", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "bMaxPower 0x32 = 100 mA", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "full-speed bulk and interrupt ceiling is 64. notification endpoint 8 is allowed", size=13, fill=T.MUTED)
+    canvas.text(40, 380, "失败路径  USBPRE = 1, the USB clock becomes 72 MHz", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 394, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 424, "the host fails while reading the descriptor", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 450, "72 / 1.5 is not applied", size=14, fill=T.RED)
+    canvas.text(56, 476, "480 Mbit/s is void on this part", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  1.5 kilohm tied to DM is not this full-speed device", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "a bulk or interrupt wMaxPacketSize of 1023 is the wrong class", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "0x0483/0x5740 is not this repository descriptor", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "do not draw a CAN transceiver or ULPI on this figure", size=13, fill=T.MUTED)
+    canvas.text(56, 656, "shared vector stays a side note: see the source card", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。48 MHz 来自已冻结的 USBPRE；脚位来自 DS5319 Rev 20 表 5；长度来自本仓库 usb-cdc。")
+    return canvas
+
+
+def rtos_prio() -> Svg:
+    canvas = Svg(
+        960,
+        960,
+        "一个 tick 是 1 ms；任务优先级 2 先于 1；128 字是 512 字节；FromISR 的数值优先级要大于等于 5",
+        "STM32F103C8T6 · FreeRTOS Kernel V11.3.2",
+    )
+    canvas.header(tag="15", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  Cortex-M3  no FPU  GROUP_4", size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "SysTick tick = 1 ms. HAL time base = TIM4, not SysTick", size=14, fill=T.CYAN)
+    canvas.text(40, 138, "5 << 4 = 0x50. EXTI0 priority 5 may call FromISR", size=14, fill=T.AMBER)
+    canvas.text(40, 170, "正常路径  task priority 2 runs, task priority 1 waits", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 214, "KEY is priority 2. LED and UART are priority 1", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "LED stack 128 words = 512 bytes", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "EXTI0 preemption priority 5 may xQueueSendFromISR", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "the numeric task order is the opposite of NVIC", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "configTICK_RATE_HZ = 1000", size=13, fill=T.MUTED)
+    canvas.text(40, 370, "失败路径  the same EXTI preemption priority is 0", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 414, "calling FromISR stops in configASSERT", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 440, "priority number 4 is also too urgent", size=14, fill=T.RED)
+    canvas.text(56, 466, "NVIC number 0 is the most urgent interrupt", size=14, fill=T.AMBER)
+    canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 554, "旁注  128 words is not 128 bytes", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "HAL left on SysTick makes HAL_Delay stick", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "task priority 1 is not ahead of task priority 2", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "do not draw the 8-register exception entry on this figure", size=13, fill=T.MUTED)
+    _credit(canvas, "自绘。移位来自 FreeRTOS Kernel V11.3.2；栈和 TIM4 来自本仓库 freertos-task。")
+    return canvas
+
 def main() -> None:
     out_dir = os.path.join(ROOT, "assets", "diagrams")
     os.makedirs(out_dir, exist_ok=True)
@@ -441,6 +572,10 @@ def main() -> None:
     i2c_addr().save(os.path.join(out_dir, "sample-07-i2c-addr.svg"))
     dma_cndtr().save(os.path.join(out_dir, "sample-10-dma-cndtr.svg"))
     iwdg_1s().save(os.path.join(out_dir, "sample-11-iwdg-1s.svg"))
+    iap_map().save(os.path.join(out_dir, "sample-12-iap-map.svg"))
+    can_bit().save(os.path.join(out_dir, "sample-13-can-bit.svg"))
+    usb_enum().save(os.path.join(out_dir, "sample-14-usb-enum.svg"))
+    rtos_prio().save(os.path.join(out_dir, "sample-15-rtos-prio.svg"))
 
 
 if __name__ == "__main__":
