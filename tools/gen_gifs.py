@@ -751,6 +751,116 @@ def rtos_tick():
         g.add(c)
     return g
 
+def stop_wake_gif():
+    """Wake from Stop, move the clock from 8 MHz back to 72 MHz, then mark 115200.
+
+    The failed baud and the other Stop cell stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "STOP",
+        "WAKE ON HSI",
+        "8 MHz",
+        "PLL ON",
+        "72 MHz",
+        "115200",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "STOP WAKE", "HSI", "AUX GIF  115200")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("0x271", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("8 MHz THEN 72 MHz", 28, 200, C.GREEN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def cfsr_read_gif():
+    """Read CFSR, see bit 15 set, then let 72 counts finish 1 us.
+
+    A clear bit 15 and a cycle delta of 0 stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "READ CFSR",
+        "0xE000ED28",
+        "bit 15 = 1",
+        "COUNT 24",
+        "COUNT 72",
+        "1 us",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "CFSR", "DWT", "AUX GIF  1 us")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("72 MHz", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("bit 15 = 1", 28, 200, C.GREEN, 1)
+        c.text("72 COUNTS = 1 us", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def boot0_low():
+    """Pin 44 is 0 and the probe sits on pins 34 and 37.
+
+    The high BOOT pin and an optimizer edit stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "pin 34 PA13",
+        "pin 37 PA14",
+        "GROUND",
+        "3.3 V",
+        "pin 44",
+        "BOOT0 = 0",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "BOOT0", "SWD", "AUX GIF  TARGET")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("0x08000000", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("BOOT0 = 0", 28, 200, C.GREEN, 1)
+        c.text("TARGET SEEN", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
+
+def one_slot():
+    """Fill 16 KB, 2 KB, and one 0xB800 image up to 0x08010000.
+
+    The second image and the oversized SRAM array stay on the static SVG.
+    """
+    g = Gif(W, H, delay=12)
+    notes = (
+        "16 KB",
+        "0x08004000",
+        "2 KB",
+        "0x08004800",
+        "0xB800",
+        "0x08010000",
+    )
+    for index, note in enumerate(notes):
+        c = Canvas(W, H)
+        chrome(c, "ONE SLOT", "64 KB", "AUX GIF  APP")
+        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
+        c.text("ONE APP", 28, 58, C.MUTED, 1)
+        c.text(note, 28, 120, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
+        c.text("16 KB + 2 KB + 0xB800", 28, 200, C.GREEN, 1)
+        c.text("ENDS AT 0x08010000", 28, 222, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        g.add(c)
+    return g
+
 BUILDERS = {
     "led-blink": led_blink,
     "pwm-breath": pwm_breath,
@@ -772,6 +882,10 @@ BUILDERS = {
     "can-500k": can_500k,
     "usb-48m": usb_48m,
     "rtos-tick": rtos_tick,
+    "stop-wake": stop_wake_gif,
+    "cfsr-read": cfsr_read_gif,
+    "boot0-low": boot0_low,
+    "one-slot": one_slot,
 }
 
 
