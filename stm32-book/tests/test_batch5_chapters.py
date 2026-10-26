@@ -453,11 +453,12 @@ class Batch5CanChapterTests(unittest.TestCase):
         ]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["13-CAN总线.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["13-can.md"]["sources"])
+        order = list(zh_manifest["sources"])
         self.assertEqual(
             ["rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb"],
-            list(zh_manifest["sources"])[-4:],
+            order[-5:-1],
         )
-        self.assertEqual(list(zh_manifest["sources"])[-4:], list(en_manifest["sources"])[-4:])
+        self.assertEqual(order[-5:], list(en_manifest["sources"])[-5:])
         listed = json.loads(
             (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
                 encoding="utf-8"

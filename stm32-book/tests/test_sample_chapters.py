@@ -252,6 +252,8 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "ds5319-swd", "pm0075-rdp", "pm0056-vector",
                 "ds5319-i2c", "rm0008-i2c", "rm0008-dma", "ds5319-dma",
                 "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
+                "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
+                "freertos-syscall",
             },
         )
         self.assertEqual(
@@ -264,6 +266,8 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "ds5319-swd", "pm0075-rdp", "pm0056-vector",
                 "ds5319-i2c", "rm0008-i2c", "rm0008-dma", "ds5319-dma",
                 "rm0008-wdg", "rm0008-rtc", "ds5319-rtc",
+                "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
+                "freertos-syscall",
             },
         )
 
