@@ -1,0 +1,160 @@
+{
+  "chapters": [
+    "12",
+    "13",
+    "14",
+    "15"
+  ],
+  "community": [],
+  "reuse_existing": [
+    {
+      "id": "pm0075-rdp",
+      "claim": "On STM32F103C8T6 the unprotected RDP byte is 0xA5. Programming that key back first mass-erases main Flash. 0xAA and 0xCC are void on this part.",
+      "do_not_copy": "Do not edit the existing pm0075-rdp object. Do not redraw the chapter 01 key figure. Do not expand watchdog feeding in chapter 12."
+    },
+    {
+      "id": "pm0056-vector",
+      "claim": "Word 0 is the initial MSP and word 1 is Reset. The application VTOR points at 0x08004800. The reset word is at 0x08004804.",
+      "do_not_copy": "Do not edit the existing pm0056-vector object. Do not paste the vector table. Do not put 167 ns in chapter 12."
+    },
+    {
+      "id": "ds5319-swd",
+      "claim": "STM32F103x8 Flash is 64 KB. The last page of this C8 starts at 0x0800FC00. 0x0801FC00 is the last page of a 128 KB part and is out of range here.",
+      "do_not_copy": "Do not edit the existing ds5319-swd object. Do not redraw sample-01-swd-vectors.svg."
+    },
+    {
+      "id": "ds5319-clock",
+      "claim": "LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT. Both pins exist on this package and carry the 8 MHz HSE.",
+      "do_not_copy": "Do not edit the existing ds5319-clock object. Do not redraw sample-02-clock-tree.svg. Do not say these pins are absent."
+    },
+    {
+      "id": "rm0008-rcc",
+      "claim": "With the PLL at 72 MHz, USBPRE=0 divides by 1.5 and yields 48 MHz. USBPRE=1 leaves the USB clock at 72 MHz.",
+      "do_not_copy": "Do not edit the existing rm0008-rcc object. Do not redraw the chapter 02 clock tree."
+    },
+    {
+      "id": "ds5319-i2c",
+      "claim": "Pin 45 PB8 and pin 46 PB9 are also the I2C1 remap. Chapter 13 does not draw CAN and I2C active on that pair at the same time.",
+      "do_not_copy": "Do not edit the existing ds5319-i2c object. Do not redraw sample-07-i2c-addr.svg."
+    },
+    {
+      "id": "project-examples",
+      "claim": "examples/iap-bootloader sizes the application as 0xB800. examples/can-bxcan uses prescaler 9, shifts a standard ID left by 5 into FilterIdHigh, asks for 120 ohm at each end, and recovers with 128 times 11 recessive bits when ABOM is on. examples/usb-cdc uses an 18-byte device descriptor, a 67-byte configuration set, and VID/PID 0x1209/0x0001. examples/freertos-task uses stacks of 128, 192, and 256 words, task priorities 1 and 2, EXTI priority 5, and TIM4 as the HAL time base.",
+      "do_not_copy": "Do not edit the existing project-examples object. Do not open a new example id. Do not paste example functions. Do not change the example trees."
+    },
+    {
+      "id": "rm0090",
+      "claim": "F4 sector sizes and F4 bxCAN are sentences that become true only after changing family. They are void as a drop-in for this C8.",
+      "do_not_copy": "Do not edit the existing rm0090 object. Do not use it to redraw the C8 page map."
+    }
+  ],
+  "absorb": [
+    {
+      "id": "rm0008-flash",
+      "chapters": [
+        "12"
+      ],
+      "title_zh": "RM0008 Rev 21 中容量闪存的页、半字和两把钥匙",
+      "title_en": "RM0008 Rev 21 medium-density Flash pages, half-words, and the two keys",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 3 is titled Memory and bus architecture. Embedded Flash memory is section 3.3.3. Table 5 prints 1 KB pages for medium-density devices. Page 0 starts at 0x08000000. The same table's page 127 starts at 0x0801FC00, which is the 128 KB end, not a 64 KB page. Table 6 prints 2 KB pages for high-density devices. That 2 KB page is void on STM32F103C8T6. This chapter points the Flash interface registers to PM0075 and does not print the key values. The claim stays: unlock FLASH_KEYR by writing 0x45670123 and then 0xCDEF89AB. Programming granularity is a half-word. An erased half-word reads back 0xFFFF. Programming can change a 1 only to a 0. This snapshot does not include an erase-time estimate and does not name an unprotected key from another family.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "3",
+      "do_not_copy": true,
+      "points": [
+        "Medium-density STM32F103 erases 1 KB pages. The high-density 2 KB page is void on STM32F103C8T6",
+        "Programming granularity is a half-word. An erased half-word reads 0xFFFF. Byte programming is void on this part",
+        "Unlock writes 0x45670123 and then 0xCDEF89AB. The reverse order leaves LOCK set"
+      ]
+    },
+    {
+      "id": "rm0008-can",
+      "chapters": [
+        "13"
+      ],
+      "title_zh": "RM0008 Rev 21 bxCAN 的位时间、总线关闭和过滤器",
+      "title_en": "RM0008 Rev 21 bxCAN bit time, bus-off, and filters",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 24, Controller area network (bxCAN). Bit time is one synchronization quantum plus BS1 plus BS2. The CAN_BTR prescaler field uses the printed bits. The Bus-Off state is reached when TEC is greater than 255, so the counter value that enters bus-off is 256. Recovery requires 128 occurrences of 11 consecutive recessive bits. Other STM32F10xxx devices, including this medium-density part, have 14 filter banks. There are 2 receive FIFOs. A 32-bit filter includes STDID[10:0]. This repository places that standard identifier in FilterIdHigh shifted left by 5, which lines those 11 bits up with the high half-word. AFIO_MAPR encoding 10 maps CAN_RX to PB8 and CAN_TX to PB9. Encoding 11 maps CAN_RX to PD0 and CAN_TX to PD1. Section 9.3.3 says the port D remap is not possible on 36-, 48-, and 64-pin packages. 500 kbit/s remains prescaler 9 and 8 time quanta. This snapshot does not include a CAN base address and does not call 450 kbit/s the working point.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "24",
+      "do_not_copy": true,
+      "points": [
+        "At 36 MHz, prescaler 9 and 8 time quanta is 500 kbit/s. Prescaler 8 and 10 time quanta is 450 kbit/s",
+        "A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits",
+        "14 filter banks and 2 receive FIFOs. Do not invent a CAN base address"
+      ]
+    },
+    {
+      "id": "ds5319-usbcan",
+      "chapters": [
+        "13",
+        "14"
+      ],
+      "title_zh": "DS5319 Rev 20 表 5 的 USB 与 CAN 脚",
+      "title_en": "DS5319 Rev 20 Table 5 USB and CAN pins",
+      "authority_zh": "ST 官方数据手册",
+      "authority_en": "ST datasheet",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+      "snapshot": "DS5319 Rev 20, July 2025, Table 5 LQFP48 column. pin 31 is PA10 and pin 34 is PA13. pin 32 is PA11 and pin 33 is PA12. PA11 alternate functions include USBDM and CANRX. PA12 alternate functions include USBDP and CANTX. pin 45 is PB8 and pin 46 is PB9. PB8 remap includes I2C1_SCL and CANRX. PB9 remap includes I2C1_SDA and CANTX. Footnote 7: pins 5 and 6 on LQFP48 are OSC_IN and OSC_OUT, and PD0 and PD1 can be remapped onto them. Table 45 note 2 prints a 1.5 kilohm pull-up on USBDP (D+) to a 3.0 to 3.6 V range for USB 2.0 full-speed compliance. This snapshot does not trace the package drawing and does not assign a transceiver pinout.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "Table 5",
+      "do_not_copy": true,
+      "points": [
+        "Default pin 32 is PA11 and default pin 33 is PA12. PA11 includes USB_DM and CAN_RX. PA12 includes USB_DP and CAN_TX",
+        "Pin 45 PB8 and pin 46 PB9 include the CAN remap",
+        "Pin 5 PD0 and pin 6 PD1 exist on LQFP48. They are the HSE pins"
+      ]
+    },
+    {
+      "id": "rm0008-usb",
+      "chapters": [
+        "13",
+        "14"
+      ],
+      "title_zh": "RM0008 Rev 21 USB 全速设备与共享中断",
+      "title_en": "RM0008 Rev 21 USB full-speed device and the shared interrupt",
+      "authority_zh": "ST 官方参考手册",
+      "authority_en": "ST reference manual",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+      "snapshot": "RM0008 Rev 21, February 2021. Printed chapter 23, Universal serial bus full-speed device interface (USB). On STM32F103 this block is a full-speed device, not a host. The USB clock must be 48 MHz. Table 63, vector table for other STM32F10xxx devices, which covers medium-density STM32F103, prints USB_LP_CAN_RX0. The pre-check default USB_LP_CAN1_RX0 is not the acronym in that table. Use the printed name USB_LP_CAN_RX0. RM0008 mentions an external pull-up resistor and does not print its ohms. The 48 MHz claim and the device-not-host claim do not change.",
+      "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+      "license_class": "ST-facts-restated",
+      "section": "23",
+      "do_not_copy": true,
+      "points": [
+        "STM32F103 USB is a full-speed device, not a host, and not 480 Mbit/s",
+        "The USB clock must be 48 MHz",
+        "The default shared vector name is USB_LP_CAN1_RX0. Replace the name only with the printed vector name"
+      ]
+    },
+    {
+      "id": "freertos-syscall",
+      "chapters": [
+        "15"
+      ],
+      "title_zh": "FreeRTOS Kernel V11.3.2 的 FromISR 移位、字栈和互斥量",
+      "title_en": "FreeRTOS Kernel V11.3.2 FromISR shift, word stacks, and mutexes",
+      "authority_zh": "FreeRTOS 内核",
+      "authority_en": "FreeRTOS kernel",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/tag/V11.3.2",
+      "snapshot": "FreeRTOS Kernel V11.3.2, the same release tag as freertos-1132. MIT. The Cortex-M port shifts the library priority left by (8 minus the number of priority bits) before the value used with BASEPRI. With 4 priority bits and library priority 5, the shifted value is 0x50. An interrupt with a numerically smaller priority must not call FromISR. A numerically larger task priority runs first. The xTaskCreate depth is in words. heap_4 coalesces adjacent free blocks. A mutex has priority inheritance and a binary semaphore does not. If a demo in this tag prints a library priority other than 5, record the printed formula here. This repository's EXTI priority stays 5. V11.3.2 portable/GCC/ARM_CM3/port.c does not print a library priority other than 5. This snapshot does not include the later-chapter CPU budget.",
+      "license": "MIT",
+      "license_class": "MIT",
+      "section": "V11.3.2",
+      "do_not_copy": true,
+      "points": [
+        "With 4 priority bits, 5 shifted left by 4 is 0x50. A numerically smaller interrupt must not call FromISR",
+        "A numerically larger task priority runs first. xTaskCreate depth is in words",
+        "A mutex has priority inheritance. A binary semaphore does not. heap_4 coalesces adjacent free blocks"
+      ]
+    }
+  ]
+}
