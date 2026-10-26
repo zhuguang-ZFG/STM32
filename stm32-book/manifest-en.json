@@ -262,9 +262,7 @@
       "question": "Faced with a crash or a slowdown, how do you go from a repeatable symptom to the fault registers, the call site, and cycle evidence?",
       "deliverable": "A minimal reproduction, a record of CFSR/HFSR/BFAR/MMFAR and the stack, and one DWT comparison before and after an optimization.",
       "boundary": "The optimizer, the debugger, and logging all change timing. A speedup without a baseline and a retest under the same conditions is not evidence. CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. HFSR.FORCED is bit 30, value 0x40000000. BFAR is valid only when bit 15 of CFSR (BFARVALID) is 1. On F103, SWO is PB3. At 72 MHz, 72 DWT cycles are 1 µs. M3 and M4 have 6 hardware breakpoint comparators; M7 has 8.",
-      "sources": [
-        "pm0056"
-      ]
+      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd"]
     },
     "18-faq.md": {
       "question": "How do you split \"it does not work\" into something you can observe, bisect, and change one cause at a time?",
@@ -1231,6 +1229,15 @@
         "accessed": "2026-10-25",
         "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
         "scope": "Chapter file 16 returns to HSI and must restore the clock before the next byte. PDDS=0 with SLEEPDEEP=1 is Stop. PDDS=1 with SLEEPDEEP=1 is Standby. Does not include the F4 periodic wake-up timer."
+      },
+    "pm0056-dwt": {
+        "title": "PM0056 DEMCR bit 24 and the DWT cycle counter",
+        "authority": "ST programming manual",
+        "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+        "snapshot": "PM0056, the same PDF as pm0056-nvic. DEMCR is at 0xE000EDFC. Bit 24 enables trace. After that bit is set, DWT_CYCCNT at 0xE0001004 counts. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the counter stays at 0 and a delta reads 0. If the printed bit is not 24, record the printed bit and keep the printed addresses. Cortex-M3 hardware breakpoint comparators default to 6. The M7 count of 8 is void on this C8. This snapshot does not restate the four fault addresses already in pm0056, does not copy the tail-chaining interval from chapter 04, and does not invent a data-watchpoint count or an FPB base address.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "Chapter file 17 DWT enable order and hardware-breakpoint count. Set DEMCR 0xE000EDFC bit 24 before reading DWT_CYCCNT at 0xE0001004. At 72 MHz, 72 counts are 1 µs. A clear bit 24 reads a delta of 0. This M3 has 6 hardware breakpoints. Does not restate the four CFSR addresses. Does not include 167 ns."
       }
   }
 }

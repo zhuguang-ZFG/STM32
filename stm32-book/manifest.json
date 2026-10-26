@@ -206,7 +206,7 @@
       "question": "面对崩溃或变慢，怎样从可重复现象走到故障寄存器、调用位置和周期证据？",
       "deliverable": "一份最小复现、CFSR/HFSR/BFAR/MMFAR/堆栈记录和一次优化前后 DWT 对照。",
       "boundary": "优化器、调试器和日志都会改变时序；没有基线与同条件复测的加速不算证据。CFSR 在 0xE000ED28，HFSR 在 0xE000ED2C，MMFAR 在 0xE000ED34，BFAR 在 0xE000ED38。HFSR.FORCED 是 bit 30，值是 0x40000000。BFAR 只有 CFSR 的 bit 15（BFARVALID）为 1 时才有效。F103 的 SWO 在 PB3。72 MHz 时 DWT 的 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。",
-      "sources": ["pm0056"]
+      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd"]
     },
     "18-常见问题FAQ.md": {
       "question": "怎样把‘不工作’拆成可观察、可二分、一次只改一个原因的排错过程？",
@@ -1087,6 +1087,15 @@
         "accessed": "2026-10-25",
         "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
         "scope": "第 16 章醒来先是 HSI，串口之前要重配时钟。PDDS=0 且 SLEEPDEEP=1 是 Stop。PDDS=1 且 SLEEPDEEP=1 是 Standby。不把 F4 的周期唤醒定时器写进来。"
+      },
+    "pm0056-dwt": {
+        "title": "PM0056 的 DEMCR bit 24 与 DWT 周期计数",
+        "authority": "ST 官方编程手册",
+        "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
+        "snapshot": "PM0056, the same PDF as pm0056-nvic. DEMCR is at 0xE000EDFC. Bit 24 enables trace. After that bit is set, DWT_CYCCNT at 0xE0001004 counts. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the counter stays at 0 and a delta reads 0. If the printed bit is not 24, record the printed bit and keep the printed addresses. Cortex-M3 hardware breakpoint comparators default to 6. The M7 count of 8 is void on this C8. This snapshot does not restate the four fault addresses already in pm0056, does not copy the tail-chaining interval from chapter 04, and does not invent a data-watchpoint count or an FPB base address.",
+        "accessed": "2026-10-25",
+        "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
+        "scope": "第 17 章的 DWT 使能顺序和硬件断点个数。先置 DEMCR 0xE000EDFC 的 bit 24，再读 DWT_CYCCNT 0xE0001004。72 MHz 下 72 个计数是 1 µs。没置 bit 24 时差值为 0。这颗 M3 是 6 个硬件断点。不重写 CFSR 的四个地址。不把 167 ns 写进来。"
       }
   }
 }

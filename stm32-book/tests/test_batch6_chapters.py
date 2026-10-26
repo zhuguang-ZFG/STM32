@@ -403,5 +403,117 @@ class Batch6StopChapterTests(unittest.TestCase):
         self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-2:])
         self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-2:])
 
+class Batch6CfsrChapterTests(unittest.TestCase):
+    def test_cfsr_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
+        zh_path = ROOT / "docs" / "17-调试与性能优化.md"
+        en_path = ROOT / "docs" / "en" / "17-debug.md"
+        zh = zh_path.read_text(encoding="utf-8")
+        en = en_path.read_text(encoding="utf-8")
+        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+            self.assertEqual(1, zh.count(heading))
+        for heading in (
+            "## Principle and boundary",
+            "## Key figures",
+            "## Timing or state",
+            "## Pitfalls and source cards",
+        ):
+            self.assertEqual(1, en.count(heading))
+        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
+        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertIn("CoreDebug_DEMCR_TRCENA_Msk", zh)
+        self.assertIn("CoreDebug_DEMCR_TRCENA_Msk", en)
+        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        for blocks in (zh_blocks, en_blocks):
+            for token in (
+                "0xE000ED28",
+                "0xE000ED2C",
+                "0xE000ED34",
+                "0xE000ED38",
+                "0xE000EDFC",
+                "0xE0001004",
+                "0x40000000",
+                "bit 15",
+                "bit 24",
+                "bit 30",
+                "1 µs",
+                "PA13",
+                "PA14",
+                "PB3",
+                "JTDO",
+                "#source-pm0056",
+                "#source-pm0056-dwt",
+                "#source-ds5319-swd",
+            ):
+                self.assertIn(token, blocks)
+            self.assertNotIn("167 ns", blocks)
+            self.assertNotIn("10+", blocks)
+            self.assertNotIn("2~4", blocks)
+            self.assertNotIn("-mfpu", blocks)
+        self.assertIn("6", zh_blocks)
+        self.assertIn("6", en_blocks)
+        self.assertIn("../assets/diagrams/sample-17-cfsr.svg", zh)
+        self.assertIn("../../assets/diagrams/sample-17-cfsr.svg", en)
+        self.assertIn("../assets/gif/cfsr-read.gif", zh)
+        self.assertIn("../../assets/gif/cfsr-read.gif", en)
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        self.assertLess(zh_key.index("sample-17-cfsr.svg"), zh_key.index("cfsr-read.gif"))
+        self.assertLess(en_key.index("sample-17-cfsr.svg"), en_key.index("cfsr-read.gif"))
+        self.assertIn("自绘", zh_key)
+        self.assertIn("Drawn for this book", en_key)
+        self.assertNotIn("示意图", zh_key)
+        self.assertIn("debug-swo.svg", zh_key)
+        lock = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        for path in (zh_path, en_path):
+            rel = path.relative_to(ROOT).as_posix()
+            baseline = baseline_chapter(lock["baseline"], rel)
+            now_video = zh if path == zh_path else en
+            marker = "<!-- video:ch17 -->"
+            end = "<!-- /video:ch17 -->"
+            self.assertEqual(
+                baseline.split(marker, 1)[1].split(end, 1)[0],
+                now_video.split(marker, 1)[1].split(end, 1)[0],
+            )
+        listed = json.loads(
+            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        by_id = {item["id"]: item for item in listed["absorb"]}
+        scope_zh = (
+            "第 17 章的 DWT 使能顺序和硬件断点个数。先置 DEMCR 0xE000EDFC 的 bit 24，再读 DWT_CYCCNT 0xE0001004。"
+            "72 MHz 下 72 个计数是 1 µs。没置 bit 24 时差值为 0。这颗 M3 是 6 个硬件断点。不重写 CFSR 的四个地址。不把 167 ns 写进来。"
+        )
+        scope_en = (
+            "Chapter file 17 DWT enable order and hardware-breakpoint count. Set DEMCR 0xE000EDFC bit 24 before reading "
+            "DWT_CYCCNT at 0xE0001004. At 72 MHz, 72 counts are 1 µs. A clear bit 24 reads a delta of 0. This M3 has 6 "
+            "hardware breakpoints. Does not restate the four CFSR addresses. Does not include 167 ns."
+        )
+        zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
+        en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
+        compass = ["pm0056", "pm0056-dwt", "ds5319-swd"]
+        self.assertEqual(compass, zh_manifest["chapter_guides"]["17-调试与性能优化.md"]["sources"])
+        self.assertEqual(compass, en_manifest["chapter_guides"]["17-debug.md"]["sources"])
+        self.assertEqual(
+            "面对崩溃或变慢，怎样从可重复现象走到故障寄存器、调用位置和周期证据？",
+            zh_manifest["chapter_guides"]["17-调试与性能优化.md"]["question"],
+        )
+        card_zh = zh_manifest["sources"]["pm0056-dwt"]
+        card_en = en_manifest["sources"]["pm0056-dwt"]
+        for key in ("url", "snapshot", "license"):
+            self.assertEqual(by_id["pm0056-dwt"][key], card_zh[key])
+            self.assertEqual(card_zh[key], card_en[key])
+        self.assertEqual("2026-10-25", card_zh["accessed"])
+        self.assertEqual(scope_zh, card_zh["scope"])
+        self.assertEqual(scope_en, card_en["scope"])
+        self.assertEqual(by_id["pm0056-dwt"]["title_zh"], card_zh["title"])
+        self.assertEqual(by_id["pm0056-dwt"]["title_en"], card_en["title"])
+        self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-1:])
+
 if __name__ == "__main__":
     unittest.main()
