@@ -46,6 +46,291 @@ PRINT_CSS = PRINT_DIR / "book-print.css"
 FONTS_DIR = PRINT_DIR / "fonts"
 PAGED_LIB = REPO_ROOT / "node_modules" / "pagedjs" / "dist" / "paged.js"
 
+# 寡行守卫：paged.js 0.4.3 声明了 CSS widows/orphans 但 chunker 的断点决策
+# 从不读它们（needsBreak 只有 break-before/after），属性等于没写。这里在
+# onBreakToken 钩子里补上：断点之后整块只剩一行（下一页首行就是段尾
+# 孤行）时，把断点回移到本页最后一行的行首，让下一页以两行起排。
+#
+# v3.2 统一版要点（对应 dist/paged.js 源码语义）：
+# - 断点渲染位置统一取 (overflow.startContainer, startOffset)：文本断点
+#   即克隆文本节点内偏移；元素断点（断在内联元素前）startContainer 是
+#   父元素、startOffset 是子节点序号，Range 语义同样成立。
+# - 行数判据纯计数（与坐标系无关，绝对 top 不可比——预览布局会把 rect
+#   排到页盒外、文档序倒挂）：clean 断点 ⟺ before == total-1；行内断点
+#   ⟺ before == total。Chromium 怪癖：range 跨内联元素边界（<strong>/
+#   <a>/<code>）时 getClientRects 重复返回同一片段的 rect 且枚举序来回
+#   跳行，簇计数把跳变当新行（复现：2 行段数出 4 簇，3 行段 5 簇）——
+#   rectsOf 收集口按 (top,bottom,x,w) 去重即恢复视觉序。簇再按
+#   rect.bottom（基线）聚：同行混排字体基线差 <1px，阈值 4px 对行距
+#   ~16.5px 有 4 倍余量。
+# - 克隆是源块的全文（首现）或后缀（续页）：块级 textContent 比对得
+#   cloneStart，克隆内前缀字符数 + cloneStart 即源内偏移，按字符计数
+#   走源块文本节点定位，无需 data-ref 逐节点映射。
+# - removeOverflow 只吃 overflow range（extractContents），不吃 token——
+#   回移必须同步 overflow.setStart，否则被移文本两页各渲染一遍（v1 实证
+#   p114→p115 重复 36 字）。
+# - equals() 只在两个 offset 均真值时才比较，offset 0 是 falsy——回移目标
+#   若等于续段克隆起点（= 上一页断点位置），equals 挡板会跳过
+#   removeOverflow 反而造成可见重复，此时放弃该寡行（skip "collide"）。
+# - 本页块恰两行且为首现（目标即块首）时整块下移：token 落 (srcBlock,
+#   0)、overflow 起点移到块前——治目录导语这类两行段。若块前紧邻 H1–H4，
+#   标题随块一起下移（token 落 (srcPrev, 0)），否则标题被孤零零留在页底
+#   （样张实证 p4/p5 末）；源/克隆两侧 tagName+data-ref 对不上则弃
+#   （skip "orphan-head"）。
+WIDOW_GUARD_JS = r"""
+class WidowGuard extends window.Paged.Handler {
+  constructor(chunker, polisher, caller) {
+    super(chunker, polisher, caller);
+    this.checked = 0;
+    this.moved = 0;
+  }
+  onBreakToken(breakToken, overflow, rendered) {
+    try {
+      let rec = null;
+      const skip = (why) => {
+        const s = (window.__widowSkip = window.__widowSkip || {});
+        s[why] = (s[why] || 0) + 1;
+        if (rec) {
+          rec.why = why;
+          (window.__widowTrace = window.__widowTrace || []).push(rec);
+        }
+      };
+      if (!breakToken || !overflow || !breakToken.node) return;
+      const INLINE = { STRONG:1, EM:1, B:1, I:1, SPAN:1, A:1, CODE:1, SUP:1,
+                       SUB:1, SMALL:1, MARK:1, ABBR:1, U:1, S:1, DEL:1, INS:1 };
+      const climb = (el) => {
+        let b = el, hops = 0;
+        while (b && b.nodeType === 1 && INLINE[b.tagName] && hops++ < 8) {
+          b = b.parentElement;
+        }
+        return (b && b.nodeType === 1) ? b : null;
+      };
+      // 源块：token 节点可能是文本节点，也可能是内联元素（元素断点）
+      const srcNode = breakToken.node;
+      rec = { tag: "", tail: String(srcNode.textContent || "").slice(-24),
+              after: -1, total: -1, before: -1 };
+      const srcBlock = climb(srcNode.nodeType === 3 ? srcNode.parentElement : srcNode);
+      if (!srcBlock) { skip("no-src-block"); return; }
+      const tag = srcBlock.tagName;
+      rec.tag = tag;
+      if (tag !== "P" && tag !== "LI") { skip("not-pli"); return; }
+      // 渲染断点位置及其所在块
+      const sc = overflow.startContainer, so = overflow.startOffset;
+      if (!sc) { skip("no-overflow"); return; }
+      let rNode;
+      if (sc.nodeType === 3) rNode = sc.parentElement;
+      else rNode = sc.childNodes[so] || sc;
+      const blockClone = climb(rNode);
+      if (!blockClone) { skip("no-clone-block"); return; }
+      if (blockClone.tagName !== tag) { skip("clone-drift"); return; }
+      // 克隆必须是源块全文（首现）或后缀（续页）
+      const srcText = srcBlock.textContent;
+      const cloneText = blockClone.textContent;
+      if (!srcText || !cloneText || cloneText.length > srcText.length) { skip("len"); return; }
+      let cloneStart = 0;
+      if (cloneText !== srcText) {
+        if (!srcText.endsWith(cloneText)) { skip("suffix"); return; }
+        cloneStart = srcText.length - cloneText.length;
+      }
+      const doc = sc.ownerDocument;
+      const range = doc.createRange();
+      const rectsOf = (sn, so_, en, eo) => {
+        try {
+          range.setStart(sn, so_);
+          range.setEnd(en, eo);
+        } catch (e) { return []; }
+        // Chromium 怪癖：range 跨内联元素边界（<strong>/<a>/<code>）时 getClientRects
+        // 会把同一片段的 rect 重复返回，枚举序来回跳行——文档序无排序的行簇计数
+        // 把每次跳变都当成新行（独立复现实证：2 行段 9 rect、序列 [12,12,33,12,33,…]，
+        // 数出 4 簇；去重后 6 rect 单调，2 簇）。按 (top,bottom,x,w) 去重即恢复视觉序。
+        const seen = new Set();
+        const rs = [];
+        for (const r of range.getClientRects()) {
+          if (r.width < 0.5 || r.height < 1) continue;
+          const k = r.top + "," + r.bottom + "," + r.x + "," + r.width;
+          if (seen.has(k)) continue;
+          seen.add(k);
+          rs.push(r);
+        }
+        return rs;
+      };
+      // 行簇计数（按基线 rect.bottom 聚类，返回行数，与坐标系无关）。top 漂移不是
+      // 根因（换 bottom 聚类后计数不变），真凶是上面的重复 rect；bottom 阈值 4px
+      // 对行距 ~16.5px 有 4 倍余量，且同行文本基线对齐（rect.bottom 差 <1px）。
+      const lineCount = (rects) => {
+        let n = 0;
+        let prev = NaN;
+        for (const r of rects) {
+          if (isNaN(prev) || Math.abs(r.bottom - prev) > 4) n++;
+          prev = r.bottom;
+        }
+        return n;
+      };
+      const blockEndOff = blockClone.childNodes.length;
+      // 断点之后（下一页起排部分）在整块内的行数
+      const after = lineCount(rectsOf(sc, so, blockClone, blockEndOff));
+      rec.after = after;
+      this.checked++;
+      window.__widowGuard = { checked: this.checked, moved: this.moved };
+      if (after !== 1) { skip("after-" + after); return; }
+      const total = lineCount(rectsOf(blockClone, 0, blockClone, blockEndOff));
+      rec.total = total;
+      if (total < 2) { skip("short-" + total); return; }
+      const before = lineCount(rectsOf(blockClone, 0, sc, so));
+      rec.before = before;
+      if (!before) { skip("no-before"); return; }
+      // 纯计数判据（与坐标系无关）：行首断点 ⟺ before == total-1；
+      // 行内断点 ⟺ before == total（断点在寡行行内，before 连寡行前半也计入）
+      if (before === total) { skip("mid-line"); return; }
+      if (before !== total - 1) { skip("count-mismatch"); return; }
+      // 克隆内全部文本节点（文档序）→ 块级字符坐标
+      const texts = [];
+      let totalLen = 0;
+      const w2 = doc.createTreeWalker(blockClone, NodeFilter.SHOW_TEXT);
+      while (w2.nextNode()) {
+        const t = w2.currentNode;
+        const len = t.textContent.length;
+        if (!len) continue;
+        texts.push({ node: t, start: totalLen, len: len });
+        totalLen += len;
+      }
+      if (!texts.length) { skip("no-text"); return; }
+      const locate = (pos) => {
+        for (const e of texts) {
+          if (pos < e.start + e.len) return { node: e.node, offset: pos - e.start };
+        }
+        const last = texts[texts.length - 1];
+        return { node: last.node, offset: last.len };
+      };
+      const linesBefore = (pos) => {
+        const p = locate(pos);
+        return lineCount(rectsOf(blockClone, 0, p.node, p.offset));
+      };
+      // 块级二分（纯行数）：最小 pos 使 [块首→pos) 行数达到 before，
+      // 其前一位置 = 倒数第二行行首（回移目标）。行首在首文本之前（块首带图）→ 整块。
+      let minPos;
+      if (linesBefore(0) >= before) {
+        minPos = 0;
+      } else {
+        let lo = 0, hi = totalLen;
+        while (hi - lo > 1) {
+          const mid = (lo + hi) >> 1;
+          if (linesBefore(mid) >= before) hi = mid; else lo = mid;
+        }
+        minPos = hi;
+      }
+      const targetPos = Math.max(0, minPos - 1);
+      const target = locate(targetPos);
+      // 回移后下一页应恰得 2 行（上一行 + 寡行）；计数异常则弃
+      const movedLines = lineCount(rectsOf(target.node, target.offset, blockClone, blockEndOff));
+      if (movedLines !== after + 1) { skip("bad-target"); return; }
+      // 目标边界上下文（节点局部坐标）——落盘供对账"移到的位置到底在哪"
+      const ctxTxt = target.node.textContent;
+      rec.tgt = ctxTxt.slice(Math.max(0, target.offset - 8), target.offset) + "⇢" + ctxTxt.slice(target.offset, target.offset + 10);
+      const srcOffset = cloneStart + targetPos;
+      if (targetPos === 0) {
+        if (cloneStart > 0) { skip("collide"); return; }
+        // 首现两行段：整块下移。若克隆里紧邻的前兄弟是 H1–H4，标题必须随块一起
+        // 下移，否则它会孤零零留在页底（实测样张 p4/p5 末：整块移动后 h2 独占页尾）。
+        const parent = blockClone.parentNode;
+        if (!parent) { skip("no-parent"); return; }
+        const prevSib = blockClone.previousElementSibling;
+        if (prevSib && /^H[1-4]$/.test(prevSib.tagName)) {
+          // 源侧同名前置元素 + data-ref 双向对上才动；对不上宁可不动（orphan-head 弃）
+          const srcPrev = srcBlock.previousElementSibling;
+          const aRef = prevSib.getAttribute("data-ref");
+          const bRef = srcPrev && srcPrev.getAttribute("data-ref");
+          if (!srcPrev || srcPrev.tagName !== prevSib.tagName || !aRef || !bRef || aRef !== bRef) {
+            skip("orphan-head");
+            return;
+          }
+          // 标题自身的 childNodes 索引（不能取 idx-1：标题与块之间可能有空白文本节点）
+          let hIdx = -1;
+          let ci = 0;
+          for (let n = parent.firstChild; n; n = n.nextSibling, ci++) {
+            if (n === prevSib) { hIdx = ci; break; }
+          }
+          if (hIdx < 0) { skip("orphan-head"); return; }
+          overflow.setStart(parent, hIdx);
+          const fromOffset = breakToken.offset;
+          breakToken.node = srcPrev;
+          breakToken.offset = 0;
+          this.moved++;
+          (window.__widowMoves = window.__widowMoves || []).push({
+            tag: tag, from: fromOffset, to: 0, whole: true, head: true,
+          });
+          rec.why = "MOVED-head";
+          (window.__widowTrace = window.__widowTrace || []).push(rec);
+          window.__widowGuard = { checked: this.checked, moved: this.moved };
+          return breakToken;
+        }
+        // 非标题前置：普通整块下移
+        let idx = 0;
+        for (let sib = parent.firstChild; sib && sib !== blockClone; sib = sib.nextSibling) idx++;
+        overflow.setStart(parent, idx);
+        const fromOffset = breakToken.offset;
+        breakToken.node = srcBlock;
+        breakToken.offset = 0;
+        this.moved++;
+        (window.__widowMoves = window.__widowMoves || []).push({
+          tag: tag, from: fromOffset, to: 0, whole: true,
+        });
+        rec.why = "MOVED-whole";
+        (window.__widowTrace = window.__widowTrace || []).push(rec);
+        window.__widowGuard = { checked: this.checked, moved: this.moved };
+        return breakToken;
+      }
+      // 源内定位 srcOffset（字符计数走源块文本节点）
+      const w3 = doc.createTreeWalker(srcBlock, NodeFilter.SHOW_TEXT);
+      let rem = srcOffset, srcT = null, srcC = 0;
+      while (w3.nextNode()) {
+        const t = w3.currentNode;
+        const len = t.textContent.length;
+        if (rem <= len) { srcT = t; srcC = rem; break; }
+        rem -= len;
+      }
+      if (!srcT) { skip("no-src-pos"); return; }
+      // 关键：overflow 与 token 同步回移，removeOverflow 只认 overflow range。
+      // 目标恰落某文本节点 offset 0 时必须换成元素边界形态，且要抬到"内联元素
+      // 之前"而不是 (code, 0)：元素内起点只搬走子节点，留下空 <code>——背景
+      // #f2f2f2 + 内边距在上一页行尾渲染成 ~5pt 灰点（实测 p492/p577/p716，
+      // 文本 grep 不可见，须行尾像素检查）。沿 firstChild 链上抬即可越过全部
+      // 内联包装（code/strong/em），停在 blockClone 或首个非首位置——元素间
+      // 边界与 paged.js 原生元素断点同型：不切文本节点、startContainer 非文本，
+      // hyphenateAtBreak 不触发（旧版空左节点 prevLetter=undefined 被 /^\w/
+      // 强转 "undefined" 命中 u，追加 U+2011）。行内分支 targetPos>=1 保证
+      // 不可能抬成 (blockClone, 0)（那需块前 0 字符，与 targetPos>=1 矛盾）。
+      let ovNode = target.node, ovOff = target.offset;
+      if (ovOff === 0) {
+        let tn = target.node;
+        while (tn.parentNode && tn.parentNode !== blockClone && tn.parentNode.firstChild === tn) tn = tn.parentNode;
+        const tp = tn.parentNode;
+        if (!tp) { skip("no-parent"); return; }
+        let ci = 0;
+        for (let n = tp.firstChild; n && n !== tn; n = n.nextSibling) ci++;
+        ovNode = tp; ovOff = ci;
+      }
+      overflow.setStart(ovNode, ovOff);
+      const fromOffset = breakToken.offset;
+      breakToken.node = srcT;
+      breakToken.offset = srcC;
+      this.moved++;
+      (window.__widowMoves = window.__widowMoves || []).push({
+        tag: tag, from: fromOffset, to: srcC,
+        el: ovNode !== target.node,
+      });
+      rec.why = "MOVED";
+      (window.__widowTrace = window.__widowTrace || []).push(rec);
+      window.__widowGuard = { checked: this.checked, moved: this.moved };
+      return breakToken;
+    } catch (err) {
+      (window.__widowGuardErrors = window.__widowGuardErrors || []).push(String(err));
+    }
+  }
+}
+window.Paged.registerHandlers(WidowGuard);
+"""
+
 TRIM_MM = (185.0, 260.0)
 CHAPTER_RE = re.compile(r'<article class="chapter".*?</article>', re.S)
 
@@ -204,7 +489,7 @@ def prepare_site(out_dir: Path, html: str, bleed_mm: float, fonts_dir: Path, boo
 
 
 def render_pdf(page_path: Path, pdf_path: Path, bleed_mm: float, browser_override: str | None,
-               collect_terms: list[str] | None = None) -> dict:
+               collect_terms: list[str] | None = None, widow_guard: bool = True) -> dict:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as exc:  # pragma: no cover - 环境缺依赖时的明确报错
@@ -242,6 +527,8 @@ def render_pdf(page_path: Path, pdf_path: Path, bleed_mm: float, browser_overrid
                 "})"
             )
             page.add_script_tag(path=str(PAGED_LIB))
+            if widow_guard:
+                page.add_script_tag(content=WIDOW_GUARD_JS)
             started = time.time()
             pages = page.evaluate(
                 """async () => {
@@ -252,6 +539,27 @@ def render_pdf(page_path: Path, pdf_path: Path, bleed_mm: float, browser_overrid
             )
             stats["pagedSeconds"] = round(time.time() - started, 1)
             stats["pagedPages"] = pages
+            widow_guard = page.evaluate(
+                "(() => { const g = window.__widowGuard || null;"
+                " if (!g) return null; g.moves = window.__widowMoves || [];"
+                " g.skip = window.__widowSkip || {}; return g; })()"
+            )
+            if widow_guard:
+                widow_guard["moves"] = widow_guard["moves"][:5]
+                stats["widowGuard"] = widow_guard
+            widow_errors = page.evaluate("window.__widowGuardErrors || null")
+            if widow_errors:
+                stats["widowGuardErrors"] = widow_errors[:5]
+            if __import__("os").environ.get("WIDOW_TRACE"):
+                import json as _json
+                _trace = page.evaluate("window.__widowTrace || []")
+                with open(".temp/widow-trace.json", "w", encoding="utf-8") as _f:
+                    _f.write(_json.dumps(_trace, ensure_ascii=False, indent=1))
+                print(f"trace: {len(_trace)} 条 → .temp/widow-trace.json")
+                _moves = page.evaluate("window.__widowMoves || []")
+                with open(".temp/widow-moves.json", "w", encoding="utf-8") as _f:
+                    _f.write(_json.dumps(_moves, ensure_ascii=False, indent=1))
+                print(f"moves: {len(_moves)} 条 → .temp/widow-moves.json")
             if collect_terms:
                 import json as _json
                 # 组合词按别名匹配："ABI / 调用约定" 正文里只写单边；
@@ -545,6 +853,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--html", type=Path, default=None, help="复用既有整书 HTML，不重新装配")
     parser.add_argument("--fonts-dir", type=Path, default=FONTS_DIR, help="字体子集目录（默认 mcu-book/print/fonts）")
     parser.add_argument("--no-index", action="store_true", help="跳过术语索引生成（原型/调试用）")
+    parser.add_argument("--no-widow-guard", action="store_true", help="禁用寡行守卫（A/B 对照用）")
     options = parser.parse_args(argv)
 
     out_dir = options.out_dir.resolve()
@@ -577,7 +886,8 @@ def main(argv: list[str] | None = None) -> int:
         import index as idx_mod  # noqa: E402
         terms = idx_mod.extract_terms()
         print(f"索引：第一遍分页收集 {len(terms)} 个术语的页码")
-        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser, collect_terms=terms)
+        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser, collect_terms=terms,
+                           widow_guard=not options.no_widow_guard)
         term_pages = stats.pop("termPages", {})
         page_folios = stats.pop("pageFolios", {})
         # 索引页码直接用收集器按页码增量算出的 folio（分部隔页不占号，
@@ -600,10 +910,24 @@ def main(argv: list[str] | None = None) -> int:
         html = html.replace("</main>", index_html + "\n</main>", 1)
         page_path = prepare_site(out_dir, html, options.bleed, options.fonts_dir.resolve(), manifest["title"])
         print(f"索引：第二遍分页（注入 {len(entries)} 条索引，页码按分页增量计算）")
-        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser)
+        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser,
+                           widow_guard=not options.no_widow_guard)
     else:
-        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser)
+        stats = render_pdf(page_path, pdf_path, options.bleed, options.browser,
+                           widow_guard=not options.no_widow_guard)
     print(f"分页: {stats['pagedPages']} 页，用时 {stats['pagedSeconds']}s（paged.js）")
+    widow_guard = stats.get("widowGuard")
+    if widow_guard:
+        print(f"寡行守卫: 检查 {widow_guard['checked']} 处断点，回移 {widow_guard['moved']} 处")
+        for move in widow_guard.get("moves", []):
+            mark = "整块" if move.get("whole") else "回移"
+            print(f"  {mark} <{move['tag']}> offset {move['from']}→{move['to']}")
+        skip_map = widow_guard.get("skip") or {}
+        if skip_map:
+            detail = "，".join(f"{k}×{v}" for k, v in sorted(skip_map.items(), key=lambda kv: -kv[1]))
+            print(f"  跳过分布: {detail}")
+    if stats.get("widowGuardErrors"):
+        print(f"⚠ 寡行守卫异常: {stats['widowGuardErrors']}")
     # 原型模式只排前 N 章，结构条目不全，大纲整形必然报错——跳过。
     if not options.sample:
         finalize_pdf(pdf_path, manifest, stats.get("outlineRows"))

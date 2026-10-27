@@ -316,6 +316,35 @@ class CheckPdfContractTests(unittest.TestCase):
         self.assertEqual(1, code, output)
         self.assertIn("第 7 页（章首页）", output)
 
+    def test_unnumbered_page_not_flagged_but_folio_page_still_is(self) -> None:
+        """前置页按"无页码"判定（目录涨过第 8 页后不再误报），门牙不松：
+        有页码的正文右页缺章名仍要点名。"""
+        make_book_pdf(self.pdf, MANIFEST)
+        document = fitz.open(self.pdf)
+        serif = _ttf("serif-regular")
+        # p27（右页）：正文长相、无页码无页眉 —— 目录续页形态，不应报
+        page = document.new_page(width=PAGE_W, height=PAGE_H)
+        page.insert_font(fontname="F0", fontbuffer=serif)
+        page.insert_text(fitz.Point(PAGE_W * 0.1, PAGE_H * 0.5), "目录续页夹具正文")
+        # p28（左页）：占位
+        document.new_page(width=PAGE_W, height=PAGE_H)
+        # p29（右页）：带页码无页眉 —— 正文右页缺章名，必须报
+        page = document.new_page(width=PAGE_W, height=PAGE_H)
+        page.insert_font(fontname="F0", fontbuffer=serif)
+        page.insert_text(fitz.Point(PAGE_W * 0.1, PAGE_H * 0.5), "正文右页夹具")
+        page.insert_textbox(
+            fitz.Rect(40, PAGE_H * 0.95, PAGE_W - 40, PAGE_H * 0.98),
+            "25 / 22",
+            fontname="F0",
+            fontsize=8,
+            align=fitz.TEXT_ALIGN_CENTER,
+            color=(0.38, 0.42, 0.40),
+        )
+        failures = check_pdf.check_headers(document, MANIFEST)
+        joined = " ".join(failures)
+        self.assertNotIn("第 27 页", joined)
+        self.assertIn("第 29 页（右页）→ 缺章名页眉", joined)
+
     def test_contents_folio_drift_is_named(self) -> None:
         code, output = self.build(toc_folio_override=(3, 99))
         self.assertEqual(1, code, output)

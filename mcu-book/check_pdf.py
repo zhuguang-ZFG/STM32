@@ -151,6 +151,13 @@ def check_structure_pages(document: fitz.Document) -> list[str]:
     return failures
 
 
+def has_folio(page: fitz.Page) -> bool:
+    """页脚有无「N / M」页码。前置页（封面/版权/前言/目录/分部隔页）设计上
+    不编页码不盖页眉，用它判定前置页比页序硬编码稳——前置区页数随内容
+    增减（实测目录涨到 9 页后，physical <= 8 的旧代理把 p9 误判成正文）。"""
+    return bool(re.search(r"\d+ / \d+", band_text(page, top=False)))
+
+
 def check_headers(document: fitz.Document, manifest: dict) -> list[str]:
     failures = []
     book_title = manifest["title"]
@@ -165,7 +172,7 @@ def check_headers(document: fitz.Document, manifest: dict) -> list[str]:
         header = band_text(document[i], top=True)
         text = document[i].get_text()
         # 前置页/分部隔页由 check_structure_pages 负责
-        if "PART" in text[:80].replace(" ", "") or physical <= 8:
+        if "PART" in text[:80].replace(" ", "") or not has_folio(document[i]):
             continue
         if physical % 2 == 0:
             if header and header != book_title:
