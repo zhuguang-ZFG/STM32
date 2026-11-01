@@ -94,6 +94,8 @@ Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Sourc
 
 ### 1. Interrupt versus polling
 
+There are two ways to wait for a parcel. You can walk down to the mailbox every five minutes; that is polling, the CPU reading the button level again and again in its main loop. Or you can fit a doorbell and go down only when it rings; that is an interrupt, the hardware telling the CPU the button was pressed. With a doorbell you do not have to keep watching, but when it rings you have to drop what you are doing, so the handler must be quick and the dropped work must be picked up again.
+
 | Dimension | Polling | Interrupt |
 | --- | --- | --- |
 | CPU use | High (it keeps checking) | Low (it responds when the event happens) |
@@ -103,6 +105,8 @@ Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Sourc
 | Fits | Simple, rare events, when you want a fixed path | Asynchronous events that need a fast response |
 
 ### 2. How NVIC priority works
+
+The NVIC is the chip's front desk for interrupts. When several requests arrive at once, it sorts them by two numbers. Preemption priority is like triage in an emergency room: a critical patient can send the doctor's current, milder patient out to wait, and that is nesting. Subpriority only decides the queue: when two patients of the same grade arrive together, which one is called first, but a patient already in the room is never sent out for someone of the same grade. One rule runs against intuition: a smaller number is more urgent, and 0 is the most urgent.
 
 - A **smaller** priority number is a **higher** priority.
 - Priority splits into preemption priority and subpriority.
@@ -127,6 +131,8 @@ How the arbitration looks:
 
 ### 3. The full interrupt response
 
+Everything between the button press and the first line of your handler is done by hardware. The step that matters most is 4: the CPU pushes 8 registers onto the stack, like slipping a bookmark into a book before getting up to answer the door. On the way back the hardware restores from that bookmark, and the main program never knows it was interrupted. Your code only owns step 6, and it must clear the interrupt flag; otherwise the doorbell keeps ringing and the CPU enters the same interrupt over and over.
+
 | Stage | What the hardware does |
 | --- | --- |
 | 1 | The peripheral event sets a flag (the matching bit in `EXTI_PR`, for example) |
@@ -138,6 +144,8 @@ How the arbitration looks:
 | 7 | The stacked context is restored and execution returns to the main program |
 
 ### 4. EXTI external interrupts
+
+EXTI is the layer that turns a pin change into an interrupt request. The F103 has 16 EXTI lines, split by pin number: pin 0 of every port (PA0, PB0, PC0, ...) shares EXTI0, every pin 1 shares EXTI1, and so on. One line can serve only one port at a time, like a building with one doorbell button per floor: floor 1 of block A and floor 1 of block B cannot both use it. The `EXTICR` registers choose the port, and on F1 they live in AFIO, which is why the AFIO clock must be on first.
 
 | Idea | Meaning |
 | --- | --- |
@@ -154,6 +162,8 @@ Polling versus interrupt versus EXTI:
 </p>
 
 ### 5. The C that matters
+
+When an interrupt and the main program share a variable, two things go wrong most often. First, the compiler helpfully keeps the variable in a register, so the main loop keeps reading the old value and never sees what the interrupt wrote; mark such variables `volatile`. Second, the main program is halfway through updating a multi-byte value when the interrupt comes in and reads a half-old, half-new value; put those reads and writes in a critical section with interrupts off.
 
 | Idea | What it does |
 | --- | --- |
