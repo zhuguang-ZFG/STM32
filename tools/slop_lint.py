@@ -136,6 +136,13 @@ RULES: dict[str, list[str]] = {
 # Notes written for a reviewer rather than a reader: which figure is "main",
 # what was deliberately left out, what a source is "allowed" to support.
 # A reader needs the fact and the condition, not the bookkeeping.
+# A paragraph that opens with a "conclusion" label is a template. The first
+# sentence of a section is already where the point goes; say it.
+RULES["结论标签"] = [
+    r"^\s*(>\s*)?\*{0,2}结论(先行)?\*{0,2}[：:]",
+    r"^\s*(>\s*)?\*{0,2}Conclusion( first)?\*{0,2}:",
+]
+
 RULES["审稿用语"] = [
     r"只钉在",
     r"整格照抄",

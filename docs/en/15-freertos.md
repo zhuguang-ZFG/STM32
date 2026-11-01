@@ -1,7 +1,7 @@
 # 15 Getting Started with FreeRTOS
 > 中文：[15 FreeRTOS 入门](../15-FreeRTOS入门.md)
 
-> FreeRTOS splits "one big loop" into several tasks that run concurrently. Queues and semaphores carry data between them, so timing and logic in a complex project stop stepping on each other.
+> One while(1) holding the button, the display, and the UART: change one thing and everything moves. FreeRTOS lets each run as its own task. This chapter starts from two tasks.
 
 <p align="center">
   <img src="../../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS task-state transitions and preemptive scheduling">
@@ -96,7 +96,7 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 
 ### 1. Bare-metal foreground/background vs an RTOS
 
-**Conclusion**: Bare metal is "a main loop plus interrupts" (foreground/background). The more tasks you have, and the tighter the timing, the harder it is to maintain. An RTOS makes concurrency explicit with **tasks plus a scheduler**. The cost is a little RAM and a little CPU.
+Bare metal is "a main loop plus interrupts" (foreground/background). The more tasks you have, and the tighter the timing, the harder it is to maintain. An RTOS makes concurrency explicit with **tasks plus a scheduler**. The cost is a little RAM and a little CPU.
 
 | Dimension | Bare-metal foreground/background | FreeRTOS, several tasks |
 | --- | --- | --- |
@@ -111,7 +111,7 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 
 ### 2. Task state transitions
 
-**Conclusion**: A task moves among running, ready, blocked, suspended, and deleted. **The CPU is given to someone else only when a task is blocked or suspended**, so every task needs a blocking point.
+A task moves among running, ready, blocked, suspended, and deleted. **The CPU is given to someone else only when a task is blocked or suspended**, so every task needs a blocking point.
 
 | State | Meaning | How you enter | How you leave |
 | --- | --- | --- | --- |
@@ -135,7 +135,7 @@ Suspended          Running ──────────────► Blocked
 
 ### 3. SysTick and the scheduler (the fight with HAL over the timebase)
 
-**Conclusion**: FreeRTOS uses **SysTick** by default to produce a 1 ms tick (`configTICK_RATE_HZ`). HAL also uses SysTick for `HAL_Delay`. **They cannot share it.** When you bring up the RTOS, move the HAL timebase to another timer.
+FreeRTOS uses **SysTick** by default to produce a 1 ms tick (`configTICK_RATE_HZ`). HAL also uses SysTick for `HAL_Delay`. **They cannot share it.** When you bring up the RTOS, move the HAL timebase to another timer.
 
 | Conflict | What you see | Fix |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ Suspended          Running ──────────────► Blocked
 
 ### 4. Priority and preemption
 
-**Conclusion**: In FreeRTOS, **a larger number is a higher priority** (the opposite of a Cortex-M interrupt). With `configUSE_PREEMPTION=1`, a higher-priority task that becomes ready preempts the current task immediately.
+In FreeRTOS, **a larger number is a higher priority** (the opposite of a Cortex-M interrupt). With `configUSE_PREEMPTION=1`, a higher-priority task that becomes ready preempts the current task immediately.
 
 STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The `ARM_CM4F` port still builds, but the scheduler lands in HardFault as soon as it starts, because an M3 does not know the floating-point instructions.
 
@@ -159,7 +159,7 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
 
 ### 5. Critical sections and interrupt priority
 
-**Conclusion**: A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask interrupts and protect shared data. **Any interrupt that calls an `xxxFromISR` API must have a priority number ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`.**
+A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask interrupts and protect shared data. **Any interrupt that calls an `xxxFromISR` API must have a priority number ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`.**
 
 | Macro | What it does |
 | --- | --- |
@@ -173,7 +173,7 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
 
 ### 6. Comparing the IPC options
 
-**Conclusion**: A **queue** carries data. A **semaphore** synchronizes or counts. A **mutex** protects a shared resource. An **event group** waits on several conditions. A **task notification** is the lightweight point-to-point option. Pick the wrong one and you will write a bug that is hard to find.
+A **queue** carries data. A **semaphore** synchronizes or counts. A **mutex** protects a shared resource. An **event group** waits on several conditions. A **task notification** is the lightweight point-to-point option. Pick the wrong one and you will write a bug that is hard to find.
 
 | Mechanism | Use | Can it carry data? | Cost | Interrupt-safe API |
 | --- | --- | --- | --- | --- |
@@ -189,7 +189,7 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
 
 ### 7. Estimating task stack size
 
-**Conclusion**: The stack argument to `xTaskCreate` is in **words (4 bytes)**, not bytes. A stack that is too small overflows into another task or into the heap, and it shows up as a random HardFault.
+The stack argument to `xTaskCreate` is in **words (4 bytes)**, not bytes. A stack that is too small overflows into another task or into the heap, and it shows up as a random HardFault.
 
 | How to estimate | What it means |
 | --- | --- |
@@ -206,7 +206,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 8. Priority inversion and priority inheritance
 
-**Conclusion**: **Priority inversion** is a high-priority task being held up, indirectly, by a low-priority task. A FreeRTOS **mutex** has **priority inheritance** built in, which squeezes that window down to a very short time.
+**Priority inversion** is a high-priority task being held up, indirectly, by a low-priority task. A FreeRTOS **mutex** has **priority inheritance** built in, which squeezes that window down to a very short time.
 
 | Idea | What you see | What to do |
 | --- | --- | --- |
@@ -218,7 +218,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 9. heap_1 through heap_5
 
-**Conclusion**: FreeRTOS ships five heap implementations. Which one you use depends on `configTOTAL_HEAP_SIZE` and on whether you need to free. **heap_4 is the one beginners use most.**
+FreeRTOS ships five heap implementations. Which one you use depends on `configTOTAL_HEAP_SIZE` and on whether you need to free. **heap_4 is the one beginners use most.**
 
 | Implementation | Supports free | Fragmentation | Notes |
 | --- | --- | --- | --- |
@@ -235,7 +235,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 10. In an interrupt you may only call FromISR APIs
 
-**Conclusion**: **An interrupt service routine must never call an ordinary API that can block** (for example `xQueueSend`). Use the `xxxFromISR` version, and use `portYIELD_FROM_ISR` to decide whether to switch immediately.
+**An interrupt service routine must never call an ordinary API that can block** (for example `xQueueSend`). Use the `xxxFromISR` version, and use `portYIELD_FROM_ISR` to decide whether to switch immediately.
 
 | Ordinary API (from a task) | Interrupt API (from an ISR) |
 | --- | --- |
@@ -370,7 +370,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ### 11. Relative delay, absolute period, and software timers
 
-**Conclusion**: `vTaskDelay(n)` waits n ticks from **this call**. Time the task spends doing its own work stretches the period further and further. For a fixed period, use `vTaskDelayUntil`.
+`vTaskDelay(n)` waits n ticks from **this call**. Time the task spends doing its own work stretches the period further and further. For a fixed period, use `vTaskDelayUntil`.
 
 ```c
 TickType_t last = xTaskGetTickCount();

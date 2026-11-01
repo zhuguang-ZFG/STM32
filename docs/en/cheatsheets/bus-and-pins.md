@@ -133,7 +133,7 @@
 | AFIO/SYSCFG | `__HAL_RCC_AFIO_CLK_ENABLE()` / `__HAL_RCC_SYSCFG_CLK_ENABLE()` | `APB2ENR` | `APB2ENR` |
 | PWR | `__HAL_RCC_PWR_CLK_ENABLE()` | `APB1ENR` | `APB1ENR` |
 
-> **Conclusion**: Macro names are unified, so the registers do not have to be memorized; but F4 GPIO is on AHB1, so the F4 GPIO clock is faster,
+> Macro names are unified, so the registers do not have to be memorized; but F4 GPIO is on AHB1, so the F4 GPIO clock is faster,
 > and `HAL_RCC_GetHCLKFreq()` is the GPIO clock frequency. F1 AFIO is called SYSCFG on F4.
 
 ## 7. Boot Modes and Debug Pins

@@ -1,7 +1,7 @@
 # 10 DMA
 > 中文：[10 DMA](../10-DMA.md)
 
-> DMA (direct memory access) moves data between a peripheral and memory on its own. The CPU does not have to touch every byte, so the cycles stay available for the actual computation.
+> Tens of thousands of bytes a second arrive on the UART. If the CPU has to move each one, it has no time for anything else. DMA is a helper that only moves data, and this chapter shows you how to give it work.
 
 <p align="center">
   <img src="../../assets/animations/dma-circular.svg" width="760" alt="DMA circular mode: the CPU and DMA move data in parallel">
@@ -98,7 +98,7 @@ The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the co
 
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
 
-**Conclusion**: On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
+On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
 
 | Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
 | --- | --- | --- |
@@ -270,7 +270,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 
 ### 6. How much is left: read NDTR
 
-**Conclusion**: In circular mode, do not guess "which index are we on." On F1 the remaining count is in `CNDTR`. HAL writes it as `__HAL_DMA_GET_COUNTER`.
+In circular mode, do not guess "which index are we on." On F1 the remaining count is in `CNDTR`. HAL writes it as `__HAL_DMA_GET_COUNTER`.
 
 ```c
 /* half-word buffer: number of samples already written, not a byte count */

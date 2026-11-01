@@ -2,7 +2,7 @@
 
 > 中文：[19 项目实战合集](../19-项目实战合集.md)
 
-> From a Bluetooth car to a FreeRTOS gateway: 10 projects, easy then harder. Each one gives you the requirements, the bill of materials, the approach, the key code, and a time estimate. Follow them and you can finish.
+> From a Bluetooth car to a FreeRTOS gateway: 10 projects, easy then harder. Each lists the chapters it uses, the parts to buy, the key code, and roughly how many evenings it takes.
 
 <p align="center">
   <img src="../../assets/boards/peripheral-wiring.svg" width="760" alt="Wiring overview for common parts: LED, button, OLED, sensors">

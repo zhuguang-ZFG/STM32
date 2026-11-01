@@ -1,7 +1,7 @@
 # 09 ADC and DAC
 > 中文：[09 ADC 与 DAC](../09-ADC与DAC.md)
 
-> An ADC turns an analog voltage into a number. A DAC turns a number back into an analog voltage. On an STM32 they are the two ends that touch the real world.
+> A voltage of up to 3.3 V goes into the ADC and a number from 0 to 4095 comes out. This chapter explains where that number comes from and why the reading jitters.
 
 <p align="center">
   <img src="../../assets/animations/adc-sar.svg" width="760" alt="Animation of ADC sample-and-hold and successive approximation (SAR)">
@@ -103,7 +103,7 @@ ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
 ### 1. Resolution, reference voltage, and quantization error
 
-**Conclusion**: At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
+At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
 
 | Resolution N | Number of steps, 2^N | 1 LSB at Vref = 3.3 V | 1 LSB at Vref = 5.0 V | Notes |
 | --- | --- | --- | --- | --- |
@@ -126,7 +126,7 @@ full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 
 ### 2. Successive approximation (SAR): sample-and-hold plus binary compare
 
-**Conclusion**: A SAR ADC approaches the input voltage by binary search. An N-bit result needs N compares, and the bits are decided from MSB down to LSB.
+A SAR ADC approaches the input voltage by binary search. An N-bit result needs N compares, and the bits are decided from MSB down to LSB.
 
 The conversion, for 12 bits:
 
@@ -162,7 +162,7 @@ On F1, `SMPx[2:0]` can be 1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5 A
 
 ### 3. Four conversion modes
 
-**Conclusion**: Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
+Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
 
 | Mode | Key bits | Behavior | Typical use |
 | --- | --- | --- | --- |
@@ -176,7 +176,7 @@ The regular group holds up to 16 conversions in the sequence. The injected group
 
 ### 4. Multi-channel plus DMA
 
-**Conclusion**: The standard shape for fast multi-channel acquisition is scan mode plus continuous conversion plus circular DMA. The CPU does not take part at all.
+The standard shape for fast multi-channel acquisition is scan mode plus continuous conversion plus circular DMA. The CPU does not take part at all.
 
 - In scan mode, each finished channel raises one DMA request (`CR2.DMA=1`) and moves `DR` into an array in memory.
 - DMA runs in **circular mode**. The array wraps by itself and becomes a ring buffer.
@@ -194,7 +194,7 @@ The regular group holds up to 16 conversions in the sequence. The injected group
 
 ### 5. Internal temperature sensor and Vrefint
 
-**Conclusion**: The temperature sensor and Vrefint are "internal channels" of the ADC. You get the die temperature and the real VDDA for free, and you use them to calibrate the external readings.
+The temperature sensor and Vrefint are "internal channels" of the ADC. You get the die temperature and the real VDDA for free, and you use them to calibrate the external readings.
 
 **Temperature (F1, RM0008 Chapter 11, "Temperature sensor")**: set `CR2.TSVREFE=1` to enable it, and select channel 16.
 
@@ -215,7 +215,7 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 
 ### 6. DAC output modes, the buffer, and noise
 
-**Conclusion**: The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DOR / 4096`. The output buffer can drive a heavier load, but it adds offset and cannot swing all the way to the rails.
+The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DOR / 4096`. The output buffer can drive a heavier load, but it adds offset and cannot swing all the way to the rails.
 
 | Feature | What it means | Key bits / registers |
 | --- | --- | --- |
@@ -243,7 +243,7 @@ Pick the source impedance from the sample-time table above. Put a follower in fr
 
 ## Code
 
-**Conclusion**: On F1 you must calibrate once before you start a conversion. Use DMA for continuous multi-channel acquisition. Polling is enough for a single slow signal.
+On F1 you must calibrate once before you start a conversion. Use DMA for continuous multi-channel acquisition. Polling is enough for a single slow signal.
 
 ```c
 HAL_ADCEx_Calibration_Start(&hadc1);          /* Required on F1; F4 does not have this step */
@@ -280,7 +280,7 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 
 ### 7. Calibration, the analog watchdog, and injected channels
 
-**Conclusion**: Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
+Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
 
 | Feature | When to use it | HAL |
 | --- | --- | --- |

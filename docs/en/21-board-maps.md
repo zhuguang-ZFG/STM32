@@ -2,7 +2,7 @@
 
 > 中文：[21 原理图与实物图鉴](../21-原理图与实物图鉴.md)
 
-> Seven structure drawings, plus how to read a minimum-system schematic, so you can name every part and every pin on the board in your hand.
+> Take a BluePill: every part on it has a job, from the two crystals to the regulator and the two jumpers. This chapter uses 7 common boards to teach you to read a minimum-system schematic.
 
 <p align="center">
   <img src="../../assets/boards/bluepill-stm32f103c8t6.svg" width="760" alt="BluePill STM32F103C8T6 minimum-system structure drawing">

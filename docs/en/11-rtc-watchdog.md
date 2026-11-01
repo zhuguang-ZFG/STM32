@@ -1,7 +1,7 @@
 # 11 RTC and the Watchdogs
 > 中文：[11 RTC 与看门狗](../11-RTC与看门狗.md)
 
-> The RTC is a calendar clock that keeps running after the main supply drops. The independent watchdog and the window watchdog reset the chip when the program runs away. Together they are two foundations of a reliable product.
+> A program that runs away leaves the device hung until someone notices. The watchdog resets the chip when you forget to feed it. The RTC keeps time on a coin cell after the power goes.
 
 <p align="center">
   <img src="../../assets/animations/iwdg-window.svg" width="760" alt="Animation of the independent watchdog counter and the feed window">
@@ -103,7 +103,7 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 
 ### 1. The RTC and the backup domain
 
-**Conclusion**: The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time after the main supply drops. Prefer the **LSE at 32.768 kHz** as the clock source. It is the most accurate of the four.
+The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time after the main supply drops. Prefer the **LSE at 32.768 kHz** as the clock source. It is the most accurate of the four.
 
 | Clock source | Frequency | Accuracy | Pins used | Fits |
 | --- | --- | --- | --- | --- |
@@ -117,7 +117,7 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 
 ### 2. BKP backup registers
 
-**Conclusion**: `BKP_DRx` is powered by `VBAT`. It survives a loss of the main supply. It is the usual place for flags such as "is this the first power-up" and for calibration constants.
+`BKP_DRx` is powered by `VBAT`. It survives a loss of the main supply. It is the usual place for flags such as "is this the first power-up" and for calibration constants.
 
 | Family | Backup registers | Width |
 | --- | --- | --- |
@@ -139,7 +139,7 @@ The usual pattern: on power-up, read a "magic value" (for example `0xA5A5`). If 
 
 ### 4. IWDG vs WWDG
 
-**Conclusion**: The IWDG has its own clock and can catch a dead hang. It is the **safety floor**. The WWDG is more accurate and has a feed window, so it can **catch a program whose timing has gone wrong**. You can use both at once.
+The IWDG has its own clock and can catch a dead hang. It is the **safety floor**. The WWDG is more accurate and has a feed window, so it can **catch a program whose timing has gone wrong**. You can use both at once.
 
 | Item | IWDG (independent watchdog) | WWDG (window watchdog) |
 | --- | --- | --- |
@@ -278,7 +278,7 @@ HAL_WWDG_Refresh(&hwwdg);
 
 ### How to compute the timeout, and how to freeze it while debugging
 
-**Conclusion**: `T = prescaler ÷ f_LSI × (Reload + 1)`. With `IWDG_PRESCALER_64` and a typical 40 kHz LSI, that is 625 Hz. For a 1 second timeout, write Reload as **624**. Writing 625 adds one extra count.
+`T = prescaler ÷ f_LSI × (Reload + 1)`. With `IWDG_PRESCALER_64` and a typical 40 kHz LSI, that is 625 Hz. For a 1 second timeout, write Reload as **624**. Writing 625 adds one extra count.
 
 The datasheet range for the LSI is about 30 to 60 kHz. 40 kHz is only the typical value. Leave margin on the timeout. Do not sit exactly on the nominal number.
 

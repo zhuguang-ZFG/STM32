@@ -1,7 +1,7 @@
 # 08 The SPI Bus
 > 中文：[SPI 总线](../08-SPI总线.md)
 
-> SPI is a fast full-duplex link on four wires. Flash, displays, and sensors use it all the time.
+> Each bit an SPI master sends out brings one bit back, like two people swapping notes across a table. This chapter shows it by reading the W25Q64 ID, 0xEF4017.
 
 <p align="center">
   <img src="../../assets/animations/spi-transfer.svg" width="760" alt="SPI full-duplex shift and CPOL/CPHA timing">
@@ -116,7 +116,7 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 | Mode 2 | 1 | 0 | High | 1st edge (falling) | Uncommon |
 | Mode 3 | 1 | 1 | High | 2nd edge (rising) | W25Q64 (also supported) |
 
-> Conclusion: **try Mode 0 first. If a read ID is all 0s or all FFs, suspect the mode before anything else.**
+> **try Mode 0 first. If a read ID is all 0s or all FFs, suspect the mode before anything else.**
 
 ### 3. Rate and the divider
 

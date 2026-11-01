@@ -60,6 +60,12 @@ class SlopLintDetectorTests(unittest.TestCase):
         self.assertIn("审稿用语", self.groups("The working point is copied whole from Appendix D."))
         self.assertNotIn("审稿用语", self.groups("本章的数字都按 STM32F103C8T6 算。"))
 
+    def test_catches_a_conclusion_label(self) -> None:
+        self.assertIn("结论标签", self.groups("**结论**：先开时钟再写寄存器。"))
+        self.assertIn("结论标签", self.groups("**结论先行：SPI 是一主多从。**"))
+        self.assertIn("结论标签", self.groups("> Conclusion: try Mode 0 first."))
+        self.assertNotIn("结论标签", self.groups("这个实验的结论是：先开时钟。"))
+
     def test_catches_emoji_in_headings(self) -> None:
         self.assertIn("标题里的 emoji", self.groups("## 📌 学习目标"))
         self.assertIn("标题里的 emoji", self.groups("## 🧠 核心原理"))

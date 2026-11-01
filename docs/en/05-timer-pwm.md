@@ -1,7 +1,7 @@
 # 05 Timers and PWM
 > 中文：[定时器与 PWM](../05-定时器与PWM.md)
 
-> The timer keeps precise time, makes PWM, and captures an external signal. It is the heart of control applications.
+> A 1 kHz PWM takes two numbers: PSC and ARR. This chapter reduces a breathing LED, a servo, and pulse measurement to those two numbers.
 
 <p align="center">
   <img src="../../assets/animations/timer-pwm.svg" width="760" alt="Timer counting and PWM duty cycle">
@@ -117,7 +117,7 @@ Useful values at 72 MHz:
 | 1 s | 7199 | 9999 | 1.000 s | 1 Hz |
 | 1 s (large ARR) | 71 | 999999 | does not fit | TIM2–TIM5 on the C8 are 16-bit and cannot hold 999999. The 1 s that fits is the row above, PSC = 7199 and ARR = 9999 |
 
-> Conclusion: fix `fCK_CNT` first (pick PSC), then `ARR+1 = T × fCK_CNT`.
+> Fix `fCK_CNT` first (pick PSC), then `ARR+1 = T × fCK_CNT`.
 
 ### 3. Count modes and shadow registers
 
@@ -153,7 +153,7 @@ Frequency versus resolution, at the same fCK_PSC:
 | 50 Hz (servo) | 1440000 | — | You also pick PSC to land on 20 ms |
 | 20 kHz | 3600 | 1/3600 | No audible noise |
 
-> Conclusion: **the higher the PWM frequency, the fewer ARR steps you have left for duty, and the resolution gets worse.** The two fight each other. Split the difference for the job.
+> **the higher the PWM frequency, the fewer ARR steps you have left for duty, and the resolution gets worse.** The two fight each other. Split the difference for the job.
 
 ### 5. Input capture, the encoder, and slave mode
 
@@ -320,7 +320,7 @@ HAL_TIM_Base_Start_IT(&htim2);
 
 ### 9. Input capture and TRGO
 
-**Conclusion:** measure a pulse width with input capture. If you want the ADC to sample on a fixed interval, send the update event out through master mode (TRGO). Do not software-trigger it from the main loop.
+**** measure a pulse width with input capture. If you want the ADC to sample on a fixed interval, send the update event out through master mode (TRGO). Do not software-trigger it from the main loop.
 
 ```c
 TIM_MasterConfigTypeDef mst = {0};

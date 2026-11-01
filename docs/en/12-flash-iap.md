@@ -1,7 +1,7 @@
 # 12 Flash and IAP Updates
 > 中文：[12 Flash 与 IAP 升级](../12-Flash与IAP升级.md)
 
-> Internal Flash holds the program and can be erased and written while the part is running. IAP (in-application programming) lets the device update its own firmware over UART or CAN, with no need to open the case and attach a programmer.
+> Once the device is inside a cabinet, it can still take new firmware over UART, write it to Flash, and jump to it, with no case opened and no programmer attached. This chapter shows how to split Flash and write a bootloader.
 
 <p align="center">
   <img src="../../assets/animations/flash-iap.svg" width="760" alt="IAP update: bootloader plus app, two regions, and the jump">
@@ -98,7 +98,7 @@ The opening animation `flash-iap.svg` shows the whole update flow. For page boun
 
 ### 1. How Flash is organized
 
-**Conclusion**: F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 erases by **16 to 128 KB sectors** and can program a **byte, half-word, word, or double word**.
+F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 erases by **16 to 128 KB sectors** and can program a **byte, half-word, word, or double word**.
 
 | Item | STM32F1 (RM0008, Chapter 3, FLASH) | STM32F4 (RM0090, Chapter 3, FLASH) |
 | --- | --- | --- |
@@ -135,7 +135,7 @@ HAL_FLASH_Lock();                                    /* lock */
 
 ### 3. How IAP works, and how you split the memory
 
-**Conclusion**: IAP splits Flash into a **bootloader region, a parameter region, and an app region**. At power-up the bootloader runs first, decides whether to update or to jump, and then jumps to the app.
+IAP splits Flash into a **bootloader region, a parameter region, and an app region**. At power-up the bootloader runs first, decides whether to update or to jump, and then jumps to the app.
 
 **Example map (STM32F103C8T6, 64 KB Flash):**
 
@@ -157,7 +157,7 @@ HAL_FLASH_Lock();                                    /* lock */
 
 ### 4. What you must do before jumping to the app
 
-**Conclusion**: Before the jump you must disable interrupts, reset the peripherals, set MSP, and set the vector-table offset. Otherwise an interrupt inside the app jumps back into the bootloader's vector table and the chip hangs.
+Before the jump you must disable interrupts, reset the peripherals, set MSP, and set the vector-table offset. Otherwise an interrupt inside the app jumps back into the bootloader's vector table and the chip hangs.
 
 ```c
 typedef void (*pFunction)(void);
@@ -196,7 +196,7 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 
 ### 5. YMODEM / UART update flow
 
-**Conclusion**: YMODEM is a reliable file-transfer protocol with a CRC check. Paired with a UART, it is a general-purpose IAP path.
+YMODEM is a reliable file-transfer protocol with a CRC check. Paired with a UART, it is a general-purpose IAP path.
 
 1. The device (the bootloader) enters receive mode and periodically sends the character `'C'` to request data.
 2. The host (SecureCRT, Xshell, or a tool you write) sends the first packet: file name and size.
@@ -307,7 +307,7 @@ int main(void)
 
 ### 6. Option bytes: readout protection, write protection, and the hardware watchdog
 
-**Conclusion**: Option bytes do not live in an ordinary Flash page. Changing readout protection erases the whole user Flash. Back up first, then touch it.
+Option bytes do not live in an ordinary Flash page. Changing readout protection erases the whole user Flash. Back up first, then touch it.
 
 | Byte | F1 | F4 |
 | --- | --- | --- |
