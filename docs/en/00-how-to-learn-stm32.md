@@ -1,7 +1,7 @@
 # 00 How to Learn STM32
 > 中文：[如何学习 STM32](../00-如何学习STM32.md)
 
-> For complete beginners: fill in the minimum background, gather the hardware, pick a development style, then walk the three-stage roadmap at a steady pace.
+> The first LED that blinks at the frequency you worked out says more about your progress than ten videos. This chapter tells you what to learn first, what to buy, and in what order.
 
 <p align="center">
   <img src="../../assets/animations/toolchain-flow.svg" width="760" alt="Toolchain data flow from writing code to flashing and running">

@@ -2,7 +2,7 @@
 
 > English: [Interrupts and the NVIC](en/04-interrupts-nvic.md)
 
-> 中断让 CPU 不必死等外设，事件到来时自动跳转处理，是实时系统的核心机制。
+> 按键一按，CPU 放下手里的活去处理，处理完再回来接着干。这一章讲谁能打断谁，以及为什么 PA0 和 PB0 不能同时做中断。
 
 <p align="center">
   <img src="../assets/animations/nvic-interrupt-flow.svg" width="760" alt="中断响应全流程">
@@ -91,7 +91,7 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 
 ## 核心原理
 
-**结论先行：中断把「CPU 反复查询」换成「外设主动通知」，代价是要正确处理优先级、共享变量和耗时。**
+**中断把「CPU 反复查询」换成「外设主动通知」，代价是要正确处理优先级、共享变量和耗时。**
 
 ### 1. 中断 vs 轮询
 
@@ -310,7 +310,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 ### 11. 三把总闸，和共用的 EXTI 线
 
-**结论**：`PRIMASK` 关掉除 NMI 和 HardFault 以外的全部中断；`FAULTMASK` 连 HardFault 也关，只留 NMI；`BASEPRI` 只挡住“优先级数值 ≥ 阈值”的那一截（数值越大，优先级越低）。
+`PRIMASK` 关掉除 NMI 和 HardFault 以外的全部中断；`FAULTMASK` 连 HardFault 也关，只留 NMI；`BASEPRI` 只挡住“优先级数值 ≥ 阈值”的那一截（数值越大，优先级越低）。
 
 | 寄存器 | 挡住谁 | 常见写法 |
 | --- | --- | --- |

@@ -2,7 +2,7 @@
 
 > 中文：[18 常见问题 FAQ](../18-常见问题FAQ.md)
 
-> The traps beginners hit most often, sorted into build and link, download and debug, peripherals, hardware, and RTOS and toolchain. Each entry is **symptom / cause / fix**. When something breaks, search for the keyword here first.
+> Download failed, LED dark, garbled serial: someone has hit every one of these before. This chapter sorts them by what you see, with a cause and a fix for each. Search here first when something breaks.
 
 <p align="center">
   <img src="../../assets/animations/toolchain-flow.svg" width="760" alt="Toolchain data flow: compile, link, flash, run">

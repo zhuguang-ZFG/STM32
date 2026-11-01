@@ -2,7 +2,7 @@
 
 > 中文：[CAN 总线](../13-CAN总线.md)
 
-> CAN uses a differential pair and non-destructive arbitration so many nodes can share one reliable bus. It is the classic network in cars and industrial control.
+> Dozens of controllers in a car share two wires. When two talk at once, the lower ID wins, the loser goes quiet by itself, and not one bit is damaged. That is CAN arbitration.
 
 <p align="center">
   <img src="../../assets/animations/can-arbitration.svg" width="760" alt="CAN non-destructive arbitration and bit stuffing">

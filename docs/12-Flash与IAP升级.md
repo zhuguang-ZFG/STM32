@@ -2,7 +2,7 @@
 
 > English: [Flash and IAP](en/12-flash-iap.md)
 
-> 内部 Flash 存放并可在线擦写程序，IAP（在应用编程）让设备通过串口/CAN 自我升级固件，无需拆机接下载器。
+> 设备装进机柜之后，不用拆壳接下载器，也能从串口收新固件、写进 Flash、跳过去运行。这一章教你划分 Flash，写一个 Bootloader。
 
 <p align="center">
   <img src="../assets/animations/flash-iap.svg" width="760" alt="IAP 在线升级：Bootloader + APP 双区跳转">
@@ -99,7 +99,7 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 ### 1. Flash 组织结构
 
-**结论**：F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4 按 **16~128 KB 的「扇区」** 擦除、支持**字节/半字/字/双字**编程。
+F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4 按 **16~128 KB 的「扇区」** 擦除、支持**字节/半字/字/双字**编程。
 
 | 项 | STM32F1（RM0008 第 3 章 FLASH） | STM32F4（RM0090 第 3 章 FLASH） |
 | --- | --- | --- |
@@ -136,7 +136,7 @@ HAL_FLASH_Lock();                                    /* 上锁 */
 
 ### 3. IAP 原理与内存划分
 
-**结论**：IAP 把 Flash 分成 **Bootloader 区 + 参数区 + APP 区**；上电先跑 Bootloader，判断是否升级/跳转，再跳到 APP。
+IAP 把 Flash 分成 **Bootloader 区 + 参数区 + APP 区**；上电先跑 Bootloader，判断是否升级/跳转，再跳到 APP。
 
 **内存划分示例（STM32F103C8T6，64 KB Flash）：**
 
@@ -158,7 +158,7 @@ HAL_FLASH_Lock();                                    /* 上锁 */
 
 ### 4. 跳转到 APP 的关键动作
 
-**结论**：跳转前必须「关中断、复位外设、设 MSP、设向量表偏移」，否则 APP 里的中断会跳回 Bootloader 的向量表而死机。
+跳转前必须「关中断、复位外设、设 MSP、设向量表偏移」，否则 APP 里的中断会跳回 Bootloader 的向量表而死机。
 
 ```c
 typedef void (*pFunction)(void);
@@ -197,7 +197,7 @@ SCB->VTOR = 0x08004800UL;   /* 必须与 Bootloader 约定一致 */
 
 ### 5. YMODEM / 串口升级流程
 
-**结论**：YMODEM 是带 CRC 校验的可靠文件传输协议，配合串口即可实现通用 IAP。
+YMODEM 是带 CRC 校验的可靠文件传输协议，配合串口即可实现通用 IAP。
 
 1. 设备（Bootloader）进入接收模式，周期性发送字符 `'C'` 请求数据。
 2. 上位机（如 SecureCRT / Xshell / 自写工具）发首包：文件名 + 大小。
@@ -308,7 +308,7 @@ int main(void)
 
 ### 6. 选项字节：读保护、写保护和硬件看门狗
 
-**结论**：选项字节不在普通 Flash 页里。改读保护会整片擦除用户 Flash。先备份，再动手。
+选项字节不在普通 Flash 页里。改读保护会整片擦除用户 Flash。先备份，再动手。
 
 | 字节 | F1 | F4 |
 | --- | --- | --- |

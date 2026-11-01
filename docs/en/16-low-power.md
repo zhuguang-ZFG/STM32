@@ -1,7 +1,7 @@
 # 16 Low-Power Design
 > 中文：[16 低功耗设计](../16-低功耗设计.md)
 
-> A battery-powered device uses three gears — Sleep, Stop, and Standby — to push the current from tens of milliamps down to a few microamps, and it wakes only when an event or the RTC asks it to.
+> Whether a coin cell lasts a year or a week depends on how deeply the chip sleeps most of the time. This chapter covers the three sleep modes and how to wake up on time.
 
 <p align="center">
   <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="Sleep, Stop, and Standby, and the sources that wake each one">
@@ -110,7 +110,7 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 
 ### 1. The three low-power modes compared
 
-**Conclusion**: The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
+The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
 
 | Item | Sleep | Stop | Standby |
 | --- | --- | --- | --- |
@@ -127,7 +127,7 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 
 ### 2. WFI and WFE
 
-**Conclusion**: `WFI` (Wait For Interrupt) wakes on **any interrupt**. `WFE` (Wait For Event) wakes on an **event**. You can raise one yourself with `SEV`, which fits "synchronize a pipeline, or more than one core, without an interrupt."
+`WFI` (Wait For Interrupt) wakes on **any interrupt**. `WFE` (Wait For Event) wakes on an **event**. You can raise one yourself with `SEV`, which fits "synchronize a pipeline, or more than one core, without an interrupt."
 
 | Instruction | Wake condition | Notes |
 | --- | --- | --- |
@@ -142,7 +142,7 @@ __WFI();
 
 ### 3. Restoring the clock after STOP wakes
 
-**Conclusion**: Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
+Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
 
 ```c
 /* After wake you must reconfigure the clock */
@@ -158,7 +158,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 ### 4. Turning peripherals off and configuring GPIO
 
-**Conclusion**: Saving power is not only about entering the mode. It is also about **turning off clocks of peripherals you do not need, and putting GPIO into a state that does not draw current.** A floating input pin leaks because the input buffer toggles.
+Saving power is not only about entering the mode. It is also about **turning off clocks of peripherals you do not need, and putting GPIO into a state that does not draw current.** A floating input pin leaks because the input buffer toggles.
 
 | What to handle | What to do | Why |
 | --- | --- | --- |
@@ -171,7 +171,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 ### 5. Battery-powered design
 
-**Conclusion**: On a battery device you **add up the whole budget**. Average current is the active current times the duty cycle, plus the sleep current. Divide the battery capacity by that and you have the runtime.
+On a battery device you **add up the whole budget**. Average current is the active current times the duty cycle, plus the sleep current. Divide the battery capacity by that and you have the runtime.
 
 | Point | What it means |
 | --- | --- |
@@ -198,7 +198,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 ### 7. Low-power design checklist
 
-**Conclusion**: Before you enter the mode, walk this list. Most cases of "standby current will not come down" missed one of these lines.
+Before you enter the mode, walk this list. Most cases of "standby current will not come down" missed one of these lines.
 
 | Check | What to do | Typical leak / waste |
 | --- | --- | --- |
@@ -305,7 +305,7 @@ __HAL_RCC_USART2_CLK_DISABLE();
 
 ### 8. The last word before the rail falls: PVD
 
-**Conclusion**: PVD watches VDD. When the voltage falls through the threshold it enters an interrupt, so you can write the critical variables into the backup registers before a real reset. It does not replace the watchdog, and it does not give you a number for "how many milliseconds you still have." The threshold and the hysteresis come from the level table in the reference manual.
+PVD watches VDD. When the voltage falls through the threshold it enters an interrupt, so you can write the critical variables into the backup registers before a real reset. It does not replace the watchdog, and it does not give you a number for "how many milliseconds you still have." The threshold and the hysteresis come from the level table in the reference manual.
 
 ```c
 PWR_PVDTypeDef pvd = {0};

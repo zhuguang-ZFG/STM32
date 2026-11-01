@@ -1,7 +1,7 @@
 # 17 Debugging and Performance
 > 中文：[17 调试与性能优化](../17-调试与性能优化.md)
 
-> Someone who can debug uses three tools together — an SWD breakpoint, an SWO print, and the HardFault registers — and finds in a few minutes a bug that would cost someone else a day. Someone who can optimize uses the DWT timer and DMA and squeezes the cycles dry.
+> A program stuck in HardFault does not have to be a guessing game. A few fault registers point at the line that went wrong. This chapter also shows how to count the cycles a piece of code takes with the DWT.
 
 <p align="center">
   <img src="../../assets/animations/debug-swo.svg" width="760" alt="SWD debug plus SWO/ITM print tracing">
@@ -99,7 +99,7 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 
 ### 1. SWD vs JTAG
 
-**Conclusion**: **SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
+**SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
 
 | Item | SWD | JTAG |
 | --- | --- | --- |
@@ -117,7 +117,7 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 
 ### 2. SWO / ITM / printf tracing
 
-**Conclusion**: **SWO (Serial Wire Output)** lets the MCU send debug information out of the SWO pin through the **ITM**. It **does not occupy a UART**, and it does not block. It is the most elegant way to log.
+**SWO (Serial Wire Output)** lets the MCU send debug information out of the SWO pin through the **ITM**. It **does not occupy a UART**, and it does not block. It is the most elegant way to log.
 
 | Mechanism | What it is |
 | --- | --- |
@@ -137,7 +137,7 @@ int __io_putchar(int ch)
 
 ### 3. Breakpoint types and how many you get
 
-**Conclusion**: The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3 / M4, usually **8** on M7), and the count is set by the chip's FPB unit. Software breakpoints are unlimited, but they **rewrite Flash**.
+The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3 / M4, usually **8** on M7), and the count is set by the chip's FPB unit. Software breakpoints are unlimited, but they **rewrite Flash**.
 
 | Type | How it works | How many | Limit |
 | --- | --- | --- | --- |
@@ -149,7 +149,7 @@ int __io_putchar(int ch)
 
 ### 4. The three-piece HardFault kit
 
-**Conclusion**: Once you are in HardFault, read **`CFSR` (configurable fault status), then `HFSR` (HardFault status), then `BFAR` (bus-fault address)**. Then **recover the PC at the time of the fault from the stack**. Finally use **`addr2line` or the `.map` file** to land on the source line.
+Once you are in HardFault, read **`CFSR` (configurable fault status), then `HFSR` (HardFault status), then `BFAR` (bus-fault address)**. Then **recover the PC at the time of the fault from the stack**. Finally use **`addr2line` or the `.map` file** to land on the source line.
 
 | Register | Full name | Key bits | Meaning |
 | --- | --- | --- | --- |
@@ -218,7 +218,7 @@ arm-none-eabi-addr2line -e build/app.elf -f -C 0x08001a3c
 
 ### 6. Ways to speed the code up
 
-**Conclusion**: **Measure first**, then optimize (time it with the DWT). The usual moves, in order of payoff: **hand the copies to DMA, then raise the compiler optimization, then cut floating point and division, then cache and prefetch, then assembly.**
+**Measure first**, then optimize (time it with the DWT). The usual moves, in order of payoff: **hand the copies to DMA, then raise the compiler optimization, then cut floating point and division, then cache and prefetch, then assembly.**
 
 | Move | What to do | Watch out |
 | --- | --- | --- |

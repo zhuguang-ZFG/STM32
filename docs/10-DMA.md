@@ -2,7 +2,7 @@
 
 > English: [DMA](en/10-dma.md)
 
-> DMA（直接存储器访问）让外设与内存之间的数据自动搬运，CPU 不必逐字节参与，从而把算力留给计算本身。
+> 串口每秒进来上万个字节，让 CPU 一个个去搬，它就别干别的了。DMA 是一个专门搬数据的帮手，这一章教你给它派活。
 
 <p align="center">
   <img src="../assets/animations/dma-circular.svg" width="760" alt="DMA 循环模式：CPU 与 DMA 并行搬运数据">
@@ -99,7 +99,7 @@ USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 �
 
 ### 1. 控制器结构：F1 的「通道」 vs F4 的「流×通道」
 
-**结论**：F1 一个外设请求固定绑到某条 DMA 通道；F4 先把请求绑到「流」，再用 `CHSEL` 选通道，灵活性更高。
+F1 一个外设请求固定绑到某条 DMA 通道；F4 先把请求绑到「流」，再用 `CHSEL` 选通道，灵活性更高。
 
 | 项 | STM32F1（RM0008 第 13 章 DMA 控制器） | STM32F4（RM0090 第 9 章 DMA 控制器） |
 | --- | --- | --- |
@@ -271,7 +271,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* 后半满 */
 
 ### 6. 还剩多少没搬：看 NDTR
 
-**结论**：循环模式下“已经到了第几个”不要猜。F1 的剩余计数在 `CNDTR`，HAL 写成 `__HAL_DMA_GET_COUNTER`。
+循环模式下“已经到了第几个”不要猜。F1 的剩余计数在 `CNDTR`，HAL 写成 `__HAL_DMA_GET_COUNTER`。
 
 ```c
 /* 半字缓冲区：已写入的采样个数，不是字节数 */

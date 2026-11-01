@@ -1,7 +1,7 @@
 # 04 Interrupts and the NVIC
 > 中文：[中断与 NVIC](../04-中断与NVIC.md)
 
-> An interrupt means the CPU does not have to sit and wait on a peripheral. When the event arrives, execution jumps to the handler. That is the core mechanism of a real-time system.
+> Press the button and the CPU drops what it is doing, handles it, then picks up where it left off. This chapter covers who may interrupt whom, and why PA0 and PB0 cannot both be interrupts.
 
 <p align="center">
   <img src="../../assets/animations/nvic-interrupt-flow.svg" width="760" alt="The full interrupt response path">
@@ -309,7 +309,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 ### 11. Three master gates, and a shared EXTI line
 
-**Conclusion:** `PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
+**** `PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
 
 | Register | Who it blocks | The usual spelling |
 | --- | --- | --- |

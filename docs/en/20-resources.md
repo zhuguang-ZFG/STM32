@@ -2,7 +2,7 @@
 
 > 中文：[20 学习资源与工具链](../20-学习资源与工具链.md)
 
-> One map of ST's official documents (RM, DS, PM, AN) and the toolchain, plus community resources, open-source firmware libraries, and concrete examples of how to search a manual.
+> ST's manuals run to thousands of pages and nobody reads them cover to cover. This chapter says what RM, DS, PM, and AN each cover, and which one to open and what to search for when you are stuck.
 
 <p align="center">
   <img src="../../assets/diagrams/project-structure.svg" width="760" alt="Directory layout of a standard STM32 project">
@@ -45,7 +45,7 @@
 
 ### 1. Map of the official resources
 
-**Conclusion**: ST's documents are free, and you start from **st.com**. For development, **CubeMX (configuration) + CubeIDE (build and debug) + CubeProgrammer (flash and option bytes)** covers most of what you will do.
+ST's documents are free, and you start from **st.com**. For development, **CubeMX (configuration) + CubeIDE (build and debug) + CubeProgrammer (flash and option bytes)** covers most of what you will do.
 
 | Resource | Site or name | What it is for |
 | --- | --- | --- |
@@ -59,7 +59,7 @@
 
 ### 2. How the manuals are named (this is the part to remember)
 
-**Conclusion**: **an RM tells you the registers (how to write them), a DS tells you the parameters (what the part is), a PM tells you the package and the pins, an AN tells you how to do a job, and a UM tells you how to use a tool.** For a register bit, open the RM. For electrical limits or the pin definition, open the DS.
+**An RM tells you the registers (how to write them), a DS tells you the parameters (what the part is), a PM tells you the package and the pins, an AN tells you how to do a job, and a UM tells you how to use a tool.** For a register bit, open the RM. For electrical limits or the pin definition, open the DS.
 
 | Prefix | Full name | What is inside | A typical example |
 | --- | --- | --- | --- |
@@ -87,7 +87,7 @@
 
 ### 4. Open-source firmware libraries, side by side
 
-**Conclusion**: **HAL and LL are the official mainstream.** If you want something small, or something that is not tied to one vendor, look at **libopencm3**. For a full RTOS ecosystem, look at **ChibiOS, Zephyr, or RT-Thread**. **FreeRTOS** is the most widely used real-time kernel.
+**HAL and LL are the official mainstream.** If you want something small, or something that is not tied to one vendor, look at **libopencm3**. For a full RTOS ecosystem, look at **ChibiOS, Zephyr, or RT-Thread**. **FreeRTOS** is the most widely used real-time kernel.
 
 | Library | Kind | Character | Fits |
 | --- | --- | --- | --- |
@@ -100,7 +100,7 @@
 
 ### 5. How to look things up in a manual (three steps + 3 examples)
 
-**Conclusion**: three steps. **(1) Pick the manual, RM or DS. (2) Ctrl+F the register name or the bit name. (3) Read the functional-description chapter for the timing and the formula.**
+Three steps. **(1) Pick the manual, RM or DS. (2) Ctrl+F the register name or the bit name. (3) Read the functional-description chapter for the timing and the formula.**
 
 | Step | What you do | The point |
 | --- | --- | --- |

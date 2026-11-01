@@ -1,7 +1,7 @@
 # 03 GPIO and LEDs
 > 中文：[GPIO 与 LED](../03-GPIO与LED.md)
 
-> GPIO is the most basic peripheral. Driving a level and reading a button with it is the door into every other peripheral.
+> The LED on a BluePill lights when you write 0 and goes dark when you write 1. Starting from that LED, you learn what a pin can drive and what it can read back.
 
 <p align="center">
   <img src="../../assets/animations/gpio-blink.svg" width="760" alt="Animation of a GPIO push-pull output driving an LED">
@@ -306,7 +306,7 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 
 ### 11. Remap, 5 V tolerance, and the lock
 
-**Conclusion:** on F1 you move a function with AFIO remap. On F4 each pin picks its own AF number. Whether a pin may see 5 V depends only on whether that datasheet column says FT. It is not "every STM32 tolerates 5 V".
+**** on F1 you move a function with AFIO remap. On F4 each pin picks its own AF number. Whether a pin may see 5 V depends only on whether that datasheet column says FT. It is not "every STM32 tolerates 5 V".
 
 | Family | How you change the function | What has to happen first |
 | --- | --- | --- |

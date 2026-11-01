@@ -1,7 +1,7 @@
 # 02 Choosing a Part, Memory, and Clocks
 > 中文：[芯片选型与存储器时钟](../02-芯片选型与存储器时钟.md)
 
-> Reading the STM32 name, where a family sits, the memory map, and the clock tree is the base for picking a part and setting the frequency.
+> When a write to a peripheral register does nothing, eight times out of ten its clock is off. This chapter teaches you to read a part number and then follow an 8 MHz crystal all the way to 72 MHz.
 
 <p align="center">
   <img src="../../assets/animations/clock-tree.svg" width="760" alt="Clock-tree multiply from HSE to SYSCLK">
@@ -314,7 +314,7 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 ### 10. Turn the clock on before you talk about CSS and MCO
 
-**Conclusion:** before the first write to any peripheral, call `__HAL_RCC_*_CLK_ENABLE()`. Power-up default is HSI at 8 MHz, not the 72 MHz you typed in Cube. Until `SystemClock_Config()` has actually run, the UART baud rate is wrong.
+**** before the first write to any peripheral, call `__HAL_RCC_*_CLK_ENABLE()`. Power-up default is HSI at 8 MHz, not the 72 MHz you typed in Cube. Until `SystemClock_Config()` has actually run, the UART baud rate is wrong.
 
 | Mechanism | What it does | One thing to remember |
 | --- | --- | --- |

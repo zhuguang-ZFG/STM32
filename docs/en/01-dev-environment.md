@@ -1,7 +1,7 @@
 # 01 Setting Up the Development Environment
 > 中文：[开发环境搭建](../01-开发环境搭建.md)
 
-> From nothing, install a setup that can compile, flash, and single-step an STM32.
+> Beginners get stuck less on code than on a debugger that will not connect. This chapter gets compile, flash, and single-step working in one pass.
 
 <p align="center">
   <img src="../../assets/animations/boot-sequence.svg" width="760" alt="Boot and vector fetch after power-on reset">
@@ -317,7 +317,7 @@ int _write(int fd, char *ptr, int len)
 
 ### 11. The startup file gets the house in order
 
-**Conclusion:** after reset the CPU reads two words from `0x00000000`. The first is the MSP. The second is `Reset_Handler`. With BOOT0=0, that address is an alias of Flash at `0x08000000`, not a separate memory.
+**** after reset the CPU reads two words from `0x00000000`. The first is the MSP. The second is `Reset_Handler`. With BOOT0=0, that address is an alias of Flash at `0x08000000`, not a separate memory.
 
 Current Cube startup order (trust the `startup_*.s` in your project; some older projects copy data first):
 
@@ -333,7 +333,7 @@ A peripheral interrupt does not enter at `0x08000000 + 4×IRQn`. Sixteen system 
 
 ### 12. The linker script stakes out the ground
 
-**Conclusion:** F103C8 Flash is 64 KB, starting at `0x08000000`. SRAM is 20 KB, starting at `0x20000000`. The stack grows down from the top of RAM.
+**** F103C8 Flash is 64 KB, starting at `0x08000000`. SRAM is 20 KB, starting at `0x20000000`. The stack grows down from the top of RAM.
 
 ```ld
 MEMORY

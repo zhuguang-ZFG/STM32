@@ -2,7 +2,7 @@
 
 > English: [SPI](en/08-spi.md)
 
-> SPI 用四根线实现高速全双工通信，常用于 Flash、屏幕、传感器。
+> SPI 的主机每发出一位，就同时收回一位，像两个人隔着桌子互换纸条。这一章用读 W25Q64 的 ID 0xEF4017 讲清楚这件事。
 
 <p align="center">
   <img src="../assets/animations/spi-transfer.svg" width="760" alt="SPI 全双工移位与 CPOL/CPHA 时序">
@@ -117,7 +117,7 @@ SPI 是一主多从的总线。主机和从机各有一个移位寄存器，两�
 | Mode 2 | 1 | 0 | 高 | 第 1 沿（下降） | 较少 |
 | Mode 3 | 1 | 1 | 高 | 第 2 沿（上升） | W25Q64（也支持） |
 
-> 结论：**先用 Mode 0 试；读 ID 全 0/全 FF 时优先怀疑模式不对。**
+> **先用 Mode 0 试；读 ID 全 0/全 FF 时优先怀疑模式不对。**
 
 ### 3. 速率与分频
 

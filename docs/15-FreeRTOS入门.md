@@ -2,7 +2,7 @@
 
 > English: [FreeRTOS](en/15-freertos.md)
 
-> FreeRTOS 把「一个大循环」拆成多个并发任务，用队列/信号量在任务间传递数据，让复杂项目的时序和逻辑不再互相打架。
+> 一个 while(1) 里塞了按键、屏幕、串口，改一处就牵动全身。FreeRTOS 让它们各跑各的任务，这一章从两个任务讲起。
 
 <p align="center">
   <img src="../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS 任务状态迁移与抢占式调度">
@@ -97,7 +97,7 @@
 
 ### 1. 裸机前后台 vs RTOS
 
-**结论**：裸机是「主循环 + 中断（前后台）」，任务越多、时序越紧就越难维护；RTOS 用**任务 + 调度器**把并发显式化，代价是少量 RAM 与 CPU 开销。
+裸机是「主循环 + 中断（前后台）」，任务越多、时序越紧就越难维护；RTOS 用**任务 + 调度器**把并发显式化，代价是少量 RAM 与 CPU 开销。
 
 | 维度 | 裸机前后台 | FreeRTOS 多任务 |
 | --- | --- | --- |
@@ -112,7 +112,7 @@
 
 ### 2. 任务状态迁移
 
-**结论**：任务在「运行 / 就绪 / 阻塞 / 挂起 / 删除」间迁移；**只有被阻塞或挂起时 CPU 才会让给别人**，所以每个任务都必须有阻塞点。
+任务在「运行 / 就绪 / 阻塞 / 挂起 / 删除」间迁移；**只有被阻塞或挂起时 CPU 才会让给别人**，所以每个任务都必须有阻塞点。
 
 | 状态 | 含义 | 进入方式 | 退出方式 |
 | --- | --- | --- | --- |
@@ -135,7 +135,7 @@ Suspended       Running ─────────► Blocked
 
 ### 3. SysTick 与调度器（关键：和 HAL 抢时基）
 
-**结论**：FreeRTOS 默认用 **SysTick** 产生 1 ms 节拍（`configTICK_RATE_HZ`）；而 HAL 也用 SysTick 做 `HAL_Delay`。**两者不能共用**——上 RTOS 时要把 HAL 时基改到别的定时器。
+FreeRTOS 默认用 **SysTick** 产生 1 ms 节拍（`configTICK_RATE_HZ`）；而 HAL 也用 SysTick 做 `HAL_Delay`。**两者不能共用**——上 RTOS 时要把 HAL 时基改到别的定时器。
 
 | 冲突点 | 现象 | 解决 |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ Suspended       Running ─────────► Blocked
 
 ### 4. 优先级与抢占
 
-**结论**：FreeRTOS 中**数值越大优先级越高**（与 Cortex-M 中断相反！）；`configUSE_PREEMPTION=1` 时高优先级就绪会立即抢占当前任务。
+FreeRTOS 中**数值越大优先级越高**（与 Cortex-M 中断相反！）；`configUSE_PREEMPTION=1` 时高优先级就绪会立即抢占当前任务。
 
 STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带 FPU 的 `ARM_CM4F`，编译照样能过，可调度器一启动就进 HardFault，因为 M3 不认浮点指令。
 
@@ -159,7 +159,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 
 ### 5. 临界区与中断优先级
 
-**结论**：临界区用 `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 关中断保护共享数据；**调用任何 `xxxFromISR` 的中断，其优先级数值必须 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`**。
+临界区用 `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 关中断保护共享数据；**调用任何 `xxxFromISR` 的中断，其优先级数值必须 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`**。
 
 | 宏 | 作用 |
 | --- | --- |
@@ -173,7 +173,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 
 ### 6. 任务间通信（IPC）对比
 
-**结论**：**队列**传数据、**信号量**做同步/计数、**互斥量**保护共享资源、**事件组**做多条件等待、**任务通知**做轻量点对点——选错了会写出难查的 bug。
+**队列**传数据、**信号量**做同步/计数、**互斥量**保护共享资源、**事件组**做多条件等待、**任务通知**做轻量点对点——选错了会写出难查的 bug。
 
 | 机制 | 用途 | 能否传数据 | 开销 | 中断安全 API |
 | --- | --- | --- | --- | --- |
@@ -189,7 +189,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 
 ### 7. 任务栈大小估算
 
-**结论**：`xTaskCreate` 的栈参数单位是**字（4 字节）**不是字节；栈太小会溢出到别的任务/堆，表现为随机 HardFault。
+`xTaskCreate` 的栈参数单位是**字（4 字节）**不是字节；栈太小会溢出到别的任务/堆，表现为随机 HardFault。
 
 | 估算方法 | 说明 |
 | --- | --- |
@@ -206,7 +206,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 8. 优先级反转与优先级继承
 
-**结论**：**优先级反转**是高优先级任务被低优先级任务（间接）拖住；FreeRTOS 的**互斥量**内置**优先级继承**，能把它压到很短。
+**优先级反转**是高优先级任务被低优先级任务（间接）拖住；FreeRTOS 的**互斥量**内置**优先级继承**，能把它压到很短。
 
 | 概念 | 现象 | 对策 |
 | --- | --- | --- |
@@ -218,7 +218,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 9. heap_1 ~ heap_5
 
-**结论**：FreeRTOS 自带 5 种堆实现，用哪个由 `configTOTAL_HEAP_SIZE` 和「是否需要 free」决定；**入门最常用 heap_4**。
+FreeRTOS 自带 5 种堆实现，用哪个由 `configTOTAL_HEAP_SIZE` 和「是否需要 free」决定；**入门最常用 heap_4**。
 
 | 实现 | 支持 free | 碎片 | 说明 |
 | --- | --- | --- | --- |
@@ -235,7 +235,7 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 ### 10. 中断里只能用 FromISR API
 
-**结论**：**中断服务程序里绝不能调用会阻塞的普通 API**（如 `xQueueSend`），必须用 `xxxFromISR` 版本，并配合 `portYIELD_FROM_ISR` 决定是否立即切换。
+**中断服务程序里绝不能调用会阻塞的普通 API**（如 `xQueueSend`），必须用 `xxxFromISR` 版本，并配合 `portYIELD_FROM_ISR` 决定是否立即切换。
 
 | 普通 API（任务中用） | 中断 API（ISR 中用） |
 | --- | --- |
@@ -370,7 +370,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ### 11. 相对延时、绝对周期，和软件定时器
 
-**结论**：`vTaskDelay(n)` 从**这一次调用**再等 n 个 tick，任务自己干活的时间会把周期越拖越长。要固定周期，用 `vTaskDelayUntil`。
+`vTaskDelay(n)` 从**这一次调用**再等 n 个 tick，任务自己干活的时间会把周期越拖越长。要固定周期，用 `vTaskDelayUntil`。
 
 ```c
 TickType_t last = xTaskGetTickCount();

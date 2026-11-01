@@ -2,7 +2,7 @@
 
 > 中文：[USB](../14-USB.md)
 
-> One USB cable can power the board and carry data. After enumeration the same chip can look like a virtual COM port (CDC), a keyboard (HID), or a disk (MSC).
+> Plug in a USB cable and a new COM port appears on the PC. Behind that, the host and the chip go through 7 steps of question and answer until the host knows what the device is and what it can do. This chapter covers that exchange and why the clock must be 48 MHz.
 
 <p align="center">
   <img src="../../assets/animations/usb-enumeration.svg" width="760" alt="USB enumeration: reset, descriptors, configuration">

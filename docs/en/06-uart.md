@@ -1,7 +1,7 @@
 # 06 UART
 > 中文：[串口 UART](../06-串口UART.md)
 
-> UART is the asynchronous serial interface you will use most: logs, modules, and a program on the PC.
+> Garbled serial output is rarely a broken wire. Usually the two ends do not agree on the baud rate. This chapter goes from how one byte leaves the pin to DMA reception that drops nothing.
 
 <p align="center">
   <img src="../../assets/animations/uart-frame.svg" width="760" alt="UART frame, bit by bit">
@@ -330,7 +330,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 ### 7. Overrun, and the RS485 direction pin
 
-**Conclusion:** once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
+**** once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
 
 | Flag | Meaning | How to clear it |
 | --- | --- | --- |
