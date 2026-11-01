@@ -35,31 +35,29 @@
 
 ## Principle and scope
 
-The tick and FromISR are fixed on STM32F103C8T6. The group matches chapter file 04: `NVIC_PRIORITYGROUP_4`, 4 preemption bits, and 0 subpriority bits.
+Every number in this chapter is for the STM32F103C8T6 and the repository example `examples/freertos-task`. The interrupt priority grouping is the same as in chapter 04: `NVIC_PRIORITYGROUP_4`, all 4 bits for preemption and 0 bits of subpriority.
 
-`configTICK_RATE_HZ = 1000`, so one tick is 1 ms. A deadline shorter than 1 ms is not a kernel guarantee. SysTick belongs to the kernel. The HAL time base is TIM4, the timer already named in the `examples/freertos-task` README. If both sides take SysTick, `HAL_Delay` sticks. See [examples in this repo](#source-project-examples).
+`configTICK_RATE_HZ = 1000`, so the kernel wakes once every 1 ms. That wake-up is one tick. The kernel only keeps time in ticks, so it cannot promise a deadline shorter than 1 ms. SysTick belongs to the kernel, which means HAL needs another timer for its own time base. The example uses TIM4, as its README says. If both sides take SysTick, `HAL_Delay` never returns. See [examples in this repo](#source-project-examples).
 
-A numerically larger task priority runs first. KEY is 2. LED and UART are 1. When both are ready, KEY runs first. Treating task priority like the NVIC, and expecting 1 to beat 2, is the failure path. The NVIC still treats a smaller number as more urgent. The idle task is 0. This part has no FPU.
+For tasks, a larger priority number runs first, the opposite of the NVIC. In the example KEY is 2 and LED and UART are 1, so when all three are ready KEY runs first. The NVIC still treats a smaller number as more urgent, so keep the two rules apart. The idle task is priority 0.
 
-`5 << (8 − 4) = 0x50`. An interrupt that calls FromISR needs a preemption priority number greater than or equal to 5, that is 5 or a larger number. The example sets `EXTI0` to 5. Setting it to 0 stops in `configASSERT`. The number 4 is also too urgent. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
+An interrupt that calls a `...FromISR` function needs a preemption priority number of 5 or a larger number. The 5 comes from `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`: the chip only uses the top 4 bits, and `5 << (8 − 4) = 0x50`. The kernel never masks interrupts more urgent than 5 (0 to 4). Calling FromISR from one of them can collide with data the kernel is in the middle of changing, so the kernel stops in `configASSERT` to tell you. The example sets `EXTI0` to 5. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
 
-The `xTaskCreate` depth is in words, and one word is 4 bytes. LED is 128 words = 512 bytes. KEY is 192 words = 768 bytes. UART is 256 words = 1024 bytes. Reading 128 as 128 bytes is the failure note.
+The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 words = 512 bytes, KEY is 192 words = 768 bytes, and UART is 256 words = 1024 bytes. Read 128 as 128 bytes and the task gets a quarter of the stack it needs; the first `printf` overflows it.
 
-Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, so the period is near 13 ms. `vTaskDelayUntil` of 10 ms keeps the period at 10 ms. A mutex protects a shared resource and has priority inheritance. A binary semaphore does not. heap_4 coalesces adjacent free blocks. Do not import the budget from chapter file 28.
+`vTaskDelay(10)` means "wait 10 more ticks from now". A task that works for 3 ms and then calls it runs with a period near 13 ms. For a fixed 10 ms period, use `vTaskDelayUntil`, which counts from the last wake-up. When several tasks share the UART, protect it with a mutex, which has priority inheritance. A binary semaphore does not. heap_4 merges neighbouring free blocks, so it fragments less.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="One tick is 1 ms. Task priority 2 runs before priority 1. 128 words are 512 bytes. FromISR needs a numeric priority of 5 or a larger number.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is a 1 ms SysTick, HAL time base TIM4, priority 2 running, priority 1 waiting, an LED stack of 128 words = 512 bytes, and EXTI0 preemption priority 5. The failure path writes that EXTI preemption priority as 0 and stops in configASSERT on FromISR. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the example running normally: SysTick in 1 ms steps, the HAL time base on TIM4, priority 2 running and priority 1 waiting, an LED stack of 128 words = 512 bytes, and EXTI0 at preemption priority 5. The lower half sets the EXTI0 preemption priority to 0: the first FromISR call inside the interrupt stops in configASSERT. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/rtos-tick.gif" width="640" alt="The tick advances 1 ms at a time, priority 2 holds the CPU, and 128 words equal 512 bytes">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 1 ms steps, priority 2 running, priority 1 waiting, 128 words = 512 bytes. Print from the static figure. configASSERT and the SysTick clash are not on this GIF.</sub>
+  <br><sub>▲ Animated version, showing only normal running: 1 ms steps, priority 2 running, priority 1 waiting, 128 words = 512 bytes. The printed book has only the static figure above.</sub>
 </p>
-
-`freertos-scheduler.svg` stays as an auxiliary figure.
 
 ## Timing and state
 
@@ -74,7 +72,7 @@ Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, 
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | `HAL_Delay` sticks, or the scheduler does not start | HAL and the kernel both want SysTick | Move the HAL time base to TIM4 | [examples in this repo](#source-project-examples) | The `examples/freertos-task` README names TIM4 as the time base |
 | The interrupt stops in `configASSERT` | The preemption number is smaller than 5 | Write `EXTI0` as 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | With 4 priority bits, 5 shifted left by 4 is `0x50`. A numerically smaller interrupt must not call FromISR |
@@ -149,7 +147,7 @@ Suspended          Running ──────────────► Blocked
 
 **Conclusion**: In FreeRTOS, **a larger number is a higher priority** (the opposite of a Cortex-M interrupt). With `configUSE_PREEMPTION=1`, a higher-priority task that becomes ready preempts the current task immediately.
 
-STM32F103C8T6 is a Cortex-M3 and has no FPU. A port built for an FPU is void on this part.
+STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The `ARM_CM4F` port still builds, but the scheduler lands in HardFault as soon as it starts, because an M3 does not know the floating-point instructions.
 
 | Item | Rule |
 | --- | --- |

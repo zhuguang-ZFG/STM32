@@ -36,57 +36,57 @@
 
 ## Principle and scope
 
-Bit time and the working pins are fixed on STM32F103C8T6. The CAN1 kernel clock is the 36 MHz APB1 clock, the same account as chapter file 02. The working point is copied from the compass: prescaler 9, BS1 = 5, BS2 = 2, SJW = 1. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).
+Bit timing and pins in this chapter are for the STM32F103C8T6. CAN1 sits on APB1 at 36 MHz, the same clock setup as chapter 02. The working point is prescaler 9, BS1 = 5, BS2 = 2, SJW = 1. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).
 
-One time quantum is `Tq = 9 / 36e6 = 250` ns. One synchronization quantum, plus BS1 of 5, plus BS2 of 2, is 8. The bit lasts `8 × 250 ns = 2` µs, which is 500 kbit/s. The sample point is `(1 + 5) / 8 = 75%`, at 1.5 µs. That is the normal path.
+One time quantum is `Tq = 9 / 36e6 = 250` ns. A bit is one synchronization quantum, plus 5 for BS1, plus 2 for BS2: 8 quanta. The bit lasts `8 × 250 ns = 2` µs, which is 500 kbit/s. The sample point is at `(1 + 5) / 8 = 75%`, 1.5 µs into the bit.
 
-Ten quanta at a 70% sample point (BS1 = 6, BS2 = 3) wants a prescaler of 7.2, which is not an integer. Writing 8 gives `36e6 / (8 × 10) = 450` kbit/s. That is the failure path. The 1 Mbit/s row stays in the core ideas and is not this section's working point.
+Before changing the segment counts, check that the prescaler comes out whole. Ten quanta at a 70% sample point (BS1 = 6, BS2 = 3) needs `36e6 / (500e3 × 10) = 7.2`, which is not an integer. Writing 8 instead gives `36e6 / (8 × 10) = 450` kbit/s. That no longer matches a 500 kbit/s peer, and both ends report errors. The 1 Mbit/s setting is covered in the core ideas below.
 
-On a BluePill the first remap is the working pair: pin 45 PB8 = CAN_RX, pin 46 PB9 = CAN_TX. The reset default is pin 32 PA11 = CAN_RX and pin 33 PA12 = CAN_TX. That pair is the normal path of the USB chapter. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).
+A BluePill uses the first remap: pin 45 PB8 = CAN_RX, pin 46 PB9 = CAN_TX. The reset default is pin 32 PA11 = CAN_RX and pin 33 PA12 = CAN_TX, but those two pins are also USB D− and D+, which chapter 14 needs. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).
 
-Pin 5 PD0 and pin 6 PD1 exist on LQFP48. They are the HSE pins. Remapping CAN onto them stops the 8 MHz crystal. See [DS5319](#source-ds5319-clock). RM0008 section 9.3.3 says the port D remap is not available on 36-pin, 48-pin, and 64-pin packages. Pin 45 and pin 46 are also the I2C1 remap from chapter file 07. This figure does not draw CAN and I2C active together. See [DS5319](#source-ds5319-i2c).
+The second remap is pin 5 PD0 and pin 6 PD1. On LQFP48 those pins carry the HSE crystal, so moving CAN there stops the 8 MHz crystal. See [DS5319](#source-ds5319-clock). RM0008 section 9.3.3 also says 36-pin, 48-pin, and 64-pin packages cannot remap CAN to port D. Pins 45 and 46 are also the I2C1 remap from chapter 07, so one project can give them to CAN or to I2C, not both. See [DS5319](#source-ds5319-i2c).
 
-Each end of the bus has one 120 Ω resistor between CANH and CANL. PB8 and PB9 enter the transceiver RXD and TXD. Only the transceiver drives CANH and CANL. Two 120 Ω resistors in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance.
+PB8 and PB9 do not go straight onto the bus. They connect to the transceiver's RXD and TXD, and the transceiver drives CANH and CANL. Each end of the bus has one 120 Ω resistor between CANH and CANL. The two in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance; the cable is about 120 Ω, and the terminators are chosen to match it.
 
-A single node that is not in loopback gets no acknowledge. The transmit error counter reaches 256 and the node stops driving the bus. Recovery is 128 times 11 consecutive recessive bits. In a 32-bit mask, a standard ID written to `FilterIdHigh` is shifted left by 5. Without that shift the bus can carry frames while the mailbox stays empty. Fourteen filter banks and two FIFOs stay in the boundary. See [examples in this repo](#source-project-examples).
+A node alone on the bus and not in loopback gets no acknowledge for its frames. The transmit error counter keeps rising, and at 256 the node goes bus-off and stops driving the bus. Recovery waits for 128 occurrences of 11 consecutive recessive bits. With a 32-bit mask filter, a standard ID written to `FilterIdHigh` must be shifted left by 5. Without the shift, frames are on the bus but the mailbox stays empty. The F103 has 14 filter banks and 2 receive FIFOs. See [examples in this repo](#source-project-examples).
 
-The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter file 14. The connectivity table prints `USB_LP_CAN1_RX0`. Do not link the two examples into one project. See [RM0008](#source-rm0008-usb).
+The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB in chapter 14 shares the same vector. Only the connectivity-line table calls it `USB_LP_CAN1_RX0`. So do not link the CAN and USB examples into one project. See [RM0008](#source-rm0008-usb).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-bit.svg" width="760" alt="At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. The working pins are pin 45 and pin 46.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is eight 250 ns quanta, a 75% sample point, 2 µs, 500 kbit/s, prescaler 9, SJW = 1. The 120 Ω resistors sit on CANH and CANL. The failure path is prescaler 8, ten quanta, 450 kbit/s, and a 70% sample point. The working pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the correct setup: eight 250 ns quanta, a 75% sample point, a 2 µs bit, 500 kbit/s, prescaler 9, SJW = 1, and 120 Ω between CANH and CANL. The lower half is the wrong setup: prescaler 8 and ten quanta give 450 kbit/s with a 70% sample point. The pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/can-500k.gif" width="640" alt="Eight quanta cross 2 µs and the sample point is at 75%">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. Print from the static figure. 450 kbit/s and the crystal pins are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the correct setup: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. The printed book has only the static figure above.</sub>
 </p>
 
-`can-arbitration.svg` stays as an auxiliary figure. Arbitration and bit stuffing are not on this static figure.
+Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of the chapter.
 
 ## Timing and state
 
 | Prescaler | BS1 | BS2 | Quanta | Bit time | Rate | Sample point |
 | --- | --- | --- | --- | --- | --- | --- |
-| 9 | 5 | 2 | 8 | 2 µs | 500 kbit/s | 75%. Quantum 250 ns. Normal |
-| 8 | 6 | 3 | 10 | not 2 µs | 450 kbit/s | 70%. Failure |
+| 9 | 5 | 2 | 8 | 2 µs | 500 kbit/s | 75%. Quantum 250 ns. Correct |
+| 8 | 6 | 3 | 10 | 2.22 µs | 450 kbit/s | 70%. Does not match the peer |
 | Pins | PB8 receives | PB9 transmits | pin 45 and pin 46 | — | — | PA11/PA12 conflict with USB |
 | Errors | count reaches 256 | bus-off | 128 times | 11 recessive bits each time | — | only then may the node drive again |
 | Filter | `FilterIdHigh` | shift left by 5 | — | — | — | without the shift the mailbox stays empty |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The scope or analyzer shows 450 kbit/s | The prescaler and the segment counts used the row that does not divide | Use prescaler 9, BS1 5, and BS2 2 | [RM0008](#source-rm0008-can) | Eight quanta and prescaler 9 is 500 kbit/s at 36 MHz. Ten quanta with prescaler 8 is 450 kbit/s |
-| One node in normal mode goes silent after a few frames | There is no acknowledge, so the transmit error counter fills | Start in loopback. On a real bus, provide a node that acknowledges | [RM0008](#source-rm0008-can) | A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits |
+| The scope or analyzer shows 450 kbit/s | The prescaler and segment counts do not divide evenly | Use prescaler 9, BS1 5, and BS2 2 | [RM0008](#source-rm0008-can) | Eight quanta and prescaler 9 is 500 kbit/s at 36 MHz. Ten quanta with prescaler 8 is 450 kbit/s |
+| One node in normal mode stops sending after a few frames | There is no acknowledge, so the transmit error counter fills | Start in loopback. On a real bus, have a node that acknowledges | [RM0008](#source-rm0008-can) | A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits |
 | Frames are on the bus and the mailbox is empty | The standard ID was not shifted | Shift left by 5 when writing `FilterIdHigh` | [examples in this repo](#source-project-examples) | `examples/can-bxcan` fills `FilterIdHigh` with `PEER_ID << 5`. The prescaler macro is 9 |
-| Both ends report errors | The bit timing differs, or the terminators are not at the two ends | Use one bit timing, and put 120 Ω between CANH and CANL at each end | [examples in this repo](#source-project-examples) | The example asks for one 120 Ω resistor at each end. This row does not set a cable impedance and does not set the transceiver supply at 5 V or 3.3 V |
+| Both ends report errors | The bit timing differs, or the terminators are not at the two ends | Use one bit timing, and put 120 Ω between CANH and CANL at each end | [examples in this repo](#source-project-examples) | The example asks for one 120 Ω resistor at each end. It does not set a cable impedance or a 5 V versus 3.3 V transceiver |
 | The waveform is on PA11/PA12 and USB also fails | The pins are still the reset default | Remap to pin 45 and pin 46 | [DS5319](#source-ds5319-usbcan) | Reset-default CAN is on PA11/PA12. PB8/PB9 is the remap. PA11/PA12 are also USB |
-| The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT. Both pins exist |
-| I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Choose either CAN or I2C on that pair | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap. Do not redraw the chapter 07 figure |
+| The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT |
+| The I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Give that pair to either CAN or I2C | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap |
 
 ## Learning goals
 

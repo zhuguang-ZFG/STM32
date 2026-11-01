@@ -343,7 +343,16 @@ class Svg:
                 f'aria-label="{esc(self.title)}">')
         style = ""
         if self.styles:
-            style = "<style>\n" + "\n".join(self.styles) + "\n</style>"
+            rules = list(self.styles)
+            animated = any("animation" in rule for rule in rules)
+            if animated:
+                # 系统设了「减少动态效果」的读者看到的是静止的第一帧。
+                rules.append("@media (prefers-reduced-motion: reduce)"
+                             "{*{animation:none!important}}")
+            style = "<style>\n" + "\n".join(rules) + "\n</style>"
+            if animated and self.title:
+                # 屏幕阅读器读 <title>；aria-label 留着兼容旧读屏。
+                head += f"\n<title>{esc(self.title)}</title>"
         defs = ""
         if self.defs:
             defs = "<defs>\n" + "\n".join(self.defs) + "\n</defs>"

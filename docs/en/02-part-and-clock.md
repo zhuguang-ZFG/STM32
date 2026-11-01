@@ -35,33 +35,31 @@
 
 ## Principle and scope
 
-The clock conclusion in this chapter is pinned to order code STM32F103C8T6 in LQFP48. The clock ledger is copied whole from Appendix D. On a connectivity-line part, the section 7.3.2 sentence below is void and you read section 8.3.2 instead. When the voltage range changes, the wait-state step is void and you re-read the voltage cell in Appendix D.
+Clock numbers in this chapter are for the STM32F103C8T6 in LQFP48 and match the clock table in Appendix D. The connectivity line (F105/F107) lays out its RCC registers differently; for those parts read section 8.3.2 of the manual instead of 7.3.2. The Flash wait states assume a 2.7–3.6 V supply; at another voltage, look the steps up again.
 
 HSE enters on pin 5 PD0-OSC_IN and pin 6 PD1-OSC_OUT at 8 MHz. `PLLXTPRE=0` (HSE is not prescaled), `PLLSRC=1` (the PLL input is HSE), `PLLMUL=0111` (×9). `8 × 9 = 72` MHz. With `SW=10`, SYSCLK uses the PLL. HPRE divides by 1, so HCLK = 72 MHz. PPRE1 = `100` (÷2), so PCLK1 = 36 MHz and must not exceed 36 MHz. PPRE2 divides by 1, so PCLK2 = 72 MHz. When an APB prescaler is not 1, timers on that bus clock at twice PCLK, so TIM2–TIM7 are still 72 MHz. TIM1 is on APB2 with a prescaler of 1, so it is not doubled again. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).
 
-`FLASH_ACR` is at base `0x40022000`, offset `0x00`. LATENCY for 48 MHz to 72 MHz is `010`, which is 2. From 0 to 24 MHz it is 0. From 24 to 48 MHz it is 1. The voltage cell is copied whole from Appendix D: 2.7–3.6 V. Setting the PLL to ×9 and leaving LATENCY at 0 makes instruction fetch fail. That is the failure path on the key figure.
+`FLASH_ACR` is at base `0x40022000`, offset `0x00`. LATENCY for 48 MHz to 72 MHz is `010`, which is 2. From 0 to 24 MHz it is 0. From 24 to 48 MHz it is 1. These steps assume a 2.7–3.6 V supply. Flash cannot keep up with 72 MHz, so each fetch waits two extra cycles. Set the PLL to ×9 but leave LATENCY at 0 and the CPU reads wrong instructions; the program runs away or lands in HardFault.
 
-With `USBPRE=0`, the 72 MHz PLL is divided by 1.5 and the result is 48 MHz. `USBPRE=1` does not divide, so the result is 72 MHz, which is not 48 MHz. `ADCPRE=10` is PCLK2÷6, and `72 / 6 = 12` MHz. `ADCPRE=01` is ÷4, which is 18 MHz and crosses the RM0008 ceiling of 14 MHz. Sample time and successive approximation stay in chapter file 09. This chapter does not write them.
+With `USBPRE=0`, the 72 MHz PLL is divided by 1.5 and the result is 48 MHz. `USBPRE=1` does not divide, so the result is 72 MHz, which is not 48 MHz. `ADCPRE=10` is PCLK2÷6, and `72 / 6 = 12` MHz. `ADCPRE=01` is ÷4, which is 18 MHz and crosses the RM0008 ceiling of 14 MHz. Sample time and successive approximation are covered in chapter 09.
 
-When HSE stops and CSS is on, if HSE is the system clock directly or through the PLL, hardware switches to HSI and turns HSE off. If HSE was the PLL input, the PLL turns off too. The CSS interrupt is NMI. The NMI handler writes CSSC in `RCC_CIR`, or NMI keeps returning. The same event also reaches the TIM1 and TIM8 break inputs. After reset the system clock is HSI at 8 MHz, not the 72 MHz filled in by Cube. Chapter file 04 only cross-references “CSS enters NMI”. This chapter does not redraw preemption.
+When HSE stops and CSS is on, if HSE is the system clock directly or through the PLL, hardware switches to HSI and turns HSE off. If HSE was the PLL input, the PLL turns off too. The CSS interrupt is NMI. The NMI handler writes CSSC in `RCC_CIR`, or NMI keeps returning. The same event also reaches the TIM1 and TIM8 break inputs. After reset the system clock is HSI at 8 MHz, not the 72 MHz filled in by Cube. Chapter 04 covers how NMI preempts.
 
-Pin 29 PA8 includes MCO in its alternate function. The pin is in [DS5319 Rev 20 Figure 8](#source-ds5319-clock). `MCO=111` drives PLL÷2, which is 36 MHz, under the 50 MHz I/O limit written in the manual. `MCO=100` drives SYSCLK out, and 72 MHz crosses that 50 MHz sentence. The normal path is 36 MHz. HSE bypass is only for an external clock. A crystal does not enable bypass.
+Pin 29 PA8 includes MCO in its alternate function. The pin is in [DS5319 Rev 20 Figure 8](#source-ds5319-clock). `MCO=111` drives PLL÷2, which is 36 MHz, under the 50 MHz I/O limit written in the manual. `MCO=100` drives SYSCLK straight out, and 72 MHz is over that limit, so the manual no longer guarantees the pin's output, and neither the amplitude nor the frequency on the scope can be trusted as a reading. To check the core clock, output PLL÷2 at 36 MHz and double it. HSE bypass is only for an oscillator module or an external clock input; with a plain crystal, leave bypass off.
 
-Section 8.3.2 `OTGFSPRE`, the reserved `PLLMUL` encoding `000x`, and ×6.5 are void on STM32F103C8T6. This C8 uses section 7.3.2 for `RCC_CFGR`. `0111` is still ×9. `0000` is still ×2.
+Many online notes mix in section 8.3.2, the connectivity line: the `OTGFSPRE` bit, the reserved `PLLMUL` encoding `000x`, and ×6.5. None of these exist on the STM32F103C8T6; copied over, they give a wrong configuration. The C8 uses section 7.3.2 for `RCC_CFGR`. `0111` is still ×9. `0000` is still ×2.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-02-clock-tree.svg" width="760" alt="72 MHz needs two Flash wait states; after HSE stops, the system clock returns to HSI at 8 MHz">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 5 PD0 and pin 6 PD1 bring in 8 MHz. PLLMUL=0111, PLLSRC=1, and PLLXTPRE=0 produce 72 MHz. PCLK1 = 36 MHz, PCLK2 = 72 MHz, TIM2–TIM7 = 72 MHz, ADCCLK = 12 MHz, and USBPRE=0 produces 48 MHz. The normal path has LATENCY = 2, and MCO on pin 29 PA8 is 36 MHz. The failure path is the same tree with LATENCY still 0. After HSE stops, SYSCLK returns to HSI at 8 MHz and the NMI handler writes CSSC. 18 MHz crosses 14 MHz, and driving 72 MHz straight out of MCO crosses 50 MHz. Those two sentences stay in the margin. Sources: [RM0008 Rev 21 sections 7.3.2 and 7.2.7](#source-rm0008-rcc) and [DS5319 Rev 20 Figure 8](#source-ds5319-clock).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 5 PD0 and pin 6 PD1 bring in 8 MHz. PLLMUL=0111, PLLSRC=1, and PLLXTPRE=0 produce 72 MHz. PCLK1 = 36 MHz, PCLK2 = 72 MHz, TIM2–TIM7 = 72 MHz, ADCCLK = 12 MHz, and USBPRE=0 produces 48 MHz. Configured correctly, LATENCY = 2 and MCO on pin 29 PA8 is 36 MHz. The figure also marks the same tree with LATENCY still 0, where fetches go wrong. After HSE stops, SYSCLK returns to HSI at 8 MHz and the NMI handler writes CSSC. Two limits are noted at the edge: ADC at 18 MHz is over 14 MHz, and 72 MHz straight out of MCO is over 50 MHz. Sources: [RM0008 Rev 21 sections 7.3.2 and 7.2.7](#source-rm0008-rcc) and [DS5319 Rev 20 Figure 8](#source-ds5319-clock).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/clock-css.gif" width="640" alt="After HSE disappears, the system clock falls from 72 MHz back to HSI at 8 MHz">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the CSS return to HSI. Print uses the static figure. The fetch failure with LATENCY still 0 is not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only CSS switching the system clock back to HSI after HSE stops. The printed book has only the static figure above.</sub>
 </p>
-
-The opening `clock-tree.svg` stays a side figure. Without playing it, 72 MHz, LATENCY, and the CSS return to HSI are all on the static figure.
 
 ## Timing and state
 
@@ -76,18 +74,18 @@ The opening `clock-tree.svg` stays a side figure. Without playing it, 72 MHz, LA
 | CSS | HSE fails | SYSCLK returns to HSI 8 MHz | The PLL is off. NMI stays pending until software writes CSSC |
 | ADC | ADCPRE=10 | 12 MHz | ADCPRE=01 produces 18 MHz and crosses 14 MHz |
 
-This table does not include the sample time. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).
+ADC sample time is in chapter 09. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The core stops as soon as the PLL is set to ×9 | LATENCY is still 0 | Write LATENCY = 2 before switching SYSCLK | [RM0008](#source-rm0008-rcc) | The 48–72 MHz step is two wait states. The voltage cell is Appendix D, 2.7–3.6 V |
 | PWM frequency is off by 2× | The division used PCLK1 at 36 MHz | Use the 72 MHz timer clock | [RM0008](#source-rm0008-rcc) | When the APB prescaler is not 1, the timer clock is doubled. TIM1 on APB2 with prescaler 1 is not doubled again |
 | The crystal never starts and the core sits outside | HSE stopped and CSS left NMI pending | After CSS is on, the clock returns to HSI, and the NMI handler writes CSSC | [RM0008](#source-rm0008-rcc) | When HSE is the PLL input, the failure turns the PLL off and SYSCLK uses HSI |
-| PLLMUL was filled from section 8.3.2 | That section is the connectivity line | This C8 uses section 7.3.2. 0111 is still ×9 and 0000 is still ×2 | [RM0008](#source-rm0008-rcc) | The connectivity-line 000x reserved encoding and OTGFSPRE are void on STM32F103C8T6 |
+| PLLMUL was filled from section 8.3.2 | That section is the connectivity line | This C8 uses section 7.3.2. 0111 is still ×9 and 0000 is still ×2 | [RM0008](#source-rm0008-rcc) | The connectivity-line 000x reserved encoding and OTGFSPRE do not exist on STM32F103C8T6 |
 | The waveform on MCO is too fast for the pin | SYSCLK at 72 MHz was driven straight onto PA8 | Drive PLL÷2, which is 36 MHz | [RM0008](#source-rm0008-rcc) | The clock sent to the MCO pin must not exceed 50 MHz |
-| ADC was set to ÷4 to go faster | ADCPRE=01 produces 18 MHz | Change it back to ÷6, which is 12 MHz | [RM0008](#source-rm0008-rcc) | 14 MHz is the ceiling. ÷4 produces 18 MHz. Sample time stays in chapter file 09 |
+| ADC was set to ÷4 to go faster | ADCPRE=01 produces 18 MHz | Change it back to ÷6, which is 12 MHz | [RM0008](#source-rm0008-rcc) | 14 MHz is the ceiling. ÷4 produces 18 MHz. Sample time is in chapter 09 |
 
 ## Learning goals
 - [ ] Split an STM32 part number piece by piece (what every character of STM32F103C8T6 means)
@@ -132,7 +130,7 @@ So **STM32F103C8T6 = F1 performance line · 48 pins · 64 KB Flash · LQFP · �
 | L0 | M0+ | 32 MHz | 8–192 KB | TSSOP | Ultra-low power | 5–12 |
 | L4 | M4F | 80 MHz | 64–1 MB | LQFP | Low power and performance together | 20–50 |
 
-> The prices are a selection sketch. They are not numbers from DS5319 or RM0008. They stay out of the four blocks and out of the new sources' scope.
+> The prices are a selection sketch. They are not numbers from DS5319 or RM0008. Use them only to compare rough price tiers; check a current quote.
 
 ### 3. Core features (Cortex-M)
 
@@ -199,7 +197,7 @@ Which bus a peripheral sits on:
   <br><sub>▲ Figure: which peripherals hang on AHB, APB1, and APB2 (vector drawing by the author)</sub>
 </p>
 
-**Important RCC_CFGR bits (RM0008 Rev 21 medium-density section 7.3.2. Section 8.3.2 is the connectivity line and is void on STM32F103C8T6):**
+**Important RCC_CFGR bits (RM0008 Rev 21 medium-density section 7.3.2. Section 8.3.2 is the connectivity line and does not apply to STM32F103C8T6):**
 
 | Field | Name | Meaning |
 | --- | --- | --- |

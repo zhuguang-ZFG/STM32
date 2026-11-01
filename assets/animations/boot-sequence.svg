@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="上电之后发生了什么">
+<title>上电之后发生了什么</title>
 <style>
 @keyframes b0-flash{0%,0.00%{opacity:0.08}0.30%,2.75%{opacity:0.42}3.05%,100%{opacity:0.08}}
 .b0{animation:b0-flash 7.2s linear infinite;}
@@ -16,6 +17,7 @@
 .b6{animation:b6-flash 7.2s linear infinite;}
 @keyframes b7-flash{0%,87.50%{opacity:0.08}87.80%,90.25%{opacity:0.42}90.55%,100%{opacity:0.08}}
 .b7{animation:b7-flash 7.2s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

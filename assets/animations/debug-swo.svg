@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="调试与跟踪：SWD + SWO/ITM">
+<title>调试与跟踪：SWD + SWO/ITM</title>
 <style>
 @keyframes swd-run{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(110px);opacity:0}}@keyframes swo-run{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(-110px);opacity:0}}.wSWDIO{animation:swd-run 1.6s linear infinite;}.wSWCLK{animation:swd-run 1.6s linear infinite .4s;}.wSWO{animation:swo-run 1.2s linear infinite .2s;}.wNRST{animation:swd-run 2s linear infinite .8s;}
 @keyframes itm-fade{0%,10%{opacity:.15}40%,100%{opacity:1}}.itm{animation:itm-fade 3s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

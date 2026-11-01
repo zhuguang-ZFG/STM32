@@ -35,50 +35,48 @@
 
 ## Principle and scope
 
-The waveform conclusion in this chapter is pinned to order code STM32F103C8T6. The counter clock is the 72 MHz from Appendix D, not 36 MHz. On a family whose TIM2 or TIM5 is 32-bit, the sentence “this part is 16-bit” is void.
+Every waveform number in this chapter is for the STM32F103C8T6, with the 72 MHz counter clock from Appendix D. On a family with 32-bit timers, redo the "does not fit in 16 bits" part below.
 
-TIM3 is on APB1. PCLK1 = 36 MHz and the prescaler is not 1, so the TIM3 counter clock is 72 MHz. PSC = 71 and ARR = 999. `72e6 / ((71+1) × (999+1)) = 1000` Hz. The counter clock is first divided to 1 MHz, then counts 1000 steps, and the period is 1 ms. The same PSC and ARR divided by 36 MHz produce 500 Hz. That is the failure path on the key figure. Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
+TIM3 sits on APB1, where PCLK1 = 36 MHz. When the APB1 prescaler is not 1, the timer clock is twice PCLK1, so TIM3 really counts at 72 MHz. PSC = 71 and ARR = 999 give `72e6 / ((71+1) × (999+1)) = 1000` Hz. The counter clock is first divided down to 1 MHz, then counts 1000 steps, so the period is 1 ms. If you work out the same PSC and ARR from 36 MHz, you get 500 Hz; a scope reading of 500 Hz usually means exactly that mistake. Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 
-PWM mode 1 drives the active level while CNT < CCR. With CCR = 500, `500 / (999+1) = 50%`, and the high time is 500 µs.
+PWM mode 1 drives the active level while CNT < CCR. With CCR = 500 the duty cycle is `500 / (999+1) = 50%`, and the high time is 500 µs.
 
-TIM2–TIM5 on this part are 16-bit. PSC = 71 and ARR = 999999 do not fit. The 1 second that fits is PSC = 7199 and ARR = 9999, `72e6 / (7200 × 10000) = 1` Hz. A 32-bit TIM2 or TIM5 is a sentence about another family.
+TIM2 to TIM5 on the C8 are all 16-bit, so ARR tops out at 65535. PSC = 71 with ARR = 999999 for a 1 second period does not fit. The version that fits is PSC = 7199 and ARR = 9999: `72e6 / (7200 × 10000) = 1` Hz. The 32-bit TIM2 and TIM5 belong to other families such as the F4.
 
-With no remap, TIM3_CH1 is on PA6. DS5319 Rev 20 Table 5: LQFP48 pin 16 is PA6, the default alternate function includes TIM3_CH1, and the same cell also includes SPI1_MISO. This figure draws only the timer. Chapter file 08 draws SPI on this pin. The two key figures do not draw both functions as active together. A remap onto PB4 or PC6 writes `TIM3_REMAP` and is not on the normal path. Source: [DS5319 Rev 20 Table 5](#source-ds5319-tim).
+With no remap, TIM3_CH1 is on PA6, LQFP48 pin 16. DS5319 Rev 20 Table 5 lists both TIM3_CH1 and SPI1_MISO as default functions of that pin, and only one can be in use at a time. Chapter 08 uses it as SPI1_MISO. Moving the channel to PB4 or PC6 needs `TIM3_REMAP`. Source: [DS5319 Rev 20 Table 5](#source-ds5319-tim).
 
-On TIM1/TIM8, `TIMx_BDTR` is at offset `0x44`, the reset value is `0x0000`, and bit 15 MOE at 0 holds the main output off. `HAL_TIM_PWM_Start` sets MOE. General-purpose TIM3 has no such bit.
+The advanced timers TIM1 and TIM8 have an extra break and dead-time register, `TIMx_BDTR`, at offset `0x44` with reset value `0x0000`. While bit 15 MOE is 0 the main output is off and the pin stays quiet. `HAL_TIM_PWM_Start` sets MOE for you; register-level code often forgets it. General-purpose TIM3 has no such bit.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-05-pwm-1khz.svg" width="760" alt="At a 72 MHz counter clock this PSC/ARR pair is 1 kHz; dividing by 36 MHz produces 500 Hz">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 16 PA6 = TIM3_CH1. Counter clock 72 MHz, PSC = 71, ARR = 999, CCR = 500. The normal path has a 1 ms period, 500 µs high, and 1000 Hz. The failure path divides by 36 MHz, so the period is 2 ms and the frequency is 500 Hz. ARR = 999999 does not fit in a 16-bit counter. TIM1 MOE is at offset 0x44 with reset value 0x0000, and it is not this waveform. SPI1_MISO is not drawn on this waveform. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 16 PA6 = TIM3_CH1. Counter clock 72 MHz, PSC = 71, ARR = 999, CCR = 500. The top half is the correct waveform: 1 ms period, 500 µs high, 1000 Hz. The bottom half is what you get when the numbers are worked out from 36 MHz: 2 ms period, 500 Hz. The figure also marks that ARR = 999999 does not fit in a 16-bit counter. TIM1 MOE at offset 0x44, reset value 0x0000, has nothing to do with this TIM3 waveform. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/pwm-1khz.gif" width="640" alt="The level flips when CNT reaches CCR = 500, at 1000 Hz">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the 1000 Hz path and the 500 µs high time. Print uses the static figure. The 500 Hz failure is not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the correct 1000 Hz waveform with 500 µs high. The printed book has only the static figure above.</sub>
 </p>
-
-The opening `timer-pwm.svg` and `pwm-breath.gif` stay in their original section and are marked as side figures. Without playing them, both 1 kHz and 500 Hz are on the static figure.
 
 ## Timing and state
 
-| Row | Counter clock | PSC | ARR | CCR | CNT | Output | Time |
+| Case | Counter clock | PSC | ARR | CCR | CNT | Output | Time |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Normal, high | 72 MHz | 71 | 999 | 500 | 0 through 499 | high | 500 µs |
-| Normal, low | 72 MHz | 71 | 999 | 500 | 500 through 999 | low | another 500 µs, period 1000 µs, 1000 Hz |
-| Failure | 36 MHz | 71 | 999 | 500 | 0 through 999 | same compare | period 2000 µs, 500 Hz |
-| Does not fit | 72 MHz | 71 | 999999 | — | — | not a 1 s pulse | truncated at 16 bits, not counted as 1 s |
-| 1 second | 72 MHz | 7199 | 9999 | — | 0 through 9999 | — | 1 Hz |
+| Correct, high part | 72 MHz | 71 | 999 | 500 | 0 through 499 | high | 500 µs |
+| Correct, low part | 72 MHz | 71 | 999 | 500 | 500 through 999 | low | another 500 µs, period 1000 µs, 1000 Hz |
+| Worked out from 36 MHz | 36 MHz | 71 | 999 | 500 | 0 through 999 | same compare | period 2000 µs, 500 Hz |
+| ARR does not fit | 72 MHz | 71 | 999999 | — | — | no 1 s period | truncated by the 16-bit register |
+| 1 second that fits | 72 MHz | 7199 | 9999 | — | 0 through 9999 | — | 1 Hz |
 
 Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The scope shows 500 Hz | The division used 36 MHz | Divide by 72 MHz, with PSC = 71 and ARR = 999 | [RM0008](#source-rm0008-tim) | This set is 1000 Hz at 72 MHz. Dividing by 36 MHz produces 500 Hz |
-| ARR was written as 999999 for a 1 s period | A 16-bit counter cannot hold it | Use PSC = 7199 and ARR = 9999 | [RM0008](#source-rm0008-tim) | The general-purpose timers on this part are 16-bit and cannot hold 999999 |
+| The scope shows 500 Hz | PSC and ARR were worked out from 36 MHz | Work them out from 72 MHz: PSC = 71, ARR = 999 | [RM0008](#source-rm0008-tim) | This set is 1000 Hz at 72 MHz and 500 Hz at 36 MHz |
+| ARR was written as 999999 for a 1 s period | A 16-bit counter cannot hold it | Use PSC = 7199 and ARR = 9999 | [RM0008](#source-rm0008-tim) | The general-purpose timers on the C8 are 16-bit and cannot hold 999999 |
 | TIM1 has no waveform at all | BDTR bit 15 MOE is still 0 | Set MOE | [RM0008](#source-rm0008-tim) | The reset value is 0x0000. With MOE at 0 the main output stays off. The offset is 0x44. TIM3 has no such bit |
 | PWM appears on some other pin | TIM3_REMAP is not 00 | Keep TIM3_REMAP=00 and use PA6 | [DS5319](#source-ds5319-tim) | LQFP48 pin 16 is PA6, and the default alternate function includes TIM3_CH1 |
 
@@ -98,7 +96,7 @@ Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 | Class | Instance | Width | What is special | Typical use |
 | --- | --- | --- | --- | --- |
 | Advanced | TIM1/TIM8 | 16-bit | Complementary outputs, dead time, break, MOE | Motors, three-phase PWM |
-| General-purpose | TIM2–TIM5 | 16-bit | 4 channels, PWM / capture / encoder | On this STM32F103C8T6 they are 16-bit. 32-bit TIM2/TIM5 is a sentence about another family, and it is void if you move to that family |
+| General-purpose | TIM2–TIM5 | 16-bit | 4 channels, PWM / capture / encoder | 16-bit on the STM32F103C8T6. TIM2/TIM5 are 32-bit on families such as the F4 |
 | Basic | TIM6/TIM7 | 16-bit | Counting only, no external channel | A time base, triggering a DAC |
 | Watchdog | IWDG/WWDG | 12/7-bit | Independent / window watchdog | Reset a program that has run away |
 | System | SysTick | 24-bit | Built into the core | HAL time base, RTOS tick |
@@ -117,7 +115,7 @@ Useful values at 72 MHz:
 | 10 ms | 7199 | 99 | 10.00 ms | 100 Hz |
 | 100 ms | 7199 | 999 | 100.0 ms | 10 Hz |
 | 1 s | 7199 | 9999 | 1.000 s | 1 Hz |
-| 1 s (large ARR) | 71 | 999999 | does not fit | TIM2–TIM5 on this part are 16-bit and cannot hold 999999. The 1 s that fits is the row above, PSC = 7199 and ARR = 9999 |
+| 1 s (large ARR) | 71 | 999999 | does not fit | TIM2–TIM5 on the C8 are 16-bit and cannot hold 999999. The 1 s that fits is the row above, PSC = 7199 and ARR = 9999 |
 
 > Conclusion: fix `fCK_CNT` first (pick PSC), then `ARR+1 = T × fCK_CNT`.
 

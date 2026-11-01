@@ -35,44 +35,44 @@
 <!-- /video:ch18 -->
 ## Principle and scope
 
-This chapter is an index, not a second peripheral tutorial. The orderable part is still STM32F103C8T6. All 38 rows stay. C1 through C8 is 8, D1 through D7 is 7, P1 through P9 is 9, H1 through H7 is 7, and R1 through R7 is 7. `8 + 7 + 9 + 7 + 7 = 38`.
+This chapter is a troubleshooting index. Each row gives the symptom, the likely cause, and the chapter to read; the theory stays in those chapters. The part is still the STM32F103C8T6. There are 38 rows, numbered by category: C1 through C8 is 8, D1 through D7 is 7, P1 through P9 is 9, H1 through H7 is 7, and R1 through R7 is 7. `8 + 7 + 9 + 7 + 7 = 38`.
 
-When the probe reports no target, look first at pin 34 PA13 = SWDIO, pin 37 PA14 = SWCLK, a shared ground, 3.3 V, and pin 7 NRST. Figure 31's external reset capacitor is 0.1 µF. Then look at the code and the optimization level. Editing `-O2` before those wires are checked is the failure path. See [DS5319 SWD](#source-ds5319-swd).
+When the probe reports no target, look first at pin 34 PA13 = SWDIO, pin 37 PA14 = SWCLK, a shared ground, 3.3 V, and pin 7 NRST. Figure 31's external reset capacitor is 0.1 µF. Only after those check out, look at the code and the optimization level. With a wrong wire, changing `-O2` changes nothing and just adds another variable. See [DS5319 SWD](#source-ds5319-swd).
 
-Pin 44 BOOT0 = 0 starts from main Flash at `0x08000000`. BOOT1 = 0 and BOOT0 = 1 enters system memory at `0x1FFFF000`. The connectivity-line address `0x1FFFB000` is void on this C8. The pins are latched on the 4th SYSCLK rising edge after reset, the same note as chapter file 00. Pin 35 is VSS_2, not SWCLK. That old drawing is in chapter file 01, and this chapter does not redraw it. See [RM0008 boot](#source-rm0008-boot).
+Pin 44 BOOT0 = 0 starts from main Flash at `0x08000000`. BOOT1 = 0 and BOOT0 = 1 enters system memory at `0x1FFFF000`. The `0x1FFFB000` often seen online belongs to the connectivity line (F105/F107), and the C8 is not one. The BOOT pins are latched on the 4th SYSCLK rising edge after reset (chapter 00). Pin 35 is VSS_2, not SWCLK; some old pinout drawings get it wrong, and chapter 01 has the comparison. See [RM0008 boot](#source-rm0008-boot).
 
-Flash is 64 KB and SRAM is 20 KB, the same cells as the existing SWD card. When HSE does not start, SYSCLK is the 8 MHz HSI. USART1 with `0x271` on that clock is 12800, not 115200. That is the same sentence as chapter file 16. This chapter does not draw another bit frame. See [RM0008 USART](#source-rm0008-usart).
+The C8 has 64 KB of Flash and 20 KB of SRAM. When HSE fails to start, SYSCLK falls back to the 8 MHz HSI, and USART1 with `0x271` on that clock runs at 12800, not 115200, so the serial output is garbage. Waking from Stop in chapter 16 fails the same way. See [RM0008 USART](#source-rm0008-usart).
 
 LSE stays 32.768 kHz, pins 3 and 4, pin 1 VBAT, and PRL = 32767. Choose the capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. See [DS5319 LSE](#source-ds5319-lse).
 
-The repository example puts the HAL time base on TIM4, not a generic TIMx. Leave SysTick to the kernel. One tick is 1 ms. See [repository examples](#source-project-examples). A FromISR call needs a numeric priority of 5 or a larger number. `5 << 4 = 0x50`. That is the same sentence as chapter file 15. Do not redraw that priority figure. See [FreeRTOS](#source-freertos-syscall).
+The repository example puts the HAL time base on TIM4, not a generic TIMx. Leave SysTick to the kernel. One tick is 1 ms. See [repository examples](#source-project-examples). A FromISR call needs a numeric priority of 5 or a larger number. `5 << 4 = 0x50`. The reason is in the chapter 15 priority figure. See [FreeRTOS](#source-freertos-syscall).
 
-The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not a current source. See [DS5319 GPIO](#source-ds5319-gpio).
+Wire the external lamp as in chapter 03: pin 10 PA0 through 270 Ω. Pin 2 PC13 sits behind the backup-domain power switch. Note 5 of the datasheet limits it to sinking at most 3 mA at up to 2 MHz, and forbids using it as a current source for an LED. The on-board LED is wired to sink. See [DS5319 GPIO](#source-ds5319-gpio).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-18-boot-triage.svg" width="760" alt="When the probe cannot see the chip, look at pins 34, 37, and 44 first. BOOT0 = 1 and BOOT1 = 0 runs from 0x1FFFF000.">
-  <br><sub>▲ Drawn for this book. The normal path is pin 44 BOOT0 = 0, starting at 0x08000000, with the probe on pin 34 PA13 and pin 37 PA14. Pin 7 NRST carries the 0.1 µF from Figure 31. The failure path is BOOT0 = 1 and BOOT1 = 0, with the CPU at 0x1FFFF000, or an optimization edit before those four pins are checked. Pin 35 is VSS_2 and points at chapter file 01. Sources: [DS5319](#source-ds5319-swd) Figure 31 and Table 5, and [RM0008 boot](#source-rm0008-boot).</sub>
+  <br><sub>▲ Drawn for this book. The top band shows the normal case: pin 44 BOOT0 = 0, start at 0x08000000, probe on pin 34 PA13 and pin 37 PA14, and 0.1 µF on pin 7 NRST as in Figure 31. The middle band shows two common mistakes: BOOT0 = 1 with BOOT1 = 0, so the CPU runs system memory at 0x1FFFF000; or changing the optimization level before checking those four pins. Pin 35 is VSS_2; see chapter 01. Sources: [DS5319](#source-ds5319-swd) Figure 31 and Table 5, and [RM0008 boot](#source-rm0008-boot).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/boot0-low.gif" width="640" alt="Pin 44 is 0, the probe is on pins 34 and 37, and the target appears">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: pin 44 is 0, the probe is on pins 34 and 37, and the target appears. Print from the static figure. BOOT0 = 1 and an optimizer edit are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the normal case: pin 44 is 0, the probe is on pins 34 and 37, and the debugger finds the chip. The printed book has only the static figure above.</sub>
 </p>
 
-`toolchain-flow.svg` stays as an auxiliary figure. The compile arrows are not on this static figure.
+The whole path from compile to download is in the opening `toolchain-flow.svg` animation.
 
 ## Timing and state
 
 | Look at this first | Value | Next step |
 | --- | --- | --- |
 | Pins 34 and 37 | PA13 = SWDIO, PA14 = SWCLK, shared ground, 3.3 V | Do not edit code until these are connected |
-| NRST | Pin 7, 0.1 µF | Figure 31. This row does not write a pull-up in kilohms |
-| BOOT | BOOT0 = 0, main Flash `0x08000000` | Normal path |
-| Failure | BOOT0 = 1 and BOOT1 = 0, `0x1FFFF000` | The user program looks unprogrammed. `0x1FFFB000` is void on the C8 |
+| NRST | Pin 7, 0.1 µF | As in DS5319 Figure 31 |
+| BOOT | BOOT0 = 0, main Flash `0x08000000` | Normal |
+| Failure | BOOT0 = 1 and BOOT1 = 0, `0x1FFFF000` | The user program looks unprogrammed. `0x1FFFB000` is the connectivity-line address |
 | Optimization | `-O2` before the wires are checked | Failure |
-| Capacity | 64 KB Flash, 20 KB SRAM | The same cells as the SWD card |
+| Capacity | 64 KB Flash, 20 KB SRAM | Write the linker script with these |
 | UART | HSI at 8 MHz and `0x271` still loaded | 12800 |
 | Time base | TIM4, 1 ms | Not a generic TIMx |
 | Priority | A number of 5 or larger | `5 << 4 = 0x50` |
@@ -80,17 +80,17 @@ The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not 
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The probe reports no target | The wires were not checked | Look at pins 34 and 37, ground, and 3.3 V first | [DS5319 SWD](#source-ds5319-swd) | Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 35 is VSS_2 |
 | The program looks unprogrammed | Pin 44 is pulled high | Put BOOT0 back to 0 | [RM0008 boot](#source-rm0008-boot) | BOOT1=0 and BOOT0=1 enters `0x1FFFF000`. The C8 is not a connectivity-line part |
-| The reset pin is open and the board resets itself | The capacitor is not the Figure 31 cell | Add 0.1 µF as Figure 31 draws it | [DS5319 NRST](#source-ds5319-nrst) | Figure 31's external reset circuit is 0.1 µF. This row does not add a pull-up in kilohms |
-| The link says Flash or RAM is too small | The estimate used a larger part | Use the C8 cells, 64 KB and 20 KB | [DS5319 SWD](#source-ds5319-swd) | The xB 128 KB is void on the C8T6 |
+| The reset pin is open and the board resets itself | The capacitor is not the Figure 31 cell | Add 0.1 µF as Figure 31 draws it | [DS5319 NRST](#source-ds5319-nrst) | Figure 31's external reset circuit is 0.1 µF |
+| The link says Flash or RAM is too small | The estimate used a larger part | Use the C8 cells, 64 KB and 20 KB | [DS5319 SWD](#source-ds5319-swd) | 128 KB is the xB size (the CB, for example); the C8T6 has 64 KB |
 | Serial data is garbage and the clock was not checked | The clock fell back to HSI | Confirm it is not sitting at 8 MHz | [RM0008 USART](#source-rm0008-usart) | `0x271` is 115200 at 72 MHz and 12800 at 8 MHz |
-| Row P9 was built with 6 pF | One capacitor was treated as required | Choose the capacitors with the crystal, from 5 pF to 15 pF | [DS5319 LSE](#source-ds5319-lse) | 6 pF is not a required value printed in the LSE section. 32.768 kHz and PRL = 32767 stay with chapter file 11 |
-| `HAL_Delay` does not return after FreeRTOS is added | The time base is still SysTick | Move the time base to TIM4 | [repository examples](#source-project-examples) | The time base in `examples/freertos-task` is TIM4. Do not write a generic TIMx |
+| Row P9 was built with 6 pF | One capacitor was treated as required | Choose the capacitors with the crystal, from 5 pF to 15 pF | [DS5319 LSE](#source-ds5319-lse) | 6 pF is not a required value printed in the LSE section. 32.768 kHz and PRL = 32767 are covered in chapter 11 |
+| `HAL_Delay` does not return after FreeRTOS is added | The time base is still SysTick | Move the time base to TIM4 | [repository examples](#source-project-examples) | The time base in `examples/freertos-task` is TIM4 |
 | An interrupt stops in `configASSERT` | The numeric priority is too urgent | Use 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | `5 << 4 = 0x50`. A smaller number must not call FromISR |
-| An external lamp stays dark while the resistor is guessed inside a range | The pin and the resistor were not pinned | Use pin 10 and 270 Ω from chapter file 03 | [DS5319 GPIO](#source-ds5319-gpio) | Pin 2 PC13 cannot source the current. This row does not invent another resistor |
+| An external lamp stays dark while the resistor is guessed inside a range | The pin and the resistor were never fixed | Use pin 10 and 270 Ω from chapter 03 | [DS5319 GPIO](#source-ds5319-gpio) | Pin 2 PC13 cannot source the current |
 ## Learning goals
 
 - [ ] Build the habit of searching by symptom, instead of editing code at random.

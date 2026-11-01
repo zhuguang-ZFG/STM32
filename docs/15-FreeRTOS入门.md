@@ -36,31 +36,29 @@
 
 ## 原理与适用范围
 
-这一章的节拍和 FromISR 只钉在订货号 STM32F103C8T6 上。分组跟第 04 章同一笔：`NVIC_PRIORITYGROUP_4`，4 位抢占，0 位子优先级。
+本章的数字都按 STM32F103C8T6 和仓库例程 `examples/freertos-task` 算。中断优先级分组和第 04 章一样：`NVIC_PRIORITYGROUP_4`，4 位全给抢占，子优先级 0 位。
 
-`configTICK_RATE_HZ = 1000`，一个 tick 是 1 ms。短于 1 ms 的期限不是内核保证。SysTick 归内核。HAL 的时基是 TIM4，这是 `examples/freertos-task` 的 README 已经写明的那一只。两家都占 SysTick 时，`HAL_Delay` 卡住。见 [本仓库例程](#source-project-examples)。
+`configTICK_RATE_HZ = 1000`，内核每 1 ms 醒一次，这一下叫一个 tick。内核只按 tick 记时间，所以比 1 ms 更短的期限它保证不了。SysTick 归内核用，HAL 自己的时基就得换一只定时器，例程用的是 TIM4（README 里写着）。如果两边都去抢 SysTick，`HAL_Delay` 会一直卡着不返回。见 [本仓库例程](#source-project-examples)。
 
-任务优先级数值大的先跑。KEY 是 2，LED 和 UART 是 1，同时就绪时先跑 KEY。把任务优先级当成 NVIC、以为 1 比 2 更优先，是失败路径。NVIC 仍是数值小的更优先。空闲任务是 0。这颗料没有 FPU。
+任务优先级是数字越大越先跑，正好和 NVIC 反过来。例程里 KEY 是 2，LED 和 UART 是 1，三个同时就绪时 KEY 先跑。NVIC 还是数字越小越急，两套规则别混着记。空闲任务的优先级是 0。
 
-`5 << (8 − 4) = 0x50`。调用 FromISR 的中断，抢占优先级数值要大于等于 5。例程把 `EXTI0` 设成 5。设成 0 会停在 `configASSERT`。数值 4 同样过急。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
+调用 `...FromISR` 的中断，抢占优先级数值必须大于等于 5。这个 5 来自 `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`：芯片只用高 4 位，`5 << (8 − 4) = 0x50`。比 5 更急的中断（0 到 4）内核不会屏蔽，在里面调 FromISR 会撞上内核正在改的数据，所以内核直接停在 `configASSERT` 提醒你。例程把 `EXTI0` 设成 5。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
 
-`xTaskCreate` 的栈深度是字，一字 4 字节。LED 128 字 = 512 字节。KEY 192 字 = 768 字节。UART 256 字 = 1024 字节。把 128 当成 128 字节，是失败旁注。
+`xTaskCreate` 的栈深度按字算，一字 4 字节。LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。把 128 当成 128 字节，栈只给了四分之一，`printf` 一调就溢出。
 
-先干 3 ms 再 `vTaskDelay(10)`，从调用时再等 10 个 tick，周期接近 13 ms。`vTaskDelayUntil` 的 10 ms 把周期钉在 10 ms。保护共享资源用互斥量，有优先级继承。二值信号量没有继承。heap_4 会合并相邻空闲块。不搬第 28 章的预算。
+`vTaskDelay(10)` 是「从现在起再等 10 个 tick」。任务先干了 3 ms 活再调它，周期就变成约 13 ms。要固定 10 ms 周期，用 `vTaskDelayUntil`，它从上一次醒来的时刻算。几个任务共用串口时用互斥量，它带优先级继承，二值信号量没有。heap_4 会把相邻的空闲块合并，碎片少一些。
 
 ## 关键插图
 
 <p align="center">
   <img src="../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="一个 tick 是 1 ms；任务优先级 2 先于 1；128 字是 512 字节；FromISR 的数值优先级要大于等于 5">
-  <br><sub>▲ 自绘。STM32F103C8T6。正常路径是 SysTick 1 ms、HAL 时基 TIM4、优先级 2 在跑、优先级 1 在等、LED 栈 128 字 = 512 字节、EXTI0 抢占优先级 5。失败路径是同一条 EXTI 的抢占优先级写成 0，调用 FromISR 后停在 configASSERT。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
+  <br><sub>▲ 自绘。STM32F103C8T6。上半部分是例程正常跑的样子：SysTick 1 ms 一格，HAL 时基在 TIM4，优先级 2 在跑、优先级 1 在等，LED 栈 128 字 = 512 字节，EXTI0 抢占优先级 5。下半部分是把 EXTI0 的抢占优先级写成 0：中断里一调 FromISR，就停在 configASSERT。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
 </p>
 
 <p align="center">
   <img src="../assets/gif/rtos-tick.gif" width="640" alt="节拍每 1 ms 走一格，优先级 2 占着 CPU，128 字等于 512 字节">
-  <br><sub>▲ 网页和公众号辅图。只播放正常路径：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷以静态主图为准。configASSERT 和 SysTick 冲突不在这条 GIF 上。</sub>
+  <br><sub>▲ 动图版，只演示正常运行：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷版只有上面的静态图。</sub>
 </p>
-
-`freertos-scheduler.svg` 留作辅图。
 
 ## 时序与状态
 
@@ -75,7 +73,7 @@
 
 ## 常见坑与出处
 
-| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
 | --- | --- | --- | --- | --- |
 | `HAL_Delay` 卡住，或调度器起不来 | HAL 和内核抢 SysTick | HAL 时基改到 TIM4 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 的 README 把时基源写成 TIM4 |
 | 一进中断就停在 `configASSERT` | 抢占优先级数值比 5 更小 | `EXTI0` 写成 5 或更靠后的数 | [FreeRTOS](#source-freertos-syscall) | 4 位优先级时，5 左移 4 位是 `0x50`。数值更小的中断不得调用 FromISR |
@@ -149,7 +147,7 @@ Suspended       Running ─────────► Blocked
 
 **结论**：FreeRTOS 中**数值越大优先级越高**（与 Cortex-M 中断相反！）；`configUSE_PREEMPTION=1` 时高优先级就绪会立即抢占当前任务。
 
-STM32F103C8T6 是 Cortex-M3，没有 FPU。选带 FPU 的移植在这颗料上作废。
+STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带 FPU 的 `ARM_CM4F`，编译照样能过，可调度器一启动就进 HardFault，因为 M3 不认浮点指令。
 
 | 项 | 规则 |
 | --- | --- |

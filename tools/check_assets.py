@@ -281,6 +281,11 @@ def check_videos():
         if not os.path.isfile(png):
             print(f"[FAIL] 缺少海报 {name}.png")
             ok = False
+        elif not os.path.isfile(gen_narrated.FONT):
+            # 海报按文泉驿微米黑逐像素比对，换别的字体必然不一致，比了也没有意义。
+            if ch is gen_narrated.CHAPTERS[0]:
+                print(f"[SKIP] 找不到海报字体 {gen_narrated.FONT}，跳过海报逐像素比对。"
+                      "装上文泉驿微米黑后用 NARRATED_FONT 指向它即可恢复。")
         else:
             got = Image.open(png).convert("RGB")
             want = gen_narrated.render_poster(ch)

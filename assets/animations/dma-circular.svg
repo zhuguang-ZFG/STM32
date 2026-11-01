@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="DMA 循环模式：CPU 与搬运工并行工作">
+<title>DMA 循环模式：CPU 与搬运工并行工作</title>
 <style>
 
 .w1{stroke-dasharray:7 10;animation:w1-flow 1.2s linear infinite;}@keyframes w1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
@@ -23,6 +24,7 @@
 .b6{animation:b6-sq 4.0s linear infinite;}
 @keyframes b7-sq{0%,87.50%{opacity:0.1}87.80%,94.38%{opacity:0.48}94.67%,100%{opacity:0.1}}
 .b7{animation:b7-sq 4.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

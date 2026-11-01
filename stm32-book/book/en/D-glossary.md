@@ -201,7 +201,7 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 ## Numbers you will actually use
 
-Each row above is only a working definition. This table pins the numbers you keep recalculating on a BluePill to an orderable part and a manual path. Change the package or the family, and the whole row is void: recalculate from that part's manual. The arithmetic is already in chapters 02, 03, 06, 07, 09, 11, and 21. This page only gathers it so a measurement has something to stand next to.
+Each row above is only a working definition. This table gathers the numbers you keep recalculating on a BluePill, each one worked out for the STM32F103C8T6 from a named manual. Change the package or the family and the whole row has to be recalculated from that part's manual. The arithmetic is already in chapters 02, 03, 06, 07, 09, 11, and 21. This page only gathers it so a measurement has something to stand next to.
 
 | Ledger | Where it is pinned | The number | What it looks like when it is wrong |
 | --- | --- | --- | --- |
@@ -216,7 +216,7 @@ Each row above is only a working definition. This table pins the numbers you kee
 
 ## Numbers to reconcile before changing family
 
-The table above is pinned to an STM32F103C8T6. The numbers below are already in chapters 04, 05, 12, 13, 15, 16, 23, 24, 25, and 27. This page gathers the ones you recalculate when the chip changes. Change the orderable part or the clock, and the row is void.
+The table above is worked out for an STM32F103C8T6. The numbers below are already in chapters 04, 05, 12, 13, 15, 16, 23, 24, 25, and 27. This page gathers the ones you recalculate when the chip changes. Change the orderable part or the clock, and the row has to be recalculated.
 
 > [!WARNING]
 > A prescaler, a page size, and a voltage scale look like integers you can copy. Before changing family, recompute this page on the new clock. A prescaler such as 7.2 does not fit in the field. The register receives a neighboring integer.
@@ -244,7 +244,7 @@ Pin numbers come from the package tables already checked in chapters 23 and 24 a
 
 ## Channels, descriptors, and fault registers
 
-The first two ledgers pin clocks, bit time, and a change of family. The numbers below are already in chapters 08, 10, 14, 15, 17, 27, and 28, and in this repository's examples. A new orderable part, a new DMA request map, or a new descriptor retires the whole row.
+The first two tables cover clocks, bit time, and a change of family. The numbers below are already in chapters 08, 10, 14, 15, 17, 27, and 28, and in this repository's examples. A new orderable part, a new DMA request map, or a new descriptor means recalculating the whole row.
 
 | Ledger | Where it is pinned | The number | What it looks like when it is wrong |
 | --- | --- | --- | --- |

@@ -36,33 +36,33 @@
 
 ## 原理与适用范围
 
-这一章的 DMA 结论只钉在订货号 STM32F103C8T6 上。通道号和半字账整格照抄附录 D。
+本章的数字都按 STM32F103C8T6 算，通道号和半字换算与附录 D 一致。
 
-这颗中密度有一个 DMA，7 条通道。分类表里「DMA2（5 通道，大容量）」在 STM32F103C8T6 上作废。见 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。F4 的 Stream 和 Channel 是另一本手册：USART1_RX 在 DMA2 Stream 5、Channel 4，FIFO 是 4 个 32 位字。把这组号写进 C8，计数器不动。见 [RM0090](#source-rm0090)。不改那条已有对象。
+C8 是中密度，只有一个 DMA1，共 7 条通道，没有 DMA2。资料里「DMA2（5 通道）」那一行属于大容量型号。见 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。F4 的 DMA 按 Stream 和 Channel 编号，USART1_RX 在 DMA2 Stream 5、Channel 4，FIFO 深 4 个 32 位字。把 F4 例程的这组编号照搬到 C8 上，配置写进去不报错，但计数器不会动。见 [RM0090](#source-rm0090)。
 
-ADC1 = DMA1 通道 1。USART1_TX = DMA1 通道 4。USART1_RX = DMA1 通道 5。四块只主张附录 D 这三行。见 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)。
+C8 上本章用到的三条请求：ADC1 走 DMA1 通道 1，USART1_TX 走 DMA1 通道 4，USART1_RX 走 DMA1 通道 5。完整映射表见 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)。
 
-缓冲区 8 个半字，`CNDTR` 读回 3：已经写入 `8 − 3 = 5` 个采样，字节数是 `5 × 2 = 10`。半传输发生在 4 个采样，也就是 8 字节，不是 4 字节。把 `CNDTR` 当成剩余字节，会把「还剩 3」读成 3 字节。这是主图的失败路径。
+`CNDTR` 数的是还没搬的数据项个数，单位跟着配置的宽度走，不是字节。缓冲区 8 个半字，`CNDTR` 读回 3，说明已经写入 `8 − 3 = 5` 个采样，也就是 `5 × 2 = 10` 字节。半传输中断在第 4 个采样触发，这时已写 8 字节，不是 4 字节。把 `CNDTR` 当成剩余字节，「还剩 3」就会被算成 3 字节，切出来的数据整体错位。
 
-计数归零后硬件重装 `CNDTR`。`长度 − CNDTR` 不是累计进度。位置仍用回调里的 `Size` 和 `old_pos`，这句与附录 A 同一笔，不改附录 A。
+循环模式下计数归零后硬件会重装 `CNDTR`，所以 `长度 − CNDTR` 只是本圈的位置，不是累计进度。要知道写到哪里，用回调里的 `Size` 和上次记下的 `old_pos`，做法和附录 A 一致。
 
-F1 的 DMA 控制器是 AHB 主机，外设寄存器在 APB。F1 没有 D-Cache。H7 的 Cache 维护留在核心原理，不进这颗料的四块规范主张。
+F1 的 DMA 控制器是 AHB 上的主设备，外设寄存器在 APB 上。F1 没有 D-Cache，DMA 写完内存后 CPU 直接读就是新数据。H7 有 D-Cache，要先做 Cache 维护，具体在后面的核心原理里。
 
-USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重画那一帧。ADC 的采样时间留在第 09 章。
+USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 章。
 
 ## 关键插图
 
 <p align="center">
   <img src="../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节；把剩余计数当成字节会切错">
-  <br><sub>▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。失败路径把同一读数当成字节。TX 仍从第 30 脚 PA9 出去。DMA2 Stream 5 在这颗 C8 上没有计数器。出处是 [RM0008 Rev 21 第 13 章](#source-rm0008-dma) 和 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
+  <br><sub>▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。图下半部分是把同一个读数当成字节时切错的位置。TX 从第 30 脚 PA9 出去。C8 没有 DMA2，配 Stream 5 不会有计数。出处是 [RM0008 Rev 21 第 13 章](#source-rm0008-dma) 和 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
 </p>
 
 <p align="center">
   <img src="../assets/gif/dma-cndtr.gif" width="640" alt="8 个半字的缓冲区里 CNDTR 减到 3，已写 5 个采样、10 字节">
-  <br><sub>▲ 网页和公众号辅图。只播放正常路径：CNDTR 减到 3，标出已写 5 个采样、10 字节。印刷以静态主图为准。把剩余计数当成字节不在这条 GIF 上。</sub>
+  <br><sub>▲ 动图版，演示 CNDTR 从 8 减到 3，标出已写 5 个采样、10 字节。印刷版只有上面的静态图。</sub>
 </p>
 
-`dma-circular.svg` 和 `dma-ring.gif` 留在原节，标成辅图。
+循环模式的动画 `dma-circular.svg` 和 `dma-ring.gif` 在后面的核心原理里。
 
 ## 时序与状态
 
@@ -74,17 +74,17 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 | USART1_TX | DMA1 通道 4 | — | — | 第 30 脚 PA9 |
 | USART1_RX | DMA1 通道 5 | — | — | 不是 DMA2 Stream 5 |
 | ADC1 | DMA1 通道 1 | — | — | 和内存到内存示例抢这一条通道 |
-| 作废 | DMA2 Stream 5 | 这颗料上没有计数器 | — | F4 的 FIFO 是 4 个 32 位字，不证明 C8 有 DMA2 |
+| F4 编号 | DMA2 Stream 5 | C8 上不存在，计数器不动 | — | F4 的 FIFO 是 4 个 32 位字，C8 没有 FIFO |
 | 循环 | 归零后重装 | 重装后的 CNDTR | 不是累计 | `长度 − CNDTR` 不是进度 |
 
 ## 常见坑与出处
 
-| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
 | --- | --- | --- | --- | --- |
 | 半字数组后一半看起来像新数据 | 半传输被当成 4 字节 | 半传输按 4 个采样、8 字节处理 | [RM0008](#source-rm0008-dma) | `CNDTR` 数的是数据项。8 个半字里已写 5 个是 10 字节。半传输不是 4 字节 |
 | `CNDTR` 读回 3，字节数却对不上 | 剩余计数被当成字节 | 先减采样个数，再乘 2 | [RM0008](#source-rm0008-dma) | 剩余 3 个半字不是剩余 3 字节 |
-| 配了 DMA2 Stream 5，C8 上不动 | 这颗料没有 DMA2 | USART1_RX 改用 DMA1 通道 5 | [DS5319](#source-ds5319-dma) | 这颗中密度只有一个 7 通道的 DMA1。DMA2 在 C8 上作废 |
-| 对照 F4 例程时通道号能对上，板上不对 | F4 的编号被写进了 C8 | F4 那一组号留在 F4 | [RM0090](#source-rm0090) | F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4 个 32 位字。这条不证明 C8 有 DMA2 |
+| 配了 DMA2 Stream 5，C8 上不动 | C8 没有 DMA2 | USART1_RX 改用 DMA1 通道 5 | [DS5319](#source-ds5319-dma) | 中密度型号只有一个 7 通道的 DMA1，没有 DMA2 |
+| 对照 F4 例程时通道号能对上，板上不对 | F4 的编号被写进了 C8 | 移植时按 RM0008 的映射表重查通道号 | [RM0090](#source-rm0090) | F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4，FIFO 是 4 个 32 位字。这些编号只在 F4 上有效 |
 | 循环模式下进度越算越大 | 用了 `长度 − CNDTR` 当累计 | 进度用回调里的写位置 | [RM0008](#source-rm0008-dma) | 计数归零后硬件重装。进度用回调里的写位置 |
 
 ## 学习目标
@@ -103,7 +103,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 
 | 项 | STM32F1（RM0008 第 13 章 DMA 控制器） | STM32F4（RM0090 第 9 章 DMA 控制器） |
 | --- | --- | --- |
-| 控制器 | DMA1（7 通道）。DMA2（5 通道）是大容量的句子，在 STM32F103C8T6 上作废 | DMA1/DMA2 各 8 个 Stream |
+| 控制器 | DMA1（7 通道）。大容量型号另有 DMA2（5 通道），STM32F103C8T6 上这一条作废 <!-- slop-lint: ignore --> | DMA1/DMA2 各 8 个 Stream |
 | 请求绑定 | 每通道固定服务若干外设（查映射表） | 每个 Stream 有 8 个 Channel，`SxCR.CHSEL` 选择 |
 | 优先级 | 通道间固定优先级 + 软件优先级 | 软件优先级 4 级 + 流编号仲裁 |
 | FIFO | 无 | 有（4×32 位），支持突发（burst） |

@@ -34,37 +34,37 @@
 <!-- /video:ch16 -->
 ## Principle and scope
 
-The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. The current cells are the DS5319 Rev 20 Table 16 typicals at 3.3 V and 25°C. See [DS5319 Table 16](#source-ds5319-pwr).
+The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. Every current below is a DS5319 Rev 20 Table 16 typical at 3.3 V and 25°C. Each number belongs to one cell of that table, and cells with different conditions do not mix. See [DS5319 Table 16](#source-ds5319-pwr).
 
 Low-power regulator, oscillators off, independent watchdog off: 14 µA. Main regulator still on, same other conditions: 24 µA. 20 µA is not a Table 16 cell. The 85°C values 200 µA and 180 µA are maximums, not typicals. 1.4 µA is `IDD_VBAT` for the backup domain with LSE and the RTC on. It is not the whole-chip Standby current.
 
-Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and RTC all off. LSI on is 3.2 µA. LSI and IWDG both on is 3.4 µA. The IWDG keeps counting in Stop and Standby, the same sentence as chapter file 11. The 14 µA cell says the independent watchdog is off. Quoting 14 µA while the IWDG is on is the failure note. Table 16 does not print a separate Stop-plus-IWDG microamp, so this chapter does not invent one. See [RM0008 watchdog](#source-rm0008-wdg).
+Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and RTC all off. LSI on is 3.2 µA. LSI and IWDG both on is 3.4 µA. Once started, the IWDG cannot be stopped and keeps counting in Stop and Standby (chapter 11). The 14 µA cell assumes the independent watchdog is off, so you cannot quote 14 µA with the IWDG running. Table 16 gives no Stop-plus-IWDG figure; measure it with a current meter if you need it. See [RM0008 watchdog](#source-rm0008-wdg).
 
 Sleep at 72 MHz is 14.4 mA typical with every peripheral on, and 5.5 mA typical with every peripheral off, still at 25°C and 3.3 V.
 
 After Stop exits, the system clock is the 8 MHz HSI, not 16 MHz and not 72 MHz. See [RM0008 clocks](#source-rm0008-rcc). Table 26's 5.4 µs is the low-power-regulator cell, from the wake event to the first user instruction, still on that 8 MHz clock. The main-regulator cell is 3.6 µs. Sleep is 1.8 µs and keeps the clock from before the sleep. Standby is 50 µs to the first instruction, then the reset path. The PLL lock maximum is 200 µs. Do not add it to 5.4 µs and call the sum the wake-up time.
 
-PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The normal path restores the PLL to 72 MHz before the next byte, and the line is 115200 again. See [RM0008 USART](#source-rm0008-usart). Do not redraw the chapter 06 frame.
+PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The fix is to restore the PLL to 72 MHz after waking and before the next byte; the line is then 115200 again. See [RM0008 USART](#source-rm0008-usart). The frame format is the one from chapter 06.
 
 Sleep keeps the clock from before the sleep. The tick in `examples/freertos-task` is 1000 Hz, which is 1 ms. Left at that rate, Sleep wakes every 1 ms. SysTick does not tick during Stop. See [examples in this repo](#source-project-examples).
 
-With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). The 270 Ω lamp from chapter file 03 and ADC12_IN0 from chapter file 09 are other uses of this pin. This chapter does not connect them at the same time.
+With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). Chapter 03 hangs a 270 Ω lamp on this pin and chapter 09 uses it as ADC12_IN0. For this chapter's lab, connect only the wake-up key.
 
-The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11 alarm: 32.768 kHz, PRL = 32767. See [RM0008 RTC](#source-rm0008-rtc).
+The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapter 11 RTC alarm: LSE at 32.768 kHz, PRL = 32767, a 1 Hz second counter. See [RM0008 RTC](#source-rm0008-rtc).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-wake.svg" width="760" alt="Stop with the low-power regulator is 14 µA typical. Wake-up is the 8 MHz HSI. Leaving 0x271 in place produces 12800 bit/s.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The normal path is SLEEPDEEP=1, PDDS=0, 14 µA at 3.3 V and 25°C with the IWDG off, the first instruction on the 8 MHz HSI after 5.4 µs, then the PLL back at 72 MHz so 0x271 is 115200 again. The failure path leaves that same 0x271 on 8 MHz and gets 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The top band is the correct sequence: SLEEPDEEP=1 and PDDS=0 enter Stop at 14 µA (3.3 V, 25°C, IWDG off); 5.4 µs after the wake event the first instruction runs on the 8 MHz HSI, then the PLL returns to 72 MHz and 0x271 means 115200. The middle band forgets to restore the clock: the same 0x271 on 8 MHz gives only 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/stop-wake.gif" width="640" alt="Wake from Stop, move the clock from the 8 MHz HSI back to 72 MHz, then mark 115200">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: wake from Stop, move from 8 MHz back to 72 MHz, and mark 115200. Print from the static figure. 12800 and 24 µA are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the correct sequence: wake from Stop, go from 8 MHz back to 72 MHz, and mark 115200. The printed book has only the static figure above.</sub>
 </p>
 
-`lowpower-wakeup.svg` stays as an auxiliary figure. Do not play it for 14 µA, 8 MHz, or 12800. Those are on the static figure.
+The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. Take the numbers from the static figure above.
 
 ## Timing and state
 
@@ -83,20 +83,20 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 | Standby, `PDDS=1` | restart from the reset vector; 50 µs to the first instruction | right |
 | Standby current | 2 µA only with LSI, IWDG, LSE, and RTC off; LSI on is 3.2 µA; IWDG on as well is 3.4 µA | do not write 2 to 3 µA |
 | Backup domain | 1.4 µA with LSE and the RTC on | not whole-chip Standby |
-| Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | not drawn as a lamp and an ADC at the same time |
+| Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | no lamp or ADC input on it meanwhile |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The manual folds the two Stop cells into one range | Two cells were folded into one range | Write 14 µA for the low-power regulator and 24 µA for the main regulator | [DS5319](#source-ds5319-pwr) | Both cells are typicals at 3.3 V and 25°C, with the independent watchdog off. 20 µA is not a Table 16 cell |
 | Standby is quoted as 2 to 3 µA | Three cells were folded into one range | Write 2 µA, 3.2 µA, or 3.4 µA according to LSI and IWDG | [DS5319](#source-ds5319-pwr) | The 2 µA cell requires LSI, IWDG, LSE, and RTC all off. 1.4 µA is the backup domain, not the whole chip |
 | The first UART frame after wake is garbage | The clock is still HSI while BRR was computed for 72 MHz | Call `SystemClock_Config()` before the next byte | [RM0008 USART](#source-rm0008-usart) | With the HSI at 8 MHz and BRR still `0x271`, the baud rate is 12800. 115200 is the 72 MHz cell |
-| A comment writes two HSI frequencies onto this part | Another family's 16 MHz was written onto this part | Write 8 MHz on this part | [RM0008 clocks](#source-rm0008-rcc) | The F1 power-up HSI is 8 MHz. 16 MHz is void on the C8 |
+| A comment gives the HSI two frequencies | Another family's 16 MHz was written onto the F103 | Write 8 MHz on the F103 | [RM0008 clocks](#source-rm0008-rcc) | The F1 power-up HSI is 8 MHz. 16 MHz is the HSI of the F4 and others |
 | Sleep current will not fall, and the comment says once per second | The tick was left at 1000 Hz | That is every 1 ms, not once per second. Suspend the tick before Sleep | [examples in this repo](#source-project-examples) | `examples/freertos-task` documents a 1000 Hz tick, 1 ms. This row does not show that SysTick keeps ticking during Stop |
-| The F4 periodic wake API was called | This part does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
-| 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Do not invent a Stop-plus-IWDG microamp |
-| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP. This row does not draw the 270 Ω lamp as active at the same time |
+| The F4 periodic wake API was called | The F103 does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
+| 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Table 16 has no Stop-plus-IWDG figure |
+| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP |
 
 ## Learning goals
 

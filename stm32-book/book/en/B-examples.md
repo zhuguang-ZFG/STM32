@@ -21,7 +21,7 @@ An example is not finished when it compiles. Each one needs an observable result
 
 ## Four rows to match before you run the list
 
-Before the order in the table, match these four rows to the first two ledgers at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
+Before the order in the table, match these four rows to the first two tables at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
 
 | Example | Match this first | What a mismatch means |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ Before the order in the table, match these four rows to the first two ledgers at
 
 ## Three more rows for the channel and the descriptor
 
-The four rows above match clocks and bit time. These three are in the third ledger of [Appendix D](#appendix-glossary). They match a request number, a descriptor length, and the unit of a stack.
+The four rows above match clocks and bit time. These three are in the third table of [Appendix D](#appendix-glossary). They match a request number, a descriptor length, and the unit of a stack.
 
 | Example | Match this first | What a mismatch means |
 | --- | --- | --- |
