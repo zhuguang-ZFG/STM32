@@ -105,7 +105,7 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 | --- | --- | --- |
 | Signal wires | SWCLK, SWDIO (2 wires) | TCK, TMS, TDI, TDO (4 wires, plus optional TRST) |
 | Pins used | Few (PA13 / PA14) | Many (PB3 / PB4 / PA15, plus PA13 / PA14) |
-| Speed | Fast (can reach 10+ MHz) | Fast |
+| Speed | Fast; the ceiling depends on the probe and the wiring | Fast |
 | Several devices | No daisy chain | Supported |
 | Typical tools | ST-Link, J-Link, DAPLink | J-Link, older JTAG probes |
 | STM32 support | Supported, recommended | Supported, but rarely used |
@@ -113,7 +113,7 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 > [!WARNING]
 > After reset, STM32 keeps **PA13 (SWDIO) and PA14 (SWCLK)** for the debug port by default. If you configure them as ordinary GPIO and turn debug off, you get "I programmed it and now I cannot connect." Leave `SWD` enabled, or keep a fallback through `HAL_DBGMCU`.
 
-"Up to 10+ MHz" is a common probe-vendor figure. Neither DS5319 nor PM0056 states it, so the sections above do not quote it. The same goes for "2 to 4" data watchpoints.
+ST's manuals do not give a top speed for SWD. The usual 4 MHz or 10 MHz figures are the probe vendors' own ratings. Turn it down when the jumper wires get long.
 
 ### 2. SWO / ITM / printf tracing
 
@@ -122,7 +122,7 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 | Mechanism | What it is |
 | --- | --- |
 | ITM (Instrumentation Trace Macrocell) | A trace unit inside the core. It can drive 32 channels (port 0 is the usual printf port) |
-| SWO (Serial Wire Output) | Reuses the SWD physical connection and adds an ITM output (you need 3-wire SWD plus SWO) |
+| SWO (Serial Wire Output) | One more wire on top of the two SWD wires, PB3 on the F103, that carries the ITM data out |
 | `ITM_SendChar` | The low-level function you redirect `printf` to |
 | What you need first | A debugger that supports SWO (ST-Link V2-1 or J-Link), and the SWO clock configured in the IDE |
 
