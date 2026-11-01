@@ -324,7 +324,7 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 On F1, the MCO field in `RCC_CFGR` selects SYSCLK / HSI / HSE / PLL÷2. When the APB prescaler is greater than 1, the timer clock is ×2 again. The 72 MHz in that figure is already the doubled number.
 
-When the family changes, peripheral base addresses change. Use the CMSIS macros and do not hard-code them. This sentence adds no new register value and does not enter a source card.
+When the family changes, peripheral base addresses change. Use the CMSIS macros and do not hard-code them.
 
 Motto: **turn the clock on before you touch a register. If HSE drops, CSS catches it. If you want to see the frequency, use MCO.**
 

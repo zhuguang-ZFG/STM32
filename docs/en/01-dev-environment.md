@@ -43,7 +43,7 @@ With BOOT0=0, what the CPU reads at `0x00000000` is an alias of Flash at `0x0800
 
 BOOT1=0 and BOOT0=1: the CPU still reads `0x00000000` and gets system memory at `0x1FFFF000`. The program in Flash is still there. It is just not being fetched. SRAM boot needs BOOT1=1 and BOOT0=1, from `0x20000000`. So "BOOT0=1 means SRAM" is wrong; it depends on BOOT1. Alias: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
 
-Unprotected readout is RDP = `0xA5`, not `0xAA`. The manual prints that key as `0x00A5`. The low byte is still `0xA5`. Clearing protection mass-erases main Flash. F4 notes often show `0xAA` (unprotected) and `0xCC` (permanent protection); carried over to the C8 those values are void, because F1 does not use them. If the tool only shows Level 0, the byte actually written to the option bytes is `0xA5`. See [PM0075](#source-pm0075-rdp).
+Unprotected readout is RDP = `0xA5`, not `0xAA`. The manual prints that key as `0x00A5`. The low byte is still `0xA5`. Clearing protection mass-erases main Flash. F4 notes often show `0xAA` (unprotected) and `0xCC` (permanent protection); on the C8 those values mean nothing, because F1 does not use them. If the tool only shows Level 0, the byte actually written to the option bytes is `0xA5`. See [PM0075](#source-pm0075-rdp).
 
 The C8 has 64 KB of Flash and 20 KB of SRAM. 128 KB is the F103CB (xB); do not copy it. The linker script says `LENGTH = 64K` and `LENGTH = 20K` to match.
 

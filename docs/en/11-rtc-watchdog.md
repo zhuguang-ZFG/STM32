@@ -49,7 +49,7 @@ The C8 is medium-density, with ten 16-bit backup data registers, 20 bytes. The f
 
 The IWDG keeps counting in Stop and Standby. It can be frozen while debugging with the chapter's `__HAL_DBGMCU_FREEZE_IWDG()`. RM0008 §19.3.3 prints only the configuration bit name `DBG_IWDG_STOP`, with no bit number. In the option bytes, `WDG_SW = 0` starts the watchdog in hardware at power-up and software cannot stop it; `WDG_SW = 1` leaves the start to software. See [PM0075](#source-pm0075-rdp).
 
-While the LSE uses pins 3 and 4, those pins cannot be GPIO. If PC13 is still the heartbeat LED, chapter 03's rule holds: it can only sink, and writing 0 turns it on. On a high-density part or an F4 the backup-register count above no longer applies (it is void there); look it up in that part's manual. <!-- slop-lint: ignore -->
+While the LSE uses pins 3 and 4, those pins cannot be GPIO. If PC13 is still the heartbeat LED, chapter 03's rule holds: it can only sink, and writing 0 turns it on. On a high-density part or an F4 the backup-register count above no longer applies; look it up in that part's manual.
 
 ## Key figures
 
@@ -107,7 +107,7 @@ The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time af
 
 | Clock source | Frequency | Accuracy | Pins used | Fits |
 | --- | --- | --- | --- | --- |
-| LSE (external 32.768 kHz crystal) | 32.768 kHz | Set by the crystal. ±20 ppm stays out of the four blocks | PC14 / PC15 | When the time has to be right |
+| LSE (external 32.768 kHz crystal) | 32.768 kHz | Set by the crystal, often ±20 ppm; check the crystal's datasheet | PC14 / PC15 | When the time has to be right |
 | LSI (internal RC) | 30 kHz minimum, 40 kHz typical, 60 kHz maximum | Table 25's range, not ±50% | None | Saving pins, or wake-up only |
 | HSE/128 (main crystal divided) | 8 MHz / 128 | Depends on the HSE | Uses the HSE | You already have a precise main crystal |
 | RTC prescaler | — | Set by `PRL` | — | Divides the source down to 1 Hz |
@@ -172,7 +172,7 @@ An early feed does not reset the IWDG. An early feed that resets is the window w
 | Any | Watchdog | No pin | Entirely on-chip |
 
 > [!WARNING]
-> Choose the load capacitors from the crystal manual. The four blocks do not write a picofarad. Too much capacitance can keep the LSE from starting.
+> Choose the load capacitors from the crystal manual. Too much capacitance can keep the LSE from starting.
 
 ## Code
 
@@ -242,7 +242,7 @@ static void MX_IWDG_Init(void)
 {
     hiwdg.Instance       = IWDG;
     hiwdg.Init.Prescaler = IWDG_PRESCALER_64;   /* LSI ≈ 40 kHz / 64 = 625 Hz */
-    hiwdg.Init.Reload    = 4095;                /* timeout (4095 + 1) / 625 = 6.5536 s. The four blocks' main ledger is still the 1 second at Reload 624 */
+    hiwdg.Init.Reload    = 4095;                /* timeout (4095 + 1) / 625 = 6.5536 s. The 1 second timeout earlier in the chapter uses Reload 624 */
     HAL_IWDG_Init(&hiwdg);
 }
 

@@ -156,7 +156,7 @@ For STM32F1: R_ADC ≈ 1 kΩ, C_ADC ≈ 8 pF, N = 12 → ln(2^14) ≈ 9.7
 
 The 1 µs that RM0008 prints at 14 MHz and 1.5 cycles is the example with the ADC clock at its limit. 71.5 cycles is 5.958 µs at 12 MHz, short of the 17.1 µs the temperature channel needs. All times in this chapter use 12 MHz. The F4 column “t_s + 12 cycles” in the comparison table does not apply to the F103.
 
-During a scan, a high-impedance channel can pick up the previous channel if that capacitor has not finished discharging. Lengthen the sample, or insert a gap in the sequence. This sentence does not enter a source card.
+During a scan, a high-impedance channel can pick up the previous channel if that capacitor has not finished discharging. Lengthen the sample, or insert a gap in the sequence.
 
 On F1, `SMPx[2:0]` can be 1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5 ADCCLK cycles (see RM0008, Chapter 11, ADC, "Channel-wise programmable sampling time"). **The higher the source impedance, the longer the sample time has to be.** Otherwise the reading sits low and wobbles.
 

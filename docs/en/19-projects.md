@@ -275,7 +275,7 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 ```c
 /* Parameter block: the slot that is valid now, and any upgrade request */
 typedef struct {
-    uint32_t magic;       /* 0x5A5A0001 means valid. The number stays in this draft. It is not a chapter 12 key, and it does not enter a source card. The C8 has no second slot. */
+    uint32_t magic;       /* 0x5A5A0001 means valid. This marker is made up for this project and has nothing to do with the chapter 12 Flash unlock keys. With the chapter 12 layout, the C8 has room for only one APP slot. */
     uint32_t active;      /* 0 = slot A, 1 = slot B */
     uint32_t pending;     /* the slot requested for the switch */
     uint32_t app_size[2];
@@ -354,7 +354,7 @@ void WS2812_Encode(const uint8_t *grb, uint16_t n)
 **Key code**:
 
 ```c
-/* 64 * 1024 = 65536, which is larger than the C8 SRAM of 20480 bytes. This array is void on STM32F103C8T6. This note does not invent an F411 or F407 SRAM size. */
+/* 64 * 1024 = 65536, which is larger than the C8 SRAM of 20480 bytes. This array does not fit on STM32F103C8T6; it needs a part with more SRAM. */
 #define LA_DEPTH  (64 * 1024)
 static uint8_t la_buf[LA_DEPTH];
 static volatile uint32_t la_wr = 0;

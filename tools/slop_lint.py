@@ -164,7 +164,20 @@ RULES["审稿用语"] = [
     r"\bfailure path on the key figure\b",
     r"\bclaim this source may support\b",
     r"\bdo(es)? not invent\b",
+    r"\b(are|as) void\b",
 ]
+
+# 写作规范里对章节结构的叫法。贡献者文档可以用，正文里读者看不懂。
+RULES["结构行话"] = [
+    r"四块",
+    r"出处卡",
+    r"主账",
+    r"\bfour blocks\b",
+    r"\bsource cards?\b",
+    r"\bmain ledger\b",
+]
+# 写给贡献者的文档，结构行话在这里是正当用法。
+META_DOCS = {"CREDITS.md", "CONTENT_GUIDE.md", "CHANGELOG.md"}
 
 # Decisions belong in words, so a glyph never carries a table cell or a
 # callout. The book build reads GitHub alert syntax for warnings.
@@ -217,6 +230,8 @@ def scrub(line: str) -> str:
 
 def lint(text: str, path: str, house_style: bool = True) -> list[Hit]:
     groups = dict(RULES)
+    if Path(path).name in META_DOCS:
+        groups.pop("结构行话")
     if house_style:
         groups |= HOUSE_STYLE
     compiled = {
@@ -244,7 +259,14 @@ def lint(text: str, path: str, house_style: bool = True) -> list[Hit]:
                         Hit(path, line_no, "代码块没写语言", raw.strip(), raw.strip())
                     )
             continue
-        if in_fence or muted or IGNORE_LINE.search(raw):
+        if muted or IGNORE_LINE.search(raw):
+            continue
+        if in_fence:
+            # 代码注释也是写给读者的，只查审稿用语。
+            for name in ("审稿用语", "结构行话"):
+                for pattern in compiled.get(name, []):
+                    for found in pattern.finditer(raw):
+                        hits.append(Hit(path, line_no, name, found.group(), raw.strip()))
             continue
 
         if HEADING_EMOJI.match(raw) and not HEADING_EMOJI_OK.search(raw):

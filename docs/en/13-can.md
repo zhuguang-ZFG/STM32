@@ -167,7 +167,7 @@ On **F1, APB1 = 36 MHz**:
 | 125 kbps | 36 | 5 Tq | 2 Tq | 75% | Long cable |
 | 100 kbps | 45 | 5 Tq | 2 Tq | 75% | 36 MHz / (45×8) = 100 kHz |
 
-> A 70% sample point (BS1=6, BS2=3, 10 TQ) wants a prescaler of 7.2 for 500 kbit/s. That is not an integer. The table uses 8 TQ and a 75% sample point, which divides evenly. [`examples/can-bxcan`](../../examples/can-bxcan/) uses the 500 kbit/s row. The 1 Mbps row samples at 66.7%. The sentence "sample around 75% to 87.5%" does not cover that row. The four sections use only the 500 kbit/s working point.
+> A 70% sample point (BS1=6, BS2=3, 10 TQ) wants a prescaler of 7.2 for 500 kbit/s. That is not an integer. The table uses 8 TQ and a 75% sample point, which divides evenly. [`examples/can-bxcan`](../../examples/can-bxcan/) uses the 500 kbit/s row. The 1 Mbps row samples at 66.7%. The sentence "sample around 75% to 87.5%" does not cover that row. The opening sections of this chapter use only the 500 kbit/s working point.
 
 > **SJW** absorbs clock error between nodes, usually 1–2 Tq. Different sample points are the first cause of flaky multi-node links. Every node must match.
 
