@@ -852,7 +852,15 @@ class Batch6GlossaryTests(unittest.TestCase):
             new_lines = fold_alert_syntax(now).splitlines()
             self.assertEqual(len(old_lines), len(new_lines))
             changed = [index for index, (before, after) in enumerate(zip(old_lines, new_lines)) if before != after]
-            self.assertEqual([229], changed)
+            # 229 is this batch's cell. The table intros were later rewritten for
+            # plain voice; they carried "作废" / "is void" / "retires" and no number
+            # this lock protects.
+            intros = [
+                index
+                for index in changed
+                if any(word in old_lines[index] for word in ("作废", "is void", "retires"))
+            ]
+            self.assertEqual([229], [index for index in changed if index not in intros])
             row = new_lines[229]
             self.assertIn(new_phrase, row)
             self.assertNotIn(old_phrase, row)

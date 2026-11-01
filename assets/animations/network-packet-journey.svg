@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="一条 MQTT 消息怎样穿过 STM32 网络栈">
+<title>一条 MQTT 消息怎样穿过 STM32 网络栈</title>
 <style>
 @keyframes net0-sq{0%,0.00%{opacity:0.42}0.30%,11.71%{opacity:1.0}12.01%,100%{opacity:0.42}}
 .net0{animation:net0-sq 7.0s linear infinite;}
@@ -16,6 +17,7 @@
 .net6{animation:net6-sq 7.0s linear infinite;}
 
 .net-flow{stroke-dasharray:4 7;animation:net-flow-flow 1.0s linear infinite;}@keyframes net-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

@@ -53,6 +53,13 @@ class SlopLintDetectorTests(unittest.TestCase):
         self.assertIn("警告请用 > [!WARNING]", self.groups("> ⚠️ 不要关掉 SWD。"))
         self.assertIn("装饰性 emoji", self.groups("- 📱 手机阅读版：链接"))
 
+    def test_catches_notes_written_for_a_reviewer(self) -> None:
+        self.assertIn("审稿用语", self.groups("这一章的结论只钉在 STM32F103C8T6 上。"))
+        self.assertIn("审稿用语", self.groups("换到 F4 时，这一句作废。"))
+        self.assertIn("审稿用语", self.groups("| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |"))
+        self.assertIn("审稿用语", self.groups("The working point is copied whole from Appendix D."))
+        self.assertNotIn("审稿用语", self.groups("本章的数字都按 STM32F103C8T6 算。"))
+
     def test_catches_emoji_in_headings(self) -> None:
         self.assertIn("标题里的 emoji", self.groups("## 📌 学习目标"))
         self.assertIn("标题里的 emoji", self.groups("## 🧠 核心原理"))

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="USB 设备枚举的 7 个步骤">
+<title>USB 设备枚举的 7 个步骤</title>
 <style>
 @keyframes p0-mv{0%,100%{opacity:.15}0%,12%{opacity:1}}.p0{animation:p0-mv 4.2s linear infinite;}
 @keyframes p1-mv{0%,100%{opacity:.15}13%,25%{opacity:1}}.p1{animation:p1-mv 4.2s linear infinite;}
@@ -7,6 +8,7 @@
 @keyframes p4-mv{0%,100%{opacity:.15}52%,64%{opacity:1}}.p4{animation:p4-mv 4.2s linear infinite;}
 @keyframes p5-mv{0%,100%{opacity:.15}65%,77%{opacity:1}}.p5{animation:p5-mv 4.2s linear infinite;}
 @keyframes p6-mv{0%,100%{opacity:.15}78%,90%{opacity:1}}.p6{animation:p6-mv 4.2s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

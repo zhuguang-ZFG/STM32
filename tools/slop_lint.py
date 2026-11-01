@@ -133,6 +133,32 @@ RULES: dict[str, list[str]] = {
     ],
 }
 
+# Notes written for a reviewer rather than a reader: which figure is "main",
+# what was deliberately left out, what a source is "allowed" to support.
+# A reader needs the fact and the condition, not the bookkeeping.
+RULES["审稿用语"] = [
+    r"只钉在",
+    r"整格照抄",
+    r"不另(开|算)一套",
+    r"不画进",
+    r"留在核心原理",
+    r"放在旁注",
+    r"主图的失败路径",
+    r"该来源允许支持的主张",
+    r"不编(一个|一块|位号|[^。，]{0,8}(基址|地址|容量|皮法|周期数|微安|BRR))",
+    # 「清洁或作废」是 Cache invalidate 的译法，是术语。
+    r"(?<!清洁或)作废",
+    # 附录 A 逐字锁定，那里的 "numbers are pinned to" 指工作点，不算。
+    r"\b(conclusions?|ledgers?|tables?|chapter)\b[^.]{0,40}\bpinned to\b",
+    r"\bcopied whole\b",
+    r"\bis void\b",
+    r"\bsecond ledger\b",
+    r"\bstays? in the core ideas\b",
+    r"\bfailure path on the key figure\b",
+    r"\bclaim this source may support\b",
+    r"\bdo(es)? not invent\b",
+]
+
 # Decisions belong in words, so a glyph never carries a table cell or a
 # callout. The book build reads GitHub alert syntax for warnings.
 HOUSE_STYLE: dict[str, list[str]] = {

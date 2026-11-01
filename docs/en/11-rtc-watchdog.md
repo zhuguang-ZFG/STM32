@@ -35,35 +35,35 @@
 
 ## Principle and scope
 
-The watchdog and RTC conclusion in this chapter is pinned to order code STM32F103C8T6. The 1 second is copied whole from Appendix D: prescaler 64, Reload = 624, and LSI taken as a typical 40 kHz gives 625 Hz. The LSI range is Table 25's 30 / 40 / 60 kHz. Do not call 40 kHz a guarantee.
+Every number in this chapter is for the STM32F103C8T6. The IWDG 1 second matches Appendix D: prescaler 64, Reload = 624, LSI at its typical 40 kHz, which counts at 625 Hz. LSI is an on-chip RC oscillator, and Table 25 gives its range as 30 / 40 / 60 kHz (min / typical / max), so this 1 second is only typical.
 
-`T = 64 / 40000 × (624 + 1) = 1` s. Reload written as 625 makes `(625 + 1) / 625` one extra count. The same prescaler and reload: at LSI = 30 kHz, `64 / 30000 × 625 = 4/3` s; at LSI = 60 kHz, `64 / 60000 × 625 = 2/3` s, half of the 30 kHz case. Appendix D says "about half" because 30 kHz and 60 kHz are the ends of the manual range, not a measurement of every part. The "about 26 s" longest step stays with Appendix D. Do not invent a guaranteed maximum. The independent watchdog resets only when the counter reaches 0. An early feed does not reset it. See [RM0008 Rev 21 chapter 19](#source-rm0008-wdg) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).
+`T = 64 / 40000 × (624 + 1) = 1` s. Reload written as 625 adds one count: `(625 + 1) / 625` s. With the same prescaler and reload, LSI = 30 kHz gives `64 / 30000 × 625 = 4/3` s and LSI = 60 kHz gives `64 / 60000 × 625 = 2/3` s, exactly half the 30 kHz figure. Appendix D says "about half" because 30 kHz and 60 kHz are the ends of the datasheet range, not a measurement of any one part. The longest step is about 26 s, also from Appendix D; the manual gives no guaranteed maximum. The independent watchdog resets only when the count reaches 0. An early feed does not reset it. See [RM0008 Rev 21 chapter 19](#source-rm0008-wdg) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).
 
-The window watchdog resets on both an early feed and a late feed. PCLK1 = 36 MHz, prescaler 8, counter `0x7F`: the timeout is `(1/36e6) × 4096 × 8 × 64 = 58.25` ms. With window `0x50`, feeding while the counter is still above `0x50` resets immediately. That is a margin note, not the IWDG waveform.
+The window watchdog (WWDG) is different: it resets on an early feed and on a late one. With PCLK1 = 36 MHz, prescaler 8, and the counter starting at `0x7F`, the timeout is `(1/36e6) × 4096 × 8 × 64 = 58.25` ms. With the window at `0x50`, feeding while the counter is still above `0x50` resets at once.
 
-If a fragment keeps Reload = 4095, write the timeout as `(4095 + 1) / 625 = 6.5536` s. The hands-on "about 6.5 s" may stay. It does not enter the four blocks' main ledger. The key figure draws only the 624 second.
+Some code fragments set Reload to its maximum, 4095. The timeout is then `(4095 + 1) / 625 = 6.5536` s, which is the "about 6.5 s" in the labs. Everywhere else this chapter works with the 624 second.
 
-LSE is 32.768 kHz, entering on pin 3 PC14-OSC32_IN and pin 4 PC15-OSC32_OUT. PRL = 32767 makes `(32767 + 1)` divide 32768 Hz into 1 Hz. PRL = 32768 is not 1 Hz. That is the RTC failure path. A typical 40 kHz LSI has no integer PRL that stays 1 Hz across 30–60 kHz. The backup domain is kept by pin 1 VBAT after the main supply disappears. Before a write, enable the PWR and BKP clocks and set DBP in `PWR_CR`. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc).
+The RTC runs from the LSE crystal, 32.768 kHz, on pin 3 PC14-OSC32_IN and pin 4 PC15-OSC32_OUT. The RTC divides by `(PRL + 1)`, so PRL = 32767 turns 32768 Hz into 1 Hz, and PRL = 32768 does not. A typical 40 kHz LSI that drifts anywhere in 30–60 kHz has no integer PRL that gives a steady 1 Hz, so an accurate RTC needs the LSE. When the main supply is gone, pin 1 VBAT powers the backup domain. Before writing it, enable the PWR and BKP clocks and set DBP in `PWR_CR`. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc).
 
-This medium-density part has ten 16-bit backup data registers, 20 bytes. Forty-two is the high-density sentence and is void on the C8. F4's twenty 32-bit backup registers and the BCD `TR`/`DR` are void on this part. Software turns the 32-bit second counter into a calendar. That sentence is supported by "this part is a 32-bit counter and ten 16-bit registers". Do not open an F4 RTC id.
+The C8 is medium-density, with ten 16-bit backup data registers, 20 bytes. The figure of 42 in some references is for high-density parts. The F4 RTC is a different design: twenty 32-bit backup registers and a calendar kept in BCD in `TR`/`DR`. The F103 RTC has only a 32-bit seconds counter, and software works out the date.
 
-The IWDG keeps counting in Stop and Standby. It can be frozen while debugging, using the chapter's `__HAL_DBGMCU_FREEZE_IWDG()`. The configuration bit name printed in RM0008 §19.3.3 is `DBG_IWDG_STOP`. Do not invent a bit number. `WDG_SW = 0` means the hardware watchdog takes over at power-up and software cannot turn it off. `WDG_SW = 1` is the software watchdog. That sentence links [PM0075](#source-pm0075-rdp) and is not expanded in chapter 01.
+The IWDG keeps counting in Stop and Standby. It can be frozen while debugging with the chapter's `__HAL_DBGMCU_FREEZE_IWDG()`. RM0008 §19.3.3 prints only the configuration bit name `DBG_IWDG_STOP`, with no bit number. In the option bytes, `WDG_SW = 0` starts the watchdog in hardware at power-up and software cannot stop it; `WDG_SW = 1` leaves the start to software. See [PM0075](#source-pm0075-rdp).
 
-While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the heartbeat LED, keep chapter 03's rule: it can only sink, and writing 0 turns it on. Do not redraw that LED figure.
+While the LSE uses pins 3 and 4, those pins cannot be GPIO. If PC13 is still the heartbeat LED, chapter 03's rule holds: it can only sink, and writing 0 turns it on. On a high-density part or an F4 the backup-register count above no longer applies (it is void there); look it up in that part's manual. <!-- slop-lint: ignore -->
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-11-iwdg-1s.svg" width="760" alt="Reload 624 is 1 second at a typical 40 kHz; reset happens only at 0; LSE needs PRL = 32767 for 1 Hz">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. LSI is typically 40 kHz and spans 30–60 kHz. Prescaler 64, a 625 Hz count, and Reload = 624 are a 1 second ledger at the typical value, not a guarantee, when the dog is fed before zero. The failure is reaching 0, or writing Reload as 625. The backup strip is pin 1 VBAT, pin 3 PC14, pin 4 PC15, 32.768 kHz, PRL = 32767, and ten 16-bit registers. PRL = 32768 is not 1 Hz. The window watchdog resets if fed while the counter is above 0x50, on a 58.25 ms scale. Sources: [DS5319 Rev 20 Table 25 and sections 2.3.14 and 2.3.15](#source-ds5319-rtc) and [RM0008 Rev 21 chapter 19](#source-rm0008-wdg).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. LSI is typically 40 kHz and spans 30–60 kHz. Prescaler 64, a 625 Hz count, and Reload = 624 give a 1 second timeout at the typical value, not a guarantee, when the dog is fed before zero. The marked faults are reaching 0 and writing Reload as 625. The backup strip shows pin 1 VBAT, pin 3 PC14, pin 4 PC15, 32.768 kHz, PRL = 32767, and ten 16-bit registers. PRL = 32768 is not 1 Hz. The window watchdog resets if fed while the counter is above 0x50, on a 58.25 ms scale. Sources: [DS5319 Rev 20 Table 25 and sections 2.3.14 and 2.3.15](#source-ds5319-rtc) and [RM0008 Rev 21 chapter 19](#source-rm0008-wdg).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/iwdg-1s.gif" width="640" alt="A 625 Hz count is fed before it reaches 0, with Reload = 624">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path: a 625 Hz count is fed before zero, marked with Reload = 624 and a typical 40 kHz. Print uses the static figure. Reaching zero, Reload = 625, and an early window-watchdog feed are not on this GIF.</sub>
+  <br><sub>▲ Animated version. A 625 Hz count is fed before it reaches zero, marked with Reload = 624 and a typical 40 kHz. The printed book has only the static figure above.</sub>
 </p>
 
-`iwdg-window.svg` stays a side figure. Do not play it for the IWDG claim. The early-feed reset belongs to the window watchdog. That sentence is in the opening caption. It does not pretend to be the IWDG on this static figure.
+The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" applies only to the WWDG; an early feed does not reset the IWDG.
 
 ## Timing and state
 
@@ -75,18 +75,18 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 | 64 | 60 kHz | 624 | 625 | 2/3 s | About half of the 30 kHz case |
 | RTC | 32768 Hz | PRL = 32767 | 32768 | 1 Hz | The divider is (PRL + 1) |
 | RTC failure | 32768 Hz | PRL = 32768 | 32769 | not 1 Hz | Change it to 32767 |
-| Backup registers | — | ten 16-bit | 20 bytes | Pin 1 VBAT keeps them | 42 is void on the C8 |
+| Backup registers | — | ten 16-bit | 20 bytes | Pin 1 VBAT keeps them | 42 is the high-density count |
 | WWDG | PCLK1 = 36 MHz | prescaler 8, counter `0x7F` | — | 58.25 ms | Feeding above `0x50` resets |
 | Comparison | 64 | 4095 | 4096 | 6.5536 s | Does not replace Reload 624 |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | A 1 second computed at 40 kHz runs short or long on the board | 40 kHz is only typical | Use Reload 624 and leave margin for 30–60 kHz | [DS5319](#source-ds5319-rtc) | Table 25 prints fLSI as 30 / 40 / 60 kHz. 40 kHz is typical. That second is not a guarantee |
 | Reload written as 625 times out one count past 1 second | The +1 was applied to the wrong side | Change it to 624 | [RM0008](#source-rm0008-wdg) | Prescaler 64 at 40 kHz counts at 625 Hz. Time uses `(Reload + 1)`. 625 is one extra count |
 | The independent watchdog resets as soon as it is fed, as if it had a window | It was treated as the window watchdog | An early feed is allowed for the IWDG. Use the WWDG for a window | [RM0008](#source-rm0008-wdg) | The IWDG resets only at 0. The WWDG also resets when fed while the counter is above the window. At 36 MHz, `0x7F` and prescaler 8 time out in 58.25 ms |
-| The calendar returns to zero when the main supply drops | The backup domain was not kept, or PRL is wrong | Connect pin 1 VBAT, use pins 3 and 4 for LSE, and write PRL 32767 | [DS5319](#source-ds5319-rtc) | Ten 16-bit backup registers are kept by VBAT. The default 1 second comes from 32.768 kHz. 42 is void on this part |
+| The calendar returns to zero when the main supply drops | The backup domain was not kept, or PRL is wrong | Connect pin 1 VBAT, use pins 3 and 4 for LSE, and write PRL 32767 | [DS5319](#source-ds5319-rtc) | Ten 16-bit backup registers are kept by VBAT. The default 1 second comes from 32.768 kHz. The C8 has 10, not 42 |
 | A prescaler of 32768 makes the second pulse slow | The divider is (PRL + 1) | Change it to 32767 | [RM0008](#source-rm0008-rtc) | The divider is `(PRL + 1)`. 32768 Hz is 1 Hz only when written as 32767 |
 | The part resets by itself after a breakpoint | The counter kept running in debug | Freeze the IWDG while debugging | [RM0008](#source-rm0008-wdg) | §19.3.3 prints the configuration bit name `DBG_IWDG_STOP`. The independent watchdog can be frozen while debugging. No bit number is given |
 | Option bytes make the watchdog run from power-up and software cannot stop it | `WDG_SW` is 0 | 0 is the hardware watchdog and 1 is the software watchdog | [PM0075](#source-pm0075-rdp) | That bit in the USER byte: 0 means the hardware watchdog and 1 means the software watchdog |
@@ -121,7 +121,7 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 
 | Family | Backup registers | Width |
 | --- | --- | --- |
-| STM32F103C8T6 | `BKP_DR1` through `BKP_DR10`, ten 16-bit registers, 20 bytes. Forty-two is high-density and is void on the C8 | 16-bit |
+| STM32F103C8T6 | `BKP_DR1` through `BKP_DR10`, ten 16-bit registers, 20 bytes. Forty-two is the high-density count | 16-bit |
 | STM32F4 | `RTC_BKP_DR0` through `DR19` | 32-bit |
 
 The usual pattern: on power-up, read a "magic value" (for example `0xA5A5`). If it matches, the calendar was already initialized, so just read the time. If it does not match, write the magic value and initialize the calendar.

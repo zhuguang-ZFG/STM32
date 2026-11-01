@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="CAN 非破坏性仲裁：ID 越小优先级越高">
+<title>CAN 非破坏性仲裁：ID 越小优先级越高</title>
 <style>
 @keyframes c0-sq{0%,0.00%{opacity:0.55}0.30%,23.33%{opacity:1}23.63%,100%{opacity:0.55}}
 .c0{animation:c0-sq 5.0s linear infinite;}
@@ -6,6 +7,7 @@
 .c1{animation:c1-sq 5.0s linear infinite;}
 @keyframes c2-sq{0%,66.67%{opacity:0.55}66.97%,90.00%{opacity:1}90.30%,100%{opacity:0.55}}
 .c2{animation:c2-sq 5.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

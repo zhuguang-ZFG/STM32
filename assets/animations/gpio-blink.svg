@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="GPIO 推挽输出点亮 LED">
+<title>GPIO 推挽输出点亮 LED</title>
 <style>
 @keyframes led-blink{0%,48%{opacity:1;filter:drop-shadow(0 0 9px currentColor)}50%,98%{opacity:0.12;filter:none}}
 .led{animation:led-blink 1s steps(1,end) infinite 0s;}
@@ -6,6 +7,7 @@
 .wire{stroke-dasharray:7 9;animation:wire-flow 1.4s linear infinite;}@keyframes wire-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
 @keyframes dot-run{0%{transform:translateX(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(48px);opacity:0}}.dot0{animation:dot-run 1.4s linear infinite;}.dot1{animation:dot-run 1.4s linear infinite .35s;}.dot2{animation:dot-run 1.4s linear infinite .7s;}.dot3{animation:dot-run 1.4s linear infinite 1.05s;}
 @keyframes cur-run{0%{transform:translateX(0)}100%{transform:translateX(268px)}}.cursor{animation:cur-run 1s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

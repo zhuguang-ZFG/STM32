@@ -34,22 +34,20 @@
 <!-- /video:ch03 -->
 ## Principle and scope
 
-The LED conclusion of this chapter holds for orderable STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
+Pin numbers and current limits in this chapter are for the STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
 
-PA0 may source current. As a push-pull output written to 1, current leaves the pin from 3.3 V through the internal PMOS, then through the resistor and the LED to ground. The example arithmetic is `(3.3 − 2.0) / 0.005 = 260`, fitted as 270 Ω. The [example](#source-project-examples) supports those three inputs and that quotient. It does not support calling 270 Ω a datasheet recommendation.
+PA0 may source current. As a push-pull output written to 1, current leaves the pin from 3.3 V through the internal PMOS, then through the resistor and the LED to ground. The example arithmetic is `(3.3 − 2.0) / 0.005 = 260`, fitted as 270 Ω. The 2.0 V and 5 mA are estimates the [example](#source-project-examples) picked for an ordinary red LED, not a datasheet recommendation. An LED of another colour has a different drop, so recompute the resistor.
 
-PC13, PC14, and PC15 sit behind the power switch. Note 5 of the same datasheet limits them to 3 mA of sink current, 2 MHz, and 30 pF, and they must not source an LED. The BluePill onboard LED can still use PC13 because its anode is at 3.3 V and the pin only sinks; writing 0 lights it. Copying the PA0 "write 1 to light" circuit onto PC13 makes that row void.
+PC13, PC14, and PC15 sit behind the power switch. Note 5 of the same datasheet limits them to 3 mA of sink current, 2 MHz, and 30 pF, and they must not source an LED. The BluePill onboard LED can still use PC13 because its anode is at 3.3 V and the pin only sinks; writing 0 lights it. So the PA0 "write 1 to light" circuit cannot be copied onto PC13 as is.
 
-The 25 mA and 50 MHz cells in the speed table are void for these three pins. A different package or orderable rewrites pin 2 and pin 10 as a whole row. F4 per-pin AFR is outside RM0008. The older sentence "F1 remaps through AFIO MAPR" holds on F1; on F4 that row is void.
+The 25 mA and 50 MHz in the speed table later do not apply to PC13–PC15. A different package moves pins 2 and 10, so look them up again in Table 5. F1 moves alternate functions in groups through the AFIO MAPR register; F4 gives every pin its own AFR field, which is not in RM0008, so read the F4 reference manual for that.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-03-gpio-led.svg" width="760" alt="On STM32F103C8T6, PA0 lights an external LED through 270 ohms; PC13 must not source that current">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48: PA0 is pin 10 and PC13 is pin 2. The normal path is 3.3 V through a push-pull pin and 270 Ω into the LED; 260 Ω is the quotient (3.3 − 2.0) / 0.005. The failure path copies that circuit onto PC13: note 5 allows 3 mA sink, at most 2 MHz, into 30 pF. The lock sequence is GPIOx_LCKR at offset 0x18. Pin and current facts are [DS5319 Rev 20](#source-ds5319-gpio) Table 5, Figure 8, and note 5. The lock and SWD pins are [RM0008 Rev 21](#source-rm0008-gpio) section 9.2.7 and section 9.3.5 Table 36.</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48: PA0 is pin 10 and PC13 is pin 2. The upper half is the correct wiring: 3.3 V through a push-pull pin and 270 Ω into the LED; 260 Ω is the quotient (3.3 − 2.0) / 0.005. The lower half is the mistake of copying that circuit onto PC13: note 5 allows 3 mA sink, at most 2 MHz, into 30 pF. The lock sequence is GPIOx_LCKR at offset 0x18. Pin and current facts are [DS5319 Rev 20](#source-ds5319-gpio) Table 5, Figure 8, and note 5. The lock and SWD pins are [RM0008 Rev 21](#source-rm0008-gpio) section 9.2.7 and section 9.3.5 Table 36.</sub>
 </p>
-
-The opening `gpio-blink.svg` stays an animated side figure. This key figure still shows the failure on PC13 when the animation is not playing.
 
 ## Timing and state
 
@@ -67,15 +65,15 @@ The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.
 
 ## Pitfalls and sources
 
-| Symptom | Cause | What to do | Source | Claim this source may support |
+| Symptom | Cause | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | An external LED on PC13 does not behave like PA0 when the pin is written 1 | PC13 must not source the LED | Move the external LED to PA0 with 270 Ω | [DS5319 Rev 20 note 5](#source-ds5319-gpio) | LQFP48 pin 2 is PC13; PC13–PC15 sink at most 3 mA, at or below 2 MHz, into 30 pF |
-| The onboard LED stays dark when PC13 is written 1 | The onboard LED is common-anode; PC13 lights it by sinking | Write 0 | [gpio-blink example](#source-project-examples) | Only the BluePill wiring. Not the 3 mA datasheet limit |
+| The onboard LED stays dark when PC13 is written 1 | The onboard LED is common-anode; PC13 lights it by sinking | Write 0 | [gpio-blink example](#source-project-examples) | The BluePill wiring. The 3 mA limit is in the datasheet |
 | An ODR write does nothing on the pin | The port clock is still off | Enable that GPIO port clock, then write CRL/CRH | [RM0008 GPIO](#source-rm0008-gpio) | Enable the port clock before writing the section 9 configuration registers |
 | Three writes to LCKR still leave the pin editable | The sequence was broken, or the confirming read was not 1 | Keep the mask, write 1, write 0, write 1, and read 1 | [RM0008 section 9.2.7](#source-rm0008-gpio) | A finished lock holds until reset; one bad step aborts it |
 | The probe never connects after a flash | PA13 and PA14 were configured as ordinary GPIO | Leave SWD on PA13 and PA14 | [RM0008 Table 36](#source-rm0008-gpio) | SWDIO is PA13 and SWCLK is PA14 |
 
-The old debounce row stays out of this card. A 10 ms to 20 ms debounce is not pinned to RM0008 or DS5319. The lab may still debounce a button without calling that interval a manual number.
+Button bounce is not in this table: the usual 10 ms to 20 ms debounce time is a rule of thumb, and neither RM0008 nor DS5319 gives it. The lab still debounces the button; just do not treat that number as a manual requirement.
 ## Learning goals
 - [ ] Remember the 8 GPIO modes and where each one belongs
 - [ ] Understand the current path of push-pull versus open-drain, and what the pull-up resistor is doing

@@ -35,31 +35,31 @@
 
 ## Principle and scope
 
-Page size, half-word programming, and the jump are fixed on STM32F103C8T6. This part is medium-density. Flash is 64 KB, from `0x08000000` up to but not including `0x08010000`, in 1 KB pages, 64 pages. Page numbers run from 0 to 63. Page 63 starts at `0x0800FC00`. `0x0801FC00` is outside this 64 KB. A 2 KB page is the high-density sentence and is void on this part. See [RM0008 Rev 21 chapter 3](#source-rm0008-flash).
+Page size, half-word programming, and the jump in this chapter are all for the STM32F103C8T6. It is medium-density: 64 KB of Flash from `0x08000000` up to but not including `0x08010000`, in 1 KB pages, 64 pages numbered 0 to 63. Page 63 starts at `0x0800FC00`. `0x0801FC00` is the last page of a 128 KB part and lies outside the C8's 64 KB. High-density parts use 2 KB pages, so page addresses must be recomputed on those. See [RM0008 Rev 21 chapter 3](#source-rm0008-flash).
 
-Program addresses are aligned to 2 bytes and write 16 bits. An erased half-word reads back `0xFFFF`. A bit already written to 0 does not return to 1 without erasing the page. Byte programming is an F4 sentence and is void on the C8. A 32-bit value takes two half-word writes.
+Program addresses must be 2-byte aligned, and each write is 16 bits. An erased half-word reads back `0xFFFF`. Flash can only turn 1s into 0s; a bit that is already 0 returns to 1 only when the whole page is erased. The F103 cannot program single bytes (the F4 can), so a 32-bit value takes two half-word writes.
 
-The two keys are written to `FLASH_KEYR` in this order: `0x45670123`, then `0xCDEF89AB`. Only then does `CR.LOCK` clear. The reverse order leaves the lock set and the erase returns an error. Lock again when the write is done.
+To unlock, write the two keys to `FLASH_KEYR` in order: `0x45670123`, then `0xCDEF89AB`. Only then does `CR.LOCK` clear. In the reverse order the lock stays set and the erase returns an error. Lock again when the write is done.
 
-This map is the one already used by the book and by `examples/iap-bootloader`. It is not the only split the manual allows. Bootloader: `0x08000000`, 16 KB, 16 pages, ending before `0x08004000`. Parameters: `0x08004000`, 2 KB, 2 pages, ending before `0x08004800`. Application: `0x08004800`, 46 KB, 46 pages, length `0xB800`, ending before `0x08010000`. The three regions add up to 64 KB. The link script origin and `SCB->VTOR` are both `0x08004800`. Changing only one of them still enters the bootloader's vectors.
+The layout below is the one used by this book and by `examples/iap-bootloader`; the manual does not require it. Bootloader: from `0x08000000`, 16 KB, 16 pages, ending before `0x08004000`. Parameters: from `0x08004000`, 2 KB, 2 pages, ending before `0x08004800`. Application: from `0x08004800`, 46 KB, 46 pages, length `0xB800`, ending before `0x08010000`. The three add up to exactly 64 KB. The application's link-script origin and `SCB->VTOR` must both be `0x08004800`. Change only one and the application's interrupts still land in the bootloader's vector table.
 
-Word 0 of the application is the MSP. Word 1, at `0x08004804`, is `Reset_Handler`. Read both words, write the MSP, write `VTOR`, then jump. Leaving `VTOR` at 0 still delivers interrupts to the bootloader. That is the same pair of words as chapter file 01. See [PM0056](#source-pm0056-vector).
+Word 0 of the application region is the initial MSP. Word 1, at `0x08004804`, is the address of `Reset_Handler`. Before the jump, read both words, set the MSP, write `VTOR`, then branch to the reset address. With `VTOR` still 0, interrupts still go to the bootloader. These two words mean the same as in the startup sequence of chapter 01. See [PM0056](#source-pm0056-vector).
 
-The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [PM0075](#source-pm0075-rdp). This chapter's bootloader lives in user Flash. The UART stays on pin 30 PA9 and pin 31 PA10 from chapter file 06. That is only a side note here.
+The "no protection" value for readout protection is `0xA5`. Setting it back to `0xA5` makes the hardware mass-erase main Flash first. See [PM0075](#source-pm0075-rdp). This chapter's bootloader lives in user Flash, not in the factory system memory. The UART it receives firmware on is still pin 30 PA9 and pin 31 PA10 from chapter 06.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-12-iap-map.svg" width="760" alt="Medium-density Flash uses 1 KB pages. The application starts at 0x08004800 and is 0xB800 bytes long. The jump loads word 0 and word 1.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, medium-density, 64 KB, 1 KB pages. The normal path writes 0x45670123, then 0xCDEF89AB, programs a half-word into the application, loads the MSP from 0x08004800 and the reset word from 0x08004804, and sets VTOR to 0x08004800. The failure path is a reversed key, a last page at 0x0801FC00, or VTOR left at 0. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, medium-density, 64 KB, 1 KB pages. In order, the figure writes 0x45670123, then 0xCDEF89AB, programs a half-word into the application, loads the MSP from 0x08004800 and the reset address from 0x08004804, and sets VTOR to 0x08004800. It also marks three faults: the keys reversed, the last page taken as 0x0801FC00, and VTOR left at 0. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/iap-jump.gif" width="640" alt="The two keys are written in order, then the CPU reads the MSP and the reset word">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 0x45670123, then 0xCDEF89AB, one half-word into the application, then the MSP and the reset word. Print from the static figure. The reversed key and 0x0801FC00 are not on this GIF.</sub>
+  <br><sub>▲ Animated version: 0x45670123, then 0xCDEF89AB, one half-word into the application, then the MSP and the reset address are read. The printed book has only the static figure above.</sub>
 </p>
 
-`flash-iap.svg` stays as an auxiliary figure. Do not play it for the page boundaries, the two keys, or the two words. Those are on the static figure.
+The opening animation `flash-iap.svg` shows the whole update flow. For page boundaries, the two keys, and the two jump words, go by the static figure above.
 
 ## Timing and state
 
@@ -71,20 +71,20 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 | Last page | `0x0800FC00` | 1 KB | page 63 | inside the application |
 | Failure address | `0x0801FC00` | — | — | not in this 64 KB |
 | Keys | `0x45670123` first | `0xCDEF89AB` second | — | the reverse order leaves LOCK set |
-| Half-word | address aligned to 2 bytes | 16 bits | erased state `0xFFFF` | byte programming is void on the C8 |
+| Half-word | address aligned to 2 bytes | 16 bits | erased state `0xFFFF` | the C8 cannot program single bytes |
 | Jump | word at `0x08004800` is the MSP | word at `0x08004804` is reset | `VTOR = 0x08004800` | `VTOR` left at 0 still enters the bootloader |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The comment says low density, but the page size is right | The density name is wrong | Call this part medium-density. The page stays 1 KB, 64 pages | [RM0008](#source-rm0008-flash) | Medium-density parts erase 1 KB pages. The high-density 2 KB page is void on the C8 |
+| The comment says low density, but the page size is right | The density name is wrong | Call this part medium-density. The page stays 1 KB, 64 pages | [RM0008](#source-rm0008-flash) | Medium-density parts erase 1 KB pages. 2 KB pages are on high-density parts |
 | The erase returns an error | The keys are reversed, or the address is not on a page boundary | Write KEY1, then KEY2. Keep the address on a page boundary | [RM0008](#source-rm0008-flash) | The order is `0x45670123` then `0xCDEF89AB`. The reverse order does not clear LOCK |
-| A written byte reads back wrong | The program was not a half-word, or a 0 was asked to become 1 | Write half-words on even addresses. Erase the page before turning a 0 back into a 1 | [RM0008](#source-rm0008-flash) | Programming granularity is 16 bits. The erased state is `0xFFFF`. Byte programming is void on this part |
-| The jump dies, or interrupts return to the bootloader | The two words were not loaded, or VTOR is still 0 | Load the MSP and the reset word from `0x08004800`, and write `VTOR` | [PM0056](#source-pm0056-vector) | Word 0 is the initial stack. Word 1 is reset. This claim does not add a new alignment rule |
+| A written byte reads back wrong | The program was not a half-word, or a 0 was asked to become 1 | Write half-words on even addresses. Erase the page before turning a 0 back into a 1 | [RM0008](#source-rm0008-flash) | Programming granularity is 16 bits. The erased state is `0xFFFF`. The F103 has no byte programming |
+| The jump dies, or interrupts return to the bootloader | The two words were not loaded, or VTOR is still 0 | Load the MSP and the reset word from `0x08004800`, and write `VTOR` | [PM0056](#source-pm0056-vector) | Word 0 is the initial stack. Word 1 is the reset address |
 | The application length does not match the link script | The length is not 46 KB | Origin `0x08004800`, length `0xB800` | [examples in this repo](#source-project-examples) | `examples/iap-bootloader` sizes the application at 46 KB, which is `0xB800` |
-| The experiment writes `0x0801FC00` | That is the last page of a 128 KB part | The last page on this C8 is `0x0800FC00` | [DS5319](#source-ds5319-swd) | That source already says STM32F103x8 Flash is 64 KB. The 128 KB last page is void on this part |
-| Readout protection is cleared with another family's unprotected key | This part does not use that key | The unprotected value is `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` allows readout. Programming `0xA5` back mass-erases first |
+| The experiment writes `0x0801FC00` | That is the last page of a 128 KB part | The last page on this C8 is `0x0800FC00` | [DS5319](#source-ds5319-swd) | STM32F103x8 Flash is 64 KB. `0x0801FC00` is the last page of a 128 KB part |
+| Readout protection is cleared with another family's unprotected key | The F103 key values differ from other families | The unprotected value is `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` allows readout. Programming `0xA5` back mass-erases first |
 
 ## Learning goals
 
@@ -315,7 +315,7 @@ int main(void)
 | USER | `nRST_STOP`, `nRST_STDBY`, `WDG_SW` | The same bits cover reset-on-stop and the hardware watchdog |
 | WRP | Write protection by page | Write protection by sector |
 
-`0xAA` and `0xCC` are void on STM32F103C8T6. The unprotected value remains `0xA5`. Clearing protection mass-erases main Flash. This sentence stays in the core ideas. The four sections do not call `0xAA` the unprotected value.
+The F4 levels `0xAA` and `0xCC` do not exist on the STM32F103C8T6. The F103 no-protection value is `0xA5`, and clearing readout protection mass-erases main Flash.
 
 When `WDG_SW = 0`, the hardware IWDG starts at power-up and software cannot stop it. On F4, if the parameter region is squeezed into the same sector as the bootloader, erasing the parameters erases the bootloader with them, so the parameter region has to own a sector of its own.
 

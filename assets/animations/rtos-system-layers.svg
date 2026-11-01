@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="嵌入式系统不只是一颗 RTOS 内核">
+<title>嵌入式系统不只是一颗 RTOS 内核</title>
 <style>
 @keyframes sl0-sq{0%,0.00%{opacity:0.48}0.30%,12.00%{opacity:1.0}12.30%,100%{opacity:0.48}}
 .sl0{animation:sl0-sq 7.2s linear infinite;}
@@ -14,6 +15,7 @@
 .sl5{animation:sl5-sq 7.2s linear infinite;}
 
 .sl-flow{stroke-dasharray:4 7;animation:sl-flow-flow 1.1s linear infinite;}@keyframes sl-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

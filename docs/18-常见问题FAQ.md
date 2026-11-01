@@ -35,44 +35,44 @@
 <!-- /video:ch18 -->
 ## 原理与适用范围
 
-这一章是索引，不是第二套外设教程。订货号仍是 STM32F103C8T6。38 条都留着。C1 到 C8 是 8 条，D1 到 D7 是 7 条，P1 到 P9 是 9 条，H1 到 H7 是 7 条，R1 到 R7 是 7 条。`8 + 7 + 9 + 7 + 7 = 38`。
+这一章是排错索引，每条只给症状、最可能的原因和该翻的章节，原理回到各章去看。芯片仍按 STM32F103C8T6。下面共 38 条，按类别编号：C1 到 C8 是 8 条，D1 到 D7 是 7 条，P1 到 P9 是 9 条，H1 到 H7 是 7 条，R1 到 R7 是 7 条。`8 + 7 + 9 + 7 + 7 = 38`。
 
-下载器报没有目标时，先看第 34 脚 PA13 = SWDIO、第 37 脚 PA14 = SWCLK、共地、3.3 V，以及第 7 脚 NRST。图 31 的外部复位电容是 0.1 µF。然后再看代码和优化等级。线还没核对就改 `-O2`，是失败路径。见 [DS5319 SWD](#source-ds5319-swd)。
+下载器报没有目标时，先看第 34 脚 PA13 = SWDIO、第 37 脚 PA14 = SWCLK、共地、3.3 V，以及第 7 脚 NRST。图 31 的外部复位电容是 0.1 µF。这几样都确认了，再去看代码和优化等级。线没接对时改 `-O2` 不会有任何变化，只会多一个变量。见 [DS5319 SWD](#source-ds5319-swd)。
 
-第 44 脚 BOOT0 = 0 时，从主闪存 `0x08000000` 启动。BOOT1 = 0 且 BOOT0 = 1 时，进系统存储器 `0x1FFFF000`。互联型的 `0x1FFFB000` 在这颗 C8 上作废。锁存在复位后 SYSCLK 的第 4 个上升沿，跟第 00 章同一笔。第 35 脚是 VSS_2，不是 SWCLK。那张旧图在第 01 章，这里不重画。见 [RM0008 启动](#source-rm0008-boot)。
+第 44 脚 BOOT0 = 0 时，从主闪存 `0x08000000` 启动。BOOT1 = 0 且 BOOT0 = 1 时，进系统存储器 `0x1FFFF000`。网上常见的 `0x1FFFB000` 是互联型（F105/F107）的地址，C8 不是互联型。BOOT 脚在复位后 SYSCLK 的第 4 个上升沿被锁存（第 00 章）。第 35 脚是 VSS_2，不是 SWCLK，有些旧引脚图画错了，第 01 章有对照。见 [RM0008 启动](#source-rm0008-boot)。
 
-闪存 64 KB，SRAM 20 KB，跟已有的 SWD 卡片同一笔。HSE 没起来时 SYSCLK 是 HSI 8 MHz。USART1 的 `0x271` 在这只时钟上是 12800，不是 115200。这句和第 16 章同一笔，这一章不另画位帧。见 [RM0008 USART](#source-rm0008-usart)。
+C8 的闪存是 64 KB，SRAM 是 20 KB。HSE 没起振时 SYSCLK 退回 HSI 8 MHz，USART1 的 `0x271` 在这个时钟上是 12800，不是 115200，所以串口全是乱码。第 16 章从 Stop 醒来也是同一个原因。见 [RM0008 USART](#source-rm0008-usart)。
 
 LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。电容按 5 pF 到 15 pF 的范围跟晶振一起选。6 pF 不是必须值。见 [DS5319 LSE](#source-ds5319-lse)。
 
-仓库例程把 HAL 时基放在 TIM4，不是笼统的 TIMx。SysTick 留给内核。一个 tick 是 1 ms。见 [本仓库例程](#source-project-examples)。数值大于等于 5 才能调用 FromISR。`5 << 4 = 0x50`。跟第 15 章同一笔，不重画那张优先级图。见 [FreeRTOS](#source-freertos-syscall)。
+仓库例程把 HAL 时基放在 TIM4，不是笼统的 TIMx。SysTick 留给内核。一个 tick 是 1 ms。见 [本仓库例程](#source-project-examples)。数值大于等于 5 才能调用 FromISR。`5 << 4 = 0x50`。原因见第 15 章的优先级图。见 [FreeRTOS](#source-freertos-syscall)。
 
-外接灯跟第 03 章：第 10 脚、270 Ω。第 2 脚 PC13 不拿来源出电流。见 [DS5319 GPIO](#source-ds5319-gpio)。
+外接灯按第 03 章接：第 10 脚 PA0，串 270 Ω。第 2 脚 PC13 接在备份域的电源开关后面，数据手册注 5 限定它只能灌电流、不超过 3 mA、速度不超过 2 MHz，不能当电流源点灯。板载灯就是用灌电流的接法。见 [DS5319 GPIO](#source-ds5319-gpio)。
 
 ## 关键插图
 
 <p align="center">
   <img src="../assets/diagrams/sample-18-boot-triage.svg" width="760" alt="认不出芯片时先看第 34 脚、第 37 脚和第 44 脚。BOOT0 为 1 且 BOOT1 为 0 时跑的是 0x1FFFF000">
-  <br><sub>▲ 自绘。正常路径是第 44 脚 BOOT0 = 0，从 0x08000000 启动，探针接在第 34 脚 PA13 和第 37 脚 PA14。第 7 脚 NRST 上是图 31 的 0.1 µF。失败路径是 BOOT0 = 1 且 BOOT1 = 0，CPU 在 0x1FFFF000；或者还没看这四只脚就改优化等级。第 35 脚是 VSS_2，指向第 01 章。出处是 [DS5319](#source-ds5319-swd) 图 31 和表 5，以及 [RM0008 启动](#source-rm0008-boot)。</sub>
+  <br><sub>▲ 自绘。上段是正常情况：第 44 脚 BOOT0 = 0，从 0x08000000 启动，探针接在第 34 脚 PA13 和第 37 脚 PA14，第 7 脚 NRST 上按图 31 接 0.1 µF。中段是两种常见错误：BOOT0 = 1 且 BOOT1 = 0，CPU 跑在 0x1FFFF000 的系统存储器里；或者这四只脚还没查就去改优化等级。第 35 脚是 VSS_2，详见第 01 章。出处是 [DS5319](#source-ds5319-swd) 图 31 和表 5，以及 [RM0008 启动](#source-rm0008-boot)。</sub>
 </p>
 
 <p align="center">
   <img src="../assets/gif/boot0-low.gif" width="640" alt="第 44 脚为 0，探针接在第 34 脚和第 37 脚，目标出现">
-  <br><sub>▲ 网页和公众号辅图。只播放正常路径：第 44 脚为 0，探针接在第 34 脚和第 37 脚，目标出现。印刷以静态主图为准。BOOT0 为 1 和「先改优化等级」不在这条 GIF 上。</sub>
+  <br><sub>▲ 动图版，只演示正常情况：第 44 脚为 0，探针接在第 34 脚和第 37 脚，调试器识别到芯片。印刷版只有上面的静态图。</sub>
 </p>
 
-`toolchain-flow.svg` 留作辅图。编译箭头不进这张静态主图。
+从编译到下载的完整流程见章首的 `toolchain-flow.svg` 动画。
 
 ## 时序与状态
 
 | 先看什么 | 值 | 下一步 |
 | --- | --- | --- |
 | 第 34 脚和第 37 脚 | PA13 = SWDIO，PA14 = SWCLK，共地，3.3 V | 还没接好就不要改代码 |
-| NRST | 第 7 脚，0.1 µF | 图 31。这一行不写上拉的千欧 |
-| BOOT | BOOT0 = 0，主闪存 `0x08000000` | 正常路径 |
-| 失败 | BOOT0 = 1 且 BOOT1 = 0，`0x1FFFF000` | 用户程序看起来像没烧进去。`0x1FFFB000` 在 C8 上作废 |
+| NRST | 第 7 脚，0.1 µF | 按 DS5319 图 31 |
+| BOOT | BOOT0 = 0，主闪存 `0x08000000` | 正常 |
+| 失败 | BOOT0 = 1 且 BOOT1 = 0，`0x1FFFF000` | 用户程序看起来像没烧进去。`0x1FFFB000` 是互联型的地址 |
 | 优化 | 线还没核对就改 `-O2` | 失败 |
-| 容量 | 闪存 64 KB，SRAM 20 KB | 跟 SWD 卡片同一笔 |
+| 容量 | 闪存 64 KB，SRAM 20 KB | 链接脚本按这个写 |
 | 串口 | HSI 8 MHz 且 `0x271` 仍在 | 12800 |
 | 时基 | TIM4，1 ms | 不是笼统的 TIMx |
 | 优先级 | 数值大于等于 5 | `5 << 4 = 0x50` |
@@ -80,17 +80,17 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 
 ## 常见坑与出处
 
-| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
 | --- | --- | --- | --- | --- |
 | 下载器报没有目标 | 线还没核对 | 先看第 34 脚、第 37 脚、地和 3.3 V | [DS5319 SWD](#source-ds5319-swd) | 第 34 脚 PA13 是 SWDIO，第 37 脚 PA14 是 SWCLK。第 35 脚是 VSS_2 |
 | 程序像没烧进去 | 第 44 脚被拉高 | 把 BOOT0 放回 0 | [RM0008 启动](#source-rm0008-boot) | BOOT1=0 且 BOOT0=1 时进 `0x1FFFF000`。C8 不是互联型 |
-| 复位脚空着，板子自己在复位 | 电容不在图 31 那一格 | 按图 31 加 0.1 µF | [DS5319 NRST](#source-ds5319-nrst) | 图 31 的外部复位电路是 0.1 µF。这一行不新写上拉的千欧 |
-| 链接说 Flash 或 RAM 不够 | 按更大的料在估 | 先按 C8 的 64 KB 和 20 KB | [DS5319 SWD](#source-ds5319-swd) | xB 的 128 KB 在 C8T6 上作废 |
+| 复位脚空着，板子自己在复位 | 电容不在图 31 那一格 | 按图 31 加 0.1 µF | [DS5319 NRST](#source-ds5319-nrst) | 图 31 的外部复位电路是 0.1 µF |
+| 链接说 Flash 或 RAM 不够 | 按更大的料在估 | 先按 C8 的 64 KB 和 20 KB | [DS5319 SWD](#source-ds5319-swd) | 128 KB 是 xB（如 C8 的兄弟 CB）的容量，C8T6 是 64 KB |
 | 串口乱码，时钟却没核对 | 掉回了 HSI | 确认没有停在 8 MHz | [RM0008 USART](#source-rm0008-usart) | `0x271` 在 72 MHz 下是 115200，在 8 MHz 下是 12800 |
 | 按 P9 焊了 6 pF | 把一只电容当成必须值 | 电容按晶振在 5 pF 到 15 pF 里选 | [DS5319 LSE](#source-ds5319-lse) | 6 pF 不是 LSE 节印出的必须值。32.768 kHz 和 PRL = 32767 仍以第 11 章为准 |
-| 上了 FreeRTOS 之后 `HAL_Delay` 不返回 | 时基还在 SysTick | 时基改到 TIM4 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 的时基是 TIM4。不写成笼统的 TIMx |
+| 上了 FreeRTOS 之后 `HAL_Delay` 不返回 | 时基还在 SysTick | 时基改到 TIM4 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 的时基是 TIM4 |
 | 一进中断就停在 `configASSERT` | 数值优先级太靠前 | 写成 5 或更靠后的数 | [FreeRTOS](#source-freertos-syscall) | `5 << 4 = 0x50`。数值更小的中断不得调用 FromISR |
-| 外接灯不亮，电阻却在一个区间里乱试 | 脚和电阻都没钉住 | 外接灯用第 03 章的第 10 脚和 270 Ω | [DS5319 GPIO](#source-ds5319-gpio) | 第 2 脚 PC13 不能当电流源。这一行不新造一只电阻 |
+| 外接灯不亮，电阻却在一个区间里乱试 | 脚和电阻都没定下来 | 外接灯用第 03 章的第 10 脚和 270 Ω | [DS5319 GPIO](#source-ds5319-gpio) | 第 2 脚 PC13 不能当电流源 |
 ## 学习目标
 
 - [ ] 建立「按现象分类检索」的排错习惯，而不是盲目改代码。

@@ -35,31 +35,29 @@
 <!-- /video:ch04 -->
 ## 原理与适用范围
 
-这一章的抢占结论只钉在订货号 STM32F103C8T6 上。时钟沿用附录 D：SYSCLK = HCLK = 72 MHz。分组沿用罗盘和附录 D：HAL 默认 `NVIC_PRIORITYGROUP_4`，4 位抢占、0 位子优先级。数值越小，逻辑优先级越高。这三句整格照抄，不另算一个新的周期数。
+本章按 STM32F103C8T6 讲，时钟和附录 D 一致：SYSCLK = HCLK = 72 MHz。优先级分组用 HAL 的默认值 `NVIC_PRIORITYGROUP_4`：4 位全给抢占优先级，子优先级 0 位。数值越小，优先级越高。
 
-抢占优先级更高（数值更小）的异常可以打断正在执行的、抢占更低的 ISR。子优先级只在多份请求已经同时挂起时决定谁先被响应，不能用来嵌套。`GROUP_4` 的子优先级位数是 0，`HAL_NVIC_SetPriority` 的子优先级参数在这个分组下不产生嵌套。要看见子优先级起作用，分组不能是 `GROUP_4`。分组一改，原来的数值不再表示同一级抢占。附录 D 已经把「改了分组还用旧的抢占级去比谁能嵌套」写成误读，这里沿用这句，不改附录。出处是 [PM0056 第 2.3.6 节](#source-pm0056-nvic)。
+抢占优先级更高（数值更小）的异常可以打断正在执行的、抢占更低的 ISR。子优先级只在多份请求已经同时挂起时决定谁先被响应，不能用来嵌套。`GROUP_4` 的子优先级位数是 0，`HAL_NVIC_SetPriority` 的子优先级参数在这个分组下不产生嵌套。要看见子优先级起作用，分组不能是 `GROUP_4`。分组一改，同一个数值代表的抢占级也变了，改分组之后还拿旧数值去比谁能嵌套，结论会错。出处是 [PM0056 第 2.3.6 节](#source-pm0056-nvic)。
 
-退出时若已有挂起异常，硬件可以省掉一部分出栈再入栈。尾链减少开销，不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR。「尾链打开后，低优先级也能插入高优先级」不是机制。PM0056 第 2.3.7 节没有印尾链的周期数，这里不编一个。图上只画出没有发生第二次嵌套入栈。不把周期数补进附录 D。
+退出时若已有挂起异常，硬件可以省掉一部分出栈再入栈。尾链减少开销，不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR。「尾链打开后，低优先级也能插进高优先级」是常见误解。PM0056 第 2.3.7 节没有给出尾链省下多少周期，所以本章不给具体数字，图上只表示少了一次出栈再入栈。
 
-`PRIMASK` 关掉可配置优先级的中断，NMI 和 HardFault 仍能进入。`FAULTMASK` 再挡住 HardFault，仍留 NMI。`BASEPRI` 只挡住优先级数值大于等于阈值的那一截。NMI 不参加 EXTI0 和 TIM2 那种抢占比较。换屏蔽寄存器时，上一句的挡住范围作废，要按新的那把闸重读。第 02 章的 CSS 进 NMI 只作交叉引用，不在这一章重写时钟树。
+`PRIMASK` 关掉可配置优先级的中断，NMI 和 HardFault 仍能进入。`FAULTMASK` 再挡住 HardFault，仍留 NMI。`BASEPRI` 只挡住优先级数值大于等于阈值的那一截。NMI 不参加 EXTI0 和 TIM2 那种抢占比较。这三个寄存器挡住的范围各不相同，用之前先确认挡的是哪一段。第 02 章讲过时钟安全系统（CSS）的中断走 NMI，所以关中断也挡不住它。
 
-裸机这套配置不自动满足第 15 章的 FromISR 约束。这句话链到 [已有的优先级说明](#source-freertos-priority)，不把第 15 章的系统调用阈值抄进这一章。
+裸机这套配置不自动满足第 15 章的 FromISR 约束。FreeRTOS 规定，在中断里调用 FromISR 函数的中断，优先级数值不能小于系统调用阈值，具体见第 15 章和 [FreeRTOS 的优先级说明](#source-freertos-priority)。
 
-EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部中断。F1 上改端口要先开 AFIO 时钟，再写 `EXTICR`。这句只在 F1 上成立。换到用 SYSCFG 的系列时，AFIO 这一句作废。[RM0008 Rev 21](#source-rm0008-exti) 把 EXTICR 放在第 9.4.3 到 9.4.6 节。第 9.2.7 节是 `GPIOx_LCKR`，不要写成 EXTICR。`EXTI_PR` 要清，写 1 清掉对应的挂起位。
+EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部中断。F1 上改端口要先开 AFIO 时钟，再写 `EXTICR`。这是 F1 的做法。F4、L4、H7 把这组寄存器放在 SYSCFG 里（`SYSCFG_EXTICR`），要开的是 SYSCFG 的时钟；G0 又挪进了 EXTI 自己（`EXTI_EXTICR`），不用开 AFIO 也不用开 SYSCFG。[RM0008 Rev 21](#source-rm0008-exti) 把 EXTICR 放在第 9.4.3 到 9.4.6 节。第 9.2.7 节是 `GPIOx_LCKR`，不要写成 EXTICR。`EXTI_PR` 要清，写 1 清掉对应的挂起位。
 
 ## 关键插图
 
 <p align="center">
   <img src="../assets/diagrams/sample-04-exception-stack.svg" width="760" alt="抢占 1 可以打断抢占 2；抢占同为 1 时后来的请求不能嵌套">
-  <br><sub>▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。正常路径：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xPSR, PC, LR, R12, R3, R2, R1, R0，SP 指向 R0。大约 12 个 HCLK，72 MHz 时 167 ns，不含 ISR 正文。失败路径：两者抢占都写成 1，子优先级 0 和 1 仍然不能嵌套，退出后可以尾链，没有第二次嵌套入栈。PRIMASK = 1 时 EXTI0 和 TIM2 进不来，NMI 仍进入。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic) 与 [RM0008 Rev 21 的 EXTICR](#source-rm0008-exti)。</sub>
+  <br><sub>▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。上半部分：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xPSR, PC, LR, R12, R3, R2, R1, R0，SP 指向 R0。大约 12 个 HCLK，72 MHz 时 167 ns，不含 ISR 正文。下半部分：两者抢占都写成 1，子优先级 0 和 1 仍然不能嵌套，退出后可以尾链，没有第二次嵌套入栈。PRIMASK = 1 时 EXTI0 和 TIM2 进不来，NMI 仍进入。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic) 与 [RM0008 Rev 21 的 EXTICR](#source-rm0008-exti)。</sub>
 </p>
 
 <p align="center">
   <img src="../assets/gif/nvic-preempt.gif" width="640" alt="TIM2 正在执行时，EXTI0 以更高抢占打断，然后返回">
-  <br><sub>▲ 网页和公众号辅图。只播放抢占成功的那一条。印刷以静态主图为准。同抢占不能嵌套的失败不在这条 GIF 上。</sub>
+  <br><sub>▲ 动图版，只演示 EXTI0 成功抢占 TIM2 的过程。印刷版只有上面的静态图。</sub>
 </p>
-
-章首的 `nvic-interrupt-flow.svg` 和简笔 `interrupt-priority.svg` 留作辅图。不播放它们，主图仍然能指出失败发生在「抢占被写成同一级」那一段。
 
 ## 时序与状态
 
@@ -68,21 +66,21 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 | 正常：TIM2 正在执行 | GROUP_4 | — | 2 | TIM2 的 ISR 在跑 | — |
 | 正常：EXTI0 到达 | GROUP_4 | 1 | 2 | 入栈 xPSR, PC, LR, R12, R3, R2, R1, R0 | 12 HCLK，约 167 ns |
 | 正常：服务与返回 | GROUP_4 | 1 | 2 | 取向量、执行 ISR、出栈返回 | 167 ns 不含 ISR 正文 |
-| 失败：抢占写成同一级 | GROUP_4 | 1 | 1 | EXTI0 保持挂起。尾链只发生在退出之后。没有第二次嵌套入栈 | 不另编周期数 |
+| 失败：抢占写成同一级 | GROUP_4 | 1 | 1 | EXTI0 保持挂起。尾链只发生在退出之后。没有第二次嵌套入栈 | 手册未给周期数 |
 | PRIMASK = 1 | GROUP_4 | 1 | 2 | 可配置中断不进入。NMI 仍进入 | — |
 
-167 ns 与附录 D 同一笔，不改成别的纳秒数。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic)。`EXTI_PR` 的清除见 [RM0008](#source-rm0008-exti)。
+入栈约 12 个 HCLK，72 MHz 下约 167 ns，和附录 D 一致。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic)。`EXTI_PR` 的清除见 [RM0008](#source-rm0008-exti)。
 
 ## 常见坑与出处
 
-| 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
+| 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
 | --- | --- | --- | --- | --- |
 | 子优先级更小，却打断不了正在跑的 ISR | 同抢占不能嵌套 | 改抢占级，不要改子优先级来嵌套 | [PM0056](#source-pm0056-nvic) | 同抢占不能嵌套；GROUP_4 没有子优先级位 |
 | 按键中断打不断定时器 | EXTI0 的抢占数值没有小于 TIM2 | 让 EXTI0 的抢占数值小于 TIM2 | [PM0056](#source-pm0056-nvic) | 数值越小越优先；写反了就嵌套失败 |
 | 打开尾链之后低优先级插进了高优先级 | 这不是尾链的定义 | 检查抢占级 | [PM0056 第 2.3.7 节](#source-pm0056-nvic) | 尾链不改变谁有权抢占 |
 | `__disable_irq()` 之后仍进了 NMI | PRIMASK 不管 NMI | 这是预期，不是 PRIMASK 失效 | [PM0056 Table 7](#source-pm0056-nvic) | PRIMASK 挡可配置优先级；NMI 除外 |
 | PA0 已经占用 EXTI0，PB0 不再触发 | 同一编号的脚共用一条 EXTI 线 | 换一个脚号 | [RM0008 EXTICR](#source-rm0008-exti) | PA0 和 PB0 都在 EXTI0 上 |
-| F1 上 EXTI 不进中断 | 没开 AFIO 时钟，或没写 EXTICR | 打开 AFIO 时钟再写 EXTICR，并清 EXTI_PR | [RM0008 第 9.4.3 节](#source-rm0008-exti) | 这句只在 F1 成立 |
+| F1 上 EXTI 不进中断 | 没开 AFIO 时钟，或没写 EXTICR | 打开 AFIO 时钟再写 EXTICR，并清 EXTI_PR | [RM0008 第 9.4.3 节](#source-rm0008-exti) | F1 的 EXTI 端口选择在 AFIO_EXTICR |
 
 ## 学习目标
 - [ ] 说清中断与轮询的差异及适用场景

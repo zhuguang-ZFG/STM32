@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="三种低功耗模式与唤醒方式">
+<title>三种低功耗模式与唤醒方式</title>
 <style>
 @keyframes pw0-f{0%,100%{opacity:.35}50%{opacity:1}}.pw0{animation:pw0-f 2.4s ease-in-out infinite 0.0s;}
 @keyframes pw1-f{0%,100%{opacity:.35}50%{opacity:1}}.pw1{animation:pw1-f 2.4s ease-in-out infinite 0.4s;}
 @keyframes pw2-f{0%,100%{opacity:.35}50%{opacity:1}}.pw2{animation:pw2-f 2.4s ease-in-out infinite 0.8s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
