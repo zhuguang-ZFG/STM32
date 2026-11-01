@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch10-dma.png">
     <source src="../assets/video/ch10-dma.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch10-dma.mp4">MP4</a> · 字幕：<a href="../assets/video/ch10-dma.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch10-dma.mp4">MP4</a> · <a href="../assets/video/ch10-dma.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. DMA 是搬运工。外设来了新数据，或者内存里有一包要送出去，它可以自己搬，CPU 继续算别的。前提是你把源、目的和数量写对。
 2. 剩余数量记在 NDTR 里。它减到 0，这一轮就搬完了。循环模式下，硬件会把数量装回去，指针也回到起点。你不用在中断里手动重置。
@@ -29,9 +30,11 @@
 8. 口诀：剩下的在 NDTR；半字的半传输按元素算，再乘 2 才是字节。调试时把 NDTR 打出来，比猜「DMA 是不是坏了」快得多。
 9. 实验让 DMA 把一串数搬进数组，断点时后半段应该已经变了，NDTR 也在减小。数组纹丝不动，先查通道、方向和使能，别先改算法。
 10. 合上书，三问。NDTR 里装的是地址还是剩余数量？循环模式谁把指针拨回去？半字传输的半满，怎样换成字节数？
+
+</details>
 <!-- /video:ch10 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的 DMA 结论只钉在订货号 STM32F103C8T6 上。通道号和半字账整格照抄附录 D。
 
@@ -61,7 +64,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 
 `dma-circular.svg` 和 `dma-ring.gif` 留在原节，标成辅图。
 
-## 时序或状态
+## 时序与状态
 
 | 长度 | 宽度 | CNDTR | 已写采样 | 已写字节 |
 | --- | --- | --- | --- | --- |
@@ -74,7 +77,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 | 作废 | DMA2 Stream 5 | 这颗料上没有计数器 | — | F4 的 FIFO 是 4 个 32 位字，不证明 C8 有 DMA2 |
 | 循环 | 归零后重装 | 重装后的 CNDTR | 不是累计 | `长度 − CNDTR` 不是进度 |
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -84,7 +87,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 | 对照 F4 例程时通道号能对上，板上不对 | F4 的编号被写进了 C8 | F4 那一组号留在 F4 | [RM0090](#source-rm0090) | F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4 个 32 位字。这条不证明 C8 有 DMA2 |
 | 循环模式下进度越算越大 | 用了 `长度 − CNDTR` 当累计 | 进度用回调里的写位置 | [RM0008](#source-rm0008-dma) | 计数归零后硬件重装。进度用回调里的写位置 |
 
-## 📌 学习目标
+## 学习目标
 
 - [ ] 说清 DMA 控制器结构：F1 的「通道」模型与 F4 的「流（Stream）× 通道（Channel）」模型。
 - [ ] 会查请求映射表，把外设请求接到正确的通道/流。
@@ -92,7 +95,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 - [ ] 会用传输完成（TC）/半传输（HT）中断实现「边收边处理」。
 - [ ] 理解 DMA 与 CPU 的总线争抢，以及 H7/F7 的 Cache 一致性问题。
 
-## 🧠 核心原理
+## 核心原理
 
 ### 1. 控制器结构：F1 的「通道」 vs F4 的「流×通道」
 
@@ -168,7 +171,7 @@ USART1_TX 仍是第 06 章的第 30 脚 PA9。本图只旁注通道号，不重�
 - **FIFO 阈值**：F4 上偶发数据错，是因为 FIFO 未配置或突发不匹配。设 FIFO 阈值、突发大小。
 - **局部变量缓冲区**：串口发一半就卡，是因为缓冲区是局部变量，函数返回后失效。用 `static` 或全局缓冲区。
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 DMA 是纯片内功能，不需要额外接线；它的价值体现在「驱动外设」上。下表给出典型用例的引脚：
 
@@ -179,7 +182,7 @@ DMA 是纯片内功能，不需要额外接线；它的价值体现在「驱动�
 | Nucleo-F411RE | 串口 DMA | USART2_TX=PA2 → DMA1_Stream6_CH4 | ST-Link 虚拟串口 |
 | 任意 | 内存→内存搬运 | 无需引脚 | 测吞吐用 |
 
-## 💻 代码实现
+## 代码实现
 
 **① 串口 DMA 发送（内存→外设，普通模式）**
 
@@ -259,7 +262,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* 后半满 */
 
 > F4 还可直接用硬件**双缓冲模式**（`DBM`），两个内存指针 `M0AR`/`M1AR` 由硬件自动切换，`CT` 位指示当前使用哪块。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **串口 DMA 回环打印**：用 `HAL_UART_Transmit_DMA` 发送一段长字符串，同时主循环翻转 LED。预期：LED 正常闪烁（说明发送不阻塞 CPU），串口数据完整。
 2. **内存→内存吞吐测试**：用 `DMA_MemCopy` 搬运 64 KB 数据，用 DWT 计时对比 `memcpy`。预期：DMA 版本 CPU 占用更低（详见第 17 章 DWT 计时）。
@@ -286,7 +289,7 @@ uint16_t got  = ADC_BUF_SIZE - left;
 2. 为什么 HT 中断时不该只处理 4 个字节？
 3. F1 的 DMA 挂在 AHB 还是 APB？
 
-## 🔗 相关资源
+## 相关资源
 
 - RM0008《STM32F10xxx 参考手册》第 13 章 DMA 控制器（含请求映射表 78/79）。
 - RM0090《STM32F4 参考手册》第 9 章 DMA 控制器（Stream/Channel、FIFO、双缓冲）。
@@ -294,4 +297,4 @@ uint16_t got  = ADC_BUF_SIZE - left;
 - 本仓库相关章节：第 09 章 ADC+DMA、第 17 章 DWT 计时。
 - 配图：`../assets/animations/dma-circular.svg`、`../assets/gif/dma-ring.gif`（均为作者自绘/程序生成）。
 
-- 📱 手机阅读版：[第 10 章 · DMA（公众号图文）](https://mp.weixin.qq.com/s/KaH4f8tRlMPmGxHsF6qmTQ)
+- 手机阅读版：[第 10 章 · DMA（公众号图文）](https://mp.weixin.qq.com/s/KaH4f8tRlMPmGxHsF6qmTQ)

@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch11-rtc.png">
     <source src="../../assets/video/ch11-rtc.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch11-rtc.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch11-rtc.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch11-rtc.mp4">MP4</a> · <a href="../../assets/video/ch11-rtc.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. RTC 住在备份域。主电源掉了，只要备用电池和低速晶振还在，日历就能继续走。时钟源优先选外部 32.768 千赫，它比内部低速时钟准。
 2. 备份域默认不让你随便写。要先允许访问，再选时钟、设分频。写不进去的时候，多半不是晶振坏了，而是域还锁着，或者写保护没解。
@@ -28,9 +29,11 @@
 8. 口诀：独立看门狗只怕喂晚；窗口看门狗喂早喂晚都会复位。RTC 走在备份域，主电掉了还靠备用电池和低速钟。
 9. 实验先故意不喂狗，确认它真的会复位，并且复位旗对得上。然后再把喂狗放到主循环里正确的位置。从没被咬过的狗，你不知道它在不在岗。
 10. 合上书，三问。主电源掉了，RTC 还靠什么继续走？哪只看门狗喂早了也会复位？为什么不要把喂狗只放在一个无关的定时中断里？
+
+</details>
 <!-- /video:ch11 -->
 
-## Principle and boundary
+## Principle and scope
 
 The watchdog and RTC conclusion in this chapter is pinned to order code STM32F103C8T6. The 1 second is copied whole from Appendix D: prescaler 64, Reload = 624, and LSI taken as a typical 40 kHz gives 625 Hz. The LSI range is Table 25's 30 / 40 / 60 kHz. Do not call 40 kHz a guarantee.
 
@@ -62,7 +65,7 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 
 `iwdg-window.svg` stays a side figure. Do not play it for the IWDG claim. The early-feed reset belongs to the window watchdog. That sentence is in the opening caption. It does not pretend to be the IWDG on this static figure.
 
-## Timing or state
+## Timing and state
 
 | Prescaler | f_LSI | Reload | (Reload + 1) | Time | Reset? |
 | --- | --- | --- | --- | --- | --- |
@@ -76,7 +79,7 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 | WWDG | PCLK1 = 36 MHz | prescaler 8, counter `0x7F` | — | 58.25 ms | Feeding above `0x50` resets |
 | Comparison | 64 | 4095 | 4096 | 6.5536 s | Does not replace Reload 624 |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -88,7 +91,7 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 | The part resets by itself after a breakpoint | The counter kept running in debug | Freeze the IWDG while debugging | [RM0008](#source-rm0008-wdg) | §19.3.3 prints the configuration bit name `DBG_IWDG_STOP`. The independent watchdog can be frozen while debugging. No bit number is given |
 | Option bytes make the watchdog run from power-up and software cannot stop it | `WDG_SW` is 0 | 0 is the hardware watchdog and 1 is the software watchdog | [PM0075](#source-pm0075-rdp) | That bit in the USER byte: 0 means the hardware watchdog and 1 means the software watchdog |
 
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Know the trade-offs among the four RTC clock sources (LSE / LSI / HSE/128), and understand the backup domain and VBAT.
 - [ ] Save a flag in a BKP backup register and use it to tell whether this is the first power-up.
@@ -96,7 +99,7 @@ While LSE uses pin 3 and pin 4, those pins are not GPIO. If PC13 is still the he
 - [ ] Explain the difference between IWDG and WWDG, and give a correct feed strategy.
 - [ ] Track down "the RTC is not running," "the LSE will not start," and "the watchdog resets by mistake."
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. The RTC and the backup domain
 
@@ -158,7 +161,7 @@ An early feed does not reset the IWDG. An early feed that resets is the window w
 - **Each task feeds once.** In an RTOS, every critical task feeds. If any one of them stalls, the chip resets.
 - **The WWDG window.** You are forced to feed inside a window that is not too early and not too late. That catches "running too fast" (a clock gone wrong) and "running too slow."
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -168,9 +171,10 @@ An early feed does not reset the IWDG. An early feed that resets is the window w
 | Nucleo-F411RE | LSE | PC14 / PC15 | A 32.768 kHz crystal is already on the board |
 | Any | Watchdog | No pin | Entirely on-chip |
 
-> ⚠️ Choose the load capacitors from the crystal manual. The four blocks do not write a picofarad. Too much capacitance can keep the LSE from starting.
+> [!WARNING]
+> Choose the load capacitors from the crystal manual. The four blocks do not write a picofarad. Too much capacitance can keep the LSE from starting.
 
-## 💻 Code
+## Code
 
 **① RTC init and reading the time (F1, LSE source)**
 
@@ -265,7 +269,7 @@ static void MX_WWDG_Init(void)
 HAL_WWDG_Refresh(&hwwdg);
 ```
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Timekeeping across power loss**: solder the LSE crystal and a VBAT coin cell. Print the time on the UART once a second, then remove power and bring it back. Expected: the time continues. It does not return to zero.
 2. **A daily alarm**: set an alarm for 08:30 every day, and light an LED in the callback. Expected: it fires once at that time and does nothing the rest of the day.
@@ -300,7 +304,7 @@ Self-test:
 2. What happens if you feed the window watchdog while the counter is still greater than the window value?
 3. Why does the board reset by itself when a breakpoint stops inside `HAL_Delay`?
 
-## 🔗 Related resources
+## Related resources
 
 - RM0008, *STM32F10xxx Reference Manual*, Chapter 18 RTC, Chapter 19 IWDG, Chapter 20 WWDG, Chapter 5 PWR, Chapter 6 BKP, and Chapter 7 RCC (LSE / LSI configuration).
 - RM0090, *STM32F4 Reference Manual*, Chapter 26 RTC, and the matching IWDG / WWDG chapters.

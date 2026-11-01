@@ -66,14 +66,6 @@ TEXT = (236, 239, 244)
 MUTED = (168, 178, 196)
 LINE = (58, 68, 88)
 
-VOICE_NOTE = (
-    "配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），"
-    "经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；"
-    "声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。"
-    "重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。"
-)
-
-
 def _font(size):
     from PIL import ImageFont
     return ImageFont.truetype(FONT, int(round(size * SCALE)), index=0)
@@ -692,6 +684,7 @@ def _doc_block(ch, prefix, lang, duration):
     minutes = f"{duration / 60:.1f} 分钟" if duration else "约 2–4 分钟"
     minutes_en = f"{duration / 60:.1f} min" if duration else "about 2–4 min"
     lines = "\n".join(f"{i}. {s['say']}" for i, s in enumerate(ch["segments"], start=1))
+    # 配音来源与许可写在 assets/README.md，章节里只留播放器和旁白稿。
     if lang == "zh":
         return (
             f"<!-- video:ch{ch['id']} -->\n"
@@ -699,12 +692,13 @@ def _doc_block(ch, prefix, lang, duration):
             f"  <video width=\"640\" controls poster=\"{prefix}/{name}.png\">\n"
             f"    <source src=\"{prefix}/{name}.mp4\" type=\"video/mp4\">\n"
             "  </video>\n"
-            f"  <br><sub>▲ 本章讲解 {minutes}。{VOICE_NOTE} "
-            f'视频：<a href="{prefix}/{name}.mp4">MP4</a> · 字幕：<a href="{prefix}/{name}.srt">SRT</a>。'
-            "由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>\n"
+            f"  <br><sub>▲ 本章讲解视频（{minutes}）。"
+            f'<a href="{prefix}/{name}.mp4">MP4</a> · <a href="{prefix}/{name}.srt">字幕</a></sub>\n'
             "</p>\n\n"
-            "**旁白（与字幕、配音同一份稿）**\n\n"
-            f"{lines}\n"
+            "<details>\n"
+            "<summary>旁白文字稿</summary>\n\n"
+            f"{lines}\n\n"
+            "</details>\n"
             f"<!-- /video:ch{ch['id']} -->\n"
         )
     return (
@@ -713,15 +707,13 @@ def _doc_block(ch, prefix, lang, duration):
         f"  <video width=\"640\" controls poster=\"{prefix}/{name}.png\">\n"
         f"    <source src=\"{prefix}/{name}.mp4\" type=\"video/mp4\">\n"
         "  </video>\n"
-        f"  <br><sub>▲ Chinese voice-over, {minutes_en}. "
-        "Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts "
-        "(library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). "
-        "Pictures are generated from this repo's SVGs, not photographs. "
-        f'Video: <a href="{prefix}/{name}.mp4">MP4</a> · subtitles: <a href="{prefix}/{name}.srt">SRT</a>. '
-        "Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>\n"
+        f"  <br><sub>▲ Chapter video with Chinese voice-over ({minutes_en}). "
+        f'<a href="{prefix}/{name}.mp4">MP4</a> · <a href="{prefix}/{name}.srt">subtitles</a></sub>\n'
         "</p>\n\n"
-        "**Narration script (Chinese, same text as the subtitles)**\n\n"
-        f"{lines}\n"
+        "<details>\n"
+        "<summary>Narration script (Chinese, same text as the subtitles)</summary>\n\n"
+        f"{lines}\n\n"
+        "</details>\n"
         f"<!-- /video:ch{ch['id']} -->\n"
     )
 

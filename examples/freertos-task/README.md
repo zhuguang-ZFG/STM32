@@ -40,7 +40,8 @@
 | NVIC → EXTI0 优先级 | 数值 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY` | 否则 `FromISR` 会断言 |
 | USART1 | 115200-8-N-1 | 日志输出 |
 
-> ⚠️ **最关键的一条**：CubeMX 里把 HAL 时基源（Timebase Source）从 SysTick 改成 **TIMx**。
+> [!WARNING]
+> **最关键的一条**：CubeMX 里把 HAL 时基源（Timebase Source）从 SysTick 改成 **TIMx**。
 > 否则 HAL 和 FreeRTOS 都抢 SysTick，会出现 `HAL_Delay` 卡死或 tick 异常。
 
 ## 四、关键代码解读

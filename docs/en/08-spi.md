@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch08-spi.png">
     <source src="../../assets/video/ch08-spi.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch08-spi.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch08-spi.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch08-spi.mp4">MP4</a> · <a href="../../assets/video/ch08-spi.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. SPI 通常是时钟、主机输出、主机输入、片选。名字要按方向记：主机出去的那根不能和进来的那根对调。对调之后，两边都在听，谁也不说话。
 2. 模式由时钟空闲电平和在哪个沿采样决定。模式 0 是空闲为低，第一个有效沿就采样。主机和从机模式不一致时，数据会整字节错位，看起来像随机数。
@@ -28,9 +29,11 @@
 8. 口诀：模式 0 的空闲时钟是低；主机输出和主机输入不能接反。片选用上升沿结束一次事务。三句先背下来再接线。
 9. 实验找一个带只读寄存器的器件，用正确的模式读回来。数值和手册复位值一致，这章才算过。读出全是 FF 或 00，先查模式和进出线。
 10. 合上书，三问。模式 0 时空闲时钟是高还是低？主机输出和主机输入能不能接反？一次事务结束时片选应该怎样？
+
+</details>
 <!-- /video:ch08 -->
 
-## Principle and boundary
+## Principle and scope
 
 The SPI conclusion in this chapter is pinned to order code STM32F103C8T6. SPI1 is on APB2 and the kernel clock is 72 MHz. The working point is copied whole from Appendix D: Mode 0, `BR=010`, SCK = 9 MHz. On the remapped pins, the PA5/PA6/PA7 sentence below is void.
 
@@ -58,7 +61,7 @@ After MOSI and MISO are swapped, the three bytes do not match `0xEF 0x40 0x17`. 
 
 The opening `spi-transfer.svg` stays a side figure. Without playing it, the pins, 9 MHz, and the three ID bytes are all on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Row | Byte | MOSI | MISO | CS | SCK |
 | --- | --- | --- | --- | --- | --- |
@@ -73,7 +76,7 @@ The opening `spi-transfer.svg` stays a side figure. Without playing it, the pins
 
 The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#source-project-examples).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -84,14 +87,14 @@ The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#
 | The ID shows up on PB3/PB4/PB5 | A remap was treated as the reset default | The reset-default pins are PA5/PA6/PA7 | [DS5319](#source-ds5319-spi) | Pin 15 is SCK, pin 16 is MISO, and pin 17 is MOSI |
 | Bit 0 of the status byte is treated as a protocol busy flag | That is what the example does | Wait on that bit only as the example does | [example](#source-project-examples) | The example treats bit 0 of the status byte as busy |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] Understand the four SPI wires and full-duplex shifting
 - [ ] Know the four CPOL/CPHA modes, and which mode common parts use
 - [ ] Compute the SPI rate and the clock divider (the BR field)
 - [ ] Compare bit-banged SPI with the hardware peripheral, and know DMA can refresh a display
 - [ ] Read a W25Q64 ID, read and write a page, and initialize an ST7789
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: SPI is a ring exchange — one master, several slaves, and one shift register on each side. The master sends one bit, and the slave returns one bit at the same time.**
 
@@ -150,14 +153,14 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 | Flexibility | High | Low (fixed pins) |
 | DMA | None | Supported (fast for a display refresh or a Flash read) |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
 | BluePill | W25Q64 | PA5=SCK, PA6=MISO, PA7=MOSI, PA4=CS | Mode 0 or 3 |
 | BluePill | ST7789/ILI9341 | PA5=SCK, PA7=MOSI, PA4=CS, PA3=DC, PA2=RST | Write only; MISO is unused |
 
-## 💻 Code
+## Code
 
 ```c
 /* spi_flash.c —— hardware SPI1 reads the W25Q64 JEDEC ID (HAL) */
@@ -255,7 +258,7 @@ The idea of a DMA display refresh: send a whole frame buffer in one `HAL_SPI_Tra
 
 The full project is in [`examples/spi-flash/`](../../examples/spi-flash/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1:** Read the W25Q64 JEDEC ID and confirm it is 0xEF4017 (use `spi-transfer.svg` to see the shift).
 2. **Lab 2:** Write 16 bytes to a page and read them back. Confirm they match. On purpose, skip the write enable and watch it fail.
@@ -316,7 +319,7 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | Several devices | One CS per device | Addressed | Point to point |
 | Full duplex | Yes | Half duplex | Yes |
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 25 (SPI); the W25Q64 and ST7789 datasheets
 - Previous: [07 The I2C Bus](07-i2c.md)

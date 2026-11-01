@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch13-can.png">
     <source src="../assets/video/ch13-can.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.8 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch13-can.mp4">MP4</a> · 字幕：<a href="../assets/video/ch13-can.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.8 分钟）。<a href="../assets/video/ch13-can.mp4">MP4</a> · <a href="../assets/video/ch13-can.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. CAN 发出去要有人应答。只有一个节点、又不是回环时，错误计数会一直涨。发送错误计数到 256，节点进入总线关闭，它就闭嘴了。这不是收发器坏了。
 2. 先把控制器配成回环，自己发给自己。能收到，说明波特率和过滤器大体对了。再接到真正的总线。示例工程默认就是这条回环路。
@@ -29,9 +30,11 @@
 8. 两块板子练习时，关掉回环，两边标识对调，总线两端各放 120 欧。收发器的电平要和模块匹配。单看回环全绿，不代表两块板子已经能对话。
 9. 口诀：发送错误计数到 256 就闭嘴。单节点不要用正常模式考验自己。500 千比特在 36 兆上，记预分频 9 和一共 8 个时间份额。
 10. 合上书，三问。为什么只有一个节点、又不是回环时会进总线关闭？36 兆下 500 千比特的预分频是多少？PB8 和 PB9 哪只是接收？
+
+</details>
 <!-- /video:ch13 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的位时间和工作脚只钉在订货号 STM32F103C8T6 上。CAN1 的内核时钟是 APB1 的 36 MHz，跟第 02 章同一笔。工作点整格照抄罗盘：预分频 9，BS1 = 5，BS2 = 2，SJW = 1。见 [RM0008 Rev 21 bxCAN](#source-rm0008-can)。
 
@@ -63,7 +66,7 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 
 `can-arbitration.svg` 留作辅图。仲裁和位填充不进这张静态主图。
 
-## 时序或状态
+## 时序与状态
 
 | 预分频 | BS1 | BS2 | 时间份额数 | 位时间 | 速率 | 采样点 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -73,7 +76,7 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 | 错误 | 计数到 256 | 总线关闭 | 128 次 | 每次 11 个隐性位 | — | 之后才可以再驱动 |
 | 过滤器 | `FilterIdHigh` | 左移 5 | — | — | — | 不左移则邮箱仍空 |
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -85,7 +88,7 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 | 重映射到晶振脚之后时钟停了 | 那两只脚接着 HSE | 不要把 CAN 放到第 5 脚和第 6 脚 | [DS5319](#source-ds5319-clock) | LQFP48 第 5 脚是 PD0-OSC_IN，第 6 脚是 PD1-OSC_OUT。这两只脚存在 |
 | 和 I2C 重映射抢同一对脚 | PB8/PB9 也是 I2C1 的重映射 | 这一对脚只选择 CAN 或 I2C 之一 | [DS5319](#source-ds5319-i2c) | 第 45 脚 PB8、第 46 脚 PB9 是 I2C1 的重映射。不改写第 07 章那张图 |
 
-## 📌 学习目标
+## 学习目标
 
 - [ ] 理解差分电平、显性/隐性、位填充、CRC、ACK 的作用。
 - [ ] 分清数据帧/遥控帧/错误帧/过载帧，以及标准帧（11 位）与扩展帧（29 位）ID。
@@ -93,7 +96,7 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 - [ ] 会算波特率与采样点（BS1/BS2/SJW），并据此配置 `CAN_BTR`。
 - [ ] 会配置过滤器与 F1 的双 FIFO 收发。
 
-## 🧠 核心原理
+## 核心原理
 
 ### 1. 物理层：差分信号与显性/隐性
 
@@ -148,7 +151,7 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 
 **结论**：一个位时间 `T_bit = 1/NBaud` 由 `SYNC_SEG(1 Tq)` + `BS1` + `BS2` 组成；采样点一般取在 **75%~87.5%**。
 
-```
+```text
 BaudRate = f_APB1 / (Prescaler × (1 + BS1 + BS2))
 采样点位置 = (1 + BS1) / (1 + BS1 + BS2) × 100%
 Tq = Prescaler / f_APB1
@@ -181,7 +184,7 @@ Tq = Prescaler / f_APB1
 
 > F4 的 bxCAN 结构与之类似（也是 14 组过滤器 + 2 FIFO，见 RM0090 第 32 章 Controller area network），寄存器命名基本一致。
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -192,7 +195,7 @@ Tq = Prescaler / f_APB1
 
 接线：`CAN_TX → 收发器 TXD`，`CAN_RX → 收发器 RXD`，收发器 `CANH/CANL` 接总线；**收发器供电注意电平**（SN65HVD230 是 3.3 V，TJA1050 是 5 V）。
 
-## 💻 代码实现
+## 代码实现
 
 **① CAN 初始化（F1，500 kbps）**
 
@@ -263,7 +266,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
 ```
 
-## 🧪 动手实验
+## 动手实验
 
 1. **单节点自测（回环模式）**：把 CAN 配成 `CAN_MODE_LOOPBACK`，自发自收，串口打印收到的 ID 与数据。预期：能收到自己发出的帧，无需收发器和总线。
 2. **双节点通信**：两块 BluePill + 收发器，A 发 B 收，总线两端各接 120 Ω。预期：B 稳定收到 A 的报文，串口打印一致。
@@ -288,7 +291,7 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM：数够 128×11 个隐性位后自动�
 2. `AutoBusOff` 打开之后，软件还要不要写“重新 Start”？
 3. 标准帧 ID 0x100 仲裁时，最先和 0x200 比的是哪一位？
 
-## 🔗 相关资源
+## 相关资源
 
 - RM0008《STM32F10xxx 参考手册》第 21 章 Controller area network (bxCAN)（含 `CAN_BTR` 位定义、过滤器、双 FIFO）。
 - RM0090《STM32F4 参考手册》第 32 章 Controller area network (bxCAN)。
@@ -297,4 +300,4 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM：数够 128×11 个隐性位后自动�
 - 配图：`../assets/animations/can-arbitration.svg`（作者自绘矢量图）。
 - 可编译示例：[examples/can-bxcan](../examples/can-bxcan/)（环回、双节点、过滤器、ABOM 与软件恢复）。BluePill 上请重映射到 PB8/PB9，不要占用板载 USB 的 PA11/PA12。
 
-- 📱 手机阅读版：[第 13 章 · CAN总线（公众号图文）](https://mp.weixin.qq.com/s/KvjVL15tp4MOqeR_5rxUbA)
+- 手机阅读版：[第 13 章 · CAN总线（公众号图文）](https://mp.weixin.qq.com/s/KvjVL15tp4MOqeR_5rxUbA)

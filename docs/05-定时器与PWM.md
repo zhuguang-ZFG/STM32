@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch05-tim.png">
     <source src="../assets/video/ch05-tim.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch05-tim.mp4">MP4</a> · 字幕：<a href="../assets/video/ch05-tim.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch05-tim.mp4">MP4</a> · <a href="../assets/video/ch05-tim.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 定时器不是魔法，就是一个被时钟推着走的计数器。CNT 加到 ARR 就回头，这一圈就是周期。先把这句话讲顺，再去看 PWM。
 2. 三个数各管一件事。PSC 把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。频率不对先看前两个，亮度不对再看 CCR。
@@ -29,9 +30,11 @@
 8. 口诀：捕获锁的是 CNT。想要某个频率，先定 PSC，再定 ARR。三个数不要一起拧，拧乱了就不知道是谁的错。
 9. 实验输出大约 1 千赫、占空比三成的 PWM。用逻辑分析仪或示波器对一下。对不上时，先核对定时器时钟，再核对 ARR 和 CCR，别先怀疑探头。
 10. 合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？
+
+</details>
 <!-- /video:ch05 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的波形结论只钉在订货号 STM32F103C8T6 上。计数时钟用附录 D 的 72 MHz，不用 36 MHz。换到 32 位定时器的系列时，「这颗料是 16 位」那一句作废。
 
@@ -59,7 +62,7 @@ TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 
 
 章首的 `timer-pwm.svg` 和 `pwm-breath.gif` 留在原节，标成辅图。不播放它们，1 kHz 和 500 Hz 都在静态主图上。
 
-## 时序或状态
+## 时序与状态
 
 | 行 | 计数时钟 | PSC | ARR | CCR | CNT | 输出 | 时间 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -71,7 +74,7 @@ TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 
 
 出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -80,14 +83,14 @@ TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 
 | TIM1 完全没有波形 | BDTR 位 15 的 MOE 还是 0 | 置上 MOE | [RM0008](#source-rm0008-tim) | 复位值 0x0000，MOE 为 0 时主输出关闭。偏移 0x44。TIM3 没有这一位 |
 | PWM 出现在别的脚上 | TIM3_REMAP 不是 00 | 保持 TIM3_REMAP=00，用 PA6 | [DS5319](#source-ds5319-tim) | LQFP48 第 16 脚是 PA6，默认复用含 TIM3_CH1 |
 
-## 📌 学习目标
+## 学习目标
 - [ ] 分清 STM32 各类定时器（高级/通用/基本/看门狗/SysTick）
 - [ ] 会用时基公式算出任意定时周期的 PSC/ARR
 - [ ] 理解计数模式、更新事件与影子寄存器
 - [ ] 会配 PWM 模式并推导占空比/频率公式
 - [ ] 会用输入捕获测频/测占空比，了解编码器接口
 
-## 🧠 核心原理
+## 核心原理
 
 **结论先行：定时器的本质是「时钟驱动计数器」，PSC 定快慢、ARR 定周期、CCR 定占空比。**
 
@@ -164,7 +167,7 @@ TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 
 | 编码器接口 | A/B 相正交解码，自动加减计数 | 电机测速/位置 |
 | 从模式 | 外部信号复位/门控计数器 | 测周、门控计数 |
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -173,7 +176,7 @@ TIM1/TIM8 的 `TIMx_BDTR` 偏移 `0x44`，复位值 `0x0000`，位 15 MOE 为 0 
 
 > F1 定时器通道对应关系见 DS5319 引脚复用表；TIM1 是高级定时器，PWM 输出需 **MOE**。
 
-## 💻 代码实现
+## 代码实现
 
 ```c
 /* timer_pwm.c —— TIM3_CH1(PA6) 输出 1kHz PWM，软件调节占空比做呼吸灯 */
@@ -268,7 +271,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 完整工程见 [`examples/timer-pwm/`](../examples/timer-pwm/)。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **实验一（PWM 输出）**：TIM3_CH1 输出 1kHz、50% 方波，用示波器/逻辑分析仪确认频率与占空比。
 2. **实验二（呼吸灯）**：按上面代码让占空比 0→100% 往返，观察 LED 渐亮渐灭（对照 `pwm-breath.gif`）。
@@ -339,11 +342,11 @@ HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
 2. ADC 想每 1 ms 转一次，该让定时器的 TRGO 选什么事件？
 3. 编码器只接了 A 相，反转时计数会怎样？
 
-## 🔗 相关资源
+## 相关资源
 
 - 官方手册：**RM0008** 第 14 章（高级定时器 TIM1/8）、第 15 章（通用定时器 TIM2~5）、第 16 章（基本定时器 TIM6/7）
 - 上一篇：[04 中断与NVIC](04-中断与NVIC.md)｜下一篇：[06 串口UART](06-串口UART.md)
-- 📱 手机阅读版：[第 05 章 · 定时器与PWM（公众号图文）](https://mp.weixin.qq.com/s/Jutp6HD4eo8bV0QcXWJ_pw)
+- 手机阅读版：[第 05 章 · 定时器与PWM（公众号图文）](https://mp.weixin.qq.com/s/Jutp6HD4eo8bV0QcXWJ_pw)
 - 相关图：[`assets/animations/timer-pwm.svg`](../assets/animations/timer-pwm.svg)、[`assets/animations/timer-modes.svg`](../assets/animations/timer-modes.svg)、[`assets/gif/pwm-breath.gif`](../assets/gif/pwm-breath.gif)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
 

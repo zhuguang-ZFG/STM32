@@ -49,7 +49,8 @@ Before changing a number, copy one row of this blank table. The right-hand colum
 | What falsifies it | The instrument reading that throws the cell out | A bit rate of 450 kbit/s matches 10 quanta and prescaler 8: `36e6 / 80 = 450000`. That cell's prescaler was 7.2 |
 | What stays out of the design | What this cell does not prove | A loopback frame shows the controller accepted this bit timing. The two 120 Ω resistors, the ACK, and the error counters are a separate note |
 
-> ⚠️ 7.2 does not fit in the prescaler field. After writing the neighboring integer 8, the bus rate is 450 kbit/s, and loopback can still look green.
+> [!WARNING]
+> 7.2 does not fit in the prescaler field. After writing the neighboring integer 8, the bus rate is 450 kbit/s, and loopback can still look green.
 
 ## Source register
 

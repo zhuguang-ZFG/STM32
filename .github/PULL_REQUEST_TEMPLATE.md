@@ -26,7 +26,7 @@ python3 tools/check_assets.py
 
 输出：
 
-```
+```text
 （粘贴输出）
 ```
 

@@ -28,7 +28,7 @@
 
 ---
 
-> ### 📣 公众号连载版
+> ### 公众号连载版
 >
 > 本教程正在微信公众号「**SIAI小宇宙**」同步连载：与本仓库相同的 **00–28 共 29 章**图文 + 每章配套讲解视频 + 速查表，
 > 手机随时翻。微信搜索「**SIAI小宇宙**」或扫文末二维码关注，关注后回复「**资料**」直达本仓库。
@@ -53,7 +53,7 @@
 | **不知道板子长什么样、引脚怎么接** | 自绘的**板卡实物结构图** + 全引脚标注图 + 外设接线总览 |
 | **示例代码抄了跑不起来** | 每个示例都是完整可编译的 HAL 代码 + CubeMX 配置要点 + 常见坑 |
 
-> 📌 **诚实声明**：本仓库所有插图都是**作者用代码自绘的矢量图（SVG）与程序生成的光栅动画（GIF）**，
+> **诚实声明**：本仓库所有插图都是**作者用代码自绘的矢量图（SVG）与程序生成的光栅动画（GIF）**，
 > 不是厂商实拍照片。需要看实拍照片与官方原理图，请通过[第 21 章](docs/21-原理图与实物图鉴.md)里的官方链接查看。
 
 ## 卡住了？按报错原文查
@@ -62,10 +62,10 @@
 
 | 你看到的现象 | 真正的原因 | 看这里 | 手机版图解 |
 | --- | --- | --- | --- |
-| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) | [📱 三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
-| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
-| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [📱 三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
-| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
+| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) | [三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
+| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
+| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
+| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
 | 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [17 调试与性能优化](docs/17-调试与性能优化.md) | — |
 | I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [07 I2C 总线](docs/07-I2C总线.md) | — |
 | 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [04 中断与 NVIC](docs/04-中断与NVIC.md) | — |
@@ -92,7 +92,7 @@
 | 想自己改图 / 生成素材 | [tools/](tools/)（纯 Python，零依赖） |
 | 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
 
-> 🔗 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
+> 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
 
 ## 动画演示（GitHub 页面直接播放）
 

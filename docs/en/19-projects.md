@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch19-projects.png">
     <source src="../../assets/video/ch19-projects.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.4 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch19-projects.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch19-projects.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.4 min). <a href="../../assets/video/ch19-projects.mp4">MP4</a> · <a href="../../assets/video/ch19-projects.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 做项目最容易散的地方，是一个周末同时加上蓝牙、显示和存储。规矩只有一条：每一轮新增加的不确定，只允许有一个外设。坏了，你知道是谁。
 2. 动手前用一句话写完完成标准。比如温度每分钟记一条，掉电不丢。没有这句话，你会一直调，不知道哪天算做完。失败怎样看出来，也要先写下来。
@@ -29,8 +30,10 @@
 8. 口诀：你的下一个项目，新增加的外设只有哪一个？说不出名字，就还没准备好开工。说得出，就先把别的欲望写进下一轮。
 9. 做完不是指灯亮过一次。别人按你的说明能复现，你能说出还没做的部分。仓库里的十个题目，选一个做到这个程度，比十个都开了头有用。
 10. 合上书，三问。你下一轮只允许新加哪一个外设？怎样算做完？板上的时钟和示例不一致时，你先改哪一部分？
+
+</details>
 <!-- /video:ch19 -->
-## Principle and boundary
+## Principle and scope
 
 This chapter stays on STM32F103C8T6. All ten projects stay. The four sections do not design an eleventh project. A number written for this part has to fit in this part, and it has to be the same ledger as chapter files 12 and 09. The file name and the title stay "A set of real projects".
 
@@ -64,7 +67,7 @@ Add one new peripheral per pass. That is a method, not a new electrical limit. H
 
 `peripheral-wiring.svg` stays as an auxiliary figure. The wiring overview does not replace this map.
 
-## Timing or state
+## Timing and state
 
 | Object | Length | Ends at | Fits |
 | --- | --- | --- | --- |
@@ -77,7 +80,7 @@ Add one new peripheral per pass. That is a method, not a new electrical limit. H
 | ADC | denominator 4096 | code 2048 is 1.65 V | denominator 4095 fails |
 | USB | application frame of 133 bytes | packet limit 64 bytes | 133 has to be split |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -88,7 +91,7 @@ Add one new peripheral per pass. That is a method, not a new electrical limit. H
 | The acquisition card writes 133 bytes as the endpoint packet length | The application frame was treated as the packet limit | A full-speed bulk packet is at most 64 bytes | [repository examples](#source-project-examples) | 133 is `4 + 128 + 1`. It is not the chapter 14 packet limit |
 | The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0. This row does not assign a motor pin |
 | Two CAN nodes do not agree on the rate | They are not on the chapter 13 ledger | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9. This row does not set the transceiver to 5 V or to 3.3 V |
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Turn "an idea" into the engineering path: requirements, then hardware, then approach, then modules, then tests.
 - [ ] Through 10 projects that build on each other, use GPIO, UART, I2C, SPI, ADC, DMA, TIM, and an RTOS in one place.
@@ -497,14 +500,14 @@ static void vCommTask(void *arg)
 
 **Where it can grow**: an MQTT or Modbus stack, OTA updates, task runtime stats (`vTaskGetRunTimeStats`), or saving data across power loss.
 
-## 🧪 Hands-on labs (picking a project and moving it forward)
+## Hands-on labs (picking a project and moving it forward)
 
 1. **Build the MVP first**: pick any project and do only the smallest version that runs (for the Bluetooth car, forward and stop are enough). You should see something happen within half a day to 1 day.
 2. **Split it into modules**: break the project into 3 to 5 pieces you can test alone, and prove each one. Each module should run on its own.
 3. **Add one harder feature**: take one direction from "where it can grow" (an OLED, for example) and put it on the MVP. The product should grow one step at a time.
 4. **Write a short retrospective**: record the traps and the fixes (add them to [chapter 18](18-faq.md)). You should start a personal notebook of engineering lessons.
 
-## 🔗 Related resources
+## Related resources
 
 - The technical detail is in [chapters 03 through 17](03-gpio-and-led.md) (GPIO, UART, I2C, SPI, ADC, DMA, TIM, RTC, Flash, CAN, USB, RTOS, low power, and debug): [03](03-gpio-and-led.md), [04](04-interrupts-nvic.md), [05](05-timer-pwm.md), [06](06-uart.md), [07](07-i2c.md), [08](08-spi.md), [09](09-adc-dac.md), [10](10-dma.md), [11](11-rtc-watchdog.md), [12](12-flash-iap.md), [13](13-can.md), [14](14-usb.md), [15](15-freertos.md), [16](16-low-power.md), [17](17-debug.md).
 - Example projects: [`examples/`](../../examples/) (gpio-blink, uart-dma-idle, i2c-oled, adc-dma, rtc-alarm, freertos-task, iap-bootloader).

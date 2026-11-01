@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch08-spi.png">
     <source src="../assets/video/ch08-spi.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch08-spi.mp4">MP4</a> · 字幕：<a href="../assets/video/ch08-spi.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch08-spi.mp4">MP4</a> · <a href="../assets/video/ch08-spi.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. SPI 通常是时钟、主机输出、主机输入、片选。名字要按方向记：主机出去的那根不能和进来的那根对调。对调之后，两边都在听，谁也不说话。
 2. 模式由时钟空闲电平和在哪个沿采样决定。模式 0 是空闲为低，第一个有效沿就采样。主机和从机模式不一致时，数据会整字节错位，看起来像随机数。
@@ -29,9 +30,11 @@
 8. 口诀：模式 0 的空闲时钟是低；主机输出和主机输入不能接反。片选用上升沿结束一次事务。三句先背下来再接线。
 9. 实验找一个带只读寄存器的器件，用正确的模式读回来。数值和手册复位值一致，这章才算过。读出全是 FF 或 00，先查模式和进出线。
 10. 合上书，三问。模式 0 时空闲时钟是高还是低？主机输出和主机输入能不能接反？一次事务结束时片选应该怎样？
+
+</details>
 <!-- /video:ch08 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的 SPI 结论只钉在订货号 STM32F103C8T6 上。SPI1 在 APB2，内核时钟 72 MHz。工作点整格照抄附录 D：Mode 0，`BR=010`，SCK = 9 MHz。换到重映射脚时，下面的 PA5/PA6/PA7 作废。
 
@@ -59,7 +62,7 @@ MOSI 和 MISO 对调之后，三字节对不上 `0xEF 0x40 0x17`。这是主图�
 
 章首的 `spi-transfer.svg` 留作辅图。不播放它，脚位、9 MHz 和 ID 三字节都在静态主图上。
 
-## 时序或状态
+## 时序与状态
 
 | 行 | 字节序号 | MOSI | MISO | CS | SCK |
 | --- | --- | --- | --- | --- | --- |
@@ -74,7 +77,7 @@ MOSI 和 MISO 对调之后，三字节对不上 `0xEF 0x40 0x17`。这是主图�
 
 页大小 256 字节。出处是 [RM0008](#source-rm0008-spi) 与 [例程](#source-project-examples)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -85,14 +88,14 @@ MOSI 和 MISO 对调之后，三字节对不上 `0xEF 0x40 0x17`。这是主图�
 | ID 出现在 PB3/PB4/PB5 | 用了重映射，还当成复位默认 | 复位后的默认脚是 PA5/PA6/PA7 | [DS5319](#source-ds5319-spi) | 第 15 脚 SCK，第 16 脚 MISO，第 17 脚 MOSI |
 | 状态字节的位 0 被当成协议里的忙 | 这是例程的做法 | 只按例程去等这一位 | [例程](#source-project-examples) | 例程把状态字节的位 0 当成忙 |
 
-## 📌 学习目标
+## 学习目标
 - [ ] 理解 SPI 四线制与全双工移位原理
 - [ ] 掌握 CPOL/CPHA 四种模式与常用器件模式
 - [ ] 会算 SPI 速率与时钟分频（BR 位）
 - [ ] 会比较软件模拟与硬件 SPI，了解 DMA 刷屏
 - [ ] 会用 W25Q64 读 ID/读写页、ST7789 初始化
 
-## 🧠 核心原理
+## 核心原理
 
 **结论先行：SPI 是「一个主机、多个从机、主从各一个移位寄存器」的环形交换——主机发一位，从机同时回一位。**
 
@@ -151,14 +154,14 @@ MOSI 和 MISO 对调之后，三字节对不上 `0xEF 0x40 0x17`。这是主图�
 | 灵活性 | 高 | 低（固定引脚） |
 | DMA | 无 | 支持（刷屏/读 Flash 快） |
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
 | BluePill | W25Q64 | PA5=SCK, PA6=MISO, PA7=MOSI, PA4=CS | Mode 0/3 |
 | BluePill | ST7789/ILI9341 | PA5=SCK, PA7=MOSI, PA4=CS, PA3=DC, PA2=RST | 只写，MISO 不用 |
 
-## 💻 代码实现
+## 代码实现
 
 ```c
 /* spi_flash.c —— 硬件 SPI1 读 W25Q64 JEDEC ID（HAL） */
@@ -256,7 +259,7 @@ DMA 刷屏思路：把整屏像素缓冲通过 `HAL_SPI_Transmit_DMA` 一次性�
 
 完整工程见 [`examples/spi-flash/`](../examples/spi-flash/)。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **实验一**：读 W25Q64 JEDEC ID，确认是 0xEF4017（对照 `spi-transfer.svg` 理解移位）。
 2. **实验二**：向某页写 16 字节再读回，验证一致；故意不写使能观察失败。
@@ -317,10 +320,10 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | 多设备 | 每设备一 CS | 地址寻址 | 点对点 |
 | 全双工 | 是 | 半双工 | 是 |
 
-## 🔗 相关资源
+## 相关资源
 
 - 官方手册：**RM0008** 第 25 章（SPI）；W25Q64、ST7789 数据手册
 - 上一篇：[07 I2C总线](07-I2C总线.md)
-- 📱 手机阅读版：[第 08 章 · SPI总线（公众号图文）](https://mp.weixin.qq.com/s/FOR_DIzh4qdzByi0qAI1Jg)
+- 手机阅读版：[第 08 章 · SPI总线（公众号图文）](https://mp.weixin.qq.com/s/FOR_DIzh4qdzByi0qAI1Jg)
 - 相关图：[`assets/animations/spi-transfer.svg`](../assets/animations/spi-transfer.svg)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。

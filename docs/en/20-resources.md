@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch20-refs.png">
     <source src="../../assets/video/ch20-refs.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch20-refs.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch20-refs.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch20-refs.mp4">MP4</a> · <a href="../../assets/video/ch20-refs.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 学习用的官方资料不用找网盘。从 ST 的网站下载数据手册和参考手册。配置用 CubeMX，编译调试用 CubeIDE，烧录和选项字节用 CubeProgrammer。
 2. 查引脚和电气参数，翻数据手册。查寄存器每一位，翻参考手册。查内核指令和故障，翻编程手册。应用笔记讲一种做法，用户手册讲一种工具。
@@ -29,8 +30,10 @@
 8. 口诀：寄存器的位去参考手册，引脚和电气去数据手册，内核去编程手册。先选对书，再搜索关键词。
 9. 今天就给你的芯片下载数据手册和参考手册，文件名要对上型号和修订号。以后章节里写的 DS 和 RM，指的就是这两本，不是搜索引擎的第一篇文章。
 10. 合上书，三问。CAN 过滤器的位定义在数据手册还是参考手册？引脚电气在哪本？读写选项字节用 Cube 家族里的哪一个工具？
+
+</details>
 <!-- /video:ch20 -->
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Recognize the official ST set: the website, CubeMX, CubeIDE, CubeProgrammer, and CubeMonitor.
 - [ ] Tell RM, DS, PM, AN, and UM apart, and know what each name means.
@@ -38,7 +41,7 @@
 - [ ] Know what the main open-source firmware libraries are for: libopencm3, ChibiOS, Zephyr, RT-Thread, and FreeRTOS.
 - [ ] Use a three-step way to search a manual with a question in hand, and work the three examples below.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. Map of the official resources
 
@@ -120,7 +123,7 @@
 - Then go back to **RM0090** chapter 9, DMA, and search the `FIFO`, `BURST`, and `PL` bits. Check the FIFO threshold against the burst size.
 - Read the "DMA and the bus matrix" chapter so the priority and the bus contention make sense.
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 The "hardware" in this chapter is **tools and instruments**. They decide how fast you can debug and how fast you can learn. The table is a starting set.
 
@@ -145,7 +148,7 @@ The "hardware" in this chapter is **tools and instruments**. They decide how fas
 | STM32CubeMonitor | Run-time variables and power, drawn for you | You do not have to write a host app |
 | PulseView | Logic-analyzer UI and protocol decode | Pair it with an 8-channel analyzer |
 
-## 💻 Code
+## Code
 
 **① Flash from the OpenOCD command line (no IDE)**
 
@@ -210,7 +213,7 @@ addr2line -e build/app.elf -f -C $(PC)
 
 > A tip: **if the command line can do it, use the command line.** Continuous integration, flashing a batch, and a machine with no IDE all depend on it. A graphical window is for interactive debug.
 
-## ⚠️ Common traps and how to check them
+## Common traps and how to check them
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
@@ -224,7 +227,7 @@ addr2line -e build/app.elf -f -C $(PC)
 | Logic-analyzer decode is nonsense | The sample rate is too low, or the logic level does not match | Raise the sample rate, and confirm 3.3 V levels |
 | A pirated J-Link gets locked | A clone J-Link was detected | Use an ST-Link, or a genuine J-Link |
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **The whole toolchain from the command line**: compile, flash with OpenOCD, and set a GDB breakpoint, without clicking a mouse. You should be able to finish one command-line debug session on your own.
 2. **Create a PlatformIO project**: use `platformio.ini` for an F103, build it, and download a blink. You should understand a cross-platform build.
@@ -232,7 +235,7 @@ addr2line -e build/app.elf -f -C $(PC)
 4. **(Further) Decode with PulseView**: capture one SPI Flash read ([chapter 08](08-spi.md)) and reconstruct the command with a decoder. You should see the `0x03` read command and the data.
 5. **(Further) Try an open-source library**: blink once with libopencm3 or Zephyr, and compare it with HAL. You should see what each layer of abstraction costs and what it saves.
 
-## 🔗 Related resources
+## Related resources
 
 - ST's website: st.com (the manual download center). The official forum is community.st.com.
 - Tool sites: STM32CubeMX, STM32CubeIDE, STM32CubeProgrammer, and STM32CubeMonitor (all downloaded from st.com).

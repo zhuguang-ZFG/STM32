@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch03-gpio.png">
     <source src="../../assets/video/ch03-gpio.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.4 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch03-gpio.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch03-gpio.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.4 min). <a href="../../assets/video/ch03-gpio.mp4">MP4</a> · <a href="../../assets/video/ch03-gpio.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. GPIO 看起来就是高低电平，真正要选的是模式。先分清输入还是输出，推挽还是开漏，要不要上下拉。模式选错，电平会和你想的相反。
 2. BluePill 的板载灯在 PC13，接法是低电平才亮。你写 1，灯反而是灭的。别拿共阴外接灯的习惯去套这颗板载灯，否则你会以为端口坏了。
@@ -28,8 +29,10 @@
 8. 口诀：F1 重映射先开 AFIO；5 伏只认 FT；锁定是 1、0、1 再读。三件都是手上的动作，不是概念题。
 9. 实验让 PC13 以 1 赫兹翻转。眼睛只能看出大概，频率要用你算过的延时或定时器来对。对上了，这章才算过关。
 10. 合上书，三问。PC13 写高还是写低才会亮？按键接 GND 该上拉还是下拉？F1 重映射之前必须先开哪个时钟？
+
+</details>
 <!-- /video:ch03 -->
-## Principle and boundary
+## Principle and scope
 
 The LED conclusion of this chapter holds for orderable STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
 
@@ -48,7 +51,7 @@ The 25 mA and 50 MHz cells in the speed table are void for these three pins. A d
 
 The opening `gpio-blink.svg` stays an animated side figure. This key figure still shows the failure on PC13 when the animation is not playing.
 
-## Timing or state
+## Timing and state
 
 The 1 Hz high and low times are not a GPIO speed-bit result. High 500 ms and low 500 ms come from the [gpio-blink example](#source-project-examples) `HAL_Delay(500)`. Writing the speed bits as 50 MHz does not turn PC13 into a pin that may source an LED.
 
@@ -62,7 +65,7 @@ The 1 Hz high and low times are not a GPIO speed-bit result. High 500 ms and low
 
 The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.2.7](#source-rm0008-gpio).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -73,14 +76,14 @@ The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.
 | The probe never connects after a flash | PA13 and PA14 were configured as ordinary GPIO | Leave SWD on PA13 and PA14 | [RM0008 Table 36](#source-rm0008-gpio) | SWDIO is PA13 and SWCLK is PA14 |
 
 The old debounce row stays out of this card. A 10 ms to 20 ms debounce is not pinned to RM0008 or DS5319. The lab may still debounce a button without calling that interval a manual number.
-## 📌 Learning goals
+## Learning goals
 - [ ] Remember the 8 GPIO modes and where each one belongs
 - [ ] Understand the current path of push-pull versus open-drain, and what the pull-up resistor is doing
 - [ ] Compute an LED series resistor R=(Vcc−Vf)/I
 - [ ] Drive GPIO both with HAL and with registers
 - [ ] Know the usual traps: SWD pin reuse, and forgetting the clock enable
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: the 8 GPIO modes are the combinations of input/output × push-pull/open-drain × alternate/GPIO × pull-up/pull-down/floating. The wrong mode is the root of most problems.**
 
@@ -115,7 +118,7 @@ The old debounce row stays out of this card. A 10 ms to 20 ms debounce is not pi
 | --- | --- | --- |
 | Where a high comes from | The PMOS actively pulls up to VDD | High impedance; an external pull-up provides the high |
 | Where a low comes from | The NMOS actively pulls down to GND | The NMOS actively pulls down to GND |
-| Wired-AND? | ❌ | ✅ Tie pins together and you get wired-AND |
+| Wired-AND? | No | Yes, tie pins together and you get wired-AND |
 | Typical use | LED, ordinary digital output | I2C, level shift, a shared bus |
 | Current path | High: VDD→PMOS→pin. Low: pin→NMOS→GND | Low: pin→NMOS→GND. High: none (the external pull-up does it) |
 
@@ -142,7 +145,7 @@ The worked example for this orderable is in Principle and boundary, and it is an
 | BSRR | Bit set/reset register. Writing 1 is what acts. Atomic |
 | BRR | Bit reset register (F1 has it; on F4 it is folded into BSRR) |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -153,7 +156,7 @@ The worked example for this orderable is in Principle and boundary, and it is an
 External LED wiring: PA0 → 270 Ω → LED anode, LED cathode → GND (**common cathode**, lights when the pin is high).
 The onboard LED is **common anode**: the anode is tied to 3.3 V, and PC13 has to pull low before current flows, so it **lights when the pin is low**.
 
-## 💻 Code
+## Code
 
 ```c
 /* gpio_blink.c —— GPIO output blinks an LED and reads a button (HAL) */
@@ -230,7 +233,7 @@ PC13_OUT = 0;   /* write 0 or 1 directly, no read-modify-write, same effect as O
 
 The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1:** Blink the PC13 onboard LED at 1 Hz (compare with `gpio-blink.svg` and `led-blink.gif`).
 2. **Lab 2:** Put an external LED on PA0, compute and fit a 270 Ω resistor, and let the PA1 button control the LED.
@@ -331,7 +334,7 @@ Self-test:
 2. PA0 is not marked FT in the datasheet. Can you tie a 5 V sensor to it directly?
 3. You finish the `LCKR` writes and never read it back. Is the lock in effect?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 9 (GPIO) and section 9.2 (register description); **DS5319** pin definitions
 - Previous: [02 Choosing a Part, Memory, and Clocks](02-part-and-clock.md) | Next: [04 Interrupts and the NVIC](04-interrupts-nvic.md)

@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch09-adc.png">
     <source src="../../assets/video/ch09-adc.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch09-adc.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch09-adc.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch09-adc.mp4">MP4</a> · <a href="../../assets/video/ch09-adc.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 逐次逼近之前，要先让采样电容充满。源阻抗越大，需要的采样时间越长。充不满就转换，读数会偏向你上一次采过的电压。
 2. F1 的 ADC 是 12 位。换算时用读数除以 4096，再乘参考电压。用 4095 做口算会有一个最小步长的差别。参考电压不是想当然的 3.3，要看你接到哪。
@@ -28,9 +29,11 @@
 8. 口诀：采样看阻抗，换算除以 4096，C8 没有 DAC。三句分别挡住采不准、算不准、抄错芯片这三件最常见的事。
 9. 实验用电位器做分压，两端接地和参考，中间进 ADC。慢慢旋转，读数应该单调变化。跳变或反向，先查接线和参考，不要先改分辨率。
 10. 合上书，三问。采样时间主要看什么？12 位换算要除以多少？STM32F103C8 有没有 DAC？
+
+</details>
 <!-- /video:ch09 -->
 
-## Principle and boundary
+## Principle and scope
 
 The sampling conclusion in this chapter is pinned to order code STM32F103C8T6. The sample clock is the 12 MHz from Appendix D. The conversion divisor is 4096. On a part that has a DAC, the sentence “this part has no DAC” is void. On an F4, the sentences “sample plus 12.5” and “calibrate after power-up” are void.
 
@@ -64,7 +67,7 @@ DMA is only a cross-reference to chapter file 10 and Appendix D: this part has o
 
 The opening `adc-sar.svg` stays a side figure. `sar-adc.gif` stays in its original section. Its pixels are not replaced.
 
-## Timing or state
+## Timing and state
 
 | Row | Sample cycles | Sample time | After adding 12.5 |
 | --- | --- | --- | --- |
@@ -76,7 +79,7 @@ The opening `adc-sar.svg` stays a side figure. `sar-adc.gif` stays in its origin
 
 The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -88,7 +91,7 @@ The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 | HAL_DAC_Start on a Blue Pill leaves no analog voltage on PA4 | This C8 has no DAC | For an analog voltage use PWM plus an RC, or change to a part that has a DAC | [DS5319](#source-ds5319-adc) | Medium-density devices have two 12-bit ADCs. There is no ADC3 and no DAC. Pin 14 is not DAC_OUT1 |
 | Pin 10 used to light an LED, and the sample looks like a push-pull read | The pin is still an output | While sampling, this pin is an analog input and no longer sources the chapter 03 current | [DS5319](#source-ds5319-adc) | LQFP48 pin 10 PA0 is ADC12_IN0. Do not rewrite the chapter 03 LED figure |
 
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Know the quantitative relationship among resolution, reference voltage, and quantization error, and be able to estimate the voltage of 1 LSB.
 - [ ] Understand the sample–hold–compare sequence of a successive-approximation (SAR) ADC, and choose the sample time from the source impedance.
@@ -96,7 +99,7 @@ The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 - [ ] Use the internal temperature sensor and Vrefint to work backward to the die temperature and the real VDDA.
 - [ ] Know the DAC output modes, and how the output buffer changes accuracy and noise.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. Resolution, reference voltage, and quantization error
 
@@ -111,14 +114,15 @@ The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
 The formulas:
 
-```
+```text
 1 LSB        = Vref / 2^N                          (N-bit resolution)
 V_in         = ADC_Code × Vref / 2^N               (proportional reading)
 quantization error = ±0.5 LSB = ±Vref / 2^(N+1)   (ideal ADC, quantization only)
 full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 ```
 
-> ⚠️ On STM32F1, `Vref` is `VDDA` (the analog supply). They share a pin. Only packages with 100 pins or more have a separate `VREF+` / `VREF-`. So **VDDA ripple is a direct error in the reading**. For a precise measurement, either bring in an external reference, or measure Vrefint first and calibrate in software.
+> [!WARNING]
+> On STM32F1, `Vref` is `VDDA` (the analog supply). They share a pin. Only packages with 100 pins or more have a separate `VREF+` / `VREF-`. So **VDDA ripple is a direct error in the reading**. For a precise measurement, either bring in an external reference, or measure Vrefint first and calibrate in software.
 
 ### 2. Successive approximation (SAR): sample-and-hold plus binary compare
 
@@ -137,7 +141,7 @@ The conversion, for 12 bits:
 
 **Sample time and source impedance** is the easiest place to get hurt. The sample switch and the signal source form an RC charge path. The capacitor has to charge to within 1/2 LSB during the sample time. ST's rule of thumb is:
 
-```
+```text
 t_s (minimum) ≈ (R_AIN + R_ADC) × C_ADC × ln(2^(N+2))
 For STM32F1: R_ADC ≈ 1 kΩ, C_ADC ≈ 8 pF, N = 12 → ln(2^14) ≈ 9.7
 ```
@@ -194,7 +198,7 @@ The regular group holds up to 16 conversions in the sequence. The injected group
 
 **Temperature (F1, RM0008 Chapter 11, "Temperature sensor")**: set `CR2.TSVREFE=1` to enable it, and select channel 16.
 
-```
+```text
 V_sense = V25 - Slope × (T - 25)
 => T(°C) = (V25 - V_sense) / Slope + 25
 F1 typical values: V25 ≈ 1.43 V, Slope ≈ 4.3 mV/°C
@@ -202,7 +206,7 @@ F1 typical values: V25 ≈ 1.43 V, Slope ≈ 4.3 mV/°C
 
 **Working backward from Vrefint to VDDA**: channel 17 measures a fixed internal reference of about 1.20 V.
 
-```
+```text
 VDDA       = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 real V_in  = ADC_Read(ch) × VDDA / 4096
 ```
@@ -227,7 +231,7 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 
 > The F103C8 (the part you usually find on a BluePill) **has no DAC**. The DAC shows up on high-density F103 (xC / xD / xE) and on F4. On a medium-density part, analog voltage means PWM plus an RC, or an external DAC chip.
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Function | Pin | Notes |
 | --- | --- | --- | --- |
@@ -237,7 +241,7 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 
 Pick the source impedance from the sample-time table above. Put a follower in front of a high-impedance sensor. Do not try to brute-force it by stretching the sample time out to 239.5 cycles.
 
-## 💻 Code
+## Code
 
 **Conclusion**: On F1 you must calibrate once before you start a conversion. Use DMA for continuous multi-channel acquisition. Polling is enough for a single slow signal.
 
@@ -268,7 +272,7 @@ HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 1/2, which is 1.65 V at a nominal 3.3 V */
 ```
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Potentiometer**: wire the wiper of a 10 kΩ potentiometer to PA0, and the two ends to 3.3 V and GND. Print the code and `code * 3.3f / 4096` on the UART. Expected: the ends land near 0 V and 3.3 V, and the middle is about 1.65 V (code about 2048).
 2. **Internal reference**: read Vrefint and work backward with `VDDA = 1.20f * 4096 / code`. Expected: on USB power, VDDA sits near 3.3 V. The exact number is whatever your meter says. This page does not give a "standard measured value."
@@ -305,7 +309,7 @@ Other packages, and the F4 channel table, follow the pinout in that part's datas
 
 Motto: **sample time follows impedance, conversion divides by 4096, and the C8 has no DAC.**
 
-## 🔗 Related resources
+## Related resources
 
 - RM0008, Chapter 11 ADC, and Chapter 12 DAC (the DAC exists only on high-density parts).
 - Datasheet DS5319: ADC pins, sample time, and source impedance.

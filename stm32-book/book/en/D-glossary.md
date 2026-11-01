@@ -218,7 +218,8 @@ Each row above is only a working definition. This table pins the numbers you kee
 
 The table above is pinned to an STM32F103C8T6. The numbers below are already in chapters 04, 05, 12, 13, 15, 16, 23, 24, 25, and 27. This page gathers the ones you recalculate when the chip changes. Change the orderable part or the clock, and the row is void.
 
-> ⚠️ A prescaler, a page size, and a voltage scale look like integers you can copy. Before changing family, recompute this page on the new clock. A prescaler such as 7.2 does not fit in the field. The register receives a neighboring integer.
+> [!WARNING]
+> A prescaler, a page size, and a voltage scale look like integers you can copy. Before changing family, recompute this page on the new clock. A prescaler such as 7.2 does not fit in the field. The register receives a neighboring integer.
 
 | Ledger | Where it is pinned | The number | What it looks like when it is wrong |
 | --- | --- | --- | --- |

@@ -83,7 +83,7 @@ See [`../../assets/README.md`](../../assets/README.md). A chapter may cite only 
 
 ## 5. Commit style
 
-```
+```text
 docs(05): add the PWM duty-cycle formula and the breathing-LED animation
 fix(gif): fix led-blink.gif timing so it matches the 1 Hz note
 ```

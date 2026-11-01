@@ -6,7 +6,7 @@ Run from the repository root:
 
     python3 tools/scan_batch3_chapters.py
 
-Rewrites docs/superpowers/plans/2026-10-25-batch3-02-05-08-09-lock.json and
+Rewrites stm32-book/tests/fixtures/2026-10-25-batch3-02-05-08-09-lock.json and
 exits 0 when all eight manuscripts lack the four headings and still have the
 old pitfall heading. Exits 2 without writing the lock if a four-block heading
 is already present, or if the old pitfall heading is already gone.
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCK_PATH = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch3-02-05-08-09-lock.json"
+LOCK_PATH = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch3-02-05-08-09-lock.json"
 FILES = {
     "02": (
         ROOT / "docs" / "02-芯片选型与存储器时钟.md",
@@ -41,15 +41,15 @@ FILES = {
         ROOT / "docs" / "en" / "09-adc-dac.md",
     ),
 }
-ZH_BLOCKS = ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡")
+ZH_BLOCKS = ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处")
 EN_BLOCKS = (
-    "## Principle and boundary",
+    "## Principle and scope",
     "## Key figures",
-    "## Timing or state",
-    "## Pitfalls and source cards",
+    "## Timing and state",
+    "## Pitfalls and sources",
 )
-ZH_OLD = "## ⚠️ 常见坑与排查"
-EN_OLD = "## ⚠️ Pitfalls and troubleshooting"
+ZH_OLD = "## 常见坑与排查"
+EN_OLD = "## Pitfalls and troubleshooting"
 
 
 def four_blocks(text: str, headings: tuple[str, ...]) -> bool:

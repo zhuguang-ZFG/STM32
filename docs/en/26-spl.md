@@ -9,10 +9,11 @@
   <video width="640" controls poster="../../assets/video/ch26-spl.png">
     <source src="../../assets/video/ch26-spl.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.9 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch26-spl.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch26-spl.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.9 min). <a href="../../assets/video/ch26-spl.mp4">MP4</a> · <a href="../../assets/video/ch26-spl.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 本章只认 STM32F10x SPL V3.5.0。F103C8、CB 使用中容量设备宏，启动文件和链接脚本也要匹配。只复制 main，工程不会一致。
 2. SPL 工程至少包含 CMSIS、设备头、驱动、启动文件、SystemInit 和应用。缺 SystemInit，时钟假设不成立；缺启动文件，向量表和初始栈没有入口。
@@ -24,8 +25,10 @@
 8. SPL 和 HAL 会写同一组寄存器，却各自维护状态。双重初始化会覆盖波特率、DMA 和中断。迁移时一次只换一个外设，用同一波形对照。
 9. 仓库示例在固定的 GNU Arm 工具链和冻结源码上编译。编译通过只证明接口和链接闭合；还要从 map 文件核对存储边界，再在真板上观察引脚、时钟和故障路径。
 10. 合上书，三问。USE STDPERIPH DRIVER 和 STM32F10X MD 各管什么？USART SendData 到底保证什么？同一个串口为什么不能先用 SPL 初始化、再让 HAL 接管？
+
+</details>
 <!-- /video:ch26 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] State the scope, directory layout, and two critical build macros of SPL V3.5.0.
 - [ ] Recognize the common `RCC_*ClockCmd → *_StructInit → *_Init → *_Cmd` initialization sequence.
@@ -33,7 +36,7 @@
 - [ ] Understand that SPL has no HAL callback dispatcher: the IRQ handler must inspect and clear the real source.
 - [ ] Decide whether an old SPL project should be maintained, migrated one peripheral at a time, or rebuilt on HAL/LL.
 
-## 🧭 1. Freeze the version and boundary first
+## 1. Freeze the version and boundary first
 
 This chapter covers **STM32F10x Standard Peripheral Library V3.5.0 only**. ST's official product entry is **STSW-STM32054**. API names and layout were checked against the V3.5.0 source. The source mirror is frozen at commit `afa743577f2784e95be2d5003380fdb84a702519` for stable file locations; it is **not a new normative source**. Register behavior still comes from RM0008 and the exact device datasheet.
 
@@ -52,7 +55,7 @@ The useful model has four layers:
 3. Sources such as `stm32f10x_gpio.c`: structure fields translated into register writes.
 4. Your project: clocks, pins, call order, interrupts, deadlines, and the product state machine.
 
-## 🗂️ 2. Project skeleton
+## 2. Project skeleton
 
 A missing source file can leave you with a declaration that compiles but no implementation to link:
 
@@ -90,7 +93,7 @@ Do not keep `STM32F10X_MD` merely because a Blue Pill tutorial used it. Also ver
 
 With `USE_FULL_ASSERT`, invalid SPL arguments enter `assert_failed()` during development. Release builds normally remove those checks. They do not replace runtime handling for communication timeouts, missing sensors, DMA errors, or failed Flash programming.
 
-## 🔁 3. The common model: clock, defaults, configuration, enable
+## 3. The common model: clock, defaults, configuration, enable
 
 ```c
 RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -112,7 +115,7 @@ The four boundaries are:
 
 Not every peripheral has the same function names. Check the V3.5.0 header and RM0008 rather than inventing a missing `*_Cmd` because another peripheral has one.
 
-## 💡 4. A buildable SPL blink loop
+## 4. A buildable SPL blink loop
 
 The example targets the common STM32F103C8 Blue Pill. PC13 is active low. The build defines `STM32F10X_MD` and `USE_STDPERIPH_DRIVER`; `stm32f10x_conf.h` includes at least RCC and GPIO. The V3.5.0 template already contains a non-weak empty `SysTick_Handler` in `stm32f10x_it.c`; **replace it rather than adding a duplicate handler in `main.c`**.
 
@@ -169,7 +172,7 @@ int main(void)
 
 The reproducible project is [`examples/spl-f1-blink/`](../../examples/spl-f1-blink/). It builds against the frozen source and shares one CMake truth across command line, CLion, and VS Code. The mirror stores `core_cm3.h` as `core_cm3.h.old`; the build only copies it when the proper filename is missing. With GNU Arm 10.3.1, the verified ELF had text 1976 B, data 20 B, bss 1028 B, and one `SysTick_Handler`. Those are build observations, not a hardware claim. Hardware acceptance still requires roughly 1 Hz on the LED and a `SystemCoreClock` that matches the actual clock.
 
-## 🧩 5. HAL, SPL, and the final register boundary
+## 5. HAL, SPL, and the final register boundary
 
 This is not a mechanical replacement table. HAL often maintains handles and state; SPL usually writes peripheral registers directly.
 
@@ -209,7 +212,7 @@ static int usart1_send_byte(uint8_t byte, uint32_t spin_limit)
 
 `spin_limit` only demonstrates bounded waiting. Product code should use a deadline derived from a reliable monotonic clock and define recovery after timeout.
 
-## ⚡ 6. Interrupts: no HAL callback dispatcher
+## 6. Interrupts: no HAL callback dispatcher
 
 ```c
 static volatile uint8_t g_key_event;
@@ -231,7 +234,7 @@ Check every boundary:
 - Clear rules differ. USART ORE still requires reading SR then DR; do not substitute a similar-looking clear function.
 - An ISR does not perform blocking output, a complete I2C transaction, Flash erase, or a long delay. Preserve minimal evidence and hand off work.
 
-## 🚚 7. DMA: two drivers are not wired together automatically
+## 7. DMA: two drivers are not wired together automatically
 
 USART1 TX needs at least:
 
@@ -262,7 +265,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 The buffer must remain alive until completion. Width, direction, and increment rules must match the register. `DMA_GetCurrDataCounter()` returns remaining **items**, not newly received bytes. F1 has no D-cache; that does not make this code portable to H7.
 
-## 🧰 8. Minimum peripheral chains
+## 8. Minimum peripheral chains
 
 | Peripheral | Minimum SPL chain | Boundary most often missed |
 | --- | --- | --- |
@@ -277,7 +280,7 @@ The buffer must remain alive until completion. Width, direction, and increment r
 | Flash | unlock → clear → erase/program → status → lock | page/halfword alignment and power loss |
 | CAN | clocks/GPIO → Init → filter → IRQ/NVIC → Tx/Rx | one normal-mode node receives no ACK |
 
-## 🔀 9. Maintaining and migrating an old project
+## 9. Maintaining and migrating an old project
 
 1. Freeze a reproducible baseline: exact part, V3.5.0, density macro, compiler, startup, crystal, linker script, and board revision.
 2. Draw a peripheral ownership table: SPL, direct registers, or a third-party component.
@@ -287,7 +290,7 @@ The buffer must remain alive until completion. Width, direction, and increment r
 
 Keep SPL when an F1 product is already in production, evidence and certification surround the frozen toolchain, and the team can keep that environment reproducible. Prefer HAL/LL when a new family has no SPL, CubeMX/current middleware is required, or the old project contains untraceable SPL copies.
 
-## ⚠️ 10. Failure map
+## 10. Failure map
 
 | Symptom | First boundary | Action |
 | --- | --- | --- |
@@ -302,7 +305,7 @@ Keep SPL when an F1 product is already in production, evidence and certification
 | intermittent failure after adding HAL | double ownership | remove one setup and IRQ path |
 | “same” API absent on H7 | SPL is not cross-generation | redesign for H7 HAL/LL, memory domains, and cache |
 
-## 🧪 Labs
+## Labs
 
 1. Build the SPL blink and record `SystemCoreClock`, measured period, and error.
 2. Step through `GPIO_ResetBits` and record the final register write; compare chapter 3's HAL path.
@@ -316,7 +319,7 @@ Self-test:
 2. Why is `USART_SendData()` not synonymous with `HAL_UART_Transmit()`?
 3. Why should one USART not be initialized by both SPL and HAL?
 
-## 🔗 Sources
+## Sources
 
 - [STSW-STM32054](https://www.st.com/en/embedded-software/stsw-stm32054.html), the official STM32F10x SPL product entry.
 - Frozen V3.5.0 source mirror: [commit `afa743577f2784e95be2d5003380fdb84a702519`](https://github.com/wajatimur/stm32f10x-stdperiph-lib/commit/afa743577f2784e95be2d5003380fdb84a702519). It locates source; ST and RM0008 remain authoritative.

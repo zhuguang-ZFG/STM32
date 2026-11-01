@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch10-dma.png">
     <source src="../../assets/video/ch10-dma.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch10-dma.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch10-dma.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch10-dma.mp4">MP4</a> · <a href="../../assets/video/ch10-dma.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. DMA 是搬运工。外设来了新数据，或者内存里有一包要送出去，它可以自己搬，CPU 继续算别的。前提是你把源、目的和数量写对。
 2. 剩余数量记在 NDTR 里。它减到 0，这一轮就搬完了。循环模式下，硬件会把数量装回去，指针也回到起点。你不用在中断里手动重置。
@@ -28,9 +29,11 @@
 8. 口诀：剩下的在 NDTR；半字的半传输按元素算，再乘 2 才是字节。调试时把 NDTR 打出来，比猜「DMA 是不是坏了」快得多。
 9. 实验让 DMA 把一串数搬进数组，断点时后半段应该已经变了，NDTR 也在减小。数组纹丝不动，先查通道、方向和使能，别先改算法。
 10. 合上书，三问。NDTR 里装的是地址还是剩余数量？循环模式谁把指针拨回去？半字传输的半满，怎样换成字节数？
+
+</details>
 <!-- /video:ch10 -->
 
-## Principle and boundary
+## Principle and scope
 
 The DMA conclusion in this chapter is pinned to order code STM32F103C8T6. The channel numbers and the half-word ledger are copied whole from Appendix D.
 
@@ -60,7 +63,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 `dma-circular.svg` and `dma-ring.gif` stay in their original section and are marked as side figures.
 
-## Timing or state
+## Timing and state
 
 | Length | Width | CNDTR | Samples written | Bytes written |
 | --- | --- | --- | --- | --- |
@@ -73,7 +76,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 | Void | DMA2 Stream 5 | no counter on this part | — | The F4 FIFO is four 32-bit words and does not prove the C8 has DMA2 |
 | Circular | reload at zero | the reloaded CNDTR | not a cumulative total | `length − CNDTR` is not progress |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -83,7 +86,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 | An F4 example's channel numbers match the text and not the board | The F4 numbers were written onto the C8 | Leave that set of numbers on F4 | [RM0090](#source-rm0090) | F4 USART1_RX is DMA2 Stream 5, Channel 4. The FIFO is four 32-bit words. This does not prove the C8 has DMA2 |
 | Progress in circular mode keeps growing | `length − CNDTR` was used as a cumulative total | Use the write position from the callback | [RM0008](#source-rm0008-dma) | Hardware reloads the count at zero. Progress uses the write position in the callback |
 
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Describe the DMA controller layout: the F1 "channel" model, and the F4 "stream × channel" model.
 - [ ] Look up the request map and connect a peripheral request to the right channel or stream.
@@ -91,7 +94,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 - [ ] Use the transfer-complete (TC) and half-transfer (HT) interrupts to process data while it is still arriving.
 - [ ] Understand bus contention between DMA and the CPU, and the cache-coherency problem on H7 and F7.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
 
@@ -167,7 +170,7 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 - **FIFO threshold**: Occasional bad data on F4 means the FIFO is not configured, or the burst does not match. Set the FIFO threshold and the burst size.
 - **Local-variable buffer**: The UART sends half the buffer and then stalls because the buffer is a local variable and dies when the function returns. Use a `static` or global buffer.
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 DMA is entirely on-chip. It needs no extra wires. Its value shows up in how it drives a peripheral. The pins below are the typical cases:
 
@@ -178,7 +181,7 @@ DMA is entirely on-chip. It needs no extra wires. Its value shows up in how it d
 | Nucleo-F411RE | UART DMA | USART2_TX = PA2 → DMA1 Stream6 Channel 4 | ST-Link virtual COM port |
 | Any | Memory-to-memory copy | No pin | For measuring throughput |
 
-## 💻 Code
+## Code
 
 **① UART DMA transmit (memory → peripheral, normal mode)**
 
@@ -258,7 +261,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 
 > F4 can also use hardware **double-buffer mode** (`DBM`). The two memory pointers `M0AR` and `M1AR` switch automatically, and the `CT` bit tells you which block is in use.
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **UART DMA loopback print**: send a long string with `HAL_UART_Transmit_DMA`, and toggle an LED in the main loop at the same time. Expected: the LED keeps blinking (the transmit does not block the CPU) and the UART data is complete.
 2. **Memory-to-memory throughput**: use `DMA_MemCopy` to move 64 KB, and time it with the DWT against `memcpy`. Expected: the DMA version uses less CPU (see [Chapter 17](17-debug.md) for DWT timing).
@@ -285,7 +288,7 @@ Self-test:
 2. Why should you not process only 4 bytes in the HT interrupt?
 3. Is the F1 DMA on AHB or on APB?
 
-## 🔗 Related resources
+## Related resources
 
 - RM0008, *STM32F10xxx Reference Manual*, Chapter 13, DMA controller (including request-map tables 78 and 79).
 - RM0090, *STM32F4 Reference Manual*, Chapter 9, DMA controller (stream / channel, FIFO, double buffer).

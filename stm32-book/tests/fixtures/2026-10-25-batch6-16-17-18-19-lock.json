@@ -22,7 +22,7 @@
       "expects_old_pitfall": true,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     },
     "17": {
       "zh": "docs/17-调试与性能优化.md",
@@ -32,7 +32,7 @@
       "expects_old_pitfall": true,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     },
     "18": {
       "zh": "docs/18-常见问题FAQ.md",
@@ -42,7 +42,7 @@
       "expects_old_pitfall": false,
       "zh_old_pitfall": false,
       "en_old_pitfall": false,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     },
     "19": {
       "zh": "docs/19-项目实战合集.md",
@@ -52,7 +52,7 @@
       "expects_old_pitfall": false,
       "zh_old_pitfall": false,
       "en_old_pitfall": false,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     }
   }
 }

@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch00-learn.png">
     <source src="../../assets/video/ch00-learn.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.3 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch00-learn.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch00-learn.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.3 min). <a href="../../assets/video/ch00-learn.mp4">MP4</a> · <a href="../../assets/video/ch00-learn.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 欢迎来到第零章。先别急着买一堆模块。把路线钉死：入门四周打底，进阶六周啃外设，实战八周做出能给人看的东西。
 2. 顺序别跳。先把环境和时钟踩实，再碰 GPIO，然后才轮到串口。跳步的人，最容易摔在时钟没开、寄存器像写进虚空。
@@ -28,8 +29,10 @@
 8. 口诀送你一句：先让一颗灯按你算过的频率闪。频率对了，说明时钟、引脚和延时你都真的算过，不是看视频看会的。
 9. 四周结束时，你应该能独立新建工程、下载、单步，并讲清启动后先干什么。讲不清这些，先别翻串口那一章，回去把灯做稳。
 10. 合上书，三问。BOOT0 拉低进哪里？HAL 比直接写寄存器多了哪一层？你的第一场胜利到底是什么？答案都在这一章正文里。
+
+</details>
 <!-- /video:ch00 -->
-## Principle and boundary
+## Principle and scope
 
 Record the first board as orderable STM32F103C8T6. The boot conclusion is [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot). Do not fill this row from a G0 or H7 boot table.
 
@@ -48,7 +51,7 @@ When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T
 
 The opening `toolchain-flow.svg` stays a side figure of the tools. This key figure shows the BOOT0=1 failure without playing an animation.
 
-## Timing or state
+## Timing and state
 
 | State | BOOT1 | BOOT0 | What the CPU fetches from 0x00000000 | On STM32F103C8T6 |
 | --- | --- | --- | --- | --- |
@@ -58,7 +61,7 @@ The opening `toolchain-flow.svg` stays a side figure of the tools. This key figu
 
 The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -66,14 +69,14 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 | BOOT pins changed inside main, and this reset already went the wrong way | The pins latched on the 4th rising edge of SYSCLK | Set BOOT0 and BOOT1 before reset | [RM0008 section 3.4](#source-rm0008-boot) | The latch is the 4th rising edge of SYSCLK; Standby exit samples them again |
 | A connectivity-line or XL-density boot address was copied into the C8 project | 0x1FFFB000 and 0x08080000 are not rows for this part | Use 0x1FFFF000 for system memory and 0x08000000 for Flash | [RM0008 section 3.4](#source-rm0008-boot) | Those two rows are void on STM32F103C8T6 |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] Know the minimum C, digital, and analog you need before studying STM32
 - [ ] Assemble a hardware kit you can use immediately, including price ranges
 - [ ] Read the "4 weeks beginner / 6 weeks intermediate / 8 weeks project" roadmap and check yourself with the self-tests
 - [ ] Choose among three styles: registers, the standard peripheral library (SPL), and HAL+LL+CubeMX
 - [ ] Remember the "do not do this" list, so the usual early dead ends do not talk you out of the work
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: getting started with STM32 does not mean finishing an entire electronics degree. You need "enough" background plus the right path.**
 
@@ -138,13 +141,13 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 
 | Item | Suggested part | Price range (¥) | Required? | Notes |
 | --- | --- | --- | --- | --- |
-| Minimum board | BluePill STM32F103C8T6 | 15–30 | ✅ | Best first board; the most material exists for it |
+| Minimum board | BluePill STM32F103C8T6 | 15–30 | Required | Best first board; the most material exists for it |
 | Next board | STM32F411 BlackPill / Nucleo-F411RE | 30–80 | Optional | Buy it when you study F4/F7, DSP, or the FPU |
-| Debugger | ST-Link V2 (clone) | 15–40 | ✅ | SWD download and debug |
-| Breadboard | 830-tie solderless breadboard | 8–20 | ✅ | You need it to wire circuits |
-| Dupont wires | Male-to-male / male-to-female, 40 of each | 8–15 | ✅ | Color-coded ones are worth it |
-| USB-TTL | CH340 / CP2102 module | 8–20 | ✅ | Serial debug; watch the 3.3 V level |
-| Sensor kit | 37-in-1 sensor modules | 40–80 | ✅ | Button, LED, OLED, DHT11, and so on |
+| Debugger | ST-Link V2 (clone) | 15–40 | Required | SWD download and debug |
+| Breadboard | 830-tie solderless breadboard | 8–20 | Required | You need it to wire circuits |
+| Dupont wires | Male-to-male / male-to-female, 40 of each | 8–15 | Required | Color-coded ones are worth it |
+| USB-TTL | CH340 / CP2102 module | 8–20 | Required | Serial debug; watch the 3.3 V level |
+| Sensor kit | 37-in-1 sensor modules | 40–80 | Required | Button, LED, OLED, DHT11, and so on |
 | OLED | 0.96" SSD1306 I2C | 12–25 | Recommended | The best first I2C exercise |
 | Logic analyzer | 8-channel 24 MHz (clone) | 15–40 | Recommended | The tool that shows I2C/SPI/UART timing |
 | Multimeter | Entry-level digital meter | 30–80 | Recommended | Voltage and continuity |
@@ -153,7 +156,7 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 
 ### 5. What not to do (the list that makes people quit)
 
-| ❌ Do not | Why | Do this instead |
+| Do not | Why | Do this instead |
 | --- | --- | --- |
 | Start by reading a 1000-page reference manual | No context, so nothing sticks and nothing gets used | Run an example first, then look up the page you need |
 | Study RTOS, bare metal, and a PC app at the same time | Attention splits, and none of them gets solid | Get the bare-metal peripherals firm, then add an RTOS |
@@ -163,7 +166,7 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 | Debug a bus with no scope and no logic analyzer | If you cannot see the timing, you are guessing | At least keep a logic analyzer |
 | Buy the most expensive board first | It is likely to sit unused | Run a 30-yuan BluePill first |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 At the start, all you wire is "minimum board + ST-Link + USB-TTL":
 
@@ -177,11 +180,12 @@ At the start, all you wire is "minimum board + ST-Link + USB-TTL":
 | PA9 (TX) | — | RX | Cross them: board TX → module RX |
 | PA10 (RX) | — | TX | Board RX → module TX |
 
-> ⚠️ The BluePill 3V3 pin cannot feed an ST-Link well. Power the board from its Micro-USB on its own.
+> [!WARNING]
+> The BluePill 3V3 pin cannot feed an ST-Link well. Power the board from its Micro-USB on its own.
 
 The physical layout is in [`assets/boards/bluepill-stm32f103c8t6.svg`](../../assets/boards/bluepill-stm32f103c8t6.svg) (a structural drawing by the author, not a photograph).
 
-## 💻 Code
+## Code
 
 The "first program": blink the onboard LED (PC13, on when low) once a second. This is the standard check that the environment is actually set up.
 
@@ -253,7 +257,7 @@ GPIOC->ODR ^= GPIO_ODR_ODR13;               /* toggle PC13 */
 
 The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1 (environment check):** Blink PC13 at 1 Hz with the code above. What you should see: the onboard blue LED turns on and off once a second.
 2. **Lab 2 (change a parameter):** Change `HAL_Delay(500)` to 100 and watch the blink speed up. Probe PC13 with a logic analyzer and confirm the frequency is about 5 Hz.
@@ -294,7 +298,7 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 | What if I cannot read the English manual? | Start with the figures and the register tables, and pair them with a Chinese tutorial. |
 | Do I need to be able to draw a PCB? | Use a ready-made board to start. You do not. |
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: STM32F103C8 datasheet **DS5319**; reference manual **RM0008** (GPIO chapter 9, RCC chapter 8)
 - Next: [01 Setting Up the Development Environment](01-dev-environment.md)

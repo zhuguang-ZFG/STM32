@@ -11,8 +11,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch4-01-07-10-11-lock.json"
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch4-01-07-10-11-source-list.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch4-01-07-10-11-lock.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch4-01-07-10-11-source-list.json"
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
@@ -247,16 +247,16 @@ class Batch4SwdChapterTests(unittest.TestCase):
     def test_swd_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "01-开发环境搭建.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "01-dev-environment.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         self.assertIn("stm32f1x unlock 0", zh)
         self.assertIn("stm32f1x unlock 0", en)
         self.assertIn(
@@ -307,8 +307,8 @@ class Batch4SwdChapterTests(unittest.TestCase):
         self.assertIn("pin 37", en)
         self.assertIn("pin 7", en)
         self.assertIn("pin 44", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             self.assertIn("0xA5", blocks)
             self.assertIn("0xAA", blocks)
@@ -321,8 +321,8 @@ class Batch4SwdChapterTests(unittest.TestCase):
         self.assertIn("../assets/gif/swd-fetch.gif", zh)
         self.assertIn("../../assets/gif/swd-fetch.gif", en)
         self.assertIn("../assets/animations/boot-sequence.svg", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-01-swd-vectors.svg"), zh_key.index("swd-fetch.gif"))
         self.assertLess(en_key.index("sample-01-swd-vectors.svg"), en_key.index("swd-fetch.gif"))
         self.assertIn("自绘", zh_key)
@@ -386,14 +386,14 @@ class Batch4I2cChapterTests(unittest.TestCase):
     def test_i2c_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "07-I2C总线.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "07-i2c.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         for text in (zh, en):
             for token in (
                 "0x3C",
@@ -419,8 +419,8 @@ class Batch4I2cChapterTests(unittest.TestCase):
         self.assertIn("第 43 脚", zh)
         self.assertIn("pin 42", en)
         self.assertIn("pin 43", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             self.assertNotIn("300ns / Cb", blocks)
             self.assertNotIn("300 ns / Cb", blocks)
@@ -433,8 +433,8 @@ class Batch4I2cChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-07-i2c-addr.svg", en)
         self.assertIn("../assets/gif/i2c-addr.gif", zh)
         self.assertIn("../../assets/gif/i2c-addr.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-07-i2c-addr.svg"), zh_key.index("i2c-addr.gif"))
         self.assertLess(en_key.index("sample-07-i2c-addr.svg"), en_key.index("i2c-addr.gif"))
         self.assertIn("自绘", zh_key)
@@ -481,12 +481,12 @@ class Batch4DmaChapterTests(unittest.TestCase):
     def test_dma_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "10-DMA.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "10-dma.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         for text in (zh, en):
             for token in (
                 "DMA1",
@@ -505,8 +505,8 @@ class Batch4DmaChapterTests(unittest.TestCase):
         self.assertIn("channel 1", en)
         self.assertIn("7", zh)
         self.assertIn("7", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             self.assertIn("DMA1", blocks)
             self.assertIn("CNDTR", blocks)
@@ -521,8 +521,8 @@ class Batch4DmaChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-10-dma-cndtr.svg", en)
         self.assertIn("../assets/gif/dma-cndtr.gif", zh)
         self.assertIn("../../assets/gif/dma-cndtr.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-10-dma-cndtr.svg"), zh_key.index("dma-cndtr.gif"))
         self.assertLess(en_key.index("sample-10-dma-cndtr.svg"), en_key.index("dma-cndtr.gif"))
         self.assertIn("自绘", zh_key)
@@ -561,12 +561,12 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
     def test_watchdog_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "11-RTC与看门狗.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "11-rtc-watchdog.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         self.assertNotIn("6 pF", zh)
         self.assertNotIn("6 pF", en)
         self.assertNotIn("过早/过晚都触发复位", zh)
@@ -599,8 +599,8 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
         self.assertIn("pin 1", en)
         self.assertIn("pin 3", en)
         self.assertIn("pin 4", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             self.assertNotIn("6 pF", blocks)
             self.assertNotIn("±20 ppm", blocks)
@@ -618,10 +618,10 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-11-iwdg-1s.svg", en)
         self.assertIn("../assets/gif/iwdg-1s.gif", zh)
         self.assertIn("../../assets/gif/iwdg-1s.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
         self.assertLess(zh_key.index("sample-11-iwdg-1s.svg"), zh_key.index("iwdg-1s.gif"))
         self.assertIn("自绘", zh_key)
-        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0])
+        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0])
         self.assertNotIn("示意图", zh_key)
         listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DIAGRAMS = ROOT / "assets" / "diagrams"
 BOOT = DIAGRAMS / "sample-00-boot-state.svg"
 GPIO = DIAGRAMS / "sample-03-gpio-led.svg"
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-chapter-lock.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-chapter-lock.json"
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
@@ -102,44 +102,44 @@ class SampleGpioChapterTests(unittest.TestCase):
     def test_gpio_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "03-GPIO与LED.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "03-gpio-and-led.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
         for text in (zh, en):
             for token in ("STM32F103C8T6", "LQFP48", "PA0", "PC13", "270", "260", "3.3", "3 mA", "2 MHz", "30 pF", "GPIOx_LCKR", "0x18", "PA13", "PA14", "#source-ds5319-gpio", "#source-rm0008-gpio", "#source-project-examples"):
                 self.assertIn(token, text)
             self.assertIn("../assets/diagrams/sample-03-gpio-led.svg" if text is zh else "../../assets/diagrams/sample-03-gpio-led.svg", text)
         for start, end in (
-            ("## 原理与边界", "## 关键插图"),
-            ("## 关键插图", "## 时序或状态"),
-            ("## 时序或状态", "## 坑与出处卡"),
-            ("## 坑与出处卡", "## 📌 学习目标"),
+            ("## 原理与适用范围", "## 关键插图"),
+            ("## 关键插图", "## 时序与状态"),
+            ("## 时序与状态", "## 常见坑与出处"),
+            ("## 常见坑与出处", "## 学习目标"),
         ):
             self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
         for start, end in (
-            ("## Principle and boundary", "## Key figures"),
-            ("## Key figures", "## Timing or state"),
-            ("## Timing or state", "## Pitfalls and source cards"),
-            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+            ("## Principle and scope", "## Key figures"),
+            ("## Key figures", "## Timing and state"),
+            ("## Timing and state", "## Pitfalls and sources"),
+            ("## Pitfalls and sources", "## Learning goals"),
         ):
             self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
-        core = zh.split("## 🧠 核心原理", 1)[1].split("## 🛠️ 硬件与接线", 1)[0]
-        core_en = en.split("## 🧠 Core ideas", 1)[1].split("## 🛠️ Hardware and wiring", 1)[0]
+        core = zh.split("## 核心原理", 1)[1].split("## 硬件与接线", 1)[0]
+        core_en = en.split("## Core ideas", 1)[1].split("## Hardware and wiring", 1)[0]
         for block in (core, core_en):
             self.assertNotIn("260", block)
             self.assertNotIn("270", block)
             self.assertNotIn("3 mA", block)
             self.assertNotIn("3mA", block)
-        self.assertNotIn("示意图", zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0])
-        self.assertNotIn("schematic", en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0].lower())
+        self.assertNotIn("示意图", zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0])
+        self.assertNotIn("schematic", en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0].lower())
         self.assertIn("自绘", zh)
         self.assertIn("Drawn for this book", en)
-        listed = json.loads((ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
+        listed = json.loads((ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}
         scopes = {
             "rm0008-gpio": (
@@ -186,36 +186,36 @@ class SampleFoundationChapterTests(unittest.TestCase):
     def test_foundation_chapters_have_four_blocks_and_the_same_addresses(self) -> None:
         zh = (ROOT / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         for text in (zh, en):
             for token in ("STM32F103C8T6", "0x08000000", "0x00000000", "0x00000004", "0x1FFFF000", "0x1FFFB000", "0x08080000", "BOOT0", "BOOT1", "SYSCLK", "#source-rm0008-boot"):
                 self.assertIn(token, text)
         self.assertIn("../assets/diagrams/sample-00-boot-state.svg", zh)
         self.assertIn("../../assets/diagrams/sample-00-boot-state.svg", en)
-        self.assertIn("自绘", zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0])
-        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0])
+        self.assertIn("自绘", zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0])
+        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0])
         for start, end in (
-            ("## 原理与边界", "## 关键插图"),
-            ("## 关键插图", "## 时序或状态"),
-            ("## 时序或状态", "## 坑与出处卡"),
-            ("## 坑与出处卡", "## 📌 学习目标"),
+            ("## 原理与适用范围", "## 关键插图"),
+            ("## 关键插图", "## 时序与状态"),
+            ("## 时序与状态", "## 常见坑与出处"),
+            ("## 常见坑与出处", "## 学习目标"),
         ):
             self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
         for start, end in (
-            ("## Principle and boundary", "## Key figures"),
-            ("## Key figures", "## Timing or state"),
-            ("## Timing or state", "## Pitfalls and source cards"),
-            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+            ("## Principle and scope", "## Key figures"),
+            ("## Key figures", "## Timing and state"),
+            ("## Timing and state", "## Pitfalls and sources"),
+            ("## Pitfalls and sources", "## Learning goals"),
         ):
             self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
-        listed = json.loads((ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
+        listed = json.loads((ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))

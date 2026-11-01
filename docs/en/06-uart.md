@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch06-uart.png">
     <source src="../../assets/video/ch06-uart.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch06-uart.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch06-uart.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch06-uart.mp4">MP4</a> · <a href="../../assets/video/ch06-uart.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 115200 8N1 里的 8，是数据位，不是波特率的一部分。一帧通常是起始位、八位数据、没有校验、一位停止。位数说错，对方会一直解出错帧。
 2. 波特率是双方约好的速度，由总线时钟分频得到。F103 上 APB 时钟不对，分频再准也会偏。一边 115200，另一边 9600，你只能看到乱码。
@@ -28,8 +29,10 @@
 8. 口诀：ORE 要先读状态再读数据；RS485 等发送完成再转身。这两句能省掉一半「串口偶发丢字」的下午。
 9. 实验可以先把 TX 和 RX 短接，确认自己能收到自己发出的字，再接到电脑。短接都收不到，就先别怀疑 USB 转串口线。
 10. 合上书，三问。8N1 的 8 是什么？清除溢出时先读哪个寄存器？RS485 为什么要等发送完成才能转换方向？
+
+</details>
 <!-- /video:ch06 -->
-## Principle and boundary
+## Principle and scope
 
 The frame in this chapter holds for orderable STM32F103C8T6 in LQFP48. USART1 is on APB2. When the core clock is 72 MHz, PCLK2 is 72 MHz, and the peripheral base is `0x40013800`. The default pins are PA9 = USART1_TX = pin 30 and PA10 = USART1_RX = pin 31, from [DS5319 Rev 20 Figure 8](#source-ds5319-usart). After reset the pins are not PB6/PB7. A remap needs AFIO as well, and the remapped pins are not on the normal path.
 
@@ -57,7 +60,7 @@ When the stop bit is not high at the expected samples, hardware sets `USART_SR.F
 
 `uart-frame.svg` and `uart-bits.gif` stay in the frame section as side figures. When a PDF does not play the GIF, the start bit, the stop bit, samples 8, 9, and 10, and the FE path are all on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Phase | Line | Bits of 0xA5 | Samples 8, 9, 10 | FE | Time | BRR |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -72,7 +75,7 @@ When the stop bit is not high at the expected samples, hardware sets `USART_SR.F
 
 Do not put 0.16% back into the `0x271` cell. Source: [RM0008 section 27.3.3](#source-rm0008-usart).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -83,14 +86,14 @@ Do not put 0.16% back into the `0x271` cell. Source: [RM0008 section 27.3.3](#so
 | Circular DMA treats `Size` as the new bytes of this transfer | `Size` is the write position | Save the previous position, subtract, and handle the wrap | [STM32CubeF4 v1.28.3](#source-stm32cube-f4) | Only that Size is the write position in the v1.28.3 example. Not an F103 pin proof |
 | The application reads the DMA buffer once as one flat frame | The buffer is not one flat frame | Read only up to the DMA write position | [MaJerle USART DMA](#source-majerle-uart) | The restated ring-position boundary. Not a new baud rate or a new pin |
 | Half-transfer and IDLE seem to arrive as a pair every time | The timing in the post was not promoted to a manual number | Do not write the post's timing as a manual number; the idle length stays the 86.8 µs cell | [ST community thread](#source-st-uart-idle) | Experience only, not promoted to a specification. No new register value |
-## 📌 Learning goals
+## Learning goals
 - [ ] Describe a UART frame (start / data / parity / stop)
 - [ ] Compute BRR for 16× oversampling on this F103. This part has no OVER8
 - [ ] Choose among blocking, interrupt, and DMA
 - [ ] Redirect printf, and stay out of the semihosting trap
 - [ ] Understand a ring buffer, and variable-length receive with DMA+IDLE
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: UART is asynchronous. The two sides stay aligned only by the baud rate they agreed on, so the frame format and the baud error are the two keys.**
 
@@ -137,7 +140,7 @@ BRR on F1, 16× oversampling: `USARTDIV = fPCLK / (16 × baud)`, and BRR = integ
 | Code complexity | Low | Medium | Medium to high |
 | Fits | Simple debug | A little data of unknown length | A lot of data, or a continuous stream, or a frame of unknown length |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -145,9 +148,10 @@ BRR on F1, 16× oversampling: `USARTDIV = fPCLK / (16 × baud)`, and BRR = integ
 | BluePill | USART1 RX | PA10 | To the USB-TTL TX |
 | BluePill | GND | GND | Common ground with the USB-TTL |
 
-> ⚠️ TX and RX must be crossed. Set the USB-TTL to 3.3 V. Do not let the USB-TTL and the ST-Link both try to power the board.
+> [!WARNING]
+> TX and RX must be crossed. Set the USB-TTL to 3.3 V. Do not let the USB-TTL and the ST-Link both try to power the board.
 
-## 💻 Code
+## Code
 
 Blocking echo:
 
@@ -220,7 +224,8 @@ int fputc(int ch, FILE *f)
 #endif
 ```
 
-> ⚠️ In Keil, check "Use MicroLIB". Otherwise it can stall in semihosting.
+> [!WARNING]
+> In Keil, check "Use MicroLIB". Otherwise it can stall in semihosting.
 
 Method 2 (preferred; it does not depend on semihosting):
 
@@ -277,7 +282,7 @@ static uint8_t ring[256];
 
 The full project is in [`examples/uart-dma-idle/`](../../examples/uart-dma-idle/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1 (echo):** USART1 at 115200 echoes. Whatever the serial terminal sends, it gets back.
 2. **Lab 2 (printf):** Redirect printf and print the core clock and a counter once a second.
@@ -350,7 +355,7 @@ Self-test:
 2. `TXE` is already 1. Why can a scope still see the last few bits?
 3. On an 8N1 drawing, why is the stop bit marked SP and not P?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 27 (USART); **DS5319** USART alternate-function pin table
 - Previous: [05 Timers and PWM](05-timer-pwm.md) | Next: [07 The I2C Bus](07-i2c.md)

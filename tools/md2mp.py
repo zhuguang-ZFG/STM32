@@ -163,7 +163,9 @@ def preprocess(text: str, resolver: ImageResolver, placeholders: dict[str, str])
         cleaned = re.sub(
             r'<p align="center">\s*<video.*?</video>\s*(?:<br\s*/?>\s*<sub>.*?</sub>)?\s*</p>',
             f"\n\n⟦{tok}⟧\n\n", block, flags=re.S)
-        return cleaned
+        # 网页上旁白稿折叠在 <details> 里；公众号不支持折叠，展开成普通段落
+        cleaned = re.sub(r"<details>\s*<summary>(.*?)</summary>", r"**\1**", cleaned, flags=re.S)
+        return cleaned.replace("</details>", "")
 
     text = re.sub(r"<!--\s*video:.*?<!--\s*/video:.*?-->", video_sub, text, flags=re.S)
 

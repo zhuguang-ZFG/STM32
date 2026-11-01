@@ -55,7 +55,7 @@ HAL_ADC_Start_DMA(&hadc1, (uint32_t *)g_adc_buf, ADC_BUF_SIZE);
 
 **2) DMA 缓冲区布局（按转换顺序交错）**
 
-```
+```text
 下标: 0    1    2    3    4    5   ...
 通道: CH0  CH1  CH4  CH0  CH1  CH4 ...
 ```

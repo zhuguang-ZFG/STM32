@@ -67,7 +67,8 @@
 | LSE | OSC32_IN/OUT | PC14 / PC15 | PC14 / PC15 |
 | HSE | OSC_IN/OUT | PD0 / PD1 (or PF0/PF1) | PH0 / PH1 |
 
-> ⚠️ **Pin conflicts**: for example, `adc-dma` using PA4 (ADC_IN4) conflicts with `spi-flash` SPI1_NSS (PA4);
+> [!WARNING]
+> **Pin conflicts**: for example, `adc-dma` using PA4 (ADC_IN4) conflicts with `spi-flash` SPI1_NSS (PA4);
 > `TIM3_CH1=PA6` conflicts with `SPI1_MISO=PA6`. When planning peripherals, draw a pin-usage table first.
 
 ## 4. F4 Alternate Function AF Number Table
@@ -101,11 +102,11 @@
 
 | Type | Description | Can it take 5V |
 | --- | --- | --- |
-| **FT (Five-volt Tolerant)** | Pins marked FT in the datasheet | ✅ Can take a 5V digital input |
-| **TC (TTa with Analog)** | Analog pins; FT, and must not exceed VDDA when used as an analog input | ⚠️ 5V is allowed as a digital input; as ADC, only ≤VDDA |
-| **Non-FT (standard IO)** | Not marked FT | ❌ Only ≤ VDDA (3.3V) |
-| **Power / special pins** | VBAT, VDDA, VREF+, BOOT0, and similar | ❌ Use the voltage specified in the datasheet |
-| **Open-drain + pull-up** | Any pin configured open-drain with an external 5V pull-up | ⚠️ Safe only when the device supports FT |
+| **FT (Five-volt Tolerant)** | Pins marked FT in the datasheet | Yes, a 5V digital input |
+| **TC (TTa with Analog)** | Analog pins; FT, and must not exceed VDDA when used as an analog input | Depends on use: 5V as a digital input, but only ≤VDDA as ADC |
+| **Non-FT (standard IO)** | Not marked FT | No, only ≤ VDDA (3.3V) |
+| **Power / special pins** | VBAT, VDDA, VREF+, BOOT0, and similar | No, use the voltage specified in the datasheet |
+| **Open-drain + pull-up** | Any pin configured open-drain with an external 5V pull-up | Safe only when the device supports FT |
 
 **How to look it up**: In the datasheet (DS) "Pinouts and pin description" table, read the type column for each pin:
 `FT` means a 5V input is allowed, `FTf` means an I²C pin (FT capable), and no mark means a standard 3.3V pin.

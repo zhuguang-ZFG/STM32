@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch14-usb.png">
     <source src="../assets/video/ch14-usb.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch14-usb.mp4">MP4</a> · 字幕：<a href="../assets/video/ch14-usb.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch14-usb.mp4">MP4</a> · <a href="../assets/video/ch14-usb.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. F103 的 USB 全速要 48 兆时钟。常见做法是 PLL 先到 72 兆，再除以 1.5。时钟差一点，主机会在读描述符时失败，设备管理器里就是未知设备。
 2. 全速设备用 D+ 上的 1.5 千欧上拉告诉主机：我是全速。BluePill 上这颗电阻常常已经在了。没有上拉，主机根本不知道你插上来了。
@@ -29,9 +30,11 @@
 8. 示例用的厂商号是 0x1209，产品号只是实验占位，并没有在 pid.codes 注册。可以在自己的电脑上认设备，不要把这组号印到准备送人的产品上。
 9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
 10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
+
+</details>
 <!-- /video:ch14 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的时钟和描述符只钉在订货号 STM32F103C8T6 上。USB 时钟整格照抄第 02 章和罗盘。PLL 是 72 MHz。`USBPRE = 0` 再除以 1.5，USB 时钟是 48 MHz。`USBPRE = 1` 不除，USB 时钟是 72 MHz，主机在读描述符时失败。见 [RM0008](#source-rm0008-rcc)。不重画时钟树。
 
@@ -59,7 +62,7 @@ PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中
 
 `usb-enumeration.svg` 留作辅图。
 
-## 时序或状态
+## 时序与状态
 
 | 项目 | 值 | 对错 |
 | --- | --- | --- |
@@ -70,7 +73,7 @@ PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中
 | 包长 | 批量和中断上限 64 | 1023 只属于等时。通知端点 8 是允许的 |
 | 脚位 | 第 32 脚 DM，第 33 脚 DP | 上拉在 DP。接到 DM 不是这条正常路径 |
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -81,7 +84,7 @@ PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中
 | 中断或批量端点写成 1023 | 用了等时的上限 | 全速这两类的上限是 64。1023 只给等时 | [本仓库例程](#source-project-examples) | 例程批量端点是 64 字节，通知端点是 8 字节 |
 | 和 CAN 例程链在一起，接收中断串了 | 两条例程共用一条向量 | 两个例程分开。CAN 不要留在 PA11/PA12 | [RM0008](#source-rm0008-usb) | 向量名以印刷为准。中容量表印 `USB_LP_CAN_RX0`。互联型表印 `USB_LP_CAN1_RX0`。这颗料的 USB 是设备，不是主机 |
 
-## 📌 学习目标
+## 学习目标
 
 - [ ] 分清 USB 2.0 低速(1.5 Mbps)/全速(12 Mbps)/高速(480 Mbps)，以及 STM32 各型号支持哪种。
 - [ ] 掌握四种传输类型（控制/批量/中断/等时）的特点与适用场景。
@@ -90,7 +93,7 @@ PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中
 - [ ] 说清 CDC 虚拟串口与 HID 的差异，并会在 CubeMX 里挂中间件。
 - [ ] 会用 ST USB Device 库写一个 CDC 收发 + HID 自定义设备。
 
-## 🧠 核心原理
+## 核心原理
 
 ### 1. USB 速率与 STM32 外设
 
@@ -108,7 +111,8 @@ PA11/PA12 的 CAN 默认功能在第 13 章已经移走。本图只画 USB。中
 | STM32F4 | OTG_FS + OTG_HS | FS 内置 PHY；HS 需外接 ULPI PHY | RM0090 第 30 章 OTG_FS / 第 31 章 OTG_HS |
 | STM32F7/H7 | OTG_FS + OTG_HS | 部分型号 HS 内置 PHY | 对应 RM 的 OTG 章节 |
 
-> ⚠️ **F103 的 USB 是纯设备（Device only），不能做主机**；F411 的 `OTG_FS` 引脚是 **PA11(DM)/PA12(DP)**，与 CAN1 复用冲突，二选一。F1 的 USB 引脚同样是 PA11/PA12。
+> [!WARNING]
+> **F103 的 USB 是纯设备（Device only），不能做主机**；F411 的 `OTG_FS` 引脚是 **PA11(DM)/PA12(DP)**，与 CAN1 复用冲突，二选一。F1 的 USB 引脚同样是 PA11/PA12。
 
 ### 2. 四种传输类型
 
@@ -201,7 +205,7 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 
 > **48 MHz 时钟是硬性要求**：F1 全速 USB 需要 `USBCLK = 48 MHz`。PLL 72 MHz 且寄存器位 `USBPRE = 0` 表示 ÷1.5，`72 / 1.5 = 48` MHz。时钟不准会导致枚举失败或随机掉线。
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -215,7 +219,7 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 - **USB 差分线尽量等长、靠近走线、90 Ω 差分阻抗**，别用杜邦线飞线，否则全速都可能枚举失败。
 - 自绘裸板做 USB 时，**D+ 到 3.3 V 需接 1.5 kΩ 上拉**（全速设备标识），很多开发板已焊好。
 - 供电：USB 口可取 5 V，板载 LDO 转 3.3 V；注意总线电流（未配置前 ≤ 100 mA）。
-## 💻 代码实现
+## 代码实现
 
 用 CubeMX 生成 USB CDC 工程后，真正要写代码的地方只有 **`USB_DEVICE/App/usbd_cdc_if.c`** 的回调。下面给出可用的收发实现。
 
@@ -305,7 +309,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc[] __ALIGN_END =
 USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 ```
 
-## 🧪 动手实验
+## 动手实验
 
 1. **CDC 回环（最易）**：CubeMX 生成 F103 的 CDC 工程，串口助手打开新出现的 COM 口，发什么回什么。预期：插上即多一个 COM 口，回显正常。
 2. **CDC 定时上报**：每秒把 ADC 采到的电压（见第 09 章）通过 `CDC_Transmit_FS` 上报。预期：上位机收到连续数值。
@@ -319,7 +323,7 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 
 两份都把 PLL 设成 72 MHz，USB 时钟选 PLL/1.5。F103 的 `USB_LP_CAN1_RX0` 与 bxCAN 接收是同一条中断，不要和 CAN 示例编进同一个工程。
 
-## 🔗 相关资源
+## 相关资源
 
 - RM0008《STM32F10xxx 参考手册》第 23 章 USB device（`USB_EPnR`、PMA、`BTABLE`）。
 - RM0090《STM32F4 参考手册》第 30 章 USB OTG_FS、第 31 章 USB OTG_HS。
@@ -330,4 +334,4 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 
 
 
-- 📱 手机阅读版：[第 14 章 · USB（公众号图文）](https://mp.weixin.qq.com/s/iSVv3wSvz9Rl4LOVxeOfdg)
+- 手机阅读版：[第 14 章 · USB（公众号图文）](https://mp.weixin.qq.com/s/iSVv3wSvz9Rl4LOVxeOfdg)

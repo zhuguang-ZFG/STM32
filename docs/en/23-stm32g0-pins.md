@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch23-g0-pins.png">
     <source src="../../assets/video/ch23-g0-pins.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch23-g0-pins.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch23-g0-pins.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch23-g0-pins.mp4">MP4</a> · <a href="../../assets/video/ch23-g0-pins.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 这一章对着 STM32G071RB 的 64 脚封装。订购信息里 R 是 64 只脚，B 是 128 KB 闪存。出处是 DS12232 第 5 版，不是凭封装外形猜的。
 2. 图的左上角、第 1 脚是 PC11。F103 那种小封装第 1 脚常常是 VBAT，这里不是。数脚时从左边往下，不要从你习惯的那个角开始。
@@ -29,8 +30,10 @@
 8. 口诀：G071 的 R 是 64 只脚，B 是 128 KB。没有 CAN，别在图上找 CAN 发送。USB 这里是 UCPD，不是设备全速。
 9. G0 这一章故意不写待机多少微安。封面摘录里没有一条可以单独引用的典型电流，与其编一个，不如你去电气特性那一章自己查。
 10. 合上书，三问。LQFP64 的第 1 脚叫什么？这颗 G071 有没有 CAN？它的 USB 能力叫 UCPD，还是 F1 那种全速设备？
+
+</details>
 <!-- /video:ch23 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] Count from the top-left corner of the LQFP64 to pin 1 and recognize PC11, not VBAT.
 - [ ] Point at the default USART, I2C, SPI, and SWD pins on this part.
@@ -38,7 +41,7 @@
 - [ ] Determine Main Flash, System memory, or SRAM from `BOOT_LOCK`, `nBOOT1`, PA14, `nBOOT_SEL`, and `nBOOT0`.
 - [ ] Determine connection and recovery reachability from RDP/`DBG_SWEN` when the application reassigns PA13/PA14 or startup is abnormal, then verify successful operations with readback.
 
-## 🧠 Which part this is
+## Which part this is
 
 The drawing is **STM32G071RB**, LQFP64. Every fact below is from **DS12232 Rev 5**:
 
@@ -52,7 +55,7 @@ The drawing is **STM32G071RB**, LQFP64. Every fact below is from **DS12232 Rev 5
 
 Motto: **On a G071, R is 64 pins and B is 128 KB. There is no CAN. Do not hunt for CAN_TX on the drawing.**
 
-## 🛠️ What changes versus F1 / F4
+## What changes versus F1 / F4
 
 | Point | F103 (LQFP48, see the BluePill drawing) | G071RB (this drawing) |
 | --- | --- | --- |
@@ -66,7 +69,7 @@ Motto: **On a G071, R is 64 pins and B is 128 KB. There is no CAN. Do not hunt f
 
 F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS12232 Table 13 (port A) and Table 14 (port B)**. Do not copy AF numbers from an F407.
 
-## 🧭 BOOT0 shares SWCLK: determine the boot source first
+## BOOT0 shares SWCLK: determine the boot source first
 
 <p align="center">
   <img src="../../assets/animations/g0-boot-swd.svg" width="860" alt="STM32G071 boot latch, nBOOT_SEL source selection, and Under Reset recovery workflow">
@@ -113,7 +116,7 @@ Keep three boundaries attached to this table:
 > **RDP and complement boundary:** never lower RDP blindly to “unlock” a board. Level 2 is irreversible, and Level 1 → Level 0 triggers a mass erase. `BOOT_LOCK` can always be set, but clearing it is restricted by the RDP conditions above. **An option-byte/complement mismatch forces `BOOT_LOCK=1`, and an RDP mismatch defaults to Level 1**. Readback must therefore check values and complements, not just one field. Preserve the scene and required data first; mass erase is not a default repair button.
 
 
-## 🛠️ Alternate functions that Table 12 / 13 / 14 actually name
+## Alternate functions that Table 12 / 13 / 14 actually name
 
 | Function | Pins | Source |
 | --- | --- | --- |
@@ -129,7 +132,7 @@ Keep three boundaries attached to this table:
 
 After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can remap PA9/PA10 onto the PA11/PA12 positions. Until that register changes, do not call PA11 "PA9".
 
-## ⚠️ Common ways an F1 port falls over
+## Common ways an F1 port falls over
 
 | What you see | Why | Fix |
 | --- | --- | --- |
@@ -139,7 +142,7 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
 | Pulling PA14 high still does not enter the bootloader | `BOOT_LOCK=1`, or `nBOOT_SEL=1` excludes the pin from selection | Read every truth-table input first instead of repeatedly changing the level |
 | The old boot area remains after writing option bytes | The new values have not passed the required reset/load sequence, or only the write return value was checked | Run the specified option-byte launch/reset, then read back after reset and verify startup plus SWD |
 
-## 🧪 Try it
+## Hands-on labs
 
 1. Print the drawing. Count with a pencil from pin 1 to PF2-NRST and check that it is pin 12.
 2. In datasheet Table 13, find the AF list for PA9 and circle USART1_TX.
@@ -157,7 +160,7 @@ Self-test:
 6. Why does pulling PA14 high not necessarily enter System memory, why can a successful option-byte write still leave the next boot unchanged, and what happens on an option-byte/complement mismatch?
 7. What are the first two recovery steps after an application breaks SWD through PA13/PA14, why are Under Reset and clearing `BOOT_LOCK` not unconditionally available, and why is lowering RDP not a default answer?
 
-## 🔗 Further reading
+## Related resources
 
 - RM0444 Rev 5 section 2.5 and its FLASH_SECR/option-byte descriptions: boot truth table, `DBG_SWEN` restriction with `BOOT_LOCK + RDP Level 1`, clearing conditions, and complement-mismatch rules. AN5096 Table 3 cross-checks the boot table; AN2606 covers system bootloader activation patterns and additional empty-flash boundaries.
 

@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch14-usb.png">
     <source src="../../assets/video/ch14-usb.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch14-usb.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch14-usb.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch14-usb.mp4">MP4</a> · <a href="../../assets/video/ch14-usb.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. F103 的 USB 全速要 48 兆时钟。常见做法是 PLL 先到 72 兆，再除以 1.5。时钟差一点，主机会在读描述符时失败，设备管理器里就是未知设备。
 2. 全速设备用 D+ 上的 1.5 千欧上拉告诉主机：我是全速。BluePill 上这颗电阻常常已经在了。没有上拉，主机根本不知道你插上来了。
@@ -29,9 +30,11 @@
 8. 示例用的厂商号是 0x1209，产品号只是实验占位，并没有在 pid.codes 注册。可以在自己的电脑上认设备，不要把这组号印到准备送人的产品上。
 9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
 10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
+
+</details>
 <!-- /video:ch14 -->
 
-## Principle and boundary
+## Principle and scope
 
 The clock and the descriptor are fixed on STM32F103C8T6. The USB clock is copied from chapter file 02 and from the compass. The PLL is 72 MHz. `USBPRE = 0` divides by 1.5, so the USB clock is 48 MHz. `USBPRE = 1` does not divide, so the USB clock is 72 MHz and the host fails while reading the descriptor. See [RM0008](#source-rm0008-rcc). Do not redraw the clock tree.
 
@@ -59,7 +62,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 
 `usb-enumeration.svg` stays as an auxiliary figure.
 
-## Timing or state
+## Timing and state
 
 | Item | Value | Right or wrong |
 | --- | --- | --- |
@@ -70,7 +73,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 | Packet length | bulk and interrupt ceiling 64 | 1023 is isochronous only. A notification endpoint of 8 is allowed |
 | Pins | pin 32 is DM, pin 33 is DP | The pull-up is on DP. On DM it is not this normal path |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -81,7 +84,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 | An interrupt or bulk endpoint is set to 1023 | That ceiling belongs to isochronous | The ceiling for those two classes at full speed is 64. 1023 is isochronous only | [examples in this repo](#source-project-examples) | The example bulk endpoint is 64 bytes and the notification endpoint is 8 bytes |
 | Linked with the CAN example, the receive interrupt is shared | The two examples use one vector | Keep the examples apart. Do not leave CAN on PA11/PA12 | [RM0008](#source-rm0008-usb) | The printed medium-density name is `USB_LP_CAN_RX0`. The connectivity table prints `USB_LP_CAN1_RX0`. USB on this part is a device, not a host |
 
-## 📌 Goals
+## Learning goals
 
 - [ ] Separate USB 2.0 low-speed (1.5 Mbps), full-speed (12 Mbps), and high-speed (480 Mbps), and know which STM32 parts do which.
 - [ ] Compare control, bulk, interrupt, and isochronous transfers.
@@ -90,7 +93,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 - [ ] Contrast CDC and HID, and know where CubeMX attaches the middleware.
 - [ ] Use the ST USB Device library for a CDC echo and a custom HID — or the HAL PCD examples in this repo, which do not ship that middleware.
 
-## 🧠 Core idea
+## Core ideas
 
 ### 1. Speeds and which STM32 block you actually have
 
@@ -201,7 +204,7 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 
 > **48 MHz is not optional.** On F1, `USBCLK = 48 MHz`. With the PLL at 72 MHz, register bit `USBPRE = 0` means ÷1.5, so `72 / 1.5 = 48` MHz. A wrong clock fails enumeration or drops the link at random.
 
-## 🛠️ Wiring
+## Wiring
 
 | Board | Peripheral | Pins | Note |
 | --- | --- | --- | --- |
@@ -215,7 +218,7 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 - On a bare board, **D+ needs 1.5 kΩ to 3.3 V** so the host sees a full-speed device. Many dev boards already have it.
 - The USB connector can feed 5 V into the on-board LDO. Before the device is configured, stay within 100 mA.
 
-## 💻 Code
+## Code
 
 If CubeMX generated a CDC project, the file you actually edit is **`USB_DEVICE/App/usbd_cdc_if.c`**. The snippets below are that style.
 
@@ -305,7 +308,7 @@ __ALIGN_BEGIN static uint8_t HID_ReportDesc[] __ALIGN_END =
 USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 ```
 
-## 🧪 Try it
+## Hands-on labs
 
 1. **CDC echo:** a CubeMX F103 CDC project, open the new COM port, type. You should get the same bytes back.
 2. **CDC once a second:** send the ADC voltage from chapter 09 with `CDC_Transmit_FS`.
@@ -319,7 +322,7 @@ This repo's two examples do not ship the ST USB middleware. They enumerate with 
 
 Both run the PLL at 72 MHz and select USB = PLL/1.5. On F103, `USB_LP_CAN1_RX0` is the same IRQ as bxCAN receive. Do not link the CAN example into the same project.
 
-## 🔗 Further reading
+## Related resources
 
 - RM0008 chapter 23, USB device (`USB_EPnR`, PMA, `BTABLE`).
 - RM0090 chapter 30, USB OTG_FS, and chapter 31, USB OTG_HS.

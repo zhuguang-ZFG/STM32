@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch18-faq.png">
     <source src="../../assets/video/ch18-faq.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch18-faq.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch18-faq.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch18-faq.mp4">MP4</a> · <a href="../../assets/video/ch18-faq.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 排错不要从改代码开始。先让现象稳定复现，再退到只点灯或只回环的最小工程。最小工程是好的，问题就在你后来加的那一块里。
 2. 这一章的五步是：复现，最小化，二分，看证据，对照手册。前两步能解决大多数问题。一上来就二分一大坨新代码，你会把时间花在来回编译上。
@@ -29,8 +30,10 @@
 8. 这一章建议你故意制造一次错误，比如删掉一个头文件路径，看编译器怎么说，再改回来。见过真实报错的人，下次不会从最后一行开始慌。
 9. 口诀：先复现，再缩到最小。前两步走完还不知道范围，再去二分和看证据。能测就别猜。
 10. 合上书，三问。排错五步的前两步是什么？调试器认不出芯片时，先查代码还是先查线和 BOOT？为什么一次只改一处？
+
+</details>
 <!-- /video:ch18 -->
-## Principle and boundary
+## Principle and scope
 
 This chapter is an index, not a second peripheral tutorial. The orderable part is still STM32F103C8T6. All 38 rows stay. C1 through C8 is 8, D1 through D7 is 7, P1 through P9 is 9, H1 through H7 is 7, and R1 through R7 is 7. `8 + 7 + 9 + 7 + 7 = 38`.
 
@@ -60,7 +63,7 @@ The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not 
 
 `toolchain-flow.svg` stays as an auxiliary figure. The compile arrows are not on this static figure.
 
-## Timing or state
+## Timing and state
 
 | Look at this first | Value | Next step |
 | --- | --- | --- |
@@ -75,7 +78,7 @@ The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not 
 | Priority | A number of 5 or larger | `5 << 4 = 0x50` |
 | Crystal | 5 pF to 15 pF, chosen with the crystal | 6 pF is not required |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -88,7 +91,7 @@ The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not 
 | `HAL_Delay` does not return after FreeRTOS is added | The time base is still SysTick | Move the time base to TIM4 | [repository examples](#source-project-examples) | The time base in `examples/freertos-task` is TIM4. Do not write a generic TIMx |
 | An interrupt stops in `configASSERT` | The numeric priority is too urgent | Use 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | `5 << 4 = 0x50`. A smaller number must not call FromISR |
 | An external lamp stays dark while the resistor is guessed inside a range | The pin and the resistor were not pinned | Use pin 10 and 270 Ω from chapter file 03 | [DS5319 GPIO](#source-ds5319-gpio) | Pin 2 PC13 cannot source the current. This row does not invent another resistor |
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Build the habit of searching by symptom, instead of editing code at random.
 - [ ] Remember the **top cause** in each family, and check the frequent items first.
@@ -297,7 +300,7 @@ The external lamp matches chapter file 03: pin 10 and 270 Ω. Pin 2 PC13 is not 
 - **Cause**: that code sat outside a `USER CODE BEGIN/END` pair.
 - **Fix**: put every custom edit between `/* USER CODE BEGIN xxx */` and `/* USER CODE END xxx */`.
 
-## 🧭 A method for debugging (do these 5 steps first)
+## A method for debugging (do these 5 steps first)
 
 When something breaks, do not reach for the editor yet. Shrink the problem in this order. Most of the time the first two steps already tell you where it is.
 
@@ -311,7 +314,7 @@ When something breaks, do not reach for the editor yet. Shrink the problem in th
 
 > Three house rules: **if you can measure it, do not guess**, **share ground before you study the signal**, and **change one thing at a time**.
 
-## 🧪 Hands-on labs (practice at debugging)
+## Hands-on labs (practice at debugging)
 
 1. **Cause C1 on purpose**: delete one include path, read the error, then put it back. You should learn to read a "header not found" error.
 2. **Cause P4 on purpose**: remove the I2C pull-ups and watch `HAL_I2C_Master_Transmit` time out. You should see why the pull-ups matter.
@@ -319,7 +322,7 @@ When something breaks, do not reach for the editor yet. Shrink the problem in th
 4. **Cause R1 on purpose**: add FreeRTOS and leave the time base alone, then watch `HAL_Delay` hang. You should understand the SysTick clash.
 5. **(Further) Keep your own trap list**: when a project teaches you a new problem, add it here as symptom / cause / fix. You should end up with a personal debugging notebook.
 
-## 🔗 Related resources
+## Related resources
 
 - The "common traps" section in each chapter of this repo: [chapter 03](03-gpio-and-led.md) through [chapter 17](17-debug.md), one peripheral at a time.
 - RM0008 / RM0090 reference manuals: register bit definitions and timing. They are the last word when you are debugging.

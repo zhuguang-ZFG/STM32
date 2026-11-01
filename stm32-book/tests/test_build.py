@@ -286,6 +286,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
         self.assertEqual(7, html.count('class="part-art"'))
+        self.assertEqual(29, html.count('class="ch-emblem"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">第 1 章</span><h1>如何学习 STM32</h1>', html)
@@ -350,7 +351,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("FAQ STM32 boot process", html)
         self.assertIn("mp.weixin.qq.com", (BOOK_DIR.parent / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8"))
 
-    def test_part_headpieces_are_complete_safe_and_inlined(self) -> None:
+    def test_inline_art_is_complete_safe_and_inlined(self) -> None:
         expected = [f"part-{part['id']}.svg" for part in self.manifest["parts"]]
         actual = sorted(path.name for path in self.builder.ILLUSTRATIONS_DIR.glob("part-*.svg"))
         self.assertEqual(expected, actual)
@@ -360,6 +361,16 @@ class BookBuildContractTests(unittest.TestCase):
             self.assertIn('class="part-art"', markup)
             self.assertEqual(1, markup.count("<svg"))
             self.assertIn('viewBox="0 0 200 140"', markup)
+
+        emblems = [f"ch{index:02d}.svg" for index in range(29)]
+        actual_emblems = sorted(
+            path.name for path in self.builder.ILLUSTRATIONS_DIR.glob("ch*.svg")
+        )
+        self.assertEqual(emblems, actual_emblems)
+        for index in range(29):
+            markup = self.builder.chapter_emblem(f"{index:02d}-x.md")
+            self.assertIn('class="ch-emblem"', markup)
+            self.assertIn('viewBox="0 0 64 64"', markup)
 
         safe = (
             '<svg viewBox="0 0 200 140" fill="none" stroke="currentColor">'
@@ -488,6 +499,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
         self.assertEqual(7, html.count('class="part-art"'))
+        self.assertEqual(29, html.count('class="ch-emblem"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">Chapter 1</span><h1>How to Learn STM32</h1>', html)
@@ -1157,6 +1169,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("position: static", narrow_part_art)
         self.assertIn("order: 4", narrow_part_art)
         print_part_art = self._css_rule(printed, ".part-art")
+        self.assertIn("position: absolute", print_part_art)
         self.assertIn("width: 45mm", print_part_art)
         self.assertIn("bottom: 18mm", print_part_art)
 
@@ -1565,7 +1578,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "98c0de3fa53e331b308db6d8f094aab76ec7b11159a1056fc16fd6acd7dce025",
+            "ef2c7b0fd546164c3cddf512fa6d063769dad824baf3d865f9b2496380146a74",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS

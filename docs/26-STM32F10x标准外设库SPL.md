@@ -7,10 +7,11 @@
   <video width="640" controls poster="../assets/video/ch26-spl.png">
     <source src="../assets/video/ch26-spl.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.9 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch26-spl.mp4">MP4</a> · 字幕：<a href="../assets/video/ch26-spl.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.9 分钟）。<a href="../assets/video/ch26-spl.mp4">MP4</a> · <a href="../assets/video/ch26-spl.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 本章只认 STM32F10x SPL V3.5.0。F103C8、CB 使用中容量设备宏，启动文件和链接脚本也要匹配。只复制 main，工程不会一致。
 2. SPL 工程至少包含 CMSIS、设备头、驱动、启动文件、SystemInit 和应用。缺 SystemInit，时钟假设不成立；缺启动文件，向量表和初始栈没有入口。
@@ -22,8 +23,10 @@
 8. SPL 和 HAL 会写同一组寄存器，却各自维护状态。双重初始化会覆盖波特率、DMA 和中断。迁移时一次只换一个外设，用同一波形对照。
 9. 仓库示例在固定的 GNU Arm 工具链和冻结源码上编译。编译通过只证明接口和链接闭合；还要从 map 文件核对存储边界，再在真板上观察引脚、时钟和故障路径。
 10. 合上书，三问。USE STDPERIPH DRIVER 和 STM32F10X MD 各管什么？USART SendData 到底保证什么？同一个串口为什么不能先用 SPL 初始化、再让 HAL 接管？
+
+</details>
 <!-- /video:ch26 -->
-## 📌 学习目标
+## 学习目标
 
 - [ ] 说清 SPL V3.5.0 的适用范围、工程目录和两个关键编译宏。
 - [ ] 看懂 `RCC_*ClockCmd → *_StructInit → *_Init → *_Cmd` 的统一初始化顺序。
@@ -31,7 +34,7 @@
 - [ ] 知道 SPL 中断没有 HAL 回调，必须在 IRQHandler 中检查并清除标志。
 - [ ] 能判断旧 SPL 工程应该维护、局部迁移还是整体迁到 HAL/LL。
 
-## 🧭 1. 先钉死版本与边界
+## 1. 先钉死版本与边界
 
 本章只讲 **STM32F10x Standard Peripheral Library V3.5.0**。ST 的官方产品入口是 **STSW-STM32054**；API 名称和目录结构按 V3.5.0 源码核对。源码镜像冻结在 commit `afa743577f2784e95be2d5003380fdb84a702519`，它用于稳定定位文件，**不是新的规范来源**。寄存器行为仍以目标芯片参考手册 RM0008 和数据手册为准。
 
@@ -50,7 +53,7 @@ SPL 的价值不是背函数名，而是看清四层：
 3. `stm32f10x_gpio.c` 等源文件把结构体字段写进寄存器。
 4. 你的工程负责时钟、引脚、调用顺序、中断边界、超时和业务状态机。
 
-## 🗂️ 2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”
+## 2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”
 
 V3.5.0 包的关键目录如下：
 
@@ -88,7 +91,7 @@ Project/
 
 SPL 用 `assert_param()` 检查函数参数。开发期可把 `USE_FULL_ASSERT` 打开，错误会进入 `assert_failed()`；发布版关闭后，这些检查通常不再执行。它不能替代通信超时、传感器离线、DMA 传输错误或 Flash 写失败的运行时处理。
 
-## 🔁 3. 统一调用模型：时钟、默认值、配置、使能
+## 3. 统一调用模型：时钟、默认值、配置、使能
 
 大多数 SPL 外设都遵循同一顺序：
 
@@ -112,7 +115,7 @@ GPIO_Init(GPIOA, &io);
 
 不是每个外设都有完全相同的函数名。判断顺序要回到头文件原型和 RM0008，不要凭“其他外设也是这样”补一个不存在的 `*_Cmd`。
 
-## 💡 4. 一份实际编译链接的 SPL 点灯最小闭环
+## 4. 一份实际编译链接的 SPL 点灯最小闭环
 
 下面代码面向常见 STM32F103C8 BluePill：PC13 板载 LED 低电平点亮。工程预定义 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER`，`stm32f10x_conf.h` 至少包含 RCC 和 GPIO 驱动头文件。**V3.5.0 模板的 `stm32f10x_it.c` 已经定义了非 weak 的空 `SysTick_Handler`；必须把模板中的空处理器替换为下面的计数实现，不能在 `main.c` 再定义一个同名函数。**
 
@@ -169,7 +172,7 @@ int main(void)
 
 这段代码已用冻结 commit `afa743577f2784e95be2d5003380fdb84a702519` 的真实 CMSIS 设备头、RCC/GPIO 驱动、medium-density 启动文件和 F103C8 链接脚本完成编译链接；对应可复验工程在 [`examples/spl-f1-blink/`](../examples/spl-f1-blink/)，同时给出命令行、CLion 和 VS Code 三条共用 CMake 的开发入口。冻结镜像把 `core_cm3.h` 保存为 `core_cm3.h.old`，工程仅在缺少正式文件名时复制到构建目录。GNU Arm 10.3.1 实测 ELF 为 text 1976 B、data 20 B、bss 1028 B，并且符号表只有一个 `SysTick_Handler`。硬件验收仍不是“链接通过”：下载后 LED 应以约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 应等于真实主频；把系统时钟改掉后，闪烁周期也必须重新对账。
 
-## 🧩 5. HAL、SPL 与寄存器怎样对上
+## 5. HAL、SPL 与寄存器怎样对上
 
 下面不是机械替换表。HAL 往往维护 Handle 和状态，SPL 多数函数直接操作外设寄存器；把函数名换掉但保留旧状态机，最容易得到“能跑一会儿”的工程。
 
@@ -210,7 +213,7 @@ static int usart1_send_byte(uint8_t byte, uint32_t spin_limit)
 
 `spin_limit` 只是教学上的有界等待；产品里应换成由可靠时基计算的截止时间，并定义超时后的恢复动作。
 
-## ⚡ 6. 中断模型：没有 HAL 回调替你分发
+## 6. 中断模型：没有 HAL 回调替你分发
 
 HAL 常见写法是 IRQHandler 调 HAL，再进入 `HAL_GPIO_EXTI_Callback()`。SPL 工程通常直接在 `stm32f10x_it.c` 的 IRQHandler 中检查来源、清标志、投递事件：
 
@@ -234,7 +237,7 @@ void EXTI0_IRQHandler(void)
 - 清除规则按外设不同：有的写专用清除位，有的要求读状态再读数据。USART 的 ORE 仍遵守“读 SR 再读 DR”，不能用一个看起来相似的 Clear 函数代替。
 - ISR 不做阻塞发送、I2C 完整事务、Flash 擦除或长延时；只保存最小证据并交给主循环/任务。
 
-## 🚚 7. DMA 模型：SPL 不会自动把两个驱动绑在一起
+## 7. DMA 模型：SPL 不会自动把两个驱动绑在一起
 
 以 USART1 TX 为例，至少要完成三件事：
 
@@ -267,7 +270,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 边界与 HAL 相同：缓冲区在完成前必须继续存在；方向、宽度和增量必须与真实寄存器匹配；循环接收用 `DMA_GetCurrDataCounter()` 得到的是**剩余项数**，不是新增长度。F1 无 D-Cache，不代表这段代码能原样搬到 H7。
 
-## 🧰 8. 各外设最小调用链
+## 8. 各外设最小调用链
 
 | 外设 | SPL 最小调用链 | 最容易漏的边界 |
 | --- | --- | --- |
@@ -284,7 +287,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 这张表只给顺序，不替代对应章节：时钟看第 2 章，GPIO 看第 3 章，NVIC 看第 4 章，TIM 看第 5 章，USART/I2C/SPI/ADC/DMA/CAN 分别看第 6–10、13 章。
 
-## 🔀 9. 维护旧工程：先冻结，再迁移
+## 9. 维护旧工程：先冻结，再迁移
 
 不要把迁移理解成全局搜索函数名。按下面顺序做：
 
@@ -307,7 +310,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 - 旧工程混用了多个来源不明的 SPL 副本，已经无法确认版本；
 - 需要持续获得当前工具链与生态支持。
 
-## ⚠️ 10. 常见坑与排查
+## 10. 常见坑与排查
 
 | 现象 | 第一处边界 | 处理 |
 | --- | --- | --- |
@@ -322,7 +325,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 | 加入 HAL 后偶发失灵 | 同一外设被 SPL/HAL 重复初始化 | 明确所有权，迁完删除旧初始化与 IRQ 路径 |
 | 换到 H7 后“同名函数”找不到 | SPL 不是跨代统一 API | 重新按 H7 HAL/LL、内存域和 Cache 设计 |
 
-## 🧪 动手实验
+## 动手实验
 
 1. **SPL 点灯**：用本章最小代码让 PC13 约 1 Hz 闪烁。记录 `SystemCoreClock`、实测周期和误差。
 2. **三层对照**：把一次 `GPIO_ResetBits(GPIOC, GPIO_Pin_13)` 单步进去，记录最终改变的寄存器；再与第 3 章 HAL 写法对照。
@@ -336,7 +339,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 2. SPL 的 USART 发送为什么不能只把 `USART_SendData()` 当成 `HAL_UART_Transmit()` 的同义词？
 3. 同一 USART 为什么不应同时由 SPL 与 HAL 初始化？
 
-## 🔗 相关资源
+## 相关资源
 
 - ST 官方产品入口：[STSW-STM32054 — STM32F10x standard peripheral library](https://www.st.com/en/embedded-software/stsw-stm32054.html)。
 - V3.5.0 冻结源码镜像：[commit `afa743577f2784e95be2d5003380fdb84a702519`](https://github.com/wajatimur/stm32f10x-stdperiph-lib/commit/afa743577f2784e95be2d5003380fdb84a702519)。镜像仅用于稳定定位 API/目录，不替代 ST 产品页和 RM0008。

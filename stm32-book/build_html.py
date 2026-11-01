@@ -390,12 +390,31 @@ _CALLOUT_TIP = re.compile(
     re.IGNORECASE,
 )
 
+# GitHub alert syntax: a blockquote whose first line is [!WARNING] and friends.
+# GitHub renders the token as a styled label; this build renders its own label,
+# so the token is read for the kind and then dropped from the text.
+_ALERT_KIND = {
+    "note": "note",
+    "tip": "tip",
+    "important": "note",
+    "warning": "warning",
+    "caution": "warning",
+}
+_ALERT_TOKEN = re.compile(r"^\[!(" + "|".join(_ALERT_KIND) + r")\]\s*", re.IGNORECASE)
+# The token sits in the first <p>, optionally followed by a <br> the renderer added.
+_ALERT_IN_HTML = re.compile(
+    r"(<p[^>]*>)\s*\[!(?:" + "|".join(_ALERT_KIND) + r")\]\s*(?:<br\s*/?>)?\s*",
+    re.IGNORECASE,
+)
+
 
 def classify_callouts(rendered: str, labels: dict[str, str] | None = None) -> str:
     """Turn plain Markdown blockquotes into note, tip, or warning callouts.
 
-    The manuscript already uses ⚠️, 提示, and ordinary lead quotes. This only
-    adds a class and a label; it does not rewrite the quoted text.
+    Warnings are marked with GitHub alert syntax (``> [!WARNING]``), which
+    renders natively on GitHub. The token selects the kind here and is then
+    removed, because this build prints its own label. Legacy leads (⚠️, 警告,
+    Warning) still classify. Tips keep their ``提示``/``Tip`` lead.
     """
     chosen = labels or {"warning": "注意", "tip": "提示", "note": "说明"}
 
@@ -403,7 +422,11 @@ def classify_callouts(rendered: str, labels: dict[str, str] | None = None) -> st
         inner = match.group(1)
         text = re.sub(r"<[^>]+>", "", inner)
         text = html.unescape(text).replace("\xa0", " ").strip()
-        if text.startswith("⚠") or text.startswith("警告") or text.lower().startswith("warning"):
+        alert = _ALERT_TOKEN.match(text)
+        if alert:
+            kind = _ALERT_KIND[alert.group(1).lower()]
+            inner = _ALERT_IN_HTML.sub(r"\1", inner, count=1)
+        elif text.startswith("⚠") or text.startswith("警告") or text.lower().startswith("warning"):
             kind = "warning"
         elif _CALLOUT_TIP.match(text):
             kind = "tip"

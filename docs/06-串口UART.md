@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch06-uart.png">
     <source src="../assets/video/ch06-uart.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch06-uart.mp4">MP4</a> · 字幕：<a href="../assets/video/ch06-uart.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch06-uart.mp4">MP4</a> · <a href="../assets/video/ch06-uart.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 115200 8N1 里的 8，是数据位，不是波特率的一部分。一帧通常是起始位、八位数据、没有校验、一位停止。位数说错，对方会一直解出错帧。
 2. 波特率是双方约好的速度，由总线时钟分频得到。F103 上 APB 时钟不对，分频再准也会偏。一边 115200，另一边 9600，你只能看到乱码。
@@ -29,8 +30,10 @@
 8. 口诀：ORE 要先读状态再读数据；RS485 等发送完成再转身。这两句能省掉一半「串口偶发丢字」的下午。
 9. 实验可以先把 TX 和 RX 短接，确认自己能收到自己发出的字，再接到电脑。短接都收不到，就先别怀疑 USB 转串口线。
 10. 合上书，三问。8N1 的 8 是什么？清除溢出时先读哪个寄存器？RS485 为什么要等发送完成才能转换方向？
+
+</details>
 <!-- /video:ch06 -->
-## 原理与边界
+## 原理与适用范围
 
 这一章的帧只钉在订货号 STM32F103C8T6、封装 LQFP48 上。USART1 在 APB2。内核时钟 72 MHz 时 PCLK2 是 72 MHz，外设基址 `0x40013800`。默认脚是 PA9 = USART1_TX = 第 30 脚，PA10 = USART1_RX = 第 31 脚，来自 [DS5319 Rev 20 图 8](#source-ds5319-usart)。复位后不是 PB6/PB7。重映射要另开 AFIO，不把重映射脚写进正常路径。
 
@@ -58,7 +61,7 @@
 
 `uart-frame.svg` 和 `uart-bits.gif` 留在原来的帧格式小节，标成辅图。PDF 不播放 GIF 时，起始位、停止位、第 8、9、10 个采样点和 FE 路径都在静态主图上。
 
-## 时序或状态
+## 时序与状态
 
 | 阶段 | 线上电平 | 0xA5 的位 | 第 8、9、10 点 | FE | 时间 | BRR |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -73,7 +76,7 @@
 
 不把 0.16% 放回 `0x271` 那一格。出处是 [RM0008 第 27.3.3 节](#source-rm0008-usart)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -85,14 +88,14 @@
 | 应用一次把 DMA 缓冲区当完整线性帧读完 | 缓冲区不是一条拍平的帧 | 读到 DMA 写位置为止 | [MaJerle USART DMA](#source-majerle-uart) | 改写后的环位置边界。不支持新的波特率或脚位 |
 | 半传输和 IDLE 好像总会成对出现 | 帖子里的时序没有升格成手册数字 | 不把帖子里的时序写成手册数字；空闲长度仍用 86.8 µs 那一格 | [ST 社区帖](#source-st-uart-idle) | 经验线索，未升格为规范。不支持新的寄存器值 |
 
-## 📌 学习目标
+## 学习目标
 - [ ] 说清 UART 帧格式（起始/数据/校验/停止位）
 - [ ] 会算这颗 F103 上 16 倍过采样的 BRR。这颗料没有 OVER8
 - [ ] 掌握阻塞/中断/DMA 三种收发方式取舍
 - [ ] 会重定向 printf 并规避半主机模式坑
 - [ ] 理解环形缓冲区与 DMA+IDLE 不定长接收
 
-## 🧠 核心原理
+## 核心原理
 
 **结论先行：UART 是「异步」通信，收发双方只靠约定的波特率对齐，因此帧格式与波特率误差是理解 UART 的两把钥匙。**
 
@@ -139,7 +142,7 @@ BRR 计算（F1，16 倍过采样）：`USARTDIV = fPCLK / (16 × 波特率)`，
 | 代码复杂度 | 低 | 中 | 中高 |
 | 适用 | 简单调试 | 少量不定长数据 | 大量/连续数据、不定长收包 |
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -147,9 +150,10 @@ BRR 计算（F1，16 倍过采样）：`USARTDIV = fPCLK / (16 × 波特率)`，
 | BluePill | USART1 RX | PA10 | 接 USB-TTL 的 TX |
 | BluePill | GND | GND | 与 USB-TTL 共地 |
 
-> ⚠️ TX/RX 必须交叉接；USB-TTL 电平选 3.3V；USB-TTL 与 ST-Link 不要同时给板子供电冲突。
+> [!WARNING]
+> TX/RX 必须交叉接；USB-TTL 电平选 3.3V；USB-TTL 与 ST-Link 不要同时给板子供电冲突。
 
-## 💻 代码实现
+## 代码实现
 
 阻塞收发：
 
@@ -222,7 +226,8 @@ int fputc(int ch, FILE *f)
 #endif
 ```
 
-> ⚠️ Keil 需勾选「Use MicroLIB」，否则可能卡在半主机模式（Semihosting）。
+> [!WARNING]
+> Keil 需勾选「Use MicroLIB」，否则可能卡在半主机模式（Semihosting）。
 
 方式二（推荐，无半主机依赖）：
 
@@ -278,7 +283,7 @@ static uint8_t ring[256];
 
 完整工程见 [`examples/uart-dma-idle/`](../examples/uart-dma-idle/)。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **实验一（回显）**：USART1 115200 回显，串口助手发什么收什么。
 2. **实验二（printf）**：重定向 printf，每秒打印一次主频与计数器值。
@@ -351,11 +356,11 @@ HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_RESET);
 2. `TXE` 已经是 1，为什么示波器上还看得到最后几位？
 3. 8N1 的停止位在图上为什么标 SP，不标 P？
 
-## 🔗 相关资源
+## 相关资源
 
 - 官方手册：**RM0008** 第 27 章（USART）；**DS5319** USART 引脚复用表
 - 上一篇：[05 定时器与PWM](05-定时器与PWM.md)｜下一篇：[07 I2C总线](07-I2C总线.md)
-- 📱 手机阅读版：[第 06 章 · 串口UART（公众号图文）](https://mp.weixin.qq.com/s/_hR9mWbVJJp8_d05jBnA9w)
+- 手机阅读版：[第 06 章 · 串口UART（公众号图文）](https://mp.weixin.qq.com/s/_hR9mWbVJJp8_d05jBnA9w)
 - 相关图：[`assets/animations/uart-frame.svg`](../assets/animations/uart-frame.svg)、[`assets/gif/uart-bits.gif`](../assets/gif/uart-bits.gif)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
 

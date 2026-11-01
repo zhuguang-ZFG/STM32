@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch09-adc.png">
     <source src="../assets/video/ch09-adc.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch09-adc.mp4">MP4</a> · 字幕：<a href="../assets/video/ch09-adc.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch09-adc.mp4">MP4</a> · <a href="../assets/video/ch09-adc.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 逐次逼近之前，要先让采样电容充满。源阻抗越大，需要的采样时间越长。充不满就转换，读数会偏向你上一次采过的电压。
 2. F1 的 ADC 是 12 位。换算时用读数除以 4096，再乘参考电压。用 4095 做口算会有一个最小步长的差别。参考电压不是想当然的 3.3，要看你接到哪。
@@ -29,9 +30,11 @@
 8. 口诀：采样看阻抗，换算除以 4096，C8 没有 DAC。三句分别挡住采不准、算不准、抄错芯片这三件最常见的事。
 9. 实验用电位器做分压，两端接地和参考，中间进 ADC。慢慢旋转，读数应该单调变化。跳变或反向，先查接线和参考，不要先改分辨率。
 10. 合上书，三问。采样时间主要看什么？12 位换算要除以多少？STM32F103C8 有没有 DAC？
+
+</details>
 <!-- /video:ch09 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的采样结论只钉在订货号 STM32F103C8T6 上。采样时钟用附录 D 的 12 MHz。换算分母用 4096。换到有 DAC 的型号时，「这颗料没有 DAC」那一句作废。换到 F4 时，「采样再加 12.5」和上电校准那两句作废。
 
@@ -65,7 +68,7 @@ DMA 只交叉引用第 10 章和附录 D：这颗料只有 DMA1，ADC1 是通道
 
 章首的 `adc-sar.svg` 留作辅图。`sar-adc.gif` 留在原节，不替换像素。
 
-## 时序或状态
+## 时序与状态
 
 | 行 | 采样周期数 | 采样时间 | 加 12.5 之后 |
 | --- | --- | --- | --- |
@@ -77,7 +80,7 @@ DMA 只交叉引用第 10 章和附录 D：这颗料只有 DMA1，ADC1 是通道
 
 时钟是 12 MHz。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -89,7 +92,7 @@ DMA 只交叉引用第 10 章和附录 D：这颗料只有 DMA1，ADC1 是通道
 | 蓝药丸上调用了 HAL_DAC_Start，PA4 没有模拟电压 | 这颗 C8 没有 DAC | 要模拟电压用 PWM 加 RC，或换有 DAC 的型号 | [DS5319](#source-ds5319-adc) | 中密度有两个 12 位 ADC。没有 ADC3，没有 DAC。第 14 脚不是 DAC_OUT1 |
 | 第 10 脚点过灯，采样却像在读推挽 | 脚还停在输出 | 采样时这只脚是模拟输入，不再按第 03 章输出电流 | [DS5319](#source-ds5319-adc) | LQFP48 第 10 脚 PA0 是 ADC12_IN0。不改写第 03 章那张 LED 图 |
 
-## 📌 学习目标
+## 学习目标
 
 - [ ] 掌握分辨率、参考电压、量化误差的定量关系，能估算 1 LSB 对应的电压。
 - [ ] 理解逐次逼近（SAR）ADC 的「采样—保持—比较」过程，会根据源阻抗选择采样时间。
@@ -97,7 +100,7 @@ DMA 只交叉引用第 10 章和附录 D：这颗料只有 DMA1，ADC1 是通道
 - [ ] 会用内部温度传感器与 Vrefint 反推芯片结温和真实 VDDA。
 - [ ] 掌握 DAC 的输出模式、缓冲器开关对精度与噪声的影响。
 
-## 🧠 核心原理
+## 核心原理
 
 ### 1. 分辨率、参考电压与量化误差
 
@@ -112,14 +115,15 @@ DMA 只交叉引用第 10 章和附录 D：这颗料只有 DMA1，ADC1 是通道
 
 计算公式：
 
-```
+```text
 1 LSB     = Vref / 2^N                          (N 位分辨率)
 V_in      = ADC_Code × Vref / 2^N               (正比式读数)
 量化误差   = ±0.5 LSB = ±Vref / 2^(N+1)          (理想 ADC，仅考虑量化)
 满量程电压 = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 ```
 
-> ⚠️ STM32F1 的 `Vref` 就是 `VDDA`（模拟电源），二者共用引脚（100 脚以上封装才有独立 `VREF+`/`VREF-`）。所以 **VDDA 波动 = 读数直接误差**；精密测量要么外接基准，要么先测 Vrefint 做软件校准。
+> [!WARNING]
+> STM32F1 的 `Vref` 就是 `VDDA`（模拟电源），二者共用引脚（100 脚以上封装才有独立 `VREF+`/`VREF-`）。所以 **VDDA 波动 = 读数直接误差**；精密测量要么外接基准，要么先测 Vrefint 做软件校准。
 
 ### 2. 逐次逼近（SAR）原理：采样保持 + 二分比较
 
@@ -138,7 +142,7 @@ V_in      = ADC_Code × Vref / 2^N               (正比式读数)
 
 **采样时间与源阻抗**——最容易踩坑的地方。采样开关与信号源构成 RC 充电回路，必须在采样时间内把电容充到 1/2 LSB 以内。ST 给出的经验公式：
 
-```
+```text
 t_s(最小) ≈ (R_AIN + R_ADC) × C_ADC × ln(2^(N+2))
 其中 STM32F1：R_ADC ≈ 1 kΩ，C_ADC ≈ 8 pF，N = 12 → ln(2^14) ≈ 9.7
 ```
@@ -195,7 +199,7 @@ F1 的 `SMPx[2:0]` 可选：1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5
 
 **温度（F1，RM0008 第 11 章「温度传感器」）**：先置 `CR2.TSVREFE=1` 使能，选通道 16。
 
-```
+```text
 V_sense = V25 - Slope × (T - 25)
 => T(°C) = (V25 - V_sense) / Slope + 25
 F1 典型值：V25 ≈ 1.43 V，Slope ≈ 4.3 mV/°C
@@ -203,7 +207,7 @@ F1 典型值：V25 ≈ 1.43 V，Slope ≈ 4.3 mV/°C
 
 **Vrefint 反推 VDDA**：通道 17 测的是约 1.20 V 的固定内部基准。
 
-```
+```text
 VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 真实 V_in = ADC_Read(ch) × VDDA / 4096
 ```
@@ -228,7 +232,7 @@ VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 
 > F103C8（BluePill 常见型号）**没有 DAC**。DAC 从 F103 大容量（xC/xD/xE）和 F4 才有。中容量片子要模拟电压，用 PWM 加 RC，或者外接 DAC 芯片。
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 功能 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -238,7 +242,7 @@ VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 
 信号源阻抗按上一节的采样时间表来选。高阻传感器先加跟随器，不要靠把采样时间拉到 239.5 周期硬撑。
 
-## 💻 代码实现
+## 代码实现
 
 **结论**：F1 在启动转换前必须做一次校准；多通道连续采集用 DMA，单次慢信号用轮询就够。
 
@@ -269,7 +273,7 @@ HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 1/2，名义 3.3 V 下是 1.65 V */
 ```
 
-## 🧪 动手实验
+## 动手实验
 
 1. **电位器**：PA0 接 10 kΩ 电位器中间抽头，两端接 3.3 V 和 GND。串口打印码值和 `code * 3.3f / 4096`。预期：拧到头接近 0 和 3.3 V，中间约 1.65 V（码值约 2048）。
 2. **内部基准**：读 Vrefint，用 `VDDA = 1.20f * 4096 / code` 反推。预期：USB 供电时 VDDA 在 3.3 V 附近，具体数字以你的表为准，这里不给“标准实测值”。
@@ -306,11 +310,11 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 
 口诀：**采样看阻抗，换算除 4096，C8 没有 DAC。**
 
-## 🔗 相关资源
+## 相关资源
 
 - RM0008 第 11 章 ADC、第 12 章 DAC（大容量才有 DAC）。
 - 数据手册 DS5319：ADC 引脚、采样时间与源阻抗。
 - 示例：[`examples/adc-dma/`](../examples/adc-dma/)。
 - 配图：[`assets/animations/adc-sar.svg`](../assets/animations/adc-sar.svg)、[`assets/gif/sar-adc.gif`](../assets/gif/sar-adc.gif)（作者自绘 / 程序生成，不是实拍）。
 
-- 📱 手机阅读版：[第 09 章 · ADC与DAC（公众号图文）](https://mp.weixin.qq.com/s/GCSYHfF66I5Qr88pK4rXIA)
+- 手机阅读版：[第 09 章 · ADC与DAC（公众号图文）](https://mp.weixin.qq.com/s/GCSYHfF66I5Qr88pK4rXIA)

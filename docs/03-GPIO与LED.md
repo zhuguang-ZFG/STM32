@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch03-gpio.png">
     <source src="../assets/video/ch03-gpio.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.4 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch03-gpio.mp4">MP4</a> · 字幕：<a href="../assets/video/ch03-gpio.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.4 分钟）。<a href="../assets/video/ch03-gpio.mp4">MP4</a> · <a href="../assets/video/ch03-gpio.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. GPIO 看起来就是高低电平，真正要选的是模式。先分清输入还是输出，推挽还是开漏，要不要上下拉。模式选错，电平会和你想的相反。
 2. BluePill 的板载灯在 PC13，接法是低电平才亮。你写 1，灯反而是灭的。别拿共阴外接灯的习惯去套这颗板载灯，否则你会以为端口坏了。
@@ -29,8 +30,10 @@
 8. 口诀：F1 重映射先开 AFIO；5 伏只认 FT；锁定是 1、0、1 再读。三件都是手上的动作，不是概念题。
 9. 实验让 PC13 以 1 赫兹翻转。眼睛只能看出大概，频率要用你算过的延时或定时器来对。对上了，这章才算过关。
 10. 合上书，三问。PC13 写高还是写低才会亮？按键接 GND 该上拉还是下拉？F1 重映射之前必须先开哪个时钟？
+
+</details>
 <!-- /video:ch03 -->
-## 原理与边界
+## 原理与适用范围
 
 这一章的点灯结论只钉在订货号 STM32F103C8T6、封装 LQFP48 上。[DS5319 Rev 20](#source-ds5319-gpio) 的图 8 和表 5 把 PA0-WKUP 放在第 10 脚，把 PC13-TAMPER-RTC 放在第 2 脚。
 
@@ -49,7 +52,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 章首那张 `gpio-blink.svg` 仍是动画辅图。这一节的主图不播放也能指出失败发生在 PC13 那段。
 
-## 时序或状态
+## 时序与状态
 
 1 Hz 的高低电平不是 GPIO 速度位算出来的。高 500 ms、低 500 ms 来自 [gpio-blink 例程](#source-project-examples) 的 `HAL_Delay(500)`。速度位写成 50 MHz 不会把 PC13 变成可以点灯的脚。
 
@@ -63,7 +66,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 寄存器是 `GPIOx_LCKR`，偏移 `0x18`。出处是 [RM0008 Rev 21 第 9.2.7 节](#source-rm0008-gpio)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -74,14 +77,14 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | 烧完就再也连不上 | PA13/PA14 被配成普通 GPIO | 把 SWD 留在 PA13 与 PA14 | [RM0008 表 36](#source-rm0008-gpio) | SWDIO 是 PA13，SWCLK 是 PA14 |
 
 旧表里的按键抖动不放进这张卡：10 ms 到 20 ms 的消抖没有钉在 RM0008 或 DS5319 上。动手实验可以继续做消抖，不把它写成手册数字。
-## 📌 学习目标
+## 学习目标
 - [ ] 记住 8 种 GPIO 模式及各自适用场景
 - [ ] 理解推挽 vs 开漏的电流路径与上拉电阻作用
 - [ ] 会算 LED 限流电阻 R=(Vcc−Vf)/I
 - [ ] 会用 HAL 和寄存器两种方式操作 GPIO
 - [ ] 知道 SWD 引脚复用、时钟使能等常见坑
 
-## 🧠 核心原理
+## 核心原理
 
 **结论先行：GPIO 的 8 种模式由「输入/输出」×「推挽/开漏」×「复用/普通」×「上拉/下拉/浮空」组合而成，选错模式是绝大多数问题的根源。**
 
@@ -116,7 +119,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | --- | --- | --- |
 | 高电平来源 | PMOS 主动拉高到 VDD | 高阻，靠外部上拉 |
 | 低电平来源 | NMOS 主动拉低到 GND | NMOS 主动拉低到 GND |
-| 能否线与 | ❌ | ✅ 多脚并接实现线与 |
+| 能否线与 | 不能 | 可以，多脚并接实现线与 |
 | 典型用途 | LED、普通数字输出 | I2C、电平转换、共享总线 |
 | 电流路径 | 高：VDD→PMOS→引脚；低：引脚→NMOS→GND | 低：引脚→NMOS→GND；高：无（靠外部上拉） |
 
@@ -143,7 +146,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | BSRR | 置位/复位寄存器，写 1 有效，原子操作 |
 | BRR | 复位寄存器（F1 有，F4 合并进 BSRR） |
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -154,7 +157,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 接线（外接 LED）：PA0 → 270Ω → LED 阳极，LED 阴极 → GND（**共阴**，高电平点亮）。
 板载 LED 是 **共阳** 接法：阳极接 3.3V，PC13 拉低才导通，故**低电平点亮**。
 
-## 💻 代码实现
+## 代码实现
 
 ```c
 /* gpio_blink.c —— GPIO 输出点灯 + 按键读取（HAL） */
@@ -231,7 +234,7 @@ PC13_OUT = 0;   /* 直接写 0/1，无需读改写，等效于 ODR */
 
 完整工程见 [`examples/gpio-blink/`](../examples/gpio-blink/)。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **实验一**：PC13 板载 LED 1Hz 闪烁（对照 `gpio-blink.svg` 与 `led-blink.gif`）。
 2. **实验二**：外接 LED 到 PA0，计算并串接 270Ω 电阻，实现按键 PA1 控制 LED。
@@ -332,11 +335,11 @@ GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 2. 数据手册没标 FT 的 PA0，能不能直接接 5 V 传感器？
 3. `LCKR` 写完不读，锁有没有生效？
 
-## 🔗 相关资源
+## 相关资源
 
 - 官方手册：**RM0008** 第 9 章（GPIO）及第 9.2 节（寄存器描述）；**DS5319** 引脚定义
 - 上一篇：[02 芯片选型与存储器时钟](02-芯片选型与存储器时钟.md)｜下一篇：[04 中断与NVIC](04-中断与NVIC.md)
-- 📱 手机阅读版：[第 03 章 · GPIO与LED（公众号图文）](https://mp.weixin.qq.com/s/G8szO2UDufAHY9vJYDpYFA)
+- 手机阅读版：[第 03 章 · GPIO与LED（公众号图文）](https://mp.weixin.qq.com/s/G8szO2UDufAHY9vJYDpYFA)
 - 相关图：[`assets/animations/gpio-blink.svg`](../assets/animations/gpio-blink.svg)、[`assets/gif/led-blink.gif`](../assets/gif/led-blink.gif)
 - 实物与资料：ST 官网 Nucleo 板原理图（LED 接法参考）
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。

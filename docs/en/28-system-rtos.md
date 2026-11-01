@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch28-rtos-system.png">
     <source src="../../assets/video/ch28-rtos-system.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 3.0 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch28-rtos-system.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch28-rtos-system.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (3.0 min). <a href="../../assets/video/ch28-rtos-system.mp4">MP4</a> · <a href="../../assets/video/ch28-rtos-system.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. RTOS 内核解决调度、同步、时间和基础内存问题，不会自动替你设计驱动所有权、启动顺序、升级和诊断。能创建任务，只说明底座能工作，不说明产品系统已经完成。
 2. 选系统先列最坏响应、内存、驱动、网络和维护约束。功能少时裸机更容易证明；已有 Cube 工程常用 FreeRTOS；需要完整设备框架，再比较 RT-Thread 与 Zephyr。
@@ -29,8 +30,10 @@
 8. 每个任务自己喂狗会制造假健康。关键任务完成一轮有效工作后，只更新自己的健康纪元。监督者检查所有纪元、队列积压、内存水位和状态机，全部健康时才刷新硬件看门狗。
 9. 把 WFI 放进 idle hook 只是入口。能否进入 Stop，还取决于截止点、DMA、Flash 和唤醒时钟。H7 的 M7 加 M4 通常按 AMP 设计，不是对称 SMP。
 10. 合上书，三问。有状态外设应该有几个所有者？什么条件满足时，监督者才能刷新看门狗？系统迁移为什么先做硬件事件到任务输出的垂直切片？
+
+</details>
 <!-- /video:ch28 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] Separate a **real-time kernel, an RTOS distribution, a device framework, and complete system services** instead of treating “a thread can run” as a finished design.
 - [ ] Select bare metal, FreeRTOS, RT-Thread, or Zephyr from worst-case response, RAM/Flash, drivers, networking, security maintenance, and team constraints.
@@ -41,7 +44,7 @@
 
 ---
 
-## 🧭 Separate four concepts first
+## Separate four concepts first
 
 | Layer | What it owns | What it does not own automatically |
 | --- | --- | --- |
@@ -54,7 +57,7 @@
 
 > Decision order: write down hard constraints, inspect existing drivers and the maintenance horizon, and only then consider which API feels familiar.
 
-## ⚖️ When to choose which system
+## When to choose which system
 
 | Constraint | Bare-metal foreground/background | FreeRTOS | RT-Thread | Zephyr |
 | --- | --- | --- | --- | --- |
@@ -68,7 +71,7 @@
 
 This table is not a ranking. Replacing a stable FreeRTOS product and its tested drivers with Zephyr merely because the ecosystem is broader can cost more than it returns. Conversely, assembling every layer manually around FreeRTOS can create long-term debt for a new product that needs several wireless chip families, a standard device model, and many protocol subsystems.
 
-## 🧱 A four-layer execution model
+## A four-layer execution model
 
 | Layer | Typical execution context | Allowed work | Forbidden work |
 | --- | --- | --- | --- |
@@ -154,7 +157,7 @@ Add ISR, kernel, protocol-stack, and worst-burst margins. These numbers are a re
 - Tick conversion must handle upward rounding and overflow. A deadline shorter than one tick is not magically guaranteed by the kernel.
 - Tickless idle changes tick generation while idle; it does not automatically reduce the power of every peripheral and board load.
 
-## 🚨 Interrupt and kernel boundaries
+## Interrupt and kernel boundaries
 
 Cortex-M exception priority and RTOS task priority are different spaces. Task priorities commonly use a larger number for higher priority; NVIC uses a smaller number. Never put a task-priority number into NVIC configuration.
 
@@ -167,7 +170,7 @@ Cortex-M exception priority and RTOS task priority are different spaces. Task pr
 
 **First-divergence check:** did the hardware pending bit appear → is NVIC enabled → did the ISR run → was the event enqueued → did the target thread become ready → did the scheduler switch? Do not jump from “the task printed nothing” to “the RTOS is broken.”
 
-## 🔄 IPC semantics matter more than names
+## IPC semantics matter more than names
 
 | Intent | FreeRTOS | RT-Thread | Zephyr | CMSIS-RTOS2 |
 | --- | --- | --- | --- | --- |
@@ -186,7 +189,7 @@ A mapping is not equivalence:
 - CMSIS-RTOS2 standardizes names, not every scheduling detail, memory layout, or extension of the underlying kernel.
 - A binary semaphore signals an event. A mutex represents ownership and supports priority inheritance. An initial value of one does not make them interchangeable.
 
-## 🧠 Memory: stacks, kernel heap, C heap, and DMA are different
+## Memory: stacks, kernel heap, C heap, and DMA are different
 
 | Region | User | Main risk | Evidence |
 | --- | --- | --- | --- |
@@ -198,7 +201,7 @@ A mapping is not equivalence:
 
 Prefer creating long-lived production objects statically during initialization. If objects truly have dynamic lifetimes, define who allocates, who frees, how failure rolls back, and how a double free is detected. Returning empty data after `malloc` fails hides resource exhaustion; it is not recovery.
 
-## 🟦 FreeRTOS V11.3.2: a compact kernel; compose the system
+## FreeRTOS V11.3.2: a compact kernel; compose the system
 
 This chapter freezes **FreeRTOS Kernel V11.3.2**. The kernel supplies tasks, queues, mutexes, semaphores, notifications, event groups, software timers, and several heap implementations. It neither requires a device model nor supplies STM32 drivers, a shell, or a filesystem automatically.
 
@@ -240,7 +243,7 @@ HSEM provides atomic ownership and interrupt notification. It neither carries th
 
 This table is a design and acceptance protocol, not a claim that this repository has completed H745 hardware measurements. An HSEM or heartbeat timeout must choose an explicit retry, one-core restart, whole-device reset, or safe-output action; “keep waiting” is not a default recovery policy.
 
-## 🟩 RT-Thread v5.3.0: kernel, device framework, and components
+## RT-Thread v5.3.0: kernel, device framework, and components
 
 This chapter freezes **RT-Thread v5.3.0**. Its value to an STM32 project is not only its thread API: device access, component startup, shell, filesystems, and network abstraction can follow one framework.
 
@@ -280,7 +283,7 @@ This demonstrates only lifecycle boundaries: find, open, and check failure. UART
 
 The framework's benefit is unified objects and components. Its risk is equally clear: DFS, SAL, FinSH, packages, and a POSIX layer consume Flash/RAM, threads, and startup dependencies. Every enabled component enters the object, stack, and failure budgets.
 
-## 🟨 Zephyr v4.4.2: configuration, hardware description, and subsystems build together
+## Zephyr v4.4.2: configuration, hardware description, and subsystems build together
 
 This chapter freezes **Zephyr v4.4.2**. Zephyr is more than another thread API:
 
@@ -335,7 +338,7 @@ A Devicetree node does not prove that the device is ready; driver initialization
 
 `k_work` is useful for deferring ISR follow-up to thread context. The system workqueue is shared: a slow item delays every other item on that queue. Network, storage, or uncontrolled blocking belongs in a dedicated workqueue or owner thread with its own stack and priority budget.
 
-## 🟪 CMSIS-RTOS2 2.3.0: one interface, not one implementation
+## CMSIS-RTOS2 2.3.0: one interface, not one implementation
 
 CMSIS 6.4.0 carries **CMSIS-RTOS2 API 2.3.0**. Typical startup includes:
 
@@ -359,7 +362,7 @@ CMSIS-RTOS2 can reduce direct application coupling to one kernel's function name
 
 Wrapping heavily used kernel extensions with similarly named functions does not create portability.
 
-## 🔌 Driver lifecycle: initialization is only the first state
+## Driver lifecycle: initialization is only the first state
 
 A recoverable driver needs at least:
 
@@ -380,7 +383,7 @@ stateDiagram-v2
 
 Every transition needs a trigger, maximum duration, resource cleanup, result code, and log fields. `HAL_OK`, `RT_EOK`, or `device_is_ready()` proves only its own boundary—not plausible sensor data, persisted Flash content, or remote business acknowledgement.
 
-## 🚀 Startup order: prove the base before opening services
+## Startup order: prove the base before opening services
 
 A useful startup gate is:
 
@@ -393,7 +396,7 @@ A useful startup gate is:
 
 Do not simulate a dependency with a fixed delay and assume that the network has an address after `delay(500)`. Wait for a result-bearing state event under a system deadline.
 
-## 🩺 Observability: reduce a fault to the first divergence
+## Observability: reduce a fault to the first divergence
 
 Every critical log needs at least:
 
@@ -416,7 +419,7 @@ Letting every task feed the watchdog can report false health while the product i
 3. It refreshes the hardware watchdog only when all health conditions pass.
 4. On failure, it persists a minimal bounded fault summary and lets the watchdog reset; persistence also has a deadline.
 
-## 💤 Low power with an RTOS
+## Low power with an RTOS
 
 An RTOS can enter idle when no task is ready, but Stop eligibility depends on the whole system:
 
@@ -428,7 +431,7 @@ An RTOS can enter idle when no task is ready, but Stop eligibility depends on th
 
 Putting `WFI` in the idle hook is only an entry instruction, not a low-power policy. The mode–wake–restore evidence from chapters 16 and 24 still applies.
 
-## 🧩 Dual core and SMP are not the same thing
+## Dual core and SMP are not the same thing
 
 | Mode | Property | New primary risks |
 | --- | --- | --- |
@@ -438,7 +441,7 @@ Putting `WFI` in the idle hook is only an entry instruction, not a low-power pol
 
 Recent FreeRTOS and RT-Thread versions have multicore capabilities, and Zephyr supports SMP on selected platforms. Support depends on the target, port, and frozen version. The M7 and M4 in a dual-core STM32H7 are not equivalent; they are normally designed as AMP. Shared memory needs ownership and cache maintenance, and inter-core messages need version, length, and timeout fields.
 
-## 🔁 Migrating from one system to another
+## Migrating from one system to another
 
 Do not mechanically replace functions. Instead:
 
@@ -451,7 +454,7 @@ Do not mechanically replace functions. Instead:
 
 The hardest part is usually not which call replaces `xQueueSend`. It is undocumented behavior: what happens when a queue is full, what locks do when a task is deleted, where timer callbacks execute, and whether a driver assumes thread-local state.
 
-## 📐 A reproducible system resource account
+## A reproducible system resource account
 
 For an STM32 with 256 KiB SRAM, begin with a static budget:
 
@@ -470,7 +473,7 @@ For an STM32 with 256 KiB SRAM, begin with a static budget:
 
 This is a calculation example. A real project must update it from the link map, per-thread minimum stack margin, kernel-heap minimum free space, and TLS/network peaks. A currently free 78.4 KiB is not automatically a long-term safety margin; burst queues, certificate chains, and update double buffers can change the peak.
 
-## ⚠️ Common failure modes
+## Common failure modes
 
 | Symptom | First hypothesis | Distinguishing experiment |
 | --- | --- | --- |
@@ -483,7 +486,7 @@ This is a calculation example. A real project must update it from the link map, 
 | Watchdog does not reset although the product is dead | the wrong context still refreshes it | allow only the supervisor to feed; block each critical task deliberately |
 | Time drifts after tickless is enabled | low-power clock or compensation boundary | record monotonic tick, RTC, and an external reference edge together |
 
-## 🧪 Four progressive labs
+## Four progressive labs
 
 ### Lab 1: reconcile object semantics
 
@@ -501,7 +504,7 @@ Freeze the control, network, and logging tasks one at a time. The health supervi
 
 Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Implement only GPIO interrupt → fixed-size event → worker thread → UART result. Hold input frequency and log schema constant. Compare object semantics, configuration, stack budget, and ISR boundaries before touching networking or filesystems.
 
-## ✅ Selection review checklist
+## Selection review checklist
 
 - [ ] The target MCU/board has a maintainable BSP and every critical driver in the frozen version.
 - [ ] Flash, SRAM, thread stacks, network/TLS peaks, and update buffers have budgets.
@@ -514,7 +517,7 @@ Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Imp
 - [ ] CVEs, errata, and upstream fixes have a continuing evaluation and upgrade path.
 - [ ] Migration or upgrade can replay the same inputs, latency, stack, and fault-injection evidence.
 
-## 🧾 Close the book: ten questions
+## Close the book: ten questions
 
 1. What separates FreeRTOS Kernel from broader ecosystems such as RT-Thread and Zephyr?
 2. Why can one mutex per driver call still be harder to prove than an owner task?
@@ -527,7 +530,7 @@ Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Imp
 9. Why is an STM32H745-class M7+M4 normally not treated as symmetric SMP?
 10. Under which conditions should the health supervisor refresh the hardware watchdog?
 
-## 🔗 Authoritative sources and frozen versions
+## Related resources
 
 - **FreeRTOS Kernel V11.3.2:** official release; scheduling, queues, mutexes, notifications, memory, tickless operation, and SMP are frozen to this version and the official developer documentation.
 - **RT-Thread v5.3.0:** official release and documentation center; kernel objects, device framework, component initialization, FinSH, DFS, SAL, and STM32 BSP behavior are version-bound.

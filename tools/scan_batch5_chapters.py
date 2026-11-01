@@ -6,10 +6,10 @@ Run from the repository root:
 
     python3 tools/scan_batch5_chapters.py
 
-Rewrites docs/superpowers/plans/2026-10-25-batch5-12-13-14-15-lock.json and
+Rewrites stm32-book/tests/fixtures/2026-10-25-batch5-12-13-14-15-lock.json and
 exits 0 when all eight manuscripts lack the four headings and still have the
 old pitfall heading that is actually in that file. English chapters 13 and 14
-use the shorter heading "## ⚠️ Pitfalls". Exits 2 without writing the lock if
+use the shorter heading "## Pitfalls". Exits 2 without writing the lock if
 a four-block heading is already present, or if the old pitfall heading is
 already gone. Does not score other chapters and does not touch earlier locks.
 """
@@ -22,37 +22,37 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCK_PATH = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json"
+LOCK_PATH = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json"
 FILES = {
     "12": (
         ROOT / "docs" / "12-Flash与IAP升级.md",
         ROOT / "docs" / "en" / "12-flash-iap.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
     ),
     "13": (
         ROOT / "docs" / "13-CAN总线.md",
         ROOT / "docs" / "en" / "13-can.md",
-        "## ⚠️ Pitfalls",
+        "## Pitfalls",
     ),
     "14": (
         ROOT / "docs" / "14-USB.md",
         ROOT / "docs" / "en" / "14-usb.md",
-        "## ⚠️ Pitfalls",
+        "## Pitfalls",
     ),
     "15": (
         ROOT / "docs" / "15-FreeRTOS入门.md",
         ROOT / "docs" / "en" / "15-freertos.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
     ),
 }
-ZH_BLOCKS = ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡")
+ZH_BLOCKS = ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处")
 EN_BLOCKS = (
-    "## Principle and boundary",
+    "## Principle and scope",
     "## Key figures",
-    "## Timing or state",
-    "## Pitfalls and source cards",
+    "## Timing and state",
+    "## Pitfalls and sources",
 )
-ZH_OLD = "## ⚠️ 常见坑与排查"
+ZH_OLD = "## 常见坑与排查"
 
 
 def four_blocks(text: str, headings: tuple[str, ...]) -> bool:

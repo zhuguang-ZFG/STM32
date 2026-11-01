@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch04-nvic.png">
     <source src="../assets/video/ch04-nvic.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.5 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch04-nvic.mp4">MP4</a> · 字幕：<a href="../assets/video/ch04-nvic.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.5 分钟）。<a href="../assets/video/ch04-nvic.mp4">MP4</a> · <a href="../assets/video/ch04-nvic.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 轮询是你不停去问，中断是事情来了敲你的门。主程序可以继续干别的。进了中断服务，办完要清标志，不然门会一直响。
 2. NVIC 这道总闸可以分成三档来记：这路中断开了没有，优先级谁高，有没有挂起还没处理。三档看全，才不会觉得中断时灵时不灵。
@@ -29,8 +30,10 @@
 8. 口诀：总闸分三档；同一编号的脚，EXTI 只能留一个端口。记住这两句，按键中断的大多数玄学都会消失。
 9. 实验用一只按键走下降沿，服务函数里只翻转 PC13。按下能亮、松开不连翻，说明边沿和清标志都做对了。连翻多半是没清，或者抖动没处理。
 10. 合上书，三问。EXTI0 能同时留给 PA0 和 PB0 吗？服务函数里为什么别写阻塞延时？总闸那三档各管什么？
+
+</details>
 <!-- /video:ch04 -->
-## 原理与边界
+## 原理与适用范围
 
 这一章的抢占结论只钉在订货号 STM32F103C8T6 上。时钟沿用附录 D：SYSCLK = HCLK = 72 MHz。分组沿用罗盘和附录 D：HAL 默认 `NVIC_PRIORITYGROUP_4`，4 位抢占、0 位子优先级。数值越小，逻辑优先级越高。这三句整格照抄，不另算一个新的周期数。
 
@@ -58,7 +61,7 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 
 章首的 `nvic-interrupt-flow.svg` 和简笔 `interrupt-priority.svg` 留作辅图。不播放它们，主图仍然能指出失败发生在「抢占被写成同一级」那一段。
 
-## 时序或状态
+## 时序与状态
 
 | 阶段 | 分组 | EXTI0 抢占 | TIM2 抢占 | 状态 | 时间 |
 | --- | --- | --- | --- | --- | --- |
@@ -70,7 +73,7 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 
 167 ns 与附录 D 同一笔，不改成别的纳秒数。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic)。`EXTI_PR` 的清除见 [RM0008](#source-rm0008-exti)。
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -81,14 +84,14 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 | PA0 已经占用 EXTI0，PB0 不再触发 | 同一编号的脚共用一条 EXTI 线 | 换一个脚号 | [RM0008 EXTICR](#source-rm0008-exti) | PA0 和 PB0 都在 EXTI0 上 |
 | F1 上 EXTI 不进中断 | 没开 AFIO 时钟，或没写 EXTICR | 打开 AFIO 时钟再写 EXTICR，并清 EXTI_PR | [RM0008 第 9.4.3 节](#source-rm0008-exti) | 这句只在 F1 成立 |
 
-## 📌 学习目标
+## 学习目标
 - [ ] 说清中断与轮询的差异及适用场景
 - [ ] 掌握 NVIC 抢占优先级 / 子优先级分组规则
 - [ ] 理解中断响应的硬件全流程（入栈 → 取向量 → ISR → 出栈）
 - [ ] 会配置 EXTI 外部中断并注意 AFIO 时钟
 - [ ] 会用 volatile、临界区，知道中断里为什么不能用 `HAL_Delay`
 
-## 🧠 核心原理
+## 核心原理
 
 **结论先行：中断把「CPU 反复查询」换成「外设主动通知」，代价是要正确处理优先级、共享变量和耗时。**
 
@@ -162,14 +165,14 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 | `__DSB()` | 数据同步屏障，保证内存访问完成 |
 | 中断里禁用 `HAL_Delay` | 它依赖 SysTick 中断，若被同级/更高级屏蔽会死等 |
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
 | BluePill | 按键（EXTI） | PA0 | 另一端接 GND，下降沿触发 |
 | BluePill | LED | PC13 | 中断里翻转 |
 
-## 💻 代码实现
+## 代码实现
 
 ```c
 /* exti_key.c —— PA0 按键外部中断翻转 PC13（含标志位 + 主循环消抖） */
@@ -256,7 +259,7 @@ __enable_irq();           /* 开总中断 */
 
 完整工程见 [`examples/exti-key/`](../examples/exti-key/)。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **实验一**：PA0 按键下降沿中断翻转 PC13，按一次亮/灭一次。
 2. **实验二**：去掉软件消抖，快速按键观察多次翻转；再加上消抖对比。
@@ -327,11 +330,11 @@ EXTI 线是按**引脚号**共用的：PA0 和 PB0 都连在 EXTI0 上，不能�
 2. PA0 已经接了按键中断，PB0 还能再挂一个 EXTI 下降沿吗？
 3. BASEPRI 的阈值是“数值更大更优先”还是相反？
 
-## 🔗 相关资源
+## 相关资源
 
 - 官方手册：**RM0008** 第 10 章（中断与事件 EXTI）、第 9.4.3 到 9.4.6 节（AFIO_EXTICR）。第 9.2.7 节是 GPIOx_LCKR，不是 EXTICR。入栈见 [PM0056 第 2.3.7 节](#source-pm0056-nvic)
 - 上一篇：[03 GPIO与LED](03-GPIO与LED.md)｜下一篇：[05 定时器与PWM](05-定时器与PWM.md)
-- 📱 手机阅读版：[第 04 章 · 中断与NVIC（公众号图文）](https://mp.weixin.qq.com/s/zxETginoI0WV0MEgcGVrSA)
+- 手机阅读版：[第 04 章 · 中断与NVIC（公众号图文）](https://mp.weixin.qq.com/s/zxETginoI0WV0MEgcGVrSA)
 - 相关图：[`assets/animations/nvic-interrupt-flow.svg`](../assets/animations/nvic-interrupt-flow.svg)、[`assets/animations/gpio-input-interrupt.svg`](../assets/animations/gpio-input-interrupt.svg)、[`assets/diagrams/interrupt-priority.svg`](../assets/diagrams/interrupt-priority.svg)
 - 免责声明：本仓库插画均为作者自绘矢量图/程序生成动画，非厂商实拍照片。
 

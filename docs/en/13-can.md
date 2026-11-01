@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch13-can.png">
     <source src="../../assets/video/ch13-can.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.8 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch13-can.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch13-can.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.8 min). <a href="../../assets/video/ch13-can.mp4">MP4</a> · <a href="../../assets/video/ch13-can.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. CAN 发出去要有人应答。只有一个节点、又不是回环时，错误计数会一直涨。发送错误计数到 256，节点进入总线关闭，它就闭嘴了。这不是收发器坏了。
 2. 先把控制器配成回环，自己发给自己。能收到，说明波特率和过滤器大体对了。再接到真正的总线。示例工程默认就是这条回环路。
@@ -29,9 +30,11 @@
 8. 两块板子练习时，关掉回环，两边标识对调，总线两端各放 120 欧。收发器的电平要和模块匹配。单看回环全绿，不代表两块板子已经能对话。
 9. 口诀：发送错误计数到 256 就闭嘴。单节点不要用正常模式考验自己。500 千比特在 36 兆上，记预分频 9 和一共 8 个时间份额。
 10. 合上书，三问。为什么只有一个节点、又不是回环时会进总线关闭？36 兆下 500 千比特的预分频是多少？PB8 和 PB9 哪只是接收？
+
+</details>
 <!-- /video:ch13 -->
 
-## Principle and boundary
+## Principle and scope
 
 Bit time and the working pins are fixed on STM32F103C8T6. The CAN1 kernel clock is the 36 MHz APB1 clock, the same account as chapter file 02. The working point is copied from the compass: prescaler 9, BS1 = 5, BS2 = 2, SJW = 1. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).
 
@@ -63,7 +66,7 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 `can-arbitration.svg` stays as an auxiliary figure. Arbitration and bit stuffing are not on this static figure.
 
-## Timing or state
+## Timing and state
 
 | Prescaler | BS1 | BS2 | Quanta | Bit time | Rate | Sample point |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -73,7 +76,7 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 | Errors | count reaches 256 | bus-off | 128 times | 11 recessive bits each time | — | only then may the node drive again |
 | Filter | `FilterIdHigh` | shift left by 5 | — | — | — | without the shift the mailbox stays empty |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -85,7 +88,7 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 | The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT. Both pins exist |
 | I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Choose either CAN or I2C on that pair | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap. Do not redraw the chapter 07 figure |
 
-## 📌 Goals
+## Learning goals
 
 - [ ] Explain differential levels, dominant/recessive, bit stuffing, CRC, and ACK.
 - [ ] Tell apart data, remote, error, and overload frames, and 11-bit versus 29-bit IDs.
@@ -93,7 +96,7 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 - [ ] Compute baud and sample point (BS1/BS2/SJW) and program `CAN_BTR`.
 - [ ] Configure filters and the two receive FIFOs on F1.
 
-## 🧠 Core idea
+## Core ideas
 
 ### 1. Physical layer: differential, dominant, recessive
 
@@ -148,7 +151,7 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 **Takeaway:** One bit is `SYNC_SEG (1 Tq)` + `BS1` + `BS2`. The sample point is usually **75% to 87.5%**.
 
-```
+```text
 BaudRate = f_APB1 / (Prescaler × (1 + BS1 + BS2))
 sample point = (1 + BS1) / (1 + BS1 + BS2) × 100%
 Tq = Prescaler / f_APB1
@@ -181,7 +184,7 @@ On **F1, APB1 = 36 MHz**:
 
 > F4 bxCAN is the same shape (14 banks + 2 FIFOs, RM0090 chapter 32). Register names mostly match.
 
-## 🛠️ Wiring
+## Wiring
 
 | Board | Peripheral | Pins | Note |
 | --- | --- | --- | --- |
@@ -192,7 +195,7 @@ On **F1, APB1 = 36 MHz**:
 
 Wire `CAN_TX` to the transceiver TXD and `CAN_RX` to RXD. CANH/CANL are the bus. **Mind the transceiver supply:** SN65HVD230 is 3.3 V, TJA1050 is 5 V.
 
-## 💻 Code
+## Code
 
 **① Init (F1, 500 kbps)**
 
@@ -263,7 +266,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
 ```
 
-## 🧪 Try it
+## Hands-on labs
 
 1. **Loopback:** `CAN_MODE_LOOPBACK`, print the ID and data you receive. You should see your own frame with no transceiver.
 2. **Two nodes:** two BluePills plus transceivers, 120 Ω at each end. B's log matches what A sent.
@@ -288,7 +291,7 @@ Self-test:
 2. With `AutoBusOff` enabled, do you still call Start again in software?
 3. When standard IDs 0x100 and 0x200 arbitrate, which bit is compared first?
 
-## 🔗 Further reading
+## Related resources
 
 - RM0008, STM32F10xxx reference manual, chapter 21, Controller area network (bxCAN): `CAN_BTR`, filters, two FIFOs.
 - RM0090, STM32F4 reference manual, chapter 32, bxCAN.

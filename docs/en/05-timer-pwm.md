@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch05-tim.png">
     <source src="../../assets/video/ch05-tim.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch05-tim.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch05-tim.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch05-tim.mp4">MP4</a> · <a href="../../assets/video/ch05-tim.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 定时器不是魔法，就是一个被时钟推着走的计数器。CNT 加到 ARR 就回头，这一圈就是周期。先把这句话讲顺，再去看 PWM。
 2. 三个数各管一件事。PSC 把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。频率不对先看前两个，亮度不对再看 CCR。
@@ -28,9 +29,11 @@
 8. 口诀：捕获锁的是 CNT。想要某个频率，先定 PSC，再定 ARR。三个数不要一起拧，拧乱了就不知道是谁的错。
 9. 实验输出大约 1 千赫、占空比三成的 PWM。用逻辑分析仪或示波器对一下。对不上时，先核对定时器时钟，再核对 ARR 和 CCR，别先怀疑探头。
 10. 合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？
+
+</details>
 <!-- /video:ch05 -->
 
-## Principle and boundary
+## Principle and scope
 
 The waveform conclusion in this chapter is pinned to order code STM32F103C8T6. The counter clock is the 72 MHz from Appendix D, not 36 MHz. On a family whose TIM2 or TIM5 is 32-bit, the sentence “this part is 16-bit” is void.
 
@@ -58,7 +61,7 @@ On TIM1/TIM8, `TIMx_BDTR` is at offset `0x44`, the reset value is `0x0000`, and 
 
 The opening `timer-pwm.svg` and `pwm-breath.gif` stay in their original section and are marked as side figures. Without playing them, both 1 kHz and 500 Hz are on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Row | Counter clock | PSC | ARR | CCR | CNT | Output | Time |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -70,7 +73,7 @@ The opening `timer-pwm.svg` and `pwm-breath.gif` stay in their original section 
 
 Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -79,14 +82,14 @@ Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 | TIM1 has no waveform at all | BDTR bit 15 MOE is still 0 | Set MOE | [RM0008](#source-rm0008-tim) | The reset value is 0x0000. With MOE at 0 the main output stays off. The offset is 0x44. TIM3 has no such bit |
 | PWM appears on some other pin | TIM3_REMAP is not 00 | Keep TIM3_REMAP=00 and use PA6 | [DS5319](#source-ds5319-tim) | LQFP48 pin 16 is PA6, and the default alternate function includes TIM3_CH1 |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] Tell the STM32 timer classes apart (advanced / general-purpose / basic / watchdog / SysTick)
 - [ ] Use the time-base formulas to get PSC and ARR for any period
 - [ ] Understand count modes, the update event, and shadow registers
 - [ ] Configure a PWM mode and derive the duty and frequency formulas
 - [ ] Measure frequency and duty with input capture, and know the encoder interface exists
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: a timer is "a counter driven by a clock". PSC sets how fast it counts, ARR sets the period, CCR sets the duty.**
 
@@ -163,7 +166,7 @@ Frequency versus resolution, at the same fCK_PSC:
 | Encoder interface | A/B quadrature decode, count up and down automatically | Motor speed or position |
 | Slave mode | An external signal resets or gates the counter | Period measurement, gated counting |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -172,7 +175,7 @@ Frequency versus resolution, at the same fCK_PSC:
 
 > F1 timer-channel pinout is in the DS5319 alternate-function table. TIM1 is an advanced timer. PWM output needs **MOE**.
 
-## 💻 Code
+## Code
 
 ```c
 /* timer_pwm.c —— TIM3_CH1 (PA6) outputs 1 kHz PWM; software walks the duty for a breathing LED */
@@ -267,7 +270,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 The full project is in [`examples/timer-pwm/`](../../examples/timer-pwm/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1 (PWM out):** TIM3_CH1 outputs a 1 kHz, 50% square wave. Confirm frequency and duty with a scope or a logic analyzer.
 2. **Lab 2 (breathing LED):** Walk the duty from 0 to 100% and back with the code above. Watch the LED fade up and down (compare with `pwm-breath.gif`).
@@ -338,7 +341,7 @@ Self-test:
 2. The ADC should convert every 1 ms. Which event should the timer's TRGO select?
 3. The encoder is wired to phase A only. What happens to the count when the shaft reverses?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 14 (advanced timers TIM1/8), chapter 15 (general-purpose timers TIM2–5), chapter 16 (basic timers TIM6/7)
 - Previous: [04 Interrupts and the NVIC](04-interrupts-nvic.md) | Next: [06 UART](06-uart.md)
