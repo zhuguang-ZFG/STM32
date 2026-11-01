@@ -103,6 +103,8 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 
 ### 1. The RTC and the backup domain
 
+The RTC is a watch inside the chip. It lives with a few backup registers in a separate small room called the backup domain. When main power goes, that room stays powered as long as a coin cell is on the VBAT pin, and the watch keeps running. How accurate it is depends on the clock: an external 32.768 kHz crystal is the most accurate, and the internal LSI is only rough.
+
 The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time after the main supply drops. Prefer the **LSE at 32.768 kHz** as the clock source. It is the most accurate of the four.
 
 | Clock source | Frequency | Accuracy | Pins used | Fits |
@@ -117,6 +119,8 @@ The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time af
 
 ### 2. BKP backup registers
 
+The backup registers are sticky notes in that small room, and they survive a main power loss. The usual trick is a note that says "time already set". At power-up, check for the note. If it is there, read the clock. If it is not, set up the calendar and then leave the note. Otherwise every restart would reset the time.
+
 `BKP_DRx` is powered by `VBAT`. It survives a loss of the main supply. It is the usual place for flags such as "is this the first power-up" and for calibration constants.
 
 | Family | Backup registers | Width |
@@ -128,6 +132,8 @@ The usual pattern: on power-up, read a "magic value" (for example `0xA5A5`). If 
 
 ### 3. Calendar, alarm, wake-up, and timestamp
 
+The F1 RTC only counts seconds, and software turns the count into a date. An alarm is "tell me when the count reaches this many seconds". From the F4 on, the RTC stores the date and time directly, an alarm can follow a rule such as "every day at 7:00", and there is also periodic wake-up and timestamping, which suit waking from low-power modes on a schedule.
+
 | Feature | What it does | Key registers |
 | --- | --- | --- |
 | Calendar | Second / minute / hour / day / month / year (F1 converts in software; F4 is hardware BCD) | `RTC_TR` / `RTC_DR` (F4) |
@@ -138,6 +144,8 @@ The usual pattern: on power-up, read a "magic value" (for example `0xA5A5`). If 
 > On F1 the alarm compares the **seconds counter**. On F4 you can mask-match second, minute, hour, day, month, or weekday, which is more flexible.
 
 ### 4. IWDG vs WWDG
+
+A watchdog is a countdown that never stops, and the program has to "feed" it now and then to wind the count back up. If the program hangs, nobody feeds it, the count runs out, and the chip resets. The independent watchdog has its own clock, so it keeps counting even if the main clock fails, which makes it the last line of defence. The window watchdog is stricter: feeding it too late resets the chip, and so does feeding it too early, so it catches a program that runs too fast as well as too slow.
 
 The IWDG has its own clock and can catch a dead hang. It is the **safety floor**. The WWDG is more accurate and has a feed window, so it can **catch a program whose timing has gone wrong**. You can use both at once.
 

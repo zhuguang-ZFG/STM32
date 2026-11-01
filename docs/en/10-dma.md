@@ -98,6 +98,8 @@ The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the co
 
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
 
+DMA is the chip's porter. The CPU tells it where to carry from, where to carry to, and how much, and then it runs back and forth on the bus by itself and reports when it is done. On the F1, the porters are split by workstation, and each workstation takes jobs from a fixed set of peripherals. The F4 adds a layer: you first choose a workstation (the stream), then one of its 8 sockets (the channel), so one peripheral can move to another workstation.
+
 On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
 
 | Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
@@ -111,6 +113,8 @@ On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind t
 | Memory↔memory | Supported (`CCR.MEM2MEM`) | Supported |
 
 ### 2. The request map (picking the right channel or stream is the whole game)
+
+The wires between peripherals and DMA channels are fixed inside the chip. On the F1, the USART1 transmit request is wired only to DMA1 channel 4. If you set up channel 5 instead, it waits forever for a request that never comes, and nothing reports an error. So the first step in setting up DMA is to look up this table rather than guess.
 
 **F1 DMA1 request map (excerpt; the full tables are RM0008 Table 78 and Table 79)**:
 
@@ -139,6 +143,8 @@ On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind t
 
 ### 3. Transfer direction and operating modes
 
+Setting up DMA means answering a few questions. Peripheral to memory, or the other way? Stop after one round, or wrap to the start and keep going? After each item, should the source and destination addresses move on? How many bytes per item? A peripheral data register has only one address, so the peripheral side stays put while the memory side moves on. That is the most common combination.
+
 | Mode / setting | Key bits | What it means |
 | --- | --- | --- |
 | Peripheral → memory | `DIR=0` (F4) / `CCR.DIR` | ADC or UART_RX into an array |
@@ -154,6 +160,8 @@ On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind t
 
 ### 4. Interrupts
 
+DMA calls out when it has finished, and that is the TC interrupt. It also calls out halfway, and that is the HT interrupt. The halfway call lets you and the porter take turns on one array. While it fills the back half, you work on the front half. When it wraps round to the front half, you work on the back half. The two of you stay half a lap apart and never collide.
+
 | Interrupt | When it fires | Use |
 | --- | --- | --- |
 | TC (transfer complete) | All N items have moved | The data is ready to process |
@@ -164,6 +172,8 @@ On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind t
 "Half-transfer plus circular mode" is the classic pair. While DMA fills the first half, the CPU processes the second half, and the other way around. The stream never has a gap.
 
 ### 5. Bus contention and cache coherency
+
+DMA and the CPU share the same bus, so the busier DMA is, the longer the CPU waits to fetch instructions and data. Chips with a cache have one more problem. The CPU looks at its own cached copy while DMA changes the original in memory, and the two drift apart. You either clean or invalidate the cache around each DMA transfer, or put the DMA buffer in a region that bypasses the cache.
 
 - **Bus contention**: DMA and the CPU share the bus matrix. While DMA is moving data it periodically occupies the bus, and in the extreme it slows the CPU. The F4 FIFO and burst mode can merge many small transfers and occupy the bus less often.
 - **Cache coherency (H7 / F7)**: if D-Cache is on, a DMA write into memory can bypass the cache, so the CPU reads a stale value. A CPU write can also still be sitting in the cache and not in RAM, so DMA reads a stale value. The fix: put the DMA buffer in a **non-cacheable region (MPU set to Non-Cacheable)**, or call `SCB_CleanDCache_by_Addr` / `SCB_InvalidateDCache_by_Addr` around the transfer. **F1 and F4 have no D-Cache, so this problem does not exist there.**

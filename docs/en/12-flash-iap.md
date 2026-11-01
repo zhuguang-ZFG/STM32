@@ -98,6 +98,8 @@ The opening animation `flash-iap.svg` shows the whole update flow. For page boun
 
 ### 1. How Flash is organized
 
+Flash is like a notebook you write in pencil and can only erase a whole page at a time. Erased cells are all 1. Writing can only turn a 1 into a 0, and the only way to turn a 0 back into a 1 is to erase the whole page. So to change one byte, you read the page out, erase it, and write it back with the changed byte. Each page survives only so many erases, so a log that writes often has to rotate through pages.
+
 F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 erases by **16 to 128 KB sectors** and can program a **byte, half-word, word, or double word**.
 
 | Item | STM32F1 (RM0008, Chapter 3, FLASH) | STM32F4 (RM0090, Chapter 3, FLASH) |
@@ -113,6 +115,8 @@ F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 e
 > Flash **can only be erased a whole page or a whole sector at a time**. You cannot change it byte by byte. Changing one byte still means erasing the whole page first. If you log frequently, do wear leveling and spread the writes across different pages.
 
 ### 2. Unlock and the programming sequence
+
+Flash is normally locked, so a runaway program cannot scribble on it. To unlock it, you write two fixed values to the key register in order. If the order or a value is wrong, Flash stays locked until the next reset. After unlocking you erase, then write, and wait for the busy flag to clear before each next step. Lock it again at the end.
 
 **The F1 sequence (RM0008, Chapter 3):**
 
@@ -135,6 +139,8 @@ HAL_FLASH_Lock();                                    /* lock */
 
 ### 3. How IAP works, and how you split the memory
 
+IAP lets the chip replace its own program. Flash is split into regions. At the front is a small bootloader that is never overwritten. Next is a parameter region that holds the update flag. After that is the real application. At every power-up the bootloader runs first and checks the parameter region. If an update is due, it receives the new program over UART and writes it into the application region. If not, it jumps straight to the application.
+
 IAP splits Flash into a **bootloader region, a parameter region, and an app region**. At power-up the bootloader runs first, decides whether to update or to jump, and then jumps to the app.
 
 **Example map (STM32F103C8T6, 64 KB Flash):**
@@ -150,12 +156,14 @@ IAP splits Flash into a **bootloader region, a parameter region, and an app regi
 | Region | Start address | Size |
 | --- | --- | --- |
 | Bootloader | `0x0800 0000` | 32 KB |
-| Parameters | `0x0800 8000` | 2 KB (inside sector 1; remember the smallest F4 sector is 16 KB) |
-| App | `0x0801 0000` | 480 KB |
+| Parameters | `0x0800 8000` | Sector 2 on its own (16 KB), of which 2 KB is used. Sector 3 is left empty |
+| App | `0x0801 0000` | 448 KB (sectors 4–7, up to `0x0808 0000`) |
 
 > F4 erases by sector. If the parameter region shares a sector with the bootloader, they are erased together, so the parameter region has to **own a sector by itself**.
 
 ### 4. What you must do before jumping to the app
+
+Jumping from the bootloader to the application is a shift change, and the bootloader has to tidy up. Interrupts, timers, and peripherals it turned on have to be switched off, or the application receives an interrupt it does not expect the moment it starts. The CPU also has to be told two things: where the new stack starts, and where the vector table now lives. Skip any of these and the application may run back into the bootloader on its first interrupt.
 
 Before the jump you must disable interrupts, reset the peripherals, set MSP, and set the vector-table offset. Otherwise an interrupt inside the app jumps back into the bootloader's vector table and the chip hangs.
 

@@ -100,6 +100,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 
 ### 1. Physical layer: differential, dominant, recessive
 
+CAN sends each bit on two twisted wires and looks at the voltage between them, not at either wire on its own. Noise from outside hits both wires at once and leaves the difference alone, which is why CAN runs tens or hundreds of meters in cars and factories full of electrical noise. A difference of about 2 V is dominant and means 0. A difference near 0 is recessive and means 1. If any one node sends dominant, the whole bus is dominant.
+
 **Takeaway:** CAN rides on `CAN_H` / `CAN_L`. **Dominant means logic 0, recessive means logic 1.** Dominant overwrites recessive (wired-AND). That is the whole of arbitration.
 
 | Logic | Bus state | CAN_H − CAN_L | Note |
@@ -113,6 +115,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 
 ### 2. Stuffing, CRC, ACK
 
+The receiver has no clock wire and keeps time from the edges in the data. If many identical bits go out in a row, the line sits without an edge and the receiver's clock slowly drifts. So CAN inserts an opposite bit after 5 identical bits, and the receiver removes it again. The CRC checks that nothing was garbled. ACK means any node on the bus that received the frame correctly presses down on the acknowledge bit, telling the sender "someone got it".
+
 | Mechanism | Job | Rule |
 | --- | --- | --- |
 | Bit stuffing | Enough edges for resync | After five identical levels, insert one opposite bit (the fixed stuff before the CRC delimiter is the exception) |
@@ -121,6 +125,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 | Error counters | Isolate a bad node | TEC/REC. Past the thresholds the node becomes error-passive, then bus-off |
 
 ### 3. Frame types and IDs
+
+A CAN frame has no recipient. It says what the message is about, and that is the ID. For example, 0x100 might mean engine speed. Every node hears it and decides for itself whether to keep it. A standard frame has an 11-bit ID, an extended frame has 29 bits, and a frame carries at most 8 bytes of data.
 
 | Frame | Use |
 | --- | --- |
@@ -136,6 +142,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 
 ### 4. Non-destructive arbitration
 
+When several nodes start talking at once, each one listens to the bus while it sends its ID. Dominant overrides recessive, so the side whose ID has the first 0 wins. The loser notices "I sent a 1 but the bus shows 0", goes quiet at once, switches to receiving, and tries again when the bus is free. The winner is never disturbed, and not one bit of its message is damaged. The lower the ID, the higher the priority.
+
 **Takeaway:** When several nodes start together, they arbitrate **bit by bit**. A node that sent recessive but sees dominant drops out and listens. The winner's frame is **not corrupted**. **A numerically smaller ID has higher priority.**
 
 | Standard ID | Priority | Typical use |
@@ -149,6 +157,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 
 ### 5. Baud rate and sample point
 
+CAN splits each bit into small slices called Tq. The first slice lines up with the edge. The rest is split into BS1 before the sample point and BS2 after it. The sample point sits between 75% and 87.5% of the bit so that the signal has time to travel the bus and settle before it is read. Every node on the bus must use the same baud rate and sample point.
+
 **Takeaway:** One bit is `SYNC_SEG (1 Tq)` + `BS1` + `BS2`. The sample point is usually **75% to 87.5%**.
 
 ```text
@@ -161,7 +171,7 @@ On **F1, APB1 = 36 MHz**:
 
 | Target | Prescaler | BS1 | BS2 | Sample | Note |
 | --- | --- | --- | --- | --- | --- |
-| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 36 MHz / (4×9) = 1 MHz, short cable |
+| 1 Mbps | 3 | 8 Tq | 3 Tq | 75% | 36 MHz / (3×12) = 1 MHz, short cable |
 | 500 kbps | 9 | 5 Tq | 2 Tq | 75% | 36 MHz / (9×8) = 500 kHz |
 | 250 kbps | 18 | 5 Tq | 2 Tq | 75% | Double the prescaler |
 | 125 kbps | 36 | 5 Tq | 2 Tq | 75% | Long cable |

@@ -103,6 +103,8 @@ ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
 ### 1. Resolution, reference voltage, and quantization error
 
+An ADC is a ruler with tick marks and no vernier. 12 bits cuts the span from 0 to Vref into 4096 steps, so at Vref = 3.3 V one step is about 0.8 mV. When the input falls between two marks, the ADC can only report the nearest one, so every reading carries up to half a step of error by design. The length of the ruler is Vref. If Vref wobbles, every reading wobbles with it.
+
 At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
 
 | Resolution N | Number of steps, 2^N | 1 LSB at Vref = 3.3 V | 1 LSB at Vref = 5.0 V | Notes |
@@ -125,6 +127,8 @@ full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 > On STM32F1, `Vref` is `VDDA` (the analog supply). They share a pin. Only packages with 100 pins or more have a separate `VREF+` / `VREF-`. So **VDDA ripple is a direct error in the reading**. For a precise measurement, either bring in an external reference, or measure Vrefint first and calibrate in software.
 
 ### 2. Successive approximation (SAR): sample-and-hold plus binary compare
+
+A SAR ADC plays a guessing game. First it takes a snapshot: the input charges a small capacitor, then the switch opens so the voltage stays put while it compares. Then it guesses from the middle: "is it above Vref/2?" If yes, it writes 1 and keeps guessing in the upper half. If no, it writes 0 and guesses in the lower half. 12 bits means 12 guesses. The snapshot is where things go wrong. If the source resistance is high, the capacitor does not fill in the sample time, and the snapshot comes out blurred.
 
 A SAR ADC approaches the input voltage by binary search. An N-bit result needs N compares, and the bits are decided from MSB down to LSB.
 
@@ -162,6 +166,8 @@ On F1, `SMPx[2:0]` can be 1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5 A
 
 ### 3. Four conversion modes
 
+The four modes differ in when the ADC stops. Single converts once each time you ask. Continuous starts again as soon as it finishes and never stops. Scan works down a list of channels in order. Discontinuous splits a long list so that each trigger converts only a few channels. Real projects most often use scan plus continuous, with DMA moving the results.
+
 Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
 
 | Mode | Key bits | Behavior | Typical use |
@@ -175,6 +181,8 @@ Single is for sampling on demand and saving power. Continuous is for live monito
 The regular group holds up to 16 conversions in the sequence. The injected group holds up to 4, and it can interrupt the regular group. That is the "urgent" sample used for motor current.
 
 ### 4. Multi-channel plus DMA
+
+In a continuous multi-channel scan, the ADC drops each result into the same DR register, and the next result overwrites it straight away. The CPU cannot keep up with fetching every one, so DMA stands at the DR door and carries each result into the next slot of an array, wrapping to the start at the end. When the CPU wants the latest values, it reads the array.
 
 The standard shape for fast multi-channel acquisition is scan mode plus continuous conversion plus circular DMA. The CPU does not take part at all.
 
@@ -193,6 +201,8 @@ The standard shape for fast multi-channel acquisition is scan mode plus continuo
 | Internal channels | Temperature CH16, Vrefint CH17 | Temperature, Vrefint, VBAT |
 
 ### 5. Internal temperature sensor and Vrefint
+
+The chip has two channels that need no wiring. One is the temperature sensor, which gives a rough idea of how hot the die is and is only good for trends. The other is Vrefint, a fixed voltage of about 1.20 V. Its job is to measure the ruler itself: since the input is known to be 1.20 V, the code you read tells you what VDDA really is right now, and you can use that to correct the other channels.
 
 The temperature sensor and Vrefint are "internal channels" of the ADC. You get the die temperature and the real VDDA for free, and you use them to calibrate the external readings.
 
@@ -214,6 +224,8 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 > F4, L4, and similar families provide **factory calibration values**: `TS_CAL1` (30°C), `TS_CAL2` (110°C), and `VREFINT_CAL`. They live in the system memory area. Read them directly. They are far more accurate than looking up a typical value.
 
 ### 6. DAC output modes, the buffer, and noise
+
+A DAC is an ADC run backwards: you give it a number from 0 to 4095 and it puts the matching voltage on the pin. The output buffer is a helper that lets the pin drive a heavier load, but the buffer itself cannot reach all the way to 0 V or VDDA. To make the voltage follow a waveform, let a timer trigger at a fixed beat and have DMA feed one value from a table on each beat.
 
 The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DOR / 4096`. The output buffer can drive a heavier load, but it adds offset and cannot swing all the way to the rails.
 
