@@ -98,6 +98,8 @@ The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#
 
 ### 1. Four wires, and how the shift works
 
+SPI is like two people swapping cards across a table. Master and slave each hold 8 cards. Every time the master taps the table (one SCK clock), both push their outermost card to the other side. After 8 taps, every card has changed hands. So SPI has no "read only": to read a byte from the slave, the master must push a byte across too, usually 0xFF as filler. Pulling CS low tells one slave "this round is with you".
+
 | Wire | Full name | Direction | Meaning |
 | --- | --- | --- | --- |
 | SCK | Serial Clock | Master → slave | Clock |
@@ -109,6 +111,8 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 
 ### 2. The four CPOL/CPHA modes
 
+The four modes settle two questions. CPOL says where the hand rests between taps, which is whether the idle clock is low or high. CPHA says whether you read the cards as the hand comes down or as it comes up, which is whether sampling happens on the 1st or the 2nd edge. If the two sides disagree, every bit is half a tap off, and what comes back is all 0, all FF, or shifted.
+
 | Mode | CPOL | CPHA | Idle clock | Sample edge | Common parts |
 | --- | --- | --- | --- | --- | --- |
 | Mode 0 | 0 | 0 | Low | 1st edge (rising) | W25Q64, ST7789, most parts |
@@ -119,6 +123,8 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 > **try Mode 0 first. If a read ID is all 0s or all FFs, suspect the mode before anything else.**
 
 ### 3. Rate and the divider
+
+The master supplies the SPI clock, so the speed is the master's bus clock divided by a power of 2. The divider has only eight steps, from 2 to 256, so 10 MHz is not available: you choose between 9 MHz and 18 MHz. The real speed limit is usually the wiring rather than the chip. On jumper wires above 18 MHz, the square wave has already rounded off into something like a sine.
 
 - SPI clock = fPCLK / divider (BR field: 2/4/8/16/32/64/128/256).
 - Example: APB2 = 72 MHz, divider 8 → 9 MHz.
@@ -135,6 +141,8 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 | 111 | 256 | 0.28125 MHz |
 
 ### 4. NSS, and more than one slave
+
+Several slaves share SCK, MOSI and MISO, and each has its own CS. The master pulls low the CS of the one it wants to talk to. The others see their CS high and let go of MISO. The easiest approach is to drive CS as an ordinary GPIO yourself, so you can see exactly when it goes low and for how long.
 
 | Method | Meaning |
 | --- | --- |

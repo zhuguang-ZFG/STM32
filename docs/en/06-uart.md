@@ -100,6 +100,8 @@ The 0.16% belongs only to the USART2 row. Source: [RM0008 section 27.3.3](#sourc
 
 ### 1. The frame
 
+UART has no clock wire, so each side keeps its own time. Every byte therefore starts with a low start bit, which works like calling out "here it comes". The receiver hears the falling edge, starts counting steps at the agreed rate, and looks at the line in the middle of each step. The 8 data bits go out lowest bit first. The high stop bit at the end returns the line to idle, so the next start bit has an edge to fall from.
+
 One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit + 0.5 / 1 / 1.5 / 2 stop bits
 
 | Piece | Value | Meaning |
@@ -117,6 +119,8 @@ One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit 
 
 ### 2. Baud rate and error
 
+Two people agree to clap 115200 times a second and each keeps their own count. A frame is only 10 bits long. As long as the two clocks drift apart by less than half a step over those 10 bits, the receiver still samples near the middle of each bit. Half a step spread over 10 bits is about 5%. After the margin for sampling and edges, the usual budget is 2% to 3% of combined error. BRR tells the USART how many PCLK cycles make one step.
+
 - Baud rate is bits per second. 9600 and 115200 are the common ones.
 - Time per bit = 1 / baud rate. 115200 → about 8.68 µs.
 - **Error budget:** the accumulated error of both sides needs to stay under about ±2% to ±3% (a 10-bit frame, sampled at the middle of three points).
@@ -133,6 +137,8 @@ BRR on F1, 16× oversampling: `USARTDIV = fPCLK / (16 × baud)`, and BRR = integ
 > On this STM32F103C8T6, USART_CR1 bits 31:14 are reserved, so there is no OVER8. 8× oversampling means moving to a family that has that bit. On F103, do not switch OVER8 on to chase high-baud errors; check 72 MHz and BRR `0x271` first. `HAL_UART_Init` still computes BRR at 16×.
 
 ### 3. Three ways to send and receive
+
+The three modes differ in where the CPU waits. Blocking mode is standing at the door until the parcel comes, doing nothing else. Interrupt mode rings the doorbell once per byte, which at 115200 baud is more than ten thousand rings a second. DMA hires a butler: bytes go straight into an array, and you are called only when the whole packet is in or the line goes idle.
 
 | Dimension | Blocking (polling) | Interrupt (IT) | DMA |
 | --- | --- | --- | --- |
