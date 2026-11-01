@@ -180,6 +180,19 @@ class Batch5FigureTests(unittest.TestCase):
         self.assertNotIn("167 ns", rtos)
         self.assertNotIn("17.2", rtos)
 
+    def test_usb_enumeration_animation_matches_the_chapter_order(self) -> None:
+        svg_path = ROOT / "assets" / "animations" / "usb-enumeration.svg"
+        svg = svg_path.read_text(encoding="utf-8")
+        self.assertLess(svg.index("④ SET_ADDRESS"), svg.index("⑤ 读完整设备描述符"))
+        self.assertIn("改用新地址读取 18 字节", svg)
+        self.assertIn("请求 ↔ 回应", svg)
+        self.assertIn("animation:usb-p", svg)
+
+        gif = (ROOT / "assets" / "gif" / "usb-enumeration-zh.gif").read_bytes()
+        self.assertTrue(gif.startswith(b"GIF89a"))
+        self.assertGreaterEqual(gif.count(b"\x21\xf9\x04"), 7)
+        self.assertLess(len(gif), 500 * 1024)
+
 
 def _load_gifs():
     path = ROOT / "tools" / "gen_gifs.py"

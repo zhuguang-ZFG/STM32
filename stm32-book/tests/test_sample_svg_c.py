@@ -41,7 +41,7 @@ animations/timer-modes.svg 900x620 11712 c8a1e34469293d5f4a02a5703271bcf62fc4e9f
 animations/timer-pwm.svg 900x620 10046 54833bf0841b1569cb993934699473b2ee4d2f0ed56b858a4fb9b5855bb8532f
 animations/toolchain-flow.svg 900x620 15176 e131ad994e16c099c15d4d941c0e7aade4865c53c912248a73590e939645e0bd
 animations/uart-frame.svg 900x620 18533 a696fc8932d337f1b22dacef54ecfe01dd37aa963b41d67111c584122f6b3400
-animations/usb-enumeration.svg 900x620 10874 b531c1c1278ee8560a2a4297dd4f36e8dfb5934fc09f7df494faf9d5e455e20d
+animations/usb-enumeration.svg 900x620 16705 ccf597d223d3d29cf8f5c3cbc47709d384453048753e4725cad655e84e7b0a1d
 boards/blackpill-stm32f411ce.svg 900x620 32264 511d86c80d8862e78be2a0c7e6ca7e24e1db11d30ea66d47b3b2f1e8cdec0494
 boards/bluepill-stm32f103c8t6.svg 900x620 35647 272634dc07da80d8c5d7e6471d9778310292318aace55acbecfcd92a8d9d4c25
 boards/f103zet6-dev.svg 900x620 26509 8d52a625b72cef5f53be80091fc870d3bcf9537b0c178c5aa4ebfcb810ded612
@@ -275,7 +275,7 @@ class SampleSvgCTests(unittest.TestCase):
             for path in gifs
         )
         self.assertEqual(
-            "f33185dc945c57ba1f4ac6e17a8ac5b218fee3ee0f85b5ffddf8080ec74d3b3a",
+            "9f4d7b2c46578f975436d92901b30c8e4588b31e2df337785b9ccc0e74508c51",
             hashlib.sha256(listing.encode("utf-8")).hexdigest(),
         )
 

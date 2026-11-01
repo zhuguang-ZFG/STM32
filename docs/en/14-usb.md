@@ -97,6 +97,8 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 
 ### 1. Speeds and which STM32 block you actually have
 
+USB is a conversation chaired by the computer. The host calls on a device, and only then may the device answer; a device cannot seize the wire whenever it has data. The F103 has one 12 Mbps full-speed device block. It can be a keyboard or a virtual serial port, but it cannot host a flash drive. Reaching 480 Mbps takes both an `OTG_HS` block and the matching high-speed PHY.
+
 **Takeaway:** The host starts every transfer. The device is polled. The common STM32 case is a **full-speed device**. Only parts with `OTG_HS` can do high-speed.
 
 | Speed | Spec | Bit rate | On STM32 |
@@ -111,9 +113,11 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 | STM32F4 | OTG_FS + OTG_HS | FS PHY on chip; HS needs an external ULPI PHY | RM0090 chapter 30 / 31 |
 | STM32F7/H7 | OTG_FS + OTG_HS | Some parts have an on-chip HS PHY | OTG chapter of that RM |
 
-> **An F103 USB block is device-only. It cannot be a host.** On an F411, `OTG_FS` is **PA11 (DM) / PA12 (DP)** and those pins are also CAN1, so you pick one. F1 USB uses the same PA11/PA12 pair.
+> **An F103 USB block is device-only. It cannot be a host.** F1 USB is on **PA11 (DM) / PA12 (DP)**. On the F103, USB and CAN share those two pins and the same 512-byte dedicated SRAM, so they cannot run at the same time and you pick one. The F411 `OTG_FS` is also on PA11/PA12, but the F411 has no CAN, so the conflict does not arise there.
 
 ### 2. Four transfer types
+
+The four transfer types divide one bus in four different ways. Control introduces and configures the device. Bulk is freight: arriving late is acceptable, but a damaged packet is retried. Interrupt gives small messages such as key reports a regular chance to be polled. Isochronous reserves time for sound or video and never goes back for a missed packet, because late audio is no longer useful.
 
 **Takeaway:** Trade latency against reliability. **Control** is for enumeration. **Bulk** moves bytes and retries. **Interrupt** is small and bounded. **Isochronous** keeps a time slot and is allowed to drop data.
 
@@ -126,6 +130,8 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 
 ### 3. Endpoints
 
+Think of endpoints as numbered send and receive windows inside the device. The host puts data into an OUT window for the device to collect. The device fills an IN window and waits for the host to collect it. IN and OUT are named from the host's side, which is the easy part to read backwards. Each window also needs a transfer type, a maximum packet size, and buffer space in the 512-byte PMA.
+
 **Takeaway:** An endpoint is a logical pipe. Except for endpoint 0, **each endpoint is one direction** (IN or OUT).
 
 | Endpoint | Direction | Use |
@@ -137,6 +143,8 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 An F1 full-speed device has up to **8 bidirectional endpoints (EP0–EP7)**. They share a **512-byte** packet memory (PMA). You assign that memory yourself (RM0008 chapter 23, `USB_EPnR`, `BTABLE`).
 
 ### 4. Descriptor tree
+
+When a device is first plugged in, the computer sees the pull-up on D+ but has no idea what the device does. It asks from the outside in: who are you and how many configurations do you have; which functions are in this configuration; which endpoints belong to each function? The descriptors are the device's answers. One bad length, parent-child relation, or total count stops the host from reading the rest.
 
 **Takeaway:** The host learns the device by reading descriptors: device, then configuration, then interface, then endpoint. The interface is the function. One configuration can hold several interfaces.
 
@@ -163,6 +171,8 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 
 ### 5. Seven enumeration steps
 
+Every USB device comes out of reset at address 0. The host uses that temporary address to read just enough information, assigns a new address, and sends all later requests there. It then reads the complete configuration and selects one before the device is ready for normal traffic. In a trace, follow that order and stop at the first request that did not get the expected reply.
+
 **Takeaway:** Reset, read descriptors, assign an address, read the configuration, select it. **Any failed step shows up as "unknown device" or "device descriptor request failed".**
 
 | Step | Action | Note |
@@ -170,14 +180,16 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 | 1 | Host sees the device (pull-up on D+) | Full speed pulls D+ up with 1.5 kΩ. That is how the host picks the speed |
 | 2 | Bus reset | D+ and D− low for at least 10 ms |
 | 3 | At address 0, read the first 8 bytes of the device descriptor | Host learns `bMaxPacketSize0` |
-| 4 | Reset again, read the full 18-byte device descriptor | VID/PID |
-| 5 | Set Address | Device gets an address from 1 to 127 |
+| 4 | Reset again, then Set Address | Device gets an address from 1 to 127 |
+| 5 | At the new address, read the full 18-byte device descriptor | VID/PID |
 | 6 | Read 9 bytes of configuration, then the whole configuration set | Interfaces and endpoints |
 | 7 | Set Configuration | The function is live |
 
 > Motto: **stuck on step 3 or 4** usually means a bad length field or a bad clock. **Stuck on step 6** usually means `wTotalLength` is wrong. **Stuck on step 7** usually means the endpoint buffer was not armed.
 
 ### 6. CDC versus HID
+
+CDC delivers a stream of bytes, so the application decides where one message ends and the next begins. HID delivers fixed-format reports whose key bits, coordinates, and status fields are declared in advance. For logs and sampled data, CDC is usually simpler. Pick HID when the operating system should treat the board directly as a keyboard, mouse, or game controller.
 
 **Takeaway:** CDC is "I am a serial port" (high bandwidth, byte stream). HID is "I am a keyboard, mouse, or custom gadget" (native support, fixed reports).
 
@@ -191,6 +203,8 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 | Typical | Debug log, data logger | Custom pad, macro keyboard, scanner |
 
 ### 7. CubeMX middleware
+
+The CubeMX pages are assembling one device from three layers. RCC supplies the 48 MHz clock. The USB peripheral owns D+/D- and the interrupt. The middleware supplies descriptors, endpoints, and class handlers. Enumeration fails if any layer is missing. A common mistake is to keep changing the CDC code when the real fault is the 48 MHz clock or VBUS sensing.
 
 | Item | Where | Value |
 | --- | --- | --- |

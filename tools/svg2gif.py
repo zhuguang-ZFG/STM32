@@ -3,8 +3,8 @@
 """assets/animations/*.svg（CSS 动画）→ assets/gif/<name>-zh.gif 动图。
 
 用途：公众号文章里的「▲ 动画」配图从静态快照升级为真动图（md2mp 会优先取这里的 gif）。
-原理：chrome --headless --screenshot + --virtual-time-budget=<t> 逐帧采样（CSS 动画随虚拟时钟前进），
-      PIL 组装 GIF（宽 640、128 色、8fps、循环）。默认对全部动画 svg 生效；已存在的 gif 仅在 --force 时重生成。
+原理：为临时 SVG 冻结 CSS 动画时间轴，Chrome 逐帧截图，再由 PIL 用共享调色板组装 GIF
+      （宽 640、64 色、8fps、循环）。默认对全部动画 svg 生效；已存在的 gif 仅在 --force 时重生成。
 
 用法：
     python tools/svg2gif.py            # 缺啥生成啥
@@ -32,7 +32,6 @@ CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 FPS = 8
 MAX_SECONDS = 12.0
 WIDTH = 640
-OVERHEAD_MS = 500  # chrome 冷启动下动画时钟起点补偿（对循环 gif 仅整体相位偏移）
 
 
 def svg_size(head: str) -> tuple[int, int]:
@@ -69,15 +68,38 @@ def loop_seconds(body: str) -> float:
 def render_frames(svg: Path, tmp: Path, dur: float, w: int, h: int) -> list[Path]:
     n = max(2, int(dur * FPS))
     frames = []
+    source = svg.read_text(encoding="utf-8")
+    # The source keeps its reduced-motion fallback for readers. A GIF render must
+    # sample the animation even when the build machine asks Chrome to reduce motion.
+    source = re.sub(
+        r"@media\s*\(prefers-reduced-motion:\s*reduce\)\s*"
+        r"\{\s*\*\s*\{\s*animation:none!important\s*\}\s*\}",
+        "",
+        source,
+    )
     for i in range(n):
-        t_ms = OVERHEAD_MS + int(i * 1000 / FPS)
+        t_ms = int(i * 1000 / FPS)
+        frozen_svg = tmp / f"s{i:03d}.svg"
+        freeze_script = f"""<script><![CDATA[
+(() => {{
+  const seek = () => document.getAnimations().forEach((animation) => {{
+    animation.pause();
+    animation.currentTime = {t_ms};
+  }});
+  seek();
+  requestAnimationFrame(seek);
+}})();
+]]></script>"""
+        frozen_svg.write_text(source.replace("</svg>", freeze_script + "</svg>"),
+                              encoding="utf-8")
         f = tmp / f"f{i:03d}.png"
         cmd = [
             CHROME, "--headless", "--disable-gpu", "--hide-scrollbars",
+            "--force-prefers-reduced-motion=no-preference",
             f"--user-data-dir={tmp / 'prof'}", "--force-device-scale-factor=1",
             f"--screenshot={f}", f"--window-size={w},{h}",
-            f"--virtual-time-budget={t_ms}",
-            svg.as_uri(),
+            "--virtual-time-budget=100",
+            frozen_svg.as_uri(),
         ]
         subprocess.run(cmd, check=True, capture_output=True, timeout=60)
         frames.append(f)
@@ -87,9 +109,13 @@ def render_frames(svg: Path, tmp: Path, dur: float, w: int, h: int) -> list[Path
 def assemble(frames: list[Path], dst: Path, fps: int = FPS, width: int = WIDTH):
     imgs = [Image.open(f).convert("RGB") for f in frames]
     scaled = [im.resize((width, round(im.height * width / im.width)), Image.LANCZOS) for im in imgs]
-    quant = [s.quantize(colors=128, method=Image.MEDIANCUT, dither=Image.FLOYDSTEINBERG) for s in scaled]
+    # A shared palette keeps unchanged text and panels byte-identical between
+    # frames. It also avoids the edge shimmer caused by per-frame dithering.
+    palette = scaled[0].quantize(colors=64, method=Image.MEDIANCUT,
+                                 dither=Image.Dither.NONE)
+    quant = [s.quantize(palette=palette, dither=Image.Dither.NONE) for s in scaled]
     quant[0].save(dst, save_all=True, append_images=quant[1:],
-                  duration=round(1000 / fps), loop=0, optimize=True, disposal=2)
+                  duration=round(1000 / fps), loop=0, optimize=True, disposal=1)
     return len(quant)
 
 

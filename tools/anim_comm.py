@@ -322,8 +322,8 @@ def can_arbitration() -> Svg:
 
 
 def usb_enumeration() -> Svg:
-    s = Svg(W, H, "USB 设备枚举的 7 个步骤",
-            "插上 USB 之后，主机和设备之间到底交换了什么")
+    s = Svg(W, H, "USB 设备枚举：从地址 0 到可用",
+            "沿着请求与回应往下看，第一笔没有正确回应的请求就是排查起点")
     s.header(tag="14 USB", tag_color=T.BLUE)
 
     s.rect(40, 84, 150, 380, fill=T.PANEL, stroke=T.CYAN, rx=8)
@@ -338,38 +338,70 @@ def usb_enumeration() -> Svg:
     s.text(785, 156, "Device", size=11, anchor="middle", fill=T.MUTED)
 
     steps = [
-        ("① 检测到设备", "全速：D+ 经 1.5 kΩ 上拉，主机据此识别速率", T.RED, False),
-        ("② 总线复位", "D+ 与 D− 同时拉低（SE0）≥ 10 ms", T.ORANGE, True),
-        ("③ 读前 8 字节", "地址仍是 0，只为拿到 bMaxPacketSize0", T.AMBER, True),
-        ("④ 再读设备描述符", "18 字节：VID / PID。不少主机还会再复位一次", T.GREEN, True),
-        ("⑤ SET_ADDRESS", "分配 1~127，之后不再使用地址 0", T.CYAN, True),
-        ("⑥ 读配置描述符", "先读 9 字节，再按 wTotalLength 读完", T.BLUE, True),
-        ("⑦ SET_CONFIGURATION", "选配置 1，CDC / HID 开始工作", T.VIOLET, True),
+        ("① 检测到设备", "全速：D+ 经 1.5 kΩ 上拉，主机据此识别速率", T.RED, "d2h"),
+        ("② 总线复位", "D+ 与 D− 同时拉低（SE0）≥ 10 ms", T.ORANGE, "h2d"),
+        ("③ 读前 8 字节", "地址仍是 0，只为拿到 bMaxPacketSize0", T.AMBER, "both"),
+        ("④ SET_ADDRESS", "部分主机会先再复位一次；随后分配地址 1~127", T.GREEN, "h2d"),
+        ("⑤ 读完整设备描述符", "改用新地址读取 18 字节，拿到 VID / PID", T.CYAN, "both"),
+        ("⑥ 读配置描述符", "先读 9 字节，再按 wTotalLength 读完", T.BLUE, "both"),
+        ("⑦ SET_CONFIGURATION", "选中配置，CDC / HID 开始工作", T.VIOLET, "h2d"),
     ]
-    for i, (title, sub, color, from_host) in enumerate(steps):
+    period = 5.6
+    window = 100 / len(steps)
+    motion_css = []
+    for i, (title, sub, color, flow) in enumerate(steps):
         y = 96 + i * 52
-        s.rect(210, y, 480, 42, fill=T.PANEL, stroke=T.STROKE, rx=8)
+        s.rect(210, y, 480, 42, fill=T.PANEL, stroke=T.STROKE, rx=8,
+               cls=f"usb-row{i}")
         s.rect(210, y, 4, 42, fill=color, rx=2)
         s.text(226, y + 18, title, size=12, fill=T.TEXT, weight="600")
         s.text(226, y + 34, sub, size=10, fill=T.MUTED)
-        cls = f"p{i}"
-        s.circle(196 if from_host else 704, y + 21, 5, fill=color, cls=cls)
-    s.add_style("\n".join(
-        css_kf(f"p{i}-mv", [("0%,100%", "opacity:.15"),
-                            (f"{i * 13}%,{i * 13 + 12}%", "opacity:1")])
-        + f".p{i}{{animation:p{i}-mv 4.2s linear infinite;}}"
-        for i in range(7)))
+        direction = {"d2h": "设备 → 主机", "h2d": "主机 → 设备",
+                     "both": "请求 ↔ 回应"}[flow]
+        s.text(674, y + 18, direction, size=9.2, anchor="end", fill=color,
+               weight="600")
+
+        start = i * window
+        end = start + window * .84
+        motion_css.append(css_kf(
+            f"usb-row{i}-on",
+            [("0%,100%", f"stroke:{T.STROKE}"),
+             (f"{start:.2f}%,{end:.2f}%", f"stroke:{color}")]))
+        motion_css.append(
+            f".usb-row{i}{{animation:usb-row{i}-on {period}s linear infinite;}}")
+
+        def packet(name, x, dx, begin, finish):
+            s.circle(x, y + 4, 4.5, fill=color, stroke=T.BG, sw=1.5,
+                     opacity=0, cls=name)
+            motion_css.append(css_kf(
+                f"{name}-mv",
+                [("0%,100%", "opacity:0;transform:translateX(0)"),
+                 (f"{begin:.2f}%", "opacity:0;transform:translateX(0)"),
+                 (f"{begin + .7:.2f}%", "opacity:1;transform:translateX(0)"),
+                 (f"{finish:.2f}%", f"opacity:1;transform:translateX({dx}px)"),
+                 (f"{finish + .7:.2f}%", f"opacity:0;transform:translateX({dx}px)")]))
+            motion_css.append(
+                f".{name}{{animation:{name}-mv {period}s ease-in-out infinite;}}")
+
+        if flow == "d2h":
+            packet(f"usb-p{i}", 682, -464, start + 1, end - 1)
+        elif flow == "h2d":
+            packet(f"usb-p{i}", 218, 464, start + 1, end - 1)
+        else:
+            middle = start + window * .43
+            packet(f"usb-p{i}a", 218, 464, start + .7, middle)
+            packet(f"usb-p{i}b", 682, -464, middle + .7, end - .7)
+    s.add_style("\n".join(motion_css))
 
     s.rect(40, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 500, "描述符是「层层套娃」", size=12, fill=T.TEXT, weight="700")
+    s.text(58, 500, "描述符按层级展开", size=12, fill=T.TEXT, weight="700")
     s.text(58, 518, "设备 → 配置 → 接口 → 端点，主机逐层索取", size=10.5,
            fill=T.MUTED)
     s.rect(460, 476, 400, 54, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(478, 500, "CDC 还是 HID？", size=12, fill=T.TEXT, weight="700")
-    s.text(478, 518, "要虚拟串口选 CDC，要免驱键鼠/自定义选 HID", size=10.5,
+    s.text(478, 518, "CDC 传字节流；HID 传固定格式的报告", size=10.5,
            fill=T.MUTED)
-    s.footer("枚举失败先查：48 MHz 时钟是否精确、D+ 上拉是否正常、"
-             "USB 中断优先级是否被抢占、描述符长度是否与实际一致")
+    s.footer("枚举失败先查：48 MHz 时钟、D+ 上拉、第一笔无回应的请求、描述符总长度")
     return s
 
 
