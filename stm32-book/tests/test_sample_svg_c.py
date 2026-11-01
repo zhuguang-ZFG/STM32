@@ -33,10 +33,13 @@ animations/iwdg-window.svg 900x620 10675 324f8c83215265a9e4b9c256552019165c14adb
 animations/l4-stop2-evidence.svg 900x620 13976 ae6b68a3a26ee3995d72dc29bcfcb2bab733a2e54637e4d9a6a8581b9f577e28
 animations/lowpower-wakeup.svg 900x620 10766 7a5fe86d6e1a29c7f8e00d177f0ec928c85f7405e8427e8f27209720cc0a22b6
 animations/memory-map.svg 900x620 7846 82e9be18ac7ecbe388e478b995ef9bcf8e876a2373406565469fda41e911b11f
+animations/network-online-state.svg 900x620 12028 b411a492adbc81a722ace75d62461b5b21a8c97a364d0f253fb43e1b09df8fdb
 animations/network-packet-journey.svg 900x620 18648 0081c4c6270e94527deba9ea9365811c22de28130ee343d8df68797eb36f1016
 animations/nvic-interrupt-flow.svg 900x620 12972 07a38a7e7d4b430809683b2beb00f98b3cac0a17fc45bb1a5d066d20c22c9dc4
+animations/rtos-startup-gates.svg 900x620 14083 9bcabaf6c8e7e0897b26bfd104833dbae9955124bc4353cc5f1690536be68a41
 animations/rtos-system-layers.svg 900x620 13996 1a44f6f16dcc08a20467d946a35a22ef968582f37faf99b5b74f5107deaf31e9
 animations/spi-transfer.svg 900x620 18861 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
+animations/spl-init-pipeline.svg 900x620 11903 d1ebfca0e4b6e9cbbda864bf9c82f217976ad6b8e16bee53e36059b6d6e8885c
 animations/timer-modes.svg 900x620 11712 c8a1e34469293d5f4a02a5703271bcf62fc4e9f2f1e89429dbcaa02b56ebeabf
 animations/timer-pwm.svg 900x620 10046 54833bf0841b1569cb993934699473b2ee4d2f0ed56b858a4fb9b5855bb8532f
 animations/toolchain-flow.svg 900x620 15176 e131ad994e16c099c15d4d941c0e7aade4865c53c912248a73590e939645e0bd
@@ -55,9 +58,13 @@ boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c8841
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
 diagrams/l4-idd-bench.svg 900x560 8673 32e1a5b195562947e04d2da8efc2f0c89dd97aed9f7cacbb3c5914ce52f8ec96
 diagrams/layers-hal-ll-reg.svg 900x560 10401 60098b25b368c2f6acefb4e9a3152f816506cae44e68b2fb8ffbf0878c049f78
+diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
 diagrams/network-debug-ladder.svg 900x560 11278 a1405054a5ba593090ad0bc6fdb104a5c8e513dd9695bd35767867faeeaec2e8
 diagrams/peripheral-bus.svg 900x560 14071 80d659d44758f54a352b8447fb4a49e6fa880a47cb981bc487c1d69aaa6ae2f6
 diagrams/project-structure.svg 900x560 13014 53f68cd4e58288a346e7cd09867724a75daa564e3b527a46a67627250def2acf
+diagrams/rtos-config-paths.svg 900x560 12512 02d7b84ba4c8fe73dcf6ea89937dfc0ebb995f7d782164fa36ba8748e708d80c
+diagrams/rtos-deadline-budget.svg 900x560 8870 b39b5c1f51b656ac5bc53be11f65d5fff8bb1ee6a9a6056d82417a1459d42c74
+diagrams/rtos-owner-task.svg 900x560 8945 49c28eff3490906480a95501c36ed3c31e2525a0d8481b7f63b4eccdb9c9f16a
 diagrams/sample-00-boot-state.svg 960x620 7103 41eff7ecd092c9f1d0e41629b4b87f337ea9d27e4b63f3ddda1d03e96c3eb3b1
 diagrams/sample-01-swd-vectors.svg 960x980 7328 2e08712dfff9ee901d17be08e83d3496b7d34b02f3ddd73a7565d230a6291b56
 diagrams/sample-02-clock-tree.svg 960x860 7402 41c1657ce8a1e34119ae2946ab5f10034fe5c83ef21fa50b4a1520861a1a98f2
@@ -78,7 +85,18 @@ diagrams/sample-16-stop-wake.svg 960x980 7143 41341af8f070f2b9413b8d4fc6f3dff0d5
 diagrams/sample-17-cfsr.svg 960x980 6727 5afb78ba8d0be29fa1bbfd8c497919296d991d9112ee2eae24f89fd9413b4d6d
 diagrams/sample-18-boot-triage.svg 960x960 6512 ab5be4eb7af108fbd513303dd1d1bf4ab24978018966c98fa80fcb46a9d83091
 diagrams/sample-19-flash-fit.svg 960x980 6499 d2cf0662543657786e0dc4d3341cffdffe459035fb80771ffc5b3fe474e7cc42
+diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
+diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 """.strip().splitlines()
+
+STATIC_ADVANCED = {
+    "diagrams/network-cache-ownership.svg",
+    "diagrams/rtos-config-paths.svg",
+    "diagrams/rtos-deadline-budget.svg",
+    "diagrams/rtos-owner-task.svg",
+    "diagrams/spl-ownership-boundary.svg",
+    "diagrams/tcp-byte-stream.svg",
+}
 
 SEMANTIC = {
     "#fbfaf7",
@@ -203,7 +221,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "ef2c7b0fd546164c3cddf512fa6d063769dad824baf3d865f9b2496380146a74",
+            "71cbabd4721f2aba5df7ac0d9e3433fc8417c9292b56a155253f71a4db8669f9",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -211,7 +229,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "595518e46a2be9adff3f3aae3b4cb62b6e3b7fe4a68bd7306dc75c43c5416769",
+            "7d93159fa1abd0ff9d8dac08cb6a39bbfaccb9aea119a9a80e9cd8db72fce96e",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -253,7 +271,13 @@ class SampleSvgCTests(unittest.TestCase):
             self.assertFalse("stroke-width:" in text, rel)
             radii = set(re.findall(r'\brx="([^"]+)"', text))
             self.assertTrue(radii <= {"2", "4", "8"}, (rel, radii))
-            if Path(rel).name.startswith("sample-"):
+            if rel in STATIC_ADVANCED:
+                self.assertNotIn("<animate", text, rel)
+                self.assertNotIn("@keyframes", text, rel)
+                self.assertNotIn("animation:", text, rel)
+                self.assertNotIn("矢量动画", text, rel)
+                self.assertIn("自绘矢量图", text, rel)
+            elif Path(rel).name.startswith("sample-"):
                 self.assertNotIn("<animate", text, rel)
                 self.assertNotIn("@keyframes", text, rel)
                 self.assertNotIn("animation:", text, rel)
@@ -262,7 +286,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(61, len(found))
+        self.assertEqual(70, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

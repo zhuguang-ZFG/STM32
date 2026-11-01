@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="RTOS 启动不是一串 delay，而是六道可证明的门">
+<title>RTOS 启动不是一串 delay，而是六道可证明的门</title>
+<style>
+@keyframes bootg0-sq{0%,0.00%{opacity:0.42}0.30%,11.33%{opacity:1.0}11.63%,100%{opacity:0.42}}
+.bootg0{animation:bootg0-sq 8.2s linear infinite;}
+@keyframes bootg1-sq{0%,16.67%{opacity:0.42}16.97%,28.00%{opacity:1.0}28.30%,100%{opacity:0.42}}
+.bootg1{animation:bootg1-sq 8.2s linear infinite;}
+@keyframes bootg2-sq{0%,33.33%{opacity:0.42}33.63%,44.67%{opacity:1.0}44.97%,100%{opacity:0.42}}
+.bootg2{animation:bootg2-sq 8.2s linear infinite;}
+@keyframes bootg3-sq{0%,50.00%{opacity:0.42}50.30%,61.33%{opacity:1.0}61.63%,100%{opacity:0.42}}
+.bootg3{animation:bootg3-sq 8.2s linear infinite;}
+@keyframes bootg4-sq{0%,66.67%{opacity:0.42}66.97%,78.00%{opacity:1.0}78.30%,100%{opacity:0.42}}
+.bootg4{animation:bootg4-sq 8.2s linear infinite;}
+@keyframes bootg5-sq{0%,83.33%{opacity:0.42}83.63%,94.67%{opacity:1.0}94.97%,100%{opacity:0.42}}
+.bootg5{animation:bootg5-sq 8.2s linear infinite;}
+
+.boot-flow{stroke-dasharray:5 8;animation:boot-flow-flow 1.2s linear infinite;}@keyframes boot-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-13px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RTOS 启动不是一串 delay，而是六道可证明的门</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每一门只有成功、降级或失败三种结果；下一层不得越过未成立的依赖</text>
+<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">28 系统 · IG-008</text>
+<rect x="30" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5" class="bootg0"/>
+<text x="93" y="136" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">复位证据</text>
+<text x="93" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">reset cause</text>
+<text x="93" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">boot_id</text>
+<line x1="159" y1="162" x2="167" y2="162" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="boot-flow"/>
+<polygon points="173.00,162.00 167.00,165.00 167.00,159.00" fill="#075e84" opacity="1"/>
+<rect x="176" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5" class="bootg1"/>
+<text x="239" y="136" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">最低硬件</text>
+<text x="239" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">clock / RAM</text>
+<text x="239" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">watchdog</text>
+<line x1="305" y1="162" x2="313" y2="162" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="boot-flow"/>
+<polygon points="319.00,162.00 313.00,165.00 313.00,159.00" fill="#075e84" opacity="1"/>
+<rect x="322" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5" class="bootg2"/>
+<text x="385" y="136" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">内核对象</text>
+<text x="385" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">task / queue</text>
+<text x="385" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">heap</text>
+<line x1="451" y1="162" x2="459" y2="162" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="boot-flow"/>
+<polygon points="465.00,162.00 459.00,165.00 459.00,159.00" fill="#075e84" opacity="1"/>
+<rect x="468" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5" class="bootg3"/>
+<text x="531" y="136" font-size="12" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备探测</text>
+<text x="531" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ready /</text>
+<text x="531" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">degraded</text>
+<line x1="597" y1="162" x2="605" y2="162" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="boot-flow"/>
+<polygon points="611.00,162.00 605.00,165.00 605.00,159.00" fill="#075e84" opacity="1"/>
+<rect x="614" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5" class="bootg4"/>
+<text x="677" y="136" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">系统服务</text>
+<text x="677" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">storage / net</text>
+<text x="677" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">time</text>
+<line x1="743" y1="162" x2="751" y2="162" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="boot-flow"/>
+<polygon points="757.00,162.00 751.00,165.00 751.00,159.00" fill="#075e84" opacity="1"/>
+<rect x="760" y="104" width="126" height="118" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5" class="bootg5"/>
+<text x="823" y="136" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用放行</text>
+<text x="823" y="168" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">actuator /</text>
+<text x="823" y="188" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">remote cmd</text>
+<rect x="40" y="258" width="520" height="176" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="286" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">门的统一合同</text>
+<text x="58" y="316" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">前置</text>
+<text x="112" y="316" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">上一门的结果码与证据已冻结</text>
+<text x="58" y="340" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">截止</text>
+<text x="112" y="340" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">最长耗时可测，不能用固定延时猜</text>
+<text x="58" y="364" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败</text>
+<text x="112" y="364" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清理已占资源，留下稳定错误枚举</text>
+<text x="58" y="388" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">降级</text>
+<text x="112" y="388" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">明确哪些能力仍可开放，哪些必须锁住</text>
+<text x="58" y="412" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">恢复</text>
+<text x="112" y="412" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">重试预算、重启范围和代际号可追踪</text>
+<rect x="584" y="258" width="276" height="176" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="602" y="286" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">固定 delay 的问题</text>
+<text x="602" y="318" font-size="10.3" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 快机器白等，慢机器仍没准备好</text>
+<text x="602" y="343" font-size="10.3" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 失败与正在进行无法区分</text>
+<text x="602" y="368" font-size="10.3" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 依赖变化后时序悄悄失效</text>
+<text x="602" y="393" font-size="10.3" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 日志只能看到“过了 500 ms”</text>
+<rect x="40" y="460" width="820" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="58" y="486" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">系统真正“启动完成”</text>
+<text x="212" y="486" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不是 scheduler 已运行，而是所有安全前置条件已经给出可审计结果。</text>
+<text x="212" y="507" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">关键设备失败时，执行器保持安全输出，远程命令仍然关闭。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

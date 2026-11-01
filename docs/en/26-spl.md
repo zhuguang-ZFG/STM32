@@ -55,6 +55,11 @@ The useful model has four layers:
 3. Sources such as `stm32f10x_gpio.c`: structure fields translated into register writes.
 4. Your project: clocks, pins, call order, interrupts, deadlines, and the product state machine.
 
+<p align="center">
+  <img src="../../assets/diagrams/spl-ownership-boundary.svg" width="820" alt="HAL and SPL use separate software-state paths but write the same peripheral registers, so one peripheral needs one owner">
+  <br><sub>▲ Ownership boundary (drawn for this book): HAL, SPL, and registers are not three pieces of hardware. Migrate one complete peripheral chain instead of alternating owners.</sub>
+</p>
+
 ## 2. Project skeleton
 
 A missing source file can leave you with a declaration that compiles but no implementation to link:
@@ -113,11 +118,21 @@ The four boundaries are:
 3. **Overrides**: every selected field must match wiring, clocks, and protocol.
 4. **Enable**: calls such as `USART_Cmd`, `SPI_Cmd`, `TIM_Cmd`, and `DMA_Cmd` normally come after configuration.
 
+<p align="center">
+  <img src="../../assets/animations/spl-init-pipeline.svg" width="820" alt="Animated SPL sequence from enabling the clock through defaults and configuration to the final peripheral enable">
+  <br><sub>▲ Continuous animation (drawn for this book): the four boundaries light in order, and each failure is placed at its earliest possible boundary. HTML loops; PDF keeps a complete readable first frame.</sub>
+</p>
+
 Not every peripheral has the same function names. Check the V3.5.0 header and RM0008 rather than inventing a missing `*_Cmd` because another peripheral has one.
 
 ## 4. A buildable SPL blink loop
 
 The example targets the common STM32F103C8 Blue Pill. PC13 is active low. The build defines `STM32F10X_MD` and `USE_STDPERIPH_DRIVER`; `stm32f10x_conf.h` includes at least RCC and GPIO. The V3.5.0 template already contains a non-weak empty `SysTick_Handler` in `stm32f10x_it.c`; **replace it rather than adding a duplicate handler in `main.c`**.
+
+<p align="center">
+  <img src="../../assets/boards/bluepill-stm32f103c8t6.svg" width="720" alt="Blue Pill STM32F103C8T6 board-structure drawing showing the PC13 LED, BOOT jumpers, USB, and SWD">
+  <br><sub>▲ Physical-layout drawing (author-drawn, not a photograph): locate PC13, SWD, power, and BOOT before reading the code. Clone-board component placement and the USB pull-up can differ.</sub>
+</p>
 
 ```c
 #include "stm32f10x.h"
@@ -214,6 +229,11 @@ static int usart1_send_byte(uint8_t byte, uint32_t spin_limit)
 
 ## 6. Interrupts: no HAL callback dispatcher
 
+<p align="center">
+  <img src="../../assets/animations/nvic-interrupt-flow.svg" width="820" alt="Animated Cortex-M path from a peripheral pending condition through NVIC arbitration, automatic stacking, ISR execution, and exception return">
+  <br><sub>▲ Interrupt animation (drawn for this book): SPL changes the configuration entry points, not the Cortex-M pending, arbitration, stacking, and exception-return chain. The handler must align with this hardware path.</sub>
+</p>
+
 ```c
 static volatile uint8_t g_key_event;
 
@@ -241,6 +261,11 @@ USART1 TX needs at least:
 1. DMA1 clock and DMA1 Channel 4 from the RM0008 request map.
 2. `DMA_Init()` with addresses, direction, count, increments, and widths.
 3. `USART_DMACmd()` to enable the USART request, then `DMA_Cmd()` to start the channel.
+
+<p align="center">
+  <img src="../../assets/animations/dma-circular.svg" width="820" alt="Animated DMA transfer between a peripheral register and memory while CNDTR decreases and circular mode reloads">
+  <br><sub>▲ DMA animation (drawn for this book): peripheral request, DMA channel, and memory buffer are three separate boundaries. SPL does not connect them merely because both drivers were initialized.</sub>
+</p>
 
 ```c
 DMA_InitTypeDef dma;

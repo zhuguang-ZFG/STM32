@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="TCP 交付字节，不交付你的消息边界">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">TCP 交付字节，不交付你的消息边界</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">发送端三次 send 可能被合并或拆分；接收端只能按长度字段或分隔符重新组帧</text>
+<rect x="729" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="803.5" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">27 TCP · IG-009</text>
+<text x="42" y="110" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">应用写入</text>
+<rect x="150" y="92" width="150" height="40" fill="#075e84" opacity="0.84" rx="4"/>
+<text x="225" y="117" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A · 6 B</text>
+<rect x="312" y="92" width="230" height="40" fill="#1b5c45" opacity="0.84" rx="4"/>
+<text x="427" y="117" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B · 10 B</text>
+<rect x="554" y="92" width="120" height="40" fill="#7a4e00" opacity="0.84" rx="4"/>
+<text x="614" y="117" font-size="10.5" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">C · 4 B</text>
+<line x1="420" y1="140" x2="420" y2="183" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="420.00,190.00 416.50,183.00 423.50,183.00" fill="#5e6872" opacity="1"/>
+<text x="438" y="172" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TCP 可任意分段</text>
+<text x="42" y="222" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">网络分段</text>
+<rect x="150" y="204" width="92" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="196" y="229" font-size="9.4" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">A0..A5+B0</text>
+<rect x="246" y="204" width="184" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="338" y="229" font-size="9.4" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">B1..B9+C0..C1</text>
+<rect x="434" y="204" width="84" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="476" y="229" font-size="9.4" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">C2..C3</text>
+<line x1="420" y1="254" x2="420" y2="297" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="420.00,304.00 416.50,297.00 423.50,297.00" fill="#5e6872" opacity="1"/>
+<text x="438" y="286" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">recv 也可短读</text>
+<text x="42" y="338" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">接收缓存</text>
+<rect x="150" y="320" width="70" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="185" y="345" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4 B</text>
+<rect x="224" y="320" width="106" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="277" y="345" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7 B</text>
+<rect x="334" y="320" width="54" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="361" y="345" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 B</text>
+<rect x="392" y="320" width="128" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="456" y="345" font-size="9.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7 B</text>
+<rect x="586" y="292" width="274" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="604" y="320" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正确解析器</text>
+<text x="604" y="344" font-size="9.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">[len][type][sequence][payload][crc]</text>
+<text x="604" y="366" font-size="9.7" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">循环消费完整帧；不完整就保留</text>
+<rect x="40" y="412" width="400" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="58" y="439" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">必须成立</text>
+<text x="58" y="465" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 长度有上限，先验证再分配</text>
+<text x="58" y="485" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 一次 recv 可含 0.5、1 或多帧</text>
+<text x="58" y="505" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 超时属于连接策略，不属于分帧规则</text>
+<rect x="460" y="412" width="400" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="478" y="439" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">不能假设</text>
+<text x="478" y="465" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 一次 send 对应一次 recv</text>
+<text x="478" y="485" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· recv 返回短数据就是断线</text>
+<text x="478" y="505" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 用结构体裸发就天然跨平台</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>

@@ -120,7 +120,10 @@ blockquote.callout { max-width: var(--measure); margin: 1rem 0 1.25rem; padding:
 img { display: block; max-width: 100%; height: auto; margin: var(--space-figure) auto; }
 figure { margin: var(--space-figure) auto; padding: .6rem .65rem .5rem; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--elev); background: color-mix(in srgb, var(--panel) 70%, var(--paper)); }
 figure img { margin: 0 auto .4rem; }
+.photo-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; align-items: start; }
+.photo-pair img { width: 100%; margin: 0; }
 figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--muted); text-align: center; font-size: var(--type-small); line-height: var(--leading-caption); }
+.photo-spread figcaption { margin-top: .55rem; }
 sub { display: block; color: var(--muted); text-align: center; font-size: var(--type-small); line-height: var(--leading-caption); }
 table { width: 100%; border-collapse: collapse; font-size: var(--type-small); }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1rem 0 1.5rem; overscroll-behavior-inline: contain; }
@@ -191,6 +194,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .part-art { position: static; width: 8rem; margin-top: .65rem; justify-self: end; order: 4; opacity: .55; }
   .part-divider h1, .part-goal { max-width: calc(100% - 4.8rem); }
   .contents ol { columns: 1; }
+  .photo-pair { grid-template-columns: minmax(0, 1fr); }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
   .table-scroll th, .table-scroll td { min-width: 4.5rem; }
   #appendix-glossary .table-scroll th:first-child,

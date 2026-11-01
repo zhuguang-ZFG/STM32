@@ -360,8 +360,309 @@ def network_debug_ladder() -> Svg:
     return s
 
 
+def spl_ownership_boundary() -> Svg:
+    """SPL、HAL 与寄存器的所有权边界，而不是函数名替换表。"""
+    s = Svg(W, H, "HAL 与 SPL 最终写的是同一组寄存器",
+            "一条外设实例只能有一个初始化与恢复所有者；混用读接口可以，双重接管不可以")
+    s.header(tag="26 SPL · IG-012", tag_color=T.CYAN)
+
+    lanes = [
+        ("HAL 路径", "Handle + 状态 + 回调", "HAL_UART_Init", T.VIOLET),
+        ("SPL 路径", "InitStruct + 直接函数", "USART_Init", T.GREEN),
+        ("寄存器边界", "BRR / CR1 / CR2 / CR3", "USART1", T.AMBER),
+        ("真实硬件", "PA9 TX · PA10 RX · 波形", "示波器 / 逻辑分析仪", T.RED),
+    ]
+    y = 96
+    for i, (name, contract, api, color) in enumerate(lanes):
+        w = 760 - i * 100
+        x = 70 + i * 50
+        s.rect(x, y, w, 76, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.rect(x, y, 7, 76, fill=color, rx=2)
+        s.text(x + 24, y + 29, name, size=14, fill=color, weight="700")
+        s.text(x + 170, y + 29, contract, size=10.5, fill=T.MUTED)
+        s.text(x + w - 18, y + 29, api, size=10.5, fill=T.TEXT,
+               anchor="end", mono=True)
+        s.text(x + 24, y + 55,
+               "所有权：初始化 · 中断 · DMA · 超时 · 恢复必须属于同一条路径",
+               size=9.7, fill=T.DIM)
+        y += 92
+
+    s.rect(40, 474, 394, 56, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(58, 498, "允许", size=11.5, fill=T.GREEN, weight="700")
+    s.text(112, 498, "SPL 配置，调试器只读寄存器验证", size=10.5, fill=T.TEXT)
+    s.text(112, 517, "迁移时一次切换一条完整外设链", size=9.7, fill=T.MUTED)
+    s.rect(466, 474, 394, 56, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(484, 498, "禁止", size=11.5, fill=T.RED, weight="700")
+    s.text(538, 498, "先用 SPL 初始化，再让 HAL 接管同一 USART", size=10.2,
+           fill=T.TEXT)
+    s.text(538, 517, "两套状态互不知情，恢复路径会互相覆盖", size=9.7, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-012 分层结构 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def network_cache_ownership() -> Svg:
+    """H7 Ethernet DMA 在可缓存内存上的 TX/RX 所有权交接。"""
+    s = Svg(W, H, "CPU、Cache 与 Ethernet DMA：谁看见哪一份数据？",
+            "TX 在交给 DMA 前 clean；RX 在 DMA 完成且 CPU 接管后 invalidate；方向相反，顺序不能交换")
+    s.header(tag="27 网络 · IG-012", tag_color=T.GREEN)
+
+    nodes = [
+        (70, 118, 180, 96, "CPU", "写 payload\n读 pbuf", T.CYAN),
+        (360, 118, 180, 96, "D-Cache", "可能仍是旧副本", T.AMBER),
+        (650, 118, 180, 96, "SRAM 描述符/缓冲", "DMA 与 CPU 的交接区", T.VIOLET),
+        (650, 344, 180, 96, "Ethernet DMA", "读 TX · 写 RX", T.GREEN),
+        (360, 344, 180, 96, "MAC / RMII", "帧与 50 MHz 接口", T.PINK),
+        (70, 344, 180, 96, "PHY / 线缆", "link 只是第一层证据", T.RED),
+    ]
+    for x, y, w, h, title, note, color in nodes:
+        s.rect(x, y, w, h, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + w / 2, y + 34, title, size=13, anchor="middle",
+               fill=color, weight="700")
+        for i, line in enumerate(note.split("\n")):
+            s.text(x + w / 2, y + 61 + i * 19, line, size=9.7,
+                   anchor="middle", fill=T.MUTED)
+
+    s.arrow(252, 146, 356, 146, color=T.CYAN, sw=2)
+    s.text(304, 133, "CPU 写", size=9.5, anchor="middle", fill=T.CYAN)
+    s.arrow(542, 146, 646, 146, color=T.GREEN, sw=2)
+    s.text(594, 128, "TX clean", size=9.5, anchor="middle", fill=T.GREEN)
+    s.text(594, 143, "发布所有权", size=9, anchor="middle", fill=T.MUTED)
+    s.arrow(740, 218, 740, 340, color=T.GREEN, sw=2)
+    s.text(756, 286, "DMA 取帧", size=9.5, fill=T.GREEN)
+    s.arrow(646, 392, 544, 392, color=T.PINK, sw=2)
+    s.arrow(356, 392, 254, 392, color=T.RED, sw=2)
+
+    s.arrow(700, 340, 700, 218, color=T.VIOLET, sw=2, dash="6 6")
+    s.text(618, 278, "RX 写 SRAM", size=9.5, fill=T.VIOLET)
+    s.arrow(646, 186, 542, 186, color=T.AMBER, sw=2, dash="6 6")
+    s.text(594, 204, "RX invalidate", size=9.5, anchor="middle", fill=T.AMBER)
+    s.arrow(356, 186, 252, 186, color=T.CYAN, sw=2, dash="6 6")
+    s.text(304, 204, "CPU 接管", size=9.5, anchor="middle", fill=T.CYAN)
+
+    s.rect(40, 466, 820, 64, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(58, 491, "最常见的错", size=11.5, fill=T.RED, weight="700")
+    s.text(150, 491, "把 clean / invalidate 当作“都刷新一下”，或在 DMA 仍拥有缓冲时让 CPU 修改它。",
+           size=10.4, fill=T.TEXT)
+    s.text(150, 514, "验收必须同时记录：缓冲地址与对齐、Cache 操作方向、描述符状态、PCAP 中的实际帧。",
+           size=9.8, fill=T.MUTED)
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-012 分层结构 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def tcp_byte_stream() -> Svg:
+    """TCP 分段与应用消息边界的连续时间轴。"""
+    s = Svg(W, H, "TCP 交付字节，不交付你的消息边界",
+            "发送端三次 send 可能被合并或拆分；接收端只能按长度字段或分隔符重新组帧")
+    s.header(tag="27 TCP · IG-009", tag_color=T.CYAN)
+
+    s.text(42, 110, "应用写入", size=11.5, fill=T.TEXT, weight="700")
+    messages = [(150, 92, 150, "A · 6 B", T.CYAN),
+                (312, 92, 230, "B · 10 B", T.GREEN),
+                (554, 92, 120, "C · 4 B", T.AMBER)]
+    for x, y, w, label, color in messages:
+        s.rect(x, y, w, 40, fill=color, rx=4, opacity=.84)
+        s.text(x + w / 2, y + 25, label, size=10.5, anchor="middle",
+               fill=T.BG, weight="700")
+
+    s.arrow(420, 140, 420, 190, color=T.STROKE, sw=2)
+    s.text(438, 172, "TCP 可任意分段", size=10, fill=T.MUTED)
+    s.text(42, 222, "网络分段", size=11.5, fill=T.TEXT, weight="700")
+    segments = [(150, 204, 92, "A0..A5+B0"), (246, 204, 184, "B1..B9+C0..C1"),
+                (434, 204, 84, "C2..C3")]
+    for i, (x, y, w, label) in enumerate(segments):
+        s.rect(x, y, w, 40, fill=T.PANEL, stroke=T.STROKE, rx=4)
+        s.text(x + w / 2, y + 25, label, size=9.4, anchor="middle",
+               fill=(T.CYAN, T.GREEN, T.AMBER)[i], mono=True)
+
+    s.arrow(420, 254, 420, 304, color=T.STROKE, sw=2)
+    s.text(438, 286, "recv 也可短读", size=10, fill=T.MUTED)
+    s.text(42, 338, "接收缓存", size=11.5, fill=T.TEXT, weight="700")
+    chunks = [(150, 320, 70, "4 B"), (224, 320, 106, "7 B"),
+              (334, 320, 54, "2 B"), (392, 320, 128, "7 B")]
+    for x, y, w, label in chunks:
+        s.rect(x, y, w, 40, fill=T.BG2, stroke=T.CYAN, rx=4)
+        s.text(x + w / 2, y + 25, label, size=9.5, anchor="middle",
+               fill=T.CYAN, mono=True)
+
+    s.rect(586, 292, 274, 92, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.text(604, 320, "正确解析器", size=12, fill=T.GREEN, weight="700")
+    s.text(604, 344, "[len][type][sequence][payload][crc]", size=9.5,
+           fill=T.TEXT, mono=True)
+    s.text(604, 366, "循环消费完整帧；不完整就保留", size=9.7, fill=T.MUTED)
+
+    s.rect(40, 412, 400, 116, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(58, 439, "必须成立", size=11.5, fill=T.GREEN, weight="700")
+    for i, note in enumerate(("长度有上限，先验证再分配", "一次 recv 可含 0.5、1 或多帧",
+                              "超时属于连接策略，不属于分帧规则")):
+        s.text(58, 465 + i * 20, "· " + note, size=10, fill=T.MUTED)
+    s.rect(460, 412, 400, 116, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(478, 439, "不能假设", size=11.5, fill=T.RED, weight="700")
+    for i, note in enumerate(("一次 send 对应一次 recv", "recv 返回短数据就是断线",
+                              "用结构体裸发就天然跨平台")):
+        s.text(478, 465 + i * 20, "· " + note, size=10, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def rtos_owner_task() -> Svg:
+    """两个调用者争抢驱动与单一所有者任务的前后对比。"""
+    s = Svg(W, H, "给驱动加很多锁，仍不等于拥有清楚的所有权",
+            "把完整事务送给唯一所有者，片选、DMA、超时和恢复才能落在同一个状态机里")
+    s.header(tag="28 RTOS · IG-011", tag_color=T.VIOLET)
+
+    s.text(220, 100, "并发直调：锁住了函数，没锁住完整事务", size=13,
+           anchor="middle", fill=T.RED, weight="700")
+    callers = [(60, 134, "任务 A", T.CYAN), (280, 134, "任务 B", T.AMBER)]
+    for x, y, name, color in callers:
+        s.rect(x, y, 140, 56, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 70, y + 33, name, size=12, anchor="middle", fill=color,
+               weight="700")
+        s.arrow(x + 70, y + 60, 220, 244, color=color, sw=2)
+    s.rect(120, 246, 200, 76, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(220, 272, "SPI API + mutex", size=12, anchor="middle",
+           fill=T.RED, weight="700")
+    s.text(220, 297, "CS / DMA / timeout 分散", size=9.8, anchor="middle",
+           fill=T.MUTED)
+    s.arrow(220, 326, 220, 374, color=T.RED, sw=2)
+    s.rect(120, 376, 200, 62, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(220, 403, "同一外设", size=12, anchor="middle", fill=T.TEXT,
+           weight="700")
+    s.text(220, 424, "交叉片选 / 恢复竞态", size=9.5, anchor="middle", fill=T.RED)
+
+    s.text(680, 100, "所有者任务：一次只接受一笔完整事务", size=13,
+           anchor="middle", fill=T.GREEN, weight="700")
+    for i, (name, color) in enumerate((("任务 A", T.CYAN), ("任务 B", T.AMBER))):
+        y = 134 + i * 72
+        s.rect(500, y, 120, 48, fill=T.PANEL, stroke=color, rx=8)
+        s.text(560, y + 29, name, size=11, anchor="middle", fill=color,
+               weight="700")
+        s.arrow(624, y + 24, 664, 220, color=color, sw=2)
+    s.rect(646, 194, 214, 176, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(753, 222, "SPI owner", size=12.5, anchor="middle", fill=T.GREEN,
+           weight="700")
+    for i, note in enumerate(("队列接收完整事务", "拉低 / 拉高 CS", "启动并等待 DMA",
+                              "统一超时与恢复", "返回稳定结果码")):
+        s.text(666, 250 + i * 22, "· " + note, size=9.8, fill=T.MUTED)
+    s.arrow(753, 374, 753, 414, color=T.GREEN, sw=2)
+    s.rect(646, 416, 214, 62, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(753, 442, "同一外设", size=12, anchor="middle", fill=T.TEXT,
+           weight="700")
+    s.text(753, 463, "串行事务 · 可审计恢复", size=9.5, anchor="middle", fill=T.GREEN)
+
+    s.rect(370, 120, 56, 358, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(398, 298, "→", size=28, anchor="middle", fill=T.CYAN, weight="700")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-011 前后变化对比 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def rtos_deadline_budget() -> Svg:
+    """响应时间组成与 deadline 的单条可复算时间轴。"""
+    s = Svg(W, H, "“实时”不是快，而是最坏响应仍早于截止点",
+            "把阻塞、执行和抢占分别量出来：R = B + C + S；平均值不能替代最坏值")
+    s.header(tag="28 实时 · IG-009", tag_color=T.AMBER)
+
+    x0, y, total = 82, 220, 730
+    s.line(x0, y, x0 + total, y, stroke=T.STROKE, sw=2)
+    pieces = [
+        (0, 120, "B 阻塞", "等资源所有者", T.RED),
+        (120, 250, "C 执行", "任务自己的 WCET", T.GREEN),
+        (370, 180, "S 干扰", "更高优先级任务/ISR", T.AMBER),
+        (550, 110, "C 继续", "完成剩余工作", T.GREEN),
+    ]
+    for start, width, name, note, color in pieces:
+        x = x0 + start
+        s.rect(x, y - 38, width, 76, fill=color, rx=4, opacity=.84)
+        s.text(x + width / 2, y - 7, name, size=11, anchor="middle",
+               fill=T.BG, weight="700")
+        s.text(x + width / 2, y + 18, note, size=8.8, anchor="middle", fill=T.BG)
+
+    marks = [(x0, "release", T.CYAN), (x0 + 660, "finish", T.GREEN),
+             (x0 + total, "deadline D", T.RED)]
+    for x, label, color in marks:
+        s.line(x, 146, x, 302, stroke=color, sw=2, dash="5 5")
+        s.text(x, 132, label, size=10, anchor="middle", fill=color, weight="700")
+
+    s.double_arrow(x0, 318, x0 + 660, 318, color=T.CYAN, sw=1.5, text_="R = B + C + S")
+    s.double_arrow(x0, 354, x0 + total, 354, color=T.RED, sw=1.5, text_="D")
+    s.text(450, 392, "验收条件：Rmax ≤ D", size=17, anchor="middle",
+           fill=T.GREEN, weight="800", mono=True)
+
+    s.rect(40, 426, 400, 102, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(58, 452, "要测", size=11.5, fill=T.GREEN, weight="700")
+    for i, note in enumerate(("ISR 占用与最长临界区", "mutex 最长持有时间与优先级继承",
+                              "任务 WCET、周期、抖动和队列峰值")):
+        s.text(112, 452 + i * 23, note, size=10, fill=T.MUTED)
+    s.rect(460, 426, 400, 102, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(478, 452, "不能只看", size=11.5, fill=T.RED, weight="700")
+    for i, note in enumerate(("CPU 平均利用率", "一次实验里的平均延迟", "任务优先级数字看起来很高")):
+        s.text(558, 452 + i * 23, note, size=10, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def rtos_config_paths() -> Svg:
+    """三套系统把配置与硬件描述送入固件的不同路径。"""
+    s = Svg(W, H, "三套 RTOS 生态：配置从哪里进入最终固件？",
+            "函数名不是主要差异；真正影响维护的是配置入口、硬件描述、驱动模型和构建产物")
+    s.header(tag="28 生态 · IG-004", tag_color=T.VIOLET)
+
+    columns = [
+        (42, "FreeRTOS", T.CYAN, [
+            ("配置", "FreeRTOSConfig.h"),
+            ("硬件", "CubeMX / HAL / BSP"),
+            ("对象", "task / queue / timer"),
+            ("构建", "工程自行组合服务"),
+        ]),
+        (322, "RT-Thread", T.GREEN, [
+            ("配置", "menuconfig / rtconfig.h"),
+            ("硬件", "BSP + device framework"),
+            ("对象", "thread / IPC / device"),
+            ("构建", "SCons + components"),
+        ]),
+        (602, "Zephyr", T.AMBER, [
+            ("配置", "Kconfig / prj.conf"),
+            ("硬件", "Devicetree + bindings"),
+            ("对象", "kernel + device model"),
+            ("构建", "west + CMake + Ninja"),
+        ]),
+    ]
+    for x, title, color, rows in columns:
+        s.rect(x, 92, 256, 360, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, 92, 256, 48, fill=color, rx=8, opacity=.86)
+        s.text(x + 128, 122, title, size=14, anchor="middle", fill=T.BG,
+               weight="800")
+        for i, (kind, detail) in enumerate(rows):
+            yy = 164 + i * 66
+            s.text(x + 18, yy, kind, size=10.5, fill=color, weight="700")
+            s.text(x + 76, yy, detail, size=9.8, fill=T.TEXT, mono=True)
+            if i < len(rows) - 1:
+                s.arrow(x + 128, yy + 16, x + 128, yy + 43,
+                        color=T.STROKE, sw=1.5, head=5)
+        s.rect(x + 18, 410, 220, 24, fill=T.BG2, stroke=color, rx=4)
+        s.text(x + 128, 427, "→ firmware.elf", size=9.8, anchor="middle",
+               fill=color, mono=True, weight="700")
+
+    s.rect(42, 474, 816, 56, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 498, "迁移检查", size=11.5, fill=T.RED, weight="700")
+    s.text(132, 498, "不要逐函数替换；逐项核对配置单位、设备所有权、ISR 边界、超时语义与启动顺序。",
+           size=10.3, fill=T.TEXT)
+    s.text(132, 518, "同一个 GPIO 闪灯能编译，不代表网络、低功耗和故障恢复已经等价。",
+           size=9.7, fill=T.MUTED)
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-004 双列多行对比 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
-       l4_idd_bench, network_debug_ladder]
+       l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
+       network_cache_ownership, tcp_byte_stream, rtos_owner_task,
+       rtos_deadline_budget, rtos_config_paths]
 
 NAMES = {
     "layers_hal_ll_reg": "layers-hal-ll-reg",
@@ -370,6 +671,12 @@ NAMES = {
     "interrupt_priority": "interrupt-priority",
     "l4_idd_bench": "l4-idd-bench",
     "network_debug_ladder": "network-debug-ladder",
+    "spl_ownership_boundary": "spl-ownership-boundary",
+    "network_cache_ownership": "network-cache-ownership",
+    "tcp_byte_stream": "tcp-byte-stream",
+    "rtos_owner_task": "rtos-owner-task",
+    "rtos_deadline_budget": "rtos-deadline-budget",
+    "rtos_config_paths": "rtos-config-paths",
 }
 
 

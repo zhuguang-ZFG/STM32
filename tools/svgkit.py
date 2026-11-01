@@ -308,11 +308,12 @@ class Svg:
             self.chip(self.w - w - 22, 15, w, 28, tag, color=tag_color, size=12)
         return self
 
-    def footer(self, note="", color=T.DIM) -> "Svg":
+    def footer(self, note="", color=T.DIM,
+               label="自绘矢量动画 · STM32 知识库") -> "Svg":
         if note:
             self.line(24, self.h - 42, self.w - 24, self.h - 42, stroke=T.GRID, sw=1)
             self.text(24, self.h - 18, note, size=12, fill=color)
-        self.text(self.w - 24, self.h - 18, "自绘矢量动画 · STM32 知识库", size=11,
+        self.text(self.w - 24, self.h - 18, label, size=11,
                   fill=T.DIM, anchor="end")
         return self
 

@@ -600,6 +600,9 @@ def check_links():
     bad, total = 0, 0
 
     for root, dirs, files in os.walk(ROOT):
+        # 仓库内的临时依赖、浏览器 profile 和渲染快照不是出版内容。
+        # 不扫描 .temp，避免第三方包自己的 README 链接污染本书门禁。
+        dirs[:] = [directory for directory in dirs if directory != ".temp"]
         for f in sorted(files):
             if not f.endswith(".md"):
                 continue

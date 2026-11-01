@@ -779,9 +779,180 @@ def g0_boot_swd() -> Svg:
     s.footer("BOOT_LOCK 清除受 RDP 限制；Level 2 不可逆；Level 1 → 0 整片擦除")
     return s
 
+
+# --------------------------------------------------------------------------- 进阶章视觉锚点
+
+
+def spl_init_pipeline() -> Svg:
+    """SPL 初始化的四个硬件状态，按真实生效顺序逐步点亮。"""
+    s = Svg(W, H, "SPL 四步初始化链：每一步都在改变硬件前提",
+            "先开总线时钟，再取得默认值、覆盖目标字段，最后写入并使能；缺一步都不是同一个系统")
+    s.header(tag="26 SPL · IG-008", tag_color=T.CYAN)
+
+    stages = [
+        ("① 开时钟", "RCC_APB2ENR", "寄存器接口开始工作", T.CYAN),
+        ("② 取默认值", "GPIO_StructInit", "每个字段都有确定起点", T.GREEN),
+        ("③ 覆盖配置", "Pin / Mode / Speed", "接线、频率、方向对齐", T.AMBER),
+        ("④ 写入并使能", "GPIO_Init / *_Cmd", "状态进入真实外设", T.VIOLET),
+    ]
+    x0, y, bw, gap = 34, 110, 192, 22
+    for i, (title, api, result, color) in enumerate(stages):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 116, fill=T.PANEL, stroke=color, rx=8, cls=f"splp{i}")
+        s.rect(x, y, bw, 6, fill=color, rx=2)
+        s.text(x + 16, y + 34, title, size=14, fill=T.TEXT, weight="700")
+        s.text(x + 16, y + 62, api, size=10.5, fill=color, mono=True)
+        s.text(x + 16, y + 91, result, size=10, fill=T.MUTED)
+        if i < len(stages) - 1:
+            s.arrow(x + bw + 3, y + 58, x + bw + gap - 3, y + 58,
+                    color=T.CYAN, sw=2, head=6, cls="splp-flow")
+    s.add_style(_seq_flash("splp", len(stages), period=6.0, window=0.9,
+                           peak=1.0, rest=0.46))
+    s.add_style(anim_flow(".splp-flow", dur="1.1s", dash="5 8", shift=-13))
+
+    s.text(40, 270, "把失败放回它第一次可能出现的位置", size=13.5,
+           fill=T.TEXT, weight="700")
+    failures = [
+        ("时钟没开", "写 CRL/CRH 后引脚仍无变化", T.RED),
+        ("结构体未初始化", "未赋值字段来自栈上的旧数据", T.ORANGE),
+        ("字段对不上", "AF_PP、频率或引脚与接线冲突", T.AMBER),
+        ("只配置未使能", "USART / SPI / TIM 仍停在关闭态", T.VIOLET),
+    ]
+    for i, (cause, symptom, color) in enumerate(failures):
+        x = 40 + (i % 2) * 420
+        yy = 294 + (i // 2) * 78
+        s.rect(x, yy, 400, 60, fill=T.BG2, stroke=color, rx=8)
+        s.text(x + 16, yy + 24, cause, size=11.5, fill=color, weight="700")
+        s.text(x + 126, yy + 24, symptom, size=10.5, fill=T.MUTED)
+        s.text(x + 16, yy + 46, "证据：读回时钟位、配置寄存器和使能位", size=9.5,
+               fill=T.DIM)
+
+    s.rect(40, 470, 820, 54, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    s.text(58, 493, "连续线索", size=11.5, fill=T.CYAN, weight="700")
+    s.text(132, 493, "函数名只是入口；真正的验收是 RCC → 配置寄存器 → 使能位 → 引脚波形",
+           size=10.5, fill=T.TEXT)
+    s.text(132, 513, "任何一段没有证据，就不要跳到下一段猜协议。", size=10, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31")
+    return s
+
+
+def network_online_state() -> Svg:
+    """把 link 到业务在线的多道门按时间顺序动画化。"""
+    s = Svg(W, H, "网线亮灯不等于业务在线",
+            "从物理链路到 MQTT 可用，每一道门都有自己的证据、超时和回退位置")
+    s.header(tag="27 网络 · IG-009", tag_color=T.GREEN)
+
+    gates = [
+        ("LINK", "PHY BSR\n50 MHz", T.ORANGE),
+        ("IP", "DHCP lease\n或静态地址", T.CYAN),
+        ("DNS", "A/AAAA\n目标地址", T.GREEN),
+        ("TIME", "RTC/NTP\n证书时钟", T.AMBER),
+        ("TLS", "链 + 主机名\n握手通过", T.VIOLET),
+        ("MQTT", "CONNACK\n业务订阅", T.PINK),
+    ]
+    y = 190
+    s.line(70, y, 830, y, stroke=T.STROKE, sw=2, dash="8 8", cls="net-line")
+    s.add_style(anim_flow(".net-line", dur="1.5s", dash="8 8", shift=-16))
+    for i, (name, evidence, color) in enumerate(gates):
+        x = 82 + i * 146
+        s.circle(x, y, 22, fill=T.BG, stroke=color, sw=2, cls=f"netg{i}")
+        s.text(x, y + 5, str(i + 1), size=12, anchor="middle", fill=color,
+               weight="800", mono=True)
+        s.text(x, y - 42, name, size=13, anchor="middle", fill=color, weight="700")
+        for j, line in enumerate(evidence.split("\n")):
+            s.text(x, y + 54 + j * 20, line, size=9.7, anchor="middle", fill=T.MUTED)
+    s.add_style(_seq_flash("netg", len(gates), period=8.0, window=0.72,
+                           peak=1.0, rest=0.38))
+
+    s.rect(40, 318, 820, 104, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(58, 346, "状态机必须保留的三条边", size=12.5, fill=T.TEXT, weight="700")
+    rows = [
+        ("失败", "回到当前门或更低一层，不把 link 断开伪装成 MQTT 超时", T.RED),
+        ("超时", "每一门都有单独截止点；总启动截止点不能靠无限重试延长", T.AMBER),
+        ("恢复", "指数退避有上限；成功后清零退避并重新验证依赖", T.GREEN),
+    ]
+    for i, (kind, note, color) in enumerate(rows):
+        yy = 372 + i * 22
+        s.text(58, yy, kind, size=10.5, fill=color, weight="700")
+        s.text(112, yy, note, size=10.2, fill=T.MUTED)
+
+    s.rect(40, 446, 820, 78, fill=T.BG2, stroke=T.CYAN, rx=8)
+    s.text(58, 473, "验收日志", size=11.5, fill=T.CYAN, weight="700")
+    s.text(132, 473, "boot_id | state | attempt | deadline_ms | result | next_state",
+           size=10.5, fill=T.TEXT, mono=True)
+    s.text(132, 500, "第一次偏离在哪一门，PCAP、错误码和配置快照就在哪一门对齐。",
+           size=10.2, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31")
+    return s
+
+
+def rtos_startup_gates() -> Svg:
+    """系统启动的六道门：逐步开放能力，失败则停在可诊断安全态。"""
+    s = Svg(W, H, "RTOS 启动不是一串 delay，而是六道可证明的门",
+            "每一门只有成功、降级或失败三种结果；下一层不得越过未成立的依赖")
+    s.header(tag="28 系统 · IG-008", tag_color=T.VIOLET)
+
+    gates = [
+        ("复位证据", "reset cause\nboot_id", T.CYAN),
+        ("最低硬件", "clock / RAM\nwatchdog", T.GREEN),
+        ("内核对象", "task / queue\nheap", T.AMBER),
+        ("设备探测", "ready /\ndegraded", T.PINK),
+        ("系统服务", "storage / net\ntime", T.VIOLET),
+        ("应用放行", "actuator /\nremote cmd", T.RED),
+    ]
+    x0, y, bw, gap = 30, 104, 126, 20
+    for i, (title, evidence, color) in enumerate(gates):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 118, fill=T.PANEL, stroke=color, rx=8, cls=f"bootg{i}")
+        s.text(x + bw / 2, y + 32, title, size=12, anchor="middle",
+               fill=color, weight="700")
+        for j, line in enumerate(evidence.split("\n")):
+            s.text(x + bw / 2, y + 64 + j * 20, line, size=9.5,
+                   anchor="middle", fill=T.MUTED, mono=True)
+        if i < len(gates) - 1:
+            s.arrow(x + bw + 3, y + 58, x + bw + gap - 3, y + 58,
+                    color=T.CYAN, sw=2, head=6, cls="boot-flow")
+    s.add_style(_seq_flash("bootg", len(gates), period=8.2, window=0.68,
+                           peak=1.0, rest=0.42))
+    s.add_style(anim_flow(".boot-flow", dur="1.2s", dash="5 8", shift=-13))
+
+    s.rect(40, 258, 520, 176, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(58, 286, "门的统一合同", size=12.5, fill=T.TEXT, weight="700")
+    contracts = [
+        ("前置", "上一门的结果码与证据已冻结"),
+        ("截止", "最长耗时可测，不能用固定延时猜"),
+        ("失败", "清理已占资源，留下稳定错误枚举"),
+        ("降级", "明确哪些能力仍可开放，哪些必须锁住"),
+        ("恢复", "重试预算、重启范围和代际号可追踪"),
+    ]
+    for i, (kind, note) in enumerate(contracts):
+        yy = 316 + i * 24
+        s.text(58, yy, kind, size=10.5, fill=T.CYAN, weight="700")
+        s.text(112, yy, note, size=10.5, fill=T.MUTED)
+
+    s.rect(584, 258, 276, 176, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(602, 286, "固定 delay 的问题", size=12.5, fill=T.RED, weight="700")
+    problems = [
+        "快机器白等，慢机器仍没准备好",
+        "失败与正在进行无法区分",
+        "依赖变化后时序悄悄失效",
+        "日志只能看到“过了 500 ms”",
+    ]
+    for i, note in enumerate(problems):
+        s.text(602, 318 + i * 25, "· " + note, size=10.3, fill=T.MUTED)
+
+    s.rect(40, 460, 820, 64, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.text(58, 486, "系统真正“启动完成”", size=11.5, fill=T.GREEN, weight="700")
+    s.text(212, 486, "不是 scheduler 已运行，而是所有安全前置条件已经给出可审计结果。",
+           size=10.5, fill=T.TEXT)
+    s.text(212, 507, "关键设备失败时，执行器保持安全输出，远程命令仍然关闭。", size=10,
+           fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31")
+    return s
+
 ALL = [timer_pwm, timer_modes, adc_sar, dma_circular, iwdg_window, flash_iap,
        freertos_scheduler, lowpower_wakeup, l4_stop2_evidence, rtos_system_layers,
-       g0_boot_swd]
+       g0_boot_swd, spl_init_pipeline, network_online_state, rtos_startup_gates]
 
 NAMES = {
     "timer_pwm": "timer-pwm",
@@ -795,4 +966,7 @@ NAMES = {
     "l4_stop2_evidence": "l4-stop2-evidence",
     "rtos_system_layers": "rtos-system-layers",
     "g0_boot_swd": "g0-boot-swd",
+    "spl_init_pipeline": "spl-init-pipeline",
+    "network_online_state": "network-online-state",
+    "rtos_startup_gates": "rtos-startup-gates",
 }

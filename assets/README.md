@@ -14,6 +14,8 @@
 
 图内纸色、墨色和语义色写在 tools/svgkit.py 的字面量里，数值与整书亮色令牌相同，生成时不读 stm32-book/styles/tokens.json。
 
+第 26–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-004`、`IG-008`、`IG-009`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
+
 ## 一、动画演示 `assets/animations/`
 
 | 文件 | 演示内容 | 关联章节 |
@@ -43,6 +45,9 @@
 | `g0-boot-swd.svg` | G071 启动锁存、PA14/选项位来源选择与 Under Reset 调试恢复 | 23 |
 | `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
 | `rtos-system-layers.svg` | 从硬件、设备、内核、系统服务到应用的系统分层，以及 FreeRTOS/RT-Thread/Zephyr 选型边界 | 28 |
+| `spl-init-pipeline.svg` | SPL 开时钟、取默认值、覆盖字段、写入/使能四步连续状态链 | 26 |
+| `network-online-state.svg` | link、IP、DNS、可信时间、TLS、MQTT 六道上线门 | 27 |
+| `rtos-startup-gates.svg` | 复位证据到应用放行的六道系统启动门 | 28 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -82,6 +87,12 @@
 | `interrupt-priority.svg` | 抢占优先级 vs 子优先级的仲裁示意 |
 | `l4-idd-bench.svg` | NUCLEO-L476RG 的 JP6 IDD 串联测流与 MCU 端 VDD 同步测量 |
 | `network-debug-ladder.svg` | 从 PHY/ARP/IP/TCP 到 TLS/MQTT 的分层排错阶梯 |
+| `spl-ownership-boundary.svg` | HAL、SPL、寄存器与真实硬件的单一所有权边界 |
+| `network-cache-ownership.svg` | CPU、D-Cache、SRAM 与 Ethernet DMA 的 TX/RX 所有权交接 |
+| `tcp-byte-stream.svg` | 应用消息、TCP 分段、接收块与长度字段重组的连续分镜 |
+| `rtos-owner-task.svg` | 并发直调与唯一所有者任务的前后对比 |
+| `rtos-deadline-budget.svg` | 阻塞、执行、干扰到 deadline 的响应时间预算 |
+| `rtos-config-paths.svg` | FreeRTOS、RT-Thread、Zephyr 配置进入固件的三列路径 |
 | `sample-00-boot-state.svg` | 第 00 章静态主图：BOOT0=0 的闪存别名，以及 BOOT0=1 时 CPU 取到系统存储器。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-03-gpio-led.svg` | 第 03 章静态主图：PA0 经 270 Ω 点灯，PC13 不能当电流源，并画出 LCKR 序列。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-04-exception-stack.svg` | 第 04 章静态主图：GROUP_4 下抢占 1 打断抢占 2 的 8 寄存器入栈，以及同抢占不能嵌套。由 `tools/gen_sample_figures.py` 生成 |
@@ -140,7 +151,7 @@
 
 同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
-文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
+文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 8 张 SVG 还没有对应光栅动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`、`spl-init-pipeline`、`network-online-state`、`rtos-startup-gates`。它们在 HTML / GitHub 中仍是可播放的 CSS 动画，PDF 保留完整第一帧。
 
 ## 六、章节讲解 `assets/video/`
 

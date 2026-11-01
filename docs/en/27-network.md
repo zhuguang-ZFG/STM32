@@ -106,6 +106,11 @@ A C `section` attribute is not enough. The linker script must create the section
 
 Invalidating a narrow, unaligned range can discard unrelated dirty variables sharing the first or last line. Give DMA buffers exclusive aligned lines, or centralize maintenance in the driver.
 
+<p align="center">
+  <img src="../../assets/diagrams/network-cache-ownership.svg" width="820" alt="Ownership transfer among CPU, D-Cache, SRAM, and Ethernet DMA, including TX clean and RX invalidate">
+  <br><sub>▲ Ownership cutaway (drawn for this book): solid green is TX and dashed violet is RX. Establish who owns the buffer before choosing clean or invalidate; they are not interchangeable refresh operations.</sub>
+</p>
+
 ### A pbuf is ownership, not just a pointer
 
 - One owner/reference policy decides when `pbuf_free()` occurs.
@@ -140,6 +145,11 @@ stateDiagram-v2
     BACKOFF --> LINK_WAIT: capped exponential backoff plus jitter
 ```
 
+<p align="center">
+  <img src="../../assets/animations/network-online-state.svg" width="820" alt="Animated gates from PHY link through IP, DNS, trusted time, TLS, and MQTT online">
+  <br><sub>▲ Continuous animation (drawn for this book): six gates light along a timeline. A link LED proves only gate one; retain errors, configuration, and packet evidence at the first failing gate.</sub>
+</p>
+
 Log at least monotonic time, old/new states, reason code, retry count, link, and IP. Production logs must not contain Wi-Fi passwords, private keys, tokens, or complete customer payloads.
 
 ### DHCP, static addressing, DNS, and time
@@ -152,6 +162,11 @@ Log at least monotonic time, old/new states, reason code, retry count, link, and
 ## TCP is a byte stream: define application framing
 
 One `send()` does not correspond to one `recv()`. A 4 KiB message may arrive in pieces; several small messages may arrive together. A protocol needs at least magic/version, length, type, business sequence, and an integrity field.
+
+<p align="center">
+  <img src="../../assets/diagrams/tcp-byte-stream.svg" width="820" alt="Three application messages split arbitrarily by TCP, delivered in differently sized receive chunks, and reconstructed with a length field">
+  <br><sub>▲ Continuous panels (drawn for this book): application writes are on top, network segments in the middle, and receive chunks below. Only application framing can reconstruct messages from the stream.</sub>
+</p>
 
 ```text
 0               15              31
