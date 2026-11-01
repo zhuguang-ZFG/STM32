@@ -93,6 +93,8 @@ Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 
 ### 1. Timer classes
 
+A timer is a counter that ticks along with a clock, plus a few comparators. The classes differ in how many extras they carry. A basic timer only counts, which makes it a good alarm clock. A general-purpose timer adds 4 channels, so it can drive PWM and measure pulses. An advanced timer adds complementary outputs and dead time for motor drives. SysTick is the one built into the core, and HAL and RTOS both use it as their heartbeat.
+
 | Class | Instance | Width | What is special | Typical use |
 | --- | --- | --- | --- | --- |
 | Advanced | TIM1/TIM8 | 16-bit | Complementary outputs, dead time, break, MOE | Motors, three-phase PWM |
@@ -102,6 +104,8 @@ Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 | System | SysTick | 24-bit | Built into the core | HAL time base, RTOS tick |
 
 ### 2. Time-base formulas
+
+Think of the timer as two gears. PSC is the first gear and slows the 72 MHz clock down: PSC = 71 means one step every 72 clocks, so each step is 1 µs. ARR is the second gear. The counter wraps to zero after ARR: ARR = 999 means 1000 steps per lap, so each lap is 1 ms. In both registers the real count is the value you write plus 1, and that +1 is the most common off-by-one.
 
 - Counter clock: `fCK_CNT = fCK_PSC / (PSC + 1)`
 - Period: `T = (ARR + 1) × (PSC + 1) / fCK_PSC`
@@ -121,6 +125,8 @@ Useful values at 72 MHz:
 
 ### 3. Count modes and shadow registers
 
+A shadow register works like a restaurant changing its menu. The new ARR or CCR you write waits in the back (the preload register). It moves to the front, where the comparison happens, only when the current lap ends and the update event fires. A PWM lap therefore never changes length halfway through and never emits a stray pulse. The cost is that a new value takes effect one lap later.
+
 | Mode | Meaning |
 | --- | --- |
 | Up | 0→ARR. Reaching ARR makes an update event (the usual choice) |
@@ -136,6 +142,8 @@ Useful values at 72 MHz:
 
 ### 4. PWM modes and formulas
 
+PWM flips a switch thousands of times a second, and the load only feels the average: the LED looks half bright, the motor runs at half speed. The counter runs from 0 to ARR. The output is high until the count reaches CCR and low after it, so CCR is the switch point. A lap has only ARR+1 steps, so the higher the frequency, the shorter the lap and the fewer duty steps you get.
+
 | Mode | Behavior |
 | --- | --- |
 | PWM mode 1 | While CNT < CCR, the output is the active level |
@@ -146,16 +154,18 @@ Useful values at 72 MHz:
 
 Frequency versus resolution, at the same fCK_PSC:
 
-| Target PWM frequency | ARR+1 | Duty resolution | Notes |
-| --- | --- | --- | --- |
-| 1 kHz | 72000 | 1/72000 | A different high-resolution set (PSC = 0 makes ARR+1 = 72000). Not the Appendix D 1 kHz cell (PSC = 71, ARR = 999) |
-| 10 kHz | 7200 | 1/7200 | A common motor PWM |
-| 50 Hz (servo) | 1440000 | — | You also pick PSC to land on 20 ms |
-| 20 kHz | 3600 | 1/3600 | No audible noise |
+| Target PWM frequency | PSC | ARR+1 | Duty resolution | Notes |
+| --- | --- | --- | --- | --- |
+| 1 kHz | 1 | 36000 | 1/36000 | A different high-resolution set. With PSC = 0, ARR+1 would be 72000, past the 16-bit limit of 65536, so PSC is 1. Not the Appendix D 1 kHz cell (PSC = 71, ARR = 999) |
+| 10 kHz | 0 | 7200 | 1/7200 | A common motor PWM |
+| 20 kHz | 0 | 3600 | 1/3600 | Above the range of human hearing, so the motor stops whining |
+| 50 Hz (servo) | 71 | 20000 | 1/20000 | 1 µs per step and 20 ms per lap, so a 1–2 ms servo pulse is CCR = 1000–2000 |
 
 > **the higher the PWM frequency, the fewer ARR steps you have left for duty, and the resolution gets worse.** The two fight each other. Split the difference for the job.
 
 ### 5. Input capture, the encoder, and slave mode
+
+Input capture uses the counter the other way round. When the outside signal changes, the hardware copies the current CNT into CCR at once, like a race timer pressing the stopwatch at the finish line. Subtract two captured values and you have the period or the pulse width. The encoder interface watches two square waves 90° apart. Which one changes first decides whether the counter goes up or down, so the count is the motor's position.
 
 | Function | How it works | Use |
 | --- | --- | --- |
