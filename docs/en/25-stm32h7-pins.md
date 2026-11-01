@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch25-h7-pins.png">
     <source src="../../assets/video/ch25-h7-pins.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.9 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch25-h7-pins.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch25-h7-pins.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.9 min). <a href="../../assets/video/ch25-h7-pins.mp4">MP4</a> · <a href="../../assets/video/ch25-h7-pins.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. STM32H743 的 144 脚封装，第 1 脚是 PE2。订购字母 Z 表示 144 脚，I 表示 2 MB 闪存，所以 Nucleo 上常见的 H743ZI 就是这个组合。出处是 DS12110 第 11 版的图 7。
 2. 内核供电有两只 VCAP。第 71 脚是第一只，第 106 脚是第二只。外接电容的取值去手册的电气章节，这张引脚图上不标电容值，避免把图注当成规格。
@@ -29,8 +30,10 @@
 8. SWD 仍是 PA13 和 PA14，脚号 105 和 109，和 BOOT0 分开。高速晶振在 PH0 和 PH1，脚号 23 和 24。
 9. 口诀：144 脚从 PE2 数起；VCAP 有两只；USB 电源不叫 VDD。CAN 的名字是 FDCAN。电容值和待机电流，图上没有的就不编。
 10. 合上书，三问。第 1 脚叫什么？第二只 VCAP 是第几脚？这里的 CAN 控制器叫 bxCAN 还是 FDCAN？
+
+</details>
 <!-- /video:ch25 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] Count from pin 1, PE2, down the left side to NRST, without reversing the numbers along the top.
 - [ ] Point at one pin pair each for FDCAN1, OTG_FS, USART1, I2C1, and SWD.
@@ -38,7 +41,7 @@
 - [ ] Identify the silicon revision against ES0392 before choosing the 400 MHz path for Rev Y/W or the 480 MHz path for Rev V.
 - [ ] Recalculate HSE → PLL1P → SYSCLK → HCLK/PCLK, then cross-check it with MCO, HAL frequency readback, and a peripheral waveform.
 
-## 🧠 Which part this is
+## Which part this is
 
 The drawing is the **LQFP144 of STM32H743xI**. In the ordering information, Z = 144 pins and I = 2 MB of Flash, so the **STM32H743ZI** you see on a Nucleo is this package and this Flash bin. Source: **DS12110 Rev 11**.
 
@@ -56,7 +59,7 @@ This chapter does not quote an H7 standby current. We do not quote a current, be
 
 Motto: **Count 144 pins from PE2. There are two VCAP pins. The USB supply is not called VDD.**
 
-## 🛠️ Versus F1 / F4
+## Versus F1 / F4
 
 | Point | F1 / F4 | H743 LQFP144 (Figure 7) |
 | --- | --- | --- |
@@ -71,7 +74,7 @@ Motto: **Count 144 pins from PE2. There are two VCAP pins. The USB supply is not
 
 Pin numbers along the top increase from right to left: pin 109 is near the right, and the top-left corner is pin 144 (VDD). The left side is where pin 1 counts downward. G0 and L4 use the same counting rule.
 
-## ⚡ Select the supply and voltage scale before 480 MHz
+## Select the supply and voltage scale before 480 MHz
 
 **“H743 up to 480 MHz” is a conditional ceiling, not a frequency available on every H743ZI after reset.** ES0392 states that revisions Y and W have no VOS0 and are limited to a 400 MHz CPU clock. Revision V supports the 480 MHz conditions in DS12110/RM0433 with VOS0. Check the device marking first; if needed, read `REV_ID` in `DBGMCU->IDCODE` and decode it against RM0433/ES0392. Do not infer the revision from the board's product name.
 
@@ -86,7 +89,7 @@ Pin numbers along the top increase from right to left: pin 109 is near the right
 
 Configure the supply scheme once during early startup. The example below explicitly defines `BOARD_POWER_SUPPLY` for an **LDO board**. On an SMPS design, change the board-level design and software selection together according to ST's hardware documentation; do not copy this line blindly.
 
-## 🕐 From 8 MHz HSE to 480 MHz: a reproducible clock chain
+## From 8 MHz HSE to 480 MHz: a reproducible clock chain
 
 The frozen STM32CubeH7 `RCC_ClockConfig` example provides a 400 MHz NUCLEO-H743ZI baseline: the ST-LINK supplies an **8 MHz HSE bypass clock**, with `PLLM=4`, `PLLN=400`, and `PLLP=2`, giving `8 / 4 × 400 / 2 = 400 MHz`. The following changes that topology only for **Rev V + 8 MHz HSE bypass + an LDO board**: select VOS0 and set `PLLN=480`. A crystal is not HSE bypass. Recalculate everything for a different HSE frequency instead of copying these values.
 
@@ -195,7 +198,7 @@ HAL_RCC_MCOConfig(RCC_MCO2, RCC_MCO2SOURCE_SYSCLK, RCC_MCODIV_5);
 3. **Peripheral closure:** revalidate SysTick/RTOS tick, UART baud rate, timer periods, Flash latency, and every peripheral kernel clock. Finish with a UART frame at a known baud rate or a PWM waveform at a known period. `HAL_Delay(1000)` taking about one second is only one check; it does not prove the independent USB or FDCAN clocks.
 
 
-## 🛠️ Alternate functions (only names that appear in DS12110 Table 9)
+## Alternate functions (only names that appear in DS12110 Table 9)
 
 | Function | Pins | LQFP144 pin | Name in Table 9 |
 | --- | --- | --- | --- |
@@ -215,7 +218,7 @@ PA11/PA12 are both FDCAN1 and OTG_FS. If you need both, move FDCAN1 to PD0/PD1 o
 
 PC2_C and PC3_C (pins 28 and 29) keep the `_C` from the datasheet figure. It marks the path that can go to the dedicated analog route. Do not rename them to plain PC2 on a schematic.
 
-## ⚠️ Moving a design across from F4
+## Moving a design across from F4
 
 | What you see | Why | Fix |
 | --- | --- | --- |
@@ -227,7 +230,7 @@ PC2_C and PC3_C (pins 28 and 29) keep the `_C` from the datasheet figure. It mar
 | The board still fails after changing the supply macro | Software supply selection disagrees with the LDO/SMPS schematic, or VOS is not ready | Check board supply, supply macro, `VOSRDY`, and startup status together; do not change only the PLL |
 | UART/PWM frequencies are wrong after the frequency increase | Old HCLK/PCLK assumptions remain, or `SystemCoreClock` is treated as HCLK/PCLK | Here `SystemCoreClock` is CPU = 480 MHz, `SystemD2Clock`/HCLK = 240 MHz, PCLK = 120 MHz, and the APB timer clock = 240 MHz; recalculate against the correct clock and validate with a waveform |
 
-## 🧪 Try it
+## Hands-on labs
 
 1. Circle pins 1, 71, 95, 103, 104, 105, 106, 138, and 143. Write the function in one short line beside each.
 2. Open the PA12 row of Table 9 and confirm that the same row lists both FDCAN1_TX and OTG_FS_DP.
@@ -244,7 +247,7 @@ Self-test:
 5. With 8 MHz HSE bypass, `PLLM=4`, `PLLN=480`, `PLLP=2`, and the chapter's bus dividers, what are SYSCLK, HCLK, PCLK, the APB timer clock, and MCO2/5?
 6. Why is a 480 MHz software readback insufficient, what are `SystemCoreClock` and `SystemD2Clock` in this example, and which clocks do they describe?
 
-## 🔗 Further reading
+## Related resources
 
 - DS12110 Rev 11: cover (core, power domains, CAN FD, USB), Figure 7, Table 9, and the letters Z and I in the ordering information.
 - RM0433: PWR/RCC, clock sources, voltage scaling, bus dividers, and `DBGMCU->IDCODE`; ES0392: the Rev Y/W lack of VOS0 and their 400 MHz limit.

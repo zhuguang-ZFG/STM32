@@ -87,7 +87,7 @@ static void delay_systick_count(uint32_t ms) {
 ## 五、编译烧录步骤
 
 1. **Keil MDK**：新建 F103C8 工程，把本 `main.c` 替换 `Core/Src/main.c`，勾选 `Use MicroLIB`（可选），编译 → 下载。
-2. **STM32CubeIDE**：新建 F103C8 工程，覆盖 `Core/Src/main.c`，点 🔨 编译，点 🐞/▶ 下载。
+2. **STM32CubeIDE**：新建 F103C8 工程，覆盖 `Core/Src/main.c`，点工具栏的编译按钮，再点调试或运行按钮下载。
 3. **PlatformIO**：`platform = ststm32`、`board = bluepill_f103c8`、`framework = stm32cube`，把 `main.c` 放进 `src/`，`pio run -t upload`。
 4. 连接 ST-Link：`SWDIO=PA13`、`SWCLK=PA14`、`GND`、`3.3V`。
 

@@ -17,7 +17,7 @@
       "en_four_blocks": false,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     },
     "13": {
       "zh": "docs/13-CAN总线.md",
@@ -26,7 +26,7 @@
       "en_four_blocks": false,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls"
+      "en_old_heading": "## Pitfalls"
     },
     "14": {
       "zh": "docs/14-USB.md",
@@ -35,7 +35,7 @@
       "en_four_blocks": false,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls"
+      "en_old_heading": "## Pitfalls"
     },
     "15": {
       "zh": "docs/15-FreeRTOS入门.md",
@@ -44,7 +44,7 @@
       "en_four_blocks": false,
       "zh_old_pitfall": true,
       "en_old_pitfall": true,
-      "en_old_heading": "## ⚠️ Pitfalls and troubleshooting"
+      "en_old_heading": "## Pitfalls and troubleshooting"
     }
   }
 }

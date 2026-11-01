@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch01-env.png">
     <source src="../../assets/video/ch01-env.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch01-env.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch01-env.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch01-env.mp4">MP4</a> · <a href="../../assets/video/ch01-env.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 环境这章只追一个问题：你写下的 C，怎样变成芯片里正在跑的程序。中间就是编译、链接、烧录、复位运行。工具可以换，这四步不会换。
 2. Keil、CubeIDE、PlatformIO 都能走完这四步。差别只是谁帮你填启动文件和链接脚本。先选一个能单步的，不要三个一起装到怀疑人生。
@@ -28,9 +29,11 @@
 8. 口诀：先认出芯片，再谈业务。调试器连不上的时候，查线、查供电、查 BOOT，不要先重写 main。线都没通，改代码是在安慰自己。
 9. 这章结束，你的文件夹里应该有一个能单步的工程。你要能说出向量表前两个字是什么，也要能指出 SWD 占用的两只脚。
 10. 合上书，三问。向量表第零个字是什么？第一个字是什么？SWD 占哪两只脚？答不上来，就把启动文件再单步一遍。
+
+</details>
 <!-- /video:ch01 -->
 
-## Principle and boundary
+## Principle and scope
 
 The debug and boot conclusion in this chapter is pinned to order code STM32F103C8T6 in LQFP48. Flash and SRAM are the same ledger as chapter file 02: 64 KB from `0x08000000`, 20 KB from `0x20000000`. The boot alias is the same ledger as chapter file 00. This chapter does not draw another BOOT table.
 
@@ -60,7 +63,7 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
 
 `boot-sequence.svg` stays a side figure. Without playing it, the pin numbers, the two words, and the failed connection are all on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Phase | BOOT / Debug | Address read | State |
 | --- | --- | --- | --- |
@@ -75,7 +78,7 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
 
 This table does not include toolchain menus. Pin 35 is VSS_2, pin 36 is VDD_2, and pin 7 is NRST.
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -85,19 +88,19 @@ This table does not include toolchain menus. Pin 35 is VSS_2, pin 36 is VDD_2, a
 | Choosing `AA` leaves the part protected, or the erase does not match | The unprotected key is not `0xAA` | Write the unprotected key as `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` is what allows readout. Programming it back mass-erases first. `0xAA` is void on this part |
 | Word 0 of the vector table was treated as the reset entry | Word 0 is the stack | Word 0 is the MSP. Word 1 is `Reset_Handler` | [PM0056](#source-pm0056-vector) | Item 0 is the initial stack. Item 1 is reset. An IRQ entry adds the 16 system exceptions first |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] See how Keil MDK, STM32CubeIDE, VS Code + PlatformIO, and CLion differ, and pick one
 - [ ] Use STM32CubeMX to generate a project that compiles immediately (clock, SWD, code-generation options)
 - [ ] Install the ST-Link driver, upgrade its firmware, and wire SWD from the table
 - [ ] Track down "No target connected", "Flash Download failed", and a chip with read protection on your own
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: whichever IDE you use, the toolchain underneath is the same path — compile → link → flash → reset and run.**
 
 ### 1. Toolchain data flow
 
-```
+```text
 source .c/.h
    │  compile (arm-none-eabi-gcc / ARMCC / ARMCLANG)
    ▼
@@ -138,7 +141,7 @@ CPU fetches the vector table → Reset_Handler → main()
 
 ### 4. A normal project tree
 
-```
+```text
 Core/          Inc/  Src/          ← user code (main.c, interrupts, peripheral init)
 Drivers/       CMSIS/  STM32F1xx_HAL_Driver/
 Middlewares/   (optional, such as FreeRTOS or FatFs)
@@ -162,7 +165,8 @@ The tree is drawn in [`assets/diagrams/project-structure.svg`](../../assets/diag
 | 7 | Code Generator | Check "Copy only necessary library files", and generate separate .c/.h files |
 | 8 | GENERATE CODE | You can compile as soon as it finishes |
 
-> ⚠️ SYS Debug must be **Serial Wire**. Otherwise CubeMX configures PA13/PA14 as ordinary GPIO, and after one flash you can never connect again (see Pitfalls).
+> [!WARNING]
+> SYS Debug must be **Serial Wire**. Otherwise CubeMX configures PA13/PA14 as ordinary GPIO, and after one flash you can never connect again (see Pitfalls).
 
 ### 6. Compile, flash, and debug
 
@@ -189,7 +193,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
   -c "init; reset halt; stm32f1x unlock 0; reset; shutdown"
 ```
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 ### SWD wiring (ST-Link V2 ↔ BluePill)
 
@@ -213,7 +217,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
 | Check the link | In STM32CubeProgrammer, Connect. If you can read the Device ID, it is OK |
 | Linux permissions | Add a udev rule so you do not sudo every time |
 
-## 💻 Code
+## Code
 
 The skeleton of a CubeMX `main.c` (the part that matters). The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 
@@ -260,7 +264,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
   -c "program build/firmware.elf verify reset exit"
 ```
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1 (the environment works):** Generate a project in CubeMX, compile it, and download it to a BluePill. The onboard LED blinks at 1 Hz.
 2. **Lab 2 (single-step):** Break on `HAL_GPIO_TogglePin` and watch `GPIOC->ODR` change in the debug window.
@@ -352,7 +356,7 @@ Self-test:
 2. Does an uninitialized global live in `.bss` or `.data`? Who turns it into 0?
 3. Why can't you take `IRQn`, multiply by 4, and add `0x08000000`?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 2 (memory and buses), chapter 8 (RCC), chapter 9 (GPIO); **DS5319** (F103C8 datasheet)
 - Previous: [00 How to Learn STM32](00-how-to-learn-stm32.md) | Next: [02 Choosing a Part, Memory, and Clocks](02-part-and-clock.md)

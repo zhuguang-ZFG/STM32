@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch15-rtos.png">
     <source src="../../assets/video/ch15-rtos.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch15-rtos.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch15-rtos.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch15-rtos.mp4">MP4</a> · <a href="../../assets/video/ch15-rtos.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 单核上没有真正的同时。FreeRTOS 让每件要长期做的事变成一个任务，各自有栈。调度器决定这一毫秒谁占用 CPU。你要为每个任务留够栈。
 2. 两个任务优先级相同，时间片用完就换另一个。更高优先级的任务一旦就绪，可以抢过来。所以不是谁先创建谁就永远占着。
@@ -28,9 +29,11 @@
 8. 口诀：相对延时是再等一会儿，绝对延时是下次几点醒。定时器回调里不准睡觉。信号量、队列、互斥，不要拿一个去代替另一个。
 9. 实验做两个任务，两颗灯用不同的周期闪。如果一创建任务就进故障，先把栈调大，再看优先级。不要一开始就上五个队列。
 10. 合上书，三问。两个同优先级任务，时间片用完会发生什么？周期任务该用哪种延时？软件定时器回调里可以等待队列吗？
+
+</details>
 <!-- /video:ch15 -->
 
-## Principle and boundary
+## Principle and scope
 
 The tick and FromISR are fixed on STM32F103C8T6. The group matches chapter file 04: `NVIC_PRIORITYGROUP_4`, 4 preemption bits, and 0 subpriority bits.
 
@@ -58,7 +61,7 @@ Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, 
 
 `freertos-scheduler.svg` stays as an auxiliary figure.
 
-## Timing or state
+## Timing and state
 
 | Object | Value | Who goes first |
 | --- | --- | --- |
@@ -69,7 +72,7 @@ Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, 
 | Time base | the kernel uses SysTick | HAL uses TIM4 |
 | Delay | 3 ms of work, then `vTaskDelay(10)` | the period is near 13 ms. `vTaskDelayUntil` of 10 ms stays 10 ms |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -82,7 +85,7 @@ Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, 
 | Two tasks interleave on the UART | A binary semaphore was used to protect the resource | Use a mutex | [FreeRTOS](#source-freertos-syscall) | A mutex has priority inheritance. A binary semaphore does not |
 | The period grows | `vTaskDelay(10)` does not include the time already spent before the call | Use `vTaskDelayUntil` for a fixed period | [FreeRTOS](#source-freertos-syscall) | When one tick is 1 ms, time already spent before the call is not inside `vTaskDelay` |
 
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Explain the difference between "bare-metal foreground/background" and "an RTOS with several tasks," and decide whether a project should use an RTOS.
 - [ ] Know the five task states (ready / running / blocked / suspended / deleted) and what moves a task between them.
@@ -91,7 +94,7 @@ Do 3 ms of work and then `vTaskDelay(10)`, and the call waits another 10 ticks, 
 - [ ] Estimate a task's stack, and understand priority inversion and priority inheritance.
 - [ ] Tell heap_1 through heap_5 apart, and remember that an interrupt may only call FromISR APIs.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. Bare-metal foreground/background vs an RTOS
 
@@ -167,7 +170,8 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. A port built for an FPU is void on 
 | `configMAX_SYSCALL_INTERRUPT_PRIORITY` | The lowest priority number that is still allowed to call a FreeRTOS API (a larger number is a lower priority) |
 | `configKERNEL_INTERRUPT_PRIORITY` | The priority of the kernel's own interrupts (PendSV / SysTick) |
 
-> ⚠️ The common `configASSERT` dead loop means **the interrupt priority number was set too small (the priority was too high)** and it crossed the range `configMAX_SYSCALL_INTERRUPT_PRIORITY` allows. On STM32, with 4 priority bits, that macro is often `5 << (8-4) = 0x50`, which means the interrupt priority number must be ≥ 5.
+> [!WARNING]
+> The common `configASSERT` dead loop means **the interrupt priority number was set too small (the priority was too high)** and it crossed the range `configMAX_SYSCALL_INTERRUPT_PRIORITY` allows. On STM32, with 4 priority bits, that macro is often `5 << (8-4) = 0x50`, which means the interrupt priority number must be ≥ 5.
 
 ### 6. Comparing the IPC options
 
@@ -175,13 +179,13 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. A port built for an FPU is void on 
 
 | Mechanism | Use | Can it carry data? | Cost | Interrupt-safe API |
 | --- | --- | --- | --- | --- |
-| Queue | Pass data between tasks or from an interrupt | ✅ any length | Medium | `xQueueSendFromISR` |
-| Binary semaphore | Synchronize on an event (ISR → task) | ❌ | Small | `xSemaphoreGiveFromISR` |
-| Counting semaphore | Count a resource, or accumulate events | ❌ | Small | `xSemaphoreGiveFromISR` |
-| Mutex | Protect a shared resource (includes priority inheritance) | ❌ | Medium | ⚠️ cannot be used from an ISR |
-| Recursive mutex | The same task may take it more than once | ❌ | Medium | ⚠️ cannot be used from an ISR |
-| Event group | Wait for several events (AND / OR) | ❌ (bit flags) | Small | `xEventGroupSetBitsFromISR` |
-| Task notification | Lightweight point-to-point sync, or pass a value | ✅ (a 32-bit value) | **Smallest** | `xTaskNotifyFromISR` |
+| Queue | Pass data between tasks or from an interrupt | Yes, any length | Medium | `xQueueSendFromISR` |
+| Binary semaphore | Synchronize on an event (ISR → task) | No | Small | `xSemaphoreGiveFromISR` |
+| Counting semaphore | Count a resource, or accumulate events | No | Small | `xSemaphoreGiveFromISR` |
+| Mutex | Protect a shared resource (includes priority inheritance) | No | Medium | Cannot be used from an ISR |
+| Recursive mutex | The same task may take it more than once | No | Medium | Cannot be used from an ISR |
+| Event group | Wait for several events (AND / OR) | Bit flags only | Small | `xEventGroupSetBitsFromISR` |
+| Task notification | Lightweight point-to-point sync, or pass a value | Yes, a 32-bit value | **Smallest** | `xTaskNotifyFromISR` |
 
 **Motto: a semaphore says "it happened," a queue says "carry this over," a mutex says "I am holding it, do not touch it," an event group says "wait until they are all here," and a task notification says "if this is enough, do not create an object."**
 
@@ -220,11 +224,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 | Implementation | Supports free | Fragmentation | Notes |
 | --- | --- | --- | --- |
-| heap_1 | ❌ | None | Simplest. Allocate only, never free. Fine when the set of tasks never changes |
-| heap_2 | ✅ | Severe | Can free, but does not coalesce. No longer recommended |
-| heap_3 | ✅ | Depends on malloc | A wrapper around the C library `malloc` / `free`. Needs to be thread-safe |
-| heap_4 | ✅ | Good (adjacent blocks coalesce) | **The usual choice.** Can free, and merges free blocks |
-| heap_5 | ✅ | Good | Same as heap_4, and it supports **several non-contiguous memory regions** |
+| heap_1 | No | None | Simplest. Allocate only, never free. Fine when the set of tasks never changes |
+| heap_2 | Yes | Severe | Can free, but does not coalesce. No longer recommended |
+| heap_3 | Yes | Depends on malloc | A wrapper around the C library `malloc` / `free`. Needs to be thread-safe |
+| heap_4 | Yes | Good (adjacent blocks coalesce) | **The usual choice.** Can free, and merges free blocks |
+| heap_5 | Yes | Good | Same as heap_4, and it supports **several non-contiguous memory regions** |
 
 ```c
 /* Change the heap size in CubeMX: FreeRTOS → TOTAL_HEAP_SIZE (bytes) */
@@ -253,7 +257,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 }
 ```
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -264,7 +268,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 > The full example in this repo is [`examples/freertos-task/`](../../examples/freertos-task/) (three tasks, a queue, a mutex, and FromISR). Its `README.md` has the CubeMX settings, item by item.
 
-## 💻 Code
+## Code
 
 Below is a minimal working skeleton: an LED blink, a key interrupt into a queue into a key task, and a UART task protected by a mutex. The full project is [`examples/freertos-task/main.c`](../../examples/freertos-task/main.c).
 
@@ -358,7 +362,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 > **The single most important CubeMX step**: change `SYS → Timebase Source` from **SysTick to TIM4**. Otherwise HAL and FreeRTOS fight over SysTick, and `HAL_Delay` hangs.
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Two tasks, two blink rates (start here)**: create two tasks that toggle two LEDs at 500 ms and 200 ms. Expected: each LED blinks on its own rhythm, and they do not disturb each other.
 2. **A queue carries a key press (next step)**: the key EXTI sends an event with `xQueueSendFromISR`. The task blocks in `xQueueReceive` and prints. Expected: while the queue is empty the task does not occupy the CPU, and a key press prints immediately.
@@ -389,7 +393,7 @@ Self-test:
 2. If a software-timer callback calls `vTaskDelay`, who gets stuck?
 3. A priority-3 task and a priority-1 task are both ready. Which one does FreeRTOS run first?
 
-## 🔗 Related resources
+## Related resources
 
 - The official FreeRTOS documentation, and *Mastering the FreeRTOS Real Time Kernel* (the chapters on tasks, queues, semaphores, and scheduling).
 - RM0008, *STM32F10xxx Reference Manual*: SysTick (the Cortex-M3 system timebase), NVIC and EXTI (Chapter 9), and USART (Chapter 27).

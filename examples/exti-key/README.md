@@ -86,7 +86,7 @@ if (g_key_event) {
 ## 五、编译烧录步骤
 
 1. 用 CubeMX 生成 F103C8 工程，把本 `main.c` 覆盖 `Core/Src/main.c`（保留生成的 `stm32f1xx_it.c` 中 `SysTick_Handler`；若其中已有 `EXTI0_IRQHandler` 请删除以免重复定义）。
-2. 编译（Keil：`F7`；CubeIDE：🔨）→ 下载（Keil：`F8`；CubeIDE：▶）。
+2. 编译（Keil 按 `F7`；CubeIDE 点工具栏的编译按钮）→ 下载（Keil 按 `F8`；CubeIDE 点运行按钮）。
 3. PlatformIO：`pio run -t upload`。
 
 ## 六、预期现象

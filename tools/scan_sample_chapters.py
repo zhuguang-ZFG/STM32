@@ -6,7 +6,7 @@ Run from the repository root:
 
     python3 tools/scan_sample_chapters.py
 
-The script writes docs/superpowers/plans/2026-10-25-sample-chapter-lock.json
+The script writes stm32-book/tests/fixtures/2026-10-25-sample-chapter-lock.json
 and exits 0 when the rubric selects peripheral 03 and foundation 00.
 If the tree has already grown the heading 原理与边界, it refuses to re-score
 and exits 0 only when the lock file already records 03 and 00.
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCK_PATH = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-chapter-lock.json"
+LOCK_PATH = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-chapter-lock.json"
 PERIPHERAL = [f"{i:02d}" for i in range(3, 15)] + ["16"]
 FOUNDATION = ["00", "01", "02"]
 LOCAL_SUFFIXES = {".svg", ".gif", ".jpg", ".jpeg", ".png"}
@@ -245,7 +245,7 @@ def select(rows: list[dict]) -> dict:
 
 def already_thickened(zh: dict[str, Path]) -> bool:
     for path in zh.values():
-        if "## 原理与边界" in path.read_text(encoding="utf-8"):
+        if "## 原理与适用范围" in path.read_text(encoding="utf-8"):
             return True
     return False
 

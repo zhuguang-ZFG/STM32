@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch16-lp.png">
     <source src="../../assets/video/ch16-lp.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch16-lp.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch16-lp.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch16-lp.mp4">MP4</a> · <a href="../../assets/video/ch16-lp.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. Sleep 只是 CPU 停了，不少外设还在耗电。Stop 会停掉大部分时钟，才算真的睡。Standby 更接近掉电，醒来像复位。先分清你要的是哪一种。
 2. 从 Stop 醒来，PLL 通常已经停了，系统时钟回到默认。第一件事是把时钟按你的配置再装回去。不装就去用串口和定时器，波特率和节拍全是错的。
@@ -28,8 +29,10 @@
 8. 口诀：掉电检测是通知；Sleep 还在耗电，Stop 才真的睡。Stop 醒来第一件事，是把时钟装回去。
 9. 实验在进 Stop 之前用串口打一句，按键唤醒后再打一句。第二句的波特率如果乱了，就是时钟没装回去。不要先用万用表追求微安。
 10. 合上书，三问。Sleep 和 Stop，谁还在让很多外设耗电？从 Stop 醒来第一件事是什么？手册上的微安能不能直接当成整块板的电流？
+
+</details>
 <!-- /video:ch16 -->
-## Principle and boundary
+## Principle and scope
 
 The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. The current cells are the DS5319 Rev 20 Table 16 typicals at 3.3 V and 25°C. See [DS5319 Table 16](#source-ds5319-pwr).
 
@@ -63,7 +66,7 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 
 `lowpower-wakeup.svg` stays as an auxiliary figure. Do not play it for 14 µA, 8 MHz, or 12800. Those are on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Step | Clock or current | Right or wrong |
 | --- | --- | --- |
@@ -82,7 +85,7 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 | Backup domain | 1.4 µA with LSE and the RTC on | not whole-chip Standby |
 | Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | not drawn as a lamp and an ADC at the same time |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -93,7 +96,9 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 | Sleep current will not fall, and the comment says once per second | The tick was left at 1000 Hz | That is every 1 ms, not once per second. Suspend the tick before Sleep | [examples in this repo](#source-project-examples) | `examples/freertos-task` documents a 1000 Hz tick, 1 ms. This row does not show that SysTick keeps ticking during Stop |
 | The F4 periodic wake API was called | This part does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
 | 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Do not invent a Stop-plus-IWDG microamp |
-| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP. This row does not draw the 270 Ω lamp as active at the same time |## 📌 Learning goals
+| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP. This row does not draw the 270 Ω lamp as active at the same time |
+
+## Learning goals
 
 - [ ] Use one table to state, for Sleep / Stop / Standby, the current, the wake sources, the wake time, and what state is kept.
 - [ ] Know the difference between `WFI` and `WFE`, and what wakes each of them.
@@ -101,7 +106,7 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 - [ ] Turn off peripherals and clocks you are not using, and put GPIO into a state that does not draw current.
 - [ ] Know the selection points for a battery supply, and how to measure the power.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. The three low-power modes compared
 
@@ -209,7 +214,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 > From experience: first turn **everything** that might draw current off, measure a clean floor, then turn things back on one at a time. The difference tells you who the real consumer is.
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
@@ -219,9 +224,10 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 | Nucleo-F411RE | On-board key | PC13 (B1) | Can wake the chip from Stop |
 | Any | Current measurement | A sense resistor in series with 3V3 | Watch it with a power profiler or a scope |
 
-> ⚠️ On a BluePill, the on-board **LED, the LDO, and the USB chip all leak**. To measure a real microamp current, use a bare-chip minimal board, and disconnect the debugger and the LED.
+> [!WARNING]
+> On a BluePill, the on-board **LED, the LDO, and the USB chip all leak**. To measure a real microamp current, use a bare-chip minimal board, and disconnect the debugger and the LED.
 
-## 💻 Code
+## Code
 
 **① Sleep mode (wait for any interrupt)**
 
@@ -289,7 +295,7 @@ __HAL_RCC_USART2_CLK_DISABLE();
 ```
 
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Saving power in Sleep**: blink in the main loop, and call `Enter_Sleep()` when idle. Compare the current with and without Sleep (a 0.1 Ω sense resistor in series, and look at the waveform). Expected: the current drops clearly in Sleep.
 2. **Stop plus a key wake**: enter Stop, wake on PA0, restore the clock, and toggle the LED. Expected: the key wakes the chip, and the UART is still healthy (which means the clock was restored).
@@ -319,7 +325,7 @@ Self-test:
 2. What is one thing that belongs in the PVD interrupt, and one thing that does not?
 3. After Standby wakes, does the program continue at the line after `WFI`, or does it start again from the reset vector?
 
-## 🔗 Related resources
+## Related resources
 
 - RM0008, *STM32F10xxx Reference Manual*, Chapter 5, Power control (PWR) (`LPDS` / `PDDS` / `CWUF` in `PWR_CR`, and WFI / WFE).
 - RM0090, *STM32F4 Reference Manual*, Chapter 5 PWR, and Chapter 26 RTC (periodic wake).

@@ -6,7 +6,7 @@ Run from the repository root:
 
     python3 tools/scan_batch6_chapters.py
 
-Rewrites docs/superpowers/plans/2026-10-25-batch6-16-17-18-19-lock.json and
+Rewrites stm32-book/tests/fixtures/2026-10-25-batch6-16-17-18-19-lock.json and
 exits 0 when all eight manuscripts lack the four headings. Chapters 16 and 17
 must still have the old pitfall heading. Chapters 18 and 19 must not have it.
 Exits 2 without writing the lock otherwise. Does not score other chapters and
@@ -21,41 +21,41 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCK_PATH = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json"
+LOCK_PATH = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json"
 FILES = {
     "16": (
         ROOT / "docs" / "16-低功耗设计.md",
         ROOT / "docs" / "en" / "16-low-power.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
         True,
     ),
     "17": (
         ROOT / "docs" / "17-调试与性能优化.md",
         ROOT / "docs" / "en" / "17-debug.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
         True,
     ),
     "18": (
         ROOT / "docs" / "18-常见问题FAQ.md",
         ROOT / "docs" / "en" / "18-faq.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
         False,
     ),
     "19": (
         ROOT / "docs" / "19-项目实战合集.md",
         ROOT / "docs" / "en" / "19-projects.md",
-        "## ⚠️ Pitfalls and troubleshooting",
+        "## Pitfalls and troubleshooting",
         False,
     ),
 }
-ZH_BLOCKS = ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡")
+ZH_BLOCKS = ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处")
 EN_BLOCKS = (
-    "## Principle and boundary",
+    "## Principle and scope",
     "## Key figures",
-    "## Timing or state",
-    "## Pitfalls and source cards",
+    "## Timing and state",
+    "## Pitfalls and sources",
 )
-ZH_OLD = "## ⚠️ 常见坑与排查"
+ZH_OLD = "## 常见坑与排查"
 
 
 def four_blocks(text: str, headings: tuple[str, ...]) -> bool:

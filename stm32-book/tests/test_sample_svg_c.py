@@ -11,6 +11,11 @@ BOOK_DIR = Path(__file__).resolve().parents[1]
 REPO = BOOK_DIR.parent
 BUILD_PATH = BOOK_DIR / "build_html.py"
 
+
+def text_file_hash(path: Path) -> str:
+    """sha256 of a text file with CRLF folded to LF, so a Windows checkout matches."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
 ROWS = """
 animations/adc-sar.svg 900x620 19409 ebd3127f7efde5d3c25f5a82dea6ae36eaff2a4c3a87c698f95f0d329a0ca807
 animations/boot-sequence.svg 900x620 14058 d6d1baa08f2d9763ef5971f4701775db3905d34a7d6998310b127dd21beaddfc
@@ -198,20 +203,20 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "98c0de3fa53e331b308db6d8f094aab76ec7b11159a1056fc16fd6acd7dce025",
+            "ef2c7b0fd546164c3cddf512fa6d063769dad824baf3d865f9b2496380146a74",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
             "9d07dad497b824c9e2038ddf1e28cb77974451acb6c3b9773863df7c8c90d0bd",
-            hashlib.sha256((BOOK_DIR / "styles" / "tokens.json").read_bytes()).hexdigest(),
+            text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "fe03b80f2e50acf03bc17e0950e8aad52c4c90bb418b40956612de9bc719a942",
-            hashlib.sha256((BOOK_DIR / "styles" / "book.css").read_bytes()).hexdigest(),
+            "595518e46a2be9adff3f3aae3b4cb62b6e3b7fe4a68bd7306dc75c43c5416769",
+            text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
             "37dbedd70d2be8e94f4cdf05b60541f69d0107af6374902f8062c8e0bf74dedd",
-            hashlib.sha256((BOOK_DIR / "cover.svg").read_bytes()).hexdigest(),
+            text_file_hash(BOOK_DIR / "cover.svg"),
         )
 
         found = sorted(

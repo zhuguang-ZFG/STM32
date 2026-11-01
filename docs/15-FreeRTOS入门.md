@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch15-rtos.png">
     <source src="../assets/video/ch15-rtos.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.6 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch15-rtos.mp4">MP4</a> · 字幕：<a href="../assets/video/ch15-rtos.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch15-rtos.mp4">MP4</a> · <a href="../assets/video/ch15-rtos.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. 单核上没有真正的同时。FreeRTOS 让每件要长期做的事变成一个任务，各自有栈。调度器决定这一毫秒谁占用 CPU。你要为每个任务留够栈。
 2. 两个任务优先级相同，时间片用完就换另一个。更高优先级的任务一旦就绪，可以抢过来。所以不是谁先创建谁就永远占着。
@@ -29,9 +30,11 @@
 8. 口诀：相对延时是再等一会儿，绝对延时是下次几点醒。定时器回调里不准睡觉。信号量、队列、互斥，不要拿一个去代替另一个。
 9. 实验做两个任务，两颗灯用不同的周期闪。如果一创建任务就进故障，先把栈调大，再看优先级。不要一开始就上五个队列。
 10. 合上书，三问。两个同优先级任务，时间片用完会发生什么？周期任务该用哪种延时？软件定时器回调里可以等待队列吗？
+
+</details>
 <!-- /video:ch15 -->
 
-## 原理与边界
+## 原理与适用范围
 
 这一章的节拍和 FromISR 只钉在订货号 STM32F103C8T6 上。分组跟第 04 章同一笔：`NVIC_PRIORITYGROUP_4`，4 位抢占，0 位子优先级。
 
@@ -59,7 +62,7 @@
 
 `freertos-scheduler.svg` 留作辅图。
 
-## 时序或状态
+## 时序与状态
 
 | 对象 | 数值 | 谁先走 |
 | --- | --- | --- |
@@ -70,7 +73,7 @@
 | 时基 | 内核用 SysTick | HAL 用 TIM4 |
 | 延时 | 工作 3 ms 再 `vTaskDelay(10)` | 周期接近 13 ms。`vTaskDelayUntil` 的 10 ms 仍是 10 ms |
 
-## 坑与出处卡
+## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 该来源允许支持的主张 |
 | --- | --- | --- | --- | --- |
@@ -83,7 +86,7 @@
 | 两个任务的串口叠在一起 | 用二值信号量保护了资源 | 用互斥量 | [FreeRTOS](#source-freertos-syscall) | 互斥量有优先级继承。二值信号量没有 |
 | 周期越来越长 | `vTaskDelay(10)` 不包含调用前已经花掉的时间 | 固定周期用 `vTaskDelayUntil` | [FreeRTOS](#source-freertos-syscall) | 一个 tick 是 1 ms 时，调用前已经花掉的时间不包含在 `vTaskDelay` 里 |
 
-## 📌 学习目标
+## 学习目标
 
 - [ ] 说清「裸机前后台」与「RTOS 多任务」的差异，判断项目该不该上 RTOS。
 - [ ] 掌握任务 5 种状态（就绪/运行/阻塞/挂起/删除）与迁移条件。
@@ -92,7 +95,7 @@
 - [ ] 会估算任务栈大小，理解优先级反转与优先级继承。
 - [ ] 分清 heap_1~heap_5，并牢记「中断里只能用 FromISR API」。
 
-## 🧠 核心原理
+## 核心原理
 
 ### 1. 裸机前后台 vs RTOS
 
@@ -167,7 +170,8 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。选带 FPU 的移植在这颗料上�
 | `configMAX_SYSCALL_INTERRUPT_PRIORITY` | 能调用 FreeRTOS API 的中断优先级下限（数值越大优先级越低） |
 | `configKERNEL_INTERRUPT_PRIORITY` | 内核自身中断（PendSV/SysTick）优先级 |
 
-> ⚠️ 常见断言 `configASSERT` 死循环，就是**中断优先级数值设得太小（优先级太高）**，超过了 `configMAX_SYSCALL_INTERRUPT_PRIORITY` 允许的范围。STM32 用 4 位优先级时，该宏常配成 `5 << (8-4) = 0x50`，即中断优先级数值要 ≥ 5。
+> [!WARNING]
+> 常见断言 `configASSERT` 死循环，就是**中断优先级数值设得太小（优先级太高）**，超过了 `configMAX_SYSCALL_INTERRUPT_PRIORITY` 允许的范围。STM32 用 4 位优先级时，该宏常配成 `5 << (8-4) = 0x50`，即中断优先级数值要 ≥ 5。
 
 ### 6. 任务间通信（IPC）对比
 
@@ -175,13 +179,13 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。选带 FPU 的移植在这颗料上�
 
 | 机制 | 用途 | 能否传数据 | 开销 | 中断安全 API |
 | --- | --- | --- | --- | --- |
-| 队列 Queue | 任务/中断间传数据 | ✅ 任意长度 | 中 | `xQueueSendFromISR` |
-| 二值信号量 Binary Semaphore | 事件同步（ISR→任务） | ❌ | 小 | `xSemaphoreGiveFromISR` |
-| 计数信号量 Counting | 资源计数/事件累计 | ❌ | 小 | `xSemaphoreGiveFromISR` |
-| 互斥量 Mutex | 保护共享资源（含优先级继承） | ❌ | 中 | ⚠️ 不能在 ISR 用 |
-| 递归互斥量 | 同一任务可重复获取 | ❌ | 中 | ⚠️ 不能在 ISR 用 |
-| 事件组 Event Group | 等待多个事件（与/或） | ❌（位标志） | 小 | `xEventGroupSetBitsFromISR` |
-| 任务通知 Task Notify | 轻量点对点同步/传值 | ✅（32 位值） | **最小** | `xTaskNotifyFromISR` |
+| 队列 Queue | 任务/中断间传数据 | 可以，任意长度 | 中 | `xQueueSendFromISR` |
+| 二值信号量 Binary Semaphore | 事件同步（ISR→任务） | 不能 | 小 | `xSemaphoreGiveFromISR` |
+| 计数信号量 Counting | 资源计数/事件累计 | 不能 | 小 | `xSemaphoreGiveFromISR` |
+| 互斥量 Mutex | 保护共享资源（含优先级继承） | 不能 | 中 | 不能在 ISR 用 |
+| 递归互斥量 | 同一任务可重复获取 | 不能 | 中 | 不能在 ISR 用 |
+| 事件组 Event Group | 等待多个事件（与/或） | 只能传位标志 | 小 | `xEventGroupSetBitsFromISR` |
+| 任务通知 Task Notify | 轻量点对点同步/传值 | 可以，32 位值 | **最小** | `xTaskNotifyFromISR` |
 
 **记忆口诀**：**信号量是「通知发生了」，队列是「把东西搬过去」，互斥量是「我占用，别动」，事件组是「等齐了再上」，任务通知是「够用就别建对象」。**
 
@@ -220,11 +224,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 
 | 实现 | 支持 free | 碎片 | 说明 |
 | --- | --- | --- | --- |
-| heap_1 | ❌ | 无 | 最简单，只分配不释放，适合任务固定不变 |
-| heap_2 | ✅ | 严重 | 支持释放但不合并，已不推荐 |
-| heap_3 | ✅ | 依赖 malloc | 包装标准库 `malloc/free`，需要线程安全 |
-| heap_4 | ✅ | 好（相邻合并） | **最常用**，支持释放且合并空闲块 |
-| heap_5 | ✅ | 好 | 同 heap_4，且支持**多块不连续内存区** |
+| heap_1 | 不支持 | 无 | 最简单，只分配不释放，适合任务固定不变 |
+| heap_2 | 支持 | 严重 | 支持释放但不合并，已不推荐 |
+| heap_3 | 支持 | 依赖 malloc | 包装标准库 `malloc/free`，需要线程安全 |
+| heap_4 | 支持 | 好（相邻合并） | **最常用**，支持释放且合并空闲块 |
+| heap_5 | 支持 | 好 | 同 heap_4，且支持**多块不连续内存区** |
 
 ```c
 /* CubeMX 里改堆大小：FreeRTOS → TOTAL_HEAP_SIZE（字节） */
@@ -253,7 +257,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 }
 ```
 
-## 🛠️ 硬件与接线
+## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |
@@ -264,7 +268,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 > 本仓库完整示例见 [`examples/freertos-task/`](../examples/freertos-task/)（三任务 + 队列 + 互斥量 + FromISR），其 `README.md` 给出了 CubeMX 逐项配置表。
 
-## 💻 代码实现
+## 代码实现
 
 下面给出一个「LED 闪烁 + 按键中断 → 队列 → 按键任务 + 串口任务（互斥量保护）」的最小可用框架，完整工程见 [`examples/freertos-task/main.c`](../examples/freertos-task/main.c)。
 
@@ -358,7 +362,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 > **CubeMX 最关键一步**：`SYS → Timebase Source` 从 **SysTick 改成 TIM4**，否则 HAL 和 FreeRTOS 抢 SysTick，`HAL_Delay` 会卡死。
 
-## 🧪 动手实验
+## 动手实验
 
 1. **两任务闪灯（入门）**：创建两个任务，分别以 500 ms、200 ms 翻转两盏 LED。预期：两灯各自节奏稳定闪烁，互不干扰。
 2. **队列传按键（进阶）**：按键 EXTI 用 `xQueueSendFromISR` 发事件，任务 `xQueueReceive` 阻塞接收并打印。预期：队列空时任务不占 CPU，按键即打印。
@@ -389,7 +393,7 @@ for (;;)
 2. 软件定时器回调里调用 `vTaskDelay`，会卡住谁？
 3. 优先级 3 的任务和优先级 1 的任务同时就绪，FreeRTOS 先跑哪一个？
 
-## 🔗 相关资源
+## 相关资源
 
 - FreeRTOS 官方文档与《Mastering the FreeRTOS Real Time Kernel》（任务、队列、信号量、调度章节）。
 - RM0008《STM32F10xxx 参考手册》：SysTick（Cortex-M3 系统时基）、NVIC 与 EXTI（第 9 章）、USART（第 27 章）。
@@ -398,4 +402,4 @@ for (;;)
 - 配图：`../assets/animations/freertos-scheduler.svg`（作者自绘矢量图）。
 
 
-- 📱 手机阅读版：[第 15 章 · FreeRTOS入门（公众号图文）](https://mp.weixin.qq.com/s/uw4_JRCRLkRFQ1EoezUXHg)
+- 手机阅读版：[第 15 章 · FreeRTOS入门（公众号图文）](https://mp.weixin.qq.com/s/uw4_JRCRLkRFQ1EoezUXHg)

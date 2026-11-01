@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch22-sim.png">
     <source src="../../assets/video/ch22-sim.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.7 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch22-sim.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch22-sim.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.7 min). <a href="../../assets/video/ch22-sim.mp4">MP4</a> · <a href="../../assets/video/ch22-sim.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. Wokwi 适合在浏览器里看灯和接线。Renode 适合在命令行里加载程序、看串口字节。口诀：浏览器里看灯，命令行里看字节。两家都代替不了真板的时序。
 2. Wokwi 的 BluePill 上，引脚键名是 A0、C13 这种。A0 接到 PA0，C13 接到 PC13。写成 PA0 这样的芯片名，图会接不上。依据是板子自己的描述文件。
@@ -29,14 +30,16 @@
 8. 口诀：仿真看现象，真板对时序。仿真里的灯会亮，不代表上升沿在真板上也那么干净。结论要回到板子上再确认一次。
 9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
 10. 合上书，三问。Wokwi 里 PC13 的灯还要再外接一颗吗？A0 接到芯片的哪只脚？串口 DMA 收包能在这个模型里验证吗？
+
+</details>
 <!-- /video:ch22 -->
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Open this repo's BluePill diagram in Wokwi, and explain the pin aliases.
 - [ ] Load `stm32f103.repl` and an ELF in Renode.
 - [ ] Know which examples can run to the end in the simulator you have now, and which ones only show the wiring.
 
-## 🧠 Which one to open first
+## Which one to open first
 
 **Conclusion**: if you want to see an LED, a button, PWM, or an OLED, use Wokwi. If you want to single-step in a terminal and watch the USART1 byte stream, use Renode. Both of them eat an ELF you compiled yourself. This repo does not ship prebuilt firmware.
 
@@ -50,7 +53,7 @@
 
 **Motto:** watch the LED in the browser, and watch the bytes on the command line.
 
-## 🛠️ Wokwi: how to read the diagram
+## Wokwi: how to read the diagram
 
 The pin name is not `PA0`. It is the key in the Wokwi board file. The source is
 [`board.json` in wokwi-boards, under `boards/stm32-bluepill/`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json):
@@ -82,7 +85,7 @@ What is supported follows the table in the Wokwi docs (GPIO, USART, I2C, SPI, TI
 
 In `wokwi.toml` the firmware path is written as `build/firmware.elf`. Wokwi accepts `.elf`, `.hex`, and `.bin` for STM32. Build it in CubeIDE or PlatformIO first, then change the `firmware` and `elf` lines to your real path. Wokwi does not compile for you.
 
-## 🛠️ Renode: two scripts
+## Renode: two scripts
 
 The scripts live in [`sim/renode/`](../../sim/renode/). They do four things: create a machine, load the official F103 platform description, load the ELF, and start.
 
@@ -101,7 +104,7 @@ The name `usart1` and the address `0x40013800` are written in Renode's `stm32f10
 
 The UART example uses DMA. `stm32f103.repl` does attach a DMA node, but whether it can finish an idle-line plus ring-buffer transfer depends on the Renode version you installed. If it does not match, first confirm the bytes with the polling transmit and receive from [chapter 06](06-uart.md), then come back to DMA.
 
-## ⚠️ What simulation will not do for you
+## What simulation will not do for you
 
 | What you see | Why | What to do |
 | --- | --- | --- |
@@ -111,7 +114,7 @@ The UART example uses DMA. `stm32f103.repl` does attach a DMA node, but whether 
 | The OLED is a black rectangle | The address was written as 0x78, and the part defaults to 0x3c | `i2cAddress` on the diagram is the 7-bit address `0x3c`. That is the same slave as 0x78 after HAL shifts it left |
 | Renode says the platform cannot be found | That version does not contain this repl | At the Renode prompt, `ls @platforms/cpus` and read the real filename |
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Watch only the on-board LED**: build an ELF from gpio-blink and drop it into Wokwi. You should see the PC13 lamp on the board blink at the code's rhythm, and the external lamp on PA0 blink much more slowly.
 2. **Press once**: in the exti-key diagram, press the button (it ties A0 to GND). The on-board LED should toggle. The firmware configures the button as a pull-up input, so the diagram does not draw another pull-up resistor.
@@ -123,7 +126,7 @@ Self-test:
 2. Why does the uart-dma-idle diagram contain only a board?
 3. What is the platform file the Renode script loads?
 
-## 🔗 Related resources
+## Related resources
 
 - Wokwi: [STM32 Blue Pill](https://docs.wokwi.com/parts/board-stm32-bluepill), [diagram.json](https://docs.wokwi.com/diagram-format), [wokwi.toml](https://docs.wokwi.com/vscode/project-config), [SSD1306 board](https://docs.wokwi.com/parts/board-ssd1306), [potentiometer](https://docs.wokwi.com/parts/wokwi-potentiometer)
 - The board-pin definition, in the original: [wokwi-boards `board.json`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json)

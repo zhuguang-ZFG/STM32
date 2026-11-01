@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import os
 import subprocess
 import unittest
@@ -45,6 +46,11 @@ def _git_show(rev: str, path: str) -> str | None:
         return None
     return got.stdout.decode("utf-8")
 
+
+
+def narration_lines(block: str) -> list[str]:
+    """Numbered narration lines. They must match the rendered subtitles."""
+    return re.findall(r"^\d+\. .+$", block.replace("\r\n", "\n"), re.M)
 
 def baseline_chapter(rev: str, path: str) -> str:
     blob = _git_show(rev, path)
@@ -251,27 +257,27 @@ class Batch5IapChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "12-flash-iap.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         self.assertIn("/* F103C8 中容量 1KB/页 */", zh)
         self.assertIn("/* F103C8 medium-density, 1 KB per page */", en)
         self.assertNotIn("F103C8 小容量", zh)
         self.assertNotIn("small-capacity", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "0x08000000",
@@ -304,8 +310,8 @@ class Batch5IapChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-12-iap-map.svg", en)
         self.assertIn("../assets/gif/iap-jump.gif", zh)
         self.assertIn("../../assets/gif/iap-jump.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-12-iap-map.svg"), zh_key.index("iap-jump.gif"))
         self.assertLess(en_key.index("sample-12-iap-map.svg"), en_key.index("iap-jump.gif"))
         self.assertIn("自绘", zh_key)
@@ -314,7 +320,7 @@ class Batch5IapChapterTests(unittest.TestCase):
         self.assertNotIn("schematic", en_key.lower())
         self.assertIn("flash-iap.svg", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -325,11 +331,11 @@ class Batch5IapChapterTests(unittest.TestCase):
             marker = "<!-- video:ch12 -->"
             end = "<!-- /video:ch12 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now_video.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -392,22 +398,21 @@ class Batch5CanChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "13-can.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls\n", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core idea", en)
-        self.assertNotIn("## 📌 Learning goals", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls\n", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         zh_video, zh_rest = _split_video(zh, "ch13")
         en_video, en_rest = _split_video(en, "ch13")
         self.assertIn("C8 没有那两只脚", zh_video)
@@ -418,8 +423,8 @@ class Batch5CanChapterTests(unittest.TestCase):
         self.assertNotIn("differential impedance near 60", en_rest)
         self.assertIn("PB8=CAN_RX、PB9=CAN_TX", zh_rest)
         self.assertIn("PB8 = CAN_RX, PB9 = CAN_TX", en_rest)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "36",
@@ -460,15 +465,15 @@ class Batch5CanChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-13-can-bit.svg", en)
         self.assertIn("../assets/gif/can-500k.gif", zh)
         self.assertIn("../../assets/gif/can-500k.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-13-can-bit.svg"), zh_key.index("can-500k.gif"))
         self.assertLess(en_key.index("sample-13-can-bit.svg"), en_key.index("can-500k.gif"))
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -478,8 +483,8 @@ class Batch5CanChapterTests(unittest.TestCase):
             marker = "<!-- video:ch13 -->"
             end = "<!-- /video:ch13 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
@@ -501,7 +506,7 @@ class Batch5CanChapterTests(unittest.TestCase):
         )
         self.assertEqual(order[-5:], list(en_manifest["sources"])[-5:])
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -542,23 +547,23 @@ class Batch5UsbChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "14-usb.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls\n", en)
-        self.assertIn("## 📌 Goals", en)
-        self.assertIn("## 🧠 Core idea", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls\n", en)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## Core ideas", en)
         self.assertIn("0x1209/0x0001", zh)
         self.assertIn("0x1209/0x0001", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "USBPRE",
@@ -595,15 +600,15 @@ class Batch5UsbChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-14-usb-enum.svg", en)
         self.assertIn("../assets/gif/usb-48m.gif", zh)
         self.assertIn("../../assets/gif/usb-48m.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-14-usb-enum.svg"), zh_key.index("usb-48m.gif"))
         self.assertLess(en_key.index("sample-14-usb-enum.svg"), en_key.index("usb-48m.gif"))
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -613,8 +618,8 @@ class Batch5UsbChapterTests(unittest.TestCase):
             marker = "<!-- video:ch14 -->"
             end = "<!-- /video:ch14 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
@@ -637,19 +642,19 @@ class Batch5RtosChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "15-freertos.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## Core ideas", en)
         self.assertIn("TIM4", zh)
         self.assertIn("TIM4", en)
         self.assertNotIn("改为 **TIMx**", zh)
@@ -661,8 +666,8 @@ class Batch5RtosChapterTests(unittest.TestCase):
         self.assertIn("no FPU", en)
         self.assertNotIn("选带 FPU 的移植（", zh)
         self.assertNotIn("Use the port that includes the FPU", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = zh.split("## 原理与适用范围", 1)[1].split("## 学习目标", 1)[0]
+        en_blocks = en.split("## Principle and scope", 1)[1].split("## Learning goals", 1)[0]
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "1000",
@@ -688,15 +693,15 @@ class Batch5RtosChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-15-rtos-prio.svg", en)
         self.assertIn("../assets/gif/rtos-tick.gif", zh)
         self.assertIn("../../assets/gif/rtos-tick.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0]
+        en_key = en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0]
         self.assertLess(zh_key.index("sample-15-rtos-prio.svg"), zh_key.index("rtos-tick.gif"))
         self.assertLess(en_key.index("sample-15-rtos-prio.svg"), en_key.index("rtos-tick.gif"))
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -706,8 +711,8 @@ class Batch5RtosChapterTests(unittest.TestCase):
             marker = "<!-- video:ch15 -->"
             end = "<!-- /video:ch15 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
@@ -730,7 +735,7 @@ class Batch5RtosChapterTests(unittest.TestCase):
             list(zh_manifest["sources"])[-10:-5],
         )
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-source-list.json").read_text(
                 encoding="utf-8"
             )
         )

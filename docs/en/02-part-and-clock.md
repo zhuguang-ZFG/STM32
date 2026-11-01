@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch02-clock.png">
     <source src="../../assets/video/ch02-clock.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch02-clock.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch02-clock.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch02-clock.mp4">MP4</a> · <a href="../../assets/video/ch02-clock.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 型号上的字母不是玄学。F103 告诉你系列，C8 这类字母看闪存容量，T6 这类看封装。先读数据手册封面和订购信息，再去数引脚。
 2. 存储器地图把闪存、内存和外设分成几段。外设的本质，就是固定地址上的一排寄存器。地址抄错系列，写进去的就不是你要的那个外设。
@@ -28,9 +29,11 @@
 8. 口诀再念一遍：先开时钟再摸寄存器。HSE 掉了靠时钟安全系统，想看频率可以走到时钟输出脚。别用Delay 的感觉去猜主频。
 9. 动手时让串口打出主频、闪存容量和两条 APB。BluePill 上常见的是 72 兆和 64 KB 闪存。对不上，先别做后面的外设实验。
 10. 合上书，三问。72 兆时闪存要几个等待？AHB 和 APB1 谁更慢？外设时钟门控没开时，写入会发生什么？
+
+</details>
 <!-- /video:ch02 -->
 
-## Principle and boundary
+## Principle and scope
 
 The clock conclusion in this chapter is pinned to order code STM32F103C8T6 in LQFP48. The clock ledger is copied whole from Appendix D. On a connectivity-line part, the section 7.3.2 sentence below is void and you read section 8.3.2 instead. When the voltage range changes, the wait-state step is void and you re-read the voltage cell in Appendix D.
 
@@ -60,7 +63,7 @@ Section 8.3.2 `OTGFSPRE`, the reserved `PLLMUL` encoding `000x`, and ×6.5 are v
 
 The opening `clock-tree.svg` stays a side figure. Without playing it, 72 MHz, LATENCY, and the CSS return to HSI are all on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Phase | SWS / switch | Clock | State |
 | --- | --- | --- | --- |
@@ -75,7 +78,7 @@ The opening `clock-tree.svg` stays a side figure. Without playing it, 72 MHz, LA
 
 This table does not include the sample time. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -86,14 +89,14 @@ This table does not include the sample time. Source: [RM0008 Rev 21 section 7.3.
 | The waveform on MCO is too fast for the pin | SYSCLK at 72 MHz was driven straight onto PA8 | Drive PLL÷2, which is 36 MHz | [RM0008](#source-rm0008-rcc) | The clock sent to the MCO pin must not exceed 50 MHz |
 | ADC was set to ÷4 to go faster | ADCPRE=01 produces 18 MHz | Change it back to ÷6, which is 12 MHz | [RM0008](#source-rm0008-rcc) | 14 MHz is the ceiling. ÷4 produces 18 MHz. Sample time stays in chapter file 09 |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] Split an STM32 part number piece by piece (what every character of STM32F103C8T6 means)
 - [ ] Pick among F0/F1/F3/F4/F7/G0/G4/H7/L0/L4 for a real need
 - [ ] State the FPU/DSP/MPU/cache differences among Cortex-M3/M4/M7
 - [ ] Remember the memory-map regions and the BOOT0/BOOT1 boot modes
 - [ ] Compute the HSE→PLL→SYSCLK→AHB/APB dividers, and find the important bits in RCC_CFGR
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: pick a part by "core + clock + Flash/RAM + package + peripherals". Set the frequency by "clock tree + divider limits".**
 
@@ -136,11 +139,11 @@ So **STM32F103C8T6 = F1 performance line · 48 pins · 64 KB Flash · LQFP · �
 | Feature | Cortex-M3 | Cortex-M4 | Cortex-M7 |
 | --- | --- | --- | --- |
 | Architecture | ARMv7-M | ARMv7E-M | ARMv7E-M |
-| FPU | ❌ none | ✅ single precision (double optional) | ✅ double precision |
-| DSP instructions | Partial | ✅ full SIMD/MAC | ✅ full |
-| MPU | Optional | Optional | ✅ standard |
-| Cache | ❌ | ❌ | ✅ I-cache / D-cache |
-| TCM | ❌ | ❌ | ✅ ITCM/DTCM |
+| FPU | None | Single precision (double optional) | Double precision |
+| DSP instructions | Partial | Full SIMD/MAC | Full |
+| MPU | Optional | Optional | Standard |
+| Cache | None | None | I-cache / D-cache |
+| TCM | None | None | ITCM/DTCM |
 | Typical clock | ≤ 120 MHz | ≤ 200 MHz | ≤ 600 MHz |
 
 ### 4. Memory map
@@ -186,7 +189,8 @@ The chain: `HSE(8MHz) → PLL(×9) → SYSCLK(72MHz) → AHB prescaler → APB1/
 | ADC | APB2 ÷6 | — | 12 MHz | 14 MHz |
 | USB | PLL ÷1.5 | — | 48 MHz | 48 MHz |
 
-> ⚠️ When the APB divider is greater than 1, the timer clock is **×2**. Example: APB1 = 36 MHz, so TIM2–7 run at 72 MHz.
+> [!WARNING]
+> When the APB divider is greater than 1, the timer clock is **×2**. Example: APB1 = 36 MHz, so TIM2–7 run at 72 MHz.
 
 Which bus a peripheral sits on:
 
@@ -208,7 +212,7 @@ Which bus a peripheral sits on:
 | [16] | PLLSRC | PLL input: 0=HSI/2, 1=HSE |
 | [17] | PLLXTPRE | HSE predivider |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral / signal | Pin | Notes |
 | --- | --- | --- | --- |
@@ -217,7 +221,7 @@ Which bus a peripheral sits on:
 | BluePill | BOOT0 jumper | BOOT0 | The jumper selects the boot mode |
 | BluePill | USB 5 V | 5V | Power |
 
-## 💻 Code
+## Code
 
 Read the unique ID, the Flash size, and the current core clock, and print them on the UART to check the clock setup:
 
@@ -271,7 +275,7 @@ uint32_t hpre  = (cfgr & RCC_CFGR_HPRE)  >> 4;     /* AHB divider */
 uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 ```
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1 (read the chip):** Run the code above and print the core clock, Flash size, and unique ID. Check that they are 72 MHz and 64 KB.
 2. **Lab 2 (overclock on purpose):** Change the PLL from ×9 to ×16 and see whether it hangs. That is the relationship between Flash wait states and the clock ceiling.
@@ -332,7 +336,7 @@ Self-test:
 2. The HSE crystal was never soldered. After CSS is enabled, where does the system clock land?
 3. When the APB1 prescaler is 2, is TIM2's counter clock 36 MHz or 72 MHz?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** (chapter 2 memory map, chapter 8 RCC, chapter 30 device electronic signature); **DS5319** (F103C8 datasheet)
 - Previous: [01 Setting Up the Development Environment](01-dev-environment.md) | Next: [03 GPIO and LEDs](03-gpio-and-led.md)

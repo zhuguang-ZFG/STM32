@@ -135,7 +135,7 @@
 | 6. Interrupts | NVIC enabled? Priority? Flag cleared? |
 | 7. Tools | Use a debugger to view registers, a logic analyzer for waveforms, and SWO for prints |
 
-## 5. Common Compile and Link Errors
+## 6. Common Compile and Link Errors
 
 | Error | Cause | Fix |
 | --- | --- | --- |
@@ -148,7 +148,7 @@
 | `call to non-static member...` (C++) | C++ syntax was used in a .c file | Use plain C, or wrap with `extern "C"` |
 | `use of undeclared identifier 'GPIO_PIN_13'` | Did not include `stm32f1xx_hal.h` or the device header | Confirm the device macro (for example `STM32F103xB`) is defined |
 
-## 6. HardFault Location Registers
+## 7. HardFault Location Registers
 
 > After entering `HardFault_Handler`, look at `SCB->CFSR` first, then `SCB->BFAR` / `MMFAR`.
 
@@ -165,7 +165,7 @@
 **Location steps**: ① Read `PC` from the stack frame; ② use `addr2line` or the IDE disassembly to find the source line;
 ③ common root causes: accessing a register before the peripheral clock is enabled (BFSR), array out of bounds (MMFSR), divide by zero / unaligned access (UFSR).
 
-## 7. Debug Tools and Methods
+## 8. Debug Tools and Methods
 
 | Method | Use | When it applies |
 | --- | --- | --- |
@@ -178,7 +178,7 @@
 | GPIO toggle + oscilloscope | Measure function duration | Performance analysis (together with DWT) |
 | `__NOP()` + single-step | Precise timing observation | Microsecond-level timing |
 
-## 8. Asserts and Common Macro Switches
+## 9. Asserts and Common Macro Switches
 
 | Macro / mechanism | Purpose | Notes |
 | --- | --- | --- |

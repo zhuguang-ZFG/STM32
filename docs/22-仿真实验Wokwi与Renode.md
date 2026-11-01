@@ -14,10 +14,11 @@
   <video width="640" controls poster="../assets/video/ch22-sim.png">
     <source src="../assets/video/ch22-sim.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解 2.7 分钟。配音是微软 Edge 在线神经语音「晓晓」（zh-CN-XiaoxiaoNeural），经 edge-tts 调用。edge-tts 大部分源码为 LGPLv3，srt_composer.py 为 MIT；声线模型是微软在线服务，不是开放模型。这里提交的是合成后的 MP4，离线可看。重新生成需要联网。画面由脚本和本仓库 SVG 生成，不是实拍。 视频：<a href="../assets/video/ch22-sim.mp4">MP4</a> · 字幕：<a href="../assets/video/ch22-sim.srt">SRT</a>。由 <code>python3 tools/gen_narrated.py --speak</code> 用 ffmpeg 合成。</sub>
+  <br><sub>▲ 本章讲解视频（2.7 分钟）。<a href="../assets/video/ch22-sim.mp4">MP4</a> · <a href="../assets/video/ch22-sim.srt">字幕</a></sub>
 </p>
 
-**旁白（与字幕、配音同一份稿）**
+<details>
+<summary>旁白文字稿</summary>
 
 1. Wokwi 适合在浏览器里看灯和接线。Renode 适合在命令行里加载程序、看串口字节。口诀：浏览器里看灯，命令行里看字节。两家都代替不了真板的时序。
 2. Wokwi 的 BluePill 上，引脚键名是 A0、C13 这种。A0 接到 PA0，C13 接到 PC13。写成 PA0 这样的芯片名，图会接不上。依据是板子自己的描述文件。
@@ -29,14 +30,16 @@
 8. 口诀：仿真看现象，真板对时序。仿真里的灯会亮，不代表上升沿在真板上也那么干净。结论要回到板子上再确认一次。
 9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
 10. 合上书，三问。Wokwi 里 PC13 的灯还要再外接一颗吗？A0 接到芯片的哪只脚？串口 DMA 收包能在这个模型里验证吗？
+
+</details>
 <!-- /video:ch22 -->
-## 📌 学习目标
+## 学习目标
 
 - [ ] 能在 Wokwi 里打开本仓库的 BluePill 图，并说清引脚别名。
 - [ ] 能用 Renode 加载 `stm32f103.repl` 和一份 ELF。
 - [ ] 知道哪些示例在当前仿真器里能跑完，哪些只能看接线。
 
-## 🧠 先选哪一家
+## 先选哪一家
 
 **结论**：想看灯、按键、PWM、OLED，用 Wokwi。想在终端里单步、看 USART1 字节流，用 Renode。两家都吃你自己编译出来的 ELF，仓库里没有预编译固件。
 
@@ -50,7 +53,7 @@
 
 口诀：**浏览器里看灯，命令行里看字节。**
 
-## 🛠️ Wokwi：图怎么读
+## Wokwi：图怎么读
 
 引脚名字不是 `PA0`，而是 Wokwi 板文件里的键。出处是
 [wokwi-boards 的 `boards/stm32-bluepill/board.json`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json)：
@@ -82,7 +85,7 @@
 
 `wokwi.toml` 里固件路径写成 `build/firmware.elf`。STM32 在 Wokwi 接受 `.elf`、`.hex`、`.bin`。先在 CubeIDE 或 PlatformIO 里编出来，再把 `firmware` / `elf` 两行改成你的真实路径。Wokwi 不负责编译。
 
-## 🛠️ Renode：两条脚本
+## Renode：两条脚本
 
 脚本在 [`sim/renode/`](../sim/renode/)。它们做的事只有四件：建机器、加载官方 F103 平台描述、加载 ELF、启动。
 
@@ -101,7 +104,7 @@ renode -e '$bin=@/path/to/firmware.elf' sim/renode/uart-usart1.resc
 
 uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是否能完整搬完「空闲线 + 环形缓冲」，取决于你装的 Renode 版本。对不上时，先用第 06 章的轮询收发确认字节，再回到 DMA。
 
-## ⚠️ 仿真替不了的事
+## 仿真替不了的事
 
 | 现象 | 原因 | 怎么办 |
 | --- | --- | --- |
@@ -111,7 +114,7 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
 | OLED 一片黑 | 地址写成了 0x78 但零件默认 0x3c | 图里 `i2cAddress` 是 7 位地址 `0x3c`，和 HAL 左移后的 0x78 是同一个从机 |
 | Renode 报平台找不到 | 版本里没有这份 repl | 在 Renode 提示符里 `ls @platforms/cpus` 看实际文件名 |
 
-## 🧪 动手实验
+## 动手实验
 
 1. **只看板载灯**：用 gpio-blink 编出 ELF，丢进 Wokwi。预期：板子上的 PC13 灯按代码节奏闪，PA0 那颗外接灯慢得多。
 2. **按一下**：exti-key 的图里按下按钮（它把 A0 接到 GND）。预期：板载灯翻转。按键在固件里是上拉输入，所以图里不用再画上拉电阻。
@@ -123,11 +126,11 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
 2. 为什么 uart-dma-idle 的图只有一块板子？
 3. Renode 脚本加载的平台文件叫什么？
 
-## 🔗 相关资源
+## 相关资源
 
 - Wokwi：[STM32 Blue Pill](https://docs.wokwi.com/parts/board-stm32-bluepill)、[diagram.json](https://docs.wokwi.com/diagram-format)、[wokwi.toml](https://docs.wokwi.com/vscode/project-config)、[SSD1306 板](https://docs.wokwi.com/parts/board-ssd1306)、[电位器](https://docs.wokwi.com/parts/wokwi-potentiometer)
 - 板脚定义原文：[wokwi-boards `board.json`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json)
 - Renode 平台原文：`platforms/cpus/stm32f103.repl`（`usart1` @ `0x40013800`，`gpioPortC` @ `0x40011000`）
 - 示例索引：[examples/README.md](../examples/README.md)
-- 📱 手机阅读版：[第 22 章 · 仿真实验Wokwi与Renode（公众号图文）](https://mp.weixin.qq.com/s/l4umxuun79wKPeHBQtq6rQ)
+- 手机阅读版：[第 22 章 · 仿真实验Wokwi与Renode（公众号图文）](https://mp.weixin.qq.com/s/l4umxuun79wKPeHBQtq6rQ)
 - 免责声明：这里没有仿真器截图。接线以 JSON 为准，能力以两家文档的支持表为准。

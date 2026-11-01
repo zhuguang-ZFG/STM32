@@ -8,7 +8,7 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams gifs videos book book-pdf book-check check verify clean stats
+.PHONY: assets animations boards diagrams gifs videos book book-pdf book-check check lint-voice verify clean stats
 
 assets: animations boards diagrams gifs videos
 
@@ -42,6 +42,10 @@ videos:
 
 check:
 	$(PY) tools/check_assets.py
+
+# 文风硬门：查 Markdown 里的 AI 味（套话、营销词、判定符号、装饰 emoji）
+lint-voice:
+	$(PY) tools/slop_lint.py
 
 # 一键验证「素材可由脚本复现」：重新生成后检查工作区是否有差异
 verify: assets

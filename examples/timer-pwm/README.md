@@ -36,7 +36,7 @@
 
 **1) 频率与占空比公式**
 
-```
+```text
 fCK_CNT = fCK_PSC / (PSC + 1)                      计数时钟
 f_PWM   = fCK_PSC / ((ARR + 1) × (PSC + 1))        PWM 频率
 Duty    = CCR / (ARR + 1) × 100%                   占空比
@@ -84,7 +84,7 @@ TIM1/TIM8 若不开 MOE，通道使能了也没有波形输出，是最常见的
 ## 五、编译烧录步骤
 
 1. CubeMX 生成 F103C8 工程，配置 TIM3 如上表，覆盖 `Core/Src/main.c`。
-2. Keil `F7` 编译 → `F8` 下载；CubeIDE 🔨 → ▶；PlatformIO `pio run -t upload`。
+2. Keil 按 `F7` 编译，按 `F8` 下载；CubeIDE 先编译再运行；PlatformIO `pio run -t upload`。
 3. 若用 CubeMX 自动生成 TIM 代码，注意别与本文件的 `pwm_init()` 重复初始化。
 
 ## 六、预期现象

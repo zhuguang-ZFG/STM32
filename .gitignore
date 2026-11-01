@@ -14,3 +14,5 @@ stm32-book/dist/
 .playwright-mcp/
 wechat-mp/
 final-videos/
+.temp/
+.tmp-*.js

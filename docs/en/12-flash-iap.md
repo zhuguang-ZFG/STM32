@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch12-iap.png">
     <source src="../../assets/video/ch12-iap.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch12-iap.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch12-iap.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch12-iap.mp4">MP4</a> · <a href="../../assets/video/ch12-iap.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 闪存不能当内存随便改一个字节。通常要先擦，再写。擦写之前必须解锁。写到一半掉电，这一页可能是半新半旧，启动时要能认出来。
 2. F103 的读保护里，选项字节 0xA5 表示不保护。改成别的值之前，先想清楚你还能不能再读出来。改保护之前，先把现有程序备份下来。
@@ -28,9 +29,11 @@
 8. 口诀：0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票；改保护先备份。擦之前为什么必须解锁？因为锁着的闪存会拒绝你，或者你以为写进去了其实没有。
 9. 实验选一页确定不会踩到当前程序的闪存，擦掉、写几个字、再读回来。和程序区叠在一起的实验，做完这章你就没有调试器可以后悔了。
 10. 合上书，三问。擦除之前为什么必须解锁？F103 的 0xA5 表示保护还是不保护？F4 写进 0xCC 之后还能不能恢复调试？
+
+</details>
 <!-- /video:ch12 -->
 
-## Principle and boundary
+## Principle and scope
 
 Page size, half-word programming, and the jump are fixed on STM32F103C8T6. This part is medium-density. Flash is 64 KB, from `0x08000000` up to but not including `0x08010000`, in 1 KB pages, 64 pages. Page numbers run from 0 to 63. Page 63 starts at `0x0800FC00`. `0x0801FC00` is outside this 64 KB. A 2 KB page is the high-density sentence and is void on this part. See [RM0008 Rev 21 chapter 3](#source-rm0008-flash).
 
@@ -58,7 +61,7 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 
 `flash-iap.svg` stays as an auxiliary figure. Do not play it for the page boundaries, the two keys, or the two words. Those are on the static figure.
 
-## Timing or state
+## Timing and state
 
 | Region | Start | Length | Pages | Ends at |
 | --- | --- | --- | --- | --- |
@@ -71,7 +74,7 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 | Half-word | address aligned to 2 bytes | 16 bits | erased state `0xFFFF` | byte programming is void on the C8 |
 | Jump | word at `0x08004800` is the MSP | word at `0x08004804` is reset | `VTOR = 0x08004800` | `VTOR` left at 0 still enters the bootloader |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | What you see | Why | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -83,7 +86,7 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 | The experiment writes `0x0801FC00` | That is the last page of a 128 KB part | The last page on this C8 is `0x0800FC00` | [DS5319](#source-ds5319-swd) | That source already says STM32F103x8 Flash is 64 KB. The 128 KB last page is void on this part |
 | Readout protection is cleared with another family's unprotected key | This part does not use that key | The unprotected value is `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` allows readout. Programming `0xA5` back mass-erases first |
 
-## 📌 Learning goals
+## Learning goals
 
 - [ ] Know the F1 "page" and F4 "sector" Flash layout, the erase/write endurance, and the programming granularity.
 - [ ] Walk the full sequence: unlock (KEY1 / KEY2) → erase → program → lock.
@@ -91,7 +94,7 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 - [ ] Know the critical steps before jumping to the app: disable interrupts, reset the peripherals, set MSP, and set `SCB->VTOR`.
 - [ ] Know the basic flow of a YMODEM / UART update protocol.
 
-## 🧠 Core ideas
+## Core ideas
 
 ### 1. How Flash is organized
 
@@ -106,7 +109,8 @@ The unprotected value remains `0xA5`. Clearing it mass-erases main Flash. See [P
 | Data retention | 20 years at 85°C | 20 years at 85°C |
 | Erase time | Page erase ~20 to 40 ms | Sector erase ~0.4 to 4 s (larger is slower) |
 
-> ⚠️ Flash **can only be erased a whole page or a whole sector at a time**. You cannot change it byte by byte. Changing one byte still means erasing the whole page first. If you log frequently, do wear leveling and spread the writes across different pages.
+> [!WARNING]
+> Flash **can only be erased a whole page or a whole sector at a time**. You cannot change it byte by byte. Changing one byte still means erasing the whole page first. If you log frequently, do wear leveling and spread the writes across different pages.
 
 ### 2. Unlock and the programming sequence
 
@@ -199,7 +203,7 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 3. The device picks the app address, erases the matching pages, and receives **128-byte or 1024-byte** packets. After the CRC16 checks out, it writes Flash and replies `ACK`.
 4. When the transfer ends (an empty packet), it checks the CRC of the whole image, sets the "app is valid" flag, and resets or jumps.
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Use | Pin | Notes |
 | --- | --- | --- | --- |
@@ -209,7 +213,7 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 
 > IAP needs no extra hardware. You only need a serial tool that can send a file (SecureCRT, Xshell, or a host program you write).
 
-## 💻 Code
+## Code
 
 **① Erase and program Flash (F1, by page)**
 
@@ -295,7 +299,7 @@ int main(void)
 
 > The app project has to change the linker script: Flash origin `0x08004800`, and the length reduced to match. At the top of `main()`, set `SCB->VTOR = 0x08004800;`.
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Read and write Flash**: write a 32-bit variable to `0x0800FC00` (the last page) and read it back after reset. Expected: the data is still there after reset. Use that page for an erase-program experiment only when this map is not in use and the program does not already occupy the last page. Once the map is bootloader 16 KB, parameters 2 KB, and application 46 KB, that page belongs to the application.
 2. **A minimal IAP**: the bootloader prints a countdown at power-up. If it receives the character `'U'` during that window, it enters receive mode. Send the compiled app bin over the UART and jump to it. Expected: the device runs the app, and the UART prints the app's heartbeat.
@@ -333,7 +337,7 @@ Self-test:
 2. After you write 0xCC on an F4, can an ST-Link still recover the part?
 3. Why can't a 2 KB parameter region on F4 just sit at the tail of the bootloader's sector?
 
-## 🔗 Related resources
+## Related resources
 
 - RM0008, *STM32F10xxx Reference Manual*, Chapter 3, Embedded Flash memory (page layout, KEY, programming sequence).
 - RM0090, *STM32F4 Reference Manual*, Chapter 3, FLASH (sector layout, SER / SNB, programming width).

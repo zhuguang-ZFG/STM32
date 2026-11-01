@@ -8,8 +8,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-source-list.json"
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch5-12-13-14-15-lock.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-source-list.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json"
 ALLOWED = {
     "ST-facts-restated",
     "MIT",
@@ -49,10 +49,10 @@ class Batch5SourceListTests(unittest.TestCase):
         self.assertEqual(40, len(lock["baseline"]))
         self.assertEqual("2026-10-25-classic-encyclopedia-batch5-12-13-14-15", lock["rubric"])
         expected = (
-            ("12", "docs/12-Flash与IAP升级.md", "docs/en/12-flash-iap.md", "## ⚠️ Pitfalls and troubleshooting"),
-            ("13", "docs/13-CAN总线.md", "docs/en/13-can.md", "## ⚠️ Pitfalls"),
-            ("14", "docs/14-USB.md", "docs/en/14-usb.md", "## ⚠️ Pitfalls"),
-            ("15", "docs/15-FreeRTOS入门.md", "docs/en/15-freertos.md", "## ⚠️ Pitfalls and troubleshooting"),
+            ("12", "docs/12-Flash与IAP升级.md", "docs/en/12-flash-iap.md", "## Pitfalls and troubleshooting"),
+            ("13", "docs/13-CAN总线.md", "docs/en/13-can.md", "## Pitfalls"),
+            ("14", "docs/14-USB.md", "docs/en/14-usb.md", "## Pitfalls"),
+            ("15", "docs/15-FreeRTOS入门.md", "docs/en/15-freertos.md", "## Pitfalls and troubleshooting"),
         )
         for prefix, zh_name, en_name, en_old in expected:
             row = lock["files"][prefix]

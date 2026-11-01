@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch21-boards.png">
     <source src="../../assets/video/ch21-boards.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch21-boards.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch21-boards.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch21-boards.mp4">MP4</a> · <a href="../../assets/video/ch21-boards.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 板子上的丝印会简写，也会印错。引脚以原理图和数据手册为准。上电之前，先在原理图上找到 3.3 伏、地和调试口，不要凭丝印把 5 伏送进 3.3 伏脚。
 2. 最小系统不是一块华丽的板子。电源、去耦、复位、时钟、调试口，这几样在，芯片就能活。板子不工作的时候，先量这几样，再怀疑你的程序。
@@ -29,10 +30,12 @@
 8. 口诀：BOOT0 不要悬空；每一对电源脚都要落地。丝印只是提示，原理图加上数据手册才是依据。
 9. 拿你手里的板子，在原理图上圈出复位、调试口、晶振和板载灯。圈不出来，先别加模块。圈得出来，后面的接线才有参照。
 10. 合上书，三问。BOOT0 悬空时上电可能进哪里？BluePill 板载灯怎样才会亮？丝印和数据手册冲突时听谁的？
+
+</details>
 <!-- /video:ch21 -->
 > **Important:** every picture under [`../../assets/boards/`](../../assets/boards/) is a **vector structure drawing the author made from the official datasheet or schematic**. They label the chip, crystals, regulator, buttons, headers, and typical peripherals. **They are not vendor photographs.** For a real photo, use the official product page or datasheet linked under each board. Generator: [`../../tools/gen_boards.py`](../../tools/gen_boards.py).
 
-## 📌 Goals
+## Learning goals
 
 - [ ] Recognize all seven structure drawings and name each board's MCU, memory, clock, and on-board parts.
 - [ ] Read "how it is powered and how you program it" for each board.
@@ -40,7 +43,7 @@
 - [ ] Say which example chapters fit each board.
 - [ ] Name the five pieces of a minimum-system schematic: crystal, reset, BOOT, decoupling, power.
 
-## 🧠 The boards
+## The boards
 
 | Drawing ([`../../assets/boards/`](../../assets/boards/)) | MCU | Clock / core | Flash / RAM | How you program it |
 | --- | --- | --- | --- | --- |
@@ -162,7 +165,7 @@
 
 > Two reminders: **check the conflict first** (SPI1's PA5~PA7 are also ADC and TIM2 alternates), and **match the voltage and share ground** (HC-05, OLED, and W25Q64 are 3.3 V parts).
 
-## 🛠️ How to read a minimum-system schematic
+## How to read a minimum-system schematic
 
 A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.**
 
@@ -188,7 +191,7 @@ A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.*
 
 **How to read the decoupling:** every `VDD` / `VDDA` pin should have a 100 nF to ground nearby, and the board should have one 10 µF bulk capacitor. **VDDA/VSSA for the ADC need their own filter**, or the samples are noisy.
 
-## 💻 Read the chip's identity
+## Read the chip's identity
 
 Once you know the board, code can print the device id, the Flash size, and the unique id. On F1 that is a practical way to spot a clone or a short-marked part.
 
@@ -221,7 +224,7 @@ void Chip_PrintIdentity(void)
 
 > Redirect `printf` first ([chapter 06](06-uart.md) and [chapter 17](17-debug.md)). If the **Flash size does not match the marking** (a C8 that reports 128 KB), you usually have a compatible chip or a remarked clone. **Device id `0x410` is a medium-density F103.** Any other value belongs in the Device ID table of RM0008.
 
-## ⚠️ Pitfalls
+## Pitfalls
 
 | What you see | Why | Fix |
 | --- | --- | --- |
@@ -235,7 +238,7 @@ void Chip_PrintIdentity(void)
 | The board gets hot | A poor LDO, or a short | Measure current, replace the LDO, find the short |
 | One function will not come out | That pin is already used | Check the pinout and the AF table, then move the function |
 
-## 🧪 Try it
+## Hands-on labs
 
 1. **Print the identity.** Run the snippet. An F103C8 should report id `0x410` and 64 KB.
 2. **Draw a minimum system.** In KiCad, draw the BluePill minimum system (MCU, LDO, crystal, reset, BOOT, decoupling). You should be able to read your own sheet.
@@ -243,7 +246,7 @@ void Chip_PrintIdentity(void)
 4. **Spot a clone (optional).** Compare id, Flash size, and UID on two "F103C8T6" boards from different sellers.
 5. **Boot pins (optional).** Change BOOT0/BOOT1 and download once over UART ISP. You should be able to name the three boot areas.
 
-## 🔗 Further reading
+## Related resources
 
 - Datasheets: DS5319 (STM32F103x8/xB), and the DS for F411CE, F407VG, and F103ZE (pin definitions and electrical limits).
 - Reference manuals: RM0008 chapter 9 (AFIO), chapter 30 (device electronic signature), chapter 3 (boot configuration); the matching chapters of RM0090.

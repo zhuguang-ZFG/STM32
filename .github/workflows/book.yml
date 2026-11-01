@@ -44,6 +44,9 @@ jobs:
           cache: pip
           cache-dependency-path: stm32-book/requirements.txt
 
+      - name: Check plain voice
+        run: python tools/slop_lint.py
+
       - name: Install book dependencies
         run: |
           python -m pip install --upgrade pip

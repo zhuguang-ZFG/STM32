@@ -13,10 +13,11 @@
   <video width="640" controls poster="../../assets/video/ch04-nvic.png">
     <source src="../../assets/video/ch04-nvic.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.5 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch04-nvic.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch04-nvic.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch04-nvic.mp4">MP4</a> · <a href="../../assets/video/ch04-nvic.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 轮询是你不停去问，中断是事情来了敲你的门。主程序可以继续干别的。进了中断服务，办完要清标志，不然门会一直响。
 2. NVIC 这道总闸可以分成三档来记：这路中断开了没有，优先级谁高，有没有挂起还没处理。三档看全，才不会觉得中断时灵时不灵。
@@ -28,8 +29,10 @@
 8. 口诀：总闸分三档；同一编号的脚，EXTI 只能留一个端口。记住这两句，按键中断的大多数玄学都会消失。
 9. 实验用一只按键走下降沿，服务函数里只翻转 PC13。按下能亮、松开不连翻，说明边沿和清标志都做对了。连翻多半是没清，或者抖动没处理。
 10. 合上书，三问。EXTI0 能同时留给 PA0 和 PB0 吗？服务函数里为什么别写阻塞延时？总闸那三档各管什么？
+
+</details>
 <!-- /video:ch04 -->
-## Principle and boundary
+## Principle and scope
 
 The preemption conclusion of this chapter holds for orderable STM32F103C8T6. The clock is the Appendix D cell: SYSCLK = HCLK = 72 MHz. The grouping is the compass and Appendix D cell: HAL defaults to `NVIC_PRIORITYGROUP_4`, 4 preemption bits and 0 subpriority bits. A smaller number is a higher logical priority. Copy those three sentences whole. Do not invent another cycle count.
 
@@ -57,7 +60,7 @@ EXTI lines are shared by pin number: PA0 and PB0 are both EXTI0, so they cannot 
 
 The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` stay side figures. Without playing them, the key figure still shows the failure where preemption was written as the same level.
 
-## Timing or state
+## Timing and state
 
 | Phase | Grouping | EXTI0 preemption | TIM2 preemption | State | Time |
 | --- | --- | --- | --- | --- | --- |
@@ -69,7 +72,7 @@ The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` st
 
 167 ns is the same Appendix D cell, not a different nanosecond figure. Source: [PM0056 section 2.3.7](#source-pm0056-nvic). Clearing `EXTI_PR` is [RM0008](#source-rm0008-exti).
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | Claim this source may support |
 | --- | --- | --- | --- | --- |
@@ -80,14 +83,14 @@ The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` st
 | PA0 already owns EXTI0, and PB0 never fires | One pin number shares one EXTI line | Use a different pin number | [RM0008 EXTICR](#source-rm0008-exti) | PA0 and PB0 are both EXTI0 |
 | EXTI never fires on F1 | The AFIO clock is off, or EXTICR was not written | Enable the AFIO clock, write EXTICR, and clear EXTI_PR | [RM0008 section 9.4.3](#source-rm0008-exti) | This sentence holds only on F1 |
 
-## 📌 Learning goals
+## Learning goals
 - [ ] Say how an interrupt differs from polling, and when each one fits
 - [ ] Know the NVIC rules for preemption priority and subpriority grouping
 - [ ] Follow the hardware path of an interrupt (stack → fetch the vector → ISR → unstack)
 - [ ] Configure an EXTI external interrupt and remember the AFIO clock
 - [ ] Use `volatile` and a critical section, and know why `HAL_Delay` does not belong in an interrupt
 
-## 🧠 Core ideas
+## Core ideas
 
 **Lead with the conclusion: an interrupt replaces "the CPU keeps asking" with "the peripheral speaks up". The cost is that you have to handle priority, shared variables, and time spent in the handler.**
 
@@ -161,14 +164,14 @@ Polling versus interrupt versus EXTI:
 | `__DSB()` | Data synchronization barrier; memory accesses finish before you continue |
 | No `HAL_Delay` in an interrupt | It depends on the SysTick interrupt. If that interrupt is masked at the same or a higher level, the delay waits forever |
 
-## 🛠️ Hardware and wiring
+## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |
 | BluePill | Button (EXTI) | PA0 | The other side to GND; falling-edge trigger |
 | BluePill | LED | PC13 | Toggled inside the interrupt path |
 
-## 💻 Code
+## Code
 
 ```c
 /* exti_key.c —— PA0 button external interrupt toggles PC13 (flag + debounce in the main loop) */
@@ -255,7 +258,7 @@ __enable_irq();           /* unmask all interrupts */
 
 The full project is in [`examples/exti-key/`](../../examples/exti-key/).
 
-## 🧪 Hands-on labs
+## Hands-on labs
 
 1. **Lab 1:** A falling edge on the PA0 button toggles PC13. One press, one on or off.
 2. **Lab 2:** Remove the software debounce and press quickly. Watch the extra toggles. Put the debounce back and compare.
@@ -326,7 +329,7 @@ Self-test:
 2. PA0 already has a button interrupt. Can PB0 still take an EXTI falling edge?
 3. Does a larger BASEPRI threshold mean higher priority, or the opposite?
 
-## 🔗 Related resources
+## Related resources
 
 - Official manuals: **RM0008** chapter 10 (interrupts and events, EXTI), sections 9.4.3 through 9.4.6 (AFIO_EXTICR). Section 9.2.7 is GPIOx_LCKR, not EXTICR. Stacking is [PM0056 section 2.3.7](#source-pm0056-nvic)
 - Previous: [03 GPIO and LEDs](03-gpio-and-led.md) | Next: [05 Timers and PWM](05-timer-pwm.md)

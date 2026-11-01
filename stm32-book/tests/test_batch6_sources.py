@@ -8,8 +8,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json"
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-source-list.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json"
 ALLOWED = {
     "ST-facts-restated",
     "MIT",
@@ -72,7 +72,7 @@ class Batch6SourceListTests(unittest.TestCase):
             self.assertEqual(expects_old, row["expects_old_pitfall"])
             self.assertEqual(expects_old, row["zh_old_pitfall"])
             self.assertEqual(expects_old, row["en_old_pitfall"])
-            self.assertEqual("## ⚠️ Pitfalls and troubleshooting", row["en_old_heading"])
+            self.assertEqual("## Pitfalls and troubleshooting", row["en_old_heading"])
 
     def test_source_list_keeps_the_license_gate(self) -> None:
         payload = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))

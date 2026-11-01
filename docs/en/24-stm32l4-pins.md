@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch24-l4-pins.png">
     <source src="../../assets/video/ch24-l4-pins.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch24-l4-pins.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch24-l4-pins.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch24-l4-pins.mp4">MP4</a> · <a href="../../assets/video/ch24-l4-pins.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. 这一章的图是 STM32L476 的 64 脚封装，Nucleo-L476RG 用的就是这一类。脚序对照 DS10198 第 11 版的图 16，并和表 16 对过。
 2. 第 1 脚是 VBAT，旁边第 2 脚才是 PC13。高速晶振换到了 PH0 和 PH1，不再是 F1 上的 PD0、PD1。抄原理图时这两只最容易接错。
@@ -29,14 +30,16 @@
 8. 口诀：L4 第 1 脚是 VBAT，USB 另有供电脚。真睡在 Stop 2。封面的纳安是芯片，不是整块板。
 9. 封面写的是带浮点的 Cortex-M4，最高 80 兆，供电大约 1.71 伏到 3.6 伏。不要把 F103 的 72 兆时钟树原样搬过来，等待周期和外设时钟都会错。
 10. 合上书，三问。第 1 脚叫什么？PA11 同时被哪两类外设看上？封面上的纳安能不能当成你这块开发板的电流？
+
+</details>
 <!-- /video:ch24 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] Point at VBAT, VDDUSB, BOOT0, and SWD on the LQFP64 and give each a pin number.
 - [ ] List pins for USART1, I2C1, SPI1, CAN1, and OTG_FS, and know that PA11/PA12 are claimed twice.
 - [ ] Remember that the Stop 2 / Shutdown currents on the cover are family typicals, useful next to an F1, not a measurement of your board.
 
-## 🧠 Which part this is
+## Which part this is
 
 The drawing is **STM32L476Rx LQFP64** (that is the package on a Nucleo-L476RG). Source: **DS10198 Rev 11**.
 
@@ -54,7 +57,7 @@ Those currents are family typicals printed on the datasheet cover. This repo did
 
 Motto: **L4 really sleeps in Stop 2. The nanoamps on the cover are the chip, not the whole board.**
 
-## 🛠️ Versus F1 / F4
+## Versus F1 / F4
 
 | Point | F103 LQFP48 | L476RG LQFP64 (Figure 16) |
 | --- | --- | --- |
@@ -69,7 +72,7 @@ Motto: **L4 really sleeps in Stop 2. The nanoamps on the cover are the chip, not
 
 F4 also has OTG_FS and a dedicated USB supply pin, so on that point L4 looks more like F4 than like an F103. The core and the low-power ladder differ on both sides: L4 is an M4F, Stop 2 stops more clocks, and you reconfigure the system clock after wake-up. That is the same rule as [chapter 16](16-low-power.md).
 
-## 🛠️ Alternate functions (LQFP64 rows of Table 16)
+## Alternate functions (LQFP64 rows of Table 16)
 
 | Function | Pins | Pin numbers | Names you can match in Table 16 |
 | --- | --- | --- | --- |
@@ -84,7 +87,7 @@ F4 also has OTG_FS and a dedicated USB supply pin, so on that point L4 looks mor
 
 PA11/PA12 appear under both CAN1 and OTG_FS. Only one function at a time. Same class of trap as USB versus CAN on an F103. If you need both, move CAN to PB8/PB9.
 
-## ⚠️ When you copy an F1 project
+## When you copy an F1 project
 
 | What you see | Why | Fix |
 | --- | --- | --- |
@@ -93,7 +96,7 @@ PA11/PA12 appear under both CAN1 and OTG_FS. Only one function at a time. Same c
 | UART is garbage after Stop 2 | The system clock is back at the default | Reconfigure the clock, then enable the USART |
 | You treat the cover's 1.1 µA as the whole board | That is the chip's Stop 2 typical | Count the LED, the debugger, and the LDO separately |
 
-## 🧪 Try it
+## Hands-on labs
 
 1. On the drawing, mark pins 44, 45, 48, and 60 and write the function next to each.
 2. Open DS10198 Table 16 and confirm that the PB9 row lists both I2C1_SDA and CAN1_TX.
@@ -105,7 +108,7 @@ Self-test:
 2. Is the Stop 2 cover typical 1.1 µA or 1.1 mA?
 3. Is VDDUSB a GPIO?
 
-## 🔗 Further reading
+## Related resources
 
 - DS10198 Rev 11: electrical and low-power typicals on the cover, Figure 16, Table 16.
 - Reconfigure the clock after a low-power wake: [16 Low-power design](16-low-power.md).
