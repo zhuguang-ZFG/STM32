@@ -4,16 +4,16 @@
 
 > English: [English edition](docs/en/README.md)
 
-**像查手册一样查知识，像看动画一样学原理。**
+**一本从零基础讲到能做项目的 STM32 中文教材。**
 
-面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 25 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 25 个原理动画 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 24 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-29_篇-60a5fa?style=flat-square)](docs/)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
 [![animations](https://img.shields.io/badge/SVG_动画-25_个-22d3ee?style=flat-square)](assets/animations/)
 [![boards](https://img.shields.io/badge/板卡与引脚图-10_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
-[![gif](https://img.shields.io/badge/教学_GIF-6_个-f87171?style=flat-square)](assets/gif/)
+[![gif](https://img.shields.io/badge/教学_GIF-24_个-f87171?style=flat-square)](assets/gif/)
 [![examples](https://img.shields.io/badge/可编译示例-14_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
@@ -28,13 +28,13 @@
 
 ---
 
-> ### 📣 公众号连载版
+> ### 公众号连载版
 >
 > 本教程正在微信公众号「**SIAI小宇宙**」同步连载：与本仓库相同的 **00–28 共 29 章**图文 + 每章配套讲解视频 + 速查表，
 > 手机随时翻。微信搜索「**SIAI小宇宙**」或扫文末二维码关注，关注后回复「**资料**」直达本仓库。
 >
 > 另外在公众号上单独发了一套「**按报错原文查**」竖版图解（No target / Flash 下载失败 /
-> 串口乱码 / 烧完变砖 等），手机上照着现象查比翻 Markdown 快——入口见下面
+> 串口乱码 / 烧完变砖 等），入口见下面
 > [「卡住了？按报错原文查」](#卡住了按报错原文查)表格的「手机版图解」列。
 >
 > （图文版针对手机阅读重新排版，动画与代码块已适配微信公众号渲染。）
@@ -45,27 +45,27 @@
 
 ## 这个仓库想解决什么问题
 
-网上 STM32 教程很多，但普遍有三个问题：
+网上不少 STM32 教程有下面三个问题：
 
 | 问题 | 本仓库的做法 |
 | --- | --- |
 | **只有文字，看不见硬件在干什么** | 每个外设配一张**会动的原理动画**（SVG + CSS 动画，GitHub 页面直接播放） |
 | **不知道板子长什么样、引脚怎么接** | 自绘的**板卡实物结构图** + 全引脚标注图 + 外设接线总览 |
-| **示例代码抄了跑不起来** | 每个示例都是完整可编译的 HAL 代码 + CubeMX 配置要点 + 常见坑 |
+| **示例代码抄了跑不起来** | 每个示例都能完整编译（HAL 为主，`spl-f1-blink` 用 SPL），README 写明接线、配置和排错方法 |
 
-> 📌 **诚实声明**：本仓库所有插图都是**作者用代码自绘的矢量图（SVG）与程序生成的光栅动画（GIF）**，
+> **诚实声明**：除 `assets/photos/` 的两张 CC0 实拍外，本仓库插图都是**作者用代码自绘的矢量图（SVG）与程序生成的光栅动画（GIF）**，
 > 不是厂商实拍照片。需要看实拍照片与官方原理图，请通过[第 21 章](docs/21-原理图与实物图鉴.md)里的官方链接查看。
 
 ## 卡住了？按报错原文查
 
-新手跑不起来的 90% 都落在这几类。找到你屏幕上那句原话：
+找到你屏幕上那句原话：
 
 | 你看到的现象 | 真正的原因 | 看这里 | 手机版图解 |
 | --- | --- | --- | --- |
-| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) | [📱 三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
-| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
-| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [📱 三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
-| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [📱 三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
+| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电） | [01 开发环境搭建](docs/01-开发环境搭建.md) | [三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
+| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
+| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
+| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
 | 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [17 调试与性能优化](docs/17-调试与性能优化.md) | — |
 | I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [07 I2C 总线](docs/07-I2C总线.md) | — |
 | 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [04 中断与 NVIC](docs/04-中断与NVIC.md) | — |
@@ -92,7 +92,7 @@
 | 想自己改图 / 生成素材 | [tools/](tools/)（纯 Python，零依赖） |
 | 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
 
-> 🔗 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
+> 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
 
 ## 动画演示（GitHub 页面直接播放）
 
@@ -111,7 +111,7 @@
 </tr>
 </table>
 
-完整清单（25 个 SVG 动画）见 [assets/README.md](assets/README.md)。下面 6 个是标准库生成的教学 GIF。`assets/gif/` 里另有 20 个 `*-zh.gif`，由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，不是这 6 张的译文：
+完整清单（25 个 SVG 动画）见 [assets/README.md](assets/README.md)。下面是 24 个教学 GIF 里的 6 个，都用标准库生成。`assets/gif/` 里另有 24 个 `*-zh.gif`，由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，不是教学 GIF 的译文：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -160,7 +160,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 产出：能独立调通 5 个外设       产出：能读懂时序图与手册         产出：能交付一个完整产品原型
 ```
 
-每章文末都有「动手实验」和自测清单，做完就算过关。详细说明见
+每章都有「动手实验」和自测清单，做完就算过关。详细说明见
 [第 0 章 · 如何学习 STM32](docs/00-如何学习STM32.md)。
 
 
@@ -244,7 +244,7 @@ python3 tools/gen_boards.py
 python3 tools/gen_pinouts.py
 python3 tools/gen_diagrams.py
 
-# 生成 6 个光栅 GIF（内置 5×7 点阵字体 + 手写 GIF89a/LZW 编码器）
+# 生成 24 个光栅 GIF（内置 5×7 点阵字体 + 手写 GIF89a/LZW 编码器）
 python3 tools/gen_gifs.py
 
 # 自检：SVG 是否合法 XML、GIF 解码回来是否与源帧逐像素一致
@@ -252,8 +252,8 @@ python3 tools/check_assets.py
 ```
 
 `tools/minigfx.py` 里的 GIF 编码器支持**帧间差分 + 透明索引**（未变化的像素不重复编码），
-所以 24 帧的 480×300 动画只有 7.5 KB。`tools/check_assets.py` 自带 LZW 解码器，
-会把生成的 GIF 解回像素与原帧逐字节比对，避免「图能生成但打不开」的尴尬。
+所以 24 帧的 480×300 `led-blink.gif` 只有约 8 KB。`tools/check_assets.py` 自带 LZW 解码器，
+会把生成的 GIF 解回像素与原帧逐字节比对。
 
 ## 贡献指南
 
@@ -277,7 +277,7 @@ python3 tools/check_assets.py
 - [x] 29 章知识文档 + 写作规范
 - [x] 25 个 SVG 原理动画（清单见 [assets/README.md](assets/README.md)，含 G0 启动与 SWD 恢复）
 - [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
-- [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
+- [x] 24 个零依赖生成的教学 GIF + 素材自检工具
 - [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
 - [x] 第 00–28 章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
@@ -287,7 +287,7 @@ python3 tools/check_assets.py
 ---
 
 <div align="center">
-<sub>如果这个仓库帮你少踩了一个坑，欢迎点个 ⭐ Star —— 这是持续更新的最大动力。</sub>
+<sub>如果这个仓库对你有用，欢迎点个 Star。</sub>
 <br><br>
 <b>持续更新中 · 最后更新见 commit 记录</b>
 </div>

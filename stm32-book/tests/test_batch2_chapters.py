@@ -10,9 +10,11 @@ import subprocess
 import unittest
 from pathlib import Path
 
+from doc_sections import blocks as four_blocks, section
+
 ROOT = Path(__file__).resolve().parents[2]
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch2-04-06-lock.json"
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch2-04-06-source-list.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch2-04-06-lock.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch2-04-06-source-list.json"
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
@@ -181,16 +183,16 @@ class Batch2NvicChapterTests(unittest.TestCase):
     def test_nvic_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "04-中断与NVIC.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "04-interrupts-nvic.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         self.assertNotIn("0x50", zh)
         self.assertNotIn("0x50", en)
         self.assertNotIn("第 9.2.7 节（AFIO_EXTICR）", zh)
@@ -220,16 +222,16 @@ class Batch2NvicChapterTests(unittest.TestCase):
         self.assertIn("../../assets/gif/nvic-preempt.gif", en)
         self.assertIn("../assets/animations/nvic-interrupt-flow.svg", zh)
         self.assertIn("../assets/diagrams/interrupt-priority.svg", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-04-exception-stack.svg"), zh_key.index("nvic-preempt.gif"))
         self.assertLess(en_key.index("sample-04-exception-stack.svg"), en_key.index("nvic-preempt.gif"))
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
         self.assertNotIn("schematic", en_key.lower())
-        zh_cards = zh.split("## 坑与出处卡", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_cards = en.split("## Pitfalls and source cards", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_cards = section(zh, "## 常见坑与出处")
+        en_cards = section(en, "## Pitfalls and sources")
         for cards in (zh_cards, en_cards):
             self.assertGreaterEqual(cards.count("#source-pm0056-nvic"), 4)
             self.assertGreaterEqual(cards.count("#source-rm0008-exti"), 2)
@@ -238,19 +240,19 @@ class Batch2NvicChapterTests(unittest.TestCase):
             self.assertNotIn("10 ms", cards)
             self.assertNotIn("20 ms", cards)
         for start, end in (
-            ("## 原理与边界", "## 关键插图"),
-            ("## 关键插图", "## 时序或状态"),
-            ("## 时序或状态", "## 坑与出处卡"),
-            ("## 坑与出处卡", "## 📌 学习目标"),
+            ("## 原理与适用范围", "## 关键插图"),
+            ("## 关键插图", "## 时序与状态"),
+            ("## 时序与状态", "## 常见坑与出处"),
+            ("## 常见坑与出处", "## 学习目标"),
         ):
-            self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
+            self.assertIn("#source-", section(zh, start))
         for start, end in (
-            ("## Principle and boundary", "## Key figures"),
-            ("## Key figures", "## Timing or state"),
-            ("## Timing or state", "## Pitfalls and source cards"),
-            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+            ("## Principle and scope", "## Key figures"),
+            ("## Key figures", "## Timing and state"),
+            ("## Timing and state", "## Pitfalls and sources"),
+            ("## Pitfalls and sources", "## Learning goals"),
         ):
-            self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
+            self.assertIn("#source-", section(en, start))
         listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}
         scopes = {
@@ -297,14 +299,14 @@ class Batch2UartChapterTests(unittest.TestCase):
     def test_uart_chapters_fix_the_brr_cell_and_keep_four_blocks(self) -> None:
         zh = (ROOT / "docs" / "06-串口UART.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "06-uart.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 🧠 核心原理", zh)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## 核心原理", zh)
         self.assertNotIn("F1/F4 支持 OVER8", zh)
         self.assertNotIn("F1 and F4 have the OVER8 bit", en)
         self.assertNotIn("8 × 115200", zh)
@@ -354,8 +356,8 @@ class Batch2UartChapterTests(unittest.TestCase):
         self.assertIn("../../assets/gif/uart-idle.gif", en)
         self.assertIn("../assets/animations/uart-frame.svg", zh)
         self.assertIn("../assets/gif/uart-bits.gif", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-06-uart-frame.svg"), zh_key.index("uart-idle.gif"))
         self.assertLess(en_key.index("sample-06-uart-frame.svg"), en_key.index("uart-idle.gif"))
         self.assertIn("自绘", zh_key)
@@ -365,27 +367,27 @@ class Batch2UartChapterTests(unittest.TestCase):
         for needle in ("8", "9", "10"):
             self.assertIn(needle, zh_key)
             self.assertIn(needle, en_key)
-        zh_cards = zh.split("## 坑与出处卡", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_cards = en.split("## Pitfalls and source cards", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_cards = section(zh, "## 常见坑与出处")
+        en_cards = section(en, "## Pitfalls and sources")
         for cards in (zh_cards, en_cards):
             self.assertGreaterEqual(cards.count("#source-rm0008-usart"), 4)
             self.assertEqual(1, cards.count("#source-stm32cube-f4"))
             self.assertEqual(1, cards.count("#source-st-uart-idle"))
             self.assertEqual(1, cards.count("#source-majerle-uart"))
         for start, end in (
-            ("## 原理与边界", "## 关键插图"),
-            ("## 关键插图", "## 时序或状态"),
-            ("## 时序或状态", "## 坑与出处卡"),
-            ("## 坑与出处卡", "## 📌 学习目标"),
+            ("## 原理与适用范围", "## 关键插图"),
+            ("## 关键插图", "## 时序与状态"),
+            ("## 时序与状态", "## 常见坑与出处"),
+            ("## 常见坑与出处", "## 学习目标"),
         ):
-            self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
+            self.assertIn("#source-", section(zh, start))
         for start, end in (
-            ("## Principle and boundary", "## Key figures"),
-            ("## Key figures", "## Timing or state"),
-            ("## Timing or state", "## Pitfalls and source cards"),
-            ("## Pitfalls and source cards", "## 📌 Learning goals"),
+            ("## Principle and scope", "## Key figures"),
+            ("## Key figures", "## Timing and state"),
+            ("## Timing and state", "## Pitfalls and sources"),
+            ("## Pitfalls and sources", "## Learning goals"),
         ):
-            self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
+            self.assertIn("#source-", section(en, start))
         listed = json.loads(SOURCE_LIST.read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}
         scopes = {

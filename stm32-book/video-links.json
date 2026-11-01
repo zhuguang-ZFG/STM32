@@ -1,0 +1,4 @@
+{
+  "about": "各章「推荐视频 / Recommended videos」的唯一数据来源。每条都在 verified_at 那天用平台自己的接口打开过（B 站 view 与 pagelist 接口，YouTube oEmbed）。改完运行 python3 tools/gen_video_links.py 重写章节；视频不进 manifest 的 sources。",
+  "chapters": {}
+}

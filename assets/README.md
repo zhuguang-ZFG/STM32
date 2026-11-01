@@ -132,14 +132,15 @@
 | `boot0-low.gif` | 第 44 脚为 0，探针接在第 34 脚和第 37 脚，目标出现 | 由 `tools/gen_gifs.py` 生成。辅图。BOOT0 为 1 和先改优化等级只在静态主图上 |
 | `one-slot.gif` | 16 KB、2 KB 和一张 0xB800 依次填到 0x08010000 为止 | 由 `tools/gen_gifs.py` 生成。辅图。第二张 APP 和 65536 字节只在静态主图上 |
 
-> ⚠️ 上面 24 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
+> [!WARNING]
+> 上面 24 张 GIF 的文字只能是 ASCII：`tools/minigfx.py` 内置的是 5×7 点阵英文字形。
 > 用 `python3 tools/gen_gifs.py` 重新生成，并用 `python3 tools/check_assets.py` 解码回像素逐字节校验。
 
 ### 公众号动图 `*-zh.gif`
 
-同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
+同目录还有 24 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
-文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 5 张 SVG 还没有对应动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`。
+文件名规则是 `<动画 svg 的主文件名>-zh.gif`。只有 `i2c-transaction.svg` 还没有对应动图。
 
 ## 六、章节讲解 `assets/video/`
 

@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-sample-source-list.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-source-list.json"
 ALLOWED = {
     "ST-facts-restated",
     "MIT",

@@ -10,9 +10,11 @@ import subprocess
 import unittest
 from pathlib import Path
 
+from doc_sections import blocks as four_blocks, section
+
 ROOT = Path(__file__).resolve().parents[2]
-LOCK = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch3-02-05-08-09-lock.json"
-SOURCE_LIST = ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch3-02-05-08-09-source-list.json"
+LOCK = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch3-02-05-08-09-lock.json"
+SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch3-02-05-08-09-source-list.json"
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
@@ -240,16 +242,16 @@ class Batch3ClockChapterTests(unittest.TestCase):
     def test_clock_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "02-芯片选型与存储器时钟.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "02-part-and-clock.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         self.assertNotIn("RM0008 第 8.3.2 节", zh)
         self.assertNotIn("RM0008 section 8.3.2", en)
         self.assertIn("7.3.2", zh)
@@ -276,8 +278,8 @@ class Batch3ClockChapterTests(unittest.TestCase):
                 "#source-ds5319-clock",
             ):
                 self.assertIn(token, text)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             self.assertNotIn("21 µs", blocks)
             self.assertNotIn("21 us", blocks)
@@ -287,16 +289,16 @@ class Batch3ClockChapterTests(unittest.TestCase):
         self.assertIn("../assets/gif/clock-css.gif", zh)
         self.assertIn("../../assets/gif/clock-css.gif", en)
         self.assertIn("../assets/animations/clock-tree.svg", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-02-clock-tree.svg"), zh_key.index("clock-css.gif"))
         self.assertLess(en_key.index("sample-02-clock-tree.svg"), en_key.index("clock-css.gif"))
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
         self.assertNotIn("schematic", en_key.lower())
-        zh_cards = zh.split("## 坑与出处卡", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_cards = en.split("## Pitfalls and source cards", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_cards = section(zh, "## 常见坑与出处")
+        en_cards = section(en, "## Pitfalls and sources")
         for cards in (zh_cards, en_cards):
             self.assertGreaterEqual(cards.count("#source-rm0008-rcc"), 6)
         self.assertIn("不是数据手册", zh)
@@ -342,18 +344,18 @@ class Batch3PwmChapterTests(unittest.TestCase):
     def test_pwm_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "05-定时器与PWM.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "05-timer-pwm.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         self.assertNotIn("16/32", zh)
         self.assertNotIn("16/32", en)
         self.assertNotIn("PWM_ARR / 2", zh)
         self.assertNotIn("PWM_ARR / 2", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         self.assertNotIn("0x10", zh_blocks)
         self.assertNotIn("0x10", en_blocks)
         for text in (zh, en):
@@ -380,8 +382,8 @@ class Batch3PwmChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-05-pwm-1khz.svg", en)
         self.assertIn("../assets/gif/pwm-1khz.gif", zh)
         self.assertIn("../../assets/gif/pwm-1khz.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-05-pwm-1khz.svg"), zh_key.index("pwm-1khz.gif"))
         self.assertLess(en_key.index("sample-05-pwm-1khz.svg"), en_key.index("pwm-1khz.gif"))
         self.assertIn("自绘", zh_key)
@@ -430,12 +432,12 @@ class Batch3SpiChapterTests(unittest.TestCase):
     def test_spi_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "08-SPI总线.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "08-spi.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         for text in (zh, en):
             for token in (
                 "010",
@@ -469,8 +471,8 @@ class Batch3SpiChapterTests(unittest.TestCase):
         self.assertIn("第 17 脚", zh)
         self.assertIn("pin 14", en)
         self.assertIn("pin 17", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             self.assertNotIn("0x3A", blocks)
             self.assertNotIn("4.7", blocks)
@@ -480,8 +482,8 @@ class Batch3SpiChapterTests(unittest.TestCase):
         self.assertIn("../assets/gif/spi-jedec.gif", zh)
         self.assertIn("../../assets/gif/spi-jedec.gif", en)
         self.assertIn("../assets/animations/spi-transfer.svg", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-08-spi-jedec.svg"), zh_key.index("spi-jedec.gif"))
         self.assertLess(en_key.index("sample-08-spi-jedec.svg"), en_key.index("spi-jedec.gif"))
         self.assertIn("自绘", zh_key)
@@ -525,12 +527,12 @@ class Batch3AdcChapterTests(unittest.TestCase):
     def test_adc_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
         zh = (ROOT / "docs" / "09-ADC与DAC.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "09-adc-dac.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and boundary", "## Key figures", "## Timing or state", "## Pitfalls and source cards"):
+        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         self.assertNotIn("F1 只有 1 个 ADC", zh)
         self.assertNotIn("only one ADC", en)
         self.assertNotIn("约 VREF/2", zh)
@@ -565,8 +567,8 @@ class Batch3AdcChapterTests(unittest.TestCase):
         self.assertIn("第 10 脚", zh)
         self.assertIn("pin 9", en)
         self.assertIn("pin 10", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         self.assertNotIn("CNDTR", zh_blocks)
         self.assertNotIn("CNDTR", en_blocks)
         self.assertIn("../assets/diagrams/sample-09-adc-sar.svg", zh)
@@ -575,8 +577,8 @@ class Batch3AdcChapterTests(unittest.TestCase):
         self.assertIn("../../assets/gif/adc-sample.gif", en)
         self.assertIn("../assets/animations/adc-sar.svg", zh)
         self.assertIn("../assets/gif/sar-adc.gif", zh)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-09-adc-sar.svg"), zh_key.index("adc-sample.gif"))
         self.assertLess(en_key.index("sample-09-adc-sar.svg"), en_key.index("adc-sample.gif"))
         self.assertIn("自绘", zh_key)

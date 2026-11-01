@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch14-usb.png">
     <source src="../../assets/video/ch14-usb.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 2.6 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch14-usb.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch14-usb.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch14-usb.mp4">MP4</a> · <a href="../../assets/video/ch14-usb.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. F103 的 USB 全速要 48 兆时钟。常见做法是 PLL 先到 72 兆，再除以 1.5。时钟差一点，主机会在读描述符时失败，设备管理器里就是未知设备。
 2. 全速设备用 D+ 上的 1.5 千欧上拉告诉主机：我是全速。BluePill 上这颗电阻常常已经在了。没有上拉，主机根本不知道你插上来了。
@@ -29,9 +30,313 @@
 8. 示例用的厂商号是 0x1209，产品号只是实验占位，并没有在 pid.codes 注册。可以在自己的电脑上认设备，不要把这组号印到准备送人的产品上。
 9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
 10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
+
+</details>
 <!-- /video:ch14 -->
 
-## Principle and boundary
+## Learning goals
+
+Before this chapter: you need the clock tree from chapter 02 (how the PLL multiplies up to 72 MHz), alternate functions from chapter 03, and the NVIC from chapter 04; UART transmit and receive from chapter 06 and DMA from chapter 10 come up again where they are used. If binary, hexadecimal, and "bytes" are unfamiliar, read the "zero-background primer" in chapter 00 first.
+
+- [ ] Name the three USB speeds, which one the STM32F103C8T6's USB peripheral runs at, and whether it can be a host
+- [ ] Say what kind of data each of the four transfer types suits, and that bulk and interrupt endpoints top out at 64 bytes per packet at full speed
+- [ ] Draw the device, configuration, interface, and endpoint descriptors as a tree, and work out the 67-byte total of the example's configuration set
+- [ ] List the seven enumeration steps in order, and tell which step failed when you see "device descriptor request failed"
+- [ ] Get a 48 MHz USB clock from a 72 MHz PLL, and explain the difference between writing 0 and 1 to `USBPRE`
+- [ ] Build a CDC virtual COM port with CubeMX's USB_DEVICE middleware, and check for `USBD_BUSY` when echoing
+
+## Core ideas
+
+**In one sentence: every USB transfer is started by the host, and the device only answers. Once plugged in, the host first reads what the device is through a fixed series of questions (enumeration), and only then moves data through the endpoints the descriptors list; on the F103 all of this depends on an accurate 48 MHz USB clock and a pull-up resistor on D+.**
+
+### An analogy first
+
+Think of the USB host as a hotel front desk and the device as a guest who has just walked in. The guest cannot go looking for a room; it can only wait for the desk to ask:
+
+- The guest steps up and rings the bell (the D+ pull-up); only then does the desk know someone is there.
+- The desk hands over a temporary number, 0, and asks the most urgent question first: "how many things can you take at once?" (the first 8 bytes of the device descriptor).
+- Then it issues a real room number (set address) and asks for the whole registration form: who you are, how many rooms you need, and what each room is for (the device descriptor, the configuration descriptor, and the interfaces and endpoints under it).
+- When registration is done, the desk says "check in" (set configuration), and only then can the guest use the rooms.
+
+That is as far as the analogy goes. A real front desk never forgets what it asked, and neither does a USB host; but if one length on the guest's form is wrong, the desk stops at that step, and all that is left in Device Manager is an "unknown device". The host asks quickly and every step has a timeout, so the device's clock has to be accurate.
+
+### 1. USB speeds and the STM32 peripherals
+
+USB 2.0 has three speeds. A device puts a pull-up resistor on D+ or D−, and the host tells low speed from full speed by which line is pulled high; a high-speed device connects at full speed first and then negotiates up with the host ([USB 2.0 specification](#source-usb20) chapter 7).
+
+| Speed | Bit rate | On STM32 |
+| --- | --- | --- |
+| Low Speed | 1.5 Mbit/s | used by older mice and keyboards; the STM32 peripherals in this book do not run at it |
+| Full Speed | 12 Mbit/s | the USB device peripheral of F0/F1/F3/L4, and OTG_FS on F4/F7/H7 |
+| High Speed | 480 Mbit/s | only OTG_HS, with an external PHY on the ULPI interface, or on parts with a built-in high-speed PHY |
+
+| Series | USB peripheral | What it can do | Manual |
+| --- | --- | --- | --- |
+| STM32F103 | USB full-speed device interface | device only, never a host; 1 to 8 configurable endpoints | RM0008 Rev 21 chapter 23 |
+| STM32F405/F407 | OTG_FS and OTG_HS | device, host, and OTG; OTG_FS has a built-in full-speed PHY, OTG_HS needs an external ULPI PHY for high speed | RM0090 Rev 22 chapters 34 and 35 |
+
+> [!WARNING]
+> On the F103, USB and CAN share one 512-byte SRAM, so only one of them can be in use at a time (RM0008 Rev 21 section 23.2). The BluePill's on-board USB connector is on PA11/PA12, and CAN's reset-default pins are those same two; chapter 13 has already moved CAN to PB8/PB9.
+
+### 2. Four transfer types
+
+USB splits transfers into four types by the nature of the data. The last column is the most bytes one packet can carry at full speed ([USB 2.0 specification](#source-usb20) chapter 5):
+
+| Type | Behavior | Typical use | Full-speed packet limit |
+| --- | --- | --- | --- |
+| Control | every device has it, on endpoint 0; retried on error | enumeration, configuration, class requests | 8, 16, 32, or 64 bytes |
+| Bulk | retried on error, no bandwidth guarantee, sends more when the bus is idle | CDC virtual COM ports, flash drives, printers | 64 bytes |
+| Interrupt | retried on error, the host polls at a fixed interval, latency has an upper bound | keyboards, mice, small status reports | 64 bytes |
+| Isochronous | guaranteed bandwidth, not retried on error: what is lost is lost | audio, cameras | 1023 bytes |
+
+An "interrupt transfer" is not an MCU interrupt: the host still does the asking, only it asks on a schedule set by `bInterval` in the descriptor, at most once per 1 ms. So one interrupt endpoint at full speed carries at most 64 × 1000 = 64,000 bytes per second. Bulk has no interval limit: at full speed one frame (1 ms) holds at most 19 packets of 64 bytes, so the specification's ceiling is about 1.2 MB/s; what you actually get depends on the host and the firmware.
+
+### 3. Endpoints
+
+An endpoint is a transmit or receive buffer inside the device, which the host finds by "address + endpoint number + direction". Endpoint 0 is the bidirectional control endpoint every device must have; every other endpoint goes in one direction only. Directions are named from the host's side: IN is device to host, OUT is host to device.
+
+| Endpoint | Direction | Use |
+| --- | --- | --- |
+| EP0 | IN and OUT | control endpoint, enumeration and standard requests |
+| EPn IN | device → host | sending data up, such as CDC transmit |
+| EPn OUT | host → device | receiving data, such as CDC receive |
+
+The F103's USB peripheral can have 1 to 8 endpoints, and the buffers of all of them live in one 512-byte packet buffer memory (PMA), laid out by the buffer descriptor table `BTABLE` (RM0008 Rev 21 sections 23.2 and 23.3). A CubeMX project lays it out for you; when you add endpoints yourself, check that they fit together.
+
+### 4. Descriptors: a tree
+
+The host learns about a device by reading its descriptors. A descriptor is a string of bytes whose first two bytes are always "this descriptor's length" and "its type". They form a tree:
+
+```text
+Device descriptor          VID, PID, endpoint 0 packet size, number of configurations
+ └─ Configuration descr.   power source, maximum current, number of interfaces, total length of the set
+     ├─ Interface descr.   class, subclass, protocol, such as CDC or HID
+     │   ├─ Endpoint descr.   address, direction, type, packet size, interval
+     │   └─ Endpoint descr.
+     └─ Interface descr.
+         └─ Endpoint descr.
+```
+
+When the host asks for the configuration descriptor, the device sends it joined to all the interface and endpoint descriptors under it, in one string called the configuration set. `wTotalLength` in the configuration descriptor is the length of that string. The table lists the fields you look up most ([USB 2.0 specification](#source-usb20) section 9.6):
+
+| Descriptor | Field | Meaning |
+| --- | --- | --- |
+| Device | `bLength` | a device descriptor is always 18 bytes, `0x12` |
+| Device | `idVendor` / `idProduct` | vendor and product IDs. ST's own examples often use `0x0483/0x5740`; this repository's `examples/usb-cdc` uses `0x1209/0x0001` |
+| Device | `bMaxPacketSize0` | endpoint 0 packet size; 8, 16, 32, or 64 at full speed |
+| Configuration | `wTotalLength` | bytes in the whole configuration set; 67 in the example, `0x0043` |
+| Configuration | `bMaxPower` | maximum current in units of 2 mA: `0x32` is 100 mA |
+| Interface | `bInterfaceClass` | `0x02` is the CDC communication interface, `0x0A` the CDC data interface, `0x03` HID, `0x08` mass storage, `0xFF` vendor-specific |
+| Endpoint | `bmAttributes` | the low 2 bits are the transfer type: 0 control, 1 isochronous, 2 bulk, 3 interrupt |
+| Endpoint | `wMaxPacketSize` | at most 64 for full-speed bulk and interrupt; 1023 belongs to full-speed isochronous only |
+
+`0x1209` is the vendor ID pid.codes provides for open-source projects; `0x0001` is only this repository's lab placeholder and is not registered with pid.codes. Fine for experiments on your own computer; do not print it on a product you plan to give anyone.
+
+### 5. Seven enumeration steps
+
+Once the device is plugged in, the host asks in this order ([USB 2.0 specification](#source-usb20) section 9.1). If the device answers any step wrongly, Device Manager shows "unknown device" or "device descriptor request failed":
+
+| Step | What the host does | What the device must answer |
+| --- | --- | --- |
+| 1 | sees D+ pulled high and knows a full-speed device has arrived | the 1.5 kΩ pull-up on D+ |
+| 2 | resets the bus: D+ and D− both held low for at least 10 ms | back to the default state after reset, address 0 |
+| 3 | asks for the device descriptor at address 0, reading only the first 8 bytes | `bMaxPacketSize0` |
+| 4 | sets the address | switch to the new address only after this transfer's status stage completes |
+| 5 | reads the full 18-byte device descriptor at the new address | VID, PID, number of configurations |
+| 6 | reads the first 9 bytes of the configuration descriptor to get the total length, then reads the whole configuration set by that length | `wTotalLength` and the interface and endpoint descriptors after it |
+| 7 | sets the configuration | opens the endpoints in the descriptors and enters the "configured" state |
+
+Some hosts reset once more after step 3; the order after that is unchanged.
+
+Step 4 has one detail: after receiving "set address", the device must wait until the status stage of that control transfer completes before it really changes address. Changing at once means the host's handshake packet no longer matches the address, and enumeration stops there. CubeMX's middleware and the HAL already handle it in this order.
+
+The rule of thumb: **stuck at step 3, check the clock and the device descriptor; stuck at step 6, check `wTotalLength`; stuck at step 7, check the endpoints and buffers.**
+
+### 6. CDC versus HID
+
+| Comparison | CDC (Communications Device Class) | HID (Human Interface Device) |
+| --- | --- | --- |
+| Looks like | a serial port | a keyboard, a mouse, or a custom device |
+| Driver | built in from Windows 10; older Windows needs an `.inf` | built in on every platform |
+| Endpoints | one interrupt IN for notifications, one bulk IN/OUT pair for data | one interrupt IN, optionally one interrupt OUT |
+| Bandwidth | bulk, ceiling about 1.2 MB/s at full speed | interrupt, at most 64,000 bytes per second per endpoint at full speed |
+| Shape of the data | any byte stream | "reports" in the format the report descriptor defines |
+| Suits | debug printing, data acquisition | buttons, barcode scanners, a few control values |
+
+Choose CDC to move data; choose HID when the system should treat the board as a keyboard or mouse the moment it is plugged in, with nothing for the user to install.
+
+### 7. USB settings in CubeMX
+
+| Setting | Where | What to enter |
+| --- | --- | --- |
+| USB peripheral | Connectivity → USB | tick Device (FS); on F4 it is USB_OTG_FS, set to Device_Only |
+| Device class | Middleware → USB_DEVICE → Class For FS IP | Communication Device Class (CDC) or Human Interface Device Class (HID) |
+| Device parameters | USB_DEVICE → Device Descriptor | VID, PID, manufacturer and product strings |
+| Buffers | USB_DEVICE → Parameter Settings | CDC's `APP_RX_DATA_SIZE` and `APP_TX_DATA_SIZE` |
+| Clock | Clock Configuration | the USB clock must be 48 MHz |
+| Interrupt | NVIC | on F1 it is `USB_LP_CAN1_RX0`; enable it |
+
+Where the F1's 48 MHz comes from: the PLL first multiplies up to 72 MHz, then the divider chosen by the `USBPRE` bit feeds USB. `USBPRE = 0` divides by 1.5, so `72 / 1.5 = 48` MHz; `USBPRE = 1` does not divide, USB gets 72 MHz, and the host fails while reading descriptors (RM0008 Rev 21 section 7.3.2). In the HAL this is written `RCC_USBCLKSOURCE_PLL_DIV1_5`. It is set correctly only when the USB box on CubeMX's clock page shows 48 MHz.
+
+The F4's OTG_FS has a setting the F1 lacks: VBUS sensing. It watches PA9 to see whether the host supplies power. If the board does not wire VBUS to PA9, turn VBUS sensing off in CubeMX, or the device keeps thinking it is unplugged.
+
+## Hardware and wiring
+
+| Board | Peripheral | Pins | Notes |
+| --- | --- | --- | --- |
+| BluePill (F103C8T6) | USB full-speed device | pin 32 PA11 = USB_DM, pin 33 PA12 = USB_DP | the on-board micro-USB is already wired; the D+ pull-up resistor is on the board |
+| BluePill | debug | PA13 / PA14 | SWD; keep it for debugging while you work |
+| NUCLEO-F411RE | OTG_FS | PA11 = DM, PA12 = DP | the board's USB connector belongs to the ST-LINK, not the F411's OTG; to use OTG_FS, bring PA11/PA12 out from the headers yourself |
+| STM32F4-Discovery | OTG_FS | PA11 / PA12 | the board has a micro-AB USB connector wired to the F407 |
+| BlackPill (F411CE) | OTG_FS | PA11 / PA12 | the on-board Type-C goes straight to the MCU |
+
+Three things to watch when wiring:
+
+- **The pull-up resistor.** A full-speed device needs 1.5 kΩ between D+ and 3.3 V ([USB 2.0 specification](#source-usb20) section 7.1.5), and the F103 has no such resistor inside. The BluePill has one soldered on, but on quite a few boards its value is not 1.5 kΩ (experience). Most computers recognize the board anyway; if one computer does not and another does, measure the resistance from PA12 to 3.3 V. On a board you design, fit 1.5 kΩ.
+- **The differential pair.** D+ and D− are a differential pair, and the USB 2.0 specification calls for 90 Ω differential impedance. Use the board's connector; do not run jumper wires, or even full speed may fail to enumerate.
+- **Current.** Before it is configured, a device may draw no more than 100 mA from USB; after configuration it may draw what `bMaxPower` declares ([USB 2.0 specification](#source-usb20) section 7.2.1). The example declares 100 mA.
+
+## Code
+
+After CubeMX generates a CDC project with the USB_DEVICE middleware, there are only two places you write yourself: the main loop in `main.c`, and the receive callback in `USB_DEVICE/App/usbd_cdc_if.c`. The code below echoes: whatever the computer sends comes straight back.
+
+```c
+/* USB_DEVICE/App/usbd_cdc_if.c. CubeMX has already generated an empty CDC_Receive_FS;
+   replace its body with the one below, and put the other lines in the USER CODE area at the top */
+#include <string.h>
+
+#define ECHO_BUF_SIZE 256U
+
+static uint8_t           s_echo[ECHO_BUF_SIZE];   /* bytes received but not yet sent back */
+static volatile uint32_t s_echo_len = 0;          /* non-zero means data is waiting to go */
+
+static int8_t CDC_Receive_FS(uint8_t *Buf, uint32_t *Len)
+{
+    /* this callback runs in the USB interrupt: copy only, do not send */
+    if (s_echo_len == 0U) {
+        uint32_t n = (*Len < ECHO_BUF_SIZE) ? *Len : ECHO_BUF_SIZE;
+        memcpy(s_echo, Buf, n);
+        s_echo_len = n;
+    }
+    /* if the last packet has not gone out yet, this one is dropped. Without re-arming, only one packet is ever received */
+    USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+    USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+    return USBD_OK;
+}
+
+/* called from the main loop: send if there is data; returns 0 while USB is still sending the last packet, try again next time */
+uint8_t CDC_EchoPoll(void)
+{
+    if (s_echo_len == 0U) {
+        return 1U;
+    }
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED) {
+        return 0U;
+    }
+    if (CDC_Transmit_FS(s_echo, (uint16_t)s_echo_len) != USBD_OK) {
+        return 0U;                                /* USBD_BUSY: the last packet is still on its way */
+    }
+    s_echo_len = 0U;
+    return 1U;
+}
+```
+
+```c
+/* main.c */
+#include "main.h"
+#include "usb_device.h"
+#include "usbd_cdc_if.h"
+
+uint8_t CDC_EchoPoll(void);   /* defined in usbd_cdc_if.c; you can also declare it in usbd_cdc_if.h */
+
+int main(void)
+{
+    HAL_Init();
+    SystemClock_Config();      /* PLL 72 MHz, USB clock RCC_USBCLKSOURCE_PLL_DIV1_5 = 48 MHz */
+    MX_GPIO_Init();
+    MX_USB_DEVICE_Init();      /* initialize the USB device stack and connect to the bus */
+
+    while (1)
+    {
+        (void)CDC_EchoPoll();
+    }
+}
+```
+
+Piece by piece:
+
+- `CDC_Receive_FS()` is called in the USB interrupt; `Buf` points to the middleware's own receive buffer, and `*Len` is the length of this packet, at most 64 bytes for full-speed bulk. The callback only copies the data into `s_echo` and does not send here: the previous send may not have finished yet, `CDC_Transmit_FS()` would return `USBD_BUSY`, and the data would be lost.
+- `USBD_CDC_SetRxBuffer()` plus `USBD_CDC_ReceivePacket()` re-arm reception. Without these two lines the device receives only the first packet, and nothing the computer sends afterwards gets a response.
+- `s_echo_len` serves as the "data waiting" flag. It is written in the interrupt and cleared in the main loop, hence `volatile`. This is the simplest single-buffer form: if the main loop has not sent the last packet yet, a new packet is dropped. To drop nothing, switch to a ring buffer like the one in chapter 06.
+- `CDC_EchoPoll()` first checks that the device has been configured: before enumeration reaches step 7, the CDC class data does not exist yet and nothing can be sent. `CDC_Transmit_FS()` is asynchronous; `USBD_OK` means only that the data was handed to the USB stack, and the USB interrupt does the actual sending. So `s_echo` must not change until the send is done; this code writes nothing into it until `s_echo_len` is cleared, which satisfies that.
+- `SystemClock_Config()` is generated by CubeMX. Open it and check one line: `PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5`.
+
+Now HID. When you choose the HID class in CubeMX, the middleware brings its own mouse report descriptor, and the report is 4 bytes: buttons, X, Y, wheel. This moves the mouse a little to the right:
+
+```c
+#include "usbd_hid.h"
+
+extern USBD_HandleTypeDef hUsbDeviceFS;
+
+void Mouse_NudgeRight(void)
+{
+    uint8_t report[4] = { 0x00, 10, 0, 0 };   /* all buttons released, X plus 10, Y and wheel unchanged */
+    if (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
+        (void)USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
+    }
+}
+```
+
+- The four bytes of the report are defined by the report descriptor, and their order and meaning must match it. If you change the report descriptor, change `HID_MOUSE_REPORT_DESC_SIZE` and the report length with it, or the host parses shifted values.
+- X and Y are relative values from −127 to 127. Each mouse report moves the pointer once; unlike a keyboard, there is no "release" report to send afterwards.
+- `USBD_HID_SendReport()` is asynchronous too, and returns `USBD_BUSY` while the previous report has not been collected by the host. The host collects on its `bInterval` schedule, and calls faster than that all get `USBD_BUSY`.
+
+The repository also has two examples that do not link ST's middleware; they enumerate directly on the HAL's PCD layer with the descriptors in their own source files, which suits reading them byte by byte against sections 4 and 5:
+
+- [examples/usb-cdc](../../examples/usb-cdc/): a virtual COM port with echo; once the computer opens the port (DTR asserted) it sends a `cdc tick` line every second.
+- [examples/usb-hid](../../examples/usb-hid/): a boot keyboard that sends the letter `a` when PA0 is pressed.
+
+Both set the PLL to 72 MHz and select PLL/1.5 for the USB clock. On the F103, USB's low-priority interrupt shares the one `USB_LP_CAN1_RX0` vector with CAN receive, so do not build them into the same project as the CAN example.
+
+## Hands-on labs
+
+1. **CDC echo.** Generate an F103 CDC project in CubeMX, change `usbd_cdc_if.c` and `main.c` as above, and plug in the on-board USB.
+   - What you should see: a new serial port on the computer (in Windows Device Manager it is under "Ports"). Open it in a serial terminal with any baud rate; whatever you send comes back.
+   - How to confirm: unplug and replug, and the port disappears and reappears. Send characters slowly one at a time, and each comes back unchanged. Paste a few hundred bytes at once and fewer may come back: the single buffer drops packets while the main loop has not finished sending, which is the code's trade-off, not a fault.
+   - If it fails, check first: if Device Manager shows "unknown device", work through the rule of thumb in section 5: first that `UsbClockSelection` is `RCC_USBCLKSOURCE_PLL_DIV1_5` and that HSE is an 8 MHz crystal; if the port appears but only the first packet echoes, check that the callback re-arms reception; if nothing appears at all, measure whether there is a pull-up between PA12 and 3.3 V.
+2. **Change one descriptor field and see where enumeration stops.** In the lab 1 project, deliberately make the configuration descriptor's `wTotalLength` 1 smaller and download again. It is in the middleware's `usbd_cdc.c`, bytes 3 and 4 of the configuration descriptor array, written `LOBYTE(USB_CDC_CONFIG_DESC_SIZ)` and `HIBYTE(...)`; change those two bytes, not the `USB_CDC_CONFIG_DESC_SIZ` macro itself, which also sets the array length and would stop the build.
+   - What you should see: the serial port no longer appears, or a device with an exclamation mark appears instead; changing it back restores it.
+   - How to confirm: with USBPcap and Wireshark on Windows, or `dmesg` on Linux, see that the length the host gets at the configuration-set step does not match the bytes the device sends.
+   - If it fails, check first: if the change has no effect, make sure you changed the full-speed copy: some middleware versions have separate full-speed and high-speed configuration descriptors, and the F103 uses the full-speed one.
+3. **HID mouse.** Start a new project, choose the HID class under USB_DEVICE, add `Mouse_NudgeRight()`, and wire a button to PA0, configured with the internal pull-up and pressed to ground (as in `examples/usb-hid`); call it once per press.
+   - What you should see: once plugged in, with no driver installed, the computer recognizes a mouse; each press moves the pointer a little to the right.
+   - How to confirm: holding the button should not keep the pointer moving, because the code sends a report only on the press itself; if it keeps moving, the button is not edge-detected or not debounced.
+   - If it fails, check first: if it is recognized as a mouse but the pointer does not move, look at the return value of `USBD_HID_SendReport()`; `USBD_BUSY` means you are sending too fast. If the report length does not match the descriptor, the pointer jumps around or moves the wrong way.
+4. **(Advanced) Capture one enumeration.** Install USBPcap and Wireshark on Windows (or use a hardware USB analyzer), unplug and replug the lab 1 board, and capture the enumeration.
+   - What you should see: the requests from the table in section 5, in order: `GET_DESCRIPTOR` (device, 8 bytes), `SET_ADDRESS`, `GET_DESCRIPTOR` (device, 18 bytes), `GET_DESCRIPTOR` (configuration, 9 bytes, then again by the total length), `SET_CONFIGURATION`.
+   - How to confirm: bytes 9 and 10 of the captured device descriptor (`idVendor`, low byte first) match the VID you entered in CubeMX.
+   - If it fails, check first: USBPcap must be set to the root hub the board is on; if the first few steps are missing, the device was already plugged in before capture started, so start capturing first and then plug in.
+
+## Self-test
+
+1. The F103's PLL runs at 72 MHz. What is the USB clock when `USBPRE` is 0, and when it is 1? Which one enumerates?
+2. A full-speed interrupt endpoint has `bInterval` 1. How many bytes per second can it carry at most? To go faster, which transfer type should it become?
+3. The example's configuration set is 67 bytes and its device descriptor 18 bytes. At step 6 of enumeration, how many bytes does the host read first, and why?
+4. The computer shows "device descriptor request failed". By section 5, which step is it most likely stuck at, and which two things do you check first?
+5. A CDC echo that calls `CDC_Transmit_FS()` directly inside the receive callback loses characters when you paste a long text. Why?
+
+Answers:
+
+1. `USBPRE = 0` divides by 1.5, 72 / 1.5 = 48 MHz, and enumerates; `USBPRE = 1` does not divide, USB gets 72 MHz, and the host fails while reading descriptors. Full-speed USB needs 48 MHz (RM0008 Rev 21 section 7.3.2).
+2. A full-speed interrupt endpoint carries at most 64 bytes per packet, and `bInterval = 1` means one poll every 1 ms, so at most 64 × 1000 = 64,000 bytes per second. To go faster, switch to bulk: at full speed one frame holds at most 19 packets of 64 bytes, a specification ceiling of about 1.2 MB/s.
+3. 9 bytes first, exactly the configuration descriptor itself. At that point the host does not yet know how long the whole configuration set is, so it first reads `wTotalLength` (67 here) from those 9 bytes, then reads the configuration descriptor together with the interface and endpoint descriptors in one go at that length.
+4. Step 3: the host asked for the device descriptor at address 0 and did not get a correct answer. First check that the USB clock is 48 MHz (`RCC_USBCLKSOURCE_PLL_DIV1_5`, and that HSE is 8 MHz), then the device descriptor's length and `bMaxPacketSize0`.
+5. The callback runs in the USB interrupt. While the previous packet is still being sent, `CDC_Transmit_FS()` returns `USBD_BUSY` and this packet is not handed over; the callback does not check the return value, so the data is lost. The right way is to copy and re-arm in the callback, send from the main loop, and check the return value.
+
+## Principle and scope
+
+> [!NOTE]
+> From this section to "Pitfalls and sources" is the deep part. It pins the conclusions above to one part number, one manual section, and numbers you can recompute. On a first read you can skip it and come back after the labs.
 
 The clock and the descriptor are fixed on STM32F103C8T6. The USB clock is copied from chapter file 02 and from the compass. The PLL is 72 MHz. `USBPRE = 0` divides by 1.5, so the USB clock is 48 MHz. `USBPRE = 1` does not divide, so the USB clock is 72 MHz and the host fails while reading the descriptor. See [RM0008](#source-rm0008-rcc). Do not redraw the clock tree.
 
@@ -59,7 +364,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 
 `usb-enumeration.svg` stays as an auxiliary figure.
 
-## Timing or state
+## Timing and state
 
 | Item | Value | Right or wrong |
 | --- | --- | --- |
@@ -70,9 +375,9 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 | Packet length | bulk and interrupt ceiling 64 | 1023 is isochronous only. A notification endpoint of 8 is allowed |
 | Pins | pin 32 is DM, pin 33 is DP | The pull-up is on DP. On DM it is not this normal path |
 
-## Pitfalls and source cards
+## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| Symptom | Cause | What to do | Source | What the source supports |
 | --- | --- | --- | --- | --- |
 | Device Manager fails the descriptor request | The USB clock is not 48 MHz | Keep `USBPRE` at 0 | [RM0008](#source-rm0008-rcc) | `USBPRE=0` makes 72 MHz ÷ 1.5 = 48 MHz. `USBPRE=1` yields 72 MHz |
 | The host does not see the device at all | The pull-up is not on D+ | Tie the pull-up to D+ on pin 33, not to DM. The resistance is 1.5 kΩ | [DS5319](#source-ds5319-usbcan) | Pin 32 PA11 includes USB_DM. Pin 33 PA12 includes USB_DP. Table 45 note 2 prints 1.5 kΩ on D+. Tied to DM, this is not the normal path |
@@ -81,245 +386,7 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 | An interrupt or bulk endpoint is set to 1023 | That ceiling belongs to isochronous | The ceiling for those two classes at full speed is 64. 1023 is isochronous only | [examples in this repo](#source-project-examples) | The example bulk endpoint is 64 bytes and the notification endpoint is 8 bytes |
 | Linked with the CAN example, the receive interrupt is shared | The two examples use one vector | Keep the examples apart. Do not leave CAN on PA11/PA12 | [RM0008](#source-rm0008-usb) | The printed medium-density name is `USB_LP_CAN_RX0`. The connectivity table prints `USB_LP_CAN1_RX0`. USB on this part is a device, not a host |
 
-## 📌 Goals
-
-- [ ] Separate USB 2.0 low-speed (1.5 Mbps), full-speed (12 Mbps), and high-speed (480 Mbps), and know which STM32 parts do which.
-- [ ] Compare control, bulk, interrupt, and isochronous transfers.
-- [ ] Read the descriptor tree: device, configuration, interface, endpoint.
-- [ ] Recite the seven enumeration steps and guess where "unknown device" got stuck.
-- [ ] Contrast CDC and HID, and know where CubeMX attaches the middleware.
-- [ ] Use the ST USB Device library for a CDC echo and a custom HID — or the HAL PCD examples in this repo, which do not ship that middleware.
-
-## 🧠 Core idea
-
-### 1. Speeds and which STM32 block you actually have
-
-**Takeaway:** The host starts every transfer. The device is polled. The common STM32 case is a **full-speed device**. Only parts with `OTG_HS` can do high-speed.
-
-| Speed | Spec | Bit rate | On STM32 |
-| --- | --- | --- | --- |
-| Low | USB 1.1 | 1.5 Mbps | Device side (a HID mouse). STM32 usually does not do this |
-| Full | USB 1.1/2.0 | 12 Mbps | **USB peripheral on F0/F1/F3/L4, OTG_FS on F4/F7/H7** |
-| High | USB 2.0 | 480 Mbps | **OTG_HS only** (external ULPI PHY, or a part with an on-chip HS PHY) |
-
-| Family | Block | Note | Manual |
-| --- | --- | --- | --- |
-| STM32F1 | USB Device FS | Device only, 12 Mbps, no OTG host | RM0008 chapter 23 |
-| STM32F4 | OTG_FS + OTG_HS | FS PHY on chip; HS needs an external ULPI PHY | RM0090 chapter 30 / 31 |
-| STM32F7/H7 | OTG_FS + OTG_HS | Some parts have an on-chip HS PHY | OTG chapter of that RM |
-
-> **An F103 USB block is device-only. It cannot be a host.** On an F411, `OTG_FS` is **PA11 (DM) / PA12 (DP)** and those pins are also CAN1, so you pick one. F1 USB uses the same PA11/PA12 pair.
-
-### 2. Four transfer types
-
-**Takeaway:** Trade latency against reliability. **Control** is for enumeration. **Bulk** moves bytes and retries. **Interrupt** is small and bounded. **Isochronous** keeps a time slot and is allowed to drop data.
-
-| Type | Trait | Typical use | Bandwidth reserved |
-| --- | --- | --- | --- |
-| Control | Endpoint 0, reliable, reserved each frame | Enumeration, class requests | Yes |
-| Bulk | Reliable, no reserved bandwidth, retries | CDC, disks, printers | No |
-| Interrupt | Reliable, polling interval, bounded latency | HID keyboard/mouse, small reports | Yes, small |
-| Isochronous | Reserved bandwidth, **no retry, drops allowed** | Audio, cameras | Yes |
-
-### 3. Endpoints
-
-**Takeaway:** An endpoint is a logical pipe. Except for endpoint 0, **each endpoint is one direction** (IN or OUT).
-
-| Endpoint | Direction | Use |
-| --- | --- | --- |
-| EP0 | IN and OUT | Control, enumeration, standard requests |
-| EPn IN | Device to host | Device transmits (CDC TX) |
-| EPn OUT | Host to device | Device receives (CDC RX) |
-
-An F1 full-speed device has up to **8 bidirectional endpoints (EP0–EP7)**. They share a **512-byte** packet memory (PMA). You assign that memory yourself (RM0008 chapter 23, `USB_EPnR`, `BTABLE`).
-
-### 4. Descriptor tree
-
-**Takeaway:** The host learns the device by reading descriptors: device, then configuration, then interface, then endpoint. The interface is the function. One configuration can hold several interfaces.
-
-```text
-Device Descriptor                         (VID / PID / how many configurations)
- └─ Configuration Descriptor              (power / max current / interface count)
-     ├─ Interface Descriptor              (class / subclass / protocol, CDC or HID)
-     │   ├─ Endpoint Descriptor           (address / direction / type / packet / interval)
-     │   └─ Endpoint Descriptor
-     └─ Interface Descriptor
-         └─ Endpoint Descriptor
-```
-
-| Descriptor | Field | Meaning |
-| --- | --- | --- |
-| Device | `idVendor` / `idProduct` | ST examples often use 0x0483/0x5740. This repository's examples/usb-cdc does not. It uses 0x1209/0x0001 |
-| Device | `bNumConfigurations` | Usually 1 |
-| Configuration | `bMaxPower` | Unit is 2 mA (0x32 = 100 mA) |
-| Interface | `bInterfaceClass` | 0x02 CDC, 0x03 HID, 0x08 MSC, 0xFF vendor |
-| Endpoint | `bmAttributes` | 0 control, 1 isochronous, 2 bulk, 3 interrupt |
-| Endpoint | `wMaxPacketSize` | 64 bytes maximum for full-speed bulk and interrupt; 1023 is full-speed isochronous only |
-
-A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is the full-speed isochronous ceiling, not the interrupt ceiling. In this repository's `examples/usb-cdc`, the bulk endpoints are 64 bytes and the notification endpoint is 8 bytes.
-
-### 5. Seven enumeration steps
-
-**Takeaway:** Reset, read descriptors, assign an address, read the configuration, select it. **Any failed step shows up as "unknown device" or "device descriptor request failed".**
-
-| Step | Action | Note |
-| --- | --- | --- |
-| 1 | Host sees the device (pull-up on D+) | Full speed pulls D+ up with 1.5 kΩ. That is how the host picks the speed |
-| 2 | Bus reset | D+ and D− low for at least 10 ms |
-| 3 | At address 0, read the first 8 bytes of the device descriptor | Host learns `bMaxPacketSize0` |
-| 4 | Reset again, read the full 18-byte device descriptor | VID/PID |
-| 5 | Set Address | Device gets an address from 1 to 127 |
-| 6 | Read 9 bytes of configuration, then the whole configuration set | Interfaces and endpoints |
-| 7 | Set Configuration | The function is live |
-
-> Motto: **stuck on step 3 or 4** usually means a bad length field or a bad clock. **Stuck on step 6** usually means `wTotalLength` is wrong. **Stuck on step 7** usually means the endpoint buffer was not armed.
-
-### 6. CDC versus HID
-
-**Takeaway:** CDC is "I am a serial port" (high bandwidth, byte stream). HID is "I am a keyboard, mouse, or custom gadget" (native support, fixed reports).
-
-| | CDC | HID |
-| --- | --- | --- |
-| Job | Virtual COM, arbitrary bytes | Keyboard, mouse, custom report |
-| Driver | Built in on Windows 10+. Older Windows wants an .inf | Driver-free on the usual desktops |
-| Endpoints | Typically bulk IN, bulk OUT, and one interrupt IN | One interrupt IN (optional OUT) |
-| Bandwidth | High, can fill full speed | Low, a few dozen bytes per frame, limited by `bInterval` |
-| Unit | Byte stream | A fixed report |
-| Typical | Debug log, data logger | Custom pad, macro keyboard, scanner |
-
-### 7. CubeMX middleware
-
-| Item | Where | Value |
-| --- | --- | --- |
-| USB block | Connectivity → USB / USB_OTG_FS | Device (FS). On F4 pick `Device_Only` or `OTG` |
-| Class | Middleware → USB_DEVICE → Class | CDC or HID |
-| Identity | `USBD_DEVICE` | VID/PID, strings |
-| CDC buffers | CDC page | Default `APP_TX/RX_DATA_SIZE` is 2048 |
-| VBUS | VBUS sensing | A self-powered board must see VBUS, or you turn sensing off |
-| IRQ | NVIC → USB_LP / OTG_FS | Keep it fairly high |
-| Clock | RCC | Full speed wants a **48 MHz** USB clock (F1 divides the PLL; F4 uses PLL48CLK) |
-
-> **48 MHz is not optional.** On F1, `USBCLK = 48 MHz`. With the PLL at 72 MHz, register bit `USBPRE = 0` means ÷1.5, so `72 / 1.5 = 48` MHz. A wrong clock fails enumeration or drops the link at random.
-
-## 🛠️ Wiring
-
-| Board | Peripheral | Pins | Note |
-| --- | --- | --- | --- |
-| BluePill (F103) | USB device | PA11 = DM, PA12 = DP | On-board micro-USB, D+ already has 1.5 kΩ |
-| BluePill | Debug | SWD PA13/PA14 | Leave them alone |
-| Nucleo-F411RE | OTG_FS | PA11 = DM, PA12 = DP | The ST-Link mini-USB is a virtual COM, **not** the OTG connector |
-| F4-Discovery | OTG_FS | PA11/PA12 | On-board micro-AB |
-| BlackPill (F411) | USB | PA11/PA12 | On-board Type-C wired to the MCU |
-
-- Keep the pair short, matched, and near 90 Ω differential. Dupont wires often fail even at full speed.
-- On a bare board, **D+ needs 1.5 kΩ to 3.3 V** so the host sees a full-speed device. Many dev boards already have it.
-- The USB connector can feed 5 V into the on-board LDO. Before the device is configured, stay within 100 mA.
-
-## 💻 Code
-
-If CubeMX generated a CDC project, the file you actually edit is **`USB_DEVICE/App/usbd_cdc_if.c`**. The snippets below are that style.
-
-**① Bring-up (`main.c`, generated)**
-
-```c
-#include "stm32f1xx_hal.h"
-#include "usb_device.h"        /* CubeMX: declares MX_USB_DEVICE_Init */
-#include "usbd_cdc_if.h"       /* CDC API */
-
-int main(void)
-{
-    HAL_Init();
-    SystemClock_Config();      /* USB clock must be 48 MHz */
-    MX_GPIO_Init();
-    MX_USB_DEVICE_Init();
-
-    uint8_t msg[] = "STM32 CDC ready\r\n";
-
-    while (1)
-    {
-        /* Non-blocking. USBD_OK means the stack accepted the buffer */
-        CDC_Transmit_FS(msg, sizeof(msg) - 1);
-        HAL_Delay(1000);
-    }
-}
-```
-
-**② Receive callback (`usbd_cdc_if.c`)**
-
-```c
-#include "usbd_cdc_if.h"
-
-static int8_t CDC_Receive_FS(uint8_t *Buf, uint32_t *Len)
-{
-    /* Buf is the internal buffer, *Len is this packet */
-    /* Echo. Do not block for long inside the USB interrupt */
-    CDC_Transmit_FS(Buf, *Len);
-
-    /* Arm the next OUT, or you only ever receive one packet */
-    USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-    USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-    return (USBD_OK);
-}
-```
-
-**③ Transmit prototype (provided by the ST library)**
-
-```c
-/* Exported by ST's usbd_cdc_if.c */
-uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len);
-```
-
-> Transmit is **asynchronous**. `CDC_Transmit_FS` hands the buffer to the stack and returns. The USB interrupt finishes the packet. Calling it again too soon returns `USBD_BUSY`.
-
-**④ A custom HID report (a small mouse)**
-
-```c
-/* 4-byte input report: 3 buttons plus relative X/Y */
-__ALIGN_BEGIN static uint8_t HID_ReportDesc[] __ALIGN_END =
-{
-    0x05, 0x01,        /* Usage Page (Generic Desktop) */
-    0x09, 0x02,        /* Usage (Mouse)                  */
-    0xA1, 0x01,        /* Collection (Application)       */
-    0x09, 0x01,        /*   Usage (Pointer)              */
-    0xA1, 0x00,        /*   Collection (Physical)        */
-    0x05, 0x09,        /*     Usage Page (Button)        */
-    0x19, 0x01,        /*     Usage Minimum (1)          */
-    0x29, 0x03,        /*     Usage Maximum (3)          */
-    0x15, 0x00, 0x25, 0x01,   /* Logical Min/Max 0..1     */
-    0x95, 0x03, 0x75, 0x01,   /* three 1-bit buttons      */
-    0x81, 0x02,        /*     Input (Data,Var,Abs)       */
-    0x95, 0x01, 0x75, 0x05,   /* pad to a byte            */
-    0x81, 0x03,        /*     Input (Const)              */
-    0x05, 0x01, 0x09, 0x30, 0x09, 0x31,  /* X, Y               */
-    0x15, 0x81, 0x25, 0x7F,   /* Logical Min/Max -127..127 */
-    0x75, 0x08, 0x95, 0x02,   /* two 8-bit fields         */
-    0x81, 0x06,        /*     Input (Data,Var,Rel)       */
-    0xC0, 0xC0         /* End Collection ×2              */
-};
-```
-
-**⑤ Send a HID report**
-
-```c
-/* 4-byte report on the interrupt IN endpoint */
-USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
-```
-
-## 🧪 Try it
-
-1. **CDC echo:** a CubeMX F103 CDC project, open the new COM port, type. You should get the same bytes back.
-2. **CDC once a second:** send the ADC voltage from chapter 09 with `CDC_Transmit_FS`.
-3. **Custom HID:** one button updates a report. Windows game-controller properties should move.
-4. **Trace (optional):** Wireshark plus USBPcap, or a hardware analyzer. Match GET_DESCRIPTOR, SET_ADDRESS, and SET_CONFIGURATION to the seven steps.
-
-This repo's two examples do not ship the ST USB middleware. They enumerate with HAL PCD:
-
-- [examples/usb-cdc](../../examples/usb-cdc/): virtual COM, echo, and a `cdc tick` line once a second while DTR is set.
-- [examples/usb-hid](../../examples/usb-hid/): a boot keyboard. PA0 to ground types the letter `a`.
-
-Both run the PLL at 72 MHz and select USB = PLL/1.5. On F103, `USB_LP_CAN1_RX0` is the same IRQ as bxCAN receive. Do not link the CAN example into the same project.
-
-## 🔗 Further reading
+## Related resources
 
 - RM0008 chapter 23, USB device (`USB_EPnR`, PMA, `BTABLE`).
 - RM0090 chapter 30, USB OTG_FS, and chapter 31, USB OTG_HS.

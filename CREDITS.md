@@ -136,3 +136,11 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 | RM0008 Rev 21（2021-02），电源控制 | ST 文档条款；只链接并改写事实，不转载手册 | 第 16 章退出 Stop 后回到 HSI | https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf |
 | PM0056，DEMCR bit 24 与 DWT_CYCCNT | ST 文档条款；只链接并改写事实，不转载手册 | 第 17 章 72 个计数是 1 µs，硬件断点是 6 个 | https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf |
 | 本仓库 `examples/freertos-task`、`examples/iap-bootloader` | MIT | 第 18 章 TIM4；第 19 章一张 `0xB800` | https://github.com/zhuguang-ZFG/STM32/tree/main/examples |
+
+## 七、写作检查工具
+
+正文的文风检查分两层。用词这一层是本仓库的 `tools/slop_lint.py`。段落和句子结构这一层用 sepia：先诊断，列出问题再动手，改的时候以替换和删除为主。sepia 原样放在 `.claude/skills/sepia/`，许可证全文在同目录的 `LICENSE`。
+
+| 作品 | 许可证 | 用在 | 链接 |
+| --- | --- | --- | --- |
+| Nanako0129/sepia v0.12.4（commit `fb06be7`），Copyright (c) 2026 Nanako Tsai | MIT | 章节正文的去 AI 味诊断与最小改动；`.claude/skills/sepia*` 五个目录 | https://github.com/Nanako0129/sepia |

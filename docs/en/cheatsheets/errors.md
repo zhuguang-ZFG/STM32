@@ -12,7 +12,7 @@
 | [§1](#1-hal-return-value-meanings) | HAL return values (HAL_StatusTypeDef) |
 | [§2](#2-hal-state-enumeration) | HAL state machine (HAL_StateTypeDef) |
 | [§3](#3-module-error-flags) | FLASH/I2C/UART error flags |
-| [§4](#4-common-symptoms--causes--how-to-locate) | 30+ symptom troubleshooting entries |
+| [§4](#4-common-symptoms--causes--how-to-locate) | 34 symptom troubleshooting entries |
 
 ## 1. HAL Return Value Meanings
 
@@ -123,7 +123,7 @@
 | 33 | UART garbled after low-power wakeup | Clock returns to HSI after STOP | Call `SystemClock_Config()` again after wakeup |
 | 34 | Program dies after running for a while | Stack overflow / watchdog not fed / interrupt storm | Increase the stack; enable the watchdog; count interrupt frequency |
 
-## 5. Quick Troubleshooting Flow (Mnemonic)
+## 5. Quick Troubleshooting Flow
 
 | Step | Check |
 | --- | --- |
@@ -135,7 +135,7 @@
 | 6. Interrupts | NVIC enabled? Priority? Flag cleared? |
 | 7. Tools | Use a debugger to view registers, a logic analyzer for waveforms, and SWO for prints |
 
-## 5. Common Compile and Link Errors
+## 6. Common Compile and Link Errors
 
 | Error | Cause | Fix |
 | --- | --- | --- |
@@ -148,7 +148,7 @@
 | `call to non-static member...` (C++) | C++ syntax was used in a .c file | Use plain C, or wrap with `extern "C"` |
 | `use of undeclared identifier 'GPIO_PIN_13'` | Did not include `stm32f1xx_hal.h` or the device header | Confirm the device macro (for example `STM32F103xB`) is defined |
 
-## 6. HardFault Location Registers
+## 7. HardFault Location Registers
 
 > After entering `HardFault_Handler`, look at `SCB->CFSR` first, then `SCB->BFAR` / `MMFAR`.
 
@@ -165,20 +165,20 @@
 **Location steps**: ① Read `PC` from the stack frame; ② use `addr2line` or the IDE disassembly to find the source line;
 ③ common root causes: accessing a register before the peripheral clock is enabled (BFSR), array out of bounds (MMFSR), divide by zero / unaligned access (UFSR).
 
-## 7. Debug Tools and Methods
+## 8. Debug Tools and Methods
 
 | Method | Use | When it applies |
 | --- | --- | --- |
 | SWD + breakpoint / single-step | View variables and single-step | Logic errors and flow problems |
 | Debugger register / peripheral view | Look directly at RCC/GPIO/TIM registers | Suspect the clock or configuration did not take effect |
-| Logic analyzer | Capture SPI/I2C/UART timing waveforms | Last resort when communication fails |
+| Logic analyzer | Capture SPI/I2C/UART timing waveforms | When you need to know whether the line carries a waveform at all, and whether its levels and timing are right |
 | Oscilloscope | Measure clock, PWM, and supply ripple | Failure to oscillate, wrong frequency, interference |
 | SWO/ITM printf | Print tracing that does not use the UART | High real-time requirements, or the UART is already in use |
 | UART printf | Print runtime status | General debugging (remember to redirect `fputc`) |
 | GPIO toggle + oscilloscope | Measure function duration | Performance analysis (together with DWT) |
 | `__NOP()` + single-step | Precise timing observation | Microsecond-level timing |
 
-## 8. Asserts and Common Macro Switches
+## 9. Asserts and Common Macro Switches
 
 | Macro / mechanism | Purpose | Notes |
 | --- | --- | --- |

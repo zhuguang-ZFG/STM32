@@ -5,10 +5,13 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import os
 import subprocess
 import unittest
 from pathlib import Path
+
+from doc_sections import blocks as four_blocks, section
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -49,6 +52,11 @@ def _git_show(rev: str, path: str) -> str | None:
     return got.stdout.decode("utf-8")
 
 
+
+def narration_lines(block: str) -> list[str]:
+    """Numbered narration lines. They must match the rendered subtitles."""
+    return re.findall(r"^\d+\. .+$", block.replace("\r\n", "\n"), re.M)
+
 def baseline_chapter(rev: str, path: str) -> str:
     blob = _git_show(rev, path)
     if blob is None:
@@ -59,6 +67,19 @@ def baseline_chapter(rev: str, path: str) -> str:
             f"batch-6 baseline {rev}:{path} is not in this checkout and could not be fetched"
         )
     return blob
+
+
+_ALERT_LEAD = re.compile(r"^> \[!WARNING\]\n> ", re.MULTILINE)
+
+
+def fold_alert_syntax(text: str) -> str:
+    """Put a GitHub alert warning back on one line, the way the baseline wrote it.
+
+    Warnings moved from ``> ⚠️ text`` to ``> [!WARNING]`` plus the text on the
+    next line. That is two lines where the baseline has one. Folding it back
+    lets a line-for-line baseline check stay strict about everything else.
+    """
+    return _ALERT_LEAD.sub("> ⚠️ ", text.replace("\r\n", "\n"))
 
 DIAGRAMS = ROOT / "assets" / "diagrams"
 STOP = DIAGRAMS / "sample-16-stop-wake.svg"
@@ -241,21 +262,21 @@ class Batch6StopChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "16-low-power.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertIn("## 📌 学习目标", zh)
-        self.assertIn("## 📌 Learning goals", en)
-        self.assertIn("## 🧠 核心原理", zh)
-        self.assertIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertIn("## 学习目标", zh)
+        self.assertIn("## Learning goals", en)
+        self.assertIn("## 核心原理", zh)
+        self.assertIn("## Core ideas", en)
         self.assertNotIn("HAL_RTCEx_SetWakeUpTimer_IT", zh)
         self.assertNotIn("HAL_RTCEx_SetWakeUpTimer_IT", en)
         self.assertNotIn("每秒唤醒一次", zh)
@@ -264,8 +285,8 @@ class Batch6StopChapterTests(unittest.TestCase):
         self.assertNotIn("14 to 20", en)
         self.assertNotIn("8/16", zh)
         self.assertNotIn("8 or 16 MHz", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "14 µA",
@@ -308,8 +329,8 @@ class Batch6StopChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-16-stop-wake.svg", en)
         self.assertIn("../assets/gif/stop-wake.gif", zh)
         self.assertIn("../../assets/gif/stop-wake.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-16-stop-wake.svg"), zh_key.index("stop-wake.gif"))
         self.assertLess(en_key.index("sample-16-stop-wake.svg"), en_key.index("stop-wake.gif"))
         self.assertIn("自绘", zh_key)
@@ -318,7 +339,7 @@ class Batch6StopChapterTests(unittest.TestCase):
         self.assertNotIn("schematic", en_key.lower())
         self.assertIn("lowpower-wakeup.svg", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -329,11 +350,11 @@ class Batch6StopChapterTests(unittest.TestCase):
             marker = "<!-- video:ch16 -->"
             end = "<!-- /video:ch16 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now_video.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -409,21 +430,21 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "17-debug.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
         self.assertIn("CoreDebug_DEMCR_TRCENA_Msk", zh)
         self.assertIn("CoreDebug_DEMCR_TRCENA_Msk", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "0xE000ED28",
@@ -456,8 +477,8 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-17-cfsr.svg", en)
         self.assertIn("../assets/gif/cfsr-read.gif", zh)
         self.assertIn("../../assets/gif/cfsr-read.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-17-cfsr.svg"), zh_key.index("cfsr-read.gif"))
         self.assertLess(en_key.index("sample-17-cfsr.svg"), en_key.index("cfsr-read.gif"))
         self.assertIn("自绘", zh_key)
@@ -465,7 +486,7 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         self.assertNotIn("示意图", zh_key)
         self.assertIn("debug-swo.svg", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -476,11 +497,11 @@ class Batch6CfsrChapterTests(unittest.TestCase):
             marker = "<!-- video:ch17 -->"
             end = "<!-- /video:ch17 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now_video.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -521,19 +542,19 @@ class Batch6BootChapterTests(unittest.TestCase):
         en_path = ROOT / "docs" / "en" / "18-faq.md"
         zh = zh_path.read_text(encoding="utf-8")
         en = en_path.read_text(encoding="utf-8")
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertNotIn("## 🧠 核心原理", zh)
-        self.assertNotIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 核心原理", zh)
+        self.assertNotIn("## Core ideas", en)
         self.assertNotIn("90%", zh)
         self.assertNotIn("90%", en)
         self.assertNotIn("220~1", zh)
@@ -547,8 +568,8 @@ class Batch6BootChapterTests(unittest.TestCase):
         for row_id in row_ids:
             self.assertIn(f"**{row_id} ", zh)
             self.assertIn(f"**{row_id} ", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "38",
@@ -587,8 +608,8 @@ class Batch6BootChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-18-boot-triage.svg", en)
         self.assertIn("../assets/gif/boot0-low.gif", zh)
         self.assertIn("../../assets/gif/boot0-low.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-18-boot-triage.svg"), zh_key.index("boot0-low.gif"))
         self.assertLess(en_key.index("sample-18-boot-triage.svg"), en_key.index("boot0-low.gif"))
         self.assertIn("自绘", zh_key)
@@ -596,7 +617,7 @@ class Batch6BootChapterTests(unittest.TestCase):
         self.assertNotIn("示意图", zh_key)
         self.assertIn("toolchain-flow.svg", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -607,11 +628,11 @@ class Batch6BootChapterTests(unittest.TestCase):
             marker = "<!-- video:ch18 -->"
             end = "<!-- /video:ch18 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now_video.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-source-list.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -682,19 +703,19 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertTrue(zh.startswith("# 19 项目实战合集\n"))
         self.assertTrue(en.startswith("# 19 A set of real projects\n"))
         self.assertNotIn("上册", zh)
-        for heading in ("## 原理与边界", "## 关键插图", "## 时序或状态", "## 坑与出处卡"):
+        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
             self.assertEqual(1, zh.count(heading))
         for heading in (
-            "## Principle and boundary",
+            "## Principle and scope",
             "## Key figures",
-            "## Timing or state",
-            "## Pitfalls and source cards",
+            "## Timing and state",
+            "## Pitfalls and sources",
         ):
             self.assertEqual(1, en.count(heading))
-        self.assertNotIn("## ⚠️ 常见坑与排查", zh)
-        self.assertNotIn("## ⚠️ Pitfalls and troubleshooting", en)
-        self.assertNotIn("## 🧠 核心原理", zh)
-        self.assertNotIn("## 🧠 Core ideas", en)
+        self.assertNotIn("## 常见坑与排查", zh)
+        self.assertNotIn("## Pitfalls and troubleshooting", en)
+        self.assertNotIn("## 核心原理", zh)
+        self.assertNotIn("## Core ideas", en)
         for heading in (
             "## 1. 蓝牙小车（★★ 入门级）",
             "## 2. 温湿度记录仪（★★ 入门级）",
@@ -733,8 +754,8 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertIn("0x5A5A0001", en)
         self.assertIn("MOTOR_DIR_PIN", zh)
         self.assertIn("MOTOR_DIR_PIN", en)
-        zh_blocks = zh.split("## 原理与边界", 1)[1].split("## 📌 学习目标", 1)[0]
-        en_blocks = en.split("## Principle and boundary", 1)[1].split("## 📌 Learning goals", 1)[0]
+        zh_blocks = four_blocks(zh, "zh")
+        en_blocks = four_blocks(en, "en")
         for blocks in (zh_blocks, en_blocks):
             for token in (
                 "0x08000000",
@@ -769,8 +790,8 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertIn("../../assets/diagrams/sample-19-flash-fit.svg", en)
         self.assertIn("../assets/gif/one-slot.gif", zh)
         self.assertIn("../../assets/gif/one-slot.gif", en)
-        zh_key = zh.split("## 关键插图", 1)[1].split("## 时序或状态", 1)[0]
-        en_key = en.split("## Key figures", 1)[1].split("## Timing or state", 1)[0]
+        zh_key = section(zh, "## 关键插图")
+        en_key = section(en, "## Key figures")
         self.assertLess(zh_key.index("sample-19-flash-fit.svg"), zh_key.index("one-slot.gif"))
         self.assertLess(en_key.index("sample-19-flash-fit.svg"), en_key.index("one-slot.gif"))
         self.assertIn("自绘", zh_key)
@@ -778,7 +799,7 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertNotIn("示意图", zh_key)
         self.assertIn("peripheral-wiring.svg", zh_key)
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -789,8 +810,8 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
             marker = "<!-- video:ch19 -->"
             end = "<!-- /video:ch19 -->"
             self.assertEqual(
-                baseline.split(marker, 1)[1].split(end, 1)[0],
-                now_video.split(marker, 1)[1].split(end, 1)[0],
+                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
@@ -810,7 +831,7 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
 class Batch6GlossaryTests(unittest.TestCase):
     def test_only_the_f103_stop_current_cell_changes(self) -> None:
         lock = json.loads(
-            (ROOT / "docs" / "superpowers" / "plans" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
+            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch6-16-17-18-19-lock.json").read_text(
                 encoding="utf-8"
             )
         )
@@ -829,8 +850,8 @@ class Batch6GlossaryTests(unittest.TestCase):
         for rel, old_phrase, new_phrase in pairs:
             now = (ROOT / rel).read_text(encoding="utf-8")
             base = baseline_chapter(lock["baseline"], rel)
-            old_lines = base.splitlines()
-            new_lines = now.splitlines()
+            old_lines = fold_alert_syntax(base).splitlines()
+            new_lines = fold_alert_syntax(now).splitlines()
             self.assertEqual(len(old_lines), len(new_lines))
             changed = [index for index, (before, after) in enumerate(zip(old_lines, new_lines)) if before != after]
             self.assertEqual([229], changed)

@@ -4,14 +4,14 @@
 
 > 中文：[学习知识库](../../README.md)
 
-**Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
+**An STM32 textbook that takes you from zero background to building projects.**
 
-An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 25 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 teaching GIFs · 14 buildable examples · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 25 mechanism animations · board drawings plus H7/G0/L4 pinouts · 24 teaching GIFs · 14 buildable examples · 4 cheatsheets
 
 [![docs](https://img.shields.io/badge/chapters-29-60a5fa?style=flat-square)](contents.md)
 [![animations](https://img.shields.io/badge/SVG_animations-25-22d3ee?style=flat-square)](../../assets/animations/)
 [![boards](https://img.shields.io/badge/boards_and_pinouts-10-fbbf24?style=flat-square)](../../assets/boards/)
-[![gif](https://img.shields.io/badge/teaching_GIF-6-f87171?style=flat-square)](../../assets/gif/)
+[![gif](https://img.shields.io/badge/teaching_GIF-24-f87171?style=flat-square)](../../assets/gif/)
 [![examples](https://img.shields.io/badge/examples-14-34d399?style=flat-square)](../../examples/)
 [![cheatsheets](https://img.shields.io/badge/cheatsheets-4-a78bfa?style=flat-square)](cheatsheets/hal.md)
 [![tools](https://img.shields.io/badge/generators-Python_stdlib-f472b6?style=flat-square)](../../tools/)
@@ -27,13 +27,13 @@ An STM32 notebook in English, translated from the Chinese edition: 29 chapters (
 
 ## What this repo is for
 
-Tutorials are easy to find and still fail in the same three ways:
+Many STM32 tutorials have one of these three problems:
 
 | Problem | What this repo does |
 | --- | --- |
 | **Text only. You never see what the hardware is doing.** | Each peripheral has a **moving diagram** (SVG + CSS). GitHub plays it on the page. |
 | **You do not know the board or the pins.** | **Structure drawings**, a full pinout, and a wiring overview. All drawn, not photographed. |
-| **Copied examples do not build.** | Each example is HAL you can compile, plus the CubeMX settings and the usual traps. |
+| **Copied examples do not build.** | Each example compiles as is (HAL, plus one SPL project), and its README gives the wiring, the settings, and the usual traps. |
 
 > **Honest note:** mechanism figures are original vector drawings or generated GIFs, not vendor product photographs. Two Nucleo-64 photos are CC0 assets with provenance recorded in [`assets/photos/README.md`](../../assets/photos/README.md). For official schematics, use the links in [chapter 21](21-board-maps.md).
 
@@ -74,7 +74,7 @@ The chapter index, with one-line summaries, is [contents.md](contents.md).
 </tr>
 </table>
 
-The full list of 25 SVG animations is in [assets/README.md](../../assets/README.md). The six GIFs below are the teaching set, generated in pure Python. `assets/gif/` also has 20 `*-zh.gif` files sampled from the SVGs for the WeChat edition:
+The full list of 25 SVG animations is in [assets/README.md](../../assets/README.md). The six GIFs below come from the set of 24 teaching GIFs, all generated in pure Python. `assets/gif/` also has 24 `*-zh.gif` files sampled from the SVGs for the WeChat edition:
 
 <div align="center">
 <img src="../../assets/gif/led-blink.gif" width="330" alt="LED blink GIF">
@@ -124,7 +124,7 @@ you can bring up         you can read a timing       you can hand someone
 5 peripherals            diagram and a manual        a prototype
 ```
 
-Each chapter ends with a lab and a self-test. The longer version is [chapter 0](00-how-to-learn-stm32.md).
+Each chapter has a lab and a self-test. The longer version is [chapter 0](00-how-to-learn-stm32.md).
 
 ## Chapters
 
@@ -172,7 +172,7 @@ The Chinese originals are in [`../../cheatsheets/`](../../cheatsheets/).
 
 ## How the pictures are made
 
-They are generated. After a clone you can rebuild them with no third-party library (no PIL, no ImageMagick, no browser):
+They are generated. The SVG and GIF generators need only the Python standard library (no PIL, no ImageMagick, no browser). The narrated MP4s need the tools in the comment below, and `check_assets.py` also needs Pillow, ffmpeg, and ffprobe to check the videos:
 
 ```bash
 python3 tools/gen_animations.py
@@ -205,7 +205,7 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 - [x] The chapter set plus the writing guide
 - [x] 25 SVG mechanism animations (inventory in `assets/README.md`, including the G0 boot and SWD recovery diagram)
 - [x] Seven board drawings plus three G0/L4/H7 package pinouts
-- [x] Six generated GIFs and the asset checker
+- [x] 24 generated teaching GIFs and the asset checker
 - [x] 14 buildable examples (including frozen SPL, bxCAN, and USB CDC/HID) and 4 cheatsheets
 - [x] A narrated MP4 for chapters 00–28 (`assets/video/`, Chinese voice-over plus SRT)
 - [x] Wokwi projects and Renode `.resc` scripts (chapter 22)
@@ -215,7 +215,7 @@ Read [CONTENT_GUIDE.md](CONTENT_GUIDE.md) first. A useful commit message looks l
 ---
 
 <div align="center">
-<sub>If one chapter saved you an afternoon, a star is the thank-you that keeps the notes moving.</sub>
+<sub>If the notes helped you, a star is welcome.</sub>
 <br><br>
 <b>Still being updated · see the commit log for the date</b>
 </div>

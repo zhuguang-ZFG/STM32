@@ -1,6 +1,6 @@
 # Where the road goes next
 
-This page exists only in the book. It gathers the seven parts into one path you can keep walking. It does not change chapter 28 in `docs/en/`. The numbers below are the ledger already stated in earlier chapters, gathered here so a measurement has a column to stand in.
+This page exists only in the book. The numbers below are the ledger already stated in earlier chapters, gathered here so you can compare them with what you measure.
 
 ## What each part should leave you
 
@@ -9,10 +9,10 @@ This page exists only in the book. It gathers the seven parts into one path you 
 | Start | A project you can rebuild: it compiles, downloads, and hits a breakpoint, with the part and the clock assumption written down |
 | Pins and time | A real level on one pin, or a timer period that was calculated and then measured |
 | Moving data | One UART, I2C, or SPI frame, or one ADC/DMA buffer with a named owner |
-| Reliability | The state after a watchdog, low-power, or failed update — not only the demo path |
+| Reliability | The state after a watchdog reset, a low-power wake-up, or a failed update |
 | Delivery | A reproduction note for a small project, with manuals, examples, and community posts kept apart |
 | Migration and networks | Power, alternate functions, clocks, and memory rechecked on a new family; network faults split by link, address, transport, and application |
-| System | One diagram with an owner, a deadline, and evidence of recovery — not only a different RTOS name |
+| System | One diagram with an owner, a deadline, and evidence of recovery |
 
 ## Four lines for the first board
 
@@ -32,16 +32,16 @@ Match the four lines for the first board, then change family. The expected value
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |
 | The G0 boot latch | Latched on the fourth rising edge of SYSCLK. PA14 is both the boot input and SWCLK. With `BOOT_LOCK=1` and RDP level 1, debug stops, and `FLASH_ACR.DBG_SWEN` resets to 0 | The level on PA14 during the sample window, and whether the debugger connects |
-| The clock an L4 wakes on | After Stop 2 the temporary clock is MSI or HSI16. The cover's 1.1 µA, 1.4 µA with the RTC, and 4 µs wake are chip typicals | The bit width of the first frame after wake-up, and the current with the debugger and the LED removed |
+| The clock an L4 wakes on | After Stop 2 the temporary clock is MSI or HSI16. The datasheet cover's 1.1 µA, 1.4 µA with the RTC, and 4 µs wake are chip typicals | The bit width of the first frame after wake-up, and the current with the debugger and the LED removed |
 | H7 silicon and VOS | Rev Y/W stay on VOS1 at 400 MHz. Rev V enters VOS0 from a VOS1 that has already reported ready, and only then 480 MHz. MCO2÷5 expects 80 MHz at 400 MHz and 96 MHz at 480 MHz | `REV_ID`, both `VOSRDY` waits, and the MCO reading on an instrument |
 
 ## When this book is finished
 
 Three checks are enough:
 
-1. The toolchain runs again on your board, not only in a screenshot.
+1. The toolchain runs again on your own board.
 2. At least one claim records the expected value, the measured value, and the conditions.
-3. That claim points at a document number or a frozen code version. A number you cannot point back should not enter the design yet.
+3. That claim points at a document number or a frozen code version. A number you cannot trace back should not enter the design yet.
 
 ## What to do next
 
@@ -53,14 +53,12 @@ Pick the constraint you actually have to ship, and go deep. Do not scan all 29 c
 - It has to reach a network: chapter 27. Prove the link, the address, TCP, MQTT, and TLS separately.
 - You are choosing an RTOS: chapters 15 and 28. Budget the stack, the queue, and the interrupt priority before you compare kernel names.
 
-Look up terms in [Appendix D](#appendix-glossary). What counts as evidence, and what is only a clue, is [Appendix E](#appendix-references).
+Look up terms in [Appendix D](#appendix-glossary). What counts as evidence, and what is only a clue, is in [Appendix E](#appendix-references).
 
-## Leave these for later
+## What not to do
 
 - Do not copy F1 register addresses onto a G0, L4, or H7.
 - Do not copy the F103 1 KB page, prescaler 9, or BRR `0x271` onto a family whose clock is different.
 - Do not treat a passing simulation as proof of the board's electrical behavior.
 - Do not treat a parameter from a social post as a manual.
 - The Chinese book and this English book are two builds. English comes from `docs/en/` and `stm32-book/book/en/`. A sentence on the Chinese page is not, by itself, a register fact this edition has checked.
-
-If you do only one thing after this page: pick one behavior you must deliver, and write its expected value, the measurement, and the next way it can fail.

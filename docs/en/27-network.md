@@ -14,10 +14,11 @@
   <video width="640" controls poster="../../assets/video/ch27-network.png">
     <source src="../../assets/video/ch27-network.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chinese voice-over, 3.1 min. Voice: Microsoft Edge neural voice zh-CN-XiaoxiaoNeural via edge-tts (library mostly LGPLv3; the voice model is an online Microsoft service, not an open model). Pictures are generated from this repo's SVGs, not photographs. Video: <a href="../../assets/video/ch27-network.mp4">MP4</a> · subtitles: <a href="../../assets/video/ch27-network.srt">SRT</a>. Rebuild with <code>python3 tools/gen_narrated.py --speak</code>.</sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (3.1 min). <a href="../../assets/video/ch27-network.mp4">MP4</a> · <a href="../../assets/video/ch27-network.srt">subtitles</a></sub>
 </p>
 
-**Narration script (Chinese, same text as the subtitles)**
+<details>
+<summary>Narration script (Chinese, same text as the subtitles)</summary>
 
 1. STM32 联网不是勾一个 lwIP 选项。数据先经过网线、变压器和 PHY，再走 RMII 到 MAC，最后由 DMA 搬进内存。链路灯只证明 PHY 看见链路脉冲，不证明 IP 和应用已经通。
 2. 第一层证据是用 MDIO 读到正确的 PHY 标识、链路、速率和双工。地址脚、复位脚或五十兆参考时钟不对时，反复改 DHCP 和 MQTT 没有意义。先找到最底层的第一处分歧。
@@ -29,8 +30,10 @@
 8. TLS 客户端至少要有受信 CA、匹配的主机名、可靠随机数和可信时间。把认证模式关掉虽然可能握手成功，却失去服务器身份保证。时间没有建立前，证书有效期也无法正确判断。
 9. 排错从 PHY 和 MDIO 到 ARP、IP、DNS，再到 TCP、TLS、MQTT 和业务 ACK。每一级保留 PCAP、错误码和状态日志，不能用 ping 通替代整条验收。
 10. 合上书，三问。链路灯只能证明哪一层？TCP ACK 为什么不能证明业务已经落盘？H7 的 Ethernet 描述符为什么不能随手放进 DTCM？
+
+</details>
 <!-- /video:ch27 -->
-## 📌 Goals
+## Learning goals
 
 - [ ] Choose explicitly among an on-chip MAC plus PHY, SPI Ethernet, Wi-Fi/cellular socket offload, and PPP.
 - [ ] Draw and verify the STM32 → MAC DMA → RMII → PHY → magnetics → RJ45 path.
@@ -40,7 +43,7 @@
 - [ ] Implement application framing, deadline-bounded I/O, exponential reconnect backoff, and business idempotency.
 - [ ] Locate the first divergence using PHY registers, PCAP, protocol errors, and state-machine logs.
 
-## 🧭 Choose the network path before opening CubeMX
+## Choose the network path before opening CubeMX
 
 | Path | MCU-facing interface | TCP/IP location | Advantage | Cost and boundary |
 | --- | --- | --- | --- | --- |
@@ -52,7 +55,7 @@
 
 Write throughput, latency, connection count, TLS, power, certification, field update, and diagnosis requirements first. “CubeMX has a checkbox” is not an engineering requirement.
 
-## 🔌 Hardware loop: MAC, RMII, PHY, and RJ45
+## Hardware loop: MAC, RMII, PHY, and RJ45
 
 The MB1364 NUCLEO-H743ZI2 family provides a 10/100 Ethernet PHY and integrated RJ45, as documented by UM2407. It shortens bring-up but does not replace a target-board schematic review. Old H743ZI, ZI2, and custom boards may differ in clock source, solder bridges, PHY address, and reset network.
 
@@ -79,7 +82,7 @@ Firmware should still record:
 
 If MDIO cannot read the PHY, stop at hardware. Changing IP addresses cannot repair a missing PHY.
 
-## 🧠 H7's critical boundary: CPU and DMA may see different memory
+## H7's critical boundary: CPU and DMA may see different memory
 
 The frozen STM32CubeH7 HTTP Netconn RTOS example states that Ethernet DMA cannot access DTCM at `0x20000000`; data must be in reachable D1/D2 SRAM. Cacheable buffers also need 32-byte line alignment and a coherent ownership protocol.
 
@@ -110,7 +113,7 @@ Invalidating a narrow, unaligned range can discard unrelated dirty variables sha
 - A pbuf may be chained; application data need not be contiguous.
 - A successful send normally means “accepted locally,” not “processed by the remote application.”
 
-## 🧵 The three lwIP APIs and their thread boundaries
+## The three lwIP APIs and their thread boundaries
 
 | API | Model | Valid context | Best fit |
 | --- | --- | --- | --- |
@@ -122,7 +125,7 @@ Do not call raw `tcp_write()` or `udp_send()` from Ethernet IRQs, timer IRQs, or
 
 Keep `LWIP_ASSERT_CORE_LOCKED()` during development. If `LWIP_TCPIP_CORE_LOCKING` is enabled, the lock is not taken from ISR context and the RTOS must handle priority inversion correctly.
 
-## 🌐 Startup state machine: link is not online
+## Startup state machine: link is not online
 
 ```mermaid
 stateDiagram-v2
@@ -146,7 +149,7 @@ Log at least monotonic time, old/new states, reason code, retry count, link, and
 - Separate DNS errors from TCP errors. Log the query, return code, resolved address, and TTL; do not permanently cache a transient failure.
 - Certificate validation needs trusted time. Begin with a protected manufacturing/RTC estimate, then calibrate over an authenticated SNTP or business channel. Do not disable time checking merely to connect.
 
-## 📦 TCP is a byte stream: define application framing
+## TCP is a byte stream: define application framing
 
 One `send()` does not correspond to one `recv()`. A 4 KiB message may arrive in pieces; several small messages may arrive together. A protocol needs at least magic/version, length, type, business sequence, and an integrity field.
 
@@ -238,7 +241,7 @@ send_all_result_t send_all_until(int fd, const uint8_t *buf, size_t len,
 
 Compute the deadline once, for example `send_all_until(fd, frame, frame_len, sys_now() + 2000U)`. `SEND_ALL_TIMEOUT` means the local send window made no sufficient progress before 2 seconds. It still does not prove remote processing. Durable business completion needs an application ACK carrying the same sequence and idempotent handling on the server.
 
-## 🚀 Choosing UDP or TCP
+## Choosing UDP or TCP
 
 | Requirement | UDP | TCP |
 | --- | --- | --- |
@@ -250,7 +253,7 @@ Compute the deadline once, for example `send_all_until(fd, frame, frame_len, sys
 
 UDP is not “more real-time TCP.” If you add retransmission, windows, ordering, and fragmentation, you may build a worse TCP. If the next sensor frame can replace the previous one, UDP may avoid head-of-line blocking, but it still needs sequence and time.
 
-## 📨 MQTT: QoS is not business exactly-once
+## MQTT: QoS is not business exactly-once
 
 | QoS | Transport meaning | Device responsibility |
 | --- | --- | --- |
@@ -267,7 +270,7 @@ Also design:
 - whether a retained message is latest state or a command—**do not retain side-effect commands**;
 - broker packet/receive limits against MCU buffers.
 
-## 🔐 TLS: a completed handshake is not automatically secure
+## TLS: a completed handshake is not automatically secure
 
 An embedded Mbed TLS client needs a trusted CA, host name, entropy/DRBG, trusted time, allowed algorithms, private-key policy, and bounded I/O callbacks.
 
@@ -282,7 +285,7 @@ Production invariants:
 
 A conventional MQTT/TLS port number is not security evidence. Authentication mode, verification result, negotiated version/cipher, and peer identity are.
 
-## 📶 Wi-Fi and cellular modules: the stack moved, the state machine did not
+## Wi-Fi and cellular modules: the stack moved, the state machine did not
 
 ### AT socket offload
 
@@ -300,7 +303,7 @@ Commands need transaction state, one deadline, cancellation, and a reset path ba
 
 PPP exposes the serial/cellular link as an lwIP netif and lets applications use sockets. You still manage dialing, authentication, MTU, flow control, cost, and weak-signal recovery. After PPP link-up, verify IP → DNS → TLS → application separately.
 
-## 🧯 Recovery: capped exponential backoff
+## Recovery: capped exponential backoff
 
 ```text
 backoff_n = min(B_max, B_base * 2^min(n, n_cap)) + random(0, jitter)
@@ -315,7 +318,7 @@ backoff_n = min(B_max, B_base * 2^min(n, n_cap)) + random(0, jitter)
 
 Before replaying actuator commands, check expiry, current device state, and idempotency key. “Execute every old command after reconnect” is unsafe.
 
-## 🔍 Layered diagnosis and PCAP evidence
+## Layered diagnosis and PCAP evidence
 
 <p align="center">
   <img src="../../assets/diagrams/network-debug-ladder.svg" width="820" alt="A diagnosis ladder from PHY and ARP through TCP, TLS, and MQTT">
@@ -348,7 +351,7 @@ mqtt                                     # when dissected
 
 A report includes board/PHY, firmware commit, MAC/IP, topology, capture point, time range, and expected behavior. One screenshot with green rows is not reproducible evidence.
 
-## 📐 Reproducible capacity and latency accounts
+## Reproducible capacity and latency accounts
 
 ```text
 RAM_net = descriptor_bytes + RX_pool + TX_pool + lwIP_heap
@@ -361,7 +364,7 @@ recovery_time = first_application_success - fault_injection_time
 
 Report peaks: minimum free heap, minimum stack per task, maximum pbuf use, maximum concurrent connections, TLS handshake peak, and worst DNS/TCP/TLS latency. Stability acceptance includes cable removal, switch restart, DHCP changes, DNS failure, server restart, certificate error, and lossy links.
 
-## 🧪 Four progressive labs
+## Four progressive labs
 
 ### A. ARP and ping only
 
@@ -393,7 +396,7 @@ Report peaks: minimum free heap, minimum stack per task, maximum pbuf use, maxim
 
 The complete field list, executable TCP soak/fault peer, and report contract are in [`labs/ethernet-24h/`](../../labs/ethernet-24h/). A localhost smoke validates only the host harness; it is not STM32 hardware evidence.
 
-## ✅ Self-test
+## Self-test
 
 1. Why does a link LED not prove that lwIP received a frame?
 2. Why can H7 Ethernet DMA not use a DTCM buffer?
@@ -406,7 +409,7 @@ The complete field list, executable TCP soak/fault peer, and report contract are
 9. If ping works but MQTT fails, what is the next diagnosis order?
 10. What MCU state machines remain when an AT module owns TCP/IP?
 
-## 🔗 Authoritative sources and frozen versions
+## Related resources
 
 - **RM0433** plus target-revision **ES0392**: H7 bus matrix and Ethernet MAC/MTL/DMA.
 - **UM2407**: MB1364 Nucleo-144 PHY, RJ45, solder bridges, and board revisions.

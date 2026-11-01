@@ -8,9 +8,9 @@
  *   Prescaler = 9，BS1 = 5 TQ，BS2 = 2 TQ
  *   36 MHz / (9 × 8) = 500 kbit/s，采样点 (1+5)/8 = 75%。
  *
- * 引脚：__HAL_AFIO_REMAP_CAN1_1() 把 CAN_RX/TX 放到 PB8/PB9。
- * HAL 里 CAN1_1 对应 MAPR.CAN_REMAP = 01。CAN1_2 是 PD0/PD1，
- * 48 脚的 F103C8 没有这两只脚。默认 PA11/PA12 又和 BluePill 的 USB 挤在一起。
+ * 引脚：__HAL_AFIO_REMAP_CAN1_2() 把 CAN_RX/TX 放到 PB8/PB9，
+ * 对应 MAPR.CAN_REMAP = 10（RM0008 第 9.4.2 节）。_1() 是复位默认的
+ * PA11/PA12，和 BluePill 的 USB 挤在一起；_3() 是 PD0/PD1，48 脚没有。
  *
  * 开关（改宏后重编译）：
  *   APP_CAN_LOOPBACK  1 = 环回，单板自发自收，不用收发器
@@ -188,7 +188,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef *h)
     __HAL_RCC_AFIO_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_CAN1_CLK_ENABLE();
-    __HAL_AFIO_REMAP_CAN1_1();
+    __HAL_AFIO_REMAP_CAN1_2();
 
     io.Pin = GPIO_PIN_9;
     io.Mode = GPIO_MODE_AF_PP;

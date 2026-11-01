@@ -268,7 +268,7 @@
         "refs": [
           {
             "chapter": "03",
-            "heading": "GPIO 寄存器（F1）",
+            "heading": "引脚背后的寄存器（F1）",
             "label": "03 寄存器"
           }
         ]
@@ -278,7 +278,7 @@
         "refs": [
           {
             "chapter": "03",
-            "heading": "GPIO registers (F1)",
+            "heading": "The registers behind a pin",
             "label": "03 registers"
           }
         ]
@@ -922,7 +922,7 @@
         "refs": [
           {
             "chapter": "03",
-            "heading": "模式详解",
+            "heading": "一只引脚的四种身份",
             "label": "03 模式"
           }
         ]
@@ -932,7 +932,7 @@
         "refs": [
           {
             "chapter": "03",
-            "heading": "The 8 GPIO modes",
+            "heading": "Four jobs for one pin",
             "label": "03 modes"
           }
         ]
@@ -1518,7 +1518,7 @@
         "refs": [
           {
             "chapter": "03",
-            "heading": "推挽 vs 开漏",
+            "heading": "推挽与开漏",
             "label": "03 开漏"
           }
         ]
