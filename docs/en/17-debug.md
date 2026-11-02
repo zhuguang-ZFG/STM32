@@ -1,7 +1,7 @@
 # 17 Debugging and Performance
 > 中文：[17 调试与性能优化](../17-调试与性能优化.md)
 
-> A program stuck in HardFault does not have to be a guessing game. A few fault registers point at the line that went wrong. This chapter also shows how to count the cycles a piece of code takes with the DWT.
+> After HardFault, freeze the stack frame and CFSR/HFSR, check whether BFAR/MMFAR are valid, and use the same ELF with addr2line. Changing optimization or commenting code first destroys the scene.
 
 <p align="center">
   <img src="../../assets/animations/debug-swo.svg" width="760" alt="SWD debug plus SWO/ITM print tracing">
@@ -97,6 +97,8 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 
 ## Core ideas
 
+Debug evidence has an order: preserve the scene, classify the fault, locate the source, and then build a minimal reproduction. Performance work follows the same rule: measure cycles, bus use, and waveforms before choosing an algorithm, DMA, compiler, or hardware change.
+
 ### 1. SWD vs JTAG
 
 **SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
@@ -117,7 +119,7 @@ ST's manuals do not give a top speed for SWD. The usual 4 MHz or 10 MHz figures 
 
 ### 2. SWO / ITM / printf tracing
 
-**SWO (Serial Wire Output)** lets the MCU send debug information out of the SWO pin through the **ITM**. It **does not occupy a UART**, and it does not block. It is the most elegant way to log.
+**SWO (Serial Wire Output)** lets the MCU send debug information through the **ITM** without occupying a UART. Whether it blocks or drops characters depends on the retarget code, probe, and host reader, so it is not a zero-cost log path.
 
 | Mechanism | What it is |
 | --- | --- |
@@ -204,6 +206,11 @@ arm-none-eabi-addr2line -e build/app.elf -f -C 0x08001a3c
 ```
 
 > With Keil, look up the faulting PC in the symbol ranges of the `.map` file, or use the IDE's Call Stack window.
+
+<p align="center">
+  <img src="../../assets/diagrams/fault-triage-ladder.svg" width="820" alt="HardFault triage freezes the scene, reads the stack, classifies CFSR and HFSR, validates BFAR and MMFAR, and maps the ELF back to source">
+  <br><sub>▲ Fault ladder: address registers matter only when BFARVALID/MMARVALID are set; with `IMPRECISERR`, stacked PC may not be the original bad write. The figure gives the reading order, not a substitute for the target ELF and captured registers (FA-002 · IG-008 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 5. Logic analyzer / oscilloscope
 
@@ -366,11 +373,13 @@ static inline void DWT_DelayInit(void)
 
 ## Hands-on labs
 
-1. **Print over SWO**: redirect `printf` to the ITM and watch the output in the IDE's SWV / ITM window. Expected: you see the log with no UART connected.
-2. **Cause a HardFault and find it**: write `*(volatile uint32_t*)0xDEADBEEF = 1;`. In the HardFault handler, print `CFSR`, `BFAR`, and `PC`, and locate the line with `addr2line`. Expected: it points back at that line.
-3. **Compare times with the DWT**: time a software `memcpy` and a DMA copy of the same amount of data (see [Chapter 10](10-dma.md)). Expected: the CPU time of the DMA version is close to 0.
-4. **(Further) Decode I2C with a logic analyzer**: capture one OLED write transaction ([Chapter 07](07-i2c.md)) and restore the address and the data with a decoder. Expected: you can see address 0x3C and the ACK.
-5. **(Further) Compare optimization levels**: time the same floating-point-heavy code at `-O0` and at `-O2` with the DWT. Expected: `-O2` is several times faster.
+1. **HardFault evidence pack:** In a controlled Debug build, access an illegal address. Save stacked PC/LR, CFSR, HFSR, BFAR/MMFAR valid bits, and the ELF hash, then locate the line with addr2line.
+2. **Precise and imprecise errors:** Create a synchronous illegal access and a DMA/bus write fault, then compare `PRECISERR`, `IMPRECISERR`, and how much the stacked PC can prove.
+3. **DWT baseline:** For the same 4 KB, record `memcpy` CPU cycles, DMA-start CPU cycles, and DMA completion wall time. A fast start does not mean the copy has completed.
+4. **Tool boundary:** Capture one I2C transfer with both protocol decode and SCL/SDA scope traces. One proves bytes; the other proves rise time and electrical margin.
+5. **Optimization regression:** Run the same test vectors at `-Og`, `-O2`, and `-Os`, recording cycles, code size, and identical outputs. Accept an optimization only when results still match.
+
+Before leaving this chapter, keep the full HardFault evidence pack, precise/imprecise comparison, both DMA and memcpy time measures, and one protocol/electrical trace pair.
 
 ## Related resources
 

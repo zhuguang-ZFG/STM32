@@ -260,6 +260,84 @@ def iap_acceptance_gates() -> Svg:
     return s
 
 
+def lowpower_current_evidence() -> Svg:
+    s = Svg(W, H, "低功耗验收看完整电流波形",
+            "静态底电流、唤醒峰值、活跃时间和周期共同决定平均电流；开发板漏电要单独扣除")
+    s.header(tag="16 功耗 · IG-009", tag_color=T.GREEN)
+    s.line(54, 272, 848, 272, stroke=T.STROKE, sw=1.5)
+    points = [(54, 252), (168, 252), (184, 122), (250, 122), (266, 252),
+              (520, 252), (536, 156), (590, 156), (606, 252), (848, 252)]
+    for i in range(len(points) - 1):
+        s.line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1],
+               stroke=T.CYAN if i < 5 else T.VIOLET, sw=2)
+    s.text(78, 246, "STOP floor", size=10, mono=True, fill=T.GREEN, weight="700")
+    s.text(217, 108, "active peak", size=10, anchor="middle", mono=True, fill=T.RED, weight="700")
+    s.text(563, 142, "wake / sample", size=10, anchor="middle", mono=True, fill=T.AMBER, weight="700")
+    s.double_arrow(184, 300, 266, 300, color=T.RED, sw=1.5)
+    s.text(225, 294, "t_active", size=9.5, anchor="middle", mono=True, fill=T.MUTED)
+    s.double_arrow(54, 330, 520, 330, color=T.CYAN, sw=1.5)
+    s.text(287, 324, "period", size=9.5, anchor="middle", mono=True, fill=T.MUTED)
+
+    s.rect(38, 366, 520, 112, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(58, 394, "平均电流", size=12.5, fill=T.GREEN, weight="800")
+    s.text(58, 426, "Iavg = (Σ Istate × tstate) / period", size=11, mono=True, fill=T.TEXT, weight="700")
+    s.text(58, 454, "同时记录电压、唤醒原因、时钟恢复完成点", size=10.2, fill=T.MUTED)
+
+    s.rect(584, 366, 278, 112, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(604, 394, "测量边界", size=12.5, fill=T.RED, weight="800")
+    s.text(604, 423, "断开调试器 / LED / USB", size=10.2, fill=T.MUTED)
+    s.text(604, 449, "DS 典型值 ≠ 开发板实测", size=10.2, fill=T.RED, weight="700")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def fault_triage_ladder() -> Svg:
+    s = Svg(W, H, "HardFault 先冻结证据，再改代码",
+            "栈帧 PC/LR、CFSR/HFSR 与有效地址寄存器逐层收窄；没有证据前不靠猜测改优化级别")
+    s.header(tag="17 故障 · IG-008", tag_color=T.RED)
+    steps = [
+        ("1", "冻结现场", "禁中断 · 不继续运行", T.RED),
+        ("2", "读栈帧", "PC / LR / xPSR", T.AMBER),
+        ("3", "分类", "CFSR / HFSR", T.CYAN),
+        ("4", "地址有效?", "BFARVALID / MMARVALID", T.VIOLET),
+        ("5", "源码定位", "addr2line + ELF", T.GREEN),
+    ]
+    x0, y, bw, gap = 24, 104, 150, 26
+    for i, (num, title, proof, color) in enumerate(steps):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 120, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 18, y + 31, num, size=13, fill=color, weight="800")
+        s.text(x + 75, y + 58, title, size=11.5, anchor="middle", fill=T.TEXT, weight="800")
+        s.text(x + 75, y + 88, proof, size=9.5, anchor="middle", mono=True, fill=T.MUTED)
+        if i < 4:
+            s.arrow(x + bw + 3, y + 60, x + bw + gap - 3, y + 60,
+                    color=T.CYAN, sw=2, head=6)
+
+    s.rect(40, 274, 500, 178, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(60, 306, "判读顺序", size=13, fill=T.TEXT, weight="800")
+    rows = [
+        ("PRECISERR", "精确总线错误：栈 PC 通常可用"),
+        ("IMPRECISERR", "异步写错误：PC 可能只是后来位置"),
+        ("BFARVALID", "置位后才读取 BFAR"),
+        ("FORCED", "可配置 Fault 被升级到 HardFault"),
+    ]
+    for i, (flag, note) in enumerate(rows):
+        yy = 338 + i * 26
+        s.text(60, yy, flag, size=10.2, mono=True, fill=T.CYAN, weight="700")
+        s.text(180, yy, note, size=10.2, fill=T.MUTED)
+
+    s.rect(568, 274, 294, 178, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(588, 306, "不要先做", size=13, fill=T.RED, weight="800")
+    s.text(588, 342, "改成 -O0 再说", size=10.5, fill=T.MUTED)
+    s.text(588, 371, "注释一半代码碰运气", size=10.5, fill=T.MUTED)
+    s.text(588, 400, "无条件打印 BFAR", size=10.5, fill=T.MUTED)
+    s.text(588, 429, "复位后丢掉现场", size=10.5, fill=T.RED, weight="700")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 def layers_hal_ll_reg() -> Svg:
     s = Svg(W, H, "四种代码风格的分层关系",
             "寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源")
@@ -1202,6 +1280,7 @@ def h7_pinmux_conflicts() -> Svg:
 
 ALL = [first_lab_wiring, first_success_gates, dma_buffer_ownership,
        watchdog_reset_evidence, iap_acceptance_gates,
+       lowpower_current_evidence, fault_triage_ladder,
        layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
        network_cache_ownership, tcp_byte_stream, rtos_owner_task,
@@ -1216,6 +1295,8 @@ NAMES = {
     "dma_buffer_ownership": "dma-buffer-ownership",
     "watchdog_reset_evidence": "watchdog-reset-evidence",
     "iap_acceptance_gates": "iap-acceptance-gates",
+    "lowpower_current_evidence": "lowpower-current-evidence",
+    "fault_triage_ladder": "fault-triage-ladder",
     "layers_hal_ll_reg": "layers-hal-ll-reg",
     "project_structure": "project-structure",
     "peripheral_bus": "peripheral-bus",

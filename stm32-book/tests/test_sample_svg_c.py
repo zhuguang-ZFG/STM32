@@ -58,6 +58,7 @@ boards/pinout-stm32g071rb-lqfp64.svg 620x750 34523 7ccc8b702e15d0473bfc1d4c95639
 boards/pinout-stm32h743zi-lqfp144.svg 840x970 75786 4d71ec5cab732513073bac6721ae4c688a36f18ab11fcae4b5e6e927433b7a96
 boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c88412f1e7920570c53e388e0a10a44fbe5f8adf
 diagrams/dma-buffer-ownership.svg 900x560 9298 f33f98d257e04ac2054f8e076c9401ff4aa9d91f30ebc32b474a08329e1b5439
+diagrams/fault-triage-ladder.svg 900x560 10278 ef5120ac9bbc4ccdc40c77db5255baf74dc03e281ac73e2b654370d851282a34
 diagrams/firmware-stack-choice.svg 900x560 8495 ffad6ce257492aef37d37dce681845652b67c5b6f5d341cc279c5ea8c02c9d1e
 diagrams/first-lab-wiring.svg 900x560 9942 b44f10ed4e72897cc4261b79bd22e34287ecc222868e131c77b067cc6a0d0df6
 diagrams/first-success-gates.svg 900x560 9213 8ad973a0bd59ecec057885587cc9d6476ed3f2506be55629220ad93dec561963
@@ -70,6 +71,7 @@ diagrams/instrument-evidence-ladder.svg 900x560 6398 17eb1364f9b45c92a06969a294b
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
 diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f0596565606f77ef6f757d3559900d66f
 diagrams/layers-hal-ll-reg.svg 900x560 10401 60098b25b368c2f6acefb4e9a3152f816506cae44e68b2fb8ffbf0878c049f78
+diagrams/lowpower-current-evidence.svg 900x560 6553 b179af76c293ac0d9ba059570b55a2b83bdc82f077d74387c85581f25765d3e6
 diagrams/manual-choice-map.svg 900x560 9687 75a6977234623a1b9e8edbd6129863f67cd9ab3ad4a4eeec7e55abe96fece3e9
 diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
 diagrams/network-debug-ladder.svg 900x560 11278 a1405054a5ba593090ad0bc6fdb104a5c8e513dd9695bd35767867faeeaec2e8
@@ -109,6 +111,7 @@ diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa92
 STATIC_ADVANCED = {
     "diagrams/firmware-stack-choice.svg",
     "diagrams/dma-buffer-ownership.svg",
+    "diagrams/fault-triage-ladder.svg",
     "diagrams/first-lab-wiring.svg",
     "diagrams/first-success-gates.svg",
     "diagrams/h7-pinmux-conflicts.svg",
@@ -116,6 +119,7 @@ STATIC_ADVANCED = {
     "diagrams/h7-revision-clock-decision.svg",
     "diagrams/h7-startup-evidence.svg",
     "diagrams/iap-acceptance-gates.svg",
+    "diagrams/lowpower-current-evidence.svg",
     "diagrams/instrument-evidence-ladder.svg",
     "diagrams/manual-choice-map.svg",
     "diagrams/network-cache-ownership.svg",
@@ -318,7 +322,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(87, len(found))
+        self.assertEqual(89, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

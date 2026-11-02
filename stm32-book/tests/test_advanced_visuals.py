@@ -108,6 +108,24 @@ CHAPTERS = {
             "rtos-startup-gates.svg",
         ),
     ),
+    ROOT / "docs" / "16-低功耗设计.md": (
+        4,
+        (
+            "lowpower-wakeup.svg",
+            "sample-16-stop-wake.svg",
+            "stop-wake.gif",
+            "lowpower-current-evidence.svg",
+        ),
+    ),
+    ROOT / "docs" / "17-调试与性能优化.md": (
+        4,
+        (
+            "debug-swo.svg",
+            "sample-17-cfsr.svg",
+            "cfsr-read.gif",
+            "fault-triage-ladder.svg",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -202,6 +220,8 @@ class AdvancedVisualTests(unittest.TestCase):
             ("12-Flash与IAP升级.md", "12-flash-iap.md"),
             ("14-USB.md", "14-usb.md"),
             ("15-FreeRTOS入门.md", "15-freertos.md"),
+            ("16-低功耗设计.md", "16-low-power.md"),
+            ("17-调试与性能优化.md", "17-debug.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
@@ -228,8 +248,10 @@ class AdvancedVisualTests(unittest.TestCase):
             "first-lab-wiring.svg",
             "first-success-gates.svg",
             "dma-buffer-ownership.svg",
+            "fault-triage-ladder.svg",
             "watchdog-reset-evidence.svg",
             "iap-acceptance-gates.svg",
+            "lowpower-current-evidence.svg",
             "manual-choice-map.svg",
             "firmware-stack-choice.svg",
             "instrument-evidence-ladder.svg",

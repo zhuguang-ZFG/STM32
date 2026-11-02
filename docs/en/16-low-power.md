@@ -1,7 +1,7 @@
 # 16 Low-Power Design
 > 中文：[16 低功耗设计](../16-低功耗设计.md)
 
-> Whether a coin cell lasts a year or a week depends on how deeply the chip sleeps most of the time. This chapter covers the three sleep modes and how to wake up on time.
+> A datasheet value of 14 µA does not mean a BluePill will measure 14 µA. Board leakage, the debugger, wake peaks, and active time belong in one current waveform and average-current account.
 
 <p align="center">
   <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="Sleep, Stop, and Standby, and the sources that wake each one">
@@ -108,6 +108,8 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 
 ## Core ideas
 
+Low-power acceptance records the static floor, wake peak, active duration, period, and wake cause. One steady current number cannot predict runtime or reveal a UART left on the wrong clock after wake.
+
 ### 1. The three low-power modes compared
 
 The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
@@ -195,6 +197,11 @@ On a battery device you **add up the whole budget**. Average current is the acti
 | Measure in pieces | Unplug peripherals one at a time | Find the part that draws the most |
 
 > A measuring tip: the µA range of a multimeter has a large internal resistance. Measuring a dynamic current "drags the voltage down" and you misread it. For dynamic current, use a sense resistor plus a scope, or a dedicated power profiler.
+
+<p align="center">
+  <img src="../../assets/diagrams/lowpower-current-evidence.svg" width="820" alt="A low-power period contains the Stop floor, wake peak, active interval, and return to sleep, and average current integrates every state">
+  <br><sub>▲ Current account: floor and peak matter only with their durations. Datasheet typical, development-board measurement, and bare-chip measurement are different boundaries. With the LED, USB, or debugger attached, the result cannot be used as the MCU's microamp figure (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 7. Low-power design checklist
 
@@ -297,11 +304,10 @@ __HAL_RCC_USART2_CLK_DISABLE();
 
 ## Hands-on labs
 
-1. **Saving power in Sleep**: blink in the main loop, and call `Enter_Sleep()` when idle. Compare the current with and without Sleep (a 0.1 Ω sense resistor in series, and look at the waveform). Expected: the current drops clearly in Sleep.
-2. **Stop plus a key wake**: enter Stop, wake on PA0, restore the clock, and toggle the LED. Expected: the key wakes the chip, and the UART is still healthy (which means the clock was restored).
-3. **RTC timed wake**: every 5 s, wake from Stop, take one ADC sample (see [Chapter 09](09-adc-dac.md)), and go back to sleep. Expected: the RTC wakes on time, and the average current drops a lot.
-4. **(Further) Measure the real standby current**: disconnect the LED and the debugger, enter Standby, and measure the microamp current with a power profiler. Expected: close to the standby typical value in the datasheet.
-5. **(Further) Check the runtime estimate**: estimate the runtime with the formula in section 5, then measure the average current and compare. Expected: the estimate and the measurement are in the same order of magnitude.
+1. **Mode baseline:** Measure Run, Sleep, Stop, and Standby on the same hardware. Record supply voltage, board loads, static current, and wake source; do not report a board result as the MCU specification.
+2. **Stop recovery evidence:** On a PA0 wake, mark entry and completion of `SystemClock_Config()` on GPIO and measure wake time. Then send `0x55` and confirm restored 115200 timing.
+3. **Periodic average current:** Wake every 5 s from RTC, sample the ADC, send one frame, and sleep again. Save the full current waveform, integrate Iavg, and compare it with the state-times-duration formula.
+4. **Leakage isolation:** Disconnect debugger, LED, USB, and sensors one at a time and record each floor-current delta. Compare the final result only with the matching mode and temperature in the target datasheet.
 
 ### 8. The last word before the rail falls: PVD
 
@@ -317,7 +323,7 @@ HAL_PWR_EnablePVD();
 
 Sleep current is not a fixed 1 mA either. The core is stopped, but the peripheral clocks are still on, and the current is usually still in the milliamp range. Stop is the mode that reaches the microamp range. The numbers in the comparison table above are the order of magnitude from the datasheet. They are not a measurement from a board in this repo. If you are writing them into a paper or a battery budget, open the datasheet for that exact part and copy the column that matches the clocks you turned off.
 
-Motto: **PVD is a power-fail notice. Sleep is still drawing current. Stop is the mode that really sleeps.**
+Before leaving this chapter, keep four mode baselines, Stop wake plus restored 115200 evidence, one integrated periodic-current trace, and a delta table from removing each external load.
 
 Self-test:
 

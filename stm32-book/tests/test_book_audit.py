@@ -60,7 +60,7 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
 
     def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
@@ -163,6 +163,20 @@ class BookAuditTests(unittest.TestCase):
                 "rtos-owner-task.svg",
                 "rtos-startup-gates.svg",
             ),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
+
+    def test_phase_three_ends_with_power_and_fault_evidence(self) -> None:
+        expected = {
+            "16": ("lowpower-wakeup.svg", "sample-16-stop-wake.svg", "stop-wake.gif", "lowpower-current-evidence.svg"),
+            "17": ("debug-swo.svg", "sample-17-cfsr.svg", "cfsr-read.gif", "fault-triage-ladder.svg"),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]
