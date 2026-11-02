@@ -461,7 +461,7 @@ def main(argv: list[str]) -> int:
             ],
         }
         manifest_path = os.path.join(out_dir, "manifest.json")
-        with open(manifest_path, "w", encoding="utf-8", newline="\n") as handle:
+        with open(manifest_path, "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, ensure_ascii=False, indent=2)
             handle.write("\n")
         print(f"[ok] {os.path.relpath(manifest_path, root)}")

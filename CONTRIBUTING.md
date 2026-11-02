@@ -44,6 +44,7 @@
 python3 tools/gen_animations.py
 python3 tools/gen_boards.py
 python3 tools/gen_diagrams.py
+python3 tools/gen_handdraw_illustrations.py
 python3 tools/gen_gifs.py
 
 # 2) 自检：SVG 是否为合法 XML、GIF 解码回验是否逐像素一致
