@@ -2,7 +2,7 @@
 
 > 中文：[18 常见问题 FAQ](../18-常见问题FAQ.md)
 
-> Download failed, LED dark, garbled serial: someone has hit every one of these before. This chapter sorts them by what you see, with a cause and a fix for each. Search here first when something breaks.
+> Start from the first boundary you can verify: did an ELF exist, can the probe read the ID, is there a pin waveform, and what do the status registers say? The FAQ gives the next check, not permission to change five settings at once.
 
 <p align="center">
   <img src="../../assets/animations/toolchain-flow.svg" width="760" alt="Toolchain data flow: compile, link, flash, run">
@@ -316,11 +316,13 @@ When something breaks, do not reach for the editor yet. Shrink the problem in th
 
 ## Hands-on labs (practice at debugging)
 
-1. **Cause C1 on purpose**: delete one include path, read the error, then put it back. You should learn to read a "header not found" error.
-2. **Cause P4 on purpose**: remove the I2C pull-ups and watch `HAL_I2C_Master_Transmit` time out. You should see why the pull-ups matter.
-3. **Cause D2 on purpose**: set PA13/PA14 as outputs, turn SWD off, and practice the "bricked" board plus the unbrick (BOOT0 pulled high). You should learn the unbrick sequence.
-4. **Cause R1 on purpose**: add FreeRTOS and leave the time base alone, then watch `HAL_Delay` hang. You should understand the SysTick clash.
-5. **(Further) Keep your own trap list**: when a project teaches you a new problem, add it here as symptom / cause / fix. You should end up with a personal debugging notebook.
+1. **Build boundary:** On a temporary branch, remove one include path. Save the first complete error, compile command, and successful exit code after repair; do not capture only the final line.
+2. **Bus boundary:** Power down, remove one I2C pull-up, and save idle level, NACK/timeout, and the recovered ACK trace after restoring it with power off.
+3. **Debug boundary:** Power down, disconnect SWCLK, record `No target connected`, restore it, and confirm that Device ID is readable. Do not practice by flashing firmware that disables SWD.
+4. **RTOS timebase boundary:** In a controlled build, keep the SysTick conflict and record the tick, HAL timebase, and blocked location. Move HAL to TIM4 and save the same test after recovery.
+5. **Personal fault card:** Record symptom, first divergent boundary, minimum evidence, fix, and prevention check. Do not promote a guess into a cause.
+
+Before leaving this chapter, keep four “failure evidence → one change → recovery evidence” records and explain why each experiment changed only one variable.
 
 ## Related resources
 

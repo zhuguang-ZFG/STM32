@@ -2,7 +2,7 @@
 
 > 中文：[20 学习资源与工具链](../20-学习资源与工具链.md)
 
-> ST's manuals run to thousands of pages and nobody reads them cover to cover. This chapter says what RM, DS, PM, and AN each cover, and which one to open and what to search for when you are stuck.
+> One question may require the datasheet's electrical boundary, the reference manual's register, and the errata sheet's exception. State what must be proved before choosing a document or tool; search results and IDE hints are not evidence by themselves.
 
 <p align="center">
   <img src="../../assets/diagrams/project-structure.svg" width="760" alt="Directory layout of a standard STM32 project">
@@ -274,11 +274,12 @@ addr2line -e build/app.elf -f -C $(PC)
 
 ## Hands-on labs
 
-1. **The whole toolchain from the command line**: compile, flash with OpenOCD, and set a GDB breakpoint, without clicking a mouse. You should be able to finish one command-line debug session on your own.
-2. **Create a PlatformIO project**: use `platformio.ini` for an F103, build it, and download a blink. You should understand a cross-platform build.
-3. **Practice searching a manual**: work the three examples in section 5, and write down the page number each time. Searching a manual with a question in hand should become a habit.
-4. **(Further) Decode with PulseView**: capture one SPI Flash read ([chapter 08](08-spi.md)) and reconstruct the command with a decoder. You should see the `0x03` read command and the data.
-5. **(Further) Try an open-source library**: blink once with libopencm3 or Zephyr, and compare it with HAL. You should see what each layer of abstraction costs and what it saves.
+1. **Reproducible build:** Produce ELF, map, and bin from the command line and record compiler version, preset, and ELF hash. CLion, VS Code, and CI call the same build entry.
+2. **Evidence lookup:** Write one question each for a pin, electrical limit, register bit, and erratum. Record DS, RM, and ES revision and page, plus what each source cannot prove.
+3. **Tool boundary:** For one SPI Flash read, save build log, register readback, runtime log, protocol decode, and scope trace, then state what each evidence layer covers.
+4. **Clean rebuild:** Remove only reconstructable build output, rebuild from pinned dependencies, and compare ELF and map. Trace every difference to toolchain, defines, sources, or linker script.
+
+Before leaving this chapter, keep a build-environment inventory, four manual references with revision and page, one five-layer evidence set, and one clean-rebuild comparison.
 
 ## Related resources
 

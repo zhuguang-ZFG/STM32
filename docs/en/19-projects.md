@@ -2,7 +2,7 @@
 
 > 中文：[19 项目实战合集](../19-项目实战合集.md)
 
-> From a Bluetooth car to a FreeRTOS gateway: 10 projects, easy then harder. Each lists the chapters it uses, the parts to buy, the key code, and roughly how many evenings it takes.
+> Choose a project by whether its evidence loop can close: how inputs are measured, state is recorded, outputs are accepted, and failures recover. Feature count and estimated evenings are not deliverables.
 
 <p align="center">
   <img src="../../assets/boards/peripheral-wiring.svg" width="760" alt="Wiring overview for common parts: LED, button, OLED, sensors">
@@ -222,6 +222,11 @@ static float Code2Volt(uint16_t code)
 
 **Where it can grow**: a trigger level and edge, an FFT for the spectrum, two channels to compare, or a DWT cycle count of the refresh rate.
 
+<p align="center">
+  <img src="../../assets/diagrams/dma-buffer-ownership.svg" width="820" alt="In an ADC acquisition project, DMA writes a circular buffer while the CPU processes only stable halves handed off by HT and TC">
+  <br><sub>▲ Acquisition projects establish buffer ownership before frame rate or UI work. The figure does not prove sample rate or analog accuracy; timer, ADC, and input-voltage evidence are still required.</sub>
+</p>
+
 ## 4. USB data-acquisition card (★★★ intermediate)
 
 **Requirements**: stream multi-channel ADC data to a PC over USB (CDC, or a vendor bulk endpoint) and plot it on the host.
@@ -297,6 +302,11 @@ uint32_t Boot_SelectApp(void)
 ```
 
 **Where it can grow**: YMODEM or your own packet format, a signature check, CAN for updating many nodes at once, or resume after a dropped transfer.
+
+<p align="center">
+  <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="A remote-update project accepts image length and CRC, slot range, vectors, jump, and application heartbeat in sequence">
+  <br><sub>▲ An update project must reject bad images, confirm the new version, and recover after an interrupted transfer. “The UART finished and code jumped” is not enough.</sub>
+</p>
 
 ## 6. WS2812 LED-strip controller (★★ intermediate)
 
@@ -414,6 +424,11 @@ void Node_Report(uint8_t node, int16_t temp_x10, uint16_t humi_x10)
 
 **Where it can grow**: CANopen, a bootloader update over the bus, or a gateway to Ethernet or 4G.
 
+<p align="center">
+  <img src="../../assets/diagrams/network-debug-ladder.svg" width="820" alt="A multi-node network is debugged from link and addressing through protocol state to application heartbeat">
+  <br><sub>▲ Multi-node projects follow the first failed boundary instead of jumping from an application log to “the bus is broken.” Each layer keeps reproducible evidence and a recovery action.</sub>
+</p>
+
 ## 9. A self-balancing car (★★★★ a challenge)
 
 **Requirements**: a two-wheel self-balancing car that stands up, recovers after a shove, and can drive and turn from a remote.
@@ -500,12 +515,17 @@ static void vCommTask(void *arg)
 
 **Where it can grow**: an MQTT or Modbus stack, OTA updates, task runtime stats (`vTaskGetRunTimeStats`), or saving data across power loss.
 
+<p align="center">
+  <img src="../../assets/animations/rtos-startup-gates.svg" width="820" alt="A system project passes reset evidence, minimum hardware, kernel objects, device discovery, and application release gates">
+  <br><sub>▲ Gateway projects release application behavior only after critical devices, queues, storage, and communication return explicit results. A running scheduler does not mean the system is ready.</sub>
+</p>
+
 ## Hands-on labs (picking a project and moving it forward)
 
-1. **Build the MVP first**: pick any project and do only the smallest version that runs (for the Bluetooth car, forward and stop are enough). You should see something happen within half a day to 1 day.
-2. **Split it into modules**: break the project into 3 to 5 pieces you can test alone, and prove each one. Each module should run on its own.
-3. **Add one harder feature**: take one direction from "where it can grow" (an OLED, for example) and put it on the MVP. The product should grow one step at a time.
-4. **Write a short retrospective**: record the traps and the fixes (add them to [chapter 18](18-faq.md)). You should start a personal notebook of engineering lessons.
+1. **Freeze the delivery contract:** State input range, output format, timing and capacity budgets, failure states, and recovery path before writing business logic.
+2. **Module evidence:** Each module keeps one runnable test, one injected failure, and one measurement or buffer record. Integrate only after it passes alone.
+3. **System budget:** Add Flash/RAM, worst response, average current, bandwidth, and queue peaks. If one budget fails, reduce scope or change the target device first.
+4. **Delivery package:** Rebuild from a clean environment and include ELF/map, configuration, wiring, acceptance records, known limits, and recovery steps so another person can reproduce it.
 
 ## Related resources
 

@@ -60,8 +60,25 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
+
+    def test_project_chapter_distributes_delivery_evidence(self) -> None:
+        chapter = self.by_id["19"]
+        assets = (
+            "peripheral-wiring.svg",
+            "sample-19-flash-fit.svg",
+            "one-slot.gif",
+            "dma-buffer-ownership.svg",
+            "iap-acceptance-gates.svg",
+            "network-debug-ladder.svg",
+            "rtos-startup-gates.svg",
+        )
+        for language in ("zh", "en"):
+            self.assertEqual(0, chapter[language]["visual_anchor_deficit"])
+            self.assertEqual(assets, chapter[language]["asset_sequence"])
+        for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+            self.assertEqual(0, chapter["parity"][field])
 
     def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
         chapter = self.by_id["01"]
