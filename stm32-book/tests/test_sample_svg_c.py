@@ -107,34 +107,63 @@ diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa9202b517d2268757f585a3eb634eccdd6fa0
 illustrations/ch00-handdraw.svg 900x560 4892 690763608b44b4a8bf00499ba843af11df66a5eab6ad56d250436f8801bfc9d0
+illustrations/ch00-mid-handdraw.svg 900x560 5586 0346a7588dfd31e2016cb831c27b90366c00a7631d441ad5ff29fe3dc76f1115
 illustrations/ch01-handdraw.svg 900x560 7564 2762f78c2bdf7787c0fb93c39df226bb26cdb4f5fcb67ebb1364229ab2b7648e
+illustrations/ch01-mid-handdraw.svg 900x560 5318 ed382975ff2698799f3f11ebfa74a1a32252966618a1f27ae0f22f439a241a7c
 illustrations/ch02-handdraw.svg 900x560 6107 ca4c04775828723faf1a1134221700f6e1e5431131d9fe894a77a93fa1c1c82b
+illustrations/ch02-mid-handdraw.svg 900x560 8233 ae0cca7c713899c1d12a2e8887a06901c03780564f093be1b17f38acab29918c
 illustrations/ch03-handdraw.svg 900x560 7859 27d994818c308861b130493232583e9c3a30de5cc0dfc2f2f66d1d88044fdf3d
+illustrations/ch03-mid-handdraw.svg 900x560 6720 34cf2d3a1f45f0a0f1a94b414b6874b3a6e2b1d44f702df096dc3112f65dba5c
 illustrations/ch04-handdraw.svg 900x560 4610 37d1d7376b48112f0adffc9779832e7afdc28d08196676297dfe323234861a38
+illustrations/ch04-mid-handdraw.svg 900x560 4062 eb023bca21ff24091f3359faa2683ca383932f4be7c69648569a84c8fe1cc121
 illustrations/ch05-handdraw.svg 900x560 4773 982cb168e2df00ddae00f2fa69da5625ef3573334698c4f3014907180846dac5
+illustrations/ch05-mid-handdraw.svg 900x560 4840 8d73882f2da0b00b0c76e8e935aa53ee68d9f68e9fa34c7b4729bd13a0be995d
 illustrations/ch06-handdraw.svg 900x560 8629 eb3ad104d080d700767e8e5c4311f1aad2632c0d24371fce4bfe00ad01d3cdec
+illustrations/ch06-mid-handdraw.svg 900x560 7234 4ed942eaba182f5d3fb4e8e7512eb62abcb4cdb3da0504b0ce7aabc6670efd6b
 illustrations/ch07-handdraw.svg 900x560 4862 106db8f730e30248fdefbaf9cf9c22a17e8852d14f2ff7fc16593f51989e8f14
+illustrations/ch07-mid-handdraw.svg 900x560 4780 d0d9a97ed471bf82bdb31dafdf07526c1d7a0ec9f686d0f0c5383f97c025690e
 illustrations/ch08-handdraw.svg 900x560 7617 478be722f78f4d25ac8c976d491aeca16ff93f51b6fc912cd6a155d19d868c8e
+illustrations/ch08-mid-handdraw.svg 900x560 5662 5a3cb8460644ad9134c312a087973607677126f6a881834395d473f6823694f2
 illustrations/ch09-handdraw.svg 900x560 7647 975072d62ba1b96e44047ef253bad7896e10cca075d653be661f34b304e1ed87
+illustrations/ch09-mid-handdraw.svg 900x560 4803 ff39ba86dfd75f912149848b2cefd0c3d0e24e8f57bde9e3ed9b669599367838
 illustrations/ch10-handdraw.svg 900x560 4360 ecb58159ab3c71ef1034ce21bde4b79ff1a771dba92e03a76b5c0e0a5bb9663b
+illustrations/ch10-mid-handdraw.svg 900x560 5102 2311370f7be095564cf48936a18a4cfa2b2f3f97db223cc39d80b6afa7bf9e48
 illustrations/ch11-handdraw.svg 900x560 7386 6b3dff4e0ddfa3999bed370472417d9322954a568c01e642340a3c65fbadb3ca
+illustrations/ch11-mid-handdraw.svg 900x560 5139 e2aa0713bda1119b97f3ee0b99c5cf32fd04fb6cfa9de0e78ac6b85310525d03
 illustrations/ch12-handdraw.svg 900x560 5191 b668767313fe2638535fe3292bc390d59b4232785f3ea4c5450403230052cc24
+illustrations/ch12-mid-handdraw.svg 900x560 4579 b4be855083c79e95690c88e4a4f931663d8cf3ee055b211b68b729602779a08c
 illustrations/ch13-handdraw.svg 900x560 4870 1ca1c850b4bd2eaf66c80b03478bc104c91d3b85bcc742b6ada81c35bc75b7ed
+illustrations/ch13-mid-handdraw.svg 900x560 8648 664d752d0149c935577d28988b205ee599fcb899c7a4edd6735cadcde5b6095f
 illustrations/ch14-handdraw.svg 900x560 4577 79a5720acc05e545dbdf074195c76a0c24d3b32d1ff2cb4b2ff8251286d9857d
+illustrations/ch14-mid-handdraw.svg 900x560 5504 58f7217908f5988b005fb3dc486baf0e1765f8ff46454ad0644e9f1b35b36f41
 illustrations/ch15-handdraw.svg 900x560 5534 dac42641d7894f460472d8ca94d749748317037bce570e4c70a0aaaaa384150c
+illustrations/ch15-mid-handdraw.svg 900x560 4978 5e4aea620f48ab0b3ddaae7b6a101b94a8fc76386330b08b90329e839cb4cd98
 illustrations/ch16-handdraw.svg 900x560 6165 3d4a176113f0d5e29f38837981bd6b6ac672d9066c58e28a0a3861664f94d41c
+illustrations/ch16-mid-handdraw.svg 900x560 7750 67fde27a76b64f03386bbc2fc33b6b26c9aee0aa5c722b377b0a00871410753d
 illustrations/ch17-handdraw.svg 900x560 3908 65cba151b77f879d841f19badca9d522d5185134370aa61c49dce68b10e1b6ab
+illustrations/ch17-mid-handdraw.svg 900x560 6235 daa6a58134ff66b5cacab3aa6c520885b100348e9a4a0e8ab232d3c977600fa3
 illustrations/ch18-handdraw.svg 900x560 6684 6ae7d56e01a97c76655e3b47dce3705bf321006b2401fb75b6cfb239e752679d
+illustrations/ch18-mid-handdraw.svg 900x560 7670 371b14a940ed5754ab2cf8effe7ae39809afc20978399ca4ff6cc6f18d8e47a9
 illustrations/ch19-handdraw.svg 900x560 4026 238a51d3d90b336d60ad0b5d6d270d624f2f2991c2a7ea574f8ac05db65c9ee4
+illustrations/ch19-mid-handdraw.svg 900x560 7673 476a849b5181865f856fb94ed3d6e0941e7c70ad7abdcc3c2b285e3d3386a8ef
 illustrations/ch20-handdraw.svg 900x560 4889 f70dfa2456fc34dc180bfb8f253809d5d939f71306a65d29dfd9c2637b8c023d
+illustrations/ch20-mid-handdraw.svg 900x560 6190 f43f772165b3205f33eeeefead598c778ce24156d7944fd9a515036e7d22fde8
 illustrations/ch21-handdraw.svg 900x560 6562 659684e75cd4e0da00263a2dca7f771ae34b545f20800d0fa4fba78578f0cf6f
+illustrations/ch21-mid-handdraw.svg 900x560 7819 f2ed3212fbce19a53c7739944b70e445399ac5c81f632d0fe18abf1149c4e534
 illustrations/ch22-handdraw.svg 900x560 6311 029cc65764a9b09eed33a875c4f7c4e5f0a0007e67c1e1d34f7cb04c847cef99
+illustrations/ch22-mid-handdraw.svg 900x560 9449 99d48a32603850b8e0160642985a2aec67eb887b4ae4878154457b11e3210c53
 illustrations/ch23-handdraw.svg 900x560 6753 56fcf895ada916052e880503ff3d7ed741f760b816165762aafe31e4202d1b17
+illustrations/ch23-mid-handdraw.svg 900x560 5872 6aa69546e74ace14092a08b90a8d4a2da967b422454e1d5c35b4d2024f4ebdb3
 illustrations/ch24-handdraw.svg 900x560 6942 b81fcecb7d3380624e5b9760f0fd75051033d387ee650b0dce388f3e232fa061
+illustrations/ch24-mid-handdraw.svg 900x560 8351 541020b574c9da639418df9325b199df97b633b9c8645cfab7965ba77d9262a7
 illustrations/ch25-handdraw.svg 900x560 4719 8b4fb482a4270940c1a32ca49e20c0a4c7df4b67a1be56afd76601b09af35847
+illustrations/ch25-mid-handdraw.svg 900x560 7291 c36bc5d40970aab60926b7dc94696c31aa9481085ac5c5b88895a3469a178ab7
 illustrations/ch26-handdraw.svg 900x560 6276 a41366bc062577f07cd07d94c7cc4efb5edd56a61dbfd5336a58a94fc9e4a7ee
+illustrations/ch26-mid-handdraw.svg 900x560 5793 12cbf52473a88b358982127fed45f9a67ba3b31a63609ed64e8de56722f676a7
 illustrations/ch27-handdraw.svg 900x560 4568 0a399c245214680b5e7889debf36323e309af6d9f4b0ab3e53c48eba51190755
+illustrations/ch27-mid-handdraw.svg 900x560 5883 a0ce44118ef9d0195eb6a6ea56d142367ac275eb42dbc4c8e9fe1b94271955a9
 illustrations/ch28-handdraw.svg 900x560 4855 6ae7ea34a727496b4d95b4defcf0286d5a2bf87f0556045dcda5205f21e4b823
+illustrations/ch28-mid-handdraw.svg 900x560 8042 95a26df098b5e9e958acb1dfbeb3bcc9cc6a10e69a68d119a5e3b53009d1d3be
 illustrations/part-p0-handdraw.svg 900x560 8677 c589bab8908afd3e15d104fd1abb84457394ceafe1da000194f76b229b65b958
 illustrations/part-p1-handdraw.svg 900x560 8064 51e467a314f6037c8b1a828a56e3362945fc3a031282db0f2202383af9935d0e
 illustrations/part-p2-handdraw.svg 900x560 7702 03f742ad87a760b8240140ea38272614e9e0f13faf6ddc2faeec58492cb9a12c
@@ -294,7 +323,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "99907fdf57e05562849b4f6c5a4a9412804c1a3a638c787df078df6d43fd8847",
+            "4c61fa4f347881586bbc91b14f9c0aaec22894dbc07b1095a9daacf89647e760",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -302,7 +331,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "16f3d10e9acde541c619dff788e20ed6827f70ec2c3dc714c9995315d01d6570",
+            "fdcba383ae7be190ee757fca7f5f9072798bbfad6abe86a83efac3e8e2254ecd",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -359,7 +388,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(125, len(found))
+        self.assertEqual(154, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

@@ -537,6 +537,29 @@ def load_handdraw_parts() -> dict[str, dict]:
     return entries
 
 
+def load_handdraw_mid() -> dict[str, dict]:
+    """Load the required 29 mid-chapter concept plates from the same manifest."""
+    data = _read_handdraw_data()
+    mid = data.get("mid")
+    if not isinstance(mid, list) or len(mid) != 29:
+        raise BuildError("hand-drawn manifest must list exactly 29 mid-chapter plates")
+    entries: dict[str, dict] = {}
+    for index, item in enumerate(mid):
+        chapter = f"{index:02d}"
+        if not isinstance(item, dict) or item.get("chapter") != chapter:
+            raise BuildError(f"hand-drawn manifest mid-chapter order is wrong at {chapter}")
+        filename = item.get("file")
+        if filename != f"ch{chapter}-mid-handdraw.svg":
+            raise BuildError(f"hand-drawn manifest mid file name is wrong at {chapter}")
+        for key in ("zh", "en", "anchor_zh", "anchor_en"):
+            value = item.get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise BuildError(f"hand-drawn manifest lacks {key} at mid {chapter}")
+        _check_handdraw_file(filename)
+        entries[chapter] = item
+    return entries
+
+
 def embed_local_images(rendered: str, source_file: Path) -> str:
     def replace_tag(match: re.Match[str]) -> str:
         tag = match.group(0)
@@ -715,6 +738,8 @@ UI = {
         "plate_caption": "手绘概念图：{title}。用于建立直觉，不承载工程数据。",
         "part_plate_alt": "分部概念图：{title}",
         "part_plate_caption": "分部概念图：{title}。用于建立直觉，不承载工程数据。",
+        "mid_plate_alt": "本节概念图：{title}",
+        "mid_plate_caption": "本节概念图：{title}。用于建立直觉，不承载工程数据。",
         "appendix_kicker": "附录",
         "callout_warning": "注意",
         "callout_tip": "提示",
@@ -776,6 +801,8 @@ UI = {
         "plate_caption": "Hand-drawn concept: {title}. Built for intuition, not engineering evidence.",
         "part_plate_alt": "Part concept: {title}",
         "part_plate_caption": "Part concept: {title}. Built for intuition, not engineering evidence.",
+        "mid_plate_alt": "Section concept: {title}",
+        "mid_plate_caption": "Section concept: {title}. Built for intuition, not engineering evidence.",
         "appendix_kicker": "Appendix",
         "callout_warning": "Warning",
         "callout_tip": "Tip",
@@ -892,6 +919,34 @@ def part_plate(entry: dict, language: str, manifest: dict) -> str:
   <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
   <figcaption>▲ {html.escape(caption)}</figcaption>
 </figure>"""
+
+
+def mid_plate(entry: dict, language: str, manifest: dict) -> str:
+    """Return one mid-chapter concept plate as an embedded image."""
+    title = entry["zh"] if language == "zh" else entry["en"]
+    alt = ui(manifest, "mid_plate_alt").format(title=title)
+    caption = ui(manifest, "mid_plate_caption").format(title=title)
+    uri = _data_uri(HANDDRAW_DIR / entry["file"])
+    return f"""
+<figure class="mid-plate">
+  <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
+  <figcaption>▲ {html.escape(caption)}</figcaption>
+</figure>"""
+
+
+def inject_mid_plate(rendered: str, entry: dict, language: str, manifest: dict) -> str:
+    """Insert the mid-chapter plate right after the chapter's anchor heading."""
+    anchor = entry["anchor_zh"] if language == "zh" else entry["anchor_en"]
+    pattern = re.compile(
+        r"<h2\b[^>]*>\s*" + re.escape(anchor) + r"\s*</h2>"
+    )
+    matches = list(pattern.finditer(rendered))
+    if len(matches) != 1:
+        raise BuildError(
+            f"mid-chapter anchor must match exactly once in {entry['file']}: {anchor!r}"
+        )
+    match = matches[0]
+    return rendered[: match.end()] + "\n  " + mid_plate(entry, language, manifest) + rendered[match.end():]
 
 
 def compass_html(guide: dict, manifest: dict) -> str:
@@ -1509,6 +1564,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     labels = callout_label_map(manifest)
     handdraw = load_handdraw_manifest()
     handdraw_parts = load_handdraw_parts()
+    handdraw_mid = load_handdraw_mid()
 
     chapter_anchors = {
         (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
@@ -1572,6 +1628,9 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             )
             rendered = render_document(
                 content, path, f"ch{filename[:2]}", chapter_anchors, table_label, labels
+            )
+            rendered = inject_mid_plate(
+                rendered, handdraw_mid[filename[:2]], edition_language(manifest), manifest
             )
             headings[f"chapter-{filename[:2]}"] = collect_headings(rendered)
             guide = manifest["chapter_guides"][filename]

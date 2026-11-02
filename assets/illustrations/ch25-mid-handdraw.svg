@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="8 MHz gears up stage by stage to 480 MHz">
+<title>8 MHz gears up stage by stage to 480 MHz</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 26</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<polygon points="186.40,300.00 178.64,310.35 180.18,323.20 168.28,328.28 163.20,340.18 150.35,338.64 140.00,346.40 129.65,338.64 116.80,340.18 111.72,328.28 99.82,323.20 101.36,310.35 93.60,300.00 101.36,289.65 99.82,276.80 111.72,271.72 116.80,259.82 129.65,261.36 140.00,253.60 150.35,261.36 163.20,259.82 168.28,271.72 180.18,276.80 178.64,289.65" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-sway"/>
+<circle cx="142" cy="301" r="14" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="140" cy="300" r="14" fill="#fbfaf7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-sway"/>
+<text x="140" y="362" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">8M</text>
+<polygon points="407.28,255.00 396.02,270.01 398.27,288.64 381.01,296.01 373.64,313.27 355.01,311.02 340.00,322.28 324.99,311.02 306.36,313.27 298.99,296.01 281.73,288.64 283.98,270.01 272.72,255.00 283.98,239.99 281.73,221.36 298.99,213.99 306.36,196.73 324.99,198.98 340.00,187.72 355.01,198.98 373.64,196.73 381.01,213.99 398.27,221.36 396.02,239.99" fill="#f1f5f7" opacity="1" stroke="#075e84" stroke-width="2" class="hd-sway"/>
+<circle cx="342" cy="256" r="20.3" fill="none" opacity="0.2" stroke="#075e84" stroke-width="1"/>
+<circle cx="340" cy="255" r="20.3" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="2" class="hd-sway"/>
+<text x="340" y="342" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PLL</text>
+<polygon points="606.40,300.00 598.64,310.35 600.18,323.20 588.28,328.28 583.20,340.18 570.35,338.64 560.00,346.40 549.65,338.64 536.80,340.18 531.72,328.28 519.82,323.20 521.36,310.35 513.60,300.00 521.36,289.65 519.82,276.80 531.72,271.72 536.80,259.82 549.65,261.36 560.00,253.60 570.35,261.36 583.20,259.82 588.28,271.72 600.18,276.80 598.64,289.65" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-sway"/>
+<circle cx="562" cy="301" r="14" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="560" cy="300" r="14" fill="#fbfaf7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-sway"/>
+<text x="560" y="362" font-size="10" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">VCO</text>
+<circle cx="742" cy="241" r="46" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="740" cy="240" r="46" fill="#fbfaf7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-pulse"/>
+<text x="740" y="246" font-size="14" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">480</text>
+<path d="M182 292 C240 282 255 268 284 262 M398 266 C460 274 480 290 520 296 M600 292 C660 276 678 256 696 246" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<line x1="131.8" y1="426.2" x2="206.8" y2="426.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="130" y1="425" x2="205" y2="425" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="106" y="429" font-size="8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">0.9</text>
+<line x1="173.8" y1="398.2" x2="248.8" y2="398.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="172" y1="397" x2="247" y2="397" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="148" y="401" font-size="8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">1.0</text>
+<line x1="215.8" y1="370.2" x2="290.8" y2="370.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="214" y1="369" x2="289" y2="369" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="190" y="373" font-size="8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">1.2</text>
+<text x="180" y="458" font-size="9" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">VOS</text>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>
