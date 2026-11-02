@@ -114,6 +114,60 @@ def first_success_gates() -> Svg:
     return s
 
 
+def dma_buffer_ownership() -> Svg:
+    s = Svg(W, H, "DMA 缓冲区：谁能写，谁能读",
+            "外设数据寄存器经 DMA 写入循环数组；HT/TC 交出半区，CNDTR 统计数据项而不是字节")
+    s.header(tag="10 DMA · IG-004", tag_color=T.CYAN)
+
+    s.rect(34, 102, 184, 112, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    s.text(126, 132, "外设 DR", size=14, anchor="middle", fill=T.TEXT, weight="800")
+    s.text(126, 160, "固定地址", size=10.5, anchor="middle", mono=True, fill=T.AMBER)
+    s.text(126, 187, "每次请求产生 1 项", size=10, anchor="middle", fill=T.MUTED)
+
+    s.rect(302, 88, 250, 144, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    s.text(427, 120, "DMA 通道", size=14, anchor="middle", fill=T.TEXT, weight="800")
+    s.text(324, 151, "映射", size=10.5, fill=T.MUTED)
+    s.text(528, 151, "DMA1_CH1", size=10.5, anchor="end", mono=True, fill=T.CYAN)
+    s.text(324, 178, "宽度", size=10.5, fill=T.MUTED)
+    s.text(528, 178, "half-word", size=10.5, anchor="end", mono=True, fill=T.CYAN)
+    s.text(324, 205, "CNDTR", size=10.5, fill=T.MUTED)
+    s.text(528, 205, "剩余数据项", size=10.5, anchor="end", fill=T.CYAN, weight="700")
+
+    s.arrow(222, 158, 298, 158, color=T.AMBER, sw=2, head=7)
+    s.text(260, 143, "request", size=9.5, anchor="middle", mono=True, fill=T.MUTED)
+
+    s.rect(638, 82, 228, 176, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(752, 112, "rx_buf[64]", size=13, anchor="middle", mono=True, fill=T.TEXT, weight="800")
+    s.rect(660, 132, 184, 42, fill=T.PANEL, stroke=T.GREEN, rx=4)
+    s.text(752, 158, "前半区 0…31", size=10.5, anchor="middle", fill=T.GREEN, weight="700")
+    s.rect(660, 190, 184, 42, fill=T.PANEL, stroke=T.VIOLET, rx=4)
+    s.text(752, 216, "后半区 32…63", size=10.5, anchor="middle", fill=T.VIOLET, weight="700")
+    s.arrow(556, 158, 634, 158, color=T.CYAN, sw=2, head=7)
+    s.text(595, 143, "MINC", size=9.5, anchor="middle", mono=True, fill=T.MUTED)
+
+    s.rect(34, 296, 832, 166, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(54, 326, "交接规则", size=13, fill=T.TEXT, weight="800")
+    rules = [
+        ("DMA 写前半区", "CPU 只处理后半区", T.GREEN),
+        ("HT：CNDTR = 32", "前半区交给 CPU", T.CYAN),
+        ("DMA 写后半区", "CPU 只处理前半区", T.VIOLET),
+        ("TC：CNDTR 回卷", "后半区交给 CPU", T.AMBER),
+    ]
+    for i, (left, right, color) in enumerate(rules):
+        yy = 356 + i * 25
+        s.text(54, yy, left, size=10.5, mono=True, fill=color, weight="700")
+        s.text(286, yy, right, size=10.5, fill=T.MUTED)
+
+    s.rect(560, 324, 280, 112, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(580, 352, "两种静默错误", size=12, fill=T.RED, weight="800")
+    s.text(580, 380, "通道错：CNDTR 不动", size=10.5, fill=T.MUTED)
+    s.text(580, 407, "宽度错：项数对，字节边界错", size=10.5, fill=T.MUTED)
+
+    s.footer("视觉规范：FA-002 概念连续线 · IG-004 双列边界 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 def layers_hal_ll_reg() -> Svg:
     s = Svg(W, H, "四种代码风格的分层关系",
             "寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源")
@@ -1054,7 +1108,7 @@ def h7_pinmux_conflicts() -> Svg:
     return s
 
 
-ALL = [first_lab_wiring, first_success_gates,
+ALL = [first_lab_wiring, first_success_gates, dma_buffer_ownership,
        layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
        network_cache_ownership, tcp_byte_stream, rtos_owner_task,
@@ -1066,6 +1120,7 @@ ALL = [first_lab_wiring, first_success_gates,
 NAMES = {
     "first_lab_wiring": "first-lab-wiring",
     "first_success_gates": "first-success-gates",
+    "dma_buffer_ownership": "dma-buffer-ownership",
     "layers_hal_ll_reg": "layers-hal-ll-reg",
     "project_structure": "project-structure",
     "peripheral_bus": "peripheral-bus",

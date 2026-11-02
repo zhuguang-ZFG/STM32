@@ -60,7 +60,7 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("01", "02", "03", "04", "05", "20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
 
     def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
@@ -96,6 +96,29 @@ class BookAuditTests(unittest.TestCase):
                 "pwm-1khz.gif",
                 "timer-modes.svg",
                 "pwm-breath.gif",
+            ),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
+
+    def test_phase_two_reaches_memory_with_visual_parity(self) -> None:
+        expected = {
+            "06": ("uart-frame.svg", "sample-06-uart-frame.svg", "uart-idle.gif", "uart-bits.gif"),
+            "07": ("i2c-transaction.svg", "sample-07-i2c-addr.svg", "i2c-addr.gif", "i2c-timing.gif"),
+            "08": ("spi-transfer.svg", "sample-08-spi-jedec.svg", "spi-jedec.gif"),
+            "09": ("adc-sar.svg", "sample-09-adc-sar.svg", "adc-sample.gif", "sar-adc.gif", "dma-circular.svg"),
+            "10": (
+                "dma-circular.svg",
+                "sample-10-dma-cndtr.svg",
+                "dma-cndtr.gif",
+                "dma-buffer-ownership.svg",
+                "dma-ring.gif",
             ),
         }
         for chapter_id, assets in expected.items():

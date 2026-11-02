@@ -1,7 +1,7 @@
 # 10 DMA
 > 中文：[10 DMA](../10-DMA.md)
 
-> Tens of thousands of bytes a second arrive on the UART. If the CPU has to move each one, it has no time for anything else. DMA is a helper that only moves data, and this chapter shows you how to give it work.
+> If DMA is enabled but no data moves, check the request map first, then direction and width, and finally CNDTR to see how many items moved. Callback counts and array contents must agree with the remaining count.
 
 <p align="center">
   <img src="../../assets/animations/dma-circular.svg" width="760" alt="DMA circular mode: the CPU and DMA move data in parallel">
@@ -96,6 +96,8 @@ The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the co
 
 ## Core ideas
 
+DMA understands neither frames nor sample groups. It moves a configured number of fixed-width items, and the CPU interprets the buffer boundary. Treating CNDTR as bytes is the common slicing error for half-word and word transfers.
+
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
 
 DMA is the chip's porter. The CPU tells it where to carry from, where to carry to, and how much, and then it runs back and forth on the bus by itself and reports when it is done. On the F1, the porters are split by workstation, and each workstation takes jobs from a fixed set of peripherals. The F4 adds a layer: you first choose a workstation (the stream), then one of its 8 sockets (the channel), so one peripheral can move to another workstation.
@@ -170,6 +172,11 @@ DMA calls out when it has finished, and that is the TC interrupt. It also calls 
 | DME / FE (F4) | Direct-mode error / FIFO error | Deeper debugging |
 
 "Half-transfer plus circular mode" is the classic pair. While DMA fills the first half, the CPU processes the second half, and the other way around. The stream never has a gap.
+
+<p align="center">
+  <img src="../../assets/diagrams/dma-buffer-ownership.svg" width="820" alt="A peripheral DR writes through DMA into a circular array, HT and TC hand off the two halves, and CNDTR counts remaining items">
+  <br><sub>▲ Ownership boundary: the CPU must not treat the half currently written by DMA as stable data. HT and TC hand off only their corresponding halves. CNDTR counts items of the configured width, not bytes directly (FA-002 · IG-004 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 5. Bus contention and cache coherency
 
@@ -269,13 +276,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 }
 ```
 
+<p align="center">
+  <img src="../../assets/gif/dma-ring.gif" width="640" alt="DMA advances through a circular buffer while HT and TC hand the first and second halves to the CPU">
+  <br><sub>▲ DMA advances the write position and the CPU processes only the half that has been handed off. The animation cannot prove request mapping or data width; read CNDTR and inspect the array as well.</sub>
+</p>
+
 > F4 can also use hardware **double-buffer mode** (`DBM`). The two memory pointers `M0AR` and `M1AR` switch automatically, and the `CT` bit tells you which block is in use.
 
 ## Hands-on labs
 
-1. **UART DMA loopback print**: send a long string with `HAL_UART_Transmit_DMA`, and toggle an LED in the main loop at the same time. Expected: the LED keeps blinking (the transmit does not block the CPU) and the UART data is complete.
-2. **Memory-to-memory throughput**: use `DMA_MemCopy` to move 64 KB, and time it with the DWT against `memcpy`. Expected: the DMA version uses less CPU (see [Chapter 17](17-debug.md) for DWT timing).
-3. **UART idle interrupt plus DMA for variable-length receive**: DMA receives in circular mode. When the `USART_IDLE` interrupt fires, compute how many bytes have arrived. Expected: variable-length frames come in steadily, with no dropped bytes.
+1. **Request and wire result:** Send a 4096-byte incrementing pattern through USART1_TX on DMA1_CH4 while the main loop increments a counter. The host checks length and CRC; the MCU records TC/TE and the main-loop count.
+2. **Memory result:** Move a known 4 KB pattern with `DMA_MemCopy`, compare every destination byte, and record TC/TE. A 4 KB test fits the F103C8's 20 KB SRAM; the old 64 KB lab did not fit this part.
+3. **Circular boundary:** Reuse chapter 09's 64-half-word ADC buffer. Record CNDTR = 32 at HT, the wrap at TC, and the first and last sample in each half. Convert items to bytes by multiplying by two.
 4. **(Further) Double-buffer ping-pong**: on F4, turn on `DBM`. Two buffers alternate, and the `CT` bit indicates the current block, so the stream is processed with no extra copy.
 
 ### 6. How much is left: read NDTR
@@ -290,7 +302,7 @@ uint16_t got  = ADC_BUF_SIZE - left;
 
 On a half-word transfer, the half-full interrupt happens at 4 samples, which is 8 bytes. If you handle it as "an interrupt every 4 bytes," you will treat the second half as new data.
 
-Motto: **what is left is in NDTR. For a half-word HT, count samples, then multiply by 2 to get bytes.**
+Before leaving this chapter, keep one verified UART long frame, one byte-for-byte 4 KB memory comparison, and one HT/TC/CNDTR record.
 
 Self-test:
 

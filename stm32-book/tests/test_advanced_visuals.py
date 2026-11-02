@@ -48,6 +48,26 @@ CHAPTERS = {
             "pwm-breath.gif",
         ),
     ),
+    ROOT / "docs" / "09-ADC与DAC.md": (
+        5,
+        (
+            "adc-sar.svg",
+            "sample-09-adc-sar.svg",
+            "adc-sample.gif",
+            "sar-adc.gif",
+            "dma-circular.svg",
+        ),
+    ),
+    ROOT / "docs" / "10-DMA.md": (
+        5,
+        (
+            "dma-circular.svg",
+            "sample-10-dma-cndtr.svg",
+            "dma-cndtr.gif",
+            "dma-buffer-ownership.svg",
+            "dma-ring.gif",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -136,6 +156,8 @@ class AdvancedVisualTests(unittest.TestCase):
             ("01-开发环境搭建.md", "01-dev-environment.md"),
             ("03-GPIO与LED.md", "03-gpio-and-led.md"),
             ("05-定时器与PWM.md", "05-timer-pwm.md"),
+            ("09-ADC与DAC.md", "09-adc-dac.md"),
+            ("10-DMA.md", "10-dma.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
@@ -161,6 +183,7 @@ class AdvancedVisualTests(unittest.TestCase):
         static = (
             "first-lab-wiring.svg",
             "first-success-gates.svg",
+            "dma-buffer-ownership.svg",
             "manual-choice-map.svg",
             "firmware-stack-choice.svg",
             "instrument-evidence-ladder.svg",

@@ -1,7 +1,7 @@
 # 09 ADC and DAC
 > 中文：[09 ADC 与 DAC](../09-ADC与DAC.md)
 
-> A voltage of up to 3.3 V goes into the ADC and a number from 0 to 4095 comes out. This chapter explains where that number comes from and why the reading jitters.
+> A meter may read 1.65 V while the ADC does not return exactly 2048. Check VDDA, sample time, ADC state, and the DMA array together to separate quantization, source impedance, and buffer-order errors.
 
 <p align="center">
   <img src="../../assets/animations/adc-sar.svg" width="760" alt="Animation of ADC sample-and-hold and successive approximation (SAR)">
@@ -100,6 +100,8 @@ ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 - [ ] Know the DAC output modes, and how the output buffer changes accuracy and noise.
 
 ## Core ideas
+
+Keep three forms of evidence throughout this chapter: input voltage at the pin, ADC configuration and status, and the code sequence in memory. A single printed voltage cannot locate the source of an error.
 
 ### 1. Resolution, reference voltage, and quantization error
 
@@ -200,6 +202,11 @@ The standard shape for fast multi-channel acquisition is scan mode plus continuo
 | Conversion time | t_s + 12.5 cycles | t_s + 12 cycles |
 | Internal channels | Temperature CH16, Vrefint CH17 | Temperature, Vrefint, VBAT |
 
+<p align="center">
+  <img src="../../assets/animations/dma-circular.svg" width="820" alt="An ADC scan sequence writes through circular DMA into an array, with HT and TC handing off the first and second halves">
+  <br><sub>▲ Multi-channel results leave one ADC_DR and enter the array in sequence; HT and TC only identify the half that is ready. The figure cannot prove channel order, data width, or sample time. Reconcile those with SQR, DMA configuration, and the measured input (FA-002 · IG-012 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 5. Internal temperature sensor and Vrefint
 
 The chip has two channels that need no wiring. One is the temperature sensor, which gives a rough idea of how hot the die is and is only good for trends. The other is Vrefint, a fixed voltage of about 1.20 V. Its job is to measure the ruler itself: since the input is known to be 1.20 V, the code you read tells you what VDDA really is right now, and you can use that to correct the other channels.
@@ -286,9 +293,9 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 
 ## Hands-on labs
 
-1. **Potentiometer**: wire the wiper of a 10 kΩ potentiometer to PA0, and the two ends to 3.3 V and GND. Print the code and `code * 3.3f / 4096` on the UART. Expected: the ends land near 0 V and 3.3 V, and the middle is about 1.65 V (code about 2048).
-2. **Internal reference**: read Vrefint and work backward with `VDDA = 1.20f * 4096 / code`. Expected: on USB power, VDDA sits near 3.3 V. The exact number is whatever your meter says. This page does not give a "standard measured value."
-3. **Sample-time comparison**: use the same high-impedance divider. Take 100 readings at 1.5 cycles and 100 at 239.5 cycles. Expected: the short sample time has a low mean and a large variance.
+1. **Input/code reconciliation:** Put a 10 kΩ potentiometer on PA0 and choose low, middle, and high points. At each point record meter voltage, ADC code, and voltage computed with the measured VDDA.
+2. **Peripheral-state reconciliation:** Read Vrefint to estimate VDDA and save readings before and after calibration together with EOC state and sample time. Do not treat the typical 1.20 V as a per-device calibration value.
+3. **Memory-result reconciliation:** Scan PA0 and PA1 into a 64-half-word circular DMA buffer. Record array order, HT/TC counts, and CNDTR. Then use a 100 kΩ source and compare 100 readings at 1.5 and 239.5 cycles by mean and range.
 
 ### 7. Calibration, the analog watchdog, and injected channels
 
@@ -319,7 +326,7 @@ Other packages, and the F4 channel table, follow the pinout in that part's datas
 2. SAR is testing bit10, and bit11 has already been kept. Should the trial value be 3072 or 1024?
 3. Why should an F103C8 project not contain `HAL_DAC_Start`?
 
-Motto: **sample time follows impedance, conversion divides by 4096, and the C8 has no DAC.**
+Before leaving this chapter, keep a three-point voltage/code table, the VDDA estimated from Vrefint, and one DMA-array record with channel order and CNDTR.
 
 ## Related resources
 

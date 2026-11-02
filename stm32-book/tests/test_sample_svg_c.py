@@ -57,6 +57,7 @@ boards/pinout-bluepill.svg 900x620 35176 4de478b58c8d278166311b99311183121ccf1ec
 boards/pinout-stm32g071rb-lqfp64.svg 620x750 34523 7ccc8b702e15d0473bfc1d4c956397dfbb5bd50363d4e762bd100c794d1d2193
 boards/pinout-stm32h743zi-lqfp144.svg 840x970 75786 4d71ec5cab732513073bac6721ae4c688a36f18ab11fcae4b5e6e927433b7a96
 boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c88412f1e7920570c53e388e0a10a44fbe5f8adf
+diagrams/dma-buffer-ownership.svg 900x560 9298 f33f98d257e04ac2054f8e076c9401ff4aa9d91f30ebc32b474a08329e1b5439
 diagrams/firmware-stack-choice.svg 900x560 8495 ffad6ce257492aef37d37dce681845652b67c5b6f5d341cc279c5ea8c02c9d1e
 diagrams/first-lab-wiring.svg 900x560 9942 b44f10ed4e72897cc4261b79bd22e34287ecc222868e131c77b067cc6a0d0df6
 diagrams/first-success-gates.svg 900x560 9213 8ad973a0bd59ecec057885587cc9d6476ed3f2506be55629220ad93dec561963
@@ -105,6 +106,7 @@ diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf
 
 STATIC_ADVANCED = {
     "diagrams/firmware-stack-choice.svg",
+    "diagrams/dma-buffer-ownership.svg",
     "diagrams/first-lab-wiring.svg",
     "diagrams/first-success-gates.svg",
     "diagrams/h7-pinmux-conflicts.svg",
@@ -312,7 +314,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(84, len(found))
+        self.assertEqual(85, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)
