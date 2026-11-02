@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="中断响应全流程">
+<title>中断响应全流程</title>
 <style>
 
 .fl0{stroke-dasharray:7 10;animation:fl0-flow 1.2s linear infinite;}@keyframes fl0-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
@@ -8,6 +9,7 @@
 .fl3{stroke-dasharray:7 10;animation:fl3-flow 1.2s linear infinite;}@keyframes fl3-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
 
 .fl4{stroke-dasharray:7 10;animation:fl4-flow 1.2s linear infinite;}@keyframes fl4-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

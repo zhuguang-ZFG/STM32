@@ -2,7 +2,7 @@
 
 > 中文：[21 原理图与实物图鉴](../21-原理图与实物图鉴.md)
 
-> Seven structure drawings, plus how to read a minimum-system schematic, so you can name every part and every pin on the board in your hand.
+> Board silkscreen, a structure drawing, and the chip's actual identity may disagree. Read Device ID, Flash size, and UID first, then use the schematic to confirm power, clock, boot, and debug boundaries.
 
 <p align="center">
   <img src="../../assets/boards/bluepill-stm32f103c8t6.svg" width="760" alt="BluePill STM32F103C8T6 minimum-system structure drawing">
@@ -43,7 +43,9 @@
 - [ ] Say which example chapters fit each board.
 - [ ] Name the five pieces of a minimum-system schematic: crystal, reset, BOOT, decoupling, power.
 
-## The boards
+## Core ideas
+
+### Board overview
 
 | Drawing ([`../../assets/boards/`](../../assets/boards/)) | MCU | Clock / core | Flash / RAM | How you program it |
 | --- | --- | --- | --- | --- |
@@ -165,7 +167,9 @@
 
 > Two reminders: **check the conflict first** (SPI1's PA5~PA7 are also ADC and TIM2 alternates), and **match the voltage and share ground** (HC-05, OLED, and W25Q64 are 3.3 V parts).
 
-## How to read a minimum-system schematic
+## Hardware and wiring
+
+### How to read a minimum-system schematic
 
 A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.**
 
@@ -191,7 +195,7 @@ A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.*
 
 **How to read the decoupling:** every `VDD` / `VDDA` pin should have a 100 nF to ground nearby, and the board should have one 10 µF bulk capacitor. **VDDA/VSSA for the ADC need their own filter**, or the samples are noisy.
 
-## Read the chip's identity
+## Code
 
 Once you know the board, code can print the device id, the Flash size, and the unique id. On F1 that is a practical way to spot a clone or a short-marked part.
 
@@ -224,7 +228,7 @@ void Chip_PrintIdentity(void)
 
 > Redirect `printf` first ([chapter 06](06-uart.md) and [chapter 17](17-debug.md)). If the **Flash size does not match the marking** (a C8 that reports 128 KB), you usually have a compatible chip or a remarked clone. **Device id `0x410` is a medium-density F103.** Any other value belongs in the Device ID table of RM0008.
 
-## Pitfalls
+## Pitfalls and troubleshooting
 
 | What you see | Why | Fix |
 | --- | --- | --- |
@@ -240,11 +244,12 @@ void Chip_PrintIdentity(void)
 
 ## Hands-on labs
 
-1. **Print the identity.** Run the snippet. An F103C8 should report id `0x410` and 64 KB.
-2. **Draw a minimum system.** In KiCad, draw the BluePill minimum system (MCU, LDO, crystal, reset, BOOT, decoupling). You should be able to read your own sheet.
-3. **Wire from the pinout.** Use `pinout-bluepill.svg` for an I2C OLED on PB6/PB7 and check the alternate function. It should light on the first try.
-4. **Spot a clone (optional).** Compare id, Flash size, and UID on two "F103C8T6" boards from different sellers.
-5. **Boot pins (optional).** Change BOOT0/BOOT1 and download once over UART ISP. You should be able to name the three boot areas.
+1. **Identity record:** Photograph the marking and record Device ID, Flash size, UID, and supply voltage. List every mismatch explicitly instead of using “clone” as the evidence.
+2. **Schematic reconciliation:** Draw the minimum system in KiCad and mark every VDD decoupler, VDDA filter, NRST, BOOT0/1, HSE/LSE, and SWD connection. Keep the ERC result.
+3. **Wiring acceptance:** Wire an OLED from the pinout, check continuity and voltage first, then capture `START → address → ACK`. Lighting is the outcome; the wiring table and trace are reviewable evidence.
+4. **Boot and recovery:** Record conditions for main Flash, system memory, and SRAM. After UART ISP, restore BOOT0 = 0 and confirm that SWD still connects.
+
+Before leaving this chapter, keep a board-identity record, a minimum-system schematic with ERC, a wiring/waveform acceptance table, and a boot-recovery record.
 
 ## Related resources
 

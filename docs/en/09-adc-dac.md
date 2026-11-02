@@ -1,7 +1,7 @@
 # 09 ADC and DAC
 > 中文：[09 ADC 与 DAC](../09-ADC与DAC.md)
 
-> An ADC turns an analog voltage into a number. A DAC turns a number back into an analog voltage. On an STM32 they are the two ends that touch the real world.
+> A meter may read 1.65 V while the ADC does not return exactly 2048. Check VDDA, sample time, ADC state, and the DMA array together to separate quantization, source impedance, and buffer-order errors.
 
 <p align="center">
   <img src="../../assets/animations/adc-sar.svg" width="760" alt="Animation of ADC sample-and-hold and successive approximation (SAR)">
@@ -35,61 +35,61 @@
 
 ## Principle and scope
 
-The sampling conclusion in this chapter is pinned to order code STM32F103C8T6. The sample clock is the 12 MHz from Appendix D. The conversion divisor is 4096. On a part that has a DAC, the sentence “this part has no DAC” is void. On an F4, the sentences “sample plus 12.5” and “calibrate after power-up” are void.
+Every sampling number in this chapter is for the STM32F103C8T6, with the 12 MHz ADC clock from Appendix D and 4096 as the conversion divisor. The C8 has no DAC. On an F4 the conversion time and the power-up calibration also differ; each is noted below.
 
-PCLK2 = 72 MHz, and `ADCPRE=10` (÷6) gives ADCCLK = 12 MHz. ÷4 gives 18 MHz and crosses 14 MHz. The prescaler sentence cross-references chapter file 02. This chapter does not redraw the clock tree. RM0008 prints `Tconv = 1 µs` at 14 MHz and 1.5 cycles. That is an example at the ceiling. This part's working point is 12 MHz. The four blocks do not put 1 µs and 21 µs in the same cell. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
+PCLK2 = 72 MHz, and `ADCPRE=10` (÷6) gives ADCCLK = 12 MHz. The ADC clock limit is 14 MHz. ÷4 would give 18 MHz, over the limit, so with a 72 MHz system clock ÷6 is the only choice. How to set the prescaler is in the chapter 02 clock tree. The often-quoted `Tconv = 1 µs` from RM0008 is the 14 MHz, 1.5-cycle example. A C8 running at 72 MHz cannot reach 14 MHz, so work from 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
-While the sample switch is closed, the input charges the sample capacitor through the source impedance. After the switch opens, the voltage on the capacitor is held. The converter then compares 12 times, starting at the MSB. Conversion time is the sample cycles plus 12.5 ADCCLK cycles. The longest sample step, 239.5 plus 12.5, is 252 cycles, and `252 / 12e6 = 21 µs`. At 12 MHz: 1.5 cycles = 125 ns, 13.5 cycles = 1.125 µs, 55.5 cycles = 4.625 µs, 71.5 cycles = 5.958 µs, and 239.5 cycles = 19.958 µs. The F4 sentence “sample plus 12 cycles” is void on this part.
+How the SAR ADC works: the sample switch closes and the input charges the sample capacitor through the source impedance; the switch opens and the capacitor holds that voltage; then the converter compares 12 times, one bit at a time, starting at the MSB. Conversion time is the sample cycles plus 12.5 ADCCLK cycles. The longest sample step, 239.5 plus 12.5, is 252 cycles, and `252 / 12e6 = 21 µs`. Sample times at 12 MHz: 1.5 cycles = 125 ns, 13.5 cycles = 1.125 µs, 55.5 cycles = 4.625 µs, 71.5 cycles = 5.958 µs, and 239.5 cycles = 19.958 µs. On an F4 a conversion is the sample plus 12 cycles; do not mix the two.
 
-The recommended sample time for the temperature sensor is 17.1 µs. `17.1e-6 × 12e6 = 205.2` cycles, so 239.5 cycles covers it and 71.5 cycles does not. The channel is ADC1 input 16. VREFINT is ADC1 input 17. The prose keeps “about 1.20 V” and does not invent a measured VDDA for one board. TSVREFE is in `ADC_CR2`. On a dual-ADC device that bit is only in ADC1. ADC2 channels 16 and 17 are tied to VSS. The temperature formula is `(V25 − VSENSE) / Avg_Slope + 25`. V25 ≈ 1.43 V and the slope ≈ 4.3 mV/°C are typical values from the electrical characteristics, not a guaranteed calibration. F4 `TS_CAL1`, `TS_CAL2`, and `VREFINT_CAL` are void on F103C8.
+The temperature sensor needs a sample time of at least 17.1 µs. `17.1e-6 × 12e6 = 205.2` cycles, so pick 239.5 cycles; 71.5 cycles is too short. The temperature sensor is on ADC1 input 16. The internal reference VREFINT is on ADC1 input 17, typically about 1.20 V; use it to work out the real VDDA on your own board. Both are connected only after TSVREFE in `ADC_CR2` is set. On a chip with two ADCs that bit exists only in ADC1, and ADC2 channels 16 and 17 are tied to VSS. The temperature formula is `(V25 − VSENSE) / Avg_Slope + 25`. V25 ≈ 1.43 V and the slope ≈ 4.3 mV/°C are typical values from the electrical characteristics, not factory calibration, so the result is good for trends and can be several degrees off in absolute terms. The F4 has factory values `TS_CAL1`, `TS_CAL2`, and `VREFINT_CAL`; the F103C8 does not.
 
-DS5319 says every medium-density device has two 12-bit ADCs. The C8 has ADC1 and ADC2. It has no ADC3 and no DAC. `HAL_DAC_Start` does nothing useful on this part. A DAC exists on high-density F103 parts and on F4. The DAC buffer, noise, and triangle wave stay in the core ideas, and they hold only after you change to a part that has a DAC. Source: [DS5319 Rev 20](#source-ds5319-adc).
+DS5319 says every medium-density device has two 12-bit ADCs. The C8 has ADC1 and ADC2, no ADC3, and no DAC, so `HAL_DAC_Start` produces no output. A DAC exists on high-density F103 parts and on the F4. The DAC buffer, noise, and triangle wave in the core ideas below apply only to parts that have a DAC. Source: [DS5319 Rev 20](#source-ds5319-adc).
 
-LQFP48 pin 10 PA0 = ADC12_IN0, and pin 9 VDDA is the reference. This package has no separate VREF+. Packages with 100 pins and up have separate VREF+ / VREF−, and the C8 does not use that sentence. Pin 10 is the LED current pin in chapter file 03. When this figure draws it as an analog input, the chapter 03 sentence “write 1 to source current” is void at the same time. Do not redraw `sample-03-gpio-led.svg`. Pin 14 PA4 on the C8 is ADC12_IN4 / SPI1_NSS, not DAC_OUT1. Drawing a DAC on pin 14 is a failure note in the margin.
+LQFP48 pin 10 PA0 = ADC12_IN0. The reference is pin 9 VDDA itself; this package has no separate VREF+, which appears only on packages with 100 pins or more. Chapter 03 lit an LED from pin 10 as a push-pull output. Reconfigure it as an analog input before sampling, or you read back the level the output is driving. Pin 14 PA4 on the C8 is ADC12_IN4 / SPI1_NSS and has no DAC_OUT1 function.
 
-Voltage = code × VDDA / 4096. At a nominal 3.3 V, 1 LSB = `3.3 / 4096 ≈ 0.806` mV, the same cell as the 806 µV already in the chapter. Code 2048 is `2048 / 4096 = 1/2`, which is exactly 1.65 V at a nominal 3.3 V. A divisor of 4095 is off by one LSB.
+Voltage = code × VDDA / 4096. At a nominal 3.3 V, 1 LSB = `3.3 / 4096 ≈ 0.806` mV, the 806 µV in the table later in this chapter. Code 2048 is `2048 / 4096 = 1/2`, exactly 1.65 V at a nominal 3.3 V. Dividing by 4095 pushes every reading slightly high, by about one LSB near full scale.
 
-RM0008 section 11.4: calibrate once after power-up. Before setting CAL in `ADC_CR2`, ADON has already been 1 for at least two ADC clocks. On the HAL side that is `HAL_ADCEx_Calibration_Start`, placed before Start. An F4 does not have this step, and that sentence is void when the family changes.
+RM0008 section 11.4 asks for one calibration after power-up: set ADON, wait at least two ADC clocks, then set CAL in `ADC_CR2`. In HAL that is `HAL_ADCEx_Calibration_Start`, called before Start. The F4 ADC has no such step.
 
-DMA is only a cross-reference to chapter file 10 and Appendix D: this part has only DMA1, and ADC1 is channel 1. Do not move the half-word or the “5 samples already written” arithmetic into this chapter.
+Moving samples continuously with DMA is covered in chapter 10 and Appendix D: the C8 has only DMA1, and ADC1 uses channel 1.
 
 ## Key figures
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-09-adc-sar.svg" width="760" alt="On this part the ADC clock is 12 MHz and the longest conversion is 21 µs; a sample that is too short leaves the previous voltage on the capacitor">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 10 PA0 = ADC12_IN0, pin 9 VDDA is the reference. ADCCLK = 12 MHz. The normal path closes the sample switch and then opens it, and the comparator takes the MSB step. The longest step is 239.5 + 12.5 = 21 µs, and the code is multiplied by VDDA / 4096. The failure path is a sample so short that the capacitor still holds the previous voltage. In the margin, ÷4 produces 18 MHz and crosses 14 MHz; a DAC drawn on pin 14 does not exist on the C8. The chapter 03 LED resistor is not on this figure. Sources: [RM0008 Rev 21 chapter 11](#source-rm0008-adc) and [DS5319 Rev 20 Figure 8](#source-ds5319-adc).</sub>
+  <img src="../../assets/diagrams/sample-09-adc-sar.svg" width="760" alt="On this chip the ADC clock is 12 MHz and the longest conversion is 21 µs; a sample that is too short leaves the previous voltage on the capacitor">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 10 PA0 = ADC12_IN0, pin 9 VDDA is the reference. ADCCLK = 12 MHz. The top half is a normal conversion: the sample switch closes and opens, and the comparator starts at the MSB. The longest step is 239.5 + 12.5 = 21 µs, and the code times VDDA / 4096 gives the voltage. The bottom half is a sample that is too short: the capacitor has not charged and still holds the previous voltage. The right side marks two more points: ÷4 gives 18 MHz, over 14 MHz, and pin 14 on the C8 has no DAC. Sources: [RM0008 Rev 21 chapter 11](#source-rm0008-adc) and [DS5319 Rev 20 Figure 8](#source-ds5319-adc).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/adc-sample.gif" width="640" alt="One sample, then the MSB compare, with ADCCLK at 12 MHz">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays one successful sample and the MSB. Print uses the static figure. The short sample and 18 MHz are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only one normal sample and the MSB compare. The printed book has only the static figure above.</sub>
 </p>
 
-The opening `adc-sar.svg` stays a side figure. `sar-adc.gif` stays in its original section. Its pixels are not replaced.
+The opening `adc-sar.svg` and `sar-adc.gif` in the core ideas show all 12 bit-by-bit compares.
 
 ## Timing and state
 
-| Row | Sample cycles | Sample time | After adding 12.5 |
+| Case | Sample cycles | Sample time | After adding 12.5 |
 | --- | --- | --- | --- |
 | Shortest | 1.5 | 125 ns | 14 / 12e6 |
 | Longest | 239.5 | 19.958 µs | 252 / 12e6 = 21 µs |
-| Temperature | 239.5, not 71.5 | 17.1 µs needs 205.2 cycles | 71.5 cycles is only 5.958 µs and does not cover it |
-| Failure | — | — | ADCCLK = 18 MHz, which crosses 14 MHz. This row is not divided again into a second set of microseconds beside 21 µs |
+| Temperature sensor | 239.5, not 71.5 | 17.1 µs needs 205.2 cycles | 71.5 cycles is only 5.958 µs, too short |
+| Wrong prescaler | — | — | ADCCLK = 18 MHz, over the 14 MHz limit; none of the times apply |
 | Conversion | — | — | Code 2048 is 1.65 V at a nominal 3.3 V, divisor 4096 |
 
-The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
+ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The reading is still near the previous voltage | The sample time used the wrong clock | Lengthen the sample at 12 MHz. Use 239.5 cycles for a high impedance | [RM0008](#source-rm0008-adc) | Conversion time = sample + 12.5. At 12 MHz the longest 252 cycles is 21 µs |
-| ADC was set to ÷4 to go faster | ADCPRE selected ÷4 | Change it back to ÷6, 12 MHz | [RM0008](#source-rm0008-adc) | 14 MHz is the ceiling. 18 MHz crosses it. The 1 µs example is at 14 MHz, not this part's working point |
-| The temperature channel is noisy and the reading wanders | The sample does not cover 17.1 µs, or the channel is wrong | Cover at least 17.1 µs, use ADC1 channel 16, and set TSVREFE | [RM0008](#source-rm0008-adc) | 17.1 µs is 205.2 cycles at 12 MHz. VREFINT is ADC1 channel 17. ADC2 inputs 16 and 17 are tied to VSS |
-| The first reading after power-up is shifted as a whole | There was no calibration | Calibrate before Start | [RM0008](#source-rm0008-adc) | Section 11.4: ADON has been 1 for at least two ADC clocks before CAL |
-| The converted voltage reads higher than the meter | The divisor was 4095 | Use 4096 | [RM0008](#source-rm0008-adc) | A 12-bit full scale is 4096 steps. Code 2048 is half of full scale. The reference is pin 9 VDDA |
-| HAL_DAC_Start on a Blue Pill leaves no analog voltage on PA4 | This C8 has no DAC | For an analog voltage use PWM plus an RC, or change to a part that has a DAC | [DS5319](#source-ds5319-adc) | Medium-density devices have two 12-bit ADCs. There is no ADC3 and no DAC. Pin 14 is not DAC_OUT1 |
-| Pin 10 used to light an LED, and the sample looks like a push-pull read | The pin is still an output | While sampling, this pin is an analog input and no longer sources the chapter 03 current | [DS5319](#source-ds5319-adc) | LQFP48 pin 10 PA0 is ADC12_IN0. Do not rewrite the chapter 03 LED figure |
+| The reading is still near the previous voltage | The sample time is too short for the capacitor to charge, often because it was worked out from another clock | Lengthen the sample at 12 MHz. Use 239.5 cycles for a high-impedance source | [RM0008](#source-rm0008-adc) | Conversion time = sample + 12.5. At 12 MHz the longest 252 cycles is 21 µs |
+| ADC was set to ÷4 to go faster | ADCPRE selected ÷4 | Change it back to ÷6, 12 MHz | [RM0008](#source-rm0008-adc) | 14 MHz is the limit and 18 MHz is over it. The 1 µs example is at 14 MHz |
+| The temperature channel is noisy and the reading wanders | The sample is shorter than 17.1 µs, or the channel is wrong | Sample for at least 17.1 µs, use ADC1 channel 16, and set TSVREFE | [RM0008](#source-rm0008-adc) | 17.1 µs is 205.2 cycles at 12 MHz. VREFINT is ADC1 channel 17. ADC2 inputs 16 and 17 are tied to VSS |
+| The first readings after power-up are all shifted | There was no calibration | Calibrate before Start | [RM0008](#source-rm0008-adc) | Section 11.4: CAL may be set only after ADON has been 1 for at least two ADC clocks |
+| The converted voltage reads slightly higher than the meter | The divisor was 4095 | Use 4096 | [RM0008](#source-rm0008-adc) | A 12-bit full scale is 4096 steps. Code 2048 is half scale. The reference is pin 9 VDDA |
+| HAL_DAC_Start on a Blue Pill leaves no analog voltage on PA4 | The C8 has no DAC | For an analog voltage use PWM plus an RC filter, or change to a part that has a DAC | [DS5319](#source-ds5319-adc) | Medium-density devices have two 12-bit ADCs. There is no ADC3 and no DAC. Pin 14 is not DAC_OUT1 |
+| Pin 10 once lit an LED, and now the sample reads a fixed level | The pin is still configured as a push-pull output | Switch PA0 to analog input before sampling | [DS5319](#source-ds5319-adc) | LQFP48 pin 10 PA0 is ADC12_IN0 |
 
 ## Learning goals
 
@@ -101,9 +101,13 @@ The clock is 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
 ## Core ideas
 
+Keep three forms of evidence throughout this chapter: input voltage at the pin, ADC configuration and status, and the code sequence in memory. A single printed voltage cannot locate the source of an error.
+
 ### 1. Resolution, reference voltage, and quantization error
 
-**Conclusion**: At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
+An ADC is a ruler with tick marks and no vernier. 12 bits cuts the span from 0 to Vref into 4096 steps, so at Vref = 3.3 V one step is about 0.8 mV. When the input falls between two marks, the ADC can only report the nearest one, so every reading carries up to half a step of error by design. The length of the ruler is Vref. If Vref wobbles, every reading wobbles with it.
+
+At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
 
 | Resolution N | Number of steps, 2^N | 1 LSB at Vref = 3.3 V | 1 LSB at Vref = 5.0 V | Notes |
 | --- | --- | --- | --- | --- |
@@ -126,7 +130,9 @@ full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 
 ### 2. Successive approximation (SAR): sample-and-hold plus binary compare
 
-**Conclusion**: A SAR ADC approaches the input voltage by binary search. An N-bit result needs N compares, and the bits are decided from MSB down to LSB.
+A SAR ADC plays a guessing game. First it takes a snapshot: the input charges a small capacitor, then the switch opens so the voltage stays put while it compares. Then it guesses from the middle: "is it above Vref/2?" If yes, it writes 1 and keeps guessing in the upper half. If no, it writes 0 and guesses in the lower half. 12 bits means 12 guesses. The snapshot is where things go wrong. If the source resistance is high, the capacitor does not fill in the sample time, and the snapshot comes out blurred.
+
+A SAR ADC approaches the input voltage by binary search. An N-bit result needs N compares, and the bits are decided from MSB down to LSB.
 
 The conversion, for 12 bits:
 
@@ -146,7 +152,7 @@ t_s (minimum) ≈ (R_AIN + R_ADC) × C_ADC × ln(2^(N+2))
 For STM32F1: R_ADC ≈ 1 kΩ, C_ADC ≈ 8 pF, N = 12 → ln(2^14) ≈ 9.7
 ```
 
-| Source impedance R_AIN | Minimum sample time t_s (an estimate, not a source card) | Sample step on this part at ADCCLK = 12 MHz | Notes |
+| Source impedance R_AIN | Minimum sample time t_s (estimate) | Sample step on the C8 at ADCCLK = 12 MHz | Notes |
 | --- | --- | --- | --- |
 | ≤ 1 kΩ | ≈ 78 ns | `000` = 1.5 cycles (125 ns) | Op-amp drive, or a small divider |
 | ≈ 10 kΩ | ≈ 0.78 µs | `010` = 13.5 cycles (1.125 µs) | A typical potentiometer |
@@ -154,15 +160,17 @@ For STM32F1: R_ADC ≈ 1 kΩ, C_ADC ≈ 8 pF, N = 12 → ln(2^14) ≈ 9.7
 | ≈ 100 kΩ | ≈ 7.8 µs | `111` = 239.5 cycles (19.958 µs) | Use this step for a high impedance |
 | ≥ 1 MΩ | ≥ 78 µs | 239.5 cycles is still not enough | **You must add a voltage-follower buffer** |
 
-The 1 µs that RM0008 prints at 14 MHz and 1.5 cycles is an example at the ceiling. 71.5 cycles is 5.958 µs at 12 MHz and does not cover the temperature channel's 17.1 µs. Times that share a cell with 21 µs use 12 MHz only. The F4 column “t_s + 12 cycles” in the comparison table is void on this part.
+The 1 µs that RM0008 prints at 14 MHz and 1.5 cycles is the example with the ADC clock at its limit. 71.5 cycles is 5.958 µs at 12 MHz, short of the 17.1 µs the temperature channel needs. All times in this chapter use 12 MHz. The F4 column “t_s + 12 cycles” in the comparison table does not apply to the F103.
 
-During a scan, a high-impedance channel can pick up the previous channel if that capacitor has not finished discharging. Lengthen the sample, or insert a gap in the sequence. This sentence does not enter a source card.
+During a scan, a high-impedance channel can pick up the previous channel if that capacitor has not finished discharging. Lengthen the sample, or insert a gap in the sequence.
 
 On F1, `SMPx[2:0]` can be 1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5 ADCCLK cycles (see RM0008, Chapter 11, ADC, "Channel-wise programmable sampling time"). **The higher the source impedance, the longer the sample time has to be.** Otherwise the reading sits low and wobbles.
 
 ### 3. Four conversion modes
 
-**Conclusion**: Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
+The four modes differ in when the ADC stops. Single converts once each time you ask. Continuous starts again as soon as it finishes and never stops. Scan works down a list of channels in order. Discontinuous splits a long list so that each trigger converts only a few channels. Real projects most often use scan plus continuous, with DMA moving the results.
+
+Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
 
 | Mode | Key bits | Behavior | Typical use |
 | --- | --- | --- | --- |
@@ -176,12 +184,14 @@ The regular group holds up to 16 conversions in the sequence. The injected group
 
 ### 4. Multi-channel plus DMA
 
-**Conclusion**: The standard shape for fast multi-channel acquisition is scan mode plus continuous conversion plus circular DMA. The CPU does not take part at all.
+In a continuous multi-channel scan, the ADC drops each result into the same DR register, and the next result overwrites it straight away. The CPU cannot keep up with fetching every one, so DMA stands at the DR door and carries each result into the next slot of an array, wrapping to the start at the end. When the CPU wants the latest values, it reads the array.
+
+The standard shape for fast multi-channel acquisition is scan mode plus continuous conversion plus circular DMA. The CPU does not take part at all.
 
 - In scan mode, each finished channel raises one DMA request (`CR2.DMA=1`) and moves `DR` into an array in memory.
 - DMA runs in **circular mode**. The array wraps by itself and becomes a ring buffer.
 - Data alignment, `CR2.ALIGN`: right-aligned (the default; the low 12 bits are valid) or left-aligned (the high 12 bits are valid, which makes a direct compare against a 16-bit integer easy).
-- An STM32F103C8 has ADC1 and ADC2. It has no ADC3 and no DAC. This part has only DMA1, and ADC1 is channel 1. Half-word and CNDTR arithmetic stays in chapter file 10.
+- An STM32F103C8 has ADC1 and ADC2. It has no ADC3 and no DAC. The C8 has only DMA1, and ADC1 is channel 1. Half-word width and CNDTR are worked out in chapter 10.
 
 | Item | F1 (RM0008, Chapter 11) | F4 (RM0090, Chapter 13) |
 | --- | --- | --- |
@@ -192,9 +202,16 @@ The regular group holds up to 16 conversions in the sequence. The injected group
 | Conversion time | t_s + 12.5 cycles | t_s + 12 cycles |
 | Internal channels | Temperature CH16, Vrefint CH17 | Temperature, Vrefint, VBAT |
 
+<p align="center">
+  <img src="../../assets/animations/dma-circular.svg" width="820" alt="An ADC scan sequence writes through circular DMA into an array, with HT and TC handing off the first and second halves">
+  <br><sub>▲ Multi-channel results leave one ADC_DR and enter the array in sequence; HT and TC only identify the half that is ready. The figure cannot prove channel order, data width, or sample time. Reconcile those with SQR, DMA configuration, and the measured input (FA-002 · IG-012 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 5. Internal temperature sensor and Vrefint
 
-**Conclusion**: The temperature sensor and Vrefint are "internal channels" of the ADC. You get the die temperature and the real VDDA for free, and you use them to calibrate the external readings.
+The chip has two channels that need no wiring. One is the temperature sensor, which gives a rough idea of how hot the die is and is only good for trends. The other is Vrefint, a fixed voltage of about 1.20 V. Its job is to measure the ruler itself: since the input is known to be 1.20 V, the code you read tells you what VDDA really is right now, and you can use that to correct the other channels.
+
+The temperature sensor and Vrefint are "internal channels" of the ADC. You get the die temperature and the real VDDA for free, and you use them to calibrate the external readings.
 
 **Temperature (F1, RM0008 Chapter 11, "Temperature sensor")**: set `CR2.TSVREFE=1` to enable it, and select channel 16.
 
@@ -215,7 +232,9 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 
 ### 6. DAC output modes, the buffer, and noise
 
-**Conclusion**: The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DOR / 4096`. The output buffer can drive a heavier load, but it adds offset and cannot swing all the way to the rails.
+A DAC is an ADC run backwards: you give it a number from 0 to 4095 and it puts the matching voltage on the pin. The output buffer is a helper that lets the pin drive a heavier load, but the buffer itself cannot reach all the way to 0 V or VDDA. To make the voltage follow a waveform, let a timer trigger at a fixed beat and have DMA feed one value from a table on each beat.
+
+The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DOR / 4096`. The output buffer can drive a heavier load, but it adds offset and cannot swing all the way to the rails.
 
 | Feature | What it means | Key bits / registers |
 | --- | --- | --- |
@@ -243,7 +262,7 @@ Pick the source impedance from the sample-time table above. Put a follower in fr
 
 ## Code
 
-**Conclusion**: On F1 you must calibrate once before you start a conversion. Use DMA for continuous multi-channel acquisition. Polling is enough for a single slow signal.
+On F1 you must calibrate once before you start a conversion. Use DMA for continuous multi-channel acquisition. Polling is enough for a single slow signal.
 
 ```c
 HAL_ADCEx_Calibration_Start(&hadc1);          /* Required on F1; F4 does not have this step */
@@ -274,13 +293,13 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 
 ## Hands-on labs
 
-1. **Potentiometer**: wire the wiper of a 10 kΩ potentiometer to PA0, and the two ends to 3.3 V and GND. Print the code and `code * 3.3f / 4096` on the UART. Expected: the ends land near 0 V and 3.3 V, and the middle is about 1.65 V (code about 2048).
-2. **Internal reference**: read Vrefint and work backward with `VDDA = 1.20f * 4096 / code`. Expected: on USB power, VDDA sits near 3.3 V. The exact number is whatever your meter says. This page does not give a "standard measured value."
-3. **Sample-time comparison**: use the same high-impedance divider. Take 100 readings at 1.5 cycles and 100 at 239.5 cycles. Expected: the short sample time has a low mean and a large variance.
+1. **Input/code reconciliation:** Put a 10 kΩ potentiometer on PA0 and choose low, middle, and high points. At each point record meter voltage, ADC code, and voltage computed with the measured VDDA.
+2. **Peripheral-state reconciliation:** Read Vrefint to estimate VDDA and save readings before and after calibration together with EOC state and sample time. Do not treat the typical 1.20 V as a per-device calibration value.
+3. **Memory-result reconciliation:** Scan PA0 and PA1 into a 64-half-word circular DMA buffer. Record array order, HT/TC counts, and CNDTR. Then use a 100 kΩ source and compare 100 readings at 1.5 and 239.5 cycles by mean and range.
 
 ### 7. Calibration, the analog watchdog, and injected channels
 
-**Conclusion**: Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
+Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
 
 | Feature | When to use it | HAL |
 | --- | --- | --- |
@@ -307,7 +326,7 @@ Other packages, and the F4 channel table, follow the pinout in that part's datas
 2. SAR is testing bit10, and bit11 has already been kept. Should the trial value be 3072 or 1024?
 3. Why should an F103C8 project not contain `HAL_DAC_Start`?
 
-Motto: **sample time follows impedance, conversion divides by 4096, and the C8 has no DAC.**
+Before leaving this chapter, keep a three-point voltage/code table, the VDDA estimated from Vrefint, and one DMA-array record with channel order and CNDTR.
 
 ## Related resources
 

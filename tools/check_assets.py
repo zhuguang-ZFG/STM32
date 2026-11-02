@@ -281,6 +281,11 @@ def check_videos():
         if not os.path.isfile(png):
             print(f"[FAIL] 缺少海报 {name}.png")
             ok = False
+        elif not os.path.isfile(gen_narrated.FONT):
+            # 海报按文泉驿微米黑逐像素比对，换别的字体必然不一致，比了也没有意义。
+            if ch is gen_narrated.CHAPTERS[0]:
+                print(f"[SKIP] 找不到海报字体 {gen_narrated.FONT}，跳过海报逐像素比对。"
+                      "装上文泉驿微米黑后用 NARRATED_FONT 指向它即可恢复。")
         else:
             got = Image.open(png).convert("RGB")
             want = gen_narrated.render_poster(ch)
@@ -595,6 +600,13 @@ def check_links():
     bad, total = 0, 0
 
     for root, dirs, files in os.walk(ROOT):
+        # 仓库内的临时依赖、浏览器 profile 和渲染快照不是出版内容。
+        # 不扫描这些目录，避免第三方包自己的 README 链接污染本书门禁。
+        dirs[:] = [
+            directory for directory in dirs
+            if directory not in {".git", ".temp", "node_modules", "dist", "build"}
+            and not directory.startswith(".venv")
+        ]
         for f in sorted(files):
             if not f.endswith(".md"):
                 continue
@@ -621,6 +633,11 @@ def check_links():
 
 
 if __name__ == "__main__":
+    # Windows 的默认 GBK 终端无法打印质量门使用的勾叉符号。
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure:
+            reconfigure(encoding="utf-8", errors="backslashreplace")
     a = check_svg()
     b = check_gif()
     d = check_videos()

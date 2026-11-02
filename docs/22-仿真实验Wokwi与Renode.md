@@ -2,7 +2,7 @@
 
 > English: [Wokwi and Renode](en/22-simulation-wokwi-renode.md)
 
-> 没有板子也能把灯点亮、把按键按下去。仿真是预习，不是代替焊接。
+> 仿真里灯闪了，只能证明 ELF 与当前模型配合。把同一个 ELF 放到真板后，还要重新验证供电、引脚、电气波形、时钟和功耗。
 
 <p align="center">
   <img src="../assets/animations/toolchain-flow.svg" width="760" alt="编译烧录运行的数据流">
@@ -41,7 +41,7 @@
 
 ## 先选哪一家
 
-**结论**：想看灯、按键、PWM、OLED，用 Wokwi。想在终端里单步、看 USART1 字节流，用 Renode。两家都吃你自己编译出来的 ELF，仓库里没有预编译固件。
+想看灯、按键、PWM、OLED，用 Wokwi。想在终端里单步、看 USART1 字节流，用 Renode。两家都吃你自己编译出来的 ELF，仓库里没有预编译固件。
 
 | | Wokwi | Renode |
 | --- | --- | --- |
@@ -51,7 +51,12 @@
 | 适合 | 接线、GPIO、EXTI、定时器、I2C | 加载 ELF、USART1 终端、外设访问日志 |
 | 官方说明 | [Blue Pill 零件页](https://docs.wokwi.com/parts/board-stm32-bluepill)、[wokwi.toml](https://docs.wokwi.com/vscode/project-config) | Renode 仓库里的 `platforms/cpus/stm32f103.repl` |
 
-口诀：**浏览器里看灯，命令行里看字节。**
+别把两列理解成高低关系。下图把 Wokwi、Renode 和目标真板放到同一条验证链上：前两者缩短反馈，真板决定电气与时序结论。图能说明工具边界，不能替代你正在使用的版本支持表。图由 `tools/gen_diagrams.py` 生成。
+
+<p align="center">
+  <img src="../assets/diagrams/simulator-comparison.svg" width="760" alt="Wokwi、Renode 和目标真板三列对比各自能观察、能证明和不能证明的内容">
+  <br><sub>▲ 对比图：浏览器看接线，机器模型看访问，最终在真板验收（FA-029 · IG-004；作者自绘矢量图）</sub>
+</p>
 
 ## Wokwi：图怎么读
 
@@ -82,6 +87,13 @@
 | [adc-dma](../examples/adc-dma/diagram.json) | 三只电位器接到 A0/A1/A4 | ADC1 基本转换有，**DMA 搬运没有** |
 
 支持情况以 Wokwi 文档那张表为准（GPIO、USART、I2C、SPI、TIM、EXTI 有；DMA、RTC、IWDG 没有）。表会改，以你打开文档的那一版为准。
+
+灯亮只是最上层现象。下图从实验现象一直追到宿主环境，适合定位“接线对了但固件没动”的问题；它不能证明某个版本确实实现了某外设，仍要查支持表或最小复现实验。图由 `tools/gen_diagrams.py` 生成。
+
+<p align="center">
+  <img src="../assets/diagrams/simulation-model-boundary.svg" width="760" alt="实验现象、外设模型、芯片平台、仿真引擎和宿主环境组成的五层仿真模型">
+  <br><sub>▲ 分层图：一段固件要穿过哪些模型才能出现可见现象（FA-002 · IG-012；作者自绘矢量图）</sub>
+</p>
 
 `wokwi.toml` 里固件路径写成 `build/firmware.elf`。STM32 在 Wokwi 接受 `.elf`、`.hex`、`.bin`。先在 CubeIDE 或 PlatformIO 里编出来，再把 `firmware` / `elf` 两行改成你的真实路径。Wokwi 不负责编译。
 
@@ -114,11 +126,21 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
 | OLED 一片黑 | 地址写成了 0x78 但零件默认 0x3c | 图里 `i2cAddress` 是 7 位地址 `0x3c`，和 HAL 左移后的 0x78 是同一个从机 |
 | Renode 报平台找不到 | 版本里没有这份 repl | 在 Renode 提示符里 `ls @platforms/cpus` 看实际文件名 |
 
+从模型迁到硬件时，按下图四道门留证据。动画依次高亮构建、模型、目标板和验收；即使 PDF 只保留第一帧，四道门和停止条件也完整可读。它规定验收顺序，不声称本仓库已经测过你的板。动画由 `tools/anim_sys.py` 生成。
+
+<p align="center">
+  <img src="../assets/animations/simulation-acceptance-gates.svg" width="760" alt="同一 ELF 依次通过构建、模型、目标板和验收四道门，每道门都有停止条件">
+  <br><sub>▲ 动画：从仿真到真板的连续验收门（FA-002 · IG-009；作者自绘矢量动画，首帧可独立阅读）</sub>
+</p>
+
 ## 动手实验
 
-1. **只看板载灯**：用 gpio-blink 编出 ELF，丢进 Wokwi。预期：板子上的 PC13 灯按代码节奏闪，PA0 那颗外接灯慢得多。
-2. **按一下**：exti-key 的图里按下按钮（它把 A0 接到 GND）。预期：板载灯翻转。按键在固件里是上拉输入，所以图里不用再画上拉电阻。
-3. **听 USART1**：Renode 跑 `uart-usart1.resc`，telnet 到 3456。若固件还是 DMA 版且没有字节，把结论记下来：这是模型边界，不是波特率算错。
+1. **同一 ELF**：记录 ELF 哈希，在 Wokwi 跑 GPIO/EXTI，在 Renode 跑 USART1；分别保存现象、模型配置和不支持项。
+2. **故障注入**：在模型中改错引脚或外设连接，确认失败可重复，并把它归到固件、平台描述或外设模型中的一层。
+3. **真板迁移**：把同一 ELF 烧到 BluePill，重新完成构建校验、`main` 断点、PC13 周期、USART 波形和供电电压；差异单独记录。
+4. **边界结论**：为每个实验写“仿真证明了什么、真板新增证明了什么、仍未证明什么”，不把模型行为写成硅片规格。
+
+离开本章前，应有同一 ELF 的双仿真记录、一次模型故障注入和一份真板迁移差异表。
 
 自测：
 

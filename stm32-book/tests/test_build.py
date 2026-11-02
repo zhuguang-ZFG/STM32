@@ -545,7 +545,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("学习路线收束", html)
         source = (BOOK_DIR.parent / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
         self.assertIn("Next:", source)
-        self.assertIn("Disclaimer: every illustration", source)
+        self.assertIn("Image sources and licenses", source)
+        self.assertIn("assets/README.md", source)
 
     def test_english_glossary_covers_the_same_themes(self) -> None:
         text = (BOOK_DIR / "book" / "en" / "D-glossary.md").read_text(encoding="utf-8")
@@ -1578,7 +1579,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "ef2c7b0fd546164c3cddf512fa6d063769dad824baf3d865f9b2496380146a74",
+            "87e3875a1ac98d62ae981802a411f445438a88fbaab1c519803d906fba62de54",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS

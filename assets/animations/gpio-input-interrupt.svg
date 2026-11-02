@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="按键读取：轮询 vs 中断">
+<title>按键读取：轮询 vs 中断</title>
 <style>
 @keyframes hit-fade{0%,100%{opacity:0.35}50%{opacity:1.0}}
 .hit{animation:hit-fade 2s ease-in-out infinite 0s;}
 @keyframes isr-fade{0%,100%{opacity:0.4}50%{opacity:1.0}}
 .isr{animation:isr-fade 1.6s ease-in-out infinite 0s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

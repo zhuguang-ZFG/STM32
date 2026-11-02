@@ -2,7 +2,7 @@
 
 > 中文：[19 项目实战合集](../19-项目实战合集.md)
 
-> From a Bluetooth car to a FreeRTOS gateway: 10 projects, easy then harder. Each one gives you the requirements, the bill of materials, the approach, the key code, and a time estimate. Follow them and you can finish.
+> Choose a project by whether its evidence loop can close: how inputs are measured, state is recorded, outputs are accepted, and failures recover. Feature count and estimated evenings are not deliverables.
 
 <p align="center">
   <img src="../../assets/boards/peripheral-wiring.svg" width="760" alt="Wiring overview for common parts: LED, button, OLED, sensors">
@@ -35,37 +35,37 @@
 <!-- /video:ch19 -->
 ## Principle and scope
 
-This chapter stays on STM32F103C8T6. All ten projects stay. The four sections do not design an eleventh project. A number written for this part has to fit in this part, and it has to be the same ledger as chapter files 12 and 09. The file name and the title stay "A set of real projects".
+All ten projects use the STM32F103C8T6. Before starting one, do the arithmetic: does it fit in 64 KB of Flash and 20 KB of SRAM, and do its addresses and conversions match chapters 12 and 09? Many projects stall not because the code is wrong but because the plan never fit on this chip.
 
-One application. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` for 46 KB, length `0xB800`, ending before `0x08010000`. `16 + 2 + 46 = 64`. That is the map in chapter file 12 and in `examples/iap-bootloader`. See [repository examples](#source-project-examples).
+One application. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` for 46 KB, length `0xB800`, ending before `0x08010000`. `16 + 2 + 46 = 64`. That is the same map as in chapter 12 and in `examples/iap-bootloader`. See [repository examples](#source-project-examples).
 
-A second image of the same `0xB800` is `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, past `0x08010000`. Chapter file 12 has no second slot. Cutting the 46 KB into two 23 KB images is a different design, and it is not the normal path of this figure. Flash ends at `0x08010000`. See [DS5319](#source-ds5319-swd).
+The A/B dual-slot update seen online needs a second `0xB800` image: `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, past `0x08010000`, so it does not fit on the C8. Chapter 12 has one application slot. A real dual-slot scheme would cut the 46 KB into two 23 KB slots and shrink the application to match, which is a different design. Flash ends at `0x08010000`. See [DS5319](#source-ds5319-swd).
 
-`64 * 1024 = 65536`. SRAM on the C8 is 20 KB, which is 20480 bytes. 65536 is larger than 20480. This array is void on STM32F103C8T6. This section does not invent another part's SRAM size.
+`64 * 1024 = 65536`. SRAM on the C8 is 20 KB, which is 20480 bytes. 65536 is larger than 20480. So a 64 KB sample buffer in the logic-analyzer project does not link on the C8. Shrink it to a dozen KB or so, or move to a chip with more SRAM and check its datasheet.
 
-The denominator is 4096. Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. That is the same sentence as chapter file 09. See [RM0008 ADC](#source-rm0008-adc). This chapter does not redraw the sampling capacitor.
+The denominator is 4096. Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. The conversion is the one from chapter 09. See [RM0008 ADC](#source-rm0008-adc).
 
-The application frame is `4 + 128 + 1 = 133` bytes. Chapter file 14's full-speed bulk packet limit is 64 bytes. 133 has to be split. Do not write 133 as `wMaxPacketSize`. 48 MHz and `0x1209/0x0001` are cross-references only. Do not redraw chapter file 14.
+The application frame is `4 + 128 + 1 = 133` bytes. The chapter 14 full-speed bulk packet limit is 64 bytes, so 133 bytes go out as three packets, 64 + 64 + 5. The endpoint descriptor's `wMaxPacketSize` stays 64, not 133. The 48 MHz USB clock and VID/PID `0x1209/0x0001` are in chapter 14.
 
-Project 8 uses 120 Ω at each end, pins PB8 and PB9, and 500 kbit/s, the same ledger as chapter file 13. Whether the transceiver is 5 V or 3.3 V stays in the bill of materials and does not enter a source card. See [repository examples](#source-project-examples).
+Project 8 uses 120 Ω at each end, pins PB8 and PB9, and 500 kbit/s, matching chapter 13. Pick a 5 V or 3.3 V transceiver from the bill of materials. See [repository examples](#source-project-examples).
 
-Do not put the direction pin on pin 10 PA0. That pin is PA0-WKUP and also ADC12_IN0. See [DS5319 ADC](#source-ds5319-adc). The four sections do not name a replacement pin.
+Do not put the direction pin on pin 10 PA0. That pin is PA0-WKUP and also ADC12_IN0. See [DS5319 ADC](#source-ds5319-adc). Pick a free GPIO on your board and update the `MOTOR_DIR_PIN` define to match.
 
-Add one new peripheral per pass. That is a method, not a new electrical limit. Hours and star ratings do not enter this section. If the LED microseconds stay in project 6, label them as the LED vendor's numbers, not RM0008, and do not copy them into this section.
+Add one new peripheral per pass and get it working before the next, so that when something breaks there is only one suspect. The WS2812 timing in project 6 comes from the LED vendor's datasheet, not from RM0008.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-19-flash-fit.svg" width="760" alt="The C8 has one application of length 0xB800. Two of them are 110 KB. 65536 bytes is larger than 20 KB of SRAM.">
-  <br><sub>▲ Drawn for this book. The normal path is 16 KB, 2 KB, and one 0xB800 image ending before 0x08010000. SRAM is 20 KB, which is 20480 bytes. The failure path draws a second 0xB800 from 0x08010000 to 0x0801B800, and a 65536-byte array past 20480. The notes are a denominator of 4095, and treating 133 bytes as one USB packet. Sources: the map already frozen in chapter file 12, and the 64 KB / 20 KB cells in [DS5319](#source-ds5319-swd).</sub>
+  <br><sub>▲ Drawn for this book. The top band is a layout that fits: 16 KB, 2 KB, and one 0xB800 image ending before 0x08010000, with 20 KB of SRAM, which is 20480 bytes. The middle band shows two that do not: a second 0xB800 from 0x08010000 to 0x0801B800, and a 65536-byte array past 20480. The bottom band marks two common mistakes: an ADC denominator of 4095, and treating 133 bytes as one USB packet. Sources: the chapter 12 Flash layout and the 64 KB / 20 KB figures in [DS5319](#source-ds5319-swd).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/one-slot.gif" width="640" alt="16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: 16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000. Print from the static figure. The second application and the 65536-byte array are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the layout that fits: 16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000. The printed book has only the static figure above.</sub>
 </p>
 
-`peripheral-wiring.svg` stays as an auxiliary figure. The wiring overview does not replace this map.
+The wiring overview for the projects is `peripheral-wiring.svg`. It covers wiring only; whether a design fits is this figure's job.
 
 ## Timing and state
 
@@ -74,7 +74,7 @@ Add one new peripheral per pass. That is a method, not a new electrical limit. H
 | Bootloader | 16 KB | `0x08004000` | fits |
 | Parameter block | 2 KB | `0x08004800` | fits |
 | One application | `0xB800` | `0x08010000` | fits |
-| Two `0xB800` images | 110 KB | `0x0801B800` | does not fit. This is not the chapter 12 map |
+| Two `0xB800` images | 110 KB | `0x0801B800` | does not fit. Chapter 12 has one application slot |
 | SRAM | 20480 bytes | on chip | fits |
 | A 65536-byte array | `64 * 1024` | past SRAM | does not fit on the C8 |
 | ADC | denominator 4096 | code 2048 is 1.65 V | denominator 4095 fails |
@@ -82,15 +82,15 @@ Add one new peripheral per pass. That is a method, not a new electrical limit. H
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The update plan says two applications and cites chapter 12 | A different design was written as this chapter's map | Bring up one `0xB800` application on the C8 first | [repository examples](#source-project-examples) | The application length in `examples/iap-bootloader` is `0xB800`. Chapter 12 has no second slot |
 | The second image is linked past `0x08010000` | The 64 KB already ended | Stop at `0x08010000` | [DS5319](#source-ds5319-swd) | STM32F103x8 Flash is 64 KB. Two 46 KB images plus 16 KB and 2 KB are 110 KB |
-| The logic-analyzer buffer does not link on the C8 | `64 * 1024` is larger than this part's SRAM | Do not compile 65536 bytes into the C8 | [DS5319](#source-ds5319-swd) | SRAM is 20 KB, which is 20480 bytes. 65536 is larger. This row does not give another part's capacity |
+| The logic-analyzer buffer does not link on the C8 | `64 * 1024` is larger than the C8's SRAM | Do not compile 65536 bytes into the C8 | [DS5319](#source-ds5319-swd) | SRAM is 20 KB, which is 20480 bytes. 65536 is larger |
 | The scope voltage is off by one LSB | The denominator was 4095 | Use 4096 | [RM0008 ADC](#source-rm0008-adc) | Code 2048 is 1.65 V at a nominal 3.3 V. 4095 is off by one LSB |
 | The acquisition card writes 133 bytes as the endpoint packet length | The application frame was treated as the packet limit | A full-speed bulk packet is at most 64 bytes | [repository examples](#source-project-examples) | 133 is `4 + 128 + 1`. It is not the chapter 14 packet limit |
-| The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0. This row does not assign a motor pin |
-| Two CAN nodes do not agree on the rate | They are not on the chapter 13 ledger | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9. This row does not set the transceiver to 5 V or to 3.3 V |
+| The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0 |
+| Two CAN nodes do not agree on the rate | The two nodes use different bit-timing settings | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9 |
 ## Learning goals
 
 - [ ] Turn "an idea" into the engineering path: requirements, then hardware, then approach, then modules, then tests.
@@ -222,6 +222,11 @@ static float Code2Volt(uint16_t code)
 
 **Where it can grow**: a trigger level and edge, an FFT for the spectrum, two channels to compare, or a DWT cycle count of the refresh rate.
 
+<p align="center">
+  <img src="../../assets/diagrams/dma-buffer-ownership.svg" width="820" alt="In an ADC acquisition project, DMA writes a circular buffer while the CPU processes only stable halves handed off by HT and TC">
+  <br><sub>▲ Acquisition projects establish buffer ownership before frame rate or UI work. The figure does not prove sample rate or analog accuracy; timer, ADC, and input-voltage evidence are still required.</sub>
+</p>
+
 ## 4. USB data-acquisition card (★★★ intermediate)
 
 **Requirements**: stream multi-channel ADC data to a PC over USB (CDC, or a vendor bulk endpoint) and plot it on the host.
@@ -275,7 +280,7 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 ```c
 /* Parameter block: the slot that is valid now, and any upgrade request */
 typedef struct {
-    uint32_t magic;       /* 0x5A5A0001 means valid. The number stays in this draft. It is not a chapter 12 key, and it does not enter a source card. The C8 has no second slot. */
+    uint32_t magic;       /* 0x5A5A0001 means valid. This marker is made up for this project and has nothing to do with the chapter 12 Flash unlock keys. With the chapter 12 layout, the C8 has room for only one APP slot. */
     uint32_t active;      /* 0 = slot A, 1 = slot B */
     uint32_t pending;     /* the slot requested for the switch */
     uint32_t app_size[2];
@@ -297,6 +302,11 @@ uint32_t Boot_SelectApp(void)
 ```
 
 **Where it can grow**: YMODEM or your own packet format, a signature check, CAN for updating many nodes at once, or resume after a dropped transfer.
+
+<p align="center">
+  <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="A remote-update project accepts image length and CRC, slot range, vectors, jump, and application heartbeat in sequence">
+  <br><sub>▲ An update project must reject bad images, confirm the new version, and recover after an interrupted transfer. “The UART finished and code jumped” is not enough.</sub>
+</p>
 
 ## 6. WS2812 LED-strip controller (★★ intermediate)
 
@@ -354,7 +364,7 @@ void WS2812_Encode(const uint8_t *grb, uint16_t n)
 **Key code**:
 
 ```c
-/* 64 * 1024 = 65536, which is larger than the C8 SRAM of 20480 bytes. This array is void on STM32F103C8T6. This note does not invent an F411 or F407 SRAM size. */
+/* 64 * 1024 = 65536, which is larger than the C8 SRAM of 20480 bytes. This array does not fit on STM32F103C8T6; it needs a part with more SRAM. */
 #define LA_DEPTH  (64 * 1024)
 static uint8_t la_buf[LA_DEPTH];
 static volatile uint32_t la_wr = 0;
@@ -413,6 +423,11 @@ void Node_Report(uint8_t node, int16_t temp_x10, uint16_t humi_x10)
 ```
 
 **Where it can grow**: CANopen, a bootloader update over the bus, or a gateway to Ethernet or 4G.
+
+<p align="center">
+  <img src="../../assets/diagrams/network-debug-ladder.svg" width="820" alt="A multi-node network is debugged from link and addressing through protocol state to application heartbeat">
+  <br><sub>▲ Multi-node projects follow the first failed boundary instead of jumping from an application log to “the bus is broken.” Each layer keeps reproducible evidence and a recovery action.</sub>
+</p>
 
 ## 9. A self-balancing car (★★★★ a challenge)
 
@@ -500,12 +515,17 @@ static void vCommTask(void *arg)
 
 **Where it can grow**: an MQTT or Modbus stack, OTA updates, task runtime stats (`vTaskGetRunTimeStats`), or saving data across power loss.
 
+<p align="center">
+  <img src="../../assets/animations/rtos-startup-gates.svg" width="820" alt="A system project passes reset evidence, minimum hardware, kernel objects, device discovery, and application release gates">
+  <br><sub>▲ Gateway projects release application behavior only after critical devices, queues, storage, and communication return explicit results. A running scheduler does not mean the system is ready.</sub>
+</p>
+
 ## Hands-on labs (picking a project and moving it forward)
 
-1. **Build the MVP first**: pick any project and do only the smallest version that runs (for the Bluetooth car, forward and stop are enough). You should see something happen within half a day to 1 day.
-2. **Split it into modules**: break the project into 3 to 5 pieces you can test alone, and prove each one. Each module should run on its own.
-3. **Add one harder feature**: take one direction from "where it can grow" (an OLED, for example) and put it on the MVP. The product should grow one step at a time.
-4. **Write a short retrospective**: record the traps and the fixes (add them to [chapter 18](18-faq.md)). You should start a personal notebook of engineering lessons.
+1. **Freeze the delivery contract:** State input range, output format, timing and capacity budgets, failure states, and recovery path before writing business logic.
+2. **Module evidence:** Each module keeps one runnable test, one injected failure, and one measurement or buffer record. Integrate only after it passes alone.
+3. **System budget:** Add Flash/RAM, worst response, average current, bandwidth, and queue peaks. If one budget fails, reduce scope or change the target device first.
+4. **Delivery package:** Rebuild from a clean environment and include ELF/map, configuration, wiring, acceptance records, known limits, and recovery steps so another person can reproduce it.
 
 ## Related resources
 

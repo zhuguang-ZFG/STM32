@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="低功耗验收看完整电流波形">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">低功耗验收看完整电流波形</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">静态底电流、唤醒峰值、活跃时间和周期共同决定平均电流；开发板漏电要单独扣除</text>
+<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16 功耗 · IG-009</text>
+<line x1="54" y1="272" x2="848" y2="272" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="54" y1="252" x2="168" y2="252" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="168" y1="252" x2="184" y2="122" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="184" y1="122" x2="250" y2="122" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="250" y1="122" x2="266" y2="252" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="266" y1="252" x2="520" y2="252" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="520" y1="252" x2="536" y2="156" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="536" y1="156" x2="590" y2="156" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="590" y1="156" x2="606" y2="252" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="606" y1="252" x2="848" y2="252" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="78" y="246" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STOP floor</text>
+<text x="217" y="108" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">active peak</text>
+<text x="563" y="142" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">wake / sample</text>
+<line x1="184" y1="300" x2="266" y2="300" stroke="#8f2d2d" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="266.00,300.00 259.00,303.00 259.00,297.00" fill="#8f2d2d" opacity="1"/>
+<polygon points="184.00,300.00 191.00,297.00 191.00,303.00" fill="#8f2d2d" opacity="1"/>
+<text x="225" y="294" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">t_active</text>
+<line x1="54" y1="330" x2="520" y2="330" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="520.00,330.00 513.00,333.00 513.00,327.00" fill="#075e84" opacity="1"/>
+<polygon points="54.00,330.00 61.00,327.00 61.00,333.00" fill="#075e84" opacity="1"/>
+<text x="287" y="324" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">period</text>
+<rect x="38" y="366" width="520" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="58" y="394" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">平均电流</text>
+<text x="58" y="426" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Iavg = (Σ Istate × tstate) / period</text>
+<text x="58" y="454" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同时记录电压、唤醒原因、时钟恢复完成点</text>
+<rect x="584" y="366" width="278" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="604" y="394" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">测量边界</text>
+<text x="604" y="423" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">断开调试器 / LED / USB</text>
+<text x="604" y="449" font-size="10.2" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DS 典型值 ≠ 开发板实测</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>

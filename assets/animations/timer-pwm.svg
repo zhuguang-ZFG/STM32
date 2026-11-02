@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="定时器怎么产生 PWM">
+<title>定时器怎么产生 PWM</title>
 <style>
 @keyframes cnt-tx{0%{transform:translateX(0px)}100%{transform:translateX(812px)}}
 .cnt{animation:cnt-tx 3s linear infinite 0s;}
 @keyframes duty-w{0%,100%{transform:scaleX(0.08)}50%{transform:scaleX(1)}}.duty{animation:duty-w 4s ease-in-out infinite;transform-box:fill-box;transform-origin:left center;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="三套 RTOS 生态：配置从哪里进入最终固件？">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三套 RTOS 生态：配置从哪里进入最终固件？</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">函数名不是主要差异；真正影响维护的是配置入口、硬件描述、驱动模型和构建产物</text>
+<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">28 生态 · IG-004</text>
+<rect x="42" y="92" width="256" height="360" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="42" y="92" width="256" height="48" fill="#075e84" opacity="0.86" rx="8"/>
+<text x="170" y="122" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">FreeRTOS</text>
+<text x="60" y="164" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置</text>
+<text x="118" y="164" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FreeRTOSConfig.h</text>
+<line x1="170" y1="180" x2="170" y2="202" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="170.00,207.00 167.50,202.00 172.50,202.00" fill="#5e6872" opacity="1"/>
+<text x="60" y="230" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件</text>
+<text x="118" y="230" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CubeMX / HAL / BSP</text>
+<line x1="170" y1="246" x2="170" y2="268" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="170.00,273.00 167.50,268.00 172.50,268.00" fill="#5e6872" opacity="1"/>
+<text x="60" y="296" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对象</text>
+<text x="118" y="296" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">task / queue / timer</text>
+<line x1="170" y1="312" x2="170" y2="334" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="170.00,339.00 167.50,334.00 172.50,334.00" fill="#5e6872" opacity="1"/>
+<text x="60" y="362" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">构建</text>
+<text x="118" y="362" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">工程自行组合服务</text>
+<rect x="60" y="410" width="220" height="24" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="170" y="427" font-size="9.8" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">→ firmware.elf</text>
+<rect x="322" y="92" width="256" height="360" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="322" y="92" width="256" height="48" fill="#1b5c45" opacity="0.86" rx="8"/>
+<text x="450" y="122" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">RT-Thread</text>
+<text x="340" y="164" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置</text>
+<text x="398" y="164" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">menuconfig / rtconfig.h</text>
+<line x1="450" y1="180" x2="450" y2="202" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="450.00,207.00 447.50,202.00 452.50,202.00" fill="#5e6872" opacity="1"/>
+<text x="340" y="230" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件</text>
+<text x="398" y="230" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BSP + device framework</text>
+<line x1="450" y1="246" x2="450" y2="268" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="450.00,273.00 447.50,268.00 452.50,268.00" fill="#5e6872" opacity="1"/>
+<text x="340" y="296" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对象</text>
+<text x="398" y="296" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">thread / IPC / device</text>
+<line x1="450" y1="312" x2="450" y2="334" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="450.00,339.00 447.50,334.00 452.50,334.00" fill="#5e6872" opacity="1"/>
+<text x="340" y="362" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">构建</text>
+<text x="398" y="362" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCons + components</text>
+<rect x="340" y="410" width="220" height="24" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="450" y="427" font-size="9.8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">→ firmware.elf</text>
+<rect x="602" y="92" width="256" height="360" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="602" y="92" width="256" height="48" fill="#7a4e00" opacity="0.86" rx="8"/>
+<text x="730" y="122" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">Zephyr</text>
+<text x="620" y="164" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置</text>
+<text x="678" y="164" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Kconfig / prj.conf</text>
+<line x1="730" y1="180" x2="730" y2="202" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="730.00,207.00 727.50,202.00 732.50,202.00" fill="#5e6872" opacity="1"/>
+<text x="620" y="230" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件</text>
+<text x="678" y="230" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Devicetree + bindings</text>
+<line x1="730" y1="246" x2="730" y2="268" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="730.00,273.00 727.50,268.00 732.50,268.00" fill="#5e6872" opacity="1"/>
+<text x="620" y="296" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对象</text>
+<text x="678" y="296" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">kernel + device model</text>
+<line x1="730" y1="312" x2="730" y2="334" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="730.00,339.00 727.50,334.00 732.50,334.00" fill="#5e6872" opacity="1"/>
+<text x="620" y="362" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">构建</text>
+<text x="678" y="362" font-size="9.8" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">west + CMake + Ninja</text>
+<rect x="620" y="410" width="220" height="24" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="730" y="427" font-size="9.8" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">→ firmware.elf</text>
+<rect x="42" y="474" width="816" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="60" y="498" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">迁移检查</text>
+<text x="132" y="498" font-size="10.3" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不要逐函数替换；逐项核对配置单位、设备所有权、ISR 边界、超时语义与启动顺序。</text>
+<text x="132" y="518" font-size="9.7" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一个 GPIO 闪灯能编译，不代表网络、低功耗和故障恢复已经等价。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-029 几何图解叙事 · IG-004 双列多行对比 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>

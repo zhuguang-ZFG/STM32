@@ -28,20 +28,25 @@ animations/freertos-scheduler.svg 900x620 15775 fe1bebd106b7c825a5d815edc6784282
 animations/g0-boot-swd.svg 900x620 12398 e9121dfb6e5290afd5d192048fa7d7409a821c7651538c80bde3237df535155f
 animations/gpio-blink.svg 900x620 14249 811377a9c3b65dd99cbeb8a1ff720b0e4e6410bc852726ac98f9aa20619175ea
 animations/gpio-input-interrupt.svg 900x620 13740 4b97aeb339eb046f0091312b6caf918b1acdc176cc72e4295cc7c116792c6697
+animations/h7-clock-chain.svg 900x620 11808 4edcb50a1871b7dd97c5a86685f43b5884c92aec162c53aa478f519394dc2068
 animations/i2c-transaction.svg 900x620 17483 e5c5b2aca2aae67cc607e3eb929cc0f20c184deceb8815f32a9d4e96f4bef55a
 animations/iwdg-window.svg 900x620 10675 324f8c83215265a9e4b9c256552019165c14adb914c3fc9189f054f264751444
-animations/l4-stop2-evidence.svg 900x620 13976 ae6b68a3a26ee3995d72dc29bcfcb2bab733a2e54637e4d9a6a8581b9f577e28
+animations/l4-stop2-evidence.svg 900x620 14214 04228f72309b692ff19fdbccce10fe8a7fc1a1030af9f83bba0307fc7896bd1e
 animations/lowpower-wakeup.svg 900x620 10766 7a5fe86d6e1a29c7f8e00d177f0ec928c85f7405e8427e8f27209720cc0a22b6
 animations/memory-map.svg 900x620 7846 82e9be18ac7ecbe388e478b995ef9bcf8e876a2373406565469fda41e911b11f
+animations/network-online-state.svg 900x620 12028 b411a492adbc81a722ace75d62461b5b21a8c97a364d0f253fb43e1b09df8fdb
 animations/network-packet-journey.svg 900x620 18648 0081c4c6270e94527deba9ea9365811c22de28130ee343d8df68797eb36f1016
 animations/nvic-interrupt-flow.svg 900x620 12972 07a38a7e7d4b430809683b2beb00f98b3cac0a17fc45bb1a5d066d20c22c9dc4
+animations/rtos-startup-gates.svg 900x620 14083 8e65b6e47917be3fdd79f4b51834520927b144caa4ed12b6d392e21823464b3b
 animations/rtos-system-layers.svg 900x620 13996 1a44f6f16dcc08a20467d946a35a22ef968582f37faf99b5b74f5107deaf31e9
+animations/simulation-acceptance-gates.svg 900x620 10660 c0316576a9b8a6c45011d4a1fce3f884228ffa2a0788561d983b43227aa9e146
 animations/spi-transfer.svg 900x620 18861 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
+animations/spl-init-pipeline.svg 900x620 11903 d1ebfca0e4b6e9cbbda864bf9c82f217976ad6b8e16bee53e36059b6d6e8885c
 animations/timer-modes.svg 900x620 11712 c8a1e34469293d5f4a02a5703271bcf62fc4e9f2f1e89429dbcaa02b56ebeabf
 animations/timer-pwm.svg 900x620 10046 54833bf0841b1569cb993934699473b2ee4d2f0ed56b858a4fb9b5855bb8532f
 animations/toolchain-flow.svg 900x620 15176 e131ad994e16c099c15d4d941c0e7aade4865c53c912248a73590e939645e0bd
 animations/uart-frame.svg 900x620 18533 a696fc8932d337f1b22dacef54ecfe01dd37aa963b41d67111c584122f6b3400
-animations/usb-enumeration.svg 900x620 10874 b531c1c1278ee8560a2a4297dd4f36e8dfb5934fc09f7df494faf9d5e455e20d
+animations/usb-enumeration.svg 900x620 16705 ccf597d223d3d29cf8f5c3cbc47709d384453048753e4725cad655e84e7b0a1d
 boards/blackpill-stm32f411ce.svg 900x620 32264 511d86c80d8862e78be2a0c7e6ca7e24e1db11d30ea66d47b3b2f1e8cdec0494
 boards/bluepill-stm32f103c8t6.svg 900x620 35647 272634dc07da80d8c5d7e6471d9778310292318aace55acbecfcd92a8d9d4c25
 boards/f103zet6-dev.svg 900x620 26509 8d52a625b72cef5f53be80091fc870d3bcf9537b0c178c5aa4ebfcb810ded612
@@ -52,12 +57,29 @@ boards/pinout-bluepill.svg 900x620 35176 4de478b58c8d278166311b99311183121ccf1ec
 boards/pinout-stm32g071rb-lqfp64.svg 620x750 34523 7ccc8b702e15d0473bfc1d4c956397dfbb5bd50363d4e762bd100c794d1d2193
 boards/pinout-stm32h743zi-lqfp144.svg 840x970 75786 4d71ec5cab732513073bac6721ae4c688a36f18ab11fcae4b5e6e927433b7a96
 boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c88412f1e7920570c53e388e0a10a44fbe5f8adf
+diagrams/dma-buffer-ownership.svg 900x560 9298 f33f98d257e04ac2054f8e076c9401ff4aa9d91f30ebc32b474a08329e1b5439
+diagrams/fault-triage-ladder.svg 900x560 10278 ef5120ac9bbc4ccdc40c77db5255baf74dc03e281ac73e2b654370d851282a34
+diagrams/firmware-stack-choice.svg 900x560 8495 ffad6ce257492aef37d37dce681845652b67c5b6f5d341cc279c5ea8c02c9d1e
+diagrams/first-lab-wiring.svg 900x560 9942 b44f10ed4e72897cc4261b79bd22e34287ecc222868e131c77b067cc6a0d0df6
+diagrams/first-success-gates.svg 900x560 9213 8ad973a0bd59ecec057885587cc9d6476ed3f2506be55629220ad93dec561963
+diagrams/h7-pinmux-conflicts.svg 900x560 7106 422b66ce1b659f837216d750bf10f80f96b6a530f2b2fca6902ed1ef011a1632
+diagrams/h7-power-domains.svg 900x560 7154 d0da1b09891335ae1afac71e6beacd6d00a43a9d3151e6838eed336ea3cfb69d
+diagrams/h7-revision-clock-decision.svg 900x560 5940 7e7f3f5dc844f2c1e9e3e02506b4797dfd75a6723145dd17a3be4823bb2a5e29
+diagrams/h7-startup-evidence.svg 900x560 7720 d0bed6f9b648d7755ecc13a1c0d1123ea6f014332e4ad5982b5733f602fea29a
+diagrams/iap-acceptance-gates.svg 900x560 9398 0f4a6a1d0b50ba2cd5ecb820a736639b669f50d94f2f751253e89f52f2249d3b
+diagrams/instrument-evidence-ladder.svg 900x560 6398 17eb1364f9b45c92a06969a294b1f31180503cd3879200f8ce8209ce1229c510
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
-diagrams/l4-idd-bench.svg 900x560 8673 32e1a5b195562947e04d2da8efc2f0c89dd97aed9f7cacbb3c5914ce52f8ec96
+diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f0596565606f77ef6f757d3559900d66f
 diagrams/layers-hal-ll-reg.svg 900x560 10401 60098b25b368c2f6acefb4e9a3152f816506cae44e68b2fb8ffbf0878c049f78
+diagrams/lowpower-current-evidence.svg 900x560 6553 b179af76c293ac0d9ba059570b55a2b83bdc82f077d74387c85581f25765d3e6
+diagrams/manual-choice-map.svg 900x560 9687 75a6977234623a1b9e8edbd6129863f67cd9ab3ad4a4eeec7e55abe96fece3e9
+diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
 diagrams/network-debug-ladder.svg 900x560 11278 a1405054a5ba593090ad0bc6fdb104a5c8e513dd9695bd35767867faeeaec2e8
 diagrams/peripheral-bus.svg 900x560 14071 80d659d44758f54a352b8447fb4a49e6fa880a47cb981bc487c1d69aaa6ae2f6
 diagrams/project-structure.svg 900x560 13014 53f68cd4e58288a346e7cd09867724a75daa564e3b527a46a67627250def2acf
+diagrams/rtos-config-paths.svg 900x560 12512 02d7b84ba4c8fe73dcf6ea89937dfc0ebb995f7d782164fa36ba8748e708d80c
+diagrams/rtos-deadline-budget.svg 900x560 8875 eec759b57c52c884ef1d126b8a0a139cb9e450dbfa561a5cb0af0467e6cb561f
+diagrams/rtos-owner-task.svg 900x560 8947 0023f1657fb272cc36e19156764f8a6a4cf5a6417bff26ef764a979f7b4d32eb
 diagrams/sample-00-boot-state.svg 960x620 7103 41eff7ecd092c9f1d0e41629b4b87f337ea9d27e4b63f3ddda1d03e96c3eb3b1
 diagrams/sample-01-swd-vectors.svg 960x980 7328 2e08712dfff9ee901d17be08e83d3496b7d34b02f3ddd73a7565d230a6291b56
 diagrams/sample-02-clock-tree.svg 960x860 7402 41c1657ce8a1e34119ae2946ab5f10034fe5c83ef21fa50b4a1520861a1a98f2
@@ -78,7 +100,39 @@ diagrams/sample-16-stop-wake.svg 960x980 7143 41341af8f070f2b9413b8d4fc6f3dff0d5
 diagrams/sample-17-cfsr.svg 960x980 6727 5afb78ba8d0be29fa1bbfd8c497919296d991d9112ee2eae24f89fd9413b4d6d
 diagrams/sample-18-boot-triage.svg 960x960 6512 ab5be4eb7af108fbd513303dd1d1bf4ab24978018966c98fa80fcb46a9d83091
 diagrams/sample-19-flash-fit.svg 960x980 6499 d2cf0662543657786e0dc4d3341cffdffe459035fb80771ffc5b3fe474e7cc42
+diagrams/simulation-model-boundary.svg 900x560 6723 365c4b15943f3a01461ec0e2ce9b0a7dbcdc199777b1b2272e04a791adeaf382
+diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7def982efcc915e5616fe5b16c44fcc99
+diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984c1735cb72ee4c92c61f0759ecb87e126
+diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
+diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
+diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa9202b517d2268757f585a3eb634eccdd6fa0
 """.strip().splitlines()
+
+STATIC_ADVANCED = {
+    "diagrams/firmware-stack-choice.svg",
+    "diagrams/dma-buffer-ownership.svg",
+    "diagrams/fault-triage-ladder.svg",
+    "diagrams/first-lab-wiring.svg",
+    "diagrams/first-success-gates.svg",
+    "diagrams/h7-pinmux-conflicts.svg",
+    "diagrams/h7-power-domains.svg",
+    "diagrams/h7-revision-clock-decision.svg",
+    "diagrams/h7-startup-evidence.svg",
+    "diagrams/iap-acceptance-gates.svg",
+    "diagrams/lowpower-current-evidence.svg",
+    "diagrams/instrument-evidence-ladder.svg",
+    "diagrams/manual-choice-map.svg",
+    "diagrams/network-cache-ownership.svg",
+    "diagrams/rtos-config-paths.svg",
+    "diagrams/rtos-deadline-budget.svg",
+    "diagrams/rtos-owner-task.svg",
+    "diagrams/simulation-model-boundary.svg",
+    "diagrams/simulator-comparison.svg",
+    "diagrams/single-build-contract.svg",
+    "diagrams/spl-ownership-boundary.svg",
+    "diagrams/tcp-byte-stream.svg",
+    "diagrams/watchdog-reset-evidence.svg",
+}
 
 SEMANTIC = {
     "#fbfaf7",
@@ -203,7 +257,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "ef2c7b0fd546164c3cddf512fa6d063769dad824baf3d865f9b2496380146a74",
+            "87e3875a1ac98d62ae981802a411f445438a88fbaab1c519803d906fba62de54",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -211,7 +265,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "595518e46a2be9adff3f3aae3b4cb62b6e3b7fe4a68bd7306dc75c43c5416769",
+            "de6d2b8a1e8de51b9303edb7d3b14b6c92dbbfb9844bf90836e3e60a6c1e8e77",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -253,7 +307,13 @@ class SampleSvgCTests(unittest.TestCase):
             self.assertFalse("stroke-width:" in text, rel)
             radii = set(re.findall(r'\brx="([^"]+)"', text))
             self.assertTrue(radii <= {"2", "4", "8"}, (rel, radii))
-            if Path(rel).name.startswith("sample-"):
+            if rel in STATIC_ADVANCED:
+                self.assertNotIn("<animate", text, rel)
+                self.assertNotIn("@keyframes", text, rel)
+                self.assertNotIn("animation:", text, rel)
+                self.assertNotIn("矢量动画", text, rel)
+                self.assertIn("自绘矢量图", text, rel)
+            elif Path(rel).name.startswith("sample-"):
                 self.assertNotIn("<animate", text, rel)
                 self.assertNotIn("@keyframes", text, rel)
                 self.assertNotIn("animation:", text, rel)
@@ -262,7 +322,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(61, len(found))
+        self.assertEqual(89, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)
@@ -275,7 +335,7 @@ class SampleSvgCTests(unittest.TestCase):
             for path in gifs
         )
         self.assertEqual(
-            "f33185dc945c57ba1f4ac6e17a8ac5b218fee3ee0f85b5ffddf8080ec74d3b3a",
+            "9f4d7b2c46578f975436d92901b30c8e4588b31e2df337785b9ccc0e74508c51",
             hashlib.sha256(listing.encode("utf-8")).hexdigest(),
         )
 

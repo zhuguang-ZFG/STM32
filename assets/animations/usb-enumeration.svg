@@ -1,20 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="USB 设备枚举的 7 个步骤">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="USB 设备枚举：从地址 0 到可用">
+<title>USB 设备枚举：从地址 0 到可用</title>
 <style>
-@keyframes p0-mv{0%,100%{opacity:.15}0%,12%{opacity:1}}.p0{animation:p0-mv 4.2s linear infinite;}
-@keyframes p1-mv{0%,100%{opacity:.15}13%,25%{opacity:1}}.p1{animation:p1-mv 4.2s linear infinite;}
-@keyframes p2-mv{0%,100%{opacity:.15}26%,38%{opacity:1}}.p2{animation:p2-mv 4.2s linear infinite;}
-@keyframes p3-mv{0%,100%{opacity:.15}39%,51%{opacity:1}}.p3{animation:p3-mv 4.2s linear infinite;}
-@keyframes p4-mv{0%,100%{opacity:.15}52%,64%{opacity:1}}.p4{animation:p4-mv 4.2s linear infinite;}
-@keyframes p5-mv{0%,100%{opacity:.15}65%,77%{opacity:1}}.p5{animation:p5-mv 4.2s linear infinite;}
-@keyframes p6-mv{0%,100%{opacity:.15}78%,90%{opacity:1}}.p6{animation:p6-mv 4.2s linear infinite;}
+@keyframes usb-row0-on{0%,100%{stroke:#5e6872}0.00%,12.00%{stroke:#8f2d2d}}
+.usb-row0{animation:usb-row0-on 5.6s linear infinite;}
+@keyframes usb-p0-mv{0%,100%{opacity:0;transform:translateX(0)}1.00%{opacity:0;transform:translateX(0)}1.70%{opacity:1;transform:translateX(0)}11.00%{opacity:1;transform:translateX(-464px)}11.70%{opacity:0;transform:translateX(-464px)}}
+.usb-p0{animation:usb-p0-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row1-on{0%,100%{stroke:#5e6872}14.29%,26.29%{stroke:#9a3412}}
+.usb-row1{animation:usb-row1-on 5.6s linear infinite;}
+@keyframes usb-p1-mv{0%,100%{opacity:0;transform:translateX(0)}15.29%{opacity:0;transform:translateX(0)}15.99%{opacity:1;transform:translateX(0)}25.29%{opacity:1;transform:translateX(464px)}25.99%{opacity:0;transform:translateX(464px)}}
+.usb-p1{animation:usb-p1-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row2-on{0%,100%{stroke:#5e6872}28.57%,40.57%{stroke:#7a4e00}}
+.usb-row2{animation:usb-row2-on 5.6s linear infinite;}
+@keyframes usb-p2a-mv{0%,100%{opacity:0;transform:translateX(0)}29.27%{opacity:0;transform:translateX(0)}29.97%{opacity:1;transform:translateX(0)}34.71%{opacity:1;transform:translateX(464px)}35.41%{opacity:0;transform:translateX(464px)}}
+.usb-p2a{animation:usb-p2a-mv 5.6s ease-in-out infinite;}
+@keyframes usb-p2b-mv{0%,100%{opacity:0;transform:translateX(0)}35.41%{opacity:0;transform:translateX(0)}36.11%{opacity:1;transform:translateX(0)}39.87%{opacity:1;transform:translateX(-464px)}40.57%{opacity:0;transform:translateX(-464px)}}
+.usb-p2b{animation:usb-p2b-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row3-on{0%,100%{stroke:#5e6872}42.86%,54.86%{stroke:#1b5c45}}
+.usb-row3{animation:usb-row3-on 5.6s linear infinite;}
+@keyframes usb-p3-mv{0%,100%{opacity:0;transform:translateX(0)}43.86%{opacity:0;transform:translateX(0)}44.56%{opacity:1;transform:translateX(0)}53.86%{opacity:1;transform:translateX(464px)}54.56%{opacity:0;transform:translateX(464px)}}
+.usb-p3{animation:usb-p3-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row4-on{0%,100%{stroke:#5e6872}57.14%,69.14%{stroke:#075e84}}
+.usb-row4{animation:usb-row4-on 5.6s linear infinite;}
+@keyframes usb-p4a-mv{0%,100%{opacity:0;transform:translateX(0)}57.84%{opacity:0;transform:translateX(0)}58.54%{opacity:1;transform:translateX(0)}63.29%{opacity:1;transform:translateX(464px)}63.99%{opacity:0;transform:translateX(464px)}}
+.usb-p4a{animation:usb-p4a-mv 5.6s ease-in-out infinite;}
+@keyframes usb-p4b-mv{0%,100%{opacity:0;transform:translateX(0)}63.99%{opacity:0;transform:translateX(0)}64.69%{opacity:1;transform:translateX(0)}68.44%{opacity:1;transform:translateX(-464px)}69.14%{opacity:0;transform:translateX(-464px)}}
+.usb-p4b{animation:usb-p4b-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row5-on{0%,100%{stroke:#5e6872}71.43%,83.43%{stroke:#1e4d63}}
+.usb-row5{animation:usb-row5-on 5.6s linear infinite;}
+@keyframes usb-p5a-mv{0%,100%{opacity:0;transform:translateX(0)}72.13%{opacity:0;transform:translateX(0)}72.83%{opacity:1;transform:translateX(0)}77.57%{opacity:1;transform:translateX(464px)}78.27%{opacity:0;transform:translateX(464px)}}
+.usb-p5a{animation:usb-p5a-mv 5.6s ease-in-out infinite;}
+@keyframes usb-p5b-mv{0%,100%{opacity:0;transform:translateX(0)}78.27%{opacity:0;transform:translateX(0)}78.97%{opacity:1;transform:translateX(0)}82.73%{opacity:1;transform:translateX(-464px)}83.43%{opacity:0;transform:translateX(-464px)}}
+.usb-p5b{animation:usb-p5b-mv 5.6s ease-in-out infinite;}
+@keyframes usb-row6-on{0%,100%{stroke:#5e6872}85.71%,97.71%{stroke:#5b3a8c}}
+.usb-row6{animation:usb-row6-on 5.6s linear infinite;}
+@keyframes usb-p6-mv{0%,100%{opacity:0;transform:translateX(0)}86.71%{opacity:0;transform:translateX(0)}87.41%{opacity:1;transform:translateX(0)}96.71%{opacity:1;transform:translateX(464px)}97.41%{opacity:0;transform:translateX(464px)}}
+.usb-p6{animation:usb-p6-mv 5.6s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
 <rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#1e4d63" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USB 设备枚举的 7 个步骤</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">插上 USB 之后，主机和设备之间到底交换了什么</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USB 设备枚举：从地址 0 到可用</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">沿着请求与回应往下看，第一笔没有正确回应的请求就是排查起点</text>
 <rect x="810" y="15" width="68" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="844" y="33.32" font-size="12" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">14 USB</text>
 <rect x="40" y="84" width="150" height="380" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
@@ -25,48 +54,58 @@
 <text x="785" y="112" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备</text>
 <text x="785" y="134" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32</text>
 <text x="785" y="156" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Device</text>
-<rect x="210" y="96" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="210" y="96" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row0"/>
 <rect x="210" y="96" width="4" height="42" fill="#8f2d2d" opacity="1" rx="2"/>
 <text x="226" y="114" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">① 检测到设备</text>
 <text x="226" y="130" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">全速：D+ 经 1.5 kΩ 上拉，主机据此识别速率</text>
-<circle cx="704" cy="117" r="5" fill="#8f2d2d" opacity="1" class="p0"/>
-<rect x="210" y="148" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="674" y="114" font-size="9.2" fill="#8f2d2d" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">设备 → 主机</text>
+<circle cx="682" cy="100" r="4.5" fill="#8f2d2d" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p0"/>
+<rect x="210" y="148" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row1"/>
 <rect x="210" y="148" width="4" height="42" fill="#9a3412" opacity="1" rx="2"/>
 <text x="226" y="166" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">② 总线复位</text>
 <text x="226" y="182" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">D+ 与 D− 同时拉低（SE0）≥ 10 ms</text>
-<circle cx="196" cy="169" r="5" fill="#9a3412" opacity="1" class="p1"/>
-<rect x="210" y="200" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="674" y="166" font-size="9.2" fill="#9a3412" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">主机 → 设备</text>
+<circle cx="218" cy="152" r="4.5" fill="#9a3412" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p1"/>
+<rect x="210" y="200" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row2"/>
 <rect x="210" y="200" width="4" height="42" fill="#7a4e00" opacity="1" rx="2"/>
 <text x="226" y="218" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">③ 读前 8 字节</text>
 <text x="226" y="234" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">地址仍是 0，只为拿到 bMaxPacketSize0</text>
-<circle cx="196" cy="221" r="5" fill="#7a4e00" opacity="1" class="p2"/>
-<rect x="210" y="252" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="674" y="218" font-size="9.2" fill="#7a4e00" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">请求 ↔ 回应</text>
+<circle cx="218" cy="204" r="4.5" fill="#7a4e00" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p2a"/>
+<circle cx="682" cy="204" r="4.5" fill="#7a4e00" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p2b"/>
+<rect x="210" y="252" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row3"/>
 <rect x="210" y="252" width="4" height="42" fill="#1b5c45" opacity="1" rx="2"/>
-<text x="226" y="270" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">④ 再读设备描述符</text>
-<text x="226" y="286" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">18 字节：VID / PID。不少主机还会再复位一次</text>
-<circle cx="196" cy="273" r="5" fill="#1b5c45" opacity="1" class="p3"/>
-<rect x="210" y="304" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="226" y="270" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">④ SET_ADDRESS</text>
+<text x="226" y="286" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">部分主机会先再复位一次；随后分配地址 1~127</text>
+<text x="674" y="270" font-size="9.2" fill="#1b5c45" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">主机 → 设备</text>
+<circle cx="218" cy="256" r="4.5" fill="#1b5c45" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p3"/>
+<rect x="210" y="304" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row4"/>
 <rect x="210" y="304" width="4" height="42" fill="#075e84" opacity="1" rx="2"/>
-<text x="226" y="322" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">⑤ SET_ADDRESS</text>
-<text x="226" y="338" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">分配 1~127，之后不再使用地址 0</text>
-<circle cx="196" cy="325" r="5" fill="#075e84" opacity="1" class="p4"/>
-<rect x="210" y="356" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="226" y="322" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">⑤ 读完整设备描述符</text>
+<text x="226" y="338" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">改用新地址读取 18 字节，拿到 VID / PID</text>
+<text x="674" y="322" font-size="9.2" fill="#075e84" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">请求 ↔ 回应</text>
+<circle cx="218" cy="308" r="4.5" fill="#075e84" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p4a"/>
+<circle cx="682" cy="308" r="4.5" fill="#075e84" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p4b"/>
+<rect x="210" y="356" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row5"/>
 <rect x="210" y="356" width="4" height="42" fill="#1e4d63" opacity="1" rx="2"/>
 <text x="226" y="374" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">⑥ 读配置描述符</text>
 <text x="226" y="390" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读 9 字节，再按 wTotalLength 读完</text>
-<circle cx="196" cy="377" r="5" fill="#1e4d63" opacity="1" class="p5"/>
-<rect x="210" y="408" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="674" y="374" font-size="9.2" fill="#1e4d63" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">请求 ↔ 回应</text>
+<circle cx="218" cy="360" r="4.5" fill="#1e4d63" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p5a"/>
+<circle cx="682" cy="360" r="4.5" fill="#1e4d63" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p5b"/>
+<rect x="210" y="408" width="480" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5" class="usb-row6"/>
 <rect x="210" y="408" width="4" height="42" fill="#5b3a8c" opacity="1" rx="2"/>
 <text x="226" y="426" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">⑦ SET_CONFIGURATION</text>
-<text x="226" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">选配置 1，CDC / HID 开始工作</text>
-<circle cx="196" cy="429" r="5" fill="#5b3a8c" opacity="1" class="p6"/>
+<text x="226" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">选中配置，CDC / HID 开始工作</text>
+<text x="674" y="426" font-size="9.2" fill="#5b3a8c" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">主机 → 设备</text>
+<circle cx="218" cy="412" r="4.5" fill="#5b3a8c" opacity="0" stroke="#fbfaf7" stroke-width="1.5" class="usb-p6"/>
 <rect x="40" y="476" width="400" height="54" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="58" y="500" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">描述符是「层层套娃」</text>
+<text x="58" y="500" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">描述符按层级展开</text>
 <text x="58" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">设备 → 配置 → 接口 → 端点，主机逐层索取</text>
 <rect x="460" y="476" width="400" height="54" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="478" y="500" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CDC 还是 HID？</text>
-<text x="478" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">要虚拟串口选 CDC，要免驱键鼠/自定义选 HID</text>
+<text x="478" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CDC 传字节流；HID 传固定格式的报告</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">枚举失败先查：48 MHz 时钟是否精确、D+ 上拉是否正常、USB 中断优先级是否被抢占、描述符长度是否与实际一致</text>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">枚举失败先查：48 MHz 时钟、D+ 上拉、第一笔无回应的请求、描述符总长度</text>
 <text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

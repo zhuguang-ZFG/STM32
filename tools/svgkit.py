@@ -308,11 +308,12 @@ class Svg:
             self.chip(self.w - w - 22, 15, w, 28, tag, color=tag_color, size=12)
         return self
 
-    def footer(self, note="", color=T.DIM) -> "Svg":
+    def footer(self, note="", color=T.DIM,
+               label="自绘矢量动画 · STM32 知识库") -> "Svg":
         if note:
             self.line(24, self.h - 42, self.w - 24, self.h - 42, stroke=T.GRID, sw=1)
             self.text(24, self.h - 18, note, size=12, fill=color)
-        self.text(self.w - 24, self.h - 18, "自绘矢量动画 · STM32 知识库", size=11,
+        self.text(self.w - 24, self.h - 18, label, size=11,
                   fill=T.DIM, anchor="end")
         return self
 
@@ -343,7 +344,16 @@ class Svg:
                 f'aria-label="{esc(self.title)}">')
         style = ""
         if self.styles:
-            style = "<style>\n" + "\n".join(self.styles) + "\n</style>"
+            rules = list(self.styles)
+            animated = any("animation" in rule for rule in rules)
+            if animated:
+                # 系统设了「减少动态效果」的读者看到的是静止的第一帧。
+                rules.append("@media (prefers-reduced-motion: reduce)"
+                             "{*{animation:none!important}}")
+            style = "<style>\n" + "\n".join(rules) + "\n</style>"
+            if animated and self.title:
+                # 屏幕阅读器读 <title>；aria-label 留着兼容旧读屏。
+                head += f"\n<title>{esc(self.title)}</title>"
         defs = ""
         if self.defs:
             defs = "<defs>\n" + "\n".join(self.defs) + "\n</defs>"

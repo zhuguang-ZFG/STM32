@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="FreeRTOS 任务调度：状态机 + 甘特图">
+<title>FreeRTOS 任务调度：状态机 + 甘特图</title>
 <style>
 @keyframes stReady-fade{0%,100%{opacity:0.1}50%{opacity:0.45}}
 .stReady{animation:stReady-fade 4s ease-in-out infinite 0s;}
@@ -12,6 +13,7 @@
 .e1{stroke-dasharray:6 8;animation:e1-flow 1.4s linear infinite;}@keyframes e1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
 @keyframes cursor-tx{0%{transform:translateX(0px)}100%{transform:translateX(700px)}}
 .cursor{animation:cursor-tx 5s linear infinite 0s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

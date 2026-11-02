@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="ADC 逐次逼近（SAR）到底在做什么">
+<title>ADC 逐次逼近（SAR）到底在做什么</title>
 <style>
 @keyframes s0-sq{0%,0.00%{opacity:0.08}0.30%,3.75%{opacity:0.4}4.05%,100%{opacity:0.08}}
 .s0{animation:s0-sq 6.0s linear infinite;}
@@ -24,6 +25,7 @@
 .s10{animation:s10-sq 6.0s linear infinite;}
 @keyframes s11-sq{0%,91.67%{opacity:0.08}91.97%,95.42%{opacity:0.4}95.72%,100%{opacity:0.08}}
 .s11{animation:s11-sq 6.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

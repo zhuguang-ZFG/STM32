@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="“实时”不是快，而是最坏响应仍早于截止点">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">“实时”不是快，而是最坏响应仍早于截止点</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">把阻塞、执行和抢占分别量出来：R = B + C + S；平均值不能替代最坏值</text>
+<rect x="747" y="15" width="131" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="812.5" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">实时预算 · IG-009</text>
+<line x1="82" y1="220" x2="812" y2="220" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<rect x="82" y="182" width="120" height="76" fill="#8f2d2d" opacity="0.84" rx="4"/>
+<text x="142" y="213" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B 阻塞</text>
+<text x="142" y="238" font-size="8.8" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等资源所有者</text>
+<rect x="202" y="182" width="250" height="76" fill="#1b5c45" opacity="0.84" rx="4"/>
+<text x="327" y="213" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">C 执行</text>
+<text x="327" y="238" font-size="8.8" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">任务自己的 WCET</text>
+<rect x="452" y="182" width="180" height="76" fill="#7a4e00" opacity="0.84" rx="4"/>
+<text x="542" y="213" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">S 干扰</text>
+<text x="542" y="238" font-size="8.8" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">更高优先级任务/ISR</text>
+<rect x="632" y="182" width="110" height="76" fill="#1b5c45" opacity="0.84" rx="4"/>
+<text x="687" y="213" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">C 继续</text>
+<text x="687" y="238" font-size="8.8" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完成剩余工作</text>
+<line x1="82" y1="146" x2="82" y2="302" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="5 5"/>
+<text x="82" y="132" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">release</text>
+<line x1="742" y1="146" x2="742" y2="302" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="5 5"/>
+<text x="742" y="132" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">finish</text>
+<line x1="812" y1="146" x2="812" y2="302" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="5 5"/>
+<text x="812" y="132" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">deadline D</text>
+<line x1="82" y1="318" x2="742" y2="318" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="742.00,318.00 735.00,321.00 735.00,315.00" fill="#075e84" opacity="1"/>
+<polygon points="82.00,318.00 89.00,315.00 89.00,321.00" fill="#075e84" opacity="1"/>
+<text x="412" y="312" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">R = B + C + S</text>
+<line x1="82" y1="354" x2="812" y2="354" stroke="#8f2d2d" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="812.00,354.00 805.00,357.00 805.00,351.00" fill="#8f2d2d" opacity="1"/>
+<polygon points="82.00,354.00 89.00,351.00 89.00,357.00" fill="#8f2d2d" opacity="1"/>
+<text x="447" y="348" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">D</text>
+<text x="450" y="392" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">验收条件：Rmax ≤ D</text>
+<rect x="40" y="426" width="400" height="102" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="58" y="452" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">要测</text>
+<text x="112" y="452" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISR 占用与最长临界区</text>
+<text x="112" y="475" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mutex 最长持有时间与优先级继承</text>
+<text x="112" y="498" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">任务 WCET、周期、抖动和队列峰值</text>
+<rect x="460" y="426" width="400" height="102" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="478" y="452" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">不能只看</text>
+<text x="558" y="452" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 平均利用率</text>
+<text x="558" y="475" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一次实验里的平均延迟</text>
+<text x="558" y="498" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">任务优先级数字看起来很高</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>

@@ -53,6 +53,11 @@ SPL 的价值不是背函数名，而是看清四层：
 3. `stm32f10x_gpio.c` 等源文件把结构体字段写进寄存器。
 4. 你的工程负责时钟、引脚、调用顺序、中断边界、超时和业务状态机。
 
+<p align="center">
+  <img src="../assets/diagrams/spl-ownership-boundary.svg" width="820" alt="HAL 与 SPL 经过各自状态路径写入同一组外设寄存器，因此同一外设只能有一个所有者">
+  <br><sub>▲ 所有权边界（自绘）：HAL、SPL 和寄存器不是三套硬件。迁移时要切换一条完整外设链，不能让两套库轮流接管同一实例。</sub>
+</p>
+
 ## 2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”
 
 V3.5.0 包的关键目录如下：
@@ -113,11 +118,21 @@ GPIO_Init(GPIOA, &io);
 3. **覆盖目标字段**：每个字段都要与接线、时钟和协议对上。
 4. **显式使能**：`USART_Cmd()`、`SPI_Cmd()`、`TIM_Cmd()`、`DMA_Cmd()` 通常在配置完成后调用。
 
+<p align="center">
+  <img src="../assets/animations/spl-init-pipeline.svg" width="820" alt="SPL 从开时钟、取默认值、覆盖配置到写入和使能的连续动画">
+  <br><sub>▲ 连续动画（自绘）：四步依次点亮；下半部分把每类故障放回第一次可能出现的位置。HTML 中循环播放，PDF 保留可独立阅读的全链路第一帧。</sub>
+</p>
+
 不是每个外设都有完全相同的函数名。判断顺序要回到头文件原型和 RM0008，不要凭“其他外设也是这样”补一个不存在的 `*_Cmd`。
 
 ## 4. 一份实际编译链接的 SPL 点灯最小闭环
 
 下面代码面向常见 STM32F103C8 BluePill：PC13 板载 LED 低电平点亮。工程预定义 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER`，`stm32f10x_conf.h` 至少包含 RCC 和 GPIO 驱动头文件。**V3.5.0 模板的 `stm32f10x_it.c` 已经定义了非 weak 的空 `SysTick_Handler`；必须把模板中的空处理器替换为下面的计数实现，不能在 `main.c` 再定义一个同名函数。**
+
+<p align="center">
+  <img src="../assets/boards/bluepill-stm32f103c8t6.svg" width="720" alt="BluePill STM32F103C8T6 板卡结构图，标出 PC13 LED、BOOT 跳线、USB 和 SWD">
+  <br><sub>▲ 实物结构对照（作者自绘，非实拍）：先在板上找到 PC13 LED、SWD、供电和 BOOT 跳线，再读代码；不同批次克隆板的元件与 USB 上拉可能不同。</sub>
+</p>
 
 ```c
 #include "stm32f10x.h"
@@ -217,6 +232,11 @@ static int usart1_send_byte(uint8_t byte, uint32_t spin_limit)
 
 HAL 常见写法是 IRQHandler 调 HAL，再进入 `HAL_GPIO_EXTI_Callback()`。SPL 工程通常直接在 `stm32f10x_it.c` 的 IRQHandler 中检查来源、清标志、投递事件：
 
+<p align="center">
+  <img src="../assets/animations/nvic-interrupt-flow.svg" width="820" alt="Cortex-M 从外设挂起、NVIC 仲裁、自动入栈、执行 ISR 到异常返回的连续动画">
+  <br><sub>▲ 中断连续动画（自绘）：SPL 改变的是配置入口，不改变 Cortex-M 的挂起、仲裁、入栈和异常返回链。IRQHandler 必须落在这条真实硬件链上。</sub>
+</p>
+
 ```c
 static volatile uint8_t g_key_event;
 
@@ -244,6 +264,11 @@ void EXTI0_IRQHandler(void)
 1. 给 DMA1 开时钟，按 RM0008 请求映射选择 DMA1 Channel 4。
 2. `DMA_Init(DMA1_Channel4, ...)` 配地址、方向、项数、增量和宽度。
 3. `USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE)` 打开 USART 的 DMA 请求，再 `DMA_Cmd()` 启动通道。
+
+<p align="center">
+  <img src="../assets/animations/dma-circular.svg" width="820" alt="DMA 在外设寄存器和内存缓冲区之间搬运数据、CNDTR 递减并循环重装的动画">
+  <br><sub>▲ DMA 连续动画（自绘）：外设请求、DMA 通道和内存缓冲区是三个边界；SPL 不会因为两边都初始化了就自动把它们连起来。</sub>
+</p>
 
 ```c
 DMA_InitTypeDef dma;

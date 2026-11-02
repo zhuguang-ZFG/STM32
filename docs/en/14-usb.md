@@ -2,7 +2,7 @@
 
 > 中文：[USB](../14-USB.md)
 
-> One USB cable can power the board and carry data. After enumeration the same chip can look like a virtual COM port (CDC), a keyboard (HID), or a disk (MSC).
+> “Unknown USB device” says only that enumeration failed somewhere. Reconcile the 48 MHz clock, D+ pull-up, standard requests, descriptor lengths, and endpoint buffers to locate the failed step.
 
 <p align="center">
   <img src="../../assets/animations/usb-enumeration.svg" width="760" alt="USB enumeration: reset, descriptors, configuration">
@@ -36,46 +36,46 @@
 
 ## Principle and scope
 
-The clock and the descriptor are fixed on STM32F103C8T6. The USB clock is copied from chapter file 02 and from the compass. The PLL is 72 MHz. `USBPRE = 0` divides by 1.5, so the USB clock is 48 MHz. `USBPRE = 1` does not divide, so the USB clock is 72 MHz and the host fails while reading the descriptor. See [RM0008](#source-rm0008-rcc). Do not redraw the clock tree.
+The clock and the descriptors in this chapter are for the STM32F103C8T6. The USB clock comes from the 72 MHz PLL set up in chapter 02. With `USBPRE = 0` the PLL is divided by 1.5, which gives the 48 MHz full-speed USB needs. With `USBPRE = 1` there is no division, the USB clock is 72 MHz, and the host fails while reading the descriptors. See [RM0008](#source-rm0008-rcc).
 
-Pin 32 PA11 = USB_DM. Pin 33 PA12 = USB_DP. The full-speed 1.5 kΩ pull-up sits between D+ and 3.3 V, on the pin 33 side. Tied to pin 32, the host does not see this full-speed device. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan). Table 45 note 2 prints that 1.5 kΩ pull-up on D+. RM0008 mentions an external pull-up and does not print the ohms. The 1.5 kΩ on the figure is the same number as that note and the compass.
+Pin 32 PA11 = USB_DM and pin 33 PA12 = USB_DP. A full-speed device needs a 1.5 kΩ pull-up between D+ and 3.3 V, on the pin 33 side. The host tells the device speed from which line is pulled high: put the pull-up on pin 32, D−, and the host takes it for a low-speed device and never treats it as full speed. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan). The 1.5 kΩ value is printed in note 2 of DS5319 Table 45. RM0008 only says an external pull-up is needed and gives no value.
 
-USB on this part is a full-speed device, not a host. 12 Mbit/s is its full-speed rate. 1.5 Mbit/s low speed is not its working mode. See [RM0008](#source-rm0008-usb).
+USB on the F103 is a full-speed device, not a host, so it cannot drive a USB stick or a keyboard. Full speed is 12 Mbit/s. Low speed, 1.5 Mbit/s, is not one of its modes. See [RM0008](#source-rm0008-usb).
 
-The device descriptor length is `0x12`, 18 bytes. `bMaxPacketSize0` is 64. VID is `0x1209` and PID is `0x0001`. That pair is this repository's experiment id. `0x0483/0x5740` is not this descriptor. The configuration set `wTotalLength` is `0x0043`, which is 67, not 18. `bMaxPower = 0x32` is in units of 2 mA, so it is 100 mA. See [examples in this repo](#source-project-examples).
+In this repository's example the device descriptor is `0x12` long, 18 bytes, and `bMaxPacketSize0` is 64. VID is `0x1209` and PID is `0x0001`, a placeholder pair for test boards. The `0x0483/0x5740` seen in many ST examples is not what this descriptor holds. The configuration set's `wTotalLength` is `0x0043`, 67 bytes: the configuration, interface, and endpoint descriptors added together, not 18. `bMaxPower = 0x32` counts in 2 mA units, so it means 100 mA. See [examples in this repo](#source-project-examples).
 
-The full-speed bulk and interrupt ceiling is 64 bytes. 1023 belongs only to full-speed isochronous. The example notification endpoint is 8 bytes and the bulk endpoints are 64. 8 does not exceed the ceiling of 64.
+At full speed, bulk and interrupt endpoints both top out at 64 bytes per packet. 1023 bytes applies only to full-speed isochronous endpoints. The example's notification endpoint is 8 bytes and its bulk endpoints are 64, both inside the limit.
 
-Chapter file 13 already moved the default CAN function off PA11/PA12. This figure draws only USB. The medium-density table prints `USB_LP_CAN_RX0` for the same interrupt as CAN receive. The connectivity table prints `USB_LP_CAN1_RX0`. Do not build the two examples together.
+PA11/PA12 are also CAN's reset-default pins, which is why chapter 13 remaps CAN to PB8/PB9. On a medium-density part the USB low-priority interrupt is named `USB_LP_CAN_RX0` in the vector table and is the same line as CAN receive. Only the connectivity-line table calls it `USB_LP_CAN1_RX0`. So do not build the USB and CAN examples into one project.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-14-usb-enum.svg" width="760" alt="Full speed needs 48 MHz. The D+ pull-up is on pin 33. This descriptor is an 18-byte device plus a 67-byte configuration set, VID/PID 0x1209/0x0001.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is USBPRE = 0, 48 MHz, 1.5 kΩ on D+ at pin 33, 18 bytes, and 67 bytes. The failure path is USBPRE = 1, and the clock becomes 72 MHz. 0x0483/0x5740 is not this descriptor. Sources: [RM0008](#source-rm0008-rcc), [DS5319](#source-ds5319-usbcan), and [usb-cdc](#source-project-examples).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The working setup in the figure is USBPRE = 0, 48 MHz, 1.5 kΩ on D+ at pin 33, an 18-byte device descriptor, and a 67-byte configuration set. The broken setup is USBPRE = 1, which makes the USB clock 72 MHz. 0x0483/0x5740 is not what this descriptor holds. Sources: [RM0008](#source-rm0008-rcc), [DS5319](#source-ds5319-usbcan), and [usb-cdc](#source-project-examples).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/usb-48m.gif" width="640" alt="D+ is pulled up, the clock is 48 MHz, then 18 bytes and 67 bytes">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: the D+ pull-up, 48 MHz, 18 bytes, and 67 bytes. Print from the static figure. 72 MHz and the pull-up on the wrong pin are not on this GIF.</sub>
+  <br><sub>▲ Animated version, showing only a normal enumeration: D+ pulled up, 48 MHz, 18 bytes, 67 bytes. The printed book has only the static figure above.</sub>
 </p>
 
-`usb-enumeration.svg` stays as an auxiliary figure.
+The full enumeration sequence is in `usb-enumeration.svg` at the top of the chapter.
 
 ## Timing and state
 
 | Item | Value | Right or wrong |
 | --- | --- | --- |
-| `USBPRE = 0` | 48 MHz | Normal. 72 / 1.5 = 48 |
-| `USBPRE = 1` | 72 MHz | Failure |
+| `USBPRE = 0` | 48 MHz | Correct. 72 / 1.5 = 48 |
+| `USBPRE = 1` | 72 MHz | Wrong; enumeration fails |
 | Device descriptor | length 18, `bMaxPacketSize0` 64 | VID `0x1209`, PID `0x0001` |
 | Configuration set | `wTotalLength` 67, which is `0x0043` | `bMaxPower` `0x32` = 100 mA |
 | Packet length | bulk and interrupt ceiling 64 | 1023 is isochronous only. A notification endpoint of 8 is allowed |
-| Pins | pin 32 is DM, pin 33 is DP | The pull-up is on DP. On DM it is not this normal path |
+| Pins | pin 32 is DM, pin 33 is DP | The pull-up goes on DP. On DM the host sees a low-speed device |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | Device Manager fails the descriptor request | The USB clock is not 48 MHz | Keep `USBPRE` at 0 | [RM0008](#source-rm0008-rcc) | `USBPRE=0` makes 72 MHz ÷ 1.5 = 48 MHz. `USBPRE=1` yields 72 MHz |
 | The host does not see the device at all | The pull-up is not on D+ | Tie the pull-up to D+ on pin 33, not to DM. The resistance is 1.5 kΩ | [DS5319](#source-ds5319-usbcan) | Pin 32 PA11 includes USB_DM. Pin 33 PA12 includes USB_DP. Table 45 note 2 prints 1.5 kΩ on D+. Tied to DM, this is not the normal path |
@@ -95,7 +95,11 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 
 ## Core ideas
 
+Device Manager is not enough for USB debugging. Firmware state, PMA and endpoint registers, host traces, and D+/D− electrical waveforms prove different layers and cannot substitute for one another.
+
 ### 1. Speeds and which STM32 block you actually have
+
+USB is a conversation chaired by the computer. The host calls on a device, and only then may the device answer; a device cannot seize the wire whenever it has data. The F103 has one 12 Mbps full-speed device block. It can be a keyboard or a virtual serial port, but it cannot host a flash drive. Reaching 480 Mbps takes both an `OTG_HS` block and the matching high-speed PHY.
 
 **Takeaway:** The host starts every transfer. The device is polled. The common STM32 case is a **full-speed device**. Only parts with `OTG_HS` can do high-speed.
 
@@ -111,9 +115,11 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 | STM32F4 | OTG_FS + OTG_HS | FS PHY on chip; HS needs an external ULPI PHY | RM0090 chapter 30 / 31 |
 | STM32F7/H7 | OTG_FS + OTG_HS | Some parts have an on-chip HS PHY | OTG chapter of that RM |
 
-> **An F103 USB block is device-only. It cannot be a host.** On an F411, `OTG_FS` is **PA11 (DM) / PA12 (DP)** and those pins are also CAN1, so you pick one. F1 USB uses the same PA11/PA12 pair.
+> **An F103 USB block is device-only. It cannot be a host.** F1 USB is on **PA11 (DM) / PA12 (DP)**. On the F103, USB and CAN share those two pins and the same 512-byte dedicated SRAM, so they cannot run at the same time and you pick one. The F411 `OTG_FS` is also on PA11/PA12, but the F411 has no CAN, so the conflict does not arise there.
 
 ### 2. Four transfer types
+
+The four transfer types divide one bus in four different ways. Control introduces and configures the device. Bulk is freight: arriving late is acceptable, but a damaged packet is retried. Interrupt gives small messages such as key reports a regular chance to be polled. Isochronous reserves time for sound or video and never goes back for a missed packet, because late audio is no longer useful.
 
 **Takeaway:** Trade latency against reliability. **Control** is for enumeration. **Bulk** moves bytes and retries. **Interrupt** is small and bounded. **Isochronous** keeps a time slot and is allowed to drop data.
 
@@ -126,6 +132,8 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 
 ### 3. Endpoints
 
+Think of endpoints as numbered send and receive windows inside the device. The host puts data into an OUT window for the device to collect. The device fills an IN window and waits for the host to collect it. IN and OUT are named from the host's side, which is the easy part to read backwards. Each window also needs a transfer type, a maximum packet size, and buffer space in the 512-byte PMA.
+
 **Takeaway:** An endpoint is a logical pipe. Except for endpoint 0, **each endpoint is one direction** (IN or OUT).
 
 | Endpoint | Direction | Use |
@@ -137,6 +145,8 @@ Chapter file 13 already moved the default CAN function off PA11/PA12. This figur
 An F1 full-speed device has up to **8 bidirectional endpoints (EP0–EP7)**. They share a **512-byte** packet memory (PMA). You assign that memory yourself (RM0008 chapter 23, `USB_EPnR`, `BTABLE`).
 
 ### 4. Descriptor tree
+
+When a device is first plugged in, the computer sees the pull-up on D+ but has no idea what the device does. It asks from the outside in: who are you and how many configurations do you have; which functions are in this configuration; which endpoints belong to each function? The descriptors are the device's answers. One bad length, parent-child relation, or total count stops the host from reading the rest.
 
 **Takeaway:** The host learns the device by reading descriptors: device, then configuration, then interface, then endpoint. The interface is the function. One configuration can hold several interfaces.
 
@@ -161,7 +171,14 @@ Device Descriptor                         (VID / PID / how many configurations)
 
 A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is the full-speed isochronous ceiling, not the interrupt ceiling. In this repository's `examples/usb-cdc`, the bulk endpoints are 64 bytes and the notification endpoint is 8 bytes.
 
+<p align="center">
+  <img src="../../assets/gif/usb-enumeration-zh.gif" width="720" alt="The USB host starts with bus reset, reads device and configuration descriptors, assigns an address, and selects a configuration">
+  <br><sub>▲ Enumeration sequence: request order in the trace should match the state machine. The animation explains control-transfer order; it cannot prove 48 MHz accuracy, D+/D− signal quality, or descriptor-field correctness.</sub>
+</p>
+
 ### 5. Seven enumeration steps
+
+Every USB device comes out of reset at address 0. The host uses that temporary address to read just enough information, assigns a new address, and sends all later requests there. It then reads the complete configuration and selects one before the device is ready for normal traffic. In a trace, follow that order and stop at the first request that did not get the expected reply.
 
 **Takeaway:** Reset, read descriptors, assign an address, read the configuration, select it. **Any failed step shows up as "unknown device" or "device descriptor request failed".**
 
@@ -170,14 +187,16 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 | 1 | Host sees the device (pull-up on D+) | Full speed pulls D+ up with 1.5 kΩ. That is how the host picks the speed |
 | 2 | Bus reset | D+ and D− low for at least 10 ms |
 | 3 | At address 0, read the first 8 bytes of the device descriptor | Host learns `bMaxPacketSize0` |
-| 4 | Reset again, read the full 18-byte device descriptor | VID/PID |
-| 5 | Set Address | Device gets an address from 1 to 127 |
+| 4 | Reset again, then Set Address | Device gets an address from 1 to 127 |
+| 5 | At the new address, read the full 18-byte device descriptor | VID/PID |
 | 6 | Read 9 bytes of configuration, then the whole configuration set | Interfaces and endpoints |
 | 7 | Set Configuration | The function is live |
 
-> Motto: **stuck on step 3 or 4** usually means a bad length field or a bad clock. **Stuck on step 6** usually means `wTotalLength` is wrong. **Stuck on step 7** usually means the endpoint buffer was not armed.
+> At steps 3 or 4, check device-descriptor length and 48 MHz first. At step 6, check `wTotalLength`. At step 7, check endpoint address, PMA, and whether the buffer is armed.
 
 ### 6. CDC versus HID
+
+CDC delivers a stream of bytes, so the application decides where one message ends and the next begins. HID delivers fixed-format reports whose key bits, coordinates, and status fields are declared in advance. For logs and sampled data, CDC is usually simpler. Pick HID when the operating system should treat the board directly as a keyboard, mouse, or game controller.
 
 **Takeaway:** CDC is "I am a serial port" (high bandwidth, byte stream). HID is "I am a keyboard, mouse, or custom gadget" (native support, fixed reports).
 
@@ -191,6 +210,8 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 | Typical | Debug log, data logger | Custom pad, macro keyboard, scanner |
 
 ### 7. CubeMX middleware
+
+The CubeMX pages are assembling one device from three layers. RCC supplies the 48 MHz clock. The USB peripheral owns D+/D- and the interrupt. The middleware supplies descriptors, endpoints, and class handlers. Enumeration fails if any layer is missing. A common mistake is to keep changing the CDC code when the real fault is the 48 MHz clock or VBUS sensing.
 
 | Item | Where | Value |
 | --- | --- | --- |
@@ -217,6 +238,11 @@ A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is
 - Keep the pair short, matched, and near 90 Ω differential. Dupont wires often fail even at full speed.
 - On a bare board, **D+ needs 1.5 kΩ to 3.3 V** so the host sees a full-speed device. Many dev boards already have it.
 - The USB connector can feed 5 V into the on-board LDO. Before the device is configured, stay within 100 mA.
+
+<p align="center">
+  <img src="../../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill pin map locating PA11 USB_DM, PA12 USB_DP, PA9, and PA10">
+  <br><sub>▲ PA11/PA12 are the USB differential pair; PA9/PA10 are a separate UART debug path. The pin map locates signals but does not prove that a clone board's pull-up, resistors, or routing meet USB electrical requirements.</sub>
+</p>
 
 ## Code
 
@@ -310,10 +336,14 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 
 ## Hands-on labs
 
-1. **CDC echo:** a CubeMX F103 CDC project, open the new COM port, type. You should get the same bytes back.
-2. **CDC once a second:** send the ADC voltage from chapter 09 with `CDC_Transmit_FS`.
-3. **Custom HID:** one button updates a report. Windows game-controller properties should move.
-4. **Trace (optional):** Wireshark plus USBPcap, or a hardware analyzer. Match GET_DESCRIPTOR, SET_ADDRESS, and SET_CONFIGURATION to the seven steps.
+1. **Enumeration evidence:** Save GET_DESCRIPTOR, SET_ADDRESS, and SET_CONFIGURATION traces and record USBCLK, the D+ pull-up, and `wTotalLength`. Break the total length once and confirm a repeatable failure step.
+2. **CDC data loop:** Send lengths 1, 64, 65, and 256. Record `USBD_BUSY`, host length, and CRC. Do not overwrite the transmit buffer while the previous packet is pending.
+3. **HID report loop:** Trigger a fixed four-byte report from a button and verify endpoint address, report length, and host state in the trace. UI movement is an observation; report bytes are the evidence.
+
+<p align="center">
+  <img src="../../assets/diagrams/instrument-evidence-ladder.svg" width="820" alt="USB evidence layers from build logs and registers through runtime logs, a logic analyzer, and an oscilloscope">
+  <br><sub>▲ USB evidence is layer-specific: a host trace proves requests and descriptors, while a scope is needed for D+/D− electrical quality. A COM port appearing does not prove that CDC transfers of every length are correct (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 This repo's two examples do not ship the ST USB middleware. They enumerate with HAL PCD:
 
@@ -321,6 +351,8 @@ This repo's two examples do not ship the ST USB middleware. They enumerate with 
 - [examples/usb-hid](../../examples/usb-hid/): a boot keyboard. PA0 to ground types the letter `a`.
 
 Both run the PLL at 72 MHz and select USB = PLL/1.5. On F103, `USB_LP_CAN1_RX0` is the same IRQ as bxCAN receive. Do not link the CAN example into the same project.
+
+Before leaving this chapter, keep the complete enumeration trace, the failure step from a bad `wTotalLength`, CRCs for the four CDC lengths, and one HID-report byte record.
 
 ## Related resources
 

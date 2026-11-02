@@ -69,6 +69,14 @@
 
 选型表不是排行榜。一个已有稳定 FreeRTOS 驱动和测试体系的产品，为“生态更丰富”改成 Zephyr，迁移风险通常大于收益；反过来，一个要支持多厂商无线芯片、标准设备模型和大量协议的新品，自己在 FreeRTOS 上拼装每层也会形成长期维护债务。
 
+<figure class="photo-spread">
+  <div class="photo-pair">
+    <img src="../assets/photos/nucleo-f411re-embedded-world.jpg" alt="Embedded World 2016 展出的 Nucleo-F411RE 实拍，板上方为 ST-LINK，下方为目标 MCU">
+    <img src="../assets/photos/nucleo-f401re-embedded-world.jpg" alt="Embedded World 2016 展出的 Nucleo-F401RE 实拍，展示 Nucleo-64 的调试器与目标板分区">
+  </div>
+  <figcaption>▲ 真板识别（CC0 实拍）：左为 Nucleo-F411RE，右为 Nucleo-F401RE。两块都不是 H7，也不代表某种 RTOS；这组照片只训练初学者分清板载 ST-LINK 上半区、目标 MCU 下半区、供电跳线与扩展排针。来源与处理记录见 <code>assets/photos/README.md</code>。</figcaption>
+</figure>
+
 ## 推荐的四层执行模型
 
 | 层 | 典型执行上下文 | 允许做什么 | 禁止做什么 |
@@ -89,6 +97,11 @@
 ### 所有者任务：比“到处加互斥量”更容易证明
 
 以 SPI Flash 为例，多个任务都直接调用 `HAL_SPI_TransmitReceive()`，即使加了互斥量，片选、命令、DMA 完成和超时恢复仍可能被拆开。更稳妥的结构是：
+
+<p align="center">
+  <img src="../assets/diagrams/rtos-owner-task.svg" width="820" alt="两个任务并发直调 SPI 与通过唯一所有者任务串行完整事务的前后对比">
+  <br><sub>▲ 前后对比（自绘）：左边只锁住单个 API，片选、DMA 和恢复仍分散；右边把完整事务交给一个所有者，状态只有一个写入者。</sub>
+</p>
 
 ```c
 typedef enum { FLASH_READ, FLASH_WRITE, FLASH_ERASE } flash_op_t;
@@ -134,6 +147,11 @@ static void flash_task(void *argument)
 $$U = \sum_i \frac{C_i}{T_i}$$
 
 其中 $C_i$ 是一次最坏执行时间，$T_i$ 是周期。$U<1$ 只是 CPU 时间总量没有超额，**不证明截止时间一定满足**；共享资源阻塞、ISR、Cache miss、Flash 等待和优先级关系仍要计入响应时间分析。
+
+<p align="center">
+  <img src="../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="实时任务从 release 到 deadline 的响应时间预算，包含阻塞 B、执行 C 和高优先级干扰 S">
+  <br><sub>▲ 时间轴（自绘）：响应时间不是一段 CPU 执行时间，而是 $R=B+C+S$；验收看最坏 $R_{max}\le D$，不能用平均利用率替代截止时间证据。</sub>
+</p>
 
 示例预算：
 
@@ -202,6 +220,11 @@ Cortex-M 的异常优先级与 RTOS 任务优先级是两套空间。任务优�
 ## FreeRTOS V11.3.2：小内核，自行组合系统
 
 本章冻结 **FreeRTOS Kernel V11.3.2**。内核提供任务、队列、互斥量、信号量、通知、事件组、软件定时器和多种堆实现。它不要求项目采用某套设备模型，也不自动提供 STM32 驱动、Shell 或文件系统。
+
+<p align="center">
+  <img src="../assets/animations/freertos-scheduler.svg" width="820" alt="FreeRTOS 任务在就绪、运行、阻塞和挂起状态之间切换的调度动画">
+  <br><sub>▲ 调度连续动画（自绘）：内核只在任务状态与优先级规则中选择可运行者；驱动所有权、服务启动和产品恢复策略仍由系统架构负责。</sub>
+</p>
 
 适合的工程结构：
 
@@ -336,6 +359,11 @@ Devicetree 节点存在不等于设备 ready；驱动初始化失败仍要处理
 
 `k_work` 适合把 ISR 后续工作推迟到线程上下文。系统工作队列是共享资源：某个工作项执行慢操作，其他工作项也会排队。网络、存储或不可控阻塞应使用专用 workqueue 或所有者线程，并给它们单独的栈和优先级预算。
 
+<p align="center">
+  <img src="../assets/diagrams/rtos-config-paths.svg" width="820" alt="FreeRTOS、RT-Thread 与 Zephyr 从配置、硬件描述、对象模型到最终固件的三列路径对比">
+  <br><sub>▲ 三列对比（自绘）：生态差异不只是 API 名字；配置入口、硬件描述、驱动模型和构建系统共同决定最终固件。迁移时应逐层对账。</sub>
+</p>
+
 ## CMSIS-RTOS2 2.3.0：统一接口，不是统一实现
 
 CMSIS 6.4.0 携带的 CMSIS-RTOS2 API 版本为 **2.3.0**。常见入口包括：
@@ -391,6 +419,11 @@ stateDiagram-v2
 4. **设备探测**：关键设备必须通过，非关键设备可进入明确降级态。
 5. **服务层**：日志、存储、网络、时间、升级按依赖拓扑启动。
 6. **应用门控**：所有安全前置条件满足后，才允许执行器和远程命令。
+
+<p align="center">
+  <img src="../assets/animations/rtos-startup-gates.svg" width="820" alt="从复位证据、最低硬件、内核对象、设备探测、系统服务到应用放行的六道启动门动画">
+  <br><sub>▲ 连续动画（自绘）：六道门按依赖顺序点亮；每道门都要给出结果码、截止点和失败去向，不能用固定 delay 假装依赖已经成立。</sub>
+</p>
 
 不要用固定延时模拟依赖：`delay(500)` 后假设网络已拿到地址，启动快慢一变就失效。应等待带结果码的状态事件，并设置系统级截止点。
 

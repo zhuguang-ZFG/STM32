@@ -1,7 +1,7 @@
 # 10 DMA
 > 中文：[10 DMA](../10-DMA.md)
 
-> DMA (direct memory access) moves data between a peripheral and memory on its own. The CPU does not have to touch every byte, so the cycles stay available for the actual computation.
+> If DMA is enabled but no data moves, check the request map first, then direction and width, and finally CNDTR to see how many items moved. Callback counts and array contents must agree with the remaining count.
 
 <p align="center">
   <img src="../../assets/animations/dma-circular.svg" width="760" alt="DMA circular mode: the CPU and DMA move data in parallel">
@@ -35,33 +35,33 @@
 
 ## Principle and scope
 
-The DMA conclusion in this chapter is pinned to order code STM32F103C8T6. The channel numbers and the half-word ledger are copied whole from Appendix D.
+Every number in this chapter is for the STM32F103C8T6. Channel numbers and the half-word arithmetic match Appendix D.
 
-This medium-density part has one DMA and 7 channels. The classification cell "DMA2 (5 channels, high-density)" is void on STM32F103C8T6. See [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma). F4 streams and channels are another manual: USART1_RX is DMA2 Stream 5, Channel 4, and the FIFO is four 32-bit words. Writing that set onto a C8 leaves the counter still. See [RM0090](#source-rm0090). Do not edit that existing object.
+The C8 is medium-density. It has one DMA1 with 7 channels and no DMA2. The "DMA2 (5 channels)" row you see in the family tables belongs to high-density parts. See [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma). F4 numbers its DMA by stream and channel: USART1_RX is DMA2 Stream 5, Channel 4, with a FIFO four 32-bit words deep. Copy those numbers from an F4 example onto a C8 and the writes raise no error, but the counter never moves. See [RM0090](#source-rm0090).
 
-ADC1 = DMA1 channel 1. USART1_TX = DMA1 channel 4. USART1_RX = DMA1 channel 5. The four blocks claim only these three Appendix D rows. See [RM0008 Rev 21 chapter 13](#source-rm0008-dma).
+The three requests this chapter uses on the C8: ADC1 on DMA1 channel 1, USART1_TX on DMA1 channel 4, USART1_RX on DMA1 channel 5. The full map is in [RM0008 Rev 21 chapter 13](#source-rm0008-dma).
 
-Eight half-words with `CNDTR` reading 3: `8 − 3 = 5` samples have been written, and the byte count is `5 × 2 = 10`. Half-transfer is at 4 samples, which is 8 bytes, not 4 bytes. Treating `CNDTR` as remaining bytes reads "3 left" as 3 bytes. That is the failure path.
+`CNDTR` counts data items not yet moved, in the configured width, not in bytes. With an 8-half-word buffer and `CNDTR` reading 3, `8 − 3 = 5` samples have been written, which is `5 × 2 = 10` bytes. The half-transfer interrupt fires at sample 4, when 8 bytes are written, not 4. Read `CNDTR` as remaining bytes and "3 left" becomes 3 bytes, so every slice you cut is shifted.
 
-When the count reaches zero, hardware reloads `CNDTR`. `length − CNDTR` is not cumulative progress. The position still comes from `Size` and `old_pos` in the callback, the same ledger as Appendix A. Do not edit Appendix A.
+In circular mode the hardware reloads `CNDTR` when it reaches zero, so `length − CNDTR` is only the position in the current lap, not cumulative progress. To know where the writer is, use `Size` from the callback and the `old_pos` you saved last time, as Appendix A does.
 
-The F1 DMA controller is an AHB master. Peripheral registers sit on APB. F1 has no D-Cache. H7 cache maintenance stays in the core ideas and out of this part's four-block claims.
+The F1 DMA controller is a master on AHB, and the peripheral registers sit on APB. F1 has no D-Cache, so once DMA has written memory the CPU reads the new data directly. H7 has a D-Cache and needs cache maintenance first; that is covered later in the core ideas.
 
-USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the channel number. It does not redraw that frame. ADC sample time stays in chapter file 09.
+USART1_TX is still pin 30 PA9 from chapter 06. ADC sample time is in chapter 09.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="Eight half-words with CNDTR at 3 means 5 samples and 10 bytes written; treating the remaining count as bytes cuts the buffer wrong">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The failure treats that same reading as bytes. TX still leaves on pin 30 PA9. DMA2 Stream 5 has no counter on this C8. Sources: [RM0008 Rev 21 chapter 13](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The lower half shows where the slice lands if that same reading is taken as bytes. TX leaves on pin 30 PA9. The C8 has no DMA2, so configuring Stream 5 produces no count. Sources: [RM0008 Rev 21 chapter 13](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/dma-cndtr.gif" width="640" alt="In an 8-half-word buffer CNDTR falls to 3: 5 samples and 10 bytes written">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path: CNDTR falls to 3, marked as 5 samples and 10 bytes. Print uses the static figure. Treating the remaining count as bytes is not on this GIF.</sub>
+  <br><sub>▲ Animated version. CNDTR falls from 8 to 3, marked as 5 samples and 10 bytes written. The printed book has only the static figure above.</sub>
 </p>
 
-`dma-circular.svg` and `dma-ring.gif` stay in their original section and are marked as side figures.
+The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the core ideas below.
 
 ## Timing and state
 
@@ -73,17 +73,17 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 | USART1_TX | DMA1 channel 4 | — | — | Pin 30 PA9 |
 | USART1_RX | DMA1 channel 5 | — | — | Not DMA2 Stream 5 |
 | ADC1 | DMA1 channel 1 | — | — | The memory-to-memory example contends for this channel |
-| Void | DMA2 Stream 5 | no counter on this part | — | The F4 FIFO is four 32-bit words and does not prove the C8 has DMA2 |
+| F4 numbers | DMA2 Stream 5 | does not exist on the C8; the counter never moves | — | The F4 FIFO is four 32-bit words; the C8 has no FIFO |
 | Circular | reload at zero | the reloaded CNDTR | not a cumulative total | `length − CNDTR` is not progress |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The second half of a half-word array looks like new data | Half-transfer was treated as 4 bytes | Handle half-transfer as 4 samples, 8 bytes | [RM0008](#source-rm0008-dma) | `CNDTR` counts data items. 5 of 8 half-words is 10 bytes. Half-transfer is not 4 bytes |
 | `CNDTR` reads 3 and the byte count does not match | The remaining count was treated as bytes | Subtract samples first, then multiply by 2 | [RM0008](#source-rm0008-dma) | 3 half-words left is not 3 bytes left |
-| DMA2 Stream 5 was configured and the C8 does not move | This part has no DMA2 | Use DMA1 channel 5 for USART1_RX | [DS5319](#source-ds5319-dma) | This medium-density part has one 7-channel DMA1. DMA2 is void on the C8 |
-| An F4 example's channel numbers match the text and not the board | The F4 numbers were written onto the C8 | Leave that set of numbers on F4 | [RM0090](#source-rm0090) | F4 USART1_RX is DMA2 Stream 5, Channel 4. The FIFO is four 32-bit words. This does not prove the C8 has DMA2 |
+| DMA2 Stream 5 was configured and the C8 does not move | This part has no DMA2 | Use DMA1 channel 5 for USART1_RX | [DS5319](#source-ds5319-dma) | Medium-density parts have one 7-channel DMA1 and no DMA2 |
+| An F4 example's channel numbers match the text and not the board | The F4 numbers were written onto the C8 | When porting, look the channel up again in the RM0008 map | [RM0090](#source-rm0090) | F4 USART1_RX is DMA2 Stream 5, Channel 4, and the FIFO is four 32-bit words. These numbers hold only on F4 |
 | Progress in circular mode keeps growing | `length − CNDTR` was used as a cumulative total | Use the write position from the callback | [RM0008](#source-rm0008-dma) | Hardware reloads the count at zero. Progress uses the write position in the callback |
 
 ## Learning goals
@@ -96,13 +96,17 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 ## Core ideas
 
+DMA understands neither frames nor sample groups. It moves a configured number of fixed-width items, and the CPU interprets the buffer boundary. Treating CNDTR as bytes is the common slicing error for half-word and word transfers.
+
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
 
-**Conclusion**: On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
+DMA is the chip's porter. The CPU tells it where to carry from, where to carry to, and how much, and then it runs back and forth on the bus by itself and reports when it is done. On the F1, the porters are split by workstation, and each workstation takes jobs from a fixed set of peripherals. The F4 adds a layer: you first choose a workstation (the stream), then one of its 8 sockets (the channel), so one peripheral can move to another workstation.
+
+On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
 
 | Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
 | --- | --- | --- |
-| Controllers | DMA1 (7 channels). "DMA2 (5 channels)" is the high-density sentence and is void on STM32F103C8T6 | DMA1 and DMA2, 8 streams each |
+| Controllers | DMA1 (7 channels). High-density parts add DMA2 (5 channels); the STM32F103C8T6 does not have it | DMA1 and DMA2, 8 streams each |
 | Request binding | Each channel serves a fixed set of peripherals (see the map) | Each stream has 8 channels; `SxCR.CHSEL` selects one |
 | Priority | Fixed priority between channels, plus a software priority | 4 software priority levels, plus arbitration by stream number |
 | FIFO | None | Yes (4 × 32-bit), with burst support |
@@ -111,6 +115,8 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 | Memory↔memory | Supported (`CCR.MEM2MEM`) | Supported |
 
 ### 2. The request map (picking the right channel or stream is the whole game)
+
+The wires between peripherals and DMA channels are fixed inside the chip. On the F1, the USART1 transmit request is wired only to DMA1 channel 4. If you set up channel 5 instead, it waits forever for a request that never comes, and nothing reports an error. So the first step in setting up DMA is to look up this table rather than guess.
 
 **F1 DMA1 request map (excerpt; the full tables are RM0008 Table 78 and Table 79)**:
 
@@ -139,6 +145,8 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 ### 3. Transfer direction and operating modes
 
+Setting up DMA means answering a few questions. Peripheral to memory, or the other way? Stop after one round, or wrap to the start and keep going? After each item, should the source and destination addresses move on? How many bytes per item? A peripheral data register has only one address, so the peripheral side stays put while the memory side moves on. That is the most common combination.
+
 | Mode / setting | Key bits | What it means |
 | --- | --- | --- |
 | Peripheral → memory | `DIR=0` (F4) / `CCR.DIR` | ADC or UART_RX into an array |
@@ -154,6 +162,8 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 ### 4. Interrupts
 
+DMA calls out when it has finished, and that is the TC interrupt. It also calls out halfway, and that is the HT interrupt. The halfway call lets you and the porter take turns on one array. While it fills the back half, you work on the front half. When it wraps round to the front half, you work on the back half. The two of you stay half a lap apart and never collide.
+
 | Interrupt | When it fires | Use |
 | --- | --- | --- |
 | TC (transfer complete) | All N items have moved | The data is ready to process |
@@ -163,7 +173,14 @@ USART1_TX is still pin 30 PA9 from chapter file 06. This figure only notes the c
 
 "Half-transfer plus circular mode" is the classic pair. While DMA fills the first half, the CPU processes the second half, and the other way around. The stream never has a gap.
 
+<p align="center">
+  <img src="../../assets/diagrams/dma-buffer-ownership.svg" width="820" alt="A peripheral DR writes through DMA into a circular array, HT and TC hand off the two halves, and CNDTR counts remaining items">
+  <br><sub>▲ Ownership boundary: the CPU must not treat the half currently written by DMA as stable data. HT and TC hand off only their corresponding halves. CNDTR counts items of the configured width, not bytes directly (FA-002 · IG-004 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 5. Bus contention and cache coherency
+
+DMA and the CPU share the same bus, so the busier DMA is, the longer the CPU waits to fetch instructions and data. Chips with a cache have one more problem. The CPU looks at its own cached copy while DMA changes the original in memory, and the two drift apart. You either clean or invalidate the cache around each DMA transfer, or put the DMA buffer in a region that bypasses the cache.
 
 - **Bus contention**: DMA and the CPU share the bus matrix. While DMA is moving data it periodically occupies the bus, and in the extreme it slows the CPU. The F4 FIFO and burst mode can merge many small transfers and occupy the bus less often.
 - **Cache coherency (H7 / F7)**: if D-Cache is on, a DMA write into memory can bypass the cache, so the CPU reads a stale value. A CPU write can also still be sitting in the cache and not in RAM, so DMA reads a stale value. The fix: put the DMA buffer in a **non-cacheable region (MPU set to Non-Cacheable)**, or call `SCB_CleanDCache_by_Addr` / `SCB_InvalidateDCache_by_Addr` around the transfer. **F1 and F4 have no D-Cache, so this problem does not exist there.**
@@ -259,18 +276,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 }
 ```
 
+<p align="center">
+  <img src="../../assets/gif/dma-ring.gif" width="640" alt="DMA advances through a circular buffer while HT and TC hand the first and second halves to the CPU">
+  <br><sub>▲ DMA advances the write position and the CPU processes only the half that has been handed off. The animation cannot prove request mapping or data width; read CNDTR and inspect the array as well.</sub>
+</p>
+
 > F4 can also use hardware **double-buffer mode** (`DBM`). The two memory pointers `M0AR` and `M1AR` switch automatically, and the `CT` bit tells you which block is in use.
 
 ## Hands-on labs
 
-1. **UART DMA loopback print**: send a long string with `HAL_UART_Transmit_DMA`, and toggle an LED in the main loop at the same time. Expected: the LED keeps blinking (the transmit does not block the CPU) and the UART data is complete.
-2. **Memory-to-memory throughput**: use `DMA_MemCopy` to move 64 KB, and time it with the DWT against `memcpy`. Expected: the DMA version uses less CPU (see [Chapter 17](17-debug.md) for DWT timing).
-3. **UART idle interrupt plus DMA for variable-length receive**: DMA receives in circular mode. When the `USART_IDLE` interrupt fires, compute how many bytes have arrived. Expected: variable-length frames come in steadily, with no dropped bytes.
+1. **Request and wire result:** Send a 4096-byte incrementing pattern through USART1_TX on DMA1_CH4 while the main loop increments a counter. The host checks length and CRC; the MCU records TC/TE and the main-loop count.
+2. **Memory result:** Move a known 4 KB pattern with `DMA_MemCopy`, compare every destination byte, and record TC/TE. A 4 KB test fits the F103C8's 20 KB SRAM; the old 64 KB lab did not fit this part.
+3. **Circular boundary:** Reuse chapter 09's 64-half-word ADC buffer. Record CNDTR = 32 at HT, the wrap at TC, and the first and last sample in each half. Convert items to bytes by multiplying by two.
 4. **(Further) Double-buffer ping-pong**: on F4, turn on `DBM`. Two buffers alternate, and the `CT` bit indicates the current block, so the stream is processed with no extra copy.
 
 ### 6. How much is left: read NDTR
 
-**Conclusion**: In circular mode, do not guess "which index are we on." On F1 the remaining count is in `CNDTR`. HAL writes it as `__HAL_DMA_GET_COUNTER`.
+In circular mode, do not guess "which index are we on." On F1 the remaining count is in `CNDTR`. HAL writes it as `__HAL_DMA_GET_COUNTER`.
 
 ```c
 /* half-word buffer: number of samples already written, not a byte count */
@@ -280,7 +302,7 @@ uint16_t got  = ADC_BUF_SIZE - left;
 
 On a half-word transfer, the half-full interrupt happens at 4 samples, which is 8 bytes. If you handle it as "an interrupt every 4 bytes," you will treat the second half as new data.
 
-Motto: **what is left is in NDTR. For a half-word HT, count samples, then multiply by 2 to get bytes.**
+Before leaving this chapter, keep one verified UART long frame, one byte-for-byte 4 KB memory comparison, and one HT/TC/CNDTR record.
 
 Self-test:
 

@@ -1,7 +1,7 @@
 # 16 Low-Power Design
 > 中文：[16 低功耗设计](../16-低功耗设计.md)
 
-> A battery-powered device uses three gears — Sleep, Stop, and Standby — to push the current from tens of milliamps down to a few microamps, and it wakes only when an event or the RTC asks it to.
+> A datasheet value of 14 µA does not mean a BluePill will measure 14 µA. Board leakage, the debugger, wake peaks, and active time belong in one current waveform and average-current account.
 
 <p align="center">
   <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="Sleep, Stop, and Standby, and the sources that wake each one">
@@ -34,37 +34,37 @@
 <!-- /video:ch16 -->
 ## Principle and scope
 
-The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. The current cells are the DS5319 Rev 20 Table 16 typicals at 3.3 V and 25°C. See [DS5319 Table 16](#source-ds5319-pwr).
+The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. Every current below is a DS5319 Rev 20 Table 16 typical at 3.3 V and 25°C. Each number belongs to one cell of that table, and cells with different conditions do not mix. See [DS5319 Table 16](#source-ds5319-pwr).
 
 Low-power regulator, oscillators off, independent watchdog off: 14 µA. Main regulator still on, same other conditions: 24 µA. 20 µA is not a Table 16 cell. The 85°C values 200 µA and 180 µA are maximums, not typicals. 1.4 µA is `IDD_VBAT` for the backup domain with LSE and the RTC on. It is not the whole-chip Standby current.
 
-Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and RTC all off. LSI on is 3.2 µA. LSI and IWDG both on is 3.4 µA. The IWDG keeps counting in Stop and Standby, the same sentence as chapter file 11. The 14 µA cell says the independent watchdog is off. Quoting 14 µA while the IWDG is on is the failure note. Table 16 does not print a separate Stop-plus-IWDG microamp, so this chapter does not invent one. See [RM0008 watchdog](#source-rm0008-wdg).
+Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and RTC all off. LSI on is 3.2 µA. LSI and IWDG both on is 3.4 µA. Once started, the IWDG cannot be stopped and keeps counting in Stop and Standby (chapter 11). The 14 µA cell assumes the independent watchdog is off, so you cannot quote 14 µA with the IWDG running. Table 16 gives no Stop-plus-IWDG figure; measure it with a current meter if you need it. See [RM0008 watchdog](#source-rm0008-wdg).
 
 Sleep at 72 MHz is 14.4 mA typical with every peripheral on, and 5.5 mA typical with every peripheral off, still at 25°C and 3.3 V.
 
 After Stop exits, the system clock is the 8 MHz HSI, not 16 MHz and not 72 MHz. See [RM0008 clocks](#source-rm0008-rcc). Table 26's 5.4 µs is the low-power-regulator cell, from the wake event to the first user instruction, still on that 8 MHz clock. The main-regulator cell is 3.6 µs. Sleep is 1.8 µs and keeps the clock from before the sleep. Standby is 50 µs to the first instruction, then the reset path. The PLL lock maximum is 200 µs. Do not add it to 5.4 µs and call the sum the wake-up time.
 
-PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The normal path restores the PLL to 72 MHz before the next byte, and the line is 115200 again. See [RM0008 USART](#source-rm0008-usart). Do not redraw the chapter 06 frame.
+PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The fix is to restore the PLL to 72 MHz after waking and before the next byte; the line is then 115200 again. See [RM0008 USART](#source-rm0008-usart). The frame format is the one from chapter 06.
 
 Sleep keeps the clock from before the sleep. The tick in `examples/freertos-task` is 1000 Hz, which is 1 ms. Left at that rate, Sleep wakes every 1 ms. SysTick does not tick during Stop. See [examples in this repo](#source-project-examples).
 
-With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). The 270 Ω lamp from chapter file 03 and ADC12_IN0 from chapter file 09 are other uses of this pin. This chapter does not connect them at the same time.
+With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). Chapter 03 hangs a 270 Ω lamp on this pin and chapter 09 uses it as ADC12_IN0. For this chapter's lab, connect only the wake-up key.
 
-The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11 alarm: 32.768 kHz, PRL = 32767. See [RM0008 RTC](#source-rm0008-rtc).
+The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapter 11 RTC alarm: LSE at 32.768 kHz, PRL = 32767, a 1 Hz second counter. See [RM0008 RTC](#source-rm0008-rtc).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-wake.svg" width="760" alt="Stop with the low-power regulator is 14 µA typical. Wake-up is the 8 MHz HSI. Leaving 0x271 in place produces 12800 bit/s.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The normal path is SLEEPDEEP=1, PDDS=0, 14 µA at 3.3 V and 25°C with the IWDG off, the first instruction on the 8 MHz HSI after 5.4 µs, then the PLL back at 72 MHz so 0x271 is 115200 again. The failure path leaves that same 0x271 on 8 MHz and gets 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The top band is the correct sequence: SLEEPDEEP=1 and PDDS=0 enter Stop at 14 µA (3.3 V, 25°C, IWDG off); 5.4 µs after the wake event the first instruction runs on the 8 MHz HSI, then the PLL returns to 72 MHz and 0x271 means 115200. The middle band forgets to restore the clock: the same 0x271 on 8 MHz gives only 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/stop-wake.gif" width="640" alt="Wake from Stop, move the clock from the 8 MHz HSI back to 72 MHz, then mark 115200">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: wake from Stop, move from 8 MHz back to 72 MHz, and mark 115200. Print from the static figure. 12800 and 24 µA are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the correct sequence: wake from Stop, go from 8 MHz back to 72 MHz, and mark 115200. The printed book has only the static figure above.</sub>
 </p>
 
-`lowpower-wakeup.svg` stays as an auxiliary figure. Do not play it for 14 µA, 8 MHz, or 12800. Those are on the static figure.
+The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. Take the numbers from the static figure above.
 
 ## Timing and state
 
@@ -83,20 +83,20 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 | Standby, `PDDS=1` | restart from the reset vector; 50 µs to the first instruction | right |
 | Standby current | 2 µA only with LSI, IWDG, LSE, and RTC off; LSI on is 3.2 µA; IWDG on as well is 3.4 µA | do not write 2 to 3 µA |
 | Backup domain | 1.4 µA with LSE and the RTC on | not whole-chip Standby |
-| Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | not drawn as a lamp and an ADC at the same time |
+| Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | no lamp or ADC input on it meanwhile |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The manual folds the two Stop cells into one range | Two cells were folded into one range | Write 14 µA for the low-power regulator and 24 µA for the main regulator | [DS5319](#source-ds5319-pwr) | Both cells are typicals at 3.3 V and 25°C, with the independent watchdog off. 20 µA is not a Table 16 cell |
 | Standby is quoted as 2 to 3 µA | Three cells were folded into one range | Write 2 µA, 3.2 µA, or 3.4 µA according to LSI and IWDG | [DS5319](#source-ds5319-pwr) | The 2 µA cell requires LSI, IWDG, LSE, and RTC all off. 1.4 µA is the backup domain, not the whole chip |
 | The first UART frame after wake is garbage | The clock is still HSI while BRR was computed for 72 MHz | Call `SystemClock_Config()` before the next byte | [RM0008 USART](#source-rm0008-usart) | With the HSI at 8 MHz and BRR still `0x271`, the baud rate is 12800. 115200 is the 72 MHz cell |
-| A comment writes two HSI frequencies onto this part | Another family's 16 MHz was written onto this part | Write 8 MHz on this part | [RM0008 clocks](#source-rm0008-rcc) | The F1 power-up HSI is 8 MHz. 16 MHz is void on the C8 |
+| A comment gives the HSI two frequencies | Another family's 16 MHz was written onto the F103 | Write 8 MHz on the F103 | [RM0008 clocks](#source-rm0008-rcc) | The F1 power-up HSI is 8 MHz. 16 MHz is the HSI of the F4 and others |
 | Sleep current will not fall, and the comment says once per second | The tick was left at 1000 Hz | That is every 1 ms, not once per second. Suspend the tick before Sleep | [examples in this repo](#source-project-examples) | `examples/freertos-task` documents a 1000 Hz tick, 1 ms. This row does not show that SysTick keeps ticking during Stop |
-| The F4 periodic wake API was called | This part does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
-| 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Do not invent a Stop-plus-IWDG microamp |
-| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP. This row does not draw the 270 Ω lamp as active at the same time |
+| The F4 periodic wake API was called | The F103 does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
+| 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Table 16 has no Stop-plus-IWDG figure |
+| A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP |
 
 ## Learning goals
 
@@ -108,9 +108,11 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 
 ## Core ideas
 
+Low-power acceptance records the static floor, wake peak, active duration, period, and wake cause. One steady current number cannot predict runtime or reveal a UART left on the wrong clock after wake.
+
 ### 1. The three low-power modes compared
 
-**Conclusion**: The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
+The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
 
 | Item | Sleep | Stop | Standby |
 | --- | --- | --- | --- |
@@ -127,7 +129,7 @@ The F4 periodic wake-up timer is void on this part. Timed wake is the chapter 11
 
 ### 2. WFI and WFE
 
-**Conclusion**: `WFI` (Wait For Interrupt) wakes on **any interrupt**. `WFE` (Wait For Event) wakes on an **event**. You can raise one yourself with `SEV`, which fits "synchronize a pipeline, or more than one core, without an interrupt."
+`WFI` (Wait For Interrupt) wakes on **any interrupt**. `WFE` (Wait For Event) wakes on an **event**. You can raise one yourself with `SEV`, which fits "synchronize a pipeline, or more than one core, without an interrupt."
 
 | Instruction | Wake condition | Notes |
 | --- | --- | --- |
@@ -142,7 +144,7 @@ __WFI();
 
 ### 3. Restoring the clock after STOP wakes
 
-**Conclusion**: Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
+Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
 
 ```c
 /* After wake you must reconfigure the clock */
@@ -158,7 +160,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 ### 4. Turning peripherals off and configuring GPIO
 
-**Conclusion**: Saving power is not only about entering the mode. It is also about **turning off clocks of peripherals you do not need, and putting GPIO into a state that does not draw current.** A floating input pin leaks because the input buffer toggles.
+Saving power is not only about entering the mode. It is also about **turning off clocks of peripherals you do not need, and putting GPIO into a state that does not draw current.** A floating input pin leaks because the input buffer toggles.
 
 | What to handle | What to do | Why |
 | --- | --- | --- |
@@ -171,7 +173,7 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 ### 5. Battery-powered design
 
-**Conclusion**: On a battery device you **add up the whole budget**. Average current is the active current times the duty cycle, plus the sleep current. Divide the battery capacity by that and you have the runtime.
+On a battery device you **add up the whole budget**. Average current is the active current times the duty cycle, plus the sleep current. Divide the battery capacity by that and you have the runtime.
 
 | Point | What it means |
 | --- | --- |
@@ -196,9 +198,14 @@ SystemClock_Config();          /* ← bring the PLL back up and restore 72 MHz *
 
 > A measuring tip: the µA range of a multimeter has a large internal resistance. Measuring a dynamic current "drags the voltage down" and you misread it. For dynamic current, use a sense resistor plus a scope, or a dedicated power profiler.
 
+<p align="center">
+  <img src="../../assets/diagrams/lowpower-current-evidence.svg" width="820" alt="A low-power period contains the Stop floor, wake peak, active interval, and return to sleep, and average current integrates every state">
+  <br><sub>▲ Current account: floor and peak matter only with their durations. Datasheet typical, development-board measurement, and bare-chip measurement are different boundaries. With the LED, USB, or debugger attached, the result cannot be used as the MCU's microamp figure (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 7. Low-power design checklist
 
-**Conclusion**: Before you enter the mode, walk this list. Most cases of "standby current will not come down" missed one of these lines.
+Before you enter the mode, walk this list. Most cases of "standby current will not come down" missed one of these lines.
 
 | Check | What to do | Typical leak / waste |
 | --- | --- | --- |
@@ -297,15 +304,14 @@ __HAL_RCC_USART2_CLK_DISABLE();
 
 ## Hands-on labs
 
-1. **Saving power in Sleep**: blink in the main loop, and call `Enter_Sleep()` when idle. Compare the current with and without Sleep (a 0.1 Ω sense resistor in series, and look at the waveform). Expected: the current drops clearly in Sleep.
-2. **Stop plus a key wake**: enter Stop, wake on PA0, restore the clock, and toggle the LED. Expected: the key wakes the chip, and the UART is still healthy (which means the clock was restored).
-3. **RTC timed wake**: every 5 s, wake from Stop, take one ADC sample (see [Chapter 09](09-adc-dac.md)), and go back to sleep. Expected: the RTC wakes on time, and the average current drops a lot.
-4. **(Further) Measure the real standby current**: disconnect the LED and the debugger, enter Standby, and measure the microamp current with a power profiler. Expected: close to the standby typical value in the datasheet.
-5. **(Further) Check the runtime estimate**: estimate the runtime with the formula in section 5, then measure the average current and compare. Expected: the estimate and the measurement are in the same order of magnitude.
+1. **Mode baseline:** Measure Run, Sleep, Stop, and Standby on the same hardware. Record supply voltage, board loads, static current, and wake source; do not report a board result as the MCU specification.
+2. **Stop recovery evidence:** On a PA0 wake, mark entry and completion of `SystemClock_Config()` on GPIO and measure wake time. Then send `0x55` and confirm restored 115200 timing.
+3. **Periodic average current:** Wake every 5 s from RTC, sample the ADC, send one frame, and sleep again. Save the full current waveform, integrate Iavg, and compare it with the state-times-duration formula.
+4. **Leakage isolation:** Disconnect debugger, LED, USB, and sensors one at a time and record each floor-current delta. Compare the final result only with the matching mode and temperature in the target datasheet.
 
 ### 8. The last word before the rail falls: PVD
 
-**Conclusion**: PVD watches VDD. When the voltage falls through the threshold it enters an interrupt, so you can write the critical variables into the backup registers before a real reset. It does not replace the watchdog, and it does not give you a number for "how many milliseconds you still have." The threshold and the hysteresis come from the level table in the reference manual.
+PVD watches VDD. When the voltage falls through the threshold it enters an interrupt, so you can write the critical variables into the backup registers before a real reset. It does not replace the watchdog, and it does not give you a number for "how many milliseconds you still have." The threshold and the hysteresis come from the level table in the reference manual.
 
 ```c
 PWR_PVDTypeDef pvd = {0};
@@ -317,7 +323,7 @@ HAL_PWR_EnablePVD();
 
 Sleep current is not a fixed 1 mA either. The core is stopped, but the peripheral clocks are still on, and the current is usually still in the milliamp range. Stop is the mode that reaches the microamp range. The numbers in the comparison table above are the order of magnitude from the datasheet. They are not a measurement from a board in this repo. If you are writing them into a paper or a battery budget, open the datasheet for that exact part and copy the column that matches the clocks you turned off.
 
-Motto: **PVD is a power-fail notice. Sleep is still drawing current. Stop is the mode that really sleeps.**
+Before leaving this chapter, keep four mode baselines, Stop wake plus restored 115200 evidence, one integrated periodic-current trace, and a delta table from removing each external load.
 
 Self-test:
 

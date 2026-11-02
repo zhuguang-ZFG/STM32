@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="定时器的四种典型用法">
+<title>定时器的四种典型用法</title>
 <style>
 @keyframes mk0-fade{0%,100%{opacity:0.2}50%{opacity:1.0}}
 .mk0{animation:mk0-fade 1.6s ease-in-out infinite 0s;}
 @keyframes mk1-fade{0%,100%{opacity:0.15}50%{opacity:0.6}}
 .mk1{animation:mk1-fade 2s ease-in-out infinite 0s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

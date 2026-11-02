@@ -71,6 +71,14 @@
 
 This table is not a ranking. Replacing a stable FreeRTOS product and its tested drivers with Zephyr merely because the ecosystem is broader can cost more than it returns. Conversely, assembling every layer manually around FreeRTOS can create long-term debt for a new product that needs several wireless chip families, a standard device model, and many protocol subsystems.
 
+<figure class="photo-spread">
+  <div class="photo-pair">
+    <img src="../../assets/photos/nucleo-f411re-embedded-world.jpg" alt="A Nucleo-F411RE photographed at Embedded World 2016, with ST-LINK above and the target MCU below">
+    <img src="../../assets/photos/nucleo-f401re-embedded-world.jpg" alt="A Nucleo-F401RE photographed at Embedded World 2016, showing the debugger and target sections of a Nucleo-64 board">
+  </div>
+  <figcaption>▲ Real-board identification (CC0 photographs): Nucleo-F411RE at left and Nucleo-F401RE at right. Neither is an H7 or evidence for an RTOS. They train a beginner to distinguish the on-board ST-LINK, target MCU, power jumpers, and expansion headers. Provenance and processing are in <code>assets/photos/README.md</code>.</figcaption>
+</figure>
+
 ## A four-layer execution model
 
 | Layer | Typical execution context | Allowed work | Forbidden work |
@@ -91,6 +99,11 @@ Core invariants:
 ### An owner task is easier to prove than scattered mutexes
 
 Consider an SPI Flash. If several tasks call `HAL_SPI_TransmitReceive()` directly, a mutex around each call can still split chip select, commands, DMA completion, and recovery. A stronger boundary is:
+
+<p align="center">
+  <img src="../../assets/diagrams/rtos-owner-task.svg" width="820" alt="Before-and-after comparison of two tasks calling SPI directly versus submitting complete transactions to one owner task">
+  <br><sub>▲ Before and after (drawn for this book): the left side locks one API while chip select, DMA, and recovery remain scattered. The right side gives complete transactions to one state writer.</sub>
+</p>
 
 ```c
 typedef enum { FLASH_READ, FLASH_WRITE, FLASH_ERASE } flash_op_t;
@@ -136,6 +149,11 @@ A conservative first utilization account for one core is:
 $$U = \sum_i \frac{C_i}{T_i}$$
 
 Here $C_i$ is worst-case execution time and $T_i$ is the period. $U<1$ says only that the known CPU demand does not exceed all available CPU time. It does **not** prove that deadlines are met; blocking, ISR load, cache misses, Flash waits, and priority relationships still belong in response-time analysis.
+
+<p align="center">
+  <img src="../../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="Response-time budget from release to deadline, including blocking B, execution C, and higher-priority interference S">
+  <br><sub>▲ Timeline (drawn for this book): response time is $R=B+C+S$, not merely CPU execution. Acceptance needs worst-case $R_{max}\le D$ rather than an average utilization number.</sub>
+</p>
 
 Example budget:
 
@@ -204,6 +222,11 @@ Prefer creating long-lived production objects statically during initialization. 
 ## FreeRTOS V11.3.2: a compact kernel; compose the system
 
 This chapter freezes **FreeRTOS Kernel V11.3.2**. The kernel supplies tasks, queues, mutexes, semaphores, notifications, event groups, software timers, and several heap implementations. It neither requires a device model nor supplies STM32 drivers, a shell, or a filesystem automatically.
+
+<p align="center">
+  <img src="../../assets/animations/freertos-scheduler.svg" width="820" alt="Animated FreeRTOS task transitions among ready, running, blocked, and suspended states">
+  <br><sub>▲ Scheduler animation (drawn for this book): the kernel selects runnable tasks from state and priority rules. Driver ownership, service startup, and product recovery remain system-architecture responsibilities.</sub>
+</p>
 
 A suitable project structure is:
 
@@ -338,6 +361,11 @@ A Devicetree node does not prove that the device is ready; driver initialization
 
 `k_work` is useful for deferring ISR follow-up to thread context. The system workqueue is shared: a slow item delays every other item on that queue. Network, storage, or uncontrolled blocking belongs in a dedicated workqueue or owner thread with its own stack and priority budget.
 
+<p align="center">
+  <img src="../../assets/diagrams/rtos-config-paths.svg" width="820" alt="Three-column comparison of how FreeRTOS, RT-Thread, and Zephyr take configuration, hardware description, and object models into firmware">
+  <br><sub>▲ Three-column comparison (drawn for this book): ecosystem differences are not merely API names. Configuration, hardware description, driver model, and build system jointly shape the firmware and must be reconciled during migration.</sub>
+</p>
+
 ## CMSIS-RTOS2 2.3.0: one interface, not one implementation
 
 CMSIS 6.4.0 carries **CMSIS-RTOS2 API 2.3.0**. Typical startup includes:
@@ -393,6 +421,11 @@ A useful startup gate is:
 4. **Device probe:** critical devices must pass; optional devices enter an explicit degraded state.
 5. **Services:** logging, storage, networking, time, and update start in dependency order.
 6. **Application gate:** actuators and remote commands open only after every safety prerequisite passes.
+
+<p align="center">
+  <img src="../../assets/animations/rtos-startup-gates.svg" width="820" alt="Animated startup gates from reset evidence through minimum hardware, kernel objects, device probing, services, and application release">
+  <br><sub>▲ Continuous animation (drawn for this book): six gates light in dependency order. Every gate needs a result, deadline, and failure destination; a fixed delay cannot prove readiness.</sub>
+</p>
 
 Do not simulate a dependency with a fixed delay and assume that the network has an address after `delay(500)`. Wait for a result-bearing state event under a system deadline.
 

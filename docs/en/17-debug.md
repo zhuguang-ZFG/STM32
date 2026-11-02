@@ -1,7 +1,7 @@
 # 17 Debugging and Performance
 > 中文：[17 调试与性能优化](../17-调试与性能优化.md)
 
-> Someone who can debug uses three tools together — an SWD breakpoint, an SWO print, and the HardFault registers — and finds in a few minutes a bug that would cost someone else a day. Someone who can optimize uses the DWT timer and DMA and squeezes the cycles dry.
+> After HardFault, freeze the stack frame and CFSR/HFSR, check whether BFAR/MMFAR are valid, and use the same ELF with addr2line. Changing optimization or commenting code first destroys the scene.
 
 <p align="center">
   <img src="../../assets/animations/debug-swo.svg" width="760" alt="SWD debug plus SWO/ITM print tracing">
@@ -34,33 +34,33 @@
 <!-- /video:ch17 -->
 ## Principle and scope
 
-This chapter is fixed on STM32F103C8T6. It is a Cortex-M3 and it has no FPU. The fault addresses are the compass cells. See [PM0056](#source-pm0056).
+This chapter uses the STM32F103C8T6, a Cortex-M3 with no FPU. The fault register addresses below belong to the Cortex-M3 System Control Block, so they are the same on every M3. See [PM0056](#source-pm0056).
 
 Read `CFSR` first. It is at `0xE000ED28`. `HFSR` is at `0xE000ED2C`. `FORCED` is bit 30, value `0x40000000`: this hard fault was escalated, and the reason is in `CFSR`. `MMFAR` is at `0xE000ED34`. `BFAR` is at `0xE000ED38`.
 
-`BFARVALID` is `CFSR` bit 15. When that bit is 0, the number in `BFAR` is not this access. Treating it as this access is the failure path. `MMFAR` waits for its own valid flag. Until that bit number is printed into a snapshot, the four sections freeze bit 15 only for `BFAR`.
+`BFARVALID` is `CFSR` bit 15. When that bit is 0, the number in `BFAR` is not this access. It may be a stale value from an earlier fault, and looking it up in the map file sends you to the wrong code. `MMFAR` has its own valid flag. This chapter covers only the `BFAR` pair; for `MMFAR`, check the `CFSR` bit layout in PM0056.
 
-The hardware stack is R0, R1, R2, R3, R12, LR, PC, xPSR. PC is the 6th word. That is the same entry as chapter file 04. The four sections do not write the chapter 04 entry time and do not redraw that figure.
+The hardware stack is R0, R1, R2, R3, R12, LR, PC, xPSR. PC is the 6th word. This is the automatic stacking from chapter 04. Counting R0 at the stack pointer as word 0, PC sits at SP + 0x18. For a precise bus fault, that PC is the address of the instruction that faulted.
 
 Set bit 24 of `DEMCR` at `0xE000EDFC` before clearing `DWT_CYCCNT` at `0xE0001004` and enabling the cycle counter. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the delta of two reads is 0. See [PM0056 DWT](#source-pm0056-dwt).
 
-This M3 has 6 hardware breakpoints. The M7 count of 8 is void on the C8. A data-watchpoint count does not enter this section.
+This M3 has 6 hardware breakpoints. Setting a 7th in flash makes the debugger refuse or fail to stop. The Cortex-M7 in an STM32F7 or H7 has 8, so do not copy that number from an H7 tutorial.
 
-Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. TRACESWO is in the remap column after JTAG is turned off and SWD is kept. Calling PB3 SWO from power-up is the failure note. See [DS5319](#source-ds5319-swd).
+Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. PB3 switches to TRACESWO only after JTAG is turned off and SWD is kept. Probe PB3 for SWO straight after power-up and you see nothing. See [DS5319](#source-ds5319-swd).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-17-cfsr.svg" width="760" alt="BFAR is valid only when bit 15 is 1. At 72 MHz, 72 cycles are 1 µs, and only after DEMCR bit 24 is set.">
-  <br><sub>▲ Drawn for this book. The normal path is CFSR at 0xE000ED28 with bit 15 set, BFAR at 0xE000ED38 for this access, DEMCR at 0xE000EDFC with bit 24 set, and 72 counts as 1 µs. The failure path reads BFAR while bit 15 is 0, or leaves bit 24 clear and reads a cycle delta of 0. HFSR bit 30 is 0x40000000. Pin 39 stays labeled JTDO. Sources: [PM0056](#source-pm0056) and [PM0056 DWT](#source-pm0056-dwt).</sub>
+  <br><sub>▲ Drawn for this book. The top band is the correct reading: only when CFSR at 0xE000ED28 has bit 15 set is BFAR at 0xE000ED38 the address of this fault, and with DEMCR at 0xE000EDFC bit 24 set, 72 counts are 1 µs. The middle band shows two mistakes: with bit 15 clear, BFAR cannot be trusted; with bit 24 clear, two reads differ by 0. HFSR bit 30 is 0x40000000. Pin 39 is labeled with its reset function, JTDO. Sources: [PM0056](#source-pm0056) and [PM0056 DWT](#source-pm0056-dwt).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/cfsr-read.gif" width="640" alt="Read CFSR with bit 15 set, then let 72 counts finish 1 µs">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: read CFSR, bit 15 is 1, then 72 counts finish 1 µs. Print from the static figure. A clear bit 15 and a cycle delta of 0 are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the good case: read CFSR, bit 15 is 1, then 72 counts finish 1 µs. The printed book has only the static figure above.</sub>
 </p>
 
-`debug-swo.svg` stays as an auxiliary figure. SWO and ITM are not on this static figure.
+SWO and ITM printing are in the opening `debug-swo.svg` animation. The static figure above covers only the fault registers and the cycle counter.
 
 ## Timing and state
 
@@ -68,24 +68,24 @@ Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. TRAC
 | --- | --- | --- |
 | `CFSR` | `0xE000ED28` | read this first |
 | `HFSR` bit 30 | `0x40000000` | `FORCED` |
-| `MMFAR` | `0xE000ED34` | wait for its own valid flag. Do not invent the bit number |
+| `MMFAR` | `0xE000ED34` | when its own valid flag is 1 |
 | `BFAR` | `0xE000ED38` | only when bit 15 is 1 |
-| Failure | bit 15 is 0 | the address is void |
+| Failure | bit 15 is 0 | BFAR holds a stale value |
 | DWT | `0xE000EDFC` bit 24, then `0xE0001004` | 72 counts are 1 µs |
 | Failure | bit 24 is 0 | the delta is 0 |
-| Hardware breakpoints | 6 | this M3. The M7 count of 8 is void |
+| Hardware breakpoints | 6 | Cortex-M3. An M7 has 8 |
 | Pins | pin 34 PA13, pin 37 PA14 | SWD. Pin 39 PB3 is JTDO by default |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | `BFAR` holds a number that is not this access | bit 15 is 0 | Read `CFSR` bit 15 first | [PM0056](#source-pm0056) | When bit 15 is 0, `BFAR` is not this access. `BFAR` is at `0xE000ED38` |
 | HardFault is answered by only a reset | The fault registers were not kept | Keep `CFSR` and the stacked PC | [PM0056](#source-pm0056) | `CFSR` is at `0xE000ED28`. `FORCED` is `HFSR` bit 30, value `0x40000000` |
 | A DWT measurement reads 0 | Trace was not enabled | Set `DEMCR` bit 24, then enable `CYCCNT` | [PM0056 DWT](#source-pm0056-dwt) | With bit 24 clear the cycle counter does not run. At 72 MHz, 72 counts are 1 µs |
-| The 7th breakpoint does not stop | The comparators are used up | This M3 has 6 hardware breakpoints | [PM0056 DWT](#source-pm0056-dwt) | The default is 6. The M7 count of 8 is void on the C8. This row does not set a data-watchpoint count |
+| The 7th breakpoint does not stop | The comparators are used up | This M3 has 6 hardware breakpoints | [PM0056 DWT](#source-pm0056-dwt) | A Cortex-M3 has 6; a Cortex-M7 has 8 |
 | SWO has no waveform, and PB3 was treated as already open | After reset it is not SWO | Pin 39 is JTDO | [DS5319](#source-ds5319-swd) | TRACESWO is in the remap column. It is not PA13 and not PA14 |
-| The assert still fires after optimization, but the timing changed | There is no cycle count under the same conditions | Keep bit 24 and `CYCCNT` before changing the optimization level | [PM0056 DWT](#source-pm0056-dwt) | A speedup without that pair is not evidence. This row adds no new compiler switch |
+| The assert still fires after optimization, but the timing changed | There is no cycle count under the same conditions | Keep bit 24 and `CYCCNT` before changing the optimization level | [PM0056 DWT](#source-pm0056-dwt) | Measure cycles before and after changing the optimization level to know how much faster it is |
 ## Learning goals
 
 - [ ] Tell SWD and JTAG apart by their pins and their trade-offs, and understand why SWD is the mainstream choice.
@@ -97,15 +97,17 @@ Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. TRAC
 
 ## Core ideas
 
+Debug evidence has an order: preserve the scene, classify the fault, locate the source, and then build a minimal reproduction. Performance work follows the same rule: measure cycles, bus use, and waveforms before choosing an algorithm, DMA, compiler, or hardware change.
+
 ### 1. SWD vs JTAG
 
-**Conclusion**: **SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
+**SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
 
 | Item | SWD | JTAG |
 | --- | --- | --- |
 | Signal wires | SWCLK, SWDIO (2 wires) | TCK, TMS, TDI, TDO (4 wires, plus optional TRST) |
 | Pins used | Few (PA13 / PA14) | Many (PB3 / PB4 / PA15, plus PA13 / PA14) |
-| Speed | Fast (can reach 10+ MHz) | Fast |
+| Speed | Fast; the ceiling depends on the probe and the wiring | Fast |
 | Several devices | No daisy chain | Supported |
 | Typical tools | ST-Link, J-Link, DAPLink | J-Link, older JTAG probes |
 | STM32 support | Supported, recommended | Supported, but rarely used |
@@ -113,16 +115,16 @@ Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. TRAC
 > [!WARNING]
 > After reset, STM32 keeps **PA13 (SWDIO) and PA14 (SWCLK)** for the debug port by default. If you configure them as ordinary GPIO and turn debug off, you get "I programmed it and now I cannot connect." Leave `SWD` enabled, or keep a fallback through `HAL_DBGMCU`.
 
-"Up to 10+ MHz" is not a rate that DS5319 or PM0056 has taken into a source card. The four sections do not write that number. The "2 to 4" data watchpoints stay out of the four sections too.
+ST's manuals do not give a top speed for SWD. The usual 4 MHz or 10 MHz figures are the probe vendors' own ratings. Turn it down when the jumper wires get long.
 
 ### 2. SWO / ITM / printf tracing
 
-**Conclusion**: **SWO (Serial Wire Output)** lets the MCU send debug information out of the SWO pin through the **ITM**. It **does not occupy a UART**, and it does not block. It is the most elegant way to log.
+**SWO (Serial Wire Output)** lets the MCU send debug information through the **ITM** without occupying a UART. Whether it blocks or drops characters depends on the retarget code, probe, and host reader, so it is not a zero-cost log path.
 
 | Mechanism | What it is |
 | --- | --- |
 | ITM (Instrumentation Trace Macrocell) | A trace unit inside the core. It can drive 32 channels (port 0 is the usual printf port) |
-| SWO (Serial Wire Output) | Reuses the SWD physical connection and adds an ITM output (you need 3-wire SWD plus SWO) |
+| SWO (Serial Wire Output) | One more wire on top of the two SWD wires, PB3 on the F103, that carries the ITM data out |
 | `ITM_SendChar` | The low-level function you redirect `printf` to |
 | What you need first | A debugger that supports SWO (ST-Link V2-1 or J-Link), and the SWO clock configured in the IDE |
 
@@ -137,7 +139,7 @@ int __io_putchar(int ch)
 
 ### 3. Breakpoint types and how many you get
 
-**Conclusion**: The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3 / M4, usually **8** on M7), and the count is set by the chip's FPB unit. Software breakpoints are unlimited, but they **rewrite Flash**.
+The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3 / M4, usually **8** on M7), and the count is set by the chip's FPB unit. Software breakpoints are unlimited, but they **rewrite Flash**.
 
 | Type | How it works | How many | Limit |
 | --- | --- | --- | --- |
@@ -149,7 +151,7 @@ int __io_putchar(int ch)
 
 ### 4. The three-piece HardFault kit
 
-**Conclusion**: Once you are in HardFault, read **`CFSR` (configurable fault status), then `HFSR` (HardFault status), then `BFAR` (bus-fault address)**. Then **recover the PC at the time of the fault from the stack**. Finally use **`addr2line` or the `.map` file** to land on the source line.
+Once you are in HardFault, read **`CFSR` (configurable fault status), then `HFSR` (HardFault status), then `BFAR` (bus-fault address)**. Then **recover the PC at the time of the fault from the stack**. Finally use **`addr2line` or the `.map` file** to land on the source line.
 
 | Register | Full name | Key bits | Meaning |
 | --- | --- | --- | --- |
@@ -205,6 +207,11 @@ arm-none-eabi-addr2line -e build/app.elf -f -C 0x08001a3c
 
 > With Keil, look up the faulting PC in the symbol ranges of the `.map` file, or use the IDE's Call Stack window.
 
+<p align="center">
+  <img src="../../assets/diagrams/fault-triage-ladder.svg" width="820" alt="HardFault triage freezes the scene, reads the stack, classifies CFSR and HFSR, validates BFAR and MMFAR, and maps the ELF back to source">
+  <br><sub>▲ Fault ladder: address registers matter only when BFARVALID/MMARVALID are set; with `IMPRECISERR`, stacked PC may not be the original bad write. The figure gives the reading order, not a substitute for the target ELF and captured registers (FA-002 · IG-008 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 5. Logic analyzer / oscilloscope
 
 | Tool | What it shows | Typical use |
@@ -218,7 +225,7 @@ arm-none-eabi-addr2line -e build/app.elf -f -C 0x08001a3c
 
 ### 6. Ways to speed the code up
 
-**Conclusion**: **Measure first**, then optimize (time it with the DWT). The usual moves, in order of payoff: **hand the copies to DMA, then raise the compiler optimization, then cut floating point and division, then cache and prefetch, then assembly.**
+**Measure first**, then optimize (time it with the DWT). The usual moves, in order of payoff: **hand the copies to DMA, then raise the compiler optimization, then cut floating point and division, then cache and prefetch, then assembly.**
 
 | Move | What to do | Watch out |
 | --- | --- | --- |
@@ -366,11 +373,13 @@ static inline void DWT_DelayInit(void)
 
 ## Hands-on labs
 
-1. **Print over SWO**: redirect `printf` to the ITM and watch the output in the IDE's SWV / ITM window. Expected: you see the log with no UART connected.
-2. **Cause a HardFault and find it**: write `*(volatile uint32_t*)0xDEADBEEF = 1;`. In the HardFault handler, print `CFSR`, `BFAR`, and `PC`, and locate the line with `addr2line`. Expected: it points back at that line.
-3. **Compare times with the DWT**: time a software `memcpy` and a DMA copy of the same amount of data (see [Chapter 10](10-dma.md)). Expected: the CPU time of the DMA version is close to 0.
-4. **(Further) Decode I2C with a logic analyzer**: capture one OLED write transaction ([Chapter 07](07-i2c.md)) and restore the address and the data with a decoder. Expected: you can see address 0x3C and the ACK.
-5. **(Further) Compare optimization levels**: time the same floating-point-heavy code at `-O0` and at `-O2` with the DWT. Expected: `-O2` is several times faster.
+1. **HardFault evidence pack:** In a controlled Debug build, access an illegal address. Save stacked PC/LR, CFSR, HFSR, BFAR/MMFAR valid bits, and the ELF hash, then locate the line with addr2line.
+2. **Precise and imprecise errors:** Create a synchronous illegal access and a DMA/bus write fault, then compare `PRECISERR`, `IMPRECISERR`, and how much the stacked PC can prove.
+3. **DWT baseline:** For the same 4 KB, record `memcpy` CPU cycles, DMA-start CPU cycles, and DMA completion wall time. A fast start does not mean the copy has completed.
+4. **Tool boundary:** Capture one I2C transfer with both protocol decode and SCL/SDA scope traces. One proves bytes; the other proves rise time and electrical margin.
+5. **Optimization regression:** Run the same test vectors at `-Og`, `-O2`, and `-Os`, recording cycles, code size, and identical outputs. Accept an optimization only when results still match.
+
+Before leaving this chapter, keep the full HardFault evidence pack, precise/imprecise comparison, both DMA and memcpy time measures, and one protocol/electrical trace pair.
 
 ## Related resources
 

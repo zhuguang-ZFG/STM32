@@ -133,6 +133,52 @@ RULES: dict[str, list[str]] = {
     ],
 }
 
+# Notes written for a reviewer rather than a reader: which figure is "main",
+# what was deliberately left out, what a source is "allowed" to support.
+# A reader needs the fact and the condition, not the bookkeeping.
+# A paragraph that opens with a "conclusion" label is a template. The first
+# sentence of a section is already where the point goes; say it.
+RULES["结论标签"] = [
+    r"^\s*(>\s*)?\*{0,2}结论(先行)?\*{0,2}[：:]",
+    r"^\s*(>\s*)?\*{0,2}Conclusion( first)?\*{0,2}:",
+]
+
+RULES["审稿用语"] = [
+    r"只钉在",
+    r"整格照抄",
+    r"不另(开|算)一套",
+    r"不画进",
+    r"留在核心原理",
+    r"放在旁注",
+    r"主图的失败路径",
+    r"该来源允许支持的主张",
+    r"不编(一个|一块|位号|[^。，]{0,8}(基址|地址|容量|皮法|周期数|微安|BRR))",
+    # 「清洁或作废」是 Cache invalidate 的译法，是术语。
+    r"(?<!清洁或)作废",
+    # 附录 A 逐字锁定，那里的 "numbers are pinned to" 指工作点，不算。
+    r"\b(conclusions?|ledgers?|tables?|chapter)\b[^.]{0,40}\bpinned to\b",
+    r"\bcopied whole\b",
+    r"\bis void\b",
+    r"\bsecond ledger\b",
+    r"\bstays? in the core ideas\b",
+    r"\bfailure path on the key figure\b",
+    r"\bclaim this source may support\b",
+    r"\bdo(es)? not invent\b",
+    r"\b(are|as) void\b",
+]
+
+# 写作规范里对章节结构的叫法。贡献者文档可以用，正文里读者看不懂。
+RULES["结构行话"] = [
+    r"四块",
+    r"出处卡",
+    r"主账",
+    r"\bfour blocks\b",
+    r"\bsource cards?\b",
+    r"\bmain ledger\b",
+]
+# 写给贡献者的文档，结构行话在这里是正当用法。
+META_DOCS = {"CREDITS.md", "CONTENT_GUIDE.md", "CHANGELOG.md"}
+
 # Decisions belong in words, so a glyph never carries a table cell or a
 # callout. The book build reads GitHub alert syntax for warnings.
 HOUSE_STYLE: dict[str, list[str]] = {
@@ -184,6 +230,8 @@ def scrub(line: str) -> str:
 
 def lint(text: str, path: str, house_style: bool = True) -> list[Hit]:
     groups = dict(RULES)
+    if Path(path).name in META_DOCS:
+        groups.pop("结构行话")
     if house_style:
         groups |= HOUSE_STYLE
     compiled = {
@@ -211,7 +259,14 @@ def lint(text: str, path: str, house_style: bool = True) -> list[Hit]:
                         Hit(path, line_no, "代码块没写语言", raw.strip(), raw.strip())
                     )
             continue
-        if in_fence or muted or IGNORE_LINE.search(raw):
+        if muted or IGNORE_LINE.search(raw):
+            continue
+        if in_fence:
+            # 代码注释也是写给读者的，只查审稿用语。
+            for name in ("审稿用语", "结构行话"):
+                for pattern in compiled.get(name, []):
+                    for found in pattern.finditer(raw):
+                        hits.append(Hit(path, line_no, name, found.group(), raw.strip()))
             continue
 
         if HEADING_EMOJI.match(raw) and not HEADING_EMOJI_OK.search(raw):
@@ -230,7 +285,8 @@ def targets(given: list[str]) -> list[Path]:
         return [Path(name) for name in given]
     found: list[Path] = []
     for path in sorted(ROOT.rglob("*.md")):
-        if any(part in SKIP_DIRS for part in path.relative_to(ROOT).parts):
+        if any(part in SKIP_DIRS or part.startswith(".venv")
+               for part in path.relative_to(ROOT).parts):
             continue
         found.append(path)
     return found

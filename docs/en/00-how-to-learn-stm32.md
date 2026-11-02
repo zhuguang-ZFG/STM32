@@ -1,7 +1,7 @@
 # 00 How to Learn STM32
 > 中文：[如何学习 STM32](../00-如何学习STM32.md)
 
-> For complete beginners: fill in the minimum background, gather the hardware, pick a development style, then walk the three-stage roadmap at a steady pace.
+> The first LED that blinks at the frequency you worked out says more about your progress than ten videos. This chapter tells you what to learn first, what to buy, and in what order.
 
 <p align="center">
   <img src="../../assets/animations/toolchain-flow.svg" width="760" alt="Toolchain data flow from writing code to flashing and running">
@@ -32,53 +32,52 @@
 
 </details>
 <!-- /video:ch00 -->
-## Principle and scope
+## The image flashed successfully, but reset does not run it
 
-Record the first board as orderable STM32F103C8T6. The boot conclusion is [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot). Do not fill this row from a G0 or H7 boot table.
+Learn the first board as the STM32F103C8T6. The boot rules below come from [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot). G0 and H7 boot differently; look those up in their own manuals.
 
-The BOOT pins latch on the 4th rising edge of SYSCLK after reset. They are sampled again when leaving Standby. Changing them later inside `main` misses that edge. The CPU then reads the stack pointer from `0x00000000` and the reset vector from `0x00000004`.
+The BOOT pins latch on the 4th rising edge of SYSCLK after reset, and are sampled again when leaving Standby. By the time `main` runs, this reset has already chosen its path; changing the pins then only affects the next reset. The CPU then reads the stack pointer from `0x00000000` and the reset vector from `0x00000004`.
 
-When BOOT0=0, main Flash is aliased at `0x00000000` for either BOOT1 value, and the array itself stays at `0x08000000`. A program that was just flashed is fetched on this row.
+When BOOT0=0, main Flash is aliased at `0x00000000` for either BOOT1 value, and the array itself stays at `0x08000000`. This is the setting for normal flashing and running.
 
-When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T6 is not a connectivity-line part, so that memory is at `0x1FFFF000`. The connectivity-line address `0x1FFFB000` is void here. When BOOT1=1 and BOOT0=1 the core boots from embedded SRAM at `0x20000000`; that does not become the image at `0x08000000`. The XL-density Bank2 address `0x08080000` is void on this 64 KB C8.
+When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T6 is not a connectivity-line part, so that memory is at `0x1FFFF000`. The `0x1FFFB000` you often see online belongs to the connectivity line (F105/F107), not the C8. When BOOT1=1 and BOOT0=1 the core boots from embedded SRAM at `0x20000000`, which holds whatever was there at power-up, not the image at `0x08000000`. `0x08080000` is the start of Bank2 on XL-density parts; the 64 KB C8 has no Flash there.
 
-## Key figures
+## BOOT0 changes the fetch alias
 
 <p align="center">
   <img src="../../assets/diagrams/sample-00-boot-state.svg" width="760" alt="With BOOT0 at 0 the CPU fetches Flash at 0x08000000 through 0x00000000; with BOOT0 at 1 and BOOT1 at 0 it fetches system memory">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path writes the image through SWDIO (PA13) and SWCLK (PA14) at 0x08000000, and BOOT0=0 aliases 0x00000000 onto that Flash. The failure path is BOOT1=0 and BOOT0=1: the CPU still reads 0x00000000, but the alias is system memory at 0x1FFFF000. The flashed image is still in Flash and is simply not fetched. The BOOT pins latch on the 4th rising edge of SYSCLK. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the normal case: the image goes in through SWDIO (PA13) and SWCLK (PA14) at 0x08000000, and BOOT0=0 aliases 0x00000000 onto that Flash. The lower half is BOOT1=0 and BOOT0=1: the CPU still reads 0x00000000, but the alias is system memory at 0x1FFFF000. The flashed image is still in Flash and is simply not fetched. The BOOT pins latch on the 4th rising edge of SYSCLK. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
 </p>
 
-The opening `toolchain-flow.svg` stays a side figure of the tools. This key figure shows the BOOT0=1 failure without playing an animation.
-
-## Timing and state
+## Three boot states
 
 | State | BOOT1 | BOOT0 | What the CPU fetches from 0x00000000 | On STM32F103C8T6 |
 | --- | --- | --- | --- | --- |
 | Normal: the flashed program runs | x | 0 | The main-Flash alias; the array remains at 0x08000000 | Holds. The next word is at 0x00000004 |
-| Failure: the chip stays in system memory | 0 | 1 | The system-memory alias | The address that holds is 0x1FFFF000. 0x1FFFB000 is void |
-| Failure: boot from SRAM | 1 | 1 | Not the program in Flash | SRAM is at 0x20000000. 0x08080000 is void |
+| Failure: the chip stays in system memory | 0 | 1 | The system-memory alias | The memory is at 0x1FFFF000. 0x1FFFB000 is the connectivity-line address |
+| Failure: boot from SRAM | 1 | 1 | Not the program in Flash | SRAM is at 0x20000000. The C8 has no Flash at 0x08080000 |
 
 The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
 
-## Pitfalls and sources
+## The address and the exact part must both match
 
-| Symptom | Cause | What to do | Source | Claim this source may support |
+| Symptom | Cause | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The image is at 0x08000000, and reset runs something else | BOOT1=0 and BOOT0=1, so the boot alias is system memory | Pull BOOT0 to 0 and reset | [RM0008 Table 9](#source-rm0008-boot) | Flash itself remains at 0x08000000; this part's system memory is 0x1FFFF000 |
 | BOOT pins changed inside main, and this reset already went the wrong way | The pins latched on the 4th rising edge of SYSCLK | Set BOOT0 and BOOT1 before reset | [RM0008 section 3.4](#source-rm0008-boot) | The latch is the 4th rising edge of SYSCLK; Standby exit samples them again |
-| A connectivity-line or XL-density boot address was copied into the C8 project | 0x1FFFB000 and 0x08080000 are not rows for this part | Use 0x1FFFF000 for system memory and 0x08000000 for Flash | [RM0008 section 3.4](#source-rm0008-boot) | Those two rows are void on STM32F103C8T6 |
+| A connectivity-line or XL-density boot address was copied into the C8 project | 0x1FFFB000 and 0x08080000 belong to other densities | Use 0x1FFFF000 for system memory and 0x08000000 for Flash | [RM0008 section 3.4](#source-rm0008-boot) | 0x1FFFB000 applies only to the connectivity line and 0x08080000 only to XL density; STM32F103C8T6 is neither |
 
 ## Learning goals
+- [ ] Keep four pieces of evidence from the first loop: a build artifact, flash verification, a breakpoint in `main`, and a 1 Hz waveform on PC13
 - [ ] Know the minimum C, digital, and analog you need before studying STM32
 - [ ] Assemble a hardware kit you can use immediately, including price ranges
 - [ ] Read the "4 weeks beginner / 6 weeks intermediate / 8 weeks project" roadmap and check yourself with the self-tests
 - [ ] Choose among three styles: registers, the standard peripheral library (SPL), and HAL+LL+CubeMX
-- [ ] Remember the "do not do this" list, so the usual early dead ends do not talk you out of the work
+- [ ] Recognize the changes that slow early work down: switching boards, toolchains, libraries, and several peripherals at once
 
-## Core ideas
+## How much background is enough
 
-**Lead with the conclusion: getting started with STM32 does not mean finishing an entire electronics degree. You need "enough" background plus the right path.**
+You do not need to finish an electronics curriculum before starting STM32. If you can read a pin table, calculate an LED series resistor, and use a pointer with a `uint32_t`, you can fill the remaining gaps while running experiments.
 
 ### 1. The "enough" bar for background
 
@@ -90,7 +89,7 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 | Computer organization | Binary and hex, bytes and addresses, what a register is | Interrupts, DMA, buses, cache | You do not see how a "register" relates to "memory" |
 | English | You can read pin tables and parameter tables in a datasheet | You can read a whole chapter of the reference manual | You cannot even look up a Pin Name |
 
-> One-sentence bar: **if you can use a pointer on a `uint32_t`, compute an LED series resistor, and read a pin table, you can start.**
+If one of those is missing, review that item. You do not need to finish a C or circuit textbook first.
 
 ### 2. Three ways to write the firmware
 
@@ -101,8 +100,8 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 | Amount of code | Little, but dense | Medium | More, but clearer |
 | Portability | Poor (F1→F4 means edits) | Poor (ST has stopped updates) | Good (HAL is one API across families) |
 | Resource use | Smallest | Small | A bit larger (you can trim it; LL is smaller) |
-| Official maintenance | Usable forever | **No longer maintained** | Still updated |
-| Fits | Learning the mechanism, tight timing, tiny memory | Keeping old projects alive | New products, fast prototypes, what most jobs use |
+| Official maintenance | No SPL/HAL version dependency; the target reference manual defines the registers | **No longer maintained** | Still updated |
+| Fits | Learning the mechanism, tight timing, tiny memory | Maintaining a version-locked old project | New projects, prototypes, and current ST examples |
 
 **Suggested path: start with HAL+CubeMX → read the registers so the layer underneath makes sense → use LL where it actually matters.**
 
@@ -141,53 +140,56 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 
 | Item | Suggested part | Price range (¥) | Required? | Notes |
 | --- | --- | --- | --- | --- |
-| Minimum board | BluePill STM32F103C8T6 | 15–30 | Required | Best first board; the most material exists for it |
+| Minimum board | BluePill STM32F103C8T6 | 15–30 | Required | The F1 labs in chapters 00–19 use this board |
 | Next board | STM32F411 BlackPill / Nucleo-F411RE | 30–80 | Optional | Buy it when you study F4/F7, DSP, or the FPU |
 | Debugger | ST-Link V2 (clone) | 15–40 | Required | SWD download and debug |
 | Breadboard | 830-tie solderless breadboard | 8–20 | Required | You need it to wire circuits |
-| Dupont wires | Male-to-male / male-to-female, 40 of each | 8–15 | Required | Color-coded ones are worth it |
+| Dupont wires | Male-to-male / male-to-female, 40 of each | 8–15 | Required | Use different colors for power, ground, and signals |
 | USB-TTL | CH340 / CP2102 module | 8–20 | Required | Serial debug; watch the 3.3 V level |
-| Sensor kit | 37-in-1 sensor modules | 40–80 | Required | Button, LED, OLED, DHT11, and so on |
-| OLED | 0.96" SSD1306 I2C | 12–25 | Recommended | The best first I2C exercise |
-| Logic analyzer | 8-channel 24 MHz (clone) | 15–40 | Recommended | The tool that shows I2C/SPI/UART timing |
+| Sensor kit | 37-in-1 sensor modules | 40–80 | Optional | Buy modules when a lab needs them; the first blink does not |
+| OLED | 0.96" SSD1306 I2C | 12–25 | Recommended | Used by the I2C lab in chapter 07 |
+| Logic analyzer | 8-channel 24 MHz (clone) | 15–40 | Recommended | Shows GPIO, I2C, SPI, and UART timing |
 | Multimeter | Entry-level digital meter | 30–80 | Recommended | Voltage and continuity |
 
-> Budget: **bare-minimum start ≈ 60 yuan** (BluePill + ST-Link + breadboard + Dupont wires); **full kit ≈ 200–300 yuan**.
+> These are rough price ranges, excluding shipping; check current prices before buying. The low end of the table puts the **bare-minimum kit near 60 yuan** (BluePill + ST-Link + breadboard + Dupont wires). Adding serial, display, measurement, and lab modules brings it to roughly 200–300 yuan.
 
-### 5. What not to do (the list that makes people quit)
+### 5. Changes that slow down the first week
 
 | Do not | Why | Do this instead |
 | --- | --- | --- |
 | Start by reading a 1000-page reference manual | No context, so nothing sticks and nothing gets used | Run an example first, then look up the page you need |
 | Study RTOS, bare metal, and a PC app at the same time | Attention splits, and none of them gets solid | Get the bare-metal peripherals firm, then add an RTOS |
-| Copy code and never look at a register | When it breaks, you cannot look | For every HAL call, look up the matching register at least once |
+| Copy code and never look at a register | When it breaks, you cannot inspect the state | The first time you use a peripheral, trace its key registers |
 | Learn the basics on an F4 or H7 | The peripherals hide the mechanism | Build the foundation on F1, then move |
 | Insist on "all registers" as a flex | Slow to write, easy to get wrong | HAL for most of it; LL or registers where it matters |
-| Debug a bus with no scope and no logic analyzer | If you cannot see the timing, you are guessing | At least keep a logic analyzer |
-| Buy the most expensive board first | It is likely to sit unused | Run a 30-yuan BluePill first |
+| Read only software state and never probe the bus | You cannot separate a configuration error from an on-wire timing error | Start with a logic analyzer for digital buses; use a scope for voltage quality and edges |
+| Buy a high-end board for the first lab | The extra peripherals do not help the blink and add power and boot variables | Close the first loop on the BluePill used by this book |
 
 ## Hardware and wiring
 
-At the start, all you wire is "minimum board + ST-Link + USB-TTL":
+For the first blink, connect only the BluePill and ST-Link. The figure uses Micro-USB as the one primary supply, so the 3.3 V pin on a clone ST-Link stays disconnected. On some clones that pin is a supply output, not a voltage-sense input; do not parallel it with USB power.
 
-| Board pin | ST-Link pin | USB-TTL | Notes |
+<p align="center">
+  <img src="../../assets/diagrams/first-lab-wiring.svg" width="820" alt="BluePill powered only from Micro-USB, with ST-Link connected to GND, SWDIO, SWCLK, and optional NRST while 3.3 V stays disconnected">
+  <br><sub>▲ First wiring: keep one primary supply, confirm BOOT0=0 and common ground, then measure 3.3 V at the MCU. Leave USB-TTL for the UART chapter. This is a connection-boundary diagram, not a board photograph or a replacement for the clone's schematic (FA-029 · IG-002 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+| BluePill | ST-Link | Connect now? | Purpose |
 | --- | --- | --- | --- |
-| 3V3 | 3.3V | 3.3V | Power (do not put 5 V on the 3V3 pin) |
-| GND | GND | GND | Common ground is required |
-| SWDIO (PA13) | SWDIO | — | Debug data |
-| SWCLK (PA14) | SWCLK | — | Debug clock |
-| NRST | RST | — | Optional; connecting it is more reliable |
-| PA9 (TX) | — | RX | Cross them: board TX → module RX |
-| PA10 (RX) | — | TX | Board RX → module TX |
+| GND | GND | Yes | Common voltage reference |
+| SWDIO (PA13) | SWDIO | Yes | Debug data |
+| SWCLK (PA14) | SWCLK | Yes | Debug clock |
+| NRST | RST | Optional | Enables connect under reset |
+| 3V3 | 3.3V | **No** | The board already has Micro-USB power; do not parallel supplies |
 
 > [!WARNING]
-> The BluePill 3V3 pin cannot feed an ST-Link well. Power the board from its Micro-USB on its own.
+> Never connect 5 V to 3V3. Before power-up, confirm that there is one primary supply. After power-up, measure the board's 3.3 V rail before starting a debug session.
 
-The physical layout is in [`assets/boards/bluepill-stm32f103c8t6.svg`](../../assets/boards/bluepill-stm32f103c8t6.svg) (a structural drawing by the author, not a photograph).
+The physical layout is in [`assets/boards/bluepill-stm32f103c8t6.svg`](../../assets/boards/bluepill-stm32f103c8t6.svg). It is an author-drawn structure map, not a photograph. The repository does not currently contain a BluePill photograph whose exact model and redistribution license have both been verified.
 
-## Code
+## The first program you can accept or reject
 
-The "first program": blink the onboard LED (PC13, on when low) once a second. This is the standard check that the environment is actually set up.
+Make the onboard LED (PC13, on when low) complete one on/off cycle every second. Running code is only the first check; the measured waveform must also be 1 Hz.
 
 ```c
 /* main.c —— BluePill onboard LED (PC13) blinks at 1 Hz
@@ -248,7 +250,7 @@ static void SystemClock_Config(void)
 The same thing in registers (so the layer underneath is visible):
 
 ```c
-/* without HAL, three core lines light the LED */
+/* without HAL, the blink needs these four register operations */
 RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;        /* enable the GPIOC clock */
 GPIOC->CRH &= ~(0xF << 20);                 /* clear the PC13 configuration bits */
 GPIOC->CRH |=  (0x2 << 20);                 /* PC13 general-purpose push-pull output, 2MHz */
@@ -259,11 +261,16 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 
 ## Hands-on labs
 
-1. **Lab 1 (environment check):** Blink PC13 at 1 Hz with the code above. What you should see: the onboard blue LED turns on and off once a second.
+1. **Lab 1 (environment check):** Blink PC13 at 1 Hz with the code above. The onboard LED should complete one on/off cycle every second.
 2. **Lab 2 (change a parameter):** Change `HAL_Delay(500)` to 100 and watch the blink speed up. Probe PC13 with a logic analyzer and confirm the frequency is about 5 Hz.
 3. **Lab 3 (registers beside HAL):** Blink the same way with registers. Compare it with the HAL version and write down what the bits in `CRH` and `ODR` mean.
 
-### 6. When you get stuck (the right order to look things up)
+<p align="center">
+  <img src="../../assets/diagrams/first-success-gates.svg" width="820" alt="Four acceptance gates for the first blink: build, flash, reset, and measurement, each with the next action after failure">
+  <br><sub>▲ Acceptance gates: confirm the ELF/AXF, verification at 0x08000000, entry to main with BOOT0=0, and finally a 1 s period on PC13. An illuminated LED proves only one level at one moment; it does not prove the build artifact, reset path, or frequency (FA-002 · IG-008 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+### 6. Do not begin debugging by searching the error text
 
 | Order | Action | Notes |
 | --- | --- | --- |
@@ -274,7 +281,7 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 | 5 | Search the error text | Keywords plus the part number |
 | 6 | Ask | Attach a minimal repro, the symptom, and what you already tried |
 
-> Three things every question needs: **what you did, what you expected, what actually happened**, plus a project small enough to reproduce.
+> When asking for help, state **what you did, what you expected, and what actually happened**, and attach a project small enough to reproduce.
 
 ### 7. Learning resources
 
@@ -293,8 +300,8 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 | Question | Short answer |
 | --- | --- |
 | If I use HAL, will I "never learn the bottom"? | No. After a HAL call, read the matching register. |
-| Do I have to buy an oscilloscope? | A logic analyzer is enough to start, and the value is better. |
-| Study F1 or F4? | F1 from zero. F4 if you want performance or a job that asks for it. |
+| Do I have to buy an oscilloscope? | A logic analyzer can cover early GPIO, UART, I2C, and SPI timing. Voltage quality and edge shape still require a scope. |
+| Study F1 or F4? | This book starts on F103. Move to F4 when the project needs an FPU, a faster core, or more SRAM. |
 | What if I cannot read the English manual? | Start with the figures and the register tables, and pair them with a Chinese tutorial. |
 | Do I need to be able to draw a PCB? | Use a ready-made board to start. You do not. |
 
@@ -303,5 +310,4 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 - Official manuals: STM32F103C8 datasheet **DS5319**; reference manual **RM0008** (GPIO chapter 9, RCC chapter 8)
 - Next: [01 Setting Up the Development Environment](01-dev-environment.md)
 - Board drawing: [`assets/boards/bluepill-stm32f103c8t6.svg`](../../assets/boards/bluepill-stm32f103c8t6.svg)
-- Hardware and documents: the Nucleo product pages on ST's website (the official boards in the same class as a BluePill)
-- Disclaimer: every illustration in this repo is a vector drawing or a program-generated animation by the author, not a manufacturer's photograph.
+- Image sources and licenses: [`assets/README.md`](../../assets/README.md)

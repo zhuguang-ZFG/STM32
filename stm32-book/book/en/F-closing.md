@@ -1,6 +1,6 @@
 # Where the road goes next
 
-This page exists only in the book. It gathers the seven parts into one path you can keep walking. It does not change chapter 28 in `docs/en/`. The numbers below are the ledger already stated in earlier chapters, gathered here so a measurement has a column to stand in.
+This page exists only in the book. It gathers the seven parts into one path you can keep walking. It does not change chapter 28 in `docs/en/`. The numbers below were already worked out in earlier chapters, gathered here so a measurement has a column to stand in.
 
 ## What each part should leave you
 
@@ -16,7 +16,7 @@ This page exists only in the book. It gathers the seven parts into one path you 
 
 ## Four lines for the first board
 
-The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are in the first ledger at the end of [Appendix D](#appendix-glossary). The next ledger is the one you use when the chip changes. Channels, descriptors, and fault registers are in the third ledger.
+The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you change chips, the lab note has these four lines. Then you can say that it runs. The arithmetic and the manual path are in the first table at the end of [Appendix D](#appendix-glossary). The next table is the one you use when the chip changes. Channels, descriptors, and fault registers are in the third table.
 
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ The default board is a BluePill, silkscreen STM32F103C8T6, LQFP48. Before you ch
 
 ## Three more lines when you change chips
 
-Match the four lines for the first board, then change family. The expected values are in the second ledger of [Appendix D](#appendix-glossary). The measurement is still yours to fill in.
+Match the four lines for the first board, then change family. The expected values are in the second table of [Appendix D](#appendix-glossary). The measurement is still yours to fill in.
 
 | Write this down | What this book expects | What you measure |
 | --- | --- | --- |

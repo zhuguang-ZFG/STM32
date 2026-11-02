@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="SPI 全双工：两个移位寄存器在环形交换">
+<title>SPI 全双工：两个移位寄存器在环形交换</title>
 <style>
 
 .mosi{stroke-dasharray:8 12;animation:mosi-flow 1.4s linear infinite;}@keyframes mosi-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-20px}}
@@ -8,6 +9,7 @@
 @keyframes bit1-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit1{animation:bit1-mv 1.6s linear infinite 0.4s;}
 @keyframes bit2-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit2{animation:bit2-mv 1.6s linear infinite 0.8s;}
 @keyframes bit3-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit3{animation:bit3-mv 1.6s linear infinite 1.2s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

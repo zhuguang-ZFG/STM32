@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="IWDG 喂晚了复位，WWDG 喂早了也复位">
+<title>IWDG 喂晚了复位，WWDG 喂早了也复位</title>
 <style>
 @keyframes dec-w{0%{transform:scaleX(1)}100%{transform:scaleX(0.02)}}.dec{animation:dec-w 3s linear infinite;transform-box:fill-box;transform-origin:right center;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>

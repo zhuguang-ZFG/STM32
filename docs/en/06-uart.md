@@ -1,7 +1,7 @@
 # 06 UART
 > 中文：[串口 UART](../06-串口UART.md)
 
-> UART is the asynchronous serial interface you will use most: logs, modules, and a program on the PC.
+> When the terminal shows garbage, inspect three places together: bit time on the wire, FE/ORE in SR, and the bytes that reached the memory buffer. Only then can you separate a baud error from a receive-timing or buffer-boundary error.
 
 <p align="center">
   <img src="../../assets/animations/uart-frame.svg" width="760" alt="UART frame, bit by bit">
@@ -34,58 +34,59 @@
 <!-- /video:ch06 -->
 ## Principle and scope
 
-The frame in this chapter holds for orderable STM32F103C8T6 in LQFP48. USART1 is on APB2. When the core clock is 72 MHz, PCLK2 is 72 MHz, and the peripheral base is `0x40013800`. The default pins are PA9 = USART1_TX = pin 30 and PA10 = USART1_RX = pin 31, from [DS5319 Rev 20 Figure 8](#source-ds5319-usart). After reset the pins are not PB6/PB7. A remap needs AFIO as well, and the remapped pins are not on the normal path.
+The frame and baud numbers in this chapter are for the STM32F103C8T6 in LQFP48. USART1 sits on APB2; with a 72 MHz core, PCLK2 is also 72 MHz, and the peripheral base is `0x40013800`. The default pins are PA9 = USART1_TX = pin 30 and PA10 = USART1_RX = pin 31, from [DS5319 Rev 20 Figure 8](#source-ds5319-usart). After reset USART1 is not on PB6/PB7; to use those pins you enable the AFIO clock and set the remap.
 
-The receiver on this part samples with a 16× baud clock. One stop bit is voted at samples 8, 9, and 10. The start bit is checked at samples 3, 5, and 7 and at samples 8, 9, and 10, as written in [RM0008 27.3.3](#source-rm0008-usart). Data bits use the middle three samples.
+The F103 receiver samples with a clock at 16 times the baud rate, so each bit is sampled 16 times. The stop bit is decided by a majority vote of samples 8, 9, and 10. The start bit is checked at those three and also at samples 3, 5, and 7, which filters out glitches on the line; see [RM0008 27.3.3](#source-rm0008-usart). Data bits also use the middle three samples.
 
-At 16×, `USARTDIV = fPCLK / (16 × baud)`. At 72 MHz and 115200, `72e6 / (16 × 115200) = 39.0625`, the fraction `0.0625 × 16 = 1`, BRR = `0x271`, `72e6 / (16 × 39.0625) = 115200`, and the divider error is 0. `USART_BRR` is at offset `0x08`, and the low 4 bits are the fraction. Copy this cell from Appendix D. The error on the 72 MHz row is 0%. About 0.16% stays on the 36 MHz row, BRR `0x138`, and that row is USART2 on APB1, not this USART1. Dropping the fraction and dividing by 39 also yields about 0.16%. That is not what writing `0x271` does. Do not edit Appendix A or Appendix D.
+At 16×, `USARTDIV = fPCLK / (16 × baud)`. At 72 MHz and 115200, `72e6 / (16 × 115200) = 39.0625`. The integer part 39 is 0x27, the fraction is `0.0625 × 16 = 1`, so BRR = `0x271`. Working back, `72e6 / (16 × 39.0625) = 115200`, and the divider error is 0. `USART_BRR` is at offset `0x08`, with the fraction in the low 4 bits. This matches Appendix D. The "0.16% error at 115200" you often see online comes from two other cases: USART2 on the 36 MHz APB1, BRR `0x138`, or dropping the fraction and dividing by 39 alone. That is not what writing `0x271` does.
 
-8× oversampling is void on this F103. `USART_CR1` is at offset `0x0C`, and bits 31:14 are reserved, so there is no OVER8. F103 has only 16×. 8× means a family that has OVER8. This chapter does not invent an 8× BRR and does not add `rm0090-usart-over8`.
+The F103 has only 16× oversampling. `USART_CR1` is at offset `0x0C`, and bits 31:14 are reserved; there is no OVER8 bit as on the F4. For 8× oversampling you need another family.
 
-At 115200 and 8N1, one bit is about 8.68 µs and a 10-bit frame is about 86.8 µs. In RM0008 an idle line is a whole frame of high. One IDLE means the line has been idle for about one frame time. It does not mean the length field of the other side's protocol has arrived. In circular DMA, `Size` is still the write position, not the increment of this transfer.
+At 115200 and 8N1, one bit is about 8.68 µs and a 10-bit frame is about 86.8 µs. RM0008 calls one full frame time of high level an idle line. The IDLE flag says only that the line has been quiet for about one frame time; it does not say the other side has finished sending a packet. With circular DMA reception, `Size` in the callback is where DMA has written up to, not the number of bytes that just arrived.
 
-When the stop bit is not high at the expected samples, hardware sets `USART_SR.FE`. The invalid byte still enters `USART_DR`. Clearing it is a read of SR and then a read of DR. Reading only DR does not clear it. Whether an interrupt arrives still depends on RXNE or on EIE in CR3. In a one-byte exchange, FE itself is not the only interrupt source. Do not write "FE always enters the service routine."
+When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The bad byte still lands in `USART_DR`. To clear FE, read SR and then DR; reading DR alone does not clear it. Whether you get an interrupt depends on the RXNE interrupt or EIE in CR3 being enabled. FE does not raise an interrupt on its own, so do not assume a framing error always reaches the interrupt handler.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-06-uart-frame.svg" width="760" alt="A stop bit sampled as 0 is a framing error, and 0x271 has zero divider error at 72 MHz and 16×">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 30 PA9 = USART1_TX, pin 31 PA10 = USART1_RX. The frame is 0xA5, LSB first. One bit is about 8.68 µs and 10 bits are about 86.8 µs. BRR `0x271`, 39.0625, 16×, error 0. Offsets: USART_SR 0x00, USART_DR 0x04, USART_BRR 0x08, USART_CR1 0x0C. Normal path: stop-bit samples 8, 9, and 10 are 1, and FE stays clear. Failure path: those three samples are 0, FE is set, the byte remains in DR, and the clear order is SR then DR. Side note: on this F103, CR1 bits 31:14 are reserved, there is no OVER8, and the figure does not compute an 8× BRR. Pins are [DS5319 Rev 20 Figure 8](#source-ds5319-usart). Sampling and BRR are [RM0008 Rev 21 chapter 27](#source-rm0008-usart).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 30 PA9 = USART1_TX, pin 31 PA10 = USART1_RX. The frame is 0xA5, LSB first. One bit is about 8.68 µs and 10 bits are about 86.8 µs. BRR `0x271`, 39.0625, 16×, error 0. Offsets: USART_SR 0x00, USART_DR 0x04, USART_BRR 0x08, USART_CR1 0x0C. The top half is a normal receive: stop-bit samples 8, 9, and 10 are 1 and FE stays clear. The bottom half is a framing error: those three samples are 0, FE is set, the byte is still in DR, and reading SR then DR clears it. A note in the lower right says CR1 bits 31:14 are reserved on the F103, so there is no OVER8. Pins: [DS5319 Rev 20 Figure 8](#source-ds5319-usart). Sampling and BRR: [RM0008 Rev 21 chapter 27](#source-rm0008-usart).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/uart-idle.gif" width="640" alt="After one frame, RX stays high, and IDLE plus 86.8 microseconds is marked after one frame time">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only marks the idle line and 86.8 µs. Print uses the static figure. The three framing-error samples are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the line staying high after a frame and IDLE appearing after 86.8 µs. The printed book has only the static figure above.</sub>
 </p>
 
-`uart-frame.svg` and `uart-bits.gif` stay in the frame section as side figures. When a PDF does not play the GIF, the start bit, the stop bit, samples 8, 9, and 10, and the FE path are all on the static figure.
+`uart-frame.svg` and `uart-bits.gif` in the frame-format section later on show the same frame being sent bit by bit.
 
 ## Timing and state
 
 | Phase | Line | Bits of 0xA5 | Samples 8, 9, 10 | FE | Time | BRR |
 | --- | --- | --- | --- | --- | --- | --- |
 | Idle | High | — | — | 0 | — | — |
-| Start bit | 0 | — | The start bit is also checked at samples 3, 5, and 7 | 0 | about 8.68 µs | — |
-| Data, LSB first | 1 0 1 0 0 1 0 1 | 0xA5 | Data bits use the middle three samples | 0 | 8 bits | — |
-| Normal stop | 1 | Stop | Voted as 1 | 0 | about 8.68 µs | USART1, 72 MHz, `0x271`, error 0% |
-| Failed stop | 0 | Stop | The three samples are 0 | 1 | about 8.68 µs | Clear by reading SR, then DR |
+| Start bit | 0 | — | Also checked at samples 3, 5, and 7 | 0 | about 8.68 µs | — |
+| Data, LSB first | 1 0 1 0 0 1 0 1 | 0xA5 | Middle three samples per bit | 0 | 8 bits | — |
+| Good stop bit | 1 | Stop | Voted as 1 | 0 | about 8.68 µs | USART1, 72 MHz, `0x271`, error 0% |
+| Bad stop bit | 0 | Stop | The three samples are 0 | 1 | about 8.68 µs | Clear by reading SR, then DR |
 | Whole frame | — | 10 bits | — | — | about 86.8 µs | 39.0625 |
-| USART2 contrast | — | — | — | — | — | APB1, 36 MHz, `0x138`, about 0.16%. Not this USART1 |
-| IDLE | Stays high after the stop bit | — | — | 0 | One full frame, about 86.8 µs | Not the end of a protocol frame |
+| For contrast: USART2 | — | — | — | — | — | APB1, 36 MHz, `0x138`, about 0.16%. Not USART1 |
+| IDLE | Stays high after the stop bit | — | — | 0 | One full frame, about 86.8 µs | Not the end of the other side's packet |
 
-Do not put 0.16% back into the `0x271` cell. Source: [RM0008 section 27.3.3](#source-rm0008-usart).
+The 0.16% belongs only to the USART2 row. Source: [RM0008 section 27.3.3](#source-rm0008-usart).
 
 ## Pitfalls and sources
 
-| Symptom | Cause | What to do | Source | Claim this source may support |
+| Symptom | Cause | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The table says USART1 `0x271` is already off | That cell dropped the fraction, or it copied the USART2 row | At 72 MHz and 16×, with the fraction kept, the error is 0% | [RM0008 BRR](#source-rm0008-usart) | The divider result of `0x271` is 115200. This cell's error is 0% |
-| A bad stop bit still yields a byte, and then reception sticks | FE is set and the byte is still in DR; reading only DR does not clear the flag | Read SR, then DR, to clear FE | [RM0008 27.3.3](#source-rm0008-usart) | When FE is set the byte still enters DR; reading only DR does not clear the flag |
-| IDLE is treated as the end of the other side's packet | An idle line only means the wire is idle | Use a length or a protocol, not 86.8 µs as the frame boundary | [RM0008](#source-rm0008-usart) | IDLE is the line staying idle for one full frame time |
-| OVER8 is turned on to fix high-baud errors on F103 | This part does not have that bit | Check 72 MHz and `0x271` first; the error is 0% | [RM0008 CR1](#source-rm0008-usart) | CR1 bits 31:14 are reserved |
-| Circular DMA treats `Size` as the new bytes of this transfer | `Size` is the write position | Save the previous position, subtract, and handle the wrap | [STM32CubeF4 v1.28.3](#source-stm32cube-f4) | Only that Size is the write position in the v1.28.3 example. Not an F103 pin proof |
-| The application reads the DMA buffer once as one flat frame | The buffer is not one flat frame | Read only up to the DMA write position | [MaJerle USART DMA](#source-majerle-uart) | The restated ring-position boundary. Not a new baud rate or a new pin |
-| Half-transfer and IDLE seem to arrive as a pair every time | The timing in the post was not promoted to a manual number | Do not write the post's timing as a manual number; the idle length stays the 86.8 µs cell | [ST community thread](#source-st-uart-idle) | Experience only, not promoted to a specification. No new register value |
+| Some reference says USART1 `0x271` has an error | It dropped the fraction, or copied the USART2 row | At 72 MHz and 16×, with the fraction kept, the error is 0% | [RM0008 BRR](#source-rm0008-usart) | `0x271` divides to exactly 115200, error 0% |
+| A bad stop bit still yields a byte, then nothing more arrives | FE is set and the byte is still in DR; reading only DR does not clear FE | Read SR, then DR, to clear FE | [RM0008 27.3.3](#source-rm0008-usart) | When FE is set the byte still enters DR; reading only DR does not clear the flag |
+| IDLE is treated as the end of the other side's packet | IDLE only means the line is quiet | Find the packet end from a length field or the protocol, not from 86.8 µs | [RM0008](#source-rm0008-usart) | IDLE is the line staying idle for one full frame time |
+| OVER8 is turned on to reduce errors on the F103 | The F103 has no such bit | Check 72 MHz and `0x271` first; the error is already 0% | [RM0008 CR1](#source-rm0008-usart) | CR1 bits 31:14 are reserved |
+| Circular DMA treats `Size` as the new bytes of this transfer | `Size` is the DMA write position | Save the previous position, subtract, and handle the wrap | [STM32CubeF4 v1.28.3](#source-stm32cube-f4) | In that example Size is the write position. It is an F4 example and says nothing about F103 pins |
+| The application reads the DMA buffer as one flat frame | Data in a ring buffer can wrap to the start | Read from the previous position up to the current DMA write position | [MaJerle USART DMA](#source-majerle-uart) | How to handle read and write positions in a ring buffer. No baud rate or pin data |
+| Half-transfer and IDLE seem to arrive as a pair every time | That is an observation from a forum thread; the manual does not say so | Do not rely on that order; the idle length is still 86.8 µs | [ST community thread](#source-st-uart-idle) | Experience only, not promoted to a specification. No new register value |
+
 ## Learning goals
 - [ ] Describe a UART frame (start / data / parity / stop)
 - [ ] Compute BRR for 16× oversampling on this F103. This part has no OVER8
@@ -95,9 +96,11 @@ Do not put 0.16% back into the `0x271` cell. Source: [RM0008 section 27.3.3](#so
 
 ## Core ideas
 
-**Lead with the conclusion: UART is asynchronous. The two sides stay aligned only by the baud rate they agreed on, so the frame format and the baud error are the two keys.**
+UART has no clock wire. The receiver samples each bit with its own clock, so frame format, PCLK, and BRR must agree. Cycling through terminal baud rates alone does not locate the failing layer.
 
 ### 1. The frame
+
+UART has no clock wire, so each side keeps its own time. Every byte therefore starts with a low start bit, which works like calling out "here it comes". The receiver hears the falling edge, starts counting steps at the agreed rate, and looks at the line in the middle of each step. The 8 data bits go out lowest bit first. The high stop bit at the end returns the line to idle, so the next start bit has an edge to fall from.
 
 One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit + 0.5 / 1 / 1.5 / 2 stop bits
 
@@ -116,6 +119,8 @@ One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit 
 
 ### 2. Baud rate and error
 
+Two people agree to clap 115200 times a second and each keeps their own count. A frame is only 10 bits long. As long as the two clocks drift apart by less than half a step over those 10 bits, the receiver still samples near the middle of each bit. Half a step spread over 10 bits is about 5%. After the margin for sampling and edges, the usual budget is 2% to 3% of combined error. BRR tells the USART how many PCLK cycles make one step.
+
 - Baud rate is bits per second. 9600 and 115200 are the common ones.
 - Time per bit = 1 / baud rate. 115200 → about 8.68 µs.
 - **Error budget:** the accumulated error of both sides needs to stay under about ±2% to ±3% (a 10-bit frame, sampled at the middle of three points).
@@ -132,6 +137,8 @@ BRR on F1, 16× oversampling: `USARTDIV = fPCLK / (16 × baud)`, and BRR = integ
 > On this STM32F103C8T6, USART_CR1 bits 31:14 are reserved, so there is no OVER8. 8× oversampling means moving to a family that has that bit. On F103, do not switch OVER8 on to chase high-baud errors; check 72 MHz and BRR `0x271` first. `HAL_UART_Init` still computes BRR at 16×.
 
 ### 3. Three ways to send and receive
+
+The three modes differ in where the CPU waits. Blocking mode is standing at the door until the parcel comes, doing nothing else. Interrupt mode rings the doorbell once per byte, which at 115200 baud is more than ten thousand rings a second. DMA hires a butler: bytes go straight into an array, and you are called only when the whole packet is in or the line goes idle.
 
 | Dimension | Blocking (polling) | Interrupt (IT) | DMA |
 | --- | --- | --- | --- |
@@ -248,7 +255,7 @@ Variable-length receive with DMA + IDLE:
 
 ```c
 /* In circular DMA, Size in the callback is the write position, not this transfer's increment.
-   The call below starts the reception again. The position difference is in the source cards. */
+   The call below starts the reception again. How to work out the position difference is under Pitfalls and sources. */
 #define RX_BUF_SIZE 128
 uint8_t rx_buf[RX_BUF_SIZE];
 volatile uint16_t rx_len = 0;
@@ -284,9 +291,9 @@ The full project is in [`examples/uart-dma-idle/`](../../examples/uart-dma-idle/
 
 ## Hands-on labs
 
-1. **Lab 1 (echo):** USART1 at 115200 echoes. Whatever the serial terminal sends, it gets back.
-2. **Lab 2 (printf):** Redirect printf and print the core clock and a counter once a second.
-3. **Lab 3 (DMA+IDLE):** Receive a frame of unknown length. The terminal sends a string of any length, and the MCU echoes the whole frame (compare the bit timing in `uart-bits.gif`).
+1. **Lab 1 (wire waveform):** Send `0x55` on USART1 and measure the 10-bit 8N1 frame. At 115200 baud, one bit is about 8.68 µs and the frame about 86.8 µs. Confirm that TX and RX are crossed.
+2. **Lab 2 (peripheral state):** Set the terminal to the wrong baud rate and record the garbage plus FE. Restore 115200, read SR then DR to clear the flag, and confirm that RXNE changes again.
+3. **Lab 3 (memory result):** Receive 1, 17, and 255 bytes with DMA+IDLE. Record callback length, the first and last buffer bytes, and the complete echo. Chapter 10 explains how DMA updates the remaining count.
 
 ### 4. USART registers that matter (F1)
 
@@ -329,7 +336,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 ### 7. Overrun, and the RS485 direction pin
 
-**Conclusion:** once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
+Once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
 
 | Flag | Meaning | How to clear it |
 | --- | --- | --- |
@@ -347,7 +354,7 @@ while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET) { }
 HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_RESET);
 ```
 
-Motto: **ORE is SR first, then DR. On RS485, wait for TC before you turn around.**
+Before leaving this chapter, keep one `0x55` frame capture, the SR flags from a wrong-baud run, and memory records for the three DMA+IDLE lengths.
 
 Self-test:
 

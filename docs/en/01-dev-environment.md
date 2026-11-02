@@ -1,7 +1,7 @@
 # 01 Setting Up the Development Environment
 > 中文：[开发环境搭建](../01-开发环境搭建.md)
 
-> From nothing, install a setup that can compile, flash, and single-step an STM32.
+> The build says success, but the part does not run. Check the artifact, flash verification, reset entry, and the breakpoint in `main` separately so the first failed boundary is visible.
 
 <p align="center">
   <img src="../../assets/animations/boot-sequence.svg" width="760" alt="Boot and vector fetch after power-on reset">
@@ -35,33 +35,31 @@
 
 ## Principle and scope
 
-The debug and boot conclusion in this chapter is pinned to order code STM32F103C8T6 in LQFP48. Flash and SRAM are the same ledger as chapter file 02: 64 KB from `0x08000000`, 20 KB from `0x20000000`. The boot alias is the same ledger as chapter file 00. This chapter does not draw another BOOT table.
+Pin numbers and addresses in this chapter are for the STM32F103C8T6 in LQFP48. Memory matches chapter 02: 64 KB of Flash from `0x08000000` and 20 KB of SRAM from `0x20000000`. Chapter 00 already covers how the BOOT pins pick the boot area; this chapter only uses the result.
 
-After reset the debug port is pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 VSS_2 and pin 36 VDD_2 sit between them. Counting pin 35 as SWCLK is the failure path on the key figure. Pin 7 NRST is worth connecting. It is not a third SWD signal. Pin 44 is BOOT0. The signal names PA13/PA14 match chapter file 03. The package pin numbers are expanded only here. Leave SYS Debug on Serial Wire. After it is turned off, those two pins become ordinary GPIO and the next SWD connection fails. Pins: [DS5319 Rev 20 Table 5](#source-ds5319-swd).
+After reset the debug port is pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 VSS_2 and pin 36 VDD_2 sit between them, and pin 35 is the one people most often miscount as SWCLK. Connect pin 7 NRST as well, so the probe can hard-reset the chip when it cannot attach, but it is not an SWD signal. Pin 44 is BOOT0. In CubeMX, set SYS Debug to Serial Wire. With No Debug, the generated code initialises those two pins as ordinary GPIO, the debug port disappears as soon as the program runs, and the next SWD connection fails. Pins: [DS5319 Rev 20 Table 5](#source-ds5319-swd).
 
-With BOOT0=0, what the CPU reads at `0x00000000` is an alias of Flash at `0x08000000`. Word 0 is the initial MSP. Word 1, at `0x00000004`, is `Reset_Handler`. A peripheral IRQ entry is not `0x08000000 + 4×IRQn`. It is `VTOR + 4×(IRQn + 16)`. Keeping `.isr_vector` with `KEEP` stays in the core ideas. The two words: [PM0056 vector table](#source-pm0056-vector).
+With BOOT0=0, what the CPU reads at `0x00000000` is an alias of Flash at `0x08000000`. Word 0 is the initial MSP. Word 1, at `0x00000004`, is `Reset_Handler`. A peripheral IRQ entry is not `0x08000000 + 4×IRQn`. It is `VTOR + 4×(IRQn + 16)`. Why the linker script wraps `.isr_vector` in `KEEP` is in the core ideas below. The two words are defined in [PM0056 vector table](#source-pm0056-vector).
 
-BOOT1=0 and BOOT0=1: the CPU still reads `0x00000000` and gets system memory at `0x1FFFF000`. The program in Flash is still there. It is just not being fetched. SRAM boot needs BOOT1=1 and BOOT0=1, from `0x20000000`. The sentence "BOOT0=1 boots from SRAM" is void. Replace it with these two lines. Do not redraw the chapter 00 figure. Alias: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
+BOOT1=0 and BOOT0=1: the CPU still reads `0x00000000` and gets system memory at `0x1FFFF000`. The program in Flash is still there. It is just not being fetched. SRAM boot needs BOOT1=1 and BOOT0=1, from `0x20000000`. So "BOOT0=1 means SRAM" is wrong; it depends on BOOT1. Alias: [RM0008 Rev 21 Table 9](#source-rm0008-boot).
 
-Unprotected readout is RDP = `0xA5`, not `0xAA`. The manual prints that key as `0x00A5`. The low byte is still `0xA5`. Clearing protection mass-erases main Flash. `0xAA` and `0xCC` are void on this part. If the option-byte screen only shows Level 0, still write that the byte is `0xA5`. See [PM0075](#source-pm0075-rdp).
+Unprotected readout is RDP = `0xA5`, not `0xAA`. The manual prints that key as `0x00A5`. The low byte is still `0xA5`. Clearing protection mass-erases main Flash. F4 notes often show `0xAA` (unprotected) and `0xCC` (permanent protection); on the C8 those values mean nothing, because F1 does not use them. If the tool only shows Level 0, the byte actually written to the option bytes is `0xA5`. See [PM0075](#source-pm0075-rdp).
 
-This C8 is 64 KB of Flash and 20 KB of SRAM. The xB 128 KB is void. `LENGTH = 64K` and `LENGTH = 20K` in the linker script are the same ledger.
+The C8 has 64 KB of Flash and 20 KB of SRAM. 128 KB is the F103CB (xB); do not copy it. The linker script says `LENGTH = 64K` and `LENGTH = 20K` to match.
 
-The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only in the remap column. It is not PA13 and it is not PA14. ITM printing stays in the core ideas and off the normal path of the key figure. Do not redraw chapter 17's `debug-swo.svg`.
+The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only in the remap column. It is not PA13 and it is not PA14, so SWO is unavailable with only the two SWD wires connected. ITM printing is covered in the core ideas and in chapter 17.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-01-swd-vectors.svg" width="760" alt="SWCLK is on pin 37; with BOOT0=0 word 0 is the stack and word 1 is reset; the unprotected byte is 0xA5">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 is VSS_2 and pin 36 is VDD_2. With pin 44 BOOT0 = 0, 0x00000000 aliases 0x08000000. Word 0 is the MSP and word 1 is Reset_Handler. The failure is those two pins reused as GPIO, or pin 35 counted as SWCLK. BOOT1=0 and BOOT0=1 fetches 0x1FFFF000, not SRAM. The unprotected byte is 0xA5. 0xAA is void. Sources: [DS5319 Rev 20 Table 5](#source-ds5319-swd), [the PM0056 vector table](#source-pm0056-vector), and [PM0075's 0xA5](#source-pm0075-rdp).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 is VSS_2 and pin 36 is VDD_2. With pin 44 BOOT0 = 0, 0x00000000 aliases 0x08000000. Word 0 is the MSP and word 1 is Reset_Handler. The figure marks two ways to lose the connection: those two pins reused as GPIO, or pin 35 counted as SWCLK. BOOT1=0 and BOOT0=1 fetches 0x1FFFF000, not SRAM. The unprotected byte is 0xA5, not 0xAA. Sources: [DS5319 Rev 20 Table 5](#source-ds5319-swd), [the PM0056 vector table](#source-pm0056-vector), and [PM0075's 0xA5](#source-pm0075-rdp).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/swd-fetch.gif" width="640" alt="After SWD writes Flash, the CPU reads the MSP and Reset_Handler">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the normal path: SWD finishes writing Flash, the CPU reads the MSP and Reset_Handler, and pins 34 and 37 are marked. Print uses the static figure. GPIO reuse and 0xAA are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows one normal run: SWD finishes writing Flash, the CPU reads the MSP and Reset_Handler, and pins 34 and 37 are marked. The printed book has only the static figure above.</sub>
 </p>
-
-`boot-sequence.svg` stays a side figure. Without playing it, the pin numbers, the two words, and the failed connection are all on the static figure.
 
 ## Timing and state
 
@@ -74,18 +72,18 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
 | Failure: system memory | BOOT1=0 and BOOT0=1 | `0x1FFFF000` | Not SRAM. The program in Flash is still there and is not fetched |
 | SRAM | BOOT1=1 and BOOT0=1 | `0x20000000` | Both BOOT pins must be 1 |
 | IRQ | Peripheral interrupt | `VTOR + 4×(IRQn + 16)` | Not `0x08000000 + 4×IRQn` |
-| Size | C8 | 64 KB Flash, 20 KB SRAM | 128 KB is void on this part |
+| Size | C8 | 64 KB Flash, 20 KB SRAM | 128 KB is the xB size |
 
-This table does not include toolchain menus. Pin 35 is VSS_2, pin 36 is VDD_2, and pin 7 is NRST.
+This table lists hardware state only. Pin 35 is VSS_2, pin 36 is VDD_2, and pin 7 is NRST.
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | After one flash you can never connect | PA13/PA14 were set as GPIO | Leave Debug on Serial Wire, on pin 34 and pin 37 | [DS5319](#source-ds5319-swd) | LQFP48 pin 34 is PA13/SWDIO and pin 37 is PA14/SWCLK. Pin 35 is VSS_2 |
 | The probe is on the pin next to PA13 and there is no clock | Pin 35 was counted as SWCLK | Keep the probe off pins 35 and 36 (VSS_2/VDD_2 stay on ground and supply); move SWCLK to pin 37 | [DS5319](#source-ds5319-swd) | Pin 35 is VSS_2, pin 36 is VDD_2, and pin 37 is SWCLK. Those two supply pins must not float |
 | BOOT0 high runs neither the Flash program nor SRAM | BOOT1 is still 0 | That is system memory while BOOT1=0. SRAM needs both BOOT pins high | [RM0008](#source-rm0008-boot) | BOOT1=0 and BOOT0=1 aliases `0x1FFFF000`. SRAM boot also needs BOOT1=1 |
-| Choosing `AA` leaves the part protected, or the erase does not match | The unprotected key is not `0xAA` | Write the unprotected key as `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` is what allows readout. Programming it back mass-erases first. `0xAA` is void on this part |
+| Choosing `AA` leaves the part protected, or the erase does not match | The unprotected key is not `0xAA` | Write the unprotected key as `0xA5`. Clearing it mass-erases main Flash | [PM0075](#source-pm0075-rdp) | RDP `0xA5` is what allows readout. Programming it back mass-erases first. `0xAA` is not the F1 unprotected value |
 | Word 0 of the vector table was treated as the reset entry | Word 0 is the stack | Word 0 is the MSP. Word 1 is `Reset_Handler` | [PM0056](#source-pm0056-vector) | Item 0 is the initial stack. Item 1 is reset. An IRQ entry adds the 16 system exceptions first |
 
 ## Learning goals
@@ -96,7 +94,7 @@ This table does not include toolchain menus. Pin 35 is VSS_2, pin 36 is VDD_2, a
 
 ## Core ideas
 
-**Lead with the conclusion: whichever IDE you use, the toolchain underneath is the same path — compile → link → flash → reset and run.**
+The IDE can change; the acceptance order does not. Confirm the ELF/AXF, verify the programmed image, and then check that reset reaches `main`.
 
 ### 1. Toolchain data flow
 
@@ -115,6 +113,8 @@ Flash 0x08000000
    ▼
 CPU fetches the vector table → Reset_Handler → main()
 ```
+
+The build log must answer two questions: which cross-compiler ran, and where it wrote the ELF/AXF. Without an artifact path, flashing has not started yet.
 
 ### 2. Power-on boot (the animation above)
 
@@ -137,7 +137,12 @@ CPU fetches the vector table → Reset_Handler → main()
 | Platforms | Windows only | Win / Linux / mac | All of them | All of them |
 | Fits | Teaching, older company projects | What ST recommends, beginners | Tinkerers, CI automation | People who live in C/C++ |
 
-**How to choose: beginners use STM32CubeIDE (free, and CubeMX is built in). If you already have a Keil license, use Keil. If you want the command line or CI, use PlatformIO.**
+STM32CubeIDE is a practical first project. Keep Keil for an existing Keil codebase. For command-line and CI builds, make CLion, VS Code, and CI call the same CMake Preset. PlatformIO has its own package and build model; do not maintain a second list of sources, defines, and linker options beside it.
+
+<p align="center">
+  <img src="../../assets/diagrams/single-build-contract.svg" width="820" alt="CubeIDE, VS Code, CLion, and CI share one CMake Preset and produce the same ELF, map, and bin set">
+  <br><sub>▲ Keep one set of build facts: sources, defines, include paths, toolchain, and linker script come from one entry point. The IDE calls it; the ELF, map, and bin serve debugging/programming, memory review, and raw binary delivery (FA-002 · IG-012 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 4. A normal project tree
 
@@ -150,7 +155,7 @@ STM32F103C8TX_FLASH.ld           ← linker script (GCC)
 <project>.ioc                    ← CubeMX project file
 ```
 
-The tree is drawn in [`assets/diagrams/project-structure.svg`](../../assets/diagrams/project-structure.svg) (vector drawing by the author).
+A project does not improve by gaining more folders. Version the sources, startup file, linker script, dependency versions, and reproducible build entry. Temporary files under `build/` can be recreated.
 
 ### 5. Generating a project in STM32CubeMX, end to end
 
@@ -170,16 +175,49 @@ The tree is drawn in [`assets/diagrams/project-structure.svg`](../../assets/diag
 
 ### 6. Compile, flash, and debug
 
-| Action | Keil | CubeIDE |
+| Action | Keil | CubeIDE | CLion + CMake | VS Code + CMake |
+| --- | --- | --- | --- | --- |
+| Compile | F7 / Build | Ctrl+B | Select a CMake Preset, then Build | `Ctrl+Shift+B` calls the CMake task |
+| Flash | F8 / Download | Run → Debug | OpenOCD Download & Run | Cortex-Debug launch configuration |
+| Debug | Ctrl+F5 / Start Debug | F11 / Debug | OpenOCD + `arm-none-eabi-gdb` | Cortex-Debug + OpenOCD |
+| Reset and run | Reset button | Run button | Run configuration | Run and Debug configuration |
+
+### CLion: CMake defines the build; the IDE calls it
+
+The complete build entry is [`examples/spl-f1-blink/`](../../examples/spl-f1-blink/). Its CLI, CLion, and VS Code routes share one `CMakePresets.json`, GNU Arm toolchain file, linker script, and OpenOCD configuration.
+
+1. Install GNU Arm Embedded, CMake, Ninja, and OpenOCD. Check `arm-none-eabi-gcc --version` and `openocd --version` first.
+2. Set the dependency root used by the example (`SPL_ROOT` for the pinned SPL V3.5.0), and open CLion from that environment.
+3. Select the `BluePill SPL Debug` preset. The configure log must identify `arm-none-eabi-gcc`, and the result must be an ELF rather than a host `.exe`.
+4. Create an **OpenOCD Download & Run** configuration with the CMake target, the ELF, `openocd/bluepill-stlink.cfg`, and `arm-none-eabi-gdb`.
+5. Run means build → program → verify → reset. Debug also starts OpenOCD on port 3333, loads the same ELF in GDB, and stops in `main`.
+
+### VS Code: a task builds; Cortex-Debug debugs
+
+1. Install C/C++, CMake Tools, and Cortex-Debug. Start `code .` from a terminal that already has the dependency environment.
+2. `.vscode/tasks.json` should call `cmake --preset debug` and `cmake --build --preset debug`; do not copy compiler flags into JSON.
+3. `.vscode/launch.json` declares the ELF, OpenOCD configuration, `arm-none-eabi-gdb`, and the pre-launch build task.
+4. Run `Ctrl+Shift+B` first, then start Cortex-Debug. Separate checks distinguish compile errors, linker-script errors, and probe errors.
+5. If CMake builds but IntelliSense still shows errors, run `CMake: Configure` so the language service reads the compilation database.
+
+| Symptom | First boundary | What to do |
 | --- | --- | --- |
-| Compile | F7 / Build | Ctrl+B |
-| Flash | F8 / Download | Run → Debug (downloads automatically) |
-| Debug | Ctrl+F5 / Start Debug | F11 / Debug |
-| Reset and run | Reset button | Run button |
+| The dependency root is empty | The IDE did not inherit the environment | Start it from the configured terminal, or set the variable in the CMake profile |
+| The build produced a host `.exe` | The toolchain file did not load | Remove that build directory, configure with the preset, and inspect compiler identification |
+| Linking reports duplicate interrupt handlers | Two files strongly define the same IRQ | Keep one owner; the SPL example uses its own `stm32f10x_it.c` |
+| The ELF exists but OpenOCD cannot connect | The failure is past the build boundary | Check power, SWD wiring, target config, and ST-Link firmware |
+| Programming succeeds but reset misses `main` | Startup, linker script, or boot path | Check the vector table, `Reset_Handler`, Flash/RAM regions, and BOOT0 |
+
+Official entry points: [CLion embedded development](https://www.jetbrains.com/help/clion/embedded-overview.html), [CLion OpenOCD support](https://www.jetbrains.com/help/clion/openocd-support.html), and [PlatformIO for VS Code](https://docs.platformio.org/en/stable/integration/ide/vscode.html).
+
+<p align="center">
+  <img src="../../assets/diagrams/project-structure.svg" width="820" alt="STM32 project boundaries among CubeMX configuration, user code, drivers, startup, linker script, and build artifacts">
+  <br><sub>▲ Project boundary: the `.ioc`, sources, startup file, and linker script determine the ELF. The `.map` records sections and symbols; the `.bin` is a raw delivery image. The directory names are a common organization, not a rule imposed by CubeMX, Keil, or CMake (FA-002 · IG-002 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### Clearing readout protection
 
-Toolchain menus stay here and do not enter the four blocks. The unprotected byte is `0xA5`, not `0xAA`. `0xAA` is void on STM32F103C8T6. Clearing protection mass-erases main Flash.
+The unprotected byte is `0xA5`, not `0xAA`. `0xAA` is how F4 and later series write it; STM32F103C8T6 does not accept it. Clearing protection mass-erases main Flash.
 
 1. STM32CubeProgrammer → choose ST-LINK, then Connect.
 2. On the left, `Option bytes` → write Read Out Protection as `0xA5`. If the UI only shows Level 0, still write that the byte is `0xA5`.
@@ -199,14 +237,14 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
 
 | ST-Link pin | Board pin | Signal | Notes |
 | --- | --- | --- | --- |
-| 3.3V | 3V3 | Power | Optional (the board can also take USB power) |
+| 3.3V | 3V3 | Power | Do not connect it in this lab; Micro-USB powers the BluePill |
 | GND | GND | Ground | **Must be connected**, common ground |
 | SWDIO | PA13 | Data | Bidirectional data |
 | SWCLK | PA14 | Clock | Debug clock |
 | RST | NRST | Reset | Worth connecting; flashing is more reliable |
 | 5V | — | — | Usually unused |
 
-> Clone ST-Link V2 boards often use a 10-pin header. Read the silkscreen. SWD needs only four wires (3V3/GND/SWDIO/SWCLK). NRST is optional.
+> Connect GND, SWDIO, SWCLK, and optional NRST. On clone probes the 3.3 V pin may be an output; do not parallel it with the BluePill's USB supply.
 
 ### ST-Link driver and firmware
 
@@ -253,22 +291,23 @@ static void MX_GPIO_Init(void)
 }
 ```
 
-Compile and download from the command line (GCC + OpenOCD, which is what CI wants):
+The repository's `examples/spl-f1-blink/` uses the same CMake Preset from the CLI, CLion, VS Code, and CI:
 
 ```bash
-# 1) compile (a project generated by PlatformIO or a Makefile)
-pio run
+# 1) configure and build
+cmake --preset debug
+cmake --build --preset debug
 
-# 2) flash the .elf into Flash with OpenOCD
+# 2) program the same ELF, verify it, and reset
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
-  -c "program build/firmware.elf verify reset exit"
+  -c "program build/debug/spl-f1-blink.elf verify reset exit"
 ```
 
 ## Hands-on labs
 
 1. **Lab 1 (the environment works):** Generate a project in CubeMX, compile it, and download it to a BluePill. The onboard LED blinks at 1 Hz.
 2. **Lab 2 (single-step):** Break on `HAL_GPIO_TogglePin` and watch `GPIOC->ODR` change in the debug window.
-3. **Lab 3 (reproduce the failure):** Set SYS Debug to Disable once, generate, and feel what "cannot connect" is like. Recover with connect-under-reset and a mass erase.
+3. **Lab 3 (connection boundary):** Power down, disconnect SWCLK, power up, and record the connection error. Power down again, restore SWCLK, and confirm that the probe can read the Device ID. Do not change option bytes or erase Flash.
 
 ### 7. The project files that matter
 
@@ -288,11 +327,11 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
 | Breakpoint | Break on a suspicious line and look at variables and registers |
 | Watch | Add globals and locals to the Watch window |
 | Registers | Open Peripherals → GPIO and the other peripheral windows |
-| SWO/ITM print | Print without using the UART; see the code below |
+| SWO/ITM print | Connect PB3/TRACESWO to a probe that supports SWO; SWDIO and SWCLK alone are not enough |
 | Disassembly | Look at the assembly for the C, and see what the optimizer did |
 
 ```c
-/* SWO/ITM print: only the SWO pin of SWD, does not take the UART */
+/* SWO/ITM print: connect PB3/TRACESWO; this does not use the UART */
 int _write(int fd, char *ptr, int len)
 {
     for (int i = 0; i < len; i++) ITM_SendChar(ptr[i]);
@@ -304,7 +343,7 @@ int _write(int fd, char *ptr, int len)
 
 | Error | Cause | Fix |
 | --- | --- | --- |
-| `Flash Download failed` | Clock was not configured, or the algorithm was not selected | In Keil, pick the right Flash algorithm |
+| `Flash Download failed` | The target or Flash algorithm does not match | Check the part capacity and select the matching Keil algorithm |
 | `Cannot access target` | Target lost power or is in reset | Check power and NRST |
 | `No STM32 target found` | Cable or driver | Try another USB port and reinstall the driver |
 | `Core is locked up` | An illegal address was touched | Check pointers and stack overflow |
@@ -317,9 +356,9 @@ int _write(int fd, char *ptr, int len)
 | F103RC | STM32F10x High-density | 256KB |
 | F401 | STM32F4xx | — |
 
-### 11. The startup file gets the house in order
+### 11. Who moves `.data` before `main`
 
-**Conclusion:** after reset the CPU reads two words from `0x00000000`. The first is the MSP. The second is `Reset_Handler`. With BOOT0=0, that address is an alias of Flash at `0x08000000`, not a separate memory.
+After reset the CPU reads two words from `0x00000000`. The first is the MSP. The second is `Reset_Handler`. With BOOT0=0, that address is an alias of Flash at `0x08000000`, not a separate memory.
 
 Current Cube startup order (trust the `startup_*.s` in your project; some older projects copy data first):
 
@@ -333,9 +372,9 @@ Current Cube startup order (trust the `startup_*.s` in your project; some older 
 
 A peripheral interrupt does not enter at `0x08000000 + 4×IRQn`. Sixteen system exceptions sit in front of the vector table, so the entry address is `VTOR + 4×(IRQn + 16)`.
 
-### 12. The linker script stakes out the ground
+### 12. The linker script decides where code may live
 
-**Conclusion:** F103C8 Flash is 64 KB, starting at `0x08000000`. SRAM is 20 KB, starting at `0x20000000`. The stack grows down from the top of RAM.
+F103C8 Flash is 64 KB, starting at `0x08000000`. SRAM is 20 KB, starting at `0x20000000`. The stack grows down from the top of RAM.
 
 ```ld
 MEMORY
@@ -348,7 +387,7 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);
 
 `.isr_vector` needs `KEEP`. Otherwise the linker throws away a vector table that C never references, and the chip flies off at power-up.
 
-Motto: **item 0 is the stack, and item 1 is reset. Clock first, then copy .data, then clear .bss.**
+Before leaving this chapter, read the first two vector-table words in the debugger, explain where `.data` and `.bss` go, and use the map file to confirm that Flash and RAM fit.
 
 Self-test:
 

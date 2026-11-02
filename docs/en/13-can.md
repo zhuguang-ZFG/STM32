@@ -2,7 +2,7 @@
 
 > 中文：[CAN 总线](../13-CAN总线.md)
 
-> CAN uses a differential pair and non-destructive arbitration so many nodes can share one reliable bus. It is the classic network in cars and industrial control.
+> Loopback can prove the bxCAN transmit/receive path, but not the transceiver, termination, or differential bus. A two-node test must also reconcile CAN_H/CAN_L, ESR counters, and receive-FIFO data.
 
 <p align="center">
   <img src="../../assets/animations/can-arbitration.svg" width="760" alt="CAN non-destructive arbitration and bit stuffing">
@@ -36,57 +36,57 @@
 
 ## Principle and scope
 
-Bit time and the working pins are fixed on STM32F103C8T6. The CAN1 kernel clock is the 36 MHz APB1 clock, the same account as chapter file 02. The working point is copied from the compass: prescaler 9, BS1 = 5, BS2 = 2, SJW = 1. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).
+Bit timing and pins in this chapter are for the STM32F103C8T6. CAN1 sits on APB1 at 36 MHz, the same clock setup as chapter 02. The working point is prescaler 9, BS1 = 5, BS2 = 2, SJW = 1. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).
 
-One time quantum is `Tq = 9 / 36e6 = 250` ns. One synchronization quantum, plus BS1 of 5, plus BS2 of 2, is 8. The bit lasts `8 × 250 ns = 2` µs, which is 500 kbit/s. The sample point is `(1 + 5) / 8 = 75%`, at 1.5 µs. That is the normal path.
+One time quantum is `Tq = 9 / 36e6 = 250` ns. A bit is one synchronization quantum, plus 5 for BS1, plus 2 for BS2: 8 quanta. The bit lasts `8 × 250 ns = 2` µs, which is 500 kbit/s. The sample point is at `(1 + 5) / 8 = 75%`, 1.5 µs into the bit.
 
-Ten quanta at a 70% sample point (BS1 = 6, BS2 = 3) wants a prescaler of 7.2, which is not an integer. Writing 8 gives `36e6 / (8 × 10) = 450` kbit/s. That is the failure path. The 1 Mbit/s row stays in the core ideas and is not this section's working point.
+Before changing the segment counts, check that the prescaler comes out whole. Ten quanta at a 70% sample point (BS1 = 6, BS2 = 3) needs `36e6 / (500e3 × 10) = 7.2`, which is not an integer. Writing 8 instead gives `36e6 / (8 × 10) = 450` kbit/s. That no longer matches a 500 kbit/s peer, and both ends report errors. The 1 Mbit/s setting is covered in the core ideas below.
 
-On a BluePill the first remap is the working pair: pin 45 PB8 = CAN_RX, pin 46 PB9 = CAN_TX. The reset default is pin 32 PA11 = CAN_RX and pin 33 PA12 = CAN_TX. That pair is the normal path of the USB chapter. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).
+A BluePill uses the first remap: pin 45 PB8 = CAN_RX, pin 46 PB9 = CAN_TX. The reset default is pin 32 PA11 = CAN_RX and pin 33 PA12 = CAN_TX, but those two pins are also USB D− and D+, which chapter 14 needs. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).
 
-Pin 5 PD0 and pin 6 PD1 exist on LQFP48. They are the HSE pins. Remapping CAN onto them stops the 8 MHz crystal. See [DS5319](#source-ds5319-clock). RM0008 section 9.3.3 says the port D remap is not available on 36-pin, 48-pin, and 64-pin packages. Pin 45 and pin 46 are also the I2C1 remap from chapter file 07. This figure does not draw CAN and I2C active together. See [DS5319](#source-ds5319-i2c).
+The second remap is pin 5 PD0 and pin 6 PD1. On LQFP48 those pins carry the HSE crystal, so moving CAN there stops the 8 MHz crystal. See [DS5319](#source-ds5319-clock). RM0008 section 9.3.3 also says 36-pin, 48-pin, and 64-pin packages cannot remap CAN to port D. Pins 45 and 46 are also the I2C1 remap from chapter 07, so one project can give them to CAN or to I2C, not both. See [DS5319](#source-ds5319-i2c).
 
-Each end of the bus has one 120 Ω resistor between CANH and CANL. PB8 and PB9 enter the transceiver RXD and TXD. Only the transceiver drives CANH and CANL. Two 120 Ω resistors in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance.
+PB8 and PB9 do not go straight onto the bus. They connect to the transceiver's RXD and TXD, and the transceiver drives CANH and CANL. Each end of the bus has one 120 Ω resistor between CANH and CANL. The two in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance; the cable is about 120 Ω, and the terminators are chosen to match it.
 
-A single node that is not in loopback gets no acknowledge. The transmit error counter reaches 256 and the node stops driving the bus. Recovery is 128 times 11 consecutive recessive bits. In a 32-bit mask, a standard ID written to `FilterIdHigh` is shifted left by 5. Without that shift the bus can carry frames while the mailbox stays empty. Fourteen filter banks and two FIFOs stay in the boundary. See [examples in this repo](#source-project-examples).
+A node alone on the bus and not in loopback gets no acknowledge for its frames. The transmit error counter keeps rising, and at 256 the node goes bus-off and stops driving the bus. Recovery waits for 128 occurrences of 11 consecutive recessive bits. With a 32-bit mask filter, a standard ID written to `FilterIdHigh` must be shifted left by 5. Without the shift, frames are on the bus but the mailbox stays empty. The F103 has 14 filter banks and 2 receive FIFOs. See [examples in this repo](#source-project-examples).
 
-The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter file 14. The connectivity table prints `USB_LP_CAN1_RX0`. Do not link the two examples into one project. See [RM0008](#source-rm0008-usb).
+The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB in chapter 14 shares the same vector. Only the connectivity-line table calls it `USB_LP_CAN1_RX0`. So do not link the CAN and USB examples into one project. See [RM0008](#source-rm0008-usb).
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-bit.svg" width="760" alt="At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. The working pins are pin 45 and pin 46.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The normal path is eight 250 ns quanta, a 75% sample point, 2 µs, 500 kbit/s, prescaler 9, SJW = 1. The 120 Ω resistors sit on CANH and CANL. The failure path is prescaler 8, ten quanta, 450 kbit/s, and a 70% sample point. The working pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the correct setup: eight 250 ns quanta, a 75% sample point, a 2 µs bit, 500 kbit/s, prescaler 9, SJW = 1, and 120 Ω between CANH and CANL. The lower half is the wrong setup: prescaler 8 and ten quanta give 450 kbit/s with a 70% sample point. The pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/can-500k.gif" width="640" alt="Eight quanta cross 2 µs and the sample point is at 75%">
-  <br><sub>▲ Auxiliary figure for the web and for posts. It plays only the normal path: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. Print from the static figure. 450 kbit/s and the crystal pins are not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only the correct setup: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. The printed book has only the static figure above.</sub>
 </p>
 
-`can-arbitration.svg` stays as an auxiliary figure. Arbitration and bit stuffing are not on this static figure.
+Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of the chapter.
 
 ## Timing and state
 
 | Prescaler | BS1 | BS2 | Quanta | Bit time | Rate | Sample point |
 | --- | --- | --- | --- | --- | --- | --- |
-| 9 | 5 | 2 | 8 | 2 µs | 500 kbit/s | 75%. Quantum 250 ns. Normal |
-| 8 | 6 | 3 | 10 | not 2 µs | 450 kbit/s | 70%. Failure |
+| 9 | 5 | 2 | 8 | 2 µs | 500 kbit/s | 75%. Quantum 250 ns. Correct |
+| 8 | 6 | 3 | 10 | 2.22 µs | 450 kbit/s | 70%. Does not match the peer |
 | Pins | PB8 receives | PB9 transmits | pin 45 and pin 46 | — | — | PA11/PA12 conflict with USB |
 | Errors | count reaches 256 | bus-off | 128 times | 11 recessive bits each time | — | only then may the node drive again |
 | Filter | `FilterIdHigh` | shift left by 5 | — | — | — | without the shift the mailbox stays empty |
 
 ## Pitfalls and sources
 
-| What you see | Why | What to do | Source | Claim this source may support |
+| What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
-| The scope or analyzer shows 450 kbit/s | The prescaler and the segment counts used the row that does not divide | Use prescaler 9, BS1 5, and BS2 2 | [RM0008](#source-rm0008-can) | Eight quanta and prescaler 9 is 500 kbit/s at 36 MHz. Ten quanta with prescaler 8 is 450 kbit/s |
-| One node in normal mode goes silent after a few frames | There is no acknowledge, so the transmit error counter fills | Start in loopback. On a real bus, provide a node that acknowledges | [RM0008](#source-rm0008-can) | A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits |
+| The scope or analyzer shows 450 kbit/s | The prescaler and segment counts do not divide evenly | Use prescaler 9, BS1 5, and BS2 2 | [RM0008](#source-rm0008-can) | Eight quanta and prescaler 9 is 500 kbit/s at 36 MHz. Ten quanta with prescaler 8 is 450 kbit/s |
+| One node in normal mode stops sending after a few frames | There is no acknowledge, so the transmit error counter fills | Start in loopback. On a real bus, have a node that acknowledges | [RM0008](#source-rm0008-can) | A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits |
 | Frames are on the bus and the mailbox is empty | The standard ID was not shifted | Shift left by 5 when writing `FilterIdHigh` | [examples in this repo](#source-project-examples) | `examples/can-bxcan` fills `FilterIdHigh` with `PEER_ID << 5`. The prescaler macro is 9 |
-| Both ends report errors | The bit timing differs, or the terminators are not at the two ends | Use one bit timing, and put 120 Ω between CANH and CANL at each end | [examples in this repo](#source-project-examples) | The example asks for one 120 Ω resistor at each end. This row does not set a cable impedance and does not set the transceiver supply at 5 V or 3.3 V |
+| Both ends report errors | The bit timing differs, or the terminators are not at the two ends | Use one bit timing, and put 120 Ω between CANH and CANL at each end | [examples in this repo](#source-project-examples) | The example asks for one 120 Ω resistor at each end. It does not set a cable impedance or a 5 V versus 3.3 V transceiver |
 | The waveform is on PA11/PA12 and USB also fails | The pins are still the reset default | Remap to pin 45 and pin 46 | [DS5319](#source-ds5319-usbcan) | Reset-default CAN is on PA11/PA12. PB8/PB9 is the remap. PA11/PA12 are also USB |
-| The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT. Both pins exist |
-| I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Choose either CAN or I2C on that pair | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap. Do not redraw the chapter 07 figure |
+| The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT |
+| The I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Give that pair to either CAN or I2C | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap |
 
 ## Learning goals
 
@@ -98,7 +98,11 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 ## Core ideas
 
+Debug CAN in three layers: controller state, transceiver and bus electrical behavior, and the frame delivered to the application. A log saying “received 0x123” does not prove sample point, termination, or recovery.
+
 ### 1. Physical layer: differential, dominant, recessive
+
+CAN sends each bit on two twisted wires and looks at the voltage between them, not at either wire on its own. Noise from outside hits both wires at once and leaves the difference alone, which is why CAN runs tens or hundreds of meters in cars and factories full of electrical noise. A difference of about 2 V is dominant and means 0. A difference near 0 is recessive and means 1. If any one node sends dominant, the whole bus is dominant.
 
 **Takeaway:** CAN rides on `CAN_H` / `CAN_L`. **Dominant means logic 0, recessive means logic 1.** Dominant overwrites recessive (wired-AND). That is the whole of arbitration.
 
@@ -113,6 +117,8 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 ### 2. Stuffing, CRC, ACK
 
+The receiver has no clock wire and keeps time from the edges in the data. If many identical bits go out in a row, the line sits without an edge and the receiver's clock slowly drifts. So CAN inserts an opposite bit after 5 identical bits, and the receiver removes it again. The CRC checks that nothing was garbled. ACK means any node on the bus that received the frame correctly presses down on the acknowledge bit, telling the sender "someone got it".
+
 | Mechanism | Job | Rule |
 | --- | --- | --- |
 | Bit stuffing | Enough edges for resync | After five identical levels, insert one opposite bit (the fixed stuff before the CRC delimiter is the exception) |
@@ -121,6 +127,8 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 | Error counters | Isolate a bad node | TEC/REC. Past the thresholds the node becomes error-passive, then bus-off |
 
 ### 3. Frame types and IDs
+
+A CAN frame has no recipient. It says what the message is about, and that is the ID. For example, 0x100 might mean engine speed. Every node hears it and decides for itself whether to keep it. A standard frame has an 11-bit ID, an extended frame has 29 bits, and a frame carries at most 8 bytes of data.
 
 | Frame | Use |
 | --- | --- |
@@ -136,6 +144,8 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 ### 4. Non-destructive arbitration
 
+When several nodes start talking at once, each one listens to the bus while it sends its ID. Dominant overrides recessive, so the side whose ID has the first 0 wins. The loser notices "I sent a 1 but the bus shows 0", goes quiet at once, switches to receiving, and tries again when the bus is free. The winner is never disturbed, and not one bit of its message is damaged. The lower the ID, the higher the priority.
+
 **Takeaway:** When several nodes start together, they arbitrate **bit by bit**. A node that sent recessive but sees dominant drops out and listens. The winner's frame is **not corrupted**. **A numerically smaller ID has higher priority.**
 
 | Standard ID | Priority | Typical use |
@@ -149,6 +159,8 @@ The medium-density table prints `USB_LP_CAN_RX0` for the same vector as chapter 
 
 ### 5. Baud rate and sample point
 
+CAN splits each bit into small slices called Tq. The first slice lines up with the edge. The rest is split into BS1 before the sample point and BS2 after it. The sample point sits between 75% and 87.5% of the bit so that the signal has time to travel the bus and settle before it is read. Every node on the bus must use the same baud rate and sample point.
+
 **Takeaway:** One bit is `SYNC_SEG (1 Tq)` + `BS1` + `BS2`. The sample point is usually **75% to 87.5%**.
 
 ```text
@@ -161,13 +173,13 @@ On **F1, APB1 = 36 MHz**:
 
 | Target | Prescaler | BS1 | BS2 | Sample | Note |
 | --- | --- | --- | --- | --- | --- |
-| 1 Mbps | 4 | 5 Tq | 3 Tq | 66.7% | 36 MHz / (4×9) = 1 MHz, short cable |
+| 1 Mbps | 3 | 8 Tq | 3 Tq | 75% | 36 MHz / (3×12) = 1 MHz, short cable |
 | 500 kbps | 9 | 5 Tq | 2 Tq | 75% | 36 MHz / (9×8) = 500 kHz |
 | 250 kbps | 18 | 5 Tq | 2 Tq | 75% | Double the prescaler |
 | 125 kbps | 36 | 5 Tq | 2 Tq | 75% | Long cable |
 | 100 kbps | 45 | 5 Tq | 2 Tq | 75% | 36 MHz / (45×8) = 100 kHz |
 
-> A 70% sample point (BS1=6, BS2=3, 10 TQ) wants a prescaler of 7.2 for 500 kbit/s. That is not an integer. The table uses 8 TQ and a 75% sample point, which divides evenly. [`examples/can-bxcan`](../../examples/can-bxcan/) uses the 500 kbit/s row. The 1 Mbps row samples at 66.7%. The sentence "sample around 75% to 87.5%" does not cover that row. The four sections use only the 500 kbit/s working point.
+> A 70% sample point (BS1=6, BS2=3, 10 TQ) wants a prescaler of 7.2 for 500 kbit/s. That is not an integer. The table uses 8 TQ and a 75% sample point, which divides evenly. [`examples/can-bxcan`](../../examples/can-bxcan/) uses the 500 kbit/s row. The 1 Mbps row samples at 66.7%. The sentence "sample around 75% to 87.5%" does not cover that row. The opening sections of this chapter use only the 500 kbit/s working point.
 
 > **SJW** absorbs clock error between nodes, usually 1–2 Tq. Different sample points are the first cause of flaky multi-node links. Every node must match.
 
@@ -268,10 +280,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 ## Hands-on labs
 
-1. **Loopback:** `CAN_MODE_LOOPBACK`, print the ID and data you receive. You should see your own frame with no transceiver.
-2. **Two nodes:** two BluePills plus transceivers, 120 Ω at each end. B's log matches what A sent.
-3. **Filter:** accept only 0x123. The peer sends 0x123 and 0x456. Only 0x123 is printed.
-4. **Priority (optional):** two nodes transmit different IDs together. A logic analyzer shows the smaller ID winning.
+1. **Controller loop:** In loopback mode, send 100 frames with an incrementing counter. Record successful sends, FIFO receives, and byte comparisons, and state explicitly that no transceiver or bus was tested.
+2. **Physical-bus loop:** Use two nodes with 120 Ω at each end. Save the CAN_H/CAN_L differential waveform and decoded frame, and record BTR, sample point, ACK, and FIFO data.
+3. **Filter and arbitration:** Accept only 0x123, then start 0x100 and 0x200 from two nodes together. Save the arbitration trace and verify that only 0x123 reaches the target FIFO.
+4. **Error and recovery:** Disconnect the second node to remove ACK. Record TEC/ESR through bus-off, restore the link, and verify ABOM recovery and the first successful frame.
 
 ### 7. Coming back from bus-off
 
@@ -283,7 +295,7 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM: return to error-active after 128×11 r
 
 With nobody else to ACK, the sender errors its way into bus-off. Debug a single board in loopback before you blame the transceiver.
 
-Motto: **TEC 256 means shut up. 128 runs of 11 recessive bits, then you may talk again.**
+Before leaving this chapter, keep loopback counts, a two-node differential capture, filter/arbitration evidence, and ESR before and after one bus-off recovery.
 
 Self-test:
 

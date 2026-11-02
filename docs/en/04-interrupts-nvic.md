@@ -1,7 +1,7 @@
 # 04 Interrupts and the NVIC
 > 中文：[中断与 NVIC](../04-中断与NVIC.md)
 
-> An interrupt means the CPU does not have to sit and wait on a peripheral. When the event arrives, execution jumps to the handler. That is the core mechanism of a real-time system.
+> Chapter 03's polling loop can miss a short press. After EXTI takes over the same input, verify that the pending bit clears, the ISR does no slow work, and a higher priority really interrupts a lower one.
 
 <p align="center">
   <img src="../../assets/animations/nvic-interrupt-flow.svg" width="760" alt="The full interrupt response path">
@@ -34,31 +34,29 @@
 <!-- /video:ch04 -->
 ## Principle and scope
 
-The preemption conclusion of this chapter holds for orderable STM32F103C8T6. The clock is the Appendix D cell: SYSCLK = HCLK = 72 MHz. The grouping is the compass and Appendix D cell: HAL defaults to `NVIC_PRIORITYGROUP_4`, 4 preemption bits and 0 subpriority bits. A smaller number is a higher logical priority. Copy those three sentences whole. Do not invent another cycle count.
+This chapter uses the STM32F103C8T6, with the clock from Appendix D: SYSCLK = HCLK = 72 MHz. Priority grouping is the HAL default, `NVIC_PRIORITYGROUP_4`: all 4 bits go to preemption priority and subpriority gets 0 bits. A smaller number is a higher priority.
 
-An exception with a higher preemption priority (a smaller number) may interrupt an ISR that is running at a lower preemption priority. Subpriority only chooses which already-pending request is taken first. It does not nest. Under `GROUP_4` the subpriority field has no bits, so the subpriority argument of `HAL_NVIC_SetPriority` does not create nesting. Seeing subpriority act means the grouping is not `GROUP_4`. After the grouping changes, the old numbers are not the same preemption level. Appendix D already calls "comparing the old preemption numbers after a grouping change" a misreading. This chapter keeps that sentence and does not edit the appendix. Source: [PM0056 section 2.3.6](#source-pm0056-nvic).
+An exception with a higher preemption priority (a smaller number) may interrupt an ISR that is running at a lower preemption priority. Subpriority only chooses which already-pending request is taken first. It does not nest. Under `GROUP_4` the subpriority field has no bits, so the subpriority argument of `HAL_NVIC_SetPriority` does not create nesting. Seeing subpriority act means the grouping is not `GROUP_4`. Change the grouping and the same number means a different preemption level, so comparing old numbers after the change gives the wrong answer about nesting. Source: [PM0056 section 2.3.6](#source-pm0056-nvic).
 
-On exit, if an exception is already pending, hardware may skip part of the unstack and the next stack. Tail-chaining cuts overhead. It does not change who may preempt. A lower priority does not enter a higher-priority ISR because tail-chaining is on. "Tail-chaining lets a lower priority insert itself into a higher one" is not the mechanism. PM0056 section 2.3.7 does not print a tail-chain cycle count, so this chapter does not invent one. The figure only shows that a second nested stack did not happen. Do not add that count to Appendix D.
+On exit, if an exception is already pending, hardware may skip part of the unstack and the next stack. Tail-chaining cuts overhead. It does not change who may preempt. A lower priority does not enter a higher-priority ISR because tail-chaining is on. "Tail-chaining lets a lower priority insert itself into a higher one" is a common misunderstanding. PM0056 section 2.3.7 does not say how many cycles tail-chaining saves, so this chapter gives no number; the figure only shows one unstack-and-restack skipped.
 
-`PRIMASK` masks exceptions of configurable priority. NMI and HardFault still enter. `FAULTMASK` also masks HardFault and still leaves NMI. `BASEPRI` masks only the band whose priority number is greater than or equal to the threshold. NMI does not take part in the EXTI0 versus TIM2 preemption comparison. Changing the mask register voids the previous sentence; read the new gate again. The CSS-to-NMI note in chapter 02 is only a cross-reference. This chapter does not redraw the clock tree.
+`PRIMASK` masks exceptions of configurable priority. NMI and HardFault still enter. `FAULTMASK` also masks HardFault and still leaves NMI. `BASEPRI` masks only the band whose priority number is greater than or equal to the threshold. NMI does not take part in the EXTI0 versus TIM2 preemption comparison. The three registers mask different ranges, so check which one you are using. Chapter 02 showed that the clock security system (CSS) interrupt arrives as NMI, which is why disabling interrupts does not stop it.
 
-A bare-metal priority setup does not automatically meet the chapter 15 FromISR constraint. That sentence links the [existing priority note](#source-freertos-priority). It does not copy the syscall threshold from chapter 15.
+A bare-metal priority setup does not automatically meet the chapter 15 FromISR constraint. FreeRTOS requires any interrupt that calls a FromISR function to have a priority number no smaller than the syscall threshold; see chapter 15 and the [FreeRTOS priority note](#source-freertos-priority).
 
-EXTI lines are shared by pin number: PA0 and PB0 are both EXTI0, so they cannot both be external interrupts. On F1, enabling a different port means enabling the AFIO clock and then writing `EXTICR`. That sentence holds only on F1. On a family that uses SYSCFG, the AFIO sentence is void. [RM0008 Rev 21](#source-rm0008-exti) places EXTICR in sections 9.4.3 through 9.4.6. Section 9.2.7 is `GPIOx_LCKR`, not EXTICR. `EXTI_PR` has to be cleared by writing 1 to the pending bit.
+EXTI lines are shared by pin number: PA0 and PB0 are both EXTI0, so they cannot both be external interrupts. On F1, enabling a different port means enabling the AFIO clock and then writing `EXTICR`. That is the F1 way. F4, L4, and H7 keep these registers in SYSCFG (`SYSCFG_EXTICR`), so you enable the SYSCFG clock instead. G0 moved them again, into the EXTI block itself (`EXTI_EXTICR`), and needs neither AFIO nor SYSCFG. [RM0008 Rev 21](#source-rm0008-exti) places EXTICR in sections 9.4.3 through 9.4.6. Section 9.2.7 is `GPIOx_LCKR`, not EXTICR. `EXTI_PR` has to be cleared by writing 1 to the pending bit.
 
 ## Key figures
 
 <p align="center">
   <img src="../../assets/diagrams/sample-04-exception-stack.svg" width="760" alt="Preemption 1 can interrupt preemption 2; a later request at the same preemption 1 cannot nest">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, NVIC_PRIORITYGROUP_4. Normal path: TIM2 at preemption 2 is running, and EXTI0 (PA0, EXTI0_IRQn) at preemption 1 and subpriority 0 interrupts it. Eight registers stack from high address to low address: xPSR, PC, LR, R12, R3, R2, R1, R0, and SP points at R0. About 12 HCLK, 167 ns at 72 MHz, not the ISR body. Failure path: both are written as preemption 1, subpriorities 0 and 1 still do not nest, tail-chaining can happen on exit, and there is no second nested stack. With PRIMASK = 1, EXTI0 and TIM2 stay out and NMI still enters. Sources: [PM0056 section 2.3.7](#source-pm0056-nvic) and [RM0008 Rev 21 EXTICR](#source-rm0008-exti).</sub>
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, NVIC_PRIORITYGROUP_4. Upper half: TIM2 at preemption 2 is running, and EXTI0 (PA0, EXTI0_IRQn) at preemption 1 and subpriority 0 interrupts it. Eight registers stack from high address to low address: xPSR, PC, LR, R12, R3, R2, R1, R0, and SP points at R0. About 12 HCLK, 167 ns at 72 MHz, not the ISR body. Lower half: both are written as preemption 1, subpriorities 0 and 1 still do not nest, tail-chaining can happen on exit, and there is no second nested stack. With PRIMASK = 1, EXTI0 and TIM2 stay out and NMI still enters. Sources: [PM0056 section 2.3.7](#source-pm0056-nvic) and [RM0008 Rev 21 EXTICR](#source-rm0008-exti).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/gif/nvic-preempt.gif" width="640" alt="While TIM2 runs, EXTI0 at a higher preemption interrupts it and then returns">
-  <br><sub>▲ Auxiliary figure for the web and the article channel. It only plays the successful preemption. Print uses the static figure. The equal-preemption failure is not on this GIF.</sub>
+  <br><sub>▲ Animated version. It shows only EXTI0 preempting TIM2 successfully. The printed book has only the static figure above.</sub>
 </p>
-
-The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` stay side figures. Without playing them, the key figure still shows the failure where preemption was written as the same level.
 
 ## Timing and state
 
@@ -67,21 +65,21 @@ The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` st
 | Normal: TIM2 is running | GROUP_4 | — | 2 | The TIM2 ISR is running | — |
 | Normal: EXTI0 arrives | GROUP_4 | 1 | 2 | Stack xPSR, PC, LR, R12, R3, R2, R1, R0 | 12 HCLK, about 167 ns |
 | Normal: handler and return | GROUP_4 | 1 | 2 | Vector fetch, ISR, unstack, return | 167 ns excludes the ISR body |
-| Failure: preemption written equal | GROUP_4 | 1 | 1 | EXTI0 stays pending. Tail-chaining happens only after exit. No second nested stack | No invented cycle count |
+| Failure: preemption written equal | GROUP_4 | 1 | 1 | EXTI0 stays pending. Tail-chaining happens only after exit. No second nested stack | The manual gives no cycle count |
 | PRIMASK = 1 | GROUP_4 | 1 | 2 | Configurable interrupts do not enter. NMI still enters | — |
 
-167 ns is the same Appendix D cell, not a different nanosecond figure. Source: [PM0056 section 2.3.7](#source-pm0056-nvic). Clearing `EXTI_PR` is [RM0008](#source-rm0008-exti).
+Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Source: [PM0056 section 2.3.7](#source-pm0056-nvic). Clearing `EXTI_PR` is [RM0008](#source-rm0008-exti).
 
 ## Pitfalls and sources
 
-| Symptom | Cause | What to do | Source | Claim this source may support |
+| Symptom | Cause | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | A smaller subpriority still cannot interrupt the running ISR | Equal preemption does not nest | Change the preemption level, not the subpriority | [PM0056](#source-pm0056-nvic) | Equal preemption does not nest; GROUP_4 has no subpriority bits |
 | The button interrupt cannot break into the timer | EXTI0's preemption number is not smaller than TIM2 | Give EXTI0 a smaller preemption number than TIM2 | [PM0056](#source-pm0056-nvic) | A smaller number wins; reversing them fails nesting |
 | After tail-chaining is on, a lower priority enters a higher one | That is not what tail-chaining means | Check the preemption levels | [PM0056 section 2.3.7](#source-pm0056-nvic) | Tail-chaining does not change who may preempt |
 | NMI still enters after `__disable_irq()` | PRIMASK does not cover NMI | This is expected, not a broken PRIMASK | [PM0056 Table 7](#source-pm0056-nvic) | PRIMASK masks configurable priority; NMI is outside it |
 | PA0 already owns EXTI0, and PB0 never fires | One pin number shares one EXTI line | Use a different pin number | [RM0008 EXTICR](#source-rm0008-exti) | PA0 and PB0 are both EXTI0 |
-| EXTI never fires on F1 | The AFIO clock is off, or EXTICR was not written | Enable the AFIO clock, write EXTICR, and clear EXTI_PR | [RM0008 section 9.4.3](#source-rm0008-exti) | This sentence holds only on F1 |
+| EXTI never fires on F1 | The AFIO clock is off, or EXTICR was not written | Enable the AFIO clock, write EXTICR, and clear EXTI_PR | [RM0008 section 9.4.3](#source-rm0008-exti) | On F1 the EXTI port select is in AFIO_EXTICR |
 
 ## Learning goals
 - [ ] Say how an interrupt differs from polling, and when each one fits
@@ -92,9 +90,11 @@ The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` st
 
 ## Core ideas
 
-**Lead with the conclusion: an interrupt replaces "the CPU keeps asking" with "the peripheral speaks up". The cost is that you have to handle priority, shared variables, and time spent in the handler.**
+EXTI decides when an event is noticed; the NVIC decides which event runs first. Prompt detection is only one part of correctness. Flags, shared data, and ISR execution time still need separate evidence.
 
 ### 1. Interrupt versus polling
+
+There are two ways to wait for a parcel. You can walk down to the mailbox every five minutes; that is polling, the CPU reading the button level again and again in its main loop. Or you can fit a doorbell and go down only when it rings; that is an interrupt, the hardware telling the CPU the button was pressed. With a doorbell you do not have to keep watching, but when it rings you have to drop what you are doing, so the handler must be quick and the dropped work must be picked up again.
 
 | Dimension | Polling | Interrupt |
 | --- | --- | --- |
@@ -105,6 +105,8 @@ The opening `nvic-interrupt-flow.svg` and the sketch `interrupt-priority.svg` st
 | Fits | Simple, rare events, when you want a fixed path | Asynchronous events that need a fast response |
 
 ### 2. How NVIC priority works
+
+The NVIC is the chip's front desk for interrupts. When several requests arrive at once, it sorts them by two numbers. Preemption priority is like triage in an emergency room: a critical patient can send the doctor's current, milder patient out to wait, and that is nesting. Subpriority only decides the queue: when two patients of the same grade arrive together, which one is called first, but a patient already in the room is never sent out for someone of the same grade. One rule runs against intuition: a smaller number is more urgent, and 0 is the most urgent.
 
 - A **smaller** priority number is a **higher** priority.
 - Priority splits into preemption priority and subpriority.
@@ -129,6 +131,8 @@ How the arbitration looks:
 
 ### 3. The full interrupt response
 
+Everything between the button press and the first line of your handler is done by hardware. The step that matters most is 4: the CPU pushes 8 registers onto the stack, like slipping a bookmark into a book before getting up to answer the door. On the way back the hardware restores from that bookmark, and the main program never knows it was interrupted. Your code only owns step 6, and it must clear the interrupt flag; otherwise the doorbell keeps ringing and the CPU enters the same interrupt over and over.
+
 | Stage | What the hardware does |
 | --- | --- |
 | 1 | The peripheral event sets a flag (the matching bit in `EXTI_PR`, for example) |
@@ -140,6 +144,8 @@ How the arbitration looks:
 | 7 | The stacked context is restored and execution returns to the main program |
 
 ### 4. EXTI external interrupts
+
+EXTI is the layer that turns a pin change into an interrupt request. The F103 has 16 EXTI lines, split by pin number: pin 0 of every port (PA0, PB0, PC0, ...) shares EXTI0, every pin 1 shares EXTI1, and so on. One line can serve only one port at a time, like a building with one doorbell button per floor: floor 1 of block A and floor 1 of block B cannot both use it. The `EXTICR` registers choose the port, and on F1 they live in AFIO, which is why the AFIO clock must be on first.
 
 | Idea | Meaning |
 | --- | --- |
@@ -157,6 +163,8 @@ Polling versus interrupt versus EXTI:
 
 ### 5. The C that matters
 
+When an interrupt and the main program share a variable, two things go wrong most often. First, the compiler helpfully keeps the variable in a register, so the main loop keeps reading the old value and never sees what the interrupt wrote; mark such variables `volatile`. Second, the main program is halfway through updating a multi-byte value when the interrupt comes in and reads a half-old, half-new value; put those reads and writes in a critical section with interrupts off.
+
 | Idea | What it does |
 | --- | --- |
 | `volatile` | Tells the compiler the variable may change inside an ISR, so it must not cache it in a register |
@@ -170,6 +178,8 @@ Polling versus interrupt versus EXTI:
 | --- | --- | --- | --- |
 | BluePill | Button (EXTI) | PA0 | The other side to GND; falling-edge trigger |
 | BluePill | LED | PC13 | Toggled inside the interrupt path |
+
+To continue from chapter 03, remove the external LED from PA0 and move the button from PA1 to PA0. PA13 and PA14 remain assigned to SWD.
 
 ## Code
 
@@ -260,9 +270,9 @@ The full project is in [`examples/exti-key/`](../../examples/exti-key/).
 
 ## Hands-on labs
 
-1. **Lab 1:** A falling edge on the PA0 button toggles PC13. One press, one on or off.
-2. **Lab 2:** Remove the software debounce and press quickly. Watch the extra toggles. Put the debounce back and compare.
-3. **Lab 3 (priority):** Add a second timer interrupt at a different preemption priority, and confirm that the higher preemption can interrupt the lower ISR.
+1. **Lab 1 (event loop):** Let the PA0 falling edge set a flag in the ISR and toggle PC13 in the main loop. Press 10 times, record 10 valid toggles, and confirm in the debugger that the matching `EXTI_PR` bit has cleared.
+2. **Lab 2 (bounce evidence):** Temporarily remove main-loop debounce and count the flags produced by 10 presses. Restore debounce and repeat. Keep both counts instead of judging by appearance.
+3. **Lab 3 (preemption evidence):** Add a TIM2 interrupt. In each ISR, drive one spare GPIO high on entry and low on exit. Capture both traces with a logic analyzer and verify that preemption priority 1 EXTI0 enters during preemption priority 2 TIM2.
 
 ### 6. NVIC registers and functions
 
@@ -311,7 +321,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 ### 11. Three master gates, and a shared EXTI line
 
-**Conclusion:** `PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
+`PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
 
 | Register | Who it blocks | The usual spelling |
 | --- | --- | --- |
@@ -321,7 +331,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 EXTI lines are shared by **pin number**: PA0 and PB0 both sit on EXTI0, so they cannot both be external interrupts at once. To change the port, write `AFIO->EXTICR` (F1) or `SYSCFG->EXTICR` (F4). They are not two lines in parallel.
 
-Motto: **the master gate has three settings. For one pin number, EXTI keeps only one port.**
+Before leaving this chapter, keep the button-event count, the before/after debounce count, and one preemption trace, and explain why PA0 and PB0 cannot occupy two independent EXTI0 lines.
 
 Self-test:
 
