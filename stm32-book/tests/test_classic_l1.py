@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import struct
 import unittest
 from pathlib import Path
 
@@ -53,6 +54,23 @@ class ClassicL1VisualTests(unittest.TestCase):
         generator = load_tool("gen_narrated")
         image = generator._visual_png("video/ch03-gpio.png")
         self.assertEqual((960, 540), image.size)
+
+    def test_stack_boundary_asset_is_complete(self) -> None:
+        diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
+        self.assertTrue(diagram.is_file(), diagram)
+        html = diagram.read_text(encoding="utf-8")
+        for label in ("写 1 灯灭，写 0 灯亮", "共阳 LED", "PC13 输出级", "电流（写 0 时）"):
+            self.assertIn(label, html)
+        self.assertNotIn("%%ICON_", html)
+        for name in ("stack-gpio-pc13-led.png", "stack-gpio-pc13-led-dark.png"):
+            raw = (REPO / "assets" / "diagrams" / name).read_bytes()
+            self.assertEqual(b"\x89PNG\r\n\x1a\n", raw[:8])
+            self.assertEqual((2000, 1200), struct.unpack(">II", raw[16:24]))
+
+    def test_stack_boundary_is_linked_once_in_both_languages(self) -> None:
+        for name in ("docs/03-GPIO与LED.md", "docs/en/03-gpio-and-led.md"):
+            text = (REPO / name).read_text(encoding="utf-8")
+            self.assertEqual(1, text.count("diagrams/stack-gpio-pc13-led.png"), name)
 
 
 if __name__ == "__main__":
