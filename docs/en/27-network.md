@@ -352,6 +352,8 @@ Before replaying actuator commands, check expiry, current device state, and idem
 | memory decays over time | pbuf/socket/message ownership | lwIP stats, heap low-water, connection count | trace unfreed lifecycle objects |
 | low throughput/high CPU | copies, cache, windows, scheduling | goodput, retransmission, window, profile | locate bottleneck before tuning |
 
+### Suggested PCAP acceptance filters
+
 Useful Wireshark filters:
 
 ```text

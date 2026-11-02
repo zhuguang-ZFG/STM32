@@ -313,7 +313,13 @@ The buffer must remain alive until completion. Width, direction, and increment r
 4. Compare visible results: GPIO voltage, PWM period, UART frame, DMA position, Flash checksum.
 5. Remove old ownership after migration. Delete the SPL setup and IRQ path for a peripheral now owned by HAL.
 
-Keep SPL when an F1 product is already in production, evidence and certification surround the frozen toolchain, and the team can keep that environment reproducible. Prefer HAL/LL when a new family has no SPL, CubeMX/current middleware is required, or the old project contains untraceable SPL copies.
+### When to keep SPL
+
+Keep SPL when an F1 product is already in production, evidence and certification surround the frozen toolchain, and the team can keep that environment reproducible.
+
+### When to migrate to HAL or LL
+
+Prefer HAL/LL when a new family has no SPL, CubeMX/current middleware is required, or the old project contains untraceable SPL copies.
 
 ## 10. Failure map
 
