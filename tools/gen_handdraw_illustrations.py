@@ -22,7 +22,7 @@ W, H = 900, 560
 
 
 class Sketch:
-    def __init__(self, chapter: int, title: str, aria: str):
+    def __init__(self, chapter: int, title: str, aria: str, label: str | None = None):
         self.s = Svg(W, H, aria)
         self.chapter = chapter
         self.title = title
@@ -38,7 +38,7 @@ class Sketch:
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 """)
         self.s.rect(0, 0, W, H, fill=T.BG)
-        self.s.text(38, 48, f"CH {chapter + 1:02d}", size=12, fill=T.CYAN,
+        self.s.text(38, 48, label or f"CH {chapter + 1:02d}", size=12, fill=T.CYAN,
                     weight="800", mono=True, ls="1.4")
         self.s.text(862, 48, "FA-002 · continuous-line", size=10.5,
                     fill=T.MUTED, anchor="end", mono=True)
@@ -430,12 +430,150 @@ CHAPTERS = [
      "Interrupts, tasks, drivers, networks, and apps form one system", "system"),
 ]
 
+PARTS = (
+    (1, "工作台把构建、烧录和测量连成一个闭环",
+     "A workbench loop connects build, flash, and measurement", "loop"),
+    (2, "芯片的引脚分成事件、时基和波形三条路",
+     "Chip pins branch into events, time base, and waveforms", "pins"),
+    (3, "字节沿着传送带进入环形缓冲区",
+     "Bytes travel along a conveyor into a ring buffer", "conveyor"),
+    (4, "四道工程门把可靠性、升级、连接和调度串起来",
+     "Four engineering gates chain reliability, update, link, and scheduling", "gates"),
+    (5, "工作台把手册、项目盒和放大镜摆在一起",
+     "A bench places manuals, a project box, and a magnifier together", "delivery"),
+    (6, "三颗芯片在迁移路上交换手册和旧库",
+     "Three chips trade manuals and a legacy library on the migration road", "migration"),
+    (7, "硬件、内核、服务和应用叠成一套系统",
+     "Hardware, kernel, services, and applications stack into one system", "stack"),
+)
+
+
+def part_scene(index: int, zh: str, aria: str, scene: str) -> Svg:
+    """Return one hand-drawn plate for a part divider."""
+    k = Sketch(index - 1, aria, aria, label=f"PART {index:02d}")
+    k.path("M52 455 C180 443 292 468 420 451 S690 440 848 454",
+           color=T.GRID, sw=1.5)
+    if scene == "loop":
+        k.path("M150 360 L820 360", color=T.GRID, sw=1.5)
+        person(k, 120, 400, .85)
+        gear(k, 300, 285, 42)
+        chip(k, 455, 235, 160, 100)
+        wave(k, 690, 300, 140, 20, T.GREEN)
+        k.path("M195 330 C260 230 340 220 410 265 S560 355 650 295 S760 215 820 265",
+               T.CYAN, cls="hd-flow")
+        k.label(300, 390, "BUILD")
+        k.label(535, 390, "FLASH")
+        k.label(760, 390, "MEASURE")
+    elif scene == "pins":
+        chip(k, 230, 215, 240, 155)
+        k.arrow(480, 250, 640, 180, T.RED)
+        k.arrow(480, 292, 640, 292, T.AMBER)
+        k.arrow(480, 334, 640, 410, T.GREEN)
+        k.circle(690, 170, 28, T.RED, T.PANEL)
+        k.label(690, 175, "IRQ", T.RED, size=10)
+        gear(k, 690, 292, 34, T.AMBER)
+        wave(k, 640, 410, 150, 20, T.GREEN)
+        k.label(690, 225, "EVENT", T.RED, size=9)
+        k.label(690, 345, "TIME", T.AMBER, size=9)
+        k.label(690, 470, "WAVE", T.GREEN, size=9)
+    elif scene == "conveyor":
+        k.path("M80 400 L820 400", color=T.GRID, sw=2)
+        for i in range(6):
+            x = 150 + i * 100
+            k.s.rect(x, 366, 58, 34, fill=T.PANEL2, stroke=T.CYAN, rx=4, sw=2)
+            k.label(x + 29, 390, "B", T.CYAN, size=9)
+        k.blob("M110 220 Q175 190 235 220 L225 320 Q170 348 120 320 Z",
+               T.PANEL, T.AMBER)
+        k.arrow(165, 330, 300, 380, T.AMBER)
+        k.label(170, 470, "SAMPLE", T.AMBER, size=9)
+        k.circle(700, 270, 68, T.VIOLET, T.PANEL2)
+        k.circle(700, 270, 42, T.VIOLET, T.BG)
+        for i in range(8):
+            a = i * math.pi / 4
+            k.circle(700 + 55 * math.cos(a), 270 + 55 * math.sin(a), 4,
+                     T.VIOLET, T.PANEL)
+        k.arrow(820, 380, 760, 330, T.VIOLET)
+        k.label(700, 350, "RING", T.VIOLET, size=10)
+    elif scene == "gates":
+        k.path("M150 400 L820 400", T.CYAN, cls="hd-flow")
+        person(k, 100, 400, .8)
+        for x, label, color in (
+            (300, "POWER", T.RED),
+            (450, "UPDATE", T.AMBER),
+            (600, "LINK", T.CYAN),
+            (750, "SCHEDULE", T.GREEN),
+        ):
+            k.line(x - 34, 300, x - 34, 430, color)
+            k.line(x + 34, 300, x + 34, 430, color)
+            k.line(x - 34, 300, x + 34, 300, color)
+            if label == "POWER":
+                k.path(f"M{x+5} 334 L{x-8} 364 L{x+2} 364 L{x-9} 396", color)
+            elif label == "UPDATE":
+                k.path(f"M{x-15} 370 A15 15 0 1 1 {x+3} 383", color)
+                k.s.poly([(x + 3, 383), (x - 5, 380), (x + 1, 373)],
+                         fill=color, sw=1)
+            elif label == "LINK":
+                k.circle(x - 9, 365, 9, color, T.BG)
+                k.circle(x + 9, 365, 9, color, T.BG)
+            elif label == "SCHEDULE":
+                k.circle(x, 365, 16, color, T.BG)
+                k.line(x, 365, x, 354, color)
+                k.line(x, 365, x + 9, 369, color)
+            k.label(x, 470, label, color, size=9)
+    elif scene == "delivery":
+        person(k, 110, 400, .85)
+        k.path("M180 380 L820 380", color=T.GRID, sw=2)
+        k.blob("M300 250 L470 250 L470 380 L300 380 Z", T.PANEL2, T.CYAN)
+        k.path("M350 250 L350 210 L420 210 L420 250", T.CYAN)
+        k.path("M350 300 L385 335 L430 285", T.GREEN)
+        k.label(385, 405, "PROJECT", T.CYAN, size=9)
+        for i in range(3):
+            k.s.rect(560, 330 - i * 30, 120, 24, fill=T.PANEL,
+                     stroke=T.AMBER, rx=4, sw=2)
+        k.label(620, 405, "MANUALS", T.AMBER, size=9)
+        k.circle(740, 285, 38, T.VIOLET, T.PANEL)
+        k.line(767, 312, 805, 350, T.VIOLET)
+    elif scene == "migration":
+        k.path("M80 400 C250 380 500 420 820 390", color=T.GRID, sw=2)
+        chip(k, 130, 220, 140, 95, T.AMBER)
+        chip(k, 365, 185, 150, 100, T.CYAN)
+        chip(k, 620, 220, 140, 95, T.VIOLET)
+        k.label(200, 345, "G0", T.AMBER, size=9)
+        k.label(440, 315, "L4", T.CYAN, size=9)
+        k.label(690, 345, "H7", T.VIOLET, size=9)
+        k.arrow(270, 265, 360, 245, T.CYAN)
+        k.arrow(515, 235, 615, 260, T.VIOLET)
+        for i in range(2):
+            k.s.rect(70, 330 - i * 24, 90, 20, fill=T.PANEL,
+                     stroke=T.AMBER, rx=4, sw=2)
+        k.label(115, 405, "MANUAL", T.AMBER, size=8)
+        k.s.rect(700, 350, 120, 40, fill=T.PANEL2, stroke=T.RED, rx=4, sw=2)
+        k.label(760, 405, "SPL", T.RED, size=9)
+    elif scene == "stack":
+        for i, (y, label, color) in enumerate((
+            (400, "HW", T.STROKE),
+            (340, "KERNEL", T.CYAN),
+            (280, "SERVICES", T.VIOLET),
+            (220, "APP", T.GREEN),
+        )):
+            x = 220 + i * 18
+            k.s.rect(x, y, 360, 46, fill=T.PANEL2, stroke=color, rx=4, sw=2)
+            k.label(x + 180, y + 29, label, color, size=10)
+        k.path("M120 430 C200 380 180 300 250 250 S330 180 430 160",
+               T.AMBER, cls="hd-flow")
+        k.circle(430, 160, 20, T.AMBER, T.PANEL)
+        k.blob("M300 110 L400 110 L400 160 L300 160 Z", T.PANEL, T.CYAN)
+        k.label(350, 140, "PRODUCT", T.CYAN, size=8)
+    return k.footer()
+
+
 def main(argv: list[str]) -> int:
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     out_dir = os.path.join(root, "assets", "illustrations")
     os.makedirs(out_dir, exist_ok=True)
     only = {item.zfill(2) for item in argv[1:]}
     count = 0
+    part_count = 0
     for ch, title, zh, aria, scene in CHAPTERS:
         number = f"{ch:02d}"
         if only and number not in only:
@@ -446,6 +584,13 @@ def main(argv: list[str]) -> int:
         print(f"[ok] {os.path.relpath(path, root)}")
         count += 1
     if not only:
+        for index, zh, aria, scene in PARTS:
+            part_id = f"p{index - 1}"
+            path = os.path.join(out_dir, f"part-{part_id}-handdraw.svg")
+            part_scene(index, zh, aria, scene).save(path)
+            xml.dom.minidom.parse(path)
+            print(f"[ok] {os.path.relpath(path, root)}")
+            part_count += 1
         manifest = {
             "schema_version": 1,
             "style": "FA-002",
@@ -459,13 +604,22 @@ def main(argv: list[str]) -> int:
                 }
                 for ch, _title, zh, aria, _scene in CHAPTERS
             ],
+            "parts": [
+                {
+                    "id": f"p{index - 1}",
+                    "file": f"part-p{index - 1}-handdraw.svg",
+                    "zh": zh,
+                    "en": aria,
+                }
+                for index, zh, aria, _scene in PARTS
+            ],
         }
         manifest_path = os.path.join(out_dir, "manifest.json")
         with open(manifest_path, "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, ensure_ascii=False, indent=2)
             handle.write("\n")
         print(f"[ok] {os.path.relpath(manifest_path, root)}")
-    print(f"generated {count} hand-drawn chapter illustrations")
+    print(f"generated {count} chapter and {part_count} part illustrations")
     return 0
 
 

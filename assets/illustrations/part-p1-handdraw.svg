@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Chip pins branch into events, time base, and waveforms">
+<title>Chip pins branch into events, time base, and waveforms</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">PART 02</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M230 223 Q233 215 242 215 L462 215 Q470 217 470 227 L470 362 Q468 370 458 370 L238 370 Q230 368 230 358 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<line x1="219.8" y1="233.2" x2="231.8" y2="233.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="218" y1="232" x2="230" y2="232" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="471.8" y1="233.2" x2="483.8" y2="233.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="232" x2="482" y2="232" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="219.8" y1="250.2" x2="231.8" y2="250.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="218" y1="249" x2="230" y2="249" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="471.8" y1="250.2" x2="483.8" y2="250.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="249" x2="482" y2="249" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="219.8" y1="267.2" x2="231.8" y2="267.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="218" y1="266" x2="230" y2="266" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="471.8" y1="267.2" x2="483.8" y2="267.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="266" x2="482" y2="266" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="219.8" y1="284.2" x2="231.8" y2="284.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="218" y1="283" x2="230" y2="283" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="471.8" y1="284.2" x2="483.8" y2="284.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="283" x2="482" y2="283" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="219.8" y1="301.2" x2="231.8" y2="301.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="218" y1="300" x2="230" y2="300" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="471.8" y1="301.2" x2="483.8" y2="301.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="300" x2="482" y2="300" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M258 267 C280 235 308 297 348 257" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="1.5"/>
+<line x1="480" y1="250" x2="632.671" y2="183.207" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="640.00,180.00 634.27,186.87 631.07,179.54" fill="#8f2d2d" opacity="1"/>
+<line x1="480" y1="292" x2="632" y2="292" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="640.00,292.00 632.00,296.00 632.00,288.00" fill="#7a4e00" opacity="1"/>
+<line x1="480" y1="334" x2="632.774" y2="406.568" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="640.00,410.00 631.06,410.18 634.49,402.95" fill="#1b5c45" opacity="1"/>
+<circle cx="692" cy="171" r="28" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="690" cy="170" r="28" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2"/>
+<text x="690" y="175" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IRQ</text>
+<polygon points="729.44,292.00 722.84,300.80 724.16,311.72 714.04,316.04 709.72,326.16 698.80,324.84 690.00,331.44 681.20,324.84 670.28,326.16 665.96,316.04 655.84,311.72 657.16,300.80 650.56,292.00 657.16,283.20 655.84,272.28 665.96,267.96 670.28,257.84 681.20,259.16 690.00,252.56 698.80,259.16 709.72,257.84 714.04,267.96 724.16,272.28 722.84,283.20" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-sway"/>
+<circle cx="692" cy="293" r="11.9" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="690" cy="292" r="11.9" fill="#fbfaf7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-sway"/>
+<path d="M640 410 Q649.375 430 658.75 410 Q668.125 390 677.5 410 Q686.875 430 696.25 410 Q705.625 390 715.0 410 Q724.375 430 733.75 410 Q743.125 390 752.5 410 Q761.875 430 771.25 410 Q780.625 390 790.0 410" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<text x="690" y="225" font-size="9" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">EVENT</text>
+<text x="690" y="345" font-size="9" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TIME</text>
+<text x="690" y="470" font-size="9" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">WAVE</text>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

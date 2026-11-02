@@ -165,6 +165,18 @@
 | `ch27-handdraw.svg` | 27 | 数据包穿过 ARP、TCP、TLS 与应用边界 |
 | `ch28-handdraw.svg` | 28 | 中断、任务、驱动、网络与应用组成一套系统 |
 
+七个分部在章节手绘图之外另有一张分部概念图，同样由 `tools/gen_handdraw_illustrations.py` 生成，并嵌在各分部标题页的下半区：
+
+| 文件 | 分部 | 画面 |
+| --- | --- | --- |
+| `part-p0-handdraw.svg` | 第一部分 | 工作台把构建、烧录和测量连成一个闭环 |
+| `part-p1-handdraw.svg` | 第二部分 | 芯片的引脚分成事件、时基和波形三条路 |
+| `part-p2-handdraw.svg` | 第三部分 | 字节沿着传送带进入环形缓冲区 |
+| `part-p3-handdraw.svg` | 第四部分 | 四道工程门把可靠性、升级、连接和调度串起来 |
+| `part-p4-handdraw.svg` | 第五部分 | 工作台把手册、项目盒和放大镜摆在一起 |
+| `part-p5-handdraw.svg` | 第六部分 | 三颗芯片在迁移路上交换手册和旧库 |
+| `part-p6-handdraw.svg` | 第七部分 | 硬件、内核、服务和应用叠成一套系统 |
+
 ## 六、光栅动画 `assets/gif/`
 
 | 文件 | 内容 | 说明 |

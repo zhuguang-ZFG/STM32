@@ -171,5 +171,84 @@ class HanddrawLayerTests(unittest.TestCase):
                 self.builder.HANDDRAW_MANIFEST = original
 
 
+class PartHanddrawTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.builder = load_builder()
+        cls.parts = cls.builder.load_handdraw_parts()
+
+    def test_manifest_covers_every_part_in_order(self) -> None:
+        self.assertEqual([f"p{index}" for index in range(7)], list(self.parts))
+        for part_id, entry in self.parts.items():
+            self.assertEqual(f"part-{part_id}-handdraw.svg", entry["file"])
+            for key in ("zh", "en"):
+                self.assertTrue(entry[key].strip(), (part_id, key))
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            self.assertTrue(path.is_file(), path)
+            self.assertLessEqual(
+                path.stat().st_size, self.builder.HANDDRAW_MAX_BYTES, path
+            )
+
+    def test_part_plates_are_safe_animated_and_distinct(self) -> None:
+        drawings: set[str] = set()
+        for part_id, entry in self.parts.items():
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            text = path.read_text(encoding="utf-8")
+            ET.parse(path)
+            self.assertIn('width="900"', text, part_id)
+            self.assertIn('viewBox="0 0 900 560"', text, part_id)
+            self.assertIn("FA-002", text, part_id)
+            self.assertIn("prefers-reduced-motion", text, part_id)
+            self.assertIn("自绘矢量动画", text, part_id)
+            for banned in ("<script", "<image", "<foreignObject", "<filter",
+                           "url(", "href="):
+                self.assertNotIn(banned, text, (part_id, banned))
+            drawings.add(text)
+        self.assertEqual(7, len(drawings))
+
+    def test_build_inlines_one_localized_plate_per_part(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(Path(tmp)).read_text(encoding="utf-8")
+        self.assertEqual(7, html.count('class="part-plate"'))
+        self.assertEqual(
+            7,
+            len(re.findall(
+                r'<figure class="part-plate">\s*'
+                r'<img src="data:image/svg\+xml;base64,',
+                html,
+            )),
+        )
+        self.assertEqual(7, html.count('alt="分部概念图：'))
+        self.assertEqual(7, html.count("▲ 分部概念图："))
+        section = html[html.index('id="part-p0"'):html.index('id="chapter-00"')]
+        self.assertLess(section.index('class="part-goal"'),
+                        section.index('class="part-plate"'))
+
+    def test_english_build_uses_english_part_captions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(
+                Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
+            ).read_text(encoding="utf-8")
+        self.assertEqual(7, html.count('class="part-plate"'))
+        self.assertEqual(7, html.count('alt="Part concept:'))
+        self.assertNotIn('alt="分部概念图：', html)
+
+    def test_missing_part_inventory_is_a_build_error(self) -> None:
+        manifest = json.loads(
+            (self.builder.HANDDRAW_MANIFEST).read_text(encoding="utf-8")
+        )
+        manifest.pop("parts", None)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+            original = self.builder.HANDDRAW_MANIFEST
+            self.builder.HANDDRAW_MANIFEST = path
+            try:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_parts()
+            finally:
+                self.builder.HANDDRAW_MANIFEST = original
+
+
 if __name__ == "__main__":
     unittest.main()

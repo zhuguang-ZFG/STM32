@@ -68,7 +68,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider .part-label { position: relative; z-index: 1; margin: 0; color: var(--accent); font-weight: 800; letter-spacing: var(--tracking-kicker); font-size: var(--type-kicker); }
 .part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 9.5rem)); }
 .part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 9.5rem)); font-size: 1.12rem; line-height: 1.6; }
-.part-index { position: absolute; right: 5%; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
+.part-index { position: absolute; right: 1.5rem; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
 .part-art { position: absolute; right: clamp(2.5rem, 8vw, 5.5rem); bottom: clamp(1.8rem, 4vw, 3.5rem); z-index: 0; width: min(13.5rem, 30%); color: var(--accent); opacity: .62; pointer-events: none; }
 .part-art svg { display: block; width: 100%; height: auto; }
 .chapter, .appendix, .part-closing, .back-matter { padding: var(--space-chapter) var(--inset); border-bottom: 1px solid var(--line); }
@@ -128,6 +128,9 @@ figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--mute
 .chapter-plate { margin: 0 0 var(--space-figure); padding: 0; border: 0; background: none; box-shadow: none; }
 .chapter-plate img { margin: 0 auto; max-width: min(100%, 820px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .chapter-plate figcaption { max-width: min(100%, 820px); margin: .5rem auto 0; }
+.part-plate { position: relative; z-index: 1; width: min(36rem, 100%); margin: 1.1rem 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.part-plate img { width: 100%; margin: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.part-plate figcaption { max-width: none; margin: .45rem 0 0; text-align: left; }
 sub { display: block; color: var(--muted); text-align: center; font-size: var(--type-small); line-height: var(--leading-caption); }
 table { width: 100%; border-collapse: collapse; font-size: var(--type-small); }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1rem 0 1.5rem; overscroll-behavior-inline: contain; }
@@ -196,6 +199,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .cover-panel { padding: 1.3rem 1rem 1.8rem; }
   .part-index { font-size: 3rem; top: .55rem; }
   .part-art { position: static; width: 8rem; margin-top: .65rem; justify-self: end; order: 4; opacity: .55; }
+  .part-plate { width: 100%; margin-top: .85rem; }
   .part-divider h1, .part-goal { max-width: calc(100% - 4.8rem); }
   .contents ol { columns: 1; }
   .photo-pair { grid-template-columns: minmax(0, 1fr); }
@@ -227,6 +231,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .chapter > header, .appendix > header, .part-closing > header, .back-matter > header, .chapter-compass { break-after: avoid-page; page-break-after: avoid; }
   .part-divider { min-height: 220mm; align-content: center; }
   .part-art { position: absolute; right: 0; bottom: 18mm; width: 45mm; margin-top: 0; opacity: .62; }
+  .part-plate { width: 150mm; margin-top: 6mm; }
   .contents > section > h2 { position: static; }
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
   h2, h3, h4, h5, h6 { bookmark-level: none; }

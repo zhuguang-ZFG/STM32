@@ -11,7 +11,7 @@
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
 | 静态框图（26 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
-| 章首手绘概念图（29 张） | `assets/illustrations/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_handdraw_illustrations.py`，采用 CC BY 4.0；只用于建立直觉，不承载工程数据 |
+| 章首与分部手绘概念图（36 张） | `assets/illustrations/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_handdraw_illustrations.py`，采用 CC BY 4.0；只用于建立直觉，不承载工程数据 |
 | 光栅动画（24 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 中明确列出的两张 CC0 实拍外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
