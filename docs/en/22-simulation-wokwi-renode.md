@@ -2,7 +2,7 @@
 
 > 中文：[22 仿真实验：Wokwi 与 Renode](../22-仿真实验Wokwi与Renode.md)
 
-> You can light the LED and press the button with no board on the desk. Simulation is how you preview the lab. It does not replace soldering.
+> A blinking LED in simulation proves only that the ELF works with that model. The same ELF on hardware still needs power, pin, electrical waveform, clock, and current checks.
 
 <p align="center">
   <img src="../../assets/animations/toolchain-flow.svg" width="760" alt="Data flow from compile through flash to run">
@@ -135,9 +135,12 @@ When moving from a model to hardware, keep evidence at the four gates below. The
 
 ## Hands-on labs
 
-1. **Watch only the on-board LED**: build an ELF from gpio-blink and drop it into Wokwi. You should see the PC13 lamp on the board blink at the code's rhythm, and the external lamp on PA0 blink much more slowly.
-2. **Press once**: in the exti-key diagram, press the button (it ties A0 to GND). The on-board LED should toggle. The firmware configures the button as a pull-up input, so the diagram does not draw another pull-up resistor.
-3. **Listen to USART1**: run `uart-usart1.resc` in Renode and telnet to 3456. If the firmware is still the DMA version and no bytes appear, write that conclusion down: it is a limit of the model, not a baud-rate arithmetic error.
+1. **Same ELF:** Record the ELF hash, run GPIO/EXTI in Wokwi and USART1 in Renode, and save the result, model configuration, and unsupported behavior for each.
+2. **Fault injection:** Break one pin or peripheral connection in the model, confirm a repeatable failure, and classify it as firmware, platform description, or peripheral model.
+3. **Target migration:** Program the same ELF on a BluePill and repeat build verification, the `main` breakpoint, PC13 period, USART waveform, and supply voltage. Record every difference.
+4. **Boundary statement:** For each lab, state what simulation proved, what hardware newly proved, and what remains unproved. Do not present model behavior as a silicon specification.
+
+Before leaving this chapter, keep two simulator records for one ELF, one model fault injection, and one target-hardware migration table.
 
 Self-test:
 
