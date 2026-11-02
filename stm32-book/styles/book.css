@@ -68,7 +68,7 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider .part-label { position: relative; z-index: 1; margin: 0; color: var(--accent); font-weight: 800; letter-spacing: var(--tracking-kicker); font-size: var(--type-kicker); }
 .part-divider h1 { position: relative; z-index: 1; margin: .15rem 0 .35rem; font-size: clamp(2rem, 5vw, 3.35rem); line-height: 1.18; max-width: min(16em, calc(100% - 9.5rem)); }
 .part-goal { position: relative; z-index: 1; margin: 0; max-width: min(36rem, calc(100% - 9.5rem)); font-size: 1.12rem; line-height: 1.6; }
-.part-index { position: absolute; right: 1.5rem; top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
+.part-index { position: absolute; right: clamp(.8rem, 1.4vw, 1.5rem); top: 1rem; z-index: 0; margin: 0; font-size: clamp(4.5rem, 14vw, 8.5rem); font-weight: 800; line-height: .8; color: var(--accent); opacity: .16; pointer-events: none; }
 .part-art { position: absolute; right: clamp(2.5rem, 8vw, 5.5rem); bottom: clamp(1.8rem, 4vw, 3.5rem); z-index: 0; width: min(13.5rem, 30%); color: var(--accent); opacity: .62; pointer-events: none; }
 .part-art svg { display: block; width: 100%; height: auto; }
 .chapter, .appendix, .part-closing, .back-matter { padding: var(--space-chapter) var(--inset); border-bottom: 1px solid var(--line); }
