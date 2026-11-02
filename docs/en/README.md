@@ -6,10 +6,11 @@
 
 **Look things up the way you look up a manual. Learn the mechanism the way you watch an animation.**
 
-An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 25 mechanism animations · board drawings plus H7/G0/L4 pinouts · 6 teaching GIFs · 14 buildable examples · 4 cheatsheets
+An STM32 notebook in English, translated from the Chinese edition: 29 chapters (00–28) · 25 mechanism animations · 29 hand-drawn chapter plates · board drawings plus H7/G0/L4 pinouts · 6 teaching GIFs · 14 buildable examples · 4 cheatsheets
 
 [![docs](https://img.shields.io/badge/chapters-29-60a5fa?style=flat-square)](contents.md)
 [![animations](https://img.shields.io/badge/SVG_animations-25-22d3ee?style=flat-square)](../../assets/animations/)
+[![plates](https://img.shields.io/badge/chapter_plates-29-c084fc?style=flat-square)](../../assets/illustrations/)
 [![boards](https://img.shields.io/badge/boards_and_pinouts-10-fbbf24?style=flat-square)](../../assets/boards/)
 [![gif](https://img.shields.io/badge/teaching_GIF-6-f87171?style=flat-square)](../../assets/gif/)
 [![examples](https://img.shields.io/badge/examples-14-34d399?style=flat-square)](../../examples/)
