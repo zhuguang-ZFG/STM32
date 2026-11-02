@@ -199,7 +199,7 @@ def _render_card_hd(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
         draw.text((W - sc(34) - bw + sc(11), sc(60)), label, font=bf, fill=BG)
 
     if seg.get("svg"):
-        shot = _svg_png(seg["svg"])
+        shot = _visual_png(seg["svg"])
         box = (sc(32), sc(108), W - sc(32), BAND_TOP - sc(36))
         pasted = _fit(shot, box[2] - box[0], box[3] - box[1])
         zoom = 1.0 + 0.04 * max(0.0, min(1.0, u))
@@ -326,7 +326,7 @@ def render_card(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
 
     y = 112
     if seg.get("svg"):
-        shot = _svg_png(seg["svg"])
+        shot = _visual_png(seg["svg"])
         box = (32, 108, W - 32, BAND_TOP - 36)
         pasted = _fit(shot, box[2] - box[0], box[3] - box[1])
         zoom = 1.0 + 0.04 * max(0.0, min(1.0, u))               # 缓慢推近
@@ -389,6 +389,23 @@ def _fit(shot, bw, bh):
 
 
 _SVG_CACHE = {}
+
+
+def _visual_png(rel):
+    """Load a storyboard visual; raster assets need no browser."""
+    if not rel.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+        return _svg_png(rel)
+    if rel in _SVG_CACHE:
+        return _SVG_CACHE[rel]
+    from PIL import Image
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path = os.path.join(root, "assets", rel)
+    if not os.path.isfile(path):
+        raise SystemExit(f"缺少插图 {path}")
+    with Image.open(path) as source:
+        image = source.convert("RGB")
+    _SVG_CACHE[rel] = image
+    return _SVG_CACHE[rel]
 
 
 def _svg_png(rel):
@@ -605,7 +622,7 @@ async def speak_one(ch, out_dir):
     name = chapter_name(ch)
     for seg in ch["segments"]:
         if seg.get("svg"):
-            _svg_png(seg["svg"])
+            _visual_png(seg["svg"])
     work = tempfile.mkdtemp(prefix=f"narr-{name}-")
     sem = asyncio.Semaphore(4)
     mp3s = []

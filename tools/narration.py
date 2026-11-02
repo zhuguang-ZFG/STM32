@@ -8,7 +8,7 @@ def b(head, lines, say, svg=False):
 
 def ch(cid, slug, title, svg, beats):
     for beat in beats:
-        if beat.get("svg"):
+        if beat.get("svg") is True:
             beat["svg"] = svg
     return {"id": cid, "slug": slug, "title": title, "svg": svg, "segments": beats}
 

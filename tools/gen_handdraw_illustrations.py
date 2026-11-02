@@ -163,14 +163,33 @@ def chapter_scene(ch: int, title: str, aria: str, scene: str) -> Svg:
         for x, y, c in [(390,170,T.GREEN),(565,245,T.VIOLET),(800,190,T.RED)]:
             k.circle(x, y, 25, c, T.BG2, cls="hd-pulse")
     elif scene == "gpio":
-        chip(k, 100, 220, 160, 110, T.CYAN)
-        k.path("M272 275 C360 275 365 165 455 170", T.AMBER)
-        k.circle(480, 170, 24, T.RED, T.PANEL, cls="hd-pulse")
-        k.path("M455 170 C445 145 450 120 480 112 C510 120 515 145 505 170", T.RED)
-        k.path("M272 300 C360 300 390 370 490 365", T.GREEN)
-        person(k, 610, 350, .8, T.STROKE, pose="stand")
-        k.circle(700, 335, 18, T.VIOLET, T.PANEL2, cls="hd-pulse")
-        k.line(626, 344, 680, 338, T.VIOLET)
+        # IG-004: two aligned electrical states, not a decorative GPIO metaphor.
+        k.label(450, 100, "共阳接法 · 3.3 V → LED → PC13", T.CYAN, 14)
+        k.blob("M70 125 Q70 115 82 115 L408 115 Q420 115 420 128 L420 425 L70 425 Z",
+               T.BG2, T.GRID)
+        k.blob("M480 125 Q480 115 492 115 L818 115 Q830 115 830 128 L830 425 L480 425 Z",
+               T.PANEL2, T.GREEN)
+        for cx, state, level, result, color in [
+            (245, "写 1 · 灯灭", "PC13 = 1", "截止 · 无电流", T.RED),
+            (655, "写 0 · 灯亮", "PC13 = 0", "导通 · 灌电流", T.GREEN),
+        ]:
+            k.label(cx, 158, state, color, 20)
+            k.label(cx, 203, "3.3 V", T.AMBER, 12)
+            k.circle(cx, 274, 34, color if cx == 655 else T.STROKE,
+                     T.PANEL if cx == 655 else T.BG,
+                     cls="hd-pulse" if cx == 655 else None)
+            k.label(cx, 280, "LED", color, 13)
+            k.line(cx, 220, cx, 238, T.AMBER)
+            k.label(cx, 353, level, color, 15)
+            k.label(cx, 398, result, color, 12)
+            if cx == 655:
+                k.arrow(cx, 312, cx, 330, T.GREEN)
+                for x1, y1, x2, y2 in [(610,274,596,274),(700,274,686,274),
+                                       (623,242,613,232),(687,242,697,232),
+                                       (623,306,613,316),(687,306,697,316)]:
+                    k.line(x1, y1, x2, y2, T.AMBER, cls="hd-pulse")
+            else:
+                k.line(cx, 312, cx, 330, T.GRID, dash="4 6")
     elif scene == "interrupt":
         k.circle(160, 275, 60, T.AMBER, T.PANEL)
         k.circle(160, 275, 18, T.RED, T.RED, cls="hd-pulse")
@@ -376,8 +395,8 @@ CHAPTERS = [
      "Source code passes through tools and gears into a microcontroller", "toolchain"),
     (2, "Clock and memory", "时钟分叉成总线和存储区",
      "A clock branches into buses and memory regions", "clock"),
-    (3, "GPIO", "一只引脚点亮灯，也读回按键",
-     "A microcontroller pin drives a lamp and reads a button", "gpio"),
+    (3, "GPIO", "PC13 写高电平灯灭、写低电平灯亮的共阳接法双态对照",
+     "Two states of the common-anode PC13 LED: high is off and low is on", "gpio"),
     (4, "Interrupt", "门铃事件进入优先级队列",
      "A doorbell event enters a priority queue", "interrupt"),
     (5, "Timer", "齿轮咬合出可测量的波形",

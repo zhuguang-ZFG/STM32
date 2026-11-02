@@ -29,8 +29,8 @@
     {
       "chapter": "03",
       "file": "ch03-handdraw.svg",
-      "zh": "一只引脚点亮灯，也读回按键",
-      "en": "A microcontroller pin drives a lamp and reads a button"
+      "zh": "PC13 写高电平灯灭、写低电平灯亮的共阳接法双态对照",
+      "en": "Two states of the common-anode PC13 LED: high is off and low is on"
     },
     {
       "chapter": "04",
