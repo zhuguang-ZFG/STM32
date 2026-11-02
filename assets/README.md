@@ -9,6 +9,7 @@
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_stack_diagrams.py --render  # stack HTML + 明暗 PNG（可选技能/Chromium）
+> python3 tools/gen_gpio_classic.py   # 11 张 GPIO 证据 SVG
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
 > python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
@@ -89,6 +90,17 @@
 | 文件 | 内容 |
 | --- | --- |
 | `stack-gpio-pc13-led.html` / `.png` / `-dark.png` | PC13 程序控制路径与写 0 电流路径；HTML 为源，2000×1200 明暗 PNG 由浏览器渲染，Lucide 图标 |
+| `classic-03-open-drain.svg` | 开漏低电平导通与高阻上拉两态 |
+| `classic-03-register-map.svg` | 五类基础寄存器及 CRL/CRH 同类关系 |
+| `classic-03-init-code.svg` | RCC 时钟到 GPIO_Init 再到主循环的真实代码顺序 |
+| `classic-03-write-methods.svg` | HAL 与直接 BSRR 同原子，ODR 读改写的竞争边界 |
+| `classic-03-bitband.svg` | GPIOC ODR bit13 的位带别名地址与公式 |
+| `classic-03-remap.svg` | F1 AFIO/MAPR 与 F4 逐脚 AFR 的迁移差异 |
+| `classic-03-ft-evidence.svg` | FT 与注入电流条件的 5 V 接入决策 |
+| `classic-03-debounce.svg` | 按键抖动、拒绝/接受采样和经验消抖边界 |
+| `classic-03-polling.svg` | 100 ms 阻塞与短按漏检的原理对照 |
+| `classic-03-pc13-evidence.svg` | HAL_Delay、PC13 ODR、灯态和 1 s 测量/仿真证据 |
+| `classic-03-pa0-pa1-wiring.svg` | PA0+270 Ω 外接灯与 PA1 上拉按键的专用接线 |
 | `layers-hal-ll-reg.svg` | 寄存器 / LL / HAL / 应用 四层架构对比 |
 | `project-structure.svg` | 一个标准 STM32 工程目录结构 |
 | `peripheral-bus.svg` | 外设挂在哪条总线上（AHB1/AHB2/APB1/APB2） |

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="5 V 能不能接：先查 DS5319，不看运气">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#8f2d2d" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5 V 能不能接：先查 DS5319，不看运气</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚表的 FT 标识与注入电流条件说了算；点亮一次不是耐压证据</text>
+<rect x="771" y="15" width="167" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="854.5" y="33.32" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s18 · 5 V 边界</text>
+<rect x="40" y="150" width="170" height="90" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="125" y="193.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">5 V 模块</text>
+<text x="125" y="210" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">传感器 / 模块信号</text>
+<text x="125" y="266" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">别问「别人板子上能亮」</text>
+<line x1="210" y1="195" x2="263" y2="195" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="270.00,195.00 263.00,198.50 263.00,191.50" fill="#5e6872" opacity="1"/>
+<rect x="270" y="140" width="260" height="110" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="400" y="178" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 查 DS5319 引脚表</text>
+<text x="400" y="206" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这只脚标了 FT 吗？</text>
+<text x="400" y="230" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">（不是「STM32 都耐 5 V」）</text>
+<line x1="530" y1="180" x2="594.485" y2="152.364" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="600.00,150.00 595.67,155.12 593.30,149.61" fill="#7a4e00" opacity="1"/>
+<text x="565" y="150" font-size="11" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">标了 FT</text>
+<line x1="530" y1="210" x2="596.559" y2="305.085" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="600.00,310.00 594.10,306.80 599.02,303.36" fill="#8f2d2d" opacity="1"/>
+<text x="565" y="300" font-size="11" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">没标 FT</text>
+<rect x="600" y="96" width="336" height="122" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="620" y="126" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FT：5 V 容忍，但有条件</text>
+<text x="620" y="152" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 注入电流 I_INJ 必须在手册范围内</text>
+<text x="620" y="173" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· VDD 上下电状态另有注入限制</text>
+<text x="620" y="194" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 核对表 5 的条件后再接</text>
+<rect x="600" y="264" width="336" height="122" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="620" y="294" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">普通脚：不要硬接 5 V</text>
+<text x="620" y="320" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 普通脚 Vin 不得超过手册允许范围</text>
+<text x="620" y="341" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 轻则电平错误，重则打伤芯片</text>
+<text x="620" y="362" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 先电平转换或分压，再进引脚</text>
+<rect x="40" y="424" width="896" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="64" y="456" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">为什么「能亮一次」不算证据</text>
+<text x="64" y="484" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 绝对最大额定值是长期边界，一次实验验证不了；</text>
+<text x="64" y="508" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 注入电流超限的损伤会累积，当时示波器看不出来；</text>
+<text x="64" y="532" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 电气边界只回到 DS5319 表 5（绝对最大额定值）与引脚表的 FT 列。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">条件摘自 DS5319 表 5；以手头芯片对应版本的最新手册为准</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

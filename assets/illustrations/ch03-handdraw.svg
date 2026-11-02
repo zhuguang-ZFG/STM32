@@ -32,7 +32,7 @@
 <line x1="246.8" y1="221.2" x2="246.8" y2="239.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
 <line x1="245" y1="220" x2="245" y2="238" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <text x="245" y="353" font-size="15" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PC13 = 1</text>
-<text x="245" y="398" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">截止 · 无电流</text>
+<text x="245" y="398" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">断开灌电流 · 灯灭</text>
 <line x1="246.8" y1="313.2" x2="246.8" y2="331.2" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
 <line x1="245" y1="312" x2="245" y2="330" stroke="#d7dce1" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="4 6"/>
 <text x="655" y="158" font-size="20" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">写 0 · 灯亮</text>

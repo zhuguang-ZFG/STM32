@@ -39,6 +39,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # whether that directory is present.
 SKIP_DIRS = {
     ".git",
+    ".claude",
     "__pycache__",
     "node_modules",
     "dist",

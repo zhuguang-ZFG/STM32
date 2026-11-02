@@ -10,7 +10,7 @@
 | SVG 原理动画（31 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
-| 静态框图（26 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py` 与 `tools/gen_sample_figures.py`，采用 CC BY 4.0 |
+| 静态框图（37 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py`、`tools/gen_sample_figures.py` 与 `tools/gen_gpio_classic.py`，采用 CC BY 4.0 |
 | PC13 stack 边界图（1 组） | `assets/diagrams/stack-gpio-pc13-led*` | 本仓库设计内容；模板与构建器 [stack-diagram](https://github.com/caru-ini/stack-diagram)（MIT，审查提交 `9e90a3b`）；[Lucide](https://lucide.dev) 图标（ISC）；Geist / JetBrains Mono 字体（SIL OFL 1.1）。许可文本见 `tools/stack-diagrams/` |
 | 章首、章中、分部与附录手绘概念图（71 张） | `assets/illustrations/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_handdraw_illustrations.py`，采用 CC BY 4.0；只用于建立直觉，不承载工程数据 |
 | 光栅动画（24 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
@@ -58,6 +58,7 @@ ST 官网文档中心：<https://www.st.com/resource/en/>
 - **ST 官方社区**：<https://community.st.com/> —— 官方工程师会回答，比搜索更可靠
 - **libopencm3**：<https://github.com/libopencm3/libopencm3> —— 开源固件库，适合看寄存器级实现
 - **ChibiOS / RT-Thread / Zephyr / FreeRTOS**：主流开源 RTOS，源码本身就是最好的教材
+- **unslop**：<https://github.com/heydamir/unslop> —— Damir Sokolovsky，CC BY 4.0；用于本书/视频 UI 红线审查与五行视觉方向，不复制其示例页面或生成故事片
 - **PlatformIO**：<https://docs.platformio.org/page/platforms/ststm32.html> —— 跨平台工具链与板卡定义
 - **Wokwi / Renode**：在线与本地仿真，可以在没有硬件时验证逻辑
 - **中文社区**：正点原子、野火、硬汉嵌入式、电子发烧友、B 站相关课程（仅作索引，不转载内容）

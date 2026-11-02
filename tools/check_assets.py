@@ -298,8 +298,9 @@ def check_videos():
             ok = False
             continue
         dur, streams = _probe_av(mp4)
-        if streams.get("v") != ("h264", gen_narrated.W, gen_narrated.H):
-            print(f"[FAIL] {name} 视频流不是 960×540 H.264：{streams.get('v')}")
+        expected_size = (1920, 1080) if ch["id"] == "03" else (gen_narrated.W, gen_narrated.H)
+        if streams.get("v") != ("h264", *expected_size):
+            print(f"[FAIL] {name} 视频流不是 {expected_size[0]}×{expected_size[1]} H.264：{streams.get('v')}")
             ok = False
         if streams.get("a") != "aac":
             print(f"[FAIL] {name} 没有 AAC 音轨")

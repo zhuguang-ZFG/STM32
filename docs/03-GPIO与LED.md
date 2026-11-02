@@ -59,8 +59,9 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | 1 | 保持要锁的脚 | 写 1 | — | 序列开始 |
 | 2 | 同上，不能改 | 写 0 | — | 序列继续 |
 | 3 | 同上，不能改 | 写 1 | — | 序列写完 |
-| 4 | 同上 | — | 再读，确认读回 1 | 锁住，直到复位 |
-| 失败 | 中途改了掩码，或少了一次写 | — | 确认读回不是 1 | 锁中止，配置仍可改 |
+| 4 | 同上 | — | 第一次读 LCKR，完成写读序列 | 写序列完成 |
+| 5 | 同上 | — | 第二次读，确认 LCKK = 1 | 锁住，直到复位 |
+| 失败 | 中途改了掩码，或少了一次写/读 | — | 第二次确认不是 1 | 锁中止，配置仍可改 |
 
 寄存器是 `GPIOx_LCKR`，偏移 `0x18`。出处是 [RM0008 Rev 21 第 9.2.7 节](#source-rm0008-gpio)。
 
@@ -71,7 +72,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | 外接灯接在 PC13 上，写 1 也不按 PA0 的方式亮 | PC13 不能当电流源 | 外接灯改到 PA0，串 270 Ω | [DS5319 Rev 20 注 5](#source-ds5319-gpio) | LQFP48 第 2 脚是 PC13；PC13–PC15 灌电流不超过 3 mA，速度不超过 2 MHz，负载不超过 30 pF |
 | 板载灯写 1 反而不亮 | 板载灯共阳，PC13 灌电流才亮 | 写 0 点亮 | [gpio-blink 例程](#source-project-examples) | 这块 BluePill 的接法。3 mA 这个限值要看数据手册 |
 | 写了 ODR，脚上没有电平 | 口时钟还没开，配置寄存器还没进外设 | 先打开对应 GPIO 口的时钟，再写 CRL/CRH | [RM0008 GPIO](#source-rm0008-gpio) | 先给这个口时钟，再写第 9 章的配置寄存器 |
-| LCKR 写了三次，之后仍能改配置 | 序列出错，或确认读回不是 1 | 掩码保持不变，写 1、写 0、写 1，再读到 1 | [RM0008 第 9.2.7 节](#source-rm0008-gpio) | 锁成立后保持到复位；错一步则锁中止 |
+| LCKR 写了三次，之后仍能改配置 | 序列出错，或确认读回不是 1 | 掩码保持不变，写 1、写 0、写 1，连续读两次，第二次确认 LCKK = 1 | [RM0008 第 9.2.7 节](#source-rm0008-gpio) | 锁成立后保持到复位；错一步则锁中止 |
 | 烧完就再也连不上 | PA13/PA14 被配成普通 GPIO | 把 SWD 留在 PA13 与 PA14 | [RM0008 表 36](#source-rm0008-gpio) | SWDIO 是 PA13，SWCLK 是 PA14 |
 
 按键抖动没有列在这张表里：常说的 10 ms 到 20 ms 消抖时间是经验值，RM0008 和 DS5319 都没有给。动手实验照样要做消抖，只是别把这个数当成手册规定。
@@ -155,8 +156,8 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 接线（外接 LED）：PA0 → 270Ω → LED 阳极，LED 阴极 → GND（**共阴**，高电平点亮）。
 板载 LED 是 **共阳** 接法：阳极接 3.3V，PC13 拉低才导通，故**低电平点亮**。
 
-<p align="center">
-  <img src="../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="PC13 共阳 LED 的程序控制路径与写 0 时的电流路径">
+<p align="center" class="wide-figure" tabindex="0">
+  <a href="../assets/diagrams/stack-gpio-pc13-led.png"><img src="../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="PC13 共阳 LED 的程序控制路径与写 0 时的电流路径"></a>
   <br><sub>▲ 上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。<a href="../assets/diagrams/stack-gpio-pc13-led.html">HTML 源</a> · <a href="../assets/diagrams/stack-gpio-pc13-led-dark.png">暗色图</a> · Lucide 图标。</sub>
 </p>
 
@@ -217,18 +218,20 @@ int main(void)
 }
 ```
 
-三种写法对照（同一动作：点亮 PC13）：
+三种写法对照（点亮与熄灭要分开；HAL 与直接 BSRR 都原子写位，ODR 读改写不是原子操作）：
 
 ```c
-/* 1) HAL 函数 */
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);   /* 低电平点亮 */
+/* 1) HAL 函数：底层同样写 BSRR */
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);   /* PC13 = 0：灯亮 */
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);     /* PC13 = 1：灯灭 */
 
-/* 2) BSRR 原子操作（推荐，避免读改写） */
-GPIOC->BSRR = GPIO_BSRR_BR13;   /* 复位 PC13（BR=Bit Reset） */
-GPIOC->BSRR = GPIO_BSRR_BS13;   /* 置位 PC13（BS=Bit Set）   */
+/* 2) 直接写 BSRR：原子置位/复位 */
+GPIOC->BSRR = GPIO_BSRR_BR13;   /* 复位 PC13 = 0：灯亮 */
+GPIOC->BSRR = GPIO_BSRR_BS13;   /* 置位 PC13 = 1：灯灭 */
 
-/* 3) ODR 读改写（简单但非原子） */
-GPIOC->ODR &= ~GPIO_ODR_ODR13;  /* 清零 */
+/* 3) ODR 读改写：有并发竞争边界 */
+GPIOC->ODR &= ~GPIO_ODR_ODR13;  /* PC13 = 0：灯亮 */
+GPIOC->ODR |= GPIO_ODR_ODR13;   /* PC13 = 1：灯灭 */
 ```
 
 位带操作（F1 支持，用一个别名地址直接操作单个 bit）：
@@ -339,7 +342,8 @@ F1 改脚位走 AFIO 重映射，F4 每个引脚自己选 AF 号。能不能接 
 GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 GPIOA->LCKR = GPIO_LCKR_LCK5;
 GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
-(void)GPIOA->LCKR;   /* 读回后 LCKK 才真正锁住，直到复位 */
+(void)GPIOA->LCKR;   /* 第一次读：完成写读序列 */
+(void)GPIOA->LCKR;   /* 第二次读：确认 LCKK = 1，锁保持到复位 */
 ```
 
 离开本章前，应留下 PA0 的高低电平、PA1 的按下/松开读值和 PC13 的 1s 周期三份记录，并能解释为什么轮询会漏掉短脉冲。

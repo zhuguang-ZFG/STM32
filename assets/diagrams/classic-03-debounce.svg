@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="按键抖动：先量波形，再谈消抖">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">按键抖动：先量波形，再谈消抖</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抖动期内样本拒绝，稳定后多次一致才接受；10–20 ms 只是经验范围</text>
+<rect x="780" y="15" width="158" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="859" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s23 · 抖动与消抖</text>
+<rect x="24" y="84" width="912" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="112" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">原始波形（按键接 PA1，上拉，按下为低）</text>
+<text x="40" y="146" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.3V</text>
+<text x="40" y="266" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0V</text>
+<rect x="137.4" y="118" width="63.2" height="160" fill="#8f2d2d" opacity="0.07" stroke="#8f2d2d" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="169" y="108" font-size="11" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">抖动：触点弹跳</text>
+<text x="169" y="306" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">≈8 ms</text>
+<rect x="564" y="118" width="63.2" height="160" fill="#8f2d2d" opacity="0.07" stroke="#8f2d2d" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="595.6" y="108" font-size="11" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">释放抖动</text>
+<text x="595.6" y="306" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">≈8 ms</text>
+<path d="M 90.0 140.0 L 137.4 140.0 L 137.4 260.0 L 153.2 260.0 L 153.2 140.0 L 169.0 140.0 L 169.0 260.0 L 184.8 260.0 L 184.8 140.0 L 200.6 140.0 L 200.6 260.0 L 564.0 260.0 L 564.0 140.0 L 579.8 140.0 L 579.8 260.0 L 595.6 260.0 L 595.6 140.0 L 611.4 140.0 L 611.4 260.0 L 627.2 260.0 L 627.2 140.0 L 880.0 140.0 L 880.0 140.0" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<text x="382.3" y="282" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按下（稳定低）</text>
+<text x="785.2" y="132" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">空闲（稳定高）</text>
+<line x1="90" y1="288" x2="880" y2="288" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="880" y="306" font-size="10" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">t / ms</text>
+<rect x="24" y="350" width="912" height="110" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="378" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">采样点：抖动期内拒绝（×），稳定后多次一致才接受（✓）</text>
+<circle cx="121.6" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="153.2" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="153.2" y="418" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<circle cx="184.8" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="184.8" y="418" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<circle cx="216.4" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="248" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="248" y="418" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✓</text>
+<circle cx="279.6" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="279.6" y="418" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✓</text>
+<circle cx="311.2" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="311.2" y="418" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✓</text>
+<circle cx="342.8" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="374.4" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="406" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="437.6" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="469.2" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="500.8" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="532.4" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="564" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="595.6" cy="414" r="7" fill="#fbfaf7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="595.6" y="418" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<circle cx="627.2" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="658.8" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="690.4" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="722" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="753.6" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="785.2" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="816.8" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<circle cx="848.4" cy="414" r="3" fill="#5e6872" opacity="0.5"/>
+<text x="169" y="444" font-size="11" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">× 拒绝</text>
+<text x="279.6" y="444" font-size="11" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✓ 连续一致 → 接受</text>
+<text x="880" y="444" font-size="10" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">t / ms</text>
+<rect x="24" y="480" width="448" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="44" y="510" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">延时确认</text>
+<text x="44" y="536" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读到低 → 延时 → 再读仍低，才算按下；</text>
+<text x="44" y="558" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">延时值按实测抖动宽度取，不抄别人的。</text>
+<rect x="488" y="480" width="448" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="508" y="510" font-size="13" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">周期采样</text>
+<text x="508" y="536" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">定时器周期读键，连续 N 次一致才更新状态；</text>
+<text x="508" y="558" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">与第 04 章 EXTI 边沿触发形成对照。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10–20 ms 是经验范围，RM0008 / DS5319 均未规定；先量实际波形，再选消抖参数</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

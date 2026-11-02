@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="主循环阻塞 100 ms：短按被漏检">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#8f2d2d" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主循环阻塞 100 ms：短按被漏检</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">轮询两次之间按完的脉冲，主循环根本看不见</text>
+<rect x="789" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="863.5" y="33.32" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s24 · 轮询边界</text>
+<rect x="24" y="84" width="912" height="340" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="44" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">含 100 ms 阻塞任务的主循环</text>
+<line x1="90" y1="170" x2="910" y2="170" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="96" y="156" width="193" height="28" fill="#9a3412" opacity="0.15" stroke="#9a3412" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="301" y="156" width="193" height="28" fill="#9a3412" opacity="0.15" stroke="#9a3412" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="506" y="156" width="193" height="28" fill="#9a3412" opacity="0.15" stroke="#9a3412" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="711" y="156" width="193" height="28" fill="#9a3412" opacity="0.15" stroke="#9a3412" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="192.5" y="174" font-size="10.5" fill="#9a3412" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">阻塞任务 ~100 ms</text>
+<circle cx="90" cy="170" r="5" fill="#1b5c45" opacity="1"/>
+<circle cx="295" cy="170" r="5" fill="#1b5c45" opacity="1"/>
+<circle cx="500" cy="170" r="5" fill="#1b5c45" opacity="1"/>
+<circle cx="705" cy="170" r="5" fill="#1b5c45" opacity="1"/>
+<circle cx="910" cy="170" r="5" fill="#1b5c45" opacity="1"/>
+<text x="90" y="148" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读 IDR</text>
+<path d="M 90 196 L 356.5 196 L 356.5 224 L 418.0 224 L 418.0 196 L 910 196" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<text x="387.25" y="244" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按键短脉冲 ~30 ms</text>
+<circle cx="387.25" cy="210" r="13" fill="#fbfaf7" opacity="1" stroke="#8f2d2d" stroke-width="2"/>
+<text x="387.25" y="215" font-size="13" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✗</text>
+<text x="442.6" y="204" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">落在两次轮询之间按完 → 漏检</text>
+<line x1="24" y1="272" x2="936" y2="272" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="44" y="306" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对照：无阻塞、每 10 ms 轮询</text>
+<line x1="90" y1="330" x2="910" y2="330" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="90" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="110.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="131" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="151.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="172" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="192.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="213" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="233.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="254" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="274.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="295" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="315.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="336" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="356.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="377" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="397.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="418" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="438.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="459" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="479.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="500" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="520.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="541" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="561.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="582" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="602.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="623" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="643.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="664" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="684.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="705" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="725.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="746" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="766.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="787" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="807.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="828" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="848.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="869" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="889.5" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<circle cx="910" cy="330" r="2.5" fill="#1b5c45" opacity="0.8"/>
+<path d="M 90 356 L 356.5 356 L 356.5 384 L 418.0 384 L 418.0 356 L 910 356" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<circle cx="387.25" cy="370" r="13" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="387.25" y="375" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">✓</text>
+<text x="442.6" y="364" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">脉冲宽度内有采样点 → 检出</text>
+<text x="910" y="410" font-size="10" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">t / ms（0–400）</text>
+<rect x="24" y="444" width="912" height="60" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="468" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">轮询的边界：采样间隔长于脉冲宽度时，漏检是迟早的事 —— 不是按键坏了，是轮询的盲区。</text>
+<text x="48" y="492" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">实验：主循环加 100 ms 阻塞后短按 PA1，记录漏检与响应延迟；下一章交给 EXTI。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对照实验见 docs/03 动手实验（实验三）</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

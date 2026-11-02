@@ -88,7 +88,7 @@ def gpio_led() -> Svg:
     canvas.text(56, 390, "GPIOx_LCKR  偏移 0x18", size=14, fill=T.VIOLET, weight="700")
     canvas.text(56, 420, "LCK[15:0] 在序列中保持不变", size=13, fill=T.TEXT)
     canvas.text(56, 446, "LCKK：写 1，写 0，写 1", size=13, fill=T.TEXT)
-    canvas.text(56, 472, "再读，确认读回 1，锁保持到复位", size=13, fill=T.TEXT)
+    canvas.text(56, 472, "读 LCKR，完成序列；再读确认 LCKK = 1", size=13, fill=T.TEXT)
     canvas.text(56, 498, "错一步，锁中止，配置仍可改", size=13, fill=T.AMBER)
     canvas.text(56, 528, "RM0008 Rev 21 §9.2.7", size=12, fill=T.MUTED)
     _credit(canvas, "自绘。脚位与 3 mA / 2 MHz / 30 pF 来自 DS5319 Rev 20。")

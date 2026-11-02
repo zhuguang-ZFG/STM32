@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="开漏输出：只主动拉低，高电平靠外部上拉">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">开漏输出：只主动拉低，高电平靠外部上拉</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写 0 时 NMOS 把总线拉到低；写 1 时输出级进入高阻，电平由外部上拉决定</text>
+<rect x="789" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="863.5" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s08 · 开漏机制</text>
+<rect x="24" y="84" width="444" height="320" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="246" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 0：NMOS 导通，主动拉低</text>
+<rect x="330" y="96" width="108" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="384" y="115" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ODR 写 0</text>
+<line x1="48" y1="196" x2="444" y2="196" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="52" y="184" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">总线（如 SDA）</text>
+<line x1="384" y1="196" x2="384" y2="204" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="330" y="204" width="108" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="384" y="222" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">其他开漏设备</text>
+<rect x="72" y="122" width="64" height="26" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="104" y="140" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.3 V</text>
+<line x1="104" y1="148" x2="104" y2="158" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="86" y="158" width="36" height="26" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="104" y="176" font-size="11" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Rp</text>
+<line x1="104" y1="184" x2="104" y2="196" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="146" y="172" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外部上拉</text>
+<line x1="214" y1="196" x2="214" y2="244" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="214" cy="248" r="3.5" fill="#17202a" opacity="1"/>
+<line x1="214" y1="248" x2="214" y2="284" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="214" cy="288" r="3.5" fill="#17202a" opacity="1"/>
+<line x1="214" y1="288" x2="214" y2="318" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="214" y1="318" x2="214" y2="328" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="202" y1="328" x2="226" y2="328" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="207" y1="334" x2="221" y2="334" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="211" y1="340" x2="217" y2="340" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="250" y="254" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NMOS</text>
+<text x="250" y="276" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">导通</text>
+<rect x="52" y="288" width="150" height="42" fill="#e5f3f8" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="127" y="315" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">总线 = 低 0</text>
+<text x="52" y="364" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流：3.3 V → Rp → NMOS → GND</text>
+<text x="52" y="386" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低电平是主动拉出来的</text>
+<rect x="492" y="84" width="444" height="320" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="714" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 1：NMOS 截止，输出级高阻</text>
+<rect x="798" y="96" width="108" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="852" y="115" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ODR 写 1</text>
+<line x1="516" y1="196" x2="912" y2="196" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="520" y="184" font-size="11" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">总线（如 SDA）</text>
+<line x1="852" y1="196" x2="852" y2="204" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="798" y="204" width="108" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="852" y="222" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">其他开漏设备</text>
+<rect x="540" y="122" width="64" height="26" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="572" y="140" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.3 V</text>
+<line x1="572" y1="148" x2="572" y2="158" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="554" y="158" width="36" height="26" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="572" y="176" font-size="11" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Rp</text>
+<line x1="572" y1="184" x2="572" y2="196" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="614" y="172" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外部上拉</text>
+<line x1="682" y1="196" x2="682" y2="244" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="682" cy="248" r="3.5" fill="#17202a" opacity="1"/>
+<line x1="682" y1="248" x2="708" y2="268" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="682" cy="288" r="3.5" fill="#17202a" opacity="1"/>
+<line x1="682" y1="288" x2="682" y2="318" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="682" y1="318" x2="682" y2="328" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="670" y1="328" x2="694" y2="328" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="675" y1="334" x2="689" y2="334" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="679" y1="340" x2="685" y2="340" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="718" y="254" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NMOS</text>
+<text x="718" y="254" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">截止</text>
+<text x="718" y="300" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">输出级 = 高阻（Hi-Z）</text>
+<text x="718" y="322" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚对地近似断开</text>
+<rect x="520" y="288" width="190" height="42" fill="#e5f3f8" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="615" y="315" font-size="12.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">总线 = 高 1（上拉供给）</text>
+<text x="520" y="364" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NMOS 无电流入地，Rp 把线拉回 3.3 V</text>
+<text x="520" y="386" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">高电平是外部上拉给的</text>
+<rect x="24" y="424" width="444" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="44" y="454" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">共享总线为什么用开漏（I2C）</text>
+<text x="44" y="480" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 任一设备写 0 都能把线拉低 —— 线与</text>
+<text x="44" y="502" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 全部写 1 时总线高阻，Rp 把线送回高电平</text>
+<text x="44" y="524" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 没有推挽输出高 / 低对顶烧驱动的风险</text>
+<rect x="492" y="424" width="444" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="512" y="454" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">把开漏当推挽用：常见现象</text>
+<text x="512" y="480" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 高电平出不来，或只能靠上拉慢慢爬升</text>
+<text x="512" y="502" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 上升沿拖尾，高速信号直接变形</text>
+<text x="512" y="524" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 要驱动 LED、时钟线，请改用推挽输出</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">机制依据 RM0008 GPIO 输出级；上拉取值与速度见 I2C 章节</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

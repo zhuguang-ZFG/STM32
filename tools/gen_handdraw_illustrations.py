@@ -170,7 +170,7 @@ def chapter_scene(ch: int, title: str, aria: str, scene: str) -> Svg:
         k.blob("M480 125 Q480 115 492 115 L818 115 Q830 115 830 128 L830 425 L480 425 Z",
                T.PANEL2, T.GREEN)
         for cx, state, level, result, color in [
-            (245, "写 1 · 灯灭", "PC13 = 1", "截止 · 无电流", T.RED),
+            (245, "写 1 · 灯灭", "PC13 = 1", "断开灌电流 · 灯灭", T.RED),
             (655, "写 0 · 灯亮", "PC13 = 0", "导通 · 灌电流", T.GREEN),
         ]:
             k.label(cx, 158, state, color, 20)

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="实验二接线：PA0 串 270 Ω 点灯，PA1 上拉按键">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">实验二接线：PA0 串 270 Ω 点灯，PA1 上拉按键</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接线、读回、现象形成闭环；换 EXTI 实验前先拆外接灯</text>
+<rect x="780" y="15" width="158" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="859" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s26 · 实验二接线</text>
+<rect x="24" y="84" width="560" height="440" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="60" y="180" width="150" height="240" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="135" y="286" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32</text>
+<text x="135" y="308" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">F103C8T6</text>
+<text x="135" y="340" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BluePill 核心板</text>
+<rect x="204" y="230" width="12" height="20" fill="#fbfaf7" opacity="1" rx="2" stroke="#5e6872" stroke-width="1.5"/>
+<text x="198" y="245" font-size="11" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA0</text>
+<line x1="216" y1="240" x2="260" y2="240" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="226" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">推挽输出</text>
+<rect x="260" y="224" width="80" height="32" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="300" y="245" font-size="13" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">270 Ω</text>
+<line x1="340" y1="240" x2="388" y2="240" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="388.00,224.00 388.00,256.00 416.00,240.00" fill="none" opacity="1" stroke="#17202a" stroke-width="2"/>
+<line x1="416" y1="224" x2="416" y2="256" stroke="#17202a" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="402" y="214" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED</text>
+<line x1="416" y1="240" x2="448" y2="240" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="448" y1="240" x2="448" y2="250" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="436" y1="250" x2="460" y2="250" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="441" y1="256" x2="455" y2="256" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="445" y1="262" x2="451" y2="262" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="330" y="292" font-size="11" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">共阴：写 1 灯亮，写 0 灯灭</text>
+<rect x="204" y="330" width="12" height="20" fill="#fbfaf7" opacity="1" rx="2" stroke="#5e6872" stroke-width="1.5"/>
+<text x="198" y="345" font-size="11" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA1</text>
+<line x1="216" y1="340" x2="258" y2="340" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="237" y="326" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">上拉输入</text>
+<circle cx="262" cy="340" r="3" fill="#17202a" opacity="1"/>
+<line x1="262" y1="340" x2="290" y2="320" stroke="#17202a" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="296" cy="340" r="3" fill="#17202a" opacity="1"/>
+<text x="280" y="310" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按键</text>
+<line x1="296" y1="340" x2="340" y2="340" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="340" y1="340" x2="340" y2="350" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="328" y1="350" x2="352" y2="350" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="333" y1="356" x2="347" y2="356" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="337" y1="362" x2="343" y2="362" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="300" y="392" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">按下：PA1 读到低 0</text>
+<text x="48" y="470" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED 共阴：阳极接电阻侧，阴极接地；按键另一端接地。</text>
+<text x="48" y="492" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA1 用内部上拉：空闲读 1，按下读 0（读 IDR）。</text>
+<rect x="616" y="84" width="320" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="636" y="116" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">限流电阻怎么算（例程估算）</text>
+<text x="636" y="146" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">(3.3 − 2.0) V / 5 mA = 260 Ω</text>
+<text x="636" y="172" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">→ 取标准值 270 Ω</text>
+<text x="636" y="202" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2.0 V / 5 mA 是普通红灯估算，换灯要重算。</text>
+<rect x="616" y="250" width="320" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="636" y="282" font-size="12.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">实验记录三件套</text>
+<text x="636" y="310" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">□ 接线：引脚、阻值、LED 极性</text>
+<text x="636" y="336" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">□ 读回：IDR / ODR 的实际值</text>
+<text x="636" y="362" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">□ 现象：按键与灯的对照</text>
+<rect x="616" y="396" width="320" height="128" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="636" y="428" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">换实验先拆线</text>
+<text x="636" y="456" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">下一章 PA0 要做 EXTI0 输入；</text>
+<text x="636" y="480" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先拆外接灯，再进中断实验，</text>
+<text x="636" y="504" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">别让一只脚同时挑两份担子。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接法与 270 Ω 计算见 docs/03 硬件与接线；PA0 是 LQFP48 第 10 脚（DS5319）</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

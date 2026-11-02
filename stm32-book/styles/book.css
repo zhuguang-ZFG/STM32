@@ -142,6 +142,9 @@ table { width: 100%; border-collapse: collapse; font-size: var(--type-small); }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1rem 0 1.5rem; overscroll-behavior-inline: contain; }
 .table-scroll:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .table-scroll table { margin: 0; }
+.wide-figure { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.wide-figure:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.wide-figure a { display: block; }
 th, td { border: 1px solid var(--line); padding: .55rem .7rem; vertical-align: top; text-align: left; }
 th { background: var(--panel); font-weight: 700; }
 tbody tr:nth-child(even) > td { background: color-mix(in srgb, var(--panel) 62%, var(--paper)); }
@@ -209,6 +212,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .part-divider h1, .part-goal { max-width: calc(100% - 4.8rem); }
   .contents ol { columns: 1; }
   .photo-pair { grid-template-columns: minmax(0, 1fr); }
+  .wide-figure img { min-width: 720px; }
   .table-scroll table { display: table; min-width: max(100%, calc(var(--table-columns) * 8rem)); white-space: normal; }
   .table-scroll th, .table-scroll td { min-width: 4.5rem; }
   #appendix-glossary .table-scroll th:first-child,
@@ -249,6 +253,8 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   img { max-height: 200mm; }
   .table-scroll { overflow: visible; break-inside: auto; }
   .table-scroll table { min-width: 0; }
+  .wide-figure { overflow: visible; }
+  .wide-figure img { min-width: 0; }
   thead { display: table-header-group; break-after: avoid-page; page-break-after: avoid; }
   tr { break-inside: avoid-page; page-break-inside: avoid; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: auto; page-break-inside: auto; line-height: 1.45; }

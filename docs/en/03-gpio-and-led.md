@@ -58,8 +58,9 @@ The 1 Hz high and low times are not a GPIO speed-bit result. High 500 ms and low
 | 1 | Hold the pins to lock | Write 1 | — | Sequence starts |
 | 2 | Same mask | Write 0 | — | Sequence continues |
 | 3 | Same mask | Write 1 | — | Writes are done |
-| 4 | Same mask | — | Read again and see 1 | Locked until reset |
-| Failure | Mask changes, or a write is skipped | — | Confirming read is not 1 | Lock aborts; the configuration can still change |
+| 4 | Same mask | — | First read of LCKR completes the write/read sequence | Sequence complete |
+| 5 | Same mask | — | Second read confirms LCKK = 1 | Locked until reset |
+| Failure | Mask changes, or a write/read is skipped | — | Second confirmation is not 1 | Lock aborts; the configuration can still change |
 
 The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.2.7](#source-rm0008-gpio).
 
@@ -70,7 +71,7 @@ The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.
 | An external LED on PC13 does not behave like PA0 when the pin is written 1 | PC13 must not source the LED | Move the external LED to PA0 with 270 Ω | [DS5319 Rev 20 note 5](#source-ds5319-gpio) | LQFP48 pin 2 is PC13; PC13–PC15 sink at most 3 mA, at or below 2 MHz, into 30 pF |
 | The onboard LED stays dark when PC13 is written 1 | The onboard LED is common-anode; PC13 lights it by sinking | Write 0 | [gpio-blink example](#source-project-examples) | The BluePill wiring. The 3 mA limit is in the datasheet |
 | An ODR write does nothing on the pin | The port clock is still off | Enable that GPIO port clock, then write CRL/CRH | [RM0008 GPIO](#source-rm0008-gpio) | Enable the port clock before writing the section 9 configuration registers |
-| Three writes to LCKR still leave the pin editable | The sequence was broken, or the confirming read was not 1 | Keep the mask, write 1, write 0, write 1, and read 1 | [RM0008 section 9.2.7](#source-rm0008-gpio) | A finished lock holds until reset; one bad step aborts it |
+| Three writes to LCKR still leave the pin editable | The sequence was broken, or the confirming read was not 1 | Keep the mask, write 1, write 0, write 1, then make two consecutive reads; the second must confirm LCKK = 1 | [RM0008 section 9.2.7](#source-rm0008-gpio) | A finished lock holds until reset; one bad step aborts it |
 | The probe never connects after a flash | PA13 and PA14 were configured as ordinary GPIO | Leave SWD on PA13 and PA14 | [RM0008 Table 36](#source-rm0008-gpio) | SWDIO is PA13 and SWCLK is PA14 |
 
 Button bounce is not in this table: the usual 10 ms to 20 ms debounce time is a rule of thumb, and neither RM0008 nor DS5319 gives it. The lab still debounces the button; just do not treat that number as a manual requirement.
@@ -154,8 +155,8 @@ The worked example for this orderable is in Principle and boundary, and it is an
 External LED wiring: PA0 → 270 Ω → LED anode, LED cathode → GND (**common cathode**, lights when the pin is high).
 The onboard LED is **common anode**: the anode is tied to 3.3 V, and PC13 has to pull low before current flows, so it **lights when the pin is low**.
 
-<p align="center">
-  <img src="../../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="Program-control path and the write-zero current path of the common-anode PC13 LED">
+<p align="center" class="wide-figure" tabindex="0">
+  <a href="../../assets/diagrams/stack-gpio-pc13-led.png"><img src="../../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="Program-control path and the write-zero current path of the common-anode PC13 LED"></a>
   <br><sub>▲ The diagram separates a program write from electrical current. Writing 0 turns on the PC13 output stage, so current flows from 3.3 V through the common-anode LED and its series resistor into the pin. It explains active-low behaviour; it does not measure current or replace the schematic of a particular clone board. <a href="../../assets/diagrams/stack-gpio-pc13-led.html">HTML source</a> · <a href="../../assets/diagrams/stack-gpio-pc13-led-dark.png">dark image</a> · Lucide icons.</sub>
 </p>
 
@@ -216,18 +217,20 @@ int main(void)
 }
 ```
 
-Three ways to do the same thing (light PC13):
+Three ways to drive PC13, with on and off kept separate. HAL and direct BSRR are both atomic; ODR read-modify-write is not:
 
 ```c
-/* 1) HAL function */
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);   /* low lights the LED */
+/* 1) HAL function: it also writes BSRR underneath */
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);   /* PC13 = 0: LED on */
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);     /* PC13 = 1: LED off */
 
-/* 2) atomic BSRR (preferred; avoids read-modify-write) */
-GPIOC->BSRR = GPIO_BSRR_BR13;   /* reset PC13 (BR = bit reset) */
-GPIOC->BSRR = GPIO_BSRR_BS13;   /* set PC13 (BS = bit set)   */
+/* 2) direct BSRR: atomic set/reset */
+GPIOC->BSRR = GPIO_BSRR_BR13;   /* reset PC13 = 0: LED on */
+GPIOC->BSRR = GPIO_BSRR_BS13;   /* set PC13 = 1: LED off */
 
-/* 3) ODR read-modify-write (simple, but not atomic) */
-GPIOC->ODR &= ~GPIO_ODR_ODR13;  /* clear the bit */
+/* 3) ODR read-modify-write: a concurrency race boundary */
+GPIOC->ODR &= ~GPIO_ODR_ODR13;  /* PC13 = 0: LED on */
+GPIOC->ODR |= GPIO_ODR_ODR13;   /* PC13 = 1: LED off */
 ```
 
 Bit-banding (F1 supports it: one alias address drives a single bit):
@@ -338,7 +341,8 @@ Lock one pin so later init cannot change it. The sequence is write 1, write 0, w
 GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 GPIOA->LCKR = GPIO_LCKR_LCK5;
 GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
-(void)GPIOA->LCKR;   /* only after the read-back does LCKK actually lock, until reset */
+(void)GPIOA->LCKR;   /* first read: complete the write/read sequence */
+(void)GPIOA->LCKR;   /* second read: confirm LCKK = 1 until reset */
 ```
 
 Before leaving this chapter, keep records of the PA0 high/low levels, the PA1 pressed/released readings, and the 1 s PC13 period, and explain why polling can miss a short pulse.

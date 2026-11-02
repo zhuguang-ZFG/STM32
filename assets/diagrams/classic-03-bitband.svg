@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="位带：ODR 的另一个写位入口">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">位带：ODR 的另一个写位入口</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设位带区 0x42000000 起：把寄存器的一位映射成一个别名地址</text>
+<rect x="789" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="863.5" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s15 · 位带别名</text>
+<text x="40" y="112" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">GPIOC-&gt;ODR @ 0x4001100C</text>
+<rect x="40" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="58" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">15</text>
+<rect x="76" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="94" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14</text>
+<rect x="112" y="130" width="36" height="46" fill="#7a4e00" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="130" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">13</text>
+<text x="130" y="158" font-size="15" fill="#ffffff" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">13</text>
+<rect x="148" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="166" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12</text>
+<rect x="184" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="202" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">11</text>
+<rect x="220" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="238" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10</text>
+<rect x="256" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="274" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9</text>
+<rect x="292" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="310" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8</text>
+<rect x="328" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="346" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<rect x="364" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="382" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<rect x="400" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="418" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<rect x="436" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="454" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<rect x="472" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="490" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<rect x="508" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="526" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<rect x="544" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="562" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<rect x="580" y="130" width="36" height="46" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="598" y="124" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0</text>
+<text x="166" y="200" font-size="11" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">▲ 目标位 bit13</text>
+<line x1="166" y1="208" x2="166" y2="232" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="166.00,238.00 163.00,232.00 169.00,232.00" fill="#7a4e00" opacity="1"/>
+<rect x="40" y="244" width="880" height="104" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="64" y="276" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别名地址 = 0x42000000 +（寄存器地址 − 0x40000000）× 32 + 位号 × 4</text>
+<text x="64" y="304" font-size="13" fill="#1e4d63" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">= 0x42000000 + (0x4001100C - 0x40000000) * 32 + 13 * 4</text>
+<text x="64" y="332" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">= 0x422201B4 （写这个别名地址 = 直接改 ODR bit13，无需读改写）</text>
+<rect x="40" y="376" width="440" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="64" y="408" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">代码里的样子</text>
+<text x="64" y="434" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">#define PC13_OUT  BITBAND_PERIPH(0x4001100CUL, 13)</text>
+<text x="64" y="458" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC13_OUT = 0;   /* PC13 输出低 -&gt; 灯亮 */</text>
+<text x="64" y="482" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC13_OUT = 1;   /* PC13 输出高 -&gt; 灯灭 */</text>
+<rect x="504" y="376" width="456" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="524" y="406" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别被长地址吓到</text>
+<text x="524" y="432" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 先确认原寄存器（GPIOC ODR）和位号（13）</text>
+<text x="524" y="454" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 别名只是入口：时钟、模式仍归 RCC 与 CRH 管</text>
+<text x="524" y="476" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 边界与 ODR 相同；位带不是第二套 GPIO</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">公式与外设位带区（0x42000000）见 Cortex-M3 / RM0008 位带说明</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

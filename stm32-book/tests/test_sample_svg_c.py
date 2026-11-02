@@ -58,6 +58,17 @@ boards/pinout-bluepill.svg 900x620 35176 4de478b58c8d278166311b99311183121ccf1ec
 boards/pinout-stm32g071rb-lqfp64.svg 620x750 34523 7ccc8b702e15d0473bfc1d4c956397dfbb5bd50363d4e762bd100c794d1d2193
 boards/pinout-stm32h743zi-lqfp144.svg 840x970 75786 4d71ec5cab732513073bac6721ae4c688a36f18ab11fcae4b5e6e927433b7a96
 boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c88412f1e7920570c53e388e0a10a44fbe5f8adf
+diagrams/classic-03-bitband.svg 960x660 10896 802dd2de3ba9b21add09a8e7cb6e459ebca21b1ed2722d654666bdc922cedaf0
+diagrams/classic-03-debounce.svg 960x660 11113 6bd1b7b8c6f2e744830ccdb5aefe0f3276d291a0fe5c81f5bf0186030c8798d7
+diagrams/classic-03-ft-evidence.svg 960x660 8220 f1697e2aba1a0b826e98324eed0bfc1ef975e36446d30ae130393673c6ff76b9
+diagrams/classic-03-init-code.svg 960x660 9057 b1a622b9fc6d34d668cb3be4bd0caa19f50179f5fdcc7c6c0e77b20fa2f39f3a
+diagrams/classic-03-open-drain.svg 960x660 14300 f82fdd1683523576bcb37ba9f77660ae4fb10c8643487d10dac5444a7c52ec74
+diagrams/classic-03-pa0-pa1-wiring.svg 960x660 11036 207a23c9c085d9aac37b710034a5a1101d3d4a4e9cc85e55614af2e56bb16070
+diagrams/classic-03-pc13-evidence.svg 960x660 10605 687969113f8f812f901bdfeec8d6751fb8f3feda884364f8b646c0580babf5d2
+diagrams/classic-03-polling.svg 960x660 9712 a126b851e13cfdf196d89eecc8dadd2fdc7ce9fe17aeac87d0d4d3c5dbfab65f
+diagrams/classic-03-register-map.svg 960x660 11947 c9f7f9646798ee2cc43bf0b8c021efbef8d9b3e8bfdff5f29b5adf6ce5cadd1c
+diagrams/classic-03-remap.svg 960x660 9069 59d6d6a9a552b797394cc67593739fb944ecd8609febd7c4c290bee85ccd05d1
+diagrams/classic-03-write-methods.svg 960x660 10438 9bbc68ad681faeadd134ef89c10528eea8378b16f240397c437971b55850c960
 diagrams/dma-buffer-ownership.svg 900x560 9298 f33f98d257e04ac2054f8e076c9401ff4aa9d91f30ebc32b474a08329e1b5439
 diagrams/fault-triage-ladder.svg 900x560 10278 ef5120ac9bbc4ccdc40c77db5255baf74dc03e281ac73e2b654370d851282a34
 diagrams/firmware-stack-choice.svg 900x560 8495 ffad6ce257492aef37d37dce681845652b67c5b6f5d341cc279c5ea8c02c9d1e
@@ -84,7 +95,7 @@ diagrams/rtos-owner-task.svg 900x560 8947 0023f1657fb272cc36e19156764f8a6a4cf5a6
 diagrams/sample-00-boot-state.svg 960x620 7103 41eff7ecd092c9f1d0e41629b4b87f337ea9d27e4b63f3ddda1d03e96c3eb3b1
 diagrams/sample-01-swd-vectors.svg 960x980 7328 2e08712dfff9ee901d17be08e83d3496b7d34b02f3ddd73a7565d230a6291b56
 diagrams/sample-02-clock-tree.svg 960x860 7402 41c1657ce8a1e34119ae2946ab5f10034fe5c83ef21fa50b4a1520861a1a98f2
-diagrams/sample-03-gpio-led.svg 960x660 8221 932244c2053d317d50bf5106192a79fbf9d1546f16dd00bcf99110b7bd11a8ad
+diagrams/sample-03-gpio-led.svg 960x660 8220 35a7e6901de591eee1e61a095904be4e2a926c4c351c386d20b8bfda714a6abe
 diagrams/sample-04-exception-stack.svg 960x780 7528 bc969846347daca2048bf5b355139a73f55e436f5c5779f9ac69a92e5d458d3e
 diagrams/sample-05-pwm-1khz.svg 960x820 6845 48d92b03384bf3ac51e52c7d54c8a2bedd68b1a20ec405c21fbbc9287999217e
 diagrams/sample-06-uart-frame.svg 960x820 12448 2da90d7d086d7eabf7a11f50cbe53f3387f1b0e3ed8b97b7781ff4a41be516ee
@@ -119,7 +130,7 @@ illustrations/ch01-handdraw.svg 900x560 7564 2762f78c2bdf7787c0fb93c39df226bb26c
 illustrations/ch01-mid-handdraw.svg 900x560 5318 ed382975ff2698799f3f11ebfa74a1a32252966618a1f27ae0f22f439a241a7c
 illustrations/ch02-handdraw.svg 900x560 6107 ca4c04775828723faf1a1134221700f6e1e5431131d9fe894a77a93fa1c1c82b
 illustrations/ch02-mid-handdraw.svg 900x560 8233 ae0cca7c713899c1d12a2e8887a06901c03780564f093be1b17f38acab29918c
-illustrations/ch03-handdraw.svg 900x560 8257 eab06de6daab1035dded6351f55d3fc752a173e3fa7b36117ce5934e3a630f50
+illustrations/ch03-handdraw.svg 900x560 8263 580d8651396694b153d02b88c3c9edd333602dc0c932f881622e6689c0b0f304
 illustrations/ch03-mid-handdraw.svg 900x560 6720 34cf2d3a1f45f0a0f1a94b414b6874b3a6e2b1d44f702df096dc3112f65dba5c
 illustrations/ch04-handdraw.svg 900x560 4610 37d1d7376b48112f0adffc9779832e7afdc28d08196676297dfe323234861a38
 illustrations/ch04-mid-handdraw.svg 900x560 4062 eb023bca21ff24091f3359faa2683ca383932f4be7c69648569a84c8fe1cc121
@@ -330,7 +341,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "8bf7ca34a767cd1cb5c7d50aa34e5fe5755d0090fa13d65f3cbd4e34a6a22270",
+            "0391297fb6f9d6616983b6f5031f10b86068d033653b610b06eb48969d130508",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -338,7 +349,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "9b6df80155dfd8fcd7256b839aa6dbbdfdc95939731814de4aea2d86ebfa0ff6",
+            "0d5a2a1f9bf631e8ba97a0ed5bf0b95b462c6057811ac751aa498994c5c92ed4",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -395,7 +406,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(161, len(found))
+        self.assertEqual(172, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

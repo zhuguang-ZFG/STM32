@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import struct
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -168,6 +169,25 @@ class ClassicL1VisualTests(unittest.TestCase):
                 self.assertTrue(path.is_file(), path)
                 self.assertIn(label, path.read_text(encoding="utf-8"))
 
+    def test_wide_figure_has_keyboard_and_narrow_screen_contract(self) -> None:
+        for name in ("docs/03-GPIO与LED.md", "docs/en/03-gpio-and-led.md"):
+            text = (REPO / name).read_text(encoding="utf-8")
+            self.assertIn('<p align="center" class="wide-figure" tabindex="0">', text)
+            self.assertIn('<a href=', text)
+        css = (REPO / "stm32-book" / "styles" / "book.css").read_text(encoding="utf-8")
+        self.assertIn(".wide-figure", css)
+        self.assertIn("min-width: 720px", css)
+        spec = importlib.util.spec_from_file_location(
+            "classic_l1_builder", REPO / "stm32-book" / "build_html.py"
+        )
+        builder = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(builder)
+        with tempfile.TemporaryDirectory() as tmp:
+            html = builder.build_html(Path(tmp)).read_text(encoding="utf-8")
+        self.assertIn('<figure class="wide-figure" tabindex="0">', html)
+        body = html.split("<body>", 1)[1]
+        self.assertNotIn('align="center"', body)
+
     def test_stack_boundary_asset_is_complete(self) -> None:
         diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
         self.assertTrue(diagram.is_file(), diagram)
@@ -183,7 +203,12 @@ class ClassicL1VisualTests(unittest.TestCase):
     def test_stack_boundary_is_linked_once_in_both_languages(self) -> None:
         for name in ("docs/03-GPIO与LED.md", "docs/en/03-gpio-and-led.md"):
             text = (REPO / name).read_text(encoding="utf-8")
-            self.assertEqual(1, text.count("diagrams/stack-gpio-pc13-led.png"), name)
+            prefix = "../../" if "/en/" in name else "../"
+            self.assertEqual(
+                1,
+                text.count(f'src="{prefix}assets/diagrams/stack-gpio-pc13-led.png"'),
+                name,
+            )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="GPIO 寄存器地图：6 个名字，5 类角色">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">GPIO 寄存器地图：6 个名字，5 类角色</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRL+CRH 同属配置类；IDR 读回、ODR 输出、BSRR/BRR 原子改位（F1）</text>
+<rect x="780" y="15" width="158" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="859" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s11 · 寄存器地图</text>
+<rect x="40" y="100" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="100" width="5" height="54" fill="#5b3a8c" opacity="1"/>
+<text x="60" y="124" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CRL</text>
+<text x="404" y="124" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x00</text>
+<text x="60" y="144" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">配置引脚 0–7（MODE/CNF）</text>
+<line x1="420" y1="127" x2="462" y2="127" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="40" y="180" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="180" width="5" height="54" fill="#5b3a8c" opacity="1"/>
+<text x="60" y="204" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CRH</text>
+<text x="404" y="204" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x04</text>
+<text x="60" y="224" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">配置引脚 8–15（MODE/CNF）</text>
+<line x1="420" y1="207" x2="462" y2="207" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="40" y="260" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="260" width="5" height="54" fill="#075e84" opacity="1"/>
+<text x="60" y="284" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IDR</text>
+<text x="404" y="284" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08</text>
+<text x="60" y="304" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只读：引脚上的真实输入电平</text>
+<line x1="420" y1="287" x2="462" y2="287" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="462" y="260" width="170" height="54" fill="#e5f3f8" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="547" y="293" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 读回</text>
+<text x="660" y="282" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按键、外部信号都靠它读回</text>
+<rect x="40" y="340" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="340" width="5" height="54" fill="#7a4e00" opacity="1"/>
+<text x="60" y="364" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">ODR</text>
+<text x="404" y="364" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0C</text>
+<text x="60" y="384" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读写：输出电平</text>
+<line x1="420" y1="367" x2="462" y2="367" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="462" y="340" width="170" height="54" fill="#e5f3f8" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="547" y="373" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 输出</text>
+<text x="660" y="362" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写它改电平；|= 是读改写</text>
+<rect x="40" y="420" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="420" width="5" height="54" fill="#1b5c45" opacity="1"/>
+<text x="60" y="444" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">BSRR</text>
+<text x="404" y="444" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x10</text>
+<text x="60" y="464" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写 1 原子：低 16 位置位 / 高 16 位复位</text>
+<line x1="420" y1="447" x2="462" y2="447" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="462" y="420" width="170" height="54" fill="#e5f3f8" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="547" y="453" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ 原子改位</text>
+<text x="660" y="442" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单指令置位 / 复位，不碰别的位</text>
+<rect x="40" y="500" width="380" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="40" y="500" width="5" height="54" fill="#1e4d63" opacity="1"/>
+<text x="60" y="524" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">BRR</text>
+<text x="404" y="524" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x14</text>
+<text x="60" y="544" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写 1 复位（F1 专有）</text>
+<line x1="420" y1="527" x2="462" y2="527" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="462" y="500" width="170" height="54" fill="#e5f3f8" opacity="1" rx="4" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="547" y="533" font-size="13" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">⑤ 复位</text>
+<text x="660" y="522" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F4 没有 BRR，并入 BSRR 高 16 位</text>
+<rect x="462" y="100" width="170" height="134" fill="#e5f3f8" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="547" y="140" font-size="13" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 配置类</text>
+<text x="547" y="166" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CRL+CRH</text>
+<text x="547" y="190" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">是同一类</text>
+<text x="660" y="122" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">MODE/CNF 决定模式</text>
+<text x="660" y="142" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">输入 / 输出 / 上下拉 / 复用</text>
+<text x="660" y="162" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一个口 16 脚，两半分管</text>
+<rect x="40" y="566" width="896" height="44" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="60" y="593" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只改一个脚、不碰别人：BSRR 写 1 置位 / 复位最直接（F1 另有 BRR 专门复位）；ODR 读改写不是唯一办法。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">偏移与功能依据 RM0008 第 9 章 GPIO 寄存器</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

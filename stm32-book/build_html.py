@@ -63,8 +63,8 @@ PROMO_RESOURCE_LINE = re.compile(
     re.IGNORECASE,
 )
 CENTERED_FIGURE = re.compile(
-    r"<p\s+align=[\"']center[\"']>\s*"
-    r"(?P<images>(?:\s*<img\b[^>]*>\s*)+)"
+    r"<p\s+(?P<attrs>[^>]*\balign=[\"']center[\"'][^>]*)>\s*"
+    r"(?P<images>(?=.*?<img\b).*?)"
     r"(?:<br\s*/?>\s*<sub>(?P<caption>.*?)</sub>\s*)?"
     r"</p>",
     re.IGNORECASE | re.DOTALL,
@@ -380,10 +380,11 @@ def semanticize_figures(rendered: str) -> str:
     def replace(match: re.Match[str]) -> str:
         images = match.group("images").strip()
         caption = match.group("caption")
+        attributes = ' class="wide-figure" tabindex="0"' if "wide-figure" in match.group("attrs") else ""
         if caption and caption.strip():
             text = re.sub(r"^\s*▲\s*", "", caption.strip())
-            return f"<figure>{images}<figcaption>{text}</figcaption></figure>"
-        return f"<figure>{images}</figure>"
+            return f"<figure{attributes}>{images}<figcaption>{text}</figcaption></figure>"
+        return f"<figure{attributes}>{images}</figure>"
 
     return CENTERED_FIGURE.sub(replace, rendered)
 

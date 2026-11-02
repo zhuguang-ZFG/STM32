@@ -35,7 +35,7 @@
 <text x="56" y="390" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">GPIOx_LCKR  偏移 0x18</text>
 <text x="56" y="420" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LCK[15:0] 在序列中保持不变</text>
 <text x="56" y="446" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LCKK：写 1，写 0，写 1</text>
-<text x="56" y="472" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再读，确认读回 1，锁保持到复位</text>
+<text x="56" y="472" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读 LCKR，完成序列；再读确认 LCKK = 1</text>
 <text x="56" y="498" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">错一步，锁中止，配置仍可改</text>
 <text x="56" y="528" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RM0008 Rev 21 §9.2.7</text>
 <line x1="24" y1="624" x2="936" y2="624" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>

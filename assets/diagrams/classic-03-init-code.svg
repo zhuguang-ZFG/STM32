@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="660" viewBox="0 0 960 660" role="img" aria-label="初始化：先开时钟，再配引脚">
+
+
+<rect x="0" y="0" width="960" height="660" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">初始化：先开时钟，再配引脚</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设时钟没开时，写进配置寄存器的值到不了硬件</text>
+<rect x="780" y="15" width="158" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="859" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s12 · 初始化顺序</text>
+<rect x="24" y="84" width="604" height="400" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="44" y="118" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">①  __HAL_RCC_GPIOC_CLK_ENABLE();  /* 先开 GPIOC 时钟 */</text>
+<text x="44" y="142" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   __HAL_RCC_GPIOA_CLK_ENABLE();  /* 用到哪个口开哪个 */</text>
+<text x="44" y="166" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
+<text x="44" y="190" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">②  GPIO_InitTypeDef gpio = {0};</text>
+<text x="44" y="214" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Pin   = GPIO_PIN_13;</text>
+<text x="44" y="238" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Mode  = GPIO_MODE_OUTPUT_PP;</text>
+<text x="44" y="262" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Pull  = GPIO_NOPULL;</text>
+<text x="44" y="286" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Speed = GPIO_SPEED_FREQ_LOW;</text>
+<text x="44" y="310" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
+<text x="44" y="334" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">③  HAL_GPIO_Init(GPIOC, &amp;gpio);   /* 写进 CRL/CRH */</text>
+<text x="44" y="358" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
+<text x="44" y="382" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">④  while (1) {</text>
+<text x="44" y="406" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">       HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);</text>
+<text x="44" y="430" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">       HAL_Delay(500);             /* 500 ms -&gt; 1 Hz */</text>
+<text x="44" y="454" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   }</text>
+<rect x="656" y="92" width="280" height="80" fill="#e5f3f8" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="796" y="130.9" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">① 开时钟</text>
+<text x="796" y="147" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RCC → GPIOC / GPIOA</text>
+<line x1="796" y1="172" x2="796" y2="190" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="796.00,196.00 793.00,190.00 799.00,190.00" fill="#5e6872" opacity="1"/>
+<rect x="656" y="196" width="280" height="80" fill="#e5f3f8" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="796" y="234.9" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">② 配引脚</text>
+<text x="796" y="251" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pin/Mode/Pull/Speed → CRL/CRH</text>
+<line x1="796" y1="276" x2="796" y2="294" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="796.00,300.00 793.00,294.00 799.00,294.00" fill="#5e6872" opacity="1"/>
+<rect x="656" y="300" width="280" height="80" fill="#e5f3f8" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="796" y="338.9" font-size="14" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">③ 读写电平</text>
+<text x="796" y="355" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主循环 BSRR / ODR / IDR</text>
+<rect x="656" y="404" width="280" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="676" y="432" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">最常见坑</text>
+<text x="676" y="454" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟没开：配置写进去了，</text>
+<text x="676" y="474" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">硬件却收不到（总线无钟）。</text>
+<rect x="24" y="508" width="912" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="536" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读代码的顺序：① 先找时钟使能  ② 再看 HAL_GPIO_Init 的参数  ③ 最后看主循环怎么写电平。</text>
+<text x="48" y="558" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">例程结构见 project-examples。</text>
+<line x1="24" y1="618" x2="936" y2="618" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="642" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟树见第 02 章；GPIO 寄存器见 RM0008 第 9 章</text>
+<text x="936" y="642" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
