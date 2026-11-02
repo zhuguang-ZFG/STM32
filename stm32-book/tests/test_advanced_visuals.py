@@ -19,6 +19,16 @@ CHAPTERS = {
             "first-success-gates.svg",
         ),
     ),
+    ROOT / "docs" / "01-开发环境搭建.md": (
+        5,
+        (
+            "boot-sequence.svg",
+            "sample-01-swd-vectors.svg",
+            "swd-fetch.gif",
+            "single-build-contract.svg",
+            "project-structure.svg",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -104,6 +114,7 @@ class AdvancedVisualTests(unittest.TestCase):
     def test_english_chapters_keep_the_same_visual_sequence(self) -> None:
         pairs = (
             ("00-如何学习STM32.md", "00-how-to-learn-stm32.md"),
+            ("01-开发环境搭建.md", "01-dev-environment.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),

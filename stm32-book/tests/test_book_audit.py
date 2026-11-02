@@ -60,8 +60,25 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
+
+    def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
+        chapter = self.by_id["01"]
+        expected_assets = (
+            "boot-sequence.svg",
+            "sample-01-swd-vectors.svg",
+            "swd-fetch.gif",
+            "single-build-contract.svg",
+            "project-structure.svg",
+        )
+        for language in ("zh", "en"):
+            edition = chapter[language]
+            self.assertEqual(5, edition["pdf_visual_anchors"])
+            self.assertEqual(0, edition["visual_anchor_deficit"])
+            self.assertEqual(expected_assets, edition["asset_sequence"])
+        for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+            self.assertEqual(0, chapter["parity"][field])
 
     def test_chapter_24_has_matching_structure_and_visual_distribution(self) -> None:
         chapter = self.by_id["24"]

@@ -858,7 +858,7 @@ def instrument_evidence_ladder() -> Svg:
 
 def single_build_contract() -> Svg:
     s = Svg(W, H, "唯一构建合同：IDE 只是入口", "源文件、宏、头文件、链接脚本和产物必须由同一套 CMake preset 定义")
-    s.header(tag="20 构建 · IG-012", tag_color=T.CYAN)
+    s.header(tag="构建合同 · IG-012", tag_color=T.CYAN)
     inputs = [("CubeIDE", T.VIOLET), ("VS Code", T.CYAN), ("CLion", T.GREEN), ("CI", T.AMBER)]
     for i, (name, color) in enumerate(inputs):
         y = 96 + i * 74

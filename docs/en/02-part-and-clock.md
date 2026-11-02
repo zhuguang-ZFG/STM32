@@ -1,7 +1,7 @@
 # 02 Choosing a Part, Memory, and Clocks
 > 中文：[芯片选型与存储器时钟](../02-芯片选型与存储器时钟.md)
 
-> When a write to a peripheral register does nothing, eight times out of ten its clock is off. This chapter teaches you to read a part number and then follow an 8 MHz crystal all the way to 72 MHz.
+> When a peripheral-register write has no effect, read the clock gate and divider registers first. After calculating 8 MHz HSE to 72 MHz SYSCLK, check Flash latency, APB limits, and the clock source that hardware actually selected.
 
 <p align="center">
   <img src="../../assets/animations/clock-tree.svg" width="760" alt="Clock-tree multiply from HSE to SYSCLK">
@@ -96,7 +96,7 @@ ADC sample time is in chapter 09. Source: [RM0008 Rev 21 section 7.3.2](#source-
 
 ## Core ideas
 
-**Lead with the conclusion: pick a part by "core + clock + Flash/RAM + package + peripherals". Set the frequency by "clock tree + divider limits".**
+Use package, memory, and peripherals to reject unsuitable order codes, then calculate each stage of the clock tree from the manual. Parts in one family can still differ in capacity, pins, and clock configuration.
 
 ### 1. The name, piece by piece
 
@@ -111,38 +111,39 @@ Take **STM32F103C8T6**:
 | 8 | 8 | Flash size: 4=16K, 6=32K, 8=64K, B=128K, C=256K, E=512K, G=1M |
 | T | T | Package: T=LQFP, U=QFN, H=BGA, P=TSSOP |
 | 6 | 6 | Temperature: 6=−40 to 85 °C, 7=−40 to 105 °C, 3=−40 to 125 °C |
-| A | (suffix) | Internal code / revision; you can ignore it when ordering |
+| A | (optional suffix) | Part of the order code; check the complete code in the datasheet instead of guessing that it can be omitted |
 
 So **STM32F103C8T6 = F1 performance line · 48 pins · 64 KB Flash · LQFP · −40 to 85 °C**.
 
 ### 2. Family comparison
 
-| Family | Core | Clock | Typical Flash | Package | Typical use | Price (¥ each) |
-| --- | --- | --- | --- | --- | --- | --- |
-| F0 | M0 | 48 MHz | 16–256 KB | TSSOP/QFN | Cheap replacement for an 8-bit MCU | 4–10 |
-| F1 | M3 | 72 MHz | 64–512 KB | LQFP | Teaching, the industrial classic | 8–20 |
-| F3 | M4F | 72 MHz | 64–512 KB | LQFP | Op-amps and comparators, mixed signal | 15–30 |
-| F4 | M4F | 100–180 MHz | 128–2048 KB | LQFP/BGA | Performance, DSP, FPU | 25–70 |
-| F7 | M7F | 216 MHz | 512 KB–2 MB | LQFP/BGA | Graphics, audio, high speed | 60–150 |
-| G0 | M0+ | 64 MHz | 16–512 KB | QFN/TSSOP | Low power and a good price | 6–15 |
-| G4 | M4F | 170 MHz | 32–512 KB | LQFP | Motor control, digital power | 20–45 |
-| H7 | M7F | 480 MHz | 512 KB–2 MB | LQFP/BGA | High-end graphics / AI | 80–200 |
-| L0 | M0+ | 32 MHz | 8–192 KB | TSSOP | Ultra-low power | 5–12 |
-| L4 | M4F | 80 MHz | 64–1 MB | LQFP | Low power and performance together | 20–50 |
+| Family | Common core | Common clock tier | Example Flash range | First selection boundary |
+| --- | --- | --- | --- | --- |
+| F0 | M0 | 48 MHz tier | 16–256 KB | Cost, package, and basic peripherals |
+| F1 | M3 | 72 MHz tier | 64–512 KB | Legacy compatibility and available material |
+| F3 | M4F | 72 MHz tier | 64–512 KB | Analog peripherals and motor control |
+| F4 | M4F | 100–180 MHz tier | 128 KB–2 MB | FPU, DSP, and memory bandwidth |
+| F7 | M7F | 216 MHz tier | 512 KB–2 MB | Cache, graphics, and fast interfaces |
+| G0 | M0+ | 64 MHz tier | 16–512 KB | Cost, low power, and newer peripherals |
+| G4 | M4F | 170 MHz tier | 32–512 KB | High-resolution timers and analog chains |
+| H7 | M7F | Above 400 MHz | 512 KB–2 MB | Power domains, cache, and external memory |
+| L0 | M0+ | 32 MHz tier | 8–192 KB | Standby current and wake sources |
+| L4 | M4F | 80 MHz tier | 64 KB–1 MB | Run performance and low-power modes |
 
-> The prices are a selection sketch. They are not numbers from DS5319 or RM0008. Use them only to compare rough price tiers; check a current quote.
+> This is a first-pass elimination table, not numbers from DS5319 or RM0008 and not a guarantee for every part. Check the candidate datasheet and ordering information before committing to a device.
 
 ### 3. Core features (Cortex-M)
 
 | Feature | Cortex-M3 | Cortex-M4 | Cortex-M7 |
 | --- | --- | --- | --- |
 | Architecture | ARMv7-M | ARMv7E-M | ARMv7E-M |
-| FPU | None | Single precision (double optional) | Double precision |
-| DSP instructions | Partial | Full SIMD/MAC | Full |
-| MPU | Optional | Optional | Standard |
-| Cache | None | None | I-cache / D-cache |
-| TCM | None | None | ITCM/DTCM |
-| Typical clock | ≤ 120 MHz | ≤ 200 MHz | ≤ 600 MHz |
+| FPU | None | Optional single precision | Optional: none, single precision, or single + double precision |
+| DSP extension | No | Yes | Yes |
+| Maximum MPU regions | 8 | 8 | 16 |
+| Cache | None | None | I-cache / D-cache; size is implementation-defined |
+| TCM | None | None | ITCM / DTCM; size is implementation-defined |
+
+These are processor-IP limits. Check the target MCU datasheet and reference manual for the FPU, cache, TCM, and MPU configuration that the silicon actually implements.
 
 ### 4. Memory map
 
@@ -276,8 +277,8 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 ## Hands-on labs
 
 1. **Lab 1 (read the chip):** Run the code above and print the core clock, Flash size, and unique ID. Check that they are 72 MHz and 64 KB.
-2. **Lab 2 (overclock on purpose):** Change the PLL from ×9 to ×16 and see whether it hangs. That is the relationship between Flash wait states and the clock ceiling.
-3. **Lab 3 (APB divider):** Change PPRE1 from ÷2 to ÷1 and see whether an APB1 peripheral (USART2, for example) still works.
+2. **Lab 2 (measure the clock):** Select PLL÷2 for MCO, output 36 MHz on PA8, and measure it with a scope or frequency counter. Do not drive the 72 MHz SYSCLK directly onto MCO.
+3. **Lab 3 (safe divider change):** Change PPRE1 from ÷2 to ÷4 and read back PCLK1 = 18 MHz with a 36 MHz TIM2 clock. Set TIM2_CH1 to PSC = 35 and ARR = 999; PA0 should output 1 kHz. Restore the original configuration afterward.
 
 ### 7. Flash wait states and core clock
 
@@ -314,7 +315,7 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 ### 10. Turn the clock on before you talk about CSS and MCO
 
-**** before the first write to any peripheral, call `__HAL_RCC_*_CLK_ENABLE()`. Power-up default is HSI at 8 MHz, not the 72 MHz you typed in Cube. Until `SystemClock_Config()` has actually run, the UART baud rate is wrong.
+Before the first write to a peripheral, call `__HAL_RCC_*_CLK_ENABLE()`. Power-up default is HSI at 8 MHz, not the 72 MHz shown on the Cube configuration page. If `SystemClock_Config()` has not completed, read `SWS` instead of guessing the core frequency from whether UART output looks normal.
 
 | Mechanism | What it does | One thing to remember |
 | --- | --- | --- |
@@ -326,7 +327,7 @@ On F1, the MCO field in `RCC_CFGR` selects SYSCLK / HSI / HSE / PLL÷2. When the
 
 When the family changes, peripheral base addresses change. Use the CMSIS macros and do not hard-code them.
 
-Motto: **turn the clock on before you touch a register. If HSE drops, CSS catches it. If you want to see the frequency, use MCO.**
+Before leaving this chapter, read the active source and APB dividers from `RCC_CFGR`, then keep one 36 MHz measurement from PA8 with MCO set to PLL÷2.
 
 Self-test:
 

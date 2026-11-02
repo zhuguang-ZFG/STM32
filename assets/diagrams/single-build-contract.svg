@@ -7,8 +7,8 @@
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
 <text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">唯一构建合同：IDE 只是入口</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">源文件、宏、头文件、链接脚本和产物必须由同一套 CMake preset 定义</text>
-<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="808" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">20 构建 · IG-012</text>
+<rect x="747" y="15" width="131" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="812.5" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">构建合同 · IG-012</text>
 <rect x="42" y="96" width="150" height="48" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
 <text x="117" y="126" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CubeIDE</text>
 <line x1="196" y1="120" x2="295.502" y2="238.637" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>

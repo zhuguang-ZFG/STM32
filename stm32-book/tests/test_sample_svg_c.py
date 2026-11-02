@@ -98,7 +98,7 @@ diagrams/sample-18-boot-triage.svg 960x960 6512 ab5be4eb7af108fbd513303dd1d1bf4a
 diagrams/sample-19-flash-fit.svg 960x980 6499 d2cf0662543657786e0dc4d3341cffdffe459035fb80771ffc5b3fe474e7cc42
 diagrams/simulation-model-boundary.svg 900x560 6723 365c4b15943f3a01461ec0e2ce9b0a7dbcdc199777b1b2272e04a791adeaf382
 diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7def982efcc915e5616fe5b16c44fcc99
-diagrams/single-build-contract.svg 900x560 8480 e91be06b3790c3d4adcfe97a4805227b5ccdc79f060eebc490484e535563f797
+diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984c1735cb72ee4c92c61f0759ecb87e126
 diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 """.strip().splitlines()
