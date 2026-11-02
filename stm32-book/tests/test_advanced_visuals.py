@@ -29,6 +29,25 @@ CHAPTERS = {
             "project-structure.svg",
         ),
     ),
+    ROOT / "docs" / "03-GPIO与LED.md": (
+        4,
+        (
+            "gpio-blink.svg",
+            "sample-03-gpio-led.svg",
+            "pinout-bluepill.svg",
+            "led-blink.gif",
+        ),
+    ),
+    ROOT / "docs" / "05-定时器与PWM.md": (
+        5,
+        (
+            "timer-pwm.svg",
+            "sample-05-pwm-1khz.svg",
+            "pwm-1khz.gif",
+            "timer-modes.svg",
+            "pwm-breath.gif",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -115,6 +134,8 @@ class AdvancedVisualTests(unittest.TestCase):
         pairs = (
             ("00-如何学习STM32.md", "00-how-to-learn-stm32.md"),
             ("01-开发环境搭建.md", "01-dev-environment.md"),
+            ("03-GPIO与LED.md", "03-gpio-and-led.md"),
+            ("05-定时器与PWM.md", "05-timer-pwm.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),

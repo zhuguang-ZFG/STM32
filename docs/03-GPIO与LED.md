@@ -2,7 +2,7 @@
 
 > English: [GPIO and the LED](en/03-gpio-and-led.md)
 
-> BluePill 板载的灯写 0 才亮，写 1 反而灭。从这盏灯开始，你会知道一只脚到底能输出什么、能读回什么。
+> PC13 写 0 灯亮，PA0 写 1 外接灯亮，PA1 按下却读到 0。先把这三种电平关系量清楚，再讨论模式、寄存器和消抖。
 
 <p align="center">
   <img src="../assets/animations/gpio-blink.svg" width="760" alt="GPIO 推挽输出驱动 LED 动画">
@@ -84,13 +84,13 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 ## 核心原理
 
-**GPIO 的 8 种模式由「输入/输出」×「推挽/开漏」×「复用/普通」×「上拉/下拉/浮空」组合而成，选错模式是绝大多数问题的根源。**
+GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定电平、引脚现在归 GPIO 还是外设。少答一个，代码也可能“看起来写成功”，引脚却没有预期电平。
 
 ### 1. 8 种 GPIO 模式详解表
 
 | 模式（HAL 宏） | 方向 | 输出级 | 上/下拉 | 典型场景 |
 | --- | --- | --- | --- | --- |
-| `GPIO_MODE_INPUT` + Pull=NPU | 输入 | — | 浮空 | 外部已有上下拉，或接数字器件输出 |
+| `GPIO_MODE_INPUT` + Pull=`GPIO_NOPULL` | 输入 | — | 浮空 | 外部已有上下拉，或接数字器件输出 |
 | `GPIO_MODE_INPUT` + Pull=UP | 输入 | — | 上拉 | 按键接 GND（低有效） |
 | `GPIO_MODE_INPUT` + Pull=DOWN | 输入 | — | 下拉 | 按键接 VCC（高有效） |
 | `GPIO_MODE_ANALOG` | 输入 | 关闭 | — | ADC 采样、低功耗 |
@@ -99,7 +99,7 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 | `GPIO_MODE_AF_PP` | 复用 | 推挽 | — | UART/SPI/PWM 输出 |
 | `GPIO_MODE_AF_OD` | 复用 | 开漏 | — | I2C 硬件外设、SMBus |
 
-> F1 里还有 `GPIO_MODE_AF_INPUT`；F4/F7 用 `GPIO_MODE_AF_OD/PP` + `Alternate` 字段指定复用功能号。术语以 HAL 宏为准。
+> F1 的外设输入通常仍把引脚配置成输入模式，复用输出才使用 `GPIO_MODE_AF_PP/OD`。F4/F7 还要填写 `Alternate` 功能号。不要把一个系列的 HAL 宏照搬到另一个系列。
 
 ### 2. 输出速度与电流能力
 
@@ -154,6 +154,13 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 接线（外接 LED）：PA0 → 270Ω → LED 阳极，LED 阴极 → GND（**共阴**，高电平点亮）。
 板载 LED 是 **共阳** 接法：阳极接 3.3V，PC13 拉低才导通，故**低电平点亮**。
+
+<p align="center">
+  <img src="../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill 引脚图中标出 PA0、PA1、PC13、PA13 和 PA14 的位置与复用边界">
+  <br><sub>▲ 本章只用 PA0、PA1 和 PC13；PA13/PA14 留给 SWD。图用于找针脚和核对丝印，不能替代目标克隆板原理图，也不能证明某个引脚已经输出正确电平（FA-029 · IG-002 · C-03/C-10/C-27/C-31）。</sub>
+</p>
+
+本章先用主循环轮询 PA1。下一章会把按键改接 PA0/EXTI0；外接 LED 要先从 PA0 拆下，PC13 继续作为结果指示灯。
 
 ## 代码实现
 
@@ -232,11 +239,16 @@ PC13_OUT = 0;   /* 直接写 0/1，无需读改写，等效于 ODR */
 
 完整工程见 [`examples/gpio-blink/`](../examples/gpio-blink/)。
 
+<p align="center">
+  <img src="../assets/gif/led-blink.gif" width="640" alt="PC13 低电平点亮、高电平熄灭，并形成 1 秒周期的闪烁">
+  <br><sub>▲ 实验预期：PC13 低有效，每 500ms 翻转一次得到 1s 周期。动画只能说明逻辑关系；验收仍要读 ODR/IDR 或测量引脚周期。</sub>
+</p>
+
 ## 动手实验
 
 1. **实验一**：PC13 板载 LED 1Hz 闪烁（对照 `gpio-blink.svg` 与 `led-blink.gif`）。
 2. **实验二**：外接 LED 到 PA0，计算并串接 270Ω 电阻，实现按键 PA1 控制 LED。
-3. **实验三**：分别用 BSRR、ODR、位带三种方式翻转 PA0，用逻辑分析仪对比波形，理解原子操作的意义。
+3. **实验三（暴露轮询边界）**：在主循环每轮加入 100ms 的阻塞任务，再短按 PA1。记录漏检或响应延迟；删掉阻塞后重测。这个现象留给第 04 章用 EXTI 解决。
 
 ### 6. 按键电路与消抖
 
@@ -284,7 +296,7 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 - 外设区别名：`别名地址 = 0x42000000 + (外设地址 − 0x40000000) × 32 + bit × 4`
 - SRAM 区别名：`别名地址 = 0x22000000 + (SRAM 地址 − 0x20000000) × 32 + bit × 4`
 
-> 位带仅覆盖 SRAM 与 AHB1 外设区；F1 上普遍可用，F4 起部分外设不再支持。
+> STM32F103 的 SRAM 与外设位带别名可用；换到其他内核或系列时，要重新查处理器和芯片参考手册，不能从 F1 直接类推。
 
 ### 9. LED 与数码管驱动简述
 
@@ -325,7 +337,7 @@ GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 (void)GPIOA->LCKR;   /* 读回后 LCKK 才真正锁住，直到复位 */
 ```
 
-口诀：**F1 重映射先开 AFIO；5 V 只认 FT；锁定是 1-0-1 再读。**
+离开本章前，应留下 PA0 的高低电平、PA1 的按下/松开读值和 PC13 的 1s 周期三份记录，并能解释为什么轮询会漏掉短脉冲。
 
 自测：
 

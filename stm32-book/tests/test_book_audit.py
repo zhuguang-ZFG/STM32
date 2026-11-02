@@ -60,7 +60,7 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("01", "02", "20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "03", "04", "05", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
 
     def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
@@ -79,6 +79,33 @@ class BookAuditTests(unittest.TestCase):
             self.assertEqual(expected_assets, edition["asset_sequence"])
         for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
             self.assertEqual(0, chapter["parity"][field])
+
+    def test_gpio_interrupt_timer_close_phase_one(self) -> None:
+        expected = {
+            "03": ("gpio-blink.svg", "sample-03-gpio-led.svg", "pinout-bluepill.svg", "led-blink.gif"),
+            "04": (
+                "nvic-interrupt-flow.svg",
+                "sample-04-exception-stack.svg",
+                "nvic-preempt.gif",
+                "interrupt-priority.svg",
+                "gpio-input-interrupt.svg",
+            ),
+            "05": (
+                "timer-pwm.svg",
+                "sample-05-pwm-1khz.svg",
+                "pwm-1khz.gif",
+                "timer-modes.svg",
+                "pwm-breath.gif",
+            ),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
 
     def test_chapter_24_has_matching_structure_and_visual_distribution(self) -> None:
         chapter = self.by_id["24"]

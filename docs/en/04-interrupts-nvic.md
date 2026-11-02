@@ -1,7 +1,7 @@
 # 04 Interrupts and the NVIC
 > 中文：[中断与 NVIC](../04-中断与NVIC.md)
 
-> Press the button and the CPU drops what it is doing, handles it, then picks up where it left off. This chapter covers who may interrupt whom, and why PA0 and PB0 cannot both be interrupts.
+> Chapter 03's polling loop can miss a short press. After EXTI takes over the same input, verify that the pending bit clears, the ISR does no slow work, and a higher priority really interrupts a lower one.
 
 <p align="center">
   <img src="../../assets/animations/nvic-interrupt-flow.svg" width="760" alt="The full interrupt response path">
@@ -90,7 +90,7 @@ Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Sourc
 
 ## Core ideas
 
-**Lead with the conclusion: an interrupt replaces "the CPU keeps asking" with "the peripheral speaks up". The cost is that you have to handle priority, shared variables, and time spent in the handler.**
+EXTI decides when an event is noticed; the NVIC decides which event runs first. Prompt detection is only one part of correctness. Flags, shared data, and ISR execution time still need separate evidence.
 
 ### 1. Interrupt versus polling
 
@@ -178,6 +178,8 @@ When an interrupt and the main program share a variable, two things go wrong mos
 | --- | --- | --- | --- |
 | BluePill | Button (EXTI) | PA0 | The other side to GND; falling-edge trigger |
 | BluePill | LED | PC13 | Toggled inside the interrupt path |
+
+To continue from chapter 03, remove the external LED from PA0 and move the button from PA1 to PA0. PA13 and PA14 remain assigned to SWD.
 
 ## Code
 
@@ -268,9 +270,9 @@ The full project is in [`examples/exti-key/`](../../examples/exti-key/).
 
 ## Hands-on labs
 
-1. **Lab 1:** A falling edge on the PA0 button toggles PC13. One press, one on or off.
-2. **Lab 2:** Remove the software debounce and press quickly. Watch the extra toggles. Put the debounce back and compare.
-3. **Lab 3 (priority):** Add a second timer interrupt at a different preemption priority, and confirm that the higher preemption can interrupt the lower ISR.
+1. **Lab 1 (event loop):** Let the PA0 falling edge set a flag in the ISR and toggle PC13 in the main loop. Press 10 times, record 10 valid toggles, and confirm in the debugger that the matching `EXTI_PR` bit has cleared.
+2. **Lab 2 (bounce evidence):** Temporarily remove main-loop debounce and count the flags produced by 10 presses. Restore debounce and repeat. Keep both counts instead of judging by appearance.
+3. **Lab 3 (preemption evidence):** Add a TIM2 interrupt. In each ISR, drive one spare GPIO high on entry and low on exit. Capture both traces with a logic analyzer and verify that preemption priority 1 EXTI0 enters during preemption priority 2 TIM2.
 
 ### 6. NVIC registers and functions
 
@@ -319,7 +321,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 ### 11. Three master gates, and a shared EXTI line
 
-**** `PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
+`PRIMASK` masks every interrupt except NMI and HardFault. `FAULTMASK` also masks HardFault, and leaves only NMI. `BASEPRI` blocks only the band whose priority number is greater than or equal to the threshold (a larger number is a lower priority).
 
 | Register | Who it blocks | The usual spelling |
 | --- | --- | --- |
@@ -329,7 +331,7 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
 EXTI lines are shared by **pin number**: PA0 and PB0 both sit on EXTI0, so they cannot both be external interrupts at once. To change the port, write `AFIO->EXTICR` (F1) or `SYSCFG->EXTICR` (F4). They are not two lines in parallel.
 
-Motto: **the master gate has three settings. For one pin number, EXTI keeps only one port.**
+Before leaving this chapter, keep the button-event count, the before/after debounce count, and one preemption trace, and explain why PA0 and PB0 cannot occupy two independent EXTI0 lines.
 
 Self-test:
 

@@ -1,7 +1,7 @@
 # 05 Timers and PWM
 > 中文：[定时器与 PWM](../05-定时器与PWM.md)
 
-> A 1 kHz PWM takes two numbers: PSC and ARR. This chapter reduces a breathing LED, a servo, and pulse measurement to those two numbers.
+> Chapter 04 responds to events with interrupts; this chapter lets hardware generate the beat. Confirm the 72 MHz TIM3 input from chapter 02, then use PSC, ARR, and CCR to generate and measure back a 1 kHz, 50% PWM.
 
 <p align="center">
   <img src="../../assets/animations/timer-pwm.svg" width="760" alt="Timer counting and PWM duty cycle">
@@ -89,7 +89,7 @@ Source: [RM0008 Rev 21 chapter 15](#source-rm0008-tim).
 
 ## Core ideas
 
-**Lead with the conclusion: a timer is "a counter driven by a clock". PSC sets how fast it counts, ARR sets the period, CCR sets the duty.**
+Determine the timer input clock before calculating PSC and ARR. CCR only sets the compare point. If 36 MHz PCLK1 is mistaken for the 72 MHz timer clock, every later result is off by two.
 
 ### 1. Timer classes
 
@@ -140,6 +140,11 @@ A shadow register works like a restaurant changing its menu. The new ARR or CCR 
 | CCR preload | Same idea, so PWM does not glitch halfway (ARPE/OCxPE) |
 | Shadow register | You write the preload register. The value that is actually compared is the shadow register |
 
+<p align="center">
+  <img src="../../assets/animations/timer-modes.svg" width="820" alt="Timer state changes for up-counting, center-aligned counting, compare matches, and update events">
+  <br><sub>▲ Counter state: CNT, ARR, and CCR determine update events and compare output. The first frame remains readable in the PDF. It explains order and boundaries; it is not an oscilloscope capture (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 ### 4. PWM modes and formulas
 
 PWM flips a switch thousands of times a second, and the load only feels the average: the LED looks half bright, the motor runs at half speed. The counter runs from 0 to ARR. The output is high until the count reaches CCR and low after it, so CCR is the switch point. A lap has only ARR+1 steps, so the higher the frequency, the shorter the lap and the fewer duty steps you get.
@@ -158,7 +163,7 @@ Frequency versus resolution, at the same fCK_PSC:
 | --- | --- | --- | --- | --- |
 | 1 kHz | 1 | 36000 | 1/36000 | A different high-resolution set. With PSC = 0, ARR+1 would be 72000, past the 16-bit limit of 65536, so PSC is 1. Not the Appendix D 1 kHz cell (PSC = 71, ARR = 999) |
 | 10 kHz | 0 | 7200 | 1/7200 | A common motor PWM |
-| 20 kHz | 0 | 3600 | 1/3600 | Above the range of human hearing, so the motor stops whining |
+| 20 kHz | 0 | 3600 | 1/3600 | Often moves switching noise beyond the main audible range; still measure the motor and driver |
 | 50 Hz (servo) | 71 | 20000 | 1/20000 | 1 µs per step and 20 ms per lap, so a 1–2 ms servo pulse is CCR = 1000–2000 |
 
 > **the higher the PWM frequency, the fewer ARR steps you have left for duty, and the resolution gets worse.** The two fight each other. Split the difference for the job.
@@ -182,6 +187,8 @@ Input capture uses the counter the other way round. When the outside signal chan
 | BluePill | Input capture | PA0 (TIM2_CH1) | A signal generator, or another PWM |
 
 > F1 timer-channel pinout is in the DS5319 alternate-function table. TIM1 is an advanced timer. PWM output needs **MOE**.
+
+To continue from chapter 04, remove the button from PA0. For the capture lab, jumper the PA6 PWM output to PA0, keep a common ground, and leave PA0 configured as an input.
 
 ## Code
 
@@ -280,9 +287,14 @@ The full project is in [`examples/timer-pwm/`](../../examples/timer-pwm/).
 
 ## Hands-on labs
 
-1. **Lab 1 (PWM out):** TIM3_CH1 outputs a 1 kHz, 50% square wave. Confirm frequency and duty with a scope or a logic analyzer.
-2. **Lab 2 (breathing LED):** Walk the duty from 0 to 100% and back with the code above. Watch the LED fade up and down (compare with `pwm-breath.gif`).
-3. **Lab 3 (input capture):** Feed lab 1's PWM into another input-capture channel. Measure frequency and duty, and compare the error with the values you set.
+1. **Lab 1 (PWM out):** Output 1 kHz at 50% on TIM3_CH1. Record frequency, period, high time, and duty, then reconcile them with PSC = 71, ARR = 999, and CCR = 500.
+2. **Lab 2 (duty steps):** Write CCR = 100, 500, and 900 and measure about 10%, 50%, and 90% before running the breathing effect. Brightness is only an observation; the three traces are the acceptance evidence.
+3. **Lab 3 (capture loop):** Jumper PA6 to PA0 and capture lab 1's PWM with TIM2. Print the captured period and high counts, compare them with the settings, and add ARR+1 when a capture crosses an overflow.
+
+<p align="center">
+  <img src="../../assets/gif/pwm-breath.gif" width="640" alt="PWM duty rises and falls while LED brightness follows the average current">
+  <br><sub>▲ The breathing effect shows CCR changing over time. Use the saved traces from labs 1 and 2 to prove that frequency remains 1 kHz and the three duty settings are correct.</sub>
+</p>
 
 ### 6. Complementary outputs and dead time (advanced timers)
 
@@ -330,7 +342,7 @@ HAL_TIM_Base_Start_IT(&htim2);
 
 ### 9. Input capture and TRGO
 
-**** measure a pulse width with input capture. If you want the ADC to sample on a fixed interval, send the update event out through master mode (TRGO). Do not software-trigger it from the main loop.
+Measure a pulse width with input capture. If the ADC must sample on a fixed interval, send the update event through master mode (TRGO) instead of software-triggering it from the main loop.
 
 ```c
 TIM_MasterConfigTypeDef mst = {0};
@@ -341,7 +353,7 @@ HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
 
 Quadrature looks at both phases: B lagging A by about 90° is one direction, and B leading is the other. With only one square wave, the hardware cannot tell forward from reverse.
 
-Motto: **capture latches CNT, and TRGO sends the beat. An encoder must have both A and B.**
+Before leaving this chapter, keep the 1 kHz/50% output trace, the three duty-step traces, and one input-capture reading, and derive PSC, ARR, and CCR from the 72 MHz timer clock.
 
 Self-test:
 

@@ -1,7 +1,7 @@
 # 03 GPIO and LEDs
 > 中文：[GPIO 与 LED](../03-GPIO与LED.md)
 
-> The LED on a BluePill lights when you write 0 and goes dark when you write 1. Starting from that LED, you learn what a pin can drive and what it can read back.
+> Writing 0 lights PC13, writing 1 lights the external LED on PA0, and pressing the PA1 button reads as 0. Measure those three relationships before discussing modes, registers, and debounce.
 
 <p align="center">
   <img src="../../assets/animations/gpio-blink.svg" width="760" alt="Animation of a GPIO push-pull output driving an LED">
@@ -83,13 +83,13 @@ Button bounce is not in this table: the usual 10 ms to 20 ms debounce time is a 
 
 ## Core ideas
 
-**Lead with the conclusion: the 8 GPIO modes are the combinations of input/output × push-pull/open-drain × alternate/GPIO × pull-up/pull-down/floating. The wrong mode is the root of most problems.**
+A GPIO configuration must answer three questions: who drives the signal, what sets the idle level, and whether GPIO or a peripheral owns the pin. Miss one and the register write may succeed while the pin still has the wrong level.
 
 ### 1. The 8 GPIO modes
 
 | Mode (HAL macro) | Direction | Output stage | Pull | Typical use |
 | --- | --- | --- | --- | --- |
-| `GPIO_MODE_INPUT` + Pull=NPU | Input | — | Floating | Something else already pulls the pin, or you are reading a digital output |
+| `GPIO_MODE_INPUT` + Pull=`GPIO_NOPULL` | Input | — | Floating | Something else already pulls the pin, or you are reading a digital output |
 | `GPIO_MODE_INPUT` + Pull=UP | Input | — | Pull-up | Button to GND (active low) |
 | `GPIO_MODE_INPUT` + Pull=DOWN | Input | — | Pull-down | Button to VCC (active high) |
 | `GPIO_MODE_ANALOG` | Input | Off | — | ADC sample, low power |
@@ -98,7 +98,7 @@ Button bounce is not in this table: the usual 10 ms to 20 ms debounce time is a 
 | `GPIO_MODE_AF_PP` | Alternate | Push-pull | — | UART / SPI / PWM output |
 | `GPIO_MODE_AF_OD` | Alternate | Open-drain | — | Hardware I2C, SMBus |
 
-> F1 also has `GPIO_MODE_AF_INPUT`. F4/F7 use `GPIO_MODE_AF_OD/PP` plus the `Alternate` field to pick the alternate-function number. Name the mode by the HAL macro.
+> On F1, a peripheral input is normally configured as an input; alternate output uses `GPIO_MODE_AF_PP/OD`. F4/F7 also require an `Alternate` function number. Do not copy HAL mode names from one family into another.
 
 ### 2. Output speed and current
 
@@ -153,6 +153,13 @@ The worked example for this orderable is in Principle and boundary, and it is an
 
 External LED wiring: PA0 → 270 Ω → LED anode, LED cathode → GND (**common cathode**, lights when the pin is high).
 The onboard LED is **common anode**: the anode is tied to 3.3 V, and PC13 has to pull low before current flows, so it **lights when the pin is low**.
+
+<p align="center">
+  <img src="../../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill pin map locating PA0, PA1, PC13, PA13, and PA14 and their alternate-function boundaries">
+  <br><sub>▲ This chapter uses PA0, PA1, and PC13; PA13 and PA14 stay assigned to SWD. The drawing locates pins and silkscreen labels. It does not replace the clone board's schematic or prove that a pin has the correct electrical level (FA-029 · IG-002 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+This chapter polls PA1 in the main loop. Chapter 04 moves the button to PA0/EXTI0; remove the external LED from PA0 first, while PC13 remains the result indicator.
 
 ## Code
 
@@ -231,11 +238,16 @@ PC13_OUT = 0;   /* write 0 or 1 directly, no read-modify-write, same effect as O
 
 The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 
+<p align="center">
+  <img src="../../assets/gif/led-blink.gif" width="640" alt="PC13 lights at a low level, turns off at a high level, and forms a one-second blink period">
+  <br><sub>▲ Expected result: PC13 is active low, and toggling every 500 ms gives a 1 s period. The animation shows the logic only; acceptance still requires an ODR/IDR readback or a measured pin period.</sub>
+</p>
+
 ## Hands-on labs
 
 1. **Lab 1:** Blink the PC13 onboard LED at 1 Hz (compare with `gpio-blink.svg` and `led-blink.gif`).
 2. **Lab 2:** Put an external LED on PA0, compute and fit a 270 Ω resistor, and let the PA1 button control the LED.
-3. **Lab 3:** Toggle PA0 with BSRR, with ODR, and with bit-banding. Compare the waveforms on a logic analyzer and see what atomic means.
+3. **Lab 3 (expose the polling boundary):** Add a blocking 100 ms task to each main-loop pass, then make a short press on PA1. Record the missed press or response delay; remove the block and repeat. Chapter 04 fixes this with EXTI.
 
 ### 6. Button circuits and debounce
 
@@ -283,7 +295,7 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 - Peripheral region alias: `alias = 0x42000000 + (peripheral address − 0x40000000) × 32 + bit × 4`
 - SRAM region alias: `alias = 0x22000000 + (SRAM address − 0x20000000) × 32 + bit × 4`
 
-> Bit-banding covers only SRAM and the AHB1 peripheral region. It is generally available on F1. From F4 on, some peripherals no longer support it.
+> STM32F103 provides SRAM and peripheral bit-band aliases. On another core or STM32 family, check the processor and device reference manuals again instead of carrying this F1 rule over.
 
 ### 9. Driving an LED or a digit display, briefly
 
@@ -306,7 +318,7 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 
 ### 11. Remap, 5 V tolerance, and the lock
 
-**** on F1 you move a function with AFIO remap. On F4 each pin picks its own AF number. Whether a pin may see 5 V depends only on whether that datasheet column says FT. It is not "every STM32 tolerates 5 V".
+On F1 you move a function with AFIO remap. On F4 each pin picks its own AF number. A pin may see 5 V only when its datasheet cell says FT; 5 V tolerance is not a family-wide default.
 
 | Family | How you change the function | What has to happen first |
 | --- | --- | --- |
@@ -324,7 +336,7 @@ GPIOA->LCKR = GPIO_LCKR_LCKK | GPIO_LCKR_LCK5;
 (void)GPIOA->LCKR;   /* only after the read-back does LCKK actually lock, until reset */
 ```
 
-Motto: **on F1, enable AFIO before you remap. 5 V only if the pin is FT. The lock is 1-0-1, then a read.**
+Before leaving this chapter, keep records of the PA0 high/low levels, the PA1 pressed/released readings, and the 1 s PC13 period, and explain why polling can miss a short pulse.
 
 Self-test:
 
