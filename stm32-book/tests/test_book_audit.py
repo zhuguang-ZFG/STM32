@@ -57,12 +57,38 @@ class BookAuditTests(unittest.TestCase):
                 self.assertGreaterEqual(chapter["target_visual_anchors"], 3)
             self.assertEqual(item["zh"]["target_visual_anchors"], item["en"]["target_visual_anchors"])
 
-    def test_bilingual_visual_drift_is_reported_without_hiding_the_first_batch(self) -> None:
+    def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        self.assertFalse(self.by_id["24"]["parity"]["asset_sequence_equal"])
-        for chapter_id in ("20", "22", "25"):
+        for chapter_id in ("20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
+
+    def test_chapter_24_has_matching_structure_and_visual_distribution(self) -> None:
+        chapter = self.by_id["24"]
+        expected_assets = (
+            "pinout-stm32l476rg-lqfp64.svg",
+            "nucleo-f411re-embedded-world.jpg",
+            "nucleo-f401re-embedded-world.jpg",
+            "l4-stop2-evidence.svg",
+            "l4-idd-bench.svg",
+        )
+
+        for language in ("zh", "en"):
+            edition = chapter[language]
+            self.assertEqual(4, edition["pdf_visual_anchors"])
+            self.assertEqual(0, edition["visual_anchor_deficit"])
+            self.assertEqual(2, edition["photos"])
+            self.assertEqual(1, edition["animations"])
+            self.assertEqual(expected_assets, edition["asset_sequence"])
+
+        for path in (
+            ROOT / "docs" / "24-STM32L4引脚.md",
+            ROOT / "docs" / "en" / "24-stm32l4-pins.md",
+        ):
+            self.assertIn('class="photo-pair"', path.read_text(encoding="utf-8"))
+
+        for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+            self.assertEqual(0, chapter["parity"][field])
 
     def test_json_report_round_trips(self) -> None:
         with tempfile.TemporaryDirectory() as folder:

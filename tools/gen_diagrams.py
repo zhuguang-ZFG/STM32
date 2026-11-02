@@ -314,7 +314,7 @@ def l4_idd_bench() -> Svg:
         x = 58 + (i % 2) * 400
         y = 454 + (i // 2) * 23
         s.text(x, y, note, size=10.2, fill=T.MUTED)
-    s.footer("静态 µA 平台 + 唤醒电荷积分 + MCU 端 VDD，三项缺一不可")
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-002 中心标注 · C-03 / C-10 / C-27 / C-31")
     return s
 
 

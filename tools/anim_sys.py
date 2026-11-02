@@ -645,7 +645,7 @@ def l4_stop2_evidence() -> Svg:
     for i, text in enumerate(steps):
         s.text(470, 418 + i * 24, text, size=10.5, fill=T.MUTED)
 
-    s.footer("不变量：先记录，后清硬件标志；先恢复时钟，后输出证据")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-009 时间轴节点 · C-03 / C-10 / C-27 / C-31")
     return s
 
 

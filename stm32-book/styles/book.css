@@ -227,6 +227,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
   h2, h3, h4, h5, h6 { bookmark-level: none; }
   p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
+  .photo-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: 9pt; line-height: 1.4; }
   sub { font-size: 9pt; line-height: 1.4; }
   img { max-height: 200mm; }
