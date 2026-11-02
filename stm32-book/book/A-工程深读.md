@@ -2,6 +2,11 @@
 
 串口 DMA 的难点不是调用一个 HAL 函数，而是先选定**缓冲区所有权契约**。常见实现只有两类；把两类代码拼在一起，最容易造成重复、漏收或半帧覆盖。
 
+<p align="center">
+  <img src="../../assets/animations/uart-idle-dma.svg" width="760" alt="UART + DMA + IDLE 两类接收契约">
+  <br><sub>▲ 动画：字节成阵到达、IDLE 触发事件、Size 是首个未写位置；契约 A 每次重新武装，契约 B 环形取模（作者自绘矢量图）</sub>
+</p>
+
 ## 1. 先写不变量
 
 无论选哪一类，实现前都应写下四条不变量：

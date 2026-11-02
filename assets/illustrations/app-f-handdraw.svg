@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Open-source projects take their places on the map">
+<title>Open-source projects take their places on the map</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">APP F</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M110 390 C140 260 260 150 430 140 S700 190 790 300 C760 390 600 430 430 425 S170 430 110 390 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<circle cx="242" cy="261" r="14" fill="none" opacity="0.2" stroke="#075e84" stroke-width="1"/>
+<circle cx="240" cy="260" r="14" fill="#f1f5f7" opacity="1" stroke="#075e84" stroke-width="2" class="hd-pulse"/>
+<line x1="241.8" y1="275.2" x2="241.8" y2="295.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="240" y1="274" x2="240" y2="294" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="240" y="312" font-size="8" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">KERNEL</text>
+<circle cx="422" cy="201" r="14" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="420" cy="200" r="14" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-pulse"/>
+<line x1="421.8" y1="215.2" x2="421.8" y2="235.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="420" y1="214" x2="420" y2="234" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="420" y="252" font-size="8" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">DRIVER</text>
+<circle cx="582" cy="251" r="14" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="580" cy="250" r="14" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-pulse"/>
+<line x1="581.8" y1="265.2" x2="581.8" y2="285.2" stroke="#5b3a8c" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="580" y1="264" x2="580" y2="284" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="580" y="302" font-size="8" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TOOL</text>
+<circle cx="362" cy="351" r="14" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="360" cy="350" r="14" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-pulse"/>
+<line x1="361.8" y1="365.2" x2="361.8" y2="385.2" stroke="#8f2d2d" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360" y1="364" x2="360" y2="384" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="360" y="402" font-size="8" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">LIB</text>
+<circle cx="642" cy="361" r="14" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="640" cy="360" r="14" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="2" class="hd-pulse"/>
+<line x1="641.8" y1="375.2" x2="641.8" y2="395.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="640" y1="374" x2="640" y2="394" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="640" y="412" font-size="8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">COMMUNITY</text>
+<path d="M254 262 C320 240 360 225 405 212 M435 205 C490 212 530 230 565 244 M375 340 C400 300 405 260 415 215 M595 262 C620 300 630 330 636 350 M255 272 C300 310 330 330 350 344" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

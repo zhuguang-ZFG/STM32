@@ -870,7 +870,12 @@ class Batch6GlossaryTests(unittest.TestCase):
                 self.assertIn(token, old_lines[229])
         for rel in ("stm32-book/book/A-工程深读.md", "stm32-book/book/en/A-uart-dma.md"):
             now = (ROOT / rel).read_text(encoding="utf-8")
-            self.assertEqual(baseline_chapter(lock["baseline"], rel), now)
+            # 附录 A 在 2026-11 加入 uart-idle-dma 动画嵌入，冻结点随之单列；
+            # 术语表的 229 单元格比对仍以 batch6 旧基线为准。
+            self.assertEqual(
+                baseline_chapter(lock.get("appendix_baseline", lock["baseline"]), rel),
+                now,
+            )
 
 
 if __name__ == "__main__":

@@ -560,6 +560,32 @@ def load_handdraw_mid() -> dict[str, dict]:
     return entries
 
 
+def load_handdraw_appendices() -> dict[str, dict]:
+    """Load the 6 appendix plates from the same manifest (en edition ships A–E)."""
+    data = _read_handdraw_data()
+    appendices = data.get("appendices")
+    if not isinstance(appendices, list) or len(appendices) != 6:
+        raise BuildError("hand-drawn manifest must list exactly 6 appendix plates")
+    entries: dict[str, dict] = {}
+    for index, item in enumerate(appendices):
+        letter = chr(ord("a") + index)
+        if not isinstance(item, dict):
+            raise BuildError(f"invalid appendix plate entry at {letter}")
+        filename = item.get("file")
+        if filename != f"app-{letter}-handdraw.svg":
+            raise BuildError(f"hand-drawn manifest appendix file name is wrong at {letter}")
+        appendix_id = item.get("id")
+        if not isinstance(appendix_id, str) or not appendix_id.startswith("appendix-"):
+            raise BuildError(f"hand-drawn manifest appendix id is wrong at {letter}")
+        for key in ("zh", "en"):
+            value = item.get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise BuildError(f"hand-drawn manifest lacks {key} title at appendix {letter}")
+        _check_handdraw_file(filename)
+        entries[appendix_id] = item
+    return entries
+
+
 def embed_local_images(rendered: str, source_file: Path) -> str:
     def replace_tag(match: re.Match[str]) -> str:
         tag = match.group(0)
@@ -740,6 +766,8 @@ UI = {
         "part_plate_caption": "分部概念图：{title}。用于建立直觉，不承载工程数据。",
         "mid_plate_alt": "本节概念图：{title}",
         "mid_plate_caption": "本节概念图：{title}。用于建立直觉，不承载工程数据。",
+        "appendix_plate_alt": "附录概念图：{title}",
+        "appendix_plate_caption": "附录概念图：{title}。用于建立直觉，不承载工程数据。",
         "appendix_kicker": "附录",
         "callout_warning": "注意",
         "callout_tip": "提示",
@@ -803,6 +831,8 @@ UI = {
         "part_plate_caption": "Part concept: {title}. Built for intuition, not engineering evidence.",
         "mid_plate_alt": "Section concept: {title}",
         "mid_plate_caption": "Section concept: {title}. Built for intuition, not engineering evidence.",
+        "appendix_plate_alt": "Appendix concept: {title}",
+        "appendix_plate_caption": "Appendix concept: {title}. Built for intuition, not engineering evidence.",
         "appendix_kicker": "Appendix",
         "callout_warning": "Warning",
         "callout_tip": "Tip",
@@ -929,6 +959,19 @@ def mid_plate(entry: dict, language: str, manifest: dict) -> str:
     uri = _data_uri(HANDDRAW_DIR / entry["file"])
     return f"""
 <figure class="mid-plate">
+  <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
+  <figcaption>▲ {html.escape(caption)}</figcaption>
+</figure>"""
+
+
+def appendix_plate(entry: dict, language: str, manifest: dict) -> str:
+    """Return one appendix-opening hand-drawn plate as an embedded image."""
+    title = entry["zh"] if language == "zh" else entry["en"]
+    alt = ui(manifest, "appendix_plate_alt").format(title=title)
+    caption = ui(manifest, "appendix_plate_caption").format(title=title)
+    uri = _data_uri(HANDDRAW_DIR / entry["file"])
+    return f"""
+<figure class="appendix-plate">
   <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
   <figcaption>▲ {html.escape(caption)}</figcaption>
 </figure>"""
@@ -1565,6 +1608,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     handdraw = load_handdraw_manifest()
     handdraw_parts = load_handdraw_parts()
     handdraw_mid = load_handdraw_mid()
+    handdraw_appendices = load_handdraw_appendices()
 
     chapter_anchors = {
         (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
@@ -1659,10 +1703,14 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             content, path, appendix["id"], chapter_anchors, table_label, labels
         )
         registry = source_registry_html(manifest) if appendix["id"] == "appendix-references" else ""
+        plate_entry = handdraw_appendices.get(appendix["id"])
+        if plate_entry is None:
+            raise BuildError(f"no hand-drawn plate for appendix: {appendix['id']}")
         body.append(
             f"""
 <article class="appendix" id="{html.escape(appendix['id'])}">
   <header><span class="chapter-number">{html.escape(ui(manifest, 'appendix_kicker'))}</span><h1>{html.escape(title)}</h1></header>
+  {appendix_plate(plate_entry, edition_language(manifest), manifest)}
   {rendered}
   {registry}
   <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>

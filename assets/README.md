@@ -9,7 +9,7 @@
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
-> python3 tools/gen_handdraw_illustrations.py   # 29 张章首 + 29 张章中 + 7 张分部手绘概念图与 manifest
+> python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -17,7 +17,7 @@
 
 第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
 
-29 张章首、29 张章中与 7 张分部手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单把 65 张图内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。
+29 张章首、29 张章中、7 张分部与 6 张附录手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。附录图按附录 id 装配：中文版嵌 6 张，英文版附录 F 尚未翻译，嵌 5 张；某篇附录没有对应条目同样是构建错误。
 
 ## 一、动画演示 `assets/animations/`
 
@@ -33,6 +33,7 @@
 | `timer-pwm.svg` | 定时器计数、比较匹配与 PWM 占空比（呼吸灯） | 05 |
 | `timer-modes.svg` | 定时器 4 种常见模式（输出比较/PWM 输入捕获/编码器） | 05 |
 | `uart-frame.svg` | UART 帧结构逐位时序：起始位/数据位/校验/停止位 | 06 |
+| `uart-idle-dma.svg` | UART + DMA + IDLE 两类接收契约：Size 是首个未写位置，契约 A 重新武装、契约 B 环形取模 | 附录 A |
 | `i2c-transaction.svg` | I2C 完整事务：START、地址、ACK、数据、STOP | 07 |
 | `spi-transfer.svg` | SPI 全双工移位：CPOL/CPHA 四种模式时序 | 08 |
 | `adc-sar.svg` | ADC 采样保持 + 逐次逼近（SAR）比较过程 | 09 |
@@ -210,6 +211,17 @@
 | `ch26-mid-handdraw.svg` | 26 | 3. 统一调用模型：时钟、默认值、配置、使能 | 时钟、默认值、配置、使能，四级台阶 |
 | `ch27-mid-handdraw.svg` | 27 | TCP 是字节流：必须自己定义消息边界 | 字节流要切成有边界的消息 |
 | `ch28-mid-handdraw.svg` | 28 | ⏱️ 实时性来自预算，不来自 RTOS 名字 | 每件事都要装进自己的时间预算盒 |
+
+六篇附录各有一张开篇概念图（`app-X-handdraw.svg`），嵌在附录标题之后；英文版附录 F 尚未翻译，所以英文版嵌 5 张：
+
+| 文件 | 附录 | 画面 |
+| --- | --- | --- |
+| `app-a-handdraw.svg` | A 工程深读 | 两类 DMA 契约各自成环，不能混拼 |
+| `app-b-handdraw.svg` | B 例程索引 | 十四个例程，每个都留下可复现的证据 |
+| `app-c-handdraw.svg` | C 习题答案 | 先自己推一遍，再翻开答案对 |
+| `app-d-handdraw.svg` | D 术语表 | 每个术语挂回它所属的章节 |
+| `app-e-handdraw.svg` | E 参考资料 | 每条事实都能落回一份带版本的来源 |
+| `app-f-handdraw.svg` | F 开源地图 | 开源项目按层次在地图上各就各位 |
 
 ## 六、光栅动画 `assets/gif/`
 

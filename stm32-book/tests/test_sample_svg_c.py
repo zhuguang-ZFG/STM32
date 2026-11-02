@@ -46,6 +46,7 @@ animations/timer-modes.svg 900x620 11712 c8a1e34469293d5f4a02a5703271bcf62fc4e9f
 animations/timer-pwm.svg 900x620 10046 54833bf0841b1569cb993934699473b2ee4d2f0ed56b858a4fb9b5855bb8532f
 animations/toolchain-flow.svg 900x620 15176 e131ad994e16c099c15d4d941c0e7aade4865c53c912248a73590e939645e0bd
 animations/uart-frame.svg 900x620 18533 a696fc8932d337f1b22dacef54ecfe01dd37aa963b41d67111c584122f6b3400
+animations/uart-idle-dma.svg 900x620 15121 8e6bf1c20266575d08c94817d1b467bfd7ce11fc9c79adf666aba4eaabab914d
 animations/usb-enumeration.svg 900x620 16705 ccf597d223d3d29cf8f5c3cbc47709d384453048753e4725cad655e84e7b0a1d
 boards/blackpill-stm32f411ce.svg 900x620 32264 511d86c80d8862e78be2a0c7e6ca7e24e1db11d30ea66d47b3b2f1e8cdec0494
 boards/bluepill-stm32f103c8t6.svg 900x620 35647 272634dc07da80d8c5d7e6471d9778310292318aace55acbecfcd92a8d9d4c25
@@ -106,6 +107,12 @@ diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984
 diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa9202b517d2268757f585a3eb634eccdd6fa0
+illustrations/app-a-handdraw.svg 900x560 7361 05b75978bc11bd0ec9d198447038e5faf848d5e1fc188609bff19a6dfd8217a3
+illustrations/app-b-handdraw.svg 900x560 10340 4565482137008aa396e1acbdc807f5195651c6305a19c3c1a5315c5088cde901
+illustrations/app-c-handdraw.svg 900x560 5353 d43950347a0b55eeebf4061255113c5d9121d66ded597eeabd98eea6ac5dd05c
+illustrations/app-d-handdraw.svg 900x560 6815 aa33690430198d0a4706d1c29efb6d207aadc81147d72d86addafc8040afff38
+illustrations/app-e-handdraw.svg 900x560 6003 5a03e600cdf5814a8f98c9f0e8ef2271e7d8f16dd47d6d86fcc58dd4ff66781e
+illustrations/app-f-handdraw.svg 900x560 6375 2f57f743444b889b10ca21f552ea657c55bf8784d95d6dad0dcbc8ed49f1efbd
 illustrations/ch00-handdraw.svg 900x560 4892 690763608b44b4a8bf00499ba843af11df66a5eab6ad56d250436f8801bfc9d0
 illustrations/ch00-mid-handdraw.svg 900x560 5586 0346a7588dfd31e2016cb831c27b90366c00a7631d441ad5ff29fe3dc76f1115
 illustrations/ch01-handdraw.svg 900x560 7564 2762f78c2bdf7787c0fb93c39df226bb26cdb4f5fcb67ebb1364229ab2b7648e
@@ -323,7 +330,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "4c61fa4f347881586bbc91b14f9c0aaec22894dbc07b1095a9daacf89647e760",
+            "8bf7ca34a767cd1cb5c7d50aa34e5fe5755d0090fa13d65f3cbd4e34a6a22270",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -331,7 +338,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "fdcba383ae7be190ee757fca7f5f9072798bbfad6abe86a83efac3e8e2254ecd",
+            "9b6df80155dfd8fcd7256b839aa6dbbdfdc95939731814de4aea2d86ebfa0ff6",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -388,7 +395,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(154, len(found))
+        self.assertEqual(161, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

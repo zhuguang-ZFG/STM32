@@ -460,5 +460,43 @@
       "anchor_zh": "⏱️ 实时性来自预算，不来自 RTOS 名字",
       "anchor_en": "⏱️ Real time comes from budgets, not an RTOS name"
     }
+  ],
+  "appendices": [
+    {
+      "id": "appendix-engineering",
+      "file": "app-a-handdraw.svg",
+      "zh": "两类 DMA 契约各自成环，不能混拼",
+      "en": "Two DMA contracts each close their own loop; never mix them"
+    },
+    {
+      "id": "appendix-examples",
+      "file": "app-b-handdraw.svg",
+      "zh": "十四个例程，每个都留下可复现的证据",
+      "en": "Fourteen examples, each leaving reproducible evidence"
+    },
+    {
+      "id": "appendix-exercises",
+      "file": "app-c-handdraw.svg",
+      "zh": "先自己推一遍，再翻开答案对",
+      "en": "Work it out yourself before opening the answer key"
+    },
+    {
+      "id": "appendix-glossary",
+      "file": "app-d-handdraw.svg",
+      "zh": "每个术语挂回它所属的章节",
+      "en": "Every term hangs from the chapter it belongs to"
+    },
+    {
+      "id": "appendix-references",
+      "file": "app-e-handdraw.svg",
+      "zh": "每条事实都能落回一份带版本的来源",
+      "en": "Every fact lands on a versioned source"
+    },
+    {
+      "id": "appendix-oss-map",
+      "file": "app-f-handdraw.svg",
+      "zh": "开源项目按层次在地图上各就各位",
+      "en": "Open-source projects take their places on the map"
+    }
   ]
 }
