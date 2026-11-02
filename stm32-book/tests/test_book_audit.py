@@ -60,7 +60,7 @@ class BookAuditTests(unittest.TestCase):
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
-        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "20", "22", "24", "25"):
+        for chapter_id in ("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "20", "22", "24", "25"):
             self.assertTrue(self.by_id[chapter_id]["parity"]["asset_sequence_equal"])
 
     def test_first_hardware_loop_has_visual_and_structure_parity(self) -> None:
@@ -120,6 +120,21 @@ class BookAuditTests(unittest.TestCase):
                 "dma-buffer-ownership.svg",
                 "dma-ring.gif",
             ),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
+
+    def test_reliability_phase_starts_with_reset_update_and_bus_evidence(self) -> None:
+        expected = {
+            "11": ("iwdg-window.svg", "sample-11-iwdg-1s.svg", "iwdg-1s.gif", "watchdog-reset-evidence.svg"),
+            "12": ("flash-iap.svg", "sample-12-iap-map.svg", "iap-jump.gif", "iap-acceptance-gates.svg"),
+            "13": ("can-arbitration.svg", "sample-13-can-bit.svg", "can-500k.gif"),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]

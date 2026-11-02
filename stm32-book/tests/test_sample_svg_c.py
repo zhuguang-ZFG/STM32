@@ -65,6 +65,7 @@ diagrams/h7-pinmux-conflicts.svg 900x560 7106 422b66ce1b659f837216d750bf10f80f96
 diagrams/h7-power-domains.svg 900x560 7154 d0da1b09891335ae1afac71e6beacd6d00a43a9d3151e6838eed336ea3cfb69d
 diagrams/h7-revision-clock-decision.svg 900x560 5940 7e7f3f5dc844f2c1e9e3e02506b4797dfd75a6723145dd17a3be4823bb2a5e29
 diagrams/h7-startup-evidence.svg 900x560 7720 d0bed6f9b648d7755ecc13a1c0d1123ea6f014332e4ad5982b5733f602fea29a
+diagrams/iap-acceptance-gates.svg 900x560 9398 0f4a6a1d0b50ba2cd5ecb820a736639b669f50d94f2f751253e89f52f2249d3b
 diagrams/instrument-evidence-ladder.svg 900x560 6393 c5eb4c58592f60d51c27728953805c5f5b1fde238e0fde0382fbc204d4c57aa5
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
 diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f0596565606f77ef6f757d3559900d66f
@@ -102,6 +103,7 @@ diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7d
 diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984c1735cb72ee4c92c61f0759ecb87e126
 diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
+diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa9202b517d2268757f585a3eb634eccdd6fa0
 """.strip().splitlines()
 
 STATIC_ADVANCED = {
@@ -113,6 +115,7 @@ STATIC_ADVANCED = {
     "diagrams/h7-power-domains.svg",
     "diagrams/h7-revision-clock-decision.svg",
     "diagrams/h7-startup-evidence.svg",
+    "diagrams/iap-acceptance-gates.svg",
     "diagrams/instrument-evidence-ladder.svg",
     "diagrams/manual-choice-map.svg",
     "diagrams/network-cache-ownership.svg",
@@ -124,6 +127,7 @@ STATIC_ADVANCED = {
     "diagrams/single-build-contract.svg",
     "diagrams/spl-ownership-boundary.svg",
     "diagrams/tcp-byte-stream.svg",
+    "diagrams/watchdog-reset-evidence.svg",
 }
 
 SEMANTIC = {
@@ -314,7 +318,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(85, len(found))
+        self.assertEqual(87, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

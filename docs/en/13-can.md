@@ -2,7 +2,7 @@
 
 > 中文：[CAN 总线](../13-CAN总线.md)
 
-> Dozens of controllers in a car share two wires. When two talk at once, the lower ID wins, the loser goes quiet by itself, and not one bit is damaged. That is CAN arbitration.
+> Loopback can prove the bxCAN transmit/receive path, but not the transceiver, termination, or differential bus. A two-node test must also reconcile CAN_H/CAN_L, ESR counters, and receive-FIFO data.
 
 <p align="center">
   <img src="../../assets/animations/can-arbitration.svg" width="760" alt="CAN non-destructive arbitration and bit stuffing">
@@ -97,6 +97,8 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 - [ ] Configure filters and the two receive FIFOs on F1.
 
 ## Core ideas
+
+Debug CAN in three layers: controller state, transceiver and bus electrical behavior, and the frame delivered to the application. A log saying “received 0x123” does not prove sample point, termination, or recovery.
 
 ### 1. Physical layer: differential, dominant, recessive
 
@@ -278,10 +280,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 ## Hands-on labs
 
-1. **Loopback:** `CAN_MODE_LOOPBACK`, print the ID and data you receive. You should see your own frame with no transceiver.
-2. **Two nodes:** two BluePills plus transceivers, 120 Ω at each end. B's log matches what A sent.
-3. **Filter:** accept only 0x123. The peer sends 0x123 and 0x456. Only 0x123 is printed.
-4. **Priority (optional):** two nodes transmit different IDs together. A logic analyzer shows the smaller ID winning.
+1. **Controller loop:** In loopback mode, send 100 frames with an incrementing counter. Record successful sends, FIFO receives, and byte comparisons, and state explicitly that no transceiver or bus was tested.
+2. **Physical-bus loop:** Use two nodes with 120 Ω at each end. Save the CAN_H/CAN_L differential waveform and decoded frame, and record BTR, sample point, ACK, and FIFO data.
+3. **Filter and arbitration:** Accept only 0x123, then start 0x100 and 0x200 from two nodes together. Save the arbitration trace and verify that only 0x123 reaches the target FIFO.
+4. **Error and recovery:** Disconnect the second node to remove ACK. Record TEC/ESR through bus-off, restore the link, and verify ABOM recovery and the first successful frame.
 
 ### 7. Coming back from bus-off
 
@@ -293,7 +295,7 @@ hcan.Init.AutoBusOff = ENABLE;   /* ABOM: return to error-active after 128×11 r
 
 With nobody else to ACK, the sender errors its way into bus-off. Debug a single board in loopback before you blame the transceiver.
 
-Motto: **TEC 256 means shut up. 128 runs of 11 recessive bits, then you may talk again.**
+Before leaving this chapter, keep loopback counts, a two-node differential capture, filter/arbitration evidence, and ESR before and after one bus-off recovery.
 
 Self-test:
 

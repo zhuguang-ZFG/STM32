@@ -1,7 +1,7 @@
 # 11 RTC and the Watchdogs
 > 中文：[11 RTC 与看门狗](../11-RTC与看门狗.md)
 
-> A program that runs away leaves the device hung until someone notices. The watchdog resets the chip when you forget to feed it. The RTC keeps time on a coin cell after the power goes.
+> A blinking LED after restart does not prove the watchdog fired. Startup must read IWDGRSTF, a persistent boot_id must increase, and RTC time should continue while main power is absent.
 
 <p align="center">
   <img src="../../assets/animations/iwdg-window.svg" width="760" alt="Animation of the independent watchdog counter and the feed window">
@@ -101,6 +101,8 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 
 ## Core ideas
 
+A reset test must distinguish a watchdog reset from ordinary power-on reset. An RTC test must distinguish continued counting from accurate time. Reset cause, persistent state, and elapsed time are separate evidence.
+
 ### 1. The RTC and the backup domain
 
 The RTC is a watch inside the chip. It lives with a few backup registers in a separate small room called the backup domain. When main power goes, that room stays powered as long as a coin cell is on the VBAT pin, and the watch keeps running. How accurate it is depends on the clock: an external 32.768 kHz crystal is the most accurate, and the internal LSI is only rough.
@@ -168,6 +170,11 @@ An early feed does not reset the IWDG. An early feed that resets is the window w
 - **Feed from a timer or an interrupt.** Fine for the IWDG, but a stuck interrupt will also reset you by mistake.
 - **Each task feeds once.** In an RTOS, every critical task feeds. If any one of them stalls, the chip resets.
 - **The WWDG window.** You are forced to feed inside a window that is not too early and not too late. That catches "running too fast" (a clock gone wrong) and "running too slow."
+
+<p align="center">
+  <img src="../../assets/diagrams/watchdog-reset-evidence.svg" width="820" alt="After feeding stops, measure timeout, read IWDGRSTF after reset, and increment a persistent boot_id">
+  <br><sub>▲ Watchdog loop: fault, timeout, reset cause, and restart record must agree. An LED or startup log appearing again proves only that the system restarted, not that IWDG caused it (FA-002 · IG-008 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ## Hardware and wiring
 
@@ -279,10 +286,9 @@ HAL_WWDG_Refresh(&hwwdg);
 
 ## Hands-on labs
 
-1. **Timekeeping across power loss**: solder the LSE crystal and a VBAT coin cell. Print the time on the UART once a second, then remove power and bring it back. Expected: the time continues. It does not return to zero.
-2. **A daily alarm**: set an alarm for 08:30 every day, and light an LED in the callback. Expected: it fires once at that time and does nothing the rest of the day.
-3. **Watchdog stress test**: set the IWDG timeout to 6.5 s, then deliberately enter `while(1)` and never feed it. Expected: the chip resets by itself after about 6.5 s.
-4. **(Further) Window watchdog timing check**: use the WWDG window to watch a periodic task. Stretch the task delay past the timeout and watch the reset. Then make the task too fast (feed too early). That resets as well.
+1. **RTC persistence:** Write the time and a BKP marker, remove main power for 60 s, and restore it. Record elapsed RTC time and the marker; record a separate failure state if LSE never starts.
+2. **IWDG reset evidence:** Configure about a 1 s timeout, stop feeding, and mark the fault start on a GPIO. On reboot, read IWDGRSTF first, increment boot_id, and then clear flags. Repeat five times and record the actual delay range.
+3. **WWDG window evidence:** Create early-feed, late-feed, and in-window cases. Record reset cause and GPIO timing. The in-window run continues; the other two reset.
 
 ### How to compute the timeout, and how to freeze it while debugging
 
@@ -304,7 +310,7 @@ __HAL_DBGMCU_FREEZE_WWDG();
 
 Once `HAL_IWDG_Init` succeeds, the IWDG cannot be stopped. Only a reset turns it off. If you write `WDG_SW` to 0 in the option bytes, the hardware watchdog takes over at power-up, and software cannot turn it off either.
 
-Motto: **one second is 624, not 625. The IWDG fears a late feed; the WWDG fears both early and late. Freeze the counter before you debug.**
+Before leaving this chapter, keep the RTC/BKP record across power loss, five IWDG delays with IWDGRSTF, and the early/late/in-window WWDG results.
 
 Self-test:
 

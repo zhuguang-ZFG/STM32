@@ -1,7 +1,7 @@
 # 12 Flash and IAP Updates
 > 中文：[12 Flash 与 IAP 升级](../12-Flash与IAP升级.md)
 
-> Once the device is inside a cabinet, it can still take new firmware over UART, write it to Flash, and jump to it, with no case opened and no programmer attached. This chapter shows how to split Flash and write a bootloader.
+> Receiving an image and jumping to it does not prove an update succeeded. The bootloader must validate length, range, CRC, and vectors, and the application must report a version heartbeat or the system should stay on the old image or roll back.
 
 <p align="center">
   <img src="../../assets/animations/flash-iap.svg" width="760" alt="IAP update: bootloader plus app, two regions, and the jump">
@@ -96,6 +96,8 @@ The opening animation `flash-iap.svg` shows the whole update flow. For page boun
 
 ## Core ideas
 
+Split the update into receive, program, verify, jump, and application confirmation. Every stage needs a failure exit; an unvalidated address must never become MSP or PC.
+
 ### 1. How Flash is organized
 
 Flash is like a notebook you write in pencil and can only erase a whole page at a time. Erased cells are all 1. Writing can only turn a 1 into a 0, and the only way to turn a 0 back into a 1 is to erase the whole page. So to change one byte, you read the page out, erase it, and write it back with the changed byte. Each page survives only so many erases, so a log that writes often has to rotate through pages.
@@ -160,6 +162,11 @@ IAP splits Flash into a **bootloader region, a parameter region, and an app regi
 | App | `0x0801 0000` | 448 KB (sectors 4–7, up to `0x0808 0000`) |
 
 > F4 erases by sector. If the parameter region shares a sector with the bootloader, they are erased together, so the parameter region has to **own a sector by itself**.
+
+<p align="center">
+  <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="An IAP image passes length and CRC, slot range, vector, jump, and application-heartbeat gates">
+  <br><sub>▲ Update gates: any failed check stays in the bootloader and preserves the last valid image. Reaching the app proves only that control left the bootloader; the version heartbeat proves that the new image completed startup (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 4. What you must do before jumping to the app
 
@@ -309,9 +316,9 @@ int main(void)
 
 ## Hands-on labs
 
-1. **Read and write Flash**: write a 32-bit variable to `0x0800FC00` (the last page) and read it back after reset. Expected: the data is still there after reset. Use that page for an erase-program experiment only when this map is not in use and the program does not already occupy the last page. Once the map is bootloader 16 KB, parameters 2 KB, and application 46 KB, that page belongs to the application.
-2. **A minimal IAP**: the bootloader prints a countdown at power-up. If it receives the character `'U'` during that window, it enters receive mode. Send the compiled app bin over the UART and jump to it. Expected: the device runs the app, and the UART prints the app's heartbeat.
-3. **(Further) A/B dual-region update**: split Flash into APP_A and APP_B, write them in turn, and record "which region is valid" in the parameter region. Expected: a failed update can fall back to the old version, so the device is not bricked.
+1. **Page-write evidence:** Write a known 256-byte pattern only to a test page explicitly reserved by the linker script. After reset, compare every byte and the CRC. Refuse the test if the address falls inside the app or bootloader region.
+2. **Reject bad images:** Create three images: wrong CRC, MSP outside SRAM, and Reset_Handler outside the app slot. The bootloader prints a stable error code and remains in update mode without jumping.
+3. **Valid update and rollback:** For a valid image, record length, CRC, vector[0], vector[1], and the app_version heartbeat. With A/B slots, interrupt one transfer and confirm that the old slot still boots.
 
 ### 6. Option bytes: readout protection, write protection, and the hardware watchdog
 
@@ -337,7 +344,7 @@ HAL_FLASHEx_OBGetConfig(&ob);   /* inspect RDPLevel / WRP; do not write yet */
 
 The call that writes RDP is not shown here. It erases the whole chip. Copying it into a sample project is an easy way to lock the board into readout protection.
 
-Motto: **0xA5 is F1's key to the door. 0xCC is a one-way ticket on F4. Back up before you change protection.**
+Before leaving this chapter, keep one page-write CRC, stable error codes for the three bad images, and a version heartbeat from a valid image. An A/B design also needs proof that the old version boots after an interrupted update.
 
 Self-test:
 

@@ -168,6 +168,98 @@ def dma_buffer_ownership() -> Svg:
     return s
 
 
+def watchdog_reset_evidence() -> Svg:
+    s = Svg(W, H, "看门狗复位必须留下三份证据",
+            "触发条件、复位原因和重启后的持久记录要能互相对账；只看到 LED 重闪不算验收")
+    s.header(tag="11 复位 · IG-008", tag_color=T.RED)
+    gates = [
+        ("1 · 故障", "停止喂狗", "GPIO 拉高标记", T.AMBER),
+        ("2 · 超时", "IWDG → 0", "测得复位延迟", T.RED),
+        ("3 · 复位", "RCC_CSR", "IWDGRSTF = 1", T.CYAN),
+        ("4 · 重启", "BKP / Flash", "boot_id + 1", T.GREEN),
+    ]
+    x0, y, bw, gap = 32, 104, 184, 34
+    for i, (title, target, evidence, color) in enumerate(gates):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 132, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 16, y + 38, title, size=13, fill=color, weight="800")
+        s.text(x + 16, y + 72, target, size=10.5, mono=True, fill=T.TEXT, weight="700")
+        s.text(x + 16, y + 102, evidence, size=10, fill=T.MUTED)
+        if i < 3:
+            s.arrow(x + bw + 4, y + 66, x + bw + gap - 4, y + 66,
+                    color=T.CYAN, sw=2, head=6)
+
+    s.rect(34, 278, 514, 178, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(54, 310, "对账项", size=13, fill=T.TEXT, weight="800")
+    rows = [
+        ("延迟", "由 LSI 实测决定，不拿 40 kHz 典型值当保证", T.AMBER),
+        ("原因", "上电先读 IWDGRSTF，再清复位标志", T.CYAN),
+        ("持久", "RTC/BKP 继续，普通 SRAM 不继续", T.GREEN),
+        ("恢复", "记录 boot_id 后再重新使能业务", T.VIOLET),
+    ]
+    for i, (name, note, color) in enumerate(rows):
+        yy = 342 + i * 27
+        s.text(54, yy, name, size=10.5, fill=color, weight="800")
+        s.text(126, yy, note, size=10.2, fill=T.MUTED)
+
+    s.rect(574, 278, 292, 178, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(594, 310, "不能单独证明", size=13, fill=T.RED, weight="800")
+    s.text(594, 345, "LED 又开始闪", size=10.5, fill=T.MUTED)
+    s.text(594, 374, "串口重新打印启动语", size=10.5, fill=T.MUTED)
+    s.text(594, 403, "大约一秒后复位", size=10.5, fill=T.MUTED)
+    s.text(594, 432, "这些都缺少复位原因", size=10.5, fill=T.RED, weight="700")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def iap_acceptance_gates() -> Svg:
+    s = Svg(W, H, "IAP 升级要过五道门",
+            "接收、边界、校验、跳转和应用心跳逐关验收；任一门失败都留在 Bootloader")
+    s.header(tag="12 升级 · IG-010", tag_color=T.VIOLET)
+    gates = [
+        ("Receive", "长度 / CRC", T.CYAN),
+        ("Range", "APP slot 内", T.AMBER),
+        ("Vector", "MSP + Reset", T.GREEN),
+        ("Jump", "VTOR / MSP", T.VIOLET),
+        ("Heartbeat", "app version", T.PINK),
+    ]
+    x0, y, bw, gap = 24, 110, 150, 26
+    for i, (name, proof, color) in enumerate(gates):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 108, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + bw / 2, y + 38, name, size=12, anchor="middle", mono=True,
+               fill=color, weight="800")
+        s.text(x + bw / 2, y + 75, proof, size=10, anchor="middle", fill=T.MUTED)
+        if i < 4:
+            s.arrow(x + bw + 3, y + 54, x + bw + gap - 3, y + 54,
+                    color=T.CYAN, sw=2, head=6)
+
+    s.rect(44, 270, 512, 178, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(64, 302, "失败留在 Bootloader", size=13, fill=T.TEXT, weight="800")
+    failures = [
+        ("CRC 错", "不擦旧 APP；请求重传"),
+        ("越界", "拒绝写 Bootloader / 参数区"),
+        ("MSP 不在 SRAM", "镜像无效，不跳转"),
+        ("Reset 不在 slot", "镜像无效，不跳转"),
+        ("无 heartbeat", "回滚或下次启动回 Bootloader"),
+    ]
+    for i, (symptom, action) in enumerate(failures):
+        yy = 331 + i * 23
+        s.text(64, yy, symptom, size=10.2, mono=True, fill=T.RED, weight="700")
+        s.text(190, yy, action, size=10.2, fill=T.MUTED)
+
+    s.rect(582, 270, 276, 178, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.text(602, 302, "最小交付证据", size=13, fill=T.GREEN, weight="800")
+    s.text(602, 338, "image length + CRC", size=10.2, mono=True, fill=T.MUTED)
+    s.text(602, 366, "slot start / end", size=10.2, mono=True, fill=T.MUTED)
+    s.text(602, 394, "vector[0] / vector[1]", size=10.2, mono=True, fill=T.MUTED)
+    s.text(602, 422, "boot_id + app_version", size=10.2, mono=True, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-010 阶段进阶 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 def layers_hal_ll_reg() -> Svg:
     s = Svg(W, H, "四种代码风格的分层关系",
             "寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源")
@@ -1109,6 +1201,7 @@ def h7_pinmux_conflicts() -> Svg:
 
 
 ALL = [first_lab_wiring, first_success_gates, dma_buffer_ownership,
+       watchdog_reset_evidence, iap_acceptance_gates,
        layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
        network_cache_ownership, tcp_byte_stream, rtos_owner_task,
@@ -1121,6 +1214,8 @@ NAMES = {
     "first_lab_wiring": "first-lab-wiring",
     "first_success_gates": "first-success-gates",
     "dma_buffer_ownership": "dma-buffer-ownership",
+    "watchdog_reset_evidence": "watchdog-reset-evidence",
+    "iap_acceptance_gates": "iap-acceptance-gates",
     "layers_hal_ll_reg": "layers-hal-ll-reg",
     "project_structure": "project-structure",
     "peripheral_bus": "peripheral-bus",

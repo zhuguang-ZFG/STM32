@@ -68,6 +68,24 @@ CHAPTERS = {
             "dma-ring.gif",
         ),
     ),
+    ROOT / "docs" / "11-RTC与看门狗.md": (
+        4,
+        (
+            "iwdg-window.svg",
+            "sample-11-iwdg-1s.svg",
+            "iwdg-1s.gif",
+            "watchdog-reset-evidence.svg",
+        ),
+    ),
+    ROOT / "docs" / "12-Flash与IAP升级.md": (
+        4,
+        (
+            "flash-iap.svg",
+            "sample-12-iap-map.svg",
+            "iap-jump.gif",
+            "iap-acceptance-gates.svg",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -158,6 +176,8 @@ class AdvancedVisualTests(unittest.TestCase):
             ("05-定时器与PWM.md", "05-timer-pwm.md"),
             ("09-ADC与DAC.md", "09-adc-dac.md"),
             ("10-DMA.md", "10-dma.md"),
+            ("11-RTC与看门狗.md", "11-rtc-watchdog.md"),
+            ("12-Flash与IAP升级.md", "12-flash-iap.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
@@ -184,6 +204,8 @@ class AdvancedVisualTests(unittest.TestCase):
             "first-lab-wiring.svg",
             "first-success-gates.svg",
             "dma-buffer-ownership.svg",
+            "watchdog-reset-evidence.svg",
+            "iap-acceptance-gates.svg",
             "manual-choice-map.svg",
             "firmware-stack-choice.svg",
             "instrument-evidence-ladder.svg",
