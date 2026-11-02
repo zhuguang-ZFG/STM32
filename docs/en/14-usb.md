@@ -2,7 +2,7 @@
 
 > 中文：[USB](../14-USB.md)
 
-> Plug in a USB cable and a new COM port appears on the PC. Behind that, the host and the chip go through 7 steps of question and answer until the host knows what the device is and what it can do. This chapter covers that exchange and why the clock must be 48 MHz.
+> “Unknown USB device” says only that enumeration failed somewhere. Reconcile the 48 MHz clock, D+ pull-up, standard requests, descriptor lengths, and endpoint buffers to locate the failed step.
 
 <p align="center">
   <img src="../../assets/animations/usb-enumeration.svg" width="760" alt="USB enumeration: reset, descriptors, configuration">
@@ -95,6 +95,8 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 
 ## Core ideas
 
+Device Manager is not enough for USB debugging. Firmware state, PMA and endpoint registers, host traces, and D+/D− electrical waveforms prove different layers and cannot substitute for one another.
+
 ### 1. Speeds and which STM32 block you actually have
 
 USB is a conversation chaired by the computer. The host calls on a device, and only then may the device answer; a device cannot seize the wire whenever it has data. The F103 has one 12 Mbps full-speed device block. It can be a keyboard or a virtual serial port, but it cannot host a flash drive. Reaching 480 Mbps takes both an `OTG_HS` block and the matching high-speed PHY.
@@ -169,6 +171,11 @@ Device Descriptor                         (VID / PID / how many configurations)
 
 A full-speed interrupt endpoint's `wMaxPacketSize` tops out at 64 bytes. 1023 is the full-speed isochronous ceiling, not the interrupt ceiling. In this repository's `examples/usb-cdc`, the bulk endpoints are 64 bytes and the notification endpoint is 8 bytes.
 
+<p align="center">
+  <img src="../../assets/gif/usb-enumeration-zh.gif" width="720" alt="The USB host starts with bus reset, reads device and configuration descriptors, assigns an address, and selects a configuration">
+  <br><sub>▲ Enumeration sequence: request order in the trace should match the state machine. The animation explains control-transfer order; it cannot prove 48 MHz accuracy, D+/D− signal quality, or descriptor-field correctness.</sub>
+</p>
+
 ### 5. Seven enumeration steps
 
 Every USB device comes out of reset at address 0. The host uses that temporary address to read just enough information, assigns a new address, and sends all later requests there. It then reads the complete configuration and selects one before the device is ready for normal traffic. In a trace, follow that order and stop at the first request that did not get the expected reply.
@@ -185,7 +192,7 @@ Every USB device comes out of reset at address 0. The host uses that temporary a
 | 6 | Read 9 bytes of configuration, then the whole configuration set | Interfaces and endpoints |
 | 7 | Set Configuration | The function is live |
 
-> Motto: **stuck on step 3 or 4** usually means a bad length field or a bad clock. **Stuck on step 6** usually means `wTotalLength` is wrong. **Stuck on step 7** usually means the endpoint buffer was not armed.
+> At steps 3 or 4, check device-descriptor length and 48 MHz first. At step 6, check `wTotalLength`. At step 7, check endpoint address, PMA, and whether the buffer is armed.
 
 ### 6. CDC versus HID
 
@@ -231,6 +238,11 @@ The CubeMX pages are assembling one device from three layers. RCC supplies the 4
 - Keep the pair short, matched, and near 90 Ω differential. Dupont wires often fail even at full speed.
 - On a bare board, **D+ needs 1.5 kΩ to 3.3 V** so the host sees a full-speed device. Many dev boards already have it.
 - The USB connector can feed 5 V into the on-board LDO. Before the device is configured, stay within 100 mA.
+
+<p align="center">
+  <img src="../../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill pin map locating PA11 USB_DM, PA12 USB_DP, PA9, and PA10">
+  <br><sub>▲ PA11/PA12 are the USB differential pair; PA9/PA10 are a separate UART debug path. The pin map locates signals but does not prove that a clone board's pull-up, resistors, or routing meet USB electrical requirements.</sub>
+</p>
 
 ## Code
 
@@ -324,10 +336,14 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 
 ## Hands-on labs
 
-1. **CDC echo:** a CubeMX F103 CDC project, open the new COM port, type. You should get the same bytes back.
-2. **CDC once a second:** send the ADC voltage from chapter 09 with `CDC_Transmit_FS`.
-3. **Custom HID:** one button updates a report. Windows game-controller properties should move.
-4. **Trace (optional):** Wireshark plus USBPcap, or a hardware analyzer. Match GET_DESCRIPTOR, SET_ADDRESS, and SET_CONFIGURATION to the seven steps.
+1. **Enumeration evidence:** Save GET_DESCRIPTOR, SET_ADDRESS, and SET_CONFIGURATION traces and record USBCLK, the D+ pull-up, and `wTotalLength`. Break the total length once and confirm a repeatable failure step.
+2. **CDC data loop:** Send lengths 1, 64, 65, and 256. Record `USBD_BUSY`, host length, and CRC. Do not overwrite the transmit buffer while the previous packet is pending.
+3. **HID report loop:** Trigger a fixed four-byte report from a button and verify endpoint address, report length, and host state in the trace. UI movement is an observation; report bytes are the evidence.
+
+<p align="center">
+  <img src="../../assets/diagrams/instrument-evidence-ladder.svg" width="820" alt="USB evidence layers from build logs and registers through runtime logs, a logic analyzer, and an oscilloscope">
+  <br><sub>▲ USB evidence is layer-specific: a host trace proves requests and descriptors, while a scope is needed for D+/D− electrical quality. A COM port appearing does not prove that CDC transfers of every length are correct (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 This repo's two examples do not ship the ST USB middleware. They enumerate with HAL PCD:
 
@@ -335,6 +351,8 @@ This repo's two examples do not ship the ST USB middleware. They enumerate with 
 - [examples/usb-hid](../../examples/usb-hid/): a boot keyboard. PA0 to ground types the letter `a`.
 
 Both run the PLL at 72 MHz and select USB = PLL/1.5. On F103, `USB_LP_CAN1_RX0` is the same IRQ as bxCAN receive. Do not link the CAN example into the same project.
+
+Before leaving this chapter, keep the complete enumeration trace, the failure step from a bad `wTotalLength`, CRCs for the four CDC lengths, and one HID-report byte record.
 
 ## Related resources
 

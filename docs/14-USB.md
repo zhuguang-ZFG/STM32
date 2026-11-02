@@ -2,7 +2,7 @@
 
 > English: [USB](en/14-usb.md)
 
-> 插上 USB 线，电脑里多出一个串口，背后是主机和芯片按 7 步一问一答，把「你是谁、能干什么」问清楚。这一章讲这个过程，以及为什么时钟必须是 48 MHz。
+> “未知 USB 设备”只说明枚举某一步失败。要同时对上 48 MHz 时钟、D+ 上拉、标准请求、描述符长度和端点缓冲，才能定位停在哪一步。
 
 <p align="center">
   <img src="../assets/animations/usb-enumeration.svg" width="760" alt="USB 设备枚举：复位 → 描述符 → 配置">
@@ -95,6 +95,8 @@ PA11/PA12 复位后也是 CAN 的默认脚，第 13 章已经把 CAN 重映射�
 
 ## 核心原理
 
+USB 调试不能只看设备管理器。固件状态、PMA/端点寄存器、主机抓包和 D+/D− 电气波形各自证明不同层，结论不能互相替代。
+
 ### 1. USB 速率与 STM32 外设
 
 USB 更像一场由电脑主持的对话。主机点到谁，谁才能回答；设备不能看见数据就自己抢着说。F103 里只有一套 12 Mbps 的全速设备外设，能做键盘、虚拟串口，却当不了 U 盘的主机。要跑 480 Mbps，不只名字里要有 `OTG_HS`，还得有对应的高速 PHY。
@@ -170,6 +172,11 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 
 全速中断的 `wMaxPacketSize` 最大是 64 字节。1023 是全速等时的上限，不是中断的上限。本仓库 `examples/usb-cdc` 的批量端点是 64 字节，通知端点是 8 字节。
 
+<p align="center">
+  <img src="../assets/gif/usb-enumeration-zh.gif" width="720" alt="USB 主机从总线复位开始，读取设备与配置描述符，分配地址并设置配置">
+  <br><sub>▲ 枚举逐步关系：抓包中的请求顺序应与状态机一致。动画能说明控制传输顺序，不能证明 48 MHz 精度、D+/D− 波形或描述符字段内容正确。</sub>
+</p>
+
 ### 5. 枚举 7 步
 
 刚复位的 USB 设备都在地址 0。主机先用这个临时地址读够最基本的信息，再发一个新地址；从那以后，后续请求都送往新地址。接着主机把整套配置读完并选中一套，设备才算真正上线。抓包时按这条顺序往后找，第一笔没有得到正确回应的请求就是排查起点。
@@ -186,7 +193,7 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 | 6 | 读配置描述符(9 字节) → 读完整配置集合 | 拿到接口/端点信息 |
 | 7 | 选择配置 Set Configuration | 设备进入「已配置」状态，功能可用 |
 
-> 调试口诀：**卡在第 3/4 步**多为描述符长度/字段错或时钟不准；**卡在第 6 步**多为配置描述符总长度 `wTotalLength` 算错；**卡在第 7 步**多为端点 FIFO/缓冲区没准备好。
+> 卡在第 3/4 步时先核对设备描述符长度与 48 MHz；卡在第 6 步核对 `wTotalLength`；卡在第 7 步核对端点地址、PMA 和缓冲区是否已就绪。
 
 ### 6. CDC 虚拟串口 vs HID
 
@@ -233,6 +240,12 @@ CubeMX 里的几个页面其实在拼同一台设备：RCC 提供 48 MHz 时钟�
 - **USB 差分线尽量等长、靠近走线、90 Ω 差分阻抗**，别用杜邦线飞线，否则全速都可能枚举失败。
 - 自绘裸板做 USB 时，**D+ 到 3.3 V 需接 1.5 kΩ 上拉**（全速设备标识），很多开发板已焊好。
 - 供电：USB 口可取 5 V，板载 LDO 转 3.3 V；注意总线电流（未配置前 ≤ 100 mA）。
+
+<p align="center">
+  <img src="../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill 引脚图中定位 PA11 USB_DM、PA12 USB_DP、PA9 和 PA10">
+  <br><sub>▲ PA11/PA12 是 USB 差分线，PA9/PA10 是另一套 UART 调试通道。引脚图用于定位，不证明克隆板的 D+ 上拉、电阻或走线满足 USB 电气要求。</sub>
+</p>
+
 ## 代码实现
 
 用 CubeMX 生成 USB CDC 工程后，真正要写代码的地方只有 **`USB_DEVICE/App/usbd_cdc_if.c`** 的回调。下面给出可用的收发实现。
@@ -325,10 +338,14 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 
 ## 动手实验
 
-1. **CDC 回环（最易）**：CubeMX 生成 F103 的 CDC 工程，串口助手打开新出现的 COM 口，发什么回什么。预期：插上即多一个 COM 口，回显正常。
-2. **CDC 定时上报**：每秒把 ADC 采到的电压（见第 09 章）通过 `CDC_Transmit_FS` 上报。预期：上位机收到连续数值。
-3. **自定义 HID**：把设备改成 HID，用一个按键触发上报，用「Windows 游戏控制器」属性页查看。预期：按键时属性页里的坐标/按钮状态变化。
-4. **（进阶）枚举抓包**：用 Wireshark + USBPcap（或硬件 USB 分析仪）抓取枚举过程，逐条对照第 5 节的 7 步。预期：能看到 GET_DESCRIPTOR / SET_ADDRESS / SET_CONFIGURATION 的完整交互。
+1. **枚举证据**：保存 GET_DESCRIPTOR、SET_ADDRESS、SET_CONFIGURATION 抓包，并记录 USBCLK、D+ 上拉和 `wTotalLength`。故意改错总长度一次，确认失败停点可重复。
+2. **CDC 数据闭环**：发送 1、64、65、256 字节四种长度，记录 `USBD_BUSY` 次数、主机收到长度和 CRC。上一包未完成时不得覆盖发送缓冲区。
+3. **HID 报告闭环**：按键触发固定 4 字节报告，抓包核对端点地址、报告长度和主机状态。属性页变化只是现象，报告字节才是证据。
+
+<p align="center">
+  <img src="../assets/diagrams/instrument-evidence-ladder.svg" width="820" alt="从构建日志、寄存器、运行日志、逻辑分析仪到示波器的 USB 证据层级">
+  <br><sub>▲ USB 各层证据不能互换：抓包能说明标准请求与描述符，示波器才说明 D+/D− 电气质量；设备管理器出现 COM 口也不能证明所有长度的 CDC 传输都正确（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
+</p>
 
 仓库里的两个示例不附带 ST USB 中间件，直接用 HAL PCD 完成枚举：
 
@@ -336,6 +353,8 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 - [examples/usb-hid](../examples/usb-hid/)：启动式键盘，PA0 按下送一个字母 `a`。
 
 两份都把 PLL 设成 72 MHz，USB 时钟选 PLL/1.5。F103 的 `USB_LP_CAN1_RX0` 与 bxCAN 接收是同一条中断，不要和 CAN 示例编进同一个工程。
+
+离开本章前，应有完整枚举抓包、错误 `wTotalLength` 的失败停点、四种 CDC 长度的 CRC 和一份 HID 报告字节记录。
 
 ## 相关资源
 

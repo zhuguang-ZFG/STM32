@@ -890,7 +890,7 @@ def rtos_startup_gates() -> Svg:
     """系统启动的六道门：逐步开放能力，失败则停在可诊断安全态。"""
     s = Svg(W, H, "RTOS 启动不是一串 delay，而是六道可证明的门",
             "每一门只有成功、降级或失败三种结果；下一层不得越过未成立的依赖")
-    s.header(tag="28 系统 · IG-008", tag_color=T.VIOLET)
+    s.header(tag="启动门 · IG-008", tag_color=T.VIOLET)
 
     gates = [
         ("复位证据", "reset cause\nboot_id", T.CYAN),

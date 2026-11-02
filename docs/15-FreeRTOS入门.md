@@ -2,7 +2,7 @@
 
 > English: [FreeRTOS](en/15-freertos.md)
 
-> 一个 while(1) 里塞了按键、屏幕、串口，改一处就牵动全身。FreeRTOS 让它们各跑各的任务，这一章从两个任务讲起。
+> 两个任务都在闪灯，不代表系统满足实时要求。要量任务周期、最长阻塞、栈余量和队列峰值，并证明 FromISR 优先级没有越过内核边界。
 
 <p align="center">
   <img src="../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS 任务状态迁移与抢占式调度">
@@ -95,6 +95,8 @@
 
 ## 核心原理
 
+FreeRTOS 解决的是调度与同步，不会自动保证截止时间。任务优先级、阻塞关系和最坏执行时间必须一起测，平均 CPU 利用率不能代替最坏响应。
+
 ### 1. 裸机前后台 vs RTOS
 
 裸机是「主循环 + 中断（前后台）」，任务越多、时序越紧就越难维护；RTOS 用**任务 + 调度器**把并发显式化，代价是少量 RAM 与 CPU 开销。
@@ -159,6 +161,11 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 
 ### 5. 临界区与中断优先级
 
+<p align="center">
+  <img src="../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="任务响应时间由阻塞、执行和高优先级干扰组成，并必须早于截止时间">
+  <br><sub>▲ 实时预算：`R = B + C + S`，验收看最坏响应 `Rmax` 是否早于截止点。图不能替代实际测量；ISR、互斥量持有时间、任务执行时间和队列峰值都要记录（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。</sub>
+</p>
+
 临界区用 `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 关中断保护共享数据；**调用任何 `xxxFromISR` 的中断，其优先级数值必须 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`**。
 
 | 宏 | 作用 |
@@ -185,7 +192,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 | 事件组 Event Group | 等待多个事件（与/或） | 只能传位标志 | 小 | `xEventGroupSetBitsFromISR` |
 | 任务通知 Task Notify | 轻量点对点同步/传值 | 可以，32 位值 | **最小** | `xTaskNotifyFromISR` |
 
-**记忆口诀**：**信号量是「通知发生了」，队列是「把东西搬过去」，互斥量是「我占用，别动」，事件组是「等齐了再上」，任务通知是「够用就别建对象」。**
+选择对象时先问是否传数据、是否保护资源、是否等待多个条件。传数据用队列，保护资源用互斥量，单次点对点通知优先考虑任务通知。
 
 ### 7. 任务栈大小估算
 
@@ -215,6 +222,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 | 死锁 | 两任务各持一把锁互相等 | 统一加锁顺序，用超时 `xSemaphoreTake(..., timeout)` |
 
 > 二值信号量**没有**优先级继承，只适合「事件通知」；保护资源一定要用 `xSemaphoreCreateMutex()`。
+
+<p align="center">
+  <img src="../assets/diagrams/rtos-owner-task.svg" width="820" alt="多个任务经队列把完整事务交给唯一外设所有者任务，由所有者统一片选、DMA、超时和恢复">
+  <br><sub>▲ 互斥量只能保护一次函数调用；包含片选、DMA、等待和恢复的完整事务更适合交给唯一所有者任务。图不能证明队列深度和截止时间足够，仍要测峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。</sub>
+</p>
 
 ### 9. heap_1 ~ heap_5
 
@@ -362,11 +374,15 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ## 动手实验
 
-1. **两任务闪灯（入门）**：创建两个任务，分别以 500 ms、200 ms 翻转两盏 LED。预期：两灯各自节奏稳定闪烁，互不干扰。
-2. **队列传按键（进阶）**：按键 EXTI 用 `xQueueSendFromISR` 发事件，任务 `xQueueReceive` 阻塞接收并打印。预期：队列空时任务不占 CPU，按键即打印。
-3. **互斥量对比实验**：两个任务都往串口打印长字符串，先不用互斥量（输出穿插），再加互斥量（输出完整）。预期：能直观看到保护效果。
-4. **（进阶）栈溢出复现**：把某任务栈设为 64 字并在函数里放一个 200 字节局部数组，触发 `vApplicationStackOverflowHook`。预期：钩子被调用，据此学会估栈。
-5. **（进阶）优先级反转**：用二值信号量保护资源制造反转，再换成互斥量对比耗时。预期：互斥量的继承机制显著缩短高任务等待时间。
+1. **周期证据**：两个任务用 `vTaskDelayUntil` 运行 500ms 与 200ms 周期，在任务入口翻转 GPIO。采集 100 个周期，记录最大/最小/平均间隔。
+2. **队列与 FromISR**：按键 ISR 发送递增序号，任务接收并核对连续性。压测到队列满，记录峰值深度、丢弃数和 `woken` 导致的立即切换。
+3. **互斥量与反转**：三个任务制造优先级反转，分别用二值信号量和互斥量，GPIO 测量高优先级任务最长等待；记录优先级继承前后差异。
+4. **栈证据**：逐步缩小一个任务栈，用 `uxTaskGetStackHighWaterMark` 记录余量，最后在受控构建中触发溢出钩子并保存任务名。
+
+<p align="center">
+  <img src="../assets/animations/rtos-startup-gates.svg" width="820" alt="系统从复位证据、最低硬件、内核对象、设备探测到应用放行依次通过启动门">
+  <br><sub>▲ `vTaskStartScheduler()` 返回不了并不等于系统已可用。每道启动门要给出成功、降级或失败结果；关键设备未就绪时，执行器和远程命令仍应保持关闭（FA-002 · IG-008 · C-03/C-10/C-27/C-31）。</sub>
+</p>
 
 ### 11. 相对延时、绝对周期，和软件定时器
 
@@ -383,7 +399,7 @@ for (;;)
 
 软件定时器用 `xTimerCreate`。回调跑在定时器服务任务里，里面不能再 `vTaskDelay`，也不能拿一个可能被别人占用的互斥量。优先级数字越大越先跑，这和 NVIC“数字越小越优先”相反。同一时刻只有一个任务占着 CPU。
 
-口诀：**Delay 是“再等一会儿”，DelayUntil 是“下次几点醒”；定时器回调里不准睡觉。**
+离开本章前，应有 100 周期抖动数据、队列峰值与丢弃计数、互斥量前后的最长等待，以及各任务栈高水位。
 
 自测：
 

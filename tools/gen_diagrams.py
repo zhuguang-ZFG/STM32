@@ -763,7 +763,7 @@ def rtos_owner_task() -> Svg:
     """两个调用者争抢驱动与单一所有者任务的前后对比。"""
     s = Svg(W, H, "给驱动加很多锁，仍不等于拥有清楚的所有权",
             "把完整事务送给唯一所有者，片选、DMA、超时和恢复才能落在同一个状态机里")
-    s.header(tag="28 RTOS · IG-011", tag_color=T.VIOLET)
+    s.header(tag="所有权 · IG-011", tag_color=T.VIOLET)
 
     s.text(220, 100, "并发直调：锁住了函数，没锁住完整事务", size=13,
            anchor="middle", fill=T.RED, weight="700")
@@ -815,7 +815,7 @@ def rtos_deadline_budget() -> Svg:
     """响应时间组成与 deadline 的单条可复算时间轴。"""
     s = Svg(W, H, "“实时”不是快，而是最坏响应仍早于截止点",
             "把阻塞、执行和抢占分别量出来：R = B + C + S；平均值不能替代最坏值")
-    s.header(tag="28 实时 · IG-009", tag_color=T.AMBER)
+    s.header(tag="实时预算 · IG-009", tag_color=T.AMBER)
 
     x0, y, total = 82, 220, 730
     s.line(x0, y, x0 + total, y, stroke=T.STROKE, sw=2)
@@ -980,7 +980,7 @@ def firmware_stack_choice() -> Svg:
 
 def instrument_evidence_ladder() -> Svg:
     s = Svg(W, H, "工具给出的证据，一层比一层接近引脚", "日志能说明代码走过；只有测量能说明电压与时序真的到达硬件")
-    s.header(tag="20 证据 · IG-010", tag_color=T.GREEN)
+    s.header(tag="证据层级 · IG-010", tag_color=T.GREEN)
     rows = [
         ("源码 / 构建日志", "编译了哪些文件、宏、链接脚本", "不能证明固件已在目标板运行", T.VIOLET),
         ("GDB / 寄存器读回", "CPU 到过哪一行，外设状态为何", "不能证明引脚电气质量", T.CYAN),

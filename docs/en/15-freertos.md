@@ -1,7 +1,7 @@
 # 15 Getting Started with FreeRTOS
 > 中文：[15 FreeRTOS 入门](../15-FreeRTOS入门.md)
 
-> One while(1) holding the button, the display, and the UART: change one thing and everything moves. FreeRTOS lets each run as its own task. This chapter starts from two tasks.
+> Two tasks blinking independently do not prove a real-time system. Measure task period, longest blocking time, stack margin, and queue peak, and prove that FromISR priorities stay inside the kernel boundary.
 
 <p align="center">
   <img src="../../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS task-state transitions and preemptive scheduling">
@@ -94,6 +94,8 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 
 ## Core ideas
 
+FreeRTOS provides scheduling and synchronization; it does not guarantee deadlines by itself. Task priority, blocking, and worst-case execution time must be measured together, and average CPU use cannot replace worst-case response.
+
 ### 1. Bare-metal foreground/background vs an RTOS
 
 Bare metal is "a main loop plus interrupts" (foreground/background). The more tasks you have, and the tighter the timing, the harder it is to maintain. An RTOS makes concurrency explicit with **tasks plus a scheduler**. The cost is a little RAM and a little CPU.
@@ -159,6 +161,11 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
 
 ### 5. Critical sections and interrupt priority
 
+<p align="center">
+  <img src="../../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="Task response time consists of blocking, execution, and higher-priority interference and must finish before the deadline">
+  <br><sub>▲ Real-time budget: `R = B + C + S`; acceptance asks whether worst-case `Rmax` finishes before the deadline. The figure does not replace measurement. Record ISR time, mutex hold time, task execution, and queue peak (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
 A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask interrupts and protect shared data. **Any interrupt that calls an `xxxFromISR` API must have a priority number ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`.**
 
 | Macro | What it does |
@@ -185,7 +192,7 @@ A **queue** carries data. A **semaphore** synchronizes or counts. A **mutex** pr
 | Event group | Wait for several events (AND / OR) | Bit flags only | Small | `xEventGroupSetBitsFromISR` |
 | Task notification | Lightweight point-to-point sync, or pass a value | Yes, a 32-bit value | **Smallest** | `xTaskNotifyFromISR` |
 
-**Motto: a semaphore says "it happened," a queue says "carry this over," a mutex says "I am holding it, do not touch it," an event group says "wait until they are all here," and a task notification says "if this is enough, do not create an object."**
+Choose the object by asking whether data moves, a resource needs ownership, or several conditions must be joined. Use a queue for data, a mutex for a resource, and a task notification for a simple point-to-point event.
 
 ### 7. Estimating task stack size
 
@@ -215,6 +222,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 | Deadlock | Two tasks each hold one lock and wait for the other | Always lock in the same order, and use a timeout: `xSemaphoreTake(..., timeout)` |
 
 > A binary semaphore does **not** have priority inheritance. It is only for "an event happened." To protect a resource, use `xSemaphoreCreateMutex()`.
+
+<p align="center">
+  <img src="../../assets/diagrams/rtos-owner-task.svg" width="820" alt="Several tasks queue complete transactions to one peripheral-owner task, which controls chip select, DMA, timeout, and recovery">
+  <br><sub>▲ A mutex protects one function call; a complete transaction containing chip select, DMA, waits, and recovery is often safer in one owner task. The figure cannot prove queue capacity or deadlines; measure peak depth and longest response (FA-002 · IG-011 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 9. heap_1 through heap_5
 
@@ -362,11 +374,15 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ## Hands-on labs
 
-1. **Two tasks, two blink rates (start here)**: create two tasks that toggle two LEDs at 500 ms and 200 ms. Expected: each LED blinks on its own rhythm, and they do not disturb each other.
-2. **A queue carries a key press (next step)**: the key EXTI sends an event with `xQueueSendFromISR`. The task blocks in `xQueueReceive` and prints. Expected: while the queue is empty the task does not occupy the CPU, and a key press prints immediately.
-3. **With and without a mutex**: two tasks both print a long string on the UART. First with no mutex (the output interleaves), then with a mutex (the output is whole). Expected: you can see the protection directly.
-4. **(Further) Reproduce a stack overflow**: give a task a 64-word stack and put a 200-byte local array in a function, so `vApplicationStackOverflowHook` runs. Expected: the hook is called, and you learn how to size a stack.
-5. **(Further) Priority inversion**: protect a resource with a binary semaphore and create an inversion, then switch to a mutex and compare the wait. Expected: the mutex inheritance shortens the high task's wait by a lot.
+1. **Period evidence:** Run two tasks at 500 ms and 200 ms with `vTaskDelayUntil`, toggling a GPIO at entry. Capture 100 periods and record minimum, maximum, and average intervals.
+2. **Queue and FromISR:** Send incrementing sequence numbers from the button ISR and check continuity in the task. Drive the queue full and record peak depth, drops, and immediate switches caused by `woken`.
+3. **Mutex and inversion:** Use three tasks to create priority inversion. Compare a binary semaphore with a mutex and measure the high-priority task's longest wait on GPIO traces.
+4. **Stack evidence:** Reduce one task's stack in steps, record `uxTaskGetStackHighWaterMark`, and finally trigger the overflow hook in a controlled build while preserving the task name.
+
+<p align="center">
+  <img src="../../assets/animations/rtos-startup-gates.svg" width="820" alt="System startup passes reset evidence, minimum hardware, kernel objects, device discovery, services, and application release gates">
+  <br><sub>▲ A scheduler that started does not mean the system is ready. Each gate returns success, degraded operation, or failure; actuators and remote commands remain disabled while critical devices are unavailable (FA-002 · IG-008 · C-03/C-10/C-27/C-31).</sub>
+</p>
 
 ### 11. Relative delay, absolute period, and software timers
 
@@ -383,7 +399,7 @@ for (;;)
 
 Create a software timer with `xTimerCreate`. The callback runs in the timer service task. Inside it you must not call `vTaskDelay` again, and you must not take a mutex that someone else might already hold. A larger priority number runs first, which is the opposite of NVIC, where a smaller number is more urgent. At any moment only one task owns the CPU.
 
-Motto: **Delay means "wait a bit longer." DelayUntil means "wake at this next time." A timer callback must not go to sleep.**
+Before leaving this chapter, keep 100-period jitter data, queue peak and drop counts, longest waits before and after the mutex, and every task's stack high-water mark.
 
 Self-test:
 
