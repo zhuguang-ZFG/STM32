@@ -35,6 +35,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -563,6 +564,44 @@ def _probe_duration(path):
     )
     return float(out.strip())
 
+def _parse_srt(path):
+    text = Path(path).read_text(encoding="utf-8")
+    blocks = re.split(r"\n\s*\n", text.strip())
+    cues = []
+    for block in blocks:
+        lines = block.splitlines()
+        if len(lines) < 3:
+            continue
+        match = re.match(r"(\d+):(\d+):(\d+),(\d+) --> (\d+):(\d+):(\d+),(\d+)", lines[1])
+        if not match:
+            continue
+        start = int(match.group(1)) * 3600 + int(match.group(2)) * 60 + int(match.group(3)) + int(match.group(4)) / 1000
+        end = int(match.group(5)) * 3600 + int(match.group(6)) * 60 + int(match.group(7)) + int(match.group(8)) / 1000
+        cues.append({"start": start, "end": end, "say": "\n".join(lines[2:]).strip()})
+    return cues
+
+
+def _split_audio_from_mp4(mp4, work, count):
+    """Split an existing narrated MP4's audio by its SRT cues for offline re-renders."""
+    srt_path = os.path.splitext(mp4)[0] + ".srt"
+    cues = _parse_srt(srt_path)
+    if len(cues) != count:
+        raise ValueError(f"{srt_path}: expected {count} cues, found {len(cues)}")
+    mp3s = []
+    for i, cue in enumerate(cues):
+        dest = os.path.join(work, f"{i:02d}.mp3")
+        subprocess.check_call(
+            [
+                "ffmpeg", "-y", "-loglevel", "error",
+                "-ss", f"{cue['start']:.3f}", "-to", f"{cue['end']:.3f}",
+                "-i", mp4, "-vn", "-ac", "1", "-ar", "44100",
+                "-c:a", "libmp3lame", dest,
+            ],
+            stdout=subprocess.DEVNULL,
+        )
+        mp3s.append(dest)
+    return mp3s
+
 
 async def _tts(text, dest, sem):
     import edge_tts
@@ -640,12 +679,25 @@ async def speak_one(ch, out_dir):
     work = tempfile.mkdtemp(prefix=f"narr-{name}-")
     sem = asyncio.Semaphore(4)
     mp3s = []
-    jobs = []
-    for i, seg in enumerate(ch["segments"]):
-        dest = os.path.join(work, f"{i:02d}.mp3")
-        mp3s.append(dest)
-        jobs.append(_tts(seg["say"], dest, sem))
-    await asyncio.gather(*jobs)
+    reuse_mp4 = os.environ.get("NARRATED_REUSE_MP4")
+    final_mp4 = os.path.join(out_dir, name + ".mp4")
+    if reuse_mp4 and os.path.isfile(reuse_mp4):
+        if os.path.abspath(final_mp4) == os.path.abspath(reuse_mp4):
+            raise RuntimeError("NARRATED_REUSE_MP4 不能与输出 MP4 相同")
+        cues = _parse_srt(os.path.splitext(reuse_mp4)[0] + ".srt")
+        if len(cues) != len(ch["segments"]):
+            raise RuntimeError(f"{reuse_mp4}: 字幕 {len(cues)} 段与旁白 {len(ch['segments'])} 段不一致")
+        for i, cue in enumerate(cues):
+            if cue["say"] != ch["segments"][i]["say"]:
+                raise RuntimeError(f"{reuse_mp4}: 第 {i + 1} 段字幕与当前旁白不一致")
+        mp3s = _split_audio_from_mp4(reuse_mp4, work, len(ch["segments"]))
+    else:
+        jobs = []
+        for i, seg in enumerate(ch["segments"]):
+            dest = os.path.join(work, f"{i:02d}.mp3")
+            mp3s.append(dest)
+            jobs.append(_tts(seg["say"], dest, sem))
+        await asyncio.gather(*jobs)
 
     durs = [_probe_duration(m) + PAD for m in mp3s]
     total = sum(durs) or 1.0

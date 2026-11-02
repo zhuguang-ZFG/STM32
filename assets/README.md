@@ -285,7 +285,7 @@
 配音是微软 Edge 在线神经语音「晓晓」（`zh-CN-XiaoxiaoNeural`），经 edge-tts 调用。
 edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线模型是微软在线服务，不是开放模型。
 仓库里放的是合成后的 MP4，直接进 git，不用 Git LFS，也不另开 Release。
-重新生成正片：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
+重新生成正片：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg；默认走 edge-tts 联网配音）。无网络时可设 `NARRATED_REUSE_MP4` 指向同一章旧 MP4，脚本会校验旧 SRT 旁白与当前旁白一致，并只重画 1080p 画面。
 续集把环境变量 `NARRATED_MODULE` 设为 `narration_ai` 再跑同一条命令。
 
 ## 八、公众号二维码 `assets/wechat/`
