@@ -1,7 +1,7 @@
 # 08 The SPI Bus
 > 中文：[SPI 总线](../08-SPI总线.md)
 
-> Each bit an SPI master sends out brings one bit back, like two people swapping notes across a table. This chapter shows it by reading the W25Q64 ID, 0xEF4017.
+> A W25Q64 JEDEC-ID read should show `0x9F` leaving on MOSI while `0xEF 0x40 0x17` returns on MISO. The wire bytes, SPI_SR, and receive array must agree.
 
 <p align="center">
   <img src="../../assets/animations/spi-transfer.svg" width="760" alt="SPI full-duplex shift and CPOL/CPHA timing">
@@ -94,7 +94,7 @@ The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#
 
 ## Core ideas
 
-**Lead with the conclusion: SPI is a ring exchange — one master, several slaves, and one shift register on each side. The master sends one bit, and the slave returns one bit at the same time.**
+Every SCK edge moves one bit on both MOSI and MISO. A master that wants to read must still transmit dummy bytes; checking the transmit array alone does not prove what the slave returned.
 
 ### 1. Four wires, and how the shift works
 
@@ -120,7 +120,7 @@ The four modes settle two questions. CPOL says where the hand rests between taps
 | Mode 2 | 1 | 0 | High | 1st edge (falling) | Uncommon |
 | Mode 3 | 1 | 1 | High | 2nd edge (rising) | W25Q64 (also supported) |
 
-> **try Mode 0 first. If a read ID is all 0s or all FFs, suspect the mode before anything else.**
+> This W25Q64 example uses Mode 0. Other devices require the CPOL/CPHA pair in their datasheet. If an ID is all 0s or all FFs, check mode, chip select, and MISO wiring together.
 
 ### 3. Rate and the divider
 
@@ -266,9 +266,11 @@ The full project is in [`examples/spi-flash/`](../../examples/spi-flash/).
 
 ## Hands-on labs
 
-1. **Lab 1:** Read the W25Q64 JEDEC ID and confirm it is 0xEF4017 (use `spi-transfer.svg` to see the shift).
-2. **Lab 2:** Write 16 bytes to a page and read them back. Confirm they match. On purpose, skip the write enable and watch it fail.
-3. **Lab 3:** Initialize an ST7789 and fill a color. Refresh the whole screen with DMA, and compare the frame rate with blocking transmits.
+1. **Lab 1 (wire waveform):** Read the JEDEC ID and save all four traces: CS, SCK, MOSI, and MISO. Verify Mode 0, 9 MHz, `0x9F`, and `0xEF4017`.
+2. **Lab 2 (peripheral state):** Skip WREN once and confirm that WEL stays clear and the data does not change. Restore WREN and poll until WIP clears. Record the status register in both runs.
+3. **Lab 3 (memory result):** Program a known 16-byte pattern, read it into an array, and compare every byte. ST7789 DMA refresh is an extension; frame-rate appearance does not replace the Flash readback.
+
+Before leaving this chapter, keep one four-wire JEDEC capture, status-register records before and after WREN, and the 16-byte readback comparison.
 
 ### 6. SPI registers that matter (F1)
 

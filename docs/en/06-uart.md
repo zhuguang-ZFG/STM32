@@ -1,7 +1,7 @@
 # 06 UART
 > 中文：[串口 UART](../06-串口UART.md)
 
-> Garbled serial output is rarely a broken wire. Usually the two ends do not agree on the baud rate. This chapter goes from how one byte leaves the pin to DMA reception that drops nothing.
+> When the terminal shows garbage, inspect three places together: bit time on the wire, FE/ORE in SR, and the bytes that reached the memory buffer. Only then can you separate a baud error from a receive-timing or buffer-boundary error.
 
 <p align="center">
   <img src="../../assets/animations/uart-frame.svg" width="760" alt="UART frame, bit by bit">
@@ -96,7 +96,7 @@ The 0.16% belongs only to the USART2 row. Source: [RM0008 section 27.3.3](#sourc
 
 ## Core ideas
 
-**Lead with the conclusion: UART is asynchronous. The two sides stay aligned only by the baud rate they agreed on, so the frame format and the baud error are the two keys.**
+UART has no clock wire. The receiver samples each bit with its own clock, so frame format, PCLK, and BRR must agree. Cycling through terminal baud rates alone does not locate the failing layer.
 
 ### 1. The frame
 
@@ -291,9 +291,9 @@ The full project is in [`examples/uart-dma-idle/`](../../examples/uart-dma-idle/
 
 ## Hands-on labs
 
-1. **Lab 1 (echo):** USART1 at 115200 echoes. Whatever the serial terminal sends, it gets back.
-2. **Lab 2 (printf):** Redirect printf and print the core clock and a counter once a second.
-3. **Lab 3 (DMA+IDLE):** Receive a frame of unknown length. The terminal sends a string of any length, and the MCU echoes the whole frame (compare the bit timing in `uart-bits.gif`).
+1. **Lab 1 (wire waveform):** Send `0x55` on USART1 and measure the 10-bit 8N1 frame. At 115200 baud, one bit is about 8.68 µs and the frame about 86.8 µs. Confirm that TX and RX are crossed.
+2. **Lab 2 (peripheral state):** Set the terminal to the wrong baud rate and record the garbage plus FE. Restore 115200, read SR then DR to clear the flag, and confirm that RXNE changes again.
+3. **Lab 3 (memory result):** Receive 1, 17, and 255 bytes with DMA+IDLE. Record callback length, the first and last buffer bytes, and the complete echo. Chapter 10 explains how DMA updates the remaining count.
 
 ### 4. USART registers that matter (F1)
 
@@ -336,7 +336,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 ### 7. Overrun, and the RS485 direction pin
 
-**** once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
+Once ORE is set, a new byte no longer enters DR until you **read SR and then read DR**. Reading DR alone does not clear ORE, and reception stays dead.
 
 | Flag | Meaning | How to clear it |
 | --- | --- | --- |
@@ -354,7 +354,7 @@ while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET) { }
 HAL_GPIO_WritePin(DE_PORT, DE_PIN, GPIO_PIN_RESET);
 ```
 
-Motto: **ORE is SR first, then DR. On RS485, wait for TC before you turn around.**
+Before leaving this chapter, keep one `0x55` frame capture, the SR flags from a wrong-baud run, and memory records for the three DMA+IDLE lengths.
 
 Self-test:
 
