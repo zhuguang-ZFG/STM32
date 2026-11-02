@@ -686,6 +686,49 @@ CHAPTERS = [
         b("低功耗和双核都要看系统", ["WFI 只是入口", "事务和唤醒时钟决定能否 Stop", "H7 的 M7 加 M4 通常按 AMP"],
           "把 WFI 放进 idle hook 只是入口。能否进入 Stop，还取决于截止点、DMA、Flash 和唤醒时钟。H7 的 M7 加 M4 通常按 AMP 设计，不是对称 SMP。"),
         b("合上书，三问", ["谁拥有外设", "谁能刷新看门狗", "迁移时先搬哪条垂直切片"],
-          "合上书，三问。有状态外设应该有几个所有者？什么条件满足时，监督者才能刷新看门狗？系统迁移为什么先做硬件事件到任务输出的垂直切片？"),
+          "合上书，三问。有状态外设应该有几个所有者？什么条件满足时，监督者才能刷新硬件看门狗？系统迁移为什么先做硬件事件到任务输出的垂直切片？"),
     ]),
 ]
+
+
+# L2 short-form visuals: same narration, one explicit learning task per beat.
+SHORT_VISUALS = {
+    "00": [
+        "diagrams/first-success-gates.svg", "diagrams/first-lab-wiring.svg",
+        "diagrams/manual-choice-map.svg", "animations/toolchain-flow.svg",
+        "diagrams/first-success-gates.svg", "diagrams/layers-hal-ll-reg.svg",
+        "diagrams/first-lab-wiring.svg", "diagrams/first-success-gates.svg",
+        "diagrams/first-success-gates.svg", "diagrams/manual-choice-map.svg",
+    ],
+    "01": [
+        "animations/boot-sequence.svg", "diagrams/single-build-contract.svg",
+        "animations/boot-sequence.svg", "animations/boot-sequence.svg",
+        "diagrams/sample-01-swd-vectors.svg", "diagrams/project-structure.svg",
+        "diagrams/first-lab-wiring.svg", "diagrams/sample-01-swd-vectors.svg",
+        "diagrams/single-build-contract.svg", "diagrams/sample-01-swd-vectors.svg",
+    ],
+    "02": [
+        "boards/bluepill-stm32f103c8t6.svg", "animations/memory-map.svg",
+        "animations/clock-tree.svg", "animations/clock-tree.svg",
+        "diagrams/sample-02-clock-tree.svg", "diagrams/sample-02-clock-tree.svg",
+        "diagrams/sample-02-clock-tree.svg", "animations/clock-tree.svg",
+        "diagrams/sample-02-clock-tree.svg", "animations/memory-map.svg",
+    ],
+    "04": [
+        "animations/gpio-input-interrupt.svg", "animations/nvic-interrupt-flow.svg",
+        "boards/pinout-bluepill.svg", "animations/nvic-interrupt-flow.svg",
+        "diagrams/interrupt-priority.svg", "animations/nvic-interrupt-flow.svg",
+        "diagrams/sample-04-exception-stack.svg", "diagrams/interrupt-priority.svg",
+        "animations/gpio-input-interrupt.svg", "diagrams/sample-04-exception-stack.svg",
+    ],
+    "05": [
+        "animations/timer-pwm.svg", "diagrams/sample-05-pwm-1khz.svg",
+        "diagrams/sample-05-pwm-1khz.svg", "animations/timer-pwm.svg",
+        "diagrams/sample-05-pwm-1khz.svg", "animations/timer-modes.svg",
+        "diagrams/sample-05-pwm-1khz.svg", "diagrams/sample-05-pwm-1khz.svg",
+        "diagrams/sample-05-pwm-1khz.svg", "animations/timer-pwm.svg",
+    ],
+}
+for _chapter in CHAPTERS:
+    for _index, _visual in enumerate(SHORT_VISUALS.get(_chapter["id"], [])):
+        _chapter["segments"][_index]["svg"] = _visual
