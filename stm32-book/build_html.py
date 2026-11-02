@@ -27,6 +27,9 @@ BOOK_DIR = ROOT / "book"
 DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
 ILLUSTRATIONS_DIR = ROOT / "book" / "illustrations"
+HANDDRAW_DIR = REPO_ROOT / "assets" / "illustrations"
+HANDDRAW_MANIFEST = HANDDRAW_DIR / "manifest.json"
+HANDDRAW_MAX_BYTES = 24 * 1024
 ART_MAX_BYTES = 6000
 TOKENS_PATH = ROOT / "styles" / "tokens.json"
 BOOK_CSS_PATH = ROOT / "styles" / "book.css"
@@ -461,6 +464,46 @@ def _data_uri(path: Path) -> str:
     return f"data:{mime};base64,{payload}"
 
 
+def load_handdraw_manifest() -> dict[str, dict]:
+    """Load the required 29-chapter hand-drawn plate manifest.
+
+    The generator writes this file, and every chapter must have exactly one
+    entry. A missing file is a build error rather than a silent gap.
+    """
+    if not HANDDRAW_MANIFEST.is_file():
+        raise BuildError(f"missing hand-drawn manifest: {HANDDRAW_MANIFEST}")
+    try:
+        data = json.loads(HANDDRAW_MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise BuildError(f"cannot read hand-drawn manifest {HANDDRAW_MANIFEST}: {exc}") from exc
+    if not isinstance(data, dict) or data.get("schema_version") != 1:
+        raise BuildError("hand-drawn manifest must declare schema_version 1")
+    if data.get("style") != "FA-002":
+        raise BuildError("hand-drawn manifest must pin style FA-002")
+    files = data.get("files")
+    if not isinstance(files, list) or len(files) != 29:
+        raise BuildError("hand-drawn manifest must list exactly 29 chapter plates")
+    entries: dict[str, dict] = {}
+    for index, item in enumerate(files):
+        chapter = f"{index:02d}"
+        if not isinstance(item, dict) or item.get("chapter") != chapter:
+            raise BuildError(f"hand-drawn manifest chapter order is wrong at {chapter}")
+        filename = item.get("file")
+        if filename != f"ch{chapter}-handdraw.svg":
+            raise BuildError(f"hand-drawn manifest file name is wrong at {chapter}")
+        for key in ("zh", "en"):
+            value = item.get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise BuildError(f"hand-drawn manifest lacks {key} title at {chapter}")
+        path = HANDDRAW_DIR / filename
+        if not path.is_file():
+            raise BuildError(f"missing hand-drawn plate: {path}")
+        if path.stat().st_size > HANDDRAW_MAX_BYTES:
+            raise BuildError(f"hand-drawn plate exceeds {HANDDRAW_MAX_BYTES} bytes: {path}")
+        entries[chapter] = item
+    return entries
+
+
 def embed_local_images(rendered: str, source_file: Path) -> str:
     def replace_tag(match: re.Match[str]) -> str:
         tag = match.group(0)
@@ -635,6 +678,8 @@ UI = {
         "toc_jump": "目录",
         "part_kicker": "第 {n} 部",
         "chapter_kicker": "第 {n} 章",
+        "plate_alt": "手绘概念图：{title}",
+        "plate_caption": "手绘概念图：{title}。用于建立直觉，不承载工程数据。",
         "appendix_kicker": "附录",
         "callout_warning": "注意",
         "callout_tip": "提示",
@@ -692,6 +737,8 @@ UI = {
         "toc_jump": "Contents",
         "part_kicker": "Part {n}",
         "chapter_kicker": "Chapter {n}",
+        "plate_alt": "Hand-drawn concept: {title}",
+        "plate_caption": "Hand-drawn concept: {title}. Built for intuition, not engineering evidence.",
         "appendix_kicker": "Appendix",
         "callout_warning": "Warning",
         "callout_tip": "Tip",
@@ -782,6 +829,19 @@ def part_headpiece(part_id: str) -> str:
     """Return the required 200×140 part-divider drawing as safe inline SVG."""
     svg = _read_inline_art(f"part-{part_id}", "0 0 200 140")
     return f'<div class="part-art" aria-hidden="true">{svg}</div>'
+
+
+def handdraw_plate(entry: dict, language: str, manifest: dict) -> str:
+    """Return one chapter-opening hand-drawn plate as an embedded image."""
+    title = entry["zh"] if language == "zh" else entry["en"]
+    alt = ui(manifest, "plate_alt").format(title=title)
+    caption = ui(manifest, "plate_caption").format(title=title)
+    uri = _data_uri(HANDDRAW_DIR / entry["file"])
+    return f"""
+<figure class="chapter-plate">
+  <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
+  <figcaption>▲ {html.escape(caption)}</figcaption>
+</figure>"""
 
 
 def compass_html(guide: dict, manifest: dict) -> str:
@@ -1397,6 +1457,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     destination.mkdir(parents=True, exist_ok=True)
     table_label = ui(manifest, "table_label")
     labels = callout_label_map(manifest)
+    handdraw = load_handdraw_manifest()
 
     chapter_anchors = {
         (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
@@ -1469,6 +1530,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 <article class="chapter" id="chapter-{filename[:2]}" data-chapter="{filename[:2]}">
   <header class="ch-head"><span class="ch-head-text"><span class="chapter-number">{html.escape(chapter_kicker)}</span><h1>{html.escape(heading)}</h1></span>{chapter_emblem(filename)}</header>
   {compass_html(guide, manifest)}
+  {handdraw_plate(handdraw[filename[:2]], edition_language(manifest), manifest)}
   {rendered}
   {quick_check_html(questions, manifest)}
   <a class="back-to-toc" href="#contents">{html.escape(ui(manifest, 'back_to_toc'))}</a>

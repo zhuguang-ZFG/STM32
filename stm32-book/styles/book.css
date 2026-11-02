@@ -124,6 +124,10 @@ figure img { margin: 0 auto .4rem; }
 .photo-pair img { width: 100%; margin: 0; }
 figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--muted); text-align: center; font-size: var(--type-small); line-height: var(--leading-caption); }
 .photo-spread figcaption { margin-top: .55rem; }
+/* 章首手绘概念图：独立一层，用于建立直觉，不承担工程数据精度 */
+.chapter-plate { margin: 0 0 var(--space-figure); padding: 0; border: 0; background: none; box-shadow: none; }
+.chapter-plate img { margin: 0 auto; max-width: min(100%, 820px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.chapter-plate figcaption { max-width: min(100%, 820px); margin: .5rem auto 0; }
 sub { display: block; color: var(--muted); text-align: center; font-size: var(--type-small); line-height: var(--leading-caption); }
 table { width: 100%; border-collapse: collapse; font-size: var(--type-small); }
 .table-scroll { max-width: 100%; overflow-x: auto; margin: 1rem 0 1.5rem; overscroll-behavior-inline: contain; }

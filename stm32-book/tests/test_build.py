@@ -1579,7 +1579,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "87e3875a1ac98d62ae981802a411f445438a88fbaab1c519803d906fba62de54",
+            "341d9e6adc177e11f08d0c20170cb74fe79e7e78c52892d7f54272bb9a73e560",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
@@ -2220,7 +2220,7 @@ class BookBuildContractTests(unittest.TestCase):
                                 const term = document.querySelector('#appendix-glossary td');
                                 const mixup = document.querySelector('#appendix-glossary td:nth-child(3)');
                                 const section = document.querySelector('#chapter-00 h2');
-                                const plate = document.querySelector('figure');
+                                const plate = document.querySelector('figure:not(.chapter-plate)');
                                 const marker = getComputedStyle(document.querySelector('#chapter-00 li'), '::marker');
                                 const divider = document.querySelector('#part-p0');
                                 const index = divider.querySelector('.part-index').getBoundingClientRect();
@@ -2268,7 +2268,7 @@ class BookBuildContractTests(unittest.TestCase):
                             const imprint = getComputedStyle(document.querySelector('.imprint'));
                             const cover = getComputedStyle(document.querySelector('.cover'));
                             const term = getComputedStyle(document.querySelector('#appendix-glossary td'));
-                            const plate = getComputedStyle(document.querySelector('figure'));
+                            const plate = getComputedStyle(document.querySelector('figure:not(.chapter-plate)'));
                             return {
                                 preBreakInside: pre.breakInside,
                                 preWhiteSpace: pre.whiteSpace,

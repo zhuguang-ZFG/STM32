@@ -9,12 +9,15 @@
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
+> python3 tools/gen_handdraw_illustrations.py   # 29 张章首手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
 图内纸色、墨色和语义色写在 tools/svgkit.py 的字面量里，数值与整书亮色令牌相同，生成时不读 stm32-book/styles/tokens.json。
 
 第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
+
+29 张章首手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单把 29 张图内嵌进中英文两版；缺图、缺条目或章节顺序不对都会让构建失败。
 
 ## 一、动画演示 `assets/animations/`
 
@@ -126,7 +129,43 @@
 | `sample-18-boot-triage.svg` | 第 18 章静态主图：先看第 34 脚、第 37 脚和第 44 脚；BOOT0 为 1 且 BOOT1 为 0 时 CPU 在 0x1FFFF000。由 `tools/gen_sample_figures.py` 生成 |
 | `sample-19-flash-fit.svg` | 第 19 章静态主图：一张 0xB800 停在 0x08010000 之前；两张是 110 KB，65536 字节大于 20 KB SRAM。由 `tools/gen_sample_figures.py` 生成 |
 
-## 五、光栅动画 `assets/gif/`
+## 五、章首手绘概念图 `assets/illustrations/`
+
+29 章各一张，900×560，网页端带轻量 CSS 动画，PDF 首帧完整可读。文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。
+
+| 文件 | 章节 | 画面 |
+| --- | --- | --- |
+| `ch00-handdraw.svg` | 00 | 从第一盏灯走到能验收的系统 |
+| `ch01-handdraw.svg` | 01 | 源码穿过工具和齿轮落进芯片 |
+| `ch02-handdraw.svg` | 02 | 时钟分叉成总线和存储区 |
+| `ch03-handdraw.svg` | 03 | 一只引脚点亮灯，也读回按键 |
+| `ch04-handdraw.svg` | 04 | 门铃事件进入优先级队列 |
+| `ch05-handdraw.svg` | 05 | 齿轮咬合出可测量的波形 |
+| `ch06-handdraw.svg` | 06 | 两个人隔着一条线交换成帧的比特 |
+| `ch07-handdraw.svg` | 07 | 两条开漏线依次拜访有地址的设备 |
+| `ch08-handdraw.svg` | 08 | 每个时钟沿，两边交换一个字节 |
+| `ch09-handdraw.svg` | 09 | 电压倒进桶里，变成二进制台阶 |
+| `ch10-handdraw.svg` | 10 | 传送带把采样搬进环形缓冲区 |
+| `ch11-handdraw.svg` | 11 | 看门狗盯着时钟和复位留下的痕迹 |
+| `ch12-handdraw.svg` | 12 | 校验过的镜像跨过带闸门的桥 |
+| `ch13-handdraw.svg` | 13 | 多个节点在一条差分路上仲裁 |
+| `ch14-handdraw.svg` | 14 | 设备在主机桌前通过枚举检查点 |
+| `ch15-handdraw.svg` | 15 | 任务绕着调度器转，交换事件 |
+| `ch16-handdraw.svg` | 16 | 睡着的芯片在电池月亮下短暂醒来 |
+| `ch17-handdraw.svg` | 17 | 故障现场在证据消失前被检查 |
+| `ch18-handdraw.svg` | 18 | 技术员沿着症状路牌逐个边界排查 |
+| `ch19-handdraw.svg` | 19 | 工作台把证据门拼成产品 |
+| `ch20-handdraw.svg` | 20 | 手册图书馆和罗盘为工程问题引路 |
+| `ch21-handdraw.svg` | 21 | 像解剖标本一样检查一块板 |
+| `ch22-handdraw.svg` | 22 | 同一份固件从模型跨到真实工作台 |
+| `ch23-handdraw.svg` | 23 | 共用的 BOOT 和 SWCLK 脚分成两条受控路径 |
+| `ch24-handdraw.svg` | 24 | 低功耗设备睡下、醒来、恢复时钟并报告 |
+| `ch25-handdraw.svg` | 25 | 电源域和时钟组成一座高性能城市 |
+| `ch26-handdraw.svg` | 26 | 冻结的旧库一格一格迁移 |
+| `ch27-handdraw.svg` | 27 | 数据包穿过 ARP、TCP、TLS 与应用边界 |
+| `ch28-handdraw.svg` | 28 | 中断、任务、驱动、网络与应用组成一套系统 |
+
+## 六、光栅动画 `assets/gif/`
 
 | 文件 | 内容 | 说明 |
 | --- | --- | --- |
@@ -165,7 +204,7 @@
 
 文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 8 张 SVG 还没有对应光栅动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`、`spl-init-pipeline`、`network-online-state`、`rtos-startup-gates`。它们在 HTML / GitHub 中仍是可播放的 CSS 动画，PDF 保留完整第一帧。
 
-## 六、章节讲解 `assets/video/`
+## 七、章节讲解 `assets/video/`
 
 正片 29 章是 `ch00`–`ch28`，AI 续集是 `chs01`–`chs12`。`chai01-ai-gpio` 是续集第一集的早期成片，在 [video/superseded/](video/superseded/README.md)，现行文件是 `chs01-ai-basics`。文件名对照见 [video/README.md](video/README.md)。
 
@@ -177,11 +216,11 @@ edge-tts 大部分源码是 LGPLv3，其中 `srt_composer.py` 是 MIT；声线�
 重新生成正片：`python3 tools/gen_narrated.py --speak`（需要 ffmpeg 和联网）。
 续集把环境变量 `NARRATED_MODULE` 设为 `narration_ai` 再跑同一条命令。
 
-## 七、公众号二维码 `assets/wechat/`
+## 八、公众号二维码 `assets/wechat/`
 
 [wechat/wechat-mp-qr.png](wechat/wechat-mp-qr.png) 是「SIAI小宇宙」的关注二维码，首页在用。它不是板卡图，也不由 `gen_boards.py` 生成。公众号 HTML 和封面写到不入库的 `wechat-mp/`。
 
-## 八、引用方式
+## 九、引用方式
 
 ```markdown
 <p align="center">

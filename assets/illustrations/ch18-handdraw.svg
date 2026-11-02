@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="A technician follows symptom signposts one boundary at a time">
+<title>A technician follows symptom signposts one boundary at a time</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 19</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<circle cx="152" cy="332.2" r="8" fill="none" opacity="0.2" stroke="#5e6872" stroke-width="1"/>
+<circle cx="150" cy="331.2" r="8" fill="#fbfaf7" opacity="1" stroke="#5e6872" stroke-width="2"/>
+<path d="M150 340.0 C146.8 355.2 153.2 366.4 150 382.4" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5e6872" stroke-width="2"/>
+<line x1="151.8" y1="354.8" x2="135.8" y2="358" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="150" y1="353.6" x2="134" y2="356.8" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="151.8" y1="354.8" x2="167.8" y2="358" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="150" y1="353.6" x2="166" y2="356.8" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="151.8" y1="383.6" x2="142.2" y2="401.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="150" y1="382.4" x2="140.4" y2="400" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="151.8" y1="383.6" x2="161.4" y2="401.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="150" y1="382.4" x2="159.6" y2="400" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M267 122 L363 122 L370 198 L260 198 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="2" class="hd-float"/>
+<text x="315" y="168" font-size="24" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">?</text>
+<line x1="316.8" y1="199.2" x2="316.8" y2="249.2" stroke="#8f2d2d" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="315" y1="198" x2="315" y2="248" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M422 222 L518 222 L525 298 L415 298 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2" class="hd-float"/>
+<text x="470" y="268" font-size="24" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">!</text>
+<line x1="471.8" y1="299.2" x2="471.8" y2="349.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="470" y1="298" x2="470" y2="348" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M572 117 L668 117 L675 193 L565 193 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<text x="620" y="163" font-size="24" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">→</text>
+<line x1="621.8" y1="194.2" x2="621.8" y2="244.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="620" y1="193" x2="620" y2="243" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M712 262 L808 262 L815 338 L705 338 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-float"/>
+<text x="760" y="308" font-size="24" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">✓</text>
+<line x1="761.8" y1="339.2" x2="761.8" y2="389.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="760" y1="338" x2="760" y2="388" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M185 350 C280 345 275 240 315 210 S430 360 470 310 S580 220 620 205 S710 350 760 345" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>
