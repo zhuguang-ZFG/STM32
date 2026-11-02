@@ -8,9 +8,9 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams gifs videos book book-pdf book-check check lint-voice verify clean stats
+.PHONY: assets animations boards diagrams illustrations gifs videos book book-pdf book-check check lint-voice verify clean stats
 
-assets: animations boards diagrams gifs videos
+assets: animations boards diagrams illustrations gifs videos
 
 # 整书版：离线单文件 HTML；book-pdf 还需要 Chrome/Edge、Playwright 与 PyMuPDF。
 book:
@@ -32,6 +32,9 @@ boards:
 
 diagrams:
 	$(PY) tools/gen_diagrams.py
+
+illustrations:
+	$(PY) tools/gen_handdraw_illustrations.py
 
 gifs:
 	$(PY) tools/gen_gifs.py
