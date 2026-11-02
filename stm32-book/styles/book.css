@@ -131,6 +131,9 @@ figcaption { max-width: var(--measure); margin: .15rem auto 0; color: var(--mute
 .mid-plate { margin: 0 0 var(--space-figure); padding: 0; border: 0; background: none; box-shadow: none; }
 .mid-plate img { margin: 0 auto; max-width: min(100%, 720px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .mid-plate figcaption { max-width: min(100%, 720px); margin: .5rem auto 0; }
+.appendix-plate { margin: 0 0 var(--space-figure); padding: 0; border: 0; background: none; box-shadow: none; }
+.appendix-plate img { margin: 0 auto; max-width: min(100%, 820px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.appendix-plate figcaption { max-width: min(100%, 820px); margin: .5rem auto 0; }
 .part-plate { position: relative; z-index: 1; width: min(36rem, 100%); margin: 1.1rem 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
 .part-plate img { width: 100%; margin: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
 .part-plate figcaption { max-width: none; margin: .45rem 0 0; text-align: left; }

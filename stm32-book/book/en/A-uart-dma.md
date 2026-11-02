@@ -2,6 +2,11 @@
 
 The hard part of UART DMA is not calling one HAL function. It is choosing a **buffer-ownership contract** first. Two common shapes exist. Mixing the code from both is how you get duplicates, lost bytes, or a half frame overwritten.
 
+<p align="center">
+  <img src="../../../assets/animations/uart-idle-dma.svg" width="760" alt="Two UART + DMA + IDLE reception contracts">
+  <br><sub>▲ Animation: bytes arrive in bursts, IDLE raises the event, Size is the first unwritten position; contract A re-arms each round, contract B wraps a ring (author-drawn vector)</sub>
+</p>
+
 ## 1. Write the invariants first
 
 Whichever shape you pick, write four invariants before the code:

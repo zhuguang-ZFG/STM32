@@ -543,6 +543,22 @@ MID = [
 ]
 
 
+APPENDICES = (
+    ("a", "appendix-engineering", "两类 DMA 契约各自成环，不能混拼",
+     "Two DMA contracts each close their own loop; never mix them", "dma-contracts"),
+    ("b", "appendix-examples", "十四个例程，每个都留下可复现的证据",
+     "Fourteen examples, each leaving reproducible evidence", "example-index"),
+    ("c", "appendix-exercises", "先自己推一遍，再翻开答案对",
+     "Work it out yourself before opening the answer key", "answer-key"),
+    ("d", "appendix-glossary", "每个术语挂回它所属的章节",
+     "Every term hangs from the chapter it belongs to", "glossary"),
+    ("e", "appendix-references", "每条事实都能落回一份带版本的来源",
+     "Every fact lands on a versioned source", "sources"),
+    ("f", "appendix-oss-map", "开源项目按层次在地图上各就各位",
+     "Open-source projects take their places on the map", "oss-map"),
+)
+
+
 def part_scene(index: int, zh: str, aria: str, scene: str) -> Svg:
     """Return one hand-drawn plate for a part divider."""
     k = Sketch(index - 1, aria, aria, label=f"PART {index:02d}")
@@ -1072,6 +1088,98 @@ def mid_scene(ch: int, zh: str, aria: str, scene: str) -> Svg:
     return k.footer()
 
 
+def appendix_scene(letter: str, zh: str, aria: str, scene: str) -> Svg:
+    """Return one hand-drawn plate for an appendix opener."""
+    k = Sketch(0, zh, aria, label=f"APP {letter.upper()}")
+    k.path("M52 455 C180 443 292 468 420 451 S690 440 848 454",
+           color=T.GRID, sw=1.5)
+
+    if scene == "dma-contracts":
+        k.path("M110 170 L790 170", T.GRID, sw=2)
+        for i in range(8):
+            k.s.rect(130 + i * 78, 140, 58, 30, fill=T.PANEL2, stroke=T.CYAN, rx=4, sw=2)
+        k.circle(430, 120, 18, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(430, 125, "IDLE", T.RED, 7)
+        k.path("M430 138 C430 150 430 155 430 165", T.RED)
+        k.path("M700 185 C700 230 260 230 165 185", T.AMBER, cls="hd-flow")
+        k.s.poly([(160,176),(178,186),(158,196)], fill=T.AMBER, sw=1)
+        k.label(430, 250, "RE-ARM", T.AMBER, 9)
+        k.path("M90 300 L810 300", T.RED, sw=2)
+        for y in range(312, 336, 12):
+            k.line(80, y, 820, y, T.RED)
+        k.label(450, 292, "DO NOT MIX", T.RED, 9)
+        k.circle(450, 400, 62, T.VIOLET, T.PANEL2)
+        k.circle(450, 400, 34, T.VIOLET, T.BG)
+        for i, lab in enumerate(("HT", "TC", "IDLE")):
+            a = -math.pi / 2 + i * 2 * math.pi / 3
+            k.circle(450 + 62 * math.cos(a), 400 + 62 * math.sin(a), 13,
+                     T.VIOLET, T.BG2, cls="hd-pulse")
+            k.label(450 + 62 * math.cos(a), 404 + 62 * math.sin(a), lab, T.VIOLET, 7)
+        k.label(450, 405, "RING", T.VIOLET, 9)
+    elif scene == "example-index":
+        for i in range(14):
+            x = 105 + (i % 7) * 100
+            y = 175 + (i // 7) * 120
+            k.blob(f"M{x} {y} L{x+74} {y} L{x+80} {y+62} L{x-6} {y+62} Z",
+                   T.PANEL2, T.CYAN if i % 3 else T.AMBER, "hd-float")
+            k.path(f"M{x+18} {y+32} L{x+32} {y+46} L{x+58} {y+16}", T.GREEN)
+            k.label(x + 37, y + 82, f"E{i+1:02d}", T.STROKE, 8)
+        k.path("M150 420 C300 445 560 445 750 425", T.GRID)
+        k.label(450, 120, "14 VERIFIED", T.GREEN, 11)
+    elif scene == "answer-key":
+        k.blob("M300 180 L600 180 L612 380 L288 380 Z", T.PANEL2, T.CYAN)
+        k.circle(450, 275, 34, T.AMBER, T.BG)
+        k.path("M438 275 L448 285 L468 258", T.AMBER)
+        k.path("M150 160 C200 140 260 170 250 215 C240 250 190 250 175 225",
+               T.AMBER, sw=2)
+        k.circle(212, 188, 16, T.AMBER, T.BG2)
+        k.path("M248 220 C300 250 340 255 415 268", T.AMBER, cls="hd-flow")
+        person(k, 690, 380, .8, T.STROKE, pose="stand", cls="hd-float")
+        k.path("M700 330 C730 300 760 330 790 300", T.VIOLET, cls="hd-flow")
+        k.label(450, 415, "CHECK AFTER", T.GREEN, 9)
+    elif scene == "glossary":
+        k.path("M90 120 L810 120", T.STROKE, sw=2)
+        for i, (x, c, hang) in enumerate([
+            (170, T.AMBER, 90), (300, T.CYAN, 130), (430, T.GREEN, 75),
+            (560, T.VIOLET, 140), (690, T.RED, 100),
+        ]):
+            k.line(x, 120, x, 120 + hang, c)
+            k.blob(f"M{x-52} {120+hang} L{x+52} {120+hang} L{x+58} {172+hang} L{x-58} {172+hang} Z",
+                   T.PANEL2, c, "hd-sway")
+            k.circle(x, 134 + hang, 5, c, T.BG)
+            k.path(f"M{x-30} {152+hang} L{x+30} {152+hang}", c)
+        k.path("M170 320 C260 380 340 360 430 395 S620 420 690 380", T.CYAN, cls="hd-flow")
+        k.label(430, 445, "TERM -> CHAPTER", T.CYAN, 9)
+    elif scene == "sources":
+        for i, (lab, c) in enumerate([
+            ("DS", T.RED), ("RM", T.AMBER), ("UM", T.CYAN), ("ERR", T.GREEN),
+        ]):
+            y = 380 - i * 62
+            x = 230 + i * 16
+            k.s.rect(x, y, 300, 48, fill=T.PANEL2, stroke=c, rx=4, sw=2)
+            k.label(x + 36, y + 30, lab, c, 11)
+            k.path(f"M{x+70} {y+24} L{x+270} {y+24}", c)
+            k.label(x + 285, y + 30, f"rev{i+1}", T.MUTED, 8)
+        k.circle(680, 220, 30, T.VIOLET, T.BG2, cls="hd-float")
+        k.label(680, 226, "?", T.VIOLET, 20)
+        k.path("M650 235 C600 265 570 285 545 300", T.VIOLET, cls="hd-flow")
+        k.circle(545, 305, 9, T.VIOLET, T.PANEL, cls="hd-pulse")
+    else:  # oss-map
+        k.blob("M110 390 C140 260 260 150 430 140 S700 190 790 300 C760 390 600 430 430 425 S170 430 110 390 Z",
+               T.PANEL2, T.GREEN)
+        for x, y, c, lab in [
+            (240, 260, T.CYAN, "KERNEL"), (420, 200, T.AMBER, "DRIVER"),
+            (580, 250, T.VIOLET, "TOOL"), (360, 350, T.RED, "LIB"), (640, 360, T.GREEN, "COMMUNITY"),
+        ]:
+            k.circle(x, y, 14, c, T.PANEL, cls="hd-pulse")
+            k.line(x, y + 14, x, y + 34, c)
+            k.label(x, y + 52, lab, c, 8)
+        k.path("M254 262 C320 240 360 225 405 212 M435 205 C490 212 530 230 565 244 M375 340 C400 300 405 260 415 215 M595 262 C620 300 630 330 636 350 M255 272 C300 310 330 330 350 344",
+               T.CYAN, cls="hd-flow")
+
+    return k.footer()
+
+
 def main(argv: list[str]) -> int:
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     out_dir = os.path.join(root, "assets", "illustrations")
@@ -1080,6 +1188,7 @@ def main(argv: list[str]) -> int:
     count = 0
     mid_count = 0
     part_count = 0
+    app_count = 0
     for ch, title, zh, aria, scene in CHAPTERS:
         number = f"{ch:02d}"
         if only and number not in only:
@@ -1106,6 +1215,12 @@ def main(argv: list[str]) -> int:
             xml.dom.minidom.parse(path)
             print(f"[ok] {os.path.relpath(path, root)}")
             part_count += 1
+        for letter, _appendix_id, zh, aria, scene in APPENDICES:
+            path = os.path.join(out_dir, f"app-{letter}-handdraw.svg")
+            appendix_scene(letter, zh, aria, scene).save(path)
+            xml.dom.minidom.parse(path)
+            print(f"[ok] {os.path.relpath(path, root)}")
+            app_count += 1
         manifest = {
             "schema_version": 1,
             "style": "FA-002",
@@ -1139,13 +1254,23 @@ def main(argv: list[str]) -> int:
                 }
                 for ch, zh, aria, anchor_zh, anchor_en, _scene in MID
             ],
+            "appendices": [
+                {
+                    "id": appendix_id,
+                    "file": f"app-{letter}-handdraw.svg",
+                    "zh": zh,
+                    "en": aria,
+                }
+                for letter, appendix_id, zh, aria, _scene in APPENDICES
+            ],
         }
         manifest_path = os.path.join(out_dir, "manifest.json")
         with open(manifest_path, "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, ensure_ascii=False, indent=2)
             handle.write("\n")
         print(f"[ok] {os.path.relpath(manifest_path, root)}")
-    print(f"generated {count} chapter, {mid_count} mid-chapter and {part_count} part illustrations")
+    print(f"generated {count} chapter, {mid_count} mid-chapter, "
+          f"{part_count} part and {app_count} appendix illustrations")
     return 0
 
 

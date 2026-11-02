@@ -474,8 +474,101 @@ def network_packet_journey() -> Svg:
     return s
 
 
+# --------------------------------------------------------------------------- UART IDLE + DMA
+
+
+def uart_idle_dma() -> Svg:
+    s = Svg(W, H, "UART + DMA + IDLE：两类接收契约",
+            "Size 是首个未写位置；交给业务的永远是新增字节区间")
+    s.header(tag="附录 A", tag_color=T.AMBER)
+
+    # 1. 总线时间线：两阵字节 + 空闲间隙
+    s.title_block(40, 96, "① 总线：字节成阵到达，间隙触发 IDLE", color=T.CYAN)
+    s.line(50, 150, 850, 150, stroke=T.GRID, sw=1)
+    x0, cw = 60, 44
+    for i in range(5):
+        x = x0 + i * cw
+        s.rect(x, 128, cw - 6, 44, fill=T.PANEL, stroke=T.GREEN, rx=4)
+        s.text(x + 19, 155, f"D{i}", size=11, anchor="middle", fill=T.GREEN, mono=True)
+        s.rect(x, 128, cw - 6, 44, fill=T.GREEN, rx=4, opacity=0.14, cls=f"bus{i}")
+    for i in range(3):
+        x = x0 + (5 + i) * cw
+        s.rect(x, 128, cw - 6, 44, fill="none", stroke=T.AMBER, rx=4, dash="4 4")
+    s.text(x0 + 6.5 * cw - 10, 122, "空闲 ≥ 1 帧", size=10.5, anchor="middle", fill=T.AMBER)
+    for i in range(3):
+        x = x0 + (8 + i) * cw
+        s.rect(x, 128, cw - 6, 44, fill=T.PANEL, stroke=T.GREEN, rx=4)
+        s.rect(x, 128, cw - 6, 44, fill=T.GREEN, rx=4, opacity=0.14, cls=f"bus{5 + i}")
+    s.path(f"M{x0 + 8 * cw - 6} 110 L{x0 + 8 * cw - 6} 84", stroke=T.RED, sw=2)
+    s.path(f"M{x0 + 8 * cw - 16} 88 L{x0 + 8 * cw - 6} 84 L{x0 + 8 * cw - 16} 96 Z",
+           fill=T.RED)
+    s.text(x0 + 8 * cw + 8, 92, "IDLE 事件", size=11, fill=T.RED, weight="700")
+    s.line(60, 120, 60, 186, stroke=T.RED, sw=1.5, cls="busscan")
+    s.add_style(_seq_flash("bus", 8, period=6.0, peak=0.5, rest=0.06))
+    s.add_style(anim_tx(".busscan", dur="6s", x1=0, x2=780))
+
+    # 2. DMA 缓冲区：Size 语义
+    s.title_block(40, 226, "② DMA 缓冲（cap = 128）：Size = 首个未写位置", color=T.VIOLET)
+    bx0, bw = 60, 640
+    s.rect(bx0, 244, bw, 46, fill=T.PANEL, stroke=T.STROKE, rx=4)
+    for i in range(1, 16):
+        s.line(bx0 + i * (bw / 16), 244, bx0 + i * (bw / 16), 290,
+               stroke=T.GRID, sw=1)
+    filled = 7
+    s.rect(bx0, 244, filled * (bw / 16), 46, fill=T.VIOLET, rx=4, opacity=0.2,
+           cls="dmafill")
+    s.path(f"M{bx0 + filled * (bw / 16)} 236 L{bx0 + filled * (bw / 16)} 296",
+           stroke=T.RED, sw=2)
+    s.text(bx0 + filled * (bw / 16) + 8, 234, "Size = 7（范围 1..128）",
+           size=11, fill=T.RED, weight="700")
+    s.text(bx0 + 4, 308, "0", size=10, fill=T.MUTED, mono=True)
+    s.text(bx0 + bw - 24, 308, "127", size=10, fill=T.MUTED, mono=True)
+    s.text(bx0 + bw / 2, 308, "HT 在半缓冲（契约 B 才用）", size=10,
+           anchor="middle", fill=T.MUTED)
+    s.add_style(css_kf("dmafill-kf", [("0%,55%", "opacity:0"),
+                                      ("62%,88%", "opacity:.22"),
+                                      ("94%,100%", "opacity:0")]) +
+                "\n.dmafill{animation:dmafill-kf 6s linear infinite;}")
+
+    # 3. 两类契约
+    box_y = 340
+    s.rect(40, box_y, 400, 200, fill=T.BG2, stroke=T.CYAN, rx=8)
+    s.text(60, box_y + 26, "契约 A：Normal，每次重新武装", size=13,
+           fill=T.CYAN, weight="700")
+    for i, step in enumerate([
+        "ReceiveToIdle_DMA 后立即关 HT 中断",
+        "IDLE（或 TC）触发 RxEventCallback(Size)",
+        "复制 [0, Size) 进软件队列，溢出计数",
+        "回调里重新武装，并再次关 HT",
+    ]):
+        s.circle(70, box_y + 52 + i * 30, 4, fill=T.CYAN)
+        s.text(84, box_y + 56 + i * 30, step, size=11, fill=T.TEXT)
+    s.path("M390 520 C400 545 320 552 240 552 S90 545 96 522",
+           stroke=T.CYAN, sw=1.5, dash="5 4", cls="loopa")
+    s.add_style(anim_flow(".loopa", dur="2.4s"))
+
+    s.rect(460, box_y, 400, 200, fill=T.BG2, stroke=T.GREEN, rx=8)
+    s.text(480, box_y + 26, "契约 B：Circular，三事件取模", size=13,
+           fill=T.GREEN, weight="700")
+    for i, step in enumerate([
+        "开 HT、TC、IDLE 三个回调来源",
+        "new = (Size - old_pos) mod cap",
+        "只把新增区间交给业务，再 old_pos = Size",
+        "回卷照常；队列满则 dropped_bytes += 1",
+    ]):
+        s.circle(490, box_y + 52 + i * 30, 4, fill=T.GREEN)
+        s.text(504, box_y + 56 + i * 30, step, size=11, fill=T.TEXT)
+    s.path("M810 520 C820 548 740 556 660 556 S510 548 516 524",
+           stroke=T.GREEN, sw=1.5, dash="5 4", cls="loopb")
+    s.add_style(anim_flow(".loopb", dur="2.4s"))
+
+    s.footer("不变量：DMA 写区应用不改写；Size 不是“本次长度”；"
+             "交给业务的是新增字节区间；静默覆盖不算可靠接收")
+    return s
+
+
 ALL = [uart_frame, i2c_transaction, spi_transfer, can_arbitration,
-       usb_enumeration, network_packet_journey]
+       usb_enumeration, network_packet_journey, uart_idle_dma]
 
 NAMES = {
     "uart_frame": "uart-frame",
@@ -484,5 +577,6 @@ NAMES = {
     "can_arbitration": "can-arbitration",
     "usb_enumeration": "usb-enumeration",
     "network_packet_journey": "network-packet-journey",
+    "uart_idle_dma": "uart-idle-dma",
 }
 

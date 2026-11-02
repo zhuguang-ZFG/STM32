@@ -360,5 +360,106 @@ class MidHanddrawTests(unittest.TestCase):
             )
 
 
+class AppendixHanddrawTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.builder = load_builder()
+        cls.entries = cls.builder.load_handdraw_appendices()
+
+    def test_manifest_covers_every_appendix_in_order(self) -> None:
+        self.assertEqual(
+            ["appendix-engineering", "appendix-examples", "appendix-exercises",
+             "appendix-glossary", "appendix-references", "appendix-oss-map"],
+            list(self.entries),
+        )
+        for index, (appendix_id, entry) in enumerate(self.entries.items()):
+            letter = chr(ord("a") + index)
+            self.assertEqual(f"app-{letter}-handdraw.svg", entry["file"])
+            for key in ("zh", "en"):
+                self.assertTrue(entry[key].strip(), (appendix_id, key))
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            self.assertTrue(path.is_file(), path)
+            self.assertLessEqual(
+                path.stat().st_size, self.builder.HANDDRAW_MAX_BYTES, path
+            )
+
+    def test_appendix_plates_are_safe_animated_and_distinct(self) -> None:
+        titles: set[str] = set()
+        drawings: set[str] = set()
+        for appendix_id, entry in self.entries.items():
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            text = path.read_text(encoding="utf-8")
+            ET.parse(path)
+            self.assertIn('width="900"', text, appendix_id)
+            self.assertIn('viewBox="0 0 900 560"', text, appendix_id)
+            self.assertIn("FA-002", text, appendix_id)
+            self.assertIn("prefers-reduced-motion", text, appendix_id)
+            self.assertIn("自绘矢量动画", text, appendix_id)
+            for banned in ("<script", "<image", "<foreignObject", "<filter",
+                           "url(", "href="):
+                self.assertNotIn(banned, text, (appendix_id, banned))
+            titles.add(entry["en"])
+            drawings.add(text)
+        self.assertEqual(6, len(titles))
+        self.assertEqual(6, len(drawings))
+
+    def test_build_inlines_one_plate_per_appendix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(Path(tmp)).read_text(encoding="utf-8")
+        self.assertEqual(6, html.count('class="appendix-plate"'))
+        self.assertEqual(
+            6,
+            len(re.findall(
+                r'<figure class="appendix-plate">\s*'
+                r'<img src="data:image/svg\+xml;base64,',
+                html,
+            )),
+        )
+        self.assertEqual(6, html.count('alt="附录概念图：'))
+        for appendix_id in self.entries:
+            section = html[html.index(f'id="{appendix_id}"'):]
+            self.assertLess(
+                section.index('</header>'), section.index('class="appendix-plate"'),
+                appendix_id,
+            )
+
+    def test_english_build_inlines_only_the_five_shipped_appendices(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(
+                Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
+            ).read_text(encoding="utf-8")
+        self.assertEqual(5, html.count('class="appendix-plate"'))
+        self.assertEqual(5, html.count('alt="Appendix concept:'))
+        self.assertNotIn('alt="附录概念图：', html)
+        self.assertNotIn('id="appendix-oss-map"', html)
+
+    def test_missing_appendix_inventory_is_a_build_error(self) -> None:
+        manifest = json.loads(
+            (self.builder.HANDDRAW_MANIFEST).read_text(encoding="utf-8")
+        )
+        manifest.pop("appendices", None)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+            original = self.builder.HANDDRAW_MANIFEST
+            self.builder.HANDDRAW_MANIFEST = path
+            try:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_appendices()
+            finally:
+                self.builder.HANDDRAW_MANIFEST = original
+
+    def test_appendix_without_plate_is_a_build_error(self) -> None:
+        original = self.builder.load_handdraw_appendices
+        trimmed = {k: v for k, v in self.entries.items() if k != "appendix-oss-map"}
+        self.builder.load_handdraw_appendices = lambda: trimmed
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.build_html(Path(tmp))
+        finally:
+            self.builder.load_handdraw_appendices = original
+
+
 if __name__ == "__main__":
     unittest.main()
