@@ -1,0 +1,899 @@
+{
+  "schema_version": 1,
+  "chapter": "01",
+  "slug": "env-long",
+  "title": "开发环境搭建：从工具链到可复现的第一次烧录",
+  "short_source": "tools/narration.py#CHAPTERS[1]",
+  "scenes": [
+    {
+      "scene_id": "ch01-s01",
+      "title": "环境搭完，调试口没了",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "你装好了工具链，第一次烧录正常，第二次却再也连不上。这一章把环境搭建拆成一条可验收链：工具链、启动边界、SWD、工程和烧录。",
+      "on_screen": [
+        "环境能装",
+        "调试口会没"
+      ],
+      "visual_source": "illustrations/ch01-handdraw.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "环境搭建是可验收链",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s02",
+      "title": "先确认目标芯片",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01"
+      ],
+      "narration": "本章脚号和地址都按 STM32F103C8T6、LQFP48 封装算。C8 是 64 KB 闪存、20 KB SRAM；128 KB 是 F103CB 的容量。",
+      "on_screen": [
+        "F103C8T6",
+        "64 KB / 20 KB"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "先确认目标芯片",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s03",
+      "title": "复位后的调试口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02"
+      ],
+      "narration": "复位后的调试口是第 34 脚 PA13=SWDIO、第 37 脚 PA14=SWCLK。中间第 35 脚是 VSS_2、第 36 脚是 VDD_2。",
+      "on_screen": [
+        "PA13=SWDIO",
+        "PA14=SWCLK"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "调试口脚位",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s04",
+      "title": "数脚最容易错位",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03"
+      ],
+      "narration": "数脚时最容易把第 35 脚当成 SWCLK。第 35 脚是 VSS_2，第 36 脚是 VDD_2，第 37 脚才是 SWCLK。",
+      "on_screen": [
+        "第35脚=VSS_2",
+        "第37脚=SWCLK"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "数脚别错位",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s05",
+      "title": "NRST 建议接上",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04"
+      ],
+      "narration": "第 7 脚 NRST 建议接上，探针可以在连不上时硬复位芯片，但它不算 SWD 信号。",
+      "on_screen": [
+        "NRST=第7脚",
+        "不算SWD信号"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "NRST 建议接上",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s06",
+      "title": "CubeMX 必须选 Serial Wire",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05"
+      ],
+      "narration": "CubeMX 里 SYS Debug 要选 Serial Wire。选成 No Debug 后，PA13/PA14 会被初始化成普通 GPIO，程序一跑调试口就没了。",
+      "on_screen": [
+        "Serial Wire",
+        "No Debug 丢调试口"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "调试模式决定引脚",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s07",
+      "title": "启动别名",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06"
+      ],
+      "narration": "BOOT0=0 时，CPU 从 0x00000000 读到的是闪存 0x08000000 的别名。第 0 个字是 MSP，第 1 个字是 Reset_Handler。",
+      "on_screen": [
+        "BOOT0=0",
+        "0x08000000 别名"
+      ],
+      "visual_source": "diagrams/sample-00-boot-state.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "启动别名",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s08",
+      "title": "向量表前两项",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07"
+      ],
+      "narration": "向量表第 0 项是栈初值，第 1 项是复位入口。把第 0 字当成复位入口是常见错误。",
+      "on_screen": [
+        "第0字=MSP",
+        "第1字=Reset"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "向量表前两项",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s09",
+      "title": "外设中断入口不要直接乘 4",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08"
+      ],
+      "narration": "外设中断入口不能直接拿 IRQn 乘 4 再加 0x08000000。前面还有 16 个系统异常，入口应是 VTOR + 4×(IRQn+16)。算错就跳到错误地址。",
+      "on_screen": [
+        "不是 0x08000000+4×IRQn",
+        "而是 VTOR+4×(IRQn+16)",
+        "算错跳错地址"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "中断入口要加 16",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch01-s10",
+      "title": "BOOT1=0 是系统存储器",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09"
+      ],
+      "narration": "BOOT1=0 且 BOOT0=1 时，CPU 取到系统存储器 0x1FFFF000，不是 SRAM。BOOT0=1 就进 SRAM 的说法是错的。",
+      "on_screen": [
+        "BOOT1=0",
+        "0x1FFFF000"
+      ],
+      "visual_source": "diagrams/sample-00-boot-state.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "BOOT1 决定第二启动区",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s11",
+      "title": "两只 BOOT 都为 1 才进 SRAM",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10"
+      ],
+      "narration": "BOOT1=1 且 BOOT0=1 才从 SRAM 0x20000000 启动。SRAM 启动常用于调试，掉电内容会丢。",
+      "on_screen": [
+        "1/1=SRAM",
+        "掉电丢失"
+      ],
+      "visual_source": "diagrams/sample-00-boot-state.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "SRAM 启动要两只 BOOT",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s12",
+      "title": "无保护字节是 0xA5",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11"
+      ],
+      "narration": "无保护是 RDP=0xA5，不是 0xAA。0xAA 是 F4 等系列笔记里常见，F103C8 不认。解除保护会整片擦除主闪存。",
+      "on_screen": [
+        "0xA5",
+        "不是 0xAA"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "无保护字节 0xA5",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s13",
+      "title": "跟踪脚不是 SWDIO",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12"
+      ],
+      "narration": "跟踪脚是第 39 脚 PB3，默认功能是 JTDO，重映射里才有 TRACESWO。只接两根 SWD 线用不了 SWO。",
+      "on_screen": [
+        "PB3=JTDO",
+        "TRACESWO 需重映射"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#原理与适用范围"
+      ],
+      "memory_anchor": "跟踪脚不是 SWDIO",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s14",
+      "title": "IDE 可以换，验收顺序不变",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13"
+      ],
+      "narration": "IDE 可以换，验收顺序不变：先确认 ELF/AXF，再确认烧录校验，最后看复位是否命中 main。",
+      "on_screen": [
+        "ELF/AXF",
+        "烧录校验",
+        "命中main"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "验收顺序不变",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s15",
+      "title": "四种环境",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14"
+      ],
+      "narration": "Keil、CubeIDE、VS Code+PlatformIO、CLion+OpenOCD 各有取舍。第一次建工程可用 CubeIDE，需要 CI 时让工具共用同一构建入口。",
+      "on_screen": [
+        "Keil/CubeIDE",
+        "VSCode/CLion",
+        "同一构建入口"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "四种环境一套事实",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s16",
+      "title": "标准工程目录",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15"
+      ],
+      "narration": "标准工程有 Core、Inc、Src、Drivers、CMake/Make 配置和链接脚本。目录不是装饰，它决定哪些文件参与构建。",
+      "on_screen": [
+        "Core/Inc/Src",
+        "Drivers",
+        "链接脚本"
+      ],
+      "visual_source": "diagrams/project-structure.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "工程目录决定构建",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s17",
+      "title": "一个构建入口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16"
+      ],
+      "narration": "CLion、VS Code 和 CI 可以共用同一个 CMake Preset，产出同一组 ELF、map 和 bin，避免 IDE 能编而 CI 不能编。",
+      "on_screen": [
+        "CMake Preset",
+        "同一组产物"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "一个构建入口",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s18",
+      "title": "CubeMX 生成工程",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17"
+      ],
+      "narration": "CubeMX 生成工程时配置芯片、时钟、SWD 和代码生成选项。生成的 main.c 会包含时钟配置和外设初始化。",
+      "on_screen": [
+        "芯片/时钟/SWD",
+        "代码生成"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "CubeMX 生成工程",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s19",
+      "title": "编译、烧录、调试三个动作",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18"
+      ],
+      "narration": "编译生成 ELF/AXF，烧录经 SWD 写入 Flash，调试看寄存器、变量和断点。三个动作的证据不同。",
+      "on_screen": [
+        "编译=ELF",
+        "烧录=Flash",
+        "调试=断点"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "三动作三证据",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s20",
+      "title": "实验：按 SWD 接线表连线",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19"
+      ],
+      "narration": "按 SWD 接线表接 GND、SWDIO、SWCLK 和可选 NRST，3.3V 不接。接好后上电，用 CubeProgrammer 读 Device ID，验证连接边界。",
+      "on_screen": [
+        "GND/SWDIO/SWCLK",
+        "NRST 可选",
+        "读 Device ID"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#硬件与接线"
+      ],
+      "memory_anchor": "按表接线再读 Device ID",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch01-s21",
+      "title": "ST-Link 驱动和固件",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20"
+      ],
+      "narration": "Windows 装 ST-Link USB driver，设备管理器出现 STLink dongle；固件太旧会报 DFU 相关错误。",
+      "on_screen": [
+        "驱动可见",
+        "固件更新"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#硬件与接线"
+      ],
+      "memory_anchor": "驱动和固件",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s22",
+      "title": "main 之前谁搬 .data",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21"
+      ],
+      "narration": "启动顺序依次是硬件读 MSP、SystemInit 配时钟和 VTOR、启动文件把 .data 从 Flash 拷到 RAM 并清零 .bss，然后才到 main。",
+      "on_screen": [
+        "MSP",
+        ".data 搬运",
+        ".bss 清零"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "main 之前搬运数据",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s23",
+      "title": "回忆：Flash 64K，RAM 20K",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22"
+      ],
+      "narration": "回忆这条边界：Flash 64K 从 0x08000000 起，RAM 20K 从 0x20000000 起，栈从 RAM 顶往下长。map 文件里越界就是这里开始错。",
+      "on_screen": [
+        "Flash 64K",
+        "RAM 20K",
+        "栈向下"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "Flash 64K，RAM 20K",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch01-s24",
+      "title": "KEEP 防止向量表被扔",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22",
+        "ch01-s23"
+      ],
+      "narration": ".isr_vector 要用 KEEP，否则链接器可能把没被 C 引用的向量表扔掉，上电就飞。",
+      "on_screen": [
+        "KEEP 保护向量表",
+        "上电就飞"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "KEEP 保向量表",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s25",
+      "title": "烧录一次后再也连不上",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22",
+        "ch01-s23",
+        "ch01-s24"
+      ],
+      "narration": "烧录一次后再也连不上，通常是 PA13/PA14 被配成 GPIO。处理是把 Debug 留在 Serial Wire，并把 SWD 接回第 34 脚和第 37 脚。",
+      "on_screen": [
+        "PA13/PA14=GPIO",
+        "改回 Serial Wire"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#常见坑与出处"
+      ],
+      "memory_anchor": "调试口被抢走",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s26",
+      "title": "No target connected",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22",
+        "ch01-s23",
+        "ch01-s24",
+        "ch01-s25"
+      ],
+      "narration": "No target connected 时先看供电、NRST、线序和驱动。不要先怀疑芯片坏了。",
+      "on_screen": [
+        "供电/NRST",
+        "线序/驱动"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#更多常见报错"
+      ],
+      "memory_anchor": "先查连接条件",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s27",
+      "title": "实验一和实验二",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22",
+        "ch01-s23",
+        "ch01-s24",
+        "ch01-s25",
+        "ch01-s26"
+      ],
+      "narration": "实验一用 CubeMX 生成工程、编译并下载，让板载 LED 1Hz 闪烁。实验二在 HAL_GPIO_TogglePin 打断点，观察 GPIOC->ODR。",
+      "on_screen": [
+        "1Hz 闪烁",
+        "ODR 断点"
+      ],
+      "visual_source": "diagrams/sample-03-gpio-led.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#动手实验"
+      ],
+      "memory_anchor": "实验一二可验收",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch01-s28",
+      "title": "离开前三件事",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch01-s01",
+        "ch01-s02",
+        "ch01-s03",
+        "ch01-s04",
+        "ch01-s05",
+        "ch01-s06",
+        "ch01-s07",
+        "ch01-s08",
+        "ch01-s09",
+        "ch01-s10",
+        "ch01-s11",
+        "ch01-s12",
+        "ch01-s13",
+        "ch01-s14",
+        "ch01-s15",
+        "ch01-s16",
+        "ch01-s17",
+        "ch01-s18",
+        "ch01-s19",
+        "ch01-s20",
+        "ch01-s21",
+        "ch01-s22",
+        "ch01-s23",
+        "ch01-s24",
+        "ch01-s25",
+        "ch01-s26",
+        "ch01-s27"
+      ],
+      "narration": "离开本章前，应能在调试器里读出向量表前两个字，解释 .data 和 .bss 的去向，并从 map 文件确认 Flash 与 RAM 没有越界。",
+      "on_screen": [
+        "读向量表",
+        "解释 .data/.bss",
+        "map 不越界"
+      ],
+      "visual_source": "illustrations/ch01-handdraw.svg",
+      "fact_source": [
+        "docs/01-开发环境搭建.md#核心原理"
+      ],
+      "memory_anchor": "离开前三件事",
+      "evidence_type": "concept"
+    }
+  ]
+}

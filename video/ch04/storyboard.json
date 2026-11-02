@@ -1,0 +1,916 @@
+{
+  "schema_version": 1,
+  "chapter": "04",
+  "slug": "nvic-long",
+  "title": "中断与 NVIC：从敲门到优先级仲裁",
+  "short_source": "tools/narration.py#CHAPTERS[4]",
+  "scenes": [
+    {
+      "scene_id": "ch04-s01",
+      "title": "按键没按，灯却自己亮了",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "轮询是你不停去问，中断是事情来了敲你的门。主程序可以继续干别的。进了中断服务，办完要清标志，不然门会一直响。",
+      "on_screen": [
+        "轮询 vs 中断",
+        "事件来了再进",
+        "记得清标志"
+      ],
+      "visual_source": "illustrations/ch04-handdraw.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "中断是敲门，不是轮询",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s02",
+      "title": "NVIC 总闸分三档",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01"
+      ],
+      "narration": "NVIC 这道总闸可以分成三档来记：这路中断开了没有，优先级谁高，有没有挂起还没处理。三档看全，才不会觉得中断时灵时不灵。 ISER 置位使能，ICER 清除使能，ISPR 和 ICPR 管理挂起，IPR 存优先级。",
+      "on_screen": [
+        "使能",
+        "优先级",
+        "挂起"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "总闸分三档",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s03",
+      "title": "EXTI 按脚号排队",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02"
+      ],
+      "narration": "EXTI 的编号就是引脚号。EXTI0 同时只能留给一个端口。PA0 和 PB0 不能一起拿这条线。要两只按键，就换不同的脚号。 F103 有 16 条 EXTI 线，所有 0 号脚共用 EXTI0；换端口要写 AFIO 的 EXTICR。",
+      "on_screen": [
+        "EXTI0 只有一条",
+        "PA0/PB0 只能留一个",
+        "另一只脚请换号"
+      ],
+      "visual_source": "animations/gpio-input-interrupt.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "EXTI 按脚号排队",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s04",
+      "title": "从引脚到服务函数",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03"
+      ],
+      "narration": "引脚边沿先进 EXTI，再由 NVIC 决定要不要打断当前程序，最后才进你写的服务函数。路径上任何一扇门关着，回调都不会来。 边沿先进 EXTI，NVIC 决定是否打断，最后进 ISR；办完必须清标志。",
+      "on_screen": [
+        "边沿",
+        "EXTI",
+        "NVIC",
+        "你的函数"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "从引脚到服务函数",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s05",
+      "title": "优先级不是数字越大越急",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04"
+      ],
+      "narration": "优先级不是数字越大越急。F1 上要先看优先级分组切成什么样，才知道哪些位是抢占、哪些是子优先级。抄例程时把分组改了，顺序会整个翻掉。 GROUP_4 把 4 位全给抢占优先级，子优先级 0 位；数值越小越优先。",
+      "on_screen": [
+        "先看分组",
+        "再分抢占和子优先",
+        "分组一改顺序就翻"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "优先级不是越大越急",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s06",
+      "title": "抢占和子优先是两件事",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05"
+      ],
+      "narration": "抢占优先级高的可以打断低的；子优先级只在同时挂起时决定谁先响应，不能用来嵌套。GROUP_4 没有子优先级位。 抢占优先级更高的可以打断正在执行的低抢占 ISR；子优先级只在同时挂起时决定顺序。",
+      "on_screen": [
+        "抢占可嵌套",
+        "子优先只仲裁",
+        "GROUP_4 无子优先"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "抢占和子优先是两件事",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s07",
+      "title": "尾链不改变谁有权抢占",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06"
+      ],
+      "narration": "退出时若已有挂起异常，硬件可以省掉一部分出栈再入栈。尾链只减少开销，不改变谁有权抢占。 尾链可以在退出时省掉一部分出栈再入栈，晚到机制允许入栈期间更高优先级抢占。",
+      "on_screen": [
+        "尾链省开销",
+        "不改变抢占权"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "尾链不改变抢占权",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s08",
+      "title": "三把总闸挡的范围不同",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07"
+      ],
+      "narration": "PRIMASK 挡可配置优先级，NMI 和 HardFault 仍能进；FAULTMASK 再挡 HardFault，只留 NMI；BASEPRI 只挡优先级数值大于等于阈值的那一截。 PRIMASK 挡可配置优先级，NMI 和 HardFault 仍能进；FAULTMASK 再挡 HardFault，只留 NMI。",
+      "on_screen": [
+        "PRIMASK",
+        "FAULTMASK",
+        "BASEPRI"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "三把总闸范围不同",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s09",
+      "title": "服务函数里别睡觉",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08"
+      ],
+      "narration": "中断服务要短。别在里面调用会阻塞的延时，也别做很重的打印。置一个标志，或者塞进缓冲区，把慢活交回主循环。 ISR 里置标志或塞缓冲区，把慢活交回主循环，避免别的中断饿着。",
+      "on_screen": [
+        "要短",
+        "别调阻塞延时",
+        "把活交给主循环"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "服务函数里别睡觉",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s10",
+      "title": "共享数据要打招呼",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09"
+      ],
+      "narration": "主循环和中断一起碰的变量，编译器可能会缓存。单字节标志加 volatile。超过一个字的数据，读的时候还得短暂关中断。 单字节标志加 volatile 防止编译器缓存；多字节数据要放在临界区里读写。",
+      "on_screen": [
+        "主循环和中断",
+        "用 volatile",
+        "多字节还要关中断"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "共享数据要打招呼",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s11",
+      "title": "多字节数据会被撕开",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10"
+      ],
+      "narration": "主循环改一个多字节数据改到一半，中断进来读走半新半旧的值。这类读写要放在临界区里。",
+      "on_screen": [
+        "多字节会撕裂",
+        "放进临界区"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "多字节数据会被撕开",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch04-s12",
+      "title": "F1 上换端口先开 AFIO",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11"
+      ],
+      "narration": "F1 上改 EXTI 端口要先开 AFIO 时钟，再写 EXTICR。F4/L4/H7 用 SYSCFG，G0 用 EXTI 自己的寄存器。 F1 上先开 AFIO 时钟，再写 EXTICR；F4、L4、H7 用 SYSCFG，G0 用 EXTI 自己的寄存器。",
+      "on_screen": [
+        "F1 开 AFIO",
+        "写 EXTICR",
+        "系列不同位置不同"
+      ],
+      "visual_source": "animations/gpio-input-interrupt.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "F1 上换端口先开 AFIO",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s13",
+      "title": "EXTI 不进中断",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12"
+      ],
+      "narration": "EXTI 不进中断时，先查 AFIO 时钟、EXTICR、触发方式和 EXTI_PR。写 1 清掉对应的挂起位。 先查 AFIO 时钟、EXTICR、触发方式和 EXTI_PR；写 1 清掉对应挂起位。",
+      "on_screen": [
+        "查 AFIO",
+        "查 EXTICR",
+        "清 EXTI_PR"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#常见坑与出处"
+      ],
+      "memory_anchor": "EXTI 不进中断",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s14",
+      "title": "实验一：事件闭环",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13"
+      ],
+      "narration": "PA0 下降沿只在 ISR 里置标志，主循环翻转 PC13。连续按 10 次，记录 10 次有效翻转，并确认 EXTI_PR 已清零。",
+      "on_screen": [
+        "下降沿",
+        "ISR 只置标志",
+        "主循环翻转"
+      ],
+      "visual_source": "animations/gpio-input-interrupt.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#动手实验"
+      ],
+      "memory_anchor": "实验一事件闭环",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s15",
+      "title": "实验二：抖动证据",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14"
+      ],
+      "narration": "临时去掉主循环消抖，统计 10 次按键产生的标志次数；恢复消抖后重测。保留两组计数，不用看起来稳定代替结果。",
+      "on_screen": [
+        "去消抖",
+        "统计标志次数",
+        "恢复后重测"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#动手实验"
+      ],
+      "memory_anchor": "实验二抖动证据",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s16",
+      "title": "实验三：抢占波形",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15"
+      ],
+      "narration": "增加 TIM2 中断，让两个 ISR 在入口置高、出口置低一只空闲 GPIO。用逻辑分析仪捕获嵌套波形。",
+      "on_screen": [
+        "TIM2 中断",
+        "入口置高",
+        "出口置低"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#动手实验"
+      ],
+      "memory_anchor": "实验三抢占波形",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s17",
+      "title": "NVIC 寄存器和函数",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16"
+      ],
+      "narration": "ISER 置位使能，ICER 清除使能，ISPR/ICPR 管理挂起，IPR 存优先级。HAL 提供设置优先级、使能和分组函数。 HAL 提供设置优先级、使能中断和设置分组的函数，寄存器名和函数要对应。",
+      "on_screen": [
+        "ISER/ICER",
+        "ISPR/ICPR",
+        "IPR"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "NVIC 寄存器和函数",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s18",
+      "title": "SysTick 是 HAL 的心跳",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17"
+      ],
+      "narration": "HAL_Init 把 SysTick 配成 1ms 中断，HAL_Delay 依赖它。SysTick 优先级通常设最低，避免打断业务中断。 HAL_Init 把 SysTick 配成 1 ms 中断，HAL_Delay 依赖它；ISR 里调用 HAL_Delay 可能死等。",
+      "on_screen": [
+        "SysTick 1ms",
+        "HAL_Delay 依赖",
+        "优先级最低"
+      ],
+      "visual_source": "animations/nvic-interrupt-flow.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "SysTick 是 HAL 的心跳",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s19",
+      "title": "中断响应有固定流程",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18"
+      ],
+      "narration": "外设置标志，送 NVIC，CPU 比较优先级，硬件入栈 8 个寄存器，取向量，执行 ISR，清标志，出栈返回。 硬件入栈 xPSR、PC、LR、R12、R3、R2、R1、R0；72 MHz 下约 12 个 HCLK，即 167 ns。",
+      "on_screen": [
+        "置标志",
+        "比较优先级",
+        "入栈 8 个寄存器",
+        "清标志出栈"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "中断响应固定流程",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s20",
+      "title": "入栈期间还能被更高优先级打断",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19"
+      ],
+      "narration": "晚到机制允许入栈期间更高优先级抢占。响应开销要按机制理解，不拿单一数字替代整条链。 晚到机制说明入栈期间更高优先级仍可抢占，单一数字不能替代整条响应链。",
+      "on_screen": [
+        "晚到抢占",
+        "入栈期间",
+        "更高优先级"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "入栈期间还能被更高优先级打断",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s21",
+      "title": "EXTI 映射随系列变化",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20"
+      ],
+      "narration": "F1 的 EXTICR 在 AFIO，F4/L4/H7 在 SYSCFG，G0 在 EXTI 自己。换系列时先查寄存器位置。 F1 的 EXTICR 在 AFIO，F4、L4、H7 在 SYSCFG，G0 在 EXTI 自己。",
+      "on_screen": [
+        "F1 AFIO",
+        "F4/L4/H7 SYSCFG",
+        "G0 EXTI"
+      ],
+      "visual_source": "animations/gpio-input-interrupt.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "EXTI 映射随系列变化",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s22",
+      "title": "RTOS 下还要看优先级阈值",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21"
+      ],
+      "narration": "FreeRTOS 规定，在中断里调用 FromISR 函数的中断，优先级数值不能小于系统调用阈值。 FreeRTOS 规定调用 FromISR 的中断，优先级数值不能小于系统调用阈值。",
+      "on_screen": [
+        "FromISR",
+        "优先级阈值",
+        "系统调用边界"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#原理与适用范围"
+      ],
+      "memory_anchor": "RTOS 下还要看优先级阈值",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s23",
+      "title": "关掉中断后仍进 NMI",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22"
+      ],
+      "narration": "PRIMASK 关掉可配置优先级，NMI 仍能进入。这不是 PRIMASK 失效，而是它挡的范围本来就不含 NMI。",
+      "on_screen": [
+        "PRIMASK",
+        "NMI 仍进",
+        "不是失效"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#常见坑与出处"
+      ],
+      "memory_anchor": "关掉中断后仍进 NMI",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s24",
+      "title": "分组选择要看场景",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22",
+        "ch04-s23"
+      ],
+      "narration": "不用 RTOS 和用 FreeRTOS 常用 GROUP_4；需要子优先级仲裁时才选 GROUP_2。分组一改，同一数值的含义也变。",
+      "on_screen": [
+        "GROUP_4",
+        "GROUP_2",
+        "按场景选"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "分组选择要看场景",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s25",
+      "title": "抢占数值写反就嵌套失败",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22",
+        "ch04-s23",
+        "ch04-s24"
+      ],
+      "narration": "按键中断打不断定时器，通常是 EXTI0 的抢占数值没有小于 TIM2。数值越小越优先，写反就嵌套失败。",
+      "on_screen": [
+        "数值越小越优先",
+        "写反就失败"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#常见坑与出处"
+      ],
+      "memory_anchor": "抢占数值写反就嵌套失败",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s26",
+      "title": "同抢占不能打断",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22",
+        "ch04-s23",
+        "ch04-s24",
+        "ch04-s25"
+      ],
+      "narration": "抢占优先级相同，即使子优先级不同也不能打断正在执行的 ISR。要改抢占级，不要改子优先级来嵌套。",
+      "on_screen": [
+        "同抢占不能打断",
+        "改抢占级"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#常见坑与出处"
+      ],
+      "memory_anchor": "同抢占不能打断",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s27",
+      "title": "离开前要有事件和波形证据",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22",
+        "ch04-s23",
+        "ch04-s24",
+        "ch04-s25",
+        "ch04-s26"
+      ],
+      "narration": "离开本章前，应有按键事件计数、消抖前后对比和一张抢占波形；同时能解释为什么 PA0 与 PB0 不能各占一条独立的 EXTI0。 离开本章前应保留按键事件计数、消抖前后对比和一张抢占波形。",
+      "on_screen": [
+        "事件计数",
+        "消抖对比",
+        "抢占波形"
+      ],
+      "visual_source": "illustrations/ch04-handdraw.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "离开前要有事件和波形证据",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch04-s28",
+      "title": "合上书，三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch04-s01",
+        "ch04-s02",
+        "ch04-s03",
+        "ch04-s04",
+        "ch04-s05",
+        "ch04-s06",
+        "ch04-s07",
+        "ch04-s08",
+        "ch04-s09",
+        "ch04-s10",
+        "ch04-s11",
+        "ch04-s12",
+        "ch04-s13",
+        "ch04-s14",
+        "ch04-s15",
+        "ch04-s16",
+        "ch04-s17",
+        "ch04-s18",
+        "ch04-s19",
+        "ch04-s20",
+        "ch04-s21",
+        "ch04-s22",
+        "ch04-s23",
+        "ch04-s24",
+        "ch04-s25",
+        "ch04-s26",
+        "ch04-s27"
+      ],
+      "narration": "合上书，三问。EXTI0 能同时留给 PA0 和 PB0 吗？服务函数里为什么别写阻塞延时？总闸那三档各管什么？",
+      "on_screen": [
+        "EXTI0 能分给两口吗",
+        "服务里能 Delay 吗",
+        "三档是什么"
+      ],
+      "visual_source": "illustrations/ch04-handdraw.svg",
+      "fact_source": [
+        "docs/04-中断与NVIC.md#核心原理"
+      ],
+      "memory_anchor": "合上书，三问",
+      "evidence_type": "concept"
+    }
+  ]
+}

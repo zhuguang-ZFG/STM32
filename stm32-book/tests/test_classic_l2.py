@@ -42,7 +42,8 @@ class ClassicL2Tests(unittest.TestCase):
         for index, chapter_id in CHAPTERS.items():
             with self.subTest(chapter=chapter_id):
                 chapter = narration.CHAPTERS[index]
-                self.assertGreaterEqual(sum(bool(seg.get("svg")) for seg in chapter["segments"]), 8)
+                paths = [seg.get("svg") for seg in chapter["segments"] if isinstance(seg.get("svg"), str)]
+                self.assertGreaterEqual(len(set(paths)), 8, (chapter_id, len(set(paths))))
 
     def test_l2_short_visuals_are_not_generic_placeholders(self) -> None:
         narration = load_tool("narration")
