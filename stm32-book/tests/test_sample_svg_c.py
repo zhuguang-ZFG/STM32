@@ -31,7 +31,7 @@ animations/gpio-input-interrupt.svg 900x620 13740 4b97aeb339eb046f0091312b6caf91
 animations/h7-clock-chain.svg 900x620 11808 4edcb50a1871b7dd97c5a86685f43b5884c92aec162c53aa478f519394dc2068
 animations/i2c-transaction.svg 900x620 17483 e5c5b2aca2aae67cc607e3eb929cc0f20c184deceb8815f32a9d4e96f4bef55a
 animations/iwdg-window.svg 900x620 10675 324f8c83215265a9e4b9c256552019165c14adb914c3fc9189f054f264751444
-animations/l4-stop2-evidence.svg 900x620 13976 ae6b68a3a26ee3995d72dc29bcfcb2bab733a2e54637e4d9a6a8581b9f577e28
+animations/l4-stop2-evidence.svg 900x620 14214 04228f72309b692ff19fdbccce10fe8a7fc1a1030af9f83bba0307fc7896bd1e
 animations/lowpower-wakeup.svg 900x620 10766 7a5fe86d6e1a29c7f8e00d177f0ec928c85f7405e8427e8f27209720cc0a22b6
 animations/memory-map.svg 900x620 7846 82e9be18ac7ecbe388e478b995ef9bcf8e876a2373406565469fda41e911b11f
 animations/network-online-state.svg 900x620 12028 b411a492adbc81a722ace75d62461b5b21a8c97a364d0f253fb43e1b09df8fdb
@@ -64,7 +64,7 @@ diagrams/h7-revision-clock-decision.svg 900x560 5940 7e7f3f5dc844f2c1e9e3e02506b
 diagrams/h7-startup-evidence.svg 900x560 7720 d0bed6f9b648d7755ecc13a1c0d1123ea6f014332e4ad5982b5733f602fea29a
 diagrams/instrument-evidence-ladder.svg 900x560 6393 c5eb4c58592f60d51c27728953805c5f5b1fde238e0fde0382fbc204d4c57aa5
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
-diagrams/l4-idd-bench.svg 900x560 8673 32e1a5b195562947e04d2da8efc2f0c89dd97aed9f7cacbb3c5914ce52f8ec96
+diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f0596565606f77ef6f757d3559900d66f
 diagrams/layers-hal-ll-reg.svg 900x560 10401 60098b25b368c2f6acefb4e9a3152f816506cae44e68b2fb8ffbf0878c049f78
 diagrams/manual-choice-map.svg 900x560 9687 75a6977234623a1b9e8edbd6129863f67cd9ab3ad4a4eeec7e55abe96fece3e9
 diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
@@ -243,7 +243,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "71cbabd4721f2aba5df7ac0d9e3433fc8417c9292b56a155253f71a4db8669f9",
+            "87e3875a1ac98d62ae981802a411f445438a88fbaab1c519803d906fba62de54",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -251,7 +251,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "7d93159fa1abd0ff9d8dac08cb6a39bbfaccb9aea119a9a80e9cd8db72fce96e",
+            "de6d2b8a1e8de51b9303edb7d3b14b6c92dbbfb9844bf90836e3e60a6c1e8e77",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
