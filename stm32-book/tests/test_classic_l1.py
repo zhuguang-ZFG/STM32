@@ -96,6 +96,29 @@ class ClassicL1VisualTests(unittest.TestCase):
             self.assertTrue(all(part > 0 for part in parts))
             self.assertAlmostEqual(duration, sum(parts))
 
+    def test_subtitle_wrap_preserves_technical_tokens_and_punctuation(self) -> None:
+        generator = load_tool("gen_narrated")
+        storyboards = load_tool("storyboards")
+        board = storyboards.load("03")
+        old_scale, old_width, old_font = generator.SCALE, generator.W, generator.FONT
+        try:
+            if not Path(old_font).exists() and Path("C:/Windows/Fonts/msyh.ttc").exists():
+                generator.FONT = "C:/Windows/Fonts/msyh.ttc"
+            generator.SCALE = 2
+            generator.W = 1920
+            font = generator._font(18)
+            for scene in (board["segments"][1], board["segments"][9]):
+                lines = generator.wrap_text(scene["narration"], font, 1792, 4, "test")
+                self.assertEqual(
+                    scene["narration"].replace(" ", ""),
+                    "".join(lines).replace(" ", ""),
+                )
+                self.assertFalse(any(line.startswith(("。", "，", "、", "；", "：")) for line in lines), lines)
+                self.assertFalse(any(line.endswith(("PC1", "50 M", "HAL_Del")) for line in lines), lines)
+                self.assertFalse(any(line.startswith(("3", "Hz", "ay")) for line in lines), lines)
+        finally:
+            generator.SCALE, generator.W, generator.FONT = old_scale, old_width, old_font
+
     def test_stack_boundary_asset_is_complete(self) -> None:
         diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
         self.assertTrue(diagram.is_file(), diagram)

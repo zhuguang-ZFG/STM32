@@ -8,7 +8,7 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams stack-diagrams illustrations samples gifs videos book book-pdf book-check check lint-voice verify clean stats
+.PHONY: assets animations boards diagrams stack-diagrams illustrations samples gifs videos lesson-check book book-pdf book-check check lint-voice verify clean stats
 
 assets: animations boards diagrams illustrations samples gifs videos
 
@@ -48,6 +48,9 @@ gifs:
 # 海报是确定性的。配音成片用 python3 tools/gen_narrated.py --speak（要联网）。
 videos:
 	$(PY) tools/gen_narrated.py --posters
+
+lesson-check:
+	$(PY) tools/gen_long_lesson.py --check
 
 check:
 	$(PY) tools/check_assets.py

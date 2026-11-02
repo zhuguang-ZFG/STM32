@@ -29,6 +29,7 @@ import glob
 import io
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -45,7 +46,8 @@ SCALE = float(os.environ.get("NARRATED_SCALE", "1"))
 if SCALE < 1:
     raise ValueError("NARRATED_SCALE 必须 >= 1")
 W, H = int(round(960 * SCALE)), int(round(540 * SCALE))
-BAND_TOP = int(round(448 * SCALE))
+BAND_TOP = int(round((540 - float(os.environ.get("NARRATED_BAND_HEIGHT", "92"))) * SCALE))
+SUBTITLE_LINES = int(os.environ.get("NARRATED_SUBTITLE_LINES", "2"))
 PAD = 0.35
 VOICE = "zh-CN-XiaoxiaoNeural"
 RATE = "-6%"
@@ -78,14 +80,29 @@ def _width(text, font):
 
 
 def wrap_text(text, font, max_w, max_lines, what):
+    # Keep technical identifiers, numbers and their closing punctuation together.
+    closing = "，。、；：？！,.;:!?)\\]}》”’%"
+    token_re = re.compile(
+        rf"[A-Za-z0-9_./+\-]+[{closing}]*|[^\x00-\x7F][{closing}]*|\s+|."
+    )
     lines, cur = [], ""
-    for ch in text:
-        trial = cur + ch
+    for token in token_re.findall(text):
+        trial = cur + token
         if not cur or _width(trial, font) <= max_w:
             cur = trial
             continue
-        lines.append(cur)
-        cur = ch
+        lines.append(cur.rstrip())
+        cur = token.lstrip()
+        if _width(cur, font) > max_w:
+            # A single over-wide token still has to fit; only now split by char.
+            piece = ""
+            for ch in cur:
+                if piece and _width(piece + ch, font) > max_w:
+                    lines.append(piece)
+                    piece = ch
+                else:
+                    piece += ch
+            cur = piece
     if cur:
         lines.append(cur)
     if len(lines) > max_lines:
@@ -257,13 +274,13 @@ def _render_card_hd(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
     for sub_size in (23, 22, 21, 20, 19, 18):
         candidate = _font(sub_size)
         try:
-            sub_lines = wrap_text(seg["say"], candidate, W - sc(64), 2, f"{ch['id']} 字幕")
+            sub_lines = wrap_text(seg["say"], candidate, W - sc(64), SUBTITLE_LINES, f"{ch['id']} 字幕")
             sub_font = candidate
             break
         except ValueError:
             continue
     if sub_font is None:
-        sub_lines = wrap_text(seg["say"], _font(18), W - sc(64), 2, f"{ch['id']} 字幕")
+        sub_lines = wrap_text(seg["say"], _font(18), W - sc(64), SUBTITLE_LINES, f"{ch['id']} 字幕")
         sub_font = _font(18)
     sy = BAND_TOP + sc(14)
     for txt in sub_lines:
@@ -362,7 +379,7 @@ def render_card(ch, seg, index, t=1.0, gprog=None, line=None, u=1.0):
     draw.rectangle((0, BAND_TOP, W, H), fill=BAND)
     draw.line((0, BAND_TOP, W, BAND_TOP), fill=LINE, width=2)
     sub_font = _font(22)
-    sub_lines = wrap_text(seg["say"], sub_font, W - 64, 2, f"{ch['id']} 字幕")
+    sub_lines = wrap_text(seg["say"], sub_font, W - 64, SUBTITLE_LINES, f"{ch['id']} 字幕")
     sy = BAND_TOP + 14
     for line in sub_lines:
         draw.text((32, sy), line, font=sub_font, fill=TEXT)
@@ -412,53 +429,46 @@ def _svg_png(rel):
     if rel in _SVG_CACHE:
         return _SVG_CACHE[rel]
     from PIL import Image
+    from pathlib import Path
+    from playwright.sync_api import Error as PlaywrightError, sync_playwright
+
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     svg = os.path.join(root, "assets", rel)
     if not os.path.isfile(svg):
         raise SystemExit(f"缺少插图 {svg}")
-    tmp = tempfile.mkdtemp(prefix="stm32svg-")
-    html = os.path.join(tmp, "card.html")
-    out = os.path.join(tmp, "card.png")
     rw, rh = int(round(880 * SCALE)), int(round(300 * SCALE))
-    # 深色底，避免白边被当成「照片」。SVG 用仓库原文件。
-    page = (
-        "<!doctype html><meta charset=utf-8><style>"
-        f"html,body{{margin:0;background:#171a24;width:{rw}px;height:{rh}px;overflow:hidden}}"
-        f"img{{width:{rw}px;height:{rh}px;object-fit:contain}}"
-        f"</style><img src='file://{svg}'>"
-    )
-    open(html, "w", encoding="utf-8").write(page)
-    ud = os.path.join(tmp, "chrome")
-    cmd = [
-        os.environ.get("NARRATED_CHROME", "google-chrome"), "--headless=new", "--disable-gpu", "--no-sandbox",
-        "--hide-scrollbars", "--no-first-run", "--disable-extensions",
-        "--force-device-scale-factor=1",
-        "--allow-file-access-from-files",
-        f"--user-data-dir={ud}",
-        "--virtual-time-budget=8000",
-        f"--window-size={rw},{rh}",
-        f"--screenshot={out}",
-        "file://" + html,
-    ]
-    # 无 D-Bus 时 Chrome 写出 PNG 后往往不退出，截图一落地就结束它。
-    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    deadline = time.time() + 25
-    while time.time() < deadline:
-        if os.path.isfile(out) and os.path.getsize(out) > 1000:
-            time.sleep(0.4)
-            break
-        if proc.poll() is not None:
-            break
-        time.sleep(0.2)
-    if proc.poll() is None:
-        proc.kill()
-        proc.wait(timeout=5)
-    if not os.path.isfile(out) or os.path.getsize(out) < 1000:
-        raise SystemExit(f"SVG 栅格化失败：{rel}")
-    img = Image.open(out).convert("RGB")
-    _SVG_CACHE[rel] = img.copy()
-    img.close()
-    shutil.rmtree(tmp, ignore_errors=True)
+    with tempfile.TemporaryDirectory(prefix="stm32svg-") as tmp:
+        html = os.path.join(tmp, "card.html")
+        out = os.path.join(tmp, "card.png")
+        page_html = (
+            "<!doctype html><meta charset=utf-8><style>"
+            f"html,body{{margin:0;background:#171a24;width:{rw}px;height:{rh}px;overflow:hidden}}"
+            f"img{{width:{rw}px;height:{rh}px;object-fit:contain}}"
+            f"</style><img src='{Path(svg).as_uri()}'>"
+        )
+        with open(html, "w", encoding="utf-8") as handle:
+            handle.write(page_html)
+        launch = {"headless": True, "args": ["--allow-file-access-from-files"]}
+        if os.environ.get("NARRATED_CHROME"):
+            launch["executable_path"] = os.environ["NARRATED_CHROME"]
+        for attempt in range(2):
+            try:
+                with sync_playwright() as playwright:
+                    browser = playwright.chromium.launch(**launch)
+                    try:
+                        page = browser.new_page(viewport={"width": rw, "height": rh})
+                        page.goto(Path(html).as_uri(), wait_until="load")
+                        page.wait_for_timeout(800)
+                        page.screenshot(path=out)
+                    finally:
+                        browser.close()
+                break
+            except PlaywrightError as exc:
+                if type(exc).__name__ != "TargetClosedError" or attempt:
+                    raise
+                print(f"[retry] {rel} 浏览器提前关闭，仅重试一次", file=sys.stderr)
+        with Image.open(out) as source:
+            _SVG_CACHE[rel] = source.convert("RGB")
     return _SVG_CACHE[rel]
 
 
@@ -622,7 +632,8 @@ async def speak_one(ch, out_dir):
     name = chapter_name(ch)
     for seg in ch["segments"]:
         if seg.get("svg"):
-            _visual_png(seg["svg"])
+            # sync_playwright must not start inside this async function's event loop.
+            await asyncio.to_thread(_visual_png, seg["svg"])
     work = tempfile.mkdtemp(prefix=f"narr-{name}-")
     sem = asyncio.Semaphore(4)
     mp3s = []

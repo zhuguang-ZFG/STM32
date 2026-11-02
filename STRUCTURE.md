@@ -18,6 +18,7 @@
 | `assets/` | 动画、章首手绘概念图、板卡图、实拍、GIF、讲解视频、公众号二维码 | [assets/README.md](assets/README.md) |
 | `assets/video/` | 正片与 AI 续集。早期成片在 `superseded/` | [assets/video/README.md](assets/video/README.md) |
 | `tools/` | 生成图片、讲解片、公众号稿的脚本 | [tools/README.md](tools/README.md) |
+| `video/` | 长课机器可读分镜、实际字幕、联系表与媒体报告；大 MP4 仍在忽略的 `final-videos/` | [video/README.md](video/README.md) |
 | `Makefile` | `assets` / `check` / `book` / `book-pdf` / `book-check` / `stats` | 文件头注释 |
 | `.github/workflows/book.yml` | 在 CI 里编 SPL 示例，并构建整书 HTML/PDF | — |
 
@@ -34,6 +35,7 @@
 - `examples/` 要能编译。`labs/` 记录一次真板实验怎样才算完成，里面没有固件工程。
 - 6 个教学 GIF 由 `tools/gen_gifs.py` 用标准库生成，文字是 ASCII。`assets/gif/*-zh.gif` 由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，已经提交进 git。
 - 讲解正片由 `tools/narration.py` + `tools/gen_narrated.py` 生成，文件名是 `ch{章号}-{slug}`。AI 续集把 `NARRATED_MODULE=narration_ai`，文件名是 `chs{集号}-{slug}`。`chai01-ai-gpio` 是续集第一集的早期成片，在 `assets/video/superseded/`。
+- 长课源按 SPECS 迁到 `video/chNN/storyboard.json`，由 `tools/storyboards.py` + `tools/gen_long_lesson.py` 生成。`video/` 只保留可审查的小文件，MP4 留在 `final-videos/`。当前已迁移 ch03，其余章节不能用旧长片冒充可复现。
 - 对外讲章节范围时用 **00–28，共 29 章**。`tools/gen_mp_covers.py` 仍只裁 ch00–ch25，因为封面源在不入库的 `final-videos/`。
 - 中文速查表留在仓库根的 `cheatsheets/`。英文速查表留在 `docs/en/cheatsheets/`。两处都已经有链接，不合并目录。
 - 中文章节目录只改 [docs/README.md](docs/README.md)。英文只改 [docs/en/contents.md](docs/en/contents.md)。首页只保留分段入口。

@@ -1,7 +1,7 @@
 # 素材生成工具
 
 本目录里画 SVG 和 GIF 的脚本只用 Python 标准库。
-`gen_narrated.py` 是例外：海报要 Pillow，成片还要 edge-tts、ffmpeg，以及能访问微软语音服务的网络。
+`gen_narrated.py` 与 `gen_long_lesson.py` 是例外：海报要 Pillow，SVG 栅格化要 Playwright + Chromium，成片还要 edge-tts、ffmpeg，以及能访问微软语音服务的网络。
 `assets/photos/` 的两张 CC0 实拍是带来源、许可和 SHA-256 记录的外部二进制资产，不由这些生成脚本重建。`make assets` 只重画海报，不重跑配音（在线语音不是逐比特稳定的）。
 
 ## 快速开始
@@ -16,6 +16,8 @@ python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部
 python3 tools/gen_gifs.py           # 6 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
 python3 tools/gen_narrated.py --speak     # 配音 MP4 + SRT（还需 edge-tts、ffmpeg、联网）
+python3 tools/gen_long_lesson.py --check 03  # 长课 storyboard + 1080p 排版检查
+python3 tools/gen_long_lesson.py --speak 03  # 长课配音 + MP4 + SRT + 联系表 + 媒体报告
 python3 tools/check_assets.py       # 自检：SVG、GIF、实拍哈希、讲解 MP4、链接
 python3 tools/audit_book.py         # 审计 PDF 静态图分布与中英文结构差异
 ```
@@ -46,7 +48,9 @@ python3 tools/gen_gifs.py led-blink
 | `gen_videos.py` | **已停用。** 五帧 ASCII 幻灯。`make assets` 不调用它。直接运行会写出 `assets/video/chNN-*.gif`（自检会失败），`--patch-docs` 会改写章节里的讲解视频。要重放旧幻灯才设 `GEN_VIDEOS_I_KNOW=1` |
 | `narration.py` | 第 00–28 章的分镜、口诀和旁白稿，输出 `assets/video/chNN-*.mp4` |
 | `narration_ai.py` | AI 续集分镜。`NARRATED_MODULE=narration_ai` 时输出 `assets/video/chsNN-*.mp4` |
-| `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报 |
+| `gen_narrated.py` | 讲解 MP4：晓晓配音、烧录进画面的字幕、SRT、海报；支持分镜专属 SVG/PNG |
+| `storyboards.py` | 校验 `video/chNN/storyboard.json`，计算预计时间轴与三关键帧时长 |
+| `gen_long_lesson.py` | 长课：三关键帧、章节标记、响度归一、实际成片联系表与媒体报告；源见 `video/README.md` |
 | `svg2gif.py` | 把动画 SVG 采样成 `assets/gif/<名字>-zh.gif`（需本机 Chrome、Pillow） |
 | `md2mp.py` | 把 `docs/NN-*.md` 和中文速查表转成公众号 HTML，写到 `wechat-mp/`（该目录不进 git） |
 | `gen_mp_covers.py` | 从 `final-videos/` 的封面裁公众号头图，写到 `wechat-mp/covers/` |
