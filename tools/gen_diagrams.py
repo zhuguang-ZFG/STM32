@@ -659,10 +659,303 @@ def rtos_config_paths() -> Svg:
     return s
 
 
+# --------------------------------------------------------------------------- Book 2.0 首批视觉锚点
+
+
+def manual_choice_map() -> Svg:
+    """把问题路由到权威文档，而不是把六类文档画成平铺清单。"""
+    s = Svg(W, H, "先问问题，再选手册", "同一颗 STM32 通常要同时打开 DS 与 RM；勘误表 ES 不能省")
+    s.header(tag="20 文档 · IG-008", tag_color=T.CYAN)
+    questions = [
+        ("引脚 / 电压 / 极限值", "DS", "确认具体订货号与封装", T.CYAN),
+        ("寄存器 / 时序 / 状态机", "RM", "再回寄存器表核对位定义", T.GREEN),
+        ("Cortex-M 内核 / Fault", "PM", "区分内核规则与厂商外设", T.VIOLET),
+        ("已知硅片问题", "ES", "按 revision 判断规避条件", T.RED),
+        ("一种设计方法", "AN", "做法不是器件规格", T.AMBER),
+        ("工具 / 开发板用法", "UM", "版本和板卡必须对得上", T.PINK),
+    ]
+    for i, (question, doc, boundary, color) in enumerate(questions):
+        x = 42 + (i % 2) * 414
+        y = 92 + (i // 2) * 112
+        s.rect(x, y, 392, 88, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.text(x + 18, y + 28, question, size=12.5, fill=T.TEXT, weight="700")
+        s.rect(x + 278, y + 14, 92, 30, fill=color, rx=4, opacity=.88)
+        s.text(x + 324, y + 34, doc, size=13, anchor="middle", fill=T.BG,
+               weight="800", mono=True)
+        s.text(x + 18, y + 58, boundary, size=10.2, fill=T.MUTED)
+        s.text(x + 18, y + 76, "搜索：型号 + 文档号 + 关键词", size=9.4,
+               fill=T.DIM, mono=True)
+    s.rect(42, 446, 816, 66, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 472, "停止条件", size=11.5, fill=T.RED, weight="700")
+    s.text(132, 472, "找不到型号、封装或 revision，就先补齐身份；不要用搜索结果摘要代替原文。",
+           size=10.6, fill=T.TEXT)
+    s.text(132, 495, "引脚和电气看 DS；寄存器和时序看 RM；异常行为还要交叉检查 ES。", size=10.2,
+           fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def firmware_stack_choice() -> Svg:
+    s = Svg(W, H, "固件栈不是排名表，而是边界选择", "先判断项目约束，再决定 HAL/LL、SPL、libopencm3 或 RTOS 生态")
+    s.header(tag="20 选型 · IG-004", tag_color=T.VIOLET)
+    columns = [
+        (42, "新 STM32 项目", T.CYAN, ("HAL / LL", "CubeMX 与官方包", "跨系列维护成本低")),
+        (254, "锁版 F1 旧工程", T.GREEN, ("SPL", "只维护既有边界", "不要和 HAL 双重接管")),
+        (466, "轻量裸机", T.AMBER, ("libopencm3", "接受社区支持边界", "自行冻结版本与构建")),
+        (678, "系统级产品", T.VIOLET, ("RTOS 生态", "设备模型与组件", "预算启动/恢复/升级")),
+    ]
+    for x, title, color, rows in columns:
+        s.rect(x, 96, 180, 310, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, 96, 180, 46, fill=color, rx=8, opacity=.86)
+        s.text(x + 90, 125, title, size=12, anchor="middle", fill=T.BG, weight="800")
+        for i, row in enumerate(rows):
+            yy = 184 + i * 74
+            s.text(x + 90, yy, row, size=10.5 if i else 13, anchor="middle",
+                   fill=color if i == 0 else T.TEXT, weight="700" if i == 0 else "normal")
+            if i < 2:
+                s.line(x + 24, yy + 23, x + 156, yy + 23, stroke=T.GRID, sw=1)
+    s.rect(42, 432, 816, 80, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 458, "明确判断", size=11.5, fill=T.RED, weight="700")
+    s.text(132, 458, "新项目优先 HAL/LL；只有维护锁定版本的 F1 旧工程时才继续用 SPL。", size=11,
+           fill=T.TEXT, weight="700")
+    s.text(132, 484, "改变判断的条件：现有资产、认证冻结、团队能力、实时/内存预算与生命周期。", size=10.2,
+           fill=T.MUTED)
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-004 多列对比 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def instrument_evidence_ladder() -> Svg:
+    s = Svg(W, H, "工具给出的证据，一层比一层接近引脚", "日志能说明代码走过；只有测量能说明电压与时序真的到达硬件")
+    s.header(tag="20 证据 · IG-010", tag_color=T.GREEN)
+    rows = [
+        ("源码 / 构建日志", "编译了哪些文件、宏、链接脚本", "不能证明固件已在目标板运行", T.VIOLET),
+        ("GDB / 寄存器读回", "CPU 到过哪一行，外设状态为何", "不能证明引脚电气质量", T.CYAN),
+        ("串口 / RTT 日志", "运行顺序、错误码、时间戳", "日志本身也可能阻塞或丢失", T.GREEN),
+        ("逻辑分析仪", "数字电平、协议字节、相对时序", "看不清过冲、纹波和模拟裕量", T.AMBER),
+        ("示波器 / 电源分析仪", "边沿、幅值、纹波、电流随时间", "探头接法与带宽仍会影响结论", T.RED),
+    ]
+    for i, (tool, proves, limit, color) in enumerate(rows):
+        x = 74 + i * 28
+        y = 92 + i * 75
+        w = 752 - i * 56
+        s.rect(x, y, w, 62, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.text(x + 18, y + 25, tool, size=11.5, fill=color, weight="700")
+        s.text(x + 176, y + 25, proves, size=10.2, fill=T.TEXT)
+        s.text(x + 176, y + 47, "边界：" + limit, size=9.6, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-010 阶段进阶 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def single_build_contract() -> Svg:
+    s = Svg(W, H, "唯一构建合同：IDE 只是入口", "源文件、宏、头文件、链接脚本和产物必须由同一套 CMake preset 定义")
+    s.header(tag="20 构建 · IG-012", tag_color=T.CYAN)
+    inputs = [("CubeIDE", T.VIOLET), ("VS Code", T.CYAN), ("CLion", T.GREEN), ("CI", T.AMBER)]
+    for i, (name, color) in enumerate(inputs):
+        y = 96 + i * 74
+        s.rect(42, y, 150, 48, fill=T.PANEL, stroke=color, rx=8)
+        s.text(117, y + 30, name, size=12, anchor="middle", fill=color, weight="700")
+        s.arrow(196, y + 24, 300, 244, color=color, sw=2)
+    s.rect(302, 178, 278, 132, fill=T.BG2, stroke=T.CYAN, rx=8)
+    s.text(441, 208, "CMakePresets.json", size=13, anchor="middle", fill=T.CYAN,
+           weight="800", mono=True)
+    for i, item in enumerate(("sources + defines", "include dirs + toolchain", "linker script + options")):
+        s.text(441, 238 + i * 22, item, size=10.2, anchor="middle", fill=T.MUTED, mono=True)
+    outputs = [("app.elf", "调试 / 下载", T.GREEN), ("app.map", "内存证据", T.AMBER),
+               ("app.bin", "IAP / 量产", T.VIOLET)]
+    for i, (name, note, color) in enumerate(outputs):
+        y = 100 + i * 90
+        s.arrow(584, 244, 670, y + 26, color=color, sw=2)
+        s.rect(674, y, 184, 54, fill=T.PANEL, stroke=color, rx=8)
+        s.text(690, y + 23, name, size=11.5, fill=color, weight="700", mono=True)
+        s.text(690, y + 43, note, size=9.7, fill=T.MUTED)
+    s.rect(302, 352, 556, 100, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(320, 379, "禁止第二套事实", size=11.5, fill=T.RED, weight="700")
+    s.text(320, 403, "不要让 IDE 私下维护另一份源文件、宏、include 或链接脚本。", size=10.5, fill=T.TEXT)
+    s.text(320, 428, "验收：本机与 CI 的 ELF 哈希、map 和编译命令可追溯。", size=10.2, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-012 分层结构 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def simulator_comparison() -> Svg:
+    s = Svg(W, H, "Wokwi、Renode 与真板验证的不是同一层", "先用模型缩短反馈，再把结论带回目标硬件")
+    s.header(tag="22 对比 · IG-004", tag_color=T.VIOLET)
+    cols = [
+        (42, "Wokwi", T.CYAN, ("浏览器接线与现象", "GPIO / EXTI / I²C / TIM", "不证明真实边沿与 DMA")),
+        (322, "Renode", T.GREEN, ("可脚本化机器模型", "ELF / UART / 外设访问", "实现随版本与平台描述变化")),
+        (602, "目标真板", T.RED, ("实际供电、时钟与硅片", "波形 / 电流 / revision", "最终验收边界")),
+    ]
+    for x, title, color, rows in cols:
+        s.rect(x, 92, 256, 342, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, 92, 256, 50, fill=color, rx=8, opacity=.86)
+        s.text(x + 128, 124, title, size=15, anchor="middle", fill=T.BG, weight="800")
+        labels = ("看什么", "能证明", "不能证明")
+        for i, (label, row) in enumerate(zip(labels, rows)):
+            yy = 178 + i * 84
+            s.text(x + 18, yy, label, size=10, fill=color, weight="700")
+            s.text(x + 18, yy + 27, row, size=10.5, fill=T.TEXT)
+            if i < 2:
+                s.line(x + 18, yy + 48, x + 238, yy + 48, stroke=T.GRID, sw=1)
+    s.rect(42, 460, 816, 52, fill=T.BG2, stroke=T.CYAN, rx=8)
+    s.text(60, 492, "顺序：模型里复现逻辑 → 固化输入与版本 → 真板测量 → 记录差异；不能反过来用模型覆盖实测。",
+           size=10.4, fill=T.TEXT, weight="700")
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-004 多列对比 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def simulation_model_boundary() -> Svg:
+    s = Svg(W, H, "一段固件要穿过四层模型", "上层现象成立，只说明它下面已经实现的模型足够支撑这一次运行")
+    s.header(tag="22 模型 · IG-012", tag_color=T.CYAN)
+    layers = [
+        ("实验现象", "LED / OLED / UART 字节", T.PINK),
+        ("外设模型", "GPIO / TIM / USART / DMA 是否实现", T.VIOLET),
+        ("芯片平台", "地址、IRQ、时钟、复位值与引脚别名", T.CYAN),
+        ("仿真引擎", "调度、时间推进、版本与脚本接口", T.GREEN),
+        ("宿主环境", "浏览器 / 本机、文件路径、串口或 socket", T.AMBER),
+    ]
+    for i, (name, detail, color) in enumerate(layers):
+        x = 74 + i * 32
+        y = 92 + i * 72
+        w = 752 - i * 64
+        s.rect(x, y, w, 58, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.text(x + 18, y + 25, name, size=11.5, fill=color, weight="700")
+        s.text(x + 158, y + 25, detail, size=10.4, fill=T.TEXT)
+        s.text(x + 158, y + 46, "先在本层找到证据，再向下追", size=9.4, fill=T.MUTED)
+    s.rect(42, 466, 816, 46, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 495, "例：DMA 未实现时，接线图正确也不能验证“空闲线 + 环形缓冲”收包。", size=10.6,
+           fill=T.RED, weight="700")
+    s.footer("视觉规范：FA-002 概念连续线 · IG-012 分层结构 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def h7_power_domains() -> Svg:
+    s = Svg(W, H, "H743 的电源脚、内核稳压器与三个域", "D1/D2/D3 是片内电源与时钟域，不是三路可以随意接线的 VDD")
+    s.header(tag="25 电源 · IG-002", tag_color=T.RED)
+    s.rect(298, 178, 304, 178, fill=T.PANEL2, stroke=T.CYAN, rx=8)
+    s.text(450, 214, "STM32H743ZI", size=18, anchor="middle", fill=T.CYAN, weight="800")
+    for i, (name, color) in enumerate((("D1 · CM7 / AXI", T.VIOLET), ("D2 · AHB/APB", T.GREEN),
+                                       ("D3 · 低速/备份", T.AMBER))):
+        y = 242 + i * 34
+        s.rect(330, y, 240, 26, fill=T.BG2, stroke=color, rx=4)
+        s.text(450, y + 18, name, size=10.3, anchor="middle", fill=color, weight="700")
+    ports = [
+        (42, 102, "VDD / VDDA", "1.62–3.6 V；按 DS 去耦", T.CYAN, 298, 214),
+        (42, 384, "VCAP1 / VCAP2", "内核稳压器电容；不可接 VDD", T.RED, 298, 320),
+        (658, 102, "VDD33USB", "USB PHY 专用供电", T.VIOLET, 602, 214),
+        (658, 384, "PDR_ON", "内部/外部电源监控边界", T.AMBER, 602, 320),
+    ]
+    for x, y, title, note, color, tx, ty in ports:
+        s.rect(x, y, 200, 72, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 100, y + 28, title, size=12, anchor="middle", fill=color, weight="700")
+        s.text(x + 100, y + 52, note, size=9.5, anchor="middle", fill=T.MUTED)
+        s.arrow(x + (200 if x < 450 else 0), y + 36, tx, ty, color=color, sw=2)
+    s.rect(42, 474, 816, 38, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 499, "供电拓扑由原理图与器件 revision 决定；HAL_PWREx_ConfigSupply() 必须与 LDO/SMPS 实物一致。",
+           size=10.2, fill=T.TEXT, weight="700")
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-002 中心结构 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def h7_revision_clock_decision() -> Svg:
+    s = Svg(W, H, "400 MHz 还是 480 MHz，先看 silicon revision", "产品名相同不代表硅片 revision 相同；ES0392 决定 VOS0 是否存在")
+    s.header(tag="25 决策 · IG-008", tag_color=T.AMBER)
+    s.rect(330, 88, 240, 58, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    s.text(450, 113, "读取器件丝印 / REV_ID", size=12.5, anchor="middle", fill=T.CYAN, weight="700")
+    s.text(450, 134, "DBGMCU->IDCODE + ES0392", size=9.8, anchor="middle", fill=T.MUTED, mono=True)
+    s.arrow(450, 150, 450, 196, color=T.CYAN, sw=2)
+    s.rect(330, 198, 240, 58, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    s.text(450, 232, "revision 是 V？", size=14, anchor="middle", fill=T.VIOLET, weight="800")
+    branches = [
+        (42, 320, "否：Rev Y / W", "VOS1 · PLLN=400", "CPU 400 / HCLK 200 / PCLK 100 MHz", T.AMBER),
+        (590, 320, "是：Rev V", "VOS1 ready → VOS0 · PLLN=480", "CPU 480 / HCLK 240 / PCLK 120 MHz", T.GREEN),
+    ]
+    for x, y, title, path, result, color in branches:
+        s.arrow(450, 260, x + 134, y - 8, color=color, sw=2)
+        s.rect(x, y, 268, 112, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 134, y + 29, title, size=12.5, anchor="middle", fill=color, weight="800")
+        s.text(x + 134, y + 58, path, size=10.2, anchor="middle", fill=T.TEXT, mono=True)
+        s.text(x + 134, y + 84, result, size=9.6, anchor="middle", fill=T.MUTED)
+    s.rect(246, 458, 408, 54, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(450, 480, "任何路径：先验证供电方案，再等 VOSRDY，最后配置 PLL。", size=10.3,
+           anchor="middle", fill=T.RED, weight="700")
+    s.text(450, 499, "请求过的频率 ≠ 已经成立的频率。", size=9.8, anchor="middle", fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 决策流程 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def h7_startup_evidence() -> Svg:
+    s = Svg(W, H, "480 MHz 启动后，要拿到三类互相独立的证据", "软件读回、MCO 测量和外设闭环分别排除不同错误")
+    s.header(tag="25 证据 · IG-010", tag_color=T.GREEN)
+    cards = [
+        (42, "1 · 软件读回", ("SYSCLK = 480 MHz", "HCLK = 240 MHz", "记录供电/REV_ID/失败步骤"), T.CYAN),
+        (322, "2 · 独立时钟输出", ("PC9 输出 MCO2", "SYSCLK / 5 = 96 MHz", "示波器或计数器实测"), T.AMBER),
+        (602, "3 · 外设闭环", ("UART 波特率 / PWM 周期", "SysTick / RTOS tick", "独立 kernel clock 另验"), T.GREEN),
+    ]
+    for x, title, rows, color in cards:
+        s.rect(x, 100, 256, 286, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, 100, 256, 48, fill=color, rx=8, opacity=.86)
+        s.text(x + 128, 130, title, size=13, anchor="middle", fill=T.BG, weight="800")
+        for i, row in enumerate(rows):
+            yy = 194 + i * 64
+            s.circle(x + 34, yy - 4, 8, fill=color, opacity=.82)
+            s.text(x + 56, yy, row, size=10.2, fill=T.TEXT)
+            if i < 2:
+                s.line(x + 24, yy + 26, x + 232, yy + 26, stroke=T.GRID, sw=1)
+    s.rect(42, 420, 816, 92, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(60, 449, "不能替代", size=11.5, fill=T.RED, weight="700")
+    s.text(132, 449, "HAL_Delay(1000) 大约一秒，只检查一条路径；它不证明 USB、FDCAN 或其他 kernel clock。",
+           size=10.3, fill=T.TEXT)
+    s.text(132, 478, "96 MHz 是计算期望；仓库没有实测数据。只有仪器读数与计算一致时，才成为板级证据。",
+           size=10.2, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-010 阶段进阶 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def h7_pinmux_conflicts() -> Svg:
+    s = Svg(W, H, "H7 复用冲突：功能可选，不等于能同时占用", "先列板级必需接口，再为每个冲突组只保留一个所有者")
+    s.header(tag="25 复用 · IG-011", tag_color=T.VIOLET)
+    conflicts = [
+        ("PA11 / PA12", "FDCAN1 RX/TX", "OTG_FS DM/DP", "FDCAN 可移到 PD0/PD1 或 PB8/PB9", T.CYAN),
+        ("PB6 / PB7", "USART1 TX/RX", "I²C1 SCL/SDA", "I²C1 可改 PB8/PB9，但要再查 FDCAN", T.GREEN),
+        ("PC9", "MCO2", "板级外设 / 其他 AF", "测时钟前先核对原理图和 Table 9", T.AMBER),
+    ]
+    for i, (pins, left, right, escape, color) in enumerate(conflicts):
+        y = 92 + i * 126
+        s.rect(42, y, 816, 102, fill=T.PANEL if i % 2 == 0 else T.BG2,
+               stroke=color, rx=8)
+        s.text(64, y + 30, pins, size=12, fill=color, weight="800", mono=True)
+        s.rect(238, y + 16, 212, 34, fill=T.BG, stroke=color, rx=4)
+        s.text(344, y + 38, left, size=10.5, anchor="middle", fill=T.TEXT, weight="700")
+        s.text(466, y + 38, "或", size=10, anchor="middle", fill=T.RED, weight="800")
+        s.rect(482, y + 16, 212, 34, fill=T.BG, stroke=color, rx=4)
+        s.text(588, y + 38, right, size=10.5, anchor="middle", fill=T.TEXT, weight="700")
+        s.text(238, y + 76, "解法：" + escape, size=10, fill=T.MUTED)
+    s.rect(42, 482, 816, 30, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(450, 502, "CubeMX 无冲突只是起点；原理图、封装脚号与目标板已占资源仍要逐项对账。", size=10.2,
+           anchor="middle", fill=T.RED, weight="700")
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-011 前后/冲突对比 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
        network_cache_ownership, tcp_byte_stream, rtos_owner_task,
-       rtos_deadline_budget, rtos_config_paths]
+       rtos_deadline_budget, rtos_config_paths, manual_choice_map,
+       firmware_stack_choice, instrument_evidence_ladder, single_build_contract,
+       simulator_comparison, simulation_model_boundary, h7_power_domains,
+       h7_revision_clock_decision, h7_startup_evidence, h7_pinmux_conflicts]
 
 NAMES = {
     "layers_hal_ll_reg": "layers-hal-ll-reg",
@@ -677,6 +970,16 @@ NAMES = {
     "rtos_owner_task": "rtos-owner-task",
     "rtos_deadline_budget": "rtos-deadline-budget",
     "rtos_config_paths": "rtos-config-paths",
+    "manual_choice_map": "manual-choice-map",
+    "firmware_stack_choice": "firmware-stack-choice",
+    "instrument_evidence_ladder": "instrument-evidence-ladder",
+    "single_build_contract": "single-build-contract",
+    "simulator_comparison": "simulator-comparison",
+    "simulation_model_boundary": "simulation-model-boundary",
+    "h7_power_domains": "h7-power-domains",
+    "h7_revision_clock_decision": "h7-revision-clock-decision",
+    "h7_startup_evidence": "h7-startup-evidence",
+    "h7_pinmux_conflicts": "h7-pinmux-conflicts",
 }
 
 

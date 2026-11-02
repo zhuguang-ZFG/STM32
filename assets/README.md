@@ -14,7 +14,7 @@
 
 图内纸色、墨色和语义色写在 tools/svgkit.py 的字面量里，数值与整书亮色令牌相同，生成时不读 stm32-book/styles/tokens.json。
 
-第 26–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-004`、`IG-008`、`IG-009`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
+第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
 
 ## 一、动画演示 `assets/animations/`
 
@@ -42,12 +42,14 @@
 | `lowpower-wakeup.svg` | 辅图：三种低功耗模式。文件不重画。14 µA、8 MHz 和 12800 在静态主图上 | 16 |
 | `debug-swo.svg` | 辅图：SWO。文件不重画。CFSR、bit 15 和 1 µs 在静态主图上 | 17 |
 | `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
+| `h7-clock-chain.svg` | H743 的 8 MHz HSE 经 PLL1 到 Rev Y/W 400 MHz 与 Rev V 480 MHz 的计算链 | 25 |
 | `g0-boot-swd.svg` | G071 启动锁存、PA14/选项位来源选择与 Under Reset 调试恢复 | 23 |
 | `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
 | `rtos-system-layers.svg` | 从硬件、设备、内核、系统服务到应用的系统分层，以及 FreeRTOS/RT-Thread/Zephyr 选型边界 | 28 |
 | `spl-init-pipeline.svg` | SPL 开时钟、取默认值、覆盖字段、写入/使能四步连续状态链 | 26 |
 | `network-online-state.svg` | link、IP、DNS、可信时间、TLS、MQTT 六道上线门 | 27 |
 | `rtos-startup-gates.svg` | 复位证据到应用放行的六道系统启动门 | 28 |
+| `simulation-acceptance-gates.svg` | 同一 ELF 从构建、模型、目标板到可归档验收证据的四道门 | 22 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -86,6 +88,16 @@
 | `peripheral-bus.svg` | 外设挂在哪条总线上（AHB1/AHB2/APB1/APB2） |
 | `interrupt-priority.svg` | 抢占优先级 vs 子优先级的仲裁示意 |
 | `l4-idd-bench.svg` | NUCLEO-L476RG 的 JP6 IDD 串联测流与 MCU 端 VDD 同步测量 |
+| `manual-choice-map.svg` | 按问题在 DS、RM、PM、ES、AN、UM 之间选择权威来源 |
+| `firmware-stack-choice.svg` | 新项目、锁版 F1、轻量裸机与系统产品的固件栈边界 |
+| `instrument-evidence-ladder.svg` | 从构建日志到示波器/电源分析仪的证据阶梯与各层边界 |
+| `single-build-contract.svg` | CubeIDE、VS Code、CLion 与 CI 共用一个 CMake preset 和一组产物 |
+| `simulator-comparison.svg` | Wokwi、Renode 与目标真板能证明和不能证明的范围 |
+| `simulation-model-boundary.svg` | 实验现象、外设模型、芯片平台、仿真引擎和宿主环境的五层边界 |
+| `h7-power-domains.svg` | H743 VDD/VDDA、VCAP、VDD33USB、PDR_ON 与 D1/D2/D3 的关系 |
+| `h7-revision-clock-decision.svg` | 按 silicon revision 在 Rev Y/W 400 MHz 与 Rev V 480 MHz 间决策 |
+| `h7-startup-evidence.svg` | 软件读回、MCO2 实测与外设闭环三类独立时钟证据 |
+| `h7-pinmux-conflicts.svg` | PA11/PA12、PB6/PB7 与 PC9 的复用冲突和迁移出口 |
 | `network-debug-ladder.svg` | 从 PHY/ARP/IP/TCP 到 TLS/MQTT 的分层排错阶梯 |
 | `spl-ownership-boundary.svg` | HAL、SPL、寄存器与真实硬件的单一所有权边界 |
 | `network-cache-ownership.svg` | CPU、D-Cache、SRAM 与 Ethernet DMA 的 TX/RX 所有权交接 |

@@ -15,6 +15,7 @@ python3 tools/gen_gifs.py           # 6 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
 python3 tools/gen_narrated.py --speak     # 配音 MP4 + SRT（还需 edge-tts、ffmpeg、联网）
 python3 tools/check_assets.py       # 自检：SVG、GIF、实拍哈希、讲解 MP4、链接
+python3 tools/audit_book.py         # 审计 PDF 静态图分布与中英文结构差异
 ```
 
 只生成某一个：
@@ -48,6 +49,7 @@ python3 tools/gen_gifs.py led-blink
 | `gen_tietu.py` | 公众号竖版贴图，写到 `final-videos/`（该目录不进 git） |
 | `gen_animations.py` | 动画总入口（自动跳过不存在的模块） |
 | `check_assets.py` | 自检：SVG、教学 GIF 回验、CC0 实拍哈希/尺寸、正片 MP4、引脚图手册号、Wokwi/Renode 配置、Markdown 链接 |
+| `audit_book.py` | 统计 29 章中英文字符、PDF 静态视觉锚点、最长无图区间与结构差异；视频不计作 PDF 插图 |
 | `ethernet_soak.py` | 共享单调截止点的 TCP echo 长稳探针，以及 close/stall/delay 故障注入对端；协议与 24 h 验收见 `labs/ethernet-24h/` |
 
 `wechat-mp/` 和 `final-videos/` 在根目录 `.gitignore` 里。克隆下来的仓库没有这两个目录；要跑公众号脚本，先在本机准备它们的输入（封面在 `final-videos/`）。目录怎么分，见 [STRUCTURE.md](../STRUCTURE.md)。

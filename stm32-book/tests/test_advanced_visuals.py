@@ -10,6 +10,37 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 CHAPTERS = {
+    ROOT / "docs" / "20-学习资源与工具链.md": (
+        5,
+        (
+            "project-structure.svg",
+            "manual-choice-map.svg",
+            "firmware-stack-choice.svg",
+            "instrument-evidence-ladder.svg",
+            "single-build-contract.svg",
+        ),
+    ),
+    ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
+        4,
+        (
+            "toolchain-flow.svg",
+            "simulator-comparison.svg",
+            "simulation-model-boundary.svg",
+            "simulation-acceptance-gates.svg",
+        ),
+    ),
+    ROOT / "docs" / "25-STM32H7引脚.md": (
+        7,
+        (
+            "pinout-stm32h743zi-lqfp144.svg",
+            "h7-power-domains.svg",
+            "h7-revision-clock-decision.svg",
+            "h7-clock-chain.svg",
+            "h7-startup-evidence.svg",
+            "h7-pinmux-conflicts.svg",
+            "network-cache-ownership.svg",
+        ),
+    ),
     ROOT / "docs" / "26-STM32F10x标准外设库SPL.md": (
         5,
         (
@@ -53,7 +84,9 @@ class AdvancedVisualTests(unittest.TestCase):
             positions = [match.start() for match in re.finditer(r"<img\b", text)]
             self.assertEqual(count, len(positions), path.name)
             for asset in assets:
-                self.assertEqual(1, text.count(asset), (path.name, asset))
+                refs = re.findall(r'<img\b[^>]*src="([^"]+)"', text)
+                self.assertEqual(1, sum(Path(ref).name == asset for ref in refs),
+                                 (path.name, asset))
 
             points = [0, *positions, len(text)]
             largest_gap = max(right - left for left, right in zip(points, points[1:]))
@@ -61,6 +94,9 @@ class AdvancedVisualTests(unittest.TestCase):
 
     def test_english_chapters_keep_the_same_visual_sequence(self) -> None:
         pairs = (
+            ("20-学习资源与工具链.md", "20-resources.md"),
+            ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
+            ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
             ("26-STM32F10x标准外设库SPL.md", "26-spl.md"),
             ("27-网络与协议栈.md", "27-network.md"),
             ("28-嵌入式系统与RTOS生态.md", "28-system-rtos.md"),
@@ -74,11 +110,23 @@ class AdvancedVisualTests(unittest.TestCase):
 
     def test_new_svg_assets_are_valid_and_use_recorded_handdraw_ids(self) -> None:
         animated = (
+            "simulation-acceptance-gates.svg",
+            "h7-clock-chain.svg",
             "spl-init-pipeline.svg",
             "network-online-state.svg",
             "rtos-startup-gates.svg",
         )
         static = (
+            "manual-choice-map.svg",
+            "firmware-stack-choice.svg",
+            "instrument-evidence-ladder.svg",
+            "single-build-contract.svg",
+            "simulator-comparison.svg",
+            "simulation-model-boundary.svg",
+            "h7-power-domains.svg",
+            "h7-revision-clock-decision.svg",
+            "h7-startup-evidence.svg",
+            "h7-pinmux-conflicts.svg",
             "spl-ownership-boundary.svg",
             "network-cache-ownership.svg",
             "tcp-byte-stream.svg",
@@ -106,9 +154,11 @@ class AdvancedVisualTests(unittest.TestCase):
         for token in (
             "FA-002",
             "FA-029",
+            "IG-002",
             "IG-004",
             "IG-008",
             "IG-009",
+            "IG-010",
             "IG-011",
             "IG-012",
             "C-03",

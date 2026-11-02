@@ -601,8 +601,12 @@ def check_links():
 
     for root, dirs, files in os.walk(ROOT):
         # 仓库内的临时依赖、浏览器 profile 和渲染快照不是出版内容。
-        # 不扫描 .temp，避免第三方包自己的 README 链接污染本书门禁。
-        dirs[:] = [directory for directory in dirs if directory != ".temp"]
+        # 不扫描这些目录，避免第三方包自己的 README 链接污染本书门禁。
+        dirs[:] = [
+            directory for directory in dirs
+            if directory not in {".git", ".temp", "node_modules", "dist", "build"}
+            and not directory.startswith(".venv")
+        ]
         for f in sorted(files):
             if not f.endswith(".md"):
                 continue
@@ -629,6 +633,11 @@ def check_links():
 
 
 if __name__ == "__main__":
+    # Windows 的默认 GBK 终端无法打印质量门使用的勾叉符号。
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure:
+            reconfigure(encoding="utf-8", errors="backslashreplace")
     a = check_svg()
     b = check_gif()
     d = check_videos()

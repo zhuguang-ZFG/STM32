@@ -28,6 +28,7 @@ animations/freertos-scheduler.svg 900x620 15775 fe1bebd106b7c825a5d815edc6784282
 animations/g0-boot-swd.svg 900x620 12398 e9121dfb6e5290afd5d192048fa7d7409a821c7651538c80bde3237df535155f
 animations/gpio-blink.svg 900x620 14249 811377a9c3b65dd99cbeb8a1ff720b0e4e6410bc852726ac98f9aa20619175ea
 animations/gpio-input-interrupt.svg 900x620 13740 4b97aeb339eb046f0091312b6caf918b1acdc176cc72e4295cc7c116792c6697
+animations/h7-clock-chain.svg 900x620 11808 4edcb50a1871b7dd97c5a86685f43b5884c92aec162c53aa478f519394dc2068
 animations/i2c-transaction.svg 900x620 17483 e5c5b2aca2aae67cc607e3eb929cc0f20c184deceb8815f32a9d4e96f4bef55a
 animations/iwdg-window.svg 900x620 10675 324f8c83215265a9e4b9c256552019165c14adb914c3fc9189f054f264751444
 animations/l4-stop2-evidence.svg 900x620 13976 ae6b68a3a26ee3995d72dc29bcfcb2bab733a2e54637e4d9a6a8581b9f577e28
@@ -38,6 +39,7 @@ animations/network-packet-journey.svg 900x620 18648 0081c4c6270e94527deba9ea9365
 animations/nvic-interrupt-flow.svg 900x620 12972 07a38a7e7d4b430809683b2beb00f98b3cac0a17fc45bb1a5d066d20c22c9dc4
 animations/rtos-startup-gates.svg 900x620 14083 9bcabaf6c8e7e0897b26bfd104833dbae9955124bc4353cc5f1690536be68a41
 animations/rtos-system-layers.svg 900x620 13996 1a44f6f16dcc08a20467d946a35a22ef968582f37faf99b5b74f5107deaf31e9
+animations/simulation-acceptance-gates.svg 900x620 10660 c0316576a9b8a6c45011d4a1fce3f884228ffa2a0788561d983b43227aa9e146
 animations/spi-transfer.svg 900x620 18861 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
 animations/spl-init-pipeline.svg 900x620 11903 d1ebfca0e4b6e9cbbda864bf9c82f217976ad6b8e16bee53e36059b6d6e8885c
 animations/timer-modes.svg 900x620 11712 c8a1e34469293d5f4a02a5703271bcf62fc4e9f2f1e89429dbcaa02b56ebeabf
@@ -55,9 +57,16 @@ boards/pinout-bluepill.svg 900x620 35176 4de478b58c8d278166311b99311183121ccf1ec
 boards/pinout-stm32g071rb-lqfp64.svg 620x750 34523 7ccc8b702e15d0473bfc1d4c956397dfbb5bd50363d4e762bd100c794d1d2193
 boards/pinout-stm32h743zi-lqfp144.svg 840x970 75786 4d71ec5cab732513073bac6721ae4c688a36f18ab11fcae4b5e6e927433b7a96
 boards/pinout-stm32l476rg-lqfp64.svg 620x750 34508 a5a8468d7b087956a4635ac7c88412f1e7920570c53e388e0a10a44fbe5f8adf
+diagrams/firmware-stack-choice.svg 900x560 8495 ffad6ce257492aef37d37dce681845652b67c5b6f5d341cc279c5ea8c02c9d1e
+diagrams/h7-pinmux-conflicts.svg 900x560 7106 422b66ce1b659f837216d750bf10f80f96b6a530f2b2fca6902ed1ef011a1632
+diagrams/h7-power-domains.svg 900x560 7154 d0da1b09891335ae1afac71e6beacd6d00a43a9d3151e6838eed336ea3cfb69d
+diagrams/h7-revision-clock-decision.svg 900x560 5940 7e7f3f5dc844f2c1e9e3e02506b4797dfd75a6723145dd17a3be4823bb2a5e29
+diagrams/h7-startup-evidence.svg 900x560 7720 d0bed6f9b648d7755ecc13a1c0d1123ea6f014332e4ad5982b5733f602fea29a
+diagrams/instrument-evidence-ladder.svg 900x560 6393 c5eb4c58592f60d51c27728953805c5f5b1fde238e0fde0382fbc204d4c57aa5
 diagrams/interrupt-priority.svg 900x560 11877 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
 diagrams/l4-idd-bench.svg 900x560 8673 32e1a5b195562947e04d2da8efc2f0c89dd97aed9f7cacbb3c5914ce52f8ec96
 diagrams/layers-hal-ll-reg.svg 900x560 10401 60098b25b368c2f6acefb4e9a3152f816506cae44e68b2fb8ffbf0878c049f78
+diagrams/manual-choice-map.svg 900x560 9687 75a6977234623a1b9e8edbd6129863f67cd9ab3ad4a4eeec7e55abe96fece3e9
 diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
 diagrams/network-debug-ladder.svg 900x560 11278 a1405054a5ba593090ad0bc6fdb104a5c8e513dd9695bd35767867faeeaec2e8
 diagrams/peripheral-bus.svg 900x560 14071 80d659d44758f54a352b8447fb4a49e6fa880a47cb981bc487c1d69aaa6ae2f6
@@ -85,15 +94,28 @@ diagrams/sample-16-stop-wake.svg 960x980 7143 41341af8f070f2b9413b8d4fc6f3dff0d5
 diagrams/sample-17-cfsr.svg 960x980 6727 5afb78ba8d0be29fa1bbfd8c497919296d991d9112ee2eae24f89fd9413b4d6d
 diagrams/sample-18-boot-triage.svg 960x960 6512 ab5be4eb7af108fbd513303dd1d1bf4ab24978018966c98fa80fcb46a9d83091
 diagrams/sample-19-flash-fit.svg 960x980 6499 d2cf0662543657786e0dc4d3341cffdffe459035fb80771ffc5b3fe474e7cc42
+diagrams/simulation-model-boundary.svg 900x560 6723 365c4b15943f3a01461ec0e2ce9b0a7dbcdc199777b1b2272e04a791adeaf382
+diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7def982efcc915e5616fe5b16c44fcc99
+diagrams/single-build-contract.svg 900x560 8480 e91be06b3790c3d4adcfe97a4805227b5ccdc79f060eebc490484e535563f797
 diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 """.strip().splitlines()
 
 STATIC_ADVANCED = {
+    "diagrams/firmware-stack-choice.svg",
+    "diagrams/h7-pinmux-conflicts.svg",
+    "diagrams/h7-power-domains.svg",
+    "diagrams/h7-revision-clock-decision.svg",
+    "diagrams/h7-startup-evidence.svg",
+    "diagrams/instrument-evidence-ladder.svg",
+    "diagrams/manual-choice-map.svg",
     "diagrams/network-cache-ownership.svg",
     "diagrams/rtos-config-paths.svg",
     "diagrams/rtos-deadline-budget.svg",
     "diagrams/rtos-owner-task.svg",
+    "diagrams/simulation-model-boundary.svg",
+    "diagrams/simulator-comparison.svg",
+    "diagrams/single-build-contract.svg",
     "diagrams/spl-ownership-boundary.svg",
     "diagrams/tcp-byte-stream.svg",
 }
@@ -286,7 +308,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(70, len(found))
+        self.assertEqual(82, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

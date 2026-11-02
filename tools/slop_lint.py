@@ -285,7 +285,8 @@ def targets(given: list[str]) -> list[Path]:
         return [Path(name) for name in given]
     found: list[Path] = []
     for path in sorted(ROOT.rglob("*.md")):
-        if any(part in SKIP_DIRS for part in path.relative_to(ROOT).parts):
+        if any(part in SKIP_DIRS or part.startswith(".venv")
+               for part in path.relative_to(ROOT).parts):
             continue
         found.append(path)
     return found
