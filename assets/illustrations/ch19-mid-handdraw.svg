@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Prove the smallest loop first, then lay stone after stone">
+<title>Prove the smallest loop first, then lay stone after stone</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 20</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M60 435 Q108.75 451 157.5 435 Q206.25 419 255.0 435 Q303.75 451 352.5 435 Q401.25 419 450.0 435 Q498.75 451 547.5 435 Q596.25 419 645.0 435 Q693.75 451 742.5 435 Q791.25 419 840.0 435" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<path d="M100 365 Q170 337 240 365 L225 405 Q170 420 115 405 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<text x="170" y="387" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">1</text>
+<line x1="171.8" y1="338.2" x2="171.8" y2="296.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="170" y1="337" x2="170" y2="295" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M170 295 L204 305 L170 317" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<path d="M290 315 Q360 287 430 315 L415 355 Q360 370 305 355 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-float"/>
+<text x="360" y="337" font-size="15" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">2</text>
+<line x1="361.8" y1="288.2" x2="361.8" y2="246.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360" y1="287" x2="360" y2="245" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M360 245 L394 255 L360 267" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<path d="M480 350 Q550 322 620 350 L605 390 Q550 405 495 390 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2" class="hd-float"/>
+<text x="550" y="372" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3</text>
+<line x1="551.8" y1="323.2" x2="551.8" y2="281.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="550" y1="322" x2="550" y2="280" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M550 280 L584 290 L550 302" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<path d="M670 285 Q740 257 810 285 L795 325 Q740 340 685 325 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
+<text x="740" y="307" font-size="15" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">4</text>
+<line x1="741.8" y1="258.2" x2="741.8" y2="216.2" stroke="#5b3a8c" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="740" y1="257" x2="740" y2="215" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M740 215 L774 225 L740 237" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5b3a8c" stroke-width="2"/>
+<path d="M145 356 L160 371 L195 338" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<circle cx="80" cy="375.8" r="7" fill="none" opacity="0.2" stroke="#5e6872" stroke-width="1"/>
+<circle cx="78" cy="374.8" r="7" fill="#fbfaf7" opacity="1" stroke="#5e6872" stroke-width="2"/>
+<path d="M78 382.5 C75.2 395.8 80.8 405.6 78 419.6" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5e6872" stroke-width="2"/>
+<line x1="79.8" y1="395.6" x2="67.2" y2="406.1" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="78" y1="394.4" x2="65.4" y2="404.9" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="80.5" y1="396.3" x2="93.1" y2="390" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="78.7" y1="395.1" x2="91.3" y2="388.8" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="79.8" y1="420.8" x2="68.6" y2="436.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="78" y1="419.6" x2="66.8" y2="435" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="79.8" y1="420.8" x2="92.4" y2="432.7" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="78" y1="419.6" x2="90.6" y2="431.5" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M150 372 C240 345 300 332 330 322 S460 326 520 340 S660 312 700 296" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-flow"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

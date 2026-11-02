@@ -9,7 +9,7 @@
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
-> python3 tools/gen_handdraw_illustrations.py   # 29 张章首 + 7 张分部手绘概念图与 manifest
+> python3 tools/gen_handdraw_illustrations.py   # 29 张章首 + 29 张章中 + 7 张分部手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -17,7 +17,7 @@
 
 第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
 
-29 张章首手绘概念图与 7 张分部手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单把 36 张图内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。
+29 张章首、29 张章中与 7 张分部手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单把 65 张图内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。
 
 ## 一、动画演示 `assets/animations/`
 
@@ -176,6 +176,40 @@
 | `part-p4-handdraw.svg` | 第五部分 | 工作台把手册、项目盒和放大镜摆在一起 |
 | `part-p5-handdraw.svg` | 第六部分 | 三颗芯片在迁移路上交换手册和旧库 |
 | `part-p6-handdraw.svg` | 第七部分 | 硬件、内核、服务和应用叠成一套系统 |
+
+每章另有一张章中概念图（`chNN-mid-handdraw.svg`），插在锚点小节标题之后、正文展开之前，帮读者先建立画面再读细节；锚点小节由 `manifest.json` 的双语锚点指定：
+
+| 文件 | 章节 | 锚点小节 | 画面 |
+| --- | --- | --- | --- |
+| `ch00-mid-handdraw.svg` | 00 | 三个启动状态 | 三条启动路径，只有一条走进你的程序 |
+| `ch01-mid-handdraw.svg` | 01 | 核心原理 | 编辑、构建、烧录、验收围成一个闭环 |
+| `ch02-mid-handdraw.svg` | 02 | 核心原理 | 时钟过两座桥，抵达快慢不同的外设区 |
+| `ch03-mid-handdraw.svg` | 03 | 核心原理 | 上拉与下拉把浮空的引脚按住 |
+| `ch04-mid-handdraw.svg` | 04 | 核心原理 | 高优先级打断正在运行的低优先级 |
+| `ch05-mid-handdraw.svg` | 05 | 核心原理 | 比较线跨过锯齿波，切出占空比 |
+| `ch06-mid-handdraw.svg` | 06 | 核心原理 | 一帧比特有头有尾，双方踩着同一个节拍 |
+| `ch07-mid-handdraw.svg` | 07 | 核心原理 | 被点到名的设备把总线拉低应答 |
+| `ch08-mid-handdraw.svg` | 08 | 核心原理 | 片选线点名，只有被选中的设备开口 |
+| `ch09-mid-handdraw.svg` | 09 | 核心原理 | 采样先按住电压，再一格一格量化 |
+| `ch10-mid-handdraw.svg` | 10 | 核心原理 | 两块缓冲区轮流接住传送带 |
+| `ch11-mid-handdraw.svg` | 11 | 核心原理 | 喂狗只在窗口内有效，早喂晚喂都复位 |
+| `ch12-mid-handdraw.svg` | 12 | 核心原理 | 验收不过的镜像退回旧版本 |
+| `ch13-mid-handdraw.svg` | 13 | 核心原理 | 过滤器只放行掩码认可的标识符 |
+| `ch14-mid-handdraw.svg` | 14 | 核心原理 | 端点是粗细不同的管道，各走各的数据 |
+| `ch15-mid-handdraw.svg` | 15 | 核心原理 | 任务在就绪、运行、阻塞之间循环 |
+| `ch16-mid-handdraw.svg` | 16 | 核心原理 | 睡着的芯片仍留着几只闹钟 |
+| `ch17-mid-handdraw.svg` | 17 | 核心原理 | 二分逼近第一处分歧点 |
+| `ch18-mid-handdraw.svg` | 18 | 排错方法论（先做这 5 步） | 五步漏斗把症状筛成原因 |
+| `ch19-mid-handdraw.svg` | 19 | 1. 蓝牙小车（★★ 入门级） | 先跑通最小闭环，再一块块加石头 |
+| `ch20-mid-handdraw.svg` | 20 | 遇到问题时去哪找证据 | 问题按层级送进对应的手册书架 |
+| `ch21-mid-handdraw.svg` | 21 | 核心原理 | 读板先圈出电源、去耦、复位 |
+| `ch22-mid-handdraw.svg` | 22 | 仿真替不了的事 | 仿真到不了的地方：时序与电气 |
+| `ch23-mid-handdraw.svg` | 23 | 从 F1 抄代码时最容易摔的几处 | F1 的桥板，有几块在 G0 上合不上 |
+| `ch24-mid-handdraw.svg` | 24 | Stop 2 进入、唤醒与时钟恢复闭环 | Stop 2 睡下、唤醒、时钟重新转起来 |
+| `ch25-mid-handdraw.svg` | 25 | HSE 8 MHz 到 480 MHz：一条可复算的时钟链 | 8 MHz 一级一级倍到 480 MHz |
+| `ch26-mid-handdraw.svg` | 26 | 3. 统一调用模型：时钟、默认值、配置、使能 | 时钟、默认值、配置、使能，四级台阶 |
+| `ch27-mid-handdraw.svg` | 27 | TCP 是字节流：必须自己定义消息边界 | 字节流要切成有边界的消息 |
+| `ch28-mid-handdraw.svg` | 28 | ⏱️ 实时性来自预算，不来自 RTOS 名字 | 每件事都要装进自己的时间预算盒 |
 
 ## 六、光栅动画 `assets/gif/`
 

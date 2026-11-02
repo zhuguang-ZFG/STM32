@@ -250,5 +250,115 @@ class PartHanddrawTests(unittest.TestCase):
                 self.builder.HANDDRAW_MANIFEST = original
 
 
+class MidHanddrawTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.builder = load_builder()
+        cls.entries = cls.builder.load_handdraw_mid()
+
+    def test_manifest_covers_every_chapter_in_order(self) -> None:
+        self.assertEqual([f"{index:02d}" for index in range(29)], list(self.entries))
+        for chapter, entry in self.entries.items():
+            self.assertEqual(f"ch{chapter}-mid-handdraw.svg", entry["file"])
+            for key in ("zh", "en", "anchor_zh", "anchor_en"):
+                self.assertTrue(entry[key].strip(), (chapter, key))
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            self.assertTrue(path.is_file(), path)
+            self.assertLessEqual(
+                path.stat().st_size, self.builder.HANDDRAW_MAX_BYTES, path
+            )
+
+    def test_mid_plates_are_safe_animated_and_distinct(self) -> None:
+        titles: set[str] = set()
+        drawings: set[str] = set()
+        for chapter, entry in self.entries.items():
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            text = path.read_text(encoding="utf-8")
+            ET.parse(path)
+            self.assertIn('width="900"', text, chapter)
+            self.assertIn('viewBox="0 0 900 560"', text, chapter)
+            self.assertIn("FA-002", text, chapter)
+            self.assertIn("prefers-reduced-motion", text, chapter)
+            self.assertIn("自绘矢量动画", text, chapter)
+            for banned in ("<script", "<image", "<foreignObject", "<filter",
+                           "url(", "href="):
+                self.assertNotIn(banned, text, (chapter, banned))
+            titles.add(entry["en"])
+            drawings.add(text)
+        self.assertEqual(29, len(titles))
+        self.assertEqual(29, len(drawings))
+
+    def test_build_inlines_one_plate_after_each_anchor(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(Path(tmp)).read_text(encoding="utf-8")
+        self.assertEqual(29, html.count('class="mid-plate"'))
+        self.assertEqual(
+            29,
+            len(re.findall(
+                r'<figure class="mid-plate">\s*'
+                r'<img src="data:image/svg\+xml;base64,',
+                html,
+            )),
+        )
+        self.assertEqual(29, html.count('alt="本节概念图：'))
+        self.assertEqual(29, html.count("▲ 本节概念图："))
+        for chapter, entry in self.entries.items():
+            start = html.index(f'id="chapter-{chapter}"')
+            end = html.find('id="chapter-', start + 10)
+            if end < 0:
+                end = html.index('class="part-closing"', start)
+            section = html[start:end]
+            self.assertEqual(1, section.count('class="mid-plate"'), chapter)
+            heading = f'>{entry["anchor_zh"]}</h2>'
+            self.assertIn(heading, section, chapter)
+            self.assertLess(
+                section.index(heading), section.index('class="mid-plate"'), chapter
+            )
+
+    def test_english_build_uses_english_mid_captions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.builder.build_html(
+                Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
+            ).read_text(encoding="utf-8")
+        self.assertEqual(29, html.count('class="mid-plate"'))
+        self.assertEqual(29, html.count('alt="Section concept:'))
+        self.assertNotIn('alt="本节概念图：', html)
+        for chapter, entry in self.entries.items():
+            start = html.index(f'id="chapter-{chapter}"')
+            end = html.find('id="chapter-', start + 10)
+            if end < 0:
+                end = html.index('class="part-closing"', start)
+            section = html[start:end]
+            heading = f'>{entry["anchor_en"]}</h2>'
+            self.assertIn(heading, section, chapter)
+            self.assertLess(
+                section.index(heading), section.index('class="mid-plate"'), chapter
+            )
+
+    def test_missing_mid_inventory_is_a_build_error(self) -> None:
+        manifest = json.loads(
+            (self.builder.HANDDRAW_MANIFEST).read_text(encoding="utf-8")
+        )
+        manifest.pop("mid", None)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+            original = self.builder.HANDDRAW_MANIFEST
+            self.builder.HANDDRAW_MANIFEST = path
+            try:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_mid()
+            finally:
+                self.builder.HANDDRAW_MANIFEST = original
+
+    def test_wrong_anchor_is_a_build_error(self) -> None:
+        entry = next(iter(self.entries.values()))
+        broken = dict(entry, anchor_zh="不存在的锚点标题")
+        with self.assertRaises(self.builder.BuildError):
+            self.builder.inject_mid_plate(
+                "<h2 id=\"ch00-_1\">核心原理</h2>", broken, "zh", {"language": "zh-CN"}
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

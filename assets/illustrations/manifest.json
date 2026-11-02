@@ -226,5 +226,239 @@
       "zh": "硬件、内核、服务和应用叠成一套系统",
       "en": "Hardware, kernel, services, and applications stack into one system"
     }
+  ],
+  "mid": [
+    {
+      "chapter": "00",
+      "file": "ch00-mid-handdraw.svg",
+      "zh": "三条启动路径，只有一条走进你的程序",
+      "en": "Three boot doors, only one reaches your program",
+      "anchor_zh": "三个启动状态",
+      "anchor_en": "Three boot states"
+    },
+    {
+      "chapter": "01",
+      "file": "ch01-mid-handdraw.svg",
+      "zh": "编辑、构建、烧录、验收围成一个闭环",
+      "en": "Edit, build, flash, and accept form one loop",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "02",
+      "file": "ch02-mid-handdraw.svg",
+      "zh": "时钟过两座桥，抵达快慢不同的外设区",
+      "en": "A clock crosses two bridges into fast and slow peripheral districts",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "03",
+      "file": "ch03-mid-handdraw.svg",
+      "zh": "上拉与下拉把浮空的引脚按住",
+      "en": "Pull-up and pull-down hold a floating pin in place",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "04",
+      "file": "ch04-mid-handdraw.svg",
+      "zh": "高优先级打断正在运行的低优先级",
+      "en": "A higher priority interrupts the lower one mid-run",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "05",
+      "file": "ch05-mid-handdraw.svg",
+      "zh": "比较线跨过锯齿波，切出占空比",
+      "en": "A compare line crosses the sawtooth and cuts out the duty cycle",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "06",
+      "file": "ch06-mid-handdraw.svg",
+      "zh": "一帧比特有头有尾，双方踩着同一个节拍",
+      "en": "A framed byte has a head and a tail on a shared beat",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "07",
+      "file": "ch07-mid-handdraw.svg",
+      "zh": "被点到名的设备把总线拉低应答",
+      "en": "The addressed device pulls the bus low to acknowledge",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "08",
+      "file": "ch08-mid-handdraw.svg",
+      "zh": "片选线点名，只有被选中的设备开口",
+      "en": "Chip-select names one device; only the chosen one speaks",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "09",
+      "file": "ch09-mid-handdraw.svg",
+      "zh": "采样先按住电压，再一格一格量化",
+      "en": "Sampling holds the voltage still, then quantizes step by step",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "10",
+      "file": "ch10-mid-handdraw.svg",
+      "zh": "两块缓冲区轮流接住传送带",
+      "en": "Two buffers take turns catching the conveyor",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "11",
+      "file": "ch11-mid-handdraw.svg",
+      "zh": "喂狗只在窗口内有效，早喂晚喂都复位",
+      "en": "Feeding only counts inside the window; early or late both reset",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "12",
+      "file": "ch12-mid-handdraw.svg",
+      "zh": "验收不过的镜像退回旧版本",
+      "en": "An image that fails acceptance rolls back to the old one",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "13",
+      "file": "ch13-mid-handdraw.svg",
+      "zh": "过滤器只放行掩码认可的标识符",
+      "en": "The filter admits only mask-approved identifiers",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "14",
+      "file": "ch14-mid-handdraw.svg",
+      "zh": "端点是粗细不同的管道，各走各的数据",
+      "en": "Endpoints are pipes of different widths, each carrying its own data",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "15",
+      "file": "ch15-mid-handdraw.svg",
+      "zh": "任务在就绪、运行、阻塞之间循环",
+      "en": "A task cycles between ready, running, and blocked",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "16",
+      "file": "ch16-mid-handdraw.svg",
+      "zh": "睡着的芯片仍留着几只闹钟",
+      "en": "A sleeping chip still keeps a few alarm bells",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "17",
+      "file": "ch17-mid-handdraw.svg",
+      "zh": "二分逼近第一处分歧点",
+      "en": "Bisect toward the first point of divergence",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "18",
+      "file": "ch18-mid-handdraw.svg",
+      "zh": "五步漏斗把症状筛成原因",
+      "en": "A five-step funnel sieves symptoms into a cause",
+      "anchor_zh": "排错方法论（先做这 5 步）",
+      "anchor_en": "A method for debugging (do these 5 steps first)"
+    },
+    {
+      "chapter": "19",
+      "file": "ch19-mid-handdraw.svg",
+      "zh": "先跑通最小闭环，再一块块加石头",
+      "en": "Prove the smallest loop first, then lay stone after stone",
+      "anchor_zh": "1. 蓝牙小车（★★ 入门级）",
+      "anchor_en": "1. Bluetooth car (★★ beginner)"
+    },
+    {
+      "chapter": "20",
+      "file": "ch20-mid-handdraw.svg",
+      "zh": "问题按层级送进对应的手册书架",
+      "en": "Route each question to the matching manual shelf",
+      "anchor_zh": "遇到问题时去哪找证据",
+      "anchor_en": "Where to look for evidence"
+    },
+    {
+      "chapter": "21",
+      "file": "ch21-mid-handdraw.svg",
+      "zh": "读板先圈出电源、去耦、复位",
+      "en": "Reading a board starts by circling power, decoupling, and reset",
+      "anchor_zh": "核心原理",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "22",
+      "file": "ch22-mid-handdraw.svg",
+      "zh": "仿真到不了的地方：时序与电气",
+      "en": "Where simulation stops: timing and electrical truth",
+      "anchor_zh": "仿真替不了的事",
+      "anchor_en": "What simulation will not do for you"
+    },
+    {
+      "chapter": "23",
+      "file": "ch23-mid-handdraw.svg",
+      "zh": "F1 的桥板，有几块在 G0 上合不上",
+      "en": "Some F1 bridge planks do not fit the G0 side",
+      "anchor_zh": "从 F1 抄代码时最容易摔的几处",
+      "anchor_en": "Common ways an F1 port falls over"
+    },
+    {
+      "chapter": "24",
+      "file": "ch24-mid-handdraw.svg",
+      "zh": "Stop 2 睡下、唤醒、时钟重新转起来",
+      "en": "Stop 2 sleeps, wakes, and the clock spins up again",
+      "anchor_zh": "Stop 2 进入、唤醒与时钟恢复闭环",
+      "anchor_en": "Stop 2: entry, wake evidence, and clock recovery"
+    },
+    {
+      "chapter": "25",
+      "file": "ch25-mid-handdraw.svg",
+      "zh": "8 MHz 一级一级倍到 480 MHz",
+      "en": "8 MHz gears up stage by stage to 480 MHz",
+      "anchor_zh": "HSE 8 MHz 到 480 MHz：一条可复算的时钟链",
+      "anchor_en": "From 8 MHz HSE to 480 MHz: a reproducible clock chain"
+    },
+    {
+      "chapter": "26",
+      "file": "ch26-mid-handdraw.svg",
+      "zh": "时钟、默认值、配置、使能，四级台阶",
+      "en": "Clock, defaults, configuration, enable: four steps",
+      "anchor_zh": "3. 统一调用模型：时钟、默认值、配置、使能",
+      "anchor_en": "3. The common model: clock, defaults, configuration, enable"
+    },
+    {
+      "chapter": "27",
+      "file": "ch27-mid-handdraw.svg",
+      "zh": "字节流要切成有边界的消息",
+      "en": "A byte stream must be cut into framed messages",
+      "anchor_zh": "TCP 是字节流：必须自己定义消息边界",
+      "anchor_en": "TCP is a byte stream: define application framing"
+    },
+    {
+      "chapter": "28",
+      "file": "ch28-mid-handdraw.svg",
+      "zh": "每件事都要装进自己的时间预算盒",
+      "en": "Every job must fit inside its own time-budget box",
+      "anchor_zh": "⏱️ 实时性来自预算，不来自 RTOS 名字",
+      "anchor_en": "⏱️ Real time comes from budgets, not an RTOS name"
+    }
   ]
 }

@@ -448,6 +448,101 @@ PARTS = (
 )
 
 
+MID = [
+    (0, "三条启动路径，只有一条走进你的程序",
+     "Three boot doors, only one reaches your program",
+     "三个启动状态", "Three boot states", "boot-gates"),
+    (1, "编辑、构建、烧录、验收围成一个闭环",
+     "Edit, build, flash, and accept form one loop",
+     "核心原理", "Core ideas", "accept-loop"),
+    (2, "时钟过两座桥，抵达快慢不同的外设区",
+     "A clock crosses two bridges into fast and slow peripheral districts",
+     "核心原理", "Core ideas", "bus-bridges"),
+    (3, "上拉与下拉把浮空的引脚按住",
+     "Pull-up and pull-down hold a floating pin in place",
+     "核心原理", "Core ideas", "pull-lines"),
+    (4, "高优先级打断正在运行的低优先级",
+     "A higher priority interrupts the lower one mid-run",
+     "核心原理", "Core ideas", "nesting"),
+    (5, "比较线跨过锯齿波，切出占空比",
+     "A compare line crosses the sawtooth and cuts out the duty cycle",
+     "核心原理", "Core ideas", "duty"),
+    (6, "一帧比特有头有尾，双方踩着同一个节拍",
+     "A framed byte has a head and a tail on a shared beat",
+     "核心原理", "Core ideas", "frame"),
+    (7, "被点到名的设备把总线拉低应答",
+     "The addressed device pulls the bus low to acknowledge",
+     "核心原理", "Core ideas", "ack"),
+    (8, "片选线点名，只有被选中的设备开口",
+     "Chip-select names one device; only the chosen one speaks",
+     "核心原理", "Core ideas", "chip-select"),
+    (9, "采样先按住电压，再一格一格量化",
+     "Sampling holds the voltage still, then quantizes step by step",
+     "核心原理", "Core ideas", "sample-hold"),
+    (10, "两块缓冲区轮流接住传送带",
+     "Two buffers take turns catching the conveyor",
+     "核心原理", "Core ideas", "pingpong"),
+    (11, "喂狗只在窗口内有效，早喂晚喂都复位",
+     "Feeding only counts inside the window; early or late both reset",
+     "核心原理", "Core ideas", "feed-window"),
+    (12, "验收不过的镜像退回旧版本",
+     "An image that fails acceptance rolls back to the old one",
+     "核心原理", "Core ideas", "rollback"),
+    (13, "过滤器只放行掩码认可的标识符",
+     "The filter admits only mask-approved identifiers",
+     "核心原理", "Core ideas", "filter-mask"),
+    (14, "端点是粗细不同的管道，各走各的数据",
+     "Endpoints are pipes of different widths, each carrying its own data",
+     "核心原理", "Core ideas", "endpoints"),
+    (15, "任务在就绪、运行、阻塞之间循环",
+     "A task cycles between ready, running, and blocked",
+     "核心原理", "Core ideas", "task-states"),
+    (16, "睡着的芯片仍留着几只闹钟",
+     "A sleeping chip still keeps a few alarm bells",
+     "核心原理", "Core ideas", "wake-sources"),
+    (17, "二分逼近第一处分歧点",
+     "Bisect toward the first point of divergence",
+     "核心原理", "Core ideas", "bisect"),
+    (18, "五步漏斗把症状筛成原因",
+     "A five-step funnel sieves symptoms into a cause",
+     "排错方法论（先做这 5 步）", "A method for debugging (do these 5 steps first)", "funnel"),
+    (19, "先跑通最小闭环，再一块块加石头",
+     "Prove the smallest loop first, then lay stone after stone",
+     "1. 蓝牙小车（★★ 入门级）", "1. Bluetooth car (★★ beginner)", "milestone"),
+    (20, "问题按层级送进对应的手册书架",
+     "Route each question to the matching manual shelf",
+     "遇到问题时去哪找证据", "Where to look for evidence", "doc-tiers"),
+    (21, "读板先圈出电源、去耦、复位",
+     "Reading a board starts by circling power, decoupling, and reset",
+     "核心原理", "Core ideas", "schematic-read"),
+    (22, "仿真到不了的地方：时序与电气",
+     "Where simulation stops: timing and electrical truth",
+     "仿真替不了的事", "What simulation will not do for you", "sim-limits"),
+    (23, "F1 的桥板，有几块在 G0 上合不上",
+     "Some F1 bridge planks do not fit the G0 side",
+     "从 F1 抄代码时最容易摔的几处", "Common ways an F1 port falls over", "porting-traps"),
+    (24, "Stop 2 睡下、唤醒、时钟重新转起来",
+     "Stop 2 sleeps, wakes, and the clock spins up again",
+     "Stop 2 进入、唤醒与时钟恢复闭环", "Stop 2: entry, wake evidence, and clock recovery", "stop2-loop"),
+    (25, "8 MHz 一级一级倍到 480 MHz",
+     "8 MHz gears up stage by stage to 480 MHz",
+     "HSE 8 MHz 到 480 MHz：一条可复算的时钟链",
+     "From 8 MHz HSE to 480 MHz: a reproducible clock chain", "clock-chain"),
+    (26, "时钟、默认值、配置、使能，四级台阶",
+     "Clock, defaults, configuration, enable: four steps",
+     "3. 统一调用模型：时钟、默认值、配置、使能",
+     "3. The common model: clock, defaults, configuration, enable", "call-model"),
+    (27, "字节流要切成有边界的消息",
+     "A byte stream must be cut into framed messages",
+     "TCP 是字节流：必须自己定义消息边界",
+     "TCP is a byte stream: define application framing", "stream-framing"),
+    (28, "每件事都要装进自己的时间预算盒",
+     "Every job must fit inside its own time-budget box",
+     "⏱️ 实时性来自预算，不来自 RTOS 名字",
+     "⏱️ Real time comes from budgets, not an RTOS name", "budget"),
+]
+
+
 def part_scene(index: int, zh: str, aria: str, scene: str) -> Svg:
     """Return one hand-drawn plate for a part divider."""
     k = Sketch(index - 1, aria, aria, label=f"PART {index:02d}")
@@ -567,12 +662,423 @@ def part_scene(index: int, zh: str, aria: str, scene: str) -> Svg:
     return k.footer()
 
 
+def mid_scene(ch: int, zh: str, aria: str, scene: str) -> Svg:
+    """Return one mid-chapter concept plate for the chapter's core section."""
+    k = Sketch(ch, zh, aria)
+    k.path("M52 455 C180 443 292 468 420 451 S690 440 848 454",
+           color=T.GRID, sw=1.5)
+
+    if scene == "boot-gates":
+        for x, c, lab, lit in [
+            (180, T.AMBER, "FLASH", True),
+            (450, T.CYAN, "ROM", False),
+            (720, T.VIOLET, "SRAM", False),
+        ]:
+            k.blob(f"M{x-70} 390 L{x-70} 220 Q{x} 165 {x+70} 220 L{x+70} 390 Z",
+                   T.PANEL2 if lit else T.BG2, c)
+            if lit:
+                k.path(f"M{x-36} 390 L{x-36} 248 Q{x} 208 {x+36} 248 L{x+36} 390", c)
+                k.circle(x, 320, 14, T.RED, T.PANEL, cls="hd-pulse")
+            k.label(x, 430, lab, c, 9)
+        person(k, 75, 395, .7, pose="walk", cls="hd-float")
+        k.path("M115 380 C170 360 175 350 180 330", T.AMBER, cls="hd-flow")
+    elif scene == "accept-loop":
+        for i, (lab, c) in enumerate([
+            ("EDIT", T.AMBER), ("BUILD", T.CYAN), ("FLASH", T.VIOLET), ("CHECK", T.GREEN),
+        ]):
+            a = -math.pi / 2 + i * math.pi / 2
+            x, y = 450 + 170 * math.cos(a), 285 + 140 * math.sin(a)
+            k.circle(x, y, 42, c, T.BG2, cls="hd-float")
+            k.label(x, y + 5, lab, c, 9)
+        for i in range(4):
+            a1 = -math.pi / 2 + i * math.pi / 2 + .5
+            a2 = -math.pi / 2 + (i + 1) * math.pi / 2 - .5
+            k.arrow(450 + 170 * math.cos(a1), 285 + 140 * math.sin(a1),
+                    450 + 170 * math.cos(a2), 285 + 140 * math.sin(a2), T.CYAN)
+        k.path("M428 285 L444 301 L476 264", T.GREEN)
+    elif scene == "bus-bridges":
+        k.circle(125, 260, 52, T.AMBER, T.PANEL)
+        k.line(125, 260, 153, 240, T.RED); k.line(125, 260, 113, 226, T.CYAN)
+        k.path("M177 260 C250 260 245 180 325 180 M177 260 C250 260 245 340 325 340",
+               T.CYAN, cls="hd-flow")
+        for y, lab, c, names in [
+            (180, "AHB", T.AMBER, ("FLASH", "DMA", "GPIO")),
+            (340, "APB", T.GREEN, ("UART", "TIM", "I2C")),
+        ]:
+            k.path(f"M325 {y} C395 {y-30} 465 {y-30} 535 {y}", c, sw=2)
+            k.path(f"M325 {y+14} C395 {y-16} 465 {y-16} 535 {y+14}", c, sw=2)
+            k.label(430, y - 34, lab, c, 10)
+            for x, name in zip((620, 715, 810), names):
+                k.blob(f"M{x-38} {y-46} L{x+38} {y-46} L{x+44} {y-4} L{x-44} {y-4} Z",
+                       T.PANEL2, c, "hd-float")
+                k.label(x, y - 20, name, c, 8)
+                k.line(x, y - 4, x, y + 10, c)
+    elif scene == "pull-lines":
+        k.line(80, 130, 820, 130, T.RED)
+        k.line(80, 420, 820, 420, T.STROKE)
+        k.label(56, 135, "VDD", T.RED, 9); k.label(56, 425, "GND", T.STROKE, 9)
+        k.path("M260 130 L260 158", T.RED)
+        k.path("M248 158 L272 176 L248 194 L272 212 L248 230 L260 246", T.RED)
+        k.path("M260 246 L260 300", T.RED)
+        k.circle(260, 300, 10, T.RED, T.PANEL, cls="hd-pulse")
+        k.path("M270 300 C330 300 350 300 395 300", T.CYAN, cls="hd-flow")
+        k.circle(425, 300, 22, T.CYAN, T.BG2); k.label(425, 305, "PIN", T.CYAN, 9)
+        k.path("M260 310 L236 368", T.AMBER)
+        k.circle(234, 376, 4, T.AMBER, T.AMBER); k.line(234, 382, 234, 420, T.AMBER)
+        k.circle(620, 300, 10, T.GREEN, T.PANEL, cls="hd-pulse")
+        k.path("M610 300 C560 300 545 300 505 300", T.GREEN, cls="hd-flow")
+        k.circle(475, 300, 22, T.GREEN, T.BG2); k.label(475, 305, "PIN", T.GREEN, 9)
+        k.path("M620 310 L620 336", T.GREEN)
+        k.path("M608 336 L632 354 L608 372 L632 390 L620 402", T.GREEN)
+        k.label(296, 196, "R", T.RED, 11); k.label(656, 362, "R", T.GREEN, 11)
+    elif scene == "nesting":
+        k.path("M110 360 C240 360 300 340 355 340", T.CYAN, sw=2)
+        k.path("M565 340 C660 340 730 360 810 360", T.CYAN, sw=2)
+        k.label(210, 395, "LOW", T.CYAN, 10)
+        k.path("M355 340 C375 215 545 215 565 340", T.RED, sw=2, cls="hd-flow")
+        k.label(460, 200, "HIGH", T.RED, 10)
+        k.path("M378 278 L362 312 L376 312 L364 346", T.AMBER)
+        k.circle(460, 278, 12, T.RED, T.PANEL, cls="hd-pulse")
+        k.arrow(520, 250, 480, 320, T.RED)
+    elif scene == "duty":
+        k.path("M120 320 L250 200 L250 320 L380 200 L380 320 L510 200 L510 320 L640 200 L640 320",
+               T.CYAN)
+        k.label(660, 215, "CNT", T.CYAN, 9)
+        k.line(100, 258, 770, 258, T.AMBER)
+        k.label(782, 262, "CCR", T.AMBER, 9)
+        for x in (185, 315, 445, 575):
+            k.line(x, 200, x, 420, T.GRID)
+        k.path("M120 380 L185 380 L185 420 L315 420 L315 380 L445 380 L445 420 L575 420 L575 380 L705 380",
+               T.RED, cls="hd-flow")
+        k.label(735, 415, "OUT", T.RED, 9)
+    elif scene == "frame":
+        k.line(100, 300, 800, 300, T.GRID)
+        k.blob("M110 250 L162 250 L168 330 L104 330 Z", T.PANEL2, T.GREEN)
+        k.label(136, 295, "S", T.GREEN, 14)
+        for i, b in enumerate("01011001"):
+            x = 214 + i * 60
+            k.circle(x, 290, 21, T.AMBER if b == "1" else T.CYAN, T.BG2, cls="hd-float")
+            k.label(x, 295, b, T.TEXT, 12)
+        k.blob("M724 250 L776 250 L782 330 L718 330 Z", T.PANEL2, T.RED)
+        k.label(750, 295, "P", T.RED, 14)
+        k.path("M136 380 C310 425 560 425 750 380", T.VIOLET, cls="hd-flow")
+        k.label(450, 448, "BAUD", T.VIOLET, 10)
+    elif scene == "ack":
+        k.path("M90 260 C260 215 420 300 810 240", T.CYAN, cls="hd-flow")
+        k.blob("M115 155 L245 155 L253 222 L107 222 Z", T.PANEL2, T.AMBER, "hd-float")
+        k.label(180, 197, "0x3C", T.AMBER, 13)
+        k.line(180, 222, 180, 256, T.AMBER)
+        k.blob("M555 140 L695 140 L707 225 L543 225 Z", T.PANEL2, T.GREEN, "hd-float")
+        k.label(625, 188, "DEV", T.GREEN, 12)
+        k.line(625, 225, 625, 250, T.GREEN)
+        k.path("M515 255 L515 345 L655 345 L655 250", T.RED, sw=2)
+        k.label(585, 388, "ACK", T.RED, 12)
+        k.circle(765, 242, 15, T.VIOLET, T.PANEL, cls="hd-pulse")
+        k.label(765, 288, "SDA", T.VIOLET, 9)
+    elif scene == "chip-select":
+        k.blob("M95 215 L225 215 L235 330 L105 330 Z", T.PANEL2, T.CYAN)
+        k.label(165, 278, "MCU", T.CYAN, 12)
+        for i, (x, c, on) in enumerate([
+            (420, T.AMBER, True), (590, T.GREEN, False), (760, T.VIOLET, False),
+        ]):
+            k.blob(f"M{x-60} 200 L{x+60} 200 L{x+70} 320 L{x-70} 320 Z",
+                   T.PANEL2 if on else T.BG2, c)
+            k.label(x, 265, f"D{i+1}", c, 13)
+            k.line(x, 200, x, 162, c)
+        k.path("M190 215 C200 140 320 118 418 158", T.RED, cls="hd-flow")
+        k.path("M590 162 C590 135 400 112 215 190", T.GRID)
+        k.path("M760 162 C760 125 470 100 215 175", T.GRID)
+        k.circle(420, 150, 10, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(420, 112, "CS", T.RED, 10)
+    elif scene == "sample-hold":
+        wave(k, 95, 260, 300, 55, T.CYAN)
+        k.blob("M445 200 L560 200 L566 320 L439 320 Z", T.PANEL2, T.AMBER)
+        k.path("M462 260 L477 232 L492 260 L507 232 L522 260 L537 232", T.AMBER)
+        k.label(503, 350, "HOLD", T.AMBER, 9)
+        k.path("M600 320 L600 240 L665 240 L665 290 L730 290 L730 205 L795 205",
+               T.RED, cls="hd-flow")
+        for x in (135, 205, 275, 345):
+            k.line(x, 400, x, 416, T.VIOLET)
+        k.label(240, 442, "CLK", T.VIOLET, 9)
+    elif scene == "pingpong":
+        k.path("M90 180 L810 180", T.GRID, sw=2)
+        for i in range(7):
+            k.s.rect(140 + i * 95, 152, 52, 30, fill=T.PANEL2, stroke=T.CYAN, rx=4, sw=2)
+        k.arrow(450, 205, 335, 285, T.AMBER); k.arrow(520, 205, 635, 285, T.VIOLET)
+        k.blob("M225 305 L435 305 L445 425 L215 425 Z", T.PANEL2, T.AMBER, "hd-float")
+        k.label(330, 370, "BUF A", T.AMBER, 12)
+        k.blob("M535 305 L745 305 L755 425 L525 425 Z", T.BG2, T.VIOLET)
+        k.label(640, 370, "BUF B", T.VIOLET, 12)
+        k.path("M472 350 C502 328 520 328 540 344", T.GREEN, cls="hd-flow")
+        k.circle(505, 330, 15, T.GREEN, T.BG, cls="hd-pulse")
+    elif scene == "feed-window":
+        k.line(120, 380, 800, 380, T.GRID, sw=2)
+        for x, lab in ((300, "OPEN"), (640, "CLOSE")):
+            k.line(x, 210, x, 380, T.AMBER, sw=2)
+            k.label(x, 200, lab, T.AMBER, 9)
+        k.path("M300 210 C420 190 540 190 640 210", T.AMBER)
+        k.blob("M430 300 Q470 272 510 300 L503 358 Q470 375 437 358 Z", T.PANEL, T.RED)
+        k.label(470, 335, "DOG", T.RED, 9)
+        k.path("M195 300 L255 345 M255 300 L195 345", T.RED)
+        k.label(225, 285, "EARLY", T.RED, 8)
+        k.path("M455 262 L470 277 L500 240", T.GREEN)
+        k.path("M700 300 L760 345 M760 300 L700 345", T.RED)
+        k.label(730, 285, "LATE", T.RED, 8)
+    elif scene == "rollback":
+        k.blob("M110 190 L330 190 L330 400 L110 400 Z", T.PANEL2, T.GREEN)
+        k.label(220, 255, "V1", T.GREEN, 16)
+        k.path("M195 320 L215 340 L255 295", T.GREEN)
+        k.blob("M570 190 L790 190 L790 400 L570 400 Z", T.PANEL2, T.RED, "hd-float")
+        k.label(680, 255, "V2", T.RED, 16)
+        k.path("M650 305 L710 345 M710 305 L650 345", T.RED)
+        k.path("M330 250 C420 195 480 195 570 250", T.CYAN, cls="hd-flow")
+        k.s.poly([(556,236),(574,250),(552,258)], fill=T.CYAN, sw=1)
+        k.path("M570 340 C480 420 420 420 330 340", T.VIOLET, cls="hd-flow")
+        k.s.poly([(344,352),(326,338),(348,330)], fill=T.VIOLET, sw=1)
+        k.label(450, 200, "BOOT", T.CYAN, 9); k.label(450, 418, "ROLLBACK", T.VIOLET, 9)
+    elif scene == "filter-mask":
+        for i, (ident, c) in enumerate([
+            ("201", T.GREEN), ("405", T.RED), ("203", T.GREEN), ("7FF", T.RED),
+        ]):
+            y = 150 + i * 66
+            k.blob(f"M90 {y} L210 {y} L216 {y+44} L84 {y+44} Z", T.PANEL2, c, "hd-float")
+            k.label(150, y+29, ident, c, 11)
+        k.path("M300 130 L300 430", T.AMBER, sw=2)
+        for y in range(150, 430, 24):
+            k.line(290, y, 310, y + 12, T.AMBER)
+        k.label(300, 452, "MASK", T.AMBER, 10)
+        for y in (172, 304):
+            k.path(f"M216 {y+22} C250 {y+25} 262 {y+26} 296 {y+28}", T.GREEN, cls="hd-flow")
+        for y in (238, 370):
+            k.path(f"M232 {y} L268 {y+30} M268 {y} L232 {y+30}", T.RED)
+        k.blob("M600 200 L790 200 L800 360 L590 360 Z", T.PANEL2, T.CYAN)
+        k.label(695, 285, "RX FIFO", T.CYAN, 12)
+        k.path("M300 194 C420 210 480 235 592 262", T.GREEN, cls="hd-flow")
+        k.path("M300 326 C420 330 480 320 592 295", T.GREEN, cls="hd-flow")
+    elif scene == "endpoints":
+        k.blob("M95 190 L255 190 L265 370 L105 370 Z", T.PANEL2, T.CYAN)
+        k.label(180, 285, "DEV", T.CYAN, 13)
+        k.blob("M645 190 L805 190 L815 370 L655 370 Z", T.PANEL2, T.GREEN)
+        k.label(730, 285, "HOST", T.GREEN, 13)
+        k.path("M265 228 C400 193 510 193 645 228", T.AMBER, sw=2)
+        k.path("M265 236 C400 201 510 201 645 236", T.AMBER, sw=2)
+        k.label(452, 190, "EP0", T.AMBER, 9)
+        k.path("M265 277 C400 277 510 277 645 277", T.CYAN, sw=2)
+        k.path("M265 293 C400 293 510 293 645 293", T.CYAN, sw=2)
+        k.label(452, 262, "EP1", T.CYAN, 9)
+        k.path("M265 330 C400 372 510 372 645 330", T.VIOLET, sw=2)
+        k.path("M265 356 C400 398 510 398 645 356", T.VIOLET, sw=2)
+        k.label(452, 412, "EP2", T.VIOLET, 9)
+        k.circle(340, 218, 9, T.AMBER, T.PANEL, cls="hd-pulse")
+        k.circle(455, 285, 11, T.CYAN, T.PANEL, cls="hd-pulse")
+        k.circle(565, 356, 13, T.VIOLET, T.PANEL, cls="hd-pulse")
+    elif scene == "task-states":
+        for x, y, lab, c in [
+            (200, 200, "READY", T.GREEN), (620, 200, "RUN", T.CYAN), (410, 395, "BLOCK", T.VIOLET),
+        ]:
+            k.blob(f"M{x-82} {y-46} L{x+82} {y-46} L{x+90} {y+46} L{x-90} {y+46} Z",
+                   T.PANEL2, c, "hd-float")
+            k.label(x, y + 6, lab, c, 13)
+        k.arrow(288, 200, 532, 200, T.GREEN)
+        k.arrow(600, 246, 478, 360, T.CYAN)
+        k.arrow(342, 360, 222, 246, T.VIOLET)
+        k.path("M385 158 C420 122 470 122 505 158", T.AMBER, cls="hd-sway")
+        k.circle(445, 120, 12, T.AMBER, T.PANEL)
+        k.label(445, 100, "TICK", T.AMBER, 8)
+    elif scene == "wake-sources":
+        chip(k, 330, 230, 240, 130, T.GREEN, "hd-float")
+        k.label(450, 302, "Z z z", T.GREEN, 16)
+        for x, y, c, lab in [
+            (140, 180, T.AMBER, "RTC"), (140, 350, T.CYAN, "PIN"), (770, 260, T.VIOLET, "UART"),
+        ]:
+            k.circle(x, y, 30, c, T.BG2, cls="hd-pulse")
+            k.path(f"M{x-12} {y} L{x} {y+12} L{x+16} {y-14}", c)
+            k.label(x, y + 54, lab, c, 9)
+        k.path("M172 185 C240 200 280 230 322 250", T.AMBER, cls="hd-flow")
+        k.path("M172 350 C250 340 290 320 328 305", T.CYAN, cls="hd-flow")
+        k.path("M738 260 C670 260 620 268 574 280", T.VIOLET, cls="hd-flow")
+    elif scene == "bisect":
+        k.line(110, 300, 790, 300, T.GRID, sw=2)
+        for x in (140, 250, 360, 470, 580, 690, 780):
+            k.line(x, 285, x, 315, T.STROKE)
+        k.path("M110 300 C250 205 380 212 470 300 S650 425 790 322", T.CYAN, cls="hd-flow")
+        k.path("M250 244 L250 205 L580 205 L580 244", T.AMBER)
+        k.label(415, 192, "1/2", T.AMBER, 10)
+        k.path("M360 172 L360 138 L470 138 L470 172", T.GREEN)
+        k.label(415, 126, "1/4", T.GREEN, 10)
+        k.circle(470, 300, 18, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(470, 348, "DIFF", T.RED, 9)
+        k.circle(660, 120, 30, T.VIOLET, T.BG, cls="hd-sway")
+        k.line(681, 141, 712, 172, T.VIOLET)
+    elif scene == "funnel":
+        k.blob("M180 145 L720 145 L520 380 L520 445 L380 445 L380 380 Z", T.PANEL2, T.CYAN)
+        for i, (t, c) in enumerate([
+            ("LOG", T.AMBER), ("VCC", T.RED), ("CLK", T.CYAN), ("PIN", T.GREEN), ("IRQ", T.VIOLET),
+        ]):
+            x = 255 + i * 97
+            k.circle(x, 108, 20, c, T.BG2, cls="hd-float")
+            k.label(x, 113, t, c, 8)
+        for i in range(5):
+            y = 195 + i * 38
+            w = 215 - i * 34
+            k.line(450 - w, y, 450 + w, y, T.GRID)
+            k.label(450 + w + 28, y + 4, f"{i+1}", T.STROKE, 10)
+        k.arrow(450, 445, 450, 472, T.RED)
+        k.circle(450, 492, 14, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(555, 497, "CAUSE", T.RED, 10)
+    elif scene == "milestone":
+        wave(k, 60, 435, 780, 16, T.CYAN)
+        for i, (x, y, c) in enumerate([
+            (170, 365, T.GREEN), (360, 315, T.CYAN), (550, 350, T.AMBER), (740, 285, T.VIOLET),
+        ]):
+            k.blob(f"M{x-70} {y} Q{x} {y-28} {x+70} {y} L{x+55} {y+40} Q{x} {y+55} {x-55} {y+40} Z",
+                   T.PANEL2, c, "hd-float")
+            k.label(x, y + 22, str(i + 1), c, 15)
+            k.line(x, y - 28, x, y - 70, c)
+            k.path(f"M{x} {y-70} L{x+34} {y-60} L{x} {y-48}", c)
+        k.path("M145 356 L160 371 L195 338", T.GREEN)
+        person(k, 78, 400, .7, pose="walk")
+        k.path("M150 372 C240 345 300 332 330 322 S460 326 520 340 S660 312 700 296",
+               T.GREEN, cls="hd-flow")
+    elif scene == "doc-tiers":
+        k.path("M560 425 L560 125 L840 125 L840 425", T.CYAN)
+        for y, lab, c in [(190, "DS", T.RED), (290, "RM", T.AMBER), (390, "AN", T.GREEN)]:
+            k.line(560, y, 840, y, T.CYAN)
+            for i in range(3):
+                k.s.rect(598 + i * 70, y - 40, 42, 36, fill=T.PANEL2, stroke=c, rx=4, sw=2)
+            k.label(820, y - 20, lab, c, 10)
+        k.circle(175, 250, 42, T.VIOLET, T.BG2, cls="hd-float")
+        k.label(175, 262, "?", T.VIOLET, 26)
+        k.path("M220 250 C330 250 430 185 552 172", T.RED, cls="hd-flow")
+        k.path("M220 265 C340 280 430 285 552 285", T.GRID)
+        k.path("M220 280 C350 335 440 385 552 388", T.GRID)
+        k.circle(556, 172, 8, T.RED, T.RED, cls="hd-pulse")
+    elif scene == "schematic-read":
+        k.s.rect(105, 145, 425, 280, fill=T.PANEL2, stroke=T.GREEN, rx=8, sw=2)
+        chip(k, 225, 220, 150, 100, T.CYAN)
+        for cx, cy, c, sym in [(190, 195, T.RED, "PWR"), (400, 200, T.AMBER, "CAP"), (330, 365, T.VIOLET, "RST")]:
+            k.circle(cx, cy, 52, c, T.BG, cls="hd-sway")
+            k.label(cx, cy + 64, sym, c, 10)
+        k.path("M170 195 L210 195 M190 175 L190 215", T.RED)
+        k.path("M382 185 L418 185 M382 215 L418 215", T.AMBER)
+        k.circle(330, 365, 13, T.VIOLET, T.PANEL)
+        k.circle(690, 270, 60, T.CYAN, T.BG)
+        k.line(732, 312, 800, 380, T.CYAN)
+        k.path("M660 270 C685 235 715 305 745 258", T.VIOLET, cls="hd-flow")
+    elif scene == "sim-limits":
+        k.blob("M90 160 L360 160 L350 380 L100 380 Z", T.PANEL2, T.CYAN)
+        k.path("M125 330 C175 250 260 350 330 235", T.CYAN, cls="hd-flow")
+        k.label(225, 412, "MODEL", T.CYAN, 10)
+        k.path("M450 115 L450 435", T.RED, sw=2)
+        for y in range(135, 430, 30):
+            k.line(437, y, 463, y + 15, T.RED)
+        k.label(450, 102, "WALL", T.RED, 9)
+        chip(k, 585, 215, 175, 120, T.GREEN, "hd-float")
+        k.label(673, 412, "BENCH", T.GREEN, 10)
+        k.path("M378 250 C408 235 424 235 444 246", T.AMBER, cls="hd-flow")
+        k.s.poly([(444,236),(462,248),(442,258)], fill=T.AMBER, sw=1)
+        k.path("M505 160 L490 195 L503 195 L492 232", T.AMBER)
+        k.label(520, 130, "ns", T.AMBER, 10)
+    elif scene == "porting-traps":
+        k.path("M60 400 L60 180 L260 180 L260 400", T.GRID, sw=2)
+        k.label(160, 162, "F1", T.AMBER, 12)
+        k.path("M640 400 L640 180 L840 180 L840 400", T.GRID, sw=2)
+        k.label(740, 162, "G0", T.CYAN, 12)
+        for i in range(5):
+            x = 292 + i * 66
+            broken = i in (1, 3)
+            c = T.RED if broken else T.GREEN
+            k.s.poly([(x, 300), (x + 52, 296 if not broken else 314),
+                      (x + 52, 330 if not broken else 348), (x, 334)],
+                     fill=T.PANEL2 if not broken else T.BG2, stroke=c, sw=2)
+        k.path("M358 292 L344 322 M352 332 L368 304", T.RED)
+        k.path("M492 296 L480 326 M506 302 L492 332", T.RED)
+        person(k, 130, 420, .7, pose="walk", cls="hd-float")
+        k.arrow(252, 250, 296, 288, T.AMBER)
+    elif scene == "stop2-loop":
+        k.path("M700 120 C745 88 796 114 789 166 C768 206 722 196 708 168 C735 172 756 158 763 134 C735 151 715 142 700 120 Z",
+               T.AMBER, fill=T.PANEL)
+        k.s.rect(150, 285, 310, 90, fill=T.PANEL2, stroke=T.GREEN, rx=8, sw=2)
+        k.path("M150 285 C195 252 265 252 305 285", T.GREEN)
+        chip(k, 225, 295, 160, 66, T.GREEN)
+        k.label(305, 338, "Z z", T.GREEN, 14)
+        k.circle(560, 240, 30, T.RED, T.BG2, cls="hd-pulse")
+        k.line(560, 240, 560, 224, T.RED); k.line(560, 240, 572, 247, T.RED)
+        k.path("M560 208 L560 188 M540 214 L528 198 M580 214 L592 198", T.RED)
+        k.path("M592 252 C645 262 665 305 653 345", T.CYAN, cls="hd-flow")
+        k.circle(652, 360, 26, T.CYAN, T.BG)
+        k.line(652, 360, 664, 349, T.CYAN); k.line(652, 360, 652, 345, T.CYAN)
+        k.label(305, 415, "STOP2", T.GREEN, 9); k.label(652, 415, "CLK", T.CYAN, 9)
+        k.label(560, 300, "WKUP", T.RED, 9)
+    elif scene == "clock-chain":
+        gear(k, 140, 300, 40, T.AMBER)
+        k.label(140, 362, "8M", T.AMBER, 10)
+        gear(k, 340, 255, 58, T.CYAN)
+        k.label(340, 342, "PLL", T.CYAN, 10)
+        gear(k, 560, 300, 40, T.VIOLET)
+        k.label(560, 362, "VCO", T.VIOLET, 10)
+        k.circle(740, 240, 46, T.RED, T.BG, cls="hd-pulse")
+        k.label(740, 246, "480", T.RED, 14)
+        k.path("M182 292 C240 282 255 268 284 262 M398 266 C460 274 480 290 520 296 M600 292 C660 276 678 256 696 246",
+               T.CYAN, cls="hd-flow")
+        for i, v in enumerate(("0.9", "1.0", "1.2")):
+            y = 425 - i * 28
+            k.line(130 + i * 42, y, 205 + i * 42, y, T.GREEN)
+            k.label(106 + i * 42, y + 4, v, T.GREEN, 8)
+        k.label(180, 458, "VOS", T.GREEN, 9)
+    elif scene == "call-model":
+        for i, (lab, c) in enumerate([
+            ("CLK", T.AMBER), ("DEF", T.CYAN), ("CFG", T.VIOLET), ("EN", T.GREEN),
+        ]):
+            x = 175 + i * 155
+            y = 375 - i * 58
+            k.s.rect(x, y, 128, 44, fill=T.PANEL2, stroke=c, rx=4, sw=2)
+            k.label(x + 64, y + 28, lab, c, 11)
+        person(k, 115, 425, .7, pose="walk")
+        k.path("M303 385 C330 370 330 350 332 333 M458 327 C485 312 485 292 487 275 M613 269 C640 254 640 234 642 217",
+               T.CYAN, cls="hd-flow")
+        k.circle(745, 130, 18, T.GREEN, T.PANEL, cls="hd-pulse")
+        k.path("M735 130 L742 138 L757 118", T.GREEN)
+    elif scene == "stream-framing":
+        k.path("M70 215 C200 175 330 255 460 210 S700 175 830 220", T.CYAN, cls="hd-flow")
+        for x in (260, 470, 660):
+            k.path(f"M{x} 145 L{x} 278", T.RED, sw=2)
+            k.path(f"M{x-9} 160 L{x} 145 L{x+9} 160", T.RED)
+        for x, c, tag in [
+            (150, T.AMBER, "LEN"), (365, T.GREEN, "SEQ"), (565, T.VIOLET, "ACK"), (745, T.RED, "CRC"),
+        ]:
+            k.blob(f"M{x-72} 330 L{x+72} 330 L{x+80} 402 L{x-80} 402 Z", T.PANEL2, c, "hd-float")
+            k.label(x, 354, tag, c, 9)
+            k.path(f"M{x-55} 374 L{x+55} 374", c)
+        k.label(450, 448, "FRAMED", T.GREEN, 10)
+    else:  # budget
+        k.line(90, 350, 810, 350, T.STROKE, sw=2)
+        for x in range(150, 811, 60):
+            k.line(x, 342, x, 358, T.GRID)
+        for x, w, c, lab in [
+            (120, 170, T.GREEN, "SENSE"), (300, 140, T.CYAN, "TASK"),
+            (450, 100, T.AMBER, "TX"), (560, 210, T.RED, "ISR"),
+        ]:
+            over = c == T.RED
+            k.blob(f"M{x} {270 if not over else 256} L{x+w} {270 if not over else 256} L{x+w-6} 338 L{x+6} 338 Z",
+                   T.PANEL2 if not over else T.BG2, c, "hd-float")
+            k.label(x + w / 2, 310, lab, c, 9)
+        k.path("M120 240 L770 240", T.VIOLET)
+        k.path("M120 232 L120 248 M770 232 L770 248", T.VIOLET)
+        k.label(445, 224, "PERIOD", T.VIOLET, 10)
+        k.path("M732 262 L798 238", T.RED)
+        k.label(820, 236, "OVER", T.RED, 9)
+
+    return k.footer()
+
+
 def main(argv: list[str]) -> int:
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     out_dir = os.path.join(root, "assets", "illustrations")
     os.makedirs(out_dir, exist_ok=True)
     only = {item.zfill(2) for item in argv[1:]}
     count = 0
+    mid_count = 0
     part_count = 0
     for ch, title, zh, aria, scene in CHAPTERS:
         number = f"{ch:02d}"
@@ -583,6 +1089,15 @@ def main(argv: list[str]) -> int:
         xml.dom.minidom.parse(path)
         print(f"[ok] {os.path.relpath(path, root)}")
         count += 1
+    for ch, zh, aria, _anchor_zh, _anchor_en, scene in MID:
+        number = f"{ch:02d}"
+        if only and number not in only:
+            continue
+        path = os.path.join(out_dir, f"ch{number}-mid-handdraw.svg")
+        mid_scene(ch, zh, aria, scene).save(path)
+        xml.dom.minidom.parse(path)
+        print(f"[ok] {os.path.relpath(path, root)}")
+        mid_count += 1
     if not only:
         for index, zh, aria, scene in PARTS:
             part_id = f"p{index - 1}"
@@ -613,13 +1128,24 @@ def main(argv: list[str]) -> int:
                 }
                 for index, zh, aria, _scene in PARTS
             ],
+            "mid": [
+                {
+                    "chapter": f"{ch:02d}",
+                    "file": f"ch{ch:02d}-mid-handdraw.svg",
+                    "zh": zh,
+                    "en": aria,
+                    "anchor_zh": anchor_zh,
+                    "anchor_en": anchor_en,
+                }
+                for ch, zh, aria, anchor_zh, anchor_en, _scene in MID
+            ],
         }
         manifest_path = os.path.join(out_dir, "manifest.json")
         with open(manifest_path, "w", encoding="utf-8") as handle:
             json.dump(manifest, handle, ensure_ascii=False, indent=2)
             handle.write("\n")
         print(f"[ok] {os.path.relpath(manifest_path, root)}")
-    print(f"generated {count} chapter and {part_count} part illustrations")
+    print(f"generated {count} chapter, {mid_count} mid-chapter and {part_count} part illustrations")
     return 0
 
 
