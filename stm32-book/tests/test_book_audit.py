@@ -99,7 +99,13 @@ class BookAuditTests(unittest.TestCase):
 
     def test_gpio_interrupt_timer_close_phase_one(self) -> None:
         expected = {
-            "03": ("gpio-blink.svg", "sample-03-gpio-led.svg", "pinout-bluepill.svg", "led-blink.gif"),
+            "03": (
+                "gpio-blink.svg",
+                "sample-03-gpio-led.svg",
+                "stack-gpio-pc13-led.png",
+                "pinout-bluepill.svg",
+                "led-blink.gif",
+            ),
             "04": (
                 "nvic-interrupt-flow.svg",
                 "sample-04-exception-stack.svg",

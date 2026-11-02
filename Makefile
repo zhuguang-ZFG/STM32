@@ -8,7 +8,7 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams illustrations samples gifs videos book book-pdf book-check check lint-voice verify clean stats
+.PHONY: assets animations boards diagrams stack-diagrams illustrations samples gifs videos book book-pdf book-check check lint-voice verify clean stats
 
 assets: animations boards diagrams illustrations samples gifs videos
 
@@ -32,6 +32,9 @@ boards:
 
 diagrams:
 	$(PY) tools/gen_diagrams.py
+
+stack-diagrams:
+	$(PY) tools/gen_stack_diagrams.py --render
 
 illustrations:
 	$(PY) tools/gen_handdraw_illustrations.py

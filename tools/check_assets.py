@@ -604,7 +604,7 @@ def check_links():
         # 不扫描这些目录，避免第三方包自己的 README 链接污染本书门禁。
         dirs[:] = [
             directory for directory in dirs
-            if directory not in {".git", ".temp", "node_modules", "dist", "build"}
+            if directory not in {".git", ".claude", ".temp", "node_modules", "dist", "build"}
             and not directory.startswith(".venv")
         ]
         for f in sorted(files):

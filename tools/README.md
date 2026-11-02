@@ -11,6 +11,7 @@ python3 tools/gen_animations.py     # SVG 动画（CSS @keyframes / SMIL）
 python3 tools/gen_boards.py         # 板卡实物结构图
 python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 6 张静态框图
+python3 tools/gen_stack_diagrams.py --render  # stack-diagram HTML + 明暗 PNG（需已审技能与 Chromium）
 python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图 + manifest
 python3 tools/gen_gifs.py           # 6 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
@@ -38,6 +39,7 @@ python3 tools/gen_gifs.py led-blink
 | `gen_boards.py` | BluePill / BlackPill / Nucleo-F411RE / F4-Discovery / F103ZET6 大板 / LQFP48 引脚图 / 外设接线总览 |
 | `gen_pinouts.py` | G071 / L476 / H743 的 LQFP 引脚图（脚序来自数据手册，不补脚） |
 | `gen_diagrams.py` | 分层架构、工程目录、外设总线、中断优先级、L4 JP6 IDD 接线、网络排错阶梯 |
+| `gen_stack_diagrams.py` | 用已审查的 stack-diagram 技能重建 PC13 控制/电流边界 HTML 与明暗 PNG；源在 `tools/stack-diagrams/`，需 Playwright Chromium，不进入零依赖 `make assets` |
 | `gen_handdraw_illustrations.py` | 29 章各两张（章首 + 章中锚点小节）+ 7 分部各一张 + 6 附录各一张 900×560 手绘概念图（`FA-002`），并写出 `assets/illustrations/manifest.json`；不承载工程数据 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
 | `gen_gifs.py` | 6 个教学 GIF：LED 闪烁、PWM 呼吸灯、UART 逐位、I2C 时序、DMA 环形缓冲、SAR ADC |

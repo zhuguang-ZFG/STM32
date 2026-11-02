@@ -155,6 +155,11 @@ External LED wiring: PA0 → 270 Ω → LED anode, LED cathode → GND (**common
 The onboard LED is **common anode**: the anode is tied to 3.3 V, and PC13 has to pull low before current flows, so it **lights when the pin is low**.
 
 <p align="center">
+  <img src="../../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="Program-control path and the write-zero current path of the common-anode PC13 LED">
+  <br><sub>▲ The diagram separates a program write from electrical current. Writing 0 turns on the PC13 output stage, so current flows from 3.3 V through the common-anode LED and its series resistor into the pin. It explains active-low behaviour; it does not measure current or replace the schematic of a particular clone board. <a href="../../assets/diagrams/stack-gpio-pc13-led.html">HTML source</a> · <a href="../../assets/diagrams/stack-gpio-pc13-led-dark.png">dark image</a> · Lucide icons.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill pin map locating PA0, PA1, PC13, PA13, and PA14 and their alternate-function boundaries">
   <br><sub>▲ This chapter uses PA0, PA1, and PC13; PA13 and PA14 stay assigned to SWD. The drawing locates pins and silkscreen labels. It does not replace the clone board's schematic or prove that a pin has the correct electrical level (FA-029 · IG-002 · C-03/C-10/C-27/C-31).</sub>
 </p>

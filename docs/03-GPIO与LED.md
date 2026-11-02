@@ -156,6 +156,11 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 板载 LED 是 **共阳** 接法：阳极接 3.3V，PC13 拉低才导通，故**低电平点亮**。
 
 <p align="center">
+  <img src="../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="PC13 共阳 LED 的程序控制路径与写 0 时的电流路径">
+  <br><sub>▲ 上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。<a href="../assets/diagrams/stack-gpio-pc13-led.html">HTML 源</a> · <a href="../assets/diagrams/stack-gpio-pc13-led-dark.png">暗色图</a> · Lucide 图标。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/boards/pinout-bluepill.svg" width="820" alt="BluePill 引脚图中标出 PA0、PA1、PC13、PA13 和 PA14 的位置与复用边界">
   <br><sub>▲ 本章只用 PA0、PA1 和 PC13；PA13/PA14 留给 SWD。图用于找针脚和核对丝印，不能替代目标克隆板原理图，也不能证明某个引脚已经输出正确电平（FA-029 · IG-002 · C-03/C-10/C-27/C-31）。</sub>
 </p>

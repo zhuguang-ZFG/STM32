@@ -8,6 +8,7 @@
 > python3 tools/gen_boards.py       # assets/boards/*.svg（板卡实物结构图）
 > python3 tools/gen_pinouts.py      # H7 / G0 / L4 的 LQFP 引脚图
 > python3 tools/gen_diagrams.py     # assets/diagrams/*.svg（静态框图）
+> python3 tools/gen_stack_diagrams.py --render  # stack HTML + 明暗 PNG（可选技能/Chromium）
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
 > python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
@@ -87,6 +88,7 @@
 
 | 文件 | 内容 |
 | --- | --- |
+| `stack-gpio-pc13-led.html` / `.png` / `-dark.png` | PC13 程序控制路径与写 0 电流路径；HTML 为源，2000×1200 明暗 PNG 由浏览器渲染，Lucide 图标 |
 | `layers-hal-ll-reg.svg` | 寄存器 / LL / HAL / 应用 四层架构对比 |
 | `project-structure.svg` | 一个标准 STM32 工程目录结构 |
 | `peripheral-bus.svg` | 外设挂在哪条总线上（AHB1/AHB2/APB1/APB2） |

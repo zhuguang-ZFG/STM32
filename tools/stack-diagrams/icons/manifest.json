@@ -1,0 +1,38 @@
+{
+  "firmware": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/file-code-2.svg",
+    "file": "firmware.svg",
+    "bytes": 504
+  },
+  "register": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/cpu.svg",
+    "file": "register.svg",
+    "bytes": 661
+  },
+  "supply": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/battery-charging.svg",
+    "file": "supply.svg",
+    "bytes": 476
+  },
+  "led": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/lightbulb.svg",
+    "file": "led.svg",
+    "bytes": 448
+  },
+  "pin": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/circle-dot.svg",
+    "file": "pin.svg",
+    "bytes": 357
+  },
+  "ground": {
+    "source": "lucide",
+    "url": "https://cdn.jsdelivr.net/npm/lucide-static/icons/arrow-down-to-line.svg",
+    "file": "ground.svg",
+    "bytes": 371
+  }
+}
