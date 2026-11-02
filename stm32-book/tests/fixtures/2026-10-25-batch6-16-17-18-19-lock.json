@@ -1,6 +1,6 @@
 {
   "rubric": "2026-10-25-classic-encyclopedia-batch6-16-17-18-19",
-  "baseline": "00879ddd726040853292e15e04958ba175a5bcbd",
+  "baseline": "5e2544509f91619abf28a9eab3db4d8b675bbd2a",
   "chapters": [
     "16",
     "17",
@@ -54,5 +54,6 @@
       "en_old_pitfall": false,
       "en_old_heading": "## Pitfalls and troubleshooting"
     }
-  }
+  },
+  "appendix_baseline": "00879ddd726040853292e15e04958ba175a5bcbd"
 }
