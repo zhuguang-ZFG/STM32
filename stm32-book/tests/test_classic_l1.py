@@ -24,6 +24,7 @@ class ClassicL1VisualTests(unittest.TestCase):
         raw = (REPO / "assets" / "illustrations" / "ch03-handdraw.svg").read_text(
             encoding="utf-8"
         )
+        self.assertIn("CH 04", raw)
         self.assertIn("写 1 · 灯灭", raw)
         self.assertIn("写 0 · 灯亮", raw)
         self.assertIn("共阳接法", raw)
@@ -53,7 +54,7 @@ class ClassicL1VisualTests(unittest.TestCase):
     def test_png_storyboard_visual_loads_without_chrome(self) -> None:
         generator = load_tool("gen_narrated")
         image = generator._visual_png("video/ch03-gpio.png")
-        self.assertEqual((960, 540), image.size)
+        self.assertEqual((1920, 1080), image.size)
 
     def test_ch03_short_storyboard_leads_with_the_active_low_mechanism(self) -> None:
         narration = load_tool("narration")
@@ -65,6 +66,35 @@ class ClassicL1VisualTests(unittest.TestCase):
         self.assertGreaterEqual(8, sum(bool(seg.get("svg")) for seg in segments))
         self.assertIn("写 1", segments[0]["say"])
         self.assertIn("不是实测", segments[1]["say"])
+
+    def test_long_storyboard_is_complete_and_covers_five_learning_roles(self) -> None:
+        storyboards = load_tool("storyboards")
+        board = storyboards.load("03")
+        scenes = board["segments"]
+        self.assertEqual(28, len(scenes))
+        required = {
+            "scene_id", "purpose", "prerequisite", "narration", "on_screen",
+            "visual_source", "fact_source", "start", "duration", "memory_anchor",
+            "evidence_type", "subtitle_ref",
+        }
+        for index, scene in enumerate(scenes, 1):
+            self.assertFalse(required - scene.keys(), (index, required - scene.keys()))
+            self.assertEqual(f"ch03.srt#{index:02d}", scene["subtitle_ref"])
+            self.assertGreater(scene["duration"], 0)
+        self.assertEqual(
+            {"hook", "mechanism", "failure", "experiment", "recall"},
+            {scene["purpose"] for scene in scenes},
+        )
+        starts = [scene["start"] for scene in scenes]
+        self.assertEqual(sorted(starts), starts)
+
+    def test_three_keyframe_split_preserves_duration_boundaries(self) -> None:
+        storyboards = load_tool("storyboards")
+        for duration in (0.5, 4.0, 12.0, 31.75):
+            parts = storyboards.keyframe_durations(duration)
+            self.assertEqual(3, len(parts))
+            self.assertTrue(all(part > 0 for part in parts))
+            self.assertAlmostEqual(duration, sum(parts))
 
     def test_stack_boundary_asset_is_complete(self) -> None:
         diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
