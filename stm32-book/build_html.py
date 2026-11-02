@@ -464,12 +464,8 @@ def _data_uri(path: Path) -> str:
     return f"data:{mime};base64,{payload}"
 
 
-def load_handdraw_manifest() -> dict[str, dict]:
-    """Load the required 29-chapter hand-drawn plate manifest.
-
-    The generator writes this file, and every chapter must have exactly one
-    entry. A missing file is a build error rather than a silent gap.
-    """
+def _read_handdraw_data() -> dict:
+    """Read and validate the shared fields of the hand-drawn manifest."""
     if not HANDDRAW_MANIFEST.is_file():
         raise BuildError(f"missing hand-drawn manifest: {HANDDRAW_MANIFEST}")
     try:
@@ -480,6 +476,24 @@ def load_handdraw_manifest() -> dict[str, dict]:
         raise BuildError("hand-drawn manifest must declare schema_version 1")
     if data.get("style") != "FA-002":
         raise BuildError("hand-drawn manifest must pin style FA-002")
+    return data
+
+
+def _check_handdraw_file(filename: str) -> None:
+    path = HANDDRAW_DIR / filename
+    if not path.is_file():
+        raise BuildError(f"missing hand-drawn plate: {path}")
+    if path.stat().st_size > HANDDRAW_MAX_BYTES:
+        raise BuildError(f"hand-drawn plate exceeds {HANDDRAW_MAX_BYTES} bytes: {path}")
+
+
+def load_handdraw_manifest() -> dict[str, dict]:
+    """Load the required 29-chapter hand-drawn plate manifest.
+
+    The generator writes this file, and every chapter must have exactly one
+    entry. A missing file is a build error rather than a silent gap.
+    """
+    data = _read_handdraw_data()
     files = data.get("files")
     if not isinstance(files, list) or len(files) != 29:
         raise BuildError("hand-drawn manifest must list exactly 29 chapter plates")
@@ -495,12 +509,31 @@ def load_handdraw_manifest() -> dict[str, dict]:
             value = item.get(key)
             if not isinstance(value, str) or not value.strip():
                 raise BuildError(f"hand-drawn manifest lacks {key} title at {chapter}")
-        path = HANDDRAW_DIR / filename
-        if not path.is_file():
-            raise BuildError(f"missing hand-drawn plate: {path}")
-        if path.stat().st_size > HANDDRAW_MAX_BYTES:
-            raise BuildError(f"hand-drawn plate exceeds {HANDDRAW_MAX_BYTES} bytes: {path}")
+        _check_handdraw_file(filename)
         entries[chapter] = item
+    return entries
+
+
+def load_handdraw_parts() -> dict[str, dict]:
+    """Load the required 7 part-divider plates from the same manifest."""
+    data = _read_handdraw_data()
+    parts = data.get("parts")
+    if not isinstance(parts, list) or len(parts) != 7:
+        raise BuildError("hand-drawn manifest must list exactly 7 part plates")
+    entries: dict[str, dict] = {}
+    for index, item in enumerate(parts):
+        part_id = f"p{index}"
+        if not isinstance(item, dict) or item.get("id") != part_id:
+            raise BuildError(f"hand-drawn manifest part order is wrong at {part_id}")
+        filename = item.get("file")
+        if filename != f"part-{part_id}-handdraw.svg":
+            raise BuildError(f"hand-drawn manifest part file name is wrong at {part_id}")
+        for key in ("zh", "en"):
+            value = item.get(key)
+            if not isinstance(value, str) or not value.strip():
+                raise BuildError(f"hand-drawn manifest lacks {key} title at {part_id}")
+        _check_handdraw_file(filename)
+        entries[part_id] = item
     return entries
 
 
@@ -680,6 +713,8 @@ UI = {
         "chapter_kicker": "第 {n} 章",
         "plate_alt": "手绘概念图：{title}",
         "plate_caption": "手绘概念图：{title}。用于建立直觉，不承载工程数据。",
+        "part_plate_alt": "分部概念图：{title}",
+        "part_plate_caption": "分部概念图：{title}。用于建立直觉，不承载工程数据。",
         "appendix_kicker": "附录",
         "callout_warning": "注意",
         "callout_tip": "提示",
@@ -739,6 +774,8 @@ UI = {
         "chapter_kicker": "Chapter {n}",
         "plate_alt": "Hand-drawn concept: {title}",
         "plate_caption": "Hand-drawn concept: {title}. Built for intuition, not engineering evidence.",
+        "part_plate_alt": "Part concept: {title}",
+        "part_plate_caption": "Part concept: {title}. Built for intuition, not engineering evidence.",
         "appendix_kicker": "Appendix",
         "callout_warning": "Warning",
         "callout_tip": "Tip",
@@ -839,6 +876,19 @@ def handdraw_plate(entry: dict, language: str, manifest: dict) -> str:
     uri = _data_uri(HANDDRAW_DIR / entry["file"])
     return f"""
 <figure class="chapter-plate">
+  <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
+  <figcaption>▲ {html.escape(caption)}</figcaption>
+</figure>"""
+
+
+def part_plate(entry: dict, language: str, manifest: dict) -> str:
+    """Return one part-divider hand-drawn plate as an embedded image."""
+    title = entry["zh"] if language == "zh" else entry["en"]
+    alt = ui(manifest, "part_plate_alt").format(title=title)
+    caption = ui(manifest, "part_plate_caption").format(title=title)
+    uri = _data_uri(HANDDRAW_DIR / entry["file"])
+    return f"""
+<figure class="part-plate">
   <img src="{uri}" alt="{html.escape(alt)}" width="900" height="560">
   <figcaption>▲ {html.escape(caption)}</figcaption>
 </figure>"""
@@ -1458,6 +1508,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     table_label = ui(manifest, "table_label")
     labels = callout_label_map(manifest)
     handdraw = load_handdraw_manifest()
+    handdraw_parts = load_handdraw_parts()
 
     chapter_anchors = {
         (docs_dir / filename).resolve(): f"chapter-{filename[:2]}"
@@ -1510,6 +1561,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
   <p class="part-label">{html.escape(ui(manifest, 'part_kicker').format(n=index))}</p>
   <h1>{html.escape(part['title'])}</h1>
   <p class="part-goal">{html.escape(part['goal'])}</p>
+  {part_plate(handdraw_parts[part['id']], edition_language(manifest), manifest)}
 </section>"""
         )
         for filename in part["files"]:

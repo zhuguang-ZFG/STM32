@@ -1455,7 +1455,7 @@ class BookBuildContractTests(unittest.TestCase):
         part_goal = self._css_rule(screen, ".part-goal")
         self.assertIn("font-size: 1.12rem", part_goal)
         self.assertIn("line-height: 1.6", part_goal)
-        self.assertIn("clamp(4.5rem, 14vw, 8.5rem)", self._css_rule(screen, ".part-index"))
+        self.assertIn("clamp(4.5rem, 14vw, 7.25rem)", self._css_rule(screen, ".part-index"))
         self.assertIn("font-size: 3rem", self._css_rule(narrow, ".part-index"))
         jump = self._css_rule(screen, ".toc-jump")
         self.assertIn("font-size: .85rem", jump)
@@ -1579,7 +1579,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "341d9e6adc177e11f08d0c20170cb74fe79e7e78c52892d7f54272bb9a73e560",
+            "99907fdf57e05562849b4f6c5a4a9412804c1a3a638c787df078df6d43fd8847",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
@@ -2220,7 +2220,7 @@ class BookBuildContractTests(unittest.TestCase):
                                 const term = document.querySelector('#appendix-glossary td');
                                 const mixup = document.querySelector('#appendix-glossary td:nth-child(3)');
                                 const section = document.querySelector('#chapter-00 h2');
-                                const plate = document.querySelector('figure:not(.chapter-plate)');
+                                const plate = document.querySelector('figure:not(.chapter-plate):not(.part-plate)');
                                 const marker = getComputedStyle(document.querySelector('#chapter-00 li'), '::marker');
                                 const divider = document.querySelector('#part-p0');
                                 const index = divider.querySelector('.part-index').getBoundingClientRect();
@@ -2268,7 +2268,7 @@ class BookBuildContractTests(unittest.TestCase):
                             const imprint = getComputedStyle(document.querySelector('.imprint'));
                             const cover = getComputedStyle(document.querySelector('.cover'));
                             const term = getComputedStyle(document.querySelector('#appendix-glossary td'));
-                            const plate = getComputedStyle(document.querySelector('figure:not(.chapter-plate)'));
+                            const plate = getComputedStyle(document.querySelector('figure:not(.chapter-plate):not(.part-plate)'));
                             return {
                                 preBreakInside: pre.breakInside,
                                 preWhiteSpace: pre.whiteSpace,

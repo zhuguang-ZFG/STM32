@@ -182,5 +182,49 @@
       "zh": "中断、任务、驱动、网络与应用组成一套系统",
       "en": "Interrupts, tasks, drivers, networks, and apps form one system"
     }
+  ],
+  "parts": [
+    {
+      "id": "p0",
+      "file": "part-p0-handdraw.svg",
+      "zh": "工作台把构建、烧录和测量连成一个闭环",
+      "en": "A workbench loop connects build, flash, and measurement"
+    },
+    {
+      "id": "p1",
+      "file": "part-p1-handdraw.svg",
+      "zh": "芯片的引脚分成事件、时基和波形三条路",
+      "en": "Chip pins branch into events, time base, and waveforms"
+    },
+    {
+      "id": "p2",
+      "file": "part-p2-handdraw.svg",
+      "zh": "字节沿着传送带进入环形缓冲区",
+      "en": "Bytes travel along a conveyor into a ring buffer"
+    },
+    {
+      "id": "p3",
+      "file": "part-p3-handdraw.svg",
+      "zh": "四道工程门把可靠性、升级、连接和调度串起来",
+      "en": "Four engineering gates chain reliability, update, link, and scheduling"
+    },
+    {
+      "id": "p4",
+      "file": "part-p4-handdraw.svg",
+      "zh": "工作台把手册、项目盒和放大镜摆在一起",
+      "en": "A bench places manuals, a project box, and a magnifier together"
+    },
+    {
+      "id": "p5",
+      "file": "part-p5-handdraw.svg",
+      "zh": "三颗芯片在迁移路上交换手册和旧库",
+      "en": "Three chips trade manuals and a legacy library on the migration road"
+    },
+    {
+      "id": "p6",
+      "file": "part-p6-handdraw.svg",
+      "zh": "硬件、内核、服务和应用叠成一套系统",
+      "en": "Hardware, kernel, services, and applications stack into one system"
+    }
   ]
 }

@@ -110,7 +110,7 @@ python stm32-book/build_html.py --lang en --check
 | 中文附录与第七部分收束页 | `stm32-book/book/` |
 | 英文附录与收束页 | `stm32-book/book/en/` |
 | 封面插画 | `stm32-book/cover.svg` |
-| 29 张章首手绘概念图 | `assets/illustrations/`，清单由 `tools/gen_handdraw_illustrations.py` 维护 |
+| 36 张手绘概念图（29 章首 + 7 分部） | `assets/illustrations/`，清单由 `tools/gen_handdraw_illustrations.py` 维护 |
 | 构建与 PDF 输出 | `stm32-book/build_html.py` |
 | 整书契约回归 | `stm32-book/tests/test_build.py` |
 | 版本与修订条目 | `stm32-book/revisions.json` |

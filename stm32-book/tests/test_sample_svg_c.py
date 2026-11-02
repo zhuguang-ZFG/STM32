@@ -135,6 +135,13 @@ illustrations/ch25-handdraw.svg 900x560 4719 8b4fb482a4270940c1a32ca49e20c0a4c7d
 illustrations/ch26-handdraw.svg 900x560 6276 a41366bc062577f07cd07d94c7cc4efb5edd56a61dbfd5336a58a94fc9e4a7ee
 illustrations/ch27-handdraw.svg 900x560 4568 0a399c245214680b5e7889debf36323e309af6d9f4b0ab3e53c48eba51190755
 illustrations/ch28-handdraw.svg 900x560 4855 6ae7ea34a727496b4d95b4defcf0286d5a2bf87f0556045dcda5205f21e4b823
+illustrations/part-p0-handdraw.svg 900x560 8677 c589bab8908afd3e15d104fd1abb84457394ceafe1da000194f76b229b65b958
+illustrations/part-p1-handdraw.svg 900x560 8064 51e467a314f6037c8b1a828a56e3362945fc3a031282db0f2202383af9935d0e
+illustrations/part-p2-handdraw.svg 900x560 7702 03f742ad87a760b8240140ea38272614e9e0f13faf6ddc2faeec58492cb9a12c
+illustrations/part-p3-handdraw.svg 900x560 9290 ffb9016500aacdf13e2c3d5d376b670f5438a1006b3192ca4355d705fcca24e8
+illustrations/part-p4-handdraw.svg 900x560 5796 7e428592a06ec8cd42ee855642bd90945388668ab941b5f81979978f7b1dcf66
+illustrations/part-p5-handdraw.svg 900x560 12963 429746577ff286fd268a8656a145ccc1562a5dcc40bc6c796923707c3899dcdb
+illustrations/part-p6-handdraw.svg 900x560 4707 7b6fb10a35064337331a86fe19f6536b0bd69792e9027b649de9e95e34c7384d
 """.strip().splitlines()
 
 STATIC_ADVANCED = {
@@ -287,7 +294,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "341d9e6adc177e11f08d0c20170cb74fe79e7e78c52892d7f54272bb9a73e560",
+            "99907fdf57e05562849b4f6c5a4a9412804c1a3a638c787df078df6d43fd8847",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -295,7 +302,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "8ae4633fb7ebadcee99b520d523e85373d36378d9a6ef834cf8c3694da06cb21",
+            "16f3d10e9acde541c619dff788e20ed6827f70ec2c3dc714c9995315d01d6570",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -352,7 +359,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(118, len(found))
+        self.assertEqual(125, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

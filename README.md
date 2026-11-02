@@ -6,12 +6,12 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 25 个原理动画 · 29 张章首手绘概念图 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 25 个原理动画 · 29 张章首 + 7 张分部手绘概念图 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-29_篇-60a5fa?style=flat-square)](docs/)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
 [![animations](https://img.shields.io/badge/SVG_动画-25_个-22d3ee?style=flat-square)](assets/animations/)
-[![illustrations](https://img.shields.io/badge/章首_手绘-29_张-c084fc?style=flat-square)](assets/illustrations/)
+[![illustrations](https://img.shields.io/badge/手绘概念图-36_张-c084fc?style=flat-square)](assets/illustrations/)
 [![boards](https://img.shields.io/badge/板卡与引脚图-10_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
 [![gif](https://img.shields.io/badge/教学_GIF-6_个-f87171?style=flat-square)](assets/gif/)
@@ -127,9 +127,9 @@
 <sub>▲ GIF 用标准库手写的 GIF89a/LZW 编码器生成，帧间差分 + 透明索引压缩；文字为 ASCII（内置点阵字体限制）</sub>
 </div>
 
-## 章首手绘概念图（29 张）
+## 手绘概念图（29 章首 + 7 分部）
 
-每章一张，900×560。网页端带轻量 CSS 动画，PDF 取完整首帧。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
+每章一张章首图，每个分部另有一张分部概念图，均为 900×560。网页端带轻量 CSS 动画，PDF 取完整首帧。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
 
 <table>
 <tr>
