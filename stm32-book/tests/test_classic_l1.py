@@ -119,6 +119,55 @@ class ClassicL1VisualTests(unittest.TestCase):
         finally:
             generator.SCALE, generator.W, generator.FONT = old_scale, old_width, old_font
 
+    def test_bsrr_examples_distinguish_led_on_from_off_bilingually(self) -> None:
+        zh = (REPO / "docs" / "03-GPIO与LED.md").read_text(encoding="utf-8")
+        en = (REPO / "docs" / "en" / "03-gpio-and-led.md").read_text(encoding="utf-8")
+        self.assertIn("GPIOC->BSRR = GPIO_BSRR_BS13;   /* 置位 PC13 = 1：灯灭 */", zh)
+        self.assertIn("GPIOC->BSRR = GPIO_BSRR_BS13;   /* set PC13 = 1: LED off */", en)
+
+    def test_lock_sequence_requires_two_reads_in_book_video_and_figure(self) -> None:
+        zh = (REPO / "docs" / "03-GPIO与LED.md").read_text(encoding="utf-8")
+        en = (REPO / "docs" / "en" / "03-gpio-and-led.md").read_text(encoding="utf-8")
+        self.assertIn("连续读两次", zh)
+        self.assertIn("two consecutive reads", en)
+        figure = (REPO / "assets" / "diagrams" / "sample-03-gpio-led.svg").read_text(encoding="utf-8")
+        self.assertIn("读 LCKR，完成序列", figure)
+        self.assertIn("再读确认 LCKK = 1", figure)
+
+    def test_reviewed_storyboard_mechanisms_are_corrected(self) -> None:
+        storyboards = load_tool("storyboards")
+        scenes = {scene["scene_id"]: scene for scene in storyboards.load("03")["segments"]}
+        self.assertIn("PMOS", scenes["ch03-s02"]["narration"])
+        self.assertNotIn("输出级截止", scenes["ch03-s02"]["narration"])
+        self.assertIn("HAL 与直接 BSRR 都具有原子写位边界", scenes["ch03-s13"]["narration"])
+        self.assertIn("HAL_Delay(500)", scenes["ch03-s25"]["narration"])
+        self.assertNotIn("PSC", scenes["ch03-s25"]["narration"])
+        self.assertEqual("五类基础寄存器", scenes["ch03-s11"]["title"])
+        self.assertNotIn("docs/03-GPIO与LED.md#自测", scenes["ch03-s28"]["fact_source"])
+
+    def test_reviewed_storyboard_visuals_match_their_learning_tasks(self) -> None:
+        storyboards = load_tool("storyboards")
+        scenes = {scene["scene_id"]: scene for scene in storyboards.load("03")["segments"]}
+        expected = {
+            "ch03-s08": ("classic-03-open-drain.svg", "高阻"),
+            "ch03-s11": ("classic-03-register-map.svg", "BSRR"),
+            "ch03-s12": ("classic-03-init-code.svg", "__HAL_RCC_GPIOC_CLK_ENABLE"),
+            "ch03-s13": ("classic-03-write-methods.svg", "HAL 与 BSRR"),
+            "ch03-s15": ("classic-03-bitband.svg", "0x4001100C"),
+            "ch03-s17": ("classic-03-remap.svg", "MAPR"),
+            "ch03-s18": ("classic-03-ft-evidence.svg", "注入电流"),
+            "ch03-s23": ("classic-03-debounce.svg", "抖动"),
+            "ch03-s24": ("classic-03-polling.svg", "漏检"),
+            "ch03-s25": ("classic-03-pc13-evidence.svg", "PC13 ODR"),
+            "ch03-s26": ("classic-03-pa0-pa1-wiring.svg", "270 Ω"),
+        }
+        for scene_id, (filename, label) in expected.items():
+            with self.subTest(scene_id=scene_id):
+                self.assertEqual(f"diagrams/{filename}", scenes[scene_id]["visual_source"])
+                path = REPO / "assets" / "diagrams" / filename
+                self.assertTrue(path.is_file(), path)
+                self.assertIn(label, path.read_text(encoding="utf-8"))
+
     def test_stack_boundary_asset_is_complete(self) -> None:
         diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
         self.assertTrue(diagram.is_file(), diagram)
