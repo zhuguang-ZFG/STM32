@@ -10,6 +10,15 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 CHAPTERS = {
+    ROOT / "docs" / "00-如何学习STM32.md": (
+        4,
+        (
+            "toolchain-flow.svg",
+            "sample-00-boot-state.svg",
+            "first-lab-wiring.svg",
+            "first-success-gates.svg",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -94,6 +103,7 @@ class AdvancedVisualTests(unittest.TestCase):
 
     def test_english_chapters_keep_the_same_visual_sequence(self) -> None:
         pairs = (
+            ("00-如何学习STM32.md", "00-how-to-learn-stm32.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
@@ -117,6 +127,8 @@ class AdvancedVisualTests(unittest.TestCase):
             "rtos-startup-gates.svg",
         )
         static = (
+            "first-lab-wiring.svg",
+            "first-success-gates.svg",
             "manual-choice-map.svg",
             "firmware-stack-choice.svg",
             "instrument-evidence-ladder.svg",

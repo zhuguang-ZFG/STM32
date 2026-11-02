@@ -58,7 +58,7 @@ The drawing is **STM32L476Rx LQFP64** (that is the package on a Nucleo-L476RG). 
 
 Those currents are family typicals printed on the datasheet cover. This repo did not measure them. An on-board LDO and LED raise the whole-board current. Do not use the cover numbers to accept or reject your multimeter.
 
-Motto: **L4 really sleeps in Stop 2. The nanoamps on the cover are the chip, not the whole board.**
+**Stop 2 is the usual deep-sleep level on L4; the nanoamp figures on the cover are chip typicals, not measurements of the whole board.**
 
 ## Recognizing the hardware: the Nucleo-64 family
 

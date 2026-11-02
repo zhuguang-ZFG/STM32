@@ -545,7 +545,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("学习路线收束", html)
         source = (BOOK_DIR.parent / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
         self.assertIn("Next:", source)
-        self.assertIn("Disclaimer: every illustration", source)
+        self.assertIn("Image sources and licenses", source)
+        self.assertIn("assets/README.md", source)
 
     def test_english_glossary_covers_the_same_themes(self) -> None:
         text = (BOOK_DIR / "book" / "en" / "D-glossary.md").read_text(encoding="utf-8")

@@ -9,6 +9,111 @@ from svgkit import Svg, T
 W, H = 900, 560
 
 
+def first_lab_wiring() -> Svg:
+    s = Svg(W, H, "第一次上电：一个主供电路径，四根 SWD 线",
+            "BluePill 由 Micro-USB 供电时，不再连接 ST-Link 的 3.3V；第一课暂不接 USB-TTL")
+    s.header(tag="00 接线 · IG-002", tag_color=T.GREEN)
+
+    s.rect(38, 96, 190, 112, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.text(133, 126, "USB 电源", size=14, anchor="middle", fill=T.TEXT, weight="800")
+    s.text(133, 154, "5 V → Micro-USB", size=11, anchor="middle", fill=T.GREEN,
+           mono=True)
+    s.text(133, 181, "本实验唯一主供电", size=10, anchor="middle", fill=T.MUTED)
+
+    s.rect(354, 86, 300, 230, fill="#123a2e", stroke=T.GREEN, rx=8)
+    s.text(504, 119, "BluePill · STM32F103C8T6", size=15, anchor="middle",
+           fill="#dbeafe", weight="800")
+    s.rect(430, 145, 148, 86, fill="#151922", stroke="#9db8ff", rx=4)
+    s.text(504, 181, "STM32F103C8T6", size=11, anchor="middle", mono=True,
+           fill="#dbeafe", weight="700")
+    s.text(504, 207, "BOOT0 = 0", size=10, anchor="middle", mono=True,
+           fill=T.AMBER)
+    s.text(376, 272, "PC13 LED · 低电平亮", size=10.5, fill="#dbeafe")
+    s.text(632, 296, "VDD 实测约 3.3 V", size=10.5, anchor="end", fill=T.CYAN)
+
+    s.arrow(230, 152, 350, 152, color=T.GREEN, sw=2, head=8)
+    s.text(290, 137, "供电", size=10, anchor="middle", fill=T.GREEN)
+
+    s.rect(38, 258, 190, 202, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    s.text(133, 290, "ST-Link · 仅调试", size=14, anchor="middle", fill=T.TEXT,
+           weight="800")
+    pins = [("SWDIO", "PA13", T.CYAN), ("SWCLK", "PA14", T.CYAN),
+            ("GND", "GND", T.MUTED), ("NRST", "NRST 可选", T.VIOLET)]
+    for i, (left, right, color) in enumerate(pins):
+        yy = 322 + i * 30
+        s.text(58, yy, left, size=10.5, mono=True, fill=color, weight="700")
+        s.text(208, yy, right, size=10.2, mono=True, anchor="end", fill=T.MUTED)
+        s.line(230, yy - 4, 350, 174 + i * 30, stroke=color, sw=2)
+    s.text(58, 438, "3.3V", size=10.5, mono=True, fill=T.RED, weight="800")
+    s.text(208, 438, "不接", size=10.5, anchor="end", fill=T.RED, weight="800")
+    s.line(232, 425, 260, 449, stroke=T.RED, sw=2)
+    s.line(260, 425, 232, 449, stroke=T.RED, sw=2)
+
+    s.rect(688, 96, 174, 220, fill=T.BG2, stroke=T.AMBER, rx=8)
+    s.text(775, 127, "上电前 3 项", size=13, anchor="middle", fill=T.TEXT, weight="800")
+    checks = ["① BOOT0 = 0", "② GND 共地", "③ 只有一个主供电"]
+    for i, check in enumerate(checks):
+        s.text(708, 164 + i * 39, check, size=10.8, fill=T.MUTED)
+    s.text(775, 286, "上电后量 VDD", size=11, anchor="middle", fill=T.CYAN,
+           weight="700")
+
+    s.rect(354, 348, 508, 112, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(376, 379, "USB-TTL 留到 UART 章节", size=13, fill=T.TEXT, weight="800")
+    s.text(376, 407, "第一课不接 PA9 / PA10，也不把 USB-TTL 的 3.3V 并入供电。",
+           size=10.5, fill=T.MUTED)
+    s.text(376, 435, "先把编译、SWD、复位和 PC13 波形四件事分别证明。", size=10.5,
+           fill=T.GREEN, weight="700")
+    s.footer("视觉规范：FA-029 几何图解叙事 · IG-002 中心标注 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
+def first_success_gates() -> Svg:
+    s = Svg(W, H, "第一次成功不是“灯亮了”，而是四份证据对得上",
+            "构建、烧录、复位路径和引脚频率逐关验收；前一关没有证据，不改后一关")
+    s.header(tag="00 验收 · IG-008", tag_color=T.CYAN)
+
+    gates = [
+        ("1 · Build", "ELF / AXF", "编译退出码 = 0", T.GREEN),
+        ("2 · Flash", "0x08000000", "Program + verify 通过", T.CYAN),
+        ("3 · Reset", "BOOT0 = 0", "main 断点命中", T.AMBER),
+        ("4 · Measure", "PC13 · active-low", "T = 1.000 s", T.VIOLET),
+    ]
+    x0, y, bw, gap = 34, 105, 184, 34
+    for i, (title, target, evidence, color) in enumerate(gates):
+        x = x0 + i * (bw + gap)
+        s.rect(x, y, bw, 132, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, y, bw, 7, fill=color, rx=2)
+        s.text(x + 18, y + 40, title, size=13, fill=color, weight="800")
+        s.text(x + 18, y + 72, target, size=10.5, mono=True, fill=T.TEXT,
+               weight="700")
+        s.text(x + 18, y + 102, evidence, size=10, fill=T.MUTED)
+        if i < len(gates) - 1:
+            s.arrow(x + bw + 4, y + 66, x + bw + gap - 4, y + 66,
+                    color=T.CYAN, sw=2, head=6)
+
+    s.rect(34, 278, 832, 184, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(54, 309, "第一处失败决定下一步", size=13, fill=T.TEXT, weight="800")
+    failures = [
+        ("没有 ELF", "先修编译/链接，不碰线", T.GREEN),
+        ("verify 失败", "查供电、GND、SWDIO、SWCLK", T.CYAN),
+        ("main 不进", "查 BOOT0、NRST、向量表", T.AMBER),
+        ("频率不对", "查时钟、SysTick、半周期", T.VIOLET),
+    ]
+    for i, (symptom, action, color) in enumerate(failures):
+        yy = 344 + i * 28
+        s.text(54, yy, symptom, size=10.5, mono=True, fill=color, weight="800")
+        s.text(216, yy, action, size=10.5, fill=T.MUTED)
+
+    s.rect(590, 326, 250, 108, fill=T.PANEL, stroke=T.VIOLET, rx=8)
+    s.text(610, 355, "1 Hz 的可复算条件", size=12, fill=T.TEXT, weight="800")
+    s.text(610, 383, "HAL_Delay(500) × 2", size=11, mono=True, fill=T.CYAN)
+    s.text(610, 409, "高 500 ms + 低 500 ms", size=10.5, fill=T.MUTED)
+    s.footer("视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 def layers_hal_ll_reg() -> Svg:
     s = Svg(W, H, "四种代码风格的分层关系",
             "寄存器 / LL / HAL / 应用：抽象越高越通用，越低越省资源")
@@ -949,7 +1054,8 @@ def h7_pinmux_conflicts() -> Svg:
     return s
 
 
-ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
+ALL = [first_lab_wiring, first_success_gates,
+       layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        l4_idd_bench, network_debug_ladder, spl_ownership_boundary,
        network_cache_ownership, tcp_byte_stream, rtos_owner_task,
        rtos_deadline_budget, rtos_config_paths, manual_choice_map,
@@ -958,6 +1064,8 @@ ALL = [layers_hal_ll_reg, project_structure, peripheral_bus, interrupt_priority,
        h7_revision_clock_decision, h7_startup_evidence, h7_pinmux_conflicts]
 
 NAMES = {
+    "first_lab_wiring": "first-lab-wiring",
+    "first_success_gates": "first-success-gates",
     "layers_hal_ll_reg": "layers-hal-ll-reg",
     "project_structure": "project-structure",
     "peripheral_bus": "peripheral-bus",

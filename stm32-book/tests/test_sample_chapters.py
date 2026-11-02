@@ -186,35 +186,56 @@ class SampleFoundationChapterTests(unittest.TestCase):
     def test_foundation_chapters_have_four_blocks_and_the_same_addresses(self) -> None:
         zh = (ROOT / "docs" / "00-如何学习STM32.md").read_text(encoding="utf-8")
         en = (ROOT / "docs" / "en" / "00-how-to-learn-stm32.md").read_text(encoding="utf-8")
-        for heading in ("## 原理与适用范围", "## 关键插图", "## 时序与状态", "## 常见坑与出处"):
+        for heading in (
+            "## 烧录成功，为什么复位后不运行",
+            "## BOOT0 改的是取指入口",
+            "## 三个启动状态",
+            "## 地址抄对，型号也要对",
+        ):
             self.assertEqual(1, zh.count(heading))
-        for heading in ("## Principle and scope", "## Key figures", "## Timing and state", "## Pitfalls and sources"):
+        for heading in (
+            "## The image flashed successfully, but reset does not run it",
+            "## BOOT0 changes the fetch alias",
+            "## Three boot states",
+            "## The address and the exact part must both match",
+        ):
             self.assertEqual(1, en.count(heading))
         self.assertNotIn("## 常见坑与排查", zh)
         self.assertNotIn("## Pitfalls and troubleshooting", en)
-        self.assertIn("## 核心原理", zh)
-        self.assertIn("## Core ideas", en)
+        self.assertIn("## 先到什么程度，再往下走", zh)
+        self.assertIn("## How much background is enough", en)
         for text in (zh, en):
             for token in ("STM32F103C8T6", "0x08000000", "0x00000000", "0x00000004", "0x1FFFF000", "0x1FFFB000", "0x08080000", "BOOT0", "BOOT1", "SYSCLK", "#source-rm0008-boot"):
                 self.assertIn(token, text)
         self.assertIn("../assets/diagrams/sample-00-boot-state.svg", zh)
         self.assertIn("../../assets/diagrams/sample-00-boot-state.svg", en)
-        self.assertIn("自绘", zh.split("## 关键插图", 1)[1].split("## 时序与状态", 1)[0])
-        self.assertIn("Drawn for this book", en.split("## Key figures", 1)[1].split("## Timing and state", 1)[0])
+        self.assertIn("自绘", zh.split("## BOOT0 改的是取指入口", 1)[1].split("## 三个启动状态", 1)[0])
+        self.assertIn("Drawn for this book", en.split("## BOOT0 changes the fetch alias", 1)[1].split("## Three boot states", 1)[0])
         for start, end in (
-            ("## 原理与适用范围", "## 关键插图"),
-            ("## 关键插图", "## 时序与状态"),
-            ("## 时序与状态", "## 常见坑与出处"),
-            ("## 常见坑与出处", "## 学习目标"),
+            ("## 烧录成功，为什么复位后不运行", "## BOOT0 改的是取指入口"),
+            ("## BOOT0 改的是取指入口", "## 三个启动状态"),
+            ("## 三个启动状态", "## 地址抄对，型号也要对"),
+            ("## 地址抄对，型号也要对", "## 学习目标"),
         ):
             self.assertIn("#source-", zh.split(start, 1)[1].split(end, 1)[0])
         for start, end in (
-            ("## Principle and scope", "## Key figures"),
-            ("## Key figures", "## Timing and state"),
-            ("## Timing and state", "## Pitfalls and sources"),
-            ("## Pitfalls and sources", "## Learning goals"),
+            ("## The image flashed successfully, but reset does not run it", "## BOOT0 changes the fetch alias"),
+            ("## BOOT0 changes the fetch alias", "## Three boot states"),
+            ("## Three boot states", "## The address and the exact part must both match"),
+            ("## The address and the exact part must both match", "## Learning goals"),
         ):
             self.assertIn("#source-", en.split(start, 1)[1].split(end, 1)[0])
+
+        for text, prefix in ((zh, "../"), (en, "../../")):
+            for asset in (
+                "assets/animations/toolchain-flow.svg",
+                "assets/diagrams/sample-00-boot-state.svg",
+                "assets/diagrams/first-lab-wiring.svg",
+                "assets/diagrams/first-success-gates.svg",
+            ):
+                self.assertEqual(1, text.count(prefix + asset))
+            for evidence in ("ELF", "AXF", "0x08000000", "main", "PC13", "1 Hz"):
+                self.assertIn(evidence, text)
         listed = json.loads((ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-sample-source-list.json").read_text(encoding="utf-8"))
         by_id = {item["id"]: item for item in listed["absorb"]}
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
