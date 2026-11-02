@@ -55,6 +55,17 @@ class ClassicL1VisualTests(unittest.TestCase):
         image = generator._visual_png("video/ch03-gpio.png")
         self.assertEqual((960, 540), image.size)
 
+    def test_ch03_short_storyboard_leads_with_the_active_low_mechanism(self) -> None:
+        narration = load_tool("narration")
+        chapter = narration.CHAPTERS[3]
+        segments = chapter["segments"]
+        self.assertEqual(10, len(segments))
+        self.assertEqual("illustrations/ch03-handdraw.svg", segments[0]["svg"])
+        self.assertEqual("diagrams/stack-gpio-pc13-led.png", segments[1]["svg"])
+        self.assertGreaterEqual(8, sum(bool(seg.get("svg")) for seg in segments))
+        self.assertIn("写 1", segments[0]["say"])
+        self.assertIn("不是实测", segments[1]["say"])
+
     def test_stack_boundary_asset_is_complete(self) -> None:
         diagram = REPO / "assets" / "diagrams" / "stack-gpio-pc13-led.html"
         self.assertTrue(diagram.is_file(), diagram)
