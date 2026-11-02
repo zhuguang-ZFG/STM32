@@ -1455,7 +1455,7 @@ class BookBuildContractTests(unittest.TestCase):
         part_goal = self._css_rule(screen, ".part-goal")
         self.assertIn("font-size: 1.12rem", part_goal)
         self.assertIn("line-height: 1.6", part_goal)
-        self.assertIn("clamp(4.5rem, 14vw, 8.5rem)", self._css_rule(screen, ".part-index"))
+        self.assertIn("clamp(4.5rem, 14vw, 7.25rem)", self._css_rule(screen, ".part-index"))
         self.assertIn("font-size: 3rem", self._css_rule(narrow, ".part-index"))
         jump = self._css_rule(screen, ".toc-jump")
         self.assertIn("font-size: .85rem", jump)
@@ -1579,7 +1579,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "b7515c1b526fb30b155587916185542943e73b117650d2205ffa4a45781082a6",
+            "99907fdf57e05562849b4f6c5a4a9412804c1a3a638c787df078df6d43fd8847",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
