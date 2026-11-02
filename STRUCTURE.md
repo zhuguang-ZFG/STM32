@@ -15,7 +15,7 @@
 | `labs/` | 真板证据协议，不是另一套示例 | [labs/README.md](labs/README.md) |
 | `sim/` | Renode 脚本。和 Wokwi 工程分开 | [sim/README.md](sim/README.md) |
 | `cheatsheets/` | 4 份中文速查表。英文在 `docs/en/cheatsheets/` | [cheatsheets/README.md](cheatsheets/README.md) |
-| `assets/` | 动画、板卡图、实拍、GIF、讲解视频、公众号二维码 | [assets/README.md](assets/README.md) |
+| `assets/` | 动画、章首手绘概念图、板卡图、实拍、GIF、讲解视频、公众号二维码 | [assets/README.md](assets/README.md) |
 | `assets/video/` | 正片与 AI 续集。早期成片在 `superseded/` | [assets/video/README.md](assets/video/README.md) |
 | `tools/` | 生成图片、讲解片、公众号稿的脚本 | [tools/README.md](tools/README.md) |
 | `Makefile` | `assets` / `check` / `book` / `book-pdf` / `book-check` / `stats` | 文件头注释 |
