@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Tasks orbit a scheduler and exchange events">
+<title>Tasks orbit a scheduler and exchange events</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 16</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<circle cx="452" cy="286" r="105" fill="none" opacity="0.2" stroke="#075e84" stroke-width="1"/>
+<circle cx="450" cy="285" r="105" fill="#f1f5f7" opacity="1" stroke="#075e84" stroke-width="2"/>
+<circle cx="452" cy="136" r="42" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="450" cy="135" r="42" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-float"/>
+<text x="450" y="140" font-size="16" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">A</text>
+<line x1="450" y1="177" x2="442" y2="177" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="450.00,177.00 442.00,181.00 442.00,173.00" fill="#8f2d2d" opacity="1"/>
+<circle cx="622" cy="286" r="42" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="620" cy="285" r="42" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<text x="620" y="290" font-size="16" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">B</text>
+<line x1="578" y1="285" x2="566" y2="285" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="558.00,285.00 566.00,281.00 566.00,289.00" fill="#1b5c45" opacity="1"/>
+<circle cx="452" cy="436" r="42" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="450" cy="435" r="42" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2" class="hd-float"/>
+<text x="450" y="440" font-size="16" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">C</text>
+<line x1="450" y1="393" x2="442" y2="393" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="450.00,393.00 442.00,397.00 442.00,389.00" fill="#7a4e00" opacity="1"/>
+<circle cx="282" cy="286" r="42" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="280" cy="285" r="42" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
+<text x="280" y="290" font-size="16" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Q</text>
+<line x1="322" y1="285" x2="334" y2="285" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="342.00,285.00 334.00,289.00 334.00,281.00" fill="#5b3a8c" opacity="1"/>
+<path d="M410 285 C430 245 470 245 490 285 C470 325 430 325 410 285" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-sway"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

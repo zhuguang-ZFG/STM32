@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Interrupts, tasks, drivers, networks, and apps form one system">
+<title>Interrupts, tasks, drivers, networks, and apps form one system</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 29</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M80 410 C180 330 250 390 330 300 S450 160 550 245 S690 350 820 170" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<path d="M98 298 Q150 275 202 298 L195 378 Q150 398 105 378 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2" class="hd-float"/>
+<text x="150" y="345" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IRQ</text>
+<path d="M278 258 Q330 235 382 258 L375 338 Q330 358 285 338 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<text x="330" y="305" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TASK</text>
+<path d="M468 188 Q520 165 572 188 L565 268 Q520 288 475 268 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
+<text x="520" y="235" font-size="10" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">DRV</text>
+<path d="M648 258 Q700 235 752 258 L745 338 Q700 358 655 338 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="2" class="hd-float"/>
+<text x="700" y="305" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">NET</text>
+<path d="M768 128 Q820 105 872 128 L865 208 Q820 228 775 208 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-float"/>
+<text x="820" y="175" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">APP</text>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

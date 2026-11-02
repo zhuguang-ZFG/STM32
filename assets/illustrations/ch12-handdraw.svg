@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="A verified image crosses a guarded bridge">
+<title>A verified image crosses a guarded bridge</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 13</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M95 160 L315 160 L315 390 L95 390 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<path d="M590 160 L810 160 L810 390 L590 390 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<path d="M315 300 C385 220 520 220 590 300" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<path d="M315 320 C385 240 520 240 590 320" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<circle cx="362" cy="252.6" r="6.5" fill="none" opacity="0.2" stroke="#5e6872" stroke-width="1"/>
+<circle cx="360" cy="251.6" r="6.5" fill="#fbfaf7" opacity="1" stroke="#5e6872" stroke-width="2" class="hd-float"/>
+<path d="M360 258.75 C357.4 271.1 362.6 280.2 360 293.2" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5e6872" stroke-width="2" class="hd-float"/>
+<line x1="361.8" y1="271" x2="350.1" y2="280.75" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360" y1="269.8" x2="348.3" y2="279.55" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="362.45" y1="271.65" x2="374.15" y2="265.8" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360.65" y1="270.45" x2="372.35" y2="264.6" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="361.8" y1="294.4" x2="351.4" y2="308.7" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360" y1="293.2" x2="349.6" y2="307.5" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="361.8" y1="294.4" x2="373.5" y2="305.45" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="360" y1="293.2" x2="371.7" y2="304.25" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="390" y1="270" x2="537" y2="270" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1" class="hd-flow"/>
+<polygon points="545.00,270.00 537.00,274.00 537.00,266.00" fill="#5b3a8c" opacity="1"/>
+<circle cx="702" cy="246" r="44" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="700" cy="245" r="44" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="2" class="hd-pulse"/>
+<path d="M680 245 L696 261 L726 220" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

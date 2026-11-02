@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "style": "FA-002",
+  "colors": [
+    "C-03",
+    "C-10",
+    "C-27",
+    "C-31"
+  ],
+  "files": [
+    {
+      "chapter": "00",
+      "file": "ch00-handdraw.svg",
+      "zh": "从第一盏灯走到能验收的系统",
+      "en": "A learner follows a winding path from a first light to a verified system"
+    },
+    {
+      "chapter": "01",
+      "file": "ch01-handdraw.svg",
+      "zh": "源码穿过工具和齿轮落进芯片",
+      "en": "Source code passes through tools and gears into a microcontroller"
+    },
+    {
+      "chapter": "02",
+      "file": "ch02-handdraw.svg",
+      "zh": "时钟分叉成总线和存储区",
+      "en": "A clock branches into buses and memory regions"
+    },
+    {
+      "chapter": "03",
+      "file": "ch03-handdraw.svg",
+      "zh": "一只引脚点亮灯，也读回按键",
+      "en": "A microcontroller pin drives a lamp and reads a button"
+    },
+    {
+      "chapter": "04",
+      "file": "ch04-handdraw.svg",
+      "zh": "门铃事件进入优先级队列",
+      "en": "A doorbell event enters a priority queue"
+    },
+    {
+      "chapter": "05",
+      "file": "ch05-handdraw.svg",
+      "zh": "齿轮咬合出可测量的波形",
+      "en": "Clockwork gears create a measured PWM waveform"
+    },
+    {
+      "chapter": "06",
+      "file": "ch06-handdraw.svg",
+      "zh": "两个人隔着一条线交换成帧的比特",
+      "en": "Two people exchange a framed stream of bits"
+    },
+    {
+      "chapter": "07",
+      "file": "ch07-handdraw.svg",
+      "zh": "两条开漏线依次拜访有地址的设备",
+      "en": "Two shared open-drain lines visit addressed devices"
+    },
+    {
+      "chapter": "08",
+      "file": "ch08-handdraw.svg",
+      "zh": "每个时钟沿，两边交换一个字节",
+      "en": "Two sides exchange bytes on every clock"
+    },
+    {
+      "chapter": "09",
+      "file": "ch09-handdraw.svg",
+      "zh": "电压倒进桶里，变成二进制台阶",
+      "en": "A voltage bucket becomes a binary staircase"
+    },
+    {
+      "chapter": "10",
+      "file": "ch10-handdraw.svg",
+      "zh": "传送带把采样搬进环形缓冲区",
+      "en": "A conveyor moves samples into a circular buffer"
+    },
+    {
+      "chapter": "11",
+      "file": "ch11-handdraw.svg",
+      "zh": "看门狗盯着时钟和复位留下的痕迹",
+      "en": "A watchdog watches a clock and the restart trail"
+    },
+    {
+      "chapter": "12",
+      "file": "ch12-handdraw.svg",
+      "zh": "校验过的镜像跨过带闸门的桥",
+      "en": "A verified image crosses a guarded bridge"
+    },
+    {
+      "chapter": "13",
+      "file": "ch13-handdraw.svg",
+      "zh": "多个节点在一条差分路上仲裁",
+      "en": "Several nodes arbitrate on one differential road"
+    },
+    {
+      "chapter": "14",
+      "file": "ch14-handdraw.svg",
+      "zh": "设备在主机桌前通过枚举检查点",
+      "en": "A device passes enumeration checkpoints at a host desk"
+    },
+    {
+      "chapter": "15",
+      "file": "ch15-handdraw.svg",
+      "zh": "任务绕着调度器转，交换事件",
+      "en": "Tasks orbit a scheduler and exchange events"
+    },
+    {
+      "chapter": "16",
+      "file": "ch16-handdraw.svg",
+      "zh": "睡着的芯片在电池月亮下短暂醒来",
+      "en": "A sleeping chip wakes briefly under a battery moon"
+    },
+    {
+      "chapter": "17",
+      "file": "ch17-handdraw.svg",
+      "zh": "故障现场在证据消失前被检查",
+      "en": "A fault scene is inspected before evidence disappears"
+    },
+    {
+      "chapter": "18",
+      "file": "ch18-handdraw.svg",
+      "zh": "技术员沿着症状路牌逐个边界排查",
+      "en": "A technician follows symptom signposts one boundary at a time"
+    },
+    {
+      "chapter": "19",
+      "file": "ch19-handdraw.svg",
+      "zh": "工作台把证据门拼成产品",
+      "en": "A workshop connects evidence gates into a product"
+    },
+    {
+      "chapter": "20",
+      "file": "ch20-handdraw.svg",
+      "zh": "手册图书馆和罗盘为工程问题引路",
+      "en": "A manual library and compass route engineering questions"
+    },
+    {
+      "chapter": "21",
+      "file": "ch21-handdraw.svg",
+      "zh": "像解剖标本一样检查一块板",
+      "en": "A board is inspected like an anatomical specimen"
+    },
+    {
+      "chapter": "22",
+      "file": "ch22-handdraw.svg",
+      "zh": "同一份固件从模型跨到真实工作台",
+      "en": "One firmware image crosses from a model into a real bench"
+    },
+    {
+      "chapter": "23",
+      "file": "ch23-handdraw.svg",
+      "zh": "共用的 BOOT 和 SWCLK 脚分成两条受控路径",
+      "en": "A shared BOOT and SWCLK pin splits into two controlled paths"
+    },
+    {
+      "chapter": "24",
+      "file": "ch24-handdraw.svg",
+      "zh": "低功耗设备睡下、醒来、恢复时钟并报告",
+      "en": "A low-power device sleeps, wakes, restores clocks, and reports"
+    },
+    {
+      "chapter": "25",
+      "file": "ch25-handdraw.svg",
+      "zh": "电源域和时钟组成一座高性能城市",
+      "en": "Power domains and clocks form a high-performance city"
+    },
+    {
+      "chapter": "26",
+      "file": "ch26-handdraw.svg",
+      "zh": "冻结的旧库一格一格迁移",
+      "en": "A frozen old library is migrated shelf by shelf"
+    },
+    {
+      "chapter": "27",
+      "file": "ch27-handdraw.svg",
+      "zh": "数据包穿过 ARP、TCP、TLS 与应用边界",
+      "en": "Packets cross ARP, TCP, TLS, and application boundaries"
+    },
+    {
+      "chapter": "28",
+      "file": "ch28-handdraw.svg",
+      "zh": "中断、任务、驱动、网络与应用组成一套系统",
+      "en": "Interrupts, tasks, drivers, networks, and apps form one system"
+    }
+  ]
+}

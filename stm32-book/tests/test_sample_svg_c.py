@@ -106,6 +106,35 @@ diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984
 diagrams/spl-ownership-boundary.svg 900x560 8419 7575a21859768a7a322837561eac717c249069fd126d27a1f4df8fa6737b2872
 diagrams/tcp-byte-stream.svg 900x560 9783 f230153d1cf891c560eadcfaa35ce04d3073cf5d2c03b175bd47c894e93a8205
 diagrams/watchdog-reset-evidence.svg 900x560 9405 b7882423651706cf667fd5fdfbfa9202b517d2268757f585a3eb634eccdd6fa0
+illustrations/ch00-handdraw.svg 900x560 4892 690763608b44b4a8bf00499ba843af11df66a5eab6ad56d250436f8801bfc9d0
+illustrations/ch01-handdraw.svg 900x560 7564 2762f78c2bdf7787c0fb93c39df226bb26cdb4f5fcb67ebb1364229ab2b7648e
+illustrations/ch02-handdraw.svg 900x560 6107 ca4c04775828723faf1a1134221700f6e1e5431131d9fe894a77a93fa1c1c82b
+illustrations/ch03-handdraw.svg 900x560 7859 27d994818c308861b130493232583e9c3a30de5cc0dfc2f2f66d1d88044fdf3d
+illustrations/ch04-handdraw.svg 900x560 4610 37d1d7376b48112f0adffc9779832e7afdc28d08196676297dfe323234861a38
+illustrations/ch05-handdraw.svg 900x560 4773 982cb168e2df00ddae00f2fa69da5625ef3573334698c4f3014907180846dac5
+illustrations/ch06-handdraw.svg 900x560 8629 eb3ad104d080d700767e8e5c4311f1aad2632c0d24371fce4bfe00ad01d3cdec
+illustrations/ch07-handdraw.svg 900x560 4862 106db8f730e30248fdefbaf9cf9c22a17e8852d14f2ff7fc16593f51989e8f14
+illustrations/ch08-handdraw.svg 900x560 7617 478be722f78f4d25ac8c976d491aeca16ff93f51b6fc912cd6a155d19d868c8e
+illustrations/ch09-handdraw.svg 900x560 7647 975072d62ba1b96e44047ef253bad7896e10cca075d653be661f34b304e1ed87
+illustrations/ch10-handdraw.svg 900x560 4360 ecb58159ab3c71ef1034ce21bde4b79ff1a771dba92e03a76b5c0e0a5bb9663b
+illustrations/ch11-handdraw.svg 900x560 7386 6b3dff4e0ddfa3999bed370472417d9322954a568c01e642340a3c65fbadb3ca
+illustrations/ch12-handdraw.svg 900x560 5191 b668767313fe2638535fe3292bc390d59b4232785f3ea4c5450403230052cc24
+illustrations/ch13-handdraw.svg 900x560 4870 1ca1c850b4bd2eaf66c80b03478bc104c91d3b85bcc742b6ada81c35bc75b7ed
+illustrations/ch14-handdraw.svg 900x560 4577 79a5720acc05e545dbdf074195c76a0c24d3b32d1ff2cb4b2ff8251286d9857d
+illustrations/ch15-handdraw.svg 900x560 5534 dac42641d7894f460472d8ca94d749748317037bce570e4c70a0aaaaa384150c
+illustrations/ch16-handdraw.svg 900x560 6165 3d4a176113f0d5e29f38837981bd6b6ac672d9066c58e28a0a3861664f94d41c
+illustrations/ch17-handdraw.svg 900x560 3908 65cba151b77f879d841f19badca9d522d5185134370aa61c49dce68b10e1b6ab
+illustrations/ch18-handdraw.svg 900x560 6684 6ae7d56e01a97c76655e3b47dce3705bf321006b2401fb75b6cfb239e752679d
+illustrations/ch19-handdraw.svg 900x560 4026 238a51d3d90b336d60ad0b5d6d270d624f2f2991c2a7ea574f8ac05db65c9ee4
+illustrations/ch20-handdraw.svg 900x560 4889 f70dfa2456fc34dc180bfb8f253809d5d939f71306a65d29dfd9c2637b8c023d
+illustrations/ch21-handdraw.svg 900x560 6562 659684e75cd4e0da00263a2dca7f771ae34b545f20800d0fa4fba78578f0cf6f
+illustrations/ch22-handdraw.svg 900x560 6311 029cc65764a9b09eed33a875c4f7c4e5f0a0007e67c1e1d34f7cb04c847cef99
+illustrations/ch23-handdraw.svg 900x560 6753 56fcf895ada916052e880503ff3d7ed741f760b816165762aafe31e4202d1b17
+illustrations/ch24-handdraw.svg 900x560 6942 b81fcecb7d3380624e5b9760f0fd75051033d387ee650b0dce388f3e232fa061
+illustrations/ch25-handdraw.svg 900x560 4719 8b4fb482a4270940c1a32ca49e20c0a4c7df4b67a1be56afd76601b09af35847
+illustrations/ch26-handdraw.svg 900x560 6276 a41366bc062577f07cd07d94c7cc4efb5edd56a61dbfd5336a58a94fc9e4a7ee
+illustrations/ch27-handdraw.svg 900x560 4568 0a399c245214680b5e7889debf36323e309af6d9f4b0ab3e53c48eba51190755
+illustrations/ch28-handdraw.svg 900x560 4855 6ae7ea34a727496b4d95b4defcf0286d5a2bf87f0556045dcda5205f21e4b823
 """.strip().splitlines()
 
 STATIC_ADVANCED = {
@@ -227,6 +256,7 @@ SOURCE_FILES = (
     "tools/svgkit.py",
     "tools/gen_sample_figures.py",
     "tools/gen_diagrams.py",
+    "tools/gen_handdraw_illustrations.py",
     "tools/anim_basics.py",
     "tools/anim_gpio.py",
     "tools/anim_comm.py",
@@ -257,7 +287,7 @@ class SampleSvgCTests(unittest.TestCase):
 
     def test_sample_svg_c_contract(self) -> None:
         self.assertEqual(
-            "87e3875a1ac98d62ae981802a411f445438a88fbaab1c519803d906fba62de54",
+            "341d9e6adc177e11f08d0c20170cb74fe79e7e78c52892d7f54272bb9a73e560",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(
@@ -265,7 +295,7 @@ class SampleSvgCTests(unittest.TestCase):
             text_file_hash(BOOK_DIR / "styles" / "tokens.json"),
         )
         self.assertEqual(
-            "de6d2b8a1e8de51b9303edb7d3b14b6c92dbbfb9844bf90836e3e60a6c1e8e77",
+            "8ae4633fb7ebadcee99b520d523e85373d36378d9a6ef834cf8c3694da06cb21",
             text_file_hash(BOOK_DIR / "styles" / "book.css"),
         )
         self.assertEqual(
@@ -322,7 +352,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(89, len(found))
+        self.assertEqual(118, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

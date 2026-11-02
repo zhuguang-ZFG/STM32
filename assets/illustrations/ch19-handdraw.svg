@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="A workshop connects evidence gates into a product">
+<title>A workshop connects evidence gates into a product</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 20</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M90 345 Q220 245 350 345 L335 410 Q220 445 105 410 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<path d="M145 340 L180 250 L220 340 M235 340 L285 220 L320 340" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5e6872" stroke-width="2"/>
+<circle cx="427" cy="181" r="38" fill="none" opacity="0.2" stroke="#075e84" stroke-width="1"/>
+<circle cx="425" cy="180" r="38" fill="#f1f5f7" opacity="1" stroke="#075e84" stroke-width="2" class="hd-float"/>
+<circle cx="562" cy="301" r="38" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="560" cy="300" r="38" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<circle cx="712" cy="171" r="38" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="710" cy="170" r="38" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
+<circle cx="787" cy="351" r="38" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="785" cy="350" r="38" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-float"/>
+<path d="M335 350 C430 345 395 210 425 210 S515 330 560 330 S650 190 710 205 S750 365 785 380" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

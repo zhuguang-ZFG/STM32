@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="A clock branches into buses and memory regions">
+<title>A clock branches into buses and memory regions</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 03</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<circle cx="167" cy="251" r="62" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="165" cy="250" r="62" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2"/>
+<line x1="211.8" y1="251.2" x2="222.8" y2="251.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="210" y1="250" x2="221" y2="250" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="198.62" y1="283.02" x2="206.398" y2="290.798" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="196.82" y1="281.82" x2="204.598" y2="289.598" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="166.8" y1="296.2" x2="166.8" y2="307.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="165" y1="295" x2="165" y2="306" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="134.98" y1="283.02" x2="127.202" y2="290.798" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="133.18" y1="281.82" x2="125.402" y2="289.598" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="121.8" y1="251.2" x2="110.8" y2="251.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="120" y1="250" x2="109" y2="250" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="134.98" y1="219.38" x2="127.202" y2="211.602" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="133.18" y1="218.18" x2="125.402" y2="210.402" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="166.8" y1="206.2" x2="166.8" y2="195.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="165" y1="205" x2="165" y2="194" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="198.62" y1="219.38" x2="206.398" y2="211.602" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="196.82" y1="218.18" x2="204.598" y2="210.402" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="166.8" y1="251.2" x2="199.8" y2="227.2" stroke="#8f2d2d" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="165" y1="250" x2="198" y2="226" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="166.8" y1="251.2" x2="148.8" y2="212.2" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="165" y1="250" x2="147" y2="211" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M230 250 C315 250 285 140 390 170 S480 315 565 245 S690 150 800 190" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<circle cx="392" cy="171" r="25" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="390" cy="170" r="25" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="2" class="hd-pulse"/>
+<circle cx="567" cy="246" r="25" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="565" cy="245" r="25" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2" class="hd-pulse"/>
+<circle cx="802" cy="191" r="25" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="800" cy="190" r="25" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-pulse"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

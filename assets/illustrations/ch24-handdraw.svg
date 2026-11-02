@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="A low-power device sleeps, wakes, restores clocks, and reports">
+<title>A low-power device sleeps, wakes, restores clocks, and reports</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">CH 25</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<path d="M335 228 Q338 220 347 220 L557 220 Q565 222 565 232 L565 342 Q563 350 553 350 L343 350 Q335 348 335 338 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-float"/>
+<line x1="324.8" y1="238.2" x2="336.8" y2="238.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="323" y1="237" x2="335" y2="237" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="566.8" y1="238.2" x2="578.8" y2="238.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="565" y1="237" x2="577" y2="237" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="324.8" y1="255.2" x2="336.8" y2="255.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="323" y1="254" x2="335" y2="254" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="566.8" y1="255.2" x2="578.8" y2="255.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="565" y1="254" x2="577" y2="254" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="324.8" y1="272.2" x2="336.8" y2="272.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="323" y1="271" x2="335" y2="271" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="566.8" y1="272.2" x2="578.8" y2="272.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="565" y1="271" x2="577" y2="271" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="324.8" y1="289.2" x2="336.8" y2="289.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="323" y1="288" x2="335" y2="288" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="566.8" y1="289.2" x2="578.8" y2="289.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="565" y1="288" x2="577" y2="288" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="324.8" y1="306.2" x2="336.8" y2="306.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="323" y1="305" x2="335" y2="305" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="566.8" y1="306.2" x2="578.8" y2="306.2" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="565" y1="305" x2="577" y2="305" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<path d="M363 272 C385 240 413 302 453 262" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="1.5" class="hd-float"/>
+<path d="M270 235 C210 185 145 190 100 235 M270 330 C190 380 130 365 95 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<circle cx="127" cy="236" r="34" fill="none" opacity="0.2" stroke="#7a4e00" stroke-width="1"/>
+<circle cx="125" cy="235" r="34" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="2"/>
+<text x="125" y="240" font-size="9" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SLEEP</text>
+<circle cx="127" cy="331" r="34" fill="none" opacity="0.2" stroke="#5b3a8c" stroke-width="1"/>
+<circle cx="125" cy="330" r="34" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="2"/>
+<text x="125" y="335" font-size="9" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STOP2</text>
+<path d="M600 400 Q613.75 440 627.5 400 Q641.25 360 655.0 400 Q668.75 440 682.5 400 Q696.25 360 710.0 400 Q723.75 440 737.5 400 Q751.25 360 765.0 400 Q778.75 440 792.5 400 Q806.25 360 820.0 400" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="2" class="hd-flow"/>
+<path d="M600 305 C660 255 730 340 810 260" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-flow"/>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

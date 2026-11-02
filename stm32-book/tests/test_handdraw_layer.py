@@ -1,0 +1,175 @@
+from __future__ import annotations
+
+import importlib.util
+import json
+import re
+import tempfile
+import unittest
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+
+BOOK_DIR = Path(__file__).resolve().parents[1]
+REPO = BOOK_DIR.parent
+BUILD_PATH = BOOK_DIR / "build_html.py"
+
+
+def load_builder():
+    spec = importlib.util.spec_from_file_location("stm32_book_builder", BUILD_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load builder: {BUILD_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class HanddrawLayerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.builder = load_builder()
+        cls.entries = cls.builder.load_handdraw_manifest()
+
+    def test_manifest_covers_every_chapter_in_order(self) -> None:
+        self.assertEqual([f"{index:02d}" for index in range(29)], list(self.entries))
+        for chapter, entry in self.entries.items():
+            self.assertEqual(f"ch{chapter}-handdraw.svg", entry["file"])
+            for key in ("zh", "en"):
+                self.assertTrue(entry[key].strip(), (chapter, key))
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            self.assertTrue(path.is_file(), path)
+            self.assertLessEqual(
+                path.stat().st_size, self.builder.HANDDRAW_MAX_BYTES, path
+            )
+
+    def test_plates_are_safe_animated_and_distinct(self) -> None:
+        titles: set[str] = set()
+        drawings: set[str] = set()
+        for chapter, entry in self.entries.items():
+            path = self.builder.HANDDRAW_DIR / entry["file"]
+            raw = path.read_bytes()
+            text = raw.decode("utf-8")
+            ET.parse(path)
+            self.assertIn('width="900"', text, chapter)
+            self.assertIn('height="560"', text, chapter)
+            self.assertIn('viewBox="0 0 900 560"', text, chapter)
+            self.assertIn("FA-002", text, chapter)
+            self.assertIn("@keyframes", text, chapter)
+            self.assertIn("prefers-reduced-motion", text, chapter)
+            self.assertIn("自绘矢量动画", text, chapter)
+            for banned in (
+                "<script",
+                "<image",
+                "<foreignObject",
+                "<filter",
+                "url(",
+                "href=",
+            ):
+                self.assertNotIn(banned, text, (chapter, banned))
+            titles.add(entry["en"])
+            drawings.add(text)
+        self.assertEqual(29, len(titles))
+        self.assertEqual(29, len(drawings))
+
+    def test_screen_css_keeps_plates_out_of_the_figure_card(self) -> None:
+        screen = self.builder.CSS.split("@media", 1)[0]
+        plate = re.search(r"\.chapter-plate\s*\{([^}]*)\}", screen)
+        self.assertIsNotNone(plate)
+        self.assertIn("border: 0", plate.group(1))
+        self.assertIn("box-shadow: none", plate.group(1))
+        image = re.search(r"\.chapter-plate img\s*\{([^}]*)\}", screen)
+        self.assertIsNotNone(image)
+        self.assertIn("max-width: min(100%, 820px)", image.group(1))
+
+    def test_build_inlines_one_localized_plate_per_chapter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(Path(tmp))
+            html = output.read_text(encoding="utf-8")
+
+        self.assertEqual(29, html.count('class="chapter-plate"'))
+        self.assertEqual(
+            29,
+            len(
+                re.findall(
+                    r'<figure class="chapter-plate">\s*'
+                    r'<img src="data:image/svg\+xml;base64,',
+                    html,
+                )
+            ),
+        )
+        self.assertEqual(29, html.count('alt="手绘概念图：'))
+        self.assertEqual(29, html.count("▲ 手绘概念图："))
+        self.assertNotIn("Hand-drawn concept:", html)
+        self.assertNotIn('src="../assets/illustrations', html)
+
+        start = html.index('id="chapter-00"')
+        end = html.index('id="chapter-01"')
+        section = html[start:end]
+        compass = section.index('class="chapter-compass"')
+        plate = section.index('class="chapter-plate"')
+        self.assertLess(compass, plate)
+        self.assertLess(plate, section.index("<h2"))
+        self.assertLess(plate, section.index("<blockquote"))
+
+    def test_english_build_uses_english_plate_captions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = self.builder.build_html(
+                Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
+            )
+            html = output.read_text(encoding="utf-8")
+
+        self.assertEqual(29, html.count('class="chapter-plate"'))
+        self.assertEqual(29, html.count('alt="Hand-drawn concept:'))
+        self.assertEqual(29, html.count("▲ Hand-drawn concept:"))
+        self.assertNotIn('alt="手绘概念图：', html)
+        self.assertNotIn("▲ 手绘概念图：", html)
+
+    def test_missing_or_incomplete_manifest_is_a_build_error(self) -> None:
+        manifest = json.loads(
+            (self.builder.HANDDRAW_MANIFEST).read_text(encoding="utf-8")
+        )
+        original_dir = self.builder.HANDDRAW_DIR
+        original_manifest = self.builder.HANDDRAW_MANIFEST
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.builder.HANDDRAW_DIR = root
+            self.builder.HANDDRAW_MANIFEST = root / "manifest.json"
+            try:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_manifest()
+
+                (root / "manifest.json").write_text(
+                    json.dumps(manifest), encoding="utf-8", newline="\n"
+                )
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_manifest()
+
+                (root / "ch00-handdraw.svg").write_text(
+                    (original_dir / "ch00-handdraw.svg").read_text(encoding="utf-8"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_manifest()
+            finally:
+                self.builder.HANDDRAW_DIR = original_dir
+                self.builder.HANDDRAW_MANIFEST = original_manifest
+
+    def test_manifest_with_a_short_inventory_is_a_build_error(self) -> None:
+        manifest = json.loads(
+            (self.builder.HANDDRAW_MANIFEST).read_text(encoding="utf-8")
+        )
+        manifest["files"] = manifest["files"][:-1]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8", newline="\n")
+            original = self.builder.HANDDRAW_MANIFEST
+            self.builder.HANDDRAW_MANIFEST = path
+            try:
+                with self.assertRaises(self.builder.BuildError):
+                    self.builder.load_handdraw_manifest()
+            finally:
+                self.builder.HANDDRAW_MANIFEST = original
+
+
+if __name__ == "__main__":
+    unittest.main()
