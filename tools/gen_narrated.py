@@ -620,7 +620,10 @@ def _concat(segs, dest):
         [
             "ffmpeg", "-y", "-loglevel", "error",
             "-f", "concat", "-safe", "0", "-i", lst,
-            "-c", "copy", "-movflags", "+faststart",
+            "-c:v", "copy",
+            "-af", "loudnorm=I=-16:TP=-1:LRA=11,alimiter=limit=0.75:level=false",
+            "-c:a", "aac", "-b:a", "40k", "-ac", "1", "-ar", "44100",
+            "-movflags", "+faststart",
             dest,
         ],
         stdout=subprocess.DEVNULL,

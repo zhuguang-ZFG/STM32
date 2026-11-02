@@ -19,26 +19,26 @@
 <text x="174" y="254" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">展开成：GPIOC-&gt;BSRR = BS13</text>
 <rect x="40" y="272" width="268" height="46" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
 <text x="174" y="301" font-size="12.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一次 32 位写 · 原子 ✓</text>
-<rect x="348" y="84" width="300" height="46" fill="#e5f3f8" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="498" y="114" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B · 直接写 BSRR</text>
-<rect x="348" y="130" width="300" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="364" y="162" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOC-&gt;BSRR =</text>
-<text x="364" y="183" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">    GPIO_BSRR_BS13;</text>
-<line x1="498" y1="208" x2="498" y2="225" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="498.00,230.00 495.50,225.00 500.50,225.00" fill="#5e6872" opacity="1"/>
-<text x="498" y="254" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">低 16 位写 1 = 置位</text>
-<rect x="364" y="272" width="268" height="46" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="498" y="301" font-size="12.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一次 32 位写 · 原子 ✓</text>
-<rect x="672" y="84" width="300" height="46" fill="#e5f3f8" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="822" y="114" font-size="14" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">C · ODR 读改写</text>
-<rect x="672" y="130" width="300" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="688" y="162" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOC-&gt;ODR ^=</text>
-<text x="688" y="183" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">    GPIO_PIN_13;</text>
-<line x1="822" y1="208" x2="822" y2="225" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="822.00,230.00 819.50,225.00 824.50,225.00" fill="#5e6872" opacity="1"/>
-<text x="822" y="254" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">读 → 改 → 写，三条指令</text>
-<rect x="688" y="272" width="268" height="46" fill="#fbfaf7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="822" y="301" font-size="12.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">中间可被插队 · 竞争 ⚠</text>
+<rect x="336" y="84" width="300" height="46" fill="#e5f3f8" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="486" y="114" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B · 直接写 BSRR</text>
+<rect x="336" y="130" width="300" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="352" y="162" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOC-&gt;BSRR =</text>
+<text x="352" y="183" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">    GPIO_BSRR_BS13;</text>
+<line x1="486" y1="208" x2="486" y2="225" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="486.00,230.00 483.50,225.00 488.50,225.00" fill="#5e6872" opacity="1"/>
+<text x="486" y="254" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">低 16 位写 1 = 置位</text>
+<rect x="352" y="272" width="268" height="46" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="486" y="301" font-size="12.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一次 32 位写 · 原子 ✓</text>
+<rect x="648" y="84" width="300" height="46" fill="#e5f3f8" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="798" y="114" font-size="14" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">C · ODR 读改写</text>
+<rect x="648" y="130" width="300" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="664" y="162" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOC-&gt;ODR ^=</text>
+<text x="664" y="183" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">    GPIO_PIN_13;</text>
+<line x1="798" y1="208" x2="798" y2="225" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="798.00,230.00 795.50,225.00 800.50,225.00" fill="#5e6872" opacity="1"/>
+<text x="798" y="254" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">读 → 改 → 写，三条指令</text>
+<rect x="664" y="272" width="268" height="46" fill="#fbfaf7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="798" y="301" font-size="12.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">中间可被插队 · 竞争 ⚠</text>
 <rect x="24" y="358" width="912" height="190" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="48" y="388" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ODR 读改写的丢位现场（主流程 vs 中断）</text>
 <text x="40" y="437" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主流程</text>

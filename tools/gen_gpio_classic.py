@@ -269,7 +269,7 @@ def write_methods() -> Svg:
          "读 → 改 → 写，三条指令", "中间可被插队 · 竞争 ⚠", T.RED),
     ]
     for i, (title, color, code, mid, verdict, vcolor) in enumerate(cols):
-        x = 24 + i * 324
+        x = 24 + i * 312
         s.rect(x, 84, 300, 46, fill=T.PANEL2, stroke=color, rx=8)
         s.text(x + 150, 114, title, size=14, anchor="middle", weight="700",
                fill=color)

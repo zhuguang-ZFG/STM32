@@ -114,7 +114,7 @@ def _scene_mp4(work: str, index: int, frames: list[str], mp3: str, dest: str, du
 def _louden(joined: str, final: str) -> None:
     subprocess.check_call([
         "ffmpeg", "-y", "-loglevel", "error", "-i", joined,
-        "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1:LRA=11",
+        "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1:LRA=11,alimiter=limit=0.75:level=false",
         "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-ar", "44100",
         "-movflags", "+faststart", final,
     ], stdout=subprocess.DEVNULL)
@@ -222,10 +222,11 @@ def contact_sheet(chapter: str) -> None:
             tiles.append((Image.open(path).convert("RGB"), scene["title"]))
         canvas = Image.new("RGB", (1920, 800), (23, 26, 36))
         draw = ImageDraw.Draw(canvas)
+        title_font = narrated._font(14)
         for position, (image, title) in enumerate(tiles):
             x, y = (position % 3) * 640, (position // 3) * 400
             canvas.paste(image, (x, y))
-            draw.text((x + 12, y + 366), title, fill=(236, 239, 244))
+            draw.text((x + 12, y + 366), title, font=title_font, fill=(236, 239, 244))
         canvas.save(source_dir / "contact-sheet.jpg", quality=90)
     print(f"[ok] contact-sheet.jpg  {len(tiles)} actual MP4 frames")
 
