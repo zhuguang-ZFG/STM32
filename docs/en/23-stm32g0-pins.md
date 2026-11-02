@@ -2,7 +2,7 @@
 
 > 中文：[23 STM32G0 引脚（G071RB）](../23-STM32G0引脚.md)
 
-> On G0, BOOT0 and the debug clock share one pin. Learn the package before you talk about alternate functions.
+> On the G071, PA14 is both the BOOT0 input and SWCLK. Recovery requires option bytes, complements, external PA14 level, and RDP together; repeatedly pulling one pin high is not a diagnosis.
 
 <p align="center">
   <img src="../../assets/boards/pinout-stm32g071rb-lqfp64.svg" width="760" alt="STM32G071RB LQFP64 pinout">
@@ -53,7 +53,7 @@ The drawing is **STM32G071RB**, LQFP64. Every fact below is from **DS12232 Rev 5
 | Low-power modes: Sleep, Stop, Standby, Shutdown | Cover features |
 | Communication: 2×I2C, 4×USART, 1×LPUART, 2×SPI, USB Type-C PD (UCPD) | Cover features. The feature list has no CAN and no USB full-speed device controller |
 
-Motto: **On a G071, R is 64 pins and B is 128 KB. There is no CAN. Do not hunt for CAN_TX on the drawing.**
+Before migrating, confirm the complete order code, package, and peripheral table. The G071RB has 64 pins and 128 KB and does not contain CAN; a missing peripheral cannot be found by searching harder in the AF table.
 
 ## What changes versus F1 / F4
 
@@ -68,6 +68,11 @@ Motto: **On a G071, R is 64 pins and B is 128 KB. There is no CAN. Do not hunt f
 | PC13–PC15 | Backup domain, weak drive | Table 12 note 1: the switch can sink only about 3 mA, keep the output under 2 MHz and the load under 30 pF, do not light an LED from here |
 
 F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS12232 Table 13 (port A) and Table 14 (port B)**. Do not copy AF numbers from an F407.
+
+<p align="center">
+  <img src="../../assets/boards/pinout-bluepill.svg" width="760" alt="BluePill F103 LQFP48 pinout for comparing power, boot, debug, and alternate-function locations with the G071RB LQFP64">
+  <br><sub>▲ Migration comparison covers boundaries only: power pins, BOOT, SWD, and required peripherals. F1 pin numbers, boot rules, and registers do not transfer to G0; use the G071 datasheet and reference manual for the decision.</sub>
+</p>
 
 ## BOOT0 shares SWCLK: determine the boot source first
 
@@ -144,11 +149,12 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
 
 ## Hands-on labs
 
-1. Print the drawing. Count with a pencil from pin 1 to PF2-NRST and check that it is pin 12.
-2. In datasheet Table 13, find the AF list for PA9 and circle USART1_TX.
-3. Answer: if a schematic ties an LED to PC13, why is this part a bad fit?
-4. Without writing anything, record `BOOT_LOCK/nBOOT1/nBOOT_SEL/nBOOT0` and the external PA14 level, then substitute every value into the truth table.
-5. On a recoverable board you own, rehearse an Under Reset connection. Prove option-byte readback first; only then decide whether to modify anything. Record values before/after reset, Main Flash startup, and SWD hot attach.
+1. **Package reconciliation:** Count from pin 1 to PF2-NRST and record power pins, PA14, and NRST, then compare each against the PCB footprint.
+2. **Alternate-function evidence:** Copy the complete PA9 row from Table 13, mark USART1_TX and conflicts, and use CubeMX only as a cross-check.
+3. **Read-only boot audit:** Record `BOOT_LOCK/nBOOT1/nBOOT_SEL/nBOOT0`, complements, RDP, and PA14 level and evaluate the truth table without writing option bytes.
+4. **Controlled recovery:** On a recoverable board, connect under reset and record settings, readback, Main Flash boot after reset, and hot attach. Any mass erase requires a separate backup and decision.
+
+Before leaving this chapter, keep a package reconciliation, PA9 AF source, complete boot-input snapshot, and one SWD recovery record that did not depend on erase.
 
 Self-test:
 

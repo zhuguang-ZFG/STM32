@@ -2,7 +2,7 @@
 
 > 中文：[25 STM32H7 引脚（H743ZI）](../25-STM32H7引脚.md)
 
-> An H7 LQFP144 has 144 pins, two VCAP pins, and a VDD33USB that exists only to feed USB. When you count, start at PE2 in the top-left corner.
+> H743 at 400 or 480 MHz depends on silicon revision, voltage scale, and the clock chain. After software readback, use MCO, a peripheral waveform, and Cache/DMA ownership to prove the system is usable.
 
 <p align="center">
   <img src="../../assets/boards/pinout-stm32h743zi-lqfp144.svg" width="860" alt="STM32H743ZI LQFP144 pinout">
@@ -64,7 +64,7 @@ The next figure puts four power boundaries that are easy to conflate on one page
   <br><sub>▲ Power-domain map: which layer owns each supply pin, core-regulator connection, and internal domain (FA-029 · IG-002; author-drawn vector)</sub>
 </p>
 
-Motto: **Count 144 pins from PE2. There are two VCAP pins. The USB supply is not called VDD.**
+Start package reconciliation at PE2 and confirm both VCAP pins, VDD33USB, PDR_ON, and the target-board connections. A missing prerequisite invalidates later clock and peripheral tests.
 
 ## Versus F1 / F4
 

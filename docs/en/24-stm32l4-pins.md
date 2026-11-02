@@ -2,7 +2,7 @@
 
 > 中文：[24 STM32L4 引脚（L476RG）](../24-STM32L4引脚.md)
 
-> Pin 1 on L4 is VBAT again, but there is a separate VDDUSB next to it. USB and CAN still both want PA11.
+> L4 migration is more than a pin swap. After Stop 2, preserve wake evidence, restore clocks, and only then release UART or USB; current measurement also separates the Nucleo debugger from the target MCU supply.
 
 <p align="center">
   <img src="../../assets/boards/pinout-stm32l476rg-lqfp64.svg" width="760" alt="STM32L476RG LQFP64 pinout">

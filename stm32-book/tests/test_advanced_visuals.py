@@ -138,6 +138,14 @@ CHAPTERS = {
             "rtos-startup-gates.svg",
         ),
     ),
+    ROOT / "docs" / "23-STM32G0引脚.md": (
+        3,
+        (
+            "pinout-stm32g071rb-lqfp64.svg",
+            "pinout-bluepill.svg",
+            "g0-boot-swd.svg",
+        ),
+    ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
         5,
         (
@@ -235,6 +243,7 @@ class AdvancedVisualTests(unittest.TestCase):
             ("16-低功耗设计.md", "16-low-power.md"),
             ("17-调试与性能优化.md", "17-debug.md"),
             ("19-项目实战合集.md", "19-projects.md"),
+            ("23-STM32G0引脚.md", "23-stm32g0-pins.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),
