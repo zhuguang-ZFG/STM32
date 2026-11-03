@@ -165,7 +165,7 @@ The worked example for this orderable is in Principle and boundary, and it is an
 
 ## Hardware and wiring
 
-> **Evidence-track status:** the photo below is a third-party photograph of the Blue Pill board (CC BY-SA 4.0, Avandalen / Wikimedia Commons), for board identification and locating the onboard LED only — it is not a measurement from this book's lab. The meter or logic-analyzer capture from this experiment is still to be supplied; the Handraw and stack figures above are knowledge-track only. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
+> **Evidence-track status:** the photo below is a third-party photograph of the Blue Pill board (CC BY-SA 4.0, Avandalen / Wikimedia Commons), for recognizing the board's overall look and pin layout only (the onboard PC13 LED position is per the board schematic/silkscreen; too small to resolve in this photo) — it is not a measurement from this book's lab. The meter or logic-analyzer capture from this experiment is still to be supplied; the Handraw and stack figures above are knowledge-track only. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
 
 <figure class="photo-spread">
   <img src="../../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Top-down photograph of a Blue Pill development board (STM32F103C8T6), blue PCB with the two pin-header rows clearly visible">
