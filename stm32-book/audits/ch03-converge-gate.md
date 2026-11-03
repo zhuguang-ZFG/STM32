@@ -51,7 +51,7 @@
 - 指纹 heads：写 1，灯反而灭了？ → 先做成最小胜利 → 低电平为什么能点灯 → 驱动与空闲电平 → 照抄 PA0 会踩坑 → 三条边界带走 → 离开前做一件事。
 - **明确去掉**邻章同构尾拍「口诀 / 实验… / 合上书，三问」。
 - SP-05：开场 0–8s 反常识实问题（PC13 写 1 灯灭）；机制段画面走 Handraw/stack，旁白标明「不是实测电流」。
-- 成片：`assets/video/ch03-gpio.mp4`（960×540，speak ≈121.4s）+ `.srt`；海报 `ch03-gpio.png` 以 `NARRATED_SCALE=2` 出 1920×1080。
+- 成片：`assets/video/ch03-gpio.mp4`（**1920×1080**，speak ≈121.4s）+ `.srt` + 海报；本轮以 `NARRATED_SCALE=2` 重生（sha256 见文末补证）。
 - 中英正文 `<details>` 旁白列表已同步 7 条。
 
 ### 长片分镜（已改 + 已 regen）
@@ -85,8 +85,8 @@
 
 仍开放（诚实未验证）：
 
-- 双语 PDF 目检 / 浏览器目检 / `task_verify`
-- 全书级 `check_assets`（ch18–ch20 960p 存量 FAIL，与 ch03 无关）
+- 浏览器/PDF **人工目检** / `task_verify`（absent-tool）
+- 全书级 `check_assets`（ch18–ch20 960p 存量 FAIL；ch03 已回 1080p）
 
 ## 知识轨哈希（本轮引用）
 
@@ -104,10 +104,11 @@
 | `python -m unittest discover -s stm32-book/tests` | **176 OK** |
 | `python stm32-book/build_html.py --check` | PASS（zh） |
 | `python stm32-book/build_html.py --lang en --check` | PASS（en） |
-| `python tools/check_assets.py` | **FAIL（既有）**：ch18/ch19/ch20 视频流非 1920×1080；ch03 本身 ok；海报字体 SKIP |
+| `python tools/check_assets.py` | **FAIL（存量）**：仅 ch18/ch19/ch20 为 960×540；**ch03 本轮 1920×1080 ok**；海报字体 SKIP |
 | `python tools/gen_long_lesson.py --check 03` / `--speak 03` | **本轮通过**：设 `NARRATED_FONT=C:\Windows\Fonts\msyh.ttc` 后 `--check` 与 `--speak` 均 exit 0；media-report 全绿 |
-| `python stm32-book/build_html.py --pdf` | **未验证**：本机启动后 PDF 长时间 0 B，已中止；不做绿灯 |
-| 浏览器章页目检 / `task_verify` | **未跑** |
+| `python stm32-book/build_html.py --pdf` / `--lang en --pdf` | **构建 passed**（dist 已写出）；**人工目检仍 unverified** |
+| 浏览器章页目检 | **unverified**（无 GUI 目检；dist HTML 见文末） |
+| `task_verify` | **unverified（absent-tool）** |
 
 ## §10.2 本轮勾选
 
@@ -119,13 +120,15 @@
 - [x] Sepia 删除/回退记录（上文）
 - [x] 短片+长片节拍指纹去同构并可再生（本轮：短片 7 拍 regen；长片 media-report 全绿）
 - [ ] 窄回归之外：`check_assets` 全书级既有 FAIL 需另开
-- [ ] 双语 PDF 目检 / 浏览器目检 / `task_verify` 分列
+- [ ] 全书级 `check_assets`（ch18–ch20 960p 存量 FAIL；ch03 本轮已回 1080p）
+- [ ] 浏览器/PDF **人工目检**（dist 已生成，见文末补证；未目检不勾）
+- [ ] `task_verify`：仓库无工具 → **unverified（absent-tool）**；双语 HTML/PDF **构建**已 passed（非目检）
 
 ## 建议下一步
 
 1. ~~短片/长片节拍去同构与 regen~~ **已完成**（见上文旁白/视频）。
 2. 补 BluePill PC13 真证照片/表计截图并回填本清单哈希。
-3. 双语 PDF 目检 / 浏览器章页目检 / `task_verify` 通过后再勾 §10.2 剩余项，勿开 B2。
+3. 人工完成浏览器/PDF 目检，并处理 ch18–20 960p 或书面挂账后，再勾 §10.2 剩余项；勿开 B2。`task_verify` 仍为 absent-tool。
 4. 另开任务处理 ch18–ch20 视频 960p（`check_assets` 存量 FAIL）；勿与 ch03 合流提交混装。
 
 ## 本轮验证记录
@@ -142,11 +145,12 @@
 - `python tools/check_assets.py` → **FAIL**：`ch18-faq` / `ch19-projects` / `ch20-refs` 视频流为 960×540，不是 1920×1080。ch03-gpio.mp4 本身 `[ok]`。海报字库缺失仅 SKIP。
 
 ### 未验证（诚实列出，不勾 §10.2）
-- 短片/长片按 SP-05/06 重生：未跑。旁白仍与相邻章同构 10 拍风险，见上文节拍指纹。
-- 双语 PDF `--check` / 实产 PDF：本机曾出现 0B 产物风险，本轮中止，**未验证**。
-- 浏览器目检（章首页 / 关系图 / 代码表 / 实验页）：**未做**。
-- `task_verify` 分列报告：**未跑**。
+- 浏览器目检（章首页 / 关系图 / 代码表 / 实验页）：**未做**（dist HTML 已生成）。
+- PDF **人工**翻页目检：**未做**（zh/en PDF **构建**已 passed，见文末）。
+- `task_verify`：**unverified（absent-tool）**，仓库无入口。
+- 全书 `check_assets`：仍因 ch18–20 960p FAIL（与 ch03 无关）。
 - BluePill PC13 共阳真板照片：仍 **待补**（正文已声明真证轨缺口）。
+- 注：短片/长片节拍去同构与 ch03 短片 1080p 重生已在上文/文末记录，不再列未跑。
 
 ### Sepia 删除/回退（本轮）
 - **删/削**：未发明第二套章骨架；未整支合并 handraw docs。未删事实表、公式、代码、来源锚。
@@ -171,7 +175,79 @@
 
 未宣称 / 仍开放：
 
-- 全书 `check_assets`（ch18–20 960p）
-- 双语 PDF 浏览器目检 / `task_verify`
+- 全书 `check_assets`（ch18–20 960p；ch03 短片已回 1080p）
+- 浏览器/PDF **人工目检**；`task_verify`（absent-tool）
 - 未把 gitignored 的 `final-videos/ch03/*.mp4` 纳入版本库；以 `media-report.json` 哈希为准
 
+### 剩余硬门补证（2026-11-03 02:58 America/Adak (UTC-10)）
+
+本轮只补证据与 ch03 相关阻塞，不把未目检项写成通过。
+
+#### 1) `task_verify`
+
+| 分列 | 结果 |
+| --- | --- |
+| passed | （无） |
+| failed | （无） |
+| unverified | **工具/脚本在仓库中不存在** |
+
+检索范围：`tools/`、`stm32-book/`、`.claude/skills/`、根目录脚本与文档引用。命中仅为 Spec/审计叙述与 `audits/ch03-l1-tdd.md` 历史句（`unverified（project-or-git-baseline-unavailable）`）。**无**可执行的 `task_verify` CLI/入口。因此本项记 **unverified（absent-tool）**，不冒充通过，也不勾 §10.2 对应框。
+
+#### 2) 双语书册自动检查
+
+| 命令 | 结果 | 备注 |
+| --- | --- | --- |
+| `python stm32-book/build_html.py --check` | **passed** | zh HTML contract；约 6.0 MB / 29 章 |
+| `python stm32-book/build_html.py --lang en --check` | **passed** | en HTML contract；约 6.1 MB / 29 章 |
+| `python stm32-book/build_html.py --pdf` | **passed（构建）** | `stm32-book/dist/stm32-practical-book.pdf`（约 13.5 MB） |
+| `python stm32-book/build_html.py --lang en --pdf` | **passed（构建）** | `stm32-book/dist/stm32-practical-book-en.pdf`（约 13.8 MB） |
+
+说明：PDF 两项是 Playwright 打印**构建成功**，**不是**人工 PDF 目检。
+
+#### 3) 浏览器 / PDF 目检
+
+| 项 | 结果 |
+| --- | --- |
+| 浏览器章首页 / 关系图页 / 代码或表页 / 实验页 | **unverified**（未做可靠 GUI 浏览器目检；**不勾** §10.2 目检框） |
+| PDF 人工翻页目检 | **unverified**（已生成文件，待人眼） |
+
+供人工目检的本机路径：
+
+- `D:\Users\STM32\stm32-book\dist\stm32-practical-book.html`
+- `D:\Users\STM32\stm32-book\dist\stm32-practical-book-en.html`
+- `D:\Users\STM32\stm32-book\dist\stm32-practical-book.pdf`
+- `D:\Users\STM32\stm32-book\dist\stm32-practical-book-en.pdf`
+
+#### 4) `check_assets`（清洁环境：未设置 `NARRATED_SCALE` / `NARRATED_FONT`）
+
+| 项 | 结果 |
+| --- | --- |
+| 命令 | `python tools/check_assets.py` → **failed**（exit 1） |
+| ch03-gpio | **ok**：视频流 **1920×1080** H.264；121s；字幕 7 条（本轮 `NARRATED_SCALE=2` + `NARRATED_FONT=C:\Windows\Fonts\msyh.ttc` 重生） |
+| ch03 mp4 sha256 | `97fc7f0d0ca868c625a82765fd027e13a0f35f9f4794a302d250813c1544b6f1` |
+| 海报逐像素 | **SKIP**（默认字体 `/usr/share/fonts/truetype/wqy/wqy-microhei.ttc` 本机不存在） |
+| 存量 FAIL | **ch18-faq / ch19-projects / ch20-refs** 均为 `('h264', 960, 540)`，期望 1920×1080 |
+
+**最小修复选项（仅文档建议；本轮未改策略、未整批重生 18–20）：**
+
+1. **优选**：`NARRATED_SCALE=2` + `NARRATED_FONT=C:\Windows\Fonts\msyh.ttc` 后执行 `python tools/gen_narrated.py --speak 18 19 20`，再在清洁环境复跑 `check_assets`。
+2. **临时例外**：审计挂账「L4 批次 B5 前允许 960p」；**不**改 `hd_chapters`，除非另开策略 PR。仓库内**无**现成一行 allowlist。
+3. **禁止本轮**：为绿灯删断言、扩大 allowlist、或无关章节大清洗。
+
+注意：若 shell 仍导出 `NARRATED_SCALE=2`，`check_assets` 会误伤海报比对；验证前必须清除。
+
+#### 5) §10.2 勾选纪律（本轮）
+
+- 已勾选的合同/结构/Handraw/真证/节拍/Sepia 项：不回退。
+- **仍不勾**：
+  - 复合自动检查门（全书 `check_assets` 仍因 ch18–20 FAIL）。
+  - 浏览器/PDF 人工目检。
+  - `task_verify`（absent-tool → unverified）。
+- 双语 HTML `--check` 与双语 PDF **构建**已 passed，只记证据，不单独把复合门改成勾选。
+
+#### 6) 仍需用户侧完成
+
+1. BluePill PC13 共阳真板照片 / 表计截图，回填真证轨哈希。
+2. 打开上列 dist HTML/PDF，完成章首页、关系图、代码/表、实验页目检。
+3. 决定 ch18–20：重生 1080p，或书面批准挂账到 B5。
+4. 若团队另有外部 `task_verify` 入口，提供路径后再跑并分列记账。

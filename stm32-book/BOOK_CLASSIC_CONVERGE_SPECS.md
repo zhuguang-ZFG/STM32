@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 状态 | Overlay Draft 1 · ch03 硬门进行中（正文/合同/短片+长片节拍已改；PDF/目检/`check_assets` 存量仍开放） |
+| 状态 | Overlay Draft 1 · ch03 硬门进行中（合同/结构/节拍/ch03@1080p/双语 HTML+PDF 构建已证；目检/task_verify/ch18–20 check_assets 仍开放） |
 | 日期 | 2026-11-03（America/Adak 本地日） |
 | 文件名 | stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md |
 | 基座分支 | `feat/book-video-classic`（0 behind `main`） |
@@ -441,8 +441,11 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 - [x] 短片 + 可复现长片链按 classic SP-05/06；旁白节拍指纹不与相邻样例章完全同构。  
 - [x] Sepia 删除/回退检查记录在章缺陷清单。  
 - [ ] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML/PDF check 通过。  
+  （部分证据：`slop_lint` 干净；双语 HTML `--check` passed；双语 PDF **构建** passed → `stm32-book/dist/`；ch03 短片已回 1920×1080。仍 FAIL：全书 `check_assets` 因 ch18/ch19/ch20 为 960×540。复合门不勾。）  
 - [ ] 浏览器/PDF 目检：章首页、关系图页、代码或表页、实验页。  
-- [ ] `task_verify` 的 passed/failed/unverified 分列；unverified 不冒充通过。
+  （dist HTML/PDF 已生成供人检；本环境未做 GUI 目检 → 不勾。详见 `audits/ch03-converge-gate.md`。）  
+- [ ] `task_verify` 的 passed/failed/unverified 分列；unverified 不冒充通过。  
+  （仓库内无 `task_verify` 可执行入口 → **unverified（absent-tool）**；不冒充通过。）
 
 ### 10.3 扩批顺序（ch03 通过后）
 
@@ -538,7 +541,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 2. 按 §9.3 Port A → §9.4 Port B。  
 3. ~~改 `CONTENT_GUIDE.md`（§8）。~~ **已完成**（中英同步；固定骨架 → 教学合同 + 功能块可选）。  
 4. 更新 manifest 分部标题与 goal（§3.2）。  
-5. ~~开 ch03 缺陷清单并跑 §10.2 硬门。~~ **进行中**：`audits/ch03-converge-gate.md`；合同/结构/Handraw/真证/Sepia/短片+长片节拍与成片报告已落；双语 PDF 目检、浏览器目检、`task_verify`、全书 `check_assets`（ch18–20 960p）仍开放。  
+5. ~~开 ch03 缺陷清单并跑 §10.2 硬门。~~ **进行中**：`audits/ch03-converge-gate.md`；合同/结构/Handraw/真证/Sepia/节拍/ch03@1080p/双语 HTML `--check` + 双语 PDF **构建**已落；仍开放：浏览器与 PDF **人工目检**、`task_verify`（absent-tool）、全书 `check_assets`（ch18–20 960p）。
 6. 硬门全绿后再开 B2。
 
 未经 §10.2 勾选完成，不得在 README 或发布说明中写「经典合流已完成」。
