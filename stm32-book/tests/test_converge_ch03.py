@@ -56,5 +56,39 @@ class ConvergeCh03Tests(unittest.TestCase):
         self.assertIn("to supply", en)
 
 
+
+    def test_short_and_long_beat_fingerprints_differ_from_neighbors(self) -> None:
+        import importlib.util
+        import sys
+
+        def load_tool(name: str):
+            path = ROOT / "tools" / f"{name}.py"
+            spec = importlib.util.spec_from_file_location(name, path)
+            module = importlib.util.module_from_spec(spec)
+            assert spec.loader is not None
+            sys.modules[name] = module
+            spec.loader.exec_module(module)
+            return module
+
+        narration = load_tool("narration")
+        storyboards = load_tool("storyboards")
+        short_heads = [seg["head"] for seg in narration.CHAPTERS[3]["segments"]]
+        self.assertEqual(7, len(short_heads))
+        self.assertNotEqual(
+            [seg["head"] for seg in narration.CHAPTERS[2]["segments"]],
+            short_heads,
+        )
+        self.assertNotEqual(
+            [seg["head"] for seg in narration.CHAPTERS[4]["segments"]],
+            short_heads,
+        )
+        self.assertTrue(all("合上书" not in h and h != "口诀" for h in short_heads))
+        purposes = [seg["purpose"] for seg in storyboards.load("03")["segments"]]
+        neighbor = [seg["purpose"] for seg in storyboards.load("02")["segments"]]
+        self.assertNotEqual(purposes, neighbor)
+        self.assertEqual(1, purposes.count("recall"))
+        self.assertGreaterEqual(purposes.count("failure"), 6)
+
+
 if __name__ == "__main__":
     unittest.main()

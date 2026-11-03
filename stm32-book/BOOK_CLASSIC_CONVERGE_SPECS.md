@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 状态 | Overlay Draft 1 · ch03 硬门进行中（正文/合同已改；视频与目检仍开放） |
+| 状态 | Overlay Draft 1 · ch03 硬门进行中（正文/合同/短片+长片节拍已改；PDF/目检/`check_assets` 存量仍开放） |
 | 日期 | 2026-11-03（America/Adak 本地日） |
 | 文件名 | stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md |
 | 基座分支 | `feat/book-video-classic`（0 behind `main`） |
@@ -438,7 +438,7 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 - [x] 章结构为功能块可选；最小胜利在手册密度之前。  
 - [x] 至少一张 Handraw 规划过的技术或概念关系图 + 真证轨缺口显式声明（有则哈希，无则写待补）。  
 - [x] 失败分支含可区分证据。  
-- [ ] 短片 + 可复现长片链按 classic SP-05/06；旁白节拍指纹不与相邻样例章完全同构。  
+- [x] 短片 + 可复现长片链按 classic SP-05/06；旁白节拍指纹不与相邻样例章完全同构。  
 - [x] Sepia 删除/回退检查记录在章缺陷清单。  
 - [ ] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML/PDF check 通过。  
 - [ ] 浏览器/PDF 目检：章首页、关系图页、代码或表页、实验页。  
@@ -538,7 +538,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 2. 按 §9.3 Port A → §9.4 Port B。  
 3. ~~改 `CONTENT_GUIDE.md`（§8）。~~ **已完成**（中英同步；固定骨架 → 教学合同 + 功能块可选）。  
 4. 更新 manifest 分部标题与 goal（§3.2）。  
-5. ~~开 ch03 缺陷清单并跑 §10.2 硬门。~~ **进行中**：`audits/ch03-converge-gate.md`；合同/结构/Handraw/真证声明/Sepia 已落；视频节拍与 HTML/PDF/task_verify 仍开放。  
+5. ~~开 ch03 缺陷清单并跑 §10.2 硬门。~~ **进行中**：`audits/ch03-converge-gate.md`；合同/结构/Handraw/真证/Sepia/短片+长片节拍与成片报告已落；双语 PDF 目检、浏览器目检、`task_verify`、全书 `check_assets`（ch18–20 960p）仍开放。  
 6. 硬门全绿后再开 B2。
 
 未经 §10.2 勾选完成，不得在 README 或发布说明中写「经典合流已完成」。

@@ -69,7 +69,7 @@
     {
       "scene_id": "ch03-s03",
       "title": "PA0 与 PC13 不能照抄接法",
-      "purpose": "mechanism",
+      "purpose": "failure",
       "prerequisite": [
         "ch03-s02"
       ],
@@ -419,7 +419,7 @@
     {
       "scene_id": "ch03-s14",
       "title": "BR13 与 BS13 一个灭一个亮",
-      "purpose": "mechanism",
+      "purpose": "experiment",
       "prerequisite": [
         "ch03-s13"
       ],
@@ -483,7 +483,7 @@
     {
       "scene_id": "ch03-s16",
       "title": "PA13、PA14 为什么别乱占",
-      "purpose": "mechanism",
+      "purpose": "failure",
       "prerequisite": [
         "ch03-s06"
       ],
@@ -831,49 +831,49 @@
     },
     {
       "scene_id": "ch03-s27",
-      "title": "合上书，能不能说出这条链",
+      "title": "离开检查：复述这条电流链",
       "purpose": "recall",
       "prerequisite": [
         "ch03-s02",
         "ch03-s14"
       ],
-      "narration": "现在别看答案，试着说完整：BR13 让 PC13 变成 0，输出级导通，电流从 3.3 伏经共阳 LED 和限流电阻流入引脚，所以灯亮。BS13 则让 PC13 变成 1，灌电流路径断开，灯灭。能把电平和电流说清，比单背低有效四个字更牢。",
+      "narration": "别翻笔记。从写值说到电流：BR13 让 PC13 变成 0，输出级导通，电流从 3.3 伏经共阳 LED 和限流电阻流入引脚，灯亮；BS13 让 PC13 变成 1，灌电流路径断开，灯灭。说不全，就回到共阳那一帧，不要用三道抢答题代替这条链。",
       "on_screen": [
-        "BR13 → 0 → 导通 → 灯亮",
-        "BS13 → 1 → 断开灌电流 → 灯灭",
-        "电平与电流一起复述"
+        "BR13 → 电平 0 → 灯亮",
+        "BS13 → 电平 1 → 灯灭",
+        "说不全就回共阳帧"
       ],
       "visual_source": "illustrations/ch03-handdraw.svg",
       "fact_source": [
         "project-examples"
       ],
-      "memory_anchor": "从写值一路复述到电流",
+      "memory_anchor": "能复述写值到电流，才算离开",
       "evidence_type": "recall",
       "start": 624.34,
-      "duration": 25.886,
+      "duration": 26.87,
       "subtitle_ref": "ch03.srt#27",
-      "head": "合上书，能不能说出这条链",
+      "head": "离开检查：复述这条电流链",
       "lines": [
-        "BR13 → 0 → 导通 → 灯亮",
-        "BS13 → 1 → 断开灌电流 → 灯灭",
-        "电平与电流一起复述"
+        "BR13 → 电平 0 → 灯亮",
+        "BS13 → 电平 1 → 灯灭",
+        "说不全就回共阳帧"
       ],
-      "say": "现在别看答案，试着说完整：BR13 让 PC13 变成 0，输出级导通，电流从 3.3 伏经共阳 LED 和限流电阻流入引脚，所以灯亮。BS13 则让 PC13 变成 1，灌电流路径断开，灯灭。能把电平和电流说清，比单背低有效四个字更牢。",
+      "say": "别翻笔记。从写值说到电流：BR13 让 PC13 变成 0，输出级导通，电流从 3.3 伏经共阳 LED 和限流电阻流入引脚，灯亮；BS13 让 PC13 变成 1，灌电流路径断开，灯灭。说不全，就回到共阳那一帧，不要用三道抢答题代替这条链。",
       "svg": "illustrations/ch03-handdraw.svg"
     },
     {
       "scene_id": "ch03-s28",
-      "title": "三个问题，带进下一章",
-      "purpose": "recall",
+      "title": "把轮询盲点交给下一章",
+      "purpose": "failure",
       "prerequisite": [
         "ch03-s24",
         "ch03-s27"
       ],
-      "narration": "最后三问。PC13 写高还是写低才会亮？按键接 GND 为什么用上拉？轮询为什么会漏掉短按？前两问答的是这一章的电流和空闲电平，第三问把你带到 EXTI。下一章我们让边沿主动敲门，并继续追 NVIC 怎样决定谁先被处理。",
+      "narration": "本章验收停在电流路径和有效电平。主循环一堵，短按就可能丢——这是轮询边界，不是再出三道问答题。下一章让边沿主动敲门，并继续追 NVIC。现在先确认：PC13 低有效、按键接 GND 要上拉、重映射先开 AFIO。",
       "on_screen": [
-        "PC13 的有效电平？",
-        "按键为什么上拉？",
-        "轮询为什么漏短按？"
+        "电流路径已验收",
+        "轮询会丢短按",
+        "下一章：边沿敲门"
       ],
       "visual_source": "illustrations/ch03-handdraw.svg",
       "fact_source": [
@@ -881,21 +881,21 @@
         "docs/03-GPIO与LED.md#动手实验",
         "docs/03-GPIO与LED.md#硬件与接线"
       ],
-      "memory_anchor": "会解释，再进入中断",
-      "evidence_type": "recall",
-      "start": 650.226,
-      "duration": 25.934,
+      "memory_anchor": "电流验完，漏检交给 EXTI",
+      "evidence_type": "diagnosis",
+      "start": 651.21,
+      "duration": 25.118,
       "subtitle_ref": "ch03.srt#28",
-      "head": "三个问题，带进下一章",
+      "head": "把轮询盲点交给下一章",
       "lines": [
-        "PC13 的有效电平？",
-        "按键为什么上拉？",
-        "轮询为什么漏短按？"
+        "电流路径已验收",
+        "轮询会丢短按",
+        "下一章：边沿敲门"
       ],
-      "say": "最后三问。PC13 写高还是写低才会亮？按键接 GND 为什么用上拉？轮询为什么会漏掉短按？前两问答的是这一章的电流和空闲电平，第三问把你带到 EXTI。下一章我们让边沿主动敲门，并继续追 NVIC 怎样决定谁先被处理。",
+      "say": "本章验收停在电流路径和有效电平。主循环一堵，短按就可能丢——这是轮询边界，不是再出三道问答题。下一章让边沿主动敲门，并继续追 NVIC。现在先确认：PC13 低有效、按键接 GND 要上拉、重映射先开 AFIO。",
       "svg": "illustrations/ch03-handdraw.svg"
     }
   ],
-  "estimated_duration": 804.437,
-  "actual_duration": 676.16
+  "estimated_duration": 803.917,
+  "actual_duration": 676.328
 }

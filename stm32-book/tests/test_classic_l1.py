@@ -61,12 +61,19 @@ class ClassicL1VisualTests(unittest.TestCase):
         narration = load_tool("narration")
         chapter = narration.CHAPTERS[3]
         segments = chapter["segments"]
-        self.assertEqual(10, len(segments))
+        # Converge §5.4: ch03 short must NOT use the neighbor 10-beat
+        # 口诀→实验→合上书三问 template; 6-beat pool order is intentional.
+        self.assertEqual(7, len(segments))
         self.assertEqual("illustrations/ch03-handdraw.svg", segments[0]["svg"])
-        self.assertEqual("diagrams/stack-gpio-pc13-led.png", segments[1]["svg"])
-        self.assertGreaterEqual(8, sum(bool(seg.get("svg")) for seg in segments))
         self.assertIn("写 1", segments[0]["say"])
-        self.assertIn("不是实测", segments[1]["say"])
+        self.assertIn("RESET", segments[1]["say"])  # minimum victory before mechanism plate
+        self.assertEqual("diagrams/stack-gpio-pc13-led.png", segments[2]["svg"])
+        self.assertIn("不是实测", segments[2]["say"])
+        joined_say = "".join(seg["say"] for seg in segments)
+        joined_head = "".join(seg["head"] for seg in segments)
+        self.assertNotIn("合上书", joined_say)
+        self.assertNotIn("口诀", joined_head)
+        self.assertGreaterEqual(8, sum(bool(seg.get("svg")) for seg in segments))
 
     def test_long_storyboard_is_complete_and_covers_five_learning_roles(self) -> None:
         storyboards = load_tool("storyboards")
