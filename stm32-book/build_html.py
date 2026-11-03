@@ -1811,14 +1811,33 @@ def _short_running_title(title: str) -> str:
     return title.strip()
 
 
-def _fit_running_header(text: str, *, fontname: str, fontsize: float, max_width: float, fitz) -> str:
-    if fitz.get_text_length(text, fontname=fontname, fontsize=fontsize) <= max_width:
+def _fit_running_header(text: str, *, fontname: str, fontsize: float, max_width: float, fitz, font=None) -> str:
+    measure = font.text_length if font is not None else (
+        lambda text, fontsize: fitz.get_text_length(text, fontname=fontname, fontsize=fontsize)
+    )
+    if measure(text, fontsize) <= max_width:
         return text
     ellipsis = "..."
     trimmed = text
-    while trimmed and fitz.get_text_length(trimmed + ellipsis, fontname=fontname, fontsize=fontsize) > max_width:
+    while trimmed and measure(trimmed + ellipsis, fontsize) > max_width:
         trimmed = trimmed[:-1]
     return f"{trimmed}{ellipsis}" if trimmed else ellipsis
+
+
+def _header_font_buffer(fitz):
+    """Build a twice-usable embedded CJK font for running headers.
+
+    PyMuPDF's "china-s" alias writes a bare /BaseFont/Heiti reference with no
+    embedded program; MuPDF renders it via its own fallback, but external
+    readers (Adobe, browsers, phones) show tofu/mojibake on every page header.
+    Inserting with a real font buffer embeds Droid Sans Fallback instead.
+    """
+    cache = getattr(_header_font_buffer, "_cache", None)
+    if cache is None:
+        font = fitz.Font("cjk")
+        cache = (font, font.buffer)
+        _header_font_buffer._cache = cache
+    return cache
 
 
 def _stamp_toc_page_references(document, fitz) -> None:
@@ -1915,7 +1934,8 @@ def _stamp_page_numbers(
         next_section = 0
         short_title = _short_running_title(metadata.get("title") or "STM32")
         rule = (0.72, 0.74, 0.76)
-        header_font = "china-s"
+        header_font, header_buffer = _header_font_buffer(fitz)
+        header_fontname = "BookHeaderCJK"
         header_size = 7.5
 
         for index in range(1, document.page_count):
@@ -1940,17 +1960,19 @@ def _stamp_page_numbers(
             header = short_title if index % 2 == 0 else current_title
             header = _fit_running_header(
                 header,
-                fontname=header_font,
+                fontname=header_fontname,
                 fontsize=header_size,
                 max_width=page.rect.width - 84,
                 fitz=fitz,
+                font=header_font,
             )
-            header_width = fitz.get_text_length(header, fontname=header_font, fontsize=header_size)
+            header_width = header_font.text_length(header, fontsize=header_size)
             x = 42 if index % 2 == 0 else page.rect.width - 42 - header_width
+            page.insert_font(fontname=header_fontname, fontbuffer=header_buffer)
             page.insert_text(
                 fitz.Point(x, 20),
                 header,
-                fontname=header_font,
+                fontname=header_fontname,
                 fontsize=header_size,
                 color=(0.38, 0.42, 0.45),
             )
