@@ -47,6 +47,143 @@ const DARK = {
 export const FONT = "'Microsoft YaHei','PingFang SC','Noto Sans SC','Segoe UI',system-ui,sans-serif"
 export const MONO = "'Cascadia Mono','Consolas','Microsoft YaHei Mono',monospace"
 
+const LAB_CSS = `
+:root{--bg:#0b0f14;--bg2:#10161d;--anim-bg:#0e141b;--card:#121a22;--panel:#0d131a;
+  --line:#273340;--ink:#dbe7f3;--sub:#9fb0c2;--muted:#6f8296;--brand:#7ee787;
+  --accent:#56d4dd;--accent-deep:#a5f3b6;--warn:#f2b84b;--warn-deep:#ffd58a;
+  --gold:#f2b84b;--danger:#ff5d5d;--wash-blue:rgba(86,212,221,.12);
+  --wash-green:rgba(126,231,135,.12);--wash-amber:rgba(242,184,75,.12)}
+body{background:#05080b}
+.frame{background:radial-gradient(120% 100% at 50% 0%,#10161d 0%,#0b0f14 62%,#05080b 100%)}
+.rig{position:absolute;inset:0;pointer-events:none;z-index:0}
+.rig .grid{position:absolute;inset:calc(var(--u)*5);opacity:.55;
+  background-image:linear-gradient(rgba(120,160,200,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,160,200,.06) 1px,transparent 1px);
+  background-size:calc(var(--u)*4) calc(var(--u)*4)}
+.rig .corner{position:absolute;width:calc(var(--u)*3);height:calc(var(--u)*3);
+  border:0 solid rgba(126,231,135,.55)}
+.rig .corner.tl{left:calc(var(--sw)*4);top:calc(var(--u)*4);border-left-width:2px;border-top-width:2px}
+.rig .corner.tr{right:calc(var(--sw)*4);top:calc(var(--u)*4);border-right-width:2px;border-top-width:2px}
+.rig .corner.bl{left:calc(var(--sw)*4);bottom:calc(var(--u)*4);border-left-width:2px;border-bottom-width:2px}
+.rig .corner.br{right:calc(var(--sw)*4);bottom:calc(var(--u)*4);border-right-width:2px;border-bottom-width:2px}
+.rig .ruler{position:absolute;right:calc(var(--sw)*2.4);top:calc(var(--u)*18);bottom:calc(var(--u)*18);
+  width:calc(var(--sw)*1.2);opacity:.5;
+  background:repeating-linear-gradient(to bottom,rgba(126,231,135,.5) 0 1px,transparent 1px calc(var(--u)*2))}
+.readout{position:absolute;left:calc(var(--sw)*6);bottom:calc(var(--u)*4.2);z-index:3;
+  font-family:var(--mono);font-size:calc(var(--u)*1.35);color:var(--accent);letter-spacing:.12em}
+.cursor{position:absolute;left:calc(var(--sw)*6);right:calc(var(--sw)*6);height:1px;z-index:4;
+  background:linear-gradient(90deg,transparent,rgba(242,184,75,.9),transparent);opacity:0;pointer-events:none}
+.cursor span{position:absolute;right:0;top:-.7em;font-family:var(--mono);font-size:calc(var(--u)*1.2);color:var(--gold)}
+.scan{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,rgba(5,8,11,.92),rgba(5,8,11,.35) 45%,rgba(86,212,221,.12))}
+.body{position:relative;z-index:2}
+.topbar,.caps,.ticks{position:absolute;z-index:3}
+pre.code .ln{position:relative}
+pre.code .ln::before{content:attr(data-ln);position:absolute;left:calc(var(--sw)*-1.1);width:calc(var(--sw)*1.4);
+  text-align:right;color:var(--muted);font-size:.72em}
+pre.code .ln.cur{background:rgba(86,212,221,.10);box-shadow:inset calc(var(--u)*.35) 0 0 var(--accent)}
+.bullets li.cur{color:var(--accent)}
+.emph{font-style:normal;color:var(--gold);font-weight:700;border-bottom:1px solid rgba(242,184,75,.5)}
+.emph.locked{background:rgba(242,184,75,.18);box-shadow:0 0 0 2px rgba(242,184,75,.28);border-radius:2px}
+[data-beat-target]{will-change:opacity,transform}
+`
+
+function v2Client(fps) {
+  return `
+  var scan = document.getElementById('scan');
+  var cursor = document.getElementById('cursor');
+  var FPS = ${Number(fps) || 30};
+  function v2Targets() { return body.querySelectorAll('[data-beat-target]') }
+  function v2Reset() {
+    v2Targets().forEach(function (el) {
+      el.style.opacity = 0; el.style.transform = 'none'; el.classList.remove('cur', 'locked')
+      // locked 也要从目标内部的强调词退掉：单场计划 showAll() 之后再回 0/1 相，
+      // 只清目标本身会把金色锁定底色留在 .emph 上。
+      el.querySelectorAll('.emph').forEach(function (m) { m.classList.remove('locked') })
+    })
+    if (scan) { scan.style.opacity = 0; scan.style.transform = 'none' }
+    if (cursor) cursor.style.opacity = 0
+  }
+  function v2MarkEmph(tokens) {
+    var list = (tokens || []).slice().sort(function (a, b) { return b.length - a.length })
+    list.forEach(function (tok) {
+      if (!tok) return
+      var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          if (!n.nodeValue || n.nodeValue.indexOf(tok) < 0) return NodeFilter.FILTER_REJECT
+          // 高亮只属于节拍目标：.step/.collabel 不在契约的强调文本集里，
+          // 整页走树会把它们也镀金，所以先要求最近的目标祖先存在。
+          var host = n.parentElement && n.parentElement.closest('[data-beat-target]')
+          if (!host) return NodeFilter.FILTER_REJECT
+          if (n.parentElement.closest('.emph')) return NodeFilter.FILTER_REJECT
+          return NodeFilter.FILTER_ACCEPT
+        }
+      })
+      var nodes = []
+      while (walker.nextNode()) nodes.push(walker.currentNode)
+      nodes.forEach(function (node) {
+        var parts = node.nodeValue.split(tok)
+        if (parts.length < 2) return
+        var frag = document.createDocumentFragment()
+        parts.forEach(function (p, i) {
+          if (i) {
+            var s = document.createElement('span')
+            s.className = 'emph'
+            s.textContent = tok
+            frag.appendChild(s)
+          }
+          if (p) frag.appendChild(document.createTextNode(p))
+        })
+        node.parentNode.replaceChild(frag, node)
+      })
+    })
+  }
+  function v2State(beat, transition = -1) {
+    var phase = beat ? beat.phase : 2
+    var cur = (beat && beat.targets) || []
+    var shown = (beat && beat.revealed) || []
+    v2Targets().forEach(function (el) {
+      var t = el.getAttribute('data-beat-target')
+      var isCur = cur.indexOf(t) >= 0
+      var isShown = shown.indexOf(t) >= 0
+      el.style.opacity = isShown ? (isCur ? [0, 0.5, 1][phase] : 1) : 0
+      el.style.transform = isCur && phase === 1 ? 'translateY(6px)' : 'none'
+      el.classList.toggle('cur', isCur && phase === 2)
+      // locked 必须每次由 v2State 拍板，而不是只加不减：单场计划里审计先 showAll() 把
+      // 金色底镀上，随后 frame() 的 setup(i) 因 i === current 直接返回、v2Reset 不跑，
+      // 回到 0/1 相时只有这里能把 locked 摘掉。
+      el.querySelectorAll('.emph').forEach(function (m) { m.classList.toggle('locked', isShown && phase === 2) })
+    })
+    var el = cur.length ? body.querySelector('[data-beat-target="' + cur[0] + '"]') : null
+    if (cursor && el) {
+      var r = el.getBoundingClientRect(), f = document.querySelector('.frame').getBoundingClientRect()
+      cursor.style.top = (r.top - f.top + r.height / 2) + 'px'; cursor.style.opacity = 1
+    } else if (cursor && beat && beat.kind === 'pulse') {
+      var fb = document.querySelector('.frame').getBoundingClientRect()
+      cursor.style.top = (fb.height * (0.16 + (beat.index % 5) * 0.15)) + 'px'; cursor.style.opacity = .85
+    }
+    if (scan) {
+      if (transition < 0) { scan.style.opacity = 0; scan.style.transform = 'none' }
+      else { scan.style.opacity = [1, .72, .38, 0][transition] ?? 0; scan.style.transform = 'translateY(' + ((transition + 1) * 25) + '%)' }
+    }
+  }
+  function v2ShowAll() {
+    v2Targets().forEach(function (el) {
+      el.style.opacity = 1; el.style.transform = 'none'; el.classList.remove('cur')
+      el.querySelectorAll('.emph').forEach(function (m) { m.classList.add('locked') })
+    })
+    if (scan) scan.style.opacity = 0
+    if (cursor) cursor.style.opacity = 0
+  }
+  function v2Readout(i, kind) {
+    var el = document.getElementById('readout')
+    if (!el) return
+    var pad = function (n) { return String(n).padStart(2, '0') }
+    el.textContent = 'CH1 · ' + String(kind || '').toUpperCase() + ' · SCENE ' + pad(i + 1) + '/' + pad(window.PAYLOAD.length) + ' · ' + FPS + 'fps'
+  }
+  `
+}
+
 function esc(s) {
   return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
 }
@@ -62,55 +199,58 @@ export function inline(s) {
 }
 
 // 代码块行内标记：行首 "!" = 证据行（红底 + 左侧红条），"~" = 弱化行
-export function codeHtml(src) {
+export function codeHtml(src, { v2 = false, prefix = 'line' } = {}) {
   const lines = String(src).replace(/\n$/, '').split('\n')
   return lines
-    .map((line) => {
+    .map((line, n) => {
       const bang = line.startsWith('!')
       const dim = line.startsWith('~')
       const text = bang || dim ? line.slice(1) : line
       const cls = bang ? 'ev' : dim ? 'dim' : ''
-      return `<span class="ln ${cls}">${inline(text) || '&nbsp;'}</span>`
+      const attrs = v2 ? ` data-ln="${n + 1}" data-beat-target="${prefix}:${n}"` : ''
+      return `<span class="ln ${cls}"${attrs}>${inline(text) || '&nbsp;'}</span>`
     })
     .join('')
 }
 
-function colHtml(label, src, extraClass = '') {
+function colHtml(label, src, extraClass = '', v2 = false, prefix = 'line') {
   if (!src) return ''
-  return `<div class="col ${extraClass}">${label ? `<div class="collabel">${inline(label)}</div>` : ''}<pre class="fit code">${codeHtml(src)}</pre></div>`
+  return `<div class="col ${extraClass}">${label ? `<div class="collabel">${inline(label)}</div>` : ''}<pre class="fit code">${codeHtml(src, { v2, prefix })}</pre></div>`
 }
 
 // 「55 —— 说明」这种条目把数字单独拎出来放大；破折号由 CSS 的 .num::after 补，
 // 所以这里要把它从文本里吃掉，否则屏幕上出现两个 ——。
 // 只认 ASCII 开头的短前缀（数字、地址、计数），中文短语留给正文字号。
-function bulletHtml(b) {
+function bulletHtml(b, target = null) {
+  const attr = target === null ? '' : ` data-beat-target="bullets:${target}"`
   const i = b.indexOf('——')
   if (i > 0) {
     const head = b.slice(0, i).trim()
     const rest = b.slice(i + 2).trim()
     if (rest && head.length <= 16 && /^[0-9a-zA-Z_]/.test(head) && !/[。；，、]/.test(head)) {
-      return `<li><span class="num">${inline(head)}</span><span>${inline(rest)}</span></li>`
+      return `<li${attr}><span class="num">${inline(head)}</span><span>${inline(rest)}</span></li>`
     }
   }
-  return `<li>${inline(b)}</li>`
+  return `<li${attr}>${inline(b)}</li>`
 }
 
-function bulletsHtml(items) {
+function bulletsHtml(items, v2 = false) {
   if (!items?.length) return ''
-  return `<ul class="bullets fit">${items.map(bulletHtml).join('')}</ul>`
+  return `<ul class="bullets fit">${items.map((b, i) => bulletHtml(b, v2 ? i : null)).join('')}</ul>`
 }
 
 export function sceneHtml(sc, ctx) {
-  const { index, total } = ctx
+  const { index, total, v2 = false } = ctx
+  const beat = (target) => (v2 ? ` data-beat-target="${target}"` : '')
   const step = `<span class="step">${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}</span>`
-  const head = sc.title ? `<div class="title fit">${inline(sc.title)}</div>` : ''
-  const sub = sc.sub ? `<div class="sub fit">${inline(sc.sub)}</div>` : ''
+  const head = sc.title ? `<div class="title fit"${beat('title')}>${inline(sc.title)}</div>` : ''
+  const sub = sc.sub ? `<div class="sub fit"${beat('sub')}>${inline(sc.sub)}</div>` : ''
 
   switch (sc.kind) {
     case 'anim': {
-      const side = sc.bullets?.length ? `<div class="side">${head}${bulletsHtml(sc.bullets)}</div>` : head
+      const side = sc.bullets?.length ? `<div class="side">${head}${bulletsHtml(sc.bullets, v2)}</div>` : head
       return `<div class="lay lay-anim">${side}<div class="animbox" data-anim="${sc.anim}"></div>${
-        sc.note ? `<div class="note">${inline(sc.note)}</div>` : ''
+        sc.note ? `<div class="note"${beat('note')}>${inline(sc.note)}</div>` : ''
       }</div>${step}`
     }
     case 'code': {
@@ -122,20 +262,23 @@ export function sceneHtml(sc, ctx) {
       return `<div class="lay lay-code">${head}<div class="cols ${single ? 'one' : narrow ? 'narrow' : ''}">${colHtml(
         sc.codeLabel || '你写的 C',
         sc.code,
-      )}${colHtml(sc.codeBLabel || '-O2 编出来的汇编', sc.codeB, 'asm')}</div>${
-        sc.note ? `<div class="note">${inline(sc.note)}</div>` : ''
+        '',
+        v2,
+        'line',
+      )}${colHtml(sc.codeBLabel || '-O2 编出来的汇编', sc.codeB, 'asm', v2, 'codeB')}</div>${
+        sc.note ? `<div class="note"${beat('note')}>${inline(sc.note)}</div>` : ''
       }</div>${step}`
     }
     case 'hook':
       return `<div class="lay lay-hook">${head}${sub}${
-        sc.code ? `<div class="cols one" style="width:100%">${colHtml(sc.codeLabel, sc.code)}</div>` : ''
+        sc.code ? `<div class="cols one" style="width:100%">${colHtml(sc.codeLabel, sc.code, '', v2, 'line')}</div>` : ''
       }</div>${step}`
     case 'card':
       return `<div class="lay lay-card ${sc.tone || ''}"><div class="cardpanel">${
-        sc.kicker ? `<div class="kicker">${inline(sc.kicker)}</div>` : ''
-      }${head}${bulletsHtml(sc.bullets)}${sub}</div></div>${step}`
+        sc.kicker ? `<div class="kicker"${beat('kicker')}>${inline(sc.kicker)}</div>` : ''
+      }${head}${bulletsHtml(sc.bullets, v2)}${sub}</div></div>${step}`
     case 'outro':
-      return `<div class="lay lay-outro">${head}${bulletsHtml(sc.bullets)}${sub}<div class="url">${esc(
+      return `<div class="lay lay-outro">${head}${bulletsHtml(sc.bullets, v2)}${sub}<div class="url"${beat('url')}>${esc(
         ctx.url || '',
       )}</div></div>${step}`
     default:
@@ -156,20 +299,25 @@ function animSource(name) {
   return animReader(name)
 }
 
-export function pageHtml({ platform, size, safe, scenes, anims, kicker, badge, sections }) {
+export function pageHtml({ platform, size, safe, scenes, anims, kicker, badge, sections, formatVersion = 1, fps = 30 }) {
+  const v2 = formatVersion === 2
   const [w, h] = size
   const secs = sceneSections(scenes, sections)
   // 分节页头是可选增量：sections 缺省时下面走今天这条旧 DOM，一个字符都不变。
   // 旧集一旦误跑 video:check，审计输出要能一字不差复现，所以这里靠"要不要生成这两个
   // 元素"来分叉，而不是生成了再用 CSS 藏起来。
   const segmented = secs.some((s) => s)
-  const payload = scenes.map((sc, i) => ({
-    kind: sc.kind,
-    html: sceneHtml(sc, { index: i, total: scenes.length, url: '通往单片机之路 · 见简介' }),
-    anim: sc.anim || null,
-    slug: `${platform}-${i}`,
-    sec: secs[i],
-  }))
+  const payload = scenes.map((sc, i) => {
+    const item = {
+      kind: sc.kind,
+      html: sceneHtml(sc, { index: i, total: scenes.length, url: '通往单片机之路 · 见简介', v2 }),
+      anim: sc.anim || null,
+      slug: `${platform}-${i}`,
+      sec: secs[i],
+    }
+    if (v2) item.emph = sc.emphasis || null
+    return item
+  })
   // 集号今天被印了两遍：badge 是「F5」，cover.kicker 是「通往单片机之路 · F5」。
   // 右格要留给小节 chip，所以左格收拢成「F5 + 系列名」，把 kicker 那条重复的集号尾巴摘掉。
   // 没分节的老集一个字都不动——那是回归口径的一部分。
@@ -349,7 +497,8 @@ pre.code{font-size:calc(var(--u)*1.4)}
 .bullets .num{font-size:calc(var(--u)*3.1)}
 .animcard{padding:calc(var(--u)*.8)}
 .watermark{font-size:calc(var(--u)*20);bottom:calc(var(--u)*24)}
-.caps span{font-size:calc(var(--u)*2.1)}` : ''}
+.caps span{font-size:calc(var(--u)*2.1)}` : ''}${v2 ? LAB_CSS : ''}${v2 && platform === 'douyin' ? `.readout{left:calc(var(--sw)*8);top:calc(var(--u)*8.8);bottom:auto}
+` : ''}
 svg .a-bg{fill:var(--anim-bg)}svg .a-card{fill:var(--card)}svg .a-panel{fill:var(--panel)}
 svg .a-line{fill:var(--line)}svg .a-ink{fill:var(--ink)}svg .a-sub{fill:var(--sub)}svg .a-muted{fill:var(--muted)}
 svg .a-brand{fill:var(--brand)}svg .a-accent{fill:var(--accent)}svg .a-accent-deep{fill:var(--accent-deep)}
@@ -364,7 +513,14 @@ svg .a-mono{font-family:var(--mono)}
 <body>
 <div class="frame">
   <div class="watermark">${esc(badge || '')}</div>
-  ${head}
+  ${v2 ? `<div class="rig" aria-hidden="true">
+    <div class="grid"></div><div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div><div class="ruler"></div>
+  </div>
+  <div class="readout" id="readout"></div>
+  <div class="cursor" id="cursor"><span>CURSOR</span></div>
+  <div class="scan" id="scan"></div>
+  ` : ''}${head}
   <div class="body" id="body"></div>
   <div class="ticks" id="ticks"></div>
   <div class="caps" id="caps"><span id="captext"></span></div>
@@ -440,11 +596,12 @@ window.MCU = (function () {
     node.setAttribute('height', Math.floor(vb[3] * z));
   }
 
-  function setup(i) {
+  ${v2 ? v2Client(fps) : ''}function setup(i) {
     if (i === current) return;
     var item = window.PAYLOAD[i];
     body.innerHTML = item.html;
-    var box = body.querySelector('.animbox');
+    ${v2 ? `v2Reset(); if (item.emph) v2MarkEmph(item.emph); v2Readout(i, item.kind);
+    ` : ''}var box = body.querySelector('.animbox');
     svg = null;
     if (box && item.anim) {
       box.innerHTML = '<div class="animcard">' + window.ANIMS[item.slug] + '</div>';
@@ -531,7 +688,10 @@ window.MCU = (function () {
       })();
     });
   }
-  return { setup: setup, seek: seek, caption: caption, frame: frame, raf: raf };
+  ${v2 ? `var MCU = { setup: setup, seek: seek, caption: caption, frame: frame, raf: raf };
+  MCU.state = v2State;
+  MCU.showAll = v2ShowAll;
+  return MCU;` : 'return { setup: setup, seek: seek, caption: caption, frame: frame, raf: raf };'}
 })();
 </script>
 </body></html>`

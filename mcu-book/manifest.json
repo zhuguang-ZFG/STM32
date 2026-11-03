@@ -178,6 +178,20 @@
         "projects/02-s3-logger.md"
       ],
       "intro": "把全部知识组装成两台可交付的记录器：电位器/六轴 → 滤波 → 16 槽队列 → 主机 CSV，外加配置双槽轮转、看门狗健康监督与四种故障注入。J1/J2 共用公共核心层，port 层只随硬件变，这就是跨平台复用的实战答案。读完的标志：面对「做个小设备」，你先列故障清单，再写第一行代码。"
+    },
+    {
+      "id": "pa",
+      "title": "第十一部分 AI 辅助开发",
+      "goal": "把大模型变成你的结对工程师：提示词给约束、输出对手册、工具化工作流、幻觉有防御，最后用这本书自身的生产线自证。",
+      "files": [
+        "ai/00-pair-not-ghost.md",
+        "ai/01-prompt-patterns.md",
+        "ai/02-manual-reconciliation.md",
+        "ai/03-toolflow-mcp.md",
+        "ai/04-hallucination-defense.md",
+        "ai/05-this-book-pipeline.md"
+      ],
+      "intro": "模型写代码很快，错得也快：总线归属张冠李戴、位语义张冠李戴、你的板子接线它永远看不见。这一部不教你用哪个 AI，教你怎么当 AI 产出的审计员：三段式提示词先把需求钉死，RM0090 逐位对账把假设打回证据，MCP 工具流让模型自己读手册跑构建，最后一章解剖这本书自己的 AI 生产线。读完的标志：模型给你的每一段寄存器代码，你先看它替你做主了哪些决定。"
     }
   ],
   "appendices": [
@@ -757,9 +771,223 @@
       "accessed": "2026-10-23",
       "license": "Apache-2.0",
       "scope": "正文机制动画的图形化讲解；HTML 版随书内嵌播放。"
+    },
+    "ai-copilot-vscode-overview": {
+      "id": "ai-copilot-vscode-overview",
+      "title": "Build with AI in VS Code（agents 总览；原 Copilot agent mode 文档现汇入此体系）",
+      "authority": "Microsoft — Visual Studio Code 官方文档",
+      "url": "https://code.visualstudio.com/docs/agents/overview",
+      "snapshot": "页面标注 10/21/2026；docs 已将 chat/agent mode 重排为 Agents 章节，旧 /docs/copilot/chat/chat-agent-mode 已跳转",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图（VS Code 内 agent 定位与 harness 概念）；A3（agent loop 官方定义、permissions/approvals 权限机制、MCP servers 接入）；A4（『AI can produce incorrect code…You remain responsible』）。"
+    },
+    "ai-copilot-vscode-agentmode-blog": {
+      "id": "ai-copilot-vscode-agentmode-blog",
+      "title": "Introducing GitHub Copilot agent mode (preview) — VS Code 官方博客",
+      "authority": "Microsoft — Visual Studio Code 官方博客",
+      "url": "https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode",
+      "snapshot": "2025-02-24 发布；agent mode 首次以 preview 亮相的公告文",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 工具流：agent 模式『读错误输出—自动修正—循环直至任务完成』工作机制的一手时间锚点与机制描述。"
+    },
+    "ai-copilot-vscode-cpp": {
+      "id": "ai-copilot-vscode-cpp",
+      "title": "C/C++ for Visual Studio Code（C/C++ 语言支持页）",
+      "authority": "Microsoft — Visual Studio Code 官方文档",
+      "url": "https://code.visualstudio.com/docs/languages/cpp",
+      "snapshot": "页面标注 10/21/2026",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 嵌入式 C 工作流可用性：Microsoft C/C++ 扩展（ms-vscode.cpptools）提供 IntelliSense/调试，同页确认 GitHub Copilot 在 C/C++ 工作流内提供编码建议——即嵌入式 C 开发在 VS Code 内可直接使用 Copilot 全家桶。"
+    },
+    "ai-copilot-github-cloud": {
+      "id": "ai-copilot-github-cloud",
+      "title": "GitHub Copilot on GitHub.com（含 Copilot cloud agent；旧 about-coding-agent 页 301 至此）",
+      "authority": "GitHub 官方文档",
+      "url": "https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github",
+      "snapshot": "页面无显式日期（docs.github.com 持续更新），2026-10-27 抓取；文内已含 cloud agent / code review / automations 新口径",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 云端 agent 定位；A3（cloud agent 在 ephemeral 云开发环境编辑文件、跑测试与 linter）；A4（官方明示 59 分钟会话上限、单分支单 PR 限制，以及『Logs do not replace your own review and testing』『can produce incorrect or suboptimal code, including…security vulnerabilities』）。"
+    },
+    "ai-copilot-ccr-cpp": {
+      "id": "ai-copilot-ccr-cpp",
+      "title": "GitHub Copilot code review now supports C, C++, Kotlin, and Swift — GitHub Changelog",
+      "authority": "GitHub 官方 changelog",
+      "url": "https://github.blog/changelog/2025-04-23-github-copilot-code-review-now-supports-c-c-kotlin-and-swift/",
+      "snapshot": "2025-04-23 发布",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0/A4 嵌入式 C 可用性：Copilot code review 自 2025-04 起支持 C/C++（覆盖 PR 中逾 90% 文件类型）；配合 Using GitHub Copilot code review 文档（docs.github.com）可见评审入口覆盖 VS Code / Visual Studio / JetBrains（含 CLion）/ Xcode / gh CLI。"
+    },
+    "ai-claude-code-overview": {
+      "id": "ai-claude-code-overview",
+      "title": "Claude Code Docs — Overview",
+      "authority": "Anthropic 官方文档（code.claude.com/docs）",
+      "url": "https://code.claude.com/docs/en/overview",
+      "snapshot": "页面无显式日期，2026-10-27 抓取；内容已含 Desktop/Web 表面、Agent SDK、scheduled tasks 等 2026 年新口径",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图（Claude Code 定义与四种表面：terminal/IDE extension/desktop/web）；A1（CLAUDE.md 官方说法）；A3（MCP 官方说法、hooks、skills、sub-agents、CLI 可管道化 `claude -p`）。"
+    },
+    "ai-claude-code-memory": {
+      "id": "ai-claude-code-memory",
+      "title": "How Claude remembers your project（memory 机制页）",
+      "authority": "Anthropic 官方文档",
+      "url": "https://code.claude.com/docs/en/memory",
+      "snapshot": "页面无显式日期；正文引用 CLI v2.1.211–v2.1.285 行为差异，判定为 2026 年下半年现行版本",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A1/A3 记忆机制底稿：CLAUDE.md（user/project/local/managed 四作用域、目录层级加载、@import）与 auto memory（~/.claude/projects/<project>/memory/、MEMORY.md 索引首 200 行或 25KB 载入）；AGENTS.md 兼容；『Claude treats them as context, not enforced configuration』——A4 幻觉/纪律防御的制度化对照。"
+    },
+    "ai-claude-code-repo": {
+      "id": "ai-claude-code-repo",
+      "title": "anthropics/claude-code — 官方仓库 README",
+      "authority": "Anthropic 官方 GitHub 仓库",
+      "url": "https://github.com/anthropics/claude-code",
+      "snapshot": "README 现行版，2026-10-27 抓取",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 agentic coding 一手定义：『an agentic coding tool that lives in your terminal, understands your codebase, edits files, runs commands』——比 overview 页营销语更贴『结对工程师』口径。"
+    },
+    "ai-cursor-docs": {
+      "id": "ai-cursor-docs",
+      "title": "Cursor Documentation 首页（产品定位）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs",
+      "snapshot": "页面无显式日期；Models 表已列 Claude Opus 5.5 / GPT-5.6 / Gemini 3.8 等 2026 下半年模型，判定为现行版",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图：『Cursor is a coding agent for building ambitious software』——官方把整款产品定位为 coding agent 而非『带 AI 的编辑器』（定位语，部分属营销口径，引用时取能力句不取形容词）。"
+    },
+    "ai-cursor-agent": {
+      "id": "ai-cursor-agent",
+      "title": "Cursor Docs — Agent（Agent 机制总览）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs/agent/overview",
+      "snapshot": "页面无显式日期，2026-10-27 抓取；含 /goal、side chats 等 2026 新特性",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 工具流：Agent 三构件（Instructions/Tools/Model）；工具清单（编辑文件、跑终端命令、浏览器、图片生成、提问澄清）；『There is no limit on the number of tool calls』；Checkpoints 快照回滚；运行中 steering/排队消息——与 VS Code/Claude Code 的工具流图互为对照。"
+    },
+    "ai-cursor-run-modes": {
+      "id": "ai-cursor-run-modes",
+      "title": "Cursor Docs — Run Modes（Auto-review / Allowlist / Run Everything 与沙箱）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs/agent/security/run-modes",
+      "snapshot": "页内 Changelog 表：v3.6（2026-05-29）Auto-review 成推荐默认、v3.23（2026-10-01）新增 Read access Workspace 模式——日期线索以此表为准",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 权限与安全边界主来源：三档运行模式、后端 LLM 分类器（可读 ReadFile/Grep/Glob/ListDir）、『Auto-review is not a security boundary』、macOS Seatbelt / Linux Landlock+seccomp 沙箱、Cloud Agents 不走 Run Modes。"
+    },
+    "ai-mcp-spec": {
+      "id": "ai-mcp-spec",
+      "title": "Model Context Protocol Specification（latest，协议版本 2026-07-28）",
+      "authority": "Model Context Protocol 官方规范（现隶属 Linux Foundation AAIF）",
+      "url": "https://modelcontextprotocol.io/specification/latest",
+      "snapshot": "协议版本 2026-07-28（latest 别名解析至此）；规范用语遵循 BCP 14 / RFC 2119",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 MCP 是什么的一手规范定义：开放协议、JSON-RPC 2.0、Hosts/Clients/Servers 三方、Server 三大特性 Resources/Prompts/Tools、安全原则（用户明示同意、工具调用前须授权）——ai-mcp-toolflow.svg 的规范层底稿。"
+    },
+    "ai-mcp-architecture": {
+      "id": "ai-mcp-architecture",
+      "title": "MCP — Architecture overview",
+      "authority": "Model Context Protocol 官方文档",
+      "url": "https://modelcontextprotocol.io/docs/learn/architecture",
+      "snapshot": "对应协议版本 2026-07-28，2026-10-27 抓取",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 架构图底稿：host 为每个 server 建一个 client；本地 STDIO server 通常服务单 client、远程 Streamable HTTP 服务多 client；两层划分（data layer / transport layer）；三大 primitives 定义与 */list、tools/call 方法；声明 LSP 式生态标准化愿景。"
+    },
+    "ai-mcp-servers": {
+      "id": "ai-mcp-servers",
+      "title": "modelcontextprotocol/servers — 官方参考实现仓库 README",
+      "authority": "MCP steering group 官方仓库",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "snapshot": "README 现行版（仓库 91.6k stars，2026-10-27 抓取）；reference servers 仅 7 个，更多服务器走 MCP Registry",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3『官方 reference servers 有哪些类别』的直接答案：在册 reference 为 Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time；GitHub、GitLab、Google Drive、Postgres、SQLite、Slack 等已归档至 servers-archived；官方明示其为教学示例『not as production-ready solutions』。"
+    },
+    "ai-mcp-anthropic-donation": {
+      "id": "ai-mcp-anthropic-donation",
+      "title": "Donating MCP to the Agentic AI Foundation — Anthropic 官方公告",
+      "authority": "Anthropic 官方新闻",
+      "url": "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
+      "snapshot": "2025-12 公告（Linux Foundation 2025-12-09 新闻稿口径一致）",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0/A3 治理事实：MCP 由 Anthropic 捐赠给 Linux Foundation 下设 Agentic AI Foundation（与 Block goose、OpenAI AGENTS.md 同为创始项目；Google/Microsoft/AWS/Cloudflare/Bloomberg 支持）；官方 Registry 上线；2025-11-25 spec 引入异步操作、无状态化、server 身份与官方 extensions。"
     }
   },
   "chapter_guides": {
+    "ai/00-pair-not-ghost.md": {
+      "question": "AI 都能写出能跑的代码了，我为什么还要学寄存器和 RTOS？",
+      "deliverable": "一张「模型能替你做与不能替你做」清单 + 2026 工具地图（Copilot/Claude Code/Cursor/MCP 各一条官方可引定位）+ 学习阶段与工作阶段两用法边界。",
+      "boundary": "只立工作观；对账在 A2、提示词在 A1，不展开任何模型原理；不评价任何具体产品优劣，只引官方定位（访问日期 2026-10-27，界面会变、方法论不变）。",
+      "sources": [
+        "ai-copilot-vscode-overview",
+        "ai-claude-code-overview",
+        "ai-cursor-run-modes",
+        "ai-mcp-spec",
+        "mcu-code"
+      ]
+    },
+    "ai/01-prompt-patterns.md": {
+      "question": "同样一个外设需求，为什么有人一句话搞定、有人贴五十行还被模型带偏？",
+      "deliverable": "三段式提示词模板（上下文/约束/验收）+ 同一霸道者点灯任务的弱强提示对照实录 + 模型「替你做主」决定清单。",
+      "boundary": "工具深度配置在 A3，对账验收细则只引 A2 不展开；提示词中文书写、术语保留英文原词；案例全部基于霸道者点灯任务，不评价具体产品优劣。",
+      "sources": [
+        "a1",
+        "ai-cursor-agent",
+        "ai-claude-code-overview",
+        "mcu-code"
+      ]
+    },
+    "ai/02-manual-reconciliation.md": {
+      "question": "模型给的 RCC/GPIO 初始化能过编译，烧进板子灯不亮，怎么知道它错在哪一位？",
+      "deliverable": "对账三问清单（名/位/序）+ 以霸道者 PF6 共阳红灯为靶子的逐位对账全表 + 证据三元组回喂句范例，含总线归属、硬件语境、位语义、顺序四类幻觉的实锤改法。",
+      "boundary": "对账流程以 RM0090 §2.3/§7.3/§8.4 与板卡原理图为唯一判据；点灯例子的上板现象属预期逻辑结果，读者须在自己的板子上复现；弱强提示对照与工具流分别在 A1/A3，本章不展开；不评价任何具体 AI 产品。",
+      "sources": [
+        "a1",
+        "mcu-code"
+      ]
+    },
+    "ai/03-toolflow-mcp.md": {
+      "question": "让模型自己看手册、自己跑构建，和把错误粘给它，差在哪？",
+      "deliverable": "MCP 三角色架构解说（Host/Client/Server、三类原语）+ 三个嵌入式场景实录（读手册快照/跑交叉构建/串口日志回喂证据三元组）+ agent 权限与安全边界清单。",
+      "boundary": "消费侧为主，不教自建 MCP server；对账与验收细则只引 A2 不展开；场景演示全用仓库既有工程，不引入新工程；引用官方口径带访问日期，界面会变、方法论不变。",
+      "sources": [
+        "ai-mcp-spec",
+        "ai-mcp-architecture",
+        "ai-mcp-servers",
+        "ai-cursor-run-modes",
+        "ai-claude-code-memory"
+      ]
+    },
+    "ai/04-hallucination-defense.md": {
+      "question": "模型编的寄存器名能有多像真的？",
+      "deliverable": "八类幻觉类型学（A2 四类手册层 + 假库函数/假引证/假勘误/假芯片特性四类话语层）+ 「正确性定义在哪」验证决策树 + 每类最低成本验证动作清单。",
+      "boundary": "案例限于 S 篇/P 篇已学外设（GPIO/USART/LEDC/Matrix），不引新外设知识；A2 的对账流程不重复，本章只讲「错的样子」与分流入口；不评价具体产品。",
+      "sources": [
+        "a1",
+        "ai-claude-code-memory",
+        "ai-copilot-github-cloud",
+        "mcu-code"
+      ]
+    },
+    "ai/05-this-book-pipeline.md": {
+      "question": "「把大模型当结对工程师」到底灵不灵？这本书本身就是实验。",
+      "deliverable": "本书 AI 生产线解剖：八道工序与十几道门、三个真实事故与长出的门（滤镜光栅化/幽灵连字符/数字漂移）、AI 的四个角色（采集/起草/评审/对账）、每条论断配复现命令的度量表、四条 AI 不许碰的边界。",
+      "boundary": "讲工作流证据不讲工具安装；行号引证以成稿当期仓库为准；「待上板实测」纪律不因自动化而豁免；门的阈值只许变严不许变松。",
+      "sources": [
+        "mcu-code",
+        "ai-copilot-vscode-overview"
+      ]
+    },
     "c/00-c-in-mcu.md": {
       "question": "同样一行 C，在 PC 上越界是段错误弹窗，到单片机上为什么变成隔壁外设寄存器被改写、没有弹窗只有事故？",
       "deliverable": "一张裸机 C 与应用 C 四维差异清单（无 OS、内存按 KB、直碰硬件、复位向量起跑），加一条用『向 0x40021418 写 32 位值』口径描述的寄存器写，并在 00-blink 三个文件里各指认一处落点。",

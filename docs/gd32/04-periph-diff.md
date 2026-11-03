@@ -27,6 +27,8 @@ minutes: 30
 
 打开 `gd32f4xx.h`，搜索 `USBHS`/`EXMC`/`CAN`/`ENET`/`TRNG` 的基址定义：存在即有这个外设，搜不到即没有（或叫别的名字）。这是"有没有"的最快自查法。
 
+先押个家底：GD32F4xx 比 STM32F407 多出哪些硬货？两边都有的 SDIO，分频器的宽窄又差在哪一位？
+
 ## 小节结构
 
 | 小节 | 内容 | 四件套 |
@@ -233,6 +235,8 @@ TRNG 的存在让 GD32 在安全/加密场景比 STM32F407 多一个硬件基础
 
 - GD32F4xx 与 STM32F407 的外设差异在你眼里是一张可查的表；
 - 移植三步清单到手，换任何国产 MCU（如 HK32/CH32/AT32）都能按这套方法建档。
+
+家底两边各有：GD32F4xx 多出 USBHS 与 TRNG，STM32F407 的 OTG_FS/OTG_HS 到这边由一件 USBHS 替代；SDIO 的差藏在第 9 位，DIV[8:0] 比 CLKDIV[7:0] 宽一位，那一位还躲在 bit31。跑 ULPI 的板子最省心，12 根信号同脚同 AF，换芯片不用改布线，换的是固件库。
 
 <div class="achievement">
 ✅ G 篇收官。下一站：<a href="../rtos/rtthread/00-arch.html">R 篇 RT-Thread</a>：国产内核配国产操作系统；或直接进 <a href="05-riscv-toolchain.html">V 篇 RISC-V</a>，去看 GD32VF103 的 Bumblebee 内核，那个没有 NVIC 的世界。

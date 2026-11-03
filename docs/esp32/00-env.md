@@ -23,6 +23,8 @@ minutes: 20
 
 ## 第一步：装 ESP-IDF（离线安装器，最稳）
 
+装之前先押个出身：app_main 一睁眼，是裸机程序独占整机，还是生下来就跑在某个任务里？押完再往下装，装完翻本章精髓对账。
+
 1. 打开乐鑫下载页 `dl.espressif.com/dl/esp-idf/`，选 **ESP-IDF v5.5.x Windows 离线安装器**（Offline Installer，约 1GB，自带 Python/Git/工具链，不挑网络）。
 2. 安装时保持默认选项；目标芯片勾选 **ESP32-S3**（全选也无妨，多占点磁盘）。
 3. 装完桌面出现两个快捷方式：**ESP-IDF 5.5 CMD** 和 **ESP-IDF 5.5 PowerShell**。这俩是注入了全部环境变量的"特权终端"，以后所有 `idf.py` 命令都在这里面敲。
@@ -158,6 +160,8 @@ SRAM 剩余：3xxxxx 字节；PSRAM 剩余：83xxxxx 字节
 - 盖齐四个"签证章"：编译器、构建、烧录、串口。
 - 从源码到串口输出的全链路亲手跑通一遍。
 - 建立了 ESP32 世界观：app_main 是任务，IDF 是全家桶。
+
+出身揭晓：app_main 生在 FreeRTOS 的任务里，不是裸机独占整机。这个答案会改写你读 E 篇每一章代码的姿势：主角不是从上到下跑一遍的 main，而是一个被调度的小卒。签证章盖齐之外，你还顺手领到了整台机器的运行规矩。
 
 <div class="achievement">
 ✅ 下一站：<a href="01-arch-boot.html">P1 S3 架构与启动全过程</a>：bootloader、分区表、app 三段接力，讲清上电到你的 printf 之间发生了什么。

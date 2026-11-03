@@ -26,6 +26,8 @@ minutes: 30
 
 打开 RT-Thread 源码 `include/rtdef.h` 找到 `struct rt_object` 与 `struct rt_thread`，亲眼看到"线程结构的第一个成员就是对象"，继承一目了然。
 
+翻 rtdef.h 之前先押个辈分：rt_thread 的第一个成员是谁，凭什么排在栈顶指针前面？押完往下翻两屏就见分晓。
+
 ## 动画：对象模型与容器
 
 rt_object 基类、rt_thread 的首成员继承、对象容器按类型分链，橙色遍历珠沿 thread 链移动，list_thread 的"一把梭"就是它在逐节点走。
@@ -169,6 +171,8 @@ RT-Thread 的生态更偏国内（中文文档、国产 MCU 适配多），FreeR
 
 - RT-Thread 的"世界观"成型：一张架构图 + 一个对象模型；
 - 拿到对照学习的第二锚点：与 F 篇逐章对表开始。
+
+辈分第一：rt_object 领衔，万物皆对象不是口号，是结构体第一排的座位；对象挂进容器统一登记，finsh 那些一把梭的 list 命令才有根。
 
 <div class="achievement">
 ✅ 下一站：<a href="01-thread-sched.html">R1 线程与调度</a>：rt_thread 解剖与 256 级位图，和 FreeRTOS 逐项对照。

@@ -1,0 +1,35 @@
+{
+  "ep": "c6-abi-stack",
+  "source": "code/c/06-abi-stack/probe.sh",
+  "evidence": {
+    "0": "probe 日志 L25：sum6 的 @ args = 8, pretend = 0, frame = 0；L48 add64 同形；L62 movs r2, #0（mix 的 v 低半）",
+    "0x100000000": "probe 日志 L9：add64(0x100000000, 0x200000001)；L10：mix(7, 0x100000000)",
+    "0x100000007": "probe 日志 L10：mix(7, 0x100000000) = 0x100000007",
+    "0x200000001": "probe 日志 L9：add64(0x100000000, 0x200000001)",
+    "0x300000001": "probe 日志 L9：add64(0x100000000, 0x200000001) = 0x300000001",
+    "1": "probe 日志 L8：sum6(1,2,3,4,5,6) 的第一个参数；L45 movs r0, #1；L64 movs r3, #1；L72–L75 四项计数均为 1",
+    "10.3.1": "probe 日志 L16：交叉工具链：10.3.1",
+    "16": "probe 日志 L67：sub sp, sp, #16（non_leaf 的 buf 空间）；L2 的 16.1.0 也含此数字",
+    "16.1.0": "probe 日志 L2：宿主工具链：gcc 16.1.0",
+    "2": "probe 日志 L8：sum6(1,2,3,4,5,6) 的第二个参数",
+    "21": "probe 日志 L8：sum6(1,2,3,4,5,6) = 21（第 5、6 个参数 5、6 走栈）",
+    "3": "probe 日志 L8：sum6(1,2,3,4,5,6) 的第三个参数；L42 movs r2, #3",
+    "31": "probe 日志 L59：adc r1, r3, r1, asr #31（mix 返回值高半的算术右移）",
+    "32": "probe 日志 L7：buf 距 sp(non_leaf) = 32 字节",
+    "4": "probe 日志 L32：ldr r0, [sp, #4]（第 6 个栈参数）；L44 movs r3, #4",
+    "5": "probe 日志 L8：sum6 第五个参数 5；L39 movs r3, #5",
+    "6": "probe 日志 L8：sum6 第六个参数 6；L40 movs r2, #6",
+    "64": "probe 日志 L5：一帧吃掉的栈 = 64 字节（两次 sp 之差，含返回地址+保存寄存器+buf）",
+    "7": "probe 日志 L10：mix(7, 0x100000000)；L64 movs r0, #7（tag）",
+    "8": "probe 日志 L25：sum6 的 @ args = 8；L41 strd r3, r2, [sp] 写两个 32 位寄存器",
+    "9": "probe 日志 L12：== 断言通过 9/9 =="
+  },
+  "exceptions": {
+    "06": "复现路径 code/c/06-abi-stack 的章节号，不是测量值",
+    "24": "M4 的前导 24 字节 = push {r4, lr} 两个 32 位寄存器（8 字节）+ sub sp, sp, #16（16 字节），按日志 L66–L67 的指令算术，不是板上实测",
+    "32 位": "字长（32-bit），架构常量；日志 L7 的 32 是 buf 距 sp 的字节数，两者不同义，只共用 token 32",
+    "64 位": "数据宽度（64-bit），架构常量；日志 L5 的 64 是宿主 non_leaf 的帧差字节数，两者不同义，只共用 token 64",
+    "8 字节 push": "push {r4, lr} 压两个 32 位寄存器 = 8 字节，按寄存器宽度算术；日志只打印 push 这条指令",
+    "16 字节 buf": "non_leaf 的 char buf[16] 与 L67 的 sub sp, sp, #16 对齐；日志未打印源码行，源码在本仓库 code/c/06-abi-stack/probe.c"
+  }
+}

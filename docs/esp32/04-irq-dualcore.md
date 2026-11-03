@@ -42,6 +42,8 @@ esp_intr_alloc(ETS_GPIO_INTR_SOURCE, ESP_INTR_FLAG_LEVEL1 | ESP_INTR_FLAG_IRAM,
                my_isr, NULL, NULL);
 ```
 
+probe 之前先认个内鬼：四条链里，哪条看着最安全、关 Cache 的窗口一开却第一个跪？先押一个再跑构建，nm 的归类表就是判决书。
+
 **落址不用背，本机链接完直接查。** `code/esp32/09-iram-discipline` 把实践清单的四条链一次摆全：不标的、只标本体的、整条链都标的、代码进了 IRAM 但常量还在 Flash 的。`sh probe.sh` 一条命令跑完构建与取证，最后那段断言逐条打勾、错一条直接非零退出才算数。下面是本机实测（ESP-IDF v5.5.2，目标 esp32s3）：
 
 ```console
@@ -382,6 +384,8 @@ STM32 的 Flash 是**原地执行**的（地址空间直接映射，CPU 直接�
 - 能正确给外设挂中断：选对源、级别、IRAM 标志，并知道每个选择的责任；
 - 双核共享数据时不再指望 `volatile`，会用 `portMUX` 与 `--FromISR` API；
 - 能对着 STM32 的 NVIC 说清"静态向量 vs 动态中断矩阵"的差异。
+
+内鬼就是那条半截链：本体搬进了 IRAM，帮手还留在 Flash 里。关 Cache 的窗口一开，取指断在半路。整条链同进同出才是 IRAM 纪律的全文，也是你往后审每一份中断代码的尺子。
 
 <div class="achievement">
 ✅ 下一站：<a href="../rtos/index.html">RTOS 篇</a>把双核 SMP 的调度细节补齐，或回 <a href="00-env.html">P0</a> 复查环境配置。

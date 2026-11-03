@@ -1,0 +1,39 @@
+{
+  "ep": "c2-pointer",
+  "source": "code/c/02-pointer/probe.sh",
+  "evidence": {
+    "0": "probe 日志：多处 0 常量（@ args = 0；objdump 地址列 0:；0x400000 的十六进制写法本身不产生独立 0）",
+    "1": "probe 日志：sizeof uint8_t=1（L105）；p+1 的 +1（L106）；*p = 1 报错标题（L112/L118）；objdump 的 #1（L54）",
+    "2": "probe 日志：sizeof uint16_t=2；*pc=2；-O2；objdump 的 #2",
+    "3": "probe 日志：现场3 段号（L71）；三条 const 反例按日志顺序的第 3 个（probe.c:54:59，L119）",
+    "4": "probe 日志：sizeof uint32_t=4；p[1] 的 #4；6*4；Cortex-M4 的 4",
+    "6": "probe 日志：[6] 下标；6*4；6*sizeof(uint32_t)==0x18；#6（objdump 地址列）",
+    "8": "probe 日志：指针自身=8 字节；objdump 的 #8",
+    "+1": "probe 日志 L106：p+1 字节增量: uint8_t* +1（增量记号，不是独立测量值）",
+    "+2": "probe 日志 L106：p+1 字节增量: uint16_t* +2（增量记号，不是独立测量值）",
+    "+4": "probe 日志 L106：p+1 字节增量: uint32_t* +4（增量记号，不是独立测量值）",
+    "15.2.1": "probe 日志 L2：arm-none-eabi-gcc.exe (xPack GNU Arm Embedded GCC x86_64) 15.2.1 20251203",
+    "16.1.0": "probe 日志 L103：gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 16.1.0",
+    "42": "probe 日志 L108：const 三组合(合法半边): *pc=2 *cp=42 *cpc=2",
+    "1048": "probe 日志 L78/L87/L97：str r2, [r3, #1048]",
+    "4194304": "probe 日志 L77/L86/L96：mov r2, #4194304 @ 0x400000",
+    "0x40021418": "probe 日志 L100/L107：0x40021000 + 0x418 = 0x40021418；&((uint32_t*)0x40021400)[6] = 0x40021418",
+    "0x40021400": "probe 日志 L107/L109：寄存器索引 &((uint32_t*)0x40021400)[6]；驱动惯用法 ... = 0x40021400",
+    "0x40021000": "probe 日志 L99：c: .word 0x40021000",
+    "0x400000": "probe 日志 L96：mov.w r2, #4194304 @ 0x400000",
+    "0x418": "probe 日志 L97：str.w r2, [r3, #1048] @ 0x418",
+    "0x18": "probe 日志 L90/L107：_Static_assert ... ==0x18；= 基址 + 6*4 = +0x18",
+    "0xc": "probe 日志 L95：@ (c <led_on_indexed+0xc>)"
+  },
+  "exceptions": {
+    "02": "复现路径 code/c/02-pointer 的章节号，不是测量值",
+    "22": "BSRR 的寄存器位号：probe.c:40 源码 1UL << (6U + 16U)，docs/c/02-pointer.md:82 写作 1UL << 22；probe 日志只打印常量 4194304，不打印 22，不是测量值",
+    "35": "codeLabel『probe.c:35-36』的源码行号，不是测量值",
+    "36": "codeLabel『probe.c:35-36』的源码行号，不是测量值",
+    "50": "编译器报错原文 probe.c:50:52 的源码行号，不是测量值",
+    "52": "编译器报错原文 probe.c:50:52 与 probe.c:52:58 的源码行号/列号，不是测量值",
+    "54": "编译器报错原文 probe.c:54:59 的源码行号，不是测量值",
+    "58": "编译器报错原文 probe.c:52:58 的源码列号，不是测量值",
+    "59": "编译器报错原文 probe.c:54:59 的源码列号，不是测量值"
+  }
+}

@@ -35,6 +35,8 @@ minutes: 35
 
 读完本章再回看这五行，每个编号你都能讲出它与 ARM `IRQn` 的区别。
 
+先押两扇门：硬件读表跳转的老剧情，这边还演不演？每个中断名下那位 shv，置 1 与置 0 各进哪扇门、谁在门口分发？ARM 那把 0x5FA 钥匙，这边还认不认？
+
 ## 动画：ECLIC 两维优先级
 
 level 决定能否打断别人（抢占），priority 决定同 level 内谁先响应（排序）。两维配合完成中断嵌套与同级排序，无需 ARM 的 PRIGROUP 分组钥匙。
@@ -313,6 +315,8 @@ ECLIC 的标准原型与权威寄存器表：
 - 中断号不再"IRQn + 16"，能从 `gd32vf103.h` 直接读 ECLIC 索引，知道同一条 EXTI0 线在两颗芯片上编号差很远；
 - MTIME 不是 SysTick：64 位递增、内存映射、软件比较、`mtime_toggle_a` 驱动，RTOS tick 的地基（[V3](08-mtime-delay.md) 接着盖）；
 - 手握"EXTI 外设照搬 F1、第 6 步换 ECLIC 三动作"的清单，能在 GD32VF103 上配通任意外部中断。
+
+两扇门对答案：shv 置 1，硬件直跳该中断的专属入口；置 0，进公共入口由软件读 mcause 分发，ARM 那张向量大表没了。优先级另拆成两张：level 管抢占、priority 管同级排序。0x5FA 那把钥匙，这个世界不认。
 
 <div class="achievement">
 ✅ 下一站：<a href="07-rcu-108m.html">V2 RCU 与 108MHz</a>：G1 的 RCU 知识平移到 RISC-V，预设档 48/72/108M 一次算清。

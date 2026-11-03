@@ -5,7 +5,7 @@
 // 事实源纪律：一集的字只从 video/episodes/<ep>/episode.json 的 publish.xiaohongshu 与 video/out/<ep>/ 来，
 // 脚本里不写任何一集的字面量。
 import { chromium } from 'playwright'
-import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
 
 const RUN = 'D:/Users/mcu/.temp/xhs-run'
 mkdirSync(RUN, { recursive: true })
@@ -302,6 +302,49 @@ async function submitEditAndVerify(form, readRow, want) {
     throw new Error(`提交后重开编辑页，合集行没显示「${want}」——按未提交对待`)
   }
   return ver
+}
+
+// 发布成功后回笔记管理现取 noteId：noteId 是这条笔记的唯一凭据，标题会重名、日期只到分钟。
+// 只读：按标题逐字命中 .note-card__title，从卡片的 data-impression 里读（归档适配器同源）；
+// 不点「编辑」、不点删除。自己开的页自己关，缩放是 origin 级，先还原再关。
+async function freshNoteIdByTitle(xsTitle) {
+  const want = String(xsTitle || '').trim()
+  if (!want) return null
+  const nm = await ctx.newPage()
+  nm.setDefaultTimeout(60_000)
+  try {
+    await nm.goto(NOTE_MANAGER_URL, { waitUntil: 'domcontentloaded' })
+    await nm.waitForTimeout(9000)
+    for (let i = 0; i < 4; i++) {
+      await nm.keyboard.press('Control+Minus')
+      await nm.waitForTimeout(300)
+    }
+    await nm.waitForTimeout(1200)
+    for (let round = 0; round < 30; round++) {
+      const hit = await nm.evaluate((t) => {
+        const norm = (v) => (v || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\s+/g, ' ').trim()
+        for (const card of document.querySelectorAll('.note-card')) {
+          if (norm(card.querySelector('.note-card__title')?.innerText) !== t) continue
+          const impression = card.getAttribute('data-impression') || ''
+          const id = (impression.match(/"noteId":"([0-9a-f]{24})"/) || [])[1] || ''
+          return { id, text: norm(card.innerText).slice(0, 120) }
+        }
+        return null
+      }, want)
+      if (hit) return hit
+      await nm.mouse.move(700, 600)
+      await nm.mouse.wheel(0, 1400)
+      await nm.evaluate(() => {
+        const box = document.querySelector('.content')
+        if (box) box.scrollTop = box.scrollHeight
+      })
+      await nm.waitForTimeout(1000)
+    }
+    return null
+  } finally {
+    await nm.keyboard.press('Control+0').catch(() => {})
+    await nm.close().catch(() => {})
+  }
 }
 
 if (verb === 'status') {
@@ -799,6 +842,7 @@ if (verb === 'status') {
   // 2026-10-17 用户授权「今晚 17 条连跑全发」，每条一文件（内容=那句原话 + 该集 id）。
   // 点法同 collection 的提交：<xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中。
   // 判据：点完 URL 要变成 published=true（事后信号，实测过）；权威核对（笔记管理「已发布」）由批后统一跑一遍。
+  const runStartedAt = new Date().toISOString()
   const gate = `${RUN}/I_HAVE_USER_OK=${EP}`
   if (!existsSync(gate)) {
     console.log(`停在发布前：闸门文件不存在 ${gate}`)
@@ -809,8 +853,9 @@ if (verb === 'status') {
     console.log('闸门在，但没给 --go：这一步不代点（默认归人）。要脚本点发布加 --go。')
     process.exitCode = 3
   } else {
+    const gateText = readFileSync(gate, 'utf8').trim()
     console.log(`闸门：${gate}`)
-    console.log(`  ${readFileSync(gate, 'utf8').trim()}`)
+    console.log(`  ${gateText}`)
     await settle()
     const btn = await page.evaluate(() => {
       const el = document.querySelector('xhs-publish-btn')
@@ -847,6 +892,26 @@ if (verb === 'status') {
     console.log('  URL 已 published=true；权威核对（笔记管理「已发布」）批后统一跑')
     await page.screenshot({ path: `${RUN}/${EP}-published.png` })
     console.log(`  截图：${RUN}/${EP}-published.png`)
+    // 写 marker 再消费闸门：marker 是"这条在线"的凭据，闸门是"可以发"的授权。
+    // 取不到 noteId 就记 noteId=null + since，不伪造；重跑幂等靠 noteId/since，不靠标题。
+    let noteId = ''
+    try {
+      const hit = await freshNoteIdByTitle(ep.publish?.xiaohongshu?.title || '')
+      noteId = hit?.id || ''
+      console.log(noteId ? `  笔记管理里读到新 noteId=${noteId}` : '  笔记管理里暂未读到这张卡片的 noteId（不伪造）')
+    } catch (e) {
+      console.log(`  读 noteId 失败（不伪造）：${e.message}`)
+    }
+    const oneLine = (s) => String(s || '').replace(/\s+/g, ' ').trim()
+    const now = new Date().toISOString()
+    const marker = `${RUN}/${EP}-published.txt`
+    const line = noteId
+      ? `noteId=${noteId}\turl=${after.url}\tat=${now}\tgate=${oneLine(gateText)}`
+      : `noteId=null\tsince=${runStartedAt}\turl=${after.url}\tat=${now}\tgate=${oneLine(gateText)}`
+    writeFileSync(marker, line + '\n')
+    console.log(`  台账：${marker}\n    ${line}`)
+    unlinkSync(gate)
+    console.log(`  闸门已消费：${gate}`)
   }
 } else {
   throw new Error(`未知步骤「${verb}」，认得的是 status / open / upload / measure / fill / topics / cover / coverset / coverapply / comment / collection / collectioncheck / collectioncreate / attach / publish`)

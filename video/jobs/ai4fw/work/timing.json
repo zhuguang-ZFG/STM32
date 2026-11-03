@@ -1,0 +1,620 @@
+{
+  "records": [
+    {
+      "stage": "doctor",
+      "source": "tool",
+      "start": 1793180468.881842,
+      "end": 1793180471.9845595,
+      "seconds": 3.103,
+      "status": "not_ready"
+    },
+    {
+      "stage": "doctor",
+      "source": "tool",
+      "start": 1793180478.1850286,
+      "end": 1793180481.2167392,
+      "seconds": 3.032,
+      "status": "not_ready"
+    },
+    {
+      "stage": "doctor",
+      "source": "tool",
+      "start": 1793180557.582621,
+      "end": 1793180560.6079192,
+      "seconds": 3.025,
+      "status": "ok"
+    },
+    {
+      "stage": "doctor",
+      "source": "tool",
+      "start": 1793181454.0846128,
+      "end": 1793181457.2650669,
+      "seconds": 3.18,
+      "status": "ok"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181463.1676202,
+      "end": 1793181464.2305164,
+      "seconds": 1.063,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181525.2816849,
+      "end": 1793181526.8005948,
+      "seconds": 1.519,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181567.0555615,
+      "end": 1793181568.7125645,
+      "seconds": 1.657,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181574.2479384,
+      "end": 1793181575.7894216,
+      "seconds": 1.541,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181598.4337332,
+      "end": 1793181600.3056536,
+      "seconds": 1.872,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793181636.1131666,
+      "end": 1793181637.894891,
+      "seconds": 1.782,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182106.982427,
+      "end": 1793182107.6224728,
+      "seconds": 0.64,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182116.743239,
+      "end": 1793182143.3562036,
+      "seconds": 26.613,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182386.0523736,
+      "end": 1793182386.925237,
+      "seconds": 0.873,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182393.8763142,
+      "end": 1793182435.1500406,
+      "seconds": 41.274,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182446.5985093,
+      "end": 1793182462.1108081,
+      "seconds": 15.512,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182597.4050782,
+      "end": 1793182598.0356073,
+      "seconds": 0.631,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182605.4061663,
+      "end": 1793182636.7135634,
+      "seconds": 31.307,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182676.308304,
+      "end": 1793182708.8179743,
+      "seconds": 32.51,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182807.6049721,
+      "end": 1793182808.3198295,
+      "seconds": 0.715,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182818.7554126,
+      "end": 1793182819.5990465,
+      "seconds": 0.844,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182903.5021982,
+      "end": 1793182904.8216329,
+      "seconds": 1.319,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793182913.0375211,
+      "end": 1793182944.2991443,
+      "seconds": 31.262,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183074.050575,
+      "end": 1793183098.4630795,
+      "seconds": 24.413,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183108.9772782,
+      "end": 1793183135.765665,
+      "seconds": 26.788,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183176.4385412,
+      "end": 1793183177.2370815,
+      "seconds": 0.799,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183201.193535,
+      "end": 1793183232.256893,
+      "seconds": 31.063,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183390.917738,
+      "end": 1793183393.486839,
+      "seconds": 2.569,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183409.9644904,
+      "end": 1793183412.1908207,
+      "seconds": 2.226,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183446.494122,
+      "end": 1793183484.573439,
+      "seconds": 38.079,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183531.5651898,
+      "end": 1793183532.3775241,
+      "seconds": 0.812,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183543.2207909,
+      "end": 1793183583.6518886,
+      "seconds": 40.431,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183663.9691734,
+      "end": 1793183701.9172037,
+      "seconds": 37.948,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183742.1548977,
+      "end": 1793183771.4771404,
+      "seconds": 29.322,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183818.273516,
+      "end": 1793183846.3804016,
+      "seconds": 28.107,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793183872.0258923,
+      "end": 1793183930.1675231,
+      "seconds": 58.142,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184026.124967,
+      "end": 1793184055.8865955,
+      "seconds": 29.762,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184070.7650695,
+      "end": 1793184107.599936,
+      "seconds": 36.835,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184129.4571505,
+      "end": 1793184162.556789,
+      "seconds": 33.1,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184199.9584775,
+      "end": 1793184240.7433496,
+      "seconds": 40.785,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184264.9215348,
+      "end": 1793184280.946518,
+      "seconds": 16.025,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184300.0890698,
+      "end": 1793184332.9864447,
+      "seconds": 32.897,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184397.343793,
+      "end": 1793184398.3158424,
+      "seconds": 0.972,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184599.309999,
+      "end": 1793184614.8981416,
+      "seconds": 15.588,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184660.9266245,
+      "end": 1793184692.3476174,
+      "seconds": 31.421,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184879.8124642,
+      "end": 1793184915.4990208,
+      "seconds": 35.687,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793184938.4744265,
+      "end": 1793184966.5747042,
+      "seconds": 28.1,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185056.3288867,
+      "end": 1793185100.9595492,
+      "seconds": 44.631,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185276.5652096,
+      "end": 1793185301.5742922,
+      "seconds": 25.009,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185372.3219092,
+      "end": 1793185393.3319926,
+      "seconds": 21.01,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185416.2642877,
+      "end": 1793185436.2327075,
+      "seconds": 19.968,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185483.0392716,
+      "end": 1793185500.1613498,
+      "seconds": 17.122,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185532.0735898,
+      "end": 1793185553.0094225,
+      "seconds": 20.936,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185650.082597,
+      "end": 1793185722.579595,
+      "seconds": 72.497,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185807.0093982,
+      "end": 1793185809.3535032,
+      "seconds": 2.344,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185820.0276244,
+      "end": 1793185836.726847,
+      "seconds": 16.699,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185843.1860971,
+      "end": 1793185855.202169,
+      "seconds": 12.016,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185862.4175289,
+      "end": 1793185883.7660487,
+      "seconds": 21.349,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185898.7234235,
+      "end": 1793185902.4305415,
+      "seconds": 3.707,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185911.3359349,
+      "end": 1793185937.6997056,
+      "seconds": 26.364,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185960.6637924,
+      "end": 1793185962.3148205,
+      "seconds": 1.651,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185983.7445161,
+      "end": 1793185985.0190299,
+      "seconds": 1.275,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793185991.7978716,
+      "end": 1793186020.1412864,
+      "seconds": 28.343,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793186249.4807694,
+      "end": 1793186272.582067,
+      "seconds": 23.101,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793186338.1186147,
+      "end": 1793186373.3758705,
+      "seconds": 35.257,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793186429.8644228,
+      "end": 1793186470.8461673,
+      "seconds": 40.982,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793186507.1972313,
+      "end": 1793186547.113517,
+      "seconds": 39.916,
+      "status": "ok"
+    },
+    {
+      "stage": "render:preview",
+      "source": "tool",
+      "start": 1793186560.1351051,
+      "end": 1793186563.9684567,
+      "seconds": 3.833,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793186587.0843973,
+      "end": 1793186633.6495829,
+      "seconds": 46.565,
+      "status": "ok"
+    },
+    {
+      "stage": "render:preview",
+      "source": "tool",
+      "start": 1793186635.0921938,
+      "end": 1793186749.9394083,
+      "seconds": 114.847,
+      "status": "ok"
+    },
+    {
+      "stage": "render",
+      "source": "tool",
+      "start": 1793186929.0028684,
+      "end": 1793186952.2334902,
+      "seconds": 23.231,
+      "status": "failed"
+    },
+    {
+      "stage": "render",
+      "source": "tool",
+      "start": 1793186960.0169609,
+      "end": 1793187025.4845076,
+      "seconds": 65.468,
+      "status": "failed"
+    },
+    {
+      "stage": "render",
+      "source": "tool",
+      "start": 1793187033.648396,
+      "end": 1793187084.3280926,
+      "seconds": 50.68,
+      "status": "failed"
+    },
+    {
+      "stage": "render",
+      "source": "tool",
+      "start": 1793187134.3493342,
+      "end": 1793187453.4231877,
+      "seconds": 319.074,
+      "status": "ok"
+    },
+    {
+      "stage": "verify",
+      "source": "tool",
+      "start": 1793187462.657787,
+      "end": 1793187479.7837114,
+      "seconds": 17.126,
+      "status": "ok"
+    },
+    {
+      "stage": "finalize",
+      "source": "tool",
+      "start": 1793187487.410062,
+      "end": 1793187488.8315423,
+      "seconds": 1.421,
+      "status": "failed"
+    },
+    {
+      "stage": "finalize",
+      "source": "tool",
+      "start": 1793187722.904916,
+      "end": 1793187724.2754486,
+      "seconds": 1.371,
+      "status": "ok"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793189301.379681,
+      "end": 1793189335.1230788,
+      "seconds": 33.743,
+      "status": "ok"
+    }
+  ]
+}

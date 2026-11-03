@@ -34,6 +34,8 @@ minutes: 55
 
 十分钟后你写的每行代码都有账可查：本章 main.c 就是这两笔账的展开。
 
+先押个家谱：VF103 的 GPIO，是 G2 那套七寄存器家族原班人马，还是另认祖宗换了编制？判据就藏在头文件的一个符号里，押完翻 gd32vf103.h 找它。
+
 ## 动画：RISC-V 点灯闭环
 
 开时钟 → CTL0 四位配置 → OCTL 设初值 → BOP/BC 原子翻转 → mtime 延时，五步装配，V0~V4 的产出在此合体成第一个完整的 RISC-V 点灯闭环。
@@ -303,6 +305,8 @@ F407 没有独立清零寄存器，用 BSRR 高 16 位复位区：把 1 左移 (
 - 第一个完整的 RISC-V 工程从你手里跑起来：启动、时钟、时基、GPIO 四环都验过账；
 - "外设像 F1、内核是 RISC-V"的混血地图刻进脑子，以后看任何 F1 兼容芯，知道哪部分照搬、哪部分重学；
 - V 篇毕业：从 arm-none-eabi 到 riscv-none-elf，你完成了一次架构迁移的全流程演练。
+
+家谱是 F1：AFIO_BASE 还钉在 APB2 头上，有 AFIO 就是 F1 家；于是 CTL0/CTL1 两张配置表每脚 4 位，掩码 0xF、移位 pin*4，别拿 S3 的 0x3、pin*2 去套；数据四剑客 ISTAT/OCTL/BOP/BC 换编制不换岗，BC 独立清零是 STM32F407 没有的待遇。
 
 <div class="achievement">
 ✅ <b>V 篇收官</b>。下一站：<a href="../lab/index.html">实验中心</a>把闭环上板实测；或直奔 <a href="../rtos/index.html">RTOS 篇</a>：看 SysTick 的 tick 到了 RISC-V 怎么落进 mtimecmp。

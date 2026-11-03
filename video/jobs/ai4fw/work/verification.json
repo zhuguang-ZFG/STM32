@@ -1,0 +1,896 @@
+{
+  "duration_seconds": 64.09,
+  "engine": {
+    "version": "2.0.2",
+    "scripts_sha256": "4b433ad0ead9655b"
+  },
+  "art_direction": {
+    "dependency_sha256": "fbbfd33d70f729011b6a6bc232851c116cd4a89ead2adea4462888a6ce26fc1a",
+    "reviewed_image_uses": 9,
+    "style": {
+      "mode": "catalog",
+      "name": "小豆人黑色涂鸦信息图",
+      "resolved_sha256": "46448cf896325fc46c7573fbedb68ba529a6f630d239719d861552b1661d7ff3",
+      "drawing_mode": "draw"
+    },
+    "drawing_plan": {
+      "plan_sha256": "9b433a3e75a2abaaeec3e0659b98e08d094bbb709ddacea6b7dd582091e120fd",
+      "reviewed_illustrations": 7
+    },
+    "presentation": {
+      "mode": "dense_infographic",
+      "density": "dense",
+      "reason": "知识盘点/工具对比内容，观众预期单页多模块的结构化信息；模块卡+标签布局与四个并列框架天然匹配",
+      "policy": {
+        "density": "dense",
+        "max_hold_seconds": 7,
+        "hold_range": [
+          5,
+          9
+        ],
+        "cadence_factor": 0.9,
+        "max_picture_visuals_per_shot": 4,
+        "max_labels_per_shot": 12,
+        "board_reuse": true,
+        "min_finished_hold_median": 0.9,
+        "drawing_share": 0.7,
+        "text_role": "module_titles",
+        "summary": "知识科普/信息图：单页多模块，结构化密"
+      },
+      "summary": "知识科普/信息图：单页多模块，结构化密"
+    }
+  },
+  "checks": {
+    "full_decode": true,
+    "complete_timeline": true,
+    "paths_and_paint_coverage": true,
+    "narration_controls_drawing_time": true,
+    "canvas_bounds": true,
+    "subtitle_order": true,
+    "loudness": true,
+    "audio_gate": "PASS",
+    "caption_sync": "PASS",
+    "semantic_part_order": true,
+    "outlines_before_fill": true,
+    "glyph_isolation": true,
+    "arm_continues_off_canvas": true,
+    "cover_half_second_still_and_fade": true,
+    "mandatory_art_direction": true
+  },
+  "assets": [
+    {
+      "name": "element-0001",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0002",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0003",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0004",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0005",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "window",
+        "arrow",
+        "film"
+      ],
+      "ink_tip_max_distance_px": 28.732050996372752,
+      "paint_max_overshoot_px": 0.3326235480477209
+    },
+    {
+      "name": "element-0006",
+      "type": "handwritten_text",
+      "isolated_characters": 15,
+      "maximum_tip_distance_px": 11.661903789690601
+    },
+    {
+      "name": "element-0007",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0008",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0009",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0010",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0011",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0012",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0013",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0014",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0015",
+      "type": "handwritten_text",
+      "isolated_characters": 12,
+      "maximum_tip_distance_px": 6.540963512851018
+    },
+    {
+      "name": "element-0016",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "wall",
+        "arrow"
+      ],
+      "ink_tip_max_distance_px": 10.64997322155793,
+      "paint_max_overshoot_px": 0.18718166655794732
+    },
+    {
+      "name": "element-0017",
+      "type": "handwritten_text",
+      "isolated_characters": 10,
+      "maximum_tip_distance_px": 6.403124237482002
+    },
+    {
+      "name": "element-0018",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0019",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0020",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0021",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0022",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0023",
+      "type": "handwritten_text",
+      "isolated_characters": 17,
+      "maximum_tip_distance_px": 6.403124239794694
+    },
+    {
+      "name": "element-0024",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "palette",
+        "card",
+        "arrow"
+      ],
+      "ink_tip_max_distance_px": 13.22111003971502,
+      "paint_max_overshoot_px": 0.6652147623960829
+    },
+    {
+      "name": "element-0025",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0026",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0027",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0028",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0029",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0030",
+      "type": "handwritten_text",
+      "isolated_characters": 13,
+      "maximum_tip_distance_px": 6.403124238387064
+    },
+    {
+      "name": "element-0031",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "staff",
+        "arrow",
+        "frame"
+      ],
+      "ink_tip_max_distance_px": 10.472650122252736,
+      "paint_max_overshoot_px": 2.6242285956989164
+    },
+    {
+      "name": "element-0032",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0033",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0034",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0035",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0036",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0037",
+      "type": "handwritten_text",
+      "isolated_characters": 21,
+      "maximum_tip_distance_px": 7.211102550927978
+    },
+    {
+      "name": "element-0038",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "head",
+        "torso",
+        "left_arm",
+        "right_arm",
+        "lower_body",
+        "pen",
+        "portrait"
+      ],
+      "ink_tip_max_distance_px": 9.840519023255796,
+      "paint_max_overshoot_px": 3.005444962561718
+    },
+    {
+      "name": "element-0039",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0040",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0041",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0042",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0043",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0044",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "table",
+        "icons",
+        "arrow"
+      ],
+      "ink_tip_max_distance_px": 11.413374739218733,
+      "paint_max_overshoot_px": 2.9069199430005384
+    },
+    {
+      "name": "element-0045",
+      "type": "handwritten_text",
+      "isolated_characters": 6,
+      "maximum_tip_distance_px": 6.540973450750934
+    },
+    {
+      "name": "element-0046",
+      "type": "handwritten_text",
+      "isolated_characters": 6,
+      "maximum_tip_distance_px": 6.403124237703722
+    },
+    {
+      "name": "element-0047",
+      "type": "handwritten_text",
+      "isolated_characters": 2,
+      "maximum_tip_distance_px": 7.675432019304333
+    },
+    {
+      "name": "element-0048",
+      "type": "handwritten_text",
+      "isolated_characters": 4,
+      "maximum_tip_distance_px": 6.540962262224629
+    },
+    {
+      "name": "element-0049",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0050",
+      "type": "typeset_caption",
+      "lines": 1,
+      "font": {
+        "path": "C:\\Windows\\Fonts\\msyh.ttc",
+        "index": 0,
+        "family": "Microsoft YaHei",
+        "style": "Regular"
+      },
+      "background": null
+    },
+    {
+      "name": "element-0051",
+      "type": "illustration",
+      "mode": "draw",
+      "outlines_before_fill": "pass",
+      "semantic_parts_in_order": [
+        "sheet",
+        "clip"
+      ],
+      "ink_tip_max_distance_px": 11.415262904145699,
+      "paint_max_overshoot_px": 0.404911316017575
+    },
+    {
+      "name": "element-0052",
+      "type": "counter",
+      "counter": {
+        "from": 0.0,
+        "to": 369.0
+      }
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "duration_seconds": 7.789,
+      "drawing_completed_before_speech_end_seconds": 0.5
+    },
+    {
+      "page": 2,
+      "duration_seconds": 13.700000000000001,
+      "drawing_completed_before_speech_end_seconds": 3.831317610489041
+    },
+    {
+      "page": 3,
+      "duration_seconds": 11.889999999999997,
+      "drawing_completed_before_speech_end_seconds": 5.5879671811514875
+    },
+    {
+      "page": 4,
+      "duration_seconds": 8.830000000000005,
+      "drawing_completed_before_speech_end_seconds": 3.4397881822966525
+    },
+    {
+      "page": 5,
+      "duration_seconds": 6.82,
+      "drawing_completed_before_speech_end_seconds": 1.515745024588277
+    },
+    {
+      "page": 6,
+      "duration_seconds": 9.697499999999998,
+      "drawing_completed_before_speech_end_seconds": 0.6979316386494148
+    },
+    {
+      "page": 7,
+      "duration_seconds": 4.363500000000002,
+      "drawing_completed_before_speech_end_seconds": 0.45000000000000284
+    }
+  ],
+  "pictures": {
+    "drawn": 7,
+    "revealed": []
+  },
+  "subtitles": {
+    "subtitle_streams": 0,
+    "adjacent_sidecars": 0,
+    "presentation": "burned"
+  },
+  "audio_mix": {
+    "background_music": true,
+    "layers": [
+      {
+        "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\music-bed.wav",
+        "user_instruction": "整集级：节奏音效铺满（用户 2026-10-28 要求）",
+        "kind": "music",
+        "start": 0.0,
+        "builtin": {
+          "version": "music-synth-1",
+          "mood": "curious",
+          "seed": 0,
+          "loop": false,
+          "bpm": 92,
+          "key_midi": 55,
+          "bars": 25,
+          "first_bar": 0,
+          "seconds": 64.09,
+          "progression_degrees": [
+            0,
+            1,
+            4,
+            5
+          ],
+          "target_lufs": -16.0,
+          "loudness_lufs": -16.0,
+          "peak_dbfs": -3.62,
+          "sha256": "0c2adb6b6197f45629130e494bc2c6b09159eb58b467c639449337e25388662e"
+        },
+        "gain": 0.25,
+        "preparation": {
+          "crossfade_seconds": 4.0,
+          "fade_in_seconds": 1.2,
+          "fade_out_seconds": 3.0,
+          "duck": true,
+          "dips": []
+        },
+        "sha256": "8e72ff77565e35b5db731e9f16b0957cf438f56d95d5c5e59aed3c833f657ece",
+        "levels": {
+          "peak_dbfs": -15.66,
+          "loudness_lufs": -30.17
+        }
+      },
+      {
+        "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\audio\\foley.wav",
+        "gain": 0.25,
+        "start": 0.0,
+        "sha256": "75ae2848df1a96231aeda2cdebbaaf06c06cd919be436358c6d143807dcfa72c",
+        "kind": "foley",
+        "reason": "pen/marker sound synced to the drawing (procedural, foley.py)",
+        "foley": {
+          "version": "foley-1",
+          "tool": "marker",
+          "gain_db": 0.0,
+          "duck_db": 4.0,
+          "seed": 0,
+          "events": 10,
+          "contact_seconds": 15.96,
+          "levels": {
+            "peak_dbfs": -24.23,
+            "loudness_lufs": -38.3,
+            "active_rms_dbfs": -43.17,
+            "active_share": 0.284,
+            "duck_db": 4.0,
+            "duck_applied_db": {
+              "speech_mean": -3.76,
+              "pause_mean": -1.87
+            },
+            "speech_rms_dbfs": -44.16,
+            "pause_rms_dbfs": -42.14
+          }
+        }
+      },
+      {
+        "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\audio\\sfx.wav",
+        "gain": 0.5,
+        "start": 0.0,
+        "sha256": "f992fbb0d53a78aebb991e2aa449f69a6c06fdeb5206bdc6abe1895b74a80851",
+        "kind": "sfx",
+        "reason": "transition and accent sounds synced to the picture (procedural, sfx.py)",
+        "sfx": {
+          "version": "sfx-1",
+          "gain_db": 0.0,
+          "sounds": 6,
+          "levels": {
+            "peak_dbfs": -30.86,
+            "loudness_lufs": -44.21
+          }
+        }
+      }
+    ],
+    "narration_only": false,
+    "narration_filter": "highpass=f=70,loudnorm=I=-20:TP=-2:LRA=7",
+    "loudnorm_first_pass": {
+      "input_i": "-25.00",
+      "input_tp": "-0.65",
+      "input_lra": "4.80",
+      "input_thresh": "-35.57",
+      "output_i": "-21.41",
+      "output_tp": "-2.00",
+      "output_lra": "3.20",
+      "output_thresh": "-31.92",
+      "normalization_type": "dynamic",
+      "target_offset": "1.41"
+    },
+    "loudnorm_mode": "dynamic",
+    "delivery_notice": "按用户明确要求加入了程序合成的背景音乐（builtin:curious）。"
+  },
+  "ending_review": {
+    "last_active_seconds": 61.94,
+    "source_tail_seconds": 0.3500000000000014,
+    "activity_threshold_dbfs": -60,
+    "analysis_window_seconds": 0.01,
+    "hold_seconds": 0.8,
+    "total_tail_seconds": 1.1500000000000015,
+    "closing_text": null,
+    "scope": "Protects samples and pacing; complete pronunciation still needs final-track review",
+    "final_phrase_encoding_correlation": 0.9996673527167322
+  },
+  "audio_track_correlation": 0.9996640592776652,
+  "audio_gate": {
+    "source": "work/mix.wav (narration + 3 layers)",
+    "narration": {
+      "source": "work/normalized-narration.wav",
+      "duration_seconds": 64.09,
+      "tonal_lines_hz_persistence": [],
+      "pause_percentile": 5,
+      "pause_depth_db": -62.4,
+      "dc_offset": -0.0,
+      "peak_dbfs": -2.0,
+      "clipped_fraction": 0.0,
+      "status": "PASS",
+      "failures": []
+    },
+    "mix": {
+      "narration_residual_db": -79.13,
+      "narration_side_db": -82.14,
+      "narration_correlation": 1.0,
+      "narration_gain_db": 0.0,
+      "tonal_lines_without_music_hz_persistence": [],
+      "peak_dbfs": -1.55,
+      "clipped_fraction": 0.0,
+      "dc_offset": [
+        1e-05,
+        1e-05
+      ],
+      "loudness_lufs": -17.71,
+      "narration_loudness_lufs": -20.5,
+      "narration_speech_rms_dbfs": -20.11,
+      "layers_speech_rms_dbfs": -33.7,
+      "voice_margin_db": 13.59
+    },
+    "layers": [
+      {
+        "kind": "music",
+        "source": "music-bed.wav",
+        "gain": 0.25,
+        "start": 0.0,
+        "peak_dbfs": -15.66,
+        "loudness_lufs": -30.17,
+        "active_share": 1.0,
+        "speech_rms_dbfs": -33.84,
+        "pause_rms_dbfs": -31.49,
+        "pause_minus_speech_db": 2.35
+      },
+      {
+        "kind": "foley",
+        "source": "foley.wav",
+        "gain": 0.25,
+        "start": 0.0,
+        "peak_dbfs": -24.23,
+        "loudness_lufs": -38.3,
+        "active_share": 0.312,
+        "speech_rms_dbfs": -44.15,
+        "pause_rms_dbfs": -42.1,
+        "pause_minus_speech_db": 2.05
+      },
+      {
+        "kind": "sfx",
+        "source": "sfx.wav",
+        "gain": 0.5,
+        "start": 0.0,
+        "peak_dbfs": -30.86,
+        "loudness_lufs": -44.21,
+        "active_share": 0.071,
+        "speech_rms_dbfs": -56.52,
+        "pause_rms_dbfs": -48.12,
+        "pause_minus_speech_db": 8.4
+      }
+    ],
+    "status": "PASS",
+    "failures": []
+  },
+  "caption_sync": {
+    "status": "PASS",
+    "tolerance_seconds": 0.3,
+    "cues": 34,
+    "cues_after_gap": 11,
+    "max_offset_seconds": 0.118,
+    "outside_tolerance": []
+  },
+  "loudness": {
+    "input_i": "-17.83",
+    "input_tp": "-1.58",
+    "input_lra": "3.20",
+    "input_thresh": "-28.10",
+    "output_i": "-17.63",
+    "output_tp": "-2.00",
+    "output_lra": "2.40",
+    "output_thresh": "-27.83",
+    "normalization_type": "dynamic",
+    "target_offset": "0.63"
+  },
+  "status": "engineering_passed_review_required",
+  "video_sha256": "fb6362e13bc06b963d016e8bf65d3a40eb97e9567a740c91be16e2351340c7d8",
+  "cover_sha256": "e579e086baddc73411ad9858c3f083ebac9b2d22362559d42d846663247d2a61",
+  "build_fingerprint": "467b06038a2073819df0dbc8e76e5bd93f856322a6733cd9fdc0909f86083e8e",
+  "frames": "1923",
+  "bytes": 7647122
+}

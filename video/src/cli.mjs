@@ -2,22 +2,29 @@
 // 视频产线入口：
 //   npm run video:lint  -- [id…]
 //   npm run video:check -- [id…] [--platform …]   只跑舞台+排版审计，不渲帧、不合成配音
-//   npm run video:build -- [id…] [--platform bilibili|douyin|both] [--force-audio] [--stills] [--no-bgm]
+//   npm run video:build -- [id…] [--platform bilibili|douyin|both] [--force-audio] [--stills] [--no-bgm] [--variant vs|panel]
+//   npm run video:pack  -- [id…]                按 publish 平台复用母版，重排发布包
+//   npm run video:numbers -- [id…]              对账上屏数字与 research/<id>-numbers.json
 //   npm run video:calib -- [--anims a,b,c]      seek 门限双向标定（改过 stage.mjs 的常量就跑它）
 // 六个阶段顺序固定（lint → tts → timeline → stage → mux → package），
 // 每阶段的产物都落在 video/out/<id>/<platform>/，改旁白只重合成改动句、改画面只重渲染该集。
 
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { episodePath, loadEpisode, platformConfig, resolveScenes, validateEpisode } from './spec.mjs'
 import { buildAudio } from './tts.mjs'
 import { buildRenderPlan, planSummary } from './timeline.mjs'
 import { openBrowser, openStage, seekSelfTest } from './stage.mjs'
 import { runCalibration } from './calib.mjs'
 import { captureStills, renderFrames } from './render.mjs'
-import { BGM_PATH, mux } from './mux.mjs'
-import { buildCover, writeRelease } from './package.mjs'
-import { EPISODES_DIR, FFMPEG, OUT_DIR, ensureDir, fmtClock, log } from './util.mjs'
+import { BGM_PATH, LAB_BGM_PATH, mux } from './mux.mjs'
+import { buildSfxEvents, renderSfx } from './audio/sfx.mjs'
+import { buildAllCovers, buildCover, packJobs, writeRelease } from './package.mjs'
+import { auditNumbers } from './numbers.mjs'
+import { EPISODES_DIR, FFMPEG, OUT_DIR, VIDEO_ROOT, ensureDir, fmtClock, log } from './util.mjs'
+
+const COVER_FILES = ['bilibili-cover.png', 'douyin-cover.png', 'zhihu-cover.png', 'xiaohongshu-cover.png']
 
 function parseArgv(argv) {
   const [cmd, ...rest] = argv
@@ -148,7 +155,7 @@ function cmdLint(ids) {
 // ⑦ 大标题折行后末行不许只剩一两个字。渲染前跑一遍，有问题直接 fail，
 // 比渲两万帧再人眼找便宜得多。npm run video:check 单跑这一段，不渲帧。
 
-async function auditLayout(stage, plan) {
+export async function auditLayout(stage, plan) {
   const issues = []
   const longest = new Map()
   for (const cap of plan.captions) {
@@ -160,6 +167,7 @@ async function auditLayout(stage, plan) {
     const r = await stage.page.evaluate(
       ({ index, capText }) => {
         window.MCU.setup(index)
+        if (window.MCU.showAll) window.MCU.showAll()
         window.MCU.caption(capText || null, 1)
         const win = { w: window.innerWidth, h: window.innerHeight }
         const rect = (el) => el.getBoundingClientRect()
@@ -334,7 +342,12 @@ async function auditLayout(stage, plan) {
             svgIssues.push(`动画溢出容器 svg=${Math.round(b.left)},${Math.round(b.top)},${Math.round(b.right)},${Math.round(b.bottom)} box=${Math.round(box.left)},${Math.round(box.top)},${Math.round(box.right)},${Math.round(box.bottom)}`)
           }
         }
-        return { overflow, clipped, hit, clash, burst, bars, tooSmall, widows, svgIssues, minFont: minFont === Infinity ? null : minFont, minFontTag, svgNote, fonts: document.fonts.status }
+        const hidden = []
+        for (const el of document.querySelectorAll('[data-beat-target]')) {
+          const cs = getComputedStyle(el)
+          if (parseFloat(cs.opacity) < 0.99) hidden.push(`${el.tagName.toLowerCase()} "${el.getAttribute('data-beat-target')}" opacity=${cs.opacity}`)
+        }
+        return { overflow, clipped, hit, clash, burst, bars, tooSmall, widows, svgIssues, hidden, minFont: minFont === Infinity ? null : minFont, minFontTag, svgNote, fonts: document.fonts.status }
       },
       { index: sc.index, capText: longest.get(sc.id) || null },
     )
@@ -345,6 +358,7 @@ async function auditLayout(stage, plan) {
     for (const cl of r.clash) issues.push(`${sc.id}: 版式相叠 ${cl}`)
     for (const ts of r.tooSmall) issues.push(`${sc.id}: 字号不可读 ${ts}`)
     for (const bu of r.burst) issues.push(`${sc.id}: ${bu}`)
+    for (const hd of r.hidden) issues.push(`${sc.id}: 审计时仍不可见 ${hd}`)
     if (r.bars.length > 1) issues.push(`${sc.id}: 同屏 ${r.bars.length} 根按场进度（${r.bars.join(' × ')}），只许留一根`)
     // 判据在 13 集成片 × 双平台上跑过一轮：17 处全是真孤字，零误报，所以升成闸。
     // 修法永远是那两个：宽屏在语义接缝补 \n，竖屏把短句再砍短。
@@ -357,6 +371,7 @@ async function auditLayout(stage, plan) {
     )
     log(rows.at(-1))
   }
+  if (plan.beatStats) log(`  🎛️ 节拍审计：${plan.beatStats.beats} 拍（含脉冲 ${plan.beatStats.pulses}），最长静止 ${plan.beatStats.maxGap.toFixed(1)}s`)
   // 字体不是看 CSS 写了什么，而是看 Chromium 真正用哪个字族栅格化了这批字。
   // CDP 的 getPlatformFontsForNode 给出实际用的字族 + 栅格化字形数：
   // 字形数为 0 或字族里没有中文字体，屏幕上就是豆腐块。
@@ -417,6 +432,7 @@ function verifySrt(srtFile, timeline, duration) {
 
 async function buildOne(browser, ep, id, platform, flags) {
   const cfg = platformConfig(ep, platform)
+  const v2 = (ep.formatVersion ?? 1) === 2
   const scenes = resolveScenes(ep, platform)
   const workDir = ensureDir(join(OUT_DIR, id, platform))
   const distDir = ensureDir(join(OUT_DIR, id))
@@ -449,6 +465,8 @@ async function buildOne(browser, ep, id, platform, flags) {
     kicker: ep.cover?.kicker || '通往单片机之路',
     badge: ep.badge || id.split('-')[0].toUpperCase(),
     sections: cfg.sections,
+    formatVersion: ep.formatVersion ?? 1,
+    fps: cfg.fps,
   })
   const srtFile = srtPathOf(workDir)
   verifySrt(srtFile, timeline, timeline.duration)
@@ -492,13 +510,25 @@ async function buildOne(browser, ep, id, platform, flags) {
     await stage.close()
   }
 
-  log('⑤ 合流（旁白 + BGM ducking + loudnorm）')
+  log(`⑤ 合流（旁白${v2 ? ' + 节拍 SFX' : ''} + BGM ducking + loudnorm）`)
+  let sfxPath = null
+  if (v2) {
+    sfxPath = join(workDir, 'sfx.wav')
+    const { events } = renderSfx(buildSfxEvents(plan), { duration: timeline.duration, outPath: sfxPath })
+    if (!plan.beatStats) throw new Error('v2 渲染计划缺少 beatStats，无法对账 SFX')
+    if (events.length !== plan.beatStats.beats) {
+      throw new Error(`SFX 事件 ${events.length} ≠ 节拍 ${plan.beatStats.beats}`)
+    }
+    log(`  🔔 SFX ${events.length} 条 → ${sfxPath}`)
+  }
   const info = await mux({
     videoPath: join(workDir, 'video.mp4'),
     narrationPath: join(workDir, 'narration.wav'),
     outPath: finalVideo,
     duration: timeline.duration,
-    bgm: flags['no-bgm'] ? null : BGM_PATH,
+    bgm: flags['no-bgm'] ? null : (v2 ? LAB_BGM_PATH : BGM_PATH),
+    sfxPath,
+    assertLoudness: v2,
   })
   const drift = Math.abs(info.duration - rendered.frames / plan.fps)
   if (drift > 1 / plan.fps) throw new Error(`${platform} 视频 ${rendered.frames / plan.fps}s 与成片 ${info.duration}s 差 ${drift}s`)
@@ -507,7 +537,16 @@ async function buildOne(browser, ep, id, platform, flags) {
   const cover = join(distDir, `${platform}-cover.png`)
   const srtOut = join(distDir, `${platform}.srt`)
   copyFileSync(srtFile, srtOut)
-  await buildCover(browser, ep, platform, cover)
+  if (v2) {
+    // v2 的四张封面由 cmdBuild 在平台循环之前统一出齐：每集只排一次版，
+    // 换平台重跑 build 时不会把别的平台的封面悄悄重画成另一版。
+    const missing = COVER_FILES.map((f) => join(distDir, f)).filter((p) => !existsSync(p))
+    if (missing.length) {
+      throw new Error(`${id} v2 封面不齐：缺 ${missing.join('，')}——先跑 npm run video:build（v2 会在平台循环前统一出齐四张）`)
+    }
+  } else {
+    await buildCover(browser, ep, platform, cover)
+  }
   const release = writeRelease({
     ep,
     platform,
@@ -527,12 +566,19 @@ async function buildOne(browser, ep, id, platform, flags) {
 async function cmdBuild(ids, flags) {
   const want = !flags.platform || flags.platform === 'both' ? ['bilibili', 'douyin'] : [flags.platform]
   const targets = pickEpisodes(ids)
+  const variant = typeof flags.variant === 'string' ? flags.variant : undefined
   log(`🎞️  产线启动：${targets.join(', ')} × ${want.join('/')}`)
   const results = []
   const browser = await openBrowser()
   try {
     for (const id of targets) {
       const ep = loadEpisode(id)
+      // v2 每集先出齐四平台封面（B站/抖音/知乎/小红书），再进平台循环；
+      // buildOne 只断言四张存在，避免第二个平台把第一张覆盖成另一套文案。
+      if ((ep.formatVersion ?? 1) === 2) {
+        log(`\n🖼️  ${id} 四平台封面（v2 统一出图）`)
+        await buildAllCovers(browser, ep, ensureDir(join(OUT_DIR, id)), { variant })
+      }
       for (const platform of want) {
         if (!ep.platforms[platform]) {
           log(`⏭️  ${id} 没有 ${platform} 平台，跳过`)
@@ -564,11 +610,15 @@ async function cmdCover(ids, flags) {
     for (const id of targets) {
       const ep = loadEpisode(id)
       for (const platform of want) {
-        if (!ep.platforms[platform]) continue
+        // 知乎/小红书是派生投放平台，episode 里可能只有 publish 没有 platforms 配置：
+        // 这种也要能单独重出封面（pack 会校验目标封面存在）。
+        if (!ep.platforms[platform] && !ep.publish?.[platform]) continue
         const dir = flags.out ? join(String(flags.out), targets.length > 1 ? id : '') : join(OUT_DIR, id)
         mkdirSync(dir, { recursive: true })
         try {
-          await buildCover(browser, ep, platform, join(dir, `${platform}-cover.png`))
+          await buildCover(browser, ep, platform, join(dir, `${platform}-cover.png`), {
+            variant: typeof flags.variant === 'string' ? flags.variant : undefined,
+          })
         } catch (e) {
           log(`❌ ${id} · ${platform}：${e.message}`)
           bad++
@@ -580,6 +630,68 @@ async function cmdCover(ids, flags) {
   }
   if (bad) log(`\n❌ ${bad} 张封面装不下，见上面逐条`)
   return bad ? 1 : 0
+}
+
+// 发布包重排：不再跑一遍产线，只按 publish 里的平台把母版视频/字幕/时间轴和各自封面
+// 拼成 out/<id>/发布-<platform>.md。知乎读 B站母版、小红书读抖音母版；
+// cfg 必须按母版平台取，否则知乎/小红书的"规格"行会写出 1920×1080 这种不存在的成片。
+// 两趟走：先把每集的平台映射和全部产物校验完，再统一写盘。
+// 单趟的话，后一个平台缺文件会留下前几个平台已被覆盖的新发布包，发布队列读到的是半套。
+async function cmdPack(ids) {
+  const targets = pickEpisodes(ids)
+  const batches = []
+  for (const id of targets) {
+    const ep = loadEpisode(id)
+    const distDir = join(OUT_DIR, id)
+    const jobs = packJobs(ep, id).map((job) => {
+      const videoPath = join(distDir, job.video)
+      const srtPath = join(distDir, job.srt)
+      const coverPath = join(distDir, job.cover)
+      const timelinePath = join(distDir, job.timeline)
+      const need = [
+        ['母版视频', videoPath],
+        ['母版字幕', srtPath],
+        ['封面', coverPath],
+        ['时间轴', timelinePath],
+      ]
+      for (const [what, p] of need) {
+        if (!existsSync(p)) throw new Error(`${id}/${job.platform}: 缺${what} ${p}——先跑 npm run video:build 与 npm run video:cover`)
+      }
+      // 时间轴解析、母版 cfg 与场景解析也放在第一趟：坏 JSON 或缺失的母版平台
+      // 同样不该等到写了一半发布包才炸出来。
+      return {
+        ...job,
+        videoPath,
+        srtPath,
+        coverPath,
+        timelinePath,
+        timeline: JSON.parse(readFileSync(timelinePath, 'utf8')),
+        cfg: platformConfig(ep, job.base),
+        sceneTexts: resolveScenes(ep, job.base),
+      }
+    })
+    batches.push({ id, ep, distDir, jobs })
+  }
+  let n = 0
+  for (const { id, ep, distDir, jobs } of batches) {
+    for (const job of jobs) {
+      writeRelease({
+        ep,
+        platform: job.platform,
+        outDir: distDir,
+        timeline: job.timeline,
+        cfg: job.cfg,
+        videoPath: job.videoPath,
+        srtPath: job.srtPath,
+        coverPath: job.coverPath,
+        sceneTexts: job.sceneTexts,
+      })
+      n++
+    }
+    log(`✅ ${id}: ${jobs.map((j) => j.platform).join(' / ')} 发布包已更新`)
+  }
+  log(`\n📦 ${n} 份发布包 → ${OUT_DIR}/<id>/发布-*.md`)
+  return 0
 }
 
 async function cmdCheck(ids, flags) {
@@ -609,6 +721,8 @@ async function cmdCheck(ids, flags) {
           kicker: ep.cover?.kicker || '通往单片机之路',
           badge: ep.badge || id.split('-')[0].toUpperCase(),
           sections: cfg.sections,
+          formatVersion: ep.formatVersion ?? 1,
+          fps: cfg.fps,
         })
         try {
           await auditLayout(stage, plan)
@@ -627,6 +741,41 @@ async function cmdCheck(ids, flags) {
   return bad ? 1 : 0
 }
 
+// ---------------------------------------------------------------- numbers
+
+// 逐集对账：episode 里每个数字都要在 video/research/<id>-numbers.json 有出处。
+// 没有 evidence 文件本身就是失败（不是"跳过"），否则新集忘写依据会静默通过。
+export async function cmdNumbers(ids, flags = {}) {
+  const unknown = Object.keys(flags)
+  if (unknown.length) {
+    throw new Error(`numbers 不认识参数 ${unknown.map((f) => `--${f}`).join(' ')}（只接受 episode id）`)
+  }
+  let bad = 0
+  for (const id of pickEpisodes(ids)) {
+    const ep = loadEpisode(id)
+    const p = join(VIDEO_ROOT, 'research', `${id}-numbers.json`)
+    if (!existsSync(p)) {
+      log(`❌ ${id}: 缺 ${p}`)
+      bad++
+      continue
+    }
+    let r
+    try {
+      r = auditNumbers(ep, JSON.parse(readFileSync(p, 'utf8')))
+    } catch (e) {
+      log(`❌ ${id}: ${p} 不可用（${e.message}）`)
+      bad++
+      continue
+    }
+    if (r.unresolved.length) {
+      bad++
+      log(`❌ ${id}: ${r.unresolved.length} 个数字未命中`)
+      for (const u of r.unresolved.slice(0, 40)) log(`   - ${u.token}  @${u.scene}/${u.field}「${u.text.slice(0, 60)}」`)
+    } else log(`✅ ${id}: ${r.tokens.length} 个数字都有依据`)
+  }
+  return bad ? 1 : 0
+}
+
 // ---------------------------------------------------------------- entry
 
 async function main() {
@@ -635,14 +784,18 @@ async function main() {
   if (cmd === 'lint') return cmdLint(pos)
   if (cmd === 'check') return cmdCheck(pos, flags)
   if (cmd === 'cover') return cmdCover(pos, flags)
+  if (cmd === 'pack') return cmdPack(pos)
   if (cmd === 'build') return cmdBuild(pos, flags)
+  if (cmd === 'numbers') return cmdNumbers(pos, flags)
   if (cmd === 'calib') return runCalibration(flags.anims ? String(flags.anims).split(',') : undefined)
-  throw new Error(`未知子命令 "${cmd || '(空)'}"，可用：lint / check / cover / build / calib`)
+  throw new Error(`未知子命令 "${cmd || '(空)'}"，可用：lint / check / cover / pack / build / numbers / calib`)
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((err) => {
-    console.error(`\n❌ ${err.message}`)
-    process.exit(1)
-  })
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main()
+    .then((code) => process.exit(code))
+    .catch((err) => {
+      console.error(`\n❌ ${err.message}`)
+      process.exit(1)
+    })
+}

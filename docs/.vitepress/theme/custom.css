@@ -1762,3 +1762,20 @@ html.dark .vp-doc .custom-block:hover {
   font-weight: 500;
   color: var(--vp-c-text-2);
 }
+
+/* ===== 章首题花（与印前同源资产，config.mts 构建期内联进每章 H1 之后）=====
+   墨色走 --cover-ink：SVG 里写的是 var(--cover-ink, #123b33)，
+   浅色沿用印前深墨，深色换亮墨——SVG 内联在 DOM 里，变量穿透得了。 */
+.chapter-art {
+  --cover-ink: #123b33;
+  max-width: 460px;
+  margin: -0.25rem auto 0.6rem;
+}
+.chapter-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+html.dark .chapter-art {
+  --cover-ink: #a3c4b9;
+}

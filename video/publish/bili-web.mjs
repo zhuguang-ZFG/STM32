@@ -8,7 +8,7 @@
 // 要填的字全部来自 video/out/<ep>/bili-submit.yaml（它由 video/publish/bili-submit.mjs 从
 // episode.json 的 publish.bilibili + series.json + timeline.json 生成），脚本里不写任何一集的字。
 import { chromium } from 'playwright'
-import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync, unlinkSync } from 'node:fs'
 
 const RUN = 'D:/Users/mcu/.temp/bili-web-run'
 mkdirSync(RUN, { recursive: true })
@@ -69,7 +69,17 @@ const withHooks = (p) => {
   })
   return p
 }
-if (!page && step !== 'open') throw new Error(`没有 ${EP} 的投稿标签页（被关了？还是没跑过 open）：先 node video/publish/bili-web.mjs open --ep=${EP}`)
+// 换源的编辑页（?type=edit&bvid=）也落在 upload/video/frame 前缀下，靠同一枚章认页；
+// 只认 URL 里就是这条 BV 的那张，免得把投稿表单当成编辑页。
+async function editPageFor(bvid) {
+  for (const p of [...ctx.pages()].reverse()) {
+    const u = p.url()
+    if (!/\/upload\/video\/frame\?/.test(u) || !u.includes('type=edit') || !u.includes(`bvid=${bvid}`)) continue
+    if ((await p.evaluate(() => window.__biliEp ?? '').catch(() => '')) === EP) return p
+  }
+  return null
+}
+if (!page && step !== 'open' && step !== 'editopen') throw new Error(`没有 ${EP} 的投稿标签页（被关了？还是没跑过 open）：先 node video/publish/bili-web.mjs open --ep=${EP}`)
 if (page) withHooks(page)
 
 // 「更多设置」里那几格有两个坑，都是实测踩出来的：
@@ -184,7 +194,354 @@ const snap = () => page.evaluate(() => {
   }
 })
 
+// 编辑页的状态指纹：换源前后各量一次，「上传完成」是否回来、标题有没有被动过，一眼可查。
+const editState = () => page.evaluate(() => {
+  const T = (e) => (e.innerText || e.value || '').replace(/\s+/g, ' ').trim()
+  const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+  const title = [...document.querySelectorAll('input')].find((x) => x.type !== 'file' && (/标题/.test(x.placeholder || '') || String(x.value || '').length > 12))
+  return {
+    标题: title ? String(title.value) : '',
+    上传态: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && T(e).length < 20 && /上传完成|上传中|转码|更换视频|失败/.test(T(e))).map(T))].slice(0, 8),
+    提示: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && T(e).length < 40 && /成功|失败|错误|稍后|重新/.test(T(e))).map(T))].slice(0, 8),
+  }
+})
+
+// 点「更换视频」后的站内确认框：「更换视频后将产生以下影响 …[取消][确定]」。
+// 这是自定义模态（DIV.bcc-dialog），不是系统 confirm；按钮在 dialog 的 footer 里，
+// 从警告文案往上爬、找到同时含该按钮的祖先再点——绝不点页面别处的「确定」。
+const clickReplaceModal = (label) => page.evaluate((label) => {
+  const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+  const T = (e) => (e.innerText || '').replace(/\s+/g, ' ').trim()
+  const warns = [...document.querySelectorAll('*')].filter((e) => vis(e) && T(e).includes('更换视频后将产生以下影响'))
+  if (!warns.length) return 'no-modal'
+  let box = warns[warns.length - 1]
+  for (let i = 0; i < 8 && box; i++, box = box.parentElement) {
+    const btn = [...box.querySelectorAll('button,[role=button]')].filter((e) => vis(e) && T(e) === label)[0]
+    if (btn) {
+      btn.setAttribute('data-replace-modal', '1')
+      return 'ok'
+    }
+  }
+  return 'no-button'
+}, label).then(async (r) => {
+  if (r !== 'ok') return r
+  await page.locator('[data-replace-modal="1"]').first().click({ timeout: 8000 })
+  return r
+})
+
+// 编辑页的封面预览有时是 DIV.cover-img 的背景图，有时要按「封面」标签找右邻的
+// background-image 节点；两套判据都留着，读同一个 URL。
+const readCoverBg = () => page.evaluate(() => {
+  const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+  const T = (e) => (e.innerText || '').replace(/\s+/g, ' ').trim()
+  const strip = (u) => u.replace(/^url\("?|"?\)$/g, '')
+  const c = document.querySelector('.cover-img')
+  if (c) { const u = strip(getComputedStyle(c).backgroundImage); if (u) return u }
+  for (const e of document.querySelectorAll('*')) {
+    if (!vis(e) || T(e) !== '封面') continue
+    const cand = e.closest('div')?.parentElement?.querySelector('[style*="background-image"]')
+    if (cand) { const u = strip(getComputedStyle(cand).backgroundImage); if (u) return u }
+  }
+  return ''
+})
+
 const V = {
+  // 换源第 1 步（只读）：打开已发布稿的编辑页（?type=edit&bvid=），核对标题/合集/封面/提交按钮。
+  // 不点「更换视频」、不点「立即投稿」——这一步只回答"这页是不是这条稿、能不能在这里换源"。
+  async editopen() {
+    const bvid = arg('--bvid') ?? ''
+    if (!/^BV[0-9A-Za-z]{10}$/.test(bvid)) throw new Error('--bvid 缺失或不合法')
+    const want = cfg('title')
+    page = (await editPageFor(bvid)) ?? withHooks(await ctx.newPage())
+    if (!page.url().includes('type=edit')) {
+      await page.goto(`https://member.bilibili.com/platform/upload/video/frame?type=edit&bvid=${bvid}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
+      await page.evaluate((ep) => { window.__biliEp = ep }, EP)
+      await page.waitForTimeout(8000)
+    }
+    const info = await page.evaluate((want) => {
+      const T = (e) => (e.innerText || e.value || '').replace(/\s+/g, ' ').trim()
+      const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+      const box = (e) => { const r = e.getBoundingClientRect(); return `${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}×${Math.round(r.height)}` }
+      const titleInput = [...document.querySelectorAll('input')].find((i) => String(i.value) === want)
+        || [...document.querySelectorAll('input')].find((i) => /标题/.test(i.placeholder || ''))
+      const submit = [...document.querySelectorAll('*')].filter((e) => !e.children.length && T(e) === '立即投稿' && vis(e))[0]
+      let cover = ''
+      for (const e of document.querySelectorAll('*')) {
+        if (!vis(e) || T(e) !== '封面') continue
+        const cand = e.closest('div')?.parentElement?.querySelector('[style*="background-image"]')
+        if (cand) cover = getComputedStyle(cand).backgroundImage
+        if (cover) break
+      }
+      return {
+        url: location.href,
+        标题: titleInput ? String(titleInput.value) : '(没找到标题框)',
+        提交按钮: submit ? `灰=${/disabled/i.test(String(submit.className)) || !!submit.closest('[class*=disabled]')} ${box(submit)}` : '(没找到立即投稿)',
+        封面背景: cover.replace(/^url\("?|"?\)$/g, '').slice(0, 200),
+        合集行: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && /加入合集|通往单片机之路|选择合集/.test(T(e))).map(T))].slice(0, 6),
+        上传态: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && /上传完成|上传中|转码|更换视频/.test(T(e))).map(T))].slice(0, 8),
+        时钟: [...new Set((document.body.innerText.match(/\b\d{2}:\d{2}:\d{2}\b/g) || []))].slice(0, 6),
+      }
+    }, want)
+    console.log(JSON.stringify(info, null, 1))
+    if (!info.url.includes(`bvid=${bvid}`)) throw new Error(`编辑页 URL 里没有 bvid=${bvid}，停手：${info.url}`)
+    if (info.标题 !== want) throw new Error(`编辑页标题「${info.标题}」≠ 配置「${want}」，停手`)
+    if (/没找到立即投稿/.test(info.提交按钮)) throw new Error('编辑页上没有「立即投稿」，停手不猜')
+    await shot('editopen')
+  },
+  // 只读探针：不校验任何值，只把编辑页此刻的输入框/提示/正文原样抄出来。
+  // 提交后页面可能重绘成空表单或加载中，editopen 的断言会先抛错，看不到现场。
+  async editpeek() {
+    const bvid = arg('--bvid') ?? ''
+    if (!/^BV[0-9A-Za-z]{10}$/.test(bvid)) throw new Error('--bvid 缺失或不合法')
+    page = (await editPageFor(bvid)) ?? page
+    if (!page) throw new Error(`没有 ${bvid} 的编辑页`)
+    await page.waitForTimeout(3000)
+    await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {})
+    await page.waitForTimeout(800)
+    const info = await page.evaluate(() => {
+      const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+      const T = (e) => (e.innerText || e.value || '').replace(/\s+/g, ' ').trim()
+      return {
+        url: location.href,
+        readyState: document.readyState,
+        文档标题: document.title,
+        可见标题框: [...document.querySelectorAll('input')].filter((e) => vis(e) && /标题/.test(e.placeholder || ''))
+          .map((e) => `value="${String(e.value).slice(0, 80)}" ph="${e.placeholder}" box=${Math.round(e.getBoundingClientRect().x)},${Math.round(e.getBoundingClientRect().y)}`),
+        输入框: [...document.querySelectorAll('input')].filter(vis)
+          .map((e, i) => `#${i} type=${e.type} value="${String(e.value).slice(0, 60)}" ph="${String(e.placeholder).slice(0, 30)}"`).slice(0, 14),
+        视频区: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && /n2610|bilibili|上传完成|上传中|转码|更换视频|\d{1,3}%/.test(T(e)) && T(e).length < 80).map(T))].slice(0, 20),
+        按钮: [...new Set([...document.querySelectorAll('button,[role=button]')].filter(vis).map(T).filter(Boolean))].slice(0, 14),
+        正文前400: T(document.body).slice(0, 400),
+      }
+    })
+    console.log(JSON.stringify(info, null, 1))
+    await page.screenshot({ path: `${RUN}/${EP}-editpeek-full.png`, fullPage: true, timeout: 20000 }).catch((e) => console.log('全页截图失败', String(e).slice(0, 60)))
+    await shot('editpeek')
+  },
+  // 换源第 2 步（只传片，不交）：把新母版喂给编辑页。上传完成之前平台上的旧稿不受影响。
+  // 只走真入口「更换视频 → 站内确认框 → filechooser」：页面上那几个 mp4 input 是分P/别处的，
+  // 上一轮喂它们上了两条新片，主视频却仍是旧的——那是把新片传成了别的东西，不是换源。
+  async replacesrc() {
+    if (!existsSync(F.video)) throw new Error(`片源不存在：${F.video}`)
+    if ((await clickReplaceModal('取消')) === 'ok') { console.log('  清掉遗留的更换确认框'); await page.waitForTimeout(1200) }
+    const formState = () => page.evaluate(() => {
+      const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+      const T = (e) => (e.innerText || e.value || '').replace(/\s+/g, ' ').trim()
+      const title = [...document.querySelectorAll('input')].filter((e) => e.type !== 'file' && vis(e) && /标题/.test(e.placeholder || ''))[0]
+      const body = document.body.innerText.replace(/\s+/g, ' ')
+      return {
+        标题: title ? String(title.value) : '(无可见标题框)',
+        上传中: /上传中|转码中|转码/.test(body),
+        上传完成: /上传完成/.test(body),
+        更换视频: /更换视频/.test(body),
+        视频项: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && T(e).length < 40 && /bilibili|上传完成|上传中|转码|更换视频/.test(T(e))).map(T))].slice(0, 10),
+      }
+    })
+    const net = []
+    const onResp = async (res) => {
+      const u = res.url()
+      if (!/member\.bilibili\.com\/(upload\/multipart|x\/vupre\/web\/archive\/videocheck|x\/vu\/web\/(edit|draft|add))/.test(u)) return
+      let j = null
+      try { j = await res.json() } catch {}
+      const line = `${res.status()} ${u.replace(/^https:\/\/[^/]+/, '').split('?')[0]} code=${j?.code ?? '?'} ${String(j?.message ?? j?.msg ?? '').slice(0, 60)}`
+      net.push(line)
+      console.log('  NET', line)
+    }
+    const onReq = (rq) => {
+      if (!/\/x\/vu\/web\/(edit|draft)/.test(rq.url())) return
+      const pd = rq.postData() || ''
+      const files = [...pd.matchAll(/"filename":"([^"]+)"/g)].map((m) => m[1]).slice(0, 4)
+      const titles = [...pd.matchAll(/"title":"((?:[^"\\]|\\.){0,30})/g)].map((m) => m[1]).slice(0, 3)
+      console.log('  REQ', rq.method(), rq.url().replace(/^https:\/\/[^/]+/, '').split('?')[0], 'files=', JSON.stringify(files), 'titles=', JSON.stringify(titles))
+    }
+    page.on('response', onResp)
+    page.on('request', onReq)
+    try {
+      console.log('  换前：', JSON.stringify(await formState()))
+      const hop = page.waitForEvent('filechooser', { timeout: 15000 }).catch(() => null)
+      await page.getByText('更换视频', { exact: true }).first().click({ timeout: 15000 })
+        .catch((e) => console.log('  「更换视频」点不动：', String(e).split('\n')[0].slice(0, 90)))
+      let fc = await hop
+      if (!fc) {
+        // 文件框是在点「确定」之后才唤起的，监听必须先挂上——上一版点完确定才去等，
+        // 事件已经在那一瞬过去（没人接就自动取消），于是永远等不到。
+        const hop2 = page.waitForEvent('filechooser', { timeout: 15000 }).catch(() => null)
+        const r = await clickReplaceModal('确定')
+        console.log('  确认框：', r)
+        if (r !== 'ok') { await shot('replacesrc-nochooser'); throw new Error('「更换视频」没有唤起确认框/文件选择，停手') }
+        fc = await hop2
+      }
+      if (!fc) { await shot('replacesrc-nochooser2'); throw new Error('确认框之后没有 filechooser，停手') }
+      await fc.setFiles(F.video)
+      console.log(`  filechooser 已喂 ${F.video}`)
+      let sawDone = false
+      for (let i = 0; i < 150; i++) {
+        await page.waitForTimeout(2000)
+        const s = await formState()
+        if (i % 5 === 0 || sawDone !== s.上传完成) console.log(`  ${i * 2 + 2}s：`, JSON.stringify(s))
+        sawDone = s.上传完成
+        const netDone = net.some((l) => /upload\/multipart\/complete/.test(l)) && net.some((l) => /videocheck/.test(l) && /code=0/.test(l))
+        if (s.上传完成 && !s.上传中 && netDone) { console.log(`  ${i * 2 + 2}s：上传完成（接口见 complete + videocheck code=0）`); break }
+        if (i === 149) { await shot('replacesrc-timeout'); throw new Error('5 分钟没等到上传完成，停手（页面保留）') }
+      }
+      await page.waitForTimeout(8000)
+      console.log('  换后：', JSON.stringify(await formState()))
+      console.log('  接口：', JSON.stringify(net.slice(-12)))
+      await shot('replacesrc')
+    } finally {
+      page.off('response', onResp)
+      page.off('request', onReq)
+    }
+  },
+  // 换源第 3 步（只换封面，不交）：点封面预览 → 传 v2 封面 → 勾「双比例同步改动」→「完成」。
+  // 和投稿页的 cover 步同一套动作，只是入口从「添加封面」换成封面预览本身。
+  async replacecover() {
+    if (!existsSync(F.cover)) throw new Error(`封面不存在：${F.cover}`)
+    const before = await readCoverBg()
+    console.log('  换前封面：', before.slice(0, 120))
+    if (!before) { await shot('replacecover-nobg'); throw new Error('页面上读不到封面背景 URL，停手') }
+    // 上一轮 probe 可能把封面弹窗留在打开状态：已经开着就直接喂图，别再点被遮住的预览。
+    const modalOpen = await page.evaluate(() => document.body.innerText.includes('封面制作'))
+    if (modalOpen) console.log('  封面弹窗已开着，直接喂图')
+    else {
+      await page.locator('.cover-img').first().click({ timeout: 10000 })
+      await page.waitForTimeout(3000)
+    }
+    const img = page.locator('input[type=file][accept*="png"], input[type=file][accept*="jpeg"]').first()
+    if (!(await img.count())) { await shot('replacecover-noinput'); throw new Error('封面弹窗里没有图片 input，停手') }
+    await img.setInputFiles(F.cover, { timeout: 60000 })
+    console.log(`  已喂封面 ${F.cover}`)
+    await page.waitForTimeout(4000)
+    const previews = () => page.evaluate(() => [...document.querySelectorAll('img')]
+      .filter((e) => (e.offsetWidth || e.offsetHeight) && e.getBoundingClientRect().width > 60)
+      .map((e) => `${Math.round(e.getBoundingClientRect().width)}×${Math.round(e.getBoundingClientRect().height)} ${String(e.src).replace(/^https?:\/\/[^/]+\//, '').slice(0, 46)}`))
+    console.log('  勾选前预览图：', JSON.stringify(await previews()))
+    await page.getByText('双比例同步改动', { exact: true }).first().click({ timeout: 8000 })
+      .catch((e) => console.log('  同步开关点不动：', String(e).split('\n')[0].slice(0, 80)))
+    await page.waitForTimeout(2500)
+    console.log('  勾选后预览图：', JSON.stringify(await previews()))
+    await shot('replacecover-sync')
+    await page.getByText('完成', { exact: true }).last().click({ timeout: 10000 })
+    await page.waitForTimeout(3500)
+    const after = await readCoverBg()
+    console.log('  换后封面：', after.slice(0, 120))
+    if (!after) { await shot('replacecover-empty'); throw new Error('完成后读不到封面背景，停手') }
+    if (after === before) { await shot('replacecover-same'); throw new Error('封面 URL 没变——可能没应用成功，停手') }
+    await shot('replacecover')
+  },
+  // 换源第 4 步（唯一不可逆）：点「立即投稿」提交这次换源——BV 不变，稿件进重新审核。
+  // 两道闸门缺一不动：本脚本的 I_HAVE_USER_OK=<ep> 与 repost 的 I_HAVE_USER_OK_PUBLISH_<ep>，
+  // 后者内容必须逐字等于用户在对话里的授权原话（--expect）。点过就消耗，绝不二次利用。
+  async replace() {
+    const bvid = arg('--bvid') ?? ''
+    const day = arg('--day') ?? ''
+    const expect = arg('--expect') ?? ''
+    const collection = arg('--collection') ?? ''
+    const oldcover = arg('--oldcover') ?? ''
+    if (!/^BV[0-9A-Za-z]{10}$/.test(bvid)) throw new Error('--bvid 缺失或不合法')
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error('--day=YYYY-MM-DD 缺失')
+    if (!expect) throw new Error('--expect=用户授权原话 缺失')
+    const gateA = `${RUN}/I_HAVE_USER_OK=${EP}`
+    const gateB = `D:/Users/mcu/.temp/repost/${day}/${EP}/I_HAVE_USER_OK_PUBLISH_${EP}`
+    for (const g of [gateA, gateB]) if (!existsSync(g)) throw new Error(`没有闸门文件 ${g} —— 用户对 ${EP} 这次换源点头之前不提交`)
+    const ga = readFileSync(gateA, 'utf8').trim()
+    const gb = readFileSync(gateB, 'utf8').trim()
+    if (ga && ga !== expect) throw new Error(`闸门 A 内容「${ga}」≠ 授权原话「${expect}」，停手`)
+    if (gb !== expect) throw new Error(`闸门 B 内容「${gb}」≠ 授权原话「${expect}」，停手`)
+    console.log(`  闸门 A：${gateA}（「${ga || '(空)'}」）`)
+    console.log(`  闸门 B：${gateB}（「${gb}」）`)
+
+    const want = cfg('title')
+    const cover = await readCoverBg()
+    const st = await page.evaluate((want) => {
+      const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+      const T = (e) => (e.innerText || e.value || '').replace(/\s+/g, ' ').trim()
+      const title = [...document.querySelectorAll('input')].find((i) => i.type !== 'file' && vis(i) && String(i.value) === want)
+        || [...document.querySelectorAll('input')].find((i) => i.type !== 'file' && vis(i) && /标题/.test(i.placeholder || ''))
+      const submit = [...document.querySelectorAll('*')].filter((e) => !e.children.length && T(e) === '立即投稿' && vis(e))[0]
+      const body = document.body.innerText.replace(/\s+/g, ' ')
+      let hitTop = ''
+      let rect = ''
+      if (submit) {
+        const r = submit.getBoundingClientRect()
+        rect = `${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.width)}×${Math.round(r.height)}`
+        const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
+        if (top && top !== submit && !top.contains(submit) && !submit.contains(top)) hitTop = `${top.tagName}.${String(top.className).slice(0, 60)} 文案="${T(top).slice(0, 20)}"`
+      }
+      return {
+        url: location.href,
+        标题: title ? String(title.value) : '',
+        上传完成: /上传完成/.test(body),
+        上传进行中: /上传中|转码中|\d{1,3}%/.test(body),
+        更换视频: /更换视频/.test(body),
+        视频项: [...new Set([...document.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && T(e).length < 40 && /bilibili|上传完成|上传中|转码|更换视频/.test(T(e))).map(T))].slice(0, 10),
+        提交: submit ? { 位置: rect, 灰: /disabled/i.test(String(submit.className)) || !!submit.closest('[class*=disabled]'), 挡住: hitTop } : null,
+      }
+    }, want)
+    const descWant = cfg('desc')
+    const descNow = await page.evaluate(() => {
+      const vis = (e) => !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length)
+      const ql = [...document.querySelectorAll('.ql-editor')].filter(vis)[0]
+      return ql ? (ql.innerText || '') : ''
+    })
+    console.log('  提交前：', JSON.stringify({ ...st, 封面: cover.slice(0, 100), 简介: `${descNow.replace(/\s+/g, '').length} 字（配置 ${descWant.replace(/\s+/g, '').length}）` }))
+    const bad = []
+    if (!st.url.includes('type=edit') || !st.url.includes(`bvid=${bvid}`)) bad.push(`不在 ${bvid} 的编辑页：${st.url}`)
+    if (st.标题 !== want) bad.push(`标题「${st.标题}」≠ 配置「${want}」`)
+    if (!st.上传完成 || st.上传进行中) bad.push(`上传态不干净：完成=${st.上传完成} 进行中=${st.上传进行中}`)
+    if (!st.更换视频) bad.push('页面上没有「更换视频」——不是可换源的编辑页')
+    if (!st.视频项.some((t) => /bilibili/.test(t))) bad.push(`视频项里没有新片 bilibili：${JSON.stringify(st.视频项)}`)
+    if (!descNow || descNow.replace(/\s+/g, '').length < descWant.replace(/\s+/g, '').length * 0.95) bad.push(`简介没带上：页面 ${descNow.replace(/\s+/g, '').length} 字 / 配置 ${descWant.replace(/\s+/g, '').length} 字`)
+    if (!st.提交) bad.push('找不到「立即投稿」')
+    else if (st.提交.灰) bad.push('「立即投稿」是禁用态')
+    else if (st.提交.挡住) bad.push(`「立即投稿」被 ${st.提交.挡住} 盖住`)
+    if (!cover) bad.push('读不到封面背景 URL')
+    if (oldcover && cover === oldcover) bad.push('封面还是旧 URL，换封面没生效')
+    if (collection && !(await page.evaluate((c) => document.body.innerText.includes(c), collection))) bad.push(`页面上没有合集「${collection}」`)
+    if (bad.length) throw new Error(`提交前核对不过：${bad.join('；')}`)
+
+    const seen = []
+    page.on('response', async (res) => {
+      if (res.request().method() === 'GET') return
+      const u = res.url()
+      if (!/member\.bilibili\.com\/x\//.test(u)) return
+      let j = null
+      try { j = await res.json() } catch {}
+      seen.push(`${res.status()} ${u.replace(/^https:\/\/[^/]+/, '').split('?')[0]} code=${j?.code ?? '?'} ${String(j?.message ?? j?.msg ?? '').slice(0, 70)}`)
+    })
+    let attempted = false
+    let clickResolved = false
+    try {
+      attempted = true
+      await page.getByText('立即投稿', { exact: true }).last().click({ timeout: 15000 })
+      clickResolved = true
+      console.log('  已点「立即投稿」，等结果……')
+      for (let i = 0; i < 40; i++) {
+        await page.waitForTimeout(3000)
+        const u = page.url()
+        const body = await page.evaluate(() => document.body.innerText.replace(/\s+/g, ' ').slice(0, 800))
+        const ok = body.match(/.{0,30}(?:稿件投递成功|修改成功|提交成功|重新审核|审核中).{0,30}/)?.[0] ?? ''
+        const err = [...new Set(body.match(/[^ ]{0,14}(?:失败|请检查|不能为空|超过|错误)[^ ]{0,20}/g) || [])].slice(0, 6)
+        if (ok || err.length || u !== st.url) {
+          console.log('  结果：', JSON.stringify({ url: u, 文案: ok, 报错: err }))
+          break
+        }
+        if (i === 39) console.log('  2 分钟没有可判定的结果，URL 仍是：', u)
+      }
+      console.log('  非 GET 应答：', JSON.stringify(seen))
+    } finally {
+      await shot('replace')
+      if (attempted) {
+        const ev = { at: new Date().toISOString(), action: 'replace', platform: 'bilibili', gate: expect, oldId: bvid, newId: bvid, clicked: clickResolved, url: page.url(), response: seen, note: '编辑页换源提交（立即投稿），BV 不变' }
+        appendFileSync(`D:/Users/mcu/.temp/repost/${day}/${EP}/events.jsonl`, JSON.stringify(ev) + '\n')
+        for (const g of [gateA, gateB]) {
+          try { unlinkSync(g); console.log(`  已消耗闸门 ${g}`) } catch (e) { console.log(`  ⚠ 闸门没删掉 ${g}：${String(e).slice(0, 80)}`) }
+        }
+      } else {
+        console.log('  没有点提交，闸门原样保留')
+      }
+    }
+  },
   async open() {
     page = withHooks(await ctx.newPage())
     await page.goto('https://member.bilibili.com/platform/upload/video/frame', { waitUntil: 'domcontentloaded', timeout: 60000 })
@@ -994,4 +1351,7 @@ const V = {
   },
 }
 if (!step || !V[step]) throw new Error(`未知步骤 "${step}"，可选：${Object.keys(V).join(' / ')}`)
-try { await V[step]() } finally { await browser.close() }
+await V[step]()
+// 这里原来跟的是 browser.close()：CDP 连接上的 close 会把常驻浏览器连同三个平台的登录一起带走。
+// 本进程退出 socket 就断了，浏览器和页面状态得留着——走通走错都一样。
+process.exit(0)

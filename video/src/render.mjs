@@ -2,7 +2,10 @@ import { spawn } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { FFMPEG, log } from './util.mjs'
-import { iterateFrames } from './timeline.mjs'
+import { iterateFrames, transitionPhase } from './timeline.mjs'
+
+// Task 5 的公开接口仍在 render.mjs 上；实现唯一来源是 timeline.mjs。
+export { transitionPhase }
 
 // PNG 直接喂 ffmpeg 的 stdin（image2pipe），中间不落一万张 PNG。
 // 关键优化不是编码而是"少截图"：一次 1080p 截图 20~40 ms，而一集里大量帧的
@@ -36,10 +39,13 @@ export function revealOpacity(frameInScene, revealFrames = REVEAL) {
   return Math.round((0.12 + 0.88 * (1 - (1 - p) ** 2)) * 100) / 100
 }
 
-export function stateKey(frame, opacity, reveal) {
+export function stateKey(frame, opacity, reveal, beat = null, transition = -1) {
   const smil = frame.smilTime === null ? '-' : (Math.round(frame.smilTime * QUANT) / QUANT).toFixed(4)
   const op = Math.round(opacity * 100) / 100
-  return `${frame.scene.index}|${smil}|${frame.captionIdx}|${op}|${reveal}`
+  const base = `${frame.scene.index}|${smil}|${frame.captionIdx}|${op}|${reveal}`
+  if (!beat && transition < 0) return base
+  const b = beat ? `${beat.index}:${beat.phase}` : '-'
+  return `${base}|b${b}|t${transition < 0 ? '-' : transition}`
 }
 
 function spawnEncoder({ ffmpeg, fps, outPath }) {
@@ -116,9 +122,11 @@ export async function renderFrames(plan, stage, { outPath, ffmpeg, onFrame }) {
     for (const frame of iterateFrames(plan)) {
       const opacity = captionOpacity(frame.caption, frame.abs, plan.fps)
       const reveal = revealOpacity(frame.frameInScene, frame.scene.revealFrames)
-      const key = stateKey(frame, opacity, reveal)
+      const beat = frame.beat || null
+      const tp = frame.transitionPhase ?? -1
+      const key = stateKey(frame, opacity, reveal, beat, tp)
       if (key !== lastKey || !lastBuf) {
-        lastBuf = await stage.capture(frame.scene.index, frame.smilTime, frame.caption?.text ?? null, opacity, reveal)
+        lastBuf = await stage.capture(frame.scene.index, frame.smilTime, frame.caption?.text ?? null, opacity, reveal, beat, tp)
         lastKey = key
         shot++
       } else {
@@ -167,7 +175,15 @@ export async function captureStills(plan, stage, times, save) {
     // 抽帧必须和正式编码用同一个 reveal：硬传 1 会把"暗首帧"抽成亮帧，
     // 人检看过了成片却仍然是暗的——检查就等于没做。
     const reveal = revealOpacity(frame.frameInScene, frame.scene.revealFrames)
-    const buf = await stage.capture(frame.scene.index, frame.smilTime, frame.caption?.text ?? null, opacity, reveal)
+    const buf = await stage.capture(
+      frame.scene.index,
+      frame.smilTime,
+      frame.caption?.text ?? null,
+      opacity,
+      reveal,
+      frame.beat ?? null,
+      frame.transitionPhase ?? -1,
+    )
     const name = `${String(Math.round(t * 1000)).padStart(8, '0')}ms_f${frame.scene.id}`
     await save(name, buf)
     results.push({ t: frame.abs, scene: frame.scene.id, smil: frame.smilTime, caption: frame.caption?.text ?? null })

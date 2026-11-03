@@ -33,6 +33,8 @@ idf.py set-target esp32s3
 idf.py build flash monitor -p COMx      # 端口必须显式指定
 ```
 
+flash 之前先押个盲区：worker 任务回回都乖乖让出 CPU，调度器无可挑剔，可它半分钟没交过一份数据，默认的 TWDT 会叫吗？押会或不会，第一屏日志见分晓。
+
 默认控制台第一屏会打出一行 `reset=… retained=0 overdue=0`：普通上电时没有有效的历史记录。接着在仓库根用数据口（GPIO10/11）查状态：
 
 ```sh
@@ -289,6 +291,8 @@ IDF 文档写得很明确：用 OpenOCD 调试时，每次停在断点，OpenOCD
 - 能说清 TWDT 默认看什么、看不到什么，以及为什么要加一个 health user；
 - 跨核共享状态会用 portMUX，知道时间戳为什么要在锁里读；
 - 能按 500ms + 2000ms 两段预算预测复位时刻，并用 RTC 记录在复位后回放原因。
+
+不叫的原因：TWDT 默认看的是出勤，不是产出。任务按时让位它就满意，活干没干完它管不着；所以这章给 health 单写了一条新规矩：按期交结果，才有人替它 reset。狗要盯的是产出，这把尺子比默认配置严得多。
 
 <div class="achievement">
 ✅ 下一站：<a href="../projects/02-s3-logger.html">J2 S3 数据记录器</a>——把协议、健康监督和看门狗装进一个完整的采集项目。

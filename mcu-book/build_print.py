@@ -833,9 +833,13 @@ def assert_vector_art(html: str) -> None:
     实测（book-final12，2026-10-26）：滤镜题图（feTurbulence）内联进印前 HTML
     会被 Chromium 整块光栅化，全书位图从 6 涨到 100（光栅预算门捕获）。
     这里在排版前按快照断言，把「静默降质」变成硬失败。
+
+    只扫 <svg> 块：正文散文合法地谈论 feTurbulence（A5 事故解剖就是案例），
+    全文子串扫描会把 prose 误报成滤镜题图。
     """
-    if "feTurbulence" in html or "<filter" in html:
-        raise SystemExit("✗ 印前中止：HTML 里含 feTurbulence/<filter>（题图滤镜会光栅化），必须纯矢量。")
+    for block in re.findall(r"<svg\b.*?</svg>", html, re.S):
+        if "feTurbulence" in block or "<filter" in block:
+            raise SystemExit("✗ 印前中止：SVG 题图含 feTurbulence/<filter>（滤镜会光栅化），必须纯矢量。")
 
 
 def main(argv: list[str] | None = None) -> int:

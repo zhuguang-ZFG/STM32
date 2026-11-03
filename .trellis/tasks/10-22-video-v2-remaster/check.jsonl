@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/video/index.md", "reason": "核对 check 不能假绿（跳过即未跑）、期望通过行数=平台数且跳过=0、成片时长按实测秒数过硬门；验收全量与单集时逐条对照"}
+{"file": ".trellis/spec/video/layout-contract.md", "reason": "核对几何审计只查越界/相叠/进度杠/字号地板、v1 产物逐字节不变、改版必须看截图且跑 fill-sweep 与 md5 证明未碰已发布产物"}
+{"file": ".agents/skills/video-release/SKILL.md", "reason": "核对换新流程的五条红线：逐集授权闸、FORCE_RESUBMIT 只在明说后用、文字只出自 episode.json/out、不关共享浏览器、凭证不进 stdout/仓库"}

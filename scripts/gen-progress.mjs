@@ -30,6 +30,7 @@ const TRACKS = [
   { key: 'compare', name: '双 OS 对照与选型', dir: 'rtos/compare', landing: '/rtos/index.html' },
   { key: 'esp32', name: 'ESP32-S3 + ESP-IDF', dir: 'esp32' },
   { key: 'gd32', name: 'GD32 双系对照', dir: 'gd32' },
+  { key: 'ai', name: 'AI 辅助开发', dir: 'ai' },
   { key: 'lab', name: '实物实验中心', dir: 'lab', prefix: 'e' },
 ]
 

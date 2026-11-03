@@ -287,4 +287,16 @@ def part_art(part_id: str) -> str:
             parts.append(f'<circle cx="{x}" cy="76" r="4" fill="{WARM}"/>')
         parts.append(f'<text x="120" y="126" text-anchor="middle" font-family="sans-serif" font-size="11" fill="{INK}">双板项目</text>')
         return _hw_part("pj", parts + txts, "双板综合项目", "10 38 220 95")
+    if part_id == "pa":
+        # 人机结对：模型气泡（方角尖尾）给代码且埋雷，人气泡（圆角圆尾）回以对账勾
+        parts = [
+            f'<path d="M28 26 H116 Q124 26 124 34 V66 Q124 74 116 74 H60 L44 88 L48 74 H28 Q20 74 20 66 V34 Q20 26 28 26 Z" fill="{SOFT}" stroke="{ACCENT}" stroke-width="2"/>',
+            f'<path d="M34 42 h34 M34 52 h44 M34 62 h26" stroke="{ACCENT}" stroke-width="1.6"/>',
+            f'<path d="M98 40 l8 8 M106 40 l-8 8" stroke="{WARM}" stroke-width="2"/>',
+            f'<path d="M152 34 H212 Q220 34 220 42 V64 Q220 72 212 72 H176 L162 84 L166 72 H152 Q144 72 144 64 V42 Q144 34 152 34 Z" fill="{SOFT}" stroke="{ACCENT}" stroke-width="2"/>',
+            f'<path d="M156 52 l6 7 l14 -16" fill="none" stroke="{ACCENT}" stroke-width="2.4"/>',
+            f'<path d="M128 46 H140 M136 42 L142 46 L136 50" fill="none" stroke="{ACCENT}" stroke-width="1.8"/>',
+            f'<path d="M140 58 H128 M132 54 L126 58 L132 62" fill="none" stroke="{ACCENT}" stroke-width="1.8"/>',
+        ]
+        return _hw_part("pa", parts, "人机结对：模型给代码，人给对账", "16 22 208 70")
     return ""

@@ -24,6 +24,8 @@ minutes: 30
 
 ## 先跑起来（10 分钟 quick win）
 
+跑之前先押两个数：你那份几十行的主源文件，预处理全部展开后会有几百行还是几千行？再押汇编那份又是多少？两个数都写下来，误差通常以倍数计。
+
 ```bash
 cd code/toolchain/01-four-steps
 sh probe.sh steps      # 只走四步，build/ 里留下 .i/.s/.o/.elf 全套证据
@@ -296,6 +298,8 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 - 亲手走完四道工序，每步留证；
 - 编译报错能按阶段定位嫌疑人。
+
+开场说 make 一秒跑完四道工序，这一秒你现在拆开看过了：宏展开后的上千行、还没住址的目标文件、最后才拿到门牌的固件。下次报错，先问它发生在哪一环，嫌疑人名单立刻从四个缩到一个。
 
 <div class="achievement">
 ✅ 下一站：<a href="02-elf.html">B2 ELF 解剖</a>：readelf/objdump 实拆一个固件，段与节不再傻傻分不清。

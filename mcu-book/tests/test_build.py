@@ -65,14 +65,15 @@ class BookBuildContractTests(unittest.TestCase):
         cls.builder = load_builder()
         cls.manifest = json.loads((BOOK_DIR / "manifest.json").read_text(encoding="utf-8"))
 
-    def test_manifest_covers_exactly_all_88_source_chapters(self) -> None:
+    def test_manifest_covers_exactly_all_source_chapters(self) -> None:
         self.builder.validate_manifest(self.manifest)
         files = [name for part in self.manifest["parts"] for name in part["files"]]
-        self.assertEqual(88, len(files))
+        # 集合相等是主门（清单与磁盘一一对应）；计数只作地板防双删。
+        self.assertGreaterEqual(len(files), 88)
         self.assertEqual(len(set(files)), len(files))
         docs = self.builder.DOCS_DIR
         expected: list[str] = []
-        for section in ("c", "build", "stm32", "rtos/freertos", "rtos/rtthread", "rtos/compare", "esp32", "gd32", "lab", "projects"):
+        for section in ("c", "build", "stm32", "rtos/freertos", "rtos/rtthread", "rtos/compare", "esp32", "gd32", "lab", "projects", "ai"):
             for path in sorted((docs / section).glob("*.md")):
                 if path.name == "index.md" or (section == "lab" and path.name == "template.md"):
                     continue
@@ -93,8 +94,9 @@ class BookBuildContractTests(unittest.TestCase):
 
         parsed = BookHTMLParser()
         parsed.feed(html)
-        self.assertEqual([f"{index:02d}" for index in range(1, 89)], parsed.chapter_numbers)
-        self.assertEqual(88, parsed.compasses)
+        chapter_total = sum(len(part["files"]) for part in self.manifest["parts"])
+        self.assertEqual([f"{index:02d}" for index in range(1, chapter_total + 1)], parsed.chapter_numbers)
+        self.assertEqual(chapter_total, parsed.compasses)
         self.assertEqual(
             {
                 "appendix-engineering",
@@ -227,12 +229,13 @@ class BookBuildContractTests(unittest.TestCase):
         levels = [row[0] for row in toc]
         self.assertEqual(1, levels[0])  # 目录与分部目标 stays top-level
         parts = [row for row in toc if row[0] == 1 and row[1].startswith("第")]
-        self.assertEqual(10, len(parts))
+        self.assertEqual(len(manifest["parts"]), len(parts))
+        chapter_total = sum(len(part["files"]) for part in manifest["parts"])
         chapters = [row for row in toc if row[0] == 2 and re.match(r"^\d{2} ", row[1])]
-        self.assertEqual(88, len(chapters))
+        self.assertEqual(chapter_total, len(chapters))
         self.assertRegex(chapters[0][1], r"^01 第1课标题")
         sections = [row for row in toc if row[0] >= 3]
-        self.assertEqual(88, len(sections))  # chapter h2 only; compass and h3 dropped
+        self.assertEqual(chapter_total, len(sections))  # chapter h2 only; compass and h3 dropped
         appendix_sections = [row for row in toc if row[1] == "附录小节"]
         self.assertEqual(len(manifest["appendices"]), len(appendix_sections))
         self.assertTrue(all(row[0] == 2 for row in appendix_sections))

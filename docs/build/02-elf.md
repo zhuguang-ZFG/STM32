@@ -28,6 +28,8 @@ minutes: 65
 
 ## 先跑起来（10 分钟 quick win，**不用开发板**）
 
+跑之前先押：入口地址和复位例程的标称地址，会不会恰好相等？若不等，差多少？两注下完再看输出头两行。
+
 ```bash
 cd code/toolchain/02-elf
 sh probe.sh head
@@ -412,6 +414,8 @@ sh probe.sh tag
 - 五刀拆完一具真固件：ELF 头 → 节表 → 程序头 → 符号表 → 反汇编；
 - 能读出 `FileSiz`/`MemSiz` 之差背后的启动工作量，并认出那对 VMA/LMA 是从链接脚本哪一行来的；
 - 见过 Thumb 位、字面量池、91 个弱别名，以及"数据被反汇编成指令"的现场。
+
+开场那笔「烧进去的只有几百字节、文件却有几十 KB」的差额账，你现在能逐项报出明细：哪些是写给链接器的目录，哪些是给装载器的，哪些根本不进芯片。那份「写给活人看的说明书」从此是你能查的档案，不是玄学。
 
 <div class="achievement">
 ✅ 下一站：<a href="03-linker-script.html">B3 链接脚本</a>。本章读了 <code>_sidata = LOADADDR(.data)</code> 与 <code>AT&gt; FLASH</code> 兑现出来的地址；下一站逐行讲图纸是怎么规定这些地址的，包括那个把 <code>.rodata</code> 并进 <code>.text</code> 的决定。

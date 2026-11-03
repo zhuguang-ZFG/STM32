@@ -102,7 +102,7 @@
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="420">③ 填充可视化：Padded 12 字节 vs Packed 8 字节——从大到小排省 4 字节</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-      <text x="36" y="420">④ 位域布局是实现定义的——硬件寄存器用掩码宏；位域只在工具链固定时用；小端 0x12345678 = 78 56 34 12</text></g>
+      <text x="36" y="420">④ 位域布局是实现定义的——硬件寄存器用掩码宏；小端 0x12345678 = 78 56 34 12</text></g>
   </g>
 
   <!-- 阶段指示点 -->

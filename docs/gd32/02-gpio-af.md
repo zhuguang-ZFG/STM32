@@ -28,6 +28,8 @@ minutes: 60
 
 打开 `.trellis/ref/gd32/gd32f4xx_gpio.h` 第 52~63 行（寄存器偏移定义），对照 S3 板卡事实里的 STM32F4 偏移表（RM0090 §8.4：MODER 0x00 / OTYPER 0x04 / OSPEEDR 0x08 / PUPDR 0x0C / IDR 0x10 / ODR 0x14 / BSRR 0x18 / LCKR 0x1C / AFRL 0x20 / AFRH 0x24）：**前 10 个偏移逐个对得上，只有名字换了**。5 分钟点名完，你已经会 GD32 GPIO 的 80%。
 
+先押个平移：S3 背过的"先清后置"肌肉记忆，到 GD32 还能原样用吗？翻转点灯这件小事，GD32 会不会专门备一件兵器，让"读-改-写"缩成一条指令？
+
 ## 动画：AF 复用的 16 选 1 选择器
 
 一根引脚一根物理线，AF0~AF15 排队过门；每脚 4 位的 AFSEL 字段决定谁过门。PA8 写 AF0、CK_OUT0 上路这个实例，动画演一遍，"换号 = 换接线"一眼看懂。
@@ -319,6 +321,8 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 - GD32F4xx 的 GPIO 从"又要学一套"变成"改七个宏名"，S3 的位级理解全额平移；
 - 知道 GD32 的真增强在哪（BC/TG），点灯翻转从此一条指令；
 - 会查 `.trellis/ref/gd32/gd32f4xx_gpio.h` 核对任何寄存器事实，为 G3 的 USART 对照备好方法。
+
+平移是全额：编码一字不差，上下拉、推挽开漏全照搬；那件兵器叫 TG，硬件翻转，一条 str 搞定，旁边还站着管独立清零的 BC，STM32F4 压根没这待遇。
 
 <div class="achievement">
 ✅ 下一站：<a href="03-usart.html">G3 USART 增强点</a>：gd32f4xx_usart.h 里比出的差异清单，接着把串口打印跑通。

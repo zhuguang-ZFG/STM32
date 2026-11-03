@@ -38,7 +38,7 @@
     "site:measure": "node scripts/measure-site.mjs",
     "book:check": "python mcu-book/build_html.py --check",
     "book:html": "python mcu-book/build_html.py",
-    "book:pdf": "python mcu-book/build_html.py --pdf",
+    "book:pdf": "python mcu-book/build_print.py",
     "book:pdfcheck": "python mcu-book/check_pdf.py",
     "book:pack": "python mcu-book/publish_downloads.py --out-dir .temp/book-downloads"
   },
@@ -46,6 +46,7 @@
     "@playwright/test": "^1.63.0",
     "ffmpeg-static": "^5.3.0",
     "minisearch": "^7.2.0",
+    "pagedjs": "^0.4.3",
     "puppeteer": "^25.13.0",
     "vitepress": "^1.6.3",
     "yaml": "^2.8.3"

@@ -32,6 +32,8 @@ riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -print-libgcc-file-name
 
 读两行输出：版本号、libgcc 路径里藏的 `rv32imac/ilp32`，这就是 RISC-V 工具链的身份证。本章每个标志位都能对回这两行。
 
+先押张工序单：身份证正面是工具链，背面印的是启动工序。搬 .data、清 .bss、调 SystemInit、进 main 这几道，RISC-V 那边还用同一套指令拼写吗？押完对第二节的对照表。
+
 ## 小节结构
 
 | 小节 | 内容 | 四件套 |
@@ -289,6 +291,8 @@ FLASH = 0x08000000、RAM = 0x20000000（`gd32vf103.h:193-194`）。与 STM32F407
 - 工具链从 ARM 换到 RISC-V，编译标志两套差异、multilib 选择都讲得出来；
 - 启动文件逐段对照 B4，知道哪节删了（FPU）、哪节换了写法（搬数据指令）、哪节完全照搬（清 bss、调 main）；
 - RISC-V 复位"sp 自己设、PC 由 reset 装入"的机制入肌肉记忆，不再误以为有"硬件两读"。
+
+工序单对上：搬 .data、清 .bss 同义换指令，ldr/str 那套换成 la 与 lw/sw；调 SystemInit、进 main 工序照旧。背面另两行空缺：一是"开 CPACR"那一节整个消失，RV32IMAC 没有 FPU，硬浮点编译选项根本不存在；二是复位不做"硬件两读"，PC 由复位向量直接装入，sp 由启动代码显式设好。这就是架构差异落在启动文件上的分量。
 
 <div class="achievement">
 ✅ 下一站：<a href="06-clic-irq.html">V1 Bumblebee 内核与 CLIC 中断</a>：去看没有 NVIC 的世界里，向量怎么"直跳"。

@@ -26,6 +26,8 @@ minutes: 30
 
 用 `gd32f4xx.h` 查 USART0 基址（APB1 + 0x4400），对照 [S7](../stm32/07-usart.md) 的 USART1 基址（APB2 + 0x1000）：**总线不同、基址不同、但偏移布局神似**。
 
+先押排门牌：串口数量 8 对 6，GD32 独有的是哪三个名字？这八路各自挂哪条总线，有没有跟大部队分开走的？押完看中断号地图。
+
 ## 小节结构
 
 | 小节 | 内容 | 四件套 |
@@ -197,6 +199,8 @@ GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`�
 
 - GD32 USART 从"换个名字的 STM32"变成"有明确差异清单的独立芯片"；
 - 迁移时按偏移不按名字的纪律到手，这套方法在 G4 外设差异上直接复用。
+
+门牌对上：GD32 独有 USART5、UART6、UART7；USART0 与 USART5 挂 APB2，其余六路 APB1，找对应按总线加中断号，别按编号，起跑线挪到 0 为的也是跟中断号对齐。CR1/CR2/CR3 改姓 CTL0/CTL1/CTL2，BRR 换 BAUD、SR/DR 换 STAT/DATA，偏移布局神似，迁移按偏移不按名字。
 
 <div class="achievement">
 ✅ 下一站：<a href="04-periph-diff.html">G4 GD32 外设差异</a>：USBHS/EXMC/CAN 逐项过堂，看"有没有、一不一样"。

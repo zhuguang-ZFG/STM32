@@ -31,6 +31,8 @@ minutes: 55
 sh code/common/reliability/probe.sh
 ```
 
+跑之前先押开场那一问：往字节流中间丢一个字节，接收端是从此再也对不上，还是能重新找回边界？若能找回，第一帧是完好无损，还是先被牺牲？答案就藏在下面的断言里。
+
 脚本用 `-std=c11 -Wall -Wextra -Werror` 编译生产用的 codec/health/transport/service，跑 `tests.c` 的边界断言；再编一个 `codec-tool`，交给 `scripts/device-console.py self-test` 和独立的 Python 实现互相编解码。在 Linux 上还会加跑一遍 ASan/UBSan。看到下面两行就算通过，不需要串口库和开发板：
 
 ```text
@@ -381,6 +383,8 @@ python3 scripts/device-console.py status --port COMx
 - 字节流 → 帧 → 命令，每一层都有明确的失败出口和对应计数；
 - 能手算一帧的 74 字节上限从哪来，也能在线上逐字节核对；
 - [S17 看门狗](../stm32/17-watchdog-reset.md)、[P13 健康监督](../esp32/13-watchdog-health.md) 和两个记录器项目用的都是这一份 codec，STATUS 是它们共同的观察窗口。
+
+回到开场那一问：丢一个字节之后，下一帧还认得出来吗？现在你不仅能答「认得」，还能说清代价——等下一个帧尾重新对齐、残帧可能被牺牲、每一笔失败都有计数可查。字节流从此不是「希望能对上」，是一条逐字节可审计的流水线。
 
 <div class="achievement">
 ✅ 下一站：<a href="../stm32/17-watchdog-reset.html">S17 看门狗</a>：协议负责说清"出了什么错"，看门狗负责"卡住就重来"。

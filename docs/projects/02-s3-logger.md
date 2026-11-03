@@ -57,6 +57,8 @@ python3 scripts/device-console.py stop --port COMx
 python3 scripts/device-console.py start --port COMx
 ~~~
 
+拔电之前先押个证词：如果刚才只跑到 configure、还没 save 就断了电，重启之后 NVS 里存的是新周期还是旧周期？押完再往下读；不服，就真拔一次电，让重启后的 status 作证。
+
 record 写入新的 CSV 文件；请使用新的输出路径，避免覆盖之前的数据。默认周期 100ms；period 允许 100–1000ms 且为 10ms 倍数，filter-shift 允许 0–6，0 为直通。configure 只改变运行配置，save 成功才持久化；旧 generation 的在途采样会丢弃计数，防止误标新配置。
 
 ## 四层实现

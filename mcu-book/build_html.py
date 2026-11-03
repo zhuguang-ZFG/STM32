@@ -46,7 +46,9 @@ OUTPUT_NAME = "mcu-deep-book.html"
 PDF_NAME = "mcu-deep-book.pdf"
 SITE_BASE = "https://zhuguang-zfg.github.io/mcu/"
 REPO_BASE = "https://github.com/zhuguang-ZFG/mcu"
-EXPECTED_CHAPTERS = 88
+def chapter_count(manifest: dict) -> int:
+    """正文章数从 manifest 推导：新部落地即自动纳入，不再钉死常量。"""
+    return sum(len(part["files"]) for part in manifest["parts"])
 
 HREF_ATTR = re.compile(r"(?P<prefix>\bhref\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
 SRC_ATTR = re.compile(r"(?P<prefix>\bsrc\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
@@ -119,9 +121,9 @@ def validate_manifest(manifest: dict) -> None:
     if not isinstance(parts, list) or not parts:
         raise BuildError("manifest parts must be a non-empty list")
     flattened = chapter_files(manifest)
-    if len(flattened) != EXPECTED_CHAPTERS or len(set(flattened)) != EXPECTED_CHAPTERS:
+    if len(set(flattened)) != len(flattened):
         raise BuildError(
-            f"chapter list must contain exactly {EXPECTED_CHAPTERS} unique files, got {len(flattened)}"
+            f"chapter list must not contain duplicates, got {len(flattened)} entries / {len(set(flattened))} unique"
         )
     for name in flattened:
         if not (DOCS_DIR / name).is_file():
@@ -786,8 +788,9 @@ def chapter_header_html(chapter_number: int, title: str, frontmatter: dict, book
 def chapter_art_html(name: str) -> str:
     """章首手绘题图：assets/chapter-art/<分部>-<章>.svg 存在即内联，缺失静默跳过。
 
-    题图是纯装饰题花（机制图解由正文 109 张插图承担），缺图不许阻塞构建。
-    每枚 SVG 自带唯一的 hw-<章id> 滤镜 id（88 枚同文档内联，重名会撞车）。
+    题图是纯装饰题花（机制图解由正文插图承担），缺图不许阻塞构建。
+    每枚 SVG 必须纯矢量、零 filter/id/url：art_guard 全目录把守 + 本函数
+    装配期硬门（历史实证：带 feTurbulence 的题图会被 Chromium 整块光栅化）。
     """
     slug = name.replace("/", "-").removesuffix(".md")
     svg_path = BOOK_DIR / "assets" / "chapter-art" / f"{slug}.svg"
@@ -901,7 +904,7 @@ COLOPHON_HTML = """
 FRONTMATTER_HTML = """
 <section class="frontmatter" id="how-to-read">
   <h1>这不是文章合集，是一本书</h1>
-  <p>全书 88 章沿同一条主线推进：先把 <strong>C 与构建</strong>的地基打牢，再把 <strong>STM32F407 寄存器</strong>逐个拆开，随后上 <strong>双 RTOS</strong>、跨到 <strong>ESP32-S3</strong>、对照 <strong>GD32 双系</strong>，最后在 <strong>实物实验与双板项目</strong>里把知识钉在板子上。每章开头的「本章罗盘」约定这一章回答什么问题、交付什么、边界在哪；章末自测的答案与逐项解析集中在附录 C。</p>
+  <p>全书 __CHAPTERS__ 章沿同一条主线推进：先把 <strong>C 与构建</strong>的地基打牢，再把 <strong>STM32F407 寄存器</strong>逐个拆开，随后上 <strong>双 RTOS</strong>、跨到 <strong>ESP32-S3</strong>、对照 <strong>GD32 双系</strong>，最后在 <strong>实物实验与双板项目</strong>里把知识钉在板子上，收官教你怎么把 <strong>大模型变成结对工程师</strong>。每章开头的「本章罗盘」约定这一章回答什么问题、交付什么、边界在哪；章末自测的答案与逐项解析集中在附录 C。</p>
   <div class="routes">
     <div class="route"><strong>零基础第一遍</strong><p>C0 → B0 → S0 → S2/S3 → 实验 E01；编译出第一个 .bin 时，你已经摸到真机器码。</p></div>
     <div class="route"><strong>只想先点灯</strong><p>S0 → S3 → E01；半小时内让霸天虎的红灯按你写的寄存器位闪烁。</p></div>
@@ -909,6 +912,7 @@ FRONTMATTER_HTML = """
     <div class="route"><strong>AIoT 方向</strong><p>S 篇 → P 篇（重点 P8 Wi-Fi、P12 音频）→ J2 S3 记录器。</p></div>
     <div class="route"><strong>RTOS 进阶</strong><p>F 篇源码级 → R 篇 → 对照篇选型 → E04 优先级反转复现。</p></div>
     <div class="route"><strong>换国产芯</strong><p>G 篇 GD32F4 逐字段对照 → V 篇 RISC-V/CLIC → 拿旧工程逐项迁移。</p></div>
+    <div class="route"><strong>想用 AI 加速</strong><p>A0 定位 → A2 手册对账 → A1 提示词模式；模型写假设，你对账拿终审权。</p></div>
   </div>
   <p><strong>证据口径：</strong>手册参数写文档号与修订点（附录 E 来源注册表）；被逐行引用的代码冻结到 tag/commit（FreeRTOS V11.1.0、ESP-IDF v5.5.2 等）；凡是没接仪器量过的现象，正文与实验页一律标「待上板实测」，不冒充已验证数据。</p>
   <p><strong>关于插图：</strong>书中 100 余张机制动画以内嵌 SVG 收录——HTML 版打开即播（SMIL 动画随翻页运行）；PDF 版为静态首帧。交互式计算器与在线视频在离线书中替换为提示卡片并给出在线版入口。</p>
@@ -1133,10 +1137,11 @@ class _AuditParser(HTMLParser):
 def audit_html(document: str, ctx: BookContext) -> None:
     parser = _AuditParser()
     parser.feed(document)
-    expected = [f"{index:02d}" for index in range(1, EXPECTED_CHAPTERS + 1)]
+    total = chapter_count(ctx.manifest)
+    expected = [f"{index:02d}" for index in range(1, total + 1)]
     if parser.chapters != expected:
         raise BuildError(f"built chapter order is wrong: {len(parser.chapters)} chapters")
-    if parser.compasses != EXPECTED_CHAPTERS:
+    if parser.compasses != total:
         raise BuildError(f"compass count mismatch: {parser.compasses}")
     expected_appendices = {item["id"] for item in ctx.manifest["appendices"]}
     if parser.appendices != expected_appendices:
@@ -1227,7 +1232,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     body_parts.append(
         f"""
 {copyright_page}
-{FRONTMATTER_HTML}
+{FRONTMATTER_HTML.replace("__CHAPTERS__", str(chapter_count(manifest)))}
 <section class="contents" id="contents"><h1>目录与分部目标</h1>{toc_html(manifest, ctx)}</section>"""
     )
 
@@ -1311,7 +1316,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
         .replace("__AUTHOR__", html.escape(manifest["author"]))
         .replace(
             "__STATS__",
-            f"{EXPECTED_CHAPTERS} 章正文（10 部），约 {reading_hours} 小时通读，"
+            f"{chapter_count(manifest)} 章正文（{len(manifest['parts'])} 部），约 {reading_hours} 小时通读，"
             f"{ctx.stats['figures']} 张机制动画与插图，{projects_count} 个配套工程（附录 B），"
             f"{quiz_questions} 道自测题（附录 C），{len(manifest['sources'])} 个冻结来源（附录 E）。",
         )
@@ -1416,7 +1421,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     audit_html(document, ctx)
     output = destination / OUTPUT_NAME
     output.write_text(document, encoding="utf-8", newline="\n")
-    print(f"html  {output} ({output.stat().st_size} bytes, {EXPECTED_CHAPTERS} chapters, 题图 {art_inlined}/{EXPECTED_CHAPTERS})")
+    print(f"html  {output} ({output.stat().st_size} bytes, {chapter_count(manifest)} chapters, 题图 {art_inlined}/{chapter_count(manifest)})")
     return output
 
 

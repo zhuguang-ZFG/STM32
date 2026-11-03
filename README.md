@@ -9,7 +9,7 @@
 [![许可：Apache-2.0](https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF-Apache--2.0-blue)](#许可)
 [![最近更新](https://img.shields.io/github/last-commit/zhuguang-ZFG/mcu)](https://github.com/zhuguang-ZFG/mcu/commits/main)
 
-**在线站点：<https://zhuguang-zfg.github.io/mcu/>** —— 读书去那里。整书离线版（88 章单文件 HTML / A4 PDF，动画即播、断网可读）随站点发布在 [**/mcu/book/**](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html)，[入口页](docs/reference/book.md)有说明。本页是**仓库地图**：内容有入口、代码在哪、规范在哪、怎么在本地跑起来。
+**在线站点：<https://zhuguang-zfg.github.io/mcu/>** —— 读书去那里。整书离线版（94 章单文件 HTML / A4 PDF，动画即播、断网可读）随站点发布在 [**/mcu/book/**](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html)，[入口页](docs/reference/book.md)有说明。本页是**仓库地图**：内容有入口、代码在哪、规范在哪、怎么在本地跑起来。
 
 ⚠️ **这是学习材料，不是安全或选型依据。** 引脚、阈值、时序以芯片 datasheet 为准；凡是没接仪器量过的现象，页面上一律写「待上板实测」，请不要当已验证数据引用。
 
@@ -41,11 +41,12 @@
 | [双 OS 对照与选型](docs/rtos/index.md) | 2 / 2（2） | [对比 0 同概念双实现对照](docs/rtos/compare/00-side-by-side.md) · [对比 1 选型决策树](docs/rtos/compare/01-choose.md) |
 | [ESP32-S3 + ESP-IDF](docs/esp32/index.md) | 14 / 14（14） | [P0 环境搭建](docs/esp32/00-env.md) · [P1 S3 架构与启动](docs/esp32/01-arch-boot.md) · [P2 GPIO 与引脚矩阵](docs/esp32/02-gpio-matrix.md) · [P3 IDF 工程解剖](docs/esp32/03-idf-anatomy.md) · [P4 中断与双核](docs/esp32/04-irq-dualcore.md) · [P5 UART 驱动解析](docs/esp32/05-uart-driver.md) · [P6 SPI/I2C 驱动框架](docs/esp32/06-spi-i2c-driver.md) · [P7 定时器与 LEDC](docs/esp32/07-timer-ledc.md) · [P8 Wi-Fi 精髓](docs/esp32/08-wifi.md) · [P9 蓝牙与 ESP-NOW](docs/esp32/09-bt-espnow.md) · [P10 Flash、分区表、NVS 与 OTA](docs/esp32/10-flash-nvs-ota.md) · [P11 低功耗](docs/esp32/11-lowpower.md) · [P12 音频链路](docs/esp32/12-audio-path.md) · [P13 看门狗与健康监督](docs/esp32/13-watchdog-health.md) |
 | [GD32 双系对照](docs/gd32/index.md) | 10 / 10（10） | [G0 环境与工具链](docs/gd32/00-env.md) · [G1 RCU 时钟树](docs/gd32/01-rcu-clock.md) · [G2 GPIO 与 AF 复用对照](docs/gd32/02-gpio-af.md) · [G3 USART 增强点](docs/gd32/03-usart.md) · [G4 GD32 外设差异](docs/gd32/04-periph-diff.md) · [V0 RISC-V 工具链与启动文件](docs/gd32/05-riscv-toolchain.md) · [V1 Bumblebee 内核与 CLIC 中断](docs/gd32/06-clic-irq.md) · [V2 RCU 与 108MHz](docs/gd32/07-rcu-108m.md) · [V3 MTIME 与裸机延时](docs/gd32/08-mtime-delay.md) · [V4 GPIO 最小系统](docs/gd32/09-gpio-minimal.md) |
+| [AI 辅助开发](docs/ai/index.md) | 6 / 6（6） | [A0 为什么把大模型当结对工程师](docs/ai/00-pair-not-ghost.md) · [A1 提示词模式](docs/ai/01-prompt-patterns.md) · [A2 手册对账](docs/ai/02-manual-reconciliation.md) · [A3 工具流](docs/ai/03-toolflow-mcp.md) · [A4 幻觉防御](docs/ai/04-hallucination-defense.md) · [A5 这本书是怎么和 AI 一起写成的](docs/ai/05-this-book-pipeline.md) |
 | [实物实验中心](docs/lab/index.md) | 8 / 8（8） | [实验 E01 点亮霸天虎的 RGB 红灯](docs/lab/e01-blink.md) · [实验 E02 逻辑分析仪抓 UART 帧](docs/lab/e02-logic-uart.md) · [实验 E03 示波器看 PWM](docs/lab/e03-scope-pwm.md) · [实验 E04 优先级反转复现](docs/lab/e04-priority-inversion.md) · [实验 E05 I2C 抓包读 EEPROM](docs/lab/e05-i2c-eeprom.md) · [实验 E06 低功耗电流实测](docs/lab/e06-lowpower-current.md) · [实验 E07 S3 板载姿态传感器](docs/lab/e07-qmi8658.md) · [实验 E08 S3 音频链路放音](docs/lab/e08-audio-play.md) |
 
-- 成稿章节 **80 / 80**（上表「实物实验」那一行的 8 篇另计，不进章节数），通读约 **3060 分钟**（≈ 51.0 小时）；
+- 成稿章节 **86 / 86**（上表「实物实验」那一行的 8 篇另计，不进章节数），通读约 **3310 分钟**（≈ 55.2 小时）；
 - 实物实验 **8 / 8**（文稿成稿；完整配套工程 7 项，上板验证 0 项）；
-- 机制动画 **103** 张，在 `docs/public/anim/`，动效与版式规范见 `.trellis/spec/docs-site/animation.md`；
+- 机制动画 **110** 张，在 `docs/public/anim/`，动效与版式规范见 `.trellis/spec/docs-site/animation.md`；
 - 示例工程 **47** 个，在 `code/`，与章节同构；
 - 章节 frontmatter 元数据校验已通过（缺项或非法值会阻止构建）。
 <!-- readme:progress:end -->
@@ -113,7 +114,7 @@ code/                        与章节同构的示例工程（寄存器版，全
 ├── stm32/ esp32/ rtos/ c/ gd32/
 └── toolchain/               不需要开发板的取证工程（如 02-elf；stm32/01-arch、09-adc 也各带一个 probe.sh）
 scripts/                     gen-progress.mjs · anim-lint.mjs · links-check.mjs · anim-audit.html
-mcu-book/                    整书离线版：manifest（10 分部 / 88 章罗盘 / 60 项来源）+ 六附录 + Python 构建器 + 契约测试
+mcu-book/                    整书离线版：manifest（11 分部 / 94 章罗盘 / 75 项来源）+ 七附录 + Python 构建器 + 契约测试
 └── dist/                    产物（gitignore，CI 发布）：单文件 HTML（动画全内嵌）+ A4 PDF（书签页码）
 .trellis/spec/docs-site/     写作结构、内容风格、动画规范（条款尽量变成可执行检查）
 .github/workflows/           deploy.yml（构建并发布 Pages）· quality.yml（死链 / 动画 / 数字 / 链接四道检查）
@@ -138,7 +139,7 @@ npm run links:check     # 仓库根 README/CONTRIBUTING 的相对链接检查（
 
 ```bash
 pip install -r mcu-book/requirements.txt
-npm run book:check      # 临时目录验证整书契约（88 章/罗盘/测验/附录/死链零容忍）
+npm run book:check      # 临时目录验证整书契约（94 章/罗盘/测验/附录/死链零容忍）
 npm run book:html       # mcu-book/dist/mcu-deep-book.html（单文件，动画内嵌即播）
 npm run book:pdf        # 追加 A4 PDF（需本机 Chrome/Edge；CI 由 book.yml 构建并发布）
 ```

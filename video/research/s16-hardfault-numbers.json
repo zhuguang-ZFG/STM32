@@ -1,0 +1,27 @@
+{
+  "ep": "s16-hardfault",
+  "source": "code/stm32/16-debug-hardfault/probe.sh（宿主 mingw gcc 16.1.0 断言 274/274；arm-none-eabi-gcc 10.3.1 交叉反汇编）＋ .temp/v2-facts/s16-probe.log ＋ docs/stm32/16-debug-hardfault.md",
+  "evidence": {
+    "probe §1 SCB 版图：SHCSR 0xE000ED24 / CFSR 0xE000ED28 / HFSR 0xE000ED2C / MMFAR 0xE000ED34 / BFAR 0xE000ED38": "core_cm4.h 版图段；s16-probe.log 第 1 节",
+    "probe §1 位号对账：CFSR 19 条 = MMFSR 6 + BFSR 7 + UFSR 6；全 1 解码 19 位；与 CMSIS core_cm4.h 39 条逐位一致": "第 1、2 节；39 条全中",
+    "probe §1 验尸报告样例：CFSR = 0x00008200，命中 2 位 PRECISERR + BFARVALID；BFAR = 0x1FFFFFFF；HFSR = 0x40000000 → FORCED；EXC_RETURN = 0xFFFFFFFD → PSP；栈帧 PC = 0x08000A5C": "第 1 节末的样例报告",
+    "probe §1 EXC_RETURN 全集：0xFFFFFFF1 处理模式/MSP/无FPU；0xFFFFFFF9 线程/MSP；0xFFFFFFFD 线程/PSP；0xFFFFFFE1/E9/ED 带 FPU 上下文": "第 1 节第 5 小节",
+    "probe §1 压栈 8 个字：偏移 0/4/8/12 = r0-r3，16 = r12，20 = lr，24 = pc，28 = xpsr；C 侧抄 frame[5] frame[6] frame[7]，共 32 字节": "第 1 节第 7 小节",
+    "probe §3 crash_null 机身原文：08000084 <crash_null>: 8000084 b480 push {r7}；8000086 af00 add r7,sp,#0；8000088 4b04 ldr r3,[pc,#16]；800008a 681b ldr r3,[r3,#0]；800008c 4a04 ldr r2,[pc,#16]；800008e 601a str r2,[r3,#0]；8000090 bf00 nop；8000092 46bd mov sp,r7；8000094 f85d 7b04 ldr.w r7,[sp],#4；8000098 4770 bx lr；800009a bf00 nop；800009c 0801012c .word 0x0801012c；80000a0 deadbeef .word 0xdeadbeef": "第 3 节完整机身；正文引用的每一条都出自这里",
+    "probe §3 crash_unaligned 机身：080000a4 80000a4 b480 80000a6 b083 80000a8 af00 80000aa 4b05 80000ac 607b 80000ae 687b ldr r3,[r7,#4] 80000b0 2201 movs r2,#1 80000b2 601a str r2,[r3,#0] 80000b4 bf00 80000c0 08010131 .word 0x08010131；crash_divzero 机身：080000c4 80000c4 b480 80000c6 b085 80000c8 af00 80000ca 6078 80000cc 2300 80000ce 60fb 80000d0 68fb 80000d2 687a 80000d4 fb92 f3f3 sdiv r3,r2,r3 80000d8 4618 80000da 3714 80000dc 46bd 80000de f85d 7b04 80000e2 4770": "第 3 节两具『死不了的尸体』完整机身；机身断言 6 条全中",
+    "probe §3 fault_demo_entry：80000e8 4b07 ldr r3,[pc,#28]；80000ee f043 0318 orr.w r3,r3,#24；8000108 e000ed14 .word 0xe000ed14（SCB->CCR）；24 = 0x18 = bit3|bit4": "第 3 节末；入口第一句拧开两个 trap 位",
+    "probe §3 HardFault_Handler 反汇编：08000070 <HardFault_Handler>: 8000070 f01e 0f04 tst.w lr,#4；8000074 bf0c ite eq；8000076 f3ef 8008 mrseq r0,MSP；800007a f3ef 8009 mrsne r0,PSP；800007e f7ff bfbf b.w 8000000 <hardfault_report>；8000082 bf00 nop": "第 3 节 handler 全文",
+    "probe §4 mrs_matrix.s 编码矩阵 10 行：6 f3ef 8008 mrseq r0,MSP；a f3ef 8008 mrsne r0,MSP；16 f3ef 8108 mrseq r1,MSP；1a f3ef 8108 mrsne r1,MSP；26 f3ef 8c08 mrseq ip,MSP；2a f3ef 8c08 mrsne ip,MSP；36 f3ef 8009 mrseq r0,PSP；3a f3ef 8009 mrsne r0,PSP；46 f3ef 8000 mrseq r0,CPSR；4a f3ef 8000 mrsne r0,CPSR；每一对 eq/ne 字节完全相同": "第 4 节矩阵；条件只在 bf0c 一个词里",
+    "probe §4 h_psp 与 h_msp 逐字节：正确版 hex 1ef0040f0cbfeff30880eff309807047，笔误版 hex 1ef0040f0cbfeff30880eff308807047；cmp -l 差异字节数 = 1，偏移 13，octal 11 → 10；MRS 编码 f3ef 8<Rd><imm5>，0x08 MSP、0x09 PSP、0x00 CPSR；PSP imm5 = 0x09 = 二进制 01001，MSP imm5 = 0x08 = 二进制 01000": "第 4 节逐字节对比",
+    "probe §3 addr2line：入口 0x08000084 → fault_ctx.c:69；真凶 0x0800008e → fault_ctx.c:70；map 文件 0x08000084 crash_null；objdump -h：0 .text 0000010c 08000000 00010000；HardFault 向量号 = 3 → 表内偏移 0x0C": "第 3 节法医全链路；69 行是左花括号，70 行是空指针写",
+    "工具链版本：宿主 gcc 16.1.0；交叉 arm-none-eabi-gcc 10.3.1；probe 第 1/2/3/4/5/6/7 段": "probe 头部打印与各段编号",
+    "teaser（下一集 S2）：168 MHz = 168000000 Hz": "S2 的既证数字，candidate 不改写",
+    "probe 断言 274/274；章节位号 39 条；CFSR 19 位；机身断言 6 条；IRQn 枚举无 HardFault 对应项": "四类证据的计数",
+    "发布文案复述同一批数字：0x0800008e、0x08000084、0x08010131、0x00008200、0x1FFFFFFF、0x40000000、0xFFFFFFFD、274、39、19、6、10、1、69、70": "publish 各平台文案与封面/标题，全部来自本集已取证数字"
+  },
+  "exceptions": {
+    "0x08000000": "Flash 起始地址（向量表落址），不是测量值",
+    "0xE000ED00": "SCB 基址，来自 core_cm4.h，不是测量值",
+    "2026-10-17": "小红书合集建立日期，平台操作记录，不是测量值"
+  }
+}

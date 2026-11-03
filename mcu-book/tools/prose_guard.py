@@ -226,6 +226,27 @@ def main() -> int:
     if argv and argv[0] == "--additions":
         additive = True
         argv = argv[1:]
+    if argv and argv[0] == "--single":
+        # 新章起草门：没有原文可对照，对单文件做绝对计数。
+        # 阈值 = 成书逐章预算（10-26-prose-polish 用户批）：—— 散文面 ≤2/章，
+        # 一句话/记住：散文本体 0。::: 容器标签（::: tip 一句话记住）不是散文，
+        # 计数前先剥掉；<details> 答案区算散文，沿用 prose_surface 定义。
+        path = Path(argv[1])
+        raw = path.read_text(encoding="utf-8")
+        stripped = "\n".join(
+            ln for ln in raw.splitlines() if not ln.lstrip().startswith(":::")
+        )
+        counts = count_markers(stripped)
+        cols = ["破折号——·散文", "一句话·散文", "记住：·散文", "下一站·散文"]
+        budget = {"破折号——·散文": 2, "一句话·散文": 0, "记住：·散文": 0}
+        print(f"{path.name}: " + "  ".join(f"{k}={counts.get(k, 0)}" for k in cols))
+        bad = {k: (counts.get(k, 0), lim) for k, lim in budget.items() if counts.get(k, 0) > lim}
+        for k, (n, lim) in bad.items():
+            print(f"  ✗ {k} {n} 处 > 预算 {lim}")
+        if bad:
+            return 1
+        print("  ✓ 口癖预算内")
+        return 0
     pairs: list[tuple[Path, Path]] = []
     if argv[0] == "--batch":
         for line in Path(argv[1]).read_text(encoding="utf-8").splitlines():

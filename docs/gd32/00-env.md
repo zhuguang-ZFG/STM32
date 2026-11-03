@@ -33,6 +33,8 @@ arm-none-eabi-gcc --version    # 应显示 15.2.1（xPack，与 CI 同源）
 cd code/gd32/01-rcu-clock && make    # G1 工程，编过就说明工具链对 GD32 也通
 ```
 
+先押个开箱单：行李是零，三件套还是三张老面孔。谁管向量表、谁把时钟树拉到 200MHz、谁划 Flash 和 SRAM 的地盘？押完再敲 make。
+
 `make` 走完应该看到 `arm-none-eabi-size` 打印 text/data/bss 三列体积，和 S 篇工程长得一模一样。这一条证明：**编 STM32 和编 GD32，是同一套 gcc、同一组编译旗，只是源码和链接脚本换了**。
 
 ## 小节结构
@@ -189,6 +191,8 @@ GD32F4xx_Firmware_Library_V3.3.3/
 - 工具链从"还要再装一套吗"变成"零增量复用"：GD32F4xx 和 STM32F407 是同一个 Cortex-M4F 内核；
 - 官方固件库 V3.3.3 的两层结构（CMSIS 设备层 + 标准外设库层）不再是一坨乱文件，每个 `.h` 都能归类；
 - 知道本站 GD32 工程是"读 `.h` 当字典、手写访问"，下一章 G1 的每个魔法数字你都能在 `.trellis/ref/gd32/` 里查到出处。
+
+开箱对上：startup_gd32f4xx.s 管向量表，Reset_Handler 里开 FPU、拷 .data、清 .bss 再进 main；system_gd32f4xx.c 把时钟树拉到 200MHz；gd32f4xx.ld 划地盘，Flash 起始 0x08000000、SRAM 起始 0x20000000。行李是零：同为 Cortex-M4F，B0 装好的那套 xPack arm-none-eabi-gcc 直接复用，旗逐字相同，只添 -DGD32F450 一个宏。往后每一章查偏移、查位名，花的都是这份零行李红利。
 
 <div class="achievement">
 ✅ 下一站：<a href="01-rcu-clock.html">G1 RCU 时钟树</a>：200MHz 是怎么算出来的，与 STM32F4 的 RCC 逐字段对照。

@@ -116,5 +116,26 @@ def test_additive_verbatim_copy_passes(tmp_path):
     assert pg.compare_additive(_write(tmp_path, "a.md", BASE), _write(tmp_path, "b.md", BASE)) == []
 
 
+class TestSingleMode:
+    """--single 新章起草门：无原文可对照，对单文件绝对计数。"""
+
+    def _run(self, tmp_path, monkeypatch, text: str, name: str = "new.md") -> int:
+        f = tmp_path / name
+        f.write_text(text, encoding="utf-8")
+        monkeypatch.setattr(sys, "argv", ["prose_guard.py", "--single", str(f)])
+        return pg.main()
+
+    def test_within_budget_passes(self, tmp_path, monkeypatch):
+        assert self._run(tmp_path, monkeypatch, "手册说错了。位表在这里。顺序也行。\n") == 0
+
+    def test_over_budget_fails(self, tmp_path, monkeypatch):
+        text = "一句——两句——三句——四句。记住：这个。一句话搞定。\n"
+        assert self._run(tmp_path, monkeypatch, text) == 1
+
+    def test_container_label_not_counted_as_prose(self, tmp_path, monkeypatch):
+        text = "::: tip 一句话记住\n**这是容器，不算散文。**\n:::\n\n正文一句。\n"
+        assert self._run(tmp_path, monkeypatch, text) == 0
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

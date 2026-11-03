@@ -49,7 +49,9 @@ if (cmd === 'seasons') {
   const r = show('seasons', await call(`${M}/seasons`, { qs: { pn: 1, ps: 30 } }))
   for (const s of r.data?.seasons || []) {
     const se = s.season || {}
-    console.log(`   合集 ${se.id} 「${se.title}」 状态=${ST[se.state] ?? se.state} 视频=${(s.part_episodes || []).length} 小节=${(s.sections || []).map((x) => x.id).join(',')} 简介 ${(se.desc || '').length} 字`)
+    // 2026-10-28 实测 sections 有两态：裸数组或 { sections: […] } 包裹——两种都认。
+    const secs = Array.isArray(s.sections) ? s.sections : (s.sections?.sections || [])
+    console.log(`   合集 ${se.id} 「${se.title}」 状态=${ST[se.state] ?? se.state} 视频=${(s.part_episodes || []).length} 小节=${secs.map((x) => x.id).join(',')} 简介 ${(se.desc || '').length} 字`)
     console.log(`        封面 ${se.cover}`)
   }
   console.log(`   合计 ${r.data?.total ?? '?'}`)
@@ -69,9 +71,11 @@ if (cmd === 'seasons') {
   if (r.code === 0) { writeFileSync('.temp/bili-season.json', JSON.stringify({ season_id: r.data, title, cover }, null, 1)); console.log('   新合集 id =', r.data) }
   else process.exit(1)
 } else if (cmd === 'join') {
+  // 实测契约（biliup/DanmakuRender 同款）：body 用 camelCase 的 sectionId + episodes；
+  // snake_case 的 section_id/episode 会被服务端静默忽略并返回 code=0。
   const [sectionId, ...rest] = A
   const episodes = rest.map((s) => { const [aid, cid, ...t] = s.split(':'); return { aid: +aid, cid: +cid, title: t.join(':'), charging_pay: 0 } })
-  const r = show('section/episodes/add', await call(`${M}/season/section/episodes/add`, { method: 'POST', qs: { csrf }, json: { episode: episodes, section_id: +sectionId } }))
+  const r = show('section/episodes/add', await call(`${M}/season/section/episodes/add`, { method: 'POST', qs: { csrf }, json: { sectionId: +sectionId, episodes } }))
   if (r.code !== 0) process.exit(1)
 } else { console.log('未知子命令') }
 export default out

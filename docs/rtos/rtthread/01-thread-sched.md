@@ -26,6 +26,8 @@ minutes: 35
 
 finsh 里 `list_thread` 看自家线程表：名称/优先级/状态/栈用量一屏出，RT-Thread 的"可观测性"开箱即用。
 
+list_thread 之前先押个嫁妆：rt_thread 出门自带一件东西，FreeRTOS 的延时要把任务挂进全局的阻塞列表统一管；是哪件？押完对照 rtdef.h 与 F1 的 TCB 看答案。
+
 ## 动画：二级位图 256 级选优
 
 先在 32 位组选字上定位第一个非空字节，再在该字节上定位第一个非空位，两次固定步数查表，256 级优先级的 O(1) 选优全程可见。
@@ -210,6 +212,8 @@ finsh 的 `list_thread` 输出列大致是：`name / pri / status / sp / stack s
 
 - 第二个内核的线程/调度机制打通；
 - "同一问题两种解法"的对照眼练成。
+
+嫁妆是定时器：FreeRTOS 把延时挂进全局的阻塞列表，RT-Thread 让每个线程自带 rt_timer 出门。同一件事两种记法，你的双 OS 对照表又添一行。
 
 <div class="achievement">
 ✅ 下一站：<a href="02-ipc.html">R2 IPC 全家桶</a>：信号量/互斥量/事件/邮箱/消息队列，一套范式五种武器。

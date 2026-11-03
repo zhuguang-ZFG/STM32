@@ -42,6 +42,8 @@ int main(void)
 
 `gcc demo.c -o demo && ./demo` 输出 `1ms = 27000 ticks, 3ms = 81000 ticks`。先减再比的无符号差值跨过 32 位边界也不出错。本章全部延时数学都能这样在宿主预演。
 
+先押个仪表：SysTick 的 CTRL/LOAD/VAL 四件套，到 mtime 这边换成什么阵型？S5 背熟的减一、读清两个魔咒，有几个跟过河？
+
 ## 动画：MTIME 64 位读写纪律
 
 RV32 读 64 位 mtime 走"高-低-高"循环防撕裂，写 mtimecmp 必须"先高后低"防假中断。两条读写纪律保住跨 32 位边界的时间账。
@@ -277,6 +279,8 @@ mtime_lo 进位回 0 的那一拍，mtime_hi 加 1。RV32 一次访存只有 32 
 - 时基换了心脏也会开方：mtime 的驱动链、27MHz 账、读写纪律、续约语句一气呵成；
 - S5 的两个魔咒（减一、读清）在 RISC-V 上的"结构性消失"讲得清楚，64 位的两条新纪律（撕裂、假中断）入了肌肉；
 - RTOS 篇的 tick 地基打好：mtimecmp 续约那行代码，就是 F8 移植时的第一颗螺丝。
+
+仪表是电表：mtime 与 mtimecmp 是两张内存表，64 位顺数，mtime 不小于 mtimecmp 即产生定时器中断；减一、读清两个魔咒结构性消失，换来的是读要"高-低-高"循环防撕裂、写 mtimecmp 要"先高后低"防假中断。1ms 还是 27000 tick，只是驱动链多一道主频除以四。
 
 <div class="achievement">
 ✅ 下一站：<a href="09-gpio-minimal.html">V4 GPIO 最小系统</a>：时钟、时基都齐了，配上 GPIO 点亮第一盏 RISC-V 的灯。

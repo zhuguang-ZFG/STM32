@@ -24,6 +24,8 @@ minutes: 30
 
 ## 先跑起来（10 分钟 quick win）
 
+连上之前先押一题：调试器往 RAM 里写一个新值，芯片必须先停下来配合吗？还是边跑边改？押一个答案，连上后当场试。
+
 ```bash
 make debug &        # OpenOCD 常驻
 make gdb            # 连上即：reset halt → load → break main → continue
@@ -165,6 +167,8 @@ OpenOCD 开 Semihosting：`monitor arm semihosting enable`；newlib 链接加 `-
 
 - 烧录/调试从魔法变成一条讲得通的链路；
 - GDB 十命令上手，软硬断点知道何时切换。
+
+开场那对「超能力」现在拆开了：烧录是往 Flash 写，断点是往指令上改，窥视是读寄存器与内存，走的都是同一条两根线的链路。所谓统治一颗芯片，凭的就是这份直通内存的读写权。
 
 <div class="achievement">
 ✅ 下一站：<a href="07-build-system.html">B7 构建系统</a>：手写 Makefile 已经上手，接着看 CMake/Ninja 和 ESP-IDF、RT-Thread(scons) 怎么把它规模化。
