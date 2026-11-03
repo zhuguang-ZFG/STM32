@@ -349,11 +349,19 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 
 ### 9.3 Port A：strip-spec-voice（先做）
 
-**吸收：**
+**状态（本 Port 已完成）：** classic tip 已是 strip 审稿门禁的**超集**；Port A 不再整支 `git merge feat/strip-spec-voice`（merge-tree ≈20 CONFLICT）。做法：核对规则 → 前移指南 → 跑硬门 → 勾选。
 
-- `tools/slop_lint.py` 审稿用语规则组及测试。  
-- `CONTENT_GUIDE.md` 中「写给读者、不写给审稿人」条款与词表说明。  
-- 与读者规则直接相关的最小正文措辞修正。
+**吸收（已在 tip / 本 Port 落定）：**
+
+- `tools/slop_lint.py`：`审稿用语` 规则组保留；另保留 classic 已有的 `结论标签`、`结构行话`、`.claude` skip、围栏内注释扫描、`\b(are|as) void\b`（均严于 strip）。  
+- `stm32-book/tests/test_slop_lint.py`：`test_catches_notes_written_for_a_reviewer` 等覆盖审稿用语；classic 另有结构行话 / 结论标签用例。  
+- `docs/CONTENT_GUIDE.md` 与 `docs/en/CONTENT_GUIDE.md`：读者规则与 strip 同源词表；本 Port 将专节**前移到显眼位置**（「写给读者，不写给审稿人」 / “Write for the reader, not the reviewer”）。  
+- 正文：`python tools/slop_lint.py` 全绿，**无需**为 lint 做 03/11–15 最小补丁；**未**整包合入 strip 对 `docs/00–19` 的章节改写（规则优先）。
+
+**刻意留下（非本 Port）：**
+
+- strip 独有的章节正文批改、svgkit reduced-motion、`check_assets` 缺字体跳过、术语表导语等 → 不在 Port A 范围；需要时另开挑拣。  
+- handraw → Port B。
 
 **冲突默认策略：**
 
@@ -361,7 +369,7 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 - 只吸收去审稿腔措辞；不得为消冲突而删证据句。  
 - 指南与 lint 规则冲突：以更严的读者保护为准，并在 PR 说明双源差异。
 
-**验收：** `python tools/slop_lint.py` 全绿；抽样章无新增审稿词；经典事实句 diff 可解释。
+**验收：** `python tools/slop_lint.py` 全绿；`python -m unittest discover -s stm32-book/tests -p test_slop_lint.py -v` 全绿；抽样章无新增审稿词；经典事实句 diff 可解释。
 
 ### 9.4 Port B：handraw-sketch-system（后做，规则优先、正文挑拣）
 
@@ -416,7 +424,7 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 ### 10.2 ch03 硬门（全部满足才扩批）
 
 - [ ] 本 Overlay 已合入 `feat/book-video-classic`。  
-- [ ] Port A（strip）完成；slop_lint 绿。  
+- [x] Port A（strip）完成；slop_lint 绿。  
 - [ ] Port B（Sepia/plain-voice 技能树 + 规则抽取）完成；**无** handraw docs 整树合并。  
 - [ ] `CONTENT_GUIDE` 已按 §8 修改。  
 - [ ] ch03 中英教学合同字段（七项核心 + 先备知识）已登记且互相对齐。  

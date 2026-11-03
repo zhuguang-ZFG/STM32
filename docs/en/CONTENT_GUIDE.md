@@ -7,6 +7,20 @@ a portal home page, a chaptered knowledge base, visuals (animation, diagrams, bo
 
 This file is the English edition of that guide. Please follow the rules below so the 20+ chapters stay in one voice.
 
+## Write for the reader, not the reviewer
+
+Body text—especially Principle and scope, Key figures, Timing and state, and Pitfalls and sources—is for learners, not for reviewers or author notes.
+
+Do not leak drafting jargon into reader prose. The ban list matches the `审稿用语` group in `tools/slop_lint.py`, for example:
+
+- "key figure", "normal path", "in the margin", "pinned only to", "copied whole", "do not invent"
+- "is void" / "are void" (except Cache "clean or invalidate" wording when that is the real term)
+- table header "claim this source may support" (use "what you can look up in the source" instead)
+
+State the fact and the condition, for example: "on an F4 this address becomes 0x…".
+
+Hard gate: `python tools/slop_lint.py` from the repo root. Contributor meta-docs may name the skeleton; chapter body may not.
+
 ## 1. Files and names
 
 - Chinese chapters live in `docs/`, named `NN-中文标题.md` (NN is two digits, for example `05-定时器与PWM.md`).
@@ -66,7 +80,7 @@ If a chapter has `<!-- video: -->` … `<!-- /video: -->`, the first four sectio
 - "Pitfalls and troubleshooting" is no longer a skeleton heading. Move the rows that used to sit in that section into "Pitfalls and sources". Do not keep two names, and do not leave an empty heading. Chapters that are not thickened yet keep the old heading until a later batch.
 - Each row states one claim. The source cell is a link to `#source-{id}`. `{id}` is an id already listed under `sources` in both manifests. After the build, the target is the Appendix E card `id="source-{id}"`.
 - Do not start a second source table. A new source gets its id appended to `sources` in both manifests.
-- Write the first four sections for the reader, not the reviewer. Leave out drafting words such as "key figure", "normal path", "in the margin", "is void", or "do not invent". State the fact and the condition instead, for example "on an F4 this address becomes 0x…". `tools/slop_lint.py` flags these words.
+- The first four sections still follow **Write for the reader, not the reviewer** above; `tools/slop_lint.py` enforces the ban list.
 
 ## 3. How to write
 
