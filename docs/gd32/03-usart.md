@@ -77,6 +77,10 @@ GD32F4xx 串口全家福（中断号已在 `gd32f4xx.h` 核对）：
 
 代价是"肌肉记忆失效"：你写惯的 `USART_CR1` 在 GD32 里编译不过，得换成 `USART_CTL0`。收益是"一个规律管八个串口"：`USART_CTL0`、`UART_CTL0` 写法一致，换外设不用重新记名字。
 
+改名纪律落到 USART 是七条偏移轨：上排是 STM32 的名字，下排是 GD32 的名字，同一列就是同一个偏移。
+
+![USART 寄存器改名对照：CR1/CR2/CR3/BRR/GTPR/SR/DR 与 CTL0/CTL1/CTL2/BAUD/GP/STAT/DATA 逐偏移对齐](/arch/usart-rename-map.png)
+
 GD32 库的统一命名风格：所有外设的控制寄存器都叫 **CTL**（Control），STM32 叫 **CR**（Control Register）。USART 的三组控制寄存器命名映射：
 
 | STM32 | GD32 | 偏移 | 功能 |

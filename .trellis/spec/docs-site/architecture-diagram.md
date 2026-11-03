@@ -16,13 +16,13 @@
 
 1. **定内容**（nodes/groups/edges），全部事实对账章节原文与已核事实（RM0090/CMSIS），未核对的写"以手册为准"；
 2. **取图标**：`python <skill>/scripts/fetch_icons.py <icons-dir> name…`——svgl→devicon→gilbarbara 自动链；品牌缺失用 `name=官方URL`（ST/Espressif/FreeRTOS/RT-Thread 均如此取到）；抽象概念用 `name:lucide/<icon>`；**不许 simple-icons、不许重涂 logo**；手动补的图标要登记进 `manifest.json`；
-3. **手写源 HTML**：以 skill 的 `assets/template.html` 为底，坐标按 `references/geometry.md`（节点 132×100、行距 ≥140、组框外扩 24/60/150、竖边走 box-bottom→tile-top、肘形边走空带走廊）——**先列每条竖/肘段的 x 走廊，确认不穿任何节点框再写**；
+3. **手写源 HTML**：以 skill 的 `assets/template.html` 为底，坐标按 `references/geometry.md`（节点 132×100、行距 ≥140、组框外扩 24/60/150、竖边走 box-bottom→tile-top、肘形边走空带走廊）——**先列每条竖/肘段的 x 走廊，确认不穿任何节点框再写**；组框标签固定在左上角（起点 = 组左 + 12px），**任何竖边都不许从标签横带里走过**：多行分组若把行间距留在标签下方，拆成上下两个组框必被第一列竖边穿字，改用「一整块高框（标签在最上、竖边全在其下方）+ 每行行首身份砖」表达归属；
 4. **构建与渲染**：
    ```bash
    python <skill>/scripts/build.py 源.html icons/ 产物.out.html --fonts <skill>/assets/fonts
    python <skill>/scripts/render_png.py 产物.out.html 图.png --selector .canvas --scale 2 --single
    ```
-   自包含 out.html 是事实源；PNG @2x（2440px 级）进 `docs/public/arch/`；逐项目检：无穿线、无白底白 logo、组标签不压节点、无画布裁切；
+   自包含 out.html 是事实源；PNG @2x（2440px 级）进 `docs/public/arch/`；逐项目检：无穿线、无白底白 logo、组标签不压节点、组标签横带无竖边穿过、无画布裁切；
 5. **入章节**：图放对应小节开头，引导句一句（非模板腔、破折号 ≤1）、alt 写"表达结构一句话"；
 6. **过门**：`docs:check`（注意「成书插图数」CLAIMS 会因新增独立行图片变化——同步 `docs/reference/book.md`、`docs/reference/changelog.md`、`mcu-book/README.md` 三处与 `scripts/docs-check.mjs` 的正则口径）→ `reading:check` → `docs:build` → `book:pdf` + `book:pdfcheck`。
 

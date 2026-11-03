@@ -91,6 +91,10 @@ typedef struct {
 
 关键设计：**SPL 的枚举值 = 寄存器位段的实际值**：`GPIO_Mode_IN=0x00`、`GPIO_Mode_OUT=0x01`、`GPIO_Mode_AF=0x02`、`GPIO_Mode_AN=0x03`，直接就是 MODER 那两位的值。所以"`GPIO_Init` 翻译"本质是"把枚举值左移到对应引脚的位段"，没有查表，只有移位。
 
+三板斧怎么喂进 `GPIO_Init`，又落到哪四段寄存器，一张图收干净：
+
+![SPL 解剖：基址宏、GPIO_TypeDef、位掩码三板斧供料给 GPIO_Init，落到 MODER/OTYPER/OSPEEDR/PUPDR 四段寄存器](/arch/spl-anatomy.png)
+
 ## 二、GPIO_Init 逐行：四段寄存器的位操作翻译
 
 `GPIO_Init` 的核心逻辑（V1.8.0 结构还原，行号以库源码为准）：逐 pin 循环，每个被选中的引脚走"清旧值 → 置新值"两步：
