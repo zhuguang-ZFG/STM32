@@ -1,0 +1,595 @@
+{
+  "schema_version": 1,
+  "chapter": "08",
+  "slug": "spi-long",
+  "title": "SPI 总线：从四线移位到模式与速率",
+  "short_source": "tools/narration.py#CHAPTERS[8]",
+  "scenes": [
+    {
+      "scene_id": "ch08-s01",
+      "title": "屏幕一直是黑的",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "ST7789 接好了，初始化也跑了，屏幕却一直黑着。查出来不是代码，是模式：主机按模式 0 发，从机按另一个沿采样，每个字节错半拍，命令全成了噪声。本章就把这种黑屏拆开看。",
+      "on_screen": [
+        "初始化跑完了",
+        "屏幕还是黑的",
+        "错在采样沿"
+      ],
+      "visual_source": "illustrations/ch08-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#核心原理"
+      ],
+      "memory_anchor": "黑屏先查模式",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch08-s02",
+      "title": "四根线各管一件事",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s01"
+      ],
+      "narration": "SPI 就四根线：SCK 是主机给的时钟，MOSI 是主机往从机发，MISO 是从机往主机回，CS 片选低有效。名字按方向记，主机出去那根和进来那根不能对调，对调之后两边都在听，谁也不说话。",
+      "on_screen": [
+        "SCK 主机给时钟",
+        "MOSI 对 MISO",
+        "CS 低有效"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#1-四根线与移位原理"
+      ],
+      "memory_anchor": "四线按方向记",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s03",
+      "title": "两个移位寄存器成环",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s02"
+      ],
+      "narration": "主机和从机各有一个八位移位寄存器，接成一个环。SCK 每走一拍，双方同时移出一位、移入一位，八拍之后正好换完一个字节。像两个人隔桌换牌，拍一下桌子，各推一张过去。",
+      "on_screen": [
+        "各一个八位寄存器",
+        "一拍移一位",
+        "八拍换一字节"
+      ],
+      "visual_source": "animations/spi-transfer.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#1-四根线与移位原理"
+      ],
+      "memory_anchor": "八拍换一字节",
+      "evidence_type": "animation"
+    },
+    {
+      "scene_id": "ch08-s04",
+      "title": "想读必须先写",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s03"
+      ],
+      "narration": "全双工意味着发送的同时接收缓冲也在进数，SPI 没有只读这回事。主机想读一个字节，也必须发字节把时钟做出来，通常发 dummy 的 0xFF，从机才有机会把数据移出来。只看发送数组，证明不了从机回了什么。",
+      "on_screen": [
+        "发的同时就在收",
+        "读也要发时钟",
+        "dummy 用 0xFF"
+      ],
+      "visual_source": "animations/spi-transfer.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#核心原理",
+        "docs/08-SPI总线.md#9-全双工与只写器件"
+      ],
+      "memory_anchor": "想读必须先写",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s05",
+      "title": "CPOL 与 CPHA",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s03"
+      ],
+      "narration": "四种模式只约定两件事。CPOL 决定时钟空闲时是低还是高，CPHA 决定在第一个边沿还是第二个边沿采样。模式 0 是空闲为低、第一个上升沿采样；模式 3 空闲为高、第二个上升沿采样。W25Q64 和 ST7789 都用模式 0。",
+      "on_screen": [
+        "CPOL 管空闲电平",
+        "CPHA 管采样沿",
+        "模式 0 最常用"
+      ],
+      "visual_source": "animations/spi-transfer.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#2-cpolcpha-四种模式"
+      ],
+      "memory_anchor": "模式 0 空闲低",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s06",
+      "title": "模式错一沿全错",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch08-s05"
+      ],
+      "narration": "主机和从机模式不一致时，每一位都差半拍。把 CPHA 配成第二沿，字节会错一位；再差一点就是全 0、全 FF 或像随机数的错位数据。数据完全对不上时，第一件事是核对模式，而不是改代码逻辑。",
+      "on_screen": [
+        "差一沿错一位",
+        "全 0 全 FF 是信号",
+        "先核模式再改码"
+      ],
+      "visual_source": "illustrations/ch08-mid-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#2-cpolcpha-四种模式"
+      ],
+      "memory_anchor": "差一沿错一位",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch08-s07",
+      "title": "模式从手册里查",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s05",
+        "ch08-s06"
+      ],
+      "narration": "模式不是猜的，是从机数据手册写死的。W25Q64 本章示例用模式 0，它也支持模式 3；换别的器件必须按它的手册选 CPOL 和 CPHA。拿到新器件，先翻时序图确认空闲电平和采样沿，再写初始化。",
+      "on_screen": [
+        "模式手册说了算",
+        "W25Q64 用模式 0",
+        "先翻时序图"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#2-cpolcpha-四种模式"
+      ],
+      "memory_anchor": "模式查手册",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s08",
+      "title": "分频只有八档",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s02"
+      ],
+      "narration": "SPI 时钟是主机总线时钟除以 BR 位选的分频，只有 2、4、8 一直到 256 这八档，没有除以 3。想要 10 MHz 是凑不出来的，只能在 9 MHz 和 18 MHz 之间选。速度先迁就从机，再谈拧高。",
+      "on_screen": [
+        "时钟等于总线除分频",
+        "2 到 256 共八档",
+        "没有除以 3"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#3-速率与分频"
+      ],
+      "memory_anchor": "分频只有八档",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch08-s09",
+      "title": "72 除以 8 得 9",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s08"
+      ],
+      "narration": "本章工作点按 STM32F103C8T6 算：SPI1 挂在 APB2 上，时钟 72 MHz，BR 写 010 是除以 8，SCK 就是 9 MHz。BR 写 001 得 18 MHz，写 000 得 36 MHz。先把分频放到从机舒服的范围，再提速。",
+      "on_screen": [
+        "总线 72 MHz",
+        "BR 010 除以 8",
+        "SCK 等于 9 MHz"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#3-速率与分频"
+      ],
+      "memory_anchor": "72 除 8 得 9",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch08-s10",
+      "title": "36 MHz 读回乱码",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch08-s09"
+      ],
+      "narration": "把 BR 写成 000，SCK 直接上 36 MHz。这个速度对杜邦线上的 W25Q64 太快，沿已经圆得像正弦波，读回来的字节会乱。速度上限多半不在芯片，而在线：实验台上能过，产品上就偶发出错。",
+      "on_screen": [
+        "000 是 36 MHz",
+        "杜邦线沿变钝",
+        "读回字节会乱"
+      ],
+      "visual_source": "diagrams/sample-08-spi-jedec.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#常见坑与出处",
+        "docs/08-SPI总线.md#3-速率与分频"
+      ],
+      "memory_anchor": "36 MHz 太快",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch08-s11",
+      "title": "片选是事务的括号",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s02"
+      ],
+      "narration": "片选是一次事务的括号：拉低表示开始，拉高表示结束。有的从机只在片选上升沿才把数据真正收下。本章不用硬件 NSS，把 PA4 配成推挽输出，软件拉低、拉高，什么时候动手都看得见。",
+      "on_screen": [
+        "拉低开始拉高结束",
+        "上升沿收下数据",
+        "PA4 软件控制"
+      ],
+      "visual_source": "animations/spi-transfer.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#4-nss-管理与多从机"
+      ],
+      "memory_anchor": "片选是括号",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s12",
+      "title": "软件 NSS 最省心",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s11"
+      ],
+      "narration": "片选有两种管法。软件 NSS 把 CS 当普通 GPIO 自己拉，最灵活，本章推荐这种；硬件 NSS 交给外设管，主要用在多主机场景。HAL 里对应 SPI_NSS_SOFT，配上推挽输出的 PA4，事务边界全在自己手里。",
+      "on_screen": [
+        "软件 NSS 最灵活",
+        "硬件 NSS 给多主",
+        "本章用软件"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#4-nss-管理与多从机",
+        "docs/08-SPI总线.md#代码实现"
+      ],
+      "memory_anchor": "软件 NSS 省心",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s13",
+      "title": "多从机共享三根线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s11",
+        "ch08-s12"
+      ],
+      "narration": "多个从机可以共用 SCK、MOSI、MISO 三根线，但片选必须各走各的。主机想跟谁说话，就把谁的 CS 拉低；其他从机看到自己 CS 是高，会把 MISO 放开不管。选中谁，谁才回应。",
+      "on_screen": [
+        "三线可以共用",
+        "片选各走各的",
+        "选中谁谁回应"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#4-nss-管理与多从机"
+      ],
+      "memory_anchor": "片选各走各的",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s14",
+      "title": "片选出事有两种",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch08-s13"
+      ],
+      "narration": "一直压着片选不拉高，下一包会粘在上一包后面，两条命令被当成一条。反过来，多从机时两根片选同时为低，两个从机一起往 MISO 上说话，线上就是冲突。每条事务结束，记得把 CS 拉回去。",
+      "on_screen": [
+        "一直低会粘包",
+        "同时低会冲突",
+        "结束拉高 CS"
+      ],
+      "visual_source": "diagrams/sample-08-spi-jedec.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#常见坑与出处"
+      ],
+      "memory_anchor": "结束拉高 CS",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch08-s15",
+      "title": "只写器件不用 MISO",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s04"
+      ],
+      "narration": "只写器件像 ST7789 屏幕，可以不接 MISO，用 HAL_SPI_Transmit 只发不收。读器件像 Flash 必须接 MISO，用 TransmitReceive 一次把收发做完。只发不收地读，下次读到的是上次留在接收寄存器里的残字节。",
+      "on_screen": [
+        "屏幕只写不接 MISO",
+        "读器件接 MISO",
+        "收发一起做完"
+      ],
+      "visual_source": "illustrations/ch08-mid-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#9-全双工与只写器件",
+        "docs/08-SPI总线.md#硬件与接线"
+      ],
+      "memory_anchor": "只写不接 MISO",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s16",
+      "title": "接反读出全 FF",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch08-s15",
+        "ch08-s06"
+      ],
+      "narration": "读回的 ID 对不上，最常见的原因是 MOSI 和 MISO 接反了；MISO 没接好悬空，读回来就是全 FF。所以读出全是 FF 或 00 时，先查模式、片选和进出两根线的方向，别急着怀疑芯片坏了。",
+      "on_screen": [
+        "接反是最常见原因",
+        "悬空读出全 FF",
+        "先查线和模式"
+      ],
+      "visual_source": "diagrams/sample-08-spi-jedec.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#2-cpolcpha-四种模式"
+      ],
+      "memory_anchor": "全 FF 先查线",
+      "evidence_type": "diagnosis"
+    },
+    {
+      "scene_id": "ch08-s17",
+      "title": "别把 SPI 当 I2C",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch08-s02",
+        "ch08-s13"
+      ],
+      "narration": "I2C 是两根线、开漏、靠地址寻址；SPI 是四根线、推挽、靠片选选人。把 I2C 的习惯带过来，少接 MISO 还想读数据，或者把 CS 也省了，器件根本不会理你。I2C 那章用开漏，这里 PA4 是推挽输出，别混。",
+      "on_screen": [
+        "I2C 两线开漏",
+        "SPI 四线推挽",
+        "选人对法不同"
+      ],
+      "visual_source": "illustrations/ch08-mid-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#10-spi--i2c--uart-对比"
+      ],
+      "memory_anchor": "SPI 不是 I2C",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch08-s18",
+      "title": "复位后的默认脚",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s02"
+      ],
+      "narration": "复位后 SPI1 在 LQFP48 的第 14 到 17 脚：PA4 是 NSS，PA5 是 SCK，PA6 是 MISO，PA7 是 MOSI。用了重映射，信号会搬到 PB3、PB4、PB5，别再当复位默认去接。另外 PA6 也是定时器 TIM3 通道 1，同一时间只能用一个功能。",
+      "on_screen": [
+        "复位脚 PA5 到 7",
+        "重映射到 PB3 到 5",
+        "PA6 兼职 TIM3"
+      ],
+      "visual_source": "illustrations/ch08-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "默认脚 PA5 到 7",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s19",
+      "title": "F1 就四个寄存器",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s18"
+      ],
+      "narration": "F1 的 SPI 关键寄存器就四个：CR1 管使能、主从、CPOL、CPHA、分频和 NSS；CR2 管中断和 DMA 使能；SR 是状态，看 TXE、RXNE、BSY；DR 是数据口，写它发、读它收。懂了这四个，寄存器版驱动也能看懂。",
+      "on_screen": [
+        "CR1 管配置",
+        "SR 看状态位",
+        "DR 是数据口"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#6-spi-关键寄存器f1"
+      ],
+      "memory_anchor": "四个寄存器",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s20",
+      "title": "HAL 配置对应模式 0",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s05",
+        "ch08-s19"
+      ],
+      "narration": "HAL 里模式 0 就是 POLARITY_LOW 加 PHASE_1EDGE，再配 NSS_SOFT、FIRSTBIT_MSB、分频 8。GPIO 侧 PA5、PA7 复用推挽，PA6 输入，PA4 普通推挽输出做片选，初始化完先把 CS 拉高。读 ID 用 TransmitReceive 一次收发四个字节。",
+      "on_screen": [
+        "LOW 加 1EDGE",
+        "分频选 8",
+        "先拉高 CS"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#代码实现",
+        "docs/08-SPI总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "LOW 加 1EDGE",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch08-s21",
+      "title": "GPIO 也能软模拟",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s03",
+        "ch08-s05"
+      ],
+      "narration": "软件模拟 SPI 就是拿普通 GPIO 复现模式 0 的时序：先把数据位摆到 MOSI 上，再拉高 SCK 制造上升沿让对方采样，顺手读回 MISO 移进一位，然后拉低。八次循环换完一字节，时序全在自己手里。",
+      "on_screen": [
+        "先摆数据位",
+        "拉高 SCK 采样",
+        "八次换一字节"
+      ],
+      "visual_source": "illustrations/ch08-mid-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#7-软件模拟-spi-核心片段"
+      ],
+      "memory_anchor": "软 SPI 复现时序",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch08-s22",
+      "title": "软件硬件怎么选",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s21",
+        "ch08-s19"
+      ],
+      "narration": "软件模拟灵活、不挑引脚，但速率低、CPU 占用高；硬件 SPI 能跑几十 MHz、占用低，还支持 DMA。刷屏和读 Flash 走硬件加 DMA，整屏像素交给 Transmit_DMA 一次发出，CPU 腾出来准备下一帧。",
+      "on_screen": [
+        "软件灵活但慢",
+        "硬件快还能 DMA",
+        "刷屏交给 DMA"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#5-软件模拟-vs-硬件-spi",
+        "docs/08-SPI总线.md#代码实现"
+      ],
+      "memory_anchor": "刷屏交给 DMA",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch08-s23",
+      "title": "三种总线摆一起",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s17"
+      ],
+      "narration": "三种总线摆在一起看：SPI 四根线、速率高、每个设备一根片选、全双工；I2C 两根线、速率中等、靠地址寻址、半双工；UART 两根线、点对点、全双工。选型先看设备数量和速率，再数线。",
+      "on_screen": [
+        "SPI 四线全双工",
+        "I2C 两线寻址",
+        "UART 点对点"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#10-spi--i2c--uart-对比"
+      ],
+      "memory_anchor": "按设备数选型",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch08-s24",
+      "title": "ST7789 五条命令",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch08-s15"
+      ],
+      "narration": "ST7789 初始化常用的命令有：0x01 软件复位，0x11 退出睡眠，0x3A 设像素格式、0x55 是 16 位色，0x36 设扫描方向，0x29 开显示。屏幕类器件靠 DC 引脚区分命令和数据，这是器件约定，不是 SPI 协议本身。",
+      "on_screen": [
+        "01 复位 11 出睡眠",
+        "3A 像素 36 方向",
+        "DC 区分命令数据"
+      ],
+      "visual_source": "illustrations/ch08-mid-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#8-st7789-常用初始化命令"
+      ],
+      "memory_anchor": "DC 区分命令数据",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch08-s25",
+      "title": "实验：读 JEDEC ID",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch08-s09",
+        "ch08-s11",
+        "ch08-s20"
+      ],
+      "narration": "实验一：模式 0、9 MHz 下读 W25Q64 的 JEDEC ID。片选拉低，发 0x9F 再跟三个 0xFF，片选拉高。发命令那 8 个时钟移进的 rx0 没有意义；厂商号在 rx1 是 0xEF，类型 0x40，容量 0x17，拼起来 0xEF4017。同时存下四线波形。",
+      "on_screen": [
+        "发 9F 加三个 FF",
+        "rx0 不是厂商号",
+        "拼出 0xEF4017"
+      ],
+      "visual_source": "diagrams/sample-08-spi-jedec.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#原理与适用范围",
+        "docs/08-SPI总线.md#动手实验"
+      ],
+      "memory_anchor": "ID 是 0xEF4017",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch08-s26",
+      "title": "实验：点亮 ST7789",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch08-s24",
+        "ch08-s25"
+      ],
+      "narration": "实验二：驱动 ST7789 点亮。接线是 PA5 时钟、PA7 数据、PA4 片选，外加 PA3 做 DC、PA2 做复位，MISO 不用接。按顺序发复位、出睡眠、像素格式、扫描方向、开显示，看到屏幕亮起，这条命令链就算走通了。",
+      "on_screen": [
+        "多两根 DC 和 RST",
+        "按序发五条命令",
+        "屏幕亮即通过"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#硬件与接线",
+        "docs/08-SPI总线.md#8-st7789-常用初始化命令"
+      ],
+      "memory_anchor": "屏幕亮即通过",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch08-s27",
+      "title": "回忆：模式与边沿",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch08-s05",
+        "ch08-s06"
+      ],
+      "narration": "合上书回忆三个问题：模式 0 的空闲时钟是高还是低？它在第几个边沿采样？主机输出和主机输入能不能接反？答案是空闲为低、第一个上升沿采样、进出两根线绝不能对调。三句背下来再接线。",
+      "on_screen": [
+        "模式 0 空闲为低",
+        "第一沿采样",
+        "进出不能对调"
+      ],
+      "visual_source": "animations/spi-transfer.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#2-cpolcpha-四种模式",
+        "docs/08-SPI总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "空闲低第一沿",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch08-s28",
+      "title": "回忆：上电顺序",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch08-s20",
+        "ch08-s26"
+      ],
+      "narration": "回忆上电顺序：先开 SPI1 和 GPIOA 时钟，配好复用引脚和推挽片选，CS 先拉高；再按模式 0、分频 8 初始化主机；对器件先复位再发初始化命令，每条事务拉低开始、拉高结束。顺序对了再读写。",
+      "on_screen": [
+        "先时钟后引脚",
+        "CS 先拉高",
+        "拉低开始拉高结束"
+      ],
+      "visual_source": "illustrations/ch08-handdraw.svg",
+      "fact_source": [
+        "docs/08-SPI总线.md#代码实现",
+        "docs/08-SPI总线.md#动手实验"
+      ],
+      "memory_anchor": "先时钟后引脚",
+      "evidence_type": "recall"
+    }
+  ]
+}

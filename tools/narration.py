@@ -728,6 +728,41 @@ SHORT_VISUALS = {
         "animations/memory-map.svg", "animations/boot-sequence.svg",
         "diagrams/single-build-contract.svg", "diagrams/layers-hal-ll-reg.svg",
     ],
+    "06": [
+        "diagrams/sample-06-uart-frame.svg", "animations/uart-frame.svg",
+        "animations/uart-idle-dma.svg", "illustrations/ch06-handdraw.svg",
+        "illustrations/ch06-mid-handdraw.svg", "diagrams/peripheral-bus.svg",
+        "diagrams/layers-hal-ll-reg.svg", "animations/clock-tree.svg",
+        "animations/toolchain-flow.svg", "diagrams/sample-02-clock-tree.svg",
+    ],
+    "07": [
+        "diagrams/sample-07-i2c-addr.svg", "animations/i2c-transaction.svg",
+        "illustrations/ch07-handdraw.svg", "illustrations/ch07-mid-handdraw.svg",
+        "diagrams/classic-03-open-drain.svg", "diagrams/peripheral-bus.svg",
+        "diagrams/layers-hal-ll-reg.svg", "diagrams/instrument-evidence-ladder.svg",
+        "diagrams/manual-choice-map.svg", "animations/boot-sequence.svg",
+    ],
+    "08": [
+        "diagrams/sample-08-spi-jedec.svg", "animations/spi-transfer.svg",
+        "illustrations/ch08-handdraw.svg", "illustrations/ch08-mid-handdraw.svg",
+        "diagrams/peripheral-bus.svg", "diagrams/layers-hal-ll-reg.svg",
+        "animations/clock-tree.svg", "diagrams/sample-02-clock-tree.svg",
+        "animations/toolchain-flow.svg", "diagrams/instrument-evidence-ladder.svg",
+    ],
+    "09": [
+        "diagrams/sample-09-adc-sar.svg", "animations/adc-sar.svg",
+        "illustrations/ch09-handdraw.svg", "illustrations/ch09-mid-handdraw.svg",
+        "diagrams/layers-hal-ll-reg.svg", "diagrams/instrument-evidence-ladder.svg",
+        "diagrams/peripheral-bus.svg", "animations/clock-tree.svg",
+        "diagrams/sample-05-pwm-1khz.svg", "animations/memory-map.svg",
+    ],
+    "10": [
+        "diagrams/sample-10-dma-cndtr.svg", "diagrams/dma-buffer-ownership.svg",
+        "animations/dma-circular.svg", "illustrations/ch10-handdraw.svg",
+        "illustrations/ch10-mid-handdraw.svg", "diagrams/peripheral-bus.svg",
+        "diagrams/layers-hal-ll-reg.svg", "animations/memory-map.svg",
+        "diagrams/instrument-evidence-ladder.svg", "animations/uart-idle-dma.svg",
+    ],
 }
 for _chapter in CHAPTERS:
     for _index, _visual in enumerate(SHORT_VISUALS.get(_chapter["id"], [])):
