@@ -1,0 +1,881 @@
+{
+  "id": "09",
+  "slug": "adc-long",
+  "title": "ADC 与 DAC：从 SAR 转换到可复现的采样证据",
+  "short_source": "tools/narration.py#CHAPTERS[9]",
+  "segments": [
+    {
+      "scene_id": "ch09-s01",
+      "title": "读数跳变先别怪代码",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "万用表量到一点六五伏，ADC 读数却不停跳变。先别急着怀疑代码：参考电压、采样时间、通道配置和 DMA 数组，任何一处出错都会让码值说谎。这章把整条采样链拆开对账。",
+      "on_screen": [
+        "表显 1.65 V",
+        "码值却在跳",
+        "整条链都要查"
+      ],
+      "visual_source": "illustrations/ch09-handdraw.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#原理与适用范围"
+      ],
+      "memory_anchor": "先对账再下结论",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 21.022,
+      "subtitle_ref": "ch09.srt#01",
+      "head": "读数跳变先别怪代码",
+      "lines": [
+        "表显 1.65 V",
+        "码值却在跳",
+        "整条链都要查"
+      ],
+      "say": "万用表量到一点六五伏，ADC 读数却不停跳变。先别急着怀疑代码：参考电压、采样时间、通道配置和 DMA 数组，任何一处出错都会让码值说谎。这章把整条采样链拆开对账。",
+      "svg": "illustrations/ch09-handdraw.svg"
+    },
+    {
+      "scene_id": "ch09-s02",
+      "title": "十二位切成 4096 格",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s01"
+      ],
+      "narration": "F1 的 ADC 是十二位，把零到参考电压切成四千零九十六格。参考三点三伏时一格约零点八零六毫伏。换算用码值除以四千零九十六再乘参考电压，用四千零九十五口算会差一个最小步长。",
+      "on_screen": [
+        "12 位 4096 格",
+        "一格约 0.8 mV",
+        "分母用 4096"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "十二位除以 4096",
+      "evidence_type": "calculation",
+      "start": 21.022,
+      "duration": 22.246,
+      "subtitle_ref": "ch09.srt#02",
+      "head": "十二位切成 4096 格",
+      "lines": [
+        "12 位 4096 格",
+        "一格约 0.8 mV",
+        "分母用 4096"
+      ],
+      "say": "F1 的 ADC 是十二位，把零到参考电压切成四千零九十六格。参考三点三伏时一格约零点八零六毫伏。换算用码值除以四千零九十六再乘参考电压，用四千零九十五口算会差一个最小步长。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s03",
+      "title": "量化误差天生半格",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s02"
+      ],
+      "narration": "ADC 像一把只有刻度没有游标的尺子，被测电压落在两条刻线之间时只能报最近那条，天生带最多半格的量化误差。尺子长度就是参考电压，VDDA 一晃，所有读数跟着晃。",
+      "on_screen": [
+        "只报最近刻线",
+        "误差 ±0.5 LSB",
+        "Vref 是尺子长度"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "量化误差半格",
+      "evidence_type": "concept",
+      "start": 43.268,
+      "duration": 19.547,
+      "subtitle_ref": "ch09.srt#03",
+      "head": "量化误差天生半格",
+      "lines": [
+        "只报最近刻线",
+        "误差 ±0.5 LSB",
+        "Vref 是尺子长度"
+      ],
+      "say": "ADC 像一把只有刻度没有游标的尺子，被测电压落在两条刻线之间时只能报最近那条，天生带最多半格的量化误差。尺子长度就是参考电压，VDDA 一晃，所有读数跟着晃。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s04",
+      "title": "先拍快照再转换",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s03"
+      ],
+      "narration": "逐次逼近之前先拍快照：采样开关闭合，输入经源阻抗给内部采样电容充电；开关断开，电容电压被冻结，转换期间保持不变。这张照片拍糊了，后面比较再准也没用。",
+      "on_screen": [
+        "开关闭合充电",
+        "断开即冻结",
+        "转换期间不变"
+      ],
+      "visual_source": "animations/adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "采样保持是快照",
+      "evidence_type": "animation",
+      "start": 62.815,
+      "duration": 19.737,
+      "subtitle_ref": "ch09.srt#04",
+      "head": "先拍快照再转换",
+      "lines": [
+        "开关闭合充电",
+        "断开即冻结",
+        "转换期间不变"
+      ],
+      "say": "逐次逼近之前先拍快照：采样开关闭合，输入经源阻抗给内部采样电容充电；开关断开，电容电压被冻结，转换期间保持不变。这张照片拍糊了，后面比较再准也没用。",
+      "svg": "animations/adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s05",
+      "title": "从高位猜十二次",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s04"
+      ],
+      "narration": "保持之后开始猜数字：先问比二分之一参考大吗，大就记一留下这位，小就记零清掉，再试四分之一。从最高位到最低位共猜十二次，十二位结果就是逐位逼出来的。",
+      "on_screen": [
+        "先试 Vref/2",
+        "大了留 1 小了清 0",
+        "12 位猜 12 次"
+      ],
+      "visual_source": "animations/adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "二分逼近十二次",
+      "evidence_type": "animation",
+      "start": 82.553,
+      "duration": 18.737,
+      "subtitle_ref": "ch09.srt#05",
+      "head": "从高位猜十二次",
+      "lines": [
+        "先试 Vref/2",
+        "大了留 1 小了清 0",
+        "12 位猜 12 次"
+      ],
+      "say": "保持之后开始猜数字：先问比二分之一参考大吗，大就记一留下这位，小就记零清掉，再试四分之一。从最高位到最低位共猜十二次，十二位结果就是逐位逼出来的。",
+      "svg": "animations/adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s06",
+      "title": "采样再加 12.5 周期",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s05"
+      ],
+      "narration": "一次转换的时间是采样周期再加十二点五个 ADC 时钟。本章按十二兆赫算：最短一点五周期是一百二十五纳秒，最长二百三十九点五加十二点五共二百五十二周期，约二十一微秒。",
+      "on_screen": [
+        "采样加 12.5",
+        "最短 125 ns",
+        "最长 21 µs"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#时序与状态"
+      ],
+      "memory_anchor": "转换等于采样加比较",
+      "evidence_type": "calculation",
+      "start": 101.29,
+      "duration": 19.667,
+      "subtitle_ref": "ch09.srt#06",
+      "head": "采样再加 12.5 周期",
+      "lines": [
+        "采样加 12.5",
+        "最短 125 ns",
+        "最长 21 µs"
+      ],
+      "say": "一次转换的时间是采样周期再加十二点五个 ADC 时钟。本章按十二兆赫算：最短一点五周期是一百二十五纳秒，最长二百三十九点五加十二点五共二百五十二周期，约二十一微秒。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s07",
+      "title": "源阻抗决定采样档",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s06"
+      ],
+      "narration": "采样开关和信号源构成 RC 充电回路，必须在采样时间内充到半个最小步长以内。源阻抗约十千欧选十三点五周期，约一百千欧选二百三十九点五周期；超过一兆欧，只能先加电压跟随器。",
+      "on_screen": [
+        "RC 要充到半格内",
+        "10 kΩ 选 13.5",
+        "100k 选 239.5"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "阻抗越大采样越长",
+      "evidence_type": "diagram",
+      "start": 120.957,
+      "duration": 21.286,
+      "subtitle_ref": "ch09.srt#07",
+      "head": "源阻抗决定采样档",
+      "lines": [
+        "RC 要充到半格内",
+        "10 kΩ 选 13.5",
+        "100k 选 239.5"
+      ],
+      "say": "采样开关和信号源构成 RC 充电回路，必须在采样时间内充到半个最小步长以内。源阻抗约十千欧选十三点五周期，约一百千欧选二百三十九点五周期；超过一兆欧，只能先加电压跟随器。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s08",
+      "title": "十二兆赫从分频来",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s07"
+      ],
+      "narration": "ADC 时钟由 PCLK2 分频得到。七十二兆赫主频下选六分频得到十二兆赫；选四分频会得到十八兆赫，超过十四兆赫上限，各档采样时间全部失效。手册里一微秒的例子是十四兆赫下算的。",
+      "on_screen": [
+        "÷6 得 12 MHz",
+        "上限 14 MHz",
+        "÷4 得到 18 MHz"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#原理与适用范围"
+      ],
+      "memory_anchor": "72 兆只能除六",
+      "evidence_type": "concept",
+      "start": 142.244,
+      "duration": 22.126,
+      "subtitle_ref": "ch09.srt#08",
+      "head": "十二兆赫从分频来",
+      "lines": [
+        "÷6 得 12 MHz",
+        "上限 14 MHz",
+        "÷4 得到 18 MHz"
+      ],
+      "say": "ADC 时钟由 PCLK2 分频得到。七十二兆赫主频下选六分频得到十二兆赫；选四分频会得到十八兆赫，超过十四兆赫上限，各档采样时间全部失效。手册里一微秒的例子是十四兆赫下算的。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch09-s09",
+      "title": "四种模式何时停手",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s08"
+      ],
+      "narration": "四种模式的区别是 ADC 什么时候停手。单次是叫一声测一次，连续是测完马上再测，扫描是按清单依次测多个通道，间断是每次触发只往下测一组。项目里最常用扫描加连续。",
+      "on_screen": [
+        "单次测一次",
+        "连续不停",
+        "扫描按清单"
+      ],
+      "visual_source": "illustrations/ch09-mid-handdraw.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "区别在何时停手",
+      "evidence_type": "concept",
+      "start": 164.37,
+      "duration": 21.063,
+      "subtitle_ref": "ch09.srt#09",
+      "head": "四种模式何时停手",
+      "lines": [
+        "单次测一次",
+        "连续不停",
+        "扫描按清单"
+      ],
+      "say": "四种模式的区别是 ADC 什么时候停手。单次是叫一声测一次，连续是测完马上再测，扫描是按清单依次测多个通道，间断是每次触发只往下测一组。项目里最常用扫描加连续。",
+      "svg": "illustrations/ch09-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch09-s10",
+      "title": "规则组十六个序列",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s09"
+      ],
+      "narration": "规则组最多排十六个转换序列，扫描模式按这张清单依次转。序列顺序决定结果到达数据寄存器的先后，和 DMA 数组里的位置一一对应。清单写错，后面每个数都张冠李戴。",
+      "on_screen": [
+        "最多 16 个序列",
+        "顺序决定位置",
+        "写错全错位"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "清单顺序要对账",
+      "evidence_type": "diagram",
+      "start": 185.433,
+      "duration": 19.637,
+      "subtitle_ref": "ch09.srt#10",
+      "head": "规则组十六个序列",
+      "lines": [
+        "最多 16 个序列",
+        "顺序决定位置",
+        "写错全错位"
+      ],
+      "say": "规则组最多排十六个转换序列，扫描模式按这张清单依次转。序列顺序决定结果到达数据寄存器的先后，和 DMA 数组里的位置一一对应。清单写错，后面每个数都张冠李戴。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s11",
+      "title": "DMA 守在 DR 门口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s10"
+      ],
+      "narration": "多通道连续采样时，每个结果都放进同一个数据寄存器，下一个马上盖掉它。让 DMA 守在门口逐格搬进数组，循环模式自动回卷；半满和全满回调里各处理一半，CPU 不参与搬运。",
+      "on_screen": [
+        "DR 会被覆盖",
+        "DMA 循环搬运",
+        "半满全满各处理"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "DMA 循环搬码值",
+      "evidence_type": "diagram",
+      "start": 205.07,
+      "duration": 20.867,
+      "subtitle_ref": "ch09.srt#11",
+      "head": "DMA 守在 DR 门口",
+      "lines": [
+        "DR 会被覆盖",
+        "DMA 循环搬运",
+        "半满全满各处理"
+      ],
+      "say": "多通道连续采样时，每个结果都放进同一个数据寄存器，下一个马上盖掉它。让 DMA 守在门口逐格搬进数组，循环模式自动回卷；半满和全满回调里各处理一半，CPU 不参与搬运。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch09-s12",
+      "title": "对齐方式要一致",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s11"
+      ],
+      "narration": "转换结果默认右对齐，低十二位有效；也可以左对齐，高十二位有效，方便十六位整型直接比较。对齐方式要和读数的代码一致，否则同一个码值会被解释成相差十六倍的两个电压。",
+      "on_screen": [
+        "默认右对齐",
+        "左对齐高 12 位",
+        "代码要跟着对齐"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "对齐错了差十六倍",
+      "evidence_type": "concept",
+      "start": 225.937,
+      "duration": 20.387,
+      "subtitle_ref": "ch09.srt#12",
+      "head": "对齐方式要一致",
+      "lines": [
+        "默认右对齐",
+        "左对齐高 12 位",
+        "代码要跟着对齐"
+      ],
+      "say": "转换结果默认右对齐，低十二位有效；也可以左对齐，高十二位有效，方便十六位整型直接比较。对齐方式要和读数的代码一致，否则同一个码值会被解释成相差十六倍的两个电压。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s13",
+      "title": "温度通道要慢慢采",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s12"
+      ],
+      "narration": "内部温度传感器接 ADC1 的输入十六，先置 TSVREFE 才接通。它要求采样至少十七点一微秒，十二兆赫下是二百零五个周期，所以必须选二百三十九点五周期档，七十一点五周期不够。",
+      "on_screen": [
+        "通道 16 测温度",
+        "先置 TSVREFE",
+        "至少 17.1 µs"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#原理与适用范围"
+      ],
+      "memory_anchor": "温度要 239.5 档",
+      "evidence_type": "concept",
+      "start": 246.324,
+      "duration": 20.137,
+      "subtitle_ref": "ch09.srt#13",
+      "head": "温度通道要慢慢采",
+      "lines": [
+        "通道 16 测温度",
+        "先置 TSVREFE",
+        "至少 17.1 µs"
+      ],
+      "say": "内部温度传感器接 ADC1 的输入十六，先置 TSVREFE 才接通。它要求采样至少十七点一微秒，十二兆赫下是二百零五个周期，所以必须选二百三十九点五周期档，七十一点五周期不够。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s14",
+      "title": "用 1.2 V 反量尺子",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s13"
+      ],
+      "narration": "内部参考 Vrefint 接输入十七，是约一点二伏的固定电压，用它可以反过来量尺子：VDDA 等于一点二伏乘四千零九十六再除以它的读数。算出的真实 VDDA 再拿去修正别的通道。",
+      "on_screen": [
+        "通道 17 是基准",
+        "VDDA 反推公式",
+        "先量尺再量物"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "先量尺子再量物",
+      "evidence_type": "calculation",
+      "start": 266.461,
+      "duration": 19.337,
+      "subtitle_ref": "ch09.srt#14",
+      "head": "用 1.2 V 反量尺子",
+      "lines": [
+        "通道 17 是基准",
+        "VDDA 反推公式",
+        "先量尺再量物"
+      ],
+      "say": "内部参考 Vrefint 接输入十七，是约一点二伏的固定电压，用它可以反过来量尺子：VDDA 等于一点二伏乘四千零九十六再除以它的读数。算出的真实 VDDA 再拿去修正别的通道。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch09-s15",
+      "title": "Start 之前先校准",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s14"
+      ],
+      "narration": "F1 上电后必须做一次校准：ADON 置一之后至少等两个 ADC 时钟，再置 CAL 位。HAL 里对应 HAL_ADCEx_Calibration_Start，放在启动转换之前。F4 没有这一步。",
+      "on_screen": [
+        "ADON 后等两拍",
+        "再置 CAL 位",
+        "放在 Start 之前"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#原理与适用范围"
+      ],
+      "memory_anchor": "校准放在启动前",
+      "evidence_type": "code",
+      "start": 285.798,
+      "duration": 20.853,
+      "subtitle_ref": "ch09.srt#15",
+      "head": "Start 之前先校准",
+      "lines": [
+        "ADON 后等两拍",
+        "再置 CAL 位",
+        "放在 Start 之前"
+      ],
+      "say": "F1 上电后必须做一次校准：ADON 置一之后至少等两个 ADC 时钟，再置 CAL 位。HAL 里对应 HAL_ADCEx_Calibration_Start，放在启动转换之前。F4 没有这一步。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch09-s16",
+      "title": "看门狗越界才叫人",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s15"
+      ],
+      "narration": "模拟看门狗负责越界才打断 CPU：给规则通道设高低两个阈值，转换结果一出窗口就进中断，正常波动时完全不打扰。HAL 里用 HAL_ADC_AnalogWDGConfig 配置。",
+      "on_screen": [
+        "设高低两阈值",
+        "出窗才进中断",
+        "窗内不打扰"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "越界才打断",
+      "evidence_type": "code",
+      "start": 306.651,
+      "duration": 20.132,
+      "subtitle_ref": "ch09.srt#16",
+      "head": "看门狗越界才叫人",
+      "lines": [
+        "设高低两阈值",
+        "出窗才进中断",
+        "窗内不打扰"
+      ],
+      "say": "模拟看门狗负责越界才打断 CPU：给规则通道设高低两个阈值，转换结果一出窗口就进中断，正常波动时完全不打扰。HAL 里用 HAL_ADC_AnalogWDGConfig 配置。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s17",
+      "title": "注入组可以插队",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s16"
+      ],
+      "narration": "注入组最多四个通道，可以打断正在跑的规则组，插进去先转，适合电机电流这类紧急采样。规则组的 DMA 缓冲不要和注入结果混在同一个数组里，分开存才不乱。",
+      "on_screen": [
+        "最多 4 通道",
+        "可打断规则组",
+        "结果分开存"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "注入组是插队",
+      "evidence_type": "concept",
+      "start": 326.783,
+      "duration": 18.678,
+      "subtitle_ref": "ch09.srt#17",
+      "head": "注入组可以插队",
+      "lines": [
+        "最多 4 通道",
+        "可打断规则组",
+        "结果分开存"
+      ],
+      "say": "注入组最多四个通道，可以打断正在跑的规则组，插进去先转，适合电机电流这类紧急采样。规则组的 DMA 缓冲不要和注入结果混在同一个数组里，分开存才不乱。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s18",
+      "title": "DAC 给数出电压",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s17"
+      ],
+      "narration": "DAC 是 ADC 反过来：给一个零到四千零九十五的数，引脚上输出对应电压。输出缓冲器打开能带动更重的负载，但走不到零和 VDDA 两头，还带约十毫伏失调。注意 F103C8 没有 DAC。",
+      "on_screen": [
+        "给数出电压",
+        "缓冲能带载",
+        "但到不了两轨"
+      ],
+      "visual_source": "illustrations/ch09-mid-handdraw.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "DAC 是反向 ADC",
+      "evidence_type": "concept",
+      "start": 345.461,
+      "duration": 22.307,
+      "subtitle_ref": "ch09.srt#18",
+      "head": "DAC 给数出电压",
+      "lines": [
+        "给数出电压",
+        "缓冲能带载",
+        "但到不了两轨"
+      ],
+      "say": "DAC 是 ADC 反过来：给一个零到四千零九十五的数，引脚上输出对应电压。输出缓冲器打开能带动更重的负载，但走不到零和 VDDA 两头，还带约十毫伏失调。注意 F103C8 没有 DAC。",
+      "svg": "illustrations/ch09-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch09-s19",
+      "title": "噪声与任意波形",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch09-s18"
+      ],
+      "narration": "DAC 的噪声来自参考纹波、数字耦合、缓冲器和量化本身，精密场合要加外部低通或运放缓冲。想输出正弦或任意波形，让定时器按节拍触发，DMA 循环把查找表送过去，触发频率决定输出频率。",
+      "on_screen": [
+        "噪声有四个源",
+        "精密加外部滤波",
+        "定时器加 DMA 出波形"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "节拍触发加查表",
+      "evidence_type": "concept",
+      "start": 367.768,
+      "duration": 23.157,
+      "subtitle_ref": "ch09.srt#19",
+      "head": "噪声与任意波形",
+      "lines": [
+        "噪声有四个源",
+        "精密加外部滤波",
+        "定时器加 DMA 出波形"
+      ],
+      "say": "DAC 的噪声来自参考纹波、数字耦合、缓冲器和量化本身，精密场合要加外部低通或运放缓冲。想输出正弦或任意波形，让定时器按节拍触发，DMA 循环把查找表送过去，触发频率决定输出频率。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s20",
+      "title": "读数停在上一次",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch09-s07"
+      ],
+      "narration": "读数总停在上一次采过的电压附近，多半是采样时间太短，电容没充满，高阻信号源最常见。按十二兆赫把采样加长，源阻抗高时直接选二百三十九点五周期档，还不行就加跟随器。",
+      "on_screen": [
+        "停在上次电压",
+        "电容没充满",
+        "加长采样档"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#常见坑与出处"
+      ],
+      "memory_anchor": "停在上次是充不满",
+      "evidence_type": "failure",
+      "start": 390.924,
+      "duration": 21.276,
+      "subtitle_ref": "ch09.srt#20",
+      "head": "读数停在上一次",
+      "lines": [
+        "停在上次电压",
+        "电容没充满",
+        "加长采样档"
+      ],
+      "say": "读数总停在上一次采过的电压附近，多半是采样时间太短，电容没充满，高阻信号源最常见。按十二兆赫把采样加长，源阻抗高时直接选二百三十九点五周期档，还不行就加跟随器。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s21",
+      "title": "参考一晃全都错",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch09-s03"
+      ],
+      "narration": "参考电压不是想当然的三点三伏，它直接取自 VDDA 引脚。VDDA 波动多少，所有读数就按比例错多少。精密测量要么外接基准，要么先测内部参考反推真实 VDDA，再谈软件平均。",
+      "on_screen": [
+        "Vref 就是 VDDA",
+        "晃多少错多少",
+        "先反推再修正"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#常见坑与出处"
+      ],
+      "memory_anchor": "参考不稳全盘错",
+      "evidence_type": "failure",
+      "start": 412.201,
+      "duration": 21.672,
+      "subtitle_ref": "ch09.srt#21",
+      "head": "参考一晃全都错",
+      "lines": [
+        "Vref 就是 VDDA",
+        "晃多少错多少",
+        "先反推再修正"
+      ],
+      "say": "参考电压不是想当然的三点三伏，它直接取自 VDDA 引脚。VDDA 波动多少，所有读数就按比例错多少。精密测量要么外接基准，要么先测内部参考反推真实 VDDA，再谈软件平均。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch09-s22",
+      "title": "引脚和型号别抄错",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch09-s18"
+      ],
+      "narration": "PA0 点过灯还是推挽输出，拿它采样读到的是驱动电平；在 C8 上调 HAL_DAC_Start，编译能过，第十四脚也不会出现模拟电压，这颗料没有 DAC。要模拟电压就用 PWM 加 RC 滤波。",
+      "on_screen": [
+        "先改模拟输入",
+        "C8 没有 DAC",
+        "PWM 加 RC 替代"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#常见坑与出处"
+      ],
+      "memory_anchor": "抄错芯片全落空",
+      "evidence_type": "failure",
+      "start": 433.873,
+      "duration": 22.517,
+      "subtitle_ref": "ch09.srt#22",
+      "head": "引脚和型号别抄错",
+      "lines": [
+        "先改模拟输入",
+        "C8 没有 DAC",
+        "PWM 加 RC 替代"
+      ],
+      "say": "PA0 点过灯还是推挽输出，拿它采样读到的是驱动电平；在 C8 上调 HAL_DAC_Start，编译能过，第十四脚也不会出现模拟电压，这颗料没有 DAC。要模拟电压就用 PWM 加 RC 滤波。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch09-s23",
+      "title": "首批读数整体偏",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch09-s15"
+      ],
+      "narration": "上电后第一批读数整体偏移，多半是跳过了校准。F1 要求 ADON 之后等够时钟再置 CAL，校准要放在每次启动转换之前。保存校准前后的读数对比，偏移是不是它干的一目了然。",
+      "on_screen": [
+        "整批偏移",
+        "多半没校准",
+        "前后对比留证"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#常见坑与出处"
+      ],
+      "memory_anchor": "整批偏移查校准",
+      "evidence_type": "failure",
+      "start": 456.389,
+      "duration": 20.272,
+      "subtitle_ref": "ch09.srt#23",
+      "head": "首批读数整体偏",
+      "lines": [
+        "整批偏移",
+        "多半没校准",
+        "前后对比留证"
+      ],
+      "say": "上电后第一批读数整体偏移，多半是跳过了校准。F1 要求 ADON 之后等够时钟再置 CAL，校准要放在每次启动转换之前。保存校准前后的读数对比，偏移是不是它干的一目了然。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch09-s24",
+      "title": "缓冲关掉带不动",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch09-s18"
+      ],
+      "narration": "缓冲器关闭时 DAC 输出阻抗约十五千欧，接个几千欧的负载电压立刻塌下来；打开缓冲能带载，却又到不了零和电源轨。先想清楚负载多重、要不要满摆幅，再决定这个开关。",
+      "on_screen": [
+        "关缓冲高输出阻",
+        "带载电压塌",
+        "开缓冲不到轨"
+      ],
+      "visual_source": "illustrations/ch09-mid-handdraw.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#核心原理"
+      ],
+      "memory_anchor": "带载先想缓冲器",
+      "evidence_type": "failure",
+      "start": 476.662,
+      "duration": 20.562,
+      "subtitle_ref": "ch09.srt#24",
+      "head": "缓冲关掉带不动",
+      "lines": [
+        "关缓冲高输出阻",
+        "带载电压塌",
+        "开缓冲不到轨"
+      ],
+      "say": "缓冲器关闭时 DAC 输出阻抗约十五千欧，接个几千欧的负载电压立刻塌下来；打开缓冲能带载，却又到不了零和电源轨。先想清楚负载多重、要不要满摆幅，再决定这个开关。",
+      "svg": "illustrations/ch09-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch09-s25",
+      "title": "三点对账电位器",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch09-s20",
+        "ch09-s21"
+      ],
+      "narration": "PA0 接十千欧电位器，两端接地和参考，中间抽头进 ADC。低中高各取一点，同时记下万用表电压、ADC 码值和按实测 VDDA 换算的电压，三列对得上，采样链才算可信。",
+      "on_screen": [
+        "低中高取三点",
+        "表压码值换算",
+        "三列互相对账"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#动手实验"
+      ],
+      "memory_anchor": "三点对账才可信",
+      "evidence_type": "experiment",
+      "start": 497.223,
+      "duration": 20.628,
+      "subtitle_ref": "ch09.srt#25",
+      "head": "三点对账电位器",
+      "lines": [
+        "低中高取三点",
+        "表压码值换算",
+        "三列互相对账"
+      ],
+      "say": "PA0 接十千欧电位器，两端接地和参考，中间抽头进 ADC。低中高各取一点，同时记下万用表电压、ADC 码值和按实测 VDDA 换算的电压，三列对得上，采样链才算可信。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch09-s26",
+      "title": "反推 VDDA 与结温",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch09-s13",
+        "ch09-s14"
+      ],
+      "narration": "读通道十七的 Vrefint，用一点二伏乘四千零九十六除以读数反推 VDDA；再读通道十六，按公式算芯片温度。温度用的是典型值不是出厂校准，只能看变化趋势，绝对值会差几度。",
+      "on_screen": [
+        "CH17 反推 VDDA",
+        "CH16 算温度",
+        "温度只看趋势"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#动手实验"
+      ],
+      "memory_anchor": "反推 VDDA 看趋势",
+      "evidence_type": "experiment",
+      "start": 517.851,
+      "duration": 20.277,
+      "subtitle_ref": "ch09.srt#26",
+      "head": "反推 VDDA 与结温",
+      "lines": [
+        "CH17 反推 VDDA",
+        "CH16 算温度",
+        "温度只看趋势"
+      ],
+      "say": "读通道十七的 Vrefint，用一点二伏乘四千零九十六除以读数反推 VDDA；再读通道十六，按公式算芯片温度。温度用的是典型值不是出厂校准，只能看变化趋势，绝对值会差几度。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch09-s27",
+      "title": "2048 是不是一半",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch09-s02",
+        "ch09-s03"
+      ],
+      "narration": "合上书自测：十二位、参考三点三伏，码值二零四八对应多少伏？正好一半，一点六五伏。为什么分母是四千零九十六不是四千零九十五？因为满量程是四千零九十六步，半量程就是二千零四十八。",
+      "on_screen": [
+        "2048 即 1.65V",
+        "分母是 4096",
+        "满量程 4096 步"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#自测"
+      ],
+      "memory_anchor": "半量程码 2048",
+      "evidence_type": "recall",
+      "start": 538.128,
+      "duration": 23.726,
+      "subtitle_ref": "ch09.srt#27",
+      "head": "2048 是不是一半",
+      "lines": [
+        "2048 即 1.65V",
+        "分母是 4096",
+        "满量程 4096 步"
+      ],
+      "say": "合上书自测：十二位、参考三点三伏，码值二零四八对应多少伏？正好一半，一点六五伏。为什么分母是四千零九十六不是四千零九十五？因为满量程是四千零九十六步，半量程就是二千零四十八。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch09-s28",
+      "title": "采样链检查顺序",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch09-s20",
+        "ch09-s22",
+        "ch09-s23"
+      ],
+      "narration": "读数出问题按顺序查：先看引脚是不是模拟输入，再看采样时间和源阻抗，再核对参考电压，最后看 DMA 数组顺序。记住口诀：采样看阻抗，换算除以四千零九十六，C8 没有 DAC。",
+      "on_screen": [
+        "先查引脚模式",
+        "再查采样与参考",
+        "口诀背三句"
+      ],
+      "visual_source": "illustrations/ch09-handdraw.svg",
+      "fact_source": [
+        "docs/09-ADC与DAC.md#自测"
+      ],
+      "memory_anchor": "口诀背这三句",
+      "evidence_type": "recall",
+      "start": 561.855,
+      "duration": 21.717,
+      "subtitle_ref": "ch09.srt#28",
+      "head": "采样链检查顺序",
+      "lines": [
+        "先查引脚模式",
+        "再查采样与参考",
+        "口诀背三句"
+      ],
+      "say": "读数出问题按顺序查：先看引脚是不是模拟输入，再看采样时间和源阻抗，再核对参考电压，最后看 DMA 数组顺序。记住口诀：采样看阻抗，换算除以四千零九十六，C8 没有 DAC。",
+      "svg": "illustrations/ch09-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 626.985,
+  "actual_duration": 583.572
+}

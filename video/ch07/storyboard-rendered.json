@@ -1,0 +1,908 @@
+{
+  "id": "07",
+  "slug": "i2c-long",
+  "title": "I2C 总线：从开漏与时序到多从机寻址",
+  "short_source": "tools/narration.py#CHAPTERS[7]",
+  "segments": [
+    {
+      "scene_id": "ch07-s01",
+      "title": "OLED 不亮先抓两处",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "OLED 不亮、HAL 超时的时候，先别急着换模块。抓 START 之后的第一个字节和第 9 个时钟：线上是 0x78 却没有 ACK，查器件地址、供电和接线；线上只有 0x3C，问题回到 HAL 的地址参数。",
+      "on_screen": [
+        "第一字节是什么",
+        "第九钟有无 ACK",
+        "先波形后换件"
+      ],
+      "visual_source": "illustrations/ch07-handdraw.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "先抓首字节与第九钟",
+      "evidence_type": "diagnosis",
+      "start": 0.0,
+      "duration": 22.542,
+      "subtitle_ref": "ch07.srt#01",
+      "head": "OLED 不亮先抓两处",
+      "lines": [
+        "第一字节是什么",
+        "第九钟有无 ACK",
+        "先波形后换件"
+      ],
+      "say": "OLED 不亮、HAL 超时的时候，先别急着换模块。抓 START 之后的第一个字节和第 9 个时钟：线上是 0x78 却没有 ACK，查器件地址、供电和接线；线上只有 0x3C，问题回到 HAL 的地址参数。",
+      "svg": "illustrations/ch07-handdraw.svg"
+    },
+    {
+      "scene_id": "ch07-s02",
+      "title": "开漏：只会拉低",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s01"
+      ],
+      "narration": "I2C 只有时钟和数据两根线，都是开漏：芯片只会把线拉低，高电平全靠上拉电阻。配成复用开漏后，接 VDD 的那只 PMOS 一直关着，只剩 NMOS 能拉低，所以外面必须各接一只上拉。",
+      "on_screen": [
+        "只会拉低",
+        "高电平靠上拉",
+        "两脚各接上拉"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "高电平靠上拉",
+      "evidence_type": "concept",
+      "start": 22.542,
+      "duration": 21.767,
+      "subtitle_ref": "ch07.srt#02",
+      "head": "开漏：只会拉低",
+      "lines": [
+        "只会拉低",
+        "高电平靠上拉",
+        "两脚各接上拉"
+      ],
+      "say": "I2C 只有时钟和数据两根线，都是开漏：芯片只会把线拉低，高电平全靠上拉电阻。配成复用开漏后，接 VDD 的那只 PMOS 一直关着，只剩 NMOS 能拉低，所以外面必须各接一只上拉。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s03",
+      "title": "线与：谁按谁是低",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s02"
+      ],
+      "narration": "挂在同一条线上的器件，谁都不按，线就是高；任何一个按下去，线就是低，这叫线与。所以 I2C 不怕两个器件打架：没人会往线上推高电平，最多是两个人一起按。",
+      "on_screen": [
+        "谁按谁是低",
+        "没人推高电平",
+        "放手慢慢回升"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "谁都不按才是高",
+      "evidence_type": "concept",
+      "start": 44.309,
+      "duration": 19.777,
+      "subtitle_ref": "ch07.srt#03",
+      "head": "线与：谁按谁是低",
+      "lines": [
+        "谁按谁是低",
+        "没人推高电平",
+        "放手慢慢回升"
+      ],
+      "say": "挂在同一条线上的器件，谁都不按，线就是高；任何一个按下去，线就是低，这叫线与。所以 I2C 不怕两个器件打架：没人会往线上推高电平，最多是两个人一起按。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s04",
+      "title": "START 与 STOP",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s03"
+      ],
+      "narration": "规矩只有一句：SCL 为高的时候 SDA 不许乱动，动了就有特殊含义。SCL 高时 SDA 从高掉到低是 START，从低跳回高是 STOP。一帧传输由 START 开场、STOP 收尾，中间才是地址和数据。",
+      "on_screen": [
+        "SCL 高时 SDA 落",
+        "SCL 高时 SDA 升",
+        "一落一起定起停"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#时序与状态"
+      ],
+      "memory_anchor": "SCL 高时 SDA 不动",
+      "evidence_type": "animation",
+      "start": 64.086,
+      "duration": 21.762,
+      "subtitle_ref": "ch07.srt#04",
+      "head": "START 与 STOP",
+      "lines": [
+        "SCL 高时 SDA 落",
+        "SCL 高时 SDA 升",
+        "一落一起定起停"
+      ],
+      "say": "规矩只有一句：SCL 为高的时候 SDA 不许乱动，动了就有特殊含义。SCL 高时 SDA 从高掉到低是 START，从低跳回高是 STOP。一帧传输由 START 开场、STOP 收尾，中间才是地址和数据。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s05",
+      "title": "数据位与高位先出",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s04"
+      ],
+      "narration": "普通数据位只在 SCL 低的时候允许变化，SCL 拉高期间必须保持稳定，每一位配一个时钟，而且 I2C 是高位先出。接收方在 SCL 为高时采样，主机要在拉高之前把位放好。",
+      "on_screen": [
+        "SCL 高时不动",
+        "一位一个时钟",
+        "高位先出"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#自测"
+      ],
+      "memory_anchor": "高位先出",
+      "evidence_type": "animation",
+      "start": 85.848,
+      "duration": 20.367,
+      "subtitle_ref": "ch07.srt#05",
+      "head": "数据位与高位先出",
+      "lines": [
+        "SCL 高时不动",
+        "一位一个时钟",
+        "高位先出"
+      ],
+      "say": "普通数据位只在 SCL 低的时候允许变化，SCL 拉高期间必须保持稳定，每一位配一个时钟，而且 I2C 是高位先出。接收方在 SCL 为高时采样，主机要在拉高之前把位放好。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s06",
+      "title": "七位地址加读写位",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s04",
+        "ch07-s05"
+      ],
+      "narration": "第一个字节是 7 位地址左移一位，最低位放读写方向：0x3C 写是 0x78、读是 0x79。HAL 的 DevAddress 要的是左移过的值，例程里的宏就是 0x3C 左移一位。",
+      "on_screen": [
+        "地址左移一位",
+        "末位放读写",
+        "0x3C→0x78 写"
+      ],
+      "visual_source": "diagrams/sample-07-i2c-addr.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "0x3C 左移成 0x78",
+      "evidence_type": "diagram",
+      "start": 106.216,
+      "duration": 18.503,
+      "subtitle_ref": "ch07.srt#06",
+      "head": "七位地址加读写位",
+      "lines": [
+        "地址左移一位",
+        "末位放读写",
+        "0x3C→0x78 写"
+      ],
+      "say": "第一个字节是 7 位地址左移一位，最低位放读写方向：0x3C 写是 0x78、读是 0x79。HAL 的 DevAddress 要的是左移过的值，例程里的宏就是 0x3C 左移一位。",
+      "svg": "diagrams/sample-07-i2c-addr.svg"
+    },
+    {
+      "scene_id": "ch07-s07",
+      "title": "第九个时钟是应答",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s06"
+      ],
+      "narration": "每发完 8 位，第 9 个时钟交给接收方：把 SDA 拉低是 ACK，保持高是 NACK，记反的人会把好设备当成坏设备。主机先报地址，地址对上的从机回 ACK，其余从机安静等下一次 START。",
+      "on_screen": [
+        "第 9 个时钟",
+        "拉低是 ACK",
+        "保持高是 NACK"
+      ],
+      "visual_source": "diagrams/sample-07-i2c-addr.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#时序与状态"
+      ],
+      "memory_anchor": "拉低才是 ACK",
+      "evidence_type": "diagram",
+      "start": 124.718,
+      "duration": 20.223,
+      "subtitle_ref": "ch07.srt#07",
+      "head": "第九个时钟是应答",
+      "lines": [
+        "第 9 个时钟",
+        "拉低是 ACK",
+        "保持高是 NACK"
+      ],
+      "say": "每发完 8 位，第 9 个时钟交给接收方：把 SDA 拉低是 ACK，保持高是 NACK，记反的人会把好设备当成坏设备。主机先报地址，地址对上的从机回 ACK，其余从机安静等下一次 START。",
+      "svg": "diagrams/sample-07-i2c-addr.svg"
+    },
+    {
+      "scene_id": "ch07-s08",
+      "title": "从机按住时钟线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s03"
+      ],
+      "narration": "从机还没准备好，就一直按住 SCL 不放，这叫时钟拉伸。主机松手后发现线没升上去，只能等。这仍是线与的功劳：低电平最长的器件，决定 SCL 的低电平时间。",
+      "on_screen": [
+        "没好就按住 SCL",
+        "主机只能等",
+        "低最长者决定"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "低电平最长者赢",
+      "evidence_type": "animation",
+      "start": 144.941,
+      "duration": 19.653,
+      "subtitle_ref": "ch07.srt#08",
+      "head": "从机按住时钟线",
+      "lines": [
+        "没好就按住 SCL",
+        "主机只能等",
+        "低最长者决定"
+      ],
+      "say": "从机还没准备好，就一直按住 SCL 不放，这叫时钟拉伸。主机松手后发现线没升上去，只能等。这仍是线与的功劳：低电平最长的器件，决定 SCL 的低电平时间。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s09",
+      "title": "线与天生的仲裁",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s03",
+        "ch07-s08"
+      ],
+      "narration": "两个主机同时发，各自一边发一边听线上的电平。想发 1 却听到 0 的那一方，知道有人比自己声音大，自己退出；另一方毫不知情地继续发完。线与让仲裁不需要任何额外信号。",
+      "on_screen": [
+        "边发边听",
+        "想发 1 听到 0",
+        "输的退出"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "想发1听到0就退",
+      "evidence_type": "concept",
+      "start": 164.594,
+      "duration": 20.257,
+      "subtitle_ref": "ch07.srt#09",
+      "head": "线与天生的仲裁",
+      "lines": [
+        "边发边听",
+        "想发 1 听到 0",
+        "输的退出"
+      ],
+      "say": "两个主机同时发，各自一边发一边听线上的电平。想发 1 却听到 0 的那一方，知道有人比自己声音大，自己退出；另一方毫不知情地继续发完。线与让仲裁不需要任何额外信号。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s10",
+      "title": "重复起始不断线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s06",
+        "ch07-s07"
+      ],
+      "narration": "读寄存器的顺序是：START、器件地址加写、寄存器地址、重复起始、器件地址加读、数据、STOP。中间是 Sr 不是 STOP。HAL_I2C_Mem_Read 替你走这条路；先停再起，有些器件会丢掉寄存器地址。",
+      "on_screen": [
+        "先写寄存器地址",
+        "Sr 不是 STOP",
+        "再切读方向"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "读寄存器用 Sr",
+      "evidence_type": "animation",
+      "start": 184.851,
+      "duration": 25.976,
+      "subtitle_ref": "ch07.srt#10",
+      "head": "重复起始不断线",
+      "lines": [
+        "先写寄存器地址",
+        "Sr 不是 STOP",
+        "再切读方向"
+      ],
+      "say": "读寄存器的顺序是：START、器件地址加写、寄存器地址、重复起始、器件地址加读、数据、STOP。中间是 Sr 不是 STOP。HAL_I2C_Mem_Read 替你走这条路；先停再起，有些器件会丢掉寄存器地址。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s11",
+      "title": "CCR 怎么定速率",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s02"
+      ],
+      "narration": "PCLK1 为 36 MHz 时，I2C_CCR 填 0x801E，CCR 字段 30，SCL 周期 2.5 微秒，即 400 kHz，偏差 ±2%。100 kHz 用 0x00B4，不支持 1 MHz。",
+      "on_screen": [
+        "0x801E→400k",
+        "0x00B4→100k",
+        "偏差 ±2%"
+      ],
+      "visual_source": "diagrams/sample-07-i2c-addr.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "0x801E 是 400k",
+      "evidence_type": "calculation",
+      "start": 210.827,
+      "duration": 21.922,
+      "subtitle_ref": "ch07.srt#11",
+      "head": "CCR 怎么定速率",
+      "lines": [
+        "0x801E→400k",
+        "0x00B4→100k",
+        "偏差 ±2%"
+      ],
+      "say": "PCLK1 为 36 MHz 时，I2C_CCR 填 0x801E，CCR 字段 30，SCL 周期 2.5 微秒，即 400 kHz，偏差 ±2%。100 kHz 用 0x00B4，不支持 1 MHz。",
+      "svg": "diagrams/sample-07-i2c-addr.svg"
+    },
+    {
+      "scene_id": "ch07-s12",
+      "title": "PB6、PB7 与上拉",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s02"
+      ],
+      "narration": "复位后 I2C1 在第 42 脚 PB6 当 SCL、第 43 脚 PB7 当 SDA，都配复用开漏，各接 4.7 kΩ 到 3.3 V。重映射后到 PB8、PB9，同一时刻只能给一个外设。",
+      "on_screen": [
+        "42 脚 SCL",
+        "43 脚 SDA",
+        "各接 4.7k 上拉"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#原理与适用范围",
+        "docs/07-I2C总线.md#硬件与接线"
+      ],
+      "memory_anchor": "42、43 脚两只 4.7k",
+      "evidence_type": "diagram",
+      "start": 232.749,
+      "duration": 19.528,
+      "subtitle_ref": "ch07.srt#12",
+      "head": "PB6、PB7 与上拉",
+      "lines": [
+        "42 脚 SCL",
+        "43 脚 SDA",
+        "各接 4.7k 上拉"
+      ],
+      "say": "复位后 I2C1 在第 42 脚 PB6 当 SCL、第 43 脚 PB7 当 SDA，都配复用开漏，各接 4.7 kΩ 到 3.3 V。重映射后到 PB8、PB9，同一时刻只能给一个外设。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch07-s13",
+      "title": "电容越大上拉越小",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s02",
+        "ch07-s11"
+      ],
+      "narration": "估算式是 Rp 上限约等于 300 纳秒除以总线电容：小于 100 pF 用 10 kΩ，100 到 200 pF 用 4.7 kΩ，200 到 400 pF 用 2.2 kΩ。太弱爬不完，太强灌电流大。",
+      "on_screen": [
+        "Rp≈300ns÷Cb",
+        "电容大阻值小",
+        "Cb 上限 400pF"
+      ],
+      "visual_source": "illustrations/ch07-mid-handdraw.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "Rp≈300ns÷Cb",
+      "evidence_type": "diagram",
+      "start": 252.277,
+      "duration": 18.768,
+      "subtitle_ref": "ch07.srt#13",
+      "head": "电容越大上拉越小",
+      "lines": [
+        "Rp≈300ns÷Cb",
+        "电容大阻值小",
+        "Cb 上限 400pF"
+      ],
+      "say": "估算式是 Rp 上限约等于 300 纳秒除以总线电容：小于 100 pF 用 10 kΩ，100 到 200 pF 用 4.7 kΩ，200 到 400 pF 用 2.2 kΩ。太弱爬不完，太强灌电流大。",
+      "svg": "illustrations/ch07-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch07-s14",
+      "title": "硬件 I2C 的寄存器",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s04",
+        "ch07-s07"
+      ],
+      "narration": "硬件 I2C 把时序交给外设：CR1 管使能和 ACK，CR2 管频率、中断和 DMA，OAR 存自身地址，DR 是数据口，SR1、SR2 报状态，CCR 定速率，TRISE 管上升时间。",
+      "on_screen": [
+        "CR1/CR2 控制",
+        "DR 走数据",
+        "SR1/SR2 看状态"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "状态看 SR1、SR2",
+      "evidence_type": "source",
+      "start": 271.045,
+      "duration": 20.113,
+      "subtitle_ref": "ch07.srt#14",
+      "head": "硬件 I2C 的寄存器",
+      "lines": [
+        "CR1/CR2 控制",
+        "DR 走数据",
+        "SR1/SR2 看状态"
+      ],
+      "say": "硬件 I2C 把时序交给外设：CR1 管使能和 ACK，CR2 管频率、中断和 DMA，OAR 存自身地址，DR 是数据口，SR1、SR2 报状态，CCR 定速率，TRISE 管上升时间。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch07-s15",
+      "title": "GPIO 翻转出时序",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s04",
+        "ch07-s05"
+      ],
+      "narration": "软件模拟用两只普通 GPIO 开漏，自己一位一位按时序翻转。起始就是先把 SDA、SCL 都放高，再在 SCL 高的时候把 SDA 拉低，随后拉低 SCL。慢一点，但每一步都在你手里，任意引脚都能用。",
+      "on_screen": [
+        "两只 GPIO",
+        "自己翻时序",
+        "慢但可控"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#代码实现"
+      ],
+      "memory_anchor": "起始：高时拉低 SDA",
+      "evidence_type": "code",
+      "start": 291.159,
+      "duration": 23.511,
+      "subtitle_ref": "ch07.srt#15",
+      "head": "GPIO 翻转出时序",
+      "lines": [
+        "两只 GPIO",
+        "自己翻时序",
+        "慢但可控"
+      ],
+      "say": "软件模拟用两只普通 GPIO 开漏，自己一位一位按时序翻转。起始就是先把 SDA、SCL 都放高，再在 SCL 高的时候把 SDA 拉低，随后拉低 SCL。慢一点，但每一步都在你手里，任意引脚都能用。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s16",
+      "title": "软件硬件怎么选",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s15",
+        "ch07-s14"
+      ],
+      "narration": "软件模拟灵活可控，但 CPU 占用高、速率低；硬件 I2C 引脚固定、CPU 省事，能跑 400 kHz。F1 的硬件 I2C 容易在从机拉住 SDA 时卡忙，不少 F1 项目宁可用软件模拟。",
+      "on_screen": [
+        "软件：灵活",
+        "硬件：省事",
+        "F1 常用软件"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "F1 常选软件模拟",
+      "evidence_type": "concept",
+      "start": 314.67,
+      "duration": 21.122,
+      "subtitle_ref": "ch07.srt#16",
+      "head": "软件硬件怎么选",
+      "lines": [
+        "软件：灵活",
+        "硬件：省事",
+        "F1 常用软件"
+      ],
+      "say": "软件模拟灵活可控，但 CPU 占用高、速率低；硬件 I2C 引脚固定、CPU 省事，能跑 400 kHz。F1 的硬件 I2C 容易在从机拉住 SDA 时卡忙，不少 F1 项目宁可用软件模拟。",
+      "svg": "diagrams/manual-choice-map.svg"
+    },
+    {
+      "scene_id": "ch07-s17",
+      "title": "先唤醒 MPU6050",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s06",
+        "ch07-s10"
+      ],
+      "narration": "MPU6050 地址 0x68，上电默认睡眠，必须先写 PWR_MGMT_1 寄存器 0x6B 唤醒，否则读到的都是 0。然后按需配采样率、陀螺量程和加速度量程。",
+      "on_screen": [
+        "先写 0x6B",
+        "唤醒排第一",
+        "再配量程"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "先写 0x6B 唤醒",
+      "evidence_type": "source",
+      "start": 335.792,
+      "duration": 20.727,
+      "subtitle_ref": "ch07.srt#17",
+      "head": "先唤醒 MPU6050",
+      "lines": [
+        "先写 0x6B",
+        "唤醒排第一",
+        "再配量程"
+      ],
+      "say": "MPU6050 地址 0x68，上电默认睡眠，必须先写 PWR_MGMT_1 寄存器 0x6B 唤醒，否则读到的都是 0。然后按需配采样率、陀螺量程和加速度量程。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch07-s18",
+      "title": "常用器件地址速查",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s06"
+      ],
+      "narration": "SSD1306 是 0x3C，HAL 填 0x78；AT24C02 是 0x50，填 0xA0；MPU6050 是 0x68，填 0xD0；PCF8574 是 0x20 到 0x27。同一条总线能同时挂这几只。",
+      "on_screen": [
+        "0x3C→0x78",
+        "0x50→0xA0",
+        "0x68→0xD0"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#硬件与接线"
+      ],
+      "memory_anchor": "3C/50/68 各对一值",
+      "evidence_type": "diagram",
+      "start": 356.519,
+      "duration": 23.961,
+      "subtitle_ref": "ch07.srt#18",
+      "head": "常用器件地址速查",
+      "lines": [
+        "0x3C→0x78",
+        "0x50→0xA0",
+        "0x68→0xD0"
+      ],
+      "say": "SSD1306 是 0x3C，HAL 填 0x78；AT24C02 是 0x50，填 0xA0；MPU6050 是 0x68，填 0xD0；PCF8574 是 0x20 到 0x27。同一条总线能同时挂这几只。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch07-s19",
+      "title": "HAL 探测与初始化",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch07-s12",
+        "ch07-s14"
+      ],
+      "narration": "例程先开 I2C1 和 GPIOB 时钟，配好 PB6、PB7，ClockSpeed 填 400000。再用 IsDeviceReady 探测器件在不在，在线才发初始化：关显示、寻址模式、开显示。",
+      "on_screen": [
+        "先探测在线",
+        "再发初始化",
+        "0x00 是命令"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#代码实现"
+      ],
+      "memory_anchor": "先探测再初始化",
+      "evidence_type": "code",
+      "start": 380.48,
+      "duration": 18.779,
+      "subtitle_ref": "ch07.srt#19",
+      "head": "HAL 探测与初始化",
+      "lines": [
+        "先探测在线",
+        "再发初始化",
+        "0x00 是命令"
+      ],
+      "say": "例程先开 I2C1 和 GPIOB 时钟，配好 PB6、PB7，ClockSpeed 填 400000。再用 IsDeviceReady 探测器件在不在，在线才发初始化：关显示、寻址模式、开显示。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch07-s20",
+      "title": "上升沿爬不完",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch07-s02",
+        "ch07-s11"
+      ],
+      "narration": "只靠片内上拉跑 400 kHz 会超时：片内约 30 到 50 kΩ，阻值太大，上升沿在 300 纳秒上限里爬不完。按表 42 外接 4.7 kΩ 到 3.3 V，片内只能短线实验凑合。",
+      "on_screen": [
+        "片内 30~50k",
+        "上升沿爬不完",
+        "外接 4.7k"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#常见坑与出处",
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "片内上拉跑不了 400k",
+      "evidence_type": "failure",
+      "start": 399.259,
+      "duration": 19.852,
+      "subtitle_ref": "ch07.srt#20",
+      "head": "上升沿爬不完",
+      "lines": [
+        "片内 30~50k",
+        "上升沿爬不完",
+        "外接 4.7k"
+      ],
+      "say": "只靠片内上拉跑 400 kHz 会超时：片内约 30 到 50 kΩ，阻值太大，上升沿在 300 纳秒上限里爬不完。按表 42 外接 4.7 kΩ 到 3.3 V，片内只能短线实验凑合。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s21",
+      "title": "0x3C 没有左移",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch07-s06",
+        "ch07-s07"
+      ],
+      "narration": "把扫描工具显示的 0x3C 直接传给 HAL，线上发出去的就是 0x3C，对应 7 位地址变成 0x1E，OLED 不应答，第 9 个时钟 SDA 保持高。DevAddress 要填左移后的 0x78。",
+      "on_screen": [
+        "0x3C 没左移",
+        "变成 0x1E",
+        "第 9 钟无 ACK"
+      ],
+      "visual_source": "diagrams/sample-07-i2c-addr.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#常见坑与出处",
+        "docs/07-I2C总线.md#原理与适用范围"
+      ],
+      "memory_anchor": "扫描值要左移",
+      "evidence_type": "failure",
+      "start": 419.111,
+      "duration": 20.422,
+      "subtitle_ref": "ch07.srt#21",
+      "head": "0x3C 没有左移",
+      "lines": [
+        "0x3C 没左移",
+        "变成 0x1E",
+        "第 9 钟无 ACK"
+      ],
+      "say": "把扫描工具显示的 0x3C 直接传给 HAL，线上发出去的就是 0x3C，对应 7 位地址变成 0x1E，OLED 不应答，第 9 个时钟 SDA 保持高。DevAddress 要填左移后的 0x78。",
+      "svg": "diagrams/sample-07-i2c-addr.svg"
+    },
+    {
+      "scene_id": "ch07-s22",
+      "title": "从机拉死数据线",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch07-s07"
+      ],
+      "narration": "从机死死拉着 SDA 的时候，主机再发起始也没用，硬件 I2C 就卡在忙状态。恢复办法：把 SCL 临时配成开漏 GPIO，补 9 个时钟脉冲，把从机的状态机推完，再发一个 STOP，最后重新初始化外设。",
+      "on_screen": [
+        "SDA 被拉死",
+        "SCL 补 9 钟",
+        "再发 STOP"
+      ],
+      "visual_source": "illustrations/ch07-mid-handdraw.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#代码实现",
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "补 9 个时钟解锁",
+      "evidence_type": "failure",
+      "start": 439.533,
+      "duration": 23.546,
+      "subtitle_ref": "ch07.srt#22",
+      "head": "从机拉死数据线",
+      "lines": [
+        "SDA 被拉死",
+        "SCL 补 9 钟",
+        "再发 STOP"
+      ],
+      "say": "从机死死拉着 SDA 的时候，主机再发起始也没用，硬件 I2C 就卡在忙状态。恢复办法：把 SCL 临时配成开漏 GPIO，补 9 个时钟脉冲，把从机的状态机推完，再发一个 STOP，最后重新初始化外设。",
+      "svg": "illustrations/ch07-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch07-s23",
+      "title": "拉伸等成 HAL_BUSY",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch07-s08"
+      ],
+      "narration": "时钟拉伸本身合法，但从机一直按住 SCL，主机只能等，等到超时就是 HAL_BUSY。先确认从机供电和复位是否正常，再看它是否需要时间：比如 EEPROM 写入后要留写周期，轮询就绪再读。",
+      "on_screen": [
+        "拉伸合法",
+        "等太久 HAL_BUSY",
+        "留足写周期"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#代码实现"
+      ],
+      "memory_anchor": "拉伸太久报 BUSY",
+      "evidence_type": "failure",
+      "start": 463.08,
+      "duration": 22.436,
+      "subtitle_ref": "ch07.srt#23",
+      "head": "拉伸等成 HAL_BUSY",
+      "lines": [
+        "拉伸合法",
+        "等太久 HAL_BUSY",
+        "留足写周期"
+      ],
+      "say": "时钟拉伸本身合法，但从机一直按住 SCL，主机只能等，等到超时就是 HAL_BUSY。先确认从机供电和复位是否正常，再看它是否需要时间：比如 EEPROM 写入后要留写周期，轮询就绪再读。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s24",
+      "title": "仲裁输了怎么办",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch07-s09"
+      ],
+      "narration": "多主环境下，仲裁输了不是错误，是规则：想发 1 却听到 0，就退出。退出的一方要知道自己输了，稍后再重试；把正常的仲裁失败当成总线故障去复位别人，才是真正引入的故障。",
+      "on_screen": [
+        "输了就退出",
+        "稍后重试",
+        "别复位别人"
+      ],
+      "visual_source": "diagrams/classic-03-open-drain.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "输仲裁稍后重试",
+      "evidence_type": "failure",
+      "start": 485.516,
+      "duration": 20.867,
+      "subtitle_ref": "ch07.srt#24",
+      "head": "仲裁输了怎么办",
+      "lines": [
+        "输了就退出",
+        "稍后重试",
+        "别复位别人"
+      ],
+      "say": "多主环境下，仲裁输了不是错误，是规则：想发 1 却听到 0，就退出。退出的一方要知道自己输了，稍后再重试；把正常的仲裁失败当成总线故障去复位别人，才是真正引入的故障。",
+      "svg": "diagrams/classic-03-open-drain.svg"
+    },
+    {
+      "scene_id": "ch07-s25",
+      "title": "空闲总线扫地址",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch07-s06",
+        "ch07-s07"
+      ],
+      "narration": "实验在空闲总线上扫描地址：逐个地址试探，谁回 ACK 谁就在线，同时捕获 START、0x78、ACK 的波形，记下 SCL 频率和 SDA 上升时间。一个 ACK 都没有，先查上拉和接线，不要先改协议。",
+      "on_screen": [
+        "逐地址试探",
+        "谁 ACK 谁在线",
+        "无 ACK 查上拉"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#动手实验"
+      ],
+      "memory_anchor": "无 ACK 先查上拉",
+      "evidence_type": "experiment",
+      "start": 506.383,
+      "duration": 22.507,
+      "subtitle_ref": "ch07.srt#25",
+      "head": "空闲总线扫地址",
+      "lines": [
+        "逐地址试探",
+        "谁 ACK 谁在线",
+        "无 ACK 查上拉"
+      ],
+      "say": "实验在空闲总线上扫描地址：逐个地址试探，谁回 ACK 谁就在线，同时捕获 START、0x78、ACK 的波形，记下 SCL 频率和 SDA 上升时间。一个 ACK 都没有，先查上拉和接线，不要先改协议。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch07-s26",
+      "title": "读身份寄存器核对",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch07-s17",
+        "ch07-s25"
+      ],
+      "narration": "扫到 0x68 之后，先写 PWR_MGMT_1 唤醒 MPU6050，再按手册读一个内容固定的寄存器核对身份。读回的值与手册一致，才证明寻址、重复起始和读方向全部走通；只信读回的缓冲区。",
+      "on_screen": [
+        "先唤醒",
+        "读固定寄存器",
+        "信缓冲区"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#动手实验",
+        "docs/07-I2C总线.md#核心原理"
+      ],
+      "memory_anchor": "信缓冲区不信屏",
+      "evidence_type": "experiment",
+      "start": 528.89,
+      "duration": 24.016,
+      "subtitle_ref": "ch07.srt#26",
+      "head": "读身份寄存器核对",
+      "lines": [
+        "先唤醒",
+        "读固定寄存器",
+        "信缓冲区"
+      ],
+      "say": "扫到 0x68 之后，先写 PWR_MGMT_1 唤醒 MPU6050，再按手册读一个内容固定的寄存器核对身份。读回的值与手册一致，才证明寻址、重复起始和读方向全部走通；只信读回的缓冲区。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch07-s27",
+      "title": "时序五要素",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch07-s04",
+        "ch07-s05",
+        "ch07-s07"
+      ],
+      "narration": "合上书背五句：START 是 SCL 高时 SDA 下落，STOP 是 SCL 高时 SDA 上升，数据高位先出，第 9 个时钟拉低是 ACK，保持高是 NACK。五句对应每一格波形。",
+      "on_screen": [
+        "起、停、稳",
+        "答、否",
+        "五句背下来"
+      ],
+      "visual_source": "animations/i2c-transaction.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#时序与状态"
+      ],
+      "memory_anchor": "起落稳答五要素",
+      "evidence_type": "recall",
+      "start": 552.906,
+      "duration": 18.259,
+      "subtitle_ref": "ch07.srt#27",
+      "head": "时序五要素",
+      "lines": [
+        "起、停、稳",
+        "答、否",
+        "五句背下来"
+      ],
+      "say": "合上书背五句：START 是 SCL 高时 SDA 下落，STOP 是 SCL 高时 SDA 上升，数据高位先出，第 9 个时钟拉低是 ACK，保持高是 NACK。五句对应每一格波形。",
+      "svg": "animations/i2c-transaction.svg"
+    },
+    {
+      "scene_id": "ch07-s28",
+      "title": "排障先电后址",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch07-s20",
+        "ch07-s21",
+        "ch07-s22"
+      ],
+      "narration": "调试顺序很固定：先量空闲高电平和上升沿，再看地址与 ACK，最后才看接收缓冲区。总线被拉死，先在 SCL 上补 9 个时钟。读寄存器走 Mem_Read，中间是重复起始；地址先确认手里是 7 位还是 8 位。",
+      "on_screen": [
+        "先量电平",
+        "再看地址 ACK",
+        "最后看缓冲区"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/07-I2C总线.md#核心原理",
+        "docs/07-I2C总线.md#常见坑与出处"
+      ],
+      "memory_anchor": "先电平再地址后数据",
+      "evidence_type": "recall",
+      "start": 571.165,
+      "duration": 25.261,
+      "subtitle_ref": "ch07.srt#28",
+      "head": "排障先电后址",
+      "lines": [
+        "先量电平",
+        "再看地址 ACK",
+        "最后看缓冲区"
+      ],
+      "say": "调试顺序很固定：先量空闲高电平和上升沿，再看地址与 ACK，最后才看接收缓冲区。总线被拉死，先在 SCL 上补 9 个时钟。读寄存器走 Mem_Read，中间是重复起始；地址先确认手里是 7 位还是 8 位。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    }
+  ],
+  "estimated_duration": 700.1,
+  "actual_duration": 596.425
+}

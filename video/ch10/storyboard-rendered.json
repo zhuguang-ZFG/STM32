@@ -1,0 +1,888 @@
+{
+  "id": "10",
+  "slug": "dma-long",
+  "title": "DMA：从请求映射到缓冲区所有权",
+  "short_source": "tools/narration.py#CHAPTERS[10]",
+  "segments": [
+    {
+      "scene_id": "ch10-s01",
+      "title": "搬运工还没上岗",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "串口一长包就丢字节，ADC 采样一快主循环就被拖死。不是代码慢，是 CPU 被搬运这种粗活占满了。这一章请出芯片里的搬运工 DMA，让 CPU 只管算，不管搬。",
+      "on_screen": [
+        "长包就丢字节",
+        "主循环被拖死",
+        "搬运活交给 DMA"
+      ],
+      "visual_source": "illustrations/ch10-handdraw.svg",
+      "fact_source": [
+        "docs/10-DMA.md#原理与适用范围"
+      ],
+      "memory_anchor": "CPU 算不管搬",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 19.618,
+      "subtitle_ref": "ch10.srt#01",
+      "head": "搬运工还没上岗",
+      "lines": [
+        "长包就丢字节",
+        "主循环被拖死",
+        "搬运活交给 DMA"
+      ],
+      "say": "串口一长包就丢字节，ADC 采样一快主循环就被拖死。不是代码慢，是 CPU 被搬运这种粗活占满了。这一章请出芯片里的搬运工 DMA，让 CPU 只管算，不管搬。",
+      "svg": "illustrations/ch10-handdraw.svg"
+    },
+    {
+      "scene_id": "ch10-s02",
+      "title": "F1 通道对 F4 流",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s01"
+      ],
+      "narration": "DMA 是芯片里的搬运工，告诉它从哪搬、搬到哪、搬多少，它自己在总线上跑。F1 按通道分工，每个工位只接固定几家外设；F4 多一层，先选流再用 CHSEL 选通道。",
+      "on_screen": [
+        "F1 按通道分工",
+        "F4 先选流再选通道",
+        "CHSEL 选通道"
+      ],
+      "visual_source": "illustrations/ch10-mid-handdraw.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "F1 通道 F4 流",
+      "evidence_type": "concept",
+      "start": 19.618,
+      "duration": 19.603,
+      "subtitle_ref": "ch10.srt#02",
+      "head": "F1 通道对 F4 流",
+      "lines": [
+        "F1 按通道分工",
+        "F4 先选流再选通道",
+        "CHSEL 选通道"
+      ],
+      "say": "DMA 是芯片里的搬运工，告诉它从哪搬、搬到哪、搬多少，它自己在总线上跑。F1 按通道分工，每个工位只接固定几家外设；F4 多一层，先选流再用 CHSEL 选通道。",
+      "svg": "illustrations/ch10-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch10-s03",
+      "title": "F1 请求映射表",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s02"
+      ],
+      "narration": "外设和 DMA 通道的连线是焊死的。C8 只有一个 DMA1 共七条通道，没有 DMA2：ADC1 走通道一，USART1 发送走通道四，接收走通道五。配 DMA 第一步是查映射表，不是猜。",
+      "on_screen": [
+        "C8 只有 DMA1",
+        "TX 通道四 RX 五",
+        "先查表不要猜"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "TX四RX五ADC一",
+      "evidence_type": "diagram",
+      "start": 39.222,
+      "duration": 21.038,
+      "subtitle_ref": "ch10.srt#03",
+      "head": "F1 请求映射表",
+      "lines": [
+        "C8 只有 DMA1",
+        "TX 通道四 RX 五",
+        "先查表不要猜"
+      ],
+      "say": "外设和 DMA 通道的连线是焊死的。C8 只有一个 DMA1 共七条通道，没有 DMA2：ADC1 走通道一，USART1 发送走通道四，接收走通道五。配 DMA 第一步是查映射表，不是猜。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s04",
+      "title": "F4 流通道怎么查",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s03"
+      ],
+      "narration": "F4 的 DMA1、DMA2 各有八个流，每个流上挂八个通道。USART1 接收在 DMA2 流五通道四，FIFO 深四个三十二位字。记忆技巧：同一外设收发常用不同流，但通道号往往相同。",
+      "on_screen": [
+        "各八个流",
+        "USART1_RX 流五",
+        "同外设常同通道"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "先定流再定通道",
+      "evidence_type": "diagram",
+      "start": 60.26,
+      "duration": 21.732,
+      "subtitle_ref": "ch10.srt#04",
+      "head": "F4 流通道怎么查",
+      "lines": [
+        "各八个流",
+        "USART1_RX 流五",
+        "同外设常同通道"
+      ],
+      "say": "F4 的 DMA1、DMA2 各有八个流，每个流上挂八个通道。USART1 接收在 DMA2 流五通道四，FIFO 深四个三十二位字。记忆技巧：同一外设收发常用不同流，但通道号往往相同。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s05",
+      "title": "三个传输方向",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s02"
+      ],
+      "narration": "配一次 DMA 先回答方向：外设到内存，比如 ADC 和串口接收写进数组；内存到外设，比如数组经串口发出；F1 还支持内存到内存，等于硬件 memcpy。方向由 DIR 和 MEM2MEM 决定。",
+      "on_screen": [
+        "外设到内存",
+        "内存到外设",
+        "MEM2MEM 硬件拷贝"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "三个方向两个位",
+      "evidence_type": "concept",
+      "start": 81.992,
+      "duration": 22.047,
+      "subtitle_ref": "ch10.srt#05",
+      "head": "三个传输方向",
+      "lines": [
+        "外设到内存",
+        "内存到外设",
+        "MEM2MEM 硬件拷贝"
+      ],
+      "say": "配一次 DMA 先回答方向：外设到内存，比如 ADC 和串口接收写进数组；内存到外设，比如数组经串口发出；F1 还支持内存到内存，等于硬件 memcpy。方向由 DIR 和 MEM2MEM 决定。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch10-s06",
+      "title": "普通还是循环",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s05"
+      ],
+      "narration": "普通模式搬完 N 个就停，产生一次完成中断，适合一锤子买卖。循环模式计数归零后硬件自动重装，指针绕回起点接着搬，适合持续刷新的数据源，不用在中断里手动重置。",
+      "on_screen": [
+        "普通搬完就停",
+        "循环自动回卷",
+        "CIRC 位切换"
+      ],
+      "visual_source": "animations/dma-circular.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "循环自动重装",
+      "evidence_type": "animation",
+      "start": 104.039,
+      "duration": 20.003,
+      "subtitle_ref": "ch10.srt#06",
+      "head": "普通还是循环",
+      "lines": [
+        "普通搬完就停",
+        "循环自动回卷",
+        "CIRC 位切换"
+      ],
+      "say": "普通模式搬完 N 个就停，产生一次完成中断，适合一锤子买卖。循环模式计数归零后硬件自动重装，指针绕回起点接着搬，适合持续刷新的数据源，不用在中断里手动重置。",
+      "svg": "animations/dma-circular.svg"
+    },
+    {
+      "scene_id": "ch10-s07",
+      "title": "地址增不增",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s05"
+      ],
+      "narration": "每搬一个数据项，地址要不要往后挪由 PINC 和 MINC 决定。外设数据寄存器只有一个地址，外设那头不增；内存是数组，内存那头递增。两头都增，就是内存到内存搬运。",
+      "on_screen": [
+        "外设地址不增",
+        "内存地址递增",
+        "PINC 与 MINC"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "外设不增内存增",
+      "evidence_type": "concept",
+      "start": 124.042,
+      "duration": 20.762,
+      "subtitle_ref": "ch10.srt#07",
+      "head": "地址增不增",
+      "lines": [
+        "外设地址不增",
+        "内存地址递增",
+        "PINC 与 MINC"
+      ],
+      "say": "每搬一个数据项，地址要不要往后挪由 PINC 和 MINC 决定。外设数据寄存器只有一个地址，外设那头不增；内存是数组，内存那头递增。两头都增，就是内存到内存搬运。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s08",
+      "title": "数据宽度与对齐",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s07"
+      ],
+      "narration": "数据宽度外设侧和内存侧分别配，八位、十六位、三十二位都行，两边不同宽时 DMA 自动打包。ADC 结果是半字，你却按字节增地址，内存里会插进一堆空隙，读出来全是错的。",
+      "on_screen": [
+        "两侧宽度分别配",
+        "不同宽自动打包",
+        "半字别按字节增"
+      ],
+      "visual_source": "diagrams/sample-10-dma-cndtr.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "宽度对齐要一致",
+      "evidence_type": "diagram",
+      "start": 144.804,
+      "duration": 21.102,
+      "subtitle_ref": "ch10.srt#08",
+      "head": "数据宽度与对齐",
+      "lines": [
+        "两侧宽度分别配",
+        "不同宽自动打包",
+        "半字别按字节增"
+      ],
+      "say": "数据宽度外设侧和内存侧分别配，八位、十六位、三十二位都行，两边不同宽时 DMA 自动打包。ADC 结果是半字，你却按字节增地址，内存里会插进一堆空隙，读出来全是错的。",
+      "svg": "diagrams/sample-10-dma-cndtr.svg"
+    },
+    {
+      "scene_id": "ch10-s09",
+      "title": "TC HT TE 三种中断",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s06"
+      ],
+      "narration": "DMA 会喊三种话：搬完全部喊 TC，搬到一半喊 HT，总线出错喊 TE。完成中断告诉你数据齐了，半程中断让你边收边处理，错误中断在配置不对时救命。F4 还多了直接模式和 FIFO 错误。",
+      "on_screen": [
+        "TC 全部搬完",
+        "HT 搬到一半",
+        "TE 总线出错"
+      ],
+      "visual_source": "diagrams/dma-buffer-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "完成半程错误三种",
+      "evidence_type": "concept",
+      "start": 165.906,
+      "duration": 23.457,
+      "subtitle_ref": "ch10.srt#09",
+      "head": "TC HT TE 三种中断",
+      "lines": [
+        "TC 全部搬完",
+        "HT 搬到一半",
+        "TE 总线出错"
+      ],
+      "say": "DMA 会喊三种话：搬完全部喊 TC，搬到一半喊 HT，总线出错喊 TE。完成中断告诉你数据齐了，半程中断让你边收边处理，错误中断在配置不对时救命。F4 还多了直接模式和 FIFO 错误。",
+      "svg": "diagrams/dma-buffer-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s10",
+      "title": "半传输的节拍",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s06",
+        "ch10-s09"
+      ],
+      "narration": "半传输加循环模式是经典组合：DMA 填前半区时 CPU 处理后半区，它绕回前半区时你处理后半区，两边错开半圈谁也不踩谁。中断里只做切换和必要计算，一阻塞数据就被盖。",
+      "on_screen": [
+        "前半区归它写",
+        "后半区归你算",
+        "中断里别阻塞"
+      ],
+      "visual_source": "animations/dma-circular.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "错开半圈不踩",
+      "evidence_type": "animation",
+      "start": 189.364,
+      "duration": 20.478,
+      "subtitle_ref": "ch10.srt#10",
+      "head": "半传输的节拍",
+      "lines": [
+        "前半区归它写",
+        "后半区归你算",
+        "中断里别阻塞"
+      ],
+      "say": "半传输加循环模式是经典组合：DMA 填前半区时 CPU 处理后半区，它绕回前半区时你处理后半区，两边错开半圈谁也不踩谁。中断里只做切换和必要计算，一阻塞数据就被盖。",
+      "svg": "animations/dma-circular.svg"
+    },
+    {
+      "scene_id": "ch10-s11",
+      "title": "NDTR 数的是项",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s08"
+      ],
+      "narration": "还剩多少没搬，看 CNDTR，HAL 里用宏读。它数的是还没搬的数据项个数，单位跟着配置的宽度走，不是字节。八个半字的缓冲区读回三，说明已写入五个采样，也就是十个字节。",
+      "on_screen": [
+        "CNDTR 剩余项数",
+        "单位跟宽度走",
+        "8减3是5个采样"
+      ],
+      "visual_source": "diagrams/sample-10-dma-cndtr.svg",
+      "fact_source": [
+        "docs/10-DMA.md#原理与适用范围"
+      ],
+      "memory_anchor": "剩余是项不是字节",
+      "evidence_type": "calculation",
+      "start": 209.841,
+      "duration": 21.342,
+      "subtitle_ref": "ch10.srt#11",
+      "head": "NDTR 数的是项",
+      "lines": [
+        "CNDTR 剩余项数",
+        "单位跟宽度走",
+        "8减3是5个采样"
+      ],
+      "say": "还剩多少没搬，看 CNDTR，HAL 里用宏读。它数的是还没搬的数据项个数，单位跟着配置的宽度走，不是字节。八个半字的缓冲区读回三，说明已写入五个采样，也就是十个字节。",
+      "svg": "diagrams/sample-10-dma-cndtr.svg"
+    },
+    {
+      "scene_id": "ch10-s12",
+      "title": "重装后不是累计",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s06",
+        "ch10-s11"
+      ],
+      "narration": "循环模式下计数归零后硬件会重装，所以长度减 CNDTR 只是本圈的位置，不是累计进度，越算越大就是踩了这个坑。要知道写到哪里，用回调里的写位置和上次记下的旧位置推算。",
+      "on_screen": [
+        "归零后自动重装",
+        "长度减它不是进度",
+        "用回调里的写位置"
+      ],
+      "visual_source": "animations/dma-circular.svg",
+      "fact_source": [
+        "docs/10-DMA.md#原理与适用范围"
+      ],
+      "memory_anchor": "本圈位置非累计",
+      "evidence_type": "animation",
+      "start": 231.184,
+      "duration": 20.487,
+      "subtitle_ref": "ch10.srt#12",
+      "head": "重装后不是累计",
+      "lines": [
+        "归零后自动重装",
+        "长度减它不是进度",
+        "用回调里的写位置"
+      ],
+      "say": "循环模式下计数归零后硬件会重装，所以长度减 CNDTR 只是本圈的位置，不是累计进度，越算越大就是踩了这个坑。要知道写到哪里，用回调里的写位置和上次记下的旧位置推算。",
+      "svg": "animations/dma-circular.svg"
+    },
+    {
+      "scene_id": "ch10-s13",
+      "title": "总线争抢",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s02"
+      ],
+      "narration": "F1 的 DMA 控制器是 AHB 上的主设备，外设寄存器挂在 APB 上，DMA 和 CPU 走同一套总线矩阵。DMA 搬得越勤，CPU 取指取数排队越久。F4 的 FIFO 和突发能合并小传输，减少占用。",
+      "on_screen": [
+        "DMA挂在AHB",
+        "与 CPU 抢总线",
+        "突发合并省占用"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "同一条总线要抢",
+      "evidence_type": "diagram",
+      "start": 251.67,
+      "duration": 22.722,
+      "subtitle_ref": "ch10.srt#13",
+      "head": "总线争抢",
+      "lines": [
+        "DMA挂在AHB",
+        "与 CPU 抢总线",
+        "突发合并省占用"
+      ],
+      "say": "F1 的 DMA 控制器是 AHB 上的主设备，外设寄存器挂在 APB 上，DMA 和 CPU 走同一套总线矩阵。DMA 搬得越勤，CPU 取指取数排队越久。F4 的 FIFO 和突发能合并小传输，减少占用。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s14",
+      "title": "Cache 一致性",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s13"
+      ],
+      "narration": "F1 没有数据缓存，DMA 写完内存 CPU 直接读就是新数据。到了带 D-Cache 的 H7、F7，CPU 看的是缓存副本，DMA 改的是内存原件，两边会对不上。要么缓冲区放非缓存区，要么搬运前后维护缓存。",
+      "on_screen": [
+        "F1无D-Cache",
+        "H7 F7 不一致",
+        "非缓存区或维护"
+      ],
+      "visual_source": "diagrams/network-cache-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "缓存副本对不上",
+      "evidence_type": "diagram",
+      "start": 274.392,
+      "duration": 25.052,
+      "subtitle_ref": "ch10.srt#14",
+      "head": "Cache 一致性",
+      "lines": [
+        "F1无D-Cache",
+        "H7 F7 不一致",
+        "非缓存区或维护"
+      ],
+      "say": "F1 没有数据缓存，DMA 写完内存 CPU 直接读就是新数据。到了带 D-Cache 的 H7、F7，CPU 看的是缓存副本，DMA 改的是内存原件，两边会对不上。要么缓冲区放非缓存区，要么搬运前后维护缓存。",
+      "svg": "diagrams/network-cache-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s15",
+      "title": "缓冲区所有权",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s09"
+      ],
+      "narration": "循环缓冲区是有归属的：DMA 正在写的那半区，CPU 不能当成稳定数据来用；只有 HT 和 TC 交出的半区才归你处理。所有权跟着标志走，谁越界谁读到撕裂的数据。",
+      "on_screen": [
+        "它在写你别读",
+        "HT TC 交出半区",
+        "所有权跟标志走"
+      ],
+      "visual_source": "diagrams/dma-buffer-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "半区跟标志移交",
+      "evidence_type": "diagram",
+      "start": 299.444,
+      "duration": 19.488,
+      "subtitle_ref": "ch10.srt#15",
+      "head": "缓冲区所有权",
+      "lines": [
+        "它在写你别读",
+        "HT TC 交出半区",
+        "所有权跟标志走"
+      ],
+      "say": "循环缓冲区是有归属的：DMA 正在写的那半区，CPU 不能当成稳定数据来用；只有 HT 和 TC 交出的半区才归你处理。所有权跟着标志走，谁越界谁读到撕裂的数据。",
+      "svg": "diagrams/dma-buffer-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s16",
+      "title": "双缓冲思路",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s10",
+        "ch10-s15"
+      ],
+      "narration": "F1 上用半传输模拟双缓冲：前半满回调处理前半个数组，后半满回调处理后半个。F4 有硬件双缓冲模式，两个内存指针由硬件自动切换，CT 位指示当前用哪块，处理与搬运真正并行。",
+      "on_screen": [
+        "F1 半传输模拟",
+        "F4 硬件双缓冲",
+        "CT 指示当前块"
+      ],
+      "visual_source": "diagrams/dma-buffer-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#代码实现"
+      ],
+      "memory_anchor": "乒乓两半轮流用",
+      "evidence_type": "diagram",
+      "start": 318.932,
+      "duration": 21.742,
+      "subtitle_ref": "ch10.srt#16",
+      "head": "双缓冲思路",
+      "lines": [
+        "F1 半传输模拟",
+        "F4 硬件双缓冲",
+        "CT 指示当前块"
+      ],
+      "say": "F1 上用半传输模拟双缓冲：前半满回调处理前半个数组，后半满回调处理后半个。F4 有硬件双缓冲模式，两个内存指针由硬件自动切换，CT 位指示当前用哪块，处理与搬运真正并行。",
+      "svg": "diagrams/dma-buffer-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s17",
+      "title": "外设要真的发请求",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s05"
+      ],
+      "narration": "光配好 DMA 不够，外设那头得真的发出请求。HAL 里一个发送调用就立即返回，后台搬运；链接宏把 DMA 句柄挂到串口句柄上。别忘了给 DMA1 开时钟，再把通道中断打开。",
+      "on_screen": [
+        "发送调用立即返回",
+        "链接宏挂句柄",
+        "开时钟开中断"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/10-DMA.md#代码实现"
+      ],
+      "memory_anchor": "配好还要发请求",
+      "evidence_type": "code",
+      "start": 340.674,
+      "duration": 20.132,
+      "subtitle_ref": "ch10.srt#17",
+      "head": "外设要真的发请求",
+      "lines": [
+        "发送调用立即返回",
+        "链接宏挂句柄",
+        "开时钟开中断"
+      ],
+      "say": "光配好 DMA 不够，外设那头得真的发出请求。HAL 里一个发送调用就立即返回，后台搬运；链接宏把 DMA 句柄挂到串口句柄上。别忘了给 DMA1 开时钟，再把通道中断打开。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch10-s18",
+      "title": "内存到内存搬运",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s07"
+      ],
+      "narration": "内存到内存模式把 DMA 当硬件 memcpy 用，源和目的地址都递增，启动后轮询等完成即可。注意示例占用的是 DMA1 通道一，和 ADC1 的请求抢同一条通道，别在正式配置里撞车。",
+      "on_screen": [
+        "源目的都递增",
+        "轮询等完成",
+        "别和 ADC1 撞车"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/10-DMA.md#代码实现"
+      ],
+      "memory_anchor": "硬件 memcpy 抢通道",
+      "evidence_type": "code",
+      "start": 360.806,
+      "duration": 19.932,
+      "subtitle_ref": "ch10.srt#18",
+      "head": "内存到内存搬运",
+      "lines": [
+        "源目的都递增",
+        "轮询等完成",
+        "别和 ADC1 撞车"
+      ],
+      "say": "内存到内存模式把 DMA 当硬件 memcpy 用，源和目的地址都递增，启动后轮询等完成即可。注意示例占用的是 DMA1 通道一，和 ADC1 的请求抢同一条通道，别在正式配置里撞车。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch10-s19",
+      "title": "谁先走：优先级",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch10-s13"
+      ],
+      "narration": "多条通道同时有请求，谁先用总线？F1 是通道间固定优先级再加软件优先级，PL 位给低中高最高四档；F4 是软件优先级加流编号仲裁。内存到内存示例给了高优先级，因为要抢过实时外设。",
+      "on_screen": [
+        "PL 四档优先级",
+        "F4 加流号仲裁",
+        "拷贝给了高优先级"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "固定加软件优先级",
+      "evidence_type": "concept",
+      "start": 380.738,
+      "duration": 22.856,
+      "subtitle_ref": "ch10.srt#19",
+      "head": "谁先走：优先级",
+      "lines": [
+        "PL 四档优先级",
+        "F4 加流号仲裁",
+        "拷贝给了高优先级"
+      ],
+      "say": "多条通道同时有请求，谁先用总线？F1 是通道间固定优先级再加软件优先级，PL 位给低中高最高四档；F4 是软件优先级加流编号仲裁。内存到内存示例给了高优先级，因为要抢过实时外设。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s20",
+      "title": "选错通道不报错",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch10-s03",
+        "ch10-s04"
+      ],
+      "narration": "把 F4 例程里 DMA2 流五通道四那组编号照搬到 C8，配置写进去不报错，但计数器永远不动，因为 C8 根本没有 DMA2。现象是 DMA 开了却没有数据，先查请求映射，别先改算法。",
+      "on_screen": [
+        "编号照搬到 C8",
+        "不报错也不动",
+        "先查映射表"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/10-DMA.md#常见坑与出处"
+      ],
+      "memory_anchor": "选错通道不报错",
+      "evidence_type": "failure",
+      "start": 403.594,
+      "duration": 21.037,
+      "subtitle_ref": "ch10.srt#20",
+      "head": "选错通道不报错",
+      "lines": [
+        "编号照搬到 C8",
+        "不报错也不动",
+        "先查映射表"
+      ],
+      "say": "把 F4 例程里 DMA2 流五通道四那组编号照搬到 C8，配置写进去不报错，但计数器永远不动，因为 C8 根本没有 DMA2。现象是 DMA 开了却没有数据，先查请求映射，别先改算法。",
+      "svg": "diagrams/peripheral-bus.svg"
+    },
+    {
+      "scene_id": "ch10-s21",
+      "title": "半满不是四字节",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch10-s08",
+        "ch10-s11"
+      ],
+      "narration": "半传输中断按元素个数算，不按字节。八个半字的缓冲，半满发生在第四个采样，是八个字节不是四个。按每四字节进一次中断去切，后半段会从奇数地址开始，整块数据全错位。",
+      "on_screen": [
+        "半满按元素算",
+        "四采样八字节",
+        "错从奇地址开始"
+      ],
+      "visual_source": "diagrams/sample-10-dma-cndtr.svg",
+      "fact_source": [
+        "docs/10-DMA.md#常见坑与出处"
+      ],
+      "memory_anchor": "半满是四采样八字节",
+      "evidence_type": "failure",
+      "start": 424.631,
+      "duration": 20.898,
+      "subtitle_ref": "ch10.srt#21",
+      "head": "半满不是四字节",
+      "lines": [
+        "半满按元素算",
+        "四采样八字节",
+        "错从奇地址开始"
+      ],
+      "say": "半传输中断按元素个数算，不按字节。八个半字的缓冲，半满发生在第四个采样，是八个字节不是四个。按每四字节进一次中断去切，后半段会从奇数地址开始，整块数据全错位。",
+      "svg": "diagrams/sample-10-dma-cndtr.svg"
+    },
+    {
+      "scene_id": "ch10-s22",
+      "title": "循环盖掉未读数据",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch10-s06",
+        "ch10-s15"
+      ],
+      "narration": "循环模式写指针走到头就绕回来，旧数据会被新数据盖住。你处理得比 DMA 慢就丢一整圈，灯还在闪不代表数据还在。速度要算得过：中断里别阻塞，处理节奏必须快过半圈时间。",
+      "on_screen": [
+        "绕回来就盖掉",
+        "慢一圈就丢一圈",
+        "处理快过半圈"
+      ],
+      "visual_source": "animations/dma-circular.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "慢一圈丢一圈",
+      "evidence_type": "failure",
+      "start": 445.529,
+      "duration": 20.838,
+      "subtitle_ref": "ch10.srt#22",
+      "head": "循环盖掉未读数据",
+      "lines": [
+        "绕回来就盖掉",
+        "慢一圈就丢一圈",
+        "处理快过半圈"
+      ],
+      "say": "循环模式写指针走到头就绕回来，旧数据会被新数据盖住。你处理得比 DMA 慢就丢一整圈，灯还在闪不代表数据还在。速度要算得过：中断里别阻塞，处理节奏必须快过半圈时间。",
+      "svg": "animations/dma-circular.svg"
+    },
+    {
+      "scene_id": "ch10-s23",
+      "title": "缓冲区被提前释放",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch10-s15"
+      ],
+      "narration": "DMA 还在后台搬，你却先动了这块内存：把串口发送缓冲区设成局部变量，函数一返回数据失效，发一半就卡死。DMA 期间缓冲区归 DMA，用 static 或全局数组，完成之前谁都别碰。",
+      "on_screen": [
+        "局部变量失效",
+        "发一半就卡死",
+        "用 static 或全局"
+      ],
+      "visual_source": "diagrams/dma-buffer-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "搬运中缓冲区归它",
+      "evidence_type": "failure",
+      "start": 466.366,
+      "duration": 21.762,
+      "subtitle_ref": "ch10.srt#23",
+      "head": "缓冲区被提前释放",
+      "lines": [
+        "局部变量失效",
+        "发一半就卡死",
+        "用 static 或全局"
+      ],
+      "say": "DMA 还在后台搬，你却先动了这块内存：把串口发送缓冲区设成局部变量，函数一返回数据失效，发一半就卡死。DMA 期间缓冲区归 DMA，用 static 或全局数组，完成之前谁都别碰。",
+      "svg": "diagrams/dma-buffer-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s24",
+      "title": "缓存没维护读旧值",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch10-s14"
+      ],
+      "narration": "带 D-Cache 的芯片上，DMA 把新数据写进内存，CPU 却从缓存里读到旧值；反过来 CPU 写的数据还停在缓存里，DMA 发到线上的是旧内容。要么缓冲区放非缓存区，要么搬运前后清理和失效缓存。",
+      "on_screen": [
+        "它写新你读旧",
+        "你写新它发旧",
+        "清理或失效缓存"
+      ],
+      "visual_source": "diagrams/network-cache-ownership.svg",
+      "fact_source": [
+        "docs/10-DMA.md#核心原理"
+      ],
+      "memory_anchor": "副本旧于原件",
+      "evidence_type": "failure",
+      "start": 488.129,
+      "duration": 23.547,
+      "subtitle_ref": "ch10.srt#24",
+      "head": "缓存没维护读旧值",
+      "lines": [
+        "它写新你读旧",
+        "你写新它发旧",
+        "清理或失效缓存"
+      ],
+      "say": "带 D-Cache 的芯片上，DMA 把新数据写进内存，CPU 却从缓存里读到旧值；反过来 CPU 写的数据还停在缓存里，DMA 发到线上的是旧内容。要么缓冲区放非缓存区，要么搬运前后清理和失效缓存。",
+      "svg": "diagrams/network-cache-ownership.svg"
+    },
+    {
+      "scene_id": "ch10-s25",
+      "title": "实验一：UART 长包",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch10-s17",
+        "ch10-s11"
+      ],
+      "narration": "实验一：USART1 发送用 DMA1 通道四，发四千零九十六字节递增序列，主循环同时累加计数。上位机核对长度和 CRC，单片机记录完成和错误中断次数，再断点看 CNDTR 是不是在减小。",
+      "on_screen": [
+        "发 4096 字节递增",
+        "上位机核对 CRC",
+        "断点看 CNDTR"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/10-DMA.md#动手实验"
+      ],
+      "memory_anchor": "长包对账三处",
+      "evidence_type": "experiment",
+      "start": 511.676,
+      "duration": 21.997,
+      "subtitle_ref": "ch10.srt#25",
+      "head": "实验一：UART 长包",
+      "lines": [
+        "发 4096 字节递增",
+        "上位机核对 CRC",
+        "断点看 CNDTR"
+      ],
+      "say": "实验一：USART1 发送用 DMA1 通道四，发四千零九十六字节递增序列，主循环同时累加计数。上位机核对长度和 CRC，单片机记录完成和错误中断次数，再断点看 CNDTR 是不是在减小。",
+      "svg": "diagrams/instrument-evidence-ladder.svg"
+    },
+    {
+      "scene_id": "ch10-s26",
+      "title": "实验二：ADC 循环缓冲",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch10-s11",
+        "ch10-s12"
+      ],
+      "narration": "实验二：接上一章的 ADC，六十四个半字的循环缓冲，记录半传输时 CNDTR 等于三十二、完成时回卷，以及前后半区的首尾样本。换算字节数一律用项数乘二，别拿剩余计数直接当字节。",
+      "on_screen": [
+        "64 半字循环缓冲",
+        "HT 时剩 32",
+        "项数乘二换字节"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/10-DMA.md#动手实验"
+      ],
+      "memory_anchor": "HT 三十二 TC 回卷",
+      "evidence_type": "experiment",
+      "start": 533.672,
+      "duration": 22.163,
+      "subtitle_ref": "ch10.srt#26",
+      "head": "实验二：ADC 循环缓冲",
+      "lines": [
+        "64 半字循环缓冲",
+        "HT 时剩 32",
+        "项数乘二换字节"
+      ],
+      "say": "实验二：接上一章的 ADC，六十四个半字的循环缓冲，记录半传输时 CNDTR 等于三十二、完成时回卷，以及前后半区的首尾样本。换算字节数一律用项数乘二，别拿剩余计数直接当字节。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch10-s27",
+      "title": "通道和流怎么选",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch10-s03",
+        "ch10-s04",
+        "ch10-s20"
+      ],
+      "narration": "合上书自问：C8 上 USART1 发送该配哪条通道？答案是 DMA1 通道四，接收是通道五，ADC1 是通道一。F4 的思路是先定流再定通道。选错的后果不是报错，是计数器纹丝不动。",
+      "on_screen": [
+        "TX 通道四 RX 五",
+        "ADC1 是通道一",
+        "选错计数器不动"
+      ],
+      "visual_source": "illustrations/ch10-mid-handdraw.svg",
+      "fact_source": [
+        "docs/10-DMA.md#学习目标"
+      ],
+      "memory_anchor": "四五一背下来",
+      "evidence_type": "recall",
+      "start": 555.836,
+      "duration": 21.683,
+      "subtitle_ref": "ch10.srt#27",
+      "head": "通道和流怎么选",
+      "lines": [
+        "TX 通道四 RX 五",
+        "ADC1 是通道一",
+        "选错计数器不动"
+      ],
+      "say": "合上书自问：C8 上 USART1 发送该配哪条通道？答案是 DMA1 通道四，接收是通道五，ADC1 是通道一。F4 的思路是先定流再定通道。选错的后果不是报错，是计数器纹丝不动。",
+      "svg": "illustrations/ch10-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch10-s28",
+      "title": "三句口诀收尾",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch10-s11",
+        "ch10-s15",
+        "ch10-s21"
+      ],
+      "narration": "再记三句口诀：剩下的在 CNDTR，数的是项不是字节；循环模式硬件把指针拨回去；半字传输的半满是四个采样、八字节。调试时先把 CNDTR 打出来，比猜 DMA 是不是坏了快得多。",
+      "on_screen": [
+        "剩余在 CNDTR",
+        "硬件拨回指针",
+        "半满四采样八字节"
+      ],
+      "visual_source": "illustrations/ch10-handdraw.svg",
+      "fact_source": [
+        "docs/10-DMA.md#自测"
+      ],
+      "memory_anchor": "三句口诀收尾",
+      "evidence_type": "recall",
+      "start": 577.518,
+      "duration": 21.707,
+      "subtitle_ref": "ch10.srt#28",
+      "head": "三句口诀收尾",
+      "lines": [
+        "剩余在 CNDTR",
+        "硬件拨回指针",
+        "半满四采样八字节"
+      ],
+      "say": "再记三句口诀：剩下的在 CNDTR，数的是项不是字节；循环模式硬件把指针拨回去；半字传输的半满是四个采样、八字节。调试时先把 CNDTR 打出来，比猜 DMA 是不是坏了快得多。",
+      "svg": "illustrations/ch10-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 656.384,
+  "actual_duration": 599.225
+}
