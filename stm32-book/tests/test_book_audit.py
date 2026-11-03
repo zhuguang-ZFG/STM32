@@ -101,6 +101,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "03": (
                 "gpio-blink.svg",
+                "ch03-handdraw.svg",
                 "sample-03-gpio-led.svg",
                 "stack-gpio-pc13-led.png",
                 "pinout-bluepill.svg",

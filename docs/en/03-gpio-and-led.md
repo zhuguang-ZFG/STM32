@@ -32,9 +32,25 @@
 
 </details>
 <!-- /video:ch03 -->
+## Minimum victory
+
+Ignore the eight-mode table for a moment. Flash [`examples/gpio-blink/`](../../examples/gpio-blink/) and do only this:
+
+1. Enable the `GPIOC` port clock and configure PC13 as a push-pull output.
+2. `HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET)` — expect the **onboard LED on**.
+3. Write `GPIO_PIN_SET` — expect the **LED off**.
+4. Accept it: read bit 13 of `GPIOC->ODR` in the debugger, or measure PC13 to ground with a meter. When the lamp is on the bit is 0 and the voltage is near 0 V; when it is off the bit is 1 and the voltage is near 3.3 V.
+
+Only after that match, read modes, series resistance, and the lock. If it does not match, use the three ODR / clock / common-anode rows in Pitfalls and sources before rewriting the resistor formula.
+
+<p align="center">
+  <img src="../../assets/illustrations/ch03-handdraw.svg" width="760" alt="Handraw: PC13 lights when written 0 and goes dark when written 1 on a common-anode path">
+  <br><sub>▲ Knowledge track (Handraw). It shows the write versus the common-anode current direction. It is not a meter reading and not a photograph. File <code>assets/illustrations/ch03-handdraw.svg</code>; full SHA-256 is in <code>stm32-book/audits/ch03-converge-gate.md</code>.</sub>
+</p>
+
 ## Principle and scope
 
-Pin numbers and current limits in this chapter are for the STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
+After the minimum victory matches the lamp, pin numbers and current limits start to matter. Pin numbers and current limits in this chapter are for the STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
 
 PA0 may source current. As a push-pull output written to 1, current leaves the pin from 3.3 V through the internal PMOS, then through the resistor and the LED to ground. The example arithmetic is `(3.3 − 2.0) / 0.005 = 260`, fitted as 270 Ω. The 2.0 V and 5 mA are estimates the [example](#source-project-examples) picked for an ordinary red LED, not a datasheet recommendation. An LED of another colour has a different drop, so recompute the resistor.
 
@@ -76,11 +92,15 @@ The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.
 
 Button bounce is not in this table: the usual 10 ms to 20 ms debounce time is a rule of thumb, and neither RM0008 nor DS5319 gives it. The lab still debounces the button; just do not treat that number as a manual requirement.
 ## Learning goals
-- [ ] Remember the 8 GPIO modes and where each one belongs
-- [ ] Understand the current path of push-pull versus open-drain, and what the pull-up resistor is doing
-- [ ] Compute an LED series resistor R=(Vcc−Vf)/I
-- [ ] Drive GPIO both with HAL and with registers
-- [ ] Know the usual traps: SWD pin reuse, and forgetting the clock enable
+
+Before you leave, without looking back you should be able to:
+
+- [ ] Say that common-anode PC13 lights on write 0 and goes dark on write 1, and name the break case (an external common-cathode LED)
+- [ ] Use an ODR readback or a pin voltage to tell “the config never reached the peripheral” from “the wiring is inverted”
+- [ ] Compute a series resistor for a PA0 external LED with `R = (Vcc − Vf) / I`, and mark Vf and I as example estimates
+- [ ] Drive PC13 with both HAL and BSRR, and name the concurrency boundary of an ODR read-modify-write
+- [ ] List what must be rechecked on a port: package pin numbers, note 5 for PC13–PC15, the FT mark, and F1 AFIO versus F4 AFR
+
 
 ## Core ideas
 
@@ -145,6 +165,9 @@ The worked example for this orderable is in Principle and boundary, and it is an
 | BRR | Bit reset register (F1 has it; on F4 it is folded into BSRR) |
 
 ## Hardware and wiring
+
+> **Evidence-track gap (to supply):** this repo still has no BluePill onboard-PC13 photograph and no meter or logic-analyzer capture from this lab. The Handraw and stack figures above are knowledge-track only; do not treat them as measurement evidence. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md.
+
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |

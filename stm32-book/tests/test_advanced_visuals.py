@@ -30,9 +30,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "03-GPIO与LED.md": (
-        5,
+        6,
         (
             "gpio-blink.svg",
+            "ch03-handdraw.svg",
             "sample-03-gpio-led.svg",
             "pinout-bluepill.svg",
             "led-blink.gif",
