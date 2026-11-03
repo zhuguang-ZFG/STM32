@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s4-nvic 封面手绘 v2 · FA-013 冷脸小豆人叠罗汉 · 块头递减=优先级 · 巴掌实压头顶 -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M780 300 q-10 -150 160 -156 q170 6 162 158 q-4 90 -80 112 l-162 2 q-76 -24 -80 -116 z" fill="#3451b2"/>
+    <circle cx="880" cy="290" r="14" fill="#ffffff" stroke="none"/>
+    <circle cx="1010" cy="290" r="14" fill="#ffffff" stroke="none"/>
+    <path d="M906 366 l48 0" stroke="#ffffff"/>
+    <path d="M760 580 q-24 190 30 350 q40 40 190 40 q150 0 190 -40 q54 -160 30 -350" fill="none"/>
+    <path d="M768 610 Q660 730 812 880" fill="none"/>
+    <ellipse cx="838" cy="912" rx="48" ry="28" fill="#3451b2"/>
+    <path d="M1132 610 Q1240 730 1088 880" fill="none"/>
+    <ellipse cx="1062" cy="912" rx="48" ry="28" fill="#3451b2"/>
+    <path d="M820 966 l-10 150 M1110 966 l10 150" fill="none"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M810 1010 q-8 -110 120 -114 q128 4 120 116 q-2 66 -56 82 l-128 2 q-54 -18 -56 -86 z" fill="#ffffff"/>
+    <circle cx="890" cy="990" r="11" fill="#1a1a1a" stroke="none"/>
+    <circle cx="990" cy="990" r="11" fill="#1a1a1a" stroke="none"/>
+    <path d="M894 1052 l52 0"/>
+    <path d="M790 1090 q-120 8 -190 -20" fill="none"/>
+    <circle cx="580" cy="1066" r="34" fill="#ffffff"/>
+    <path d="M800 1196 q-18 150 24 270 q32 32 156 32 q124 0 156 -32 q42 -120 24 -270" fill="none"/>
+    <path d="M850 1494 l-8 120 M1080 1494 l8 120" fill="none"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M840 1530 q-6 -80 92 -84 q98 4 92 86 q-2 48 -40 60 l-104 2 q-38 -14 -40 -64 z" fill="#ffffff"/>
+    <circle cx="896" cy="1516" r="9" fill="#1a1a1a" stroke="none"/>
+    <circle cx="968" cy="1516" r="9" fill="#1a1a1a" stroke="none"/>
+    <path d="M900 1568 l40 0"/>
+    <path d="M1092 1620 q60 -10 96 14" fill="none"/>
+    <rect x="1204" y="1610" width="60" height="60" fill="#3eaf7c"/>
+    <path d="M846 1666 q-14 90 18 164 q24 24 118 24 q94 0 118 -24 q32 -74 18 -164" fill="none"/>
+  </g>
+</svg>

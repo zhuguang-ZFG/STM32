@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s5-systick 封面手绘 · FE-038 少笔画大留白 · 滴答怀表掉方块，一排杯子接 -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- 怀表（悬空微右倾） -->
+    <g transform="rotate(8 960 420)">
+      <circle cx="960" cy="420" r="210"/>
+      <circle cx="960" cy="420" r="168"/>
+      <path d="M960 210 l0 -70 q0 -26 26 -26 l48 0"/>
+      <circle cx="1050" cy="114" r="20"/>
+      <!-- 表针：指向 12 差一格（滴答瞬间） -->
+      <path d="M960 420 L960 300"/>
+      <path d="M960 420 L1040 460"/>
+      <circle cx="960" cy="420" r="12" fill="#1a1a1a"/>
+    </g>
+    <!-- 掉落的方块串（垂直虚点） -->
+    <rect x="932" y="700" width="56" height="56" fill="#3451b2"/>
+    <rect x="932" y="830" width="56" height="56" fill="#ffffff"/>
+    <rect x="932" y="960" width="56" height="56" fill="#3451b2"/>
+    <rect x="932" y="1090" width="56" height="56" fill="#ffffff"/>
+  </g>
+  <!-- 底部一排杯子，接满的那只钴蓝点亮 -->
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M520 1520 l40 220 l140 0 l40 -220" fill="#ffffff"/>
+    <path d="M760 1520 l40 220 l140 0 l40 -220" fill="#ffffff"/>
+    <path d="M1000 1520 l40 220 l140 0 l40 -220" fill="#3451b2"/>
+    <path d="M1240 1520 l40 220 l140 0 l40 -220" fill="#ffffff"/>
+    <!-- 杯内已接的方块 -->
+    <rect x="1036" y="1640" width="52" height="52" fill="#ffffff" stroke-width="10"/>
+    <rect x="1276" y="1660" width="46" height="46" fill="#ffffff" stroke-width="10"/>
+  </g>
+  <!-- 地面一笔 -->
+  <path d="M440 1748 q520 40 1040 0" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+</svg>
