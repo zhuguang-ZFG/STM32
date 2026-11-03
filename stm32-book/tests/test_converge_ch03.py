@@ -50,10 +50,15 @@ class ConvergeCh03Tests(unittest.TestCase):
         self.assertLess(en.index("## Minimum victory"), en.index("## Core ideas"))
         self.assertIn("ch03-handdraw.svg", zh)
         self.assertIn("ch03-handdraw.svg", en)
-        self.assertIn("真证轨缺口", zh)
-        self.assertIn("Evidence-track gap", en)
-        self.assertIn("待补", zh)
-        self.assertIn("to supply", en)
+        # 板卡外观照片已补（第三方 CC BY-SA 4.0，仅识别用途），测量证据（万用表/逻辑分析仪截图）缺口仍在：
+        self.assertIn("bluepill-stm32f103c8t6.jpg", zh)
+        self.assertIn("bluepill-stm32f103c8t6.jpg", en)
+        self.assertIn("真证轨现状", zh)
+        self.assertIn("Evidence-track status", en)
+        self.assertIn("仍待补", zh)
+        self.assertIn("still to be supplied", en)
+        self.assertIn("assets/photos/README.md", zh)
+        self.assertIn("assets/photos/README.md", en)
 
 
 

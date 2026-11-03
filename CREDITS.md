@@ -10,12 +10,13 @@
 | SVG 原理动画（31 个） | `assets/animations/` | **本仓库作者用代码绘制**，脚本见 `tools/anim_*.py`，采用 CC BY 4.0 |
 | 板卡结构图（7 张）+ 芯片引脚图（3 张） | `assets/boards/` | **本仓库作者依据官方数据手册/开源原理图绘制的矢量图**，脚本见 `tools/gen_boards.py`、`tools/gen_pinouts.py`。**不是厂商实拍照片** |
 | Nucleo-64 实拍（2 张） | `assets/photos/` | Ordercrazy / Thomas Springer 摄影，Wikimedia Commons，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)；F411RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_Stm32_Nucleo.jpg)、F401RE [原图页](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM_Nucleo_401.jpg)；处理尺寸与校验和见 `assets/photos/README.md` |
+| Blue Pill 实拍（1 张） | `assets/photos/` | Avandalen 摄影，Wikimedia Commons，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)（署名—相同方式共享），[原图页](https://commons.wikimedia.org/wiki/File:Blue_Pill.jpg)；STM32F103C8T6 板卡外观识别用；处理尺寸与校验和见 `assets/photos/README.md` |
 | 静态框图（37 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py`、`tools/gen_sample_figures.py` 与 `tools/gen_gpio_classic.py`，采用 CC BY 4.0 |
 | PC13 stack 边界图（1 组） | `assets/diagrams/stack-gpio-pc13-led*` | 本仓库设计内容；模板与构建器 [stack-diagram](https://github.com/caru-ini/stack-diagram)（MIT，审查提交 `9e90a3b`）；[Lucide](https://lucide.dev) 图标（ISC）；Geist / JetBrains Mono 字体（SIL OFL 1.1）。许可文本见 `tools/stack-diagrams/` |
 | 章首、章中、分部与附录手绘概念图（71 张） | `assets/illustrations/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_handdraw_illustrations.py`，采用 CC BY 4.0；只用于建立直觉，不承载工程数据 |
 | 光栅动画（24 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
-> 除 `assets/photos/` 的两张 CC0 实拍，以及 stack HTML/PNG 内嵌的 Lucide 图标和 Geist/JetBrains Mono 字体外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
+> 除 `assets/photos/` 的两张 CC0 实拍与一张 CC BY-SA 4.0 Blue Pill 实拍，以及 stack HTML/PNG 内嵌的 Lucide 图标和 Geist/JetBrains Mono 字体外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG。
 > 真实板卡的官方照片、原理图与 Gerber 仍以对应厂商产品页为准。
 
 ## 二、官方手册（本仓库反复引用）

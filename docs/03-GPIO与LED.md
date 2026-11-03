@@ -166,8 +166,12 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 
 ## 硬件与接线
 
-> **真证轨缺口（待补）：** 仓库里还没有 BluePill 板载 PC13 的实拍，也没有本次实验的万用表/逻辑分析仪截图。上面的 Handraw 与 stack 图只属于知识轨；不得把它们当成测量证据。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md。
+> **真证轨现状：** 下图为 Blue Pill 板卡的第三方实拍（CC BY-SA 4.0，Avandalen / Wikimedia Commons），只用于识别板卡外观与板载 LED 位置，不是本书实验的测量证据。本次实验的万用表/逻辑分析仪截图仍待补；上面的 Handraw 与 stack 图只属于知识轨。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md，照片来源与许可登记在 assets/photos/README.md。
 
+<figure class="photo-spread">
+  <img src="../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Blue Pill 开发板俯视实拍（STM32F103C8T6），蓝色 PCB，可见板上排针与板载 LED">
+  <figcaption>▲ 真板识别（CC BY-SA 4.0 实拍，Avandalen / Wikimedia Commons）：Blue Pill 开发板，主控 STM32F103C8T6——与本章实验使用的板卡同型号。此图仅为板卡识别，不含接线与测量画面。来源与处理记录见 <code>assets/photos/README.md</code>。</figcaption>
+</figure>
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |

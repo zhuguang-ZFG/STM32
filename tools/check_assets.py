@@ -570,6 +570,10 @@ def check_photos():
             "4fdea7be65c35d96ee9dbeebfc1a5475dcb65b758b5c0dea3cc5a529fe093815",
             (760, 852),
         ),
+        "bluepill-stm32f103c8t6.jpg": (
+            "73b1887438eefaf0766bef50dbd3f631d7fd80e1f3ca392cde4c29fabb5c03c7",
+            (760, 315),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():

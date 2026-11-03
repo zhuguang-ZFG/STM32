@@ -165,8 +165,12 @@ The worked example for this orderable is in Principle and boundary, and it is an
 
 ## Hardware and wiring
 
-> **Evidence-track gap (to supply):** this repo still has no BluePill onboard-PC13 photograph and no meter or logic-analyzer capture from this lab. The Handraw and stack figures above are knowledge-track only; do not treat them as measurement evidence. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md.
+> **Evidence-track status:** the photo below is a third-party photograph of the Blue Pill board (CC BY-SA 4.0, Avandalen / Wikimedia Commons), for board identification and locating the onboard LED only — it is not a measurement from this book's lab. The meter or logic-analyzer capture from this experiment is still to be supplied; the Handraw and stack figures above are knowledge-track only. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
 
+<figure class="photo-spread">
+  <img src="../../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Top-down photograph of a Blue Pill development board (STM32F103C8T6), blue PCB with pin headers and onboard LED visible">
+  <figcaption>▲ Board identification (CC BY-SA 4.0 photograph, Avandalen / Wikimedia Commons): a Blue Pill development board carrying the STM32F103C8T6 — the same part used in this chapter's lab. Identification only; the photo contains no wiring or measurement scene. Source and processing are recorded in <code>assets/photos/README.md</code>.</figcaption>
+</figure>
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |

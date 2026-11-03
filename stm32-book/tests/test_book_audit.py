@@ -103,6 +103,7 @@ class BookAuditTests(unittest.TestCase):
                 "gpio-blink.svg",
                 "ch03-handdraw.svg",
                 "sample-03-gpio-led.svg",
+                "bluepill-stm32f103c8t6.jpg",
                 "stack-gpio-pc13-led.png",
                 "pinout-bluepill.svg",
                 "led-blink.gif",
