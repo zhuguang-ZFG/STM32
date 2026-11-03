@@ -26,6 +26,8 @@ minutes: 25
 
 跑这两条，把工具链的"五脏六腑"看个大概：
 
+跑之前先押一题：这条 ARM 版的编译器找启动文件和库时，会不会顺路去翻宿主机上那个本机编译器的抽屉？押一个会或不会，再对输出里那份目录清单。
+
 ```bash
 arm-none-eabi-gcc -print-search-dirs     # 它去哪儿找库和头文件
 arm-none-eabi-gcc -dumpspecs | more      # gcc 内部的"调度剧本"
@@ -49,6 +51,10 @@ arm-none-eabi-gcc -dumpspecs | more      # gcc 内部的"调度剧本"
 | 版本与来源 | Arm GNU Toolchain 官方发行；为什么别用"打包版杂牌军" | 配置 |
 
 ## 一、交叉编译是什么：build/host/target 三胞胎
+
+先把全程收进一张图：main.c 在 PC 上被四件套加工成 blink.bin，再经 OpenOCD 与 ST-Link 落进 F407 的 Flash。gdb 那条虚线回头再讲，先记住实线这条主路。
+
+![交叉编译四件套全景：从 main.c 到 F407 的完整旅程](/arch/toolchain-pipeline.png)
 
 <AnimFigure src="/anim/toolchain-relay.svg" />
 
@@ -153,6 +159,8 @@ ARM 官方维护 **Arm GNU Toolchain**（gcc/binutils/newlib/gdb 一体打包）
 
 - 工具链从"一坨 exe"变成职责分明的四件套；
 - 会查 gcc 的搜索路径和调度剧本，环境问题能自救。
+
+开场那句「在鸡上孵鸭蛋」现在能落到实处了：孵蛋这套家什各有分工，翻译、打杂、看诊、供血四个抽屉，往哪儿伸手你都能自查。下次环境报错说找不到某个文件，先别急着重装，看一眼它自己的搜索路径，答案常常就在那一屏里。
 
 <div class="achievement">
 ✅ 下一站：<a href="01-four-steps.html">B1 四步构建</a>：把 main.c 一步步变成机器码，中间产物全留下。

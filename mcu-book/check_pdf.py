@@ -267,6 +267,9 @@ def check_index_entries(document: fitz.Document, sample: int = 5) -> list[str]:
             continue
         if "只在术语表定义" in line or "每条最多列" in line:
             continue
+        # 注释行的换行残片（「每条最」/「多列 6 个页码。」分页折行后逃逸上面两条）
+        if re.fullmatch(r"多列\s*\d+\s*个页码。?", line) or re.fullmatch(r"每条最", line):
+            continue
         if not started:
             continue
         if not line or re.fullmatch(r"\d+\s*/\s*\d+", line) or line in ("通往单片机之路", "术语索引"):
@@ -577,21 +580,30 @@ def check_min_font(document: fitz.Document) -> list[str]:
     return []
 
 
-RASTER_BUDGET = 20
+def _raster_budget() -> int:
+    """位图预算 = 6 张真实照片锚点 + 注册架构图数（docs/public/arch/）+ 10 张余量。
+
+    2026-11-03 起书内新增架构图层（stack-diagram PNG，specs 注册的合法位图源），
+    预算改为真源对账：架构图目录每增删一张，预算自动跟随；
+    题图/封面/分部图仍是矢量——若它们开始栅格化，位图总数会越过余量报红。
+    """
+    arch_dir = Path(__file__).resolve().parent.parent / "docs" / "public" / "arch"
+    arch_count = len(list(arch_dir.glob("*.png"))) if arch_dir.is_dir() else 0
+    return 6 + arch_count + 10
 
 
 def check_raster_budget(document: fitz.Document) -> list[str]:
-    """光栅预算：全书位图不得超过真实照片的数量级。
+    """光栅预算：全书位图不得超过「照片 + 注册架构图」的数量级。
 
     题图/封面/分部图都是矢量（滤镜习语经 Chromium 打印不落位图）；
     每枚题图都会变成一张位图，总数会从个位数跳到上百，而版面密度门看不出来。
-    这里只设一个宽松上限（真实硬件照片 6 张），超过即视为题图被栅格化。
     """
+    budget = _raster_budget()
     pages = [(i + 1, len(document[i].get_images())) for i in range(document.page_count)]
     total = sum(n for _, n in pages)
-    if total > RASTER_BUDGET:
+    if total > budget:
         top = "、".join(f"p{p}×{n}" for p, n in pages if n)[:120]
-        return [f"光栅图 {total} 张 > 预算 {RASTER_BUDGET}（题图可能被滤镜版栅格化）：{top}"]
+        return [f"光栅图 {total} 张 > 预算 {budget}（题图可能被滤镜版栅格化）：{top}"]
     return []
 
 

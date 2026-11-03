@@ -24,6 +24,8 @@ minutes: 25
 
 ## 先跑起来（10 分钟 quick win）
 
+跑之前先押：这个只点灯的小固件，Flash 里体积最大的单个符号会是谁？主函数、启动代码、还是库里的东西？押一个名字，再看按大小排队的队尾。
+
 ```bash
 arm-none-eabi-size build/blink.elf
 arm-none-eabi-nm -S --size-sort build/blink.elf    # 符号按大小排，倒数五个就是大户
@@ -51,6 +53,10 @@ size 三列算总账，map 文件查明细，nm --size-sort 找大户。盯住"�
 ![Map 文件与体积审计](/anim/map-size-audit.svg)
 
 ## 一、size 三列：Flash 与 RAM 各吃哪几份
+
+账目公式先看图：三列输入两条公式，Flash 与 RAM 各吃哪几份一目了然。
+
+![size 三列的账：text/data/bss 汇入 Flash=text+data 与 RAM=data+bss](/arch/map-audit.png)
 
 `arm-none-eabi-size blink.elf` 输出三列（本站 00-blink 实测，具体数以你本地 build 为准）：
 
@@ -176,6 +182,8 @@ MEMORY { RAM (xrw) : ORIGIN=0x20000000, LENGTH=128K
 
 - 固件体积在你眼里是一笔能逐条对账的账；
 - 手握 size/nm/map 三把审计刀，优化不再靠猜。
+
+开场那本「固件户口本」你已经会翻了：每个符号多大、住在哪个段、由谁引进，三把刀各查一类。下次体积暴涨，第一反应不再是删代码，而是先审账，找出真正的大户再动手。
 
 <div class="achievement">
 ✅ 下一站：<a href="06-flash-debug.html">B6 烧录与调试</a>：SWD 两根线，怎么把固件送进 Flash，又凭什么让 CPU 说停就停。

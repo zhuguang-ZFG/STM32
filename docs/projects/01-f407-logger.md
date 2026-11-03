@@ -56,9 +56,15 @@ python3 scripts/device-console.py stop --port COMx
 python3 scripts/device-console.py start --port COMx
 ~~~
 
+断电之前先押个记性：如果刚才只跑到 configure、还没 save 就断了电，重启之后记录器会用哪个周期干活？新改的、原来的，还是配置干脆丢掉？押完再往下读；不服，就真拔一次电，答案在重启后的 status 里。
+
 record 写入新的 CSV 文件；请使用新的输出路径，避免覆盖之前的数据。默认周期 100ms；period 允许 100–1000ms 且为 10ms 倍数，filter-shift 允许 0–6，0 为直通。configure 只改变运行配置，save 成功才持久化；旧 generation 的在途采样会丢弃计数，防止误标新配置。
 
 ## 四层实现
+
+五站数据流先收进一张图：采样主路之外，还有一条影子拷贝的配置通路。
+
+![数据记录器五站接力：ADC→DMA→采样任务→样本队列→USART，配置走 EEPROM 影子拷贝](/arch/logger-flow.png)
 
 ![记录器架构：采样输入经 sample 任务、滤波与 16 槽队列、comm 任务和串口到主机；supervisor 按期限检查进度并喂硬件看门狗；save 在锁外写配置存储](/images/projects/logger-architecture.svg)
 

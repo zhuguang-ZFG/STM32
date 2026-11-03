@@ -8,10 +8,21 @@ title: 更新日志
 
 站点统计（成稿章节 / 实验 / 动画 / 工程数）由 `npm run docs:gen` 扫描全站章节 frontmatter 得出，[首页学习地图](/)与本页同源。
 
-## 2026-10-24 · 整书离线版 v1.0.0：88 章装订成书，随站点发布到 `/mcu/book/`
+## 2026-10-27 · 新增第十一部「AI 辅助开发」六章成稿
 
-- **成书不拼接**：`mcu-book/` 构建器把 88 章正文装订为 10 部 + 6 附录的单文件 HTML（约 6 MB，图片全内嵌、动画即播、断网可读）与 A4 PDF（约 650 页，书签树为**部→章→节**三级）。每章开头新增「本章罗盘」（问题 / 交付 / 边界 / 依据锚点），88 份逐章撰写；13 组自测的题目留在正文、答案自动汇入附录 C；47 个配套工程与 60 项冻结来源各成一表。构建契约四向对账——章节、罗盘、测验、工程索引缺一个，出版直接失败（`mcu-book/tests/` 10 条回归 + CI `book.yml`）。
-- **打印不丢内容**：章节里 344 处 `<details>` 折叠块（大量是「参考答案」）在 PDF 里曾被收起状态直接打印——内容整个缺失。现在打印/PDF 前自动展开全部折叠块，重排后 PDF 从 693 页到 713 页，抽检两条此前丢失的答案已可全文检索。屏幕上 109 张 SMIL 动画离屏自动暂停、系统「减少动效」偏好下停在首帧，与站点 AnimFigure 同口径。
+- **94 章正文装订为书、11 部 + 7 附录**：manifest parts 新增 `pa`（AI 辅助开发：A0 结对工程师 / A1 提示词模式 / A2 手册对账 / A3 工具流 / A4 幻觉防御 / A5 生产线自证）；`test_build.py` 章数断言与 `build_html.py` 的 EXPECTED_CHAPTERS 常量全部改为从 manifest 推导；前言「全书 N 章」改占位符注入并新增「想用 AI 加速」路线。
+- **75 项冻结来源**：新增 15 条 ai-* 官方来源（Copilot / Claude Code / Cursor / MCP 规范，访问日期 2026-10-27，采集记录见 `.trellis/tasks/10-27-ai-dev-deepen/research/external-sources.md`）。
+- **SMIL 动画达 116 张**：新增 `ai-tool-map`（工具地图）、`ai-prompt-anatomy`（提示词解剖）、`ai-reconcile-loop`（对账闭环）、`ai-mcp-toolflow`（工具流）、`ai-hallucination-tree`（幻觉决策树）、`ai-book-pipeline`（生产线全景）六张机制动画，`anim-lint` 110/110 通过并登记 `docs/animations.md`。
+
+## 2026-11-03 · 首批 4 张架构图入书（stack-diagram 路线）
+
+- **136 张机制动画与架构图**：用 stack-diagram（白底瓷砖 + 官方 logo + 正交连线）新增 14 张静态架构图并入站入书——首批 `toolchain-pipeline`（B0）、`idf-anatomy`（P3）、`wifi-stack`（P8）、`rtos-side-by-side`（对比 0）；批二 `memory-map`（C1）、`boot-sequence`（B4）、`context-switch`（F2）；批三 `dma-paths`（S8）、`linker-map`（B3）、`scheduler-structs`（F3）、`ota-slots`（P10）；批四 `exti-chain`（S4 四层关卡）、`boot-relay`（P1 三棒静态版图，与接力动画互补）、`rcu-tree`（G1 时钟树）；批五 `sem-mutex`（F5 马甲家族）、`device-ops`（R4 设备框架调用链）、`i2c-bus`（S11 两线开漏拓扑）、`map-audit`（B5 size 公式）；批六 `logger-flow`（J1 记录器五站数据流）、`pwr-domains`（S14 三档供电域矩阵）。图源 HTML 与数据驱动生成器 `gen_batch3.py`/`gen_batch4.py`/`gen_batch5.py` 存 `scripts/arch-diagrams/`，PNG 交付 `docs/public/arch/`；与动画分工：动画演因果，架构图定静态结构。
+- **新机器门**：`prose_guard.py --single` 单章口癖门（破折号散文面 ≤2、一句话/记住：散文本体 0）；`test_part_art.py` 分部隔页题图覆盖测试（manifest × part_art 非空、零滤镜零 href）；art_guard 题图达 100 枚 0 违规。
+
+## 2026-10-24 · 整书离线版 v1.0.0：88 章首次装订，随站点发布到 `/mcu/book/`
+
+- **成书不拼接**：`mcu-book/` 构建器把 88 章成稿正文装订为 10 部 + 6 份附录的单文件 HTML（约 6 MB，图片全内嵌、动画即播、断网可读）与 A4 PDF（约 650 页，书签树为**部→章→节**三级）。每章开头新增「本章罗盘」（问题 / 交付 / 边界 / 依据锚点），88 份逐章撰写；13 组自测的题目留在正文、答案自动汇入附录 C；47 个配套工程与 60 条冻结来源各成一表。构建契约四向对账——章节、罗盘、测验、工程索引缺一个，出版直接失败（`mcu-book/tests/` 10 条回归 + CI `book.yml`）。
+- **打印不丢内容**：章节里 344 处 `<details>` 折叠块（大量是「参考答案」）在 PDF 里曾被收起状态直接打印——内容整个缺失。现在打印/PDF 前自动展开全部折叠块，重排后 PDF 从 693 页到 713 页，抽检两条此前丢失的答案已可全文检索。屏幕上那 109 张 SMIL 机制动画离屏自动暂停、系统「减少动效」偏好下停在首帧，与站点 AnimFigure 同口径。
 - **站点与书同源**：每个章节页顶部新增「本章罗盘」卡片，读取的就是整书的 `mcu-book/manifest.json`——站点展示与成书内容单一数据源。代价是外壳 chunk +23.4 KB (br)，性能预算按惯例核算上调（110→140 KB），理由写在 `scripts/perf-budget.mjs`。
 - **顺带修了 4 处站内死链**：F5「下一站」少写 `-timer`、P4 的 `../../` 越出站点 base、B7 收官与 C7 收官两处 `.md` 原始锚点（部署后 404）——都是整书构建器的零断链审计反向揪出来的。
 - **入口**：导航「资料 → 整书离线版」（[HTML](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html) / [PDF](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.pdf)），CI 每次 push 从 main 重出，书没有过期副本。

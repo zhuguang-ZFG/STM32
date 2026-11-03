@@ -38,6 +38,8 @@ Project build complete. To flash, run:
  idf.py flash
 ```
 
+monitor 起来之前先押一棒：banner 的第一行是谁打的？你写的代码，还是芯片里比你的代码老得多的那位？押完再看串口，第一行当场判分。
+
 然后 `idf.py flash monitor`，串口会打出启动 banner。**banner 里的每一行都对应下面某一棒**，这是本章最实用的调试入口：
 
 | 串口看到什么 | 说明卡在哪一棒 |
@@ -202,6 +204,10 @@ factory,  app,  factory, ,        1M,
 
 ## 六、和 STM32 对照：一条直线 vs 三棒接力
 
+对照之前先看静态版图：三棒的位置关系与两条依赖（bootloader 读地产证选槽、app_main 寄居 main task），动画演过程，这张图定结构。
+
+![S3 上电三棒静态结构：ROM→bootloader→app，依赖分区表与 main task](/arch/boot-relay.png)
+
 | | STM32（F407） | ESP32-S3 |
 |---|---|---|
 | 上电第一步 | 复位向量 → `Reset_Handler` | ROM 引导（固化） |
@@ -312,6 +318,8 @@ factory,  app,  factory, ,        1M,
 - 上电三棒在你眼里不再是黑箱，每一棒都能指到源码行号；
 - 知道 `app_main` 的真实身份，以及它的优先级/栈从哪来；
 - 拿到一块出问题的板子，会先看串口日志前缀定位到"哪一棒"，而不是盲目重烧。
+
+你押的那一棒，赢家是 ROM：出厂就焊死在芯片里，改不了删不掉，你的代码再大也轮不到它先开口。三段接力，第一棒不由你写，往后两棒才是你的地盘。
 
 <div class="achievement">
 ✅ 下一站：<a href="03-idf-anatomy.html">P3 IDF 工程解剖</a>：把那几个 `CMakeLists.txt` 和 `sdkconfig` 拆开看，理解这条流水线怎么把上千个文件编成你刚烧进去的镜像。

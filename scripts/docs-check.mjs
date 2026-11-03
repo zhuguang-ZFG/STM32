@@ -368,9 +368,10 @@ export const CLAIMS = [
   // 动画文件数 ↔ docs/public/anim/*.svg 计数（与 gen-progress.mjs 同源，103）
   { label: '动画文件数', file: 'README.md', pattern: /机制动画 \*\*(\d+)\*\* 张/g, expected: truth.animFiles, minMatches: 1 },
   // 成书插图/动画数 ↔ 构建器 anim-figure 计数口径（独立段落图片 + AnimFigure，109）
-  { label: '成书动画数', file: 'docs/reference/book.md', pattern: /(\d+) 张机制动画/g, expected: truth.bookFigures, minMatches: 1 },
-  { label: '成书动画数', file: 'docs/reference/changelog.md', pattern: /(\d+) 张 SMIL 动画/g, expected: truth.bookFigures, minMatches: 1 },
-  { label: '成书动画数', file: 'mcu-book/README.md', pattern: /(\d+) 张(?:机制|SMIL) ?动画/g, expected: truth.bookFigures, minMatches: 1 },
+  // 2026-11-03 起 4 张 stack-diagram 架构图入书，口径=机制动画+架构图（120）
+  { label: '成书插图数', file: 'docs/reference/book.md', pattern: /(\d+) 张机制动画/g, expected: truth.bookFigures, minMatches: 1 },
+  { label: '成书插图数', file: 'docs/reference/changelog.md', pattern: /(\d+) 张机制动画/g, expected: truth.bookFigures, minMatches: 1 },
+  { label: '成书插图数', file: 'mcu-book/README.md', pattern: /(\d+) 张(?:机制|SMIL) ?动画/g, expected: truth.bookFigures, minMatches: 1 },
   // 串口协议契约数 ↔ 附录 A "契约N" 小节数（5）
   { label: '帧协议契约数', file: 'docs/reference/book.md', pattern: new RegExp(`帧协议的(\\d+|[${CN}]+) ?个?契约`, 'g'), expected: truth.protocolContracts, minMatches: 1 },
   { label: '帧协议契约数', file: 'mcu-book/README.md', pattern: new RegExp(`帧协议的(\\d+|[${CN}]+) ?个?契约`, 'g'), expected: truth.protocolContracts, minMatches: 1 },

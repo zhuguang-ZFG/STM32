@@ -9,6 +9,8 @@ minutes: 40
 
 > 🎯 两个任务"同时在跑"的幻觉，每毫秒发生一次偷梁换柱：把当前任务的魂（寄存器）抽走封进它的栈，把下一个任务的魂从它的栈里请回来。执刑官是 PendSV——全系统优先级最低的中断。本章把这段编出来只有 **27 条机器指令、104 字节**的 naked 函数逐行过堂。
 
+动手前先押个响不响：断点压在内核源码写的 xPortPendSVHandler 上，切一次任务，断得住吗？押完进第五节的目击实验亲手试。
+
 ## 本章精髓
 
 1. 为什么是 PendSV 且必须最低：切换要等所有中断服完役才进行，否则 ISR 被"切走一半"就乱套：最低优先级保证 PendSV 永远最后执行。**而且这个"最低"不用你配**：V11 的 ARMv7-M 移植层自己硬写成 255，`configKERNEL_INTERRUPT_PRIORITY` 在这个端口上是不被读取的死宏（第一节翻案）。
@@ -65,7 +67,7 @@ portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
 
 位号本身另有架构出处：CMSIS 的 `core_cm4.h:490` 写死 `SCB_ICSR_PENDSVSET_Pos = 28U`（同文件 `:487` 的 `NMIPENDSET_Pos` 才是 31U，别记混）。
 
-而"最低优先级"也不是配置文档里的一句话，是启动时真写进去的两行（`port.c:434-435`）：
+而"最低优先级"也不是只写在配置文档里，是启动时真写进去的两行（`port.c:434-435`）：
 
 ```c
 portNVIC_SHPR3_REG |= portNVIC_PENDSV_PRI;    /* port.c:66 → portMIN_INTERRUPT_PRIORITY << 16 */
@@ -89,6 +91,10 @@ portNVIC_SHPR3_REG |= portNVIC_SYSTICK_PRI;   /* port.c:67 → portMIN_INTERRUPT
 > **开机就断言炸，比"一周崩一次"好得多**。老说法里那个"偶发灵异 bug"，今天的形态是启动即死，除非你把 `configASSERT` 定义成空，那它才会退化成人格分裂式的偶发崩溃。常见坑一节还会点名。
 
 ## 二、软硬分工：硬件管一半，软件管另一半
+
+先看分工图：左列是芯片免费送的，右列是 xPortPendSVHandler 一条条汇编挣来的。
+
+![PendSV 换魂软硬分工：八寄存器压栈与 PSP 切换归硬件，R4-R11 存 TCB 与换 PSP 归软件](/arch/context-switch.png)
 
 异常入场时，硬件已自动压好 8 个字的**硬件帧**（[S4 动画](../../stm32/04-nvic-exti.md)演示过）：xPSR、PC、LR、R12、R3~R0。这是 AAPCS 的"调用者保存"部分，硬件替你管了。
 
@@ -185,7 +191,7 @@ bx    r14                    ; ⑪ 异常返回：硬件弹出硬件帧，新任
 
 ## 四、换指针即换魂
 
-`vTaskSwitchContext`（tasks.c）的核心动作一句话：`pxCurrentTCB = 最高优先级就绪任务的 TCB`（怎么选出最高的？位图 + CLZ 一条指令，[F3 调度器](03-scheduler.md)细讲）。
+`vTaskSwitchContext`（tasks.c）的核心动作只有一步：`pxCurrentTCB = 最高优先级就绪任务的 TCB`（怎么选出最高的？位图 + CLZ 一条指令，[F3 调度器](03-scheduler.md)细讲）。
 
 ⑤ 号指令 `str r0, [r2]` 为什么敢往偏移 0 写？因为 FreeRTOS 立下铁律：**TCB 结构体的第一个成员永远是 `pxTopOfStack`**。这条铁律不是口口相传，内核源码里就写在成员自己的注释上（`tasks.c:360`，本机 `.trellis/ref/freertos-v11/kernel` 实测行号）：
 
@@ -357,6 +363,8 @@ p pxCurrentTCB            # 已换人！对比两次地址
 - 三个数张口就来：软件帧 9 个字、正文 27 条指令、新任务第一帧 18 个字 72 字节；
 - 拿到任何一份 RTOS 移植层，先看它的 `FreeRTOSConfig.h` 改了哪些 handler 名，这是 GDB 能不能断上的分水岭；
 - 再看到 `taskYIELD()` 或 `portYIELD_FROM_ISR`，你知道它们在跟 PendSV 打招呼。
+
+断点没响，不是 GDB 坏了：源码里的名字被一行宏换掉了，向量表里躺着的才是真身。往后拿到任何移植层，先翻改名表再下断点，这一炮才响得起来。
 
 <div class="achievement">
 ✅ 下一站：<a href="03-scheduler.html">F3 调度器</a>：位图就绪表 32 选 1 只要一条 CLZ，tick 里到底发生了什么。

@@ -26,6 +26,8 @@ minutes: 50
 
 menuconfig 填上 Wi-Fi 账号密码（示例工程惯例），`idf.py flash monitor`：观察日志从 `wifi:state: init` 到 `got ip` 的完整旅程，把日志与状态机逐条对号入座。
 
+monitor 之前先押趟车：日志从 init 一路走到拿到 IP，这条旅程要停几个大站？押个整数，跑完拿事件全表对号。
+
 ## 动画：从 WiFi 握手到 TCP 三次握手
 
 先拿"小区门禁卡"（关联+DHCP 得 IP），再和服务器对暗号：SYN(seq=100) → SYN+ACK(seq=300,ack=101) → ACK(ack=301)。**三次才能证明双向耳聪目明**：序号是防迟到旧报文骗开门的。
@@ -62,6 +64,10 @@ handler 签名：`void handler(void *arg, esp_event_base_t base, int32_t id, voi
 **关键纪律**：handler 跑在事件任务上下文，**不能阻塞**。事件任务是单线程的，一个 handler 阻塞（`vTaskDelay(1000)`、等信号量），后续所有事件（别的 handler）都堵在队列里。Wi-Fi 断线了你的重连 handler 睡 1 秒，这 1 秒里 IP 事件、BLE 事件全丢。骨架坑列表第一名的"handler 里阻塞重连"就是这么翻车的。重连等长操作要外置到独立任务或定时器（第四节）。
 
 ## 二、骨架六步：教科书初始化
+
+六步长什么样、事件怎么回流，先看图再读代码；顺序铁律就画在实线上。
+
+![Wi-Fi 骨架六步与两条事件回流](/arch/wifi-stack.png)
 
 STA 模式连路由器的标准初始化（六步，每步失败后果列在注释里）：
 
@@ -216,6 +222,8 @@ wifi:state: got ip:192.168.x.x                ← GOT_IP（网络可用）
 
 - 联网从"玄学调用"变成"状态机+事件"的可推理系统；
 - 断线重连这个 99% 教程跳过的生产问题，你有了解法。
+
+大站点完名：从 init 到拿到 IP 一共六站，日志里一站都不缺席。断线那一站最考验人：默认没人替你重连，路由器一重启，设备就安静掉线。
 
 <div class="achievement">
 ✅ 下一站：<a href="09-bt-espnow.html">P9 蓝牙与 ESP-NOW</a>：无路由直连的另一种可能。

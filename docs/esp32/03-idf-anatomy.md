@@ -40,6 +40,8 @@ ls build/config/
 
 `build/config/sdkconfig.h` 就是"菜单 → 文本 → 宏"的终点站。打开它搜一个你认识的配置项（比如 `CONFIG_IDF_TARGET`），再回到工程根目录的 `sdkconfig` 里搜同名项：**同一个选项，两种形态**。这一章就是讲这两个文件之间的那段流水线。
 
+往下读之前先押个方向：sdkconfig 和 sdkconfig.h，谁是谁的译文、谁又是原文？方向押反了，后面整条流水线都会读倒。
+
 ## 动画：Kconfig 三阶管线
 
 从 Kconfig 定义到 sdkconfig 文本再到 sdkconfig.h C 宏，配置沿管线单向流动。
@@ -58,6 +60,10 @@ ls build/config/
 | 自己写组件 | 最小可用的组件骨架与常见错误 | 配置 |
 
 ## 一、三行顶层 CMake：你的工程为什么这么短
+
+先看解剖图：你的工程、IDF 构建系统、芯片里的启动链，三个圈子各管一段。三行 CMake 就是第一个圈子递给第二个圈子的接力棒。
+
+![一个 ESP32 工程的解剖图：你的工程、IDF 构建系统、芯片启动链](/arch/idf-anatomy.png)
 
 看 `code/esp32/00-hello/CMakeLists.txt` 的正文（注释之外）：
 
@@ -402,6 +408,8 @@ idf_component_register(SRCS "main.c"
 - 能给自己的驱动写一个合规的组件（`SRCS`/`INCLUDE_DIRS`/`REQUIRES` 三板斧）；
 - 走通了 Kconfig 三段论，能追着一个 `CONFIG_xxx` 从菜单追到宏；
 - 构建报错时会分层定位（配置 / 组件声明 / 编译 / 烧录），而不是瞎改。
+
+方向押完翻底牌：原文其实是 Kconfig，sdkconfig 与 sdkconfig.h 都是它的译文，一份给人看，一份给编译器看。追着任何一个配置项从菜单走到宏，这条链你现在是顺着的。
 
 <div class="achievement">
 ✅ 下一站：<a href="04-irq-dualcore.html">P4 中断与双核</a>：IRAM 纪律与核间分工，把"Cache 关了你的 ISR 还能不能跑"这件事彻底说透。

@@ -7,7 +7,7 @@ minutes: 45
 
 # G1 RCU 时钟树：200MHz 是怎么算出来的
 
-> 🎯 STM32F407 封顶 168MHz，GD32F450 官方**默认**就跑 200MHz，还是那颗 Cortex-M4F，差别全在时钟树和供电档位。学会"同名不同姓"的对照读法，两颗芯片就都归你了。
+> 🎯 最危险的移植往往不是完全陌生，而是“看起来一模一样”：PLL 位域熟悉、时钟公式熟悉、输出脚也熟悉，于是你顺手照搬 STM32 的经验。GD32 偏偏在电压回执、Flash 等待与外设时钟源上换了合同。今天的任务不是背另一棵时钟树，而是抓出哪些相似可以复用，哪些相似专门会骗熟手。
 
 ## 本章精髓
 
@@ -20,18 +20,28 @@ minutes: 45
 - S2 的"六步提频"与"MCO1 对账"思想（方法论完全复用）。
 - GD32 命名：`CK_SYS`/`CK_AHB`/`CK_APB1`/`CK_APB2` 对应 STM32 的 SYSCLK/HCLK/PCLK1/PCLK2。
 
+## 先跑起来（10 分钟 quick win）
+
+先遮住下文结论，只看官方 PLL 参数，自己算一遍输入、VCO 与系统时钟；再回答两个迁移判断：STM32 的电压档“写完就走”能否照搬？MCO 的分频编码能否按“分频比减一”填写？算完再往下读。前一道题考公式，后两道题专门抓“太熟所以没查手册”的惯性。
+
+即时判分标准很简单：频率公式可以复用，电压握手不能省，输出分频编码必须查枚举。相似的位域帮你快速定位，不同的状态位与编码才决定代码能不能安全运行。
+
 ## 动画：GD32 的时钟树长什么样
 
 ![GD32 RCU 时钟树动画](/anim/gd32-rcu-clock.svg)
 
 ## 一、命名对照：同名不同姓
 
+时钟树先看图：源、PLL、SYSCLK、AHB/APB 逐级分发；切换顺序铁律在图底。
+
+![GD32 RCU 时钟树：IRC16M/HXTAL→PLL→SYSCLK→AHB→APB 两级](/arch/rcu-tree.png)
+
 | STM32F407 | GD32F4xx | 凭证 |
 |---|---|---|
 | RCC | **RCU**（基址 0x40023800，AHB1） | gd32f4xx.h:343 |
 | SYSCLK / HCLK / PCLK1/2 | **CK_SYS / CK_AHB / CK_APB1/2** | gd32f4xx_rcu.h 注释 |
 | HSI 16M / HSE | **IRC16M / HXTAL** | gd32f4xx_rcu.h:812-814 |
-| FLASH_ACR.LATENCY | **FMC_WS.WSCNT**（bits[3:0]，0~11 档） | gd32f4xx_fmc.h:150-161 |
+| FLASH_ACR.LATENCY | **FMC_WS.WSCNT**（bits[3:0]，0~15 档） | gd32f4xx_fmc.h:150-165 |
 | PWR + VOS（无回执） | **PMU + LDOVS/HDEN/HDS**（有 HDRF/HDSRF 回执） | gd32f4xx_pmu.h:59-73 |
 | MCO1（PA8，/1~/5，编码 0/4/5/6/7） | **CK_OUT0**（PA8，/1~/5，编码同款） | gd32f4xx_rcu.h:886-901；HAL stm32f4xx_hal_rcc.h:314-318 |
 | PLLRDY / SWS | **PLLSTB / SCSS** | gd32f4xx_rcu.h:88,102-103 |
@@ -146,8 +156,8 @@ GD32 把"能不能上 200MHz"拆成三次握手，每一步都有硬件回执（
 2. HDEN 和 HDS 各控制什么？为什么两个都要等标志位？
 <details><summary>参考答案</summary>**HDEN**（High Density Mode Enable）使能高密度模式，拉高 LDO 输出，让芯片能在 200MHz 下稳定运行。**HDS**（High Density Step）进一步微调 LDO 档位到最高性能档。两者各有就绪标志：**HDRF**（HD Enable Ready Flag）和 **HDSRF**（HD Step Ready Flag）。必须轮询等待是因为 LDO 电压爬升需要时间（微秒级），如果不等就绪就提频，内核可能因供电不足跑飞。官方 `system_gd32f4xx.c` 里两步都有 `while(!HDRF)` / `while(!HDSRF)` 的等待循环。</details>
 
-3. CK_OUT0 输出在哪个引脚？/4 分频的编码值是多少？写成"分频比 − 1 = 3"会输出什么？
-<details><summary>参考答案</summary>CK_OUT0 输出在 **PA8**（AF0 复用功能）。/4 分频的编码值是 **3**（编码规则：分频系数 = 编码值 + 1，所以 /4 → 编码 3）。如果误写成"分频比 − 1 = 3"，这恰好就是正确值，不会出错。但如果误把编码直接当分频比（填 4），实际分频会变成 /5，输出频率偏低 20%。这条"编码 = 分频系数 − 1"的约定和 STM32 MCO 完全一致。</details>
+3. CK_OUT0 输出在哪个引脚？/4 分频的编码值是多少？误写成"分频比 − 1 = 3"会落入哪个编码区？
+<details><summary>参考答案</summary>CK_OUT0 输出在 **PA8**（AF0 复用功能）。/4 分频的编码值是 **6**：官方宏依次使用 0、4、5、6、7 表示 /1 到 /5。误写 3 会落入 `0xx` 的不分频区，输出源时钟而不是 /4。这里不能套“分频系数减一”，必须按官方枚举写值；本章代码使用的 `RCU_CKOUT0_DIV4` 也正是 `6UL << 24`。</details>
 
 ## 事实来源
 
@@ -171,5 +181,7 @@ GD32 把"能不能上 200MHz"拆成三次握手，每一步都有硬件回执（
 
 - 你算出了 GD32 的 200MHz，也掌握了“同名不同姓”的对照读法。拿到任何一颗 Cortex-M4，都能顺着时钟树把它提上去。
 - 你知道电压档要等回执、Flash 等待要自己管：这两条是官方文档不会替你记住的坑。
+
+回到开场那次“看起来一样”的移植：你现在会先复用结构，再逐项核对合同。公式相同就大胆算，状态位不同就老实等，编码表长得眼熟也要重新查。真正可迁移的不是寄存器写法，而是这套对照取证的方法。
 
 <div class="achievement"> ✅ G1 收官。下一站：<a href="./02-gpio-af.md">G2 GPIO 与 AF 复用对照</a>：七大寄存器“同名不同姓”，逐个点名。 </div>

@@ -33,6 +33,8 @@ rt_pin_write(LED_R, PIN_LOW);   /* 共阳：低电平亮 */
 
 不用查任何一个寄存器，体会封装的甜。
 
+先押个翻译官：应用那一行调用落到板上，变成谁的动作？寄存器直写在哪个环节被换的手？押完看下一节的调用链动画。
+
 ## 动画：设备框架调用链
 
 一次 `rt_device_write` 从应用出发，穿过框架 API、ops 表、驱动，最终落到寄存器：四层各司其职，换板只换 ops 表，应用纹丝不动。
@@ -51,6 +53,10 @@ rt_pin_write(LED_R, PIN_LOW);   /* 共阳：低电平亮 */
 | 自己写一个设备 | 把蜂鸣器封装成 rt_device 的全流程 | 代码分析 |
 
 ## 一、调用链全图：四层各司其职
+
+调用链先收进一张图：应用喊名、对象调表、驱动执行。
+
+![设备框架调用链：应用 rt_device_find、rt_device 调 ops 表、驱动落到硬件](/arch/device-ops.png)
 
 一次 `rt_device_write` 从应用到寄存器，穿过四层：
 
@@ -321,6 +327,8 @@ rt_uint32_t f = 4000;  rt_device_control(buz, BUZZER_CMD_SET_FREQ, &f);
 
 - 驱动模型从"Linux 那套很高级"变成"我也写得出的 ops 表"；
 - RT-Thread 的生态逻辑打通：软件包为什么能即插即用，答案就在这层框架。
+
+翻译官是 ops 表：应用那行调用跳进表里，落到谁家的函数就是谁的动作。换块板子，动的只是表后面那层实现，应用一行不改。
 
 <div class="achievement">
 ✅ 下一站：<a href="05-finsh.html">R5 finsh 控制台</a>，在板子上跑 shell：list、ps、help 的背后。
