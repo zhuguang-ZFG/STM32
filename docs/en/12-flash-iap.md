@@ -13,7 +13,7 @@
   <video width="640" controls poster="../../assets/video/ch12-iap.png">
     <source src="../../assets/video/ch12-iap.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch12-iap.mp4">MP4</a> · <a href="../../assets/video/ch12-iap.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.8 min). <a href="../../assets/video/ch12-iap.mp4">MP4</a> · <a href="../../assets/video/ch12-iap.srt">subtitles</a></sub>
 </p>
 
 <details>
@@ -22,9 +22,9 @@
 1. 闪存不能当内存随便改一个字节。通常要先擦，再写。擦写之前必须解锁。写到一半掉电，这一页可能是半新半旧，启动时要能认出来。
 2. F103 的读保护里，选项字节 0xA5 表示不保护。改成别的值之前，先想清楚你还能不能再读出来。改保护之前，先把现有程序备份下来。
 3. 到了 F4，0xCC 这一档是不可逆的读保护。手滑写进去，这颗芯片的调试口就回不来了。实验这种操作，不要放在你唯一的那块板子上。
-4. 这一帧是仓库画的升级路径。正在执行的程序不要擦掉自己的脚下。新固件写到另一块区域，校验通过，再跳过去。校验失败就留在旧程序里，设备还活着。
+4. 这一帧是仓库画的升级路径。程序不要擦掉自己的脚下：先回到 Bootloader，再由它把新固件写进 APP 区。单槽没有旧程序可退，校验失败就留在升级模式。
 5. 程序如果不是从默认的闪存起始跑，中断向量表的偏移也要改。只改链接脚本、不改向量表偏移，平时能跑，一进中断就飞到旧地址。
-6. 跳转之前至少核对长度和校验。有条件再看版本号。没有校验就跳，等于允许任意一包噪声变成你的新程序。失败了要留在还能通信的旧程序里。
+6. 跳转前至少核对长度和校验。没有校验就跳，等于允许任意一包噪声变成新程序。失败就留在 Bootloader 等重传，单槽没有旧版本可回滚。
 7. 擦除不是调用一下就结束。要等忙标志落下，再去读。写保护如果开着，解锁只解了闪存控制器还不够。手册里的顺序不要跳步。
 8. 口诀：0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票；改保护先备份。擦之前为什么必须解锁？因为锁着的闪存会拒绝你，或者你以为写进去了其实没有。
 9. 实验选一页确定不会踩到当前程序的闪存，擦掉、写几个字、再读回来。和程序区叠在一起的实验，做完这章你就没有调试器可以后悔了。
@@ -172,7 +172,7 @@ IAP splits Flash into a **bootloader region, a parameter region, and an app regi
 
 Jumping from the bootloader to the application is a shift change, and the bootloader has to tidy up. Interrupts, timers, and peripherals it turned on have to be switched off, or the application receives an interrupt it does not expect the moment it starts. The CPU also has to be told two things: where the new stack starts, and where the vector table now lives. Skip any of these and the application may run back into the bootloader on its first interrupt.
 
-Before the jump you must disable interrupts, reset the peripherals, set MSP, and set the vector-table offset. Otherwise an interrupt inside the app jumps back into the bootloader's vector table and the chip hangs.
+Before the jump you must disable interrupts, clear all NVIC enables and pendings, reset the peripherals, set MSP, and set the vector-table offset. Otherwise an interrupt inside the app jumps back into the bootloader's vector table and the chip hangs.
 
 ```c
 typedef void (*pFunction)(void);
@@ -183,8 +183,13 @@ void JumpToApp(void)
     uint32_t app_stack = *(volatile uint32_t *)APP_ADDR;         /* vector table [0] = MSP */
     uint32_t app_entry = *(volatile uint32_t *)(APP_ADDR + 4);   /* vector table [1] = Reset_Handler */
 
-    /* 1) Disable global interrupts and stop SysTick, so an interrupt cannot cut in during the jump */
+    /* 1) Disable global interrupts, disable every maskable interrupt and
+          clear pending requests; stop SysTick */
     __disable_irq();
+    for (uint32_t i = 0U; i < 8U; i++) {
+        NVIC->ICER[i] = 0xFFFFFFFFU;
+        NVIC->ICPR[i] = 0xFFFFFFFFU;
+    }
     SysTick->CTRL = 0;
     SysTick->LOAD = 0;
     SysTick->VAL  = 0;
@@ -197,7 +202,9 @@ void JumpToApp(void)
     __set_MSP(app_stack);
     SCB->VTOR = APP_ADDR;
 
-    /* 4) Enable interrupts again and jump to the app entry */
+    /* 4) Enable interrupts and branch immediately; nothing may run in between.
+          Maskable sources were cleared in step 1; only non-maskable
+          NMI/hard-fault remains as a residual window. */
     __enable_irq();
     ((pFunction)app_entry)();
 }
@@ -274,25 +281,7 @@ int Flash_WriteBuf(uint32_t addr, const uint16_t *data, uint32_t halfwords)
 
 **② Jump to the app**
 
-```c
-typedef void (*pFunction)(void);
-
-void JumpToApp(uint32_t app_addr)
-{
-    uint32_t sp    = *(volatile uint32_t *)app_addr;
-    uint32_t entry = *(volatile uint32_t *)(app_addr + 4);
-
-    __disable_irq();
-    SysTick->CTRL = 0; SysTick->LOAD = 0; SysTick->VAL = 0;
-    HAL_RCC_DeInit();
-    HAL_DeInit();
-
-    __set_MSP(sp);
-    SCB->VTOR = app_addr;
-    __enable_irq();
-    ((pFunction)entry)();
-}
-```
+The jump function is the same as in section 4: clear the NVIC enables and pendings, stop SysTick, de-initialize peripherals, set MSP and `SCB->VTOR`, then enable interrupts and branch immediately. Not repeated here.
 
 **③ Bootloader main flow (the skeleton)**
 

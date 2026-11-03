@@ -52,6 +52,17 @@ def narration_lines(block: str) -> list[str]:
     """Numbered narration lines. They must match the rendered subtitles."""
     return re.findall(r"^\d+\. .+$", block.replace("\r\n", "\n"), re.M)
 
+
+def expected_narration(index: int) -> list[str]:
+    """The canonical narration from tools/narration.py, as numbered doc lines."""
+    path = ROOT / "tools" / "narration.py"
+    spec = importlib.util.spec_from_file_location("batch5_narration", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return [f"{n}. {seg['say']}" for n, seg in enumerate(module.CHAPTERS[index]["segments"], 1)]
+
 def baseline_chapter(rev: str, path: str) -> str:
     blob = _git_show(rev, path)
     if blob is None:
@@ -332,19 +343,12 @@ class Batch5IapChapterTests(unittest.TestCase):
         self.assertNotIn("示意图", zh_key)
         self.assertNotIn("schematic", en_key.lower())
         self.assertIn("flash-iap.svg", zh_key)
-        lock = json.loads(
-            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
-                encoding="utf-8"
-            )
-        )
         for path in (zh_path, en_path):
-            rel = path.relative_to(ROOT).as_posix()
-            baseline = baseline_chapter(lock["baseline"], rel)
             now_video = zh if path == zh_path else en
             marker = "<!-- video:ch12 -->"
             end = "<!-- /video:ch12 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                expected_narration(12),
                 narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
@@ -485,18 +489,11 @@ class Batch5CanChapterTests(unittest.TestCase):
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
-        lock = json.loads(
-            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
-                encoding="utf-8"
-            )
-        )
         for path, now in ((zh_path, zh), (en_path, en)):
-            rel = path.relative_to(ROOT).as_posix()
-            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch13 -->"
             end = "<!-- /video:ch13 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                expected_narration(13),
                 narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
@@ -620,18 +617,11 @@ class Batch5UsbChapterTests(unittest.TestCase):
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
-        lock = json.loads(
-            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
-                encoding="utf-8"
-            )
-        )
         for path, now in ((zh_path, zh), (en_path, en)):
-            rel = path.relative_to(ROOT).as_posix()
-            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch14 -->"
             end = "<!-- /video:ch14 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                expected_narration(14),
                 narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
@@ -713,18 +703,11 @@ class Batch5RtosChapterTests(unittest.TestCase):
         self.assertIn("自绘", zh_key)
         self.assertIn("Drawn for this book", en_key)
         self.assertNotIn("示意图", zh_key)
-        lock = json.loads(
-            (ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch5-12-13-14-15-lock.json").read_text(
-                encoding="utf-8"
-            )
-        )
         for path, now in ((zh_path, zh), (en_path, en)):
-            rel = path.relative_to(ROOT).as_posix()
-            baseline = baseline_chapter(lock["baseline"], rel)
             marker = "<!-- video:ch15 -->"
             end = "<!-- /video:ch15 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                expected_narration(15),
                 narration_lines(now.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))

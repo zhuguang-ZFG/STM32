@@ -2,7 +2,7 @@
 
 > English: [Flash and IAP](en/12-flash-iap.md)
 
-> 收到固件并跳转不等于升级成功。Bootloader 必须先证明长度、范围、CRC 和向量表都有效；应用还要回报版本心跳，否则应留在旧版本或回滚。
+> 收到固件并跳转不等于升级成功。Bootloader 必须先证明长度、范围、CRC 和向量表都有效；应用还要回报版本心跳，否则应留在 Bootloader 的升级模式继续等待重传。单槽没有旧镜像可回退，回滚需要 A/B 双槽或外部备份。
 
 <p align="center">
   <img src="../assets/animations/flash-iap.svg" width="760" alt="IAP 在线升级：Bootloader + APP 双区跳转">
@@ -14,7 +14,7 @@
   <video width="640" controls poster="../assets/video/ch12-iap.png">
     <source src="../assets/video/ch12-iap.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch12-iap.mp4">MP4</a> · <a href="../assets/video/ch12-iap.srt">字幕</a></sub>
+  <br><sub>▲ 本章讲解视频（2.8 分钟）。<a href="../assets/video/ch12-iap.mp4">MP4</a> · <a href="../assets/video/ch12-iap.srt">字幕</a></sub>
 </p>
 
 <details>
@@ -23,9 +23,9 @@
 1. 闪存不能当内存随便改一个字节。通常要先擦，再写。擦写之前必须解锁。写到一半掉电，这一页可能是半新半旧，启动时要能认出来。
 2. F103 的读保护里，选项字节 0xA5 表示不保护。改成别的值之前，先想清楚你还能不能再读出来。改保护之前，先把现有程序备份下来。
 3. 到了 F4，0xCC 这一档是不可逆的读保护。手滑写进去，这颗芯片的调试口就回不来了。实验这种操作，不要放在你唯一的那块板子上。
-4. 这一帧是仓库画的升级路径。正在执行的程序不要擦掉自己的脚下。新固件写到另一块区域，校验通过，再跳过去。校验失败就留在旧程序里，设备还活着。
+4. 这一帧是仓库画的升级路径。程序不要擦掉自己的脚下：先回到 Bootloader，再由它把新固件写进 APP 区。单槽没有旧程序可退，校验失败就留在升级模式。
 5. 程序如果不是从默认的闪存起始跑，中断向量表的偏移也要改。只改链接脚本、不改向量表偏移，平时能跑，一进中断就飞到旧地址。
-6. 跳转之前至少核对长度和校验。有条件再看版本号。没有校验就跳，等于允许任意一包噪声变成你的新程序。失败了要留在还能通信的旧程序里。
+6. 跳转前至少核对长度和校验。没有校验就跳，等于允许任意一包噪声变成新程序。失败就留在 Bootloader 等重传，单槽没有旧版本可回滚。
 7. 擦除不是调用一下就结束。要等忙标志落下，再去读。写保护如果开着，解锁只解了闪存控制器还不够。手册里的顺序不要跳步。
 8. 口诀：0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票；改保护先备份。擦之前为什么必须解锁？因为锁着的闪存会拒绝你，或者你以为写进去了其实没有。
 9. 实验选一页确定不会踩到当前程序的闪存，擦掉、写几个字、再读回来。和程序区叠在一起的实验，做完这章你就没有调试器可以后悔了。
@@ -166,14 +166,14 @@ IAP 把 Flash 分成 **Bootloader 区 + 参数区 + APP 区**；上电先跑 Boo
 
 <p align="center">
   <img src="../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="IAP 镜像依次通过长度与 CRC、槽位边界、向量表、跳转和应用心跳五道验收门">
-  <br><sub>▲ 升级门：任一检查失败都留在 Bootloader，不擦除仍有效的旧镜像。跳到 APP 只能证明控制流离开 Bootloader；应用版本心跳才证明新镜像完成启动（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
+  <br><sub>▲ 升级门：任一检查失败都留在 Bootloader 的升级模式；单槽没有旧镜像可退，A/B 双槽或外部备份才有回滚。跳到 APP 只能证明控制流离开 Bootloader；应用版本心跳才证明新镜像完成启动（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
 ### 4. 跳转到 APP 的关键动作
 
 从 Bootloader 跳到 APP，要像交接班一样把现场收拾干净。Bootloader 开过的中断、定时器、外设要关掉，否则 APP 刚起来就会收到一个它不认识的中断。还要告诉 CPU 两件事：新的栈从哪里开始，中断向量表搬到了哪里。少做任何一步，APP 都可能在第一次进中断时跑回 Bootloader。
 
-跳转前必须「关中断、复位外设、设 MSP、设向量表偏移」，否则 APP 里的中断会跳回 Bootloader 的向量表而死机。
+跳转前必须「关中断、清 NVIC 的使能与挂起位、复位外设、设 MSP、设向量表偏移」，否则 APP 里的中断会跳回 Bootloader 的向量表而死机。清空之后才开中断并立刻跳转，中间不能再执行别的代码。
 
 ```c
 typedef void (*pFunction)(void);
@@ -184,8 +184,12 @@ void JumpToApp(void)
     uint32_t app_stack = *(volatile uint32_t *)APP_ADDR;         /* 向量表[0]=MSP */
     uint32_t app_entry = *(volatile uint32_t *)(APP_ADDR + 4);   /* 向量表[1]=Reset_Handler */
 
-    /* 1) 关全局中断 + 关 SysTick，避免跳转时被中断打断 */
+    /* 1) 关全局中断，关掉所有可屏蔽中断并清掉已挂起的请求；关 SysTick */
     __disable_irq();
+    for (uint32_t i = 0U; i < 8U; i++) {
+        NVIC->ICER[i] = 0xFFFFFFFFU;
+        NVIC->ICPR[i] = 0xFFFFFFFFU;
+    }
     SysTick->CTRL = 0;
     SysTick->LOAD = 0;
     SysTick->VAL  = 0;
@@ -198,7 +202,8 @@ void JumpToApp(void)
     __set_MSP(app_stack);
     SCB->VTOR = APP_ADDR;
 
-    /* 4) 重新开中断并跳到 APP 入口 */
+    /* 4) 开中断后立刻跳到 APP 入口，中间不能再插入任何代码。
+          可屏蔽中断已在第 1 步清空；剩余窗口只有不可屏蔽的 NMI/硬件故障。 */
     __enable_irq();
     ((pFunction)app_entry)();
 }
@@ -275,25 +280,7 @@ int Flash_WriteBuf(uint32_t addr, const uint16_t *data, uint32_t halfwords)
 
 **② 跳转 APP**
 
-```c
-typedef void (*pFunction)(void);
-
-void JumpToApp(uint32_t app_addr)
-{
-    uint32_t sp    = *(volatile uint32_t *)app_addr;
-    uint32_t entry = *(volatile uint32_t *)(app_addr + 4);
-
-    __disable_irq();
-    SysTick->CTRL = 0; SysTick->LOAD = 0; SysTick->VAL = 0;
-    HAL_RCC_DeInit();
-    HAL_DeInit();
-
-    __set_MSP(sp);
-    SCB->VTOR = app_addr;
-    __enable_irq();
-    ((pFunction)entry)();
-}
-```
+跳转函数与第 4 节相同：先清 NVIC 使能与挂起位、关 SysTick、复位外设，再设 MSP 与 `SCB->VTOR`，开中断后立刻跳转，这里不重复贴代码。
 
 **③ Bootloader 主流程（框架）**
 
@@ -319,7 +306,7 @@ int main(void)
 
 1. **页级写入证据**：只在链接脚本明确保留的测试页写入 256 字节已知模式，复位后逐字节读回并核对 CRC。若地址落入 APP 或 Bootloader 区，测试必须拒绝执行。
 2. **坏镜像拒绝**：分别制造 CRC 错、MSP 不在 SRAM、Reset_Handler 不在 APP 槽位三种镜像。Bootloader 应打印稳定错误码并保持在升级模式，不跳转。
-3. **有效升级与回滚**：写入合法镜像后记录长度、CRC、vector[0]/vector[1] 和 app_version 心跳。A/B 方案再中断一次传输，确认旧槽仍能启动。
+3. **有效升级与 A/B 回滚**：写入合法镜像后记录长度、CRC、vector[0]/vector[1] 和 app_version 心跳。A/B 方案再中断一次传输，确认旧槽仍能启动。
 
 ### 6. 选项字节：读保护、写保护和硬件看门狗
 

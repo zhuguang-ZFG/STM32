@@ -14,13 +14,13 @@
   <video width="640" controls poster="../../assets/video/ch13-can.png">
     <source src="../../assets/video/ch13-can.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.8 min). <a href="../../assets/video/ch13-can.mp4">MP4</a> · <a href="../../assets/video/ch13-can.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (3.3 min). <a href="../../assets/video/ch13-can.mp4">MP4</a> · <a href="../../assets/video/ch13-can.srt">subtitles</a></sub>
 </p>
 
 <details>
 <summary>Narration script (Chinese, same text as the subtitles)</summary>
 
-1. CAN 发出去要有人应答。只有一个节点、又不是回环时，错误计数会一直涨。发送错误计数到 256，节点进入总线关闭，它就闭嘴了。这不是收发器坏了。
+1. CAN 发出去要有人应答。单节点又没开回环时，每次发送都收不到 ACK，错误计数每次加 8，连续十六次尝试到 128 后转 error-passive，此后只重传同一帧，不会到 Bus-Off。
 2. 先把控制器配成回环，自己发给自己。能收到，说明波特率和过滤器大体对了。再接到真正的总线。示例工程默认就是这条回环路。
 3. F103 的 APB1 若是 36 兆，500 千比特要用预分频 9、位段 1 是 5、位段 2 是 2。一共 8 个时间份额，采样点在 75%。原先那组除不尽，实际只有 450 千比特。
 4. 这一帧是仓库画的仲裁。线上是线与，显性位能盖过隐性位。标识更小的那一帧会留下来，输的那一方安静地改去接收。所以标识不是随便填的装饰。
@@ -28,8 +28,8 @@
 6. CAN1 默认在 PA11 和 PA12，和 USB 撞车。BluePill 上改到 PB8 接收、PB9 发送，用的是 CAN1 的第一种重映射。不要配成去 PD0、PD1 的那一种，C8 没有那两只脚。
 7. 自动总线恢复可以让控制器自己试着回来。关掉它，就要在错误回调里停掉再重新启动。不管哪一种，总线上的接线、终端电阻和波特率得先改对，不然它还会再闭嘴。
 8. 两块板子练习时，关掉回环，两边标识对调，总线两端各放 120 欧。收发器的电平要和模块匹配。单看回环全绿，不代表两块板子已经能对话。
-9. 口诀：发送错误计数到 256 就闭嘴。单节点不要用正常模式考验自己。500 千比特在 36 兆上，记预分频 9 和一共 8 个时间份额。
-10. 合上书，三问。为什么只有一个节点、又不是回环时会进总线关闭？36 兆下 500 千比特的预分频是多少？PB8 和 PB9 哪只是接收？
+9. 口诀：发送错误计数超过 255 才进 Bus-Off，单节点无 ACK 只会停在 128 的 error-passive 并一直重传。单节点不要用正常模式考验自己。500 千比特在 36 兆上，记预分频 9 和一共 8 个时间份额。
+10. 合上书，三问。为什么单节点、又不是回环时停在 error-passive 而不会进 Bus-Off？36 兆下 500 千比特的预分频是多少？PB8 和 PB9 哪只是接收？
 
 </details>
 <!-- /video:ch13 -->
@@ -48,7 +48,7 @@ The second remap is pin 5 PD0 and pin 6 PD1. On LQFP48 those pins carry the HSE 
 
 PB8 and PB9 do not go straight onto the bus. They connect to the transceiver's RXD and TXD, and the transceiver drives CANH and CANL. Each end of the bus has one 120 Ω resistor between CANH and CANL. The two in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance; the cable is about 120 Ω, and the terminators are chosen to match it.
 
-A node alone on the bus and not in loopback gets no acknowledge for its frames. The transmit error counter keeps rising, and at 256 the node goes bus-off and stops driving the bus. Recovery waits for 128 occurrences of 11 consecutive recessive bits. With a 32-bit mask filter, a standard ID written to `FilterIdHigh` must be shifted left by 5. Without the shift, frames are on the bus but the mailbox stays empty. The F103 has 14 filter banks and 2 receive FIFOs. See [examples in this repo](#source-project-examples).
+A node alone on the bus and not in loopback gets no acknowledge for its frames. Each transmission attempt is an ACK error, so the transmit error counter rises by 8. After sixteen consecutive attempts it reaches 128 and the node becomes error-passive: it still retransmits, but only sends passive error flags. The standard stops a passive sender from raising TEC on further ACK errors, so this single node keeps retransmitting the same frame and never reaches 256. Bus-off needs TEC above 255 (that is, 256); recovery waits for 128 occurrences of 11 consecutive recessive bits. With a 32-bit mask filter, a standard ID written to `FilterIdHigh` must be shifted left by 5. Without the shift, frames are on the bus but the mailbox stays empty. The F103 has 14 filter banks and 2 receive FIFOs. See [examples in this repo](#source-project-examples).
 
 The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB in chapter 14 shares the same vector. Only the connectivity-line table calls it `USB_LP_CAN1_RX0`. So do not link the CAN and USB examples into one project. See [RM0008](#source-rm0008-usb).
 
@@ -73,7 +73,7 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 | 9 | 5 | 2 | 8 | 2 µs | 500 kbit/s | 75%. Quantum 250 ns. Correct |
 | 8 | 6 | 3 | 10 | 2.22 µs | 450 kbit/s | 70%. Does not match the peer |
 | Pins | PB8 receives | PB9 transmits | pin 45 and pin 46 | — | — | PA11/PA12 conflict with USB |
-| Errors | count reaches 256 | bus-off | 128 times | 11 recessive bits each time | — | only then may the node drive again |
+| Errors | 128 → error-passive | TEC > 255 → bus-off | 128 times | 11 recessive bits each time | — | recovery only after that sequence |
 | Filter | `FilterIdHigh` | shift left by 5 | — | — | — | without the shift the mailbox stays empty |
 
 ## Pitfalls and sources
@@ -81,7 +81,7 @@ Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of th
 | What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The scope or analyzer shows 450 kbit/s | The prescaler and segment counts do not divide evenly | Use prescaler 9, BS1 5, and BS2 2 | [RM0008](#source-rm0008-can) | Eight quanta and prescaler 9 is 500 kbit/s at 36 MHz. Ten quanta with prescaler 8 is 450 kbit/s |
-| One node in normal mode stops sending after a few frames | There is no acknowledge, so the transmit error counter fills | Start in loopback. On a real bus, have a node that acknowledges | [RM0008](#source-rm0008-can) | A transmit error counter of 256 enters bus-off. Recovery takes 128 times 11 recessive bits |
+| One node in normal mode gets no ACK | There is no acknowledge, so the transmit error counter rises | Start in loopback. On a real bus, have a node that acknowledges | [RM0008](#source-rm0008-can) | After 128 the sender becomes error-passive and stops raising TEC on ACK errors; bus-off needs TEC above 255 |
 | Frames are on the bus and the mailbox is empty | The standard ID was not shifted | Shift left by 5 when writing `FilterIdHigh` | [examples in this repo](#source-project-examples) | `examples/can-bxcan` fills `FilterIdHigh` with `PEER_ID << 5`. The prescaler macro is 9 |
 | Both ends report errors | The bit timing differs, or the terminators are not at the two ends | Use one bit timing, and put 120 Ω between CANH and CANL at each end | [examples in this repo](#source-project-examples) | The example asks for one 120 Ω resistor at each end. It does not set a cable impedance or a 5 V versus 3.3 V transceiver |
 | The waveform is on PA11/PA12 and USB also fails | The pins are still the reset default | Remap to pin 45 and pin 46 | [DS5319](#source-ds5319-usbcan) | Reset-default CAN is on PA11/PA12. PB8/PB9 is the remap. PA11/PA12 are also USB |
@@ -283,23 +283,23 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 1. **Controller loop:** In loopback mode, send 100 frames with an incrementing counter. Record successful sends, FIFO receives, and byte comparisons, and state explicitly that no transceiver or bus was tested.
 2. **Physical-bus loop:** Use two nodes with 120 Ω at each end. Save the CAN_H/CAN_L differential waveform and decoded frame, and record BTR, sample point, ACK, and FIFO data.
 3. **Filter and arbitration:** Accept only 0x123, then start 0x100 and 0x200 from two nodes together. Save the arbitration trace and verify that only 0x123 reaches the target FIFO.
-4. **Error and recovery:** Disconnect the second node to remove ACK. Record TEC/ESR through bus-off, restore the link, and verify ABOM recovery and the first successful frame.
+4. **Error and recovery:** Disconnect the second node to remove ACK. Record TEC rising to 128, the switch to error-passive, and continued retransmission. Reconnect the acknowledging node and verify the first successful frame. To observe bus-off, run a separate experiment with a sustained transmit error and record ABOM recovery after 128×11 recessive bits.
 
 ### 7. Coming back from bus-off
 
-**Takeaway:** When TEC reaches 256 the node is bus-off and stops driving the bus. Recovery needs **128 sequences of 11 recessive bits**. Hardware can count that for you. That bit is ABOM.
+**Takeaway:** TEC at or above 256 puts the node in bus-off, and it stops driving the bus. Recovery needs **128 sequences of 11 recessive bits**. Hardware can count that for you. That bit is ABOM.
 
 ```c
 hcan.Init.AutoBusOff = ENABLE;   /* ABOM: return to error-active after 128×11 recessive bits */
 ```
 
-With nobody else to ACK, the sender errors its way into bus-off. Debug a single board in loopback before you blame the transceiver.
+With nobody else to ACK, the sender keeps retransmitting but stops at error-passive; it does not reach bus-off. Debug a single board in loopback before you blame the transceiver.
 
-Before leaving this chapter, keep loopback counts, a two-node differential capture, filter/arbitration evidence, and ESR before and after one bus-off recovery.
+Before leaving this chapter, keep loopback counts, a two-node differential capture, filter/arbitration evidence, and ESR before and after one error-passive and one bus-off recovery.
 
 Self-test:
 
-1. Why does the only node on a bus enter bus-off after a few frames?
+1. Why does the only node on a bus stop at error-passive instead of reaching bus-off?
 2. With `AutoBusOff` enabled, do you still call Start again in software?
 3. When standard IDs 0x100 and 0x200 arbitrate, which bit is compared first?
 

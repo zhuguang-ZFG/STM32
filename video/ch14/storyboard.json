@@ -1,0 +1,591 @@
+{
+  "schema_version": 1,
+  "chapter": "14",
+  "slug": "usb-long",
+  "title": "USB：从枚举到可用的 CDC",
+  "short_source": "tools/narration.py#CHAPTERS[14]",
+  "scenes": [
+    {
+      "scene_id": "ch14-s01",
+      "title": "叹号里的未知设备",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "插上自己做的 USB 设备，设备管理器只弹出一个带叹号的未知设备。这不是一句报错，而是枚举某一步先掉了链子：时钟、上拉、描述符、端点。这一课拆开枚举，看清它停在哪里。",
+      "on_screen": [
+        "未知设备≠死局",
+        "总有一步先错",
+        "拆开枚举看"
+      ],
+      "visual_source": "illustrations/ch14-handdraw.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围"
+      ],
+      "memory_anchor": "未知设备是停点提示",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s02",
+      "title": "主机提问，设备回答",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s01"
+      ],
+      "narration": "USB 是一场由电脑主持的对话。主机点到谁，谁才能回答；设备不能看见数据就自己抢着说。理解这个轮询关系，后面的枚举、端点、传输类型才有落点。",
+      "on_screen": [
+        "主机发起一切",
+        "设备只被轮询"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/14-USB.md#1. USB 速率与 STM32 外设"
+      ],
+      "memory_anchor": "USB 是主持式对话",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s03",
+      "title": "三档速率，F103 只占一档",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s02"
+      ],
+      "narration": "USB 有低速 1.5 兆、全速 12 兆、高速 480 兆三档。F103 里只有一套 12 兆全速设备外设，能做键盘、虚拟串口，却当不了 U 盘的主机。要跑 480 兆，得找带 OTG_HS 的型号。",
+      "on_screen": [
+        "低速 1.5M",
+        "全速 12M",
+        "高速 480M 需 OTG_HS"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/14-USB.md#1. USB 速率与 STM32 外设",
+        "docs/14-USB.md#原理与适用范围"
+      ],
+      "memory_anchor": "F103 只是 12M 设备",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s04",
+      "title": "48 兆时钟是硬门槛",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s03"
+      ],
+      "narration": "全速 USB 要求 48 兆时钟，差一点主机就读不动描述符。F103 的做法是 PLL 先到 72 兆，USBPRE 置 0 再除以 1.5，正好 48 兆。要是 USBPRE 置 1 不分频，USB 拿到 72 兆，枚举必败。",
+      "on_screen": [
+        "USB 要 48MHz",
+        "72 ÷ 1.5 = 48",
+        "USBPRE=0"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#7. CubeMX 中间件配置要点"
+      ],
+      "memory_anchor": "72除1.5得48",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch14-s05",
+      "title": "D+ 上拉报到",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s03"
+      ],
+      "narration": "主机靠哪根线被拉高来判断速度。全速设备要在 D+ 和 3.3 伏之间接一只 1.5 千欧上拉。F103 的 D+ 是第 33 脚 PA12，D− 是第 32 脚 PA11。上拉错接到 D−，主机会把你当低速设备，干脆不认。",
+      "on_screen": [
+        "D+ = PA12 第33脚",
+        "D− = PA11 第32脚",
+        "1.5kΩ 上拉到 3.3V"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#硬件与接线"
+      ],
+      "memory_anchor": "上拉在 D+ 第33脚",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch14-s06",
+      "title": "端点是编号的收发窗口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s02"
+      ],
+      "narration": "端点是设备里编号的逻辑管道。主机把数据送进 OUT 窗口，设备从里面取；设备把数据放进 IN 窗口，等主机来拿。注意 IN、OUT 站在主机一侧命名，初学最容易看反。除端点 0 双向外，每个端点只支持一个方向。",
+      "on_screen": [
+        "IN/OUT 从主机看",
+        "EP0 双向",
+        "其余端点单方向"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/14-USB.md#3. 端点 Endpoint"
+      ],
+      "memory_anchor": "IN OUT 以主机为准",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s07",
+      "title": "512 字节的 PMA",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s06"
+      ],
+      "narration": "F1 全速设备最多 8 个双向端点，EP0 到 EP7。所有端点的缓冲共享一块 512 字节的专用 SRAM，叫 PMA，要靠 BTABLE 手工分配。缓冲区没分好，端点数据就没有落点。",
+      "on_screen": [
+        "EP0~EP7 共8个",
+        "PMA 512 字节",
+        "BTABLE 手工分配"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/14-USB.md#3. 端点 Endpoint"
+      ],
+      "memory_anchor": "512 字节大家分",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s08",
+      "title": "四种传输分一条总线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s06"
+      ],
+      "narration": "四种传输是在分配同一条总线。控制传输先把设备介绍清楚；批量传输像运货，宁可晚一点也要重发错包；中断传输给键盘留固定问询机会；等时传输给声音画面留固定时段，错过不补。",
+      "on_screen": [
+        "控制:配置",
+        "批量:可靠",
+        "中断:低延迟",
+        "等时:实时允许丢"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/14-USB.md#2. 四种传输类型"
+      ],
+      "memory_anchor": "可靠与实时的取舍",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s09",
+      "title": "控制传输与端点 0",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s08"
+      ],
+      "narration": "控制传输走端点 0，可靠，每帧有预留，枚举和标准请求全靠它。主机读描述符、分地址、选配置，都是端点 0 上的控制传输。所以端点 0 没准备好，后面一切都无从谈起。",
+      "on_screen": [
+        "EP0 专用",
+        "枚举靠它",
+        "每帧有预留"
+      ],
+      "visual_source": "animations/usb-enumeration.svg",
+      "fact_source": [
+        "docs/14-USB.md#2. 四种传输类型",
+        "docs/14-USB.md#5. 枚举 7 步"
+      ],
+      "memory_anchor": "枚举走 EP0",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s10",
+      "title": "批量与中断怎么用",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s08"
+      ],
+      "narration": "批量传输可靠但没有带宽保证，出错重传，虚拟串口和 U 盘都用它。中断传输有固定轮询间隔，延迟有界，适合键盘鼠标这种小数据上报。选哪一类，看你要吞吐量还是要响应时间。",
+      "on_screen": [
+        "批量:吞吐重传",
+        "中断:定期间询",
+        "HID 用中断"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/14-USB.md#2. 四种传输类型",
+        "docs/14-USB.md#6. CDC 虚拟串口 vs HID"
+      ],
+      "memory_anchor": "批量运货中断按铃",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s11",
+      "title": "包长上限别记混",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s10"
+      ],
+      "narration": "全速下批量端点和中断端点的最大包长都是 64 字节。1023 字节只属于全速等时端点，套到中断上就是错。本仓库例程的批量端点是 64 字节，通知端点是 8 字节，都在上限以内。",
+      "on_screen": [
+        "批量/中断 ≤64",
+        "等时才有 1023",
+        "例程:64 与 8"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#4. 描述符层级",
+        "docs/14-USB.md#时序与状态"
+      ],
+      "memory_anchor": "64 与 1023 别混",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s12",
+      "title": "描述符是一棵树",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s06"
+      ],
+      "narration": "主机靠一串描述符认识设备，层级是设备、配置、接口、端点。设备说我是谁、有几套配置；配置说怎么供电、有几个接口；接口承载功能；端点说地址、方向、类型和包长。一处对不上，主机就读不下去。",
+      "on_screen": [
+        "设备→配置",
+        "接口→端点",
+        "一处错全停"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#4. 描述符层级"
+      ],
+      "memory_anchor": "设备配置接口端点",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch14-s13",
+      "title": "设备描述符 18 字节",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s12"
+      ],
+      "narration": "本仓库例程的设备描述符长度是 0x12，也就是 18 字节，bMaxPacketSize0 是 64。VID 是 0x1209，PID 是 0x0001，只给实验板占位。网上 ST 例程常见的 0x0483 和 0x5740 不是这份描述符的值，抄过来就成了别人的设备。",
+      "on_screen": [
+        "长度 0x12=18",
+        "VID 0x1209",
+        "PID 0x0001 占位"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#4. 描述符层级"
+      ],
+      "memory_anchor": "18 字节 0x1209",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch14-s14",
+      "title": "配置集合的总长度",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s13"
+      ],
+      "narration": "配置描述符集合的 wTotalLength 是 0x0043，即 67 字节，是配置、接口、端点各段加起来的总长，不是设备描述符那 18 字节。bMaxPower 是 0x32，单位 2 毫安，所以是 100 毫安。总长度算错，常常卡在选择配置之前。",
+      "on_screen": [
+        "wTotalLength=67",
+        "0x0043",
+        "bMaxPower 0x32=100mA"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#时序与状态"
+      ],
+      "memory_anchor": "总长 67 不是 18",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch14-s15",
+      "title": "接口与端点描述符",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s12"
+      ],
+      "narration": "接口描述符的 bInterfaceClass 决定设备身份：0x02 是 CDC，0x03 是 HID，0x08 是 U 盘，0xFF 是厂商自定义。端点描述符的 bmAttributes 标传输类型：0 控制、2 批量、3 中断、1 等时。这两个字段是主机选驱动的依据。",
+      "on_screen": [
+        "0x02=CDC",
+        "0x03=HID",
+        "bmAttributes 定类型"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#4. 描述符层级"
+      ],
+      "memory_anchor": "类码决定驱动",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch14-s16",
+      "title": "枚举前四步",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s09",
+        "ch14-s13"
+      ],
+      "narration": "枚举开始：主机先看到 D+ 上拉，判断是全速；接着复位总线，D+ 和 D− 同时拉低至少 10 毫秒；然后在默认地址 0 读设备描述符前 8 字节，拿到 bMaxPacketSize0；最后再次复位并设置地址，设备得到 1 到 127 的唯一地址。",
+      "on_screen": [
+        "D+ 上拉被检测",
+        "复位 ≥10ms",
+        "地址0读前8字节",
+        "设置新地址"
+      ],
+      "visual_source": "animations/usb-enumeration.svg",
+      "fact_source": [
+        "docs/14-USB.md#5. 枚举 7 步"
+      ],
+      "memory_anchor": "复位读8字节再编址",
+      "evidence_type": "animation"
+    },
+    {
+      "scene_id": "ch14-s17",
+      "title": "枚举后三步",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s16"
+      ],
+      "narration": "拿到新地址后，主机用它读完整 18 字节设备描述符，拿到 VID 和 PID；再读 9 字节配置描述符，然后读完整配置集合；最后选择配置，设备进入已配置状态，功能真正可用。此后请求都送往新地址。",
+      "on_screen": [
+        "新地址读18字节",
+        "读配置9字节再读全集",
+        "Set Configuration 上线"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/14-USB.md#5. 枚举 7 步"
+      ],
+      "memory_anchor": "选配置才算上线",
+      "evidence_type": "animation"
+    },
+    {
+      "scene_id": "ch14-s18",
+      "title": "CDC 还是 HID",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s15"
+      ],
+      "narration": "CDC 交付一串字节，应用自己切消息，插上就是虚拟串口，Windows 10 起免驱，通常一个批量 IN、一个批量 OUT 加一个中断 IN。HID 交付固定格式的报告，全平台免驱。传数据选 CDC，扮键盘选 HID。",
+      "on_screen": [
+        "CDC=字节流",
+        "HID=固定报告",
+        "CDC 三端点"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/14-USB.md#6. CDC 虚拟串口 vs HID"
+      ],
+      "memory_anchor": "数据走 CDC 按键走 HID",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch14-s19",
+      "title": "CDC 代码只有回调",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch14-s18"
+      ],
+      "narration": "CubeMX 生成工程后，要写代码的只有 usbd_cdc_if.c 的回调。CDC_Transmit_FS 是异步的：交给 USB 栈就返回，真正上线靠中断；上一包没发完再调会返回 USBD_BUSY。接收回调里必须重新挂载接收，否则只能收到一包。",
+      "on_screen": [
+        "只改 usbd_cdc_if.c",
+        "发送异步 有BUSY",
+        "接收后重新挂载"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/14-USB.md#代码实现"
+      ],
+      "memory_anchor": "发送异步接收重挂",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch14-s20",
+      "title": "时钟错：描述符请求失败",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch14-s04",
+        "ch14-s16"
+      ],
+      "narration": "最常见的失败：USBPRE 被置成 1，USB 时钟变成 72 兆而不是 48 兆。主机读设备描述符时就失败，设备管理器报描述符请求失败。卡在第 3、4 步，先核时钟和描述符字段，别急着改代码。",
+      "on_screen": [
+        "USBPRE=1 → 72MHz",
+        "读描述符即失败",
+        "先查时钟"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "docs/14-USB.md#常见坑与出处",
+        "docs/14-USB.md#7. CubeMX 中间件配置要点"
+      ],
+      "memory_anchor": "卡在读描述符先查钟",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch14-s21",
+      "title": "上拉错：主机看不见",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch14-s05"
+      ],
+      "narration": "如果主机完全看不到设备，多半是上拉出了问题。上拉没接，主机根本不知道你插上来了；上拉错接到 D−，主机把你当低速设备。记住阻值 1.5 千欧，位置在第 33 脚 D+ 这一侧。",
+      "on_screen": [
+        "没上拉=没插入",
+        "接到D−=低速误判",
+        "1.5kΩ 在第33脚"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#常见坑与出处",
+        "docs/14-USB.md#原理与适用范围"
+      ],
+      "memory_anchor": "看不见先查上拉",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch14-s22",
+      "title": "总长度错：卡在配置前",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch14-s14",
+        "ch14-s17"
+      ],
+      "narration": "把设备描述符的 18 当成配置集合总长，wTotalLength 就和真实字节数打架，枚举卡在选择配置之前。正确值是 67，即 0x0043。改完后故意再改错一次，确认失败停点可重复。",
+      "on_screen": [
+        "18≠总长",
+        "wTotalLength=67",
+        "停点应可复现"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#常见坑与出处",
+        "docs/14-USB.md#动手实验"
+      ],
+      "memory_anchor": "卡在读配置查总长",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch14-s23",
+      "title": "VID/PID 抄错了人家",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch14-s13"
+      ],
+      "narration": "枚举出来的是 ST 的 0x0483 和 0x5740，说明描述符是从例程原样抄来的。本仓库用 0x1209 和 0x0001，PID 只是实验占位，并没有注册。在自己的电脑上认设备可以，别把占位号印到要送人的产品上。",
+      "on_screen": [
+        "0x0483/0x5740 是ST的",
+        "本仓库 0x1209/0x0001",
+        "占位号不上产品"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/14-USB.md#常见坑与出处",
+        "docs/14-USB.md#原理与适用范围"
+      ],
+      "memory_anchor": "VID 认出门第",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch14-s24",
+      "title": "USB 和 CAN 共用一条中断",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch14-s19"
+      ],
+      "narration": "F103 里 USB 低优先级中断和 CAN 接收邮箱 0 共用同一个入口，中容量向量表叫 USB_LP_CAN_RX0，两只脚 PA11、PA12 也是共用的。两套例程编进同一个工程，服务函数分不清谁在叫，另一边就丢数据。两个例程必须分开编。",
+      "on_screen": [
+        "USB_LP_CAN_RX0",
+        "PA11/PA12 也共用",
+        "两例程分开编"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#常见坑与出处"
+      ],
+      "memory_anchor": "USB 与 CAN 二选一",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch14-s25",
+      "title": "实验一：留下枚举证据",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch14-s17",
+        "ch14-s22"
+      ],
+      "narration": "抓一份完整枚举：GET_DESCRIPTOR、SET_ADDRESS、SET_CONFIGURATION 都在，同时记下 USBCLK、D+ 上拉和 wTotalLength。再故意把总长度改错一次，确认停点可重复。抓包说明请求顺序，示波器才说明电气质量，各层证据不能互换。",
+      "on_screen": [
+        "抓包+时钟+上拉+总长",
+        "改错一次看停点",
+        "证据分层不互换"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/14-USB.md#动手实验"
+      ],
+      "memory_anchor": "枚举要留证据链",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch14-s26",
+      "title": "实验二：CDC 长度扫一遍",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch14-s19",
+        "ch14-s25"
+      ],
+      "narration": "做 CDC 数据闭环：发 1、64、65、256 字节四种长度，记录 USBD_BUSY 次数、主机收到的长度和 CRC。65 字节会跨包，最能暴露缓冲问题。上一包没发完，绝不能覆盖发送缓冲区。",
+      "on_screen": [
+        "1/64/65/256 字节",
+        "记 BUSY 与 CRC",
+        "未发完不覆盖"
+      ],
+      "visual_source": "illustrations/ch14-mid-handdraw.svg",
+      "fact_source": [
+        "docs/14-USB.md#动手实验",
+        "docs/14-USB.md#代码实现"
+      ],
+      "memory_anchor": "四种长度验闭环",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch14-s27",
+      "title": "排障口诀回顾",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch14-s20",
+        "ch14-s21",
+        "ch14-s22"
+      ],
+      "narration": "合上书，把排障口诀背下来：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点没准备好。抓包里第一笔没被正确回应的请求，就是排查起点。",
+      "on_screen": [
+        "读描述符→时钟",
+        "读配置→总长",
+        "最后一步→端点"
+      ],
+      "visual_source": "illustrations/ch14-handdraw.svg",
+      "fact_source": [
+        "docs/14-USB.md#5. 枚举 7 步",
+        "docs/14-USB.md#常见坑与出处"
+      ],
+      "memory_anchor": "停在哪步查哪样",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch14-s28",
+      "title": "三问收束",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch14-s27"
+      ],
+      "narration": "三个问题收束本章。F103 的 D+ 和 D− 在哪两只脚？第 32 脚 PA11 和第 33 脚 PA12。48 兆怎么从 72 兆得到？USBPRE 置 0 除以 1.5。CDC 和 HID 谁更像串口？CDC，它交付的就是字节流。",
+      "on_screen": [
+        "DM/DP 在哪",
+        "72→48 怎么来",
+        "CDC 更像串口"
+      ],
+      "visual_source": "illustrations/ch14-mid-handdraw.svg",
+      "fact_source": [
+        "docs/14-USB.md#原理与适用范围",
+        "docs/14-USB.md#6. CDC 虚拟串口 vs HID"
+      ],
+      "memory_anchor": "三问全对即毕业",
+      "evidence_type": "recall"
+    }
+  ]
+}

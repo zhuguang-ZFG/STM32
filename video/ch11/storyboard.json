@@ -1,0 +1,591 @@
+{
+  "schema_version": 1,
+  "chapter": "11",
+  "slug": "rtc-long",
+  "title": "RTC 与看门狗：让时间可信、让复位可证",
+  "short_source": "tools/narration.py#CHAPTERS[11]",
+  "scenes": [
+    {
+      "scene_id": "ch11-s01",
+      "title": "板子为什么半夜自己重启",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "一台跑了三个月的采集板，半夜自己重启了，日志里什么错误都没有。是没有喂狗，还是狗根本不在岗？LED 重新闪只能证明系统重启，不能证明是看门狗咬的。这一课我们把时间和复位都做成可以出示的证据。",
+      "on_screen": [
+        "重启≠证据",
+        "复位原因要读旗",
+        "时间和复位都要可证"
+      ],
+      "visual_source": "illustrations/ch11-handdraw.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "复位要有旗作证",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s02",
+      "title": "RTC 住在备份域",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s01"
+      ],
+      "narration": "RTC 和几个备份寄存器住在备份域，这个小房间由第 1 脚 VBAT 单独供电。主电源断了，只要纽扣电池还在，秒计数器就继续走。所以断电再上电，日历不丢——但前提是时钟源选对了。",
+      "on_screen": [
+        "备份域独立供电",
+        "VBAT 接 CR2032",
+        "主电掉了表照走"
+      ],
+      "visual_source": "illustrations/ch11-mid-handdraw.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#1. RTC 与备份域",
+        "docs/11-RTC与看门狗.md#硬件与接线"
+      ],
+      "memory_anchor": "备份域靠 VBAT 续命",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s03",
+      "title": "时钟源怎么选",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s02"
+      ],
+      "narration": "RTC 的时钟源有三个候选：外部 32.768 千赫 LSE 最准，精度由晶振决定；内部 LSI 典型 40 千赫，手册给的范围是 30 到 60 千赫，只能算大概；HSE 分频 128 份也能用，但要占主晶振。要准就焊 LSE。",
+      "on_screen": [
+        "LSE 32.768kHz",
+        "LSI 30/40/60kHz",
+        "HSE/128 备选"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#1. RTC 与备份域",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "要准走 LSE",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch11-s04",
+      "title": "LSE 占着 PC14 和 PC15",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s03"
+      ],
+      "narration": "LSE 晶振焊在第 3 脚 PC14 和第 4 脚 PC15 之间，这两只脚一旦被晶振占用，就不能再当普通 GPIO。负载电容要按晶振手册选，电容过大晶振可以不起振——这是「RTC 不走时」排查的第一站。",
+      "on_screen": [
+        "PC14=OSC32_IN",
+        "PC15=OSC32_OUT",
+        "电容过大不起振"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#硬件与接线",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "LSE 占脚要记账",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch11-s05",
+      "title": "PRL 分频：为什么是 32767",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s03"
+      ],
+      "narration": "RTC 的分频比是 PRL 加一。32768 赫兹要得到 1 赫兹秒脉冲，PRL 必须写 32767，这样 32768 除以 32768 正好整除。写成 32768 就多了 32769 分频，秒脉冲偏慢，一天能漂出几十秒。",
+      "on_screen": [
+        "分频比=PRL+1",
+        "32768/32768=1Hz",
+        "写 32768 偏慢"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#时序与状态"
+      ],
+      "memory_anchor": "32767 不是 32768",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch11-s06",
+      "title": "LSI 做不出稳定的 1 Hz",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s05"
+      ],
+      "narration": "为什么不用 LSI 跑 RTC？LSI 典型 40 千赫，实际在 30 到 60 千赫之间漂，任何整数 PRL 都补不齐这个漂移。LSI 适合做唤醒和喂看门狗，做日历必须换 LSE，这是取舍不是疏忽。",
+      "on_screen": [
+        "LSI 漂 30–60kHz",
+        "整数 PRL 补不齐",
+        "日历必须 LSE"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#1. RTC 与备份域"
+      ],
+      "memory_anchor": "LSI 喂狗，LSE 守时",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s07",
+      "title": "F1 的 RTC 只会数秒",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s05"
+      ],
+      "narration": "F103 的 RTC 硬件上只有一个 32 位秒计数器，年月日时分秒全靠软件换算。F4 才是 BCD 硬件日历，TR 和 DR 寄存器直接存日期时间。所以 F1 上的闹钟是比较秒数，不是比较「每天 8 点」。",
+      "on_screen": [
+        "F1=32 位秒计数",
+        "年月日软件换算",
+        "F4 才有 BCD 日历"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#1. RTC 与备份域",
+        "docs/11-RTC与看门狗.md#3. 日历、闹钟、唤醒与时间戳"
+      ],
+      "memory_anchor": "F1 的表只数秒",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s08",
+      "title": "BKP 便签：魔法值",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s02"
+      ],
+      "narration": "备份寄存器是备份域里的便签纸。C8 有 10 个 16 位，共 20 字节，由 VBAT 续电；资料里的 42 个是大容量型号。典型用法：上电读 BKP_DR1，等于 0xA5A5 说明时间设过，否则初始化日历再贴上魔法值。",
+      "on_screen": [
+        "10 个 16 位=20 字节",
+        "0xA5A5 魔法值",
+        "42 个是大容量"
+      ],
+      "visual_source": "diagrams/peripheral-bus.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#2. BKP 备份寄存器",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "便签在就不用重设",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch11-s09",
+      "title": "写备份域前先解锁",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s08"
+      ],
+      "narration": "备份域默认上锁。写 RTC 或 BKP 之前，先开 PWR 和 BKP 的时钟，再把 PWR_CR 的 DBP 位置一解锁。写不进去的时候，多半不是晶振坏了，而是域还锁着——先查 DBP，再查时钟使能。",
+      "on_screen": [
+        "开 PWR/BKP 时钟",
+        "DBP 置一解锁",
+        "写不进先查锁"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#代码实现"
+      ],
+      "memory_anchor": "先解锁再写入",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch11-s10",
+      "title": "IWDG：独立的最后保险",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s01"
+      ],
+      "narration": "独立看门狗用自己的 LSI 时钟，跟主时钟完全无关。程序卡死、主时钟停了，它照样往下数，数到 0 就复位。它是安全底线：只在喂晚了才复位，喂早不复位。Stop 和 Standby 模式下它也照数不误。",
+      "on_screen": [
+        "时钟独立 LSI",
+        "减到 0 才复位",
+        "低功耗模式照数"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "IWDG 只罚迟到",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s11",
+      "title": "1 秒超时怎么算",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s10"
+      ],
+      "narration": "超时公式是预分频除以 LSI 频率，再乘 Reload 加一。预分频 64、LSI 典型 40 千赫，计数频率是 625 赫兹；要 1 秒，Reload 写 624，因为 624 加一等于 625 拍。写成 625 就多一个计数，是六百二十六分之六百二十五秒。",
+      "on_screen": [
+        "T=64/40000×625",
+        "计数频率 625Hz",
+        "Reload=624 才 1s"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#时序与状态"
+      ],
+      "memory_anchor": "1 秒=Reload 624",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch11-s12",
+      "title": "LSI 漂移吃掉你的余量",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s11"
+      ],
+      "narration": "LSI 不是 40 千赫整。30 千赫时同样的配置超时变成三分之四秒，60 千赫时是三分之二秒，正好是慢端的一半。所以标称 1 秒只是典型值，不是保证值；喂狗周期要按两端漂移留足余量。",
+      "on_screen": [
+        "30kHz→4/3s",
+        "60kHz→2/3s",
+        "典型值≠保证值"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#常见坑与出处"
+      ],
+      "memory_anchor": "按漂移端留余量",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch11-s13",
+      "title": "WWDG：喂早喂晚都复位",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s10"
+      ],
+      "narration": "窗口看门狗挂在 PCLK1 上，36 兆赫、预分频 8、初值 0x7F，超时约 58.25 毫秒。它画了一个窗口：计数器还大于窗口值 0x50 就喂，立刻复位；跌过 0x40 还没喂，也复位。太早说明跑飞了，太晚说明卡住了。",
+      "on_screen": [
+        "PCLK1 36MHz",
+        "超时 58.25ms",
+        "窗口内才允许喂"
+      ],
+      "visual_source": "animations/iwdg-window.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "WWDG 早晚都咬",
+      "evidence_type": "animation"
+    },
+    {
+      "scene_id": "ch11-s14",
+      "title": "58.25 毫秒的算术",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s13"
+      ],
+      "narration": "验算一遍：PCLK1 36 兆赫，先除 4096 再乘预分频 8，再数 0x7F 减 0x3F 共 64 拍。36 兆分之一乘 4096 乘 8 乘 64，等于 58.25 毫秒。WWDG 的窗口值 0x50 决定允许多早喂，早于它就触发复位。",
+      "on_screen": [
+        "1/36e6×4096×8×64",
+        "=58.25ms",
+        "窗口上界 0x50"
+      ],
+      "visual_source": "animations/iwdg-window.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#时序与状态"
+      ],
+      "memory_anchor": "58.25ms 可验算",
+      "evidence_type": "calculation"
+    },
+    {
+      "scene_id": "ch11-s15",
+      "title": "两只狗同时在岗",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s10",
+        "ch11-s13"
+      ],
+      "narration": "IWDG 和 WWDG 可以同时用：WWDG 跟 PCLK1，精度好，盯周期性任务是否按点执行；IWDG 跟 LSI，主时钟崩了它还在，负责兜底。一个管节奏，一个管死活，分工不同，不互相替代。",
+      "on_screen": [
+        "WWDG 管节奏",
+        "IWDG 管死活",
+        "可同时在岗"
+      ],
+      "visual_source": "animations/iwdg-window.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "节奏归 WWDG，命归 IWDG",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s16",
+      "title": "喂狗放在哪里",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s15"
+      ],
+      "narration": "把喂狗放在一个和业务无关的定时中断里，主循环死锁了中断照样喂，等于没养。喂狗必须放在你确认「这一圈真的走完了」的地方。WWDG 更进一步：喂早了也复位，所以它能发现程序跑得太快。",
+      "on_screen": [
+        "无关中断喂=没养",
+        "喂在走完一圈处",
+        "WWDG 还抓跑太快"
+      ],
+      "visual_source": "animations/iwdg-window.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "喂狗要喂在证据上",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch11-s17",
+      "title": "健康监督者模式",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s16"
+      ],
+      "narration": "多任务下别让每个任务各自喂狗：卡死的任务不喂，其他任务照喂，反而制造假健康。正确做法是健康监督者——每个任务完成一轮只更新自己的健康纪元，监督任务检查全部纪元都前进，才统一刷新硬件看门狗。",
+      "on_screen": [
+        "任务只更新纪元",
+        "监督者统一喂",
+        "任一卡死就停喂"
+      ],
+      "visual_source": "diagrams/watchdog-reset-evidence.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "纪元全动才喂狗",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch11-s18",
+      "title": "复位旗与持久 boot_id",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s01"
+      ],
+      "narration": "芯片为什么重启，复位状态寄存器里有记录：IWDGRSTF、WWDGRSTF、上电复位是不同的旗。启动代码先读旗、把持久 boot_id 加一，再清旗。不清掉，下一次就分不清是新复位还是旧旗残留。",
+      "on_screen": [
+        "读 IWDGRSTF",
+        "boot_id 加一",
+        "读完要清旗"
+      ],
+      "visual_source": "diagrams/watchdog-reset-evidence.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#动手实验",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "先读旗再清旗",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch11-s19",
+      "title": "调试冻结与选项字节",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch11-s11"
+      ],
+      "narration": "断点停住时 IWDG 还在数，板子会自己复位。用 __HAL_DBGMCU_FREEZE_IWDG() 冻住它，手册只印了位名 DBG_IWDG_STOP。选项字节里 WDG_SW 写 0，上电就由硬件启动看门狗，软件想关也关不掉。",
+      "on_screen": [
+        "调试冻结 IWDG",
+        "DBG_IWDG_STOP",
+        "WDG_SW=0 硬件狗"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#超时怎么算，调试时怎么冻住",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "冻结归调试，硬件归选项",
+      "evidence_type": "code"
+    },
+    {
+      "scene_id": "ch11-s20",
+      "title": "Reload 写成 625",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch11-s11"
+      ],
+      "narration": "超时比 1 秒多一拍，查半天查不出。原因是少算了加一的位置：预分频 64、40 千赫下计数频率 625 赫兹，Reload 写 625 时超时是六百二十六拍除以六百二十五赫兹。改回 624，加一永远属于公式不属于你。",
+      "on_screen": [
+        "超时多一拍",
+        "+1 属于公式",
+        "Reload 改回 624"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#常见坑与出处",
+        "docs/11-RTC与看门狗.md#时序与状态"
+      ],
+      "memory_anchor": "加一在公式里",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch11-s21",
+      "title": "PRL 写成 32768",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch11-s05"
+      ],
+      "narration": "秒脉冲偏慢，日历每天漂。分频比是 PRL 加一，32768 赫兹要写成 32767 才整除出 1 赫兹；写 32768 得到的是 32769 分频。这类偏慢不会报错，只会在几天后对表时露馅。",
+      "on_screen": [
+        "秒脉冲偏慢",
+        "32769 分频",
+        "PRL 改 32767"
+      ],
+      "visual_source": "diagrams/sample-11-iwdg-1s.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#常见坑与出处",
+        "docs/11-RTC与看门狗.md#原理与适用范围"
+      ],
+      "memory_anchor": "慢钟不报错",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch11-s22",
+      "title": "LSE 不起振",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch11-s04"
+      ],
+      "narration": "初始化 LSE 超时失败。先别判晶振死刑：32.768 千赫起振本来就慢，超时给太短会误判；再看负载电容是否按晶振手册选、焊接是否可靠。调试阶段可以临时切 LSI，先把日历逻辑跑通再回来追晶振。",
+      "on_screen": [
+        "起振慢≠坏了",
+        "超时别给太短",
+        "先切 LSI 跑通"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#常见坑与出处",
+        "docs/11-RTC与看门狗.md#硬件与接线"
+      ],
+      "memory_anchor": "先查电容再换晶振",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch11-s23",
+      "title": "断点一停板子就复位",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch11-s19"
+      ],
+      "narration": "单步调试时板子莫名重启，因为断点停住了程序，IWDG 却还在倒数。处理办法是调试配置里冻结看门狗，调 __HAL_DBGMCU_FREEZE_IWDG()。记住这只是调试手段，量产固件里不需要也不应该有。",
+      "on_screen": [
+        "停点≠停狗",
+        "调试时冻结",
+        "FREEZE_IWDG"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#常见坑与出处",
+        "docs/11-RTC与看门狗.md#超时怎么算，调试时怎么冻住"
+      ],
+      "memory_anchor": "断点要连狗一起冻",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch11-s24",
+      "title": "把 IWDG 当成有窗口",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch11-s13"
+      ],
+      "narration": "独立看门狗一喂就复位，像长了窗口——多半是把两只狗的行为记混了。IWDG 喂早是允许的，它只在计数减到 0 时复位；「喂早也复位」只属于 WWDG。要窗口约束就用 WWDG，别指望 IWDG 替你抓跑太快。",
+      "on_screen": [
+        "IWDG 无窗口",
+        "喂早不复位",
+        "要窗口用 WWDG"
+      ],
+      "visual_source": "animations/iwdg-window.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#常见坑与出处",
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "窗口是 WWDG 的",
+      "evidence_type": "failure"
+    },
+    {
+      "scene_id": "ch11-s25",
+      "title": "实验一：故意不喂狗",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch11-s18"
+      ],
+      "narration": "设约 1 秒超时，用 GPIO 标出停止喂狗的起点，然后停止喂狗。重启后先读 IWDGRSTF、让持久 boot_id 加一，再清旗。重复 5 次，记录每次的实际延迟范围——按 LSI 漂移，它该落在典型 1 秒附近的区间里。",
+      "on_screen": [
+        "GPIO 标故障起点",
+        "读 IWDGRSTF",
+        "5 次记录延迟"
+      ],
+      "visual_source": "diagrams/watchdog-reset-evidence.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#动手实验"
+      ],
+      "memory_anchor": "停喂→复位→旗对得上",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch11-s26",
+      "title": "实验二：WWDG 三组对照",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch11-s14",
+        "ch11-s25"
+      ],
+      "narration": "制造三种喂法：喂早、喂晚、落在 0x40 到 0x50 窗口内。前两种应复位且复位旗指向 WWDG，窗口内应持续运行。同时做 RTC 持久性实验：写好时间和 BKP 标记，断电 60 秒再恢复，核对时间与魔法值。",
+      "on_screen": [
+        "早/晚/窗口内三组",
+        "旗指向 WWDG",
+        "断电 60s 核时间"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#动手实验"
+      ],
+      "memory_anchor": "三组喂法三面旗",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch11-s27",
+      "title": "合上书，三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch11-s26"
+      ],
+      "narration": "三问自测。第一，主电源掉了，RTC 靠什么继续走？备份域和 VBAT。第二，哪只狗喂早了也会复位？窗口看门狗。第三，为什么不能把喂狗只放进无关的定时中断？因为主循环死锁时中断还在喂，狗就成了摆设。",
+      "on_screen": [
+        "VBAT 续走",
+        "WWDG 抓喂早",
+        "中断喂=摆设"
+      ],
+      "visual_source": "illustrations/ch11-mid-handdraw.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#动手实验",
+        "docs/11-RTC与看门狗.md#4. IWDG 与 WWDG 对比"
+      ],
+      "memory_anchor": "三问能答再翻页",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch11-s28",
+      "title": "一句话带走",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch11-s27"
+      ],
+      "narration": "带走三句话：RTC 走在备份域，主电掉了靠 VBAT 和 LSE；PRL 和 Reload 的加一都在公式里，32767 和 624 才各得其所；独立看门狗只罚迟到，窗口看门狗早晚都罚，复位后读旗留证。",
+      "on_screen": [
+        "备份域+VBAT",
+        "加一在公式里",
+        "复位要留旗"
+      ],
+      "visual_source": "illustrations/ch11-handdraw.svg",
+      "fact_source": [
+        "docs/11-RTC与看门狗.md#原理与适用范围",
+        "docs/11-RTC与看门狗.md#时序与状态"
+      ],
+      "memory_anchor": "加一归公式，复位留旗",
+      "evidence_type": "recall"
+    }
+  ]
+}

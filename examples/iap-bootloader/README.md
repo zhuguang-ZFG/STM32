@@ -71,22 +71,26 @@ HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, addr + i, half);
 **3) 跳转前四步（最关键）**
 
 ```c
-__disable_irq();                 /* ① 关中断 */
+__disable_irq();                 /* ① 关全局中断 */
+for (i = 0; i < 8; i++) {        /*    关闭所有可屏蔽中断并清挂起 */
+    NVIC->ICER[i] = 0xFFFFFFFF;
+    NVIC->ICPR[i] = 0xFFFFFFFF;
+}
 SysTick->CTRL = 0;               /*    关 SysTick，避免跳转时被打断 */
 HAL_RCC_DeInit(); HAL_DeInit();  /* ② 复位外设 */
 __set_MSP(app_stack);            /* ③ 设主栈指针 = 向量表[0] */
 SCB->VTOR = app_addr;            /*    设向量表偏移 = APP 基址 */
-__enable_irq();                  /* ④ 开中断并跳转 */
+__enable_irq();                  /* ④ 开中断后立刻跳转，中间不加代码 */
 ((pFunction)app_entry)();        /*    app_entry = 向量表[1] */
 ```
 
-少了 `SCB->VTOR` 或没设 MSP，APP 里的中断会跳到 Bootloader 的向量表 → 死机。
+少了 `SCB->VTOR` 或没设 MSP，APP 里的中断会跳到 Bootloader 的向量表 → 死机。不先清 NVIC 的使能与挂起位就开中断，`__enable_irq()` 到跳转之间可能先执行一个 APP 还没初始化好的中断。
 
 **4) 校验（累加和，量产建议 CRC32）**
 
 ```c
 if (checksum32((const uint8_t *)app_addr, fw_len) != csum) return -1;
-/* 校验失败保留旧 APP，避免变砖 */
+/* 校验失败留在 Bootloader 升级模式，等待重传；单槽没有旧 APP 可保留 */
 ```
 
 ## 五、编译烧录步骤

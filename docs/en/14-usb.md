@@ -14,7 +14,7 @@
   <video width="640" controls poster="../../assets/video/ch14-usb.png">
     <source src="../../assets/video/ch14-usb.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch14-usb.mp4">MP4</a> · <a href="../../assets/video/ch14-usb.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.7 min). <a href="../../assets/video/ch14-usb.mp4">MP4</a> · <a href="../../assets/video/ch14-usb.srt">subtitles</a></sub>
 </p>
 
 <details>

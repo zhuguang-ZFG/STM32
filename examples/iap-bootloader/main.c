@@ -77,16 +77,20 @@ int main(void)
     if (uart_wait_for_upgrade(WAIT_UPGRADE_MS))
     {
         uint32_t fw_size = 0U;
-        if (uart_receive_firmware(APP_ADDR, &fw_size) == 0)
+
+        /* 失败时 APP 区可能已被擦除或只写了一半，绝不能跳转；
+           留在升级模式继续等下一个完整固件包重传。 */
+        while (uart_receive_firmware(APP_ADDR, &fw_size) != 0)
         {
-            /* 升级成功：LED 快闪 3 次提示 */
-            for (int i = 0; i < 3; i++)
-            {
-                HAL_GPIO_TogglePin(LED_PORT, LED_PIN);
-                HAL_Delay(100);
-            }
+            /* 等重传 */
         }
-        /* 升级失败也继续往下，跳回旧 APP */
+
+        /* 升级成功：LED 快闪 3 次提示 */
+        for (int i = 0; i < 3; i++)
+        {
+            HAL_GPIO_TogglePin(LED_PORT, LED_PIN);
+            HAL_Delay(100);
+        }
     }
 
     jump_to_app(APP_ADDR);
@@ -262,7 +266,7 @@ static int uart_receive_firmware(uint32_t app_addr, uint32_t *out_size)
 
     if (checksum32((const uint8_t *)app_addr, fw_len) != csum)
     {
-        return -1;      /* 校验失败，保留旧 APP（本示例未做双区回退） */
+        return -1;      /* 校验失败：留在 Bootloader 等重传，单槽没有旧 APP 可回退 */
     }
 
     *out_size = total;
@@ -286,8 +290,13 @@ static void jump_to_app(uint32_t app_addr)
         error_handler();                /* APP 区无有效固件 */
     }
 
-    /* 1) 关全局中断 + 关 SysTick */
+    /* 1) 关全局中断，关闭所有可屏蔽中断并清掉已挂起的请求；关 SysTick */
     __disable_irq();
+    for (uint32_t i = 0U; i < 8U; i++)
+    {
+        NVIC->ICER[i] = 0xFFFFFFFFU;   /* 关闭所有可屏蔽中断 */
+        NVIC->ICPR[i] = 0xFFFFFFFFU;   /* 清掉已挂起的请求 */
+    }
     SysTick->CTRL = 0U;
     SysTick->LOAD = 0U;
     SysTick->VAL  = 0U;
@@ -300,7 +309,8 @@ static void jump_to_app(uint32_t app_addr)
     __set_MSP(app_stack);
     SCB->VTOR = app_addr;
 
-    /* 4) 重新开中断并跳到 APP 复位入口 */
+    /* 4) 开中断后立刻跳到 APP 复位入口，中间不能再插入代码。
+          可屏蔽中断已在第 1 步清空，剩余窗口只有不可屏蔽的 NMI/硬件故障。 */
     __enable_irq();
     ((pFunction)app_entry)();
 }

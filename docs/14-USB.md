@@ -14,7 +14,7 @@
   <video width="640" controls poster="../assets/video/ch14-usb.png">
     <source src="../assets/video/ch14-usb.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ 本章讲解视频（2.6 分钟）。<a href="../assets/video/ch14-usb.mp4">MP4</a> · <a href="../assets/video/ch14-usb.srt">字幕</a></sub>
+  <br><sub>▲ 本章讲解视频（2.7 分钟）。<a href="../assets/video/ch14-usb.mp4">MP4</a> · <a href="../assets/video/ch14-usb.srt">字幕</a></sub>
 </p>
 
 <details>
