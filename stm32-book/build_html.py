@@ -1989,6 +1989,11 @@ def _stamp_page_numbers(
         document.close()
 
 
+def _raw_pdf_path(html_path: Path, manifest: dict) -> Path:
+    """Language-suffixed intermediate so concurrent zh/en builds cannot collide."""
+    return html_path.with_name(f".stm32-book.raw.{edition_language(manifest)}.pdf")
+
+
 def build_pdf(
     html_path: Path,
     browser_override: str | None = None,
@@ -2006,7 +2011,7 @@ def build_pdf(
 
     manifest = load_manifest(manifest_path)
     output = html_path.with_name(manifest.get("pdf_name", PDF_NAME))
-    raw_pdf = html_path.with_name(f".stm32-book.raw.{edition_language(manifest)}.pdf")
+    raw_pdf = _raw_pdf_path(html_path, manifest)
     try:
         with sync_playwright() as playwright:
             launch_args = {"headless": True}

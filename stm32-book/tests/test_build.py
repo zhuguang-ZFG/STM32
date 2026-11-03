@@ -231,6 +231,18 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual([f"{index:02d}" for index in range(29)], chinese_numbers)
         self.assertEqual(chinese_numbers, english_numbers)
 
+    def test_raw_pdf_intermediate_is_named_per_language(self) -> None:
+        """Concurrent zh/en builds share one output dir; a shared raw name let the en
+        Chromium print truncate the raw while zh stamping read it (corrupt 52 MB PDF).
+        The intermediate must therefore differ per edition."""
+        zh_raw = self.builder._raw_pdf_path(Path("dist") / "book.html", self.manifest)
+        english_manifest = json.loads((BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8"))
+        en_raw = self.builder._raw_pdf_path(Path("dist") / "book.html", english_manifest)
+
+        self.assertEqual(Path("dist") / ".stm32-book.raw.zh.pdf", zh_raw)
+        self.assertEqual(Path("dist") / ".stm32-book.raw.en.pdf", en_raw)
+        self.assertNotEqual(zh_raw, en_raw)
+
     def test_narrated_blocks_include_direct_mp4_links(self) -> None:
         generator_path = BOOK_DIR.parent / "tools" / "gen_narrated.py"
         spec = importlib.util.spec_from_file_location("narrated_generator_test", generator_path)
