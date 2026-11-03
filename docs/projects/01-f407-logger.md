@@ -60,6 +60,12 @@ python3 scripts/device-console.py start --port COMx
 
 record 写入新的 CSV 文件；请使用新的输出路径，避免覆盖之前的数据。默认周期 100ms；period 允许 100–1000ms 且为 10ms 倍数，filter-shift 允许 0–6，0 为直通。configure 只改变运行配置，save 成功才持久化；旧 generation 的在途采样会丢弃计数，防止误标新配置。
 
+## 动画：样本队列的过载保护
+
+队列灌满之后发生什么，是本章最重要的一个设计决策：新样本被挡在门外、丢新计数 +1——显式过载保护，不是隐式内存溢出。
+
+![样本队列过载保护动画：灌入、灌满、丢新计数、取走一批](/anim/logger-queue-overflow.svg)
+
 ## 四层实现
 
 五站数据流先收进一张图：采样主路之外，还有一条影子拷贝的配置通路。

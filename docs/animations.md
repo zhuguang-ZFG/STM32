@@ -249,6 +249,10 @@ title: 动画演示中心
 
 ![双核自旋锁：互斥、自旋与释放](/anim/dual-core-spinlock.svg)
 
+## 项目实战
+
+![J1 样本队列过载保护：灌满丢新计数 +1，取走腾格子](/anim/logger-queue-overflow.svg)
+
 ## AI 辅助开发
 
 ![A0 工具地图：MCP 是路，三个 agent 工具是岛](/anim/ai-tool-map.svg)
