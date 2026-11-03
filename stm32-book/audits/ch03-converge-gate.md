@@ -94,7 +94,7 @@
 | --- | --- |
 | `assets/illustrations/ch03-handdraw.svg` | `f42797497bced104561e330c8e8293c26ef0c2142c0c6935175d70a5bf185ef0` |
 | `assets/diagrams/stack-gpio-pc13-led.png` | `3677daa7780d086868437f41450664e8d2faa6c58ed07ccbadeb188c1fa960d9` |
-| `assets/diagrams/sample-03-gpio-led.svg` | `35a7e6901de591eee1e61a095904be4e2a926c4c351c386d20b8bfda714a6abe` |
+| `assets/diagrams/sample-03-gpio-led.svg` | `ed09310282b4f0b6b6abf6bb529636b0a276d8fcb9262f06cfc8b6044e407d04` |
 
 ## §15.4 B1 三表（ch03 模板）
 
