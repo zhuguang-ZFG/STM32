@@ -1,0 +1,585 @@
+{
+  "schema_version": 1,
+  "chapter": "17",
+  "slug": "debug-long",
+  "title": "调试与性能优化：SWD、SWO、HardFault 与可测量优化",
+  "short_source": "tools/narration.py#CHAPTERS[17]",
+  "scenes": [
+    {
+      "scene_id": "ch17-s01",
+      "title": "会调试的人先收集证据",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "断点停在哪、关键寄存器是多少、线上有没有边沿，这三样就是证据。不会调试的人靠改一行试试。这一章把证据三件套配齐：SWD 抓现场，HardFault 寄存器分类，DWT 周期计数把耗时量出来。",
+      "on_screen": [
+        "证据三件套",
+        "寄存器/栈帧/边沿",
+        "不靠改一行试试"
+      ],
+      "visual_source": "illustrations/ch17-handdraw.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#原理与适用范围"
+      ],
+      "memory_anchor": "先证据后改代码",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch17-s02",
+      "title": "SWD 两根线就能断点",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s01"
+      ],
+      "narration": "SWD 只用 SWDIO 加 SWCLK 两根信号线再加地，第 34 脚 PA13 是 SWDIO，第 37 脚 PA14 是 SWCLK。JTAG 要四根线，只在多器件菊花链或老工具里用。SWD 是 Cortex-M 的首选调试接口。",
+      "on_screen": [
+        "SWDIO+SWCLK+GND",
+        "PA13/PA14",
+        "JTAG 四线退场"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#1. SWD vs JTAG"
+      ],
+      "memory_anchor": "SWD 两线 PA13/PA14",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch17-s03",
+      "title": "调试脚改普通 GPIO 会失联",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s02"
+      ],
+      "narration": "复位后 PA13/PA14 默认留给调试口。如果把它们配成普通 GPIO 又关掉调试，就会烧录后连不上。真要复用，至少调 __HAL_AFIO_REMAP_SWJ_NOJTAG 只关 JTAG，把 SWD 保下来。",
+      "on_screen": [
+        "改 GPIO 后连不上",
+        "NOJTAG 保留 SWD",
+        "烧录即失联"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#1. SWD vs JTAG",
+        "docs/17-调试与性能优化.md#代码实现"
+      ],
+      "memory_anchor": "复用调试脚要留保底",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s04",
+      "title": "SWO 让打印不占串口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s02"
+      ],
+      "narration": "SWO 让 MCU 通过 ITM 从一根线输出调试信息，不占用 UART。ITM 有 32 个通道，Port 0 常作 printf，底层是 ITM_SendChar。前提是探针支持 SWO，并在 IDE 里把 SWO 时钟配成内核时钟。",
+      "on_screen": [
+        "ITM 32 通道 Port 0",
+        "ITM_SendChar",
+        "不占 UART"
+      ],
+      "visual_source": "animations/debug-swo.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#2. SWO / ITM / printf 跟踪"
+      ],
+      "memory_anchor": "printf 走 SWO 不占串口",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s05",
+      "title": "重定向 __io_putchar",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s04"
+      ],
+      "narration": "把 __io_putchar 重定向到 ITM_SendChar，printf 就从 SWO 出来，函数里只调 ITM_SendChar 返回字符。CubeMX 使能 SWD 即可，无需额外初始化，但要确认它是不是阻塞或丢字符，不能当成零代价日志。",
+      "on_screen": [
+        "__io_putchar→ITM_SendChar",
+        "printf 走 SWO",
+        "非零代价日志"
+      ],
+      "visual_source": "animations/debug-swo.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#2. SWO / ITM / printf 跟踪",
+        "docs/17-调试与性能优化.md#代码实现"
+      ],
+      "memory_anchor": "putchar 一行重定向",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s06",
+      "title": "硬件断点只有六个",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s03"
+      ],
+      "narration": "硬件断点由 FPB 比较地址实现，这颗 M3 只有 6 个，M7 是 8 个，网上的教程如果是 H7 的不能照搬。软件断点无限，但要把指令替换成 BKPT，Flash 里由调试器改写内容。",
+      "on_screen": [
+        "FPB 比较器",
+        "M3 六个 M7 八个",
+        "BKPT 改写 Flash"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#3. 断点类型与数量限制",
+        "docs/17-调试与性能优化.md#原理与适用范围"
+      ],
+      "memory_anchor": "硬件六个软件无限",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s07",
+      "title": "断点打不下先删旧的",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s06"
+      ],
+      "narration": "硬件断点数量固定，不能设在 RAM 数据地址；数据观察点用 DWT 比较数据地址，只有两到四个。断点打不上或超限时，删掉旧断点，调试器一般会自动用软件断点补足。",
+      "on_screen": [
+        "数量固定",
+        "数据观察点 2~4 个",
+        "删旧补软件断点"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#3. 断点类型与数量限制"
+      ],
+      "memory_anchor": "超限删旧断点",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s08",
+      "title": "故障寄存器四兄弟的地址",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s01"
+      ],
+      "narration": "CFSR 在 0xE000ED28，HFSR 在 0xE000ED2C，MMFAR 在 0xE000ED34，BFAR 在 0xE000ED38。HFSR 的 bit 30 是 FORCED，值 0x40000000，表示这次硬故障是从别的故障升级来的，原因要回 CFSR 里找。",
+      "on_screen": [
+        "CFSR 0xE000ED28",
+        "HFSR bit30=0x40000000",
+        "BFAR 0xE000ED38"
+      ],
+      "visual_source": "diagrams/sample-17-cfsr.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#原理与适用范围",
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套"
+      ],
+      "memory_anchor": "CFSR/HFSR/BFAR 地址",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch17-s09",
+      "title": "BFARVALID 为 0 时地址是旧的",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s08"
+      ],
+      "narration": "BFARVALID 是 CFSR 的 bit 15。这一位为 0 时，BFAR 里的数不是这次访问的地址，可能是上一次故障留下的旧值，拿它去查代码只会找错地方。所以先看 CFSR bit 15，再决定信不信 BFAR。",
+      "on_screen": [
+        "bit15=BFARVALID",
+        "0 → 旧值别信",
+        "先看 CFSR"
+      ],
+      "visual_source": "diagrams/sample-17-cfsr.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#原理与适用范围",
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "bit15 为 0 别信 BFAR",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s10",
+      "title": "异常自动压栈八个字",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s08"
+      ],
+      "narration": "异常进入时内核把 R0、R1、R2、R3、R12、LR、PC、xPSR 压栈，R0 在栈指针处算第 0 个字，PC 在 SP 加 0x18，就是第 6 个字。对精确的总线故障，这个 PC 就是出错那条指令的地址。",
+      "on_screen": [
+        "R0-R3 R12 LR PC xPSR",
+        "PC=SP+0x18",
+        "第 6 个字"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套",
+        "docs/17-调试与性能优化.md#原理与适用范围"
+      ],
+      "memory_anchor": "PC 在栈里第 6 个字",
+      "evidence_type": "diagram"
+    },
+    {
+      "scene_id": "ch17-s11",
+      "title": "先看 MSP 还是 PSP",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s10"
+      ],
+      "narration": "进入 HardFault 处理器后，先用 TST LR, #4 判断用的是 MSP 还是 PSP，再从对应栈指针取栈帧。hard_fault_handler_c 里 stack[6] 就是出错 PC，把它和 CFSR、HFSR、BFAR 一起留在局部变量里，然后断下。",
+      "on_screen": [
+        "TST LR,#4",
+        "MSP 还是 PSP",
+        "stack[6]=PC"
+      ],
+      "visual_source": "diagrams/sample-04-exception-stack.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套"
+      ],
+      "memory_anchor": "LR bit2 选栈指针",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s12",
+      "title": "addr2line 把 PC 变回源码行",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s11"
+      ],
+      "narration": "用 arm-none-eabi-addr2line -e build/app.elf -f -C 加 PC 值，输出函数名加文件名行号。Keil 用户可以在 .map 里查符号范围，或直接看 IDE 的 Call Stack 窗口。必须用同一个 ELF，换了文件对回去就是错的。",
+      "on_screen": [
+        "addr2line -e app.elf",
+        "函数+文件:行",
+        "同一个 ELF"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套"
+      ],
+      "memory_anchor": "同一个 ELF 对回源码",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s13",
+      "title": "故障判读有固定顺序",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s12"
+      ],
+      "narration": "证据有顺序：先冻结现场，再读栈帧，然后分类 CFSR 和 HFSR，验证 BFAR 或 MMFAR 是否有效，最后用 ELF 定位源码。先改优化级别或注释代码会把现场抹掉，后面每一步都没有输入。",
+      "on_screen": [
+        "冻结→读栈→分类→定位",
+        "先改代码=抹现场",
+        "顺序即证据"
+      ],
+      "visual_source": "diagrams/fault-triage-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套",
+        "docs/17-调试与性能优化.md#核心原理"
+      ],
+      "memory_anchor": "判读顺序不能乱",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s14",
+      "title": "非精确错误的可信边界",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s13"
+      ],
+      "narration": "IMPRECISERR 表示非精确总线错误，出错位置可能已经过去几拍，栈里的 PC 也可能不是最初写错的位置。PRECISERR 才是精确错误。只有 BFARVALID 或 MMARVALID 置位时，地址寄存器才有意义。",
+      "on_screen": [
+        "IMPRECISERR 错位",
+        "PRECISERR 精确",
+        "有效位先置位"
+      ],
+      "visual_source": "diagrams/fault-triage-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#4. HardFault 定位三件套",
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "非精确错误别全信 PC",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s15",
+      "title": "把隐藏的 bug 变成 HardFault",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s14"
+      ],
+      "narration": "默认除零可能静默通过。Fault_Enable 里先置 CCR 的 DIV_0_TRP 让除零触发 UsageFault，再把 SHCSR 的 UsageFault、BusFault、MemManage 三个使能位打开。隐藏的错变成可定位的故障，才有机会被抓住。",
+      "on_screen": [
+        "DIV_0_TRP",
+        "三类故障使能",
+        "错要抛得出来"
+      ],
+      "visual_source": "diagrams/interrupt-priority.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#代码实现",
+        "docs/17-调试与性能优化.md#7. HardFault 常见原因表"
+      ],
+      "memory_anchor": "静默错误先打开捕获",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s16",
+      "title": "逻辑分析仪看协议，示波器看信号",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s05"
+      ],
+      "narration": "逻辑分析仪八通道 24 兆以上，抓 I2C、SPI、UART、CAN 的数字时序并解码协议，回答协议对不对。示波器看 PWM 上升沿、电源纹波和信号完整性，回答信号好不好。调试总线偶发错误两者都要用。",
+      "on_screen": [
+        "逻辑分析仪 8ch 24MHz+",
+        "协议对不对",
+        "信号好不好"
+      ],
+      "visual_source": "animations/debug-swo.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#5. 逻辑分析仪 / 示波器"
+      ],
+      "memory_anchor": "协议靠解码，质量靠波形",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch17-s17",
+      "title": "DWT 周期计数先开跟踪",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s16"
+      ],
+      "narration": "先用 DEMCR 0xE000EDFC 的 bit 24 置 1，再把 DWT_CYCCNT 0xE0001004 清零并打开。72 兆下 72 个计数是 1 微秒。没置 bit 24 时，前后两次读数的差是 0，你量到的不是代码耗时，是没打开的计数器。",
+      "on_screen": [
+        "DEMCR bit24",
+        "CYCCNT 0xE0001004",
+        "72 计数=1µs"
+      ],
+      "visual_source": "diagrams/sample-17-cfsr.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#6. 代码优化手段",
+        "docs/17-调试与性能优化.md#原理与适用范围"
+      ],
+      "memory_anchor": "先开 bit24 再清零",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s18",
+      "title": "优化手段按收益排序",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s17"
+      ],
+      "narration": "先测量再优化。收益排序是：DMA 卸载搬运最大，然后是编译器优化等级，再是减少浮点和除法，接着是 Cache 和预取，最后才是手写汇编。没有 DWT 的数字就去展开汇编，很容易优化了一个根本不占时间的循环。",
+      "on_screen": [
+        "DMA>优化等级>减浮点>Cache>汇编",
+        "先量再改",
+        "别优化空气"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#6. 代码优化手段",
+        "docs/17-调试与性能优化.md#核心原理"
+      ],
+      "memory_anchor": "收益排序 DMA 最大",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch17-s19",
+      "title": "优化等级与 volatile",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch17-s18"
+      ],
+      "narration": "Release 用 -O2 追速度或 -Os 追体积，调试用 -Og 能单步。优化之后可能看不到变量，和硬件时序有关的读写要老实加 volatile 防被重排。改完优化要拿原来的测试向量再跑一遍，结果一致才算数。",
+      "on_screen": [
+        "-O2/-Os/-Og",
+        "volatile 防重排",
+        "回归再跑一遍"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#6. 代码优化手段",
+        "docs/17-调试与性能优化.md#代码实现"
+      ],
+      "memory_anchor": "改优化必回归",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch17-s20",
+      "title": "坑：BFAR 有数但对不上",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch17-s09",
+        "ch17-s13"
+      ],
+      "narration": "BFAR 里明明有个数，却对不上这次访问。原因是 CFSR 的 bit 15 为 0，BFAR 里是上一次故障的旧值。处理是先看 CFSR bit 15，有效再去查这个地址，别拿旧值满代码找。",
+      "on_screen": [
+        "BFAR 对不上",
+        "bit15=0 旧值",
+        "先看 CFSR"
+      ],
+      "visual_source": "diagrams/sample-17-cfsr.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "对不上就查有效位",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s21",
+      "title": "坑：一进 HardFault 就复位",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch17-s13"
+      ],
+      "narration": "一进 HardFault 就自动复位，什么都没留下，下次故障还是两眼一抹黑。处理是先在处理器里留下 CFSR 和压栈的 PC，再进复位。没有这两样的现场，事后任何分析都是猜。",
+      "on_screen": [
+        "直接复位=丢现场",
+        "先存 CFSR+PC",
+        "留证再复位"
+      ],
+      "visual_source": "diagrams/fault-triage-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "复位前先留证据",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s22",
+      "title": "坑：DWT 测出来是 0",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch17-s17"
+      ],
+      "narration": "DWT 前后两次读数差是 0，你以为那段代码不耗时。其实是 DEMCR 的 bit 24 没置 1，周期计数根本没走。处理是先置 bit 24，再清零开 CYCCNT，最后重测。72 兆下 72 个计数才是 1 微秒。",
+      "on_screen": [
+        "差值为 0",
+        "bit24 没开",
+        "重开重测"
+      ],
+      "visual_source": "diagrams/sample-17-cfsr.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "差 0 先查 bit24",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s23",
+      "title": "坑：断点打到第七个就不停",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch17-s06"
+      ],
+      "narration": "断点打在第 7 个就报错或不停，你以为是代码问题。其实是比较器用完了：这颗 M3 只有 6 个硬件断点。处理是删掉旧断点，让调试器用软件断点补足。H7 的 8 个这个数字不能照搬。",
+      "on_screen": [
+        "第 7 个不断",
+        "M3 只有 6 个",
+        "删旧让软件补"
+      ],
+      "visual_source": "diagrams/sample-01-swd-vectors.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#常见坑与出处"
+      ],
+      "memory_anchor": "断点不够删旧的",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s24",
+      "title": "坑：上电抓 PB3 没有 SWO 波形",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch17-s04"
+      ],
+      "narration": "上电就去 PB3 抓 SWO 波形，什么也看不到，你以为接线坏了。其实第 39 脚复位后是 JTDO，要关掉 JTAG 只留 SWD，它才会切到 TRACESWO 功能。它不是 PA13，也不是 PA14。",
+      "on_screen": [
+        "PB3 无波形",
+        "复位后是 JTDO",
+        "关 JTAG 切 SWO"
+      ],
+      "visual_source": "animations/debug-swo.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#常见坑与出处",
+        "docs/17-调试与性能优化.md#硬件与接线"
+      ],
+      "memory_anchor": "PB3 要先重映射",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch17-s25",
+      "title": "实验：造一次非法访问收证据包",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch17-s20",
+        "ch17-s21"
+      ],
+      "narration": "在受控 Debug 构建里故意访问非法地址，让它进硬故障。保存栈中 PC 和 LR、CFSR、HFSR、BFAR 或 MMFAR 的有效位，连同 ELF 哈希一起留下，再用 addr2line 对回源码行。对得上，这套流程才算你的。",
+      "on_screen": [
+        "非法地址→HardFault",
+        "存 PC/CFSR/BFAR",
+        "addr2line 对回行"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#动手实验"
+      ],
+      "memory_anchor": "证据包要能对回源码",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch17-s26",
+      "title": "实验：memcpy 与 DMA 的两类时间",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch17-s17",
+        "ch17-s18"
+      ],
+      "narration": "对同一 4KB 数据量，记录 memcpy 的 CPU 周期、DMA 启动的 CPU 周期和 DMA 完成的墙钟时间。启动快不等于搬运已完成。只记一个数，就会把启动快写成搬运快。",
+      "on_screen": [
+        "4KB 同一数据量",
+        "启动 CPU vs 完成墙钟",
+        "两个数都要记"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#动手实验"
+      ],
+      "memory_anchor": "启动时间和完成时间是两回事",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch17-s27",
+      "title": "一次只改一处",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch17-s25",
+        "ch17-s26"
+      ],
+      "narration": "功能还不对时，不要先把优化开到最高，也不要同时改三处。改完立刻复现刚才的现象：好了不知道是谁的功劳，坏了更不知道是谁的错。调试的口诀是一次只改一处，版本管理就是为了能回到上一版。",
+      "on_screen": [
+        "一次只改一处",
+        "改完就复现",
+        "能回上一版"
+      ],
+      "visual_source": "diagrams/fault-triage-ladder.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#核心原理",
+        "docs/17-调试与性能优化.md#相关资源"
+      ],
+      "memory_anchor": "单变量复现",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch17-s28",
+      "title": "合上书三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch17-s27"
+      ],
+      "narration": "合上书，回答三问：F103 的 SWO 占用哪只脚？进硬故障最先看哪个寄存器？为什么优化之前要先有周期计数？三问都能答上来，证据三件套才算真正装进了你的工具箱。",
+      "on_screen": [
+        "SWO 占哪只脚？",
+        "先读哪个寄存器？",
+        "优化前为何先量周期？"
+      ],
+      "visual_source": "illustrations/ch17-mid-handdraw.svg",
+      "fact_source": [
+        "docs/17-调试与性能优化.md#动手实验"
+      ],
+      "memory_anchor": "三问验收证据三件套",
+      "evidence_type": "recall"
+    }
+  ]
+}

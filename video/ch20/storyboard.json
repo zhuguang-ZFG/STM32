@@ -1,0 +1,570 @@
+{
+  "schema_version": 1,
+  "chapter": "20",
+  "slug": "refs-long",
+  "title": "学习资源与工具链：手册、社区、固件库与仿真边界",
+  "short_source": "tools/narration.py#CHAPTERS[20]",
+  "scenes": [
+    {
+      "scene_id": "ch20-s01",
+      "title": "先写清要证明什么，再选文档",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "同一个问题，可能要查数据手册的电气边界、参考手册的寄存器、还有勘误表的已知缺陷。动手之前先写清你要证明什么，再选手册和工具；搜索结果和 IDE 提示都不能替代证据边界。这一课把这条路走一遍。",
+      "on_screen": [
+        "一个问题，三本手册",
+        "先定要证明什么",
+        "搜索≠证据"
+      ],
+      "visual_source": "illustrations/ch20-handdraw.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#遇到问题时去哪找证据"
+      ],
+      "memory_anchor": "先定问题，再选手册",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s02",
+      "title": "官方资源地图：Cube 三件套",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s01"
+      ],
+      "narration": "ST 的资料全部免费，从 st.com 出发：CubeMX 做图形化配置，CubeIDE 编译调试，CubeProgrammer 烧录和读写选项字节，这三件套覆盖九成场景；CubeMonitor 负责运行时变量和功耗可视化，官方论坛 community.st.com 检索质量高。",
+      "on_screen": [
+        "st.com 下载中心",
+        "CubeMX/CubeIDE/CubeProgrammer",
+        "community.st.com"
+      ],
+      "visual_source": "diagrams/project-structure.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#1. 官方资源地图"
+      ],
+      "memory_anchor": "官网出发，三件套足矣",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s03",
+      "title": "五种手册的命名规律",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s02"
+      ],
+      "narration": "RM 讲寄存器怎么写，DS 讲参数是什么，PM 讲封装引脚，AN 讲一种做法，UM 讲工具怎么用，ES 是勘误。先按问题类型把检索范围缩到正确的资料类型，但订货号、封装和硅版本仍要在 DS 与 ES 里对账。",
+      "on_screen": [
+        "RM/DS/PM/AN/UM/ES",
+        "问题→资料类型",
+        "身份信息回 DS/ES 对账"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#2. 手册命名规则（重点）"
+      ],
+      "memory_anchor": "R 看寄存器，D 看数据，A 看应用，U 看工具",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s04",
+      "title": "RM 是字典，DS 是体检报告",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s03"
+      ],
+      "narration": "查寄存器位定义打开参考手册，查电气参数和引脚定义打开数据手册：比如 CAN 过滤器的位在 RM 里，这颗芯片有没有 CAN、引脚叫什么在 DS 里。两本同时开着核对，比靠记忆力可靠。",
+      "on_screen": [
+        "寄存器位→RM",
+        "电气/引脚→DS",
+        "两本对照"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#2. 手册命名规则（重点）",
+        "docs/20-学习资源与工具链.md#遇到问题时去哪找证据"
+      ],
+      "memory_anchor": "RM 是字典，DS 是体检报告，AN 是教程",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s05",
+      "title": "社区与检索技巧",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s03"
+      ],
+      "narration": "官方问题去 community.st.com 和 GitHub 的 STMicroelectronics 仓库；中文教程看正点原子、野火、硬石；深度问题去 Stack Overflow 和 EEVblog。中文搜不到时，用英文关键词加手册编号，比如 RM0008 TIM PWM register，命中率高很多。",
+      "on_screen": [
+        "ST 论坛 / GitHub ST",
+        "原子/野火/硬石",
+        "英文关键词+手册编号"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#3. 社区与中文资源"
+      ],
+      "memory_anchor": "中文搜不到就英文加手册编号",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s06",
+      "title": "固件栈按项目边界选，不按高低排",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s05"
+      ],
+      "narration": "新项目优先官方 HAL/LL，CubeMX 生成、跨系列统一；这不是给库排高低，而是把认证冻结、已有资产和团队能力这些约束放到各自位置。选择会变，但单一外设的所有权要求不会消失。",
+      "on_screen": [
+        "新项目→HAL/LL",
+        "约束决定选择",
+        "不排名次"
+      ],
+      "visual_source": "diagrams/firmware-stack-choice.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#4. 开源固件库对比"
+      ],
+      "memory_anchor": "栈按项目边界选，不按抽象高低",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s07",
+      "title": "SPL 只服务锁版的旧 F1",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s06"
+      ],
+      "narration": "STM32F10x SPL V3.5.0 是官方遗留驱动：F1 专用、结构体加函数 API、没有 CubeMX 生成。它只用于维护或迁移已锁定版本的旧工程；新工程不要碰，否则你分不清哪些文件真的在编译。",
+      "on_screen": [
+        "SPL V3.5.0 = 遗留驱动",
+        "只维护锁版 F1",
+        "新工程不碰"
+      ],
+      "visual_source": "diagrams/spl-ownership-boundary.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#4. 开源固件库对比"
+      ],
+      "memory_anchor": "SPL 锁在旧 F1，新项目用 HAL",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s08",
+      "title": "轻量与 RTOS 生态的定位",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s06"
+      ],
+      "narration": "想跨厂商或追求轻量裸机，用 libopencm3，纯 C、无 IDE 依赖、小而快；要完整 RTOS 生态，ChibiOS 实时性强、Zephyr 跨厂商模块化、RT-Thread 中文社区活跃、FreeRTOS 是最通用的实时内核。",
+      "on_screen": [
+        "libopencm3：轻量裸机",
+        "ChibiOS/Zephyr/RT-Thread",
+        "FreeRTOS：通用内核"
+      ],
+      "visual_source": "diagrams/firmware-stack-choice.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#4. 开源固件库对比"
+      ],
+      "memory_anchor": "轻量找 libopencm3，系统找 RTOS",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s09",
+      "title": "查手册三步法：先定手册",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s04"
+      ],
+      "narration": "查手册三步：先定手册，寄存器和时序去 RM、引脚电气去 DS、具体问题去 AN；再用 Ctrl+F 直接搜寄存器名或位名；最后顺着功能描述章节看时序图与公式，再回寄存器位确认。",
+      "on_screen": [
+        "①定手册 ②搜关键词 ③读上下文",
+        "TIMx_CCR1 / CEN",
+        "时序图→寄存器位"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#5. 如何查手册（三步法 + 3 个示例）"
+      ],
+      "memory_anchor": "定手册、搜位名、读上下文",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s10",
+      "title": "示例：PWM 占空比查 RM0008",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s09"
+      ],
+      "narration": "问 TIM1 的 PWM 占空比怎么算：打开 RM0008 搜 CCR1，定位到第 15 章高级控制定时器；占空比等于 CCR1 除以 (ARR+1)，频率等于计数时钟除以 (ARR+1)；再回寄存器表确认 CCMR1.OC1M 选 PWM 模式、CCER.CC1E 使能输出。",
+      "on_screen": [
+        "RM0008 第15章",
+        "占空比=CCR1/(ARR+1)",
+        "OC1M + CC1E"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#5. 如何查手册（三步法 + 3 个示例）"
+      ],
+      "memory_anchor": "占空比 CCR1/(ARR+1)，回位定义确认",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s11",
+      "title": "示例：PA11 能不能做 USB 查 DS5319",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s09"
+      ],
+      "narration": "问 F103C8T6 的 PA11 能不能做 USB：打开 DS5319 搜 PA11，看引脚表的复用功能列，确认 PA11 就是 USB_DM；要查复用冲突的细节，再回 RM0008 第 9 章 AFIO 看重映射。",
+      "on_screen": [
+        "DS5319 引脚表",
+        "PA11 = USB_DM",
+        "冲突回 RM0008 AFIO"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#5. 如何查手册（三步法 + 3 个示例）"
+      ],
+      "memory_anchor": "引脚复用先查 DS，冲突回 RM 的 AFIO",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s12",
+      "title": "示例：DMA 偶发错误查 AN4031",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s09"
+      ],
+      "narration": "问 F4 的 DMA 传输为什么偶发错误：先用 AN4031 看推荐配置，再回 RM0090 第 9 章 DMA 搜 FIFO、BURST、PL 位，核对 FIFO 阈值与突发大小，结合总线矩阵理解优先级与争抢。F1 的 DMA 没有 FIFO 和突发档位，不能照搬。",
+      "on_screen": [
+        "AN4031 推荐配置",
+        "RM0090 FIFO/BURST/PL",
+        "总线矩阵争抢"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#5. 如何查手册（三步法 + 3 个示例）"
+      ],
+      "memory_anchor": "AN 给做法，RM 核位定义",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s13",
+      "title": "工具与仪器清单",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s02"
+      ],
+      "narration": "调试器用 ST-Link V2 或 J-Link，逻辑分析仪抓 I2C/SPI/UART/CAN 时序并解码，示波器看波形和纹波，串口助手收发调试信息，KiCad 画原理图和 PCB，CubeMonitor 免写上位机做变量可视化。",
+      "on_screen": [
+        "ST-Link / J-Link",
+        "逻辑分析仪 / 示波器",
+        "KiCad / CubeMonitor"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#硬件与接线"
+      ],
+      "memory_anchor": "工具决定调试效率",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s14",
+      "title": "五级证据阶梯",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s13"
+      ],
+      "narration": "工具越靠近引脚，证据越接近真实电气行为：构建日志、调试器读寄存器、运行日志、逻辑分析仪解码、示波器和电源分析仪，每一级都有自己的能证明和不能证明——调试器读到寄存器，不等于引脚边沿合格。",
+      "on_screen": [
+        "构建→调试→日志→逻辑→示波器",
+        "每级有能/不能证明",
+        "寄存器≠引脚边沿"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#硬件与接线"
+      ],
+      "memory_anchor": "证据阶梯，每级边界分明",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s15",
+      "title": "仿真模型的边界",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s14"
+      ],
+      "narration": "仿真和仪器一样有证据边界：仿真能回答逻辑和接口对不对，不能替代引脚上的真实电气行为。示波器看到波形，也不能替代构建版本记录——先分清你的证据属于哪一层，再决定要不要上板。",
+      "on_screen": [
+        "仿真≠真实电气",
+        "波形≠版本记录",
+        "先分层再上板"
+      ],
+      "visual_source": "diagrams/simulation-model-boundary.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#硬件与接线"
+      ],
+      "memory_anchor": "仿真答逻辑，仪器答电气",
+      "evidence_type": "concept"
+    },
+    {
+      "scene_id": "ch20-s16",
+      "title": "构建合同：preset 是唯一事实来源",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s02"
+      ],
+      "narration": "CubeIDE、VS Code、CLion 和 CI 只是入口，必须汇入同一个 CMakePresets.json，再从同一份定义产出 ELF、map 和 bin。这张图证明的是构建所有权，不证明固件功能正确，功能仍需调试器和仪器闭环。",
+      "on_screen": [
+        "IDE=入口，preset=事实来源",
+        "ELF/map/bin 同一份",
+        "功能靠仪器闭环"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#代码实现"
+      ],
+      "memory_anchor": "入口可以多，构建只有一个",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s17",
+      "title": "OpenOCD 命令行烧录与调试",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s16"
+      ],
+      "narration": "能用命令行就用命令行：OpenOCD 一条命令烧录 elf 并校验复位；分开两个终端，一个起调试服务器，一个用 GDB 连接，reset halt、load、break main、continue，CI 和批量烧录都靠这条路。",
+      "on_screen": [
+        "openocd program verify reset exit",
+        "GDB target extended-remote",
+        "CI 靠命令行"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#代码实现"
+      ],
+      "memory_anchor": "命令行烧录，GDB 远程调试",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s18",
+      "title": "PlatformIO 与共用构建入口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s16"
+      ],
+      "narration": "PlatformIO 用 platformio.ini 指定平台、板子、框架和上传协议；CLion 用 OpenOCD 下载运行，VS Code 用 Cortex-Debug，两者引用同一个 ELF 和同一个 OpenOCD 配置。IDE 也必须调用 cmake --preset，而不是维护第二套源文件和宏。",
+      "on_screen": [
+        "platformio.ini",
+        "同一 ELF 同一 cfg",
+        "cmake --preset debug"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#代码实现"
+      ],
+      "memory_anchor": "入口共用一份构建定义",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s19",
+      "title": "救砖与定位：RDP 与 addr2line",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch20-s17"
+      ],
+      "narration": "芯片被读保护时，用 STM32_Programmer_CLI 解除 RDP，注意会整片擦除 Flash；HardFault 打印的 PC 用 addr2line 转成源码行。图形界面适合交互调试，自动化和救砖场景命令行更可靠。",
+      "on_screen": [
+        "STM32_Programmer_CLI -ob RDP=0xAA",
+        "addr2line -f -C PC",
+        "擦除警告"
+      ],
+      "visual_source": "diagrams/project-structure.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#代码实现"
+      ],
+      "memory_anchor": "解 RDP 会擦片，PC 用 addr2line 定位",
+      "evidence_type": "mechanism"
+    },
+    {
+      "scene_id": "ch20-s20",
+      "title": "坑：找不到对应型号的手册",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch20-s03"
+      ],
+      "narration": "按系列搜手册而不是按型号：搜 RM0008、DS5319 这样的编号，而不是搜 F103C8 的全名。手册按系列编号，型号对应的手册要靠编号对上，否则很容易开错一本。",
+      "on_screen": [
+        "按系列搜→按型号搜",
+        "RM0008 / DS5319",
+        "编号对账"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#常见坑与排查"
+      ],
+      "memory_anchor": "手册编号搜系列",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch20-s21",
+      "title": "坑：寄存器名搜不到",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch20-s09"
+      ],
+      "narration": "手册里搜不到，多半是搜了 HAL 的名字而不是寄存器名：HAL 的 Instance 和字段对应 TIMx_CR1 这样的寄存器。先把 HAL 名字翻译成寄存器位名，再进 RM 搜。",
+      "on_screen": [
+        "HAL 名≠寄存器名",
+        "Instance→TIMx_CR1",
+        "翻译后再搜"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#常见坑与排查"
+      ],
+      "memory_anchor": "搜不到就换寄存器名",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch20-s22",
+      "title": "坑：中文教程代码跑不通",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch20-s08"
+      ],
+      "narration": "教程版本和库不一致是最常见的原因：例程能跑、你的工程不能跑，经常只是包的版本不同。以官方 HAL 与 RM 为准，把 Cube 版本、固件包版本和板子丝印写进笔记。",
+      "on_screen": [
+        "版本不一致",
+        "以官方 HAL/RM 为准",
+        "记三样：Cube/包/丝印"
+      ],
+      "visual_source": "diagrams/firmware-stack-choice.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#常见坑与排查"
+      ],
+      "memory_anchor": "跑不通先查版本三件套",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch20-s23",
+      "title": "坑：下载失败与连不上",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch20-s17"
+      ],
+      "narration": "PlatformIO 下载失败，检查上传协议和端口，upload_protocol 设 stlink 或指定 upload_port；OpenOCD 连不上，多半是 cfg 选错目标，F1 用 stm32f1x.cfg、F4 用 stm32f4x.cfg。",
+      "on_screen": [
+        "upload_protocol=stlink",
+        "stm32f1x / stm32f4x cfg",
+        "端口先查"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#常见坑与排查"
+      ],
+      "memory_anchor": "下载失败查协议，连不上查 cfg",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch20-s24",
+      "title": "坑：解码乱与克隆调试器",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch20-s13"
+      ],
+      "narration": "逻辑分析仪解码乱，是采样率不足或电平不匹配：提高采样率，确认 3.3V 电平。克隆 J-Link 可能被检测锁死，换 ST-Link 或正版，别在证据链源头上省钱。",
+      "on_screen": [
+        "采样率/3.3V 电平",
+        "克隆 J-Link 被锁",
+        "换 ST-Link"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#常见坑与排查"
+      ],
+      "memory_anchor": "解码乱查电平，调试器用正版",
+      "evidence_type": "evidence"
+    },
+    {
+      "scene_id": "ch20-s25",
+      "title": "实验：可复现构建与重建验证",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch20-s18"
+      ],
+      "narration": "命令行生成 ELF、map 和 bin，记录编译器版本、preset 和 ELF 哈希；然后清空可重建的 build 目录，从固定依赖重新生成并比较 ELF 和 map，差异必须能追到工具链、宏、源文件或链接脚本。",
+      "on_screen": [
+        "记录版本+哈希",
+        "清空 build 重建",
+        "差异追到工具链/宏"
+      ],
+      "visual_source": "diagrams/simulator-comparison.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#动手实验"
+      ],
+      "memory_anchor": "重建一致才算可复现",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch20-s26",
+      "title": "实验：四张来源卡与五层证据",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch20-s20"
+      ],
+      "narration": "为引脚、电气上限、寄存器位、勘误各写一个问题，分别找到 DS、RM、ES 的页码与 revision，并写下该来源不能证明什么；同一次 SPI 读 Flash 再存下构建日志、寄存器读回、运行日志、逻辑解码和示波器波形，说明五层证据各自覆盖的范围。",
+      "on_screen": [
+        "四问→DS/RM/ES 页码",
+        "写清不能证明什么",
+        "SPI 读五层证据"
+      ],
+      "visual_source": "diagrams/instrument-evidence-ladder.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#动手实验"
+      ],
+      "memory_anchor": "来源卡带 revision，证据分五层",
+      "evidence_type": "experiment"
+    },
+    {
+      "scene_id": "ch20-s27",
+      "title": "回顾：口诀与三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch20-s19"
+      ],
+      "narration": "口诀：寄存器的位去参考手册，引脚和电气去数据手册，内核去编程手册。先选对书，再搜索关键词。今天就给你的芯片下载数据手册和参考手册，文件名对上型号和修订号。",
+      "on_screen": [
+        "位→RM，电气→DS，内核→PM",
+        "先选书再搜索",
+        "文件名对型号+修订"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#2. 手册命名规则（重点）",
+        "docs/20-学习资源与工具链.md#动手实验"
+      ],
+      "memory_anchor": "先选对书，再搜关键词",
+      "evidence_type": "recall"
+    },
+    {
+      "scene_id": "ch20-s28",
+      "title": "合上书，三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch20-s27"
+      ],
+      "narration": "合上书，三问：CAN 过滤器的位定义在数据手册还是参考手册？引脚电气在哪一本？读写选项字节用 Cube 家族里的哪一个工具？答出 RM、DS、CubeProgrammer，这一章才算带走了。",
+      "on_screen": [
+        "CAN 位→RM",
+        "引脚电气→DS",
+        "选项字节→CubeProgrammer"
+      ],
+      "visual_source": "illustrations/ch20-mid-handdraw.svg",
+      "fact_source": [
+        "docs/20-学习资源与工具链.md#动手实验",
+        "docs/20-学习资源与工具链.md#1. 官方资源地图"
+      ],
+      "memory_anchor": "RM、DS、CubeProgrammer 三问",
+      "evidence_type": "recall"
+    }
+  ]
+}

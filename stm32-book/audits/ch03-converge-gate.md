@@ -305,14 +305,16 @@
 
 | 检查 | 结果 |
 | --- | --- |
-| `python -m unittest discover stm32-book/tests` | **177 OK**（75s；较上轮 +1：`test_classic_l5`） |
+| `python -m unittest discover stm32-book/tests` | **177 OK**（75s；较上轮 +1：`test_classic_l5` 4 用例） |
 | `python tools/check_assets.py` | **PASS**（1298/1298 链接，29 章 MP4+SRT+海报） |
 | `python tools/slop_lint.py` | 干净 |
 | `build_html.py --check`（zh/en） | PASS（6010483 / 6060965 bytes，29 章） |
 | `python tools/audit_book.py` | 中文 PDF 视觉锚点 140，低于目标章节 0 |
 | `git diff --check` | exit 0 |
 | ch16–ch20 五个短片全解码（`ffmpeg -v error -map 0 -f null -`） | exit 0，stderr 0 字节 |
-| `xd://task_verify`（action=run） | **unverified（project-or-git-baseline-unavailable）**，checks=[]；不冒充通过 |
+| `xd://task_verify`（action=run，提交前后各一次） | **unverified（project-or-git-baseline-unavailable）**，checks=[]；不冒充通过 |
+
+提交链（本收口轮共 4 个提交，`git log --oneline -4` 可复核）：页眉字体修复 → 审计/spec 收口 → ch16–20 回 1080p → ch16–20 分镜源与 L5 契约测试。工作树在收口后仅剩 gitignored 的 `dist/`、`.temp/`。
 
 ### ch16–ch20 短片回 1080p 与合同对齐
 
