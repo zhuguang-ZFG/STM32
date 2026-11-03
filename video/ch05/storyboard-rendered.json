@@ -1,0 +1,1227 @@
+{
+  "id": "05",
+  "slug": "tim-long",
+  "title": "定时器与 PWM：从计数到可测量的 1 kHz",
+  "short_source": "tools/narration.py#CHAPTERS[5]",
+  "segments": [
+    {
+      "scene_id": "ch05-s01",
+      "title": "呼吸灯不需要 CPU 一直翻",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "定时器不是魔法，就是一个被时钟推着走的计数器。CNT 加到 ARR 就回头，这一圈就是周期。先把这句话讲顺，再去看 PWM。",
+      "on_screen": [
+        "时钟推着 CNT",
+        "碰到 ARR 回头",
+        "这就是周期"
+      ],
+      "visual_source": "illustrations/ch05-handdraw.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "定时器是计数器",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 16.149,
+      "subtitle_ref": "ch05.srt#01",
+      "head": "呼吸灯不需要 CPU 一直翻",
+      "lines": [
+        "时钟推着 CNT",
+        "碰到 ARR 回头",
+        "这就是周期"
+      ],
+      "say": "定时器不是魔法，就是一个被时钟推着走的计数器。CNT 加到 ARR 就回头，这一圈就是周期。先把这句话讲顺，再去看 PWM。",
+      "svg": "illustrations/ch05-handdraw.svg"
+    },
+    {
+      "scene_id": "ch05-s02",
+      "title": "三个数各管一件",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01"
+      ],
+      "narration": "PSC 把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。频率不对先看前两个，亮度不对再看 CCR。 PSC 先把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。",
+      "on_screen": [
+        "PSC 管快慢",
+        "ARR 管周期",
+        "CCR 管占空比"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "三个数各管一件",
+      "evidence_type": "concept",
+      "start": 16.149,
+      "duration": 22.368,
+      "subtitle_ref": "ch05.srt#02",
+      "head": "三个数各管一件",
+      "lines": [
+        "PSC 管快慢",
+        "ARR 管周期",
+        "CCR 管占空比"
+      ],
+      "say": "PSC 把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。频率不对先看前两个，亮度不对再看 CCR。 PSC 先把时钟变慢，ARR 决定一圈多长，CCR 决定方波在哪里翻。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s03",
+      "title": "公式就这一条",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02"
+      ],
+      "narration": "频率等于定时器时钟，除以 ARR 加 1，再除以 PSC 加 1。想要 1 千赫，先选定分频后的计数时钟，再反推 ARR。 公式是定时器时钟除以 ARR 加 1，再除以 PSC 加 1；两个寄存器都是写值加 1。",
+      "on_screen": [
+        "频率等于时钟",
+        "除以 ARR 加 1",
+        "再除以 PSC 加 1"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "公式就这一条",
+      "evidence_type": "concept",
+      "start": 38.517,
+      "duration": 23.967,
+      "subtitle_ref": "ch05.srt#03",
+      "head": "公式就这一条",
+      "lines": [
+        "频率等于时钟",
+        "除以 ARR 加 1",
+        "再除以 PSC 加 1"
+      ],
+      "say": "频率等于定时器时钟，除以 ARR 加 1，再除以 PSC 加 1。想要 1 千赫，先选定分频后的计数时钟，再反推 ARR。 公式是定时器时钟除以 ARR 加 1，再除以 PSC 加 1；两个寄存器都是写值加 1。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s04",
+      "title": "PWM 就是比较",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03"
+      ],
+      "narration": "计数器一边跑，一边和 CCR 比。低于和高于可以是两种电平，占空比就出来了。示波器上的高电平宽度，应该和你算的 CCR 一致。",
+      "on_screen": [
+        "CNT 低于 CCR",
+        "输出一种电平",
+        "越过就翻转"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "PWM 就是比较",
+      "evidence_type": "concept",
+      "start": 62.483,
+      "duration": 15.984,
+      "subtitle_ref": "ch05.srt#04",
+      "head": "PWM 就是比较",
+      "lines": [
+        "CNT 低于 CCR",
+        "输出一种电平",
+        "越过就翻转"
+      ],
+      "say": "计数器一边跑，一边和 CCR 比。低于和高于可以是两种电平，占空比就出来了。示波器上的高电平宽度，应该和你算的 CCR 一致。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s05",
+      "title": "APB 分频大于 1 时要乘 2",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04"
+      ],
+      "narration": "APB1 是 36 MHz，但定时器时钟常常还要乘 2，所以 TIM3 实际按 72 MHz 计数。用错时钟，1 千赫会变成 500 赫。 TIM3 挂在 APB1，PCLK1 是 36 MHz，APB1 预分频大于 1 时定时器时钟乘 2，所以实际按 72 MHz 计数。",
+      "on_screen": [
+        "APB 分频大于 1",
+        "定时器往往乘 2",
+        "先问 PCLK"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#原理与适用范围"
+      ],
+      "memory_anchor": "APB 分频大于 1 时要乘 2",
+      "evidence_type": "concept",
+      "start": 78.467,
+      "duration": 27.71,
+      "subtitle_ref": "ch05.srt#05",
+      "head": "APB 分频大于 1 时要乘 2",
+      "lines": [
+        "APB 分频大于 1",
+        "定时器往往乘 2",
+        "先问 PCLK"
+      ],
+      "say": "APB1 是 36 MHz，但定时器时钟常常还要乘 2，所以 TIM3 实际按 72 MHz 计数。用错时钟，1 千赫会变成 500 赫。 TIM3 挂在 APB1，PCLK1 是 36 MHz，APB1 预分频大于 1 时定时器时钟乘 2，所以实际按 72 MHz 计数。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s06",
+      "title": "影子寄存器等一圈再生效",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05"
+      ],
+      "narration": "新写的 ARR 或 CCR 先放预装载寄存器，更新事件到来时才换到前台参与比较。代价是新值要晚一圈生效。 ARR 和 CCR 先写预装载寄存器，更新事件到来时才换到影子寄存器参与比较。",
+      "on_screen": [
+        "影子寄存器",
+        "更新事件生效",
+        "晚一圈"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "影子寄存器等一圈再生效",
+      "evidence_type": "concept",
+      "start": 106.177,
+      "duration": 22.367,
+      "subtitle_ref": "ch05.srt#06",
+      "head": "影子寄存器等一圈再生效",
+      "lines": [
+        "影子寄存器",
+        "更新事件生效",
+        "晚一圈"
+      ],
+      "say": "新写的 ARR 或 CCR 先放预装载寄存器，更新事件到来时才换到前台参与比较。代价是新值要晚一圈生效。 ARR 和 CCR 先写预装载寄存器，更新事件到来时才换到影子寄存器参与比较。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s07",
+      "title": "计数模式有三种",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06"
+      ],
+      "narration": "向上计数从 0 到 ARR；向下计数从 ARR 到 0；中央对齐 0 到 ARR 再回 0，常用于电机对称 PWM。 向上计数从 0 到 ARR，向下计数从 ARR 到 0，中央对齐从 0 到 ARR 再回 0。",
+      "on_screen": [
+        "向上计数",
+        "向下计数",
+        "中央对齐"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "计数模式有三种",
+      "evidence_type": "concept",
+      "start": 128.544,
+      "duration": 22.312,
+      "subtitle_ref": "ch05.srt#07",
+      "head": "计数模式有三种",
+      "lines": [
+        "向上计数",
+        "向下计数",
+        "中央对齐"
+      ],
+      "say": "向上计数从 0 到 ARR；向下计数从 ARR 到 0；中央对齐 0 到 ARR 再回 0，常用于电机对称 PWM。 向上计数从 0 到 ARR，向下计数从 ARR 到 0，中央对齐从 0 到 ARR 再回 0。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s08",
+      "title": "输入捕获锁的是 CNT",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07"
+      ],
+      "narration": "边沿到来时，硬件把当时的 CNT 锁进捕获寄存器。两个边沿相减，再乘上计数周期，就是脉宽。 边沿到来时硬件把 CNT 锁进捕获寄存器；两次相减再乘计数周期就是脉宽。",
+      "on_screen": [
+        "边沿到来",
+        "把计数器抄下来",
+        "两次相减是脉宽"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "输入捕获锁的是 CNT",
+      "evidence_type": "concept",
+      "start": 150.856,
+      "duration": 21.052,
+      "subtitle_ref": "ch05.srt#08",
+      "head": "输入捕获锁的是 CNT",
+      "lines": [
+        "边沿到来",
+        "把计数器抄下来",
+        "两次相减是脉宽"
+      ],
+      "say": "边沿到来时，硬件把当时的 CNT 锁进捕获寄存器。两个边沿相减，再乘上计数周期，就是脉宽。 边沿到来时硬件把 CNT 锁进捕获寄存器；两次相减再乘计数周期就是脉宽。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s09",
+      "title": "16 位装不下 999999",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08"
+      ],
+      "narration": "C8 的 TIM2 到 TIM5 都是 16 位，ARR 最大 65535。想用 PSC=71、ARR=999999 得到 1 秒装不下。 C8 的 TIM2 到 TIM5 是 16 位，ARR 最大 65535；想要 1 秒要用 PSC=7199、ARR=9999。",
+      "on_screen": [
+        "16 位上限",
+        "ARR 装不下",
+        "改用 PSC 7199"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#原理与适用范围"
+      ],
+      "memory_anchor": "16 位装不下 999999",
+      "evidence_type": "concept",
+      "start": 171.909,
+      "duration": 28.26,
+      "subtitle_ref": "ch05.srt#09",
+      "head": "16 位装不下 999999",
+      "lines": [
+        "16 位上限",
+        "ARR 装不下",
+        "改用 PSC 7199"
+      ],
+      "say": "C8 的 TIM2 到 TIM5 都是 16 位，ARR 最大 65535。想用 PSC=71、ARR=999999 得到 1 秒装不下。 C8 的 TIM2 到 TIM5 是 16 位，ARR 最大 65535；想要 1 秒要用 PSC=7199、ARR=9999。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s10",
+      "title": "实验一：1kHz 50% PWM",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09"
+      ],
+      "narration": "TIM3_CH1 输出 1kHz、50% 方波。记录测得频率、周期、高电平时间和占空比，并与 PSC=71、ARR=999、CCR=500 对账。 实验一对账 PSC=71、ARR=999、CCR=500，记录频率、周期、高电平时间和占空比。",
+      "on_screen": [
+        "1kHz",
+        "50%",
+        "PSC 71 ARR 999 CCR 500"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#动手实验"
+      ],
+      "memory_anchor": "实验一 1kHz 50% PWM",
+      "evidence_type": "concept",
+      "start": 200.168,
+      "duration": 31.91,
+      "subtitle_ref": "ch05.srt#10",
+      "head": "实验一：1kHz 50% PWM",
+      "lines": [
+        "1kHz",
+        "50%",
+        "PSC 71 ARR 999 CCR 500"
+      ],
+      "say": "TIM3_CH1 输出 1kHz、50% 方波。记录测得频率、周期、高电平时间和占空比，并与 PSC=71、ARR=999、CCR=500 对账。 实验一对账 PSC=71、ARR=999、CCR=500，记录频率、周期、高电平时间和占空比。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s11",
+      "title": "实验二：三档占空比",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10"
+      ],
+      "narration": "依次写 CCR=100、500、900，测量约 10%、50%、90% 三档，再运行呼吸灯。亮度变化只是现象，三档波形才是证据。 实验二写 CCR=100、500、900，测量约 10%、50%、90% 三档波形。",
+      "on_screen": [
+        "CCR 100/500/900",
+        "约 10%/50%/90%",
+        "三档波形"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#动手实验"
+      ],
+      "memory_anchor": "实验二三档占空比",
+      "evidence_type": "concept",
+      "start": 232.078,
+      "duration": 29.055,
+      "subtitle_ref": "ch05.srt#11",
+      "head": "实验二：三档占空比",
+      "lines": [
+        "CCR 100/500/900",
+        "约 10%/50%/90%",
+        "三档波形"
+      ],
+      "say": "依次写 CCR=100、500、900，测量约 10%、50%、90% 三档，再运行呼吸灯。亮度变化只是现象，三档波形才是证据。 实验二写 CCR=100、500、900，测量约 10%、50%、90% 三档波形。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s12",
+      "title": "实验三：输入捕获闭环",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11"
+      ],
+      "narration": "PA6 接到 PA0，用 TIM2 捕获 PWM。串口打印捕获周期和高电平计数，与设定值比较；溢出时按 ARR+1 补偿。 实验三把 PA6 接到 PA0，用 TIM2 捕获，打印周期和高电平计数，溢出时补一个 ARR+1。",
+      "on_screen": [
+        "PA6 接 PA0",
+        "TIM2 捕获",
+        "打印周期和脉宽"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#动手实验"
+      ],
+      "memory_anchor": "实验三输入捕获闭环",
+      "evidence_type": "concept",
+      "start": 261.133,
+      "duration": 25.406,
+      "subtitle_ref": "ch05.srt#12",
+      "head": "实验三：输入捕获闭环",
+      "lines": [
+        "PA6 接 PA0",
+        "TIM2 捕获",
+        "打印周期和脉宽"
+      ],
+      "say": "PA6 接到 PA0，用 TIM2 捕获 PWM。串口打印捕获周期和高电平计数，与设定值比较；溢出时按 ARR+1 补偿。 实验三把 PA6 接到 PA0，用 TIM2 捕获，打印周期和高电平计数，溢出时补一个 ARR+1。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s13",
+      "title": "定时器分成五类",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12"
+      ],
+      "narration": "高级 TIM1/TIM8 有互补输出、死区和刹车；通用 TIM2 到 TIM5 有 4 通道；基本 TIM6/TIM7 只计数；看门狗和 SysTick 另有用途。 高级定时器有互补输出、死区和刹车，通用定时器有 4 通道，基本定时器只计数。",
+      "on_screen": [
+        "高级/通用/基本",
+        "看门狗",
+        "SysTick"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "定时器分成五类",
+      "evidence_type": "concept",
+      "start": 286.539,
+      "duration": 23.936,
+      "subtitle_ref": "ch05.srt#13",
+      "head": "定时器分成五类",
+      "lines": [
+        "高级/通用/基本",
+        "看门狗",
+        "SysTick"
+      ],
+      "say": "高级 TIM1/TIM8 有互补输出、死区和刹车；通用 TIM2 到 TIM5 有 4 通道；基本 TIM6/TIM7 只计数；看门狗和 SysTick 另有用途。 高级定时器有互补输出、死区和刹车，通用定时器有 4 通道，基本定时器只计数。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s14",
+      "title": "高级定时器要开 MOE",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13"
+      ],
+      "narration": "TIM1/TIM8 的 BDTR 偏移 0x44，复位值 0x0000。位 15 MOE 为 0 时主输出关闭。HAL_TIM_PWM_Start 会替你置 MOE。 TIM1 的 BDTR 偏移 0x44，复位值 0x0000；位 15 MOE 为 0 时主输出关闭。",
+      "on_screen": [
+        "BDTR 0x44",
+        "MOE 位 15",
+        "HAL 会置 MOE"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#原理与适用范围"
+      ],
+      "memory_anchor": "高级定时器要开 MOE",
+      "evidence_type": "concept",
+      "start": 310.476,
+      "duration": 26.45,
+      "subtitle_ref": "ch05.srt#14",
+      "head": "高级定时器要开 MOE",
+      "lines": [
+        "BDTR 0x44",
+        "MOE 位 15",
+        "HAL 会置 MOE"
+      ],
+      "say": "TIM1/TIM8 的 BDTR 偏移 0x44，复位值 0x0000。位 15 MOE 为 0 时主输出关闭。HAL_TIM_PWM_Start 会替你置 MOE。 TIM1 的 BDTR 偏移 0x44，复位值 0x0000；位 15 MOE 为 0 时主输出关闭。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s15",
+      "title": "TIM1 没波形先查 MOE",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14"
+      ],
+      "narration": "高级定时器完全没有波形时，先查 BDTR 位 15 的 MOE 是不是 0。复位值是 0，自己写寄存器容易漏。 HAL_TIM_PWM_Start 会替你置 MOE；自己写寄存器时容易漏掉这一位。",
+      "on_screen": [
+        "MOE=0",
+        "查 BDTR",
+        "TIM3 没有这一位"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#常见坑与出处"
+      ],
+      "memory_anchor": "TIM1 没波形先查 MOE",
+      "evidence_type": "concept",
+      "start": 336.925,
+      "duration": 22.177,
+      "subtitle_ref": "ch05.srt#15",
+      "head": "TIM1 没波形先查 MOE",
+      "lines": [
+        "MOE=0",
+        "查 BDTR",
+        "TIM3 没有这一位"
+      ],
+      "say": "高级定时器完全没有波形时，先查 BDTR 位 15 的 MOE 是不是 0。复位值是 0，自己写寄存器容易漏。 HAL_TIM_PWM_Start 会替你置 MOE；自己写寄存器时容易漏掉这一位。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s16",
+      "title": "TRGO 可以触发外部动作",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15"
+      ],
+      "narration": "要让 ADC 按固定间隔采样，用主模式把更新事件送出去。不要在主循环里软件触发。 要让 ADC 按固定间隔采样，用主模式把更新事件送出去，不要在主循环里软件触发。",
+      "on_screen": [
+        "TRGO_UPDATE",
+        "主模式触发",
+        "不软件触发"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "TRGO 可以触发外部动作",
+      "evidence_type": "concept",
+      "start": 359.102,
+      "duration": 20.372,
+      "subtitle_ref": "ch05.srt#16",
+      "head": "TRGO 可以触发外部动作",
+      "lines": [
+        "TRGO_UPDATE",
+        "主模式触发",
+        "不软件触发"
+      ],
+      "say": "要让 ADC 按固定间隔采样，用主模式把更新事件送出去。不要在主循环里软件触发。 要让 ADC 按固定间隔采样，用主模式把更新事件送出去，不要在主循环里软件触发。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s17",
+      "title": "编码器要看两相",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16"
+      ],
+      "narration": "编码器接口看两路相差 90 度的方波，谁先跳变决定往上数还是往下数。只有一路方波时，硬件分不清正反转。 编码器看 A、B 两路相差 90 度的方波；只有一路时硬件分不清正反转。",
+      "on_screen": [
+        "A/B 相差 90°",
+        "谁先跳变决定方向",
+        "单路分不清"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "编码器要看两相",
+      "evidence_type": "concept",
+      "start": 379.474,
+      "duration": 21.142,
+      "subtitle_ref": "ch05.srt#17",
+      "head": "编码器要看两相",
+      "lines": [
+        "A/B 相差 90°",
+        "谁先跳变决定方向",
+        "单路分不清"
+      ],
+      "say": "编码器接口看两路相差 90 度的方波，谁先跳变决定往上数还是往下数。只有一路方波时，硬件分不清正反转。 编码器看 A、B 两路相差 90 度的方波；只有一路时硬件分不清正反转。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s18",
+      "title": "PWM 频率和分辨率要权衡",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17"
+      ],
+      "narration": "PWM 频率越高，一圈越短，能切的档位就越少。同一计数时钟下，1kHz 和 10kHz 的占空比分辨率不同。 PWM 频率越高，一圈越短，能切的占空比档位就越少。",
+      "on_screen": [
+        "频率越高",
+        "档位越少",
+        "按需求折中"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "PWM 频率和分辨率要权衡",
+      "evidence_type": "concept",
+      "start": 400.616,
+      "duration": 21.143,
+      "subtitle_ref": "ch05.srt#18",
+      "head": "PWM 频率和分辨率要权衡",
+      "lines": [
+        "频率越高",
+        "档位越少",
+        "按需求折中"
+      ],
+      "say": "PWM 频率越高，一圈越短，能切的档位就越少。同一计数时钟下，1kHz 和 10kHz 的占空比分辨率不同。 PWM 频率越高，一圈越短，能切的占空比档位就越少。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s19",
+      "title": "PWM 模式 1 和 2 是反相",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18"
+      ],
+      "narration": "PWM 模式 1 在 CNT 小于 CCR 时输出有效电平；模式 2 则输出无效电平。选错模式，输出会反相。 模式 1 在 CNT 小于 CCR 时输出有效电平，模式 2 则输出无效电平。",
+      "on_screen": [
+        "模式 1",
+        "模式 2",
+        "输出反相"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "PWM 模式 1 和 2 是反相",
+      "evidence_type": "concept",
+      "start": 421.759,
+      "duration": 21.337,
+      "subtitle_ref": "ch05.srt#19",
+      "head": "PWM 模式 1 和 2 是反相",
+      "lines": [
+        "模式 1",
+        "模式 2",
+        "输出反相"
+      ],
+      "say": "PWM 模式 1 在 CNT 小于 CCR 时输出有效电平；模式 2 则输出无效电平。选错模式，输出会反相。 模式 1 在 CNT 小于 CCR 时输出有效电平，模式 2 则输出无效电平。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s20",
+      "title": "定时器中断可以翻转 LED",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19"
+      ],
+      "narration": "TIM2 每 1s 触发更新中断，在回调里翻转 PC13。启动要用 Start_IT，而不是 Start。 TIM2 每 1 s 触发更新中断，在回调里翻转 PC13；启动要用 Start_IT。",
+      "on_screen": [
+        "TIM2 1s",
+        "回调翻转 PC13",
+        "Start_IT"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "定时器中断可以翻转 LED",
+      "evidence_type": "concept",
+      "start": 443.096,
+      "duration": 21.203,
+      "subtitle_ref": "ch05.srt#20",
+      "head": "定时器中断可以翻转 LED",
+      "lines": [
+        "TIM2 1s",
+        "回调翻转 PC13",
+        "Start_IT"
+      ],
+      "say": "TIM2 每 1s 触发更新中断，在回调里翻转 PC13。启动要用 Start_IT，而不是 Start。 TIM2 每 1 s 触发更新中断，在回调里翻转 PC13；启动要用 Start_IT。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s21",
+      "title": "定时器选型看需求",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20"
+      ],
+      "narration": "通用定时用 TIM2 到 TIM5，高级 PWM 用 TIM1/TIM8，仅时基用 TIM6/TIM7，长定时看 32 位定时器，系统节拍用 SysTick。 通用定时用 TIM2 到 TIM5，高级 PWM 用 TIM1/TIM8，仅时基用 TIM6/TIM7。",
+      "on_screen": [
+        "通用 TIM2~5",
+        "高级 TIM1/8",
+        "时基 TIM6/7"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "定时器选型看需求",
+      "evidence_type": "concept",
+      "start": 464.299,
+      "duration": 23.866,
+      "subtitle_ref": "ch05.srt#21",
+      "head": "定时器选型看需求",
+      "lines": [
+        "通用 TIM2~5",
+        "高级 TIM1/8",
+        "时基 TIM6/7"
+      ],
+      "say": "通用定时用 TIM2 到 TIM5，高级 PWM 用 TIM1/TIM8，仅时基用 TIM6/TIM7，长定时看 32 位定时器，系统节拍用 SysTick。 通用定时用 TIM2 到 TIM5，高级 PWM 用 TIM1/TIM8，仅时基用 TIM6/TIM7。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s22",
+      "title": "捕获周期要乘计数周期",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21"
+      ],
+      "narration": "两次捕获相减得到的是计数个数，再乘计数周期才是时间。溢出时要补一个 ARR+1。",
+      "on_screen": [
+        "两次相减",
+        "乘计数周期",
+        "溢出补 ARR+1"
+      ],
+      "visual_source": "animations/timer-pwm.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "捕获周期要乘计数周期",
+      "evidence_type": "concept",
+      "start": 488.165,
+      "duration": 10.611,
+      "subtitle_ref": "ch05.srt#22",
+      "head": "捕获周期要乘计数周期",
+      "lines": [
+        "两次相减",
+        "乘计数周期",
+        "溢出补 ARR+1"
+      ],
+      "say": "两次捕获相减得到的是计数个数，再乘计数周期才是时间。溢出时要补一个 ARR+1。",
+      "svg": "animations/timer-pwm.svg"
+    },
+    {
+      "scene_id": "ch05-s23",
+      "title": "只捕获上升沿算不出占空比",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22"
+      ],
+      "narration": "只捕获上升沿只能得到周期，不能得到高电平时间。要测占空比，上升沿和下降沿都要捕获。 只捕获上升沿只能得到周期；要测占空比，上升沿和下降沿都要捕获。",
+      "on_screen": [
+        "只有上升沿",
+        "只能得周期",
+        "还要捕获下降沿"
+      ],
+      "visual_source": "animations/timer-modes.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#自测"
+      ],
+      "memory_anchor": "只捕获上升沿算不出占空比",
+      "evidence_type": "concept",
+      "start": 498.776,
+      "duration": 19.478,
+      "subtitle_ref": "ch05.srt#23",
+      "head": "只捕获上升沿算不出占空比",
+      "lines": [
+        "只有上升沿",
+        "只能得周期",
+        "还要捕获下降沿"
+      ],
+      "say": "只捕获上升沿只能得到周期，不能得到高电平时间。要测占空比，上升沿和下降沿都要捕获。 只捕获上升沿只能得到周期；要测占空比，上升沿和下降沿都要捕获。",
+      "svg": "animations/timer-modes.svg"
+    },
+    {
+      "scene_id": "ch05-s24",
+      "title": "引脚复用要先查数据手册",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22",
+        "ch05-s23"
+      ],
+      "narration": "TIM3_CH1 默认在 PA6，也就是 LQFP48 第 16 脚。这只脚还同时列了 SPI1_MISO，同一时间只能用一个。 TIM3_CH1 默认在 PA6，也就是 LQFP48 第 16 脚；这只脚还同时复用 SPI1_MISO。",
+      "on_screen": [
+        "PA6 TIM3_CH1",
+        "第 16 脚",
+        "还复用 SPI1_MISO"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#原理与适用范围"
+      ],
+      "memory_anchor": "引脚复用要先查数据手册",
+      "evidence_type": "concept",
+      "start": 518.254,
+      "duration": 26.705,
+      "subtitle_ref": "ch05.srt#24",
+      "head": "引脚复用要先查数据手册",
+      "lines": [
+        "PA6 TIM3_CH1",
+        "第 16 脚",
+        "还复用 SPI1_MISO"
+      ],
+      "say": "TIM3_CH1 默认在 PA6，也就是 LQFP48 第 16 脚。这只脚还同时列了 SPI1_MISO，同一时间只能用一个。 TIM3_CH1 默认在 PA6，也就是 LQFP48 第 16 脚；这只脚还同时复用 SPI1_MISO。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch05-s25",
+      "title": "PWM 出现在别的脚上",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22",
+        "ch05-s23",
+        "ch05-s24"
+      ],
+      "narration": "PWM 出现在别的脚上，先查 TIM3_REMAP 是不是 00。保持 00 时用 PA6。 PWM 出现在别的脚上时，先查 TIM3_REMAP 是不是 00；保持 00 时用 PA6。",
+      "on_screen": [
+        "TIM3_REMAP",
+        "保持 00",
+        "用 PA6"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#常见坑与出处"
+      ],
+      "memory_anchor": "PWM 出现在别的脚上",
+      "evidence_type": "concept",
+      "start": 544.959,
+      "duration": 21.117,
+      "subtitle_ref": "ch05.srt#25",
+      "head": "PWM 出现在别的脚上",
+      "lines": [
+        "TIM3_REMAP",
+        "保持 00",
+        "用 PA6"
+      ],
+      "say": "PWM 出现在别的脚上，先查 TIM3_REMAP 是不是 00。保持 00 时用 PA6。 PWM 出现在别的脚上时，先查 TIM3_REMAP 是不是 00；保持 00 时用 PA6。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch05-s26",
+      "title": "想要 1 秒先定 PSC",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22",
+        "ch05-s23",
+        "ch05-s24",
+        "ch05-s25"
+      ],
+      "narration": "想要 1 秒，先让计数时钟好算，再定 ARR。能装下的写法是 PSC=7199、ARR=9999。 想要 1 秒，先定 PSC 让计数时钟好算，再定 ARR；能装下的写法是 PSC=7199、ARR=9999。",
+      "on_screen": [
+        "先定 PSC",
+        "再定 ARR",
+        "PSC 7199 ARR 9999"
+      ],
+      "visual_source": "diagrams/sample-05-pwm-1khz.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "想要 1 秒先定 PSC",
+      "evidence_type": "concept",
+      "start": 566.076,
+      "duration": 26.156,
+      "subtitle_ref": "ch05.srt#26",
+      "head": "想要 1 秒先定 PSC",
+      "lines": [
+        "先定 PSC",
+        "再定 ARR",
+        "PSC 7199 ARR 9999"
+      ],
+      "say": "想要 1 秒，先让计数时钟好算，再定 ARR。能装下的写法是 PSC=7199、ARR=9999。 想要 1 秒，先定 PSC 让计数时钟好算，再定 ARR；能装下的写法是 PSC=7199、ARR=9999。",
+      "svg": "diagrams/sample-05-pwm-1khz.svg"
+    },
+    {
+      "scene_id": "ch05-s27",
+      "title": "离开前要有波形和读数",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22",
+        "ch05-s23",
+        "ch05-s24",
+        "ch05-s25",
+        "ch05-s26"
+      ],
+      "narration": "离开本章前，应保留 1kHz/50% 输出波形、三档占空比波形和一次输入捕获读数，并能从 72 MHz 反算 PSC、ARR 与 CCR。 离开本章前应保留 1 kHz/50% 波形、三档占空比波形和一次输入捕获读数。",
+      "on_screen": [
+        "1kHz/50% 波形",
+        "三档占空比",
+        "一次捕获读数"
+      ],
+      "visual_source": "illustrations/ch05-handdraw.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "离开前要有波形和读数",
+      "evidence_type": "concept",
+      "start": 592.232,
+      "duration": 24.876,
+      "subtitle_ref": "ch05.srt#27",
+      "head": "离开前要有波形和读数",
+      "lines": [
+        "1kHz/50% 波形",
+        "三档占空比",
+        "一次捕获读数"
+      ],
+      "say": "离开本章前，应保留 1kHz/50% 输出波形、三档占空比波形和一次输入捕获读数，并能从 72 MHz 反算 PSC、ARR 与 CCR。 离开本章前应保留 1 kHz/50% 波形、三档占空比波形和一次输入捕获读数。",
+      "svg": "illustrations/ch05-handdraw.svg"
+    },
+    {
+      "scene_id": "ch05-s28",
+      "title": "合上书，三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch05-s01",
+        "ch05-s02",
+        "ch05-s03",
+        "ch05-s04",
+        "ch05-s05",
+        "ch05-s06",
+        "ch05-s07",
+        "ch05-s08",
+        "ch05-s09",
+        "ch05-s10",
+        "ch05-s11",
+        "ch05-s12",
+        "ch05-s13",
+        "ch05-s14",
+        "ch05-s15",
+        "ch05-s16",
+        "ch05-s17",
+        "ch05-s18",
+        "ch05-s19",
+        "ch05-s20",
+        "ch05-s21",
+        "ch05-s22",
+        "ch05-s23",
+        "ch05-s24",
+        "ch05-s25",
+        "ch05-s26",
+        "ch05-s27"
+      ],
+      "narration": "合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？",
+      "on_screen": [
+        "谁决定频率",
+        "谁决定占空比",
+        "捕获锁的是什么"
+      ],
+      "visual_source": "illustrations/ch05-handdraw.svg",
+      "fact_source": [
+        "docs/05-定时器与PWM.md#核心原理"
+      ],
+      "memory_anchor": "合上书，三问",
+      "evidence_type": "concept",
+      "start": 617.108,
+      "duration": 14.631,
+      "subtitle_ref": "ch05.srt#28",
+      "head": "合上书，三问",
+      "lines": [
+        "谁决定频率",
+        "谁决定占空比",
+        "捕获锁的是什么"
+      ],
+      "say": "合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？",
+      "svg": "illustrations/ch05-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 721.435,
+  "actual_duration": 631.739
+}

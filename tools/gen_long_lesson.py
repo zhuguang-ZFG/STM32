@@ -111,13 +111,57 @@ def _scene_mp4(work: str, index: int, frames: list[str], mp3: str, dest: str, du
     subprocess.check_call(command, stdout=subprocess.DEVNULL)
 
 
+def _measure_loudness(path: str) -> dict:
+    result = subprocess.run([
+        "ffmpeg", "-hide_banner", "-i", path,
+        "-filter_complex", "ebur128=peak=true", "-f", "null", "-",
+    ], capture_output=True, text=True)
+    integrated = re.findall(r"I:\s*(-?\d+(?:\.\d+)?) LUFS", result.stderr)
+    peaks = re.findall(r"Peak:\s*(-?\d+(?:\.\d+)?) dBFS", result.stderr)
+    loudness_range = re.findall(r"LRA:\s*(-?\d+(?:\.\d+)?) LU", result.stderr)
+    return {
+        "measured_I": float(integrated[-1]) if integrated else -18.0,
+        "measured_TP": float(peaks[-1]) if peaks else -2.0,
+        "measured_LRA": float(loudness_range[-1]) if loudness_range else 3.8,
+    }
+
+
 def _louden(joined: str, final: str) -> None:
+    stage1 = os.path.join(ROOT, ".temp", f"louden-stage1-{os.path.basename(final)}")
     subprocess.check_call([
         "ffmpeg", "-y", "-loglevel", "error", "-i", joined,
-        "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1:LRA=11,alimiter=limit=0.75:level=false",
+        "-c:v", "copy",
+        "-af",
+        "acompressor=threshold=-18dB:ratio=8:attack=5:release=120:makeup=6,"
+        "alimiter=limit=0.5:level=false",
         "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-ar", "44100",
-        "-movflags", "+faststart", final,
+        stage1,
     ], stdout=subprocess.DEVNULL)
+    measured = _measure_loudness(stage1)
+    print(f"[louden] stage1 measured: {measured}")
+    target = -15.8
+    check = {}
+    for attempt in range(3):
+        af = (
+            f"loudnorm=I={target}:TP=-1:LRA=11:linear=true:"
+            f"measured_I={measured['measured_I']}:measured_TP={measured['measured_TP']}:"
+            f"measured_LRA={measured['measured_LRA']},"
+            "alimiter=limit=0.8:level=false"
+        )
+        subprocess.check_call([
+            "ffmpeg", "-y", "-loglevel", "error", "-i", stage1,
+            "-c:v", "copy", "-af", af,
+            "-c:a", "aac", "-b:a", "64k", "-ac", "1", "-ar", "44100",
+            "-movflags", "+faststart", final,
+        ], stdout=subprocess.DEVNULL)
+        check = _measure_loudness(final)
+        print(f"[louden] final attempt {attempt + 1}: {check}")
+        if -17.0 <= check["measured_I"] <= -15.0 and check["measured_TP"] <= -0.9:
+            break
+        target = max(-16.4, min(-15.2, target + (-15.8 - check["measured_I"])))
+    else:
+        raise SystemExit(f"loudness out of contract: {check}")
+    os.remove(stage1)
 
 
 async def speak(chapter: str) -> None:
@@ -172,7 +216,7 @@ async def speak(chapter: str) -> None:
             cursor += duration
 
         joined = os.path.join(work, "joined.mp4")
-        narrated._concat(encoded, joined)
+        narrated._concat(encoded, joined, normalize=False)
         final = str(chapter_dir / f"ch{board['id']}-bilibili-safe.mp4")
         _louden(joined, final)
 
@@ -255,6 +299,7 @@ def media_report(chapter: str) -> bool:
         "30_fps": video["r_frame_rate"] == "30/1",
         "subtitle_count": len(scenes) == 28,
         "duration_matches_storyboard": abs(duration - scenes[-1]["start"] - scenes[-1]["duration"]) < 1.0,
+        "duration_bounds": 480 <= duration <= 1080,
         "integrated_loudness": bool(integrated) and -17.0 <= float(integrated[-1]) <= -15.0,
         "true_peak": bool(peaks) and float(peaks[-1]) <= -0.9,
         "contact_sheet": (source_dir / "contact-sheet.jpg").is_file(),
@@ -269,6 +314,7 @@ def media_report(chapter: str) -> bool:
         "width": video["width"],
         "height": video["height"],
         "frame_rate": video["r_frame_rate"],
+        "tts_voice": os.environ.get("NARRATED_TTS_VOICE", "zh-CN-XiaoxiaoNeural"),
         "integrated_lufs": float(integrated[-1]) if integrated else None,
         "true_peak_dbtp": float(peaks[-1]) if peaks else None,
         "subtitle_cues": len(scenes),

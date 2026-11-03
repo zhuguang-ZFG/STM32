@@ -602,8 +602,37 @@ def _split_audio_from_mp4(mp4, work, count):
         mp3s.append(dest)
     return mp3s
 
+def _sapi_tts(text: str, dest: str) -> None:
+    """Synthesize with the locally installed Microsoft Chinese voice when edge-tts is unavailable."""
+    wav = os.path.splitext(dest)[0] + ".wav"
+    env = dict(os.environ, NARRATED_SAPI_TEXT=text, NARRATED_SAPI_OUT=wav)
+    subprocess.check_call(
+        ["powershell", "-NoProfile", "-Command",
+         "Add-Type -AssemblyName System.Speech;"
+         "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer;"
+         "$s.Rate = 0; $s.Volume = 100;"
+         "$s.SetOutputToWaveFile($env:NARRATED_SAPI_OUT);"
+         "$s.Speak($env:NARRATED_SAPI_TEXT);"
+         "$s.Dispose()"],
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.check_call(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", wav,
+         "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", dest],
+        stdout=subprocess.DEVNULL,
+    )
+    os.remove(wav)
+    if os.path.getsize(dest) < 800:
+        raise RuntimeError("SAPI 音频过小")
+
 
 async def _tts(text, dest, sem):
+    if os.environ.get("NARRATED_TTS_FALLBACK") == "SAPI":
+        async with sem:
+            await asyncio.to_thread(_sapi_tts, text, dest)
+        return
     import edge_tts
     last = None
     for attempt in range(4):
@@ -650,23 +679,24 @@ def _segment_mp4_anim(work, idx, mp3, dest, dur):
             pass
 
 
-def _concat(segs, dest):
+def _concat(segs, dest, normalize: bool = True):
     lst = dest + ".txt"
     with open(lst, "w", encoding="utf-8") as fh:
         for seg in segs:
             fh.write(f"file '{seg}'\n")
-    subprocess.check_call(
-        [
-            "ffmpeg", "-y", "-loglevel", "error",
-            "-f", "concat", "-safe", "0", "-i", lst,
-            "-c:v", "copy",
+    command = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "concat", "-safe", "0", "-i", lst,
+        "-c:v", "copy",
+    ]
+    if normalize:
+        command += [
             "-af", "loudnorm=I=-16:TP=-1:LRA=11,alimiter=limit=0.75:level=false",
             "-c:a", "aac", "-b:a", "40k", "-ac", "1", "-ar", "44100",
             "-movflags", "+faststart",
-            dest,
-        ],
-        stdout=subprocess.DEVNULL,
-    )
+        ]
+    command.append(dest)
+    subprocess.check_call(command, stdout=subprocess.DEVNULL)
     os.remove(lst)
 
 

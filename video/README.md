@@ -39,4 +39,6 @@ $env:NARRATED_CHROME = 'C:/path/to/chrome.exe'
 - `contact-sheet.jpg` 从实际 MP4 的开场、机制、失败、实验、回忆五类场景抽帧，不用海报替代成片证据。
 - `media-report.json` 记录 MP4 与 storyboard 的 SHA-256、1080p/30fps、时长、字幕数、响度与检查结果。
 
-配音采用既有 `zh-CN-XiaoxiaoNeural`。在线合成不保证逐比特一致，报告中的 MP4 哈希用于证明某一次本地生成，不用于宣称跨机器字节一致。
+配音默认采用既有 `zh-CN-XiaoxiaoNeural`。在线合成不保证逐比特一致，报告中的 MP4 哈希用于证明某一次本地生成，不用于宣称跨机器字节一致。
+
+当 edge-tts 网络不可用时，可设 `NARRATED_TTS_FALLBACK=SAPI` 与 `NARRATED_TTS_VOICE`（例如 `Microsoft Huihui Desktop`）改用本机离线语音；实际使用的语音写入 `media-report.json` 的 `tts_voice` 字段，属于必须随成片声明的偏差，不得静默替换。

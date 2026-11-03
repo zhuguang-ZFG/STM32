@@ -10,7 +10,7 @@
       "title": "环境搭完，调试口没了",
       "purpose": "hook",
       "prerequisite": [],
-      "narration": "你装好了工具链，第一次烧录正常，第二次却再也连不上。这一章把环境搭建拆成一条可验收链：工具链、启动边界、SWD、工程和烧录。",
+      "narration": "你装好了工具链，第一次烧录正常，第二次却再也连不上。这一章把环境搭建拆成一条可验收链：工具链、启动边界、SWD、工程和烧录。环境不是装完就算，必须先能认出芯片，再谈业务。",
       "on_screen": [
         "环境能装",
         "调试口会没"
@@ -29,7 +29,7 @@
       "prerequisite": [
         "ch01-s01"
       ],
-      "narration": "本章脚号和地址都按 STM32F103C8T6、LQFP48 封装算。C8 是 64 KB 闪存、20 KB SRAM；128 KB 是 F103CB 的容量。",
+      "narration": "本章脚号和地址都按 STM32F103C8T6、LQFP48 封装算。C8 是 64 KB 闪存、20 KB SRAM；128 KB 是 F103CB 的容量。闪存从 0x08000000 起，SRAM 从 0x20000000 起，链接脚本里的 LENGTH 就按这两个容量写。",
       "on_screen": [
         "F103C8T6",
         "64 KB / 20 KB"
@@ -49,7 +49,7 @@
         "ch01-s01",
         "ch01-s02"
       ],
-      "narration": "复位后的调试口是第 34 脚 PA13=SWDIO、第 37 脚 PA14=SWCLK。中间第 35 脚是 VSS_2、第 36 脚是 VDD_2。",
+      "narration": "复位后的调试口是第 34 脚 PA13=SWDIO、第 37 脚 PA14=SWCLK。中间第 35 脚是 VSS_2、第 36 脚是 VDD_2。CubeMX 里把 SYS Debug 选成 Serial Wire，才会保留这两只脚的调试功能。",
       "on_screen": [
         "PA13=SWDIO",
         "PA14=SWCLK"
@@ -115,7 +115,7 @@
         "ch01-s04",
         "ch01-s05"
       ],
-      "narration": "CubeMX 里 SYS Debug 要选 Serial Wire。选成 No Debug 后，PA13/PA14 会被初始化成普通 GPIO，程序一跑调试口就没了。",
+      "narration": "CubeMX 里 SYS Debug 要选 Serial Wire。选成 No Debug 后，PA13/PA14 会被初始化成普通 GPIO，程序一跑调试口就没了。烧录一次后再也连不上，先按这个顺序救：把 BOOT0 拉高，重新接上探针，再用 CubeProgrammer 连一次。",
       "on_screen": [
         "Serial Wire",
         "No Debug 丢调试口"
@@ -139,7 +139,7 @@
         "ch01-s05",
         "ch01-s06"
       ],
-      "narration": "BOOT0=0 时，CPU 从 0x00000000 读到的是闪存 0x08000000 的别名。第 0 个字是 MSP，第 1 个字是 Reset_Handler。",
+      "narration": "BOOT0=0 时，CPU 从 0x00000000 读到的是闪存 0x08000000 的别名。第 0 个字是 MSP，第 1 个字是 Reset_Handler。别名意味着两个地址指向同一份物理闪存，程序并没有被搬到别处。",
       "on_screen": [
         "BOOT0=0",
         "0x08000000 别名"
@@ -218,7 +218,7 @@
         "ch01-s08",
         "ch01-s09"
       ],
-      "narration": "BOOT1=0 且 BOOT0=1 时，CPU 取到系统存储器 0x1FFFF000，不是 SRAM。BOOT0=1 就进 SRAM 的说法是错的。",
+      "narration": "BOOT1=0 且 BOOT0=1 时，CPU 取到系统存储器 0x1FFFF000，不是 SRAM。BOOT0=1 就进 SRAM 的说法是错的。闪存里的程序还在，只是没有被取指，所以改 BOOT 脚不会擦掉它。",
       "on_screen": [
         "BOOT1=0",
         "0x1FFFF000"
@@ -275,7 +275,7 @@
         "ch01-s10",
         "ch01-s11"
       ],
-      "narration": "无保护是 RDP=0xA5，不是 0xAA。0xAA 是 F4 等系列笔记里常见，F103C8 不认。解除保护会整片擦除主闪存。",
+      "narration": "无保护是 RDP=0xA5，不是 0xAA。0xAA 是 F4 等系列笔记里常见，F103C8 不认。解除保护会整片擦除主闪存。工具界面只显示 Level 0 时，实际写进选项字节的仍是 0xA5；编程回 0xA5 会先整片擦除。",
       "on_screen": [
         "0xA5",
         "不是 0xAA"
@@ -336,7 +336,7 @@
         "ch01-s12",
         "ch01-s13"
       ],
-      "narration": "IDE 可以换，验收顺序不变：先确认 ELF/AXF，再确认烧录校验，最后看复位是否命中 main。",
+      "narration": "IDE 可以换，验收顺序不变：先确认 ELF/AXF，再确认烧录校验，最后看复位是否命中 main。构建日志至少要回答两件事：用了哪一个交叉编译器，生成的 ELF/AXF 在哪里；没有产物路径，就还没进入烧录边界。",
       "on_screen": [
         "ELF/AXF",
         "烧录校验",
@@ -369,7 +369,7 @@
         "ch01-s13",
         "ch01-s14"
       ],
-      "narration": "Keil、CubeIDE、VS Code+PlatformIO、CLion+OpenOCD 各有取舍。第一次建工程可用 CubeIDE，需要 CI 时让工具共用同一构建入口。",
+      "narration": "Keil、CubeIDE、VS Code+PlatformIO、CLion+OpenOCD 各有取舍。第一次建工程可用 CubeIDE，需要 CI 时让工具共用同一构建入口。Keil 只有 Windows，社区版超代码大小要授权；CubeIDE 免费且集成 CubeMX；PlatformIO 有自己的包管理；CLion 收费，学生免费。",
       "on_screen": [
         "Keil/CubeIDE",
         "VSCode/CLion",
@@ -403,7 +403,7 @@
         "ch01-s14",
         "ch01-s15"
       ],
-      "narration": "标准工程有 Core、Inc、Src、Drivers、CMake/Make 配置和链接脚本。目录不是装饰，它决定哪些文件参与构建。",
+      "narration": "标准工程有 Core、Inc、Src、Drivers、CMake/Make 配置和链接脚本。目录不是装饰，它决定哪些文件参与构建。真正要进版本控制的是源文件、启动文件、链接脚本、依赖版本和可复现的构建入口；build 目录里的临时产物可以重建。",
       "on_screen": [
         "Core/Inc/Src",
         "Drivers",
@@ -438,7 +438,7 @@
         "ch01-s15",
         "ch01-s16"
       ],
-      "narration": "CLion、VS Code 和 CI 可以共用同一个 CMake Preset，产出同一组 ELF、map 和 bin，避免 IDE 能编而 CI 不能编。",
+      "narration": "CLion、VS Code 和 CI 可以共用同一个 CMake Preset，产出同一组 ELF、map 和 bin，避免 IDE 能编而 CI 不能编。一个工程只保留一套构建事实：源文件、宏、头文件路径、工具链和链接脚本都由同一入口定义。",
       "on_screen": [
         "CMake Preset",
         "同一组产物"
@@ -473,7 +473,7 @@
         "ch01-s16",
         "ch01-s17"
       ],
-      "narration": "CubeMX 生成工程时配置芯片、时钟、SWD 和代码生成选项。生成的 main.c 会包含时钟配置和外设初始化。",
+      "narration": "CubeMX 生成工程时配置芯片、时钟、SWD 和代码生成选项。生成的 main.c 会包含时钟配置和外设初始化。选 STM32F103C8Tx，把 PC13 设为 GPIO_Output，RCC 的 HSE 选 Crystal，SYS Debug 选 Serial Wire，时钟按 8 MHz 晶振经 PLL 九倍频到 72 MHz。",
       "on_screen": [
         "芯片/时钟/SWD",
         "代码生成"
@@ -509,7 +509,7 @@
         "ch01-s17",
         "ch01-s18"
       ],
-      "narration": "编译生成 ELF/AXF，烧录经 SWD 写入 Flash，调试看寄存器、变量和断点。三个动作的证据不同。",
+      "narration": "编译生成 ELF/AXF，烧录经 SWD 写入 Flash，调试看寄存器、变量和断点。三个动作的证据不同。OpenOCD 下载运行的合同是 build、program、verify、reset；调试还要监听 3333 端口，用 GDB 加载同一份 ELF，并断在 main。",
       "on_screen": [
         "编译=ELF",
         "烧录=Flash",
@@ -547,7 +547,7 @@
         "ch01-s18",
         "ch01-s19"
       ],
-      "narration": "按 SWD 接线表接 GND、SWDIO、SWCLK 和可选 NRST，3.3V 不接。接好后上电，用 CubeProgrammer 读 Device ID，验证连接边界。",
+      "narration": "按 SWD 接线表接 GND、SWDIO、SWCLK 和可选 NRST，3.3V 不接。接好后上电，用 CubeProgrammer 读 Device ID，验证连接边界。不同 ST-Link 克隆板的 3.3V 脚可能是输出，不要与 BluePill 的 USB 供电并联。",
       "on_screen": [
         "GND/SWDIO/SWCLK",
         "NRST 可选",
@@ -586,7 +586,7 @@
         "ch01-s19",
         "ch01-s20"
       ],
-      "narration": "Windows 装 ST-Link USB driver，设备管理器出现 STLink dongle；固件太旧会报 DFU 相关错误。",
+      "narration": "Windows 装 ST-Link USB driver，设备管理器出现 STLink dongle；固件太旧会报 DFU 相关错误。升级用 ST-Link Upgrade；STM32CubeProgrammer 里 Connect 能读到 Device ID 就说明连接边界通了；Linux 还要加 udev 规则，避免每次 sudo。",
       "on_screen": [
         "驱动可见",
         "固件更新"
@@ -750,7 +750,7 @@
         "ch01-s23",
         "ch01-s24"
       ],
-      "narration": "烧录一次后再也连不上，通常是 PA13/PA14 被配成 GPIO。处理是把 Debug 留在 Serial Wire，并把 SWD 接回第 34 脚和第 37 脚。",
+      "narration": "烧录一次后再也连不上，通常是 PA13/PA14 被配成 GPIO。处理是把 Debug 留在 Serial Wire，并把 SWD 接回第 34 脚和第 37 脚。根治办法是重新生成工程时保留 Serial Wire，救砖时先拉高 BOOT0 再连。",
       "on_screen": [
         "PA13/PA14=GPIO",
         "改回 Serial Wire"
@@ -837,7 +837,7 @@
         "ch01-s25",
         "ch01-s26"
       ],
-      "narration": "实验一用 CubeMX 生成工程、编译并下载，让板载 LED 1Hz 闪烁。实验二在 HAL_GPIO_TogglePin 打断点，观察 GPIOC->ODR。",
+      "narration": "实验一用 CubeMX 生成工程、编译并下载，让板载 LED 1Hz 闪烁。实验二在 HAL_GPIO_TogglePin 打断点，观察 GPIOC->ODR。两个实验都要留下证据：构建日志里的编译器与 ELF 路径，以及调试器里读到的 Device ID。",
       "on_screen": [
         "1Hz 闪烁",
         "ODR 断点"

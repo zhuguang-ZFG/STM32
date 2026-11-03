@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "chapter": "00",
+  "mp4": "final-videos/ch00/ch00-bilibili-safe.mp4",
+  "mp4_sha256": "82e0a8136f104da8b28c273443d9993e41801c23165df2c4ed793d19c1af538a",
+  "storyboard_sha256": "00838a8ef92e4fe0acef19bdd28a445326675ae3f6dd7d19386c448d7fbfba6d",
+  "duration_seconds": 573.353311,
+  "width": 1920,
+  "height": 1080,
+  "frame_rate": "30/1",
+  "tts_voice": "zh-CN-XiaoxiaoNeural",
+  "integrated_lufs": -15.8,
+  "true_peak_dbtp": -1.9,
+  "subtitle_cues": 28,
+  "checks": {
+    "28_scenes": true,
+    "five_learning_roles": true,
+    "1080p": true,
+    "30_fps": true,
+    "subtitle_count": true,
+    "duration_matches_storyboard": true,
+    "duration_bounds": true,
+    "integrated_loudness": true,
+    "true_peak": true,
+    "contact_sheet": true
+  }
+}

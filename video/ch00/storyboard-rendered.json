@@ -1,0 +1,1195 @@
+{
+  "id": "00",
+  "slug": "learn-long",
+  "title": "如何学习 STM32：从够用标准到第一盏可验收的灯",
+  "short_source": "tools/narration.py#CHAPTERS[0]",
+  "segments": [
+    {
+      "scene_id": "ch00-s01",
+      "title": "灯没亮，先别猜",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "你买了板子，写了代码，灯却没亮。第一课不是背寄存器，而是先建立一条可验收的最小闭环：构建、烧录、复位、测量。",
+      "on_screen": [
+        "灯没亮",
+        "先别猜",
+        "建立最小闭环"
+      ],
+      "visual_source": "illustrations/ch00-handdraw.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#学习目标"
+      ],
+      "memory_anchor": "先建立可验收闭环",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 15.095,
+      "subtitle_ref": "ch00.srt#01",
+      "head": "灯没亮，先别猜",
+      "lines": [
+        "灯没亮",
+        "先别猜",
+        "建立最小闭环"
+      ],
+      "say": "你买了板子，写了代码，灯却没亮。第一课不是背寄存器，而是先建立一条可验收的最小闭环：构建、烧录、复位、测量。",
+      "svg": "illustrations/ch00-handdraw.svg"
+    },
+    {
+      "scene_id": "ch00-s02",
+      "title": "学习目标不是把书看完",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01"
+      ],
+      "narration": "学习目标不是把书看完，而是留下第一次闭环的四份证据：构建产物、烧录校验、main 断点和 PC13 的 1 Hz 波形。 四份证据分别是构建产物、烧录校验、main 断点和 PC13 的 1 Hz 波形。",
+      "on_screen": [
+        "四份证据",
+        "构建、烧录、复位、测量"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#学习目标"
+      ],
+      "memory_anchor": "四份证据才算闭环",
+      "evidence_type": "concept",
+      "start": 15.095,
+      "duration": 21.907,
+      "subtitle_ref": "ch00.srt#02",
+      "head": "学习目标不是把书看完",
+      "lines": [
+        "四份证据",
+        "构建、烧录、复位、测量"
+      ],
+      "say": "学习目标不是把书看完，而是留下第一次闭环的四份证据：构建产物、烧录校验、main 断点和 PC13 的 1 Hz 波形。 四份证据分别是构建产物、烧录校验、main 断点和 PC13 的 1 Hz 波形。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch00-s03",
+      "title": "够用标准决定先补哪块",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02"
+      ],
+      "narration": "开始前不必学完整个电子工程。能读引脚表、算 LED 限流电阻，并用指针操作一个 uint32_t，就可以一边做实验一边补知识。 最低要求是能用指针操作 uint32_t，能读高低电平和上升沿，会算 LED 限流电阻，并理解字节、地址和寄存器。",
+      "on_screen": [
+        "够用即可",
+        "边做边补"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#先到什么程度，再往下走"
+      ],
+      "memory_anchor": "够用即可，边做边补",
+      "evidence_type": "concept",
+      "start": 37.002,
+      "duration": 28.789,
+      "subtitle_ref": "ch00.srt#03",
+      "head": "够用标准决定先补哪块",
+      "lines": [
+        "够用即可",
+        "边做边补"
+      ],
+      "say": "开始前不必学完整个电子工程。能读引脚表、算 LED 限流电阻，并用指针操作一个 uint32_t，就可以一边做实验一边补知识。 最低要求是能用指针操作 uint32_t，能读高低电平和上升沿，会算 LED 限流电阻，并理解字节、地址和寄存器。",
+      "svg": "diagrams/manual-choice-map.svg"
+    },
+    {
+      "scene_id": "ch00-s04",
+      "title": "三种开发方式",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03"
+      ],
+      "narration": "寄存器、标准库 SPL、HAL+LL+CubeMX 三种方式各有取舍。入门建议 HAL+CubeMX，理解底层时对照寄存器，关键处再用 LL 优化。 寄存器直接写 ODR 适合学原理，SPL 已停止维护，HAL+LL+CubeMX 适合新项目和原型。",
+      "on_screen": [
+        "寄存器 / SPL / HAL",
+        "HAL 入门，寄存器对照"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#三种开发方式对比"
+      ],
+      "memory_anchor": "HAL 入门，寄存器对照",
+      "evidence_type": "concept",
+      "start": 65.791,
+      "duration": 27.94,
+      "subtitle_ref": "ch00.srt#04",
+      "head": "三种开发方式",
+      "lines": [
+        "寄存器 / SPL / HAL",
+        "HAL 入门，寄存器对照"
+      ],
+      "say": "寄存器、标准库 SPL、HAL+LL+CubeMX 三种方式各有取舍。入门建议 HAL+CubeMX，理解底层时对照寄存器，关键处再用 LL 优化。 寄存器直接写 ODR 适合学原理，SPL 已停止维护，HAL+LL+CubeMX 适合新项目和原型。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s05",
+      "title": "入门四周",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04"
+      ],
+      "narration": "入门四周的目标很具体：环境搭建、GPIO 输出、点灯、按键、中断和定时器。每一周都要有可测量产出。 第 1 周环境与点灯，第 2 周按键，第 3 周中断，第 4 周定时器和 PWM，每周都要有可测量产出。",
+      "on_screen": [
+        "四周目标",
+        "可测量产出"
+      ],
+      "visual_source": "diagrams/project-structure.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#先到什么程度，再往下走"
+      ],
+      "memory_anchor": "入门四周有产出",
+      "evidence_type": "concept",
+      "start": 93.731,
+      "duration": 24.956,
+      "subtitle_ref": "ch00.srt#05",
+      "head": "入门四周",
+      "lines": [
+        "四周目标",
+        "可测量产出"
+      ],
+      "say": "入门四周的目标很具体：环境搭建、GPIO 输出、点灯、按键、中断和定时器。每一周都要有可测量产出。 第 1 周环境与点灯，第 2 周按键，第 3 周中断，第 4 周定时器和 PWM，每周都要有可测量产出。",
+      "svg": "diagrams/project-structure.svg"
+    },
+    {
+      "scene_id": "ch00-s06",
+      "title": "进阶六周",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05"
+      ],
+      "narration": "进阶六周打通常用通信与外设：UART、I2C、SPI、ADC、DMA、看门狗和低功耗。每项都要有实验证据。 第 5 到 10 周依次打通 UART、DMA、I2C、SPI、ADC、看门狗和低功耗。",
+      "on_screen": [
+        "通信与外设",
+        "实验证据"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#先到什么程度，再往下走"
+      ],
+      "memory_anchor": "进阶六周有证据",
+      "evidence_type": "concept",
+      "start": 118.688,
+      "duration": 24.158,
+      "subtitle_ref": "ch00.srt#06",
+      "head": "进阶六周",
+      "lines": [
+        "通信与外设",
+        "实验证据"
+      ],
+      "say": "进阶六周打通常用通信与外设：UART、I2C、SPI、ADC、DMA、看门狗和低功耗。每项都要有实验证据。 第 5 到 10 周依次打通 UART、DMA、I2C、SPI、ADC、看门狗和低功耗。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s07",
+      "title": "实战八周",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06"
+      ],
+      "narration": "实战八周做一个完整项目：需求拆解、模块划分、状态机、驱动、存储、RTOS 和升级。项目不是外设清单。 第 11 到 18 周做需求拆解、模块划分、状态机、驱动、存储、FreeRTOS 和 IAP 升级。",
+      "on_screen": [
+        "完整项目",
+        "不是外设清单"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#先到什么程度，再往下走"
+      ],
+      "memory_anchor": "实战八周做项目",
+      "evidence_type": "concept",
+      "start": 142.845,
+      "duration": 25.037,
+      "subtitle_ref": "ch00.srt#07",
+      "head": "实战八周",
+      "lines": [
+        "完整项目",
+        "不是外设清单"
+      ],
+      "say": "实战八周做一个完整项目：需求拆解、模块划分、状态机、驱动、存储、RTOS 和升级。项目不是外设清单。 第 11 到 18 周做需求拆解、模块划分、状态机、驱动、存储、FreeRTOS 和 IAP 升级。",
+      "svg": "diagrams/single-build-contract.svg"
+    },
+    {
+      "scene_id": "ch00-s08",
+      "title": "采购清单",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07"
+      ],
+      "narration": "第一次点灯只需要 BluePill、ST-Link、面包板和杜邦线。极简起步约 60 元，其他传感器用到再买。 BluePill 约 15 到 30 元，ST-Link 约 15 到 40 元，极简起步约 60 元，加上串口、显示和测量工具约 200 到 300 元。",
+      "on_screen": [
+        "极简 60 元",
+        "用到再买"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件采购清单"
+      ],
+      "memory_anchor": "极简起步约 60 元",
+      "evidence_type": "concept",
+      "start": 167.882,
+      "duration": 26.411,
+      "subtitle_ref": "ch00.srt#08",
+      "head": "采购清单",
+      "lines": [
+        "极简 60 元",
+        "用到再买"
+      ],
+      "say": "第一次点灯只需要 BluePill、ST-Link、面包板和杜邦线。极简起步约 60 元，其他传感器用到再买。 BluePill 约 15 到 30 元，ST-Link 约 15 到 40 元，极简起步约 60 元，加上串口、显示和测量工具约 200 到 300 元。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch00-s09",
+      "title": "别同时换四个变量",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08"
+      ],
+      "narration": "同时换板卡、工具链、库和多个外设，会让问题无法定位。正确做法是一次只改一个变量。",
+      "on_screen": [
+        "一次只改一个变量",
+        "问题才能定位"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#会拖慢入门的做法"
+      ],
+      "memory_anchor": "一次只改一个变量",
+      "evidence_type": "concept",
+      "start": 194.293,
+      "duration": 11.241,
+      "subtitle_ref": "ch00.srt#09",
+      "head": "别同时换四个变量",
+      "lines": [
+        "一次只改一个变量",
+        "问题才能定位"
+      ],
+      "say": "同时换板卡、工具链、库和多个外设，会让问题无法定位。正确做法是一次只改一个变量。",
+      "svg": "diagrams/manual-choice-map.svg"
+    },
+    {
+      "scene_id": "ch00-s10",
+      "title": "第一次接线只留一个供电",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09"
+      ],
+      "narration": "第一次接线只接 BluePill 和 ST-Link。Micro-USB 是唯一主供电，ST-Link 的 3.3V 不接，避免并联两个电源。 第一次点灯只接 BluePill 和 ST-Link；Micro-USB 是唯一主供电，先确认 BOOT0=0 和共地。",
+      "on_screen": [
+        "只留一个主供电",
+        "3.3V 不接"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "只留一个主供电",
+      "evidence_type": "concept",
+      "start": 205.534,
+      "duration": 25.426,
+      "subtitle_ref": "ch00.srt#10",
+      "head": "第一次接线只留一个供电",
+      "lines": [
+        "只留一个主供电",
+        "3.3V 不接"
+      ],
+      "say": "第一次接线只接 BluePill 和 ST-Link。Micro-USB 是唯一主供电，ST-Link 的 3.3V 不接，避免并联两个电源。 第一次点灯只接 BluePill 和 ST-Link；Micro-USB 是唯一主供电，先确认 BOOT0=0 和共地。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch00-s11",
+      "title": "BOOT0 决定从哪启动",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10"
+      ],
+      "narration": "复位后从哪取第一条指令由 BOOT0 和 BOOT1 决定。BOOT0=0 从主闪存启动，0/1 进系统存储器 ISP，1/1 从 SRAM 启动。 BluePill 用跳帽切换启动区；接错时程序还在，只是没有被取指。",
+      "on_screen": [
+        "BOOT0=0 主闪存",
+        "0/1 ISP",
+        "1/1 SRAM"
+      ],
+      "visual_source": "diagrams/sample-00-boot-state.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "BOOT0 决定取指入口",
+      "evidence_type": "concept",
+      "start": 230.96,
+      "duration": 23.022,
+      "subtitle_ref": "ch00.srt#11",
+      "head": "BOOT0 决定从哪启动",
+      "lines": [
+        "BOOT0=0 主闪存",
+        "0/1 ISP",
+        "1/1 SRAM"
+      ],
+      "say": "复位后从哪取第一条指令由 BOOT0 和 BOOT1 决定。BOOT0=0 从主闪存启动，0/1 进系统存储器 ISP，1/1 从 SRAM 启动。 BluePill 用跳帽切换启动区；接错时程序还在，只是没有被取指。",
+      "svg": "diagrams/sample-00-boot-state.svg"
+    },
+    {
+      "scene_id": "ch00-s12",
+      "title": "5V 不能接 3.3V",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11"
+      ],
+      "narration": "5V 不能接到 3V3。上电前确认只有一个主供电路径，上电后先量板上 3.3V，再连接调试器会话。",
+      "on_screen": [
+        "5V≠3.3V",
+        "先量 3.3V"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "5V 不能接 3.3V",
+      "evidence_type": "concept",
+      "start": 253.982,
+      "duration": 12.615,
+      "subtitle_ref": "ch00.srt#12",
+      "head": "5V 不能接 3.3V",
+      "lines": [
+        "5V≠3.3V",
+        "先量 3.3V"
+      ],
+      "say": "5V 不能接到 3V3。上电前确认只有一个主供电路径，上电后先量板上 3.3V，再连接调试器会话。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch00-s13",
+      "title": "板载 LED 是 PC13 低电平点亮",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12"
+      ],
+      "narration": "板载 LED 是 PC13 低电平点亮。输出 0 时灯亮，输出 1 时灯灭。只凭灯亮不能证明程序正确。",
+      "on_screen": [
+        "PC13 低电平点亮",
+        "0 亮 1 灭"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#第一份能验收的程序"
+      ],
+      "memory_anchor": "PC13 低电平点亮",
+      "evidence_type": "concept",
+      "start": 266.598,
+      "duration": 11.986,
+      "subtitle_ref": "ch00.srt#13",
+      "head": "板载 LED 是 PC13 低电平点亮",
+      "lines": [
+        "PC13 低电平点亮",
+        "0 亮 1 灭"
+      ],
+      "say": "板载 LED 是 PC13 低电平点亮。输出 0 时灯亮，输出 1 时灯灭。只凭灯亮不能证明程序正确。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s14",
+      "title": "HAL 点灯骨架",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13"
+      ],
+      "narration": "HAL 点灯骨架先初始化 HAL 和系统时钟，再开 GPIOC 时钟，配置 PC13 为推挽输出，然后翻转电平并延时。 代码先 HAL_Init 和 SystemClock_Config，再开 GPIOC 时钟，把 PC13 配成推挽输出，然后翻转并延时。",
+      "on_screen": [
+        "HAL_Init",
+        "GPIOC 时钟",
+        "PC13 推挽输出"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#第一份能验收的程序"
+      ],
+      "memory_anchor": "HAL 点灯骨架",
+      "evidence_type": "concept",
+      "start": 278.584,
+      "duration": 25.146,
+      "subtitle_ref": "ch00.srt#14",
+      "head": "HAL 点灯骨架",
+      "lines": [
+        "HAL_Init",
+        "GPIOC 时钟",
+        "PC13 推挽输出"
+      ],
+      "say": "HAL 点灯骨架先初始化 HAL 和系统时钟，再开 GPIOC 时钟，配置 PC13 为推挽输出，然后翻转电平并延时。 代码先 HAL_Init 和 SystemClock_Config，再开 GPIOC 时钟，把 PC13 配成推挽输出，然后翻转并延时。",
+      "svg": "diagrams/single-build-contract.svg"
+    },
+    {
+      "scene_id": "ch00-s15",
+      "title": "时钟配置决定能否跑 72 MHz",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14"
+      ],
+      "narration": "HSE 8 MHz 经 PLL 乘 9 得 72 MHz。APB1 36 MHz，APB2 72 MHz，Flash 等待周期为 2。 HSE 8 MHz 乘 9 得 72 MHz，APB1 36 MHz，APB2 72 MHz，Flash 等待周期为 2。",
+      "on_screen": [
+        "8 MHz × 9",
+        "APB1 36 MHz",
+        "APB2 72 MHz"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#第一份能验收的程序"
+      ],
+      "memory_anchor": "8×9 得 72 MHz",
+      "evidence_type": "concept",
+      "start": 303.73,
+      "duration": 22.372,
+      "subtitle_ref": "ch00.srt#15",
+      "head": "时钟配置决定能否跑 72 MHz",
+      "lines": [
+        "8 MHz × 9",
+        "APB1 36 MHz",
+        "APB2 72 MHz"
+      ],
+      "say": "HSE 8 MHz 经 PLL 乘 9 得 72 MHz。APB1 36 MHz，APB2 72 MHz，Flash 等待周期为 2。 HSE 8 MHz 乘 9 得 72 MHz，APB1 36 MHz，APB2 72 MHz，Flash 等待周期为 2。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s16",
+      "title": "CRH/ODR 对照寄存器",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15"
+      ],
+      "narration": "不用 HAL 时，点灯需要开 GPIOC 时钟、清 CRH 配置位、设推挽输出、翻转 ODR。对照寄存器能看清 HAL 背后发生了什么。 寄存器写法要开 IOPCEN，清 CRH 配置位，设通用推挽输出，再翻转 ODR。",
+      "on_screen": [
+        "CRH 配置位",
+        "ODR 翻转",
+        "对照寄存器"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#第一份能验收的程序"
+      ],
+      "memory_anchor": "CRH/ODR 对照寄存器",
+      "evidence_type": "concept",
+      "start": 326.102,
+      "duration": 24.067,
+      "subtitle_ref": "ch00.srt#16",
+      "head": "CRH/ODR 对照寄存器",
+      "lines": [
+        "CRH 配置位",
+        "ODR 翻转",
+        "对照寄存器"
+      ],
+      "say": "不用 HAL 时，点灯需要开 GPIOC 时钟、清 CRH 配置位、设推挽输出、翻转 ODR。对照寄存器能看清 HAL 背后发生了什么。 寄存器写法要开 IOPCEN，清 CRH 配置位，设通用推挽输出，再翻转 ODR。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s17",
+      "title": "灯亮不等于程序正确",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16"
+      ],
+      "narration": "灯亮只能证明某一时刻有电平，不能单独证明构建产物、复位路径和频率都正确。验收要按四关走。",
+      "on_screen": [
+        "灯亮≠程序正确",
+        "按四关验收"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#动手实验"
+      ],
+      "memory_anchor": "灯亮不等于程序正确",
+      "evidence_type": "concept",
+      "start": 350.169,
+      "duration": 12.015,
+      "subtitle_ref": "ch00.srt#17",
+      "head": "灯亮不等于程序正确",
+      "lines": [
+        "灯亮≠程序正确",
+        "按四关验收"
+      ],
+      "say": "灯亮只能证明某一时刻有电平，不能单独证明构建产物、复位路径和频率都正确。验收要按四关走。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch00-s18",
+      "title": "实验一：环境验证",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17"
+      ],
+      "narration": "实验一：按代码驱动 PC13 并以 1 Hz 闪烁。预期现象是板载 LED 每秒完成一次亮灭周期。",
+      "on_screen": [
+        "1 Hz 闪烁",
+        "每秒一次亮灭"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#动手实验"
+      ],
+      "memory_anchor": "实验一环境验证",
+      "evidence_type": "concept",
+      "start": 362.184,
+      "duration": 11.101,
+      "subtitle_ref": "ch00.srt#18",
+      "head": "实验一：环境验证",
+      "lines": [
+        "1 Hz 闪烁",
+        "每秒一次亮灭"
+      ],
+      "say": "实验一：按代码驱动 PC13 并以 1 Hz 闪烁。预期现象是板载 LED 每秒完成一次亮灭周期。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch00-s19",
+      "title": "实验二：改动参数",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18"
+      ],
+      "narration": "实验二：把 HAL_Delay(500) 改成 100，观察闪烁变快；用逻辑分析仪量 PC13 波形，确认频率约 5 Hz。 实验二把 HAL_Delay(500) 改成 100，预期 PC13 约 5 Hz，并用逻辑分析仪量波形。",
+      "on_screen": [
+        "100 ms",
+        "约 5 Hz",
+        "量 PC13 波形"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#动手实验"
+      ],
+      "memory_anchor": "实验二改动参数",
+      "evidence_type": "concept",
+      "start": 373.285,
+      "duration": 24.636,
+      "subtitle_ref": "ch00.srt#19",
+      "head": "实验二：改动参数",
+      "lines": [
+        "100 ms",
+        "约 5 Hz",
+        "量 PC13 波形"
+      ],
+      "say": "实验二：把 HAL_Delay(500) 改成 100，观察闪烁变快；用逻辑分析仪量 PC13 波形，确认频率约 5 Hz。 实验二把 HAL_Delay(500) 改成 100，预期 PC13 约 5 Hz，并用逻辑分析仪量波形。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch00-s20",
+      "title": "先查 ELF/AXF",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19"
+      ],
+      "narration": "调试前先确认构建产物是 ELF/AXF。没有正确构建产物，后面烧录、断点和复位都无从谈起。 构建日志要能回答用了哪个交叉编译器，ELF/AXF 在哪里。",
+      "on_screen": [
+        "ELF/AXF",
+        "先查构建"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#学习资源清单"
+      ],
+      "memory_anchor": "先查 ELF/AXF",
+      "evidence_type": "concept",
+      "start": 397.921,
+      "duration": 18.333,
+      "subtitle_ref": "ch00.srt#20",
+      "head": "先查 ELF/AXF",
+      "lines": [
+        "ELF/AXF",
+        "先查构建"
+      ],
+      "say": "调试前先确认构建产物是 ELF/AXF。没有正确构建产物，后面烧录、断点和复位都无从谈起。 构建日志要能回答用了哪个交叉编译器，ELF/AXF 在哪里。",
+      "svg": "animations/toolchain-flow.svg"
+    },
+    {
+      "scene_id": "ch00-s21",
+      "title": "SWD 四根线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20"
+      ],
+      "narration": "SWD 调试至少接 GND、SWDIO、SWCLK，可选 NRST。NRST 接上后可以使用 connect-under-reset。 SWD 至少接 GND、SWDIO 和 SWCLK；NRST 接上后可以使用 connect-under-reset。",
+      "on_screen": [
+        "GND/SWDIO/SWCLK",
+        "NRST 可选"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "SWD 四根线",
+      "evidence_type": "concept",
+      "start": 416.255,
+      "duration": 25.633,
+      "subtitle_ref": "ch00.srt#21",
+      "head": "SWD 四根线",
+      "lines": [
+        "GND/SWDIO/SWCLK",
+        "NRST 可选"
+      ],
+      "say": "SWD 调试至少接 GND、SWDIO、SWCLK，可选 NRST。NRST 接上后可以使用 connect-under-reset。 SWD 至少接 GND、SWDIO 和 SWCLK；NRST 接上后可以使用 connect-under-reset。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch00-s22",
+      "title": "上电启动流程",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21"
+      ],
+      "narration": "上电后 CPU 从 0x00000000 读复位向量，先初始化栈指针，再跳 Reset_Handler，最后进入 main。 CPU 先读 MSP，再跳 Reset_Handler，启动文件初始化栈和时钟，最后才进入 main。",
+      "on_screen": [
+        "复位向量",
+        "栈指针",
+        "Reset_Handler"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "上电启动流程",
+      "evidence_type": "concept",
+      "start": 441.887,
+      "duration": 23.232,
+      "subtitle_ref": "ch00.srt#22",
+      "head": "上电启动流程",
+      "lines": [
+        "复位向量",
+        "栈指针",
+        "Reset_Handler"
+      ],
+      "say": "上电后 CPU 从 0x00000000 读复位向量，先初始化栈指针，再跳 Reset_Handler，最后进入 main。 CPU 先读 MSP，再跳 Reset_Handler，启动文件初始化栈和时钟，最后才进入 main。",
+      "svg": "animations/boot-sequence.svg"
+    },
+    {
+      "scene_id": "ch00-s23",
+      "title": "地址空间分工",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22"
+      ],
+      "narration": "Cortex-M 把 4 GB 地址空间分段：Code、SRAM、外设、外部 RAM 和系统区。每段职责固定。 0 号段是 Code，0x20000000 起是 SRAM，0x40000000 起是外设寄存器。",
+      "on_screen": [
+        "4 GB 分段",
+        "Code/SRAM/外设",
+        "职责固定"
+      ],
+      "visual_source": "animations/memory-map.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "地址空间分工",
+      "evidence_type": "concept",
+      "start": 465.119,
+      "duration": 22.883,
+      "subtitle_ref": "ch00.srt#23",
+      "head": "地址空间分工",
+      "lines": [
+        "4 GB 分段",
+        "Code/SRAM/外设",
+        "职责固定"
+      ],
+      "say": "Cortex-M 把 4 GB 地址空间分段：Code、SRAM、外设、外部 RAM 和系统区。每段职责固定。 0 号段是 Code，0x20000000 起是 SRAM，0x40000000 起是外设寄存器。",
+      "svg": "animations/memory-map.svg"
+    },
+    {
+      "scene_id": "ch00-s24",
+      "title": "复位不进 main",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22",
+        "ch00-s23"
+      ],
+      "narration": "如果复位后不进 main，先查 BOOT 脚、烧录地址、复位向量和时钟配置。不要先改代码。",
+      "on_screen": [
+        "复位不进 main",
+        "先查启动链"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#硬件与接线"
+      ],
+      "memory_anchor": "复位不进 main",
+      "evidence_type": "concept",
+      "start": 488.002,
+      "duration": 10.726,
+      "subtitle_ref": "ch00.srt#24",
+      "head": "复位不进 main",
+      "lines": [
+        "复位不进 main",
+        "先查启动链"
+      ],
+      "say": "如果复位后不进 main，先查 BOOT 脚、烧录地址、复位向量和时钟配置。不要先改代码。",
+      "svg": "animations/boot-sequence.svg"
+    },
+    {
+      "scene_id": "ch00-s25",
+      "title": "排错顺序",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22",
+        "ch00-s23",
+        "ch00-s24"
+      ],
+      "narration": "排错不要从搜索报错开始。先看现象、量波形，再查数据手册、参考手册、官方例程，最后才搜索报错。 顺序是先看现象量波形，再查数据手册和参考手册，再找官方例程，最后才搜索报错。",
+      "on_screen": [
+        "先看现象",
+        "再查手册",
+        "最后搜索"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#排错不要从搜索报错开始"
+      ],
+      "memory_anchor": "排错顺序",
+      "evidence_type": "concept",
+      "start": 498.728,
+      "duration": 24.067,
+      "subtitle_ref": "ch00.srt#25",
+      "head": "排错顺序",
+      "lines": [
+        "先看现象",
+        "再查手册",
+        "最后搜索"
+      ],
+      "say": "排错不要从搜索报错开始。先看现象、量波形，再查数据手册、参考手册、官方例程，最后才搜索报错。 顺序是先看现象量波形，再查数据手册和参考手册，再找官方例程，最后才搜索报错。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch00-s26",
+      "title": "提问三要素",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22",
+        "ch00-s23",
+        "ch00-s24",
+        "ch00-s25"
+      ],
+      "narration": "提问时写清做了什么、期望什么、实际什么，并附上最小可复现工程。这比“跑不起来”有效得多。",
+      "on_screen": [
+        "做了什么",
+        "期望什么",
+        "实际什么"
+      ],
+      "visual_source": "diagrams/manual-choice-map.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#排错不要从搜索报错开始"
+      ],
+      "memory_anchor": "提问三要素",
+      "evidence_type": "concept",
+      "start": 522.794,
+      "duration": 11.536,
+      "subtitle_ref": "ch00.srt#26",
+      "head": "提问三要素",
+      "lines": [
+        "做了什么",
+        "期望什么",
+        "实际什么"
+      ],
+      "say": "提问时写清做了什么、期望什么、实际什么，并附上最小可复现工程。这比“跑不起来”有效得多。",
+      "svg": "diagrams/manual-choice-map.svg"
+    },
+    {
+      "scene_id": "ch00-s27",
+      "title": "资源清单",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22",
+        "ch00-s23",
+        "ch00-s24",
+        "ch00-s25",
+        "ch00-s26"
+      ],
+      "narration": "DS5319、RM0008、PM0056、STM32CubeF1、CubeMX、ST-Link 和逻辑分析仪是常用资源。遇到问题先查官方手册。 DS5319 查引脚和电气参数，RM0008 查寄存器和时钟，PM0056 查内核和 NVIC。",
+      "on_screen": [
+        "DS5319 / RM0008",
+        "PM0056",
+        "STM32CubeF1"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#学习资源清单"
+      ],
+      "memory_anchor": "常用资源清单",
+      "evidence_type": "concept",
+      "start": 534.33,
+      "duration": 28.285,
+      "subtitle_ref": "ch00.srt#27",
+      "head": "资源清单",
+      "lines": [
+        "DS5319 / RM0008",
+        "PM0056",
+        "STM32CubeF1"
+      ],
+      "say": "DS5319、RM0008、PM0056、STM32CubeF1、CubeMX、ST-Link 和逻辑分析仪是常用资源。遇到问题先查官方手册。 DS5319 查引脚和电气参数，RM0008 查寄存器和时钟，PM0056 查内核和 NVIC。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch00-s28",
+      "title": "合上书先跑通第一盏灯",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch00-s01",
+        "ch00-s02",
+        "ch00-s03",
+        "ch00-s04",
+        "ch00-s05",
+        "ch00-s06",
+        "ch00-s07",
+        "ch00-s08",
+        "ch00-s09",
+        "ch00-s10",
+        "ch00-s11",
+        "ch00-s12",
+        "ch00-s13",
+        "ch00-s14",
+        "ch00-s15",
+        "ch00-s16",
+        "ch00-s17",
+        "ch00-s18",
+        "ch00-s19",
+        "ch00-s20",
+        "ch00-s21",
+        "ch00-s22",
+        "ch00-s23",
+        "ch00-s24",
+        "ch00-s25",
+        "ch00-s26",
+        "ch00-s27"
+      ],
+      "narration": "合上书先跑通第一盏灯。留下构建、烧录、复位和测量四份证据，再进入下一章。",
+      "on_screen": [
+        "第一盏灯",
+        "四份证据",
+        "再进入下一章"
+      ],
+      "visual_source": "illustrations/ch00-handdraw.svg",
+      "fact_source": [
+        "docs/00-如何学习STM32.md#学习目标"
+      ],
+      "memory_anchor": "先跑通第一盏灯",
+      "evidence_type": "concept",
+      "start": 562.615,
+      "duration": 10.521,
+      "subtitle_ref": "ch00.srt#28",
+      "head": "合上书先跑通第一盏灯",
+      "lines": [
+        "第一盏灯",
+        "四份证据",
+        "再进入下一章"
+      ],
+      "say": "合上书先跑通第一盏灯。留下构建、烧录、复位和测量四份证据，再进入下一章。",
+      "svg": "illustrations/ch00-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 672.263,
+  "actual_duration": 573.136
+}

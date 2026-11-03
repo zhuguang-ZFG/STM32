@@ -1,0 +1,905 @@
+{
+  "id": "02",
+  "slug": "clock-long",
+  "title": "芯片选型与存储器时钟：从料号解码到 72 MHz 证据链",
+  "short_source": "tools/narration.py#CHAPTERS[2]",
+  "segments": [
+    {
+      "scene_id": "ch02-s01",
+      "title": "寄存器写进去了，外设为什么没反应？",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "先从一个真实现场开始。你按手册填好寄存器，下载运行，引脚却纹丝不动，调试器里读回还像写成功了。这一章追的不是某一行代码，而是两块地基：芯片选型和存储器时钟。时钟门控没开，写进去的值根本到不了外设。",
+      "on_screen": [
+        "写入了，读回也像成功",
+        "外设却毫无反应",
+        "先查时钟，不查代码"
+      ],
+      "visual_source": "illustrations/ch02-handdraw.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理",
+        "rm0008-rcc"
+      ],
+      "memory_anchor": "写入没反应，先查时钟门控",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 26.545,
+      "subtitle_ref": "ch02.srt#01",
+      "head": "寄存器写进去了，外设为什么没反应？",
+      "lines": [
+        "写入了，读回也像成功",
+        "外设却毫无反应",
+        "先查时钟，不查代码"
+      ],
+      "say": "先从一个真实现场开始。你按手册填好寄存器，下载运行，引脚却纹丝不动，调试器里读回还像写成功了。这一章追的不是某一行代码，而是两块地基：芯片选型和存储器时钟。时钟门控没开，写进去的值根本到不了外设。",
+      "svg": "illustrations/ch02-handdraw.svg"
+    },
+    {
+      "scene_id": "ch02-s02",
+      "title": "型号前半段：F103 告诉你什么",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s01"
+      ],
+      "narration": "先看型号的前半段。STM32 是品牌；F 是产品系列，F 是基础主流型，L 是低功耗，G 是通用，H 是高性能；103 是子系列，代表 F1 增强型，72 兆主频，带 USB 和 CAN。系列名相同，不代表容量、引脚和时钟配置相同。",
+      "on_screen": [
+        "F：基础主流型",
+        "103：F1 增强型 72 MHz",
+        "系列名≠容量引脚相同"
+      ],
+      "visual_source": null,
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "F103 是系列加子系列",
+      "evidence_type": "concept",
+      "start": 26.545,
+      "duration": 28.505,
+      "subtitle_ref": "ch02.srt#02",
+      "head": "型号前半段：F103 告诉你什么",
+      "lines": [
+        "F：基础主流型",
+        "103：F1 增强型 72 MHz",
+        "系列名≠容量引脚相同"
+      ],
+      "say": "先看型号的前半段。STM32 是品牌；F 是产品系列，F 是基础主流型，L 是低功耗，G 是通用，H 是高性能；103 是子系列，代表 F1 增强型，72 兆主频，带 USB 和 CAN。系列名相同，不代表容量、引脚和时钟配置相同。",
+      "svg": false
+    },
+    {
+      "scene_id": "ch02-s03",
+      "title": "C8T6：一位一个意思",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s02"
+      ],
+      "narration": "后半段一位一个意思：C 是 48 脚，8 是 64 KB 闪存，T 是 LQFP 封装，6 是零下 40 到 85 摄氏度，末尾可选后缀也属于订购代码，不能猜着省略。合起来，STM32F103C8T6 就是 F1 增强型、48 脚、64 KB、LQFP、工业温档。",
+      "on_screen": [
+        "C = 48 脚，8 = 64 KB",
+        "T = LQFP，6 = −40~85 ℃",
+        "采购核对完整料号"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "C8T6：脚数、容量、封装、温度",
+      "evidence_type": "diagram",
+      "start": 55.051,
+      "duration": 30.069,
+      "subtitle_ref": "ch02.srt#03",
+      "head": "C8T6：一位一个意思",
+      "lines": [
+        "C = 48 脚，8 = 64 KB",
+        "T = LQFP，6 = −40~85 ℃",
+        "采购核对完整料号"
+      ],
+      "say": "后半段一位一个意思：C 是 48 脚，8 是 64 KB 闪存，T 是 LQFP 封装，6 是零下 40 到 85 摄氏度，末尾可选后缀也属于订购代码，不能猜着省略。合起来，STM32F103C8T6 就是 F1 增强型、48 脚、64 KB、LQFP、工业温档。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch02-s04",
+      "title": "系列对比表只是第一轮排除",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s03"
+      ],
+      "narration": "十个系列摆在一起，先用内核和主频档做第一轮排除：F0 和 G0 看成本，F1 看旧项目兼容，F3 和 G4 看模拟链路，F4 看 FPU 和 DSP，F7 和 H7 看 Cache 和高速接口，L0 和 L4 看低功耗。这张表只是排除法，不是任何一颗芯片的保证值。",
+      "on_screen": [
+        "成本：F0 / G0",
+        "性能：F4 / F7 / H7",
+        "排除表≠数据手册保证值"
+      ],
+      "visual_source": null,
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "先排除，再查候选手册",
+      "evidence_type": "concept",
+      "start": 85.12,
+      "duration": 28.265,
+      "subtitle_ref": "ch02.srt#04",
+      "head": "系列对比表只是第一轮排除",
+      "lines": [
+        "成本：F0 / G0",
+        "性能：F4 / F7 / H7",
+        "排除表≠数据手册保证值"
+      ],
+      "say": "十个系列摆在一起，先用内核和主频档做第一轮排除：F0 和 G0 看成本，F1 看旧项目兼容，F3 和 G4 看模拟链路，F4 看 FPU 和 DSP，F7 和 H7 看 Cache 和高速接口，L0 和 L4 看低功耗。这张表只是排除法，不是任何一颗芯片的保证值。",
+      "svg": false
+    },
+    {
+      "scene_id": "ch02-s05",
+      "title": "M3、M4、M7 的内核边界",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s04"
+      ],
+      "narration": "内核决定算力边界。M3 没有 FPU 和 DSP 扩展，MPU 八个区域；M4 可选单精度 FPU，带 DSP 扩展；M7 的 FPU 可选单精度加双精度，还有指令和数据 Cache 以及 TCM。这些是处理器 IP 的能力上限，具体芯片实现了哪些，仍要查它自己的手册。",
+      "on_screen": [
+        "M3：无 FPU、无 DSP",
+        "M4：可选单精度 FPU",
+        "M7：Cache 与 TCM 由实现定"
+      ],
+      "visual_source": null,
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "IP 上限≠芯片实现",
+      "evidence_type": "concept",
+      "start": 113.385,
+      "duration": 28.78,
+      "subtitle_ref": "ch02.srt#05",
+      "head": "M3、M4、M7 的内核边界",
+      "lines": [
+        "M3：无 FPU、无 DSP",
+        "M4：可选单精度 FPU",
+        "M7：Cache 与 TCM 由实现定"
+      ],
+      "say": "内核决定算力边界。M3 没有 FPU 和 DSP 扩展，MPU 八个区域；M4 可选单精度 FPU，带 DSP 扩展；M7 的 FPU 可选单精度加双精度，还有指令和数据 Cache 以及 TCM。这些是处理器 IP 的能力上限，具体芯片实现了哪些，仍要查它自己的手册。",
+      "svg": false
+    },
+    {
+      "scene_id": "ch02-s06",
+      "title": "4 GB 地图切成固定几段",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s03"
+      ],
+      "narration": "Cortex-M 把 4 GB 地址空间分段：0 号段是 Code，放闪存别名和中断向量表；0x2000_0000 起是片上 SRAM；0x4000_0000 起是所有外设寄存器；再往外是外部 RAM 和外部设备；最高一段是 NVIC、SysTick 所在的系统区。每段职责固定。",
+      "on_screen": [
+        "0x0000_0000：Code",
+        "0x2000_0000：SRAM",
+        "0x4000_0000：外设"
+      ],
+      "visual_source": "animations/memory-map.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "代码、内存、外设各占一段",
+      "evidence_type": "animation",
+      "start": 142.165,
+      "duration": 30.659,
+      "subtitle_ref": "ch02.srt#06",
+      "head": "4 GB 地图切成固定几段",
+      "lines": [
+        "0x0000_0000：Code",
+        "0x2000_0000：SRAM",
+        "0x4000_0000：外设"
+      ],
+      "say": "Cortex-M 把 4 GB 地址空间分段：0 号段是 Code，放闪存别名和中断向量表；0x2000_0000 起是片上 SRAM；0x4000_0000 起是所有外设寄存器；再往外是外部 RAM 和外部设备；最高一段是 NVIC、SysTick 所在的系统区。每段职责固定。",
+      "svg": "animations/memory-map.svg"
+    },
+    {
+      "scene_id": "ch02-s07",
+      "title": "外设是固定地址上的一排寄存器",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s06"
+      ],
+      "narration": "落到这颗 C8：64 KB 闪存在 0x0800_0000，20 KB SRAM 在 0x2000_0000。外设是固定地址上的一排寄存器，GPIOA 在 0x40010800。编程用 CMSIS 头文件里的宏，不把地址写死，换系列才不用返工。",
+      "on_screen": [
+        "Flash 64 KB @0x0800_0000",
+        "SRAM 20 KB @0x2000_0000",
+        "用 GPIOA_BASE，不写死地址"
+      ],
+      "visual_source": "animations/memory-map.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "地址抄错系列，写的就不是那个外设",
+      "evidence_type": "diagram",
+      "start": 172.824,
+      "duration": 27.384,
+      "subtitle_ref": "ch02.srt#07",
+      "head": "外设是固定地址上的一排寄存器",
+      "lines": [
+        "Flash 64 KB @0x0800_0000",
+        "SRAM 20 KB @0x2000_0000",
+        "用 GPIOA_BASE，不写死地址"
+      ],
+      "say": "落到这颗 C8：64 KB 闪存在 0x0800_0000，20 KB SRAM 在 0x2000_0000。外设是固定地址上的一排寄存器，GPIOA 在 0x40010800。编程用 CMSIS 头文件里的宏，不把地址写死，换系列才不用返工。",
+      "svg": "animations/memory-map.svg"
+    },
+    {
+      "scene_id": "ch02-s08",
+      "title": "BOOT0 决定第一条指令从哪来",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s07"
+      ],
+      "narration": "复位后从哪取第一条指令，由 BOOT0 和 BOOT1 决定。BOOT0 接 0，从主闪存正常启动；接 1 且 BOOT1 接 0，进出厂 Bootloader，走串口 ISP 下载；两个都接 1，从 SRAM 启动，调试用，掉电就丢。BluePill 用跳帽切换。",
+      "on_screen": [
+        "BOOT0=0：主闪存启动",
+        "0/1：系统存储器 ISP",
+        "1/1：SRAM，掉电丢失"
+      ],
+      "visual_source": "animations/boot-sequence.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理",
+        "docs/02-芯片选型与存储器时钟.md#硬件与接线"
+      ],
+      "memory_anchor": "BOOT0 决定第一取指地址",
+      "evidence_type": "diagram",
+      "start": 200.208,
+      "duration": 25.097,
+      "subtitle_ref": "ch02.srt#08",
+      "head": "BOOT0 决定第一条指令从哪来",
+      "lines": [
+        "BOOT0=0：主闪存启动",
+        "0/1：系统存储器 ISP",
+        "1/1：SRAM，掉电丢失"
+      ],
+      "say": "复位后从哪取第一条指令，由 BOOT0 和 BOOT1 决定。BOOT0 接 0，从主闪存正常启动；接 1 且 BOOT1 接 0，进出厂 Bootloader，走串口 ISP 下载；两个都接 1，从 SRAM 启动，调试用，掉电就丢。BluePill 用跳帽切换。",
+      "svg": "animations/boot-sequence.svg"
+    },
+    {
+      "scene_id": "ch02-s09",
+      "title": "8 MHz 怎样变成 72 MHz",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s08"
+      ],
+      "narration": "8 兆晶振从第 5、6 脚进来，PLLXTPRE 不预分频，PLLSRC 选 HSE，PLLMUL 写 0111 乘 9，得到 72 兆；SW 写 10 切到 PLL，HPRE 不分频，HCLK 也是 72 兆。这条链撑起串口和 CAN 的波特率，是 F103 常见的一条路。",
+      "on_screen": [
+        "8 MHz × 9 = 72 MHz",
+        "PLLSRC=1，PLLMUL=0111",
+        "SW=10 后 HCLK=72 MHz"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "八乘九，得七十二",
+      "evidence_type": "animation",
+      "start": 225.304,
+      "duration": 27.575,
+      "subtitle_ref": "ch02.srt#09",
+      "head": "8 MHz 怎样变成 72 MHz",
+      "lines": [
+        "8 MHz × 9 = 72 MHz",
+        "PLLSRC=1，PLLMUL=0111",
+        "SW=10 后 HCLK=72 MHz"
+      ],
+      "say": "8 兆晶振从第 5、6 脚进来，PLLXTPRE 不预分频，PLLSRC 选 HSE，PLLMUL 写 0111 乘 9，得到 72 兆；SW 写 10 切到 PLL，HPRE 不分频，HCLK 也是 72 兆。这条链撑起串口和 CAN 的波特率，是 F103 常见的一条路。",
+      "svg": "animations/clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s10",
+      "title": "RCC_CFGR：整条链的开关面板",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s09"
+      ],
+      "narration": "整条链写在 RCC_CFGR 里：SW 选源，SWS 只读回现值，HPRE、PPRE1、PPRE2 管总线分频，PLLSRC、PLLXTPRE、PLLMUL 管 PLL 入口和倍数。上电默认是 HSI 8 兆，不是 Cube 里的 72 兆；配置没跑完时读 SWS，别拿串口猜主频。",
+      "on_screen": [
+        "SW 选源，SWS 只读回",
+        "上电默认 HSI 8 MHz",
+        "拿不准先读 SWS"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "切没切过去，读 SWS",
+      "evidence_type": "source",
+      "start": 252.88,
+      "duration": 31.399,
+      "subtitle_ref": "ch02.srt#10",
+      "head": "RCC_CFGR：整条链的开关面板",
+      "lines": [
+        "SW 选源，SWS 只读回",
+        "上电默认 HSI 8 MHz",
+        "拿不准先读 SWS"
+      ],
+      "say": "整条链写在 RCC_CFGR 里：SW 选源，SWS 只读回现值，HPRE、PPRE1、PPRE2 管总线分频，PLLSRC、PLLXTPRE、PLLMUL 管 PLL 入口和倍数。上电默认是 HSI 8 兆，不是 Cube 里的 72 兆；配置没跑完时读 SWS，别拿串口猜主频。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s11",
+      "title": "72 MHz 要先给闪存加等待",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s09"
+      ],
+      "narration": "闪存跟不上 72 兆，要按档位加等待：0 到 24 兆等 0 拍，24 到 48 兆等 1 拍，48 到 72 兆等 2 拍，按 2.7 到 3.6 伏供电给出。LATENCY 在 FLASH_ACR 里。顺序是先写 LATENCY 等于 2，再把 SYSCLK 切到 PLL。",
+      "on_screen": [
+        "0–24 MHz：0 拍",
+        "24–48 MHz：1 拍",
+        "48–72 MHz：2 拍，先写再切"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "七十二兆等两拍，先等后切",
+      "evidence_type": "source",
+      "start": 284.279,
+      "duration": 27.355,
+      "subtitle_ref": "ch02.srt#11",
+      "head": "72 MHz 要先给闪存加等待",
+      "lines": [
+        "0–24 MHz：0 拍",
+        "24–48 MHz：1 拍",
+        "48–72 MHz：2 拍，先写再切"
+      ],
+      "say": "闪存跟不上 72 兆，要按档位加等待：0 到 24 兆等 0 拍，24 到 48 兆等 1 拍，48 到 72 兆等 2 拍，按 2.7 到 3.6 伏供电给出。LATENCY 在 FLASH_ACR 里。顺序是先写 LATENCY 等于 2，再把 SYSCLK 切到 PLL。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s12",
+      "title": "总线减半，定时器翻倍回来",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s09"
+      ],
+      "narration": "APB1 最高 36 兆，PPRE1 写 100，PCLK1 为 36 兆；APB2 不分频，PCLK2 是 72 兆。预分频不是 1 时，该总线的定时器时钟再乘 2，TIM2 到 TIM7 仍是 72 兆；TIM1 在 APB2，不再乘 2。算 PWM 前先确认用哪个数。",
+      "on_screen": [
+        "PCLK1 = 36 MHz，PCLK2 = 72 MHz",
+        "分频≠1，定时器时钟 ×2",
+        "TIM2–TIM7 仍是 72 MHz"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "总线分频，定时器乘二回来",
+      "evidence_type": "animation",
+      "start": 311.634,
+      "duration": 28.175,
+      "subtitle_ref": "ch02.srt#12",
+      "head": "总线减半，定时器翻倍回来",
+      "lines": [
+        "PCLK1 = 36 MHz，PCLK2 = 72 MHz",
+        "分频≠1，定时器时钟 ×2",
+        "TIM2–TIM7 仍是 72 MHz"
+      ],
+      "say": "APB1 最高 36 兆，PPRE1 写 100，PCLK1 为 36 兆；APB2 不分频，PCLK2 是 72 兆。预分频不是 1 时，该总线的定时器时钟再乘 2，TIM2 到 TIM7 仍是 72 兆；TIM1 在 APB2，不再乘 2。算 PWM 前先确认用哪个数。",
+      "svg": "animations/clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s13",
+      "title": "USB 要 48，ADC 不过 14",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s12"
+      ],
+      "narration": "同一棵树还要供两个有上限的住户。USBPRE 写 0，72 兆除以 1.5 得 48 兆；写 1 不除，出来 72 兆。ADCPRE 写 10 是 PCLK2 除以 6，得 12 兆；写 01 是除以 4，得 18 兆，越过手册的 14 兆上限。采样时间第 09 章再讲。",
+      "on_screen": [
+        "USBPRE=0：÷1.5 得 48 MHz",
+        "ADCPRE=10：÷6 得 12 MHz",
+        "ADC 上限 14 MHz"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "USB 四十八，ADC 不过十四",
+      "evidence_type": "source",
+      "start": 339.809,
+      "duration": 27.18,
+      "subtitle_ref": "ch02.srt#13",
+      "head": "USB 要 48，ADC 不过 14",
+      "lines": [
+        "USBPRE=0：÷1.5 得 48 MHz",
+        "ADCPRE=10：÷6 得 12 MHz",
+        "ADC 上限 14 MHz"
+      ],
+      "say": "同一棵树还要供两个有上限的住户。USBPRE 写 0，72 兆除以 1.5 得 48 兆；写 1 不除，出来 72 兆。ADCPRE 写 10 是 PCLK2 除以 6，得 12 兆；写 01 是除以 4，得 18 兆，越过手册的 14 兆上限。采样时间第 09 章再讲。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s14",
+      "title": "先开时钟，再摸寄存器",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s07"
+      ],
+      "narration": "回到开头的现场。任何外设在第一次写寄存器之前，都要先开它的时钟：先 CLK_ENABLE，再调初始化函数。时钟没开，这块外设就像不存在，写入像写进虚空，调试器里看起来还像成功了。读别人的代码，先找时钟使能，再看初始化和主循环。",
+      "on_screen": [
+        "先 CLK_ENABLE",
+        "再 HAL_xxx_Init",
+        "没开时钟＝外设不存在"
+      ],
+      "visual_source": "illustrations/ch02-mid-handdraw.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理",
+        "rm0008-rcc"
+      ],
+      "memory_anchor": "先开时钟，再摸寄存器",
+      "evidence_type": "concept",
+      "start": 366.989,
+      "duration": 29.885,
+      "subtitle_ref": "ch02.srt#14",
+      "head": "先开时钟，再摸寄存器",
+      "lines": [
+        "先 CLK_ENABLE",
+        "再 HAL_xxx_Init",
+        "没开时钟＝外设不存在"
+      ],
+      "say": "回到开头的现场。任何外设在第一次写寄存器之前，都要先开它的时钟：先 CLK_ENABLE，再调初始化函数。时钟没开，这块外设就像不存在，写入像写进虚空，调试器里看起来还像成功了。读别人的代码，先找时钟使能，再看初始化和主循环。",
+      "svg": "illustrations/ch02-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch02-s15",
+      "title": "外设认领自己的总线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s12"
+      ],
+      "narration": "外设不是随便挂的。TIM2–TIM7、USART2、I2C、SPI2 在 APB1，最高 36 兆；TIM1、USART1、SPI1、ADC 在 APB2，72 兆；RCC 在 AHB。基址分段：TIM2 在 0x40000000，USART1 在 0x40013800。",
+      "on_screen": [
+        "APB1：TIM2–7、USART2/3、I2C、SPI2",
+        "APB2：TIM1、USART1、SPI1、ADC",
+        "RCC 在 AHB：0x40021000"
+      ],
+      "visual_source": "illustrations/ch02-mid-handdraw.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#核心原理"
+      ],
+      "memory_anchor": "先认总线，再算频率",
+      "evidence_type": "diagram",
+      "start": 396.874,
+      "duration": 29.04,
+      "subtitle_ref": "ch02.srt#15",
+      "head": "外设认领自己的总线",
+      "lines": [
+        "APB1：TIM2–7、USART2/3、I2C、SPI2",
+        "APB2：TIM1、USART1、SPI1、ADC",
+        "RCC 在 AHB：0x40021000"
+      ],
+      "say": "外设不是随便挂的。TIM2–TIM7、USART2、I2C、SPI2 在 APB1，最高 36 兆；TIM1、USART1、SPI1、ADC 在 APB2，72 兆；RCC 在 AHB。基址分段：TIM2 在 0x40000000，USART1 在 0x40013800。",
+      "svg": "illustrations/ch02-mid-handdraw.svg"
+    },
+    {
+      "scene_id": "ch02-s16",
+      "title": "把主频送出芯片：PA8 的 MCO",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s09"
+      ],
+      "narration": "想把主频拿给示波器看，用第 29 脚 PA8 的复用功能 MCO。MCO 写 111，送出 PLL 除以 2，也就是 36 兆，低于手册写的 50 兆 I/O 上限。要测主频，就送这 36 兆，量到以后乘回去。F4 的 MCO 在 PA8 和 PC9，脚位规则换了，要重查手册。",
+      "on_screen": [
+        "PA8（第 29 脚）复用含 MCO",
+        "MCO=111：PLL÷2 = 36 MHz",
+        "量到 36 兆，乘回 72 兆"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "ds5319-clock",
+        "rm0008-rcc"
+      ],
+      "memory_anchor": "要测主频，送 PLL 的一半",
+      "evidence_type": "source",
+      "start": 425.914,
+      "duration": 30.959,
+      "subtitle_ref": "ch02.srt#16",
+      "head": "把主频送出芯片：PA8 的 MCO",
+      "lines": [
+        "PA8（第 29 脚）复用含 MCO",
+        "MCO=111：PLL÷2 = 36 MHz",
+        "量到 36 兆，乘回 72 兆"
+      ],
+      "say": "想把主频拿给示波器看，用第 29 脚 PA8 的复用功能 MCO。MCO 写 111，送出 PLL 除以 2，也就是 36 兆，低于手册写的 50 兆 I/O 上限。要测主频，就送这 36 兆，量到以后乘回去。F4 的 MCO 在 PA8 和 PC9，脚位规则换了，要重查手册。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch02-s17",
+      "title": "CSS：HSE 掉了谁接管",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s10"
+      ],
+      "narration": "HSE 停振且 CSS 已打开时，如果 HSE 直接或经 PLL 当系统时钟，硬件切回 HSI 并关掉 HSE；HSE 若是 PLL 入口，PLL 也一起关。CSS 中断接在 NMI 上，处理函数必须写 RCC_CIR 的 CSSC，否则 NMI 一直进来。同一事件还送到 TIM1、TIM8 的刹车输入。",
+      "on_screen": [
+        "HSE 停 → SYSCLK 回 HSI",
+        "PLL 入口是 HSE 则 PLL 也关",
+        "NMI 里必须写 CSSC"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "HSE 掉了，CSS 接管回 HSI",
+      "evidence_type": "source",
+      "start": 456.873,
+      "duration": 31.219,
+      "subtitle_ref": "ch02.srt#17",
+      "head": "CSS：HSE 掉了谁接管",
+      "lines": [
+        "HSE 停 → SYSCLK 回 HSI",
+        "PLL 入口是 HSE 则 PLL 也关",
+        "NMI 里必须写 CSSC"
+      ],
+      "say": "HSE 停振且 CSS 已打开时，如果 HSE 直接或经 PLL 当系统时钟，硬件切回 HSI 并关掉 HSE；HSE 若是 PLL 入口，PLL 也一起关。CSS 中断接在 NMI 上，处理函数必须写 RCC_CIR 的 CSSC，否则 NMI 一直进来。同一事件还送到 TIM1、TIM8 的刹车输入。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s18",
+      "title": "两颗晶振，两种分工",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s09"
+      ],
+      "narration": "BluePill 的 8 兆晶振已经焊在 PD0、PD1 上。HSE bypass 只用于有源晶振或外部时钟输入，接无源晶振时不能开。板上还有一颗 32.768 kHz 的 LSE 晶振，接在 PC14、PC15，留给 RTC 用。两颗晶振分工不同，配置位也不同，别拿一套参数套两颗。",
+      "on_screen": [
+        "PD0/PD1：8 MHz 无源晶振",
+        "bypass 只给有源/外部时钟",
+        "PC14/PC15：32.768 kHz LSE"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围",
+        "docs/02-芯片选型与存储器时钟.md#硬件与接线",
+        "ds5319-clock"
+      ],
+      "memory_anchor": "无源晶振不开 bypass",
+      "evidence_type": "diagram",
+      "start": 488.092,
+      "duration": 30.879,
+      "subtitle_ref": "ch02.srt#18",
+      "head": "两颗晶振，两种分工",
+      "lines": [
+        "PD0/PD1：8 MHz 无源晶振",
+        "bypass 只给有源/外部时钟",
+        "PC14/PC15：32.768 kHz LSE"
+      ],
+      "say": "BluePill 的 8 兆晶振已经焊在 PD0、PD1 上。HSE bypass 只用于有源晶振或外部时钟输入，接无源晶振时不能开。板上还有一颗 32.768 kHz 的 LSE 晶振，接在 PC14、PC15，留给 RTC 用。两颗晶振分工不同，配置位也不同，别拿一套参数套两颗。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch02-s19",
+      "title": "换系列，先换手册章节",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch02-s10"
+      ],
+      "narration": "网上不少资料混用了第 8.3.2 节，那是互联型 F105、F107 的内容：OTGFSPRE 位、000x 保留编码、乘 6.5，这些在 C8T6 上都不存在，照抄会配错。这颗芯片的 RCC_CFGR 看第 7.3.2 节，0111 仍是乘 9，0000 是乘 2。换系列，先换手册章节。",
+      "on_screen": [
+        "8.3.2 节：互联型，作废",
+        "OTGFSPRE 与 ×6.5 不存在",
+        "C8 只看 7.3.2 节"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "抄配置前先对手册章节",
+      "evidence_type": "source",
+      "start": 518.971,
+      "duration": 32.898,
+      "subtitle_ref": "ch02.srt#19",
+      "head": "换系列，先换手册章节",
+      "lines": [
+        "8.3.2 节：互联型，作废",
+        "OTGFSPRE 与 ×6.5 不存在",
+        "C8 只看 7.3.2 节"
+      ],
+      "say": "网上不少资料混用了第 8.3.2 节，那是互联型 F105、F107 的内容：OTGFSPRE 位、000x 保留编码、乘 6.5，这些在 C8T6 上都不存在，照抄会配错。这颗芯片的 RCC_CFGR 看第 7.3.2 节，0111 仍是乘 9，0000 是乘 2。换系列，先换手册章节。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s20",
+      "title": "只改 PLL，一跑就停住",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch02-s11"
+      ],
+      "narration": "最常见的死法：只把 PLL 改成乘 9，LATENCY 还留在 0。72 兆下闪存每次取指都要多等两拍，等待没配上，CPU 读到错的指令，程序跑飞或者掉进 HardFault，现象就是一跑就停住。处理顺序只有一条：先把 LATENCY 写成 2，再把 SYSCLK 切到 PLL。",
+      "on_screen": [
+        "现象：一跑就停住",
+        "原因：LATENCY 仍是 0",
+        "处理：先写 2，再切 PLL"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#常见坑与出处"
+      ],
+      "memory_anchor": "跑飞先查等待，不查 PLL",
+      "evidence_type": "diagnosis",
+      "start": 551.869,
+      "duration": 29.984,
+      "subtitle_ref": "ch02.srt#20",
+      "head": "只改 PLL，一跑就停住",
+      "lines": [
+        "现象：一跑就停住",
+        "原因：LATENCY 仍是 0",
+        "处理：先写 2，再切 PLL"
+      ],
+      "say": "最常见的死法：只把 PLL 改成乘 9，LATENCY 还留在 0。72 兆下闪存每次取指都要多等两拍，等待没配上，CPU 读到错的指令，程序跑飞或者掉进 HardFault，现象就是一跑就停住。处理顺序只有一条：先把 LATENCY 写成 2，再把 SYSCLK 切到 PLL。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s21",
+      "title": "PWM 频率恰好差一倍",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch02-s12"
+      ],
+      "narration": "PWM 频率算出来恰好差一倍，多半是把 PCLK1 的 36 兆当成了定时器输入。APB1 预分频是 2，TIM2 的计数时钟其实乘回了 72 兆，按 36 兆配 PSC，输出频率自然翻倍。处理办法是先读回 PCLK1，确认分频系数，再按乘 2 之后的 72 兆算参数。",
+      "on_screen": [
+        "现象：频率恰差一倍",
+        "原因：把 36 MHz 当定时器钟",
+        "处理：按 ×2 后的 72 MHz 算"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#常见坑与出处"
+      ],
+      "memory_anchor": "差一倍，先想定时器乘 2",
+      "evidence_type": "diagnosis",
+      "start": 581.853,
+      "duration": 30.533,
+      "subtitle_ref": "ch02.srt#21",
+      "head": "PWM 频率恰好差一倍",
+      "lines": [
+        "现象：频率恰差一倍",
+        "原因：把 36 MHz 当定时器钟",
+        "处理：按 ×2 后的 72 MHz 算"
+      ],
+      "say": "PWM 频率算出来恰好差一倍，多半是把 PCLK1 的 36 兆当成了定时器输入。APB1 预分频是 2，TIM2 的计数时钟其实乘回了 72 兆，按 36 兆配 PSC，输出频率自然翻倍。处理办法是先读回 PCLK1，确认分频系数，再按乘 2 之后的 72 兆算参数。",
+      "svg": "animations/clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s22",
+      "title": "晶振不起振，先证明芯片活着",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch02-s17",
+        "ch02-s18"
+      ],
+      "narration": "外部晶振起不来，系统停在外面干等。先退回内部 HSI，证明芯片还活着，再查负载电容和焊点。打开 CSS 之后，HSE 一停，时钟自动回到 HSI 8 兆；但 NMI 里忘了写 CSSC，中断会反复进来，程序像卡死。一上来就把 PLL 拉满，是在用死机练习耐心。",
+      "on_screen": [
+        "先退 HSI，证明芯片活着",
+        "再查负载电容与焊点",
+        "NMI 忘写 CSSC＝反复进中断"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#常见坑与出处"
+      ],
+      "memory_anchor": "先活下来，再查晶振",
+      "evidence_type": "diagnosis",
+      "start": 612.386,
+      "duration": 31.374,
+      "subtitle_ref": "ch02.srt#22",
+      "head": "晶振不起振，先证明芯片活着",
+      "lines": [
+        "先退 HSI，证明芯片活着",
+        "再查负载电容与焊点",
+        "NMI 忘写 CSSC＝反复进中断"
+      ],
+      "say": "外部晶振起不来，系统停在外面干等。先退回内部 HSI，证明芯片还活着，再查负载电容和焊点。打开 CSS 之后，HSE 一停，时钟自动回到 HSI 8 兆；但 NMI 里忘了写 CSSC，中断会反复进来，程序像卡死。一上来就把 PLL 拉满，是在用死机练习耐心。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s23",
+      "title": "照笔记配 PLL，越配越错",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch02-s19"
+      ],
+      "narration": "照网上笔记填 PLLMUL，芯片却怎么都不对，先检查抄的是哪一节。第 8.3.2 节是互联型的布局，000x 在这颗 C8 上是保留编码，OTGFSPRE 根本不存在。把不存在的位写进 RCC_CFGR，配置错了还不知道错在哪。这颗芯片只看第 7.3.2 节。",
+      "on_screen": [
+        "现象：照笔记配 PLL 出错",
+        "原因：抄了互联型章节",
+        "处理：C8 只看 7.3.2"
+      ],
+      "visual_source": "diagrams/sample-02-clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#常见坑与出处"
+      ],
+      "memory_anchor": "抄错章节，比抄错数更隐蔽",
+      "evidence_type": "diagnosis",
+      "start": 643.761,
+      "duration": 29.934,
+      "subtitle_ref": "ch02.srt#23",
+      "head": "照笔记配 PLL，越配越错",
+      "lines": [
+        "现象：照笔记配 PLL 出错",
+        "原因：抄了互联型章节",
+        "处理：C8 只看 7.3.2"
+      ],
+      "say": "照网上笔记填 PLLMUL，芯片却怎么都不对，先检查抄的是哪一节。第 8.3.2 节是互联型的布局，000x 在这颗 C8 上是保留编码，OTGFSPRE 根本不存在。把不存在的位写进 RCC_CFGR，配置错了还不知道错在哪。这颗芯片只看第 7.3.2 节。",
+      "svg": "diagrams/sample-02-clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s24",
+      "title": "超限的波形不算证据",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch02-s16"
+      ],
+      "narration": "想看真实主频，把 MCO 写成 100，让 72 兆的 SYSCLK 直接上 PA8，超过手册写的 50 兆 I/O 上限。手册不再保证这只脚的输出，示波器上量到的幅度和频率都不能当读数。正确做法是 MCO 写 111，送 PLL 除以 2 的 36 兆，量到以后乘 2 还原。",
+      "on_screen": [
+        "现象：MCO 波形不可信",
+        "原因：72 MHz 超 50 MHz 上限",
+        "处理：送 PLL÷2 的 36 MHz"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "ds5319-clock",
+        "docs/02-芯片选型与存储器时钟.md#常见坑与出处"
+      ],
+      "memory_anchor": "超限的读数不是主频证据",
+      "evidence_type": "diagnosis",
+      "start": 673.694,
+      "duration": 29.619,
+      "subtitle_ref": "ch02.srt#24",
+      "head": "超限的波形不算证据",
+      "lines": [
+        "现象：MCO 波形不可信",
+        "原因：72 MHz 超 50 MHz 上限",
+        "处理：送 PLL÷2 的 36 MHz"
+      ],
+      "say": "想看真实主频，把 MCO 写成 100，让 72 兆的 SYSCLK 直接上 PA8，超过手册写的 50 兆 I/O 上限。手册不再保证这只脚的输出，示波器上量到的幅度和频率都不能当读数。正确做法是 MCO 写 111，送 PLL 除以 2 的 36 兆，量到以后乘 2 还原。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch02-s25",
+      "title": "实验一：串口先对三个数",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch02-s10"
+      ],
+      "narration": "第一个实验只核对三件事。运行本章代码，串口打出 SYSCLK、HCLK、PCLK1、PCLK2、闪存容量和 96 位唯一 ID。BluePill 上常见的正确读数是 72 兆、72 兆、36 兆、72 兆和 64 KB。对不上，先别做后面的外设实验，回头查时钟链和时钟配置函数。",
+      "on_screen": [
+        "打印 SYSCLK / PCLK1 / PCLK2",
+        "期望 72 / 36 / 72 MHz、64 KB",
+        "对不上就先停手"
+      ],
+      "visual_source": null,
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#代码实现",
+        "docs/02-芯片选型与存储器时钟.md#动手实验"
+      ],
+      "memory_anchor": "三个频率加容量，先对数",
+      "evidence_type": "experiment",
+      "start": 703.313,
+      "duration": 33.958,
+      "subtitle_ref": "ch02.srt#25",
+      "head": "实验一：串口先对三个数",
+      "lines": [
+        "打印 SYSCLK / PCLK1 / PCLK2",
+        "期望 72 / 36 / 72 MHz、64 KB",
+        "对不上就先停手"
+      ],
+      "say": "第一个实验只核对三件事。运行本章代码，串口打出 SYSCLK、HCLK、PCLK1、PCLK2、闪存容量和 96 位唯一 ID。BluePill 上常见的正确读数是 72 兆、72 兆、36 兆、72 兆和 64 KB。对不上，先别做后面的外设实验，回头查时钟链和时钟配置函数。",
+      "svg": false
+    },
+    {
+      "scene_id": "ch02-s26",
+      "title": "实验二：从 PA8 量出 36 MHz",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch02-s16",
+        "ch02-s24"
+      ],
+      "narration": "第二个实验拿一份测量证据。把 MCO 配成 PLL÷2，从第 29 脚 PA8 输出，用示波器或频率计应量到 36 兆，乘 2 反推主频 72 兆。不要把 72 兆直送 MCO。改完 PPRE1 这类分频后，也先读回 PCLK1 再算 PSC 和 ARR，实验结束恢复原配置。",
+      "on_screen": [
+        "MCO=PLL÷2 → PA8 输出",
+        "期望量到 36 MHz",
+        "×2 反推 72 MHz 主频"
+      ],
+      "visual_source": "boards/pinout-bluepill.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#动手实验",
+        "rm0008-rcc",
+        "ds5319-clock"
+      ],
+      "memory_anchor": "36 兆是量出来的主频证据",
+      "evidence_type": "experiment",
+      "start": 737.272,
+      "duration": 30.784,
+      "subtitle_ref": "ch02.srt#26",
+      "head": "实验二：从 PA8 量出 36 MHz",
+      "lines": [
+        "MCO=PLL÷2 → PA8 输出",
+        "期望量到 36 MHz",
+        "×2 反推 72 MHz 主频"
+      ],
+      "say": "第二个实验拿一份测量证据。把 MCO 配成 PLL÷2，从第 29 脚 PA8 输出，用示波器或频率计应量到 36 兆，乘 2 反推主频 72 兆。不要把 72 兆直送 MCO。改完 PPRE1 这类分频后，也先读回 PCLK1 再算 PSC 和 ARR，实验结束恢复原配置。",
+      "svg": "boards/pinout-bluepill.svg"
+    },
+    {
+      "scene_id": "ch02-s27",
+      "title": "合上书，把这条链说完整",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch02-s09",
+        "ch02-s16"
+      ],
+      "narration": "别看答案，把这条链说完整：8 兆进来，PLL 乘 9 得 72 兆；HCLK 72 兆，PCLK1 36 兆，PCLK2 72 兆；TIM2 到 TIM7 乘回 72 兆；闪存等 2 拍；USB 除以 1.5 得 48 兆；ADC 除以 6 得 12 兆；MCO 送 36 兆。能从头推到尾，才算拿走这棵树。",
+      "on_screen": [
+        "8×9=72 → HCLK 72",
+        "PCLK1 36 / PCLK2 72 / TIM 72",
+        "LATENCY 2 · USB 48 · ADC 12 · MCO 36"
+      ],
+      "visual_source": "animations/clock-tree.svg",
+      "fact_source": [
+        "rm0008-rcc",
+        "docs/02-芯片选型与存储器时钟.md#时序与状态"
+      ],
+      "memory_anchor": "从晶振一路背到 MCO",
+      "evidence_type": "recall",
+      "start": 768.055,
+      "duration": 32.048,
+      "subtitle_ref": "ch02.srt#27",
+      "head": "合上书，把这条链说完整",
+      "lines": [
+        "8×9=72 → HCLK 72",
+        "PCLK1 36 / PCLK2 72 / TIM 72",
+        "LATENCY 2 · USB 48 · ADC 12 · MCO 36"
+      ],
+      "say": "别看答案，把这条链说完整：8 兆进来，PLL 乘 9 得 72 兆；HCLK 72 兆，PCLK1 36 兆，PCLK2 72 兆；TIM2 到 TIM7 乘回 72 兆；闪存等 2 拍；USB 除以 1.5 得 48 兆；ADC 除以 6 得 12 兆；MCO 送 36 兆。能从头推到尾，才算拿走这棵树。",
+      "svg": "animations/clock-tree.svg"
+    },
+    {
+      "scene_id": "ch02-s28",
+      "title": "四个问题，带进下一章",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch02-s14",
+        "ch02-s27"
+      ],
+      "narration": "最后四问，答不出就回对应场景重看。72 兆时闪存等几拍？APB1 预分频是 2 时，TIM2 是 36 兆还是 72 兆？没开时钟就写寄存器会发生什么？HSE 没焊、CSS 打开后系统时钟落到哪？下一章点亮第一盏灯，每一问都会变成手上的动作。",
+      "on_screen": [
+        "72 MHz 等几拍？",
+        "TIM2 是 36 还是 72 MHz？",
+        "门控没开、HSE 掉了各会怎样？"
+      ],
+      "visual_source": "illustrations/ch02-handdraw.svg",
+      "fact_source": [
+        "docs/02-芯片选型与存储器时钟.md#核心原理",
+        "docs/02-芯片选型与存储器时钟.md#原理与适用范围"
+      ],
+      "memory_anchor": "四问带走，下章点灯",
+      "evidence_type": "recall",
+      "start": 800.104,
+      "duration": 29.849,
+      "subtitle_ref": "ch02.srt#28",
+      "head": "四个问题，带进下一章",
+      "lines": [
+        "72 MHz 等几拍？",
+        "TIM2 是 36 还是 72 MHz？",
+        "门控没开、HSE 掉了各会怎样？"
+      ],
+      "say": "最后四问，答不出就回对应场景重看。72 兆时闪存等几拍？APB1 预分频是 2 时，TIM2 是 36 兆还是 72 兆？没开时钟就写寄存器会发生什么？HSE 没焊、CSS 打开后系统时钟落到哪？下一章点亮第一盏灯，每一问都会变成手上的动作。",
+      "svg": "illustrations/ch02-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 986.313,
+  "actual_duration": 829.953
+}
