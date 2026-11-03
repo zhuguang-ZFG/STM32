@@ -2006,7 +2006,7 @@ def build_pdf(
 
     manifest = load_manifest(manifest_path)
     output = html_path.with_name(manifest.get("pdf_name", PDF_NAME))
-    raw_pdf = html_path.with_name(".stm32-book.raw.pdf")
+    raw_pdf = html_path.with_name(f".stm32-book.raw.{edition_language(manifest)}.pdf")
     try:
         with sync_playwright() as playwright:
             launch_args = {"headless": True}
