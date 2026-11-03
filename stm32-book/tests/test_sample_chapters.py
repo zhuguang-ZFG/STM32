@@ -276,6 +276,7 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
                 "freertos-syscall",
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
+                "commons-blue-pill",
             },
         )
         self.assertEqual(
@@ -291,6 +292,7 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "rm0008-flash", "rm0008-can", "ds5319-usbcan", "rm0008-usb",
                 "freertos-syscall",
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
+                "commons-blue-pill",
             },
         )
 

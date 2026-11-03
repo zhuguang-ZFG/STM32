@@ -152,8 +152,7 @@
         "ds5319",
         "rm0008-gpio",
         "ds5319-gpio",
-        "project-examples",
-        "commons-blue-pill"
+        "project-examples"
       ]
     },
     "04-interrupts-nvic.md": {
