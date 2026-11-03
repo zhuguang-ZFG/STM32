@@ -373,28 +373,33 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 
 ### 9.4 Port B：handraw-sketch-system（后做，规则优先、正文挑拣）
 
-**整树拷贝（允许）：**
+**状态（本 Port 已完成）：** 未整支 `git merge feat/handraw-sketch-system`（merge-tree ≈76 CONFLICT）。做法：整树拷贝 Sepia* 技能 → 合并 plain-voice → 抽取节奏/分层/自测进 CONTENT_GUIDE → 勾选；**未**覆盖 classic `docs/` 章节正文。
 
-- `.claude/skills/` 下与 **Sepia\*** 相关的技能目录（名称以仓库实际为准，含 `sepia` 前缀或其文档所指 refactor 技能）。  
-- `.claude/skills/plain-voice` 与 classic 已有文风技能**对齐**（缺则拷贝，已有则 diff 后合并规则，不丢任一侧检查项）。  
+**整树拷贝（已落盘）：**
 
-**明确禁止：**
+- `.claude/skills/sepia/`、`sepia-review/`、`sepia-refactor/`、`sepia-write/`、`sepia-recreate/`（自 `feat/handraw-sketch-system` / 工作树 `D:\Users\STM32-handraw` 整目录拷贝；vendor Sepia v0.12.4 MIT）。  
+- `.claude/skills/plain-voice/SKILL.md`：保留 classic 原有禁词/排版/双语/逃逸/提交前检查；**并入** handraw 的「The second pass: sepia」节；两侧检查项均保留。  
+- 本地另有 `handraw-style` / `humanizer-zh` / `unslop` 等既有技能，本 Port 未改。
 
-- **不要** `git merge` handraw 的 `docs/` / `docs/en/` 大改。  
-- **不要**用 handraw 已改 00–19 正文覆盖 classic 已证据化段落。  
+**明确禁止（已遵守）：**
 
-**只抽取写入 Overlay + CONTENT_GUIDE 的规则：**
+- **没有** `git merge` handraw 的 `docs/` / `docs/en/`。  
+- **没有**用 handraw 已改 00–19 正文覆盖 classic 已证据化段落。  
+- **没有**禁用 lint。  
+- 无关脏文件（`video/ch16+`、ch16/ch17 资产等）未纳入本 Port 暂存。
 
-- 节奏：长短句、反同构节拍、先缺陷列表后改字。  
-- 分层：最小胜利 / 机制 / 手册密度后置。  
-- 自测：离开检查、删除检查、回退检查。  
-- Handraw 规划登记字段与「技术图+概念图统一视觉语言」合同（本文件 §6）。  
+**只抽取写入 Overlay + CONTENT_GUIDE 的规则（已写入）：**
 
-**正文挑拣例外（窄允许）：**
+- 节奏：长短句、反同构节拍、先缺陷列表后改字 → `docs/CONTENT_GUIDE.md` / `docs/en/CONTENT_GUIDE.md`「节奏、分层与自测」专节。  
+- 分层：最小胜利 / 机制 / 手册密度后置 → 同上；写作要求第 1 条已改写对齐。  
+- 自测：离开检查、删除检查、回退检查 → 同上；提交规范增加 Sepia 勾选提示。  
+- Handraw 规划登记字段与「技术图+概念图统一视觉语言」合同：细节仍在本文件 §6；指南仅加双轨指针（诚实标注条款已改）。
 
-若 handraw 某段**仅**去模板腔且不触碰事实、代码、来源、图注证明范围，可将单段 cherry-pick 进 classic，并在 PR 中逐段标注来源提交号。默认仍是不碰 `docs/` 大面积。
+**正文挑拣例外（本 Port 未使用）：**
 
-**验收：** Sepia / plain-voice 可在 agent 环境加载；CONTENT_GUIDE 已含节奏/分层/自测；`docs/` 无 handraw 整包覆盖痕迹；全书测试基线不回退。
+默认不碰 `docs/` 章节大面积；未 cherry-pick handraw 去模板腔段落。
+
+**验收：** Sepia / plain-voice 可在 agent 环境加载；CONTENT_GUIDE 中英已含节奏/分层/自测；`docs/` 章节文件无 handraw 整包覆盖；`slop_lint` + `test_slop_lint` 基线不回退。
 
 ### 9.5 合入后退役
 
@@ -425,7 +430,7 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 
 - [ ] 本 Overlay 已合入 `feat/book-video-classic`。  
 - [x] Port A（strip）完成；slop_lint 绿。  
-- [ ] Port B（Sepia/plain-voice 技能树 + 规则抽取）完成；**无** handraw docs 整树合并。  
+- [x] Port B（Sepia/plain-voice 技能树 + 规则抽取）完成；**无** handraw docs 整树合并。  
 - [ ] `CONTENT_GUIDE` 已按 §8 修改。  
 - [ ] ch03 中英教学合同字段（七项核心 + 先备知识）已登记且互相对齐。  
 - [ ] 章结构为功能块可选；最小胜利在手册密度之前。  

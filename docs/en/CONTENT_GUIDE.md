@@ -21,6 +21,39 @@ State the fact and the condition, for example: "on an F4 this address becomes 0x
 
 Hard gate: `python tools/slop_lint.py` from the repo root. Contributor meta-docs may name the skeleton; chapter body may not.
 
+
+## Rhythm, layering, and self-checks (ported from handraw, Port B)
+
+Banned words stay with `tools/slop_lint.py`. The three rules below are for human reading and the Sepia workflow; lint cannot replace them. The full contract is in [`../../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`](../../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md) §5 and §6.
+
+### Rhythm
+
+- Let sentence and paragraph length follow the content; do not lock a chapter to one beat length.
+- Do not reuse one 8–10 beat narration or memory-card template across consecutive chapters, and do not stretch a short-form beat sheet into a long lesson. The allowed beat pool and hard bans are in Overlay §5.4.
+- When rewriting a section or a chapter: run Sepia `review` for a defect list **first**, then `refactor` item by item. Do not edit while reading in a way that only makes the text longer. Skills live under [`.claude/skills/sepia/`](../../.claude/skills/sepia/SKILL.md); entry points are `sepia-review` / `sepia-refactor`. Day-to-day voice rules are in [`.claude/skills/plain-voice/SKILL.md`](../../.claude/skills/plain-voice/SKILL.md).
+
+### Layering
+
+Keep this reading order; later layers may be skipped on a first pass, but do not invert them:
+
+1. **Minimum win**: one small result the reader can verify on the board or in simulation (an observable effect).
+2. **Mechanism**: why the current, bytes, state, or register behave that way.
+3. **Manual density**: orderable part, revision, table numbers, addresses, and edge conditions come last; a first-time reader may skip them until after the labs.
+
+Turn "conclusion first, then the mechanism" into: **state a verifiable minimum-win conclusion first, then the mechanism; push manual density later.**
+
+### Self-checks (required before you finish an edit)
+
+1. **Leave check**: with the section closed, the reader can still restate the minimum win and one failure signal.
+2. **Deletion check**: if removing a new phrase does not change the meaning, delete the new phrase (Sepia deletion test).
+3. **Reversion check**: if the earlier sentence was shorter, clearer, and already in the right voice, keep it; do not rewrite for polish alone (Sepia reversion test).
+
+Code, URLs, IDs, table data, `<!-- video: -->` / `<!-- links: -->` blocks, and `#source-` links are protected ranges; voice skills must not rewrite facts there.
+
+### Handraw vs evidence (pointer)
+
+Technical and conceptual figures use the Handraw knowledge track (Layout / style / palette registration; see Overlay §6 and `.claude/skills/handraw-style`). Board photos and instrument captures use the evidence track. Never fake evidence with AI, and never call a drawing a photograph. Planning fields live in the Overlay; this guide only points there.
+
 ## 1. Files and names
 
 - Chinese chapters live in `docs/`, named `NN-中文标题.md` (NN is two digits, for example `05-定时器与PWM.md`).
@@ -84,11 +117,11 @@ If a chapter has `<!-- video: -->` … `<!-- /video: -->`, the first four sectio
 
 ## 3. How to write
 
-1. **Conclusion first, then the mechanism.** The first sentence of each section is something you can use immediately.
+1. **Minimum win first, then the mechanism; manual density later.** The first sentence is a verifiable minimum conclusion; mechanism follows; orderable-part and table density come after.
 2. **Use tables.** Parameters, register bits, and trap checklists belong in tables, not in long stacked paragraphs.
 3. **Match words to pictures.** Every animation or diagram the text mentions appears once in the chapter, with a `<sub>` caption.
 4. **Code must compile.** Samples are real HAL you can build (the `HAL_` prefix), with the headers, `main()`, and the comments you need. Do not write pseudocode. Parameters are macros, so there are no magic numbers.
-5. **Label the pictures honestly.** Every figure in this repo is an **author-drawn vector (SVG) or a program-generated GIF**, not a vendor photograph. If you want a photograph, link the official product page (in a "Board and documents" subsection). Do not call a drawing a photograph.
+5. **Label pictures on two tracks.** The Handraw knowledge track covers technical and conceptual figures (registration in Overlay §6). The evidence track is for board photos and instrument captures. Many figures here remain **author-drawn vectors (SVG) or program-generated GIFs**, not vendor photographs. For a photograph, link the official product page ("Board and documents"). Do not call a drawing a photograph, and do not fake measurements with AI.
 6. Use the same words: `GPIO`, timer (`TIM`), interrupt (`IRQ`), `DMA channel`, `HAL / LL / registers`.
 7. Line width is not limited. Do not use an HTML `<script>`, and do not use images hosted off-site (GitHub's proxy will fail).
 

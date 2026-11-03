@@ -56,6 +56,29 @@ Do not "fix" these; a linter rule here would fire on correct writing:
 - Several bold spans in one `**结论**：` line, where each marks a term being
   defined. The emphasis is doing structural work.
 
+## The second pass: sepia
+
+`slop_lint.py` catches words. The shape of a section gives generated prose away
+as well: every section announcing, saying, then recapping; runs of sentences cut
+to one length; `和`、`以及`、`同时` chained across clauses; `进行调试` where
+`调试` would do. For that layer this repo vendors
+[Nanako0129/sepia](https://github.com/Nanako0129/sepia) v0.12.4 (MIT) under
+`.claude/skills/sepia/`, with its operations as `sepia-review` and
+`sepia-refactor`.
+
+- A chapter is a tutorial. Load `professional-pass.md`,
+  `domains/tech-articles.md` and `discourse-pass.md` §1–3, then `style-pass.md`
+  §2–3 and §5. Chinese text also loads `languages/zh.md`.
+- Review before refactor. The defect list comes first; edits replace or delete
+  rather than add.
+- The chapter container, 学习目标 through 相关资源, is this venue's convention
+  and is not a finding. The Taiwan rows in `zh.md` §0 do not apply: the book is
+  Simplified Chinese.
+- Never invent an anecdote. If nobody hit the bug, state it the way the manual
+  does and keep the source link.
+- `<!-- video:chNN -->` and `<!-- links:chNN -->` blocks, code, pin tables and
+  `#source-` links are protected ranges.
+
 ## Both editions move together
 
 `docs/` and `docs/en/` mirror each other, as do the appendices under
