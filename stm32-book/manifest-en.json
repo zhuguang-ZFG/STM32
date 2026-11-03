@@ -12,7 +12,7 @@
   "repository": "https://github.com/zhuguang-ZFG/STM32",
   "license": {
     "prose_and_original_images": "CC BY 4.0",
-    "third_party_images": "CC0 1.0 (only the assets/photos items that are labeled)",
+    "third_party_images": "CC0 1.0 or CC BY-SA 4.0 (the labeled assets/photos items; the Blue Pill photo is CC BY-SA 4.0)",
     "code": "MIT"
   },
   "docs_dir": "docs/en",
@@ -152,7 +152,8 @@
         "ds5319",
         "rm0008-gpio",
         "ds5319-gpio",
-        "project-examples"
+        "project-examples",
+        "commons-blue-pill"
       ]
     },
     "04-interrupts-nvic.md": {
@@ -686,6 +687,15 @@
       "accessed": "2026-10-23",
       "license": "CC0 1.0",
       "scope": "An example of Nucleo-64 physical layout. It is not a NUCLEO-L476RG."
+    },
+    "commons-blue-pill": {
+      "title": "Blue Pill — STM32F103C8T6 development board photograph",
+      "authority": "Wikimedia Commons file metadata",
+      "url": "https://commons.wikimedia.org/wiki/File:Blue_Pill.jpg",
+      "snapshot": "Photograph by Avandalen; this book uses a 760×315 processed copy (SHA-256 registered in assets/photos/README.md and tools/check_assets.py)",
+      "accessed": "2026-11-03",
+      "license": "CC BY-SA 4.0",
+      "scope": "A reference for the Blue Pill board's overall look and pin layout. The onboard PC13 LED position follows the board schematic/silkscreen and is too small to resolve in this photo; it contains no measurement scene and is not experimental evidence."
     },
     "es0250": {
       "title": "ES0250 — STM32L471/L475/L476/L486 device errata",

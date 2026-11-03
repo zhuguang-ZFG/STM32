@@ -12,7 +12,7 @@
   "repository": "https://github.com/zhuguang-ZFG/STM32",
   "license": {
     "prose_and_original_images": "CC BY 4.0",
-    "third_party_images": "CC0 1.0（仅逐项标注的 assets/photos）",
+    "third_party_images": "CC0 1.0 或 CC BY-SA 4.0（逐项标注的 assets/photos，Blue Pill 照片为 CC BY-SA 4.0）",
     "code": "MIT"
   },
   "parts": [
@@ -128,7 +128,7 @@
       "failure_branch": "灯不亮时先分三条：ODR 已是 0 但灯灭→查共阳接线/限流；ODR 仍是 1→查口时钟与 CRL/CRH；脚上有电平但灯不亮→查限流电阻与灯极性。禁止停在「板坏了」。",
       "memory_anchor": "口诀：PC13 共阳，写 0 才亮。相似点：灌电流开关。失效点：外接共阴灯仍写 0 会灭；PC13 不能当电流源照抄 PA0。",
       "exit_check": "不翻书回答：PC13 写几亮？按键接 GND 用上拉还是下拉？F1 重映射前开哪个时钟？并独立完成：PC13 1 Hz 翻转且能用 ODR 或周期测量验收。",
-      "sources": ["rm0008", "ds5319", "rm0008-gpio", "ds5319-gpio", "project-examples"]
+      "sources": ["rm0008", "ds5319", "rm0008-gpio", "ds5319-gpio", "project-examples", "commons-blue-pill"]
     },
     "04-中断与NVIC.md": {
       "question": "异步事件怎样从引脚进入 EXTI 和 NVIC，又怎样在有限时间内安全退出 ISR？",
@@ -254,7 +254,7 @@
       "question": "L476RG 的引脚、电源域和低功耗模式怎样影响 Stop 2 进入、唤醒恢复与真实平均电流？",
       "deliverable": "一张 LQFP64 关键脚表、一条在 HAL 清位前发布的 IRQ 入口唤醒证据链、一条可验证的 Stop 2 时钟恢复链，以及含接线图、原始波形与积分公式的功耗账。",
       "boundary": "原始唤醒位必须在 HAL handler 之前捕获；典型低功耗数字不是整板保证值；模式能力、芯片 revision、VDD/温度、仪器带宽、负担电压和板级负载必须随结果记录。封面 Stop 2 典型值是 1.1 µA，带 RTC 为 1.4 µA，从 Stop 唤醒 4 µs；这是芯片数，不是本仓库实测。醒后临时时钟是 MSI 或 HSI16。SysTick 若不停，1 ms 节拍会反复唤醒。限值还要对照该 revision 的 ES0250。",
-      "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "stm32l4-hal-rtc", "commons-nucleo-f411re", "commons-nucleo-f401re", "es0250"]
+      "sources": ["ds10198", "rm0351", "an4746", "um1724", "stm32cube-l4-stop2", "stm32l4-hal-rtc", "commons-nucleo-f411re", "commons-nucleo-f401re", "commons-blue-pill", "es0250"]
     },
     "25-STM32H7引脚.md": {
       "question": "迁到 H743ZI 后，供电方案、硅片 revision、VCAP、FDCAN、Cache 与 400/480 MHz 时钟树怎样改变旧工程假设？",
@@ -550,6 +550,15 @@
       "accessed": "2026-10-23",
       "license": "CC0 1.0",
       "scope": "Nucleo-64 家族实物布局示例；不是 NUCLEO-L476RG。"
+    },
+    "commons-blue-pill": {
+      "title": "Blue Pill — STM32F103C8T6 development board photograph",
+      "authority": "Wikimedia Commons 文件元数据",
+      "url": "https://commons.wikimedia.org/wiki/File:Blue_Pill.jpg",
+      "snapshot": "Avandalen 摄影；本书使用 760×315 处理副本（SHA-256 登记于 assets/photos/README.md 与 tools/check_assets.py）",
+      "accessed": "2026-11-03",
+      "license": "CC BY-SA 4.0",
+      "scope": "Blue Pill 板卡外观与引脚排布参照；PC13 LED 位置据板卡原理图/丝印，图中过小难以分辨；不含测量画面，不是实验测量证据。"
     },
     "es0250": {
       "title": "ES0250 — STM32L471/L475/L476/L486 device errata",
