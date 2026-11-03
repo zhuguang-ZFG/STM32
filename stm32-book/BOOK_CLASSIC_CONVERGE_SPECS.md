@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 状态 | Overlay Draft 1 · 待样章 ch03 验收后升为执行基线 |
+| 状态 | Overlay Draft 1 · ch03 硬门进行中（正文/合同已改；视频与目检仍开放） |
 | 日期 | 2026-11-03（America/Adak 本地日） |
 | 文件名 | stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md |
 | 基座分支 | `feat/book-video-classic`（0 behind `main`） |
@@ -430,16 +430,16 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 
 ### 10.2 ch03 硬门（全部满足才扩批）
 
-- [ ] 本 Overlay 已合入 `feat/book-video-classic`。  
+- [x] 本 Overlay 已合入 `feat/book-video-classic`。  
 - [x] Port A（strip）完成；slop_lint 绿。  
 - [x] Port B（Sepia/plain-voice 技能树 + 规则抽取）完成；**无** handraw docs 整树合并。  
 - [x] `CONTENT_GUIDE` 已按 §8 修改。  
-- [ ] ch03 中英教学合同字段（七项核心 + 先备知识）已登记且互相对齐。  
-- [ ] 章结构为功能块可选；最小胜利在手册密度之前。  
-- [ ] 至少一张 Handraw 规划过的技术或概念关系图 + 真证轨缺口显式声明（有则哈希，无则写待补）。  
-- [ ] 失败分支含可区分证据。  
+- [x] ch03 中英教学合同字段（七项核心 + 先备知识）已登记且互相对齐。  
+- [x] 章结构为功能块可选；最小胜利在手册密度之前。  
+- [x] 至少一张 Handraw 规划过的技术或概念关系图 + 真证轨缺口显式声明（有则哈希，无则写待补）。  
+- [x] 失败分支含可区分证据。  
 - [ ] 短片 + 可复现长片链按 classic SP-05/06；旁白节拍指纹不与相邻样例章完全同构。  
-- [ ] Sepia 删除/回退检查记录在章缺陷清单。  
+- [x] Sepia 删除/回退检查记录在章缺陷清单。  
 - [ ] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML/PDF check 通过。  
 - [ ] 浏览器/PDF 目检：章首页、关系图页、代码或表页、实验页。  
 - [ ] `task_verify` 的 passed/failed/unverified 分列；unverified 不冒充通过。
@@ -538,7 +538,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 2. 按 §9.3 Port A → §9.4 Port B。  
 3. ~~改 `CONTENT_GUIDE.md`（§8）。~~ **已完成**（中英同步；固定骨架 → 教学合同 + 功能块可选）。  
 4. 更新 manifest 分部标题与 goal（§3.2）。  
-5. 开 ch03 缺陷清单并跑 §10.2 硬门。  
+5. ~~开 ch03 缺陷清单并跑 §10.2 硬门。~~ **进行中**：`audits/ch03-converge-gate.md`；合同/结构/Handraw/真证声明/Sepia 已落；视频节拍与 HTML/PDF/task_verify 仍开放。  
 6. 硬门全绿后再开 B2。
 
 未经 §10.2 勾选完成，不得在 README 或发布说明中写「经典合流已完成」。
