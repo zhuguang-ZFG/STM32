@@ -141,6 +141,12 @@
       "question": "How do a pin's input structure, output drive, and external load together decide the real level?",
       "deliverable": "A pin-mode, wiring, and expected-level table, with both output states checked on a meter or a logic analyzer.",
       "boundary": "A GPIO mode does not change the absolute maximum ratings. 5 V tolerance and sink/source current must be checked for the specific pin. On the BluePill, PC13's LED is on when the pin is low. An F1 internal pull-up is about 30–50 kΩ and does not replace an I2C resistor.",
+      "prerequisites": "Chapters 00–02: you can build and flash a BluePill/F103 image, you know SYSCLK and peripheral clocks are enabled separately, and you can read registers in the debugger. If you have never lit the LED, finish the minimum victory below before reading the full tables.",
+      "minimum_victory": "Writing 0 to PC13 lights the onboard LED; writing 1 turns it off. Confirm GPIOC->ODR bit13 in the debugger, or measure the pin with a meter, and match that bit to the lamp.",
+      "mechanism": "A program write only changes the control path. On a common-anode LED the current flows from 3.3 V through the lamp into the pin, so the active level is low.",
+      "failure_branch": "If the lamp stays dark, split three ways: ODR is already 0 but dark → check common-anode wiring/series resistor; ODR is still 1 → check the port clock and CRL/CRH; pin level looks right but lamp is dark → check the resistor and LED polarity. Do not stop at \"the board is dead.\"",
+      "memory_anchor": "Mnemonic: PC13 is common-anode — write 0 to light it. Alike: a sink switch. Breaks: a common-cathode external LED written 0 goes dark; PC13 must not source like PA0.",
+      "exit_check": "Without the book: which write lights PC13? Pull-up or pull-down for a button to GND? Which clock before an F1 remap? Action: blink PC13 at 1 Hz and accept it with an ODR readback or a measured period.",
       "sources": [
         "rm0008",
         "ds5319",
