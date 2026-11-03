@@ -39,6 +39,7 @@
 - [x] 批 4（3 张，11-03 深夜）：`exti-chain`（S4 四层关卡）、`boot-relay`（P1 三棒静态版图——P1 已有同主题接力动画，改插「和 STM32 对照」节做结构互补）、`rcu-tree`（G1 200MHz 时钟树）——`gen_batch4.py`
 - [x] 批 5（4 张，11-03 深夜）：`sem-mutex`（F5 马甲家族·双族汇入 Queue 底座）、`device-ops`（R4 四层调用链）、`i2c-bus`（S11 两线开漏拓扑·总线扇出双从机）、`map-audit`（B5 size 三列两条公式汇入 Flash/RAM）——`gen_batch5.py`
 - [x] 批 6（2 张，11-03 深夜）：`logger-flow`（J1 记录器五站数据流——项目篇首图）、`pwr-domains`（S14 三档供电域矩阵，tile dark 深底=断电域，与三档对比动画差异化）；S2/F6/A3 经查已有同主题动画**主动跳过**——为铺而铺的诱惑要挡
+- [x] 批 8（4 张，11-03 午后）：`usart-rename-map`（G3 八串口两套牌·0x00–0x18 七条偏移轨）、`spl-anatomy`（S15 三板斧供料→GPIO_Init→四段寄存器落位）、`rtt-three-floors`（R0 三层楼·INIT_*_EXPORT 登记进对象容器）、`heap-free-list`（F7 空闲链表按地址排·相邻才拼）——`gen_batch8.py`；选型按「整章零配图」扫描，G3 是全书唯一无图成稿章，其余三张补静态结构（各自已有动画演过程）；首版 G3 按厂商拆上下两组框，下框左上角标签被 x=130 竖边穿过，改「整块对照框 + 每行行首厂商砖」后清
 - [x] 每章正文插入 1 张 + 一句话引导，图注写「表达结构一句话」
 - [x] 图内事实全部对账章节原文（NDTR/HIFCR、KEEP/AT>、CLZ 位图/延时列表、otadata 双槽回滚、四层口诀、三棒接力、LDOVS→HDEN→HDS、出生带钥匙/被等就继承、ops 表 init/open/read/write/control、数据只在 SCL 低区变、Flash=text+data）
 - [x] 验收：docs:check ✓、reading:check ✓、docs:build ✓、test 116/116 ✓、**PDF 1188 页 13 门全过**（批 3 1183 / 批 4 1184 / 批 5 1188）；CLAIMS → 134 三处同步
@@ -58,13 +59,16 @@
 - [x] 视频推广卡 1 张（B站 16:9）：c3-volatile「你的 volatile 白加了？」Swiss 亮色版，与现有深底程序封面形成明暗两版对照
 - [x] 批量 10 张（11-03 晚，goal 重发后继续）：C0「出错弹窗 vs 冒烟」、C2「指针三板斧」、C4「结构体罩寄存器」、C5「中断只做快递分拣」、C6「AAPCS 口诀」、C8「0 只当帧尾」、F0「一人阻塞全家堵」、B2「头说我是谁」、S7「起始拉低数据八位」、P2「专线与总机」——同款 Swiss 版式，`batch/batch.html` 单源生成
 - [x] 批 7（16 张，11-03 深夜）：S2/S4/S14、P3/P8/P10、F2/F5/F6、R2/R4、G1、B3/B4/B5、C7——`gen_cards_batch2.py` 数据驱动，六条板线核心章全覆盖，产线移 `scripts/arch-diagrams/`（可复现）；入库 `deliverables/cards-batch7/`
-- [ ] 用户目检 → 定发布平台与存放位置后入库正式区（现共 30 张：14 样张/批 2 + 16 批 7）
-- [x] 验收：卡片文字与章节原文一致（零改写）；配色即站点色系（#3451b2/#3eaf7c/#d97706）
+- [ ] 用户目检 → 定发布平台与存放位置后入库正式区（现共 30 张：14 样张/批 2 + 16 批 7）；一屏联系表已备 `deliverables/review-sheet.html`（30 图全载、路径校验通过）
+- [x] 验收（机械对账，脚本 `.temp/card-fidelity-check.py`，29 张 HTML 源逐片段回查章节正文）：**29 张 giant 主句全部原样命中**；9 处「行内小注」是卡面自造压缩短语（c3 三处 / b2 三处 / s7「帧格式」/ p3「自报三项」/ f6 去逗号），c3 样张钩子句截断——待用户拍板：A 放宽口径为「主句零改写、小注允许压缩」，B 逐张改回原句重渲
+- [ ] 版式硬伤 3 张（截图逐张看到）：f0 三行重复「RTOS 三件宝」、c8 与 b2 的 mark 列按 1–2 字设计导致「序号/丢了/程序头」竖排拆字；批 2 源是一次性手写的 `.temp/social-cards-2026-11-03/batch/batch.html`，改后同目录 `shoot.mjs` 重渲
+- [x] 验收：配色即站点色系（#3451b2/#3eaf7c/#d97706）
 
 ### L4 视频插画 brief 包（handraw-style）✅ 2026-11-03 完成
 
 - [x] `video/assets/art-briefs/`：README 总纲 + 7 集 brief（ai4fw、s2/s4/s5/s7、s14、s16），每份含画风编号、核心特征验收清单、构图骨架、中英双语提示词（pure-image + 参考图隔离指令）
 - [x] 明确标注执行需外部生图模型；SVG 手绘路线按「核心特征」清单直接自绘；品牌统一色 C-04 钴蓝（≈站点 #3451b2）
+- [x] SVG 手绘路线落地（11-03 深夜）：7 集封面全部自绘完成——s2 六道门立柜 / s4 叠罗汉冷脸小豆人 / s5 怀表滴答 / s7 秒表对看 / s14 三张床 / s16 现场勘察 / ai4fw 几何机器；粗黑轮廓 14px + 钴蓝扁平色块 + 大留白 + 图内无文字（sweety 契约）；SVG 源 + 1920² PNG 在 `video/assets/art-briefs/covers/`，提交 786b9bf
 - [x] 验收：三条路线（FA-013 涂鸦信息图 / FE-038 视觉双关 / FA-029 几何信息图）与 sweety-handdraw 白底黑墨线规范同源不冲突；图内文字极简契约写入每份 brief
 
 ### L5 精排导读 + 沉淀（guizang-page / specs 沉淀）✅ 2026-11-03 完成
