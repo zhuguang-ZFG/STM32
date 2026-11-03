@@ -96,6 +96,48 @@
 | `assets/diagrams/stack-gpio-pc13-led.png` | `3677daa7780d086868437f41450664e8d2faa6c58ed07ccbadeb188c1fa960d9` |
 | `assets/diagrams/sample-03-gpio-led.svg` | `35a7e6901de591eee1e61a095904be4e2a926c4c351c386d20b8bfda714a6abe` |
 
+## §15.4 B1 三表（ch03 模板）
+
+本节是 Overlay §15.4 计划 30 要求的三表，作为 B2–B7 的唯一模板。表内每行都能在仓库文件中核对；未新生成图的章不得照抄本表。
+
+### 表 1 · 插图清单
+
+| # | 文件 | 类型（§15.1） | 认知任务（互不重复） | 轨道 / 登记 | Layout | 风格 / 配色 | SHA-256 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | `assets/illustrations/ch03-handdraw.svg` | 概念图（双态对照） | 写值 → 共阳电流方向：写 1 灯灭、写 0 灯亮 | 知识轨（Handraw）；manifest `files[chapter=03]` 已登记 | IG-004 双列多行对比 | FA-002 continuous-line；层登记 C-03 / C-10 / C-27 / C-31（页脚 Prussian Blue / Sage / Naples Yellow） | `f42797497bced104561e330c8e8293c26ef0c2142c0c6935175d70a5bf185ef0` |
+| 2 | `assets/illustrations/ch03-mid-handdraw.svg` | 概念图（上拉 / 下拉双态） | 浮空引脚被按住 vs 浮空；长片分镜 `visual_source` 已用 | 知识轨（Handraw）；manifest `mid[chapter=03]` 已登记；**未入章正文** | IG-004 双列多行对比 | FA-002；同层配色 | `bd31d11c8f267c785870667472ae3fa8f8a3186ebc342294cbad0b1a1a6a33de` |
+| 3 | `assets/diagrams/sample-03-gpio-led.svg` | 技术关系图 + 正误对比 | PA0 推挽点灯（正确）vs 同一接法搬上 PC13（错误） | 知识轨自绘（`tools/gen_sample_figures.py`，svgkit） | IG-004 双列多行对比 | 自绘静态；页脚标注 DS5319 Rev 20 | `ed09310282b4f0b6b6abf6bb529636b0a276d8fcb9262f06cfc8b6044e407d04` |
+| 4 | `assets/diagrams/stack-gpio-pc13-led.png` | 技术关系图（分层） | 程序控制路径与电流路径分层对账 | 精确工程轨 `stack-diagram`（HTML 源含 `stack-diagram` 标记、132px 节点网格） | 节点几何规则（非 IG 图型） | 自绘；暗色版 `stack-gpio-pc13-led-dark.png` | `3677daa7780d086868437f41450664e8d2faa6c58ed07ccbadeb188c1fa960d9` |
+| 5 | `assets/boards/pinout-bluepill.svg` | 技术 / 硬件图 | PA0、PA1、PC13、PA13、PA14 位置与复用边界 | 知识轨自绘（`tools/gen_pinouts.py`） | 引脚全图（非 IG 图型） | 自绘 | `35530cc647320da3e1cc809177d74f0be79c1c3b23ce32f266e92c83ab958a03` |
+
+类型覆盖：概念图（1、2）、技术关系图（3、4、5）、排错或对比图（3 的正误双栏 + 「常见坑与出处」五行表）。任务不重复：1 讲共阳电流方向，2 讲浮空电平，3 讲电流路径与引脚能力边界，4 讲控制/电流分层，5 讲板级引脚位置。
+
+真证轨缺口：BluePill PC13 共阳实拍 / 万用表或示波器截图仍**待补**；有则回填哈希，无则保留缺口声明。
+
+原文请求存档：以上 1–5 均为既有资产回登记，本轮**未**新生成图片，故无新提示词存档；后续新图必须随图登记 Layout / 风格 / 配色与提示词原文。
+
+### 表 2 · 动画清单
+
+| # | 文件 | 覆盖要求 | 认知任务 | 可播放性 | SHA-256 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `assets/animations/gpio-blink.svg` | 核心机制 ≥1 可播放演示 | GPIO 推挽输出两态驱动 LED（写 1 / 写 0 电流路径） | 5 段 CSS keyframes（`hd-pulse` / `hd-flow` 等），首帧为完整静态底图，PDF 打印可读 | `27bf3652e06a0f27092da486ea17916554593ee1b81cd1048c42ce95e22ec997` |
+| 2 | `assets/gif/led-blink.gif` | 实验可见结果 | PC13 低电平点亮 → 1 Hz 闪烁 | GIF 动图（640 px 宽，8085 B） | `d5654032d7760c3fe017ddbb1f5df1ba58cfe9192ad55b833002a5964c6ae1f1` |
+
+空转场 / 纯装饰动效：0（1 的机制变化是写值—电流方向对应，2 是实验现象）。章首视频不计入动画锚点。
+
+### 表 3 · 官方 / 开源对照表
+
+| 来源 | 类型 | 编号 / 版本 | 路径 / 位置 | 许可 | 可复用 / 仅对照 | 冲突裁定 |
+| --- | --- | --- | --- | --- | --- | --- |
+| RM0008 | ST 官方参考手册 | Rev 21（STM32F101/102/103/105/107） | §9 GPIO；§9.2.7 `GPIOx_LCKR`；§9.3.5 表 36（SWDIO=PA13、SWCLK=PA14） | ST 文档条款 | 权威依据，可引用文档号 | 与开源冲突时以 RM0008 适用条件为准 |
+| DS5319 | ST 官方数据手册 | Rev 20（STM32F103x8/B） | 表 5 引脚定义；图 8；注 5（PC13–PC15：3 mA / 2 MHz / 30 pF） | ST 文档条款 | 权威依据，可引用文档号 | 3 mA / 2 MHz / 30 pF 只认 DS5319 注 5 |
+| zhuguang-ZFG/STM32 | GitHub OSS | `main` | `examples/`（gpio-blink 等 14 例程） | MIT | **仅对照**：例程目标、接线、预期现象、代码可复用；不作为限值或寄存器依据 | 差异写入迁移表 / 坑表，不静默覆盖官方 |
+| zhuguang-ZFG/STM32 | GitHub OSS | `main` | `docs/`（内容风格指南） | CC BY 4.0 | **仅对照**：命名与写作规则 | 与 Overlay 冲突时以 Overlay 为准 |
+
+订货号：STM32F103C8T6，LQFP48 封装（PA0 第 10 脚、PC13 第 2 脚）。每章 ≥1 个 GitHub OSS 的要求已由 `examples/`（MIT）满足。
+
+**冲突实例（已按 §15.3 计划 29 处理）：** PA0 的 `(3.3 − 2.0) / 0.005 = 260 Ω` 来自 MIT 例程估算，2.0 V / 5 mA **不是** DS5319 推荐值；正文与图 3 均标明「不是数据手册推荐的电流」，限值仍以 DS5319 注 5 为准。
+
 ## 本轮可复现验证（执行结果）
 
 | 命令 | 结果 |
@@ -119,10 +161,11 @@
 - [x] 失败分支可区分证据（坑表保留）
 - [x] Sepia 删除/回退记录（上文）
 - [x] 短片+长片节拍指纹去同构并可再生（本轮：短片 7 拍 regen；长片 media-report 全绿）
-- [ ] 窄回归之外：`check_assets` 全书级既有 FAIL 需另开
-- [ ] 全书级 `check_assets`（ch18–ch20 960p 存量 FAIL；ch03 本轮已回 1080p）
-- [ ] 浏览器/PDF **人工目检**（dist 已生成，见文末补证；未目检不勾）
-- [ ] `task_verify`：仓库无工具 → **unverified（absent-tool）**；双语 HTML/PDF **构建**已 passed（非目检）
+- [x] **§15.4 三表（B1 模板）** 已写入本文件 §15.4；类型覆盖概念/技术关系/排错对比，核心机制动画 ≥1，官方（RM0008 Rev 21 / DS5319 Rev 20）+ OSS（MIT `examples/`）齐全。
+- [x] 全书级 `check_assets`：**PASS**（1298/1298 链接、29 章 MP4+SRT+海报；ch16–ch20 已回 1920×1080，`hd_chapters` 同步登记）。
+- [x] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML `--check`：**全绿**（177 OK；PDF 构建与目检见文末收口轮）。
+- [x] 浏览器/PDF **目检**：ch03 章首页 / Handraw 关系图 / stack 关系图 / 寄存器表 / 实验动画 / 引脚图已用真实 Chromium 渲染逐页核对（证据见文末收口轮）。
+- [x] `task_verify`：工具已可调用（`xd://task_verify`）→ **unverified（project-or-git-baseline-unavailable）**；passed/failed 均无，不冒充通过。
 
 ## 建议下一步
 
@@ -251,3 +294,46 @@
 2. 打开上列 dist HTML/PDF，完成章首页、关系图、代码/表、实验页目检。
 3. 决定 ch18–20：重生 1080p，或书面批准挂账到 B5。
 4. 若团队另有外部 `task_verify` 入口，提供路径后再跑并分列记账。
+
+## 收口轮（2026-11-03 晚，America/Adak）
+
+### §15.4 三表（B1 模板）
+
+已写入上文「§15.4 B1 三表」：插图清单 5 行、动画清单 2 行、官方/开源对照 4 行。官方 RM0008 Rev 21 / DS5319 Rev 20；OSS `zhuguang-ZFG/STM32` `examples/` MIT（仅对照）。B2–B7 强制同模。
+
+### 自动检查（全部重跑）
+
+| 检查 | 结果 |
+| --- | --- |
+| `python -m unittest discover stm32-book/tests` | **177 OK**（75s；较上轮 +1：`test_classic_l5`） |
+| `python tools/check_assets.py` | **PASS**（1298/1298 链接，29 章 MP4+SRT+海报） |
+| `python tools/slop_lint.py` | 干净 |
+| `build_html.py --check`（zh/en） | PASS（6010483 / 6060965 bytes，29 章） |
+| `python tools/audit_book.py` | 中文 PDF 视觉锚点 140，低于目标章节 0 |
+| `git diff --check` | exit 0 |
+| ch16–ch20 五个短片全解码（`ffmpeg -v error -map 0 -f null -`） | exit 0，stderr 0 字节 |
+| `xd://task_verify`（action=run） | **unverified（project-or-git-baseline-unavailable）**，checks=[]；不冒充通过 |
+
+### ch16–ch20 短片回 1080p 与合同对齐
+
+- 工作树中 ch16–ch20 已重生成 1920×1080；`tools/check_assets.py` `hd_chapters` 原缺 16/17 致反向 FAIL，补齐为 `{00..20}`。
+- 配套：`tools/narration.py` ch18 第 5 拍改 4 条、ch16–17 SRT 同步、`docs/20` 一处文字。
+
+### 浏览器目检（真实 Chromium，1600×1125 ×7 图）
+
+p1 章首页 / p2 Handraw 双态 / p3 stack 关系图 / p4 寄存器表 / p5 实验 GIF / p6 动手实验 / p7 引脚图。视觉核对：图全渲染，无缺图/断图；`ch03-handdraw.svg` 页脚 "CH 04" 系显示编号（源 03 → 显示 04），非缺陷；`gpio-blink.svg` 标注「外接 LED：高电平点亮（BluePill 板载灯是 PC13，低电平才亮）」为诚实通用示例。
+
+### PDF 目检（PyMuPDF 光栅 + 视觉核对）
+
+zh p44/46/48/50、en p47/48/50/54/58：中文完好、表格/代码/插图无溢出，动画首帧印刷可读。
+
+### PDF 页眉乱码根因与修复（用户报「书籍乱码」）
+
+- **根因**：`build_html.py` 页眉用 `china-s` 别名 → PDF 仅写 `/BaseFont/Heiti` 引用、零嵌入（`extract_font` = 0 字节）。MuPDF 自带回退故光栅目检全绿；Adobe/浏览器/手机阅读器无此字体 → **每页页眉乱码**。正文 28 字体中 17 个 Type3 由 Chromium 自嵌（`AAAAAA+` 前缀），不受影响。
+- **修复**：`build_html.py` `_header_font_buffer()` 取 `fitz.Font("cjk")` buffer，`insert_font(fontbuffer=...)` 真嵌入 Droid Sans Fallback；宽度测量改 `Font.text_length`。回归：stamping 契约 4 测试 OK；嵌入断言 3556308 字节；even/odd 页眉与省略号路径实测。
+- 乱码面普查：全库 1074 文本文件严格 UTF-8 扫描 → 干净（仅 `.claude/settings.local.json` 权限串 1 个 U+FFFD，非书籍内容）；git 中文文件名八进制转义系 `core.quotepath`，已设 false。
+
+### 遗留
+
+1. BluePill PC13 真证照片仍缺（上文 §6.1）。
+2. B2–B7 未动（B1 模板已就绪）。

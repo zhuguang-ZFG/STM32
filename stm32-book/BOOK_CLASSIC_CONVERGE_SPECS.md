@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 状态 | Overlay Draft 1 · §15 插图/动画密度与官方+开源出处合同已落盘；ch03 硬门进行中（目检/task_verify/ch18–20 check_assets 仍开放） |
+| 状态 | Overlay Draft 1 · §15 三表模板已在 ch03 落盘；ch03 硬门仅余 `task_verify`（unverified 已分列记账）与真证照片；PDF 页眉乱码（非嵌入 CJK 字体）已修复并重建 |
 | 日期 | 2026-11-03（America/Adak 本地日） |
 | 文件名 | stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md |
 | 基座分支 | `feat/book-video-classic`（0 behind `main`） |
@@ -441,13 +441,14 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 - [x] 失败分支含可区分证据。  
 - [x] 短片 + 可复现长片链按 classic SP-05/06；旁白节拍指纹不与相邻样例章完全同构。  
 - [x] Sepia 删除/回退检查记录在章缺陷清单。  
-- [ ] **§15 模板（B1）**：章缺陷清单含「插图清单 + 动画清单 + 官方/开源对照表」三表；插图类型覆盖概念/技术关系/排错或对比；核心机制 ≥1 可播放演示；出处含 ST 官方 + ≥1 GitHub OSS（路径/许可证/可复用边界）。  
-- [ ] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML/PDF check 通过。  
-  （部分证据：`slop_lint` 干净；双语 HTML `--check` passed；双语 PDF **构建** passed → `stm32-book/dist/`；ch03 短片已回 1920×1080。仍 FAIL：全书 `check_assets` 因 ch18/ch19/ch20 为 960×540。复合门不勾。）  
-- [ ] 浏览器/PDF 目检：章首页、关系图页、代码或表页、实验页。  
-  （dist HTML/PDF 已生成供人检；本环境未做 GUI 目检 → 不勾。详见 `audits/ch03-converge-gate.md`。）  
+- [x] **§15 模板（B1）**：章缺陷清单含「插图清单 + 动画清单 + 官方/开源对照表」三表；插图类型覆盖概念/技术关系/排错或对比；核心机制 ≥1 可播放演示；出处含 ST 官方 + ≥1 GitHub OSS（路径/许可证/可复用边界）。  
+  （**已落盘**：`stm32-book/audits/ch03-converge-gate.md` §15.4 三表；官方 RM0008 Rev 21 / DS5319 Rev 20 + OSS `examples/` MIT。）  
+- [x] 窄回归 + 全量 `unittest` + `check_assets` + `slop_lint` + 双语 HTML/PDF check 通过。  
+  （实测（2026-11-03 收口轮）：unittest **177 OK**；`check_assets` 全书 **PASS**（1298/1298 链接，ch16–20 已回 1080p，`hd_chapters` 补齐）；`slop_lint` 干净；双语 HTML `--check` PASS；PDF 页眉嵌入字体修复后重建，证据见 `audits/ch03-converge-gate.md` 收口轮。）  
+- [x] 浏览器/PDF 目检：章首页、关系图页、代码或表页、实验页。  
+  （**已检**（2026-11-03）：真实 Chromium 1600×1125 ×7 页（章首/Handraw/stack/寄存器表/GIF/动手实验/引脚图）；PDF 光栅 zh p44/46/48/50 + en p47/48/50/54/58，视觉模型核对无缺陷。结论见 `audits/ch03-converge-gate.md` 收口轮。）  
 - [ ] `task_verify` 的 passed/failed/unverified 分列；unverified 不冒充通过。  
-  （仓库内无 `task_verify` 可执行入口 → **unverified（absent-tool）**；不冒充通过。）
+  （**unverified**：`project-or-git-baseline-unavailable`，checks=[]，无检查执行；动作=`action:"run"`（2026-11-03）。）  
 
 ### 10.3 扩批顺序（ch03 通过后）
 
@@ -589,7 +590,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 
 ### 15.4 批次落点（计划 30–31）
 
-- [ ] **30 B1（ch03）模板**：样章缺陷清单必须先定并填完三表——插图清单、动画清单、官方/开源对照表——再扩视觉实现；三表格式作为后续批次唯一模板。  
+- [x] **30 B1（ch03）模板**：样章缺陷清单必须先定并填完三表——插图清单、动画清单、官方/开源对照表——再扩视觉实现；三表格式作为后续批次唯一模板。（**已完成**：`stm32-book/audits/ch03-converge-gate.md` §15.4；B2–B7 强制同模。）  
 - [ ] **31 B2–B7**：B2–B6 强制使用同一三表模板；B7 输出全书插图覆盖率、动画覆盖率、出处（官方+OSS）普查，缺口不得标完成。
 
 ### 15.5 验收挂钩
