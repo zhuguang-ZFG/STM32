@@ -53,6 +53,11 @@ jobs:
           python -m pip install -r stm32-book/requirements.txt
           python -m playwright install --with-deps chromium
 
+      - name: Install CJK font for narration tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-wqy-microhei
+
       - name: Run whole-book regressions
         run: python -m unittest discover stm32-book/tests -v
 
