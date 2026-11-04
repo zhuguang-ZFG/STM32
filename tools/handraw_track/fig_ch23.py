@@ -1,0 +1,123 @@
+# -*- coding: utf-8 -*-
+"""ch23 knowledge-track figures (facts from docs/23, DS12232 Rev 5 / RM0444)."""
+from hd import *
+
+
+def part_id():
+    f = Fig("ch23-part-id", "STM32G071RB 是谁 / decode the part")
+    f.panel(296, 116, 560, 76, AMBER_FILL)
+    f.rect(296, 116, 560, 76, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 146, "STM32G071RB：M0+ @ 64 MHz", size=30, color=INK,
+           anchor="middle", weight="bold")
+    f.text(W / 2, 178, "1.7–3.6 V · R = 64 脚 · B = 128 KB Flash · SRAM 36 KB",
+           size=20, color=MUTED, anchor="middle")
+    rows = [
+        ("通信口", "2×I2C · 4×USART · 1×LPUART · 2×SPI", GREEN_D),
+        ("Type-C", "UCPD（供电协商），不是 USB 设备控制器", BLUE_D),
+        ("没有 CAN", "功能不存在时，别从复用表里硬找", RED),
+        ("低功耗", "Sleep · Stop · Standby · Shutdown", BLUE_D),
+    ]
+    y = 236
+    for t, d, c in rows:
+        f.rect(120, y, 220, 62, color=c, fill=WHITE)
+        f.text(230, y + 39, t, size=23, color=c, anchor="middle", weight="bold")
+        f.text(368, y + 39, d, size=22, color=INK)
+        y += 82
+    f.htext(W / 2, 636, "先确认完整订货号、封装与外设表，再动手", size=25,
+            color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+def pin_compare():
+    f = Fig("ch23-pin-compare", "F103 与 G071RB 的脚 / pin families differ")
+    rows = [
+        ("第 1 脚", "VBAT", "PC11（Table 12）", RED),
+        ("复位", "专用 NRST", "PF2-NRST，可配 GPIO", GREEN_D),
+        ("BOOT", "专用 BOOT0", "PA14-BOOT0 = SWCLK 共脚", AMBER_STROKE),
+        ("复位后 GPIO", "多为浮空输入", "模拟输入（Table 11）", BLUE_D),
+        ("PA11/PA12", "USB DM/DP", "普通 GPIO + UCPD 重映射位", BLUE_D),
+        ("CAN", "bxCAN", "这颗料没有 CAN", RED),
+        ("PC13–15", "备份域小电流", "只灌 ~3 mA / ≤2 MHz / 30 pF", GREEN_D),
+    ]
+    y0 = 132
+    f.text(160, y0 - 14, "项", size=20, color=MUTED, anchor="middle")
+    f.text(450, y0 - 14, "F103", size=20, color=MUTED, anchor="middle")
+    f.text(860, y0 - 14, "G071RB", size=20, color=MUTED, anchor="middle")
+    for t, a, b, c in rows:
+        y = y0
+        f.rect(66, y, 188, 56, color=c, fill=WHITE)
+        f.text(160, y + 35, t, size=20, color=c, anchor="middle", weight="bold")
+        f.text(450, y + 35, a, size=20, color=MUTED, anchor="middle")
+        f.rect(650, y, 436, 56, color=c, fill=WHITE)
+        f.text(868, y + 35, b, size=20, color=INK, anchor="middle")
+        y0 = y + 74
+    f.htext(W / 2, 682, "AF 表看 DS12232 Table 13/14，别抄 F407 的 AF 号",
+            size=24, color=RED, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+def boot_latch():
+    f = Fig("ch23-boot-latch", "PA14：BOOT0 = SWCLK / one pin, two jobs")
+    f.panel(256, 122, 640, 92, AMBER_FILL)
+    f.rect(256, 122, 640, 92, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 156, "复位释放后：第四个 SYSCLK 上升沿锁存启动源", size=25,
+           color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 194, "锁存之后 SWCLK 翻转不会反向改启动目标", size=22,
+           color=GREEN_D, anchor="middle")
+    dangers = [
+        ("采样窗口内", "外部上拉 / 跳线 / 调试器把 PA14", "保持非预期电平"),
+        ("BOOT_LOCK = 1", "优先强制 Main Flash", "拉 PA14 覆盖不了"),
+        ("nBOOT_SEL", "选“用引脚还是选项位”", "不是 Bootloader 开关"),
+        ("空片例外", "Main Flash 为空时", "可转入系统 Bootloader"),
+    ]
+    y = 268
+    for t, a, b in dangers:
+        f.rect(110, y, 250, 78, color=RED, fill=WHITE)
+        f.text(235, y + 32, t, size=21, color=RED, anchor="middle",
+               weight="bold")
+        f.text(235, y + 60, "危险 / 边界", size=17, color=MUTED, anchor="middle")
+        f.text(390, y + 32, a, size=21, color=INK)
+        f.text(390, y + 60, b, size=21, color=INK)
+        y += 94
+    f.htext(W / 2, 700, "出厂默认不能替代现场读回 — Bootloader 或旧工程可能改写过",
+            size=23, color=MUTED, anchor="middle")
+    return f
+
+
+def pinmux():
+    f = Fig("ch23-pinmux", "G071RB 复用速查 / where things live")
+    rows = [
+        ("SWD", "PA13 SWDIO / PA14-BOOT0 SWCLK", "动了 PA14 就同时动了 BOOT0", RED),
+        ("USART1", "PA9 / PA10，或 PC4 / PC5", "Table 13", GREEN_D),
+        ("USART2", "PA2 / PA3", "Table 13", GREEN_D),
+        ("I2C1", "PB6 / PB7，或 PB8 / PB9", "Table 14", BLUE_D),
+        ("SPI1", "PA5/PA6/PA7，NSS=PA4 或 PB0", "Table 13 / 14", BLUE_D),
+        ("HSE / LSE", "PF0/PF1 · PC14/PC15", "Table 12 脚名", AMBER_STROKE),
+    ]
+    y0 = 136
+    for t, a, b, c in rows:
+        f.rect(80, y0, 200, 66, color=c, fill=WHITE)
+        f.text(180, y0 + 40, t, size=22, color=c, anchor="middle", weight="bold")
+        f.text(306, y0 + 28, a, size=21, color=INK)
+        f.text(306, y0 + 54, b, size=19, color=MUTED)
+        y0 += 84
+    f.htext(W / 2, 672, "PA11/PA12 复位后就是自己；PA9/PA10 重映射过去要先动 SYSCFG_CFGR1",
+            size=23, color=MUTED, anchor="middle")
+    return f
+
+
+FIGS = {
+    "ch23-part-id": part_id,
+    "ch23-pin-compare": pin_compare,
+    "ch23-boot-latch": boot_latch,
+    "ch23-pinmux": pinmux,
+}
+
+if __name__ == "__main__":
+    import sys
+    names = sys.argv[1:] or list(FIGS)
+    for n in names:
+        f = FIGS[n]()
+        OUT.mkdir(parents=True, exist_ok=True)
+        save(f, str(OUT / (n + ".svg")))
+        print("wrote", OUT / (n + ".svg"))
