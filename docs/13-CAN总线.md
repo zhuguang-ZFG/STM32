@@ -67,6 +67,11 @@ MCU 的 PB8/PB9 不能直接接总线，要先进收发器的 RXD/TXD，由收�
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch13-can-bit.png" width="760" alt="Handraw：CAN 500 与 450 kbit/s 对比（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。预分频 9×8 份额=500 kbit/s；预分频 8×10 份额=450 kbit/s；PB8/PB9 + 120 Ω；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/can-500k.gif" width="640" alt="8 个时间份额走过 2 µs，采样点在 75%">
   <br><sub>▲ 动图版，只演示正确配置：8 个 250 ns 的时间份额，采样点 75%，500 kbit/s。印刷版只有上面的静态图。</sub>
 </p>
@@ -173,6 +178,11 @@ CAN 的帧不写收件人，只写「这条消息是什么」，也就是 ID。�
   <br><sub>▲ 自绘。采样点 75%；预分频写错会变成 450 kbit/s。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-bit-quanta.png" width="760" alt="Handraw：8 个时间份额与 75% 采样点（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。Sync1+BS1 5+BS2 2；Tq 250 ns；采样 75%；写错预分频变 450 kbit/s；不是实拍。</sub>
+</p>
+
 
 CAN 把一位的时间切成若干份小格，叫 Tq。第 1 格用来对齐边沿，后面分成采样点前的 BS1 和采样点后的 BS2。采样点放在一位的 75% 到 87.5% 处，是为了等线上的信号走完一个来回、彻底稳定了再看。同一条总线上所有节点的波特率和采样点都要一致。
 
@@ -206,6 +216,11 @@ Tq = Prescaler / f_APB1
   <br><sub>▲ 自绘。硬实时进 FIFO0，批量进 FIFO1；溢出要提速排空。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-filter-fifo.png" width="760" alt="Handraw：14 组过滤器与双 FIFO（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。硬实时进 FIFO0，批量进 FIFO1；溢出先提速排空；不是实拍。</sub>
+</p>
+
 
 F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把「ID 匹配的报文」路由到 FIFO0 或 FIFO1，用中断/轮询取出。
 
@@ -222,6 +237,11 @@ F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把�
 <p align="center">
   <img src="../assets/diagrams/sample-13-can-triage.svg" width="760" alt="预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点">
   <br><sub>▲ 自绘。排错三岔口：APB1 36 MHz、预分频 8 配 10 个时间份额算出来是 450 kbit/s——这就是文档里的错误配置例；邮箱一直空，先查标准 ID 写 FilterIdHigh 是不是忘了左移 5 位（0x123 << 5）；错误帧暴涨多半是采样点定错。出处是 [RM0008 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20](#source-ds5319-clock)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-can-triage.png" width="760" alt="Handraw：CAN 三岔口排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：450 kbit/s；FilterIdHigh 左移 5 位；采样点对齐；不是实拍。</sub>
 </p>
 
 ## 硬件与接线
@@ -319,6 +339,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 <p align="center">
   <img src="../assets/diagrams/sample-13-tec-busoff.svg" width="760" alt="TEC 128 进被动；超过 255 才 Bus-Off">
   <br><sub>▲ 自绘。单节点无 ACK 只到 128；Bus-Off 要另造发送错误。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-tec-busoff.png" width="760" alt="Handraw：TEC 与 Bus-Off 阶梯（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。TEC≥128 被动；>255 Bus-Off；单节点无 ACK 停在 128；恢复 128×11 隐性位；不是实拍。</sub>
 </p>
 
 

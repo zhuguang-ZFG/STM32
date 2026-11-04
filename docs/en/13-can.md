@@ -67,6 +67,11 @@ The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB i
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-can-bit.png" width="760" alt="Handraw: CAN 500 vs 450 kbit/s (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Prescaler 9×8 quanta=500 kbit/s; prescaler 8×10 quanta=450 kbit/s; PB8/PB9 + 120 Ω; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/can-500k.gif" width="640" alt="Eight quanta cross 2 µs and the sample point is at 75%">
   <br><sub>▲ Animated version. It shows only the correct setup: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. The printed book has only the static figure above.</sub>
 </p>
@@ -172,6 +177,11 @@ When several nodes start talking at once, each one listens to the bus while it s
   <br><sub>▲ Drawn for this book. Sample at 75%; wrong prescaler yields 450 kbit/s.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-bit-quanta.png" width="760" alt="Handraw: 8 time quanta and 75% sample point (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Sync1+BS1 5+BS2 2; Tq 250 ns; sample 75%; wrong prescaler yields 450 kbit/s; not a photo.</sub>
+</p>
+
 
 CAN splits each bit into small slices called Tq. The first slice lines up with the edge. The rest is split into BS1 before the sample point and BS2 after it. The sample point sits between 75% and 87.5% of the bit so that the signal has time to travel the bus and settle before it is read. Every node on the bus must use the same baud rate and sample point.
 
@@ -205,6 +215,11 @@ On **F1, APB1 = 36 MHz**:
   <br><sub>▲ Drawn for this book. Hard-realtime → FIFO0; bulk → FIFO1; fix overrun by draining faster.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-filter-fifo.png" width="760" alt="Handraw: 14 filter banks and dual FIFO (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Hard-realtime → FIFO0; bulk → FIFO1; fix overrun by draining faster; not a photo.</sub>
+</p>
+
 
 **Takeaway:** F1 bxCAN has **14 filter banks** and **2 receive FIFOs**. A filter routes a matching ID to FIFO0 or FIFO1. You then poll or take an interrupt.
 
@@ -221,6 +236,11 @@ On **F1, APB1 = 36 MHz**:
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-triage.svg" width="760" alt="Prescaler 8 with 10 time quanta gives 450 kbit/s; an empty mailbox means the standard ID was not shifted left by 5; exploding error frames point at the sample point">
   <br><sub>▲ Drawn for this book. Triage, three branches: APB1 36 MHz with prescaler 8 and 10 time quanta computes to 450 kbit/s — the wrong-configuration example from this chapter; a mailbox that never fills — check whether the standard ID written to FilterIdHigh was shifted left by 5 (0x123 << 5); exploding error frames — the sample point is set wrong. Sources: [RM0008 bxCAN](#source-rm0008-can) and [DS5319 Rev 20](#source-ds5319-clock).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-can-triage.png" width="760" alt="Handraw: CAN three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: 450 kbit/s; FilterIdHigh << 5; align sample point; not a photo.</sub>
 </p>
 
 ## Wiring
@@ -318,6 +338,11 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 <p align="center">
   <img src="../../assets/diagrams/sample-13-tec-busoff.svg" width="760" alt="TEC 128 = error-passive; TEC > 255 = bus-off">
   <br><sub>▲ Drawn for this book. Lone node without ACK stops at 128; bus-off needs real Tx errors.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-tec-busoff.png" width="760" alt="Handraw: TEC and Bus-Off ladder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). TEC≥128 passive; >255 Bus-Off; lone node no ACK stops at 128; recover 128×11 recessives; not a photo.</sub>
 </p>
 
 
