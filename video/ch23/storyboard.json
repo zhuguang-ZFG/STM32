@@ -1,0 +1,605 @@
+{
+ "schema_version": 1,
+ "chapter": "23",
+ "slug": "g0-pins-long",
+ "title": "STM32G0 引脚：一只脚两份工作的规则",
+ "short_source": "tools/narration.py#CHAPTERS[23]",
+ "scenes": [
+  {
+   "scene_id": "ch23-s01",
+   "title": "拉高 PA14，调试器反而连不上了？",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一个反直觉的操作：想把 G0 拉进 Bootloader，把 PA14 拉高，结果 Bootloader 没进，调试器反而连不上了。这一章只追一个问题：一只脚同时管启动和调试，G0 靠什么规则不乱。",
+   "on_screen": [
+    "拉高 PA14",
+    "Bootloader 没进",
+    "SWD 也连不上"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "一只脚，两份工作",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch23-s02",
+   "title": "这颗料是谁：G071RB",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s01"
+   ],
+   "narration": "对照的料是 STM32G071RB，LQFP64：Cortex-M0+ 最高 64 兆，供电 1.7 到 3.6 伏，Flash 128KB，SRAM 36KB。出处是 DS12232 修订版 5 的封面与订购信息。",
+   "on_screen": [
+    "M0+ @ 64 MHz",
+    "1.7–3.6 V",
+    "128KB Flash · 36KB SRAM"
+   ],
+   "visual_source": "illustrations/handraw/ch23-part-id.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#这颗料是谁"
+   ],
+   "memory_anchor": "R 管脚数，B 管容量",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch23-s03",
+   "title": "通信口清单：没有 CAN",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s02"
+   ],
+   "narration": "G071 的通信口是 2 个 I2C、4 个 USART、1 个 LPUART、2 个 SPI，加一个 UCPD 做 Type-C 供电协商。特性表里没有 CAN，也没有 USB 全速设备控制器——功能不存在时，别从复用表里硬找。",
+   "on_screen": [
+    "2×I2C · 4×USART · LPUART",
+    "2×SPI · UCPD",
+    "没有 CAN"
+   ],
+   "visual_source": "illustrations/handraw/ch23-part-id.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#这颗料是谁"
+   ],
+   "memory_anchor": "没有的功能别硬找",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch23-s04",
+   "title": "第 1 脚是 PC11，复位是 PF2",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s02"
+   ],
+   "narration": "和 F103 逐脚对照：G071RB 的第 1 脚是 PC11，不是 VBAT；复位脚是 PF2-NRST，配成复位时是 RST 结构，配成 GPIO 时是 FT。第一脚从哪数、复位在哪，迁移时先核这两处。",
+   "on_screen": [
+    "第 1 脚 = PC11",
+    "PF2-NRST",
+    "RST 结构 / FT 可选"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pin-compare.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#和 F1 / F4 比，脚上差在哪"
+   ],
+   "memory_anchor": "第 1 脚和复位脚都会挪",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s05",
+   "title": "复位后的 GPIO 是模拟输入",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s04"
+   ],
+   "narration": "Table 11 有一条容易被忽略：除非另有说明，复位后所有 IO 是模拟输入。这和 F1 的浮空输入不同。复用前先把要用的脚配置成正常模式，否则读到的是高阻。",
+   "on_screen": [
+    "复位后 = 模拟输入",
+    "≠ F1 的浮空",
+    "用前先配置"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pin-compare.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#和 F1 / F4 比，脚上差在哪"
+   ],
+   "memory_anchor": "醒来时所有脚都是模拟态",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s06",
+   "title": "PA14 一只脚两份工作",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s04"
+   ],
+   "narration": "G0 的 BOOT0 长在 PA14 上，和 SWCLK 是同一只脚。Table 12 注 6 写明：复位后 PA13 内部上拉、PA14 内部下拉，并直接进入 SWD 复用。内部下拉不是外部强上拉的抵消器。",
+   "on_screen": [
+    "PA14 = BOOT0 = SWCLK",
+    "复位后内部下拉",
+    "PA13 内部上拉"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "一只脚，两份工作",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s07",
+   "title": "启动源在第四个 SYSCLK 上升沿锁存",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s06"
+   ],
+   "narration": "ST 启动 FAQ 说明：复位释放后，启动配置在第四个 SYSCLK 上升沿锁存。锁存之后，SWCLK 正常翻转不会反向改变本次启动目标。",
+   "on_screen": [
+    "第四个 SYSCLK 上升沿",
+    "锁存启动源",
+    "之后翻转不改结果"
+   ],
+   "visual_source": "animations/sample-23-boot-latch.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "第四沿定终身",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch23-s08",
+   "title": "危险在采样窗口里",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s07"
+   ],
+   "narration": "真正危险的不是锁存后的翻转，而是采样窗口：外部上拉、跳线或调试器在这几拍里把 PA14 保持在非预期电平，启动源就被写错了。窗口管理靠硬件，不靠运气。",
+   "on_screen": [
+    "采样窗口内",
+    "外部电平说了算",
+    "窗口靠硬件管理"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "an5096",
+    "docs/23-STM32G0引脚.md#共脚硬件：采样稳定与调试驱动要同时成立"
+   ],
+   "memory_anchor": "窗口里的电平定启动",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s09",
+   "title": "BOOT_LOCK 一票否决",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s08"
+   ],
+   "narration": "启动表的第一行是 BOOT_LOCK：它等于 1 时，不管 PA14 电平如何，都强制从主 Flash 启动。想靠拉引脚覆盖它，做不到。读回这一位，是判断启动问题的第一步。",
+   "on_screen": [
+    "BOOT_LOCK = 1",
+    "强制 Main Flash",
+    "拉脚覆盖不了"
+   ],
+   "visual_source": "diagrams/sample-23-boot0-swclk.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "一票否决先读它",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s10",
+   "title": "真值表：五行记完",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s09"
+   ],
+   "narration": "RM0444 的启动表五行记完：锁存关闭时，nBOOT_SEL 为 0 看 PA14 电平；为 1 看选项位 nBOOT0 与 nBOOT1。X 表示该项不影响结果，别把每个字段都当成必须配置。",
+   "on_screen": [
+    "nBOOT_SEL=0 → 看 PA14",
+    "nBOOT_SEL=1 → 看选项位",
+    "X = 不影响"
+   ],
+   "visual_source": "animations/sample-23-boot-source-flow.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "SEL 先分两条路",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s11",
+   "title": "nBOOT_SEL 不是 Bootloader 开关",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s10"
+   ],
+   "narration": "最常见的误读是把 nBOOT_SEL 当成系统 Bootloader 的开关。它选的是使用引脚还是选项位这条路径，不是结果。结果由 nBOOT0、nBOOT1 和电平共同决定。",
+   "on_screen": [
+    "选路径 ≠ 选结果",
+    "引脚 vs 选项位",
+    "结果还要看电平"
+   ],
+   "visual_source": "animations/sample-23-boot-source-flow.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "SEL 选路，不选终点",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s12",
+   "title": "空片例外：会转进 Bootloader",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s11"
+   ],
+   "narration": "还有一条额外路径：表上选了主 Flash，但空 Flash 检查判定用户区为空，器件可以转入系统 Bootloader。这是 DS12232 与 AN2606 写明的行为，不能把选主理解成空片也一定从 0x08000000 执行。",
+   "on_screen": [
+    "主 Flash 为空",
+    "空片检查通过",
+    "转入系统 Bootloader"
+   ],
+   "visual_source": "animations/g0-boot-swd.svg",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "空片会自己找路",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch23-s13",
+   "title": "共脚硬件：两件事同时成立",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s08"
+   ],
+   "narration": "共脚硬件的要求是采样稳定与调试驱动同时成立：AN5096 要求核对上下拉、串阻与跳线，不能用强上拉把 SWCLK 固定住。稳定启动和能连调试器，是一对必须共存的约束。",
+   "on_screen": [
+    "采样稳定",
+    "调试驱动正常",
+    "不许强上拉固定 SWCLK"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "an5096",
+    "docs/23-STM32G0引脚.md#共脚硬件：采样稳定与调试驱动要同时成立"
+   ],
+   "memory_anchor": "两头都要成立",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s14",
+   "title": "不需要 Boot 脚的产品配置",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s13"
+   ],
+   "narration": "如果产品不需要现场 Boot 引脚，可以选 nBOOT_SEL 为 1、nBOOT0 为 1 的主 Flash 配置，减少启动对 PA14 电平的依赖。配置写在选项字节里，出厂默认不能替代现场读回。",
+   "on_screen": [
+    "nBOOT_SEL=1",
+    "nBOOT0=1",
+    "主 Flash 少依赖 PA14"
+   ],
+   "visual_source": "animations/sample-23-boot-source-flow.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "把启动钉在主 Flash",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s15",
+   "title": "关键复用速查",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s14"
+   ],
+   "narration": "G071RB 的常用复用：USART1 在 PA9 和 PA10，另一组在 PC4 和 PC5；USART2 在 PA2 和 PA3；I2C1 在 PB6、PB7，也可以走 PB8、PB9；SPI1 在 PA5、PA6、PA7，NSS 用 PA4 或 PB0。",
+   "on_screen": [
+    "USART1：PA9/10 或 PC4/5",
+    "I2C1：PB6/7 或 PB8/9",
+    "SPI1：PA5/6/7"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pinmux.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#关键复用（只列 Table 12 / 13 / 14 里写明的）"
+   ],
+   "memory_anchor": "复用以 Table 13/14 为准",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s16",
+   "title": "HSE 在 PF0，LSE 在 PC14",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s15"
+   ],
+   "narration": "时钟脚也挪了位置：HSE 用 PF0-OSC_IN 和 PF1-OSC_OUT，LSE 仍用 PC14 和 PC15。引脚名和 F1 完全不同，抄 F1 的时钟接法前，先把这两对标出来。",
+   "on_screen": [
+    "HSE：PF0 / PF1",
+    "LSE：PC14 / PC15",
+    "脚名与 F1 不同"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pin-compare.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#关键复用（只列 Table 12 / 13 / 14 里写明的）"
+   ],
+   "memory_anchor": "时钟脚也换了门牌",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s17",
+   "title": "PA9/PA10 重映射到 PA11/PA12",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch23-s15"
+   ],
+   "narration": "PA11 和 PA12 复位后就是普通 PA11、PA12。Table 12 注 5 写明：可以用 SYSCFG_CFGR1 把 PA9 和 PA10 重映射到 PA11、PA12 的位置。没改寄存器之前，不要把 PA11 叫成 PA9。",
+   "on_screen": [
+    "PA11/12 复位后是自己",
+    "重映射走 SYSCFG_CFGR1",
+    "没改前别改名"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pinmux.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#关键复用（只列 Table 12 / 13 / 14 里写明的）"
+   ],
+   "memory_anchor": "重映射是显式动作",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch23-s18",
+   "title": "上电能进系统存储器，SWD 也怪",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s09",
+    "ch23-s10"
+   ],
+   "narration": "上电就进系统存储器，SWD 行为也怪：先读回 BOOT_LOCK、nBOOT_SEL、nBOOT0 和 nBOOT1 四个输入，把启动源错误和应用改写调试脚分成两个边界，再决定恢复路径。",
+   "on_screen": [
+    "现象：进了 ISP",
+    "动作：读回四输入",
+    "两个边界分开验"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#从 F1 抄代码时最容易摔的几处"
+   ],
+   "memory_anchor": "先读回，再分边界",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s19",
+   "title": "找遍图没有 CANH",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s03"
+   ],
+   "narration": "原理图上找不到 CANH，因为 G071 没有 CAN 控制器。解决只有两条：换带 FDCAN 的 G0 子系列，或者改用 USART。不要在复用表里替一个不存在的功能找脚。",
+   "on_screen": [
+    "现象：没有 CANH",
+    "原因：料没有 CAN",
+    "动作：换子系列/改口"
+   ],
+   "visual_source": "illustrations/handraw/ch23-part-id.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#从 F1 抄代码时最容易摔的几处"
+   ],
+   "memory_anchor": "功能不存在，脚就不存在",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s20",
+   "title": "PC13 点灯很暗：电流上限",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s04"
+   ],
+   "narration": "PC13 推挽点灯又暗又软，原因在 Table 12 注 1：这类脚只能灌大约 3 毫安，输出别超过 2 兆赫，负载别超过 30 皮法。解决是把灯挪到普通 GPIO。",
+   "on_screen": [
+    "现象：灯暗边沿软",
+    "上限：3 mA · 2 MHz · 30 pF",
+    "动作：换普通脚"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pinmux.png",
+   "fact_source": [
+    "ds12232",
+    "docs/23-STM32G0引脚.md#从 F1 抄代码时最容易摔的几处"
+   ],
+   "memory_anchor": "小电流脚不点大灯",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s21",
+   "title": "拉高 PA14 进不了 Bootloader",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s11",
+    "ch23-s12"
+   ],
+   "narration": "拉高 PA14 仍进不了 Bootloader，两个候选：BOOT_LOCK 已置 1 强制主 Flash，或 nBOOT_SEL 为 1 使引脚不参与选择。解决是按真值表读回全部输入，不重复改电平。",
+   "on_screen": [
+    "现象：进不了 ISP",
+    "候选：锁存/选了选项位",
+    "动作：读回全部输入"
+   ],
+   "visual_source": "animations/sample-23-boot-source-flow.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#从 F1 抄代码时最容易摔的几处"
+   ],
+   "memory_anchor": "改电平前先读回",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s22",
+   "title": "选项字节写完仍走旧启动区",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s22"
+   ],
+   "narration": "选项字节写完，复位后仍走旧启动区：新值没有经过规定的加载流程，或者只看了写入返回值。解决是执行规定的 option byte launch 和复位，之后读回并验证启动与 SWD。",
+   "on_screen": [
+    "现象：配置不生效",
+    "原因：没走加载流程",
+    "动作：launch + 读回"
+   ],
+   "visual_source": "animations/sample-23-boot-latch.svg",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#从 F1 抄代码时最容易摔的几处"
+   ],
+   "memory_anchor": "写完要 launch，再读回",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s23",
+   "title": "SWD 失联：两个不同边界",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s06",
+    "ch23-s13"
+   ],
+   "narration": "应用把 PA13、PA14 改成 GPIO、关掉调试或进入低功耗后，启动后的 SWD 可能失败。这和本次启动选错区域是两个不同故障边界，先分开验证，不要混在一张工单里。",
+   "on_screen": [
+    "应用改脚 / 关调试",
+    "≠ 启动选错区",
+    "先分开验证"
+   ],
+   "visual_source": "animations/sample-23-boot-source-flow.svg",
+   "fact_source": [
+    "an5096",
+    "docs/23-STM32G0引脚.md#共脚硬件：采样稳定与调试驱动要同时成立"
+   ],
+   "memory_anchor": "两个边界两张工单",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s24",
+   "title": "采样窗口被外部上拉拖走",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch23-s08",
+    "ch23-s13"
+   ],
+   "narration": "采样窗口内 PA14 被外部上拉保持在非预期电平，启动源就错了。按 AN5096 核对上下拉、串阻与跳线，特别检查有没有器件在抢这根脚的电平。",
+   "on_screen": [
+    "现象：启动源漂移",
+    "原因：外部电平抢脚",
+    "动作：核对上下拉"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "an5096",
+    "docs/23-STM32G0引脚.md#BOOT0 与 SWCLK 共脚：先判定启动来源"
+   ],
+   "memory_anchor": "窗口里的电平要受控",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch23-s25",
+   "title": "实验一：启动模式三连测",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch23-s10",
+    "ch23-s12"
+   ],
+   "narration": "第一个实验把三种启动各进一遍：主 Flash 正常跑、系统存储器进 Bootloader、SRAM 用于调试，分别记录进入条件与现象。表上的每一行，都要有一次实测对上。",
+   "on_screen": [
+    "主 Flash",
+    "系统存储器",
+    "SRAM 各进一次"
+   ],
+   "visual_source": "diagrams/sample-23-boot0-swclk.svg",
+   "fact_source": [
+    "project-examples",
+    "docs/23-STM32G0引脚.md#动手实验"
+   ],
+   "memory_anchor": "表上每行都要实测",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch23-s26",
+   "title": "实验二：读回启动配置",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch23-s09",
+    "ch23-s11"
+   ],
+   "narration": "第二个实验读回启动配置：BOOT_LOCK、nBOOT_SEL、nBOOT0 和 nBOOT1 的现场值，与出厂默认对比。默认值不能替代读回，因为 Bootloader 或旧工程可能改写过。",
+   "on_screen": [
+    "读回四个字段",
+    "与默认对比",
+    "默认 ≠ 现场"
+   ],
+   "visual_source": "illustrations/handraw/ch23-boot-latch.png",
+   "fact_source": [
+    "rm0444",
+    "docs/23-STM32G0引脚.md#动手实验"
+   ],
+   "memory_anchor": "现场读回才算数",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch23-s27",
+   "title": "实验三：SWD 失联恢复",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch23-s23",
+    "ch23-s24"
+   ],
+   "narration": "第三个实验练恢复：故意让应用关闭 SWD，再用受控连接尝试恢复连接，记录 Under Reset 的行为与限制。恢复路径练过，真失联时才有第二张牌。",
+   "on_screen": [
+    "故意关 SWD",
+    "受控连接",
+    "Under Reset 行为"
+   ],
+   "visual_source": "animations/g0-boot-swd.svg",
+   "fact_source": [
+    "an5096",
+    "docs/23-STM32G0引脚.md#动手实验"
+   ],
+   "memory_anchor": "恢复路径要练过",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch23-s28",
+   "title": "离开检查：三件证据",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch23-s25",
+    "ch23-s26",
+    "ch23-s27"
+   ],
+   "narration": "离开这一章，你手里应有三件证据：一张启动来源判定记录、一张 G071RB 抢脚与复用清单，和一条练过的 SWD 恢复路径。从这一章起，换任何 G0 板都先做这三件事。",
+   "on_screen": [
+    "启动判定记录",
+    "抢脚清单",
+    "恢复路径"
+   ],
+   "visual_source": "illustrations/handraw/ch23-pinmux.png",
+   "fact_source": [
+    "ds12232",
+    "rm0444",
+    "docs/23-STM32G0引脚.md#动手实验"
+   ],
+   "memory_anchor": "先判定，再动手",
+   "evidence_type": "recall"
+  }
+ ]
+}
