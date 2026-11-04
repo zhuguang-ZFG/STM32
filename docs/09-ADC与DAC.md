@@ -69,6 +69,11 @@ RM0008 第 11.4 节要求上电后做一次校准：ADON 置 1 之后至少等�
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch09-adc-sar.png" width="760" alt="Handraw：ADC SAR 采样与转换（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK 12 MHz；最长 239.5+12.5=21 µs；采样太短则电容仍是上次电压；不是示波器实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/adc-sample.gif" width="640" alt="一次采样之后做 MSB 比较，ADCCLK 是 12 MHz">
   <br><sub>▲ 动图版，只演示一次正常的采样和 MSB 比较。印刷版只有上面的静态图。</sub>
 </p>
@@ -119,6 +124,11 @@ ADC 时钟 12 MHz。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。
   <br><sub>▲ 自绘。Code/4095×Vref+；绝对伏特先标 EST。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-vref-rails.png" width="760" alt="Handraw：码值换算与 Vref 量尺（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。Code/4095×Vref+；绝对伏特先标 EST；不是实拍。</sub>
+</p>
+
 
 ADC 像一把只有刻度没有游标的尺子。12 位就是把 0 到 Vref 这一段切成 4096 格，Vref = 3.3 V 时一格约 0.8 mV。被测电压落在两条刻线之间时，ADC 只能报离它最近的那条，所以读数天生带着最多半格的误差。尺子本身的长度就是 Vref，Vref 一晃，所有读数跟着晃。
 
@@ -149,6 +159,11 @@ V_in      = ADC_Code × Vref / 2^N               (正比式读数)
 <p align="center">
   <img src="../assets/diagrams/sample-09-sar-ladder.svg" width="760" alt="12 位 SAR 权重台阶与比较动作">
   <br><sub>▲ 自绘。MSB→LSB 权重；EOC 后读 DR。动画见 sample-09-adc-sar-weights。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-sar-ladder.png" width="760" alt="Handraw：12 位 SAR 权重台阶（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。MSB→LSB 权重；EOC 后读 DR；不是实拍。</sub>
 </p>
 
 
@@ -327,6 +342,11 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
   <br><sub>▲ 自绘。ADCCLK≤14 MHz；软源拉长 SMP。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-sample-time.png" width="760" alt="Handraw：ADC 采样时间与源阻抗（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK≤14 MHz；软源拉长 SMP；不是实拍。</sub>
+</p>
+
 
 校准只在 F1 上电后做一次；模拟看门狗负责“越界才打断 CPU”；注入通道可以插队，不打乱规则组的 DMA。
 
@@ -343,6 +363,11 @@ ADC 读数「不对」先分清三岔：末位抖动、顶满贴零、整体偏�
 <p align="center">
   <img src="../assets/diagrams/sample-09-adc-triage.svg" width="760" alt="ADC triage: sample time vs source impedance, VDDA rail clamp, calibration sequence">
   <br><sub>▲ 自绘。岔口一：末位抖动不是随机噪声，是采样电容没充满——`t_s ≈ (R_AIN + 1 kΩ) × 8 pF × ln(2^14) ≈ (R_AIN + 1 kΩ) × 78 ns`，100 kΩ 源阻抗需要约 7.8 µs，而 12 MHz 下 1.5 周期只有 125 ns，差 60 倍；把 `SMPR2 SMP0[2:0]` 设为 111（239.5 周期 = 19.958 µs）；ADCCLK 必须 ≤14 MHz（÷6 得 12 MHz，÷4 得 18 MHz 越限）；RC 缓冲只在 R×C ≪ 采样间隔时有意义，≥1 MΩ 仍需跟随器。岔口二：4095 是钳位不是读数——VIN 高于 VDDA 会打开输入保护；恒 0 先查 PA0 是不是还配着推挽输出；LQFP48 没有独立 VREF+，第 9 脚 VDDA 就是量尺，跌 1% 全表偏 1%；转换运行中量第 9 脚，保持 VSSA ≤ VIN ≤ VDDA；用 CH17 Vrefint 反推对账：VDDA = 1.20 V × 4096 / code。岔口三：上电后最初几个码整体偏移且不随输入走——没校准：ADON 后等两个 ADCCLK，RSTCAL=1 等自清，再 CAL=1 等自清；校准期间不跑转换，`HAL_ADCEx_Calibration_Start` 必须在 `HAL_ADC_Start` 之前；0 V 和半量程各测一组：两处恒定差是偏置，随量程增长是增益。校准流程与采样档位见 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)，精度实践见 AN2834。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-adc-triage.png" width="760" alt="Handraw：ADC 三岔口排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：采样未充满 / VDDA 钳位 / 上电未校准；不是实拍。</sub>
 </p>
 
 ### 8. 通道和引脚（F103 ADC1）

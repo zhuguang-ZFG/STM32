@@ -68,6 +68,11 @@ Moving samples continuously with DMA is covered in chapter 10 and Appendix D: th
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-adc-sar.png" width="760" alt="Handraw: ADC SAR sample and convert (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). ADCCLK 12 MHz; longest 239.5+12.5=21 µs; short sample leaves prior voltage; not a scope capture.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/adc-sample.gif" width="640" alt="One sample, then the MSB compare, with ADCCLK at 12 MHz">
   <br><sub>▲ Animated version. It shows only one normal sample and the MSB compare. The printed book has only the static figure above.</sub>
 </p>
@@ -118,6 +123,11 @@ Keep three forms of evidence throughout this chapter: input voltage at the pin, 
   <br><sub>▲ Drawn for this book. Code/4095×Vref+; mark absolute volts EST.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-vref-rails.png" width="760" alt="Handraw: code-to-volt and Vref ruler (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Code/4095×Vref+; mark absolute volts EST; not a photo.</sub>
+</p>
+
 
 An ADC is a ruler with tick marks and no vernier. 12 bits cuts the span from 0 to Vref into 4096 steps, so at Vref = 3.3 V one step is about 0.8 mV. When the input falls between two marks, the ADC can only report the nearest one, so every reading carries up to half a step of error by design. The length of the ruler is Vref. If Vref wobbles, every reading wobbles with it.
 
@@ -148,6 +158,11 @@ full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 <p align="center">
   <img src="../../assets/diagrams/sample-09-sar-ladder.svg" width="760" alt="12-bit SAR weight ladder and compare actions">
   <br><sub>▲ Drawn for this book. MSB→LSB weights; read DR after EOC.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-sar-ladder.png" width="760" alt="Handraw: 12-bit SAR weight ladder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). MSB→LSB weights; read DR after EOC; not a photo.</sub>
 </p>
 
 
@@ -326,6 +341,11 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
   <br><sub>▲ Drawn for this book. ADCCLK≤14 MHz; lengthen SMP for soft sources.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-sample-time.png" width="760" alt="Handraw: ADC sample time vs source impedance (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). ADCCLK≤14 MHz; lengthen SMP for soft sources; not a photo.</sub>
+</p>
+
 
 Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
 
@@ -342,6 +362,11 @@ The injected group holds at most 4 channels. Do not mix the regular group's DMA 
 <p align="center">
   <img src="../../assets/diagrams/sample-09-adc-triage.svg" width="760" alt="ADC triage: sample time vs source impedance, VDDA rail clamp, calibration sequence">
   <br><sub>▲ Drawn for this book. Branch one: low-bit jitter is not random noise; the sampling capacitor never finishes charging — `t_s ≈ (R_AIN + 1 kΩ) × 8 pF × ln(2^14) ≈ (R_AIN + 1 kΩ) × 78 ns`, so a 100 kΩ source needs about 7.8 µs while 1.5 cycles at 12 MHz gives only 125 ns, off by 60×. Set `SMPR2 SMP0[2:0]` to 111 (239.5 cycles = 19.958 µs). ADCCLK must stay ≤ 14 MHz (÷6 gives 12 MHz; ÷4 gives 18 MHz and is out of spec). An RC buffer helps only when R×C ≪ the sample interval; at ≥ 1 MΩ you still need a follower. Branch two: 4095 is a clamp, not a reading — VIN above VDDA turns on the input protection. A constant 0 first raises the question of whether PA0 is still a push-pull output. LQFP48 has no separate VREF+; pin 9 VDDA is the scale, so a 1 % droop shifts every code by 1 %. Measure pin 9 while conversions run, keep VSSA ≤ VIN ≤ VDDA, and cross-check with CH17 Vrefint: VDDA = 1.20 V × 4096 / code. Branch three: the first codes after power-up carry an offset that ignores the input — calibration was skipped. Set ADON, wait two ADCCLK, then RSTCAL = 1 and poll until it clears, then CAL = 1 and poll; no conversion runs during calibration, and `HAL_ADCEx_Calibration_Start` goes before `HAL_ADC_Start`. Take one reading at 0 V and one at half scale: a constant step at both is offset, a growing one is gain. Calibration flow and sample-time table: [RM0008 Rev 21 chapter 11](#source-rm0008-adc). Precision practice: AN2834.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-adc-triage.png" width="760" alt="Handraw: ADC three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: under-sampled / VDDA clamp / missing calibration; not a photo.</sub>
 </p>
 
 ### 8. Channels and pins (F103 ADC1)
