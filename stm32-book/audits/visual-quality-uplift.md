@@ -267,3 +267,74 @@ zh + en for all 25 new assets (50 insert ops) via `tools/sample_figs_quality4/em
 
 ch23–28 + appendix (same bar). No video.
 
+## Batch 5 — final: ch23–28 + appendix F
+
+Date: 2026-11-04 (America/Adak). Same bar: denser Handraw figures, FA-002 CSS-SVG anims, remade weak chapter anim in place. Video untouched.
+
+### New static Handraw SVGs (+14)
+
+| Chapter | Assets |
+|---|---|
+| ch23 | `sample-23-boot0-swclk.svg`, `sample-23-f1-copy-traps.svg` |
+| ch24 | `sample-24-stop2-retain.svg`, `sample-24-idd-jp6.svg` |
+| ch25 | `sample-25-voltage-scale.svg`, `sample-25-dcache-dma.svg` |
+| ch26 | `sample-26-file-matrix.svg`, `sample-26-timeout-poll.svg` |
+| ch27 | `sample-27-rmii-checklist.svg`, `sample-27-tcp-framing.svg` |
+| ch28 | `sample-28-four-concepts.svg`, `sample-28-three-times.svg` |
+| appendix F | `sample-f-six-facts.svg`, `sample-f-ask-before.svg` |
+
+### New CSS-SVG mechanism animations (+7)
+
+| Chapter | Asset |
+|---|---|
+| ch23 | `sample-23-boot-source-flow.svg` |
+| ch24 | `sample-24-wake-restore-flow.svg` |
+| ch25 | `sample-25-hse-to-480-flow.svg` |
+| ch26 | `sample-26-clk-cfg-en-flow.svg` |
+| ch27 | `sample-27-link-dhcp-flow.svg` |
+| ch28 | `sample-28-isr-owner-flow.svg` |
+| appendix F | `sample-f-repo-lane-flow.svg` |
+
+### Remade chapter anim (in place)
+
+`g0-boot-swd.svg` — FA-002 teaching remake (filename kept). Shared classics (`nvic-interrupt-flow`, `dma-circular`, `network-packet-journey`, `rtos-system-layers`, `freertos-scheduler`) left untouched.
+
+### Embeds
+
+zh + en for 21 new assets (42 insert ops) via `tools/sample_figs_quality5/embed_q5.py` (docs ch23–28 + `stm32-book/book/F-*.md`).
+
+### Anchor deltas (asset_sequence length, video stripped)
+
+| Chapter | Before | After | Δ |
+|---|---:|---:|---:|
+| ch23 | 5 | **8** | +3 |
+| ch24 | 7 | **10** | +3 |
+| ch25 | 8 | **11** | +3 |
+| ch26 | 6 | **9** | +3 |
+| ch27 | 6 | **9** | +3 |
+| ch28 | 11 | **14** | +3 |
+| appendix F (md imgs) | 1 | **4** | +3 |
+
+### Gates
+
+`pytest` book tests + `tools/check_assets.py` + `build_html.py --check` (zh+en) green after this batch.
+
+## Full-series summary (visual quality uplift)
+
+| Batch | Scope | Commit theme |
+|---|---|---|
+| Pilot | ch02/03/06/09/10 | denser Handraw + remade anims |
+| Batch 2 | ch04/05/07/08 | denser Handraw + remade anims |
+| Batch 3 | ch11–17 | denser Handraw + remade anims |
+| Batch 4 | ch00/01 + ch18–22 | denser Handraw + remade AUX GIFs + anims |
+| Batch 5 (final) | ch23–28 + appendix F | denser Handraw + remade g0-boot-swd + anims |
+
+**Bar held across the series:** meaningful denser static Handraw plates, FA-002 continuous-line CSS-SVG mechanism animations (with `prefers-reduced-motion`), zh+en embeds, lock updates (`ROWS` / GIF listing / ADV `CHAPTERS` / audit sequences), gates green. **Video / narration pipelines intentionally out of scope** after owner stop.
+
+### Remaining visual gaps (honest)
+
+- Shared classic anims that still lack a chapter-specific FA-002 remake (`nvic-interrupt-flow`, `dma-circular`, `network-packet-journey`, `rtos-system-layers`, `freertos-scheduler`) — left as shared assets; new chapter-local flows cover the teaching spine.
+- Appendix A–E / other book appendices not in this batch's scope (F only).
+- Optional denser remakes of older pre-uplift static plates that already met density bar — deferred.
+- PDF rebuild of zh+en into `stm32-book/dist` is optional post-gate nicety, not a gate.
+

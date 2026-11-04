@@ -78,6 +78,13 @@ F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS1
 
 
 <p align="center">
+  <img src="../../assets/diagrams/sample-23-boot0-swclk.svg" width="760" alt="G0: sample BOOT0 before trusting SWD">
+  <br><sub>▲ Drawn for this book. Decide boot source, then drive SWCLK.</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../../assets/animations/sample-23-boot-latch.svg" width="760" alt="G0 samples the shared BOOT0/SWCLK pin on the fourth SYSCLK rising edge">
   <br><sub>▲ Animation: boot source latches after four SYSCLK rising edges (drawn for this book, not a photo). Sources: [DS12232](#source-ds12232), [RM0444](#source-rm0444), [AN2606](#source-an2606); OSS compare: [project examples](#source-project-examples).</sub>
 </p>
@@ -109,6 +116,13 @@ Keep three boundaries attached to this table:
 3. If Main Flash is selected while the empty-flash checker finds the user area empty, the device can enter the system bootloader instead. This additional DS12232/AN2606 path means “Main in the table” does not guarantee execution from 0x08000000 on an empty device.
 
 ### Shared-pin hardware: stable sampling and debug drive must coexist
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-23-boot-source-flow.svg" width="720" alt="G0 boot-source decision flow">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). option → BOOT0 → vectors → SWD.</sub>
+</p>
+
 
 - DS12232 Table 12 note 6: after reset, PA13 has its internal pull-up, PA14 its internal pull-down, and both enter the SWD alternate function. The internal pull-down does not cancel an arbitrary strong external pull-up.
 - When PA14 selects boot, check pull resistors, series resistance, and jumpers against AN5096 and the probe's drive capability. Do not clamp SWCLK with a strong pull-up. If a product does not need a field boot pin, `nBOOT_SEL=1, nBOOT0=1` selects Main Flash without depending on PA14 at boot.
@@ -151,6 +165,13 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
 </p>
 
 ## Common ways an F1 port falls over
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-23-f1-copy-traps.svg" width="760" alt="Common F1→G0 pin copy traps">
+  <br><sub>▲ Drawn for this book. Same peripheral name ≠ same pin; trust the DS table.</sub>
+</p>
+
 
 | What you see | Why | Fix |
 | --- | --- | --- |

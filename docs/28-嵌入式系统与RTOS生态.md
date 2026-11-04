@@ -44,6 +44,13 @@
 
 ## 先把四个概念分开
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-28-four-concepts.svg" width="760" alt="裸机 / 前后台 / RTOS / Linux 四概念分界">
+  <br><sub>▲ 自绘。先分概念，再选内核名字。</sub>
+</p>
+
+
 | 层级 | 负责什么 | 不自动负责什么 |
 | --- | --- | --- |
 | **内核 Kernel** | 线程调度、IPC、软件定时器、临界区、内存分配 | 板级驱动、文件系统、网络、安全更新、日志策略 |
@@ -105,6 +112,13 @@
 
 
 <p align="center">
+  <img src="../assets/animations/sample-28-isr-owner-flow.svg" width="720" alt="ISR 投递、所有者任务写硬件">
+  <br><sub>▲ 自绘矢量动画（FA-002）。ISR 只投递，所有者才碰硬件。</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../assets/animations/sample-28-owner-flow.svg" width="760" alt="IRQ 投递、所有者消费、监督者喂狗的所有者任务数据流">
   <br><sub>▲ 动画：IRQ→队列→所有者→执行器→监督者（作者自绘矢量动画，非实拍）。出处见本章 FreeRTOS/RT-Thread/Zephyr 版本钉死说明。</sub>
 </p>
@@ -149,6 +163,13 @@ static void flash_task(void *argument)
 ## ⏱️ 实时性来自预算，不来自 RTOS 名字
 
 ### 三种时间必须区分
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-28-three-times.svg" width="760" alt="周期、超时、截止点三种时间">
+  <br><sub>▲ 自绘。实时性来自预算，不来自 RTOS 商标。</sub>
+</p>
+
 
 | 时间 | 含义 | 常见错误 |
 | --- | --- | --- |

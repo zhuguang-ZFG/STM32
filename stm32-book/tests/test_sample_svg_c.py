@@ -25,7 +25,7 @@ animations/debug-swo.svg 900x620 12733 e44f13c22225782401c9b3d44f376781297c01030
 animations/dma-circular.svg 900x620 16722 7deb7de9dc81e1a01c1c2e01827c131661f5b6d45bb5c2fb1d0473e126041fd1
 animations/flash-iap.svg 900x620 13007 55ad4b20f25654a8bb6a705303a99d5fb513f5b125b70a4545278f84d63ad0cb
 animations/freertos-scheduler.svg 900x620 16018 fe1bebd106b7c825a5d815edc67842821a8298e6e98036153641ca928c098bb3
-animations/g0-boot-swd.svg 900x620 12601 e9121dfb6e5290afd5d192048fa7d7409a821c7651538c80bde3237df535155f
+animations/g0-boot-swd.svg 900x620 12440 1bff8776ad1ace5ee07c1bd9a5cc861ca92c9c84a721600a35734095bca7e353
 animations/gpio-blink.svg 900x620 14432 811377a9c3b65dd99cbeb8a1ff720b0e4e6410bc852726ac98f9aa20619175ea
 animations/gpio-input-interrupt.svg 900x620 13941 4b97aeb339eb046f0091312b6caf918b1acdc176cc72e4295cc7c116792c6697
 animations/h7-clock-chain.svg 900x620 11808 4edcb50a1871b7dd97c5a86685f43b5884c92aec162c53aa478f519394dc2068
@@ -65,7 +65,14 @@ animations/sample-21-crystal-boot-flow.svg 900x620 12410 d3ee93e687a24642cba3951
 animations/sample-21-power-swd.svg 900x620 13237 f7bca2108dac36c6962306c4529209c9dcc52a1ea18836d692cfdbcc28786745
 animations/sample-22-sim-pick-flow.svg 900x620 12377 50000cca48d0a33517000481a9cae877128c1e49949bd5e697f748310e5b15e2
 animations/sample-23-boot-latch.svg 900x620 10798 c4686bd2a828dd287175a6333043848ca35bbef1105725177998da60406bde8e
+animations/sample-23-boot-source-flow.svg 900x620 12487 9ddb0738b19e4d90d0d09c222002965180bbe6de643a58ee1b69f4ab3752c4ee
+animations/sample-24-wake-restore-flow.svg 900x620 12385 d33869e6fd8e65d6a13da3647d2cf598e9d2ca0ec8b36c844136936fda1b05cf
+animations/sample-25-hse-to-480-flow.svg 900x620 12393 a795b3c7e41d8c746e2a4499c6ae7d356a81a57dffd4b14781536965ce4c3900
+animations/sample-26-clk-cfg-en-flow.svg 900x620 12399 1d145cce8706ff787eaf1b225c680569ce83c80f85726d4bbba57d3d10ed71bb
+animations/sample-27-link-dhcp-flow.svg 900x620 12389 66aa93e8307316606e806b408842d5b783b63bf1121be0c0bf9811f383cef909
+animations/sample-28-isr-owner-flow.svg 900x620 12420 aa875db87c818c54d6152e2611feec274628cdcab0207b8e2239e0261cd27f75
 animations/sample-28-owner-flow.svg 900x620 13550 751e413262886ed40075c2623f83eb4093ee0d7647df09572c624968aa1fb324
+animations/sample-f-repo-lane-flow.svg 900x620 12404 dbfa548a78f0e7865cd806cbe25a7a494e7980a624256fbd2aceb5b8731ca66b
 animations/simulation-acceptance-gates.svg 900x620 10660 c0316576a9b8a6c45011d4a1fce3f884228ffa2a0788561d983b43227aa9e146
 animations/spi-transfer.svg 900x620 19103 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
 animations/spl-init-pipeline.svg 900x620 11903 d1ebfca0e4b6e9cbbda864bf9c82f217976ad6b8e16bee53e36059b6d6e8885c
@@ -234,15 +241,29 @@ diagrams/sample-22-hw-gap.svg 960x880 7177 5db5fc374f08d86b74b22855cd5189cdbce88
 diagrams/sample-22-renode-path.svg 960x880 7269 30c05b13e89c3037a57b3ace9faf19aa170ca2186bf2733a0a27a97eb5fb2f19
 diagrams/sample-22-sim-triage.svg 960x880 10046 91b5ebe5c187d49426874133fdd28b56a78352e2e72cdb6e38635a623d6c2bda
 diagrams/sample-22-wokwi-scope.svg 960x880 7106 21eb65f69cae64e30c4eae14e17f9a8626cabcf40d5bfdaa1ec7410d0a23597f
+diagrams/sample-23-boot0-swclk.svg 960x880 6735 3515ec4461f0300983d73a562249c8786909ea0f20d15c5487dcee82ded5d866
+diagrams/sample-23-f1-copy-traps.svg 960x880 6730 6f83e88a6319dcee8145c5c50ecf4c14c431dde0b274356259f79e59edfb57e7
 diagrams/sample-23-f1-g0-compare.svg 960x880 13974 1e18f381cfd9a94a4e24a124762ae91772fc0a88da36c981019dc9b53856d9ee
+diagrams/sample-24-idd-jp6.svg 960x880 5953 ca9bf04627f926da5cd7960444a02955d79b782370de3f995131f6f511fe7ff7
 diagrams/sample-24-mode-compare.svg 960x880 13617 e680e4f97471a3f47a241ee36ceddc54c8291daaa41d78c3e71a446706b4ac1a
+diagrams/sample-24-stop2-retain.svg 960x880 6914 1779959e1e8ff84673a1ad28d3e005c12f41b80818367a9db8a42e8089791cdf
 diagrams/sample-24-wake-triage.svg 960x880 10894 8f3ea058731235fd54b25d3e390aa006bc9dece35bfa0c9df30098b9adfccdcc
+diagrams/sample-25-dcache-dma.svg 960x880 6847 ecfc3a59bf4d7b28bad0ea69ed714fec8b3dc49968c18038791d6d156fb21b1b
 diagrams/sample-25-migrate-triage.svg 960x880 7718 e348c3b809b5cccc71d17f1b07353e78fef3191b33b581f2175bd9fdc368ff94
+diagrams/sample-25-voltage-scale.svg 960x880 6444 733ea24167318cec20faf4ce57d6e328df36a0d6d2bb2950e5a10c99119fecd6
+diagrams/sample-26-file-matrix.svg 960x880 7195 a2a0847e2d5b9263d695dc6073b49c3519d639ef755a0f5fee02f124f63b00e4
 diagrams/sample-26-spl-hal-compare.svg 960x880 9466 66fc188f5cae5ec5d8652fb38466638eef4e3c274e5b8a2394f7dfb51c2566df
+diagrams/sample-26-timeout-poll.svg 960x880 7046 3fd5cd9db286b5b34f2ce6417d83fd39b33af93112689487517ddc5721b8bc0b
 diagrams/sample-27-link-triage.svg 960x880 8863 7a8daae96e3fdf54aedee566f1baf8a441a4bb24fac164df1b6225b1c5bcc622
+diagrams/sample-27-rmii-checklist.svg 960x880 6292 17241eafa356d33a96119625a04338223ec26b979e10a67aca96c7317f19e71f
+diagrams/sample-27-tcp-framing.svg 960x880 6879 eee4fe447091d15ad3ec28749faa9ae6ee68642fae27390fefebdf0ea7d44b4d
 diagrams/sample-28-fault-triage.svg 960x880 10199 5ffe60a6bb72715c224ed684fe062284da721dfaaeda0514901bf1fe8c953c69
+diagrams/sample-28-four-concepts.svg 960x880 7329 1dec27409d31d0895a54798bfd94549d7810747edb240bdd67fa98f1a294d214
 diagrams/sample-28-os-compare.svg 960x880 12945 ade62396bddda3517a01bec9800ec7961005cd7247a2e78c322384eff2de4f1c
+diagrams/sample-28-three-times.svg 960x880 6591 843548c0b1b0e82967d860aa62ec30c5905a88b7578a0d4ddee5920d04b01834
+diagrams/sample-f-ask-before.svg 960x880 7854 0228ec7286b580dacb60722bd94ffa2ca212023e06a09c16ed5bc30dc34e36d6
 diagrams/sample-f-oss-map.svg 960x880 11712 393eb0687927eb4c6301a3a5f81b0d4dda387aab6aa2f260bf13c424124aaf51
+diagrams/sample-f-six-facts.svg 960x880 7704 d87feadfef30f520c12fceed884038af252a1352a4e5aab5e4f8d2d225dce80e
 diagrams/simulation-model-boundary.svg 900x560 6723 365c4b15943f3a01461ec0e2ce9b0a7dbcdc199777b1b2272e04a791adeaf382
 diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7def982efcc915e5616fe5b16c44fcc99
 diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984c1735cb72ee4c92c61f0759ecb87e126
@@ -542,7 +563,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(303, len(found))
+        self.assertEqual(324, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

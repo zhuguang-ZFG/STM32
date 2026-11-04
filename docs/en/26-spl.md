@@ -62,6 +62,13 @@ The useful model has four layers:
 
 ## 2. Project skeleton
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-26-file-matrix.svg" width="760" alt="SPL must-link file matrix">
+  <br><sub>▲ Drawn for this book. Missing one .c = declared, never linked.</sub>
+</p>
+
+
 A missing source file can leave you with a declaration that compiles but no implementation to link:
 
 ```text
@@ -99,6 +106,13 @@ Do not keep `STM32F10X_MD` merely because a Blue Pill tutorial used it. Also ver
 With `USE_FULL_ASSERT`, invalid SPL arguments enter `assert_failed()` during development. Release builds normally remove those checks. They do not replace runtime handling for communication timeouts, missing sensors, DMA errors, or failed Flash programming.
 
 ## 3. The common model: clock, defaults, configuration, enable
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-26-clk-cfg-en-flow.svg" width="720" alt="SPL clock→config→enable call-chain motion">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). RCC → defaults → Init → enable.</sub>
+</p>
+
 
 ```c
 RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -217,6 +231,13 @@ This is not a mechanical replacement table. HAL often maintains handles and stat
 | CAN | HAL transmit/receive | `CAN_Transmit/CAN_Receive` | bxCAN mailbox/FIFO |
 
 ### Polling needs a deadline
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-26-timeout-poll.svg" width="760" alt="SPL polling must carry its own timeout">
+  <br><sub>▲ Drawn for this book. HAL timeout habits do not travel into SPL forever-loops.</sub>
+</p>
+
 
 `USART_SendData()` writes one data register. It does not provide a complete buffer operation or a HAL-style timeout:
 

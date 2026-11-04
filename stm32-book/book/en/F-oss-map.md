@@ -10,6 +10,13 @@ This appendix gives three things: a chapter-organized repository map (star count
 
 
 <p align="center">
+  <img src="../../../assets/animations/sample-f-repo-lane-flow.svg" width="720" alt="Pick one repo lane and read it through">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). pick → pin SHA → quote → lab card.</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../../../assets/diagrams/sample-f-oss-map.svg" width="760" alt="Open-source repository map by evidence layer: Cube, CMSIS, libopencm3, FreeRTOS, RT-Thread, Zephyr">
   <br><sub>▲ Drawn for this book. Open-source evidence-layer map: ask which `.h`/function you need before you talk about stars. License boundaries are in each repo `LICENSE`; when official RM/DS and OSS disagree, the manual's applicable conditions win.</sub>
 </p>
@@ -42,6 +49,13 @@ This appendix gives three things: a chapter-organized repository map (star count
 | 28 RTOS ecosystem | espressif/esp-idf | 19347 | Apache-2.0 | `components/esp_common/include/esp_err.h` |
 
 ## Six facts you only get by reading the source
+
+
+<p align="center">
+  <img src="../../../assets/diagrams/sample-f-six-facts.svg" width="760" alt="Six facts only source reading reveals">
+  <br><sub>▲ Drawn for this book. Star counts do not replace these six facts.</sub>
+</p>
+
 
 ### 1. Cube's license is an ingredient list, not one stew
 
@@ -92,6 +106,13 @@ The same file's `__NVIC_SetPriority()` answers another common question: the valu
 **Field pitfall:** Opening a PR on a mirror and waiting a month; waiting for a new release on an archived repo and getting only "no longer maintained".
 
 ## Community: five things before you ask
+
+
+<p align="center">
+  <img src="../../../assets/diagrams/sample-f-ask-before.svg" width="760" alt="Five things before you ask the community">
+  <br><sub>▲ Drawn for this book. A question template before an emotional post.</sub>
+</p>
+
 
 1. **Read the issue template.** What the template asks for is what the maintainers need most.
 2. **Shrink the repro to the minimum.** Prefer 20 lines over 200; delete every init you can until the step just before the symptom disappears.

@@ -10,6 +10,13 @@
 
 
 <p align="center">
+  <img src="../../assets/animations/sample-f-repo-lane-flow.svg" width="720" alt="选一条仓库车道读到底">
+  <br><sub>▲ 自绘矢量动画（FA-002）。选树 → 钉 SHA → 引用 → 实验卡。</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../../assets/diagrams/sample-f-oss-map.svg" width="760" alt="按证据层组织的开源仓库地图：Cube、CMSIS、libopencm3、FreeRTOS、RT-Thread、Zephyr">
   <br><sub>▲ 自绘。开源证据层地图：先问要哪一份 `.h`/函数，再谈星标。许可边界见各仓库 `LICENSE`；官方 RM/DS 冲突时以手册为准。</sub>
 </p>
@@ -42,6 +49,13 @@
 | 28 RTOS 生态 | espressif/esp-idf | 19347 | Apache-2.0 | `components/esp_common/include/esp_err.h` |
 
 ## 六个知识点：只有读源码才拿得到
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-f-six-facts.svg" width="760" alt="六个只有读源码才拿得到的知识点">
+  <br><sub>▲ 自绘。星标数替代不了这六条证据。</sub>
+</p>
+
 
 ### 1. Cube 的许可是"配料表"，不是一锅汤
 
@@ -92,6 +106,13 @@
 **踩坑现场**：在镜像上开 PR 等一个月没人回；在归档仓库等新版本，等到的只有"已停止维护"。
 
 ## 社区：提问之前先做五件事
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-f-ask-before.svg" width="760" alt="提问前五件事清单">
+  <br><sub>▲ 自绘。提问模板先于情绪发帖。</sub>
+</p>
+
 
 1. **读 issue 模板**。模板问什么，就是维护者最缺什么。
 2. **把复现压到最小**。能贴 20 行就别贴 200 行；能删的初始化全删掉，直到现象消失的前一步。

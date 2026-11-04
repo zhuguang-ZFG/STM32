@@ -46,6 +46,13 @@
 
 ## Separate four concepts first
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-28-four-concepts.svg" width="760" alt="Bare-metal / foreground-background / RTOS / Linux boundaries">
+  <br><sub>▲ Drawn for this book. Separate concepts before naming a kernel.</sub>
+</p>
+
+
 | Layer | What it owns | What it does not own automatically |
 | --- | --- | --- |
 | **Kernel** | thread scheduling, IPC, software timers, critical sections, memory allocation | board drivers, filesystems, networking, secure updates, logging policy |
@@ -107,6 +114,13 @@ Core invariants:
 
 
 <p align="center">
+  <img src="../../assets/animations/sample-28-isr-owner-flow.svg" width="720" alt="ISR posts; owner task writes the device">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). ISR posts; owner alone touches hardware.</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../../assets/animations/sample-28-owner-flow.svg" width="760" alt="Owner-task flow: IRQ posts, owner consumes, supervisor feeds the watchdog">
   <br><sub>▲ Animation: IRQ→queue→owner→actuator→supervisor (drawn for this book, not a photo). Sources: pinned FreeRTOS/RT-Thread/Zephyr tags in this chapter.</sub>
 </p>
@@ -151,6 +165,13 @@ A mutex is appropriate for a short, reentrant boundary. An owner task is appropr
 ## ⏱️ Real time comes from budgets, not an RTOS name
 
 ### Three different times
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-28-three-times.svg" width="760" alt="Period, timeout, and deadline vocabulary">
+  <br><sub>▲ Drawn for this book. Real time is a budget, not a brand name.</sub>
+</p>
+
 
 | Time | Meaning | Common mistake |
 | --- | --- | --- |

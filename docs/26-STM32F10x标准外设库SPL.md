@@ -60,6 +60,13 @@ SPL 的价值不是背函数名，而是看清四层：
 
 ## 2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-26-file-matrix.svg" width="760" alt="SPL 必链文件矩阵">
+  <br><sub>▲ 自绘。缺一个 .c = 声明有、链接无。</sub>
+</p>
+
+
 V3.5.0 包的关键目录如下：
 
 ```text
@@ -97,6 +104,13 @@ Project/
 SPL 用 `assert_param()` 检查函数参数。开发期可把 `USE_FULL_ASSERT` 打开，错误会进入 `assert_failed()`；发布版关闭后，这些检查通常不再执行。它不能替代通信超时、传感器离线、DMA 传输错误或 Flash 写失败的运行时处理。
 
 ## 3. 统一调用模型：时钟、默认值、配置、使能
+
+
+<p align="center">
+  <img src="../assets/animations/sample-26-clk-cfg-en-flow.svg" width="720" alt="SPL 时钟→配置→使能调用链动画">
+  <br><sub>▲ 自绘矢量动画（FA-002）。RCC → 默认值 → Init → 使能。</sub>
+</p>
+
 
 大多数 SPL 外设都遵循同一顺序：
 
@@ -218,6 +232,13 @@ int main(void)
 | CAN 收发 | `HAL_CAN_AddTxMessage()` / `HAL_CAN_GetRxMessage()` | `CAN_Transmit()` / `CAN_Receive()` | bxCAN mailbox/FIFO |
 
 ### 轮询必须自己带超时
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-26-timeout-poll.svg" width="760" alt="SPL 轮询必须自带超时">
+  <br><sub>▲ 自绘。HAL 超时习惯不能带进 SPL 死循环。</sub>
+</p>
+
 
 SPL 的 `USART_SendData()` 只写数据寄存器，不会像 `HAL_UART_Transmit(..., timeout)` 一样替你组织完整阻塞发送与超时。安全写法要把等待边界写出来：
 

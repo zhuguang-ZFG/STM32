@@ -91,6 +91,13 @@ F4 also has OTG_FS and a dedicated USB supply pin, so on that point L4 looks mor
 
 
 <p align="center">
+  <img src="../../assets/diagrams/sample-24-stop2-retain.svg" width="760" alt="L4 Stop2 retention vs must-redo map">
+  <br><sub>▲ Drawn for this book. Stop2 is not forever-RAM; map retention first.</sub>
+</p>
+
+
+
+<p align="center">
   <img src="../../assets/diagrams/sample-24-mode-compare.svg" width="760" alt="L4 Sleep/Stop1/Stop2/Standby retained-state and wake compare">
   <br><sub>▲ Drawn for this book. Four L4 low-power modes. Sources: [RM0351](#source-rm0351), [DS10198](#source-ds10198), [AN4746](#source-an4746); OSS compare: [stm32cube-l4-stop2](#source-stm32cube-l4-stop2).</sub>
 </p>
@@ -133,6 +140,13 @@ After Stop 0/1/2, RCC can use `STOPWUCK` to select MSI or HSI16 as the temporary
 PA11/PA12 appear under both CAN1 and OTG_FS. Only one function at a time. Same class of trap as USB versus CAN on an F103. If you need both, move CAN to PB8/PB9.
 
 ## Stop 2: entry, wake evidence, and clock recovery
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-24-wake-restore-flow.svg" width="720" alt="Stop2 wake: restore clocks before talking">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). flag → clocks → comms → app.</sub>
+</p>
+
 
 
 <p align="center">
@@ -269,6 +283,13 @@ ST's `PWR_STOP2` example does more than call `HAL_PWREx_EnterSTOP2Mode()`: it su
 A diagnostic build can expose the clock on MCO, toggle a timer output, or time a UART byte. **Do not enable MCO or serial logs in the current-measurement build:** the observation path changes the current. Keep the same low-power path in both builds; change only the evidence output.
 
 ## A current and battery-life calculation you can reproduce
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-24-idd-jp6.svg" width="760" alt="Nucleo JP6 IDD measurement and battery math">
+  <br><sub>▲ Drawn for this book. JP6 integral is the accept sheet — not a DMM guess.</sub>
+</p>
+
 
 ### 1. Measurement boundary: JP6 isolates only MCU IDD
 

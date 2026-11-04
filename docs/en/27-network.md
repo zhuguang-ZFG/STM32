@@ -61,6 +61,13 @@ The MB1364 NUCLEO-H743ZI2 family provides a 10/100 Ethernet PHY and integrated R
 
 ### RMII signals to reconcile
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-27-rmii-checklist.svg" width="760" alt="Minimum RMII signal checklist">
+  <br><sub>▲ Drawn for this book. Reconcile wires before blaming lwIP.</sub>
+</p>
+
+
 | Group | Typical signals | First proof |
 | --- | --- | --- |
 | Reference | 50 MHz `REF_CLK` | frequency, amplitude, startup order, and which side drives it |
@@ -120,6 +127,13 @@ Invalidating a narrow, unaligned range can discard unrelated dirty variables sha
 
 ## The three lwIP APIs and their thread boundaries
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-27-tcp-framing.svg" width="760" alt="TCP framing and message edges">
+  <br><sub>▲ Drawn for this book. A byte stream is not a message — frame it.</sub>
+</p>
+
+
 | API | Model | Valid context | Best fit |
 | --- | --- | --- | --- |
 | raw callback | event-driven; low-copy potential | the only loop in `NO_SYS`, or `tcpip_thread` / `tcpip_callback()` in OS mode | constrained systems that accept explicit state machines |
@@ -131,6 +145,13 @@ Do not call raw `tcp_write()` or `udp_send()` from Ethernet IRQs, timer IRQs, or
 Keep `LWIP_ASSERT_CORE_LOCKED()` during development. If `LWIP_TCPIP_CORE_LOCKING` is enabled, the lock is not taken from ISR context and the RTOS must handle priority inversion correctly.
 
 ## Startup state machine: link is not online
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-27-link-dhcp-flow.svg" width="720" alt="Link-to-usable-IP bring-up flow">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). PHY → link → IP → ping.</sub>
+</p>
+
 
 ```mermaid
 stateDiagram-v2

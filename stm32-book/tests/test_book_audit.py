@@ -425,40 +425,55 @@ class BookAuditTests(unittest.TestCase):
             "23": (
                 "pinout-stm32g071rb-lqfp64.svg",
                 "pinout-bluepill.svg",
+                "sample-23-boot0-swclk.svg",
                 "sample-23-boot-latch.svg",
                 "g0-boot-swd.svg",
+                "sample-23-boot-source-flow.svg",
                 "sample-23-f1-g0-compare.svg",
+                "sample-23-f1-copy-traps.svg",
             ),
             "24": (
                 "pinout-stm32l476rg-lqfp64.svg",
                 "nucleo-f411re-embedded-world.jpg",
                 "nucleo-f401re-embedded-world.jpg",
+                "sample-24-stop2-retain.svg",
                 "sample-24-mode-compare.svg",
                 "l4-stop2-evidence.svg",
+                "sample-24-wake-restore-flow.svg",
                 "sample-24-wake-triage.svg",
+                "sample-24-idd-jp6.svg",
                 "l4-idd-bench.svg",
             ),
             "25": (
                 "pinout-stm32h743zi-lqfp144.svg",
                 "h7-power-domains.svg",
+                "sample-25-voltage-scale.svg",
                 "h7-revision-clock-decision.svg",
+                "sample-25-hse-to-480-flow.svg",
                 "h7-clock-chain.svg",
                 "h7-startup-evidence.svg",
                 "h7-pinmux-conflicts.svg",
                 "sample-25-migrate-triage.svg",
+                "sample-25-dcache-dma.svg",
                 "network-cache-ownership.svg",
             ),
             "26": (
                 "spl-ownership-boundary.svg",
+                "sample-26-file-matrix.svg",
+                "sample-26-clk-cfg-en-flow.svg",
                 "spl-init-pipeline.svg",
                 "bluepill-stm32f103c8t6.svg",
                 "sample-26-spl-hal-compare.svg",
+                "sample-26-timeout-poll.svg",
                 "nvic-interrupt-flow.svg",
                 "dma-circular.svg",
             ),
             "27": (
                 "network-packet-journey.svg",
+                "sample-27-rmii-checklist.svg",
                 "network-cache-ownership.svg",
+                "sample-27-tcp-framing.svg",
+                "sample-27-link-dhcp-flow.svg",
                 "network-online-state.svg",
                 "tcp-byte-stream.svg",
                 "sample-27-link-triage.svg",
@@ -466,11 +481,14 @@ class BookAuditTests(unittest.TestCase):
             ),
             "28": (
                 "rtos-system-layers.svg",
+                "sample-28-four-concepts.svg",
                 "sample-28-os-compare.svg",
                 "nucleo-f411re-embedded-world.jpg",
                 "nucleo-f401re-embedded-world.jpg",
+                "sample-28-isr-owner-flow.svg",
                 "sample-28-owner-flow.svg",
                 "rtos-owner-task.svg",
+                "sample-28-three-times.svg",
                 "rtos-deadline-budget.svg",
                 "freertos-scheduler.svg",
                 "rtos-config-paths.svg",
@@ -493,18 +511,21 @@ class BookAuditTests(unittest.TestCase):
             "pinout-stm32l476rg-lqfp64.svg",
             "nucleo-f411re-embedded-world.jpg",
             "nucleo-f401re-embedded-world.jpg",
+            "sample-24-stop2-retain.svg",
             "sample-24-mode-compare.svg",
             "l4-stop2-evidence.svg",
+            "sample-24-wake-restore-flow.svg",
             "sample-24-wake-triage.svg",
+            "sample-24-idd-jp6.svg",
             "l4-idd-bench.svg",
         )
 
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(6, edition["pdf_visual_anchors"])
+            self.assertEqual(9, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(2, edition["photos"])
-            self.assertEqual(1, edition["animations"])
+            self.assertEqual(2, edition["animations"])
             self.assertEqual(expected_assets, edition["asset_sequence"])
 
         for path in (

@@ -1,16 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定">
-<title>G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="G0 BOOT vs SWD">
+<title>G0 BOOT vs SWD</title>
 <style>
-@keyframes g0s0-sq{0%,0.00%{opacity:0.5}0.30%,22.50%{opacity:1.0}22.80%,100%{opacity:0.5}}
-.g0s0{animation:g0s0-sq 5.2s linear infinite;}
-@keyframes g0s1-sq{0%,25.00%{opacity:0.5}25.30%,47.50%{opacity:1.0}47.80%,100%{opacity:0.5}}
-.g0s1{animation:g0s1-sq 5.2s linear infinite;}
-@keyframes g0s2-sq{0%,50.00%{opacity:0.5}50.30%,72.50%{opacity:1.0}72.80%,100%{opacity:0.5}}
-.g0s2{animation:g0s2-sq 5.2s linear infinite;}
-@keyframes g0s3-sq{0%,75.00%{opacity:0.5}75.30%,97.50%{opacity:1.0}97.80%,100%{opacity:0.5}}
-.g0s3{animation:g0s3-sq 5.2s linear infinite;}
 
-.g0-flow{stroke-dasharray:5 8;animation:g0-flow-flow 1.2s linear infinite;}@keyframes g0-flow-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-13px}}
+.f0{stroke-dasharray:6 12;animation:f0-flow 1.2s linear infinite;}@keyframes f0-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+
+.f1{stroke-dasharray:6 12;animation:f1-flow 1.2s linear infinite;}@keyframes f1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+
+.f2{stroke-dasharray:6 12;animation:f2-flow 1.2s linear infinite;}@keyframes f2-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+
+.f3{stroke-dasharray:6 12;animation:f3-flow 1.2s linear infinite;}@keyframes f3-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+
+.f4{stroke-dasharray:6 12;animation:f4-flow 1.2s linear infinite;}@keyframes f4-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+@keyframes s0-flash{0%,0.00%{opacity:0.06}0.25%,3.33%{opacity:0.35}3.58%,100%{opacity:0.06}}
+.s0{animation:s0-flash 7.0s linear infinite;}
+@keyframes s1-flash{0%,16.67%{opacity:0.06}16.92%,20.00%{opacity:0.35}20.25%,100%{opacity:0.06}}
+.s1{animation:s1-flash 7.0s linear infinite;}
+@keyframes s2-flash{0%,33.33%{opacity:0.06}33.58%,36.67%{opacity:0.35}36.92%,100%{opacity:0.06}}
+.s2{animation:s2-flash 7.0s linear infinite;}
+@keyframes s3-flash{0%,50.00%{opacity:0.06}50.25%,53.33%{opacity:0.35}53.58%,100%{opacity:0.06}}
+.s3{animation:s3-flash 7.0s linear infinite;}
+@keyframes s4-flash{0%,66.67%{opacity:0.06}66.92%,70.00%{opacity:0.35}70.25%,100%{opacity:0.06}}
+.s4{animation:s4-flash 7.0s linear infinite;}
+@keyframes s5-flash{0%,83.33%{opacity:0.06}83.58%,86.67%{opacity:0.35}86.92%,100%{opacity:0.06}}
+.s5{animation:s5-flash 7.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -18,64 +31,67 @@
 <rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">G071：BOOT0 与 SWCLK 共脚，启动选择仍可判定</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先分清锁存时刻与选择来源，再按 RDP/DBG_SWEN 判定恢复；不要假设 Under Reset 必通</text>
-<rect x="720" y="15" width="158" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="799" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">23 G0 Boot / SWD</text>
-<rect x="35" y="104" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5" class="g0s0"/>
-<rect x="35" y="104" width="190" height="5" fill="#1b5c45" opacity="1" rx="2"/>
-<text x="130" y="140" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 复位释放</text>
-<text x="130" y="167" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">选项字节已加载</text>
-<line x1="228" y1="148" x2="236" y2="148" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="242.00,148.00 236.00,151.00 236.00,145.00" fill="#075e84" opacity="1"/>
-<rect x="245" y="104" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5" class="g0s1"/>
-<rect x="245" y="104" width="190" height="5" fill="#7a4e00" opacity="1" rx="2"/>
-<text x="340" y="140" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 第 4 个 SYSCLK 沿</text>
-<text x="340" y="167" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">锁存启动配置</text>
-<line x1="438" y1="148" x2="446" y2="148" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="452.00,148.00 446.00,151.00 446.00,145.00" fill="#075e84" opacity="1"/>
-<rect x="455" y="104" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5" class="g0s2"/>
-<rect x="455" y="104" width="190" height="5" fill="#5b3a8c" opacity="1" rx="2"/>
-<text x="550" y="140" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ nBOOT_SEL</text>
-<text x="550" y="167" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0=PA14 · 1=nBOOT0</text>
-<line x1="648" y1="148" x2="656" y2="148" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="662.00,148.00 656.00,151.00 656.00,145.00" fill="#075e84" opacity="1"/>
-<rect x="665" y="104" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5" class="g0s3"/>
-<rect x="665" y="104" width="190" height="5" fill="#075e84" opacity="1" rx="2"/>
-<text x="760" y="140" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ 启动目标</text>
-<text x="760" y="167" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Main / System / SRAM</text>
-<rect x="40" y="222" width="400" height="158" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="60" y="250" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA14-BOOT0 = SWCLK</text>
-<text x="60" y="278" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">采样窗口</text>
-<text x="142" y="278" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外部上拉/调试器不得干扰锁存</text>
-<text x="60" y="309" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">启动以后</text>
-<text x="142" y="309" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWCLK 翻转不会反改启动目标</text>
-<text x="60" y="340" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">复位默认</text>
-<text x="142" y="340" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA14 内部下拉 · PA13 内部上拉</text>
-<rect x="460" y="222" width="400" height="158" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="480" y="250" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">两种启动来源，不要混读</text>
-<text x="480" y="281" font-size="11" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">nBOOT_SEL=0</text>
-<text x="610" y="281" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA14 参与选择</text>
-<text x="480" y="313" font-size="11" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">nBOOT_SEL=1</text>
-<text x="610" y="313" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">改看 nBOOT0 / nBOOT1</text>
-<text x="480" y="350" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT_LOCK=1：强制 Main Flash</text>
-<rect x="40" y="404" width="820" height="128" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="60" y="442" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1  保留现场</text>
-<text x="60" y="470" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST / 供电 / 保护证据</text>
-<line x1="224" y1="456" x2="239" y2="456" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="244.00,456.00 239.00,458.50 239.00,453.50" fill="#075e84" opacity="1"/>
-<text x="260" y="442" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2  受控连接</text>
-<text x="260" y="470" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Under Reset 非万能</text>
-<line x1="424" y1="456" x2="439" y2="456" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="444.00,456.00 439.00,458.50 439.00,453.50" fill="#075e84" opacity="1"/>
-<text x="460" y="442" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3  判定可写性</text>
-<text x="460" y="470" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RDP / DBG_SWEN 分支</text>
-<line x1="624" y1="456" x2="639" y2="456" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="g0-flow"/>
-<polygon points="644.00,456.00 639.00,458.50 639.00,453.50" fill="#075e84" opacity="1"/>
-<text x="660" y="442" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4  复位并读回</text>
-<text x="660" y="470" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">确认 Main Flash 与 SWD</text>
-<text x="60" y="510" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">恢复目标：让启动源可解释、可复现，而不是碰巧进入一次 Bootloader</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">G0：BOOT 采样稳定后再驱动 SWCLK</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line · remake</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">23</text>
+<rect x="40" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="100" y="132" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">NRST</text>
+<text x="100" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">release</text>
+<rect x="40" y="100" width="120" height="100" fill="#075e84" opacity="0.12" rx="8" class="s0"/>
+<line x1="164" y1="150" x2="167" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="174.00,150.00 167.00,153.50 167.00,146.50" fill="#5e6872" opacity="1"/>
+<line x1="164" y1="150" x2="174" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f0"/>
+<rect x="178" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="238" y="132" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT</text>
+<text x="238" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">sample</text>
+<rect x="178" y="100" width="120" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="s1"/>
+<line x1="302" y1="150" x2="305" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="312.00,150.00 305.00,153.50 305.00,146.50" fill="#5e6872" opacity="1"/>
+<line x1="302" y1="150" x2="312" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f1"/>
+<rect x="316" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="376" y="132" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LATCH</text>
+<text x="376" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">path</text>
+<rect x="316" y="100" width="120" height="100" fill="#7a4e00" opacity="0.12" rx="8" class="s2"/>
+<line x1="440" y1="150" x2="443" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="450.00,150.00 443.00,153.50 443.00,146.50" fill="#5e6872" opacity="1"/>
+<line x1="440" y1="150" x2="450" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f2"/>
+<rect x="454" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="514" y="132" font-size="13" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FLASH</text>
+<text x="514" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">vectors</text>
+<rect x="454" y="100" width="120" height="100" fill="#5b3a8c" opacity="0.12" rx="8" class="s3"/>
+<line x1="578" y1="150" x2="581" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="588.00,150.00 581.00,153.50 581.00,146.50" fill="#5e6872" opacity="1"/>
+<line x1="578" y1="150" x2="588" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f3"/>
+<rect x="592" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="652" y="132" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SWCLK</text>
+<text x="652" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">drive</text>
+<rect x="592" y="100" width="120" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="s4"/>
+<line x1="716" y1="150" x2="719" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="726.00,150.00 719.00,153.50 719.00,146.50" fill="#5e6872" opacity="1"/>
+<line x1="716" y1="150" x2="726" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f4"/>
+<rect x="730" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="790" y="132" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HALT</text>
+<text x="790" y="160" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">debug</text>
+<rect x="730" y="100" width="120" height="100" fill="#075e84" opacity="0.12" rx="8" class="s5"/>
+<rect x="40" y="217" width="3" height="18" fill="#1b5c45" opacity="1"/>
+<text x="52" y="230" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Shared-pad reality: boot decision owns the first milliseconds</text>
+<rect x="40" y="250" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="274" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">NRST</text>
+<text x="840" y="274" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">release edge is when BOOT0 is sampled</text>
+<rect x="40" y="294" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="318" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">OPT</text>
+<text x="840" y="318" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">nBOOT_SEL may ignore the pin — read options</text>
+<rect x="40" y="338" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="362" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SWD</text>
+<text x="840" y="362" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">attach after Flash path is proven</text>
+<rect x="40" y="382" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="406" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">OLD</text>
+<text x="840" y="406" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pre-remake lacked FA-002 credit / reduced-motion pack</text>
+<rect x="40" y="450" width="820" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="478" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Filename kept: g0-boot-swd.svg — denser teaching remake.</text>
+<text x="56" y="500" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Companion new anim: sample-23-boot-source-flow.svg.</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT_LOCK 清除受 RDP 限制；Level 2 不可逆；Level 1 → 0 整片擦除</text>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画（FA-002）· G0 BOOT/SWD remake</text>
 <text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>
