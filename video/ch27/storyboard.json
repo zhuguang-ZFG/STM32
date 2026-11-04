@@ -1,0 +1,608 @@
+{
+ "schema_version": 1,
+ "chapter": "27",
+ "slug": "network-long",
+ "title": "网络与协议栈：每层都有证据",
+ "short_source": "tools/narration.py#CHAPTERS[27]",
+ "scenes": [
+  {
+   "scene_id": "ch27-s01",
+   "title": "仿真能 ping 通，真板 link 灯都不亮",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一个落差：Wokwi 里 MQTT 都能跑，真板插上网线，连 link 灯都不亮。这一章只追一个问题：从网线到应用层，每一层的证据长什么样，又为什么不能互相代替。",
+   "on_screen": [
+    "仿真全绿",
+    "真板无 link",
+    "每层的证据不一样"
+   ],
+   "visual_source": "illustrations/handraw/ch27-rmii-signals.png",
+   "fact_source": [
+    "rm0433",
+    "docs/27-网络与协议栈.md#硬件闭环：MAC、RMII、PHY 与 RJ45"
+   ],
+   "memory_anchor": "分层证据不互替",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch27-s02",
+   "title": "先选网络路径，别先勾 CubeMX",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s01"
+   ],
+   "narration": "选路径有五条：内置 MAC 加外部 PHY 吞吐高但全由你负责；W5500 这类 SPI 方案上手快但受芯片限制；AT 模组把协议栈移走，复杂度变成 AT 状态机；PPP 让 MCU 跑 lwIP；OS 自带网络栈看组件生态。先写需求，再选硬件。",
+   "on_screen": [
+    "MAC+PHY：全自己扛",
+    "SPI/AT：边界在芯片",
+    "先写需求再选"
+   ],
+   "visual_source": "diagrams/sample-27-rmii-checklist.svg",
+   "fact_source": [
+    "um2407",
+    "docs/27-网络与协议栈.md#先选网络路径，不要先勾 CubeMX"
+   ],
+   "memory_anchor": "因为能勾选就上，是把风险留到最后",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s03",
+   "title": "RMII 六组信号",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s02"
+   ],
+   "narration": "RMII 至少对清六组：REF_CLK 50 兆，看时钟来自 PHY 还是 MCU；TXD0、TXD1 加 TX_EN 对好复用脚；RXD0、RXD1 加 CRS_DV 看 link 后有没有活动；MDC、MDIO 要能稳定读 PHY ID。",
+   "on_screen": [
+    "REF_CLK 50 MHz",
+    "TXD0/1+TX_EN",
+    "RXD0/1+CRS_DV · MDC/MDIO"
+   ],
+   "visual_source": "illustrations/handraw/ch27-rmii-signals.png",
+   "fact_source": [
+    "rm0433",
+    "docs/27-网络与协议栈.md#硬件闭环：MAC、RMII、PHY 与 RJ45"
+   ],
+   "memory_anchor": "先对清线，再怪 lwIP",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s04",
+   "title": "link LED 只是线索",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s03"
+   ],
+   "narration": "link LED 亮只说明 PHY 检测到链路脉冲，不是验收。固件还要记录 PHY 的 OUI 和型号、状态寄存器的 link 位、协商出的速率双工，并确认 MAC 同步成同一速率。拔线重插后状态机要能重来。",
+   "on_screen": [
+    "LED 亮 ≠ 验收",
+    "读 BSR 与协商结果",
+    "MAC 要同步"
+   ],
+   "visual_source": "illustrations/handraw/ch27-rmii-signals.png",
+   "fact_source": [
+    "um2407",
+    "docs/27-网络与协议栈.md#硬件闭环：MAC、RMII、PHY 与 RJ45"
+   ],
+   "memory_anchor": "线索不是证据",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s05",
+   "title": "DMA 看见的内存与 CPU 不一样",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s04"
+   ],
+   "narration": "H7 上最容易错的是内存可见性：Ethernet DMA 访问不了 0x20000000 的 DTCM，描述符和缓冲要放 D1、D2 的 SRAM，可缓存时按 32 字节 Cache 行对齐并做一致性维护。",
+   "on_screen": [
+    "DTCM 不可达",
+    "描述符放 D1/D2",
+    "32 B 对齐"
+   ],
+   "visual_source": "illustrations/handraw/ch27-cache-dma.png",
+   "fact_source": [
+    "rm0433",
+    "docs/27-网络与协议栈.md#H7 最容易错的地方：DMA 看见的内存与 CPU 看见的不一样"
+   ],
+   "memory_anchor": "DMA 的地图和你的不同",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s06",
+   "title": "Cache 方向：clean 发、invalidate 收",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s05"
+   ],
+   "narration": "交接前先确认谁拥有缓冲：发送是 CPU 写完对整条 Cache 行做 clean，让 DMA 读到最新；接收是 DMA 写完后对收包范围做 invalidate，CPU 才不会读旧值。对没对齐的窄区间直接 invalidate，会把首尾行里的脏变量一起丢。",
+   "on_screen": [
+    "TX：clean",
+    "RX：invalidate",
+    "窄区间是危险操作"
+   ],
+   "visual_source": "diagrams/network-cache-ownership.svg",
+   "fact_source": [
+    "an4839",
+    "docs/27-网络与协议栈.md#H7 最容易错的地方：DMA 看见的内存与 CPU 看见的不一样"
+   ],
+   "memory_anchor": "clean 发，invalidate 收",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s07",
+   "title": "链接脚本先答三个问题",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s06"
+   ],
+   "narration": "链接脚本要先回答三个问题：描述符和缓冲放在哪一段，DMA 能不能访问，地址大小是否对齐。不要只在 C 文件里写 section 属性，要在 map 文件里核对最终地址。",
+   "on_screen": [
+    "在哪一段",
+    "DMA 可达吗",
+    "对齐了吗"
+   ],
+   "visual_source": "diagrams/network-cache-ownership.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/27-网络与协议栈.md#H7 最容易错的地方：DMA 看见的内存与 CPU 看见的不一样"
+   ],
+   "memory_anchor": "map 文件里核对",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s08",
+   "title": "pbuf 是所有权",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s07"
+   ],
+   "narration": "收到 pbuf 之后，谁持有引用、什么时候释放必须唯一；零拷贝接收不能在 DMA 还可能覆写时交给上层；pbuf 可能是链，不保证整条应用消息连续；发送返回成功只表示进了本地队列。",
+   "on_screen": [
+    "引用唯一",
+    "零拷贝别抢",
+    "pbuf 可能是链"
+   ],
+   "visual_source": "diagrams/tcp-byte-stream.svg",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#H7 最容易错的地方：DMA 看见的内存与 CPU 看见的不一样"
+   ],
+   "memory_anchor": "指针背后是所有权",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s09",
+   "title": "lwIP 三套 API 的上下文",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s08"
+   ],
+   "narration": "lwIP 官方把执行模型分两类：NO_SYS 主循环和带 tcpip_thread 的 OS 模式。raw 回调只在主循环或 tcpip_thread 里跑；Netconn 和 BSD socket 在应用任务，通过邮箱通信。最常见的网络玄学是从错误上下文调用。",
+   "on_screen": [
+    "raw：主循环/tcpip_thread",
+    "Netconn/socket：应用任务",
+    "别从错误上下文调"
+   ],
+   "visual_source": "illustrations/handraw/ch27-api-context.png",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#lwIP 三套 API 与线程边界"
+   ],
+   "memory_anchor": "API 之外还要问在哪调",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s10",
+   "title": "IRQ 里的禁令",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s09"
+   ],
+   "narration": "禁止在 Ethernet 或定时器中断里直接调用 tcp_write 和 udp_send。中断只收集事件、归还描述符、唤醒正确的上下文。LWIP_ASSERT_CORE_LOCKED 是开发期应保留的断言，锁不能从中断拿。",
+   "on_screen": [
+    "IRQ 里不调 raw API",
+    "只收集事件与唤醒",
+    "锁不从中断拿"
+   ],
+   "visual_source": "illustrations/handraw/ch27-api-context.png",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#lwIP 三套 API 与线程边界"
+   ],
+   "memory_anchor": "中断只递纸条",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s11",
+   "title": "从 link 到在线的六道门",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s10"
+   ],
+   "narration": "联网的启动是一个状态机：PHY link、拿到 IP、DNS 解析、可信时间、TLS 握手、MQTT 在线，六道门依次过。DHCP、静态地址、DNS 和时间各有独立证据，哪道门停了就在哪道查。",
+   "on_screen": [
+    "link → IP → DNS",
+    "时间 → TLS → MQTT",
+    "每道门独立证据"
+   ],
+   "visual_source": "animations/network-online-state.svg",
+   "fact_source": [
+    "stm32cube-h7-lwip",
+    "docs/27-网络与协议栈.md#从 link 到可用网络的启动状态机"
+   ],
+   "memory_anchor": "六道门依次过",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch27-s12",
+   "title": "TCP 是字节流，帧自己定",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s11"
+   ],
+   "narration": "一次 send 不对应一次 recv：4KB 消息可能分几次到，两条小消息可能一次读到。应用协议至少定义魔数、版本、类型、长度、序号和校验——比如 0x534E 开头加网络字节序的 payload_len。",
+   "on_screen": [
+    "send ≠ recv",
+    "magic 0x534E",
+    "长度 + 序号 + 校验"
+   ],
+   "visual_source": "illustrations/handraw/ch27-tcp-framing.png",
+   "fact_source": [
+    "rfc9293",
+    "docs/27-网络与协议栈.md#TCP 是字节流：必须自己定义消息边界"
+   ],
+   "memory_anchor": "字节流上自己画框",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s13",
+   "title": "MQTT QoS 不等于业务 exactly-once",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s12"
+   ],
+   "narration": "MQTT 5.0 的三档 QoS 是传输语义：QoS 0 允许丢，QoS 1 允许重复，设备端要带业务幂等键；QoS 2 在协议流里恰好一次，仍不能替代数据库事务或执行器幂等。retained 别存有副作用的命令。",
+   "on_screen": [
+    "0 丢 · 1 重复 · 2 协议内",
+    "幂等键自己带",
+    "retain 别存命令"
+   ],
+   "visual_source": "diagrams/sample-27-tcp-framing.svg",
+   "fact_source": [
+    "mqtt-v5",
+    "docs/27-网络与协议栈.md#MQTT：QoS 不等于业务 exactly-once"
+   ],
+   "memory_anchor": "传输语义 ≠ 业务语义",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s14",
+   "title": "TLS：能握手不等于安全",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s13"
+   ],
+   "narration": "TLS 的生产不变量：认证模式必须是 VERIFY_REQUIRED，示例里的 VERIFY_NONE 只能用于隔离实验；调用 set_hostname 验证主机名；随机数来自真实熵源；私钥不进 Git 不进日志。",
+   "on_screen": [
+    "VERIFY_REQUIRED",
+    "set_hostname",
+    "真熵源 · 私钥不进库"
+   ],
+   "visual_source": "animations/network-packet-journey.svg",
+   "fact_source": [
+    "mbedtls-networking",
+    "docs/27-网络与协议栈.md#TLS：能握手不等于安全"
+   ],
+   "memory_anchor": "握手过了还要验身份",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s15",
+   "title": "断网恢复：有上限的退避",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch27-s14"
+   ],
+   "narration": "断网恢复用有上限的指数退避：min 取 B_max 与 B_base 乘 2 的 n 次方的较小值，再加抖动。link 断了不再建 socket，DNS、TCP、TLS、MQTT 分别计数，喂狗条件是网络任务真的在推进。",
+   "on_screen": [
+    "min(B_max, base×2^n)",
+    "分层计数",
+    "喂狗 = 在推进"
+   ],
+   "visual_source": "illustrations/handraw/ch27-backoff.png",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#断网恢复：有上限的指数退避"
+   ],
+   "memory_anchor": "退避有上限，计数分层",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch27-s16",
+   "title": "MDIO 读不到 PHY",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s03"
+   ],
+   "narration": "MDIO 读不到 PHY，先停在硬件层：查 NRST 释放时间、strap 上下拉有没有被别的器件抢、PHY 地址对不对。不要通过反复改 IP 地址去修一个不存在的 PHY。",
+   "on_screen": [
+    "现象：读不到 PHY",
+    "假设：复位/strap/地址",
+    "动作：停在硬件层"
+   ],
+   "visual_source": "illustrations/handraw/ch27-rmii-signals.png",
+   "fact_source": [
+    "um2407",
+    "docs/27-网络与协议栈.md#硬件闭环：MAC、RMII、PHY 与 RJ45"
+   ],
+   "memory_anchor": "硬件层的事硬件层了结",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s17",
+   "title": "link 有了 ping 不通",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s04",
+    "ch27-s11"
+   ],
+   "narration": "link 亮了 ping 却不通，沿分层走：ARP 有没有应答，IP 配置对不对，别直接跳到改 lwIP 配置。每一层有自己的证据，跳层会把简单问题修成玄学。",
+   "on_screen": [
+    "现象：ping 不通",
+    "假设：ARP/IP 层",
+    "动作：逐层取证"
+   ],
+   "visual_source": "diagrams/network-debug-ladder.svg",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#分层排错与 Wireshark 证据"
+   ],
+   "memory_anchor": "一层一层爬梯子",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s18",
+   "title": "串口收到的是乱字节",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s12"
+   ],
+   "narration": "TCP 收到的数据粘成一团或被切开，这不是 bug，是字节流的常态：一次 send 不对应一次 recv。解决是应用层长度字段加缓冲重组，别指望网络替你保帧。",
+   "on_screen": [
+    "现象：粘包/断帧",
+    "原因：字节流",
+    "动作：长度重组"
+   ],
+   "visual_source": "diagrams/tcp-byte-stream.svg",
+   "fact_source": [
+    "rfc9293",
+    "docs/27-网络与协议栈.md#TCP 是字节流：必须自己定义消息边界"
+   ],
+   "memory_anchor": "重组是应用的责任",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s19",
+   "title": "TLS 握手过了连接被拒",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s14"
+   ],
+   "narration": "TLS 握手成功、连接却被服务器拒绝，第一条假设是没验证主机名或认证模式是 NONE。对照生产不变量逐条核对：VERIFY_REQUIRED、set_hostname、可信时间，一个都不能少。",
+   "on_screen": [
+    "现象：握手过被拒",
+    "假设：验证不全",
+    "动作：对照不变量"
+   ],
+   "visual_source": "animations/network-packet-journey.svg",
+   "fact_source": [
+    "mbedtls-networking",
+    "docs/27-网络与协议栈.md#TLS：能握手不等于安全"
+   ],
+   "memory_anchor": "握手段合格，身份段再看",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s20",
+   "title": "MQTT 收到重复消息",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s13"
+   ],
+   "narration": "QoS 1 的消息收到两遍，这是传输语义允许的重复，不是服务器坏了。解决在业务层：幂等键去重，收到 PUBACK 前保留消息。把重传当故障修，方向就反了。",
+   "on_screen": [
+    "现象：重复消息",
+    "原因：QoS 1 语义",
+    "动作：幂等去重"
+   ],
+   "visual_source": "diagrams/sample-27-tcp-framing.svg",
+   "fact_source": [
+    "mqtt-v5",
+    "docs/27-网络与协议栈.md#MQTT：QoS 不等于业务 exactly-once"
+   ],
+   "memory_anchor": "重复是语义的一部分",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s21",
+   "title": "网络任务把看门狗喂死了",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s15"
+   ],
+   "narration": "网络一断系统就复位，第一条假设是喂狗写在死循环里无条件刷。解决是让喂狗条件等于网络任务真的在推进，断网时按退避状态走，离线队列限字节限时间。",
+   "on_screen": [
+    "现象：断网即复位",
+    "假设：无条件喂狗",
+    "动作：喂狗绑定推进"
+   ],
+   "visual_source": "illustrations/handraw/ch27-backoff.png",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#断网恢复：有上限的指数退避"
+   ],
+   "memory_anchor": "喂狗是健康证明",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s22",
+   "title": "DNS 一卡全卡",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch27-s11",
+    "ch27-s15"
+   ],
+   "narration": "DNS 一卡，后面的 TLS 和 MQTT 全卡：它们各自没有截止点，默认无限等待。解决是给整个事务一个总 deadline，DNS、connect、TLS 各自限时，超时返回给策略层决定重试。",
+   "on_screen": [
+    "现象：卡在 DNS",
+    "原因：无总截止点",
+    "动作：一条总 deadline"
+   ],
+   "visual_source": "animations/network-online-state.svg",
+   "fact_source": [
+    "lwip-pitfalls",
+    "docs/27-网络与协议栈.md#断网恢复：有上限的指数退避"
+   ],
+   "memory_anchor": "总 deadline 罩全场",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch27-s23",
+   "title": "实验一：ARP 与 ping",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch27-s03",
+    "ch27-s17"
+   ],
+   "narration": "实验一只做到链路层以上一步：完成 RMII 核对后，在真板上拿到 ARP 应答和 ping 回复，用 Wireshark 抓包留证。这一步过了，硬件闭环才算闭环。",
+   "on_screen": [
+    "ARP 应答",
+    "ping 回复",
+    "Wireshark 留证"
+   ],
+   "visual_source": "diagrams/sample-27-link-triage.svg",
+   "fact_source": [
+    "stm32cube-h7-lwip",
+    "docs/27-网络与协议栈.md#动手实验"
+   ],
+   "memory_anchor": "先证明物理和地址层",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch27-s24",
+   "title": "实验二：TCP echo 与分帧",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch27-s12",
+    "ch27-s18"
+   ],
+   "narration": "实验二做 TCP echo 加分帧：同一份固件故意发超长消息，验证长度字段和缓冲重组能还原消息边界，再用 Wireshark 看分段与重组后的应用帧。",
+   "on_screen": [
+    "echo 回环",
+    "故意超长",
+    "重组留证"
+   ],
+   "visual_source": "diagrams/tcp-byte-stream.svg",
+   "fact_source": [
+    "rfc9293",
+    "docs/27-网络与协议栈.md#动手实验"
+   ],
+   "memory_anchor": "分帧规则要有实验背书",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch27-s25",
+   "title": "实验三：DHCP、DNS 与 MQTT",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch27-s11",
+    "ch27-s13"
+   ],
+   "narration": "实验三把启动状态机跑完：DHCP 拿地址、DNS 解析、可信时间、TLS 握手、MQTT 订阅发布，每一道门保存独立证据。卡在哪道门，就在哪道门取证。",
+   "on_screen": [
+    "DHCP → DNS → 时间",
+    "TLS → MQTT",
+    "逐门留证"
+   ],
+   "visual_source": "animations/sample-27-link-dhcp-flow.svg",
+   "fact_source": [
+    "mqtt-v5",
+    "docs/27-网络与协议栈.md#动手实验"
+   ],
+   "memory_anchor": "六道门逐个过",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch27-s26",
+   "title": "实验四：TLS 与长期运行",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch27-s14",
+    "ch27-s15"
+   ],
+   "narration": "实验四上 TLS 并长期运行：验证 VERIFY_REQUIRED 加主机名，跑退避恢复，观察内存峰值与连接泄漏。长期跑出来的问题，短测永远看不见。",
+   "on_screen": [
+    "TLS 全程验证",
+    "退避恢复",
+    "内存峰值观察"
+   ],
+   "visual_source": "illustrations/handraw/ch27-backoff.png",
+   "fact_source": [
+    "mbedtls-networking",
+    "docs/27-网络与协议栈.md#动手实验"
+   ],
+   "memory_anchor": "长期运行才见真问题",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch27-s27",
+   "title": "容量与延迟要可复算",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch27-s24",
+    "ch27-s25",
+    "ch27-s26"
+   ],
+   "narration": "容量结论也要可复算：吞吐受 RMII 或 SPI 上限约束，延迟按层层超时叠加，内存按描述符、pbuf 和缓冲峰值合计。每个数字都能指回一张表或一条测量。",
+   "on_screen": [
+    "吞吐上限",
+    "延迟叠加",
+    "内存峰值"
+   ],
+   "visual_source": "diagrams/network-debug-ladder.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/27-网络与协议栈.md#相关资源"
+   ],
+   "memory_anchor": "每个数字指回出处",
+   "evidence_type": "calculation"
+  },
+  {
+   "scene_id": "ch27-s28",
+   "title": "离开检查：分层证据链",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch27-s23",
+    "ch27-s24",
+    "ch27-s25",
+    "ch27-s26",
+    "ch27-s27"
+   ],
+   "narration": "离开这一章，你手里应有一条分层证据链：物理与 ARP 的抓包、应用层的分帧记录、六道门的状态机日志，加一份写明仿真与真板边界的结论。网络问题从此按层取证，不再一步跳到结论。",
+   "on_screen": [
+    "物理抓包",
+    "分帧记录",
+    "门日志 · 边界结论"
+   ],
+   "visual_source": "diagrams/network-debug-ladder.svg",
+   "fact_source": [
+    "lwip-pitfalls",
+    "rm0433",
+    "docs/27-网络与协议栈.md#动手实验"
+   ],
+   "memory_anchor": "按层取证，不跳结论",
+   "evidence_type": "recall"
+  }
+ ]
+}

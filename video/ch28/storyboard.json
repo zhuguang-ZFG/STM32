@@ -1,0 +1,608 @@
+{
+ "schema_version": 1,
+ "chapter": "28",
+ "slug": "rtos-long",
+ "title": "RTOS 生态：从内核对象到可交付证据",
+ "short_source": "tools/narration.py#CHAPTERS[28]",
+ "scenes": [
+  {
+   "scene_id": "ch28-s01",
+   "title": "上了 RTOS，控制周期反而抖了？",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一次反直觉的迁移：裸机时代控制周期又稳又准，上了 RTOS 反而抖了。这一章只追一个问题：实时性到底来自哪里，RTOS 名字和内核对象各自能给你什么、不能给你什么。",
+   "on_screen": [
+    "裸机：稳",
+    "RTOS 后：抖",
+    "实时性来自哪里"
+   ],
+   "visual_source": "illustrations/handraw/ch28-four-concepts.png",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#先把四个概念分开"
+   ],
+   "memory_anchor": "实时性来自预算不来自名字",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch28-s02",
+   "title": "四个概念先分开",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s01"
+   ],
+   "narration": "先把四个概念分开：裸机是一个大循环；前后台靠 ISR 置标志主循环兜底；RTOS 由内核管调度与 IPC，任务各管一段；Linux 是进程加驱动子系统，要 MMU。并发在单核上是假象，同一刻只跑一个。",
+   "on_screen": [
+    "裸机大循环",
+    "前后台：ISR 置标志",
+    "RTOS：内核调度 · Linux：进程"
+   ],
+   "visual_source": "diagrams/sample-28-four-concepts.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#先把四个概念分开"
+   ],
+   "memory_anchor": "并发是假象，调度才是真",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s03",
+   "title": "内核只负责五件事",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s02"
+   ],
+   "narration": "内核只负责调度、IPC、软件定时器、临界区和内存分配。板级驱动、文件系统、网络、升级策略都不是内核白送的。把产品正确性外包给某个 RTOS 名字，是这一章要拆掉的想法。",
+   "on_screen": [
+    "调度 · IPC",
+    "定时器 · 临界区",
+    "内存分配 — 仅此而已"
+   ],
+   "visual_source": "animations/rtos-system-layers.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#先把四个概念分开"
+   ],
+   "memory_anchor": "内核是租客不是管家",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s04",
+   "title": "四家对照：版本与定位",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s03"
+   ],
+   "narration": "四家各有定位：FreeRTOS 11.3.2 是小内核，网络、TLS、OTA 项目自行组合；RT-Thread 5.3.0 带设备框架、FinSH 和软件包；Zephyr 4.4.2 用 Kconfig 和 Devicetree 统一构建；CMSIS-RTOS2 2.3.0 统一接口但不统一实现。",
+   "on_screen": [
+    "FreeRTOS 11.3.2 小内核",
+    "RT-Thread 5.3.0 生态",
+    "Zephyr 4.4.2 统一构建"
+   ],
+   "visual_source": "diagrams/sample-28-os-compare.svg",
+   "fact_source": [
+    "freertos-1132",
+    "rtthread-530",
+    "docs/28-嵌入式系统与RTOS生态.md#什么时候选哪一种"
+   ],
+   "memory_anchor": "统一接口不等于统一语义",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s05",
+   "title": "选型顺序：约束先行",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s04"
+   ],
+   "narration": "选型表不是排行榜。顺序是：先列硬约束，再看现有驱动与维护周期，最后才看 API 熟不熟。已有稳定 FreeRTOS 证据的产品，为生态换内核，迁移风险通常大于收益。",
+   "on_screen": [
+    "先列硬约束",
+    "再看驱动与维护",
+    "API 熟悉度最后"
+   ],
+   "visual_source": "illustrations/handraw/ch28-os-compare.png",
+   "fact_source": [
+    "freertos-1132",
+    "rtthread-530",
+    "docs/28-嵌入式系统与RTOS生态.md#什么时候选哪一种"
+   ],
+   "memory_anchor": "约束先行，生态殿后",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s06",
+   "title": "四层执行模型",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s03"
+   ],
+   "narration": "推荐的四层执行模型：事件入口只取时间戳清条件发事件；实时控制层读快照做计算；系统服务串行化设备访问；管理策略决定重连降级重启。每层有自己的禁止事项。",
+   "on_screen": [
+    "事件入口",
+    "实时控制",
+    "系统服务 · 管理策略"
+   ],
+   "visual_source": "animations/sample-28-owner-flow.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#推荐的四层执行模型"
+   ],
+   "memory_anchor": "一层一件事",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s07",
+   "title": "五条不变量",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s06"
+   ],
+   "narration": "五条不变量撑起整个模型：ISR 只发布事实不执行策略；一个有状态外设只有一个所有者；每个等待都有截止点；每个队列都有满时策略；每次跨层都保留可关联的序号、时间戳和结果码。",
+   "on_screen": [
+    "ISR 只发事实",
+    "外设一个所有者",
+    "等待有截止 · 队列有满策"
+   ],
+   "visual_source": "diagrams/rtos-owner-task.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#推荐的四层执行模型"
+   ],
+   "memory_anchor": "五条不变量五道锁",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s08",
+   "title": "所有者任务长什么样",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s07"
+   ],
+   "narration": "以 SPI Flash 为例：两个任务都直接调 HAL，片选、DMA 和恢复会被拆开。改成队列加所有者任务，flash_task 唯一碰 SPI、CS 和 DMA，用 xTaskNotify 把 busy、queued、timeout 回执给请求者。",
+   "on_screen": [
+    "队列 → flash_task",
+    "唯一碰 SPI+CS+DMA",
+    "回执：busy/queued/timeout"
+   ],
+   "visual_source": "diagrams/rtos-owner-task.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#所有者任务：比“到处加互斥量”更容易证明"
+   ],
+   "memory_anchor": "一个所有者，回执可查",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s09",
+   "title": "启动的六道门",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s08"
+   ],
+   "narration": "启动要过六道门：复位证据、最低硬件、内核对象、设备探测、系统服务、应用放行。每道门有可检查的条件，过不去就停在那道门，不往下走。",
+   "on_screen": [
+    "复位证据 → 最低硬件",
+    "内核对象 → 设备探测",
+    "系统服务 → 应用放行"
+   ],
+   "visual_source": "animations/rtos-startup-gates.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#启动顺序：先证明底座，再开放服务"
+   ],
+   "memory_anchor": "六道门逐道放行",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch28-s10",
+   "title": "三种时间必须区分",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s09"
+   ],
+   "narration": "三种时间必须分开：响应时间是事件到任务开始处理，执行时间是任务真占 CPU，端到端时延从传感器到执行器。只测 ISR 入口，会漏掉被更高优先级阻塞的时间。",
+   "on_screen": [
+    "响应时间",
+    "执行时间",
+    "端到端时延"
+   ],
+   "visual_source": "diagrams/sample-28-three-times.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#⏱️ 实时性来自预算，不来自 RTOS 名字"
+   ],
+   "memory_anchor": "三本时间账分开记",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s11",
+   "title": "R = B + C + S",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s10"
+   ],
+   "narration": "响应时间是一笔预算：R 等于阻塞 B 加执行 C 加高优先级干扰 S，从 release 起算到 deadline。验收看最坏的 Rmax 小于等于 D，不能用平均利用率替代截止时间证据。",
+   "on_screen": [
+    "R = B + C + S",
+    "从 release 到 deadline",
+    "验收看最坏 Rmax ≤ D"
+   ],
+   "visual_source": "diagrams/rtos-deadline-budget.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#⏱️ 实时性来自预算，不来自 RTOS 名字"
+   ],
+   "memory_anchor": "预算到最坏才算数",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s12",
+   "title": "利用率 U 不证明截止",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s11"
+   ],
+   "narration": "利用率公式 U 等于各任务 Ci 除以 Ti 求和，小于 1 只说明 CPU 时间没超额，不证明截止时间一定满足。共享资源阻塞、ISR、Cache miss 和 Flash 等待都要计入响应时间。",
+   "on_screen": [
+    "U = Σ C/T < 1",
+    "只是不超额",
+    "截止另证"
+   ],
+   "visual_source": "diagrams/rtos-deadline-budget.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#⏱️ 实时性来自预算，不来自 RTOS 名字"
+   ],
+   "memory_anchor": "U < 1 是必要不充分",
+   "evidence_type": "calculation"
+  },
+  {
+   "scene_id": "ch28-s13",
+   "title": "中断与内核两套优先级",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s12"
+   ],
+   "narration": "Cortex-M 的异常优先级与 RTOS 任务优先级是两套空间：任务数值越大越高，NVIC 数值越小越高。中断里只允许 FromISR 变体的入口，绝不能拿任务优先级数字去填 NVIC。",
+   "on_screen": [
+    "任务：大者高",
+    "NVIC：小者高",
+    "ISR 只用 FromISR"
+   ],
+   "visual_source": "animations/sample-28-isr-owner-flow.svg",
+   "fact_source": [
+    "rm0399",
+    "docs/28-嵌入式系统与RTOS生态.md#中断与内核边界"
+   ],
+   "memory_anchor": "两套数字两个方向",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s14",
+   "title": "IPC 的语义比名字重要",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s13"
+   ],
+   "narration": "IPC 的语义比名字重要：队列传定长数据有满时策略，信号量只做同步不带数据，互斥量带优先级继承但不能在中断用。同一名字在不同内核语义可能不同，逐条对文档。",
+   "on_screen": [
+    "队列：数据+满策",
+    "信号量：同步",
+    "互斥：继承·禁 ISR"
+   ],
+   "visual_source": "diagrams/rtos-owner-task.svg",
+   "fact_source": [
+    "cmsis-640",
+    "docs/28-嵌入式系统与RTOS生态.md#IPC 的语义比名字重要"
+   ],
+   "memory_anchor": "先问语义再看名字",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch28-s15",
+   "title": "内存四本账",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch28-s14"
+   ],
+   "narration": "内存分四本账：线程栈、内核堆、系统堆和 DMA 非缓存区不是一回事。256KB 的例子里八线程栈 16KB、网络缓冲 25.6KB、TLS 峰值 64KB，加总 177.6KB。峰值要看最坏情况，不是平均值。",
+   "on_screen": [
+    "栈 · 内核堆 · 系统堆",
+    "DMA 非缓存区",
+    "峰值 177.6 / 256 KB"
+   ],
+   "visual_source": "diagrams/rtos-config-paths.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#内存：栈、内核堆、系统堆和 DMA 不是一回事"
+   ],
+   "memory_anchor": "四本账分开记峰值",
+   "evidence_type": "calculation"
+  },
+  {
+   "scene_id": "ch28-s16",
+   "title": "高优先级任务仍然迟到",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s11"
+   ],
+   "narration": "高优先级任务仍然迟到，第一条假设是被更高优先级的 ISR 或任务占用，或者被互斥量阻塞。解决是分别记录 ISR 占用、任务切换和持锁时长，用数据定位，不靠感觉调优先级。",
+   "on_screen": [
+    "现象：仍然迟到",
+    "假设：占用或锁",
+    "动作：分段计时"
+   ],
+   "visual_source": "diagrams/rtos-deadline-budget.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "先测量再调优先级",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s17",
+   "title": "几小时后创建对象失败",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s14"
+   ],
+   "narration": "运行几小时后创建对象失败，第一条假设是泄漏或碎片，不是内核不稳定。解决是固定输入循环跑，记录最小堆水位和对象计数，看它们是阶梯下降还是突然跳水。",
+   "on_screen": [
+    "现象：几小时后失败",
+    "假设：泄漏/碎片",
+    "动作：记水位曲线"
+   ],
+   "visual_source": "illustrations/handraw/ch28-fault-triage.png",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "水位曲线会说话",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s18",
+   "title": "开网络后控制周期抖动",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s13",
+    "ch28-s15"
+   ],
+   "narration": "开启网络后控制周期抖动，候选是协议线程优先级、临界区长度或 Cache 与 DMA 路径改变。解决是禁止日志，分别关闭网络流量与网络线程，用 DWT 对比周期分布。",
+   "on_screen": [
+    "现象：周期抖动",
+    "候选：优先级/临界区",
+    "动作：逐项关闭对比"
+   ],
+   "visual_source": "illustrations/handraw/ch28-four-concepts.png",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "逐项关闭找元凶",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s19",
+   "title": "Zephyr 设备存在但不可用",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s04"
+   ],
+   "narration": "Zephyr 的设备对象存在却不可用，第一条假设是 Devicetree 节点有了但驱动 init 失败。解决是检查 device_is_ready、启动日志和依赖设备状态，不要先改业务线程。",
+   "on_screen": [
+    "现象：设备不可用",
+    "假设：init 失败",
+    "动作：device_is_ready"
+   ],
+   "visual_source": "diagrams/rtos-config-paths.svg",
+   "fact_source": [
+    "zephyr-442",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "先问 ready 再用",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s20",
+   "title": "rt_device_find 返回空",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s04"
+   ],
+   "narration": "RT-Thread 的 rt_device_find 返回空，候选是设备未注册、组件未启用或名称不同。解决是列设备、看配置与初始化级别，不要先改业务线程。",
+   "on_screen": [
+    "现象：find 为空",
+    "候选：未注册/未启用",
+    "动作：列设备清单"
+   ],
+   "visual_source": "diagrams/sample-28-os-compare.svg",
+   "fact_source": [
+    "rtthread-530",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "先列清单再改代码",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s21",
+   "title": "看门狗不复位但业务死了",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s07"
+   ],
+   "narration": "看门狗不复位但业务已经死了，第一条假设是错误的上下文仍在喂狗。解决是只允许健康监督者喂狗，并故意阻塞每个关键任务做验证，让失败能被区分。",
+   "on_screen": [
+    "现象：狗不咬业务死",
+    "假设：错误上下文喂狗",
+    "动作：健康监督者"
+   ],
+   "visual_source": "illustrations/handraw/ch28-fault-triage.png",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "只让健康者喂狗",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s22",
+   "title": "tickless 之后时间漂移",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch28-s07"
+   ],
+   "narration": "tickless 之后时间漂移，第一条假设是低功耗时钟或补偿边界，而不是任务算法。解决是同时记录单调 tick、RTC 和外部基准边沿，三者对表才能定位漂移来源。",
+   "on_screen": [
+    "现象：时间漂移",
+    "假设：时钟补偿",
+    "动作：三方对表"
+   ],
+   "visual_source": "animations/rtos-system-layers.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#常见失败模式"
+   ],
+   "memory_anchor": "三方对表定漂移",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch28-s23",
+   "title": "实验一：对象语义对账",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch28-s14"
+   ],
+   "narration": "第一个实验做对象语义对账：创建深度为 2 的队列，发三条消息，分别验证非阻塞、限时阻塞和永久等待的结果，记录返回码、耗时和最终顺序。队列满怎样进策略层，这次就弄清。",
+   "on_screen": [
+    "深度 2 发三条",
+    "三种等待各一遍",
+    "记返回码与顺序"
+   ],
+   "visual_source": "diagrams/rtos-owner-task.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#四组递进实验"
+   ],
+   "memory_anchor": "队列满的三种结局",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch28-s24",
+   "title": "实验二：所有者与直调对比",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch28-s08",
+    "ch28-s23"
+   ],
+   "narration": "第二个实验对比两种访问：两个任务直接调驱动并只锁单次 API，故意在 DMA 完成前触发另一请求；再换所有者任务版本。预期后者稳定给出 busy、queued、timeout，不出现交叉。",
+   "on_screen": [
+    "直调：故意并发",
+    "所有者：队列化",
+    "结果可预期"
+   ],
+   "visual_source": "diagrams/rtos-owner-task.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#四组递进实验"
+   ],
+   "memory_anchor": "两种写法各跑一遍",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch28-s25",
+   "title": "实验三：故障注入与监督者",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch28-s21"
+   ],
+   "narration": "第三个实验做故障注入：依次冻结控制、网络和日志任务，健康监督者应识别不同失败、保存状态摘要，并停止喂狗。验收不是最后复位了，而是复位后能区分哪一个健康条件先失败。",
+   "on_screen": [
+    "依次冻结三任务",
+    "监督者识别",
+    "复位后能区分"
+   ],
+   "visual_source": "animations/rtos-startup-gates.svg",
+   "fact_source": [
+    "freertos-1132",
+    "docs/28-嵌入式系统与RTOS生态.md#四组递进实验"
+   ],
+   "memory_anchor": "失败要能区分",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch28-s26",
+   "title": "实验四：垂直切片跨系统",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch28-s23",
+    "ch28-s24"
+   ],
+   "narration": "第四个实验选同一垂直切片跨系统实现：GPIO 中断到定长事件到工作线程再到 UART 结果，固定输入频率和日志格式，对比对象语义、配置文件、栈预算与 ISR 边界。不一开始就迁网络和文件系统。",
+   "on_screen": [
+    "中断→事件→线程→UART",
+    "固定输入与格式",
+    "不先迁网络"
+   ],
+   "visual_source": "animations/rtos-system-layers.svg",
+   "fact_source": [
+    "zephyr-442",
+    "docs/28-嵌入式系统与RTOS生态.md#四组递进实验"
+   ],
+   "memory_anchor": "小切片跨系统",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch28-s27",
+   "title": "选型评审清单",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch28-s05",
+    "ch28-s15",
+    "ch28-s26"
+   ],
+   "narration": "选型评审带一张清单：硬约束列了吗，预算按最坏算了吗，ISR 边界逐条核了吗，故障恢复和降级路径演过吗，栈和堆的水位记录了吗。清单每格都有证据，评审才算过。",
+   "on_screen": [
+    "约束与预算",
+    "ISR 与恢复",
+    "水位证据"
+   ],
+   "visual_source": "illustrations/handraw/ch28-os-compare.png",
+   "fact_source": [
+    "freertos-1132",
+    "rtthread-530",
+    "docs/28-嵌入式系统与RTOS生态.md#选型评审清单"
+   ],
+   "memory_anchor": "每格都有证据",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch28-s28",
+   "title": "离开检查：一张图一份表",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch28-s23",
+    "ch28-s24",
+    "ch28-s25",
+    "ch28-s26",
+    "ch28-s27"
+   ],
+   "narration": "离开这一章，你手里应有一张系统约束图和一份选型条件表，加一份全书能力自检：能按资源预算与故障恢复路径做取舍，能指出自己停在哪一级、下一级缺哪份证据。RTOS 是工具，证据才是你的。",
+   "on_screen": [
+    "系统约束图",
+    "选型条件表",
+    "能力自检"
+   ],
+   "visual_source": "illustrations/handraw/ch28-owner-task.png",
+   "fact_source": [
+    "freertos-1132",
+    "rtthread-530",
+    "docs/28-嵌入式系统与RTOS生态.md#选型评审清单"
+   ],
+   "memory_anchor": "证据在手，取舍有据",
+   "evidence_type": "recall"
+  }
+ ]
+}
