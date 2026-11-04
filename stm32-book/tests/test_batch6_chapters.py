@@ -55,6 +55,22 @@ def narration_lines(block: str) -> list[str]:
     """Numbered narration lines. They must match the rendered subtitles."""
     return re.findall(r"^\d+\. .+$", block.replace("\r\n", "\n"), re.M)
 
+
+def expected_narration(index: int) -> list[str]:
+    """Canonical narration from tools/narration.py, as numbered doc lines.
+
+    2026-11-05：Batch A/C/E 反同构重写改动了 ch00–20 旁白结尾拍；这些章的
+    旁白守卫从冻结基线切换为与 tools/narration.py 现行定义比对（与
+    test_batch5 同一模式）——文档稿必须始终等于现行旁白与字幕。
+    """
+    path = ROOT / "tools" / "narration.py"
+    spec = importlib.util.spec_from_file_location("batch6_narration", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return [f"{n}. {seg['say']}" for n, seg in enumerate(module.CHAPTERS[index]["segments"], 1)]
+
 def baseline_chapter(rev: str, path: str) -> str:
     blob = _git_show(rev, path)
     if blob is None:
@@ -365,7 +381,7 @@ class Batch6StopChapterTests(unittest.TestCase):
             marker = "<!-- video:ch16 -->"
             end = "<!-- /video:ch16 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines("\n".join(expected_narration(int(marker[len("<!-- video:ch"):-4]))) + "\n"),
                 narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
@@ -512,7 +528,7 @@ class Batch6CfsrChapterTests(unittest.TestCase):
             marker = "<!-- video:ch17 -->"
             end = "<!-- /video:ch17 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines("\n".join(expected_narration(int(marker[len("<!-- video:ch"):-4]))) + "\n"),
                 narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
@@ -643,7 +659,7 @@ class Batch6BootChapterTests(unittest.TestCase):
             marker = "<!-- video:ch18 -->"
             end = "<!-- /video:ch18 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines("\n".join(expected_narration(int(marker[len("<!-- video:ch"):-4]))) + "\n"),
                 narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         listed = json.loads(
@@ -825,7 +841,7 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
             marker = "<!-- video:ch19 -->"
             end = "<!-- /video:ch19 -->"
             self.assertEqual(
-                narration_lines(baseline.split(marker, 1)[1].split(end, 1)[0]),
+                narration_lines("\n".join(expected_narration(int(marker[len("<!-- video:ch"):-4]))) + "\n"),
                 narration_lines(now_video.split(marker, 1)[1].split(end, 1)[0]),
             )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))

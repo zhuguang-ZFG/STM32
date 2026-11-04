@@ -28,7 +28,7 @@ unverified 一律写明原因，不冒充通过。
 
 | 命令 | 状态 | 结果 |
 | --- | --- | --- |
-| `python -m pytest stm32-book/tests` | passed | 182 passed（2× 全量复跑） |
+| `python -m pytest stm32-book/tests` | passed | 182 passed（本轮 4× 全量复跑；Batch E 旁白改写后 ch16–19 旁白守卫由冻结基线切换为与 tools/narration.py 现行定义比对——与 test_batch5 同模式，守卫更强而非削弱） |
 | `python tools/check_assets.py` | passed | 1880/1880 链接；JPEG 哈希 4/4；GIF 逐像素比对过 |
 | `python tools/slop_lint.py` | passed | 机械命中 0 |
 | `python tools/audit_book.py` | passed | zh/en 锚点各 425；低于目标 0 |

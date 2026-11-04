@@ -504,7 +504,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 
 ### 11.3 全书完成定义（合流改造）
 
-- [ ] 29 中文 + 29 英文均有对照本 Overlay 的逐章审计，无跳章。  
+- [x] 29 中文 + 29 英文均有对照本 Overlay 的逐章审计，无跳章。（证据链：B1 样章门 `audits/ch03-converge-gate.md`；B2–B6 批次门覆盖 00–28 全部章号 zh+en（`b2…b6-converge-gate.md`）；B7 普查 `b7-converge-census.md`/`b7-gap-close.md` 逐章对账三表/锚点/出处；知识轨层 `audits/handraw-knowledge-track-29.md`；视频层 `audits/task-verify-equivalent-2026-11-05.md` §4。）  
 - [x] manifest 七分部标题/目标已按 §3.2 更新；阅读指南含主路径与加速路径。（**2026-11-05**：`manifest.json`/`manifest-en.json` 七分部标题与目标按 §3.2 表更新；`book/F-学习路线收束.md` 与 `en/F-closing.md` 增主路径/加速路径/专题插入表。）  
 - [x] CONTENT_GUIDE 无强制固定骨架；功能块合同生效。  
 - [x] strip 与 handraw **按 §9 方式**完成且旧支停更归档。（**2026-11-04**：`audits/branch-archive-strip-handraw.md`；远程 tip 保留只读，未删。）  
