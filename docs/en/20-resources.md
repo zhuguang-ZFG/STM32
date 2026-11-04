@@ -79,6 +79,11 @@ ST's documents are free, and you start from **st.com**. For development, **CubeM
   <br><sub>▲ Drawn for this book. Pick the right PDF before Ctrl+F.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-manual-names.png" width="760" alt="Handraw: manual acronyms RM/DS/ES/PM (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pick the right PDF then Ctrl+F; RM registers, DS parameters, PM package, ES errata; not a photo.</sub>
+</p>
+
 
 **An RM tells you the registers (how to write them), a DS tells you the parameters (what the part is), a PM tells you the package and the pins, an AN tells you how to do a job, and a UM tells you how to use a tool.** For a register bit, open the RM. For electrical limits or the pin definition, open the DS.
 
@@ -96,6 +101,11 @@ Start with the question on the left of the next figure, then choose the first do
 <p align="center">
   <img src="../../assets/diagrams/manual-choice-map.svg" width="760" alt="Six engineering questions route to the DS, RM, PM, ES, AN, and UM, each with a stated evidence boundary">
   <br><sub>▲ Decision map: ask the question before choosing the manual (FA-002 · IG-008; author-drawn vector)</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-manual-choice.png" width="760" alt="Handraw: six questions to DS/RM/PM/ES/AN/UM (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Ask the question first, then pick the manual; R registers, D data, A application, U tools; not a photo.</sub>
 </p>
 
 > Remember: **R is registers, D is data, A is applications, U is tools.** The RM is the dictionary, the DS is the checkup report, and the AN is the tutorial.
@@ -119,6 +129,11 @@ Start with the question on the left of the next figure, then choose the first do
 <p align="center">
   <img src="../../assets/diagrams/sample-20-lib-compare.svg" width="760" alt="Library compare: SPL / HAL / LL / libopencm3">
   <br><sub>▲ Drawn for this book. Freeze one library stack per project.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-lib-compare.png" width="760" alt="Handraw: library compare SPL/HAL/LL/libopencm3 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Freeze one stack and one version per project; HAL mainstream, SPL for locked F1, LL near registers, libopencm3 lean; not a photo.</sub>
 </p>
 
 
@@ -198,6 +213,11 @@ Evidence gets closer to electrical reality as the tool moves toward the pin. Rea
 <p align="center">
   <img src="../../assets/diagrams/instrument-evidence-ladder.svg" width="760" alt="Five evidence levels from build logs and a debugger through runtime logs and a logic analyzer to an oscilloscope or power analyzer">
   <br><sub>▲ Evidence ladder: each tool answers a different question (FA-002 · IG-010; author-drawn vector, not a measurement capture)</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-evidence-ladder.png" width="760" alt="Handraw: five-rung evidence ladder build to scope (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Build log → debugger → runtime log → logic analyzer → scope/power analyzer; do not leapfrog; not a photo.</sub>
 </p>
 
 ## Code
@@ -290,6 +310,11 @@ addr2line -e build/app.elf -f -C $(PC)
 <p align="center">
   <img src="../../assets/diagrams/sample-20-evidence-triage.svg" width="760" alt="Wrong manual, instrument leapfrog, or wrong firmware stack: match DS/RM/PM first, then the evidence ladder, then the stack">
   <br><sub>▲ Drawn for this book. Evidence triage. Sources: [project credits](#source-project-credits) and [stlink tools](#source-stlink-tools).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-evidence-triage.png" width="760" alt="Handraw: evidence triage manual·instrument·stack (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Match DS/RM/PM first, then pick the evidence ladder step, change the firmware stack last; not a photo.</sub>
 </p>
 
 ## Common traps and how to check them
