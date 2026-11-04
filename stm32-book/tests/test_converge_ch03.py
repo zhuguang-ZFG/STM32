@@ -53,6 +53,10 @@ class ConvergeCh03Tests(unittest.TestCase):
         # 板卡外观照片已补（第三方 CC BY-SA 4.0，仅识别用途），测量证据（万用表/逻辑分析仪截图）缺口仍在：
         self.assertIn("bluepill-stm32f103c8t6.jpg", zh)
         self.assertIn("bluepill-stm32f103c8t6.jpg", en)
+        self.assertIn("bluepill-stm32f103c8t6-popolon.jpg", zh)
+        self.assertIn("bluepill-stm32f103c8t6-popolon.jpg", en)
+        self.assertIn("原理示意/非实拍", zh)
+        self.assertIn("principle diagram / not a photograph", en)
         self.assertIn("真证轨现状", zh)
         self.assertIn("Evidence-track status", en)
         self.assertIn("仍待补", zh)

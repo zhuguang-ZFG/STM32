@@ -17,7 +17,7 @@
 | 教学合同七项+先备 | manifest 仅有 question/deliverable/boundary/sources | 中英 `chapter_guides` 补齐 prerequisites/minimum_victory/mechanism/failure_branch/memory_anchor/exit_check；保留三件套供 compass 渲染 |
 | 最小胜利 vs 手册密度 | 视频后直接「原理与适用范围」+ 长表；最小胜利埋在实验/代码 | 视频后插入「最小胜利 / Minimum victory」，手册表仍在核心原理之后 |
 | Handraw 引用 | `ch03-handdraw.svg` 只在短片/分镜，**章正文未引用** | 最小胜利节嵌入 Handraw 图 + SHA-256 |
-| 真证轨 | BluePill 板卡外观实拍已补（CC BY-SA 4.0，Avandalen / Wikimedia Commons，`assets/photos/bluepill-stm32f103c8t6.jpg`，哈希见 tools/check_assets.py 与 assets/photos/README.md），仅板卡识别；表计/示波器截图仍缺；Nucleo 照片与本章无关 | 硬件节「真证轨现状」+ 知识轨哈希；测量证据缺口保留 |
+| 真证轨 | BluePill 板卡外观实拍已补两张（CC BY-SA 4.0：Avandalen `bluepill-stm32f103c8t6.jpg` + Popolon `bluepill-stm32f103c8t6-popolon.jpg`，哈希见 tools/check_assets.py 与 assets/photos/README.md），仅板卡识别；PC13 LED 特写与表计/示波器截图仍缺；Handraw/stack 为知识轨「原理示意/非实拍」；Nucleo 照片与本章无关 | 硬件节「真证轨现状」+ 知识轨哈希；测量证据缺口保留 |
 | 失败分支证据 | 「常见坑与出处」五行已含现象/原因/处理/出处 | 保留；最小胜利失败时指向该表三行；未删可区分证据 |
 | 旁白节拍指纹 | 改前：10 拍同构尾（口诀/实验/合上书） | **已改**：短片 7 拍 + 长片 purpose 交错；已 regen 成片与 media-report |
 | 同构填料 | 「学习目标」五条清单偏目录腔 | 改写成离开检查动作/判断；标题保留以兼容既有 sample 测试 |
@@ -112,7 +112,7 @@
 
 类型覆盖：概念图（1、2）、技术关系图（3、4、5）、排错或对比图（3 的正误双栏 + 「常见坑与出处」五行表）。任务不重复：1 讲共阳电流方向，2 讲浮空电平，3 讲电流路径与引脚能力边界，4 讲控制/电流分层，5 讲板级引脚位置。
 
-真证轨缺口：BluePill 板卡外观实拍已补（CC BY-SA 4.0，Avandalen / Wikimedia Commons，缩放 760×315，SHA-256 `73b1887438eefaf0766bef50dbd3f631d7fd80e1f3ca392cde4c29fabb5c03c7`；仅板卡识别，非测量证据）；万用表或示波器截图仍**待补**；有则回填哈希，无则保留缺口声明。
+真证轨：BluePill 板卡外观实拍已补两张——Avandalen 760×315 SHA-256 `73b1887438eefaf0766bef50dbd3f631d7fd80e1f3ca392cde4c29fabb5c03c7`；Popolon 760×513 SHA-256 `ece8ef0b4f76c21688532b43c86ba5663ec7a3bc042f16107bc7b5eecc470a57`（CC BY-SA 4.0；仅板卡识别，非测量证据）。PC13 LED 特写与万用表/示波器截图仍**待补**；Handraw/stack 标「原理示意/非实拍」，不得登记为真证。
 
 原文请求存档：以上 1–5 均为既有资产回登记，本轮**未**新生成图片，故无新提示词存档；后续新图必须随图登记 Layout / 风格 / 配色与提示词原文。
 
@@ -337,5 +337,5 @@ zh p44/46/48/50、en p47/48/50/54/58：中文完好、表格/代码/插图无溢
 
 ### 遗留
 
-1. BluePill PC13 真证照片仍缺（上文 §6.1）。
+1. BluePill 板卡外观真证照片已补（Avandalen + Popolon）；PC13 LED 特写与表计截图仍缺（上文 §6.1）。
 2. B2–B7 未动（B1 模板已就绪）。

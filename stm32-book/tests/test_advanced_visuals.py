@@ -37,7 +37,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "03-GPIO与LED.md": (
-        7,
+        8,
         (
             "gpio-blink.svg",
             "ch03-handdraw.svg",
@@ -46,6 +46,7 @@ CHAPTERS = {
             "pinout-bluepill.svg",
             "led-blink.gif",
             "bluepill-stm32f103c8t6.jpg",
+            "bluepill-stm32f103c8t6-popolon.jpg",
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (

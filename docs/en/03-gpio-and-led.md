@@ -44,7 +44,7 @@ Only after that match, read modes, series resistance, and the lock. If it does n
 
 <p align="center">
   <img src="../../assets/illustrations/ch03-handdraw.svg" width="760" alt="Handraw: PC13 lights when written 0 and goes dark when written 1 on a common-anode path">
-  <br><sub>▲ Knowledge track (Handraw). It shows the write versus the common-anode current direction. It is not a meter reading and not a photograph. File <code>assets/illustrations/ch03-handdraw.svg</code>; full SHA-256 is in <code>stm32-book/audits/ch03-converge-gate.md</code>.</sub>
+  <br><sub>▲ Knowledge track (Handraw · principle diagram / not a photograph). It shows the write versus the common-anode current direction. It is not a meter reading and not a photograph. File <code>assets/illustrations/ch03-handdraw.svg</code>; full SHA-256 is in <code>stm32-book/audits/ch03-converge-gate.md</code>.</sub>
 </p>
 
 ## Principle and scope
@@ -165,11 +165,14 @@ The worked example for this orderable is in Principle and boundary, and it is an
 
 ## Hardware and wiring
 
-> **Evidence-track status:** the photo below is a third-party photograph of the Blue Pill board (CC BY-SA 4.0, Avandalen / Wikimedia Commons), for recognizing the board's overall look and pin layout only (the onboard PC13 LED position is per the board schematic/silkscreen; too small to resolve in this photo) — it is not a measurement from this book's lab. The meter or logic-analyzer capture from this experiment is still to be supplied; the Handraw and stack figures above are knowledge-track only. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
+> **Evidence-track status:** The figures below are two third-party Blue Pill photographs (both CC BY-SA 4.0: Avandalen `Blue_Pill.jpg`; Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`, 2018-09-08). They are only for recognizing the board's overall look and pin layout (the onboard PC13 LED sits on the USB-connector side per the board schematic/silkscreen; too small to resolve in these photos) — not a measurement from this book's lab. **A PC13 LED close-up and the meter or logic-analyzer capture from this experiment are still to be supplied** — do not use an AI-generated image as evidence. The Handraw and stack figures above are knowledge-track only (labeled principle diagram / not a photograph) and must not be registered as evidence-track. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
 
 <figure class="photo-spread">
-  <img src="../../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Top-down photograph of a Blue Pill development board (STM32F103C8T6), blue PCB with the two pin-header rows clearly visible">
-  <figcaption>▲ Hardware reference photo (CC BY-SA 4.0 photograph, Avandalen / Wikimedia Commons): a Blue Pill development board carrying the STM32F103C8T6 — the same part used in this chapter's lab. The onboard PC13 LED sits on the USB-connector side (per the board schematic/silkscreen; too small to resolve in this photo). Use it only to recognize the board's overall look and pin layout; it contains no wiring or measurement scene and is not experimental evidence. Source and processing are recorded in <code>assets/photos/README.md</code>.</figcaption>
+  <div class="photo-pair">
+    <img src="../../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Top-down photograph of a Blue Pill development board (STM32F103C8T6), blue PCB with the two pin-header rows clearly visible (Avandalen)">
+    <img src="../../assets/photos/bluepill-stm32f103c8t6-popolon.jpg" alt="Top-down photograph of a Blue Pill / Core Learning Board (STM32F103C8T6), Popolon 2018-09-08">
+  </div>
+  <figcaption>▲ Hardware reference photos (two CC BY-SA 4.0 photographs): left Avandalen / Wikimedia Commons <code>Blue_Pill.jpg</code>; right Popolon / Wikimedia Commons <code>Core Learning Board module Arduino STM32 F103 C8T6.jpg</code> (2018-09-08). Both carry the STM32F103C8T6 — the same part used in this chapter's lab. The onboard PC13 LED sits on the USB-connector side (per schematic/silkscreen; too small to resolve here). Use them only to recognize the board's overall look and pin layout; a PC13 LED close-up and meter capture are still missing; these photos contain no wiring or measurement scene and are not experimental evidence. Source and processing are in <code>assets/photos/README.md</code>.</figcaption>
 </figure>
 
 | Board | Peripheral | Pin | Notes |
@@ -183,7 +186,7 @@ The onboard LED is **common anode**: the anode is tied to 3.3 V, and PC13 has to
 
 <p align="center" class="wide-figure" tabindex="0">
   <a href="../../assets/diagrams/stack-gpio-pc13-led.png"><img src="../../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="Program-control path and the write-zero current path of the common-anode PC13 LED"></a>
-  <br><sub>▲ The diagram separates a program write from electrical current. Writing 0 turns on the PC13 output stage, so current flows from 3.3 V through the common-anode LED and its series resistor into the pin. It explains active-low behaviour; it does not measure current or replace the schematic of a particular clone board. <a href="../../assets/diagrams/stack-gpio-pc13-led.html">HTML source</a> · <a href="../../assets/diagrams/stack-gpio-pc13-led-dark.png">dark image</a> · Lucide icons.</sub>
+  <br><sub>▲ Knowledge track (principle diagram / not a photograph). The diagram separates a program write from electrical current. Writing 0 turns on the PC13 output stage, so current flows from 3.3 V through the common-anode LED and its series resistor into the pin. It explains active-low behaviour; it does not measure current or replace the schematic of a particular clone board. <a href="../../assets/diagrams/stack-gpio-pc13-led.html">HTML source</a> · <a href="../../assets/diagrams/stack-gpio-pc13-led-dark.png">dark image</a> · Lucide icons.</sub>
 </p>
 
 <p align="center">

@@ -45,7 +45,7 @@
 
 <p align="center">
   <img src="../assets/illustrations/ch03-handdraw.svg" width="760" alt="Handraw：PC13 写 0 灯亮、写 1 灯灭的共阳电流示意">
-  <br><sub>▲ 知识轨（Handraw）。说明写值与共阳电流方向，不是万用表读数，也不是实拍。文件 <code>assets/illustrations/ch03-handdraw.svg</code>；完整 SHA-256 见审计清单 <code>stm32-book/audits/ch03-converge-gate.md</code>。</sub>
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。说明写值与共阳电流方向，不是万用表读数，也不是实拍。文件 <code>assets/illustrations/ch03-handdraw.svg</code>；完整 SHA-256 见审计清单 <code>stm32-book/audits/ch03-converge-gate.md</code>。</sub>
 </p>
 
 ## 原理与适用范围
@@ -166,11 +166,14 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 
 ## 硬件与接线
 
-> **真证轨现状：** 下图为 Blue Pill 板卡的第三方实拍（CC BY-SA 4.0，Avandalen / Wikimedia Commons），只用于识别板卡整体外观与引脚排布（板载 PC13 LED 位置据板卡原理图/丝印，图中过小难以分辨），不是本书实验的测量证据。本次实验的万用表/逻辑分析仪截图仍待补；上面的 Handraw 与 stack 图只属于知识轨。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md，照片来源与许可登记在 assets/photos/README.md。
+> **真证轨现状：** 下图为两张 Blue Pill 板卡第三方实拍（均为 CC BY-SA 4.0：Avandalen `Blue_Pill.jpg`；Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`，2018-09-08），只用于识别板卡整体外观与引脚排布（板载 PC13 LED 位置据板卡原理图/丝印，图中过小难以分辨），不是本书实验的测量证据。**PC13 LED 特写与万用表/逻辑分析仪截图仍待补**——禁止 AI 生成图冒充。上面的 Handraw 与 stack 图只属于知识轨（标注「原理示意/非实拍」），不得登记为真证。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md，照片来源与许可登记在 assets/photos/README.md。
 
 <figure class="photo-spread">
-  <img src="../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Blue Pill 开发板俯视实拍（STM32F103C8T6），蓝色 PCB 与两侧排针清晰可见">
-  <figcaption>▲ 硬件参照照（CC BY-SA 4.0 实拍，Avandalen / Wikimedia Commons）：Blue Pill 开发板，主控 STM32F103C8T6——与本章实验使用的板卡同型号。板载 PC13 LED 位于 USB 座一侧（据板卡原理图/丝印，图中过小难以分辨）。此图仅用于板卡外观与引脚排布识别，不含接线与测量画面，不是实验测量证据。来源与处理记录见 <code>assets/photos/README.md</code>。</figcaption>
+  <div class="photo-pair">
+    <img src="../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Blue Pill 开发板俯视实拍（STM32F103C8T6），蓝色 PCB 与两侧排针清晰可见（Avandalen）">
+    <img src="../assets/photos/bluepill-stm32f103c8t6-popolon.jpg" alt="Blue Pill / Core Learning Board 俯视实拍（STM32F103C8T6），Popolon 2018-09-08">
+  </div>
+  <figcaption>▲ 硬件参照照（两张 CC BY-SA 4.0 实拍）：左 Avandalen / Wikimedia Commons <code>Blue_Pill.jpg</code>；右 Popolon / Wikimedia Commons <code>Core Learning Board module Arduino STM32 F103 C8T6.jpg</code>（2018-09-08）。主控均为 STM32F103C8T6——与本章实验板卡同型号。板载 PC13 LED 位于 USB 座一侧（据原理图/丝印，图中过小难以分辨）。仅用于板卡外观与引脚排布识别；PC13 LED 特写与表计截图仍缺；不含接线与测量画面，不是实验测量证据。来源与处理见 <code>assets/photos/README.md</code>。</figcaption>
 </figure>
 
 | 开发板 | 外设 | 引脚 | 备注 |
@@ -184,7 +187,7 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 
 <p align="center" class="wide-figure" tabindex="0">
   <a href="../assets/diagrams/stack-gpio-pc13-led.png"><img src="../assets/diagrams/stack-gpio-pc13-led.png" width="820" alt="PC13 共阳 LED 的程序控制路径与写 0 时的电流路径"></a>
-  <br><sub>▲ 上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。<a href="../assets/diagrams/stack-gpio-pc13-led.html">HTML 源</a> · <a href="../assets/diagrams/stack-gpio-pc13-led-dark.png">暗色图</a> · Lucide 图标。</sub>
+  <br><sub>▲ 知识轨（原理示意/非实拍）。上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。<a href="../assets/diagrams/stack-gpio-pc13-led.html">HTML 源</a> · <a href="../assets/diagrams/stack-gpio-pc13-led-dark.png">暗色图</a> · Lucide 图标。</sub>
 </p>
 
 <p align="center">
