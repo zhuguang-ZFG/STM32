@@ -65,12 +65,22 @@ Do not read the two columns as a ranking. The next figure places Wokwi, Renode, 
   <br><sub>▲ Comparison: inspect wiring in the browser, accesses in the machine model, and accept the result on hardware (FA-029 · IG-004; author-drawn vector)</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-sim-compare.png" width="760" alt="Handraw: Wokwi/Renode/desk three-column compare (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Reproduce logic in the model, then measure on the desk; a green sim does not override hardware; not a photo.</sub>
+</p>
+
 ## Wokwi: how to read the diagram
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-22-wokwi-scope.svg" width="760" alt="Wokwi fit and limits: logic yes, analog on the desk">
   <br><sub>▲ Drawn for this book. Browser green still needs the BluePill accept.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-wokwi-scope.png" width="760" alt="Handraw: Wokwi fit and limits (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Logic/LED fit; ADC/USB/crystal margins need the desk; twin accept on BluePill; not a photo.</sub>
 </p>
 
 
@@ -119,6 +129,11 @@ In `wokwi.toml` the firmware path is written as `build/firmware.elf`. Wokwi acce
   <br><sub>▲ Drawn for this book. Run the two repo scripts before editing platforms.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-renode-path.png" width="760" alt="Handraw: Renode platform→ELF→UART (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Four-step script path; same golden string as the desk; green log ≠ HSE solder; not a photo.</sub>
+</p>
+
 
 The scripts live in [`sim/renode/`](../../sim/renode/). They do four things: create a machine, load the official F103 platform description, load the ELF, and start.
 
@@ -143,12 +158,22 @@ The UART example uses DMA. `stm32f103.repl` does attach a DMA node, but whether 
   <br><sub>▲ Drawn for this book. Simulation triage. Sources: [DS5319](#source-ds5319), [Wokwi Blue Pill board](#source-wokwi-bluepill) and [Renode STM32 docs](#source-renode-stm32).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-sim-triage.png" width="760" alt="Handraw: sim triage model/host/board (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branch before you patch; sim proof and desk proof stay two sentences; not a photo.</sub>
+</p>
+
 ## What simulation will not do for you
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-22-hw-gap.svg" width="760" alt="Sim vs hardware gap: what still needs the desk">
   <br><sub>▲ Drawn for this book. Dual-track: structure in sim, margins on the desk.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-hw-gap.png" width="760" alt="Handraw: sim vs hardware gap — desk required (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). sim green → desk green before done; crystal/USB/droop stay on the bench; not a photo.</sub>
 </p>
 
 

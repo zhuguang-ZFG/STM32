@@ -65,12 +65,22 @@
   <br><sub>▲ 对比图：浏览器看接线，机器模型看访问，最终在真板验收（FA-029 · IG-004；作者自绘矢量图）</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-sim-compare.png" width="760" alt="Handraw：Wokwi/Renode/真板三列对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。模型复现逻辑后再上真板测量；仿真绿灯不能覆盖实测；不是实拍。</sub>
+</p>
+
 ## Wokwi：图怎么读
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-22-wokwi-scope.svg" width="760" alt="Wokwi 擅长与边界：逻辑可以，模拟要上桌">
   <br><sub>▲ 自绘。浏览器绿了还要 BluePill 同款验收。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-wokwi-scope.png" width="760" alt="Handraw：Wokwi 擅长与边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。逻辑/LED 适合；ADC/USB/晶振余量必须上桌；孪生验收在 BluePill；不是实拍。</sub>
 </p>
 
 
@@ -119,6 +129,11 @@
   <br><sub>▲ 自绘。先跑仓库两条脚本，再改平台文件。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-renode-path.png" width="760" alt="Handraw：Renode 平台→ELF→UART（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。四步脚本路径；golden string 与真板一致；绿灯≠HSE 焊接；不是实拍。</sub>
+</p>
+
 
 脚本在 [`sim/renode/`](../sim/renode/)。它们做的事只有四件：建机器、加载官方 F103 平台描述、加载 ELF、启动。
 
@@ -143,12 +158,22 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
   <br><sub>▲ 自绘。仿真三岔口。出处是 [DS5319](#source-ds5319)、[Wokwi Blue Pill 板定义](#source-wokwi-bluepill) 和 [Renode STM32 文档](#source-renode-stm32)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-sim-triage.png" width="760" alt="Handraw：仿真三岔口模型/主机/板级（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先分岔再修；仿真与真板两句证明不能并成一句；不是实拍。</sub>
+</p>
+
 ## 仿真替不了的事
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-22-hw-gap.svg" width="760" alt="仿真与实物差距：哪些必须上桌">
   <br><sub>▲ 自绘。双轨诚实：结构靠仿真，裕量靠桌面。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-hw-gap.png" width="760" alt="Handraw：仿真与实物差距必须上桌（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。sim 绿→desk 绿才算完成；晶振/USB/纹波仿真替不了；不是实拍。</sub>
 </p>
 
 
