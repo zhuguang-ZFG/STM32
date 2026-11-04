@@ -63,6 +63,11 @@ PA11/PA12 are also CAN's reset-default pins, which is why chapter 13 remaps CAN 
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-usb-enum.png" width="760" alt="Handraw: USB enumeration and 48 MHz (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). USBPRE=0→48 MHz; D+ 1.5 kΩ; device 18 B + config 67 B; USBPRE=1 → 72 MHz fails; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/usb-48m.gif" width="640" alt="D+ is pulled up, the clock is 48 MHz, then 18 bytes and 67 bytes">
   <br><sub>▲ Animated version, showing only a normal enumeration: D+ pulled up, 48 MHz, 18 bytes, 67 bytes. The printed book has only the static figure above.</sub>
 </p>
@@ -112,6 +117,11 @@ Device Manager is not enough for USB debugging. Firmware state, PMA and endpoint
   <br><sub>▲ Drawn for this book. FS needs 48 MHz; USBPRE=1 breaks enumeration.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-usbpre-48.png" width="760" alt="Handraw: USBPRE and 48 MHz clock (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PLL 72 MHz÷1.5=48 MHz; USBPRE=1 host rejects; check clock before blaming CDC; not a photo.</sub>
+</p>
+
 
 USB is a conversation chaired by the computer. The host calls on a device, and only then may the device answer; a device cannot seize the wire whenever it has data. The F103 has one 12 Mbps full-speed device block. It can be a keyboard or a virtual serial port, but it cannot host a flash drive. Reaching 480 Mbps takes both an `OTG_HS` block and the matching high-speed PHY.
 
@@ -150,6 +160,11 @@ The four transfer types divide one bus in four different ways. Control introduce
 <p align="center">
   <img src="../../assets/diagrams/sample-14-pma-map.svg" width="760" alt="F1 USB: eight endpoints share a 512-byte PMA">
   <br><sub>▲ Drawn for this book. IN/OUT are host-named; overlapping PMA corrupts packets.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-pma-map.png" width="760" alt="Handraw: PMA and endpoint windows (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 512-byte PMA shared by EP0..EP7; IN/OUT are host-named; overlap corrupts packets; not a photo.</sub>
 </p>
 
 
@@ -219,6 +234,11 @@ Every USB device comes out of reset at address 0. The host uses that temporary a
 <p align="center">
   <img src="../../assets/diagrams/sample-14-descriptor-map.svg" width="760" alt="Device descriptor 18 bytes; configuration collection 67 bytes = 9+9+5+5+4+5+7+9+7+7; VID/PID 0x1209/0x0001; bulk endpoint 64 bytes, notification endpoint 8 bytes">
   <br><sub>▲ Drawn for this book. The descriptor tree: the device descriptor is 18 bytes; the configuration collection is 67 bytes = 9+9+5+5+4+5+7+9+7+7; VID/PID 0x1209/0x0001; the bulk endpoint is 64 bytes and the notification endpoint 8 — the two CDC endpoints hang off this tree, and the CDC-versus-HID differences in the next section all live inside the configuration collection. Sources: [RM0008 USB](#source-rm0008-usb) and the [usb-cdc example](#source-project-examples).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-descriptor-map.png" width="760" alt="Handraw: descriptor tree 18+67 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Device 18 B; config set 67=0x0043; VID/PID 0x1209/0x0001; not a photo.</sub>
 </p>
 
 ### 6. CDC versus HID
@@ -370,6 +390,11 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 <p align="center">
   <img src="../../assets/diagrams/instrument-evidence-ladder.svg" width="820" alt="USB evidence layers from build logs and registers through runtime logs, a logic analyzer, and an oscilloscope">
   <br><sub>▲ USB evidence is layer-specific: a host trace proves requests and descriptors, while a scope is needed for D+/D− electrical quality. A COM port appearing does not prove that CDC transfers of every length are correct (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-evidence-ladder.png" width="760" alt="Handraw: USB evidence ladder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Log→registers→UART→logic analyzer→scope; a COM port does not prove every CDC length; not a photo.</sub>
 </p>
 
 This repo's two examples do not ship the ST USB middleware. They enumerate with HAL PCD:

@@ -63,6 +63,11 @@ PA11/PA12 复位后也是 CAN 的默认脚，第 13 章已经把 CAN 重映射�
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch14-usb-enum.png" width="760" alt="Handraw：USB 枚举与 48 MHz（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。USBPRE=0→48 MHz；D+ 1.5 kΩ；设备 18 字节+配置 67 字节；USBPRE=1 变 72 MHz 失败；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/usb-48m.gif" width="640" alt="D+ 被拉高，时钟是 48 MHz，随后是 18 字节和 67 字节">
   <br><sub>▲ 动图版，只演示正常枚举：D+ 被上拉、48 MHz、18 字节、67 字节。印刷版只有上面的静态图。</sub>
 </p>
@@ -112,6 +117,11 @@ USB 调试不能只看设备管理器。固件状态、PMA/端点寄存器、主
   <br><sub>▲ 自绘。全速硬性 48 MHz；USBPRE=1 会枚举失败。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch14-usbpre-48.png" width="760" alt="Handraw：USBPRE 与 48 MHz 时钟（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。PLL 72 MHz÷1.5=48 MHz；USBPRE=1 主机拒读；先查时钟再怪 CDC；不是实拍。</sub>
+</p>
+
 
 USB 更像一场由电脑主持的对话。主机点到谁，谁才能回答；设备不能看见数据就自己抢着说。F103 里只有一套 12 Mbps 的全速设备外设，能做键盘、虚拟串口，却当不了 U 盘的主机。要跑 480 Mbps，不只名字里要有 `OTG_HS`，还得有对应的高速 PHY。
 
@@ -151,6 +161,11 @@ USB 主机发起一切通信，设备只能「被轮询」；STM32 最常见的�
 <p align="center">
   <img src="../assets/diagrams/sample-14-pma-map.svg" width="760" alt="F1 USB：8 个端点共享 512 字节 PMA">
   <br><sub>▲ 自绘。IN/OUT 站在主机侧；PMA 重叠会毁掉包。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch14-pma-map.png" width="760" alt="Handraw：PMA 与端点窗口（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。512 字节 PMA 共享 EP0..EP7；IN/OUT 站在主机侧；重叠会毁包；不是实拍。</sub>
 </p>
 
 
@@ -220,6 +235,11 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 <p align="center">
   <img src="../assets/diagrams/sample-14-descriptor-map.svg" width="760" alt="设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7，VID/PID 0x1209/0x0001，批量端点 64 字节、通知端点 8 字节">
   <br><sub>▲ 自绘。描述符层级树：设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7；VID/PID 0x1209/0x0001；批量端点 64 字节、通知端点 8 字节——CDC 的两个端点就挂在这棵树上，下一节的 CDC 与 HID 差异都在配置集合里。出处是 [RM0008 USB](#source-rm0008-usb) 和 [usb-cdc 例程](#source-project-examples)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch14-descriptor-map.png" width="760" alt="Handraw：描述符树 18+67（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。设备 18 字节；配置集合 67=0x0043；VID/PID 0x1209/0x0001；不是实拍。</sub>
 </p>
 
 ### 6. CDC 虚拟串口 vs HID
@@ -372,6 +392,11 @@ USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
 <p align="center">
   <img src="../assets/diagrams/instrument-evidence-ladder.svg" width="820" alt="从构建日志、寄存器、运行日志、逻辑分析仪到示波器的 USB 证据层级">
   <br><sub>▲ USB 各层证据不能互换：抓包能说明标准请求与描述符，示波器才说明 D+/D− 电气质量；设备管理器出现 COM 口也不能证明所有长度的 CDC 传输都正确（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch14-evidence-ladder.png" width="760" alt="Handraw：USB 证据层级阶梯（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。日志→寄存器→串口→逻辑分析仪→示波器；COM 口出现不证明一切 CDC 长度都对；不是实拍。</sub>
 </p>
 
 仓库里的两个示例不附带 ST USB 中间件，直接用 HAL PCD 完成枚举：
