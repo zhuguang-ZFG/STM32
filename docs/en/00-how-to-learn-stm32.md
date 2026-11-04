@@ -56,6 +56,12 @@ When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T
   <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the normal case: the image goes in through SWDIO (PA13) and SWCLK (PA14) at 0x08000000, and BOOT0=0 aliases 0x00000000 onto that Flash. The lower half is BOOT1=0 and BOOT0=1: the CPU still reads 0x00000000, but the alias is system memory at 0x1FFFF000. The flashed image is still in Flash and is simply not fetched. The BOOT pins latch on the 4th rising edge of SYSCLK. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-boot0-fetch.png" width="760" alt="Handraw: BOOT0=0 fetches Flash, BOOT0=1 fetches system memory (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). How BOOT0 retargets the 0x00000000 alias; not a flash log and not a board photograph.</sub>
+</p>
+
+
 ## Three boot states
 
 | State | BOOT1 | BOOT0 | What the CPU fetches from 0x00000000 | On STM32F103C8T6 |
@@ -78,6 +84,12 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
   <img src="../../assets/diagrams/sample-00-boot-triage.svg" width="820" alt="When nothing shows on the board, triage in three rings, supply then BOOT0 then SWDIO/SWCLK, and stop at the first ring that fails">
   <br><sub>▲ Drawn for this book. Three rings, top to bottom. Ring 1 measures 3.3 V between VDD and VSS at the MCU, with Micro-USB as the only supply. Ring 2 confirms pin 44 BOOT0 = 0, so 0x00000000 aliases Flash at 0x08000000. Only then does ring 3 attach the probe: pin 34 SWDIO, pin 37 SWCLK, common ground, pin 7 NRST optional. The figure shows the order of the check: while one ring fails, any later code change is unverifiable. It does not prove the probe firmware is current, it does not say whether a clone's 3V3 pin is an output or a sense pin, and it does not replace the target board's schematic. Source: [DS5319 Rev 20 Table 5](#source-ds5319) and [RM0008 Rev 21 Table 9](#source-rm0008-boot).</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-boot-triage-rings.png" width="760" alt="Handraw: supply → BOOT0 → SWD three-ring triage (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Order: supply, BOOT0, then SWD; if ring 1 fails, do not change code. Not a meter photograph.</sub>
+</p>
+
 
 ## Learning goals
 - [ ] Keep four pieces of evidence from the first loop: a build artifact, flash verification, a breakpoint in `main`, and a 1 Hz waveform on PC13
@@ -111,6 +123,12 @@ If one of those is missing, review that item. You do not need to finish a C or c
   <br><sub>▲ Drawn for this book. One lane the first week; mixing three APIs burns the week.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-three-api-lanes.png" width="760" alt="Handraw: register / SPL / HAL lanes — pick one the first week (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Three abstraction heights for the same peripheral; this book recommends HAL to start. Not an IDE screenshot.</sub>
+</p>
+
+
 
 | Dimension | Registers (bare registers) | Standard peripheral library (SPL) | HAL + LL + CubeMX |
 | --- | --- | --- | --- |
@@ -132,6 +150,12 @@ If one of those is missing, review that item. You do not need to finish a C or c
   <br><sub>▲ Drawn for this book. Measurable gates; do not skip UART accept for RTOS.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-roadmap-three-stages.png" width="760" alt="Handraw: blink → bus → system three-stage gates (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Each stage is measurable; pass before moving on. Not a progress-bar photo.</sub>
+</p>
+
+
 
 #### Stage 1: Beginner (4 weeks) — get the board running
 
@@ -146,6 +170,12 @@ If one of those is missing, review that item. You do not need to finish a C or c
   <img src="../../assets/diagrams/sample-00-accept-gate.svg" width="820" alt="Three acceptance gates for the first program: build with 0 Error, something visible on the board, and every line explainable; a clean build alone does not pass">
   <br><sub>▲ Drawn for this book. All three gates in order, or it is not accepted. Gate 1 is the build: 0 Error, an artifact from STM32F103C8Tx_FLASH.ld, written to 0x08000000 by the flash tool. Gate 2 is the board: the PC13 LED completes one on/off cycle per second, 500 ms on plus 500 ms off. Gate 3 is the sentence: you can say why APB2ENR.IOPCEN is set before CRH is written, why CRH[23:20] = 0x2 means 2 MHz push-pull, and why toggling ODR13 changes the pin. A green build covers gate 1 only; it says nothing about BOOT0, a Dupont wire, or the 500 ms, and the four-gate ladder in the hands-on section adds flash, reset, and measurement. Source: [RM0008 Rev 21 chapter 9](#source-rm0008) and [DS5319 Rev 20 Table 5](#source-ds5319).</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-accept-three-gates.png" width="760" alt="Handraw: build 0 Error / visible on board / explain every line (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Three acceptance gates; a clean build alone is not a pass. Not a build-log screenshot.</sub>
+</p>
+
 
 #### Stage 2: Intermediate (6 weeks) — open the usual buses and peripherals
 
@@ -200,6 +230,12 @@ If one of those is missing, review that item. You do not need to finish a C or c
   <img src="../../assets/diagrams/sample-00-learn-loop.svg" width="820" alt="The learning loop in four steps: read the matching RM0008 section, write the smallest code, put it on the board, explain every line; skipping the manual stops at explanation">
   <br><sub>▲ Drawn for this book. Four steps, then repeat. Read the one register you need in RM0008 chapter 9; write the smallest code that touches it (set APB2ENR.IOPCEN, write 0x2 to CRH[23:20], toggle ODR13); flash 0x08000000 and watch PC13 with BOOT0 = 0; then explain why the order holds, why 0x2 is push-pull, and why 500 ms is a half period before moving to the next register. The lower half is the failure path: copy a project instead, and when nothing shows you can neither point at the line that owns a pin nor tell an unopened clock from an unwired pin. The figure shows that all four steps are required; it does not prove any particular project is written well, and it leaves the clock tree and the exception stack to other chapters. Source: [RM0008 Rev 21 chapter 9](#source-rm0008) and [DS5319 Rev 20 Table 5](#source-ds5319).</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-learn-loop-four-steps.png" width="760" alt="Handraw: read RM → smallest code → board → explain loop (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Four-step loop; skipping the manual stops at explanation. Not a classroom photograph.</sub>
+</p>
+
 
 ## Hardware and wiring
 
