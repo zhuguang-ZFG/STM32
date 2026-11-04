@@ -1,0 +1,604 @@
+{
+ "schema_version": 1,
+ "chapter": "25",
+ "slug": "h7-pins-long",
+ "title": "STM32H7 引脚：480 兆背后的前提",
+ "short_source": "tools/narration.py#CHAPTERS[25]",
+ "scenes": [
+  {
+   "scene_id": "ch25-s01",
+   "title": "照抄 480 兆的配置，板子起不来",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一次失败：同样的 H743，别人贴出 480 兆配置能跑，你的板子一上电就挂在启动。这一章只追一个问题：这颗 480 兆的芯片，上限背后藏着哪些前提条件。",
+   "on_screen": [
+    "同型号配置",
+    "一块能跑一块挂",
+    "上限背后有前提"
+   ],
+   "visual_source": "illustrations/handraw/ch25-rev-vos.png",
+   "fact_source": [
+    "es0392",
+    "docs/25-STM32H7引脚.md#先选供电与电压档，再切换 480 MHz"
+   ],
+   "memory_anchor": "480 不是无条件承诺",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch25-s02",
+   "title": "这颗料是谁：H743ZIT6",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s01"
+   ],
+   "narration": "订购信息解码：Z 是 144 脚，I 是 2MB 闪存，T 是 LQFP 封装。内核是 Cortex-M7 最高 480 兆，带双精度浮点和 16KB 读写 Cache；供电 1.62 到 3.6 伏。出处 DS12110 修订版 11。",
+   "on_screen": [
+    "Z = 144 脚",
+    "I = 2 MB Flash",
+    "M7 @ 480 MHz + Cache"
+   ],
+   "visual_source": "illustrations/handraw/ch25-part-id.png",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#这颗料是谁"
+   ],
+   "memory_anchor": "ZI T 三个字母各管一事",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch25-s03",
+   "title": "和 F1/F4 逐脚对照",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s02"
+   ],
+   "narration": "引脚和 F1、F4 不是一套：第 1 脚是 PE2；内核供电走 VCAP1 脚 71 和 VCAP2 脚 106，要外接电容；脚 95 是 VDD33USB 专用电源；脚 143 是 PDR_ON；CAN 是 FDCAN，不是 bxCAN。",
+   "on_screen": [
+    "第 1 脚 = PE2",
+    "VCAP1/2 = 脚 71/106",
+    "FDCAN ≠ bxCAN"
+   ],
+   "visual_source": "illustrations/handraw/ch25-pin-compare.png",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#和 F1 / F4 比"
+   ],
+   "memory_anchor": "每一类电源脚都换了门牌",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s04",
+   "title": "三个片内域，不是一个电源轨",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s03"
+   ],
+   "narration": "H743 内部有 D1、D2、D3 三个电源时钟域，可以分别关时钟或断电，它们画在芯片内部，由 PWR 和 RCC 管理。VCAP 是内核稳压器的电容，VDD33USB 只喂 USB PHY，PDR_ON 决定掉电监测的边界——谁也不是普通去耦脚。",
+   "on_screen": [
+    "D1 / D2 / D3 片内域",
+    "VCAP = 内核稳压",
+    "VDD33USB · PDR_ON 各司其职"
+   ],
+   "visual_source": "diagrams/h7-power-domains.svg",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#和 F1 / F4 比"
+   ],
+   "memory_anchor": "三个域在片内，不在板上",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s05",
+   "title": "revision 决定 400 还是 480",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s02"
+   ],
+   "narration": "ES0392 写明：Rev Y 和 Rev W 没有 VOS0，CPU 最高 400 兆；只有 Rev V 才允许进入 VOS0 用到 480 兆。先读 DBGMCU 里 IDCODE 的 REV_ID 对照手册，不要靠开发板商品名猜。",
+   "on_screen": [
+    "Rev Y/W：无 VOS0，400 MHz",
+    "Rev V：VOS0 → 480 MHz",
+    "读 REV_ID"
+   ],
+   "visual_source": "illustrations/handraw/ch25-rev-vos.png",
+   "fact_source": [
+    "es0392",
+    "docs/25-STM32H7引脚.md#先选供电与电压档，再切换 480 MHz"
+   ],
+   "memory_anchor": "revision 是第一道门",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s06",
+   "title": "VOS 换挡：每次都等 VOSRDY",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s05"
+   ],
+   "narration": "Rev V 追求 480 兆的正确路径是：先在 VOS1 就绪，再进入 VOS0，每次换挡都等待 VOSRDY 标志，并给独立截止点。在 Rev Y 或 W 上写 VOS0，不会解锁 480 兆，只会让启动失败。",
+   "on_screen": [
+    "VOS1 就绪 → VOS0",
+    "等 VOSRDY",
+    "Y/W 写 VOS0 = 挂"
+   ],
+   "visual_source": "diagrams/h7-revision-clock-decision.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#先选供电与电压档，再切换 480 MHz"
+   ],
+   "memory_anchor": "一档一档升，等就绪",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s07",
+   "title": "供电方案启动初期配一次",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s06"
+   ],
+   "narration": "供电方案只在启动初期配置一次：LDO 板写 PWR_LDO_SUPPLY，SMPS 板必须同时改板级器件和软件宏，不能只改一个宏。原理图、电感、VCAP 电容要和 DS12110、AN4938 的方案一致。",
+   "on_screen": [
+    "LDO 板 → LDO_SUPPLY",
+    "SMPS 板改器件+宏",
+    "只改宏救不了板"
+   ],
+   "visual_source": "diagrams/h7-power-domains.svg",
+   "fact_source": [
+    "an4938",
+    "docs/25-STM32H7引脚.md#先选供电与电压档，再切换 480 MHz"
+   ],
+   "memory_anchor": "板和宏要一起改",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s08",
+   "title": "时钟链可复算：8 兆到 400",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s06"
+   ],
+   "narration": "官方示例给出 400 兆基线：ST-LINK 提供 8 兆 HSE 旁路时钟，除以 PLLM4，乘 PLLN400，再除 PLLP2，8 除 4 乘 400 除 2 等于 400 兆。整条链每个分频都可以复算。",
+   "on_screen": [
+    "8 MHz ÷ 4 × 400 ÷ 2",
+    "= 400 MHz",
+    "每个分频可复算"
+   ],
+   "visual_source": "animations/sample-25-hse-to-480-flow.svg",
+   "fact_source": [
+    "stm32cube-h7-clock",
+    "docs/25-STM32H7引脚.md#HSE 8 MHz 到 480 MHz：一条可复算的时钟链"
+   ],
+   "memory_anchor": "时钟是一笔可复算的账",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch25-s09",
+   "title": "Rev V 改一个数到 480",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s08"
+   ],
+   "narration": "Rev V 加 8 兆 HSE 旁路加 LDO 板，把 PLLN 改成 480，其余分频保持官方拓扑，就得到 480 兆。自焊晶振不是旁路，HSE 频率不同必须重算，不能照抄。",
+   "on_screen": [
+    "PLLN 400 → 480",
+    "其余分频不动",
+    "非旁路要重算"
+   ],
+   "visual_source": "animations/h7-clock-chain.svg",
+   "fact_source": [
+    "stm32cube-h7-clock",
+    "docs/25-STM32H7引脚.md#HSE 8 MHz 到 480 MHz：一条可复算的时钟链"
+   ],
+   "memory_anchor": "改一个数，重算全链",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch25-s10",
+   "title": "四级时钟各算各的",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s09"
+   ],
+   "narration": "升频之后四档时钟是四本账：SystemCoreClock 是 CPU 的 480 兆，SystemD2Clock 对应 HCLK 240 兆，APB 外设时钟 120 兆，APB 定时器时钟翻倍到 240 兆。把 CPU 频率当外设时钟用，波特率和周期全错。",
+   "on_screen": [
+    "CPU 480",
+    "HCLK 240",
+    "PCLK 120 · APB 定时器 240"
+   ],
+   "visual_source": "illustrations/handraw/ch25-clock-math.png",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "四本账别记混",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s11",
+   "title": "验收用 MCO2 和波形",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s10"
+   ],
+   "narration": "时钟换挡的验收不靠看起来对了：MCO2 输出分频后的时钟，用仪器量频率；UART 发已知字节、PWM 量周期，外设闭环一起对。三类证据齐全，频率才算真的上去了。",
+   "on_screen": [
+    "软件读回",
+    "MCO2 仪器量",
+    "UART/PWM 闭环"
+   ],
+   "visual_source": "diagrams/h7-startup-evidence.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#启动后必须拿到三类证据"
+   ],
+   "memory_anchor": "三类证据才收账",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s12",
+   "title": "L1 Cache：DMA 看见的不一样",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s11"
+   ],
+   "narration": "H7 有 L1 Cache，DMA 写进的内存 CPU 可能读到旧值。方向要分清：发送前 CPU 对写过的 Cache 行做 clean；接收后对收包范围做 invalidate。方向做反，数据就新旧混杂。",
+   "on_screen": [
+    "TX：先 clean",
+    "RX：后 invalidate",
+    "Cache line = 32 B"
+   ],
+   "visual_source": "diagrams/network-cache-ownership.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "clean 发，invalidate 收",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s13",
+   "title": "Ethernet DMA 到不了 DTCM",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s12"
+   ],
+   "narration": "固定的 CubeH7 示例写明：Ethernet DMA 访问不了 0x20000000 的 DTCM。描述符和缓冲要放 D1 或 D2 的 SRAM，缓冲可缓存时按 32 字节对齐并做一致性维护，最后在 map 文件里核对地址。",
+   "on_screen": [
+    "DTCM 0x20000000 不可达",
+    "放 D1/D2 SRAM",
+    "32 B 对齐"
+   ],
+   "visual_source": "diagrams/sample-25-dcache-dma.svg",
+   "fact_source": [
+    "project-examples",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "描述符先看落址",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s14",
+   "title": "危险操作：窄区间 invalidate",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s12"
+   ],
+   "narration": "对没按 Cache 行对齐的窄区间直接 invalidate 是危险操作：首尾行里别的脏变量会一起丢。安全方案是缓冲区独占并对齐，或者由驱动统一管理所有权与维护范围。",
+   "on_screen": [
+    "未对齐 invalidate",
+    "脏变量一起丢",
+    "独占并对齐"
+   ],
+   "visual_source": "diagrams/sample-25-dcache-dma.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "invalidate 不是刷新键",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s15",
+   "title": "PA11/PA12 的抢脚与出口",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s03"
+   ],
+   "narration": "PA11 和 PA12 同时是 FDCAN1 和 OTG_FS，一只脚一次只有一个所有者。要两样都要，FDCAN1 改到 PD0、PD1 或 PB8、PB9。同理 PB6、PB7 在 USART1 和 I2C1 之间二选一。",
+   "on_screen": [
+    "FDCAN1 ↔ OTG_FS",
+    "迁 PD0/1 或 PB8/9",
+    "USART1 ↔ I2C1 抢 PB6/7"
+   ],
+   "visual_source": "diagrams/h7-pinmux-conflicts.svg",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#关键复用（DS12110 Table 9，只写表里出现过的）"
+   ],
+   "memory_anchor": "迁移出口写在表里",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s16",
+   "title": "PC2_C 的下划线不是笔误",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s15"
+   ],
+   "narration": "模拟脚 PC2_C 和 PC3_C 名字里的下划线 C 是手册写法，表示可接到模数转换的专用路径。原理图里不要把它写成普通 PC2，名字变了，连接就变了。",
+   "on_screen": [
+    "PC2_C / PC3_C",
+    "ADC 专用路径",
+    "别写成普通 PC2"
+   ],
+   "visual_source": "boards/pinout-stm32h743zi-lqfp144.svg",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#关键复用（DS12110 Table 9，只写表里出现过的）"
+   ],
+   "memory_anchor": "下划线是功能不是排版",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s17",
+   "title": "迁移四岔口：先分流再修",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch25-s11",
+    "ch25-s12"
+   ],
+   "narration": "F4 迁 H7 出问题，按四岔口分流：供电方案、硅片 revision、Cache 与 DMA、时钟链。每条岔口有自己的核对清单，混在一起修会把好配置改坏。",
+   "on_screen": [
+    "供电",
+    "revision",
+    "Cache/DMA · 时钟链"
+   ],
+   "visual_source": "diagrams/sample-25-migrate-triage.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "四岔口先分流",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch25-s18",
+   "title": "Rev Y/W 照抄 480 = 启动失败",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s05",
+    "ch25-s06"
+   ],
+   "narration": "在 Rev Y 或 W 上请求 480 兆后启动失败，原因是这些修订没有 VOS0，上限就是 VOS1 的 400 兆。解决是按 ES0392 改用 VOS1 加 400 兆基线，不重试超规格配置。",
+   "on_screen": [
+    "现象：启动失败",
+    "原因：无 VOS0",
+    "动作：回 400 基线"
+   ],
+   "visual_source": "illustrations/handraw/ch25-rev-vos.png",
+   "fact_source": [
+    "es0392",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "超规格不重试",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s19",
+   "title": "改了供电宏仍不启动",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s07"
+   ],
+   "narration": "只改供电宏还是不启动：软件方案和 LDO、SMPS 原理图不一致，或者 VOS 没等就绪。解决是同时核对板级供电、供电宏、VOSRDY 和启动状态，四样一起看。",
+   "on_screen": [
+    "现象：仍不启动",
+    "原因：板宏不一致/未就绪",
+    "动作：四样一起核对"
+   ],
+   "visual_source": "diagrams/h7-power-domains.svg",
+   "fact_source": [
+    "an4938",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "宏是声明，板是事实",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s20",
+   "title": "内核不起振或随机死",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s04"
+   ],
+   "narration": "内核不起振或随机死，第一条假设是 VCAP1、VCAP2 没按电气特性装电容。解决是只按 DS12110 的 VCAP 一节选值，不凭 F4 的经验。VCAP 不是普通去耦脚，不能省。",
+   "on_screen": [
+    "现象：不起振/随机死",
+    "假设：VCAP 未装",
+    "动作：按电气节选值"
+   ],
+   "visual_source": "illustrations/handraw/ch25-pin-compare.png",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "VCAP 电容按手册选",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s21",
+   "title": "USB 完全无枚举",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s03"
+   ],
+   "narration": "USB 完全无枚举，第一条假设是脚 95 的 VDD33USB 没供电。它是 USB PHY 的专用电源，不是任意一路 VDD，也不是普通 GPIO。原理图上先确认这一脚。",
+   "on_screen": [
+    "现象：无枚举",
+    "假设：VDD33USB 缺电",
+    "动作：查脚 95"
+   ],
+   "visual_source": "illustrations/handraw/ch25-pin-compare.png",
+   "fact_source": [
+    "ds12110",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "PHY 有自己的胃",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s22",
+   "title": "「CAN」初始化失败",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s03",
+    "ch25-s15"
+   ],
+   "narration": "CAN 初始化失败，第一条假设是你把 F407 的 bxCAN 代码贴到了 FDCAN 上。寄存器和行为不是同一章，解决是打开 RM 里的 FDCAN 章节，按 FDCAN 的初始化流程重写。",
+   "on_screen": [
+    "现象：初始化失败",
+    "原因：bxCAN ≠ FDCAN",
+    "动作：开对章"
+   ],
+   "visual_source": "diagrams/h7-pinmux-conflicts.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "同名不同宗",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s23",
+   "title": "DMA 缓冲区在调试器里是旧的",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s12",
+    "ch25-s13"
+   ],
+   "narration": "DMA 收完数据，调试器里的数组还是旧值，第一条假设是缓冲落在可缓存内存而没做维护。解决是按发送 clean、接收 invalidate 的方向补齐，并确认缓冲对齐与落址。",
+   "on_screen": [
+    "现象：旧值",
+    "假设：缺维护",
+    "动作：按方向补"
+   ],
+   "visual_source": "diagrams/sample-25-dcache-dma.svg",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "新旧混杂先查 Cache",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s24",
+   "title": "升频后 UART 和 PWM 全错",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch25-s10"
+   ],
+   "narration": "升频后 UART 波特率和 PWM 周期全错，第一条假设是把 CPU 频率当成了外设时钟。本例 CPU 是 480 兆，HCLK 240，PCLK 120，APB 定时器 240。按各自时钟重算，并用波形验收。",
+   "on_screen": [
+    "现象：波特率/周期错",
+    "假设：账本记混",
+    "动作：按档重算"
+   ],
+   "visual_source": "illustrations/handraw/ch25-clock-math.png",
+   "fact_source": [
+    "rm0433",
+    "docs/25-STM32H7引脚.md#从 F4 迁过来"
+   ],
+   "memory_anchor": "四本账逐本对",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch25-s25",
+   "title": "实验一：读出你的 revision",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch25-s05"
+   ],
+   "narration": "第一个实验读身份：从 DBGMCU 的 IDCODE 里读出 REV_ID，对照 RM0433 与 ES0392 确认是 Rev Y、W 还是 V，并与丝印、商品名分别核对。任何不一致单独记录。",
+   "on_screen": [
+    "读 REV_ID",
+    "对照两份手册",
+    "与丝印分别核对"
+   ],
+   "visual_source": "illustrations/handraw/ch25-rev-vos.png",
+   "fact_source": [
+    "es0392",
+    "docs/25-STM32H7引脚.md#动手实验"
+   ],
+   "memory_anchor": "revision 写进工程记录",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch25-s26",
+   "title": "实验二：时钟账复算",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch25-s08",
+    "ch25-s09",
+    "ch25-s10"
+   ],
+   "narration": "第二个实验把时钟账复算一遍：按你的 HSE 频率重算 PLLM、PLLN、PLLP，写出 CPU、HCLK、PCLK 四档结果，再用 MCO2 输出分频时钟，用仪器量出频率对账。",
+   "on_screen": [
+    "重算 PLL",
+    "写四档结果",
+    "MCO2 对账"
+   ],
+   "visual_source": "animations/h7-clock-chain.svg",
+   "fact_source": [
+    "stm32cube-h7-clock",
+    "docs/25-STM32H7引脚.md#动手实验"
+   ],
+   "memory_anchor": "算得出才调得出",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch25-s27",
+   "title": "实验三：升频前后闭环",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch25-s26"
+   ],
+   "narration": "第三个实验做升频前后对照：同一份外设闭环代码，在 400 兆基线和目标频率各跑一遍，UART 发已知字节、PWM 量周期，差异与原因写进记录。",
+   "on_screen": [
+    "400 基线一遍",
+    "目标频率一遍",
+    "差异写记录"
+   ],
+   "visual_source": "diagrams/h7-startup-evidence.svg",
+   "fact_source": [
+    "stm32cube-h7-clock",
+    "docs/25-STM32H7引脚.md#动手实验"
+   ],
+   "memory_anchor": "前后对照才算迁移",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch25-s28",
+   "title": "离开检查：四份证据",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch25-s25",
+    "ch25-s26",
+    "ch25-s27"
+   ],
+   "narration": "离开这一章，你手里应有四份证据：revision 记录、供电方案核对、四档时钟账，和一份 Cache 维护清单加升频闭环差异。480 兆从此是一笔带前提的账，不是一句口号。",
+   "on_screen": [
+    "revision 记录",
+    "供电核对",
+    "时钟账 · Cache 清单"
+   ],
+   "visual_source": "diagrams/sample-25-migrate-triage.svg",
+   "fact_source": [
+    "ds12110",
+    "rm0433",
+    "docs/25-STM32H7引脚.md#动手实验"
+   ],
+   "memory_anchor": "带前提的 480 兆",
+   "evidence_type": "recall"
+  }
+ ]
+}

@@ -1,0 +1,600 @@
+{
+ "schema_version": 1,
+ "chapter": "26",
+ "slug": "spl-long",
+ "title": "标准外设库：看清四层，接好三条链",
+ "short_source": "tools/narration.py#CHAPTERS[26]",
+ "scenes": [
+  {
+   "scene_id": "ch26-s01",
+   "title": "HAL 的超时习惯，把 SPL 工程卡死了",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一次卡死：习惯了 HAL 的超时参数，把同样的写法搬进 SPL 的工程，程序停在 while 循环里再也不出来。这一章只追一个问题：SPL 到底替你做了什么、没做什么。",
+   "on_screen": [
+    "HAL 写法搬进 SPL",
+    "卡在 while",
+    "SPL 替你做了什么"
+   ],
+   "visual_source": "illustrations/handraw/ch26-timeout-poll.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#轮询必须自己带超时"
+   ],
+   "memory_anchor": "SPL 更薄，也更快让你负责",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch26-s02",
+   "title": "先钉死版本：V3.5.0",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s01"
+   ],
+   "narration": "这一章只讲 STM32F10x 标准外设库 V3.5.0，官方入口 STSW-STM32054。源码镜像冻结在固定 commit，只用于定位文件，不是新的规范来源。寄存器行为仍以 RM0008 和数据手册为准。",
+   "on_screen": [
+    "SPL V3.5.0",
+    "STSW-STM32054",
+    "寄存器以 RM0008 为准"
+   ],
+   "visual_source": "illustrations/handraw/ch26-four-layers.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#1. 先钉死版本与边界"
+   ],
+   "memory_anchor": "版本先钉死再谈 API",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch26-s03",
+   "title": "SPL 的四层",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s02"
+   ],
+   "narration": "SPL 的价值是看清四层：stm32f10x.h 给寄存器地址和位定义；外设头文件给结构体和声明；外设源文件把字段写进寄存器；时钟、引脚、顺序、中断、超时和业务，全是你自己的工程的事。",
+   "on_screen": [
+    "f10x.h：地址与位",
+    "头文件：结构体",
+    ".c 写寄存器 · 你的工程"
+   ],
+   "visual_source": "illustrations/handraw/ch26-four-layers.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#1. 先钉死版本与边界"
+   ],
+   "memory_anchor": "背函数名没有价值",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s04",
+   "title": "工程骨架：少一个文件链接就断",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s03"
+   ],
+   "narration": "工程骨架少一个文件都可能函数有声明、链接没实现：CMSIS 目录管内核与启动，StdPeriph_Driver 的 inc 和 src 要一起进工程，模板里还有 conf.h、中断文件和 system 文件。",
+   "on_screen": [
+    "CMSIS + Driver/src",
+    "conf.h · it.c · system",
+    "缺一个 .c 就链接失败"
+   ],
+   "visual_source": "diagrams/sample-26-file-matrix.svg",
+   "fact_source": [
+    "spl-f1-mirror",
+    "docs/26-STM32F10x标准外设库SPL.md#2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”"
+   ],
+   "memory_anchor": "缺一个 .c 就断",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s05",
+   "title": "两个必须确认的宏",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s04"
+   ],
+   "narration": "两个宏必须显式确认：STM32F10X_MD 这类密度宏按确切料号选，C8 和 B 是中容量；USE_STDPERIPH_DRIVER 让 stm32f10x.h 引入 conf.h。配错或漏掉，轻则声明不可见，重则启动文件和芯片不匹配。",
+   "on_screen": [
+    "密度宏按料号选",
+    "USE_STDPERIPH_DRIVER",
+    "漏了 = 声明不可见"
+   ],
+   "visual_source": "illustrations/handraw/ch26-defines.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”"
+   ],
+   "memory_anchor": "密度宏跟料号走",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s06",
+   "title": "assert_param 不是故障处理",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s05"
+   ],
+   "narration": "SPL 用 assert_param 检查参数。开发期打开 USE_FULL_ASSERT，错误进 assert_failed；发布版关闭后这些检查通常不再执行。通信超时、传感器离线、DMA 错误、Flash 写失败，都要自己的运行时处理。",
+   "on_screen": [
+    "开发期 USE_FULL_ASSERT",
+    "发布版不执行",
+    "运行时自己处理"
+   ],
+   "visual_source": "illustrations/handraw/ch26-defines.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”"
+   ],
+   "memory_anchor": "断言挡不住故障",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s07",
+   "title": "统一调用模型四步",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s03"
+   ],
+   "narration": "大多数 SPL 外设遵循同一顺序：开时钟，取默认值，覆盖目标字段，最后显式使能。四步对应四个边界：没有时钟写入不生效，局部变量有随机值，字段要和接线对上，使能在配置之后。",
+   "on_screen": [
+    "开时钟",
+    "StructInit",
+    "覆盖字段",
+    "Cmd 使能"
+   ],
+   "visual_source": "illustrations/handraw/ch26-init-steps.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#3. 统一调用模型：时钟、默认值、配置、使能"
+   ],
+   "memory_anchor": "四步四边界",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s08",
+   "title": "点灯闭环：真实编译链接",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s07"
+   ],
+   "narration": "点灯最小闭环要走真实的编译链接：RCC 开 GPIOA 时钟，StructInit 填默认，改 Pin、Mode、Speed，GPIO_Init 写入，再用 SetBits 和 ResetBits 控制。每一步都能在寄存器层对账。",
+   "on_screen": [
+    "时钟 → 默认 → 配置",
+    "GPIO_Init",
+    "SetBits / ResetBits"
+   ],
+   "visual_source": "animations/sample-26-clk-cfg-en-flow.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#4. 一份实际编译链接的 SPL 点灯最小闭环"
+   ],
+   "memory_anchor": "闭环在寄存器层对账",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch26-s09",
+   "title": "HAL 与 SPL 对上同一寄存器",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s08"
+   ],
+   "narration": "HAL 和 SPL 不是两套硬件：GPIO 时钟最终都写 RCC_APB2ENR，配置都落在 CRL 和 CRH，输出走 BSRR 和 BRR，DMA 剩余都在 CNDTR。只换函数名、保留旧状态机，最容易得到能跑一会儿的工程。",
+   "on_screen": [
+    "同一个 RCC_APB2ENR",
+    "CRL/CRH · BSRR/BRR",
+    "DMA 剩余在 CNDTR"
+   ],
+   "visual_source": "diagrams/sample-26-spl-hal-compare.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#5. HAL、SPL 与寄存器怎样对上"
+   ],
+   "memory_anchor": "两条库路一块硬件",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s10",
+   "title": "轮询自己带超时",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s09"
+   ],
+   "narration": "SPL 的 USART_SendData 只写数据寄存器，不会替你组织超时。等 TXE 的循环自己写边界：教学里用递减的 spin limit，产品里换成可靠时基的截止时间，并写清超时后的恢复动作。",
+   "on_screen": [
+    "SendData 只写 DR",
+    "spin_limit 有界等待",
+    "产品用可靠时基"
+   ],
+   "visual_source": "illustrations/handraw/ch26-timeout-poll.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#5. HAL、SPL 与寄存器怎样对上"
+   ],
+   "memory_anchor": "等标志的循环要边界",
+   "evidence_type": "code"
+  },
+  {
+   "scene_id": "ch26-s11",
+   "title": "中断没有回调替你分发",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s10"
+   ],
+   "narration": "SPL 的中断模型没有 HAL 回调替你分发：NVIC_Init 在 misc.c 里配置优先级和使能，IRQHandler 要自己写在 stm32f10x_it.c 里，标志也要自己清。谁使能、谁响应、谁清标志，三条都要自己接。",
+   "on_screen": [
+    "NVIC_Init（misc.c）",
+    "自己写 IRQHandler",
+    "自己清标志"
+   ],
+   "visual_source": "animations/nvic-interrupt-flow.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#6. 中断模型：没有 HAL 回调替你分发"
+   ],
+   "memory_anchor": "三条链自己接",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch26-s12",
+   "title": "DMA 不会自动绑两家",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s11"
+   ],
+   "narration": "SPL 的 DMA 也不会自动把两个驱动绑在一起：ADC 转换完不会替你搬数据，要自己配 DMA_Init 的外设地址、内存地址、数量和方向，再使能通道。两个驱动之间的 glue 是你的代码。",
+   "on_screen": [
+    "CPAR/CMAR 自己填",
+    "CNDTR 自己数",
+    "glue 是你的代码"
+   ],
+   "visual_source": "animations/dma-circular.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#7. DMA 模型：SPL 不会自动把两个驱动绑在一起"
+   ],
+   "memory_anchor": "搬运工要你自己雇",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch26-s13",
+   "title": "各外设的最小调用链",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s12"
+   ],
+   "narration": "每个外设的最小调用链都能回寄存器：TIM 走 PSC、ARR、CR1；USART 配 BRR 和 CR1 再 Cmd；ADC 要先校准再启动；Flash 走解锁、擦除、编程。函数名可能不同，回到头文件原型核对。",
+   "on_screen": [
+    "TIM：PSC/ARR/CR1",
+    "USART：BRR/CR1",
+    "ADC 先校准 · Flash 解锁"
+   ],
+   "visual_source": "illustrations/handraw/ch26-init-steps.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#8. 各外设最小调用链"
+   ],
+   "memory_anchor": "链链落到寄存器",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s14",
+   "title": "维护旧工程：先冻结再迁移",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s13"
+   ],
+   "narration": "维护旧工程的顺序是先冻结再迁移：冻结能复现的基线，画外设所有权表，一次只迁一个外设，对比可见结果，迁完清掉旧所有权。不能双初始化，也不能全局搜索函数名。",
+   "on_screen": [
+    "冻结基线",
+    "所有权表",
+    "一次一外设 · 清旧的"
+   ],
+   "visual_source": "diagrams/sample-26-spl-hal-compare.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#9. 维护旧工程：先冻结，再迁移"
+   ],
+   "memory_anchor": "迁移是外科手术",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s15",
+   "title": "什么时候保留，什么时候迁",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch26-s14"
+   ],
+   "narration": "判断有条件：已量产、改动小、能锁定环境的产品保留 SPL；新系列没有 SPL、需要 CubeMX 和跨系列 BSP、或库副本来源不明的，迁到 HAL 或 LL。条件变了，结论就变。",
+   "on_screen": [
+    "保留：量产+锁定",
+    "迁移：新系列/副本不明",
+    "条件变结论变"
+   ],
+   "visual_source": "illustrations/handraw/ch26-spl-hal.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#9. 维护旧工程：先冻结，再迁移"
+   ],
+   "memory_anchor": "有条件的判断",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch26-s16",
+   "title": "链接错误：函数有声明没实现",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s04"
+   ],
+   "narration": "链接器报函数有声明没实现，第一条假设是工程没把用到的 StdPeriph_Driver 源文件加进编译。解决是对照外设清单补 src 下对应的 .c，只加 include 路径是不够的。",
+   "on_screen": [
+    "现象：链接失败",
+    "假设：缺源文件",
+    "动作：补对应 .c"
+   ],
+   "visual_source": "diagrams/sample-26-file-matrix.svg",
+   "fact_source": [
+    "spl-f1-mirror",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "声明在前，实现在编译清单里",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s17",
+   "title": "GPIO_InitTypeDef 不可见",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s05"
+   ],
+   "narration": "编译报 GPIO_InitTypeDef 不存在，第一条假设是没定义 USE_STDPERIPH_DRIVER，conf.h 没被引入。解决是确认宏定义和头文件搜索路径，再确认密度宏和芯片容量一致。",
+   "on_screen": [
+    "现象：类型不可见",
+    "假设：宏没定义",
+    "动作：查宏与路径"
+   ],
+   "visual_source": "illustrations/handraw/ch26-defines.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "两个宏先查再编译",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s18",
+   "title": "写入像进了虚空：时钟没开",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s07"
+   ],
+   "narration": "寄存器写进去读出来还是零，第一条假设是外设时钟没开。SPL 的 RCC 命令不会替你补：APB2 的 GPIO 和 APB1 的外设各走各的使能位。先开时钟，再摸寄存器。",
+   "on_screen": [
+    "现象：写不生效",
+    "假设：时钟没开",
+    "动作：补 RCC 使能"
+   ],
+   "visual_source": "illustrations/handraw/ch26-init-steps.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "先开时钟再摸寄存器",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s19",
+   "title": "死循环等一个不来的标志",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s10"
+   ],
+   "narration": "程序卡死在等 TXE 的循环里，第一条假设是外设没初始化完或时钟没开，标志永远不会置位。解决是给循环加边界，让失败提前返回，再看外设配置。",
+   "on_screen": [
+    "现象：卡死在 while",
+    "假设：标志永不置位",
+    "动作：加边界再查配置"
+   ],
+   "visual_source": "illustrations/handraw/ch26-timeout-poll.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "先加边界，再修根因",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s20",
+   "title": "中断进不来",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s11"
+   ],
+   "narration": "外设事件发生了中断却不进来，按顺序查三条：NVIC 的使能和优先级配了没有，外设自己的中断允许位开了没有，服务函数名和启动文件里的向量一致吗。三条任何一条断了都不进来。",
+   "on_screen": [
+    "NVIC 使能",
+    "外设中断位",
+    "向量名一致"
+   ],
+   "visual_source": "animations/nvic-interrupt-flow.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "三条链逐条查",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s21",
+   "title": "DMA 搬完数据不更新",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s12"
+   ],
+   "narration": "DMA 配置完数组不动，按顺序三查：外设地址和内存地址填对没有，传输数量是不是按配置宽度数，通道使能置了没有。两驱动的接线胶水也在检查范围里。",
+   "on_screen": [
+    "地址",
+    "数量与宽度",
+    "通道使能"
+   ],
+   "visual_source": "animations/dma-circular.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "三查先于改算法",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s22",
+   "title": "迁移后能跑一会儿就死",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s14"
+   ],
+   "narration": "迁到 HAL 后能跑一会儿就死，第一条假设是只换了函数名、保留了旧状态机。SPL 和 HAL 的状态假设互不知情，解决是按所有权表整条外设链切换，删掉旧初始化和旧中断处理。",
+   "on_screen": [
+    "现象：跑一会就死",
+    "假设：两套状态混走",
+    "动作：整链切换"
+   ],
+   "visual_source": "diagrams/sample-26-spl-hal-compare.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#9. 维护旧工程：先冻结，再迁移"
+   ],
+   "memory_anchor": "同一外设一个主人",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s23",
+   "title": "实验一：点灯闭环",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch26-s08"
+   ],
+   "narration": "第一个实验把点灯闭环做完整：从工程骨架到编译链接零错误，烧录后用寄存器读回 GPIO 配置，再用示波器或逻辑分析仪量出翻转频率。每一步留证据。",
+   "on_screen": [
+    "编译零错",
+    "读回配置",
+    "量翻转频率"
+   ],
+   "visual_source": "animations/sample-26-clk-cfg-en-flow.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#动手实验"
+   ],
+   "memory_anchor": "每一步留证据",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch26-s24",
+   "title": "实验二：给轮询装上边界",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch26-s10"
+   ],
+   "narration": "第二个实验给轮询装边界：把死等的发送改成带 spin limit 的版本，故意断开外设让超时触发，确认失败路径返回错误码而不是卡死。",
+   "on_screen": [
+    "改成有界等待",
+    "故意断开触发",
+    "返回错误码"
+   ],
+   "visual_source": "illustrations/handraw/ch26-timeout-poll.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#动手实验"
+   ],
+   "memory_anchor": "失败要能返回",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch26-s25",
+   "title": "实验三：中断三链",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch26-s11"
+   ],
+   "narration": "第三个实验跑通中断三条链：NVIC 配置、外设中断允许、服务函数清标志，用按键验证一次边沿一次响应。三条链任何一条没接，按键就没反应。",
+   "on_screen": [
+    "NVIC → 外设位 → 清标志",
+    "一次边沿一次响应",
+    "三链缺一不可"
+   ],
+   "visual_source": "animations/nvic-interrupt-flow.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#动手实验"
+   ],
+   "memory_anchor": "三条链一次验完",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch26-s26",
+   "title": "实验四：一外设迁移对照",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch26-s14",
+    "ch26-s15"
+   ],
+   "narration": "第四个实验做迁移对照：选一个最简单的外设，保留接线与时钟条件，只把驱动从 SPL 换到 HAL，对比 GPIO 电平或 UART 帧的差异，并删除旧所有权。",
+   "on_screen": [
+    "选最简外设",
+    "只换驱动",
+    "对比结果删旧的"
+   ],
+   "visual_source": "diagrams/sample-26-spl-hal-compare.svg",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#动手实验"
+   ],
+   "memory_anchor": "一次一外设",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch26-s27",
+   "title": "边界提醒：SPL 的合理位置",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch26-s15"
+   ],
+   "narration": "最后一条边界提醒：不要为了学 SPL 而把新项目开在 F1 旧库上，也不要给 G0、L4 复制 f10x 的文件。SPL 的位置在维护旧工程，不在新项目起点。",
+   "on_screen": [
+    "新项目不开在 SPL",
+    "不跨系列复制",
+    "SPL 在维护侧"
+   ],
+   "visual_source": "illustrations/handraw/ch26-four-layers.png",
+   "fact_source": [
+    "stsw-stm32054",
+    "docs/26-STM32F10x标准外设库SPL.md#10. 常见坑与排查"
+   ],
+   "memory_anchor": "新项目不用旧库起步",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch26-s28",
+   "title": "离开检查：三份证据",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch26-s23",
+    "ch26-s24",
+    "ch26-s25",
+    "ch26-s26"
+   ],
+   "narration": "离开这一章，你手里应有三份证据：一份编译链接零错的工程记录、一份带超时边界的中断与轮询验证，和一份单外设迁移对照。SPL 从此是你手里的工具，不是玄学。",
+   "on_screen": [
+    "工程记录",
+    "超时与中断验证",
+    "迁移对照"
+   ],
+   "visual_source": "illustrations/handraw/ch26-spl-hal.png",
+   "fact_source": [
+    "rm0008",
+    "docs/26-STM32F10x标准外设库SPL.md#动手实验"
+   ],
+   "memory_anchor": "SPL 是工具不是玄学",
+   "evidence_type": "recall"
+  }
+ ]
+}
