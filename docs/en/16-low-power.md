@@ -67,6 +67,11 @@ The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapt
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-stop-wake.png" width="760" alt="Handraw: Stop 14 μA and wake clock (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). SLEEPDEEP=1, PDDS=0 → Stop 14 μA; wake starts on HSI 8 MHz; leaving 0x271 yields 12800 bit/s; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/stop-wake.gif" width="640" alt="Wake from Stop, move the clock from the 8 MHz HSI back to 72 MHz, then mark 115200">
   <br><sub>▲ Animated version. It shows only the correct sequence: wake from Stop, go from 8 MHz back to 72 MHz, and mark 115200. The printed book has only the static figure above.</sub>
 </p>
@@ -123,12 +128,22 @@ Low-power acceptance records the static floor, wake peak, active duration, perio
   <br><sub>▲ Drawn for this book. Three modes compared: Sleep 14.4 mA and it keeps 72 MHz; Stop 14 uA and it wakes on HSI 8 MHz, so the clock must be reconfigured; Standby 2 uA and it restarts from the reset vector. The three rows carry different conditions and must not share one line. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-stop-compare.png" width="760" alt="Handraw: Sleep / Stop / Standby compare (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Sleep ~14.4 mA keeps 72 MHz; Stop 14 μA needs clock restore; Standby 2 μA restarts from reset vector; not a photo.</sub>
+</p>
+
 ### 1. The three low-power modes compared
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-mode-current.svg" width="760" alt="Sleep in mA; Stop 14 µA; Standby 2 µA (conditions named)">
   <br><sub>▲ Drawn for this book. Do not merge 14/24 µA into 20; 1.4 µA is VBAT domain only.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-mode-current.png" width="760" alt="Handraw: mode currents Sleep mA / Stop 14 μA / Standby 2 μA (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). DS5319 @ 3.3 V, 25°C typicals; board leakage is a different number; not a photo.</sub>
 </p>
 
 
@@ -168,6 +183,11 @@ __WFI();
 <p align="center">
   <img src="../../assets/diagrams/sample-16-clock-restore.svg" width="760" alt="After Stop: HSI 8 MHz first, then PLL 72 MHz before 115200">
   <br><sub>▲ Drawn for this book. Without restore, BRR 0x271 at 8 MHz is 12800 bit/s.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-clock-restore.png" width="760" alt="Handraw: Stop wake clock restore chain (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). WAKE → HSI 8 MHz → PLL 72 MHz → then 115200; after Stop, HSE/PLL are off; not a photo.</sub>
 </p>
 
 
@@ -333,6 +353,11 @@ __HAL_RCC_USART2_CLK_DISABLE();
 <p align="center">
   <img src="../../assets/diagrams/sample-16-pwr-triage.svg" width="760" alt="Stop never entered, garbled serial after wake, current will not drop: 14 uA needs SLEEPDEEP=1 and PDDS=0, wake runs HSI 8 MHz, and 2 uA holds only with LSI, IWDG, LSE and RTC all off">
   <br><sub>▲ Drawn for this book. Triage, three branches: Stop never entered — SLEEPDEEP=1 with PDDS=0 is the 14 uA cell; garbled serial after wake — the clock still runs HSI 8 MHz while BRR was computed for 72 MHz; the current will not drop — 2 uA requires LSI, IWDG, LSE and RTC all off. Sources: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-pwr-triage.png" width="760" alt="Handraw: low-power three forks mode/clock/current (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Cannot enter Stop, garbled UART, current stuck: check SLEEPDEEP/PDDS, then PLL restore, then IWDG/LSI/LSE/RTC; not a photo.</sub>
 </p>
 
 ## Hands-on labs
