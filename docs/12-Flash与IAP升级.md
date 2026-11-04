@@ -121,7 +121,7 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 <p align="center">
   <img src="../assets/illustrations/handraw/ch12-page-erase.png" width="760" alt="Handraw：中容量 1 KB 页擦除地图（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。1 KB/页；末页 0x0800FC00；擦除地址须落页边界；0x0801FC00 对 C8 作废；不是实拍。</sub>
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。1 KB/页；末页 0x0800FC00；擦除地址须落页边界；0x0801FC00 超出 C8 容量，不存在这个页；不是实拍。</sub>
 </p>
 
 
