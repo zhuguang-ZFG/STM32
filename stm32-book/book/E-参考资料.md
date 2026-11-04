@@ -9,6 +9,11 @@
 
 ## 快照规则
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-e-layers.png" width="760" alt="Handraw：四层来源（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。手册→厂商代码→社区→本书原创；彼此不替代。非实拍。</sub>
+</p>
 - 手册引用至少写文档号；对引脚、典型电流等修订敏感事实再写 Rev、Figure、Table 或章节。
 - GitHub 参考实现冻结 tag 或完整 commit，不用“main 现在看起来一样”作为证据。
 - 社区文章记录访问日期和用途，只作经验线索。
@@ -22,6 +27,11 @@
 
 ## 许可边界
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-e-license.png" width="760" alt="Handraw：许可边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。CC BY / CC0 / MIT；第三方手册不转载。非实拍。</sub>
+</p>
 - `docs/`、除 `assets/photos/` 外的原创图形资产与本书原创正文/版式：**CC BY 4.0**。转载或改编须署名、链接来源并说明修改。
 - `assets/photos/` 中两张 Nucleo-64 实拍保持原 **CC0 1.0**；作者、原图页、处理尺寸和 SHA-256 见照片目录 README。
 - `examples/`、`tools/` 与代码片段：**MIT**。完整条款以仓库根 `LICENSE` 为准。
@@ -30,12 +40,22 @@
 
 ## 一笔数字怎样才算钉住
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-e-snapshot.png" width="760" alt="Handraw：快照规则（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。文档号/Rev；Git 冻 SHA；社区记访问日；复现冻料号与工具链。非实拍。</sub>
+</p>
 [附录 D](#appendix-glossary)文末的前两张账用同一套四格：订货号、文档号或章节、寄存器或公式、算式结果。缺一格，就还只是线索。第二张账把订货号换成 G0、L4 或 H7 时，时钟和寄存器整行重写。第三张账钉 DMA 通道、USB 描述符长度和 `CFSR`/`HFSR` 地址；换请求表或换描述符时，这几行同样整行重写。
 
 115200 这一格可以当样子。订货号是 STM32F103C8T6，USART1 的时钟走 APB2，不是 APB1。文档号是 [RM0008](#source-rm0008) 的 USART 波特率寄存器，算式正文在第 06 章。公式是 `fPCLK / (16 × 波特率)`。72 MHz 代入得到 39.0625，BRR 低 4 位是 1，结果是 `0x271`，分频误差是 0。记录里如果只有「误差 0.16%」而没有 USART 编号和 BRR，这一格还没钉住：0.16% 是 36 MHz 那一行，或是把 72 MHz 的小数位丢掉之后的数。
 
 ## 把一格填满
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-e-pin-number.png" width="760" alt="Handraw：115200 格子范例（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。USART1@72 MHz → BRR 0x271；只写误差百分比不算钉住。非实拍。</sub>
+</p>
 换一个数之前，先按这个空表抄一行。右边是 500 kbit/s 已经填过的样子，对应[附录 D](#appendix-glossary)第二张账。
 
 | 格子 | 填什么 | 500 kbit/s 这一格 |
@@ -52,4 +72,9 @@
 
 ## 来源登记表
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-e-fill-cell.png" width="760" alt="Handraw：把一格填满（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。料号·时钟·寄存器·算术·证伪；500 kbit/s 是填满范例。非实拍。</sub>
+</p>
 以下登记表由 `manifest.json` 在构建时生成。每个条目包含权威层级、冻结点、访问日期、许可边界和在本书中的适用范围。正文“来源锚点”直接链接到对应条目。

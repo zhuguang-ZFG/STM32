@@ -14,11 +14,21 @@ This appendix gives three things: a chapter-organized repository map (star count
   <br><sub>▲ Hand-drawn CSS animation (FA-002). pick → pin SHA → quote → lab card.</sub>
 </p>
 
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-f-lane.png" width="760" alt="Handraw: pick one repo lane (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pick the tree → read the file → freeze the SHA → cite → lab card. Not a photo.</sub>
+</p>
+
 
 
 <p align="center">
   <img src="../../../assets/diagrams/sample-f-oss-map.svg" width="760" alt="Open-source repository map by evidence layer: Cube, CMSIS, libopencm3, FreeRTOS, RT-Thread, Zephyr">
   <br><sub>▲ Drawn for this book. Open-source evidence-layer map: ask which `.h`/function you need before you talk about stars. License boundaries are in each repo `LICENSE`; when official RM/DS and OSS disagree, the manual's applicable conditions win.</sub>
+</p>
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-f-stars.png" width="760" alt="Handraw: stars ≠ should-read (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Read it only if the target .h or function is there. Not a photo.</sub>
 </p>
 
 
@@ -54,6 +64,11 @@ This appendix gives three things: a chapter-organized repository map (star count
 <p align="center">
   <img src="../../../assets/diagrams/sample-f-six-facts.svg" width="760" alt="Six facts only source reading reveals">
   <br><sub>▲ Drawn for this book. Star counts do not replace these six facts.</sub>
+</p>
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-f-six-facts.png" width="760" alt="Handraw: six facts from source (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). License mix, CMSIS inlines, pbuf chains, ready lists — only source gives them. Not a photo.</sub>
 </p>
 
 
@@ -113,6 +128,11 @@ The same file's `__NVIC_SetPriority()` answers another common question: the valu
   <br><sub>▲ Drawn for this book. A question template before an emotional post.</sub>
 </p>
 
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-f-ask-before.png" width="760" alt="Handraw: five things before asking (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). README, frozen commit, minimal repro, raw logs, paths already ruled out. Not a photo.</sub>
+</p>
+
 
 1. **Read the issue template.** What the template asks for is what the maintainers need most.
 2. **Shrink the repro to the minimum.** Prefer 20 lines over 200; delete every init you can until the step just before the symptom disappears.
@@ -133,6 +153,11 @@ The same file's `__NVIC_SetPriority()` answers another common question: the valu
 
 ## Evidence policy
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-f-evidence.png" width="760" alt="Handraw: evidence rule (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Manuals first, source second, community third, lab closes the loop. Not a photo.</sub>
+</p>
 - Star counts and the `archived` field: GitHub API, 2026-10-26.
 - Licenses: repo-root `LICENSE` / `COPYING` / `LICENSE.md` text; STM32CubeF4 cited from its per-component table.
 - Code paths: hits on the default branch that day; paths may drift — run `git log -1` before you read.

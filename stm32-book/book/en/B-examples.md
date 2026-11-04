@@ -21,6 +21,11 @@ An example is not finished when it compiles. Each one needs an observable result
 
 ## Four rows to match before you run the list
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-b-four-rows.png" width="760" alt="Handraw: four rows to match first (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PC13 polarity, 1 kHz PWM, USART1 BRR 0x271, CAN 500 kbit/s; do not add the next bus on a mismatch. Not a photo.</sub>
+</p>
 Before the order in the table, match these four rows to the first two tables at the end of [Appendix D](#appendix-glossary). If they do not match, do not add the next bus yet.
 
 | Example | Match this first | What a mismatch means |
@@ -32,6 +37,11 @@ Before the order in the table, match these four rows to the first two tables at 
 
 ## Three more rows for the channel and the descriptor
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-b-channel-desc.png" width="760" alt="Handraw: channel and descriptor rows (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). JEDEC EF4017, CDC 67-byte config, stack depth in words. Not a photo.</sub>
+</p>
 The four rows above match clocks and bit time. These three are in the third table of [Appendix D](#appendix-glossary). They match a request number, a descriptor length, and the unit of a stack.
 
 | Example | Match this first | What a mismatch means |
@@ -42,6 +52,11 @@ The four rows above match clocks and bit time. These three are in the third tabl
 
 ## A useful order
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-b-run-order.png" width="760" alt="Handraw: useful run order (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Close the loop → one peripheral → state → concurrency → SPL alone; do not mix HAL init. Not a photo.</sub>
+</p>
 1. **Close the loop first:** `gpio-blink → exti-key → timer-pwm`. Prove download, pins, and the time base.
 2. **Then one peripheral:** `uart-dma-idle → i2c-oled → spi-flash → adc-dma`. Add one bus or data path at a time.
 3. **Then state:** `rtc-alarm → iap-bootloader → can-bxcan → usb-*`. Keep a firmware image you can fall back to.
@@ -50,6 +65,11 @@ The four rows above match clocks and bit time. These three are in the third tabl
 
 ## A record for each example
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-b-delivery.png" width="760" alt="Handraw: delivery record fields (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Part/tools/wiring/expected/actual/boundary/reproduce; compiling is not done. Not a photo.</sub>
+</p>
 Keep one table in your own lab notes:
 
 | Field | Example |

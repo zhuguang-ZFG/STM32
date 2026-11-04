@@ -4,6 +4,11 @@
 
 ## 00 如何学习 STM32
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-c-discipline.png" width="760" alt="Handraw：答案怎么用（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先自做再对照；禁背答案替实验。非实拍。</sub>
+</p>
 1. BOOT0 拉低时从主 Flash 启动。
 2. HAL 在寄存器之上提供句柄、状态机、参数检查和跨系列较统一的 API；它没有消除底层时钟、引脚和寄存器约束。
 3. 第一场胜利是让一颗灯按**自己算过并测过**的频率闪，而不是只看到它亮过。
@@ -22,6 +27,11 @@
 
 ## 03 GPIO 与 LED
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-c-early-checks.png" width="760" alt="Handraw：前几章自测焦点（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。极性、EXTI、1 kHz 算术是早期核对轴。非实拍。</sub>
+</p>
 1. BluePill 的 PC13 板载 LED 通常低电平点亮。
 2. 按键接 GND 时用上拉，使松开为 1、按下为 0。
 3. F1 做 AFIO 重映射前必须使能 AFIO 时钟，并保留 SWD 所需引脚。
@@ -86,6 +96,11 @@
 
 ## 13 CAN 总线
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-c-bus-system.png" width="760" alt="Handraw：总线到系统核对轴（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。环回≠ACK；IAP 拒跳；FromISR 优先级；CFSR 先读。非实拍。</sub>
+</p>
 1. 单节点正常模式没有其他节点发送 ACK，错误计数上升，最终可能 Bus-Off；先用回环或增加正确终端的第二节点。
 2. 36 MHz、总时间份额 8、500 kbit/s 时预分频是 `36 MHz / (8 × 500 kHz) = 9`。
 3. 常见 F1 重映射下 PB8 是 CAN_RX，PB9 是 CAN_TX，最终核对 AFIO 映射与数据手册。
@@ -203,6 +218,11 @@
 
 ## 28 嵌入式系统与 RTOS 生态
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-c-not-proof.png" width="760" alt="Handraw：答对数字≠产品证据（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。自测证明读懂契约，不签收量产与最坏响应。非实拍。</sub>
+</p>
 1. FreeRTOS Kernel 主要提供调度、IPC、定时器和内存等内核机制；RT-Thread/Zephyr 还把设备框架、构建配置、网络、文件系统、Shell 等组件组织进统一生态。产品策略与验收仍由项目负责。
 2. 互斥量只序列化被包住的代码；片选、DMA 完成、超时恢复和驱动状态可能仍被拆成多个临界段。所有者任务把完整事务和状态集中在一个写入者中。
 3. `U < 1` 只说明已计入的执行时间总量没有超过单核容量；共享资源阻塞、ISR、优先级、Cache/Flash 等额外时延仍可能让具体任务错过截止时间。这一页的示例是 `80 µs / 1 ms = 8%`，`420 µs / 10 ms = 4.2%`，`70 µs / 2 ms = 3.5%`，`1.5 ms / 100 ms = 1.5%`，合计 17.2%。这不是某块 STM32 的测量。

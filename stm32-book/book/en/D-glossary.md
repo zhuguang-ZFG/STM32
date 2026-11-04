@@ -4,6 +4,11 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 ## Clocks and reset
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-d-lookup.png" width="760" alt="Handraw: how to look up a term (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pick the domain → match the chapter → return to the prose → check Appendix E. Not a photo.</sub>
+</p>
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
 | AHB / APB | On-chip bus levels. The CPU and fast peripherals usually sit on AHB. Most peripherals sit on APB. Clocks divide down from SYSCLK | After an APB divider, every timer clock simply equals PCLK |
@@ -73,6 +78,11 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 ## UART, I2C, SPI, CAN, and USB
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-d-clusters.png" width="760" alt="Handraw: glossary clusters (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Clusters follow chapter themes; the glossary is not a substitute manual. Not a photo.</sub>
+</p>
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
 | 7-bit address | The common I2C slave address width. The first byte on the wire is those 7 bits plus the read/write bit. HAL's DevAddress is shifted left by 1: the SSD1306's `0x3C` is written `0x78` | The 7-bit value a scanner prints is the 8-bit frame on the wire |
@@ -174,6 +184,11 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 ## Debug
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-d-not-rm.png" width="760" alt="Handraw: glossary ≠ reference manual (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Short definitions and cross-refs; not electrical limits or full bit-field tables. Not a photo.</sub>
+</p>
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
 | BFAR / MMFAR | Bus-fault address / memory-management fault address. The address means something only when the matching valid flag is set | As soon as HardFault runs, these registers hold the guilty address |
@@ -189,6 +204,11 @@ Terms are grouped the way a reader meets them across the seven parts. Each line 
 
 ## Engineering habits
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-d-pin-table.png" width="760" alt="Handraw: four cells that pin a number (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Part, document, register/formula, arithmetic; leave one empty and it is still a clue. Not a photo.</sub>
+</p>
 | Term | Meaning in this book | A common mix-up |
 | --- | --- | --- |
 | CubeMX | ST's graphical tool for clocks, pins, and initialization code. The result still has to be checked against the datasheet AF table | After the graphical project is saved, pin conflicts and illegal clocks cannot remain |

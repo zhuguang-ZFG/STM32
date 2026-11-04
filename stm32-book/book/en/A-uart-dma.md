@@ -7,6 +7,11 @@ The hard part of UART DMA is not calling one HAL function. It is choosing a **bu
   <br><sub>▲ Animation: bytes arrive in bursts, IDLE raises the event, Size is the first unwritten position; contract A re-arms each round, contract B wraps a ring (author-drawn vector)</sub>
 </p>
 
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-a-invariants.png" width="760" alt="Handraw: four reception invariants (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Do not write the DMA region; Size is the first unwritten index; hand over the new slice; count overflow. Not a photo.</sub>
+</p>
+
 ## 1. Write the invariants first
 
 Whichever shape you pick, write four invariants before the code:
@@ -20,6 +25,11 @@ ST's circular-DMA example lists HT, TC, and IDLE as callback sources and compute
 
 ## 2. Contract A: normal DMA, re-armed after every event
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-a-contract-a.png" width="760" alt="Handraw: contract A and the gap (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Normal DMA re-arms and disables HT each round; ORE can hit during copy; use B for continuous streams. Not a photo.</sub>
+</p>
 This fits a command line, low or moderate throughput, and a wish for one contiguous block on each IDLE. The decision that matters: **turn the HT interrupt off, and turn it off again after every re-arm.** Otherwise a half-buffer event ends the round early and the next round overwrites the rest.
 
 ```c
@@ -54,6 +64,11 @@ There is a gap: a new byte can arrive, and raise ORE, while the callback is copy
 
 ## 3. Contract B: circular DMA, armed once, read by position
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-a-contract-b.png" width="760" alt="Handraw: contract B ring math (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Arm once; compute the new slice from pos and old_pos; never re-call ReceiveToIdle each callback. Not a photo.</sub>
+</p>
 This fits a continuous stream. DMA does not stop. The application keeps the previous position. If `Size > old_pos`, the new slice is contiguous. If `Size < old_pos`, DMA wrapped, and you take the tail and then the head.
 
 ```c
@@ -79,6 +94,11 @@ Do **not** call `HAL_UARTEx_ReceiveToIdle_DMA` again on every callback. Restarti
 
 ## 4. The boundary between the ISR and the application
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-a-isr-boundary.png" width="760" alt="Handraw: ISR vs application (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). ISR copies a bounded slice and counts; parsing and blocking stay in tasks; FromISR needs a legal priority. Not a photo.</sub>
+</p>
 `ring_write` may copy a bounded slice and count. It must not parse JSON, take a mutex, block on a transmit, or print a long log from the ISR. A single-producer, single-consumer ring you can audit exposes at least:
 
 | State | Owner | What you can observe |
@@ -116,6 +136,11 @@ Changing only the linker script, or only adding a cache operation, can fix just 
 
 ## 6. A minimum check matrix
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-a-verify.png" width="760" alt="Handraw: minimal verification matrix (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Stimulus → visible result → what it does not prove; ORE recovery and dropped_bytes must be observable. Not a photo.</sub>
+</p>
 | Input | Expected | Evidence to record |
 | --- | --- | --- |
 | 1, 127, then 128 bytes, then a pause | The same bytes, no overrun of the buffer | Received length, CRC or a byte compare |

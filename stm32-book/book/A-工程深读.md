@@ -7,6 +7,11 @@
   <br><sub>▲ 动画：字节成阵到达、IDLE 触发事件、Size 是首个未写位置；契约 A 每次重新武装，契约 B 环形取模（作者自绘矢量图）</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-a-invariants.png" width="760" alt="Handraw：四条接收不变量（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。DMA 写区应用不碰；Size 是首个未写位置；交给业务的是新增区间；跟不上必须计数。非实拍。</sub>
+</p>
+
 ## 1. 先写不变量
 
 无论选哪一类，实现前都应写下四条不变量：
@@ -20,6 +25,11 @@ ST 的官方循环 DMA 例程明确列出 HT、TC、IDLE 三种回调来源，�
 
 ## 2. 契约 A：Normal DMA，每次结束后重新武装
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-a-contract-a.png" width="760" alt="Handraw：契约 A 与空窗（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。Normal DMA 每次重新武装并关 HT；复制期间可能 ORE；连续流改契约 B。非实拍。</sub>
+</p>
 适合命令行、低到中等吞吐、希望每次 IDLE 都得到一块连续数据的场景。关键决定是：**关闭 HT 中断，并在每一次重新武装后再次关闭**。否则半缓冲事件会提前终止本轮，后半帧被下一轮覆盖。
 
 ```c
@@ -54,6 +64,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 
 ## 3. 契约 B：Circular DMA，启动一次，按位置取增量
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-a-contract-b.png" width="760" alt="Handraw：契约 B 环形取模（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。启动一次；pos 与 old_pos 算增量；禁止每次重新 ReceiveToIdle。非实拍。</sub>
+</p>
 适合连续流。DMA 不停止，应用保存上一次位置。`Size > old_pos` 时新增区间连续；`Size < old_pos` 时说明 DMA 绕回数组开头，要处理尾段和头段。
 
 ```c
@@ -79,6 +94,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t pos)
 
 ## 4. ISR 与业务层的边界
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-a-isr-boundary.png" width="760" alt="Handraw：ISR 与业务边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。ISR 只做有界拷贝与计数；解析与阻塞留在任务；FromISR 要满足优先级。非实拍。</sub>
+</p>
 `ring_write` 只能做有界复制和计数，不能在 ISR 里解析 JSON、等待互斥量、阻塞发送或打印长日志。一个可审计的单生产者/单消费者环形队列至少暴露：
 
 | 状态 | 责任 | 可观察量 |
@@ -116,6 +136,11 @@ H7 还要回答两个独立问题：
 
 ## 6. 最小验证矩阵
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-a-verify.png" width="760" alt="Handraw：最小验证矩阵（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。刺激→可见结果→不证明什么；ORE 恢复与 dropped_bytes 必须可观察。非实拍。</sub>
+</p>
 | 输入 | 预期 | 要记录的证据 |
 | --- | --- | --- |
 | 1、127、128 字节后停顿 | 字节逐一相同，无越界 | 接收长度、CRC/逐字节比较 |

@@ -21,6 +21,11 @@
 
 ## 先和账对上的四行
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-b-four-rows.png" width="760" alt="Handraw：先对四行账（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。PC13 极性、1 kHz PWM、USART1 BRR 0x271、CAN 500k；对不上不加下一条总线。非实拍。</sub>
+</p>
 跑表里的顺序之前，先把这四行和[附录 D](#appendix-glossary)文末的前两张账对上。对不上就先不要加下一种总线。
 
 | 例程 | 先对上的数 | 对不上说明什么 |
@@ -32,6 +37,11 @@
 
 ## 通道和描述符再对三行
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-b-channel-desc.png" width="760" alt="Handraw：通道与描述符三行（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。JEDEC EF4017、CDC 67 字节、栈深按字计。非实拍。</sub>
+</p>
 上面四行对的是时钟和位时间。这三行在[附录 D](#appendix-glossary)的第三张账，对的是请求号、描述符长度和栈的单位。
 
 | 例程 | 先对上的数 | 对不上说明什么 |
@@ -42,6 +52,11 @@
 
 ## 推荐跑法
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-b-run-order.png" width="760" alt="Handraw：推荐跑法五步（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。闭环→单外设→状态→并发→SPL 单独；勿混 HAL 初始化。非实拍。</sub>
+</p>
 1. **先闭环**：`gpio-blink → exti-key → timer-pwm`。先证明下载、引脚和时基。
 2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`。一次只引入一种总线或数据路径。
 3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`。每一步都保留上一阶段可回退镜像。
@@ -50,6 +65,11 @@
 
 ## 每个例程的交付记录
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-b-delivery.png" width="760" alt="Handraw：交付记录字段（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。料号/工具/接线/期望/实测/边界/复现；编译通过不算完成。非实拍。</sub>
+</p>
 建议在自己的实验目录保留同一张表：
 
 | 字段 | 示例 |

@@ -4,6 +4,11 @@
 
 ## 时钟与复位
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-d-lookup.png" width="760" alt="Handraw：术语怎么查（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。定领域→对章节→回正文→对附录 E。非实拍。</sub>
+</p>
 | 术语 | 本书中的含义 | 常见误解 |
 | --- | --- | --- |
 | AHB / APB | 片内总线层级。CPU 和高速外设多挂在 AHB，多数外设挂在 APB，时钟从 SYSCLK 逐级分下来 | APB 分频之后，所有定时器时钟都简单等于 PCLK |
@@ -73,6 +78,11 @@
 
 ## UART、I2C、SPI、CAN 与 USB
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-d-clusters.png" width="760" alt="Handraw：术语分组地图（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。分组对齐章主题；表不是手册替身。非实拍。</sub>
+</p>
 | 术语 | 本书中的含义 | 常见误解 |
 | --- | --- | --- |
 | 7-bit address | I2C 常见的 7 位从机地址。线上的第一个字节是这 7 位加上读/写位。HAL 的 DevAddress 要左移 1 位：SSD1306 的 `0x3C` 写成 `0x78` | 扫描器显示的 7 位地址就是总线上的 8 位帧 |
@@ -174,6 +184,11 @@
 
 ## 调试
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-d-not-rm.png" width="760" alt="Handraw：术语表不是手册（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。给对照与短定义；不给电气极限与全位域表。非实拍。</sub>
+</p>
 | 术语 | 本书中的含义 | 常见误解 |
 | --- | --- | --- |
 | BFAR / MMFAR | 总线故障地址 / 存储器管理故障地址。只有对应的“地址有效”标志置位时，这个地址才有意义 | HardFault 一发生，这两个寄存器里就是肇事地址 |
@@ -189,6 +204,11 @@
 
 ## 工程习惯
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-d-pin-table.png" width="760" alt="Handraw：钉住数字的四格（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。料号·文档·寄存器/公式·算术；空一格仍是线索。非实拍。</sub>
+</p>
 | 术语 | 本书中的含义 | 常见误解 |
 | --- | --- | --- |
 | CubeMX | ST 的图形配置工具，用来生成时钟、引脚和初始化代码。生成结果仍要对照数据手册的复用表 | 图形界面保存之后，引脚冲突和时钟超限都不可能再出现 |

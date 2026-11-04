@@ -14,11 +14,21 @@
   <br><sub>▲ 自绘矢量动画（FA-002）。选树 → 钉 SHA → 引用 → 实验卡。</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-f-lane.png" width="760" alt="Handraw：选一条车道读到底（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。选树→读文件→冻 SHA→写引用→实验卡。非实拍。</sub>
+</p>
+
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-f-oss-map.svg" width="760" alt="按证据层组织的开源仓库地图：Cube、CMSIS、libopencm3、FreeRTOS、RT-Thread、Zephyr">
   <br><sub>▲ 自绘。开源证据层地图：先问要哪一份 `.h`/函数，再谈星标。许可边界见各仓库 `LICENSE`；官方 RM/DS 冲突时以手册为准。</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-f-stars.png" width="760" alt="Handraw：星标多≠该读（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。该不该读只看有没有目标 .h/函数。非实拍。</sub>
 </p>
 
 
@@ -54,6 +64,11 @@
 <p align="center">
   <img src="../../assets/diagrams/sample-f-six-facts.svg" width="760" alt="六个只有读源码才拿得到的知识点">
   <br><sub>▲ 自绘。星标数替代不了这六条证据。</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-f-six-facts.png" width="760" alt="Handraw：六个源码知识点（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。许可配料表、CMSIS 内联、pbuf 链、就绪表等只能读源码拿到。非实拍。</sub>
 </p>
 
 
@@ -113,6 +128,11 @@
   <br><sub>▲ 自绘。提问模板先于情绪发帖。</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-f-ask-before.png" width="760" alt="Handraw：提问前五件事（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。README、冻 commit、最小复现、原文日志、已排除路径。非实拍。</sub>
+</p>
+
 
 1. **读 issue 模板**。模板问什么，就是维护者最缺什么。
 2. **把复现压到最小**。能贴 20 行就别贴 200 行；能删的初始化全删掉，直到现象消失的前一步。
@@ -133,6 +153,11 @@
 
 ## 证据口径
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/app-f-evidence.png" width="760" alt="Handraw：证据口径（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。手册优先，源码第二，社区第三，实验收口。非实拍。</sub>
+</p>
 - 星标数、`archived` 字段：GitHub API，2026-10-26。
 - 许可：仓库根 `LICENSE`/`COPYING`/`LICENSE.md` 原文；STM32CubeF4 按其逐组件表引用。
 - 代码路径：当日默认分支的 GitHub 代码检索命中；版本漂移后路径可能变化，读之前先 `git log -1`。

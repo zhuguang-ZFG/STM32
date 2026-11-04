@@ -4,6 +4,11 @@ Answer on your own first. These notes only give the reason. Register bits and el
 
 ## 00 How to Learn STM32
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-c-discipline.png" width="760" alt="Handraw: how to use the answers (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Solve first, then compare; do not memorize answers instead of measuring. Not a photo.</sub>
+</p>
 1. With BOOT0 low, the part boots from main Flash.
 2. HAL adds a handle, a state machine, parameter checks, and a more uniform API above the registers. It does not remove the clock, pin, and register constraints.
 3. The first win is one LED blinking at a frequency **you calculated and measured**, not an LED that merely turned on.
@@ -22,6 +27,11 @@ Answer on your own first. These notes only give the reason. Register bits and el
 
 ## 03 GPIO and the LED
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-c-early-checks.png" width="760" alt="Handraw: early-chapter check focus (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Polarity, EXTI, and 1 kHz arithmetic are the early check axes. Not a photo.</sub>
+</p>
 1. The onboard LED on BluePill PC13 is usually on when the pin is low.
 2. A switch to GND uses a pull-up: released reads 1, pressed reads 0.
 3. On F1, enable the AFIO clock before a remap, and keep the pins SWD needs.
@@ -86,6 +96,11 @@ Check: an F103C8 has only DMA1, seven channels, and no DMA2. USART1_TX is channe
 
 ## 13 CAN
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-c-bus-system.png" width="760" alt="Handraw: bus → system check axis (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Loopback ≠ ACK; refuse a bad IAP image; FromISR priority; read CFSR first. Not a photo.</sub>
+</p>
 1. One node in normal mode has nobody to send ACK. The error counters rise and the node can go bus-off. Use loopback, or a second node with the right termination.
 2. At 36 MHz, 8 time quanta, and 500 kbit/s, the prescaler is `36 MHz / (8 × 500 kHz) = 9`.
 3. On the common F1 remap, PB8 is CAN_RX and PB9 is CAN_TX. Check AFIO and the datasheet for the final map.
@@ -203,6 +218,11 @@ Check: RMII `REF_CLK` is 50 MHz, not the 25 MHz of MII. DHCP is UDP 67 (server) 
 
 ## 28 Systems and the RTOS Landscape
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-c-not-proof.png" width="760" alt="Handraw: right number ≠ product proof (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Self-checks prove you read the contract; they do not sign off production or worst-case response. Not a photo.</sub>
+</p>
 1. The FreeRTOS kernel mainly provides scheduling, IPC, timers, and memory. RT-Thread and Zephyr also organize a device framework, the build configuration, networking, a file system, and a shell. Product policy and acceptance stay with the project.
 2. A mutex only serializes the code it wraps. Chip-select, DMA completion, timeout recovery, and driver state can still be split across critical sections. An owner task keeps the whole transaction and its state with one writer.
 3. `U < 1` only says the execution time you counted does not exceed one core. Blocking on a shared resource, ISRs, priority, cache, and Flash wait states can still miss a deadline. The worked example on this page is `80 µs / 1 ms = 8%`, `420 µs / 10 ms = 4.2%`, `70 µs / 2 ms = 3.5%`, `1.5 ms / 100 ms = 1.5%`, and 17.2% together. That is not a measurement of any STM32 board.

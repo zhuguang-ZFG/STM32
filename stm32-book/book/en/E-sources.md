@@ -9,6 +9,11 @@ This book sorts sources into four layers. They do not replace each other:
 
 ## Snapshot rules
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-e-layers.png" width="760" alt="Handraw: four source layers (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Manuals → vendor code → community → this book; layers do not replace each other. Not a photo.</sub>
+</p>
 - A manual citation names at least the document number. For a fact that moves between revisions — a pin, a typical current — also name the Rev, figure, table, or chapter.
 - A GitHub reference is frozen at a tag or a full commit. "main looks the same today" is not evidence.
 - A community article records the access date and the use. It is a clue.
@@ -24,6 +29,11 @@ The way the book is organized borrows a method used for another book in the same
 
 ## License boundary
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-e-license.png" width="760" alt="Handraw: license boundary (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CC BY / CC0 / MIT; third-party manuals are linked, not redistributed. Not a photo.</sub>
+</p>
 - `docs/`, original drawings outside `assets/photos/`, and the original prose and layout of this book: **CC BY 4.0**. A republication or adaptation names the author, links the source, and says what changed.
 - Two Nucleo-64 photographs in `assets/photos/` stay **CC0 1.0**. The author, the original page, the processed size, and the SHA-256 are in that directory's README.
 - `examples/`, `tools/`, and code fragments: **MIT**. The full terms are the repository `LICENSE`.
@@ -32,12 +42,22 @@ The way the book is organized borrows a method used for another book in the same
 
 ## When a number is actually pinned
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-e-snapshot.png" width="760" alt="Handraw: snapshot rules (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Doc number/Rev; freeze Git at a SHA; date community posts; freeze part and toolchain for repro. Not a photo.</sub>
+</p>
 The first two tables at the end of [Appendix D](#appendix-glossary) use the same four cells: the orderable part, the document number or chapter, the register or formula, and the result of the arithmetic. Leave one cell empty, and the number is still only a clue. When the second table changes the part to a G0, an L4, or an H7, the clock and the registers are rewritten for the whole row. The third table fixes the DMA channel, the USB descriptor length, and the `CFSR`/`HFSR` addresses. A new request map or a new descriptor rewrites those rows as well.
 
 The 115200 cell is the pattern. The part is an STM32F103C8T6, and USART1's clock is APB2, not APB1. The document is the USART baud-rate register in [RM0008](#source-rm0008); the worked formula is in chapter 06. The formula is `fPCLK / (16 × baud)`. Substituting 72 MHz gives 39.0625, the low 4 bits of BRR are 1, the register is `0x271`, and the divider error is 0. A note that says only "0.16% error", with no USART number and no BRR, has not pinned the cell. That 0.16% is the 36 MHz row, or what you get by dropping the fraction on the 72 MHz row.
 
 ## What fills one cell
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-e-pin-number.png" width="760" alt="Handraw: the 115200 cell pattern (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). USART1 at 72 MHz → BRR 0x271; an error percentage alone does not pin the cell. Not a photo.</sub>
+</p>
 Before changing a number, copy one row of this blank table. The right-hand column is the 500 kbit/s cell already filled, matching the second table in [Appendix D](#appendix-glossary).
 
 | Cell | What to write | The 500 kbit/s cell |
@@ -54,4 +74,9 @@ Before changing a number, copy one row of this blank table. The right-hand colum
 
 ## Source register
 
+
+<p align="center">
+  <img src="../../../assets/illustrations/handraw/app-e-fill-cell.png" width="760" alt="Handraw: what fills one cell (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Part, clock, register, arithmetic, falsifier; 500 kbit/s is the filled example. Not a photo.</sub>
+</p>
 The register below is generated from `manifest-en.json` at build time. Each entry has an authority, a frozen point, an access date, a license boundary, and the scope used in this book. A chapter's source anchors link to these entries.
