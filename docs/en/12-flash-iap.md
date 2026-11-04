@@ -62,6 +62,11 @@ The "no protection" value for readout protection is `0xA5`. Setting it back to `
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-iap-map.png" width="760" alt="Handraw: IAP Flash map and key order (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Bootloader 16 KB + params 2 KB + APP 0x08004800/0xB800; KEY1→KEY2→half-word→MSP/VTOR; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/iap-jump.gif" width="640" alt="The two keys are written in order, then the CPU reads the MSP and the reset word">
   <br><sub>▲ Animated version: 0x45670123, then 0xCDEF89AB, one half-word into the application, then the MSP and the reset address are read. The printed book has only the static figure above.</sub>
 </p>
@@ -113,6 +118,11 @@ Split the update into receive, program, verify, jump, and application confirmati
   <br><sub>▲ Drawn for this book. Medium-density 1 KB pages; C8 last page is 0x0800FC00.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-page-erase.png" width="760" alt="Handraw: medium-density 1 KB page-erase map (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 1 KB pages; last page 0x0800FC00; erase address on page boundary; 0x0801FC00 void on C8; not a photo.</sub>
+</p>
+
 
 Flash is like a notebook you write in pencil and can only erase a whole page at a time. Erased cells are all 1. Writing can only turn a 1 into a 0, and the only way to turn a 0 back into a 1 is to erase the whole page. So to change one byte, you read the page out, erase it, and write it back with the changed byte. Each page survives only so many erases, so a log that writes often has to rotate through pages.
 
@@ -136,12 +146,22 @@ F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 e
   <br><sub>▲ Drawn for this book. Triage, three branches: erase errors — read the CR.LOCK bit and check the 1 KB page boundary; write failures — check half-word access and whether the target still reads 0xFFFF; wrong read-back — compare page by page against 0x08004800 and 0xB800. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0075](#source-pm0075-rdp).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-flash-triage.png" width="760" alt="Handraw: Flash erase/write/read-back triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: CR.LOCK/page boundary; half-word and 0xFFFF; 0xB800 read-back compare; not a photo.</sub>
+</p>
+
 ### 2. Unlock and the programming sequence
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-12-key-order.svg" width="760" alt="FLASH unlock: KEY1 0x45670123 then KEY2 0xCDEF89AB">
   <br><sub>▲ Drawn for this book. Reversed keys leave LOCK set; jump needs MSP and Reset_Handler.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-key-order.png" width="760" alt="Handraw: KEY1 then KEY2 unlock (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 0x45670123 then 0xCDEF89AB; reverse leaves LOCK set; jump needs MSP and Reset_Handler; not a photo.</sub>
 </p>
 
 
@@ -193,6 +213,11 @@ IAP splits Flash into a **bootloader region, a parameter region, and an app regi
 <p align="center">
   <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="An IAP image passes length and CRC, slot range, vector, jump, and application-heartbeat gates">
   <br><sub>▲ Update gates: any failed check stays in the bootloader and preserves the last valid image. Reaching the app proves only that control left the bootloader; the version heartbeat proves that the new image completed startup (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-acceptance-gates.png" width="760" alt="Handraw: IAP five acceptance gates (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Receive/range/vector/jump/heartbeat; any failed check stays in Bootloader; not a photo.</sub>
 </p>
 
 ### 4. What you must do before jumping to the app
@@ -247,6 +272,11 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 <p align="center">
   <img src="../../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="The resident bootloader uses 16 KB at 0x08000000; the factory system memory does not come out of this 64 KB; both paths are chosen at reset and share the 46 KB APP at 0x08004800">
   <br><sub>▲ Drawn for this book. Two boot paths compared: the resident bootloader occupies 16 KB from 0x08000000, and the factory system-memory boot program does not come out of this 64 KB; the path is picked at reset by BOOT0, and both converge on the 46 KB APP at 0x08004800. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0056 vector table](#source-pm0056-vector).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-boot-compare.png" width="760" alt="Handraw: resident Bootloader vs system memory (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Path A spends 18 KB of user Flash; Path B spends none of the 64 KB; both meet at 0x08004800; not a photo.</sub>
 </p>
 
 ### 5. YMODEM / UART update flow

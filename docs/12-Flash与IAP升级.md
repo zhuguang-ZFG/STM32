@@ -63,6 +63,11 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch12-iap-map.png" width="760" alt="Handraw：IAP Flash 分区与钥匙顺序（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。Bootloader 16 KB + 参数 2 KB + APP 0x08004800/0xB800；KEY1→KEY2→半字→MSP/VTOR；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/iap-jump.gif" width="640" alt="两把钥匙按顺序写完，CPU 读出 MSP 和复位">
   <br><sub>▲ 动图版，演示先写 0x45670123、后写 0xCDEF89AB，一个半字写进 APP，再读出 MSP 和复位地址。印刷版只有上面的静态图。</sub>
 </p>
@@ -114,6 +119,11 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
   <br><sub>▲ 自绘。中容量 1 KB/页；C8 末页是 0x0800FC00。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-page-erase.png" width="760" alt="Handraw：中容量 1 KB 页擦除地图（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。1 KB/页；末页 0x0800FC00；擦除地址须落页边界；0x0801FC00 对 C8 作废；不是实拍。</sub>
+</p>
+
 
 Flash 像一本只能用铅笔写、用整页橡皮擦的笔记本。擦过的地方全是 1，写的时候只能把 1 改成 0，想把 0 改回 1 只能把一整页擦掉。所以改一个字节，也要先把整页内容读出来，擦掉这一页，再连同改过的那个字节一起写回去。每页擦写的次数是有限的，频繁写日志要轮着用不同的页。
 
@@ -137,12 +147,22 @@ F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4
   <br><sub>▲ 自绘。排错三岔口：擦除报错先读 CR.LOCK 位与 1 KB 页边界对不对；写不进去检查是不是按半字写、目标还停在 0xFFFF；读回不对就按 0x08004800、0xB800 逐页比对。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0075](#source-pm0075-rdp)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-flash-triage.png" width="760" alt="Handraw：Flash 擦写读回三岔口（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CR.LOCK/页边界；半字与 0xFFFF；0xB800 读回比对；不是实拍。</sub>
+</p>
+
 ### 2. 解锁与编程流程
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-12-key-order.svg" width="760" alt="FLASH 解锁：先 0x45670123 再 0xCDEF89AB">
   <br><sub>▲ 自绘。钥匙顺序反了锁打不开；跳转要装 MSP 与复位向量。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-key-order.png" width="760" alt="Handraw：KEY1 再 KEY2 解锁（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。0x45670123 再 0xCDEF89AB；顺序反了 LOCK 不消；跳转要装 MSP 与复位向量；不是实拍。</sub>
 </p>
 
 
@@ -196,6 +216,11 @@ IAP 把 Flash 分成 **Bootloader 区 + 参数区 + APP 区**；上电先跑 Boo
   <br><sub>▲ 升级门：任一检查失败都留在 Bootloader 的升级模式；单槽没有旧镜像可退，A/B 双槽或外部备份才有回滚。跳到 APP 只能证明控制流离开 Bootloader；应用版本心跳才证明新镜像完成启动（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-acceptance-gates.png" width="760" alt="Handraw：IAP 五道验收门（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。接收/边界/向量/跳转/心跳；任一门失败留在 Bootloader；不是实拍。</sub>
+</p>
+
 ### 4. 跳转到 APP 的关键动作
 
 从 Bootloader 跳到 APP，要像交接班一样把现场收拾干净。Bootloader 开过的中断、定时器、外设要关掉，否则 APP 刚起来就会收到一个它不认识的中断。还要告诉 CPU 两件事：新的栈从哪里开始，中断向量表搬到了哪里。少做任何一步，APP 都可能在第一次进中断时跑回 Bootloader。
@@ -246,6 +271,11 @@ SCB->VTOR = 0x08004800UL;   /* 必须与 Bootloader 约定一致 */
 <p align="center">
   <img src="../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="常驻 Bootloader 走 0x08000000 的 16 KB，出厂系统存储器不占这 64 KB；两条路都在复位时选好，之后共用 0x08004800 的 46 KB">
   <br><sub>▲ 自绘。两条启动路径对比：常驻 Bootloader 从 0x08000000 起占 16 KB，出厂系统存储器里的自举程序不占这 64 KB；路径在复位时由 BOOT0 选定，之后都汇聚到 0x08004800 的 46 KB APP。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0056 向量表](#source-pm0056-vector)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-boot-compare.png" width="760" alt="Handraw：常驻 Bootloader 与系统存储器对比（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。路径甲占 18 KB 用户闪存；路径乙不占 64 KB；都交到 0x08004800；不是实拍。</sub>
 </p>
 
 ### 5. YMODEM / 串口升级流程
