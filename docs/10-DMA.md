@@ -65,6 +65,11 @@ USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 �
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch10-dma-cndtr.png" width="760" alt="Handraw：DMA1 CNDTR 半字账本（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。8 个半字缓冲；CNDTR=3 时已写 5 采样/10 字节；HT=4 采样/8 字节；按字节切开位置会错；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/dma-cndtr.gif" width="640" alt="8 个半字的缓冲区里 CNDTR 减到 3，已写 5 个采样、10 字节">
   <br><sub>▲ 动图版，演示 CNDTR 从 8 减到 3，标出已写 5 个采样、10 字节。印刷版只有上面的静态图。</sub>
 </p>
@@ -112,6 +117,11 @@ DMA 不理解“帧”或“采样组”，只按配置搬固定宽度的数据�
 <p align="center">
   <img src="../assets/diagrams/sample-10-mem2mem-vs-peri.svg" width="760" alt="外设请求 DMA 与内存到内存对照">
   <br><sub>▲ 自绘决策表。流式外设用 peri；块拷贝用 mem2mem。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-mem2mem-vs-peri.png" width="760" alt="Handraw：mem2mem 与 peri 决策表（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。流式外设用 peri；块拷贝用 mem2mem；不是实拍。</sub>
 </p>
 
 
@@ -165,12 +175,22 @@ F103 上查完映射表，「DMA 不动了」的排查也有固定三岔：先�
   <br><sub>▲ 自绘。以 DMA1 通道 5（USART1_RX）、CPAR=0x40013804、CMAR=0x20000100、CNDTR=0x0080 为例。岔口一：CNDTR 停在 0x0080、TCIF5 为 0——`CCR.EN`（位 0）没置，或外设请求根本没来：USART1_RX 硬连线到 DMA1 通道 5（不是 4 也不是 6），需要 `USART_CR3.DMAR = 1` 且每个收到的字节置位 RXNE；配置顺序是 CPAR → CMAR → CNDTR → CCR，EN 最后置 1。岔口二：字节错位一位、或每项都写进 CMAR[0]——`PSIZE`（CCR 位 9:8）与 `MSIZE`（CCR 位 11:10）不一致会截断或填充，`MINC = 0`（CCR 位 7）让存储器地址永不递增；注意 `PINC = 0`（CCR 位 6）配固定数据寄存器（如 USART_DR）是正常配置不是 bug；8 位 USART1_RX 的正确组合是 PSIZE = MSIZE = 00、MINC = 1、PINC = 0，CMAR 按 32 位对齐。岔口三：CNDTR 归零、TCIF5 已置位但 ISR 不跑——先向 `IFCR` 的 CTCIF5（通道 5 是位 17）写 1 清标志（写 0 无效），再查 `TCIE`（CCR 位 1）与 NVIC 里的 DMA1_Channel5 使能；重新武装前把四个标志全清一遍。底注：F103 只有 DMA1（7 通道）；CNDTR 计配置宽度的数据项数而不是字节——8 位 × 0x0080 = 128 B，16 位同值 = 256 B。通道映射与 CR/IFCR 语义见 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)，DMA1 结构见 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-dma-triage.png" width="760" alt="Handraw：DMA 三岔口排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CNDTR 卡住 / 宽度错位 / CIRC=0 只跑一轮；不是实拍。</sub>
+</p>
+
 ### 3. 传输方向与工作模式
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-10-dma-phases.svg" width="760" alt="DMA 请求→仲裁→搬运→CNDTR 四阶段">
   <br><sub>▲ 自绘。环形模式 HT/TC；普通模式数到 0 停。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-dma-phases.png" width="760" alt="Handraw：循环 HT/TC 与普通停零（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。环形 HT/TC 交半区；普通模式 CNDTR=0 停；不是实拍。</sub>
 </p>
 
 
@@ -325,6 +345,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* 后半满 */
 <p align="center">
   <img src="../assets/diagrams/sample-10-cndtr-ledger.svg" width="760" alt="环形 ADC 缓冲的 CNDTR 现场台账">
   <br><sub>▲ 自绘。HT/TC 半区所有权；ISR 只置标志。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-cndtr-ledger.png" width="760" alt="Handraw：HT/TC 半区所有权账本（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。HT/TC 半区所有权；ISR 只置标志；CNDTR 计配置宽度项；不是实拍。</sub>
 </p>
 
 

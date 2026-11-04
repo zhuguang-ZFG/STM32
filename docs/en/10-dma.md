@@ -64,6 +64,11 @@ USART1_TX is still pin 30 PA9 from chapter 06. ADC sample time is in chapter 09.
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-dma-cndtr.png" width="760" alt="Handraw: DMA1 CNDTR half-word ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 8 half-word buffer; CNDTR=3 means 5 samples / 10 bytes written; HT at 4 samples / 8 bytes; byte-wise cut is wrong; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/dma-cndtr.gif" width="640" alt="In an 8-half-word buffer CNDTR falls to 3: 5 samples and 10 bytes written">
   <br><sub>▲ Animated version. CNDTR falls from 8 to 3, marked as 5 samples and 10 bytes written. The printed book has only the static figure above.</sub>
 </p>
@@ -111,6 +116,11 @@ DMA understands neither frames nor sample groups. It moves a configured number o
 <p align="center">
   <img src="../../assets/diagrams/sample-10-mem2mem-vs-peri.svg" width="760" alt="Peripheral-request DMA versus memory-to-memory">
   <br><sub>▲ Drawn decision table. Streaming peripherals vs one-shot mem2mem.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-mem2mem-vs-peri.png" width="760" alt="Handraw: mem2mem vs peri decision table (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Streaming peripherals use peri; block copy uses mem2mem; not a photo.</sub>
 </p>
 
 
@@ -164,12 +174,22 @@ After the mapping table, DMA stalls on the F103 also fall into a fixed three bra
   <br><sub>▲ Drawn for this book, with DMA1 channel 5 (USART1_RX), CPAR=0x40013804, CMAR=0x20000100, CNDTR=0x0080 as the standing example. Branch one: CNDTR stuck at 0x0080 with TCIF5 = 0 — either `CCR.EN` (bit 0) was never set, or the peripheral request never arrives: USART1_RX is hard-wired to DMA1 channel 5 (not 4 or 6), which needs `USART_CR3.DMAR = 1` and RXNE setting on every received byte. Configure in the order CPAR → CMAR → CNDTR → CCR, with EN last. Branch two: bytes arrive shifted by one, or every item lands in CMAR[0] — `PSIZE` (CCR bits 9:8) and `MSIZE` (CCR bits 11:10) disagreeing truncates or pads items, and `MINC = 0` (CCR bit 7) means the memory address never increments. Note that `PINC = 0` (CCR bit 6) on a fixed data register such as USART_DR is the normal setting, not a bug. For 8-bit USART1_RX use PSIZE = MSIZE = 00, MINC = 1, PINC = 0, with CMAR 32-bit aligned. Branch three: CNDTR reaches 0 and TCIF5 sets, but the ISR never runs — write 1 to CTCIF5 (bit 17 of DMA_IFCR for channel 5; writing 0 does nothing), then check `TCIE` (CCR bit 1) and the DMA1_Channel5 IRQ in the NVIC, and clear all four flags before re-arming. Footnote: the F103 has only DMA1 with 7 channels; CNDTR counts items of the configured width, not bytes — 8-bit × 0x0080 = 128 B, the same value at 16-bit = 256 B. Channel mapping and CR/IFCR semantics: [RM0008 Rev 21 chapter 13](#source-rm0008-dma). DMA1 layout: [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-dma-triage.png" width="760" alt="Handraw: DMA three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: CNDTR stuck / width mismatch / CIRC=0 one-shot; not a photo.</sub>
+</p>
+
 ### 3. Transfer direction and operating modes
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-10-dma-phases.svg" width="760" alt="DMA request→grant→transfer→CNDTR phases">
   <br><sub>▲ Drawn for this book. Circular HT/TC; normal stops at zero.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-dma-phases.png" width="760" alt="Handraw: circular HT/TC vs normal stop (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Circular HT/TC hand off halves; normal stops at CNDTR=0; not a photo.</sub>
 </p>
 
 
@@ -324,6 +344,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 <p align="center">
   <img src="../../assets/diagrams/sample-10-cndtr-ledger.svg" width="760" alt="Live CNDTR ledger for a circular ADC buffer">
   <br><sub>▲ Drawn for this book. HT/TC half ownership; ISR only sets a flag.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-cndtr-ledger.png" width="760" alt="Handraw: HT/TC half ownership ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). HT/TC half ownership; ISR only sets a flag; CNDTR counts configured-width items; not a photo.</sub>
 </p>
 
 
