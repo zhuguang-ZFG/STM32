@@ -43,6 +43,13 @@
 
 ## Where to look for evidence
 
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-20-lookup-flow.svg" width="760" alt="Lookup flow from orderable part number through DS, RM, PM, and AN/UM">
+  <br><sub>▲ Animation: orderable PN → DS → RM → PM → AN/UM (drawn for this book, not a photo). Sources: this chapter's manual map and [project credits](#source-project-credits).</sub>
+</p>
+
 ### 1. Map of the official resources
 
 ST's documents are free, and you start from **st.com**. For development, **CubeMX (configuration) + CubeIDE (build and debug) + CubeProgrammer (flash and option bytes)** covers most of what you will do.
@@ -257,6 +264,12 @@ addr2line -e build/app.elf -f -C $(PC)
 ```
 
 > A tip: **if the command line can do it, use the command line.** Continuous integration, flashing a batch, and a machine with no IDE all depend on it. A graphical window is for interactive debug.
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-20-evidence-triage.svg" width="760" alt="Wrong manual, instrument leapfrog, or wrong firmware stack: match DS/RM/PM first, then the evidence ladder, then the stack">
+  <br><sub>▲ Drawn for this book. Evidence triage. Sources: [project credits](#source-project-credits) and [stlink tools](#source-stlink-tools).</sub>
+</p>
 
 ## Common traps and how to check them
 

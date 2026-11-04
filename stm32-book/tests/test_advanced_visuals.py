@@ -149,8 +149,8 @@ CHAPTERS = {
             "sample-17-perf-triage.svg",
         ),
     ),
-    ROOT / "docs" / "19-项目实战合集.md": (
-        7,
+        ROOT / "docs" / "19-项目实战合集.md": (
+        8,
         (
             "peripheral-wiring.svg",
             "sample-19-flash-fit.svg",
@@ -159,9 +159,28 @@ CHAPTERS = {
             "iap-acceptance-gates.svg",
             "network-debug-ladder.svg",
             "rtos-startup-gates.svg",
+            "sample-19-milestone-triage.svg",
         ),
     ),
-    ROOT / "docs" / "23-STM32G0引脚.md": (
+
+        ROOT / "docs" / "18-常见问题FAQ.md": (
+        4,
+        (
+            "toolchain-flow.svg",
+            "sample-18-boot-triage.svg",
+            "boot0-low.gif",
+            "sample-18-faq-compare.svg",
+        ),
+    ),
+    ROOT / "docs" / "21-原理图与实物图鉴.md": (
+        3,
+        (
+            "bluepill-stm32f103c8t6.svg",
+            "sample-21-board-compare.svg",
+            "sample-21-power-swd.svg",
+        ),
+    ),
+ROOT / "docs" / "23-STM32G0引脚.md": (
         3,
         (
             "pinout-stm32g071rb-lqfp64.svg",
@@ -169,25 +188,30 @@ CHAPTERS = {
             "g0-boot-swd.svg",
         ),
     ),
-    ROOT / "docs" / "20-学习资源与工具链.md": (
-        5,
+        ROOT / "docs" / "20-学习资源与工具链.md": (
+        7,
         (
             "project-structure.svg",
+            "sample-20-lookup-flow.svg",
             "manual-choice-map.svg",
             "firmware-stack-choice.svg",
             "instrument-evidence-ladder.svg",
             "single-build-contract.svg",
+            "sample-20-evidence-triage.svg",
         ),
     ),
-    ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
-        4,
+
+        ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
+        5,
         (
             "toolchain-flow.svg",
             "simulator-comparison.svg",
             "simulation-model-boundary.svg",
+            "sample-22-sim-triage.svg",
             "simulation-acceptance-gates.svg",
         ),
     ),
+
     ROOT / "docs" / "25-STM32H7引脚.md": (
         7,
         (
@@ -265,8 +289,10 @@ class AdvancedVisualTests(unittest.TestCase):
             ("15-FreeRTOS入门.md", "15-freertos.md"),
             ("16-低功耗设计.md", "16-low-power.md"),
             ("17-调试与性能优化.md", "17-debug.md"),
+            ("18-常见问题FAQ.md", "18-faq.md"),
             ("19-项目实战合集.md", "19-projects.md"),
             ("23-STM32G0引脚.md", "23-stm32g0-pins.md"),
+            ("21-原理图与实物图鉴.md", "21-board-maps.md"),
             ("20-学习资源与工具链.md", "20-resources.md"),
             ("22-仿真实验Wokwi与Renode.md", "22-simulation-wokwi-renode.md"),
             ("25-STM32H7引脚.md", "25-stm32h7-pins.md"),

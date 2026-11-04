@@ -116,6 +116,12 @@ The name `usart1` and the address `0x40013800` are written in Renode's `stm32f10
 
 The UART example uses DMA. `stm32f103.repl` does attach a DMA node, but whether it can finish an idle-line plus ring-buffer transfer depends on the Renode version you installed. If it does not match, first confirm the bytes with the polling transmit and receive from [chapter 06](06-uart.md), then come back to DMA.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-22-sim-triage.svg" width="760" alt="Model gap, host environment, board-only physics: a green sim is not a green board">
+  <br><sub>▲ Drawn for this book. Simulation triage. Sources: [DS5319](#source-ds5319), [Wokwi Blue Pill board](#source-wokwi-bluepill) and [Renode STM32 docs](#source-renode-stm32).</sub>
+</p>
+
 ## What simulation will not do for you
 
 | What you see | Why | What to do |

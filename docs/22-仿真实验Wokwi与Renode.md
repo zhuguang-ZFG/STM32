@@ -116,6 +116,12 @@ renode -e '$bin=@/path/to/firmware.elf' sim/renode/uart-usart1.resc
 
 uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是否能完整搬完「空闲线 + 环形缓冲」，取决于你装的 Renode 版本。对不上时，先用第 06 章的轮询收发确认字节，再回到 DMA。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-22-sim-triage.svg" width="760" alt="模型缺口、主机环境、板级物理：仿真能过不等于板上能过">
+  <br><sub>▲ 自绘。仿真三岔口。出处是 [DS5319](#source-ds5319)、[Wokwi Blue Pill 板定义](#source-wokwi-bluepill) 和 [Renode STM32 文档](#source-renode-stm32)。</sub>
+</p>
+
 ## 仿真替不了的事
 
 | 现象 | 原因 | 怎么办 |

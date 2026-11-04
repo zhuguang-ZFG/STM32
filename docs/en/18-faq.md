@@ -179,6 +179,12 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Cause**: clock or peripheral init walked off the end of a structure, the vector table is wrong, or the stack is too small.
 - **Fix**: read `CFSR` first. `BFAR` is this access only when bit 15 is 1 (see [chapter 17](17-debug.md)). Check the linker script.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-18-faq-compare.svg" width="760" alt="Build/link, download/debug, peripherals, hardware, and RTOS each have one first probe — do not shotgun five config edits">
+  <br><sub>▲ Drawn for this book. Five FAQ domains, one first probe each. Sources: [RM0008 boot](#source-rm0008-boot) and [DS5319 NRST/SWD](#source-ds5319-nrst).</sub>
+</p>
+
 ## 3. Peripherals
 
 **P1 A GPIO write does nothing**

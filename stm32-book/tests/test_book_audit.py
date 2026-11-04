@@ -73,6 +73,7 @@ class BookAuditTests(unittest.TestCase):
             "iap-acceptance-gates.svg",
             "network-debug-ladder.svg",
             "rtos-startup-gates.svg",
+            "sample-19-milestone-triage.svg",
         )
         for language in ("zh", "en"):
             self.assertEqual(0, chapter[language]["visual_anchor_deficit"])
@@ -237,6 +238,63 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "16": ("lowpower-wakeup.svg", "sample-16-stop-wake.svg", "stop-wake.gif", "sample-16-stop-compare.svg", "lowpower-current-evidence.svg", "sample-16-pwr-triage.svg"),
             "17": ("debug-swo.svg", "sample-17-cfsr.svg", "cfsr-read.gif", "sample-17-obs-compare.svg", "fault-triage-ladder.svg", "sample-17-perf-triage.svg"),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
+
+
+    def test_phase_four_projects_faq_resources_boards_and_sim(self) -> None:
+        expected = {
+            "18": (
+                "toolchain-flow.svg",
+                "sample-18-boot-triage.svg",
+                "boot0-low.gif",
+                "sample-18-faq-compare.svg",
+            ),
+            "19": (
+                "peripheral-wiring.svg",
+                "sample-19-flash-fit.svg",
+                "one-slot.gif",
+                "dma-buffer-ownership.svg",
+                "iap-acceptance-gates.svg",
+                "network-debug-ladder.svg",
+                "rtos-startup-gates.svg",
+                "sample-19-milestone-triage.svg",
+            ),
+            "20": (
+                "project-structure.svg",
+                "sample-20-lookup-flow.svg",
+                "manual-choice-map.svg",
+                "firmware-stack-choice.svg",
+                "instrument-evidence-ladder.svg",
+                "single-build-contract.svg",
+                "sample-20-evidence-triage.svg",
+            ),
+            "21": (
+                "bluepill-stm32f103c8t6.svg",
+                "sample-21-board-compare.svg",
+                "bluepill-stm32f103c8t6.svg",
+                "blackpill-stm32f411ce.svg",
+                "nucleo-f411re.svg",
+                "f4-discovery.svg",
+                "f103zet6-dev.svg",
+                "pinout-bluepill.svg",
+                "peripheral-wiring.svg",
+                "sample-21-power-swd.svg",
+            ),
+            "22": (
+                "toolchain-flow.svg",
+                "simulator-comparison.svg",
+                "simulation-model-boundary.svg",
+                "sample-22-sim-triage.svg",
+                "simulation-acceptance-gates.svg",
+            ),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]

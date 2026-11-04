@@ -520,6 +520,12 @@ static void vCommTask(void *arg)
   <br><sub>▲ Gateway projects release application behavior only after critical devices, queues, storage, and communication return explicit results. A running scheduler does not mean the system is ready.</sub>
 </p>
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-19-milestone-triage.svg" width="760" alt="Scope creep, skipped milestones, integration without evidence: one slot, one demo, a gate before merge">
+  <br><sub>▲ Drawn for this book. Three project branches: scope / skipped gate / no evidence. Sources: [project examples](#source-project-examples) and this chapter's acceptance gates.</sub>
+</p>
+
 ## Hands-on labs (picking a project and moving it forward)
 
 1. **Freeze the delivery contract:** State input range, output format, timing and capacity budgets, failure states, and recovery path before writing business logic.

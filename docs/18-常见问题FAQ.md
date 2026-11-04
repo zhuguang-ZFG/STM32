@@ -179,6 +179,12 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **原因**：时钟/外设初始化越界、向量表错、栈太小。
 - **解决**：先看 `CFSR`。`BFAR` 只有 bit 15 为 1 才是这次的地址（见第 17 章）；核对链接脚本。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-18-faq-compare.svg" width="760" alt="编译链接、下载调试、外设、硬件、RTOS 五域各有第一探针，不要一次改五处配置">
+  <br><sub>▲ 自绘。FAQ 五域对照：每域只做第一探针，有证据再改一处。出处是 [RM0008 启动](#source-rm0008-boot) 和 [DS5319 NRST/SWD](#source-ds5319-nrst)。</sub>
+</p>
+
 ## 三、外设
 
 **P1 GPIO 写了不动作**

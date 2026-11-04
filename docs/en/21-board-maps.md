@@ -45,6 +45,13 @@
 
 ## Core ideas
 
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-21-board-compare.svg" width="760" alt="BluePill F103, BlackPill F411, Nucleo-F411RE: package, debugger, 5V, and USB path compared">
+  <br><sub>▲ Drawn comparison (not a photo). Three boards, five questions. Sources: [DS5319](#source-ds5319) and [project credits](#source-project-credits).</sub>
+</p>
+
 ### Board overview
 
 | Drawing ([`../../assets/boards/`](../../assets/boards/)) | MCU | Clock / core | Flash / RAM | How you program it |
@@ -166,6 +173,12 @@
 | DHT11 | PB12 | Single-wire timing |
 
 > Two reminders: **check the conflict first** (SPI1's PA5~PA7 are also ADC and TIM2 alternates), and **match the voltage and share ground** (HC-05, OLED, and W25Q64 are 3.3 V parts).
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-21-power-swd.svg" width="760" alt="Power-up to SWD: 3V3 → NRST → BOOT0=0 → SWDIO/SWCLK">
+  <br><sub>▲ Animation: power → reset → BOOT0 → SWD (drawn for this book, not a photo). Sources: [DS5319](#source-ds5319) and [project credits](#source-project-credits).</sub>
+</p>
 
 ## Hardware and wiring
 
