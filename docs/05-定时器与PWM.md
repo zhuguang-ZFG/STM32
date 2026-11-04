@@ -63,6 +63,11 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch05-pwm-1khz.png" width="760" alt="Handraw：TIM3_CH1 1 kHz 50% 正误对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。上半 72 MHz→1000 Hz；下半误用 36 MHz→500 Hz；不是示波器实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/pwm-1khz.gif" width="640" alt="CNT 走到 CCR = 500 时电平翻转，频率 1000 Hz">
   <br><sub>▲ 动图版，只演示 1000 Hz、高电平 500 µs 的正确波形。印刷版只有上面的静态图。</sub>
 </p>
@@ -119,6 +124,11 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
   <br><sub>▲ 自绘。PSC=71 ARR=999 CCR=500 与章内宏一致。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-timebase-math.png" width="760" alt="Handraw：时基公式 PSC/ARR/CCR（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz→(PSC+1)→(ARR+1)→1 kHz；CCR/1000=50%；不是实拍。</sub>
+</p>
+
 
 把定时器想成两级齿轮。PSC 是第一级，先把 72 MHz 的时钟减慢：PSC = 71 就是每 72 个时钟走一格，一格 1 µs。ARR 是第二级，数到 ARR 就清零重来：ARR = 999 就是 1000 格一圈，一圈 1 ms。两个寄存器都是「写的值加 1」才是真正的格数，这个 +1 是最常见的差一错误。
 
@@ -144,6 +154,11 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 <p align="center">
   <img src="../assets/diagrams/sample-05-shadow-regs.svg" width="760" alt="ARR/CCR 预装载与更新事件">
   <br><sub>▲ 自绘。ARPE/OCxPE：写预装载，UE 才锁进影子。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-shadow-regs.png" width="760" alt="Handraw：影子寄存器 ARPE/OCxPE（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。写预装载，UE 才锁进影子；无预装载易出短脉冲；不是实拍。</sub>
 </p>
 
 
@@ -172,6 +187,11 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 <p align="center">
   <img src="../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="有波形但频率差整数倍时停在 PSC/ARR 分频比；PA6 全无波形时依次读 TIM3_CCER 的 CC1E 与 GPIOA_CRL 的复用配置">
   <br><sub>▲ 自绘。看哪里：三环从上到下。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，用 72 MHz 重算 72e6 / (72 × 1000) = 1000 Hz；同一组数按 36 MHz 除得到 500 Hz。环 ② 读回 TIM3_CCER 位 0 的 CC1E = 1，TIM3_CCMR1 的 OC1M[6:4] = 110 是 PWM 模式 1。环 ③ 读回 GPIOA_CRL[27:24] = 0xB，即 CNF6 = 10 复用推挽、MODE6 = 11 是 50 MHz，TIM3_REMAP = 00 把通道留在第 16 脚 PA6。证明什么：三环的读回值能把「频率错」和「引脚上完全没有波形」分开——下半部分只有 36 MHz 那一行还留着 500 Hz 的波形；CC1E = 0 与 MODE6 = 00 都让 PA6 没有波形，重映射不为 00 则波形改去 PB4 或 PC6。不证明什么：CCR 占空比、探头是否共地，以及第 08 章是否把 PA6 当 SPI1_MISO 用；TIM1 额外的 BDTR 位 15 MOE 在偏移 0x44，本图只点名不展开。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-pwm-debug.png" width="760" alt="Handraw：PWM 三环排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。①分频比 ②CC1E/OC1M ③GPIO 复用；后环修不了前环；不是实拍。</sub>
 </p>
 
 ### 4. PWM 模式与公式
@@ -331,6 +351,11 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 <p align="center">
   <img src="../assets/diagrams/sample-05-deadtime.svg" width="760" alt="互补 PWM 与死区避免直通">
   <br><sub>▲ 自绘。BDTR DTG + MOE；半桥实验才需要。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-deadtime.png" width="760" alt="Handraw：互补死区 BDTR DTG（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。CHx/CHxN 双沿死区；无 DT 有直通风险；半桥实验才需要；不是实拍。</sub>
 </p>
 
 

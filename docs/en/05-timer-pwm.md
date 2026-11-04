@@ -62,6 +62,11 @@ The advanced timers TIM1 and TIM8 have an extra break and dead-time register, `T
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-pwm-1khz.png" width="760" alt="Handraw: TIM3_CH1 1 kHz 50% OK vs FAIL (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Top: 72 MHz → 1000 Hz; bottom: wrong 36 MHz → 500 Hz; not a scope capture.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/pwm-1khz.gif" width="640" alt="The level flips when CNT reaches CCR = 500, at 1000 Hz">
   <br><sub>▲ Animated version. It shows only the correct 1000 Hz waveform with 500 µs high. The printed book has only the static figure above.</sub>
 </p>
@@ -118,6 +123,11 @@ A timer is a counter that ticks along with a clock, plus a few comparators. The 
   <br><sub>▲ Drawn for this book. PSC=71 ARR=999 CCR=500 matches the chapter macros.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-timebase-math.png" width="760" alt="Handraw: time-base math PSC/ARR/CCR (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 72 MHz → (PSC+1) → (ARR+1) → 1 kHz; CCR/1000 = 50%; not a photo.</sub>
+</p>
+
 
 Think of the timer as two gears. PSC is the first gear and slows the 72 MHz clock down: PSC = 71 means one step every 72 clocks, so each step is 1 µs. ARR is the second gear. The counter wraps to zero after ARR: ARR = 999 means 1000 steps per lap, so each lap is 1 ms. In both registers the real count is the value you write plus 1, and that +1 is the most common off-by-one.
 
@@ -143,6 +153,11 @@ Useful values at 72 MHz:
 <p align="center">
   <img src="../../assets/diagrams/sample-05-shadow-regs.svg" width="760" alt="ARR/CCR preload and the update event">
   <br><sub>▲ Drawn for this book. ARPE/OCxPE: write preload; latch on update event.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-shadow-regs.png" width="760" alt="Handraw: shadow registers ARPE/OCxPE (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Write preload; latch on UE; without preload → runt pulse; not a photo.</sub>
 </p>
 
 
@@ -171,6 +186,11 @@ When the output is silent or the frequency is wrong, read the three rings below 
 <p align="center">
   <img src="../../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="A waveform with the wrong period stops at the PSC/ARR ratio; a completely silent PA6 means reading CC1E in TIM3_CCER and the alternate-function bits in GPIOA_CRL">
   <br><sub>▲ Drawn for this book. Where to look: three rings, top to bottom. Ring ① reads TIM3_PSC = 71 and TIM3_ARR = 999 back and recomputes 72e6 / (72 × 1000) = 1000 Hz; the same pair divided by 36 MHz gives 500 Hz. Ring ② reads CC1E = 1 in bit 0 of TIM3_CCER, with OC1M[6:4] = 110 in TIM3_CCMR1 selecting PWM mode 1. Ring ③ reads GPIOA_CRL[27:24] = 0xB: CNF6 = 10 is alternate-function push-pull and MODE6 = 11 is 50 MHz, while TIM3_REMAP = 00 keeps the channel on pin 16 PA6. What it proves: the read-backs separate a frequency error from a dead pin — in the lower half only the 36 MHz row still leaves a 500 Hz waveform; CC1E = 0 and MODE6 = 00 both leave PA6 quiet, and a non-zero remap moves the waveform to PB4 or PC6. What it does not prove: the duty set by CCR, the probe ground, or whether chapter 08 has taken PA6 as SPI1_MISO; TIM1's extra BDTR bit 15 MOE at offset 0x44 is only named, not drawn. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-pwm-debug.png" width="760" alt="Handraw: PWM three-ring debug (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). ① divider ② CC1E/OC1M ③ GPIO AF; later ring never fixes earlier; not a photo.</sub>
 </p>
 
 ### 4. PWM modes and formulas
@@ -330,6 +350,11 @@ The full project is in [`examples/timer-pwm/`](../../examples/timer-pwm/).
 <p align="center">
   <img src="../../assets/diagrams/sample-05-deadtime.svg" width="760" alt="Complementary PWM with dead time against shoot-through">
   <br><sub>▲ Drawn for this book. BDTR DTG + MOE; for half-bridge labs only.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-deadtime.png" width="760" alt="Handraw: complementary dead time BDTR DTG (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CHx/CHxN dead time both edges; no DT → shoot-through risk; half-bridge labs only; not a photo.</sub>
 </p>
 
 
