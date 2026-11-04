@@ -54,14 +54,18 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
-        6,
+        10,
         (
             "timer-pwm.svg",
+            "sample-05-pwm-edge-flow.svg",
             "sample-05-pwm-1khz.svg",
             "pwm-1khz.gif",
+            "sample-05-timebase-math.svg",
+            "sample-05-shadow-regs.svg",
             "timer-modes.svg",
             "sample-05-pwm-debug.svg",
             "pwm-breath.gif",
+            "sample-05-deadtime.svg",
         ),
     ),
     ROOT / "docs" / "09-ADC与DAC.md": (

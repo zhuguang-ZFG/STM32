@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="I2C pull-up vs capacitance">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">I2C pull-up vs capacitance</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">4.7 k starting point, not a religion</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">07</text>
+<text x="40" y="86" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Rise time roughly ~0.847 * Rpull * Cbus (to ~63%); stay inside mode limits.</text>
+<rect x="40" y="120" width="880" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="156" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Short jumper</text>
+<text x="300" y="156" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">~20-50 pF</text>
+<text x="520" y="156" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4.7 k–10 k</text>
+<text x="880" y="156" font-size="13" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">100 kHz easy</text>
+<rect x="40" y="190" width="880" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="56" y="226" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Breadboard mess</text>
+<text x="300" y="226" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">~100-200 pF</text>
+<text x="520" y="226" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2.2–4.7 k</text>
+<text x="880" y="226" font-size="13" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">edges soften</text>
+<rect x="40" y="260" width="880" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="56" y="296" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Long cable / many slaves</text>
+<text x="300" y="296" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">&gt;200 pF</text>
+<text x="520" y="296" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1–2.2 k</text>
+<text x="880" y="296" font-size="13" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">watch sink current</text>
+<rect x="40" y="330" width="880" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="366" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">400 kHz Fast-mode</text>
+<text x="300" y="366" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">budget tight</text>
+<text x="520" y="366" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">often 1–2.2 k</text>
+<text x="880" y="366" font-size="13" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">scope rise time</text>
+<rect x="40" y="420" width="880" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="454" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Too strong pull-up: slave VOL may not reach low; ACK looks like NACK on a bad scope zoom.</text>
+<text x="56" y="484" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Internal MCU pull-ups are tens of kΩ — not a substitute for real bus resistors.</text>
+<text x="56" y="514" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Chapter mentions 4.7 k with 0x801E — keep them together in the lab checklist.</text>
+<rect x="40" y="590" width="880" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="626" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Place in electrical-behavior section — stops 'just change CCR' cargo cult.</text>
+<text x="56" y="654" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Knowledge-track RC card; measure Cbus when the edge looks rounded.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. Pull-up guidance compressed from UM10204 + lab practice; not a PCB fab note.</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

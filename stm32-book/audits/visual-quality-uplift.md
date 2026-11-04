@@ -70,7 +70,82 @@ Exceeds prior overlay floors by +3 to +4 meaningful anchors on each pilot chapte
 - `python stm32-book/build_html.py --check` zh+en — PASS
 - Dual-track honesty kept (no AI-fake 真证 photos)
 
+
+---
+
+## Batch 2 — ch04 / ch05 / ch07 / ch08 (this turn)
+
+Pilot bar unchanged: denser meaningful figures (+2..+4), remade crude AUX GIFs, Handraw CSS-SVG mechanism anims, zh+en embeds, no video work.
+
+### New static Handraw figures (+12)
+
+| Chapter | Assets |
+|---|---|
+| ch04 | `sample-04-priority-group.svg`, `sample-04-tail-chaining.svg`, `sample-04-exti-line-map.svg` |
+| ch05 | `sample-05-timebase-math.svg`, `sample-05-shadow-regs.svg`, `sample-05-deadtime.svg` |
+| ch07 | `sample-07-start-ack.svg`, `sample-07-pullup-cap.svg`, `sample-07-sr-restart.svg` |
+| ch08 | `sample-08-mode0-edges.svg`, `sample-08-br-table.svg`, `sample-08-nss-multi.svg` |
+
+All under `assets/diagrams/`, 960×880, credit + real values (PRIGROUP / PSC·ARR·CCR / 0x78·ACK / Mode0·BR=010).
+
+### New CSS-SVG mechanism animations (+4)
+
+| Chapter | Asset |
+|---|---|
+| ch04 | `assets/animations/sample-04-nvic-preempt-flow.svg` |
+| ch05 | `assets/animations/sample-05-pwm-edge-flow.svg` |
+| ch07 | `assets/animations/sample-07-i2c-ack-flow.svg` |
+| ch08 | `assets/animations/sample-08-spi-jedec-flow.svg` |
+
+FA-002 continuous-line; reduced-motion first frame PDF-readable.
+
+### Remade crude AUX GIFs (in place, test-bounded)
+
+| GIF | Notes |
+|---|---|
+| `assets/gif/nvic-preempt.gif` | 6 frames, TIM2→EXTI0→stack→ISR→return (no SAME PREEMPT) |
+| `assets/gif/pwm-1khz.gif` | 6 frames, CNT→CCR=500 edge, 1000 Hz / 500 µs |
+| `assets/gif/i2c-addr.gif` | 6 frames, START→0x78→9th→ACK / 0x801E·4.7 k |
+| `assets/gif/spi-jedec.gif` | 6 frames, CS↓ 0x9F → EF 40 17 @ 9 MHz |
+
+Builders in `tools/gen_gifs.py`; denser bodies in `tools/sample_figs_quality2/gif_snippets/`.
+
+### Embeds
+
+zh + en for all 16 new assets (32 insert ops) via `tools/sample_figs_quality2/embed_q2.py`.
+
+## Anchor deltas (img anchors in zh chapter, video stripped)
+
+| Chapter | Before (prior lock) | After | Δ |
+|---|---:|---:|---:|
+| ch04 | 6 | **10** | +4 |
+| ch05 | 6 | **10** | +4 |
+| ch07 | 5 | **9** | +4 |
+| ch08 | 6 | **10** | +4 |
+
+## Generator package
+
+`tools/sample_figs_quality2/` — `figures_q2.py`, `anim_q2.py`, `embed_q2.py`, `patch_crude_gifs.py`, `gif_snippets/`.
+
+## Gates
+
+- `python tools/check_assets.py` — PASS
+- `pytest stm32-book/tests` — PASS
+- `python stm32-book/build_html.py --check` zh+en — PASS
+- Dual-track honesty kept; **no video** this turn
+
 ## Next queue (not done this turn)
+
+1. **ch11–ch17** — reliability / USB / RTOS / LP / debug thin spots
+2. **ch00–ch01, ch18–ch22** — onboarding + FAQ/boards/sim gaps
+3. **ch23–ch28 + appendix** — pinmux / SPL / network / RTOS-system polish
+4. Optional: rebuild bilingual PDF after next 1–2 batches
+
+Do **not** claim whole-book visual quality done after this batch.
+
+## Next queue (not done this turn) *(pilot — superseded by Batch 2 section above)*
+
+### Pilot next-queue archive
 
 1. **ch04, ch05, ch07, ch08** — interrupt / timer / I2C / SPI mechanism density + remake weak anims
 2. **ch11–ch17** — reliability / USB / RTOS / LP / debug thin spots from B7 census

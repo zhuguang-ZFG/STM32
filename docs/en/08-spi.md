@@ -49,6 +49,13 @@ When the three bytes do not match `0xEF 0x40 0x17`, the usual cause is MOSI and 
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-08-spi-jedec-flow.svg" width="720" alt="SPI JEDEC ID read: 0x9F through EF 40 17">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). CS↓ 0x9F → EF 40 17 @ 9 MHz.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-08-spi-jedec.svg" width="760" alt="Mode 0 at divide-by-8 is 9 MHz; the three bytes after 0x9F are 0xEF, 0x40, and 0x17; swapping MOSI and MISO makes them miss">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 14 PA4 = CS (push-pull, low during the transaction), pin 15 PA5 = SCK, pin 16 PA6 = MISO, pin 17 PA7 = MOSI. CPOL = 0, CPHA = 0, BR=010, SCK = 9 MHz. On the normal path MOSI sends 0x9F and then three 0xFF bytes; rx[1] through rx[3] are 0xEF, 0x40, and 0x17. The lower half shows the wrong bytes you get with PA6 and PA7 swapped. The right side marks two more cases: PA4 held low glues two commands into one, and BR=000 makes SCK = 36 MHz. Sources: [RM0008 Rev 21 section 25.5.1](#source-rm0008-spi) and [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
@@ -111,6 +118,13 @@ How the shift works: master and slave each have an 8-bit shift register, and the
 
 ### 2. The four CPOL/CPHA modes
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-mode0-edges.svg" width="760" alt="SPI Mode0 sampling edges and flash default">
+  <br><sub>▲ Drawn for this book. CPOL0 CPHA0: sample on first rising edge; common JEDEC flash default.</sub>
+</p>
+
+
 The four modes settle two questions. CPOL says where the hand rests between taps, which is whether the idle clock is low or high. CPHA says whether you read the cards as the hand comes down or as it comes up, which is whether sampling happens on the 1st or the 2nd edge. If the two sides disagree, every bit is half a tap off, and what comes back is all 0, all FF, or shifted.
 
 | Mode | CPOL | CPHA | Idle clock | Sample edge | Common parts |
@@ -131,6 +145,13 @@ The four modes are not four protocols; they are the two CR1 bits CPOL and CPHA. 
 
 ### 3. Rate and the divider
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-br-table.svg" width="760" alt="SPI BR divider table down to the 9 MHz lab point">
+  <br><sub>▲ Drawn for this book. SPI1@72 MHz, BR=010 → 9 MHz, matches the JEDEC GIF.</sub>
+</p>
+
+
 The master supplies the SPI clock, so the speed is the master's bus clock divided by a power of 2. The divider has only eight steps, from 2 to 256, so 10 MHz is not available: you choose between 9 MHz and 18 MHz. The real speed limit is usually the wiring rather than the chip. On jumper wires above 18 MHz, the square wave has already rounded off into something like a sine.
 
 - SPI clock = fPCLK / divider (BR field: 2/4/8/16/32/64/128/256).
@@ -148,6 +169,13 @@ The master supplies the SPI clock, so the speed is the master's bus clock divide
 | 111 | 256 | 0.28125 MHz |
 
 ### 4. NSS, and more than one slave
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-nss-multi.svg" width="760" alt="Multi-slave topology with independent chip-selects">
+  <br><sub>▲ Drawn for this book. Shared SCK/MOSI/MISO; two CS low fights the bus.</sub>
+</p>
+
 
 Several slaves share SCK, MOSI and MISO, and each has its own CS. The master pulls low the CS of the one it wants to talk to. The others see their CS high and let go of MISO. The easiest approach is to drive CS as an ordinary GPIO yourself, so you can see exactly when it goes low and for how long.
 

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="NSS / multi-slave map">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">NSS / multi-slave map</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Software CS per flash or panel</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">08</text>
+<text x="40" y="86" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Shared SCK/MOSI/MISO; each slave needs its own CS. Master mode SSM/SSI tricks.</text>
+<rect x="40" y="120" width="200" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="140" y="160" font-size="16" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">MCU</text>
+<text x="140" y="196" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA5 SCK</text>
+<text x="140" y="224" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA7 MOSI</text>
+<text x="140" y="252" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA6 MISO</text>
+<text x="140" y="286" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA4 CS0</text>
+<line x1="250" y1="180" x2="313.566" y2="152.757" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="320.00,150.00 314.94,155.97 312.19,149.54" fill="#5e6872" opacity="1"/>
+<line x1="250" y1="220" x2="313" y2="220" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="320.00,220.00 313.00,223.50 313.00,216.50" fill="#5e6872" opacity="1"/>
+<line x1="250" y1="280" x2="313.07" y2="289.01" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="320.00,290.00 312.58,292.47 313.57,285.55" fill="#5e6872" opacity="1"/>
+<rect x="330" y="120" width="280" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="470" y="160" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">W25Q flash</text>
+<text x="470" y="192" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CS = PA4 (active low)</text>
+<rect x="330" y="250" width="280" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="470" y="290" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST7789 panel</text>
+<text x="470" y="322" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CS = PBy (separate)</text>
+<rect x="640" y="120" width="280" height="230" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="780" y="160" font-size="15" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Rules</text>
+<text x="660" y="200" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">- only one CS low at a time</text>
+<text x="660" y="232" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">- idle CS high before init</text>
+<text x="660" y="264" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">- HW NSS single-slave only</text>
+<text x="660" y="296" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">- SSM=1 for soft NSS master</text>
+<rect x="40" y="380" width="880" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="414" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Two CS low =&gt; both drive MISO =&gt; ID bytes corrupt; looks like 'bad mode'.</text>
+<text x="56" y="444" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Chapter macros FLASH_CS_LOW/HIGH are the multi-slave pattern even for one part.</text>
+<text x="56" y="474" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Write-only panels may float MISO — do not share that line with a flash without a jumper plan.</text>
+<text x="56" y="504" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pairs with bus-compare SVG — this card is the CS topology, not protocol ranking.</text>
+<rect x="40" y="570" width="880" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="606" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Place under NSS/multi-slave — diagram beats another paragraph of CS folklore.</text>
+<text x="56" y="636" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Knowledge-track wiring card; pin letters follow the chapter flash lab.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. NSS/multi-slave practice for F103 SPI labs; matches FLASH_CS macros.</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

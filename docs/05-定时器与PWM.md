@@ -50,6 +50,13 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-05-pwm-edge-flow.svg" width="720" alt="PWM：CNT 走到 CCR=500 翻电平">
+  <br><sub>▲ 自绘矢量动画（FA-002）。1 kHz、50% 高电平 500 µs。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-05-pwm-1khz.svg" width="760" alt="72 MHz 计数时钟下这组 PSC/ARR 是 1 kHz；改用 36 MHz 去除得到 500 Hz">
   <br><sub>▲ 自绘。STM32F103C8T6，LQFP48 第 16 脚 PA6 = TIM3_CH1。计数时钟 72 MHz，PSC = 71，ARR = 999，CCR = 500。上半部分是正确的波形：周期 1 ms，高电平 500 µs，频率 1000 Hz。下半部分是按 36 MHz 算错时的波形：周期 2 ms，频率 500 Hz。图上另标出 ARR = 999999 在 16 位计数器里装不下。TIM1 的 MOE 在偏移 0x44，复位值 0x0000，与这条 TIM3 波形无关。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
@@ -106,6 +113,13 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 
 ### 2. 时基公式
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-05-timebase-math.svg" width="760" alt="72 MHz 经 PSC/ARR 得到 1 kHz PWM">
+  <br><sub>▲ 自绘。PSC=71 ARR=999 CCR=500 与章内宏一致。</sub>
+</p>
+
+
 把定时器想成两级齿轮。PSC 是第一级，先把 72 MHz 的时钟减慢：PSC = 71 就是每 72 个时钟走一格，一格 1 µs。ARR 是第二级，数到 ARR 就清零重来：ARR = 999 就是 1000 格一圈，一圈 1 ms。两个寄存器都是「写的值加 1」才是真正的格数，这个 +1 是最常见的差一错误。
 
 - 计数时钟：`fCK_CNT = fCK_PSC / (PSC + 1)`
@@ -125,6 +139,13 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 > 先定 `fCK_CNT`（选 PSC），再定 `ARR+1 = T × fCK_CNT`。
 
 ### 3. 计数模式与影子寄存器
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-05-shadow-regs.svg" width="760" alt="ARR/CCR 预装载与更新事件">
+  <br><sub>▲ 自绘。ARPE/OCxPE：写预装载，UE 才锁进影子。</sub>
+</p>
+
 
 影子寄存器像餐厅换菜单。你新写的 ARR 或 CCR 先放在后台（预装载寄存器），等这一圈数完、更新事件到来时才换到前台去参与比较。这样不会出现一圈 PWM 数到一半周期突然变了、波形出一个怪脉冲的情况。代价是新值要晚一圈才生效。
 
@@ -305,6 +326,13 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 </p>
 
 ### 6. 互补输出与死区（高级定时器）
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-05-deadtime.svg" width="760" alt="互补 PWM 与死区避免直通">
+  <br><sub>▲ 自绘。BDTR DTG + MOE；半桥实验才需要。</sub>
+</p>
+
 
 | 概念 | 说明 |
 | --- | --- |

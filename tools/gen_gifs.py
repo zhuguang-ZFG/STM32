@@ -362,29 +362,34 @@ def nvic_preempt():
     The equal-preemption failure stays on the static SVG. This GIF does not draw it.
     """
     g = Gif(W, H, delay=12)
-    lines = (
-        "TIM2 RUN  PREEMPT 2",
-        "EXTI0 ARRIVES  PREEMPT 1",
-        "STACK EIGHT REGS",
-        "EXTI0 ISR RUNS",
-        "UNSTACK AND RETURN",
-        "TIM2 RESUMES",
-    )
-    for index, line in enumerate(lines):
+    stages = [
+        ("TIM2 RUN  PREEMPT 2", True, False, False, False),
+        ("EXTI0 ARRIVES  PREEMPT 1", True, True, False, False),
+        ("STACK EIGHT REGS", True, True, True, False),
+        ("EXTI0 ISR RUNS", True, True, True, True),
+        ("UNSTACK AND RETURN", True, False, False, False),
+        ("TIM2 RESUMES", True, False, False, False),
+    ]
+    for index, (line, tim_on, exti_on, stack_on, isr_on) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "NVIC PREEMPT", "GROUP4", "AUX GIF  STATIC SVG HAS THE FAILURE")
-        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
-        c.text("TIM2  PREEMPT 2", 28, 60, C.AMBER, 1)
-        c.panel(16, 96, 448, 36, C.PANEL, C.CYAN if index else C.STROKE)
-        c.text("EXTI0  PREEMPT 1", 28, 108, C.GREEN if index else C.DIM, 1)
-        c.text(line, 28, 160, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
-        c.text("HIGHER PREEMPTION INTERRUPTS TIM2", 28, 214, C.GREEN, 1)
-        c.text("THEN THE CORE RETURNS", 28, 232, C.MUTED, 1)
-        c.text("PRINT THE FAILURE ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        c.panel(16, 42, 210, 70, C.PANEL, C.AMBER if tim_on else C.STROKE)
+        c.text("TIM2", 90, 58, C.AMBER if tim_on else C.DIM, 1)
+        c.text("PREEMPT 2", 55, 84, C.TEXT if tim_on else C.DIM, 1)
+        c.panel(250, 42, 210, 70, C.PANEL, C.GREEN if exti_on else C.STROKE)
+        c.text("EXTI0", 320, 58, C.GREEN if exti_on else C.DIM, 1)
+        c.text("PREEMPT 1", 295, 84, C.TEXT if exti_on else C.DIM, 1)
+        c.line(226, 76, 248, 76, C.STROKE, 2)
+        c.panel(16, 126, 444, 36, C.PANEL2 if stack_on else C.PANEL, C.STROKE)
+        c.text("STACK  R0-R3 R12 LR PC xPSR" if stack_on else "STACK  IDLE", 28, 140, C.TEXT if stack_on else C.DIM, 1)
+        c.panel(16, 172, 444, 28, C.PANEL, C.VIOLET if isr_on else C.STROKE)
+        c.text("EXTI0 ISR  ACTIVE" if isr_on else "EXTI0 ISR  WAIT", 28, 184, C.TEXT if isr_on else C.DIM, 1)
+        c.text(line, 16, 220, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 242, C.MUTED, 1)
+        c.text("HIGHER PREEMPTION INTERRUPTS TIM2", 16, 262, C.GREEN, 1)
+        c.text("PRINT THE FAILURE ON THE STATIC SVG", 16, 282, C.DIM, 1)
         g.add(c)
     return g
-
 
 def clock_css():
     """HSE enters the PLL, SYSCLK sits at 72 MHz, then HSE vanishes and SYSCLK returns to HSI.
@@ -429,29 +434,37 @@ def pwm_1khz():
     The slow path stays on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "CNT 0  HIGH",
-        "CNT 250  HIGH",
-        "CCR=500  EDGE",
-        "CNT 750  LOW",
-        "CNT 999  LOW",
-        "1000 Hz  500 us HIGH",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("CNT 0  HIGH", 0, True),
+        ("CNT 250  HIGH", 250, True),
+        ("CCR=500  EDGE", 500, True),
+        ("CNT 750  LOW", 750, False),
+        ("CNT 999  LOW", 999, False),
+        ("1000 Hz  500 us HIGH", 0, True),
+    ]
+    for index, (note, cnt, high) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "PWM 1 KHZ", "TIM3", "AUX GIF  1000 Hz")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("PSC=71 ARR=999 CCR=500", 28, 58, C.MUTED, 1)
-        level = C.GREEN if index < 2 else C.AMBER
-        c.hline(24, 120, 200 if index < 2 else 432, level, 2)
-        c.text(note, 28, 160, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
-        c.text("1000 Hz FROM A 72 MHz CLOCK", 28, 214, C.CYAN, 1)
-        c.text("500 us HIGH THEN LOW", 28, 232, C.GREEN, 1)
-        c.text("PRINT THE SLOW PATH ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("PSC=71 ARR=999 CCR=500", 28, 52, C.MUTED, 1)
+        c.panel(16, 80, 140, 60, C.PANEL, C.CYAN)
+        c.text("CNT", 60, 96, C.CYAN, 1)
+        c.text(str(cnt), 55, 122, C.TEXT, 1)
+        c.panel(170, 80, 140, 60, C.PANEL, C.AMBER)
+        c.text("CCR", 215, 96, C.AMBER, 1)
+        c.text("500", 215, 122, C.TEXT, 1)
+        c.panel(324, 80, 140, 60, C.PANEL, C.GREEN if high else C.STROKE)
+        c.text("OUT", 370, 96, C.GREEN if high else C.DIM, 1)
+        c.text("HIGH" if high else "LOW", 360, 122, C.TEXT if high else C.DIM, 1)
+        # crude duty bar
+        c.hline(24, 160, 220 if high else 40, C.GREEN if high else C.AMBER, 2)
+        c.text(note, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 212, C.MUTED, 1)
+        c.text("1000 Hz FROM A 72 MHz CLOCK", 16, 236, C.CYAN, 1)
+        c.text("500 us HIGH THEN LOW", 16, 256, C.GREEN, 1)
+        c.text("PRINT THE SLOW PATH ON THE STATIC SVG", 16, 278, C.DIM, 1)
         g.add(c)
     return g
-
 
 def spi_jedec():
     """CS falls, MOSI shifts 0x9F, then MISO returns 0xEF 0x40 0x17 at 9 MHz.
@@ -459,27 +472,35 @@ def spi_jedec():
     The swapped-wire failure stays on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "CS LOW",
-        "MOSI 0x9F",
-        "MISO 0xEF",
-        "MISO 0x40",
-        "MISO 0x17",
-        "CS HIGH  9 MHz",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("CS LOW", True, "", ""),
+        ("MOSI 0x9F", True, "0x9F", ""),
+        ("MISO 0xEF", True, "0x9F", "EF"),
+        ("MISO 0x40", True, "0x9F", "EF 40"),
+        ("MISO 0x17", True, "0x9F", "EF 40 17"),
+        ("CS HIGH  9 MHz", False, "0x9F", "EF 40 17"),
+    ]
+    for index, (note, cs_low, mosi, miso) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "SPI JEDEC", "MODE 0", "AUX GIF  9 MHz")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("PA5 SCK  PA7 MOSI  PA6 MISO", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("0x9F THEN 0xEF 0x40 0x17", 28, 200, C.GREEN, 1)
-        c.text("9 MHz  BR=010", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE SWAP ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("PA5 SCK  PA7 MOSI  PA6 MISO", 28, 52, C.MUTED, 1)
+        c.panel(16, 80, 100, 54, C.PANEL, C.AMBER if cs_low else C.STROKE)
+        c.text("CS", 50, 96, C.AMBER if cs_low else C.DIM, 1)
+        c.text("LOW" if cs_low else "HIGH", 40, 120, C.TEXT if cs_low else C.DIM, 1)
+        c.panel(130, 80, 150, 54, C.PANEL, C.CYAN if mosi else C.STROKE)
+        c.text("MOSI", 175, 96, C.CYAN if mosi else C.DIM, 1)
+        c.text(mosi or "-", 170, 120, C.TEXT if mosi else C.DIM, 1)
+        c.panel(294, 80, 170, 54, C.PANEL, C.GREEN if miso else C.STROKE)
+        c.text("MISO", 350, 96, C.GREEN if miso else C.DIM, 1)
+        c.text(miso or "-", 320, 120, C.TEXT if miso else C.DIM, 1)
+        c.text(note, 16, 170, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 194, C.MUTED, 1)
+        c.text("0x9F THEN 0xEF 0x40 0x17", 16, 220, C.GREEN, 1)
+        c.text("9 MHz  BR=010", 16, 242, C.CYAN, 1)
+        c.text("PRINT THE SWAP ON THE STATIC SVG", 16, 266, C.DIM, 1)
         g.add(c)
     return g
-
 
 def adc_sample():
     """One successful sample, then the MSB compare, at 12 MHz.
@@ -551,27 +572,34 @@ def i2c_addr():
     A raw address byte and a missing pull-up stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "START",
-        "SHIFT 0x78",
-        "BIT 7 TO BIT 0",
-        "9TH CLOCK",
-        "SDA LOW  ACK",
-        "0x801E  4.7 k",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("START", True, False, False, False),
+        ("SHIFT 0x78", True, True, False, False),
+        ("BIT 7 TO BIT 0", True, True, False, False),
+        ("9TH CLOCK", True, True, True, False),
+        ("SDA LOW  ACK", True, True, True, True),
+        ("0x801E  4.7 k", True, True, True, True),
+    ]
+    for index, (note, st, sh, ninth, ack) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "I2C ADDR", "0x78", "AUX GIF  ACK")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("PB6 SCL  PB7 SDA", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("0x78 THEN ACK", 28, 200, C.GREEN, 1)
-        c.text("0x801E AND 4.7 k", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE NACK ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("PB6 SCL  PB7 SDA", 28, 52, C.MUTED, 1)
+        c.panel(16, 80, 100, 54, C.PANEL, C.AMBER if st else C.STROKE)
+        c.text("START", 35, 110, C.AMBER if st else C.DIM, 1)
+        c.panel(130, 80, 120, 54, C.PANEL, C.CYAN if sh else C.STROKE)
+        c.text("0x78", 165, 110, C.CYAN if sh else C.DIM, 1)
+        c.panel(264, 80, 100, 54, C.PANEL, C.VIOLET if ninth else C.STROKE)
+        c.text("9TH", 292, 110, C.VIOLET if ninth else C.DIM, 1)
+        c.panel(378, 80, 86, 54, C.PANEL, C.GREEN if ack else C.STROKE)
+        c.text("ACK", 398, 110, C.GREEN if ack else C.DIM, 1)
+        c.text(note, 16, 170, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 194, C.MUTED, 1)
+        c.text("0x78 THEN ACK", 16, 220, C.GREEN, 1)
+        c.text("0x801E AND 4.7 k", 16, 242, C.CYAN, 1)
+        c.text("PRINT THE NACK ON THE STATIC SVG", 16, 266, C.DIM, 1)
         g.add(c)
     return g
-
 
 def dma_cndtr():
     """Eight half-words, CNDTR falls to 3: 5 samples, 10 bytes.

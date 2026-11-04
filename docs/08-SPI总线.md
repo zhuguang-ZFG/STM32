@@ -50,6 +50,13 @@ Mode 0 是 CPOL = 0、CPHA = 0：空闲时 SCK 为低，在第一个边沿（上
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-08-spi-jedec-flow.svg" width="720" alt="SPI JEDEC 读 ID：0x9F 到 EF 40 17">
+  <br><sub>▲ 自绘矢量动画（FA-002）。CS↓ 0x9F → EF 40 17 @ 9 MHz。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-08-spi-jedec.svg" width="760" alt="Mode 0、除以 8 得到 9 MHz；0x9F 之后的三字节是 0xEF、0x40、0x17；MOSI 和 MISO 对调之后对不上">
   <br><sub>▲ 自绘。STM32F103C8T6，LQFP48。第 14 脚 PA4 = CS（推挽，事务期间为低），第 15 脚 PA5 = SCK，第 16 脚 PA6 = MISO，第 17 脚 PA7 = MOSI。CPOL = 0，CPHA = 0，BR=010，SCK = 9 MHz。正常路径 MOSI 先送 0x9F，随后三个 0xFF；rx[1] 到 rx[3] 是 0xEF、0x40、0x17。图下半部分是 PA6 与 PA7 接反时读到的错字节。右侧另标两种情况：PA4 一直为低时两条命令粘成一条；BR=000 时 SCK = 36 MHz。出处是 [RM0008 Rev 21 第 25.5.1 节](#source-rm0008-spi) 和 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
@@ -112,6 +119,13 @@ SPI 像两个人隔着桌子换牌。主机手里 8 张，从机手里 8 张，�
 
 ### 2. CPOL/CPHA 四种模式
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-mode0-edges.svg" width="760" alt="SPI Mode0 采样边沿与 Flash 默认">
+  <br><sub>▲ 自绘。CPOL0 CPHA0：第一个上升沿采样；JEDEC Flash 常用。</sub>
+</p>
+
+
 四种模式只是在约定两件事。CPOL 说桌子没拍的时候手放在上面还是下面，也就是时钟空闲是低还是高。CPHA 说是在拍下去的那一刻看牌，还是在抬起来的那一刻看牌，也就是第 1 个边沿还是第 2 个边沿采样。两边约定不一致，每一位都会差半拍，读回来的就是全 0、全 FF 或错位的数。
 
 | 模式 | CPOL | CPHA | 空闲时钟 | 采样沿 | 常用器件 |
@@ -132,6 +146,13 @@ SPI 像两个人隔着桌子换牌。主机手里 8 张，从机手里 8 张，�
 
 ### 3. 速率与分频
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-br-table.svg" width="760" alt="SPI BR 分频到 9 MHz 实验点">
+  <br><sub>▲ 自绘。SPI1@72 MHz，BR=010 → 9 MHz，与 JEDEC GIF 一致。</sub>
+</p>
+
+
 SPI 的时钟由主机给，所以速度就是主机的总线时钟除以一个 2 的幂。分频只有 2 到 256 这八档，想要 10 MHz 是凑不出来的，只能在 9 MHz 和 18 MHz 之间选。速度上限多半不在芯片，而在线：杜邦线上跑 18 MHz 以上，波形已经圆得像正弦波了。
 
 - SPI 时钟 = fPCLK / 分频系数（BR 位：2/4/8/16/32/64/128/256）。
@@ -149,6 +170,13 @@ SPI 的时钟由主机给，所以速度就是主机的总线时钟除以一个 
 | 111 | 256 | 0.28125MHz |
 
 ### 4. NSS 管理与多从机
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-nss-multi.svg" width="760" alt="多从机独立 CS 拓扑">
+  <br><sub>▲ 自绘。共用 SCK/MOSI/MISO；同时拉低两个 CS 会顶总线。</sub>
+</p>
+
 
 多个从机共用 SCK、MOSI、MISO 三根线，各自有一根 CS。主机想跟谁说话，就把谁的 CS 拉低，其他从机看到自己的 CS 是高，会把 MISO 放开不管。最省心的做法是把 CS 当普通 GPIO 自己控制，什么时候拉低、拉多久都看得见。
 

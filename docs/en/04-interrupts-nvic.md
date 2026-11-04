@@ -48,6 +48,13 @@ EXTI lines are shared by pin number: PA0 and PB0 are both EXTI0, so they cannot 
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-04-nvic-preempt-flow.svg" width="720" alt="NVIC preemption: EXTI0 interrupts TIM2 then returns">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). TIM2→EXTI0→stack→ISR→return.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-04-exception-stack.svg" width="760" alt="Preemption 1 can interrupt preemption 2; a later request at the same preemption 1 cannot nest">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, NVIC_PRIORITYGROUP_4. Upper half: TIM2 at preemption 2 is running, and EXTI0 (PA0, EXTI0_IRQn) at preemption 1 and subpriority 0 interrupts it. Eight registers stack from high address to low address: xPSR, PC, LR, R12, R3, R2, R1, R0, and SP points at R0. About 12 HCLK, 167 ns at 72 MHz, not the ISR body. Lower half: both are written as preemption 1, subpriorities 0 and 1 still do not nest, tail-chaining can happen on exit, and there is no second nested stack. With PRIMASK = 1, EXTI0 and TIM2 stay out and NMI still enters. Sources: [PM0056 section 2.3.7](#source-pm0056-nvic) and [RM0008 Rev 21 EXTICR](#source-rm0008-exti).</sub>
@@ -106,6 +113,13 @@ There are two ways to wait for a parcel. You can walk down to the mailbox every 
 
 ### 2. How NVIC priority works
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-04-priority-group.svg" width="760" alt="NVIC preempt versus subpriority grouping">
+  <br><sub>▲ Drawn for this book. AIRCR PRIGROUP splits four priority bits; equal preempt does not nest.</sub>
+</p>
+
+
 The NVIC is the chip's front desk for interrupts. When several requests arrive at once, it sorts them by two numbers. Preemption priority is like triage in an emergency room: a critical patient can send the doctor's current, milder patient out to wait, and that is nesting. Subpriority only decides the queue: when two patients of the same grade arrive together, which one is called first, but a patient already in the room is never sent out for someone of the same grade. One rule runs against intuition: a smaller number is more urgent, and 0 is the most urgent.
 
 - A **smaller** priority number is a **higher** priority.
@@ -151,6 +165,13 @@ Watch these seven steps side by side — polling, an external interrupt, and EXT
 </p>
 
 ### 4. EXTI external interrupts
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-04-exti-line-map.svg" width="760" alt="EXTI line mux through AFIO to one GPIO port">
+  <br><sub>▲ Drawn for this book. One port per EXTI line; EXTI5-9 and 10-15 share IRQs.</sub>
+</p>
+
 
 EXTI is the layer that turns a pin change into an interrupt request. The F103 has 16 EXTI lines, split by pin number: pin 0 of every port (PA0, PB0, PC0, ...) shares EXTI0, every pin 1 shares EXTI1, and so on. One line can serve only one port at a time, like a building with one doorbell button per floor: floor 1 of block A and floor 1 of block B cannot both use it. The `EXTICR` registers choose the port, and on F1 they live in AFIO, which is why the AFIO clock must be on first.
 
@@ -316,6 +337,13 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 | You need subpriority to break ties | GROUP_2 |
 
 ### 10. Interrupt overhead, and the hardware shortcuts
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-04-tail-chaining.svg" width="760" alt="Cortex-M3 entry, exit, and tail-chaining cycles">
+  <br><sub>▲ Drawn for this book. ~12-cycle entry; ~6-cycle tail-chain. The 6-cycle figure is for tail-chain only, not the ISR body.</sub>
+</p>
+
 
 | Mechanism | Meaning |
 | --- | --- |

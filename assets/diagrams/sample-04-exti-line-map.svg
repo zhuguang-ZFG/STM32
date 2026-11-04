@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="EXTI line mux">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EXTI line mux</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">One EXTI line, many GPIO ports via AFIO</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">04</text>
+<text x="40" y="86" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">F103: EXTI0..15 each pick one of PA..PG via AFIO_EXTICR</text>
+<rect x="40" y="120" width="280" height="220" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="180" y="150" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">GPIO ports</text>
+<rect x="70" y="170" width="220" height="32" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="180" y="192" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0</text>
+<rect x="70" y="210" width="220" height="32" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="180" y="232" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PB0</text>
+<rect x="70" y="250" width="220" height="32" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="180" y="272" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC0</text>
+<rect x="70" y="290" width="220" height="32" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="180" y="312" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PD0</text>
+<line x1="330" y1="230" x2="393" y2="230" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="400.00,230.00 393.00,233.50 393.00,226.50" fill="#5e6872" opacity="1"/>
+<rect x="410" y="160" width="200" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="510" y="200" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">AFIO_EXTICR1</text>
+<text x="510" y="232" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">EXTI0[3:0]</text>
+<text x="510" y="264" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0000=PA .. 0010=PC</text>
+<line x1="620" y1="230" x2="683" y2="230" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="690.00,230.00 683.00,233.50 683.00,226.50" fill="#5e6872" opacity="1"/>
+<rect x="700" y="160" width="220" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="810" y="200" font-size="16" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EXTI0</text>
+<text x="810" y="232" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">IMR / RTSR / FTSR</text>
+<text x="810" y="264" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">shared IRQ vector</text>
+<rect x="40" y="380" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="414" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Trap: two pins on the same EXTI line cannot both be sources — last EXTICR write wins.</text>
+<text x="56" y="444" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">EXTI5-9 and EXTI10-15 share IRQ handlers; check pending bits inside the ISR.</text>
+<text x="56" y="474" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Blue Pill key on PA0 =&gt; EXTI0, AFIO_EXTICR1 EXTI0=0000, NVIC IRQ EXTI0_IRQn.</text>
+<rect x="40" y="560" width="880" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="594" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">First frame: mux diagram + shared-vector note. Not a decor icon strip.</text>
+<text x="56" y="624" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Register names from RM0008 AFIO/EXTI; pairs with gpio-input-interrupt animation.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. EXTI mux from RM0008; lab pin PA0 matches chapter KEY_PIN.</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

@@ -49,6 +49,13 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-04-nvic-preempt-flow.svg" width="720" alt="NVIC 抢占：EXTI0 打断 TIM2 再返回">
+  <br><sub>▲ 自绘矢量动画（FA-002）。TIM2→EXTI0→入栈→ISR→返回。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-04-exception-stack.svg" width="760" alt="抢占 1 可以打断抢占 2；抢占同为 1 时后来的请求不能嵌套">
   <br><sub>▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。上半部分：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xPSR, PC, LR, R12, R3, R2, R1, R0，SP 指向 R0。大约 12 个 HCLK，72 MHz 时 167 ns，不含 ISR 正文。下半部分：两者抢占都写成 1，子优先级 0 和 1 仍然不能嵌套，退出后可以尾链，没有第二次嵌套入栈。PRIMASK = 1 时 EXTI0 和 TIM2 进不来，NMI 仍进入。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic) 与 [RM0008 Rev 21 的 EXTICR](#source-rm0008-exti)。</sub>
@@ -107,6 +114,13 @@ EXTI 解决的是“何时发现事件”，NVIC 解决的是“多个事件先�
 
 ### 2. NVIC 优先级机制
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-04-priority-group.svg" width="760" alt="NVIC 抢占位与亚优先级分组">
+  <br><sub>▲ 自绘。AIRCR PRIGROUP 切分 4 个优先级位；同抢占互不打断。</sub>
+</p>
+
+
 NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，它按两个数排队。抢占优先级像急诊分级：重症病人到了，可以把正在看病的轻症病人请出去先等着，这就是嵌套。子优先级只管挂号顺序：两个同级的病人同时到，先叫谁，但已经进了诊室的不会被同级的人打断。记住一条反直觉的规则：数字越小越急，0 最急。
 
 - 优先级**数值越小，优先级越高**。
@@ -152,6 +166,13 @@ NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，
 </p>
 
 ### 4. EXTI 外部中断
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-04-exti-line-map.svg" width="760" alt="EXTI 线经 AFIO 选择 GPIO 端口">
+  <br><sub>▲ 自绘。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ。</sub>
+</p>
+
 
 EXTI 是把引脚变化转成中断请求的那一层。F103 有 16 条 EXTI 线，按脚号分：所有端口的 0 号脚（PA0、PB0、PC0……）共用 EXTI0，所有 1 号脚共用 EXTI1，以此类推。一条线同一时间只能接一个端口，就像一栋楼每层只有一个门铃按钮，A 座 1 层和 B 座 1 层不能同时用。选哪个端口靠 `EXTICR` 这组开关，F1 上它在 AFIO 里，所以要先开 AFIO 时钟。
 
@@ -317,6 +338,13 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 | 需要子优先级仲裁 | GROUP_2 |
 
 ### 10. 中断响应开销与优化机制
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-04-tail-chaining.svg" width="760" alt="Cortex-M3 入栈出栈与尾链周期">
+  <br><sub>▲ 自绘。入栈约 12 周期；尾链约 6。别空谈“6 周期 ISR”。</sub>
+</p>
+
 
 | 机制 | 说明 |
 | --- | --- |

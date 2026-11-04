@@ -49,6 +49,13 @@ The advanced timers TIM1 and TIM8 have an extra break and dead-time register, `T
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-05-pwm-edge-flow.svg" width="720" alt="PWM: CNT reaches CCR=500 and the level flips">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). 1 kHz, 50% high for 500 µs.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-05-pwm-1khz.svg" width="760" alt="At a 72 MHz counter clock this PSC/ARR pair is 1 kHz; dividing by 36 MHz produces 500 Hz">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 16 PA6 = TIM3_CH1. Counter clock 72 MHz, PSC = 71, ARR = 999, CCR = 500. The top half is the correct waveform: 1 ms period, 500 µs high, 1000 Hz. The bottom half is what you get when the numbers are worked out from 36 MHz: 2 ms period, 500 Hz. The figure also marks that ARR = 999999 does not fit in a 16-bit counter. TIM1 MOE at offset 0x44, reset value 0x0000, has nothing to do with this TIM3 waveform. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
@@ -105,6 +112,13 @@ A timer is a counter that ticks along with a clock, plus a few comparators. The 
 
 ### 2. Time-base formulas
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-05-timebase-math.svg" width="760" alt="72 MHz through PSC/ARR to 1 kHz PWM">
+  <br><sub>▲ Drawn for this book. PSC=71 ARR=999 CCR=500 matches the chapter macros.</sub>
+</p>
+
+
 Think of the timer as two gears. PSC is the first gear and slows the 72 MHz clock down: PSC = 71 means one step every 72 clocks, so each step is 1 µs. ARR is the second gear. The counter wraps to zero after ARR: ARR = 999 means 1000 steps per lap, so each lap is 1 ms. In both registers the real count is the value you write plus 1, and that +1 is the most common off-by-one.
 
 - Counter clock: `fCK_CNT = fCK_PSC / (PSC + 1)`
@@ -124,6 +138,13 @@ Useful values at 72 MHz:
 > Fix `fCK_CNT` first (pick PSC), then `ARR+1 = T × fCK_CNT`.
 
 ### 3. Count modes and shadow registers
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-05-shadow-regs.svg" width="760" alt="ARR/CCR preload and the update event">
+  <br><sub>▲ Drawn for this book. ARPE/OCxPE: write preload; latch on update event.</sub>
+</p>
+
 
 A shadow register works like a restaurant changing its menu. The new ARR or CCR you write waits in the back (the preload register). It moves to the front, where the comparison happens, only when the current lap ends and the update event fires. A PWM lap therefore never changes length halfway through and never emits a stray pulse. The cost is that a new value takes effect one lap later.
 
@@ -304,6 +325,13 @@ The full project is in [`examples/timer-pwm/`](../../examples/timer-pwm/).
 </p>
 
 ### 6. Complementary outputs and dead time (advanced timers)
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-05-deadtime.svg" width="760" alt="Complementary PWM with dead time against shoot-through">
+  <br><sub>▲ Drawn for this book. BDTR DTG + MOE; for half-bridge labs only.</sub>
+</p>
+
 
 | Idea | Meaning |
 | --- | --- |

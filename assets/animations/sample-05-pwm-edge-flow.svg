@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="PWM compare edge">
+<title>PWM compare edge</title>
+<style>
+
+.f0{stroke-dasharray:5 10;animation:f0-flow 1.0s linear infinite;}@keyframes f0-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-15px}}
+
+.f1{stroke-dasharray:5 10;animation:f1-flow 1.0s linear infinite;}@keyframes f1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-15px}}
+
+.f2{stroke-dasharray:5 10;animation:f2-flow 1.0s linear infinite;}@keyframes f2-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-15px}}
+
+.f3{stroke-dasharray:5 10;animation:f3-flow 1.0s linear infinite;}@keyframes f3-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-15px}}
+@keyframes s0-flash{0%,0.00%{opacity:0.06}0.25%,4.00%{opacity:0.35}4.25%,100%{opacity:0.06}}
+.s0{animation:s0-flash 5.5s linear infinite;}
+@keyframes s1-flash{0%,20.00%{opacity:0.06}20.25%,24.00%{opacity:0.35}24.25%,100%{opacity:0.06}}
+.s1{animation:s1-flash 5.5s linear infinite;}
+@keyframes s2-flash{0%,40.00%{opacity:0.06}40.25%,44.00%{opacity:0.35}44.25%,100%{opacity:0.06}}
+.s2{animation:s2-flash 5.5s linear infinite;}
+@keyframes s3-flash{0%,60.00%{opacity:0.06}60.25%,64.00%{opacity:0.35}64.25%,100%{opacity:0.06}}
+.s3{animation:s3-flash 5.5s linear infinite;}
+@keyframes s4-flash{0%,80.00%{opacity:0.06}80.25%,84.00%{opacity:0.35}84.25%,100%{opacity:0.06}}
+.s4{animation:s4-flash 5.5s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PWM 边沿：CNT 走到 CCR=500 翻电平</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">05</text>
+<rect x="40" y="100" width="820" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="130" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TIM3  PSC=71  ARR=999  CCR=500  =&gt; 1 kHz, 50%</text>
+<text x="56" y="154" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">f_tim 72 MHz / 72 / 1000 = 1000 Hz</text>
+<rect x="60" y="200" width="140" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="130" y="232" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CNT=0</text>
+<text x="130" y="264" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HIGH</text>
+<rect x="60" y="200" width="140" height="90" fill="#1b5c45" opacity="0.12" rx="8" class="s0"/>
+<line x1="204" y1="245" x2="209" y2="245" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="216.00,245.00 209.00,248.50 209.00,241.50" fill="#5e6872" opacity="1"/>
+<line x1="204" y1="245" x2="216" y2="245" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f0"/>
+<rect x="220" y="200" width="140" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="290" y="232" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">250</text>
+<text x="290" y="264" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HIGH</text>
+<rect x="220" y="200" width="140" height="90" fill="#1b5c45" opacity="0.12" rx="8" class="s1"/>
+<line x1="364" y1="245" x2="369" y2="245" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="376.00,245.00 369.00,248.50 369.00,241.50" fill="#5e6872" opacity="1"/>
+<line x1="364" y1="245" x2="376" y2="245" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f1"/>
+<rect x="380" y="200" width="140" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="450" y="232" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CCR 500</text>
+<text x="450" y="264" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EDGE</text>
+<rect x="380" y="200" width="140" height="90" fill="#7a4e00" opacity="0.12" rx="8" class="s2"/>
+<line x1="524" y1="245" x2="529" y2="245" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="536.00,245.00 529.00,248.50 529.00,241.50" fill="#5e6872" opacity="1"/>
+<line x1="524" y1="245" x2="536" y2="245" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f2"/>
+<rect x="540" y="200" width="140" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="610" y="232" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">750</text>
+<text x="610" y="264" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LOW</text>
+<rect x="540" y="200" width="140" height="90" fill="#075e84" opacity="0.12" rx="8" class="s3"/>
+<line x1="684" y1="245" x2="689" y2="245" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="696.00,245.00 689.00,248.50 689.00,241.50" fill="#5e6872" opacity="1"/>
+<line x1="684" y1="245" x2="696" y2="245" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f3"/>
+<rect x="700" y="200" width="140" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="770" y="232" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">999</text>
+<text x="770" y="264" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LOW</text>
+<rect x="700" y="200" width="140" height="90" fill="#075e84" opacity="0.12" rx="8" class="s4"/>
+<rect x="40" y="320" width="820" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="350" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Output high ________/          \________  (edge at CCR)</text>
+<text x="56" y="378" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">500 us high + 500 us low each 1 ms period</text>
+<rect x="40" y="430" width="820" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="460" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Slow-path mistakes (wrong f_tim) stay on sample-05-pwm-debug — this anim only shows the happy edge.</text>
+<text x="56" y="486" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pairs with pwm-1khz.gif denser frames; PDF first frame still readable.</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · PWM 比较翻转，非示波器实拍</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>
