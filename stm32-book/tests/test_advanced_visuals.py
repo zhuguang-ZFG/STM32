@@ -181,11 +181,25 @@ CHAPTERS = {
         ),
     ),
 ROOT / "docs" / "23-STM32G0引脚.md": (
-        3,
+        5,
         (
             "pinout-stm32g071rb-lqfp64.svg",
             "pinout-bluepill.svg",
+            "sample-23-boot-latch.svg",
             "g0-boot-swd.svg",
+            "sample-23-f1-g0-compare.svg",
+        ),
+    ),
+    ROOT / "docs" / "24-STM32L4引脚.md": (
+        7,
+        (
+            "pinout-stm32l476rg-lqfp64.svg",
+            "nucleo-f411re-embedded-world.jpg",
+            "nucleo-f401re-embedded-world.jpg",
+            "sample-24-mode-compare.svg",
+            "l4-stop2-evidence.svg",
+            "sample-24-wake-triage.svg",
+            "l4-idd-bench.svg",
         ),
     ),
         ROOT / "docs" / "20-学习资源与工具链.md": (
@@ -213,7 +227,7 @@ ROOT / "docs" / "23-STM32G0引脚.md": (
     ),
 
     ROOT / "docs" / "25-STM32H7引脚.md": (
-        7,
+        8,
         (
             "pinout-stm32h743zi-lqfp144.svg",
             "h7-power-domains.svg",
@@ -221,40 +235,46 @@ ROOT / "docs" / "23-STM32G0引脚.md": (
             "h7-clock-chain.svg",
             "h7-startup-evidence.svg",
             "h7-pinmux-conflicts.svg",
+            "sample-25-migrate-triage.svg",
             "network-cache-ownership.svg",
         ),
     ),
     ROOT / "docs" / "26-STM32F10x标准外设库SPL.md": (
-        5,
+        6,
         (
             "spl-ownership-boundary.svg",
             "spl-init-pipeline.svg",
             "bluepill-stm32f103c8t6.svg",
+            "sample-26-spl-hal-compare.svg",
             "nvic-interrupt-flow.svg",
             "dma-circular.svg",
         ),
     ),
     ROOT / "docs" / "27-网络与协议栈.md": (
-        5,
+        6,
         (
             "network-packet-journey.svg",
             "network-cache-ownership.svg",
             "network-online-state.svg",
             "tcp-byte-stream.svg",
+            "sample-27-link-triage.svg",
             "network-debug-ladder.svg",
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        8,
+        11,
         (
             "rtos-system-layers.svg",
+            "sample-28-os-compare.svg",
             "nucleo-f411re-embedded-world.jpg",
             "nucleo-f401re-embedded-world.jpg",
+            "sample-28-owner-flow.svg",
             "rtos-owner-task.svg",
             "rtos-deadline-budget.svg",
             "freertos-scheduler.svg",
             "rtos-config-paths.svg",
             "rtos-startup-gates.svg",
+            "sample-28-fault-triage.svg",
         ),
     ),
 }

@@ -57,6 +57,13 @@
 
 ## 什么时候选哪一种
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-28-os-compare.svg" width="760" alt="FreeRTOS、RT-Thread、Zephyr、CMSIS-RTOS2 选型对照">
+  <br><sub>▲ 自绘。四系统选型对照。出处是 [FreeRTOS 11.3.2](#source-freertos-1132)、[RT-Thread 5.3.0](#source-rtthread-530)、[Zephyr 4.4.2](#source-zephyr-442)、[CMSIS 6.4.0](#source-cmsis-640)。</sub>
+</p>
+
+
 | 约束 | 裸机前后台 | FreeRTOS | RT-Thread | Zephyr |
 | --- | --- | --- | --- | --- |
 | 功能很少、状态机可穷举 | **合适** | 可用但可能过度 | 通常过重 | 通常过重 |
@@ -95,6 +102,13 @@
 5. **每次跨层都保留可关联的序号、时间戳和结果码。**
 
 ### 所有者任务：比“到处加互斥量”更容易证明
+
+
+<p align="center">
+  <img src="../assets/animations/sample-28-owner-flow.svg" width="760" alt="IRQ 投递、所有者消费、监督者喂狗的所有者任务数据流">
+  <br><sub>▲ 动画：IRQ→队列→所有者→执行器→监督者（作者自绘矢量动画，非实拍）。出处见本章 FreeRTOS/RT-Thread/Zephyr 版本钉死说明。</sub>
+</p>
+
 
 以 SPI Flash 为例，多个任务都直接调用 `HAL_SPI_TransmitReceive()`，即使加了互斥量，片选、命令、DMA 完成和超时恢复仍可能被拆开。更稳妥的结构是：
 
@@ -503,6 +517,12 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 | **未分配裕量** | `256 - 177.6` | **78.4 KiB** |
 
 这只是计算示例。真实项目必须用链接 map、各线程最小栈余量、内核堆最低水位和 TLS/网络峰值更新。不能把“当前空闲 78.4 KiB”直接当成长期安全裕量；突发队列、证书链和升级双缓冲都可能改变峰值。
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-28-fault-triage.svg" width="760" alt="队列满、任务冻结、驱动超时三岔口与监督者规则">
+  <br><sub>▲ 自绘。系统故障三岔口。出处是本章故障注入实验与 [FreeRTOS 11.3.2](#source-freertos-1132) 等开源 tag。</sub>
+</p>
 
 ## 常见失败模式
 

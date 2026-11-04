@@ -418,7 +418,8 @@
         "rm0444",
         "an5096",
         "an2606",
-        "st-boot-faq"
+        "st-boot-faq",
+        "project-examples"
       ]
     },
     "24-stm32l4-pins.md": {

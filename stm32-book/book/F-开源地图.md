@@ -8,6 +8,13 @@
 
 ## 仓库地图
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-f-oss-map.svg" width="760" alt="按证据层组织的开源仓库地图：Cube、CMSIS、libopencm3、FreeRTOS、RT-Thread、Zephyr">
+  <br><sub>▲ 自绘。开源证据层地图：先问要哪一份 `.h`/函数，再谈星标。许可边界见各仓库 `LICENSE`；官方 RM/DS 冲突时以手册为准。</sub>
+</p>
+
+
 | 章 | 仓库 | 星标 | 许可 | 先读什么 |
 |---|---|---|---|---|
 | 01 环境 | platformio/platformio-core | 9564 | 见 `LICENSE` | `platformio/builder/`：谁决定 `-mcpu` 与链接脚本 |

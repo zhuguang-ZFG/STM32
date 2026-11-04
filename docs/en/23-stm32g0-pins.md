@@ -76,6 +76,13 @@ F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS1
 
 ## BOOT0 shares SWCLK: determine the boot source first
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-23-boot-latch.svg" width="760" alt="G0 samples the shared BOOT0/SWCLK pin on the fourth SYSCLK rising edge">
+  <br><sub>▲ Animation: boot source latches after four SYSCLK rising edges (drawn for this book, not a photo). Sources: [DS12232](#source-ds12232), [RM0444](#source-rm0444), [AN2606](#source-an2606); OSS compare: [project examples](#source-project-examples).</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/animations/g0-boot-swd.svg" width="860" alt="STM32G071 boot latch, nBOOT_SEL source selection, and Under Reset recovery workflow">
   <br><sub>▲ Animation: boot configuration is latched on the fourth SYSCLK rising edge after reset; nBOOT_SEL selects the pin or option-bit path. Under Reset is only a controlled connection attempt; RDP and DBG_SWEN also constrain recovery. Generated illustration, not an oscilloscope capture.</sub>
@@ -136,6 +143,12 @@ Keep three boundaries attached to this table:
 | Leave alone while debugging | PA13, PA14 | Moving PA14 also moves BOOT0 |
 
 After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can remap PA9/PA10 onto the PA11/PA12 positions. Until that register changes, do not call PA11 "PA9".
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-23-f1-g0-compare.svg" width="760" alt="Five F1→G0 traps: pinout, BOOT/SWD, option bytes, AF tables, clock ceiling">
+  <br><sub>▲ Drawn for this book. Five F1→G0 migration checks. Sources: [DS12232](#source-ds12232) / [RM0444](#source-rm0444); structure only: [project examples](#source-project-examples).</sub>
+</p>
 
 ## Common ways an F1 port falls over
 

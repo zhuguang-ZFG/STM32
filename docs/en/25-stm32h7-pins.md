@@ -253,6 +253,12 @@ The next figure keeps each conflicting pin group, its two claimants, and an esca
 
 PC2_C and PC3_C (pins 28 and 29) keep the `_C` from the datasheet figure. It marks the path that can go to the dedicated analog route. Do not rename them to plain PC2 on a schematic.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-25-migrate-triage.svg" width="760" alt="F4→H7 triage: supply, revision, cache/DMA, clock evidence">
+  <br><sub>▲ Drawn for this book. Four-step H7 migration triage. Sources: [DS12110](#source-ds12110), [RM0433](#source-rm0433), [ES0392](#source-es0392); OSS: [stm32cube-h7-clock](#source-stm32cube-h7-clock).</sub>
+</p>
+
 ## Moving a design across from F4
 
 | What you see | Why | Fix |

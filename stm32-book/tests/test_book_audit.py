@@ -305,19 +305,89 @@ class BookAuditTests(unittest.TestCase):
             for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
                 self.assertEqual(0, chapter["parity"][field])
 
+
+    def test_phase_five_family_migration_spl_network_rtos(self) -> None:
+        expected = {
+            "23": (
+                "pinout-stm32g071rb-lqfp64.svg",
+                "pinout-bluepill.svg",
+                "sample-23-boot-latch.svg",
+                "g0-boot-swd.svg",
+                "sample-23-f1-g0-compare.svg",
+            ),
+            "24": (
+                "pinout-stm32l476rg-lqfp64.svg",
+                "nucleo-f411re-embedded-world.jpg",
+                "nucleo-f401re-embedded-world.jpg",
+                "sample-24-mode-compare.svg",
+                "l4-stop2-evidence.svg",
+                "sample-24-wake-triage.svg",
+                "l4-idd-bench.svg",
+            ),
+            "25": (
+                "pinout-stm32h743zi-lqfp144.svg",
+                "h7-power-domains.svg",
+                "h7-revision-clock-decision.svg",
+                "h7-clock-chain.svg",
+                "h7-startup-evidence.svg",
+                "h7-pinmux-conflicts.svg",
+                "sample-25-migrate-triage.svg",
+                "network-cache-ownership.svg",
+            ),
+            "26": (
+                "spl-ownership-boundary.svg",
+                "spl-init-pipeline.svg",
+                "bluepill-stm32f103c8t6.svg",
+                "sample-26-spl-hal-compare.svg",
+                "nvic-interrupt-flow.svg",
+                "dma-circular.svg",
+            ),
+            "27": (
+                "network-packet-journey.svg",
+                "network-cache-ownership.svg",
+                "network-online-state.svg",
+                "tcp-byte-stream.svg",
+                "sample-27-link-triage.svg",
+                "network-debug-ladder.svg",
+            ),
+            "28": (
+                "rtos-system-layers.svg",
+                "sample-28-os-compare.svg",
+                "nucleo-f411re-embedded-world.jpg",
+                "nucleo-f401re-embedded-world.jpg",
+                "sample-28-owner-flow.svg",
+                "rtos-owner-task.svg",
+                "rtos-deadline-budget.svg",
+                "freertos-scheduler.svg",
+                "rtos-config-paths.svg",
+                "rtos-startup-gates.svg",
+                "sample-28-fault-triage.svg",
+            ),
+        }
+        for chapter_id, assets in expected.items():
+            chapter = self.by_id[chapter_id]
+            for language in ("zh", "en"):
+                edition = chapter[language]
+                self.assertEqual(0, edition["visual_anchor_deficit"])
+                self.assertEqual(assets, edition["asset_sequence"])
+            for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
+                self.assertEqual(0, chapter["parity"][field])
+
     def test_chapter_24_has_matching_structure_and_visual_distribution(self) -> None:
         chapter = self.by_id["24"]
         expected_assets = (
             "pinout-stm32l476rg-lqfp64.svg",
             "nucleo-f411re-embedded-world.jpg",
             "nucleo-f401re-embedded-world.jpg",
+            "sample-24-mode-compare.svg",
             "l4-stop2-evidence.svg",
+            "sample-24-wake-triage.svg",
             "l4-idd-bench.svg",
         )
 
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(4, edition["pdf_visual_anchors"])
+            self.assertEqual(6, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(2, edition["photos"])
             self.assertEqual(1, edition["animations"])

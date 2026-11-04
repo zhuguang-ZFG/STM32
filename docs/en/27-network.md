@@ -333,6 +333,12 @@ backoff_n = min(B_max, B_base * 2^min(n, n_cap)) + random(0, jitter)
 
 Before replaying actuator commands, check expiry, current device state, and idempotency key. “Execute every old command after reconnect” is unsafe.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-27-link-triage.svg" width="760" alt="Layered network triage: link, ping, TCP, and app evidence are not interchangeable">
+  <br><sub>▲ Drawn for this book. Layered network triage. Sources: [RM0433](#source-rm0433), [AN4839](#source-an4839); OSS: [stm32cube-h7-lwip](#source-stm32cube-h7-lwip), [lwip-pitfalls](#source-lwip-pitfalls).</sub>
+</p>
+
 ## Layered diagnosis and PCAP evidence
 
 <p align="center">

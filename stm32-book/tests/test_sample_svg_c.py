@@ -41,6 +41,8 @@ animations/rtos-startup-gates.svg 900x620 14083 8e65b6e47917be3fdd79f4b518345209
 animations/rtos-system-layers.svg 900x620 13996 1a44f6f16dcc08a20467d946a35a22ef968582f37faf99b5b74f5107deaf31e9
 animations/sample-20-lookup-flow.svg 900x620 13227 31fd3cd26a383eb0c9af27c1426564d827322c1e57e8c71b9c4bdb516f23fdf9
 animations/sample-21-power-swd.svg 900x620 13142 f7bca2108dac36c6962306c4529209c9dcc52a1ea18836d692cfdbcc28786745
+animations/sample-23-boot-latch.svg 900x620 10798 c4686bd2a828dd287175a6333043848ca35bbef1105725177998da60406bde8e
+animations/sample-28-owner-flow.svg 900x620 13550 751e413262886ed40075c2623f83eb4093ee0d7647df09572c624968aa1fb324
 animations/simulation-acceptance-gates.svg 900x620 10660 c0316576a9b8a6c45011d4a1fce3f884228ffa2a0788561d983b43227aa9e146
 animations/spi-transfer.svg 900x620 18861 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
 animations/spl-init-pipeline.svg 900x620 11903 d1ebfca0e4b6e9cbbda864bf9c82f217976ad6b8e16bee53e36059b6d6e8885c
@@ -148,6 +150,15 @@ diagrams/sample-19-milestone-triage.svg 960x880 10276 d3eac0752050e88efc49fb98ac
 diagrams/sample-20-evidence-triage.svg 960x880 10034 0f4d59549ac172809e5916fce4679cfb22123fd7364c4b314f4016401cfe9b01
 diagrams/sample-21-board-compare.svg 960x880 12730 a74b12009f0249767c513dc8326a2cc2d034c92a03456a564970b463d94e256d
 diagrams/sample-22-sim-triage.svg 960x880 10000 91b5ebe5c187d49426874133fdd28b56a78352e2e72cdb6e38635a623d6c2bda
+diagrams/sample-23-f1-g0-compare.svg 960x880 13974 1e18f381cfd9a94a4e24a124762ae91772fc0a88da36c981019dc9b53856d9ee
+diagrams/sample-24-mode-compare.svg 960x880 13617 e680e4f97471a3f47a241ee36ceddc54c8291daaa41d78c3e71a446706b4ac1a
+diagrams/sample-24-wake-triage.svg 960x880 10894 8f3ea058731235fd54b25d3e390aa006bc9dece35bfa0c9df30098b9adfccdcc
+diagrams/sample-25-migrate-triage.svg 960x880 7718 e348c3b809b5cccc71d17f1b07353e78fef3191b33b581f2175bd9fdc368ff94
+diagrams/sample-26-spl-hal-compare.svg 960x880 9466 66fc188f5cae5ec5d8652fb38466638eef4e3c274e5b8a2394f7dfb51c2566df
+diagrams/sample-27-link-triage.svg 960x880 8863 7a8daae96e3fdf54aedee566f1baf8a441a4bb24fac164df1b6225b1c5bcc622
+diagrams/sample-28-fault-triage.svg 960x880 10199 5ffe60a6bb72715c224ed684fe062284da721dfaaeda0514901bf1fe8c953c69
+diagrams/sample-28-os-compare.svg 960x880 12945 ade62396bddda3517a01bec9800ec7961005cd7247a2e78c322384eff2de4f1c
+diagrams/sample-f-oss-map.svg 960x880 11712 393eb0687927eb4c6301a3a5f81b0d4dda387aab6aa2f260bf13c424124aaf51
 diagrams/simulation-model-boundary.svg 900x560 6723 365c4b15943f3a01461ec0e2ce9b0a7dbcdc199777b1b2272e04a791adeaf382
 diagrams/simulator-comparison.svg 900x560 8691 264d2e8ea080e2852fe0e32c718f94a7def982efcc915e5616fe5b16c44fcc99
 diagrams/single-build-contract.svg 900x560 8485 3984ce04a30ca75e25cd2659968cf984c1735cb72ee4c92c61f0759ecb87e126
@@ -447,7 +458,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(208, len(found))
+        self.assertEqual(219, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

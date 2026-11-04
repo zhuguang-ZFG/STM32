@@ -59,6 +59,13 @@
 
 ## When to choose which system
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-28-os-compare.svg" width="760" alt="FreeRTOS, RT-Thread, Zephyr, and CMSIS-RTOS2 selection compare">
+  <br><sub>▲ Drawn for this book. Four-OS selection compare. Sources: [FreeRTOS 11.3.2](#source-freertos-1132), [RT-Thread 5.3.0](#source-rtthread-530), [Zephyr 4.4.2](#source-zephyr-442), [CMSIS 6.4.0](#source-cmsis-640).</sub>
+</p>
+
+
 | Constraint | Bare-metal foreground/background | FreeRTOS | RT-Thread | Zephyr |
 | --- | --- | --- | --- | --- |
 | Very small feature set; state machine can be enumerated | **good fit** | usable but possibly excessive | usually too heavy | usually too heavy |
@@ -97,6 +104,13 @@ Core invariants:
 5. **Every layer crossing retains a correlatable sequence, timestamp, and result code.**
 
 ### An owner task is easier to prove than scattered mutexes
+
+
+<p align="center">
+  <img src="../../assets/animations/sample-28-owner-flow.svg" width="760" alt="Owner-task flow: IRQ posts, owner consumes, supervisor feeds the watchdog">
+  <br><sub>▲ Animation: IRQ→queue→owner→actuator→supervisor (drawn for this book, not a photo). Sources: pinned FreeRTOS/RT-Thread/Zephyr tags in this chapter.</sub>
+</p>
+
 
 Consider an SPI Flash. If several tasks call `HAL_SPI_TransmitReceive()` directly, a mutex around each call can still split chip select, commands, DMA completion, and recovery. A stronger boundary is:
 
@@ -505,6 +519,12 @@ For an STM32 with 256 KiB SRAM, begin with a static budget:
 | **Unallocated margin** | `256 - 177.6` | **78.4 KiB** |
 
 This is a calculation example. A real project must update it from the link map, per-thread minimum stack margin, kernel-heap minimum free space, and TLS/network peaks. A currently free 78.4 KiB is not automatically a long-term safety margin; burst queues, certificate chains, and update double buffers can change the peak.
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-28-fault-triage.svg" width="760" alt="Queue-full, task-frozen, and driver-timeout triage with supervisor rules">
+  <br><sub>▲ Drawn for this book. System-fault triage. Sources: this chapter's fault-injection labs and pinned OSS tags such as [FreeRTOS 11.3.2](#source-freertos-1132).</sub>
+</p>
 
 ## Common failure modes
 

@@ -187,6 +187,12 @@ int main(void)
 
 这段代码已用冻结 commit `afa743577f2784e95be2d5003380fdb84a702519` 的真实 CMSIS 设备头、RCC/GPIO 驱动、medium-density 启动文件和 F103C8 链接脚本完成编译链接；对应可复验工程在 [`examples/spl-f1-blink/`](../examples/spl-f1-blink/)，同时给出命令行、CLion 和 VS Code 三条共用 CMake 的开发入口。冻结镜像把 `core_cm3.h` 保存为 `core_cm3.h.old`，工程仅在缺少正式文件名时复制到构建目录。GNU Arm 10.3.1 实测 ELF 为 text 1976 B、data 20 B、bss 1028 B，并且符号表只有一个 `SysTick_Handler`。硬件验收仍不是“链接通过”：下载后 LED 应以约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 应等于真实主频；把系统时钟改掉后，闪烁周期也必须重新对账。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-26-spl-hal-compare.svg" width="760" alt="SPL 与 HAL/LL 在版本、初始化、中断、DMA 与迁移策略上的对照">
+  <br><sub>▲ 自绘。SPL↔HAL 对照。出处是 [STSW-STM32054](#source-stsw-stm32054)、[RM0008](#source-rm0008)；目录核对仅用 [spl-f1-mirror](#source-spl-f1-mirror)。</sub>
+</p>
+
 ## 5. HAL、SPL 与寄存器怎样对上
 
 下面不是机械替换表。HAL 往往维护 Handle 和状态，SPL 多数函数直接操作外设寄存器；把函数名换掉但保留旧状态机，最容易得到“能跑一会儿”的工程。

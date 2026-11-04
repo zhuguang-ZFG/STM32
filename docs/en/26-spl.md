@@ -187,6 +187,12 @@ int main(void)
 
 The reproducible project is [`examples/spl-f1-blink/`](../../examples/spl-f1-blink/). It builds against the frozen source and shares one CMake truth across command line, CLion, and VS Code. The mirror stores `core_cm3.h` as `core_cm3.h.old`; the build only copies it when the proper filename is missing. With GNU Arm 10.3.1, the verified ELF had text 1976 B, data 20 B, bss 1028 B, and one `SysTick_Handler`. Those are build observations, not a hardware claim. Hardware acceptance still requires roughly 1 Hz on the LED and a `SystemCoreClock` that matches the actual clock.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-26-spl-hal-compare.svg" width="760" alt="SPL versus HAL/LL on version, init, IRQ, DMA, and migration">
+  <br><sub>▲ Drawn for this book. SPL↔HAL compare. Sources: [STSW-STM32054](#source-stsw-stm32054), [RM0008](#source-rm0008); tree check only: [spl-f1-mirror](#source-spl-f1-mirror).</sub>
+</p>
+
 ## 5. HAL, SPL, and the final register boundary
 
 This is not a mechanical replacement table. HAL often maintains handles and state; SPL usually writes peripheral registers directly.
