@@ -1,0 +1,604 @@
+{
+ "schema_version": 1,
+ "chapter": "21",
+ "slug": "board-maps-long",
+ "title": "原理图与实物图鉴：从丝印到四份证据",
+ "short_source": "tools/narration.py#CHAPTERS[21]",
+ "scenes": [
+  {
+   "scene_id": "ch21-s01",
+   "title": "丝印说 C8T6，为什么跑不到 72 兆？",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先做一个存疑的判断。板子丝印写着 STM32F103C8T6，程序却怎么也跑不到 72 兆。这一章只追一个问题：怎么用原理图和数据手册确认这块板真的是谁，而不是相信丝印。",
+   "on_screen": [
+    "丝印：STM32F103C8T6",
+    "跑不到 72 兆",
+    "先验身份，再谈跑分"
+   ],
+   "visual_source": "illustrations/handraw/ch21-board-compare.png",
+   "fact_source": [
+    "project-examples",
+    "docs/21-原理图与实物图鉴.md#核心原理"
+   ],
+   "memory_anchor": "先验身份，再谈跑分",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch21-s02",
+   "title": "三块常见板，三套边界",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s01"
+   ],
+   "narration": "认板先看三块常见板：BluePill 用 F103C8T6，LQFP48、72 兆、64KB 闪存 20KB 内存；BlackPill 用 F411CEU6，UFQFPN48、100 兆、512K 加 128K；Nucleo-F411RE 是 LQFP64，板载 ST-LINK/V2-1。封装、调试器、5V 与 USB 路径都不一样。",
+   "on_screen": [
+    "BluePill：72 兆 64K/20K",
+    "BlackPill：100 兆 512K/128K",
+    "Nucleo：板载 ST-LINK/V2-1"
+   ],
+   "visual_source": "diagrams/sample-21-board-compare.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#板卡一览"
+   ],
+   "memory_anchor": "三块板三套边界",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s03",
+   "title": "板卡图是结构图，不是实拍",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s02"
+   ],
+   "narration": "本仓库 assets/boards 下的板卡图，全部是作者依据官方数据手册和开源原理图自绘的矢量结构图，不是实拍照片。它们帮你建立空间关系；实际板子的焊桥和丝印，仍以你手上那块的原理图为准。",
+   "on_screen": [
+    "自绘矢量结构图",
+    "不是实拍",
+    "以手上板的原理图为准"
+   ],
+   "visual_source": "boards/bluepill-stm32f103c8t6.svg",
+   "fact_source": [
+    "project-credits",
+    "docs/21-原理图与实物图鉴.md#核心原理"
+   ],
+   "memory_anchor": "图建立空间，证据靠实测",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch21-s04",
+   "title": "电源轨：5V 怎样变成 3V3",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s02"
+   ],
+   "narration": "BluePill 的电源轨分四级：USB 的 5V 进 AMS1117-3.3 稳压，输出 3V3 给 VDD 和 SWD 目标；VDDA 单独一路模拟供电；VBAT 在引脚 1 维持备份域。看原理图先把这四级找到。",
+   "on_screen": [
+    "USB 5V → AMS1117-3.3",
+    "3V3 → VDD + SWD",
+    "VDDA 单独 · VBAT 引脚 1"
+   ],
+   "visual_source": "diagrams/sample-21-vdd-3v3.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "5V 进，3V3 用，VBAT 守备份",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s05",
+   "title": "去耦电容的读图方法",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s04"
+   ],
+   "narration": "读去耦有一套固定方法：在原理图上找每个 VDD 和 VDDA 引脚，旁边应各有一颗 100 纳法电容到地，整板再配一颗 10 微法储能。VDDA 和 VSSA 必须单独滤波，否则 ADC 采样噪声大。",
+   "on_screen": [
+    "每个 VDD 一颗 100 nF",
+    "整板一颗 10 µF",
+    "VDDA 单独滤波"
+   ],
+   "visual_source": "diagrams/sample-21-vdd-3v3.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "每个 VDD 一颗 100 纳法",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s06",
+   "title": "最小系统八要素",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s05"
+   ],
+   "narration": "一张最小系统原理图要数出八样东西：主控、电源加电容、每个 VDD 的去耦、HSE 晶振、LSE 晶振、复位网络、BOOT 电路和 SWD 接口，外接电池板还有 VBAT。少一样，板子就带病。",
+   "on_screen": [
+    "主控 · 电源 · 去耦",
+    "HSE · LSE · 复位",
+    "BOOT · SWD · VBAT"
+   ],
+   "visual_source": "boards/peripheral-wiring.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "八要素少一样就带病",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s07",
+   "title": "HSE 电路：PD0/PD1 与负载电容",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s06"
+   ],
+   "narration": "HSE 电路是两颗 20 皮法配 8 兆晶振，接在 PD0 和 PD1。不起振时先退回内部时钟证明芯片活着，再查负载电容和焊点。一上来把 PLL 乘到很高，是用死机练耐心。",
+   "on_screen": [
+    "8 MHz + 2×20 pF",
+    "PD0/PD1",
+    "不起振先退 HSI"
+   ],
+   "visual_source": "diagrams/sample-21-hse-load.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "8 兆配两颗 20 皮法",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s08",
+   "title": "LSE：RTC 的 32.768 千赫",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s07"
+   ],
+   "narration": "LSE 给 RTC 走时，配 32.768 千赫晶振和两颗 6 皮法。负载电容过大它就不起振，RTC 直接停走。很多兼容板根本没焊这颗晶振，买来先数焊位。",
+   "on_screen": [
+    "32.768 kHz + 2×6 pF",
+    "电容过大不起振",
+    "兼容板常缺焊"
+   ],
+   "visual_source": "boards/pinout-bluepill.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "32.768 配两颗 6 皮法",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s09",
+   "title": "复位网络：引脚 7 的三件套",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s06"
+   ],
+   "narration": "NRST 在引脚 7，低电平有效。正规复位网络是 10 千欧上拉、100 纳法到地，再配一颗复位按键。NRST 悬空的板子容易误复位，这是上电偶发重启的常见来源。",
+   "on_screen": [
+    "NRST = 引脚 7",
+    "10 kΩ 上拉 + 100 nF",
+    "悬空易误复位"
+   ],
+   "visual_source": "diagrams/sample-21-nrst-boot0.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "上拉、电容、按键三件套",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s10",
+   "title": "BOOT0 与 BOOT1：三行启动表",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s09"
+   ],
+   "narration": "启动模式由 BOOT0 和 BOOT1 决定：BOOT0 为 0 从主 Flash 正常运行；BOOT0 为 1、BOOT1 为 0 进系统存储器做串口 ISP；两个都为 1 进内嵌 SRAM，用于调试救砖。BOOT0 拉高不是程序丢了。",
+   "on_screen": [
+    "0 / x → 主 Flash",
+    "1 / 0 → 系统 ISP",
+    "1 / 1 → SRAM 救砖"
+   ],
+   "visual_source": "diagrams/sample-21-nrst-boot0.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "BOOT0 拉高不是程序蒸发",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s11",
+   "title": "SWD 四根线，脚 34 和 37",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s10"
+   ],
+   "narration": "下载调试只占四根线：PA13 是 SWDIO，PA14 是 SWCLK，在 LQFP48 上是脚 34 和 37，再加 GND 和 3V3。这两只脚要永久保留，复用之后调试器就连不上。",
+   "on_screen": [
+    "PA13 = SWDIO",
+    "PA14 = SWCLK",
+    "脚 34 / 37 + GND + 3V3"
+   ],
+   "visual_source": "animations/sample-21-power-swd.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "SWD 四线永久保留",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s12",
+   "title": "上电到调试的四拍",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s11"
+   ],
+   "narration": "把顺序连起来看：3V3 稳住，NRST 释放，BOOT0 保持 0，SWDIO 和 SWCLK 才有对话对象。任何一拍没到位，调试器看到的就是另一个世界。这帧动画就是这四拍。",
+   "on_screen": [
+    "3V3 → NRST",
+    "BOOT0=0",
+    "SWDIO/SWCLK"
+   ],
+   "visual_source": "animations/sample-21-power-swd.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "电、复位、启动、调试四拍",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch21-s13",
+   "title": "USB-TTL 接 USART1：交叉加共地",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s12"
+   ],
+   "narration": "USB 转串口接 USART1 有三条纪律：PA9 的 TX 要接适配器的 RX，PA10 的 RX 接适配器 TX，两边交叉；GND 必须共地；两边都是 3.3 伏电平，绝不能把 5V 灌进 PA10。",
+   "on_screen": [
+    "PA9 ↔ RX 交叉",
+    "GND 必须共地",
+    "别把 5V 灌进 PA10"
+   ],
+   "visual_source": "diagrams/sample-21-usb-ttl.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "交叉、共地、3.3 伏",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s14",
+   "title": "用代码读出芯片身份",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s13"
+   ],
+   "narration": "身份可以用代码读：DBGMCU_IDCODE 在 0xE0042000，Flash 容量在 0x1FFFF7E0，唯一 ID 在 0x1FFFF7E8。F103 中容量的器件 ID 是 0x410；Flash 读出 64KB 才是正品 C8。",
+   "on_screen": [
+    "IDCODE 0xE0042000",
+    "Flash 0x1FFFF7E0",
+    "0x410 = 中容量"
+   ],
+   "visual_source": "boards/pinout-bluepill.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#代码实现"
+   ],
+   "memory_anchor": "0x410 加 64KB 才是正品",
+   "evidence_type": "code"
+  },
+  {
+   "scene_id": "ch21-s15",
+   "title": "5V 忍耐脚与电平转换",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch21-s14"
+   ],
+   "narration": "接 5V 外设前先看引脚类型：标 FT 的脚能容忍 5V，普通脚只能进 3.3 伏。电平不匹配就加电平转换，或者改用 FT 引脚。这张接线总览标了常用外设的接法。",
+   "on_screen": [
+    "FT 脚容忍 5V",
+    "普通脚只进 3.3V",
+    "不匹配就加转换"
+   ],
+   "visual_source": "boards/peripheral-wiring.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "FT 才忍 5V",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch21-s16",
+   "title": "跑不到 72 兆：先怀疑身份",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s14"
+   ],
+   "narration": "买的 F103C8T6 跑不出 72 兆，第一条假设是兼容芯片或主频受限的山寨主控。解决办法不是调参数，是读器件 ID 和 Flash 容量核对，以实际能力为准，再决定要不要换板。",
+   "on_screen": [
+    "现象：到不了 72 兆",
+    "假设：兼容芯片",
+    "动作：读 ID 核对"
+   ],
+   "visual_source": "illustrations/handraw/ch21-board-compare.png",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "跑不到标称频率，先验身份",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s17",
+   "title": "RTC 不走时：先数晶振",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s08"
+   ],
+   "narration": "RTC 不走时，第一条假设是板上根本没焊 LSE 晶振。解决是补焊 32.768 千赫和两颗 6 皮法，再测振荡。不是先改软件配置——晶振都不在，配置写到天上去也没用。",
+   "on_screen": [
+    "现象：RTC 停走",
+    "假设：LSE 未焊",
+    "动作：补焊再测"
+   ],
+   "visual_source": "boards/pinout-bluepill.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "RTC 停走先数晶振",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s18",
+   "title": "上电偶发复位：数去耦",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s05"
+   ],
+   "narration": "上电偶发复位的两个候选：缺去耦电容，或者 NRST 悬空。解决是每个 VDD 补 100 纳法，NRST 补 100 纳法上拉。偶发两个字，就说明电源和复位网络有漏洞。",
+   "on_screen": [
+    "现象：偶发复位",
+    "假设：缺去耦/悬空",
+    "动作：补 100 nF"
+   ],
+   "visual_source": "diagrams/sample-21-nrst-boot0.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "偶发复位先数电容",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s19",
+   "title": "LED 一亮 SWD 就抖：量 3V3",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s04"
+   ],
+   "narration": "LED 一亮调试器就抖，先量 3V3 是不是还在 3.2 到 3.4 伏之间。劣质 1117 或缺去耦会拉垮电压；ST-LINK 的 3V3 和 USB 同时供电也会打架。电压站住了，再谈下载。",
+   "on_screen": [
+    "量 3V3：3.2–3.4 V",
+    "劣质 LDO/缺去耦",
+    "双电源会打架"
+   ],
+   "visual_source": "illustrations/handraw/ch21-vdd-3v3.png",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "LED 一亮就抖，先量 3V3",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s20",
+   "title": "ADC 噪声大：VDDA 没滤波",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s05"
+   ],
+   "narration": "ADC 读数噪声大，第一条假设是 VDDA 和 VSSA 没有单独滤波。解决是给 VDDA 加磁珠加电容单独供电。模拟电源和数字电源混在一起，噪声就写进采样值。",
+   "on_screen": [
+    "现象：噪声大",
+    "假设：VDDA 未滤",
+    "动作：磁珠加电容"
+   ],
+   "visual_source": "diagrams/sample-21-vdd-3v3.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "模拟电别和数字电混走",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s21",
+   "title": "下载后连不上：SWD 被复用",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s11"
+   ],
+   "narration": "下载过一次就连不上，第一条假设是程序把 PA13、PA14 复用成 GPIO 并关掉了 SWD。解决是保留 SWD 不复用；已经连不上，就把 BOOT0 拉高救砖重来。",
+   "on_screen": [
+    "现象：连不上",
+    "假设：SWD 被复用",
+    "动作：保留或救砖"
+   ],
+   "visual_source": "illustrations/handraw/ch21-nrst-boot0.png",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "SWD 两脚永久保留",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s22",
+   "title": "丝印和图对不上：信手册",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s02"
+   ],
+   "narration": "排针标号和图上对不上，第一条假设是板厂丝印错误或山寨改版。解决是以芯片手册的引脚定义为准，不要信丝印。丝印是给人看的，手册才是给芯片看的。",
+   "on_screen": [
+    "现象：标号不符",
+    "假设：丝印错误",
+    "动作：以手册为准"
+   ],
+   "visual_source": "boards/pinout-bluepill.svg",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#常见坑与排查"
+   ],
+   "memory_anchor": "丝印会骗人，手册不会",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s23",
+   "title": "探头一接晶振就停：负载拖垮",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch21-s07"
+   ],
+   "narration": "示波器探头一接 OSC_OUT，晶振就停振，这是探头负载拖起了起振。先用内部时钟的固件确认程序没病，再恢复 HSE；量晶振要用低容探头，别用一乘档硬怼。",
+   "on_screen": [
+    "现象：接探头停振",
+    "假设：负载拖垮",
+    "动作：先 HSI 再 HSE"
+   ],
+   "visual_source": "illustrations/handraw/ch21-hse-load.png",
+   "fact_source": [
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#硬件与接线"
+   ],
+   "memory_anchor": "探头也能拖垮晶振",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch21-s24",
+   "title": "实验一：身份记录",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch21-s14",
+    "ch21-s16"
+   ],
+   "narration": "第一个实验是身份记录：对目标板拍丝印，记录器件 ID、Flash 容量、唯一 ID 和供电电压。任何不一致都单独列出来，用具体证据说话，不用山寨两个字代替。",
+   "on_screen": [
+    "拍丝印",
+    "记 ID/容量/UID",
+    "不一致逐条列"
+   ],
+   "visual_source": "illustrations/handraw/ch21-board-compare.png",
+   "fact_source": [
+    "project-examples",
+    "docs/21-原理图与实物图鉴.md#动手实验"
+   ],
+   "memory_anchor": "身份记录是板子的户口",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch21-s25",
+   "title": "实验二：原理图对账",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch21-s05",
+    "ch21-s06"
+   ],
+   "narration": "第二个实验在 KiCad 画一张最小系统，逐项标出每个 VDD 的去耦、VDDA 滤波、复位、BOOT、晶振和 SWD。交付物是 ERC 通过的原理图，不是一块能亮的板。",
+   "on_screen": [
+    "KiCad 最小系统",
+    "逐项标注八要素",
+    "ERC 通过为交付"
+   ],
+   "visual_source": "boards/bluepill-stm32f103c8t6.svg",
+   "fact_source": [
+    "project-examples",
+    "docs/21-原理图与实物图鉴.md#动手实验"
+   ],
+   "memory_anchor": "ERC 通过才算对账",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch21-s26",
+   "title": "实验三：接线验收",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch21-s13",
+    "ch21-s15"
+   ],
+   "narration": "第三个实验按 pinout 接 OLED：先做通断和电压检查，再抓 START、地址和 ACK 的波形。点亮只是结果，接线表和波形才是可以复查的证据。",
+   "on_screen": [
+    "先通断与电压",
+    "再抓 I2C 波形",
+    "接线表可复查"
+   ],
+   "visual_source": "boards/peripheral-wiring.svg",
+   "fact_source": [
+    "project-examples",
+    "docs/21-原理图与实物图鉴.md#动手实验"
+   ],
+   "memory_anchor": "波形才是可复查的证据",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch21-s27",
+   "title": "实验四：启动与恢复",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch21-s10",
+    "ch21-s21"
+   ],
+   "narration": "第四个实验把三种启动各做一遍：主 Flash、系统存储器和 SRAM，分别记录进入条件。串口 ISP 之后把 BOOT0 跳回 0，并确认 SWD 仍然可以连接。恢复路径练过，救砖才不慌。",
+   "on_screen": [
+    "三种启动各一遍",
+    "ISP 后跳回 0",
+    "确认 SWD 可连"
+   ],
+   "visual_source": "diagrams/sample-21-nrst-boot0.svg",
+   "fact_source": [
+    "project-examples",
+    "ds5319",
+    "docs/21-原理图与实物图鉴.md#动手实验"
+   ],
+   "memory_anchor": "恢复路径练过才不慌",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch21-s28",
+   "title": "离开检查：四份证据",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch21-s24",
+    "ch21-s25",
+    "ch21-s26",
+    "ch21-s27"
+   ],
+   "narration": "离开这一章，你手里应该有四份证据：一份板卡身份记录、一张带 ERC 的最小系统原理图、一张接线加波形的验收表，和一份启动恢复记录。丝印从此只是线索，原理图和实测才是结论。",
+   "on_screen": [
+    "身份记录",
+    "ERC 原理图",
+    "接线波形表 · 启动记录"
+   ],
+   "visual_source": "illustrations/handraw/ch21-board-compare.png",
+   "fact_source": [
+    "project-examples",
+    "project-credits",
+    "docs/21-原理图与实物图鉴.md#动手实验"
+   ],
+   "memory_anchor": "丝印是线索，实测是结论",
+   "evidence_type": "recall"
+  }
+ ]
+}
