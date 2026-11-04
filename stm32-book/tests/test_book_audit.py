@@ -87,11 +87,15 @@ class BookAuditTests(unittest.TestCase):
             "sample-01-swd-vectors.svg",
             "swd-fetch.gif",
             "single-build-contract.svg",
+            "sample-01-flash-path.svg",
             "project-structure.svg",
+            "sample-01-flash-triage.svg",
+            "sample-01-debug-connect.svg",
+            "sample-01-build-accept.svg",
         )
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(5, edition["pdf_visual_anchors"])
+            self.assertEqual(9, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(expected_assets, edition["asset_sequence"])
         for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
@@ -114,12 +118,14 @@ class BookAuditTests(unittest.TestCase):
                 "nvic-preempt.gif",
                 "interrupt-priority.svg",
                 "gpio-input-interrupt.svg",
+                "sample-04-exti-triage.svg",
             ),
             "05": (
                 "timer-pwm.svg",
                 "sample-05-pwm-1khz.svg",
                 "pwm-1khz.gif",
                 "timer-modes.svg",
+                "sample-05-pwm-debug.svg",
                 "pwm-breath.gif",
             ),
         }

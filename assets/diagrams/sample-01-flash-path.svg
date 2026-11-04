@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="三条把 .bin 送进 0x08000000 的路径：SWD 调试口随时可用，串口与 USB DFU 都住在 ROM bootloader 里">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三条把 .bin 送进 0x08000000 的路径：SWD 调试口随时可用，串口与 USB DFU 都住在 ROM bootloader 里</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 01 · RM0008 2.4 · AN3155 · AN3156</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  Flash 0x08000000..0x0800FFFF (64 KB)  page 1 KB</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">every path ends at the same address; they differ in who opens the door</text>
+<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWD = debug port, no bootloader involved    ISP/DFU = ROM bootloader at 0x1FFFF000</text>
+<text x="40" y="170" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">路径一  SWD 调试口（BOOT0 = 0 也能烧）</text>
+<rect x="40" y="184" width="880" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="56" y="208" width="200" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="156" y="232.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">host tools</text>
+<text x="156" y="249" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">openocd / pyocd / Keil</text>
+<rect x="300" y="208" width="170" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="385" y="232.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ST-Link V2</text>
+<text x="385" y="249" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB to SWD</text>
+<rect x="514" y="208" width="190" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="609" y="232.55" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">SWD pins</text>
+<text x="609" y="249" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA13 SWDIO · PA14 SWCLK</text>
+<rect x="748" y="208" width="156" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="826" y="232.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Flash</text>
+<text x="826" y="249" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x08000000</text>
+<line x1="256" y1="234" x2="293" y2="234" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="300.00,234.00 293.00,237.50 293.00,230.50" fill="#1b5c45" opacity="1"/>
+<line x1="470" y1="234" x2="507" y2="234" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="514.00,234.00 507.00,237.50 507.00,230.50" fill="#1b5c45" opacity="1"/>
+<line x1="704" y1="234" x2="741" y2="234" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="748.00,234.00 741.00,237.50 741.00,230.50" fill="#1b5c45" opacity="1"/>
+<text x="56" y="296" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">two wires plus NRST; the same cable then runs the debugger, so this is the default path</text>
+<text x="56" y="322" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">keeps working while user firmware runs, unless PA13/PA14 were reused as GPIO</text>
+<text x="56" y="352" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint before blaming the cable: the .ioc must set SYS → Debug = Serial Wire</text>
+<text x="40" y="424" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">路径二 / 三  BOOT0 = 1 复位 → ROM bootloader，二选一传输</text>
+<rect x="40" y="438" width="880" height="252" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="56" y="466" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0 = 1 at reset makes the core fetch from system memory 0x1FFFF000, not from Flash</text>
+<text x="56" y="490" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the bootloader listens on two transports at once; pick either, the entry condition is identical</text>
+<rect x="56" y="508" width="404" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="258" y="536.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">USART1 ISP</text>
+<text x="258" y="553" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA9 TX · PA10 RX, 8N1, auto-baud</text>
+<text x="76" y="596" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">host: Flash Loader Demonstrator / stm32flash   (AN3155)</text>
+<rect x="500" y="508" width="404" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="702" y="536.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">USB DFU</text>
+<text x="702" y="553" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PA11 DM · PA12 DP, device FS</text>
+<text x="520" y="596" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">host: DfuSe demo / dfu-util   (AN3156)</text>
+<text x="56" y="628" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">no SWD pins involved here: a part whose debug port was killed can still be flashed this way</text>
+<text x="56" y="654" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0 is sampled at reset; toggling it while running changes nothing until the next reset</text>
+<text x="40" y="706" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">不证明什么  通路存在不等于烧写成功</text>
+<rect x="40" y="720" width="880" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="750" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a working path proves transport only; the write itself is the next chapter's triage figure</text>
+<text x="56" y="776" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISP and DFU live inside the ROM bootloader, so they cannot flash while user code is running</text>
+<text x="56" y="806" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">none of the three says the application logic is correct; verify compares bytes, not behavior</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。bootloader 入口与两个传输来自 RM0008 2.4 与 AN3155/AN3156；64 KB 容量与基址来自 DS5319 Rev 20。</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

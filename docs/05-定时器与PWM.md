@@ -146,6 +146,13 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
   <br><sub>▲ 计数状态：CNT、ARR 和 CCR 的关系决定更新事件与比较输出。动画首帧在 PDF 中仍可读；它说明顺序和边界，不是示波器实测波形（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
+输出全无或频率不对时，先按下面三环读回寄存器，不要同时改 PSC、ARR、CCR。示波器上还有波形、只是周期差整数倍，问题在环 ① 的分频比；PA6 上一点波形都没有，才往下读环 ② 的 CC1E 和环 ③ 的 GPIO 复用。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="有波形但频率差整数倍时停在 PSC/ARR 分频比；PA6 全无波形时依次读 TIM3_CCER 的 CC1E 与 GPIOA_CRL 的复用配置">
+  <br><sub>▲ 自绘。看哪里：三环从上到下。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，用 72 MHz 重算 72e6 / (72 × 1000) = 1000 Hz；同一组数按 36 MHz 除得到 500 Hz。环 ② 读回 TIM3_CCER 位 0 的 CC1E = 1，TIM3_CCMR1 的 OC1M[6:4] = 110 是 PWM 模式 1。环 ③ 读回 GPIOA_CRL[27:24] = 0xB，即 CNF6 = 10 复用推挽、MODE6 = 11 是 50 MHz，TIM3_REMAP = 00 把通道留在第 16 脚 PA6。证明什么：三环的读回值能把「频率错」和「引脚上完全没有波形」分开——下半部分只有 36 MHz 那一行还留着 500 Hz 的波形；CC1E = 0 与 MODE6 = 00 都让 PA6 没有波形，重映射不为 00 则波形改去 PB4 或 PC6。不证明什么：CCR 占空比、探头是否共地，以及第 08 章是否把 PA6 当 SPI1_MISO 用；TIM1 额外的 BDTR 位 15 MOE 在偏移 0x44，本图只点名不展开。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
+</p>
+
 ### 4. PWM 模式与公式
 
 PWM 就是让一个开关每秒开合成千上万次，负载只感受到平均值：LED 看起来是半亮，电机转得是半速。计数器从 0 数到 ARR，数到 CCR 之前输出高，之后输出低，CCR 就是那个开关点。一圈总共只有 ARR+1 格，所以频率越高、一圈越短，能切的档位就越少。

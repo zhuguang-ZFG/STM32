@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="860" viewBox="0 0 960 860" role="img" aria-label="学习闭环：读 RM0008 对应节、写最小代码、上板、逐行能解释；跳手册抄代码则停在不能解释">
+
+
+<rect x="0" y="0" width="960" height="860" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">学习闭环：读 RM0008 对应节、写最小代码、上板、逐行能解释；跳手册抄代码则停在不能解释</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · PC13 · RM0008 Rev 21 §9 GPIO / DS5319 Rev 20 Table 5</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">00</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LQFP48  PC13 LED at 1 Hz, 500 ms per half period</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one register per turn: RCC_APB2ENR.IOPCEN, GPIOC_CRH[23:20], GPIOC_ODR[13]</text>
+<text x="40" y="138" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the image lands at 0x08000000; BOOT0 = 0 is what makes this reset run it</text>
+<text x="40" y="170" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正常路径  四步一轮，每一步都要被板上现象检验</text>
+<rect x="40" y="184" width="880" height="240" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="40" y="206" width="190" height="124" fill="#fbfaf7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="52" y="234" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1  read one section</text>
+<text x="52" y="262" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RM0008 Rev 21 §9 GPIO</text>
+<text x="52" y="286" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IOPCEN, CRH, ODR</text>
+<text x="52" y="310" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one register per turn</text>
+<rect x="250" y="206" width="190" height="124" fill="#fbfaf7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="262" y="234" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2  write 20 lines</text>
+<text x="262" y="262" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">APB2ENR |= IOPCEN</text>
+<text x="262" y="286" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRH[23:20] = 0x2</text>
+<text x="262" y="310" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ODR ^= ODR13</text>
+<rect x="460" y="206" width="190" height="124" fill="#fbfaf7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="472" y="234" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3  put it on the board</text>
+<text x="472" y="262" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">flash at 0x08000000</text>
+<text x="472" y="286" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0 = 0, PC13 toggles</text>
+<text x="472" y="310" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">500 ms per half period</text>
+<rect x="670" y="206" width="190" height="124" fill="#fbfaf7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="682" y="234" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4  explain each line</text>
+<text x="682" y="262" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">why the clock comes first</text>
+<text x="682" y="286" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">why 0x2 means push-pull</text>
+<text x="682" y="310" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">why 500 ms is half a period</text>
+<line x1="232" y1="268" x2="241" y2="268" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="248.00,268.00 241.00,271.50 241.00,264.50" fill="#1b5c45" opacity="1"/>
+<line x1="442" y1="268" x2="451" y2="268" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="458.00,268.00 451.00,271.50 451.00,264.50" fill="#1b5c45" opacity="1"/>
+<line x1="652" y1="268" x2="661" y2="268" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="668.00,268.00 661.00,271.50 661.00,264.50" fill="#1b5c45" opacity="1"/>
+<line x1="765" y1="330" x2="765" y2="356" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="765" y1="356" x2="135" y2="356" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="135" y1="356" x2="135" y2="339" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="135.00,332.00 138.50,339.00 131.50,339.00" fill="#1b5c45" opacity="1"/>
+<text x="450" y="382" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">next register: the same four steps</text>
+<text x="40" y="452" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">The loop closes only when step 4 can name every line it wrote.</text>
+<text x="40" y="492" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败路径  跳过手册，直接抄一个不能解释的工程</text>
+<rect x="40" y="506" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="536" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Copy 200 lines, and the first broken build has no owner</text>
+<text x="56" y="564" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the board shows nothing, and no line of the copy names PC13</text>
+<text x="56" y="590" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">an unopened clock and an unwired pin look identical from the outside</text>
+<text x="56" y="616" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">step 4 fails first: the demo board still blinks, so the copy looks correct</text>
+<text x="56" y="642" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">searching the error text now buys a symptom, not a cause</text>
+<rect x="40" y="672" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="702" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  one claim per turn keeps the loop honest</text>
+<text x="56" y="728" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PC13 is on when low: LED lit means ODR13 = 0</text>
+<text x="56" y="754" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1 Hz is a period; a single on or off proves nothing</text>
+<text x="56" y="780" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">clock tree and exception stack are other chapters, not this loop</text>
+<line x1="24" y1="824" x2="936" y2="824" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="844" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。寄存器写法与 500 ms 半周期来自第 00 章；GPIO 章节与 Table 5 脚位来自 RM0008 Rev 21 第 9 章和 DS5319 Rev 20。</text>
+<text x="936" y="844" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

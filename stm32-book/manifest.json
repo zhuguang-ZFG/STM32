@@ -104,7 +104,7 @@
       "question": "零基础怎样建立一条不会被工具、术语和教程数量淹没的学习路径？",
       "deliverable": "一份个人学习路线、最低硬件清单，以及第一次点灯的期望值—实测值记录。",
       "boundary": "本章只定义入门顺序，不替代 C 语言、电路安全和目标芯片手册。",
-      "sources": ["project-guide", "rm0008", "ds5319", "rm0008-boot"]
+      "sources": ["project-guide", "rm0008", "ds5319", "rm0008-boot", "project-examples"]
     },
     "01-开发环境搭建.md": {
       "question": "源码怎样经过编译、链接、烧录和复位，最终变成可单步观察的机器状态？",
@@ -116,7 +116,7 @@
       "question": "型号、存储器映射和时钟树怎样共同决定一份代码能否在目标芯片上工作？",
       "deliverable": "一张目标型号拆解表、一张 Flash/SRAM 地址图和一份 SYSCLK/APB/定时器时钟账。",
       "boundary": "示例以 F103 为主；任何量产选型必须回到确切订货号、修订版和温度等级。BluePill 示例是 STM32F103C8T6（LQFP48）：HSE 8 MHz ×9 = 72 MHz，48–72 MHz 档的 Flash 等待是 2；容量用 0x1FFFF7E0 的读数和 DS5319 的 64 KB 对账。",
-      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock"]
+      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock", "spl-f1-mirror"]
     },
     "03-GPIO与LED.md": {
       "question": "一只引脚的输入结构、输出驱动和外部负载怎样共同决定真实电平？",
@@ -134,13 +134,13 @@
       "question": "异步事件怎样从引脚进入 EXTI 和 NVIC，又怎样在有限时间内安全退出 ISR？",
       "deliverable": "一张事件路径图、一份优先级表和一笔 ISR 最坏执行时间预算。",
       "boundary": "裸机优先级配置不自动满足 RTOS 的 FromISR 约束；第 15 章再加入内核边界。硬件入栈 8 个寄存器，大约 12 个 HCLK；在 72 MHz 上约 167 ns，不含 ISR 正文。HAL 默认分组是 GROUP_4：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高。",
-      "sources": ["pm0056", "rm0008", "freertos-priority", "rm0008-exti", "pm0056-nvic"]
+      "sources": ["pm0056", "rm0008", "freertos-priority", "rm0008-exti", "pm0056-nvic", "project-examples"]
     },
     "05-定时器与PWM.md": {
       "question": "时钟、PSC、ARR 与 CCR 怎样变成可测的周期、频率和占空比？",
       "deliverable": "一笔从定时器输入时钟到目标波形的计算，以及一张仪器实测对照表。",
       "boundary": "公式只对选定计数模式和时钟路径成立；高级定时器还要核对 MOE、死区与互补输出。这颗 F103 上 APB1 为 36 MHz 时，TIM2–TIM7 的计数时钟仍是 72 MHz。PSC 为 71、ARR 为 999 时，72 MHz / (72 × 1000) = 1 kHz。同一组 PSC、ARR 用 36 MHz 去除会算出 500 Hz。16 位定时器装不下 ARR 999999。",
-      "sources": ["rm0008", "rm0008-tim", "ds5319-tim"]
+      "sources": ["rm0008", "rm0008-tim", "ds5319-tim", "project-examples"]
     },
     "06-串口UART.md": {
       "question": "UART 的位时序、错误标志、DMA 缓冲和帧边界怎样连成可靠的接收路径？",

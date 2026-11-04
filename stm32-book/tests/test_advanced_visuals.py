@@ -11,22 +11,29 @@ ROOT = Path(__file__).resolve().parents[2]
 
 CHAPTERS = {
     ROOT / "docs" / "00-如何学习STM32.md": (
-        4,
+        7,
         (
             "toolchain-flow.svg",
             "sample-00-boot-state.svg",
+            "sample-00-boot-triage.svg",
+            "sample-00-accept-gate.svg",
+            "sample-00-learn-loop.svg",
             "first-lab-wiring.svg",
             "first-success-gates.svg",
         ),
     ),
     ROOT / "docs" / "01-开发环境搭建.md": (
-        5,
+        9,
         (
             "boot-sequence.svg",
             "sample-01-swd-vectors.svg",
             "swd-fetch.gif",
             "single-build-contract.svg",
+            "sample-01-flash-path.svg",
             "project-structure.svg",
+            "sample-01-flash-triage.svg",
+            "sample-01-debug-connect.svg",
+            "sample-01-build-accept.svg",
         ),
     ),
     ROOT / "docs" / "03-GPIO与LED.md": (
@@ -42,12 +49,13 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
-        5,
+        6,
         (
             "timer-pwm.svg",
             "sample-05-pwm-1khz.svg",
             "pwm-1khz.gif",
             "timer-modes.svg",
+            "sample-05-pwm-debug.svg",
             "pwm-breath.gif",
         ),
     ),

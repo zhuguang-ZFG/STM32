@@ -265,7 +265,7 @@ class Batch2NvicChapterTests(unittest.TestCase):
         }
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["pm0056", "rm0008", "freertos-priority", "rm0008-exti", "pm0056-nvic"]
+        compass = ["pm0056", "rm0008", "freertos-priority", "rm0008-exti", "pm0056-nvic", "project-examples"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["04-中断与NVIC.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["04-interrupts-nvic.md"]["sources"])
         for source_id, (scope_zh, scope_en) in scopes.items():

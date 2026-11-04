@@ -182,6 +182,13 @@ A project does not improve by gaining more folders. Version the sources, startup
 | Debug | Ctrl+F5 / Start Debug | F11 / Debug | OpenOCD + `arm-none-eabi-gdb` | Cortex-Debug + OpenOCD |
 | Reset and run | Reset button | Run button | Run configuration | Run and Debug configuration |
 
+Three paths can carry the .bin into 0x08000000 — and which one to use when — in this figure:
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-flash-path.svg" width="820" alt="Three paths into Flash at 0x08000000: SWD programming through the debug port, or the ROM bootloader after a reset with BOOT0 = 1 over USART1 ISP or USB DFU">
+  <br><sub>▲ Self-drawn. Where to look: the top half is the SWD path — host tools → ST-Link → PA13/PA14 → Flash; the bottom half is the ROM bootloader entered by a reset with BOOT0 = 1, offering USART1 ISP and USB DFU. What it proves: all three paths end at the same address; what differs is the door — SWD bypasses the bootloader, while ISP and DFU exist only inside it. What it does not prove: an available path is not a successful write, and verify compares bytes, not behavior. Source: RM0008 2.4 with AN3155/AN3156; the 64 KB capacity comes from DS5319 Rev 20.</sub>
+</p>
+
 ### CLion: CMake defines the build; the IDE calls it
 
 The complete build entry is [`examples/spl-f1-blink/`](../../examples/spl-f1-blink/). Its CLI, CLion, and VS Code routes share one `CMakePresets.json`, GNU Arm toolchain file, linker script, and OpenOCD configuration.
@@ -348,6 +355,18 @@ int _write(int fd, char *ptr, int len)
 | `No STM32 target found` | Cable or driver | Try another USB port and reinstall the driver |
 | `Core is locked up` | An illegal address was touched | Check pointers and stack overflow |
 
+The `Flash Download failed` and `Verification failed` rows usually appear after attach already succeeded — triage them in three branches:
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-flash-triage.svg" width="820" alt="Three triage branches after a successful attach: download failure checks the algorithm and read protection, verify failure checks power and clock speed, and a part that flashes but never runs checks BOOT0 and the vector table base">
+  <br><sub>▲ Self-drawn. Where to look: each branch pairs a symptom with checkpoints and a fix — branch one checks the 64 KB medium-density algorithm and the RDP option byte; branch two measures 3V3 before dropping `adapter speed`; branch three checks whether BOOT0 is still high, the first eight bytes of the bin, and the 0x08000000 base. What it proves: after attach succeeds the debug port is innocent, and the failing stage is told by the exact error line. What it does not prove: a clean verify shows byte equality only, and clearing read protection triggers a mass erase. Source: RM0008 2.5 and DS5319 Rev 20; the bin header sample comes from examples/spl-f1-blink.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-debug-connect.svg" width="820" alt="Three rings to check when the ELF exists but Cortex-Debug cannot attach: PA13/PA14 reused as GPIO, power and ground, then adapter speed in the cfg">
+  <br><sub>▲ Drawn for this book. Three rings in order, one checkpoint each. Ring one: pin 34 PA13 and pin 37 PA14 were reused as ordinary GPIO, so the `.ioc` must show SYS → Debug = `Serial Wire` and the generated GPIO init must not list those two pins as outputs; to recover, pull pin 44 BOOT0 high, connect, erase, set `Serial Wire` back, and flash again. Ring two: power and ground, because pin 35 VSS_2 and pin 36 VDD_2 must not float; 3V3 to GND should read 3.3 V and the probe ground must be the board ground, and this lab powers the BluePill over Micro-USB, so the probe's 3.3 V output must not be paralleled onto it. Ring three is the interface and its cfg. `openocd/bluepill-stlink.cfg` carries `transport select hla_swd` and `adapter speed 1000`; the checkpoint is that Cortex-Debug's `configFiles` really loads that file, and the speed is the only line to lower. The figure does not prove the ELF is sound, and it does not cover SWO/ITM. Pins: [DS5319 Rev 20 Table 5](#source-ds5319-swd); the cfg values come from `examples/spl-f1-blink/openocd/bluepill-stlink.cfg`.</sub>
+</p>
+
 ### 10. Flash download algorithms
 
 | Part | Keil Flash algorithm | Notes |
@@ -388,6 +407,11 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);
 `.isr_vector` needs `KEEP`. Otherwise the linker throws away a vector table that C never references, and the chip flies off at power-up.
 
 Before leaving this chapter, read the first two vector-table words in the debugger, explain where `.data` and `.bss` go, and use the map file to confirm that Flash and RAM fit.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-build-accept.svg" width="820" alt="One link step produces ELF, map, and bin: the ELF is for debugging, the bin for flashing, the map for Flash and RAM footprint">
+  <br><sub>▲ Drawn for this book. Upper half: one link step writes the `.elf`, the same command writes the `.map` through `-Wl,-Map=`, and `objcopy -O binary` turns that one ELF into the `.bin`. The ELF carries symbols and debug information, which is why a breakpoint can stop on a source line; the `.bin` has no address fields and always lands at `0x08000000`; the `.map` is the address book for sections and symbols, and the only place where the 64 KB and 20 KB boundaries are checked. The eight bytes printed here are the head of the real artifact in `examples/spl-f1-blink/`, `00 50 00 20 25 07 00 08`: word 0, `0x20005000`, is the top of 20 KB SRAM, and word 1, `0x08000725`, is `Reset_Handler` from the map. The lower half is the failure with no artifact path at all: the build log cannot name the compiler, the linker script, or where the ELF sits; a host `.exe` came out instead; or there is no `.map`, so nobody can say whether `.text` still ends before `0x08010000`. The figure does not prove the image was programmed, and it does not prove reset reaches `main`. Sources: the toolchain data flow above and [the DS5319 64 KB / 20 KB figures](#source-ds5319-swd).</sub>
+</p>
 
 Self-test:
 

@@ -167,6 +167,13 @@ The memory-map animation:
 
 A typical F103C8: **64 KB Flash at 0x0800_0000, 20 KB SRAM at 0x2000_0000**.
 
+The next figure turns "the board and the code disagree" into one ledger: it is written for Flash while the pins select SRAM.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-02-boot-mode.svg" width="760" alt="With BOOT1=1 and BOOT0=1, 0x00000000 aliases power-on SRAM at 0x20000000; only BOOT0=0 aliases Flash">
+  <br><sub>▲ Drawn for this book. The top panel is BOOT1=0 and BOOT0=0: 0x00000000 aliases the 64 KB image at 0x08000000, word 0 is the initial MSP and word 1 is Reset_Handler. The middle panel is BOOT1=1 and BOOT0=1: the same address aliases SRAM at 0x20000000, which runs to 0x20005000, and what sits there is power-on content, so word 0 is not a stack top and word 1 is not code — the fetch goes wrong before main, while the image in Flash is still intact at 0x08000000 and simply not fetched. The comparison panel lists the three alias rows and marks 0x1FFFB000 as an interconnect-line address and 0x08080000 as an XL-density one, neither of which belongs to this C8. The levels were taken on pin 44 and PB2 while reset was held; the figure says nothing about which bytes SRAM happens to hold. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
+</p>
+
 ### 5. Boot mode: BOOT0 / BOOT1
 
 | BOOT1 | BOOT0 | Boot region | Use |
@@ -210,6 +217,13 @@ Which bus a peripheral sits on:
 | [21:18] | PLLMUL | PLL multiply (×2 to ×16) |
 | [16] | PLLSRC | PLL input: 0=HSI/2, 1=HSE |
 | [17] | PLLXTPRE | HSE predivider |
+
+The most common clock-tree failure is an HSE that never starts while the code computes everything for 72 MHz. Reading back the bits in the table above is exactly the debugging ledger below:
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-02-hse-fail.svg" width="760" alt="After the HSE stops, the same 72 MHz divider ledger gives 12800 instead of 115200 baud and 9 ms instead of 1 ms; check HSERDY, the PLL multiplier and LATENCY">
+  <br><sub>▲ Drawn for this book. The top panel is the 72 MHz ledger: USART1 at 115200 divides 72 MHz into 39.0625, so BRR holds 0x271, and a SysTick reload of 72000 is 1.000 ms; HSERDY and PLLRDY both read 1 and SWS reads 10 in RCC_CFGR. The middle panel keeps that same ledger after the HSE stops: SYSCLK falls to HSI at 8 MHz, so 0x271 divides 8 MHz down to 12800 baud, one ninth of the intended rate, and the 72000 reload becomes 9.000 ms. The three checkpoints below are RCC_CR bit 17 HSERDY, the PLLMUL [21:18], PLLXTPRE [17], PLLSRC [16] and SWS [3:2] fields in RCC_CFGR, and LATENCY [2:0] in FLASH_ACR. The figure draws no crystal start-up waveform and cannot prove the 8 MHz part on your board is good; it only shows that every divider was computed for 72 MHz. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).</sub>
+</p>
 
 ## Hardware and wiring
 

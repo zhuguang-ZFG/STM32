@@ -143,6 +143,13 @@ Everything between the button press and the first line of your handler is done b
 | 6 | Your ISR runs, and **clears the interrupt flag** |
 | 7 | The stacked context is restored and execution returns to the main program |
 
+Watch these seven steps side by side — polling, an external interrupt, and EXTI triggering — in this animation:
+
+<p align="center">
+  <img src="../../assets/animations/gpio-input-interrupt.svg" width="760" alt="Polling versus interrupt versus EXTI">
+  <br><sub>▲ Animation: polling versus an external interrupt versus EXTI trigger choices (vector drawing by the author)</sub>
+</p>
+
 ### 4. EXTI external interrupts
 
 EXTI is the layer that turns a pin change into an interrupt request. The F103 has 16 EXTI lines, split by pin number: pin 0 of every port (PA0, PB0, PC0, ...) shares EXTI0, every pin 1 shares EXTI1, and so on. One line can serve only one port at a time, like a building with one doorbell button per floor: floor 1 of block A and floor 1 of block B cannot both use it. The `EXTICR` registers choose the port, and on F1 they live in AFIO, which is why the AFIO clock must be on first.
@@ -154,11 +161,9 @@ EXTI is the layer that turns a pin change into an interrupt request. The F103 ha
 | AFIO | On F1, mapping an EXTI pin requires `__HAL_RCC_AFIO_CLK_ENABLE()` (**an F1-only trap**) |
 | Mapping | `AFIO->EXTICR[x]` chooses which port the EXTI line connects to (PAx / PBx / …) |
 
-Polling versus interrupt versus EXTI:
-
 <p align="center">
-  <img src="../../assets/animations/gpio-input-interrupt.svg" width="760" alt="Polling versus interrupt versus EXTI">
-  <br><sub>▲ Animation: polling versus an external interrupt versus EXTI trigger choices (vector drawing by the author)</sub>
+  <img src="../../assets/diagrams/sample-04-exti-triage.svg" width="760" alt="Four gates read back in order when a button interrupt does not fire: clock, mapping, EXTI_IMR, NVIC_ISER0; EXTI_IMR at 0 still sets EXTI_PR">
+  <br><sub>▲ Drawn for this book. STM32F103C8T6, button on PA0, EXTI0_IRQn = 6. Where to look: follow the PA0 edge towards the ISR and read four registers in order — RCC_APB2ENR bit 2 (IOPAEN), AFIO_EXTICR1 [3:0] (0000 selects PA0), EXTI_IMR bit 0, and NVIC_ISER0 bit 6. The path is open only when all four read back 1. What it proves: with EXTI_IMR at 0, EXTI_PR bit 0 is still set by the edge, so "PR reads 1 but the handler never runs" separates ring ④ from ring ③; a PR that reads 0 means the edge never reached EXTI at all, so go back to rings ① and ②. What it does not prove: the pin mode (GPIOx_CRL MODE/CNF), the edge chosen by RTSR/FTSR, contact bounce, or preemption and subpriority. Sources: RM0008 Rev 21 sections 8.3.7, 9.4.3, 10.3.1, and 10.3.6 ([EXTICR and EXTI_PR](#source-rm0008-exti)), and [PM0056 section 4](#source-pm0056-nvic) for NVIC_ISERx and the exception number.</sub>
 </p>
 
 ### 5. The C that matters

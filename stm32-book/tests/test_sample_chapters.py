@@ -241,11 +241,11 @@ class SampleFoundationChapterTests(unittest.TestCase):
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
         self.assertEqual(
-            ["project-guide", "rm0008", "ds5319", "rm0008-boot"],
+            ["project-guide", "rm0008", "ds5319", "rm0008-boot", "project-examples"],
             zh_manifest["chapter_guides"]["00-如何学习STM32.md"]["sources"],
         )
         self.assertEqual(
-            ["project-guide", "rm0008", "ds5319", "rm0008-boot"],
+            ["project-guide", "rm0008", "ds5319", "rm0008-boot", "project-examples"],
             en_manifest["chapter_guides"]["00-how-to-learn-stm32.md"]["sources"],
         )
         card_zh = zh_manifest["sources"]["rm0008-boot"]

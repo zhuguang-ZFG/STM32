@@ -315,7 +315,7 @@ class Batch3ClockChapterTests(unittest.TestCase):
         }
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock"]
+        compass = ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock", "spl-f1-mirror"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["02-芯片选型与存储器时钟.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["02-part-and-clock.md"]["sources"])
         for source_id, (scope_zh, scope_en) in scopes.items():
@@ -403,7 +403,7 @@ class Batch3PwmChapterTests(unittest.TestCase):
         }
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["rm0008", "rm0008-tim", "ds5319-tim"]
+        compass = ["rm0008", "rm0008-tim", "ds5319-tim", "project-examples"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["05-定时器与PWM.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["05-timer-pwm.md"]["sources"])
         for source_id, (scope_zh, scope_en) in scopes.items():

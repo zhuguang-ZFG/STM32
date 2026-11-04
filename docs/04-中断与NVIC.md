@@ -144,6 +144,13 @@ NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，
 | 6 | 执行用户 ISR，**清中断标志** |
 | 7 | 出栈恢复现场，返回主程序 |
 
+这七步的动态对照——轮询、外部中断与 EXTI 触发——看这张动画：
+
+<p align="center">
+  <img src="../assets/animations/gpio-input-interrupt.svg" width="760" alt="轮询 vs 中断 vs EXTI">
+  <br><sub>▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）</sub>
+</p>
+
 ### 4. EXTI 外部中断
 
 EXTI 是把引脚变化转成中断请求的那一层。F103 有 16 条 EXTI 线，按脚号分：所有端口的 0 号脚（PA0、PB0、PC0……）共用 EXTI0，所有 1 号脚共用 EXTI1，以此类推。一条线同一时间只能接一个端口，就像一栋楼每层只有一个门铃按钮，A 座 1 层和 B 座 1 层不能同时用。选哪个端口靠 `EXTICR` 这组开关，F1 上它在 AFIO 里，所以要先开 AFIO 时钟。
@@ -155,11 +162,9 @@ EXTI 是把引脚变化转成中断请求的那一层。F103 有 16 条 EXTI 线
 | AFIO | F1 上配置 EXTI 引脚映射需使能 `__HAL_RCC_AFIO_CLK_ENABLE()`（**F1 特有坑**） |
 | 映射 | `AFIO->EXTICR[x]` 选择 EXTI 线连到哪个端口（PAx/PBx/…） |
 
-轮询 vs 中断 vs EXTI 对比动画：
-
 <p align="center">
-  <img src="../assets/animations/gpio-input-interrupt.svg" width="760" alt="轮询 vs 中断 vs EXTI">
-  <br><sub>▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）</sub>
+  <img src="../assets/diagrams/sample-04-exti-triage.svg" width="760" alt="按键中断不触发时按四环读回：时钟、映射、EXTI_IMR、NVIC_ISER0 依次放行；IMR 为 0 时 EXTI_PR 仍置 1">
+  <br><sub>▲ 自绘。STM32F103C8T6，按键在 PA0，EXTI0_IRQn = 6。看哪里：按 PA0 边沿到 ISR 的顺序读四个寄存器——RCC_APB2ENR 的 bit 2（IOPAEN）、AFIO_EXTICR1 的 [3:0]（0000 选 PA0）、EXTI_IMR 的 bit 0、NVIC_ISER0 的 bit 6；四个都读回 1，这条路径才通。证明什么：EXTI_IMR 为 0 时，EXTI_PR 的 bit 0 照样被边沿置 1，所以「PR 为 1 却不进 ISR」把第 ④ 环和第 ③ 环分开；PR 读回 0 说明边沿根本没到 EXTI，要回第 ①、② 环。不证明什么：引脚模式（GPIOx_CRL 的 MODE/CNF）、RTSR/FTSR 选的触发沿、按键抖动，以及抢占与子优先级，都不在这张图上。出处是 RM0008 Rev 21 第 8.3.7、9.4.3、10.3.1、10.3.6 节（[EXTICR 与 EXTI_PR](#source-rm0008-exti)），以及 [PM0056 第 4 章](#source-pm0056-nvic) 的 NVIC_ISERx 与异常编号。</sub>
 </p>
 
 ### 5. 关键 C 语义

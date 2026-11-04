@@ -145,6 +145,13 @@ A shadow register works like a restaurant changing its menu. The new ARR or CCR 
   <br><sub>▲ Counter state: CNT, ARR, and CCR determine update events and compare output. The first frame remains readable in the PDF. It explains order and boundaries; it is not an oscilloscope capture (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
 </p>
 
+When the output is silent or the frequency is wrong, read the three rings below back in order and change one register at a time. A waveform that is still there but off by a whole ratio points at ring ①, the divider. Only when PA6 is completely quiet do you walk ring ② CC1E and ring ③ GPIO alternate-function setup.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="A waveform with the wrong period stops at the PSC/ARR ratio; a completely silent PA6 means reading CC1E in TIM3_CCER and the alternate-function bits in GPIOA_CRL">
+  <br><sub>▲ Drawn for this book. Where to look: three rings, top to bottom. Ring ① reads TIM3_PSC = 71 and TIM3_ARR = 999 back and recomputes 72e6 / (72 × 1000) = 1000 Hz; the same pair divided by 36 MHz gives 500 Hz. Ring ② reads CC1E = 1 in bit 0 of TIM3_CCER, with OC1M[6:4] = 110 in TIM3_CCMR1 selecting PWM mode 1. Ring ③ reads GPIOA_CRL[27:24] = 0xB: CNF6 = 10 is alternate-function push-pull and MODE6 = 11 is 50 MHz, while TIM3_REMAP = 00 keeps the channel on pin 16 PA6. What it proves: the read-backs separate a frequency error from a dead pin — in the lower half only the 36 MHz row still leaves a 500 Hz waveform; CC1E = 0 and MODE6 = 00 both leave PA6 quiet, and a non-zero remap moves the waveform to PB4 or PC6. What it does not prove: the duty set by CCR, the probe ground, or whether chapter 08 has taken PA6 as SPI1_MISO; TIM1's extra BDTR bit 15 MOE at offset 0x44 is only named, not drawn. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
+</p>
+
 ### 4. PWM modes and formulas
 
 PWM flips a switch thousands of times a second, and the load only feels the average: the LED looks half bright, the motor runs at half speed. The counter runs from 0 to ARR. The output is high until the count reaches CCR and low after it, so CCR is the switch point. A lap has only ARR+1 steps, so the higher the frequency, the shorter the lap and the fewer duty steps you get.

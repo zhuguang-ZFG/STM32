@@ -112,7 +112,8 @@
         "project-guide",
         "rm0008",
         "ds5319",
-        "rm0008-boot"
+        "rm0008-boot",
+        "project-examples"
       ]
     },
     "01-dev-environment.md": {
@@ -135,7 +136,7 @@
       "question": "How do the part number, the memory map, and the clock tree together decide whether a program can run on the target chip?",
       "deliverable": "A breakdown of the target part, a Flash/SRAM address map, and a SYSCLK/APB/timer clock ledger.",
       "boundary": "The examples are mainly F103. Any production choice must go back to the exact order code, revision, and temperature grade. The BluePill example is an STM32F103C8T6 in LQFP48: an 8 MHz HSE times 9 is 72 MHz, and the Flash wait for 48–72 MHz is 2. Check the kilobytes at 0x1FFFF7E0 against the 64 KB in DS5319.",
-      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock"]
+      "sources": ["rm0008", "ds5319", "rm0008-rcc", "ds5319-clock", "spl-f1-mirror"]
     },
     "03-gpio-and-led.md": {
       "question": "How do a pin's input structure, output drive, and external load together decide the real level?",
@@ -164,14 +165,15 @@
         "rm0008",
         "freertos-priority",
         "rm0008-exti",
-        "pm0056-nvic"
+        "pm0056-nvic",
+        "project-examples"
       ]
     },
     "05-timer-pwm.md": {
       "question": "How do the clock, PSC, ARR, and CCR become a measurable period, frequency, and duty cycle?",
       "deliverable": "A calculation from the timer input clock to the target waveform, and a table of instrument measurements beside it.",
       "boundary": "The formula holds only for the chosen count mode and clock path. An advanced timer also needs MOE, dead time, and complementary outputs checked. On this F103, when APB1 is 36 MHz, TIM2–TIM7 still count at 72 MHz. With PSC 71 and ARR 999, 72 MHz / (72 × 1000) = 1 kHz. The same PSC and ARR divided by 36 MHz produce 500 Hz. A 16-bit timer cannot hold ARR 999999.",
-      "sources": ["rm0008", "rm0008-tim", "ds5319-tim"]
+      "sources": ["rm0008", "rm0008-tim", "ds5319-tim", "project-examples"]
     },
     "06-uart.md": {
       "question": "How do UART bit timing, error flags, the DMA buffer, and the frame boundary become a reliable receive path?",
