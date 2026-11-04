@@ -46,7 +46,7 @@ unverified 一律写明原因，不冒充通过。
 | Batch A 旁白反同构改写（ch00/01/02/04/05） | passed | 五章结尾拍互不相同且 ≠ ch03/ch06 模板；`--check` 全过 |
 | Batch A 五章 1080p 重配音 | passed | ch00 139.3s / ch01 146.9s / ch02 155.5s / ch04 157.2s / ch05 161.0s，均 1920×1080 H.264+AAC、10 条字幕，全部在 120–240 s 合同内（ffprobe 逐条核验） |
 | Batch A 文档旁白稿同步 | passed | `--patch-docs` 后 zh+en 各 10 文件 24/30 行更新 |
-| ch00/01/02/04/05 长课重配音（Batch B） | **unverified** | ch01/02/04/05 因 Huihui 漂移需以 Xiaoxiao 重配音，编码进行中（每章约 15–25 分钟）；ch00 长课已是 Xiaoxiao 且十项全过；storyboard 均在、`--check 03` 已验链 |
+| ch00–05 长课 Xiaoxiao 交付（Batch B） | passed | ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s 重配音为 `zh-CN-XiaoxiaoNeural`（Huihui 漂移清除），media-report 十项全 True、LUFS −15.7~−15.8；ch00/ch03 本已绿——六章全部达标 |
 | ch06–28 视频（Batch C–G） | **unverified** | 排队中；计划与批次定义见 `audits/video-regen-plan.md` |
 | `task_verify` 工具本体 | **unverified** | 工具不存在；本文件即等价分列记录 |
 

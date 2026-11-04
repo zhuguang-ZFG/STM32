@@ -86,4 +86,4 @@ python tools/gen_long_lesson.py --report 00
 - [x] This plan file
 - [x] Batch A execute（**2026-11-05**）：ch00/01/02/04/05 旁白结尾反同构改写（五章指纹互不相同、≠ch03/ch06），NARRATED_RATE/NARRATED_PITCH 环境变量接线（Blocker 1 关闭），1080p 重配音 ch00 139.3s / ch01 146.9s / ch02 155.5s / ch04 157.2s / ch05 161.0s，文档旁白稿 `--patch-docs` 同步；QA：ffprobe 逐条核验、check_assets 1962/1962、pytest 182 passed。
 - [x] ch03 pilot 端到端复跑（**2026-11-05**）：短片 `--speak 03` 121.4s/1080p/7 条字幕（TTS 断连重试生效）；长课 `--report 03` 十项全 True、SHA 在 media-report。
-- [ ] Batch B execute：ch01/02/04/05 长课 Huihui→Xiaoxiao 重配音进行中；ch00 长课已绿。
+- [x] Batch B execute（**2026-11-05**）：ch01/02/04/05 长课 Huihui→XiaoxiaoNeural 重配音完成——ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s，media-report 十项全 True、LUFS −15.7~−15.8、28 字幕对齐；ch00/ch03 长课本已 Xiaoxiao 绿。Batch A+B 收口后 ch00–05 六章短片与长课全部为 Xiaoxiao 可复现交付。
