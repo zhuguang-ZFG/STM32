@@ -47,6 +47,12 @@ Only after that match, read modes, series resistance, and the lock. If it does n
   <br><sub>▲ Knowledge track (Handraw · principle diagram / not a photograph). It shows the write versus the common-anode current direction. It is not a meter reading and not a photograph. File <code>assets/illustrations/ch03-handdraw.svg</code>; full SHA-256 is in <code>stm32-book/audits/ch03-converge-gate.md</code>.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-common-anode-before-after.png" width="760" alt="Handraw: common-anode LED write-0 on versus write-1 off (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Side-by-side write 0 versus write 1 on a common-anode path; not a meter reading and not a board photograph.</sub>
+</p>
+
+
 ## Principle and scope
 
 After the minimum victory matches the lamp, pin numbers and current limits start to matter. Pin numbers and current limits in this chapter are for the STM32F103C8T6 in LQFP48. [DS5319 Rev 20](#source-ds5319-gpio) Figure 8 and Table 5 place PA0-WKUP on pin 10 and PC13-TAMPER-RTC on pin 2.
@@ -70,6 +76,12 @@ The 25 mA and 50 MHz in the speed table later do not apply to PC13–PC15. A dif
   <img src="../../assets/diagrams/sample-03-gpio-led.svg" width="760" alt="On STM32F103C8T6, PA0 lights an external LED through 270 ohms; PC13 must not source that current">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48: PA0 is pin 10 and PC13 is pin 2. The upper half is the correct wiring: 3.3 V through a push-pull pin and 270 Ω into the LED; 260 Ω is the quotient (3.3 − 2.0) / 0.005. The lower half is the mistake of copying that circuit onto PC13: note 5 allows 3 mA sink, at most 2 MHz, into 30 pF. The lock sequence is GPIOx_LCKR at offset 0x18. Pin and current facts are [DS5319 Rev 20](#source-ds5319-gpio) Table 5, Figure 8, and note 5. The lock and SWD pins are [RM0008 Rev 21](#source-rm0008-gpio) section 9.2.7 and section 9.3.5 Table 36.</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-pa0-ok-pc13-wrong.png" width="760" alt="Handraw: PA0 may drive an LED; copying the same onto PC13 is wrong (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Correct PA0 external LED versus the mistake of putting that current on PC13; not a wiring photograph.</sub>
+</p>
+
 
 ## Timing and state
 
@@ -112,6 +124,12 @@ Before you leave, without looking back you should be able to:
 
 A GPIO configuration must answer three questions: who drives the signal, what sets the idle level, and whether GPIO or a peripheral owns the pin. Miss one and the register write may succeed while the pin still has the wrong level.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-gpio-three-questions.png" width="760" alt="Handraw: three GPIO questions — driver, idle level, ownership (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Answer driver, idle level, and pin ownership before configuring; not a register screenshot.</sub>
+</p>
+
 ### 1. The 8 GPIO modes
 
 | Mode (HAL macro) | Direction | Output stage | Pull | Typical use |
@@ -147,6 +165,12 @@ A GPIO configuration must answer three questions: who drives the signal, what se
 | Typical use | LED, ordinary digital output | I2C, level shift, a shared bus |
 | Current path | High: VDD→PMOS→pin. Low: pin→NMOS→GND | Low: pin→NMOS→GND. High: none (the external pull-up does it) |
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-push-pull-vs-open-drain.png" width="760" alt="Handraw: push-pull versus open-drain output stages (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Push-pull drives high and low; open-drain only sinks, with the high from an external pull-up; not a scope capture.</sub>
+</p>
+
 ### 4. LED series resistor
 
 
@@ -154,6 +178,12 @@ A GPIO configuration must answer three questions: who drives the signal, what se
   <img src="../../assets/diagrams/sample-03-current-path.svg" width="760" alt="3V3→R→LED→PC13 current-path estimate (marked EST)">
   <br><sub>▲ Hand-drawn EST. ~0.59 mA @ 2.2k; ~3.9 mA @ 330. Not a lab reading.</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-led-current-limit.png" width="760" alt="Handraw: LED series resistor R=(Vcc−Vf)/I (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Choose R from estimated Vf and target current; not a measured current reading.</sub>
+</p>
+
 
 
 `R = (Vcc − Vf) / I`
@@ -314,6 +344,12 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
   <img src="../../assets/diagrams/sample-03-exti-vs-poll.svg" width="760" alt="Polling versus EXTI edges for buttons">
   <br><sub>▲ Drawn compare. Light the pin here; continue events in the NVIC/EXTI chapter.</sub>
 </p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-poll-vs-exti.png" width="760" alt="Handraw: polling versus EXTI edge for a button (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Main-loop polling cost versus an edge interrupt path; not a scope capture and not board evidence.</sub>
+</p>
+
 
 
 | Wiring | Idle level | Pressed level | Edge |
