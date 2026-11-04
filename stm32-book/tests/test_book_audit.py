@@ -67,13 +67,16 @@ class BookAuditTests(unittest.TestCase):
         chapter = self.by_id["19"]
         assets = (
             "peripheral-wiring.svg",
+            "sample-19-slot-fill-flow.svg",
             "sample-19-flash-fit.svg",
             "one-slot.gif",
+            "sample-19-pick-ladder.svg",
             "dma-buffer-ownership.svg",
             "iap-acceptance-gates.svg",
             "network-debug-ladder.svg",
             "rtos-startup-gates.svg",
             "sample-19-milestone-triage.svg",
+            "sample-19-sram-budget.svg",
         )
         for language in ("zh", "en"):
             self.assertEqual(0, chapter[language]["visual_anchor_deficit"])
@@ -87,16 +90,19 @@ class BookAuditTests(unittest.TestCase):
             "boot-sequence.svg",
             "sample-01-swd-vectors.svg",
             "swd-fetch.gif",
+            "sample-01-flash-swd-flow.svg",
+            "sample-01-env-compare.svg",
             "single-build-contract.svg",
             "sample-01-flash-path.svg",
             "project-structure.svg",
+            "sample-01-rdp-unlock.svg",
             "sample-01-flash-triage.svg",
             "sample-01-debug-connect.svg",
             "sample-01-build-accept.svg",
         )
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(9, edition["pdf_visual_anchors"])
+            self.assertEqual(12, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(expected_assets, edition["asset_sequence"])
         for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
@@ -342,24 +348,34 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "18": (
                 "toolchain-flow.svg",
+                "sample-18-boot0-flow.svg",
                 "sample-18-boot-triage.svg",
                 "boot0-low.gif",
+                "sample-18-link-map.svg",
+                "sample-18-hardfault-ladder.svg",
                 "sample-18-faq-compare.svg",
+                "sample-18-uart-garbled.svg",
             ),
             "19": (
                 "peripheral-wiring.svg",
+                "sample-19-slot-fill-flow.svg",
                 "sample-19-flash-fit.svg",
                 "one-slot.gif",
+                "sample-19-pick-ladder.svg",
                 "dma-buffer-ownership.svg",
                 "iap-acceptance-gates.svg",
                 "network-debug-ladder.svg",
                 "rtos-startup-gates.svg",
                 "sample-19-milestone-triage.svg",
+                "sample-19-sram-budget.svg",
             ),
             "20": (
                 "project-structure.svg",
+                "sample-20-evidence-flow.svg",
                 "sample-20-lookup-flow.svg",
+                "sample-20-manual-names.svg",
                 "manual-choice-map.svg",
+                "sample-20-lib-compare.svg",
                 "firmware-stack-choice.svg",
                 "instrument-evidence-ladder.svg",
                 "single-build-contract.svg",
@@ -367,21 +383,30 @@ class BookAuditTests(unittest.TestCase):
             ),
             "21": (
                 "bluepill-stm32f103c8t6.svg",
+                "sample-21-crystal-boot-flow.svg",
                 "sample-21-board-compare.svg",
+                "sample-21-vdd-3v3.svg",
                 "bluepill-stm32f103c8t6.svg",
                 "blackpill-stm32f411ce.svg",
                 "nucleo-f411re.svg",
                 "f4-discovery.svg",
                 "f103zet6-dev.svg",
                 "pinout-bluepill.svg",
+                "sample-21-usb-ttl.svg",
                 "peripheral-wiring.svg",
                 "sample-21-power-swd.svg",
+                "sample-21-hse-load.svg",
+                "sample-21-nrst-boot0.svg",
             ),
             "22": (
                 "toolchain-flow.svg",
+                "sample-22-sim-pick-flow.svg",
                 "simulator-comparison.svg",
+                "sample-22-wokwi-scope.svg",
                 "simulation-model-boundary.svg",
+                "sample-22-renode-path.svg",
                 "sample-22-sim-triage.svg",
+                "sample-22-hw-gap.svg",
                 "simulation-acceptance-gates.svg",
             ),
         }

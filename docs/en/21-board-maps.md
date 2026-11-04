@@ -46,6 +46,13 @@
 ## Core ideas
 
 
+<p align="center">
+  <img src="../../assets/animations/sample-21-crystal-boot-flow.svg" width="720" alt="Board: 3V3 and HSE ready, then Flash boot">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Power→crystal→BOOT0→vectors.</sub>
+</p>
+
+
+
 
 <p align="center">
   <img src="../../assets/diagrams/sample-21-board-compare.svg" width="760" alt="BluePill F103, BlackPill F411, Nucleo-F411RE: package, debugger, 5V, and USB path compared">
@@ -65,6 +72,13 @@
 | `peripheral-wiring.svg` | — (wiring overview) | — | — | — |
 
 ### 1. BluePill · STM32F103C8T6
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-21-vdd-3v3.svg" width="760" alt="BluePill rails: 5 V · 3V3 · VDDA · VBAT">
+  <br><sub>▲ Drawn for this book. Measure 3V3 before blaming firmware.</sub>
+</p>
+
 
 ![bluepill](../../assets/boards/bluepill-stm32f103c8t6.svg)
 
@@ -159,6 +173,13 @@
 
 ### 7. Peripheral wiring overview
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-21-usb-ttl.svg" width="760" alt="USB-TTL ↔ USART1: cross PA9/PA10, shared 3.3 V GND">
+  <br><sub>▲ Drawn for this book. Cross TX/RX, share GND; no 5 V into PA10.</sub>
+</p>
+
+
 ![wiring](../../assets/boards/peripheral-wiring.svg)
 
 | Peripheral | Pins | Bus / mode |
@@ -183,6 +204,13 @@
 ## Hardware and wiring
 
 ### How to read a minimum-system schematic
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-21-hse-load.svg" width="760" alt="HSE 8 MHz: PD0/PD1 and load caps">
+  <br><sub>▲ Drawn for this book. No HSERDY → check the can before PLLMUL.</sub>
+</p>
+
 
 A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.**
 
@@ -242,6 +270,13 @@ void Chip_PrintIdentity(void)
 > Redirect `printf` first ([chapter 06](06-uart.md) and [chapter 17](17-debug.md)). If the **Flash size does not match the marking** (a C8 that reports 128 KB), you usually have a compatible chip or a remarked clone. **Device id `0x410` is a medium-density F103.** Any other value belongs in the Device ID table of RM0008.
 
 ## Pitfalls and troubleshooting
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-21-nrst-boot0.svg" width="760" alt="NRST and BOOT0: pins 7 and 44">
+  <br><sub>▲ Drawn for this book. BOOT0=1 boots system memory — not a 'lost' app.</sub>
+</p>
+
 
 | What you see | Why | Fix |
 | --- | --- | --- |

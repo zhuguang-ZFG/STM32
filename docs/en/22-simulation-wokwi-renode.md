@@ -41,6 +41,13 @@
 
 ## Which one to open first
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-22-sim-pick-flow.svg" width="720" alt="Sim: pick a tool, go green, then the desk">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Pick→prove→port.</sub>
+</p>
+
+
 If you want to see an LED, a button, PWM, or an OLED, use Wokwi. If you want to single-step in a terminal and watch the USART1 byte stream, use Renode. Both of them eat an ELF you compiled yourself. This repo does not ship prebuilt firmware.
 
 | | Wokwi | Renode |
@@ -59,6 +66,13 @@ Do not read the two columns as a ranking. The next figure places Wokwi, Renode, 
 </p>
 
 ## Wokwi: how to read the diagram
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-22-wokwi-scope.svg" width="760" alt="Wokwi fit and limits: logic yes, analog on the desk">
+  <br><sub>▲ Drawn for this book. Browser green still needs the BluePill accept.</sub>
+</p>
+
 
 The pin name is not `PA0`. It is the key in the Wokwi board file. The source is
 [`board.json` in wokwi-boards, under `boards/stm32-bluepill/`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json):
@@ -99,6 +113,13 @@ In `wokwi.toml` the firmware path is written as `build/firmware.elf`. Wokwi acce
 
 ## Renode: two scripts
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-22-renode-path.svg" width="760" alt="Renode path: platform → ELF → UART analyzer">
+  <br><sub>▲ Drawn for this book. Run the two repo scripts before editing platforms.</sub>
+</p>
+
+
 The scripts live in [`sim/renode/`](../../sim/renode/). They do four things: create a machine, load the official F103 platform description, load the ELF, and start.
 
 | Script | What it does |
@@ -123,6 +144,13 @@ The UART example uses DMA. `stm32f103.repl` does attach a DMA node, but whether 
 </p>
 
 ## What simulation will not do for you
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-22-hw-gap.svg" width="760" alt="Sim vs hardware gap: what still needs the desk">
+  <br><sub>▲ Drawn for this book. Dual-track: structure in sim, margins on the desk.</sub>
+</p>
+
 
 | What you see | Why | What to do |
 | --- | --- | --- |

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="Readout protection unlock">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Readout protection unlock</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RDP level 1 → mass erase → level 0</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01</text>
+<text x="40" y="86" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cannot attach / flash fails with protection: check FLASH_OBR RDP before rewriting wiring.</text>
+<rect x="40" y="130" width="210" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="145" y="168" font-size="15" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1 Detect</text>
+<text x="145" y="204" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">OpenOCD / CubeProg</text>
+<text x="145" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RDP=1 reported</text>
+<line x1="254" y1="200" x2="259" y2="200" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="266.00,200.00 259.00,203.50 259.00,196.50" fill="#5e6872" opacity="1"/>
+<rect x="270" y="130" width="210" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="375" y="168" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2 Unlock cmd</text>
+<text x="375" y="204" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">stm32f1x unlock</text>
+<text x="375" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">or CubeProg UI</text>
+<line x1="484" y1="200" x2="489" y2="200" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="496.00,200.00 489.00,203.50 489.00,196.50" fill="#5e6872" opacity="1"/>
+<rect x="500" y="130" width="210" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="605" y="168" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3 Mass erase</text>
+<text x="605" y="204" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">full Flash wipe</text>
+<text x="605" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">user code gone</text>
+<line x1="714" y1="200" x2="719" y2="200" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="726.00,200.00 719.00,203.50 719.00,196.50" fill="#5e6872" opacity="1"/>
+<rect x="730" y="130" width="210" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="835" y="168" font-size="15" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4 RDP=0</text>
+<text x="835" y="204" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">option bytes</text>
+<text x="835" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWD returns</text>
+<rect x="40" y="300" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="334" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">F103 option bytes live near 0x1FFFF800; RDP level 2 is a one-way door on many parts.</text>
+<text x="56" y="366" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Level 1 unlock always mass-erases — expect to reflash the blink lab afterward.</text>
+<text x="56" y="398" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Confirm with `stm32f1x options_read` (or CubeProg) that RDP reads 0xA5 / level 0.</text>
+<rect x="40" y="470" width="880" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="504" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Trap: chasing SWD wiring for hours while OBR says protected.</text>
+<text x="56" y="536" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Trap: assuming unlock keeps Flash contents — it does not on level-1 exit.</text>
+<text x="56" y="568" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Document the unlock in the lab notebook; production units may intentionally stay locked.</text>
+<rect x="40" y="630" width="880" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="664" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Place under '芯片被读保护时怎么解锁' — pairs with sample-01-debug-connect.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. RDP unlock path from RM0008 option-byte chapter.</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

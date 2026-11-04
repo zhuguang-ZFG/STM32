@@ -55,6 +55,13 @@ Add one new peripheral per pass and get it working before the next, so that when
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-19-slot-fill-flow.svg" width="720" alt="One slot: 16 KB + 2 KB + 0xB800 → 0x08010000">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Single-image layout math.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-19-flash-fit.svg" width="760" alt="The C8 has one application of length 0xB800. Two of them are 110 KB. 65536 bytes is larger than 20 KB of SRAM.">
   <br><sub>▲ Drawn for this book. The top band is a layout that fits: 16 KB, 2 KB, and one 0xB800 image ending before 0x08010000, with 20 KB of SRAM, which is 20480 bytes. The middle band shows two that do not: a second 0xB800 from 0x08010000 to 0x0801B800, and a 65536-byte array past 20480. The bottom band marks two common mistakes: an ADC denominator of 4095, and treating 133 bytes as one USB packet. Sources: the chapter 12 Flash layout and the 64 KB / 20 KB figures in [DS5319](#source-ds5319-swd).</sub>
@@ -92,6 +99,13 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 | The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0 |
 | Two CAN nodes do not agree on the rate | The two nodes use different bit-timing settings | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9 |
 ## Learning goals
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-19-pick-ladder.svg" width="760" alt="Pick ladder: star count vs skills you already accepted">
+  <br><sub>▲ Drawn for this book. Pick the smallest project that forces one new bus.</sub>
+</p>
+
 
 - [ ] Turn "an idea" into the engineering path: requirements, then hardware, then approach, then modules, then tests.
 - [ ] Through 10 projects that build on each other, use GPIO, UART, I2C, SPI, ADC, DMA, TIM, and an RTOS in one place.
@@ -527,6 +541,13 @@ static void vCommTask(void *arg)
 </p>
 
 ## Hands-on labs (picking a project and moving it forward)
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-19-sram-budget.svg" width="760" alt="SRAM 20 KB budget: stacks, DMA, .bss">
+  <br><sub>▲ Drawn for this book. Count buffers on C8 before adding tasks.</sub>
+</p>
+
 
 1. **Freeze the delivery contract:** State input range, output format, timing and capacity budgets, failure states, and recovery path before writing business logic.
 2. **Module evidence:** Each module keeps one runnable test, one injected failure, and one measurement or buffer record. Integrate only after it passes alone.

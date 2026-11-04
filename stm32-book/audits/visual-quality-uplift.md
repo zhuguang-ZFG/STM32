@@ -211,3 +211,59 @@ zh + en for all 22 new assets (44 insert ops) via `tools/sample_figs_quality3/em
 
 ch00–01 / ch18–22 (same bar). No video.
 
+## Batch 4 — ch00/01 + ch18–22
+
+Date: 2026-11-04 (America/Adak). Same bar as prior quality batches: denser Handraw figures, remade AUX GIFs, FA-002 CSS-SVG anims. Video untouched.
+
+### New static Handraw SVGs (+18)
+
+| Chapter | Assets |
+|---|---|
+| ch00 | `sample-00-three-ways.svg`, `sample-00-roadmap-gates.svg` |
+| ch01 | `sample-01-env-compare.svg`, `sample-01-rdp-unlock.svg` |
+| ch18 | `sample-18-link-map.svg`, `sample-18-hardfault-ladder.svg`, `sample-18-uart-garbled.svg` |
+| ch19 | `sample-19-pick-ladder.svg`, `sample-19-sram-budget.svg` |
+| ch20 | `sample-20-manual-names.svg`, `sample-20-lib-compare.svg` |
+| ch21 | `sample-21-vdd-3v3.svg`, `sample-21-hse-load.svg`, `sample-21-usb-ttl.svg`, `sample-21-nrst-boot0.svg` |
+| ch22 | `sample-22-wokwi-scope.svg`, `sample-22-renode-path.svg`, `sample-22-hw-gap.svg` |
+
+### New CSS-SVG mechanism animations (+7)
+
+| Chapter | Asset |
+|---|---|
+| ch00 | `sample-00-boot-fetch-flow.svg` |
+| ch01 | `sample-01-flash-swd-flow.svg` |
+| ch18 | `sample-18-boot0-flow.svg` |
+| ch19 | `sample-19-slot-fill-flow.svg` |
+| ch20 | `sample-20-evidence-flow.svg` |
+| ch21 | `sample-21-crystal-boot-flow.svg` |
+| ch22 | `sample-22-sim-pick-flow.svg` |
+
+### Remade crude AUX GIFs (in place, test-bounded)
+
+`boot0-low.gif`, `one-slot.gif`, `swd-fetch.gif` — denser multi-panel frames; builders in `tools/gen_gifs.py` via `tools/sample_figs_quality4/gif_snippets/`.
+
+### Embeds
+
+zh + en for all 25 new assets (50 insert ops) via `tools/sample_figs_quality4/embed_q4.py`.
+
+### Anchor deltas (ADV <img> count; video stripped)
+
+| Chapter | Before | After | Δ |
+|---|---:|---:|---:|
+| ch00 | 7 | **10** | +3 |
+| ch01 | 9 | **12** | +3 |
+| ch18 | 4 | **8** | +4 |
+| ch19 | 8 | **11** | +3 |
+| ch20 | 7 | **10** | +3 |
+| ch21 | 3 | **8** | +5 |
+| ch22 | 5 | **9** | +4 |
+
+### Gates
+
+`pytest` book tests + `tools/check_assets.py` + `build_html.py --check` (zh+en) green after this batch.
+
+### Next round
+
+ch23–28 + appendix (same bar). No video.
+

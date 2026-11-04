@@ -545,26 +545,37 @@ def swd_fetch():
     Pin reuse and the failure byte stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    lines = (
-        "WRITE 0x08000000",
-        "pin 34 SWDIO",
-        "pin 37 SWCLK",
-        "READ MSP",
-        "READ Reset_Handler",
-        "BOOT0 = 0",
-    )
-    for index, line in enumerate(lines):
+    stages = [
+        ("WRITE IMAGE", True, False, False, False, False),
+        ("SWDIO pin34", True, True, False, False, False),
+        ("SWCLK pin37", True, True, True, False, False),
+        ("READ MSP", True, True, True, True, False),
+        ("READ Reset", True, True, True, True, True),
+        ("BOOT0 = 0", True, True, True, True, True),
+    ]
+    for index, (line, wr, dio, clk, msp, rst) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "SWD FETCH", "BOOT0=0", "AUX GIF  STATIC SVG HAS THE FAILURE")
-        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
-        c.text("pin 34  pin 37", 28, 60, C.CYAN, 1)
-        c.text(line, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("MSP THEN Reset_Handler", 28, 200, C.GREEN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if dio else C.STROKE)
+        c.text("SWDIO", 48, 58, C.CYAN if dio else C.DIM, 1)
+        c.text("pin 34", 40, 84, C.TEXT if dio else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if clk else C.STROKE)
+        c.text("SWCLK", 200, 58, C.GREEN if clk else C.DIM, 1)
+        c.text("pin 37", 192, 84, C.TEXT if clk else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if wr else C.STROKE)
+        c.text("FLASH", 350, 58, C.AMBER if wr else C.DIM, 1)
+        c.text("0x0800..", 336, 84, C.TEXT if wr else C.DIM, 1)
+        c.panel(16, 126, 220, 36, C.PANEL2 if msp else C.PANEL, C.STROKE)
+        c.text("MSP WORD0" if msp else "MSP IDLE", 28, 140, C.TEXT if msp else C.DIM, 1)
+        c.panel(248, 126, 212, 36, C.PANEL, C.GREEN if rst else C.STROKE)
+        c.text("Reset_Handler" if rst else "RH WAIT", 260, 140, C.TEXT if rst else C.DIM, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("MSP THEN Reset_Handler", 16, 240, C.GREEN, 1)
+        c.text("BOOT0 STAYS 0", 16, 262, C.CYAN, 1)
+        c.text("PRINT PIN REUSE ON THE STATIC SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
-
 
 def i2c_addr():
     """START, shift 0x78, then ACK on the 9th clock.
@@ -939,27 +950,37 @@ def boot0_low():
     The high BOOT pin and an optimizer edit stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "pin 34 PA13",
-        "pin 37 PA14",
-        "GROUND",
-        "3.3 V",
-        "pin 44",
-        "BOOT0 = 0",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("PA13 SWDIO", True, False, False, False, False),
+        ("PA14 SWCLK", True, True, False, False, False),
+        ("GND COMMON", True, True, True, False, False),
+        ("3.3 V SENSE", True, True, True, True, False),
+        ("BOOT0 PIN44", True, True, True, True, True),
+        ("BOOT0 = 0", True, True, True, True, True),
+    ]
+    for index, (line, io, clk, gnd, vcc, boot) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "BOOT0", "SWD", "AUX GIF  TARGET")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("0x08000000", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("BOOT0 = 0", 28, 200, C.GREEN, 1)
-        c.text("TARGET SEEN", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if io else C.STROKE)
+        c.text("PA13", 56, 58, C.CYAN if io else C.DIM, 1)
+        c.text("pin 34", 40, 84, C.TEXT if io else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if clk else C.STROKE)
+        c.text("PA14", 208, 58, C.GREEN if clk else C.DIM, 1)
+        c.text("pin 37", 192, 84, C.TEXT if clk else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if boot else C.STROKE)
+        c.text("BOOT0", 350, 58, C.AMBER if boot else C.DIM, 1)
+        c.text("pin 44", 348, 84, C.TEXT if boot else C.DIM, 1)
+        c.panel(16, 126, 220, 36, C.PANEL2 if gnd else C.PANEL, C.STROKE)
+        c.text("GND SHARED" if gnd else "GND ?", 28, 140, C.TEXT if gnd else C.DIM, 1)
+        c.panel(248, 126, 212, 36, C.PANEL, C.GREEN if vcc else C.STROKE)
+        c.text("3.3 V SENSE" if vcc else "VCC ?", 260, 140, C.TEXT if vcc else C.DIM, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("BOOT0 = 0", 16, 240, C.GREEN, 1)
+        c.text("TARGET SEEN AT 0x08000000", 16, 262, C.CYAN, 1)
+        c.text("PRINT HIGH BOOT ON THE STATIC SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
-
 
 def one_slot():
     """Fill 16 KB, 2 KB, and one 0xB800 image up to 0x08010000.
@@ -967,24 +988,35 @@ def one_slot():
     The second image and the oversized SRAM array stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "16 KB",
-        "0x08004000",
-        "2 KB",
-        "0x08004800",
-        "0xB800",
-        "0x08010000",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("BOOT 16 KB", True, False, False, False, False),
+        ("END 0x08004000", True, True, False, False, False),
+        ("GAP 2 KB", True, True, True, False, False),
+        ("APP 0x08004800", True, True, True, True, False),
+        ("LEN 0xB800", True, True, True, True, True),
+        ("END 0x08010000", True, True, True, True, True),
+    ]
+    for index, (line, boot, end16, gap, app, length) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "ONE SLOT", "64 KB", "AUX GIF  APP")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("ONE APP", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("16 KB + 2 KB + 0xB800", 28, 200, C.GREEN, 1)
-        c.text("ENDS AT 0x08010000", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if boot else C.STROKE)
+        c.text("BOOT", 56, 58, C.CYAN if boot else C.DIM, 1)
+        c.text("16 KB", 48, 84, C.TEXT if boot else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if gap else C.STROKE)
+        c.text("GAP", 214, 58, C.GREEN if gap else C.DIM, 1)
+        c.text("2 KB", 208, 84, C.TEXT if gap else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if app else C.STROKE)
+        c.text("APP", 360, 58, C.AMBER if app else C.DIM, 1)
+        c.text("0xB800", 344, 84, C.TEXT if app else C.DIM, 1)
+        c.panel(16, 126, 300, 36, C.PANEL2 if end16 else C.PANEL, C.STROKE)
+        c.text("0x08004000 MARK" if end16 else "BOOT WINDOW", 28, 140, C.TEXT if end16 else C.DIM, 1)
+        c.panel(328, 126, 132, 36, C.PANEL, C.GREEN if length else C.STROKE)
+        c.text("FIT" if length else "...", 370, 140, C.TEXT if length else C.DIM, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("16 KB + 2 KB + 0xB800", 16, 240, C.GREEN, 1)
+        c.text("ENDS AT 0x08010000", 16, 262, C.CYAN, 1)
+        c.text("PRINT SLOT-2 ON THE STATIC SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
 

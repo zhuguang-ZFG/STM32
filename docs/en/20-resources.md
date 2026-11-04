@@ -44,6 +44,13 @@
 ## Where to look for evidence
 
 
+<p align="center">
+  <img src="../../assets/animations/sample-20-evidence-flow.svg" width="720" alt="Evidence: symptom → pick manual → note revision">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Blogs hint; frozen PDFs contract.</sub>
+</p>
+
+
+
 
 <p align="center">
   <img src="../../assets/animations/sample-20-lookup-flow.svg" width="760" alt="Lookup flow from orderable part number through DS, RM, PM, and AN/UM">
@@ -65,6 +72,13 @@ ST's documents are free, and you start from **st.com**. For development, **CubeM
 | ST Community | community.st.com | The official forum. Search results there are usually good |
 
 ### 2. How the manuals are named (this is the part to remember)
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-20-manual-names.svg" width="760" alt="Manual acronyms: RM / DS / ES / PM matched to the question">
+  <br><sub>▲ Drawn for this book. Pick the right PDF before Ctrl+F.</sub>
+</p>
+
 
 **An RM tells you the registers (how to write them), a DS tells you the parameters (what the part is), a PM tells you the package and the pins, an AN tells you how to do a job, and a UM tells you how to use a tool.** For a register bit, open the RM. For electrical limits or the pin definition, open the DS.
 
@@ -100,6 +114,13 @@ Start with the question on the left of the next figure, then choose the first do
 > Search tip: when a Chinese search misses, **English keywords plus the manual number** (for example `RM0008 TIM PWM register`) hit much more often.
 
 ### 4. Open-source firmware libraries, side by side
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-20-lib-compare.svg" width="760" alt="Library compare: SPL / HAL / LL / libopencm3">
+  <br><sub>▲ Drawn for this book. Freeze one library stack per project.</sub>
+</p>
+
 
 **HAL and LL are the official mainstream.** If you want something small, or something that is not tied to one vendor, look at **libopencm3**. For a full RTOS ecosystem, look at **ChibiOS, Zephyr, or RT-Thread**. **FreeRTOS** is the most widely used real-time kernel.
 

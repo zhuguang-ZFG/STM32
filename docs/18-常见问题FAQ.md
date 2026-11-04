@@ -51,6 +51,13 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-18-boot0-flow.svg" width="720" alt="FAQ：BOOT0 拉低后从 Flash 启动">
+  <br><sub>▲ 自绘矢量动画（FA-002）。测 BOOT0 再改程序。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-18-boot-triage.svg" width="760" alt="认不出芯片时先看第 34 脚、第 37 脚和第 44 脚。BOOT0 为 1 且 BOOT1 为 0 时跑的是 0x1FFFF000">
   <br><sub>▲ 自绘。上段是正常情况：第 44 脚 BOOT0 = 0，从 0x08000000 启动，探针接在第 34 脚 PA13 和第 37 脚 PA14，第 7 脚 NRST 上按图 31 接 0.1 µF。中段是两种常见错误：BOOT0 = 1 且 BOOT1 = 0，CPU 跑在 0x1FFFF000 的系统存储器里；或者这四只脚还没查就去改优化等级。第 35 脚是 VSS_2，详见第 01 章。出处是 [DS5319](#source-ds5319-swd) 图 31 和表 5，以及 [RM0008 启动](#source-rm0008-boot)。</sub>
@@ -102,6 +109,13 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 
 ## 一、编译与链接
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-18-link-map.svg" width="760" alt="链接图排查：溢出 vs 错误的 FLASH ORIGIN">
+  <br><sub>▲ 自绘。C8=64 KB/20 KB；先读 region 再改 C。</sub>
+</p>
+
+
 **C1 找不到 `stm32f1xx_hal.h`**
 - **现象**：编译报 `fatal error: stm32f1xx_hal.h: No such file or directory`。
 - **原因**：头文件搜索路径（Include Paths）没加 HAL 的 `Inc` 目录。
@@ -143,6 +157,13 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **解决**：开 `-Os`、`-ffunction-sections -fdata-sections` + `--gc-sections` 去死代码。
 
 ## 二、下载与调试
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-18-hardfault-ladder.svg" width="760" alt="HardFault 梯子：先 CFSR，再信 BFAR">
+  <br><sub>▲ 自绘。bit15=1 才信 BFAR；否则看压栈 PC。</sub>
+</p>
+
 
 **D1 `No target connected` / 连不上目标**
 - **现象**：下载器报找不到目标。
@@ -186,6 +207,13 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 </p>
 
 ## 三、外设
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-18-uart-garbled.svg" width="760" alt="串口乱码清单：波特 · HSE · 交叉线 · 3.3 V">
+  <br><sub>▲ 自绘。先确认 SWS/BRR，再怀疑字符串代码。</sub>
+</p>
+
 
 **P1 GPIO 写了不动作**
 - **现象**：`HAL_GPIO_WritePin` 后引脚无变化。

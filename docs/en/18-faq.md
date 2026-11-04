@@ -51,6 +51,13 @@ Wire the external lamp as in chapter 03: pin 10 PA0 through 270 Ω. Pin 2 PC13 s
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-18-boot0-flow.svg" width="720" alt="FAQ: BOOT0 low, then Flash boot">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Measure BOOT0 before rewriting C.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-18-boot-triage.svg" width="760" alt="When the probe cannot see the chip, look at pins 34, 37, and 44 first. BOOT0 = 1 and BOOT1 = 0 runs from 0x1FFFF000.">
   <br><sub>▲ Drawn for this book. The top band shows the normal case: pin 44 BOOT0 = 0, start at 0x08000000, probe on pin 34 PA13 and pin 37 PA14, and 0.1 µF on pin 7 NRST as in Figure 31. The middle band shows two common mistakes: BOOT0 = 1 with BOOT1 = 0, so the CPU runs system memory at 0x1FFFF000; or changing the optimization level before checking those four pins. Pin 35 is VSS_2; see chapter 01. Sources: [DS5319](#source-ds5319-swd) Figure 31 and Table 5, and [RM0008 boot](#source-rm0008-boot).</sub>
@@ -102,6 +109,13 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 
 ## 1. Build and link
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-18-link-map.svg" width="760" alt="Link-map triage: overflow vs wrong FLASH ORIGIN">
+  <br><sub>▲ Drawn for this book. C8=64 KB/20 KB; read the region line before rewriting C.</sub>
+</p>
+
+
 **C1 Cannot find `stm32f1xx_hal.h`**
 - **Symptom**: the build reports `fatal error: stm32f1xx_hal.h: No such file or directory`.
 - **Cause**: the include path does not contain the HAL `Inc` directory.
@@ -143,6 +157,13 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Fix**: turn on `-Os`, add `-ffunction-sections -fdata-sections`, and pass `--gc-sections` so the linker drops dead code.
 
 ## 2. Download and debug
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-18-hardfault-ladder.svg" width="760" alt="HardFault ladder: CFSR first, then BFAR if valid">
+  <br><sub>▲ Drawn for this book. Trust BFAR only when bit15=1; else use stacked PC.</sub>
+</p>
+
 
 **D1 `No target connected` / the probe cannot see the target**
 - **Symptom**: the programmer says it cannot find the target.
@@ -186,6 +207,13 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 </p>
 
 ## 3. Peripherals
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-18-uart-garbled.svg" width="760" alt="UART garbled checklist: baud · HSE · swap · 3.3 V">
+  <br><sub>▲ Drawn for this book. Confirm SWS/BRR before rewriting string code.</sub>
+</p>
+
 
 **P1 A GPIO write does nothing**
 - **Symptom**: after `HAL_GPIO_WritePin` the pin does not change.

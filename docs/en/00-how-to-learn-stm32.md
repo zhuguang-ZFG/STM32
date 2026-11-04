@@ -44,6 +44,13 @@ When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T
 
 ## BOOT0 changes the fetch alias
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-00-boot-fetch-flow.svg" width="720" alt="BOOT0=0: fetch MSP and Reset from 0x08000000">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). BOOT0→alias→vectors→run.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-00-boot-state.svg" width="760" alt="With BOOT0 at 0 the CPU fetches Flash at 0x08000000 through 0x00000000; with BOOT0 at 1 and BOOT1 at 0 it fetches system memory">
   <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the normal case: the image goes in through SWDIO (PA13) and SWCLK (PA14) at 0x08000000, and BOOT0=0 aliases 0x00000000 onto that Flash. The lower half is BOOT1=0 and BOOT0=1: the CPU still reads 0x00000000, but the alias is system memory at 0x1FFFF000. The flashed image is still in Flash and is simply not fetched. The BOOT pins latch on the 4th rising edge of SYSCLK. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
@@ -98,6 +105,13 @@ If one of those is missing, review that item. You do not need to finish a C or c
 
 ### 2. Three ways to write the firmware
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-00-three-ways.svg" width="760" alt="Three lanes: register / SPL / HAL — pick one the first week">
+  <br><sub>▲ Drawn for this book. One lane the first week; mixing three APIs burns the week.</sub>
+</p>
+
+
 | Dimension | Registers (bare registers) | Standard peripheral library (SPL) | HAL + LL + CubeMX |
 | --- | --- | --- | --- |
 | Abstraction | Lowest: you write `GPIOA->ODR` directly | Middle: `GPIO_SetBits()` | Highest: `HAL_GPIO_WritePin()` |
@@ -111,6 +125,13 @@ If one of those is missing, review that item. You do not need to finish a C or c
 **Suggested path: start with HAL+CubeMX → read the registers so the layer underneath makes sense → use LL where it actually matters.**
 
 ### 3. The three-stage roadmap
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-00-roadmap-gates.svg" width="760" alt="Three-stage gates: blink → bus → system, each measurable">
+  <br><sub>▲ Drawn for this book. Measurable gates; do not skip UART accept for RTOS.</sub>
+</p>
+
 
 #### Stage 1: Beginner (4 weeks) — get the board running
 

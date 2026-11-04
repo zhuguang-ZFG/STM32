@@ -63,6 +63,10 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
 
 ## Timing and state
 
+<p align="center">
+  <img src="../../assets/animations/sample-01-flash-swd-flow.svg" width="720" alt="SWD: program ELF, reset, then fetch vectors">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Program→reset→MSP/Reset.</sub>
+</p>
 | Phase | BOOT / Debug | Address read | State |
 | --- | --- | --- | --- |
 | Reset, BOOT0=0 | Pin 44 BOOT0 = 0 | `0x00000000` aliases `0x08000000` | The physical memory is 64 KB of Flash |
@@ -127,6 +131,11 @@ The build log must answer two questions: which cross-compiler ran, and where it 
 | 5 | `__main` → `main()` | Enter your code |
 
 ### 3. Four development environments
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-env-compare.svg" width="760" alt="Four IDEs, one contract: same ELF at 0x08000000">
+  <br><sub>▲ Drawn for this book. The IDE is a caller; the contract is one ELF and flash script.</sub>
+</p>
 
 | Dimension | Keil MDK-ARM | STM32CubeIDE | VS Code + PlatformIO | CLion + OpenOCD |
 | --- | --- | --- | --- | --- |
@@ -223,6 +232,11 @@ Official entry points: [CLion embedded development](https://www.jetbrains.com/he
 </p>
 
 ### Clearing readout protection
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-01-rdp-unlock.svg" width="760" alt="RDP unlock: level 1 → mass erase → level 0">
+  <br><sub>▲ Drawn for this book. Leaving RDP1 mass-erases; check OBR before rewiring SWD.</sub>
+</p>
 
 The unprotected byte is `0xA5`, not `0xAA`. `0xAA` is how F4 and later series write it; STM32F103C8T6 does not accept it. Clearing protection mass-erases main Flash.
 

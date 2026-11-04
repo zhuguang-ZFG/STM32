@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="SRAM 20 KB budget">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SRAM 20 KB budget</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">stacks + DMA buffers + .bss on F103C8</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">19</text>
+<text x="40" y="86" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Projects die in RAM before Flash: count buffers with the 20 KB ceiling visible.</text>
+<rect x="40" y="120" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="64" y="156" font-size="15" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">.data+.bss</text>
+<text x="64" y="192" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">~2–6 KB</text>
+<text x="64" y="226" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">globals / tables</text>
+<rect x="340" y="120" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="364" y="156" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Main stack</text>
+<text x="364" y="192" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">1–2 KB</text>
+<text x="364" y="226" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">startup default</text>
+<rect x="640" y="120" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="664" y="156" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Task stacks</text>
+<text x="664" y="192" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">N × 256–1024 B</text>
+<text x="664" y="226" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FreeRTOS</text>
+<rect x="40" y="280" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="64" y="316" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">DMA ping-pong</text>
+<text x="64" y="352" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">2 × ADC buf</text>
+<text x="64" y="386" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">scope lab</text>
+<rect x="340" y="280" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="364" y="316" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Heap</text>
+<text x="364" y="352" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">configTOTAL_HEAP</text>
+<text x="364" y="386" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">printf cost</text>
+<rect x="640" y="280" width="280" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="664" y="316" font-size="15" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Headroom</text>
+<text x="664" y="352" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">≥2 KB</text>
+<text x="664" y="386" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">interrupt nesting</text>
+<rect x="40" y="460" width="880" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="494" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Worked example: 2×1024 ADC + 3×512 stacks + 4 KB .bss ≈ 9 KB — fits with margin.</text>
+<text x="56" y="526" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2×4096 ADC + fat printf heap ⇒ HardFault that looks like 'DMA bug'.</text>
+<text x="56" y="558" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Check map: `_end` / `_estack` gap; on RTOS also `xPortGetFreeHeapSize()`.</text>
+<rect x="40" y="620" width="880" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="654" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Trap: copying an F4 128 KB-RAM demo buffer sizes into BluePill.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. SRAM budget card for F103C8 projects.</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

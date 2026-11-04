@@ -41,6 +41,13 @@
 
 ## 先选哪一家
 
+
+<p align="center">
+  <img src="../assets/animations/sample-22-sim-pick-flow.svg" width="720" alt="仿真：先选工具，绿线后再上桌">
+  <br><sub>▲ 自绘矢量动画（FA-002）。选型→证明→移植。</sub>
+</p>
+
+
 想看灯、按键、PWM、OLED，用 Wokwi。想在终端里单步、看 USART1 字节流，用 Renode。两家都吃你自己编译出来的 ELF，仓库里没有预编译固件。
 
 | | Wokwi | Renode |
@@ -59,6 +66,13 @@
 </p>
 
 ## Wokwi：图怎么读
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-22-wokwi-scope.svg" width="760" alt="Wokwi 擅长与边界：逻辑可以，模拟要上桌">
+  <br><sub>▲ 自绘。浏览器绿了还要 BluePill 同款验收。</sub>
+</p>
+
 
 引脚名字不是 `PA0`，而是 Wokwi 板文件里的键。出处是
 [wokwi-boards 的 `boards/stm32-bluepill/board.json`](https://github.com/wokwi/wokwi-boards/blob/main/boards/stm32-bluepill/board.json)：
@@ -99,6 +113,13 @@
 
 ## Renode：两条脚本
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-22-renode-path.svg" width="760" alt="Renode 路径：平台 → ELF → UART 分析">
+  <br><sub>▲ 自绘。先跑仓库两条脚本，再改平台文件。</sub>
+</p>
+
+
 脚本在 [`sim/renode/`](../sim/renode/)。它们做的事只有四件：建机器、加载官方 F103 平台描述、加载 ELF、启动。
 
 | 脚本 | 做什么 |
@@ -123,6 +144,13 @@ uart 示例走 DMA。Renode 的 `stm32f103.repl` 里挂了 DMA 节点，但是�
 </p>
 
 ## 仿真替不了的事
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-22-hw-gap.svg" width="760" alt="仿真与实物差距：哪些必须上桌">
+  <br><sub>▲ 自绘。双轨诚实：结构靠仿真，裕量靠桌面。</sub>
+</p>
+
 
 | 现象 | 原因 | 怎么办 |
 | --- | --- | --- |
