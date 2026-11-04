@@ -55,6 +55,13 @@ Moving samples continuously with DMA is covered in chapter 10 and Appendix D: th
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-09-adc-sar-weights.svg" width="720" alt="SAR weight walk and sample-time budget mechanism">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Weight highlight MSB→LSB, not empty bounce.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-09-adc-sar.svg" width="760" alt="On this chip the ADC clock is 12 MHz and the longest conversion is 21 µs; a sample that is too short leaves the previous voltage on the capacitor">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 10 PA0 = ADC12_IN0, pin 9 VDDA is the reference. ADCCLK = 12 MHz. The top half is a normal conversion: the sample switch closes and opens, and the comparator starts at the MSB. The longest step is 239.5 + 12.5 = 21 µs, and the code times VDDA / 4096 gives the voltage. The bottom half is a sample that is too short: the capacitor has not charged and still holds the previous voltage. The right side marks two more points: ÷4 gives 18 MHz, over 14 MHz, and pin 14 on the C8 has no DAC. Sources: [RM0008 Rev 21 chapter 11](#source-rm0008-adc) and [DS5319 Rev 20 Figure 8](#source-ds5319-adc).</sub>
@@ -105,6 +112,13 @@ Keep three forms of evidence throughout this chapter: input voltage at the pin, 
 
 ### 1. Resolution, reference voltage, and quantization error
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-09-vref-rails.svg" width="760" alt="Code-to-volt math and Vref+/Vrefint caveats">
+  <br><sub>▲ Drawn for this book. Code/4095×Vref+; mark absolute volts EST.</sub>
+</p>
+
+
 An ADC is a ruler with tick marks and no vernier. 12 bits cuts the span from 0 to Vref into 4096 steps, so at Vref = 3.3 V one step is about 0.8 mV. When the input falls between two marks, the ADC can only report the nearest one, so every reading carries up to half a step of error by design. The length of the ruler is Vref. If Vref wobbles, every reading wobbles with it.
 
 At a 3.3 V reference, 1 LSB of a 12-bit ADC is about **0.806 mV**. The ideal quantization error is **±0.5 LSB**.
@@ -129,6 +143,13 @@ full-scale voltage = Vref × (2^N - 1) / 2^N ≈ Vref - 1 LSB
 > On STM32F1, `Vref` is `VDDA` (the analog supply). They share a pin. Only packages with 100 pins or more have a separate `VREF+` / `VREF-`. So **VDDA ripple is a direct error in the reading**. For a precise measurement, either bring in an external reference, or measure Vrefint first and calibrate in software.
 
 ### 2. Successive approximation (SAR): sample-and-hold plus binary compare
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-09-sar-ladder.svg" width="760" alt="12-bit SAR weight ladder and compare actions">
+  <br><sub>▲ Drawn for this book. MSB→LSB weights; read DR after EOC.</sub>
+</p>
+
 
 A SAR ADC plays a guessing game. First it takes a snapshot: the input charges a small capacitor, then the switch opens so the voltage stays put while it compares. Then it guesses from the middle: "is it above Vref/2?" If yes, it writes 1 and keeps guessing in the upper half. If no, it writes 0 and guesses in the lower half. 12 bits means 12 guesses. The snapshot is where things go wrong. If the source resistance is high, the capacitor does not fill in the sample time, and the snapshot comes out blurred.
 
@@ -298,6 +319,13 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 3. **Memory-result reconciliation:** Scan PA0 and PA1 into a 64-half-word circular DMA buffer. Record array order, HT/TC counts, and CNDTR. Then use a 100 kΩ source and compare 100 readings at 1.5 and 239.5 cycles by mean and range.
 
 ### 7. Calibration, the analog watchdog, and injected channels
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-09-sample-time.svg" width="760" alt="ADC sample-time budget versus source impedance">
+  <br><sub>▲ Drawn for this book. ADCCLK≤14 MHz; lengthen SMP for soft sources.</sub>
+</p>
+
 
 Calibration is done once on F1, after power-up and before Start. The analog watchdog's job is "interrupt the CPU only when the value leaves the window." An injected channel can cut in line without disturbing the regular group's DMA.
 

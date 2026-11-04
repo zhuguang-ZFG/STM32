@@ -52,6 +52,13 @@ USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 �
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-10-dma-circular-ht.svg" width="720" alt="环形 DMA 半区所有权与 CNDTR 倒数机制动画">
+  <br><sub>▲ 自绘矢量动画（FA-002）。A/B 半区交替可读；请求线流动。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节；把剩余计数当成字节会切错">
   <br><sub>▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。图下半部分是把同一个读数当成字节时切错的位置。TX 从第 30 脚 PA9 出去。C8 没有 DMA2，配 Stream 5 不会有计数。出处是 [RM0008 Rev 21 第 13 章](#source-rm0008-dma) 和 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
@@ -100,6 +107,13 @@ USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 �
 DMA 不理解“帧”或“采样组”，只按配置搬固定宽度的数据项。CPU 负责解释数组边界；把 CNDTR 当成字节数，是半字和字传输最常见的切片错误。
 
 ### 1. 控制器结构：F1 的「通道」 vs F4 的「流×通道」
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-10-mem2mem-vs-peri.svg" width="760" alt="外设请求 DMA 与内存到内存对照">
+  <br><sub>▲ 自绘决策表。流式外设用 peri；块拷贝用 mem2mem。</sub>
+</p>
+
 
 DMA 是芯片里的搬运工，CPU 告诉它从哪搬、搬到哪、搬多少，它自己在总线上来回跑，搬完再报告。F1 的搬运工按「工位」分工，每个工位只接固定几家外设的活。F4 多了一层：先选工位（流），再在工位上的 8 个插口里选一个（通道），同一家外设能换到别的工位上去。
 
@@ -152,6 +166,13 @@ F103 上查完映射表，「DMA 不动了」的排查也有固定三岔：先�
 </p>
 
 ### 3. 传输方向与工作模式
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-10-dma-phases.svg" width="760" alt="DMA 请求→仲裁→搬运→CNDTR 四阶段">
+  <br><sub>▲ 自绘。环形模式 HT/TC；普通模式数到 0 停。</sub>
+</p>
+
 
 配一次 DMA 要回答几个问题：从外设到内存还是反过来；搬完一轮停下还是绕回开头接着搬；每搬一个，源地址和目标地址要不要往后挪；一次搬几个字节。外设的数据寄存器只有一个地址，所以外设那头不挪，内存那头往后挪，这是最常见的组合。
 
@@ -299,6 +320,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* 后半满 */
 4. **（进阶）双缓冲乒乓**：F4 上开启 `DBM`，两个缓冲区交替，`CT` 位指示当前块，实现零拷贝流式处理。
 
 ### 6. 还剩多少没搬：看 NDTR
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-10-cndtr-ledger.svg" width="760" alt="环形 ADC 缓冲的 CNDTR 现场台账">
+  <br><sub>▲ 自绘。HT/TC 半区所有权；ISR 只置标志。</sub>
+</p>
+
 
 循环模式下“已经到了第几个”不要猜。F1 的剩余计数在 `CNDTR`，HAL 写成 `__HAL_DMA_GET_COUNTER`。
 

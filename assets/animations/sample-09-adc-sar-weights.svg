@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="SAR weight walk">
+<title>SAR weight walk</title>
+<style>
+@keyframes w0-flash{0%,0.00%{opacity:0.06}0.25%,3.00%{opacity:0.35}3.25%,100%{opacity:0.06}}
+.w0{animation:w0-flash 6.5s linear infinite;}
+@keyframes w1-flash{0%,16.67%{opacity:0.06}16.92%,19.67%{opacity:0.35}19.92%,100%{opacity:0.06}}
+.w1{animation:w1-flash 6.5s linear infinite;}
+@keyframes w2-flash{0%,33.33%{opacity:0.06}33.58%,36.33%{opacity:0.35}36.58%,100%{opacity:0.06}}
+.w2{animation:w2-flash 6.5s linear infinite;}
+@keyframes w3-flash{0%,50.00%{opacity:0.06}50.25%,53.00%{opacity:0.35}53.25%,100%{opacity:0.06}}
+.w3{animation:w3-flash 6.5s linear infinite;}
+@keyframes w4-flash{0%,66.67%{opacity:0.06}66.92%,69.67%{opacity:0.35}69.92%,100%{opacity:0.06}}
+.w4{animation:w4-flash 6.5s linear infinite;}
+@keyframes w5-flash{0%,83.33%{opacity:0.06}83.58%,86.33%{opacity:0.35}86.58%,100%{opacity:0.06}}
+.w5{animation:w5-flash 6.5s linear infinite;}
+@keyframes m0-flash{0%,0.00%{opacity:0.06}0.25%,5.00%{opacity:0.35}5.25%,100%{opacity:0.06}}
+.m0{animation:m0-flash 5.0s linear infinite;}
+@keyframes m1-flash{0%,25.00%{opacity:0.06}25.25%,30.00%{opacity:0.35}30.25%,100%{opacity:0.06}}
+.m1{animation:m1-flash 5.0s linear infinite;}
+@keyframes m2-flash{0%,50.00%{opacity:0.06}50.25%,55.00%{opacity:0.35}55.25%,100%{opacity:0.06}}
+.m2{animation:m2-flash 5.0s linear infinite;}
+@keyframes m3-flash{0%,75.00%{opacity:0.06}75.25%,80.00%{opacity:0.35}80.25%,100%{opacity:0.06}}
+.m3{animation:m3-flash 5.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ADC SAR：权重台阶与采样时间预算</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">09</text>
+<rect x="40" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="104" y="132" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b11</text>
+<text x="104" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2048</text>
+<text x="104" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">1.65 V</text>
+<rect x="40" y="100" width="128" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="w0"/>
+<line x1="172" y1="150" x2="169" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="176.00,150.00 169.00,153.50 169.00,146.50" fill="#5e6872" opacity="1"/>
+<rect x="180" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="244" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b10</text>
+<text x="244" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1024</text>
+<text x="244" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0.825</text>
+<rect x="180" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w1"/>
+<line x1="312" y1="150" x2="309" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="316.00,150.00 309.00,153.50 309.00,146.50" fill="#5e6872" opacity="1"/>
+<rect x="320" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="384" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b9</text>
+<text x="384" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">512</text>
+<text x="384" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0.413</text>
+<rect x="320" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w2"/>
+<line x1="452" y1="150" x2="449" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="456.00,150.00 449.00,153.50 449.00,146.50" fill="#5e6872" opacity="1"/>
+<rect x="460" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="524" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b8</text>
+<text x="524" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">256</text>
+<text x="524" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0.206</text>
+<rect x="460" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w3"/>
+<line x1="592" y1="150" x2="589" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="596.00,150.00 589.00,153.50 589.00,146.50" fill="#5e6872" opacity="1"/>
+<rect x="600" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="664" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">…</text>
+<text x="664" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">…</text>
+<text x="664" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">…</text>
+<rect x="600" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w4"/>
+<line x1="732" y1="150" x2="729" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="736.00,150.00 729.00,153.50 729.00,146.50" fill="#5e6872" opacity="1"/>
+<rect x="740" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="804" y="132" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b0</text>
+<text x="804" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<text x="804" y="182" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0.8 mV</text>
+<rect x="740" y="100" width="128" height="100" fill="#7a4e00" opacity="0.12" rx="8" class="w5"/>
+<rect x="40" y="227" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Sample time vs soft sources (ADCCLK ≤ 14 MHz)</text>
+<rect x="40" y="270" width="200" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="140" y="298" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SMP 1.5</text>
+<text x="140" y="322" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">low-R pin only</text>
+<rect x="40" y="270" width="200" height="70" fill="#1b5c45" opacity="0.1" rx="8" class="m0"/>
+<rect x="255" y="270" width="200" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="355" y="298" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SMP 7.5</text>
+<text x="355" y="322" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">general first guess</text>
+<rect x="255" y="270" width="200" height="70" fill="#075e84" opacity="0.1" rx="8" class="m1"/>
+<rect x="470" y="270" width="200" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="570" y="298" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SMP 28.5</text>
+<text x="570" y="322" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">filtered / higher R</text>
+<rect x="470" y="270" width="200" height="70" fill="#7a4e00" opacity="0.1" rx="8" class="m2"/>
+<rect x="685" y="270" width="200" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="785" y="298" font-size="14" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SMP 239.5</text>
+<text x="785" y="322" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">thermistor / soft</text>
+<rect x="685" y="270" width="200" height="70" fill="#5b3a8c" opacity="0.1" rx="8" class="m3"/>
+<rect x="40" y="370" width="820" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="404" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Vin example 1.65 V @ Vref+=3.3 V → mid-scale ~2048. Codes are EST until averaged.</text>
+<text x="56" y="432" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Motion: weight highlight walks MSB→LSB; SMP row shows settling budget, not a bounce.</text>
+<rect x="40" y="490" width="820" height="50" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="520" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pairs with remade adc-sample.gif; static sample-09-sar-ladder freezes the weights.</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · SAR 权重与采样时间，非采集卡截图</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

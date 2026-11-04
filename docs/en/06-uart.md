@@ -48,6 +48,13 @@ When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The b
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-06-uart-baud-wire.svg" width="720" alt="Baud formula, TX/RX crossover, and 8N1 bit-order mechanism">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Math ledger + crossover flow + bit highlight.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-06-uart-frame.svg" width="760" alt="A stop bit sampled as 0 is a framing error, and 0x271 has zero divider error at 72 MHz and 16×">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48 pin 30 PA9 = USART1_TX, pin 31 PA10 = USART1_RX. The frame is 0xA5, LSB first. One bit is about 8.68 µs and 10 bits are about 86.8 µs. BRR `0x271`, 39.0625, 16×, error 0. Offsets: USART_SR 0x00, USART_DR 0x04, USART_BRR 0x08, USART_CR1 0x0C. The top half is a normal receive: stop-bit samples 8, 9, and 10 are 1 and FE stays clear. The bottom half is a framing error: those three samples are 0, FE is set, the byte is still in DR, and reading SR then DR clears it. A note in the lower right says CR1 bits 31:14 are reserved on the F103, so there is no OVER8. Pins: [DS5319 Rev 20 Figure 8](#source-ds5319-usart). Sampling and BRR: [RM0008 Rev 21 chapter 27](#source-rm0008-usart).</sub>
@@ -100,6 +107,13 @@ UART has no clock wire. The receiver samples each bit with its own clock, so fra
 
 ### 1. The frame
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-06-frame-annotated.svg" width="760" alt="Annotated 8N1 frame for byte 0xA5">
+  <br><sub>▲ Drawn for this book. LSB first; ~8.68 µs/bit at 115200. Wire grammar, knowledge track.</sub>
+</p>
+
+
 UART has no clock wire, so each side keeps its own time. Every byte therefore starts with a low start bit, which works like calling out "here it comes". The receiver hears the falling edge, starts counting steps at the agreed rate, and looks at the line in the middle of each step. The 8 data bits go out lowest bit first. The high stop bit at the end returns the line to idle, so the next start bit has an edge to fall from.
 
 One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit + 0.5 / 1 / 1.5 / 2 stop bits
@@ -118,6 +132,13 @@ One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit 
 </p>
 
 ### 2. Baud rate and error
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-06-baud-formula.svg" width="760" alt="USART1/2 BRR examples at 72/36 MHz">
+  <br><sub>▲ Drawn for this book. Same baud string, different PCLK → different BRR.</sub>
+</p>
+
 
 Two people agree to clap 115200 times a second and each keeps their own count. A frame is only 10 bits long. As long as the two clocks drift apart by less than half a step over those 10 bits, the receiver still samples near the middle of each bit. Half a step spread over 10 bits is about 5%. After the margin for sampling and edges, the usual budget is 2% to 3% of combined error. BRR tells the USART how many PCLK cycles make one step.
 
@@ -155,6 +176,13 @@ The three modes differ in where the CPU waits. Blocking mode is standing at the 
 | Fits | Simple debug | A little data of unknown length | A lot of data, or a continuous stream, or a frame of unknown length |
 
 ## Hardware and wiring
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-06-tx-rx-crossover.svg" width="760" alt="MCU TX→adapter RX crossover, common GND, 3V3 only">
+  <br><sub>▲ Drawn wiring rule. TX-TX stays silent; 5V TTL into 3V3 risks damage.</sub>
+</p>
+
 
 | Board | Peripheral | Pin | Notes |
 | --- | --- | --- | --- |

@@ -51,6 +51,13 @@ Many online notes mix in section 8.3.2, the connectivity line: the `OTGFSPRE` bi
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-02-pll-lock-flow.svg" width="720" alt="PLL lock mechanism animation: highlight advances HSE→PLL→SWS">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Lock steps advance; fail path on clock-css GIF / HSE-fail SVG.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-02-clock-tree.svg" width="760" alt="72 MHz needs two Flash wait states; after HSE stops, the system clock returns to HSI at 8 MHz">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 5 PD0 and pin 6 PD1 bring in 8 MHz. PLLMUL=0111, PLLSRC=1, and PLLXTPRE=0 produce 72 MHz. PCLK1 = 36 MHz, PCLK2 = 72 MHz, TIM2–TIM7 = 72 MHz, ADCCLK = 12 MHz, and USBPRE=0 produces 48 MHz. Configured correctly, LATENCY = 2 and MCO on pin 29 PA8 is 36 MHz. The figure also marks the same tree with LATENCY still 0, where fetches go wrong. After HSE stops, SYSCLK returns to HSI at 8 MHz and the NMI handler writes CSSC. Two limits are noted at the edge: ADC at 18 MHz is over 14 MHz, and 72 MHz straight out of MCO is over 50 MHz. Sources: [RM0008 Rev 21 sections 7.3.2 and 7.2.7](#source-rm0008-rcc) and [DS5319 Rev 20 Figure 8](#source-ds5319-clock).</sub>
@@ -99,6 +106,13 @@ ADC sample time is in chapter 09. Source: [RM0008 Rev 21 section 7.3.2](#source-
 Use package, memory, and peripherals to reject unsuitable order codes, then calculate each stage of the clock tree from the manual. Parts in one family can still differ in capacity, pins, and clock configuration.
 
 ### 1. The name, piece by piece
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-02-bus-matrix.svg" width="760" alt="AHB/APB1/APB2 attachment map at full-speed F103">
+  <br><sub>▲ Drawn for this book. Ask which bus a peripheral sits on before baud/timer math.</sub>
+</p>
+
 
 Take **STM32F103C8T6**:
 
@@ -183,6 +197,13 @@ The next figure turns "the board and the code disagree" into one ledger: it is w
 | 1 | 1 | Embedded SRAM | Debug / unbrick (lost when power drops) |
 
 ### 6. Clock tree and dividers
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-02-pll-lock.svg" width="760" alt="Four-step PLL lock ledger: HSE ready, multiply, SWS=PLL, LATENCY=2">
+  <br><sub>▲ Drawn for this book. PLL lock ledger: HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2. Knowledge track, not a scope photo.</sub>
+</p>
+
 
 The chain: `HSE(8MHz) → PLL(×9) → SYSCLK(72MHz) → AHB prescaler → APB1/APB2`
 
@@ -295,6 +316,13 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 3. **Lab 3 (safe divider change):** Change PPRE1 from ÷2 to ÷4 and read back PCLK1 = 18 MHz with a 36 MHz TIM2 clock. Set TIM2_CH1 to PSC = 35 and ARR = 999; PA0 should output 1 kHz. Restore the original configuration afterward.
 
 ### 7. Flash wait states and core clock
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-02-flash-latency.svg" width="760" alt="FLASH_ACR LATENCY bands versus SYSCLK">
+  <br><sub>▲ Drawn for this book. Raise LATENCY before raising SYSCLK; reverse when lowering.</sub>
+</p>
+
 
 | Clock range | Wait states (LATENCY) |
 | --- | --- |

@@ -51,6 +51,13 @@ USART1_TX is still pin 30 PA9 from chapter 06. ADC sample time is in chapter 09.
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-10-dma-circular-ht.svg" width="720" alt="Circular DMA half ownership and CNDTR countdown mechanism">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Alternating A/B ownership; request flow.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-10-dma-cndtr.svg" width="760" alt="Eight half-words with CNDTR at 3 means 5 samples and 10 bytes written; treating the remaining count as bytes cuts the buffer wrong">
   <br><sub>▲ Drawn for this book. STM32F103C8T6 has only DMA1. USART1_TX uses channel 4, the width is a half-word, and the buffer length is 8. With CNDTR = 3, 5 samples and 10 bytes have been written. Half-transfer is at sample 4, 8 bytes. The lower half shows where the slice lands if that same reading is taken as bytes. TX leaves on pin 30 PA9. The C8 has no DMA2, so configuring Stream 5 produces no count. Sources: [RM0008 Rev 21 chapter 13](#source-rm0008-dma) and [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
@@ -99,6 +106,13 @@ The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the co
 DMA understands neither frames nor sample groups. It moves a configured number of fixed-width items, and the CPU interprets the buffer boundary. Treating CNDTR as bytes is the common slicing error for half-word and word transfers.
 
 ### 1. Controller layout: F1 "channels" vs F4 "stream × channel"
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-10-mem2mem-vs-peri.svg" width="760" alt="Peripheral-request DMA versus memory-to-memory">
+  <br><sub>▲ Drawn decision table. Streaming peripherals vs one-shot mem2mem.</sub>
+</p>
+
 
 DMA is the chip's porter. The CPU tells it where to carry from, where to carry to, and how much, and then it runs back and forth on the bus by itself and reports when it is done. On the F1, the porters are split by workstation, and each workstation takes jobs from a fixed set of peripherals. The F4 adds a layer: you first choose a workstation (the stream), then one of its 8 sockets (the channel), so one peripheral can move to another workstation.
 
@@ -151,6 +165,13 @@ After the mapping table, DMA stalls on the F103 also fall into a fixed three bra
 </p>
 
 ### 3. Transfer direction and operating modes
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-10-dma-phases.svg" width="760" alt="DMA request→grant→transfer→CNDTR phases">
+  <br><sub>▲ Drawn for this book. Circular HT/TC; normal stops at zero.</sub>
+</p>
+
 
 Setting up DMA means answering a few questions. Peripheral to memory, or the other way? Stop after one round, or wrap to the start and keep going? After each item, should the source and destination addresses move on? How many bytes per item? A peripheral data register has only one address, so the peripheral side stays put while the memory side moves on. That is the most common combination.
 
@@ -298,6 +319,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)      /* second half full
 4. **(Further) Double-buffer ping-pong**: on F4, turn on `DBM`. Two buffers alternate, and the `CT` bit indicates the current block, so the stream is processed with no extra copy.
 
 ### 6. How much is left: read NDTR
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-10-cndtr-ledger.svg" width="760" alt="Live CNDTR ledger for a circular ADC buffer">
+  <br><sub>▲ Drawn for this book. HT/TC half ownership; ISR only sets a flag.</sub>
+</p>
+
 
 In circular mode, do not guess "which index are we on." On F1 the remaining count is in `CNDTR`. HAL writes it as `__HAL_DMA_GET_COUNTER`.
 

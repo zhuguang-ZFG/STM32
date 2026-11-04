@@ -49,6 +49,13 @@ F103 只有 16 倍过采样。`USART_CR1` 偏移 `0x0C`，位 31:14 保留，没
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-06-uart-baud-wire.svg" width="720" alt="波特率公式与 TX/RX 交叉、8N1 位序机制动画">
+  <br><sub>▲ 自绘矢量动画（FA-002）。公式台账 + 交叉流动 + 位高亮。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-06-uart-frame.svg" width="760" alt="停止位采到 0 就是帧错误，0x271 在 72 MHz、16 倍下误差是 0">
   <br><sub>▲ 自绘。STM32F103C8T6，LQFP48 第 30 脚 PA9 = USART1_TX，第 31 脚 PA10 = USART1_RX。帧是 0xA5，LSB 先发。一位约 8.68 µs，10 位约 86.8 µs。BRR `0x271`，39.0625，16 倍，误差 0。寄存器偏移 USART_SR 0x00、USART_DR 0x04、USART_BRR 0x08、USART_CR1 0x0C。上半部分是正常接收：停止位第 8、9、10 点为 1，FE 不置位。下半部分是帧错误：这三点为 0，FE 置位，字节仍在 DR，先读 SR 再读 DR 才能清除。右下角注明 F103 的 CR1 位 31:14 保留，没有 OVER8。脚位见 [DS5319 Rev 20 图 8](#source-ds5319-usart)，采样与 BRR 见 [RM0008 Rev 21 第 27 章](#source-rm0008-usart)。</sub>
@@ -101,6 +108,13 @@ UART 没有时钟线。接收端用自己的时钟在每一位中间采样，所
 
 ### 1. 帧格式详解
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-06-frame-annotated.svg" width="760" alt="0xA5 的 8N1 帧位注释：空闲/起始/数据/停止">
+  <br><sub>▲ 自绘。LSB first；115200 位宽≈8.68 µs。知识轨线语法。</sub>
+</p>
+
+
 UART 没有时钟线，两边各拿各的表。所以每个字节前面先发一个低电平的起始位，相当于喊一声「开始了」，接收方听到这一声的下降沿就开始按约定的节拍数格子，每格中间看一眼线上是高还是低。8 位数据从最低位开始发，最后一个高电平的停止位让线回到空闲，给下一声「开始了」留出下降沿。
 
 一帧 = 1 起始位 + 8/9 数据位（LSB 先发）+ 可选校验位 + 0.5/1/1.5/2 停止位
@@ -119,6 +133,13 @@ UART 没有时钟线，两边各拿各的表。所以每个字节前面先发一
 </p>
 
 ### 2. 波特率与误差
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-06-baud-formula.svg" width="760" alt="USART1/2 在 72/36 MHz 下的 BRR 算例">
+  <br><sub>▲ 自绘。同一波特率字符串，PCLK 不同则 BRR 不同。</sub>
+</p>
+
 
 两个人约好每秒拍 115200 下，各自数拍子。一帧只有 10 位，只要两边的表在这 10 位里错开不到半格，接收方每次都还能在格子中间附近采样。半格摊到 10 位上大约是 5%，再扣掉采样和边沿的余量，通常要求收发合计误差在 2%～3% 以内。BRR 就是告诉 USART 一格要数多少个 PCLK。
 
@@ -156,6 +177,13 @@ BRR 计算（F1，16 倍过采样）：`USARTDIV = fPCLK / (16 × 波特率)`，
 | 适用 | 简单调试 | 少量不定长数据 | 大量/连续数据、不定长收包 |
 
 ## 硬件与接线
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-06-tx-rx-crossover.svg" width="760" alt="MCU TX→适配器 RX 交叉与共地、仅 3V3">
+  <br><sub>▲ 自绘接线规则。TX-TX 会永远沉默；5V TTL 进 3V3 有风险。</sub>
+</p>
+
 
 | 开发板 | 外设 | 引脚 | 备注 |
 | --- | --- | --- | --- |

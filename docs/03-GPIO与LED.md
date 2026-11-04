@@ -60,6 +60,13 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-03-gpio-bsrr-flow.svg" width="720" alt="BSRR 原子写与 PC13 低有效点灯机制动画">
+  <br><sub>▲ 自绘矢量动画（FA-002）。模式→类型→BSRR→引脚；极性跟原理图。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-03-gpio-led.svg" width="760" alt="STM32F103C8T6 上 PA0 经 270 欧点亮外接灯，PC13 不能输出这股电流">
   <br><sub>▲ 自绘。STM32F103C8T6，LQFP48：PA0 是第 10 脚，PC13 是第 2 脚。上半部分是正确接法：3.3 V 经推挽和 270 Ω 到 LED；260 Ω 是 (3.3 − 2.0) / 0.005 的商。下半部分是把同一接法搬到 PC13 的错误：注 5 只允许 3 mA 灌电流，速度不超过 2 MHz，负载不超过 30 pF。锁序列见 GPIOx_LCKR，偏移 0x18。脚位与电流来自 [DS5319 Rev 20](#source-ds5319-gpio) 表 5、图 8、注 5；锁与 SWD 来自 [RM0008 Rev 21](#source-rm0008-gpio) 第 9.2.7 节和第 9.3.5 节表 36。</sub>
@@ -143,6 +150,13 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 
 ### 4. LED 限流电阻计算
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-03-current-path.svg" width="760" alt="3V3→R→LED→PC13 电流路径估算（标 EST）">
+  <br><sub>▲ 自绘估算（EST）。2.2k≈0.59 mA；330≈3.9 mA。不是实验室读数。</sub>
+</p>
+
+
 `R = (Vcc − Vf) / I`
 
 | 参数 | 典型值 | 说明 |
@@ -155,6 +169,13 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 具体订货号上的算例写在「原理与边界」，并标明它来自例程而不是数据手册。这里只保留公式。
 
 ### 5. GPIO 寄存器（F1）
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-03-moder-map.svg" width="760" alt="PC13 LED 的 MODER/OTYPER/PUPDR/OSPEEDR 与 BSRR 台账">
+  <br><sub>▲ 自绘。四寄存器配置 + BSRR 原子写；禁止 ODR 读改写。</sub>
+</p>
+
 
 | 寄存器 | 作用 |
 | --- | --- |
@@ -288,6 +309,13 @@ PC13_OUT = 0;   /* 直接写 0/1，无需读改写，等效于 ODR */
 3. **实验三（暴露轮询边界）**：在主循环每轮加入 100ms 的阻塞任务，再短按 PA1。记录漏检或响应延迟；删掉阻塞后重测。这个现象留给第 04 章用 EXTI 解决。
 
 ### 6. 按键电路与消抖
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-03-exti-vs-poll.svg" width="760" alt="轮询按键 vs EXTI 边沿：主循环占用与低功耗对照">
+  <br><sub>▲ 自绘对照。GPIO 章先点灯；事件输入在 NVIC/EXTI 章继续。</sub>
+</p>
+
 
 | 接法 | 空闲电平 | 按下电平 | 触发沿 |
 | --- | --- | --- | --- |

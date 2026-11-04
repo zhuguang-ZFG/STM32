@@ -107,12 +107,16 @@ class BookAuditTests(unittest.TestCase):
             "03": (
                 "gpio-blink.svg",
                 "ch03-handdraw.svg",
+                "sample-03-gpio-bsrr-flow.svg",
                 "sample-03-gpio-led.svg",
+                "sample-03-current-path.svg",
+                "sample-03-moder-map.svg",
                 "bluepill-stm32f103c8t6.jpg",
                 "bluepill-stm32f103c8t6-popolon.jpg",
                 "stack-gpio-pc13-led.png",
                 "pinout-bluepill.svg",
                 "led-blink.gif",
+                "sample-03-exti-vs-poll.svg",
             ),
             "04": (
                 "nvic-interrupt-flow.svg",
@@ -144,10 +148,14 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "06": (
                 "uart-frame.svg",
+                "sample-06-uart-baud-wire.svg",
                 "sample-06-uart-frame.svg",
                 "uart-idle.gif",
+                "sample-06-frame-annotated.svg",
                 "uart-bits.gif",
+                "sample-06-baud-formula.svg",
                 "sample-06-baud-triage.svg",
+                "sample-06-tx-rx-crossover.svg",
                 "sample-06-idle-dma.svg",
             ),
             "07": (
@@ -167,19 +175,27 @@ class BookAuditTests(unittest.TestCase):
             ),
             "09": (
                 "adc-sar.svg",
+                "sample-09-adc-sar-weights.svg",
                 "sample-09-adc-sar.svg",
                 "adc-sample.gif",
+                "sample-09-vref-rails.svg",
+                "sample-09-sar-ladder.svg",
                 "sar-adc.gif",
                 "dma-circular.svg",
+                "sample-09-sample-time.svg",
                 "sample-09-adc-triage.svg",
             ),
             "10": (
                 "dma-circular.svg",
+                "sample-10-dma-circular-ht.svg",
                 "sample-10-dma-cndtr.svg",
                 "dma-cndtr.gif",
+                "sample-10-mem2mem-vs-peri.svg",
                 "sample-10-dma-triage.svg",
+                "sample-10-dma-phases.svg",
                 "dma-buffer-ownership.svg",
                 "dma-ring.gif",
+                "sample-10-cndtr-ledger.svg",
             ),
         }
         for chapter_id, assets in expected.items():

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="DMA circular HT/TC">
+<title>DMA circular HT/TC</title>
+<style>
+@keyframes h0-flash{0%,0.00%{opacity:0.06}0.25%,22.50%{opacity:0.28}22.75%,100%{opacity:0.06}}
+.h0{animation:h0-flash 3.6s linear infinite;}
+@keyframes h1-flash{0%,50.00%{opacity:0.06}50.25%,72.50%{opacity:0.28}72.75%,100%{opacity:0.06}}
+.h1{animation:h1-flash 3.6s linear infinite;}
+@keyframes c0-flash{0%,0.00%{opacity:0.06}0.25%,3.20%{opacity:0.35}3.45%,100%{opacity:0.06}}
+.c0{animation:c0-flash 6.0s linear infinite;}
+@keyframes c1-flash{0%,20.00%{opacity:0.06}20.25%,23.20%{opacity:0.35}23.45%,100%{opacity:0.06}}
+.c1{animation:c1-flash 6.0s linear infinite;}
+@keyframes c2-flash{0%,40.00%{opacity:0.06}40.25%,43.20%{opacity:0.35}43.45%,100%{opacity:0.06}}
+.c2{animation:c2-flash 6.0s linear infinite;}
+@keyframes c3-flash{0%,60.00%{opacity:0.06}60.25%,63.20%{opacity:0.35}63.45%,100%{opacity:0.06}}
+.c3{animation:c3-flash 6.0s linear infinite;}
+@keyframes c4-flash{0%,80.00%{opacity:0.06}80.25%,83.20%{opacity:0.35}83.45%,100%{opacity:0.06}}
+.c4{animation:c4-flash 6.0s linear infinite;}
+
+.req{stroke-dasharray:8 12;animation:req-flow 2.2s linear infinite;}@keyframes req-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-20px}}
+@keyframes tok-tx{0%{transform:translateX(0px)}100%{transform:translateX(780px)}}
+.tok{animation:tok-tx 2.2s linear infinite 0s;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 环形缓冲：CNDTR 倒数与 HT/TC 半区所有权</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">10</text>
+<rect x="40" y="100" width="400" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="240" y="140" font-size="16" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Half A  [0 .. N/2)</text>
+<text x="240" y="172" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT: CPU may read A</text>
+<text x="240" y="200" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA writes B</text>
+<rect x="40" y="100" width="400" height="140" fill="#1b5c45" opacity="0.12" rx="8" class="h0"/>
+<rect x="460" y="100" width="400" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="660" y="140" font-size="16" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Half B  [N/2 .. N)</text>
+<text x="660" y="172" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TC: CPU may read B</text>
+<text x="660" y="200" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA reloads + writes A</text>
+<rect x="460" y="100" width="400" height="140" fill="#7a4e00" opacity="0.12" rx="8" class="h1"/>
+<rect x="40" y="267" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="280" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Example N=256 halfwords · CNDTR live</text>
+<rect x="40" y="310" width="155" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="117" y="338" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">256</text>
+<text x="117" y="362" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">armed</text>
+<rect x="40" y="310" width="155" height="70" fill="#075e84" opacity="0.1" rx="8" class="c0"/>
+<rect x="210" y="310" width="155" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="287" y="338" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">192</text>
+<text x="287" y="362" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">filling A</text>
+<rect x="210" y="310" width="155" height="70" fill="#075e84" opacity="0.1" rx="8" class="c1"/>
+<rect x="380" y="310" width="155" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="457" y="338" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">128</text>
+<text x="457" y="362" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT</text>
+<rect x="380" y="310" width="155" height="70" fill="#1b5c45" opacity="0.1" rx="8" class="c2"/>
+<rect x="550" y="310" width="155" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="627" y="338" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">64</text>
+<text x="627" y="362" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">filling B</text>
+<rect x="550" y="310" width="155" height="70" fill="#075e84" opacity="0.1" rx="8" class="c3"/>
+<rect x="720" y="310" width="155" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="797" y="338" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">0→256</text>
+<text x="797" y="362" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TC</text>
+<rect x="720" y="310" width="155" height="70" fill="#1b5c45" opacity="0.1" rx="8" class="c4"/>
+<line x1="60" y1="420" x2="840" y2="420" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1" class="req"/>
+<circle cx="60" cy="420" r="5" fill="#5b3a8c" opacity="1" class="tok"/>
+<text x="60" y="448" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">peripheral request → DMA grant → mem write → CNDTR--</text>
+<rect x="40" y="470" width="820" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="498" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Trap: parse the wrong half after HT/TC; printf inside HT longer than half-buffer time.</text>
+<text x="56" y="520" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISR sets a flag; main drains the finished half. Matches sample-10-cndtr-ledger.</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · 环形 DMA 半区所有权，非逻辑分析仪截图</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

@@ -391,29 +391,37 @@ def clock_css():
 
     The fetch failure stays on the static SVG.
     """
-    g = Gif(W, H, delay=12)
-    lines = (
-        "HSE 8 MHz INTO PLL",
-        "PLL x9 LOCKS",
-        "SYSCLK 72 MHz",
-        "HSE GONE",
-        "PLL OFF",
-        "SYSCLK IS HSI 8 MHz",
-    )
-    for index, line in enumerate(lines):
+    g = Gif(W, H, delay=10)
+    stages = [
+        ("HSE 8 MHz INTO PLL", True, False, "8", "HSI"),
+        ("PLL x9 LOCKS", True, True, "8", "PLL"),
+        ("SYSCLK 72 MHz", True, True, "72", "PLL"),
+        ("HSE GONE", False, True, "72", "PLL"),
+        ("PLL OFF", False, False, "8", "HSI"),
+        ("SYSCLK IS HSI 8 MHz", False, False, "8", "HSI"),
+    ]
+    for index, (line, hse_on, pll_on, mhz, src) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "CLOCK CSS", "HSE", "AUX GIF  STATIC SVG HAS THE FAILURE")
-        c.panel(16, 48, 448, 36, C.PANEL, C.STROKE)
-        c.text("HSE 8 MHz", 28, 60, C.CYAN, 1)
-        c.panel(16, 96, 448, 36, C.PANEL, C.GREEN if index >= 2 else C.STROKE)
-        c.text("72 MHz" if index < 4 else "HSI 8 MHz", 28, 108, C.AMBER, 1)
-        c.text(line, 28, 160, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
-        c.text("CSS RETURNS SYSCLK TO HSI", 28, 214, C.GREEN, 1)
-        c.text("PRINT THE FETCH FAILURE ON THE SVG", 28, 232, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if hse_on else C.STROKE)
+        c.text("HSE", 60, 58, C.CYAN if hse_on else C.DIM, 1)
+        c.text("8 MHz" if hse_on else "OFF", 48, 84, C.TEXT if hse_on else C.DIM, 1)
+        c.panel(170, 42, 140, 70, C.PANEL, C.GREEN if pll_on else C.STROKE)
+        c.text("PLL", 220, 58, C.GREEN if pll_on else C.DIM, 1)
+        c.text("x9" if pll_on else "OFF", 222, 84, C.TEXT if pll_on else C.DIM, 1)
+        c.panel(324, 42, 140, 70, C.PANEL, C.AMBER)
+        c.text("SYSCLK", 350, 58, C.AMBER, 1)
+        c.text(f"{mhz} MHz", 348, 84, C.TEXT, 1)
+        c.line(156, 76, 168, 76, C.STROKE, 2)
+        c.line(310, 76, 322, 76, C.STROKE, 2)
+        c.panel(16, 126, 448, 36, C.PANEL2 if src == "PLL" else C.PANEL, C.STROKE)
+        c.text(f"SOURCE  {src}   SWS={'10' if src == 'PLL' else '00'}", 28, 140, C.TEXT, 1)
+        c.text(line, 16, 184, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 208, C.MUTED, 1)
+        c.text("CSS RETURNS SYSCLK TO HSI", 16, 232, C.GREEN, 1)
+        c.text("PRINT THE FETCH FAILURE ON THE SVG", 16, 252, C.DIM, 1)
         g.add(c)
     return g
-
 
 def pwm_1khz():
     """CNT walks to ARR and the level flips at CCR=500.
@@ -476,29 +484,39 @@ def spi_jedec():
 def adc_sample():
     """One successful sample, then the MSB compare, at 12 MHz.
 
-    The short-sample failure stays on the static SVG.
+    Soft-source settling failures stay on the static SVG.
     """
-    g = Gif(W, H, delay=12)
+    g = Gif(W, H, delay=10)
     notes = (
-        "SWITCH CLOSED",
-        "CAP CHARGES",
-        "SWITCH OPENS",
+        "SAMPLE CAP CHARGING",
         "HOLD",
-        "MSB COMPARE",
-        "ADCCLK 12 MHz",
+        "MSB COMPARE 2048",
+        "KEEP / DROP BIT",
+        "NEXT WEIGHT",
+        "EOC  12 MHz",
     )
+    progress = (1, 2, 3, 4, 5, 6)
     for index, note in enumerate(notes):
         c = Canvas(W, H)
         chrome(c, "ADC SAMPLE", "12 MHZ", "AUX GIF  ONE CONVERSION")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("PA0  ADC12_IN0  VDDA", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("12 MHz SAMPLE THEN MSB", 28, 200, C.GREEN, 1)
-        c.text("PRINT THE SHORT SAMPLE ON THE SVG", 28, 222, C.DIM, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("ADCCLK 12 MHz  SMP then SAR", 28, 52, C.MUTED, 1)
+        c.panel(16, 84, 448, 24, C.BG2, C.STROKE)
+        fill = int(440 * min(1.0, progress[index] / 3))
+        c.fill_rect(18, 86, max(2, fill), 20, C.CYAN if index < 2 else C.GREEN)
+        c.text("SAMPLE" if index < 2 else "CONVERT", 20, 120, C.MUTED, 1)
+        for i, (lab, w) in enumerate((("MSB", 2048), ("b10", 1024), ("b9", 512), ("LSB", 1))):
+            x = 16 + i * 114
+            active = index >= 2 and i <= max(0, index - 2)
+            c.panel(x, 140, 104, 48, C.PANEL, C.AMBER if active else C.STROKE)
+            c.text(lab, x + 12, 152, C.AMBER if active else C.DIM, 1)
+            c.text(str(w), x + 12, 170, C.TEXT if active else C.DIM, 1)
+        c.text(note, 16, 212, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 232, C.MUTED, 1)
+        c.text("MSB FIRST THEN LOWER WEIGHTS", 16, 252, C.GREEN, 1)
+        c.text("PRINT SETTLING MISS ON THE SVG", 16, 270, C.DIM, 1)
         g.add(c)
     return g
-
 
 def swd_fetch():
     """SWD writes Flash, then the CPU reads MSP and Reset_Handler.
@@ -560,7 +578,8 @@ def dma_cndtr():
 
     Treating the remainder as bytes stays on the static SVG.
     """
-    g = Gif(W, H, delay=12)
+    g = Gif(W, H, delay=10)
+    counts = (8, 8, 6, 4, 3, 3)
     notes = (
         "8 HALF-WORDS",
         "CNDTR 8",
@@ -572,15 +591,25 @@ def dma_cndtr():
     for index, note in enumerate(notes):
         c = Canvas(W, H)
         chrome(c, "DMA CNDTR", "DMA1", "AUX GIF  HALF-WORDS")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("channel 4  HALF-WORD", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("5 samples IS 10 bytes", 28, 200, C.GREEN, 1)
-        c.text("PRINT THE BYTE CUT ON THE SVG", 28, 222, C.DIM, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("channel 4  HALF-WORD", 28, 52, C.MUTED, 1)
+        for i in range(8):
+            x = 20 + i * 56
+            filled = i < (8 - counts[index])
+            c.panel(x, 88, 48, 40, C.PANEL2 if filled else C.PANEL,
+                    C.GREEN if filled else C.STROKE)
+            c.text(str(i), x + 18, 104, C.DIM, 1)
+        c.panel(16, 144, 200, 48, C.PANEL, C.AMBER)
+        c.text(f"CNDTR {counts[index]}", 36, 162, C.AMBER, 1)
+        done = 8 - counts[index]
+        c.panel(232, 144, 232, 48, C.PANEL, C.CYAN)
+        c.text(f"DONE {done}  BYTES {done*2}", 248, 162, C.CYAN, 1)
+        c.text(note, 16, 216, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 236, C.MUTED, 1)
+        c.text("5 samples IS 10 bytes", 16, 256, C.GREEN, 1)
+        c.text("PRINT THE BYTE CUT ON THE SVG", 16, 274, C.DIM, 1)
         g.add(c)
     return g
-
 
 def iwdg_1s():
     """A 625 Hz count is fed before it reaches 0.
@@ -615,7 +644,7 @@ def uart_idle():
 
     Framing-error samples stay on the static SVG. This GIF does not replay 0xA5 bit by bit.
     """
-    g = Gif(W, H, delay=12)
+    g = Gif(W, H, delay=10)
     notes = (
         "FRAME END  STOP HIGH",
         "RX STAYS HIGH",
@@ -627,19 +656,25 @@ def uart_idle():
     for index, note in enumerate(notes):
         c = Canvas(W, H)
         chrome(c, "UART IDLE", "8N1", "AUX GIF  86.8 us IS ONE FRAME")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("RX LINE HIGH AFTER THE FRAME", 28, 58, C.MUTED, 1)
+        c.panel(16, 42, 448, 28, C.PANEL, C.STROKE)
+        c.text("RX AFTER ONE FRAME @ 115200", 28, 52, C.MUTED, 1)
         c.hline(24, 120, 432, C.GREEN, 2)
+        for t in range(11):
+            x = 24 + t * 39
+            c.vline(x, 112, 16, C.GRID, 1)
         mark = 24 + int(432 * index / 5)
-        c.vline(mark, 100, 40, C.AMBER, 1)
-        c.text(note, 28, 160, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 184, C.MUTED, 1)
-        c.text("IDLE IS THE LINE HIGH FOR 86.8 us", 28, 214, C.CYAN, 1)
-        c.text("NOT A PROTOCOL LENGTH FIELD", 28, 232, C.AMBER, 1)
-        c.text("FRAMING ERROR STAYS ON THE STATIC SVG", 28, 254, C.DIM, 1)
+        c.vline(mark, 96, 48, C.AMBER, 2)
+        c.circle(mark, 120, 3, C.AMBER, True)
+        c.panel(16, 150, 200, 40, C.PANEL, C.CYAN)
+        c.text("BIT  8.68 us", 28, 166, C.CYAN, 1)
+        c.panel(232, 150, 232, 40, C.PANEL, C.AMBER)
+        c.text("FRAME  86.8 us", 248, 166, C.AMBER, 1)
+        c.text(note, 16, 212, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 232, C.MUTED, 1)
+        c.text("IDLE IS THE LINE HIGH FOR 86.8 us", 16, 252, C.CYAN, 1)
+        c.text("NOT A PROTOCOL LENGTH FIELD", 16, 270, C.AMBER, 1)
         g.add(c)
     return g
-
 
 def iap_jump():
     """Write the two keys in order, then read MSP and Reset_Handler.

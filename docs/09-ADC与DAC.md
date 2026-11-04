@@ -56,6 +56,13 @@ RM0008 第 11.4 节要求上电后做一次校准：ADON 置 1 之后至少等�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-09-adc-sar-weights.svg" width="720" alt="SAR 权重行走与采样时间预算机制动画">
+  <br><sub>▲ 自绘矢量动画（FA-002）。权重高亮 MSB→LSB，不是空转弹跳。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-09-adc-sar.svg" width="760" alt="这颗芯片的 ADC 时钟是 12 MHz，最长转换 21 µs；采样太短时电容上仍是上一次的电压">
   <br><sub>▲ 自绘。STM32F103C8T6，LQFP48 第 10 脚 PA0 = ADC12_IN0，第 9 脚 VDDA 为参考。ADCCLK = 12 MHz。上半部分是一次正常转换：采样开关闭合再断开，比较器从 MSB 开始比较，最长一档 239.5 + 12.5 = 21 µs，码值乘 VDDA / 4096 得到电压。下半部分是采样时间太短：电容没充满，上面还是上一次的电压。右侧另标两处：÷4 得到 18 MHz，超过 14 MHz；C8 的第 14 脚没有 DAC。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc) 和 [DS5319 Rev 20 图 8](#source-ds5319-adc)。</sub>
@@ -106,6 +113,13 @@ ADC 时钟 12 MHz。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。
 
 ### 1. 分辨率、参考电压与量化误差
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-09-vref-rails.svg" width="760" alt="码值换算电压与 Vref+/Vrefint 注意点">
+  <br><sub>▲ 自绘。Code/4095×Vref+；绝对伏特先标 EST。</sub>
+</p>
+
+
 ADC 像一把只有刻度没有游标的尺子。12 位就是把 0 到 Vref 这一段切成 4096 格，Vref = 3.3 V 时一格约 0.8 mV。被测电压落在两条刻线之间时，ADC 只能报离它最近的那条，所以读数天生带着最多半格的误差。尺子本身的长度就是 Vref，Vref 一晃，所有读数跟着晃。
 
 12 位 ADC 在 3.3 V 参考下的最小可分辨电压（1 LSB）约为 **0.806 mV**；理想量化误差为 **±0.5 LSB**。
@@ -130,6 +144,13 @@ V_in      = ADC_Code × Vref / 2^N               (正比式读数)
 > STM32F1 的 `Vref` 就是 `VDDA`（模拟电源），二者共用引脚（100 脚以上封装才有独立 `VREF+`/`VREF-`）。所以 **VDDA 波动 = 读数直接误差**；精密测量要么外接基准，要么先测 Vrefint 做软件校准。
 
 ### 2. 逐次逼近（SAR）原理：采样保持 + 二分比较
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-09-sar-ladder.svg" width="760" alt="12 位 SAR 权重台阶与比较动作">
+  <br><sub>▲ 自绘。MSB→LSB 权重；EOC 后读 DR。动画见 sample-09-adc-sar-weights。</sub>
+</p>
+
 
 SAR ADC 在玩猜数字。先拍一张快照：把输入电压存进一个小电容，然后断开，让它在比较期间不变。接着从一半猜起：「比 Vref/2 大吗？」大就记 1、继续猜上半段，小就记 0、猜下半段。12 位就猜 12 次。快照这一步最容易出事：信号源内阻大，小电容在采样时间里充不满，拍下来的就是一张糊照片。
 
@@ -299,6 +320,13 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 3. **内存结果对账**：PA0/PA1 两通道扫描 + DMA 循环采 64 个半字。记录数组顺序、HT/TC 次数和 CNDTR；再用 100 kΩ 高阻源比较 1.5 与 239.5 周期各 100 次的均值和极差。
 
 ### 7. 校准、模拟看门狗、注入通道
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-09-sample-time.svg" width="760" alt="ADC 采样时间 SMPR 与源阻抗预算">
+  <br><sub>▲ 自绘。ADCCLK≤14 MHz；软源拉长 SMP。</sub>
+</p>
+
 
 校准只在 F1 上电后做一次；模拟看门狗负责“越界才打断 CPU”；注入通道可以插队，不打乱规则组的 DMA。
 
