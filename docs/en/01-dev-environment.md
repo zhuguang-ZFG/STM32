@@ -55,6 +55,11 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
   <img src="../../assets/diagrams/sample-01-swd-vectors.svg" width="760" alt="SWCLK is on pin 37; with BOOT0=0 word 0 is the stack and word 1 is reset; the unprotected byte is 0xA5">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. Pin 34 PA13 = SWDIO and pin 37 PA14 = SWCLK. Pin 35 is VSS_2 and pin 36 is VDD_2. With pin 44 BOOT0 = 0, 0x00000000 aliases 0x08000000. Word 0 is the MSP and word 1 is Reset_Handler. The figure marks two ways to lose the connection: those two pins reused as GPIO, or pin 35 counted as SWCLK. BOOT1=0 and BOOT0=1 fetches 0x1FFFF000, not SRAM. The unprotected byte is 0xA5, not 0xAA. Sources: [DS5319 Rev 20 Table 5](#source-ds5319-swd), [the PM0056 vector table](#source-pm0056-vector), and [PM0075's 0xA5](#source-pm0075-rdp).</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-swd-vectors.png" width="760" alt="Handraw: SWD probe and post-reset vector check (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). SWDIO/SWCLK/GND and SP/Reset in legal ranges after reset; not a wiring photo and not a flash log.</sub>
+</p>
+
 
 <p align="center">
   <img src="../../assets/gif/swd-fetch.gif" width="640" alt="After SWD writes Flash, the CPU reads the MSP and Reset_Handler">
@@ -136,6 +141,11 @@ The build log must answer two questions: which cross-compiler ran, and where it 
   <img src="../../assets/diagrams/sample-01-env-compare.svg" width="760" alt="Four IDEs, one contract: same ELF at 0x08000000">
   <br><sub>▲ Drawn for this book. The IDE is a caller; the contract is one ELF and flash script.</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-four-envs-one-elf.png" width="760" alt="Handraw: four environments, one ELF (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). CubeIDE / Keil / IAR / VS Code+OpenOCD converge on the same ELF/HEX; not an IDE screenshot.</sub>
+</p>
+
 
 | Dimension | Keil MDK-ARM | STM32CubeIDE | VS Code + PlatformIO | CLion + OpenOCD |
 | --- | --- | --- | --- | --- |
@@ -197,6 +207,11 @@ Three paths can carry the .bin into 0x08000000 — and which one to use when —
   <img src="../../assets/diagrams/sample-01-flash-path.svg" width="820" alt="Three paths into Flash at 0x08000000: SWD programming through the debug port, or the ROM bootloader after a reset with BOOT0 = 1 over USART1 ISP or USB DFU">
   <br><sub>▲ Self-drawn. Where to look: the top half is the SWD path — host tools → ST-Link → PA13/PA14 → Flash; the bottom half is the ROM bootloader entered by a reset with BOOT0 = 1, offering USART1 ISP and USB DFU. What it proves: all three paths end at the same address; what differs is the door — SWD bypasses the bootloader, while ISP and DFU exist only inside it. What it does not prove: an available path is not a successful write, and verify compares bytes, not behavior. Source: RM0008 2.4 with AN3155/AN3156; the 64 KB capacity comes from DS5319 Rev 20.</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-three-flash-paths.png" width="760" alt="Handraw: three paths into Flash (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). SWD debugger, UART/USB system bootloader, and custom bootloader; not a programmer UI shot.</sub>
+</p>
+
 
 ### CLion: CMake defines the build; the IDE calls it
 
@@ -237,6 +252,11 @@ Official entry points: [CLion embedded development](https://www.jetbrains.com/he
   <img src="../../assets/diagrams/sample-01-rdp-unlock.svg" width="760" alt="RDP unlock: level 1 → mass erase → level 0">
   <br><sub>▲ Drawn for this book. Leaving RDP1 mass-erases; check OBR before rewiring SWD.</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-rdp-unlock.png" width="760" alt="Handraw: RDP downgrade mass-erase (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Lowering RDP in Option Bytes from Level 1/2 to Level 0 mass-erases main Flash; not a Programmer photograph.</sub>
+</p>
+
 
 The unprotected byte is `0xA5`, not `0xAA`. `0xAA` is how F4 and later series write it; STM32F103C8T6 does not accept it. Clearing protection mass-erases main Flash.
 
@@ -375,11 +395,21 @@ The `Flash Download failed` and `Verification failed` rows usually appear after 
   <img src="../../assets/diagrams/sample-01-flash-triage.svg" width="820" alt="Three triage branches after a successful attach: download failure checks the algorithm and read protection, verify failure checks power and clock speed, and a part that flashes but never runs checks BOOT0 and the vector table base">
   <br><sub>▲ Self-drawn. Where to look: each branch pairs a symptom with checkpoints and a fix — branch one checks the 64 KB medium-density algorithm and the RDP option byte; branch two measures 3V3 before dropping `adapter speed`; branch three checks whether BOOT0 is still high, the first eight bytes of the bin, and the 0x08000000 base. What it proves: after attach succeeds the debug port is innocent, and the failing stage is told by the exact error line. What it does not prove: a clean verify shows byte equality only, and clearing read protection triggers a mass erase. Source: RM0008 2.5 and DS5319 Rev 20; the bin header sample comes from examples/spl-f1-blink.</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-flash-triage.png" width="760" alt="Handraw: flash-fail triage (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Power → SWD wiring → reset/BOOT0 → Option Bytes/RDP → interface choice; not a fault photo.</sub>
+</p>
+
 
 <p align="center">
   <img src="../../assets/diagrams/sample-01-debug-connect.svg" width="820" alt="Three rings to check when the ELF exists but Cortex-Debug cannot attach: PA13/PA14 reused as GPIO, power and ground, then adapter speed in the cfg">
   <br><sub>▲ Drawn for this book. Three rings in order, one checkpoint each. Ring one: pin 34 PA13 and pin 37 PA14 were reused as ordinary GPIO, so the `.ioc` must show SYS → Debug = `Serial Wire` and the generated GPIO init must not list those two pins as outputs; to recover, pull pin 44 BOOT0 high, connect, erase, set `Serial Wire` back, and flash again. Ring two: power and ground, because pin 35 VSS_2 and pin 36 VDD_2 must not float; 3V3 to GND should read 3.3 V and the probe ground must be the board ground, and this lab powers the BluePill over Micro-USB, so the probe's 3.3 V output must not be paralleled onto it. Ring three is the interface and its cfg. `openocd/bluepill-stlink.cfg` carries `transport select hla_swd` and `adapter speed 1000`; the checkpoint is that Cortex-Debug's `configFiles` really loads that file, and the speed is the only line to lower. The figure does not prove the ELF is sound, and it does not cover SWO/ITM. Pins: [DS5319 Rev 20 Table 5](#source-ds5319-swd); the cfg values come from `examples/spl-f1-blink/openocd/bluepill-stlink.cfg`.</sub>
 </p>
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-debug-connect-rings.png" width="760" alt="Handraw: debug connect rings (schematic)">
+  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Physical SWD → adapter → host driver/OpenOCD → IDE session; not a wiring photo.</sub>
+</p>
+
 
 ### 10. Flash download algorithms
 
