@@ -67,6 +67,11 @@ The MB1364 NUCLEO-H743ZI2 family provides a 10/100 Ethernet PHY and integrated R
   <br><sub>▲ Drawn for this book. Reconcile wires before blaming lwIP.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-rmii-signals.png" width="760" alt="Handraw: RMII signal groups (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). REF_CLK 50 MHz, TXD0/1+TX_EN, RXD0/1+CRS_DV, MDC+MDIO, NRST+strap, magnetics+RJ45; link LED is only a clue; if MDIO cannot read the PHY, stop at the hardware layer; not a photo.</sub>
+</p>
+
 
 | Group | Typical signals | First proof |
 | --- | --- | --- |
@@ -118,6 +123,11 @@ Invalidating a narrow, unaligned range can discard unrelated dirty variables sha
   <br><sub>▲ Ownership cutaway (drawn for this book): solid green is TX and dashed violet is RX. Establish who owns the buffer before choosing clean or invalidate; they are not interchangeable refresh operations.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-cache-dma.png" width="760" alt="Handraw: TX clean vs RX invalidate (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). TX cleans full 32 B lines before handoff; RX invalidates after DMA writes; unaligned narrow invalidates also drop dirty data in first/last lines; Ethernet DMA cannot reach DTCM at 0x20000000; not a photo.</sub>
+</p>
+
 ### A pbuf is ownership, not just a pointer
 
 - One owner/reference policy decides when `pbuf_free()` occurs.
@@ -131,6 +141,11 @@ Invalidating a narrow, unaligned range can discard unrelated dirty variables sha
 <p align="center">
   <img src="../../assets/diagrams/sample-27-tcp-framing.svg" width="760" alt="TCP framing and message edges">
   <br><sub>▲ Drawn for this book. A byte stream is not a message — frame it.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-api-context.png" width="760" alt="Handraw: lwIP API call contexts (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). raw API only from the NO_SYS main loop or tcpip_thread; Netconn/sockets from application tasks; never call tcp_write()/udp_send() from Ethernet or timer IRQs; not a photo.</sub>
 </p>
 
 
@@ -187,6 +202,11 @@ One `send()` does not correspond to one `recv()`. A 4 KiB message may arrive in 
 <p align="center">
   <img src="../../assets/diagrams/tcp-byte-stream.svg" width="820" alt="Three application messages split arbitrarily by TCP, delivered in differently sized receive chunks, and reconstructed with a length field">
   <br><sub>▲ Continuous panels (drawn for this book): application writes are on top, network segments in the middle, and receive chunks below. Only application framing can reconstruct messages from the stream.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-tcp-framing.png" width="760" alt="Handraw: defining a frame over a byte stream (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). One send() does not match one recv(); frame carries magic 0x534E, ver+type, payload_len (network byte order), sequence, CRC32; TLS does not replace application checks; not a photo.</sub>
 </p>
 
 ```text
@@ -358,6 +378,11 @@ Before replaying actuator commands, check expiry, current device state, and idem
 <p align="center">
   <img src="../../assets/diagrams/sample-27-link-triage.svg" width="760" alt="Layered network triage: link, ping, TCP, and app evidence are not interchangeable">
   <br><sub>▲ Drawn for this book. Layered network triage. Sources: [RM0433](#source-rm0433), [AN4839](#source-an4839); OSS: [stm32cube-h7-lwip](#source-stm32cube-h7-lwip), [lwip-pitfalls](#source-lwip-pitfalls).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-backoff.png" width="760" alt="Handraw: bounded exponential backoff (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). backoff = min(B_max, B_base×2^n)+jitter with a capped n; no socket while link is down; DNS/TCP/TLS/MQTT count separately; watchdog feeding requires network progress; not a photo.</sub>
 </p>
 
 ## Layered diagnosis and PCAP evidence
