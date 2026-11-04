@@ -28,12 +28,11 @@
 6. 在 F103 上，USB 的低优先级中断和 CAN 接收邮箱 0 共用一个入口。两套一起开的时候，服务函数里要分清是谁在叫。只复制一个空的中断函数，另一边就会丢。
 7. 示例里 CDC 的配置描述符是 67 个字节。HID 的报告描述符也要自己数，别让总长度字段和真实字节数打架。设置地址要等这一次状态传输走完再生效。
 8. 示例用的厂商号是 0x1209，产品号只是实验占位，并没有在 pid.codes 注册。可以在自己的电脑上认设备，不要把这组号印到准备送人的产品上。
-9. 口诀：卡在读描述符，多半是时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点还没准备好。
-10. 合上书，三问。F103 的 D+ 和 D- 在哪两只脚？48 兆时钟从 72 兆怎样得到？CDC 和 HID，谁更像一个串口？
+9. 枚举卡在哪一步就查哪处：卡在读描述符，多半是 48 兆时钟或描述符字段；卡在读配置，多半是总长度；卡在最后一步，多半是端点没准备好。
+10. 示例里的 0x1209 和产品号只是实验占位，没有在 pid.codes 注册。自己的电脑能认出设备就够了，别把这一组数字印到要送人的产品上。
 
 </details>
 <!-- /video:ch14 -->
-
 ## Principle and scope
 
 The clock and the descriptors in this chapter are for the STM32F103C8T6. The USB clock comes from the 72 MHz PLL set up in chapter 02. With `USBPRE = 0` the PLL is divided by 1.5, which gives the 48 MHz full-speed USB needs. With `USBPRE = 1` there is no division, the USB clock is 72 MHz, and the host fails while reading the descriptors. See [RM0008](#source-rm0008-rcc).

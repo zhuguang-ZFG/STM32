@@ -26,13 +26,12 @@
 5. 程序如果不是从默认的闪存起始跑，中断向量表的偏移也要改。只改链接脚本、不改向量表偏移，平时能跑，一进中断就飞到旧地址。
 6. 跳转前至少核对长度和校验。没有校验就跳，等于允许任意一包噪声变成新程序。失败就留在 Bootloader 等重传，单槽没有旧版本可回滚。
 7. 擦除不是调用一下就结束。要等忙标志落下，再去读。写保护如果开着，解锁只解了闪存控制器还不够。手册里的顺序不要跳步。
-8. 口诀：0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票；改保护先备份。擦之前为什么必须解锁？因为锁着的闪存会拒绝你，或者你以为写进去了其实没有。
+8. 两把钥匙别带错门：0xA5 是 F1 的开门钥匙，0xCC 是 F4 的单程票。擦除前必须先解锁，锁着的闪存会拒绝写入，或者让你以为写进去了。
 9. 实验选一页确定不会踩到当前程序的闪存，擦掉、写几个字、再读回来。和程序区叠在一起的实验，做完这章你就没有调试器可以后悔了。
-10. 合上书，三问。擦除之前为什么必须解锁？F103 的 0xA5 表示保护还是不保护？F4 写进 0xCC 之后还能不能恢复调试？
+10. 选页有三条纪律：页址别踩到程序区，先擦干净再写，写完读回核对。三条都守住，升级程序才不会把自己刷死。
 
 </details>
 <!-- /video:ch12 -->
-
 ## Principle and scope
 
 Page size, half-word programming, and the jump in this chapter are all for the STM32F103C8T6. It is medium-density: 64 KB of Flash from `0x08000000` up to but not including `0x08010000`, in 1 KB pages, 64 pages numbered 0 to 63. Page 63 starts at `0x0800FC00`. `0x0801FC00` is the last page of a 128 KB part and lies outside the C8's 64 KB. High-density parts use 2 KB pages, so page addresses must be recomputed on those. See [RM0008 Rev 21 chapter 3](#source-rm0008-flash).
