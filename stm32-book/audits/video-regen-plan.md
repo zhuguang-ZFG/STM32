@@ -1,0 +1,87 @@
+# Video regen plan (Bilibili-ready)
+
+**Date (America/Adak):** 2026-11-04  
+**HEAD at plan write:** see `git rev-parse HEAD` on `main`  
+**Voice prefs:** `zh-CN-XiaoxiaoNeural`, rate **−5%**, pitch **−4Hz**; 1080p; covers/SRT/tags; narration anti-isomorphism; 逼真翔实生动 / 精美有趣.
+
+## Inventory (ch00–28)
+
+### Short films (`assets/video/chNN-*.mp4` via `tools/gen_narrated.py`)
+
+| Range | Resolution / fps (sample) | Notes |
+| --- | --- | --- |
+| ch00–20 | **1920×1080** required by `check_assets` `hd_chapters` | ch03 already anti-iso + 1080p@8fps (gate). ch00/01/02/04/05 still end with shared **口诀 → … → 合上书，三问** template (except ch03). |
+| ch21–28 | **960×540** @8fps (legacy) | Not yet in `hd_chapters`; upgrade later batch or extend HD allowlist intentionally. |
+
+All 29 shorts have mp4+srt+png on disk. Duration contract: 120–240 s.
+
+### Long lessons (`final-videos/chNN/chNN-bilibili-safe.mp4` via `tools/gen_long_lesson.py`)
+
+| Range | storyboard.json | storyboard-rendered + media-report | bilibili-safe mp4 |
+| --- | --- | --- | --- |
+| ch00–15 | yes | yes | yes (1920×1080) |
+| ch16–20 | yes | **missing** | yes (mp4 present; reports stale/absent) |
+| ch21–25 | **no** | no | yes (legacy long mp4; no tracked storyboard) |
+| ch26–28 | **no** | no | **missing** `final-videos/chNN/` |
+
+Voice drift: some media-reports (e.g. ch05/ch15) show `Microsoft Huihui Desktop` SAPI fallback — **must regen with edge-tts Xiaoxiao** for contract voice.
+
+`final-videos/` is gitignored; tracked evidence = `video/chNN/{storyboard.json,storyboard-rendered.json,media-report.json,*.srt,contact-sheet.jpg}` + short assets under `assets/video/`.
+
+## Anti-isomorphism neighbor rule
+
+Do not ship adjacent chapters with the same closing beat template (`口诀` / `合上书，三问`).  
+ch03 is the reference diverse fingerprint (7 beats; no 口诀/合上书).  
+Batch order diversifies neighbors before speak.
+
+## Batch order
+
+| Batch | Scope | Work |
+| --- | --- | --- |
+| **A (next execute)** | Shorts **ch00,01,02,04,05** (skip ch03) | Rewrite `tools/narration.py` endings for unique fingerprints vs neighbors; then `NARRATED_SCALE=2 NARRATED_FONT=C:\Windows\Fonts\msyh.ttc` `python tools/gen_narrated.py --speak NN` each; optional rate/pitch env once wired. |
+| B | Longs **ch00–05** | Ensure storyboard role-order fingerprints differ; `gen_long_lesson.py --speak NN` with Xiaoxiao (no SAPI); refresh media-report. ch03 long already green. |
+| C | Shorts **ch06–15** | Same anti-iso + 1080p speak. |
+| D | Longs **ch06–15** | Regen; fix Huihui-voiced chapters. |
+| E | Shorts **ch16–20** | Confirm 1080p; anti-iso; speak. |
+| F | Longs **ch16–20** | Need rendered+report; `--speak` fills gaps. |
+| G | ch21–28 | Author storyboards (long) + promote shorts to 1080p / extend `hd_chapters` only with intentional Spec note; create `final-videos/ch26–28`. |
+
+## Commands (Windows PowerShell)
+
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+$env:NARRATED_SCALE='2'
+$env:NARRATED_FONT='C:\Windows\Fonts\msyh.ttc'
+# preferred once code reads env (today RATE hardcoded -6%):
+# $env:NARRATED_RATE='-5%'; $env:NARRATED_PITCH='-4Hz'
+python tools/gen_narrated.py --check 00 01 02 04 05
+python tools/gen_narrated.py --speak 00
+# … per chapter …
+Remove-Item Env:NARRATED_SCALE -ErrorAction SilentlyContinue  # check_assets expects default scale for poster math unless FONT skip
+python tools/check_assets.py
+python tools/gen_long_lesson.py --check 00
+python tools/gen_long_lesson.py --speak 00
+python tools/gen_long_lesson.py --report 00
+```
+
+## QA checklist (per chapter)
+
+- [ ] Short: 1920×1080 H.264 + AAC; duration 120–240 s; SRT cue text == narration `say`; voice present.
+- [ ] Short fingerprint ≠ immediate neighbors (heads + closing beat).
+- [ ] Long (when in batch): media-report checks all true; 1080p 30fps; XiaoxiaoNeural; LUFS/peak; contact-sheet; storyboard SHA recorded.
+- [ ] `pytest` / `check_assets` / `slop_lint` / `audit_book` / `build_html --check` zh+en green; **no assertion weakening**.
+- [ ] Covers/SRT/tags present or regenerated via existing `gen_platform_covers` / chapter md as needed.
+
+## Blockers / open
+
+1. **RATE/PITCH:** `gen_narrated.py` hardcodes `RATE="-6%"` and no pitch — wire env defaults to −5% / −4Hz before Batch A speak (small tools change).
+2. **ch21–28 long storyboards** missing — authoring cost before G.
+3. **ch26–28** no `final-videos` dirs yet.
+4. **SAPI fallback chapters** must not count as final Xiaoxiao deliverables.
+5. Full 29×2 regen is multi-hour; stay batched; PDF rebuild already done this session (zh+en).
+
+## Status
+
+- [x] Inventory
+- [x] This plan file
+- [ ] Batch A execute (deferred after bilingual PDF rebuild 2026-11-04)
