@@ -62,6 +62,11 @@ When the three bytes do not match `0xEF 0x40 0x17`, the usual cause is MOSI and 
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-spi-jedec.png" width="760" alt="Handraw: SPI JEDEC read ID (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 0x9F → EF4017; swapped MISO/MOSI fails; not a scope capture.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/spi-jedec.gif" width="640" alt="Chip select falls, 0x9F shifts out, then 0xEF, 0x40, and 0x17 shift in">
   <br><sub>▲ Animated version. It shows only a normal ID read, with SCK at 9 MHz. The printed book has only the static figure above.</sub>
 </p>
@@ -143,12 +148,22 @@ The four modes are not four protocols; they are the two CR1 bits CPOL and CPHA. 
   <br><sub>▲ Drawn for this book. Column heads are CPOL (0 = idle low, 1 = idle high); row heads are CPHA (0 = sample on edge 1, 1 = sample on edge 2). Each cell carries NSS/SCK/MOSI mini traces with dots on the sampling edges. Edge numbering follows CPOL: the first transition after NSS falls is rising when CPOL = 0 and falling when CPOL = 1. CPHA = 1 samples on edge 2, half a clock later — the slave still answers, so the bytes look plausible, which is exactly why a wrong mode is hard to spot. Mode 0 (0,0) is the default: W25Q64 and ST7789 run it; Mode 3 is the other common choice; Modes 1 and 2 are rare. The header lists two SPI1 rates at APB2 72 MHz: BR=000 → 36 MHz, BR=010 → 9 MHz. Sampling-edge and divider definitions: [RM0008 Rev 21 chapter 25](#source-rm0008-spi).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-cpha-modes.png" width="760" alt="Handraw: CPOL/CPHA four modes (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CPOL = idle level; CPHA = sample edge; Mode0 most used; not a photo.</sub>
+</p>
+
 ### 3. Rate and the divider
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-08-br-table.svg" width="760" alt="SPI BR divider table down to the 9 MHz lab point">
   <br><sub>▲ Drawn for this book. SPI1@72 MHz, BR=010 → 9 MHz, matches the JEDEC GIF.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-br-table.png" width="760" alt="Handraw: SPI baud BR divider table (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). SPI1@72 MHz, BR=010 → 9 MHz lab; keep breadboard slower; not a photo.</sub>
 </p>
 
 
@@ -174,6 +189,11 @@ The master supplies the SPI clock, so the speed is the master's bus clock divide
 <p align="center">
   <img src="../../assets/diagrams/sample-08-nss-multi.svg" width="760" alt="Multi-slave topology with independent chip-selects">
   <br><sub>▲ Drawn for this book. Shared SCK/MOSI/MISO; two CS low fights the bus.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-nss-multi.png" width="760" alt="Handraw: multi-slave NSS map (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Shared SCK/MOSI/MISO; one CS per slave; never share CS; not a photo.</sub>
 </p>
 
 
@@ -372,6 +392,11 @@ When SPI "does nothing," check in a fixed order: chip select and MISO first, the
 <p align="center">
   <img src="../../assets/diagrams/sample-08-spi-triage.svg" width="760" alt="SPI triage: MISO stuck reading FF or 00, missing SCK, divider climb">
   <br><sub>▲ Drawn for this book. Branch one: every byte reading 0xFF means nothing is driving MISO (a floating input reads 1) — check that PA4 sits low for the whole transfer (stuck high leaves the slave in Hi-Z; stuck low merges two commands into one frame), and check PA6 (pin 16), the wiring, and power. A 0x00 instead means something holds the line low: MOSI/MISO are swapped, or CPOL/CPHA are wrong. Branch two: no SCK at all — SPE (CR1 bit 6) and MSTR (CR1 bit 2) must both be set; with MSTR = 0 the part waits for an external clock that never comes. Also check the `RCC_APB2ENR` bit 12 gate (CR1 reads back 0x0000 with it off) and that PA5 is alternate-function push-pull (`GPIOA_CRL` nibble 5 = 0xB). Branch three: right at low speed, wrong at high — BR=000 is 72/2 = 36 MHz, which a W25Q64 on jumper wires is not rated for. Repeat the same transaction at BR=010 (9 MHz); if the ID comes back 0xEF 0x40 0x17, the protocol is fine and the limit is the wire — climb 010 → 001 (18 MHz) one step at a time and stop at the first bad read. Registers and divider: [RM0008 Rev 21 chapter 25](#source-rm0008-spi). Pins: [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-spi-triage.png" width="760" alt="Handraw: SPI three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). All 0xFF → CS/MISO; no SCK → SPE/MSTR; high-BR only → lower divider; not a photo.</sub>
 </p>
 
 ## Related resources

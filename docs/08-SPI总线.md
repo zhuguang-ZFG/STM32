@@ -63,6 +63,11 @@ Mode 0 是 CPOL = 0、CPHA = 0：空闲时 SCK 为低，在第一个边沿（上
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch08-spi-jedec.png" width="760" alt="Handraw：SPI JEDEC 读 ID（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。0x9F→EF4017；MISO/MOSI 对调则失败；不是示波器实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/spi-jedec.gif" width="640" alt="片选拉低后移出 0x9F，再移入 0xEF、0x40、0x17">
   <br><sub>▲ 动图版，只演示正常读 ID 的过程，SCK 为 9 MHz。印刷版只有上面的静态图。</sub>
 </p>
@@ -144,12 +149,22 @@ SPI 像两个人隔着桌子换牌。主机手里 8 张，从机手里 8 张，�
   <br><sub>▲ 自绘。列头是 CPOL（0=空闲低、1=空闲高），行头是 CPHA（0=第 1 个边沿采样、1=第 2 个边沿采样），每格画 NSS/SCK/MOSI mini 波形并用圆点标出采样边沿。边沿编号跟着 CPOL 走：NSS 拉低后的第一个跳变，CPOL=0 是上升沿、CPOL=1 是下降沿。CPHA=1 在第 2 个边沿、晚半个时钟采样——从机照样回答，所以字节「看起来像对的」，错模式最难在这里。Mode 0（0,0）最通用，W25Q64、ST7789 都跑它；Mode 3 次之；Mode 1/2 罕见。顶部给出 SPI1 在 APB2 72 MHz 下的两档速率：BR=000 → 36 MHz、BR=010 → 9 MHz。CPOL/CPHA 采样边沿与分频定义见 [RM0008 Rev 21 第 25 章](#source-rm0008-spi)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-cpha-modes.png" width="760" alt="Handraw：CPOL/CPHA 四模式（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。CPOL 定空闲电平，CPHA 定采样边沿；Mode0 最常用；不是实拍。</sub>
+</p>
+
 ### 3. 速率与分频
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-08-br-table.svg" width="760" alt="SPI BR 分频到 9 MHz 实验点">
   <br><sub>▲ 自绘。SPI1@72 MHz，BR=010 → 9 MHz，与 JEDEC GIF 一致。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-br-table.png" width="760" alt="Handraw：SPI 分频表（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。SPI1@72 MHz，BR=010→9 MHz 实验档；面包板勿开太快；不是实拍。</sub>
 </p>
 
 
@@ -175,6 +190,11 @@ SPI 的时钟由主机给，所以速度就是主机的总线时钟除以一个 
 <p align="center">
   <img src="../assets/diagrams/sample-08-nss-multi.svg" width="760" alt="多从机独立 CS 拓扑">
   <br><sub>▲ 自绘。共用 SCK/MOSI/MISO；同时拉低两个 CS 会顶总线。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-nss-multi.png" width="760" alt="Handraw：多从机片选（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。共享 SCK/MOSI/MISO，每片独立 CS；不可两片共一片选；不是实拍。</sub>
 </p>
 
 
@@ -373,6 +393,11 @@ SPI 实验「没反应」时按固定顺序查：先片选与 MISO，再时钟�
 <p align="center">
   <img src="../assets/diagrams/sample-08-spi-triage.svg" width="760" alt="SPI triage: MISO stuck reading FF or 00, missing SCK, divider climb">
   <br><sub>▲ 自绘。岔口一：读回全 0xFF 说明没有器件在驱动 MISO（悬空读 1）——查 PA4 是否在整个事务期间保持低（卡高从机进 Hi-Z，卡低把两条命令并成一帧）、PA6（第 16 脚）接线与供电；读回 0x00 则是有东西把线拉低：MOSI/MISO 对调或 CPOL/CPHA 不对。岔口二：完全没有 SCK——SPE（CR1 位 6）和 MSTR（CR1 位 2）都要置 1，MSTR=0 时芯片在等一个永远不会来的外部时钟；同时查 `RCC_APB2ENR` 位 12 门控（关着时 CR1 读回 0x0000）和 PA5 复用推挽（`GPIOA_CRL` 第 5 半字节 = 0xB）。岔口三：低速对、高速错——BR=000 就是 72/2 = 36 MHz，杜邦线上的 W25Q64 撑不住；先 BR=010（9 MHz）复测同一事务，ID 回读 0xEF 0x40 0x17 说明协议没问题、是线速问题，再按 010 → 001（18 MHz）逐档上探，首个坏读即回退。寄存器与分频见 [RM0008 Rev 21 第 25 章](#source-rm0008-spi)，引脚见 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-spi-triage.png" width="760" alt="Handraw：SPI 三岔口排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。全 0xFF 查 CS/MISO；无时钟查 SPE/MSTR；高速才错则降分频；不是实拍。</sub>
 </p>
 
 ## 相关资源
