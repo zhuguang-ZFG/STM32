@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="CPOL 定空闲电平，CPHA 定第几个边沿采样：四种模式只是 CR1 里的两位">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPOL 定空闲电平，CPHA 定第几个边沿采样：四种模式只是 CR1 里的两位</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 08 · RM0008 Rev 21 第 25 章</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">08</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  SPI1 on APB2 72 MHz   CPOL = CR1 bit 1   CPHA = CR1 bit 0</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPOL sets the idle level; CPHA picks the edge that samples: edge 1 for CPHA = 0, edge 2 for CPHA = 1</text>
+<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BR=000 → 72 / 2 = 36 MHz        BR=010 → 72 / 8 = 9 MHz</text>
+<text x="338" y="170" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPOL = 0 · 空闲低</text>
+<text x="730" y="170" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPOL = 1 · 空闲高</text>
+<text x="40" y="284" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPHA = 0</text>
+<text x="40" y="306" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 1 个边沿采样</text>
+<text x="40" y="496" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPHA = 1</text>
+<text x="40" y="518" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 2 个边沿采样</text>
+<rect x="148" y="186" width="380" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="2"/>
+<text x="162" y="210" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Mode 0</text>
+<text x="514" y="210" font-size="11" fill="#1b5c45" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CPOL=0  CPHA=0  most used</text>
+<line x1="162" y1="220" x2="514" y2="220" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="162" y="240" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NSS</text>
+<text x="162" y="288" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCK</text>
+<text x="162" y="340" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MOSI</text>
+<line x1="200" y1="262" x2="200" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="278" y1="262" x2="278" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="356" y1="262" x2="356" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="434" y1="262" x2="434" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<polygon points="188.00,236.00 194.00,236.00 194.00,248.00 514.00,248.00 514.00,236.00 522.00,236.00" fill="none" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<polygon points="188.00,298.00 200.00,298.00 200.00,270.00 239.00,270.00 239.00,298.00 278.00,298.00 278.00,298.00 278.00,270.00 317.00,270.00 317.00,298.00 356.00,298.00 356.00,298.00 356.00,270.00 395.00,270.00 395.00,298.00 434.00,298.00 434.00,298.00 434.00,270.00 473.00,270.00 473.00,298.00 512.00,298.00 522.00,298.00" fill="none" opacity="1" stroke="#075e84" stroke-width="2"/>
+<circle cx="200" cy="270" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="278" cy="270" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="356" cy="270" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="434" cy="270" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<polygon points="188.00,325.00 200.00,325.00 239.00,325.00 239.00,347.00 317.00,347.00 317.00,325.00 395.00,325.00 395.00,325.00 512.00,325.00 522.00,325.00" fill="none" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="162" y="378" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">sample on edge 1 (rising); shift on edge 2 (falling)</text>
+<rect x="540" y="186" width="380" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="554" y="210" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Mode 2</text>
+<text x="906" y="210" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CPOL=1  CPHA=0</text>
+<line x1="554" y1="220" x2="906" y2="220" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="554" y="240" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NSS</text>
+<text x="554" y="288" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCK</text>
+<text x="554" y="340" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MOSI</text>
+<line x1="592" y1="262" x2="592" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="670" y1="262" x2="670" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="748" y1="262" x2="748" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="826" y1="262" x2="826" y2="351" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<polygon points="580.00,236.00 586.00,236.00 586.00,248.00 906.00,248.00 906.00,236.00 914.00,236.00" fill="none" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<polygon points="580.00,270.00 592.00,270.00 592.00,298.00 631.00,298.00 631.00,270.00 670.00,270.00 670.00,270.00 670.00,298.00 709.00,298.00 709.00,270.00 748.00,270.00 748.00,270.00 748.00,298.00 787.00,298.00 787.00,270.00 826.00,270.00 826.00,270.00 826.00,298.00 865.00,298.00 865.00,270.00 904.00,270.00 914.00,270.00" fill="none" opacity="1" stroke="#075e84" stroke-width="2"/>
+<circle cx="592" cy="298" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="670" cy="298" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="748" cy="298" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="826" cy="298" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<polygon points="580.00,325.00 592.00,325.00 631.00,325.00 631.00,347.00 709.00,347.00 709.00,325.00 787.00,325.00 787.00,325.00 904.00,325.00 914.00,325.00" fill="none" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="554" y="378" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">sample on edge 1 (falling); shift on edge 2 (rising)</text>
+<rect x="148" y="398" width="380" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="162" y="422" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Mode 1</text>
+<text x="514" y="422" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CPOL=0  CPHA=1</text>
+<line x1="162" y1="432" x2="514" y2="432" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="162" y="452" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NSS</text>
+<text x="162" y="500" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCK</text>
+<text x="162" y="552" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MOSI</text>
+<line x1="239" y1="474" x2="239" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="317" y1="474" x2="317" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="395" y1="474" x2="395" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="473" y1="474" x2="473" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<polygon points="188.00,448.00 194.00,448.00 194.00,460.00 514.00,460.00 514.00,448.00 522.00,448.00" fill="none" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<polygon points="188.00,510.00 200.00,510.00 200.00,482.00 239.00,482.00 239.00,510.00 278.00,510.00 278.00,510.00 278.00,482.00 317.00,482.00 317.00,510.00 356.00,510.00 356.00,510.00 356.00,482.00 395.00,482.00 395.00,510.00 434.00,510.00 434.00,510.00 434.00,482.00 473.00,482.00 473.00,510.00 512.00,510.00 522.00,510.00" fill="none" opacity="1" stroke="#075e84" stroke-width="2"/>
+<circle cx="239" cy="510" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="317" cy="510" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="395" cy="510" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="473" cy="510" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<polygon points="188.00,537.00 200.00,537.00 278.00,537.00 278.00,559.00 356.00,559.00 356.00,537.00 434.00,537.00 434.00,537.00 512.00,537.00 522.00,537.00" fill="none" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="162" y="590" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">sample on edge 2 (falling); shift on edge 1 (rising)</text>
+<rect x="540" y="398" width="380" height="204" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="554" y="422" font-size="15" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Mode 3</text>
+<text x="906" y="422" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CPOL=1  CPHA=1</text>
+<line x1="554" y1="432" x2="906" y2="432" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="554" y="452" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NSS</text>
+<text x="554" y="500" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCK</text>
+<text x="554" y="552" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MOSI</text>
+<line x1="631" y1="474" x2="631" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="709" y1="474" x2="709" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="787" y1="474" x2="787" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<line x1="865" y1="474" x2="865" y2="563" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.5" stroke-dasharray="3 3"/>
+<polygon points="580.00,448.00 586.00,448.00 586.00,460.00 906.00,460.00 906.00,448.00 914.00,448.00" fill="none" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<polygon points="580.00,482.00 592.00,482.00 592.00,510.00 631.00,510.00 631.00,482.00 670.00,482.00 670.00,482.00 670.00,510.00 709.00,510.00 709.00,482.00 748.00,482.00 748.00,482.00 748.00,510.00 787.00,510.00 787.00,482.00 826.00,482.00 826.00,482.00 826.00,510.00 865.00,510.00 865.00,482.00 904.00,482.00 914.00,482.00" fill="none" opacity="1" stroke="#075e84" stroke-width="2"/>
+<circle cx="631" cy="482" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="709" cy="482" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="787" cy="482" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<circle cx="865" cy="482" r="3" fill="#7a4e00" opacity="1" stroke="#f1f5f7" stroke-width="1"/>
+<polygon points="580.00,537.00 592.00,537.00 670.00,537.00 670.00,559.00 748.00,559.00 748.00,537.00 826.00,537.00 826.00,537.00 904.00,537.00 914.00,537.00" fill="none" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="554" y="590" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">sample on edge 2 (rising); shift on edge 1 (falling)</text>
+<text x="40" y="644" font-size="16" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">读法  边沿编号跟着 CPOL 走，CPHA 只数第几个</text>
+<rect x="40" y="656" width="880" height="68" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="56" y="684" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">edge 1 is the first transition after NSS falls: rising when CPOL = 0, falling when CPOL = 1</text>
+<text x="56" y="710" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPHA = 1 samples edge 2, half a clock later; the slave still answers, so the bytes look plausible</text>
+<text x="40" y="766" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">底注  Mode 0 (0,0) 最通用</text>
+<rect x="40" y="778" width="880" height="50" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="806" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">W25Q64, ST7789 and most parts here run Mode 0; Mode 3 is the other common choice, Mode 1/2 are rare</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。CPOL/CPHA 采样边沿与分频定义来自 RM0008 Rev 21 第 25 章。</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

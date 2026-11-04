@@ -60,21 +60,23 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "09-ADC与DAC.md": (
-        5,
+        6,
         (
             "adc-sar.svg",
             "sample-09-adc-sar.svg",
             "adc-sample.gif",
             "sar-adc.gif",
             "dma-circular.svg",
+            "sample-09-adc-triage.svg",
         ),
     ),
     ROOT / "docs" / "10-DMA.md": (
-        5,
+        6,
         (
             "dma-circular.svg",
             "sample-10-dma-cndtr.svg",
             "dma-cndtr.gif",
+            "sample-10-dma-triage.svg",
             "dma-buffer-ownership.svg",
             "dma-ring.gif",
         ),

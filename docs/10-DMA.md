@@ -144,6 +144,13 @@ F1 一个外设请求固定绑到某条 DMA 通道；F4 先把请求绑到「流
 
 > 记忆技巧：**F4 里同一外设 TX/RX 往往用不同 Stream，但同一 Channel**；查表时先定 Stream 再定 Channel。
 
+F103 上查完映射表，「DMA 不动了」的排查也有固定三岔：先读 CNDTR，再看缓冲区，最后看中断标志。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-10-dma-triage.svg" width="760" alt="DMA triage: CNDTR stuck, PSIZE/MSIZE/MINC mismatches, IFCR clear then NVIC">
+  <br><sub>▲ 自绘。以 DMA1 通道 5（USART1_RX）、CPAR=0x40013804、CMAR=0x20000100、CNDTR=0x0080 为例。岔口一：CNDTR 停在 0x0080、TCIF5 为 0——`CCR.EN`（位 0）没置，或外设请求根本没来：USART1_RX 硬连线到 DMA1 通道 5（不是 4 也不是 6），需要 `USART_CR3.DMAR = 1` 且每个收到的字节置位 RXNE；配置顺序是 CPAR → CMAR → CNDTR → CCR，EN 最后置 1。岔口二：字节错位一位、或每项都写进 CMAR[0]——`PSIZE`（CCR 位 9:8）与 `MSIZE`（CCR 位 11:10）不一致会截断或填充，`MINC = 0`（CCR 位 7）让存储器地址永不递增；注意 `PINC = 0`（CCR 位 6）配固定数据寄存器（如 USART_DR）是正常配置不是 bug；8 位 USART1_RX 的正确组合是 PSIZE = MSIZE = 00、MINC = 1、PINC = 0，CMAR 按 32 位对齐。岔口三：CNDTR 归零、TCIF5 已置位但 ISR 不跑——先向 `IFCR` 的 CTCIF5（通道 5 是位 17）写 1 清标志（写 0 无效），再查 `TCIE`（CCR 位 1）与 NVIC 里的 DMA1_Channel5 使能；重新武装前把四个标志全清一遍。底注：F103 只有 DMA1（7 通道）；CNDTR 计配置宽度的数据项数而不是字节——8 位 × 0x0080 = 128 B，16 位同值 = 256 B。通道映射与 CR/IFCR 语义见 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)，DMA1 结构见 [DS5319 Rev 20 第 2.3.13 节](#source-ds5319-dma)。</sub>
+</p>
+
 ### 3. 传输方向与工作模式
 
 配一次 DMA 要回答几个问题：从外设到内存还是反过来；搬完一轮停下还是绕回开头接着搬；每搬一个，源地址和目标地址要不要往后挪；一次搬几个字节。外设的数据寄存器只有一个地址，所以外设那头不挪，内存那头往后挪，这是最常见的组合。

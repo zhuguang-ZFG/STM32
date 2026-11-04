@@ -123,6 +123,13 @@ SPI 像两个人隔着桌子换牌。主机手里 8 张，从机手里 8 张，�
 
 > W25Q64 的本章示例使用 Mode 0。其他器件必须按数据手册选择 CPOL/CPHA；读 ID 全 0 或全 FF 时，同时检查模式、片选和 MISO 接线。
 
+四种模式不是四套协议，只是 CR1 里 CPOL、CPHA 两位的组合——会数边沿，就会选模式。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-cpha-modes.svg" width="760" alt="CPOL/CPHA 2x2 matrix with mini NSS/SCK/MOSI waveforms and sampling edges">
+  <br><sub>▲ 自绘。列头是 CPOL（0=空闲低、1=空闲高），行头是 CPHA（0=第 1 个边沿采样、1=第 2 个边沿采样），每格画 NSS/SCK/MOSI mini 波形并用圆点标出采样边沿。边沿编号跟着 CPOL 走：NSS 拉低后的第一个跳变，CPOL=0 是上升沿、CPOL=1 是下降沿。CPHA=1 在第 2 个边沿、晚半个时钟采样——从机照样回答，所以字节「看起来像对的」，错模式最难在这里。Mode 0（0,0）最通用，W25Q64、ST7789 都跑它；Mode 3 次之；Mode 1/2 罕见。顶部给出 SPI1 在 APB2 72 MHz 下的两档速率：BR=000 → 36 MHz、BR=010 → 9 MHz。CPOL/CPHA 采样边沿与分频定义见 [RM0008 Rev 21 第 25 章](#source-rm0008-spi)。</sub>
+</p>
+
 ### 3. 速率与分频
 
 SPI 的时钟由主机给，所以速度就是主机的总线时钟除以一个 2 的幂。分频只有 2 到 256 这八档，想要 10 MHz 是凑不出来的，只能在 9 MHz 和 18 MHz 之间选。速度上限多半不在芯片，而在线：杜邦线上跑 18 MHz 以上，波形已经圆得像正弦波了。
@@ -327,6 +334,13 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | 速率 | 高 | 中 | 中 |
 | 多设备 | 每设备一 CS | 地址寻址 | 点对点 |
 | 全双工 | 是 | 半双工 | 是 |
+
+SPI 实验「没反应」时按固定顺序查：先片选与 MISO，再时钟，最后才怀疑速度。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-08-spi-triage.svg" width="760" alt="SPI triage: MISO stuck reading FF or 00, missing SCK, divider climb">
+  <br><sub>▲ 自绘。岔口一：读回全 0xFF 说明没有器件在驱动 MISO（悬空读 1）——查 PA4 是否在整个事务期间保持低（卡高从机进 Hi-Z，卡低把两条命令并成一帧）、PA6（第 16 脚）接线与供电；读回 0x00 则是有东西把线拉低：MOSI/MISO 对调或 CPOL/CPHA 不对。岔口二：完全没有 SCK——SPE（CR1 位 6）和 MSTR（CR1 位 2）都要置 1，MSTR=0 时芯片在等一个永远不会来的外部时钟；同时查 `RCC_APB2ENR` 位 12 门控（关着时 CR1 读回 0x0000）和 PA5 复用推挽（`GPIOA_CRL` 第 5 半字节 = 0xB）。岔口三：低速对、高速错——BR=000 就是 72/2 = 36 MHz，杜邦线上的 W25Q64 撑不住；先 BR=010（9 MHz）复测同一事务，ID 回读 0xEF 0x40 0x17 说明协议没问题、是线速问题，再按 010 → 001（18 MHz）逐档上探，首个坏读即回退。寄存器与分频见 [RM0008 Rev 21 第 25 章](#source-rm0008-spi)，引脚见 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
+</p>
 
 ## 相关资源
 

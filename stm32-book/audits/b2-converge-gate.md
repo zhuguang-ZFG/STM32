@@ -1,6 +1,6 @@
 # B2 合流硬门审计（§10.2）——ch00 / 01 / 02 / 04 / 05
 
-状态：2026-11-04，基线 main `a17536c`。本轮新增 11 张自绘静态 SVG（ch00×3、ch01×4、ch02×2、ch04×1、ch05×1），2 处既有图移位纠偏（ch02 hse-fail→§6、ch04 gpio-input-interrupt→§3），1 处布局修复（flash-path ISP/DFU 盒 84→60、host 行 574→596，`<text>` 内文不变，text_hash 不变），5 章 zh/en 同步嵌入与出处卡维护，测试锁扩展。全部门验通过（见「验证记录」）。
+状态：2026-11-04，基线 main `a17536c`。本轮新增 11 张自绘静态 SVG（ch00×3、ch01×4、ch02×2、ch04×1、ch05×1），2 处既有图移位纠偏（ch02 hse-fail→§6、ch04 gpio-input-interrupt→§3），1 处布局修复（flash-path ISP/DFU 盒 84→60、host 行 574→596，`<text>` 内文不变，text_hash 不变），5 章 zh/en 同步嵌入与 sources 清单维护，测试锁扩展。全部门验通过（见「验证记录」）。
 
 ## 已完成前置
 
@@ -12,8 +12,8 @@
 
 | 章 | 改前缺陷 | 本轮处置 |
 |---|---|---|
-| ch00 | 缺 §15.3 OSS 出处卡（project-examples 未登记）；无图区间超中章上限 | 补 3 张自绘图（boot-triage / accept-gate / learn-loop）+ sources 追加 project-examples |
-| ch01 | 锚点 5 低于 overlay 长章下限 9；缺烧录通路对比图与下载排错图；无照片引用（真证轨缺口，如实登记，不以 AI 图伪装实拍） | 补 flash-path（对比型）+ flash-triage（排错型），锚点 5→9；sources 既有卡已覆盖，未动 |
+| ch00 | 缺 §15.3 OSS source 登记（project-examples 未登记）；无图区间超中章上限 | 补 3 张自绘图（boot-triage / accept-gate / learn-loop）+ sources 追加 project-examples |
+| ch01 | 锚点 5 低于 overlay 长章下限 9；缺烧录通路对比图与下载排错图；无照片引用（真证轨缺口，如实登记，不以 AI 图伪装实拍） | 同批先补 debug-connect + build-accept 至 7，再补 flash-path（对比型）+ flash-triage（排错型）至 9；sources 既有卡已覆盖，未动 |
 | ch02 | 缺 OSS 登记（spl-f1-mirror 未入卡）；hse-fail / boot-mode 图嵌错节（语义错位） | 双图移位纠偏（hse-fail→§6 时钟树、boot-mode→§5 启动模式）+ sources 追加 spl-f1-mirror |
 | ch04 | gpio-input-interrupt 动画嵌 §4 无上下文 | 动画移至 §3 中断响应全流程；freertos-priority / project-examples 既有卡满足 §15.3 |
 | ch05 | 缺排错图；project-examples 未登记 | 补 sample-05-pwm-debug（§3 后，PSC=71/ARR=999→1 kHz 勘误口径随图注落盘）+ sources 追加 project-examples |
@@ -21,7 +21,7 @@
 
 ## Sepia 删除 / 回退检查
 
-本轮零删除：仅新增图、新增出处卡、移动 2 处既有图位置、1 处布局修复。无测试/断言弱化；契约守卫只扩展：资产清单 172→183、ch01 锚点锁 7→9、ch00/01/05 计数元组扩展、compass 锁扩 4 处（test_sample_chapters:243-250、test_batch2:268、test_batch3:318/406）。
+本轮零删除：仅新增图、新增 source 登记、移动 2 处既有图位置、1 处布局修复。无测试/断言弱化；契约守卫只扩展：资产清单 172→183、ch01 锚点锁随批次推进 7→9（先扩 debug-connect/build-accept，再扩 flash-path/flash-triage）、ch00/01/05 计数元组扩展、compass 锁扩 4 处（test_sample_chapters:243-250、test_batch2:268、test_batch3:318/406）。
 
 ## §15.2 锚点下限与无图区间登记
 
@@ -226,7 +226,7 @@ ch01（长章，定性口径）：四段区间 1,867 / 1,519 / 1,374 / 1,000。�
 - [x] 改章前缺陷清单 + 三表（§15.4）×5 章落盘（本文档）
 - [x] §15.2 档位登记：旧→新下限、实测锚点、8 处例外（理由+补偿锚点）、ch01 长章定性覆盖
 - [x] §15.1-23 三类型、§15.1-24 每章 ≥1 可播放动画
-- [x] §15.3 每章 ≥1 GitHub OSS 出处卡
+- [x] §15.3 每章 ≥1 个 GitHub OSS source（登记于 sources）
 - [x] 知识轨哈希登记（11 张，text_hash 口径与测试锁一致）
 - [x] 测试锁扩展且全绿（38 定向 + 178 全量，零断言弱化）
 - [x] 双语 HTML 契约门 + 资产链接门通过

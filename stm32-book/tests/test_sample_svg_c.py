@@ -109,11 +109,18 @@ diagrams/sample-04-exception-stack.svg 960x780 7528 bc969846347daca2048bf5b35513
 diagrams/sample-04-exti-triage.svg 960x880 12658 5b9031358e707823f20bd002178ccfcd2e70917da6a0731b0c8d895398400999
 diagrams/sample-05-pwm-1khz.svg 960x820 6845 48d92b03384bf3ac51e52c7d54c8a2bedd68b1a20ec405c21fbbc9287999217e
 diagrams/sample-05-pwm-debug.svg 960x920 12147 90918e07f70e4c221e85dbeea40550c1a71850eba141baa1f8e9087e45610b6d
+diagrams/sample-06-baud-triage.svg 960x880 9012 9eaf42b59083f53333adf8bef5fce9ac78536d469a0b29fbc77eb793975e73f1
+diagrams/sample-06-idle-dma.svg 960x840 15348 8a0b80e12adc2e955f0105a482b40b4f8c997752424ad1b542b6b77021d5448f
 diagrams/sample-06-uart-frame.svg 960x820 12448 2da90d7d086d7eabf7a11f50cbe53f3387f1b0e3ed8b97b7781ff4a41be516ee
 diagrams/sample-07-i2c-addr.svg 960x920 6620 5d8aeb4df50370a3885d46d17f086e582dab7875ce914911efb247b07e8d7e5a
+diagrams/sample-07-i2c-triage.svg 960x880 15555 e883d49128b6ad56b242d8f1178dc70d67f1014bfb42f958c41bf34677d54a1d
+diagrams/sample-08-cpha-modes.svg 960x880 18777 a8832f9b9717be139e721840e6c634b56218617fdee98684cd53f5365869290e
 diagrams/sample-08-spi-jedec.svg 960x860 6850 717ba67544302d5517bffdbfe23deec414d5f52c49993a9eba0260fd4952fd4c
+diagrams/sample-08-spi-triage.svg 960x880 9199 b40d75cbc76bf1d00c1bcf6059a6a9acb05148a6a2465e03131bd1dfbbd68be5
 diagrams/sample-09-adc-sar.svg 960x860 6656 3d193aa429c4f707ea7f82cf4e6e44c2f128bc032e59d43a7e2334c5882dc65e
+diagrams/sample-09-adc-triage.svg 960x880 11279 3f34454191defda44ef0b893ae5d1584b2ce13c9baa2ade07c54bd31089c8dbe
 diagrams/sample-10-dma-cndtr.svg 960x900 6552 6a887f553de8b9d8744527a71b0c86217ccbea32b2f4f65ff3519f519cfb92f5
+diagrams/sample-10-dma-triage.svg 960x880 10284 1c7e9f8d07636051dfe5a5d33ddbaa9634b8d9c4968e729c141748fb93e5262d
 diagrams/sample-11-iwdg-1s.svg 960x980 7169 226d77d6f316c4b5ce1a1580507c95b96d69a8c3a35f7601475794dc279b18eb
 diagrams/sample-12-iap-map.svg 960x980 7450 017cfc1406a5ad4843bcdf80666eaa5636e3186fa60008f61cef514cf26f60dd
 diagrams/sample-13-can-bit.svg 960x980 7175 0e1da8a54f67b46946b959799eb301cf07baa63b6494fd196c00cc6514654cc8
@@ -417,7 +424,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(183, len(found))
+        self.assertEqual(190, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

@@ -596,7 +596,7 @@ class Batch3AdcChapterTests(unittest.TestCase):
         }
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc"]
+        compass = ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc", "project-examples"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["09-ADC与DAC.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["09-adc-dac.md"]["sources"])
         for source_id, (scope_zh, scope_en) in scopes.items():

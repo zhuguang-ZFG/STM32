@@ -122,6 +122,13 @@ The four modes settle two questions. CPOL says where the hand rests between taps
 
 > This W25Q64 example uses Mode 0. Other devices require the CPOL/CPHA pair in their datasheet. If an ID is all 0s or all FFs, check mode, chip select, and MISO wiring together.
 
+The four modes are not four protocols; they are the two CR1 bits CPOL and CPHA. Count edges correctly and the mode picks itself.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-cpha-modes.svg" width="760" alt="CPOL/CPHA 2x2 matrix with mini NSS/SCK/MOSI waveforms and sampling edges">
+  <br><sub>▲ Drawn for this book. Column heads are CPOL (0 = idle low, 1 = idle high); row heads are CPHA (0 = sample on edge 1, 1 = sample on edge 2). Each cell carries NSS/SCK/MOSI mini traces with dots on the sampling edges. Edge numbering follows CPOL: the first transition after NSS falls is rising when CPOL = 0 and falling when CPOL = 1. CPHA = 1 samples on edge 2, half a clock later — the slave still answers, so the bytes look plausible, which is exactly why a wrong mode is hard to spot. Mode 0 (0,0) is the default: W25Q64 and ST7789 run it; Mode 3 is the other common choice; Modes 1 and 2 are rare. The header lists two SPI1 rates at APB2 72 MHz: BR=000 → 36 MHz, BR=010 → 9 MHz. Sampling-edge and divider definitions: [RM0008 Rev 21 chapter 25](#source-rm0008-spi).</sub>
+</p>
+
 ### 3. Rate and the divider
 
 The master supplies the SPI clock, so the speed is the master's bus clock divided by a power of 2. The divider has only eight steps, from 2 to 256, so 10 MHz is not available: you choose between 9 MHz and 18 MHz. The real speed limit is usually the wiring rather than the chip. On jumper wires above 18 MHz, the square wave has already rounded off into something like a sine.
@@ -326,6 +333,13 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | Speed | High | Medium | Medium |
 | Several devices | One CS per device | Addressed | Point to point |
 | Full duplex | Yes | Half duplex | Yes |
+
+When SPI "does nothing," check in a fixed order: chip select and MISO first, the clock second, and only then suspect the speed.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-spi-triage.svg" width="760" alt="SPI triage: MISO stuck reading FF or 00, missing SCK, divider climb">
+  <br><sub>▲ Drawn for this book. Branch one: every byte reading 0xFF means nothing is driving MISO (a floating input reads 1) — check that PA4 sits low for the whole transfer (stuck high leaves the slave in Hi-Z; stuck low merges two commands into one frame), and check PA6 (pin 16), the wiring, and power. A 0x00 instead means something holds the line low: MOSI/MISO are swapped, or CPOL/CPHA are wrong. Branch two: no SCK at all — SPE (CR1 bit 6) and MSTR (CR1 bit 2) must both be set; with MSTR = 0 the part waits for an external clock that never comes. Also check the `RCC_APB2ENR` bit 12 gate (CR1 reads back 0x0000 with it off) and that PA5 is alternate-function push-pull (`GPIOA_CRL` nibble 5 = 0xB). Branch three: right at low speed, wrong at high — BR=000 is 72/2 = 36 MHz, which a W25Q64 on jumper wires is not rated for. Repeat the same transaction at BR=010 (9 MHz); if the ID comes back 0xEF 0x40 0x17, the protocol is fine and the limit is the wire — climb 010 → 001 (18 MHz) one step at a time and stop at the first bad read. Registers and divider: [RM0008 Rev 21 chapter 25](#source-rm0008-spi). Pins: [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
+</p>
 
 ## Related resources
 

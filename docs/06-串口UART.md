@@ -137,6 +137,13 @@ BRR 计算（F1，16 倍过采样）：`USARTDIV = fPCLK / (16 × 波特率)`，
 
 > 这颗 STM32F103C8T6 的 USART_CR1 位 31:14 保留，没有 OVER8。8 倍过采样要换到带这个位的系列。F103 上不要为了高频误码去开 OVER8，先核对 72 MHz 和 BRR `0x271`。`HAL_UART_Init` 仍按 16 倍算 BRR。
 
+乱码、没输出、丢字节是串口实验最常见的三种「坏了」，下面这张图把它们收敛成三条岔路，每条只查一个根因。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-06-baud-triage.svg" width="760" alt="USART baud and wiring triage: baud formula, TX/RX crossing, clock gate, ORE clearing">
+  <br><sub>▲ 自绘。岔口一：`USARTDIV = fPCLK / (16 × baud)`，USART1 在 PCLK2 72 MHz、115200 下是 39.0625，BRR `0x271`，误差 0；若 HSE 启动失败回落 HSI 8 MHz 而代码仍按 72 MHz 分频，线上只剩 12800 波特，慢 9 倍——先看 `RCC_CFGR` 的 SWS 位（00=HSI、01=HSE、10=PLL）再谈改 BRR。岔口二：PA9（第 30 脚）必须接对方 RX，TX 对 TX 看着正常但两端都收不到；USART1 的门是 `RCC_APB2ENR` 位 14，USART2/3 是 `RCC_APB1ENR` 位 17/18，门没开时写 BRR 无处落地、SR 读回 0x00C0。岔口三：下一个字来时 RXNE 还没读走，移位寄存器被覆盖，ORE 置位；清除顺序是先读 SR（0x00）再读 DR（0x04），只读 DR 清不掉。脚位见 [DS5319 Rev 20 图 8](#source-ds5319-usart)，USARTDIV 与 ORE 清除见 [RM0008 Rev 21 第 27 章](#source-rm0008-usart)。</sub>
+</p>
+
 ### 3. 三种收发方式对比
 
 三种方式的区别是 CPU 守在哪里。阻塞模式像站在门口等快递，等到为止什么都不干。中断模式是每来一个字节按一次门铃，115200 波特下每秒响一万多次。DMA 是请了个管家，字节直接搬进数组，整包收完或线空闲了才叫你一声。
@@ -323,6 +330,13 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 ```
+
+轮询的下一步是「DMA 搬字节、IDLE 划帧」：CPU 整帧只醒一次，帧长从 CNDTR 差值直接算出来。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-06-idle-dma.svg" width="760" alt="UART IDLE-line receive with DMA ring buffer and frame-length arithmetic">
+  <br><sub>▲ 自绘。`DMAR = CR3 bit 6` 让每次 RXNE 都触发 DMA 请求，DMA1 通道 5（USART1_RX 的固定映射）把字节搬进 256 项环形缓冲（CIRC=1，CNDTR 从 256 递减、归零回卷）；线上保持高满一帧——115200 8N1 下 10 位约 86.8 µs——IDLE（SR 位 4）置位，`IDLEIE = CR1 bit 4` 把它变成中断；ISR 里 `len = pos − CNDTR`（`pos` 为上一帧 ISR 保存的 CNDTR，回卷则再加 256）就是这一帧的长度，读 SR 再读 DR 这对操作顺带清掉 ORE。右下对比：轮询收 10 字节要 20 次 SR/DR 访问且 CPU 全程占用；IDLE+DMA 整帧只进一次中断。注意 IDLE 只说明线路空闲满一帧，不等于对方一包结束。IDLE 判定见 [ST 社区经验帖](#source-st-uart-idle)，通道映射与寄存器见 [RM0008 Rev 21 第 27、13 章](#source-rm0008-usart)。</sub>
+</p>
 
 ### 6. 串口助手常见设置
 

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="840" viewBox="0 0 960 840" role="img" aria-label="IDLE + DMA 收整帧：DMA 搬字节，IDLE 划帧边界，CNDTR 差值给出这一帧的长度">
+
+
+<rect x="0" y="0" width="960" height="840" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IDLE + DMA 收整帧：DMA 搬字节，IDLE 划帧边界，CNDTR 差值给出这一帧的长度</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 06 · RM0008 Rev 21 ch.27 · ch.13</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">06</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USART1 + DMA1 Channel 5  buf[256]  CIRC = 1  CNDTR reloads at 256</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the CPU never reads DR per byte; it wakes once at the frame boundary</text>
+<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DMAR = CR3 bit 6    IDLE = SR bit 4    IDLEIE = CR1 bit 4    DMA1 Ch5 = USART1_RX</text>
+<text x="40" y="170" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">数据通路  线 → DMA → 环形缓冲</text>
+<rect x="40" y="184" width="880" height="226" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="56" y="204" width="170" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="141" y="228.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">RX PA10</text>
+<text x="141" y="245" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 31</text>
+<rect x="252" y="204" width="190" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="347" y="228.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">USART1_DR</text>
+<text x="347" y="245" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x40013804</text>
+<rect x="468" y="204" width="190" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="563" y="228.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">DMA1 Ch5</text>
+<text x="563" y="245" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1_RX</text>
+<rect x="684" y="204" width="222" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="795" y="228.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ring buffer</text>
+<text x="795" y="245" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">buf[256], CIRC=1</text>
+<line x1="226" y1="230" x2="245" y2="230" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="252.00,230.00 245.00,233.50 245.00,226.50" fill="#1b5c45" opacity="1"/>
+<line x1="442" y1="230" x2="461" y2="230" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="468.00,230.00 461.00,233.50 461.00,226.50" fill="#1b5c45" opacity="1"/>
+<line x1="658" y1="230" x2="677" y2="230" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="684.00,230.00 677.00,233.50 677.00,226.50" fill="#1b5c45" opacity="1"/>
+<rect x="684" y="314" width="222" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="795" y="338.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">IDLE frame</text>
+<text x="795" y="355" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">line high ≈ 86.8 µs</text>
+<rect x="468" y="314" width="190" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="563" y="338.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">IDLE IRQ</text>
+<text x="563" y="355" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IDLEIE = 1</text>
+<rect x="252" y="314" width="190" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="347" y="338.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">length + parse</text>
+<text x="347" y="355" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">len = pos − CNDTR</text>
+<line x1="684" y1="340" x2="665" y2="340" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="658.00,340.00 665.00,336.50 665.00,343.50" fill="#075e84" opacity="1"/>
+<line x1="468" y1="340" x2="449" y2="340" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="442.00,340.00 449.00,336.50 449.00,343.50" fill="#075e84" opacity="1"/>
+<line x1="795" y1="256" x2="795" y2="307" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="795.00,314.00 791.50,307.00 798.50,307.00" fill="#075e84" opacity="1"/>
+<text x="805" y="290" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">frame edge</text>
+<text x="56" y="396" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMAR = 1 makes RXNE raise a DMA request; CNDTR counts down from 256, so the ring never stalls</text>
+<text x="40" y="442" font-size="16" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">空闲判定  一帧的高电平才算 IDLE</text>
+<rect x="40" y="456" width="880" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="56" y="484" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">an idle character is a whole frame of 1s:</text>
+<text x="56" y="506" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10 bits at 115200 8N1 = 86.8 µs</text>
+<path d="M 56 544.24 L 56.00 544.24 L 79.33 544.24 L 79.33 519.76 L 102.67 519.76 L 102.67 544.24 L 126.00 544.24 L 126.00 519.76 L 149.33 519.76 L 149.33 519.76 L 172.67 519.76 L 172.67 544.24 L 196.00 544.24 L 196.00 544.24 L 219.33 544.24 L 219.33 519.76 L 242.67 519.76 L 242.67 519.76 L 266.00 519.76 L 266.00 519.76 L 289.33 519.76 L 289.33 519.76 L 312.67 519.76 L 312.67 519.76 L 336.00 519.76 L 336.00 519.76 L 359.33 519.76 L 359.33 519.76 L 382.67 519.76 L 382.67 519.76 L 406.00 519.76 L 406.00 519.76 L 429.33 519.76 L 429.33 519.76 L 452.67 519.76 L 452.67 519.76 L 476.00 519.76" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<line x1="289.333" y1="514" x2="289.333" y2="550" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1" stroke-dasharray="4 4"/>
+<text x="56" y="566" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">stop bit → 10 bit-times of high → IDLE</text>
+<text x="520" y="486" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">one interrupt per frame</text>
+<text x="520" y="512" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IDLE is set after one full frame of 1s; no byte moves</text>
+<text x="520" y="538" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IDLEIE in CR1 turns that flag into an interrupt</text>
+<text x="520" y="564" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">read SR then DR in the ISR; the same pair clears ORE</text>
+<text x="520" y="588" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the line is quiet — that is not the peer's packet end</text>
+<text x="40" y="622" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对比  轮询逐字节 vs IDLE+DMA 整帧</text>
+<rect x="40" y="636" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="668" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">轮询 polling</text>
+<rect x="250" y="650" width="650" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="252" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="317.4" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="382.8" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="448.2" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="513.6" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="579" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="644.4" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="709.8" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="775.2" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="840.6" y="651" width="57.4" height="24" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="250" y="700" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10 bytes = 10 SR reads + 10 DR reads; the CPU owns the port for the whole frame</text>
+<text x="56" y="740" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IDLE + DMA</text>
+<rect x="250" y="722" width="650" height="26" fill="#e5f3f8" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="840" y="723" width="58" height="24" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="869" y="740" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IRQ</text>
+<text x="260" y="739" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA moves all 10 bytes; the CPU sleeps until the frame ends</text>
+<text x="250" y="772" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one interrupt at the frame edge; CNDTR delta gives the length, nothing per byte</text>
+<line x1="24" y1="804" x2="936" y2="804" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="824" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。IDLE 检测与 DMA1 通道 5 映射来自 RM0008 Rev 21 第 27、13 章。</text>
+<text x="936" y="824" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

@@ -140,14 +140,41 @@ class BookAuditTests(unittest.TestCase):
 
     def test_phase_two_reaches_memory_with_visual_parity(self) -> None:
         expected = {
-            "06": ("uart-frame.svg", "sample-06-uart-frame.svg", "uart-idle.gif", "uart-bits.gif"),
-            "07": ("i2c-transaction.svg", "sample-07-i2c-addr.svg", "i2c-addr.gif", "i2c-timing.gif"),
-            "08": ("spi-transfer.svg", "sample-08-spi-jedec.svg", "spi-jedec.gif"),
-            "09": ("adc-sar.svg", "sample-09-adc-sar.svg", "adc-sample.gif", "sar-adc.gif", "dma-circular.svg"),
+            "06": (
+                "uart-frame.svg",
+                "sample-06-uart-frame.svg",
+                "uart-idle.gif",
+                "uart-bits.gif",
+                "sample-06-baud-triage.svg",
+                "sample-06-idle-dma.svg",
+            ),
+            "07": (
+                "i2c-transaction.svg",
+                "sample-07-i2c-addr.svg",
+                "i2c-addr.gif",
+                "i2c-timing.gif",
+                "sample-07-i2c-triage.svg",
+            ),
+            "08": (
+                "spi-transfer.svg",
+                "sample-08-spi-jedec.svg",
+                "spi-jedec.gif",
+                "sample-08-cpha-modes.svg",
+                "sample-08-spi-triage.svg",
+            ),
+            "09": (
+                "adc-sar.svg",
+                "sample-09-adc-sar.svg",
+                "adc-sample.gif",
+                "sar-adc.gif",
+                "dma-circular.svg",
+                "sample-09-adc-triage.svg",
+            ),
             "10": (
                 "dma-circular.svg",
                 "sample-10-dma-cndtr.svg",
                 "dma-cndtr.gif",
+                "sample-10-dma-triage.svg",
                 "dma-buffer-ownership.svg",
                 "dma-ring.gif",
             ),

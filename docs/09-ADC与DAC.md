@@ -310,6 +310,13 @@ HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2048); /* 2048 / 4096 = 
 
 注入组最多 4 个通道。规则组的 DMA 缓冲不要和注入结果混在同一个数组里。
 
+ADC 读数「不对」先分清三岔：末位抖动、顶满贴零、整体偏置——三条路的根因和修法完全不同。
+
+<p align="center">
+  <img src="../assets/diagrams/sample-09-adc-triage.svg" width="760" alt="ADC triage: sample time vs source impedance, VDDA rail clamp, calibration sequence">
+  <br><sub>▲ 自绘。岔口一：末位抖动不是随机噪声，是采样电容没充满——`t_s ≈ (R_AIN + 1 kΩ) × 8 pF × ln(2^14) ≈ (R_AIN + 1 kΩ) × 78 ns`，100 kΩ 源阻抗需要约 7.8 µs，而 12 MHz 下 1.5 周期只有 125 ns，差 60 倍；把 `SMPR2 SMP0[2:0]` 设为 111（239.5 周期 = 19.958 µs）；ADCCLK 必须 ≤14 MHz（÷6 得 12 MHz，÷4 得 18 MHz 越限）；RC 缓冲只在 R×C ≪ 采样间隔时有意义，≥1 MΩ 仍需跟随器。岔口二：4095 是钳位不是读数——VIN 高于 VDDA 会打开输入保护；恒 0 先查 PA0 是不是还配着推挽输出；LQFP48 没有独立 VREF+，第 9 脚 VDDA 就是量尺，跌 1% 全表偏 1%；转换运行中量第 9 脚，保持 VSSA ≤ VIN ≤ VDDA；用 CH17 Vrefint 反推对账：VDDA = 1.20 V × 4096 / code。岔口三：上电后最初几个码整体偏移且不随输入走——没校准：ADON 后等两个 ADCCLK，RSTCAL=1 等自清，再 CAL=1 等自清；校准期间不跑转换，`HAL_ADCEx_Calibration_Start` 必须在 `HAL_ADC_Start` 之前；0 V 和半量程各测一组：两处恒定差是偏置，随量程增长是增益。校准流程与采样档位见 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)，精度实践见 AN2834。</sub>
+</p>
+
 ### 8. 通道和引脚（F103 ADC1）
 
 | 通道 | 引脚 / 来源 |

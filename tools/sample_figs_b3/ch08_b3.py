@@ -1,0 +1,257 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Static B3 figures for chapter 08: CPOL/CPHA modes and SPI triage.
+
+No CSS animation and no SMIL.
+
+    python tools/sample_figs_b3/ch08_b3.py assets/diagrams
+"""
+
+from __future__ import annotations
+
+import hashlib
+import os
+import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from svgkit import Svg, T
+
+
+def _credit(canvas: Svg, note: str) -> None:
+    canvas.line(24, canvas.h - 36, canvas.w - 24, canvas.h - 36, stroke=T.GRID, sw=1)
+    canvas.text(24, canvas.h - 16, note, size=11, fill=T.MUTED)
+    canvas.text(canvas.w - 24, canvas.h - 16, "自绘 · 静态 · CC BY 4.0", size=11, fill=T.DIM, anchor="end")
+
+
+def _spi_cell(canvas: Svg, x: float, y: float, w: float, h: float, mode: int,
+              cpol: int, cpha: int, bits: list[int], accent: str, note: str,
+              highlight: bool = False) -> None:
+    """One 2x2 matrix cell: NSS, SCK and MOSI with the sampling edges marked."""
+    canvas.rect(x, y, w, h, fill=T.PANEL, stroke=accent, rx=8, sw=2 if highlight else 1.5)
+    canvas.text(x + 14, y + 24, f"Mode {mode}", size=15, fill=accent, weight="700")
+    tag = f"CPOL={cpol}  CPHA={cpha}" + ("  most used" if mode == 0 else "")
+    canvas.text(x + w - 14, y + 24, tag, size=11, mono=True, anchor="end",
+                fill=T.GREEN if mode == 0 else T.MUTED)
+    canvas.line(x + 14, y + 34, x + w - 14, y + 34, stroke=T.GRID, sw=1)
+
+    lx = x + 14
+    wx0 = x + 52
+    wx1 = x + w - 16
+    pre, post = wx0 - 12, wx1 + 10
+    drop, rise = wx0 - 6, wx1 + 2
+    period = (wx1 - wx0) / 4.0
+
+    cs_hi, cs_lo = y + 50, y + 62
+    sc_mid = y + 98
+    sc_hi, sc_lo = sc_mid - 14, sc_mid + 14
+    mo_mid = y + 150
+    mo_hi, mo_lo = mo_mid - 11, mo_mid + 11
+
+    canvas.text(lx, cs_hi + 4, "NSS", size=10, mono=True, fill=T.DIM)
+    canvas.text(lx, sc_mid + 4, "SCK", size=10, mono=True, fill=T.DIM)
+    canvas.text(lx, mo_mid + 4, "MOSI", size=10, mono=True, fill=T.DIM)
+
+    # sampling edges: CPHA = 0 -> first edge of each clock, CPHA = 1 -> second edge
+    samples = [wx0 + i * period + (0.0 if cpha == 0 else period / 2) for i in range(4)]
+    for sx in samples:
+        canvas.line(sx, y + 76, sx, mo_lo + 4, stroke=T.AMBER, sw=1, dash="3 3", opacity=0.5)
+
+    # NSS: low for the whole transfer, high between commands
+    canvas.poly([(pre, cs_hi), (drop, cs_hi), (drop, cs_lo), (rise, cs_lo),
+                 (rise, cs_hi), (post, cs_hi)], stroke=T.VIOLET, sw=1.5)
+
+    # SCK: idle level from CPOL, one pulse per bit
+    if cpol == 0:
+        clock = [(pre, sc_lo)]
+        for i in range(4):
+            a = wx0 + i * period
+            clock += [(a, sc_lo), (a, sc_hi), (a + period / 2, sc_hi),
+                      (a + period / 2, sc_lo), (a + period, sc_lo)]
+        clock.append((post, sc_lo))
+    else:
+        clock = [(pre, sc_hi)]
+        for i in range(4):
+            a = wx0 + i * period
+            clock += [(a, sc_hi), (a, sc_lo), (a + period / 2, sc_lo),
+                      (a + period / 2, sc_hi), (a + period, sc_hi)]
+        clock.append((post, sc_hi))
+    canvas.poly(clock, stroke=T.CYAN, sw=2)
+
+    # sample dots sit on the clock level reached at that edge
+    for sx in samples:
+        level = (sc_hi if cpol == 0 else sc_lo) if cpha == 0 else (sc_hi if cpol == 1 else sc_lo)
+        canvas.circle(sx, level, 3, fill=T.AMBER, stroke=T.PANEL, sw=1)
+
+    # MOSI: CPHA = 0 changes on the trailing edge, CPHA = 1 on the leading edge
+    if cpha == 0:
+        bounds = [wx0, wx0 + period / 2, wx0 + 1.5 * period, wx0 + 2.5 * period, wx1]
+    else:
+        bounds = [wx0, wx0 + period, wx0 + 2 * period, wx0 + 3 * period, wx1]
+    level0 = mo_hi if bits[0] else mo_lo
+    mosi = [(pre, level0)]
+    for i, bit in enumerate(bits):
+        level = mo_hi if bit else mo_lo
+        mosi += [(bounds[i], level), (bounds[i + 1], level)]
+    mosi.append((post, mo_hi if bits[-1] else mo_lo))
+    canvas.poly(mosi, stroke=T.GREEN, sw=2)
+
+    canvas.text(x + 14, y + h - 12, note, size=11, fill=T.AMBER)
+
+
+def cpha_modes() -> Svg:
+    canvas = Svg(
+        960,
+        880,
+        "CPOL 定空闲电平，CPHA 定第几个边沿采样：四种模式只是 CR1 里的两位",
+        "STM32F103C8T6 · chapter 08 · RM0008 Rev 21 第 25 章",
+    )
+    canvas.header(tag="08", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  SPI1 on APB2 72 MHz   CPOL = CR1 bit 1   CPHA = CR1 bit 0",
+                size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "CPOL sets the idle level; CPHA picks the edge that samples: edge 1 for CPHA = 0, edge 2 for CPHA = 1",
+                size=14, fill=T.CYAN)
+    canvas.text(40, 138, "BR=000 → 72 / 2 = 36 MHz        BR=010 → 72 / 8 = 9 MHz",
+                size=13, fill=T.AMBER, mono=True)
+
+    canvas.text(338, 170, "CPOL = 0 · 空闲低", size=14, fill=T.TEXT, weight="700", anchor="middle")
+    canvas.text(730, 170, "CPOL = 1 · 空闲高", size=14, fill=T.TEXT, weight="700", anchor="middle")
+
+    canvas.text(40, 284, "CPHA = 0", size=14, fill=T.TEXT, weight="700")
+    canvas.text(40, 306, "第 1 个边沿采样", size=11, fill=T.MUTED)
+    canvas.text(40, 496, "CPHA = 1", size=14, fill=T.TEXT, weight="700")
+    canvas.text(40, 518, "第 2 个边沿采样", size=11, fill=T.MUTED)
+
+    bits = [1, 0, 1, 1]
+    _spi_cell(canvas, 148, 186, 380, 204, 0, 0, 0, bits, T.GREEN,
+              "sample on edge 1 (rising); shift on edge 2 (falling)", highlight=True)
+    _spi_cell(canvas, 540, 186, 380, 204, 2, 1, 0, bits, T.VIOLET,
+              "sample on edge 1 (falling); shift on edge 2 (rising)")
+    _spi_cell(canvas, 148, 398, 380, 204, 1, 0, 1, bits, T.AMBER,
+              "sample on edge 2 (falling); shift on edge 1 (rising)")
+    _spi_cell(canvas, 540, 398, 380, 204, 3, 1, 1, bits, T.CYAN,
+              "sample on edge 2 (rising); shift on edge 1 (falling)")
+
+    canvas.text(40, 644, "读法  边沿编号跟着 CPOL 走，CPHA 只数第几个", size=16, fill=T.CYAN, weight="700")
+    canvas.rect(40, 656, 880, 68, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(56, 684, "edge 1 is the first transition after NSS falls: rising when CPOL = 0, falling when CPOL = 1",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 710, "CPHA = 1 samples edge 2, half a clock later; the slave still answers, so the bytes look plausible",
+                size=14, fill=T.TEXT)
+
+    canvas.text(40, 766, "底注  Mode 0 (0,0) 最通用", size=16, fill=T.VIOLET, weight="700")
+    canvas.rect(40, 778, 880, 50, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 806, "W25Q64, ST7789 and most parts here run Mode 0; Mode 3 is the other common choice, Mode 1/2 are rare",
+                size=14, fill=T.TEXT)
+    _credit(canvas, "自绘。CPOL/CPHA 采样边沿与分频定义来自 RM0008 Rev 21 第 25 章。")
+    return canvas
+
+
+def spi_triage() -> Svg:
+    canvas = Svg(
+        960,
+        880,
+        "SPI 三岔口：全 0xFF 查片选与 MISO，无时钟查 SPE/MSTR，只在高 BR 出错先降速",
+        "STM32F103C8T6 · chapter 08 · RM0008 Rev 21 第 25 章 · DS5319 Rev 20 表 5",
+    )
+    canvas.header(tag="08", tag_color=T.CYAN)
+    canvas.text(40, 86, "STM32F103C8T6  LQFP48 pin 14..17   SPI1 on APB2 72 MHz   Mode 0   BR=010",
+                size=16, fill=T.TEXT, weight="700")
+    canvas.text(40, 112, "branch on what came back on the wire: all 0xFF, no clock at all, or correct only at low BR",
+                size=14, fill=T.CYAN)
+    canvas.text(40, 138, "PA4 = CS (low for the whole transfer)   PA5 = SCK   PA6 = MISO   PA7 = MOSI",
+                size=13, fill=T.AMBER, mono=True)
+
+    canvas.text(40, 168, "岔口一  读回全 0xFF  MISO 恒高", size=16, fill=T.RED, weight="700")
+    canvas.rect(40, 180, 880, 166, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 208, "0xFF on every byte means nothing is driving MISO; a floating input reads 1",
+                size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 234, "check 1: PA4 must sit low from the first SCK edge to the last, and high between commands",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 260, "PA4 stuck high leaves the slave in Hi-Z; PA4 stuck low merges two commands into one frame",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 286, "check 2: PA6 is pin 16 — a broken jumper, a missing GND, or an unpowered part all read 0xFF",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 312, "if the byte is 0x00 instead, something holds the line low: swap MOSI/MISO, or fix CPOL/CPHA",
+                size=14, fill=T.TEXT)
+
+    canvas.text(40, 362, "岔口二  没有 SCK  时钟不动", size=16, fill=T.AMBER, weight="700")
+    canvas.rect(40, 374, 880, 166, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    canvas.text(56, 402, "SPI1 cannot clock until SPE = 1 and MSTR = 1 in CR1",
+                size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 428, "SPE = CR1 bit 6, MSTR = CR1 bit 2; both reset to 0, and a master needs both",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 454, "MSTR = 0 leaves the part as a slave: it waits for an external clock that never comes",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 480, "check the gate: RCC_APB2ENR bit 12 (0x40021018); with it off CR1 reads back 0x0000",
+                size=14, fill=T.TEXT, mono=True)
+    canvas.text(56, 506, "PA5 must be alternate-function push-pull: GPIOA_CRL nibble 5 = 0xB, not input or analog",
+                size=14, fill=T.TEXT)
+
+    canvas.text(40, 556, "岔口三  低速对、高速错", size=16, fill=T.VIOLET, weight="700")
+    canvas.rect(40, 568, 880, 166, fill=T.PANEL, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 596, "BR=000 is 72 / 2 = 36 MHz; a W25Q64 on jumper wires is not specified at that rate",
+                size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 622, "set BR = 010 (÷8 = 9 MHz) and repeat the exact same transaction before changing anything else",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 648, "if the ID comes back 0xEF 0x40 0x17 at 9 MHz, the protocol is right and the limit is the wire",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 674, "climb one step at a time: 010 → 001 (18 MHz); stop at the first bad read and keep the last good BR",
+                size=14, fill=T.TEXT)
+    canvas.text(56, 700, "a scope at the slave end separates rounded edges from a slave that is not rated for the rate",
+                size=14, fill=T.TEXT)
+
+    canvas.text(40, 762, "查的顺序  先片选与 MISO → 再时钟 → 最后才降速", size=16, fill=T.GREEN, weight="700")
+    canvas.rect(40, 774, 880, 46, fill=T.BG2, stroke=T.GREEN, rx=8)
+    canvas.text(56, 800, "0xFF is a select or wiring fault; silence is an enable fault; only a low-BR pass makes speed the suspect",
+                size=13, fill=T.TEXT)
+    _credit(canvas, "自绘。SPE/MS 与 BR 分频来自 RM0008 Rev 21 第 25 章；引脚来自 DS5319 Rev 20 表 5。")
+    return canvas
+
+
+FIGURES = [
+    ("sample-08-cpha-modes.svg", cpha_modes),
+    ("sample-08-spi-triage.svg", spi_triage),
+]
+
+T_COLORS = {
+    value
+    for name in dir(T)
+    if name.isupper() and isinstance(value := getattr(T, name), str) and value.startswith("#")
+}
+TEXT_RE = re.compile(r"<text\b[^>]*>(.*?)</text>", flags=re.DOTALL)
+
+
+def _audit(name: str, path: str) -> str:
+    raw = open(path, "rb").read()
+    text = raw.decode("utf-8")
+    width, height = (int(part) for part in re.search(r'\bwidth="(\d+)" height="(\d+)"', text).groups())
+    strokes = set(re.findall(r'stroke-width="([^"]+)"', text))
+    radii = set(re.findall(r'\brx="([^"]+)"', text))
+    colors = {item.lower() for item in re.findall(r"#(?:[0-9A-Fa-f]{6})(?![0-9A-Fa-f])", text)}
+    digest = hashlib.sha256("\n".join(TEXT_RE.findall(text)).encode("utf-8")).hexdigest()
+
+    assert width == 960, (name, "width", width)
+    assert strokes <= {"1", "1.5", "2"}, (name, "stroke-width", sorted(strokes))
+    assert radii <= {"2", "4", "8"}, (name, "rx", sorted(radii))
+    assert colors <= T_COLORS, (name, "colors", sorted(colors - T_COLORS))
+    assert "自绘" in text, (name, "credit")
+    for banned in ("<animate", "@keyframes", "animation:", "矢量动画"):
+        assert banned not in text, (name, "animation", banned)
+    assert len(raw) < 60 * 1024, (name, "bytes", len(raw))
+    print(f"{name}  {width}x{height}  {len(raw)} bytes  text_hash={digest}")
+    return digest
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = sys.argv[1:] if argv is None else argv
+    out_dir = args[0] if args else os.path.join("assets", "diagrams")
+    os.makedirs(out_dir, exist_ok=True)
+    for name, make in FIGURES:
+        path = make().save(os.path.join(out_dir, name))
+        _audit(name, path)
+
+
+if __name__ == "__main__":
+    main()

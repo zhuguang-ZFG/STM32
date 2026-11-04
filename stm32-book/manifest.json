@@ -164,7 +164,7 @@
       "question": "源阻抗、采样保持、参考电压和量化怎样共同决定一个 ADC 码值？",
       "deliverable": "一条从输入电压到码值再回算电压的误差链，并记录端点、中点和内部参考三组读数。",
       "boundary": "示例公式使用名义参考值；精度结论必须包含 VDDA、校准、采样时间和具体型号。F103 在 PCLK2 = 72 MHz 时 ADC 预分频取 ÷6，得到 12 MHz，不得超过 14 MHz。",
-      "sources": ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc"]
+      "sources": ["rm0008", "ds5319", "rm0008-adc", "ds5319-adc", "project-examples"]
     },
     "10-DMA.md": {
       "question": "DMA 请求、可达内存、传输宽度、环形位置和 Cache 一致性怎样分别验证？",

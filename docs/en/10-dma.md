@@ -143,6 +143,13 @@ The wires between peripherals and DMA channels are fixed inside the chip. On the
 
 > A memory hook: **on F4, TX and RX of the same peripheral often use different streams but the same channel.** When you look at the table, settle the stream first, then the channel.
 
+After the mapping table, DMA stalls on the F103 also fall into a fixed three branches: read CNDTR first, then the buffer, then the interrupt flags.
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-10-dma-triage.svg" width="760" alt="DMA triage: CNDTR stuck, PSIZE/MSIZE/MINC mismatches, IFCR clear then NVIC">
+  <br><sub>▲ Drawn for this book, with DMA1 channel 5 (USART1_RX), CPAR=0x40013804, CMAR=0x20000100, CNDTR=0x0080 as the standing example. Branch one: CNDTR stuck at 0x0080 with TCIF5 = 0 — either `CCR.EN` (bit 0) was never set, or the peripheral request never arrives: USART1_RX is hard-wired to DMA1 channel 5 (not 4 or 6), which needs `USART_CR3.DMAR = 1` and RXNE setting on every received byte. Configure in the order CPAR → CMAR → CNDTR → CCR, with EN last. Branch two: bytes arrive shifted by one, or every item lands in CMAR[0] — `PSIZE` (CCR bits 9:8) and `MSIZE` (CCR bits 11:10) disagreeing truncates or pads items, and `MINC = 0` (CCR bit 7) means the memory address never increments. Note that `PINC = 0` (CCR bit 6) on a fixed data register such as USART_DR is the normal setting, not a bug. For 8-bit USART1_RX use PSIZE = MSIZE = 00, MINC = 1, PINC = 0, with CMAR 32-bit aligned. Branch three: CNDTR reaches 0 and TCIF5 sets, but the ISR never runs — write 1 to CTCIF5 (bit 17 of DMA_IFCR for channel 5; writing 0 does nothing), then check `TCIE` (CCR bit 1) and the DMA1_Channel5 IRQ in the NVIC, and clear all four flags before re-arming. Footnote: the F103 has only DMA1 with 7 channels; CNDTR counts items of the configured width, not bytes — 8-bit × 0x0080 = 128 B, the same value at 16-bit = 256 B. Channel mapping and CR/IFCR semantics: [RM0008 Rev 21 chapter 13](#source-rm0008-dma). DMA1 layout: [DS5319 Rev 20 section 2.3.13](#source-ds5319-dma).</sub>
+</p>
+
 ### 3. Transfer direction and operating modes
 
 Setting up DMA means answering a few questions. Peripheral to memory, or the other way? Stop after one round, or wrap to the start and keep going? After each item, should the source and destination addresses move on? How many bytes per item? A peripheral data register has only one address, so the peripheral side stays put while the memory side moves on. That is the most common combination.
