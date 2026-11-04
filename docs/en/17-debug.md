@@ -13,7 +13,7 @@
   <video width="640" controls poster="../../assets/video/ch17-debug.png">
     <source src="../../assets/video/ch17-debug.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.7 min). <a href="../../assets/video/ch17-debug.mp4">MP4</a> · <a href="../../assets/video/ch17-debug.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (3.0 min). <a href="../../assets/video/ch17-debug.mp4">MP4</a> · <a href="../../assets/video/ch17-debug.srt">subtitles</a></sub>
 </p>
 
 <details>
@@ -26,9 +26,9 @@
 5. 觉得慢，先用 DWT 的周期计数把那段量出来，跑多次取个数。没有数字就去展开汇编，很容易优化了一个根本不占时间的循环。量完再决定要不要交给 DMA。
 6. 实验可以故意写一个非法地址，让它进硬故障。如果你能把 CFSR 和栈里的 PC 对回那一行，这套流程才算你的。只在文章里看过，真故障来时还会慌。
 7. 功能还不对时，不要先把优化开到最高。优化会把你以为按顺序发生的读写重排。和硬件时序有关的变量要老实标记，优化之后再跑一遍原来的测试。
-8. 口诀：硬故障先看 CFSR，再看 HFSR 和栈里的 PC。F103 上 SWO 占 PB3。没有证据就不要改第二处。
+8. 硬故障的第一站是 CFSR，再看 HFSR 和栈里的 PC。F103 的 SWO 占 PB3。没有证据就不要改第二处。
 9. 调试时一次只改一处，改完立刻复现刚才的现象。同时改三处，好了也不知道是谁的功劳，坏了更不知道是谁的错。版本管理就是为了能回到上一版。
-10. 合上书，三问。F103 的 SWO 占用哪只脚？进硬故障最先看哪个寄存器？为什么优化之前要先有周期计数？
+10. 优化之前先有周期计数：DWT 的 CYCCNT 给出最坏值，再看分布。凭感觉说“应该快了”，不是证据。
 
 </details>
 <!-- /video:ch17 -->
