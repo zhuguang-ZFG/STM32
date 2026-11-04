@@ -451,7 +451,7 @@
    "title": "选项字节写完仍走旧启动区",
    "purpose": "failure",
    "prerequisite": [
-    "ch23-s22"
+    "ch23-s11"
    ],
    "narration": "选项字节写完，复位后仍走旧启动区：新值没有经过规定的加载流程，或者只看了写入返回值。解决是执行规定的 option byte launch 和复位，之后读回并验证启动与 SWD。",
    "on_screen": [
