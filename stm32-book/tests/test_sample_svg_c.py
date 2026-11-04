@@ -512,6 +512,12 @@ class SampleSvgCTests(unittest.TestCase):
         found = sorted(
             path.relative_to(REPO / "assets").as_posix()
             for path in (REPO / "assets").rglob("*.svg")
+            # handraw knowledge track is a separate family with its own
+            # contract (stm32-book/tests/test_handraw_track.py); see
+            # BOOK_CLASSIC_CONVERGE_SPECS.md §6.1.
+            if not path.relative_to(REPO / "assets").as_posix().startswith(
+                "illustrations/handraw/"
+            )
         )
         expected = []
         for line in ROWS:

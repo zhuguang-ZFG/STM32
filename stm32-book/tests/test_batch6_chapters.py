@@ -843,6 +843,19 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
         self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
         self.assertNotIn("ds5319-flash", zh_manifest["sources"])
 
+HANDRAW_BLOCK = re.compile(
+    r'\n?<p align="center">\s*\n\s*<img src="[^"]*illustrations/handraw/[^"]*"[^>]*>'
+    r"\s*\n\s*<br><sub>.*?</sub>\s*\n</p>\n?",
+    re.DOTALL,
+)
+
+
+def strip_handraw_embeds(text: str) -> str:
+    """附录 A–F 的 handraw 知识轨嵌入是 2026-11 的新增层；与 batch6 锁定的
+    F103 Stop 电流单元格无关，比对前从两侧同形剥离（见 Overlay §6.1）。"""
+    return HANDRAW_BLOCK.sub("", text)
+
+
 class Batch6GlossaryTests(unittest.TestCase):
     def test_only_the_f103_stop_current_cell_changes(self) -> None:
         lock = json.loads(
@@ -865,8 +878,8 @@ class Batch6GlossaryTests(unittest.TestCase):
         for rel, old_phrase, new_phrase in pairs:
             now = (ROOT / rel).read_text(encoding="utf-8")
             base = baseline_chapter(lock["baseline"], rel)
-            old_lines = fold_alert_syntax(base).splitlines()
-            new_lines = fold_alert_syntax(now).splitlines()
+            old_lines = fold_alert_syntax(strip_handraw_embeds(base)).splitlines()
+            new_lines = fold_alert_syntax(strip_handraw_embeds(now)).splitlines()
             self.assertEqual(len(old_lines), len(new_lines))
             changed = [index for index, (before, after) in enumerate(zip(old_lines, new_lines)) if before != after]
             # 229 is this batch's cell. The table intros were later rewritten for
@@ -890,8 +903,10 @@ class Batch6GlossaryTests(unittest.TestCase):
             # 附录 A 在 2026-11 加入 uart-idle-dma 动画嵌入，冻结点随之单列；
             # 术语表的 229 单元格比对仍以 batch6 旧基线为准。
             self.assertEqual(
-                baseline_chapter(lock.get("appendix_baseline", lock["baseline"]), rel),
-                now,
+                strip_handraw_embeds(
+                    baseline_chapter(lock.get("appendix_baseline", lock["baseline"]), rel)
+                ),
+                strip_handraw_embeds(now),
             )
 
 
