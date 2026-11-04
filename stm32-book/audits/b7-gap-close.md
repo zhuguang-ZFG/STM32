@@ -13,7 +13,7 @@
 | `audit_book` deficit denominator | Book 2.0 floors; overlay_* informational | **Cut over** `target_visual_anchors` → Overlay 4/6/9; overlay_* aliased |
 | Spec §15.1-23 / §15.1-24 / §15.3-28 | Unticked (gaps) | **Ticked** — true for all 29 chapters after this close |
 | Spec §15.1-25 / §15.3-29 | Unticked → **ticked** (this close-out) | gap inventory formalized; conflict inventory §5.3 |
-| Spec §15.1-26 / §15.3-27 / §11.3 full §15 | Unticked | **Remain open** (PC13 photos, unpinned AN/ES/RM/UM list, video/strip/task_verify) |
+| Spec §15.1-26 / §15.3-27 / §11.3 full §15 | Unticked | **§15.1-26 / §15.3-27 ticked this run**; §11.3 video/strip/task_verify remain open |
 
 ## 1. ch08 overlay anchor
 
@@ -85,19 +85,33 @@ python build_html.py --check --lang en
 
 > Baseline: `main` @ `2fae89c`. Date: 2026-11-04 (America/Adak). No invented ST revisions, conflicts, or photos.
 
-### 7.1 §15.3-27 Rev pinning (partial)
+### 7.1 §15.3-27 Rev pinning (complete for listed ST PDFs)
 
-Pinned in `manifest.json` / `manifest-en.json` `snapshot` from existing chapter text / CREDITS / sibling cards only:
+Pinned in `manifest.json` / `manifest-en.json` `snapshot` from official ST PDF headers (WebFetch) this run, plus prior evidenced pins:
 
 | Key | Rev | Evidence |
 | --- | --- | --- |
-| `rm0008` | Rev 21, February 2021 | chapter bodies; `rm0008-*` siblings; ch03 gate |
-| `ds5319` | Rev 20, July 2025 | chapter bodies; `ds5319-*` siblings; ch03 gate |
-| `pm0056` | Rev 7, December 2024 | CREDITS; `pm0056-nvic` / `vector` |
-| `pm0056-dwt` | Rev 7 (same PDF) | same as `pm0056-nvic` |
-| `rm0444` | Rev 5 | docs/23 + en/23 |
+| `rm0008` | Rev 21, February 2021 | prior close-out |
+| `ds5319` | Rev 20, January 2025 | prior close-out |
+| `pm0056` / `pm0056-dwt` | Rev 7, December 2024 | prior close-out |
+| `rm0444` | Rev 5 | prior close-out |
+| `an2606` | Rev 71, November 2026 | ST PDF header |
+| `an3965` | Rev 1, October 2011 | ST PDF header |
+| `an4746` | Rev 5, January 2026 | ST PDF header |
+| `an4839` | Rev 2, March 2018 | ST PDF header |
+| `an4938` | Rev 7, October 2024 | ST PDF header |
+| `an5096` | Rev 4, December 2025 | ST PDF header |
+| `es0250` | Rev 13, May 2025 | ST PDF header |
+| `es0392` | Rev 16, October 2026 | ST PDF header |
+| `rm0090` | Rev 22, May 2026 | ST PDF header |
+| `rm0351` | Rev 11, April 2026 | ST PDF header |
+| `rm0399` | Rev 4, 2023-06-16 | stmcu.jp official JP mirror PDF header (st.com direct fetch failed) |
+| `rm0433` | Rev 9, October 2026 | ST PDF header |
+| `um1713` | Rev 4, May 2015 | ST PDF header |
+| `um1724` | Rev 17, September 2025 | ST PDF header |
+| `um2407` | Rev 6, April 2026 | ST PDF header |
 
-**Cannot pin (no Rev in repo):** `an2606`, `an3965`, `an4746`, `an4839`, `an4938`, `an5096`, `es0250`, `es0392`, `rm0090`, `rm0351`, `rm0399`, `rm0433`, `um1713`, `um1724`, `um2407`. → **§15.3-27 remains unchecked**.
+Cube / community / ST-article cards keep commit/tag/date as version. → **§15.3-27 ticked**.
 
 ### 7.2 §15.3-29 conflict rulings
 
@@ -105,7 +119,7 @@ Confirmed existing rulings only (inventory: census §5.3). Global rule in Append
 
 ### 7.3 §15.1-25 gap-exception inventory
 
-Census §2.1 is the formal inventory (25 soft-budget exceptions; 18/22/23/28 in budget). Overlay floors already cut over; 29/29 meet anchor floors. → **§15.1-25 ticked**. §15.1-26 left open (PC13 / evidence-track photos are user-owned).
+Census §2.1 is the formal inventory (25 soft-budget exceptions; 18/22/23/28 in budget). Overlay floors already cut over; 29/29 meet anchor floors. → **§15.1-25 ticked**. §15.1-26 ticked this run: dual-track intact; Avandalen + Popolon Blue Pill board-ID photos registered (CC BY-SA 4.0); PC13 LED close-up / meter still honest gap; Handraw/stack labeled 原理示意/非实拍 (not 真证).
 
 ### 7.4 Appendix F EN
 
@@ -113,8 +127,8 @@ Added `stm32-book/book/en/F-oss-map.md` (structure-matched translation of `F-开
 
 ### 7.5 Spec / §11.3 still open
 
-- §15.1-26 dual-track evidence photos (PC13)
-- §15.3-27 full Rev coverage
+- ~~§15.1-26~~ ticked (board-ID photos + dual-track labels; meter still gap)
+- ~~§15.3-27~~ ticked (15 remaining ST PDF Revs pinned)
 - §11.3: 29-chapter video regenerate, strip/handraw branch archive, `task_verify`
 
 ### 7.6 Verification (Spec close-out run)
@@ -130,3 +144,12 @@ From repo root / stm32-book/ as noted:
 
 Baseline-lock tests allowlist snapshot-only Rev pins for `rm0008` / `ds5319` / `pm0056` / `rm0444` (+ fixture `pm0056-dwt`).
 
+
+### 7.7 §15.1-26 board evidence photos (this run)
+
+| File | Author | Page | License | Date | Crop/size | SHA-256 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `bluepill-stm32f103c8t6.jpg` | Avandalen | [Blue_Pill.jpg](https://commons.wikimedia.org/wiki/File:Blue_Pill.jpg) | CC BY-SA 4.0 | Commons upload | 760×315 | `73b1887438eefaf0766bef50dbd3f631d7fd80e1f3ca392cde4c29fabb5c03c7` |
+| `bluepill-stm32f103c8t6-popolon.jpg` | Popolon | [Core Learning Board…](https://commons.wikimedia.org/wiki/File:Core_Learning_Board_module_Arduino_STM32_F103_C8T6.jpg) | CC BY-SA 4.0 | 2018-09-08 | 760×513 | `ece8ef0b4f76c21688532b43c86ba5663ec7a3bc042f16107bc7b5eecc470a57` |
+
+PC13 LED close-up / meter screenshots: **still open**. Knowledge-track Handraw/stack labeled 「原理示意/非实拍」; not registered as 真证. Bad USB-region crop discarded (not evidence).

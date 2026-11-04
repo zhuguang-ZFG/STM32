@@ -89,18 +89,19 @@ FLASH = DIAGRAMS / "sample-19-flash-fit.svg"
 
 # §15.3-27 Spec close-out: base ST cards may refresh `snapshot` to an evidenced Rev.
 # All other fields must still match the lock baseline.
-_REV_PIN_SNAPSHOT_ALLOW = frozenset({"rm0008", "ds5319", "pm0056", "rm0444"})
+_REV_PIN_SNAPSHOT_ALLOW = frozenset({"rm0008", "ds5319", "pm0056", "rm0444", "an2606", "an3965", "an4746", "an4839", "an4938", "an5096", "es0250", "es0392", "rm0090", "rm0351", "rm0399", "rm0433", "um1713", "um1724", "um2407"})
 
 
 def _assert_baseline_source(test, source_id: str, expected: dict, actual: dict) -> None:
     if source_id in _REV_PIN_SNAPSHOT_ALLOW:
-        exp = {k: v for k, v in expected.items() if k != "snapshot"}
-        act = {k: v for k, v in actual.items() if k != "snapshot"}
+        # Spec §15.3-27: snapshot (and its accessed date) may refresh to an evidenced Rev.
+        ignore = {"snapshot", "accessed"}
+        exp = {k: v for k, v in expected.items() if k not in ignore}
+        act = {k: v for k, v in actual.items() if k not in ignore}
         test.assertEqual(exp, act, source_id)
         test.assertRegex(actual.get("snapshot", ""), r"Rev\.?\s*\d+", source_id)
     else:
         test.assertEqual(expected, actual, source_id)
-
 
 class Batch6FigureTests(unittest.TestCase):
     def test_key_figures_are_static_and_under_60_kib(self) -> None:
