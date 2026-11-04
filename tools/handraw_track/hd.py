@@ -252,10 +252,15 @@ class Fig:
         """Paper, title, footer badge."""
         self.body.insert(0, f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
         if self.title:
-            self.text(W / 2, 74, self.title, size=46, color=self.title_color,
+            # auto-shrink long titles so they never clip the canvas
+            # (Segoe Print runs ~25% wider than the estimator, so pad it)
+            tsize = 46
+            while text_w(self.title, tsize) * 1.30 > W - 80 and tsize > 28:
+                tsize -= 2
+            self.text(W / 2, 74, self.title, size=tsize, color=self.title_color,
                       anchor="middle", weight="bold", halo=False)
             # hand underline swash
-            tw = text_w(self.title, 46)
+            tw = text_w(self.title, tsize) * 1.22
             y0 = 92
             pts = [(W / 2 - tw / 2 + self.rng.uniform(-6, 6), y0)]
             for i in range(1, 7):
