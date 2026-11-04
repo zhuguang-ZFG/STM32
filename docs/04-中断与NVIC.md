@@ -60,6 +60,11 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
   <img src="../assets/diagrams/sample-04-exception-stack.svg" width="760" alt="抢占 1 可以打断抢占 2；抢占同为 1 时后来的请求不能嵌套">
   <br><sub>▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。上半部分：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xPSR, PC, LR, R12, R3, R2, R1, R0，SP 指向 R0。大约 12 个 HCLK，72 MHz 时 167 ns，不含 ISR 正文。下半部分：两者抢占都写成 1，子优先级 0 和 1 仍然不能嵌套，退出后可以尾链，没有第二次嵌套入栈。PRIMASK = 1 时 EXTI0 和 TIM2 进不来，NMI 仍进入。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic) 与 [RM0008 Rev 21 的 EXTICR](#source-rm0008-exti)。</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-exception-stack.png" width="760" alt="Handraw：EXTI0 抢占 TIM2 异常入栈（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。抢占 1 的 EXTI0 打断抢占 2 的 TIM2，现场八寄存器入栈；不是示波器实拍。</sub>
+</p>
+
 
 <p align="center">
   <img src="../assets/gif/nvic-preempt.gif" width="640" alt="TIM2 正在执行时，EXTI0 以更高抢占打断，然后返回">
@@ -119,6 +124,11 @@ EXTI 解决的是“何时发现事件”，NVIC 解决的是“多个事件先�
   <img src="../assets/diagrams/sample-04-priority-group.svg" width="760" alt="NVIC 抢占位与亚优先级分组">
   <br><sub>▲ 自绘。AIRCR PRIGROUP 切分 4 个优先级位；同抢占互不打断。</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-priority-group.png" width="760" alt="Handraw：AIRCR 优先级分组（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。PRIGROUP 切分抢占/子优先级；同抢占互不打断；不是寄存器截图。</sub>
+</p>
+
 
 
 NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，它按两个数排队。抢占优先级像急诊分级：重症病人到了，可以把正在看病的轻症病人请出去先等着，这就是嵌套。子优先级只管挂号顺序：两个同级的病人同时到，先叫谁，但已经进了诊室的不会被同级的人打断。记住一条反直觉的规则：数字越小越急，0 最急。
@@ -143,6 +153,11 @@ NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，
   <img src="../assets/diagrams/interrupt-priority.svg" width="760" alt="抢占优先级与子优先级仲裁示意">
   <br><sub>▲ 图示：抢占优先级 vs 子优先级的仲裁示意（作者自绘矢量图）</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-preempt-vs-sub.png" width="760" alt="Handraw：抢占 vs 子优先级（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。更小抢占数优先级更高能打断；同抢占只靠子优先级排队；不是调试器实拍。</sub>
+</p>
+
 
 ### 3. 中断响应全流程
 
@@ -172,6 +187,11 @@ NVIC 是芯片里专门管中断的「前台」。几件事同时找上门时，
   <img src="../assets/diagrams/sample-04-exti-line-map.svg" width="760" alt="EXTI 线经 AFIO 选择 GPIO 端口">
   <br><sub>▲ 自绘。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ。</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-exti-line-map.png" width="760" alt="Handraw：EXTI 线映射（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ；不是芯片显微照片。</sub>
+</p>
+
 
 
 EXTI 是把引脚变化转成中断请求的那一层。F103 有 16 条 EXTI 线，按脚号分：所有端口的 0 号脚（PA0、PB0、PC0……）共用 EXTI0，所有 1 号脚共用 EXTI1，以此类推。一条线同一时间只能接一个端口，就像一栋楼每层只有一个门铃按钮，A 座 1 层和 B 座 1 层不能同时用。选哪个端口靠 `EXTICR` 这组开关，F1 上它在 AFIO 里，所以要先开 AFIO 时钟。
@@ -187,6 +207,11 @@ EXTI 是把引脚变化转成中断请求的那一层。F103 有 16 条 EXTI 线
   <img src="../assets/diagrams/sample-04-exti-triage.svg" width="760" alt="按键中断不触发时按四环读回：时钟、映射、EXTI_IMR、NVIC_ISER0 依次放行；IMR 为 0 时 EXTI_PR 仍置 1">
   <br><sub>▲ 自绘。STM32F103C8T6，按键在 PA0，EXTI0_IRQn = 6。看哪里：按 PA0 边沿到 ISR 的顺序读四个寄存器——RCC_APB2ENR 的 bit 2（IOPAEN）、AFIO_EXTICR1 的 [3:0]（0000 选 PA0）、EXTI_IMR 的 bit 0、NVIC_ISER0 的 bit 6；四个都读回 1，这条路径才通。证明什么：EXTI_IMR 为 0 时，EXTI_PR 的 bit 0 照样被边沿置 1，所以「PR 为 1 却不进 ISR」把第 ④ 环和第 ③ 环分开；PR 读回 0 说明边沿根本没到 EXTI，要回第 ①、② 环。不证明什么：引脚模式（GPIOx_CRL 的 MODE/CNF）、RTSR/FTSR 选的触发沿、按键抖动，以及抢占与子优先级，都不在这张图上。出处是 RM0008 Rev 21 第 8.3.7、9.4.3、10.3.1、10.3.6 节（[EXTICR 与 EXTI_PR](#source-rm0008-exti)），以及 [PM0056 第 4 章](#source-pm0056-nvic) 的 NVIC_ISERx 与异常编号。</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-exti-triage.png" width="760" alt="Handraw：EXTI 四环分诊（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。IOPAEN → EXTICR → IMR → NVIC_ISER 四环都通才进 ISR；PR 置位不等于进中断；不是板级实拍。</sub>
+</p>
+
 
 ### 5. 关键 C 语义
 
@@ -344,6 +369,11 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
   <img src="../assets/diagrams/sample-04-tail-chaining.svg" width="760" alt="Cortex-M3 入栈出栈与尾链周期">
   <br><sub>▲ 自绘。入栈约 12 周期；尾链约 6。别空谈“6 周期 ISR”。</sub>
 </p>
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-tail-chaining.png" width="760" alt="Handraw：入栈与尾链周期（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。入栈约 12 周期，尾链约 6；别把硬件尾链开销当成整个 ISR 时长；不是示波器实拍。</sub>
+</p>
+
 
 
 | 机制 | 说明 |
