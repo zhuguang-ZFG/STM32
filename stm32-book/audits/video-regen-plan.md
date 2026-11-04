@@ -86,4 +86,9 @@ python tools/gen_long_lesson.py --report 00
 - [x] This plan file
 - [x] Batch A execute（**2026-11-05**）：ch00/01/02/04/05 旁白结尾反同构改写（五章指纹互不相同、≠ch03/ch06），NARRATED_RATE/NARRATED_PITCH 环境变量接线（Blocker 1 关闭），1080p 重配音 ch00 139.3s / ch01 146.9s / ch02 155.5s / ch04 157.2s / ch05 161.0s，文档旁白稿 `--patch-docs` 同步；QA：ffprobe 逐条核验、check_assets 1962/1962、pytest 182 passed。
 - [x] ch03 pilot 端到端复跑（**2026-11-05**）：短片 `--speak 03` 121.4s/1080p/7 条字幕（TTS 断连重试生效）；长课 `--report 03` 十项全 True、SHA 在 media-report。
-- [x] Batch B execute（**2026-11-05**）：ch01/02/04/05 长课 Huihui→XiaoxiaoNeural 重配音完成——ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s，media-report 十项全 True、LUFS −15.7~−15.8、28 字幕对齐；ch00/ch03 长课本已 Xiaoxiao 绿。Batch A+B 收口后 ch00–05 六章短片与长课全部为 Xiaoxiao 可复现交付。
+- [x] Batch B execute（**2026-11-05**）：ch01/02/04/05 长课 Huihui→XiaoxiaoNeural 重配音完成
+- [x] Batch C execute（**2026-11-05**）：ch06–15 十章短片结尾拍反同构改写（每章取自本章事实），1080p 重配音 149.0–170.8 s 全部在合同内；zh+en 文档旁白稿同步；QA ffprobe + check_assets 1962/1962 + pytest 182 passed（commit `ac7bdca`）。
+- [x] Batch D execute（**2026-11-05**）：ch06–15 长课 Huihui→XiaoxiaoNeural 重配音，media-report 十项全 True（commit `90b22d6`）。ch00–15 十六章长课全部 Xiaoxiao 达标。
+- [x] Batch E execute（**2026-11-05**）：ch16–20 五章短片结尾拍反同构改写 + 1080p 重配音 146.9–162.8 s（commit `a6be916`）。
+- [x] Batch F execute（**2026-11-05**）：ch16–20 长课整链重配音完成——rendered storyboard + media-report 十项全 True + XiaoxiaoNeural + 联系表；`video/ch16–20/` 证据链补齐。ch00–20 十六章长课 + 二十一章短片（00–20）全部为 Xiaoxiao 可复现交付。
+- [ ] Batch G execute：ch21–28 需先编写 8 份长课 storyboard（每章 28 场景）+ 短片 1080p 提升/`hd_chapters` 扩围 + `final-videos/ch26–28` 建立——未开始，诚实挂账。——ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s，media-report 十项全 True、LUFS −15.7~−15.8、28 字幕对齐；ch00/ch03 长课本已 Xiaoxiao 绿。Batch A+B 收口后 ch00–05 六章短片与长课全部为 Xiaoxiao 可复现交付。

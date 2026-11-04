@@ -1,0 +1,891 @@
+{
+  "id": "19",
+  "slug": "projects-long",
+  "title": "项目实战合集：从蓝牙小车到 CAN 网络与自平衡车",
+  "short_source": "tools/narration.py#CHAPTERS[19]",
+  "segments": [
+    {
+      "scene_id": "ch19-s01",
+      "title": "十个项目，只许一个新外设",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "这一章有十个项目，从蓝牙小车到自平衡车。但开工前只有一条规矩：每一轮新增加的不确定，只允许有一个外设。坏了你知道是谁。这一课把这条规矩和十个项目的入口一次讲完。",
+      "on_screen": [
+        "十个项目一张图",
+        "一轮只加一个新外设",
+        "坏了知道是谁"
+      ],
+      "visual_source": "illustrations/ch19-handdraw.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "开工前先数不确定",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 18.782,
+      "subtitle_ref": "ch19.srt#01",
+      "head": "十个项目，只许一个新外设",
+      "lines": [
+        "十个项目一张图",
+        "一轮只加一个新外设",
+        "坏了知道是谁"
+      ],
+      "say": "这一章有十个项目，从蓝牙小车到自平衡车。但开工前只有一条规矩：每一轮新增加的不确定，只允许有一个外设。坏了你知道是谁。这一课把这条规矩和十个项目的入口一次讲完。",
+      "svg": "illustrations/ch19-handdraw.svg"
+    },
+    {
+      "scene_id": "ch19-s02",
+      "title": "先算账：64 KB 和 20 KB",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s01"
+      ],
+      "narration": "十个项目都按 STM32F103C8T6 做：闪存 64 KB、SRAM 20 KB。做项目前先算一笔账，很多项目卡住不是代码写错，是方案在这颗芯片上根本装不下。这张接线总览是多数项目起步的地方。",
+      "on_screen": [
+        "F103C8T6: 64KB Flash / 20KB SRAM",
+        "先算容量再定方案",
+        "从 peripheral-wiring 起步"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "方案先在芯片上装得下",
+      "evidence_type": "concept",
+      "start": 18.782,
+      "duration": 22.238,
+      "subtitle_ref": "ch19.srt#02",
+      "head": "先算账：64 KB 和 20 KB",
+      "lines": [
+        "F103C8T6: 64KB Flash / 20KB SRAM",
+        "先算容量再定方案",
+        "从 peripheral-wiring 起步"
+      ],
+      "say": "十个项目都按 STM32F103C8T6 做：闪存 64 KB、SRAM 20 KB。做项目前先算一笔账，很多项目卡住不是代码写错，是方案在这颗芯片上根本装不下。这张接线总览是多数项目起步的地方。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s03",
+      "title": "一张 APP 的地图：16 + 2 + 46",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s02"
+      ],
+      "narration": "这张图是第 12 章和本仓库例程的地图：Bootloader 从 0x08000000 起 16 KB，参数区 2 KB，APP 从 0x08004800 起长度 0xB800，到 0x08010000 之前。16 + 2 + 46 = 64，刚好放下。",
+      "on_screen": [
+        "Bootloader 16KB @ 0x08000000",
+        "参数区 2KB @ 0x08004000",
+        "APP 0xB800 @ 0x08004800"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围",
+        "docs/19-项目实战合集.md#时序与状态"
+      ],
+      "memory_anchor": "16+2+46=64 一张图",
+      "evidence_type": "calculation",
+      "start": 41.02,
+      "duration": 26.606,
+      "subtitle_ref": "ch19.srt#03",
+      "head": "一张 APP 的地图：16 + 2 + 46",
+      "lines": [
+        "Bootloader 16KB @ 0x08000000",
+        "参数区 2KB @ 0x08004000",
+        "APP 0xB800 @ 0x08004800"
+      ],
+      "say": "这张图是第 12 章和本仓库例程的地图：Bootloader 从 0x08000000 起 16 KB，参数区 2 KB，APP 从 0x08004800 起长度 0xB800，到 0x08010000 之前。16 + 2 + 46 = 64，刚好放下。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s04",
+      "title": "蓝牙小车：单字符到车轮",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s03"
+      ],
+      "narration": "蓝牙小车是入门第一题。手机发单字符 F/B/L/R/S，串口中断收包后解析，设置电机方向与 PWM 占空比。L298N 的 IN1/IN2 控方向，ENA 接 TIM3 PWM，占空比范围 0 到 999。",
+      "on_screen": [
+        "指令 F/B/L/R/S",
+        "L298N: IN1/IN2 方向",
+        "TIM3 PWM 0~999"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#1. 蓝牙小车（★★ 入门级）"
+      ],
+      "memory_anchor": "一个字符一辆车",
+      "evidence_type": "code",
+      "start": 67.626,
+      "duration": 22.358,
+      "subtitle_ref": "ch19.srt#04",
+      "head": "蓝牙小车：单字符到车轮",
+      "lines": [
+        "指令 F/B/L/R/S",
+        "L298N: IN1/IN2 方向",
+        "TIM3 PWM 0~999"
+      ],
+      "say": "蓝牙小车是入门第一题。手机发单字符 F/B/L/R/S，串口中断收包后解析，设置电机方向与 PWM 占空比。L298N 的 IN1/IN2 控方向，ENA 接 TIM3 PWM，占空比范围 0 到 999。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s05",
+      "title": "温湿度记录仪：先记时间再画曲线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s04"
+      ],
+      "narration": "记录仪先用 RTC 周期唤醒，读传感器、显示到 OLED、写入 W25Q64 的循环日志区，串口导出 CSV。先把读数和时间做对，掉电不丢，再去画曲线。SHT30 走 I2C，精度优于 DHT11。",
+      "on_screen": [
+        "RTC 唤醒 → 传感器 → OLED",
+        "W25Q64 循环日志区",
+        "先时间对，再画曲线"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#2. 温湿度记录仪（★★ 入门级）"
+      ],
+      "memory_anchor": "时间错，记录无意义",
+      "evidence_type": "concept",
+      "start": 89.984,
+      "duration": 23.006,
+      "subtitle_ref": "ch19.srt#05",
+      "head": "温湿度记录仪：先记时间再画曲线",
+      "lines": [
+        "RTC 唤醒 → 传感器 → OLED",
+        "W25Q64 循环日志区",
+        "先时间对，再画曲线"
+      ],
+      "say": "记录仪先用 RTC 周期唤醒，读传感器、显示到 OLED、写入 W25Q64 的循环日志区，串口导出 CSV。先把读数和时间做对，掉电不丢，再去画曲线。SHT30 走 I2C，精度优于 DHT11。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s06",
+      "title": "示波器：DMA 写出稳定半区",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s05"
+      ],
+      "narration": "迷你示波器用 TIM 触发 ADC 等间隔采样，DMA 循环搬运到 512 字缓冲。半传输中断画前半区，传输完成画后半区，实现无缝刷新。采集项目先固定缓冲区所有权，再谈刷新率。",
+      "on_screen": [
+        "TIM 触发 → ADC → DMA",
+        "512 字循环缓冲",
+        "HT 画前半，TC 画后半"
+      ],
+      "visual_source": "diagrams/dma-buffer-ownership.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#3. DMA + ADC 迷你示波器（★★★ 进阶）"
+      ],
+      "memory_anchor": "先固定缓冲区所有权",
+      "evidence_type": "mechanism",
+      "start": 112.99,
+      "duration": 20.246,
+      "subtitle_ref": "ch19.srt#06",
+      "head": "示波器：DMA 写出稳定半区",
+      "lines": [
+        "TIM 触发 → ADC → DMA",
+        "512 字循环缓冲",
+        "HT 画前半，TC 画后半"
+      ],
+      "say": "迷你示波器用 TIM 触发 ADC 等间隔采样，DMA 循环搬运到 512 字缓冲。半传输中断画前半区，传输完成画后半区，实现无缝刷新。采集项目先固定缓冲区所有权，再谈刷新率。",
+      "svg": "diagrams/dma-buffer-ownership.svg"
+    },
+    {
+      "scene_id": "ch19-s07",
+      "title": "电压换算：分母是 4096",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s06"
+      ],
+      "narration": "12 位 ADC 换算电压，V 等于码乘 Vref 除以 4096。码 2048 在名义 3.3 V 下是 1.65 V。分母写成 4095 会偏一个 LSB。示波器屏幕显示的电压值，第一步就是这条换算对齐第 09 章。",
+      "on_screen": [
+        "V = code × Vref / 4096",
+        "码 2048 = 1.65 V",
+        "4095 偏一个 LSB"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围",
+        "docs/19-项目实战合集.md#3. DMA + ADC 迷你示波器（★★★ 进阶）"
+      ],
+      "memory_anchor": "分母 4096，2048 是一半",
+      "evidence_type": "calculation",
+      "start": 133.236,
+      "duration": 22.838,
+      "subtitle_ref": "ch19.srt#07",
+      "head": "电压换算：分母是 4096",
+      "lines": [
+        "V = code × Vref / 4096",
+        "码 2048 = 1.65 V",
+        "4095 偏一个 LSB"
+      ],
+      "say": "12 位 ADC 换算电压，V 等于码乘 Vref 除以 4096。码 2048 在名义 3.3 V 下是 1.65 V。分母写成 4095 会偏一个 LSB。示波器屏幕显示的电压值，第一步就是这条换算对齐第 09 章。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch19-s08",
+      "title": "USB 采集卡：133 字节不是一包",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s07"
+      ],
+      "narration": "USB 采集卡先做通枚举和回显，再把采样挂上去。一帧是帧头加序号加 64 个样本加校验，共 4 + 128 + 1 = 133 字节。第 14 章全速批量一包上限是 64 字节，所以它要拆成三包发。",
+      "on_screen": [
+        "帧头 + 序号 + 64 样本 + CRC",
+        "133 字节 = 4+128+1",
+        "拆成 64+64+5 三包"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#4. USB 数据采集卡（★★★ 进阶）",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "枚举先行，133 拆三包",
+      "evidence_type": "calculation",
+      "start": 156.074,
+      "duration": 21.686,
+      "subtitle_ref": "ch19.srt#08",
+      "head": "USB 采集卡：133 字节不是一包",
+      "lines": [
+        "帧头 + 序号 + 64 样本 + CRC",
+        "133 字节 = 4+128+1",
+        "拆成 64+64+5 三包"
+      ],
+      "say": "USB 采集卡先做通枚举和回显，再把采样挂上去。一帧是帧头加序号加 64 个样本加校验，共 4 + 128 + 1 = 133 字节。第 14 章全速批量一包上限是 64 字节，所以它要拆成三包发。",
+      "svg": "diagrams/sample-14-usb-enum.svg"
+    },
+    {
+      "scene_id": "ch19-s09",
+      "title": "IAP：C8 只有一个 APP 槽",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s08"
+      ],
+      "narration": "IAP 项目在 C8 上先按第 12 章的一张 APP 做通。网上常见的 A/B 双分区要再放一张 0xB800，合计 110 KB，结束在 0x0801B800，越过 0x08010000。第 12 章没有第二张槽，双分区是另一份设计。",
+      "on_screen": [
+        "C8 只有一张 0xB800 APP",
+        "双分区 16+2+46+46=110KB",
+        "0x0801B800 越界"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#5. IAP 远程升级（★★★ 进阶）",
+        "docs/19-项目实战合集.md#常见坑与出处"
+      ],
+      "memory_anchor": "C8 单槽，双分区换芯片",
+      "evidence_type": "mechanism",
+      "start": 177.76,
+      "duration": 24.782,
+      "subtitle_ref": "ch19.srt#09",
+      "head": "IAP：C8 只有一个 APP 槽",
+      "lines": [
+        "C8 只有一张 0xB800 APP",
+        "双分区 16+2+46+46=110KB",
+        "0x0801B800 越界"
+      ],
+      "say": "IAP 项目在 C8 上先按第 12 章的一张 APP 做通。网上常见的 A/B 双分区要再放一张 0xB800，合计 110 KB，结束在 0x0801B800，越过 0x08010000。第 12 章没有第二张槽，双分区是另一份设计。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s10",
+      "title": "升级生效：magic 与 CRC 说了算",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s09"
+      ],
+      "narration": "参数区记录 magic 0x5A5A0001 表示有效，还有 active、pending 和两张 APP 的长度与 CRC。Boot_SelectApp 校验通过才把 pending 变成 active。串口传完并跳转不够，要依次验收镜像长度、槽位、向量和心跳。",
+      "on_screen": [
+        "magic 0x5A5A0001",
+        "pending 校验过才生效",
+        "验收：长度/槽位/向量/心跳"
+      ],
+      "visual_source": "diagrams/iap-acceptance-gates.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#5. IAP 远程升级（★★★ 进阶）"
+      ],
+      "memory_anchor": "传完不算完，验收才算",
+      "evidence_type": "mechanism",
+      "start": 202.542,
+      "duration": 23.846,
+      "subtitle_ref": "ch19.srt#10",
+      "head": "升级生效：magic 与 CRC 说了算",
+      "lines": [
+        "magic 0x5A5A0001",
+        "pending 校验过才生效",
+        "验收：长度/槽位/向量/心跳"
+      ],
+      "say": "参数区记录 magic 0x5A5A0001 表示有效，还有 active、pending 和两张 APP 的长度与 CRC。Boot_SelectApp 校验通过才把 pending 变成 active。串口传完并跳转不够，要依次验收镜像长度、槽位、向量和心跳。",
+      "svg": "diagrams/iap-acceptance-gates.svg"
+    },
+    {
+      "scene_id": "ch19-s11",
+      "title": "WS2812：厂商的时序，不是 RM0008",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s10"
+      ],
+      "narration": "WS2812 靠单线归零码传 24 位 GRB：T0H 0.4 微秒，T1H 0.8 微秒，周期 1.25 微秒。这些时序来自灯珠厂商数据手册。用 TIM 加 DMA 把每一位编成两个比较值循环送出，末尾留 50 个周期复位低电平。",
+      "on_screen": [
+        "T0H 0.4µs / T1H 0.8µs",
+        "周期 1.25µs，24 位 GRB",
+        "TIM+DMA + 50 周期复位"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#6. WS2812 灯带控制器（★★ 进阶）"
+      ],
+      "memory_anchor": "时序看厂商手册",
+      "evidence_type": "code",
+      "start": 226.388,
+      "duration": 25.046,
+      "subtitle_ref": "ch19.srt#11",
+      "head": "WS2812：厂商的时序，不是 RM0008",
+      "lines": [
+        "T0H 0.4µs / T1H 0.8µs",
+        "周期 1.25µs，24 位 GRB",
+        "TIM+DMA + 50 周期复位"
+      ],
+      "say": "WS2812 靠单线归零码传 24 位 GRB：T0H 0.4 微秒，T1H 0.8 微秒，周期 1.25 微秒。这些时序来自灯珠厂商数据手册。用 TIM 加 DMA 把每一位编成两个比较值循环送出，末尾留 50 个周期复位低电平。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s12",
+      "title": "逻辑分析仪：缓冲在 C8 上链不过",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s11"
+      ],
+      "narration": "逻辑分析仪用 TIM 高频触发，ISR 里把整组 GPIO 的 IDR 读成一个字节存环形缓冲，停止后经 USB 分块上传。但 64 乘 1024 等于 65536，大于 C8 的 20480 字节，这只数组在 C8 上放不下。",
+      "on_screen": [
+        "TIM 采样 → IDR → 环形缓冲",
+        "LA_DEPTH = 64 × 1024",
+        "65536 > 20480 放不下"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#7. 简易逻辑分析仪（★★★★ 挑战）",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "缓冲超 SRAM 先换芯片",
+      "evidence_type": "calculation",
+      "start": 251.434,
+      "duration": 23.99,
+      "subtitle_ref": "ch19.srt#12",
+      "head": "逻辑分析仪：缓冲在 C8 上链不过",
+      "lines": [
+        "TIM 采样 → IDR → 环形缓冲",
+        "LA_DEPTH = 64 × 1024",
+        "65536 > 20480 放不下"
+      ],
+      "say": "逻辑分析仪用 TIM 高频触发，ISR 里把整组 GPIO 的 IDR 读成一个字节存环形缓冲，停止后经 USB 分块上传。但 64 乘 1024 等于 65536，大于 C8 的 20480 字节，这只数组在 C8 上放不下。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s13",
+      "title": "CAN 组网：先做通两个节点",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s12"
+      ],
+      "narration": "多机 CAN 先做通两个节点，再加第三个。规划 ID 空间：低 4 位节点号、高 7 位功能码，0x100 是状态上报，0x200 是主节点命令，用过滤器分流。链路不通时叠协议，你分不清是包错了还是采样错了。",
+      "on_screen": [
+        "ID: 低4位节点 + 高7位功能",
+        "0x100 上报 / 0x200 命令",
+        "先两个节点再第三个"
+      ],
+      "visual_source": "diagrams/network-debug-ladder.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#8. 多机 CAN 网络（★★★★ 挑战）"
+      ],
+      "memory_anchor": "先两节点通再扩网",
+      "evidence_type": "concept",
+      "start": 275.424,
+      "duration": 22.454,
+      "subtitle_ref": "ch19.srt#13",
+      "head": "CAN 组网：先做通两个节点",
+      "lines": [
+        "ID: 低4位节点 + 高7位功能",
+        "0x100 上报 / 0x200 命令",
+        "先两个节点再第三个"
+      ],
+      "say": "多机 CAN 先做通两个节点，再加第三个。规划 ID 空间：低 4 位节点号、高 7 位功能码，0x100 是状态上报，0x200 是主节点命令，用过滤器分流。链路不通时叠协议，你分不清是包错了还是采样错了。",
+      "svg": "diagrams/network-debug-ladder.svg"
+    },
+    {
+      "scene_id": "ch19-s14",
+      "title": "总线层：500k、120Ω、PB8/PB9",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s13"
+      ],
+      "narration": "CAN 两端各接 120 欧终端电阻，工作脚 PB8/PB9，速率 500 kbit/s，例程预分频是 9，和第 13 章一致。两个节点速率对不上时，从链路层往上逐层排查，不要直接跳到总线坏了，每层留可复现证据。",
+      "on_screen": [
+        "两端各 120Ω 终端",
+        "PB8/PB9 @ 500 kbit/s",
+        "从链路层逐层排查"
+      ],
+      "visual_source": "diagrams/network-debug-ladder.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#8. 多机 CAN 网络（★★★★ 挑战）",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "速率不一致先查位时间",
+      "evidence_type": "mechanism",
+      "start": 297.878,
+      "duration": 21.662,
+      "subtitle_ref": "ch19.srt#14",
+      "head": "总线层：500k、120Ω、PB8/PB9",
+      "lines": [
+        "两端各 120Ω 终端",
+        "PB8/PB9 @ 500 kbit/s",
+        "从链路层逐层排查"
+      ],
+      "say": "CAN 两端各接 120 欧终端电阻，工作脚 PB8/PB9，速率 500 kbit/s，例程预分频是 9，和第 13 章一致。两个节点速率对不上时，从链路层往上逐层排查，不要直接跳到总线坏了，每层留可复现证据。",
+      "svg": "diagrams/network-debug-ladder.svg"
+    },
+    {
+      "scene_id": "ch19-s15",
+      "title": "自平衡：串级 PD，5 毫秒一环",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s14"
+      ],
+      "narration": "自平衡是挑战题，不要当第一周作业。MPU6050 做姿态解算得到倾角，串级 PID 外环角度内环角速度，PD 输出限幅后送电机，控制周期固定 5 毫秒。底盘力学和编码器还没稳，算法只会放大抖动。",
+      "on_screen": [
+        "MPU6050 → 互补滤波倾角",
+        "PD: 25.0 与 0.8",
+        "固定 5ms 控制环"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#9. 自平衡小车（★★★★ 挑战）"
+      ],
+      "memory_anchor": "先稳车再谈算法",
+      "evidence_type": "code",
+      "start": 319.54,
+      "duration": 22.406,
+      "subtitle_ref": "ch19.srt#15",
+      "head": "自平衡：串级 PD，5 毫秒一环",
+      "lines": [
+        "MPU6050 → 互补滤波倾角",
+        "PD: 25.0 与 0.8",
+        "固定 5ms 控制环"
+      ],
+      "say": "自平衡是挑战题，不要当第一周作业。MPU6050 做姿态解算得到倾角，串级 PID 外环角度内环角速度，PD 输出限幅后送电机，控制周期固定 5 毫秒。底盘力学和编码器还没稳，算法只会放大抖动。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s16",
+      "title": "网关：采集、显示、通信各一个任务",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s15"
+      ],
+      "narration": "FreeRTOS 网关把长期做的事拆成任务：采集任务读传感器放进队列，通信任务取出转发，显示任务等事件组。互斥量保护共享的 I2C 总线，管理任务喂看门狗和低功耗调度。",
+      "on_screen": [
+        "采集 → 队列 → 通信",
+        "事件组同步显示",
+        "互斥量保护 I2C"
+      ],
+      "visual_source": "animations/rtos-startup-gates.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#10. FreeRTOS 智能网关（★★★★ 挑战）"
+      ],
+      "memory_anchor": "任务按长期职责划",
+      "evidence_type": "code",
+      "start": 341.946,
+      "duration": 18.614,
+      "subtitle_ref": "ch19.srt#16",
+      "head": "网关：采集、显示、通信各一个任务",
+      "lines": [
+        "采集 → 队列 → 通信",
+        "事件组同步显示",
+        "互斥量保护 I2C"
+      ],
+      "say": "FreeRTOS 网关把长期做的事拆成任务：采集任务读传感器放进队列，通信任务取出转发，显示任务等事件组。互斥量保护共享的 I2C 总线，管理任务喂看门狗和低功耗调度。",
+      "svg": "animations/rtos-startup-gates.svg"
+    },
+    {
+      "scene_id": "ch19-s17",
+      "title": "调度器运行不等于系统就绪",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s16"
+      ],
+      "narration": "网关类项目从复位证据开始，经过最低硬件、内核对象、设备探测，到应用放行逐门启动。调度器已运行不等于系统已准备好，关键设备、队列、存储和通信都给出结果后才放行业务。",
+      "on_screen": [
+        "启动逐门放行",
+        "设备探测 → 队列 → 通信",
+        "调度器运行≠系统就绪"
+      ],
+      "visual_source": "animations/rtos-startup-gates.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#10. FreeRTOS 智能网关（★★★★ 挑战）"
+      ],
+      "memory_anchor": "逐门给结果再放行",
+      "evidence_type": "mechanism",
+      "start": 360.56,
+      "duration": 19.838,
+      "subtitle_ref": "ch19.srt#17",
+      "head": "调度器运行不等于系统就绪",
+      "lines": [
+        "启动逐门放行",
+        "设备探测 → 队列 → 通信",
+        "调度器运行≠系统就绪"
+      ],
+      "say": "网关类项目从复位证据开始，经过最低硬件、内核对象、设备探测，到应用放行逐门启动。调度器已运行不等于系统已准备好，关键设备、队列、存储和通信都给出结果后才放行业务。",
+      "svg": "animations/rtos-startup-gates.svg"
+    },
+    {
+      "scene_id": "ch19-s18",
+      "title": "交付前先冻结合同",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s17"
+      ],
+      "narration": "动手实验的第一条是冻结交付合同：写清输入范围、输出格式、时序容量预算、失败状态和恢复路径，先不写业务代码。每个模块保留可运行测试、失败注入和一份测量记录，通过后再组合。",
+      "on_screen": [
+        "冻结交付合同再写码",
+        "模块：测试 + 失败注入",
+        "通过后再组合"
+      ],
+      "visual_source": "diagrams/iap-acceptance-gates.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#动手实验（选题与推进）"
+      ],
+      "memory_anchor": "合同先冻结，证据先组合",
+      "evidence_type": "concept",
+      "start": 380.398,
+      "duration": 20.294,
+      "subtitle_ref": "ch19.srt#18",
+      "head": "交付前先冻结合同",
+      "lines": [
+        "冻结交付合同再写码",
+        "模块：测试 + 失败注入",
+        "通过后再组合"
+      ],
+      "say": "动手实验的第一条是冻结交付合同：写清输入范围、输出格式、时序容量预算、失败状态和恢复路径，先不写业务代码。每个模块保留可运行测试、失败注入和一份测量记录，通过后再组合。",
+      "svg": "diagrams/iap-acceptance-gates.svg"
+    },
+    {
+      "scene_id": "ch19-s19",
+      "title": "系统预算：任何一项超了先缩功能",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch19-s18"
+      ],
+      "narration": "系统预算汇总 Flash、RAM、最坏响应、平均电流、带宽和队列峰值。任何一项超预算，先缩功能或换目标芯片，而不是熬夜调参。交付包从干净环境重建，让另一个人按说明能复现。",
+      "on_screen": [
+        "Flash / RAM / 响应 / 电流 / 带宽",
+        "超预算先缩功能或换芯片",
+        "干净环境可重建"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#动手实验（选题与推进）",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "超预算换方案不熬夜",
+      "evidence_type": "concept",
+      "start": 400.692,
+      "duration": 19.766,
+      "subtitle_ref": "ch19.srt#19",
+      "head": "系统预算：任何一项超了先缩功能",
+      "lines": [
+        "Flash / RAM / 响应 / 电流 / 带宽",
+        "超预算先缩功能或换芯片",
+        "干净环境可重建"
+      ],
+      "say": "系统预算汇总 Flash、RAM、最坏响应、平均电流、带宽和队列峰值。任何一项超预算，先缩功能或换目标芯片，而不是熬夜调参。交付包从干净环境重建，让另一个人按说明能复现。",
+      "svg": "diagrams/sample-14-usb-enum.svg"
+    },
+    {
+      "scene_id": "ch19-s20",
+      "title": "失败一：第二张 APP 越界",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch19-s19"
+      ],
+      "narration": "第一个典型失败：升级方案写成两张 APP 还注明见第 12 章。64 KB 在 0x08010000 结束，第二张 0xB800 从那里画到 0x0801B800，已经越界。C8 上先按一张 0xB800 做通。",
+      "on_screen": [
+        "两张 APP = 110 KB",
+        "结束于 0x0801B800",
+        "越过 0x08010000"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#常见坑与出处",
+        "docs/19-项目实战合集.md#时序与状态"
+      ],
+      "memory_anchor": "双分区不是 C8 的地图",
+      "evidence_type": "failure",
+      "start": 420.458,
+      "duration": 22.886,
+      "subtitle_ref": "ch19.srt#20",
+      "head": "失败一：第二张 APP 越界",
+      "lines": [
+        "两张 APP = 110 KB",
+        "结束于 0x0801B800",
+        "越过 0x08010000"
+      ],
+      "say": "第一个典型失败：升级方案写成两张 APP 还注明见第 12 章。64 KB 在 0x08010000 结束，第二张 0xB800 从那里画到 0x0801B800，已经越界。C8 上先按一张 0xB800 做通。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s21",
+      "title": "失败二：64KB 缓冲编进 C8",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch19-s20"
+      ],
+      "narration": "第二个失败：把 65536 字节的采样缓冲直接编进 C8。C8 的 SRAM 是 20480 字节，链接阶段就报不够。要么缩到十几 KB，要么换 SRAM 更大的芯片，先查它的数据手册。",
+      "on_screen": [
+        "64 × 1024 = 65536",
+        "SRAM 只有 20480",
+        "链接直接失败"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#常见坑与出处",
+        "docs/19-项目实战合集.md#7. 简易逻辑分析仪（★★★★ 挑战）"
+      ],
+      "memory_anchor": "缓冲超 SRAM 链接报错",
+      "evidence_type": "failure",
+      "start": 443.344,
+      "duration": 19.838,
+      "subtitle_ref": "ch19.srt#21",
+      "head": "失败二：64KB 缓冲编进 C8",
+      "lines": [
+        "64 × 1024 = 65536",
+        "SRAM 只有 20480",
+        "链接直接失败"
+      ],
+      "say": "第二个失败：把 65536 字节的采样缓冲直接编进 C8。C8 的 SRAM 是 20480 字节，链接阶段就报不够。要么缩到十几 KB，要么换 SRAM 更大的芯片，先查它的数据手册。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s22",
+      "title": "失败三：分母 4095 偏一个 LSB",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch19-s21"
+      ],
+      "narration": "第三个失败：示波器电压偏一个 LSB，查下来是分母用了 4095。12 位满量程是 4096，码 2048 在名义 3.3 V 下是 1.65 V，分母 4095 整条曲线偏一个码。改回 4096 就对齐了。",
+      "on_screen": [
+        "分母写成 4095",
+        "整条曲线偏一码",
+        "改回 4096 即对齐"
+      ],
+      "visual_source": "diagrams/sample-09-adc-sar.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#常见坑与出处",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "4096 分母，4095 偏码",
+      "evidence_type": "failure",
+      "start": 463.182,
+      "duration": 23.102,
+      "subtitle_ref": "ch19.srt#22",
+      "head": "失败三：分母 4095 偏一个 LSB",
+      "lines": [
+        "分母写成 4095",
+        "整条曲线偏一码",
+        "改回 4096 即对齐"
+      ],
+      "say": "第三个失败：示波器电压偏一个 LSB，查下来是分母用了 4095。12 位满量程是 4096，码 2048 在名义 3.3 V 下是 1.65 V，分母 4095 整条曲线偏一个码。改回 4096 就对齐了。",
+      "svg": "diagrams/sample-09-adc-sar.svg"
+    },
+    {
+      "scene_id": "ch19-s23",
+      "title": "失败四：133 当成端点包长",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch19-s22"
+      ],
+      "narration": "第四个失败：采集卡把 133 字节写成端点包长。133 是应用帧，不是第 14 章全速批量的包上限。wMaxPacketSize 仍写 64，帧拆成 64 加 64 加 5 三包发，端点描述符才不会失配。",
+      "on_screen": [
+        "133 不是 wMaxPacketSize",
+        "拆 64+64+5 三包",
+        "描述符仍写 64"
+      ],
+      "visual_source": "diagrams/sample-14-usb-enum.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#常见坑与出处",
+        "docs/19-项目实战合集.md#原理与适用范围"
+      ],
+      "memory_anchor": "帧长不等于包上限",
+      "evidence_type": "failure",
+      "start": 486.284,
+      "duration": 22.142,
+      "subtitle_ref": "ch19.srt#23",
+      "head": "失败四：133 当成端点包长",
+      "lines": [
+        "133 不是 wMaxPacketSize",
+        "拆 64+64+5 三包",
+        "描述符仍写 64"
+      ],
+      "say": "第四个失败：采集卡把 133 字节写成端点包长。133 是应用帧，不是第 14 章全速批量的包上限。wMaxPacketSize 仍写 64，帧拆成 64 加 64 加 5 三包发，端点描述符才不会失配。",
+      "svg": "diagrams/sample-14-usb-enum.svg"
+    },
+    {
+      "scene_id": "ch19-s24",
+      "title": "失败五：方向脚占在 PA0",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch19-s23"
+      ],
+      "narration": "第五个失败：小车方向写在 PA0。第 10 脚是 PA0-WKUP，也是 ADC12_IN0，和唤醒、ADC、灯都撞在一起。换到板子上空闲的 GPIO，记得同步改 MOTOR_DIR_PIN 的定义，而不是只改一处代码。",
+      "on_screen": [
+        "PA0 = WKUP = ADC12_IN0",
+        "换离第 10 脚的 GPIO",
+        "同步改 MOTOR_DIR_PIN"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#常见坑与出处",
+        "docs/19-项目实战合集.md#1. 蓝牙小车（★★ 入门级）"
+      ],
+      "memory_anchor": "方向脚避开 PA0",
+      "evidence_type": "failure",
+      "start": 508.426,
+      "duration": 25.094,
+      "subtitle_ref": "ch19.srt#24",
+      "head": "失败五：方向脚占在 PA0",
+      "lines": [
+        "PA0 = WKUP = ADC12_IN0",
+        "换离第 10 脚的 GPIO",
+        "同步改 MOTOR_DIR_PIN"
+      ],
+      "say": "第五个失败：小车方向写在 PA0。第 10 脚是 PA0-WKUP，也是 ADC12_IN0，和唤醒、ADC、灯都撞在一起。换到板子上空闲的 GPIO，记得同步改 MOTOR_DIR_PIN 的定义，而不是只改一处代码。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s25",
+      "title": "实验一：一句话写完完成标准",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch19-s24"
+      ],
+      "narration": "第一个动手实验：动手前用一句话写完完成标准，比如温度每分钟记一条、掉电不丢。没有这句话你会一直调，不知道哪天算做完。失败怎样看出来，也要先写下来。这就是冻结合同。",
+      "on_screen": [
+        "完成标准一句话",
+        "每分钟一条，掉电不丢",
+        "失败怎么看出来先写"
+      ],
+      "visual_source": "diagrams/iap-acceptance-gates.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#动手实验（选题与推进）"
+      ],
+      "memory_anchor": "完成标准先写一句话",
+      "evidence_type": "experiment",
+      "start": 533.52,
+      "duration": 19.43,
+      "subtitle_ref": "ch19.srt#25",
+      "head": "实验一：一句话写完完成标准",
+      "lines": [
+        "完成标准一句话",
+        "每分钟一条，掉电不丢",
+        "失败怎么看出来先写"
+      ],
+      "say": "第一个动手实验：动手前用一句话写完完成标准，比如温度每分钟记一条、掉电不丢。没有这句话你会一直调，不知道哪天算做完。失败怎样看出来，也要先写下来。这就是冻结合同。",
+      "svg": "diagrams/iap-acceptance-gates.svg"
+    },
+    {
+      "scene_id": "ch19-s26",
+      "title": "实验二：从示例跑起，再上一个外设",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch19-s25"
+      ],
+      "narration": "第二个实验：不要从空白文件开始堆。先让仓库里对应的示例在你的板上跑起来，再加这一个项目需要的外设。示例和板子不一致时，先改时钟和引脚，别改算法。每一轮只允许一个新外设。",
+      "on_screen": [
+        "先跑仓库示例",
+        "再上一个新外设",
+        "不一致先改时钟引脚"
+      ],
+      "visual_source": "diagrams/sample-19-flash-fit.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围",
+        "docs/19-项目实战合集.md#动手实验（选题与推进）"
+      ],
+      "memory_anchor": "示例先行，改时钟不改算法",
+      "evidence_type": "experiment",
+      "start": 552.95,
+      "duration": 19.478,
+      "subtitle_ref": "ch19.srt#26",
+      "head": "实验二：从示例跑起，再上一个外设",
+      "lines": [
+        "先跑仓库示例",
+        "再上一个新外设",
+        "不一致先改时钟引脚"
+      ],
+      "say": "第二个实验：不要从空白文件开始堆。先让仓库里对应的示例在你的板上跑起来，再加这一个项目需要的外设。示例和板子不一致时，先改时钟和引脚，别改算法。每一轮只允许一个新外设。",
+      "svg": "diagrams/sample-19-flash-fit.svg"
+    },
+    {
+      "scene_id": "ch19-s27",
+      "title": "三问口诀：新外设、完成标准、时钟",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch19-s26"
+      ],
+      "narration": "合上书三问。第一问，你下一轮只允许新加哪一个外设？说不出名字就还没准备好开工。第二问，怎样算做完？第三问，板上的时钟和示例不一致时，你先改哪一部分？先改时钟和引脚，别改算法。",
+      "on_screen": [
+        "下一轮新外设是哪个",
+        "怎样算做完",
+        "时钟不一致改哪部分"
+      ],
+      "visual_source": "boards/peripheral-wiring.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围",
+        "docs/19-项目实战合集.md#动手实验（选题与推进）"
+      ],
+      "memory_anchor": "三问：外设、完成、时钟",
+      "evidence_type": "recall",
+      "start": 572.428,
+      "duration": 21.278,
+      "subtitle_ref": "ch19.srt#27",
+      "head": "三问口诀：新外设、完成标准、时钟",
+      "lines": [
+        "下一轮新外设是哪个",
+        "怎样算做完",
+        "时钟不一致改哪部分"
+      ],
+      "say": "合上书三问。第一问，你下一轮只允许新加哪一个外设？说不出名字就还没准备好开工。第二问，怎样算做完？第三问，板上的时钟和示例不一致时，你先改哪一部分？先改时钟和引脚，别改算法。",
+      "svg": "boards/peripheral-wiring.svg"
+    },
+    {
+      "scene_id": "ch19-s28",
+      "title": "做完：别人能复现，你能说没做的",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch19-s27"
+      ],
+      "narration": "做完不是指灯亮过一次。别人按你的说明能复现，你能说出还没做的部分。仓库里的十个题目，选一个做到这个程度，比十个都开了头有用。选项目先看证据链能否闭合，十个项目，一个外设一轮。",
+      "on_screen": [
+        "复现才是做完",
+        "能说出未做的部分",
+        "选一个做透胜过全开头"
+      ],
+      "visual_source": "illustrations/ch19-mid-handdraw.svg",
+      "fact_source": [
+        "docs/19-项目实战合集.md#原理与适用范围",
+        "docs/19-项目实战合集.md#学习目标"
+      ],
+      "memory_anchor": "一个外设一轮做到底",
+      "evidence_type": "recall",
+      "start": 593.706,
+      "duration": 20.15,
+      "subtitle_ref": "ch19.srt#28",
+      "head": "做完：别人能复现，你能说没做的",
+      "lines": [
+        "复现才是做完",
+        "能说出未做的部分",
+        "选一个做透胜过全开头"
+      ],
+      "say": "做完不是指灯亮过一次。别人按你的说明能复现，你能说出还没做的部分。仓库里的十个题目，选一个做到这个程度，比十个都开了头有用。选项目先看证据链能否闭合，十个项目，一个外设一轮。",
+      "svg": "illustrations/ch19-mid-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 733.143,
+  "actual_duration": 613.856
+}

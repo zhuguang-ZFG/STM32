@@ -47,7 +47,11 @@ unverified 一律写明原因，不冒充通过。
 | Batch A 五章 1080p 重配音 | passed | ch00 139.3s / ch01 146.9s / ch02 155.5s / ch04 157.2s / ch05 161.0s，均 1920×1080 H.264+AAC、10 条字幕，全部在 120–240 s 合同内（ffprobe 逐条核验） |
 | Batch A 文档旁白稿同步 | passed | `--patch-docs` 后 zh+en 各 10 文件 24/30 行更新 |
 | ch00–05 长课 Xiaoxiao 交付（Batch B） | passed | ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s 重配音为 `zh-CN-XiaoxiaoNeural`（Huihui 漂移清除），media-report 十项全 True、LUFS −15.7~−15.8；ch00/ch03 本已绿——六章全部达标 |
-| ch06–28 视频（Batch C–G） | **unverified** | 排队中；计划与批次定义见 `audits/video-regen-plan.md` |
+| ch06–15 短片反同构重配音（Batch C） | passed | 十章指纹互不相同；1080p 149.0–170.8 s；pytest/check_assets 过（`ac7bdca`） |
+| ch06–15 长课 Xiaoxiao（Batch D） | passed | 十章 media-report 十项全 True（`90b22d6`） |
+| ch16–20 短片反同构重配音（Batch E） | passed | 五章指纹互不相同；1080p 146.9–162.8 s（`a6be916`） |
+| ch16–20 长课（Batch F） | passed | 五章整链重配音：rendered+report 补齐、XiaoxiaoNeural、十项全 True（`video/ch16–20/`） |
+| ch21–28（Batch G） | **unverified** | 需先编写 8 份长课 storyboard；未开始，诚实挂账 |
 | `task_verify` 工具本体 | **unverified** | 工具不存在；本文件即等价分列记录 |
 
 ## 4. 逐章审计（§11.3 第一项）的对账

@@ -1,0 +1,896 @@
+{
+  "id": "18",
+  "slug": "faq-long",
+  "title": "常见问题 FAQ：编译、下载、外设、硬件与 RTOS 的排错顺序",
+  "short_source": "tools/narration.py#CHAPTERS[18]",
+  "segments": [
+    {
+      "scene_id": "ch18-s01",
+      "title": "排错不是从改代码开始",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "一个闪灯的程序、一次下载失败、一串乱码，看起来是三件事，其实是同一条排错顺序。这一章是排错索引：先按现象找到第一条可验证边界，再决定下一项检查。38 条症状按编译、下载、外设、硬件、RTOS 五类编号。",
+      "on_screen": [
+        "排错从现象开始",
+        "先找第一条边界",
+        "38条五类编号"
+      ],
+      "visual_source": "illustrations/ch18-handdraw.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "按现象找第一条边界",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 24.23,
+      "subtitle_ref": "ch18.srt#01",
+      "head": "排错不是从改代码开始",
+      "lines": [
+        "排错从现象开始",
+        "先找第一条边界",
+        "38条五类编号"
+      ],
+      "say": "一个闪灯的程序、一次下载失败、一串乱码，看起来是三件事，其实是同一条排错顺序。这一章是排错索引：先按现象找到第一条可验证边界，再决定下一项检查。38 条症状按编译、下载、外设、硬件、RTOS 五类编号。",
+      "svg": "illustrations/ch18-handdraw.svg"
+    },
+    {
+      "scene_id": "ch18-s02",
+      "title": "第一处真正的错误",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s01"
+      ],
+      "narration": "编译报一长串时，先看第一处真正的错误，不要从最后一行开始慌。fatal error 说找不到 stm32f1xx_hal.h，多半不是语法突然坏了，而是头文件搜索路径里没加 HAL 的 Inc 目录和 Core/Inc。这一帧是编译到运行的数据流，第一道门就是包含路径。",
+      "on_screen": [
+        "先看第一处真错误",
+        "Include路径缺Inc",
+        "不是语法坏"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "报错先看第一条",
+      "evidence_type": "concept",
+      "start": 24.23,
+      "duration": 25.454,
+      "subtitle_ref": "ch18.srt#02",
+      "head": "第一处真正的错误",
+      "lines": [
+        "先看第一处真错误",
+        "Include路径缺Inc",
+        "不是语法坏"
+      ],
+      "say": "编译报一长串时，先看第一处真正的错误，不要从最后一行开始慌。fatal error 说找不到 stm32f1xx_hal.h，多半不是语法突然坏了，而是头文件搜索路径里没加 HAL 的 Inc 目录和 Core/Inc。这一帧是编译到运行的数据流，第一道门就是包含路径。",
+      "svg": "animations/toolchain-flow.svg"
+    },
+    {
+      "scene_id": "ch18-s03",
+      "title": "链接报未定义符号",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s02"
+      ],
+      "narration": "编译通过、链接却报 undefined reference to HAL_GPIO_Init，问题不在你写的代码，而在工程清单：对应的 HAL 源文件没加进编译。CubeMX 工程由 HAL_MODULE_ENABLED 宏控制哪些模块参与编译。工程结构决定链接器能看到什么。",
+      "on_screen": [
+        "编译过链接失败",
+        "源文件没进工程",
+        "宏控HAL模块"
+      ],
+      "visual_source": "diagrams/project-structure.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接"
+      ],
+      "memory_anchor": "链接错先查工程清单",
+      "evidence_type": "diagram",
+      "start": 49.684,
+      "duration": 26.102,
+      "subtitle_ref": "ch18.srt#03",
+      "head": "链接报未定义符号",
+      "lines": [
+        "编译过链接失败",
+        "源文件没进工程",
+        "宏控HAL模块"
+      ],
+      "say": "编译通过、链接却报 undefined reference to HAL_GPIO_Init，问题不在你写的代码，而在工程清单：对应的 HAL 源文件没加进编译。CubeMX 工程由 HAL_MODULE_ENABLED 宏控制哪些模块参与编译。工程结构决定链接器能看到什么。",
+      "svg": "diagrams/project-structure.svg"
+    },
+    {
+      "scene_id": "ch18-s04",
+      "title": "按芯片写容量契约",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s03"
+      ],
+      "narration": "链接报 region FLASH overflowed 或 RAM overflowed，先确认你按哪颗料在估。C8 的闪存只有 64 KB、SRAM 只有 20 KB，128 KB 是 xB 的容量。容量是构建契约的一部分：链接脚本和堆栈最小值都要按这颗芯片写。",
+      "on_screen": [
+        "C8: 64KB Flash",
+        "SRAM只有20KB",
+        "脚本按芯片写"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接",
+        "docs/18-常见问题FAQ.md#时序与状态"
+      ],
+      "memory_anchor": "溢出先问是哪颗料",
+      "evidence_type": "mechanism",
+      "start": 75.786,
+      "duration": 23.174,
+      "subtitle_ref": "ch18.srt#04",
+      "head": "按芯片写容量契约",
+      "lines": [
+        "C8: 64KB Flash",
+        "SRAM只有20KB",
+        "脚本按芯片写"
+      ],
+      "say": "链接报 region FLASH overflowed 或 RAM overflowed，先确认你按哪颗料在估。C8 的闪存只有 64 KB、SRAM 只有 20 KB，128 KB 是 xB 的容量。容量是构建契约的一部分：链接脚本和堆栈最小值都要按这颗芯片写。",
+      "svg": "diagrams/single-build-contract.svg"
+    },
+    {
+      "scene_id": "ch18-s05",
+      "title": "声明和定义分开",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s04"
+      ],
+      "narration": "multiple definition 重定义，是因为把变量写在头文件里又被多个 .c 包含。头文件只放 extern 声明，定义放 .c。分层看也一样：声明和定义是两层，混在一起每层都看到一份，链接时两份就打架。",
+      "on_screen": [
+        "头文件只放extern",
+        "定义放.c",
+        "两层别混"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接"
+      ],
+      "memory_anchor": "声明与定义分开",
+      "evidence_type": "concept",
+      "start": 98.96,
+      "duration": 20.726,
+      "subtitle_ref": "ch18.srt#05",
+      "head": "声明和定义分开",
+      "lines": [
+        "头文件只放extern",
+        "定义放.c",
+        "两层别混"
+      ],
+      "say": "multiple definition 重定义，是因为把变量写在头文件里又被多个 .c 包含。头文件只放 extern 声明，定义放 .c。分层看也一样：声明和定义是两层，混在一起每层都看到一份，链接时两份就打架。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s06",
+      "title": "printf 先接上输出层",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s05"
+      ],
+      "narration": "printf 串口乱码或没输出，多半没重定向。要写 __io_putchar 到 UART，需要浮点再加 -u _printf_float。printf 的输出最终落在某一层，没接上就是空白。这一层通了，再查半主机和浮点配置。",
+      "on_screen": [
+        "重定向__io_putchar",
+        "浮点加-u",
+        "层没接上就空白"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接"
+      ],
+      "memory_anchor": "printf先接输出层",
+      "evidence_type": "concept",
+      "start": 119.686,
+      "duration": 24.47,
+      "subtitle_ref": "ch18.srt#06",
+      "head": "printf 先接上输出层",
+      "lines": [
+        "重定向__io_putchar",
+        "浮点加-u",
+        "层没接上就空白"
+      ],
+      "say": "printf 串口乱码或没输出，多半没重定向。要写 __io_putchar 到 UART，需要浮点再加 -u _printf_float。printf 的输出最终落在某一层，没接上就是空白。这一层通了，再查半主机和浮点配置。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s07",
+      "title": "构建入口的零件",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s06"
+      ],
+      "narration": "arm-none-eabi-gcc: not found 是工具链没安装或没进 PATH；cannot open linker script 是 -T 指向的 .ld 路径错了或换工程没同步。工具链和链接脚本都是构建入口的零件，入口断了，后面每一道门都没有数据。",
+      "on_screen": [
+        "工具链进PATH",
+        "-T指向.ld",
+        "入口断全断"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接",
+        "docs/18-常见问题FAQ.md#五、RTOS 与工具链"
+      ],
+      "memory_anchor": "入口零件先查路径",
+      "evidence_type": "mechanism",
+      "start": 144.156,
+      "duration": 20.894,
+      "subtitle_ref": "ch18.srt#07",
+      "head": "构建入口的零件",
+      "lines": [
+        "工具链进PATH",
+        "-T指向.ld",
+        "入口断全断"
+      ],
+      "say": "arm-none-eabi-gcc: not found 是工具链没安装或没进 PATH；cannot open linker script 是 -T 指向的 .ld 路径错了或换工程没同步。工具链和链接脚本都是构建入口的零件，入口断了，后面每一道门都没有数据。",
+      "svg": "animations/toolchain-flow.svg"
+    },
+    {
+      "scene_id": "ch18-s08",
+      "title": "一份符合容量的固件",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s07"
+      ],
+      "narration": "bin 体积异常大，通常装了没用的东西：未用的库、调试信息、printf 全格式。开 -Os，加 -ffunction-sections -fdata-sections 再用 --gc-sections 把死代码裁掉。一次构建只应产出一份符合容量的固件。",
+      "on_screen": [
+        "-Os减体积",
+        "gc-sections裁死代码",
+        "一份固件"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接"
+      ],
+      "memory_anchor": "体积大先裁死代码",
+      "evidence_type": "mechanism",
+      "start": 165.05,
+      "duration": 20.222,
+      "subtitle_ref": "ch18.srt#08",
+      "head": "一份符合容量的固件",
+      "lines": [
+        "-Os减体积",
+        "gc-sections裁死代码",
+        "一份固件"
+      ],
+      "say": "bin 体积异常大，通常装了没用的东西：未用的库、调试信息、printf 全格式。开 -Os，加 -ffunction-sections -fdata-sections 再用 --gc-sections 把死代码裁掉。一次构建只应产出一份符合容量的固件。",
+      "svg": "diagrams/single-build-contract.svg"
+    },
+    {
+      "scene_id": "ch18-s09",
+      "title": "No target 先查线",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s08"
+      ],
+      "narration": "No target connected 先别查优化等级。第 34 脚 PA13 是 SWDIO、第 37 脚 PA14 是 SWCLK、共地、3.3 V，第 7 脚 NRST 按图 31 接 0.1 µF。这几样没核对完，线没接对时改 -O2 不会有任何变化，只会多一个变量。",
+      "on_screen": [
+        "PA13/PA14/GND/3V3",
+        "NRST 0.1µF",
+        "线没对改O2无用"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "认不出芯片先查线",
+      "evidence_type": "evidence",
+      "start": 185.272,
+      "duration": 25.886,
+      "subtitle_ref": "ch18.srt#09",
+      "head": "No target 先查线",
+      "lines": [
+        "PA13/PA14/GND/3V3",
+        "NRST 0.1µF",
+        "线没对改O2无用"
+      ],
+      "say": "No target connected 先别查优化等级。第 34 脚 PA13 是 SWDIO、第 37 脚 PA14 是 SWCLK、共地、3.3 V，第 7 脚 NRST 按图 31 接 0.1 µF。这几样没核对完，线没接对时改 -O2 不会有任何变化，只会多一个变量。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s10",
+      "title": "自己关掉调试口",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s09"
+      ],
+      "narration": "烧录后 SWD 失联，板子像变砖：程序把 PA13 和 PA14 配成了普通 GPIO，调试口被自己关掉了。上电瞬间按住 NRST 再点下载，或把 BOOT0 拉高从系统存储器启动，再用 STM32CubeProgrammer 擦除。",
+      "on_screen": [
+        "PA13/PA14变GPIO",
+        "按住NRST再下载",
+        "BOOT0拉高擦除"
+      ],
+      "visual_source": "diagrams/sample-18-boot-triage.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试"
+      ],
+      "memory_anchor": "失联先怀疑关了SWD",
+      "evidence_type": "evidence",
+      "start": 211.158,
+      "duration": 23.678,
+      "subtitle_ref": "ch18.srt#10",
+      "head": "自己关掉调试口",
+      "lines": [
+        "PA13/PA14变GPIO",
+        "按住NRST再下载",
+        "BOOT0拉高擦除"
+      ],
+      "say": "烧录后 SWD 失联，板子像变砖：程序把 PA13 和 PA14 配成了普通 GPIO，调试口被自己关掉了。上电瞬间按住 NRST 再点下载，或把 BOOT0 拉高从系统存储器启动，再用 STM32CubeProgrammer 擦除。",
+      "svg": "diagrams/sample-18-boot-triage.svg"
+    },
+    {
+      "scene_id": "ch18-s11",
+      "title": "下载中断查两侧",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s10"
+      ],
+      "narration": "Flash Download failed - Target DLL has been cancelled，下载到一半断，先查两件事：Flash 算法和型号对不对，芯片有没有被读保护。解除读保护要走 Option Bytes 的 RDP。这两项都在芯片这一侧，不在你代码里。",
+      "on_screen": [
+        "算法型号核对",
+        "查RDP读保护",
+        "问题在芯片侧"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试"
+      ],
+      "memory_anchor": "下载中断查算法与RDP",
+      "evidence_type": "evidence",
+      "start": 234.836,
+      "duration": 20.174,
+      "subtitle_ref": "ch18.srt#11",
+      "head": "下载中断查两侧",
+      "lines": [
+        "算法型号核对",
+        "查RDP读保护",
+        "问题在芯片侧"
+      ],
+      "say": "Flash Download failed - Target DLL has been cancelled，下载到一半断，先查两件事：Flash 算法和型号对不对，芯片有没有被读保护。解除读保护要走 Option Bytes 的 RDP。这两项都在芯片这一侧，不在你代码里。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s12",
+      "title": "断点与优化",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s11"
+      ],
+      "narration": "断点不生效、单步乱跳，两个原因最常见：硬件断点用尽，M3/M4 只有 6 个；编译器优化重排指令。删多余断点改用软件断点，调试配置改 -O0 或 -Og。断点是给构建留的观察窗，优化关掉窗才清晰。",
+      "on_screen": [
+        "硬件断点仅6个",
+        "-O0/-Og",
+        "软件断点替代"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试"
+      ],
+      "memory_anchor": "断点乱跳先关优化",
+      "evidence_type": "mechanism",
+      "start": 255.01,
+      "duration": 22.286,
+      "subtitle_ref": "ch18.srt#12",
+      "head": "断点与优化",
+      "lines": [
+        "硬件断点仅6个",
+        "-O0/-Og",
+        "软件断点替代"
+      ],
+      "say": "断点不生效、单步乱跳，两个原因最常见：硬件断点用尽，M3/M4 只有 6 个；编译器优化重排指令。删多余断点改用软件断点，调试配置改 -O0 或 -Og。断点是给构建留的观察窗，优化关掉窗才清晰。",
+      "svg": "animations/toolchain-flow.svg"
+    },
+    {
+      "scene_id": "ch18-s13",
+      "title": "HardFault 的第一条边界",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s12"
+      ],
+      "narration": "一进调试就停在 HardFault_Handler，先看 CFSR。BFAR 只有 bit 15 为 1 才是这次的出错地址，再核对链接脚本和栈大小。寄存器是最终证据：时钟、外设初始化越界还是向量表错，CFSR 给的第一条边界比猜可靠。",
+      "on_screen": [
+        "先看CFSR",
+        "BFAR bit15",
+        "核对链接脚本"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试",
+        "docs/18-常见问题FAQ.md#排错方法论（先做这 5 步）"
+      ],
+      "memory_anchor": "HardFault先看CFSR",
+      "evidence_type": "evidence",
+      "start": 277.296,
+      "duration": 24.71,
+      "subtitle_ref": "ch18.srt#13",
+      "head": "HardFault 的第一条边界",
+      "lines": [
+        "先看CFSR",
+        "BFAR bit15",
+        "核对链接脚本"
+      ],
+      "say": "一进调试就停在 HardFault_Handler，先看 CFSR。BFAR 只有 bit 15 为 1 才是这次的出错地址，再核对链接脚本和栈大小。寄存器是最终证据：时钟、外设初始化越界还是向量表错，CFSR 给的第一条边界比猜可靠。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s14",
+      "title": "外设老三样第一样",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s13"
+      ],
+      "narration": "HAL_GPIO_WritePin 后引脚无变化，老三样的第一样：忘记使能 GPIO 时钟，写 __HAL_RCC_GPIOx_CLK_ENABLE()。现象在引脚上，同时怀疑引脚模式和接线；现象在 HAL 返回值里，就打印那个状态码再对照寄存器。",
+      "on_screen": [
+        "先查时钟使能",
+        "现象看层定位",
+        "打印状态码"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "外设无反应查时钟",
+      "evidence_type": "mechanism",
+      "start": 302.006,
+      "duration": 28.982,
+      "subtitle_ref": "ch18.srt#14",
+      "head": "外设老三样第一样",
+      "lines": [
+        "先查时钟使能",
+        "现象看层定位",
+        "打印状态码"
+      ],
+      "say": "HAL_GPIO_WritePin 后引脚无变化，老三样的第一样：忘记使能 GPIO 时钟，写 __HAL_RCC_GPIOx_CLK_ENABLE()。现象在引脚上，同时怀疑引脚模式和接线；现象在 HAL 返回值里，就打印那个状态码再对照寄存器。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s15",
+      "title": "乱码的时钟边界",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s14"
+      ],
+      "narration": "串口全乱码，先统一两端波特率、共地、确认 SYSCLK。HSE 没起振时 SYSCLK 退回 HSI 8 MHz，USART1 的 0x271 在这只时钟上是 12800，不是 115200。同一个除法器，时钟错了波特率就错了。",
+      "on_screen": [
+        "先共地看时钟",
+        "HSE不起振退HSI",
+        "0x271在8MHz是12800"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设",
+        "docs/18-常见问题FAQ.md#原理与适用范围",
+        "docs/18-常见问题FAQ.md#时序与状态"
+      ],
+      "memory_anchor": "乱码先确认时钟",
+      "evidence_type": "mechanism",
+      "start": 330.988,
+      "duration": 24.734,
+      "subtitle_ref": "ch18.srt#15",
+      "head": "乱码的时钟边界",
+      "lines": [
+        "先共地看时钟",
+        "HSE不起振退HSI",
+        "0x271在8MHz是12800"
+      ],
+      "say": "串口全乱码，先统一两端波特率、共地、确认 SYSCLK。HSE 没起振时 SYSCLK 退回 HSI 8 MHz，USART1 的 0x271 在这只时钟上是 12800，不是 115200。同一个除法器，时钟错了波特率就错了。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s16",
+      "title": "I2C 卡死三件事",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s15"
+      ],
+      "narration": "I2C 卡在 HAL_I2C_Master_Transmit，三件事按顺序查：SCL 和 SDA 各接 4.7 kΩ 上拉、核对 7 位地址、总线被拉死就做恢复，补 9 个时钟脉冲。上拉和地址是硬件层，恢复是抢救手段。",
+      "on_screen": [
+        "上拉4.7kΩ",
+        "核对7位地址",
+        "9时钟恢复"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设"
+      ],
+      "memory_anchor": "I2C卡死查上拉地址",
+      "evidence_type": "mechanism",
+      "start": 355.722,
+      "duration": 23.51,
+      "subtitle_ref": "ch18.srt#16",
+      "head": "I2C 卡死三件事",
+      "lines": [
+        "上拉4.7kΩ",
+        "核对7位地址",
+        "9时钟恢复"
+      ],
+      "say": "I2C 卡在 HAL_I2C_Master_Transmit，三件事按顺序查：SCL 和 SDA 各接 4.7 kΩ 上拉、核对 7 位地址、总线被拉死就做恢复，补 9 个时钟脉冲。上拉和地址是硬件层，恢复是抢救手段。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s17",
+      "title": "PWM 无输出的三层",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s16"
+      ],
+      "narration": "PWM 在示波器上看不到波形，按顺序问：有没有调 HAL_TIM_PWM_Start、引脚 AF 复用配了没有、通道对不对。没启动、没配复用、选错通道，三层各错一处的现象完全一样，所以要一层一层过。",
+      "on_screen": [
+        "先调PWM_Start",
+        "核对AF复用",
+        "再查通道"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设"
+      ],
+      "memory_anchor": "PWM无输出三层顺序",
+      "evidence_type": "mechanism",
+      "start": 379.232,
+      "duration": 22.958,
+      "subtitle_ref": "ch18.srt#17",
+      "head": "PWM 无输出的三层",
+      "lines": [
+        "先调PWM_Start",
+        "核对AF复用",
+        "再查通道"
+      ],
+      "say": "PWM 在示波器上看不到波形，按顺序问：有没有调 HAL_TIM_PWM_Start、引脚 AF 复用配了没有、通道对不对。没启动、没配复用、选错通道，三层各错一处的现象完全一样，所以要一层一层过。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s18",
+      "title": "RTC 不走时",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s17"
+      ],
+      "narration": "RTC 上电归零或不走时：LSE 没起振、VBAT 没接电池、负载电容过大。接 32.768 kHz 晶振，负载电容在 5 pF 到 15 pF 里按晶振选，6 pF 不是必须值。PRL 填 32767，引脚是第 3 脚和第 4 脚。",
+      "on_screen": [
+        "LSE 32.768kHz",
+        "负载5~15pF按晶振选",
+        "PRL=32767"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "RTC不走时查LSE与VBAT",
+      "evidence_type": "mechanism",
+      "start": 402.19,
+      "duration": 25.406,
+      "subtitle_ref": "ch18.srt#18",
+      "head": "RTC 不走时",
+      "lines": [
+        "LSE 32.768kHz",
+        "负载5~15pF按晶振选",
+        "PRL=32767"
+      ],
+      "say": "RTC 上电归零或不走时：LSE 没起振、VBAT 没接电池、负载电容过大。接 32.768 kHz 晶振，负载电容在 5 pF 到 15 pF 里按晶振选，6 pF 不是必须值。PRL 填 32767，引脚是第 3 脚和第 4 脚。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s19",
+      "title": "时基不抢 SysTick",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch18-s18"
+      ],
+      "narration": "上了 RTOS 之后 HAL_Delay 不返回，是 FreeRTOS 和 HAL 在抢 SysTick。仓库例程把 HAL 时基放在 TIM4，不是笼统的 TIMx，SysTick 留给内核，一个 tick 是 1 ms。调用 FromISR 的中断数值优先级要大于等于 5。",
+      "on_screen": [
+        "时基放TIM4",
+        "SysTick留给内核",
+        "FromISR数值≥5"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#五、RTOS 与工具链",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "时基冲突改TIM4",
+      "evidence_type": "mechanism",
+      "start": 427.596,
+      "duration": 25.646,
+      "subtitle_ref": "ch18.srt#19",
+      "head": "时基不抢 SysTick",
+      "lines": [
+        "时基放TIM4",
+        "SysTick留给内核",
+        "FromISR数值≥5"
+      ],
+      "say": "上了 RTOS 之后 HAL_Delay 不返回，是 FreeRTOS 和 HAL 在抢 SysTick。仓库例程把 HAL 时基放在 TIM4，不是笼统的 TIMx，SysTick 留给内核，一个 tick 是 1 ms。调用 FromISR 的中断数值优先级要大于等于 5。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s20",
+      "title": "失败证据：首条错误",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch18-s19"
+      ],
+      "narration": "预期：修改包含路径后编译通过。实际：一长串错误涌出来。第一处真正的错误是 fatal error: stm32f1xx_hal.h: No such file or directory。边界在包含路径这一层，不是语法层。把 Inc 加进搜索路径，错误消失。",
+      "on_screen": [
+        "预期:编译通过",
+        "实际:一串报错",
+        "边界:包含路径"
+      ],
+      "visual_source": "animations/toolchain-flow.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#一、编译与链接",
+        "docs/18-常见问题FAQ.md#排错方法论（先做这 5 步）"
+      ],
+      "memory_anchor": "失败证据:首条错误定位",
+      "evidence_type": "evidence",
+      "start": 453.242,
+      "duration": 24.59,
+      "subtitle_ref": "ch18.srt#20",
+      "head": "失败证据：首条错误",
+      "lines": [
+        "预期:编译通过",
+        "实际:一串报错",
+        "边界:包含路径"
+      ],
+      "say": "预期：修改包含路径后编译通过。实际：一长串错误涌出来。第一处真正的错误是 fatal error: stm32f1xx_hal.h: No such file or directory。边界在包含路径这一层，不是语法层。把 Inc 加进搜索路径，错误消失。",
+      "svg": "animations/toolchain-flow.svg"
+    },
+    {
+      "scene_id": "ch18-s21",
+      "title": "失败证据：No target",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch18-s20"
+      ],
+      "narration": "预期：连接后出现目标。实际：No target connected。边界不在优化等级：第 34 脚和第 37 脚没接到 PA13、PA14，或者没共地、没供电。核对四线和供电后目标出现，这一步不该动代码。",
+      "on_screen": [
+        "预期:出现目标",
+        "实际:No target",
+        "边界:四线与供电"
+      ],
+      "visual_source": "diagrams/sample-18-boot-triage.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#二、下载与调试",
+        "docs/18-常见问题FAQ.md#关键插图"
+      ],
+      "memory_anchor": "No target查四线",
+      "evidence_type": "evidence",
+      "start": 477.832,
+      "duration": 22.118,
+      "subtitle_ref": "ch18.srt#21",
+      "head": "失败证据：No target",
+      "lines": [
+        "预期:出现目标",
+        "实际:No target",
+        "边界:四线与供电"
+      ],
+      "say": "预期：连接后出现目标。实际：No target connected。边界不在优化等级：第 34 脚和第 37 脚没接到 PA13、PA14，或者没共地、没供电。核对四线和供电后目标出现，这一步不该动代码。",
+      "svg": "diagrams/sample-18-boot-triage.svg"
+    },
+    {
+      "scene_id": "ch18-s22",
+      "title": "失败证据：假变砖",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch18-s21"
+      ],
+      "narration": "预期：烧完程序复位就跑。实际：程序像没烧进去。边界在第 44 脚：BOOT0 被拉高，复位后跑的是系统存储器 0x1FFFF000。把 BOOT0 放回 0，从主闪存 0x08000000 启动，程序立刻出现。",
+      "on_screen": [
+        "预期:复位就跑",
+        "实际:像没烧",
+        "边界:BOOT0与启动地址"
+      ],
+      "visual_source": "diagrams/sample-00-boot-state.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#原理与适用范围",
+        "docs/18-常见问题FAQ.md#常见坑与出处",
+        "docs/18-常见问题FAQ.md#时序与状态"
+      ],
+      "memory_anchor": "假变砖查BOOT0",
+      "evidence_type": "evidence",
+      "start": 499.95,
+      "duration": 24.662,
+      "subtitle_ref": "ch18.srt#22",
+      "head": "失败证据：假变砖",
+      "lines": [
+        "预期:复位就跑",
+        "实际:像没烧",
+        "边界:BOOT0与启动地址"
+      ],
+      "say": "预期：烧完程序复位就跑。实际：程序像没烧进去。边界在第 44 脚：BOOT0 被拉高，复位后跑的是系统存储器 0x1FFFF000。把 BOOT0 放回 0，从主闪存 0x08000000 启动，程序立刻出现。",
+      "svg": "diagrams/sample-00-boot-state.svg"
+    },
+    {
+      "scene_id": "ch18-s23",
+      "title": "失败证据：串口乱码",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch18-s22"
+      ],
+      "narration": "预期：115200 收到清晰文本。实际：满屏乱码。边界在时钟：HSE 没起振，SYSCLK 退回 HSI 8 MHz，0x271 在这个时钟上是 12800。时钟恢复 72 MHz，波特率对了，串口立刻通。",
+      "on_screen": [
+        "预期:115200清晰",
+        "实际:满屏乱码",
+        "边界:时钟退回HSI"
+      ],
+      "visual_source": "diagrams/first-lab-wiring.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#三、外设",
+        "docs/18-常见问题FAQ.md#常见坑与出处"
+      ],
+      "memory_anchor": "乱码边界是时钟",
+      "evidence_type": "evidence",
+      "start": 524.612,
+      "duration": 23.318,
+      "subtitle_ref": "ch18.srt#23",
+      "head": "失败证据：串口乱码",
+      "lines": [
+        "预期:115200清晰",
+        "实际:满屏乱码",
+        "边界:时钟退回HSI"
+      ],
+      "say": "预期：115200 收到清晰文本。实际：满屏乱码。边界在时钟：HSE 没起振，SYSCLK 退回 HSI 8 MHz，0x271 在这个时钟上是 12800。时钟恢复 72 MHz，波特率对了，串口立刻通。",
+      "svg": "diagrams/first-lab-wiring.svg"
+    },
+    {
+      "scene_id": "ch18-s24",
+      "title": "失败证据：HAL_Delay",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch18-s23"
+      ],
+      "narration": "预期：HAL_Delay 延时后返回。实际：程序卡死不回。边界在时基：HAL 还在用 SysTick，和 FreeRTOS 内核抢同一个计数器。把时基改到 TIM4，SysTick 留给内核，同样的测试恢复通过。",
+      "on_screen": [
+        "预期:延时返回",
+        "实际:卡死",
+        "边界:SysTick冲突"
+      ],
+      "visual_source": "diagrams/layers-hal-ll-reg.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#五、RTOS 与工具链",
+        "docs/18-常见问题FAQ.md#常见坑与出处"
+      ],
+      "memory_anchor": "卡死边界是时基",
+      "evidence_type": "evidence",
+      "start": 547.93,
+      "duration": 22.334,
+      "subtitle_ref": "ch18.srt#24",
+      "head": "失败证据：HAL_Delay",
+      "lines": [
+        "预期:延时返回",
+        "实际:卡死",
+        "边界:SysTick冲突"
+      ],
+      "say": "预期：HAL_Delay 延时后返回。实际：程序卡死不回。边界在时基：HAL 还在用 SysTick，和 FreeRTOS 内核抢同一个计数器。把时基改到 TIM4，SysTick 留给内核，同样的测试恢复通过。",
+      "svg": "diagrams/layers-hal-ll-reg.svg"
+    },
+    {
+      "scene_id": "ch18-s25",
+      "title": "实验：构建边界",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch18-s24"
+      ],
+      "narration": "实验一：在临时分支移除一个 Include 路径，编译，保存完整首条错误、编译命令和修复后的退出码，不要只截最后一行。改回路径再编译，确认退出码回到 0。这一组是失败证据到单一修复到恢复证据。",
+      "on_screen": [
+        "移除Include路径",
+        "保存首条错误",
+        "修复后退出码0"
+      ],
+      "visual_source": "diagrams/single-build-contract.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#动手实验（排错训练）",
+        "docs/18-常见问题FAQ.md#排错方法论（先做这 5 步）"
+      ],
+      "memory_anchor": "构建边界实验",
+      "evidence_type": "experiment",
+      "start": 570.264,
+      "duration": 21.686,
+      "subtitle_ref": "ch18.srt#25",
+      "head": "实验：构建边界",
+      "lines": [
+        "移除Include路径",
+        "保存首条错误",
+        "修复后退出码0"
+      ],
+      "say": "实验一：在临时分支移除一个 Include 路径，编译，保存完整首条错误、编译命令和修复后的退出码，不要只截最后一行。改回路径再编译，确认退出码回到 0。这一组是失败证据到单一修复到恢复证据。",
+      "svg": "diagrams/single-build-contract.svg"
+    },
+    {
+      "scene_id": "ch18-s26",
+      "title": "实验：调试边界",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch18-s25"
+      ],
+      "narration": "实验二：断电后暂时断开 SWCLK，记录 No target connected；恢复接线后确认能读 Device ID。不要烧入关闭 SWD 的固件来练习。每一步只改一个变量，才有失败证据到恢复证据的完整链条。",
+      "on_screen": [
+        "断开SWCLK记录",
+        "恢复后读Device ID",
+        "一次只改一处"
+      ],
+      "visual_source": "diagrams/sample-18-boot-triage.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#动手实验（排错训练）",
+        "docs/18-常见问题FAQ.md#二、下载与调试"
+      ],
+      "memory_anchor": "调试边界实验",
+      "evidence_type": "experiment",
+      "start": 591.95,
+      "duration": 21.254,
+      "subtitle_ref": "ch18.srt#26",
+      "head": "实验：调试边界",
+      "lines": [
+        "断开SWCLK记录",
+        "恢复后读Device ID",
+        "一次只改一处"
+      ],
+      "say": "实验二：断电后暂时断开 SWCLK，记录 No target connected；恢复接线后确认能读 Device ID。不要烧入关闭 SWD 的固件来练习。每一步只改一个变量，才有失败证据到恢复证据的完整链条。",
+      "svg": "diagrams/sample-18-boot-triage.svg"
+    },
+    {
+      "scene_id": "ch18-s27",
+      "title": "五步和三铁律",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch18-s26"
+      ],
+      "narration": "回顾五步：复现，确认现象稳定；最小化，退到只点灯或只回环；二分，注释掉一半逐个使能；看证据，日志和波形代替猜测；对照手册，确认以为对的地方。前两步能解决大多数问题。",
+      "on_screen": [
+        "1复现 2最小化",
+        "3二分 4看证据",
+        "5对照手册"
+      ],
+      "visual_source": "diagrams/first-success-gates.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#排错方法论（先做这 5 步）",
+        "docs/18-常见问题FAQ.md#学习目标"
+      ],
+      "memory_anchor": "五步前两步最值钱",
+      "evidence_type": "recall",
+      "start": 613.204,
+      "duration": 20.246,
+      "subtitle_ref": "ch18.srt#27",
+      "head": "五步和三铁律",
+      "lines": [
+        "1复现 2最小化",
+        "3二分 4看证据",
+        "5对照手册"
+      ],
+      "say": "回顾五步：复现，确认现象稳定；最小化，退到只点灯或只回环；二分，注释掉一半逐个使能；看证据，日志和波形代替猜测；对照手册，确认以为对的地方。前两步能解决大多数问题。",
+      "svg": "diagrams/first-success-gates.svg"
+    },
+    {
+      "scene_id": "ch18-s28",
+      "title": "合上书三问",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch18-s27"
+      ],
+      "narration": "合上书三问：排错五步的前两步是什么？调试器认不出芯片时，先查代码还是先查线和 BOOT？为什么一次只改一处？三条铁律收尾：能测就别猜，先共地再看信号，改一处只改一处。",
+      "on_screen": [
+        "五步前两步",
+        "先查线再查代码",
+        "一次只改一处"
+      ],
+      "visual_source": "illustrations/ch18-mid-handdraw.svg",
+      "fact_source": [
+        "docs/18-常见问题FAQ.md#排错方法论（先做这 5 步）",
+        "docs/18-常见问题FAQ.md#原理与适用范围"
+      ],
+      "memory_anchor": "铁律:能测别猜",
+      "evidence_type": "recall",
+      "start": 633.45,
+      "duration": 19.478,
+      "subtitle_ref": "ch18.srt#28",
+      "head": "合上书三问",
+      "lines": [
+        "五步前两步",
+        "先查线再查代码",
+        "一次只改一处"
+      ],
+      "say": "合上书三问：排错五步的前两步是什么？调试器认不出芯片时，先查代码还是先查线和 BOOT？为什么一次只改一处？三条铁律收尾：能测就别猜，先共地再看信号，改一处只改一处。",
+      "svg": "illustrations/ch18-mid-handdraw.svg"
+    }
+  ],
+  "estimated_duration": 843.727,
+  "actual_duration": 652.928
+}
