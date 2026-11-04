@@ -1,0 +1,611 @@
+{
+ "schema_version": 1,
+ "chapter": "22",
+ "slug": "sim-long",
+ "title": "Wokwi 与 Renode：各自能证明什么",
+ "short_source": "tools/narration.py#CHAPTERS[22]",
+ "scenes": [
+  {
+   "scene_id": "ch22-s01",
+   "title": "仿真绿灯，为什么板上还是不闪？",
+   "purpose": "hook",
+   "prerequisite": [],
+   "narration": "先看一个最常见的落差：仿真的图全对，绿灯也亮了，真板上就是不闪。这一章只追一个问题：Wokwi、Renode 和真板，各自能证明什么、不能证明什么。",
+   "on_screen": [
+    "仿真图全对",
+    "真板不闪",
+    "先分清三家能证明什么"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-compare.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "仿真绿灯不等于板上绿灯",
+   "evidence_type": "concept"
+  },
+  {
+   "scene_id": "ch22-s02",
+   "title": "先选哪一家",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s01"
+   ],
+   "narration": "选工具先看目的：想看灯、按键、PWM 和 OLED，用 Wokwi；想在终端里单步、看 USART1 的字节流，用 Renode。两家都吃你自己编译出来的 ELF，仓库里不提供预编译固件。",
+   "on_screen": [
+    "看现象 → Wokwi",
+    "看字节流 → Renode",
+    "都吃自编译 ELF"
+   ],
+   "visual_source": "animations/sample-22-sim-pick-flow.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "按目的选工具，不吃预编译",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s03",
+   "title": "三列对照：反馈快慢与结论归属",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s02"
+   ],
+   "narration": "三列对照要说清归属：Wokwi 在浏览器里看接线，反馈最快；Renode 在机器模型里看外设访问；真板决定电气与时序结论。前两家缩短反馈，最后一家出验收证据。",
+   "on_screen": [
+    "Wokwi：看接线",
+    "Renode：看访问",
+    "真板：出结论"
+   ],
+   "visual_source": "diagrams/simulator-comparison.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "缩短反馈靠仿真，验收靠真板",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s04",
+   "title": "Wokwi 是什么",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s03"
+   ],
+   "narration": "Wokwi 跑在浏览器或 VS Code 插件里，配置是示例目录里的 diagram.json 加 wokwi.toml，板子选 board-stm32-bluepill，也就是 F103C8。它适合接线、GPIO、EXTI、定时器和 I2C。",
+   "on_screen": [
+    "浏览器 / VS Code",
+    "diagram.json + wokwi.toml",
+    "适合 GPIO EXTI TIM I2C"
+   ],
+   "visual_source": "diagrams/sample-22-wokwi-scope.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "图加 toml 就是板子",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s05",
+   "title": "wokwi.toml 指向你的 ELF",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s04"
+   ],
+   "narration": "wokwi.toml 里固件路径写成 build/firmware.elf。STM32 接受 elf、hex 和 bin，先在 CubeIDE 或 PlatformIO 里编出来，再把两行改成你的真实路径。Wokwi 不负责编译。",
+   "on_screen": [
+    "build/firmware.elf",
+    "接受 elf/hex/bin",
+    "Wokwi 不编译"
+   ],
+   "visual_source": "diagrams/sample-22-wokwi-scope.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "路径指向自编译产物",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s06",
+   "title": "核心示例的支持表",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s05"
+   ],
+   "narration": "仓库六个核心示例各有一份图：gpio-blink、exti-key、timer-pwm、i2c-oled 都能在当前模型里跑完；uart-dma-idle 的 DMA 未实现，空闲帧收包跑不完；adc-dma 只有基本转换，DMA 搬运也没有。",
+   "on_screen": [
+    "四个示例能跑",
+    "uart-dma-idle 卡 DMA",
+    "adc-dma 缺搬运"
+   ],
+   "visual_source": "illustrations/handraw/ch22-wokwi-scope.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "支持表里有短板，先看再跑",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s07",
+   "title": "支持表是契约，不是承诺",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s06"
+   ],
+   "narration": "支持情况以 Wokwi 文档那张表为准：GPIO、USART、I2C、SPI、TIM、EXTI 有；DMA、RTC、IWDG 没有。表会随版本改，以你打开文档的那一版为准，必要时做一个最小复现实验。",
+   "on_screen": [
+    "有：GPIO USART I2C SPI TIM EXTI",
+    "无：DMA RTC IWDG",
+    "以当版文档为准"
+   ],
+   "visual_source": "illustrations/handraw/ch22-wokwi-scope.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#先选哪一家"
+   ],
+   "memory_anchor": "支持表随版本改",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s08",
+   "title": "五层模型：现象从哪里来",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s07"
+   ],
+   "narration": "灯亮只是最上层现象。往下一层是外设模型，再往下是芯片平台、仿真引擎和宿主环境。定位接线对了但固件没动的问题，就沿这五层往下追。",
+   "on_screen": [
+    "现象 → 外设模型",
+    "芯片平台 → 仿真引擎",
+    "宿主环境"
+   ],
+   "visual_source": "diagrams/simulation-model-boundary.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#Wokwi：图怎么读"
+   ],
+   "memory_anchor": "现象底下有五层",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s09",
+   "title": "Renode 是什么",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s08"
+   ],
+   "narration": "Renode 跑在本机命令行，脚本在 sim/renode 目录，平台描述用官方的 stm32f103.repl。它适合加载 ELF、在终端看 USART1 字节流，以及打印外设访问日志。",
+   "on_screen": [
+    "本机命令行",
+    "sim/renode/*.resc",
+    "官方 stm32f103.repl"
+   ],
+   "visual_source": "diagrams/sample-22-renode-path.svg",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#Renode：两条脚本"
+   ],
+   "memory_anchor": "一条命令跑机器模型",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s10",
+   "title": "两条脚本各做四件事",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s09"
+   ],
+   "narration": "仓库的两条脚本只做四件事：建机器、加载官方 F103 平台描述、加载 ELF、启动。gpio-blink.resc 打开 USART1 分析器并把 gpioPortC 的访问打进日志；uart-usart1.resc 把 usart1 接到本机 3456 端口。",
+   "on_screen": [
+    "建机器 · 加载平台",
+    "加载 ELF · 启动",
+    "uart 脚本接 3456 端口"
+   ],
+   "visual_source": "illustrations/handraw/ch22-renode-path.png",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#Renode：两条脚本"
+   ],
+   "memory_anchor": "四件事，两条脚本",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s11",
+   "title": "启动命令与 ELF 路径",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s10"
+   ],
+   "narration": "启动用 renode 加 -e 参数把固件路径传进去：bin 变量指向你编译出的 firmware.elf。默认找当前目录的 firmware.elf，路径不对就在命令行里换。",
+   "on_screen": [
+    "renode -e $bin=@…",
+    "默认当前目录",
+    "路径可用 -e 换"
+   ],
+   "visual_source": "diagrams/sample-22-renode-path.svg",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#Renode：两条脚本"
+   ],
+   "memory_anchor": "ELF 路径是参数",
+   "evidence_type": "code"
+  },
+  {
+   "scene_id": "ch22-s12",
+   "title": "usart1 就是 PA9 和 PA10",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s11"
+   ],
+   "narration": "脚本里的 usart1 这个名字和地址 0x40013800，写在 Renode 的 stm32f103.repl 里，对应参考手册的 USART1，也就是 PA9 和 PA10。别把它说成 USART2。",
+   "on_screen": [
+    "usart1 @ 0x40013800",
+    "= PA9 / PA10",
+    "不是 USART2"
+   ],
+   "visual_source": "diagrams/sample-22-renode-path.svg",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#Renode：两条脚本"
+   ],
+   "memory_anchor": "名字、地址、引脚三对齐",
+   "evidence_type": "code"
+  },
+  {
+   "scene_id": "ch22-s13",
+   "title": "Renode 的 DMA 也看版本",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s12"
+   ],
+   "narration": "uart 示例走 DMA。Renode 的平台文件里挂了 DMA 节点，但能不能完整搬完空闲线加环形缓冲，取决于你装的 Renode 版本。对不上时，先用第 06 章的轮询收发确认字节，再回到 DMA。",
+   "on_screen": [
+    "DMA 节点已挂",
+    "能否搬完看版本",
+    "先轮询确认字节"
+   ],
+   "visual_source": "illustrations/handraw/ch22-renode-path.png",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#Renode：两条脚本"
+   ],
+   "memory_anchor": "DMA 先用轮询兜底",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s14",
+   "title": "四道验收门",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s03"
+   ],
+   "narration": "从模型迁到硬件，同一份 ELF 依次过四道门：构建、模型、目标板、验收，每道门都有停止条件。它规定验收顺序，不代表本仓库已经替你测过你的板。",
+   "on_screen": [
+    "构建 → 模型",
+    "目标板 → 验收",
+    "每道门有停止条件"
+   ],
+   "visual_source": "animations/simulation-acceptance-gates.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "四道门一个 ELF",
+   "evidence_type": "animation"
+  },
+  {
+   "scene_id": "ch22-s15",
+   "title": "边界结论的三句话",
+   "purpose": "mechanism",
+   "prerequisite": [
+    "ch22-s14"
+   ],
+   "narration": "每个实验写三句话收尾：仿真证明了什么、真板新增证明了什么、仍未证明什么。不把模型行为写成硅片规格，这三句就是双轨诚实的落点。",
+   "on_screen": [
+    "仿真证明了…",
+    "真板新增证明了…",
+    "仍未证明…"
+   ],
+   "visual_source": "illustrations/handraw/ch22-hw-gap.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "三句话写清边界",
+   "evidence_type": "diagram"
+  },
+  {
+   "scene_id": "ch22-s16",
+   "title": "找不到固件：路径是占位",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s05"
+   ],
+   "narration": "Wokwi 提示找不到固件，第一条假设是 wokwi.toml 里的路径还是仓库占位值。解决是把它改成你刚编译出来的 ELF，保存后重新启动仿真。",
+   "on_screen": [
+    "现象：找不到固件",
+    "假设：占位路径",
+    "动作：改成你的 ELF"
+   ],
+   "visual_source": "illustrations/handraw/ch22-wokwi-scope.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "占位路径先换掉",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s17",
+   "title": "图对灯不闪：先真板后模型",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s08"
+   ],
+   "narration": "灯不闪但图是对的，第一条假设是固件的时钟或 BOOT 配置和仿真模型不一致。解决是先在真板上确认，再对照模型支持表逐项核对，不要先改图。",
+   "on_screen": [
+    "现象：图对灯不闪",
+    "假设：时钟/BOOT 不一致",
+    "动作：先真板确认"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-compare.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "先真板，再对支持表",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s18",
+   "title": "串口没字节：在等 DMA",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s06"
+   ],
+   "narration": "串口一个字节都没有，第一条假设是示例在等 DMA 的空闲中断，而模型没实现 DMA。解决是换成轮询收发，或者直接上真板。等一个不会来的中断，不如先确认字节。",
+   "on_screen": [
+    "现象：无字节",
+    "假设：等 DMA 空闲",
+    "动作：换轮询"
+   ],
+   "visual_source": "illustrations/handraw/ch22-wokwi-scope.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "等不到的中断先绕开",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s19",
+   "title": "OLED 一片黑：地址的两种写法",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s06"
+   ],
+   "narration": "OLED 一片黑，第一条假设是地址写法对不上：图里的 i2cAddress 是七位的 0x3c，HAL 左移之后是 0x78，它们是同一个从机。对照你的固件写法，别两边都左移。",
+   "on_screen": [
+    "0x3c = 7 位",
+    "0x78 = 左移后",
+    "同一个从机"
+   ],
+   "visual_source": "illustrations/handraw/ch22-wokwi-scope.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "0x3c 和 0x78 是同一家",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s20",
+   "title": "平台找不到：先列目录",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s09"
+   ],
+   "narration": "Renode 报平台找不到，第一条假设是你这个版本里没有这份 repl。解决是在 Renode 提示符里列出 platforms/cpus 目录，看实际文件名再改脚本，不要凭记忆写路径。",
+   "on_screen": [
+    "现象：平台缺失",
+    "假设：版本差异",
+    "动作：ls @platforms/cpus"
+   ],
+   "visual_source": "illustrations/handraw/ch22-renode-path.png",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "先列目录再写路径",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s21",
+   "title": "仿真过了板上不过：三岔口",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s14"
+   ],
+   "narration": "双仿真都绿、真板却不过，按三岔口分流：模型缺口、主机环境、板级物理。晶振起振、USB 枚举和电源纹波都仿真不了，只能上桌测量。",
+   "on_screen": [
+    "模型缺口",
+    "主机环境",
+    "板级物理"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-triage.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "三岔口先分流再修",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s22",
+   "title": "晶振、USB、纹波上桌",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s21"
+   ],
+   "narration": "有三件事仿真替不了：晶振起振和负载灵敏度、USB 枚举的电气细节、供电纹波和地弹。结构靠仿真，裕量靠桌面，这句就是双轨分工。",
+   "on_screen": [
+    "晶振起振",
+    "USB 枚举",
+    "纹波与地弹"
+   ],
+   "visual_source": "illustrations/handraw/ch22-hw-gap.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "结构靠仿真，裕量靠桌面",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s23",
+   "title": "时序结论归真板",
+   "purpose": "failure",
+   "prerequisite": [
+    "ch22-s21"
+   ],
+   "narration": "两条仿真都过了，时序结论仍归真板：模型的时间粒度和真实外设不一定一致。把仿真结论写成硅片规格，是最常见的越界。",
+   "on_screen": [
+    "现象：时序不一致",
+    "假设：模型粒度",
+    "动作：真板定论"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-compare.png",
+   "fact_source": [
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#仿真替不了的事"
+   ],
+   "memory_anchor": "时序结论归真板",
+   "evidence_type": "diagnosis"
+  },
+  {
+   "scene_id": "ch22-s24",
+   "title": "实验一：同一份 ELF",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch22-s05",
+    "ch22-s11"
+   ],
+   "narration": "第一个实验只允许一份固件：记录 ELF 的哈希，在 Wokwi 跑 GPIO 和 EXTI，在 Renode 跑 USART1。分别保存现象、模型配置和不支持项，三样齐了才可比。",
+   "on_screen": [
+    "记 ELF 哈希",
+    "Wokwi：GPIO/EXTI",
+    "Renode：USART1"
+   ],
+   "visual_source": "diagrams/simulator-comparison.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#动手实验"
+   ],
+   "memory_anchor": "一份 ELF，两处仿真",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch22-s25",
+   "title": "实验二：故障注入",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch22-s24"
+   ],
+   "narration": "第二个实验故意在模型里改错一个引脚或外设连接，确认失败可以重复，并把它归到固件、平台描述或外设模型中的一层。归不了层的失败，不算完成。",
+   "on_screen": [
+    "故意改错",
+    "失败可重复",
+    "归到哪一层"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-triage.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#动手实验"
+   ],
+   "memory_anchor": "失败要能归层",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch22-s26",
+   "title": "实验三：真板迁移",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch22-s24"
+   ],
+   "narration": "第三个实验把同一份 ELF 烧进 BluePill：重新做构建校验、main 断点、PC13 周期、USART 波形和供电电压，与仿真差异单独记录。迁移表就是这一章的交付物。",
+   "on_screen": [
+    "同一 ELF 上板",
+    "五项重测",
+    "差异单独记"
+   ],
+   "visual_source": "illustrations/handraw/ch22-sim-compare.png",
+   "fact_source": [
+    "ds5319",
+    "docs/22-仿真实验Wokwi与Renode.md#动手实验"
+   ],
+   "memory_anchor": "迁移表是交付物",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch22-s27",
+   "title": "实验四：写边界结论",
+   "purpose": "experiment",
+   "prerequisite": [
+    "ch22-s25",
+    "ch22-s26"
+   ],
+   "narration": "第四个实验把前面三个实验各写三句话收尾：仿真证明了什么、真板新增证明了什么、仍未证明什么。写不出第三句，说明边界还没摸到。",
+   "on_screen": [
+    "三句话一句不少",
+    "第三句最难",
+    "不写成硅片规格"
+   ],
+   "visual_source": "illustrations/handraw/ch22-hw-gap.png",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#动手实验"
+   ],
+   "memory_anchor": "第三句是这一章的靶心",
+   "evidence_type": "experiment"
+  },
+  {
+   "scene_id": "ch22-s28",
+   "title": "离开检查：双仿真记录三件套",
+   "purpose": "recall",
+   "prerequisite": [
+    "ch22-s24",
+    "ch22-s25",
+    "ch22-s26",
+    "ch22-s27"
+   ],
+   "narration": "离开这一章，你手里应有三件证据：同一 ELF 的双仿真记录、一次可重复的模型故障注入，和一份真板迁移差异表。从这一章起，仿真结论和真板结论分开写，永不混成一句。",
+   "on_screen": [
+    "双仿真记录",
+    "故障注入",
+    "迁移差异表"
+   ],
+   "visual_source": "diagrams/simulator-comparison.svg",
+   "fact_source": [
+    "wokwi-bluepill",
+    "renode-stm32",
+    "docs/22-仿真实验Wokwi与Renode.md#动手实验"
+   ],
+   "memory_anchor": "两种结论分开写",
+   "evidence_type": "recall"
+  }
+ ]
+}
