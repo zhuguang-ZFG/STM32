@@ -194,6 +194,12 @@ Every USB device comes out of reset at address 0. The host uses that temporary a
 
 > At steps 3 or 4, check device-descriptor length and 48 MHz first. At step 6, check `wTotalLength`. At step 7, check endpoint address, PMA, and whether the buffer is armed.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-14-descriptor-map.svg" width="760" alt="Device descriptor 18 bytes; configuration collection 67 bytes = 9+9+5+5+4+5+7+9+7+7; VID/PID 0x1209/0x0001; bulk endpoint 64 bytes, notification endpoint 8 bytes">
+  <br><sub>▲ Drawn for this book. The descriptor tree: the device descriptor is 18 bytes; the configuration collection is 67 bytes = 9+9+5+5+4+5+7+9+7+7; VID/PID 0x1209/0x0001; the bulk endpoint is 64 bytes and the notification endpoint 8 — the two CDC endpoints hang off this tree, and the CDC-versus-HID differences in the next section all live inside the configuration collection. Sources: [RM0008 USB](#source-rm0008-usb) and the [usb-cdc example](#source-project-examples).</sub>
+</p>
+
 ### 6. CDC versus HID
 
 CDC delivers a stream of bytes, so the application decides where one message ends and the next begins. HID delivers fixed-format reports whose key bits, coordinates, and status fields are declared in advance. For logs and sampled data, CDC is usually simpler. Pick HID when the operating system should treat the board directly as a keyboard, mouse, or game controller.

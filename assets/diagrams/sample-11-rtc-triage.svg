@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 11 · DS5319 Rev 20 表 25 · RM0008 Rev 21 第 18 章</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">11</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LSE 32.768 kHz  PRL = 32767  VBAT pin 1  BKP_DR1 = 0xA5A5</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three symptoms, three branches: slow seconds, lost time, silent alarm</text>
+<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1 Hz = 32768 / (PRL + 1) → PRL = 32767      LSI 30 / 40 / 60 kHz 只给范围，不给保证</text>
+<text x="40" y="170" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  秒脉冲偏慢：分频比是 (PRL + 1)</text>
+<rect x="40" y="184" width="880" height="196" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="56" y="214" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">32768 Hz 除以 (PRL + 1)：写 32768 就是 32769 分频，秒脉冲偏慢</text>
+<text x="56" y="242" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PRL 写 32767 才是 32768 分频，正好 1 Hz。分频比里那个 +1 不能漏</text>
+<text x="56" y="268" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI 典型 40 kHz，实际在 30 到 60 kHz 之间漂：任何整数 PRL 都得不到稳定的 1 Hz</text>
+<text x="56" y="294" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">40 kHz 只是表 25 的典型值，不是保证值；要走得准只能上 LSE 32.768 kHz</text>
+<text x="56" y="320" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSE 占着第 3 脚 PC14 与第 4 脚 PC15，这两只脚就不能再当 GPIO</text>
+<text x="56" y="346" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：先确认走的是 LSE 不是 LSI，再谈 PRL；量 1 Hz 输出或隔天读秒差</text>
+<text x="40" y="396" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  复位后时间归零：备份域没续上</text>
+<rect x="40" y="410" width="880" height="196" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="440" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">备份域靠第 1 脚 VBAT 续电；主电源掉了、纽扣电池没接，日历就归零</text>
+<text x="56" y="468" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">上电先读 BKP_DR1：读到 0xA5A5 才读时间，不匹配才初始化日历并写回魔法值</text>
+<text x="56" y="494" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写备份域前先开 PWR 与 BKP 时钟并置位 PWR_CR.DBP；没解锁，寄存器写不进去</text>
+<text x="56" y="520" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">C8 是 10 个 16 位备份寄存器，共 20 字节；资料里的 42 个是大容量型号</text>
+<text x="56" y="546" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的 RTC 只有 32 位秒计数器，年月日要软件换算；F4 才是 BCD 的 TR/DR</text>
+<text x="56" y="572" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：断开主电源 60 s 再恢复，时间差与 BKP 标记都在，续电链才算通</text>
+<text x="40" y="622" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  闹钟不响：比的是秒计数器</text>
+<rect x="40" y="636" width="880" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="666" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">F1 的 RTC_ALR 比较的是 32 位秒计数器，不是年月日</text>
+<text x="56" y="694" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每天触发要掩掉日期与星期：AlarmMask = RTC_ALARMMASK_DATEWEEKDAY</text>
+<text x="56" y="720" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先 HAL_RTC_GetTime 再 HAL_RTC_GetDate：读日期会锁存时间寄存器</text>
+<text x="56" y="746" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F4 换成 BCD 日历与 RTC_ALRMxR，可按秒/分/时/日/星期掩码匹配</text>
+<text x="56" y="772" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：先确认闹钟中断已使能，再看 ALR 落在哪个秒数上</text>
+<rect x="40" y="800" width="880" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="820" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  断点停在 HAL_Delay 里被复位是 IWDG 没冻住，先用 __HAL_DBGMCU_FREEZE_IWDG()，不是 RTC 的问题。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。VBAT 与备份寄存器来自 DS5319 Rev 20 表 25；PRL、RTC_ALR 与 DBP 解锁来自 RM0008 Rev 21 第 18 章。</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

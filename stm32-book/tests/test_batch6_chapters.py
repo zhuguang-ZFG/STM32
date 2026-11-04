@@ -515,7 +515,7 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         )
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["pm0056", "pm0056-dwt", "ds5319-swd"]
+        compass = ["pm0056", "pm0056-dwt", "ds5319-swd", "stlink-tools"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["17-调试与性能优化.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["17-debug.md"]["sources"])
         self.assertEqual(

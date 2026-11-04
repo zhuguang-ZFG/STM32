@@ -277,6 +277,7 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "freertos-syscall",
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
                 "commons-blue-pill",
+                "stlink-tools",
             },
         )
         self.assertEqual(
@@ -293,6 +294,7 @@ class SampleFoundationChapterTests(unittest.TestCase):
                 "freertos-syscall",
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
                 "commons-blue-pill",
+                "stlink-tools",
             },
         )
 

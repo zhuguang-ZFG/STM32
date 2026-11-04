@@ -176,7 +176,7 @@
       "question": "时间怎样跨主电源保持，看门狗又怎样证明主循环真的健康而不是只会喂狗？",
       "deliverable": "一份掉电走时记录、一份故意漏喂后的复位原因记录和明确的健康喂狗条件。",
       "boundary": "看门狗复位不是故障恢复策略本身；状态持久化、故障计数和安全降级仍需系统设计。名义 1 秒是预分频 64、Reload 624、LSI 按 40 kHz；手册范围大约 30–60 kHz，这个秒数不是保证值。",
-      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp", "project-examples"]
     },
     "12-Flash与IAP升级.md": {
       "question": "如何在擦写约束、地址边界和掉电风险下，把新固件安全地交给应用程序？",
@@ -212,7 +212,7 @@
       "question": "面对崩溃或变慢，怎样从可重复现象走到故障寄存器、调用位置和周期证据？",
       "deliverable": "一份最小复现、CFSR/HFSR/BFAR/MMFAR/堆栈记录和一次优化前后 DWT 对照。",
       "boundary": "优化器、调试器和日志都会改变时序；没有基线与同条件复测的加速不算证据。CFSR 在 0xE000ED28，HFSR 在 0xE000ED2C，MMFAR 在 0xE000ED34，BFAR 在 0xE000ED38。HFSR.FORCED 是 bit 30，值是 0x40000000。BFAR 只有 CFSR 的 bit 15（BFARVALID）为 1 时才有效。F103 的 SWO 在 PB3。72 MHz 时 DWT 的 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。",
-      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd"]
+      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd", "stlink-tools"]
     },
     "18-常见问题FAQ.md": {
       "question": "怎样把‘不工作’拆成可观察、可二分、一次只改一个原因的排错过程？",
@@ -397,6 +397,15 @@
       "accessed": "2026-10-23",
       "license": "链接引用",
       "scope": "Size 为首个未写位置、HT 与 IDLE 可能相邻触发；最终以对应 HAL 版本源码为准。"
+    },
+    "stlink-tools": {
+      "title": "stlink v1.9.0 — 开源 ST-LINK 工具集（st-flash / st-util / st-info）",
+      "authority": "stlink-org GitHub 开源项目",
+      "url": "https://github.com/stlink-org/stlink/tree/v1.9.0/doc/man",
+      "snapshot": "tag v1.9.0, GitHub Releases 2026-10-04",
+      "accessed": "2026-11-04",
+      "license": "BSD-3-Clause（本书仅链接，不分发其源码）",
+      "scope": "SWD 连接、flash 读写与芯片探测的命令行证据；本书仅对照其行为，不引用源码。"
     },
     "st-h7-dma": {
       "title": "DMA is not working on STM32H7 devices",

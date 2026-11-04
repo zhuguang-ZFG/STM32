@@ -641,7 +641,7 @@ class Batch4WatchdogChapterTests(unittest.TestCase):
         }
         zh_manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
         en_manifest = json.loads((ROOT / "stm32-book" / "manifest-en.json").read_text(encoding="utf-8"))
-        compass = ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
+        compass = ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp", "project-examples"]
         self.assertEqual(compass, zh_manifest["chapter_guides"]["11-RTC与看门狗.md"]["sources"])
         self.assertEqual(compass, en_manifest["chapter_guides"]["11-rtc-watchdog.md"]["sources"])
         for source_id, (scope_zh, scope_en) in scopes.items():

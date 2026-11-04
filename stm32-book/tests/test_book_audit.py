@@ -190,9 +190,9 @@ class BookAuditTests(unittest.TestCase):
 
     def test_reliability_phase_starts_with_reset_update_and_bus_evidence(self) -> None:
         expected = {
-            "11": ("iwdg-window.svg", "sample-11-iwdg-1s.svg", "iwdg-1s.gif", "watchdog-reset-evidence.svg"),
-            "12": ("flash-iap.svg", "sample-12-iap-map.svg", "iap-jump.gif", "iap-acceptance-gates.svg"),
-            "13": ("can-arbitration.svg", "sample-13-can-bit.svg", "can-500k.gif"),
+            "11": ("iwdg-window.svg", "sample-11-iwdg-1s.svg", "iwdg-1s.gif", "sample-11-wdg-compare.svg", "watchdog-reset-evidence.svg", "sample-11-rtc-triage.svg"),
+            "12": ("flash-iap.svg", "sample-12-iap-map.svg", "iap-jump.gif", "sample-12-flash-triage.svg", "iap-acceptance-gates.svg", "sample-12-boot-compare.svg"),
+            "13": ("can-arbitration.svg", "sample-13-can-bit.svg", "can-500k.gif", "sample-13-can-triage.svg"),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]
@@ -210,6 +210,7 @@ class BookAuditTests(unittest.TestCase):
                 "sample-14-usb-enum.svg",
                 "usb-48m.gif",
                 "usb-enumeration-zh.gif",
+                "sample-14-descriptor-map.svg",
                 "pinout-bluepill.svg",
                 "instrument-evidence-ladder.svg",
             ),
@@ -219,6 +220,7 @@ class BookAuditTests(unittest.TestCase):
                 "rtos-tick.gif",
                 "rtos-deadline-budget.svg",
                 "rtos-owner-task.svg",
+                "sample-15-rtos-triage.svg",
                 "rtos-startup-gates.svg",
             ),
         }
@@ -233,8 +235,8 @@ class BookAuditTests(unittest.TestCase):
 
     def test_phase_three_ends_with_power_and_fault_evidence(self) -> None:
         expected = {
-            "16": ("lowpower-wakeup.svg", "sample-16-stop-wake.svg", "stop-wake.gif", "lowpower-current-evidence.svg"),
-            "17": ("debug-swo.svg", "sample-17-cfsr.svg", "cfsr-read.gif", "fault-triage-ladder.svg"),
+            "16": ("lowpower-wakeup.svg", "sample-16-stop-wake.svg", "stop-wake.gif", "sample-16-stop-compare.svg", "lowpower-current-evidence.svg", "sample-16-pwr-triage.svg"),
+            "17": ("debug-swo.svg", "sample-17-cfsr.svg", "cfsr-read.gif", "sample-17-obs-compare.svg", "fault-triage-ladder.svg", "sample-17-perf-triage.svg"),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]

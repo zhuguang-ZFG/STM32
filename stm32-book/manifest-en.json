@@ -224,7 +224,7 @@
       "question": "How does time survive loss of the main supply, and how does a watchdog prove the main loop is actually healthy rather than merely being fed?",
       "deliverable": "A power-loss timekeeping record, a reset-reason record after a deliberate missed feed, and an explicit healthy-feed condition.",
       "boundary": "A watchdog reset is not itself a fault-recovery strategy. State persistence, fault counts, and safe degradation still need a system design. A nominal 1 second is prescaler 64 and Reload 624, taking LSI as 40 kHz. The manual range is about 30–60 kHz, so that second is not a guarantee.",
-      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp"]
+      "sources": ["rm0008", "ds5319", "rm0008-wdg", "rm0008-rtc", "ds5319-rtc", "pm0075-rdp", "project-examples"]
     },
     "12-flash-iap.md": {
       "question": "How do you hand a new firmware image to the application safely, under erase limits, address boundaries, and power-loss risk?",
@@ -270,7 +270,7 @@
       "question": "Faced with a crash or a slowdown, how do you go from a repeatable symptom to the fault registers, the call site, and cycle evidence?",
       "deliverable": "A minimal reproduction, a record of CFSR/HFSR/BFAR/MMFAR and the stack, and one DWT comparison before and after an optimization.",
       "boundary": "The optimizer, the debugger, and logging all change timing. A speedup without a baseline and a retest under the same conditions is not evidence. CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. HFSR.FORCED is bit 30, value 0x40000000. BFAR is valid only when bit 15 of CFSR (BFARVALID) is 1. On F103, SWO is PB3. At 72 MHz, 72 DWT cycles are 1 µs. M3 and M4 have 6 hardware breakpoint comparators; M7 has 8.",
-      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd"]
+      "sources": ["pm0056", "pm0056-dwt", "ds5319-swd", "stlink-tools"]
     },
     "18-faq.md": {
       "question": "How do you split \"it does not work\" into something you can observe, bisect, and change one cause at a time?",
@@ -535,6 +535,15 @@
       "accessed": "2026-10-23",
       "license": "Link citation",
       "scope": "Size is the first unwritten position, and HT and IDLE can fire back to back. The HAL source for that version is the authority."
+    },
+    "stlink-tools": {
+      "title": "stlink v1.9.0 — open source ST-LINK toolset (st-flash / st-util / st-info)",
+      "authority": "stlink-org GitHub open-source project",
+      "url": "https://github.com/stlink-org/stlink/tree/v1.9.0/doc/man",
+      "snapshot": "tag v1.9.0, GitHub Releases 2026-10-04",
+      "accessed": "2026-11-04",
+      "license": "BSD-3-Clause (linked only; this book does not distribute its source)",
+      "scope": "Command-line evidence for SWD connection, flash read/write, and chip probing; the book compares its behavior only and does not quote its source."
     },
     "st-h7-dma": {
       "title": "DMA is not working on STM32H7 devices",

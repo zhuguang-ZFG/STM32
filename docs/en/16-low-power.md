@@ -110,6 +110,12 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 
 Low-power acceptance records the static floor, wake peak, active duration, period, and wake cause. One steady current number cannot predict runtime or reveal a UART left on the wrong clock after wake.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-16-stop-compare.svg" width="760" alt="Sleep is 14.4 mA and keeps 72 MHz; Stop is 14 uA and wakes on HSI 8 MHz needing a clock reconfiguration; Standby is 2 uA and restarts from the reset vector">
+  <br><sub>▲ Drawn for this book. Three modes compared: Sleep 14.4 mA and it keeps 72 MHz; Stop 14 uA and it wakes on HSI 8 MHz, so the clock must be reconfigured; Standby 2 uA and it restarts from the reset vector. The three rows carry different conditions and must not share one line. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+</p>
+
 ### 1. The three low-power modes compared
 
 The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
@@ -301,6 +307,12 @@ __HAL_RCC_USART2_CLK_DISABLE();
 /* Keep only the clocks RTC, PWR, and the wake source need */
 ```
 
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-16-pwr-triage.svg" width="760" alt="Stop never entered, garbled serial after wake, current will not drop: 14 uA needs SLEEPDEEP=1 and PDDS=0, wake runs HSI 8 MHz, and 2 uA holds only with LSI, IWDG, LSE and RTC all off">
+  <br><sub>▲ Drawn for this book. Triage, three branches: Stop never entered — SLEEPDEEP=1 with PDDS=0 is the 14 uA cell; garbled serial after wake — the clock still runs HSI 8 MHz while BRR was computed for 72 MHz; the current will not drop — 2 uA requires LSI, IWDG, LSE and RTC all off. Sources: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+</p>
 
 ## Hands-on labs
 

@@ -145,6 +145,12 @@ The F1 RTC only counts seconds, and software turns the count into a date. An ala
 
 > On F1 the alarm compares the **seconds counter**. On F4 you can mask-match second, minute, hour, day, month, or weekday, which is more flexible.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-11-wdg-compare.svg" width="760" alt="IWDG resets when the counter reaches 0: Reload 624 is 1 second; WWDG runs 58.25 ms per pass and feeding it while the counter is still above 0x50 also resets">
+  <br><sub>▲ Drawn for this book. IWDG counts down and resets at zero: LSI 40 kHz, prescaler 64, Reload 624 is exactly 1 second. WWDG is a windowed countdown: about 58.25 ms per pass, and feeding it while the counter is still above 0x50 also resets — feeding is only allowed inside the window. Sources: [RM0008 watchdog](#source-rm0008-wdg) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
+</p>
+
 ### 4. IWDG vs WWDG
 
 A watchdog is a countdown that never stops, and the program has to "feed" it now and then to wind the count back up. If the program hangs, nobody feeds it, the count runs out, and the chip resets. The independent watchdog has its own clock, so it keeps counting even if the main clock fails, which makes it the last line of defence. The window watchdog is stricter: feeding it too late resets the chip, and so does feeding it too early, so it catches a program that runs too fast as well as too slow.
@@ -283,6 +289,12 @@ static void MX_WWDG_Init(void)
 /* Must refresh inside the [0x40, 0x50] window */
 HAL_WWDG_Refresh(&hwwdg);
 ```
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL must be 32767 for 1 Hz; a zeroed clock after reset points at VBAT; the alarm compares a 32-bit seconds counter">
+  <br><sub>▲ Drawn for this book. Triage, three branches: time runs fast or slow — check PRL first, 32767 turns 32.768 kHz into 1 Hz; the clock zeroes after reset — check whether VBAT and the backup domain lost power; the alarm never fires — remember it compares a 32-bit seconds counter. Sources: [RM0008 RTC](#source-rm0008-rtc) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
+</p>
 
 ## Hands-on labs
 

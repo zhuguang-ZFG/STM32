@@ -146,6 +146,12 @@ F1 的 RTC 其实只会数秒，年月日要靠软件拿秒数去算。闹钟就
 
 > F1 的闹钟是比较**秒计数器**；F4 可按「秒/分/时/日/月/星期」掩码匹配，更灵活。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-11-wdg-compare.svg" width="760" alt="Reload 624 是 1 秒且减到 0 才复位；WWDG 58.25 ms，大于 0x50 喂狗也复位">
+  <br><sub>▲ 自绘。IWDG 递减到 0 就复位：LSI 40 kHz、预分频 64、Reload 624 正好 1 秒。WWDG 是带窗口的倒计时：约 58.25 ms 一程，计数值还大于 0x50 时喂狗同样复位，喂狗只允许在窗口内。出处是 [RM0008 看门狗](#source-rm0008-wdg) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
+</p>
+
 ### 4. IWDG 与 WWDG 对比
 
 看门狗是一个一直往下数的倒计时，程序要定期去「喂」它，把数拨回去。程序卡死了，没人喂，数到头芯片就复位。独立看门狗用自己的时钟，主时钟坏了它也照样数，是最后一道保险。窗口看门狗管得更细：喂得太晚会复位，喂得太早也会复位，所以它能发现程序跑得太快或太慢。
@@ -284,6 +290,12 @@ static void MX_WWDG_Init(void)
 /* 必须落在 [0x40, 0x50] 窗口内喂狗 */
 HAL_WWDG_Refresh(&hwwdg);
 ```
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器">
+  <br><sub>▲ 自绘。排错三岔口：时间快慢不一，先查 PRL 是不是 32767——32.768 kHz 减一才是 1 Hz；复位后时间归零，查 VBAT 与备份域有没有掉电；闹钟不响，记住比较对象是 32 位秒计数器。出处是 [RM0008 RTC](#source-rm0008-rtc) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
+</p>
 
 ## 动手实验
 

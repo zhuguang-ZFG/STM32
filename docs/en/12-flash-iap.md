@@ -116,6 +116,12 @@ F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 e
 > [!WARNING]
 > Flash **can only be erased a whole page or a whole sector at a time**. You cannot change it byte by byte. Changing one byte still means erasing the whole page first. If you log frequently, do wear leveling and spread the writes across different pages.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-12-flash-triage.svg" width="760" alt="Erase errors: read CR.LOCK and the 1 KB page boundary first; write failures: half-word access and 0xFFFF; wrong read-back: compare page by page against 0x08004800 / 0xB800">
+  <br><sub>▲ Drawn for this book. Triage, three branches: erase errors — read the CR.LOCK bit and check the 1 KB page boundary; write failures — check half-word access and whether the target still reads 0xFFFF; wrong read-back — compare page by page against 0x08004800 and 0xB800. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0075](#source-pm0075-rdp).</sub>
+</p>
+
 ### 2. Unlock and the programming sequence
 
 Flash is normally locked, so a runaway program cannot scribble on it. To unlock it, you write two fixed values to the key register in order. If the order or a value is wrong, Flash stays locked until the next reset. After unlocking you erase, then write, and wait for the busy flag to clear before each next step. Lock it again at the end.
@@ -215,6 +221,12 @@ void JumpToApp(void)
 ```c
 SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 ```
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="The resident bootloader uses 16 KB at 0x08000000; the factory system memory does not come out of this 64 KB; both paths are chosen at reset and share the 46 KB APP at 0x08004800">
+  <br><sub>▲ Drawn for this book. Two boot paths compared: the resident bootloader occupies 16 KB from 0x08000000, and the factory system-memory boot program does not come out of this 64 KB; the path is picked at reset by BOOT0, and both converge on the 46 KB APP at 0x08004800. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0056 vector table](#source-pm0056-vector).</sub>
+</p>
 
 ### 5. YMODEM / UART update flow
 

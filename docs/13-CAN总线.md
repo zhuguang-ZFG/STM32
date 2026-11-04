@@ -197,6 +197,12 @@ F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把�
 
 > F4 的 bxCAN 结构与之类似（也是 14 组过滤器 + 2 FIFO，见 RM0090 第 32 章 Controller area network），寄存器命名基本一致。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-13-can-triage.svg" width="760" alt="预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点">
+  <br><sub>▲ 自绘。排错三岔口：APB1 36 MHz、预分频 8 配 10 个时间份额算出来是 450 kbit/s——这就是文档里的错误配置例；邮箱一直空，先查标准 ID 写 FilterIdHigh 是不是忘了左移 5 位（0x123 << 5）；错误帧暴涨多半是采样点定错。出处是 [RM0008 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20](#source-ds5319-clock)。</sub>
+</p>
+
 ## 硬件与接线
 
 | 开发板 | 外设 | 引脚 | 备注 |

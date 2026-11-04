@@ -267,6 +267,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 }
 ```
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-15-rtos-triage.svg" width="760" alt="Task not moving, stack overflow, wrong priority: one tick is 1 ms, 128 words are 512 bytes, FromISR needs a numerical preempt priority of at least 5">
+  <br><sub>▲ Drawn for this book. Triage, three branches: the task never runs — check whether the scheduler started, one tick is 1 ms; stack overflow — remember 128 words are 512 bytes; the wrong API in an interrupt — FromISR needs a numerical preempt priority of at least 5. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
+</p>
+
 ## Hardware and wiring
 
 | Board | Peripheral | Pin | Notes |

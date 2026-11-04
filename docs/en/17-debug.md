@@ -117,6 +117,12 @@ Debug evidence has an order: preserve the scene, classify the fault, locate the 
 
 ST's manuals do not give a top speed for SWD. The usual 4 MHz or 10 MHz figures are the probe vendors' own ratings. Turn it down when the jumper wires get long.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-17-obs-compare.svg" width="760" alt="Observation tools do not substitute for each other: the M3 has 6 hardware breakpoints, SWO occupies PB3 not the UART, and the log leaves PC and CFSR behind">
+  <br><sub>▲ Drawn for this book. Observation tools compared: they do not substitute for each other — the M3 has 6 hardware breakpoints and beyond that you switch to conditional breakpoints or logging; SWO rides PB3, not the UART; after a HardFault the log still leaves PC and CFSR behind. Sources: [PM0056 debug](#source-pm0056) and [DS5319 SWD](#source-ds5319-swd).</sub>
+</p>
+
 ### 2. SWO / ITM / printf tracing
 
 **SWO (Serial Wire Output)** lets the MCU send debug information through the **ITM** without occupying a UART. Whether it blocks or drops characters depends on the retarget code, probe, and host reader, so it is not a zero-cost log path.
@@ -289,6 +295,12 @@ void Measure(void)
 
 > [!WARNING]
 > SWD needs only four wires: **SWCLK, SWDIO, GND, and 3V3**. **GND must be common**, or it will not connect. If the board was configured with debug turned off, recover it by holding reset at the moment of power-up and then connecting, or by pulling BOOT0 high and booting from system memory.
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-17-perf-triage.svg" width="760" alt="Triage, three branches: zero readings check bit 24; at 72 MHz 72 counts are 1 us; BFAR requires CFSR bit 15 set">
+  <br><sub>▲ Drawn for this book. Triage, three branches: DWT reads zero — check whether DEMCR bit 24 (TRCENA) is set; at 72 MHz exactly 72 counts are 1 us — do not mistake 720000 for 1 s; BFAR is valid only when CFSR bit 15 is set. Sources: [PM0056 DWT](#source-pm0056-dwt) and [PM0056](#source-pm0056).</sub>
+</p>
 
 ## Code
 

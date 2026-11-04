@@ -117,6 +117,12 @@ F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4
 > [!WARNING]
 > Flash **只能按整页/整扇区擦除**，不能按字节改；改一个字节也要先擦整页。频繁写日志务必做「磨损均衡」，把写分散到不同页。
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-12-flash-triage.svg" width="760" alt="擦除报错先读 CR.LOCK 与 1 KB 页边界；写不进去看半字与 0xFFFF；读回不对按 0x08004800、0xB800 逐页比对">
+  <br><sub>▲ 自绘。排错三岔口：擦除报错先读 CR.LOCK 位与 1 KB 页边界对不对；写不进去检查是不是按半字写、目标还停在 0xFFFF；读回不对就按 0x08004800、0xB800 逐页比对。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0075](#source-pm0075-rdp)。</sub>
+</p>
+
 ### 2. 解锁与编程流程
 
 Flash 平时是锁着的，防止程序跑飞时乱写。开锁要按顺序往钥匙寄存器写两个固定的数，顺序或数值不对，Flash 会一直锁到下次复位。开锁后先擦后写，每一步都要等忙标志清零再做下一步，最后记得重新上锁。
@@ -214,6 +220,12 @@ void JumpToApp(void)
 ```c
 SCB->VTOR = 0x08004800UL;   /* 必须与 Bootloader 约定一致 */
 ```
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="常驻 Bootloader 走 0x08000000 的 16 KB，出厂系统存储器不占这 64 KB；两条路都在复位时选好，之后共用 0x08004800 的 46 KB">
+  <br><sub>▲ 自绘。两条启动路径对比：常驻 Bootloader 从 0x08000000 起占 16 KB，出厂系统存储器里的自举程序不占这 64 KB；路径在复位时由 BOOT0 选定，之后都汇聚到 0x08004800 的 46 KB APP。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0056 向量表](#source-pm0056-vector)。</sub>
+</p>
 
 ### 5. YMODEM / 串口升级流程
 

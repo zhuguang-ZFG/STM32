@@ -196,6 +196,12 @@ On **F1, APB1 = 36 MHz**:
 
 > F4 bxCAN is the same shape (14 banks + 2 FIFOs, RM0090 chapter 32). Register names mostly match.
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-13-can-triage.svg" width="760" alt="Prescaler 8 with 10 time quanta gives 450 kbit/s; an empty mailbox means the standard ID was not shifted left by 5; exploding error frames point at the sample point">
+  <br><sub>▲ Drawn for this book. Triage, three branches: APB1 36 MHz with prescaler 8 and 10 time quanta computes to 450 kbit/s — the wrong-configuration example from this chapter; a mailbox that never fills — check whether the standard ID written to FilterIdHigh was shifted left by 5 (0x123 << 5); exploding error frames — the sample point is set wrong. Sources: [RM0008 bxCAN](#source-rm0008-can) and [DS5319 Rev 20](#source-ds5319-clock).</sub>
+</p>
+
 ## Wiring
 
 | Board | Peripheral | Pins | Note |
