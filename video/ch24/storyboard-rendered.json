@@ -1,0 +1,912 @@
+{
+  "id": "24",
+  "slug": "l4-pins-long",
+  "title": "STM32L4 引脚：从典型值到整板实测",
+  "short_source": "tools/narration.py#CHAPTERS[24]",
+  "segments": [
+    {
+      "scene_id": "ch24-s01",
+      "title": "封面说 1.1 µA，你量出来是毫安？",
+      "purpose": "hook",
+      "prerequisite": [],
+      "narration": "先看一个落差：数据手册封面写 Stop 2 是 1.1 微安，你的板上量出来却是毫安级。这一章只追一个问题：从芯片典型值到整板实测，中间隔着哪几层没对上。",
+      "on_screen": [
+        "封面：1.1 µA",
+        "实测：毫安级",
+        "中间差几层"
+      ],
+      "visual_source": "illustrations/handraw/ch24-part-id.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#这颗料是谁"
+      ],
+      "memory_anchor": "典型值到实测隔着板子",
+      "evidence_type": "concept",
+      "start": 0.0,
+      "duration": 16.79,
+      "subtitle_ref": "ch24.srt#01",
+      "head": "封面说 1.1 µA，你量出来是毫安？",
+      "lines": [
+        "封面：1.1 µA",
+        "实测：毫安级",
+        "中间差几层"
+      ],
+      "say": "先看一个落差：数据手册封面写 Stop 2 是 1.1 微安，你的板上量出来却是毫安级。这一章只追一个问题：从芯片典型值到整板实测，中间隔着哪几层没对上。",
+      "svg": "illustrations/handraw/ch24-part-id.png"
+    },
+    {
+      "scene_id": "ch24-s02",
+      "title": "这颗料是谁：L476RG",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s01"
+      ],
+      "narration": "对照的料是 STM32L476RG，LQFP64：Cortex-M4F 最高 80 兆，供电 1.71 到 3.6 伏，Flash 1MB，SRAM 128KB。出处是 DS10198 修订版 11。",
+      "on_screen": [
+        "M4F @ 80 MHz",
+        "1.71–3.6 V",
+        "1MB Flash · 128KB SRAM"
+      ],
+      "visual_source": "illustrations/handraw/ch24-part-id.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#这颗料是谁"
+      ],
+      "memory_anchor": "R 是 64 脚，G 是 1MB",
+      "evidence_type": "concept",
+      "start": 16.79,
+      "duration": 20.342,
+      "subtitle_ref": "ch24.srt#02",
+      "head": "这颗料是谁：L476RG",
+      "lines": [
+        "M4F @ 80 MHz",
+        "1.71–3.6 V",
+        "1MB Flash · 128KB SRAM"
+      ],
+      "say": "对照的料是 STM32L476RG，LQFP64：Cortex-M4F 最高 80 兆，供电 1.71 到 3.6 伏，Flash 1MB，SRAM 128KB。出处是 DS10198 修订版 11。",
+      "svg": "illustrations/handraw/ch24-part-id.png"
+    },
+    {
+      "scene_id": "ch24-s03",
+      "title": "电流档：从 30 纳安到 100 微安",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s02"
+      ],
+      "narration": "封面的电流档按模式排列：VBAT 300 纳安，Shutdown 30 纳安，Standby 120 纳安，带 RTC 420 纳安；Stop 2 是 1.1 微安，带 RTC 1.4 微安，唤醒只要 4 微秒；运行态 LDO 每兆赫 100 微安，SMPS 39 微安。",
+      "on_screen": [
+        "Shutdown 30 nA",
+        "Stop 2 = 1.1 µA",
+        "Run：100 µA/MHz（LDO）"
+      ],
+      "visual_source": "illustrations/handraw/ch24-part-id.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#这颗料是谁"
+      ],
+      "memory_anchor": "一档模式一档电流",
+      "evidence_type": "concept",
+      "start": 37.132,
+      "duration": 24.11,
+      "subtitle_ref": "ch24.srt#03",
+      "head": "电流档：从 30 纳安到 100 微安",
+      "lines": [
+        "Shutdown 30 nA",
+        "Stop 2 = 1.1 µA",
+        "Run：100 µA/MHz（LDO）"
+      ],
+      "say": "封面的电流档按模式排列：VBAT 300 纳安，Shutdown 30 纳安，Standby 120 纳安，带 RTC 420 纳安；Stop 2 是 1.1 微安，带 RTC 1.4 微安，唤醒只要 4 微秒；运行态 LDO 每兆赫 100 微安，SMPS 39 微安。",
+      "svg": "illustrations/handraw/ch24-part-id.png"
+    },
+    {
+      "scene_id": "ch24-s04",
+      "title": "实物认识：先认对板",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s02"
+      ],
+      "narration": "实拍照片帮助建立 Nucleo-64 的空间概念：上半区是 ST-LINK，下半区是目标 MCU。但注意，本章两张 CC0 实拍是 F411RE 和 F401RE，不是 L476RG；JP6 的描述只对 MB1136 版 NUCLEO-L476RG 负责。",
+      "on_screen": [
+        "上 ST-LINK 下 MCU",
+        "照片不是 L476RG",
+        "JP6 只对 MB1136"
+      ],
+      "visual_source": "photos/nucleo-f411re-embedded-world.jpg",
+      "fact_source": [
+        "commons-nucleo-f411re",
+        "docs/24-STM32L4引脚.md#实物认识：Nucleo-64 外形家族"
+      ],
+      "memory_anchor": "认对板，再谈测量",
+      "evidence_type": "diagram",
+      "start": 61.242,
+      "duration": 26.438,
+      "subtitle_ref": "ch24.srt#04",
+      "head": "实物认识：先认对板",
+      "lines": [
+        "上 ST-LINK 下 MCU",
+        "照片不是 L476RG",
+        "JP6 只对 MB1136"
+      ],
+      "say": "实拍照片帮助建立 Nucleo-64 的空间概念：上半区是 ST-LINK，下半区是目标 MCU。但注意，本章两张 CC0 实拍是 F411RE 和 F401RE，不是 L476RG；JP6 的描述只对 MB1136 版 NUCLEO-L476RG 负责。",
+      "svg": "photos/nucleo-f411re-embedded-world.jpg"
+    },
+    {
+      "scene_id": "ch24-s05",
+      "title": "和 F103 逐脚对照",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s02"
+      ],
+      "narration": "L476RG 和 F103 逐脚比：第 1 脚都是 VBAT，但高速晶振挪到 PH0 和 PH1，也就是脚 5 和 6；脚 48 是 VDDUSB；BOOT0 在脚 60，不与 SWCLK 共用；SWD 在脚 46 和 49；还多了 Shutdown 和 Stop 2。",
+      "on_screen": [
+        "HSE：脚 5/6",
+        "VDDUSB：脚 48",
+        "BOOT0：脚 60 独立"
+      ],
+      "visual_source": "illustrations/handraw/ch24-pin-mux.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#和 F1 / F4 比"
+      ],
+      "memory_anchor": "同是 64 脚，门牌全变",
+      "evidence_type": "diagram",
+      "start": 87.68,
+      "duration": 25.406,
+      "subtitle_ref": "ch24.srt#05",
+      "head": "和 F103 逐脚对照",
+      "lines": [
+        "HSE：脚 5/6",
+        "VDDUSB：脚 48",
+        "BOOT0：脚 60 独立"
+      ],
+      "say": "L476RG 和 F103 逐脚比：第 1 脚都是 VBAT，但高速晶振挪到 PH0 和 PH1，也就是脚 5 和 6；脚 48 是 VDDUSB；BOOT0 在脚 60，不与 SWCLK 共用；SWD 在脚 46 和 49；还多了 Shutdown 和 Stop 2。",
+      "svg": "illustrations/handraw/ch24-pin-mux.png"
+    },
+    {
+      "scene_id": "ch24-s06",
+      "title": "两类醒来路径",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s03"
+      ],
+      "narration": "先按醒来后从哪里继续分两类：Sleep 和 Stop 系列，从 WFI 或 WFE 的下一条指令继续，SRAM 与大多数寄存器保持；Standby 和 Shutdown 的唤醒走复位路径，主 SRAM 丢失。两类混记，就会把丢了的 RAM 当成还在。",
+      "on_screen": [
+        "Sleep/Stop：原地继续",
+        "Standby/Shutdown：走复位",
+        "混记 = 把丢的当还在"
+      ],
+      "visual_source": "illustrations/handraw/ch24-modes.png",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#低功耗模式与状态保持（RM0351）"
+      ],
+      "memory_anchor": "醒来从哪里继续",
+      "evidence_type": "diagram",
+      "start": 113.086,
+      "duration": 22.502,
+      "subtitle_ref": "ch24.srt#06",
+      "head": "两类醒来路径",
+      "lines": [
+        "Sleep/Stop：原地继续",
+        "Standby/Shutdown：走复位",
+        "混记 = 把丢的当还在"
+      ],
+      "say": "先按醒来后从哪里继续分两类：Sleep 和 Stop 系列，从 WFI 或 WFE 的下一条指令继续，SRAM 与大多数寄存器保持；Standby 和 Shutdown 的唤醒走复位路径，主 SRAM 丢失。两类混记，就会把丢了的 RAM 当成还在。",
+      "svg": "illustrations/handraw/ch24-modes.png"
+    },
+    {
+      "scene_id": "ch24-s07",
+      "title": "四档深浅",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s06"
+      ],
+      "narration": "Stop 内部还有档位：Stop 0 保留能力最多，Stop 1 是功耗与唤醒的折中，Stop 2 更深地关闭 VCORE 域，PLL 在 Stop 中关闭。更深的档位省电更多，醒后要重配的东西也更多。",
+      "on_screen": [
+        "Stop 0 保留最多",
+        "Stop 1 折中",
+        "Stop 2 关 VCORE 域"
+      ],
+      "visual_source": "diagrams/sample-24-mode-compare.svg",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#低功耗模式与状态保持（RM0351）"
+      ],
+      "memory_anchor": "越深越省，越深越要重配",
+      "evidence_type": "diagram",
+      "start": 135.588,
+      "duration": 18.23,
+      "subtitle_ref": "ch24.srt#07",
+      "head": "四档深浅",
+      "lines": [
+        "Stop 0 保留最多",
+        "Stop 1 折中",
+        "Stop 2 关 VCORE 域"
+      ],
+      "say": "Stop 内部还有档位：Stop 0 保留能力最多，Stop 1 是功耗与唤醒的折中，Stop 2 更深地关闭 VCORE 域，PLL 在 Stop 中关闭。更深的档位省电更多，醒后要重配的东西也更多。",
+      "svg": "diagrams/sample-24-mode-compare.svg"
+    },
+    {
+      "scene_id": "ch24-s08",
+      "title": "Standby 也不是全丢",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s07"
+      ],
+      "narration": "Standby 关掉 VCORE，主 SRAM 和普通寄存器丢失，但部分器件可选 SRAM2 保持，由 RRS 配置确认；Shutdown 比它更深。用 RTC 和备份寄存器保存最小状态，醒来先查复位标志。",
+      "on_screen": [
+        "SRAM2 可选保持",
+        "RRS 配置确认",
+        "先查复位标志"
+      ],
+      "visual_source": "diagrams/sample-24-stop2-retain.svg",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#低功耗模式与状态保持（RM0351）"
+      ],
+      "memory_anchor": "保不保，查 RRS",
+      "evidence_type": "diagram",
+      "start": 153.818,
+      "duration": 19.262,
+      "subtitle_ref": "ch24.srt#08",
+      "head": "Standby 也不是全丢",
+      "lines": [
+        "SRAM2 可选保持",
+        "RRS 配置确认",
+        "先查复位标志"
+      ],
+      "say": "Standby 关掉 VCORE，主 SRAM 和普通寄存器丢失，但部分器件可选 SRAM2 保持，由 RRS 配置确认；Shutdown 比它更深。用 RTC 和备份寄存器保存最小状态，醒来先查复位标志。",
+      "svg": "diagrams/sample-24-stop2-retain.svg"
+    },
+    {
+      "scene_id": "ch24-s09",
+      "title": "睡前先证明可以睡",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s07"
+      ],
+      "narration": "进入 Stop 2 前做三件核对：系统时钟确认 SWS 等于 PLL，外设内核时钟核对 CCIPR 的选择，引脚恢复睡前改成的模拟态，并确认 DMA 和中断的所有权。三条都过，才允许睡。",
+      "on_screen": [
+        "SWS = PLL",
+        "CCIPR 选择核对",
+        "引脚与所有权"
+      ],
+      "visual_source": "diagrams/sample-24-stop2-retain.svg",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "睡前先证明能睡",
+      "evidence_type": "diagram",
+      "start": 173.08,
+      "duration": 19.934,
+      "subtitle_ref": "ch24.srt#09",
+      "head": "睡前先证明可以睡",
+      "lines": [
+        "SWS = PLL",
+        "CCIPR 选择核对",
+        "引脚与所有权"
+      ],
+      "say": "进入 Stop 2 前做三件核对：系统时钟确认 SWS 等于 PLL，外设内核时钟核对 CCIPR 的选择，引脚恢复睡前改成的模拟态，并确认 DMA 和中断的所有权。三条都过，才允许睡。",
+      "svg": "diagrams/sample-24-stop2-retain.svg"
+    },
+    {
+      "scene_id": "ch24-s10",
+      "title": "IRQ 入口先留证据",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s09"
+      ],
+      "narration": "唤醒进入中断后，第一件事不是调 HAL：先把 RTC、EXTI 和 PWR 的原始标志快照进 Stop 2 保持的 SRAM。HAL 的 handler 随后会把硬件位清掉，主循环消费的是软件记录，不是已经消失的标志。",
+      "on_screen": [
+        "入口先快照",
+        "HAL 会清硬件位",
+        "主循环读软件记录"
+      ],
+      "visual_source": "animations/l4-stop2-evidence.svg",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "先留证据，再清标志",
+      "evidence_type": "animation",
+      "start": 193.014,
+      "duration": 20.462,
+      "subtitle_ref": "ch24.srt#10",
+      "head": "IRQ 入口先留证据",
+      "lines": [
+        "入口先快照",
+        "HAL 会清硬件位",
+        "主循环读软件记录"
+      ],
+      "say": "唤醒进入中断后，第一件事不是调 HAL：先把 RTC、EXTI 和 PWR 的原始标志快照进 Stop 2 保持的 SRAM。HAL 的 handler 随后会把硬件位清掉，主循环消费的是软件记录，不是已经消失的标志。",
+      "svg": "animations/l4-stop2-evidence.svg"
+    },
+    {
+      "scene_id": "ch24-s11",
+      "title": "醒后第一件事：装回时钟",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s10"
+      ],
+      "narration": "Stop 0、1、2 醒来后，RCC 按 STOPWUCK 选 MSI 或 HSI16 临时接管。CPU 已继续执行，不等于 80 兆 PLL 已恢复：SysTick、UART 波特率、Flash 等待周期、定时器周期都要按新时钟重算。",
+      "on_screen": [
+        "STOPWUCK：MSI / HSI16",
+        "PLL 已关",
+        "全都要重算"
+      ],
+      "visual_source": "illustrations/handraw/ch24-wake-clocks.png",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "醒来 ≠ 80 兆已恢复",
+      "evidence_type": "diagram",
+      "start": 213.476,
+      "duration": 21.758,
+      "subtitle_ref": "ch24.srt#11",
+      "head": "醒后第一件事：装回时钟",
+      "lines": [
+        "STOPWUCK：MSI / HSI16",
+        "PLL 已关",
+        "全都要重算"
+      ],
+      "say": "Stop 0、1、2 醒来后，RCC 按 STOPWUCK 选 MSI 或 HSI16 临时接管。CPU 已继续执行，不等于 80 兆 PLL 已恢复：SysTick、UART 波特率、Flash 等待周期、定时器周期都要按新时钟重算。",
+      "svg": "illustrations/handraw/ch24-wake-clocks.png"
+    },
+    {
+      "scene_id": "ch24-s12",
+      "title": "恢复完成的四项证据",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s11"
+      ],
+      "narration": "时钟恢复完成的证据有四项：断言 HAL_RCC_GetSysClockFreq 与 SystemCoreClock 都是 80 兆；定时器输出测过周期；UART 发出一帧已知字节；GPIO 标记的边沿间距正确。四项齐了才回到业务。",
+      "on_screen": [
+        "断言 80 MHz",
+        "定时器周期",
+        "已知字节帧 · GPIO 边距"
+      ],
+      "visual_source": "animations/sample-24-wake-restore-flow.svg",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "四项证据再回业务",
+      "evidence_type": "animation",
+      "start": 235.234,
+      "duration": 22.886,
+      "subtitle_ref": "ch24.srt#12",
+      "head": "恢复完成的四项证据",
+      "lines": [
+        "断言 80 MHz",
+        "定时器周期",
+        "已知字节帧 · GPIO 边距"
+      ],
+      "say": "时钟恢复完成的证据有四项：断言 HAL_RCC_GetSysClockFreq 与 SystemCoreClock 都是 80 兆；定时器输出测过周期；UART 发出一帧已知字节；GPIO 标记的边沿间距正确。四项齐了才回到业务。",
+      "svg": "animations/sample-24-wake-restore-flow.svg"
+    },
+    {
+      "scene_id": "ch24-s13",
+      "title": "关键复用速查",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s05"
+      ],
+      "narration": "L476RG 的常用复用：USART2 在 PA2 和 PA3，脚 16 和 17；SPI1 在 PA5 到 PA7；I2C1 在 PB6、PB7；CAN1 和 OTG_FS 都在 PA11、PA12；SWD 在脚 46 和 49；脚 48 的 VDDUSB 是电源脚，不是 GPIO。",
+      "on_screen": [
+        "USART2：脚 16/17",
+        "SPI1：脚 21–23",
+        "CAN1 与 OTG_FS：PA11/12"
+      ],
+      "visual_source": "illustrations/handraw/ch24-pin-mux.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#关键复用（Table 16 的 LQFP64 行）"
+      ],
+      "memory_anchor": "电源脚别当 GPIO 用",
+      "evidence_type": "diagram",
+      "start": 258.12,
+      "duration": 28.55,
+      "subtitle_ref": "ch24.srt#13",
+      "head": "关键复用速查",
+      "lines": [
+        "USART2：脚 16/17",
+        "SPI1：脚 21–23",
+        "CAN1 与 OTG_FS：PA11/12"
+      ],
+      "say": "L476RG 的常用复用：USART2 在 PA2 和 PA3，脚 16 和 17；SPI1 在 PA5 到 PA7；I2C1 在 PB6、PB7；CAN1 和 OTG_FS 都在 PA11、PA12；SWD 在脚 46 和 49；脚 48 的 VDDUSB 是电源脚，不是 GPIO。",
+      "svg": "illustrations/handraw/ch24-pin-mux.png"
+    },
+    {
+      "scene_id": "ch24-s14",
+      "title": "PA11 和 PA12 的抢脚",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s13"
+      ],
+      "narration": "PA11 和 PA12 同时出现在 CAN1 和 OTG_FS 上，同一时刻只能选一家。要两样都要，CAN 改到 PB8 和 PB9。这和 F103 上 USB 抢 CAN 是同一类坑。",
+      "on_screen": [
+        "CAN1 与 OTG_FS 抢脚",
+        "同刻只选一家",
+        "CAN 改 PB8/PB9"
+      ],
+      "visual_source": "illustrations/handraw/ch24-pin-mux.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#关键复用（Table 16 的 LQFP64 行）"
+      ],
+      "memory_anchor": "一只脚一个所有者",
+      "evidence_type": "diagram",
+      "start": 286.67,
+      "duration": 19.046,
+      "subtitle_ref": "ch24.srt#14",
+      "head": "PA11 和 PA12 的抢脚",
+      "lines": [
+        "CAN1 与 OTG_FS 抢脚",
+        "同刻只选一家",
+        "CAN 改 PB8/PB9"
+      ],
+      "say": "PA11 和 PA12 同时出现在 CAN1 和 OTG_FS 上，同一时刻只能选一家。要两样都要，CAN 改到 PB8 和 PB9。这和 F103 上 USB 抢 CAN 是同一类坑。",
+      "svg": "illustrations/handraw/ch24-pin-mux.png"
+    },
+    {
+      "scene_id": "ch24-s15",
+      "title": "JP6 只切 MCU 的 IDD",
+      "purpose": "mechanism",
+      "prerequisite": [
+        "ch24-s03"
+      ],
+      "narration": "测量边界先划清：对 MB1136 版 NUCLEO-L476RG，拔掉 JP6 串入电流表，量的是 STM32 的电流，不等于整板输入电流。ST-LINK、LED 和外部模块经 GPIO 的回灌，都不在 JP6 里。",
+      "on_screen": [
+        "拔 JP6 串表",
+        "只量 MCU IDD",
+        "回灌不在其中"
+      ],
+      "visual_source": "illustrations/handraw/ch24-idd.png",
+      "fact_source": [
+        "um1724",
+        "docs/24-STM32L4引脚.md#可复算的电流测量与续航账"
+      ],
+      "memory_anchor": "JP6 圈里只有 MCU",
+      "evidence_type": "diagram",
+      "start": 305.716,
+      "duration": 21.542,
+      "subtitle_ref": "ch24.srt#15",
+      "head": "JP6 只切 MCU 的 IDD",
+      "lines": [
+        "拔 JP6 串表",
+        "只量 MCU IDD",
+        "回灌不在其中"
+      ],
+      "say": "测量边界先划清：对 MB1136 版 NUCLEO-L476RG，拔掉 JP6 串入电流表，量的是 STM32 的电流，不等于整板输入电流。ST-LINK、LED 和外部模块经 GPIO 的回灌，都不在 JP6 里。",
+      "svg": "illustrations/handraw/ch24-idd.png"
+    },
+    {
+      "scene_id": "ch24-s16",
+      "title": "万用表把板子压复位了",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s15"
+      ],
+      "narration": "万用表一接上板子就复位：自动量程的负担电压让 MCU 的 VDD 下跌。解决是改用动态功耗分析仪或低阻分流器，同时记录 MCU 引脚端的 VDD，不能只记电源设定值。",
+      "on_screen": [
+        "现象：接表就复位",
+        "原因：负担电压",
+        "动作：分析仪/低阻分流"
+      ],
+      "visual_source": "illustrations/handraw/ch24-idd.png",
+      "fact_source": [
+        "um1724",
+        "docs/24-STM32L4引脚.md#可复算的电流测量与续航账"
+      ],
+      "memory_anchor": "表本身也是负载",
+      "evidence_type": "diagnosis",
+      "start": 327.258,
+      "duration": 18.494,
+      "subtitle_ref": "ch24.srt#16",
+      "head": "万用表把板子压复位了",
+      "lines": [
+        "现象：接表就复位",
+        "原因：负担电压",
+        "动作：分析仪/低阻分流"
+      ],
+      "say": "万用表一接上板子就复位：自动量程的负担电压让 MCU 的 VDD 下跌。解决是改用动态功耗分析仪或低阻分流器，同时记录 MCU 引脚端的 VDD，不能只记电源设定值。",
+      "svg": "illustrations/handraw/ch24-idd.png"
+    },
+    {
+      "scene_id": "ch24-s17",
+      "title": "功能固件量不出睡眠",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s15"
+      ],
+      "narration": "用功能固件量电流，MCO、串口日志和 LED 自己就把电流抬起来了。解决是做两份固件：功能诊断和低功耗测量走同一条睡眠路径，只在证据输出上不同，测电流那份不开 MCO 和日志。",
+      "on_screen": [
+        "现象：数字虚高",
+        "原因：观测手段耗电",
+        "动作：两份固件"
+      ],
+      "visual_source": "diagrams/l4-idd-bench.svg",
+      "fact_source": [
+        "project-examples",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "别让仪器抬高电流",
+      "evidence_type": "diagnosis",
+      "start": 345.752,
+      "duration": 20.15,
+      "subtitle_ref": "ch24.srt#17",
+      "head": "功能固件量不出睡眠",
+      "lines": [
+        "现象：数字虚高",
+        "原因：观测手段耗电",
+        "动作：两份固件"
+      ],
+      "say": "用功能固件量电流，MCO、串口日志和 LED 自己就把电流抬起来了。解决是做两份固件：功能诊断和低功耗测量走同一条睡眠路径，只在证据输出上不同，测电流那份不开 MCO 和日志。",
+      "svg": "diagrams/l4-idd-bench.svg"
+    },
+    {
+      "scene_id": "ch24-s18",
+      "title": "平均值不是续航账",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s15"
+      ],
+      "narration": "拿两个读数平均算续航，会把唤醒尖峰抹平。正确做法是从波形积分：分开积分活动段与 Stop 2 段，算出每周期电荷与平均电流，采样率满足 f s 大于等于 10 除以最短脉冲。",
+      "on_screen": [
+        "平均 ≠ 积分",
+        "分段积分",
+        "f_s ≥ 10 / t_min"
+      ],
+      "visual_source": "diagrams/sample-24-idd-jp6.svg",
+      "fact_source": [
+        "um1724",
+        "docs/24-STM32L4引脚.md#可复算的电流测量与续航账"
+      ],
+      "memory_anchor": "续航账从积分来",
+      "evidence_type": "diagnosis",
+      "start": 365.902,
+      "duration": 18.59,
+      "subtitle_ref": "ch24.srt#18",
+      "head": "平均值不是续航账",
+      "lines": [
+        "平均 ≠ 积分",
+        "分段积分",
+        "f_s ≥ 10 / t_min"
+      ],
+      "say": "拿两个读数平均算续航，会把唤醒尖峰抹平。正确做法是从波形积分：分开积分活动段与 Stop 2 段，算出每周期电荷与平均电流，采样率满足 f s 大于等于 10 除以最短脉冲。",
+      "svg": "diagrams/sample-24-idd-jp6.svg"
+    },
+    {
+      "scene_id": "ch24-s19",
+      "title": "Stop 2 从未醒来",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s10"
+      ],
+      "narration": "进了 Stop 2 从未醒来，按三岔口第一条分流：唤醒源没有配置，或者标志在睡前已被清掉。核对 RTC、EXTI 的使能与触发边沿，用 GPIO 标记确认睡前状态。",
+      "on_screen": [
+        "现象：不醒",
+        "假设：唤醒源/标志",
+        "动作：GPIO 标记核对"
+      ],
+      "visual_source": "diagrams/sample-24-wake-triage.svg",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "不醒先查唤醒源",
+      "evidence_type": "diagnosis",
+      "start": 384.492,
+      "duration": 18.302,
+      "subtitle_ref": "ch24.srt#19",
+      "head": "Stop 2 从未醒来",
+      "lines": [
+        "现象：不醒",
+        "假设：唤醒源/标志",
+        "动作：GPIO 标记核对"
+      ],
+      "say": "进了 Stop 2 从未醒来，按三岔口第一条分流：唤醒源没有配置，或者标志在睡前已被清掉。核对 RTC、EXTI 的使能与触发边沿，用 GPIO 标记确认睡前状态。",
+      "svg": "diagrams/sample-24-wake-triage.svg"
+    },
+    {
+      "scene_id": "ch24-s20",
+      "title": "反复醒来睡不安稳",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s19"
+      ],
+      "narration": "板子反复醒来睡不安稳，第二条岔路：有未预期的唤醒源在触发。逐个关闭 RTC、EXTI 线和 WKUP 引脚做排除，用示波器标记锁定是哪一路。",
+      "on_screen": [
+        "现象：反复醒",
+        "假设：多余唤醒源",
+        "动作：逐路排除"
+      ],
+      "visual_source": "diagrams/sample-24-wake-triage.svg",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "一次只关一路",
+      "evidence_type": "diagnosis",
+      "start": 402.794,
+      "duration": 16.814,
+      "subtitle_ref": "ch24.srt#20",
+      "head": "反复醒来睡不安稳",
+      "lines": [
+        "现象：反复醒",
+        "假设：多余唤醒源",
+        "动作：逐路排除"
+      ],
+      "say": "板子反复醒来睡不安稳，第二条岔路：有未预期的唤醒源在触发。逐个关闭 RTC、EXTI 线和 WKUP 引脚做排除，用示波器标记锁定是哪一路。",
+      "svg": "diagrams/sample-24-wake-triage.svg"
+    },
+    {
+      "scene_id": "ch24-s21",
+      "title": "醒了但业务是乱的",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s11",
+        "ch24-s12"
+      ],
+      "narration": "人醒了业务却是乱的：串口乱码、定时器周期错，第一条假设是时钟没装回，直接用了 MSI 或 HSI16 下的旧配置。按四项证据顺序核对，先时钟后通信。",
+      "on_screen": [
+        "现象：乱码/周期错",
+        "假设：时钟没装回",
+        "动作：按四项证据走"
+      ],
+      "visual_source": "illustrations/handraw/ch24-wake-clocks.png",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#Stop 2 进入、唤醒与时钟恢复闭环"
+      ],
+      "memory_anchor": "先时钟，后通信",
+      "evidence_type": "diagnosis",
+      "start": 419.608,
+      "duration": 16.838,
+      "subtitle_ref": "ch24.srt#21",
+      "head": "醒了但业务是乱的",
+      "lines": [
+        "现象：乱码/周期错",
+        "假设：时钟没装回",
+        "动作：按四项证据走"
+      ],
+      "say": "人醒了业务却是乱的：串口乱码、定时器周期错，第一条假设是时钟没装回，直接用了 MSI 或 HSI16 下的旧配置。按四项证据顺序核对，先时钟后通信。",
+      "svg": "illustrations/handraw/ch24-wake-clocks.png"
+    },
+    {
+      "scene_id": "ch24-s22",
+      "title": "Standby 醒来数据没了",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s06",
+        "ch24-s08"
+      ],
+      "narration": "Standby 唤醒后变量归零，如果本想用 SRAM2 保存状态，先查 RRS 配置与目标料号是否支持。不能从别的 L4 料号照抄，Standby 的保持能力要逐项确认。",
+      "on_screen": [
+        "现象：变量归零",
+        "假设：SRAM2 没保",
+        "动作：查 RRS 与料号"
+      ],
+      "visual_source": "diagrams/sample-24-stop2-retain.svg",
+      "fact_source": [
+        "rm0351",
+        "docs/24-STM32L4引脚.md#低功耗模式与状态保持（RM0351）"
+      ],
+      "memory_anchor": "保持能力逐料号确认",
+      "evidence_type": "diagnosis",
+      "start": 436.446,
+      "duration": 16.622,
+      "subtitle_ref": "ch24.srt#22",
+      "head": "Standby 醒来数据没了",
+      "lines": [
+        "现象：变量归零",
+        "假设：SRAM2 没保",
+        "动作：查 RRS 与料号"
+      ],
+      "say": "Standby 唤醒后变量归零，如果本想用 SRAM2 保存状态，先查 RRS 配置与目标料号是否支持。不能从别的 L4 料号照抄，Standby 的保持能力要逐项确认。",
+      "svg": "diagrams/sample-24-stop2-retain.svg"
+    },
+    {
+      "scene_id": "ch24-s23",
+      "title": "封面数字当整板结论",
+      "purpose": "failure",
+      "prerequisite": [
+        "ch24-s03",
+        "ch24-s15"
+      ],
+      "narration": "最后一条失败是把封面典型值直接当整板结论。板上的 LDO、LED 和回灌都会抬高电流，手册数字对不上万用表不是芯片坏了，是条件不同。所有数字都要带条件记录。",
+      "on_screen": [
+        "封面 ≠ 整板",
+        "LDO/LED/回灌",
+        "数字带条件"
+      ],
+      "visual_source": "illustrations/handraw/ch24-part-id.png",
+      "fact_source": [
+        "ds10198",
+        "docs/24-STM32L4引脚.md#这颗料是谁"
+      ],
+      "memory_anchor": "没有条件的数字不写进设计",
+      "evidence_type": "diagnosis",
+      "start": 453.068,
+      "duration": 18.566,
+      "subtitle_ref": "ch24.srt#23",
+      "head": "封面数字当整板结论",
+      "lines": [
+        "封面 ≠ 整板",
+        "LDO/LED/回灌",
+        "数字带条件"
+      ],
+      "say": "最后一条失败是把封面典型值直接当整板结论。板上的 LDO、LED 和回灌都会抬高电流，手册数字对不上万用表不是芯片坏了，是条件不同。所有数字都要带条件记录。",
+      "svg": "illustrations/handraw/ch24-part-id.png"
+    },
+    {
+      "scene_id": "ch24-s24",
+      "title": "实验 A：功能闭环",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch24-s10",
+        "ch24-s12"
+      ],
+      "narration": "实验 A 先做功能闭环：RTC 每 5 秒唤醒一次 Stop 2，中断入口快照标志，恢复后断言 80 兆，再测一个定时器周期和一帧已知字节。睡前留 GPIO 标记给示波器。",
+      "on_screen": [
+        "RTC 5 秒唤醒",
+        "入口快照",
+        "断言 + 周期 + 帧"
+      ],
+      "visual_source": "animations/l4-stop2-evidence.svg",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "功能闭环带证据输出",
+      "evidence_type": "experiment",
+      "start": 471.634,
+      "duration": 18.23,
+      "subtitle_ref": "ch24.srt#24",
+      "head": "实验 A：功能闭环",
+      "lines": [
+        "RTC 5 秒唤醒",
+        "入口快照",
+        "断言 + 周期 + 帧"
+      ],
+      "say": "实验 A 先做功能闭环：RTC 每 5 秒唤醒一次 Stop 2，中断入口快照标志，恢复后断言 80 兆，再测一个定时器周期和一帧已知字节。睡前留 GPIO 标记给示波器。",
+      "svg": "animations/l4-stop2-evidence.svg"
+    },
+    {
+      "scene_id": "ch24-s25",
+      "title": "实验 A 加练：故意跳过时钟恢复",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch24-s24"
+      ],
+      "narration": "功能闭环跑通后加练一次：故意跳过时钟恢复，记录第一个偏离期望的边界出现在哪里，然后恢复代码。知道第一块多米诺倒在哪，排错才有顺序。",
+      "on_screen": [
+        "故意跳过",
+        "记录第一偏离",
+        "再恢复代码"
+      ],
+      "visual_source": "illustrations/handraw/ch24-wake-clocks.png",
+      "fact_source": [
+        "stm32cube-l4-stop2",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "第一块多米诺最有信息量",
+      "evidence_type": "experiment",
+      "start": 489.864,
+      "duration": 15.206,
+      "subtitle_ref": "ch24.srt#25",
+      "head": "实验 A 加练：故意跳过时钟恢复",
+      "lines": [
+        "故意跳过",
+        "记录第一偏离",
+        "再恢复代码"
+      ],
+      "say": "功能闭环跑通后加练一次：故意跳过时钟恢复，记录第一个偏离期望的边界出现在哪里，然后恢复代码。知道第一块多米诺倒在哪，排错才有顺序。",
+      "svg": "illustrations/handraw/ch24-wake-clocks.png"
+    },
+    {
+      "scene_id": "ch24-s26",
+      "title": "实验 B：测量闭环",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch24-s16",
+        "ch24-s18"
+      ],
+      "narration": "实验 B 换测量闭环：关闭 MCO、日志、LED 和无关传感器，从 JP6 串入仪器并同时测 MCU 端 VDD，抓至少十个完整周期，分段积分出每周期电荷与平均电流。",
+      "on_screen": [
+        "无日志固件",
+        "≥10 个周期",
+        "分段积分"
+      ],
+      "visual_source": "diagrams/l4-idd-bench.svg",
+      "fact_source": [
+        "um1724",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "测量固件干净出发",
+      "evidence_type": "experiment",
+      "start": 505.07,
+      "duration": 18.302,
+      "subtitle_ref": "ch24.srt#26",
+      "head": "实验 B：测量闭环",
+      "lines": [
+        "无日志固件",
+        "≥10 个周期",
+        "分段积分"
+      ],
+      "say": "实验 B 换测量闭环：关闭 MCO、日志、LED 和无关传感器，从 JP6 串入仪器并同时测 MCU 端 VDD，抓至少十个完整周期，分段积分出每周期电荷与平均电流。",
+      "svg": "diagrams/l4-idd-bench.svg"
+    },
+    {
+      "scene_id": "ch24-s27",
+      "title": "实验 B 加练：量化调试的代价",
+      "purpose": "experiment",
+      "prerequisite": [
+        "ch24-s26"
+      ],
+      "narration": "测量闭环完成后加练一次：接回调试器重复同一测量，量化调试器造成的差异。原始波形和脚本都保存，不用功能固件的波形冒充低功耗结果。",
+      "on_screen": [
+        "接回调试器",
+        "量化差异",
+        "存原始波形"
+      ],
+      "visual_source": "diagrams/sample-24-idd-jp6.svg",
+      "fact_source": [
+        "um1724",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "调试器的代价也算进账",
+      "evidence_type": "experiment",
+      "start": 523.372,
+      "duration": 15.446,
+      "subtitle_ref": "ch24.srt#27",
+      "head": "实验 B 加练：量化调试的代价",
+      "lines": [
+        "接回调试器",
+        "量化差异",
+        "存原始波形"
+      ],
+      "say": "测量闭环完成后加练一次：接回调试器重复同一测量，量化调试器造成的差异。原始波形和脚本都保存，不用功能固件的波形冒充低功耗结果。",
+      "svg": "diagrams/sample-24-idd-jp6.svg"
+    },
+    {
+      "scene_id": "ch24-s28",
+      "title": "离开检查：三份账",
+      "purpose": "recall",
+      "prerequisite": [
+        "ch24-s24",
+        "ch24-s26",
+        "ch24-s27"
+      ],
+      "narration": "离开这一章，你手里应有三份账：一份带四项证据的恢复记录，一张分段积分的续航账，和一份写明仿真与真板各自证明了什么的边界结论。低功耗的每微安，都要能对上条件。",
+      "on_screen": [
+        "恢复记录",
+        "续航账",
+        "边界结论"
+      ],
+      "visual_source": "illustrations/handraw/ch24-idd.png",
+      "fact_source": [
+        "um1724",
+        "project-examples",
+        "docs/24-STM32L4引脚.md#动手实验"
+      ],
+      "memory_anchor": "每微安都要对上条件",
+      "evidence_type": "recall",
+      "start": 538.818,
+      "duration": 17.534,
+      "subtitle_ref": "ch24.srt#28",
+      "head": "离开检查：三份账",
+      "lines": [
+        "恢复记录",
+        "续航账",
+        "边界结论"
+      ],
+      "say": "离开这一章，你手里应有三份账：一份带四项证据的恢复记录，一张分段积分的续航账，和一份写明仿真与真板各自证明了什么的边界结论。低功耗的每微安，都要能对上条件。",
+      "svg": "illustrations/handraw/ch24-idd.png"
+    }
+  ],
+  "estimated_duration": 713.89,
+  "actual_duration": 556.352
+}
