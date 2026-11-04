@@ -35,6 +35,21 @@ Match the four lines for the first board, then change family. The expected value
 | The clock an L4 wakes on | After Stop 2 the temporary clock is MSI or HSI16. The cover's 1.1 µA, 1.4 µA with the RTC, and 4 µs wake are chip typicals | The bit width of the first frame after wake-up, and the current with the debugger and the LED removed |
 | H7 silicon and VOS | Rev Y/W stay on VOS1 at 400 MHz. Rev V enters VOS0 from a VOS1 that has already reported ready, and only then 480 MHz. MCO2÷5 expects 80 MHz at 400 MHz and 96 MHz at 480 MHz | `REV_ID`, both `VOSRDY` waits, and the MCO reading on an instrument |
 
+## Recommended reading order
+
+**Main path (first full pass)**: 00 → 01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24 → 25 → 26 → 27 → 28 → this appendix. This is the table-of-contents order; each chapter's prerequisites only reference earlier concepts.
+
+**Accelerated path (toolchain experience)**: 00 (read the learning contract only) → 02 → 03 → 05 → 06 → 10 → 15 → 17 → 20 → 22 → pick 23 / 24 / 25 for your target chip → 28. Each chapter's prerequisites state which minimum victories the accelerated path skips; if measurement evidence is missing, fall back to the corresponding main-path chapter — do not pass simulation results off as board evidence.
+
+**Topic inserts (chapter numbers unchanged)**:
+
+| Your task | Insert | When |
+| --- | --- | --- |
+| Maintaining an F1 SPL project | 26 | After L2, or before entering L5 migration |
+| Board wiring / board selection | 21 | In parallel once the L1 minimal project is being wired |
+| No-board simulation | 22 | In parallel during L1–L2 practice; acceptance still uses a real board or a stated simulation boundary |
+| Symptom triage | 18 | Jump in from the symptom index whenever any experiment fails; no need to read 00–17 first |
+
 ## When this book is finished
 
 Three checks are enough:

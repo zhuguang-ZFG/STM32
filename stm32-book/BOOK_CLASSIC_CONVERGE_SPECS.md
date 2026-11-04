@@ -505,17 +505,17 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 ### 11.3 全书完成定义（合流改造）
 
 - [ ] 29 中文 + 29 英文均有对照本 Overlay 的逐章审计，无跳章。  
-- [ ] manifest 七分部标题/目标已按 §3.2 更新；阅读指南含主路径与加速路径。  
+- [x] manifest 七分部标题/目标已按 §3.2 更新；阅读指南含主路径与加速路径。（**2026-11-05**：`manifest.json`/`manifest-en.json` 七分部标题与目标按 §3.2 表更新；`book/F-学习路线收束.md` 与 `en/F-closing.md` 增主路径/加速路径/专题插入表。）  
 - [x] CONTENT_GUIDE 无强制固定骨架；功能块合同生效。  
 - [x] strip 与 handraw **按 §9 方式**完成且旧支停更归档。（**2026-11-04**：`audits/branch-archive-strip-handraw.md`；远程 tip 保留只读，未删。）  
 - [ ] 29 短片 + 29 长片由当前源可再生；字幕/分镜/成片哈希对应；旁白无全书同构。  
-- [ ] Handraw 知识轨与真证轨在重点章可区分；无 AI 假证据。  
-- [ ] 29 章均满足 §15：插图类型覆盖、动画下限、上调视觉锚点、官方+OSS 出处与冲突裁定。  
+- [x] Handraw 知识轨与真证轨在重点章可区分；无 AI 假证据。（**2026-11-05**：知识轨 177 张覆盖 29 章 + 附录 A–F，全部带「原理示意 / 非实拍」徽章与图注边界；真证轨照片与缺口未动；`test_handraw_track` 双语对称断言 PASS。见 `audits/handraw-knowledge-track-29.md`。）  
+- [x] 29 章均满足 §15：插图类型覆盖、动画下限、上调视觉锚点、官方+OSS 出处与冲突裁定。（§15.1-23/24/25 三表与普查 `b7-converge-census.md`；本轮知识轨补齐后 `audit_book` zh/en 锚点各 425、低于目标章节 0。）  
 - [x] B7 完成插图/动画/出处覆盖率普查报告。（**已完成**：`stm32-book/audits/b7-converge-census.md`；缺口见该报告 §9，不标假完成。）  
-- [ ] 双语 HTML/PDF 同源；书签/索引/来源/许可一致；页样已目检。  
+- [x] 双语 HTML/PDF 同源；书签/索引/来源/许可一致；页样已目检。（**2026-11-05**：同一提交构建 zh 565 页 / en 589 页 PDF；页样目检 zh p12/p285/p563 + en p296 无缺陷，记录见 `audits/handraw-knowledge-track-29.md` §4。）  
 - [x] 基线测试与新增合同全绿；无删测试换绿灯。（**B7 验证**：pytest 180 passed；check_assets / slop_lint / audit_book 通过；build_html --check zh+en PASS。未删测试。）  
 - [ ] `task_verify` 分列报告完成。  
-- [ ] CREDITS、许可证、变更记录、生成命令同步；临时 smoke 不进发布源。
+- [x] CREDITS、许可证、变更记录、生成命令同步；临时 smoke 不进发布源。（**2026-11-05**：CREDITS 新增知识轨行——两条生产线、许可、yang0/handraw-style 出处；生成命令见 `tools/handraw_track/README.md`；本轮变更记录在 `audits/handraw-knowledge-track-29.md`。）
 
 ---
 

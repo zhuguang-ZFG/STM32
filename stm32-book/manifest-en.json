@@ -26,8 +26,8 @@
   "parts": [
     {
       "id": "p0",
-      "title": "Part 1  Start: a development loop you can repeat",
-      "goal": "Write the learning route, the toolchain, the chip boundary, and the clock assumptions down as an engineering record you can reproduce.",
+      "title": "Part 1 · L0 Start: a repeatable development loop",
+      "goal": "Turn the learning path, toolchain, chip boundaries, and clock assumptions into a reproducible engineering record; leave with one build-flash-reset cycle and version notes.",
       "files": [
         "00-how-to-learn-stm32.md",
         "01-dev-environment.md",
@@ -36,8 +36,8 @@
     },
     {
       "id": "p1",
-      "title": "Part 2  GPIO, interrupts, and time",
-      "goal": "Go from one pin to asynchronous events and a hardware time base, and prove the configuration with a waveform instead of guessing by eye.",
+      "title": "Part 2 · L1 Drive: pins, events, and time bases",
+      "goal": "On one minimal project, deliver blink, interrupt response, and PWM waveform evidence; prove configuration with measurement.",
       "files": [
         "03-gpio-and-led.md",
         "04-interrupts-nvic.md",
@@ -46,8 +46,8 @@
     },
     {
       "id": "p2",
-      "title": "Part 3  Serial buses, sampling, and DMA",
-      "goal": "Reconcile level, frame, buffer, and memory consistency, and explain where every byte comes from and where it goes.",
+      "title": "Part 3 · L2 Data: waveforms → peripherals → memory",
+      "goal": "Reconcile levels, frames, buffers, and memory consistency; point at where an error lives — wire, peripheral, or memory.",
       "files": [
         "06-uart.md",
         "07-i2c.md",
@@ -58,8 +58,8 @@
     },
     {
       "id": "p3",
-      "title": "Part 4  Reliability, links, scheduling, and debug",
-      "goal": "Put power loss, updates, networks, USB, real-time scheduling, low power, and fault finding inside one engineering boundary.",
+      "title": "Part 4 · L3 Reliability: timing, links, scheduling, and faults",
+      "goal": "Each chapter leaves one reproducible failure and a shortest diagnosis; evidence separates at least two candidate causes.",
       "files": [
         "11-rtc-watchdog.md",
         "12-flash-iap.md",
@@ -72,8 +72,8 @@
     },
     {
       "id": "p4",
-      "title": "Part 5  Delivery: troubleshooting, projects, sources, and simulation",
-      "goal": "Turn scattered peripherals into a project you can reproduce, and state the limits of the document layers, the board evidence, and the simulation model.",
+      "title": "Part 5 · L4 Delivery: triage, projects, references, and simulation boundaries",
+      "goal": "Symptom-driven triage, rebuildable projects, decision maps; say what Wokwi/Renode/real hardware can and cannot prove.",
       "files": [
         "18-faq.md",
         "19-projects.md",
@@ -84,8 +84,8 @@
     },
     {
       "id": "p5",
-      "title": "Part 6  Migration, legacy projects, and networks",
-      "goal": "Migrate by package, supply, clock, memory, cache, and network layer; keep a legacy SPL project maintainable; and put the device on a network you can diagnose, recover, and authenticate.",
+      "title": "Part 6 · L5 Migration: packages, power, clocks, cache, and legacy stacks",
+      "goal": "Migration checklists for three families, SPL maintenance boundaries, and network diagnosability; list what must be rechecked when switching series.",
       "files": [
         "23-stm32g0-pins.md",
         "24-stm32l4-pins.md",
@@ -96,8 +96,8 @@
     },
     {
       "id": "p6",
-      "title": "Part 7  System architecture: from kernel objects to a product you can ship",
-      "goal": "Put scheduling, devices, services, faults, and the resource budget on one system diagram, and choose FreeRTOS, RT-Thread, Zephyr, or bare metal against those constraints.",
+      "title": "Part 7 · L5 System close-out: from kernel objects to a deliverable product",
+      "goal": "One system-constraint diagram, an RTOS/bare-metal selection table, and a whole-book self-check; trade off by budget and recovery path.",
       "files": [
         "28-system-rtos.md"
       ],

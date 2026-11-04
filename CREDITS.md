@@ -14,6 +14,7 @@
 | 静态框图（37 张） | `assets/diagrams/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_diagrams.py`、`tools/gen_sample_figures.py` 与 `tools/gen_gpio_classic.py`，采用 CC BY 4.0 |
 | PC13 stack 边界图（1 组） | `assets/diagrams/stack-gpio-pc13-led*` | 本仓库设计内容；模板与构建器 [stack-diagram](https://github.com/caru-ini/stack-diagram)（MIT，审查提交 `9e90a3b`）；[Lucide](https://lucide.dev) 图标（ISC）；Geist / JetBrains Mono 字体（SIL OFL 1.1）。许可文本见 `tools/stack-diagrams/` |
 | 章首、章中、分部与附录手绘概念图（71 张） | `assets/illustrations/` | **本仓库作者用代码绘制**，脚本见 `tools/gen_handdraw_illustrations.py`，采用 CC BY 4.0；只用于建立直觉，不承载工程数据 |
+| 知识轨手绘图（29 章 + 附录 A–F，177 张 PNG + 66 张 SVG 源） | `assets/illustrations/handraw/` | 知识轨概念插画，图注与徽章一律标「原理示意 / 非实拍」，不作实拍、仪器或实验证据。ch00–12（71 张）为 AI 生成概念图，按 [yang0/handraw-style](https://github.com/yang0/handraw-style) 规划登记（FA-002/FA-029 · IG 系列图型），规划与 SHA 记录见 `stm32-book/audits/`；ch13–28 与附录（106 张）由 `tools/handraw_track`（`hd.py` + `fig_chNN.py`，种子固定、可复现）绘制，采用 CC BY 4.0 |
 | 光栅动画（24 个 GIF） | `assets/gif/` | **本仓库作者用纯 Python 渲染并手写 GIF 编码器生成**，脚本见 `tools/minigfx.py`、`tools/gen_gifs.py` |
 
 > 除 `assets/photos/` 的两张 CC0 Nucleo 实拍与两张 CC BY-SA 4.0 Blue Pill 实拍（Avandalen + Popolon），以及 stack HTML/PNG 内嵌的 Lucide 图标和 Geist/JetBrains Mono 字体外，本仓库图形资产均为自绘或程序生成。实拍在正文中按真实型号标注，不将 F401RE/F411RE 冒充 NUCLEO-L476RG；不得用 AI 生成图冒充实拍证据。
