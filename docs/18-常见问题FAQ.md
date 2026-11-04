@@ -64,6 +64,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch18-boot-triage.png" width="760" alt="Handraw：FAQ 启动分流 BOOT0 与 SWD（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT0=0 从 Flash 0x08000000；BOOT0=1 进系统存储；先查第 34/37/44 脚；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/boot0-low.gif" width="640" alt="第 44 脚为 0，探针接在第 34 脚和第 37 脚，目标出现">
   <br><sub>▲ 动图版，只演示正常情况：第 44 脚为 0，探针接在第 34 脚和第 37 脚，调试器识别到芯片。印刷版只有上面的静态图。</sub>
 </p>
@@ -115,6 +120,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
   <br><sub>▲ 自绘。C8=64 KB/20 KB；先读 region 再改 C。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-link-map.png" width="760" alt="Handraw：链接图溢出 vs 错误 FLASH ORIGIN（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。.text/.data/.bss 对齐 map；溢出≠ORIGIN 写错；不是实拍。</sub>
+</p>
+
 
 **C1 找不到 `stm32f1xx_hal.h`**
 - **现象**：编译报 `fatal error: stm32f1xx_hal.h: No such file or directory`。
@@ -164,6 +174,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
   <br><sub>▲ 自绘。bit15=1 才信 BFAR；否则看压栈 PC。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-hardfault-ladder.png" width="760" alt="Handraw：HardFault 梯子 CFSR→BFAR（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先读 CFSR 0xE000ED28；BFARVALID=bit15 再信 BFAR；再看 stacked PC；不是实拍。</sub>
+</p>
+
 
 **D1 `No target connected` / 连不上目标**
 - **现象**：下载器报找不到目标。
@@ -206,12 +221,22 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
   <br><sub>▲ 自绘。FAQ 五域对照：每域只做第一探针，有证据再改一处。出处是 [RM0008 启动](#source-rm0008-boot) 和 [DS5319 NRST/SWD](#source-ds5319-nrst)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-faq-compare.png" width="760" alt="Handraw：FAQ 五域第一探针对比（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。编译链接 / 下载调试 / 外设 / 硬件 / RTOS 各有第一探针，不要一次改五处；不是实拍。</sub>
+</p>
+
 ## 三、外设
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-18-uart-garbled.svg" width="760" alt="串口乱码清单：波特 · HSE · 交叉线 · 3.3 V">
   <br><sub>▲ 自绘。先确认 SWS/BRR，再怀疑字符串代码。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-uart-garbled.png" width="760" alt="Handraw：串口乱码清单波特·HSE·交叉线·3.3 V（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先对波特与 HSE；TX/RX 交叉；共地 3.3 V；不是实拍。</sub>
 </p>
 
 

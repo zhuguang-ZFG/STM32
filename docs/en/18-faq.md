@@ -64,6 +64,11 @@ Wire the external lamp as in chapter 03: pin 10 PA0 through 270 Ω. Pin 2 PC13 s
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-boot-triage.png" width="760" alt="Handraw: FAQ boot triage BOOT0 and SWD (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT0=0 starts Flash 0x08000000; BOOT0=1 runs system memory; check pins 34/37/44 first; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/boot0-low.gif" width="640" alt="Pin 44 is 0, the probe is on pins 34 and 37, and the target appears">
   <br><sub>▲ Animated version. It shows only the normal case: pin 44 is 0, the probe is on pins 34 and 37, and the debugger finds the chip. The printed book has only the static figure above.</sub>
 </p>
@@ -115,6 +120,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
   <br><sub>▲ Drawn for this book. C8=64 KB/20 KB; read the region line before rewriting C.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-link-map.png" width="760" alt="Handraw: link-map overflow vs wrong FLASH ORIGIN (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Align .text/.data/.bss to the map; overflow ≠ wrong ORIGIN; not a photo.</sub>
+</p>
+
 
 **C1 Cannot find `stm32f1xx_hal.h`**
 - **Symptom**: the build reports `fatal error: stm32f1xx_hal.h: No such file or directory`.
@@ -164,6 +174,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
   <br><sub>▲ Drawn for this book. Trust BFAR only when bit15=1; else use stacked PC.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-hardfault-ladder.png" width="760" alt="Handraw: HardFault ladder CFSR→BFAR (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Read CFSR 0xE000ED28 first; trust BFAR only if BFARVALID=bit15; then stacked PC; not a photo.</sub>
+</p>
+
 
 **D1 `No target connected` / the probe cannot see the target**
 - **Symptom**: the programmer says it cannot find the target.
@@ -206,12 +221,22 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
   <br><sub>▲ Drawn for this book. Five FAQ domains, one first probe each. Sources: [RM0008 boot](#source-rm0008-boot) and [DS5319 NRST/SWD](#source-ds5319-nrst).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-faq-compare.png" width="760" alt="Handraw: FAQ five-domain first-probe compare (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Build/link, download/debug, peripherals, hardware, RTOS each have a first probe—do not change five configs at once; not a photo.</sub>
+</p>
+
 ## 3. Peripherals
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-18-uart-garbled.svg" width="760" alt="UART garbled checklist: baud · HSE · swap · 3.3 V">
   <br><sub>▲ Drawn for this book. Confirm SWS/BRR before rewriting string code.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-uart-garbled.png" width="760" alt="Handraw: UART garbled checklist baud·HSE·swap·3.3 V (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Match baud and HSE first; swap TX/RX; common ground 3.3 V; not a photo.</sub>
 </p>
 
 
