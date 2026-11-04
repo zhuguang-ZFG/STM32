@@ -124,8 +124,8 @@ There are two ways to wait for a parcel. You can walk down to the mailbox every 
   <br><sub>▲ Drawn for this book. AIRCR PRIGROUP splits four priority bits; equal preempt does not nest.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch04-priority-group.png" width="760" alt="Handraw: AIRCR priority grouping (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). PRIGROUP splits preempt vs subpriority; same preempt cannot interrupt; not a register screenshot.</sub>
+  <img src="../../assets/illustrations/handraw/ch04-priority-group.png" width="760" alt="Handraw: AIRCR priority grouping (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PRIGROUP splits preempt vs subpriority; same preempt cannot interrupt; not a register screenshot.</sub>
 </p>
 
 
@@ -153,8 +153,8 @@ How the arbitration looks:
   <br><sub>▲ Figure: preemption priority versus subpriority (vector drawing by the author)</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch04-preempt-vs-sub.png" width="760" alt="Handraw: preempt vs subpriority (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Smaller preempt number is higher and can nest; same preempt only queues by subpriority; not a debugger photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch04-preempt-vs-sub.png" width="760" alt="Handraw: preempt vs subpriority (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Smaller preempt number is higher and can nest; same preempt only queues by subpriority; not a debugger photo.</sub>
 </p>
 
 
@@ -187,8 +187,8 @@ Watch these seven steps side by side — polling, an external interrupt, and EXT
   <br><sub>▲ Drawn for this book. One port per EXTI line; EXTI5-9 and 10-15 share IRQs.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch04-exti-line-map.png" width="760" alt="Handraw: EXTI line map (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Each EXTI line picks one port; 5–9 and 10–15 share IRQs; not a die photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch04-exti-line-map.png" width="760" alt="Handraw: EXTI line map (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Each EXTI line picks one port; 5–9 and 10–15 share IRQs; not a die photo.</sub>
 </p>
 
 
@@ -207,8 +207,8 @@ EXTI is the layer that turns a pin change into an interrupt request. The F103 ha
   <br><sub>▲ Drawn for this book. STM32F103C8T6, button on PA0, EXTI0_IRQn = 6. Where to look: follow the PA0 edge towards the ISR and read four registers in order — RCC_APB2ENR bit 2 (IOPAEN), AFIO_EXTICR1 [3:0] (0000 selects PA0), EXTI_IMR bit 0, and NVIC_ISER0 bit 6. The path is open only when all four read back 1. What it proves: with EXTI_IMR at 0, EXTI_PR bit 0 is still set by the edge, so "PR reads 1 but the handler never runs" separates ring ④ from ring ③; a PR that reads 0 means the edge never reached EXTI at all, so go back to rings ① and ②. What it does not prove: the pin mode (GPIOx_CRL MODE/CNF), the edge chosen by RTSR/FTSR, contact bounce, or preemption and subpriority. Sources: RM0008 Rev 21 sections 8.3.7, 9.4.3, 10.3.1, and 10.3.6 ([EXTICR and EXTI_PR](#source-rm0008-exti)), and [PM0056 section 4](#source-pm0056-nvic) for NVIC_ISERx and the exception number.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch04-exti-triage.png" width="760" alt="Handraw: EXTI four-ring triage (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). IOPAEN → EXTICR → IMR → NVIC_ISER all must be open; PR set does not mean ISR entry; not a board photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch04-exti-triage.png" width="760" alt="Handraw: EXTI four-ring triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). IOPAEN → EXTICR → IMR → NVIC_ISER all must be open; PR set does not mean ISR entry; not a board photograph.</sub>
 </p>
 
 
@@ -369,8 +369,8 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
   <br><sub>▲ Drawn for this book. ~12-cycle entry; ~6-cycle tail-chain. The 6-cycle figure is for tail-chain only, not the ISR body.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch04-tail-chaining.png" width="760" alt="Handraw: entry vs tail-chaining cycles (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Entry stacking ~12 cycles, tail-chaining ~6; do not treat hardware chaining as whole ISR time; not a scope capture.</sub>
+  <img src="../../assets/illustrations/handraw/ch04-tail-chaining.png" width="760" alt="Handraw: entry vs tail-chaining cycles (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Entry stacking ~12 cycles, tail-chaining ~6; do not treat hardware chaining as whole ISR time; not a scope capture.</sub>
 </p>
 
 

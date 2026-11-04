@@ -118,8 +118,8 @@ Use package, memory, and peripherals to reject unsuitable order codes, then calc
   <br><sub>▲ Drawn for this book. Ask which bus a peripheral sits on before baud/timer math.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch02-bus-matrix.png" width="760" alt="Handraw: AHB/APB bus matrix (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Ask which bus and which PCLK before baud or timer math; not a die photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch02-bus-matrix.png" width="760" alt="Handraw: AHB/APB bus matrix (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Ask which bus and which PCLK before baud or timer math; not a die photo.</sub>
 </p>
 
 
@@ -198,8 +198,8 @@ The next figure turns "the board and the code disagree" into one ledger: it is w
   <br><sub>▲ Drawn for this book. The top panel is BOOT1=0 and BOOT0=0: 0x00000000 aliases the 64 KB image at 0x08000000, word 0 is the initial MSP and word 1 is Reset_Handler. The middle panel is BOOT1=1 and BOOT0=1: the same address aliases SRAM at 0x20000000, which runs to 0x20005000, and what sits there is power-on content, so word 0 is not a stack top and word 1 is not code — the fetch goes wrong before main, while the image in Flash is still intact at 0x08000000 and simply not fetched. The comparison panel lists the three alias rows and marks 0x1FFFB000 as an interconnect-line address and 0x08080000 as an XL-density one, neither of which belongs to this C8. The levels were taken on pin 44 and PB2 while reset was held; the figure says nothing about which bytes SRAM happens to hold. Source: [RM0008 Rev 21 section 3.4 Table 9](#source-rm0008-boot).</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch02-boot-alias.png" width="760" alt="Handraw: BOOT pins retarget 0x00000000 alias (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). BOOT1/BOOT0 alias 0x00000000 to Flash / system memory / SRAM; not a board photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch02-boot-alias.png" width="760" alt="Handraw: BOOT pins retarget 0x00000000 alias (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT1/BOOT0 alias 0x00000000 to Flash / system memory / SRAM; not a board photograph.</sub>
 </p>
 
 
@@ -219,8 +219,8 @@ The next figure turns "the board and the code disagree" into one ledger: it is w
   <br><sub>▲ Drawn for this book. PLL lock ledger: HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2. Knowledge track, not a scope photo.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch02-pll-lock-steps.png" width="760" alt="Handraw: four-step PLL lock ledger (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2; raise wait states before raising frequency; not a register screenshot.</sub>
+  <img src="../../assets/illustrations/handraw/ch02-pll-lock-steps.png" width="760" alt="Handraw: four-step PLL lock ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2; raise wait states before raising frequency; not a register screenshot.</sub>
 </p>
 
 
@@ -266,8 +266,8 @@ The most common clock-tree failure is an HSE that never starts while the code co
   <br><sub>▲ Drawn for this book. The top panel is the 72 MHz ledger: USART1 at 115200 divides 72 MHz into 39.0625, so BRR holds 0x271, and a SysTick reload of 72000 is 1.000 ms; HSERDY and PLLRDY both read 1 and SWS reads 10 in RCC_CFGR. The middle panel keeps that same ledger after the HSE stops: SYSCLK falls to HSI at 8 MHz, so 0x271 divides 8 MHz down to 12800 baud, one ninth of the intended rate, and the 72000 reload becomes 9.000 ms. The three checkpoints below are RCC_CR bit 17 HSERDY, the PLLMUL [21:18], PLLXTPRE [17], PLLSRC [16] and SWS [3:2] fields in RCC_CFGR, and LATENCY [2:0] in FLASH_ACR. The figure draws no crystal start-up waveform and cannot prove the 8 MHz part on your board is good; it only shows that every divider was computed for 72 MHz. Source: [RM0008 Rev 21 section 7.3.2](#source-rm0008-rcc).</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch02-hse-fail-fallback.png" width="760" alt="Handraw: HSE fail falls back to HSI (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). After CSS drops SYSCLK from 72 MHz to HSI 8 MHz, baud/SysTick math still assuming 72 MHz is wrong; not a scope capture.</sub>
+  <img src="../../assets/illustrations/handraw/ch02-hse-fail-fallback.png" width="760" alt="Handraw: HSE fail falls back to HSI (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). After CSS drops SYSCLK from 72 MHz to HSI 8 MHz, baud/SysTick math still assuming 72 MHz is wrong; not a scope capture.</sub>
 </p>
 
 
@@ -348,8 +348,8 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
   <br><sub>▲ Drawn for this book. Raise LATENCY before raising SYSCLK; reverse when lowering.</sub>
 </p>
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch02-flash-latency.png" width="760" alt="Handraw: Flash wait-state bands (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). 0–24 / 24–48 / 48–72 MHz map to LATENCY 0/1/2; raise LATENCY first, lower it after; not a datasheet scan.</sub>
+  <img src="../../assets/illustrations/handraw/ch02-flash-latency.png" width="760" alt="Handraw: Flash wait-state bands (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 0–24 / 24–48 / 48–72 MHz map to LATENCY 0/1/2; raise LATENCY first, lower it after; not a datasheet scan.</sub>
 </p>
 
 

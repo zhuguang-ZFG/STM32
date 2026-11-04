@@ -57,8 +57,8 @@ When BOOT1=0 and BOOT0=1, system memory is aliased at `0x00000000`. STM32F103C8T
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-boot0-fetch.png" width="760" alt="Handraw: BOOT0=0 fetches Flash, BOOT0=1 fetches system memory (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). How BOOT0 retargets the 0x00000000 alias; not a flash log and not a board photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-boot0-fetch.png" width="760" alt="Handraw: BOOT0=0 fetches Flash, BOOT0=1 fetches system memory (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). How BOOT0 retargets the 0x00000000 alias; not a flash log and not a board photograph.</sub>
 </p>
 
 
@@ -86,8 +86,8 @@ The latch is the 4th rising edge of SYSCLK after reset. Source: [RM0008 Rev 21 T
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-boot-triage-rings.png" width="760" alt="Handraw: supply → BOOT0 → SWD three-ring triage (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Order: supply, BOOT0, then SWD; if ring 1 fails, do not change code. Not a meter photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-boot-triage-rings.png" width="760" alt="Handraw: supply → BOOT0 → SWD three-ring triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Order: supply, BOOT0, then SWD; if ring 1 fails, do not change code. Not a meter photograph.</sub>
 </p>
 
 
@@ -124,8 +124,8 @@ If one of those is missing, review that item. You do not need to finish a C or c
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-three-api-lanes.png" width="760" alt="Handraw: register / SPL / HAL lanes — pick one the first week (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Three abstraction heights for the same peripheral; this book recommends HAL to start. Not an IDE screenshot.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-three-api-lanes.png" width="760" alt="Handraw: register / SPL / HAL lanes — pick one the first week (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Three abstraction heights for the same peripheral; this book recommends HAL to start. Not an IDE screenshot.</sub>
 </p>
 
 
@@ -151,8 +151,8 @@ If one of those is missing, review that item. You do not need to finish a C or c
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-roadmap-three-stages.png" width="760" alt="Handraw: blink → bus → system three-stage gates (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Each stage is measurable; pass before moving on. Not a progress-bar photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-roadmap-three-stages.png" width="760" alt="Handraw: blink → bus → system three-stage gates (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Each stage is measurable; pass before moving on. Not a progress-bar photo.</sub>
 </p>
 
 
@@ -172,8 +172,8 @@ If one of those is missing, review that item. You do not need to finish a C or c
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-accept-three-gates.png" width="760" alt="Handraw: build 0 Error / visible on board / explain every line (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Three acceptance gates; a clean build alone is not a pass. Not a build-log screenshot.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-accept-three-gates.png" width="760" alt="Handraw: build 0 Error / visible on board / explain every line (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Three acceptance gates; a clean build alone is not a pass. Not a build-log screenshot.</sub>
 </p>
 
 
@@ -232,8 +232,8 @@ If one of those is missing, review that item. You do not need to finish a C or c
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch00-learn-loop-four-steps.png" width="760" alt="Handraw: read RM → smallest code → board → explain loop (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Four-step loop; skipping the manual stops at explanation. Not a classroom photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch00-learn-loop-four-steps.png" width="760" alt="Handraw: read RM → smallest code → board → explain loop (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Four-step loop; skipping the manual stops at explanation. Not a classroom photograph.</sub>
 </p>
 
 

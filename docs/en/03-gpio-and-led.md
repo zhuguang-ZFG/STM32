@@ -48,8 +48,8 @@ Only after that match, read modes, series resistance, and the lock. If it does n
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-common-anode-before-after.png" width="760" alt="Handraw: common-anode LED write-0 on versus write-1 off (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Side-by-side write 0 versus write 1 on a common-anode path; not a meter reading and not a board photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-common-anode-before-after.png" width="760" alt="Handraw: common-anode LED write-0 on versus write-1 off (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Side-by-side write 0 versus write 1 on a common-anode path; not a meter reading and not a board photograph.</sub>
 </p>
 
 
@@ -78,8 +78,8 @@ The 25 mA and 50 MHz in the speed table later do not apply to PC13–PC15. A dif
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-pa0-ok-pc13-wrong.png" width="760" alt="Handraw: PA0 may drive an LED; copying the same onto PC13 is wrong (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Correct PA0 external LED versus the mistake of putting that current on PC13; not a wiring photograph.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-pa0-ok-pc13-wrong.png" width="760" alt="Handraw: PA0 may drive an LED; copying the same onto PC13 is wrong (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Correct PA0 external LED versus the mistake of putting that current on PC13; not a wiring photograph.</sub>
 </p>
 
 
@@ -126,8 +126,8 @@ A GPIO configuration must answer three questions: who drives the signal, what se
 
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-gpio-three-questions.png" width="760" alt="Handraw: three GPIO questions — driver, idle level, ownership (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Answer driver, idle level, and pin ownership before configuring; not a register screenshot.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-gpio-three-questions.png" width="760" alt="Handraw: three GPIO questions — driver, idle level, ownership (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Answer driver, idle level, and pin ownership before configuring; not a register screenshot.</sub>
 </p>
 
 ### 1. The 8 GPIO modes
@@ -167,8 +167,8 @@ A GPIO configuration must answer three questions: who drives the signal, what se
 
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-push-pull-vs-open-drain.png" width="760" alt="Handraw: push-pull versus open-drain output stages (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Push-pull drives high and low; open-drain only sinks, with the high from an external pull-up; not a scope capture.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-push-pull-vs-open-drain.png" width="760" alt="Handraw: push-pull versus open-drain output stages (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Push-pull drives high and low; open-drain only sinks, with the high from an external pull-up; not a scope capture.</sub>
 </p>
 
 ### 4. LED series resistor
@@ -180,8 +180,8 @@ A GPIO configuration must answer three questions: who drives the signal, what se
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-led-current-limit.png" width="760" alt="Handraw: LED series resistor R=(Vcc−Vf)/I (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Choose R from estimated Vf and target current; not a measured current reading.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-led-current-limit.png" width="760" alt="Handraw: LED series resistor R=(Vcc−Vf)/I (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Choose R from estimated Vf and target current; not a measured current reading.</sub>
 </p>
 
 
@@ -346,8 +346,8 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch03-poll-vs-exti.png" width="760" alt="Handraw: polling versus EXTI edge for a button (schematic)">
-  <br><sub>▲ Knowledge track (Handraw · schematic / not a photo). Main-loop polling cost versus an edge interrupt path; not a scope capture and not board evidence.</sub>
+  <img src="../../assets/illustrations/handraw/ch03-poll-vs-exti.png" width="760" alt="Handraw: polling versus EXTI edge for a button (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Main-loop polling cost versus an edge interrupt path; not a scope capture and not board evidence.</sub>
 </p>
 
 
