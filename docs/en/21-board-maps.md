@@ -59,6 +59,11 @@
   <br><sub>▲ Drawn comparison (not a photo). Three boards, five questions. Sources: [DS5319](#source-ds5319) and [project credits](#source-project-credits).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-board-compare.png" width="760" alt="Handraw: BluePill/BlackPill/Nucleo compare (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Compare package, debugger, 5 V path, and USB path across three boards; not a photo.</sub>
+</p>
+
 ### Board overview
 
 | Drawing ([`../../assets/boards/`](../../assets/boards/)) | MCU | Clock / core | Flash / RAM | How you program it |
@@ -77,6 +82,11 @@
 <p align="center">
   <img src="../../assets/diagrams/sample-21-vdd-3v3.svg" width="760" alt="BluePill rails: 5 V · 3V3 · VDDA · VBAT">
   <br><sub>▲ Drawn for this book. Measure 3V3 before blaming firmware.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-vdd-3v3.png" width="760" alt="Handraw: BluePill rails 5 V·3V3·VDDA·VBAT (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Measure 3V3 before blaming firmware; 5 V→AMS1117→VDD/VDDA/VBAT; not a photo.</sub>
 </p>
 
 
@@ -179,6 +189,11 @@
   <br><sub>▲ Drawn for this book. Cross TX/RX, share GND; no 5 V into PA10.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-usb-ttl.png" width="760" alt="Handraw: USB-TTL to USART1 PA9/PA10 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). TX→PA10, RX→PA9, shared GND at 3.3 V; do not feed 5 V into PA10; not a photo.</sub>
+</p>
+
 
 ![wiring](../../assets/boards/peripheral-wiring.svg)
 
@@ -209,6 +224,11 @@
 <p align="center">
   <img src="../../assets/diagrams/sample-21-hse-load.svg" width="760" alt="HSE 8 MHz: PD0/PD1 and load caps">
   <br><sub>▲ Drawn for this book. No HSERDY → check the can before PLLMUL.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-hse-load.png" width="760" alt="Handraw: HSE 8 MHz PD0/PD1 and load caps (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). If HSERDY never sets, check crystal solder first, then PLLMUL; not a photo.</sub>
 </p>
 
 
@@ -275,6 +295,11 @@ void Chip_PrintIdentity(void)
 <p align="center">
   <img src="../../assets/diagrams/sample-21-nrst-boot0.svg" width="760" alt="NRST and BOOT0: pins 7 and 44">
   <br><sub>▲ Drawn for this book. BOOT0=1 boots system memory — not a 'lost' app.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-nrst-boot0.png" width="760" alt="Handraw: NRST and BOOT0 pins 7/44 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT0=0 boots Flash; BOOT0=1 runs system memory—not lost firmware; not a photo.</sub>
 </p>
 
 
