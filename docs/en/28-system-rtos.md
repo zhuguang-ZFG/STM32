@@ -52,6 +52,11 @@
   <br><sub>▲ Drawn for this book. Separate concepts before naming a kernel.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-four-concepts.png" width="760" alt="Handraw: bare-metal / main+ISR / RTOS / Linux boundaries (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Bare-metal is one big loop; foreground-background uses ISR flags; RTOS kernel does scheduling and IPC; Linux needs an MMU; the kernel only provides scheduling, IPC, timers, critical sections, memory allocation; not a photo.</sub>
+</p>
+
 
 | Layer | What it owns | What it does not own automatically |
 | --- | --- | --- |
@@ -70,6 +75,11 @@
 <p align="center">
   <img src="../../assets/diagrams/sample-28-os-compare.svg" width="760" alt="FreeRTOS, RT-Thread, Zephyr, and CMSIS-RTOS2 selection compare">
   <br><sub>▲ Drawn for this book. Four-OS selection compare. Sources: [FreeRTOS 11.3.2](#source-freertos-1132), [RT-Thread 5.3.0](#source-rtthread-530), [Zephyr 4.4.2](#source-zephyr-442), [CMSIS 6.4.0](#source-cmsis-640).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-os-compare.png" width="760" alt="Handraw: kernel selection compare (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). FreeRTOS 11.3.2 small kernel, self-assembled; RT-Thread 5.3.0 device framework and packages; Zephyr 4.4.2 Kconfig + Devicetree; CMSIS-RTOS2 2.3.0 uniform API does not mean uniform semantics; list hard constraints first; not a photo.</sub>
 </p>
 
 
@@ -133,6 +143,11 @@ Consider an SPI Flash. If several tasks call `HAL_SPI_TransmitReceive()` directl
   <br><sub>▲ Before and after (drawn for this book): the left side locks one API while chip select, DMA, and recovery remain scattered. The right side gives complete transactions to one state writer.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-owner-task.png" width="760" alt="Handraw: owner task before/after (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Two tasks calling HAL_SPI_TransmitReceive directly interleave CS, DMA and recovery; instead queue requests to one flash_task owner, xTaskNotify receipts auditable; not a photo.</sub>
+</p>
+
 ```c
 typedef enum { FLASH_READ, FLASH_WRITE, FLASH_ERASE } flash_op_t;
 
@@ -188,6 +203,11 @@ Here $C_i$ is worst-case execution time and $T_i$ is the period. $U<1$ says only
 <p align="center">
   <img src="../../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="Response-time budget from release to deadline, including blocking B, execution C, and higher-priority interference S">
   <br><sub>▲ Timeline (drawn for this book): response time is $R=B+C+S$, not merely CPU execution. Acceptance needs worst-case $R_{max}\le D$ rather than an average utilization number.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-three-times.png" width="760" alt="Handraw: R = B + C + S deadline budget (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). R runs from release through blocking B, execution C and interference S; acceptance checks worst-case R_max ≤ D with one monotonic deadline per transaction; not a photo.</sub>
 </p>
 
 Example budget:
@@ -545,6 +565,11 @@ This is a calculation example. A real project must update it from the link map, 
 <p align="center">
   <img src="../../assets/diagrams/sample-28-fault-triage.svg" width="760" alt="Queue-full, task-frozen, and driver-timeout triage with supervisor rules">
   <br><sub>▲ Drawn for this book. System-fault triage. Sources: this chapter's fault-injection labs and pinned OSS tags such as [FreeRTOS 11.3.2](#source-freertos-1132).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-fault-triage.png" width="760" alt="Handraw: system fault triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: queue-full needs a written full policy; a frozen task still feeding means only the health supervisor feeds; driver timeouts return codes to the policy layer; not a photo.</sub>
 </p>
 
 ## Common failure modes

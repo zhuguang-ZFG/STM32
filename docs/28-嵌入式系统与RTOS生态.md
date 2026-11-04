@@ -50,6 +50,11 @@
   <br><sub>▲ 自绘。先分概念，再选内核名字。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-four-concepts.png" width="760" alt="Handraw：裸机 / 前后台 / RTOS / Linux 四概念（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。裸机一个大循环、前后台 ISR 置标志、RTOS 内核管调度与 IPC、Linux 要 MMU；内核只负责调度 · IPC · 软件定时器 · 临界区 · 内存分配；不是实拍。</sub>
+</p>
+
 
 | 层级 | 负责什么 | 不自动负责什么 |
 | --- | --- | --- |
@@ -68,6 +73,11 @@
 <p align="center">
   <img src="../assets/diagrams/sample-28-os-compare.svg" width="760" alt="FreeRTOS、RT-Thread、Zephyr、CMSIS-RTOS2 选型对照">
   <br><sub>▲ 自绘。四系统选型对照。出处是 [FreeRTOS 11.3.2](#source-freertos-1132)、[RT-Thread 5.3.0](#source-rtthread-530)、[Zephyr 4.4.2](#source-zephyr-442)、[CMSIS 6.4.0](#source-cmsis-640)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-os-compare.png" width="760" alt="Handraw：四系统选型对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。FreeRTOS 11.3.2 小内核自行组合；RT-Thread 5.3.0 设备框架与软件包；Zephyr 4.4.2 Kconfig+Devicetree；CMSIS-RTOS2 2.3.0 统一接口≠统一实现；先列硬约束再看驱动与维护周期；不是实拍。</sub>
 </p>
 
 
@@ -131,6 +141,11 @@
   <br><sub>▲ 前后对比（自绘）：左边只锁住单个 API，片选、DMA 和恢复仍分散；右边把完整事务交给一个所有者，状态只有一个写入者。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-owner-task.png" width="760" alt="Handraw：所有者任务前后对比（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。两个任务直调 HAL_SPI_TransmitReceive 会把片选、DMA、恢复拆开；改成队列交给 flash_task 唯一所有者，xTaskNotify 回执 requester，结果可对账；不是实拍。</sub>
+</p>
+
 ```c
 typedef enum { FLASH_READ, FLASH_WRITE, FLASH_ERASE } flash_op_t;
 
@@ -186,6 +201,11 @@ $$U = \sum_i \frac{C_i}{T_i}$$
 <p align="center">
   <img src="../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="实时任务从 release 到 deadline 的响应时间预算，包含阻塞 B、执行 C 和高优先级干扰 S">
   <br><sub>▲ 时间轴（自绘）：响应时间不是一段 CPU 执行时间，而是 $R=B+C+S$；验收看最坏 $R_{max}\le D$，不能用平均利用率替代截止时间证据。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-three-times.png" width="760" alt="Handraw：R = B + C + S 截止点预算（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。release 起算，B 阻塞、C 执行、S 干扰，R = B + C + S；验收看最坏 R_max ≤ D，一个事务一个单调时钟截止点；不是实拍。</sub>
 </p>
 
 示例预算：
@@ -543,6 +563,11 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 <p align="center">
   <img src="../assets/diagrams/sample-28-fault-triage.svg" width="760" alt="队列满、任务冻结、驱动超时三岔口与监督者规则">
   <br><sub>▲ 自绘。系统故障三岔口。出处是本章故障注入实验与 [FreeRTOS 11.3.2](#source-freertos-1132) 等开源 tag。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-fault-triage.png" width="760" alt="Handraw：系统故障三岔口（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：队列满要有满时策略；冻结任务仍喂狗则只允许健康监督者喂狗；驱动超时返回码回策略层；不是实拍。</sub>
 </p>
 
 ## 常见失败模式
