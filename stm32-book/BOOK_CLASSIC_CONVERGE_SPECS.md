@@ -412,6 +412,15 @@ Sepia 诊断必须先输出缺陷列表再改字；禁止边读边改导致「�
 2. 默认删除远程续推保护外的活跃开发；如需保留分支，只读归档并在 README 指向本 Overlay。  
 3. 后续文风争议以本 Overlay + CONTENT_GUIDE + slop_lint 为准，禁止再开平行「去 AI 味支」分叉。
 
+**退役落盘（2026-11-04，America/Adak）：** 已完成。证据见 `audits/branch-archive-strip-handraw.md`。
+
+| 分支 | Tip SHA | 状态 |
+| --- | --- | --- |
+| `feat/strip-spec-voice` | `b1f03cb20477098e0c251841d6e8be833218d8fa` | **停更/归档**；价值已 Port A 进 main；远程保留只读历史，不删 tip |
+| `feat/handraw-sketch-system` | `23e319e0ed9676bf481a1ae6f7604daee1d693d9` | **停更/归档**；价值已 Port B 进 main；远程保留只读历史，不删 tip |
+
+sole development line = **`main`** + 本 Overlay。README 已加指针。未对远程执行 `git push origin :branch`。
+
 ### 9.6 禁止的「变通」
 
 - 为减少冲突而关闭 lint。  
@@ -498,7 +507,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 - [ ] 29 中文 + 29 英文均有对照本 Overlay 的逐章审计，无跳章。  
 - [ ] manifest 七分部标题/目标已按 §3.2 更新；阅读指南含主路径与加速路径。  
 - [x] CONTENT_GUIDE 无强制固定骨架；功能块合同生效。  
-- [ ] strip 与 handraw **按 §9 方式**完成且旧支停更归档。  
+- [x] strip 与 handraw **按 §9 方式**完成且旧支停更归档。（**2026-11-04**：`audits/branch-archive-strip-handraw.md`；远程 tip 保留只读，未删。）  
 - [ ] 29 短片 + 29 长片由当前源可再生；字幕/分镜/成片哈希对应；旁白无全书同构。  
 - [ ] Handraw 知识轨与真证轨在重点章可区分；无 AI 假证据。  
 - [ ] 29 章均满足 §15：插图类型覆盖、动画下限、上调视觉锚点、官方+OSS 出处与冲突裁定。  
@@ -591,7 +600,7 @@ PDF 串行。实际浏览器检查使用生成页。视频命令与结果按章�
 ### 15.4 批次落点（计划 30–31）
 
 - [x] **30 B1（ch03）模板**：样章缺陷清单必须先定并填完三表——插图清单、动画清单、官方/开源对照表——再扩视觉实现；三表格式作为后续批次唯一模板。（**已完成**：`stm32-book/audits/ch03-converge-gate.md` §15.4；B2–B7 强制同模。）  
-- [x] **31 B2–B7**：B2–B6 强制使用同一三表模板；B7 输出全书插图覆盖率、动画覆盖率、出处（官方+OSS）普查，缺口不得标完成。（**B7 普查已落盘**：`audits/b7-converge-census.md`；§15.1-23/24/25 与 §15.3-28/29 已勾；§15.1-26 / §15.3-27 已勾（见本轮照片与 Rev 钉版）；§11.3 视频/strip/task_verify 仍开放——见 `audits/b7-gap-close.md`。）  
+- [x] **31 B2–B7**：B2–B6 强制使用同一三表模板；B7 输出全书插图覆盖率、动画覆盖率、出处（官方+OSS）普查，缺口不得标完成。（**B7 普查已落盘**：`audits/b7-converge-census.md`；§15.1-23/24/25 与 §15.3-28/29 已勾；§15.1-26 / §15.3-27 已勾（见本轮照片与 Rev 钉版）；§11.3 strip/handraw 归档已勾；视频再生与 task_verify 仍开放——见 `audits/b7-gap-close.md`。）  
 
 ### 15.5 验收挂钩
 

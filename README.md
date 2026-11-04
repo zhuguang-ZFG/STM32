@@ -273,6 +273,12 @@ python3 tools/check_assets.py
 所以 24 帧的 480×300 动画只有 7.5 KB。`tools/check_assets.py` 自带 LZW 解码器，
 会把生成的 GIF 解回像素与原帧逐字节比对，避免「图能生成但打不开」的尴尬。
 
+## 开发主线与旧支归档
+
+sole development line = **`main`**。合流规格见 [`stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`](stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md)。
+
+历史分支 **`feat/strip-spec-voice`**（tip `b1f03cb`）与 **`feat/handraw-sketch-system`**（tip `23e319e`）已于 **2026-11-04** 标为 **停更/归档**：规则与技能已 Port 进 main，远程 tip 保留只读历史，不再在旧支改 docs。详情：[`stm32-book/audits/branch-archive-strip-handraw.md`](stm32-book/audits/branch-archive-strip-handraw.md)。
+
 ## 贡献指南
 
 欢迎 PR / Issue，尤其是这三类：

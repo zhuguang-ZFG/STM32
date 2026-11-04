@@ -13,7 +13,7 @@
 | `audit_book` deficit denominator | Book 2.0 floors; overlay_* informational | **Cut over** `target_visual_anchors` → Overlay 4/6/9; overlay_* aliased |
 | Spec §15.1-23 / §15.1-24 / §15.3-28 | Unticked (gaps) | **Ticked** — true for all 29 chapters after this close |
 | Spec §15.1-25 / §15.3-29 | Unticked → **ticked** (this close-out) | gap inventory formalized; conflict inventory §5.3 |
-| Spec §15.1-26 / §15.3-27 / §11.3 full §15 | Unticked | **§15.1-26 / §15.3-27 ticked this run**; §11.3 video/strip/task_verify remain open |
+| Spec §15.1-26 / §15.3-27 / §11.3 strip archive | Prior open | **§15.1-26 / §15.3-27 / strip·handraw archive ticked**; §11.3 video + task_verify remain open |
 
 ## 1. ch08 overlay anchor
 
@@ -62,7 +62,7 @@ Post-cutover audit: zh `visual_anchor_deficit` sum **0**, `chapters_below_target
 1. PC13 / board evidence photos (user-owned).
 2. `task_verify` absent.
 3. Full 29 short + long video regenerate / narration anti-isomorphism.
-4. strip / handraw branch archive per Spec §9.
+4. ~~strip / handraw branch archive per Spec §9~~ **done 2026-11-04** — `audits/branch-archive-strip-handraw.md`; remote tips kept read-only.
 5. ~~Appendix F English page if still missing~~ → **added** `book/en/F-oss-map.md`.
 6. ST revision pinning book-wide (§15.3-27) — **partial**; see §7.1.
 7. ~~Max-gap soft-budget exception inventory (§15.1-25)~~ → **formalized** census §2.1; Spec ticked.
@@ -129,7 +129,7 @@ Added `stm32-book/book/en/F-oss-map.md` (structure-matched translation of `F-开
 
 - ~~§15.1-26~~ ticked (board-ID photos + dual-track labels; meter still gap)
 - ~~§15.3-27~~ ticked (15 remaining ST PDF Revs pinned)
-- §11.3: 29-chapter video regenerate, strip/handraw branch archive, `task_verify`
+- §11.3: 29-chapter video regenerate, `task_verify` (strip/handraw archive **done** 2026-11-04)
 
 ### 7.6 Verification (Spec close-out run)
 
