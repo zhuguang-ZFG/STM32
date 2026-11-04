@@ -50,6 +50,13 @@ PA11/PA12 are also CAN's reset-default pins, which is why chapter 13 remaps CAN 
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-14-usb-48m-flow.svg" width="720" alt="USB: D+ pull-up → 48 MHz → 18/67 bytes">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Pull-up→host sees FS→USBPRE→descriptors.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-14-usb-enum.svg" width="760" alt="Full speed needs 48 MHz. The D+ pull-up is on pin 33. This descriptor is an 18-byte device plus a 67-byte configuration set, VID/PID 0x1209/0x0001.">
   <br><sub>▲ Drawn for this book. STM32F103C8T6. The working setup in the figure is USBPRE = 0, 48 MHz, 1.5 kΩ on D+ at pin 33, an 18-byte device descriptor, and a 67-byte configuration set. The broken setup is USBPRE = 1, which makes the USB clock 72 MHz. 0x0483/0x5740 is not what this descriptor holds. Sources: [RM0008](#source-rm0008-rcc), [DS5319](#source-ds5319-usbcan), and [usb-cdc](#source-project-examples).</sub>
@@ -99,6 +106,13 @@ Device Manager is not enough for USB debugging. Firmware state, PMA and endpoint
 
 ### 1. Speeds and which STM32 block you actually have
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-14-usbpre-48.svg" width="760" alt="USBPRE=0 => 72/1.5=48 MHz; D+ pull-up marks full-speed">
+  <br><sub>▲ Drawn for this book. FS needs 48 MHz; USBPRE=1 breaks enumeration.</sub>
+</p>
+
+
 USB is a conversation chaired by the computer. The host calls on a device, and only then may the device answer; a device cannot seize the wire whenever it has data. The F103 has one 12 Mbps full-speed device block. It can be a keyboard or a virtual serial port, but it cannot host a flash drive. Reaching 480 Mbps takes both an `OTG_HS` block and the matching high-speed PHY.
 
 **Takeaway:** The host starts every transfer. The device is polled. The common STM32 case is a **full-speed device**. Only parts with `OTG_HS` can do high-speed.
@@ -131,6 +145,13 @@ The four transfer types divide one bus in four different ways. Control introduce
 | Isochronous | Reserved bandwidth, **no retry, drops allowed** | Audio, cameras | Yes |
 
 ### 3. Endpoints
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-14-pma-map.svg" width="760" alt="F1 USB: eight endpoints share a 512-byte PMA">
+  <br><sub>▲ Drawn for this book. IN/OUT are host-named; overlapping PMA corrupts packets.</sub>
+</p>
+
 
 Think of endpoints as numbered send and receive windows inside the device. The host puts data into an OUT window for the device to collect. The device fills an IN window and waits for the host to collect it. IN and OUT are named from the host's side, which is the easy part to read backwards. Each window also needs a transfer type, a maximum packet size, and buffer space in the 512-byte PMA.
 

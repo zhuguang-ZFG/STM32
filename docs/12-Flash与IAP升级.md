@@ -50,6 +50,13 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-12-iap-jump-flow.svg" width="720" alt="IAP：按序解锁再装 MSP 与复位向量">
+  <br><sub>▲ 自绘矢量动画（FA-002）。KEY1→KEY2→半字→向量→VTOR。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-12-iap-map.svg" width="760" alt="中容量是 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字">
   <br><sub>▲ 自绘。STM32F103C8T6，中容量，64 KB，1 KB 一页。图上按顺序画出：先写 0x45670123，再写 0xCDEF89AB，半字写入 APP，然后从 0x08004800 取 MSP，从 0x08004804 取复位地址，把 VTOR 写成 0x08004800。图里另外标出三种出错情况：钥匙顺序反了、末页写成 0x0801FC00、VTOR 还是 0。出处是 [RM0008 Rev 21 第 3 章](#source-rm0008-flash) 和 [PM0056](#source-pm0056-vector)。</sub>
@@ -101,6 +108,13 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 ### 1. Flash 组织结构
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-12-page-erase.svg" width="760" alt="F103C8 按 1 KB 页擦除；APP 从 0x08004800 起">
+  <br><sub>▲ 自绘。中容量 1 KB/页；C8 末页是 0x0800FC00。</sub>
+</p>
+
+
 Flash 像一本只能用铅笔写、用整页橡皮擦的笔记本。擦过的地方全是 1，写的时候只能把 1 改成 0，想把 0 改回 1 只能把一整页擦掉。所以改一个字节，也要先把整页内容读出来，擦掉这一页，再连同改过的那个字节一起写回去。每页擦写的次数是有限的，频繁写日志要轮着用不同的页。
 
 F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4 按 **16~128 KB 的「扇区」** 擦除、支持**字节/半字/字/双字**编程。
@@ -124,6 +138,13 @@ F1 按 **1 KB/2 KB 的「页」** 擦除、以**半字（16 位）** 编程；F4
 </p>
 
 ### 2. 解锁与编程流程
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-12-key-order.svg" width="760" alt="FLASH 解锁：先 0x45670123 再 0xCDEF89AB">
+  <br><sub>▲ 自绘。钥匙顺序反了锁打不开；跳转要装 MSP 与复位向量。</sub>
+</p>
+
 
 Flash 平时是锁着的，防止程序跑飞时乱写。开锁要按顺序往钥匙寄存器写两个固定的数，顺序或数值不对，Flash 会一直锁到下次复位。开锁后先擦后写，每一步都要等忙标志清零再做下一步，最后记得重新上锁。
 

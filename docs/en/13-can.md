@@ -54,6 +54,13 @@ The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB i
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-13-can-arb-flow.svg" width="720" alt="CAN: eight 250 ns quanta walk to the sample point">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Sync→BS1→75% sample→BS2→2 µs.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-bit.svg" width="760" alt="At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. The working pins are pin 45 and pin 46.">
   <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the correct setup: eight 250 ns quanta, a 75% sample point, a 2 µs bit, 500 kbit/s, prescaler 9, SJW = 1, and 120 Ω between CANH and CANL. The lower half is the wrong setup: prescaler 8 and ten quanta give 450 kbit/s with a 70% sample point. The pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
@@ -159,6 +166,13 @@ When several nodes start talking at once, each one listens to the bus while it s
 
 ### 5. Baud rate and sample point
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-13-bit-quanta.svg" width="760" alt="Prescaler 9 at 36 MHz: eight 250 ns quanta = 500 kbit/s">
+  <br><sub>▲ Drawn for this book. Sample at 75%; wrong prescaler yields 450 kbit/s.</sub>
+</p>
+
+
 CAN splits each bit into small slices called Tq. The first slice lines up with the edge. The rest is split into BS1 before the sample point and BS2 after it. The sample point sits between 75% and 87.5% of the bit so that the signal has time to travel the bus and settle before it is read. Every node on the bus must use the same baud rate and sample point.
 
 **Takeaway:** One bit is `SYNC_SEG (1 Tq)` + `BS1` + `BS2`. The sample point is usually **75% to 87.5%**.
@@ -184,6 +198,13 @@ On **F1, APB1 = 36 MHz**:
 > **SJW** absorbs clock error between nodes, usually 1–2 Tq. Different sample points are the first cause of flaky multi-node links. Every node must match.
 
 ### 6. Filters and two FIFOs (F1)
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-13-filter-fifo.svg" width="760" alt="F1: 14 filter banks and FIFO0/FIFO1">
+  <br><sub>▲ Drawn for this book. Hard-realtime → FIFO0; bulk → FIFO1; fix overrun by draining faster.</sub>
+</p>
+
 
 **Takeaway:** F1 bxCAN has **14 filter banks** and **2 receive FIFOs**. A filter routes a matching ID to FIFO0 or FIFO1. You then poll or take an interrupt.
 
@@ -292,6 +313,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 4. **Error and recovery:** Disconnect the second node to remove ACK. Record TEC rising to 128, the switch to error-passive, and continued retransmission. Reconnect the acknowledging node and verify the first successful frame. To observe bus-off, run a separate experiment with a sustained transmit error and record ABOM recovery after 128×11 recessive bits.
 
 ### 7. Coming back from bus-off
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-13-tec-busoff.svg" width="760" alt="TEC 128 = error-passive; TEC > 255 = bus-off">
+  <br><sub>▲ Drawn for this book. Lone node without ACK stops at 128; bus-off needs real Tx errors.</sub>
+</p>
+
 
 **Takeaway:** TEC at or above 256 puts the node in bus-off, and it stops driving the bus. Recovery needs **128 sequences of 11 recessive bits**. Hardware can count that for you. That bit is ABOM.
 

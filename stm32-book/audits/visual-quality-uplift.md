@@ -154,3 +154,60 @@ Do **not** claim whole-book visual quality done after this batch.
 5. Optional: rebuild bilingual PDF after next 1–2 batches so pages pick up new figures
 
 Do **not** claim whole-book visual quality done after this pilot.
+
+## Batch 3 — ch11–17
+
+Date: 2026-11-04 (America/Adak). Same bar as pilot/batch2: denser Handraw figures, remade AUX GIFs, FA-002 CSS-SVG anims. Video untouched.
+
+### New static Handraw SVGs (+15)
+
+| Chapter | Assets |
+|---|---|
+| ch11 | `sample-11-backup-domain.svg`, `sample-11-iwdg-math.svg` |
+| ch12 | `sample-12-page-erase.svg`, `sample-12-key-order.svg` |
+| ch13 | `sample-13-bit-quanta.svg`, `sample-13-filter-fifo.svg`, `sample-13-tec-busoff.svg` |
+| ch14 | `sample-14-usbpre-48.svg`, `sample-14-pma-map.svg` |
+| ch15 | `sample-15-task-states.svg`, `sample-15-fromisr.svg` |
+| ch16 | `sample-16-mode-current.svg`, `sample-16-clock-restore.svg` |
+| ch17 | `sample-17-swd-pins.svg`, `sample-17-cfsr-bits.svg` |
+
+### New CSS-SVG mechanism animations (+7)
+
+| Chapter | Asset |
+|---|---|
+| ch11 | `sample-11-iwdg-feed-flow.svg` |
+| ch12 | `sample-12-iap-jump-flow.svg` |
+| ch13 | `sample-13-can-arb-flow.svg` |
+| ch14 | `sample-14-usb-48m-flow.svg` |
+| ch15 | `sample-15-rtos-tick-flow.svg` |
+| ch16 | `sample-16-stop-wake-flow.svg` |
+| ch17 | `sample-17-cfsr-flow.svg` |
+
+### Remade crude AUX GIFs (in place, test-bounded)
+
+`iwdg-1s.gif`, `iap-jump.gif`, `can-500k.gif`, `usb-48m.gif`, `rtos-tick.gif`, `stop-wake.gif`, `cfsr-read.gif` — denser multi-panel frames; builders in `tools/gen_gifs.py` via `tools/sample_figs_quality3/gif_snippets/`.
+
+### Embeds
+
+zh + en for all 22 new assets (44 insert ops) via `tools/sample_figs_quality3/embed_q3.py`.
+
+### Anchor deltas (asset_sequence length, video stripped)
+
+| Chapter | Before | After | Δ |
+|---|---:|---:|---:|
+| ch11 | 6 | **9** | +3 |
+| ch12 | 6 | **9** | +3 |
+| ch13 | 4 | **8** | +4 |
+| ch14 | 7 | **10** | +3 |
+| ch15 | 7 | **10** | +3 |
+| ch16 | 6 | **9** | +3 |
+| ch17 | 6 | **9** | +3 |
+
+### Gates
+
+`pytest` book tests + `tools/check_assets.py` + `build_html.py --check` (zh+en) green after this batch.
+
+### Next round
+
+ch00–01 / ch18–22 (same bar). No video.
+

@@ -645,27 +645,37 @@ def iwdg_1s():
     Off-by-one reload and the window watchdog stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "40 kHz TYPICAL",
-        "prescaler 64",
-        "625 Hz",
-        "COUNT DOWN",
-        "FEED BEFORE ZERO",
-        "Reload = 624",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("40 kHz TYPICAL", True, False, False, False, False),
+        ("prescaler 64", True, True, False, False, False),
+        ("625 Hz", True, True, True, False, False),
+        ("COUNT DOWN", True, True, True, True, False),
+        ("FEED BEFORE ZERO", True, True, True, True, True),
+        ("Reload = 624", True, True, True, True, True),
+    ]
+    for index, (line, lsi, psc, tick, count, feed) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "IWDG 1S", "624", "AUX GIF  TYPICAL 40 kHz")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("NOT A GUARANTEE", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("Reload = 624", 28, 200, C.GREEN, 1)
-        c.text("625 Hz UNTIL THE FEED", 28, 222, C.CYAN, 1)
-        c.text("PRINT ZERO AND THE WINDOW ON THE SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if lsi else C.STROKE)
+        c.text("LSI", 60, 58, C.CYAN if lsi else C.DIM, 1)
+        c.text("40 kHz", 40, 84, C.TEXT if lsi else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if psc else C.STROKE)
+        c.text("/64", 214, 58, C.GREEN if psc else C.DIM, 1)
+        c.text("PSC", 214, 84, C.TEXT if psc else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if tick else C.STROKE)
+        c.text("625 Hz", 350, 58, C.AMBER if tick else C.DIM, 1)
+        c.text("TICK", 360, 84, C.TEXT if tick else C.DIM, 1)
+        c.panel(16, 126, 300, 36, C.PANEL2 if count else C.PANEL, C.STROKE)
+        c.text("COUNT  N .. 1" if count else "COUNT  IDLE", 28, 140, C.TEXT if count else C.DIM, 1)
+        c.panel(328, 126, 132, 36, C.PANEL, C.GREEN if feed else C.STROKE)
+        c.text("FEED" if feed else "WAIT", 360, 140, C.TEXT if feed else C.DIM, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("Reload = 624", 16, 240, C.GREEN, 1)
+        c.text("625 Hz UNTIL THE FEED", 16, 262, C.CYAN, 1)
+        c.text("PRINT ZERO AND THE WINDOW ON THE SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
-
 
 def uart_idle():
     """After one frame, RX stays high for one frame time, then IDLE is marked.
@@ -710,26 +720,35 @@ def iap_jump():
     A reversed key and the address past 64 KB stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "KEY1 0x45670123",
-        "KEY2 0xCDEF89AB",
-        "HALF-WORD IN APP",
-        "READ MSP",
-        "READ Reset_Handler",
-        "VTOR 0x08004800",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("KEY1 0x45670123", True, False, False, False, False),
+        ("KEY2 0xCDEF89AB", True, True, False, False, False),
+        ("HALF-WORD IN APP", True, True, True, False, False),
+        ("READ MSP", True, True, True, True, False),
+        ("READ Reset_Handler", True, True, True, True, True),
+        ("VTOR 0x08004800", True, True, True, True, True),
+    ]
+    for index, (line, k1, k2, prog, msp, vtor) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "IAP JUMP", "APP", "AUX GIF  KEY ORDER")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("0x08004800  0xB800", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("MSP THEN Reset_Handler", 28, 200, C.GREEN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        c.panel(16, 42, 210, 56, C.PANEL, C.CYAN if k1 else C.STROKE)
+        c.text("KEY1", 90, 56, C.CYAN if k1 else C.DIM, 1)
+        c.text("0x45670123", 40, 78, C.TEXT if k1 else C.DIM, 1)
+        c.panel(250, 42, 210, 56, C.PANEL, C.GREEN if k2 else C.STROKE)
+        c.text("KEY2", 324, 56, C.GREEN if k2 else C.DIM, 1)
+        c.text("0xCDEF89AB", 274, 78, C.TEXT if k2 else C.DIM, 1)
+        c.panel(16, 110, 210, 36, C.PANEL, C.AMBER if prog else C.STROKE)
+        c.text("HALF-WORD" if prog else "PROG IDLE", 28, 124, C.TEXT if prog else C.DIM, 1)
+        c.panel(250, 110, 210, 36, C.PANEL, C.VIOLET if msp else C.STROKE)
+        c.text("MSP + Reset_Handler" if msp else "VECTOR IDLE", 258, 124, C.TEXT if msp else C.DIM, 1)
+        c.panel(16, 158, 444, 28, C.PANEL2 if vtor else C.PANEL, C.STROKE)
+        c.text("VTOR 0x08004800  0xB800" if vtor else "VTOR PENDING", 28, 170, C.TEXT if vtor else C.DIM, 1)
+        c.text(line, 16, 210, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 232, C.MUTED, 1)
+        c.text("MSP THEN Reset_Handler", 16, 254, C.GREEN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 276, C.DIM, 1)
         g.add(c)
     return g
-
 
 def can_500k():
     """Eight 250 ns quanta make one 2 us bit at 500 kbit/s.
@@ -737,27 +756,33 @@ def can_500k():
     The failed prescaler row and the crystal pins stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "TQ 1  250 ns",
-        "TQ 2  250 ns",
-        "TQ 3  250 ns",
-        "TQ 6  SAMPLE 75%",
-        "TQ 8  2 us",
-        "500 kbit/s",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("TQ 1  250 ns", 1),
+        ("TQ 2  250 ns", 2),
+        ("TQ 3  250 ns", 3),
+        ("TQ 6  SAMPLE 75%", 6),
+        ("TQ 8  2 us", 8),
+        ("500 kbit/s", 8),
+    ]
+    for index, (line, lit) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "CAN 500K", "36 MHz", "AUX GIF  8 QUANTA")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("prescaler 9", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("75% AT 1.5 us", 28, 200, C.GREEN, 1)
-        c.text("250 ns TIMES 8 IS 2 us", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.text("prescaler 9", 16, 50, C.MUTED, 1)
+        x0 = 16
+        for q in range(8):
+            on = q < lit
+            col = C.AMBER if (q == 5 and lit >= 6) else (C.GREEN if on else C.STROKE)
+            c.panel(x0 + q * 56, 70, 50, 50, C.PANEL, col)
+            c.text(f"T{q+1}", x0 + q * 56 + 12, 90, C.TEXT if on else C.DIM, 1)
+        c.panel(16, 140, 444, 36, C.PANEL2, C.STROKE)
+        c.text("SAMPLE AT 75%  /  1.5 us" if lit >= 6 else "BUILDING BIT TIME", 28, 154, C.TEXT, 1)
+        c.text(line, 16, 200, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 222, C.MUTED, 1)
+        c.text("75% AT 1.5 us", 16, 246, C.GREEN, 1)
+        c.text("250 ns TIMES 8 IS 2 us", 16, 268, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 288, C.DIM, 1)
         g.add(c)
     return g
-
 
 def usb_48m():
     """D+ is pulled up, the clock is 48 MHz, then 18 and 67 bytes.
@@ -765,27 +790,38 @@ def usb_48m():
     The undivided clock and the pull-up on DM stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "D+ PULL-UP",
-        "HOST SEES D+",
-        "USBPRE = 0",
-        "48 MHz",
-        "18 bytes",
-        "67 bytes",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("D+ PULL-UP", True, False, False, False, False),
+        ("HOST SEES D+", True, True, False, False, False),
+        ("USBPRE = 0", True, True, True, False, False),
+        ("48 MHz", True, True, True, True, False),
+        ("18 bytes", True, True, True, True, True),
+        ("67 bytes", True, True, True, True, True),
+    ]
+    for index, (line, dp, host, pre, clk, desc) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "USB 48M", "FS", "AUX GIF  D+")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("PA12 DP", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("18 bytes THEN 67 bytes", 28, 200, C.GREEN, 1)
-        c.text("48 MHz", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if dp else C.STROKE)
+        c.text("PA12", 60, 58, C.CYAN if dp else C.DIM, 1)
+        c.text("D+ UP", 50, 84, C.TEXT if dp else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if host else C.STROKE)
+        c.text("HOST", 210, 58, C.GREEN if host else C.DIM, 1)
+        c.text("SEES FS", 195, 84, C.TEXT if host else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if pre else C.STROKE)
+        c.text("USBPRE", 350, 58, C.AMBER if pre else C.DIM, 1)
+        c.text("= 0", 365, 84, C.TEXT if pre else C.DIM, 1)
+        c.panel(16, 126, 210, 36, C.PANEL, C.VIOLET if clk else C.STROKE)
+        c.text("48 MHz USBCLK" if clk else "CLOCK PENDING", 28, 140, C.TEXT if clk else C.DIM, 1)
+        c.panel(250, 126, 210, 36, C.PANEL2 if desc else C.PANEL, C.STROKE)
+        label = "18 bytes THEN 67 bytes" if index >= 5 else ("18 bytes" if index == 4 else "DESC IDLE")
+        c.text(label, 258, 140, C.TEXT if desc else C.DIM, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("18 bytes THEN 67 bytes", 16, 240, C.GREEN, 1)
+        c.text("48 MHz", 16, 262, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
-
 
 def rtos_tick():
     """A 1 ms tick keeps priority 2 on the CPU and priority 1 waiting.
@@ -793,24 +829,34 @@ def rtos_tick():
     The assert stop and a SysTick clash stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "TICK 1 ms",
-        "TICK 1 ms",
-        "priority 2 RUNS",
-        "priority 1 WAITS",
-        "128 words",
-        "512 bytes",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("TICK 1 ms", True, False, False, False),
+        ("TICK 1 ms", True, True, False, False),
+        ("priority 2 RUNS", True, True, True, False),
+        ("priority 1 WAITS", True, True, True, True),
+        ("128 words", True, True, True, True),
+        ("512 bytes", True, True, True, True),
+    ]
+    for index, (line, tick, ready, p2, p1) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "RTOS TICK", "1 ms", "AUX GIF  WORDS")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("1000 Hz", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("priority 2 BEFORE priority 1", 28, 200, C.GREEN, 1)
-        c.text("128 words = 512 bytes", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE ASSERT ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if tick else C.STROKE)
+        c.text("1000 Hz", 45, 58, C.CYAN if tick else C.DIM, 1)
+        c.text("1 ms", 60, 84, C.TEXT if tick else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.AMBER if p2 else C.STROKE)
+        c.text("PRIO 2", 200, 58, C.AMBER if p2 else C.DIM, 1)
+        c.text("RUNS" if p2 else "IDLE", 210, 84, C.TEXT if p2 else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.VIOLET if p1 else C.STROKE)
+        c.text("PRIO 1", 352, 58, C.VIOLET if p1 else C.DIM, 1)
+        c.text("WAITS" if p1 else "IDLE", 358, 84, C.TEXT if p1 else C.DIM, 1)
+        c.panel(16, 126, 444, 36, C.PANEL2 if ready else C.PANEL, C.STROKE)
+        stack = "128 words = 512 bytes" if index >= 5 else ("128 words" if index == 4 else "STACK LED TASK")
+        c.text(stack if index >= 4 else ("READY LIST" if ready else "SCHEDULER"), 28, 140, C.TEXT, 1)
+        c.text(line, 16, 190, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
+        c.text("priority 2 BEFORE priority 1", 16, 240, C.GREEN, 1)
+        c.text("128 words = 512 bytes", 16, 262, C.CYAN, 1)
+        c.text("PRINT THE ASSERT ON THE STATIC SVG", 16, 284, C.DIM, 1)
         g.add(c)
     return g
 
@@ -820,26 +866,37 @@ def stop_wake_gif():
     The failed baud and the other Stop cell stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "STOP",
-        "WAKE ON HSI",
-        "8 MHz",
-        "PLL ON",
-        "72 MHz",
-        "115200",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("STOP", True, False, False, False, False),
+        ("WAKE ON HSI", True, True, False, False, False),
+        ("8 MHz", True, True, True, False, False),
+        ("PLL ON", True, True, True, True, False),
+        ("72 MHz", True, True, True, True, True),
+        ("115200", True, True, True, True, True),
+    ]
+    for index, (line, stop, wake, hsi, pll, uart) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "STOP WAKE", "HSI", "AUX GIF  115200")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("0x271", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("8 MHz THEN 72 MHz", 28, 200, C.GREEN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 222, C.DIM, 1)
+        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if stop else C.STROKE)
+        c.text("STOP", 55, 58, C.CYAN if stop else C.DIM, 1)
+        c.text("LP REG", 45, 84, C.TEXT if stop else C.DIM, 1)
+        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if wake else C.STROKE)
+        c.text("WAKE", 210, 58, C.GREEN if wake else C.DIM, 1)
+        c.text("PA0/RTC", 190, 84, C.TEXT if wake else C.DIM, 1)
+        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if hsi else C.STROKE)
+        c.text("HSI", 365, 58, C.AMBER if hsi else C.DIM, 1)
+        c.text("8 MHz", 350, 84, C.TEXT if hsi else C.DIM, 1)
+        c.panel(16, 126, 210, 36, C.PANEL, C.VIOLET if pll else C.STROKE)
+        c.text("PLL 72 MHz" if pll else "PLL OFF", 28, 140, C.TEXT if pll else C.DIM, 1)
+        c.panel(250, 126, 210, 36, C.PANEL2 if uart else C.PANEL, C.STROKE)
+        c.text("UART 115200" if uart else "UART HOLD", 262, 140, C.TEXT if uart else C.DIM, 1)
+        c.text("0x271", 16, 180, C.MUTED, 1)
+        c.text(line, 16, 206, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 228, C.MUTED, 1)
+        c.text("8 MHz THEN 72 MHz", 16, 252, C.GREEN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 274, C.DIM, 1)
         g.add(c)
     return g
-
 
 def cfsr_read_gif():
     """Read CFSR, see bit 15 set, then let 72 counts finish 1 us.
@@ -847,27 +904,34 @@ def cfsr_read_gif():
     A clear bit 15 and a cycle delta of 0 stay on the static SVG.
     """
     g = Gif(W, H, delay=12)
-    notes = (
-        "READ CFSR",
-        "0xE000ED28",
-        "bit 15 = 1",
-        "COUNT 24",
-        "COUNT 72",
-        "1 us",
-    )
-    for index, note in enumerate(notes):
+    stages = [
+        ("READ CFSR", True, False, False, False),
+        ("0xE000ED28", True, True, False, False),
+        ("bit 15 = 1", True, True, True, False),
+        ("COUNT 24", True, True, True, True),
+        ("COUNT 72", True, True, True, True),
+        ("1 us", True, True, True, True),
+    ]
+    for index, (line, cfsr, addr, bit, dwt) in enumerate(stages):
         c = Canvas(W, H)
         chrome(c, "CFSR", "DWT", "AUX GIF  1 us")
-        c.panel(16, 48, 448, 28, C.PANEL, C.STROKE)
-        c.text("72 MHz", 28, 58, C.MUTED, 1)
-        c.text(note, 28, 120, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 28, 160, C.MUTED, 1)
-        c.text("bit 15 = 1", 28, 200, C.GREEN, 1)
-        c.text("72 COUNTS = 1 us", 28, 222, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 28, 248, C.DIM, 1)
+        c.panel(16, 42, 210, 70, C.PANEL, C.CYAN if cfsr else C.STROKE)
+        c.text("CFSR", 90, 58, C.CYAN if cfsr else C.DIM, 1)
+        c.text("0xE000ED28" if addr else "READ", 40, 84, C.TEXT if cfsr else C.DIM, 1)
+        c.panel(250, 42, 210, 70, C.PANEL, C.GREEN if bit else C.STROKE)
+        c.text("BFARVALID", 290, 58, C.GREEN if bit else C.DIM, 1)
+        c.text("bit 15 = 1" if bit else "PENDING", 290, 84, C.TEXT if bit else C.DIM, 1)
+        c.panel(16, 126, 444, 36, C.PANEL2 if dwt else C.PANEL, C.STROKE)
+        dlabel = "72 COUNTS = 1 us" if index >= 5 else ("COUNT 72" if index == 4 else ("COUNT 24" if index == 3 else "DWT IDLE"))
+        c.text(dlabel, 28, 140, C.TEXT if dwt else C.DIM, 1)
+        c.text("72 MHz", 16, 180, C.MUTED, 1)
+        c.text(line, 16, 206, C.TEXT, 1)
+        c.text(f"FRAME {index + 1} OF 6", 16, 228, C.MUTED, 1)
+        c.text("bit 15 = 1", 16, 252, C.GREEN, 1)
+        c.text("72 COUNTS = 1 us", 16, 274, C.CYAN, 1)
+        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 294, C.DIM, 1)
         g.add(c)
     return g
-
 
 def boot0_low():
     """Pin 44 is 0 and the probe sits on pins 34 and 37.

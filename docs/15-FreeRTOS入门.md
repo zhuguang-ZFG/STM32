@@ -50,6 +50,13 @@
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-15-rtos-tick-flow.svg" width="720" alt="RTOS：1 ms 节拍，优先级 2 先跑">
+  <br><sub>▲ 自绘矢量动画（FA-002）。节拍→就绪→prio2→128 字。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="一个 tick 是 1 ms；任务优先级 2 先于 1；128 字是 512 字节；FromISR 的数值优先级要大于等于 5">
   <br><sub>▲ 自绘。STM32F103C8T6。上半部分是例程正常跑的样子：SysTick 1 ms 一格，HAL 时基在 TIM4，优先级 2 在跑、优先级 1 在等，LED 栈 128 字 = 512 字节，EXTI0 抢占优先级 5。下半部分是把 EXTI0 的抢占优先级写成 0：中断里一调 FromISR，就停在 configASSERT。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
@@ -113,6 +120,13 @@ FreeRTOS 解决的是调度与同步，不会自动保证截止时间。任务�
 > 判断标准：**当主循环里出现「好几件事都想按各自节奏跑」时，就该考虑 RTOS**；只是点灯+读串口，裸机足矣。
 
 ### 2. 任务状态迁移
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-15-task-states.svg" width="760" alt="FreeRTOS 四态：Running / Ready / Blocked / Suspended">
+  <br><sub>▲ 自绘。1 ms 节拍；128 字=512 字节；别和 HAL 抢 SysTick。</sub>
+</p>
+
 
 任务在「运行 / 就绪 / 阻塞 / 挂起 / 删除」间迁移；**高优先级任务一旦就绪就会抢占正在运行的低优先级任务，同优先级任务按时间片轮转，`taskYIELD` 也能主动让出 CPU**。阻塞的作用不是「让 CPU 能切换」，而是不占 CPU 地等待，并让低优先级任务有机会运行；一直就绪又不阻塞的任务会让低优先级任务长期得不到 CPU，若关闭时间片轮转，同优先级任务也会互相饿死。
 
@@ -246,6 +260,13 @@ FreeRTOS 自带 5 种堆实现，用哪个由 `configTOTAL_HEAP_SIZE` 和「是�
 ```
 
 ### 10. 中断里只能用 FromISR API
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-15-fromisr.svg" width="760" alt="ISR 里只能用 FromISR；抢占优先级数值至少 5">
+  <br><sub>▲ 自绘。队列/信号量任务版 API 禁止进中断。</sub>
+</p>
+
 
 **中断服务程序里绝不能调用会阻塞的普通 API**（如 `xQueueSend`），必须用 `xxxFromISR` 版本，并配合 `portYIELD_FROM_ISR` 决定是否立即切换。
 

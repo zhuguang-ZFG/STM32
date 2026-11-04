@@ -54,6 +54,13 @@ The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapt
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-16-stop-wake-flow.svg" width="720" alt="Stop wake: HSI 8 MHz → PLL 72 MHz → UART 115200">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Stop→wake→HSI→PLL→115200.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-wake.svg" width="760" alt="Stop with the low-power regulator is 14 µA typical. Wake-up is the 8 MHz HSI. Leaving 0x271 in place produces 12800 bit/s.">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The top band is the correct sequence: SLEEPDEEP=1 and PDDS=0 enter Stop at 14 µA (3.3 V, 25°C, IWDG off); 5.4 µs after the wake event the first instruction runs on the 8 MHz HSI, then the PLL returns to 72 MHz and 0x271 means 115200. The middle band forgets to restore the clock: the same 0x271 on 8 MHz gives only 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
@@ -118,6 +125,13 @@ Low-power acceptance records the static floor, wake peak, active duration, perio
 
 ### 1. The three low-power modes compared
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-16-mode-current.svg" width="760" alt="Sleep in mA; Stop 14 µA; Standby 2 µA (conditions named)">
+  <br><sub>▲ Drawn for this book. Do not merge 14/24 µA into 20; 1.4 µA is VBAT domain only.</sub>
+</p>
+
+
 The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
 
 | Item | Sleep | Stop | Standby |
@@ -149,6 +163,13 @@ __WFI();
 ```
 
 ### 3. Restoring the clock after STOP wakes
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-16-clock-restore.svg" width="760" alt="After Stop: HSI 8 MHz first, then PLL 72 MHz before 115200">
+  <br><sub>▲ Drawn for this book. Without restore, BRR 0x271 at 8 MHz is 12800 bit/s.</sub>
+</p>
+
 
 Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
 

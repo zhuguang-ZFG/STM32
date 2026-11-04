@@ -49,6 +49,13 @@ The "no protection" value for readout protection is `0xA5`. Setting it back to `
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-12-iap-jump-flow.svg" width="720" alt="IAP: unlock in order, then load MSP and Reset_Handler">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). KEY1→KEY2→half-word→vectors→VTOR.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-12-iap-map.svg" width="760" alt="Medium-density Flash uses 1 KB pages. The application starts at 0x08004800 and is 0xB800 bytes long. The jump loads word 0 and word 1.">
   <br><sub>▲ Drawn for this book. STM32F103C8T6, medium-density, 64 KB, 1 KB pages. In order, the figure writes 0x45670123, then 0xCDEF89AB, programs a half-word into the application, loads the MSP from 0x08004800 and the reset address from 0x08004804, and sets VTOR to 0x08004800. It also marks three faults: the keys reversed, the last page taken as 0x0801FC00, and VTOR left at 0. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
@@ -100,6 +107,13 @@ Split the update into receive, program, verify, jump, and application confirmati
 
 ### 1. How Flash is organized
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-12-page-erase.svg" width="760" alt="F103C8 erases 1 KB pages; APP starts at 0x08004800">
+  <br><sub>▲ Drawn for this book. Medium-density 1 KB pages; C8 last page is 0x0800FC00.</sub>
+</p>
+
+
 Flash is like a notebook you write in pencil and can only erase a whole page at a time. Erased cells are all 1. Writing can only turn a 1 into a 0, and the only way to turn a 0 back into a 1 is to erase the whole page. So to change one byte, you read the page out, erase it, and write it back with the changed byte. Each page survives only so many erases, so a log that writes often has to rotate through pages.
 
 F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 erases by **16 to 128 KB sectors** and can program a **byte, half-word, word, or double word**.
@@ -123,6 +137,13 @@ F1 erases by **1 KB or 2 KB pages** and programs a **half-word (16 bits)**. F4 e
 </p>
 
 ### 2. Unlock and the programming sequence
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-12-key-order.svg" width="760" alt="FLASH unlock: KEY1 0x45670123 then KEY2 0xCDEF89AB">
+  <br><sub>▲ Drawn for this book. Reversed keys leave LOCK set; jump needs MSP and Reset_Handler.</sub>
+</p>
+
 
 Flash is normally locked, so a runaway program cannot scribble on it. To unlock it, you write two fixed values to the key register in order. If the order or a value is wrong, Flash stays locked until the next reset. After unlocking you erase, then write, and wait for the busy flag to clear before each next step. Lock it again at the end.
 

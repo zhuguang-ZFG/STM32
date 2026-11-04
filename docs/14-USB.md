@@ -50,6 +50,13 @@ PA11/PA12 复位后也是 CAN 的默认脚，第 13 章已经把 CAN 重映射�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-14-usb-48m-flow.svg" width="720" alt="USB：D+ 上拉 → 48 MHz → 18/67 字节">
+  <br><sub>▲ 自绘矢量动画（FA-002）。上拉→主机看见→USBPRE→描述符。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-14-usb-enum.svg" width="760" alt="全速要 48 MHz；D+ 上拉在第 33 脚；这份描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001">
   <br><sub>▲ 自绘。STM32F103C8T6。图中正确的配置是 USBPRE = 0、48 MHz、第 33 脚 D+ 上接 1.5 kΩ、设备描述符 18 字节、配置集合 67 字节。错误配置是 USBPRE = 1，USB 时钟变成 72 MHz。0x0483/0x5740 不是这份描述符的值。出处是 [RM0008](#source-rm0008-rcc)、[DS5319](#source-ds5319-usbcan) 和 [usb-cdc](#source-project-examples)。</sub>
@@ -99,6 +106,13 @@ USB 调试不能只看设备管理器。固件状态、PMA/端点寄存器、主
 
 ### 1. USB 速率与 STM32 外设
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-14-usbpre-48.svg" width="760" alt="USBPRE=0 时 72/1.5=48 MHz；D+ 上拉标识全速">
+  <br><sub>▲ 自绘。全速硬性 48 MHz；USBPRE=1 会枚举失败。</sub>
+</p>
+
+
 USB 更像一场由电脑主持的对话。主机点到谁，谁才能回答；设备不能看见数据就自己抢着说。F103 里只有一套 12 Mbps 的全速设备外设，能做键盘、虚拟串口，却当不了 U 盘的主机。要跑 480 Mbps，不只名字里要有 `OTG_HS`，还得有对应的高速 PHY。
 
 USB 主机发起一切通信，设备只能「被轮询」；STM32 最常见的是**全速(FS)设备**，只有带 `OTG_HS` 的型号才支持高速(HS)。
@@ -132,6 +146,13 @@ USB 主机发起一切通信，设备只能「被轮询」；STM32 最常见的�
 | 等时 Isochronous | 有带宽保证，**不重传、允许丢** | USB 音频、摄像头 | 有 |
 
 ### 3. 端点 Endpoint
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-14-pma-map.svg" width="760" alt="F1 USB：8 个端点共享 512 字节 PMA">
+  <br><sub>▲ 自绘。IN/OUT 站在主机侧；PMA 重叠会毁掉包。</sub>
+</p>
+
 
 端点可以看成设备里的几个编号收发窗口。主机把数据送进 OUT 窗口，设备从里面取；设备把数据放进 IN 窗口，等主机来拿。这里的 IN、OUT 都站在主机一侧命名，初学时最容易看反。每个窗口还要约定传输类型、最大包长，并在那 512 字节 PMA 里留出缓冲区。
 

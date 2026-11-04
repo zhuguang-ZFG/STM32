@@ -49,6 +49,13 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-15-rtos-tick-flow.svg" width="720" alt="RTOS: 1 ms tick, priority 2 runs first">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Tick→ready→prio2→128 words.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-15-rtos-prio.svg" width="760" alt="One tick is 1 ms. Task priority 2 runs before priority 1. 128 words are 512 bytes. FromISR needs a numeric priority of 5 or a larger number.">
   <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the example running normally: SysTick in 1 ms steps, the HAL time base on TIM4, priority 2 running and priority 1 waiting, an LED stack of 128 words = 512 bytes, and EXTI0 at preemption priority 5. The lower half sets the EXTI0 preemption priority to 0: the first FromISR call inside the interrupt stops in configASSERT. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
@@ -112,6 +119,13 @@ Bare metal is "a main loop plus interrupts" (foreground/background). The more ta
 > The test: **when the main loop contains several things that each want to run on their own rhythm, it is time to consider an RTOS.** Blinking an LED and reading a UART is still fine on bare metal.
 
 ### 2. Task state transitions
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-15-task-states.svg" width="760" alt="FreeRTOS states: Running / Ready / Blocked / Suspended">
+  <br><sub>▲ Drawn for this book. 1 ms tick; 128 words=512 bytes; do not share SysTick with HAL.</sub>
+</p>
+
 
 A task moves among running, ready, blocked, suspended, and deleted. **The CPU is given to someone else only when a task is blocked or suspended**, so every task needs a blocking point.
 
@@ -246,6 +260,13 @@ FreeRTOS ships five heap implementations. Which one you use depends on `configTO
 ```
 
 ### 10. In an interrupt you may only call FromISR APIs
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-15-fromisr.svg" width="760" alt="ISR may only call FromISR; preempt priority numeric ≥ 5">
+  <br><sub>▲ Drawn for this book. Task-context queue/sem APIs are banned inside ISRs.</sub>
+</p>
+
 
 **An interrupt service routine must never call an ordinary API that can block** (for example `xQueueSend`). Use the `xxxFromISR` version, and use `portYIELD_FROM_ISR` to decide whether to switch immediately.
 

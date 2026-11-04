@@ -54,6 +54,13 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-11-iwdg-feed-flow.svg" width="720" alt="IWDG：625 Hz 倒数，到 0 前喂狗">
+  <br><sub>▲ 自绘矢量动画（FA-002）。LSI→625 Hz→倒数→喂狗。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-11-iwdg-1s.svg" width="760" alt="Reload 624 在 40 kHz 典型值下是 1 秒；减到 0 才复位；LSE 要 PRL = 32767 才是 1 Hz">
   <br><sub>▲ 自绘。STM32F103C8T6。LSI 典型 40 kHz，范围 30–60 kHz。预分频 64，计数频率 625 Hz，Reload = 624，在减到 0 之前喂狗，超时按典型值算是 1 秒，不是保证值。图里标出的出错情况是计数减到 0，或把 Reload 写成 625。备份域部分画的是第 1 脚 VBAT、第 3 脚 PC14、第 4 脚 PC15，32.768 kHz，PRL = 32767，10 个 16 位寄存器。PRL = 32768 不是 1 Hz。窗口看门狗在计数器大于 0x50 时喂狗会复位，超时 58.25 ms。出处是 [DS5319 Rev 20 表 25、第 2.3.14 节和第 2.3.15 节](#source-ds5319-rtc) 以及 [RM0008 Rev 21 第 19 章](#source-rm0008-wdg)。</sub>
@@ -106,6 +113,13 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
 
 ### 1. RTC 与备份域
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-11-backup-domain.svg" width="760" alt="备份域：VBAT 续电，LSE 32.768 kHz 走时">
+  <br><sub>▲ 自绘。VBAT 续电备份域；LSE 最准，LSI 仅作备用。</sub>
+</p>
+
+
 RTC 是芯片里的一块电子表，它和几个备份寄存器住在一个单独的小房间里，叫备份域。主电源断了，只要 VBAT 脚上还接着纽扣电池，这个小房间照样有电，表照样走。表的准不准看时钟源：外接的 32.768 kHz 晶振最准，内部的 LSI 只能算大概。
 
 RTC 位于**备份域**，由 `VBAT` 供电，主电源掉电后仍能走时；时钟源优先选 **LSE 32.768 kHz**（精度最高）。
@@ -153,6 +167,13 @@ F1 的 RTC 其实只会数秒，年月日要靠软件拿秒数去算。闹钟就
 </p>
 
 ### 4. IWDG 与 WWDG 对比
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-11-iwdg-math.svg" width="760" alt="IWDG 一秒公式：40 kHz / 64 = 625 Hz，Reload 624">
+  <br><sub>▲ 自绘。超时用 (Reload+1)；写成 625 会多一拍。</sub>
+</p>
+
 
 看门狗是一个一直往下数的倒计时，程序要定期去「喂」它，把数拨回去。程序卡死了，没人喂，数到头芯片就复位。独立看门狗用自己的时钟，主时钟坏了它也照样数，是最后一道保险。窗口看门狗管得更细：喂得太晚会复位，喂得太早也会复位，所以它能发现程序跑得太快或太慢。
 

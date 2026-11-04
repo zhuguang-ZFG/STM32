@@ -50,6 +50,13 @@ Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. PB3 
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-17-cfsr-flow.svg" width="720" alt="CFSR: bit 15=1 unlocks BFAR; then 72 counts">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). Fault→CFSR→bit15→BFAR→1 µs.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-17-cfsr.svg" width="760" alt="BFAR is valid only when bit 15 is 1. At 72 MHz, 72 cycles are 1 µs, and only after DEMCR bit 24 is set.">
   <br><sub>▲ Drawn for this book. The top band is the correct reading: only when CFSR at 0xE000ED28 has bit 15 set is BFAR at 0xE000ED38 the address of this fault, and with DEMCR at 0xE000EDFC bit 24 set, 72 counts are 1 µs. The middle band shows two mistakes: with bit 15 clear, BFAR cannot be trusted; with bit 24 clear, two reads differ by 0. HFSR bit 30 is 0x40000000. Pin 39 is labeled with its reset function, JTDO. Sources: [PM0056](#source-pm0056) and [PM0056 DWT](#source-pm0056-dwt).</sub>
@@ -100,6 +107,13 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 Debug evidence has an order: preserve the scene, classify the fault, locate the source, and then build a minimal reproduction. Performance work follows the same rule: measure cycles, bus use, and waveforms before choosing an algorithm, DMA, compiler, or hardware change.
 
 ### 1. SWD vs JTAG
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-17-swd-pins.svg" width="760" alt="SWD: PA13/PA14/NRST; SWO uses PB3">
+  <br><sub>▲ Drawn for this book. M3 has 6 HW breakpoints; reclaiming SWD pins bricks debug.</sub>
+</p>
+
 
 **SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
 
@@ -156,6 +170,13 @@ The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3
 > If a breakpoint will not set, or you are over the limit, delete the old ones. The debugger will usually fill in with software breakpoints on its own.
 
 ### 4. The three-piece HardFault kit
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-17-cfsr-bits.svg" width="760" alt="CFSR @ 0xE000ED28; trust BFAR only when bit 15 = 1">
+  <br><sub>▲ Drawn for this book. CFSR first; 72 counts at 72 MHz = 1 µs.</sub>
+</p>
+
 
 Once you are in HardFault, read **`CFSR` (configurable fault status), then `HFSR` (HardFault status), then `BFAR` (bus-fault address)**. Then **recover the PC at the time of the fault from the stack**. Finally use **`addr2line` or the `.map` file** to land on the source line.
 

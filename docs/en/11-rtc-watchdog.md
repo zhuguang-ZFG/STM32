@@ -53,6 +53,13 @@ While the LSE uses pins 3 and 4, those pins cannot be GPIO. If PC13 is still the
 
 ## Key figures
 
+
+<p align="center">
+  <img src="../../assets/animations/sample-11-iwdg-feed-flow.svg" width="720" alt="IWDG: 625 Hz countdown, feed before zero">
+  <br><sub>▲ Hand-drawn CSS animation (FA-002). LSI→625 Hz→count→feed.</sub>
+</p>
+
+
 <p align="center">
   <img src="../../assets/diagrams/sample-11-iwdg-1s.svg" width="760" alt="Reload 624 is 1 second at a typical 40 kHz; reset happens only at 0; LSE needs PRL = 32767 for 1 Hz">
   <br><sub>▲ Drawn for this book. STM32F103C8T6. LSI is typically 40 kHz and spans 30–60 kHz. Prescaler 64, a 625 Hz count, and Reload = 624 give a 1 second timeout at the typical value, not a guarantee, when the dog is fed before zero. The marked faults are reaching 0 and writing Reload as 625. The backup strip shows pin 1 VBAT, pin 3 PC14, pin 4 PC15, 32.768 kHz, PRL = 32767, and ten 16-bit registers. PRL = 32768 is not 1 Hz. The window watchdog resets if fed while the counter is above 0x50, on a 58.25 ms scale. Sources: [DS5319 Rev 20 Table 25 and sections 2.3.14 and 2.3.15](#source-ds5319-rtc) and [RM0008 Rev 21 chapter 19](#source-rm0008-wdg).</sub>
@@ -105,6 +112,13 @@ A reset test must distinguish a watchdog reset from ordinary power-on reset. An 
 
 ### 1. The RTC and the backup domain
 
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-11-backup-domain.svg" width="760" alt="Backup domain: VBAT keeps RTC; LSE 32.768 kHz">
+  <br><sub>▲ Drawn for this book. VBAT keeps the backup domain; LSE is preferred over LSI.</sub>
+</p>
+
+
 The RTC is a watch inside the chip. It lives with a few backup registers in a separate small room called the backup domain. When main power goes, that room stays powered as long as a coin cell is on the VBAT pin, and the watch keeps running. How accurate it is depends on the clock: an external 32.768 kHz crystal is the most accurate, and the internal LSI is only rough.
 
 The RTC sits in the **backup domain** and is powered by `VBAT`. It keeps time after the main supply drops. Prefer the **LSE at 32.768 kHz** as the clock source. It is the most accurate of the four.
@@ -152,6 +166,13 @@ The F1 RTC only counts seconds, and software turns the count into a date. An ala
 </p>
 
 ### 4. IWDG vs WWDG
+
+
+<p align="center">
+  <img src="../../assets/diagrams/sample-11-iwdg-math.svg" width="760" alt="IWDG 1 s math: 40 kHz / 64 = 625 Hz, Reload 624">
+  <br><sub>▲ Drawn for this book. Timeout uses (Reload+1); 625 is one tick too many.</sub>
+</p>
+
 
 A watchdog is a countdown that never stops, and the program has to "feed" it now and then to wind the count back up. If the program hangs, nobody feeds it, the count runs out, and the chip resets. The independent watchdog has its own clock, so it keeps counting even if the main clock fails, which makes it the last line of defence. The window watchdog is stricter: feeding it too late resets the chip, and so does feeding it too early, so it catches a program that runs too fast as well as too slow.
 

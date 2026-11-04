@@ -54,6 +54,13 @@ MCU 的 PB8/PB9 不能直接接总线，要先进收发器的 RXD/TXD，由收�
 
 ## 关键插图
 
+
+<p align="center">
+  <img src="../assets/animations/sample-13-can-arb-flow.svg" width="720" alt="CAN：8 个 250 ns 时间份额走到采样点">
+  <br><sub>▲ 自绘矢量动画（FA-002）。Sync→BS1→75% 采样→BS2→2 µs。</sub>
+</p>
+
+
 <p align="center">
   <img src="../assets/diagrams/sample-13-can-bit.svg" width="760" alt="36 MHz 下预分频 9、8 个时间份额是 500 kbit/s；写成预分频 8 和 10 个时间份额是 450 kbit/s；工作脚是第 45 脚和第 46 脚">
   <br><sub>▲ 自绘。STM32F103C8T6。图上半部分是正确配置：8 个 250 ns 的时间份额，采样点 75%，一位 2 µs，500 kbit/s，预分频 9，SJW = 1，CANH 与 CANL 之间接 120 Ω。下半部分是错误配置：预分频 8、10 个时间份额，得到 450 kbit/s，采样点 70%。引脚是第 45 脚 PB8 和第 46 脚 PB9。出处是 [RM0008 Rev 21 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20 表 5](#source-ds5319-usbcan)。</sub>
@@ -160,6 +167,13 @@ CAN 的帧不写收件人，只写「这条消息是什么」，也就是 ID。�
 
 ### 5. 波特率与采样点
 
+
+<p align="center">
+  <img src="../assets/diagrams/sample-13-bit-quanta.svg" width="760" alt="36 MHz 下预分频 9、8 个 250 ns 份额是 500 kbit/s">
+  <br><sub>▲ 自绘。采样点 75%；预分频写错会变成 450 kbit/s。</sub>
+</p>
+
+
 CAN 把一位的时间切成若干份小格，叫 Tq。第 1 格用来对齐边沿，后面分成采样点前的 BS1 和采样点后的 BS2。采样点放在一位的 75% 到 87.5% 处，是为了等线上的信号走完一个来回、彻底稳定了再看。同一条总线上所有节点的波特率和采样点都要一致。
 
 一个位时间 `T_bit = 1/NBaud` 由 `SYNC_SEG(1 Tq)` + `BS1` + `BS2` 组成；采样点一般取在 **75%~87.5%**。
@@ -185,6 +199,13 @@ Tq = Prescaler / f_APB1
 > **SJW（再同步跳转宽度）** 用于吸收各节点时钟误差，一般取 1~2 Tq。采样点不一致是 CAN 通信偶发错误的首要原因，多节点必须统一。
 
 ### 6. 过滤器与双 FIFO（F1）
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-13-filter-fifo.svg" width="760" alt="F1：14 个过滤组和 FIFO0/FIFO1">
+  <br><sub>▲ 自绘。硬实时进 FIFO0，批量进 FIFO1；溢出要提速排空。</sub>
+</p>
+
 
 F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把「ID 匹配的报文」路由到 FIFO0 或 FIFO1，用中断/轮询取出。
 
@@ -293,6 +314,13 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 4. **错误与恢复**：断开第二节点制造无 ACK，记录 TEC 升到 128、节点转入 error-passive 并持续重传；再接回应答节点，验证第一帧成功发送。要观察 Bus-Off，需另造持续增加 TEC 的发送错误，并记录 128×11 个隐性位后的 ABOM 恢复。
 
 ### 7. 总线关闭之后怎么回来
+
+
+<p align="center">
+  <img src="../assets/diagrams/sample-13-tec-busoff.svg" width="760" alt="TEC 128 进被动；超过 255 才 Bus-Off">
+  <br><sub>▲ 自绘。单节点无 ACK 只到 128；Bus-Off 要另造发送错误。</sub>
+</p>
+
 
 发送错误计数 TEC ≥ 256，节点进入 Bus-Off，不再驱动总线。恢复条件是总线上出现 **128 次、每次 11 个连续隐性位**。硬件可以自己等，这就是 ABOM。
 

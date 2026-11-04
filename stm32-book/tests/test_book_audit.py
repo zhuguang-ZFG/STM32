@@ -225,9 +225,38 @@ class BookAuditTests(unittest.TestCase):
 
     def test_reliability_phase_starts_with_reset_update_and_bus_evidence(self) -> None:
         expected = {
-            "11": ("iwdg-window.svg", "sample-11-iwdg-1s.svg", "iwdg-1s.gif", "sample-11-wdg-compare.svg", "watchdog-reset-evidence.svg", "sample-11-rtc-triage.svg"),
-            "12": ("flash-iap.svg", "sample-12-iap-map.svg", "iap-jump.gif", "sample-12-flash-triage.svg", "iap-acceptance-gates.svg", "sample-12-boot-compare.svg"),
-            "13": ("can-arbitration.svg", "sample-13-can-bit.svg", "can-500k.gif", "sample-13-can-triage.svg"),
+            "11": (
+                "iwdg-window.svg",
+                "sample-11-iwdg-feed-flow.svg",
+                "sample-11-iwdg-1s.svg",
+                "iwdg-1s.gif",
+                "sample-11-backup-domain.svg",
+                "sample-11-wdg-compare.svg",
+                "sample-11-iwdg-math.svg",
+                "watchdog-reset-evidence.svg",
+                "sample-11-rtc-triage.svg",
+            ),
+            "12": (
+                "flash-iap.svg",
+                "sample-12-iap-jump-flow.svg",
+                "sample-12-iap-map.svg",
+                "iap-jump.gif",
+                "sample-12-page-erase.svg",
+                "sample-12-flash-triage.svg",
+                "sample-12-key-order.svg",
+                "iap-acceptance-gates.svg",
+                "sample-12-boot-compare.svg",
+            ),
+            "13": (
+                "can-arbitration.svg",
+                "sample-13-can-arb-flow.svg",
+                "sample-13-can-bit.svg",
+                "can-500k.gif",
+                "sample-13-bit-quanta.svg",
+                "sample-13-filter-fifo.svg",
+                "sample-13-can-triage.svg",
+                "sample-13-tec-busoff.svg",
+            ),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]
@@ -242,8 +271,11 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "14": (
                 "usb-enumeration.svg",
+                "sample-14-usb-48m-flow.svg",
                 "sample-14-usb-enum.svg",
                 "usb-48m.gif",
+                "sample-14-usbpre-48.svg",
+                "sample-14-pma-map.svg",
                 "usb-enumeration-zh.gif",
                 "sample-14-descriptor-map.svg",
                 "pinout-bluepill.svg",
@@ -251,10 +283,13 @@ class BookAuditTests(unittest.TestCase):
             ),
             "15": (
                 "freertos-scheduler.svg",
+                "sample-15-rtos-tick-flow.svg",
                 "sample-15-rtos-prio.svg",
                 "rtos-tick.gif",
+                "sample-15-task-states.svg",
                 "rtos-deadline-budget.svg",
                 "rtos-owner-task.svg",
+                "sample-15-fromisr.svg",
                 "sample-15-rtos-triage.svg",
                 "rtos-startup-gates.svg",
             ),
@@ -270,8 +305,28 @@ class BookAuditTests(unittest.TestCase):
 
     def test_phase_three_ends_with_power_and_fault_evidence(self) -> None:
         expected = {
-            "16": ("lowpower-wakeup.svg", "sample-16-stop-wake.svg", "stop-wake.gif", "sample-16-stop-compare.svg", "lowpower-current-evidence.svg", "sample-16-pwr-triage.svg"),
-            "17": ("debug-swo.svg", "sample-17-cfsr.svg", "cfsr-read.gif", "sample-17-obs-compare.svg", "fault-triage-ladder.svg", "sample-17-perf-triage.svg"),
+            "16": (
+                "lowpower-wakeup.svg",
+                "sample-16-stop-wake-flow.svg",
+                "sample-16-stop-wake.svg",
+                "stop-wake.gif",
+                "sample-16-stop-compare.svg",
+                "sample-16-mode-current.svg",
+                "sample-16-clock-restore.svg",
+                "lowpower-current-evidence.svg",
+                "sample-16-pwr-triage.svg",
+            ),
+            "17": (
+                "debug-swo.svg",
+                "sample-17-cfsr-flow.svg",
+                "sample-17-cfsr.svg",
+                "cfsr-read.gif",
+                "sample-17-swd-pins.svg",
+                "sample-17-obs-compare.svg",
+                "sample-17-cfsr-bits.svg",
+                "fault-triage-ladder.svg",
+                "sample-17-perf-triage.svg",
+            ),
         }
         for chapter_id, assets in expected.items():
             chapter = self.by_id[chapter_id]
