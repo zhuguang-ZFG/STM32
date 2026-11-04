@@ -63,6 +63,11 @@
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch15-rtos-prio.png" width="760" alt="Handraw：1 ms 节拍与优先级 2 先跑（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。tick=1 ms；prio2 先于 prio1；128 字=512 字节；FromISR 抢占优先级数值≥5；写成 0 会 configASSERT；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/rtos-tick.gif" width="640" alt="节拍每 1 ms 走一格，优先级 2 占着 CPU，128 字等于 512 字节">
   <br><sub>▲ 动图版，只演示正常运行：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷版只有上面的静态图。</sub>
 </p>
@@ -127,6 +132,11 @@ FreeRTOS 解决的是调度与同步，不会自动保证截止时间。任务�
   <br><sub>▲ 自绘。1 ms 节拍；128 字=512 字节；别和 HAL 抢 SysTick。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-task-states.png" width="760" alt="Handraw：FreeRTOS 四态 Running/Ready/Blocked/Suspended（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。每核只有一个 Running；Ready 等 tick；Blocked 等对象；Suspended 被搁置；不是实拍。</sub>
+</p>
+
 
 任务在「运行 / 就绪 / 阻塞 / 挂起 / 删除」间迁移；**高优先级任务一旦就绪就会抢占正在运行的低优先级任务，同优先级任务按时间片轮转，`taskYIELD` 也能主动让出 CPU**。阻塞的作用不是「让 CPU 能切换」，而是不占 CPU 地等待，并让低优先级任务有机会运行；一直就绪又不阻塞的任务会让低优先级任务长期得不到 CPU，若关闭时间片轮转，同优先级任务也会互相饿死。
 
@@ -178,6 +188,11 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 <p align="center">
   <img src="../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="任务响应时间由阻塞、执行和高优先级干扰组成，并必须早于截止时间">
   <br><sub>▲ 实时预算：`R = B + C + S`，验收看最坏响应 `Rmax` 是否早于截止点。图不能替代实际测量；ISR、互斥量持有时间、任务执行时间和队列峰值都要记录（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-deadline-budget.png" width="760" alt="Handraw：实时预算 R=B+C+S（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。R=B+C+S；阻塞+执行+高优先级干扰；最坏值必须早于截止点；平均值不能替代最坏值；不是实拍。</sub>
 </p>
 
 临界区用 `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 关中断保护共享数据；**调用任何 `xxxFromISR` 的中断，其优先级数值必须 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`**。
@@ -242,6 +257,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
   <br><sub>▲ 互斥量只能保护一次函数调用；包含片选、DMA、等待和恢复的完整事务更适合交给唯一所有者任务。图不能证明队列深度和截止时间足够，仍要测峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-owner-task.png" width="760" alt="Handraw：外设所有者任务（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。多任务经队列把完整事务交给唯一所有者；片选、DMA、超时和恢复落在同一状态机；不是实拍。</sub>
+</p>
+
 ### 9. heap_1 ~ heap_5
 
 FreeRTOS 自带 5 种堆实现，用哪个由 `configTOTAL_HEAP_SIZE` 和「是否需要 free」决定；**入门最常用 heap_4**。
@@ -265,6 +285,11 @@ FreeRTOS 自带 5 种堆实现，用哪个由 `configTOTAL_HEAP_SIZE` 和「是�
 <p align="center">
   <img src="../assets/diagrams/sample-15-fromisr.svg" width="760" alt="ISR 里只能用 FromISR；抢占优先级数值至少 5">
   <br><sub>▲ 自绘。队列/信号量任务版 API 禁止进中断。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-fromisr.png" width="760" alt="Handraw：ISR 里只能用 FromISR（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。ISR 只许 *FromISR；禁止 xQueueSend/vTaskDelay/malloc；抢占优先级数值至少 5；不是实拍。</sub>
 </p>
 
 

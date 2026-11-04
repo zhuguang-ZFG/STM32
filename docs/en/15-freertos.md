@@ -62,6 +62,11 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-rtos-prio.png" width="760" alt="Handraw: 1 ms tick and priority 2 first (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). tick=1 ms; prio2 before prio1; 128 words=512 bytes; FromISR needs preempt priority ≥5; priority 0 hits configASSERT; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/rtos-tick.gif" width="640" alt="The tick advances 1 ms at a time, priority 2 holds the CPU, and 128 words equal 512 bytes">
   <br><sub>▲ Animated version, showing only normal running: 1 ms steps, priority 2 running, priority 1 waiting, 128 words = 512 bytes. The printed book has only the static figure above.</sub>
 </p>
@@ -126,6 +131,11 @@ Bare metal is "a main loop plus interrupts" (foreground/background). The more ta
   <br><sub>▲ Drawn for this book. 1 ms tick; 128 words=512 bytes; do not share SysTick with HAL.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-task-states.png" width="760" alt="Handraw: FreeRTOS four states Running/Ready/Blocked/Suspended (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). One Running task per core; Ready waits for tick; Blocked waits on an object; Suspended is held aside; not a photo.</sub>
+</p>
+
 
 A task moves among running, ready, blocked, suspended, and deleted. **The CPU is given to someone else only when a task is blocked or suspended**, so every task needs a blocking point.
 
@@ -178,6 +188,11 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
 <p align="center">
   <img src="../../assets/diagrams/rtos-deadline-budget.svg" width="820" alt="Task response time consists of blocking, execution, and higher-priority interference and must finish before the deadline">
   <br><sub>▲ Real-time budget: `R = B + C + S`; acceptance asks whether worst-case `Rmax` finishes before the deadline. The figure does not replace measurement. Record ISR time, mutex hold time, task execution, and queue peak (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-deadline-budget.png" width="760" alt="Handraw: real-time budget R=B+C+S (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). R=B+C+S; blocking + execution + higher-priority interference; worst case must finish before the deadline; averages cannot replace worst case; not a photo.</sub>
 </p>
 
 A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask interrupts and protect shared data. **Any interrupt that calls an `xxxFromISR` API must have a priority number ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`.**
@@ -242,6 +257,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
   <br><sub>▲ A mutex protects one function call; a complete transaction containing chip select, DMA, waits, and recovery is often safer in one owner task. The figure cannot prove queue capacity or deadlines; measure peak depth and longest response (FA-002 · IG-011 · C-03/C-10/C-27/C-31).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-owner-task.png" width="760" alt="Handraw: peripheral owner task (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Tasks queue complete transactions to one owner; chip-select, DMA, timeout, and recovery stay in one state machine; not a photo.</sub>
+</p>
+
 ### 9. heap_1 through heap_5
 
 FreeRTOS ships five heap implementations. Which one you use depends on `configTOTAL_HEAP_SIZE` and on whether you need to free. **heap_4 is the one beginners use most.**
@@ -265,6 +285,11 @@ FreeRTOS ships five heap implementations. Which one you use depends on `configTO
 <p align="center">
   <img src="../../assets/diagrams/sample-15-fromisr.svg" width="760" alt="ISR may only call FromISR; preempt priority numeric ≥ 5">
   <br><sub>▲ Drawn for this book. Task-context queue/sem APIs are banned inside ISRs.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-fromisr.png" width="760" alt="Handraw: ISR may only call FromISR (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). ISR may only call *FromISR; never xQueueSend/vTaskDelay/malloc; preempt priority numeric ≥5; not a photo.</sub>
 </p>
 
 
