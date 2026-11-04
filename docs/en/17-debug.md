@@ -63,6 +63,11 @@ Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. PB3 
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-cfsr.png" width="760" alt="Handraw: CFSR bit15 and DWT 72 counts (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BFAR needs CFSR bit 15=1; enable DEMCR bit 24 first; 72 counts at 72 MHz = 1 μs; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/cfsr-read.gif" width="640" alt="Read CFSR with bit 15 set, then let 72 counts finish 1 µs">
   <br><sub>▲ Animated version. It shows only the good case: read CFSR, bit 15 is 1, then 72 counts finish 1 µs. The printed book has only the static figure above.</sub>
 </p>
@@ -114,6 +119,11 @@ Debug evidence has an order: preserve the scene, classify the fault, locate the 
   <br><sub>▲ Drawn for this book. M3 has 6 HW breakpoints; reclaiming SWD pins bricks debug.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-swd-pins.png" width="760" alt="Handraw: SWD pins PA13/PA14/NRST (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). SWDIO=PA13, SWCLK=PA14, keep NRST free; SWO uses PB3; not a photo.</sub>
+</p>
+
 
 **SWD uses only 2 signal wires (SWDIO + SWCLK) plus GND.** It uses fewer pins than JTAG, and it is the debug interface of choice on Cortex-M. JTAG is mainly for a daisy chain of several devices, or for older tools.
 
@@ -135,6 +145,11 @@ ST's manuals do not give a top speed for SWD. The usual 4 MHz or 10 MHz figures 
 <p align="center">
   <img src="../../assets/diagrams/sample-17-obs-compare.svg" width="760" alt="Observation tools do not substitute for each other: the M3 has 6 hardware breakpoints, SWO occupies PB3 not the UART, and the log leaves PC and CFSR behind">
   <br><sub>▲ Drawn for this book. Observation tools compared: they do not substitute for each other — the M3 has 6 hardware breakpoints and beyond that you switch to conditional breakpoints or logging; SWO rides PB3, not the UART; after a HardFault the log still leaves PC and CFSR behind. Sources: [PM0056 debug](#source-pm0056) and [DS5319 SWD](#source-ds5319-swd).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-obs-compare.png" width="760" alt="Handraw: halt / SWO / log are not substitutes (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). M3 has 6 hardware breakpoints; SWO occupies PB3 not UART; log leaves PC and CFSR; not a photo.</sub>
 </p>
 
 ### 2. SWO / ITM / printf tracing
@@ -175,6 +190,11 @@ The number of hardware breakpoints is **very small** (usually **6** on Cortex-M3
 <p align="center">
   <img src="../../assets/diagrams/sample-17-cfsr-bits.svg" width="760" alt="CFSR @ 0xE000ED28; trust BFAR only when bit 15 = 1">
   <br><sub>▲ Drawn for this book. CFSR first; 72 counts at 72 MHz = 1 µs.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-cfsr-bits.png" width="760" alt="Handraw: CFSR bit map and HardFault kit (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Read 0xE000ED28; BFARVALID=bit 15; CFSR→HFSR→BFAR→stacked PC; not a photo.</sub>
 </p>
 
 
@@ -321,6 +341,11 @@ void Measure(void)
 <p align="center">
   <img src="../../assets/diagrams/sample-17-perf-triage.svg" width="760" alt="Triage, three branches: zero readings check bit 24; at 72 MHz 72 counts are 1 us; BFAR requires CFSR bit 15 set">
   <br><sub>▲ Drawn for this book. Triage, three branches: DWT reads zero — check whether DEMCR bit 24 (TRCENA) is set; at 72 MHz exactly 72 counts are 1 us — do not mistake 720000 for 1 s; BFAR is valid only when CFSR bit 15 is set. Sources: [PM0056 DWT](#source-pm0056-dwt) and [PM0056](#source-pm0056).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-perf-triage.png" width="760" alt="Handraw: performance triage three forks (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Zero readings check DEMCR bit 24; 72 counts = 1 μs; BFAR needs CFSR bit 15=1; not a photo.</sub>
 </p>
 
 ## Code
