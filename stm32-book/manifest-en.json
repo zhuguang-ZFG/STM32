@@ -435,7 +435,8 @@
         "stm32l4-hal-rtc",
         "commons-nucleo-f411re",
         "commons-nucleo-f401re",
-        "es0250"
+        "es0250",
+        "project-examples"
       ]
     },
     "25-stm32h7-pins.md": {
@@ -452,7 +453,9 @@
         "stm32cube-h7-system",
         "stm32cube-h7-msp",
         "stm32h7-hal-pwr",
-        "st-h7-dma"
+        "st-h7-dma",
+        "project-examples",
+        "stlink-tools"
       ]
     },
     "26-spl.md": {

@@ -335,6 +335,11 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | 多设备 | 每设备一 CS | 地址寻址 | 点对点 |
 | 全双工 | 是 | 半双工 | 是 |
 
+<p align="center">
+  <img src="../assets/diagrams/sample-08-bus-compare.svg" width="760" alt="SPI / I2C / UART side-by-side: wires, addressing, duplex, clock owner">
+  <br><sub>▲ 自绘。三总线对照：SPI 四线全双工、每从机一根 CS、主机驱动 SCK；I2C 两线开漏、地址寻址、半双工；UART 点对点异步、双方自有波特率。本图只整理线数/寻址/双工关系，不替代 [RM0008](#source-rm0008-spi) 各章时序。开源对照：[examples/](#source-project-examples)（MIT）只提供结构与验收格式。</sub>
+</p>
+
 SPI 实验「没反应」时按固定顺序查：先片选与 MISO，再时钟，最后才怀疑速度。
 
 <p align="center">

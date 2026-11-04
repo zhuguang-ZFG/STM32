@@ -363,3 +363,4 @@ Self-test:
 - **STM32CubeL4:** pinned commit `485c092549f9495079fcb39f17f66cbaa0930118`, under `NUCLEO-L476RG/Examples/PWR/PWR_STOP2*`, for the Stop 2 entry and recovery sequence. Its pinned HAL driver is `71a58f9d417139d332e448a46c9e6ba5181181dc`; use `stm32l4xx_hal_rtc_ex.c` to verify the interrupt order: clear EXTI, clear WUTF, then call the callback.
 - **ES0250:** errata for L471/L475/L476/L486. Check every item against the silicon revision before production.
 - General low-power method: [16 Low-power design](16-low-power.md). Family comparisons: [G0 pins](23-stm32g0-pins.md) and [H7 pins](25-stm32h7-pins.md).
+- Open-source compare: [companion examples/](https://github.com/zhuguang-ZFG/STM32/tree/main/examples) (MIT; see [#source-project-examples](#source-project-examples)) — structure, acceptance, and evidence format only. This repo has no L476 board example; do not copy F1 wiring or power nets onto L4.

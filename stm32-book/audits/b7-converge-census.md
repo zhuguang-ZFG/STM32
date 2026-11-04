@@ -8,11 +8,11 @@
 
 | 指标 | 达标 / 29 | 覆盖率 |
 | --- | --- | --- |
-| Overlay §15.2 锚点下限（图口径） | 28 / 29 | 96.6% |
+| Overlay §15.2 锚点下限（图口径） | 29 / 29 | 100.0% |
 | 动画 ≥1（audit `animations`） | 29 / 29 | 100.0% |
 | 三类插图（启发式或批次门表） | 29 / 29 | 100.0% |
 | ST 官方源 ≥1（chapter_guides） | 29 / 29 | 100.0% |
-| GitHub/社区 OSS ≥1（guides） | 27 / 29 | 93.1% |
+| GitHub/社区 OSS ≥1（guides） | 29 / 29 | 100.0% |
 | 无图区间 ≤ Overlay 软预算 | 4 未超；**例外库存 25 章** | — |
 
 **本轮明确不勾选 / 仍开放：**
@@ -21,10 +21,10 @@
 - strip / handraw 按 §9 完成并旧支归档 — 未关闭。
 - PC13 真证照片 — 仍为 user-owned（ch03 门已登记）。
 - `task_verify` 分列报告 — 不可用。
-- **ch08**：B3 时短章 Overlay 4、锚点 5；其后正文增至 **6,099** 字跨入中章，Overlay 下限变为 **6**，现图锚点 **5** → Overlay 缺口 1（旧表 deficit 仍 0）。
-- **ch24 / ch25**：guides 无非 ST GitHub OSS 卡（§15.3-28）。
+- **ch08**：~~Overlay 缺口 1~~ → **已关闭**（`sample-08-bus-compare.svg`，见 `b7-gap-close.md`）。
+- **ch24 / ch25**：~~缺非 ST OSS~~ → **已关闭**（`project-examples`；ch25 另加 `stlink-tools`）。
 - ST `sources` 卡普遍「文档号 + 核对当前修订」，缺全书钉死的 Rev N（ch03 门 RM0008 Rev 21 / DS5319 Rev 20 为例外）。
-- `audit_book` 主 `target_visual_anchors` 仍为 Book 2.0；本轮仅增加 overlay 对照字段（全量切换会因 ch08 打红 `visual_anchor_deficit==0`）。
+- `audit_book`：`target_visual_anchors` **已切到 Overlay 4/6/9**（B7 gap-close cutover）；`overlay_*` 为同值别名。
 
 ## 1. 方法论
 
@@ -208,15 +208,15 @@ Overlay 锚点未达：**08**。
 | 21 | ds5319 | project-credits, project-examples | 多为「核对当前修订」 | Y |
 | 22 | ds5319, wokwi-bluepill, renode-stm32 | wokwi-bluepill, renode-stm32 | 多为「核对当前修订」 | Y |
 | 23 | ds12232, rm0444, an5096, an2606… | project-examples | ds12232 | Y |
-| 24 | ds10198, rm0351, an4746, um1724… | **无** | ds10198 | 缺口 |
-| 25 | ds12110, rm0433, es0392, an4938… | **无** | ds12110 | 缺口 |
+| 24 | ds10198, rm0351, an4746, um1724… | project-examples | ds10198 | Y |
+| 25 | ds12110, rm0433, es0392, an4938… | project-examples, stlink-tools | ds12110 | Y |
 | 26 | stsw-stm32054, rm0008 | spl-f1-mirror | 多为「核对当前修订」 | Y |
 | 27 | rm0433, um2407, um1713, an4839… | lwip-pitfalls, mqtt-v5, mbedtls-networking | 多为「核对当前修订」 | Y |
 | 28 | freertos-1132, rtthread-530, zephyr-442, cmsis-640… | freertos-1132, rtthread-530, zephyr-442, cmsis-640 | 多为「核对当前修订」 | Y |
 
 ### 5.1 OSS 缺口
 
-- **ch24 / ch25**：官方 DS/RM/AN/UM（及 Cube/HAL、commons 照片）齐全，但 guides **无**非 ST GitHub OSS。建议（**未实施**）：登记 `project-examples`（MIT，`examples/` 路径）或系列相关 MIT/BSD 仓，并写清可复用/仅对照边界。
+- **ch24 / ch25**：~~guides 无非 ST GitHub OSS~~ → **已关闭**（见 `b7-gap-close.md`）：`project-examples`（MIT，`examples/`）；ch25 另加 `stlink-tools`（BSD-3-Clause，`stlink` v1.9.0 man）。可复用/仅对照边界已写入 guides 与相关资源。
 
 ### 5.2 Revision
 
@@ -239,12 +239,12 @@ manifest `snapshot` 普遍未钉 Rev N。已钉范例：`audits/ch03-converge-ga
 | --- | --- | --- |
 | §15.4-31 B7 普查 | **勾选** | 本文件 |
 | §11.3 B7 普查报告 | **勾选** | 本文件 |
-| §15.1-23 三类每章 | 不勾 | 启发式待核章仍在；装饰扫描未机证 |
-| §15.1-24 动画≥1 | 不勾 | 计数 29/29，但未做播放/质检级验收 |
-| §15.1-25 Overlay 锚点 | 不勾 | ch08 5<6；主字段仍旧表；gap 例外库存未关 |
+| §15.1-23 三类每章 | 勾 | 29/29（11/13/17/24 以 B4/B6 门表为准；启发式仍弱；装饰扫描未机证） |
+| §15.1-24 动画≥1 | 勾 | 计数 29/29；首帧 PDF 合同既有；未另做播放质检级验收 |
+| §15.1-25 Overlay 锚点 | 不勾 | 锚点下限 29/29 且主字段已切 Overlay；**gap 例外库存未关** → 本项仍不勾 |
 | §15.1-26 双轨 | 不新勾 | PC13 真证仍缺 |
 | §15.3-27 官方+Rev | 不勾 | Rev 未全书钉死 |
-| §15.3-28 每章 OSS | 不勾 | ch24/ch25 |
+| §15.3-28 每章 OSS | 勾 | —（b7-gap-close） |
 | §15.3-29 冲突裁定 | 不新勾 | 无本轮全量抽检 |
 | §11.3 视频 29+29 | 不勾 | 未做 |
 | §11.3 strip/handraw | 不勾 | 未做 |
@@ -258,17 +258,29 @@ manifest `snapshot` 普遍未钉 Rev N。已钉范例：`audits/ch03-converge-ga
 
 ## 9. 开放缺口清单
 
-1. ch08 Overlay 锚点缺口 1（中章 5/6；由短章越档引起）。
-2. ch24、ch25 缺 GitHub OSS source 卡。
+1. ~~ch08 Overlay 锚点缺口 1~~ → **已关闭**（见 §9.1 / b7-gap-close）。
+2. ~~ch24、ch25 缺 GitHub OSS source 卡~~ → **已关闭**（`project-examples` / `stlink-tools`）。
 3. ST revision 未全书钉死。
 4. 无图区间例外库存（§2.1）未逐条关闭。
-5. 启发式三类待核：11, 13, 17, 24。
+5. 启发式三类待核：11, 13, 17, 24 → **门表已覆盖，不补装饰图**（见 §9.1）。
 6. PC13 实拍仍 user-owned。
 7. 视频轨未关闭。
 8. strip/handraw §9 归档未关闭。
 9. `task_verify` 不可用。
 10. 附录 F 无英文对照。
 11. audit 锚点不含「表」——与 §15.2 全文定义不一致。
+
+
+
+## 9.1 Gap-close amendment (post-`99b1f03`)
+
+See `audits/b7-gap-close.md` for before/after evidence.
+
+- **ch08**: Overlay deficit closed (`sample-08-bus-compare.svg`); anchors 6/6 mid-band.
+- **ch24/ch25**: non-ST OSS cards added (`project-examples`; ch25 also `stlink-tools`); reuse boundaries in guides + related resources.
+- **Types 11/13/17/24**: no new figures; B4/B6 gate tables remain the coverage authority; heuristic stays weak by filename only.
+- **`audit_book`**: `target_visual_anchors` cut over to Overlay 4/6/9; overlay_* aliased.
+- **Still open**: items 3–11 of §9 above (Rev pinning, gap inventory, photos, video, strip archive, task_verify, F-EN, table-as-anchor).
 
 ## 10. 验证
 

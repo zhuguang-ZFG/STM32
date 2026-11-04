@@ -161,6 +161,7 @@ class BookAuditTests(unittest.TestCase):
                 "sample-08-spi-jedec.svg",
                 "spi-jedec.gif",
                 "sample-08-cpha-modes.svg",
+                "sample-08-bus-compare.svg",
                 "sample-08-spi-triage.svg",
             ),
             "09": (

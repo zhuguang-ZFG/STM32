@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Static B3 figures for chapter 08: CPOL/CPHA modes and SPI triage.
+"""Static B3/B7 figures for chapter 08: CPOL/CPHA modes, SPI triage, and bus compare.
 
 No CSS animation and no SMIL.
 
@@ -210,9 +210,85 @@ def spi_triage() -> Svg:
     return canvas
 
 
+
+def bus_compare() -> Svg:
+    """SPI / I2C / UART side-by-side: wires, addressing, duplex, first pick."""
+    canvas = Svg(
+        960,
+        880,
+        "SPI / I2C / UART 总线对照：线数、寻址与双工不能混用",
+        "STM32F103C8T6 · chapter 08 · 对照第 06 / 07 / 08 章，不替代各章验收",
+    )
+    canvas.header(title="SPI / I2C / UART 三总线对照：先问线、再问寻址、最后才问速率",
+                  tag="08", tag_color=T.CYAN)
+    canvas.text(40, 88, "同一「通信」词，电气与主机关系完全不同——抄接线之前先对这一表",
+                size=15, fill=T.TEXT, weight="700")
+    canvas.text(40, 114, "compare · wire count · multi-drop · duplex · who drives the clock",
+                size=13, fill=T.CYAN)
+
+    buses = [
+        ("SPI", "4 线", "SCK+MOSI+MISO+CS", "每从机一根 CS", "全双工移位",
+         "主机驱动 SCK", "Flash / 显示屏", T.CYAN),
+        ("I2C", "2 线", "SCL + SDA（开漏）", "7/10 位地址", "半双工共享",
+         "主机驱动 SCL", "传感器 / EEPROM", T.GREEN),
+        ("UART", "2 线", "TX + RX（+GND）", "点对点（无总线地址）", "全双工异步",
+         "双方自有波特率", "调试打印 / 模组", T.AMBER),
+    ]
+    heads = ("总线", "线数", "信号", "多设备", "双工", "时钟/节拍", "典型负载")
+    xs = [40, 120, 230, 420, 580, 720, 860]
+    # widths derived from xs; last col to 920
+    rights = [120, 230, 420, 580, 720, 860, 920]
+    widths = [rights[i] - xs[i] for i in range(7)]
+    y0 = 140
+    for i, h in enumerate(heads):
+        canvas.rect(xs[i], y0, widths[i], 40, fill=T.BG2, stroke=T.STROKE, rx=4)
+        canvas.text(xs[i] + widths[i] / 2, y0 + 26, h, size=13, fill=T.MUTED,
+                    anchor="middle", weight="700")
+    for r, row in enumerate(buses):
+        name, wires, signals, multi, duplex, clock, load, color = row
+        vals = (name, wires, signals, multi, duplex, clock, load)
+        y = y0 + 52 + r * 110
+        for i, val in enumerate(vals):
+            canvas.rect(
+                xs[i], y, widths[i], 98,
+                fill=T.PANEL,
+                stroke=color if i == 0 else T.STROKE,
+                rx=8,
+                sw=2 if i == 0 else 1.5,
+            )
+            size = 16 if i == 0 else 13
+            canvas.text(
+                xs[i] + widths[i] / 2, y + 52, val,
+                size=size, fill=color if i == 0 else T.TEXT,
+                anchor="middle", weight="700" if i == 0 else "400",
+            )
+
+    canvas.text(40, 530, "选型口诀（本章只钉 SPI 验收，其余见对章）", size=15,
+                fill=T.TEXT, weight="700")
+    tips = [
+        (T.CYAN, "要高速 + 全双工 + 可拉片选", "选 SPI；CS 必须整事务保持低，否则读回 0xFF"),
+        (T.GREEN, "要少线 + 多从机地址", "选 I2C；开漏上拉与 ACK 是硬门槛，见第 07 章"),
+        (T.AMBER, "要异步点对点 / 打印", "选 UART；双方波特率各自负责，见第 06 章"),
+    ]
+    for i, (color, title, body) in enumerate(tips):
+        y = 548 + i * 70
+        canvas.rect(40, y, 880, 60, fill=T.BG2, stroke=color, rx=8)
+        canvas.text(56, y + 24, title, size=14, fill=color, weight="700")
+        canvas.text(56, y + 46, body, size=13, fill=T.TEXT)
+
+    canvas.rect(40, 760, 880, 56, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(56, 784, "对照边界：本图只整理线数/寻址/双工关系，不替代 RM0008 第 25/26/27 章时序与寄存器。",
+                size=13, fill=T.TEXT)
+    canvas.text(56, 804, "开源对照：配套 examples/spi-flash（MIT）只提供结构与验收格式，不替代本表与手册。",
+                size=12, fill=T.MUTED)
+    _credit(canvas, "自绘 · SPI/I2C/UART 三总线对照 · 非实拍")
+    return canvas
+
+
 FIGURES = [
     ("sample-08-cpha-modes.svg", cpha_modes),
     ("sample-08-spi-triage.svg", spi_triage),
+    ("sample-08-bus-compare.svg", bus_compare),
 ]
 
 T_COLORS = {

@@ -334,6 +334,11 @@ static uint8_t spi_soft_xfer(uint8_t tx)
 | Several devices | One CS per device | Addressed | Point to point |
 | Full duplex | Yes | Half duplex | Yes |
 
+<p align="center">
+  <img src="../../assets/diagrams/sample-08-bus-compare.svg" width="760" alt="SPI / I2C / UART side-by-side: wires, addressing, duplex, clock owner">
+  <br><sub>▲ Drawn for this book. Three-bus compare: SPI is four-wire full duplex with one CS per slave and the master driving SCK; I2C is two open-drain wires with addressing and half duplex; UART is point-to-point async with each side owning its baud rate. This figure only organizes wires, addressing, and duplex — it does not replace the timing chapters in [RM0008](#source-rm0008-spi). Open-source compare: [examples/](#source-project-examples) (MIT) supplies structure and acceptance format only.</sub>
+</p>
+
 When SPI "does nothing," check in a fixed order: chip select and MISO first, the clock second, and only then suspect the speed.
 
 <p align="center">

@@ -198,25 +198,30 @@ def _max_visual_gap(text: str, anchors: tuple[VisualAnchor, ...]) -> tuple[int, 
 
 
 def _target_visuals(chars: int) -> int:
-    """Book 2.0 §6.3 floor — kept as the gate field for visual_anchor_deficit."""
+    """Classic Converge Overlay §15.2 floor (Book 2.0 +1/+2/+3): short 4 / mid 6 / long 9.
+
+    B7 gap-close cut over the gate field after every chapter met the Overlay floor
+    (ch08 gained sample-08-bus-compare.svg). Book 2.0 raw floors are no longer the
+    visual_anchor_deficit denominator.
+    """
     if chars < 6000:
-        return 3
-    if chars <= 10000:
         return 4
-    return 6
+    if chars <= 10000:
+        return 6
+    return 9
 
 
 def _overlay_target_visuals(chars: int) -> int:
-    """Classic Converge Overlay §15.2: short +1 / mid +2 / long +3 on Book 2.0 floors."""
-    return _target_visuals(chars) + (1 if chars < 6000 else 2 if chars <= 10000 else 3)
+    """Alias of target_visual_anchors after B7 cutover; kept for JSON field stability."""
+    return _target_visuals(chars)
 
 
 def _overlay_gap_budget_chars(chars: int, chapter_id: str) -> int:
     """Overlay max-gap soft budget; ch18/23/28 hard-capped at 3500.
 
     Book 2.0 mid band cites 1,000–1,200 continuous chars; Overlay applies 90/85/80%
-    to the 1,200 reference and floors to 100. Full cutover of target_visual_anchors
-    to Overlay is deferred while any chapter still has overlay deficit (see B7 census).
+    to the 1,200 reference and floors to 100. Anchor-floor cutover is done; gap soft
+    budgets remain advisory with the exception inventory in b7-converge-census.md.
     """
     if chapter_id in {"18", "23", "28"}:
         return 3500
@@ -314,8 +319,8 @@ def build_audit() -> dict[str, object]:
         "definitions": {
             "pdf_visual_anchor": "one PDF-readable image or grouped figure; video is excluded",
             "max_visual_gap_chars": "running text between PDF anchors; fenced code is excluded",
-            "target_visual_anchors": "Book 2.0 §6.3 floor; both editions use the Chinese chapter scale",
-            "overlay_target_visual_anchors": "Classic Converge Overlay §15.2 floor (old+1/+2/+3); informational until full cutover",
+            "target_visual_anchors": "Classic Converge Overlay §15.2 floor (short 4 / mid 6 / long 9); both editions use the Chinese chapter scale",
+            "overlay_target_visual_anchors": "Same as target_visual_anchors after B7 cutover; retained for field stability",
             "overlay_gap_budget_chars": "Overlay §15.2 max-gap soft budget (90/85/80% of 1200 ref; ch18/23/28 ≤3500)",
         },
         "summary": {
@@ -335,7 +340,7 @@ def render_markdown(payload: dict[str, object]) -> str:
     lines = [
         "# STM32 Book audit",
         "",
-        "`PDF 图` excludes chapter video. `缺图` is the Book 2.0 Spec deficit; JSON also carries Overlay §15.2 fields (see B7 census).",
+        "`PDF 图` excludes chapter video. `缺图` is the Overlay §15.2 deficit (cut over at B7 gap-close); JSON also mirrors overlay_* fields.",
         "",
         "| 章 | 中文字符 | 中文 PDF 图 | 缺图 | 最大无图区 | 英文 PDF 图 | 图序一致 | 结构差异 |",
         "| --- | ---: | ---: | ---: | ---: | ---: | :---: | --- |",

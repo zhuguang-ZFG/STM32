@@ -118,6 +118,7 @@ diagrams/sample-06-idle-dma.svg 960x840 15348 8a0b80e12adc2e955f0105a482b40b4f8c
 diagrams/sample-06-uart-frame.svg 960x820 12448 2da90d7d086d7eabf7a11f50cbe53f3387f1b0e3ed8b97b7781ff4a41be516ee
 diagrams/sample-07-i2c-addr.svg 960x920 6620 5d8aeb4df50370a3885d46d17f086e582dab7875ce914911efb247b07e8d7e5a
 diagrams/sample-07-i2c-triage.svg 960x880 15555 e883d49128b6ad56b242d8f1178dc70d67f1014bfb42f958c41bf34677d54a1d
+diagrams/sample-08-bus-compare.svg 960x880 15392 eeab1e67083554790aaad5bf06a9f3b6be403c2e6923a83ef2f7aba1f5b0357c
 diagrams/sample-08-cpha-modes.svg 960x880 18777 a8832f9b9717be139e721840e6c634b56218617fdee98684cd53f5365869290e
 diagrams/sample-08-spi-jedec.svg 960x860 6850 717ba67544302d5517bffdbfe23deec414d5f52c49993a9eba0260fd4952fd4c
 diagrams/sample-08-spi-triage.svg 960x880 9199 b40d75cbc76bf1d00c1bcf6059a6a9acb05148a6a2465e03131bd1dfbbd68be5
@@ -458,7 +459,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(219, len(found))
+        self.assertEqual(220, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)
