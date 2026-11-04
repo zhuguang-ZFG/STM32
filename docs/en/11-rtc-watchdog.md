@@ -66,6 +66,11 @@ While the LSE uses pins 3 and 4, those pins cannot be GPIO. If PC13 is still the
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-iwdg-1s.png" width="760" alt="Handraw: IWDG 1 s Reload=624 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). LSI→÷64→625 Hz; Reload 624 is typical 1 s, not a guarantee; 625 is one tick too many; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/iwdg-1s.gif" width="640" alt="A 625 Hz count is fed before it reaches 0, with Reload = 624">
   <br><sub>▲ Animated version. A 625 Hz count is fed before it reaches zero, marked with Reload = 624 and a typical 40 kHz. The printed book has only the static figure above.</sub>
 </p>
@@ -118,6 +123,11 @@ A reset test must distinguish a watchdog reset from ordinary power-on reset. An 
   <br><sub>▲ Drawn for this book. VBAT keeps the backup domain; LSE is preferred over LSI.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-backup-domain.png" width="760" alt="Handraw: VBAT backup domain (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). VBAT keeps the backup domain; LSE preferred, LSI backup only; not a photo.</sub>
+</p>
+
 
 The RTC is a watch inside the chip. It lives with a few backup registers in a separate small room called the backup domain. When main power goes, that room stays powered as long as a coin cell is on the VBAT pin, and the watch keeps running. How accurate it is depends on the clock: an external 32.768 kHz crystal is the most accurate, and the internal LSI is only rough.
 
@@ -165,12 +175,22 @@ The F1 RTC only counts seconds, and software turns the count into a date. An ala
   <br><sub>▲ Drawn for this book. IWDG counts down and resets at zero: LSI 40 kHz, prescaler 64, Reload 624 is exactly 1 second. WWDG is a windowed countdown: about 58.25 ms per pass, and feeding it while the counter is still above 0x50 also resets — feeding is only allowed inside the window. Sources: [RM0008 watchdog](#source-rm0008-wdg) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-wdg-compare.png" width="760" alt="Handraw: IWDG vs WWDG (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). IWDG resets only at 0; WWDG also resets if fed above the window; not a photo.</sub>
+</p>
+
 ### 4. IWDG vs WWDG
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-11-iwdg-math.svg" width="760" alt="IWDG 1 s math: 40 kHz / 64 = 625 Hz, Reload 624">
   <br><sub>▲ Drawn for this book. Timeout uses (Reload+1); 625 is one tick too many.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-iwdg-math.png" width="760" alt="Handraw: IWDG timeout math (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Timeout uses (Reload+1); 624→1.000 s; 625 is one tick too many; not a photo.</sub>
 </p>
 
 
@@ -315,6 +335,11 @@ HAL_WWDG_Refresh(&hwwdg);
 <p align="center">
   <img src="../../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL must be 32767 for 1 Hz; a zeroed clock after reset points at VBAT; the alarm compares a 32-bit seconds counter">
   <br><sub>▲ Drawn for this book. Triage, three branches: time runs fast or slow — check PRL first, 32767 turns 32.768 kHz into 1 Hz; the clock zeroes after reset — check whether VBAT and the backup domain lost power; the alarm never fires — remember it compares a 32-bit seconds counter. Sources: [RM0008 RTC](#source-rm0008-rtc) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-rtc-triage.png" width="760" alt="Handraw: RTC three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Branches: PRL / VBAT drop / alarm second counter; not a photo.</sub>
 </p>
 
 ## Hands-on labs

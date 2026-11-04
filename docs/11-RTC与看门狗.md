@@ -67,6 +67,11 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
 </p>
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch11-iwdg-1s.png" width="760" alt="Handraw：IWDG 1 秒 Reload=624（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。LSI→÷64→625 Hz；Reload 624 典型 1 秒非保证；625 多一拍；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/gif/iwdg-1s.gif" width="640" alt="625 Hz 的计数在减到 0 之前被喂狗，Reload = 624">
   <br><sub>▲ 动图版，演示 625 Hz 的计数在减到 0 之前被喂狗，标出 Reload = 624 和 40 kHz 典型值。印刷版只有上面的静态图。</sub>
 </p>
@@ -119,6 +124,11 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
   <br><sub>▲ 自绘。VBAT 续电备份域；LSE 最准，LSI 仅作备用。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-backup-domain.png" width="760" alt="Handraw：VBAT 备份域（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。VBAT 续电备份域；LSE 优先，LSI 仅备用；不是实拍。</sub>
+</p>
+
 
 RTC 是芯片里的一块电子表，它和几个备份寄存器住在一个单独的小房间里，叫备份域。主电源断了，只要 VBAT 脚上还接着纽扣电池，这个小房间照样有电，表照样走。表的准不准看时钟源：外接的 32.768 kHz 晶振最准，内部的 LSI 只能算大概。
 
@@ -166,12 +176,22 @@ F1 的 RTC 其实只会数秒，年月日要靠软件拿秒数去算。闹钟就
   <br><sub>▲ 自绘。IWDG 递减到 0 就复位：LSI 40 kHz、预分频 64、Reload 624 正好 1 秒。WWDG 是带窗口的倒计时：约 58.25 ms 一程，计数值还大于 0x50 时喂狗同样复位，喂狗只允许在窗口内。出处是 [RM0008 看门狗](#source-rm0008-wdg) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-wdg-compare.png" width="760" alt="Handraw：IWDG 与 WWDG 对比（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。IWDG 减到 0 才复位；WWDG 窗口外喂狗也复位；不是实拍。</sub>
+</p>
+
 ### 4. IWDG 与 WWDG 对比
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-11-iwdg-math.svg" width="760" alt="IWDG 一秒公式：40 kHz / 64 = 625 Hz，Reload 624">
   <br><sub>▲ 自绘。超时用 (Reload+1)；写成 625 会多一拍。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-iwdg-math.png" width="760" alt="Handraw：IWDG 超时公式（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。超时用 (Reload+1)；624→1.000 s；写成 625 会多一拍；不是实拍。</sub>
 </p>
 
 
@@ -316,6 +336,11 @@ HAL_WWDG_Refresh(&hwwdg);
 <p align="center">
   <img src="../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器">
   <br><sub>▲ 自绘。排错三岔口：时间快慢不一，先查 PRL 是不是 32767——32.768 kHz 减一才是 1 Hz；复位后时间归零，查 VBAT 与备份域有没有掉电；闹钟不响，记住比较对象是 32 位秒计数器。出处是 [RM0008 RTC](#source-rm0008-rtc) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-rtc-triage.png" width="760" alt="Handraw：RTC 三岔口排障（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：PRL / VBAT 掉电 / 闹钟秒计数；不是实拍。</sub>
 </p>
 
 ## 动手实验
