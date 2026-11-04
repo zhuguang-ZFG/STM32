@@ -198,11 +198,34 @@ def _max_visual_gap(text: str, anchors: tuple[VisualAnchor, ...]) -> tuple[int, 
 
 
 def _target_visuals(chars: int) -> int:
+    """Book 2.0 §6.3 floor — kept as the gate field for visual_anchor_deficit."""
     if chars < 6000:
         return 3
     if chars <= 10000:
         return 4
     return 6
+
+
+def _overlay_target_visuals(chars: int) -> int:
+    """Classic Converge Overlay §15.2: short +1 / mid +2 / long +3 on Book 2.0 floors."""
+    return _target_visuals(chars) + (1 if chars < 6000 else 2 if chars <= 10000 else 3)
+
+
+def _overlay_gap_budget_chars(chars: int, chapter_id: str) -> int:
+    """Overlay max-gap soft budget; ch18/23/28 hard-capped at 3500.
+
+    Book 2.0 mid band cites 1,000–1,200 continuous chars; Overlay applies 90/85/80%
+    to the 1,200 reference and floors to 100. Full cutover of target_visual_anchors
+    to Overlay is deferred while any chapter still has overlay deficit (see B7 census).
+    """
+    if chapter_id in {"18", "23", "28"}:
+        return 3500
+    old_upper = 1200
+    if chars < 6000:
+        return int((old_upper * 0.90) // 100 * 100)
+    if chars <= 10000:
+        return int((old_upper * 0.85) // 100 * 100)
+    return int((old_upper * 0.80) // 100 * 100)
 
 
 def audit_chapter(path: Path) -> ChapterAudit:
@@ -268,11 +291,19 @@ def build_audit() -> dict[str, object]:
             target_visual_anchors=zh.target_visual_anchors,
             visual_anchor_deficit=max(0, zh.target_visual_anchors - en.pdf_visual_anchors),
         )
+        zh_payload = asdict(zh)
+        en_payload = asdict(en)
+        overlay_target = _overlay_target_visuals(zh.chars)
+        overlay_gap = _overlay_gap_budget_chars(zh.chars, chapter_id)
+        for payload, anchors in ((zh_payload, zh.pdf_visual_anchors), (en_payload, en.pdf_visual_anchors)):
+            payload["overlay_target_visual_anchors"] = overlay_target
+            payload["overlay_visual_anchor_deficit"] = max(0, overlay_target - anchors)
+            payload["overlay_gap_budget_chars"] = overlay_gap
         chapters.append(
             {
                 "id": chapter_id,
-                "zh": asdict(zh),
-                "en": asdict(en),
+                "zh": zh_payload,
+                "en": en_payload,
                 "parity": _parity(zh, en),
             }
         )
@@ -283,7 +314,9 @@ def build_audit() -> dict[str, object]:
         "definitions": {
             "pdf_visual_anchor": "one PDF-readable image or grouped figure; video is excluded",
             "max_visual_gap_chars": "running text between PDF anchors; fenced code is excluded",
-            "target_visual_anchors": "minimum from BOOK_REDESIGN_SPEC.md section 6.3; both editions use the Chinese chapter scale",
+            "target_visual_anchors": "Book 2.0 §6.3 floor; both editions use the Chinese chapter scale",
+            "overlay_target_visual_anchors": "Classic Converge Overlay §15.2 floor (old+1/+2/+3); informational until full cutover",
+            "overlay_gap_budget_chars": "Overlay §15.2 max-gap soft budget (90/85/80% of 1200 ref; ch18/23/28 ≤3500)",
         },
         "summary": {
             language: {
@@ -302,7 +335,7 @@ def render_markdown(payload: dict[str, object]) -> str:
     lines = [
         "# STM32 Book audit",
         "",
-        "`PDF 图` excludes chapter video. `缺图` is the minimum deficit from the Book 2.0 Spec.",
+        "`PDF 图` excludes chapter video. `缺图` is the Book 2.0 Spec deficit; JSON also carries Overlay §15.2 fields (see B7 census).",
         "",
         "| 章 | 中文字符 | 中文 PDF 图 | 缺图 | 最大无图区 | 英文 PDF 图 | 图序一致 | 结构差异 |",
         "| --- | ---: | ---: | ---: | ---: | ---: | :---: | --- |",
