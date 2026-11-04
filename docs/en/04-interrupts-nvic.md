@@ -13,7 +13,7 @@
   <video width="640" controls poster="../../assets/video/ch04-nvic.png">
     <source src="../../assets/video/ch04-nvic.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch04-nvic.mp4">MP4</a> · <a href="../../assets/video/ch04-nvic.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch04-nvic.mp4">MP4</a> · <a href="../../assets/video/ch04-nvic.srt">subtitles</a></sub>
 </p>
 
 <details>
@@ -26,9 +26,9 @@
 5. 优先级不是数字越大越急。F1 上要先看优先级分组切成什么样，才知道哪些位是抢占、哪些是子优先级。抄例程时把分组改了，顺序会整个翻掉。
 6. 中断服务要短。别在里面调用会阻塞的延时，也别做很重的打印。置一个标志，或者塞进缓冲区，把慢活交回主循环。服务函数一长，别的中断就饿着。
 7. 主循环和中断一起碰的变量，编译器可能会缓存。单字节标志加 volatile。超过一个字的数据，读的时候还得短暂关中断，否则会撕成两半。
-8. 口诀：总闸分三档；同一编号的脚，EXTI 只能留一个端口。记住这两句，按键中断的大多数玄学都会消失。
+8. 这一章最容易踩两处：服务函数里写阻塞延时，把别的中断全堵在门外；或者忘了清 EXTI 标志，一只按下连翻一串。两处都改在服务函数里，动手只要一行。
 9. 实验用一只按键走下降沿，服务函数里只翻转 PC13。按下能亮、松开不连翻，说明边沿和清标志都做对了。连翻多半是没清，或者抖动没处理。
-10. 合上书，三问。EXTI0 能同时留给 PA0 和 PB0 吗？服务函数里为什么别写阻塞延时？总闸那三档各管什么？
+10. 离开前检查三件事：按键一次只翻一次灯，NVIC 分组没有在别处被改过，服务函数里找不到阻塞调用。三件都过，这一章才算交出去。
 
 </details>
 <!-- /video:ch04 -->

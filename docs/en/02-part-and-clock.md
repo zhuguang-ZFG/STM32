@@ -13,7 +13,7 @@
   <video width="640" controls poster="../../assets/video/ch02-clock.png">
     <source src="../../assets/video/ch02-clock.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.5 min). <a href="../../assets/video/ch02-clock.mp4">MP4</a> · <a href="../../assets/video/ch02-clock.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch02-clock.mp4">MP4</a> · <a href="../../assets/video/ch02-clock.srt">subtitles</a></sub>
 </p>
 
 <details>
@@ -28,11 +28,10 @@
 7. 外部晶振起不来时，先退回内部时钟，证明芯片还活着，再查负载电容和焊点。一上来就把 PLL 乘到很高，是在用死机练习耐心。
 8. 口诀再念一遍：先开时钟再摸寄存器。HSE 掉了靠时钟安全系统，想看频率可以走到时钟输出脚。别用Delay 的感觉去猜主频。
 9. 动手时让串口打出主频、闪存容量和两条 APB。BluePill 上常见的是 72 兆和 64 KB 闪存。对不上，先别做后面的外设实验。
-10. 合上书，三问。72 兆时闪存要几个等待？AHB 和 APB1 谁更慢？外设时钟门控没开时，写入会发生什么？
+10. 带走两条边界：HSE 失败时，时钟安全系统把你送回内部时钟，主频随之改变；Flash 等待拍数跟着主频走，换主频就要重查等待。别人的主频数字，不能抄进你的工程。
 
 </details>
 <!-- /video:ch02 -->
-
 ## Principle and scope
 
 Clock numbers in this chapter are for the STM32F103C8T6 in LQFP48 and match the clock table in Appendix D. The connectivity line (F105/F107) lays out its RCC registers differently; for those parts read section 8.3.2 of the manual instead of 7.3.2. The Flash wait states assume a 2.7–3.6 V supply; at another voltage, look the steps up again.

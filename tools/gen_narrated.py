@@ -51,7 +51,8 @@ BAND_TOP = int(round((540 - float(os.environ.get("NARRATED_BAND_HEIGHT", "92")))
 SUBTITLE_LINES = int(os.environ.get("NARRATED_SUBTITLE_LINES", "2"))
 PAD = 0.35
 VOICE = "zh-CN-XiaoxiaoNeural"
-RATE = "-6%"
+RATE = os.environ.get("NARRATED_RATE", "-6%")
+PITCH = os.environ.get("NARRATED_PITCH", "")
 FONT = os.environ.get("NARRATED_FONT", "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc")
 
 # 校准自本机 edge-tts 7.2.8、rate=-8% 的一次短句（51 字 / 13.27 秒）。
@@ -634,11 +635,14 @@ async def _tts(text, dest, sem):
             await asyncio.to_thread(_sapi_tts, text, dest)
         return
     import edge_tts
+    kwargs = {"rate": RATE}
+    if PITCH:
+        kwargs["pitch"] = PITCH
     last = None
     for attempt in range(4):
         try:
             async with sem:
-                com = edge_tts.Communicate(text, VOICE, rate=RATE)
+                com = edge_tts.Communicate(text, VOICE, **kwargs)
                 await com.save(dest)
             if os.path.getsize(dest) < 800:
                 raise RuntimeError("音频过小")

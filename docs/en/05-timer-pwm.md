@@ -13,7 +13,7 @@
   <video width="640" controls poster="../../assets/video/ch05-tim.png">
     <source src="../../assets/video/ch05-tim.mp4" type="video/mp4">
   </video>
-  <br><sub>▲ Chapter video with Chinese voice-over (2.6 min). <a href="../../assets/video/ch05-tim.mp4">MP4</a> · <a href="../../assets/video/ch05-tim.srt">subtitles</a></sub>
+  <br><sub>▲ Chapter video with Chinese voice-over (2.7 min). <a href="../../assets/video/ch05-tim.mp4">MP4</a> · <a href="../../assets/video/ch05-tim.srt">subtitles</a></sub>
 </p>
 
 <details>
@@ -26,13 +26,12 @@
 5. 想要 1 千赫，你先定谁？先定 PSC，让计数时钟变成好算的整数，再定 ARR 加 1。CCR 最后填，因为它不改变频率，只改变占空比。
 6. 输入捕获不是去量电压。边沿到来时，硬件把当时的 CNT 锁进捕获寄存器。两个边沿相减，再乘上计数周期，就是脉宽。口诀：捕获锁的是 CNT。
 7. 回到时钟那一章：APB 分频大于 1 时，定时器时钟常常还要乘 2。公式里的时钟用错，你算的 1 千赫会变成 2 千赫或 500 赫。先问到真实的定时器时钟。
-8. 口诀：捕获锁的是 CNT。想要某个频率，先定 PSC，再定 ARR。三个数不要一起拧，拧乱了就不知道是谁的错。
+8. 三个数按顺序拧：先用 PSC 把时钟分到好算，再用 ARR 定周期，最后 CCR 定占空比。每拧一步记下算出的数，出错时才知道是哪一步的账不对。
 9. 实验输出大约 1 千赫、占空比三成的 PWM。用逻辑分析仪或示波器对一下。对不上时，先核对定时器时钟，再核对 ARR 和 CCR，别先怀疑探头。
-10. 合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？
+10. 离开前把账读回一遍：PSC 和 ARR 是不是你写的值，CNT 有没有真的在跑。寄存器读回和示波器对上，PWM 这一章才算闭环。
 
 </details>
 <!-- /video:ch05 -->
-
 ## Principle and scope
 
 Every waveform number in this chapter is for the STM32F103C8T6, with the 72 MHz counter clock from Appendix D. On a family with 32-bit timers, redo the "does not fit in 16 bits" part below.

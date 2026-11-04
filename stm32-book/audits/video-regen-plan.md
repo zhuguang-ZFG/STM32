@@ -84,4 +84,6 @@ python tools/gen_long_lesson.py --report 00
 
 - [x] Inventory
 - [x] This plan file
-- [ ] Batch A execute (deferred after bilingual PDF rebuild 2026-11-04)
+- [x] Batch A execute（**2026-11-05**）：ch00/01/02/04/05 旁白结尾反同构改写（五章指纹互不相同、≠ch03/ch06），NARRATED_RATE/NARRATED_PITCH 环境变量接线（Blocker 1 关闭），1080p 重配音 ch00 139.3s / ch01 146.9s / ch02 155.5s / ch04 157.2s / ch05 161.0s，文档旁白稿 `--patch-docs` 同步；QA：ffprobe 逐条核验、check_assets 1962/1962、pytest 182 passed。
+- [x] ch03 pilot 端到端复跑（**2026-11-05**）：短片 `--speak 03` 121.4s/1080p/7 条字幕（TTS 断连重试生效）；长课 `--report 03` 十项全 True、SHA 在 media-report。
+- [ ] Batch B execute：ch01/02/04/05 长课 Huihui→Xiaoxiao 重配音进行中；ch00 长课已绿。
