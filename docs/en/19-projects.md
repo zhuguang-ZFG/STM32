@@ -68,6 +68,11 @@ Add one new peripheral per pass and get it working before the next, so that when
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-flash-fit.png" width="760" alt="Handraw: C8 one-slot Flash/SRAM fit (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT 16 KB + PARAM 2 KB + APP 0xB800; two APP copies = 110 KB do not fit; 65536>20480; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/one-slot.gif" width="640" alt="16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000">
   <br><sub>▲ Animated version. It shows only the layout that fits: 16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000. The printed book has only the static figure above.</sub>
 </p>
@@ -104,6 +109,11 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 <p align="center">
   <img src="../../assets/diagrams/sample-19-pick-ladder.svg" width="760" alt="Pick ladder: star count vs skills you already accepted">
   <br><sub>▲ Drawn for this book. Pick the smallest project that forces one new bus.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-pick-ladder.png" width="760" alt="Handraw: pick ladder stars vs accepted skills (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pick the smallest project that forces one new bus; stars map to skills already accepted; not a photo.</sub>
 </p>
 
 
@@ -320,6 +330,11 @@ uint32_t Boot_SelectApp(void)
 <p align="center">
   <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="A remote-update project accepts image length and CRC, slot range, vectors, jump, and application heartbeat in sequence">
   <br><sub>▲ An update project must reject bad images, confirm the new version, and recover after an interrupted transfer. “The UART finished and code jumped” is not enough.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-iap-gates.png" width="760" alt="Handraw: IAP gates length·CRC·slot·vector·heartbeat (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Length and CRC → slot → vector → jump → app heartbeat; reject bad image and rollback; not a photo.</sub>
 </p>
 
 ## 6. WS2812 LED-strip controller (★★ intermediate)
@@ -540,12 +555,22 @@ static void vCommTask(void *arg)
   <br><sub>▲ Drawn for this book. Three project branches: scope / skipped gate / no evidence. Sources: [project examples](#source-project-examples) and this chapter's acceptance gates.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-milestone-triage.png" width="760" alt="Handraw: milestone triage three forks (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Scope creep / skipped gates / no evidence; one slot one feature, each slot demoable, merge after pass gate; not a photo.</sub>
+</p>
+
 ## Hands-on labs (picking a project and moving it forward)
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-19-sram-budget.svg" width="760" alt="SRAM 20 KB budget: stacks, DMA, .bss">
   <br><sub>▲ Drawn for this book. Count buffers on C8 before adding tasks.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-sram-budget.png" width="760" alt="Handraw: SRAM 20 KB budget stacks·DMA·.bss (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). On F103C8 count buffers first then add tasks; total 20480; base 0x20000000; not a photo.</sub>
 </p>
 
 
