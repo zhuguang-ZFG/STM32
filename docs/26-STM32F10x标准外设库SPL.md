@@ -58,12 +58,22 @@ SPL 的价值不是背函数名，而是看清四层：
   <br><sub>▲ 所有权边界（自绘）：HAL、SPL 和寄存器不是三套硬件。迁移时要切换一条完整外设链，不能让两套库轮流接管同一实例。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-four-layers.png" width="760" alt="Handraw：SPL 四层边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。stm32f10x.h 管寄存器地址与位定义；外设头文件管结构体与声明；外设 .c 把字段写进寄存器；时钟、引脚、顺序、中断、超时、业务仍是你的工程的事；不是实拍。</sub>
+</p>
+
 ## 2. 工程骨架：少一个文件都可能“函数有声明、链接没实现”
 
 
 <p align="center">
   <img src="../assets/diagrams/sample-26-file-matrix.svg" width="760" alt="SPL 必链文件矩阵">
   <br><sub>▲ 自绘。缺一个 .c = 声明有、链接无。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-defines.png" width="760" alt="Handraw：两个宏与 assert_param（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。STM32F10X_MD 按料号选密度；USE_STDPERIPH_DRIVER 引入 conf.h；assert_param 发布版通常不执行，不能替代运行时处理；不是实拍。</sub>
 </p>
 
 
@@ -137,6 +147,11 @@ GPIO_Init(GPIOA, &io);
   <br><sub>▲ 连续动画（自绘）：四步依次点亮；下半部分把每类故障放回第一次可能出现的位置。HTML 中循环播放，PDF 保留可独立阅读的全链路第一帧。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-init-steps.png" width="760" alt="Handraw：SPL 初始化四步（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。开时钟 → StructInit 默认值 → 覆盖字段 → 显式 Cmd 使能；函数名可能不同，回 RM0008 与头文件原型核对；不是实拍。</sub>
+</p>
+
 不是每个外设都有完全相同的函数名。判断顺序要回到头文件原型和 RM0008，不要凭“其他外设也是这样”补一个不存在的 `*_Cmd`。
 
 ## 4. 一份实际编译链接的 SPL 点灯最小闭环
@@ -207,6 +222,11 @@ int main(void)
   <br><sub>▲ 自绘。SPL↔HAL 对照。出处是 [STSW-STM32054](#source-stsw-stm32054)、[RM0008](#source-rm0008)；目录核对仅用 [spl-f1-mirror](#source-spl-f1-mirror)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-spl-hal.png" width="760" alt="Handraw：HAL 与 SPL 入口对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。GPIO 时钟/配置、USART 收发、DMA 剩余项的 HAL 与 SPL V3.5.0 入口都落到同一组寄存器；只换函数名保留旧状态机最容易得到“能跑一会儿”的工程；不是实拍。</sub>
+</p>
+
 ## 5. HAL、SPL 与寄存器怎样对上
 
 下面不是机械替换表。HAL 往往维护 Handle 和状态，SPL 多数函数直接操作外设寄存器；把函数名换掉但保留旧状态机，最容易得到“能跑一会儿”的工程。
@@ -237,6 +257,11 @@ int main(void)
 <p align="center">
   <img src="../assets/diagrams/sample-26-timeout-poll.svg" width="760" alt="SPL 轮询必须自带超时">
   <br><sub>▲ 自绘。HAL 超时习惯不能带进 SPL 死循环。</sub>
+</p>
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-timeout-poll.png" width="760" alt="Handraw：轮询自带超时（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。USART_SendData() 只写 DR，等 TXE 的循环要自己写 spin_limit 或可靠时基截止时间，并定义恢复动作；不是实拍。</sub>
 </p>
 
 

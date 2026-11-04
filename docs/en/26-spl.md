@@ -60,12 +60,22 @@ The useful model has four layers:
   <br><sub>▲ Ownership boundary (drawn for this book): HAL, SPL, and registers are not three pieces of hardware. Migrate one complete peripheral chain instead of alternating owners.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-four-layers.png" width="760" alt="Handraw: SPL four layers (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). stm32f10x.h holds register addresses and bits; peripheral headers hold structs and declarations; peripheral .c files write registers; clock, pins, order, IRQ, timeout and business logic remain your job; not a photo.</sub>
+</p>
+
 ## 2. Project skeleton
 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-26-file-matrix.svg" width="760" alt="SPL must-link file matrix">
   <br><sub>▲ Drawn for this book. Missing one .c = declared, never linked.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-defines.png" width="760" alt="Handraw: two defines and assert_param (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). STM32F10X_MD selects the density for the exact part; USE_STDPERIPH_DRIVER pulls in conf.h; assert_param is usually compiled out in release and never replaces runtime fault handling; not a photo.</sub>
 </p>
 
 
@@ -135,6 +145,11 @@ The four boundaries are:
 <p align="center">
   <img src="../../assets/animations/spl-init-pipeline.svg" width="820" alt="Animated SPL sequence from enabling the clock through defaults and configuration to the final peripheral enable">
   <br><sub>▲ Continuous animation (drawn for this book): the four boundaries light in order, and each failure is placed at its earliest possible boundary. HTML loops; PDF keeps a complete readable first frame.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-init-steps.png" width="760" alt="Handraw: SPL init four steps (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Enable clock → StructInit defaults → overwrite fields → explicit Cmd enable; function names vary, check the header prototype and RM0008; not a photo.</sub>
 </p>
 
 Not every peripheral has the same function names. Check the V3.5.0 header and RM0008 rather than inventing a missing `*_Cmd` because another peripheral has one.
@@ -207,6 +222,11 @@ The reproducible project is [`examples/spl-f1-blink/`](../../examples/spl-f1-bli
   <br><sub>▲ Drawn for this book. SPL↔HAL compare. Sources: [STSW-STM32054](#source-stsw-stm32054), [RM0008](#source-rm0008); tree check only: [spl-f1-mirror](#source-spl-f1-mirror).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-spl-hal.png" width="760" alt="Handraw: HAL vs SPL entries (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). HAL and SPL entries for GPIO clock/config, USART data, and DMA counter land on the same registers; swapping names while keeping the old state machine yields a “works for a while” project; not a photo.</sub>
+</p>
+
 ## 5. HAL, SPL, and the final register boundary
 
 This is not a mechanical replacement table. HAL often maintains handles and state; SPL usually writes peripheral registers directly.
@@ -236,6 +256,11 @@ This is not a mechanical replacement table. HAL often maintains handles and stat
 <p align="center">
   <img src="../../assets/diagrams/sample-26-timeout-poll.svg" width="760" alt="SPL polling must carry its own timeout">
   <br><sub>▲ Drawn for this book. HAL timeout habits do not travel into SPL forever-loops.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-timeout-poll.png" width="760" alt="Handraw: polling with its own timeout (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). USART_SendData() only writes DR; the TXE wait needs your own spin limit or a solid timebase deadline plus a recovery action; not a photo.</sub>
 </p>
 
 
