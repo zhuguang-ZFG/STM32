@@ -16,6 +16,21 @@ SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch3-02
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
+
+# §15.3-27 Spec close-out: base ST cards may refresh `snapshot` to an evidenced Rev.
+# All other fields must still match the lock baseline.
+_REV_PIN_SNAPSHOT_ALLOW = frozenset({"rm0008", "ds5319", "pm0056", "rm0444"})
+
+
+def _assert_baseline_source(test, source_id: str, expected: dict, actual: dict) -> None:
+    if source_id in _REV_PIN_SNAPSHOT_ALLOW:
+        exp = {k: v for k, v in expected.items() if k != "snapshot"}
+        act = {k: v for k, v in actual.items() if k != "snapshot"}
+        test.assertEqual(exp, act, source_id)
+        test.assertRegex(actual.get("snapshot", ""), r"Rev\.?\s*\d+", source_id)
+    else:
+        test.assertEqual(expected, actual, source_id)
+
 def baseline_manifests() -> tuple[dict, dict]:
     """Manifests at the lock file's baseline, before batch-3 sources exist."""
     global _BASELINE_MANIFESTS
@@ -334,9 +349,9 @@ class Batch3ClockChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
         baseline, baseline_en = baseline_manifests()
         for source_id, obj in baseline["sources"].items():
-            self.assertEqual(obj, zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, zh_manifest["sources"][source_id])
         for source_id, obj in baseline_en["sources"].items():
-            self.assertEqual(obj, en_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, en_manifest["sources"][source_id])
 
 class Batch3PwmChapterTests(unittest.TestCase):
     def test_pwm_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
@@ -422,9 +437,9 @@ class Batch3PwmChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
         baseline, baseline_en = baseline_manifests()
         for source_id, obj in baseline["sources"].items():
-            self.assertEqual(obj, zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, zh_manifest["sources"][source_id])
         for source_id, obj in baseline_en["sources"].items():
-            self.assertEqual(obj, en_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, en_manifest["sources"][source_id])
 
 class Batch3SpiChapterTests(unittest.TestCase):
     def test_spi_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
@@ -519,7 +534,7 @@ class Batch3SpiChapterTests(unittest.TestCase):
         self.assertEqual(baseline["sources"]["project-examples"], zh_manifest["sources"]["project-examples"])
         self.assertEqual(baseline_en["sources"]["project-examples"], en_manifest["sources"]["project-examples"])
         for source_id, obj in baseline["sources"].items():
-            self.assertEqual(obj, zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, zh_manifest["sources"][source_id])
 
 class Batch3AdcChapterTests(unittest.TestCase):
     def test_adc_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
@@ -610,7 +625,7 @@ class Batch3AdcChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
         baseline, _baseline_en = baseline_manifests()
         for source_id, obj in baseline["sources"].items():
-            self.assertEqual(obj, zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, zh_manifest["sources"][source_id])
         self.assertIn("rm0008-adc", zh_manifest["sources"])
         self.assertIn("ds5319-adc", zh_manifest["sources"])
 

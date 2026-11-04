@@ -12,7 +12,8 @@
 | Type heuristic weak (11/13/17/24) | Y(门表) only | **No new decorative figures.** Gate tables already claim concept/compare/triage; amendment below |
 | `audit_book` deficit denominator | Book 2.0 floors; overlay_* informational | **Cut over** `target_visual_anchors` → Overlay 4/6/9; overlay_* aliased |
 | Spec §15.1-23 / §15.1-24 / §15.3-28 | Unticked (gaps) | **Ticked** — true for all 29 chapters after this close |
-| Spec §15.1-25 / §15.1-26 / §15.3-27 / §15.3-29 / §11.3 full §15 | Unticked | **Remain open** (gap exceptions, evidence-track photos, Rev pinning, conflict book-wide proof, video/strip/task_verify) |
+| Spec §15.1-25 / §15.3-29 | Unticked → **ticked** (this close-out) | gap inventory formalized; conflict inventory §5.3 |
+| Spec §15.1-26 / §15.3-27 / §11.3 full §15 | Unticked | **Remain open** (PC13 photos, unpinned AN/ES/RM/UM list, video/strip/task_verify) |
 
 ## 1. ch08 overlay anchor
 
@@ -62,10 +63,11 @@ Post-cutover audit: zh `visual_anchor_deficit` sum **0**, `chapters_below_target
 2. `task_verify` absent.
 3. Full 29 short + long video regenerate / narration anti-isomorphism.
 4. strip / handraw branch archive per Spec §9.
-5. Appendix F English page if still missing.
-6. ST revision pinning book-wide (§15.3-27).
-7. Max-gap soft-budget exception inventory (§15.1-25 full close).
+5. ~~Appendix F English page if still missing~~ → **added** `book/en/F-oss-map.md`.
+6. ST revision pinning book-wide (§15.3-27) — **partial**; see §7.1.
+7. ~~Max-gap soft-budget exception inventory (§15.1-25)~~ → **formalized** census §2.1; Spec ticked.
 8. Audit anchor definition still excludes tables vs §15.2 prose.
+9. §15.3-29 conflict rulings — **confirmed** for known divergences; Spec ticked (census §5.3).
 
 ## 6. Verification commands
 
@@ -77,3 +79,54 @@ python tools/audit_book.py
 python build_html.py --check --lang zh   # cwd=stm32-book
 python build_html.py --check --lang en
 ```
+
+
+## 7. Spec close-out (this run)
+
+> Baseline: `main` @ `2fae89c`. Date: 2026-11-04 (America/Adak). No invented ST revisions, conflicts, or photos.
+
+### 7.1 §15.3-27 Rev pinning (partial)
+
+Pinned in `manifest.json` / `manifest-en.json` `snapshot` from existing chapter text / CREDITS / sibling cards only:
+
+| Key | Rev | Evidence |
+| --- | --- | --- |
+| `rm0008` | Rev 21, February 2021 | chapter bodies; `rm0008-*` siblings; ch03 gate |
+| `ds5319` | Rev 20, July 2025 | chapter bodies; `ds5319-*` siblings; ch03 gate |
+| `pm0056` | Rev 7, December 2024 | CREDITS; `pm0056-nvic` / `vector` |
+| `pm0056-dwt` | Rev 7 (same PDF) | same as `pm0056-nvic` |
+| `rm0444` | Rev 5 | docs/23 + en/23 |
+
+**Cannot pin (no Rev in repo):** `an2606`, `an3965`, `an4746`, `an4839`, `an4938`, `an5096`, `es0250`, `es0392`, `rm0090`, `rm0351`, `rm0399`, `rm0433`, `um1713`, `um1724`, `um2407`. → **§15.3-27 remains unchecked**.
+
+### 7.2 §15.3-29 conflict rulings
+
+Confirmed existing rulings only (inventory: census §5.3). Global rule in Appendix F zh+en; ch03 gate conflict column; ch20/21/23/24/25 「仅对照 / 以手册为准」. **No fabricated conflicts.** → **§15.3-29 ticked**.
+
+### 7.3 §15.1-25 gap-exception inventory
+
+Census §2.1 is the formal inventory (25 soft-budget exceptions; 18/22/23/28 in budget). Overlay floors already cut over; 29/29 meet anchor floors. → **§15.1-25 ticked**. §15.1-26 left open (PC13 / evidence-track photos are user-owned).
+
+### 7.4 Appendix F EN
+
+Added `stm32-book/book/en/F-oss-map.md` (structure-matched translation of `F-开源地图.md`; same star/license/path facts; conflict caption retained). Registered in `manifest-en.json` appendices. Handdraw plate `app-f-handdraw.svg` already present. EN handdraw test updated 5→6.
+
+### 7.5 Spec / §11.3 still open
+
+- §15.1-26 dual-track evidence photos (PC13)
+- §15.3-27 full Rev coverage
+- §11.3: 29-chapter video regenerate, strip/handraw branch archive, `task_verify`
+
+### 7.6 Verification (Spec close-out run)
+
+From repo root / stm32-book/ as noted:
+
+- python -m pytest -q → **180 passed**
+- python tools/check_assets.py → PASS (SVG 220/220; links 1396/1396; photos 3/3; narrated 29)
+- python tools/slop_lint.py → clean
+- python tools/audit_book.py → zh/en PDF anchors 188; deficit 0 chapters
+- python build_html.py --check --lang zh → PASS
+- python build_html.py --check --lang en → PASS (Appendix F EN F-oss-map.md in contract)
+
+Baseline-lock tests allowlist snapshot-only Rev pins for `rm0008` / `ds5319` / `pm0056` / `rm0444` (+ fixture `pm0056-dwt`).
+

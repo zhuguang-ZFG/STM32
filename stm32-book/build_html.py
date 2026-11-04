@@ -562,7 +562,7 @@ def load_handdraw_mid() -> dict[str, dict]:
 
 
 def load_handdraw_appendices() -> dict[str, dict]:
-    """Load the 6 appendix plates from the same manifest (en edition ships A–E)."""
+    """Load the 6 appendix plates from the same manifest (zh and en both ship A–F)."""
     data = _read_handdraw_data()
     appendices = data.get("appendices")
     if not isinstance(appendices, list) or len(appendices) != 6:

@@ -23,7 +23,7 @@
 - `task_verify` 分列报告 — 不可用。
 - **ch08**：~~Overlay 缺口 1~~ → **已关闭**（`sample-08-bus-compare.svg`，见 `b7-gap-close.md`）。
 - **ch24 / ch25**：~~缺非 ST OSS~~ → **已关闭**（`project-examples`；ch25 另加 `stlink-tools`）。
-- ST `sources` 卡普遍「文档号 + 核对当前修订」，缺全书钉死的 Rev N（ch03 门 RM0008 Rev 21 / DS5319 Rev 20 为例外）。
+- ST Rev：**部分钉死**（rm0008/ds5319/pm0056/rm0444 + 兄弟卡；见 §5.2）；15 份 AN/ES/RM/UM 仍无仓库 Rev 证据 → §15.3-27 不勾。附录 F EN 已补 ook/en/F-oss-map.md。
 - `audit_book`：`target_visual_anchors` **已切到 Overlay 4/6/9**（B7 gap-close cutover）；`overlay_*` 为同值别名。
 
 ## 1. 方法论
@@ -51,7 +51,7 @@
 | 05 | 中 | 6539 | 4 | 6 | 6 |  | 1855 | 1000 | 是 | 关键插图 → 4. PWM 模式与公式 |
 | 06 | 中 | 7779 | 4 | 6 | 6 |  | 1464 | 1000 | 是 | 关键插图 → 2. 波特率与误差 |
 | 07 | 短 | 3074 | 3 | 4 | 5 |  | 1744 | 1000 | 是 | 2. 时序与协议 → 相关资源 |
-| 08 | 中 | 6099 | 4 | 6 | 5 | 1 | 1605 | 1000 | 是 | 关键插图 → 3. 速率与分频 |
+| 08 | 中 | 6099 | 4 | 6 | 6 |  | 1605 | 1000 | 是 | 关键插图 → 3. 速率与分频 |
 | 09 | 中 | 9219 | 4 | 6 | 6 |  | 1979 | 1000 | 是 | 关键插图 → 3. 四种转换模式 |
 | 10 | 中 | 7968 | 4 | 6 | 6 |  | 2096 | 1000 | 是 | 关键插图 → 3. 传输方向与工作模式 |
 | 11 | 中 | 7775 | 4 | 6 | 6 |  | 2417 | 1000 | 是 | 关键插图 → 4. IWDG 与 WWDG 对比 |
@@ -73,11 +73,11 @@
 | 27 | 中 | 9883 | 4 | 6 | 6 |  | 2585 | 1000 | 是 | 分层排错与 Wireshark 证据 → 章末 |
 | 28 | 长 | 13046 | 6 | 9 | 10 |  | 2198 | 3500 |  | 一份可复算的系统资源账 → 章末 |
 
-Overlay 锚点未达：**08**。
+Overlay 锚点未达：无（ch08 已在 gap-close 补齐）。
 
-### 2.1 最大无图区间例外库存
+### 2.1 最大无图区间例外库存（§15.1-25 正式库存）
 
-下列章 gap > Overlay 软预算（或硬顶）。B2–B6 已按「表/代码密集走廊」登记例外；B7 汇总库存，**不**自动勾 §15.1-25。
+下列章 gap > Overlay 软预算（或硬顶）。B2–B6 已按「表/代码密集走廊」登记例外；B7 汇总为**正式例外库存**。补偿：各章仍满足 Overlay 锚点下限（见上表 Ov / 锚点列；ch08 已在 gap-close 补至 6）。**§15.1-25 已勾**（Spec close-out）：锚点下限已切 Overlay 且本库存完整引用。
 
 | 章 | gap | 预算 | 备注 |
 | --- | ---: | ---: | --- |
@@ -218,9 +218,35 @@ Overlay 锚点未达：**08**。
 
 - **ch24 / ch25**：~~guides 无非 ST GitHub OSS~~ → **已关闭**（见 `b7-gap-close.md`）：`project-examples`（MIT，`examples/`）；ch25 另加 `stlink-tools`（BSD-3-Clause，`stlink` v1.9.0 man）。可复用/仅对照边界已写入 guides 与相关资源。
 
-### 5.2 Revision
+### 5.2 Revision（Spec close-out）
 
-manifest `snapshot` 普遍未钉 Rev N。已钉范例：`audits/ch03-converge-gate.md`。不勾 §15.3-27 全绿。
+已按正文 / CREDITS / 兄弟卡证据钉死：
+
+| 卡 | Rev | 证据 |
+| --- | --- | --- |
+| `rm0008` + `rm0008-*` | Rev 21, February 2021 | 各章正文；ch03 门；兄弟卡 snapshot |
+| `ds5319` + `ds5319-*` | Rev 20, July 2025 | 各章正文；ch03 门；兄弟卡 snapshot |
+| `pm0056` + `pm0056-nvic` / `vector` / `dwt` | Rev 7, December 2024 | CREDITS；`pm0056-nvic` 卡 |
+| `rm0444` | Rev 5 | docs/23、en/23 |
+| `ds12232` / `ds10198` / `ds12110` / `pm0075` | 已钉（既有） | 章正文 + manifest |
+
+**仓库无 Rev 证据、本轮不发明**：`an2606` `an3965` `an4746` `an4839` `an4938` `an5096` `es0250` `es0392` `rm0090` `rm0351` `rm0399` `rm0433` `um1713` `um1724` `um2407`。ch27 guides 的 ST 卡全部落在未钉集合 → **§15.3-27 仍不勾**。
+
+### 5.3 冲突裁定库存（§15.3-29）
+
+只登记正文/附录/门表里**已经出现**的官方↔OSS（或官方↔丝印/社区）分歧与裁定；不新造冲突。
+
+| 位置 | 分歧 | 裁定语 |
+| --- | --- | --- |
+| 附录 F（zh `F-开源地图.md` / en `F-oss-map.md`） | 官方 RM/DS vs 开源实现 | 「官方 RM/DS 冲突时以手册为准」/ EN equivalent |
+| `audits/ch03-converge-gate.md` §15.4 | RM0008/DS5319 vs `examples/` MIT | 冲突列：与开源冲突时以 RM0008/DS5319 为准；OSS 仅对照 |
+| ch20 坑表 | 中文教程代码 vs 官方 HAL/RM | 「以官方 HAL 与 RM 为准」 |
+| ch21 / 附录 C | 丝印 vs 数据手册 | 以确切料号官方 DS + 可追溯原理图为准 |
+| ch23/24/25 图注与相关资源 | Cube / `examples/` vs RM/DS | 「例程/Cube 仅对照」；不替代目标手册条件 |
+| ch25 + `stlink-tools` 卡 | 探针工具行为 vs DS12110/ES0392 | does not override DS/ES（gap-close §2） |
+| 附录 F §3 libopencm3 | memorymap 翻译 vs RM | EN 明确：寄存器值与适用 RM/DS 冲突时以手册为准 |
+
+**§15.3-29 已勾**（Spec close-out）。未对无分歧章节批量插入裁定句。
 
 ## 6. 附录 F
 
@@ -241,15 +267,15 @@ manifest `snapshot` 普遍未钉 Rev N。已钉范例：`audits/ch03-converge-ga
 | §11.3 B7 普查报告 | **勾选** | 本文件 |
 | §15.1-23 三类每章 | 勾 | 29/29（11/13/17/24 以 B4/B6 门表为准；启发式仍弱；装饰扫描未机证） |
 | §15.1-24 动画≥1 | 勾 | 计数 29/29；首帧 PDF 合同既有；未另做播放质检级验收 |
-| §15.1-25 Overlay 锚点 | 不勾 | 锚点下限 29/29 且主字段已切 Overlay；**gap 例外库存未关** → 本项仍不勾 |
+| §15.1-25 Overlay 锚点 | **勾** | 锚点下限 29/29 + Overlay 主字段；例外库存见 §2.1（Spec close-out） |
 | §15.1-26 双轨 | 不新勾 | PC13 真证仍缺 |
-| §15.3-27 官方+Rev | 不勾 | Rev 未全书钉死 |
+| §15.3-27 官方+Rev | 不勾 | 已钉 rm0008/ds5319/pm0056/rm0444 等；15 份 AN/ES/RM/UM 仍无证据（§5.2） |
 | §15.3-28 每章 OSS | 勾 | —（b7-gap-close） |
-| §15.3-29 冲突裁定 | 不新勾 | 无本轮全量抽检 |
+| §15.3-29 冲突裁定 | **勾** | 已知分歧裁定库存见 §5.3；未新造冲突 |
 | §11.3 视频 29+29 | 不勾 | 未做 |
 | §11.3 strip/handraw | 不勾 | 未做 |
 | §11.3 task_verify | 不勾 | 不可用 |
-| §11.3 基线测试全绿 | **已勾** | pytest 180；check_assets；slop_lint；audit_book；build_html zh+en PASS |
+| §11.3 基线测试全绿 | **已勾** | pytest 180；check_assets；slop_lint；audit_book；build_html zh+en PASS（Spec close-out verify reconfirmed） |
 
 ## 8. 工具变更
 
@@ -261,7 +287,7 @@ manifest `snapshot` 普遍未钉 Rev N。已钉范例：`audits/ch03-converge-ga
 1. ~~ch08 Overlay 锚点缺口 1~~ → **已关闭**（见 §9.1 / b7-gap-close）。
 2. ~~ch24、ch25 缺 GitHub OSS source 卡~~ → **已关闭**（`project-examples` / `stlink-tools`）。
 3. ST revision 未全书钉死。
-4. 无图区间例外库存（§2.1）未逐条关闭。
+4. ~~无图区间例外库存（§2.1）未逐条关闭~~ → **已正式化为 §15.1-25 库存**（不逐条塞图；理由+补偿锚点见上表）。
 5. 启发式三类待核：11, 13, 17, 24 → **门表已覆盖，不补装饰图**（见 §9.1）。
 6. PC13 实拍仍 user-owned。
 7. 视频轨未关闭。
@@ -280,7 +306,7 @@ See `audits/b7-gap-close.md` for before/after evidence.
 - **ch24/ch25**: non-ST OSS cards added (`project-examples`; ch25 also `stlink-tools`); reuse boundaries in guides + related resources.
 - **Types 11/13/17/24**: no new figures; B4/B6 gate tables remain the coverage authority; heuristic stays weak by filename only.
 - **`audit_book`**: `target_visual_anchors` cut over to Overlay 4/6/9; overlay_* aliased.
-- **Still open**: items 3–11 of §9 above (Rev pinning, gap inventory, photos, video, strip archive, task_verify, F-EN, table-as-anchor).
+- **Still open**: photos (PC13), video 29, strip/handraw archive, task_verify, remaining ST Rev pins (§5.2), table-as-anchor definition. Closed this Spec close-out: gap inventory (§2.1→§15.1-25), conflict inventory (§5.3→§15.3-29), F-EN parity, evidenced Rev pins.
 
 ## 10. 验证
 

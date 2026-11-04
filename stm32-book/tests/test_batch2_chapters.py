@@ -16,6 +16,21 @@ SOURCE_LIST = ROOT / "stm32-book" / "tests" / "fixtures" / "2026-10-25-batch2-04
 _BASELINE_MANIFESTS: dict[str, dict] | None = None
 
 
+
+# §15.3-27 Spec close-out: base ST cards may refresh `snapshot` to an evidenced Rev.
+# All other fields must still match the lock baseline.
+_REV_PIN_SNAPSHOT_ALLOW = frozenset({"rm0008", "ds5319", "pm0056", "rm0444"})
+
+
+def _assert_baseline_source(test, source_id: str, expected: dict, actual: dict) -> None:
+    if source_id in _REV_PIN_SNAPSHOT_ALLOW:
+        exp = {k: v for k, v in expected.items() if k != "snapshot"}
+        act = {k: v for k, v in actual.items() if k != "snapshot"}
+        test.assertEqual(exp, act, source_id)
+        test.assertRegex(actual.get("snapshot", ""), r"Rev\.?\s*\d+", source_id)
+    else:
+        test.assertEqual(expected, actual, source_id)
+
 def baseline_manifests() -> tuple[dict, dict]:
     """Manifests at the lock file's baseline, before batch-2 sources exist."""
     global _BASELINE_MANIFESTS
@@ -284,9 +299,9 @@ class Batch2NvicChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
         baseline, baseline_en = baseline_manifests()
         for source_id, obj in baseline["sources"].items():
-            self.assertEqual(obj, zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, zh_manifest["sources"][source_id])
         for source_id, obj in baseline_en["sources"].items():
-            self.assertEqual(obj, en_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, obj, en_manifest["sources"][source_id])
         self.assertIn("rm0008-exti", zh_manifest["sources"])
         self.assertIn("pm0056-nvic", zh_manifest["sources"])
         self.assertNotIn("rm0090-usart-over8", zh_manifest["sources"])
@@ -448,8 +463,8 @@ class Batch2UartChapterTests(unittest.TestCase):
             },
         )
         for source_id in ("majerle-uart", "st-uart-idle", "stm32cube-f4", "pm0056", "rm0090"):
-            self.assertEqual(baseline["sources"][source_id], zh_manifest["sources"][source_id])
-            self.assertEqual(baseline_en["sources"][source_id], en_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, baseline["sources"][source_id], zh_manifest["sources"][source_id])
+            _assert_baseline_source(self, source_id, baseline_en["sources"][source_id], en_manifest["sources"][source_id])
 
 if __name__ == "__main__":
     unittest.main()

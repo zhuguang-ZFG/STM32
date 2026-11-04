@@ -423,15 +423,15 @@ class AppendixHanddrawTests(unittest.TestCase):
                 appendix_id,
             )
 
-    def test_english_build_inlines_only_the_five_shipped_appendices(self) -> None:
+    def test_english_build_inlines_all_six_appendices_including_oss_map(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             html = self.builder.build_html(
                 Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
             ).read_text(encoding="utf-8")
-        self.assertEqual(5, html.count('class="appendix-plate"'))
-        self.assertEqual(5, html.count('alt="Appendix concept:'))
+        self.assertEqual(6, html.count('class="appendix-plate"'))
+        self.assertEqual(6, html.count('alt="Appendix concept:'))
         self.assertNotIn('alt="附录概念图：', html)
-        self.assertNotIn('id="appendix-oss-map"', html)
+        self.assertIn('id="appendix-oss-map"', html)
 
     def test_missing_appendix_inventory_is_a_build_error(self) -> None:
         manifest = json.loads(

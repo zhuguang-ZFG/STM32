@@ -525,6 +525,11 @@
       "id": "appendix-references",
       "title": "Appendix E  Sources, versions, and license",
       "file": "E-sources.md"
+    },
+    {
+      "id": "appendix-oss-map",
+      "title": "Appendix F  Open-source project and community map",
+      "file": "F-oss-map.md"
     }
   ],
   "sources": {
@@ -559,7 +564,7 @@
       "title": "RM0008 — STM32F101/102/103/105/107 Reference Manual",
       "authority": "ST official reference manual",
       "url": "https://www.st.com/resource/en/",
-      "snapshot": "Document number RM0008; recheck the current revision in the ST document center",
+      "snapshot": "RM0008 Rev 21, February 2021; F1 chapters and rm0008-* sibling cards in this book are pinned to this revision; recheck the ST document center for other orderables",
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
       "scope": "F1 clocks, GPIO, DMA, timers, communication peripherals, and register definitions."
@@ -577,7 +582,7 @@
       "title": "DS5319 — STM32F103x8/B Datasheet",
       "authority": "ST official datasheet",
       "url": "https://www.st.com/resource/en/",
-      "snapshot": "Document number DS5319; recheck the current revision in the ST document center",
+      "snapshot": "DS5319 Rev 20, July 2025; F103 chapters and ds5319-* sibling cards in this book are pinned to this revision; recheck the ST document center for other orderables",
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
       "scope": "F103C8/B pins, packages, electrical parameters, memory, and peripheral capability."
@@ -586,7 +591,7 @@
       "title": "PM0056 — STM32F10xxx Cortex-M3 Programming Manual",
       "authority": "ST official programming manual",
       "url": "https://www.st.com/resource/en/",
-      "snapshot": "Document number PM0056; recheck the current revision in the ST document center",
+      "snapshot": "PM0056 Rev 7, December 2024; this book and pm0056-nvic / pm0056-vector / pm0056-dwt sibling cards are pinned to this revision; recheck the ST document center for other orderables",
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
       "scope": "Cortex-M3 exceptions, NVIC, SCB, and core behavior. CFSR is at 0xE000ED28, HFSR at 0xE000ED2C, MMFAR at 0xE000ED34, and BFAR at 0xE000ED38. HFSR.FORCED is bit 30, value 0x40000000. BFARVALID is bit 15 of CFSR."
@@ -703,7 +708,7 @@
       "title": "RM0444 — STM32G0x1 Reference Manual",
       "authority": "ST official reference manual",
       "url": "https://www.st.com/resource/en/reference_manual/rm0444-stm32g0x1-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
-      "snapshot": "Document number RM0444; recheck the current revision",
+      "snapshot": "RM0444 Rev 5; chapter 23 G0 boot/option-byte text is pinned to this revision (docs/23 and en/23); recheck the ST document center for other orderables",
       "accessed": "2026-10-23",
       "license": "ST document terms (this book only links and cites the document number)",
       "scope": "G0 peripherals, boot selection, BOOT_LOCK/DBG_SWEN, RDP clear conditions, complement mismatch, option bytes, and RTC-domain limits."
@@ -1351,7 +1356,7 @@
       "title": "PM0056 DEMCR bit 24 and the DWT cycle counter",
       "authority": "ST programming manual",
       "url": "https://www.st.com/resource/en/programming_manual/pm0056-stm32f10xxx-cortex-m3-programming-manual-stmicroelectronics.pdf",
-      "snapshot": "PM0056, the same PDF as pm0056-nvic. DEMCR is at 0xE000EDFC. Bit 24 enables trace. After that bit is set, DWT_CYCCNT at 0xE0001004 counts. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the counter stays at 0 and a delta reads 0. If the printed bit is not 24, record the printed bit and keep the printed addresses. Cortex-M3 hardware breakpoint comparators default to 6. The M7 count of 8 is void on this C8. This snapshot does not restate the four fault addresses already in pm0056, does not copy the tail-chaining interval from chapter 04, and does not invent a data-watchpoint count or an FPB base address.",
+      "snapshot": "PM0056 Rev 7, December 2024 (same PDF as pm0056-nvic). DEMCR is at 0xE000EDFC. Bit 24 enables trace. After that bit is set, DWT_CYCCNT at 0xE0001004 counts. At 72 MHz, 72 counts are 1 µs. If bit 24 is clear, the counter stays at 0 and a delta reads 0. If the printed bit is not 24, record the printed bit and keep the printed addresses. Cortex-M3 hardware breakpoint comparators default to 6. The M7 count of 8 is void on this C8. This snapshot does not restate the four fault addresses already in pm0056, does not copy the tail-chaining interval from chapter 04, and does not invent a data-watchpoint count or an FPB base address.",
       "accessed": "2026-10-25",
       "license": "ST document terms (link and restated facts only; the manual is not redistributed)",
       "scope": "Chapter file 17 DWT enable order and hardware-breakpoint count. Set DEMCR 0xE000EDFC bit 24 before reading DWT_CYCCNT at 0xE0001004. At 72 MHz, 72 counts are 1 µs. A clear bit 24 reads a delta of 0. This M3 has 6 hardware breakpoints. Does not restate the four CFSR addresses. Does not include 167 ns."
