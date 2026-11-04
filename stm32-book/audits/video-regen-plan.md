@@ -91,4 +91,4 @@ python tools/gen_long_lesson.py --report 00
 - [x] Batch D execute（**2026-11-05**）：ch06–15 长课 Huihui→XiaoxiaoNeural 重配音，media-report 十项全 True（commit `90b22d6`）。ch00–15 十六章长课全部 Xiaoxiao 达标。
 - [x] Batch E execute（**2026-11-05**）：ch16–20 五章短片结尾拍反同构改写 + 1080p 重配音 146.9–162.8 s（commit `a6be916`）。
 - [x] Batch F execute（**2026-11-05**）：ch16–20 长课整链重配音完成——rendered storyboard + media-report 十项全 True + XiaoxiaoNeural + 联系表；`video/ch16–20/` 证据链补齐。ch00–20 十六章长课 + 二十一章短片（00–20）全部为 Xiaoxiao 可复现交付。
-- [ ] Batch G execute：ch21–28 需先编写 8 份长课 storyboard（每章 28 场景）+ 短片 1080p 提升/`hd_chapters` 扩围 + `final-videos/ch26–28` 建立——未开始，诚实挂账。——ch01 564.6s / ch02 777.6s / ch04 541.7s / ch05 599.5s，media-report 十项全 True、LUFS −15.7~−15.8、28 字幕对齐；ch00/ch03 长课本已 Xiaoxiao 绿。Batch A+B 收口后 ch00–05 六章短片与长课全部为 Xiaoxiao 可复现交付。
+- [x] Batch G execute（**2026-11-05**）：ch21–28 八份长课 storyboard 自编完成（每章 28 场景五角色，逐条取材本章正文，全部过 --check）+ Xiaoxiao 整链重配音（media-report 十项全 True）；短片 ch21–28 结尾拍反同构改写 + NARRATED_SCALE=2 重配音为 1080p；check_assets `hd_chapters` 扩围至 29 章（Spec 说明已写入 check_assets 注释与本行）；`final-videos/ch26–28` 已由长课链建立。至此 29 短片 + 29 长课全部由当前源可再生。

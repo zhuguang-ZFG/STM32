@@ -298,7 +298,9 @@ def check_videos():
             ok = False
             continue
         dur, streams = _probe_av(mp4)
-        hd_chapters = {"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"}
+        # 2026-11-05 Batch G：ch21–28 短片以 NARRATED_SCALE=2 重配音为 1080p，
+        # 全书 29 章统一 HD（Spec 说明见 audits/video-regen-plan.md Batch G）。
+        hd_chapters = {f"{n:02d}" for n in range(29)}
         expected_size = (1920, 1080) if ch["id"] in hd_chapters else (gen_narrated.W, gen_narrated.H)
         if streams.get("v") != ("h264", *expected_size):
             print(f"[FAIL] {name} 视频流不是 {expected_size[0]}×{expected_size[1]} H.264：{streams.get('v')}")

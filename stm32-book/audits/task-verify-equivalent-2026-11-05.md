@@ -51,7 +51,9 @@ unverified 一律写明原因，不冒充通过。
 | ch06–15 长课 Xiaoxiao（Batch D） | passed | 十章 media-report 十项全 True（`90b22d6`） |
 | ch16–20 短片反同构重配音（Batch E） | passed | 五章指纹互不相同；1080p 146.9–162.8 s（`a6be916`） |
 | ch16–20 长课（Batch F） | passed | 五章整链重配音：rendered+report 补齐、XiaoxiaoNeural、十项全 True（`video/ch16–20/`） |
-| ch21–28（Batch G） | **unverified** | 需先编写 8 份长课 storyboard；未开始，诚实挂账 |
+| ch21–28 长课 storyboard 自编（Batch G-1/2） | passed | 八份 storyboard 各 28 场景五角色，逐条取材本章正文；--check 全过；Xiaoxiao 成片 media-report 十项全 True（546.7/629.3/688.4/713.9/719.1/672.0/700.6/652.7 s 估算，实测见各 media-report） |
+| ch21–28 短片 1080p + hd_chapters 扩围（Batch G-3） | passed | 八章结尾拍反同构改写；NARRATED_SCALE=2 重配音；check_assets hd_chapters 扩至 29 章后 1962/1962 全过；final-videos/ch26–28 已建立 |
+| 29 短片 + 29 长片由当前源可再生 | passed | 29 长课 storyboard/media-report/字幕/联系表齐备；29 短片 1080p mp4+srt+poster；反同构指纹 00–28 相邻互异 |
 | `task_verify` 工具本体 | **unverified** | 工具不存在；本文件即等价分列记录 |
 
 ## 4. 逐章审计（§11.3 第一项）的对账
