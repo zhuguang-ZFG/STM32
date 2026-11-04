@@ -61,6 +61,11 @@ When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The b
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-uart-frame.png" width="760" alt="Handraw: USART1 0xA5 frame (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Idle/Start/8 data LSB-first/Stop; ~8.68 µs/bit at 115200; not a scope capture.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/gif/uart-idle.gif" width="640" alt="After one frame, RX stays high, and IDLE plus 86.8 microseconds is marked after one frame time">
   <br><sub>▲ Animated version. It shows only the line staying high after a frame and IDLE appearing after 86.8 µs. The printed book has only the static figure above.</sub>
 </p>
@@ -139,6 +144,11 @@ One frame = 1 start bit + 8 or 9 data bits (LSB first) + an optional parity bit 
   <br><sub>▲ Drawn for this book. Same baud string, different PCLK → different BRR.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-baud-formula.png" width="760" alt="Handraw: USART BRR baud formula (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). USART1 72 MHz vs USART2 36 MHz; copying BRR ≈ 2× error; not a photo.</sub>
+</p>
+
 
 Two people agree to clap 115200 times a second and each keeps their own count. A frame is only 10 bits long. As long as the two clocks drift apart by less than half a step over those 10 bits, the receiver still samples near the middle of each bit. Half a step spread over 10 bits is about 5%. After the margin for sampling and edges, the usual budget is 2% to 3% of combined error. BRR tells the USART how many PCLK cycles make one step.
 
@@ -164,6 +174,11 @@ Garbled bytes, no bytes at all, and missing bytes are the three classic failures
   <br><sub>▲ Drawn for this book. Branch one: `USARTDIV = fPCLK / (16 × baud)`; USART1 at PCLK2 72 MHz and 115200 gives 39.0625, BRR `0x271`, error 0. If HSE fails at startup and RCC falls back to HSI 8 MHz while the code still divides by 72 MHz, the wire runs 12800 baud — 9× slower. Check the SWS bits of `RCC_CFGR` (00 = HSI, 01 = HSE, 10 = PLL) before touching BRR. Branch two: PA9 (pin 30) must reach the peer's RX; a TX-to-TX cable looks right and carries nothing. The USART1 gate is `RCC_APB2ENR` bit 14; USART2/3 sit behind `RCC_APB1ENR` bits 17/18. With the gate off, BRR writes go nowhere and SR reads back 0x00C0. Branch three: if the next word finishes before RXNE is read, the shift register is overwritten and ORE sets; clear it by reading SR (0x00) then DR (0x04) — reading DR alone leaves ORE set. Pins: [DS5319 Rev 20 Figure 8](#source-ds5319-usart). USARTDIV and ORE clearing: [RM0008 Rev 21 chapter 27](#source-rm0008-usart).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-baud-triage.png" width="760" alt="Handraw: UART three-branch triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Garbled → fCK/BRR; silent → crossover/clock gate; missing bytes → SR then DR; not a photo.</sub>
+</p>
+
 ### 3. Three ways to send and receive
 
 The three modes differ in where the CPU waits. Blocking mode is standing at the door until the parcel comes, doing nothing else. Interrupt mode rings the doorbell once per byte, which at 115200 baud is more than ten thousand rings a second. DMA hires a butler: bytes go straight into an array, and you are called only when the whole packet is in or the line goes idle.
@@ -181,6 +196,11 @@ The three modes differ in where the CPU waits. Blocking mode is standing at the 
 <p align="center">
   <img src="../../assets/diagrams/sample-06-tx-rx-crossover.svg" width="760" alt="MCU TX→adapter RX crossover, common GND, 3V3 only">
   <br><sub>▲ Drawn wiring rule. TX-TX stays silent; 5V TTL into 3V3 risks damage.</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-tx-rx-crossover.png" width="760" alt="Handraw: TX/RX crossover wiring (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). MCU TX→adapter RX; common GND; no 5 V into 3.3 V pin; not a photo.</sub>
 </p>
 
 
@@ -364,6 +384,11 @@ The next step past polling is "DMA moves the bytes, IDLE marks the frame": the C
 <p align="center">
   <img src="../../assets/diagrams/sample-06-idle-dma.svg" width="760" alt="UART IDLE-line receive with DMA ring buffer and frame-length arithmetic">
   <br><sub>▲ Drawn for this book. `DMAR = CR3 bit 6` turns every RXNE into a DMA request; DMA1 channel 5 (the hard-wired USART1_RX mapping) moves bytes into a 256-item ring buffer with CIRC = 1, so CNDTR counts down from 256 and reloads at zero. When the line stays high for one frame time — 10 bits ≈ 86.8 µs at 115200 8N1 — IDLE (SR bit 4) sets, and `IDLEIE = CR1 bit 4` turns it into an interrupt. In the ISR, `len = pos − CNDTR` — save the last frame's CNDTR as `pos`, add 256 across a reload — is the frame length; reading SR then DR (the same pair) clears ORE on the side. The lower-right compare: polling 10 bytes costs 20 SR/DR accesses with the CPU busy the whole frame; IDLE plus DMA enters once per frame. Note that IDLE only means the line has idled for one frame time — it is not the peer's packet boundary. IDLE detection: [the ST community thread](#source-st-uart-idle). Channel mapping and registers: [RM0008 Rev 21 chapters 27 and 13](#source-rm0008-usart).</sub>
+</p>
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-idle-dma.png" width="760" alt="Handraw: IDLE+DMA whole-frame RX (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). DMA moves bytes; IDLE marks frame; CNDTR delta = length; not a photo.</sub>
 </p>
 
 ### 6. Usual serial-terminal settings
