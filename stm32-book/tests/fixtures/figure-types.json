@@ -2080,5 +2080,20 @@
   "type": "triage",
   "chapter": "28",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：队列满要有满时策略；冻结任务仍喂狗则只允许健康监督者喂狗；驱动超时返回码回策略层；不是实拍。"
+ },
+ "illustrations/handraw/ch09-scan-sequence.png": {
+  "type": "calculation",
+  "chapter": "09",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SQR 序列四通道的采样档与总周期；14 + 26 + 68 + 252 = 360 周期 = 12 MHz 下 30 µs；温度通道要 239.5 档；不是实拍。"
+ },
+ "illustrations/handraw/ch15-prio-inherit.png": {
+  "type": "technical",
+  "chapter": "15",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。L 持锁被 M 抢占，H 等锁使 L 继承 H 的优先级；给还后 H 运行、L 回落；二值信号量没有继承；不是实拍。"
+ },
+ "illustrations/handraw/ch16-wake-matrix.png": {
+  "type": "comparison",
+  "chapter": "16",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep 1.8 µs 沿用时钟、Stop 5.4 µs 走 HSI 8 MHz、Standby 50 µs 走复位；WKUP 只认 PA0 上升沿；不是实拍。"
  }
 }

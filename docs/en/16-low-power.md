@@ -50,6 +50,11 @@ Sleep keeps the clock from before the sleep. The tick in `examples/freertos-task
 
 With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). Chapter 03 hangs a 270 Ω lamp on this pin and chapter 09 uses it as ADC12_IN0. For this chapter's lab, connect only the wake-up key.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-wake-matrix.png" width="760" alt="Handraw: the wake sources and wake times of Sleep, Stop and Standby (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three rows are the three ways to sleep, each giving the clock you wake on, the time to the first instruction, what can wake it and what cannot; the three bars below compare 1.8, 5.4 and 50 us, and the card on the right lists the two things to do before sleeping. What it proves: the deeper the sleep, the slower and narrower the wake path — Standby only accepts the rising edge on pin 10 PA0 and the RTC, so a falling-edge EXTI that wakes Stop will not wake it, and waking looks like a power-on. What it does not prove: this is a digest of the manual and this chapter's measurements, not a current trace, and Table 16 gives no value for Stop with IWDG running. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 Rev 21 ch.18 and ch.19](#source-rm0008-rtc).</sub>
+</p>
+
 The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapter 11 RTC alarm: LSE at 32.768 kHz, PRL = 32767, a 1 Hz second counter. See [RM0008 RTC](#source-rm0008-rtc).
 
 ## Key figures

@@ -177,7 +177,7 @@ class BookAuditTests(unittest.TestCase):
                 "adc-sar.svg", "sample-09-adc-sar-weights.svg", "sample-09-adc-sar.svg",
                 "ch09-adc-sar.png", "adc-sample.gif", "sample-09-vref-rails.svg",
                 "ch09-vref-rails.png", "sample-09-sar-ladder.svg", "ch09-sar-ladder.png",
-                "sar-adc.gif", "dma-circular.svg", "sample-09-sample-time.svg",
+                "sar-adc.gif", "ch09-scan-sequence.png", "dma-circular.svg", "sample-09-sample-time.svg",
                 "ch09-sample-time.png", "sample-09-adc-triage.svg", "ch09-adc-triage.png",
             ),
             "10": (
@@ -249,7 +249,7 @@ class BookAuditTests(unittest.TestCase):
                 "freertos-scheduler.svg", "sample-15-rtos-tick-flow.svg", "sample-15-rtos-prio.svg",
                 "ch15-rtos-prio.png", "rtos-tick.gif", "sample-15-task-states.svg",
                 "ch15-task-states.png", "rtos-deadline-budget.svg", "ch15-deadline-budget.png",
-                "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
+                "ch15-prio-inherit.png", "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
                 "ch15-fromisr.png", "sample-15-rtos-triage.svg", "rtos-startup-gates.svg",
             ),
         }
@@ -266,7 +266,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "16": (
 
-                "lowpower-wakeup.svg", "sample-16-stop-wake-flow.svg", "sample-16-stop-wake.svg",
+                "lowpower-wakeup.svg", "ch16-wake-matrix.png", "sample-16-stop-wake-flow.svg", "sample-16-stop-wake.svg",
                 "ch16-stop-wake.png", "stop-wake.gif", "sample-16-stop-compare.svg",
                 "ch16-stop-compare.png", "sample-16-mode-current.svg", "ch16-mode-current.png",
                 "sample-16-clock-restore.svg", "ch16-clock-restore.png", "lowpower-current-evidence.svg",

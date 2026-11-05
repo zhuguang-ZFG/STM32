@@ -217,6 +217,11 @@ Single is for sampling on demand and saving power. Continuous is for live monito
 
 The regular group holds up to 16 conversions in the sequence. The injected group holds up to 4, and it can interrupt the regular group. That is the "urgent" sample used for motor current.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-scan-sequence.png" width="760" alt="Handraw: a four-channel scan sequence and the 30 us it takes (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the left column is the SQR sequence, each row giving the sample setting, the total cycles including the 12.5, and the microseconds; the bar on the right is proportional to those cycles, and the four segments add up to 360 cycles — exactly 30 us at 12 MHz. What it proves: the interval of one scan is set by every sample setting in it, so changing one changes the whole round; the temperature channel needs the 239.5 setting because 17.1 us x 12 MHz = 205.2 cycles. What it does not prove: this is arithmetic at a 12 MHz ADCCLK, not a measured source impedance, crosstalk or DMA overhead, and it is not a scope capture. Source: [RM0008 Rev 21 ch.11](#source-rm0008-adc).</sub>
+</p>
+
 ### 4. Multi-channel plus DMA
 
 In a continuous multi-channel scan, the ADC drops each result into the same DR register, and the next result overwrites it straight away. The CPU cannot keep up with fetching every one, so DMA stands at the DR door and carries each result into the next slot of an array, wrapping to the start at the end. When the CPU wants the latest values, it reads the array.

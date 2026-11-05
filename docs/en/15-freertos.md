@@ -210,6 +210,11 @@ A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask i
 
 A **queue** carries data. A **semaphore** synchronizes or counts. A **mutex** protects a shared resource. An **event group** waits on several conditions. A **task notification** is the lightweight point-to-point option. Pick the wrong one and you will write a bug that is hard to find.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-prio-inherit.png" width="760" alt="Handraw: priority inheritance — a low task holds the mutex while a mid task preempts it and a high task blocks (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three lanes are three tasks on one core; L takes the mutex first, M preempts it once ready, and H blocks on the same mutex. At that moment L is boosted to H's priority, which keeps M off the CPU until L releases, after which H runs and L drops back. What it proves: inheritance turns H's wait from "how long M runs" into "how long the critical section is". What it does not prove: no timings are measured, and it does not cover calling a mutex from an ISR (which needs the FromISR API) or multi-core. Source: [FreeRTOS kernel docs](#source-freertos-syscall).</sub>
+</p>
+
 | Mechanism | Use | Can it carry data? | Cost | Interrupt-safe API |
 | --- | --- | --- | --- | --- |
 | Queue | Pass data between tasks or from an interrupt | Yes, any length | Medium | `xQueueSendFromISR` |

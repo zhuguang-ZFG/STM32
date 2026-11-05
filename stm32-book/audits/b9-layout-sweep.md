@@ -275,3 +275,21 @@
 顺手清掉 `tools/sample_figs_b4/ch17_b4.py` 里的 `BANDS`（38 行）——旧 `perf_triage` 的唯一消费者，重画后已无引用；删除后重生成两张 ch17 图逐字节不变。
 
 复审中另有三条判为不采纳：`ch15_b4._audit` 的 `height == 880` 断言（本轮没有改 ch15 画布高度，未触发）；把 `ch01` 图内英文正文改成中文（本书图内技术串保留英文是既定约定，`test_batch5/6` 也断言 `prescaler 9`、`pin 45` 这类英文 token）；把 `spi-transfer` 的位节拍再拉长（3.4 s 已经够看，继续拉长会让信号节拍失真）。
+
+### 15. 新增三张可复现手绘图（B12）
+
+用户要求「多增加插图和手绘」。已有的手绘图按章在 4–6 张之间，但 ch00–ch20 那批是 PNG 无源（AI 生成层），只有 ch21–ch28 由 `tools/handraw_track/` 确定性生成。这一轮把确定性通道往前扩，新写两个模块、三张图：
+
+| 图 | 生成器 | 类型（`figure-types.json`） | 回答的问题 |
+|---|---|---|---|
+| `ch09-scan-sequence` | `tools/handraw_track/fig_ch09.py` | calculation | 一次扫描到底多久：SQR 四通道的采样档换算成周期，14 + 26 + 68 + 252 = 360 周期 = 12 MHz 下整 30 µs；温度通道为什么要 239.5 档（17.1 µs × 12 MHz = 205.2 周期） |
+| `ch15-prio-inherit` | `tools/handraw_track/fig_ch15.py` | technical | 优先级继承在救谁：L 持锁 → M 抢占 → H 等锁，L 临时升到 H 的优先级把 M 挡在后面；不继承时 H 的等待被 M 拖长 |
+| `ch16-wake-matrix` | `tools/handraw_track/fig_ch16.py` | comparison | 三种睡法能接受的唤醒源与醒来代价：Sleep 1.8 µs 沿用时钟 / Stop 5.4 µs 走 HSI 8 MHz / Standby 50 µs 走复位；WKUP 只认 PA0 上升沿，下降沿 EXTI 叫不醒 Standby |
+
+选型纪律：三张都先查过同章已有图名，避免同义重画——ch09 原有 adc-sar / sample-time / vref / triage，没有「一轮扫描的时间预算」；ch15 原有 tick / task-states / deadline-budget / owner-task / fromisr，没有继承时序（IPC 对照已经是一张表，不再画成图）；ch16 原有 stop-wake / stop-compare / mode-current / clock-restore / pwr-triage，没有「模式 × 唤醒源矩阵」。
+
+做法与既有通道一致：固定 seed、真实数字取自 `docs/09`/`docs/15`/`docs/16`、`render.py` 用 Chromium 截 1152×864 PNG；zh/en 同位置嵌入，图注按 §6.2 四问（看哪里 / 证明什么 / 不能证明什么 / 出处）重写，并保留「原理示意 / 非实拍」徽章。
+
+验证：两张 SVG 逐个跑 `.temp/measure_svg.py` 均为 0 缺陷（文字越界、互压、卡片溢出、形状出画全清）；像素分布与既有 `ch23-part-id.png` 同量级（墨迹 7.3%–14.1%，边界框 66..1107 / 39..834，未被裁切）。视觉模型通道仍不可用（`?q=` 返回 `model_not_found`），所以「看图」这一步只能以几何与像素统计代替，已在提交说明里注明。
+
+**测试登记（需复核）**：新增图迫使三处「图片清单」从 14/15 提到 15/16 —— `test_advanced_visuals.py` 的 `CHAPTERS` 计数与 assets 元组、`test_book_audit.py` 三条 `asset_sequence` 元组、`tests/fixtures/figure-types.json` 新增三条登记。这是为了让既有契约承认新增锚点，不是放宽断言；数量与顺序都按文档实际 `<img>` 顺序逐条对齐。

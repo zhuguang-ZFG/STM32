@@ -99,7 +99,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "09-ADC与DAC.md": (
-        15,
+        16,
         (
             "adc-sar.svg",
             "sample-09-adc-sar-weights.svg",
@@ -116,6 +116,7 @@ CHAPTERS = {
             "ch09-sample-time.png",
             "sample-09-adc-triage.svg",
             "ch09-adc-triage.png",
+            "ch09-scan-sequence.png",
         ),
     ),
     ROOT / "docs" / "10-DMA.md": (
@@ -216,7 +217,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "15-FreeRTOS入门.md": (
-        15,
+        16,
         (
             "freertos-scheduler.svg",
             "sample-15-rtos-tick-flow.svg",
@@ -233,10 +234,11 @@ CHAPTERS = {
             "ch15-fromisr.png",
             "sample-15-rtos-triage.svg",
             "rtos-startup-gates.svg",
+            "ch15-prio-inherit.png",
         ),
     ),
     ROOT / "docs" / "16-低功耗设计.md": (
-        14,
+        15,
         (
             "lowpower-wakeup.svg",
             "sample-16-stop-wake-flow.svg",
@@ -252,6 +254,7 @@ CHAPTERS = {
             "lowpower-current-evidence.svg",
             "sample-16-pwr-triage.svg",
             "ch16-pwr-triage.png",
+            "ch16-wake-matrix.png",
         ),
     ),
     ROOT / "docs" / "17-调试与性能优化.md": (
