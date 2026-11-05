@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "description": "task_verify 命令清单：可执行项逐条运行；manual/deferred 项如实输出 unverified。",
+  "checks": [
+    {"id": "pytest-full", "kind": "command", "cmd": "python -m pytest stm32-book/tests -q"},
+    {"id": "check-assets", "kind": "command", "cmd": "python tools/check_assets.py"},
+    {"id": "slop-lint", "kind": "command", "cmd": "python tools/slop_lint.py"},
+    {"id": "audit-book", "kind": "command", "cmd": "python tools/audit_book.py"},
+    {"id": "build-html-check-zh", "kind": "command", "cmd": "python stm32-book/build_html.py --check"},
+    {"id": "build-html-check-en", "kind": "command", "cmd": "python stm32-book/build_html.py --lang en --check"},
+    {"id": "git-diff-check", "kind": "command", "cmd": "git diff --check"},
+    {"id": "storyboard-facts-anchors", "kind": "command", "cmd": "python -m pytest stm32-book/tests/test_storyboard_facts.py -q"},
+    {"id": "shorts-loudness", "kind": "command", "cmd": "python tools/shorts_loudness.py --report stm32-book/audits/shorts-loudness.json"},
+    {"id": "ch03-truth-track-photo", "kind": "manual", "reason": "需要真板拍摄 PC13 点亮特写；本环境无真板（Spec 禁止 AI 图冒充实测）"},
+    {"id": "l4-board-current-measurement", "kind": "manual", "reason": "需要 NUCLEO-L476RG 与电流分析仪做分段积分实测"},
+    {"id": "task-verify-tool-provenance", "kind": "manual", "reason": "agent 框架的 task_verify 工具本体不在本环境；本工具即等价实现"}
+  ]
+}

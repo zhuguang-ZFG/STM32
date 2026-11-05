@@ -484,7 +484,7 @@
    "visual_source": "diagrams/sample-27-link-triage.svg",
    "fact_source": [
     "stm32cube-h7-lwip",
-    "docs/27-网络与协议栈.md#动手实验"
+    "docs/27-网络与协议栈.md#四个递进实验"
    ],
    "memory_anchor": "先证明物理和地址层",
    "evidence_type": "experiment"
@@ -506,7 +506,7 @@
    "visual_source": "diagrams/tcp-byte-stream.svg",
    "fact_source": [
     "rfc9293",
-    "docs/27-网络与协议栈.md#动手实验"
+    "docs/27-网络与协议栈.md#四个递进实验"
    ],
    "memory_anchor": "分帧规则要有实验背书",
    "evidence_type": "experiment"
@@ -528,7 +528,7 @@
    "visual_source": "animations/sample-27-link-dhcp-flow.svg",
    "fact_source": [
     "mqtt-v5",
-    "docs/27-网络与协议栈.md#动手实验"
+    "docs/27-网络与协议栈.md#四个递进实验"
    ],
    "memory_anchor": "六道门逐个过",
    "evidence_type": "experiment"
@@ -550,7 +550,7 @@
    "visual_source": "illustrations/handraw/ch27-backoff.png",
    "fact_source": [
     "mbedtls-networking",
-    "docs/27-网络与协议栈.md#动手实验"
+    "docs/27-网络与协议栈.md#四个递进实验"
    ],
    "memory_anchor": "长期运行才见真问题",
    "evidence_type": "experiment"
@@ -599,7 +599,7 @@
    "fact_source": [
     "lwip-pitfalls",
     "rm0433",
-    "docs/27-网络与协议栈.md#动手实验"
+    "docs/27-网络与协议栈.md#四个递进实验"
    ],
    "memory_anchor": "按层取证，不跳结论",
    "evidence_type": "recall"
