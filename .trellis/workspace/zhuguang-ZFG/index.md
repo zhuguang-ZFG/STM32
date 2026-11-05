@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 12
-- **Last Active**: 2026-10-25
+- **Total Sessions**: 33
+- **Last Active**: 2026-11-05
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~663 | Active |
+| `journal-1.md` | ~1295 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 33 | 2026-11-05 | Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验 | `afd543f`, `08d0c3c`, `696c194` | `feat/video-v2-remaster` |
 | 12 | 2026-10-25 | BMS-Z 对齐：验证纵深（门禁脚本/文档对账/PDF 契约/下载打包/dist 对账） | `d87f513`, `ca9b756` | `feat/video-v2-remaster` |
 | 11 | 2026-10-18 | xhs 驱动改进：虚拟列表扫卡、只读 collectioncheck、xhs-verify 整列对账与台账对齐 | `22cfba3`, `61942e7`, `bb293bf`, `60f048c` | `main` |
 | 10 | 2026-10-17 | 小红书合集线收口（建「通往单片机之路」、F5/S5 换集落盘）+ 视频系列 17 条批量上传全发 | `e09345e`, `0212cf3`, `cfbe246`, `a93c12a`, `23f31e5`, `20bc8eb`, `984c402` | `main` |

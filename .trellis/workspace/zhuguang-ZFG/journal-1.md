@@ -1239,3 +1239,57 @@ comment 步补 --go（闸门另起一张 I_HAVE_USER_OK_COMMENT）并真发出 1
 
 - 用户验收批 10；任务归档待拍板。
 - 视频侧转入 10-22-video-v2-remaster Wave C（s14/s16/s2/s4/s7），首集 s2-rcc。
+
+
+## Session 33: Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验
+
+**Date**: 2026-11-05
+**Task**: Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+完成推荐 A 卡片布局、30 张正式素材、同源导读与过期门、锚点误报修复及 13 页 PPT 复验；质量门通过，按确认计划提交并归档，既有工作区修改保留。
+
+### Main Changes
+
+### Changes
+
+- 正式化 29 张竖版金句卡与 1 张横版封面：源码/共享 CSS/渲染与检查命令归入 scripts/social-cards，正式 PNG/摘要/联系表放 video/assets/social-cards/book；主句与小注保持接收基线，内容组间距 36px，横版封面字节不变。
+- 精排导读从 docs/reference/book.md 同源生成，接入站点书籍入口；源文/生成器/HTML 摘要由 docs:build 前置检查。修复 VitePress 对独立 HTML 的路由拦截、hero 标题配色继承与旧附录笔误。
+- pages-check 屏蔽 script/style 里的伪 href，保留真实错误行号；新增回归测试。传播资产可执行契约与复盘已落 .trellis/spec/docs-site/presentation-assets.md。
+- 旧 PPT 13 页复验通过，含观众屏同步/宫格/备注/计时/遮屏/重连/排练/标注/自动翻页；2 条既有版式警告保留解释。
+
+### Validation
+
+- npm run quality 全绿：122 项单元测试、47 工程、111 动画、138 Markdown、132 构建页、2616 锚点链接、2116 可检索标题。
+- Python 72 passed；导读 390px/1440px 两项浏览器回归通过；29 卡文字/来源/边界/间距与 30 图摘要/尺寸通过。
+- 本轮提交不改变被验收的代码或素材字节，未重复跑整本 PDF。
+
+### Completion
+
+- 用户回复「继续下一步」确认提交计划，三项 work commit：afd543f、08d0c3c、696c194。
+- 任务已归档至 .trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout（归档提交 eae36b1）。
+- 旧任务 13 张 PNG、未跟踪 PPT、旧 spec 与联系表混合修改保持工作区，未并入本轮提交；未推送远端。
+- 用户审美终验、平台投稿、guizang-voice 旧文样本仍独立延期。其他 Trellis 任务未作状态变更。
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `afd543f` | (see git log) |
+| `08d0c3c` | (see git log) |
+| `696c194` | (see git log) |
+
+### Testing
+
+- 已完成 quality（122 项单元测试）、72 项 Python 测试、2 项导读浏览器回归、30 图资产与 PPT 全链路验证，详见本节 Validation 与归档任务 research/verification.md。
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
