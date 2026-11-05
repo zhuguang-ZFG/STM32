@@ -31,8 +31,15 @@
 9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
 10. 每个实验用三句话收尾：仿真证明了什么，真板新增证明了什么，还有什么没证明。三句写全，双轨才算诚实。
 
+
 </details>
+
 <!-- /video:ch22 -->
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-sim-verdict.png" width="760" alt="Handraw：三句话收尾的三栏对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三栏各管一句——①仿真证明了什么（ELF 与当前模型配合，GPIO/EXTI/TIM 的接线与现象成立）；②真板新增证明了什么（供电、引脚、电气波形、时钟、功耗，同一份 ELF 要重新验证）；③还有什么没证明（Wokwi 的 BluePill 模型没有 DMA/RTC/IWDG，看不到的要写进残留风险）。证明什么：三句写全双轨才算诚实，一次只换一个不确定的点。不能证明什么：这是记录纪律不是评测报告，Renode 的端口 3456 只是本章脚本的选择。出处见 [Wokwi](#source-wokwi-bluepill) 与 [Renode](#source-renode-stm32)。</sub>
+</p>
 ## 学习目标
 
 - [ ] 能在 Wokwi 里打开本仓库的 BluePill 图，并说清引脚别名。

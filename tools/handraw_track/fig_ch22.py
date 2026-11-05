@@ -139,13 +139,44 @@ def hw_gap():
     return f
 
 
+def sim_verdict():
+    f = Fig("ch22-sim-verdict", "三句话收尾 / what the sim proved, what the board added")
+    cols = [
+        ("① 仿真证明了什么", GREEN_D,
+         ["ELF 与当前模型配合：", "GPIO/EXTI/TIM 的接线", "与现象在模型里成立"]),
+        ("② 真板新增证明了什么", BLUE_D,
+         ["供电、引脚、电气波形、", "时钟、功耗——同一份 ELF", "放上去要重新验证一遍"]),
+        ("③ 还有什么没证明", RED,
+         ["Wokwi 的 BluePill 模型", "没有 DMA/RTC/IWDG；", "看不到的就要写进残留风险"]),
+    ]
+    for i, (title, c, lines) in enumerate(cols):
+        x = 80 + i * 344
+        f.rect(x, 150, 328, 260, color=c, fill=WHITE)
+        f.htext(x + 164, 192, title, size=23, color=c, anchor="middle",
+                weight="bold", hl=(i == 2))
+        f.multi(x + 164, 244, lines, size=19, color=INK, lh=30,
+                anchor="middle")
+    f.panel(80, 448, 984, 108, AMBER_FILL)
+    f.rect(80, 448, 984, 108, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 490, "浏览器里看灯，命令行里看字节；谁也代替不了真板的时序",
+           size=26, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 530, "Renode：官方 F103 平台描述，USART1 接到端口 3456 的套接字",
+           size=22, color=INK, anchor="middle")
+    f.rect(80, 588, 984, 86, color=GREEN_D, fill=WHITE)
+    f.text(W / 2, 622, "三句写全，双轨才算诚实：一次只换一个不确定的点",
+           size=25, color=GREEN_D, anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
     "ch22-sim-compare": sim_compare,
     "ch22-wokwi-scope": wokwi_scope,
     "ch22-renode-path": renode_path,
     "ch22-sim-triage": sim_triage,
     "ch22-hw-gap": hw_gap,
+    "ch22-sim-verdict": sim_verdict,
 }
+
 
 if __name__ == "__main__":
     import sys

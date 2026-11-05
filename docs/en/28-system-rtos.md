@@ -507,6 +507,11 @@ Letting every task feed the watchdog can report false health while the product i
 3. It refreshes the hardware watchdog only when all health conditions pass.
 4. On failure, it persists a minimal bounded fault summary and lets the watchdog reset; persistence also has a deadline.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-wdg-supervisor.png" width="760" alt="Handraw: one health supervisor feeds the watchdog (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: on the left, three critical tasks each hold an epoch that they update only after a round of meaningful work; in the middle, the supervisor checks every epoch, queue backlog, memory watermarks, and state machines, and refreshes the IWDG only when everything is healthy; the red card on the right is the false health — every task stuck while some interrupt keeps feeding. What it proves: the feed belongs to the supervisor; per-task feeding reports false health. What it does not prove: a design-pattern sketch, not RTOS timer granularity or epoch width. Source: [FreeRTOS](#source-freertos-1132).</sub>
+</p>
+
 ## Low power with an RTOS
 
 An RTOS can enter idle when no task is ready, but Stop eligibility depends on the whole system:

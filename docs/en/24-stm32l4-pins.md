@@ -128,6 +128,11 @@ Start with the return path. Sleep and Stop resume after `WFI/WFE`; Standby and S
 This table is a decision entry point, not a wake-source list. Whether RTC, WKUP, EXTI, IWDG, LPUART, LPTIM, or I2C works in a mode depends on the instance, its kernel clock, and the silicon revision. Check the PWR, RCC, and peripheral chapters of RM0351. SRAM2 retention in Standby also depends on the exact part and `RRS`; do not copy that setting from another L4.
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-sram2-retain.png" width="760" alt="Handraw: SRAM2 retention across the three modes and the RRS condition (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three rows — in Sleep/Stop, SRAM1/2 and most registers are retained with nothing extra to do; in Standby, VCORE is off and the main SRAM and ordinary registers die, with SRAM2 retention as an option (set RRS); Shutdown goes deeper still. Below: Standby SRAM2 retention must be confirmed against the exact part and the RRS setting, and on waking you check the reset flags to learn which path you took; the minimal state belongs in the RTC backup registers, which always survive Standby. What it proves: carrying state through Standby in SRAM2 starts with RRS and the part number. What it does not prove: this sketches retention relationships, not a part's SRAM2 size or its wake-source list. Source: [RM0351](#source-rm0351) and [AN4746](#source-an4746).</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/animations/l4-stop2-evidence.svg" width="820" alt="STM32L476 Stop 2 sequence from preparation through an IRQ-entry snapshot and HAL flag clearing to clock recovery">
   <br><sub>▲ Animation: snapshot the raw RTC/EXTI/PWR bits into Stop 2-retained SRAM at IRQ entry. After the HAL handler clears those bits, main consumes the software record. The first frame is complete for print. This is a generated process diagram, not a logic-analyzer capture (FA-002 · IG-009 · C-03/C-10/C-27/C-31).</sub>
 </p>

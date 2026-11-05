@@ -188,12 +188,49 @@ def fault_triage():
     return f
 
 
+
+def wdg_supervisor():
+    f = Fig("ch28-wdg-supervisor", "看门狗由健康监督者喂 / one supervisor, all epochs")
+    # 左：三个任务各自汇报 epoch
+    f.text(96, 140, "每个关键任务跑完一轮有效工作，更新自己的健康 epoch", size=22,
+           color=MUTED)
+    tasks = [("任务 A（采样）", GREEN_D), ("任务 B（协议）", BLUE_D),
+             ("任务 C（存储）", AMBER_STROKE)]
+    y = 168
+    for name, c in tasks:
+        f.rect(96, y, 340, 76, color=c, fill=WHITE)
+        f.text(116, y + 46, name, size=22, color=c, weight="bold")
+        f.rect(330, y + 22, 84, 34, color=c, fill=WHITE, sw=1.8)
+        f.text(372, y + 45, "epoch", size=16, color=INK, anchor="middle")
+        y += 92
+    f.arrow(440, 300, 560, 300, color=INK, bend=0.06)
+    # 中：监督任务
+    f.rect(566, 170, 330, 260, color=GREEN_D, fill=WHITE)
+    f.htext(731, 210, "监督任务", size=26, color=GREEN_D, anchor="middle",
+            weight="bold")
+    f.multi(590, 252, ["检查所有 epoch、队列积压、", "内存水位和关键状态机；", "全部健康才刷新 IWDG"], size=21,
+            color=INK, lh=32)
+    f.arrow(731, 434, 731, 486, color=GREEN_D, bend=0.0, head=11)
+    f.rect(600, 492, 262, 56, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(731, 528, "IWDG 刷新", size=22, color=GREEN_D, anchor="middle",
+           weight="bold")
+    # 右：假健康
+    f.rect(924, 170, 132, 260, color=RED, fill=WHITE)
+    f.multi(990, 210, ["假健康：", "任务全卡，", "某个中断", "还在喂"], size=19,
+            color=RED, lh=30, anchor="middle")
+    f.panel(96, 600, 960, 82, AMBER_FILL)
+    f.rect(96, 600, 960, 82, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 650, "不健康先持久化最小故障摘要再复位；摘要写入也要有截止点",
+           size=24, color=INK, anchor="middle", weight="bold")
+    return f
+
 FIGS = {
     "ch28-four-concepts": four_concepts,
     "ch28-os-compare": os_compare,
     "ch28-owner-task": owner_task,
     "ch28-three-times": three_times,
     "ch28-fault-triage": fault_triage,
+    "ch28-wdg-supervisor": wdg_supervisor,
 }
 
 if __name__ == "__main__":

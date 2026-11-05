@@ -2155,5 +2155,35 @@
   "type": "technical",
   "chapter": "27",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一条消息拆成三个 pbuf 的链，想连续就先拷出来；引用跟着所有权走，pbuf_free() 每份引用恰好一次，漏 free 堆耗尽、多 free 当场崩；不是实拍。"
+ },
+ "illustrations/handraw/ch21-minimal-five.png": {
+  "type": "comparison",
+  "chapter": "21",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。最小系统五件事：电源、去耦、复位、BOOT、晶振，各占一格用箭头指进芯片；先量这五样再怀疑程序；不是实拍。"
+ },
+ "illustrations/handraw/ch22-sim-verdict.png": {
+  "type": "comparison",
+  "chapter": "22",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三句话收尾各一栏：仿真证明了什么、真板新增证明了什么、还有什么没证明（模型没有 DMA/RTC/IWDG）；三句写全双轨才算诚实；不是实拍。"
+ },
+ "illustrations/handraw/ch24-sram2-retain.png": {
+  "type": "technical",
+  "chapter": "24",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SRAM2 三档对照：Sleep/Stop 照常保持、Standby 可选保持要置 RRS、Shutdown 更深；保持要按料号与 RRS 确认，最小状态放 RTC 后备寄存器；不是实拍。"
+ },
+ "illustrations/handraw/ch23-g0-f1-compare.png": {
+  "type": "comparison",
+  "chapter": "23",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G071RB 与 F103C8 六行对照：第 1 脚 PC11、复位 PF2、BOOT 与 SWCLK 共 PA14、USB 是 UCPD、没有 CAN、PC13–15 限 3 mA/2 MHz/30 pF；不是实拍。"
+ },
+ "illustrations/handraw/ch25-power-domains.png": {
+  "type": "technical",
+  "chapter": "25",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。D1/D2/D3 三域可分别关时钟或断电；VCAP1/2 指向内核稳压器、VDD33USB 第 95 脚、PDR_ON 第 143 脚；不是实拍。"
+ },
+ "illustrations/handraw/ch28-wdg-supervisor.png": {
+  "type": "technical",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三个关键任务各持 epoch，监督任务检查全部健康条件后才刷新 IWDG；任务自己喂会产生任务全卡、中断还在喂的假健康；不是实拍。"
  }
 }

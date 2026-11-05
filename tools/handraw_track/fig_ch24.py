@@ -119,12 +119,40 @@ def idd():
     return f
 
 
+def sram2_retain():
+    f = Fig("ch24-sram2-retain", "SRAM2 想带状态过 Standby：查 RRS 与料号 / SRAM2 across modes")
+    rows = [
+        ("Sleep / Stop 0·1·2", "SRAM1/2 与大多数寄存器照常保持", "不用额外配置", GREEN_D),
+        ("Standby", "VCORE 关，主 SRAM 与普通寄存器丢；", "SRAM2 保持是可选项：置 RRS，", RED),
+        ("Shutdown", "比 Standby 更深，主 SRAM 丢；", "RTC/备份域是否保持看供电与配置", MUTED),
+    ]
+    y = 140
+    for name, l1, l2, c in rows:
+        f.rect(96, y, 984, 96, color=c, fill=WHITE)
+        f.htext(272, y + 40, name, size=25, color=c, anchor="middle",
+                weight="bold")
+        f.text(430, y + 40, l1, size=22, color=INK)
+        f.text(430, y + 74, l2, size=22, color=c if c != MUTED else INK)
+        y += 112
+    f.panel(96, 484, 984, 108, AMBER_FILL)
+    f.rect(96, 484, 984, 108, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 522, "Standby 的 SRAM2 保持必须由目标料号和 RRS 配置确认", size=26,
+           color=RED, anchor="middle", weight="bold")
+    f.text(W / 2, 562, "不能从别的 L4 料号照抄；醒来先查复位标志，才知道走的是哪条路",
+           size=22, color=INK, anchor="middle")
+    f.rect(96, 616, 984, 78, color=GREEN, fill=WHITE)
+    f.multi(W / 2, 646, ["最小状态放 RTC 后备寄存器：Standby 里一定活着，", "不用赌 SRAM2 的配置"], size=22,
+            color=INK, lh=34, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch24-part-id": part_id,
     "ch24-modes": modes,
     "ch24-wake-clocks": wake_clocks,
     "ch24-pin-mux": pin_mux,
     "ch24-idd": idd,
+    "ch24-sram2-retain": sram2_retain,
 }
 
 if __name__ == "__main__":

@@ -79,6 +79,11 @@ F4 alternate functions use AFR numbers. G0 does too, but the AF tables are **DS1
   <br><sub>▲ Migration comparison covers boundaries only: power pins, BOOT, SWD, and required peripherals. F1 pin numbers, boot rules, and registers do not transfer to G0; use the G071 datasheet and reference manual for the decision.</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch23-g0-f1-compare.png" width="760" alt="Handraw: six comparison rows between the G071RB and the F103C8 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: six rows — pin 1 is PC11, not VBAT; reset is PF2; BOOT shares PA14 with SWCLK and is pulled down internally after reset; USB is UCPD, not a device controller; there is no CAN; PC13–PC15 can sink only about 3 mA, under 2 MHz, under 30 pF. What it proves: the comparison card to carry out of this chapter — memorize it against the F1 so the migration does not trip, and remember that pins come up as analog input. What it does not prove: this paraphrases Table 12, it is not the package drawing — pin positions and notes rule in DS12232. Source: [DS12232](#source-ds12232).</sub>
+</p>
+
 ## BOOT0 shares SWCLK: determine the boot source first
 
 

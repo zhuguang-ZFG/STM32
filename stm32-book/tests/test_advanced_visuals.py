@@ -324,7 +324,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
-        13,
+        14,
         (
             "bluepill-stm32f103c8t6.svg",
             "sample-21-crystal-boot-flow.svg",
@@ -337,16 +337,18 @@ CHAPTERS = {
             "sample-21-power-swd.svg",
             "sample-21-hse-load.svg",
             "ch21-hse-load.png",
+            "ch21-minimal-five.png",
             "sample-21-nrst-boot0.svg",
             "ch21-nrst-boot0.png",
         ),
     ),
     ROOT / "docs" / "23-STM32G0引脚.md": (
-        12,
+        13,
         (
             "pinout-stm32g071rb-lqfp64.svg",
             "ch23-part-id.png",
             "pinout-bluepill.svg",
+            "ch23-g0-f1-compare.png",
             "sample-23-boot0-swclk.svg",
             "sample-23-boot-latch.svg",
             "ch23-boot-latch.png",
@@ -359,7 +361,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "24-STM32L4引脚.md": (
-        15,
+        16,
         (
             "pinout-stm32l476rg-lqfp64.svg",
             "ch24-part-id.png",
@@ -368,6 +370,7 @@ CHAPTERS = {
             "sample-24-stop2-retain.svg",
             "sample-24-mode-compare.svg",
             "ch24-modes.png",
+            "ch24-sram2-retain.png",
             "l4-stop2-evidence.svg",
             "sample-24-wake-restore-flow.svg",
             "ch24-wake-clocks.png",
@@ -400,9 +403,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
-        14,
+        15,
         (
             "toolchain-flow.svg",
+            "ch22-sim-verdict.png",
             "sample-22-sim-pick-flow.svg",
             "simulator-comparison.svg",
             "ch22-sim-compare.png",
@@ -419,11 +423,12 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "25-STM32H7引脚.md": (
-        16,
+        17,
         (
             "pinout-stm32h743zi-lqfp144.svg",
             "ch25-part-id.png",
             "h7-power-domains.svg",
+            "ch25-power-domains.png",
             "ch25-pin-compare.png",
             "sample-25-voltage-scale.svg",
             "ch25-rev-vos.png",
@@ -479,7 +484,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        19,
+        20,
         (
             "rtos-system-layers.svg",
             "sample-28-four-concepts.svg",
@@ -498,6 +503,7 @@ CHAPTERS = {
             "freertos-scheduler.svg",
             "rtos-config-paths.svg",
             "rtos-startup-gates.svg",
+            "ch28-wdg-supervisor.png",
             "sample-28-fault-triage.svg",
             "ch28-fault-triage.png",
         ),

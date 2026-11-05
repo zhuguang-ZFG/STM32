@@ -505,6 +505,11 @@ monotonic_ms | boot_id | component | event | state | sequence | result | detail
 3. 只有全部满足健康条件时，监督任务才刷新硬件看门狗。
 4. 不健康时先持久化最小故障摘要，再让看门狗复位；摘要写入也必须有截止点。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-wdg-supervisor.png" width="760" alt="Handraw：健康监督者统一喂狗（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左边三个关键任务各持一个 epoch，跑完一轮有效工作才更新；中间监督任务检查所有 epoch、队列积压、内存水位和状态机，全部健康才刷新 IWDG；右边红卡是假健康——任务全卡但某个中断还在喂。证明什么：喂狗权收归监督者，每个任务自己喂会产生假健康。不能证明什么：这是设计模式的示意，不涉及具体 RTOS 的定时器粒度与 epoch 位宽。出处是 [FreeRTOS](#source-freertos-1132)。</sub>
+</p>
+
 ## 低功耗与 RTOS
 
 RTOS 能在没有就绪任务时进入 idle，但系统能否 Stop 取决于完整约束：

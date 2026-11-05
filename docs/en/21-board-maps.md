@@ -246,6 +246,11 @@ A minimum system is six things: **MCU, power, crystal, reset, BOOT, decoupling.*
 | SWD | PA13/PA14 + GND + 3V3 | Program and debug | Keep them. Do not reuse them |
 | VBAT | A coin cell | Holds RTC and the backup domain | With no cell, time dies when power dies |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-minimal-five.png" width="760" alt="Handraw: the five pieces of a minimal system around the chip (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: five boxes, one per piece, each with an arrow into the chip — power (3.3 V onto every VDD/VSS pair), decoupling (100 nF per VDD plus one 10 µF, VDDA filtered separately), reset (NRST with 10 kΩ pull-up, 100 nF, a button), boot (BOOT0 with a 10 kΩ pull-down, 0 = main flash), crystal (8 MHz HSE plus the 32.768 kHz LSE pads). What it proves: a dead board gets these five measured before the code gets blamed; missing decoupling shows up as random resets or a jumpy ADC. What it does not prove: this is a triage list, not a schematic — actual capacitor and load values follow the whole board and the crystal's spec. Source: [DS5319](#source-ds5319).</sub>
+</p>
+
 **Boot mode (BOOT0/BOOT1):**
 
 | BOOT0 | BOOT1 | Boot area | Use |
