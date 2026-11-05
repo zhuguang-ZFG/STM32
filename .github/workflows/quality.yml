@@ -51,7 +51,7 @@ jobs:
           python mcu-book/build_html.py --pdf
           python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html
           mkdir -p docs/.vitepress/dist/book
-          cp mcu-book/dist/mcu-deep-book.html mcu-book/dist/mcu-deep-book.pdf docs/.vitepress/dist/book/
+          cp mcu-book/dist/mcu-deep-book.html mcu-book/dist/mcu-deep-book.pdf mcu-book/dist/mcu-deep-book-print.pdf docs/.vitepress/dist/book/
       - name: 整书契约门（对 PDF 产物反向校验：元数据/大纲/页眉页码）
         run: python mcu-book/check_pdf.py
       - name: 下载包（稳定名 + 版本名 + SHA256SUMS + 落地页）
