@@ -123,6 +123,8 @@ SSID/password 用 `CONFIG_WIFI_SSID`（Kconfig 宏）而非硬编码。骨架坑
 
 ## 四、重连策略：DISCONNECTED 的退避算法
 
+![Wi-Fi 重连退避：1s→2s→…→60s 封顶](/figures/esp32-08-backoff.svg)
+
 handler 里的重连必须**外置**到定时器或任务，不能 `vTaskDelay` 在 handler 里等（第一节纪律）。指数退避标准写法：
 
 ```c

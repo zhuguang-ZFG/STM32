@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="输入侧：引脚信号先过施密特触发整形成方波，再读 IDR 两次采样消抖"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">输入侧：整形 + 采样</text>
+<rect x="8" y="20" width="86" height="22" rx="3" stroke-width="1.4"/> <text x="12" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">引脚（带抖动）</text>
+<path d="M94 31 C 112 22, 126 40, 144 31 C 158 24, 170 38, 186 31" stroke-width="1.8"/>
+<rect x="186" y="20" width="62" height="22" rx="3" stroke-width="1.4"/> <text x="190" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">施密特</text>
+<path d="M248 31 L304 31" stroke-width="2.2"/>
+<path d="M8 52 L312 52" stroke-width="1.2" stroke-dasharray="3 2"/>
+<text x="8" y="66" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">软件消抖：读 IDR 两次，间隔 ≥5ms</text>
+<rect x="8" y="72" width="120" height="14" rx="3" stroke-width="1.4"/> <text x="12" y="83" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">t0 读 IDR = 0</text>
+<rect x="140" y="72" width="120" height="14" rx="3" stroke-width="1.4"/> <text x="144" y="83" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">t1 再读 = 0 → 认按键</text>
+<path d="M128 79 L140 79" stroke-width="2.2"/>
+</g></svg>

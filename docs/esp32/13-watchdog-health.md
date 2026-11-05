@@ -69,6 +69,8 @@ worker 上报进展、supervisor 巡检确认、reset_user 喂狗、TWDT 两秒�
 
 ## 一、S3 的四种看门狗
 
+![S3 四种看门狗：RTC/IWDT/TWDT/XTWDT 各管一段](/figures/esp32-13-four-wdt.svg)
+
 | 看门狗 | 监督什么 | 谁喂 | 本例 |
 |---|---|---|---|
 | RTC_WDT | 上电到用户 `app_main` 之前的启动过程 | 引导代码；默认在进入用户主函数前关闭 | 不动 |

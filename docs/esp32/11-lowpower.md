@@ -65,8 +65,6 @@ ESP32 睡眠分两档（对应 [S14 STM32](../stm32/14-pwr.md) 的 Sleep/Stop/St
 
 ## 二、RTC 内存与慢速内存：跨 Deep sleep 的"遗言"
 
-![断电边界：数字域失电，RTC 域留遗言](/figures/esp32-11-rtc-domain.svg)
-
 Deep sleep 把数字域 RAM 全断了，但 RTC 域还活着：RTC 域里有一块 RTC slow memory 专门给跨 sleep 的状态用。IDF 用属性宏把变量放进这块内存：
 
 ```c

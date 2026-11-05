@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="两份优先级：configMAX_SYSCALL_INTERRUPT_PRIORITY 以下才许调 FromISR，configKERNEL 是最低档"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
-<path d="M48 10 L48 78" stroke-width="1.6"/> <path d="M45 14 L48 10 L51 14" stroke-width="1.6"/>
-<path d="M44 10 L52 10" stroke-width="1.2"/> <path d="M44 31 L52 31" stroke-width="1.2"/> <path d="M44 53 L52 53" stroke-width="1.2"/> <path d="M44 78 L52 78" stroke-width="1.2"/>
-<text x="34" y="13" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">0</text> <text x="34" y="34" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">5</text> <text x="34" y="56" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">10</text> <text x="30" y="81" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">15</text>
-<path d="M48 31 L190 31" stroke-width="1.8" stroke-dasharray="4 2"/> <text x="60" y="26" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">MAX_SYSCALL = 5</text>
-<path d="M48 70 L190 70" stroke-width="1.8" stroke-dasharray="4 2"/> <text x="60" y="76" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">KERNEL = 15</text>
-<text x="196" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">禁止调内核</text> <text x="196" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">可调 FromISR</text>
-<text x="240" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">数值越大，优先级越低</text>
-</g></svg>

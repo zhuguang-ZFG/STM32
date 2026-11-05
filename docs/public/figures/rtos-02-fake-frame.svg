@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="伪造首帧：新任务没被中断过，pxPortInitialiseStack 手工造出 18 个字的栈帧"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">pxPortInitialiseStack 手工造帧</text>
+<rect x="8" y="20" width="150" height="22" rx="3" stroke-width="1.4"/> <text x="12" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">硬件帧 8 字（r0-r3/r12/lr/pc/xpsr）</text>
+<rect x="8" y="46" width="150" height="22" rx="3" stroke-width="1.4"/> <text x="12" y="59" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">软件帧 9 字（r4-r11 + EXC_RETURN）</text>
+<rect x="8" y="72" width="150" height="14" rx="3" stroke-width="1.4"/> <text x="12" y="83" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">对齐 1 字 → 共 18 字 = 72 字节</text>
+<path d="M158 31 C 172 31, 178 31, 190 31" stroke-width="2.2"/>
+<rect x="190" y="20" width="122" height="20" rx="3" stroke-width="1.4"/> <text x="194" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">xPSR = 0x01000000</text>
+<path d="M158 57 L190 57" stroke-width="2.2"/>
+<rect x="190" y="48" width="122" height="18" rx="3" stroke-width="1.4"/> <text x="194" y="61" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">PC &amp; 0xFFFFFFFE</text>
+<rect x="190" y="70" width="122" height="16" rx="3" stroke-width="1.4"/> <text x="194" y="81" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">EXC_RETURN = 0xFFFFFFFD</text>
+<text x="230" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">bit24=1 → Thumb 开跑</text>
+</g></svg>

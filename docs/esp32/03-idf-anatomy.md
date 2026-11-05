@@ -104,6 +104,8 @@ endif()
 
 ## 二、组件是什么：一行声明交代全部
 
+![组件依赖图：REQUIRES 决定拓扑编译顺序](/figures/esp32-03-component-graph.svg)
+
 一个组件 = 一个目录 + 一个 `CMakeLists.txt`。本仓库最小的例子，`code/esp32/00-hello/main/CMakeLists.txt` 正文只有一行：
 
 ```cmake

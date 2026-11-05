@@ -68,8 +68,6 @@ make DEMO_SCENE=4 flash    # 定时器：slow cb 耗时 50ms → fast cb 最大�
 
 ## 一、通知原理：TCB 里的 32 位邮箱
 
-![任务通知：TCB 里的 32 位邮箱与三种写入语义](/figures/rtos-06-notify-mailbox.svg)
-
 每个任务的 TCB 里有两组字段（数组长度 = `configTASK_NOTIFICATION_ARRAY_ENTRIES`）：
 
 - `ulNotifiedValue[]`：32 位值；
