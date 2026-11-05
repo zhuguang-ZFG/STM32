@@ -63,7 +63,7 @@ The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapt
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-wake.svg" width="760" alt="Stop with the low-power regulator is 14 µA typical. Wake-up is the 8 MHz HSI. Leaving 0x271 in place produces 12800 bit/s.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, LQFP48. The top band is the correct sequence: SLEEPDEEP=1 and PDDS=0 enter Stop at 14 µA (3.3 V, 25°C, IWDG off); 5.4 µs after the wake event the first instruction runs on the 8 MHz HSI, then the PLL returns to 72 MHz and 0x271 means 115200. The middle band forgets to restore the clock: the same 0x271 on 8 MHz gives only 12800 bit/s. The main-regulator cell is 24 µA. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the three bits on top are what entering Stop takes (SLEEPDEEP=1, PDDS=0, LPDS=1); the two current bars below show 14 µA on the low-power regulator against 24 µA on the main one, so the difference is the regulator, not the mode; the timeline then runs from the EXTI wake through 5.4 µs on the 8 MHz HSI to `SystemClock_Config()` restoring the PLL at 72 MHz with up to 200 µs of lock; the last two bars are 0x271 at 72 MHz giving 115200 against 8 MHz giving 12800, a factor of nine. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
 </p>
 
 <p align="center">

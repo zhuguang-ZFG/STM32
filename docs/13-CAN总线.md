@@ -62,7 +62,7 @@ MCU 的 PB8/PB9 不能直接接总线，要先进收发器的 RXD/TXD，由收�
 
 <p align="center">
   <img src="../assets/diagrams/sample-13-can-bit.svg" width="760" alt="36 MHz 下预分频 9、8 个时间份额是 500 kbit/s；写成预分频 8 和 10 个时间份额是 450 kbit/s；工作脚是第 45 脚和第 46 脚">
-  <br><sub>▲ 自绘。STM32F103C8T6。图上半部分是正确配置：8 个 250 ns 的时间份额，采样点 75%，一位 2 µs，500 kbit/s，预分频 9，SJW = 1，CANH 与 CANL 之间接 120 Ω。下半部分是错误配置：预分频 8、10 个时间份额，得到 450 kbit/s，采样点 70%。引脚是第 45 脚 PB8 和第 46 脚 PB9。出处是 [RM0008 Rev 21 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20 表 5](#source-ds5319-usbcan)。</sub>
+  <br><sub>▲ 自绘。看哪里：最上面把标准数据帧按位排开（SOF、11 位 ID、RTR、IDE、r0、DLC、data、CRC、ACK、EOF），ACK 那一位由接收方拉低——没人应答就是 ACK 错误；第二行演示位填充：连续五个相同位后插一个相反的位；第三行是接线，MCU 的 PB8/PB9 先进收发器的 TXD/RXD，CANH 与 CANL 两端各一只 120，并联是 60 的直流负载；下方两张卡对照工作配置（预分频 9、八个份额、2 µs、500 kbit/s、采样点 75%）与对不上的那组（预分频 8、十个份额、450 kbit/s、70%）；最后一列是引脚，默认 pin 32 PA11 / pin 33 PA12，pin 5 PD0 与 pin 6 PD1 的重映射会顶掉 HSE。出处是 [RM0008 Rev 21 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20 表 5](#source-ds5319-usbcan)。</sub>
 </p>
 
 <p align="center">

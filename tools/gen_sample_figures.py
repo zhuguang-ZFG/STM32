@@ -560,29 +560,116 @@ def can_bit() -> Svg:
         "36 MHz 下预分频 9、8 个时间份额是 500 kbit/s；预分频 8 和 10 个时间份额是 450 kbit/s；工作脚是第 45 脚和第 46 脚",
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 bxCAN",
     )
-    canvas.header(tag="13", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  CAN1 on APB1  36 MHz", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "pin 45 PB8 = CAN_RX    pin 46 PB9 = CAN_TX", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "MCU pins enter the transceiver. 120 ohm sits on CANH and CANL, at each end", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  prescaler 9, eight quanta, 2 us, 500 kbit/s", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "Tq = 250 ns. SYNC 1 + BS1 5 + BS2 2 = 8", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "sample at 1.5 us, 75%. SJW = 1", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "8 x 250 ns = 2 us", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "the resistor is not tied to PB8 or PB9", size=14, fill=T.AMBER)
-    canvas.text(56, 318, "two 120 ohm parts in parallel are a 60 ohm DC load, not a cable impedance", size=13, fill=T.MUTED)
-    canvas.text(40, 370, "失败路径  prescaler 8, BS1 6, BS2 3, ten quanta, 450 kbit/s", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 414, "36e6 / (8 x 10) = 450 kbit/s. sample point 70%", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 440, "the bit is no longer 2 us", size=14, fill=T.RED)
-    canvas.text(56, 466, "1 Mbit/s stays off this figure", size=14, fill=T.AMBER)
-    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  pin 32 PA11 and pin 33 PA12 stay with USB", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "pin 5 PD0 and pin 6 PD1 exist. Remapping CAN there stops the HSE", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "pin 45 and pin 46 are not drawn as I2C at the same time", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "bus-off at 256 and 128 x 11 recessive bits stay in the table, not as a second waveform", size=13, fill=T.MUTED)
-    canvas.text(56, 656, "do not draw the 4.7 kilohm I2C pull-ups on this figure", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。位时间来自 RM0008 Rev 21 bxCAN；脚位来自 DS5319 Rev 20 表 5。")
+    canvas.header(title="总线上一位长什么样：帧、位填充与收发器接线",
+                  tag="13", tag_color=T.ORANGE)
+
+    # ① 标准帧
+    canvas.text(24, 82, "标准数据帧按位排开：11 位 ID 在前，ACK 是一位", size=12.5,
+                fill=T.TEXT, weight="700")
+    fields = [("SOF", 1, T.CYAN), ("ID", 11, T.AMBER), ("RTR", 1, T.MUTED),
+              ("IDE", 1, T.MUTED), ("r0", 1, T.MUTED), ("DLC", 4, T.MUTED),
+              ("data", 8, T.GREEN), ("CRC", 15, T.VIOLET), ("ACK", 2, T.RED),
+              ("EOF", 7, T.MUTED)]
+    total = sum(n for _, n, _ in fields)
+    fx, fw = 24, 900
+    x = fx
+    for name, n, color in fields:
+        w = fw * n / total
+        canvas.rect(x, 94, w - 1, 30, fill=color, rx=2, opacity=0.22)
+        canvas.rect(x, 94, w - 1, 30, fill="none", stroke=color, sw=1, rx=2)
+        if w > 16:
+            canvas.text(x + w / 2, 113, name, size=8.5, anchor="middle",
+                        fill=color, mono=True)
+        x += w
+    canvas.text(24, 140, "1 + 11 + 1 + 1 + 1 + 4 + 8 + 15 + 2 + 7 = 51 位，数据段按实际字节数算",
+                size=9, fill=T.MUTED, mono=True)
+    canvas.text(24, 158, "ACK 位由接收方拉低：没人应答就是 ACK 错误，这解释了单节点为什么发不出去",
+                size=9.5, fill=T.RED)
+
+    # ② 位填充
+    canvas.text(24, 196, "位填充：连续 5 个相同位之后插一个相反的位", size=12.5,
+                fill=T.TEXT, weight="700")
+    pattern = [1, 0, 1, 1, 1, 1, 1, 1, 0, 0]
+    stuffed = [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0]
+    for i, bit in enumerate(stuffed):
+        x = 24 + i * 34
+        is_stuff = i == 7
+        color = T.RED if is_stuff else T.CYAN
+        canvas.rect(x, 208, 30, 26, fill=color, rx=2,
+                    opacity=0.30 if is_stuff else 0.16)
+        canvas.rect(x, 208, 30, 26, fill="none", stroke=color, sw=1.5, rx=2)
+        canvas.text(x + 15, 226, str(bit), size=10, anchor="middle", fill=color,
+                    mono=True)
+    canvas.text(24, 248, "原始：1 0 1 1 1 1 1 1 0 0 —— 六个 1 之后必须插一个 0", size=9,
+                fill=T.MUTED, mono=True)
+    canvas.text(316, 258, "↑ 插入位", size=9.5, fill=T.RED)
+    canvas.arrow(300, 250, 270, 236, color=T.RED, sw=1.5, head=5)
+
+    # ③ 收发器与终端
+    ty = 276
+    canvas.text(24, ty, "MCU 的脚印不进总线：中间必须过收发器", size=12.5,
+                fill=T.TEXT, weight="700")
+    canvas.rect(24, ty + 12, 190, 62, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(38, ty + 32, "STM32F103C8T6", size=9.5, fill=T.MUTED)
+    canvas.text(38, ty + 50, "pin 45 PB8 = CAN_RX", size=9.5, fill=T.CYAN, mono=True)
+    canvas.text(38, ty + 66, "pin 46 PB9 = CAN_TX", size=9.5, fill=T.CYAN, mono=True)
+    canvas.arrow(218, ty + 44, 262, ty + 44, color=T.STROKE, sw=1.5, head=6)
+    canvas.rect(266, ty + 12, 150, 62, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    canvas.text(280, ty + 32, "收发器", size=10, fill=T.AMBER, weight="700")
+    canvas.text(280, ty + 50, "TXD / RXD", size=9, fill=T.TEXT, mono=True)
+    canvas.text(280, ty + 66, "CANH / CANL", size=9, fill=T.TEXT, mono=True)
+    canvas.arrow(420, ty + 44, 464, ty + 44, color=T.STROKE, sw=1.5, head=6)
+    # 总线
+    canvas.line(470, ty + 30, 900, ty + 30, stroke=T.CYAN, sw=2)
+    canvas.line(470, ty + 60, 900, ty + 60, stroke=T.CYAN, sw=2)
+    canvas.text(902, ty + 34, "CANH", size=9, fill=T.CYAN, mono=True)
+    canvas.text(902, ty + 64, "CANL", size=9, fill=T.CYAN, mono=True)
+    for xx in (470, 880):
+        canvas.rect(xx - 10, ty + 34, 20, 22, fill=T.PANEL2, stroke=T.AMBER, rx=2)
+        canvas.text(xx, ty + 49, "120", size=8, anchor="middle", fill=T.AMBER,
+                    mono=True)
+    canvas.text(470, ty + 96, "两端各一只 120", size=9, fill=T.AMBER, mono=True)
+    canvas.text(560, ty + 96, "并联 = 60 直流负载，不是电缆特性阻抗", size=9,
+                fill=T.MUTED)
+
+    # ④ 两种配置
+    cy = 400
+    canvas.text(24, cy, "两种配法只差三个数，速率和采样点就都变了", size=12.5,
+                fill=T.TEXT, weight="700")
+    cfgs = [(T.GREEN, "工作配置", [("prescaler 9", "Tq = 250 ns"), ("SYNC 1 + BS1 5 + BS2 2", "八个时间份额"),
+                                    ("2 us 一位", "500 kbit/s"), ("采样点 75%", "1.5 us 处"), ("SJW = 1", "APB1 36 MHz")]),
+            (T.RED, "对不上的那组", [("prescaler 8", "配十个份额"), ("36e6 / (8 x 10)", "450 kbit/s"),
+                                    ("一位不是 2 us", "两端都报错"), ("采样点 70%", "BS1 6 / BS2 3"), ("10 份额要 7.2 分频", "不是整数")])]
+    for i, (color, head, rows) in enumerate(cfgs):
+        x = 24 + i * 462
+        canvas.rect(x, cy + 12, 450, 168, fill=T.PANEL, stroke=color, rx=8)
+        canvas.rect(x, cy + 12, 450, 5, fill=color, rx=2)
+        canvas.text(x + 14, cy + 36, head, size=10.5, fill=T.TEXT, weight="700")
+        for j, (key, val) in enumerate(rows):
+            y = cy + 58 + j * 24
+            canvas.text(x + 14, y, key, size=9, fill=color, mono=True)
+            canvas.text(x + 230, y, val, size=9, fill=T.MUTED)
+
+    # ⑤ 引脚
+    py = 604
+    canvas.text(24, py, "引脚：默认与 USB 撞，改到 PB8/PB9 用第一种重映射", size=12.5,
+                fill=T.TEXT, weight="700")
+    pins = [(T.MUTED, "pin 32 PA11", "CAN_RX 默认，也是 USB DM"),
+            (T.MUTED, "pin 33 PA12", "CAN_TX 默认，也是 USB DP"),
+            (T.RED, "pin 5 PD0", "重映射之一，会把 HSE 顶掉"),
+            (T.RED, "pin 6 PD1", "同上，C8 上不要选"),
+            (T.GREEN, "pin 45 PB8 / pin 46 PB9", "第一种重映射，本章用它")]
+    for i, (color, head, note) in enumerate(pins):
+        y = py + 14 + i * 26
+        canvas.text(38, y, head, size=9.5, fill=color, mono=True)
+        canvas.text(300, y, note, size=9, fill=T.MUTED)
+    canvas.rect(24, 740, 912, 52, fill=T.BG2, stroke=T.CYAN, rx=8)
+    canvas.text(40, 762, "这张画总线上的一位与接线；发不出、收不到、错误帧暴涨的分诊在排错三岔口那张里。",
+                size=10, fill=T.TEXT)
+    canvas.text(40, 780, "1 Mbit/s 与 Bus-Off 恢复的 128 × 11 个隐性位留给正文与时序表。",
+                size=10, fill=T.MUTED)
+
+    _credit(canvas, "自绘。位时间与帧格式来自 RM0008 Rev 21 bxCAN；脚位来自 DS5319 Rev 20 表 5。")
     return canvas
 
 
@@ -657,28 +744,92 @@ def stop_wake() -> Svg:
         "低功耗稳压器的 Stop 典型值是 14 µA；醒来先是 HSI 8 MHz；不重配时钟时 0x271 变成 12800 bit/s",
         "STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 16 / Table 26",
     )
-    canvas.header(tag="16", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  Stop  low-power regulator", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "SLEEPDEEP=1  PDDS=0  14 uA at 3.3 V, 25 C, no IWDG", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "pin 10 PA0 is the Stop key. The lamp and ADC are not drawn on this pin", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  EXTI wakes the core, then the PLL returns to 72 MHz", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "first instruction on HSI 8 MHz. Table 26 says 5.4 us", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "SystemClock_Config() restores the PLL to 72 MHz", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "USART1 still uses 0x271. The line is 115200", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "5.4 us does not include the 200 us PLL lock maximum", size=14, fill=T.AMBER)
-    canvas.text(56, 318, "the main-regulator cell is 3.6 us, not this path", size=13, fill=T.MUTED)
-    canvas.text(40, 370, "失败路径  the same 0x271 is left on the 8 MHz HSI", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 414, "8e6 / (16 x 39.0625) = 12800 bit/s", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 440, "the host is still at 115200. The ratio is 9", size=14, fill=T.RED)
-    canvas.text(56, 466, "16 MHz is void on this C8", size=14, fill=T.AMBER)
-    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  quoting 14 uA while the main regulator is on is the 24 uA cell", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "the F4 periodic wake-up timer is void on this C8", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "pin 10 is not drawn as a lamp at the same time", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "Standby currents stay off this sheet unless it is split", size=13, fill=T.MUTED)
-    canvas.text(56, 656, "do not draw the chapter 06 bit frame", size=13, fill=T.MUTED)
+    canvas.header(title="进 Stop、被 EXTI 叫醒、再把时钟接回 72 MHz",
+                  tag="16", tag_color=T.CYAN)
+
+    # ① 进 Stop 需要的三个位
+    canvas.text(24, 82, "进 Stop 是三个位同时成立，少一个就进错模式", size=12.5,
+                fill=T.TEXT, weight="700")
+    bits = [("SLEEPDEEP=1", "SCB->SCR，决定睡深不睡浅", T.GREEN),
+            ("PDDS=0", "PWR->CR，0 是 Stop，1 是 Standby", T.AMBER),
+            ("LPDS=1", "用低功耗稳压器，才有 14 uA", T.CYAN)]
+    for i, (head, note, color) in enumerate(bits):
+        x = 24 + i * 306
+        canvas.rect(x, 94, 292, 52, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(x + 12, 114, head, size=10.5, fill=color, weight="700",
+                    mono=True)
+        canvas.text(x + 12, 132, note, size=9, fill=T.MUTED)
+
+    # ② 电流：两种稳压器
+    cy = 168
+    canvas.text(24, cy, "同一颗 Stop，稳压器不同差 10 uA —— 引用哪一格要看配置", size=12.5,
+                fill=T.TEXT, weight="700")
+    bars = [("LPDS=1 · 低功耗稳压器", 14, T.GREEN, "14 uA", "3.3 V / 25 °C / 关 IWDG"),
+            ("LPDS=0 · 主稳压器", 24, T.AMBER, "24 uA", "同一个 Stop 状态，另一格数据")]
+    for i, (label, ua, color, value, note) in enumerate(bars):
+        y = cy + 16 + i * 40
+        canvas.text(24, y + 14, label, size=9.5, fill=T.TEXT)
+        w = 460 * ua / 24
+        canvas.rect(250, y, w, 20, fill=color, rx=2, opacity=0.26)
+        canvas.rect(250, y, w, 20, fill="none", stroke=color, sw=1.5, rx=2)
+        canvas.text(250 + w + 8, y + 14, value, size=9.5, fill=color, mono=True)
+        canvas.text(24, y + 34, note, size=8.5, fill=T.MUTED)
+    canvas.text(700, cy + 30, "IWDG 单开一项就再 +3.4 uA", size=9, fill=T.RED)
+    canvas.text(700, cy + 46, "表 16 的条件里写明关掉它", size=9, fill=T.MUTED)
+
+    # ③ 唤醒时间轴
+    ty = 286
+    canvas.text(24, ty, "EXTI 叫醒之后不是立刻回到 72 MHz：先 HSI，再锁 PLL", size=12.5,
+                fill=T.TEXT, weight="700")
+    axis_y = ty + 78
+    canvas.line(60, axis_y, 900, axis_y, stroke=T.STROKE, sw=1.5)
+    segs = [("进入 Stop", 60, 200, T.MUTED, "pin 10 PA0 上的 EXTI 一直在等"),
+            ("唤醒：HSI 8 MHz", 200, 400, T.GREEN, "第一条指令就跑在 8 MHz，5.4 us"),
+            ("SystemClock_Config", 400, 620, T.AMBER, "重开 PLL，回 72 MHz"),
+            ("PLL 锁定 ≤ 200 us", 620, 860, T.CYAN, "锁不上就超时")]
+    for name, x1, x2, color, note in segs:
+        canvas.rect(x1, axis_y - 26, x2 - x1 - 4, 52, fill=color, rx=4, opacity=0.22)
+        canvas.rect(x1, axis_y - 26, x2 - x1 - 4, 52, fill="none", stroke=color,
+                    sw=1.5, rx=4)
+        canvas.text(x1 + 8, axis_y - 6, name, size=9.5, fill=color, weight="700")
+        canvas.text(x1 + 8, axis_y + 12, note, size=8.5, fill=T.TEXT)
+    canvas.text(200, axis_y + 44, "5.4 us", size=9, fill=T.GREEN, mono=True)
+    canvas.text(620, axis_y + 44, "200 us", size=9, fill=T.CYAN, mono=True)
+    canvas.text(60, axis_y + 44, "0", size=9, fill=T.MUTED, mono=True)
+    canvas.text(24, axis_y + 68, "唤醒时间报 5.4 us 时，说的是到第一条指令；串口能用的时间要把 PLL 锁定的 200 us 加上。",
+                size=9.5, fill=T.MUTED)
+
+    # ④ 0x271 陷阱
+    by = 470
+    canvas.text(24, by, "最容易漏的一步：醒来重配时钟，否则 0x271 不是 115200", size=12.5,
+                fill=T.TEXT, weight="700")
+    canvas.rect(24, by + 12, 912, 150, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(38, by + 36, "USART1->BRR = 0x271 = 39.0625（16 倍过采样）", size=9.5,
+                fill=T.MUTED, mono=True)
+    rates = [("72 MHz: 72e6 / (16 × 39.0625)", 115200, "115200", T.GREEN, 1.0),
+             ("8 MHz: 8e6 / (16 × 39.0625)", 12800, "12800", T.RED, 12800 / 115200)]
+    for i, (calc, rate, value, color, frac) in enumerate(rates):
+        y = by + 58 + i * 46
+        canvas.text(38, y, calc, size=9, fill=T.TEXT, mono=True)
+        w = 520 * frac
+        canvas.rect(38, y + 8, max(w, 34), 20, fill=color, rx=2, opacity=0.24)
+        canvas.rect(38, y + 8, max(w, 34), 20, fill="none", stroke=color, sw=1.5,
+                    rx=2)
+        canvas.text(38 + max(w, 34) + 10, y + 22, value + " bit/s", size=9.5,
+                    fill=color, mono=True)
+    canvas.text(700, by + 44, "主机仍是 115200", size=9.5, fill=T.TEXT)
+    canvas.text(600, by + 100, "12800 × 9 = 115200", size=9.5, fill=T.RED, mono=True)
+    canvas.text(600, by + 118, "差 9 倍，收到的是乱码不是短帧", size=9.5, fill=T.MUTED)
+    canvas.text(600, by + 140, "先跑 SystemClock_Config()，再开 USART", size=9,
+                fill=T.GREEN)
+
+    # ⑤ 这张图不覆盖什么
+    canvas.rect(24, 648, 912, 62, fill=T.BG2, stroke=T.CYAN, rx=8)
+    canvas.text(40, 672, "Standby 的 2 uA 与唤醒 1.8 ms 另算一格；F4 的周期唤醒定时器在 C8 上不存在。",
+                size=10.5, fill=T.TEXT)
+    canvas.text(40, 692, "这里也不画第 06 章的 UART 位帧 —— 12800 与 115200 的差别在位宽，不在帧格式。",
+                size=10, fill=T.MUTED)
+
     _credit(canvas, "自绘。电流和 5.4 us 来自 DS5319 Rev 20 表 16 与表 26。8 MHz 来自第 02 章。")
     return canvas
 

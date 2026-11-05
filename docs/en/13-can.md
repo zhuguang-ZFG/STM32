@@ -62,7 +62,7 @@ The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB i
 
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-bit.svg" width="760" alt="At 36 MHz, prescaler 9 and eight quanta is 500 kbit/s. Prescaler 8 and ten quanta is 450 kbit/s. The working pins are pin 45 and pin 46.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6. The upper half is the correct setup: eight 250 ns quanta, a 75% sample point, a 2 µs bit, 500 kbit/s, prescaler 9, SJW = 1, and 120 Ω between CANH and CANL. The lower half is the wrong setup: prescaler 8 and ten quanta give 450 kbit/s with a 70% sample point. The pins are pin 45 PB8 and pin 46 PB9. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the top row lays a standard data frame out bit by bit (SOF, 11-bit ID, RTR, IDE, r0, DLC, data, CRC, ACK, EOF), and the ACK slot is pulled low by a receiver — no receiver means an ACK error; the second row shows bit stuffing, one opposite bit after five identical ones; the third row is the wiring, where PB8/PB9 go into the transceiver TXD/RXD and each end of CANH and CANL carries a 120 ohm part, 60 ohm in parallel as a DC load; the two cards compare the working setup (prescaler 9, eight quanta, 2 us, 500 kbit/s, 75% sample point) with the one that does not divide (prescaler 8, ten quanta, 450 kbit/s, 70%); the last column is the pinout, where pin 32 PA11 and pin 33 PA12 are the defaults and the pin 5 PD0 / pin 6 PD1 remap costs the HSE. Sources: [RM0008 Rev 21 bxCAN](#source-rm0008-can) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
 </p>
 
 <p align="center">
