@@ -111,6 +111,8 @@ SHCSR:USGFAULTENA 18
 
 ## 三、CFSR 19 位逐位点名
 
+![CFSR 19 位点图：MMFSR/BFSR/UFSR 三段](/figures/stm32-16-cfsr-bits.svg)
+
 CFSR 是三个子寄存器拼成的（`core_cm4.h:616-684`）：低 8 位 MMFSR、次 8 位 BFSR、高 16 位 UFSR。probe 的表实测是 **MMFSR 6 位 + BFSR 7 位 + UFSR 6 位 = 19 位**（子寄存器的基名 `MEMFAULTSR`/`BUSFAULTSR`/`USGFAULTSR` 只占 3 条记录，不参与点名的位数）。
 
 | 子寄存器 | 位 | 名字 | 白话 |

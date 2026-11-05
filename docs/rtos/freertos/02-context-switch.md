@@ -244,6 +244,8 @@ p pxCurrentTCB            # 已换人！对比两次地址
 
 ## 六、没跑过的任务，第一帧是伪造的
 
+![伪造首帧：pxPortInitialiseStack 手工造 18 字栈帧](/figures/rtos-02-fake-frame.svg)
+
 前面所有动作都假设"这个任务曾经被切走"。可 `xTaskCreate` 刚建好的任务从没被中断过，**没有硬件会替它压那一帧**。所以第一帧是手工造的：`port.c:202` 的 `pxPortInitialiseStack()` 直接往任务栈里写出一份和"被切走时"形状完全一致的栈帧。
 
 形状必须严格一致，否则 ⑧⑨⑩⑪ 那四条"起棺"指令会读错位置。`probe.sh` 第 5 步把源码里的回退量当场加了一遍：

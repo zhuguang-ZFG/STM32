@@ -43,6 +43,29 @@ const chapterArt = (rel?: string): string => {
   return `<div class="chapter-art">${svg}</div>\n`
 }
 
+// 章节手绘机制图（docs/public/figures/*.svg）：同样必须内联而不是 <img>——
+// <img> 里的 SVG 是独立文档，页面 CSS 变量（--cover-ink 深浅两套墨色）穿不进去，
+// 深色主题会固定成 #123b33 黑上黑。这里沿用 chapter-art 的硬门与内联约定。
+const FIG_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'figures')
+const handFigure = (name: string, caption: string): string => {
+  let svg: string
+  try {
+    svg = readFileSync(join(FIG_DIR, `${name}.svg`), 'utf-8')
+  } catch (err: any) {
+    // 缺图交给 VitePress 死链检查兜底；其余 IO 错误必须炸出来，别再吞配置错误。
+    if (err?.code === 'ENOENT') return ''
+    throw err
+  }
+  if (svg.includes('feTurbulence') || svg.includes('<filter')) {
+    throw new Error(`手绘机制图必须纯矢量（含滤镜）：${name}.svg`)
+  }
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
+  const cap = caption.trim()
+    ? `<figcaption>${esc(caption.trim())}</figcaption>`
+    : ''
+  return `<figure class="hand-figure">${svg}${cap}</figure>\n`
+}
+
 export default defineConfig({
   base: BASE,
   title: '通往单片机之路',
@@ -116,6 +139,27 @@ export default defineConfig({
           if (!match) continue
           const block = new state.Token('html_block', '', 0)
           block.content = emit(match[1], child.content || child.attrGet('alt') || '') + '\n'
+          block.map = tokens[i].map
+          tokens.splice(i, 3, block)
+          i--
+        }
+      })
+      // 章节手绘机制图：![图注](/figures/x.svg) 独占一行时内联整棵 SVG，
+      // 与章首题花同一墨色令牌；缺文件保持原样，交给 VitePress 死链检查兜底。
+      md.core.ruler.after('anim-figure-block', 'hand-figure', (state: any) => {
+        const tokens = state.tokens
+        for (let i = 0; i < tokens.length - 2; i++) {
+          if (tokens[i].type !== 'paragraph_open' || tokens[i + 2].type !== 'paragraph_close') continue
+          const inline = tokens[i + 1]
+          if (inline.type !== 'inline' || inline.children?.length !== 1) continue
+          const child = inline.children[0]
+          if (child.type !== 'image') continue
+          const match = /^\/figures\/([\w-]+)\.svg$/.exec(child.attrGet('src') || '')
+          if (!match) continue
+          const html = handFigure(match[1], child.content || child.attrGet('alt') || '')
+          if (!html) continue
+          const block = new state.Token('html_block', '', 0)
+          block.content = html
           block.map = tokens[i].map
           tokens.splice(i, 3, block)
           i--

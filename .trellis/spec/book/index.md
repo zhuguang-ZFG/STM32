@@ -58,4 +58,4 @@ F01（2026-11-05 修复）：`.github/workflows/book.yml` 与 `quality.yml` 原�
 不存在而红。两条 workflow 现在都在 A4 之后跑
 `python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html`，再跑 `check_pdf.py`；
 Book CI 另补 `actions/setup-node` + `npm ci`，提供 `pagedjs`。验证：PR #2 的 `book`/`checks`
-全绿，本地 1174 页、13/13 通过。
+全绿，本地 1205 页、13/13 通过。

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="严格别名：指针强转读 float 的位是 UB，union 或 memcpy 才是定义良好的位模式搬运"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="14" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">严格别名</text>
+<text x="74" y="10" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">*(uint32_t*)&amp;f</text>
+<rect x="8" y="30" width="62" height="24" rx="3" stroke-width="1.4"/> <text x="12" y="42" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">float f</text> <text x="12" y="52" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">1.0f</text>
+<path d="M70 36 C 110 16, 160 14, 194 14" stroke-width="1.8" stroke-dasharray="3 2"/>
+<rect x="194" y="4" width="112" height="20" rx="3" stroke-width="1.4"/> <text x="198" y="17" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x3F800000</text>
+<rect x="150" y="20" width="22" height="12" rx="2" stroke-width="1.2" stroke-dasharray="2 2"/> <text x="161" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">UB</text>
+<text x="74" y="62" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">union / memcpy</text>
+<path d="M70 48 C 110 68, 160 70, 194 70" stroke-width="2.2"/>
+<rect x="194" y="60" width="112" height="20" rx="3" stroke-width="1.4"/> <text x="198" y="73" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x3F800000</text>
+</g></svg>
