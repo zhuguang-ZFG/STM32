@@ -55,7 +55,7 @@ def pwm_debug() -> Svg:
     ]
     for index, (title, reg, value, note) in enumerate(rings):
         left = 58 + index * 290
-        canvas.rect(left, 230, 260, 132, fill=T.BG, stroke=T.CYAN, rx=6)
+        canvas.rect(left, 230, 260, 132, fill=T.BG, stroke=T.CYAN, rx=4)
         canvas.text(left + 14, 260, title, size=14, fill=T.CYAN, weight="700")
         canvas.text(left + 14, 292, reg, size=12, fill=T.TEXT, mono=True)
         canvas.text(left + 14, 320, value, size=13, fill=T.GREEN, weight="700")

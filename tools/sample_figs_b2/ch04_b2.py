@@ -56,7 +56,7 @@ def exti_triage() -> Svg:
     ]
     for index, (title, reg, value, note) in enumerate(gates):
         left = 58 + index * 214
-        canvas.rect(left, 232, 200, 118, fill=T.BG, stroke=T.CYAN, rx=6)
+        canvas.rect(left, 232, 200, 118, fill=T.BG, stroke=T.CYAN, rx=4)
         canvas.text(left + 12, 262, title, size=14, fill=T.CYAN, weight="700")
         canvas.text(left + 12, 292, reg, size=12, fill=T.TEXT, mono=True)
         canvas.text(left + 12, 318, value, size=14, fill=T.GREEN, weight="700")

@@ -5,7 +5,7 @@
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">排错三岔口：读数为 0 查 bit 24；72 MHz 下 72 个计数是 1 µs；BFAR 要 CFSR bit 15 为 1</text>
+<text x="22" y="32" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">排错三岔口：读数为 0 查 bit 24；72 MHz 下 72 个计数是 1 µs；BFAR 要 CFSR bit 15 为 1</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 17 · DWT / optimization / HardFault</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">17</text>

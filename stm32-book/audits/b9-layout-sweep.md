@@ -171,3 +171,25 @@
 8. `python -m pytest stm32-book/tests -q` —— 首次全量跑出 1 failed：`sample-02-hse-fail.svg` 的红色叉用了 `stroke-width=2.5`，违反 `test_sample_svg_c` 的调色板/线宽锁（只允许 1 / 1.5 / 2）。这是**图的缺陷不是测试的缺陷**，改图为 2 后重锁（`bytes` 16,162→16,158，`text_hash` 不变），定向 `test_sample_svg_c.py` 1 passed，再全量重跑 188 passed（0 failed，约 5 分 48 秒）。
 
 已知限制：本批的版面判定全部来自几何测量（真实字体文本框 + 图元遮挡关系），没有做视觉目检——本机视觉通道 `?q=` 不可用（连续 `model_not_found`）。几何检查能证明「不出界、不互压、不被盖住、不溢出卡片」，不能证明「构图好看」，这一点与 B8 相同。
+
+## 12. 生成器–磁盘对账（补做）
+
+§10 当时只重跑了「本批动过的那几个」生成器，等于用抽样代替全量：`header()` 改成自适应后，任何**没重跑**的生成器都在磁盘上留着旧的固定 20 px 标题。这个漏洞是被 `sample-00-accept-gate` 撞出来的（标题与右端 chip 咬 2.6 px，占较小文本框 17%，小于互压阈值 30%——五类几何检查不会报），说明「只有被重跑的生成器才是可信的」是个未经验证的假设。
+
+做法：干净工作树下逐个重跑 `tools/` 与 `tools/sample_figs_*/` 的全部生成器，用 `git status` / `git diff` 反查漂移；**只**采纳标题字号类差异，其余一律还原。
+
+| 生成器族 | 结果 |
+|---|---|
+| `gen_sample_figures.py`、`gen_diagrams.py`、`gen_gpio_classic.py`、`gen_boards.py`、`gen_pinouts.py` | 逐字节一致 |
+| `sample_figs_b2/ch00,ch01,ch02` 、`sample_figs_b3/*`、`sample_figs_b4/*`、`sample_figs_b5/ch*_b5`、`sample_figs_b6/figures_b6`、`sample_figs_quality{1..5}/figures_q*.py`、`gen_stack_diagrams.py`、`gen_tietu.py`、`remake_shared.py` | 逐字节一致，**除**下列三处标题字号 |
+| `sample_figs_b2/ch05_b2.py` | `sample-05-pwm-debug` 标题 20 → 19.5 px（加 rx 缺陷，见下） |
+| `sample_figs_b4/ch17_b4.py` | `sample-17-obs-compare` 20 → 19.5、`sample-17-perf-triage` 20 → 19 px |
+| `gen_stack_diagrams.py` | 重算内联的 base64 图（`stack-gpio-pc13-led.html` 8 行），跟随上面的字号变化 |
+
+对账顺带挖出三个真问题：
+
+1. **`ch04_b2.py` / `ch05_b2.py` 会产出锁不接受的圆角**：两个生成器写 `rx=6`，而 `test_sample_svg_c` 只允许 `{2,4,8}`，磁盘上一直是 `rx=4`。也就是说这两个脚本当时一跑就会把图改成「测试必挂」的状态——已把生成器改回 `rx=4`，现在重跑与磁盘逐字节一致（`sample-04-exti-triage` 无变化，`sample-05-pwm-debug` 只剩标题字号差异）。
+2. **`anim_b5.py` / `anim_b6.py` 被误指到 `assets/diagrams`**：4 张动画板（`sample-20-lookup-flow`、`sample-21-power-swd`、`sample-23-boot-latch`、`sample-28-owner-flow`）被写进了静态图目录，与 `assets/animations/` 下的正本逐字节相同。已删除副本；`ROWS` 因此从 328 回到 **324**（动画板不进静态锁）。这两个脚本的正确目标是 `assets/animations/`，重跑后该目录零漂移。
+3. **`gen_animations.py` 仍不是 `g0-boot-swd` / `uart-frame` 的权威写入者**：全量重跑会把这两个文件退回旧标题与旧关键帧时序。本批继续用 `git checkout` 还原，结论不变（§10）。
+
+对账后的最终状态：`measure_svg.py --all` → `324 files / 0 bad / 0 issues`；`test_sample_svg_c` 1 passed、`ROWS` 324 行；`check_assets` 全部通过（链接 1,964/1,964）；`build_html --check` zh / en 均 PASS；`audit_book` 与 b8 的字段差异只有 ch02 的字符数（caption 重写所致，+81 zh / +163 en），deficit 与 parity 一律不变。
