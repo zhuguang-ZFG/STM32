@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="优先级反转与继承：高优先级任务等锁、中优先级任务抢占、持锁的低优先级任务临时继承高优先级"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="10" y="22" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">H</text> <text x="10" y="42" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">M</text> <text x="10" y="62" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">L</text>
+<path d="M40 74 L306 74" stroke-width="1.2"/>
+<rect x="70" y="14" width="60" height="14" rx="3" stroke-width="1.4"/> <rect x="190" y="14" width="50" height="14" rx="3" stroke-width="1.4"/>
+<rect x="100" y="34" width="70" height="14" rx="3" stroke-width="1.4"/> <rect x="210" y="34" width="50" height="14" rx="3" stroke-width="1.4"/>
+<rect x="40" y="54" width="60" height="14" rx="3" stroke-width="1.4"/> <rect x="170" y="54" width="70" height="14" rx="3" stroke-width="1.4"/>
+<text x="100" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">等锁</text> <text x="215" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">运行</text>
+<text x="135" y="44" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">抢占</text> <text x="235" y="44" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">运行</text>
+<text x="70" y="64" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">持锁</text> <text x="205" y="64" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">继承</text>
+<path d="M80 28 C 80 40, 70 48, 60 54" stroke-width="2.2"/>
+<path d="M120 48 C 120 52, 110 54, 100 54" stroke-width="1.8"/>
+<path d="M180 54 C 180 44, 190 36, 200 28" stroke-width="1.8" stroke-dasharray="3 2"/>
+<text x="40" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">H 等锁 · M 抢占 · L 继承到 H</text>
+</g></svg>

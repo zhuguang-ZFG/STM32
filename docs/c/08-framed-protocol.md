@@ -98,6 +98,8 @@ void write_le16(uint8_t *p, uint16_t v) { p[0]=(uint8_t)v; p[1]=(uint8_t)(v>>8);
 
 结构体的填充和端序由编译器和 ABI 决定（[C4](04-struct-abi.md)）。直接发结构体内存，等于让编译器替你定了一份没写在任何地方的协议。
 
+![COBS 帧布局：SOF、长度、转义后的载荷、CRC-16 与 EOF；每 254 字节最多多一个开销字节](/figures/c-08-framed-protocol.svg)
+
 ## 三、CRC-16/CCITT-FALSE：先把名字叫全
 
 "CRC-16"不是一个算法，而是一族算法。要确定是哪一个，得给全多项式、初值、是否反转输入输出、结果是否再异或这几个参数。本协议用的是：

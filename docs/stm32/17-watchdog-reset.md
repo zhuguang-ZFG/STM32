@@ -83,6 +83,8 @@ void TIM6_DAC_IRQHandler(void) { IWDG->KR = 0xAAAA; ... }   /* 反例 */
 
 通信任务没有收到串口数据也会上报进展。它证明的是"这一轮有界的服务检查做完了"，不要求主机一直发数据。监督任务优先级最高，低优先级任务忙死了也挡不住它判断超时。
 
+![窗口看门狗：早喂也复位、晚喂也复位，只有落在窗口内才喂狗成功](/figures/stm32-17-watchdog-reset.svg)
+
 ## 二、health 模块：把"进展"变成可检查的 mask
 
 `code/common/reliability/health.c` 是平台无关的纯 C，F407 和 S3 共用，主机上就能测。它不拿锁，也不碰看门狗寄存器，调用方负责串行化（F407 用 `taskENTER_CRITICAL`）。

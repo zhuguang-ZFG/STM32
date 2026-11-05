@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="COBS 帧布局：SOF、长度、转义后的载荷、CRC-16 与 EOF；每 254 字节最多多一个开销字节"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<path d="M16 26 C 100 24, 220 28, 304 26" stroke-width="2.2"/>
+<rect x="16" y="30" width="288" height="22" rx="3" stroke-width="1.4"/>
+<path d="M40 30 L40 52" stroke-width="1.4"/> <path d="M72 30 L72 52" stroke-width="1.4"/> <path d="M220 30 L220 52" stroke-width="1.4"/> <path d="M270 30 L270 52" stroke-width="1.4"/>
+<text x="28" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">0x7E</text> <text x="56" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">LEN</text> <text x="146" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">PAYLOAD</text>
+<text x="245" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">CRC-16</text> <text x="287" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">0x7E</text>
+<path d="M72 60 C 100 66, 150 66, 210 60" stroke-width="1.8"/>
+<text x="72" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">COBS：0x00 → 0x01 0x01</text>
+<text x="220" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">每 254B 多 1B</text>
+</g></svg>
