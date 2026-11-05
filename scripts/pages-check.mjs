@@ -77,7 +77,11 @@ export function checkDistAnchors(distDir) {
   for (const file of collectHtmlPages(distDir)) {
     const page = toPosix(path.relative(distDir, file))
     const html = fs.readFileSync(file, 'utf8')
-    for (const m of html.matchAll(/href="([^"]*)"/g)) {
+    // Inline runtimes contain CSS selectors such as a[href="#'+id+'"].
+    // They are not links. Blank non-markup bodies without changing offsets,
+    // preserving the file/line diagnostics for actual anchors below them.
+    const markup = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, block => block.replace(/[^\n]/g, ' '))
+    for (const m of markup.matchAll(/href="([^"]*)"/g)) {
       const href = m[1]
       const resolved = resolveHref(href, page)
       if (!resolved) continue

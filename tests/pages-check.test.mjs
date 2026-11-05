@@ -150,3 +150,24 @@ test('checkDistAnchors：base 外的绝对路径直接判错（不许映射进�
     rm(dir)
   }
 })
+
+test('checkDistAnchors：脚本与样式里的 href 选择器不计链接，真实错误保持原行号', () => {
+  const dir = makeDist({
+    'index.html': PAGE([
+      '<script>',
+      `const active = panel.querySelector('a[href="#'+entry.target.id+'"]');`,
+      '</script>',
+      '<style>a[href="#style-only"] { color: blue }</style>',
+      '<a href="#real">真实链接</a>',
+      '<a href="#missing">真实错误</a>',
+    ].join('\n'), ['real']),
+  })
+  try {
+    const { problems, checked } = checkDistAnchors(dir)
+    assert.equal(checked, 2)
+    assert.equal(problems.length, 1)
+    assert.match(problems[0], /^index\.html:6 → href "#missing"/)
+  } finally {
+    rm(dir)
+  }
+})
