@@ -35,4 +35,4 @@
 - [x] 卡片/导读命令、测试和规范已交付；旧用户文件保留。
 - [x] 最终质量门全绿；PPT 扩展验证包括冻结时暂停自动翻页、恢复后继续、排练记录及圈选/激光工具。
 - [x] Phase 3.4 用户回复「继续下一步」确认提交计划，按三项分组提交；产线 `afd543f`、检查器 `08d0c3c`，规范和本任务为第三项。不并入会话开始前的卡片、旧 spec 历史差异或未跟踪 PPT。
-- [ ] 提交后运行 finish-work 归档本轮任务并记 journal；归档前保留 in_progress，不伪记 completed。
+- [x] 三项 work commit 已完成：`afd543f`、`08d0c3c`、`696c194`。本轮任务已归档至 `.trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout/`，task.json 为 completed；归档与 journal 分别独立提交。

@@ -51,4 +51,4 @@
 2. `fix(checks): 忽略内联脚本和样式中的伪锚点`：`scripts/pages-check.mjs` 与 `tests/pages-check.test.mjs` 独立成提交，不混入卡片构图差异。
 3. `docs(trellis): 登记传播资产契约与实现验收`：`.trellis/spec/docs-site/` 的本轮规范与本轮任务目录。
 4. 旧 spec 与历史联系表包含会话前修改且与本轮更新相交，不整文件暂存；所有变更保留在工作区，差量基线在 `.temp/skill-closeout/specs-before.md` 与 `review-sheet-before.html`。旧 13 张 PNG 与未跟踪 PPT 也不加入本轮提交。
-5. 用户已确认，产线 `afd543f`、检查器 `08d0c3c` 已提交，规范/任务为第三项 work commit；之后 finish-work 归档与记录 journal，最终提交号由 journal 登记。
+5. 用户已确认，产线 `afd543f`、检查器 `08d0c3c`、规范/任务 `696c194` 已提交；本轮任务已归档，journal 另行登记以上三个 work commit。
