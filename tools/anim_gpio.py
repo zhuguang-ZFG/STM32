@@ -4,9 +4,46 @@
 
 from __future__ import annotations
 
-from svgkit import Svg, T, anim_blink, anim_fade, anim_flow, anim_tx
+from svgkit import Svg, T, anim_blink, anim_fade, anim_flow, anim_tx, css_kf
 
 W, H = 900, 620
+
+REDUCED = "@media (prefers-reduced-motion: reduce){*{animation:none!important}}"
+
+
+def _step_highlight(prefix: str, n: int, period=6.0, window=0.22,
+                    peak=0.35, rest=0.06) -> str:
+    css = []
+    step = 100.0 / n
+    for i in range(n):
+        a = i * step
+        b = min(a + step * window, 99.2)
+        name = f"{prefix}{i}-hl"
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.25:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.25, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
+        css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
+    return "\n".join(css)
+
+
+def _seq_flash(prefix: str, n: int, period=5.0, window=0.55,
+               peak=1.0, rest=0.22) -> str:
+    css = []
+    step = 100.0 / n
+    for i in range(n):
+        a = i * step
+        b = min(a + step * window, 99.2)
+        name = f"{prefix}{i}-sq"
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.3:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.3, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
+        css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
+    return "\n".join(css)
+
 
 
 def gpio_blink() -> Svg:
@@ -183,62 +220,60 @@ def gpio_input_interrupt() -> Svg:
 
 
 def nvic_interrupt_flow() -> Svg:
-    s = Svg(W, H, "中断响应全流程", "从外设置标志到 ISR 返回，硬件帮你做了哪些事")
-    s.header(tag="04 NVIC", tag_color=T.CYAN)
-
-    steps = [
-        ("① 外设置标志", "SR 寄存器的某位置 1", T.BLUE),
-        ("② NVIC 仲裁", "比较抢占优先级，数值小者先响应", T.CYAN),
-        ("③ 硬件自动入栈", "先压 xPSR，SP 停在 R0", T.VIOLET),
-        ("④ 取向量表", "VTOR + 4×(IRQn+16)", T.AMBER),
-        ("⑤ 执行 ISR", "清标志、处理数据、越短越好", T.GREEN),
-        ("⑥ 出栈返回", "恢复现场，继续被打断的指令", T.PINK),
+    s = Svg(W, H, "中断响应全流程",
+            "外设置位 → NVIC 仲裁 → 硬件入栈 → 取向量 → ISR → 出栈；数字来自 Cortex-M3")
+    s.header(title="NVIC 响应链：从 SR 置位到 ISR 返回",
+             subtitle="mechanism · FA-002 continuous-line · F103 / Cortex-M3",
+             tag="04 NVIC", tag_color=T.CYAN)
+    css = []
+    stages = [
+        ("① 外设置位", "EXTI_PR / TIMx_SR", "IRQn 例：EXTI0=6", T.BLUE),
+        ("② NVIC 仲裁", "抢占优先级更小先跑", "GROUP_4：4 抢占 / 0 子", T.CYAN),
+        ("③ 硬件入栈", "R0-R3,R12,LR,PC,xPSR", "固定 32 B · SP→R0", T.VIOLET),
+        ("④ 取向量", "VTOR + 4×(IRQn+16)", "Reset=0，IRQ 从 16 起", T.AMBER),
+        ("⑤ 执行 ISR", "清标志 · 置事件 · 快退", "禁 HAL_Delay / printf", T.GREEN),
+        ("⑥ 出栈返回", "EXC_RETURN 恢复现场", "可 tail-chain 下一 IRQ", T.PINK),
     ]
-    x0, y0, bw, bh, gap = 40, 100, 196, 80, 18
-    for i, (label, sub, color) in enumerate(steps):
+    x0, y0, bw, bh, gapx, gapy = 36, 96, 200, 96, 22, 18
+    for i, (title, a, b, color) in enumerate(stages):
         r, c = divmod(i, 3)
-        x = x0 + c * (bw + 82)
-        y = y0 + r * (bh + 56)
+        x = x0 + c * (bw + gapx)
+        y = y0 + r * (bh + gapy + 28)
         s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=8)
-        s.text(x + 14, y + 28, label, size=14, fill=T.TEXT, weight="700")
-        s.text(x + 14, y + 52, sub, size=10.5, fill=T.MUTED)
+        s.rect(x, y, bw, 5, fill=color, rx=2)
+        s.text(x + 14, y + 30, title, size=13, fill=T.TEXT, weight="700")
+        s.text(x + 14, y + 54, a, size=11, fill=T.MUTED, mono=True)
+        s.text(x + 14, y + 76, b, size=10.5, fill=T.DIM)
+        s.rect(x, y, bw, bh, fill=color, rx=8, opacity=0.12, cls=f"nv{i}")
         if c < 2:
-            s.arrow(x + bw + 4, y + bh / 2, x + bw + 78, y + bh / 2,
-                    color=T.CYAN, sw=2, head=7, cls=f"fl{i}")
+            s.arrow(x + bw + 3, y + bh / 2, x + bw + gapx - 3, y + bh / 2,
+                    color=T.CYAN, sw=2, head=7, cls="nv-flow")
         if c == 2 and r == 0:
-            s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + 40,
-                    color=T.CYAN, sw=2, head=7)
-        if r == 1 and c < 2:
-            s.arrow(x + bw + 4, y + bh / 2, x + bw + 78, y + bh / 2,
-                    color=T.CYAN, sw=2, head=7)
-    s.add_style(anim_flow(".fl0", dur="1.2s", dash="7 10", shift=-17))
-    s.add_style(anim_flow(".fl1", dur="1.2s", dash="7 10", shift=-17, ))
-    s.add_style(anim_flow(".fl3", dur="1.2s", dash="7 10", shift=-17))
-    s.add_style(anim_flow(".fl4", dur="1.2s", dash="7 10", shift=-17))
-
-    # 栈帧
-    s.title_block(40, 348, "硬件栈帧 32 字节：低地址在左，SP 指向 R0", color=T.VIOLET)
+            s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + 24,
+                    color=T.CYAN, sw=2, head=7, cls="nv-flow")
+    css.append(_step_highlight("nv", 6, period=7.2, window=0.14, peak=0.32))
+    css.append(anim_flow(".nv-flow", dur="1.2s", dash="7 10", shift=-17))
+    s.title_block(36, 360, "硬件栈帧 8×4 B（低地址在左，SP 停在 R0）", color=T.VIOLET)
     regs = ["R0", "R1", "R2", "R3", "R12", "LR", "PC", "xPSR"]
-    for i, r in enumerate(regs):
-        x = 40 + i * 62
-        s.rect(x, 360, 56, 40, fill=T.PANEL2, stroke=T.VIOLET, rx=4)
-        s.text(x + 28, 385, r, size=12, anchor="middle", fill=T.TEXT, mono=True)
-    s.text(548, 385, "高地址 →  硬件自动入栈，ISR 直接写 C", size=11,
-           fill=T.MUTED)
-
-    # 优先级分组
-    s.title_block(40, 428, "优先级分组：谁可以打断谁", color=T.AMBER)
-    rows = [("NVIC_PRIORITYGROUP_4", "4 位抢占 / 0 位子优先级", "只用抢占，最常用"),
-            ("NVIC_PRIORITYGROUP_2", "2 位抢占 / 2 位子优先级", "同类外设内部排队"),
-            ("同抢占优先级", "不能互相打断", "会按子优先级排队执行")]
-    for i, (a, b, c) in enumerate(rows):
-        yy = 444 + i * 24
-        s.text(52, yy, a, size=11.5, mono=True, fill=T.CYAN)
-        s.text(280, yy, b, size=11.5, fill=T.TEXT)
-        s.text(500, yy, c, size=11, fill=T.MUTED)
-    s.footer("ISR 里禁止 HAL_Delay / 浮点运算 / printf，必要时只置标志交给主循环处理")
+    for i, reg in enumerate(regs):
+        x = 36 + i * 64
+        s.rect(x, 384, 58, 44, fill=T.PANEL2, stroke=T.VIOLET, rx=4)
+        s.text(x + 29, 410, reg, size=12, anchor="middle", fill=T.TEXT, mono=True)
+        s.rect(x, 384, 58, 44, fill=T.VIOLET, rx=4, opacity=0.1, cls=f"sf{i}")
+    css.append(_seq_flash("sf", 8, period=4.8, window=0.4, peak=0.55, rest=0.08))
+    s.text(560, 410, "ISR 可直接用 C；返回靠 EXC_RETURN", size=11, fill=T.MUTED)
+    s.rect(36, 450, 828, 100, fill=T.BG2, stroke=T.AMBER, rx=8)
+    s.text(52, 478, "同抢占优先级不能互抢 · Tail-chaining 可省一对出入栈",
+           size=13, fill=T.TEXT, weight="700")
+    s.text(52, 504, "例：TIM2(IRQ=28) 跑着时 EXTI0(IRQ=6) 若抢占更高 → 打断；同级则排队。",
+           size=12, fill=T.MUTED)
+    s.text(52, 528, "ISR 只清 SR / 置标志；长活丢主循环。匹配 sample-04-nvic-preempt-flow。",
+           size=12, fill=T.DIM)
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · NVIC 响应链，非逻辑分析仪实拍",
+             label="自绘矢量动画 · STM32 知识轨")
     return s
-
 
 
 

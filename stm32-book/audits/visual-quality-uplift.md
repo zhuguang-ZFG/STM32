@@ -297,7 +297,7 @@ Date: 2026-11-04 (America/Adak). Same bar: denser Handraw figures, FA-002 CSS-SV
 
 ### Remade chapter anim (in place)
 
-`g0-boot-swd.svg` — FA-002 teaching remake (filename kept). Shared classics (`nvic-interrupt-flow`, `dma-circular`, `network-packet-journey`, `rtos-system-layers`, `freertos-scheduler`) left untouched.
+`g0-boot-swd.svg` — FA-002 teaching remake (filename kept). Shared classics later remade 2026-11-04 via `tools/sample_figs_classic_shared/remake_shared.py` (see Remaining visual gaps).
 
 ### Embeds
 
@@ -333,8 +333,9 @@ zh + en for 21 new assets (42 insert ops) via `tools/sample_figs_quality5/embed_
 
 ### Remaining visual gaps (honest)
 
-- Shared classic anims that still lack a chapter-specific FA-002 remake (`nvic-interrupt-flow`, `dma-circular`, `network-packet-journey`, `rtos-system-layers`, `freertos-scheduler`) — left as shared assets; new chapter-local flows cover the teaching spine.
-- Appendix A–E / other book appendices not in this batch's scope (F only).
+- Shared classic anims FA-002 remake (**done 2026-11-04**): `nvic-interrupt-flow`, `dma-circular`, `freertos-scheduler`, `rtos-system-layers`, `network-packet-journey`, plus appendix A `uart-idle-dma` — reproducible via `tools/sample_figs_classic_shared/remake_shared.py`; ROWS locked; `prefers-reduced-motion` + continuous-line CSS. Handraw static plates left as-is.
+- Appendix B–E: no mechanism anims (handraw-only) — no anim polish needed. Appendix A embeds remade `uart-idle-dma.svg`.
 - Optional denser remakes of older pre-uplift static plates that already met density bar — deferred.
-- PDF rebuild of zh+en into `stm32-book/dist` is optional post-gate nicety, not a gate.
+- Video / narration / Bilibili / `contact_sheet.py` remain PAUSED (owner).
+- PDF rebuild of zh+en into `stm32-book/dist` is optional post-gate nicety, not a gate for this anim pass.
 

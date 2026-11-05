@@ -8,10 +8,28 @@ from svgkit import Svg, T, anim_fade, anim_flow, anim_tx, css_kf
 
 W, H = 900, 620
 
+REDUCED = "@media (prefers-reduced-motion: reduce){*{animation:none!important}}"
 
-def _seq_flash(prefix: str, n: int, period=4.4, window=0.5,
+
+def _step_highlight(prefix: str, n: int, period=6.0, window=0.22,
+                    peak=0.35, rest=0.06) -> str:
+    css = []
+    step = 100.0 / n
+    for i in range(n):
+        a = i * step
+        b = min(a + step * window, 99.2)
+        name = f"{prefix}{i}-hl"
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.25:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.25, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
+        css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
+    return "\n".join(css)
+
+
+def _seq_flash(prefix: str, n: int, period=5.0, window=0.55,
                peak=1.0, rest=0.22) -> str:
-    """依次高亮：窗口内为 peak，其余时间为 rest（不要在窗口之前就铺满不透明）。"""
     css = []
     step = 100.0 / n
     for i in range(n):
@@ -27,7 +45,6 @@ def _seq_flash(prefix: str, n: int, period=4.4, window=0.5,
     return "\n".join(css)
 
 
-# --------------------------------------------------------------------------- UART 帧
 
 
 def uart_frame() -> Svg:
@@ -411,160 +428,132 @@ def usb_enumeration() -> Svg:
 
 
 def network_packet_journey() -> Svg:
-    s = Svg(W, H, "一条 MQTT 消息怎样穿过 STM32 网络栈",
-            "每层只解决自己的问题：消息语义、可靠字节流、寻址、帧传输与物理链路")
-    s.header(tag="27 网络", tag_color=T.CYAN)
-
+    s = Svg(W, H, "MQTT 消息穿过 STM32 网络栈",
+            "每层只管自己的语义：消息 · 字节流 · 寻址 · 帧 · 物理")
+    s.header(title="网络包旅程：从 APP 到 PHY 的证据链",
+             subtitle="mechanism · FA-002 continuous-line · MQTT QoS1 over TLS/TCP",
+             tag="27 网络", tag_color=T.CYAN)
+    css = []
     layers = [
-        ("APP", "{temp: 23.6}", "业务序号 / 幂等键", T.PINK),
-        ("MQTT", "PUBLISH · QoS 1", "可能重复，不等于业务只执行一次", T.VIOLET),
-        ("TLS", "record + tag", "CA / 主机名 / 时间 / RNG", T.AMBER),
-        ("TCP", "seq · ACK · retransmit", "字节流没有消息边界", T.GREEN),
-        ("IP", "src / dst / route", "地址、掩码、网关", T.CYAN),
-        ("Ethernet", "dst MAC · EtherType · FCS", "ARP 与二层广播域", T.BLUE),
-        ("DMA / MAC", "descriptor → RMII → PHY", "可达 SRAM · 32 B 对齐 · Cache", T.ORANGE),
+        ("APP", "{temp:23.6}", "业务序号 / 幂等键", T.PINK),
+        ("MQTT", "PUBLISH · QoS1", "至少一次 ≠ 业务一次", T.VIOLET),
+        ("TLS", "record + tag", "CA · SNI · 时间 · RNG", T.AMBER),
+        ("TCP", "seq · ACK · RTX", "字节流无消息边界", T.GREEN),
+        ("IP", "src/dst · TTL", "地址 · 掩码 · 网关", T.CYAN),
+        ("Eth", "dst MAC · type · FCS", "ARP / 二层广播域", T.BLUE),
+        ("DMA", "desc → RMII → PHY", "SRAM 对齐 · Cache 一致", T.ORANGE),
     ]
-    x, y0, bw, bh, gap = 56, 90, 500, 54, 10
+    x, y0, bw, bh, gap = 48, 92, 500, 52, 8
     for i, (name, payload, boundary, color) in enumerate(layers):
         y = y0 + i * (bh + gap)
-        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=8, cls=f"net{i}")
-        s.rect(x, y, 84, bh, fill=T.BG2, stroke=color, rx=8)
-        s.text(x + 42, y + 32, name, size=12, anchor="middle", fill=color, weight="700")
-        s.text(x + 102, y + 22, payload, size=11, mono=True, fill=T.TEXT, weight="600")
-        s.text(x + 102, y + 42, boundary, size=9.8, fill=T.MUTED)
+        s.rect(x, y, bw, bh, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, y, 78, bh, fill=T.BG2, stroke=color, rx=8)
+        s.text(x + 39, y + 30, name, size=12, anchor="middle", fill=color, weight="700")
+        s.text(x + 96, y + 20, payload, size=11, mono=True, fill=T.TEXT, weight="600")
+        s.text(x + 96, y + 40, boundary, size=10, fill=T.MUTED)
+        s.rect(x, y, bw, bh, fill=color, rx=8, opacity=0.1, cls=f"net{i}")
         if i < len(layers) - 1:
-            s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + gap - 2,
+            s.arrow(x + bw / 2, y + bh + 1, x + bw / 2, y + bh + gap - 1,
                     color=T.CYAN, sw=2, head=5, cls="net-flow")
-    s.add_style(_seq_flash("net", len(layers), period=7.0, window=.82,
-                           peak=1.0, rest=.42))
-    s.add_style(anim_flow(".net-flow", dur="1.0s", dash="4 7", shift=-11))
-
-    s.rect(584, 90, 276, 182, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(604, 118, "链路建立的证据顺序", size=13, fill=T.TEXT, weight="700")
+    css.append(_step_highlight("net", 7, period=7.0, window=0.12, peak=0.3))
+    css.append(anim_flow(".net-flow", dur="1.0s", dash="4 7", shift=-11))
+    s.rect(572, 92, 288, 200, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(590, 118, "链路证据顺序", size=13, fill=T.TEXT, weight="700")
     proof = [
-        ("1", "PHY link", "读 PHY BSR，不只看 LED", T.ORANGE),
-        ("2", "ARP", "看到 who-has / is-at", T.BLUE),
-        ("3", "IP", "ping 只证明到 ICMP", T.CYAN),
-        ("4", "TCP", "SYN → SYN/ACK → ACK", T.GREEN),
-        ("5", "TLS/MQTT", "分别记录握手与 CONNACK", T.VIOLET),
+        ("1", "PHY link", "读 BSR，不只看 LED", T.ORANGE),
+        ("2", "ARP", "who-has / is-at", T.BLUE),
+        ("3", "IP", "ping≠业务可达", T.CYAN),
+        ("4", "TCP", "SYN→SYN/ACK→ACK", T.GREEN),
+        ("5", "TLS/MQTT", "握手 + CONNACK", T.VIOLET),
     ]
     for i, (n, key, note, color) in enumerate(proof):
-        yy = 146 + i * 25
-        s.circle(614, yy - 4, 8, fill=color)
-        s.text(614, yy, n, size=8.5, anchor="middle", fill=T.BG, weight="700")
-        s.text(632, yy, key, size=10, mono=True, fill=color, weight="700")
-        s.text(684, yy, note, size=9.2, fill=T.MUTED)
-
-    s.rect(584, 292, 276, 198, fill=T.PANEL, stroke=T.RED, rx=8)
-    s.text(604, 320, "三个不能混为一谈", size=13, fill=T.TEXT, weight="700")
+        yy = 148 + i * 28
+        s.circle(600, yy - 4, 9, fill=color)
+        s.text(600, yy, n, size=9, anchor="middle", fill=T.BG, weight="700")
+        s.text(620, yy, key, size=11, mono=True, fill=color, weight="700")
+        s.text(700, yy, note, size=10, fill=T.MUTED)
+    s.rect(572, 310, 288, 220, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(590, 338, "五个不能混为一谈", size=13, fill=T.TEXT, weight="700")
     warnings = [
-        ("TCP 已 ACK", "不代表业务已经落盘"),
-        ("MQTT QoS 1", "保证至少一次，重复要幂等"),
-        ("ping 成功", "不证明 DNS/TCP/TLS/MQTT 正常"),
-        ("link up", "不证明 DMA/Cache 与 IP 配置正确"),
-        ("收到一帧", "不代表流式协议分帧完整"),
+        ("TCP ACK", "≠ 业务已落盘"),
+        ("MQTT QoS1", "至少一次，要幂等"),
+        ("ping 通", "≠ DNS/TLS/MQTT OK"),
+        ("link up", "≠ DMA/Cache/IP OK"),
+        ("收到一段", "≠ 流式分帧完成"),
     ]
     for i, (claim, truth) in enumerate(warnings):
-        yy = 350 + i * 27
-        s.text(604, yy, "×", size=13, fill=T.RED, weight="700")
-        s.text(624, yy, claim, size=10, mono=True, fill=T.TEXT)
-        s.text(704, yy, truth, size=9.2, fill=T.MUTED)
-
-    s.footer("分层验收：先 PHY，再 ARP/IP，再 TCP，再 TLS，最后才是 MQTT 与业务语义")
+        yy = 368 + i * 30
+        s.text(590, yy, "×", size=13, fill=T.RED, weight="700")
+        s.text(610, yy, claim, size=11, mono=True, fill=T.TEXT)
+        s.text(710, yy, truth, size=10, fill=T.MUTED)
+    s.rect(48, 530, 500, 36, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(60, 554, "分层验收：PHY → ARP/IP → TCP → TLS → MQTT → 业务语义",
+           size=12, fill=T.TEXT, weight="700")
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · 网络分层证据链，非抓包截图",
+             label="自绘矢量动画 · STM32 知识轨")
     return s
 
-
-# --------------------------------------------------------------------------- UART IDLE + DMA
 
 
 def uart_idle_dma() -> Svg:
     s = Svg(W, H, "UART + DMA + IDLE：两类接收契约",
-            "Size 是首个未写位置；交给业务的永远是新增字节区间")
-    s.header(tag="附录 A", tag_color=T.AMBER)
-
-    # 1. 总线时间线：两阵字节 + 空闲间隙
-    s.title_block(40, 96, "① 总线：字节成阵到达，间隙触发 IDLE", color=T.CYAN)
-    s.line(50, 150, 850, 150, stroke=T.GRID, sw=1)
-    x0, cw = 60, 44
-    for i in range(5):
-        x = x0 + i * cw
-        s.rect(x, 128, cw - 6, 44, fill=T.PANEL, stroke=T.GREEN, rx=4)
-        s.text(x + 19, 155, f"D{i}", size=11, anchor="middle", fill=T.GREEN, mono=True)
-        s.rect(x, 128, cw - 6, 44, fill=T.GREEN, rx=4, opacity=0.14, cls=f"bus{i}")
-    for i in range(3):
-        x = x0 + (5 + i) * cw
-        s.rect(x, 128, cw - 6, 44, fill="none", stroke=T.AMBER, rx=4, dash="4 4")
-    s.text(x0 + 6.5 * cw - 10, 122, "空闲 ≥ 1 帧", size=10.5, anchor="middle", fill=T.AMBER)
-    for i in range(3):
-        x = x0 + (8 + i) * cw
-        s.rect(x, 128, cw - 6, 44, fill=T.PANEL, stroke=T.GREEN, rx=4)
-        s.rect(x, 128, cw - 6, 44, fill=T.GREEN, rx=4, opacity=0.14, cls=f"bus{5 + i}")
-    s.path(f"M{x0 + 8 * cw - 6} 110 L{x0 + 8 * cw - 6} 84", stroke=T.RED, sw=2)
-    s.path(f"M{x0 + 8 * cw - 16} 88 L{x0 + 8 * cw - 6} 84 L{x0 + 8 * cw - 16} 96 Z",
-           fill=T.RED)
-    s.text(x0 + 8 * cw + 8, 92, "IDLE 事件", size=11, fill=T.RED, weight="700")
-    s.line(60, 120, 60, 186, stroke=T.RED, sw=1.5, cls="busscan")
-    s.add_style(_seq_flash("bus", 8, period=6.0, peak=0.5, rest=0.06))
-    s.add_style(anim_tx(".busscan", dur="6s", x1=0, x2=780))
-
-    # 2. DMA 缓冲区：Size 语义
-    s.title_block(40, 226, "② DMA 缓冲（cap = 128）：Size = 首个未写位置", color=T.VIOLET)
-    bx0, bw = 60, 640
-    s.rect(bx0, 244, bw, 46, fill=T.PANEL, stroke=T.STROKE, rx=4)
-    for i in range(1, 16):
-        s.line(bx0 + i * (bw / 16), 244, bx0 + i * (bw / 16), 290,
-               stroke=T.GRID, sw=1)
-    filled = 7
-    s.rect(bx0, 244, filled * (bw / 16), 46, fill=T.VIOLET, rx=4, opacity=0.2,
-           cls="dmafill")
-    s.path(f"M{bx0 + filled * (bw / 16)} 236 L{bx0 + filled * (bw / 16)} 296",
-           stroke=T.RED, sw=2)
-    s.text(bx0 + filled * (bw / 16) + 8, 234, "Size = 7（范围 1..128）",
-           size=11, fill=T.RED, weight="700")
-    s.text(bx0 + 4, 308, "0", size=10, fill=T.MUTED, mono=True)
-    s.text(bx0 + bw - 24, 308, "127", size=10, fill=T.MUTED, mono=True)
-    s.text(bx0 + bw / 2, 308, "HT 在半缓冲（契约 B 才用）", size=10,
-           anchor="middle", fill=T.MUTED)
-    s.add_style(css_kf("dmafill-kf", [("0%,55%", "opacity:0"),
-                                      ("62%,88%", "opacity:.22"),
-                                      ("94%,100%", "opacity:0")]) +
-                "\n.dmafill{animation:dmafill-kf 6s linear infinite;}")
-
-    # 3. 两类契约
-    box_y = 340
-    s.rect(40, box_y, 400, 200, fill=T.BG2, stroke=T.CYAN, rx=8)
-    s.text(60, box_y + 26, "契约 A：Normal，每次重新武装", size=13,
-           fill=T.CYAN, weight="700")
-    for i, step in enumerate([
-        "ReceiveToIdle_DMA 后立即关 HT 中断",
-        "IDLE（或 TC）触发 RxEventCallback(Size)",
-        "复制 [0, Size) 进软件队列，溢出计数",
-        "回调里重新武装，并再次关 HT",
+            "Size=首个未写位置；交给业务的永远是新增字节区间")
+    s.header(title="UART IDLE+DMA：契约 A（Normal）与契约 B（Circular）",
+             subtitle="mechanism · FA-002 continuous-line · 附录 A · 115200 8N1",
+             tag="附录 A", tag_color=T.CYAN)
+    css = []
+    s.title_block(40, 92, "① 总线：字节阵到达，间隙 ≥1 帧触发 IDLE（约 86.8 μs @115200）",
+                  color=T.AMBER)
+    for i, lab in enumerate(["D0", "D1", "D2", "D3", "D4", "…", "IDLE"]):
+        x = 48 + i * 78
+        col = T.RED if lab == "IDLE" else T.CYAN
+        s.rect(x, 118, 70, 44, fill=T.PANEL, stroke=col, rx=8)
+        s.text(x + 35, 146, lab, size=13, anchor="middle", fill=col, weight="700", mono=True)
+        s.rect(x, 118, 70, 44, fill=col, rx=8, opacity=0.12, cls=f"by{i}")
+    css.append(_step_highlight("by", 7, period=5.6, window=0.12, peak=0.32))
+    s.title_block(40, 184, "② DMA 缓冲 cap=128：Size = 首个未写位置（1..128）", color=T.GREEN)
+    s.rect(40, 210, 820, 56, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.rect(40, 210, 280, 56, fill=T.GREEN, opacity=0.18, rx=8, cls="buf")
+    s.text(60, 244, "写满区 [0, Size)", size=13, fill=T.GREEN, weight="700")
+    s.text(340, 244, "Size=7 例", size=13, fill=T.TEXT, mono=True, weight="700")
+    s.text(480, 244, "HT@64 仅契约 B 使用", size=12, fill=T.MUTED)
+    s.text(720, 244, "127", size=12, fill=T.DIM, mono=True)
+    css.append(anim_fade(".buf", dur="2.4s", a=0.1, b=0.35))
+    s.rect(40, 288, 400, 200, fill=T.BG2, stroke=T.CYAN, rx=8)
+    s.text(56, 316, "契约 A · Normal", size=14, fill=T.CYAN, weight="700")
+    for i, line in enumerate([
+        "ReceiveToIdle_DMA 后立即关 HT",
+        "IDLE（或 TC）→ RxEventCallback(Size)",
+        "复制 [0, Size) 进软件队列",
+        "回调内重新武装，并再次关 HT",
+        "适合：不定长命令帧",
     ]):
-        s.circle(70, box_y + 52 + i * 30, 4, fill=T.CYAN)
-        s.text(84, box_y + 56 + i * 30, step, size=11, fill=T.TEXT)
-    s.path("M390 520 C400 545 320 552 240 552 S90 545 96 522",
-           stroke=T.CYAN, sw=1.5, dash="5 4", cls="loopa")
-    s.add_style(anim_flow(".loopa", dur="2.4s"))
-
-    s.rect(460, box_y, 400, 200, fill=T.BG2, stroke=T.GREEN, rx=8)
-    s.text(480, box_y + 26, "契约 B：Circular，三事件取模", size=13,
-           fill=T.GREEN, weight="700")
-    for i, step in enumerate([
-        "开 HT、TC、IDLE 三个回调来源",
-        "new = (Size - old_pos) mod cap",
-        "只把新增区间交给业务，再 old_pos = Size",
-        "回卷照常；队列满则 dropped_bytes += 1",
+        s.text(56, 348 + i * 24, f"· {line}", size=12, fill=T.TEXT)
+        s.rect(48, 336 + i * 24, 6, 16, fill=T.CYAN, rx=2, cls=f"ca{i}")
+    css.append(_seq_flash("ca", 5, period=5.0, window=0.45, peak=1.0, rest=0.25))
+    s.rect(460, 288, 400, 200, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    s.text(476, 316, "契约 B · Circular", size=14, fill=T.VIOLET, weight="700")
+    for i, line in enumerate([
+        "开 HT、TC、IDLE 三个来源",
+        "new = (Size − old_pos) mod cap",
+        "只交新增区间给业务",
+        "再 old_pos = Size",
+        "适合：连续流 / 高吞吐",
     ]):
-        s.circle(490, box_y + 52 + i * 30, 4, fill=T.GREEN)
-        s.text(504, box_y + 56 + i * 30, step, size=11, fill=T.TEXT)
-    s.path("M810 520 C820 548 740 556 660 556 S510 548 516 524",
-           stroke=T.GREEN, sw=1.5, dash="5 4", cls="loopb")
-    s.add_style(anim_flow(".loopb", dur="2.4s"))
-
-    s.footer("不变量：DMA 写区应用不改写；Size 不是“本次长度”；"
-             "交给业务的是新增字节区间；静默覆盖不算可靠接收")
+        s.text(476, 348 + i * 24, f"· {line}", size=12, fill=T.TEXT)
+        s.rect(468, 336 + i * 24, 6, 16, fill=T.VIOLET, rx=2, cls=f"cb{i}")
+    css.append(_seq_flash("cb", 5, period=5.0, window=0.45, peak=1.0, rest=0.25))
+    s.rect(40, 508, 820, 48, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(56, 538, "陷阱：把 Size 当长度却忘了 Circular 取模；HT 回调里做重活超过半缓冲窗口。",
+           size=13, fill=T.RED, weight="700")
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · UART IDLE+DMA 契约，非逻辑分析仪实拍",
+             label="自绘矢量动画 · STM32 知识轨 · 附录 A")
     return s
+
 
 
 ALL = [uart_frame, i2c_transaction, spi_transfer, can_arbitration,

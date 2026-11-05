@@ -8,10 +8,28 @@ from svgkit import Svg, T, anim_fade, anim_flow, anim_rotate, anim_tx, css_kf
 
 W, H = 900, 620
 
+REDUCED = "@media (prefers-reduced-motion: reduce){*{animation:none!important}}"
+
+
+def _step_highlight(prefix: str, n: int, period=6.0, window=0.22,
+                    peak=0.35, rest=0.06) -> str:
+    css = []
+    step = 100.0 / n
+    for i in range(n):
+        a = i * step
+        b = min(a + step * window, 99.2)
+        name = f"{prefix}{i}-hl"
+        css.append(
+            f"@keyframes {name}{{0%,{a:.2f}%{{opacity:{rest}}}"
+            f"{a + 0.25:.2f}%,{b:.2f}%{{opacity:{peak}}}"
+            f"{min(b + 0.25, 100):.2f}%,100%{{opacity:{rest}}}}}"
+        )
+        css.append(f".{prefix}{i}{{animation:{name} {period}s linear infinite;}}")
+    return "\n".join(css)
+
 
 def _seq_flash(prefix: str, n: int, period=5.0, window=0.55,
                peak=1.0, rest=0.22) -> str:
-    """依次高亮：窗口内为 peak，其余时间为 rest。"""
     css = []
     step = 100.0 / n
     for i in range(n):
@@ -27,7 +45,6 @@ def _seq_flash(prefix: str, n: int, period=5.0, window=0.55,
     return "\n".join(css)
 
 
-# --------------------------------------------------------------------------- 定时器 PWM
 
 
 def timer_pwm() -> Svg:
@@ -226,79 +243,68 @@ def adc_sar() -> Svg:
 
 
 def dma_circular() -> Svg:
-    s = Svg(W, H, "DMA 循环模式：CPU 与搬运工并行工作",
-            "ADC 每采一个数，DMA 写入数组；半满 HT、写满 TC，各进一次中断")
-    s.header(tag="10 DMA", tag_color=T.GREEN)
-
-    s.rect(40, 96, 150, 90, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    s.text(115, 124, "ADC1", size=14, anchor="middle", fill=T.AMBER,
-           weight="700")
-    s.text(115, 146, "CH0 · PA0", size=11, anchor="middle", fill=T.MUTED)
-    s.text(115, 168, "DR 寄存器", size=11, anchor="middle", fill=T.DIM)
-
-    s.rect(300, 96, 170, 90, fill=T.PANEL, stroke=T.CYAN, rx=8)
-    s.text(385, 122, "DMA1 CH1", size=14, anchor="middle", fill=T.CYAN,
-           weight="700")
-    s.text(385, 144, "循环模式 / 半字", size=11, anchor="middle", fill=T.MUTED)
-    s.text(385, 166, "MINC = 1（地址自增）", size=10, anchor="middle",
-           fill=T.DIM)
-
-    s.arrow(194, 141, 296, 141, color=T.AMBER, sw=2, cls="w1")
-    s.arrow(474, 141, 636, 141, color=T.CYAN, sw=2, cls="w2")
-    s.add_style(anim_flow(".w1", dur="1.2s", dash="7 10", shift=-17))
-    s.add_style(anim_flow(".w2", dur="1.2s", dash="7 10", shift=-17))
+    s = Svg(W, H, "DMA 循环模式：CPU 与搬运工并行",
+            "ADC1→DMA1 CH1→buf[N]；CNDTR 倒数；HT/TC 半区所有权切换")
+    s.header(title="DMA 循环：CNDTR 倒数与 HT/TC 半区所有权",
+             subtitle="mechanism · FA-002 continuous-line · F103 DMA1 CH1 ← ADC1",
+             tag="10 DMA", tag_color=T.GREEN)
+    css = []
+    boxes = [
+        (40, "ADC1", "CH0 · PA0", "DR 半字", T.AMBER),
+        (250, "DMA1 CH1", "CIRC · MINC=1", "PSIZE/MSIZE=16", T.CYAN),
+        (470, "RAM buf[N]", "N=256 半字", "对齐 + volatile", T.GREEN),
+    ]
+    for x, title, a, b, color in boxes:
+        s.rect(x, 96, 180, 100, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, 96, 180, 5, fill=color, rx=2)
+        s.text(x + 90, 130, title, size=14, anchor="middle", fill=color, weight="700")
+        s.text(x + 90, 154, a, size=11, anchor="middle", fill=T.MUTED, mono=True)
+        s.text(x + 90, 176, b, size=11, anchor="middle", fill=T.DIM)
+    s.arrow(224, 146, 246, 146, color=T.AMBER, sw=2, cls="dma-f")
+    s.arrow(434, 146, 466, 146, color=T.CYAN, sw=2, cls="dma-f")
+    css.append(anim_flow(".dma-f", dur="1.1s", dash="7 10", shift=-17))
     for i in range(3):
-        s.circle(206, 141, 4.5, fill=T.CYAN, cls=f"pk{i}")
-    s.add_style("\n".join(
+        s.circle(230, 146, 4.5, fill=T.CYAN, cls=f"pk{i}")
+    css.append("\n".join(
         css_kf(f"pk{i}-mv", [("0%", "transform:translateX(0)"),
-                             ("45%", "transform:translateX(420px)"),
-                             ("46%,100%", "transform:translateX(420px)")])
-        + f".pk{i}{{animation:pk{i}-mv 1.6s linear infinite {i * 0.5:.1f}s;}}"
+                             ("50%", "transform:translateX(400px)"),
+                             ("51%,100%", "transform:translateX(400px)")])
+        + f".pk{i}{{animation:pk{i}-mv 1.8s linear infinite {i * 0.45:.2f}s;}}"
         for i in range(3)))
-
-    s.text(640, 108, "RAM 数组 buf[8]", size=12, fill=T.TEXT, weight="600")
-    for i in range(8):
-        x = 640 + (i % 4) * 60
-        y = 120 + (i // 4) * 52
-        s.rect(x, y, 52, 40, fill=T.PANEL2, stroke=T.STROKE, rx=8)
-        s.text(x + 26, y + 16, f"[{i}]", size=10, anchor="middle", fill=T.MUTED)
-        s.text(x + 26, y + 32, "----", size=10, anchor="middle", fill=T.DIM,
-               mono=True)
-        s.rect(x, y, 52, 40, fill=T.CYAN, rx=8, opacity=0.2, cls=f"b{i}")
-    s.add_style(_seq_flash("b", 8, period=4.0, window=0.55, peak=0.48, rest=0.1))
-
-    s.rect(40, 214, 820, 88, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 240, "CPU 同时在干什么？", size=12.5, fill=T.TEXT, weight="700")
-    s.text(58, 262, "滤波 / 通信 / 刷屏 / 跑 PID —— 一次搬运都不参与，"
-                    "总线空闲时 DMA 自动抢占一个周期", size=11, fill=T.MUTED)
-    s.text(58, 284, "轮询把 CPU 绑在采样循环里；中断是每样本进一次 ISR；"
-                    "DMA 只需半满、全满两次中断", size=11, fill=T.AMBER)
-
-    s.title_block(40, 322, "DMA 使用四步走", color=T.CYAN)
-    steps = [("① 使能时钟", "F1 在 AHB，F4 在 AHB1"),
-             ("② 配通道映射", "F1 固定通道表，F4 用 Stream+Channel"),
-             ("③ 配参数", "方向 / 宽度 / 自增 / 循环 / 优先级"),
-             ("④ 开中断", "半传输 + 传输完成 + 错误")]
-    for i, (k, v) in enumerate(steps):
-        x = 40 + i * 208
-        s.rect(x, 336, 196, 56, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(x + 14, 360, k, size=11.5, fill=T.CYAN, weight="600")
-        s.text(x + 14, 380, v, size=10, fill=T.MUTED)
-
-    s.rect(40, 408, 820, 132, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.code(56, 432, [
-        "HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_buf, 8);   // 8 个半字，循环",
-        "",
-        "void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *h) { 处理前 4 个 }",
-        "void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *h)     { 处理后 4 个 }",
-        "",
-        "// 易错点：缓冲区要 4 字节对齐、加 volatile，H7 上还要处理 D-Cache 一致性",
-    ], size=12, lh=21)
-    s.footer("F1 只有 7 个 DMA 通道、没有 FIFO；F4/H7 是 Stream + FIFO + 双缓冲，映射表见 10 章")
+    s.rect(40, 220, 400, 110, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    s.text(240, 252, "Half A  [0 .. N/2)", size=15, anchor="middle", fill=T.GREEN, weight="700")
+    s.text(240, 280, "HT：CPU 可读 A · DMA 写 B", size=12, anchor="middle", fill=T.TEXT)
+    s.text(240, 304, "CNDTR 刚过 128（N=256）", size=11, anchor="middle", fill=T.MUTED, mono=True)
+    s.rect(40, 220, 400, 110, fill=T.GREEN, rx=8, opacity=0.12, cls="ha0")
+    s.rect(460, 220, 400, 110, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    s.text(660, 252, "Half B  [N/2 .. N)", size=15, anchor="middle", fill=T.AMBER, weight="700")
+    s.text(660, 280, "TC：CPU 可读 B · DMA 重装写 A", size=12, anchor="middle", fill=T.TEXT)
+    s.text(660, 304, "CNDTR 回 256（循环）", size=11, anchor="middle", fill=T.MUTED, mono=True)
+    s.rect(460, 220, 400, 110, fill=T.AMBER, rx=8, opacity=0.12, cls="ha1")
+    css.append(_step_highlight("ha", 2, period=3.6, window=0.45, peak=0.28))
+    s.title_block(40, 352, "CNDTR 现场（半字计数）", color=T.CYAN)
+    marks = [("256", "armed"), ("192", "填 A"), ("128", "HT"), ("64", "填 B"), ("0→256", "TC")]
+    for i, (n, lab) in enumerate(marks):
+        x = 40 + i * 170
+        col = T.GREEN if lab in ("HT", "TC") else T.CYAN
+        s.rect(x, 378, 155, 64, fill=T.PANEL, stroke=col, rx=8)
+        s.text(x + 77, 404, n, size=14, anchor="middle", fill=col, weight="700", mono=True)
+        s.text(x + 77, 426, lab, size=12, anchor="middle", fill=T.TEXT)
+        s.rect(x, 378, 155, 64, fill=col, rx=8, opacity=0.1, cls=f"cd{i}")
+    css.append(_step_highlight("cd", 5, period=6.0, window=0.16))
+    s.rect(40, 462, 820, 88, fill=T.BG2, stroke=T.RED, rx=8)
+    s.text(56, 490, "陷阱：HT/TC 后解析错半区；ISR 里 printf 超过半缓冲时间 → 覆盖。",
+           size=13, fill=T.RED, weight="700")
+    s.text(56, 516, "ISR 只置标志；主循环排空完成半区。对齐 sample-10-dma-circular-ht / cndtr-ledger。",
+           size=12, fill=T.MUTED)
+    s.text(56, 536, "F1：7 通道无 FIFO；F4/H7：Stream+FIFO+双缓冲。buf 4B 对齐 + volatile；H7 管 D-Cache。",
+           size=11, fill=T.DIM)
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · 环形 DMA 半区所有权，非逻辑分析仪截图",
+             label="自绘矢量动画 · STM32 知识轨")
     return s
 
-
-# --------------------------------------------------------------------------- 看门狗
 
 
 def iwdg_window() -> Svg:
@@ -438,77 +444,68 @@ def flash_iap() -> Svg:
 
 
 def freertos_scheduler() -> Svg:
-    s = Svg(W, H, "FreeRTOS 任务调度：状态机 + 甘特图",
-            "SysTick 每 1 ms 打断一次，调度器挑出「就绪队列里优先级最高」的任务")
-    s.header(tag="15 FreeRTOS", tag_color=T.PINK)
-
-    states = [("就绪 Ready", 80, 110, T.GREEN, "stReady", "等调度器挑选"),
-              ("运行 Running", 400, 110, T.CYAN, "stRun", "正在占用 CPU"),
-              ("阻塞 Blocked", 400, 226, T.AMBER, "stBlock", "等延时 / 队列 / 信号量"),
-              ("挂起 Suspended", 80, 226, T.VIOLET, "stSusp", "vTaskSuspend 挂起")]
+    s = Svg(W, H, "FreeRTOS 任务调度：状态机 + 甘特",
+            "SysTick=1 ms；就绪队列挑最高优先级；同优先级时间片轮转")
+    s.header(title="FreeRTOS 调度：状态迁移与单核甘特",
+             subtitle="mechanism · FA-002 continuous-line · configTICK_RATE_HZ=1000",
+             tag="15 FreeRTOS", tag_color=T.PINK)
+    css = []
+    states = [
+        ("就绪 Ready", 70, 100, T.GREEN, "st0", "在就绪链表等选中"),
+        ("运行 Running", 390, 100, T.CYAN, "st1", "独占 CPU（单核）"),
+        ("阻塞 Blocked", 390, 220, T.AMBER, "st2", "Delay / Queue / Sem"),
+        ("挂起 Suspended", 70, 220, T.VIOLET, "st3", "vTaskSuspend"),
+    ]
     for name, x, y, color, cls, sub in states:
-        s.rect(x, y, 170, 62, fill=T.PANEL, stroke=color, rx=8)
-        s.text(x + 85, y + 26, name, size=13, anchor="middle", fill=T.TEXT,
-               weight="600")
-        s.text(x + 85, y + 46, sub, size=9, anchor="middle", fill=T.MUTED)
-        s.rect(x, y, 170, 62, fill=color, rx=8, opacity=0.15, cls=cls)
-    s.add_style(anim_fade(".stReady", dur="4s", a=0.1, b=0.45))
-    s.add_style(anim_fade(".stRun", dur="4s", a=0.45, b=0.1, delay="1s"))
-    s.add_style(anim_fade(".stBlock", dur="4s", a=0.1, b=0.45, delay="2s"))
-    s.add_style(anim_fade(".stSusp", dur="4s", a=0.1, b=0.45, delay="3s"))
-
-    s.arrow(252, 128, 396, 128, color=T.GREEN, sw=2, dash="6 8", cls="e1")
-    s.text(324, 120, "调度器选中", size=10, anchor="middle", fill=T.GREEN)
-    s.arrow(568, 128, 700, 128, color=T.CYAN, sw=2, head=6)
-    s.text(634, 118, "被抢占 / 时间片到", size=10, anchor="middle",
-           fill=T.MUTED)
-    s.line(700, 128, 700, 96, stroke=T.CYAN, sw=2)
-    s.arrow(700, 96, 252, 96, color=T.CYAN, sw=2, head=6)
-    s.line(252, 96, 252, 128, stroke=T.CYAN, sw=2)
-    s.arrow(485, 176, 485, 222, color=T.AMBER, sw=2, head=6)
-    s.text(492, 200, "vTaskDelay / 等队列", size=10, fill=T.AMBER)
-    s.line(400, 257, 252, 257, stroke=T.AMBER, sw=2)
-    s.arrow(252, 257, 165, 257, color=T.AMBER, sw=2, head=6)
-    s.text(292, 276, "超时 / 事件到达", size=10, fill=T.AMBER)
-    s.line(80, 226, 80, 176, stroke=T.VIOLET, sw=2)
-    s.text(20, 205, "vTaskSuspend", size=10, fill=T.VIOLET)
-    s.add_style(anim_flow(".e1", dur="1.4s", dash="6 8", shift=-14))
-
-    s.text(40, 314, "CPU 时间轴（单核：同一时刻只有一根色条）", size=12,
-           fill=T.MUTED)
-    rows = [("Task1 高", T.CYAN, [(0, 8), (24, 6)]),
-            ("Task2 中", T.GREEN, [(8, 8)]),
-            ("Task3 低", T.AMBER, [(16, 8)]),
-            ("Idle", T.DIM, [(30, 2)])]
+        s.rect(x, y, 190, 70, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + 95, y + 28, name, size=13, anchor="middle", fill=T.TEXT, weight="700")
+        s.text(x + 95, y + 52, sub, size=10, anchor="middle", fill=T.MUTED)
+        s.rect(x, y, 190, 70, fill=color, rx=8, opacity=0.14, cls=cls)
+    css.append(_step_highlight("st", 4, period=5.6, window=0.2, peak=0.34))
+    s.arrow(264, 130, 386, 130, color=T.GREEN, sw=2, cls="e-flow")
+    s.text(325, 118, "调度选中", size=10, anchor="middle", fill=T.GREEN)
+    s.arrow(584, 130, 720, 130, color=T.CYAN, sw=2, head=6)
+    s.text(652, 118, "抢占/时间片", size=10, anchor="middle", fill=T.MUTED)
+    s.line(720, 130, 720, 88, stroke=T.CYAN, sw=2)
+    s.arrow(720, 88, 264, 88, color=T.CYAN, sw=2, head=6)
+    s.line(264, 88, 264, 130, stroke=T.CYAN, sw=2)
+    s.arrow(485, 174, 485, 216, color=T.AMBER, sw=2, head=6)
+    s.text(496, 198, "vTaskDelay", size=10, fill=T.AMBER)
+    s.line(390, 255, 262, 255, stroke=T.AMBER, sw=2)
+    s.arrow(262, 255, 165, 255, color=T.AMBER, sw=2, head=6)
+    s.text(280, 274, "超时 / 事件", size=10, fill=T.AMBER)
+    css.append(anim_flow(".e-flow", dur="1.3s", dash="6 8", shift=-14))
+    s.text(40, 318, "单核甘特（同刻仅一条色带）· Tick=1 ms", size=12, fill=T.MUTED)
+    rows = [
+        ("T1 pri=3", T.CYAN, [(0, 8), (24, 6)]),
+        ("T2 pri=2", T.GREEN, [(8, 8)]),
+        ("T3 pri=1", T.AMBER, [(16, 8)]),
+        ("Idle", T.DIM, [(30, 2)]),
+    ]
     scale = 700 / 32
     for i, (name, color, spans) in enumerate(rows):
-        y = 328 + i * 34
-        s.text(40, y + 20, name, size=10.5, fill=color)
+        y = 334 + i * 34
+        s.text(40, y + 20, name, size=11, fill=color, mono=True)
         s.rect(150, y, 700, 26, fill=T.BG2, stroke=T.GRID, rx=4)
         for x0, w in spans:
-            s.rect(150 + x0 * scale, y + 2, w * scale - 1, 22, fill=color,
-                   rx=4, opacity=0.85)
+            s.rect(150 + x0 * scale, y + 2, w * scale - 1, 22, fill=color, rx=4, opacity=0.88)
         for t in range(0, 33, 4):
-            s.line(150 + t * scale, y, 150 + t * scale, y + 26,
-                   stroke=T.GRID, sw=1)
-    s.line(150, 320, 150, 468, stroke=T.RED, sw=1.5, cls="cursor")
-    s.add_style(anim_tx(".cursor", dur="5s", x1=0, x2=700))
-    s.text(150, 482, "0 ms", size=9, fill=T.DIM)
-    s.text(850, 482, "32 ms", size=9, fill=T.DIM, anchor="end")
-
-    s.rect(40, 496, 820, 64, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 516, "三条铁律", size=11.5, fill=T.TEXT, weight="700")
-    s.text(58, 536, "① 数字越大优先级越高（和 NVIC 相反）；② 中断里只用 FromISR API",
+            s.line(150 + t * scale, y, 150 + t * scale, y + 26, stroke=T.GRID, sw=1)
+    s.line(150, 328, 150, 472, stroke=T.RED, sw=1.5, cls="cursor")
+    css.append(anim_tx(".cursor", dur="5s", x1=0, x2=700))
+    s.text(150, 488, "0 ms", size=9, fill=T.DIM)
+    s.text(850, 488, "32 ms", size=9, fill=T.DIM, anchor="end")
+    s.rect(40, 500, 820, 56, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(56, 522, "铁律：数字越大优先级越高（与 NVIC 相反）· ISR 只用 FromISR · 用 HighWaterMark 看栈",
+           size=12, fill=T.TEXT, weight="700")
+    s.text(56, 542, "坑：未创建任务就 StartScheduler；在 ISR 里调阻塞 API 触发断言。对齐 sample-15-rtos-tick-flow。",
            size=11, fill=T.MUTED)
-    s.text(58, 552, "③ 栈不够会 HardFault，用 uxTaskGetStackHighWaterMark 看剩余",
-           size=11, fill=T.MUTED)
-    s.footer("常见坑：忘记在 vTaskStartScheduler 之前创建任务、在中断里调用阻塞 API 触发断言")
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · FreeRTOS 调度机制，非 Tracealyzer 实拍",
+             label="自绘矢量动画 · STM32 知识轨")
     return s
 
-
-
-
-# --------------------------------------------------------------------------- 低功耗
 
 
 def lowpower_wakeup() -> Svg:
@@ -654,59 +651,60 @@ def l4_stop2_evidence() -> Svg:
 
 
 def rtos_system_layers() -> Svg:
-    s = Svg(W, H, "嵌入式系统不只是一颗 RTOS 内核",
-            "从硬件、驱动和内核，到服务与应用；每层都要有所有权、超时和故障边界")
-    s.header(tag="28 系统", tag_color=T.VIOLET)
-
+    s = Svg(W, H, "嵌入式系统层：硬件到应用",
+            "每层有所有者、超时与故障边界；RTOS 内核只是其中一层")
+    s.header(title="系统分层：所有权 · 超时 · 故障边界",
+             subtitle="mechanism · FA-002 continuous-line · ch28 选型前先列约束",
+             tag="28 系统", tag_color=T.VIOLET)
+    css = []
     layers = [
-        ("应用", "控制回路 · 数据采集 · 人机界面 · 升级策略", T.CYAN),
-        ("系统服务", "网络 · 文件系统 · 日志 · Shell · 时间 · OTA", T.GREEN),
-        ("OS API", "原生 API / CMSIS-RTOS2；只统一接口，不抹平语义", T.AMBER),
-        ("内核", "调度 · IPC · 定时器 · 内存 · 低功耗 · 故障钩子", T.VIOLET),
-        ("BSP / 设备", "HAL/LL · RT-Thread device · Zephyr device model", T.PINK),
-        ("硬件", "Cortex-M · NVIC · DMA · Cache · 外设 · PHY", T.RED),
+        ("应用", "控制回路 · 采集 · HMI · OTA 策略", "入口前置 · 出口结果码", T.CYAN),
+        ("系统服务", "网络 · FS · 日志 · Shell · 时间", "组件可替换，契约不变", T.GREEN),
+        ("OS API", "原生 / CMSIS-RTOS2", "统一接口，不抹平语义", T.AMBER),
+        ("内核", "调度 · IPC · 定时器 · 堆 · 钩子", "Tick=1 ms 常见起点", T.VIOLET),
+        ("BSP / 驱动", "HAL/LL · RTT device · Zephyr DM", "外设时钟与引脚归属", T.PINK),
+        ("硬件", "Cortex-M · NVIC · DMA · Cache · PHY", "LQFP / BGA 封装约束", T.RED),
     ]
-    x, y, bw, bh, gap = 42, 92, 548, 62, 12
-    for i, (name, detail, color) in enumerate(layers):
+    x, y, bw, bh, gap = 40, 94, 540, 60, 10
+    for i, (name, detail, rule, color) in enumerate(layers):
         yy = y + i * (bh + gap)
-        s.rect(x, yy, bw, bh, fill=T.PANEL, stroke=color, rx=8, cls=f"sl{i}")
-        s.rect(x, yy, 7, bh, fill=color, rx=4)
-        s.text(x + 24, yy + 27, name, size=14, fill=color, weight="700")
-        s.text(x + 132, yy + 27, detail, size=10.5, fill=T.MUTED)
-        s.text(x + 24, yy + 49, "入口有前置条件 · 出口有结果码 · 等待有截止点", size=9.5,
-               fill=T.DIM)
+        s.rect(x, yy, bw, bh, fill=T.PANEL, stroke=color, rx=8)
+        s.rect(x, yy, 8, bh, fill=color, rx=2)
+        s.text(x + 24, yy + 24, name, size=14, fill=color, weight="700")
+        s.text(x + 120, yy + 24, detail, size=11, fill=T.MUTED)
+        s.text(x + 24, yy + 46, rule, size=10, fill=T.DIM)
+        s.rect(x, yy, bw, bh, fill=color, rx=8, opacity=0.1, cls=f"ly{i}")
         if i < len(layers) - 1:
-            s.arrow(x + bw / 2, yy + bh + 3, x + bw / 2,
-                    yy + bh + gap - 3, color=T.CYAN, sw=2, head=6, cls="sl-flow")
-    s.add_style(_seq_flash("sl", len(layers), period=7.2, window=0.72,
-                           peak=1.0, rest=0.48))
-    s.add_style(anim_flow(".sl-flow", dur="1.1s", dash="4 7", shift=-11))
-
-    s.text(626, 102, "怎么选系统", size=14, fill=T.TEXT, weight="700")
+            s.arrow(x + bw / 2, yy + bh + 2, x + bw / 2, yy + bh + gap - 2,
+                    color=T.CYAN, sw=2, head=5, cls="ly-flow")
+    css.append(_step_highlight("ly", 6, period=7.2, window=0.14, peak=0.3))
+    css.append(anim_flow(".ly-flow", dur="1.1s", dash="4 7", shift=-11))
+    s.text(610, 110, "怎么选内核", size=14, fill=T.TEXT, weight="700")
     cards = [
-        ("裸机", "状态机明确\n资源极紧", T.DIM),
-        ("FreeRTOS", "小内核\n自己组合服务", T.CYAN),
-        ("RT-Thread", "设备框架 + 组件\n中文生态", T.GREEN),
-        ("Zephyr", "Kconfig + Devicetree\n跨厂商子系统", T.AMBER),
+        ("裸机", "状态机清晰 · 资源极紧", T.DIM),
+        ("FreeRTOS", "小内核 · 自己拼服务", T.CYAN),
+        ("RT-Thread", "设备框架 + 组件", T.GREEN),
+        ("Zephyr", "Kconfig + Devicetree", T.AMBER),
     ]
     for i, (name, detail, color) in enumerate(cards):
-        yy = 122 + i * 94
-        s.rect(618, yy, 242, 76, fill=T.BG2, stroke=color, rx=8)
-        s.text(634, yy + 25, name, size=13, fill=color, weight="700")
-        for j, line in enumerate(detail.split("\n")):
-            s.text(730, yy + 25 + j * 21, line, size=10.5, fill=T.MUTED)
-
-    s.rect(618, 506, 242, 48, fill=T.PANEL, stroke=T.RED, rx=8)
-    s.text(739, 526, "先列约束，再选生态", size=12, anchor="middle",
-           fill=T.RED, weight="700")
-    s.text(739, 545, "不要用 API 熟悉度代替需求", size=9.5,
-           anchor="middle", fill=T.MUTED)
-    s.footer("不变量：ISR 只发布事件；资源只有一个所有者；每个阻塞都有截止点；证据能定位到第一处分歧")
+        yy = 130 + i * 88
+        s.rect(600, yy, 260, 72, fill=T.BG2, stroke=color, rx=8)
+        s.text(616, yy + 28, name, size=13, fill=color, weight="700")
+        s.text(616, yy + 52, detail, size=11, fill=T.MUTED)
+        s.rect(600, yy, 260, 72, fill=color, rx=8, opacity=0.08, cls=f"ch{i}")
+    css.append(_seq_flash("ch", 4, period=5.6, window=0.55, peak=0.4, rest=0.06))
+    s.rect(600, 490, 260, 60, fill=T.PANEL, stroke=T.RED, rx=8)
+    s.text(730, 514, "先列约束，再选生态", size=13, anchor="middle", fill=T.RED, weight="700")
+    s.text(730, 536, "勿用 API 熟悉度代替需求", size=11, anchor="middle", fill=T.MUTED)
+    s.rect(40, 530, 540, 36, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(52, 554, "不变量：ISR 只发事件 · 资源单所有者 · 阻塞有截止 · 证据定位第一处分歧",
+           size=11, fill=T.TEXT)
+    css.append(REDUCED)
+    s.add_style("\n".join(css))
+    s.footer(note="自绘矢量动画 · FA-002 · 系统分层边界，非厂商架构海报",
+             label="自绘矢量动画 · STM32 知识轨")
     return s
 
-
-
-# --------------------------------------------------------------------------- G0 启动与 SWD 共脚
 
 
 def g0_boot_swd() -> Svg:

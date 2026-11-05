@@ -1,29 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="DMA 循环模式：CPU 与搬运工并行工作">
-<title>DMA 循环模式：CPU 与搬运工并行工作</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="DMA 循环模式：CPU 与搬运工并行">
+<title>DMA 循环模式：CPU 与搬运工并行</title>
 <style>
 
-.w1{stroke-dasharray:7 10;animation:w1-flow 1.2s linear infinite;}@keyframes w1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
-
-.w2{stroke-dasharray:7 10;animation:w2-flow 1.2s linear infinite;}@keyframes w2-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
-@keyframes pk0-mv{0%{transform:translateX(0)}45%{transform:translateX(420px)}46%,100%{transform:translateX(420px)}}.pk0{animation:pk0-mv 1.6s linear infinite 0.0s;}
-@keyframes pk1-mv{0%{transform:translateX(0)}45%{transform:translateX(420px)}46%,100%{transform:translateX(420px)}}.pk1{animation:pk1-mv 1.6s linear infinite 0.5s;}
-@keyframes pk2-mv{0%{transform:translateX(0)}45%{transform:translateX(420px)}46%,100%{transform:translateX(420px)}}.pk2{animation:pk2-mv 1.6s linear infinite 1.0s;}
-@keyframes b0-sq{0%,0.00%{opacity:0.1}0.30%,6.88%{opacity:0.48}7.18%,100%{opacity:0.1}}
-.b0{animation:b0-sq 4.0s linear infinite;}
-@keyframes b1-sq{0%,12.50%{opacity:0.1}12.80%,19.38%{opacity:0.48}19.68%,100%{opacity:0.1}}
-.b1{animation:b1-sq 4.0s linear infinite;}
-@keyframes b2-sq{0%,25.00%{opacity:0.1}25.30%,31.88%{opacity:0.48}32.17%,100%{opacity:0.1}}
-.b2{animation:b2-sq 4.0s linear infinite;}
-@keyframes b3-sq{0%,37.50%{opacity:0.1}37.80%,44.38%{opacity:0.48}44.67%,100%{opacity:0.1}}
-.b3{animation:b3-sq 4.0s linear infinite;}
-@keyframes b4-sq{0%,50.00%{opacity:0.1}50.30%,56.88%{opacity:0.48}57.17%,100%{opacity:0.1}}
-.b4{animation:b4-sq 4.0s linear infinite;}
-@keyframes b5-sq{0%,62.50%{opacity:0.1}62.80%,69.38%{opacity:0.48}69.67%,100%{opacity:0.1}}
-.b5{animation:b5-sq 4.0s linear infinite;}
-@keyframes b6-sq{0%,75.00%{opacity:0.1}75.30%,81.88%{opacity:0.48}82.17%,100%{opacity:0.1}}
-.b6{animation:b6-sq 4.0s linear infinite;}
-@keyframes b7-sq{0%,87.50%{opacity:0.1}87.80%,94.38%{opacity:0.48}94.67%,100%{opacity:0.1}}
-.b7{animation:b7-sq 4.0s linear infinite;}
+.dma-f{stroke-dasharray:7 10;animation:dma-f-flow 1.1s linear infinite;}@keyframes dma-f-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-17px}}
+@keyframes pk0-mv{0%{transform:translateX(0)}50%{transform:translateX(400px)}51%,100%{transform:translateX(400px)}}.pk0{animation:pk0-mv 1.8s linear infinite 0.00s;}
+@keyframes pk1-mv{0%{transform:translateX(0)}50%{transform:translateX(400px)}51%,100%{transform:translateX(400px)}}.pk1{animation:pk1-mv 1.8s linear infinite 0.45s;}
+@keyframes pk2-mv{0%{transform:translateX(0)}50%{transform:translateX(400px)}51%,100%{transform:translateX(400px)}}.pk2{animation:pk2-mv 1.8s linear infinite 0.90s;}
+@keyframes ha0-hl{0%,0.00%{opacity:0.06}0.25%,22.50%{opacity:0.28}22.75%,100%{opacity:0.06}}
+.ha0{animation:ha0-hl 3.6s linear infinite;}
+@keyframes ha1-hl{0%,50.00%{opacity:0.06}50.25%,72.50%{opacity:0.28}72.75%,100%{opacity:0.06}}
+.ha1{animation:ha1-hl 3.6s linear infinite;}
+@keyframes cd0-hl{0%,0.00%{opacity:0.06}0.25%,3.20%{opacity:0.35}3.45%,100%{opacity:0.06}}
+.cd0{animation:cd0-hl 6.0s linear infinite;}
+@keyframes cd1-hl{0%,20.00%{opacity:0.06}20.25%,23.20%{opacity:0.35}23.45%,100%{opacity:0.06}}
+.cd1{animation:cd1-hl 6.0s linear infinite;}
+@keyframes cd2-hl{0%,40.00%{opacity:0.06}40.25%,43.20%{opacity:0.35}43.45%,100%{opacity:0.06}}
+.cd2{animation:cd2-hl 6.0s linear infinite;}
+@keyframes cd3-hl{0%,60.00%{opacity:0.06}60.25%,63.20%{opacity:0.35}63.45%,100%{opacity:0.06}}
+.cd3{animation:cd3-hl 6.0s linear infinite;}
+@keyframes cd4-hl{0%,80.00%{opacity:0.06}80.25%,83.20%{opacity:0.35}83.45%,100%{opacity:0.06}}
+.cd4{animation:cd4-hl 6.0s linear infinite;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -31,84 +28,69 @@
 <rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 循环模式：CPU 与搬运工并行工作</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC 每采一个数，DMA 写入数组；半满 HT、写满 TC，各进一次中断</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 循环：CNDTR 倒数与 HT/TC 半区所有权</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line · F103 DMA1 CH1 ← ADC1</text>
 <rect x="810" y="15" width="68" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="844" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">10 DMA</text>
-<rect x="40" y="96" width="150" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="115" y="124" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ADC1</text>
-<text x="115" y="146" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CH0 · PA0</text>
-<text x="115" y="168" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DR 寄存器</text>
-<rect x="300" y="96" width="170" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="385" y="122" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA1 CH1</text>
-<text x="385" y="144" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">循环模式 / 半字</text>
-<text x="385" y="166" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">MINC = 1（地址自增）</text>
-<line x1="194" y1="141" x2="289" y2="141" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1" class="w1"/>
-<polygon points="296.00,141.00 289.00,144.50 289.00,137.50" fill="#7a4e00" opacity="1"/>
-<line x1="474" y1="141" x2="629" y2="141" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="w2"/>
-<polygon points="636.00,141.00 629.00,144.50 629.00,137.50" fill="#075e84" opacity="1"/>
-<circle cx="206" cy="141" r="4.5" fill="#075e84" opacity="1" class="pk0"/>
-<circle cx="206" cy="141" r="4.5" fill="#075e84" opacity="1" class="pk1"/>
-<circle cx="206" cy="141" r="4.5" fill="#075e84" opacity="1" class="pk2"/>
-<text x="640" y="108" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">RAM 数组 buf[8]</text>
-<rect x="640" y="120" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="666" y="136" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[0]</text>
-<text x="666" y="152" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="640" y="120" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b0"/>
-<rect x="700" y="120" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="726" y="136" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[1]</text>
-<text x="726" y="152" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="700" y="120" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b1"/>
-<rect x="760" y="120" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="786" y="136" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[2]</text>
-<text x="786" y="152" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="760" y="120" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b2"/>
-<rect x="820" y="120" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="846" y="136" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[3]</text>
-<text x="846" y="152" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="820" y="120" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b3"/>
-<rect x="640" y="172" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="666" y="188" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[4]</text>
-<text x="666" y="204" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="640" y="172" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b4"/>
-<rect x="700" y="172" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="726" y="188" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[5]</text>
-<text x="726" y="204" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="700" y="172" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b5"/>
-<rect x="760" y="172" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="786" y="188" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[6]</text>
-<text x="786" y="204" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="760" y="172" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b6"/>
-<rect x="820" y="172" width="52" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="846" y="188" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">[7]</text>
-<text x="846" y="204" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">----</text>
-<rect x="820" y="172" width="52" height="40" fill="#075e84" opacity="0.2" rx="8" class="b7"/>
-<rect x="40" y="214" width="820" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="58" y="240" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CPU 同时在干什么？</text>
-<text x="58" y="262" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">滤波 / 通信 / 刷屏 / 跑 PID —— 一次搬运都不参与，总线空闲时 DMA 自动抢占一个周期</text>
-<text x="58" y="284" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">轮询把 CPU 绑在采样循环里；中断是每样本进一次 ISR；DMA 只需半满、全满两次中断</text>
-<rect x="40" y="309" width="3" height="18" fill="#075e84" opacity="1"/>
-<text x="52" y="322" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">DMA 使用四步走</text>
-<rect x="40" y="336" width="196" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="54" y="360" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">① 使能时钟</text>
-<text x="54" y="380" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 在 AHB，F4 在 AHB1</text>
-<rect x="248" y="336" width="196" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="262" y="360" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">② 配通道映射</text>
-<text x="262" y="380" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 固定通道表，F4 用 Stream+Channel</text>
-<rect x="456" y="336" width="196" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="470" y="360" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">③ 配参数</text>
-<text x="470" y="380" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">方向 / 宽度 / 自增 / 循环 / 优先级</text>
-<rect x="664" y="336" width="196" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="678" y="360" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">④ 开中断</text>
-<text x="678" y="380" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">半传输 + 传输完成 + 错误</text>
-<rect x="40" y="408" width="820" height="132" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="432" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_ADC_Start_DMA(&amp;hadc1, (uint32_t *)adc_buf, 8);   // 8 个半字，循环</text>
-<text x="56" y="453" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
-<text x="56" y="474" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *h) { 处理前 4 个 }</text>
-<text x="56" y="495" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *h)     { 处理后 4 个 }</text>
-<text x="56" y="516" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
-<text x="56" y="537" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 易错点：缓冲区要 4 字节对齐、加 volatile，H7 上还要处理 D-Cache 一致性</text>
+<rect x="40" y="96" width="180" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="40" y="96" width="180" height="5" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="130" y="130" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ADC1</text>
+<text x="130" y="154" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CH0 · PA0</text>
+<text x="130" y="176" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DR 半字</text>
+<rect x="250" y="96" width="180" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="250" y="96" width="180" height="5" fill="#075e84" opacity="1" rx="2"/>
+<text x="340" y="130" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA1 CH1</text>
+<text x="340" y="154" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CIRC · MINC=1</text>
+<text x="340" y="176" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PSIZE/MSIZE=16</text>
+<rect x="470" y="96" width="180" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="470" y="96" width="180" height="5" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="560" y="130" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RAM buf[N]</text>
+<text x="560" y="154" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">N=256 半字</text>
+<text x="560" y="176" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对齐 + volatile</text>
+<line x1="224" y1="146" x2="239" y2="146" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1" class="dma-f"/>
+<polygon points="246.00,146.00 239.00,149.50 239.00,142.50" fill="#7a4e00" opacity="1"/>
+<line x1="434" y1="146" x2="459" y2="146" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="dma-f"/>
+<polygon points="466.00,146.00 459.00,149.50 459.00,142.50" fill="#075e84" opacity="1"/>
+<circle cx="230" cy="146" r="4.5" fill="#075e84" opacity="1" class="pk0"/>
+<circle cx="230" cy="146" r="4.5" fill="#075e84" opacity="1" class="pk1"/>
+<circle cx="230" cy="146" r="4.5" fill="#075e84" opacity="1" class="pk2"/>
+<rect x="40" y="220" width="400" height="110" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="240" y="252" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Half A  [0 .. N/2)</text>
+<text x="240" y="280" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT：CPU 可读 A · DMA 写 B</text>
+<text x="240" y="304" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CNDTR 刚过 128（N=256）</text>
+<rect x="40" y="220" width="400" height="110" fill="#1b5c45" opacity="0.12" rx="8" class="ha0"/>
+<rect x="460" y="220" width="400" height="110" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="660" y="252" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Half B  [N/2 .. N)</text>
+<text x="660" y="280" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TC：CPU 可读 B · DMA 重装写 A</text>
+<text x="660" y="304" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CNDTR 回 256（循环）</text>
+<rect x="460" y="220" width="400" height="110" fill="#7a4e00" opacity="0.12" rx="8" class="ha1"/>
+<rect x="40" y="339" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="352" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CNDTR 现场（半字计数）</text>
+<rect x="40" y="378" width="155" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="117" y="404" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">256</text>
+<text x="117" y="426" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">armed</text>
+<rect x="40" y="378" width="155" height="64" fill="#075e84" opacity="0.1" rx="8" class="cd0"/>
+<rect x="210" y="378" width="155" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="287" y="404" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">192</text>
+<text x="287" y="426" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">填 A</text>
+<rect x="210" y="378" width="155" height="64" fill="#075e84" opacity="0.1" rx="8" class="cd1"/>
+<rect x="380" y="378" width="155" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="457" y="404" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">128</text>
+<text x="457" y="426" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT</text>
+<rect x="380" y="378" width="155" height="64" fill="#1b5c45" opacity="0.1" rx="8" class="cd2"/>
+<rect x="550" y="378" width="155" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="627" y="404" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">64</text>
+<text x="627" y="426" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">填 B</text>
+<rect x="550" y="378" width="155" height="64" fill="#075e84" opacity="0.1" rx="8" class="cd3"/>
+<rect x="720" y="378" width="155" height="64" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="797" y="404" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">0→256</text>
+<text x="797" y="426" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TC</text>
+<rect x="720" y="378" width="155" height="64" fill="#1b5c45" opacity="0.1" rx="8" class="cd4"/>
+<rect x="40" y="462" width="820" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="490" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">陷阱：HT/TC 后解析错半区；ISR 里 printf 超过半缓冲时间 → 覆盖。</text>
+<text x="56" y="516" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ISR 只置标志；主循环排空完成半区。对齐 sample-10-dma-circular-ht / cndtr-ledger。</text>
+<text x="56" y="536" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1：7 通道无 FIFO；F4/H7：Stream+FIFO+双缓冲。buf 4B 对齐 + volatile；H7 管 D-Cache。</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 只有 7 个 DMA 通道、没有 FIFO；F4/H7 是 Stream + FIFO + 双缓冲，映射表见 10 章</text>
-<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · 环形 DMA 半区所有权，非逻辑分析仪截图</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识轨</text>
 </svg>
