@@ -91,46 +91,63 @@ def accept_gate() -> Svg:
         "STM32F103C8T6 · PC13 低电平点亮 · RM0008 Rev 21 §9 GPIO",
     )
     canvas.header(tag="00", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  one program, three gates: build, board, explanation",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "gate 1 is a log file; gates 2 and 3 need the board in front of you",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "0 Error is necessary. It is not one of the two gates that use the board.",
-                size=14, fill=T.AMBER)
+    canvas.text(40, 122, "三道门槛按顺序全过才叫验收——每道都是 yes/no，不是感觉", size=15, fill=T.TEXT, weight="700")
 
-    canvas.text(40, 170, "正常路径  三道门槛按顺序全过，才叫验收", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 252, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    gates = (
-        ("gate 1  build with 0 Error", "the .elf comes from STM32F103C8Tx_FLASH.ld and the flash tool writes 0x08000000",
-         "the build log proves syntax and linking, not pins"),
-        ("gate 2  the board shows it", "the PC13 LED completes one on/off cycle per second",
-         "500 ms on plus 500 ms off is 1 s: count the time, not the brightness"),
-        ("gate 3  every line is explainable", "why APB2ENR.IOPCEN is set before CRH is written",
-         "why CRH[23:20] = 0x2 is 2 MHz push-pull, and why ODR13 toggles"),
-    )
-    for i, (head, d1, d2) in enumerate(gates):
-        top = 196 + i * 80
-        _ring(canvas, 74, top + 40, str(i + 1), T.GREEN)
-        canvas.text(100, top + 34, head, size=15, fill=T.GREEN, weight="700")
-        canvas.text(100, top + 58, d1, size=13, fill=T.TEXT)
-        canvas.text(100, top + 76, d2, size=12, fill=T.MUTED)
+    gates = [
+        (40, "1", "编译 0 Error"),
+        (340, "2", "板上有现象"),
+        (640, "3", "逐行能解释"),
+    ]
+    for gx, num, gtitle in gates:
+        canvas.rect(gx, 150, 280, 300, fill=T.PANEL, stroke=T.GREEN, rx=8)
+        _ring(canvas, gx + 30, 184, num, T.GREEN)
+        canvas.text(gx + 56, 190, gtitle, size=16, fill=T.GREEN, weight="700")
 
-    canvas.text(40, 478, "失败路径  只看编译过", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 492, 880, 164, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 522, "0 Error and nothing else", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 550, "the LED never moves and no waveform appears on PC13", size=14, fill=T.RED)
-    canvas.text(56, 576, "a clean build says nothing about BOOT0, a wire, or the 500 ms", size=14, fill=T.TEXT)
-    canvas.text(56, 602, "gates 2 and 3 need the board in front of you; a log cannot supply them", size=14, fill=T.AMBER)
-    canvas.text(56, 628, "the build is the only gate that fails out loud", size=13, fill=T.MUTED)
+    # 门 1：日志
+    canvas.rect(58, 216, 244, 92, fill=T.BG, stroke=T.CYAN, rx=4)
+    canvas.text(70, 244, "arm-none-eabi-gcc … 0 Error", size=11, fill=T.TEXT, mono=True)
+    canvas.text(70, 268, "flash  →  0x08000000", size=11, fill=T.GREEN, mono=True)
+    canvas.text(70, 292, "from STM32F103C8Tx_FLASH.ld", size=10, fill=T.MUTED, mono=True)
+    canvas.text(58, 338, "日志只证明语法与链接，", size=12, fill=T.TEXT)
+    canvas.text(58, 358, "证明不了引脚和波形", size=12, fill=T.TEXT)
+    canvas.arrow(322, 300, 340, 300, color=T.GREEN, sw=2, head=7)
 
-    canvas.rect(40, 672, 880, 118, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 702, "旁注  a gate is a yes or no, not a feeling", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 728, "PC13 is on when low: lit means ODR13 = 0", size=14, fill=T.TEXT)
-    canvas.text(56, 754, "a logic analyzer shows the 1 s period; the eye only sees blinking", size=14, fill=T.AMBER)
-    canvas.text(56, 780, "the four-gate ladder in the hands-on section adds flash, reset, and measurement", size=13, fill=T.MUTED)
+    # 门 2：PC13 1 Hz
+    canvas.waveform(358, 226, 244, 84, [1, 0, 1, 0, 1, 0, 1, 0], color=T.GREEN, sw=2)
+    canvas.text(358, 332, "500 ms 高 + 500 ms 低 = 1 s", size=12, fill=T.TEXT)
+    canvas.text(358, 354, "数时间，不是数亮度", size=12, fill=T.AMBER)
+    canvas.arrow(622, 300, 640, 300, color=T.GREEN, sw=2, head=7)
+
+    # 门 3：逐行解释
+    rows3 = [
+        ("IOPCEN 先于 CRH——为什么", "时钟不开，寄存器白写"),
+        ("CRH[23:20] = 0x2", "→ 2 MHz 推挽输出"),
+        ("ODR13 不断翻转", "→ LED 才有 1 Hz"),
+    ]
+    for i, (l1, l2) in enumerate(rows3):
+        yy = 226 + i * 62
+        canvas.rect(658, yy, 244, 50, fill=T.BG, stroke=T.CYAN, rx=4)
+        canvas.text(670, yy + 21, l1, size=12, fill=T.TEXT, mono=True)
+        canvas.text(670, yy + 40, l2, size=11, fill=T.MUTED)
+
+    # 失败路径：只看编译过 → 路障
+    canvas.rect(40, 480, 880, 150, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 508, "失败路径  只看编译过", size=15, fill=T.RED, weight="700")
+    canvas.line(70, 590, 400, 590, stroke=T.STROKE, sw=2)
+    for i in range(4):
+        canvas.line(410 + i * 14, 578, 422 + i * 14, 602, stroke=T.RED, sw=2)
+    canvas.arrow(70, 590, 404, 590, color=T.MUTED, sw=2, head=7)
+    canvas.text(470, 552, "LED 不动，PC13 上没有波形", size=14, fill=T.RED, weight="700")
+    canvas.text(470, 578, "门 2、门 3 都在板上——日志给不了", size=14, fill=T.TEXT)
+    canvas.text(470, 604, "编译是唯一会自己喊失败的门槛", size=13, fill=T.MUTED)
+
+    canvas.rect(40, 656, 880, 116, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 686, "旁注  门槛是 yes/no，不是感觉", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 712, "PC13 低电平点亮：亮 = ODR13 = 0", size=13, fill=T.TEXT)
+    canvas.text(56, 736, "1 s 周期用逻辑分析仪数；眼睛只会看闪不闪", size=13, fill=T.AMBER)
+    canvas.text(56, 760, "动手节的四级阶梯再加上电、复位与测量", size=12, fill=T.MUTED)
     _credit(canvas, "自绘。PC13 低电平点亮与 500 ms 半周期来自第 00 章；CRH / ODR 与 GPIO 时钟来自 RM0008 Rev 21 第 9 章。")
     return canvas
-
 
 def boot_triage() -> Svg:
     canvas = Svg(

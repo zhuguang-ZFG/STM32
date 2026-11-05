@@ -52,7 +52,7 @@
  "diagrams/sample-00-accept-gate.svg": {
   "type": "calculation",
   "chapter": "00",
-  "caption": "▲ 自绘。三道门槛按顺序通过才叫验收。第一道看构建：0 Error，产物来自 STM32F103C8Tx_FLASH.ld，烧录工具写到 0x08000000。第二道看板子：PC13 上的 LED 每秒完成一次亮灭，500 ms 亮加 50"
+  "caption": "▲ 自绘。三道门槛各占一格，各画各的证据：门 1 是 0 Error 日志、产物来自 STM32F103C8Tx_FLASH.ld、烧到 0x08000000；门 2 是 PC13 的 1 Hz 方波，500 ms 高加 50"
  },
  "illustrations/handraw/ch00-accept-three-gates.png": {
   "type": "technical",
@@ -484,7 +484,7 @@
  "diagrams/sample-05-pwm-debug.svg": {
   "type": "triage",
   "chapter": "05",
-  "caption": "▲ 自绘。看哪里：三环从上到下。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，用 72 MHz 重算 72e6 / (72 × 1000) = 1000 Hz；同一组数按 36 MHz 除得到 500 Hz。环 ②"
+  "caption": "▲ 自绘。判据画在上一排：1 kHz 通过、500 Hz 差整数倍只查环①、全无查环②③；下面信号链 PSC/ARR → CCER → CRL 画到 PA6，REMAP ≠ 00 波形跑到 PB4/PC6。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，72e6 / (72 × 1000) = 1000 Hz；按 36 MHz 除得到 500 Hz。环 ②"
  },
  "illustrations/handraw/ch05-pwm-debug.png": {
   "type": "triage",

@@ -185,7 +185,7 @@ C8 的 TIM2～TIM5 都是 16 位，ARR 最大 65535。想用 PSC = 71、ARR = 99
 
 <p align="center">
   <img src="../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="有波形但频率差整数倍时停在 PSC/ARR 分频比；PA6 全无波形时依次读 TIM3_CCER 的 CC1E 与 GPIOA_CRL 的复用配置">
-  <br><sub>▲ 自绘。看哪里：三环从上到下。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，用 72 MHz 重算 72e6 / (72 × 1000) = 1000 Hz；同一组数按 36 MHz 除得到 500 Hz。环 ② 读回 TIM3_CCER 位 0 的 CC1E = 1，TIM3_CCMR1 的 OC1M[6:4] = 110 是 PWM 模式 1。环 ③ 读回 GPIOA_CRL[27:24] = 0xB，即 CNF6 = 10 复用推挽、MODE6 = 11 是 50 MHz，TIM3_REMAP = 00 把通道留在第 16 脚 PA6。证明什么：三环的读回值能把「频率错」和「引脚上完全没有波形」分开——下半部分只有 36 MHz 那一行还留着 500 Hz 的波形；CC1E = 0 与 MODE6 = 00 都让 PA6 没有波形，重映射不为 00 则波形改去 PB4 或 PC6。不证明什么：CCR 占空比、探头是否共地，以及第 08 章是否把 PA6 当 SPI1_MISO 用；TIM1 额外的 BDTR 位 15 MOE 在偏移 0x44，本图只点名不展开。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
+  <br><sub>▲ 自绘。看哪里：上一排三张波形是判据——1 kHz 通过、500 Hz 差整数倍只查环 ①、全无查环 ②③；三环信号链从左到右画到 PA6。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，用 72 MHz 重算 72e6 / (72 × 1000) = 1000 Hz；同一组数按 36 MHz 除得到 500 Hz。环 ② 读回 TIM3_CCER 位 0 的 CC1E = 1，TIM3_CCMR1 的 OC1M[6:4] = 110 是 PWM 模式 1。环 ③ 读回 GPIOA_CRL[27:24] = 0xB，即 CNF6 = 10 复用推挽、MODE6 = 11 是 50 MHz，TIM3_REMAP = 00 把通道留在第 16 脚 PA6。证明什么：三环的读回值能把「频率错」和「引脚上完全没有波形」分开——判据排里 500 Hz 那张就是只错环 ① 的样子；CC1E = 0 与 MODE6 = 00 都让 PA6 没有波形，重映射不为 00 则波形改去 PB4 或 PC6。不证明什么：CCR 占空比、探头是否共地，以及第 08 章是否把 PA6 当 SPI1_MISO 用；TIM1 额外的 BDTR 位 15 MOE 在偏移 0x44，本图只点名不展开。出处是 [RM0008 Rev 21 第 15 章](#source-rm0008-tim) 和 [DS5319 Rev 20 表 5](#source-ds5319-tim)。</sub>
 </p>
 
 <p align="center">

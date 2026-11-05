@@ -30,82 +30,59 @@ def pwm_debug() -> Svg:
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 §15 · DS5319 Rev 20 Table 5",
     )
     canvas.header(tag="05", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48 pin 16 PA6 = TIM3_CH1  TIM3 on APB1",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112,
-                "offsets: TIM3_CCER 0x20   TIM3_CCMR1 0x18   GPIOA_CRL 0x00   TIM3_REMAP lives in AFIO_MAPR",
-                size=13, fill=T.CYAN)
-    canvas.text(40, 138,
-                "counter clock 72 MHz: PCLK1 = 36 MHz, doubled because the APB1 prescaler is not 1",
-                size=14, fill=T.AMBER)
-    canvas.text(40, 164,
-                "read the rings in this order; a later ring never repairs an earlier one",
-                size=13, fill=T.MUTED)
+    canvas.text(40, 122, "PA6 的波形就是判据：先看有没有，再看周期对不对", size=15, fill=T.TEXT, weight="700")
 
-    canvas.text(40, 196, "正常路径  three rings open, PA6 carries 1 kHz", size=16,
-                fill=T.GREEN, weight="700")
-    canvas.rect(40, 210, 880, 188, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    # 判据：三种波形
+    judges = [
+        (40, [1, 0, 1, 0, 1, 0, 1, 0], "1 kHz ✓", "三环都通", T.GREEN),
+        (340, [1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0], "500 Hz", "差整数倍 → 只查环 ①", T.AMBER),
+        (640, [0, 0, 0, 0, 0, 0, 0, 0], "全无", "→ 查环 ② ③", T.RED),
+    ]
+    for jx, bits, head, note, c in judges:
+        canvas.rect(jx, 146, 280, 120, fill=T.PANEL, stroke=c, rx=8)
+        canvas.waveform(jx + 18, 156, 244, 64, bits, color=c, sw=2)
+        canvas.text(jx + 18, 242, head, size=13, fill=c, weight="700")
+        canvas.text(jx + 100, 242, note, size=12, fill=T.TEXT)
+
+    # 信号链三环
     rings = [
-        ("① 分频比", "TIM3_PSC = 71  TIM3_ARR = 999",
-         "72e6 / (72 × 1000) = 1000 Hz", "PSC+1 and ARR+1 are the counts"),
-        ("② 输出使能", "TIM3_CCER bit 0",
-         "CC1E = 1", "CCMR1 OC1M[6:4] = 110"),
-        ("③ GPIO 复用", "GPIOA_CRL[27:24] = 0xB",
-         "CNF6 = 10  MODE6 = 11", "TIM3_REMAP = 00 keeps PA6"),
+        (40, "环 ① 分频比", "TIM3_PSC = 71", "TIM3_ARR = 999",
+         "72e6 / (72 × 1000) = 1000 Hz"),
+        (360, "环 ② 输出使能", "TIM3_CCER bit 0 = 1", "CCMR1 OC1M = 110",
+         "CC1E = 0 → OC1 到不了引脚"),
+        (680, "环 ③ GPIO 复用", "CRL[27:24] = 0xB", "TIM3_REMAP = 00",
+         "MODE6 = 00 → 脚还是输入"),
     ]
-    for index, (title, reg, value, note) in enumerate(rings):
-        left = 58 + index * 290
-        canvas.rect(left, 230, 260, 132, fill=T.BG, stroke=T.CYAN, rx=4)
-        canvas.text(left + 14, 260, title, size=14, fill=T.CYAN, weight="700")
-        canvas.text(left + 14, 292, reg, size=12, fill=T.TEXT, mono=True)
-        canvas.text(left + 14, 320, value, size=13, fill=T.GREEN, weight="700")
-        canvas.text(left + 14, 346, note, size=11, fill=T.MUTED)
-        if index < 2:
-            canvas.arrow(left + 260, 296, left + 290, 296, color=T.GREEN, sw=2, head=6)
-    canvas.text(56, 384, "read PSC, ARR, CCER, and CRL back before touching the code again",
-                size=12, fill=T.MUTED)
+    for rx_, title, l1, l2, l3 in rings:
+        canvas.rect(rx_, 300, 250, 140, fill=T.PANEL, stroke=T.CYAN, rx=8)
+        canvas.text(rx_ + 14, 328, title, size=14, fill=T.CYAN, weight="700")
+        canvas.text(rx_ + 14, 356, l1, size=12, fill=T.TEXT, mono=True)
+        canvas.text(rx_ + 14, 378, l2, size=12, fill=T.TEXT, mono=True)
+        canvas.text(rx_ + 14, 406, l3, size=11, fill=T.GREEN)
+    canvas.arrow(292, 370, 358, 370, color=T.GREEN, sw=2, head=7)
+    canvas.arrow(612, 370, 678, 370, color=T.GREEN, sw=2, head=7)
+    canvas.circle(922, 370, 26, fill=T.BG, stroke=T.GREEN, sw=2)
+    canvas.text(922, 366, "PA6", size=12, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(922, 384, "第 16 脚", size=9, fill=T.MUTED, anchor="middle")
 
-    canvas.text(40, 430, "失败路径  each ring fails on its own read-back", size=16,
-                fill=T.RED, weight="700")
-    canvas.rect(40, 444, 880, 196, fill=T.PANEL, stroke=T.RED, rx=8)
+    # 环① 的专属症状
+    canvas.rect(680, 456, 250, 54, fill=T.BG2, stroke=T.AMBER, rx=4)
+    canvas.text(692, 478, "REMAP ≠ 00 → 波形跑到", size=11, fill=T.AMBER)
+    canvas.text(692, 496, "PB4 或 PC6，PA6 安静", size=11, fill=T.AMBER)
+    canvas.text(40, 540, "counter clock 72 MHz：PCLK1 = 36 MHz，APB1 预分频 ≠ 1 时翻倍——"
+                        "按 36 MHz 算 PSC/ARR 就得到 500 Hz", size=12, fill=T.AMBER)
+
+    canvas.rect(40, 566, 880, 210, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 596, "判据  先看波形，再做读回", size=15, fill=T.VIOLET, weight="700")
     rows = [
-        ("①  PSC/ARR from 36 MHz",
-         "a 500 Hz waveform is still there, so only ring ① is wrong"),
-        ("②  CCER bit 0 CC1E = 0",
-         "OC1 never reaches the pin: PA6 stays quiet"),
-        ("③a  CRL[27:24] MODE6 = 00",
-         "the pin is still an input: AF push-pull never drives it"),
-        ("③b  TIM3_REMAP != 00",
-         "the waveform moves to PB4 or PC6: PA6 stays quiet"),
+        ("CCR 只管占空比，频率由 PSC / ARR 定", T.TEXT),
+        ("TIM1 还要 BDTR bit 15 MOE = 1（偏移 0x44，复位 0x0000）；TIM3 没有 MOE", T.AMBER),
+        ("读回顺序：PSC → ARR → CCER → CRL，按这个顺序对数", T.TEXT),
+        ("一次只动一个环：三个数一起改，就不知道错的是谁", T.GREEN),
+        ("不证明：CCR 占空比、探头地线、以及第 08 章是否把 PA6 用作 SPI1_MISO", T.MUTED),
     ]
-    for index, (left_text, right_text) in enumerate(rows):
-        base = 478 + index * 38
-        canvas.text(56, base, left_text, size=13, fill=T.RED, mono=True)
-        canvas.text(360, base, right_text, size=14, fill=T.TEXT)
-    canvas.text(56, 622, "start from the scope: is there any waveform at all?",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 672, "判据  waveform first, then the read-back", size=16,
-                fill=T.VIOLET, weight="700")
-    canvas.rect(40, 686, 880, 180, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 716,
-                "A waveform with the period off by a whole ratio: ring ①. Nothing at all: rings ② and ③.",
-                size=14, fill=T.TEXT, weight="700")
-    canvas.text(56, 742,
-                "CC1E = 0 disconnects OC1; MODE6 = 00 leaves PA6 an input; a non-zero remap moves the channel.",
-                size=14, fill=T.GREEN)
-    canvas.text(56, 768,
-                "TIM1 also needs BDTR bit 15 MOE = 1 at offset 0x44, reset 0x0000; TIM3 has no MOE.",
-                size=14, fill=T.AMBER)
-    canvas.text(56, 794,
-                "CCR sets only the duty, never the frequency. Read PSC, ARR, CCER, and CRL in that order.",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 820,
-                "Does not prove: the CCR duty, the probe ground, or whether chapter 08 holds PA6 as SPI1_MISO.",
-                size=13, fill=T.MUTED)
-    canvas.text(56, 846,
-                "one ring at a time: three numbers turned together hide which one was wrong.",
-                size=13, fill=T.MUTED)
+    for i, (line, c) in enumerate(rows):
+        canvas.text(56, 626 + i * 28, line, size=13, fill=c)
 
     _credit(canvas, "自绘。CCER/CCMR1 位号与 BDTR 偏移来自 RM0008 Rev 21 第 15 章；"
                     "PA6 第 16 脚与默认复用来自 DS5319 Rev 20 表 5。")
