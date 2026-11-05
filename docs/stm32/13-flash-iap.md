@@ -110,7 +110,7 @@ PSIZE 必须在 STRT 之前设好，硬件按 PSIZE 决定每次 DRAM-flash 的�
 
 ## 三、擦写例程：扇区擦除、字写入、BSY 等待
 
-![Flash 擦除/编程序列：解锁→SER/AR→STRT→等 BSY](/figures/stm32-13-flash-seq.svg)
+![Flash 擦除/编程序列：解锁→SER/SNB→STRT→等 BSY](/figures/stm32-13-flash-seq.svg)
 
 **扇区擦除**完整序列（以擦参数扇区 11 为例）：
 
