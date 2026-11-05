@@ -270,7 +270,7 @@ SCB->VTOR = 0x08004800UL;   /* must match what the bootloader agreed */
 
 <p align="center">
   <img src="../../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="The resident bootloader uses 16 KB at 0x08000000; the factory system memory does not come out of this 64 KB; both paths are chosen at reset and share the 46 KB APP at 0x08004800">
-  <br><sub>▲ Drawn for this book. Two boot paths compared: the resident bootloader occupies 16 KB from 0x08000000, and the factory system-memory boot program does not come out of this 64 KB; the path is picked at reset by BOOT0, and both converge on the 46 KB APP at 0x08004800. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0056 vector table](#source-pm0056-vector).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: a 64 KB map on top lines the 16 KB bootloader, 2 KB parameter block and 46 KB app up with their four addresses, and the box on the right is the off-chip system memory (0x1FFFF000, not part of this 64 KB); the two cards below compare reset level, first fetch, update channel and cost; the violet block is the watershed — linker start, `SCB->VTOR` and the first two words must agree; the last row shows how each path breaks. Sources: [RM0008 Flash](#source-rm0008-flash) and [PM0056 vector table](#source-pm0056-vector).</sub>
 </p>
 
 <p align="center">

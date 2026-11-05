@@ -235,7 +235,7 @@ F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把�
 
 <p align="center">
   <img src="../assets/diagrams/sample-13-can-triage.svg" width="760" alt="预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点">
-  <br><sub>▲ 自绘。排错三岔口：APB1 36 MHz、预分频 8 配 10 个时间份额算出来是 450 kbit/s——这就是文档里的错误配置例；邮箱一直空，先查标准 ID 写 FilterIdHigh 是不是忘了左移 5 位（0x123 << 5）；错误帧暴涨多半是采样点定错。出处是 [RM0008 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20](#source-ds5319-clock)。</sub>
+  <br><sub>▲ 自绘。看哪里：顶部先把一位拆成 8 个 250 ns 的时间份额，采样点落在 75%（1.5 µs）；下面三列对应三种症状——① TEC 每次 ACK 错误加 8，第 16 次到 128 进 error-passive，再重传也不会到 256；② FilterIdHigh 的位域图，标准 ID 不左移 5 位就永远匹配不上；③ 75% 与 70% 两种分法的采样点画在同一标尺上对不齐，终端是两端各一只 120 Ω。底部四格是引脚（默认 PA11/PA12，BluePill 走 PB8/PB9）与「预分频 9 × 8 份额 = 500 kbit/s」的换算对照。出处是 [RM0008 bxCAN](#source-rm0008-can) 和 [DS5319 Rev 20](#source-ds5319-clock)。</sub>
 </p>
 
 <p align="center">

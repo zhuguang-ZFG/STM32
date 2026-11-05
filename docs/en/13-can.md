@@ -234,7 +234,7 @@ On **F1, APB1 = 36 MHz**:
 
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-triage.svg" width="760" alt="Prescaler 8 with 10 time quanta gives 450 kbit/s; an empty mailbox means the standard ID was not shifted left by 5; exploding error frames point at the sample point">
-  <br><sub>▲ Drawn for this book. Triage, three branches: APB1 36 MHz with prescaler 8 and 10 time quanta computes to 450 kbit/s — the wrong-configuration example from this chapter; a mailbox that never fills — check whether the standard ID written to FilterIdHigh was shifted left by 5 (0x123 << 5); exploding error frames — the sample point is set wrong. Sources: [RM0008 bxCAN](#source-rm0008-can) and [DS5319 Rev 20](#source-ds5319-clock).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the top strips one bit into eight 250 ns quanta with the sample point at 75% (1.5 µs); the three columns below are the three symptoms — (1) TEC adds 8 per ACK error, reaches 128 on the sixteenth try and enters error-passive, and retransmits forever without reaching 256; (2) the FilterIdHigh bitfield, where a standard ID that is not shifted left by 5 never matches; (3) sample points at 75% and 70% on one ruler, which never line up, plus 120 Ω at each end. The bottom row gives the pins (PA11/PA12 by default, PB8/PB9 on the BluePill) and the prescaler 9 x 8 quanta = 500 kbit/s conversion. Sources: [RM0008 bxCAN](#source-rm0008-can) and [DS5319 Rev 20](#source-ds5319-clock).</sub>
 </p>
 
 <p align="center">

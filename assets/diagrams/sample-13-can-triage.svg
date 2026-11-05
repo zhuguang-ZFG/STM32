@@ -1,42 +1,134 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="预分频 9 配 8 个份额是 500 kbit/s；邮箱空是标准 ID 没左移 5 位；错误帧暴涨查采样点与终端">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点</text>
+<rect x="0" y="0" width="4" height="58" fill="#9a3412" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CAN 三岔口：发不出、收不到、错误帧暴涨</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 13 · RM0008 Rev 21 第 21 章 bxCAN · DS5319 Rev 20 表 5</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">13</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6   CAN1 on APB1 36 MHz   prescaler 9   BS1 5   BS2 2   SJW 1</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three symptoms, three branches: silent TX, empty mailbox, error frames piling up</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">36e6 / (9 × 8) = 500 kbit/s   Tq = 250 ns   8 × 250 ns = 2 µs   sample 75% = 1.5 µs</text>
-<text x="40" y="170" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  发不出：帧一直重发</text>
-<rect x="40" y="184" width="880" height="188" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="214" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先量位时间：2 µs 一位才是 500 kbit/s，两端必须用同一组数</text>
-<text x="56" y="242" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">预分频 8 配 10 个时间份额是 36e6 / (8 × 10) = 450 kbit/s；10 个份额要 7.2 分频，不是整数</text>
-<text x="56" y="268" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单节点、没开回环：每次尝试都是 ACK 错误，TEC 每次加 8，十六次到 128 进 error-passive</text>
-<text x="56" y="294" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">error-passive 只发被动错误标志，仍持续重传同一帧，到不了 256，也就不会 Bus-Off</text>
-<text x="56" y="320" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单板调试先开回环模式跑 100 帧，别先怀疑收发器坏了</text>
-<text x="56" y="346" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：读 TEC 与 ESR，128 说明总线没人应答，不是控制器坏了</text>
-<text x="40" y="396" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  收不到：邮箱一直是空的</text>
-<rect x="40" y="410" width="880" height="188" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="440" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">总线上有帧、邮箱却是空的：先查过滤器，不是先换收发器</text>
-<text x="56" y="468" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">标准 ID 写 FilterIdHigh 要左移 5 位：0x123 写成 0x123 &lt;&lt; 5，不左移邮箱永远空</text>
-<text x="56" y="494" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">掩码 0x7FF &lt;&lt; 5 表示 11 位全部必须匹配；F1 有 14 组过滤器、2 个接收 FIFO</text>
-<text x="56" y="520" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">过滤器要挂到 FIFO0 或 FIFO1，中断用 CAN_IT_RX_FIFO0_MSG_PENDING 打开</text>
-<text x="56" y="546" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">向量表里这条中断叫 USB_LP_CAN_RX0，和 USB 共用：CAN 与 USB 例程不能编进同一个工程</text>
-<text x="56" y="572" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：先回环数清 FIFO0 的接收数量，再上真实总线</text>
-<text x="40" y="622" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  错误帧暴涨：两端都在报错</text>
-<rect x="40" y="636" width="880" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="666" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">两端都报错：先对齐位时间与采样点，再去查线和终端</text>
-<text x="56" y="694" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">采样点 75%（BS1 5 / BS2 2）与 70%（BS1 6 / BS2 3）混用，边沿就对不齐</text>
-<text x="56" y="720" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">终端电阻接在总线两端 CANH 与 CANL 之间，各一只 120 Ω；两只并联是 60 Ω 直流负载，不是电缆特性阻抗</text>
-<text x="56" y="746" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TEC 到 256 进 Bus-Off：恢复要 128 次、每次 11 个连续隐性位，ABOM 可自动回</text>
-<text x="56" y="772" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint：存一份 CAN_H 减 CAN_L 的差分波形，先看位宽与采样点</text>
-<rect x="40" y="800" width="880" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="820" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  重映射后 CAN_RX 是第 45 脚 PB8、CAN_TX 是第 46 脚 PB9；第 32、33 脚 PA11/PA12 是复位默认，也是 USB 的 D- 和 D+。</text>
+<text x="922" y="33.32" font-size="12" fill="#9a3412" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">13</text>
+<text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先把一位拆开：36 MHz ÷ 9 = 4 MHz，Tq = 250 ns，8 个 Tq = 2 µs = 500 kbit/s</text>
+<rect x="24" y="92" width="900" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="36" y="102" width="109.5" height="24" fill="#075e84" opacity="0.28" rx="2"/>
+<text x="90.75" y="119" font-size="10.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Sync</text>
+<line x1="36" y1="102" x2="36" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="145.5" y="102" width="547.5" height="24" fill="#1b5c45" opacity="0.28" rx="2"/>
+<text x="419.25" y="119" font-size="10.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BS1 = 5</text>
+<line x1="145.5" y1="102" x2="145.5" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="255" y1="102" x2="255" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="364.5" y1="102" x2="364.5" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="474" y1="102" x2="474" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="583.5" y1="102" x2="583.5" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="693" y="102" width="219" height="24" fill="#7a4e00" opacity="0.28" rx="2"/>
+<text x="802.5" y="119" font-size="10.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BS2 = 2</text>
+<line x1="693" y1="102" x2="693" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="802.5" y1="102" x2="802.5" y2="126" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="693" y1="98" x2="693" y2="132" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="693" y="146" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">采样点 75% = 1.5 µs</text>
+<text x="40" y="146" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0</text>
+<text x="908" y="146" font-size="9.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 µs</text>
+<rect x="24" y="176" width="290" height="330" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="24" y="176" width="290" height="5" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="38" y="206" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 发不出：帧一直重发</text>
+<text x="38" y="226" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">单节点没开回环，没人给 ACK</text>
+<circle cx="48" cy="254" r="10" fill="#f1f5f7" opacity="1" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="257.5" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="66" y="254" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每次尝试 ACK 错误</text>
+<text x="66" y="270" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+8 TEC</text>
+<line x1="48" y1="266" x2="48" y2="286" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="48" cy="298" r="10" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="48" y="301.5" font-size="9.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="66" y="298" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 16 次到 128</text>
+<text x="66" y="314" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">error-passive</text>
+<line x1="48" y1="310" x2="48" y2="330" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="48" cy="342" r="10" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="48" y="345.5" font-size="9.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="66" y="342" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">被动错误标志</text>
+<text x="66" y="358" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">仍然重传</text>
+<line x1="48" y1="354" x2="48" y2="374" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<circle cx="48" cy="386" r="10" fill="#f1f5f7" opacity="1" stroke="#5e6872" stroke-width="1.5"/>
+<text x="48" y="389.5" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
+<text x="66" y="386" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">到不了 256</text>
+<text x="66" y="402" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">不会 Bus-Off</text>
+<rect x="38" y="426" width="262" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="50" y="446" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先开回环跑 100 帧，再怀疑收发器</text>
+<text x="38" y="476" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读 TEC / ESR：128 = 总线没人应答，不是控制器坏</text>
+<rect x="326" y="176" width="300" height="330" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="326" y="176" width="300" height="5" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="340" y="206" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 收不到：邮箱一直是空的</text>
+<text x="340" y="226" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">标准 ID 进 FilterIdHigh 要左移 5 位</text>
+<text x="340" y="250" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FilterIdHigh（高 16 位）</text>
+<rect x="340" y="256" width="185" height="26" fill="#e5f3f8" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="433.5" y="273" font-size="8.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">STDID[10:0]</text>
+<rect x="527" y="256" width="32" height="26" fill="#e5f3f8" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="544" y="273" font-size="8.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">EXID</text>
+<rect x="561" y="256" width="49" height="26" fill="#e5f3f8" opacity="1" rx="2" stroke="#5e6872" stroke-width="1"/>
+<text x="586.5" y="273" font-size="8.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">I R 0</text>
+<text x="340" y="300" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x123  →  0x123 &lt;&lt; 5</text>
+<line x1="340" y1="308" x2="605" y2="308" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="610.00,308.00 605.00,310.50 605.00,305.50" fill="#1b5c45" opacity="1"/>
+<text x="340" y="330" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不左移：掩码对上了，数据位却错位 → 邮箱永远空</text>
+<text x="340" y="352" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">掩码 0x7FF &lt;&lt; 5 = 11 位全匹配；EXID/IDE/RTR 占低位</text>
+<text x="340" y="370" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1：14 组过滤器 / 2 个 RX FIFO</text>
+<text x="340" y="392" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">过滤器要挂 FIFO0 或 FIFO1，中断开</text>
+<text x="340" y="410" font-size="9" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CAN_IT_RX_FIFO0_MSG_PENDING</text>
+<rect x="340" y="426" width="272" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="352" y="438" font-size="9" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">向量名 USB_LP_CAN_RX0</text>
+<text x="352" y="450" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CAN 与 USB 共用，别编进同一个工程</text>
+<rect x="638" y="176" width="298" height="330" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<rect x="638" y="176" width="298" height="5" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="652" y="206" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 错误帧暴涨：两端都报错</text>
+<text x="652" y="226" font-size="10" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">先对齐位时间与采样点，再查线与终端</text>
+<text x="652" y="254" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">75% · BS1 5 / BS2 2</text>
+<rect x="652" y="262" width="270" height="16" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<line x1="854.5" y1="258" x2="854.5" y2="282" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="854.5" cy="270" r="4" fill="#1b5c45" opacity="1"/>
+<text x="652" y="294" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">70% · BS1 6 / BS2 3</text>
+<rect x="652" y="302" width="270" height="16" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<line x1="841" y1="298" x2="841" y2="322" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="841" cy="310" r="4" fill="#8f2d2d" opacity="1"/>
+<text x="652" y="344" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">混用两种分法，边沿永远对不齐</text>
+<text x="652" y="368" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">终端：总线两端各一只 120 Ω</text>
+<line x1="652" y1="384" x2="928" y2="384" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<rect x="672" y="376" width="24" height="16" fill="#e5f3f8" opacity="1" rx="2" stroke="#075e84" stroke-width="1.5"/>
+<text x="684" y="388" font-size="8.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">120</text>
+<rect x="906" y="376" width="24" height="16" fill="#e5f3f8" opacity="1" rx="2" stroke="#075e84" stroke-width="1.5"/>
+<text x="918" y="388" font-size="8.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">120</text>
+<text x="652" y="412" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">两只并联 = 60 Ω 直流负载，不是电缆特性阻抗</text>
+<text x="652" y="434" font-size="9" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TEC 256 = Bus-Off：恢复要 128 × 11 个连续隐性位</text>
+<text x="652" y="452" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ABOM 可自动回；先存一份 CANH−CANL 差分波形</text>
+<text x="24" y="528" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">引脚先确认：默认在 PA11/PA12，BluePill 用第一种重映射</text>
+<rect x="24" y="540" width="216" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="36" y="560" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">第 32 脚 PA11</text>
+<text x="36" y="576" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CAN_RX（默认）</text>
+<text x="36" y="590" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">也是 USB D−</text>
+<rect x="252" y="540" width="216" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="264" y="560" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">第 33 脚 PA12</text>
+<text x="264" y="576" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CAN_TX（默认）</text>
+<text x="264" y="590" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">也是 USB D+</text>
+<rect x="480" y="540" width="216" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="492" y="560" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">第 45 脚 PB8</text>
+<text x="492" y="576" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CAN_RX（重映射）</text>
+<text x="492" y="590" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">本例程使用</text>
+<rect x="708" y="540" width="216" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="720" y="560" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">第 46 脚 PB9</text>
+<text x="720" y="576" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CAN_TX（重映射）</text>
+<text x="720" y="590" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接收发器 TXD</text>
+<text x="24" y="616" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">两组数不能混：36 MHz 下预分频必须整除</text>
+<rect x="24" y="634" width="900" height="28" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<text x="36" y="653" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9 × 8 Tq</text>
+<text x="190" y="653" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">500 kbit/s</text>
+<text x="330" y="653" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">采样 75%（本例程）</text>
+<rect x="24" y="668" width="900" height="28" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<text x="36" y="687" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8 × 10 Tq</text>
+<text x="190" y="687" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">450 kbit/s</text>
+<text x="330" y="687" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对端 500 → 双方都报错</text>
+<rect x="24" y="702" width="900" height="28" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<text x="36" y="721" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10 Tq 想要 500k</text>
+<text x="190" y="721" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">需 7.2 分频</text>
+<text x="330" y="721" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不是整数，配不出来</text>
 <line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。位时间、过滤器与 TEC 来自 RM0008 Rev 21 第 21 章；PB8/PB9 来自 DS5319 Rev 20 表 5。</text>
 <text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
