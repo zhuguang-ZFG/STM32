@@ -11,21 +11,9 @@ minutes: 30
 
 ## 本章精髓
 
-1. **工具链命名遵循 RISC-V 规范**：`riscv-none-elf-gcc`（曾用 `riscv-none-embed-gcc` / `riscv64-unknown-elf-gcc`），编译标志从 `-mcpu/-mthumb/-mfloat-abi/-mfpu` 换成 `-march=rv32imac -mabi=ilp32`——"目标三元组 + march/mabi"是 RISC-V 工具链的身份证。
-2. **启动文件 `start_gd32vf103.S` 与 B4 的 `startup_stm32f407xx.s` 同构**：设 sp → 搬 .data → 清 .bss → 调 SystemInit → `call main`。**删掉的**是"开 CPACR"那一节——RV32IMAC 没有 FPU，硬浮点编译选项根本不存在。
+1. **工具链命名遵循 RISC-V 规范**：`riscv-none-elf-gcc`（曾用 `riscv-none-embed-gcc` / `riscv64-unknown-elf-gcc`），编译标志从 `-mcpu/-mthumb/-mfloat-abi/-mfpu` 换成 `-march=rv32imac -mabi=ilp32`："目标三元组 + march/mabi"是 RISC-V 工具链的身份证。
+2. **启动文件 `start_gd32vf103.S` 与 B4 的 `startup_stm32f407xx.s` 同构**：设 sp → 搬 .data → 清 .bss → 调 SystemInit → `call main`。**删掉的**是"开 CPACR"那一节：RV32IMAC 没有 FPU，硬浮点编译选项根本不存在。
 3. **RISC-V 复位不做"硬件两读"**：PC 由复位向量直接装入，sp 必须由启动代码显式 `la sp, __stack_top` 设好。向量表那套机制在 [V1](06-clic-irq.md) 才登场（ECLIC 的向量直跳），复位这一刻它不参与。
-
-## 怎么读这一章
-
-- **读过 [B4 启动过程](../build/04-startup.md)**：每节先看"与 B4 的差异"，再对照记，速度最快。
-- **没读过 B4**：先把"设栈 → 搬数据 → 清 bss → 进 main"这条骨架记牢，再来看 RISC-V 用什么指令写。
-- 工具链命令都能在宿主上直接敲，不用开发板。
-
-## 学习目标
-
-- 说出 `riscv-none-elf-gcc` 替代 `arm-none-eabi-gcc` 后，编译标志哪两套变了。
-- 指着 `start_gd32vf103.S` 逐段讲出与 B4 启动文件的相同工序与删除的"开 FPU"步骤。
-- 解释为什么 RISC-V 启动代码必须显式设 sp，而 Cortex-M 不用。
 
 ## 先修
 
@@ -42,7 +30,9 @@ riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -print-libgcc-file-name
 # 能打印出 libgcc 路径，说明 rv32imac/ilp32 这个 multilib 组合在工具链里有效
 ```
 
-读两行输出：版本号、libgcc 路径里藏的 `rv32imac/ilp32`——这就是 RISC-V 工具链的身份证。本章每个标志位都能对回这两行。
+读两行输出：版本号、libgcc 路径里藏的 `rv32imac/ilp32`，这就是 RISC-V 工具链的身份证。本章每个标志位都能对回这两行。
+
+先押张工序单：身份证正面是工具链，背面印的是启动工序。搬 .data、清 .bss、调 SystemInit、进 main 这几道，RISC-V 那边还用同一套指令拼写吗？押完对第二节的对照表。
 
 ## 小节结构
 
@@ -70,7 +60,7 @@ riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -print-libgcc-file-name
 
 **目标三元组**的读法：`riscv`（厂商）+ `none`（无操作系统/裸机）+ `elf`（目标格式）。ARM 那边写 `none-eabi` 是因为 ARM 用 EABI 规范；RISC-V 这边直接 `elf`， ABI 由 `-mabi` 单独指定。
 
-**编译标志对照**——这是最关键的一行差异：
+**编译标志对照**，这是最关键的一行差异：
 
 | 项 | ARM (STM32F407) | RISC-V (GD32VF103) |
 |---|---|---|
@@ -78,7 +68,7 @@ riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -print-libgcc-file-name
 | 浮点标志 | `-mfloat-abi=hard -mfpu=fpv4-sp-d16` | **无**（IMAC 无 F/D 扩展） |
 | ABI 标志 | （隐含在 -mfloat-abi） | `-mabi=ilp32` |
 
-把 `-march=rv32imac` 拆开念：`rv32` = 32 位 RISC-V；`I` = 基础整数指令；`M` = 乘除法；`A` = 原子指令；`C` = 压缩指令（16 位编码，省 Flash）。`-mabi=ilp32` = ILP32 数据模型（int/long/指针都是 32 位），不带 `f`/`d` 后缀——因为没有浮点硬件，浮点运算走 libgcc 软件模拟。
+把 `-march=rv32imac` 拆开念：`rv32` = 32 位 RISC-V；`I` = 基础整数指令；`M` = 乘除法；`A` = 原子指令；`C` = 压缩指令（16 位编码，省 Flash）。`-mabi=ilp32` = ILP32 数据模型（int/long/指针都是 32 位），不带 `f`/`d` 后缀，因为没有浮点硬件，浮点运算走 libgcc 软件模拟。
 
 > **【注】别把 `riscv64-unknown-elf-gcc` 当 64 位用**。它支持 rv32 multilib，但默认目标是 rv64。不显式带 `-march=rv32imac -mabi=ilp32`，链接脚本里 `ORIGIN(RAM)=0x20000000` 这种 32 位地址会和 64 位默认重定位对不上，报一堆 `relocation truncated to fit`。
 
@@ -112,7 +102,7 @@ riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -print-libgcc-file-name
 .L_copy_done:
 ```
 
-`_sidata = LOADADDR(.data)`、`_sdata`/`_edata` 是 [B3 链接脚本](../build/03-linker-script.md)讲的五个符号里的三个——这套约定跨架构通用，RISC-V 链接脚本照样发这些"地址条"。`bgeu t1, t2`（无符号大于等于则跳）对应 B4 的 `cmp r4, r1; bcc`——同样是"先判后干"，长度为零的 .data 也安全。
+`_sidata = LOADADDR(.data)`、`_sdata`/`_edata` 是 [B3 链接脚本](../build/03-linker-script.md)讲的五个符号里的三个，这套约定跨架构通用，RISC-V 链接脚本照样发这些"地址条"。`bgeu t1, t2`（无符号大于等于则跳）对应 B4 的 `cmp r4, r1; bcc`，同样是"先判后干"，长度为零的 .data 也安全。
 
 清 .bss 更瘦：源操作数都不需要，一路 `sw zero` 扫过去，与 B4 第四节同思路，只是指令换成了 RISC-V 的 `sw`。
 
@@ -122,9 +112,9 @@ B4 的"第 0 步"是开 `SCB->CPACR` 的 CP10/CP11，否则第一条 FPU 指令�
 
 - **指令集没有浮点扩展**：`-march=rv32imac` 里的 `IMAC` 不含 `F`（单精度）也不含 `D`（双精度），编译器根本不会生成 FPU 指令。
 - **没有"协处理器使能"机制**：ARM 用 CPACR 管协处理器权限是因为它有 CP0~CP15 的协处理器编号空间；RISC-V 的自定义扩展走 CSR 编码空间，浮点若有则由 `mstatus.FS` 字段管，但 IMAC 没有浮点，`mstatus.FS` 都不用碰。
-- **`-mfloat-abi=hard` 是非法组合**：在 `rv32imac` 上加 `-mfloat-abi=hard`，工具链要么报错，要么默默走软浮点（libgcc 软件模拟）。这与 B4 里"硬浮点工程忘开 CPACR"的坑是镜像关系——ARM 是"有 FPU 但没开门"，RISC-V 是"门都没有"。
+- **`-mfloat-abi=hard` 是非法组合**：在 `rv32imac` 上加 `-mfloat-abi=hard`，工具链要么报错，要么默默走软浮点（libgcc 软件模拟）。这与 B4 里"硬浮点工程忘开 CPACR"的坑是镜像关系：ARM 是"有 FPU 但没开门"，RISC-V 是"门都没有"。
 
-推论：GD32VF103 上做浮点运算（`float a = 1.5f * 2.0f;`）走的是 libgcc 的软浮点函数调用，慢且占 Flash——但能跑，不会 fault。要不要用浮点、用多少，是个工程权衡，不是"开了就崩"的开关。
+推论：GD32VF103 上做浮点运算（`float a = 1.5f * 2.0f;`）走的是 libgcc 的软浮点函数调用，慢且占 Flash，但能跑，不会 fault。要不要用浮点、用多少，是个工程权衡，不是"开了就崩"的开关。
 
 ## 四、没有硬件两读：RISC-V 复位与 Cortex-M 的根本差异
 
@@ -145,9 +135,9 @@ reset_handler:
     /* ... 之后才是搬 .data、清 .bss、call SystemInit、call main ... */
 ```
 
-`__stack_top` 由链接脚本给（见第五节），值 = `ORIGIN(RAM) + LENGTH(RAM)`，栈从 RAM 顶向下长——与 B4 的 `_estack` 同思路，只是 B4 那是"硬件读进去"，这里是"软件装进去"。
+`__stack_top` 由链接脚本给（见第五节），值 = `ORIGIN(RAM) + LENGTH(RAM)`，栈从 RAM 顶向下长，与 B4 的 `_estack` 同思路，只是 B4 那是"硬件读进去"，这里是"软件装进去"。
 
-> **【坑】** 别以为 RISC-V 也有"向量表第 0 项是栈顶值"的约定，把 `__stack_top` 写进链接脚本当向量——RISC-V 复位不读它，sp 还是 0，第一条用到栈的指令就跑飞。向量机制在 [V1](06-clic-irq.md) 讲（ECLIC 向量直跳），复位这一刻它完全不参与。
+> **【坑】** 别以为 RISC-V 也有"向量表第 0 项是栈顶值"的约定，把 `__stack_top` 写进链接脚本当向量：RISC-V 复位不读它，sp 还是 0，第一条用到栈的指令就跑飞。向量机制在 [V1](06-clic-irq.md) 讲（ECLIC 向量直跳），复位这一刻它完全不参与。
 
 ## 五、链接脚本：gcc_gd32vf103.ld 与 B3 五符号
 
@@ -177,7 +167,7 @@ SECTIONS
 #define SRAM_BASE   ((uint32_t)0x20000000U)   /* SRAM base        */
 ```
 
-**与 STM32F407 完全相同的地址**（见 [S1 架构总览](../stm32/01-arch.md)）——这是 GD32 刻意保持的移植兼容点：把 STM32 固件搬到 GD32VF103，Flash 和 RAM 起始地址不用改。
+**与 STM32F407 完全相同的地址**（见 [S1 架构总览](../stm32/01-arch.md)）。这是 GD32 刻意保持的移植兼容点：把 STM32 固件搬到 GD32VF103，Flash 和 RAM 起始地址不用改。
 
 [B3](../build/03-linker-script.md) 讲的五个符号在这里同名同义：`_sidata = LOADADDR(.data)`（初值仓库在 Flash 的位置）、`_sdata`/`_edata`（.data 在 RAM 的头尾）、`_sbss`/`_ebss`（.bss 在 RAM 的头尾）、`__stack_top`（栈顶）。这套符号是链接脚本约定，跨架构通用。
 
@@ -197,7 +187,7 @@ SECTIONS
 4. 使能 PLL：`RCU_CTL |= PLLEN`（bit24），轮询 `PLLSTB`（bit25）
 5. 选 PLL 为系统时钟：`RCU_CFG0 |= RCU_CKSYSSRC_PLL`，轮询 `SCSS = PLL`
 
-这与 STM32 RCC 提频六步同构，只是寄存器名 `RCC→RCU`、位名 `PLLRDY→PLLSTB`、`SWS→SCSS`（[G1](01-rcu-clock.md) 已在 GD32F4 上逐字段对照过）。**同样"官方留白"**：`system_gd32vf103.c` 全文不设 Flash 等待周期——但 VF103 的 FMC_WS 寄存器确实存在（@0x4002 2000 + 0x00，gd32vf103_fmc.h:45,64），而且 UM 已核验出一个 G1 没有的收窄：**VF103 的 WSCNT[2:0] 只有 000/001/010 三档有效，011~111 全部保留**（UM §2.4.1），同样要先置 FMC_WSEN 才生效。108MHz 档实际该配几拍，UM 不给映射表（与 G1 在 GD32F4 的发现一致）——**待上板实测**。
+这与 STM32 RCC 提频六步同构，只是寄存器名 `RCC→RCU`、位名 `PLLRDY→PLLSTB`、`SWS→SCSS`（[G1](01-rcu-clock.md) 已在 GD32F4 上逐字段对照过）。**同样"官方留白"**：`system_gd32vf103.c` 全文不设 Flash 等待周期，但 VF103 的 FMC_WS 寄存器确实存在（@0x4002 2000 + 0x00，gd32vf103_fmc.h:45,64），而且 UM 已核验出一个 G1 没有的收窄：**VF103 的 WSCNT[2:0] 只有 000/001/010 三档有效，011~111 全部保留**（UM §2.4.1），同样要先置 FMC_WSEN 才生效。108MHz 档实际该配几拍，UM 不给映射表（与 G1 在 GD32F4 的发现一致），**待上板实测**。
 
 启动序列全景：
 
@@ -210,7 +200,7 @@ reset_handler
   → call main                   /* main 一进来就在 108MHz 跑 */
 ```
 
-`SystemInit` 在 `main` 之前把时钟拉到 108M——所以你的 `main` 第一行就在 108MHz 跑。跳过它就只在 8M IRC8M 跑，串口波特率全错。
+`SystemInit` 在 `main` 之前把时钟拉到 108M，所以你的 `main` 第一行就在 108MHz 跑。跳过它就只在 8M IRC8M 跑，串口波特率全错。
 
 ## 记忆锚点
 
@@ -223,7 +213,7 @@ reset_handler
 ## 实物实验
 
 - `riscv-none-elf-objdump -d your.elf | findstr reset_handler`：看 `reset_handler` 第一条是 `la sp`（设栈），与 Cortex-M reset 第一条"读向量表"对比。
-- GDB `monitor reset halt` 后 `info registers sp pc`：sp = 0、pc = `reset_handler` 地址——亲眼看到"sp 没人设"。
+- GDB `monitor reset halt` 后 `info registers sp pc`：sp = 0、pc = `reset_handler` 地址，亲眼看到"sp 没人设"。
 - 进阶：在 `reset_handler` 的 `la sp, __stack_top` 行下断，单步过后 sp 变成 RAM 顶值（0x20000000 + RAM 长度）；再单步过 `call SystemInit`，`RCU_CFG0` 的 SCSS 字段应变成 PLL。
 
 ## 常见坑
@@ -231,7 +221,7 @@ reset_handler
 1. **用了 `riscv64-unknown-elf-gcc` 旧名又不带 `-march/-mabi`**：默认 rv64，链接脚本里 32 位地址对不上，报 `relocation truncated to fit` 一堆。要么换 `riscv-none-elf-gcc`，要么每次显式带 `-march=rv32imac -mabi=ilp32`。
 2. **`-march=rv32imac` 误写成 `rv32imacF`**：加了 F 但芯片没 FPU，工具链报 `unsupported ISA extension`。GD32VF103 就是 IMAC，别画蛇添足。
 3. **以为 RISC-V 也有"向量表第 0 项是栈顶"**：把 `__stack_top` 当向量写，复位还是不读它，sp 留 0，第一条 push 就跑飞。RISC-V 复位只跳 `reset_handler`，栈是软件设。
-4. **忘了 `call SystemInit`**：`main` 在 8MHz IRC8M 跑，串口波特率、延时全错——现象是"程序能跑但时序诡异"，难查。
+4. **忘了 `call SystemInit`**：`main` 在 8MHz IRC8M 跑，串口波特率、延时全错，现象是"程序能跑但时序诡异"，难查。
 5. **照搬 STM32 的 `-mfloat-abi=hard`**：RISC-V 上无 F 扩展，编译报错或默默走软浮点；想要硬件浮点得换带 F/D 的 RISC-V 芯片，GD32VF103 不行。
 
 ## 短自测
@@ -256,7 +246,7 @@ reset_handler
 
 <details><summary>看答案</summary>
 
-sp = 0。由启动代码 `la sp, __stack_top` 显式设——`__stack_top` 由链接脚本给（`ORIGIN(RAM) + LENGTH(RAM)`）。Cortex-M 复位时硬件从 0 号地址读 4 字节自动装 MSP，软件不用管；RISC-V 没有"硬件两读"机制，sp 必须软件设。
+sp = 0。由启动代码 `la sp, __stack_top` 显式设，`__stack_top` 由链接脚本给（`ORIGIN(RAM) + LENGTH(RAM)`）。Cortex-M 复位时硬件从 0 号地址读 4 字节自动装 MSP，软件不用管；RISC-V 没有"硬件两读"机制，sp 必须软件设。
 
 </details>
 
@@ -264,7 +254,7 @@ sp = 0。由启动代码 `la sp, __stack_top` 显式设——`__stack_top` 由�
 
 <details><summary>看答案</summary>
 
-FLASH = 0x08000000、RAM = 0x20000000（`gd32vf103.h:193-194`）。与 STM32F407 **完全相同**——这是 GD32 刻意保持的移植兼容点，把 STM32 固件搬到 GD32VF103，Flash 和 RAM 起始地址不用改。
+FLASH = 0x08000000、RAM = 0x20000000（`gd32vf103.h:193-194`）。与 STM32F407 **完全相同**，这是 GD32 刻意保持的移植兼容点，把 STM32 固件搬到 GD32VF103，Flash 和 RAM 起始地址不用改。
 
 </details>
 
@@ -272,7 +262,7 @@ FLASH = 0x08000000、RAM = 0x20000000（`gd32vf103.h:193-194`）。与 STM32F407
 
 <details><summary>看答案</summary>
 
-`reset_handler` 在 `call main` 之前先 `call SystemInit`（`system_gd32vf103.c:150`），后者调 `system_clock_108m_hxtal()` 把 RCU 配成 PLL × 27 = 108M。跳过它，`main` 只在 8M IRC8M 跑——程序能跑但串口波特率、延时时序全错，难查。
+`reset_handler` 在 `call main` 之前先 `call SystemInit`（`system_gd32vf103.c:150`），后者调 `system_clock_108m_hxtal()` 把 RCU 配成 PLL × 27 = 108M。跳过它，`main` 只在 8M IRC8M 跑，程序能跑但串口波特率、延时时序全错，难查。
 
 </details>
 
@@ -302,6 +292,8 @@ FLASH = 0x08000000、RAM = 0x20000000（`gd32vf103.h:193-194`）。与 STM32F407
 - 启动文件逐段对照 B4，知道哪节删了（FPU）、哪节换了写法（搬数据指令）、哪节完全照搬（清 bss、调 main）；
 - RISC-V 复位"sp 自己设、PC 由 reset 装入"的机制入肌肉记忆，不再误以为有"硬件两读"。
 
+工序单对上：搬 .data、清 .bss 同义换指令，ldr/str 那套换成 la 与 lw/sw；调 SystemInit、进 main 工序照旧。背面另两行空缺：一是"开 CPACR"那一节整个消失，RV32IMAC 没有 FPU，硬浮点编译选项根本不存在；二是复位不做"硬件两读"，PC 由复位向量直接装入，sp 由启动代码显式设好。这就是架构差异落在启动文件上的分量。
+
 <div class="achievement">
-✅ 下一站：<a href="06-clic-irq.html">V1 Bumblebee 内核与 CLIC 中断</a>——没有 NVIC 的世界，向量怎么"直跳"。
+✅ 下一站：<a href="06-clic-irq.html">V1 Bumblebee 内核与 CLIC 中断</a>：去看没有 NVIC 的世界里，向量怎么"直跳"。
 </div>

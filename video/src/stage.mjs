@@ -37,7 +37,7 @@ export async function openBrowser() {
   })
 }
 
-export async function openStage(browser, { platform, size, safe, scenes, kicker, badge, sections }) {
+export async function openStage(browser, { platform, size, safe, scenes, kicker, badge, sections, formatVersion = 1, fps = 30 }) {
   const [width, height] = size
   const page = await browser.newPage({
     viewport: { width, height },
@@ -47,17 +47,20 @@ export async function openStage(browser, { platform, size, safe, scenes, kicker,
   // 关掉平滑滚动和 transition：帧间只有我们 seek 出来的差异，不该有别的插值在动
   await page.addStyleTag({ content: '*,*::before,*::after{transition:none!important;animation:none!important}' })
   await page.setContent(
-    pageHtml({ platform, size, safe, scenes, anims: buildAnims(scenes, platform), kicker, badge, sections }),
+    pageHtml({ platform, size, safe, scenes, anims: buildAnims(scenes, platform), kicker, badge, sections, formatVersion, fps }),
     { waitUntil: 'load' },
   )
   await page.evaluate(() => document.fonts.ready)
 
   return {
     page,
-    async capture(index, smilTime, caption, opacity, reveal) {
+    async capture(index, smilTime, caption, opacity, reveal, beat = null, transition = -1) {
       await page.evaluate(
-        (a) => window.MCU.frame(a.index, a.smilTime, a.caption, a.opacity, a.reveal),
-        { index, smilTime, caption: caption ?? null, opacity: opacity ?? 1, reveal: reveal ?? 1 },
+        async (a) => {
+          await window.MCU.frame(a.index, a.smilTime, a.caption, a.opacity, a.reveal)
+          if (window.MCU.state) window.MCU.state(a.beat, a.transition)
+        },
+        { index, smilTime, caption: caption ?? null, opacity: opacity ?? 1, reveal: reveal ?? 1, beat, transition },
       )
       return page.screenshot({ type: 'png' })
     },

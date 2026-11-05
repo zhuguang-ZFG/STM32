@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   book:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Check out repository
@@ -34,6 +34,12 @@ jobs:
           python -m pip install -r mcu-book/requirements.txt
           python -m playwright install --with-deps chromium
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
       - name: Run whole-book regressions
         run: python -m unittest discover mcu-book/tests -v
 
@@ -43,6 +49,22 @@ jobs:
       - name: Build HTML and PDF deliverables
         run: python mcu-book/build_html.py --pdf
 
+      - name: Build print PDF
+        run: python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html
+
+      - name: 整书契约门（对 PDF 产物反向校验：元数据/大纲/封面页脚/逐页页眉）
+        run: python mcu-book/check_pdf.py
+
+      - name: 下载包（稳定名 + 版本名 + SHA256SUMS + 落地页）
+        run: python mcu-book/publish_downloads.py --out-dir mcu-book/dist/downloads
+
+      - name: 下载包自证（GNU sha256sum 权威口径 + hashlib 平台无关口径）
+        run: |
+          cd mcu-book/dist/downloads
+          sha256sum -c SHA256SUMS.txt
+          cd -
+          python mcu-book/publish_downloads.py --verify mcu-book/dist/downloads
+
       - name: Upload offline book
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
@@ -50,5 +72,6 @@ jobs:
           path: |
             mcu-book/dist/mcu-deep-book.html
             mcu-book/dist/mcu-deep-book.pdf
+            mcu-book/dist/downloads/
           if-no-files-found: error
           retention-days: 14

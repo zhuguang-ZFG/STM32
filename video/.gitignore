@@ -1,0 +1,10 @@
+# 运行时工具链与依赖（不入库；skill 源码克隆自上游，pydeps 为隔离安装）
+/sweety-handdraw-video/
+/pydeps/
+
+# 本地配音音频缓存（可由 edge_runner 重生；契约 json 保留入库）
+jobs/*/inputs/narration/*.wav
+jobs/*/inputs/narration/master-chunks/
+
+# 渲染输出
+jobs/*/out/

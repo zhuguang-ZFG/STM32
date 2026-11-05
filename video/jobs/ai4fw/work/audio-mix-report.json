@@ -1,0 +1,108 @@
+{
+  "background_music": true,
+  "layers": [
+    {
+      "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\music-bed.wav",
+      "user_instruction": "整集级：节奏音效铺满（用户 2026-10-28 要求）",
+      "kind": "music",
+      "start": 0.0,
+      "builtin": {
+        "version": "music-synth-1",
+        "mood": "curious",
+        "seed": 0,
+        "loop": false,
+        "bpm": 92,
+        "key_midi": 55,
+        "bars": 25,
+        "first_bar": 0,
+        "seconds": 64.09,
+        "progression_degrees": [
+          0,
+          1,
+          4,
+          5
+        ],
+        "target_lufs": -16.0,
+        "loudness_lufs": -16.0,
+        "peak_dbfs": -3.62,
+        "sha256": "0c2adb6b6197f45629130e494bc2c6b09159eb58b467c639449337e25388662e"
+      },
+      "gain": 0.25,
+      "preparation": {
+        "crossfade_seconds": 4.0,
+        "fade_in_seconds": 1.2,
+        "fade_out_seconds": 3.0,
+        "duck": true,
+        "dips": []
+      },
+      "sha256": "8e72ff77565e35b5db731e9f16b0957cf438f56d95d5c5e59aed3c833f657ece",
+      "levels": {
+        "peak_dbfs": -15.66,
+        "loudness_lufs": -30.17
+      }
+    },
+    {
+      "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\audio\\foley.wav",
+      "gain": 0.25,
+      "start": 0.0,
+      "sha256": "75ae2848df1a96231aeda2cdebbaaf06c06cd919be436358c6d143807dcfa72c",
+      "kind": "foley",
+      "reason": "pen/marker sound synced to the drawing (procedural, foley.py)",
+      "foley": {
+        "version": "foley-1",
+        "tool": "marker",
+        "gain_db": 0.0,
+        "duck_db": 4.0,
+        "seed": 0,
+        "events": 10,
+        "contact_seconds": 15.96,
+        "levels": {
+          "peak_dbfs": -24.23,
+          "loudness_lufs": -38.3,
+          "active_rms_dbfs": -43.17,
+          "active_share": 0.284,
+          "duck_db": 4.0,
+          "duck_applied_db": {
+            "speech_mean": -3.76,
+            "pause_mean": -1.87
+          },
+          "speech_rms_dbfs": -44.16,
+          "pause_rms_dbfs": -42.14
+        }
+      }
+    },
+    {
+      "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\audio\\sfx.wav",
+      "gain": 0.5,
+      "start": 0.0,
+      "sha256": "f992fbb0d53a78aebb991e2aa449f69a6c06fdeb5206bdc6abe1895b74a80851",
+      "kind": "sfx",
+      "reason": "transition and accent sounds synced to the picture (procedural, sfx.py)",
+      "sfx": {
+        "version": "sfx-1",
+        "gain_db": 0.0,
+        "sounds": 6,
+        "levels": {
+          "peak_dbfs": -30.86,
+          "loudness_lufs": -44.21
+        }
+      }
+    }
+  ],
+  "narration_only": false,
+  "narration_filter": "highpass=f=70,loudnorm=I=-20:TP=-2:LRA=7",
+  "loudnorm_first_pass": {
+    "input_i": "-25.00",
+    "input_tp": "-0.65",
+    "input_lra": "4.80",
+    "input_thresh": "-35.57",
+    "output_i": "-21.41",
+    "output_tp": "-2.00",
+    "output_lra": "3.20",
+    "output_thresh": "-31.92",
+    "normalization_type": "dynamic",
+    "target_offset": "1.41"
+  },
+  "loudnorm_mode": "dynamic",
+  "delivery_notice": "按用户明确要求加入了程序合成的背景音乐（builtin:curious）。"
+}

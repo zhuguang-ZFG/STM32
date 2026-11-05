@@ -1,0 +1,46 @@
+{
+  "version": "sfx-1",
+  "options": {
+    "gain_db": 0.0,
+    "transitions": true,
+    "accents": true,
+    "seed": 0
+  },
+  "sounds": [
+    {
+      "at": 8.189,
+      "sound": "paper_slide",
+      "for": "slide_over"
+    },
+    {
+      "at": 21.789,
+      "sound": "swish",
+      "for": "pan"
+    },
+    {
+      "at": 33.479,
+      "sound": "swell",
+      "for": "iris"
+    },
+    {
+      "at": 42.509,
+      "sound": "swish",
+      "for": "pan"
+    },
+    {
+      "at": 49.529,
+      "sound": "swish",
+      "for": "push"
+    },
+    {
+      "at": 59.029,
+      "sound": "brush",
+      "for": "marker_wipe"
+    }
+  ],
+  "levels": {
+    "peak_dbfs": -30.86,
+    "loudness_lufs": -44.21
+  },
+  "source_sha256": "f992fbb0d53a78aebb991e2aa449f69a6c06fdeb5206bdc6abe1895b74a80851"
+}

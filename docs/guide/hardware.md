@@ -15,12 +15,12 @@ title: 导读·实物装备清单
 | 2.8 寸 ESP32-S3 显示模块（ES3C28P，[LCD wiki 资料](https://www.lcdwiki.com/zh/2.8inch_ESP32-S3_Display)） | ESP32 当前持板 | N16R8 同款主控；ILI9341V 2.8 寸屏（SPI：CS=IO10/DC=IO46/SCK=IO12）；FT6336G 触摸（I2C=IO15/16，INT=IO17 低有效）；ES8311 音频；WS2812 RGB=IO42；SD=SDIO；电池 ADC=IO9 | [P 篇](../esp32/index.md) 实验（触摸/屏/音频场景） |
 
 ::: warning 买板注意
-霸天虎**不板载仿真器**，必须另购调试器（见下表）。立创 S3 板与 ES3C28P 均为 Type-C 一线通吃（供电+烧录+串口），无此问题。两块 S3 板都是 N16R8 小智系（16MB Flash + 8MB PSRAM），P 篇正文通用；差异在板载外设——实战派带姿态传感器 QMI8658（[E07](../lab/e07-qmi8658.md)），ES3C28P 带电容触摸与 2.8 寸方屏（FT6336G/ILI9341V）。引脚以各板资料页为准，上板前先核。
+霸天虎**不板载仿真器**，必须另购调试器（见下表）。立创 S3 板与 ES3C28P 均为 Type-C 一线通吃（供电+烧录+串口），无此问题。两块 S3 板都是 N16R8 小智系（16MB Flash + 8MB PSRAM），P 篇正文通用；差异在板载外设：实战派带姿态传感器 QMI8658（[E07](../lab/e07-qmi8658.md)），ES3C28P 带电容触摸与 2.8 寸方屏（FT6336G/ILI9341V）。引脚以各板资料页为准，上板前先核。
 :::
 
 ### 板卡与主控实拍参考
 
-三张开源许可的实物照片，帮你下单前后认板子、认模组。**野火霸天虎官方产品图受版权保护，本站不转载**——外观与引脚图请看[官方资料页](https://doc.embedfire.com/products/link/zh/latest/mcu/stm32/stm32f407_batianhu.html)。
+三张开源许可的实物照片，帮你下单前后认板子、认模组。**野火霸天虎官方产品图受版权保护，本站不转载**，外观与引脚图请看[官方资料页](https://doc.embedfire.com/products/link/zh/latest/mcu/stm32/stm32f407_batianhu.html)。
 
 ![立创·实战派 ESP32-S3 开发板：2 寸 IPS 屏、摄像头开孔、Type-C 接口](/images/boards/lichuang-s3-board.jpg)
 

@@ -2,6 +2,15 @@
 
 `code/stm32/` 下的寄存器级工程（基准板：野火 F407 霸天虎，F407ZGT6）。
 
+## 动手前必读与跨层路由
+
+- 改板级启动/链接/寄存器/外设：本合同与下列工程结构。
+- 改共用协议、健康监测、串口 CLI：先读 [firmware-common](../firmware-common/index.md)；协议字节不在本层重复。
+- 改传感器 logger：先读 [logger-contract](../docs-site/logger-contract.md)，再看公共层的 [reliability-contract](../firmware-common/reliability-contract.md)。
+- 改 `code/rtos/` 或 FreeRTOS/RT-Thread 内核结论：读 [firmware-rtos](../firmware-rtos/index.md)；板级 port/启动文件仍归本层。
+- 改工程登记、场景/变体、CI 矩阵：读 [quality-contract](../docs-site/quality-contract.md)；字段真源是 `scripts/project-catalog.mjs`。
+- 无板取证脚本的工具/跳过语义：读 [probe-contract](../firmware-common/probe-contract.md)；编译成功不等于上板通过。
+
 ## 工程结构（每个示例四文件起）
 
 照 `code/stm32/00-blink/`：
@@ -21,15 +30,18 @@
 - 每个地址/位在注释给出处（RM0090 章节号或 CMSIS 头文件行）；未核实的一律 `#error 待核对` 或文档注明"以手册为准"，禁止编造；
 - 已核实事实清单（CMSIS 核对过）：GPIOF=0x40021400、RCC=0x40023800、AHB1ENR 偏移 0x30、GPIOFEN=bit5、BSRR 偏移 0x18；霸天虎 LED 红 PF6/绿 PF7/蓝 PF8 共阳低电平点亮。
 
-## 验证
+## 质量检查
 
 ```bash
 cd code/stm32/<demo> && make          # 必须零警告通过（-Wall -Wextra）
 make flash                             # OpenOCD+ST-Link 烧录（有板时）
+npm run firmware:check                 # 全非 ESP 工程 + 场景/变体 + 登记 probe
+npm run projects:check                 # 工程登记与 probe 钩子
 ```
 
 - 无板环境：至少 `arm-none-eabi-gcc` 编译链接通过 + `nm/objdump` 抽查向量表落位 0x08000000。
 - 固件未上板验证的，在工程 README 与对应章节页标注"待上板实测"。
+- 改共用协议/logger 时另跑 [firmware-common](../firmware-common/index.md) 的 probe；编译成功不等于协议正确。
 
 ## 构建回归
 

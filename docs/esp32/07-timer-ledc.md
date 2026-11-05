@@ -11,21 +11,12 @@ minutes: 35
 
 ## 本章精髓
 
-1. **GPTimer 是"闹钟工厂"**：计数器+报警值，到点回调——回调跑在 ISR 上下文（IRAM 纪律回 [P4](04-irq-dualcore.md)），微秒级分辨率，适合测距、超时、采样节拍。
-2. **LEDC 是"8 通道 PWM 乐团"（S3 上只有低速模式）**：定时器（分辨率+频率）与通道（绑定 GPIO+占空比）两级配置——占空比渐变用硬件 `ledc_fade`（无需 CPU 逐点写）。**别套经典 ESP32 的 16 通道/高速模式**：S3 是 8 通道（`SOC_LEDC_CHANNEL_NUM=8`）、定时器位宽 14 位（`SOC_LEDC_TIMER_BIT_WIDTH=14`）、仅低速模式（soc_caps.h 核实）。
-3. **分辨率×频率是此消彼长**：`f = 时钟 / 2^位数`——位数越高，可达频率越低。舵机 50Hz 可上 14 位，音频级应用就得降位数。
+1. **GPTimer 是"闹钟工厂"**：计数器+报警值，到点回调；回调跑在 ISR 上下文（IRAM 纪律回 [P4](04-irq-dualcore.md)），微秒级分辨率，适合测距、超时、采样节拍。
+2. **LEDC 是"8 通道 PWM 乐团"（S3 上只有低速模式）**：定时器（分辨率+频率）与通道（绑定 GPIO+占空比）两级配置。占空比渐变用硬件 `ledc_fade`（无需 CPU 逐点写）。**别套经典 ESP32 的 16 通道/高速模式**：S3 是 8 通道（`SOC_LEDC_CHANNEL_NUM=8`）、定时器位宽 14 位（`SOC_LEDC_TIMER_BIT_WIDTH=14`）、仅低速模式（soc_caps.h 核实）。
+3. **分辨率×频率是此消彼长**：`f = 时钟 / 2^位数`：位数越高，可达频率越低。舵机 50Hz 可上 14 位，音频级应用就得降位数。
 
-## 怎么读这一章
-
-- **能记住**：口诀"GPTimer 定闹钟（ISR 里快办事），LEDC 开乐团（timer 定调 channel 发声）；渐变交给硬件 fade，位数频率跷跷板。"
 - **能理解**：为什么改 duty 必须 update（双缓冲）；为什么 fade 与手动 set 不能混用；为什么 S3 不能套经典 ESP32 的结论。
 - **能用**：写出 LEDC 两级配置链；用硬件 fade 做呼吸灯；说出分辨率与频率的取舍。
-
-## 学习目标
-
-- 背出 LEDC 两级配置链：`ledc_timer_config`（频率/分辨率/速度组）→ `ledc_channel_config`（GPIO/通道/占空比）。
-- 用硬件 fade 做呼吸灯，逻辑分析仪验证占空比线性度。
-- 用 GPTimer 报警回调实现 1kHz 采样节拍，与 `vTaskDelay` 版做抖动对比。
 
 ## 先修
 
@@ -33,7 +24,9 @@ minutes: 35
 
 ## 先跑起来（10 分钟 quick win）
 
-`code/esp32/03-ledc-fade`：LEDC 通道绑到 **GPIO10**（多功能扩展口，立创 wiki 核实），5kHz/10 位起步，硬件 fade 做呼吸——占空比的物理意义第一次"看得见"。
+`code/esp32/03-ledc-fade`：LEDC 通道绑到 **GPIO10**（多功能扩展口，立创 wiki 核实），5kHz/10 位起步，硬件 fade 做呼吸，占空比的物理意义第一次"看得见"。
+
+呼吸灯亮起来之前先押个闲差：占空比从零爬到满的那几秒，CPU 在忙循环、在被打断、还是根本不用管？押完再 flash，答案会让你重新认识"定时"两个外设的分工。
 
 ## 动画：timer 定调，channel 发声
 
@@ -45,7 +38,7 @@ LEDC 的两级分工一目了然：timer 定频率与分辨率（"多快、多�
 
 - 板卡：立创·实战派 ESP32-S3；PWM 从 **GPIO10**（多功能扩展口）输出。
 - 框架：ESP-IDF **v5.5.2**；LEDC 驱动在 `components/esp_driver_ledc/`。
-- 芯片能力（soc_caps.h）：S3 是 8 通道、14 位位宽、仅低速模式——与经典 ESP32 的 16 通道/高速模式不是一回事。
+- 芯片能力（soc_caps.h）：S3 是 8 通道、14 位位宽、仅低速模式，与经典 ESP32 的 16 通道/高速模式不是一回事。
 
 ## 小节结构
 
@@ -60,7 +53,7 @@ LEDC 的两级分工一目了然：timer 定频率与分辨率（"多快、多�
 
 ## 一、GPTimer 报警：闹钟工厂
 
-GPTimer 的配置对象：`gptimer_config_t`（时钟源、分辨率、计数方向）→ `gptimer_alarm_config_t`（报警值、自动重载）→ 回调注册。回调跑在 **ISR 上下文**——IRAM 纪律（回 P4）：回调里只办事不等待，不能用会阻塞的 API。
+GPTimer 的配置对象：`gptimer_config_t`（时钟源、分辨率、计数方向）→ `gptimer_alarm_config_t`（报警值、自动重载）→ 回调注册。回调跑在 **ISR 上下文**（IRAM 纪律回 P4）：回调里只办事不等待，不能用会阻塞的 API。
 
 ## 二、采样节拍：1kHz 定时 vs vTaskDelay
 
@@ -91,15 +84,15 @@ ledc_channel_config_t ch = {
 };
 ```
 
-`ledc_get_freq` 回读实际频率——请求值与实际值可能因分频舍入不同（回 [S6](../stm32/06-tim.md) 的"+1"教训）。
+`ledc_get_freq` 回读实际频率：请求值与实际值可能因分频舍入不同（回 [S6](../stm32/06-tim.md) 的"+1"教训）。
 
 ## 四、硬件渐变：ledc_fade 系列
 
-`ledc_fade_func_install()` 装渐变引擎 → `ledc_set_fade_with_time()` 设目标占空比与用时 → `ledc_fade_start()` 启动。**fade 期间 CPU 不逐点干预**——这是它比"定时器模拟 PWM 渐变"高级的地方。
+`ledc_fade_func_install()` 装渐变引擎 → `ledc_set_fade_with_time()` 设目标占空比与用时 → `ledc_fade_start()` 启动。**fade 期间 CPU 不逐点干预**：这是它比"定时器模拟 PWM 渐变"高级的地方。
 
 两模式：`LEDC_FADE_NO_WAIT`（启动就返回，fade 在后台跑）vs `LEDC_FADE_WAIT_DONE`（等渐变完）。选哪个取决于你要不要在渐变途中干别的。
 
-注意纪律：fade 与手动 `ledc_set_duty` 不能混用——渐变途中手动 set 会被 fade 引擎覆盖，先停 fade 再接管。
+注意纪律：fade 与手动 `ledc_set_duty` 不能混用，渐变途中手动 set 会被 fade 引擎覆盖，先停 fade 再接管。
 
 ## 五、分辨率取舍：频率-位数跷跷板
 
@@ -113,7 +106,7 @@ ledc_channel_config_t ch = {
 
 ## 六、对照 TIM：一肩挑 vs 分工
 
-STM32 的 TIM 一个外设包干时基+PWM+捕获；S3 拆成 GPTimer（计时）+ LEDC（PWM）。设计哲学的对照：**复用度高但配置纠缠** vs **职责单一但各司其职**。学到的东西是相通的——比较值、预装载、双缓冲、fade/渐变，只是名字换了。
+STM32 的 TIM 一个外设包干时基+PWM+捕获；S3 拆成 GPTimer（计时）+ LEDC（PWM）。设计哲学的对照：**复用度高但配置纠缠** vs **职责单一但各司其职**。学到的东西是相通的：比较值、预装载、双缓冲、fade/渐变，只是名字换了。
 
 ## 附录：工程完整源码
 
@@ -135,11 +128,11 @@ STM32 的 TIM 一个外设包干时基+PWM+捕获；S3 拆成 GPTimer（计时�
 
 ## 常见坑
 
-- **改 duty 忘 update**：LEDC 双缓冲——`ledc_update_duty` 才装载（与 TIM 直接写 CCR 不同）；
-- **fade 与手动 set 混用**：渐变途中手动 set 被 fade 引擎覆盖——停 fade 再接管；
-- **套经典 ESP32 结论**：S3 是 8 通道、14 位、仅低速模式——没有高速模式可选；
-- **GPTimer 回调里做长活**：回调=ISR——阻塞一毫，系统抖一分（P4 复训）；
-- **请求频率当实际频率**：分频舍入让两者不等——用 `ledc_get_freq` 回读。
+- **改 duty 忘 update**：LEDC 双缓冲，`ledc_update_duty` 才装载（与 TIM 直接写 CCR 不同）；
+- **fade 与手动 set 混用**：渐变途中手动 set 被 fade 引擎覆盖，停 fade 再接管；
+- **套经典 ESP32 结论**：S3 是 8 通道、14 位、仅低速模式，没有高速模式可选；
+- **GPTimer 回调里做长活**：回调=ISR，阻塞一毫，系统抖一分（P4 复训）；
+- **请求频率当实际频率**：分频舍入让两者不等，用 `ledc_get_freq` 回读。
 
 ## 短自测
 
@@ -168,6 +161,8 @@ STM32 的 TIM 一个外设包干时基+PWM+捕获；S3 拆成 GPTimer（计时�
 - PWM 从"能用"到"用好"：fade、分辨率、速度组边界全在掌握；
 - 与 STM32 TIM 的对照让你看清"同一个问题、两种设计"。
 
+闲差押中了：那几秒 CPU 是真闲，fade 由硬件自己爬坡，一步都不用你盯。把"什么时候叫"和"以什么节奏眨"拆给两个外设，拆的就是这个意思。
+
 <div class="achievement">
-✅ 下一站：<a href="08-wifi.html">P8 Wi-Fi 精髓</a>——esp_event 事件循环与连接状态机，联网的第一性原理。
+✅ 下一站：<a href="08-wifi.html">P8 Wi-Fi 精髓</a>：esp_event 事件循环与连接状态机，联网的第一性原理。
 </div>

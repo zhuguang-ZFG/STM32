@@ -11,29 +11,19 @@ minutes: 45
 
 ## 本章精髓
 
-1. 函数凭什么"调用完就回来"？——`bl` 把返回地址写进 lr；非叶子函数把 lr 压栈，收尾时 `pop {…, pc}` 直接弹回程序计数器。
-2. 参数凭什么"送得到"？——AAPCS 铁律：r0–r3 装前 4 个、第 5 个起走栈、64 位占偶奇寄存器对、硬浮点走 d0–d7。
-3. 局部变量凭什么"用完自动回收"？——栈帧随 sp 移动而生灭，分配与释放的全部成本就是改一根指针。
+1. 函数凭什么"调用完就回来"？`bl` 把返回地址写进 lr；非叶子函数把 lr 压栈，收尾时 `pop {…, pc}` 直接弹回程序计数器。
+2. 参数凭什么"送得到"？AAPCS 铁律：r0–r3 装前 4 个、第 5 个起走栈、64 位占偶奇寄存器对、硬浮点走 d0–d7。
+3. 局部变量凭什么"用完自动回收"？栈帧随 sp 移动而生灭，分配与释放的全部成本就是改一根指针。
 
-## 怎么读这一章
-
-- **能记住**：口诀「参数 r0 到 r3，多余的上栈找；64 位占偶奇对；返回值 r0 里抱；r4–r11 谁用谁保管；lr 记着回家道」。
 - **能理解**：拿 `sum6` 的 `ldr r2, [sp]`、`mix` 调用方不写的 r1、`non_leaf` 的 `push {r4, lr}` … `pop {r4, pc}` 三段真实汇编，逐条对到 ABI 规则上。
-- **能用**：给你一段 Cortex-M 的 `-O2` 反汇编，能说出参数从哪进、栈帧多大、返回地址压在栈上哪个字——[S16 崩溃定位](../stm32/16-debug-hardfault.md)要用的就是这个本事。
-
-## 学习目标
-
-- 能画出一次函数调用前后的栈布局变化（sp、保存的 lr、局部变量）。
-- 能背出 AAPCS 的分工：r0–r3 传参、r0（64 位 r0:r1）返回值、r4–r11 谁用谁保存、sp/lr/pc 各管什么。
-- 能在反汇编里一眼认出 prologue（push/sub）与 epilogue（pop），并解释 `pop {r4, pc}` 为什么能完成返回。
-- 能预言 64 位参数与 double 参数的落位（偶奇寄存器对 / d0–d7），并用汇编验证自己的预言。
+- **能用**：给你一段 Cortex-M 的 `-O2` 反汇编，能说出参数从哪进、栈帧多大、返回地址压在栈上哪个字，[S16 崩溃定位](../stm32/16-debug-hardfault.md)要用的就是这个本事。
 
 ## 先修
 
-- [C4 结构体与 ABI](04-struct-abi.md)——数据在内存里怎么排；本章讲调用发生时数据怎么进函数。
-- [C5 函数指针](05-func-pointer.md)——`blx r3` 决定"跳到哪"；本章回答"跳过去之后参数怎么进、栈帧怎么长"。
-- [C1 内存模型](01-memory-model.md)——知道栈住在 SRAM 哪一端、往哪头长。
-- [B4 启动过程](../build/04-startup.md) 可读可后补——知道复位后 sp 从哪来。
+- [C4 结构体与 ABI](04-struct-abi.md)：数据在内存里怎么排；本章讲调用发生时数据怎么进函数。
+- [C5 函数指针](05-func-pointer.md)：`blx r3` 决定"跳到哪"；本章回答"跳过去之后参数怎么进、栈帧怎么长"。
+- [C1 内存模型](01-memory-model.md)：知道栈住在 SRAM 哪一端、往哪头长。
+- [B4 启动过程](../build/04-startup.md) 可读可后补：知道复位后 sp 从哪来。
 
 ## 先跑起来（10 分钟 quick win）
 
@@ -41,6 +31,8 @@ minutes: 45
 cd code/c/06-abi-stack
 sh probe.sh   # 宿主 gcc 真跑 9 条断言；arm-none-eabi-gcc 在 PATH 时附送 Cortex-M4 汇编核对
 ```
+
+跑之前先押：那个非叶子函数只开了一个局部数组，它的一帧会吃掉多少字节？刚好等于数组大小，还是更多？多出来的部分又是谁？押完对第一行输出。
 
 宿主侧（gcc 16.1.0 实测输出，每条都是真跑出来的数）：
 
@@ -52,7 +44,7 @@ add64(0x100000000, 0x200000001) = 0x300000001（64 位结果走寄存器对回�
 == 断言通过 9/9 ==
 ```
 
-交叉侧（本机 PATH 里的 arm-none-eabi-gcc 10.3.1，`-mcpu=cortex-m4 -mfloat-abi=hard -O2 -S`）里找这三行——AAPCS 就长这样：
+交叉侧（本机 PATH 里的 arm-none-eabi-gcc 10.3.1，`-mcpu=cortex-m4 -mfloat-abi=hard -O2 -S`）里找这三行，AAPCS 就长这样：
 
 ```text
 add2:
@@ -82,7 +74,7 @@ add2:
 
 ## 一、为什么需要"约定"
 
-启动文件里一行 `bl main` 为什么能成？编译器是 gcc，启动文件是手写汇编，两者从没见过面——能接上头，全靠 **AAPCS**（Procedure Call Standard for the ARM Architecture）：ARM 公布的调用约定，gcc / clang / IAR / Keil 全都遵守。它规定四个问题：参数放哪、返回值放哪、哪些寄存器用完要复原、栈怎么对齐。
+启动文件里一行 `bl main` 为什么能成？编译器是 gcc，启动文件是手写汇编，两者从没见过面，能接上头全靠 **AAPCS**（Procedure Call Standard for the ARM Architecture）：ARM 公布的调用约定，gcc / clang / IAR / Keil 全都遵守。它规定四个问题：参数放哪、返回值放哪、哪些寄存器用完要复原、栈怎么对齐。
 
 核心寄存器分工（每一行都能在本章 probe 里找到对应证据）：
 
@@ -96,7 +88,7 @@ add2:
 | r14 | lr | 返回地址，`bl` 时硬件写入 | 每次调用都被覆盖 | non_leaf 必须 push 它 |
 | r15 | pc | 程序计数器 | —— | `pop {r4, pc}` 改写它完成返回 |
 
-一句话：约定 = 谁可以用、谁必须存、参数放哪、返回值放哪。约定之外没有魔法。
+说白了，约定 = 谁可以用、谁必须存、参数放哪、返回值放哪。约定之外没有魔法。
 
 ## 二、参数落位铁律：r0–r3 装前 4 个，第 5 个起走栈
 
@@ -117,7 +109,7 @@ sum6:
 	bx	lr
 ```
 
-- `@ args = 8`：编译器注释——调用方在栈上放了 **8 字节**入参（两个 int），函数自己的帧却是 0（`frame = 0`）。
+- `@ args = 8` 是编译器注释：调用方在栈上放了 **8 字节**入参（两个 int），函数自己的帧却是 0（`frame = 0`）。
 - 前 4 个参数就在 r0–r3 里，三条 `add` 直接加完；第 5、6 个用 `ldr r2, [sp]` / `ldr r0, [sp, #4]` 从栈上读回来。
 
 调用方一侧（main 内，`bl sum6` 之前，build/probe.s 第 217–224 行；probe.sh 第 48–50 行取证）：
@@ -133,9 +125,9 @@ sum6:
 	bl	sum6
 ```
 
-`strd`（store double）一次把第 5、6 参数写上栈顶，与被调方的两条 `ldr` 严丝合缝。（细心的读者会发现 r1=2 没被重写：编译器在同一编译单元内知道 `add2` 不改 r1，就沿用了——这是对函数体内情的优化，跨模块调用时 ABI 不作此承诺。）
+`strd`（store double）一次把第 5、6 参数写上栈顶，与被调方的两条 `ldr` 严丝合缝。（细心的读者会发现 r1=2 没被重写：编译器在同一编译单元内知道 `add2` 不改 r1，就沿用了，这是对函数体内情的优化，跨模块调用时 ABI 不作此承诺。）
 
-行为断言兜底：`sum6(1,2,3,4,5,6) = 21`（宿主 9/9 之一）——**语义不因传参方式改变**，变的只是成本：栈传参多出内存写+内存读，寄存器传参零额外访存。性能敏感的接口，参数控制在 4 个以内。
+行为断言兜底：`sum6(1,2,3,4,5,6) = 21`（宿主 9/9 之一），**语义不因传参方式改变**，变的只是成本：栈传参多出内存写+内存读，寄存器传参零额外访存。性能敏感的接口，参数控制在 4 个以内。
 
 ## 三、64 位参数：必须落在偶奇寄存器对
 
@@ -151,9 +143,9 @@ add64:
 
 x 在 **r0:r1**、y 在 **r2:r3**，返回值也在 r0:r1。`adds`/`adc` 进位链就是"两个 32 位寄存器扮一个 64 位数"的铁证。宿主实测：`add64(0x100000000, 0x200000001) = 0x300000001`。
 
-真正的反直觉点在 `mix(int tag, long long v)`（probe.c 第 53–57 行）：tag 占了 r0，v **不能**放 r1:r2——AAPCS 要求 64 位参数对齐到**偶数号**寄存器，于是 v 落 r2:r3，**r1 被跳过**。
+真正的反直觉点在 `mix(int tag, long long v)`（probe.c 第 53–57 行）：tag 占了 r0，v **不能**放 r1:r2，AAPCS 要求 64 位参数对齐到**偶数号**寄存器，于是 v 落 r2:r3，**r1 被跳过**。
 
-- 被调方从没读过入参 r1：`mov r1, r0`（r1 只当返回值高半的暂存）、`adds r0, r0, r2`、`adc r1, r3, r1, asr #31`——读的入参只有 r0、r2、r3。
+- 被调方从没读过入参 r1：`mov r1, r0`（r1 只当返回值高半的暂存）、`adds r0, r0, r2`、`adc r1, r3, r1, asr #31`：读的入参只有 r0、r2、r3。
 - 调用方铁证（`bl mix` 之前，probe.sh 第 55–60 行取证段）：
 
 ```asm
@@ -178,11 +170,11 @@ add_d:
 	bl	__aeabi_dadd    @   double 加法得调软件库（它按 r0:r1/r2:r3 收参）
 ```
 
-两个 double 是从 **d0、d1** 进来的——`vmov r0, r1, d0` 恰好证明了这一点；占 r0:r1 是被调的软件库 `__aeabi_dadd` 的内部约定，不是本函数的传参方式。对照：`-mfloat-abi=soft` 时 double 按 64 位整数规则直接走 r0:r1。两种 ABI 编出的目标文件**不能混链**（链接器会报 VFP 参数 mismatch）——这就是"ABI"三个字的分量。宿主断言：`add_d(0.5, 0.25) == 0.75`（9/9 之一）。
+两个 double 是从 **d0、d1** 进来的，`vmov r0, r1, d0` 恰好证明了这一点；占 r0:r1 是被调的软件库 `__aeabi_dadd` 的内部约定，不是本函数的传参方式。对照：`-mfloat-abi=soft` 时 double 按 64 位整数规则直接走 r0:r1。两种 ABI 编出的目标文件**不能混链**（链接器会报 VFP 参数 mismatch）：这就是"ABI"三个字的分量。宿主断言：`add_d(0.5, 0.25) == 0.75`（9/9 之一）。
 
 ## 五、栈帧解剖：push {r4, lr} … pop {r4, pc}
 
-`non_leaf`（probe.c 第 78–88 行）内部还要 `bl sink`、`bl add2`——每次 `bl` 都会覆盖 lr，所以 prologue 必须先把 lr 存起来。为什么还带着 r4？因为 `sink` 标了 `__attribute__((noipa)`（probe.c 第 70–76 行注释）：禁用一切过程间分析，调用方只能按 ABI 做最坏假定——r0–r3、r12 全被改写。想活过这次调用的值，只能放进被调方保存寄存器，r4 由此登场。
+`non_leaf`（probe.c 第 78–88 行）内部还要 `bl sink`、`bl add2`，每次 `bl` 都会覆盖 lr，所以 prologue 必须先把 lr 存起来。为什么还带着 r4？因为 `sink` 标了 `__attribute__((noipa)`（probe.c 第 70–76 行注释）：禁用一切过程间分析，调用方只能按 ABI 做最坏假定：r0–r3、r12 全被改写。想活过这次调用的值，只能放进被调方保存寄存器，r4 由此登场。
 
 完整帧（probe.sh 第 62–63 行取证输出）：
 
@@ -196,9 +188,9 @@ non_leaf:
 	pop	{r4, pc}        @ 恢复 r4，返回地址直接弹进 PC——连 bx lr 都省了
 ```
 
-**返回地址弹进 PC** 是 Thumb-2 的经典收尾：弹栈与跳转合一。口诀里"lr 记着回家道"的下半场——回家不一定要经过 lr，可以直接进门。这个 Cortex-M4 帧 = push 8 + sub 16 = **24 字节**。
+**返回地址弹进 PC** 是 Thumb-2 的经典收尾：弹栈与跳转合一。口诀里"lr 记着回家道"的下半场：回家不一定要经过 lr，可以直接进门。这个 Cortex-M4 帧 = push 8 + sub 16 = **24 字节**。
 
-对照组 `add2`（probe.c 第 33–37 行）：叶子函数不调用任何人，编译器直接注释 `@ link register save eliminated.`，全身就 `add r0, r0, r1` + `bx lr` 两条指令。计数核对（probe.sh 第 66–70 行）：全文件 `push {r4, lr}` 恰出现 1 次、`pop {r4, pc}` 恰出现 1 次——正是 non_leaf 这一对；`strd , [sp]` 也恰 1 次，就是 sum6 那次的栈传参。
+对照组 `add2`（probe.c 第 33–37 行）：叶子函数不调用任何人，编译器直接注释 `@ link register save eliminated.`，全身就 `add r0, r0, r1` + `bx lr` 两条指令。计数核对（probe.sh 第 66–70 行）：全文件 `push {r4, lr}` 恰出现 1 次、`pop {r4, pc}` 恰出现 1 次，正是 non_leaf 这一对；`strd , [sp]` 也恰 1 次，就是 sum6 那次的栈传参。
 
 ## 六、把抽象 ABI 落成字节账（宿主实测）
 
@@ -212,14 +204,14 @@ non_leaf:
 | buf 地址 | `0x7d73dff960` |
 | buf 距 sp(non_leaf) | **32 字节** |
 
-布局断言同步通过（probe.c 第 110–113 行）：sp 向下走（`sp_callee < sp_main`）、buf 落在本帧之内、帧差是 8 的倍数——AAPCS 要求公共接口处 sp **8 字节对齐**，主流桌面 ABI 同样有对齐条款。
+布局断言同步通过（probe.c 第 110–113 行）：sp 向下走（`sp_callee < sp_main`）、buf 落在本帧之内、帧差是 8 的倍数：AAPCS 要求公共接口处 sp **8 字节对齐**，主流桌面 ABI 同样有对齐条款。
 
-注意口径：64 字节是宿主编译器的帧；**同一个 non_leaf 编到 Cortex-M4 是 24 字节**（第五节的 8+16）。字节账随目标与编译器而变，不变的是机制——**sp 一根指针的移动 = 分配与释放的全部成本**。
+注意口径：64 字节是宿主编译器的帧；**同一个 non_leaf 编到 Cortex-M4 是 24 字节**（第五节的 8+16）。字节账随目标与编译器而变，不变的是机制：**sp 一根指针的移动 = 分配与释放的全部成本**。
 
 与前后章的呼应：
 
-- [C5 函数指针](05-func-pointer.md)：函数指针在机器码层面是 `blx r3`——跳到寄存器里的地址；本章补的是跳过去之后"参数怎么进、帧怎么长"。传参规则与直接调用完全一致，函数指针才能与直调无缝互换。
-- [S16 HardFault 与排错](../stm32/16-debug-hardfault.md)：HardFault 时硬件把 r0–r3、r12、lr、pc、xPSR 自动压进当前栈——反查崩溃行号，就是按本章的栈帧知识把那个 pc 从栈里挖出来。
+- [C5 函数指针](05-func-pointer.md)：函数指针在机器码层面是 `blx r3`，跳到寄存器里的地址；本章补的是跳过去之后"参数怎么进、帧怎么长"。传参规则与直接调用完全一致，函数指针才能与直调无缝互换。
+- [S16 HardFault 与排错](../stm32/16-debug-hardfault.md)：HardFault 时硬件把 r0–r3、r12、lr、pc、xPSR 自动压进当前栈：反查崩溃行号，就是按本章的栈帧知识把那个 pc 从栈里挖出来。
 - [F2 上下文切换](../rtos/freertos/02-context-switch.md)：切任务 = 把一整套寄存器现场换栈保存/恢复，机制与本章 prologue/epilogue 同源。
 
 ## 附录：工程完整源码
@@ -244,15 +236,15 @@ non_leaf:
 
 - **装备**：霸天虎板 + ST-Link + 第 0 章工程 + OpenOCD/GDB。
 - **做法**：断点打在任一非叶子函数入口，`si` 单步过 prologue；每步 `info registers sp lr pc`，再 `x/4xw $sp` 看栈顶。
-- **预期现象**（数字来自本章 Cortex-M4 汇编）：`push {r4, lr}` 后 sp 减 8，栈顶第二个字就是返回地址（lr 的拷贝）；`sub sp, #16` 后再减 16——整帧 24 字节；`pop {r4, pc}` 后 sp 复原，pc 精确落回 `bl` 的下一条指令。
-- **进阶**：在 HardFault_Handler 里读硬件压栈帧的第 7 个字（偏移 24，即 stacked pc），对照 map 文件找崩溃行——完整流程见 [S16](../stm32/16-debug-hardfault.md)。
+- **预期现象**（数字来自本章 Cortex-M4 汇编）：`push {r4, lr}` 后 sp 减 8，栈顶第二个字就是返回地址（lr 的拷贝）；`sub sp, #16` 后再减 16，整帧 24 字节；`pop {r4, pc}` 后 sp 复原，pc 精确落回 `bl` 的下一条指令。
+- **进阶**：在 HardFault_Handler 里读硬件压栈帧的第 7 个字（偏移 24，即 stacked pc），对照 map 文件找崩溃行，完整流程见 [S16](../stm32/16-debug-hardfault.md)。
 - 交叉引用：[实验中心 E02 待建](../lab/index.md)。
 
 ## 常见坑
 
-- **误以为 `lr` 不用保存**：函数里再调函数（非叶子），第一次 `bl` 就把 lr 覆盖了——所以 non_leaf 的 prologue 一定有 `push {…, lr}`，而叶子 add2 才配拥有 `@ link register save eliminated.`。手写汇编忘了 push lr，返回时程序直接乱飞。
-- **64 位参数落位想当然**：`mix(int, long long)` 的 long long 在 r2:r3 而不在 r1:r2——调试时按 r1 找值，找到的是上一个函数留下的垃圾（本章调用方汇编里 r1 残留 add64 的返回高半）。
-- **中断里也在用同一个栈**：ISR 的硬件压栈发生在被中断者的栈上，栈预算要算上最坏中断嵌套——[F2 上下文切换](../rtos/freertos/02-context-switch.md)会回头算这笔账。
+- **误以为 `lr` 不用保存**：函数里再调函数（非叶子），第一次 `bl` 就把 lr 覆盖了，所以 non_leaf 的 prologue 一定有 `push {…, lr}`，而叶子 add2 才配拥有 `@ link register save eliminated.`。手写汇编忘了 push lr，返回时程序直接乱飞。
+- **64 位参数落位想当然**：`mix(int, long long)` 的 long long 在 r2:r3 而不在 r1:r2，调试时按 r1 找值，找到的是上一个函数留下的垃圾（本章调用方汇编里 r1 残留 add64 的返回高半）。
+- **中断里也在用同一个栈**：ISR 的硬件压栈发生在被中断者的栈上，栈预算要算上最坏中断嵌套，[F2 上下文切换](../rtos/freertos/02-context-switch.md)会回头算这笔账。
 - **递归无界 = 栈溢出踩堆/全局区**：裸机没有 MMU 兜底，症状是"变量莫名其妙变了"，HardFault 都不一定报。
 - **`main` 里 `return` 不会"回到命令行"**：裸机没有命令行可回；[B4 启动过程](../build/04-startup.md)里 main 返回后的去向是启动代码的死循环。
 
@@ -270,7 +262,7 @@ non_leaf:
 
 <details><summary>看答案</summary>
 
-AAPCS 要求 64 位参数落在**偶奇寄存器对**。tag 占了 r0 后，下一个可用的偶奇对是 r2:r3，r1 被跳过。调用方汇编（`movs r2, #0` / `movs r3, #1` / `movs r0, #7` / `bl mix`）从头到尾没写 r1——r1 里残留的是 add64 返回值的高半，mix 对它视而不见。
+AAPCS 要求 64 位参数落在**偶奇寄存器对**。tag 占了 r0 后，下一个可用的偶奇对是 r2:r3，r1 被跳过。调用方汇编（`movs r2, #0` / `movs r3, #1` / `movs r0, #7` / `bl mix`）从头到尾没写 r1，r1 里残留的是 add64 返回值的高半，mix 对它视而不见。
 
 </details>
 
@@ -278,7 +270,7 @@ AAPCS 要求 64 位参数落在**偶奇寄存器对**。tag 占了 r0 后，下�
 
 <details><summary>看答案</summary>
 
-non_leaf 内部 `bl sink`、`bl add2`，任何一次 `bl` 都会覆盖 lr，不保存就回不了家——所以 prologue 有 `push {r4, lr}`。add2 是叶子函数（不调用任何人），lr 不会被覆盖，编译器直接注释 `@ link register save eliminated.`，全身只有 `add r0, r0, r1` + `bx lr`。
+non_leaf 内部 `bl sink`、`bl add2`，任何一次 `bl` 都会覆盖 lr，不保存就回不了家，所以 prologue 有 `push {r4, lr}`。add2 是叶子函数（不调用任何人），lr 不会被覆盖，编译器直接注释 `@ link register save eliminated.`，全身只有 `add r0, r0, r1` + `bx lr`。
 
 </details>
 
@@ -286,7 +278,7 @@ non_leaf 内部 `bl sink`、`bl add2`，任何一次 `bl` 都会覆盖 lr，不�
 
 <details><summary>看答案</summary>
 
-① 从栈上恢复 r4（被调方保存寄存器复原）；② 把 prologue 存下的返回地址直接弹进 pc——弹栈与跳转合一，程序计数器被改写的瞬间就完成了返回，自然不需要再走 lr + `bx lr` 这条路。这是 Thumb-2 的经典收尾。
+① 从栈上恢复 r4（被调方保存寄存器复原）；② 把 prologue 存下的返回地址直接弹进 pc，弹栈与跳转合一，程序计数器被改写的瞬间就完成了返回，自然不需要再走 lr + `bx lr` 这条路。这是 Thumb-2 的经典收尾。
 
 </details>
 
@@ -294,7 +286,7 @@ non_leaf 内部 `bl sink`、`bl add2`，任何一次 `bl` 都会覆盖 lr，不�
 
 <details><summary>看答案</summary>
 
-从 d0、d1 进来（`-mfloat-abi=hard` 时浮点参数走 VFP 寄存器，不占 r0:r1，所以 `@ args = 0`）。证据是 `vmov r0, r1, d0` / `vmov r2, r3, d1`——编译器把 d0/d1 搬进内核寄存器，只是因为 fpv4-sp 没有双精度硬件，要调软件库 `__aeabi_dadd`。
+从 d0、d1 进来（`-mfloat-abi=hard` 时浮点参数走 VFP 寄存器，不占 r0:r1，所以 `@ args = 0`）。证据是 `vmov r0, r1, d0` / `vmov r2, r3, d1`：编译器把 d0/d1 搬进内核寄存器，只是因为 fpv4-sp 没有双精度硬件，要调软件库 `__aeabi_dadd`。
 
 </details>
 
@@ -324,9 +316,11 @@ non_leaf 内部 `bl sink`、`bl add2`，任何一次 `bl` 都会覆盖 lr，不�
 
 - 看反汇编不再发怵：prologue/epilogue 一眼认出，`@ args = 8` 这种注释也会读了。
 - 明白局部变量"自动回收"其实是 sp 一根指针的移动，一帧 24～64 字节的账自己会算。
-- 能预言参数落位——包括 64 位跳过 r1 这种反直觉情况——并能拿汇编验证自己的预言。
+- 能预言参数落位（包括 64 位跳过 r1 这种反直觉情况），并能拿汇编验证自己的预言。
 - 给 [S16](../stm32/16-debug-hardfault.md) 的崩溃现场分析备好了全部读帧本领。
 
+回到开场那四条口诀：参数装 r0–r3、多余的走栈、返回地址进 lr、返回值回 r0，现在每一条都有你亲手跑出来的汇编行作证。一次函数调用不再是黑盒，是一笔算得出的栈账。
+
 <div class="achievement">
-✅ 下一站：<a href="07-ub-misra.html">C7 未定义行为与 MISRA-C 精要</a>——约定管不到的"未定义行为"有多野；或直奔 <a href="../stm32/16-debug-hardfault.html">S16 HardFault 与排错</a>，把栈帧里的 PC 挖出来反查崩溃行号。
+✅ 下一站：<a href="07-ub-misra.html">C7 未定义行为与 MISRA-C 精要</a>：看看约定管不到的"未定义行为"能野到什么程度；也可以拐去 <a href="../stm32/16-debug-hardfault.html">S16 HardFault 与排错</a>，把栈帧里的 PC 挖出来反查崩溃行号。
 </div>

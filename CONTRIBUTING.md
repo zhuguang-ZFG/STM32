@@ -61,14 +61,18 @@
 ## 6. 提交流程
 
 1. Issue 先聊：新章节/新实验先开 Issue 说清"读者能带走什么"；
-2. PR 自检清单：
+2. PR 自检清单：**先跑 `bash scripts/local-gates.sh`（Windows：`powershell -File scripts/local-gates.ps1`）**，它逐项复跑 CI 的同一批门并逐条给结论（FAIL 非零退出、工具缺失记 SKIP）；
    - [ ] `npm run docs:gen` 零告警（每章 frontmatter 的 `status` / `difficulty` / `minutes` 齐备）；
-   - [ ] `npm run docs:build` 零错误、零死链；
+   - [ ] `npm run docs:build` 零错误、零死链（锚点另由 `npm run pages:check` 对构建产物核对）；
+   - [ ] `npm run docs:check` 零报错（全站链接与锚点、Markdown 卫生、仓库自链、**正文里的手写数字与真源对账**）；
+   - [ ] 动过整书：`npm run book:check` + `python mcu-book/check_pdf.py` + `python mcu-book/publish_downloads.py --verify .temp/book-downloads` 全过；
+   - [ ] 动过 Python：`python -m ruff check .` 零命中（只抓真错误；排除项必须在 `ruff.toml` 里写明理由）；
    - [ ] `grep -rn "TODO|待补充|placeholder" docs/` 无命中；
    - [ ] 四件套落位、风格契约六条逐项过；
    - [ ] 事实出处已标注；
-   - [ ] 新页面已进 sidebar；新增路线/章节后首页地图与 README 状态段自动跟随，**不要手写数字**；
+   - [ ] 新页面已进 sidebar；新增路线/章节后首页地图与 README 状态段自动跟随，**不要手写数字**（手写的会被 `docs:check` 抓住）；
    - [ ] 新增板块时同步登记：`config.mts` 的 nav/sidebar + `scripts/gen-progress.mjs` 的 `TRACKS`；
+   - [ ] 改了版本/引用口径：`CITATION.cff` 与根 `CHANGELOG.md` 同步（`docs:check` 会对账 manifest 与站点更新日志）。
 3.  Commit message：`<板块>: <动作> <主题>`，如 `stm32: 成稿 S3 GPIO 章`。
 
 ## License

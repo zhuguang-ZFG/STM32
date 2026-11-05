@@ -48,22 +48,22 @@
     <text x="490" y="58" font-size="11" fill="#333">
       <tspan font-weight="bold" fill="#3451b2">Archive member</tspan>：谁被从库里捞出来
     </text>
-    <text x="490" y="72" font-size="9" fill="#666">libm.a:sinf.o → 引入 sin 函数</text>
+    <text x="490" y="72" font-size="12" fill="#666">libm.a:sinf.o → 引入 sin 函数</text>
     
     <rect x="480" y="85" width="220" height="35" rx="4" fill="#fff" stroke="#3eaf7c" stroke-width="1.5"/>
     <text x="490" y="103" font-size="11" fill="#333">
       <tspan font-weight="bold" fill="#3eaf7c">Memory Map</tspan>：每个符号住哪
     </text>
-    <text x="490" y="117" font-size="9" fill="#666">0x08001234  main  (main.o)</text>
+    <text x="490" y="117" font-size="12" fill="#666">0x08001234  main  (main.o)</text>
     
     <rect x="480" y="130" width="220" height="35" rx="4" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
     <text x="490" y="148" font-size="11" fill="#333">
       <tspan font-weight="bold" fill="#d97706">Discarded</tspan>：被 gc-sections 辞退
     </text>
-    <text x="490" y="162" font-size="9" fill="#666">.text.unused_func → 没被引用，删</text>
+    <text x="490" y="162" font-size="12" fill="#666">.text.unused_func → 没被引用，删</text>
   </g>
   
-  <!-- Stage 4: nm --size-sort -->
+  <!-- Stage 4: nm size-sort -->
   <g>
     <text x="20" y="200" font-size="14" font-weight="bold" fill="#3451b2">④ nm --size-sort：找大户</text>
     

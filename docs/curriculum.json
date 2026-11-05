@@ -980,5 +980,53 @@
       "P11"
     ],
     "parallel": []
+  },
+  {
+    "id": "A0",
+    "track": "ai",
+    "path": "docs/ai/00-pair-not-ghost.md",
+    "title": "A0 为什么把大模型当结对工程师",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A1",
+    "track": "ai",
+    "path": "docs/ai/01-prompt-patterns.md",
+    "title": "A1 提示词模式：上下文、约束、验收三段式",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A2",
+    "track": "ai",
+    "path": "docs/ai/02-manual-reconciliation.md",
+    "title": "A2 手册对账：模型写的寄存器代码，逐位验证给它看",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A3",
+    "track": "ai",
+    "path": "docs/ai/03-toolflow-mcp.md",
+    "title": "A3 工具流：让模型读手册、跑构建、看串口",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A4",
+    "track": "ai",
+    "path": "docs/ai/04-hallucination-defense.md",
+    "title": "A4 幻觉防御：八类幻觉与验证决策树",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A5",
+    "track": "ai",
+    "path": "docs/ai/05-this-book-pipeline.md",
+    "title": "A5 bisect-half",
+    "must": [],
+    "parallel": []
   }
 ]

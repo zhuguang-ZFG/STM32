@@ -9,20 +9,15 @@ minutes: 25
 
 ![环境搭建五步闭环](/anim/env-setup-flow.svg)
 
-> 🎯 你买了一台顶配的"全自动咖啡机"（IDE），按一下就出咖啡——但豆子什么时候磨的、水温几度，你一概不知。这一章我们反着来：手动磨豆、手动控温。等你会了，再回去用咖啡机也不迟。
+> 🎯 你买了一台顶配的"全自动咖啡机"（IDE），按一下就出咖啡，但豆子什么时候磨的、水温几度，你一概不知。这一章我们反着来：手动磨豆、手动控温。等你会了，再回去用咖啡机也不迟。
+
+动手之前先押个分工：从一行 C 源码到板上灯亮，这一路要过工具链四件套的手。真正把 C 翻译成 ARM 机器码的是谁？把编译产物送进芯片的又是谁？押完再往下装，记忆锚点那节对答案。
 
 ## 本章精髓
 
-1. 为什么坚持不用 CubeIDE/Keil 起步？——IDE 把"预处理→编译→汇编→链接→烧录"藏进一个按钮，而这条链路本身就是嵌入式的半壁江山（[B 篇](../build/index.md)整个都在讲它）。
-2. 交叉编译到底"交叉"在哪？——在 x86 电脑上，产出 ARM Cortex-M4 的机器码。
-3. 一个能跑的固件最少需要几个文件？——四个：启动文件、链接脚本、main、Makefile。我们已经备好：[code/stm32/00-blink](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/00-blink)。
-
-## 学习目标
-
-- 装好四样工具并各自验证：arm-none-eabi-gcc、make、OpenOCD、ST-Link 驱动。
-- 用 `make` 构建出 elf/bin/hex/map，并说出每个产物的用途。
-- 用 `make flash` 把固件烧进霸天虎，看到 PF6 红灯以约 1Hz 闪烁。
-- （选做）用 GDB 单步到 `main`，读一次 `RCC_AHB1ENR` 寄存器。
+1. 为什么坚持不用 CubeIDE/Keil 起步？因为 IDE 把"预处理→编译→汇编→链接→烧录"藏进一个按钮，而这条链路本身就是嵌入式的半壁江山（[B 篇](../build/index.md)整个都在讲它）。
+2. 交叉编译到底"交叉"在哪？在 x86 电脑上，产出 ARM Cortex-M4 的机器码。
+3. 一个能跑的固件最少需要几个文件？四个：启动文件、链接脚本、main、Makefile。我们已经备好：[code/stm32/00-blink](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/00-blink)。
 
 ## 先修
 
@@ -51,7 +46,7 @@ minutes: 25
 arm-none-eabi-gcc --version
 ```
 
-看到 `gcc version 14.x.x` 即成功。`arm-none-eabi` 读作"ARM、无厂商、嵌入式应用二进制接口"——专门为裸机 ARM 产代码的 GCC。
+看到 `gcc version 14.x.x` 即成功。`arm-none-eabi` 读作"ARM、无厂商、嵌入式应用二进制接口"（专门为裸机 ARM 产代码的 GCC）。
 
 ## 第二步：装 make
 
@@ -74,7 +69,7 @@ make --version
 openocd --version
 ```
 
-OpenOCD 的角色：一边通过 USB 跟 ST-Link 说话，一边通过 SWD 协议跟芯片说话，把我们的 `program` 命令翻译成对 Flash 的擦写。SWD 只有两根信号线（SWDIO 数据 + SWCLK 时钟）——[B6 章](../build/06-flash-debug.md)会把它讲透。
+OpenOCD 的角色：一边通过 USB 跟 ST-Link 说话，一边通过 SWD 协议跟芯片说话，把我们的 `program` 命令翻译成对 Flash 的擦写。SWD 只有两根信号线（SWDIO 数据 + SWCLK 时钟），[B6 章](../build/06-flash-debug.md)会把它讲透。
 
 ## 第四步：ST-Link 驱动
 
@@ -178,7 +173,7 @@ x/wx 0x40023830   # RCC_AHB1ENR：bit5 应该是 1（GPIOF 时钟开了）
 <details><summary>参考答案</summary>交叉指"编译环境"与"运行环境"的 CPU 架构不同：你在 x86-64 的 Windows 上编译，产出的是 ARM Cortex-M4 的机器码。电脑上的 gcc 默认产出 x86 指令，Cortex-M 无法执行；`arm-none-eabi-gcc` 才是 ARM 目标的后端。`none` 表示没有操作系统（裸机），`eabi` 是 ARM 嵌入式 ABI。</details>
 
 2. `make` 之后 `build/` 下出现 elf、bin、hex、map 四个文件。分别是什么用途？烧录用哪个？
-<details><summary>参考答案</summary>**elf**：完整的 ELF 固件，含代码、数据、调试信息和符号表——调试用它的符号，烧录用它的二进制内容。**bin**：纯二进制镜像，从地址 0x08000000 起的逐字节拷贝，烧录最快。**hex**：Intel HEX 格式，每行带地址和校验，可描述不连续的内存区域。**map**：链接器输出的符号地址清单，不含机器码，用于查"函数住在第几字节"。烧录用 bin 或 hex 均可（OpenOCD 两种都接受），调试必须用 elf。</details>
+<details><summary>参考答案</summary>**elf**：完整的 ELF 固件，含代码、数据、调试信息和符号表：调试用它的符号，烧录用它的二进制内容。**bin**：纯二进制镜像，从地址 0x08000000 起的逐字节拷贝，烧录最快。**hex**：Intel HEX 格式，每行带地址和校验，可描述不连续的内存区域。**map**：链接器输出的符号地址清单，不含机器码，用于查"函数住在第几字节"。烧录用 bin 或 hex 均可（OpenOCD 两种都接受），调试必须用 elf。</details>
 
 3. Makefile 里命令行首为什么必须是 Tab 而不是空格？报 `missing separator` 怎么修？
 <details><summary>参考答案</summary>Make 的语法规则：规则体（recipe）的每一行必须以 **Tab 字符**开头，空格不被识别为命令行。这是 1970 年代 Make 的原始设计，至今未改。某些编辑器（VS Code 默认不犯，但 Notepad++ 和某些 IDE 的"智能缩进"模式会）会把 Tab 自动替换成空格。修复方法：在编辑器里关闭"用空格替换 Tab"，或直接用 `sed -i 's/^    /\t/' Makefile` 把行首四空格换成 Tab。</details>
@@ -187,7 +182,7 @@ x/wx 0x40023830   # RCC_AHB1ENR：bit5 应该是 1（GPIOF 时钟开了）
 
 - **`'arm-none-eabi-gcc' 不是内部或外部命令`**：PATH 没生效。装了新工具必须**重开终端**；还不行就是安装时没勾 Add path，手动加。
 - **make 报 `missing separator`**：Makefile 的命令行首必须是 **Tab 不是空格**。某些编辑器会把 Tab 转成空格。
-- **OpenOCD 报 `Error: open failed` / 找不到 ST-Link**：九成是驱动（回第四步）；一成是杜邦线虚接——SWD 对接触很敏感，重新插拔。
+- **OpenOCD 报 `Error: open failed` / 找不到 ST-Link**：九成是驱动（回第四步）；一成是杜邦线虚接：SWD 对接触很敏感，重新插拔。
 - **灯不亮但烧录成功**：先怀疑引脚号。霸天虎是 **PF6**；网上大量教程是其他板子的 PA8/PF9，照搬必翻车。
 - **解压路径有中文/空格**：xPack 系工具对非 ASCII 路径敏感，装 `D:\tools\` 这种纯英文路径。
 - **两台 USB 设备抢供电**：仿真器 3.3V 和板子 USB 供电不要同时怼，见第五步警告。
@@ -196,8 +191,8 @@ x/wx 0x40023830   # RCC_AHB1ENR：bit5 应该是 1（GPIOF 时钟开了）
 
 - 电脑变成了交叉编译工作站，四件工具各司其职。
 - 亲手构建了固件四产物，知道每个是干什么的。
-- 红灯在你自己的代码控制下闪烁——裸机世界的 Hello World 达成。
+- 红灯在你自己的代码控制下闪烁，裸机世界的 Hello World 达成。
 
 <div class="achievement">
-✅ 下一站：<a href="01-arch.html">S1 F407 架构总览</a>——为什么 0x40020000 是 GPIOA？总线矩阵与存储器映射给你答案。状态：本章代码已静态核对 RM0090，<strong>待上板实测反馈</strong>（欢迎 Issue 报告你的现象）。
+✅ 下一站：<a href="01-arch.html">S1 F407 架构总览</a>：0x40020000 凭什么就是 GPIOA？总线矩阵和存储器映射把门牌号拆开给你看。状态：本章代码已静态核对 RM0090，<strong>待上板实测反馈</strong>（欢迎 Issue 报告你的现象）。
 </div>

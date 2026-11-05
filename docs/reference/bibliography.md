@@ -11,7 +11,7 @@ description: 全站引证的一手资料总表：芯片手册与内核文档的�
 
 - 章节末尾的"延伸阅读"用 `[D2]` 这样的标签指向本页对应条目；标签前的字母就是下面的分区（A 芯片 · B 总线 · C 语言与工具链 · D 论文 · E 书 · F 代码）。
 - **版本号是口径的一部分。** 寄存器位、行号、API 名都对着表里那一版说话；你手里若是别的版本，先对一下，再决定要不要信这页。
-- 标注"**未核版本**"的条目，是本站引用过内容但没把 PDF 的修订号核进来的——读者以官网当前版为准，别把这页当权威。
+- 标注"**未核版本**"的条目，是本站引用过内容但没把 PDF 的修订号核进来的：读者以官网当前版为准，别把这页当权威。
 - 论文都给了 DOI（`https://doi.org/<DOI>`），经 Crossref 核对过题名、期刊/会议、年份与页码；大多数在 ACM/IEEE 付费墙后，作者主页或学校仓库常有预印本。
 
 ## A　芯片与内核官方文档 {#chips}
@@ -73,7 +73,7 @@ description: 全站引证的一手资料总表：芯片手册与内核文档的�
 | D9 | P. Koopman, T. Chakravarty. **Cyclic Redundancy Code (CRC) Polynomial Selection for Embedded Networks.** *Proc. DSN 2004*, pp. 145–154. DOI [10.1109/DSN.2004.1311885](https://doi.org/10.1109/DSN.2004.1311885) | [C8](../c/08-framed-protocol.md) 为什么选 CRC-16/CCITT 而不是随手挑一个多项式、[P10](../esp32/10-flash-nvs-ota.md) NVS 的 CRC32 |
 | D10 | E. W. Dijkstra. **Solution of a Problem in Concurrent Programming Control.** *Commun. ACM* 8(9): 569, 1965. DOI [10.1145/365559.365617](https://doi.org/10.1145/365559.365617) | [F5](../rtos/freertos/05-sem-mutex.md)、[C5](../c/05-func-pointer.md)：互斥这件事的起点，一页纸 |
 | D11 | G. Reeves. **What Really Happened on Mars?** *RISKS Digest* 19.49, 1997-12. | [F5](../rtos/freertos/05-sem-mutex.md)、[E04](../lab/e04-priority-inversion.md)：火星探路者优先级反转事故的一手复盘（JPL 工程师原文） |
-| D12 | J. Ganssle. **Great Watchdog Timers for Embedded Systems.** [ganssle.com](https://www.ganssle.com/watchdogs.htm) | [S17](../stm32/17-watchdog-reset.md)、[P13](../esp32/13-watchdog-health.md)：窗口看门狗为什么比"定时喂狗"可靠 |
+| D12 | J. Ganssle. **Great Watchdog Timers for Embedded Systems.** [ganssle.com（Wayback 存档）](https://web.archive.org/web/20241214122124/https://www.ganssle.com/watchdogs.htm) | [S17](../stm32/17-watchdog-reset.md)、[P13](../esp32/13-watchdog-health.md)：窗口看门狗为什么比"定时喂狗"可靠 |
 | D13 | S. Cheshire, M. Baker. **Consistent Overhead Byte Stuffing.** *IEEE/ACM Trans. Networking* 7(2): 159–172, 1999. DOI [10.1109/90.769765](https://doi.org/10.1109/90.769765) | [C8](../c/08-framed-protocol.md)：0x00 只当帧尾、开销有固定上限——帧协议选 COBS 而不是转义或长度前缀的理由 |
 
 ## E　书 {#books}
@@ -112,7 +112,7 @@ description: 全站引证的一手资料总表：芯片手册与内核文档的�
 ## 常见坑
 
 - **拿错代的手册**：RM0090 管 F405/407/415/417/427/437/429/439；F103 是 RM0008，F7 是 RM0385。位定义能对上才怪。
-- **IDF 文档读成 latest**：网页默认跳最新版，本站基准 v5.5.2——URL 里带 `v5.5` 才是同一本书。
+- **IDF 文档读成 latest**：网页默认跳最新版，本站基准 v5.5.2；URL 里带 `v5.5` 才是同一本书。
 - **论文只读摘要**：D1 的 69.3% 是 n→∞ 的下界、D2 的继承协议不防死锁（天花板协议才防）、D7 的结论是"别信 volatile 一个人"——这三条都在正文而不在摘要里。
 - **把 ganssle.com 这类工程随笔当规范引**：它们是经验，不是标准；本页标在 D 区是因为被频繁引用，不是因为它有审稿。
 

@@ -1,0 +1,730 @@
+/* 印刷版式：16 开 185×260 mm。
+ *
+ * 为什么必须独立于屏幕样式：站点/HTML 版那份 CSS 是**屏幕优先**的
+ * （`min(100% - 2rem, 1000px)` 栏宽 + `clamp()` 字号），Chromium 默认打印把它整体压进 A4：
+ * 正文被缩到 7.5–8.2pt、字形退化成 Type3 位图。印刷要的是"先定版心，再排字"，
+ * 所以这一份从 @page 写起，屏幕样式里的宽度/字号/颜色一律由这里覆盖。
+ *
+ * 字体：只用随仓库分发的子集（见 subset_fonts.py 与同目录 OFL.txt / provenance.json），
+ * 不依赖机器已装字体——否则 CI 与本机排出来的书不是同一本。
+ */
+
+/* ---------- 字体（子集 woff2，SIL OFL 1.1） ---------- */
+@font-face {
+  font-family: "Book Serif";
+  src: url("./fonts/serif-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Serif";
+  src: url("./fonts/serif-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Sans";
+  src: url("./fonts/sans-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Sans";
+  src: url("./fonts/sans-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Mono";
+  src: url("./fonts/mono-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Mono";
+  src: url("./fonts/mono-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;
+}
+/* 粗体等宽必须有真字形：只声明 400 时 Chromium 对粗体代码做合成加粗，
+   打印管线把合成字形嵌成无名 Type3 位图（实测 1 页对照：粗 <code> → Type3，
+   真 700 子集 → Type0 TrueType）。 */
+/* emoji/符号回退族：正文里有 🎯 ✅ ❌ ▶ ⚠ 这类字符，CJK 衬线字体没有它们的字形。
+   单色 emoji 字体（Noto Emoji, OFL）正好适合印刷——彩色 emoji 印出来是一团灰。 */
+@font-face {
+  font-family: "Book Symbols";
+  src: url("./fonts/symbols-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Math";
+  src: url("./fonts/math-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "Book Emoji";
+  src: url("./fonts/emoji-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+
+/* ---------- 页面：开本、版心、页眉页脚 ---------- */
+/* 版心内白边（装订侧）留宽：185 宽的书，内 20mm / 外 16mm，上下 18mm。 */
+@page {
+  size: 185mm 260mm;
+  /* 天头 20 / 外 23 / 地脚 22 / 内 24（版心 138×218，见设计表） */
+  margin: 20mm 23mm 22mm 24mm;
+
+  /* 页码：正文从 1 起算，末页必须 N / N（旧产物印成 713 / 712 就是没有这条） */
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: "Book Sans", sans-serif;
+    font-size: 8pt;
+    color: #444;
+  }
+}
+/* 奇偶页页眉：偶页（左页）书名，奇页（右页）当前章名。
+   章首页无页眉用 first-except：paged.js 里该值 = 本页出现串源元素时
+   返回空串，否则取上一页的携带值。章/附录首页同时有 h1（章名）与
+   .book-title-marker（书名），所以两个页眉在首页都为空；
+   后续页没有这些元素，携带值就是章名/书名。
+   注意：paged.js 的 string-set 只支持 content()/attr()，字符串字面量
+   会被解析成 undefined——不要写 string-set: name "字面量"。 */
+@page :left {
+  /* 偶数页（左页）：装订侧在右边 */
+  margin-left: 23mm;
+  margin-right: 24mm;
+  @top-left {
+    content: string(book-title, first-except);
+    font-family: "Book Sans", sans-serif;
+    font-size: 8pt;
+    color: #444;
+  }
+}
+@page :right {
+  /* 奇数页（右页）：装订侧在左边 */
+  margin-left: 24mm;
+  margin-right: 23mm;
+  @top-right {
+    content: string(chapter-title, first-except);
+    font-family: "Book Sans", sans-serif;
+    font-size: 8pt;
+    color: #444;
+  }
+}
+/* 封面：满幅、无页眉页脚；底色打在页面上而不是元素上——
+   元素 height:100% 在分页盒里父链无确定高度会塌陷（实测出血版底部露白），
+   @page background 才是整页兜底的正确层级，出血版自动铺满。 */
+@page cover {
+  margin: 0;
+  background: #f7f4ec;
+  counter-increment: none;
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-center { content: none; }
+}
+/* 前置页（版权页/前言/目录）与分部隔页：不编页码、不盖页眉，
+   也不推进页码计数器——正文从 1 起。 */
+@page frontmatter {
+  counter-increment: none;
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-center { content: none; }
+}
+/* 正文页码从 1 起：paged.js 的页码增量由 --pagedjs-page-counter-increment
+   驱动（.pagedjs_page { counter-increment: page var(...) }）。
+   封面/前置页/分部隔页把增量归零，不占页码——第一章自然成为第 1 页，
+   目录 target-counter 按同一增量累加，页脚/目录/索引自动一致。 */
+.pagedjs_cover_page,
+.pagedjs_frontmatter_page {
+  --pagedjs-page-counter-increment: 0;
+}
+
+/* ---------- 基础排版 ---------- */
+html,
+body {
+  background: #fff;
+  color: #111;
+}
+body {
+  font-family: "Book Serif", "Book Symbols", "Book Math", "Book Emoji", serif;
+  font-size: 10pt;
+  line-height: 1.6;
+  text-align: justify;
+  /* 禁合成粗体：衬线/黑体都有真 700 子集，永远不会需要合成；
+     而等宽与 emoji 没有更粗的字形，合成加粗会被 Chromium 打印管线
+     嵌成无名 Type3 位图（实测：粗 <code>、提示条标题的 💡 都是这条路）。
+     关掉合成后它们以 400 字重印刷——单色纸面上 emoji 的"粗细"本无意义。 */
+  font-synthesis: none;
+  /* 中文正文两字缩进交给段落，不用全局 text-indent 免得影响标题/表格 */
+}
+/* 覆盖屏幕版的固定栏宽与收缩字号 */
+.book {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+p {
+  margin: 0 0 0.35em;
+  text-indent: 2em;
+}
+h1,
+h2,
+h3,
+h4,
+.chapter-number,
+.part-label,
+.part-stats,
+caption {
+  font-family: "Book Sans", "Book Symbols", "Book Math", "Book Emoji", sans-serif;
+  text-align: left;
+  text-indent: 0;
+  break-after: avoid;
+  line-height: 1.35;
+}
+h1 { font-size: 20pt; margin: 0 0 0.6em; }
+h2 { font-size: 13pt; margin: 1.2em 0 0.4em; }
+h3 { font-size: 11pt; margin: 1em 0 0.3em; }
+h4 { font-size: 10pt; margin: 0.9em 0 0.2em; }
+
+/* 代码：等宽、不缩字号、允许折行（宁可折行也不许横向溢出被裁掉） */
+pre,
+code,
+kbd,
+samp {
+  /* 等宽族收尾必须带一个 CJK 族：代码块里的中文（注释、报错说明）没有
+     等宽字形，没有这条就落到系统字体（微软雅黑）——CI 上没有该字体时
+     排版直接走样（实测：'在下，零警告' 嵌入了 MicrosoftYaHei）。 */
+  font-family: "Book Mono", "Book Sans", "Book Symbols", "Book Math", "Book Emoji", monospace;
+  font-size: 8.5pt;
+  text-indent: 0;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin: 0.5em 0 0.8em;
+  padding: 0.5em 0.6em;
+  border-left: 2pt solid #bbb;
+  background: #f6f6f6;
+  /* 墨色必须在这里重申。屏幕样式是"深底浅字"（--code: #101a17 配
+     --code-ink: #eaf5f1）；印刷把底色换成浅灰却继承了那支浅字，于是
+     代码在纸上是近白字印在近白底上。实测受害面：378 页、8443 个
+     span（全书代码的大半）在 PDF 里肉眼不可见，文本层却是好的 ——
+     所以只看提取文本永远发现不了，必须看渲染图。 */
+  color: #17211e;
+  /* 屏幕样式给 pre 的是 overflow-x: auto（横向滚动条）。印刷里必须清掉：
+     overflow 不是 visible 的盒子是滚动容器，而滚动容器不可分片 ——
+     paged.js 只能把整块代码搬到下一页，哪怕它有 500pt 高。实测这是
+     break-inside 改成 auto 之后仍剩 71 页「页中断开」的真正原因。 */
+  overflow: visible;
+  /* 跨页策略统一在下面「高块必须允许跨页」那一节，这里不再写 break-inside */
+}
+code,
+kbd,
+samp {
+  background: #f2f2f2;
+  color: #17211e;
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+pre code,
+pre kbd,
+pre samp {
+  background: none;
+  padding: 0;
+}
+
+/* 图与表：整体不跨页 */
+figure,
+.decision-tree,
+.anim-figure,
+.quiz-answer-item {
+  break-inside: avoid;
+}
+
+/* 高块必须允许跨页。实测（1122 页产物）：自测题盒、长表、长代码块都带
+   break-inside: avoid，一个 550pt 的盒子放不进半页就整块跳走，前一页只排到
+   版心 1%–30% 就收尾 —— 全书 143 页属于这种"页中断开"。
+   这里拆的是**容器**，不拆最小语义单位：单题、单条答案、单个表行、单张图
+   仍然整块保留，所以跨页不会把一道题或一行表切两半。 */
+.quiz-bank,
+.quiz-questions,
+table,
+.table-scroll,
+pre,
+blockquote,
+.admonition,
+.source-card,
+.chapter-compass {
+  break-inside: auto;
+}
+.quiz-questions > li,
+.quiz-question,
+tr,
+.admonition-title {
+  break-inside: avoid;
+}
+/* 跨页的表把表头带到下一页（paged.js 支持 table-header-group） */
+thead {
+  display: table-header-group;
+}
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+}
+th,
+td {
+  border: 0.4pt solid #999;
+  padding: 0.2em 0.35em;
+  text-align: left;
+  text-indent: 0;
+}
+/* 表格单元格里的长 inline code 必须能在任意位置断行。
+   `table { width: 100% }` 不是上限：auto 布局下表宽取 min-content，
+   一个 `$IDF_PATH/components/bootloader/subproject/main/bootloader_start.c:62`
+   就把表撑到 547pt（版心 388pt），右侧列被纸边裁掉——实测 p674
+   有一行代码路径就这么印丢了，而 break-word 在无空格长串上不生效。
+   用 anywhere 而不是 `table-layout: fixed`：实测 17 张真实表格，
+   anywhere 让总高 +56pt，fixed 因为放弃自然列宽 +952pt。 */
+td code,
+th code {
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: visible; /* 印刷不滚动，直接排 */
+
+}
+
+/* ---------- 结构：封面 / 前置页 / 分部 / 章 ---------- */
+/* 封面：满幅深青（accent-deep）底色 + 白字——一本讲寄存器的书，
+   封面该有"工具书"的份量感，不是网页截图。
+   满幅由 @page cover 的页面底色负责（出血版自动铺满）；
+   元素只负责内容，不写死高度——height:100% 时 padding 加内容会
+   把底部文字挤出页外（实测版权行 y=743pt > 737pt 页高）。 */
+.cover {
+  page: cover;
+  break-after: page;
+  box-sizing: border-box;
+  padding: 26mm 20mm 20mm;
+  background: #f7f4ec;
+  color: #123b33;
+  --cover-ink: #123b33;
+}
+.cover .eyebrow,
+.cover .subtitle,
+.cover .edition,
+.cover a {
+  color: #123b33;
+}
+.cover h1 {
+  color: #123b33;
+  font-size: 34pt;
+  line-height: 1.12;
+  margin: 0.35em 0 0.3em;
+  border-top: 2.5pt solid #0e6e5c;
+  padding-top: 8mm;
+}
+.cover .eyebrow {
+  font-family: "Book Sans", sans-serif;
+  font-size: 9pt;
+  letter-spacing: 0.22em;
+  color: #0e6e5c;
+}
+.cover .subtitle {
+  font-size: 11pt;
+  line-height: 1.75;
+  color: #3c5a52;
+}
+.cover .cover-art {
+  width: 84mm;
+  margin: 10mm auto 0;
+}
+.cover .cover-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* 章首手绘题花：装饰性小图，油墨与封面同源（--cover-ink 由 .cover 或此处全局供给） */
+.book {
+  --cover-ink: #123b33;
+}
+.chapter-art {
+  width: 96mm;
+  margin: 5mm auto 4mm;
+  break-inside: avoid;
+}
+.chapter-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cover .edition {
+  margin-top: 16mm;
+  font-size: 8.5pt;
+  color: #6b8f84;
+}
+.frontmatter,
+.contents,
+.part-divider {
+  page: frontmatter;
+  break-before: page;
+  break-after: page;
+}
+/* 分部隔页：插画 + 本部导航填满版心，不留半页空白。
+   不用 flex/min-height：实测分页引擎切片时整页内容会被丢掉（隔页印成空白），
+   普通块流 + 顶部留白才能被正常切片。 */
+.part-divider {
+  padding-top: 0;
+  border-top: none;
+  border-bottom: none;
+}
+/* 插画按**高度**定尺寸：各图 viewBox 宽高比在 1.25–2.5 之间，
+   若按宽度定尺寸，瘦高的图会被放得比别的大一圈（实测 pe 明显偏大）。 */
+.part-divider .part-art {
+  margin: 0 0 4mm auto;
+  text-align: right;
+}
+.part-divider .part-art svg {
+  display: inline-block;
+  height: 26mm;
+  width: auto;
+  max-width: 100%;
+}
+.part-divider .part-toc {
+  margin-top: 7mm;
+  padding-top: 4mm;
+  border-top: 0.6pt solid #cfe3dc;
+  columns: 2;
+  column-gap: 7mm;
+  font-size: 8.5pt;
+  line-height: 1.55;
+  list-style: none;
+  padding-left: 0;
+}
+.part-divider .part-toc li {
+  break-inside: avoid;
+  display: block;
+  margin: 0.4mm 0;
+}
+/* 本部导航：标题常常折行，点线会被折行切断 —— 这里不画点线，
+   页码紧跟标题，用 margin 拉开间距。
+   注意：content 里**不能**把字符串字面量和 target-counter 混写
+   （实测 `" · " target-counter(...)` 整条解析失败，页码全成 0，
+   与早先 leader() 失效是同一类问题）。只写 target-counter 才解析。 */
+.part-divider .part-toc li::after {
+  content: none;
+}
+.part-divider .part-toc li a {
+  color: #123b33;
+  display: inline;
+}
+.part-divider .part-toc li a::after {
+  content: target-counter(attr(href), page);
+  color: #0e6e5c;
+  margin-left: 0.5em;
+}
+.part-divider .part-label {
+  font-size: 10pt;
+  letter-spacing: 0.3em;
+  color: #0e6e5c;
+  font-weight: 700;
+  border-left: 3pt solid #0e6e5c;
+  padding-left: 4mm;
+}
+.part-divider h1 {
+  font-size: 26pt;
+  line-height: 1.25;
+  margin: 6mm 0 5mm;
+}
+.part-divider .part-goal {
+  font-size: 10.5pt;
+  line-height: 1.75;
+  color: #333;
+  text-indent: 0;
+}
+.part-divider .part-intro {
+  border-left: 2pt solid #0e6e5c;
+  background: #f4f8f6;
+  padding: 4mm 5mm;
+  margin-top: 5mm;
+  font-size: 9.5pt;
+  color: #444;
+  text-indent: 0;
+}
+.part-divider .part-stats {
+  margin-top: 6mm;
+  font-size: 9pt;
+  color: #0a5044;
+  letter-spacing: 0.05em;
+}
+article.chapter,
+article.appendix {
+  break-before: page;
+}
+/* 正文页码从 1 起：封面/前置页/分部隔页 counter-increment: none，
+   第一章自然成为第 1 页；目录 target-counter 同源，索引由构建器换算。 */
+/* 章首页：章号 + 大标题 + 色条分隔，翻开即知"新的一章" */
+article.chapter > header,
+article.appendix > header {
+  border-bottom: 1.5pt solid #0e6e5c;
+  padding-bottom: 5mm;
+  margin-bottom: 7mm;
+  break-after: avoid;
+}
+article.chapter > header .chapter-number,
+article.appendix > header .chapter-number {
+  color: #0e6e5c;
+  font-size: 9.5pt;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  margin-bottom: 2mm;
+}
+article.chapter > header h1,
+article.appendix > header h1 {
+  font-size: 22pt;
+  line-height: 1.25;
+  margin: 2mm 0 2.5mm;
+}
+article.chapter > header .chapter-meta,
+article.appendix > header .chapter-meta {
+  font-size: 8.5pt;
+  color: #666;
+  letter-spacing: 0.04em;
+}
+/* 章名页眉串源：h1 的 textContent。书名串源是每章 header 里的
+   .book-title-marker（零字号，不占版面）。两个串在 @page 里都用
+   first-except 取值——章首页本页有串源元素 → 空；后续页 → 携带值。 */
+article.chapter > header h1,
+article.appendix > header h1 {
+  string-set: chapter-title content();
+}
+.book-title-marker {
+  string-set: book-title content();
+  font-size: 0;
+  line-height: 0;
+}
+
+/* 章首页的罗盘/元信息 */
+.chapter-compass {
+  border: 0.4pt solid #bbb;
+  padding: 0.5em 0.7em;
+  font-size: 9pt;
+  break-inside: avoid;
+  margin-bottom: 1em;
+}
+.chapter-number {
+  font-size: 9pt;
+  letter-spacing: 0.15em;
+  color: #666;
+}
+
+/* ---------- 目录：带页码（target-counter 由分页引擎解析） ---------- */
+.contents ol {
+  list-style: none;
+  padding-left: 0;
+}
+/* 印刷目录单列排：两列每列只有 ~190pt，实测全书 88 章有 62 章标题折行，
+   点线跟着第一行、页码悬在标题中间（p5-6 实测 19/20/22/23/30…58 处全是
+   这种撕裂感）。单列后 88 章零折行，点线连续到页码。代价是目录多占约半页，
+   前置页不计页码、正文起点不变。 */
+.toc-chapters {
+  columns: 1 !important; /* 覆盖屏幕版 columns: 2 */
+  padding-left: 0;
+}
+/* 分部标题与引言不许孤行页底：h2、引言段后面必须跟着本章条目。 */
+.contents > section > h2,
+.contents > section > h2 + p {
+  break-after: avoid;
+}
+.toc-chapters li {
+  break-inside: avoid;
+  margin: 0.15em 0;
+  font-size: 9.5pt;
+}
+/* 目录行：链接文字 + 点线 + 页码。
+   点线**不用 leader()**——paged.js 不支持这个函数，写了会让整条 content 失效
+   （实测：目录只剩标题、页码一个都不出现）。改成用 flex 布局 + 虚线底边画点线，
+   页码由 target-counter 解析成真实页码。 */
+.toc-chapters li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+.toc-chapters li::after {
+  content: "";
+  flex: 1 1 auto;
+  order: 1;
+  border-bottom: 0.4pt dotted #999;
+  transform: translateY(-0.25em);
+}
+.toc-chapters li a {
+  display: contents;
+}
+.toc-chapters li a::after {
+  content: target-counter(attr(href), page);
+  font-family: "Book Sans", sans-serif;
+  font-size: 9pt;
+  flex: 0 0 auto;
+  order: 2;
+}
+
+/* ---------- 屏幕专用元素：印刷里没有意义 ---------- */
+.skip-link,
+.reading-progress,
+.back-to-chapter,
+.back-to-toc,
+.video-card .video-card-note {
+  display: none;
+}
+
+/* ---------- 版权页 / 书尾页 ---------- */
+.copyright h1,
+.colophon h1 {
+  font-size: 18pt;
+}
+.copyright-fields {
+  display: grid;
+  grid-template-columns: 26mm 1fr;
+  column-gap: 5mm;
+  row-gap: 2.4mm;
+  font-size: 9.5pt;
+  margin-top: 8mm;
+}
+.copyright-fields dt {
+  color: #666;
+  font-weight: 400;
+}
+.copyright-fields dd {
+  margin: 0;
+  text-indent: 0;
+}
+.colophon p {
+  text-indent: 0;
+}
+
+/* ---------- 索引（附录 G）：两栏 ---------- */
+/* 屏幕样式的 dl { display:grid } 会杀掉多栏（实测：grid 与 column-count
+   冲突时 grid 赢，索引退化成单列）。这里显式回到 block。
+   条目用 flex 而不是 dt/dd 默认排版：术语左、页码右，跨栏断行由
+   break-inside: avoid 保证一条不拆开。 */
+.index-entries {
+  display: block;
+  column-count: 2;
+  column-gap: 6mm;
+  font-size: 9pt;
+  margin-top: 6mm;
+}
+.index-entry {
+  display: flex;
+  align-items: baseline;
+  break-inside: avoid;
+  margin-bottom: 0.18em;
+}
+.index-entry .term {
+  font-family: "Book Sans", sans-serif;
+  font-weight: 700;
+}
+.index-entry .pages {
+  margin-left: auto;
+  padding-left: 2mm;
+  color: #333;
+  font-family: "Book Sans", sans-serif;
+}
+/* ---------- 图（SVG）里的文字 ---------- */
+/* 实测教训：原型 PDF 里 8.5–10.3pt 的 Type3 位图字形全部来自 SVG <text>，
+   系统字体（Segoe UI / 微软雅黑 / Consolas）也是从图里漏出来的。
+   图在印刷版里必须与正文同族——否则同一本书出现三种字形，且 CI 上没有这些系统字体时会走样。 */
+svg text,
+svg tspan,
+.dt-node,
+.dt-label,
+.dt-question,
+.dt-branch,
+.dt-result,
+.dt-source,
+.dt-arrow,
+.dt-continue,
+.mcu-code,
+.mcu-anim {
+  font-family: "Book Sans", "Book Symbols", "Book Math", "Book Emoji", sans-serif;
+}
+svg .mcu-code,
+svg tspan.mcu-code {
+  font-family: "Book Mono", "Book Sans", "Book Symbols", "Book Math", "Book Emoji", monospace;
+}
+
+/* ---------- 兜底：印刷版里不允许出现"书稿自定义字体栈" ---------- */
+/* 屏幕 CSS 用 :root 与简写设过字体；这里把常见文本容器统一回印刷族。
+   用 !important 是刻意的：印刷族是这本书的身份，元素级的选择不该绕开它
+   （漏网的后果是 CI 与本机出现两套字形——省下的那点"灵活性"换不来这个）。 */
+body,
+p,
+li,
+dd,
+dt,
+blockquote,
+figcaption,
+caption,
+td,
+th,
+.part-goal,
+.part-intro,
+.part-stats,
+.chapter-meta,
+.quiz-answer-text,
+.admonition-title {
+  /* "Book Mono" 进正文栈的尾巴：⁷(U+2077) 等上标只在 Cascadia Mono 里有
+     字形（Noto Serif/Sans/Symbols2/Math/Emoji 都没有），没这条就落到系统
+     微软雅黑（实测 14-pwr 一处）。正文里的上标从等宽取字形，字号/行距
+     仍由外层控制，视觉差异可接受。 */
+  font-family: "Book Serif", "Book Symbols", "Book Math", "Book Emoji", "Book Mono", serif !important;
+}
+h1, h2, h3, h4, h5, h6,
+.chapter-number,
+.eyebrow,
+.part-label,
+.toc-chapters li a::after {
+  font-family: "Book Sans", "Book Symbols", "Book Math", "Book Emoji", sans-serif !important;
+}
+code, kbd, samp, pre, .mcu-code {
+  font-family: "Book Mono", "Book Sans", "Book Symbols", "Book Math", "Book Emoji", monospace !important;
+}
+
+/* ---------- 中文禁则（clreq 行首行尾禁则） ---------- */
+/* Chromium 按 UAX#14 断行，大部分禁则已满足；这里再收紧：
+   行首不允许出现收尾类标点，行尾不允许出现起首类标点（浏览器支持多少算多少，
+   真正的判定交给契约门对 PDF 文本逐行检查——见 check_pdf 的行首行尾禁则断言）。 */
+body {
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* paged.js 会给"跨页的最后元素"打 data-align-last-split-element="justify"
+   （text-align-last 可继承），而整章 article 必跨页——于是章内每个标题、
+   段落末行、罗盘标签全被两端对齐拉散（实测："本章罗盘""另 —— 种 C"整行
+   散布）。中文排版末行不两端对齐。结构性元素用 !important：paged.js 的
+   属性规则与类选择器同特异性且后注入，章号这类直接被它打标的元素
+   （"第 01 章" 曾被拉成首字贴左、末字贴右）必须压得住。正文 p/li 不加
+   !important，让真正跨页的段落仍吃到 paged.js 的属性（特异性更高）。 */
+article, header, section, nav,
+h1, h2, h3, h4, h5, h6,
+dd, dt, blockquote,
+.chapter-number, .part-label, .part-stats, .chapter-meta,
+.cover *, .contents *, .part-divider *, .chapter-compass *,
+figcaption, caption, th, td, .index-entries * {
+  text-align-last: auto !important;
+}
+p, li {
+  text-align-last: auto;
+}

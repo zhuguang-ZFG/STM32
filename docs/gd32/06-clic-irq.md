@@ -12,21 +12,8 @@ minutes: 35
 ## 本章精髓
 
 1. **中断控制器换名换架构**：**ECLIC**（Enhanced Core-Level Interrupt Controller，Bumblebee 内核私有，Nuclei 与 Andes 联合开发）取代 ARM 的 NVIC。RISC-V 标准的 software / timer / external 三类中断它都管，外部中断源数交给芯片定（GD32VF103 在 `gd32vf103.h` 里用 `CLIC_INT_*` 与 `*_IRQn` 编号）。
-2. **优先级变成两维**：**level（抢占级，最多 16 级，决定能否打断别人）+ priority（同级排序，最多 16 级）**——不是 ARM 那套"4 位单一优先级 + PRIGROUP 切分组 + 0x5FA 钥匙"。
-3. **"向量"换语义**：ARM 是"向量表第 N 项放 ISR 地址，硬件读表跳转"；ECLIC 是"每个中断有 shv 位，置 1 即**向量直跳**到该中断专属入口，置 0 则进公共入口再软件分发"——省了一张大表，但每个要向量的中断都得显式配入口。
-
-## 怎么读这一章
-
-- **读过 [S4 NVIC 与 EXTI](../stm32/04-nvic-exti.md)**：每节先看"与 S4 的差异表"，五处不同一次记全。
-- **没读过 S4**：先记住"中断 = 配置控制器 + 设优先级 + 写 ISR"三件事，再看 RISC-V 每件事怎么落。
-- ECLIC 寄存器精确偏移已由官方固件驱动实证（n200_eclic.h），但 nlbits 语义、shv 字段细节仍以 Bumblebee ISA 手册为准（本页标注"待 ISA 手册核验"处仅剩语义级）；中断号、level/priority 维度、向量模式都有头文件或内核手册背书。
-
-## 学习目标
-
-- 说出 ECLIC 相对 NVIC 的三处架构差异（控制器、优先级维度、向量机制）。
-- 用 `gd32vf103.h` 的 `IRQn_Type` 推出任意外设中断的 ECLIC 编号（如 `EXTI0_IRQn=25`、`USART0_IRQn=56`），并解释为什么不再"槽号 = IRQn + 16"。
-- 区分 level（抢占）与 priority（同级）的作用，知道为什么 RISC-V 不需要 ARM 的 PRIGROUP 分组钥匙。
-- 解释 MTIME 为什么不是 SysTick：内存映射、mtime/mtimecmp、mtime_toggle_a 驱动频率。
+2. **优先级变成两维**：**level（抢占级，最多 16 级，决定能否打断别人）+ priority（同级排序，最多 16 级）**，不是 ARM 那套"4 位单一优先级 + PRIGROUP 切分组 + 0x5FA 钥匙"。
+3. **"向量"换语义**：ARM 是"向量表第 N 项放 ISR 地址，硬件读表跳转"；ECLIC 是"每个中断有 shv 位，置 1 即**向量直跳**到该中断专属入口，置 0 则进公共入口再软件分发"，省了一张大表，但每个要向量的中断都得显式配入口。
 
 ## 先修
 
@@ -48,9 +35,11 @@ minutes: 35
 
 读完本章再回看这五行，每个编号你都能讲出它与 ARM `IRQn` 的区别。
 
+先押两扇门：硬件读表跳转的老剧情，这边还演不演？每个中断名下那位 shv，置 1 与置 0 各进哪扇门、谁在门口分发？ARM 那把 0x5FA 钥匙，这边还认不认？
+
 ## 动画：ECLIC 两维优先级
 
-level 决定能否打断别人（抢占），priority 决定同 level 内谁先响应（排序）——两维配合完成中断嵌套与同级排序，无需 ARM 的 PRIGROUP 分组钥匙。
+level 决定能否打断别人（抢占），priority 决定同 level 内谁先响应（排序）。两维配合完成中断嵌套与同级排序，无需 ARM 的 PRIGROUP 分组钥匙。
 
 ![ECLIC 两维优先级：level 定抢占，priority 定序](/anim/riscv-clic-priority.svg)
 
@@ -83,7 +72,7 @@ GD32VF103 把 ARM Cortex-M4 换成了 Nuclei/Andes 联合定制的 **Bumblebee**
 | 复位两读 | 硬件读 0x0 / 0x4 | 无 | [V0 第四节](05-riscv-toolchain.md) |
 | PMP | 有（可选） | 无 | 手册 §2.7 |
 
-**少了 NVIC、SysTick、`SCB->VTOR`、PendSV——这四样是 Cortex-M 内核的"标配"，RISC-V 一个都没有。** 但中断该有的能力（嵌套、抢占、向量、NMI）ECLIC 全给，只是实现的姿势不同。本章就是把这"不同"逐项讲清。
+**少了 NVIC、SysTick、`SCB->VTOR`、PendSV：这四样是 Cortex-M 内核的"标配"，RISC-V 一个都没有。** 但中断该有的能力（嵌套、抢占、向量、NMI）ECLIC 全给，只是实现的姿势不同。本章就是把这"不同"逐项讲清。
 
 ## 二、ECLIC 取代 NVIC：增强版 CLIC 的职责
 
@@ -108,11 +97,11 @@ ECLIC 是 Bumblebee 核的私有外设（与 DEBUG、TIMER 并列在 Core 层级
 | 向量模式 | 向量表读表跳转 | clicintattr[i].shv（向量/非向量） |
 | 全局配置 | SCB->AIRCR（PRIGROUP） | cliccfg（全局配置，如 nlbits） |
 
-注意一个收敛点：ARM 把"触发沿"放在外设（EXTI RTSR/FTSR）、把"优先级"放在内核（NVIC IPR），两处分；ECLIC 把这些都收进来统一管——每个中断一组完整的属性（使能、挂起、触发沿、level/priority、向量模式）。
+注意一个收敛点：ARM 把"触发沿"放在外设（EXTI RTSR/FTSR）、把"优先级"放在内核（NVIC IPR），两处分；ECLIC 把这些都收进来统一管：每个中断一组完整的属性（使能、挂起、触发沿、level/priority、向量模式）。
 
 ## 三、中断号地图：CLIC_INT_* 与 ARM IRQn+16 的差异
 
-[S4 第四节](../stm32/04-nvic-exti.md)讲过：ARM 的"槽号 = IRQn + 16"（前 16 项是内核异常），外设中断从槽 16 开始排。RISC-V ECLIC **没有这个 +16 偏移**——中断号就是 ECLIC 的索引。
+[S4 第四节](../stm32/04-nvic-exti.md)讲过：ARM 的"槽号 = IRQn + 16"（前 16 项是内核异常），外设中断从槽 16 开始排。RISC-V ECLIC **没有这个 +16 偏移**：中断号就是 ECLIC 的索引。
 
 `gd32vf103.h:97-172` 的 `IRQn_Type` 给了全部编号（节选）：
 
@@ -131,9 +120,9 @@ USBFS_IRQn   = 86,
 ECLIC_NUM_INTERRUPTS         /* 中断总数哨兵（gd32vf103.h:171） */
 ```
 
-**关键差异**：EXTI0 在 STM32F407 是 `IRQn = 6`（槽 22，`stm32f407xx.h:83`），在 GD32VF103 是 `IRQn = 25`（ECLIC 索引 25，无 +16）。**同一条 EXTI0 线，两颗芯片的中断号差很远**——移植时不能照搬 S4 那张映射表。
+**关键差异**：EXTI0 在 STM32F407 是 `IRQn = 6`（槽 22，`stm32f407xx.h:83`），在 GD32VF103 是 `IRQn = 25`（ECLIC 索引 25，无 +16）。**同一条 EXTI0 线，两颗芯片的中断号差很远**，移植时不能照搬 S4 那张映射表。
 
-> **【混血特征】** GD32VF103 的外设脱胎自 GD32F1（与 STM32F1 同源）：EXTI 在 `APB2 + 0x400 = 0x40010400`（`gd32vf103.h:220`），AFIO 在 `APB2 + 0x000 = 0x40010000`（`gd32vf103.h:219`）——这俩地址与 STM32F1 完全一致。所以 GD32VF103 是"**外设像 F1、内核是 RISC-V**"的混血：第七节配 EXTI 时，外设层那几步几乎照搬 F1，只有控制器层（第 6 步）换成 ECLIC。
+> **【混血特征】** GD32VF103 的外设脱胎自 GD32F1（与 STM32F1 同源）：EXTI 在 `APB2 + 0x400 = 0x40010400`（`gd32vf103.h:220`），AFIO 在 `APB2 + 0x000 = 0x40010000`（`gd32vf103.h:219`），这俩地址与 STM32F1 完全一致。所以 GD32VF103 是"**外设像 F1、内核是 RISC-V**"的混血：第七节配 EXTI 时，外设层那几步几乎照搬 F1，只有控制器层（第 6 步）换成 ECLIC。
 
 ## 四、两维优先级：level + priority vs ARM 单一优先级
 
@@ -147,12 +136,12 @@ ECLIC_NUM_INTERRUPTS         /* 中断总数哨兵（gd32vf103.h:171） */
 | 调优先级 API | `NVIC_SetPriority(n, x)` | 写 clicintctl[n] 的 level + priority |
 | 分组钥匙 | `0x5FA` | 无钥匙机制 |
 
-- **level**（抢占级，最多 16 级）：决定"能不能打断别人"。高 level 抢断低 level——类似 ARM 的抢占优先级。
-- **priority**（同级排序，最多 16 级）：决定"同 level 同时挂起时谁先上"——类似 ARM 的子优先级，但**没有打断能力**。
+- **level**（抢占级，最多 16 级）：决定"能不能打断别人"。高 level 抢断低 level，类似 ARM 的抢占优先级。
+- **priority**（同级排序，最多 16 级）：决定"同 level 同时挂起时谁先上"，类似 ARM 的子优先级，但**没有打断能力**。
 
-**推论一**：移植 RTOS 时"优先级数值没变、行为全变"的灵异事件（S4 3.2 讲的 PRIGROUP 尺子换了）在 RISC-V 上不会发生——没有"分组尺子"可换。但 RTOS 仍要求"全部 level 给抢占"这类约定，对应到 cliccfg 的 nlbits 设置（官方驱动已给掩码与移位：`ECLIC_CFG_NLBITS_MASK=0x1E`、`NLBITS_LSB=1`，n200_eclic.h:54-55；**精确语义**仍以 ISA 手册为准）。
+**推论一**：移植 RTOS 时"优先级数值没变、行为全变"的灵异事件（S4 3.2 讲的 PRIGROUP 尺子换了）在 RISC-V 上不会发生：没有"分组尺子"可换。但 RTOS 仍要求"全部 level 给抢占"这类约定，对应到 cliccfg 的 nlbits 设置（官方驱动已给掩码与移位：`ECLIC_CFG_NLBITS_MASK=0x1E`、`NLBITS_LSB=1`，n200_eclic.h:54-55；**精确语义**仍以 ISA 手册为准）。
 
-**推论二**：ARM 那套 `NVIC_SetPriorityGrouping()` / `0x5FA` 钥匙在 RISC-V 上完全不存在——看到 GD32VF103 例程里"设优先级分组"的写法，那是在配 cliccfg，不是 ARM 的 AIRCR。
+**推论二**：ARM 那套 `NVIC_SetPriorityGrouping()` / `0x5FA` 钥匙在 RISC-V 上完全不存在。看到 GD32VF103 例程里"设优先级分组"的写法，那是在配 cliccfg，不是 ARM 的 AIRCR。
 
 ## 五、向量直跳：shv 模式与 ARM 向量表的机制差异
 
@@ -160,8 +149,8 @@ ECLIC_NUM_INTERRUPTS         /* 中断总数哨兵（gd32vf103.h:171） */
 
 ECLIC 有两种向量模式（手册 §1.1 "fast vectored interrupt processing"）：
 
-- **向量模式（shv = 1）**：每个中断有自己的入口地址，硬件**直接跳到该入口**——叫"向量直跳"。不需要"读一张大表"，每个中断的向量独立配置在 ECLIC 内部。
-- **非向量模式（shv = 0）**：所有中断进公共入口（`mtvec` 指向），由软件读 `mcause` / clicintip 分发——省向量存储，但多一次软件分派。
+- **向量模式（shv = 1）**：每个中断有自己的入口地址，硬件**直接跳到该入口**，叫"向量直跳"。不需要"读一张大表"，每个中断的向量独立配置在 ECLIC 内部。
+- **非向量模式（shv = 0）**：所有中断进公共入口（`mtvec` 指向），由软件读 `mcause` / clicintip 分发，省向量存储，但多一次软件分派。
 
 | | ARM NVIC (S4) | ECLIC (V1) |
 |---|---|---|
@@ -171,11 +160,11 @@ ECLIC 有两种向量模式（手册 §1.1 "fast vectored interrupt processing"�
 | 函数名拼错 | weak 符号顶替 → 死循环 | 取决于配置；公共入口模式下"没注册"进默认处理 |
 | 异常返回 | `EXC_RETURN` 魔法值（0xFFFFFFFD）+ 硬件弹栈 8 字 | `mret` + 从 mepc 恢复（软件在 prologue 压栈） |
 
-ECLIC 的"向量直跳"省了 ARM 那张大表，但代价是每个要用向量的中断都得显式配入口——灵活但要写更多配置代码。
+ECLIC 的"向量直跳"省了 ARM 那张大表，但代价是每个要用向量的中断都得显式配入口，灵活但要写更多配置代码。
 
-> **【注】RISC-V 异常返回没有"魔法值"**。ARM 进 ISR 时 LR 被硬件换成 `EXC_RETURN`（0xFFFFFFFD），出 ISR 一条 `bx lr` 触发硬件弹栈。RISC-V 进 ISR 时硬件把返回地址存进 `mepc`、把中断使能存进 `mstatus.MPIE`，ISR 末尾一条 `mret` 指令恢复——没有"LR 换魔法值"这一步，压栈也是软件在 prologue 干（不像 ARM 硬件自动压 8 字）。
+> **【注】RISC-V 异常返回没有"魔法值"**。ARM 进 ISR 时 LR 被硬件换成 `EXC_RETURN`（0xFFFFFFFD），出 ISR 一条 `bx lr` 触发硬件弹栈。RISC-V 进 ISR 时硬件把返回地址存进 `mepc`、把中断使能存进 `mstatus.MPIE`，ISR 末尾一条 `mret` 指令恢复：没有"LR 换魔法值"这一步，压栈也是软件在 prologue 干（不像 ARM 硬件自动压 8 字）。
 >
-> 精确的 shv 位位置、向量寄存器布局、clicintattr 字段——官方固件驱动已实证偏移（clicintattr@+0x1002、SHV 位 0x01、TRIG_LEVEL/EDGE=0x00/0x02、TRIG_POS/NEG=0x00/0x04，n200_eclic.h:40-46），语义细节仍以 ISA 手册为准。
+> 精确的 shv 位位置、向量寄存器布局、clicintattr 字段：官方固件驱动已实证偏移（clicintattr@+0x1002、SHV 位 0x01、TRIG_LEVEL/EDGE=0x00/0x02、TRIG_POS/NEG=0x00/0x04，n200_eclic.h:40-46），语义细节仍以 ISA 手册为准。
 
 ## 六、MTIME 不是 SysTick：内存映射定时器
 
@@ -184,8 +173,8 @@ ECLIC 的"向量直跳"省了 ARM 那张大表，但代价是每个要用向量�
 - **RISC-V 标准 64 位递增定时器**，CLK 由系统低速 RTC 频率驱动；
 - **mtime**：64 位当前计数值；
 - **mtimecmp**：64 位比较值，**mtime 不小于 mtimecmp 时触发定时器中断**；
-- **mtime/mtimecmp 不是 CSR**——手册明说："not CSR registers, but Memory Address Mapped system registers"（内存映射系统寄存器）；
-- 具体映射地址 RISC-V 架构不定义，由实现定；Bumblebee 把它们做在 TIMER 单元里——官方固件驱动实证：`TIMER_CTRL_ADDR = 0xD1000000`，mtime @ +0x0、mtimecmp @ +0x8（n200_timer.h:24-30）。
+- **mtime/mtimecmp 不是 CSR**：手册明说："not CSR registers, but Memory Address Mapped system registers"（内存映射系统寄存器）；
+- 具体映射地址 RISC-V 架构不定义，由实现定；Bumblebee 把它们做在 TIMER 单元里。官方固件驱动实证：`TIMER_CTRL_ADDR = 0xD1000000`，mtime @ +0x0、mtimecmp @ +0x8（n200_timer.h:24-30）。
 
 | | SysTick (Cortex-M, S5) | MTIME (Bumblebee) |
 |---|---|---|
@@ -199,7 +188,7 @@ ECLIC 的"向量直跳"省了 ARM 那张大表，但代价是每个要用向量�
 
 **驱动频率**（手册 §3.1 + GD32VF103 注记）：mtime 由 SoC 的 `mtime_toggle_a` 脉冲驱动，每检测到一个边沿 mtime 加 1。GD32VF103 上 `rtc_clk = core_clk_aon / 4`，所以 **mtime 自增频率 = core_clk_aon / 4**。若核心跑 108MHz，mtime 约 27MHz 自增（`core_clk_aon` 与核心时钟同源同频的关系已由 [V3](08-mtime-delay.md) 收案：手册 §2.1）。
 
-**推论**：MTIME 是 64 位递增 + 软件比较，意味着"周期定时"要软件每次中断后把 mtimecmp 加一个周期（不像 SysTick 硬件自动重装）——这是 RTOS port 到 RISC-V 必须处理的差异（[V3](08-mtime-delay.md) 详述）。SysTick 的"写一次 LOAD 一劳永逸"在 MTIME 上不成立。
+**推论**：MTIME 是 64 位递增 + 软件比较，意味着"周期定时"要软件每次中断后把 mtimecmp 加一个周期（不像 SysTick 硬件自动重装），这是 RTOS port 到 RISC-V 必须处理的差异（[V3](08-mtime-delay.md) 详述）。SysTick 的"写一次 LOAD 一劳永逸"在 MTIME 上不成立。
 
 ## 七、对照落地：配通 EXTI0，与 S4 六步逐条对比
 
@@ -238,8 +227,8 @@ GD32VF103 的"混血"在这里体现得最清楚：外设层（EXTI/AFIO/GPIO）
 ## 实物实验
 
 - 用 GDB 读 `mtvec`（`info registers mtvec`）与 cliccfg，看 ECLIC 全局配置（寄存器偏移已实证，语义细节见 ISA 手册）。
-- 配 EXTI0 为 shv=1 向量模式，按键触发，在 ISR 入口设断点——应直接断在专属入口，不停在公共入口。
-- 配同 EXTI0 为 shv=0 非向量模式，再触发——应先停在公共入口，单步后分发到 ISR。两种模式对比"向量直跳"。
+- 配 EXTI0 为 shv=1 向量模式，按键触发，在 ISR 入口设断点，应直接断在专属入口，不停在公共入口。
+- 配同 EXTI0 为 shv=0 非向量模式，再触发，应先停在公共入口，单步后分发到 ISR。两种模式一对比，"向量直跳"就直观了。
 - MTIME 实验（[V3](08-mtime-delay.md) 详述）：读 mtime 两次间隔，反推自增频率，验证 `core_clk_aon / 4`。
 
 ## 常见坑
@@ -248,7 +237,7 @@ GD32VF103 的"混血"在这里体现得最清楚：外设层（EXTI/AFIO/GPIO）
 2. **以为 ECLIC 也有 AIRCR / 0x5FA 钥匙、PRIGROUP 分组**：RISC-V 没这套，level + priority 本来就两维，硬写 AIRCR 无效。看到"设优先级分组"的代码，那是配 cliccfg，不是 ARM 的 AIRCR。
 3. **把 mtime/mtimecmp 当 CSR 用 `csrr`/`csrw` 读写**：它们是内存映射，要用 `lw`/`sw` 普通访存指令，`csrr` 会触发非法指令异常。
 4. **SysTick 周期定时照搬到 MTIME**：以为硬件自动重装 → MTIME 是软件写 mtimecmp 加周期，不写就只响一次。RTOS tick 必须每次中断后更新 mtimecmp。
-5. **EXTI 外设照搬 F1，但忘了 GD32VF103 时钟使能位编码不同**：`RCU_APB2EN.PAEN` 是 bit2（`gd32vf103_rcu.h:165`），不是 F1 的 bit2（PAEN 恰好同位），但 AFEN 是 bit0、USART0EN 是 bit14——照搬 F1 位号前要核对 `gd32vf103_rcu.h`，别想当然。
+5. **EXTI 外设照搬 F1，但忘了 GD32VF103 时钟使能位编码不同**：`RCU_APB2EN.PAEN` 是 bit2（`gd32vf103_rcu.h:165`），不是 F1 的 bit2（PAEN 恰好同位），但 AFEN 是 bit0、USART0EN 是 bit14：照搬 F1 位号前要核对 `gd32vf103_rcu.h`，别想当然。
 
 ## 短自测
 
@@ -256,7 +245,7 @@ GD32VF103 的"混血"在这里体现得最清楚：外设层（EXTI/AFIO/GPIO）
 
 <details><summary>看答案</summary>
 
-`EXTI0_IRQn = 25`（`gd32vf103.h:113`）。STM32F407 的 `EXTI0_IRQn = 6`（槽 22，`stm32f407xx.h:83`）。差很多——RISC-V ECLIC 没有"IRQn + 16"偏移，ECLIC 索引就是中断号本身。S4 那张"槽号 = IRQn + 16"的映射表在 GD32VF103 上完全不适用，移植不能照搬。
+`EXTI0_IRQn = 25`（`gd32vf103.h:113`）。STM32F407 的 `EXTI0_IRQn = 6`（槽 22，`stm32f407xx.h:83`）。差很多：RISC-V ECLIC 没有"IRQn + 16"偏移，ECLIC 索引就是中断号本身。S4 那张"槽号 = IRQn + 16"的映射表在 GD32VF103 上完全不适用，移植不能照搬。
 
 </details>
 
@@ -272,7 +261,7 @@ GD32VF103 的"混血"在这里体现得最清楚：外设层（EXTI/AFIO/GPIO）
 
 <details><summary>看答案</summary>
 
-**不是 CSR**。Bumblebee 手册 §2.13 明说它们是 "Memory Address Mapped system registers"，做在 TIMER 单元里，精确地址由实现定（官方固件驱动实证：0xD1000000，n200_timer.h:29）。要用 `lw`/`sw` 普通访存指令读写，不能用 `csrr`/`csrw`——后者会触发非法指令异常。
+**不是 CSR**。Bumblebee 手册 §2.13 明说它们是 "Memory Address Mapped system registers"，做在 TIMER 单元里，精确地址由实现定（官方固件驱动实证：0xD1000000，n200_timer.h:29）。要用 `lw`/`sw` 普通访存指令读写，不能用 `csrr`/`csrw`，后者会触发非法指令异常。
 
 </details>
 
@@ -280,7 +269,7 @@ GD32VF103 的"混血"在这里体现得最清楚：外设层（EXTI/AFIO/GPIO）
 
 <details><summary>看答案</summary>
 
-shv=1 是**向量模式**——硬件直跳到该中断专属入口（向量直跳）；shv=0 是**非向量模式**——进公共入口（`mtvec` 指向）再软件读 `mcause`/clicintip 分发。ARM 是"Flash 起始一张大表，硬件读槽跳"，所有中断都走读表；ECLIC 每中断独立配，可直跳（shv=1）也可分发（shv=0），省了一张大表但每个要向量的中断都得显式配入口。
+shv=1 是**向量模式**：硬件直跳到该中断专属入口（向量直跳）；shv=0 是**非向量模式**：进公共入口（`mtvec` 指向）再软件读 `mcause`/clicintip 分发。ARM 是"Flash 起始一张大表，硬件读槽跳"，所有中断都走读表；ECLIC 每中断独立配，可直跳（shv=1）也可分发（shv=0），省了一张大表但每个要向量的中断都得显式配入口。
 
 </details>
 
@@ -324,9 +313,11 @@ ECLIC 的标准原型与权威寄存器表：
 
 - 中断控制器从 NVIC 换到 ECLIC，三处架构差异（控制器、两维优先级、向量直跳）入肌肉记忆；
 - 中断号不再"IRQn + 16"，能从 `gd32vf103.h` 直接读 ECLIC 索引，知道同一条 EXTI0 线在两颗芯片上编号差很远；
-- MTIME 不是 SysTick：64 位递增、内存映射、软件比较、`mtime_toggle_a` 驱动——RTOS tick 的地基（[V3](08-mtime-delay.md) 接着盖）；
+- MTIME 不是 SysTick：64 位递增、内存映射、软件比较、`mtime_toggle_a` 驱动，RTOS tick 的地基（[V3](08-mtime-delay.md) 接着盖）；
 - 手握"EXTI 外设照搬 F1、第 6 步换 ECLIC 三动作"的清单，能在 GD32VF103 上配通任意外部中断。
 
+两扇门对答案：shv 置 1，硬件直跳该中断的专属入口；置 0，进公共入口由软件读 mcause 分发，ARM 那张向量大表没了。优先级另拆成两张：level 管抢占、priority 管同级排序。0x5FA 那把钥匙，这个世界不认。
+
 <div class="achievement">
-✅ 下一站：<a href="07-rcu-108m.html">V2 RCU 与 108MHz</a>——G1 的 RCU 知识平移到 RISC-V，预设档 48/72/108M 怎么算。
+✅ 下一站：<a href="07-rcu-108m.html">V2 RCU 与 108MHz</a>：G1 的 RCU 知识平移到 RISC-V，预设档 48/72/108M 一次算清。
 </div>

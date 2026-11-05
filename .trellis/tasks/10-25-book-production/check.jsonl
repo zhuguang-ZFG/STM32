@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/10-25-book-production/implement.md", "reason": "逐期验收命令与故意失败样例；check 阶段按此复跑并核对报错原文"}
+{"file": ".trellis/tasks/10-25-book-production/prd.md", "reason": "验收标准（含内容同一性 R7 与印前契约七条）"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "新增书籍工艺契约必须已收录；缺失即视为未完成"}
+{"file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md", "reason": "判断某个断言是否被放宽时回到产物实测基线（A4/Type3/713-712）"}

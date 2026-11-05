@@ -11,26 +11,17 @@ minutes: 35
 
 ## 本章精髓
 
-1. 组件 = 自描述的源码包：`idf_component_register(SRCS ... INCLUDE_DIRS ... REQUIRES ...)` 声明源码/头文件/依赖——IDF 按依赖图拓扑排序编译，`main` 只是"一个叫 main 的特殊组件"。
-2. Kconfig 三段论：组件自带的 `Kconfig` 文件描述选项 → `menuconfig` 写 `sdkconfig`（文本） → 构建生成 `sdkconfig.h`（宏）——**菜单 → 文本 → 宏**，代码里 `#if CONFIG_XXX` 应声生效。
-3. `idf.py` 是司令不是士兵：`idf.py build` = cmake 配置 + 构建器干活；`flash` 要调 esptool；`menuconfig` 要调 kconfig 工具——它是调度层，不是编译器。
+1. 组件 = 自描述的源码包：`idf_component_register(SRCS ... INCLUDE_DIRS ... REQUIRES ...)` 声明源码/头文件/依赖，IDF 按依赖图拓扑排序编译，`main` 只是"一个叫 main 的特殊组件"。
+2. Kconfig 三段论：组件自带的 `Kconfig` 文件描述选项 → `menuconfig` 写 `sdkconfig`（文本） → 构建生成 `sdkconfig.h`（宏）。归拢成一句：**菜单 → 文本 → 宏**，代码里 `#if CONFIG_XXX` 应声生效。
+3. `idf.py` 是司令不是士兵：`idf.py build` = cmake 配置 + 构建器干活；`flash` 要调 esptool；`menuconfig` 要调 kconfig 工具，它是调度层，不是编译器。
 
-## 怎么读这一章
-
-- **能记住**：一句话——**组件自报家门，Kconfig 三段变身，idf.py 只当司令。**
-- **能理解**：你那个只有三行的顶层 `CMakeLists.txt` 为什么就够了——`include($ENV{IDF_PATH}/tools/cmake/project.cmake)` 一行把整套规则拉进了你的工程。
+- **能理解**：你那个只有三行的顶层 `CMakeLists.txt` 为什么就够了：`include($ENV{IDF_PATH}/tools/cmake/project.cmake)` 一行把整套规则拉进了你的工程。
 - **能用**：新建一个自己的组件（哪怕只是把 LED 驱动从 `main` 里拆出去），知道该写哪几行；出构建错误时知道去翻 `sdkconfig` 还是 `CMakeLists.txt`。
-
-## 学习目标
-
-- 说清 `idf_component_register` 各参数的含义，并能指出 `main` 组件"特殊"在哪里。
-- 走通 Kconfig 三段论：在源码里找到 Kconfig 选项、在 `sdkconfig` 里找到它被固化成什么、在代码里看到 `CONFIG_*` 被使用。
-- 知道 `idf.py` 的子命令分别调用了什么（构建系统 / esptool / kconfig 工具）。
 
 ## 先修
 
 - [P0 环境与工具链](00-env.md)：能跑 `idf.py build`。
-- [P1 S3 架构与启动](01-arch-boot.md)：三棒启动——本章讲的是"第三棒的代码是怎么被编出来的"。
+- [P1 S3 架构与启动](01-arch-boot.md)：三棒启动，本章讲的是"第三棒的代码是怎么被编出来的"。
 - [B7 构建系统](../build/07-build-system.md)：Makefile/CMake 的基本概念，本章做对照。
 
 ## 先跑起来（10 分钟 quick win）
@@ -47,11 +38,13 @@ ls build/config/
 # sdkconfig.h  sdkconfig.cmake  sdkconfig.json
 ```
 
-`build/config/sdkconfig.h` 就是"菜单 → 文本 → 宏"的终点站。打开它搜一个你认识的配置项（比如 `CONFIG_IDF_TARGET`），再回到工程根目录的 `sdkconfig` 里搜同名项——**同一个选项，两种形态**。这一章就是讲这两个文件之间的那段流水线。
+`build/config/sdkconfig.h` 就是"菜单 → 文本 → 宏"的终点站。打开它搜一个你认识的配置项（比如 `CONFIG_IDF_TARGET`），再回到工程根目录的 `sdkconfig` 里搜同名项：**同一个选项，两种形态**。这一章就是讲这两个文件之间的那段流水线。
+
+往下读之前先押个方向：sdkconfig 和 sdkconfig.h，谁是谁的译文、谁又是原文？方向押反了，后面整条流水线都会读倒。
 
 ## 动画：Kconfig 三阶管线
 
-从 Kconfig 定义到 sdkconfig 文本再到 sdkconfig.h C 宏——配置沿管线单向流动。
+从 Kconfig 定义到 sdkconfig 文本再到 sdkconfig.h C 宏，配置沿管线单向流动。
 
 ![Kconfig 三阶管线动画](/anim/kconfig-pipeline.svg)
 
@@ -67,6 +60,10 @@ ls build/config/
 | 自己写组件 | 最小可用的组件骨架与常见错误 | 配置 |
 
 ## 一、三行顶层 CMake：你的工程为什么这么短
+
+先看解剖图：你的工程、IDF 构建系统、芯片里的启动链，三个圈子各管一段。三行 CMake 就是第一个圈子递给第二个圈子的接力棒。
+
+![一个 ESP32 工程的解剖图：你的工程、IDF 构建系统、芯片启动链](/arch/idf-anatomy.png)
 
 看 `code/esp32/00-hello/CMakeLists.txt` 的正文（注释之外）：
 
@@ -89,13 +86,13 @@ include(${CMAKE_CURRENT_LIST_DIR}/targets.cmake)   # 21 行：芯片目标定义
 include(${CMAKE_CURRENT_LIST_DIR}/idf.cmake)       # 29 行：IDF 本体规则
 ```
 
-**`project(hello-mcu)` 不是普通的 CMake 工程声明**——`project.cmake` 里重定义了它（`tools/cmake/build.cmake:67-73` 附近解析 `project()` 的参数），所以这一行之后，构建系统额外获得了几件事：
+**`project(hello-mcu)` 不是普通的 CMake 工程声明**：`project.cmake` 里重定义了它（`tools/cmake/build.cmake:67-73` 附近解析 `project()` 的参数），所以这一行之后，构建系统额外获得了几件事：
 
 - **组件扫描**：从 `IDF_PATH/components/` 和你的 `components/` 目录收集所有组件；
 - **依赖图排序**：按 `REQUIRES` 做拓扑排序，决定编译顺序与头文件可见性；
 - **Kconfig 处理**：生成配置头文件（第三节）。
 
-还有一行值得注意——本工程自己加的**目标守卫**：
+还有一行值得注意：本工程自己加的**目标守卫**：
 
 ```cmake
 if(NOT IDF_TARGET STREQUAL "esp32s3")
@@ -145,9 +142,9 @@ function(idf_component_register)
 | `EMBED_FILES` | 把文件当作二进制数据嵌进固件 | 网页、字体 |
 | `EMBED_TXTFILES` | 同上，但附加 `\0` 结尾（当字符串用） | 证书、HTML |
 
-**`REQUIRES` 构成的是一张有向图**。IDF 收齐所有组件的声明后做**拓扑排序**，得到编译顺序——所以你在 `main` 里 `#include "driver/ledc.h"` 能不能成功，取决于 `main` 有没有（直接或传递地）`REQUIRES esp_driver_ledc`。
+**`REQUIRES` 构成的是一张有向图**。IDF 收齐所有组件的声明后做**拓扑排序**，得到编译顺序，所以你在 `main` 里 `#include "driver/ledc.h"` 能不能成功，取决于 `main` 有没有（直接或传递地）`REQUIRES esp_driver_ledc`。
 
-> 对照 STM32 侧：我们手写 Makefile 时，头文件路径靠 `-I` 一个个列、链接靠 `.o` 一个个点。IDF 把这两件事合并成一句"我依赖谁"，剩下的交给构建系统。**代价是依赖声明写错时报错信息比较绕**——这是下面常见坑里的第一条。
+> 对照 STM32 侧：我们手写 Makefile 时，头文件路径靠 `-I` 一个个列、链接靠 `.o` 一个个点。IDF 把这两件事合并成一句"我依赖谁"，剩下的交给构建系统。**代价是依赖声明写错时报错信息比较绕**：这是下面常见坑里的第一条。
 
 ## 三、`main` 特殊在哪：一个特别的组件
 
@@ -157,7 +154,7 @@ IDF 里 `main` 是一个**约定的特殊组件名**。它的特殊之处：
 - 它可以（通常也应该）`REQUIRES` 别的组件；
 - 你的 `app_main()` 就住在这里（[P1](01-arch-boot.md) 讲的启动第三棒会调用它）。
 
-构建系统确实对 `main` 有专门处理——`tools/cmake/build.cmake:465` 附近可以看到 `main` 目录被当作**项目组件**（project components）收集的路径：
+构建系统确实对 `main` 有专门处理，`tools/cmake/build.cmake:465` 附近可以看到 `main` 目录被当作**项目组件**（project components）收集的路径：
 
 ```cmake
 __project_component_dir("${CMAKE_CURRENT_LIST_DIR}/main" "project_components")
@@ -177,7 +174,7 @@ __project_component_dir("${CMAKE_CURRENT_LIST_DIR}/main" "project_components")
 
 **第一段：菜单（Kconfig 文件）**
 
-每个组件可以放一个 `Kconfig`，用 Kconfig 语言描述选项（类型、默认值、依赖、提示文案）。IDF 本体的 `Kconfig` 到处都是——例如 `components/esp_system/Kconfig:227` 起：
+每个组件可以放一个 `Kconfig`，用 Kconfig 语言描述选项（类型、默认值、依赖、提示文案）。IDF 本体的 `Kconfig` 到处都是，例如 `components/esp_system/Kconfig:227` 起：
 
 ```text
     config ESP_MAIN_TASK_STACK_SIZE
@@ -191,7 +188,7 @@ __project_component_dir("${CMAKE_CURRENT_LIST_DIR}/main" "project_components")
 
 **第二段：文本（sdkconfig）**
 
-`idf.py menuconfig` 打开菜单，你的选择被写进工程根目录的 `sdkconfig`——一个纯文本文件。本仓库 `code/esp32/01-gpio-matrix/sdkconfig` 的头部写着：
+`idf.py menuconfig` 打开菜单，你的选择被写进工程根目录的 `sdkconfig`，一个纯文本文件。本仓库 `code/esp32/01-gpio-matrix/sdkconfig` 的头部写着：
 
 ```text
 #
@@ -210,7 +207,7 @@ grep -cE "^CONFIG_" code/esp32/01-gpio-matrix/sdkconfig
 # 890
 ```
 
-**890 个配置项**——一个传感器示例工程的配置规模。
+**890 个配置项**，一个传感器示例工程的配置规模。
 
 > **`DO NOT EDIT` 是认真的**：这个文件由工具生成。要改配置就 `idf.py menuconfig`（或直接 `set-target` 等命令），手改会在下次 menuconfig 时被覆盖。想让某项配置进版本控制又能被追踪，IDF 提供了 `sdkconfig.defaults` 机制。
 
@@ -235,7 +232,7 @@ grep -cE "^CONFIG_" code/esp32/01-gpio-matrix/sdkconfig
 | `build/config/sdkconfig.cmake` | **CMake**：构建脚本里判断配置 |
 | `build/config/sdkconfig.json` | **工具**：脚本/IDE 读取配置 |
 
-于是代码里就能这么写——本仓库的真实例子，`code/esp32/00-hello/main/hello_main.c:25`：
+于是代码里就能这么写，本仓库的真实例子，`code/esp32/00-hello/main/hello_main.c:25`：
 
 ```c
            CONFIG_IDF_TARGET_ESP32S3 ? "S3" : "?",
@@ -243,7 +240,7 @@ grep -cE "^CONFIG_" code/esp32/01-gpio-matrix/sdkconfig
 
 **`CONFIG_IDF_TARGET_ESP32S3` 这个宏从哪来**？追回去就是：IDF 本体的 `Kconfig` 定义选项 → 你（或 `set-target`）写进 `sdkconfig` → 构建时 `kconfig.cmake` 生成 `sdkconfig.h` → 编译器看到 `-D` 或被包含的头文件。**三段闭环。**
 
-> 对照 [R6 RT-Thread 的 menuconfig](../rtos/rtthread/06-env-menuconfig.md)：同一套 Kconfig 语言的另一套实现——学会了这套，RT-Thread 那边是横向迁移。
+> 对照 [R6 RT-Thread 的 menuconfig](../rtos/rtthread/06-env-menuconfig.md)：同一套 Kconfig 语言的另一套实现，学会了这套，RT-Thread 那边是横向迁移。
 
 ## 五、`idf.py` 是司令不是士兵
 
@@ -267,7 +264,7 @@ grep -cE "^CONFIG_" code/esp32/01-gpio-matrix/sdkconfig
 - 运行时崩 → [P1](01-arch-boot.md) 的启动三棒排查法。
 
 > 与 [B7 构建系统](../build/07-build-system.md) 的对照：STM32 侧我们手写 Makefile，编译/汇编/链接三件事都看得见（[B1 四步构建](../build/01-four-steps.md)）；IDF 把这三件事封进 `idf.py build`。
-> **代价是透明度，收益是规模**——上千个文件、上百个组件、多芯片目标，手写 Makefile 管不过来。这也是为什么"两边都学"比"只学一边"更能看清构建系统到底在做什么。
+> **代价是透明度，收益是规模**：上千个文件、上百个组件、多芯片目标，手写 Makefile 管不过来。这也是为什么"两边都学"比"只学一边"更能看清构建系统到底在做什么。
 
 ## 六、自己写一个组件：最小骨架
 
@@ -324,18 +321,18 @@ idf_component_register(SRCS "main.c"
 
 ## 实物实验
 
-- `idf.py build` 后翻 `build/config/`，打开 `sdkconfig.h` 找到 `CONFIG_IDF_TARGET_ESP32S3`，再回工程根 `sdkconfig` 找 `CONFIG_IDF_TARGET=`——**同一个选项的两种形态**，把两处都截图/记录。
+- `idf.py build` 后翻 `build/config/`，打开 `sdkconfig.h` 找到 `CONFIG_IDF_TARGET_ESP32S3`，再回工程根 `sdkconfig` 找 `CONFIG_IDF_TARGET=`：**同一个选项的两种形态**，把两处都截图/记录。
 - 数一下你的工程的配置规模：`grep -cE "^CONFIG_" sdkconfig`（本仓库 gpio-matrix 是 **890** 项）。
-- 把 `code/esp32/01-gpio-matrix/main/CMakeLists.txt` 的 `REQUIRES` 删掉，重新 `idf.py build`，**记录报错信息**——这就是"依赖声明写错时长什么样"，以后再见到能一眼认出来。
+- 把 `code/esp32/01-gpio-matrix/main/CMakeLists.txt` 的 `REQUIRES` 删掉，重新 `idf.py build`，**记录报错信息**，这就是"依赖声明写错时长什么样"，以后再见到能一眼认出来。
 - 查看 `idf.py --help` 的子命令列表，对照第五节那张表，确认每个命令各调谁（**待上机回填**）。
 
 ## 常见坑
 
 - **手改 `sdkconfig`**：文件头写着 `DO NOT EDIT`，它由工具生成。下次 `menuconfig` 或 `set-target` 会覆盖你的手改。要持久化配置用 `sdkconfig.defaults`。
 - **`INCLUDE_DIRS` 写成头文件路径**：它要的是**目录**。写成 `include/my_led.h` 会让 `-I` 指向文件，编译期找不到头文件。
-- **忘了 `REQUIRES`**：代码里能用是因为**头文件恰好被别的组件的公开头传递带进来了**——这种"侥幸编译通过"很脆弱，换个 IDF 版本就可能断。显式声明依赖。
+- **忘了 `REQUIRES`**：代码里能用是因为**头文件恰好被别的组件的公开头传递带进来了**，这种"侥幸编译通过"很脆弱，换个 IDF 版本就可能断。显式声明依赖。
 - **`main` 里越堆越多**：`main` 是特殊组件，但不是什么都能往里塞。功能成规模就拆 `components/`。
-- **残留错目标的 `sdkconfig`**：从别的芯片工程拷来的 `sdkconfig` 会让构建静默按错目标编——本仓库每个工程都用 `if(NOT IDF_TARGET STREQUAL "esp32s3")` 守卫住了，你自己的工程也建议加。
+- **残留错目标的 `sdkconfig`**：从别的芯片工程拷来的 `sdkconfig` 会让构建静默按错目标编，本仓库每个工程都用 `if(NOT IDF_TARGET STREQUAL "esp32s3")` 守卫住了，你自己的工程也建议加。
 - **顶层 `CMakeLists.txt` 里加了一堆逻辑**：它只需要三行 + 可选守卫。真正的构建逻辑属于组件。
 
 ## 短自测
@@ -354,7 +351,7 @@ idf_component_register(SRCS "main.c"
 <details>
 <summary>看答案</summary>
 
-`INCLUDE_DIRS` 是**公开**的——依赖你这个组件的其他组件也能包含这些头文件；`PRIV_INCLUDE_DIRS` 是**私有**的，只有本组件内部能用。这是"接口 vs 实现"在构建系统里的落地：把内部头文件放进私有目录，别人就编译不到你的实现细节。同理 `REQUIRES` / `PRIV_REQUIRES` 是依赖的公开与私有版本。
+`INCLUDE_DIRS` 是**公开**的，依赖你这个组件的其他组件也能包含这些头文件；`PRIV_INCLUDE_DIRS` 是**私有**的，只有本组件内部能用。这是"接口 vs 实现"在构建系统里的落地：把内部头文件放进私有目录，别人就编译不到你的实现细节。同理 `REQUIRES` / `PRIV_REQUIRES` 是依赖的公开与私有版本。
 
 </details>
 
@@ -407,11 +404,13 @@ idf_component_register(SRCS "main.c"
 
 ## 你做到了
 
-- 那个"三行就够"的顶层 CMake 不再神秘——你知道它拉进了什么；
+- 那个"三行就够"的顶层 CMake 不再神秘，你知道它拉进了什么；
 - 能给自己的驱动写一个合规的组件（`SRCS`/`INCLUDE_DIRS`/`REQUIRES` 三板斧）；
 - 走通了 Kconfig 三段论，能追着一个 `CONFIG_xxx` 从菜单追到宏；
 - 构建报错时会分层定位（配置 / 组件声明 / 编译 / 烧录），而不是瞎改。
 
+方向押完翻底牌：原文其实是 Kconfig，sdkconfig 与 sdkconfig.h 都是它的译文，一份给人看，一份给编译器看。追着任何一个配置项从菜单走到宏，这条链你现在是顺着的。
+
 <div class="achievement">
-✅ 下一站：<a href="04-irq-dualcore.html">P4 中断与双核</a>——IRAM 纪律与核间分工，把"Cache 关了你的 ISR 还能不能跑"这件事彻底说清。
+✅ 下一站：<a href="04-irq-dualcore.html">P4 中断与双核</a>：IRAM 纪律与核间分工，把"Cache 关了你的 ISR 还能不能跑"这件事彻底说透。
 </div>

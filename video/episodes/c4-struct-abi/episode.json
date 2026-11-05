@@ -1,20 +1,95 @@
 {
   "id": "c4-struct-abi",
-  "title": "GPIOF->BSRR 凭什么罩住 0x40021418",
+  "title": "GPIOF->BSRR 凭什么落在 0x18：结构体布局与两条断言",
   "badge": "C4",
-  "voice": "zh-CN-YunxiNeural",
-  "rate": "+4%",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
   "fps": 30,
   "sampleRate": 44100,
   "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "0x40021400": "零 x 四零零二一四零零",
+    "0x40021418": "零 x 四零零二一四一八",
+    "0x12345678": "零 x 一二三四五六七八",
+    "0xFFFFFF": "零 x F F F F F F",
+    "0x00": "零 x 零零",
+    "0x04": "零 x 零四",
+    "0x08": "零 x 零八",
+    "0x0C": "零 x 零 c",
+    "0x10": "零 x 一零",
+    "0x14": "零 x 一四",
+    "0x18": "零 x 一八",
+    "0x1C": "零 x 一 c",
+    "0x20": "零 x 二零",
+    "0x24": "零 x 二四",
+    "0x28": "零 x 二八",
+    "0x4": "零 x 四",
+    "0x8": "零 x 八",
+    "0x": "零 x ",
+    "GPIO_TypeDef": "G P I O type def",
+    "GPIOF_BASE": "G P I O F base",
+    "GPIOF": "G P I O F",
+    "GPIO": "G P I O",
+    "BSRR": "B S R R",
+    "MODER": "mode 寄存器",
+    "OTYPER": "output type 寄存器",
+    "OSPEEDR": "O speed 寄存器",
+    "PUPDR": "pull up down 寄存器",
+    "IDR": "input data 寄存器",
+    "ODR": "output data 寄存器",
+    "LCKR": "lock 寄存器",
+    "AFR": "A F R",
+    "Short_t": "short t",
+    "NoReserved_t": "no reserved t",
+    "WithReserved_t": "with reserved t",
+    "Padded_t": "padded t",
+    "Packed1_t": "packed 一 t",
+    "Packed_t": "packed t",
+    "Bitmap": "bit map",
+    "Bitfield_1_t": "bit field 一 t",
+    "Bitfield_2_t": "bit field 二 t",
+    "RESERVED": "reserved",
+    "_Static_assert": "下划线 static assert",
+    "static_assert": "static assert",
+    "offsetof": "offset of",
+    "sizeof": "size of",
+    "uint32_t": "u int 三十二 t",
+    "uint8_t": "u int 八 t",
+    "__IO": "下划线下划线 I O",
+    "__I": "下划线下划线 I",
+    "__O": "下划线下划线 O",
+    "pack(1)": "pack 一",
+    "pack": "pack",
+    "gcc": "g c c",
+    "C11": "C 十一",
+    "Cortex-M4": "Cortex M 四",
+    "Cortex-M": "Cortex M",
+    "ARM": "A R M",
+    "AAPCS": "A A P C S",
+    "ABI": "A B I",
+    "CMSIS": "C M S I S",
+    "GDB": "G D B",
+    "C4": "C 四",
+    "C5": "C 五"
+  },
   "cover": {
+    "variant": "vs",
     "kicker": "通往单片机之路 · C4",
     "line1": "GPIOF->BSRR",
-    "line2": "凭什么对",
+    "line2": "凭什么落在 0x18",
     "vs": {
-      "left": "一行箭头",
-      "right": "一行裸地址"
+      "left": "手册：BSRR 在 0x18",
+      "right": "漏一格：整块 0x24",
+      "labels": [
+        "OFFSET",
+        "SIZE"
+      ]
     },
+    "proof": "! offsetof(BSRR) = 0x18，sizeof = 0x28\n! Short_t：BSRR 仍在 0x18，sizeof 只剩 0x24\n对齐：Padded 12 / Packed 8 / pack(1) 6",
+    "proofShort": "! offsetof(BSRR) = 0x18\n! sizeof 0x28 → 漏一格 0x24\n对齐 12 / 8 / pack(1) 6",
+    "num": "0x24",
+    "numNote": "少一对方括号，整块短了四字节",
     "sizes": {
       "bilibili": [
         1920,
@@ -23,80 +98,15 @@
       "douyin": [
         1080,
         1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
       ]
-    },
-    "proof": "! offsetof(BSRR) = 0x18\n! sizeof = 0x24   (GPIO_TypeDef 应为 0x28)",
-    "num": "0x24",
-    "numNote": "少写一个中括号，整块只剩这么大"
-  },
-  "publish": {
-    "bilibili": {
-      "titles": [
-        "你每天写的 GPIOF->BSRR，凭什么是 0x40021418？——结构体与 ABI",
-        "把 AFR 的中括号漏掉一个，编译器会当场抓住你吗？",
-        "结构体罩寄存器：声明顺序定先后，ABI 定间隔"
-      ],
-      "intro": "GPIOF->BSRR = 1<<6 比 *(volatile uint32_t*)(0x40021418) 好看一百倍，但它凭什么是对的？这一集把这句翻译彻底拆开：偏移是数出来的（offsetof 实测逐个对齐）、对齐三规则把布局焊死（Padded 12 字节 vs Packed 8 字节）、填充肉眼可见、位域布局是实现定义的（换工具链就翻车）、pack(1) 是给协议帧的不是给寄存器的。所有数字都来自本机实测：cd code/c/04-struct-abi && sh probe.sh; sh broken.sh。本集本集讲全：通往单片机之路。",
-      "tags": [
-        "单片机",
-        "STM32",
-        "C语言",
-        "结构体对齐",
-        "CMSIS",
-        "ABI",
-        "嵌入式"
-      ],
-      "topics": [
-        "单片机",
-        "嵌入式开发",
-        "C语言"
-      ]
-    },
-    "douyin": {
-      "titles": [
-        "GPIOF->BSRR 是什么？结构体怎么罩住寄存器",
-        "漏掉一个中括号，寄存器全错位",
-        "结构体罩寄存器，靠的是三条铁律"
-      ],
-      "intro": "偏移不是背的，是数出来的。BSRR 排第七个，4×6=24=0x18。通往单片机之路 C4 本集讲全，每个 offsetof 都能自己重跑。",
-      "tags": [
-        "单片机",
-        "STM32",
-        "C语言",
-        "嵌入式"
-      ],
-      "topics": [
-        "单片机",
-        "嵌入式开发"
-      ],
-      "caption": "结构体那根箭头，凭什么罩住寄存器\n偏移不是背的：第七个成员 4×6=0x18\n#C语言 #结构体 #寄存器 #STM32",
-      "pinned": "完整图文在「通往单片机之路」C4《结构体与 ABI》。每一个 offsetof 都能自己重跑，条数是数出来的不是抄的，一条命令复现：sh code/c/04-struct-abi/probe.sh",
-      "repro": "sh code/c/04-struct-abi/probe.sh"
-    },
-    "zhihu": {
-      "titles": [
-        "GPIOF->BSRR 凭什么是 0x40021418？把这句翻译彻底拆开",
-        "结构体罩寄存器：声明顺序定先后，对齐规则把布局焊死"
-      ],
-      "intro": "GPIOF->BSRR = 1<<6 比 *(volatile uint32_t*)(0x40021418) 好看一百倍，但它凭什么是对的？这一集把这句翻译彻底拆开：偏移是数出来的（offsetof 实测逐个对齐）、对齐三规则把布局焊死（Padded 12 字节 vs Packed 8 字节）、填充肉眼可见、位域布局是实现定义的（换工具链就翻车）、pack(1) 是给协议帧的不是给寄存器的。\n所有数字来自本机实测：cd code/c/04-struct-abi && sh probe.sh; sh broken.sh。本集把 C4 讲全。",
-      "domain": "科学工程",
-      "mark": "个人观点仅供参考",
-      "original": true
-    },
-    "xiaohongshu": {
-      "title": "漏掉一个中括号，寄存器全错位",
-      "body": "偏移不是背的，是数出来的。BSRR 排第七个，4×6=24=0x18。\n\n复现：sh code/c/04-struct-abi/probe.sh",
-      "topics": [
-        "单片机",
-        "STM32",
-        "C语言"
-      ],
-      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
-      "pinned": "每一个 offsetof 都能自己重跑，条数是数出来的不是抄的，一条命令复现：sh code/c/04-struct-abi/probe.sh",
-      "repro": "sh code/c/04-struct-abi/probe.sh",
-      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
-      "collection": "通往单片机之路",
-      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
     }
   },
   "platforms": {
@@ -109,37 +119,78 @@
         480,
         720
       ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头与三份合同"
+        },
+        {
+          "at": "sa-1",
+          "title": "布局三条规则"
+        },
+        {
+          "at": "map-intro",
+          "title": "官方地图与探针"
+        },
+        {
+          "at": "break-intro",
+          "title": "两种错法"
+        },
+        {
+          "at": "align-intro",
+          "title": "对齐与填充"
+        },
+        {
+          "at": "bitfield-intro",
+          "title": "位域端序与收束"
+        }
+      ],
       "scenes": [
         {
           "id": "hook-01",
           "kind": "hook",
-          "title": "你每天写的 GPIOF->BSRR，",
-          "sub": "凭什么是 0x40021418？",
-          "narration": "点亮一个 LED，大家习惯写 GPIOF 箭头 BSRR。这一行凭什么是那个地址，为什么不是别的地儿？今天就把这句翻译彻底拆开，一直拆到 ARM 写死的那条调用标准里。"
+          "title": "一行箭头，三份合同",
+          "sub": "基址 + 偏移 + volatile 纪律",
+          "narration": "点亮一盏灯，常见写法是 GPIOF 箭头 BSRR 等于 1 左移 6。这一行底下叠着三份合同：基址、偏移、访存纪律。",
+          "emphasis": [
+            "volatile"
+          ]
         },
         {
           "id": "hook-02",
-          "kind": "hook",
-          "title": "两种写法，同一句话",
+          "kind": "code",
+          "title": "同一句话，两种写法",
           "codeLabel": "你写的",
           "code": "GPIOF->BSRR = (1U << 6);",
-          "narration": "第一种写法，一行，读起来像人话：把第六位置起来。"
+          "narration": "第一种写法一行，读起来是置位第六位。编译器不认箭头，只认基址、偏移、写这三步。"
         },
         {
           "id": "hook-03",
           "kind": "code",
-          "title": "丑，但一切都写在明面上",
-          "codeLabel": "编译器最后算出来的",
+          "title": "丑写法把每一步写在明面上",
+          "codeLabel": "编译器眼里的等价形式",
           "code": "*(volatile uint32_t *)(0x40021400 + 0x18) = (1U << 6);",
-          "narration": "第二种写法，裸地址，丑得没人愿意抄第二遍。可这两行在编译器手里，是完完全全的同一句话。问题就来了：中间那一步翻译，靠的是什么。"
+          "narration": "第二种是裸地址：0x40021400 是 GPIOF 的基址，0x18 是 BSRR 的偏移，外面的 volatile 来自成员声明。三个零件各就各位，箭头只是藏起它们。这一集把三份合同逐条摊到本机日志上。",
+          "emphasis": [
+            "0x40021400",
+            "0x18"
+          ]
         },
         {
           "id": "hook-04",
           "kind": "card",
           "tone": "gold",
-          "kicker": "答案",
-          "title": "三条规则，焊在 ABI 里",
-          "narration": "答案只有三条，全都写在 ARM 的调用标准里：声明顺序定先后，对齐规则定间隔，volatile 定纪律。接下来四幕，把它们一次摆完。"
+          "kicker": "先把结论摆出来",
+          "title": "错在布局，不在箭头",
+          "bullets": [
+            "声明顺序决定谁在前",
+            "对齐规则决定隔多远",
+            "volatile 决定访问算不算数"
+          ],
+          "narration": "结论先放这儿：箭头不会错，错的是它依赖的那张布局表。GPIOF 给基址，结构体给偏移，volatile 给访存纪律。后面每一幕，只验证其中一条。",
+          "emphasis": [
+            "布局"
+          ]
         },
         {
           "id": "sa-1",
@@ -148,8 +199,12 @@
           "t0": 0,
           "t1": 3,
           "smil": "stretch",
-          "note": "第一幕：偏移是数出来的，不是背的",
-          "narration": "先看上面这条带子。MODER 打头，往后每一个寄存器四个字节。BSRR 排在第七个，四乘六等于二十四，写成十六进制就是 0x18。这个偏移不是背下来的，是从声明顺序里一格一格数出来的。"
+          "title": "把寄存器地图摊成一行",
+          "note": "偏移是数出来的",
+          "narration": "先看这条带子。MODER 打头，每四个字节一格，从 0 数第六格就是 BSRR 的 0x18，AFR 从 0x20 起、占两格。偏移不是背的，是顺着声明顺序数出来的。",
+          "emphasis": [
+            "偏移"
+          ]
         },
         {
           "id": "sa-2",
@@ -158,7 +213,12 @@
           "t0": 3,
           "t1": 6,
           "smil": "stretch",
-          "narration": "第二条管间隔。每个成员的起始偏移，必须是它自己对齐值的倍数；整个结构体的大小，必须是最大对齐值的倍数。所以尾巴上可能有填充——那不是浪费，那是为了让下一个数组元素还能对齐。"
+          "title": "间隔由对齐规则定",
+          "note": "成员落位，洞由编译器插",
+          "narration": "第二条规则管间隔。成员落在自己对齐值的倍数上，整个结构体的大小落在最大对齐值的倍数上。所以成员之间可能有洞，尾巴上可能有填充，都是规则算出来的。",
+          "emphasis": [
+            "对齐"
+          ]
         },
         {
           "id": "sa-3",
@@ -167,7 +227,13 @@
           "t0": 6,
           "t1": 9,
           "smil": "stretch",
-          "narration": "第三条，填充是看得见的洞。同样三个成员，一个字节、四个字节、一个字节：先小后大排，十二字节；把大的放前面，八个字节。少掉的四字节，全是编译器插进去的填充。"
+          "title": "同一组成员，两种排法",
+          "note": "Padded 12 字节，Packed 8 字节",
+          "narration": "第三条，填充看得见。同样三个成员，按小大排十二字节，按大到小排八字节。差的四字节全是编译器插的填充，后面用本机日志逐格对。",
+          "emphasis": [
+            "12",
+            "8"
+          ]
         },
         {
           "id": "sa-4",
@@ -176,164 +242,264 @@
           "t0": 9,
           "t1": 12,
           "smil": "stretch",
-          "narration": "最后一幕讲两条纪律。位域怎么排位，C 标准不作主，交给编译器自己决定；小端不是你的选择，是这台机器的既成事实。寄存器映射该用的，是掩码宏加移位。"
+          "title": "位域交给编译器，端序交给芯片",
+          "note": "小端由目标决定，不是 C 源码选项",
+          "narration": "最后两条纪律。位域怎么排位，标准说实现定义，编译器自己决定；端序由目标和工具链决定，Cortex-M 通常默认小端，本集只在本机宿主上实测。寄存器映射一般该用掩码加移位；位域只在工具链固定、布局有文档保证时用。",
+          "emphasis": [
+            "位域"
+          ]
         },
         {
           "id": "map-intro",
           "kind": "card",
-          "kicker": "解剖",
+          "kicker": "第一幕",
           "title": "把官方定义摊开",
-          "narration": "先把 ST 官方头文件里 GPIO_TypeDef 的定义原样摊开。九个成员，一个不多，注释里连地址偏移都替你写好了。"
+          "bullets": [
+            "九个成员，十个寄存器",
+            "注释里写着偏移",
+            "照抄，不改顺序"
+          ],
+          "narration": "第一幕从官方定义开始。头文件里 GPIO_TypeDef 九个成员，注释写好了每个偏移。探针工程不背数，只原样照抄，再让编译器把同一组数吐出来对账。",
+          "emphasis": [
+            "九个成员"
+          ]
         },
         {
           "id": "cmsis-def",
           "kind": "code",
-          "codeLabel": "stm32f407xx.h 里的 GPIO_TypeDef",
-          "code": "typedef struct\n{\n  __IO uint32_t MODER;    /*!< Address offset: 0x00 */\n  __IO uint32_t OTYPER;   /*!< Address offset: 0x04 */\n  __IO uint32_t OSPEEDR;  /*!< Address offset: 0x08 */\n  __IO uint32_t PUPDR;    /*!< Address offset: 0x0C */\n  __IO uint32_t IDR;      /*!< Address offset: 0x10 */\n  __IO uint32_t ODR;      /*!< Address offset: 0x14 */\n! __IO uint32_t BSRR;     /*!< Address offset: 0x18 */\n  __IO uint32_t LCKR;     /*!< Address offset: 0x1C */\n  __IO uint32_t AFR[2];   /*!< Address offset: 0x20-0x24 */\n} GPIO_TypeDef;",
-          "narration": "从上到下：MODER、OTYPER、OSPEEDR、PUPDR、IDR、ODR、BSRR、LCKR，最后是 AFR。注意 AFR 是个数组，自己占两格。九个成员，十个寄存器，四字节乘十，正好四十，也就是 0x28。"
+          "codeLabel": "stm32f407xx.h 的成员顺序",
+          "code": "typedef struct {\n  __IO uint32_t MODER;    /* 0x00 */\n  __IO uint32_t OTYPER;   /* 0x04 */\n  __IO uint32_t OSPEEDR;  /* 0x08 */\n  __IO uint32_t PUPDR;    /* 0x0C */\n  __IO uint32_t IDR;      /* 0x10 */\n  __IO uint32_t ODR;      /* 0x14 */\n! __IO uint32_t BSRR;     /* 0x18 */\n  __IO uint32_t LCKR;     /* 0x1C */\n  __IO uint32_t AFR[2];   /* 0x20-0x24 */\n} GPIO_TypeDef;",
+          "narration": "声明顺序就是地图顺序：前六个位置寄存器，接着 BSRR、LCKR，AFR 收尾。AFR 带方括号，按两个槽位算。九行声明，十个四字节槽，合起来四十字节，也就是 0x28。",
+          "emphasis": [
+            "0x18"
+          ],
+          "title": "九行声明，十个槽"
         },
         {
           "id": "gpiof-macro",
           "kind": "code",
-          "codeLabel": "GPIOF 到底是什么",
-          "code": "#define GPIOF   ((GPIO_TypeDef *) GPIOF_BASE)   /* GPIOF_BASE = 0x40021400 */",
-          "narration": "而 GPIOF 本身不是一个变量，它是一个强制转换：把 0x40021400 这块基址，当成指向这个结构体的指针。所谓外设，就是这么来的。"
+          "codeLabel": "GPIOF 是一个强制转换",
+          "code": "#define GPIOF ((GPIO_TypeDef *)GPIOF_BASE)\n/* GPIOF_BASE = 0x40021400 */",
+          "narration": "GPIOF 不是变量，是把基址 0x40021400 解释成指向这张表的指针。所谓外设，就是一块被结构体罩住的地址。基址来自手册，结构体来自头文件，一拼，访问才有名字。",
+          "emphasis": [
+            "0x40021400"
+          ],
+          "title": "基址被解释成指针"
         },
         {
           "id": "expand",
           "kind": "code",
-          "title": "箭头做的事，只有加法",
+          "title": "箭头只做加法",
           "codeLabel": "漂亮写法",
           "code": "GPIOF->BSRR = (1U << 6);",
-          "codeBLabel": "展开",
+          "codeBLabel": "展开后",
           "codeB": "! (*(volatile uint32_t *)(0x40021400 + 0x18)) = (1U << 6);",
-          "narration": "两行合起来看。箭头取 BSRR，编译器做的就是一件事：基址加 0x18。等号左边那个 volatile，来自成员自己的声明。漂亮写法和丑写法，到此完全等价。"
+          "narration": "两行并排：箭头取 BSRR，编译器算的是基址加 0x18，加出来 0x40021418，正是手册地址。等号左边的 volatile 来自成员声明，所以这次写不会被优化掉。",
+          "emphasis": [
+            "0x40021400"
+          ]
         },
         {
           "id": "io-macros",
           "kind": "code",
-          "codeLabel": "CMSIS 的三个宏在说话",
-          "code": "~__IO  →  volatile            /* 读、写都算，硬件随时可能改 */\n~__I   →  volatile const      /* 只读：你不写它，它自己会变 */\n!__O   →  volatile            /* 只写：语义上强调，别指望读回什么 */",
-          "narration": "头文件里那三个宏也各有分工。__IO 读写都算，__I 是只读、硬件随时自己改，__O 是只写。它们展开出来，全是上一集里那个 volatile——纪律从那时候就埋下了。"
+          "codeLabel": "CMSIS 三个宏展开后",
+          "code": "~__IO  ->  volatile        /* 读写都算 */\n~__I   ->  volatile const  /* 只读，硬件会改 */\n!__O   ->  volatile        /* 只写，别指望读回 */",
+          "narration": "三个宏展开后都落回 volatile。__IO 读写都算，__I 是只读，__O 是只写。上一集讲过它管什么；这一集只看它粘在谁身上——粘在成员上，才跟着箭头生效。",
+          "emphasis": [
+            "__IO"
+          ],
+          "title": "三个宏都落回 volatile"
         },
         {
           "id": "probe-run",
           "kind": "code",
-          "title": "手册说什么，编译器就给出什么",
-          "codeLabel": "sh probe.sh 的实测输出",
+          "title": "手册的偏移，编译器逐个吐出",
+          "codeLabel": "probe.sh 本机输出",
           "code": "offsetof(MODER)   = 0x00\noffsetof(OTYPER)  = 0x04\noffsetof(OSPEEDR) = 0x08\noffsetof(PUPDR)   = 0x0C\noffsetof(IDR)     = 0x10\noffsetof(ODR)     = 0x14\n! offsetof(BSRR)    = 0x18  <-- target: 0x18\noffsetof(LCKR)    = 0x1C\noffsetof(AFR)     = 0x20\n! sizeof(GPIO_TypeDef) = 0x28  <-- target: 0x28",
-          "narration": "这不是理想值，是本机一行行跑出来的实测。MODER 在 0x00，一路排到 BSRR 的 0x18，AFR 在 0x20，整个结构体大小 0x28。手册上写的偏移，和编译器给的偏移，一个不差。"
+          "narration": "这不是抄来的表，是本机 gcc 一行行打出来的。MODER 在 0x00，每四个字节一格，排到 BSRR 正好 0x18；AFR 在 0x20，整块 0x28。手册写的和编译器给的，一个不差。",
+          "emphasis": [
+            "0x18",
+            "0x28"
+          ]
         },
         {
           "id": "static-assert",
           "kind": "code",
-          "title": "别相信打印，让编译器自己核对",
-          "codeLabel": "probe.c 里的两条硬断言",
-          "code": "! _Static_assert(offsetof(GPIO_TypeDef, BSRR) == 0x18,\n               \"BSRR offset must be 0x18\");\n! _Static_assert(sizeof(GPIO_TypeDef) == 0x28,\n               \"GPIO_TypeDef size must be 0x28 (10 x uint32)\");",
-          "narration": "光打印出来还不够，打印只在跑到的时候说话。这两条 _Static_assert 让编译器在编译那一刻自己核对：偏移必须是 0x18，大小必须是 0x28。错了，就别想生成目标文件。"
+          "title": "别信打印，让编译期核对",
+          "codeLabel": "probe.c 的两条硬断言",
+          "code": "! _Static_assert(offsetof(GPIO_TypeDef, BSRR) == 0x18,\n                 \"BSRR offset must be 0x18\");\n! _Static_assert(sizeof(GPIO_TypeDef) == 0x28,\n                 \"GPIO_TypeDef size must be 0x28 (10 x uint32)\");",
+          "narration": "打印只在跑起来时说话，断言在编译那一刻说话。两条 _Static_assert 把偏移 0x18 和大小 0x28 钉死：谁改了成员顺序，目标文件就生成不出来。布局能被机器核对，不必靠人眼。",
+          "emphasis": [
+            "0x18",
+            "0x28"
+          ]
         },
         {
           "id": "break-intro",
           "kind": "card",
           "tone": "danger",
-          "kicker": "现在故意写错",
-          "title": "编译器拦得住吗？",
-          "narration": "接下来是这一集最好玩的部分：我们故意把它写错，看编译器到底拦不拦得住你。两种错法，命运完全不同。"
+          "kicker": "第二幕",
+          "title": "故意写错，看谁拦得住",
+          "bullets": [
+            "错法一：少写一格数组",
+            "错法二：空洞没补占位",
+            "一个会炸，一个会静"
+          ],
+          "narration": "第二幕把布局写错，分两种：少写一格数组，或空洞没补占位。两种错都不碰箭头，只动结构体；一种有断言接住，另一种什么声音都没有。",
+          "emphasis": [
+            "空洞"
+          ]
         },
         {
           "id": "break-short",
           "kind": "code",
-          "codeLabel": "错法一：AFR 少写一个中括号",
-          "code": "  volatile uint32_t BSRR;     /* 0x18 */\n  volatile uint32_t LCKR;     /* 0x1C */\n! volatile uint32_t AFR;      /* BUG：本该是 AFR[2] */\n} Short_t;",
-          "codeBLabel": "sh broken.sh 实测",
-          "codeB": "! offsetof(BSRR) = 0x18\n! sizeof = 0x24   (GPIO_TypeDef 应为 0x28)",
-          "narration": "第一种错法：AFR 少写了一个中括号，数组变成了单个 uint32_t。前面八个成员一个没动，BSRR 老老实实还在 0x18；可整块长度只剩三十六字节，0x24。"
+          "codeLabel": "Short_t：AFR 少写一对方括号",
+          "code": "  volatile uint32_t BSRR;  /* 0x18 */\n  volatile uint32_t LCKR;  /* 0x1C */\n! volatile uint32_t AFR;   /* BUG：本该是 AFR[2] */\n} Short_t;",
+          "codeBLabel": "broken.sh 本机输出",
+          "codeB": "! Short_t: offsetof(BSRR) = 0x18  sizeof = 0x24\n~ (GPIO_TypeDef 应为 0x28)",
+          "narration": "第一种错：AFR 的中括号少了一对，数组变成单个 uint32_t。本机打印，BSRR 的偏移还是 0x18，前面成员没动；可整块从 0x28 掉到 0x24，短了四字节。",
+          "emphasis": [
+            "0x24"
+          ],
+          "title": "少一对方括号"
         },
         {
           "id": "break-short-err",
           "kind": "code",
-          "title": "断言当场就炸",
-          "codeLabel": "编译器的原话",
-          "code": "! error: static assertion failed: \"GPIO_TypeDef size must be 0x28 (10 x uint32)\"\n~ _Static_assert(sizeof(Short_t) == 0x28, ...);\n~ ^~~~~~~~~~~~~~",
-          "narration": "断言当场炸掉，编译不过去。有意思的是：BSRR 这个字段本身没有任何报错——它确实还在原位。错的是它后面的整个世界，而唯一肯说出这句话的，是你亲手写下的那条断言。"
+          "title": "断言当场把编译停住",
+          "codeLabel": "编译器原话",
+          "code": "! assert-fail.c:6:1: error: static assertion failed:\n!   \"GPIO_TypeDef size must be 0x28 (10 x uint32)\"",
+          "narration": "把大小断言压回去，编译直接失败，原话是静态断言没过：大小必须是 0x28，十个 uint32。报错只提大小，没提 BSRR——它确实还在原位。错的是后面那一格 AFR 和整块长度。",
+          "emphasis": [
+            "0x28"
+          ]
         },
         {
           "id": "break-hole",
           "kind": "code",
-          "codeLabel": "错法二：地图里的空洞没补保留字",
-          "code": "/* 假想地图：CR@0x00  RESERVED@0x04  DR@0x08 */\n  volatile uint32_t CR;\n! volatile uint32_t DR;   /* BUG：本该 0x08 */\n} NoReserved_t;",
-          "codeBLabel": "补上占位成员",
-          "codeB": "  volatile uint32_t CR;\n! volatile uint32_t RESERVED;   /* 把后面的偏移按回原位 */\n  volatile uint32_t DR;\n} WithReserved_t;",
-          "narration": "第二种错法更阴。手册在 0x04 留了一个空洞，你偷懒没写保留字。于是 DR 从 0x08 前移到了 0x04。老老实实补一个占位成员，它才回到 0x08。"
+          "codeLabel": "NoReserved_t：空洞没补占位",
+          "code": "  volatile uint32_t CR;   /* 0x00 */\n! volatile uint32_t DR;   /* BUG：本该 0x08 */\n} NoReserved_t;",
+          "codeBLabel": "WithReserved_t：补一个占位成员",
+          "codeB": "  volatile uint32_t CR;        /* 0x00 */\n! volatile uint32_t RESERVED;  /* 顶住 0x04 */\n  volatile uint32_t DR;        /* 0x08 */\n} WithReserved_t;",
+          "narration": "第二种错更常见。假想地图 CR 在 0x00、空洞在 0x04、DR 在 0x08；你只写 CR 和 DR，DR 就排到 0x04。补一个 RESERVED 占位，它才回到 0x08。手册里的空洞，必须用成员顶住。",
+          "emphasis": [
+            "0x04",
+            "0x08"
+          ],
+          "title": "漏掉的是占位成员"
         },
         {
           "id": "break-hole-silent",
           "kind": "card",
           "tone": "danger",
-          "title": "这种错，编译通过",
-          "narration": "最吓人的是差别：第一种错，断言会当场替你兜住；第二种错，如果没写断言，代码照样编译、照样下载、照样跑飞。你读到的是隔壁寄存器的值，改的是隔壁寄存器的位——而屏幕上没有任何一行字告诉你这件事。"
+          "title": "这种错，编译一声不吭",
+          "bullets": [
+            "少写数组：大小变了，断言接住",
+            "漏补空洞：结构体合法，编译通过",
+            "DR 指到隔壁寄存器"
+          ],
+          "narration": "对照一下就明白怕在哪：少写数组，大小变了，断言接住；漏补空洞，结构体照样合法，编译通过。可 DR 读到的是隔壁寄存器，写进去的位也落在隔壁。没有断言，就没有任何一行字告诉你。",
+          "emphasis": [
+            "编译通过"
+          ]
         },
         {
           "id": "align-intro",
           "kind": "card",
-          "kicker": "对齐三规则",
-          "title": "AAPCS 把布局焊死",
-          "narration": "回到规则本身。ARM 的架构调用标准，把结构体布局焊成三条铁律。我们拿一个故意含洞的结构体，一条一条量给你看。"
+          "kicker": "第三幕",
+          "title": "对齐把间隔焊死",
+          "bullets": [
+            "起始偏移是自身对齐的倍数",
+            "总大小是最大对齐的倍数",
+            "填充买的是数组 stride"
+          ],
+          "narration": "第三幕只做一件事：量间隔。第一条，成员落在几字节边界，由它自己的对齐值决定；第二条，整块收尾要补齐到最大对齐值的整数倍。两条合起来，洞和尾巴就都有了出处。",
+          "emphasis": [
+            "对齐"
+          ]
         },
         {
           "id": "padded-calc",
           "kind": "code",
-          "codeLabel": "故意含洞的三个成员",
-          "code": "typedef struct {\n    uint8_t  a;      /* 偏移 0，占 1 字节 */\n~   /* 编译器插 3 字节填充 */\n!   uint32_t b;      /* 偏移 4，占 4 字节 */\n    uint8_t  c;      /* 偏移 8，占 1 字节 */\n~   /* 尾部再填 3 字节，使总大小为 4 的倍数 */\n} Padded_t;",
-          "narration": "一个字节、四个字节、又一个字节。b 是 uint32_t，必须落在四的倍数上，所以 a 后面插三个填充；c 排在 0x08，尾巴再补三个，让总大小成为四的倍数。"
+          "codeLabel": "Padded_t：一字节、四字节、一字节",
+          "code": "typedef struct {\n  uint8_t  a;   /* 0 */\n~ /* 编译器插 3 字节 */\n! uint32_t b;   /* 4 */\n  uint8_t  c;   /* 8 */\n~ /* 尾部再填 3 字节 */\n} Padded_t;",
+          "narration": "先摆 a，再放 b：b 要四字节对齐，a 后面只能垫三格；c 落在 0x08，收尾再垫三格，整块才凑成四的倍数。式子是 1 + 3 + 4 + 1 + 3，结果 12。",
+          "title": "Padded_t 的 12 字节"
         },
         {
           "id": "padded-picture",
           "kind": "code",
           "title": "洞是画得出来的",
-          "codeLabel": "Padded_t 的内存画像（x = 填充）",
-          "code": "偏移:  0    1 2 3    4 5 6 7    8    9 10 11\n      [a] [x x x]  [b b b b]   [c]  [x x x]\n\n! 实测：Padded_t: sizeof=12, offsets a=0 b=4 c=8",
-          "narration": "把洞画出来就是这一行：a 一格、三个填充、b 四格、c 一格、尾部再三个填充。一加三加四加一加三，十二。实测 sizeof 正好是 12，a 在 0、b 在 4、c 在 8——手算和机器对上了，这条规则才真的归你。"
+          "codeLabel": "Padded_t 的内存画像（x 是填充）",
+          "code": "偏移:  0  1 2 3  4 5 6 7  8  9 10 11\n      [a][x x x][b b b b][c][x x x]\n\n! 本机：sizeof = 12，a=0 b=4 c=8",
+          "narration": "画像按字节摆：a 占第一格，后面三格空着；b 铺满四格；c 再占一格，末尾三格留白。量出来 sizeof 是 12，a、b、c 的起点分别是 0、4、8，和纸上算的一致。",
+          "emphasis": [
+            "12"
+          ]
         },
         {
           "id": "packed-calc",
           "kind": "code",
-          "codeLabel": "同样三个成员，从大到小排",
-          "code": "typedef struct {\n!   uint32_t b;      /* 偏移 0 */\n    uint8_t  a;      /* 偏移 4 */\n    uint8_t  c;      /* 偏移 5 */\n~   /* 尾部 2 字节填充 */\n} Packed_t;",
-          "codeBLabel": "实测",
-          "codeB": "! Packed_t: sizeof=8, offsets a=4 b=0 c=5\n~ （Padded_t: sizeof=12）",
-          "narration": "还是那三个成员，把大的放前面：b 占零到四，a 在四，c 在五，尾部只需要两个填充——八个字节。少掉的四字节，就是原来那两个洞，加上多出来的尾部。"
+          "codeLabel": "Packed_t：同样三个成员，大的放前面",
+          "code": "typedef struct {\n! uint32_t b;  /* 0 */\n  uint8_t  a;  /* 4 */\n  uint8_t  c;  /* 5 */\n~ /* 尾部 2 字节 */\n} Packed_t;",
+          "codeBLabel": "本机输出",
+          "codeB": "! Packed_t: sizeof=8, offsets a=4 b=0 c=5\n~ (Padded_t: sizeof=12)",
+          "narration": "同样三个成员，把 b 放最前：b 占 0 到 3，a 在 4，c 在 5，尾部只剩两个填充，总共八个字节。少掉的四字节就是中间的洞和尾巴。重排不是审美，是在买大小。",
+          "emphasis": [
+            "8"
+          ],
+          "title": "重排后的 8 字节"
         },
         {
           "id": "stride",
           "kind": "code",
-          "title": "尾部填充到底在买什么",
-          "codeLabel": "定义一个数组，量间距",
-          "code": "Padded_t arr[2];\n\n! Padded_t: sizeof = 12  a=0 b=4 c=8\n! arr[1] - arr[0] = 12 字节\n  arr[0].b 距基址 4 字节，arr[1].b 距基址 16 字节\n~ 若 sizeof 只算到 c 结束的 9，arr[1].b 就会落在 13 —— 不再是 4 的倍数",
-          "narration": "尾部那三个字节不是浪费，它买的是数组的间距。实测两个元素的间距正好十二，第二个 b 落在 16，还是四的倍数。要是 sizeof 只算到 c 结束的九，arr[1] 的 b 就会落在十三——整条 arr[i] 的索引公式当场作废。"
+          "title": "尾部填充买的是数组间距",
+          "codeLabel": "Padded_t arr[2]，量间距",
+          "code": "Padded_t arr[2];\n\n! Padded_t: sizeof = 12，a=0 b=4 c=8\n! arr[1] - arr[0] = 12 字节\n  arr[0].b 距基址 4 字节，arr[1].b 距基址 16 字节\n~ 若 sizeof 只算到 c 结束的 9，arr[1].b 就会落在 13",
+          "narration": "数组一开，间距就不是成员偏移，而是整个 sizeof。两个元素相隔 12 字节，所以第二个 b 的地址从 16 起算。假如总长只算到 9，它就会落到 13，索引公式立刻失效——尾部三格买的就是这件事。",
+          "emphasis": [
+            "16",
+            "13"
+          ]
         },
         {
           "id": "reorder-lesson",
           "kind": "card",
           "tone": "good",
-          "title": "成员从大到小排",
-          "narration": "所以那条老规矩是对的：结构体成员按对齐值从大到小排，填充最少。这不是风格洁癖，是三条对齐规则叠加之后的必然结果。"
+          "title": "成员按对齐值从大到小排",
+          "bullets": [
+            "填充最少",
+            "stride 仍是 4 的倍数",
+            "不是风格，是规则的结果"
+          ],
+          "narration": "老规矩有依据：成员按对齐值从大到小排，填充最少。Padded 十二，Packed 八，差的四字节就是排列顺序。这一节的结论：布局是算出来的，不是随手写的。",
+          "emphasis": [
+            "4"
+          ]
         },
         {
           "id": "bitfield-intro",
           "kind": "code",
-          "codeLabel": "看起来很方便的捷径",
-          "code": "typedef struct {\n    uint32_t a : 1;\n    uint32_t b : 2;\n    uint32_t c : 5;\n    uint32_t d : 24;\n} Bitfield_1_t;",
-          "narration": "接下来这个捷径，很多人踩过：寄存器里 a 占一位、b 占两位、c 占五位，那我用位域一一对上，不是又清楚又省事？"
+          "codeLabel": "看起来省事的写法",
+          "code": "typedef struct {\n  uint32_t a : 1;\n  uint32_t b : 2;\n  uint32_t c : 5;\n  uint32_t d : 24;\n} Bitfield_1_t;",
+          "narration": "第四幕看位域。寄存器里 a 一位、b 两位、c 五位、d 二十四位，一一对上看着省事。可这把位序交给编译器，C 标准只保证语法，不保证布局。",
+          "emphasis": [
+            "24"
+          ],
+          "title": "看着省事的位域"
         },
         {
           "id": "bitfield-rev",
           "kind": "code",
-          "codeLabel": "把声明顺序整个倒过来",
-          "code": "typedef struct {\n    uint32_t d : 24;\n    uint32_t c : 5;\n    uint32_t b : 2;\n    uint32_t a : 1;\n} Bitfield_2_t;",
-          "codeBLabel": "实测",
-          "codeB": "! bitfield_1 sizeof=4, bitfield_2 sizeof=4\n~ bitfield layout is implementation-defined;\n~ use mask macros for hardware registers",
-          "narration": "看第二个：同样四个位域，把声明顺序整个倒过来写。本机测下来两个的 sizeof 都是四，看起来什么都没变。真正变的，是你在屏幕上看不见的那一位一位。"
+          "codeLabel": "Bitfield_2_t：声明顺序整个倒过来",
+          "code": "typedef struct {\n  uint32_t d : 24;\n  uint32_t c : 5;\n  uint32_t b : 2;\n  uint32_t a : 1;\n} Bitfield_2_t;",
+          "codeBLabel": "本机输出",
+          "codeB": "! bitfield_1 sizeof=4, bitfield_2 sizeof=4\n~ bitfield layout is implementation-defined",
+          "narration": "把声明顺序倒过来，写成 Bitfield_2_t。本机打印两个的 sizeof 都是 4，看着没变；可能变的是每一位的落点，日志不打印，标准也不规定。",
+          "emphasis": [
+            "sizeof"
+          ],
+          "title": "倒过来还是 4 字节"
         },
         {
           "id": "bitfield-says",
@@ -341,87 +507,154 @@
           "tone": "danger",
           "kicker": "C 标准原话",
           "title": "实现定义",
-          "narration": "问题就在这四个字。位域从高位往低位排还是反过来、要不要跨存储单元、填充怎么处理，C 标准全部交给编译器自己决定。同一份代码，换一条工具链，位序可能完全相反——拿它映射硬件寄存器，就是赌博。"
+          "narration": "标准里那四个字是实现定义：从高位排还是低位排、能不能跨存储单元、填充怎么处理，编译器自己决定。换一条工具链，同一条声明就可能换个位序。拿位域直接映射硬件寄存器，是把可移植性押在编译器的心情上。",
+          "emphasis": [
+            "实现定义"
+          ]
         },
         {
           "id": "mask-fix",
           "kind": "code",
-          "title": "正经做法：掩码 + 移位",
-          "codeLabel": "probe.c 里那组宏",
-          "code": "#define REG_FIELD_A_MASK  (1UL << 0)\n#define REG_FIELD_B_MASK  (3UL << 1)\n#define REG_FIELD_C_MASK  (31UL << 3)\n#define REG_FIELD_D_MASK  (0xFFFFFFUL << 8)\n\n! /* 读 */  (reg & REG_FIELD_B_MASK) >> 1\n! /* 写 */  reg = (reg & ~REG_FIELD_B_MASK) | (val << 1)",
-          "narration": "正经做法是不用位域。取字段，与上掩码再右移；写字段，先清掉旧位再或上新值。这几行在任何编译器、任何工具链上，都是同一个位序。"
+          "title": "寄存器用掩码加移位",
+          "codeLabel": "probe.c 里的四个宏",
+          "code": "#define REG_FIELD_A_MASK (1UL << 0)\n#define REG_FIELD_B_MASK (3UL << 1)\n#define REG_FIELD_C_MASK (31UL << 3)\n#define REG_FIELD_D_MASK (0xFFFFFFUL << 8)\n\n! /* 读 */ (reg & REG_FIELD_B_MASK) >> 1\n! /* 写 */ reg = (reg & ~REG_FIELD_B_MASK) | (val << 1)",
+          "narration": "正经做法是掩码加移位。每个字段一个掩码，取就与上掩码再右移，写就先清旧位再或新值。这四个宏在任何编译器上都指向同一位，位序由移位常量写死，不交给实现。",
+          "emphasis": [
+            "掩码"
+          ]
         },
         {
           "id": "endian",
           "kind": "code",
           "codeLabel": "端序不用猜，打出来",
-          "code": "uint32_t x = 0x12345678;\nuint8_t *p = (uint8_t *)&x;\n\n! 实测：endian: 0x12345678 stored as 78 56 34 12 -> little-endian",
-          "narration": "端序这件事也不用猜：0x12345678 在内存里排成 78、56、34、12，最低有效字节住在最低地址。Cortex-M 默认就是这个样，是事实，不是选择。"
+          "code": "uint32_t x = 0x12345678;\nuint8_t *p = (uint8_t *)&x;\n\n! 本机：0x12345678 stored as 78 56 34 12 -> little-endian",
+          "narration": "字节序用读数说话：把 0x12345678 按地址从低往高读，得到 78、56、34、12。最低有效字节在最低地址，日志判成小端；Cortex-M 默认走这条，不是编译选项。",
+          "emphasis": [
+            "0x12345678"
+          ],
+          "title": "0x12345678 的内存顺序"
         },
         {
           "id": "pack-right",
           "kind": "code",
-          "codeLabel": "pack(1)：洞真的没了",
-          "code": "#pragma pack(push, 1)\ntypedef struct { uint8_t a; uint32_t b; uint8_t c; } Packed1_t;\n#pragma pack(pop)\n\n! 实测：Packed1_t: sizeof = 6  a=0 b=1 c=5",
-          "narration": "最后说 pack。它真能把对齐压到一个字节、消灭所有填充：本机实测，同样三个成员，加了 pack 一，sizeof 从十二变成六，b 直接落在偏移一。它该出现的地方是协议帧——网络包、文件头那些要按字节精确对上的位置。"
+          "codeLabel": "pack(1) 把洞压没了",
+          "code": "#pragma pack(push, 1)\ntypedef struct { uint8_t a; uint32_t b; uint8_t c; } Packed1_t;\n#pragma pack(pop)\n\n! 本机：Packed1_t sizeof = 6，a=0 b=1 c=5",
+          "narration": "最后看 pack。这是 Packed1_t 混合类型示例，不是寄存器地图。加 pack 一，同样三个成员，sizeof 从十二掉到六，b 直接落在偏移 1。pack 该去的地方是协议帧：网络包、文件头这种按字节对齐的格式。",
+          "emphasis": [
+            "6",
+            "1"
+          ],
+          "title": "pack(1) 压到 6 字节"
         },
         {
           "id": "pack-wrong",
           "kind": "card",
           "tone": "danger",
-          "title": "别把它用在寄存器上",
-          "narration": "但不该用在寄存器映射上。给 GPIO_TypeDef 加 pack 一，等于亲手取消编译器对偏移的担保：你写的还是那个字段名，硬件那边的地址已经不是它了。而且 b 落在偏移一就是非对齐访问，在 Cortex-M4 上可能直接触发 UsageFault。"
+          "title": "别拿 pack 压寄存器",
+          "bullets": [
+            "偏移担保被取消",
+            "Packed1_t 的 b 在偏移 1：非对齐访问",
+            "Cortex-M4 可能直接报错"
+          ],
+          "narration": "寄存器地图不能压 pack。一压，字段名还在，偏移担保却没了；b 被塞到偏移 1，属于非对齐访问，Cortex-M4 上可能直接出错。位域和 pack 应该留给协议帧、文件头这类数据格式。",
+          "emphasis": [
+            "pack"
+          ]
         },
         {
           "id": "board-check",
           "kind": "code",
-          "title": "板上验真的就是这一行",
+          "title": "板上那一行：待回填",
           "codeLabel": "GDB（STM32F407 工程）",
-          "code": "(gdb) print &((GPIO_TypeDef *)0)->BSRR\n~   期望：偏移 0x18，加上 GPIOF_BASE 0x40021400 就是手册的 0x40021418\n~   本章状态：编译期已核实，板上肉眼结果待回填",
-          "narration": "板上的验证也是这一行：打印 BSRR 的地址，加上基址应该正好等于手册给的 0x40021418。这一条我在编译期核实过，板上的肉眼结果还挂在本集等回填——凡是能自己跑的，我都跑过了。"
+          "code": "(gdb) print &((GPIO_TypeDef *)0x40021400)->BSRR\n~ 期望：0x40021418，即基址 0x40021400 加偏移 0x18\n~ 本章状态：编译期已核实，板上结果待回填",
+          "narration": "板上还有一步：在 GDB 里打印 BSRR 的地址，加基址应该等于 0x40021418。本集没有板子，日志也没有 GDB 输出，所以状态写待回填。编译期那两条断言已核实，板上结果等回填。",
+          "emphasis": [
+            "待回填"
+          ]
         },
         {
           "id": "howto-intro",
           "kind": "card",
-          "kicker": "换一颗新芯片",
-          "title": "别抄库，自己写一遍",
-          "narration": "拿到一颗陌生的芯片，最好的练习就是自己把寄存器地图写成结构体，然后逐字段验证。五步，每一步都有工具兜底。"
+          "kicker": "第五幕",
+          "title": "陌生芯片，自己写一遍",
+          "bullets": [
+            "照手册抄顺序",
+            "空洞补占位",
+            "逐字段对偏移",
+            "全字段 volatile",
+            "sizeof 进断言"
+          ],
+          "narration": "第五幕给一套流程。拿到陌生芯片，别急着抄库：照手册抄顺序，空洞补占位，逐字段对偏移，全字段加 volatile，最后把 sizeof 压进断言。五步做完，这张地图才归你。",
+          "emphasis": [
+            "占位"
+          ]
         },
         {
           "id": "howto-steps",
           "kind": "code",
           "codeLabel": "五步",
-          "code": "! 1  照手册从上往下，一行一个寄存器抄下来\n! 2  地图里的空洞，一律补 RESERVED 占位\n  3  用 offsetof 逐字段和手册的偏移对\n  4  全字段加 volatile（C3 那一集的原因）\n! 5  sizeof 压进一条 _Static_assert，留到最后",
-          "narration": "第一步，照手册从上往下一行一个寄存器；第二步，地图里的空洞一律补 RESERVED；第三步，用 offsetof 逐字段和手册对；第四步，全字段加 volatile；第五步，把 sizeof 压进一条断言。"
+          "code": "! 1  照手册从上往下，一行一个寄存器\n! 2  空洞一律补 RESERVED 占位\n  3  用 offsetof 逐字段和手册对\n  4  全字段加 volatile（C3 的理由）\n! 5  sizeof 压进一条 _Static_assert",
+          "narration": "五步里第三步最花时间也最值：每个字段都让 offsetof 报一次数，和手册逐个对。第四步是上一集的功课，寄存器每次访问都算数。第五步把总大小钉死，谁改错顺序，编译就停。",
+          "emphasis": [
+            "offsetof"
+          ],
+          "title": "落地五步"
         },
         {
           "id": "howto-assert",
           "kind": "code",
           "codeLabel": "第五步落地成两行",
-          "code": "~ /* 就是 broken.c 里那个补了空洞的结构体 */\n! _Static_assert(offsetof(WithReserved_t, DR) == 0x08, \"DR must be 0x08\");\n! _Static_assert(sizeof(WithReserved_t) == 0x0C, \"空洞必须由占位成员顶住\");",
-          "narration": "前四步做完，第五步这两条断言就是这份地图的收据：往后任何人改错一个成员顺序，都会在编译那一刻被抓住，而不是在板子上熬一整晚。"
+          "code": "~ /* broken.c 里那个补了空洞的结构体 */\n! _Static_assert(offsetof(WithReserved_t, DR) == 0x08, \"DR must be 0x08\");\n! _Static_assert(sizeof(WithReserved_t) == 0x0C, \"空洞必须由占位成员顶住\");",
+          "narration": "这两行把地图钉在编译期：DR 必须是 0x08，整块必须是 0x0C。它们不生成指令，只在翻译阶段核对；以后谁动了成员顺序或删掉占位，构建会先停下来，不会等到上板才暴露。",
+          "emphasis": [
+            "0x08",
+            "0x0C"
+          ],
+          "title": "最后落成两行断言"
         },
         {
           "id": "punch",
           "kind": "card",
           "tone": "gold",
-          "kicker": "三句真言",
-          "title": "顺序定先后，ABI 定间隔，\nvolatile 定纪律",
-          "narration": "这一集就三句话：声明顺序定先后，对齐规则定间隔，volatile 定纪律。再补半句——位域别碰硬件，pack 只打包裹。"
+          "kicker": "一句话带走",
+          "title": "顺序定先后，对齐定间隔",
+          "bullets": [
+            "偏移是数出来的，不是背的",
+            "断言是编译期最硬的证人",
+            "pack 和位域留给数据格式"
+          ],
+          "narration": "整集收成一句：顺序定先后，对齐定间隔。偏移是数出来的，断言是编译期最硬的证人；pack 留给协议帧，位域只在工具链固定、布局有文档保证时用，别罩寄存器。下次看到 GPIOF 箭头 BSRR，先问：这张表，谁核对过？",
+          "emphasis": [
+            "断言"
+          ]
         },
         {
           "id": "cta",
           "kind": "outro",
-          "title": "每一个偏移，你都能自己跑",
-          "sub": "通往单片机之路 · C4",
-          "narration": "这一集里每一个 offsetof、每一个 sizeof，都来自本集 C4 章节的取证工程。clone 下来，先跑 probe 脚本，再跑 broken 脚本，你会看到和我一模一样的数字。"
+          "title": "全部取证，两条脚本",
+          "sub": "cd code/c/04-struct-abi && sh probe.sh && sh broken.sh",
+          "bullets": [
+            "probe.sh：偏移、对齐、端序、位域",
+            "broken.sh：两种错法与断言原文",
+            "本机 gcc，-std=c11 -O0"
+          ],
+          "narration": "屏上测量值，除手册基址、引脚位、视图刻度和源码断言外，都来自本机两条脚本：probe 打偏移、对齐、端序和位域，broken 打两种错法和断言原文。工具链 gcc，C11，O0。没有开发板，也没有 GDB 输出；板上那一格仍然待回填。",
+          "emphasis": [
+            "probe.sh"
+          ]
         },
         {
           "id": "teaser",
-          "kind": "card",
-          "kicker": "下一站 · C5",
-          "title": "函数指针与状态机",
-          "narration": "下一集讲函数指针和状态机，中断驱动代码的基本功三件套。地址能对上，调用未必干净——我们下次接着拆。"
+          "kind": "outro",
+          "title": "下一集：函数指针与状态机",
+          "bullets": [
+            "C5 函数指针与状态机",
+            "地址对得上，调用未必干净"
+          ],
+          "narration": "下一集进 C5：函数指针和状态机。结构体把地址算对了，接下来要问调用——函数指针存在哪、怎么传、状态机怎么用它把中断接起来。这一集把布局讲完，下一集讲调用。",
+          "emphasis": [
+            "C5"
+          ]
         }
       ]
     },
@@ -435,53 +668,258 @@
         75
       ],
       "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "probe-run",
+          "title": "偏移对账"
+        },
+        {
+          "at": "break-short",
+          "title": "两种错法"
+        },
+        {
+          "at": "padded-picture",
+          "title": "对齐、位域与 pack"
+        },
+        {
+          "at": "punch",
+          "title": "收束"
+        }
+      ],
       "pick": [
         "hook-01",
-        "sa-1",
-        "cmsis-def",
-        "expand",
-        "static-assert",
+        "hook-03",
+        "probe-run",
         "break-short",
+        "break-short-err",
         "break-hole",
         "break-hole-silent",
         "padded-picture",
-        "packed-calc",
+        "stride",
         "bitfield-says",
         "mask-fix",
+        "pack-right",
         "punch",
         "cta"
       ],
       "set": {
-        "break-short": {
-          "code": "  volatile uint32_t BSRR; // 0x18\n  volatile uint32_t LCKR; // 0x1C\n! volatile uint32_t AFR;  ← AFR[2]\n} Short_t;",
-          "codeB": "! offsetof(BSRR) = 0x18\n! sizeof = 0x24\n! GPIO_TypeDef 应为 0x28"
+        "hook-01": {
+          "head": 0,
+          "tail": 0,
+          "title": "一行箭头\n三份合同",
+          "sub": "基址、偏移、volatile 纪律",
+          "emphasis": [
+            "volatile"
+          ]
         },
-        "packed-calc": {
-          "codeB": "! Packed_t: sizeof=8\n  offsets a=4 b=0 c=5\n~ （Padded_t: sizeof=12）"
+        "hook-03": {
+          "head": 0,
+          "tail": 0,
+          "title": "丑写法\n把零件摊开",
+          "emphasis": [
+            "0x18"
+          ]
+        },
+        "probe-run": {
+          "head": 0,
+          "tail": 0,
+          "title": "手册的偏移\n编译器逐个吐",
+          "code": "offsetof(MODER)   = 0x00\noffsetof(OTYPER)  = 0x04\noffsetof(OSPEEDR) = 0x08\noffsetof(PUPDR)   = 0x0C\noffsetof(IDR)     = 0x10\noffsetof(ODR)     = 0x14\n! offsetof(BSRR)  = 0x18\noffsetof(LCKR)    = 0x1C\noffsetof(AFR)     = 0x20\n! sizeof = 0x28",
+          "emphasis": [
+            "0x18",
+            "0x28"
+          ]
+        },
+        "break-short": {
+          "head": 0,
+          "tail": 0,
+          "title": "少一对方括号\n整块只剩 0x24",
+          "code": "  volatile uint32_t BSRR; // 0x18\n  volatile uint32_t LCKR; // 0x1C\n! volatile uint32_t AFR;  // AFR[2]\n} Short_t;",
+          "codeB": "! offsetof(BSRR) = 0x18\n! sizeof = 0x24\n~ 应为 0x28",
+          "emphasis": [
+            "0x24"
+          ]
+        },
+        "break-short-err": {
+          "head": 0,
+          "tail": 0,
+          "title": "断言当场\n把编译停住",
+          "emphasis": [
+            "0x28"
+          ]
+        },
+        "break-hole": {
+          "head": 0,
+          "tail": 0,
+          "title": "空洞没补\nDR 前移到 0x04",
+          "emphasis": [
+            "0x04"
+          ]
         },
         "break-hole-silent": {
-          "title": "这种错，\n编译通过"
+          "head": 0,
+          "tail": 0,
+          "title": "这种错\n编译一声不吭"
+        },
+        "padded-picture": {
+          "head": 0,
+          "tail": 0,
+          "title": "洞是画得出来的",
+          "code": "偏移: 0  1 2 3  4 5 6 7  8  9 10 11\n     [a][x x x][b b b b][c][x x x]\n! 本机：sizeof=12，a=0 b=4 c=8",
+          "emphasis": [
+            "12"
+          ]
+        },
+        "stride": {
+          "head": 0,
+          "tail": 0,
+          "title": "尾部填充\n买的是间距",
+          "code": "! Padded_t: sizeof = 12\n! arr[1] - arr[0] = 12\n  arr[1].b 距基址 16\n~ 若不补尾：落在 13",
+          "emphasis": [
+            "16",
+            "13"
+          ]
+        },
+        "bitfield-says": {
+          "head": 0,
+          "tail": 0,
+          "title": "位域怎么排\n实现定义",
+          "emphasis": [
+            "实现定义"
+          ]
+        },
+        "mask-fix": {
+          "head": 0,
+          "tail": 0,
+          "title": "寄存器用\n掩码加移位",
+          "code": "#define REG_FIELD_B_MASK (3UL << 1)\n\n! /* 读 */ (reg & MASK) >> 1\n! /* 写 */ reg = (reg & ~MASK) | (v << 1)",
+          "emphasis": [
+            "掩码"
+          ]
+        },
+        "pack-right": {
+          "head": 0,
+          "tail": 0,
+          "title": "pack 一\n压到 6 字节",
+          "code": "#pragma pack(push, 1)\n! Packed1_t: sizeof = 6，b=1\n#pragma pack(pop)",
+          "emphasis": [
+            "6"
+          ]
         },
         "punch": {
-          "title": "顺序定先后，\nABI 定间隔，\nvolatile\n定纪律"
+          "head": 0,
+          "tail": 0,
+          "title": "顺序定先后\n对齐定间隔",
+          "bullets": [
+            "偏移是数出来的",
+            "断言是布局的证人",
+            "pack 和位域留给数据格式"
+          ],
+          "emphasis": [
+            "断言"
+          ]
+        },
+        "cta": {
+          "head": 0,
+          "tail": 0,
+          "title": "两条脚本\n全部取证",
+          "sub": "sh code/c/04-struct-abi/probe.sh",
+          "emphasis": [
+            "probe.sh"
+          ]
         }
       },
       "narration": {
-        "hook-01": "GPIOF 箭头 BSRR，凭什么是 0x40021418？",
-        "sa-1": "BSRR 排第七，四六二十四，就是 0x18。",
-        "cmsis-def": "九个成员十个寄存器，正好 0x28。",
-        "expand": "箭头取字段，编译器只做基址加 0x18。",
-        "static-assert": "两条编译期断言，把它当场钉死。",
-        "break-short": "AFR 少个中括号，总长剩 0x24。",
-        "break-hole": "空洞没补保留字，DR 前移到 0x04。",
-        "break-hole-silent": "这种错照样编译通过——你动的是隔壁寄存器。",
-        "padded-picture": "a 一格、填充三格、b 四格：共十二。",
-        "packed-calc": "大的放前面，只剩八个字节。",
-        "bitfield-says": "位域怎么排位，编译器自己说了算。",
-        "mask-fix": "所以寄存器用掩码加移位。",
-        "punch": "顺序定先后，ABI 定间隔。",
-        "cta": "本集 C4，偏移都能自己跑。"
+        "hook-01": "基址、偏移、volatile，三份合同。",
+        "hook-03": "基址 0x40021400 加偏移 0x18，账就这两笔。",
+        "probe-run": "本机探针逐字段打偏移，BSRR 在 0x18，对上。",
+        "break-short": "AFR 少对方括号，整块只剩 0x24。",
+        "break-short-err": "大小断言当场炸，编译器只提 0x28。",
+        "break-hole": "空洞没补，DR 从 0x08 到 0x04。",
+        "break-hole-silent": "这种错照样编译，读到隔壁寄存器。",
+        "padded-picture": "a、填三格、b 四格，共 12。",
+        "stride": "数组间距 12，arr[1].b 落在 16。",
+        "bitfield-says": "位域怎么排位，标准说实现定义。",
+        "mask-fix": "寄存器改用掩码加移位，位序写死。",
+        "pack-right": "pack 压到 6 字节，b 在偏移 1，给协议帧。",
+        "punch": "顺序定先后，对齐定间隔，断言作证。",
+        "cta": "两条脚本跑完，板上那格待回填。"
       }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "GPIOF->BSRR 凭什么落在 0x18：一张表，两条断言",
+        "结构体少写一对方括号：BSRR 没动，整块从 0x28 掉到 0x24",
+        "把寄存器地图写成结构体：偏移、填充与五步核对"
+      ],
+      "intro": "GPIOF->BSRR = 1U << 6 只有一行，但它是三份合同叠出来的：基址 0x40021400、结构体偏移 0x18、成员上的 volatile。这一集把偏移、对齐、端序摊到本机日志上核对，基址与引脚位对照手册。\n\n① 官方地图：GPIO_TypeDef 九个成员、十个寄存器。probe.sh 打出来的偏移从 MODER 的 0x00 一路排到 AFR 的 0x20，BSRR 正好 0x18，sizeof 是 0x28。两条 _Static_assert 把 0x18 和 0x28 钉在编译期。\n\n② 错法一：把 AFR[2] 写成 AFR。BSRR 的偏移仍是 0x18，整块却从 0x28 缩到 0x24；把大小断言压回去，编译当场失败，原话是 static assertion failed，大小必须是 0x28。\n\n③ 错法二：地图里的空洞没补占位。NoReserved_t 的 DR 被顶到 0x04，补一个 RESERVED 才回到 0x08。这种错结构体照样合法，编译通过，没有断言就没有任何提示。\n\n④ 对齐与填充：Padded_t 的 a 在 0、b 在 4、c 在 8，sizeof 12；同样成员重排成 Packed_t，sizeof 8，a 在 4、b 在 0、c 在 5。数组间距也是 12，arr[1].b 落在 16；若 sizeof 只算到 9，它就会落在 13。pack(1) 把同一组压到 6 字节，b 落在偏移 1，是非对齐访问。\n\n⑤ 位域与端序：Bitfield_1_t 和 Bitfield_2_t 的 sizeof 都是 4，日志只说布局是实现定义；0x12345678 在本机存成 78 56 34 12，是小端。寄存器字段改用掩码加移位。\n\n⑥ 五步配方：照手册抄顺序、空洞补占位、offsetof 逐字段对、全字段 volatile、sizeof 进断言。\n\n⚠️ 本集没有开发板，日志里没有 GDB 输出。板上那一行（打印 BSRR 地址应得 0x40021418）状态是待回填；屏上的测量值，除手册基址、引脚位、视图刻度和源码断言外，都来自本机两条脚本。\n\n全部取证：cd code/c/04-struct-abi && sh probe.sh && sh broken.sh。完整图文与代码在开源书《通往单片机之路》C4 章。",
+      "tags": [
+        "单片机",
+        "STM32",
+        "C语言",
+        "结构体对齐",
+        "CMSIS",
+        "ABI",
+        "嵌入式"
+      ],
+      "topics": [
+        "科技数码",
+        "知识",
+        "校园学习"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "箭头凭什么落在 0x18",
+        "漏一对方括号，整块只剩 0x24",
+        "偏移是数出来的，不是背的"
+      ],
+      "intro": "GPIOF->BSRR 这一行，底下是基址加偏移加 volatile。本机探针打出来：BSRR 在 0x18，sizeof 是 0x28。AFR 少一对方括号，BSRR 没动，整块只剩 0x24，断言当场把编译停住。空洞没补占位更阴：DR 从 0x08 前移到 0x04，编译一声不吭。对齐上，Padded_t 是 12 字节，重排成 Packed_t 是 8 字节；pack(1) 压到 6 字节，b 落在偏移 1，是非对齐访问。位域怎么排位，标准说实现定义。两条脚本本机跑完，板上那格待回填。复现：sh code/c/04-struct-abi/probe.sh。",
+      "tags": [
+        "单片机",
+        "STM32",
+        "C语言",
+        "程序员",
+        "嵌入式"
+      ],
+      "topics": [
+        "知识",
+        "科技数码"
+      ],
+      "caption": "结构体那根箭头，落地要过三关\n偏移 0x18，断言 0x28\n#C语言 #结构体 #寄存器 #STM32",
+      "pinned": "完整图文在「通往单片机之路」C4《结构体与 ABI》。偏移、填充、位域、端序，两条脚本一条命令全跑出来，不需要开发板：sh code/c/04-struct-abi/probe.sh",
+      "repro": "sh code/c/04-struct-abi/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "GPIOF->BSRR 为什么落在 0x18：结构体布局逐字段对账",
+        "漏一对方括号，BSRR 没动，整块从 0x28 变成 0x24"
+      ],
+      "intro": "GPIOF->BSRR 这一行，底下是基址 0x40021400、结构体偏移 0x18、成员上的 volatile 三份合同。本机 probe.sh 打出来：MODER 在 0x00，一路排到 AFR 的 0x20，BSRR 正好 0x18，sizeof 是 0x28。两条 _Static_assert 把 0x18 和 0x28 钉在编译期。\n\n两种错法。AFR[2] 写成 AFR，BSRR 仍在 0x18，整块却只剩 0x24，大小断言当场让编译失败；地图里的空洞没补占位，DR 从 0x08 前移到 0x04，结构体照样合法，编译一声不吭。\n\n对齐与填充：Padded_t 的 a 在 0、b 在 4、c 在 8，sizeof 12；Packed_t 重排后 sizeof 8。数组间距 12，arr[1].b 落在 16，若 sizeof 只算到 9 就会落在 13。pack(1) 压到 6 字节，b 在偏移 1，是非对齐访问。\n\n位域布局是实现定义，Bitfield_1_t 与 Bitfield_2_t 的 sizeof 都是 4，但位序不可移植；0x12345678 在本机存成 78 56 34 12，小端。寄存器字段用掩码加移位。\n\n五步配方：抄顺序、补占位、offsetof 对偏移、全字段 volatile、sizeof 进断言。板上 GDB 那一行本集没有跑，状态待回填。全部取证：sh code/c/04-struct-abi/probe.sh。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true
+    },
+    "xiaohongshu": {
+      "title": "漏一对方括号，整块缩成 0x24",
+      "body": "GPIOF->BSRR 这一行，底下是基址 0x40021400、偏移 0x18、volatile 三份合同。\n\n本机探针：BSRR 在 0x18，sizeof 是 0x28。AFR 少一对方括号，BSRR 没动，整块只剩 0x24，断言当场停住编译。空洞没补占位更阴：DR 从 0x08 前移到 0x04，编译一声不吭。\n\nPadded_t 是 12 字节，Packed_t 重排后 8 字节；数组间距 12，arr[1].b 落在 16。pack(1) 压到 6 字节，b 落在偏移 1，是非对齐访问。位域怎么排位，标准说实现定义。\n\n复现：sh code/c/04-struct-abi/probe.sh",
+      "topics": [
+        "单片机",
+        "STM32",
+        "C语言"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "偏移、填充、位域、端序，两条脚本本机全跑出来，不需要开发板：sh code/c/04-struct-abi/probe.sh",
+      "repro": "sh code/c/04-struct-abi/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
     }
   }
 }

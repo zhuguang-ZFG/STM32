@@ -81,6 +81,8 @@ title: 动画演示中心
 
 ![RCC 时钟树：168MHz 从哪来](/anim/rcc-clock-tree.svg)
 
+![提频六步：先降速，再提速](/anim/rcc-six-gates.svg)
+
 ![GPIO 配置流程：从寄存器到点亮](/anim/gpio-config.svg)
 
 ![总线矩阵：内核与外设怎么连](/anim/bus-matrix.svg)
@@ -246,6 +248,24 @@ title: 动画演示中心
 ![双 OS 同概念对照：通知 vs 无 / 设备框架 / 配置哲学](/anim/dual-os-compare.svg)
 
 ![双核自旋锁：互斥、自旋与释放](/anim/dual-core-spinlock.svg)
+
+## 项目实战
+
+![J1 样本队列过载保护：灌满丢新计数 +1，取走腾格子](/anim/logger-queue-overflow.svg)
+
+## AI 辅助开发
+
+![A0 工具地图：MCP 是路，三个 agent 工具是岛](/anim/ai-tool-map.svg)
+
+![A1 提示词解剖：上下文、约束、验收三段式](/anim/ai-prompt-anatomy.svg)
+
+![A2 手册对账闭环：生成 → 对账 → 上板 → 回喂](/anim/ai-reconcile-loop.svg)
+
+![A3 MCP 工具流：模型读手册、跑构建、看串口](/anim/ai-mcp-toolflow.svg)
+
+![A4 幻觉防御决策树：正确性定义在哪，验证动作就在哪](/anim/ai-hallucination-tree.svg)
+
+![A5 生产线全景：源文、构建、门禁与产物](/anim/ai-book-pipeline.svg)
 
 ## 动画规范
 

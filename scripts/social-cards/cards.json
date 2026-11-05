@@ -1,0 +1,411 @@
+[
+  {
+    "id": "card-c3",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 ·</span> C3",
+    "blocks": [
+      "<div class=\"giant\">把总线动作<br>写进<span class=\"em\">合同</span></div>",
+      "<div class=\"quote\">编译器只对你的<span class=\"hl\">\"内存值\"</span>负责，不对你的<span class=\"hl\">\"总线动作\"</span>负责——<code>volatile</code> 就是那句话。</div>",
+      "<div class=\"rows\">\n    <div class=\"row\"><span class=\"mark yes\">保</span><span class=\"t\">登门（访存）</span><span class=\"d\">每次都真读</span></div>\n    <div class=\"row\"><span class=\"mark no\">不管</span><span class=\"t\">排队（原子）</span><span class=\"d\">临界区/BSRR 的岗</span></div>\n    <div class=\"row\"><span class=\"mark no\">不管</span><span class=\"t\">先后（顺序）</span><span class=\"d\">屏障/cache 的岗</span></div>\n  </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/03-volatile</span>",
+    "source": "docs/c/03-volatile.md",
+    "text": "御舆 · C 语言精髓 · C3 把总线动作写进合同 编译器只对你的\"内存值\"负责，不对你的\"总线动作\"负责——volatile 就是那句话。 保登门（访存）每次都真读 不管排队（原子）临界区/BSRR 的岗 不管先后（顺序）屏障/cache 的岗 一句话记住docs/c/03-volatile",
+    "giant": "把总线动作写进合同",
+    "fontSize": 76,
+    "markWidth": 78
+  },
+  {
+    "id": "card-b1",
+    "kicker": "御舆 <span class=\"no\">· 构建篇 ·</span> B1",
+    "blocks": [
+      "<div class=\"giant small\">E · S · c · T<br><span class=\"em\">四步走</span></div>",
+      "<div class=\"quote\">报错先问：<span class=\"hl\">死在哪一步？</span></div>",
+      "<div class=\"rows\">\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">-E</span><span class=\"t\">出 .i</span><span class=\"d\">预处理</span></div>\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">-S</span><span class=\"t\">出 .s</span><span class=\"d\">编译</span></div>\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">-c</span><span class=\"t\">出 .o</span><span class=\"d\">汇编</span></div>\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">-T</span><span class=\"t\">定格局</span><span class=\"d\">链接脚本</span></div>\n  </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/build/01-four-steps</span>",
+    "source": "docs/build/01-four-steps.md",
+    "text": "御舆 · 构建篇 · B1 E · S · c · T四步走 报错先问：死在哪一步？ -E出 .i预处理 -S出 .s编译 -c出 .o汇编 -T定格局链接脚本 一句话记住docs/build/01-four-steps",
+    "giant": "E·S·c·T四步走",
+    "fontSize": 76,
+    "markWidth": 78
+  },
+  {
+    "id": "card-c1",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 ·</span> C1",
+    "blocks": [
+      "<div class=\"giant small\">一个全局变量的<br><span class=\"em\">三段旅程</span></div>",
+      "<div class=\"rows\">\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">.data</span><span class=\"t\">有初值</span><span class=\"d\">Flash 存粮票，RAM 住人</span></div>\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">.bss</span><span class=\"t\">没初值</span><span class=\"d\">只分房不带行李</span></div>\n    <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">Flash</span><span class=\"t\">const</span><span class=\"d\">不动产的忠实租客</span></div>\n  </div>",
+      "<div class=\"quote\">判断占哪种介质，<span class=\"hl\">看地址前缀，不看 <code>nm</code> 字母</span>。</div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/01-memory-model</span>",
+    "source": "docs/c/01-memory-model.md",
+    "text": "御舆 · C 语言精髓 · C1 一个全局变量的三段旅程 .data有初值Flash 存粮票，RAM 住人 .bss没初值只分房不带行李 Flashconst不动产的忠实租客 判断占哪种介质，看地址前缀，不看 nm 字母。 一句话记住docs/c/01-memory-model",
+    "giant": "一个全局变量的三段旅程",
+    "fontSize": 76,
+    "markWidth": 78
+  },
+  {
+    "id": "card-c0",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C0</span>",
+    "blocks": [
+      "<div class=\"giant\">应用 C 出错弹窗<br>裸机 C 出错<span class=\"em\">冒烟</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">问</span><span class=\"t\">写每一行前</span><span class=\"d\">这行代码落在硬件的哪个地址上？</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/00-c-in-mcu</span>",
+    "source": "docs/c/00-c-in-mcu.md",
+    "text": "御舆 · C 语言精髓 · C0 应用 C 出错弹窗裸机 C 出错冒烟 问写每一行前这行代码落在硬件的哪个地址上？ 一句话记住docs/c/00-c-in-mcu",
+    "giant": "应用C出错弹窗裸机C出错冒烟",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-c2",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C2</span>",
+    "blocks": [
+      "<div class=\"giant\">指针<span class=\"em\">三板斧</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">1</span><span class=\"t\">地址定位置</span><span class=\"d\">where</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">2</span><span class=\"t\">类型定宽度</span><span class=\"d\">width</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">3</span><span class=\"t\">volatile 定纪律</span><span class=\"d\">don't-optimize</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/02-pointer</span>",
+    "source": "docs/c/02-pointer.md",
+    "text": "御舆 · C 语言精髓 · C2 指针三板斧 1地址定位置where 2类型定宽度width 3volatile 定纪律don't-optimize 一句话记住docs/c/02-pointer",
+    "giant": "指针三板斧",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-c4",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C4</span>",
+    "blocks": [
+      "<div class=\"giant\">结构体<span class=\"em\">罩寄存器</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">序</span><span class=\"t\">声明顺序</span><span class=\"d\">定先后</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">隔</span><span class=\"t\">ABI</span><span class=\"d\">定间隔</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">纪</span><span class=\"t\">volatile</span><span class=\"d\">定纪律</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">禁</span><span class=\"t\">位域</span><span class=\"d\">别碰硬件</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">包</span><span class=\"t\">pack</span><span class=\"d\">只打包裹（协议）</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/04-struct-abi</span>",
+    "source": "docs/c/04-struct-abi.md",
+    "text": "御舆 · C 语言精髓 · C4 结构体罩寄存器 序声明顺序定先后 隔ABI定间隔 纪volatile定纪律 禁位域别碰硬件 包pack只打包裹（协议） 一句话记住docs/c/04-struct-abi",
+    "giant": "结构体罩寄存器",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-c5",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C5</span>",
+    "blocks": [
+      "<div class=\"giant\">中断里只做<span class=\"em\">快递分拣</span>，不下厨房</div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">1</span><span class=\"t\">指针记账</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">2</span><span class=\"t\">状态归档</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">3</span><span class=\"t\">缓冲转运</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/05-func-pointer</span>",
+    "source": "docs/c/05-func-pointer.md",
+    "text": "御舆 · C 语言精髓 · C5 中断里只做快递分拣，不下厨房 1指针记账 2状态归档 3缓冲转运 一句话记住docs/c/05-func-pointer",
+    "giant": "中断里只做快递分拣，不下厨房",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-c6",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C6</span>",
+    "blocks": [
+      "<div class=\"giant\">参数 r0 到 r3<br>多余的<span class=\"em\">上栈找</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">对</span><span class=\"t\">64 位</span><span class=\"d\">占偶奇对，r1 可以被跳掉</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">抱</span><span class=\"t\">返回值</span><span class=\"d\">r0 里抱</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">管</span><span class=\"t\">r4–r11</span><span class=\"d\">谁用谁保管</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">销</span><span class=\"t\">lr</span><span class=\"d\">记着回家道，pop 进 pc 一把销</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/06-abi-stack</span>",
+    "source": "docs/c/06-abi-stack.md",
+    "text": "御舆 · C 语言精髓 · C6 参数 r0 到 r3多余的上栈找 对64 位占偶奇对，r1 可以被跳掉 抱返回值r0 里抱 管r4–r11谁用谁保管 销lr记着回家道，pop 进 pc 一把销 一句话记住docs/c/06-abi-stack",
+    "giant": "参数r0到r3多余的上栈找",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-c8",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C8</span>",
+    "blocks": [
+      "<div class=\"giant\">0 只当<span class=\"em\">帧尾</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">CRC</span><span class=\"t\">只管</span><span class=\"d\">损坏</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">序号</span><span class=\"t\">只管</span><span class=\"d\">配对</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">失步</span><span class=\"t\">就等</span><span class=\"d\">下一个 0</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">丢了</span><span class=\"t\">就计数</span><span class=\"d\">确认发不出去就不执行</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/08-framed-protocol</span>",
+    "source": "docs/c/08-framed-protocol.md",
+    "text": "御舆 · C 语言精髓 · C8 0 只当帧尾 CRC只管损坏 序号只管配对 失步就等下一个 0 丢了就计数确认发不出去就不执行 一句话记住docs/c/08-framed-protocol",
+    "giant": "0只当帧尾",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-f0",
+    "kicker": "御舆 <span class=\"no\">· RTOS · F0</span>",
+    "blocks": [
+      "<div class=\"giant\">一人阻塞<br><span class=\"em\">全家堵</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">栈</span><span class=\"t\">私栈</span><span class=\"d\">平行世界，卡住不污染别人</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">户</span><span class=\"t\">TCB 户口本</span><span class=\"d\">状态、优先级、栈顶都登记</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">魂</span><span class=\"t\">换魂术</span><span class=\"d\">PendSV 保存 / 恢复现场</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/freertos/00-why-rtos</span>",
+    "source": "docs/rtos/freertos/00-why-rtos.md",
+    "text": "御舆 · RTOS · F0 一人阻塞全家堵 栈私栈平行世界，卡住不污染别人 户TCB 户口本状态、优先级、栈顶都登记 魂换魂术PendSV 保存 / 恢复现场 一句话记住docs/rtos/freertos/00-why-rtos",
+    "giant": "一人阻塞全家堵",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-b2",
+    "kicker": "御舆 <span class=\"no\">· 构建篇 · B2</span>",
+    "blocks": [
+      "<div class=\"giant\">头说<span class=\"em\">我是谁</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">节</span><span class=\"t\">说我有几抽屉</span><span class=\"d\">段与节</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">头</span><span class=\"t\">说怎么装车</span><span class=\"d\">装载视图</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">差</span><span class=\"t\">FileSiz − MemSiz</span><span class=\"d\">就是启动代码的工作量</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/build/02-elf</span>",
+    "source": "docs/build/02-elf.md",
+    "text": "御舆 · 构建篇 · B2 头说我是谁 节说我有几抽屉段与节 头说怎么装车装载视图 差FileSiz − MemSiz就是启动代码的工作量 一句话记住docs/build/02-elf",
+    "giant": "头说我是谁",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-s7",
+    "kicker": "御舆 <span class=\"no\">· STM32 · S7</span>",
+    "blocks": [
+      "<div class=\"giant\">起始拉低<br>数据<span class=\"em\">八位</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">发</span><span class=\"t\">低位先发，停止拉高</span><span class=\"d\">帧格式</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">走</span><span class=\"t\">波特率</span><span class=\"d\">跟着 PCLK</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">塞</span><span class=\"t\">TXE 只管塞</span><span class=\"d\">TC 才管完</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">读</span><span class=\"t\">IDLE</span><span class=\"d\">读 SR 再读 DR</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/stm32/07-usart</span>",
+    "source": "docs/stm32/07-usart.md",
+    "text": "御舆 · STM32 · S7 起始拉低数据八位 发低位先发，停止拉高帧格式 走波特率跟着 PCLK 塞TXE 只管塞TC 才管完 读IDLE读 SR 再读 DR 一句话记住docs/stm32/07-usart",
+    "giant": "起始拉低数据八位",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-p2",
+    "kicker": "御舆 <span class=\"no\">· ESP32 · P2</span>",
+    "blocks": [
+      "<div class=\"giant\">IO_MUX 是<span class=\"em\">专线</span><br>Matrix 是总机</div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">快</span><span class=\"t\">高速</span><span class=\"d\">走专线</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">布</span><span class=\"t\">布局</span><span class=\"d\">走总机</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">任</span><span class=\"t\">\"任意\"</span><span class=\"d\">= 有效焊盘 + 没被占用 + 板卡接出来</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">禁</span><span class=\"t\">strapping 脚</span><span class=\"d\">上电别惹</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/esp32/02-gpio-matrix</span>",
+    "source": "docs/esp32/02-gpio-matrix.md",
+    "text": "御舆 · ESP32 · P2 IO_MUX 是专线Matrix 是总机 快高速走专线 布布局走总机 任\"任意\"= 有效焊盘 + 没被占用 + 板卡接出来 禁strapping 脚上电别惹 一句话记住docs/esp32/02-gpio-matrix",
+    "giant": "IO_MUX是专线Matrix是总机",
+    "fontSize": 60,
+    "markWidth": 56
+  },
+  {
+    "id": "card-s2-rcc",
+    "kicker": "御舆 <span class=\"no\">· STM32 · S2</span>",
+    "blocks": [
+      "<div class=\"giant\">先电压、再等待<br>后<span class=\"em\">切钟</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">先</span><span class=\"t\">先降总线</span><span class=\"d\">再提主频</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">验</span><span class=\"t\">写完 SW</span><span class=\"d\">要看 SWS</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">倍</span><span class=\"t\">APB 分频不是一</span><span class=\"d\">定时器时钟自己乘二</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/stm32/02-rcc-clock</span>",
+    "source": "docs/stm32/02-rcc-clock.md",
+    "text": "御舆 · STM32 · S2 先电压、再等待后切钟 先先降总线再提主频 验写完 SW要看 SWS 倍APB 分频不是一定时器时钟自己乘二 一句话记住docs/stm32/02-rcc-clock",
+    "giant": "先电压、再等待后切钟",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-s4-nvic",
+    "kicker": "御舆 <span class=\"no\">· STM32 · S4</span>",
+    "blocks": [
+      "<div class=\"giant\">先 SYSCFG 选门<br>再 EXTI <span class=\"em\">设沿</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">放</span><span class=\"t\">后 NVIC 放行</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">清</span><span class=\"t\">ISR 进门先清挂起</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">诀</span><span class=\"t\">四层口诀</span><span class=\"d\">中断永不丢</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/stm32/04-nvic-exti</span>",
+    "source": "docs/stm32/04-nvic-exti.md",
+    "text": "御舆 · STM32 · S4 先 SYSCFG 选门再 EXTI 设沿 放后 NVIC 放行 清ISR 进门先清挂起 诀四层口诀中断永不丢 一句话记住docs/stm32/04-nvic-exti",
+    "giant": "先SYSCFG选门再EXTI设沿",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-s14-pwr",
+    "kicker": "御舆 <span class=\"no\">· STM32 · S14</span>",
+    "blocks": [
+      "<div class=\"giant\">Sleep 停脑<br>Stop 停钟（<span class=\"em\">记忆在</span>）</div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">深</span><span class=\"t\">Standby 断电</span><span class=\"d\">只留遗言</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">配</span><span class=\"t\">唤醒源</span><span class=\"d\">睡前配</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">查</span><span class=\"t\">醒来</span><span class=\"d\">先查钟</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/stm32/14-pwr</span>",
+    "source": "docs/stm32/14-pwr.md",
+    "text": "御舆 · STM32 · S14 Sleep 停脑Stop 停钟（记忆在） 深Standby 断电只留遗言 配唤醒源睡前配 查醒来先查钟 一句话记住docs/stm32/14-pwr",
+    "giant": "Sleep停脑Stop停钟（记忆在）",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-p3-idf",
+    "kicker": "御舆 <span class=\"no\">· ESP32 · P3</span>",
+    "blocks": [
+      "<div class=\"giant\">组件<span class=\"em\">自报家门</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">声</span><span class=\"t\">SRCS / INCLUDE_DIRS / REQUIRES</span><span class=\"d\">自报三项</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">变</span><span class=\"t\">Kconfig 三段变身</span><span class=\"d\">菜单→sdkconfig→sdkconfig.h</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">令</span><span class=\"t\">idf.py</span><span class=\"d\">只当司令不搬砖</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/esp32/03-idf-anatomy</span>",
+    "source": "docs/esp32/03-idf-anatomy.md",
+    "text": "御舆 · ESP32 · P3 组件自报家门 声SRCS / INCLUDE_DIRS / REQUIRES自报三项 变Kconfig 三段变身菜单→sdkconfig→sdkconfig.h 令idf.py只当司令不搬砖 一句话记住docs/esp32/03-idf-anatomy",
+    "giant": "组件自报家门",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-p8-wifi",
+    "kicker": "御舆 <span class=\"no\">· ESP32 · P8</span>",
+    "blocks": [
+      "<div class=\"giant\">Wi-Fi 是<span class=\"em\">状态机</span><br>事件循环是播报员</div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">联</span><span class=\"t\">GOT_IP</span><span class=\"d\">才算联网</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">备</span><span class=\"t\">DISCONNECTED</span><span class=\"d\">必须安排后路</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/esp32/08-wifi</span>",
+    "source": "docs/esp32/08-wifi.md",
+    "text": "御舆 · ESP32 · P8 Wi-Fi 是状态机事件循环是播报员 联GOT_IP才算联网 备DISCONNECTED必须安排后路 一句话记住docs/esp32/08-wifi",
+    "giant": "Wi-Fi是状态机事件循环是播报员",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-p10-flash",
+    "kicker": "御舆 <span class=\"no\">· ESP32 · P10</span>",
+    "blocks": [
+      "<div class=\"giant\">分区表是<span class=\"em\">地产证</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">存</span><span class=\"t\">NVS</span><span class=\"d\">带掉电保护的抽屉</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">升</span><span class=\"t\">OTA</span><span class=\"d\">双槽轮流坐庄</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">保</span><span class=\"t\">新固件不自证清白</span><span class=\"d\">旧槽随时复位</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/esp32/10-flash-nvs-ota</span>",
+    "source": "docs/esp32/10-flash-nvs-ota.md",
+    "text": "御舆 · ESP32 · P10 分区表是地产证 存NVS带掉电保护的抽屉 升OTA双槽轮流坐庄 保新固件不自证清白旧槽随时复位 一句话记住docs/esp32/10-flash-nvs-ota",
+    "giant": "分区表是地产证",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-f2-switch",
+    "kicker": "御舆 <span class=\"no\">· FreeRTOS · F2</span>",
+    "blocks": [
+      "<div class=\"giant\">PendSV <span class=\"em\">最后上场</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">存</span><span class=\"t\">r4-r11 手工进栈</span><span class=\"d\">栈顶藏进 TCB</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">换</span><span class=\"t\">换个指针换个魂</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">新</span><span class=\"t\">异常返回</span><span class=\"d\">新人生</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/freertos/02-context-switch</span>",
+    "source": "docs/rtos/freertos/02-context-switch.md",
+    "text": "御舆 · FreeRTOS · F2 PendSV 最后上场 存r4-r11 手工进栈栈顶藏进 TCB 换换个指针换个魂 新异常返回新人生 一句话记住docs/rtos/freertos/02-context-switch",
+    "giant": "PendSV最后上场",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-f5-sem",
+    "kicker": "御舆 <span class=\"no\">· FreeRTOS · F5</span>",
+    "blocks": [
+      "<div class=\"giant\">同步二值 · 资源计数<br>保护互斥 · <span class=\"em\">嵌套递归</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">钥</span><span class=\"t\">互斥锁出生带钥匙</span><span class=\"d\">被等就继承 · 还锁即回落</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">裸</span><span class=\"t\">二值信号量没有继承</span><span class=\"d\">拿它护数据等于裸奔</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/freertos/05-sem-mutex</span>",
+    "source": "docs/rtos/freertos/05-sem-mutex.md",
+    "text": "御舆 · FreeRTOS · F5 同步二值 · 资源计数保护互斥 · 嵌套递归 钥互斥锁出生带钥匙被等就继承 · 还锁即回落 裸二值信号量没有继承拿它护数据等于裸奔 一句话记住docs/rtos/freertos/05-sem-mutex",
+    "giant": "同步二值·资源计数保护互斥·嵌套递归",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-f6-notify",
+    "kicker": "御舆 <span class=\"no\">· FreeRTOS · F6</span>",
+    "blocks": [
+      "<div class=\"giant\">通知写 TCB<br><span class=\"em\">一步到位</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">栏</span><span class=\"t\">事件组</span><span class=\"d\">位公告栏</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">守</span><span class=\"t\">软定时器</span><span class=\"d\">住守护任务 · 回调里只办事不等待</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">清</span><span class=\"t\">清位</span><span class=\"d\">是汇总清，不是先醒者独占</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/freertos/06-notify-event-timer</span>",
+    "source": "docs/rtos/freertos/06-notify-event-timer.md",
+    "text": "御舆 · FreeRTOS · F6 通知写 TCB一步到位 栏事件组位公告栏 守软定时器住守护任务 · 回调里只办事不等待 清清位是汇总清，不是先醒者独占 一句话记住docs/rtos/freertos/06-notify-event-timer",
+    "giant": "通知写TCB一步到位",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-r2-ipc",
+    "kicker": "御舆 <span class=\"no\">· RT-Thread · R2</span>",
+    "blocks": [
+      "<div class=\"giant\">一副骨架<span class=\"em\">五张皮</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">五</span><span class=\"t\">令牌 · 带主令牌 · 旗语</span><span class=\"d\">定长池 · 变长队</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">排</span><span class=\"t\">排队要么 FIFO 要么 PRIO</span><span class=\"d\">创建时一锤定音</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/rtthread/02-ipc</span>",
+    "source": "docs/rtos/rtthread/02-ipc.md",
+    "text": "御舆 · RT-Thread · R2 一副骨架五张皮 五令牌 · 带主令牌 · 旗语定长池 · 变长队 排排队要么 FIFO 要么 PRIO创建时一锤定音 一句话记住docs/rtos/rtthread/02-ipc",
+    "giant": "一副骨架五张皮",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-r4-device",
+    "kicker": "御舆 <span class=\"no\">· RT-Thread · R4</span>",
+    "blocks": [
+      "<div class=\"giant\">驱动填表（ops）<br>应用<span class=\"em\">喊名</span>（find）</div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">换</span><span class=\"t\">换板只换表</span><span class=\"d\">应用纹丝不动</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">价</span><span class=\"t\">解耦的代价是一张表</span><span class=\"d\">回报是整个生态</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/rtos/rtthread/04-device</span>",
+    "source": "docs/rtos/rtthread/04-device.md",
+    "text": "御舆 · RT-Thread · R4 驱动填表（ops）应用喊名（find） 换换板只换表应用纹丝不动 价解耦的代价是一张表回报是整个生态 一句话记住docs/rtos/rtthread/04-device",
+    "giant": "驱动填表（ops）应用喊名（find）",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-g1-rcu",
+    "kicker": "御舆 <span class=\"no\">· GD32 · G1</span>",
+    "blocks": [
+      "<div class=\"giant\">先电压三件套<br>再 FMC 等待、<span class=\"em\">后切钟</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">验</span><span class=\"t\">写完 SCS</span><span class=\"d\">看 SCSS</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">量</span><span class=\"t\">CK_OUT0 一量</span><span class=\"d\">自欺现形</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/gd32/01-rcu-clock</span>",
+    "source": "docs/gd32/01-rcu-clock.md",
+    "text": "御舆 · GD32 · G1 先电压三件套再 FMC 等待、后切钟 验写完 SCS看 SCSS 量CK_OUT0 一量自欺现形 一句话记住docs/gd32/01-rcu-clock",
+    "giant": "先电压三件套再FMC等待、后切钟",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-b3-linker",
+    "kicker": "御舆 <span class=\"no\">· 构建篇 · B3</span>",
+    "blocks": [
+      "<div class=\"giant\">链接脚本不产代码<br>产三份<span class=\"em\">地址契约</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">圈</span><span class=\"t\">MEMORY</span><span class=\"d\">圈地</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">房</span><span class=\"t\">SECTIONS</span><span class=\"d\">分房</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">牌</span><span class=\"t\">符号</span><span class=\"d\">留门牌</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/build/03-linker-script</span>",
+    "source": "docs/build/03-linker-script.md",
+    "text": "御舆 · 构建篇 · B3 链接脚本不产代码产三份地址契约 圈MEMORY圈地 房SECTIONS分房 牌符号留门牌 一句话记住docs/build/03-linker-script",
+    "giant": "链接脚本不产代码产三份地址契约",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-b4-startup",
+    "kicker": "御舆 <span class=\"no\">· 构建篇 · B4</span>",
+    "blocks": [
+      "<div class=\"giant\">上电两读定生死<br>开门搬家再<span class=\"em\">清零</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">进</span><span class=\"t\">bl 一声进 main</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">栈</span><span class=\"t\">向量表头不是代码</span><span class=\"d\">是栈顶</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">口</span><span class=\"t\">第二条</span><span class=\"d\">才是入口</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/build/04-startup</span>",
+    "source": "docs/build/04-startup.md",
+    "text": "御舆 · 构建篇 · B4 上电两读定生死开门搬家再清零 进bl 一声进 main 栈向量表头不是代码是栈顶 口第二条才是入口 一句话记住docs/build/04-startup",
+    "giant": "上电两读定生死开门搬家再清零",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-b5-map",
+    "kicker": "御舆 <span class=\"no\">· 构建篇 · B5</span>",
+    "blocks": [
+      "<div class=\"giant\">Flash=text+data<br>RAM=<span class=\"em\">data+bss</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">审</span><span class=\"t\">优化先审账</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">排</span><span class=\"t\">nm</span><span class=\"d\">按大小排队</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">户</span><span class=\"t\">map</span><span class=\"d\">查户口本</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/build/05-map-size</span>",
+    "source": "docs/build/05-map-size.md",
+    "text": "御舆 · 构建篇 · B5 Flash=text+dataRAM=data+bss 审优化先审账 排nm按大小排队 户map查户口本 一句话记住docs/build/05-map-size",
+    "giant": "Flash=text+dataRAM=data+bss",
+    "fontSize": 56,
+    "markWidth": 78
+  },
+  {
+    "id": "card-c7-ub",
+    "kicker": "御舆 <span class=\"no\">· C 语言精髓 · C7</span>",
+    "blocks": [
+      "<div class=\"giant\">UB <span class=\"em\">三兄弟</span></div>",
+      "<div class=\"rows\">\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">一</span><span class=\"t\">溢出</span><span class=\"d\">今天跑通不等于明天安全</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">二</span><span class=\"t\">移位</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">三</span><span class=\"t\">别名</span></div>\n      <div class=\"row\"><span class=\"mark\" style=\"color:var(--accent)\">规</span><span class=\"t\">加括号不丢人</span><span class=\"d\">显式转换不寒碜</span></div>\n    </div>"
+    ],
+    "footer": "<span class=\"brand\">一句话记住</span><span>docs/c/07-ub-misra</span>",
+    "source": "docs/c/07-ub-misra.md",
+    "text": "御舆 · C 语言精髓 · C7 UB 三兄弟 一溢出今天跑通不等于明天安全 二移位 三别名 规加括号不丢人显式转换不寒碜 一句话记住docs/c/07-ub-misra",
+    "giant": "UB三兄弟",
+    "fontSize": 56,
+    "markWidth": 78
+  }
+]

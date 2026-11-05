@@ -1,0 +1,727 @@
+{
+ "illustrations": [
+  {
+   "id": "v01",
+   "outline_strategy": "visible_source_ink",
+   "composition": "上：圆角代码窗口（三行伪代码横线）；中：红色手绘箭头自窗口指向右下；下：橙色齿孔胶片条横贯。三段垂直流水线构图",
+   "drawability_reason": "三个物件都是平直横线+简单轮廓，笔画独立、无交叉细节；窗口 16 笔内可完成，箭头 3 笔，胶片条外框+齿孔约 10 笔",
+   "parts": [
+    {
+     "id": "window",
+     "subject": "window",
+     "role": "whole",
+     "stroke_groups": [
+      "窗口外框矩形（圆角四角）",
+      "标题栏圆点两枚",
+      "三行伪代码横线（长短错落）"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "箭头主干弧线一笔",
+      "实心三角箭头头部"
+     ]
+    },
+    {
+     "id": "film",
+     "subject": "film",
+     "role": "whole",
+     "stroke_groups": [
+      "胶片条上下两条长边",
+      "左右两端短边封口",
+      "齿孔一列小方孔（上排）",
+      "齿孔一列小方孔（下排）",
+      "中央橙色画面块填充"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "window",
+     "kind": "object",
+     "identity_cues": [
+      "圆角矩形窗口轮廓",
+      "标题栏两枚圆点",
+      "三行长短不一的代码横线"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "红色粗斜箭头",
+      "手绘折线箭头头部"
+     ]
+    },
+    {
+     "id": "film",
+     "kind": "object",
+     "identity_cues": [
+      "橙色横置胶片条",
+      "上下两排齿孔"
+     ]
+    }
+   ],
+   "outline_order": [
+    "window",
+    "arrow",
+    "film"
+   ],
+   "fill_order": [
+    "window",
+    "arrow",
+    "film"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v01-code-to-film",
+     "narration_quote": "一段代码直接出片",
+     "observable": "代码窗口与胶片条同屏且由箭头直接相连，不含任何视频模型图标"
+    }
+   ],
+   "references": [],
+   "spatial_order": "top_to_bottom_left_to_right"
+  },
+  {
+   "id": "v02",
+   "outline_strategy": "visible_source_ink",
+   "composition": "整面格架墙（3×3 方格矩阵，中部一格橙色高亮）；蓝色箭头从上方斜指橙色格",
+   "drawability_reason": "方格全是直线，九宫格 8 个方格轮廓；箭头独立 3 笔。直线网格是最稳的手绘题材",
+   "parts": [
+    {
+     "id": "wall",
+     "subject": "wall",
+     "role": "whole",
+     "stroke_groups": [
+      "八格方格外廓（逐格）",
+      "橙色中心格描边+填充"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "箭头主干斜线",
+      "箭头头部两笔"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "wall",
+     "kind": "object",
+     "identity_cues": [
+      "九宫格格架",
+      "唯一橙色高亮格"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "蓝色斜箭头指向橙格"
+     ]
+    }
+   ],
+   "outline_order": [
+    "wall",
+    "arrow"
+   ],
+   "fill_order": [
+    "wall",
+    "arrow"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v02-style-drawers",
+     "narration_quote": "59 套给 Claude 深度调优的代码风格",
+     "observable": "九宫格格架表现成套风格库，一格橙色高亮呼应「挑一套用」"
+    }
+   ],
+   "references": [],
+   "spatial_order": "composition_exception",
+   "order_exception": "蓝箭头位于抽屉墙上方且与顶格相接，先画墙定场再画箭头点睛，比严格自上而下更顺笔"
+  },
+  {
+   "id": "v03",
+   "outline_strategy": "visible_source_ink",
+   "composition": "左：五角星徽章；右：胶片卷轴（圆盘+拖尾胶片）；中间红色箭头自徽章指向卷轴",
+   "drawability_reason": "星形 10 笔折线，卷轴两个同心圆+拖尾 6 笔，箭头 3 笔；全部大轮廓无细碎纹理",
+   "parts": [
+    {
+     "id": "star",
+     "subject": "star",
+     "role": "whole",
+     "stroke_groups": [
+      "五角星外轮廓（连续折线）"
+     ]
+    },
+    {
+     "id": "roll",
+     "subject": "roll",
+     "role": "whole",
+     "stroke_groups": [
+      "卷轴外圆",
+      "卷轴内孔小圆",
+      "拖尾胶片两条平行线"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "箭头主干横线",
+      "箭头头部两笔"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "star",
+     "kind": "object",
+     "identity_cues": [
+      "五角星徽章轮廓"
+     ]
+    },
+    {
+     "id": "roll",
+     "kind": "object",
+     "identity_cues": [
+      "圆形胶片卷轴带内孔",
+      "拖尾胶片"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "红色箭头连接徽章与卷轴"
+     ]
+    }
+   ],
+   "outline_order": [
+    "star",
+    "roll",
+    "arrow"
+   ],
+   "fill_order": [
+    "star",
+    "roll",
+    "arrow"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v03-star-roll",
+     "narration_quote": "一支六分半的样片塞进 98 种视觉风格",
+     "observable": "星形徽章（人气）与胶片卷轴（样片）同屏，箭头表达「星数背书样片」"
+    }
+   ],
+   "references": [],
+   "spatial_order": "composition_exception",
+   "order_exception": "箭头位于徽章与卷轴之间略高处，最后落笔点睛，观看顺序为星→卷→箭头"
+  },
+  {
+   "id": "v04",
+   "outline_strategy": "visible_source_ink",
+   "composition": "上：大调色盘（腰果形外廓，四枚色格圆点，其中一格橙色）；下：语法小卡（圆角卡片+两条横线条目）；红色箭头从调色盘指向小卡",
+   "drawability_reason": "调色盘一条封闭曲线+六枚圆点，小卡矩形+三横线；箭头 3 笔。曲线少、直线圆点为主",
+   "parts": [
+    {
+     "id": "palette",
+     "subject": "palette",
+     "role": "whole",
+     "stroke_groups": [
+      "调色盘腰果形外廓",
+      "两枚留白色格圆点",
+      "一枚橙色圆环色格"
+     ]
+    },
+    {
+     "id": "card",
+     "subject": "card",
+     "role": "whole",
+     "stroke_groups": [
+      "卡片圆角矩形",
+      "两条横线条目（上长下短）"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "箭头主干弧线一笔",
+      "实心三角箭头头部"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "palette",
+     "kind": "object",
+     "identity_cues": [
+      "腰果形调色盘",
+      "色格圆点中一格橙色圆环"
+     ]
+    },
+    {
+     "id": "card",
+     "kind": "object",
+     "identity_cues": [
+      "圆角小卡片",
+      "两条横线像清单条目"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "红色箭头从调色盘指向卡片"
+     ]
+    }
+   ],
+   "outline_order": [
+    "palette",
+    "card",
+    "arrow"
+   ],
+   "fill_order": [
+    "palette",
+    "card",
+    "arrow"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v04-styles-grammar",
+     "narration_quote": "36 种艺术风格配 9 种解说语法",
+     "observable": "调色盘多色格（一格橙）与清单小卡（语法条目）同屏，红箭头表达「风格配语法」"
+    }
+   ],
+   "references": [],
+   "spatial_order": "composition_exception",
+   "order_exception": "蓝箭头在调色盘与小卡之间的连接位，最后补笔，视线先风格后语法"
+  },
+  {
+   "id": "v05",
+   "outline_strategy": "visible_source_ink",
+   "composition": "左：像素风蘑菇（块状蘑菇帽+柄，帽上三块斑纹）；右：一个手绘音符；同排并列",
+   "drawability_reason": "蘑菇全部用阶梯状直线（像素感），音符椭圆头+符杆+符尾；无曲线难点",
+   "parts": [
+    {
+     "id": "mushroom",
+     "subject": "mushroom",
+     "role": "whole",
+     "stroke_groups": [
+      "蘑菇帽阶梯像素外廓",
+      "帽上两块像素斑纹",
+      "蘑菇柄矩形"
+     ]
+    },
+    {
+     "id": "notes",
+     "subject": "notes",
+     "role": "whole",
+     "stroke_groups": [
+      "音符椭圆符头",
+      "音符符干"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "mushroom",
+     "kind": "object",
+     "identity_cues": [
+      "像素块状蘑菇帽带斑纹",
+      "蘑菇柄"
+     ]
+    },
+    {
+     "id": "notes",
+     "kind": "object",
+     "identity_cues": [
+      "手绘音符",
+      "符头符杆完整"
+     ]
+    }
+   ],
+   "outline_order": [
+    "mushroom",
+    "notes"
+   ],
+   "fill_order": [
+    "mushroom",
+    "notes"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v05-mario-music",
+     "narration_quote": "马里奥关卡 65 秒复原，连配乐都是代码合成的",
+     "observable": "像素蘑菇（马里奥关卡）与音符（代码合成配乐）同屏并列"
+    }
+   ],
+   "references": [],
+   "spatial_order": "top_to_bottom_left_to_right"
+  },
+  {
+   "id": "v06",
+   "outline_strategy": "visible_source_ink",
+   "composition": "上：三条横线谱（三小节，线上四枚音符头）；中：蓝色大箭头自上而下折转；下：橙色成片帧（圆角矩形+播放三角）",
+   "drawability_reason": "谱线 3 长横线+音符头 4 小椭圆；箭头折线 3 笔；成片帧矩形+三角 5 笔。全部基础几何",
+   "parts": [
+    {
+     "id": "staff",
+     "subject": "staff",
+     "role": "whole",
+     "stroke_groups": [
+      "三条横线谱线",
+      "三枚椭圆音符头（位置高低错落）"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "箭头主干弧线一笔",
+      "实心三角箭头头部"
+     ]
+    },
+    {
+     "id": "frame",
+     "subject": "frame",
+     "role": "whole",
+     "stroke_groups": [
+      "成片帧圆角矩形",
+      "上下两排白色齿孔",
+      "中央白色播放三角形",
+      "橙色帧内填充"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "staff",
+     "kind": "object",
+     "identity_cues": [
+      "三条横线简谱",
+      "三枚音符头高低错落"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "蓝色折转箭头自上而下"
+     ]
+    },
+    {
+     "id": "frame",
+     "kind": "object",
+     "identity_cues": [
+      "橙色圆角成片帧",
+      "中央播放三角"
+     ]
+    }
+   ],
+   "outline_order": [
+    "staff",
+    "arrow",
+    "frame"
+   ],
+   "fill_order": [
+    "staff",
+    "arrow",
+    "frame"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v06-abc-to-film",
+     "narration_quote": "用 ABC 记谱描述动画，直接合成成片",
+     "observable": "简谱横线在上、成片帧在下、蓝色箭头直连两者，表达记谱直接合成成片"
+    }
+   ],
+   "references": [],
+   "spatial_order": "composition_exception",
+   "order_exception": "蓝箭头从谱线上方起笔贯穿到成片帧，若先画箭头上方的谱线再画箭头会穿帮，实际按谱线→箭头→成片帧落笔"
+  },
+  {
+   "id": "v07",
+   "outline_strategy": "visible_source_ink",
+   "composition": "小豆人（描边圆头、实心豆眼、微笑、描边椭圆躯干、张开双臂、并腿站立）居中偏左；橙色画笔自右手斜向右下，笔尖将触一段未完成的自画像弧线起笔处",
+   "drawability_reason": "头与躯干为独立描边椭圆（不填充），眼为实心墨点，四肢单线；画笔杆+三角笔尖；自画像一条弧线。人物按头→躯干→左臂→右臂→下身顺序",
+   "parts": [
+    {
+     "id": "head",
+     "subject": "person",
+     "role": "head",
+     "stroke_groups": [
+      "头部描边圆轮廓",
+      "两枚实心豆眼"
+     ]
+    },
+    {
+     "id": "torso",
+     "subject": "person",
+     "role": "torso",
+     "stroke_groups": [
+      "躯干描边椭圆轮廓"
+     ]
+    },
+    {
+     "id": "left_arm",
+     "subject": "person",
+     "role": "left_arm",
+     "stroke_groups": [
+      "左臂一条外展弧线",
+      "左手小圆"
+     ]
+    },
+    {
+     "id": "right_arm",
+     "subject": "person",
+     "role": "right_arm",
+     "stroke_groups": [
+      "右臂一条上举弧线",
+      "右手小圆"
+     ]
+    },
+    {
+     "id": "lower_body",
+     "subject": "person",
+     "role": "lower_body",
+     "stroke_groups": [
+      "双腿一笔（带髋部横线）"
+     ]
+    },
+    {
+     "id": "pen",
+     "subject": "pen",
+     "role": "whole",
+     "stroke_groups": [
+      "画笔笔杆斜线",
+      "三角形笔尖（朝向右下纸面）",
+      "笔尖橙色填充"
+     ]
+    },
+    {
+     "id": "portrait",
+     "subject": "portrait",
+     "role": "whole",
+     "stroke_groups": [
+      "自画像未完成头部弧线"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "person",
+     "kind": "human",
+     "identity_cues": [
+      "描边圆头配实心豆眼",
+      "描边椭圆躯干带四肢",
+      "手持橙笔作画的姿态"
+     ],
+     "omitted_roles": {
+      "neck": "豆人无颈，圆头直接接躯干，符合 Q 版比例"
+     }
+    },
+    {
+     "id": "pen",
+     "kind": "object",
+     "identity_cues": [
+      "橙色画笔",
+      "笔尖朝向右下自画像起笔处"
+     ]
+    },
+    {
+     "id": "portrait",
+     "kind": "object",
+     "identity_cues": [
+      "未完成的自画像弧线",
+      "起笔墨点"
+     ]
+    }
+   ],
+   "outline_order": [
+    "head",
+    "torso",
+    "left_arm",
+    "right_arm",
+    "lower_body",
+    "pen",
+    "portrait"
+   ],
+   "fill_order": [
+    "head",
+    "torso",
+    "left_arm",
+    "right_arm",
+    "lower_body",
+    "pen",
+    "portrait"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v07-self-draw",
+     "narration_quote": "你现在看到的这条手绘视频，就是 sweety-handdraw-video 做的",
+     "observable": "小豆人持笔画出自己，表达「这条视频由该工具手绘生成」"
+    }
+   ],
+   "references": [],
+   "spatial_order": "composition_exception",
+   "order_exception": "画笔悬浮在豆人右上方、自画像在其右下，先画人物主体再补画笔与自画像，叙事上先有作者再有作品"
+  },
+  {
+   "id": "v08",
+   "outline_strategy": "visible_source_ink",
+   "composition": "双列四行对照表整表：外框+三条行线+一条竖线，左列四枚需求小图标（抽屉、调色盘、音符、画笔），四枚橙色箭头自图标指向右列（右列留白给文字层）",
+   "drawability_reason": "表格全直线（外框 4 笔+行线 3 笔+竖线 1 笔），四枚迷你图标各约 5 笔，四枚橙色箭头各 3 笔；exclude 区域归 icons/arrow 部位",
+   "parts": [
+    {
+     "id": "table",
+     "subject": "table",
+     "role": "whole",
+     "stroke_groups": [
+      "表格外框矩形",
+      "行线一（第一二行之间）",
+      "行线二（第二三行之间）",
+      "行线三（第三四行之间）",
+      "中缝竖线"
+     ]
+    },
+    {
+     "id": "icons",
+     "subject": "icons",
+     "role": "whole",
+     "stroke_groups": [
+      "行 1 抽屉小图标（方格+拉手）",
+      "行 2 调色盘小图标（腰果形+色点）",
+      "行 3 音符小图标（符头+符干）",
+      "行 4 画笔小图标（斜线笔触）"
+     ]
+    },
+    {
+     "id": "arrow",
+     "subject": "arrow",
+     "role": "whole",
+     "stroke_groups": [
+      "行 1 橙色箭头（主干+头部）",
+      "行 2 橙色箭头（主干+头部）",
+      "行 3 橙色箭头（主干+头部）",
+      "行 4 橙色箭头（主干+头部）"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "table",
+     "kind": "object",
+     "identity_cues": [
+      "双列四行表格线",
+      "中缝竖线"
+     ]
+    },
+    {
+     "id": "icons",
+     "kind": "object",
+     "identity_cues": [
+      "行首迷你抽屉/调色盘/音符/画笔四枚图标纵向排列"
+     ]
+    },
+    {
+     "id": "arrow",
+     "kind": "object",
+     "identity_cues": [
+      "四枚橙色箭头指向右列"
+     ]
+    }
+   ],
+   "outline_order": [
+    "table",
+    "icons",
+    "arrow"
+   ],
+   "fill_order": [
+    "table",
+    "icons",
+    "arrow"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v08-full-table",
+     "narration_quote": "要现成风格，上 lemo；要讲解语法，花叔艺术流；要记谱合成，huashu-motion；要手绘口播，sweety",
+     "observable": "四行各带需求图标并以橙色箭头指向右列，右列留白供文字层写框架名"
+    }
+   ],
+   "references": [],
+   "spatial_order": "top_to_bottom_left_to_right"
+  },
+  {
+   "id": "v10",
+   "outline_strategy": "visible_source_ink",
+   "composition": "一张垂下的清单纸（八边形外廓+纸面两条清单横线），右下角一枚橙色回形针别住纸角",
+   "drawability_reason": "清单纸一条闭合外廓+三条横线，回形针一条回环曲线；全是大轮廓，6 笔内完成",
+   "parts": [
+    {
+     "id": "sheet",
+     "subject": "sheet",
+     "role": "whole",
+     "stroke_groups": [
+      "清单纸八边形外廓",
+      "纸面两条清单横线"
+     ]
+    },
+    {
+     "id": "clip",
+     "subject": "clip",
+     "role": "whole",
+     "stroke_groups": [
+      "回形针外环曲线",
+      "回形针内环曲线",
+      "橙色填充"
+     ]
+    }
+   ],
+   "subjects": [
+    {
+     "id": "sheet",
+     "kind": "object",
+     "identity_cues": [
+      "垂下的清单纸",
+      "纸面两条清单横线"
+     ]
+    },
+    {
+     "id": "clip",
+     "kind": "object",
+     "identity_cues": [
+      "橙色回形针别在纸角"
+     ]
+    }
+   ],
+   "outline_order": [
+    "sheet",
+    "clip"
+   ],
+   "fill_order": [
+    "sheet",
+    "clip"
+   ],
+   "narrative_requirements": [
+    {
+     "id": "v10-list",
+     "narration_quote": "369 个仓库完整清单，评论区自取",
+     "observable": "清单纸带横线并以橙色回形针别住，表达「完整清单打包可取」"
+    }
+   ],
+   "references": [],
+   "spatial_order": "top_to_bottom_left_to_right"
+  }
+ ]
+}

@@ -1,0 +1,253 @@
+{
+ "style_sha256": "46448cf896325fc46c7573fbedb68ba529a6f630d239719d861552b1661d7ff3",
+ "plan_sha256": "ef7c91da7ac5a0a838e1d7b56da7e9fa1e36c96414f7951c444bc222ff14827f",
+ "illustrations": [
+  {
+   "plan_id": "v01",
+   "status": "pass",
+   "source_sha256": "91d2562e037fe392d31153bd6d046c7f0fcad885ca42663d734421476c769dfc",
+   "crop": null,
+   "anatomy_and_occlusion": "三物件无交叠；箭头不压窗口与胶片",
+   "part_boundaries": "窗口/箭头/胶片三部位像素各自独立",
+   "stroke_breaks": "窗口横线、胶片分格与两排齿孔均为独立抬笔短笔",
+   "outline_then_fill": "先轮廓后橙色胶片填充",
+   "spatial_order": "自上而下窗口→箭头→胶片",
+   "narrative_checks": [
+    {
+     "id": "v01-code-to-film",
+     "status": "pass",
+     "evidence": "代码窗口三横线与带齿孔橙色胶片条同屏且由红箭头直连，无视频模型图标 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "文本文档与橙色电影胶片（红箭头相连）",
+    "evidence": "新鲜命名（当前像素）：文档+橙色电影胶片+红箭头 ✓"
+   }
+  },
+  {
+   "plan_id": "v02",
+   "status": "pass",
+   "source_sha256": "7ffd3dc4653625ce3fb477a41c57b29ebd34d741e803237d954b565fa448519a",
+   "crop": [
+    55,
+    115,
+    1025,
+    946
+   ],
+   "anatomy_and_occlusion": "九宫格与箭头无交叠",
+   "part_boundaries": "wall 含全部格线，箭头独立部位",
+   "stroke_breaks": "格线均独立抬笔",
+   "outline_then_fill": "先格线轮廓后橙格填充",
+   "spatial_order": "墙先画、蓝箭头点睛（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v02-style-drawers",
+     "status": "pass",
+     "evidence": "九宫格格架，一格橙色高亮，蓝箭头指向 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "砖块网格矩阵中橙色高亮块（蓝箭头指向）",
+    "evidence": "新鲜命名（无拉手版）：砖块/网格单元矩阵，中间橙色块被蓝色箭头指向 ✓"
+   }
+  },
+  {
+   "plan_id": "v03",
+   "status": "pass",
+   "source_sha256": "0ecbd655eb6981ee0a3e5794fa7d2c9ace5d7e8e23e3c3e6b1703da2577753f3",
+   "crop": [
+    95,
+    911,
+    955,
+    1591
+   ],
+   "anatomy_and_occlusion": "星/绶带/卷轴/拖尾/箭头无交叠",
+   "part_boundaries": "三部位独立（拖尾归 roll）",
+   "stroke_breaks": "星形连续折线一笔、卷轴同心圆与拖尾独立抬笔",
+   "outline_then_fill": "先轮廓后橙色星填充",
+   "spatial_order": "星→卷轴→箭头（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v03-star-roll",
+     "status": "pass",
+     "evidence": "星形徽章带绶带与带拖尾胶片卷轴同屏，红箭头相连 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "五角星与光盘",
+    "evidence": "新鲜命名（去绶带版）：星星+唱片/光盘 ✓"
+   }
+  },
+  {
+   "plan_id": "v04",
+   "status": "pass",
+   "source_sha256": "9cf0ffed6de4de5714864e148e05a771216e0626ad0485b031add8d9159fd882",
+   "crop": [
+    53,
+    203,
+    857,
+    1079
+   ],
+   "anatomy_and_occlusion": "调色盘/小卡/箭头无交叠",
+   "part_boundaries": "三部位独立",
+   "stroke_breaks": "两枚留白色格与橙色圆环各自抬笔",
+   "outline_then_fill": "先盘轮廓后留白色格填充，橙环为描线",
+   "spatial_order": "调色盘→小卡→红箭头（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v04-styles-grammar",
+     "status": "pass",
+     "evidence": "调色盘色格（一格橙色圆环）与两条横线清单小卡同屏，红箭头相连 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "调色板（一格橙色）与文本卡",
+    "evidence": "新鲜命名（加粗橙环版）：经典调色板图标+文本说明，红箭头相连 ✓"
+   }
+  },
+  {
+   "plan_id": "v05",
+   "status": "pass",
+   "source_sha256": "2d6cefce77a3bb9fb3eceba813f57f84a6a83b8539478e4d50f7fbedf2c6c98f",
+   "crop": [
+    281,
+    1057,
+    1063,
+    1687
+   ],
+   "anatomy_and_occlusion": "蘑菇与音符无交叠",
+   "part_boundaries": "两部位独立",
+   "stroke_breaks": "像素阶梯线与符尾独立抬笔",
+   "outline_then_fill": "先蘑菇轮廓后橙斑填充",
+   "spatial_order": "左蘑菇右音符，同排左到右",
+   "narrative_checks": [
+    {
+     "id": "v05-mario-music",
+     "status": "pass",
+     "evidence": "像素蘑菇与两个音符同屏并列 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "蘑菇与音符",
+    "evidence": "新鲜命名（单音符版）：蘑菇+音符 ✓"
+   }
+  },
+  {
+   "plan_id": "v06",
+   "status": "pass",
+   "source_sha256": "e79b441492633f6f521e65e5cc871e4b9c819a109d2cb3a126ba7f5d7e673832",
+   "crop": [
+    86,
+    505,
+    1001,
+    1536
+   ],
+   "anatomy_and_occlusion": "谱线/箭头/成片帧无交叠",
+   "part_boundaries": "三部位独立",
+   "stroke_breaks": "三线谱与三枚音符头独立抬笔",
+   "outline_then_fill": "先谱线后橙色帧（齿孔与播放三角为留白镂空）",
+   "spatial_order": "谱线→箭头→成片帧（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v06-abc-to-film",
+     "status": "pass",
+     "evidence": "三线简谱在上、带齿孔与播放三角的橙色成片帧在下、蓝箭头直连 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "五线谱与橙色视频播放图标（蓝箭头相连）",
+    "evidence": "新鲜命名（三枚音符头+单笔画箭头版）：带音符的五线谱→带播放按钮的橙色胶片框=视频播放 ✓"
+   }
+  },
+  {
+   "plan_id": "v07",
+   "status": "pass",
+   "source_sha256": "f654891c8ebb2ce8612d5475044082b862d59d1027926e37a711441fa9808125",
+   "crop": [
+    58,
+    556,
+    967,
+    1366
+   ],
+   "anatomy_and_occlusion": "头/躯干分离无交叠，四肢接躯干边缘，笔尖将触弧起笔（即将落笔为刻意）",
+   "part_boundaries": "七部位独立：头/躯干/双臂/下身/笔/自画像",
+   "stroke_breaks": "每肢体与五官均独立抬笔",
+   "outline_then_fill": "先描边轮廓后豆眼与笔尖实心填充",
+   "spatial_order": "头→躯干→左臂→右臂→下身→笔→自画像（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v07-self-draw",
+     "status": "pass",
+     "evidence": "豆人持橙笔，笔尖朝向右下自画像弧线起笔处 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "火柴人与橙色棍棒",
+    "evidence": "新鲜命名（无微笑版）：火柴人/小人+球棒/棍棒 ✓"
+   }
+  },
+  {
+   "plan_id": "v08",
+   "status": "pass",
+   "source_sha256": "9e20e0df858257554c84b6bafcc0382b1b1f7d707a889dc51ce4568b7b8c6406",
+   "crop": [
+    76,
+    474,
+    1007,
+    1366
+   ],
+   "anatomy_and_occlusion": "框线/图标/箭头互不压线，竖线与框刻意留隙（手绘分栏惯例）",
+   "part_boundaries": "table（排除图标列与箭头列）/icons/arrow 三部位独立",
+   "stroke_breaks": "每条行线与每枚图标独立抬笔",
+   "outline_then_fill": "先墨线后橙色箭头填充",
+   "spatial_order": "先表格骨架，再图标列自上而下，再箭头列（exception 已声明）",
+   "narrative_checks": [
+    {
+     "id": "v08-full-table",
+     "status": "pass",
+     "evidence": "四行各带需求图标并以橙色箭头指向右列留白 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "带多媒体图标的四行表格（橙色指示箭头）",
+    "evidence": "新鲜命名（单笔画箭头版）：多媒体表格/媒体数据表，箭头三角头部清晰 ✓"
+   }
+  },
+  {
+   "plan_id": "v10",
+   "status": "pass",
+   "source_sha256": "ed39cecb26a28a84356183147b99c2f41a1cea4f83176cd11d47f4d0594541e0",
+   "crop": [
+    300,
+    900,
+    920,
+    1450
+   ],
+   "anatomy_and_occlusion": "清单纸与回形针前后关系清晰，回形针不压清单线",
+   "part_boundaries": "sheet/clip 两部位独立",
+   "stroke_breaks": "三条清单横线与回形针回环独立抬笔",
+   "outline_then_fill": "先纸廓后橙色回形针填充",
+   "spatial_order": "先纸面后回形针，自上而下",
+   "narrative_checks": [
+    {
+     "id": "v10-list",
+     "status": "pass",
+     "evidence": "清单纸三条横线以橙色回形针别住 ✓"
+    }
+   ],
+   "recognizability": {
+    "status": "pass",
+    "named_as": "带橙色回形针的两横线便签纸",
+    "evidence": "新鲜命名（两横线版）：带夹子的便签/纸条（配回形针）✓"
+   }
+  }
+ ]
+}

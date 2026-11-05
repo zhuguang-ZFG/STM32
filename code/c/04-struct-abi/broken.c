@@ -42,6 +42,9 @@ typedef struct {
     volatile uint32_t DR;       /* 0x08 */
 } WithReserved_t;
 
+_Static_assert(offsetof(WithReserved_t, DR) == 0x08, "DR must be 0x08");
+_Static_assert(sizeof(WithReserved_t) == 0x0C, "空洞必须由占位成员顶住");
+
 /* ---- 3. 尾部填充买的是数组 stride ---- */
 typedef struct {
     uint8_t  a;

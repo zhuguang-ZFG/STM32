@@ -4,14 +4,14 @@ title: GD32 双系路线
 
 # GD32 路线：一颗国产芯的两条进化线
 
-> 🎯 检验你有没有学透一颗芯片，最快的办法是换一颗”长得像但不一样”的：GD32 给你两条线——G 篇逐字段对照 STM32F407（同名不同姓），V 篇用你已经会的知识丈量 RISC-V。
+> 🎯 检验你有没有学透一颗芯片，最快的办法是换一颗”长得像但不一样”的：GD32 给你两条线：G 篇逐字段对照 STM32F407（同名不同姓），V 篇用你已经会的知识丈量 RISC-V。
 
 ![GD32 路线总览：G 篇对照 + V 篇 RISC-V 双线并行](/anim/gd32-roadmap.svg)
 
 兆易创新 GD32 是国内出货量最大的 MCU 家族之一，也是"学透一颗再举一反三"的最佳教材。这条路线一次讲两条线：
 
 - **G 篇（GD32F4xx，ARM Cortex-M4F）**：STM32F407 的"近亲"——寄存器布局神似，但外设库叫 **RCU** 不叫 RCC、主频更高（**F450 200MHz / F470 240MHz**，官方库默认档就是 200MHz），USART 等外设还有增强点。逐字段对照学"兼容但不相同"。
-- **V 篇（GD32VF103，RISC-V RV32IMAC）**：Bumblebee 内核 108MHz——没有 NVIC、没有 SysTick，中断走 **CLIC**、内核定时走 **MTIME**。用你已经会的 STM32 知识丈量 RISC-V，只讲迁移必需的四件事。
+- **V 篇（GD32VF103，RISC-V RV32IMAC）**：Bumblebee 内核 108MHz：没有 NVIC、没有 SysTick，中断走 **CLIC**、内核定时走 **MTIME**。用你已经会的 STM32 知识丈量 RISC-V，只讲迁移必需的四件事。
 
 事实基准：**官方固件库 + 官方手册双层核对**——固件库取 GD32F4xx **V3.3.3** / GD32VF103 官方库（源码按版本核对），手册取 **GD32F4xx User Manual Rev3.0**、**GD32VF103 User Manual EN V1.0**、**GD32F407xx Datasheet Rev2.7**、**GD32F470 Product Brief**、**Bumblebee Core Brief**（参考缓存位于 .trellis/ref/，不随仓库分发）。位域、引脚与复用号已按"头文件说什么 + 手册怎么写"逐项标注出处；手册本身留白或没给的（典型如 Flash"频率↔等待周期"对照表、VF103 的 CKOUT0 引脚名），页面明写**手册留白**并降级为"待上板实测"，**不猜、不外推**。
 

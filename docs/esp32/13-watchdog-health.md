@@ -15,17 +15,8 @@ minutes: 45
 2. **条件写反就是没装狗**：`health_supervise` 返回 true 才 `reset_user`；返回 false 表示"该停喂了"。停止监督也不能 `delete_user`，删掉被监视的对象等于取消了超时来源。
 3. **跨核共享要真正的锁**：worker、通信、监督三个任务可能在两个核上跑。C 的 volatile 不提供互斥，也不保证一致的快照。`portMUX` 自旋锁保护 health 状态，而且要**拿到锁之后再读时间**。
 
-## 怎么读这一章
-
-- **能记住**：S3 有四种看门狗（RTC_WDT、IWDT、TWDT、XTWDT），本章只用 TWDT，IWDT 保持默认开启；TWDT 超时 2000ms、`trigger_panic=true`。
 - **能理解**：为什么注册一个 user 而不是把每个任务都 `esp_task_wdt_add`；为什么 `init` 返回 `ESP_ERR_INVALID_STATE` 时要改用 `reconfigure`；为什么用 OpenOCD 调过的板子要重新上电才能测看门狗。
 - **能用**：分别构建普通固件和故障固件；用 `fault` 命令停掉 worker 或监督，按时间预算预测复位时刻，用默认控制台的复位日志核对。
-
-## 学习目标
-
-- 能说出 TWDT 和 IWDT 各自用哪个定时器组、由什么喂、超时后的默认动作。
-- 能逐行讲清 supervise 循环里锁内做了什么、锁外做了什么，以及为什么 `reset_user` 放在锁外。
-- 能画出 `fault 1` 从命令到复位的时间线，并解释 500ms 期限和 2000ms TWDT 超时怎么叠加。
 
 ## 先修
 
@@ -41,6 +32,8 @@ cd code/esp32/07-watchdog-health
 idf.py set-target esp32s3
 idf.py build flash monitor -p COMx      # 端口必须显式指定
 ```
+
+flash 之前先押个盲区：worker 任务回回都乖乖让出 CPU，调度器无可挑剔，可它半分钟没交过一份数据，默认的 TWDT 会叫吗？押会或不会，第一屏日志见分晓。
 
 默认控制台第一屏会打出一行 `reset=… retained=0 overdue=0`：普通上电时没有有效的历史记录。接着在仓库根用数据口（GPIO10/11）查状态：
 
@@ -73,6 +66,7 @@ worker 上报进展、supervisor 巡检确认、reset_user 喂狗、TWDT 两秒�
 | 五、故障注入与时间预算 | 两种故障、两条时间线 | 代码分析 |
 | 六、复位原因与 RTC 记录 | `esp_reset_reason` + `RTC_NOINIT_ATTR` | 代码分析 |
 | 七、OpenOCD 与看门狗 | 断点会关掉看门狗，而且不再打开 | 引脚 |
+
 ## 一、S3 的四种看门狗
 
 | 看门狗 | 监督什么 | 谁喂 | 本例 |
@@ -99,9 +93,10 @@ TWDT 有两种订阅方式：
 2. **能说出是谁超时。** STATUS 的过期 mask 和 RTC 记录都能告诉主机"是 worker 还是通信"。只靠 TWDT，复位前打出的 backtrace 里才有这个信息。
 3. **和 F407 共用一份代码。** `health.c` 在 S17 里驱动 IWDG/WWDG，在这里驱动 TWDT，判定逻辑完全相同，主机上测一次就够了。
 
-那监督任务自己卡死了怎么办？它不再调 `reset_user`，health user 的超时照样到期。这就是为什么必须**单独注册一个由监督任务负责的 user**：主管自己出问题时，也要有一个没人刷新的超时来源。
+那监督任务自己卡死了怎么办？它不再调 `reset_user`，health user 的超时照样到期。所以必须**单独注册一个由监督任务负责的 user**：主管自己出问题时，也要有一个没人刷新的超时来源。
 
 停止监督的故障（`fault 2`）也不能写成 `esp_task_wdt_delete_user`。删掉 user，TWDT 就不再等它，超时来源没了，系统反而不会复位。正确的表现是：user 保持注册，但没人再 reset 它。
+
 ## 三、跨核共享：锁内读时间，锁外喂狗
 
 三个任务都用 `xTaskCreate` 创建，没有绑核，调度器可能把它们放到两个核上同时跑。共享的东西有 `health`、`supervisor`、`service` 和几个故障标志，全部用一个 `portMUX_TYPE` 保护：
@@ -222,7 +217,7 @@ TWDT 触发 panic 后，`esp_reset_reason()` 在这块板上到底报 `ESP_RST_T
 
 ## 七、OpenOCD 与看门狗
 
-IDF 文档写得很明确：用 OpenOCD 调试时，每次停在断点，OpenOCD 都会**关掉 IWDT 和 TWDT 的硬件定时器**，离开断点后**也不会再打开**。也就是说，只要通过 JTAG 连过 OpenOCD，这两个看门狗就等于没装，不会有任何警告或 panic。
+IDF 文档写得很明确：用 OpenOCD 调试时，每次停在断点，OpenOCD 都会**关掉 IWDT 和 TWDT 的硬件定时器**，离开断点后**也不会再打开**。只要通过 JTAG 连过 OpenOCD，这两个看门狗就等于没装，不会有任何警告或 panic。
 
 和 F407 的冻结位是一个道理：用调试器连过的板子上测"会不会复位"，"不复位"说明不了任何问题。固定流程是：烧录 → 关掉 OpenOCD → 板子重新上电 → 再发故障命令。
 
@@ -296,6 +291,8 @@ IDF 文档写得很明确：用 OpenOCD 调试时，每次停在断点，OpenOCD
 - 能说清 TWDT 默认看什么、看不到什么，以及为什么要加一个 health user；
 - 跨核共享状态会用 portMUX，知道时间戳为什么要在锁里读；
 - 能按 500ms + 2000ms 两段预算预测复位时刻，并用 RTC 记录在复位后回放原因。
+
+不叫的原因：TWDT 默认看的是出勤，不是产出。任务按时让位它就满意，活干没干完它管不着；所以这章给 health 单写了一条新规矩：按期交结果，才有人替它 reset。狗要盯的是产出，这把尺子比默认配置严得多。
 
 <div class="achievement">
 ✅ 下一站：<a href="../projects/02-s3-logger.html">J2 S3 数据记录器</a>——把协议、健康监督和看门狗装进一个完整的采集项目。

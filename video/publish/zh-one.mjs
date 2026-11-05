@@ -3,7 +3,7 @@
 //   node video/publish/zh-one.mjs --ep <id> --publish  填完再发；仍要 .temp/zh-run/I_HAVE_USER_OK=<id> 放行
 // 事实源只有 episode.json 的 publish.zhihu 和 video/out/<id>/，脚本里不写任何一集的字。
 import { chromium } from 'playwright'
-import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs'
+import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs'
 
 const RUN = 'D:/Users/mcu/.temp/zh-run'
 mkdirSync(RUN, { recursive: true })
@@ -216,6 +216,17 @@ try {
     const fresh = ctx.pages().filter((p) => !before.has(p))
     for (const p of fresh) log('详情 URL=', p.url())
     if (!fresh.length) log('⚠️ 没拿到详情链接，稍后用 /creator/manage/creation 回查')
+    // 知乎管理页的作品卡显示介绍正文、不显示标题（2026-10-29 实测），事后回读只能靠 pin id 锁行。
+    // 把发布凭据落成 marker，verify --after 从这里面取 id。
+    const pinPage = fresh.find((p) => /\/pin\/\d+/.test(p.url()))
+    if (pinPage) {
+      writeFileSync(
+        `${RUN}/${EP}-published.txt`,
+        `${pinPage.url()}\t${new Date().toISOString()}\t${readFileSync(gate, 'utf8').trim()}\n`,
+      )
+      log('发布凭据已落盘：', `${RUN}/${EP}-published.txt`)
+      await pinPage.close().catch(() => {})
+    }
   }
 } finally {
   await page.close().catch(() => {})

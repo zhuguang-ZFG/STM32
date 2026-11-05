@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """device-console.py —— 双板串口协议主机工具（knowledge-reliability 任务）。
 
 线上格式与 code/common/reliability/protocol.* 完全一致，但本文件的 codec 是
@@ -214,7 +213,7 @@ class Transport:
             self.ser = serial.Serial(port=port, baudrate=baud, timeout=0.02,
                                      write_timeout=0.5, rts=False, dtr=False)
         except Exception as exc:  # noqa: BLE001 —— 统一成串口错误退出码
-            raise SerialError(f"打开 {port} 失败: {exc}")
+            raise SerialError(f"打开 {port} 失败: {exc}") from exc
         self.logger = logger
         self.parser = StreamParser(self._on_frame)
         self.received = []          # (frame, note)
@@ -401,11 +400,14 @@ def self_test(helper=None):
     good = build_frame(TYPE_INFO, 7, b"\x01\x02\x03")
     raw = bytearray(struct.pack("<BBHH", 1, TYPE_INFO, 7, 3)) + b"\x01\x02\x03"
     raw += struct.pack("<H", crc16(raw))
-    bad_crc = bytearray(raw); bad_crc[-1] ^= 1
+    bad_crc = bytearray(raw)
+    bad_crc[-1] ^= 1
     check("crc error", _expect_error(cobs_encode(bad_crc), "crc"))
-    bad_version = bytearray(raw); bad_version[0] = 2
+    bad_version = bytearray(raw)
+    bad_version[0] = 2
     check("version error", _expect_error(cobs_encode(bad_version), "version"))
-    bad_length = bytearray(raw); bad_length[4] = 65
+    bad_length = bytearray(raw)
+    bad_length[4] = 65
     check("length error", _expect_error(cobs_encode(bad_length), "length"))
     check("truncated error", _expect_error(good[:6], "any"))
     check("cobs zero inside block", _expect_error(bytes([2, 0, 3]), "any"))
@@ -465,7 +467,7 @@ def self_test(helper=None):
         for name in failures:
             print(f"self-test FAIL: {name}", file=sys.stderr)
         return False
-    print(f"self-test passed: codec vectors + session matching + sync/retry"
+    print("self-test passed: codec vectors + session matching + sync/retry"
           + (" + C cross-validation" if helper else ""))
     return True
 

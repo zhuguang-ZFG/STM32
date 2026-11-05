@@ -15,17 +15,8 @@ minutes: 55
 2. **每道检查只管一件事**：CRC 管随机损坏，管不了篡改；序号只用来配对响应，不是安全凭据；所有检查都通过之前，不往调用方的输出里写一个字节。
 3. **失败要有出口和计数**：超时、超长、已知丢字节一律进 DISCARD，八种结局各自计数；发送队列满了丢新帧并计数，确认帧发不出去就不执行命令。"出错后仍知道发生了什么"靠的就是这些计数。
 
-## 怎么读这一章
-
-- **能记住**：帧 = 版本 1B + 类型 1B + 序号 2B + 长度 2B + 负载 0~64B + CRC 2B；COBS 开销恒为 1 字节，再加 1 字节帧尾，一帧最长 74 字节。
 - **能理解**：EMPTY 态收到 0 为什么什么都不做；transport loss 之后为什么第一帧可能被牺牲；为什么"确认帧入队失败"等于"命令不执行"。
 - **能用**：主机上用分块、粘包、错误流跑生产 codec；用 `device-console.py` 在两块板上查 INFO/STATUS。
-
-## 学习目标
-
-- 能手算 seq=7 的 INFO 请求：8 字节 raw、CRC 值、10 字节线上帧，并与脚本输出逐字节对上。
-- 能逐行讲清 `protocol_rx_feed` 的三个状态和八个计数器各在哪一行加一。
-- 能说出 F407 的 DMA 环形接收在什么条件下判定"丢失"，以及丢失怎样从 ISR 传到解析器。
 
 ## 先修
 
@@ -40,6 +31,8 @@ minutes: 55
 sh code/common/reliability/probe.sh
 ```
 
+跑之前先押开场那一问：往字节流中间丢一个字节，接收端是从此再也对不上，还是能重新找回边界？若能找回，第一帧是完好无损，还是先被牺牲？答案就藏在下面的断言里。
+
 脚本用 `-std=c11 -Wall -Wextra -Werror` 编译生产用的 codec/health/transport/service，跑 `tests.c` 的边界断言；再编一个 `codec-tool`，交给 `scripts/device-console.py self-test` 和独立的 Python 实现互相编解码。在 Linux 上还会加跑一遍 ASan/UBSan。看到下面两行就算通过，不需要串口库和开发板：
 
 ```text
@@ -48,7 +41,7 @@ self-test passed: codec vectors + session matching + sync/retry + C cross-valida
 ```
 ## 动画：逐字节解析状态机
 
-字节流如何变成可恢复的消息——EMPTY → COLLECT → 验证 → DISCARD 的每一步：游标沿字节流连续前进、状态随之切换，坏帧路径与重新同步一图看完。
+字节流如何变成可恢复的消息：EMPTY → COLLECT → 验证 → DISCARD 的每一步，游标沿字节流连续前进、状态随之切换，坏帧路径与重新同步一图看完。
 
 ![C8 帧协议：逐字节解析状态机与重新同步](/anim/c08-frame-parse.svg)
 
@@ -104,6 +97,7 @@ void write_le16(uint8_t *p, uint16_t v) { p[0]=(uint8_t)v; p[1]=(uint8_t)(v>>8);
 ```
 
 结构体的填充和端序由编译器和 ABI 决定（[C4](04-struct-abi.md)）。直接发结构体内存，等于让编译器替你定了一份没写在任何地方的协议。
+
 ## 三、CRC-16/CCITT-FALSE：先把名字叫全
 
 "CRC-16"不是一个算法，而是一族算法。要确定是哪一个，得给全多项式、初值、是否反转输入输出、结果是否再异或这几个参数。本协议用的是：
@@ -192,6 +186,7 @@ f->type=raw[1]; f->sequence=read_le16(raw+2); f->length=length;
 ```
 
 `tests.c` 专门验证了这一点：先放一个 `type=99` 的哨兵帧，喂进 VERSION/LENGTH/CRC 三种坏帧，断言哨兵原封不动。
+
 ## 五、接收状态机：三个状态，八个计数
 
 `protocol_rx_feed` 每次吃一个字节。状态转移如下：
@@ -252,6 +247,7 @@ bool byte_queue_pop(byte_queue_t *q, uint8_t *byte, bool *loss)
 - UART_FIFO_OVF、UART_BUFFER_FULL、帧错、校验错、BREAK 都按传输丢失处理：`uart_flush_input` 清掉驱动缓冲，`xQueueReset` 清掉积压的事件，再调 `protocol_rx_loss`。
 
 **接线**：3.3V USB-TTL，TX 接板子 RX、RX 接板子 TX，GND 共地。协议口上不混入任何 printf：F407 的调试走 SWD，S3 的文本日志走默认控制台。
+
 ## 七、发送与背压：加大数组解决不了问题
 
 `protocol_tx_t` 只有 4 个槽，每槽 74 字节，入队时就编码好：
@@ -388,6 +384,8 @@ python3 scripts/device-console.py status --port COMx
 - 能手算一帧的 74 字节上限从哪来，也能在线上逐字节核对；
 - [S17 看门狗](../stm32/17-watchdog-reset.md)、[P13 健康监督](../esp32/13-watchdog-health.md) 和两个记录器项目用的都是这一份 codec，STATUS 是它们共同的观察窗口。
 
+回到开场那一问：丢一个字节之后，下一帧还认得出来吗？现在你不仅能答「认得」，还能说清代价——等下一个帧尾重新对齐、残帧可能被牺牲、每一笔失败都有计数可查。字节流从此不是「希望能对上」，是一条逐字节可审计的流水线。
+
 <div class="achievement">
-✅ 下一站：<a href="../stm32/17-watchdog-reset.html">S17 看门狗</a>——协议能告诉你"出了什么错"，看门狗负责"卡住了就重来"。
+✅ 下一站：<a href="../stm32/17-watchdog-reset.html">S17 看门狗</a>：协议负责说清"出了什么错"，看门狗负责"卡住就重来"。
 </div>

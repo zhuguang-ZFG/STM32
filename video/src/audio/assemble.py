@@ -94,6 +94,11 @@ def srt_time(sec):
     return f"{ms // 3600000:02d}:{ms % 3600000 // 60000:02d}:{ms % 60000 // 1000:02d},{ms % 1000:03d}"
 
 
+def spoken_text(sc):
+    """送进 TTS 的文本（发音表展开后的 ttsText）；字幕仍用 sc["narration"] 原文。"""
+    return (sc.get("ttsText") or sc["narration"]).strip()
+
+
 def plausible(text, dur):
     return dur >= MIN_SPEECH and len(text) / max(dur, 1e-6) <= MAX_SPEED
 
@@ -129,7 +134,7 @@ async def synth_all(jobs, voice, rate, ffmpeg):
         async with sem:
             if os.path.exists(path) and os.path.getsize(path) > 200:
                 return scene["id"], "cache"
-            await synth(scene["narration"], path, voice, rate, ffmpeg)
+            await synth(spoken_text(scene), path, voice, rate, ffmpeg)
             return scene["id"], "tts"
 
     results = await asyncio.gather(*(one(s, p) for s, p in jobs))
@@ -152,11 +157,11 @@ def main():
 
     scenes = manifest["scenes"]
     for sc in scenes:
-        if not sc["narration"].strip():
-            raise RuntimeError(f"场景 {sc['id']} 旁白为空")
+        if not sc["narration"].strip() or not spoken_text(sc):
+            raise RuntimeError(f"场景 {sc['id']} 旁白或 ttsText 为空")
 
     paths = [
-        os.path.join(cache_dir, sha1_of(f"{manifest['voice']}|{manifest['rate']}|{sc['narration']}") + ".mp3")
+        os.path.join(cache_dir, sha1_of(f"{manifest['voice']}|{manifest['rate']}|{spoken_text(sc)}") + ".mp3")
         for sc in scenes
     ]
     todo = [p for p in paths if not (os.path.exists(p) and os.path.getsize(p) > 200)]
@@ -172,7 +177,7 @@ def main():
     durations = [probe_duration(ffmpeg, p) for p in paths]
 
     # 缓存里可能躺着上一轮留下的残包（体积正常、时长只有零点几秒），必须重合成再入轴。
-    suspect = [i for i, sc in enumerate(scenes) if not plausible(sc["narration"], durations[i])]
+    suspect = [i for i, sc in enumerate(scenes) if not plausible(spoken_text(sc), durations[i])]
     if suspect:
         log(f"  ⚠️  {len(suspect)} 句语速不合理（残包/静音），删缓存重合成：{[scenes[i]['id'] for i in suspect]}")
         for i in suspect:
@@ -181,8 +186,8 @@ def main():
         asyncio.run(_run([(scenes[i], paths[i]) for i in suspect]))
         for i in suspect:
             durations[i] = probe_duration(ffmpeg, paths[i])
-            if not plausible(scenes[i]["narration"], durations[i]):
-                raise RuntimeError(f"场景 {scenes[i]['id']} 重合成后仍不合理：{durations[i]:.2f}s / {len(scenes[i]['narration'])} 字")
+            if not plausible(spoken_text(scenes[i]), durations[i]):
+                raise RuntimeError(f"场景 {scenes[i]['id']} 重合成后仍不合理：{durations[i]:.2f}s / {len(spoken_text(scenes[i]))} 字")
 
     timeline_scenes = []
     cursor = 0.0

@@ -79,8 +79,8 @@
       <tspan x="625" dy="20" font-weight="bold">x=INT_MAX:</tspan>
       <tspan x="625" dy="14" fill="#dc2626">返回 1 ✗</tspan>
     </text>
-    <text x="625" y="135" font-family="sans-serif" font-size="9" fill="#666">数学期望：0</text>
-    <text x="625" y="150" font-family="sans-serif" font-size="9" fill="#666">实际结果：1</text>
+    <text x="625" y="135" font-family="sans-serif" font-size="12" fill="#666">数学期望：0</text>
+    <text x="625" y="150" font-family="sans-serif" font-size="12" fill="#666">实际结果：1</text>
   </g>
   
   <!-- Bottom section: Solution -->

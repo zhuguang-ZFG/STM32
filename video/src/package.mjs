@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs'
+import { copyFileSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { codeHtml, inline, FONT, MONO } from './layout.mjs'
 import { fmtClock, log } from './util.mjs'
@@ -157,6 +157,104 @@ pre.code b{color:#8ab4ff}
 </body></html>`
 }
 
+// v2「实验室仪器风」封面：石墨底 + 细网格 + 四角框，物证卡压红左边，
+// 大数字外面一圈红笔游标（::before 贴着自己的内容盒画，不占任何布局空间）。
+// 和 v1 一样，模板只负责把话排上去；装不装得下由 fitCover 用量矩形来判，
+// 所以 .head/.mid/.num/.numnote/pre.code/.vslab 这些类名一个都不能省。
+// 336px 缩略图下读不清的元素不上封面——标题、数字、两列对撞是横版全部内容，
+// 证据卡在 336px 下连行首都认不全（v1 横版早就撤了它），只留给竖版。
+// 横版腾出来的面积全部给字号：head 10.4u / num 11.5u / vslab 4.6u / numnote 2.4u；
+// 竖版维持 8.8/10/3.2/1.8，证据卡优先用短版 proofShort。
+export function coverV2Html({ kicker, line1, line2, tag, proof, proofShort, num, numNote, badge, vs, size, variant, siteNote: siteNoteText }) {
+  const [w, h] = size
+  const u = coverU(size)
+  const vert = h > w
+  const panel = variant === 'panel'
+  const headFs = vert ? 8.8 : 10.4
+  const numFs = vert ? 10 : 11.5
+  const vsFs = vert ? 3.2 : 4.6
+  const noteFs = vert ? 1.8 : 2.4
+  const slab = (side, label, text) =>
+    `<div class="vslab ${side}" data-want="${(u * vsFs).toFixed(2)}" data-label="${label}">${headline(text || '')}</div>`
+  // panel 版只留标题 + 证据卡，不摆对撞两列；两条路径都保留 .head/.mid/.num，
+  // fitCover 的缩字与整列压出检查对两版是同一套口径。
+  const vsHtml = vs && !panel
+    ? `<div class="vs">${slab('l', vs.labels?.[0] || 'EXPECTED', vs.left)}${slab('r', vs.labels?.[1] || 'MEASURED', vs.right)}</div>`
+    : ''
+  const card = vert ? (proofShort || proof || '') : ''
+  const proofHtml = card
+    ? `<pre class="code" data-want="${(u * 3.35).toFixed(2)}">${codeHtml(card)}</pre>`
+    : ''
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:${w}px;height:${h}px;overflow:hidden;background:#080b10;color:#e6eaf2;font-family:${FONT}}
+.pad.v2{position:absolute;inset:0;padding:${u * 5}px ${u * 6}px;display:flex;flex-direction:column;gap:${u * 1.6}px;
+  background-color:#0d1118;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px),radial-gradient(120% 85% at 50% 0%,rgba(84,130,220,.12),transparent 62%);
+  background-size:${u * 4}px ${u * 4}px,${u * 4}px ${u * 4}px,auto}
+.corners{position:absolute;inset:${u * 1.5}px;pointer-events:none}
+.corners i{position:absolute;width:${u * 3}px;height:${u * 3}px;border:0 solid rgba(255,255,255,.38)}
+.corners i:nth-child(1){left:0;top:0;border-left-width:${u * .22}px;border-top-width:${u * .22}px}
+.corners i:nth-child(2){right:0;top:0;border-right-width:${u * .22}px;border-top-width:${u * .22}px}
+.corners i:nth-child(3){left:0;bottom:0;border-left-width:${u * .22}px;border-bottom-width:${u * .22}px}
+.corners i:nth-child(4){right:0;bottom:0;border-right-width:${u * .22}px;border-bottom-width:${u * .22}px}
+.top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:${u * 2}px;
+  font-family:${MONO};font-size:${u * 2.2}px;letter-spacing:.08em;color:#8fa0b8;white-space:nowrap}
+.top b{color:#ffde59;font-weight:800}
+.head{flex:none;font-size:${u * headFs}px;font-weight:900;line-height:1.04;letter-spacing:-.03em;word-break:keep-all;
+  color:#fff;text-shadow:0 ${u * .8}px 0 rgba(0,0,0,.45)}
+.mid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:${u * 2.2}px}
+.vs{flex:none;display:flex;gap:${u * 2}px;width:100%}
+.vslab{flex:1 1 0;min-width:0;font-size:${u * vsFs}px;font-weight:800;line-height:1.16;color:#dfe6f2;
+  word-break:keep-all;border-top:${u * .3}px solid rgba(255,255,255,.18);padding-top:${u * .9}px}
+.vslab::before{content:attr(data-label);display:block;margin-bottom:${u * .5}px;font-family:${MONO};
+  font-size:${u * 1.5}px;font-weight:700;letter-spacing:.16em;color:#7f8ba0}
+.vslab.l{border-top-color:rgba(53,201,138,.75)}
+.vslab.r{border-top-color:rgba(255,77,79,.8);text-align:right}
+.vslab.r::before{color:#ff8a80}
+pre.code{flex:none;background:rgba(5,8,13,.92);border:1px solid rgba(255,255,255,.12);border-left:${u * .55}px solid #ff4d4f;
+  border-radius:${u * .7}px;padding:${u * 1.4}px ${u * 1.6}px;font-family:${MONO};font-size:${u * 3.35}px;line-height:1.4;
+  color:#cfd8e6;white-space:pre;tab-size:4;overflow:hidden;text-align:left}
+pre.code .ln{display:block;padding:0 ${u * .5}px;border-radius:3px}
+pre.code .ln.ev{background:rgba(255,138,128,.14);box-shadow:inset ${u * .35}px 0 0 #ff8a80;color:#ffd9d5}
+pre.code .ln.dim{color:#7f8ba0}
+pre.code .hl{font-style:normal;color:#ffde59;font-weight:700}
+pre.code .bad{font-style:normal;color:#ff8a80;font-weight:700}
+pre.code b{color:#8ab4ff}
+.bottom{flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:${u * 2}px;
+  border-top:1px solid rgba(255,255,255,.12);padding-top:${u * 1.5}px}
+/* 游标贴在 .num 自己的内容盒里画（border-box + inset:0）：红圈不增加 scrollWidth，
+   缩字量到的永远是文字本身，而不是这圈装饰。::before 是定位元素，默认画在行内文字之上；
+   把 .num 立成层叠上下文、环放到 z-index:-1，红笔才从黄字后面穿过去。 */
+.num{position:relative;isolation:isolate;flex:none;font-size:${u * numFs}px;font-weight:900;line-height:.98;letter-spacing:-.03em;
+  color:#ffde59;white-space:nowrap;text-shadow:0 ${u * .6}px 0 rgba(0,0,0,.5)}
+.num::before{content:'';position:absolute;z-index:-1;inset:0;box-sizing:border-box;border:${u * .3}px solid #ff4d4f;
+  border-radius:50%;opacity:.9;pointer-events:none}
+.numnote{flex:1 1 auto;min-width:0;font-size:${u * noteFs}px;font-weight:700;line-height:1.3;color:#9fb0c8;
+  text-align:right;word-break:keep-all}
+.tk{white-space:nowrap}
+.foot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:${u * 2}px;
+  font-family:${MONO};font-size:${u * 2.2}px;color:#8fa0b8}
+.chip{border:${u * .2}px solid rgba(255,255,255,.3);border-radius:999px;padding:${u * .5}px ${u * 1.6}px;
+  color:#fff;font-weight:800;background:rgba(255,255,255,.04);letter-spacing:.04em}
+</style></head><body>
+<div class="pad v2">
+  <div class="corners"><i></i><i></i><i></i><i></i></div>
+  <div class="top"><span>CH1 · <b>${esc(badge || '')}</b></span><span>${esc(kicker || '通往单片机之路')}</span></div>
+  <div class="mid">
+    <div class="head" data-want="${(u * headFs).toFixed(2)}">${headline(line1 || '')}${line2 ? `<br>${headline(line2)}` : ''}</div>
+    ${vsHtml}
+    ${proofHtml}
+  </div>
+  <div class="bottom">
+    <div class="num" data-want="${(u * numFs).toFixed(2)}">${esc(num || '')}</div>
+    <div class="numnote" data-want="${(u * noteFs).toFixed(2)}">${esc(numNote || '')}</div>
+  </div>
+  <div class="foot"><span class="chip">${esc(tag || '本机实跑')}</span><span>${esc(siteNoteText || siteNote(size))}</span></div>
+</div>
+</body></html>`
+}
+
 function siteNote(size) {
   return size[0] > size[1] ? '寄存器级 · 每句话都能复现' : '寄存器级 · 全部可复现'
 }
@@ -173,7 +271,42 @@ function headline(s) {
 
 // 知乎视频封面板要求 16:9，喂 1920×1200 它不缩放、直接在底部切掉一条（实测把「本机实跑」那行
 // 证据徽章切掉一半）。所以给它单开一档，让 coverHtml 按 u=10.8 重排，而不是裁交付物。
-export const COVER_SIZES = { bilibili: [1920, 1200], douyin: [1080, 1440], zhihu: [1920, 1080] }
+// 小红书笔记页的封面位是 4:3（1440×1080）；它和抖音共用竖版母版内容，但出图必须另排一版，
+// 直接把 3:4 的抖音封面塞进 4:3 位里会被切掉上下两条。
+export const COVER_SIZES = {
+  bilibili: [1920, 1200],
+  douyin: [1080, 1440],
+  zhihu: [1920, 1080],
+  xiaohongshu: [1440, 1080],
+}
+
+// 派生平台复用母版：知乎没有自己的成片，直接挂 B站横版；小红书挂抖音竖版。
+// 只有封面按目标平台重排，视频/字幕/时间轴一律指向母版，不再重渲。
+export const PACK_MAP = {
+  bilibili: { base: 'bilibili', video: 'bilibili.mp4', cover: 'bilibili-cover.png', srt: 'bilibili.srt' },
+  douyin: { base: 'douyin', video: 'douyin.mp4', cover: 'douyin-cover.png', srt: 'douyin.srt' },
+  zhihu: { base: 'bilibili', video: 'bilibili.mp4', cover: 'zhihu-cover.png', srt: 'bilibili.srt' },
+  xiaohongshu: { base: 'douyin', video: 'douyin.mp4', cover: 'xiaohongshu-cover.png', srt: 'douyin.srt' },
+}
+
+// pack 的第一趟只做纯解析，不读盘：未知平台在这里就抛，第二趟才动文件。
+// 这样后一个平台缺产物时，前一个平台的发布包不会被覆盖成"一半新一半旧"。
+export function packJobs(ep, id) {
+  const plats = Object.keys(ep.publish || {})
+  if (!plats.length) throw new Error(`${id}: 没有 publish，无法出发布包`)
+  return plats.map((platform) => {
+    const map = PACK_MAP[platform]
+    if (!map) throw new Error(`${id}: publish 里有未知平台 "${platform}"，pack 只认 ${Object.keys(PACK_MAP).join('/')}`)
+    return {
+      platform,
+      base: map.base,
+      video: map.video,
+      srt: map.srt,
+      cover: map.cover,
+      timeline: join(map.base, 'timeline.json'),
+    }
+  })
+}
 
 // 封面字号单位：跟短边走（竖版按高度算，同样的代码行会直接顶出画布）。
 // 排版和缩字地板两处都用它，各算一次的话竖版会一个用 10.8、一个用 14.4，地板凭空抬高 33%。
@@ -272,15 +405,21 @@ export async function fitCover(page, u) {
   }, u)
 }
 
-export async function buildCover(browser, ep, platform, outPath) {
+export async function buildCover(browser, ep, platform, outPath, { variant } = {}) {
   // 平台可以整对象换一份封面：F0 的抖音短版讲的是另一个问题，不该继续挂横版那句钩子和那张跑分卡。
   // 是替换不是合并——合并会让横版的 num/proof 残影留在竖版上，"两个钩子同屏"正是要治的毛病。
   const cover = ep.platforms?.[platform]?.cover ?? ep.cover
   const size = cover?.sizes?.[platform] || COVER_SIZES[platform] || [1920, 1200]
   const u = coverU(size)
   const badge = ep.badge || ep.id.split('-')[0].toUpperCase()
+  // v1 的模板与调用参数逐字不变：老封面已经发过稿，重出图必须字节一致。
+  // v2 走仪器风模板；variant 先看调用方，再看封面自己的声明（平台 cover 已整体替换 ep.cover）。
+  const v2 = (ep.formatVersion ?? 1) === 2
+  const html = v2
+    ? coverV2Html({ ...cover, badge, tag: cover?.tag, size, variant: variant ?? cover?.variant })
+    : coverHtml({ ...cover, badge, tag: cover?.tag, size })
   const page = await browser.newPage({ viewport: { width: size[0], height: size[1] }, deviceScaleFactor: 1 })
-  await page.setContent(coverHtml({ ...cover, badge, tag: cover?.tag, size }), { waitUntil: 'load' })
+  await page.setContent(html, { waitUntil: 'load' })
   await page.evaluate(() => document.fonts.ready)
   const fit = await fitCover(page, u)
   const lost = Object.entries(fit).filter(([, r]) => r.lost)
@@ -297,6 +436,68 @@ export async function buildCover(browser, ep, platform, outPath) {
   await page.screenshot({ path: outPath })
   await page.close()
   log(`  🖼️  封面 ${size.join('×')} → ${outPath}${shrunk.length ? `（缩字 ${shrunk.join('，')}）` : ''}`)
+  return outPath
+}
+
+// PNG 头里的 IHDR 宽高（偏移 16/20）。不引依赖，测试与人检清单也用它读回实际出图尺寸。
+export function pngSize(buf) {
+  if (buf.length < 24 || buf.readUInt32BE(0) !== 0x89504e47 || buf.readUInt32BE(4) !== 0x0d0a1a0a) {
+    throw new Error('不是 PNG 文件')
+  }
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) }
+}
+
+// 四张封面一次出齐：同一集换平台只换排版，不换事实；XHS 4:3 那张同时充当抖音的
+// 1440×1080 备选（抖音信息流允许 4:3，部分投放位不裁 3:4）。contact sheet 是给人看的，
+// 336px 下读不清就回去改文案，而不是靠它做自动判据。
+export async function buildAllCovers(browser, ep, distDir, { variant } = {}) {
+  const jobs = [
+    ['bilibili', join(distDir, 'bilibili-cover.png')],
+    ['douyin', join(distDir, 'douyin-cover.png')],
+    ['zhihu', join(distDir, 'zhihu-cover.png')],
+    ['xiaohongshu', join(distDir, 'xiaohongshu-cover.png')],
+  ]
+  for (const [p, out] of jobs) await buildCover(browser, ep, p, out, { variant })
+  copyFileSync(join(distDir, 'xiaohongshu-cover.png'), join(distDir, 'douyin-cover-1440x1080.png'))
+  await buildContactSheet(browser, jobs.map(([p, out]) => ({ p, out })), join(distDir, 'cover-contact-336.png'))
+  return jobs
+}
+
+// contact sheet 不走 file://（路径里有空格/中文时 Chromium 的导航规则各不相同）：
+// 四张 PNG 直接 base64 内联进 setContent，宽高从 PNG 头读回，标签写实际像素而不是配置值。
+// 每列必须正好 336px 宽：标签用绝对定位压在列顶（不再占一行把图挤窄），
+// 图宽封顶 336px，竖版 1080×1440 正好铺成 336×448，配上 6px 页边距塞进 460px 高的视口。
+// 列框走 inset 阴影而不是 border——border 会吃掉 2px 内容宽，竖版就只能排到 334px。
+export async function buildContactSheet(browser, jobs, outPath) {
+  const cols = jobs.map(({ p, out }) => {
+    const buf = readFileSync(out)
+    const { width, height } = pngSize(buf)
+    return `<div class="col"><div class="lab"><b>${esc(p)}</b><span>${width}×${height}</span></div>
+<div class="shot"><img src="data:image/png;base64,${buf.toString('base64')}" alt="${esc(p)}"></div></div>`
+  }).join('\n')
+  const page = await browser.newPage({ viewport: { width: 1440, height: 460 }, deviceScaleFactor: 1 })
+  try {
+    await page.setContent(`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1440px;height:460px;overflow:hidden;background:#0b0e13;color:#e6eaf2;font-family:${FONT}}
+.sheet{display:flex;gap:12px;padding:6px}
+.col{position:relative;width:336px;height:448px;flex:none;overflow:hidden;background:#05070a;
+  border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.lab{position:absolute;left:0;right:0;top:0;z-index:1;display:flex;align-items:baseline;justify-content:space-between;
+  padding:4px 8px;background:#05070a;border-bottom:1px solid rgba(255,255,255,.08);font-family:${MONO};font-size:12px;color:#9fb0c8}
+.lab b{color:#ffde59;font-size:13px;letter-spacing:.08em}
+.shot{width:336px;height:448px;display:flex;align-items:center;justify-content:center}
+.shot img{display:block;max-width:336px;width:auto;height:auto}
+</style></head><body><div class="sheet">${cols}</div></body></html>`, { waitUntil: 'load' })
+    await page.evaluate(() => document.fonts.ready)
+    await page.evaluate(() => Promise.all([...document.images].map((img) => img.decode().catch(() => {}))))
+    const widths = await page.evaluate(() => [...document.querySelectorAll('.col')].map((el) => el.getBoundingClientRect().width))
+    if (widths.some((w) => Math.round(w) !== 336)) throw new Error(`contact sheet 列宽不是 336px：${widths.map(Math.round).join(', ')}`)
+    await page.screenshot({ path: outPath })
+  } finally {
+    await page.close()
+  }
+  log(`  🧾 封面人检表 1440×460 → ${outPath}`)
   return outPath
 }
 
@@ -380,9 +581,88 @@ function douyinBlock(ep, pub, secs, cfg, coverPath, videoPath, srtPath, timeline
   ]
 }
 
+// 小红书没有"标题/简介两栏可撤回"：标题超 20 字会被截尾、正文超 1000 字会被截断，
+// 站外地址会限流，合集漏选不报错但少一次分发。这些全部在写文件前拦死，
+// 而不是等发布的人到编辑页里再自己发现。
+function xiaohongshuBlock(ep, pub, cfg, coverPath, videoPath, srtPath, secs) {
+  const die = (m) => { throw new Error(`发布文案 ${ep.id}/xiaohongshu：${m}`) }
+  if (!pub.title?.trim()) die('缺 publish.xiaohongshu.title')
+  if (!pub.body?.trim()) die('缺 publish.xiaohongshu.body')
+  if ([...pub.title].length > 20) die(`标题 ${[...pub.title].length} 字 > 20`)
+  if (pub.body.length > 1000) die(`正文 ${pub.body.length} 字 > 1000`)
+  if (/(https?:\/\/|github|www\.)/i.test(`${pub.title}\n${pub.body}`)) die('标题/正文出现站外地址')
+  if (!pub.collection?.trim()) die('缺 collection：小红书必须在发布前选合集')
+  // 话题不是正文里的 "#名字"：实测只打 # 是黑字，必须接住弹层候选才成 chip。
+  // 数组为空等于这条笔记没有话题可分发，不能静默放过。
+  if (!Array.isArray(pub.topics) || !pub.topics.length || pub.topics.some((t) => typeof t !== 'string' || !t.trim())) {
+    die('缺 topics：话题必须在发布时逐条接弹层，才能变成 chip')
+  }
+  if (!pub.repro?.trim()) die('缺 repro（复现命令）')
+  if (!pub.pinned?.includes(pub.repro.split(' ').pop())) die('置顶评论没写复现脚本')
+  const topics = pub.topics.map((t) => `#${String(t).trim().replace(/^#+/, '')}`).join(' ')
+  return [
+    `# ${ep.title} · 小红书发布（可直接粘贴）`,
+    '',
+    '## 标题',
+    '',
+    '```text',
+    pub.title.trim(),
+    '```',
+    '',
+    `标题 ${[...pub.title].length} 字（上限 20）。超 20 字不报错、直接从尾部截断，所以这里先拦一次。`,
+    '',
+    '## 正文',
+    '',
+    '```text',
+    pub.body.trim(),
+    '```',
+    '',
+    `正文 ${pub.body.length} 字（上限 1000）。标题和正文都不含站外地址；复现命令保持 \`${pub.repro}\` 这种纯文本。`,
+    '',
+    '## 话题',
+    '',
+    '```text',
+    topics,
+    '```',
+    '',
+    '话题必须逐条接弹层：输入 #名字 后接住候选（回车或点选）才会变成 chip；只打 # 只是普通文本，不会成话题。',
+    pub.topicsNote ? `\n${pub.topicsNote}` : '',
+    '',
+    '## 置顶',
+    '',
+    '```text',
+    pub.pinned,
+    '```',
+    '',
+    `发布后立刻用自己的账号发这条并置顶。置顶评论可以出现 \`${pub.repro}\`，站外检查只管标题和正文。`,
+    '',
+    '## 封面',
+    '',
+    `- 文件：\`${coverPath}\`（xiaohongshu-cover.png，1440×1080，4:3）`,
+    `- 母版：\`${videoPath}\``,
+    `- 视频母版：${cfg.size.join('×')} / ${cfg.fps} fps / ${secs.toFixed(1)}s（复用竖版母版，不重渲）`,
+    `- 字幕：\`${srtPath}\``,
+    '- 小红书封面位是 4:3，不要上传抖音的 1080×1440 3:4 版（上下会被切掉）。',
+    '',
+    '## 合集',
+    '',
+    `- 合集：\`${pub.collection.trim()}\``,
+    '- 发布前必须选好合集；漏选不报错，只是这次分发不进系列。',
+    pub.collectionNote ? `\n${pub.collectionNote}` : '',
+    '',
+  ]
+}
+
 export function writeRelease({ ep, platform, outDir, timeline, cfg, videoPath, srtPath, coverPath, sceneTexts }) {
   const secs = timeline.totalFrames / timeline.fps
   const pub = ep.publish?.[platform] || {}
+  if (platform === 'xiaohongshu') {
+    const lines = xiaohongshuBlock(ep, pub, cfg, coverPath, videoPath, srtPath, secs)
+    const p = join(outDir, `发布-${platform}.md`)
+    writeFileSync(p, lines.join('\n'))
+    log(`  📝 发布文案 → ${p}`)
+    return p
+  }
   if (platform === 'douyin') {
     const lines = [`# ${ep.title} · 抖音投稿（可直接粘贴）`, '']
     lines.push(...douyinBlock(ep, pub, secs, cfg, coverPath, videoPath, srtPath, timeline))

@@ -7,27 +7,13 @@ minutes: 55
 
 # V4 GPIO 最小系统
 
-> 🎯 [G2](02-gpio-af.md) 带来过好消息：GD32F4xx 的 GPIO 与 STM32F4 七张表逐字相同，只换名字。到了 VF103，好消息一条不成立——它的 GPIO 是 F1 血统：两张配置表每脚 4 位、复用走 AFIO 重映射、时钟挂在 APB2 不在 AHB1。判据不用猜，就在 `gd32vf103.h` 的三行宏里。本章用 V0 的启动、V2 的 108M、V3 的 mtime 延时，拼出第一个完整的 RISC-V 点灯闭环——V 篇到此收官。
+> 🎯 [G2](02-gpio-af.md) 带来过好消息：GD32F4xx 的 GPIO 与 STM32F4 七张表逐字相同，只换名字。到了 VF103，好消息一条不成立——它的 GPIO 是 F1 血统：两张配置表每脚 4 位、复用走 AFIO 重映射、时钟挂在 APB2 不在 AHB1。判据不用猜，就在 `gd32vf103.h` 的三行宏里。本章用 V0 的启动、V2 的 108M、V3 的 mtime 延时，拼出第一个完整的 RISC-V 点灯闭环，V 篇到此收官。
 
 ## 本章精髓
 
-1. **血统鉴定看头文件**：`gd32vf103.h` 给了 `AFIO_BASE = APB2+0x0000`（:219）——AFIO（复用重映射机关）是 F1 时代的活化石，F4xx 早已用每脚 4 位的 AFSEL0/1 替掉它（[G2 第五节](02-gpio-af.md)）。**有 AFIO 就是 F1 家**：VF103 的 GPIO 因此是 CTL0/CTL1 两张配置表、每脚 4 位（MD+CTL 合体），不是 G2 那套七寄存器家族。
-2. **数据四剑客换编制不换岗**：ISTAT/OCTL/BOP/BC 对应 [S3](../stm32/03-gpio.md) 的 IDR/ODR/BSRR——BOP 低 16 位置位、高 16 位复位，写 0 无影响；BC 是独立清零寄存器（STM32F407 没有，得用 BSRR 高 16 位绕）；"读-改-写暗伤"与"原子写"的教训（S3 第二节）原样平移。
-3. **五步闭环即收官**：开时钟（RCU_APB2EN.PAEN = bit2，注意在 APB2）→ CTL0 四位配置 → OCTL 设初值 → BOP/BC 原子翻转 → mtime delay_ms（[V3](08-mtime-delay.md)）——V0~V3 的产出在此合体烧录，点灯即毕业。
-
-## 怎么读这一章
-
-- **读过 [S3 GPIO](../stm32/03-gpio.md) 与 [G2](02-gpio-af.md)**：先接受第一节那个反转——G2 的"七表全同"在 VF103 上不适用；之后每节都是旧知识换编制。
-- **只读过 S3**：把"先时钟、后配置、数据用原子写"三句纪律带走，四位编码就是 S3 四张表压进一格的"F1 压缩版"。
-- 逐位编码（MD/CTL 语义）已按头文件核验：每脚 4 位、低 2 位 MD 高 2 位 CTL 与 F1 惯例一致（gd32vf103_gpio.h:53-104）；精确电气语义（如速度档上限）上板前按 UM 复核一遍。
-
-## 学习目标
-
-- 给出 VF103 GPIO 是 F1 血统的头文件级判据（提示：一个 F4xx 没有的基址宏），说出它与 G2 七寄存器家族的三处结构差异。
-- 写出"推挽输出 + 速度档"的 CTL0 四位编码，按 pin×4 落位（对照 S3 的 pin×2）。
-- 默写 ISTAT/OCTL/BOP/BC 与 S3 三剑客的对照，指出"清一个脚"在 F407 与 VF103 上各自的写法。
-- 完成"开时钟 → CTL → OCTL → BOP/BC → mtime 延时"五步闭环，说出时钟使能位在 APB2 bit2~6 的依据。
-- 把 V0 启动/链接、V2 时钟、V3 延时、V4 GPIO 串成一个可烧录工程，各章产出对号入座。
+1. **血统鉴定看头文件**：`gd32vf103.h` 给了 `AFIO_BASE = APB2+0x0000`（:219）：AFIO（复用重映射机关）是 F1 时代的活化石，F4xx 早已用每脚 4 位的 AFSEL0/1 替掉它（[G2 第五节](02-gpio-af.md)）。**有 AFIO 就是 F1 家**：VF103 的 GPIO 因此是 CTL0/CTL1 两张配置表、每脚 4 位（MD+CTL 合体），不是 G2 那套七寄存器家族。
+2. **数据四剑客换编制不换岗**：ISTAT/OCTL/BOP/BC 对应 [S3](../stm32/03-gpio.md) 的 IDR/ODR/BSRR：BOP 低 16 位置位、高 16 位复位，写 0 无影响；BC 是独立清零寄存器（STM32F407 没有，得用 BSRR 高 16 位绕）；"读-改-写暗伤"与"原子写"的教训（S3 第二节）原样平移。
+3. **五步闭环即收官**：开时钟（RCU_APB2EN.PAEN = bit2，注意在 APB2）→ CTL0 四位配置 → OCTL 设初值 → BOP/BC 原子翻转 → mtime delay_ms（[V3](08-mtime-delay.md)）：V0~V3 的产出在此合体烧录，点灯即毕业。
 
 ## 先修
 
@@ -38,7 +24,7 @@ minutes: 55
 
 ## 先跑起来（10 分钟 quick win）
 
-拿你板子的原理图（GD32VF103 板各家 LED 引脚不同——Sipeed、GigaDevice、自制板各归各；仓库基准板指定后本节接线回填），查出 LED 的端口、脚号与极性（共阳低亮/共阴高亮）。然后做两笔账：
+拿你板子的原理图（GD32VF103 板各家 LED 引脚不同，Sipeed、GigaDevice、自制板各归各；仓库基准板指定后本节接线回填），查出 LED 的端口、脚号与极性（共阳低亮/共阴高亮）。然后做两笔账：
 
 ```text
 ① 核基址：GPIO_BASE = APB2 + 0x0800 = 0x40010000 + 0x0800 = 0x40010800（gd32vf103.h:201,221）
@@ -46,11 +32,13 @@ minutes: 55
    落位：CTL0 的 [pin*4+3 : pin*4] = 0b1000；掩码 0xF、移位 pin*4（S3 是 0x3、pin*2——别混）
 ```
 
-十分钟后你写的每行代码都有账可查——本章 main.c 就是这两笔账的展开。
+十分钟后你写的每行代码都有账可查：本章 main.c 就是这两笔账的展开。
+
+先押个家谱：VF103 的 GPIO，是 G2 那套七寄存器家族原班人马，还是另认祖宗换了编制？判据就藏在头文件的一个符号里，押完翻 gd32vf103.h 找它。
 
 ## 动画：RISC-V 点灯闭环
 
-开时钟 → CTL0 四位配置 → OCTL 设初值 → BOP/BC 原子翻转 → mtime 延时——五步装配，V0~V4 的产出在此合体成第一个完整的 RISC-V 点灯闭环。
+开时钟 → CTL0 四位配置 → OCTL 设初值 → BOP/BC 原子翻转 → mtime 延时，五步装配，V0~V4 的产出在此合体成第一个完整的 RISC-V 点灯闭环。
 
 ![RISC-V 点灯闭环：五步装配](/anim/riscv-blink-closed.svg)
 
@@ -75,7 +63,7 @@ minutes: 55
 #define GPIO_BASE   (APB2_BUS_BASE + 0x00000800U)   /* :221 → 0x40010800 */
 ```
 
-AFIO 是"复用重映射"的 F1 制机关：F1 家族的复用功能只有固定几个引脚候选，靠 AFIO 的选择寄存器"选门"；F4xx 起改为每脚 4 位的 AFSEL 编号自由 mux（[G2 第五节](02-gpio-af.md)）。**AFIO_BASE 的存在本身就是血统证明**——F4xx 头文件里没有这个外设。[V1 第三节](06-clic-irq.md)用 EXTI/AFIO 基址验过"外设脱胎自 GD32F1"，GPIO 是同一血统的下一块拼图。
+AFIO 是"复用重映射"的 F1 制机关：F1 家族的复用功能只有固定几个引脚候选，靠 AFIO 的选择寄存器"选门"；F4xx 起改为每脚 4 位的 AFSEL 编号自由 mux（[G2 第五节](02-gpio-af.md)）。**AFIO_BASE 的存在本身就是血统证明**：F4xx 头文件里没有这个外设。[V1 第三节](06-clic-irq.md)用 EXTI/AFIO 基址验过"外设脱胎自 GD32F1"，GPIO 是同一血统的下一块拼图。
 
 三代对照一次摆开：
 
@@ -88,7 +76,7 @@ AFIO 是"复用重映射"的 F1 制机关：F1 家族的复用功能只有固定
 | 数据寄存器 | IDR/ODR/BSRR | ISTAT/OCTL/BOP/BC/TG | ISTAT/OCTL/BOP/BC |
 | GPIO 基址 | 0x40020000（GPIOA） | 0x40020000 | **0x40010800——与 STM32F103 同址** |
 
-最后一行再补一记铁证：0x40010800 恰是 STM32F103 GPIOA 的老地址，端口步进 0x400（A~E 依次 +0x400，与 F103 完全同址；逐口基址已核验：GPIOA=GPIO_BASE+0，B~E 各 +0x400，gd32vf103_gpio.h:41-45）。[V2](07-rcu-108m.md) 的 RCU 跟 F1 同门牌、本章 GPIO 也跟 F1 同门牌——"外设层像 F1、内核是 RISC-V"这个混血判断，处处有地址背书。
+最后一行再补一记铁证：0x40010800 恰是 STM32F103 GPIOA 的老地址，端口步进 0x400（A~E 依次 +0x400，与 F103 完全同址；逐口基址已核验：GPIOA=GPIO_BASE+0，B~E 各 +0x400，gd32vf103_gpio.h:41-45）。[V2](07-rcu-108m.md) 的 RCU 跟 F1 同门牌、本章 GPIO 也跟 F1 同门牌，"外设层像 F1、内核是 RISC-V"这个混血判断，处处有地址背书。
 
 ## 二、四位一坑：CTL0/CTL1 的 MD+CTL 编码
 
@@ -109,9 +97,9 @@ GPIOx_MODER &= ~(3UL << (pin * 2U));      GPIO_CTL0(x) &= ~(0xFUL << (pin * 4U))
 GPIOx_MODER |=  (1UL << (pin * 2U));      GPIO_CTL0(x) |=  (0x8UL << (pin * 4U));  /* 四位合体 0b1000 */
 ```
 
-照搬 S3 的 0x3 掩码会留下两个旧位——"模式改不干净"的暗病，配复用脚时尤其致命（残留位能把推挽变开漏，信号半死不活）。
+照搬 S3 的 0x3 掩码会留下两个旧位，是"模式改不干净"的暗病，配复用脚时尤其致命（残留位能把推挽变开漏，信号半死不活）。
 
-要上拉/下拉输入：MD=00、CTL=10，再写 OCTL 对应位——F1 血统的"输出锁存器"兼任上拉/下拉选择（写 1 上拉、写 0 下拉），这是与 S3 PUPDR 独立寄存器的又一个结构差异（已按用户手册实证：UM §7.5 配置表 Input pull-up=CTL10+OCTL1、pull-down=CTL10+OCTL0）。复用输出（如 USART_TX）：MD 选速度、CTL 选"复用推挽"，重映射候选脚多时还要动 AFIO——三件套见 [V1 第七节](06-clic-irq.md) 第 3、4 步。
+要上拉/下拉输入：MD=00、CTL=10，再写 OCTL 对应位：F1 血统的"输出锁存器"兼任上拉/下拉选择（写 1 上拉、写 0 下拉），这是与 S3 PUPDR 独立寄存器的又一个结构差异（已按用户手册实证：UM §7.5 配置表 Input pull-up=CTL10+OCTL1、pull-down=CTL10+OCTL0）。复用输出（如 USART_TX）：MD 选速度、CTL 选"复用推挽"，重映射候选脚多时还要动 AFIO：三件套见 [V1 第七节](06-clic-irq.md) 第 3、4 步。
 
 ## 三、数据四剑客：ISTAT/OCTL/BOP/BC
 
@@ -124,10 +112,10 @@ GPIOx_MODER |=  (1UL << (pin * 2U));      GPIO_CTL0(x) |=  (0x8UL << (pin * 4U))
 
 四条纪律全部从 S3 平移，只有第四条是"减负"：
 
-- **OCTL 的暗伤**：`OCTL 或上一个值`是"读-改-写"三条指令，中断插进读与写之间就冲掉别人的改动——S3 第二节的翻车现场在 RISC-V 上一字不差。
-- **BOP 只能纯赋值**：读回恒 0、写 0 无影响——对它做读-改-写等于把自己的位全清空（S3 坑 5 的 F1 版）。
-- **BC 是 GD32 家的直路**：F407 想清一个脚得往 BSRR 高 16 位写（pin+16 半档）；VF103 直接把 1 左移 pin 位写 BC——不用挪半档（[G2 第三节](02-gpio-af.md) 在 F4xx 上已点名这件兵器）。
-- **没有 TG**：G2 介绍的硬件翻转寄存器在 VF103 上没有（头文件实证：寄存器列表只有 CTL0/1、ISTAT、OCTL、BOP、BC、LOCK 六枚，无 TG，gd32vf103_gpio.h:53-59）——翻转老老实实 BOP/BC 各写一次。
+- **OCTL 的暗伤**：`OCTL 或上一个值`是"读-改-写"三条指令，中断插进读与写之间就冲掉别人的改动，S3 第二节的翻车现场在 RISC-V 上一字不差。
+- **BOP 只能纯赋值**：读回恒 0、写 0 无影响：对它做读-改-写等于把自己的位全清空（S3 坑 5 的 F1 版）。
+- **BC 是 GD32 家的直路**：F407 想清一个脚得往 BSRR 高 16 位写（pin+16 半档）；VF103 直接把 1 左移 pin 位写 BC，不用挪半档（[G2 第三节](02-gpio-af.md) 在 F4xx 上已点名这件兵器）。
+- **没有 TG**：G2 介绍的硬件翻转寄存器在 VF103 上没有（头文件实证：寄存器列表只有 CTL0/1、ISTAT、OCTL、BOP、BC、LOCK 六枚，无 TG，gd32vf103_gpio.h:53-59），翻转老老实实 BOP/BC 各写一次。
 
 ## 四、点灯五步：完整 main.c
 
@@ -193,9 +181,9 @@ int main(void)
 
 五步对号：**① 开时钟 → ② CTL0 四位配置 → ③ OCTL 初值 → ④ BOP/BC 原子翻转 → ⑤ mtime delay**。三点说明：
 
-- **时钟位换总线了**：S3/G2 的 GPIO 时钟在 AHB1ENR/RCU_AHB1EN，VF103 在 **RCU_APB2EN** bit2~6（PA~PE 逐一对应，gd32vf103_rcu.h:165-169）——"外设像 F1"的又一处落地（F1 的 GPIO 时钟就在 APB2）。照搬 F407 的 AHB1 肌肉记忆，连寄存器都摸错。
-- **④ 的极性由硬件定**：共阳灯低电平亮——初值给高（灭），BOP 置高是"灭"、BC 清零才是"亮"；共阴反过来。不看原理图抄极性，程序对灯不亮。
-- **⑤ 的时间观来自 V3**：mtime 27MHz、1ms=27000 tick，delay 精度受整 tick 限制——500ms 误差在微秒级，肉眼与逻辑分析仪都无感。
+- **时钟位换总线了**：S3/G2 的 GPIO 时钟在 AHB1ENR/RCU_AHB1EN，VF103 在 **RCU_APB2EN** bit2~6（PA~PE 逐一对应，gd32vf103_rcu.h:165-169），"外设像 F1"的又一处落地（F1 的 GPIO 时钟就在 APB2）。照搬 F407 的 AHB1 肌肉记忆，连寄存器都摸错。
+- **④ 的极性由硬件定**：共阳灯低电平亮：初值给高（灭），BOP 置高是"灭"、BC 清零才是"亮"；共阴反过来。不看原理图抄极性，程序对灯不亮。
+- **⑤ 的时间观来自 V3**：mtime 27MHz、1ms=27000 tick，delay 精度受整 tick 限制，500ms 误差在微秒级，肉眼与逻辑分析仪都无感。
 
 ## 五、工程拼图：四份产出合成一个能烧的工程
 
@@ -209,11 +197,11 @@ int main(void)
 
 烧录与调试沿用 V0 实验的 GDB 流程（调试后端按你的板卡定）。上电验收三件事：
 
-1. **灯闪**：1 秒周期（500ms 亮 500ms 灭）——闭环 OK；
-2. **GDB 读 SCSS**：RCU_CFG0 bits[2:3] 应为 2（PLL，[V2 实物实验](07-rcu-108m.md)）——时钟真在 108M；
-3. **mtime 差值**：连续读差反推约 27MHz（[V3 实物实验](08-mtime-delay.md)）——时基真的在跑。
+1. **灯闪**：1 秒周期（500ms 亮 500ms 灭），闭环 OK；
+2. **GDB 读 SCSS**：RCU_CFG0 bits[2:3] 应为 2（PLL，[V2 实物实验](07-rcu-108m.md)），时钟真在 108M；
+3. **mtime 差值**：连续读差反推约 27MHz（[V3 实物实验](08-mtime-delay.md)），时基真的在跑。
 
-三条全中，说明 V0~V4 没有一环是"抄来的"——每章的账都在你的板上对上了。
+三条全中，说明 V0~V4 没有一环是"抄来的"：每章的账都在你的板上对上了。
 
 ## 六、收官对账：ARM 世界的五件替身
 
@@ -228,12 +216,12 @@ V 篇五章，替你把 Cortex-M 的"标配"换成了 RISC-V 的对应物：
 | SysTick：24 位倒数、LOAD 自动重装、COUNTFLAG | mtime：64 位顺数、软件续约、比大小（主频/4） | [V3](08-mtime-delay.md) |
 | GPIO：MODER 七表、AHB1 时钟、AFSEL 编号 | GPIO：CTL0/CTL1 四位表、APB2 时钟、AFIO 选门 | V4（本章） |
 
-外设层与 F1 同源的"混血"红利贯穿全程：EXTI 配置、ISR 清挂起、GPIO 编码，凡是 F1 有的几乎照搬；要重学的只有内核三件——启动方式、中断控制器、时基。**这就是"学透一颗再举一反三"的实战版：先 STM32、再 GD32F4xx、最后 RISC-V，每一步都只学"差的那一点"。**
+外设层与 F1 同源的"混血"红利贯穿全程：EXTI 配置、ISR 清挂起、GPIO 编码，凡是 F1 有的几乎照搬；要重学的只有内核三件：启动方式、中断控制器、时基。**这就是"学透一颗再举一反三"的实战版：先 STM32、再 GD32F4xx、最后 RISC-V，每一步都只学"差的那一点"。**
 
 ## 记忆锚点
 
 ::: tip 一句话记住
-**有 AFIO 就是 F1 家：两张表每脚四位，掩 0xF 移 pin×4；时钟在 APB2 bit2~6 不在 AHB1；数据四剑客 ISTAT/OCTL/BOP/BC——BC 清脚不用 +16；五步闭环：时钟、CTL、OCTL、BOP/BC、mtime delay。**
+**有 AFIO 就是 F1 家：两张表每脚四位，掩 0xF 移 pin×4；时钟在 APB2 bit2~6 不在 AHB1；数据四剑客 ISTAT/OCTL/BOP/BC，BC 清脚不用 +16；五步闭环：时钟、CTL、OCTL、BOP/BC、mtime delay。**
 :::
 
 **延伸**：RISC-V 点灯闭环动画见 [V4 动画](/anim/riscv-blink-closed.svg)；STM32 GPIO 对照见 [S3](../stm32/03-gpio.md)；MTIME 延时在 [V3](08-mtime-delay.md) 展开。
@@ -241,15 +229,15 @@ V 篇五章，替你把 Cortex-M 的"标配"换成了 RISC-V 的对应物：
 ## 实物实验
 
 - **基础**：跑通五步闭环，LED 1 秒周期翻转；逻辑分析仪量高电平段，应为 500ms 整（整 tick 误差内）。
-- **换档联动**：[V2](07-rcu-108m.md) 切 72M 档重编译——delay 用 SystemCoreClock 现算，灯仍应 500ms 翻转；若变慢，查 V3 坑 5（常数写死）。
-- **输入侧复刻**：LED 脚改输入浮空/上拉（CTL0 改 MD=00、CTL=01/10），GDB 读 ISTAT，杜邦线拉地看 1 变 0——[S3 第六节](../stm32/03-gpio.md)的实验在 RISC-V 上再走一遍。
-- **七色扩展**：板上有 RGB 三灯的，三脚各配一段 CTL0/CTL1，主循环按位图轮流点亮——顺手练"多位配置不串位"。
+- **换档联动**：[V2](07-rcu-108m.md) 切 72M 档重编译，delay 用 SystemCoreClock 现算，灯仍应 500ms 翻转；若变慢，查 V3 坑 5（常数写死）。
+- **输入侧复刻**：LED 脚改输入浮空/上拉（CTL0 改 MD=00、CTL=01/10），GDB 读 ISTAT，杜邦线拉地看 1 变 0，[S3 第六节](../stm32/03-gpio.md)的实验在 RISC-V 上再走一遍。
+- **七色扩展**：板上有 RGB 三灯的，三脚各配一段 CTL0/CTL1，主循环按位图轮流点亮，顺手练"多位配置不串位"。
 
 ## 常见坑
 
-1. **忘开 RCU_APB2EN.PAEN**：症状与 S3 一模一样（写入无效、读回全 0），但解法换门牌——bit2~6 对应 PA~PE（gd32vf103_rcu.h:165-169），且寄存器是 **APB2EN** 不是 AHB1EN。第一大坑跨架构永恒，坑的坐标每颗芯都要重查。
-2. **照搬 S3 的 0x3 掩码 / pin×2 移位**：VF103 每脚 4 位——掩 0xF、移 pin×4。掩浅了留旧位，配出的"半新半旧"模式是间歇性怪病的温床。
-3. **OCTL 读-改-写翻转 + 对 BOP/BC 也读-改-写**：前者是 S3 第二节的暗伤（中断插队丢状态），后者更隐蔽——BOP 读回恒 0，读-改-写等于清空自己。原子寄存器只配纯赋值。
+1. **忘开 RCU_APB2EN.PAEN**：症状与 S3 一模一样（写入无效、读回全 0），但解法换门牌：bit2~6 对应 PA~PE（gd32vf103_rcu.h:165-169），且寄存器是 **APB2EN** 不是 AHB1EN。第一大坑跨架构永恒，坑的坐标每颗芯都要重查。
+2. **照搬 S3 的 0x3 掩码 / pin×2 移位**：VF103 每脚 4 位：掩 0xF、移 pin×4。掩浅了留旧位，配出的"半新半旧"模式是间歇性怪病的温床。
+3. **OCTL 读-改-写翻转 + 对 BOP/BC 也读-改-写**：前者是 S3 第二节的暗伤（中断插队丢状态），后者更隐蔽：BOP 读回恒 0，读-改-写等于清空自己。原子寄存器只配纯赋值。
 4. **极性与基址拍脑袋**：共阳/共阴不查原理图就抄亮灭逻辑；端口基址步进记错（B 口是 +0x400，不是 +0x100）。
 5. **复用三件套缺一件**：F1 血统的复用 = CTL 选"复用推挽/开漏" + AFIO_EXTISSx 选门 + RCU_APB2EN.AFEN（bit0）开 AFIO 时钟，缺一件外设就哑（[V1 第七节](06-clic-irq.md)）。
 
@@ -259,7 +247,7 @@ V 篇五章，替你把 Cortex-M 的"标配"换成了 RISC-V 的对应物：
 
 <details><summary>看答案</summary>
 
-`gd32vf103.h` 给了 AFIO_BASE = APB2+0x0000（:219）——AFIO 是 F1 制的复用重映射机关，F4xx 没有（F4xx 用每脚 4 位的 AFSEL0/1 替掉，见 G2 第五节）。有 AFIO 就是 F1 家。两处结构差异：① 配置从四张表（MODER 家族）变两张表 CTL0/CTL1、每脚 4 位（MD+CTL）；② 复用从"AFSEL 编号自由 mux"变"AFIO 选门 + CTL 选复用形态"。附带证据：GPIO 基址 0x40010800 与 STM32F103 的 GPIOA 同址。
+`gd32vf103.h` 给了 AFIO_BASE = APB2+0x0000（:219）：AFIO 是 F1 制的复用重映射机关，F4xx 没有（F4xx 用每脚 4 位的 AFSEL0/1 替掉，见 G2 第五节）。有 AFIO 就是 F1 家。两处结构差异：① 配置从四张表（MODER 家族）变两张表 CTL0/CTL1、每脚 4 位（MD+CTL）；② 复用从"AFSEL 编号自由 mux"变"AFIO 选门 + CTL 选复用形态"。附带证据：GPIO 基址 0x40010800 与 STM32F103 的 GPIOA 同址。
 
 </details>
 
@@ -267,7 +255,7 @@ V 篇五章，替你把 Cortex-M 的"标配"换成了 RISC-V 的对应物：
 
 <details><summary>看答案</summary>
 
-MD=10（2MHz 输出）、CTL=00（推挽）→ 四位合体 0b1000 = 0x8。PA1 在 CTL0 占 bits[7:4]：先把该四段清零（掩码 0xF 左移 4 位后取反相与），再或上 0x8 左移 4 位——目标段值 0x00000080。注意每脚 4 位：掩 0xF、移 pin×4（S3 是 0x3、pin×2）。
+MD=10（2MHz 输出）、CTL=00（推挽）→ 四位合体 0b1000 = 0x8。PA1 在 CTL0 占 bits[7:4]：先把该四段清零（掩码 0xF 左移 4 位后取反相与），再或上 0x8 左移 4 位，目标段值 0x00000080。注意每脚 4 位：掩 0xF、移 pin×4（S3 是 0x3、pin×2）。
 
 </details>
 
@@ -275,7 +263,7 @@ MD=10（2MHz 输出）、CTL=00（推挽）→ 四位合体 0b1000 = 0x8。PA1 �
 
 <details><summary>看答案</summary>
 
-F407 没有独立清零寄存器，用 BSRR 高 16 位复位区：把 1 左移 (pin+16) 位后写入。VF103 有 BC（GD32 家兵器，F4xx 同款见 G2 第三节）：把 1 左移 pin 位直接写 GPIO_BC——不用 +16 挪半档。两者都是纯赋值原子写、写 0 无影响。
+F407 没有独立清零寄存器，用 BSRR 高 16 位复位区：把 1 左移 (pin+16) 位后写入。VF103 有 BC（GD32 家兵器，F4xx 同款见 G2 第三节）：把 1 左移 pin 位直接写 GPIO_BC，不用 +16 挪半档。两者都是纯赋值原子写、写 0 无影响。
 
 </details>
 
@@ -283,7 +271,7 @@ F407 没有独立清零寄存器，用 BSRR 高 16 位复位区：把 1 左移 (
 
 <details><summary>看答案</summary>
 
-写 RCU_APB2EN（RCU+0x18）的 bit2——PAEN。依据 gd32vf103_rcu.h:165（RCU_APB2EN_PAEN = BIT(2)），bit3~6 依次对应 PB~PE。注意 GPIO 时钟在 APB2 不在 AHB1（F1 血统），别用 F407 的 AHB1ENR bit5 肌肉记忆。
+写 RCU_APB2EN（RCU+0x18）的 bit2，PAEN。依据 gd32vf103_rcu.h:165（RCU_APB2EN_PAEN = BIT(2)），bit3~6 依次对应 PB~PE。注意 GPIO 时钟在 APB2 不在 AHB1（F1 血统），别用 F407 的 AHB1ENR bit5 肌肉记忆。
 
 </details>
 
@@ -315,9 +303,11 @@ F407 没有独立清零寄存器，用 BSRR 高 16 位复位区：把 1 左移 (
 ## 你做到了
 
 - 第一个完整的 RISC-V 工程从你手里跑起来：启动、时钟、时基、GPIO 四环都验过账；
-- "外设像 F1、内核是 RISC-V"的混血地图刻进脑子——以后看任何 F1 兼容芯，知道哪部分照搬、哪部分重学；
+- "外设像 F1、内核是 RISC-V"的混血地图刻进脑子，以后看任何 F1 兼容芯，知道哪部分照搬、哪部分重学；
 - V 篇毕业：从 arm-none-eabi 到 riscv-none-elf，你完成了一次架构迁移的全流程演练。
 
+家谱是 F1：AFIO_BASE 还钉在 APB2 头上，有 AFIO 就是 F1 家；于是 CTL0/CTL1 两张配置表每脚 4 位，掩码 0xF、移位 pin*4，别拿 S3 的 0x3、pin*2 去套；数据四剑客 ISTAT/OCTL/BOP/BC 换编制不换岗，BC 独立清零是 STM32F407 没有的待遇。
+
 <div class="achievement">
-✅ <b>V 篇收官</b>。下一站：<a href="../lab/index.html">实验中心</a>把闭环上板实测；或直奔 <a href="../rtos/index.html">RTOS 篇</a>——看 SysTick 的 tick 在 RISC-V 上怎么落到 mtimecmp。
+✅ <b>V 篇收官</b>。下一站：<a href="../lab/index.html">实验中心</a>把闭环上板实测；或直奔 <a href="../rtos/index.html">RTOS 篇</a>：看 SysTick 的 tick 到了 RISC-V 怎么落进 mtimecmp。
 </div>

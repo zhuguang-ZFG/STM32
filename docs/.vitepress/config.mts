@@ -3,6 +3,9 @@ import { animDuration, decorateAnim, readAnim } from './anim-decorate.mjs'
 import { codeLanguages } from './code-languages.mjs'
 import { renderSearch } from '../../scripts/search-render.mjs'
 import { tokenizeForSearch } from '../../scripts/search-tokenize.mjs'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const HOST = 'https://zhuguang-zfg.github.io'
 const BASE = '/mcu/'
@@ -15,6 +18,29 @@ const pageUrl = (page: string) => {
   if (p === 'index.html') p = ''
   else p = p.replace(/\/index\.html$/, '/')
   return `${HOST}${BASE}${p}`
+}
+const ART_DIR = join(
+  dirname(fileURLToPath(import.meta.url)), '..', '..',
+  'mcu-book', 'book', 'assets', 'chapter-art',
+)
+
+// 章首题花上网：与印前 build_html.py chapter_art_html 同一资产、同一约定——
+// 相对路径 slug（stm32/06-tim.md → stm32-06-tim）存在即内联、缺失静默跳过、
+// 滤镜硬门（feTurbulence/<filter 是印前光栅化源头，web 同口径拒绝）。
+// 内联而非 <img>：SVG 里的 var(--cover-ink) 墨色令牌要能吃深浅两套主题。
+const chapterArt = (rel?: string): string => {
+  if (!rel) return ''
+  const slug = rel.replace(/\.md$/, '').replace(/\//g, '-')
+  let svg: string
+  try {
+    svg = readFileSync(join(ART_DIR, `${slug}.svg`), 'utf-8')
+  } catch {
+    return ''
+  }
+  if (svg.includes('feTurbulence') || svg.includes('<filter')) {
+    throw new Error(`章首题图必须纯矢量（含滤镜）：${slug}.svg`)
+  }
+  return `<div class="chapter-art">${svg}</div>\n`
 }
 
 export default defineConfig({
@@ -95,6 +121,19 @@ export default defineConfig({
           i--
         }
       })
+      // 章首题花：插在 H1 之后，镜像印前「章号/标题 → 题花」的相邻关系
+      // （web 端罗盘住在 doc-before 槽、位于标题上方，属既有布局，不在此动）。
+      md.core.ruler.after('anim-figure-block', 'chapter-art', (state: any) => {
+        const rel = state.env?.relativePath || state.env?.path
+        const html = chapterArt(typeof rel === 'string' ? rel : '')
+        if (!html) return
+        const block = new state.Token('html_block', '', 0)
+        block.content = html
+        const h1Close = state.tokens.findIndex(
+          (t: any) => t.type === 'heading_close' && t.tag === 'h1',
+        )
+        state.tokens.splice(h1Close >= 0 ? h1Close + 1 : 0, 0, block)
+      })
     },
   },
   themeConfig: {
@@ -121,6 +160,7 @@ export default defineConfig({
       { text: 'GD32', link: '/gd32/' },
       { text: '实验', link: '/lab/' },
       { text: '综合项目', link: '/projects/' },
+      { text: 'AI 辅助', link: '/ai/' },
       { text: '动画', link: '/animations' },
       { text: '学习路径', link: '/learning-path' },
       {
@@ -140,6 +180,7 @@ export default defineConfig({
     ],
     sidebar: {
       '/projects/': [{ text:'综合项目', items:[{text:'导览',link:'/projects/'},{text:'J1 F407记录器',link:'/projects/01-f407-logger'},{text:'J2 S3记录器',link:'/projects/02-s3-logger'}] }],
+      '/ai/': [{ text:'AI 辅助开发', items:[{text:'导览',link:'/ai/'},{text:'A0 结对工程师',link:'/ai/00-pair-not-ghost'},{text:'A1 提示词模式',link:'/ai/01-prompt-patterns'},{text:'A2 手册对账',link:'/ai/02-manual-reconciliation'},{text:'A3 工具流',link:'/ai/03-toolflow-mcp'},{text:'A4 幻觉防御',link:'/ai/04-hallucination-defense'},{text:'A5 生产线自证',link:'/ai/05-this-book-pipeline'}] }],
       '/guide/': [
         {
           text: '导读',

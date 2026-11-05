@@ -4,6 +4,10 @@ import { ANIM_DIR, EPISODES_DIR } from './util.mjs'
 
 export const KINDS = ['hook', 'anim', 'code', 'card', 'outro']
 export const SMIL_MODES = ['stretch', 'loop', 'once']
+export const FORMAT_VERSIONS = [1, 2]
+export const V2_VOICES = ['zh-CN-YunyangNeural']
+const V2_SECTION_RANGE = [3, 6]
+const REVEAL_RE = /^(title|sub|note|kicker|url|code:\d+-\d+|codeB:\d+-\d+|bullets:\d+-\d+|line:\d+-\d+)$/
 
 // 旁白时长估算：每字秒数 + 每场固定留白，见下面 validateEpisode 里的回归出处
 export const SEC_PER_CHAR = {
@@ -37,7 +41,13 @@ export function resolveScenes(ep, platform) {
       // 不断行的 19 字大标题，只能让抖音带一份自己的 code/title——
       // 而不是把 scene 整份复制出来两处维护。
       return list.map((sc) => {
-        const out = overrides[sc.id] ? { ...sc, narration: overrides[sc.id] } : { ...sc }
+        const out = { ...sc }
+        if (overrides[sc.id]) {
+          // 旁白换了，源 scene 的 ttsText 是照着旧旁白写的发音文，留着会让耳朵和字幕对不上：
+          // 删掉后由 narrationJobs 从新旁白展开（或由下面的 set 显式给平台自己的 ttsText）。
+          delete out.ttsText
+          out.narration = overrides[sc.id]
+        }
         return sets[sc.id] ? { ...out, ...sets[sc.id] } : out
       })
     }
@@ -93,6 +103,72 @@ function validateSections(sections, scenes, name, errs) {
   }
 }
 
+function lineCount(src) {
+  return src ? String(src).replace(/\n$/, '').split('\n').length : 0
+}
+
+function rangeOf(spec) {
+  const m = String(spec).match(/:(\d+)-(\d+)$/)
+  return m ? [Number(m[1]), Number(m[2])] : null
+}
+
+function validateBeatMap(sc, at, errs) {
+  if (sc.beatMap === undefined) return
+  if (!Array.isArray(sc.beatMap) || !sc.beatMap.length) {
+    errs.push(`${at}: beatMap 必须是非空数组`)
+    return
+  }
+  let last = 0
+  for (const [i, b] of sc.beatMap.entries()) {
+    const p = `${at}.beatMap[${i}]`
+    // 单项写坏（null、字符串、数组）只报这一项，不能把整份 episode 的校验抛崩。
+    if (!b || typeof b !== 'object' || Array.isArray(b)) {
+      errs.push(`${p}: beatMap 项必须是对象`)
+      continue
+    }
+    // 首拍锚定 scene 起点（caption 1 / 0 s）：at > 1 会被 Task 3 的
+    // captions[at-1] 错位或静默退回场首，必须在这里拦下。
+    if (i === 0 && Number.isInteger(b.at) && b.at !== 1) {
+      errs.push(`${p}: 第一拍 at 必须是 1（场景基线）`)
+    }
+    if (!Number.isInteger(b.at) || b.at < 1) errs.push(`${p}: at 必须是 ≥1 的整数（1-based 字幕序号）`)
+    else if (b.at <= last) errs.push(`${p}: at=${b.at} 必须大于上一拍 ${last}`)
+    else last = b.at
+    if (typeof b.reveal !== 'string' || !REVEAL_RE.test(b.reveal)) {
+      errs.push(`${p}: reveal="${b.reveal}" 不在允许形状内`)
+      continue
+    }
+    const range = rangeOf(b.reveal)
+    if (!range) continue
+    const [a, c] = range
+    if (a > c) errs.push(`${p}: ${b.reveal} 起止倒置`)
+    const kind = b.reveal.split(':')[0]
+    const max = kind === 'bullets' ? (sc.bullets?.length || 0)
+      : kind === 'codeB' ? lineCount(sc.codeB)
+        : lineCount(sc.code)
+    if (c >= max) errs.push(`${p}: ${b.reveal} 越界（共 ${max} 行/条）`)
+  }
+}
+
+function validateEmphasis(sc, at, errs) {
+  if (sc.emphasis === undefined) return
+  if (!Array.isArray(sc.emphasis)) { errs.push(`${at}: emphasis 必须是数组`); return }
+  const hay = [sc.title, sc.sub, sc.note, sc.kicker, sc.code, sc.codeB, ...(sc.bullets || [])].filter(Boolean).join('\n')
+  for (const e of sc.emphasis) {
+    if (typeof e !== 'string' || !e.trim()) errs.push(`${at}: emphasis 里有空值`)
+    else if (!hay.includes(e)) errs.push(`${at}: emphasis "${e}" 不在这一场的上屏文本里`)
+  }
+}
+
+function validateLexicon(lex, errs) {
+  if (lex === undefined) return
+  if (!lex || typeof lex !== 'object' || Array.isArray(lex)) { errs.push('ttsLexicon 必须是对象'); return }
+  for (const [k, v] of Object.entries(lex)) {
+    if (k.length < 2) errs.push(`ttsLexicon["${k}"] 的键至少 2 字符`)
+    if (typeof v !== 'string' || !v.trim()) errs.push(`ttsLexicon["${k}"] 的值必须是非空字符串`)
+  }
+}
+
 export function validateEpisode(ep, id) {
   const errs = []
   const warns = []
@@ -100,6 +176,13 @@ export function validateEpisode(ep, id) {
   check(ep.title?.trim(), '缺 title', errs)
   check(ep.voice?.trim(), '缺 voice（edge-tts 音色名）', errs)
   check(Array.isArray(ep.platforms) === false && ep.platforms, '缺 platforms', errs)
+
+  const fv = ep.formatVersion ?? 1
+  check(FORMAT_VERSIONS.includes(fv), `formatVersion=${ep.formatVersion} 不在 1/2`, errs)
+  if (fv === 2) {
+    check(V2_VOICES.includes(ep.voice), `v2 音色必须是 ${V2_VOICES.join('/')}，当前 "${ep.voice}"`, errs)
+    validateLexicon(ep.ttsLexicon, errs)
+  }
 
   const seenAnims = new Set()
   for (const [name, cfg] of Object.entries(ep.platforms || {})) {
@@ -154,8 +237,18 @@ export function validateEpisode(ep, id) {
         const lines = (sc.code || '').split('\n').length
         check(lines <= maxLines + 6, `${at}: 代码 ${lines} 行，超出 ${name} 可显示上限，请拆场`, warns)
       }
+
+      if (fv === 2) {
+        validateBeatMap(sc, at, errs)
+        validateEmphasis(sc, at, errs)
+        if (sc.ttsText !== undefined) check(typeof sc.ttsText === 'string' && sc.ttsText.trim(), `${at}: ttsText 必须是非空字符串`, errs)
+      }
     }
     validateSections(cfg.sections, scenes, name, errs)
+    if (fv === 2) {
+      const n = cfg.sections?.length || 0
+      check(n >= V2_SECTION_RANGE[0] && n <= V2_SECTION_RANGE[1], `平台 ${name}: v2 需要 3–6 节，当前 ${n} 节`, errs)
+    }
     const [lo, hi] = cfg.targetSec || []
     if (lo && hi) {
       // 口径来自 11 集成片的实测回归（拿 narration.srt 末句时间当分母，最小二乘拟合）：

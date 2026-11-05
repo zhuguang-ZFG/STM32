@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>库没有魔法：三板斧喂给 GPIO_Init，四段寄存器落位</title>
+<style>
+:root {
+  color-scheme: light;
+  --color-paper:   oklch(98.5% 0.004 250);
+  --color-paper-2: oklch(96.5% 0.005 252);
+  --color-rule:    oklch(93% 0.007 255);
+  --color-rule-2:  oklch(83% 0.011 255);
+  --color-muted:   oklch(56% 0.013 255);
+  --color-neutral: oklch(46% 0.015 255);
+  --color-ink-2:   oklch(34% 0.018 257);
+  --color-ink:     oklch(24% 0.020 258);
+  --color-accent:  oklch(58% 0.20 256);
+  --color-graphite:oklch(24% 0.018 260);
+  --color-g1:      oklch(68% 0.15 55);
+  --color-g1-soft: oklch(78% 0.12 55);
+  --color-g1-ink:  oklch(52% 0.14 50);
+  --color-g1-tint: oklch(96.5% 0.015 60 / .5);
+  --color-accent-soft: oklch(58% 0.20 256 / .45);
+  --color-accent-tint: oklch(97% 0.012 256 / .5);
+  --font-display: "Geist", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Microsoft YaHei", "Noto Sans CJK SC", ui-monospace, Menlo, monospace;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px;
+  --radius-card: 10px; --radius-tile: 12px;
+  --color-veil: oklch(98.5% 0.004 250 / .78);
+}
+[data-theme="dark"] { color-scheme: dark; }
+@font-face { font-family:"Geist"; font-style:normal; font-weight:100 900; font-display:swap;
+  src:url(data:font/woff2;base64,%%FONT_DISPLAY%%) format("woff2"); }
+@font-face { font-family:"JetBrains Mono"; font-style:normal; font-weight:100 800; font-display:swap;
+  src:url(data:font/woff2;base64,%%FONT_JBM%%) format("woff2"); }
+.kicker, .node .role, .el, .legend, .foot { letter-spacing: 0.04em; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { overflow-x: clip; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); padding: var(--space-xl) var(--space-lg) var(--space-2xl); }
+.page { width: fit-content; max-width: 100%; margin: 0 auto; }
+.head { display:grid; grid-template-columns: 1fr auto; gap: var(--space-lg); align-items:end;
+  padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-rule-2); margin-bottom: var(--space-lg); }
+.kicker { font-family: var(--font-mono); font-size: 11px; color: var(--color-accent); margin-bottom: var(--space-sm); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 4vw, 30px); letter-spacing: -0.005em; line-height: 1.2; }
+.lede { max-width: 300px; font-size: 12px; line-height: 1.7; color: var(--color-neutral); padding-bottom: 2px; }
+@media (max-width: 680px) { .head { grid-template-columns: 1fr; align-items:start; } .lede { max-width:none; } }
+.scroller { overflow-x: auto; border: 1px solid var(--color-rule-2); border-radius: var(--radius-card); }
+.canvas { position: relative; width: 1020px; height: 700px; background: var(--color-paper);
+  background-image:
+    linear-gradient(var(--color-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+  background-size: 24px 24px; background-position: -1px -1px; }
+.group { position:absolute; border-radius: var(--radius-tile); }
+.g-label { position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:6px;
+  font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--color-neutral); white-space: nowrap; }
+.g-label img { width: 14px; height: 14px; }
+.group.ga { border:1.5px solid var(--color-g1); background: var(--color-g1-tint); }
+.group.ga > .g-label { color: var(--color-g1-ink); }
+.group.gb { border:1.5px solid var(--color-accent-soft); background: var(--color-accent-tint); }
+.group.gb > .g-label { color: var(--color-accent); }
+.node { position:absolute; width:132px; text-align:center; }
+.tile { width:60px; height:60px; margin:0 auto; border-radius: var(--radius-tile);
+  background:#fff; border:1px solid var(--color-rule-2); display:grid; place-items:center;
+  box-shadow: 0 1px 2px oklch(24% 0.02 258 / 0.05); }
+.tile img { width:34px; height:34px; object-fit:contain; }
+.node .name { font-family: var(--font-display); font-weight:600; font-size:13px; margin-top: var(--space-sm); letter-spacing:0; }
+.node .role { font-family: var(--font-mono); font-size:9.5px; color: var(--color-muted); margin-top:2px; }
+.node .name span, .node .role span { background: var(--color-veil); padding: 0 var(--space-xs); border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+svg.edges { position:absolute; inset:0; width:1020px; height:700px; pointer-events:none; }
+.e  { stroke: var(--color-accent); stroke-width:1.6; fill:none; }
+.n  { stroke: var(--color-neutral); stroke-width:1.4; fill:none; }
+.dash { stroke-dasharray:4 5; }
+.el { font-family: var(--font-mono); font-size:10.5px; fill: var(--color-neutral);
+  paint-order: stroke; stroke: var(--color-paper); stroke-width:4px; stroke-linejoin:round; }
+.el.a { fill: var(--color-accent); }
+.legend { display:flex; gap: var(--space-lg); align-items:center; margin-top: var(--space-md);
+  font-family: var(--font-mono); font-size:10px; color: var(--color-muted); flex-wrap:wrap; }
+.legend .sw { display:inline-block; width:30px; vertical-align:middle; margin-right:6px; border-top:1.6px solid var(--color-accent); }
+.foot { margin-top: var(--space-xl); padding-top: var(--space-md); border-top: 1px solid var(--color-rule-2);
+  display:flex; justify-content:space-between; gap: var(--space-md); flex-wrap:wrap;
+  font-family: var(--font-mono); font-size:10px; color: var(--color-muted); }
+.foot a { color: inherit; text-decoration-color: var(--color-rule-2); text-underline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <div>
+      <div class="kicker">御舆 MCU 书 · S15 SPL 解剖 · 配图</div>
+      <h1>库没有魔法：三板斧喂给 GPIO_Init，四段寄存器落位</h1>
+    </div>
+    <p class="lede">基址宏把地址变成名字，结构体把地址掰成字段，位掩码把位段变成宏；GPIO_Init 只是把它们按 pinpos 移位写进四段寄存器。</p>
+  </header>
+
+  <div class="scroller">
+  <div class="canvas">
+
+    <!-- GROUPS -->
+    <div class="group gb" style="left:100px; top:80px; width:820px; height:210px;">
+      <div class="g-label">stm32f4xx.h 三板斧 · CMSIS 设备头逐字可见</div>
+    </div>
+
+    <!-- EDGES -->
+    <svg class="edges" viewBox="0 0 1020 700" aria-hidden="true">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/>
+        </marker>
+      </defs>
+      <path class="n" d="M190 240 V300 H278 V376" marker-end="url(#ar)"/>
+      <path class="n" d="M830 240 V360 H310 V376" marker-end="url(#ar)"/>
+      <path class="n" d="M510 240 V330 H678 V376" marker-end="url(#ar)"/>
+      <path class="e" d="M300 480 V510 H150 V556" marker-end="url(#ar)"/>
+      <path class="e" d="M300 480 V510 H390 V556" marker-end="url(#ar)"/>
+      <path class="e" d="M300 480 V510 H630 V556" marker-end="url(#ar)"/>
+      <path class="e" d="M300 480 V510 H870 V556" marker-end="url(#ar)"/>
+    </svg>
+
+    <!-- NODES -->
+    <div class="node" style="left:124px;top:140px">
+      <div class="tile"><img src="%%ICON_binary%%" alt=""></div>
+      <div class="name"><span>基址宏</span></div><div class="role"><span>GPIOA = 0x40020000</span></div>
+    </div>
+    <div class="node" style="left:444px;top:140px">
+      <div class="tile"><img src="%%ICON_braces%%" alt=""></div>
+      <div class="name"><span>GPIO_TypeDef</span></div><div class="role"><span>9 字段 = RM0090 布局</span></div>
+    </div>
+    <div class="node" style="left:764px;top:140px">
+      <div class="tile"><img src="%%ICON_settings%%" alt=""></div>
+      <div class="name"><span>位掩码</span></div><div class="role"><span>枚举值 = 位段值</span></div>
+    </div>
+    <div class="node" style="left:234px;top:380px">
+      <div class="tile"><img src="%%ICON_workflow%%" alt=""></div>
+      <div class="name"><span>GPIO_Init</span></div><div class="role"><span>逐 pin 循环 · 先清后置</span></div>
+    </div>
+    <div class="node" style="left:634px;top:380px">
+      <div class="tile"><img src="%%ICON_bell%%" alt=""></div>
+      <div class="name"><span>assert_param</span></div><div class="role"><span>Debug 体检 · Release 空宏</span></div>
+    </div>
+    <div class="node" style="left:84px;top:560px">
+      <div class="tile"><img src="%%ICON_box%%" alt=""></div>
+      <div class="name"><span>MODER 0x00</span></div><div class="role"><span>2 位/引脚 · 移 pinpos×2</span></div>
+    </div>
+    <div class="node" style="left:324px;top:560px">
+      <div class="tile"><img src="%%ICON_box%%" alt=""></div>
+      <div class="name"><span>OTYPER 0x04</span></div><div class="role"><span>1 位/引脚 · 推挽/开漏</span></div>
+    </div>
+    <div class="node" style="left:564px;top:560px">
+      <div class="tile"><img src="%%ICON_box%%" alt=""></div>
+      <div class="name"><span>OSPEEDR 0x08</span></div><div class="role"><span>2 位/引脚 · 仅 OUT/AF</span></div>
+    </div>
+    <div class="node" style="left:804px;top:560px">
+      <div class="tile"><img src="%%ICON_box%%" alt=""></div>
+      <div class="name"><span>PUPDR 0x0C</span></div><div class="role"><span>2 位/引脚 · Analog 清 0</span></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw"></span>翻译落位四段寄存器</span>
+    <span><span class="sw n"></span>三板斧供料</span>
+  </div>
+
+  <div class="foot">
+    <span>直接赋值会覆盖其他 15 个引脚，所以先清后置 · 移位量由寄存器布局决定（2 位/引脚移 pinpos×2，OTYPER 1 位移 pinpos）· RCC_AHB1PeriphClockCmd 写完读回 AHB1ENR（某些版本用 __DSB()），替我们踩了「时钟生效延迟」这个坑 · 枚举值即位段值，翻译零查表</span>
+    <span>icons: Lucide · made with <a href="https://github.com/caru-ini/stack-diagram" target="_blank" rel="noopener">stack-diagram</a></span>
+  </div>
+
+</div>
+</body>
+</html>

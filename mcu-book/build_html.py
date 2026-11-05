@@ -38,13 +38,17 @@ PUBLIC_DIR = DOCS_DIR / "public"
 BOOK_DIR = ROOT / "book"
 QUIZ_DIR = DOCS_DIR / ".vitepress" / "data" / "quizzes"
 PROJECTS_JSON = REPO_ROOT / "code" / "projects.json"
+sys.path.insert(0, str(ROOT / "print"))
+import art  # noqa: E402 — 自绘主题插图（书稿工艺层）
 DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
 OUTPUT_NAME = "mcu-deep-book.html"
 PDF_NAME = "mcu-deep-book.pdf"
 SITE_BASE = "https://zhuguang-zfg.github.io/mcu/"
 REPO_BASE = "https://github.com/zhuguang-ZFG/mcu"
-EXPECTED_CHAPTERS = 88
+def chapter_count(manifest: dict) -> int:
+    """正文章数从 manifest 推导：新部落地即自动纳入，不再钉死常量。"""
+    return sum(len(part["files"]) for part in manifest["parts"])
 
 HREF_ATTR = re.compile(r"(?P<prefix>\bhref\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
 SRC_ATTR = re.compile(r"(?P<prefix>\bsrc\s*=\s*)(?P<quote>[\"'])(?P<value>.*?)(?P=quote)", re.I)
@@ -117,9 +121,9 @@ def validate_manifest(manifest: dict) -> None:
     if not isinstance(parts, list) or not parts:
         raise BuildError("manifest parts must be a non-empty list")
     flattened = chapter_files(manifest)
-    if len(flattened) != EXPECTED_CHAPTERS or len(set(flattened)) != EXPECTED_CHAPTERS:
+    if len(set(flattened)) != len(flattened):
         raise BuildError(
-            f"chapter list must contain exactly {EXPECTED_CHAPTERS} unique files, got {len(flattened)}"
+            f"chapter list must not contain duplicates, got {len(flattened)} entries / {len(set(flattened))} unique"
         )
     for name in flattened:
         if not (DOCS_DIR / name).is_file():
@@ -316,7 +320,7 @@ def substitute_components(
         text = LAB_STATUS_TAG.sub(lab_status_html(frontmatter, source_label), text)
 
     def video_repl(match: re.Match[str]) -> str:
-        kind, video_id, title = match.group(1), match.group(2), match.group(3) or video_id
+        kind, video_id, title = match.group(1), match.group(2), match.group(3) or match.group(2)
         url = (
             f"https://www.bilibili.com/video/{video_id}"
             if kind == "bilibili"
@@ -349,7 +353,6 @@ def substitute_components(
         text = MERMAID_FENCE.sub(DECISION_TREE_HTML, text)
     else:
         def mermaid_repl(match: re.Match[str]) -> str:
-            source = match.group(0)
             return (
                 '<aside class="widget-note"><p>🧮 这一节在在线版是可交互图表；'
                 "离线书未收录其渲染，需对照在线版阅读。</p></aside>"
@@ -501,6 +504,17 @@ def cjk_slugify(value: str, separator: str) -> str:
     return re.sub(r"[\s-]+", separator, value) or "section"
 
 
+def fragment_key(fragment: str) -> str:
+    """锚点比较键：去掉连字符/下划线/空白再小写。
+
+    为什么需要它：同一个标题在三处的锚点不一样 —— 书籍构建器直接丢标点
+    （`第五步：接线（SWD 四线）` → `第五步接线swd-四线`），站点侧 VitePress 把全角标点
+    折成 `-`（→ `第五步-接线-swd-四线`），GitHub 又是另一种。源码里的链接只能写一条，
+    所以解析时按"去分隔符后比较"，两边都能落到同一个 id 上。
+    """
+    return re.sub(r"[-_\s]+", "", fragment).lower()
+
+
 def render_markdown(source: str) -> str:
     renderer = markdown.Markdown(
         extensions=["extra", "toc", "sane_lists"],
@@ -560,6 +574,7 @@ class BookContext:
                 self.section_index_anchor[hub.resolve()] = "contents"
         self.quizzes = load_quizzes()
         self.path_to_name = {info["path"].resolve(): name for name, info in self.chapter_meta.items()}
+        self._fragment_index: dict[str, dict[str, str]] = {}
         self.stats = {"figures": 0}
         self.part_minutes: dict[str, int] = {}
 
@@ -571,6 +586,43 @@ class BookContext:
         if resolved in self.section_index_anchor:
             return f"#{self.section_index_anchor[resolved]}"
         return None
+
+    def resolve_fragment(self, chapter: str | None, fragment: str) -> str | None:
+        """把源文件里的锚点解析成书内真实 id（失败返回 None，交给既有回退路径）。
+
+        源文件里的锚点可能是站点风格（VitePress 把全角标点折成 "-"），而书里的 id
+        是构建器自己 slug 出来的（直接丢标点）。两边不同源，所以按 fragment_key 比较。
+        """
+        if not chapter or not fragment:
+            return None
+        index = self._fragment_index.get(chapter)
+        if index is None:
+            index = self._build_fragment_index(chapter)
+            self._fragment_index[chapter] = index
+        return index.get(fragment_key(fragment))
+
+    def _build_fragment_index(self, chapter: str) -> dict[str, str]:
+        """渲染目标章一次，把「比较键 → 书内 id」记下来（按章缓存）。
+
+        不去自己复刻 markdown toc 的重复标题计数规则，而是直接从渲染结果里读 id，
+        与真正产出的 id 天然一致。
+        """
+        info = self.chapter_meta.get(chapter)
+        if not info or not info["path"].is_file():
+            return {}
+        rendered = render_markdown(info["path"].read_text(encoding="utf-8"))
+        index: dict[str, str] = {}
+        ambiguous: set[str] = set()
+        for match in ID_ATTR.finditer(rendered):
+            real = f"{info['anchor']}-{match.group('value')}"
+            key = fragment_key(match.group("value"))
+            if key in index and index[key] != real:
+                ambiguous.add(key)
+                continue
+            index[key] = real
+        for key in ambiguous:
+            index.pop(key, None)
+        return index
 
 
 def rewrite_local_links(rendered: str, source_file: Path, source_label: str, ctx: BookContext) -> str:
@@ -596,7 +648,13 @@ def rewrite_local_links(rendered: str, source_file: Path, source_label: str, ctx
             target = _resolve_md_target(source_file, raw_path, source_label)
             anchor = ctx.anchor_lookup(target)
             if anchor is not None:
-                value = anchor + (f"-{fragment}" if fragment else "")
+                # 先按"去分隔符比较"把站点风格锚点解析成书内 id；解析不到才退回原来的
+                # 直接拼接（那条路走不通时由 audit_html 的坏锚点检查兜住并报错）。
+                resolved = ctx.resolve_fragment(ctx.path_to_name.get(target.resolve()), fragment)
+                if resolved is not None:
+                    value = "#" + resolved
+                else:
+                    value = anchor + (f"-{fragment}" if fragment else "")
             elif target.suffix.lower() == ".md" and target.is_file() and target.resolve().is_relative_to(DOCS_DIR.resolve()):
                 page = target.resolve().relative_to(DOCS_DIR.resolve()).as_posix().removesuffix(".md")
                 value = f"{SITE_BASE}{page}.html" + (f"#{fragment}" if fragment else "")
@@ -635,7 +693,7 @@ def embed_local_images(rendered: str, source_file: Path, source_label: str) -> s
     return IMAGE_TAG.sub(replace_tag, rendered)
 
 
-def upgrade_images_to_figures(rendered: str, ctx: "BookContext | None" = None) -> str:
+def upgrade_images_to_figures(rendered: str, ctx: BookContext | None = None) -> str:
     """Give every standalone image a <figure> with its caption (alt text)."""
 
     def replace_paragraph(match: re.Match[str]) -> str:
@@ -709,7 +767,7 @@ def compass_html(guide: dict) -> str:
 </aside>"""
 
 
-def chapter_header_html(chapter_number: int, title: str, frontmatter: dict) -> str:
+def chapter_header_html(chapter_number: int, title: str, frontmatter: dict, book_title: str = "") -> str:
     meta_bits: list[str] = []
     stars = _stars(frontmatter.get("difficulty"))
     if stars:
@@ -718,10 +776,33 @@ def chapter_header_html(chapter_number: int, title: str, frontmatter: dict) -> s
     if minutes:
         meta_bits.append(f"约 {html.escape(str(minutes))} 分钟")
     meta = f'<p class="chapter-meta">{" · ".join(meta_bits)}</p>' if meta_bits else ""
+    # 书名号元素：印刷版用它做 string-set 的 content() 源（paged.js 只支持
+    # content()/attr()，不支持字符串字面量）。零字号不占版面。
+    marker = f'<span class="book-title-marker" aria-hidden="true">{html.escape(book_title)}</span>'
     return (
-        f'<header><span class="chapter-number">第 {chapter_number:02d} 章</span>'
+        f'<header>{marker}<span class="chapter-number">第 {chapter_number:02d} 章</span>'
         f"<h1>{html.escape(title)}</h1>{meta}</header>"
     )
+
+
+def chapter_art_html(name: str) -> str:
+    """章首手绘题图：assets/chapter-art/<分部>-<章>.svg 存在即内联，缺失静默跳过。
+
+    题图是纯装饰题花（机制图解由正文插图承担），缺图不许阻塞构建。
+    每枚 SVG 必须纯矢量、零 filter/id/url：art_guard 全目录把守 + 本函数
+    装配期硬门（历史实证：带 feTurbulence 的题图会被 Chromium 整块光栅化）。
+    """
+    slug = name.replace("/", "-").removesuffix(".md")
+    svg_path = BOOK_DIR / "assets" / "chapter-art" / f"{slug}.svg"
+    if not svg_path.is_file():
+        return ""
+    svg = svg_path.read_text(encoding="utf-8")
+    # 题图必须纯矢量：带 feTurbulence/<filter> 的题图内联进印前 HTML 后，
+    # Chromium 会把它们整块光栅化（实测：滤镜版全书多 94 张位图）。
+    # 该门在装配期就拦，把"静默降质"变成硬失败。
+    if "feTurbulence" in svg or "<filter" in svg:
+        raise BuildError(f"题图必须纯矢量（含滤镜会光栅化）：{svg_path}")
+    return f'<div class="chapter-art">{svg}</div>'
 
 
 def source_registry_html(manifest: dict) -> str:
@@ -794,10 +875,36 @@ def toc_html(manifest: dict, ctx: BookContext) -> str:
     return "".join(sections) + f'<section><h2>附录</h2><ol class="toc-chapters">{appendices}</ol></section>'
 
 
+COPYRIGHT_HTML = """
+<section class="frontmatter copyright" id="copyright">
+  <h1>版权与版本</h1>
+  <dl class="copyright-fields">
+    <dt>书名</dt><dd>__TITLE__</dd>
+    <dt>版本</dt><dd>v__VERSION__ · __DATE__</dd>
+    <dt>作者</dt><dd>__AUTHOR__</dd>
+    <dt>许可</dt><dd>正文与图片 __L_PROSE__ · 代码 __L_CODE__（仓库 LICENSE）</dd>
+    <dt>来源</dt><dd>__REPO__/ · 在线阅读 __SITE__</dd>
+    <dt>证据冻结点</dt><dd>__SOURCES__ 项来源注册（附录 E）；被引用的上游代码冻结到 tag/commit；未上板实测的现象一律标「待上板实测」。</dd>
+    <dt>构建</dt><dd>由 <code>mcu-book/build_html.py</code> + <code>build_print.py</code> 从仓库 88 章源文档一键构建；同一输入两次构建的页数与开本一致（构建信息含时间戳除外）。</dd>
+    <dt>书号</dt><dd>自制版本页，未申请 ISBN/CIP；发行渠道另行决定。</dd>
+  </dl>
+</section>
+"""
+
+COLOPHON_HTML = """
+<section class="frontmatter colophon" id="colophon">
+  <h1>勘误与贡献</h1>
+  <p><strong>发现错误？</strong>到仓库提 Issue：<a href="__REPO__/issues">__REPO__/issues</a>。请带上章节号（如 S7）、原文一句、以及你认为正确的说法与出处——「证据驱动」对勘误同样适用。</p>
+  <p><strong>想参与？</strong>校对、翻译、新章节与实验复现都欢迎；入口见仓库 <code>CONTRIBUTING.md</code>，排版与书稿工艺的讨论见 <code>docs/reference/book.md</code>。</p>
+  <p><strong>贡献者</strong>：__AUTHOR__；完整名单见 <a href="__REPO__/graphs/contributors">GitHub Contributors</a>。</p>
+  <p><strong>全书规模</strong>：__STATS__</p>
+</section>
+"""
+
 FRONTMATTER_HTML = """
 <section class="frontmatter" id="how-to-read">
   <h1>这不是文章合集，是一本书</h1>
-  <p>全书 88 章沿同一条主线推进：先把 <strong>C 与构建</strong>的地基打牢，再把 <strong>STM32F407 寄存器</strong>逐个拆开，随后上 <strong>双 RTOS</strong>、跨到 <strong>ESP32-S3</strong>、对照 <strong>GD32 双系</strong>，最后在 <strong>实物实验与双板项目</strong>里把知识钉在板子上。每章开头的「本章罗盘」约定这一章回答什么问题、交付什么、边界在哪；章末自测的答案与逐项解析集中在附录 C。</p>
+  <p>全书 __CHAPTERS__ 章沿同一条主线推进：先把 <strong>C 与构建</strong>的地基打牢，再把 <strong>STM32F407 寄存器</strong>逐个拆开，随后上 <strong>双 RTOS</strong>、跨到 <strong>ESP32-S3</strong>、对照 <strong>GD32 双系</strong>，最后在 <strong>实物实验与双板项目</strong>里把知识钉在板子上，收官教你怎么把 <strong>大模型变成结对工程师</strong>。每章开头的「本章罗盘」约定这一章回答什么问题、交付什么、边界在哪；章末自测的答案与逐项解析集中在附录 C。</p>
   <div class="routes">
     <div class="route"><strong>零基础第一遍</strong><p>C0 → B0 → S0 → S2/S3 → 实验 E01；编译出第一个 .bin 时，你已经摸到真机器码。</p></div>
     <div class="route"><strong>只想先点灯</strong><p>S0 → S3 → E01；半小时内让霸天虎的红灯按你写的寄存器位闪烁。</p></div>
@@ -805,6 +912,7 @@ FRONTMATTER_HTML = """
     <div class="route"><strong>AIoT 方向</strong><p>S 篇 → P 篇（重点 P8 Wi-Fi、P12 音频）→ J2 S3 记录器。</p></div>
     <div class="route"><strong>RTOS 进阶</strong><p>F 篇源码级 → R 篇 → 对照篇选型 → E04 优先级反转复现。</p></div>
     <div class="route"><strong>换国产芯</strong><p>G 篇 GD32F4 逐字段对照 → V 篇 RISC-V/CLIC → 拿旧工程逐项迁移。</p></div>
+    <div class="route"><strong>想用 AI 加速</strong><p>A0 定位 → A2 手册对账 → A1 提示词模式；模型写假设，你对账拿终审权。</p></div>
   </div>
   <p><strong>证据口径：</strong>手册参数写文档号与修订点（附录 E 来源注册表）；被逐行引用的代码冻结到 tag/commit（FreeRTOS V11.1.0、ESP-IDF v5.5.2 等）；凡是没接仪器量过的现象，正文与实验页一律标「待上板实测」，不冒充已验证数据。</p>
   <p><strong>关于插图：</strong>书中 100 余张机制动画以内嵌 SVG 收录——HTML 版打开即播（SMIL 动画随翻页运行）；PDF 版为静态首帧。交互式计算器与在线视频在离线书中替换为提示卡片并给出在线版入口。</p>
@@ -831,6 +939,7 @@ CSS = r"""
   --warn-soft: #fdf3e3;
   --code: #101a17;
   --code-ink: #eaf5f1;
+  --cover-ink: #123b33;
   font-family: "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -846,10 +955,6 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .cover h1 { font-size: clamp(2.6rem, 8vw, 5.6rem); line-height: 1.06; margin: .25em 0; max-width: 14ch; }
 .cover .subtitle { font-size: clamp(1.1rem, 3vw, 1.65rem); max-width: 32em; }
 .cover .edition { color: var(--muted); margin-top: 3rem; }
-.cover-stats { display: flex; flex-wrap: wrap; gap: 1rem 2.2rem; margin-top: 2.8rem; padding: 1.2rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.cover-stats .stat { min-width: 6.5rem; border-left: 3px solid var(--accent); padding-left: .8rem; }
-.cover-stats .stat b { display: block; font-size: 1.45rem; line-height: 1.25; color: var(--accent-deep); }
-.cover-stats .stat span { font-size: .82rem; color: var(--muted); }
 .frontmatter, .contents { padding: 4rem 6%; }
 .frontmatter { border-bottom: 1px solid var(--line); }
 .frontmatter .routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.6rem 0; }
@@ -866,6 +971,16 @@ a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .part-divider .part-goal { max-width: 42em; }
 .part-divider .part-intro { max-width: 44em; margin-top: 1.2rem; padding: 1rem 1.2rem; border-left: 3px solid var(--line); color: var(--muted); background: color-mix(in srgb, var(--panel) 60%, transparent); border-radius: .4rem; }
 .part-divider .part-stats { margin-top: 1.2rem; color: var(--accent-deep); font-weight: 600; letter-spacing: .06em; }
+.part-divider .part-art { text-align: right; margin-bottom: 1rem; }
+.part-divider .part-art svg { display: inline-block; height: 110px; width: auto; max-width: 100%; }
+.part-divider .part-toc { columns: 2; column-gap: 2.4rem; margin-top: 1.6rem; padding: 1.1rem 0 0; border-top: 1px solid var(--line); list-style: none; font-size: .94rem; }
+.part-divider .part-toc li { break-inside: avoid; margin: .22rem 0; }
+.part-divider .part-toc a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+.part-divider .part-toc a:hover { border-bottom-color: var(--accent); }
+.cover-art { width: min(340px, 72%); margin: 2rem 0 0; }
+.chapter-art { width: min(400px, 84%); margin: 1.4rem auto 0.6rem; }
+.chapter-art svg { display: block; width: 100%; height: auto; }
+.cover-art svg { display: block; width: 100%; height: auto; }
 .chapter, .appendix { padding: 4rem 6%; border-bottom: 1px solid var(--line); }
 .chapter > header, .appendix > header { margin-bottom: 2.2rem; }
 .chapter > header h1, .appendix > header h1 { font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.18; margin: .2em 0; }
@@ -956,7 +1071,7 @@ footer.book-footer { padding: 3rem 6%; color: var(--muted); text-align: center; 
   .dt-label { min-width: 0; }
 }
 @media (prefers-color-scheme: dark) {
-  :root { --paper: #101816; --ink: #e8efec; --muted: #a9b6b1; --line: #39463f; --panel: #1a2420; --accent: #6fc6ae; --accent-deep: #8fd6c2; --accent-soft: #173129; --warn: #e0a35c; --warn-soft: #2e2415; --code: #0a100e; --code-ink: #ebf5f1; }
+  :root { --paper: #101816; --ink: #e8efec; --muted: #a9b6b1; --line: #39463f; --panel: #1a2420; --accent: #6fc6ae; --accent-deep: #8fd6c2; --accent-soft: #173129; --warn: #e0a35c; --warn-soft: #2e2415; --code: #0a100e; --code-ink: #ebf5f1; --cover-ink: #8fd6c2; }
   .anim-figure { background: #ffffff; }
 }
 @media print {
@@ -1022,10 +1137,11 @@ class _AuditParser(HTMLParser):
 def audit_html(document: str, ctx: BookContext) -> None:
     parser = _AuditParser()
     parser.feed(document)
-    expected = [f"{index:02d}" for index in range(1, EXPECTED_CHAPTERS + 1)]
+    total = chapter_count(ctx.manifest)
+    expected = [f"{index:02d}" for index in range(1, total + 1)]
     if parser.chapters != expected:
         raise BuildError(f"built chapter order is wrong: {len(parser.chapters)} chapters")
-    if parser.compasses != EXPECTED_CHAPTERS:
+    if parser.compasses != total:
         raise BuildError(f"compass count mismatch: {parser.compasses}")
     expected_appendices = {item["id"] for item in ctx.manifest["appendices"]}
     if parser.appendices != expected_appendices:
@@ -1102,23 +1218,44 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
 
     body_parts: list[str | None] = [None]  # cover slot, filled after stats are known
     license_note = manifest["license"]
+    copyright_page = (
+        COPYRIGHT_HTML.replace("__TITLE__", html.escape(manifest["title"]))
+        .replace("__VERSION__", html.escape(manifest["version"]))
+        .replace("__DATE__", html.escape(manifest["date"]))
+        .replace("__AUTHOR__", html.escape(manifest["author"]))
+        .replace("__L_PROSE__", html.escape(license_note["prose_and_images"]))
+        .replace("__L_CODE__", html.escape(license_note["code"]))
+        .replace("__REPO__", REPO_BASE)
+        .replace("__SITE__", SITE_BASE)
+        .replace("__SOURCES__", str(len(manifest["sources"])))
+    )
     body_parts.append(
         f"""
-{FRONTMATTER_HTML}
+{copyright_page}
+{FRONTMATTER_HTML.replace("__CHAPTERS__", str(chapter_count(manifest)))}
 <section class="contents" id="contents"><h1>目录与分部目标</h1>{toc_html(manifest, ctx)}</section>"""
     )
 
+    art_inlined = 0
     for part in manifest["parts"]:
         part_minutes = ctx.part_minutes.get(part["id"], 0)
         part_hours = round(part_minutes / 60, 1)
+        part_toc = "".join(
+            f'<li><a href="#ch{ctx.chapter_meta[name]["number"]:02d}">'
+            f"{ctx.chapter_meta[name]['number']:02d}．"
+            f"{html.escape(ctx.chapter_meta[name]['title'])}</a></li>"
+            for name in part["files"]
+        )
         body_parts.append(
             f"""
 <section class="part-divider" id="part-{html.escape(part['id'])}">
+  <div class="part-art">{art.part_art(part['id'])}</div>
   <p class="part-label">PART {html.escape(part['id'].upper())}</p>
   <h1>{html.escape(part['title'])}</h1>
   <p class="part-goal">{html.escape(part['goal'])}</p>
   <p class="part-intro">{html.escape(part['intro'])}</p>
   <p class="part-stats">本部 {len(part['files'])} 章 · 约 {part_minutes} 分钟（{part_hours} 小时）</p>
+  <ol class="toc-chapters part-toc">{part_toc}</ol>
 </section>"""
         )
         for name in part["files"]:
@@ -1132,10 +1269,13 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
             prepared = strip_h1(prepared)
             rendered = render_document(prepared, source_file, name, f"ch{number:02d}", ctx)
             guide = manifest["chapter_guides"][name]
+            art_html = chapter_art_html(name)
+            art_inlined += bool(art_html)
             body_parts.append(
                 f"""
 <article class="chapter" id="ch{number:02d}" data-chapter="{number:02d}">
-  {chapter_header_html(number, info['frontmatter'].get('title', name), info['frontmatter'])}
+  {chapter_header_html(number, info['frontmatter'].get('title', name), info['frontmatter'], manifest['title'])}
+  {art_html}
   {compass_html(guide)}
   {rendered}
   <a class="back-to-toc" href="#contents">返回目录 ↑</a>
@@ -1158,10 +1298,12 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
         registry = (
             source_registry_html(manifest) if appendix["id"] == "appendix-references" else ""
         )
+        art_html = chapter_art_html(appendix["file"])
         body_parts.append(
             f"""
 <article class="appendix" id="{html.escape(appendix['id'])}">
-  <header><span class="chapter-number">APPENDIX</span><h1>{html.escape(title)}</h1></header>
+  <header><span class="book-title-marker" aria-hidden="true">{html.escape(manifest['title'])}</span><span class="chapter-number">APPENDIX</span><h1>{html.escape(title)}</h1></header>
+  {art_html}
   {rendered}
   {registry}
   <a class="back-to-toc" href="#contents">返回目录 ↑</a>
@@ -1169,19 +1311,23 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
         )
 
     reading_hours = round(total_minutes / 60)
+    body_parts.append(
+        COLOPHON_HTML.replace("__REPO__", REPO_BASE)
+        .replace("__AUTHOR__", html.escape(manifest["author"]))
+        .replace(
+            "__STATS__",
+            f"{chapter_count(manifest)} 章正文（{len(manifest['parts'])} 部），约 {reading_hours} 小时通读，"
+            f"{ctx.stats['figures']} 张机制动画与插图，{projects_count} 个配套工程（附录 B），"
+            f"{quiz_questions} 道自测题（附录 C），{len(manifest['sources'])} 个冻结来源（附录 E）。",
+        )
+    )
+
     body_parts[0] = f"""
 <section class="cover" id="cover">
-  <p class="eyebrow">通往单片机之路 · OFFLINE BOOK</p>
+  <p class="eyebrow">通往单片机之路</p>
   <h1>{html.escape(manifest['title'])}</h1>
   <p class="subtitle">{html.escape(manifest['subtitle'])}</p>
-  <div class="cover-stats" role="list" aria-label="全书规模">
-    <div class="stat" role="listitem"><b>{EXPECTED_CHAPTERS}</b><span>章正文（10 部）</span></div>
-    <div class="stat" role="listitem"><b>约 {reading_hours} 小时</b><span>通读时长（{total_minutes} 分钟）</span></div>
-    <div class="stat" role="listitem"><b>{ctx.stats['figures']}</b><span>内嵌机制动画与插图</span></div>
-    <div class="stat" role="listitem"><b>{projects_count}</b><span>配套工程（附录 B）</span></div>
-    <div class="stat" role="listitem"><b>{quiz_questions}</b><span>自测题（附录 C）</span></div>
-    <div class="stat" role="listitem"><b>{len(manifest['sources'])}</b><span>冻结来源（附录 E）</span></div>
-  </div>
+  <div class="cover-art">{art.cover_art()}</div>
   <p class="edition">v{html.escape(manifest['version'])} · {html.escape(manifest['date'])}<br>
   {html.escape(manifest['author'])}<br>
   正文与图片 {html.escape(license_note['prose_and_images'])} · 代码 {html.escape(license_note['code'])}</p>
@@ -1275,7 +1421,7 @@ def build_html(output_dir: Path | None = None, manifest_path: Path = MANIFEST_PA
     audit_html(document, ctx)
     output = destination / OUTPUT_NAME
     output.write_text(document, encoding="utf-8", newline="\n")
-    print(f"html  {output} ({output.stat().st_size} bytes, {EXPECTED_CHAPTERS} chapters)")
+    print(f"html  {output} ({output.stat().st_size} bytes, {chapter_count(manifest)} chapters, 题图 {art_inlined}/{chapter_count(manifest)})")
     return output
 
 
@@ -1348,7 +1494,7 @@ def restructured_outline(entries: list, manifest: dict, title_map: dict[str, str
     first_part = find(expected[0][1], 0)
     new_toc: list[list] = []
     front_pages = {"这不是文章合集，是一本书", "目录与分部目标"}
-    for level, title, page in entries[:first_part]:
+    for _level, title, page in entries[:first_part]:
         clean = title.strip()
         if clean in front_pages:
             new_toc.append([1, clean, page])
@@ -1407,6 +1553,35 @@ def running_header_map(toc: list, book_title: str) -> list[tuple[int, str]]:
     return marks
 
 
+def header_label_for_page(headers: list[tuple[int, str]], book_title: str, page_number: int) -> str:
+    """某一页应画的页眉文字（含 >48 字截断规则）。
+
+    _stamp_page_numbers 与 check_pdf.py 共用：页眉“该是什么”只有这一处定义。
+    """
+    label = book_title
+    for start, text in headers:
+        if start <= page_number:
+            label = text
+        else:
+            break
+    if len(label) > 48:
+        label = label[:47] + "…"
+    return label
+
+
+def header_skip_pages(toc: list) -> set[int]:
+    """不画页眉的页码集合——前言、目录、分部隔页（level 1 且非附录条目）。
+
+    与 _stamp_page_numbers 单真源：check_pdf.py 用同一函数对产物做反向校验，
+    避免“画页眉的规则”和“查页眉的规则”各自维护一份而悄悄漂移。
+    """
+    return {
+        page
+        for level, text, page in toc
+        if level == 1 and not text.strip().startswith("附录")
+    }
+
+
 def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, title: str) -> None:
     try:
         import fitz
@@ -1425,11 +1600,7 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, title: str) -> None:
         document.set_toc(toc)
         headers = running_header_map(toc, title)
         # 扉页（封面由 range 起点跳过、前言、目录、部隔页）不画页眉。
-        skip_header = {
-            page
-            for level, text, page in toc
-            if level == 1 and not text.strip().startswith("附录")
-        }
+        skip_header = header_skip_pages(toc)
         document.set_metadata({
             **document.metadata,
             "title": title,
@@ -1443,14 +1614,7 @@ def _stamp_page_numbers(raw_pdf: Path, output_pdf: Path, title: str) -> None:
             page_number = index + 1
             # 页眉：当前章/附录标题（中文走内置 china-s 字体），正文上边距 16mm≈45pt，画在 22pt 处不侵入。
             if page_number not in skip_header:
-                label = title
-                for start, text in headers:
-                    if start <= page_number:
-                        label = text
-                    else:
-                        break
-                if len(label) > 48:
-                    label = label[:47] + "…"
+                label = header_label_for_page(headers, title, page_number)
                 page.insert_textbox(
                     fitz.Rect(45, 16, page.rect.width - 45, 34),
                     label,

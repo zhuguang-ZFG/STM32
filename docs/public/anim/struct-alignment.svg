@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
-  <title>结构体与 ABI：声明顺序定先后、ABI 定间隔、volatile 定纪律</title>
-  <desc>四阶段动画：GPIO_TypeDef 凭什么罩住寄存器块。① 结构体是编译器担保的地址计算器：GPIOF-&gt;BSRR 展开成 (*(volatile uint32_t *)(0x40021400 + 0x18))，偏移 0x18 由声明顺序与 ABI 对齐规则唯一确定，_Static_assert 在编译期钉死；② 对齐三规则（ARM AAPCS）：成员对齐——uint32_t 必落 4 的倍数；结构体对齐——sizeof 是最大成员对齐的倍数（尾部补填充）；数组 stride——arr[i] = base + i*sizeof；编译器不许重排；③ 填充可视化：Padded_t {u8 a; u32 b; u8 c} 占 12 字节（a@0 + 填充3 + b@4 + c@8 + 尾填充3），成员从大到小重排后 Packed_t {u32 b; u8 a; u8 c} 只占 8 字节——省 4 字节的力学原理；④ 位域陷阱与端序：位域布局（分配方向、跨单元、填充）是 C 标准留给编译器的实现定义，换工具链位序可能反转——硬件寄存器必须用掩码宏+移位；Cortex-M4 默认小端：0x12345678 在内存里是 78 56 34 12。图上真在跑的东西：一个游标沿 GPIO_TypeDef 的偏移条带连续扫描——偏移是"数"出来的，不是背出来的。</desc>
+  <title>结构体与 ABI：声明顺序定先后、对齐规则定间隔、volatile 定纪律</title>
+  <desc>四阶段动画：GPIO_TypeDef 凭什么罩住寄存器块。① 结构体是编译器担保的地址计算器：GPIOF-&gt;BSRR 展开成 (*(volatile uint32_t *)(0x40021400 + 0x18))，偏移 0x18 由声明顺序、类型大小与对齐规则共同决定，_Static_assert 在编译期钉死；② 对齐三规则：成员对齐——uint32_t 必落 4 的倍数；结构体对齐——sizeof 是最大成员对齐的倍数（尾部补填充）；数组 stride——arr[i] = base + i*sizeof；编译器不许重排；③ 填充可视化：Padded_t {u8 a; u32 b; u8 c} 占 12 字节（a@0 + 填充3 + b@4 + c@8 + 尾填充3），成员从大到小重排后 Packed_t {u32 b; u8 a; u8 c} 只占 8 字节——省 4 字节的力学原理；④ 位域陷阱与端序：位域布局（分配方向、跨单元、填充）是 C 标准留给编译器的实现定义，换工具链位序可能不同——硬件寄存器必须用掩码宏+移位；端序由目标架构与工具链决定，本机 gcc 宿主实测小端：0x12345678 在内存里是 78 56 34 12。图上真在跑的东西：一个游标沿 GPIO_TypeDef 的偏移条带连续扫描——偏移是"数"出来的，不是背出来的。</desc>
   <rect width="720" height="452" fill="#f6f8fa"/>
   <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">结构体与 ABI：GPIO_TypeDef 凭什么罩住寄存器块</text>
-  <text x="24" y="50" font-size="12" fill="#666">声明顺序定先后、ABI 定间隔、volatile 定纪律——三条规则焊死在 ARM AAPCS 里</text>
+  <text x="24" y="50" font-size="12" fill="#666">声明顺序定先后、对齐规则定间隔、volatile 定纪律——C 与工具链的布局约定</text>
 
   <!-- ===== 常驻：GPIO_TypeDef 偏移条带 ===== -->
   <rect x="40" y="64" width="640" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
@@ -24,7 +24,7 @@
   <circle cx="54" cy="126" r="6" fill="#3451b2">
     <animate attributeName="cx" values="54;670;670;54" keyTimes="0;0.86;0.93;1" dur="4s" repeatCount="indefinite"/>
   </circle>
-  <text x="360" y="144" font-size="11" fill="#94a3b8" text-anchor="middle">offsetof 逐格数出来：第 7 个成员 × 4 字节 = 0x18——不是背的，是算的</text>
+  <text x="360" y="144" font-size="11" fill="#94a3b8" text-anchor="middle">offsetof 逐格数出来：第 7 个成员，前面 6 格 × 4 字节 = 0x18——不是背的，是算的</text>
 
   <!-- ===== 阶段一：地址计算器 ===== -->
   <g opacity="1">
@@ -33,10 +33,10 @@
     <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">① 结构体 = 编译器担保的地址计算器</text>
     <text x="56" y="208" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOF-&gt;BSRR = (1&lt;&lt;6);</text>
     <text x="56" y="232" font-size="12" font-family="Consolas,monospace" fill="#333">≈ (*(volatile uint32_t *)(0x40021400 + 0x18)) = (1&lt;&lt;6);</text>
-    <text x="56" y="258" font-size="13" fill="#333">偏移由声明顺序唯一确定；`__IO` 宏展开成 volatile——读+写都可能被硬件改。</text>
+    <text x="56" y="258" font-size="13" fill="#333">偏移由声明顺序、类型大小与对齐规则共同决定；__IO 就是 volatile——读写都可能被硬件改。</text>
     <text x="56" y="286" font-size="12" font-family="Consolas,monospace" fill="#666">_Static_assert(offsetof(GPIO_TypeDef, BSRR) == 0x18);  /* 编译期钉死 */</text>
     <text x="56" y="312" font-size="12" font-family="Consolas,monospace" fill="#666">_Static_assert(sizeof(GPIO_TypeDef) == 0x28);</text>
-    <text x="56" y="340" font-size="13" fill="#d97706">漏掉地图里的空洞（保留字）→ 后面所有偏移整体前移——库版本不匹配时最阴的 bug。</text>
+    <text x="56" y="340" font-size="13" fill="#d97706">漏掉地图里的空洞（占位成员）→ 后面所有偏移整体前移——库版本不匹配时最阴的 bug。</text>
     <text x="56" y="366" font-size="12" fill="#666">验证三件套：offsetof / sizeof / _Static_assert——任何"结构体封装"都能当场验真。</text>
   </g>
 
@@ -44,12 +44,12 @@
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
     <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">② 对齐三规则：AAPCS 把布局焊死</text>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">② 对齐三规则：成员、结构体与数组的布局</text>
     <text x="56" y="210" font-size="13" fill="#333"><tspan font-weight="bold">成员对齐</tspan>：每个成员的起始偏移是其对齐值的倍数——uint32_t 永远落在 4 的倍数上；</text>
     <text x="56" y="238" font-size="13" fill="#333"><tspan font-weight="bold">结构体对齐</tspan>：总大小必须是最大成员对齐值的倍数——尾部可能补填充；</text>
     <text x="56" y="266" font-size="13" fill="#333"><tspan font-weight="bold">数组 stride</tspan>：sizeof(struct) 已含尾部填充，arr[i] = base + i × sizeof——元素天然连续。</text>
     <text x="56" y="298" font-size="13" fill="#d97706">编译器不许重排成员——顺序写错一位，后面所有偏移全错。</text>
-    <text x="56" y="330" font-size="12" fill="#666">GDB 板上验证：print &amp;((GPIO_TypeDef*)0)-&gt;BSRR == 手册的 0x40021418。</text>
+    <text x="56" y="330" font-size="12" fill="#666">手册期望：0x40021400 + offsetof(BSRR) 0x18 = 0x40021418（板上结果待回填）。</text>
   </g>
 
   <!-- ===== 阶段三：填充可视化 ===== -->
@@ -76,21 +76,21 @@
     <text x="516" y="254" font-size="11" fill="#94a3b8" text-anchor="middle">sizeof=8：4+1+1+2</text>
     <text x="56" y="290" font-size="13" fill="#333">成员按对齐要求落位、洞是编译器插的填充——你能在内存里"看见"这些洞。</text>
     <text x="56" y="318" font-size="13" fill="#1a7f56">成员从大到小排，填充变少：Padded 12 字节 → Packed 8 字节，省 4 字节。</text>
-    <text x="56" y="346" font-size="12" fill="#666">注意 pack 是给协议帧的（网络包、文件头）：给寄存器结构体加 #pragma pack(1)</text>
-    <text x="56" y="368" font-size="12" fill="#666">会触发非对齐访问——Cortex-M4 上可能直接 UsageFault。</text>
+    <text x="56" y="346" font-size="12" fill="#666">pack(1) 取消 ABI 的偏移/对齐担保；Packed1_t 这类混合类型一旦压出非对齐成员，</text>
+    <text x="56" y="368" font-size="12" fill="#666">在某些 Cortex-M 配置/总线上可能访问出错（本集未上板）。</text>
   </g>
 
   <!-- ===== 阶段四：位域陷阱与端序 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
     <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">④ 位域别碰硬件；小端是事实不是选择</text>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">④ 位域慎碰硬件；端序由目标架构决定</text>
     <text x="56" y="210" font-size="13" fill="#333">C 标准把位域布局（分配方向、是否跨单元、填充）全部留给编译器——实现定义。</text>
-    <text x="56" y="238" font-size="13" fill="#dc2626">同一份位域代码，GCC / Clang / IAR 位序可能完全相反——映射硬件寄存器就是赌博。</text>
+    <text x="56" y="238" font-size="13" fill="#dc2626">同一份位域代码，GCC / Clang / IAR 位序可能不同——工具链不固定就别拿它罩硬件。</text>
     <text x="56" y="266" font-size="12" font-family="Consolas,monospace" fill="#333">正确做法：#define FIELD_B_MASK (3UL&lt;&lt;1)   /* 读: (reg&amp;M)&gt;&gt;1  写: reg=(reg&amp;~M)|(v&lt;&lt;1) */</text>
-    <text x="56" y="296" font-size="13" fill="#333">端序实测（Cortex-M4 默认小端）：</text>
+    <text x="56" y="296" font-size="13" fill="#333">端序（本机 gcc 宿主实测；Cortex-M 通常默认小端）：</text>
     <text x="56" y="322" font-size="12" font-family="Consolas,monospace" fill="#666">0x12345678 在内存里 = 78 56 34 12（低地址→高地址，最低有效字节住最低地址）</text>
-    <text x="56" y="352" font-size="12" fill="#1a7f56">寄存器封装三句真言：顺序定先后、ABI 定间隔、volatile 定纪律。</text>
+    <text x="56" y="352" font-size="12" fill="#1a7f56">寄存器封装三句真言：顺序定先后、对齐定间隔、volatile 定纪律。</text>
   </g>
 
   <!-- 阶段字幕 -->

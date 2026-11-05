@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md", "reason": "内容唯一事实源：369 仓库清单与四大框架全部数字/事实（2026-10-27 GitHub API 快照）"}
+{"file": "video/research/wx-plan.md", "reason": "视频号投稿实测约束（码率≤10Mbps、封面 204px 可读、发布闸门）与 Playwright 自动化边界"}
+{"file": "video/research/v2-voice-probe.md", "reason": "云扬 edge-tts 语速探针（+0%/+2%/+4% 实测）与发音表机制，配音参数依据"}
+{"file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/SKILL.md", "reason": "skill 主契约：job 结构、命令链、黄金 5 秒、旁白分段、美术记录与隐私清洗要求"}
+{"file": ".trellis/tasks/10-28-social-video-ai-tools/design.md", "reason": "本任务技术设计：Windows 适配实证事实（shell 执行模型/字体显式路径/edge-tts boundary）、双画幅与语音注入路线"}

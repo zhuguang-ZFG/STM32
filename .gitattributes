@@ -1,6 +1,6 @@
 # 文本以 LF 入库并以 LF 签出；换行策略归仓库管，不归每台机器管。
 # 触发点不是本机：Git Bash 的 sh 实测能吃下 `\<CRLF>` 续行，本机 sh probe.sh 照跑；
-# 但 quality.yml 的 arm-host 跑在 ubuntu-latest，check-firmware.mjs:20 对每个 host-probe
+# 但 quality.yml 的 arm-host 跑在 ubuntu-24.04，check-firmware.mjs:20 对每个 host-probe
 # 工程执行 `sh probe.sh`，Linux 的 shell 不吃 CRLF。
 # 现状 core.autocrlf=true 写在 Git for Windows 的 system gitconfig 里——那是机器属性：
 # 同一份 blob 不带本文件签出 probe.sh 得到 CRLF，带上本文件得到 LF（checkout-index 实测）。

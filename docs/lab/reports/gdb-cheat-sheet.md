@@ -380,9 +380,12 @@ arm-none-eabi-gdb build/firmware.elf
 ## 十、参考链接
 
 - [GDB 官方文档](https://sourceware.org/gdb/documentation/)
-- [FreeRTOS-GDB 插件](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/tools/pc/FreeRTOS_GDB_Plugin/freertos.py)
+- [FreeRTOS-Kernel 仓库](https://github.com/FreeRTOS/FreeRTOS-Kernel)
 - [OpenOCD 文档](https://openocd.org/doc/doxygen/html/index.html)
 - [QEMU ARM 文档](https://www.qemu.org/docs/master/system/target-arm.html)
+
+> **FreeRTOS-GDB 插件已从上游移除**，所以本表不再引用它。2026-10-25 实测：`tools/pc/FreeRTOS_GDB_Plugin/freertos.py` 在 `main` 与 `V10.4.3` / `V10.5.1` / `V11.1.0` 上均返回 404（这条死链是外链巡检门第一次跑时抓出来的）。
+> 要看内核对象布局，用第二节那几条 `pxCurrentTCB` / `xTasks` 的原生 GDB 命令，配合第六节的内存查看即可，不依赖任何插件。
 
 ---
 

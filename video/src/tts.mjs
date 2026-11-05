@@ -16,10 +16,24 @@ export function timelinePath(outDir) {
 const TAIL = { hook: 0.5, anim: 0.45, code: 0.5, card: 0.7, outro: 0.8 }
 const MIN_SEC = { hook: 2.2, anim: 2.4, code: 2.8, card: 2.4, outro: 2.6 }
 
+// 发音表只作用于送进 TTS 的文本，字幕/时间轴仍用 narration 原文：
+// 屏幕上写 0x40021418，耳朵里听到"零 x 四零零二一四一八"。
+// 长键先替换，避免 "0x" 抢在 "0x40021418" 前面把地址拆碎；实现是纯 split/join，
+// 不碰正则，所以 emoji 与组合字符（e + U+0301）不会被拆散。
+export function applyLexicon(text, lexicon) {
+  if (!lexicon) return text
+  let out = String(text)
+  for (const k of Object.keys(lexicon).sort((a, b) => b.length - a.length)) {
+    out = out.split(k).join(lexicon[k])
+  }
+  return out
+}
+
 export function narrationJobs(ep, platform) {
   return resolveScenes(ep, platform).map((sc) => ({
     id: sc.id,
     narration: sc.narration.trim(),
+    ttsText: applyLexicon((sc.ttsText || sc.narration).trim(), ep.ttsLexicon),
     head: sc.head ?? 0.22,
     tail: sc.tail ?? TAIL[sc.kind] ?? 0.45,
     minSec: sc.minSec ?? MIN_SEC[sc.kind] ?? 2,

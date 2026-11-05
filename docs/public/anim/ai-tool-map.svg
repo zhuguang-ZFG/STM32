@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>2026 工具地图：MCP 是路，三个 agent 工具是岛</title>
+  <desc>AI 辅助开发的工具地图。1 MCP（Model Context Protocol）是协议层：现版本 2026-07-28，JSON-RPC 2.0，Hosts/Clients/Servers 三层结构，Resources/Prompts/Tools 三类原语；官方 reference servers 只有 7 个且明示是教学示例。2 三个消费侧工具各有定位：Copilot 在 VS Code 的 agents 体系里跑「推理→行动→验证」的 agent loop，官方红线句是你对进入代码库的变更负责；Claude Code 覆盖 terminal/IDE/desktop/web 多表面，CLAUDE.md 每次启动读取；Cursor 官方定位 coding agent，Agent=Instructions+Tools+Model，Run Modes 明示不是安全边界。3 共同纪律：界面会变，方法论不变——地图会过期，「模型给假设、人拿终审权」不过期。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <defs>
+    <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#24292f">2026 工具地图：MCP 是路，工具是岛</text>
+  <text x="360" y="56" text-anchor="middle" font-size="12" fill="#57606a">界面会变，方法论不变——来源与访问日期见附录 E</text>
+
+  <!-- 中枢：MCP -->
+  <rect x="292" y="176" width="136" height="72" rx="12" fill="#ffffff" stroke="#3451b2" stroke-width="2.4"/>
+  <text x="360" y="204" text-anchor="middle" font-size="16" font-weight="bold" fill="#3451b2">MCP 协议</text>
+  <text x="360" y="224" text-anchor="middle" font-size="12" fill="#57606a">版本 2026-07-28 · JSON-RPC 2.0</text>
+  <text x="360" y="238" text-anchor="middle" font-size="12" fill="#57606a">Resources / Prompts / Tools</text>
+  <circle cx="360" cy="140" r="10" fill="none" stroke="#3451b2" stroke-width="2">
+    <animate attributeName="r" values="8;26" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0" dur="4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 路 -->
+  <path d="M292 200 H190 Q170 200 166 180 L156 140" fill="none" stroke="#cbd5e1" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#ah2)"/>
+  <path d="M428 200 H530 Q550 200 554 180 L564 140" fill="none" stroke="#cbd5e1" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#ah2)"/>
+  <path d="M360 248 V300" fill="none" stroke="#cbd5e1" stroke-width="2.4" stroke-dasharray="6 5" marker-end="url(#ah2)"/>
+
+  <!-- 岛 1：Copilot -->
+  <rect x="56" y="60" width="196" height="92" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <rect x="72" y="82" width="52" height="36" rx="4" fill="#eef2ff" stroke="#333" stroke-width="1.6"/>
+  <path d="M80 94 h20 M80 102 h28 M80 110 h16" stroke="#94a3b8" stroke-width="2"/>
+  <text x="196" y="94" text-anchor="middle" font-size="14" font-weight="bold" fill="#24292f">Copilot</text>
+  <text x="196" y="112" text-anchor="middle" font-size="12" fill="#57606a">VS Code agents 体系</text>
+  <text x="154" y="136" text-anchor="middle" font-size="11" fill="#92400e">agent loop：推理→行动→验证</text>
+
+  <!-- 岛 2：Claude Code -->
+  <rect x="468" y="60" width="196" height="92" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <rect x="484" y="82" width="52" height="36" rx="4" fill="#eef7f1" stroke="#333" stroke-width="1.6"/>
+  <text x="510" y="106" font-family="monospace" font-size="13" fill="#1a7f56">&gt;_</text>
+  <text x="608" y="94" text-anchor="middle" font-size="14" font-weight="bold" fill="#24292f">Claude Code</text>
+  <text x="608" y="112" text-anchor="middle" font-size="12" fill="#57606a">terminal / IDE / web 多表面</text>
+  <text x="566" y="136" text-anchor="middle" font-size="11" fill="#92400e">CLAUDE.md 启动读取</text>
+
+  <!-- 岛 3：Cursor -->
+  <rect x="252" y="308" width="216" height="92" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <path d="M276 330 l22 8 -12 6 6 18 z" fill="#eef2ff" stroke="#333" stroke-width="1.6"/>
+  <text x="400" y="342" text-anchor="middle" font-size="14" font-weight="bold" fill="#24292f">Cursor</text>
+  <text x="400" y="360" text-anchor="middle" font-size="12" fill="#57606a">官方定位 coding agent</text>
+  <text x="400" y="376" text-anchor="middle" font-size="11" fill="#92400e">Run Modes 明示：不是安全边界</text>
+  <text x="360" y="420" text-anchor="middle" font-size="11" fill="#57606a">Agent = Instructions + Tools + Model</text>
+
+  <!-- 路上的流动令牌 -->
+  <circle r="5" fill="#d97706" cx="292" cy="200">
+    <animate attributeName="cx" values="292;190;166;156" keyTimes="0;0.4;0.7;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="200;200;190;140" keyTimes="0;0.4;0.7;1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#3eaf7c" cx="428" cy="200">
+    <animate attributeName="cx" values="428;530;554;564" keyTimes="0;0.4;0.7;1" dur="8s" begin="2s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="200;200;190;140" keyTimes="0;0.4;0.7;1" dur="8s" begin="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#dc2626" cx="360" cy="248">
+    <animate attributeName="cy" values="248;300" dur="4s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+</svg>

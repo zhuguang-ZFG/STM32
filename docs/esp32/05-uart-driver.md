@@ -11,21 +11,12 @@ minutes: 25
 
 ## 本章精髓
 
-1. **事件驱动的完整闭环**：ISR 只做搬运与发事件（`UART_DATA`/`UART_FIFO_OVF`/`UART_BUFFER_FULL`…），`uart_event_t` 经队列交给用户任务处理——**中断礼仪的教科书示范**（回 [C5](../c/05-func-pointer.md) 记账不办事）。
-2. **三层缓冲各司其职**：硬件 FIFO（S3 上是 128 字节，`SOC_UART_FIFO_LEN`）→ 驱动环形缓冲（rx_ring_buf）→ 用户 buf——溢出三处各自的告警与处置，数据丢失的排查路径就藏在这三层。
+1. **事件驱动的完整闭环**：ISR 只做搬运与发事件（`UART_DATA`/`UART_FIFO_OVF`/`UART_BUFFER_FULL`…），`uart_event_t` 经队列交给用户任务处理，是**中断礼仪的教科书示范**（回 [C5](../c/05-func-pointer.md) 记账不办事）。
+2. **三层缓冲各司其职**：硬件 FIFO（S3 上是 128 字节，`SOC_UART_FIFO_LEN`）→ 驱动环形缓冲（rx_ring_buf）→ 用户 buf，溢出三处各自的告警与处置，数据丢失的排查路径就藏在这三层。
 3. **事件 ≠ 数据**：`UART_DATA` 事件的 `size`/`timeout_flag` 只是**元数据**（"现在有多少字节可读、是不是超时收尾"），真正的字节要你自己 `uart_read_bytes` 取走。别把事件结构体当串口字节负载。
 
-## 怎么读这一章
-
-- **能记住**：口诀"ISR 记账发事件，三层缓冲防溢出；配置填结构体，接收看事件。"
 - **能理解**：为什么事件队列满了会丢数据；为什么 `uart_read_bytes` 等的是 ring buffer 不是 FIFO。
 - **能用**：用事件队列写"不定长帧接收"，并与 S7 手写版对照。
-
-## 学习目标
-
-- 画出 IDF UART 的数据路径图（FIFO→ISR→ring→queue→task），标注每层的溢出处理。
-- 用事件队列写"不定长帧接收"（UART_DATA + 超时标志），对比 S7 手写状态机版。
-- 读懂 `uart_driver_install` 的六个参数各自影响什么。
 
 ## 先修
 
@@ -33,7 +24,9 @@ minutes: 25
 
 ## 先跑起来（10 分钟 quick win）
 
-`code/esp32/02-uart-events`：UART1 经 GPIO Matrix 路由到 GPIO10(TX)/GPIO11(RX)（多功能扩展口，立创 wiki 核实）。扩展口发任意数据，串口监视打印事件类型与长度，并原样回显——第一次看到"驱动在替你记事件账"。
+`code/esp32/02-uart-events`：UART1 经 GPIO Matrix 路由到 GPIO10(TX)/GPIO11(RX)（多功能扩展口，立创 wiki 核实）。扩展口发任意数据，串口监视打印事件类型与长度，并原样回显，第一次看到"驱动在替你记事件账"。
+
+发数据之前先押一层：事件报"有数据到"的那一刻，你发的字节正睡在哪一层？押完再发，答案在事件模型那一节。
 
 ## 动画：字节与事件走两条路
 
@@ -68,8 +61,8 @@ RX 线 → 硬件 FIFO(128B) → 驱动 ring buffer(rx_buf_size) → 你 uart_re
 
 每一层都有自己的溢出告警：
 
-- **FIFO_OVF**：ISR 没及时把 FIFO 搬进 ring buffer——通常是你把中断优先级配太低，或 ISR 被长阻塞堵住；
-- **BUFFER_FULL**：ring buffer 满了你还没读——任务优先级不够，或队列消费太慢；
+- **FIFO_OVF**：ISR 没及时把 FIFO 搬进 ring buffer，通常是你把中断优先级配太低，或 ISR 被长阻塞堵住；
+- **BUFFER_FULL**：ring buffer 满了你还没读，任务优先级不够，或队列消费太慢；
 - 第三层：你的 `uart_read_bytes` 给的 buf 太小，截断是你自己的。
 
 **排查路径固定**：先开日志看哪种 OVF/FULL 事件来了，就锁定是哪一层的问题。
@@ -87,7 +80,7 @@ RX 线 → 硬件 FIFO(128B) → 驱动 ring buffer(rx_buf_size) → 你 uart_re
 | `UART_FRAME_ERR` | 帧错误（没等到停止位） |
 | `UART_PARITY_ERR` | 校验错 |
 
-ISR 只负责把字节从 FIFO 搬进 ring buffer、把事件丢进队列。**所有"处理"都在任务上下文**——这就是"记账不办事"的中断礼仪。
+ISR 只负责把字节从 FIFO 搬进 ring buffer、把事件丢进队列。**所有"处理"都在任务上下文**，这就是"记账不办事"的中断礼仪。
 
 ## 三、uart_config_t：八字段落位
 
@@ -102,7 +95,7 @@ uart_config_t cfg = {
 };
 ```
 
-与 S7 手写版对照：你不再需要自己算 BRR——驱动替你算，但**时钟源的精度上限仍然存在**（source_clk 选 APB 还是晶振，影响高波特率下的误差）。机制没变，只是封装了一层。
+与 S7 手写版对照：你不再需要自己算 BRR，驱动替你算，但**时钟源的精度上限仍然存在**（source_clk 选 APB 还是晶振，影响高波特率下的误差）。机制没变，只是封装了一层。
 
 ## 四、不定长接收：DATA + 超时标志
 
@@ -116,7 +109,7 @@ case UART_DATA: {
 }
 ```
 
-`timeout_flag` 就是 IDF 版的"IDLE 标志"：RX 线空闲超过阈值，驱动认为这一帧结束了。**字节在 ring buffer 里，帧边界在事件的 timeout_flag 里**——两条路合起来就是完整答案。
+`timeout_flag` 就是 IDF 版的"IDLE 标志"：RX 线空闲超过阈值，驱动认为这一帧结束了。**字节在 ring buffer 里，帧边界在事件的 timeout_flag 里**：两条路合起来就是完整答案。
 
 ## 五、发送路径：uart_write_bytes 的等待逻辑
 
@@ -147,15 +140,15 @@ case UART_DATA: {
 
 ## 实物实验
 
-- quick win + 压力测试：115200 连发 10KB，记录有无 OVF/FULL 事件；把 ring buffer 调小一半复现溢出——"溢出可观测"就是专业驱动的样子；
-- 对照实验：同一串数据，S7 手写版（STM32）与 IDF 版（S3）的日志并排看——机制同构，眼见为实。
+- quick win + 压力测试：115200 连发 10KB，记录有无 OVF/FULL 事件；把 ring buffer 调小一半复现溢出，"溢出可观测"就是专业驱动的样子；
+- 对照实验：同一串数据，S7 手写版（STM32）与 IDF 版（S3）的日志并排看：机制同构，眼见为实。
 
 ## 常见坑
 
-- **`uart_read_bytes` 阻塞时机误解**：它等的是 ring buffer，不是硬件 FIFO——超时参数按层理解；
-- **事件队列没消费导致丢数据**：队列满了新事件被丢（有日志）——事件任务优先级要给够；
-- **流控脚没接 RTS/CTS 却开流控**：发送卡死查无原因——flow_ctrl 配置与接线一致；
-- **多任务并发读写同一 UART**：驱动有锁但帧级互斥语义自行保证——协议帧级互斥用互斥量（[F5](../rtos/freertos/05-sem-mutex.md) 复训）；
+- **`uart_read_bytes` 阻塞时机误解**：它等的是 ring buffer，不是硬件 FIFO，超时参数按层理解；
+- **事件队列没消费导致丢数据**：队列满了新事件被丢（有日志），事件任务优先级要给够；
+- **流控脚没接 RTS/CTS 却开流控**：发送卡死查无原因，先核对 flow_ctrl 配置与接线；
+- **多任务并发读写同一 UART**：驱动有锁但帧级互斥语义自行保证，协议帧级互斥用互斥量（[F5](../rtos/freertos/05-sem-mutex.md) 复训）；
 - **把事件结构体当字节负载**：`UART_DATA` 事件的 `size` 只是"现在可读多少"的元数据，字节要 `uart_read_bytes` 读。
 
 ## 短自测
@@ -167,7 +160,7 @@ case UART_DATA: {
 <details><summary>参考答案</summary>不是。size 是元数据（"现在有多少字节可读"），字节在 ring buffer 里，要 uart_read_bytes 取走。事件结构体不是串口字节负载。</details>
 
 3. 不定长帧的帧尾怎么判？与 STM32 的 IDLE 是什么关系？
-<details><summary>参考答案</summary>看 UART_DATA 事件的 timeout_flag——RX 空闲超过阈值就置位，表示帧尾。它与 STM32 的 IDLE 标志是同一个思路：硬件管搬运，帧边界由"空闲/超时"事件告诉你。</details>
+<details><summary>参考答案</summary>看 UART_DATA 事件的 timeout_flag：RX 空闲超过阈值就置位，表示帧尾。它与 STM32 的 IDLE 标志是同一个思路：硬件管搬运，帧边界由"空闲/超时"事件告诉你。</details>
 
 ## 对照表：本章概念 → 仓库与上游落点
 
@@ -183,9 +176,11 @@ case UART_DATA: {
 ## 你做到了
 
 - "成熟驱动"的评判标准具体化：事件账、缓冲层、配置对象、并发纪律；
-- 读懂 2 千行驱动的勇气和方法——[P6](06-spi-i2c-driver.md) 的 SPI/I2C 直接复用；
+- 读懂 2 千行驱动的勇气和方法，[P6](06-spi-i2c-driver.md) 的 SPI/I2C 直接复用；
 - 三条路线在同一个"串口接收"问题上完成了第一次三方对照。
 
+字节睡在中间那层：FIFO 只管收，事件只管喊，真正等你来取的是 ring buffer。下次丢数据，从三层各自的家门口查起，别一上来就怪驱动。
+
 <div class="achievement">
-✅ 下一站：<a href="06-spi-i2c-driver.html">P6 SPI/I2C 驱动框架</a>——拿板载 ST7789 与 QMI8658 当活教材。
+✅ 下一站：<a href="06-spi-i2c-driver.html">P6 SPI/I2C 驱动框架</a>：拿板载 ST7789 与 QMI8658 当活教材。
 </div>

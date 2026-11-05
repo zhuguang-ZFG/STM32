@@ -7,25 +7,16 @@ minutes: 35
 
 # S15 SPL 标准库解剖：读懂库的"封装术"
 
-> 🎯 前面 14 章我们手写寄存器；这一章把 SPL（标准外设库）放上解剖台：`GPIO_Init` 一个函数，里面就是我们手写的"先时钟、再模式、后数据"——读懂库的封装术，你就拥有了"用库而不被库绑死"的自由。
+> 🎯 前面 14 章我们手写寄存器；这一章把 SPL（标准外设库）放上解剖台：`GPIO_Init` 一个函数，里面就是我们手写的"先时钟、再模式、后数据"。读懂库的封装术，你就拥有了"用库而不被库绑死"的自由。
 
 ## 本章精髓
 
 1. 库 = 结构体 + 查表 + 断言：`GPIO_InitTypeDef` 把四张寄存器表打包成四个字段；`GPIO_Init` 逐字段翻译成位操作；`assert_param` 在 Debug 版替你查参数。
-2. 封装的三层价值：防错（参数检查/位序查表）、可读（`GPIO_Mode_OUT` vs `0x01`）、可移植（同 API 跨 F1/F4）——代价是代码体积与运行开销（B5 审计它）。
-3. 读库的正确姿势：**从 API 反推寄存器**——遇到任何库函数，先问"它动了哪几个寄存器的哪几位"，用 RM0090 对答案。
+2. 封装的三层价值：防错（参数检查/位序查表）、可读（`GPIO_Mode_OUT` vs `0x01`）、可移植（同 API 跨 F1/F4），代价是代码体积与运行开销（B5 审计它）。
+3. 读库的正确姿势：**从 API 反推寄存器**，遇到任何库函数，先问"它动了哪几个寄存器的哪几位"，用 RM0090 对答案。
 
-## 怎么读这一章
-
-- **能记住**：库的"三板斧"——结构体打包参数、函数翻译成位操作、断言查参数。
 - **能理解**：为什么 `GPIO_Init` 要逐 pin 循环（一次配多个引脚）、为什么用"先清后置"而不是直接赋值（保留别的引脚的配置）。
 - **能用**：拿到任何 SPL 函数（GPIO_Init/USART_Init/I2C_Init），用本章的"API→寄存器反推法"拆开它。
-
-## 学习目标
-
-- 逐行讲清 `GPIO_Init`（stm32f4xx_gpio.c）：MODER/OTYPER/OSPEEDR/PUPDR 四段写法的位操作技巧。
-- 解剖 `RCC_AHB1PeriphClockCmd`：一句话置位背后为什么还有一句"读回"（延迟生效）。
-- 对比同一功能的手写版与库版的体积/可读性，给出"何时手写何时用库"的判断框架。
 
 ## 先修
 
@@ -33,11 +24,13 @@ minutes: 35
 
 ## 先跑起来（10 分钟 quick win）
 
-打开任意 SPL 工程的 `stm32f4xx_gpio.c`，找到 `GPIO_Init`，对照 [S3](03-gpio.md) 你的手写版——逐段配对（MODER 段→你的 MODER 行），10 分钟完成"相认"。
+打开任意 SPL 工程的 `stm32f4xx_gpio.c`，找到 `GPIO_Init`，对照 [S3](03-gpio.md) 你的手写版，逐段配对（MODER 段→你的 MODER 行），10 分钟完成"相认"。
+
+相认之前先押个体积：同一段功能，SPL 版和你手写版做出来，谁占的地方更大？差不多、差几倍，还是库反而更省？押完往下读，库与手写的三轴实测会给出量过的答案。
 
 ## 动画：GPIO_Init 解剖
 
-结构体打包 → 逐 pin 循环 → 位偏移计算 → 四段寄存器写入——库的封装术全在这四步里。
+结构体打包 → 逐 pin 循环 → 位偏移计算 → 四段寄存器写入，库的封装术全在这四步里。
 
 ![GPIO_Init 解剖动画](/anim/spl-gpio-init.svg)
 
@@ -58,9 +51,9 @@ minutes: 35
 
 ## 一、头文件三板斧：基址宏、结构体、位掩码
 
-SPL 读懂任何函数之前，先读懂 `stm32f4xx.h` 的三层基础设施——它们在 CMSIS 设备头里逐字可见（本站 `.trellis/ref/cmsis/stm32f407.h`）：
+SPL 读懂任何函数之前，先读懂 `stm32f4xx.h` 的三层基础设施，它们在 CMSIS 设备头里逐字可见（本站 `.trellis/ref/cmsis/stm32f407.h`）：
 
-**第一板斧：基址宏**——把"地址"变成"名字"：
+**第一板斧：基址宏**：把"地址"变成"名字"：
 
 ```c
 #define AHB1PERIPH_BASE  (PERIPH_BASE + 0x00020000UL)   /* = 0x40020000 */
@@ -68,9 +61,9 @@ SPL 读懂任何函数之前，先读懂 `stm32f4xx.h` 的三层基础设施—�
 #define GPIOA            ((GPIO_TypeDef *) GPIOA_BASE)
 ```
 
-`GPIOA` 就是一个指向 0x40020000 的结构体指针——`GPIOA->MODER` 在编译期就是 `*(uint32_t*)0x40020000`。**所有"寄存器访问"在 C 层面都是结构体成员解引用**，没有魔法。
+`GPIOA` 就是一个指向 0x40020000 的结构体指针，`GPIOA->MODER` 在编译期就是 `*(uint32_t*)0x40020000`。**所有"寄存器访问"在 C 层面都是结构体成员解引用**，没有魔法。
 
-**第二板斧：结构体**——把一串地址掰成命名字段（CMSIS 已核对偏移）：
+**第二板斧：结构体**：把一串地址掰成命名字段（CMSIS 已核对偏移）：
 
 ```c
 typedef struct {
@@ -86,9 +79,9 @@ typedef struct {
 } GPIO_TypeDef;
 ```
 
-`__IO` 是 `volatile`——回 [C3](../c/03-volatile.md)：寄存器访问必须 volatile，否则编译器把连续两次写合并。**结构体的字段顺序与偏移就是 RM0090 的寄存器布局**，所以"读 CMSIS 结构体 = 读 RM0090 寄存器表"。
+`__IO` 是 `volatile`，回 [C3](../c/03-volatile.md)：寄存器访问必须 volatile，否则编译器把连续两次写合并。**结构体的字段顺序与偏移就是 RM0090 的寄存器布局**，所以"读 CMSIS 结构体 = 读 RM0090 寄存器表"。
 
-**第三板斧：位掩码**——把"第 N 位的值"变成可读宏（CMSIS 已核对 `GPIO_MODER_MODER0_Msk = 0x3`）：
+**第三板斧：位掩码**：把"第 N 位的值"变成可读宏（CMSIS 已核对 `GPIO_MODER_MODER0_Msk = 0x3`）：
 
 ```c
 #define GPIO_MODER_MODER0_Msk   (0x3UL)              /* 2 位 */
@@ -96,11 +89,15 @@ typedef struct {
 /* 模式枚举（值即寄存器位段值）：00=IN, 01=OUT, 10=AF, 11=Analog */
 ```
 
-关键设计：**SPL 的枚举值 = 寄存器位段的实际值**——`GPIO_Mode_IN=0x00`、`GPIO_Mode_OUT=0x01`、`GPIO_Mode_AF=0x02`、`GPIO_Mode_AN=0x03`，直接就是 MODER 那两位的值。所以"`GPIO_Init` 翻译"本质是"把枚举值左移到对应引脚的位段"——没有查表，只有移位。
+关键设计：**SPL 的枚举值 = 寄存器位段的实际值**：`GPIO_Mode_IN=0x00`、`GPIO_Mode_OUT=0x01`、`GPIO_Mode_AF=0x02`、`GPIO_Mode_AN=0x03`，直接就是 MODER 那两位的值。所以"`GPIO_Init` 翻译"本质是"把枚举值左移到对应引脚的位段"，没有查表，只有移位。
+
+三板斧怎么喂进 `GPIO_Init`，又落到哪四段寄存器，一张图收干净：
+
+![SPL 解剖：基址宏、GPIO_TypeDef、位掩码三板斧供料给 GPIO_Init，落到 MODER/OTYPER/OSPEEDR/PUPDR 四段寄存器](/arch/spl-anatomy.png)
 
 ## 二、GPIO_Init 逐行：四段寄存器的位操作翻译
 
-`GPIO_Init` 的核心逻辑（V1.8.0 结构还原，行号以库源码为准）——逐 pin 循环，每个被选中的引脚走"清旧值 → 置新值"两步：
+`GPIO_Init` 的核心逻辑（V1.8.0 结构还原，行号以库源码为准）：逐 pin 循环，每个被选中的引脚走"清旧值 → 置新值"两步：
 
 ```c
 void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
@@ -141,12 +138,12 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 四个翻译要点，每个都能对照 [S3](03-gpio.md) 你手写的版本：
 
-1. **为什么逐 pin 循环**：`GPIO_Pin` 是 16 位掩码（如 `GPIO_Pin_5 | GPIO_Pin_6`），一次调用可能配多个引脚。循环逐位检测"这个引脚在不在掩码里"，在就走翻译——这是"一次 API 配多引脚"的实现。
-2. **为什么"先清后置"而不是直接赋值**：`MODER &= ~(mask << shift)` 先把这一位段清成 0，`|=` 再置新值。直接 `=` 会覆盖别的引脚的配置——这是"按位段操作"的基本功，[C7](../c/07-ub-misra.md) 的位运算纪律在库里的体现。
+1. **为什么逐 pin 循环**：`GPIO_Pin` 是 16 位掩码（如 `GPIO_Pin_5 | GPIO_Pin_6`），一次调用可能配多个引脚。循环逐位检测"这个引脚在不在掩码里"，在就走翻译，这是"一次 API 配多引脚"的实现。
+2. **为什么"先清后置"而不是直接赋值**：`MODER &= ~(mask << shift)` 先把这一位段清成 0，`|=` 再置新值。直接 `=` 会覆盖别的引脚的配置，这是"按位段操作"的基本功，[C7](../c/07-ub-misra.md) 的位运算纪律在库里的体现。
 3. **移位量 `pinpos * 2`**：MODER/OSPEEDR/PUPDR 是 2 位/引脚，所以移 `pinpos*2`；OTYPER 是 1 位/引脚，移 `pinpos`。**移位量由寄存器布局决定**，不是库作者拍脑袋。
-4. **枚举值即位段值**：`init->GPIO_Mode` 直接左移到 MODER 位段，没有查表——因为 SPL 在头文件里就把枚举定义成了与硬件编码相同的值（`GPIO_Mode_OUT=0x01` 就是 MODER 的 01）。这是 SPL 设计的精髓：**让 API 值与硬件值零翻译**。
+4. **枚举值即位段值**：`init->GPIO_Mode` 直接左移到 MODER 位段，没有查表，因为 SPL 在头文件里就把枚举定义成了与硬件编码相同的值（`GPIO_Mode_OUT=0x01` 就是 MODER 的 01）。这是 SPL 设计的精髓：**让 API 值与硬件值零翻译**。
 
-对照 [S3](03-gpio.md) 你手写的 `GPIOA->MODER |= (0x01 << (5*2))`——`GPIO_Init` 干的是同一件事，只是包了"循环多引脚 + 清旧值 + 断言"三层。**库没有魔法，只有更周全的边界处理。**
+对照 [S3](03-gpio.md) 你手写的 `GPIOA->MODER |= (0x01 << (5*2))`，`GPIO_Init` 干的是同一件事，只是包了"循环多引脚 + 清旧值 + 断言"三层。**库没有魔法，只有更周全的边界处理。**
 
 ## 三、时钟使能的读回：一句话置位背后的延迟
 
@@ -166,13 +163,13 @@ void RCC_AHB1PeriphClockCmd(uint32_t RCC_AHB1Periph, FunctionalState NewState)
 }
 ```
 
-**为什么要读回**：RM0090 §7 有一条"外设时钟使能后，访问外设寄存器前需等几个时钟周期生效"。如果刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空——现象是"配置了但没生效"。**读回 RCC->AHB1ENR 强制一次总线往返**，等流水线把写落地再继续——这是 SPL 替你踩的"时钟生效延迟"坑。
+**为什么要读回**：RM0090 §7 有一条"外设时钟使能后，访问外设寄存器前需等几个时钟周期生效"。如果刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是"配置了但没生效"。**读回 RCC->AHB1ENR 强制一次总线往返**，等流水线把写落地再继续——这是 SPL 替你踩的"时钟生效延迟"坑。
 
-手写寄存器版本（[S3](03-gpio.md) 及之前所有章节）的对应做法：开时钟后插一句 `(void)RCC->AHB1ENR;` 或 `__DSB();`。**这是库的"隐形价值"之一——把硬件手册里的小字条款编进函数体**，手写时容易漏。
+手写寄存器版本（[S3](03-gpio.md) 及之前所有章节）的对应做法：开时钟后插一句 `(void)RCC->AHB1ENR;` 或 `__DSB();`。**这是库的"隐形价值"之一：把硬件手册里的小字条款编进函数体**，手写时容易漏。
 
 ## 四、assert_param：Debug 版的参数体检
 
-SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`assert_param` 在 Release 版是空宏（编译期消失），Debug 版是"失败进死循环 + 打印位置"——和标准 `assert` 一个套路，但跨编译器、不依赖 libc。
+SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`assert_param` 在 Release 版是空宏（编译期消失），Debug 版是"失败进死循环 + 打印位置"，和标准 `assert` 一个套路，但跨编译器、不依赖 libc。
 
 ```c
 #ifdef USE_FULL_ASSERT
@@ -190,7 +187,7 @@ SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`asse
                             ((MODE) == GPIO_Mode_AF)  || ((MODE) == GPIO_Mode_AN))
 ```
 
-价值：Debug 版开 `USE_FULL_ASSERT`，参数错（如 `GPIO_Pin = 0`、`GPIO_Mode = 0x05`）当场进 `assert_failed` 死循环，看调用栈就知道哪个调用方传错了。**Release 版编译期消失**，零运行开销——这是 SPL 把"调试价值"与"运行成本"分离的标准做法。
+价值：Debug 版开 `USE_FULL_ASSERT`，参数错（如 `GPIO_Pin = 0`、`GPIO_Mode = 0x05`）当场进 `assert_failed` 死循环，看调用栈就知道哪个调用方传错了。**Release 版编译期消失**，零运行开销，这是 SPL 把"调试价值"与"运行成本"分离的标准做法。
 
 骨架坑列表里"assert 卡住当死机"就是没认出 `assert_failed` 死循环——它在喊"参数错了"，看调用栈别慌，不是硬件挂了。
 
@@ -216,7 +213,7 @@ SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`asse
 
 ## 六、从库反推手册：USART_Init 方法演练
 
-把"GPIO_Init 反推法"用在 `USART_Init` 上——拿到这个函数，先问"它动了哪几个寄存器的哪几位"，答案落在 CR1/CR2/CR3/BRR：
+把"GPIO_Init 反推法"用在 `USART_Init` 上，拿到这个函数，先问"它动了哪几个寄存器的哪几位"，答案落在 CR1/CR2/CR3/BRR：
 
 | 结构体字段 | 寄存器落位 | 值怎么来 |
 |---|---|---|
@@ -228,9 +225,9 @@ SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`asse
 | `USART_HardwareFlowControl` | **CR3.CTSE/RTSE** | CTS/RTS 流控 |
 | `USART_CLKInit` 的 CPOL/CPHA | **CR2.CPOL/CPHA** | 同步时钟模式 |
 
-`USART_Init` 的翻译逻辑（与 `GPIO_Init` 同构）：读 CR1/CR2/CR3，逐字段"先清后置"，最后写 BRR。**断言保证 BAUD 不超范围、WordLength 合法**——和 GPIO 的 assert_param 一个套路。
+`USART_Init` 的翻译逻辑（与 `GPIO_Init` 同构）：读 CR1/CR2/CR3，逐字段"先清后置"，最后写 BRR。**断言保证 BAUD 不超范围、WordLength 合法**，和 GPIO 的 assert_param 一个套路。
 
-这就是"API → 寄存器反推法"的全部：**拿到任何库函数，列出它的结构体字段 → 查 RM0090 每个字段对应哪个寄存器位 → 对照库源码核对翻译逻辑**。HAL/LL/RT-Thread 驱动都只是换皮——结构体字段名变了、断言宏变了，但"结构体打包 + 位操作翻译 + 断言"三板斧不变。**学会这一刀，任何新库都能解剖。**
+这就是"API → 寄存器反推法"的全部：**拿到任何库函数，列出它的结构体字段 → 查 RM0090 每个字段对应哪个寄存器位 → 对照库源码核对翻译逻辑**。HAL/LL/RT-Thread 驱动都只是换皮，结构体字段名变了、断言宏变了，但"结构体打包 + 位操作翻译 + 断言"三板斧不变。**学会这一刀，任何新库都能解剖。**
 
 ## 附录：本章对照源
 
@@ -252,21 +249,21 @@ SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`asse
 
 ## 常见坑
 
-- **库与芯片型号错配**：F10x 库编 F407 工程——头文件结构体全错位。
+- **库与芯片型号错配**：F10x 库编 F407 工程，头文件结构体全错位。
 - **忘定义 USE_STDPERIPH_DRIVER / 器件宏**：编译出来的配置表是空的。
-- **assert 卡住当死机**：Debug 断言失败进死循环——那是库在喊"参数错了"，看调用栈别慌。
+- **assert 卡住当死机**：Debug 断言失败进死循环，那是库在喊"参数错了"，看调用栈别慌。
 - **无脑全库链接**：只用一个 GPIO 却把整个库编进去（B5：gc-sections 救场的前提是分节编译）。
 
 ## 短自测
 
 1. 为什么 `GPIO_Init` 用"先清后置"而不是直接 `MODER = 新值`？
-<details><summary>参考答案</summary>MODER 是 32 位、16 个引脚各占 2 位。直接 `=` 会覆盖其他 15 个引脚的配置——而一次 `GPIO_Init` 通常只配一个或几个引脚。"先清后置"（`&amp;= ~(mask&lt;&lt;shift)` 再 `|= 新值&lt;&lt;shift`）只动目标引脚的位段，保留其他引脚的配置。这是按位段操作的基本功，[C7](../c/07-ub-misra.md) 的位运算纪律在库里的体现。</details>
+<details><summary>参考答案</summary>MODER 是 32 位、16 个引脚各占 2 位。直接 `=` 会覆盖其他 15 个引脚的配置，而一次 `GPIO_Init` 通常只配一个或几个引脚。"先清后置"（`&amp;= ~(mask&lt;&lt;shift)` 再 `|= 新值&lt;&lt;shift`）只动目标引脚的位段，保留其他引脚的配置。这是按位段操作的基本功，[C7](../c/07-ub-misra.md) 的位运算纪律在库里的体现。</details>
 
 2. 为什么 SPL 的 `GPIO_Mode_OUT` 枚举值是 0x01 而不是随便一个数？
-<details><summary>参考答案</summary>SPL 把枚举值定义成与 MODER 寄存器位段值**相同**的编码（00=IN, 01=OUT, 10=AF, 11=AN）。这样 `GPIO_Init` 翻译时直接 `枚举值 &lt;&lt; (pinpos*2)` 落到位段，没有查表——零翻译成本。这是 SPL 设计的精髓：让 API 值与硬件值同构，减少"翻译"环节出错的可能。</details>
+<details><summary>参考答案</summary>SPL 把枚举值定义成与 MODER 寄存器位段值**相同**的编码（00=IN, 01=OUT, 10=AF, 11=AN）。这样 `GPIO_Init` 翻译时直接 `枚举值 &lt;&lt; (pinpos*2)` 落到位段，没有查表，零翻译成本。这是 SPL 设计的精髓：让 API 值与硬件值同构，减少"翻译"环节出错的可能。</details>
 
 3. `RCC_AHB1PeriphClockCmd` 写完 `AHB1ENR |= bit` 后为什么还要读回一次？
-<details><summary>参考答案</summary>RM0090 §7 规定外设时钟使能后，访问外设寄存器前需等几个时钟周期生效。若刚写完立刻访问外设，可能在时钟还没喂到外设的那几个周期里读/写落空。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续——这是 SPL 替你踩的"时钟生效延迟"坑。手写版对应做法是开时钟后插 `(void)RCC->AHB1ENR;` 或 `__DSB();`。</details>
+<details><summary>参考答案</summary>RM0090 §7 规定外设时钟使能后，访问外设寄存器前需等几个时钟周期生效。若刚写完立刻访问外设，可能在时钟还没喂到外设的那几个周期里读/写落空。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续，这是 SPL 替你踩的"时钟生效延迟"坑。手写版对应做法是开时钟后插 `(void)RCC->AHB1ENR;` 或 `__DSB();`。</details>
 
 4. assert_param 在 Release 和 Debug 版分别是什么？为什么不会拖慢量产固件？
 <details><summary>参考答案</summary>Release 版（未定义 USE_FULL_ASSERT）：`assert_param(expr)` 展开为 `((void)0)`，编译期完全消失，零运行开销。Debug 版（定义 USE_FULL_ASSERT）：展开为 `expr ? (void)0 : assert_failed(__FILE__, __LINE__)`，参数错时进 `assert_failed` 死循环并打印位置。量产固件用 Release 配置编译，断言消失，不拖慢运行；开发期用 Debug 配置，参数错当场抓人。这是 SPL 把"调试价值"与"运行成本"分离的标准做法。</details>
@@ -288,8 +285,8 @@ SPL 每个函数开头一串 `assert_param(IS_GPIO_PIN(init->GPIO_Pin))`。`asse
 ## 你做到了
 
 - 库在你眼里是"透明的封装"，不再是必须迷信的黑盒；
-- 掌握"API→寄存器"的反推法——任何新库（HAL/LL/RT-Thread 驱动）都能用同一把刀解剖。
+- 掌握"API→寄存器"的反推法，任何新库（HAL/LL/RT-Thread 驱动）都能用同一把刀解剖。
 
 <div class="achievement">
-✅ 下一站：<a href="16-debug-hardfault.html">S16 HardFault 与排错</a>——崩溃现场的法医技术。
+✅ 下一站：<a href="16-debug-hardfault.html">S16 HardFault 与排错</a>：崩溃之后别猜，去现场把死因验出来。
 </div>

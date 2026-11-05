@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       esp-matrix: ${{ steps.catalog.outputs.matrix }}
     steps:
@@ -49,8 +49,22 @@ jobs:
           python -m pip install -r mcu-book/requirements.txt
           python -m playwright install --with-deps chromium
           python mcu-book/build_html.py --pdf
+          python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html
           mkdir -p docs/.vitepress/dist/book
           cp mcu-book/dist/mcu-deep-book.html mcu-book/dist/mcu-deep-book.pdf docs/.vitepress/dist/book/
+      - name: 整书契约门（对 PDF 产物反向校验：元数据/大纲/页眉页码）
+        run: python mcu-book/check_pdf.py
+      - name: 下载包（稳定名 + 版本名 + SHA256SUMS + 落地页）
+        run: python mcu-book/publish_downloads.py --out-dir docs/.vitepress/dist/downloads
+      - name: 下载包自证（GNU sha256sum 为权威口径 + hashlib 平台无关口径）
+        # 为什么要两个口径：清单按 GNU 二进制标记写，GNU coreutils 下 `sha256sum -c` 应全 OK；
+        # 而 Git for Windows 的实现会按文本模式读、对 PDF 误报 FAILED（见 publish_downloads.py 注释）。
+        # 这里在 Linux 上跑权威口径，同时跑一遍平台无关的 --verify，两者不一致即环境或产物有问题。
+        run: |
+          cd docs/.vitepress/dist/downloads
+          sha256sum -c SHA256SUMS.txt
+          cd -
+          python mcu-book/publish_downloads.py --verify docs/.vitepress/dist/downloads
       - uses: actions/upload-artifact@v4
         with:
           name: docs-site
@@ -58,7 +72,7 @@ jobs:
           if-no-files-found: error
 
   arm-host:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -94,7 +108,7 @@ jobs:
 
   esp32:
     needs: checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: espressif/idf:v5.5.2
     strategy:
       fail-fast: false
@@ -114,3 +128,15 @@ jobs:
           idf.py -B build/ci-$VARIANT -D SDKCONFIG="$PWD/build/ci-$VARIANT/sdkconfig" -D SDKCONFIG_DEFAULTS="$DEFAULTS" set-target "$TARGET"
           idf.py -B build/ci-$VARIANT -D SDKCONFIG="$PWD/build/ci-$VARIANT/sdkconfig" -D SDKCONFIG_DEFAULTS="$DEFAULTS" build size
           python -c 'import json,os; assert json.load(open("build/ci-"+os.environ["VARIANT"]+"/project_description.json"))["target"] == "esp32s3"'
+
+  # Python 静态检查：只抓真错误（未定义名、未用导入、可疑比较…），不做格式化。
+  # 已有战果：mcu-book/build_html.py 的 `or video_id`（自己赋给自己）就是这一门抓出来的。
+  # 规则范围与排除项见根目录 ruff.toml 的注释。
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/ruff-action@v4.1.0
+        with:
+          version: "0.15.21"
+          args: check

@@ -187,11 +187,12 @@ int main(void)
 
     /* ===== 5. tick↔时间整数换算与 uint32_t 回绕 ===== */
     /* 168MHz：1 周期 = 1000/168 ns = 125/21 ns ≈ 5.952ns，整数除法向零截断 */
-    CHECK(1UL * 1000UL / 168UL == 5UL);      /* 1 周期 → 5ns（真值 5.952） */
-    CHECK(1000UL / 168UL == 5UL);            /* 1000 周期 → 5us（真值 5.952）*/
-    CHECK(168UL * 1000UL / 168UL == 1000UL); /* 整 us 时无误差 */
+    CHECK(1UL * 1000UL / 168UL == 5UL);       /* 1 周期 → 5ns（真值 5.952） */
+    CHECK(168UL * 1000UL / 168UL == 1000UL);  /* 168 周期 → 1000ns = 1us，整 us 无损 */
+    CHECK(1000UL * 1000UL / 168UL == 5952UL); /* 1000 周期 → 5952ns = 5.952us */
     printf("[5] 换算：1 周期 = 125/21 ns ≈ 5.952ns；整数公式 ns=c*1000/168："
-           "c=1 → 5ns、c=1000 → 5us（向零截断，整 us 时恰好无损）\n");
+           "c=1 → 5ns、c=168 → 1000ns=1us（整 us 无损）、"
+           "c=1000 → 5952ns=5.952us（按整数 us 取 5us，丢 0.952us）\n");
 
     /* uint32_t 毫秒计数器：2^32 ms = 49.71 天回绕 */
     CHECK(4294967296ULL / 86400000ULL == 49ULL);
@@ -208,10 +209,11 @@ int main(void)
     CHECK((uint32_t)(now2 - then) == 3000UL);
     CHECK((uint32_t)(now2 - then) >= timeout);     /* 正确写法：判为超时 */
     CHECK((now2 >= then + timeout) == 0);          /* 朴素写法：误判为未超时！ */
-    printf("    回绕：uint32_t ms 计数 %llu 天绕一圈；"
+    unsigned long long days10 = 4294967296ULL * 10ULL / 86400000ULL;
+    printf("    回绕：uint32_t ms 计数 %llu.%llu 天绕一圈；"
            "then=0x%08lX now=5000 → (now-then)=%lums（无符号减法跨回绕正确）；"
-           "而 now>=then+timeout 在 now=2000 时误报未超时\n",
-           (unsigned long long)(4294967296ULL / 86400000ULL),
+           "而 now>=then+timeout 在 now=2000 时漏报未超时\n",
+           days10 / 10ULL, days10 % 10ULL,
            (unsigned long)then, (unsigned long)(now - then));
 
     /* ===== 6. SysTick_Config 全貌：寄存器三写 + 优先级最低 ===== */

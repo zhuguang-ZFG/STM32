@@ -1,20 +1,59 @@
 {
   "id": "f2-context-switch",
-  "title": "上下文切换：PendSV 换魂术",
+  "title": "PendSV 换魂术：27 条指令、三层名字与伪造的第一帧",
   "badge": "F2",
-  "voice": "zh-CN-YunxiNeural",
-  "rate": "+4%",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
   "fps": 30,
   "sampleRate": 44100,
   "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "xPortPendSVHandler": "x port PendSV handler",
+    "PendSV_Handler": "PendSV handler",
+    "vTaskSwitchContext": "v task switch context",
+    "pxCurrentTCB": "p x current T C B",
+    "pxPortInitialiseStack": "p x port initialise stack",
+    "pxTopOfStack": "p x top of stack",
+    "prvTaskExitError": "p r v task exit error",
+    "configKERNEL_INTERRUPT_PRIORITY": "config kernel interrupt priority",
+    "configMAX_SYSCALL_INTERRUPT_PRIORITY": "config max syscall interrupt priority",
+    "EXC_RETURN": "E X C return",
+    "BASEPRI": "base priority",
+    "stmdb": "S T M D B",
+    "ldmia": "L D M I A",
+    "vstmdbeq": "V S T M D B",
+    "vldmiaeq": "V L D M I A",
+    "xPSR": "x P S R",
+    "PSP": "P S P",
+    "TCB": "T C B",
+    "AAPCS": "A A P C S",
+    "CLZ": "C L Z",
+    "F2": "F 二",
+    "0x50": "零 x 五零",
+    "0x01000000": "零 x 零一 零零 零零 零零",
+    "0xfffffffd": "零 x f f f f f f f d",
+    "0xfffffffe": "零 x f f f f f f f e"
+  },
   "cover": {
+    "variant": "vs",
     "kicker": "通往单片机之路 · F2",
-    "line1": "每毫秒一次",
-    "line2": "偷梁换柱",
+    "line1": "断点打不上",
+    "line2": "三层名字在换",
     "vs": {
-      "left": "看着两个任务",
-      "right": "其实一个 CPU"
+      "left": "源码：长名字",
+      "right": "符号：PendSV_Handler",
+      "labels": [
+        "SOURCE",
+        "SYMBOL"
+      ]
     },
+    "tag": "本机 probe · 反汇编逐行",
+    "siteNote": "寄存器级 · 日志逐行可查",
+    "proof": "!port.c:505  xPortPendSVHandler\n!Config:76 宏改成 PendSV_Handler\n!startup:111 向量表认后者\n!nm 只剩 PendSV_Handler",
+    "proofShort": "!源码名：xPortPendSVHandler\n!宏名：PendSV_Handler\n!符号名：只剩后者",
+    "num": "27 条",
+    "numNote": "换魂正文指令；整段 104 字节",
     "sizes": {
       "bilibili": [
         1920,
@@ -23,20 +62,666 @@
       "douyin": [
         1080,
         1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "why-systick-not",
+          "title": "执刑官"
+        },
+        {
+          "at": "cs-1",
+          "title": "换魂四幕"
+        },
+        {
+          "at": "asm-store",
+          "title": "二十七条"
+        },
+        {
+          "at": "name-map",
+          "title": "名字与目击"
+        },
+        {
+          "at": "forge-src",
+          "title": "第一帧"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "b xPortPendSVHandler，断不到",
+          "sub": "源码里明明有这个函数",
+          "narration": "敲 b xPortPendSVHandler，回的是函数未定义。源码里明明有它，为什么断不到？答案不在调试器，而在三层名字。",
+          "emphasis": [
+            "xPortPendSVHandler"
+          ]
+        },
+        {
+          "id": "hook-02",
+          "kind": "code",
+          "title": "三层名字，一层层换",
+          "codeLabel": "源码 → 宏 → 向量表",
+          "code": "port.c:138  void xPortPendSVHandler( void )\nport.c:505  void xPortPendSVHandler( void )\nFreeRTOSConfig.h:76  #define xPortPendSVHandler PendSV_Handler\nstartup_stm32f407xx.s:111  .word PendSV_Handler\nnm port.o: T PendSV_Handler",
+          "narration": "名字有三层。源码层，port.c 的声明和定义都叫 xPortPendSVHandler；预处理层，配置文件第七十六行把它整体改成 PendSV_Handler；链接层，启动文件第 111 行的向量表认的是后者，符号表里也只剩后者。所以断点要断改名后的那个。",
+          "emphasis": [
+            "PendSV_Handler"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-4"
+            }
+          ]
+        },
+        {
+          "id": "hook-03",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "先把账摆上桌",
+          "title": "整集只对三笔铁账",
+          "bullets": [
+            "9 —— 软件帧一次压进任务栈的字数",
+            "27 —— PendSV 正文的指令条数",
+            "18 —— 没跑过的任务，第一帧的字数"
+          ],
+          "narration": "整集只对三笔账：软件帧一次压九个字；PendSV 正文二十七条指令；从没跑过的任务，第一帧十八个字。三个数都从同一份 probe 日志里读出来，后面逐笔拆。",
+          "emphasis": [
+            "9"
+          ]
+        },
+        {
+          "id": "why-systick-not",
+          "kind": "code",
+          "title": "SysTick 只报案，PendSV 才执法",
+          "codeLabel": "一次切换为什么要绕一手",
+          "code": "Tick 中断：\n  发现更高优先级就绪\n  → 只置 PendSV 挂起位\n  → 不在 SysTick 里切换\n\nPendSV：\n  优先级 255，最低一档\n  → 排队等更高优先级 ISR 服完\n  → 才执行换魂",
+          "narration": "为什么不直接在这个毫秒中断里切？因为切换要等更高优先级的中断服完役。SysTick 只做一件事：发现更高优先级任务就绪，就把 PendSV 的挂起位设成一。真正的执法者是 PendSV，优先级 255，属于全系统最低的一档，永远排在所有更高优先级的 ISR 后面。",
+          "emphasis": [
+            "255"
+          ]
+        },
+        {
+          "id": "why-low",
+          "kind": "code",
+          "title": "255 不是配置给的，是移植层硬写",
+          "codeLabel": "V11 的 ARMv7-M 移植层",
+          "code": "port.c:65   #define portMIN_INTERRUPT_PRIORITY ( 255UL )\nport.c:66   ... << 16UL\nport.c:67   ... << 24UL\nport.c:434  SHPR3 |= PENDSV_PRI\nport.c:435  SHPR3 |= SYSTICK_PRI\n\nconfigKERNEL_INTERRUPT_PRIORITY 出现次数\n  port.c: 0 次   portmacro.h: 0 次",
+          "note": "History.txt 301 到 302 写明：这个宏对 ARMv7-M 已 obsolete",
+          "narration": "最低优先级不是从配置里读来的。探针只查移植层：port.c 第 65 行把 255 写成常量，第 66、67 行各左移 16 和 24 位，第 434、435 行分别落进 SHPR3 给 PendSV 与 SysTick 的槽。那配置文件里同名的一行呢？port.c 与 portmacro.h 各扫一遍，命中数都是 0；History.txt 第 301 到 302 行也写明它对 ARMv7-M 已经 obsolete。真正被内核读的是另一个宏，下一场说。",
+          "emphasis": [
+            "255"
+          ]
+        },
+        {
+          "id": "prio-danger",
+          "kind": "card",
+          "tone": "danger",
+          "kicker": "真正会炸的是旁边那一行",
+          "title": "临界区只抬到 0x50",
+          "bullets": [
+            "0x50 = 5 << (8 - 4)，四位优先级实现",
+            "port.c:379 / 383 / 413 三道断言盯着它",
+            "填 0、超出位宽、填奇数：开机即断言",
+            "configKERNEL 那行是死代码，留着无害"
+          ],
+          "narration": "真正被内核读的是另一个宏：最大系统调用优先级，落地是 0x50，也就是五左移四位。它被三道断言盯着：填零、超出四位位宽、填奇数，开机就炸。临界区抬到 0x50，只挡得住优先级数值不小于五的中断；零到四照样能打断，所以换魂只能等。",
+          "emphasis": [
+            "0x50"
+          ]
+        },
+        {
+          "id": "cs-1",
+          "kind": "anim",
+          "anim": "context-switch",
+          "t0": 0,
+          "t1": 3,
+          "smil": "stretch",
+          "title": "第一幕：TaskA 正在跑",
+          "note": "魂在寄存器里，栈上还空着",
+          "narration": "先看完整的一轮。TaskA 占着 CPU，寄存器里是它此刻的全部家当；它自己的任务栈还没有这轮的软件帧，栈顶就是下一个要写的位置。",
+          "emphasis": [
+            "TaskA"
+          ]
+        },
+        {
+          "id": "cs-2",
+          "kind": "anim",
+          "anim": "context-switch",
+          "t0": 3,
+          "t1": 6,
+          "smil": "stretch",
+          "title": "第二幕：一条 stmdb 压九个字",
+          "note": "栈顶随后藏进 TCB 偏移 0",
+          "narration": "轮到了封存。一条 stmdb 让 r4 到 r11 和 EXC_RETURN 一起落进 TaskA 自己的栈，数下来九个字；紧接着的 str 把刚更新的栈顶记进 TCB 偏移零，等待下一次起棺。",
+          "emphasis": [
+            "stmdb"
+          ]
+        },
+        {
+          "id": "cs-3",
+          "kind": "anim",
+          "anim": "context-switch",
+          "t0": 6,
+          "t1": 9,
+          "smil": "stretch",
+          "title": "第三幕：全剧唯一一句 C",
+          "note": "vTaskSwitchContext 只换指针",
+          "narration": "接着只动一次 C。vTaskSwitchContext 把当前任务指针改指 TaskB，别的寄存器一个也不搬；CPU 仍是那一个，选谁上场的决定到此结束，后面的体力活交给汇编。",
+          "emphasis": [
+            "vTaskSwitchContext"
+          ]
+        },
+        {
+          "id": "cs-4",
+          "kind": "anim",
+          "anim": "context-switch",
+          "t0": 9,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "第四幕：九个字弹回，异常返回",
+          "note": "TaskB 从上次停下的指令接着跑",
+          "narration": "最后起棺。TaskB 的栈里，九个软件字被 ldmia 弹回寄存器，PSP 随即指向新栈顶；异常返回时硬件再弹八个字，TaskB 便从上次停下的那条指令继续，像什么都没发生。",
+          "emphasis": [
+            "九个字"
+          ]
+        },
+        {
+          "id": "frame-split",
+          "kind": "code",
+          "title": "硬件管八个字，软件补九个字",
+          "codeLabel": "一帧的两半",
+          "code": "硬件帧 8 个字\n  R0 R1 R2 R3 R12 LR PC xPSR\n\n软件帧 9 个字\n  R4 到 R11，再加 EXC_RETURN",
+          "codeB": "0x16  stmdb r0!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}\n0x1a  str   r0, [r2, #0]",
+          "codeBLabel": "存的两条：压九个字，再封棺",
+          "narration": "为什么硬件只压八个字，软件还得补九个？异常入场时，硬件按调用者保存的约定压 R0 到 R3、R12、LR、PC、xPSR，正好八个；R4 到 R11 属于被调者保存，硬件不管，只能由 PendSV 用 stmdb 补。那条指令的列表有九项，sl、fp 分别是 r9、r11 的别名，再加上 lr 槽里的 EXC_RETURN，正好九个字。",
+          "emphasis": [
+            "九个字"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-3"
+            }
+          ]
+        },
+        {
+          "id": "lazy",
+          "kind": "card",
+          "tone": "good",
+          "title": "浮点行李：先占座，后写真",
+          "bullets": [
+            "有浮点行李：硬件帧扩到 26 个字",
+            "软件再补 s16 到 s31 共 16 个字",
+            "初始 EXC_RETURN 的 bit4 = 1：没有行李",
+            "第一帧因此是 18 个字，不是 26 个"
+          ],
+          "narration": "浮点再加一层。M4F 的懒堆叠让硬件先给 FPU 帧占座，真用到浮点才写真数。所以 EXC_RETURN 的 bit4 是一块牌子：为一，这趟没有浮点行李；为零，软件还要多压 s16 到 s31。初始帧的 bit4 是一，所以第一帧只有十八个字，不是二十六个。",
+          "emphasis": [
+            "bit4"
+          ]
+        },
+        {
+          "id": "sf-1",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 0,
+          "t1": 4,
+          "smil": "stretch",
+          "title": "第一幕：调用一层，帧叠一层",
+          "note": "栈指针一路往下走",
+          "narration": "动画从栈帧的生成讲起。调用一层，栈里就多一层，栈指针一路向低地址走。",
+          "emphasis": [
+            "调用一层"
+          ]
+        },
+        {
+          "id": "sf-2",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 4,
+          "t1": 8,
+          "smil": "stretch",
+          "title": "第二幕：被调者保存区",
+          "note": "r4 到 r11 的家，PendSV 按同一套规矩压",
+          "narration": "再看被调者保存区：r4 到 r11 就住在这里。PendSV 补压那九个字时，遵守的是和普通函数完全相同的保存规则，一个寄存器都不差。",
+          "emphasis": [
+            "r4"
+          ]
+        },
+        {
+          "id": "sf-3",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 8,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "第三幕：任务栈就是一摞帧",
+          "note": "切换冻住的只是最顶上几个字",
+          "narration": "把视角拉远，任务栈本来就是一层层帧摞起来的。切换真正冻结的，只是最上面那一小段，底下那些帧原地不动。",
+          "emphasis": [
+            "最顶上"
+          ]
+        },
+        {
+          "id": "asm-store",
+          "kind": "code",
+          "title": "存：取栈顶、压软件帧、封棺",
+          "codeLabel": "PendSV 前半段",
+          "code": "0x00  mrs   r0, PSP\n0x0c  tst.w lr, #16\n0x12  vstmdbeq r0!, {s16 到 s31}\n0x16  stmdb r0!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}\n0x1a  str   r0, [r2, #0]",
+          "note": "0x12 是浮点分支；没有浮点行李就跳过",
+          "narration": "逐行过堂。第一段是存。第一条，把当前任务栈顶取进 r0——任务用 PSP，主栈指针归内核。接着查异常返回值的 bit4：有浮点行李，就先托运 s16 到 s31。然后一条 stmdb 把 r4 到 r11 加 EXC_RETURN 压栈，一共九个字；最后一条 str，新栈顶写进 TCB 偏移零，封棺。",
+          "emphasis": [
+            "stmdb"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-4"
+            }
+          ]
+        },
+        {
+          "id": "asm-switch",
+          "kind": "code",
+          "title": "换：临界区抬到 80，再换指针",
+          "codeLabel": "全剧唯一一句 C",
+          "code": "0x20  mov.w r0, #80\n0x24  msr   BASEPRI, r0\n0x30  bl    vTaskSwitchContext\n0x34  mov.w r0, #0\n0x38  msr   BASEPRI, r0",
+          "narration": "第二段是换。先把中断屏蔽抬到 80，配两条屏障，再调一次 vTaskSwitchContext。全剧就这一句 C：换指针。回来立刻把屏蔽清零。为什么是 80？它就是 0x50，五左移四位的结果；临界区只挡优先级数值不小于五的中断，零到四照样能进来，所以这段必须短。",
+          "emphasis": [
+            "80"
+          ]
+        },
+        {
+          "id": "asm-load",
+          "kind": "code",
+          "title": "取：还魂、指栈、异常返回",
+          "codeLabel": "PendSV 后半段",
+          "code": "0x42  ldmia.w r0!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}\n0x50  msr   PSP, r0\n0x58  bx    lr",
+          "narration": "最后一段负责还魂。C 已经改过当前指针，于是这里重新读出 TCB，再取它偏移零里的栈顶；一条 ldmia 弹回九个软件字，若有浮点行李，s16 到 s31 也一并领回。PSP 换成新栈顶后，bx lr 触发异常返回，硬件按 EXC_RETURN 选栈并弹出八个字的硬件帧，任务从上次的断点继续。",
+          "emphasis": [
+            "bx"
+          ]
+        },
+        {
+          "id": "count-27",
+          "kind": "code",
+          "title": "27 条指令，104 字节",
+          "codeLabel": "数到 bx lr 为止",
+          "code": "正文 27 条\n整段 104 字节\n\n一条直线：\n  没有循环\n  没有函数内跳转",
+          "codeB": "0x00  mrs  r0, PSP\n0x30  bl   vTaskSwitchContext\n0x58  bx   lr",
+          "codeBLabel": "首、换、尾三行",
+          "narration": "整段代码编出来多少条？目标文件的反汇编里，从入口数到 bx lr：27 条，整段 104 字节。它是一条直路——没有循环，也没有函数内跳转。常说的几百个周期，指的是整次换魂，存、换、取再加访存的量级；这份日志没有周期计数，我不把它当实测，也不替它补一个周期数。",
+          "emphasis": [
+            "27"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-1"
+            }
+          ]
+        },
+        {
+          "id": "tcb-zero",
+          "kind": "code",
+          "title": "偏移 0 不是猜的，是铁律",
+          "codeLabel": "凭据在成员自己的注释里",
+          "code": "tasks.c:360\nTHIS MUST BE THE FIRST MEMBER\nOF THE TCB STRUCT.\n\n0x1a  str r0, [r2, #0]",
+          "narration": "为什么偏移零可以写？tasks.c 第 360 行把 pxTopOfStack 钉成 TCB 的第一个成员，注释还用全大写强调 THIS MUST BE THE FIRST MEMBER。移植层与内核之间，就靠这一条约定接头。",
+          "emphasis": [
+            "tasks.c:360"
+          ]
+        },
+        {
+          "id": "decision",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "决策与执行分开",
+          "title": "C 换指针，汇编搬寄存器",
+          "bullets": [
+            "C 只改一个指针：pxCurrentTCB",
+            "汇编搬 9 个软件字，指一次 PSP",
+            "两边只共享一个字：TCB 偏移 0"
+          ],
+          "narration": "把这一节收口：整个切换，C 只换一个全局指针；体力活全在二十七条汇编里。决策与执行分得干净，两边唯一的接口，就是 TCB 第一个成员里那个栈顶字。",
+          "emphasis": [
+            "pxCurrentTCB"
+          ]
+        },
+        {
+          "id": "name-map",
+          "kind": "code",
+          "title": "断点断哪一层：看符号表",
+          "codeLabel": "三层名字，最后只剩一个符号",
+          "code": "port.c:138/505  xPortPendSVHandler\nFreeRTOSConfig.h:76  #define ... PendSV_Handler\nstartup_stm32f407xx.s:111  .word PendSV_Handler\nnm: T PendSV_Handler\nt prvTaskExitError",
+          "narration": "回到开场的坑。源码层叫长名字；配置文件第七十六行一行宏，把它换成向量表用的短名字；宏展开之后，长名字已经被替换掉了。符号表里只剩大写 T 的 PendSV_Handler；小写 t 的 prvTaskExitError 是文件内静态符号，没被改名。断点要断编出来的那个名字。调试器只是照着符号表办事。",
+          "emphasis": [
+            "PendSV_Handler"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-4"
+            }
+          ]
+        },
+        {
+          "id": "gdb-steps",
+          "kind": "code",
+          "title": "GDB 里三个容易读错的点",
+          "codeLabel": "照着敲就能对上动画",
+          "code": "b PendSV_Handler\nx/8xw $psp      硬件帧 8 字\nstepi 8\nx/9xw $r0       软件帧 9 字\nx/8xw $r0+36    再往上硬件帧",
+          "narration": "在真板上按这个顺序看。断在入口，PSP 指硬件帧最低字，只能读八个字；软件帧还没压。stepi 八步停在 str 那一行，新栈顶已经在 r0 里，不是 PSP——PSP 要到后半段才更新。软件帧数九个，不是八个；r0 加三十六正好回到 PSP，这条等式只在没有浮点行李时成立。",
+          "emphasis": [
+            "36"
+          ]
+        },
+        {
+          "id": "forge-src",
+          "kind": "code",
+          "title": "没跑过的任务，第一帧是伪造的",
+          "codeLabel": "pxPortInitialiseStack 的回退顺序",
+          "code": "pxTopOfStack--;             对齐空位\n*pxTopOfStack = portINITIAL_XPSR;\npxTopOfStack--;\n*pxTopOfStack = pxCode & portSTART_ADDRESS_MASK;\npxTopOfStack--;\n*pxTopOfStack = portTASK_RETURN_ADDRESS;\npxTopOfStack -= 5;          R12 R3 R2 R1\n*pxTopOfStack = pvParameters;\npxTopOfStack--;\n*pxTopOfStack = portINITIAL_EXC_RETURN;\npxTopOfStack -= 8;          R11 到 R4",
+          "codeB": "回退 17 个字\n+ 落点 1 个\n= 18 个字 = 72 字节\n\n硬件帧 8 + 软件帧 9 + 对齐 1",
+          "codeBLabel": "把回退量当场加起来",
+          "note": "18 个字里只有 5 个被真正写过，其余故意留脏",
+          "narration": "最后是那些从未被切过的任务：它们的第一帧没有硬件代劳，只能由 pxPortInitialiseStack 手工摆出来。把源码里的回退量相加，是十七个字；再算上指针最终停住的落点，一共十八个字、七十二字节。硬件八、软件九、对齐一，三笔正好凑齐；十八个槽里真正写过的只有五个，其余故意留脏。",
+          "emphasis": [
+            "18"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-4"
+            }
+          ]
+        },
+        {
+          "id": "forge-imm",
+          "kind": "code",
+          "title": "三个立即数撑起第一帧",
+          "codeLabel": "xPSR、EXC_RETURN、PC 掩码",
+          "code": "portINITIAL_XPSR        0x01000000\nportINITIAL_EXC_RETURN  0xfffffffd\nportSTART_ADDRESS_MASK  0xfffffffe",
+          "codeB": "0x14  mov.w r2, #16777216\n0x22  bic.w r2, r3, #1",
+          "codeBLabel": "编出来的两条装载",
+          "narration": "三个立即数解释第一帧。xPSR 填 0x01000000，bit24 为一，这是 Thumb 状态位：异常返回后任务以 Thumb 模式开跑。EXC_RETURN 填 0xfffffffd，bit2 选 PSP，bit3 选线程模式，bit4 为一表示没有浮点行李。PC 还要和 0xfffffffe 相与，清掉最低位，模式由 xPSR 说了算。三个数各管一件事：状态、返回路径、入口地址。",
+          "emphasis": [
+            "0xfffffffd"
+          ]
+        },
+        {
+          "id": "forge-trap",
+          "kind": "card",
+          "tone": "danger",
+          "kicker": "任务函数不许 return",
+          "title": "返回地址是一个陷阱",
+          "bullets": [
+            "LR 槽填 prvTaskExitError",
+            "return → configASSERT + 关中断 + 死循环",
+            "正确退出：vTaskDelete( NULL )"
+          ],
+          "narration": "于是任务函数一旦 return，就无路可走：LR 槽指向 prvTaskExitError，那里会触发断言、关中断，然后原地死循环，表现就是程序卡死。要结束任务，请调用 vTaskDelete( NULL )。",
+          "emphasis": [
+            "prvTaskExitError"
+          ]
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "title": "换个指针，换个魂",
+          "bullets": [
+            "名字三层：源码 → 宏 → 向量表",
+            "优先级：255 硬写，临界区 0x50",
+            "软件帧 9 字，首帧 18 字",
+            "换魂直线 27 条，周期数没有测"
+          ],
+          "narration": "一句话带走：名字分三层，断点断编出来的那个；优先级 255 由移植层硬写，临界区只抬到 0x50；软件帧九个字，首帧十八个字；换魂是一条二十七条指令的直线，周期数没有测。换个指针，换个魂。",
+          "emphasis": [
+            "0x50"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "bullets:0-3"
+            }
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "一条命令，五步取证",
+          "sub": "sh code/rtos/01-freertos-lab/probe.sh",
+          "bullets": [
+            "符号链：port.c:138/505 → Config:76 → startup:111",
+            "反汇编：27 条 / 104 字节",
+            "三行铁账：9 字 / 偏移 0 / #80",
+            "首帧：17 字回退 + 落点 = 18 字"
+          ],
+          "narration": "复现不需要开发板：在仓库里执行 sh code/rtos/01-freertos-lab/probe.sh，五步一次跑完——符号链、反汇编、三行铁账、优先级账、首帧长度账。只要交叉编译器；日志和命令都在仓库里。",
+          "emphasis": [
+            "27"
+          ]
+        },
+        {
+          "id": "teaser",
+          "kind": "outro",
+          "title": "下一集 · F3：位图选任务",
+          "sub": "一张位图，一条 CLZ",
+          "narration": "下一集回答这一集留下的问题：换指针之前，调度器怎么选出下一个任务？答案是一张就绪位图，加一条前导零计数指令。"
+        }
       ]
     },
-    "proof": "! 90 + 6 + 4 + 4 = 104 字节整段",
-    "num": "104 字节",
-    "numNote": "换一次任务，硬件加移植层搬这么多"
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "why-systick-not",
+          "title": "执刑官"
+        },
+        {
+          "at": "cs-2",
+          "title": "换魂"
+        },
+        {
+          "at": "frame-split",
+          "title": "软硬分工"
+        },
+        {
+          "at": "punch",
+          "title": "收束"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "why-systick-not",
+        "cs-2",
+        "cs-3",
+        "frame-split",
+        "count-27",
+        "tcb-zero",
+        "name-map",
+        "forge-src",
+        "punch",
+        "cta"
+      ],
+      "set": {
+        "hook-01": {
+          "title": "断点打不上\n先看三层名字",
+          "sub": "b xPortPendSVHandler",
+          "emphasis": [
+            "xPortPendSVHandler"
+          ]
+        },
+        "why-systick-not": {
+          "title": "SysTick 只报案\nPendSV 才动手",
+          "code": "Tick → 置挂起位\nPendSV → 最后执行",
+          "emphasis": [
+            "PendSV"
+          ]
+        },
+        "cs-2": {
+          "title": "一条 stmdb\n压进九个字",
+          "code": "9 个字进栈\n栈顶写进偏移 0",
+          "note": "栈顶藏进 TCB 偏移 0",
+          "emphasis": [
+            "9"
+          ]
+        },
+        "cs-3": {
+          "title": "全剧唯一 C\n只换一个指针",
+          "note": "vTaskSwitchContext 只换指针",
+          "emphasis": [
+            "指针"
+          ]
+        },
+        "frame-split": {
+          "title": "硬件八个字\n软件九个字",
+          "code": "硬件：R0 R1 R2 R3 R12 LR PC xPSR\n软件：R4 到 R11 + EXC_RETURN",
+          "codeB": "",
+          "codeBLabel": "",
+          "emphasis": [
+            "九个字"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-1"
+            }
+          ]
+        },
+        "count-27": {
+          "title": "二十七条\n一百零四字节",
+          "code": "数到 bx lr 为止\n一条直线，无循环",
+          "codeB": "",
+          "codeBLabel": "",
+          "emphasis": [
+            "bx lr"
+          ]
+        },
+        "tcb-zero": {
+          "title": "偏移零\n有铁律",
+          "code": "tasks.c:360\nTHIS MUST BE THE FIRST MEMBER",
+          "emphasis": [
+            "tasks.c:360"
+          ]
+        },
+        "name-map": {
+          "title": "三层名字\n断点断哪层",
+          "code": "port.c:505 xPortPendSVHandler\nConfig:76 宏改名\nstartup:111 PendSV_Handler",
+          "emphasis": [
+            "PendSV_Handler"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-2"
+            }
+          ]
+        },
+        "forge-src": {
+          "title": "首帧十八字\n手工伪造",
+          "code": "pxPortInitialiseStack()\n回退 17 个字 + 落点 1 个",
+          "codeB": "",
+          "codeBLabel": "",
+          "note": "18 个字 = 72 字节",
+          "emphasis": [
+            "17"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-1"
+            }
+          ]
+        },
+        "punch": {
+          "title": "换个指针\n换个魂",
+          "bullets": [
+            "名字三层，优先级 255",
+            "软件帧 9 字，首帧 18 字"
+          ],
+          "emphasis": [
+            "255"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "bullets:0-1"
+            }
+          ]
+        },
+        "cta": {
+          "title": "一条命令\n全部取证",
+          "sub": "sh code/rtos/01-freertos-lab/probe.sh",
+          "bullets": [
+            "符号链、反汇编、三行铁账",
+            "不需要开发板"
+          ],
+          "emphasis": [
+            "probe.sh"
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "GDB 敲 b xPortPendSVHandler，回函数未定义；源码里明明有它。",
+        "why-systick-not": "SysTick 只置挂起位；真正动手的是最低优先级 PendSV。",
+        "cs-2": "stmdb 压九个字，栈顶写进偏移零。",
+        "cs-3": "唯一一句 C：vTaskSwitchContext 只换指针。",
+        "frame-split": "硬件八个字，软件九个，这是调用约定的分工。",
+        "count-27": "数到 bx lr：27 条指令，104 字节。",
+        "tcb-zero": "偏移零是铁律：栈顶必须是 TCB 首成员。",
+        "name-map": "源码名、宏名、向量表名，断点断编出来的。",
+        "forge-src": "没跑过的任务，首帧十八字：十七个字回退加一个落点。",
+        "punch": "名字三层，优先级 255，软件帧 9，首帧 18。",
+        "cta": "一条命令，五步取证，不用开发板。"
+      }
+    }
   },
   "publish": {
     "bilibili": {
       "titles": [
-        "两个任务同时在跑？每毫秒一次的偷梁换柱：PendSV 换魂术 27 条汇编逐行过堂",
-        "你的断点为什么打不上：FreeRTOS 用一行宏把函数名换掉了",
-        "打开上下文切换的黑盒：软件帧 9 个字、正文 27 条、第一帧 18 个字"
+        "断点打不上：三层名字，和 PendSV 的 27 条指令",
+        "一次切换压九个字：硬件帧八个、软件帧九个",
+        "PendSV 为什么必须最低：255 是硬写的，临界区只到 0x50"
       ],
-      "intro": "两个任务「同时在跑」是每毫秒发生一次偷梁换柱：把当前任务的魂抽走封进它的栈，把下一个任务的魂从它的栈里请回来。执刑官是 PendSV——全系统优先级最低的中断。\n\n这一集把这段 naked 函数逐行过堂，并且所有数字都在本机实跑：\n· 为什么切换不能在 SysTick 里直接做（否则把某个 ISR 切走一半）\n· 硬件帧 8 个字 / 软件帧 9 个字的分工从哪来（AAPCS 的账）\n· 十一条语义步骤编出来是 27 条指令、正文 90 字节、整段 104 字节\n· str r0, [r2, #0] 为什么敢往偏移 0 写——凭据在 tasks.c:360 的成员注释里\n· 一个真实的坑：b xPortPendSVHandler 什么都断不到，因为 FreeRTOSConfig.h:76 一行宏把它改成了 PendSV_Handler\n· GDB 里为什么不能读 $psp 看软件帧（PSP 到第 ⑩ 条才被改）\n· 没跑过的任务，第一帧是 pxPortInitialiseStack 手工伪造的 18 个字\n\n复现：git clone 后进 code/rtos/01-freertos-lab，sh probe.sh，五步一条命令跑完（不需要开发板，只需要 arm-none-eabi-gcc）。\n\n本集全文：docs/rtos/freertos/02-context-switch.md（通往单片机之路 F2）。",
+      "intro": "这一集只认一份日志：本机 probe 的符号链、PendSV_Handler 反汇编、三行铁账、优先级账和首帧长度账。所有数字都是这次跑出来的，没有开发板。\n\n· 名字有三层：port.c 的源码名 xPortPendSVHandler，FreeRTOSConfig.h:76 的宏改名，startup_stm32f407xx.s:111 的向量表；nm 里只剩 PendSV_Handler，所以 b xPortPendSVHandler 断不到\n· 切换为什么不在 SysTick 里做：SysTick 只置挂起位，PendSV 以 255 排在所有更高优先级的 ISR 之后\n· 255 不是 configKERNEL_INTERRUPT_PRIORITY 给的：这个宏在 port.c 与 portmacro.h 里出现 0 次，port.c 自己硬写 255，再写进 SHPR3\n· 真正要盯的是 configMAX_SYSCALL_INTERRUPT_PRIORITY：0x50 = 5 << (8 - 4)，port.c:379/383/413 三道断言，临界区只挡优先级数值不小于 5 的中断\n· 软件帧 9 个字，一条 stmdb 压完；栈顶写进 TCB 偏移 0，凭据是 tasks.c:360 的成员注释\n· 反汇编数到 bx lr：27 条指令，整段 104 字节；它是一条没有循环、没有函数内跳转的直线\n· 没跑过的任务，第一帧由 pxPortInitialiseStack 伪造：回退 17 个字加落点 1 个，共 18 个字 72 字节；硬件帧 8 + 软件帧 9 + 对齐 1\n\n“几百个周期”是整次换魂的量级口径，不是这次日志的实测；日志没有周期计数，这一集也不补。\n\n复现：sh code/rtos/01-freertos-lab/probe.sh。完整图文与代码在开源书《通往单片机之路》F2 章。",
       "tags": [
         "FreeRTOS",
         "STM32",
@@ -56,405 +741,61 @@
     },
     "douyin": {
       "titles": [
-        "FreeRTOS 任务是怎么切换的？每毫秒换一次魂",
-        "断点打不上？一行宏把函数名换了",
-        "27 条汇编讲透上下文切换"
+        "断点打不上？三层名字在换",
+        "一条 stmdb 压九个字",
+        "27 条指令讲透换魂"
       ],
+      "intro": "GDB 敲 b xPortPendSVHandler 断不到，因为源码名被 FreeRTOSConfig.h:76 改成 PendSV_Handler，向量表认后者。SysTick 只置挂起位，PendSV 以 255 最后上场；软件帧 9 字，首帧 18 字，正文 27 条、整段 104 字节。本机 probe，无开发板。",
       "tags": [
         "FreeRTOS",
         "STM32",
         "嵌入式",
         "单片机"
       ],
-      "intro": "两个任务同时在跑？那是每毫秒一次的偷梁换柱。执刑官 PendSV 是全系统优先级最低的中断——它必须最后上场。软件帧 9 个字、正文 27 条指令、新任务第一帧 18 个字，全部本机实测。通往单片机之路 F2 本集讲全。#FreeRTOS #STM32 #嵌入式 #RTOS",
       "topics": [
-        "FreeRTOS",
-        "STM32",
-        "嵌入式开发",
-        "单片机"
+        "知识",
+        "科技数码"
       ],
-      "caption": "两个任务同时在跑？每毫秒换一次魂\nPendSV 必须最低，它要最后上场\n#FreeRTOS #上下文切换 #STM32 #RTOS",
-      "pinned": "完整图文在「通往单片机之路」F2《上下文切换：PendSV 逐指令》。软件帧 9 个字、正文 27 条指令、新任务第一帧 18 个字，三个数一条命令复现：sh code/rtos/01-freertos-lab/probe.sh",
+      "caption": "断点打不上？三层名字在换\nPendSV 存九字、取九字，最后上场\n#FreeRTOS #PendSV #RTOS",
+      "pinned": "完整图文在「通往单片机之路」F2《PendSV 换魂术》。三层名字、软件帧 9 字、正文 27 条、首帧 18 字，都能一条命令复现：sh code/rtos/01-freertos-lab/probe.sh",
       "repro": "sh code/rtos/01-freertos-lab/probe.sh"
     },
     "zhihu": {
       "titles": [
-        "两个任务「同时在跑」，其实是每毫秒一次的偷梁换柱",
-        "你的断点为什么打不上：FreeRTOS 用一行宏把函数名换掉了"
+        "断点打不上：FreeRTOS 用三层名字换掉了 PendSV",
+        "一次上下文切换的账：9 个软件字、27 条指令、18 字首帧"
       ],
-      "intro": "把当前任务的魂抽走封进它的栈，把下一个任务的魂从它的栈里请回来——执刑官是 PendSV，全系统优先级最低的中断。这一集把这段 naked 函数逐行过堂，所有数字本机实跑：\n为什么切换不能在 SysTick 里直接做（否则把某个 ISR 切走一半）；硬件帧 8 个字 / 软件帧 9 个字的分工从哪来（AAPCS 的账）；十一条语义步骤编出来是 27 条指令、正文 90 字节、整段 104 字节；str r0, [r2, #0] 为什么敢往偏移 0 写——凭据在 tasks.c:360 的成员注释里。\n一个真实的坑：b xPortPendSVHandler 什么都断不到，因为 FreeRTOSConfig.h:76 一行宏把它改成了 PendSV_Handler。还有没跑过的任务，第一帧是 pxPortInitialiseStack 手工伪造的 18 个字。\n取证：code/rtos/01-freertos-lab 里 sh probe.sh，五步一条命令跑完，不需要开发板。本集 F2 本集讲全。",
+      "intro": "源码里叫 xPortPendSVHandler，GDB 里 b xPortPendSVHandler 却断不到。这一集把三层名字摊开：port.c 的声明与定义，FreeRTOSConfig.h:76 的一行宏改名，startup_stm32f407xx.s:111 的向量表；nm 里只剩 PendSV_Handler。\n\n切换为什么不在 SysTick 里做？SysTick 只置 PendSV 挂起位；PendSV 的优先级是 255，属于最低一档，排队等所有更高优先级的 ISR 服完才执法。255 不是 configKERNEL_INTERRUPT_PRIORITY 给的，这个宏在 port.c 与 portmacro.h 里出现 0 次，port.c 自己硬写 255；真正被读的是 configMAX_SYSCALL_INTERRUPT_PRIORITY，落地 0x50，临界区只挡优先级数值不小于 5 的中断，port.c:379/383/413 三道断言盯着它。\n\n存的一侧：一条 stmdb 压 9 个软件字，栈顶写进 TCB 偏移 0，凭据是 tasks.c:360 的成员注释。反汇编数到 bx lr：正文 27 条，整段 104 字节，没有循环、没有函数内跳转。没跑过的任务，第一帧由 pxPortInitialiseStack 伪造：回退 17 个字加落点 1 个，共 18 个字 72 字节；硬件帧 8 + 软件帧 9 + 对齐 1。\n\n“几百个周期”是整次换魂的量级口径，这次日志没有周期计数，不冒充实测。复现：sh code/rtos/01-freertos-lab/probe.sh，不需要开发板。",
       "domain": "科学工程",
       "mark": "个人观点仅供参考",
-      "original": true
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集沿用与已发章节一致的「个人观点仅供参考」。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "FreeRTOS",
+        "STM32",
+        "上下文切换",
+        "PendSV",
+        "嵌入式"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
     },
     "xiaohongshu": {
-      "title": "27 条汇编讲透上下文切换",
-      "body": "两个任务同时在跑？那是每毫秒一次的偷梁换柱。执刑官 PendSV 是全系统优先级最低的中断——它必须最后上场。软件帧 9 个字、正文 27 条指令、新任务第一帧 18 个字，全部本机实测。#FreeRTOS #STM32 #嵌入式 #RTOS\n\n复现：sh code/rtos/01-freertos-lab/probe.sh",
+      "title": "断点打不上？三层名字在换",
+      "body": "GDB 敲 b xPortPendSVHandler，回的是函数未定义。源码里明明有它，因为名字被换了三层：\n\n源码层：port.c:138 与 port.c:505 都叫 xPortPendSVHandler\n预处理层：FreeRTOSConfig.h:76 一行宏，改成 PendSV_Handler\n链接层：startup_stm32f407xx.s:111 的向量表认后者，nm 里也只剩后者\n\n切换不在 SysTick 里做：SysTick 只置挂起位；PendSV 以 255 排在所有更高优先级的 ISR 之后。255 是 port.c 自己硬写的，configKERNEL_INTERRUPT_PRIORITY 在移植层出现 0 次；真正被读的是 configMAX_SYSCALL_INTERRUPT_PRIORITY，落地 0x50，临界区只挡优先级数值不小于 5 的中断。\n\n一次切换：软件帧 9 个字，栈顶写进 TCB 偏移 0（tasks.c:360 的成员注释）；反汇编数到 bx lr 是 27 条、整段 104 字节；没跑过的任务，第一帧 18 个字 72 字节，由 pxPortInitialiseStack 回退 17 个字加落点 1 个伪造。\n\n“几百个周期”是整次换魂的量级口径，这次日志没有周期计数，不冒充实测。\n\n复现：sh code/rtos/01-freertos-lab/probe.sh",
       "topics": [
         "FreeRTOS",
         "STM32",
         "嵌入式"
       ],
       "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
-      "pinned": "软件帧 9 个字、正文 27 条指令、新任务第一帧 18 个字，三个数一条命令复现：sh code/rtos/01-freertos-lab/probe.sh",
+      "pinned": "三层名字、9 字软件帧、27 条指令、18 字首帧都在里面：sh code/rtos/01-freertos-lab/probe.sh",
       "repro": "sh code/rtos/01-freertos-lab/probe.sh",
       "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
       "collection": "通往单片机之路",
       "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
-    }
-  },
-  "platforms": {
-    "bilibili": {
-      "size": [
-        1920,
-        1080
-      ],
-      "targetSec": [
-        480,
-        720
-      ],
-      "scenes": [
-        {
-          "id": "hook-01",
-          "kind": "hook",
-          "title": "两个任务同时在跑，是每毫秒一次的偷梁换柱",
-          "sub": "魂 = 寄存器；封进各自的栈；执刑官是优先级最低的 PendSV",
-          "narration": "先说清楚我们在看什么幻觉。两个任务同时在跑，其实是同一个 CPU 在轮流投胎：每一毫秒，把当前任务的魂——也就是它那批寄存器——抽走封进它自己的栈，再把下一个任务的魂从它的栈里请回来。干这件事的执刑官叫 PendSV，它是全系统优先级最低的中断。这一集把这段代码逐行过堂，屏幕上的每个数字都是本机实跑出来的。"
-        },
-        {
-          "id": "hook-02",
-          "kind": "hook",
-          "title": "一个我自己踩过的坑：断点根本打不上",
-          "sub": "b xPortPendSVHandler → Function not defined",
-          "narration": "开场先给一个真实的翻车现场。你想在换魂入口打个断点，敲 b xPortPendSVHandler，GDB 回你一句函数没定义。你明明在内核源码里看见这个函数了，它去哪了？这一集第五节会把这个坑彻底讲透，因为它正好是理解整条移植层的钥匙。"
-        },
-        {
-          "id": "hook-03",
-          "kind": "card",
-          "title": "本集只记三个数",
-          "bullets": [
-            "9 —— 软件帧压进任务栈的字数（r4-r11 加 EXC_RETURN）",
-            "27 —— PendSV 编出来的正文指令条数",
-            "18 —— 一个从没跑过的任务，第一帧的字数"
-          ],
-          "narration": "整集就三个数，先钉在墙上。九，一次切换软件侧手工压进任务栈的字数。二十七，这段 naked 函数编出来的正文指令条数。十八，一个从没被中断过的任务，它第一帧的字数。三个数都能用一条命令复现，最后告诉你脚本在哪。"
-        },
-        {
-          "id": "why-systick-not",
-          "kind": "code",
-          "title": "SysTick 只报案，PendSV 才执法",
-          "codeLabel": "本章第一节的账",
-          "code": "SysTick（每 1ms）\n  └─ xTaskIncrementTick() 发现：有更高优先级任务就绪了\n       └─ 它不切换，只写一笔挂起位\n\n!portmacro.h:99   portNVIC_INT_CTRL_REG = *( volatile uint32_t * ) 0xe000ed04\n!portmacro.h:100  portNVIC_PENDSVSET_BIT = ( 1UL << 28UL )\n!portmacro.h:91   portYIELD_WITHIN_API() 的全部动作 = 写这一笔\n\nPendSV（优先级最低，永远排队到最后）\n  └─ 真正的换魂在这里执行",
-          "note": "为什么绕这一手：SysTick 优先级高，在它堆里直接切换＝把某个 ISR 切走一半；架构侧同一条位号见 CMSIS core_cm4.h:490",
-          "narration": "为什么不干脆在 SysTick 里切？因为 SysTick 优先级高，它手上可能正压着别的中断没服完役。你在那里面一切换，等于把某个中断服务程序切走一半——外设寄存器读到一半、标志位清到一半，回来全乱。所以 SysTick 的活只是报案：往那个叫 ICSR 的寄存器第 28 位写一笔挂起。这不是背出来的数，移植层头文件里两行宏就把地址和位号写死了，而那句让出接口，全部动作就是把这一位置起来。"
-        },
-        {
-          "id": "why-low",
-          "kind": "code",
-          "title": "最低优先级不是玄学，是编出来的一个立即数",
-          "codeLabel": "probe.sh 第 4 步 · 本机实测",
-          "code": "!port.c:65   #define portMIN_INTERRUPT_PRIORITY   ( 255UL )\n port.c:66   #define portNVIC_PENDSV_PRI   ( 255 << 16UL )\n port.c:67   #define portNVIC_SYSTICK_PRI  ( 255 << 24UL )\n!port.c:434  portNVIC_SHPR3_REG |= portNVIC_PENDSV_PRI;\n!port.c:435  portNVIC_SHPR3_REG |= portNVIC_SYSTICK_PRI;\n\n~grep -c configKERNEL_INTERRUPT_PRIORITY port.c portmacro.h\n!  port.c:0        portmacro.h:0     ← 这个宏一次都没被读",
-          "codeB": "  20:  f04f 0050   mov.w  r0, #80\t; 0x50\n  24:  f380 8811   msr    BASEPRI, r0\n  38:  f380 8811   msr    BASEPRI, r0\n\n!这才是被读的那个宏：5 << (8 - configPRIO_BITS)\n~ configPRIO_BITS = 4 → 5 << 4 = 80",
-          "codeBLabel": "临界区那条落地成 #80",
-          "note": "handler 优先级（255）与临界区天花板（80）是两个不同的数，别混：前者内核硬写，后者才由配置宏代入",
-          "narration": "那 PendSV 为什么永远最后上场？我原以为是配置里那行写了 255，跑完探针才发现：移植层自己硬写。第六十五行一个常量 255，第六十六、六十七行分别左移十六和二十四位，第四百三十四、四百三十五行写进优先级寄存器。而我数了一遍，那个所有人都以为在起作用的宏，在这个移植层的两个文件里出现的次数是零。真正被读的只有另一个：五左移四位等于八十，编出来就是屏幕上这条立即数。"
-        },
-        {
-          "id": "prio-danger",
-          "kind": "card",
-          "tone": "danger",
-          "title": "翻案：坑不在那一行，在旁边那一行",
-          "bullets": [
-            "老说法：configKERNEL_INTERRUPT_PRIORITY 配错 → 现场随机崩，一周一次",
-            "本机实测：内核根本不读它（port.c:0，portmacro.h:0），那行是死代码",
-            "真正会炸的是 configMAX_SYSCALL_INTERRUPT_PRIORITY：port.c:379 / 383 / 413 三道断言",
-            "填 0、超出位宽、填奇数 → 开机就断言炸，比一周崩一次好得多"
-          ],
-          "narration": "我原本要在这儿讲那个著名的坑：这一行配错，切换抢在别的 ISR 前头执行，现场随机崩，一周出现一次，日志里查不到东西。探针跑完我把这段撤了——新版本的内核根本不读那个宏，你写什么它都不看，configKERNEL 的变更记录里自己写了句 obsolete。真正会炸的是旁边那行：最大系统调用优先级。它被三道断言盯着，填零、超出硬件位宽、填奇数，开机当场就炸。这比一周崩一次好得多——除非你把断言定义成空函数，那它才会退化成灵异事件。"
-        },
-        {
-          "id": "cs-1",
-          "kind": "anim",
-          "anim": "context-switch",
-          "t0": 0,
-          "t1": 3,
-          "smil": "stretch",
-          "note": "第一幕：TaskA 正在跑，它的魂在寄存器里",
-          "narration": "换魂全程动画放一遍。第一幕，TaskA 正在跑，它的魂这时候就摊在 CPU 的寄存器里，栈上还空着。"
-        },
-        {
-          "id": "cs-2",
-          "kind": "anim",
-          "anim": "context-switch",
-          "t0": 3,
-          "t1": 6,
-          "smil": "stretch",
-          "note": "第二幕：stmdb 一条指令压 9 个字，栈顶藏进 TCB",
-          "narration": "第二幕，封棺。一条 stmdb 指令把 r4 到 r11 连同一个异常返回值压进 TaskA 自己的栈，一共九个字，然后把这个新栈顶存进它的任务档案。注意档案里栈顶住在哪——这个问题第四节回答。"
-        },
-        {
-          "id": "cs-3",
-          "kind": "anim",
-          "anim": "context-switch",
-          "t0": 6,
-          "t1": 9,
-          "smil": "stretch",
-          "note": "第三幕：vTaskSwitchContext 只干一件事——换指针",
-          "narration": "第三幕，全剧唯一一句 C：换个全局指针，把当前任务档案指向 TaskB。CPU 还是那个 CPU，决策到此为止。"
-        },
-        {
-          "id": "cs-4",
-          "kind": "anim",
-          "anim": "context-switch",
-          "t0": 9,
-          "t1": 12,
-          "smil": "stretch",
-          "note": "第四幕：起棺——从 TaskB 的栈里把魂请回来",
-          "narration": "第四幕，起棺。从新任务的栈里把九个字弹回寄存器，异常一返回，硬件顺手弹出剩下的八个字，TaskB 就从它上次停下的那条指令接着跑。看两个栈此消彼长——这就是同时在跑的全部真相。"
-        },
-        {
-          "id": "frame-split",
-          "kind": "code",
-          "title": "硬件管一半，软件管另一半：AAPCS 的账",
-          "codeLabel": "为什么正好是 9 个字",
-          "code": "硬件自动压（异常入场，8 个字）\n  R0 R1 R2 R3 R12 LR PC xPSR\n~  ← 这是 AAPCS 的「调用者保存」，硬件替你管了\n\n软件手工补压（被调者保存，9 个字）\n!  16:  e920 4ff0  stmdb  r0!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}\n~                                       └─ sl = r9，fp = r11 的 ABI 别名\n\nFPU 再加两层：硬件帧扩展 s0-s15 + FPSCR，软件再加 s16-s31（16 个字）",
-          "note": "软硬两半合起来，才是一个任务完整的魂",
-          "narration": "为什么硬件管八个字、软件要补九个？这笔试的调用约定。异常入场时硬件自动压好八字：R0 到 R3、R12、LR、PC、xPSR，这正好是调用约定里的调用者保存。而 r4 到 r11 是被调者保存——硬件不认识这个约定，得 PendSV 自己手工压。看这条实测指令：寄存器列表里九项，sl 和 fp 就是 r9 和 r11 的别名。"
-        },
-        {
-          "id": "lazy",
-          "kind": "card",
-          "tone": "good",
-          "title": "懒堆叠：先占座，后写真",
-          "bullets": [
-            "M4F 的 FPCCR.LSPEN 默认开：入场先给 FPU 帧预留空间",
-            "真用到浮点才写真数——不用浮点的中断省下这笔",
-            "EXC_RETURN 的 bit4 就是「这趟有没有 FPU 行李」的牌子"
-          ],
-          "narration": "浮点再加一层戏。M4F 有个懒堆叠：异常入场时硬件先给浮点帧占好座位，任务真碰了浮点才回头写真数。所以异常返回值里第 4 位就是一块牌子，写着这趟到底有没有浮点行李。"
-        },
-        {
-          "id": "sf-1",
-          "kind": "anim",
-          "anim": "stack-frame",
-          "t0": 0,
-          "t1": 4,
-          "smil": "stretch",
-          "note": "栈帧怎么长出来：调用一层，帧就叠一层",
-          "narration": "这段动画把栈帧怎么长出来画清楚了。第一幕，调用一层帧就叠一层，栈指针往下走。"
-        },
-        {
-          "id": "sf-2",
-          "kind": "anim",
-          "anim": "stack-frame",
-          "t0": 4,
-          "t1": 8,
-          "smil": "stretch",
-          "note": "被调者保存区：r4-r11 的家，PendSV 就是按这个约定压的",
-          "narration": "第二幕，帧里被调者保存那一格，就是 r4 到 r11 的家。PendSV 那九个字的压法，跟普通函数用的是同一套规矩。"
-        },
-        {
-          "id": "sf-3",
-          "kind": "anim",
-          "anim": "stack-frame",
-          "t0": 8,
-          "t1": 12,
-          "smil": "stretch",
-          "note": "一个任务的栈，从被创建那一刻起就是这一摞帧",
-          "narration": "第三幕，一个任务的栈从头到尾就是这么一摞帧。上下文切换冻住的，只是这摞帧最顶上那几个字。"
-        },
-        {
-          "id": "asm-store",
-          "kind": "code",
-          "title": "存：① 到 ⑤",
-          "codeLabel": "port.c:509 起的 naked 内联汇编",
-          "code": "!   mrs   r0, psp              ① 取当前任务栈顶（跑的是 PSP 不是 MSP）\n    isb\n    ldr   r3, =pxCurrentTCB    ②\n    ldr   r2, [r3]\n~   tst   r14, #0x10           ③ 有浮点行李吗\n~   it    eq\n~   vstmdbeq r0!, {s16-s31}\n!   stmdb r0!, {r4-r11, r14}   ④ 软件帧入栈——魂魄抽离\n!   str   r0, [r2]             ⑤ 新栈顶存进 TCB：封棺",
-          "note": "源码里 ② 写作 ldr r3, pxCurrentTCBConst（字面量池符号，port.c:514）",
-          "narration": "逐行过堂。第一段是存。一，把当前任务栈顶取进 r0——注意任务用的是 PSP，主栈指针 MSP 归内核和中断。二，拿到当前任务的档案。三，查有没有浮点行李，有就先托运十六个浮点寄存器。四，r4 到 r11 加异常返回值压栈，魂魄抽离。五，新栈顶写进档案第一个成员——封棺。"
-        },
-        {
-          "id": "asm-switch",
-          "kind": "code",
-          "title": "换：⑥ 和 ⑦，全剧唯一的 C",
-          "codeLabel": "临界区 + 换指针",
-          "code": "    stmdb sp!, {r0, r3}        进临界区前先保现场\n    mov   r0, #80              ⑥ 宏在这里代入，落地是立即数\n    msr   basepri, r0             屏蔽低优先级中断\n    dsb\n    isb\n!   bl    vTaskSwitchContext   ⑦ 换指针：pxCurrentTCB = 下一个任务\n    mov   r0, #0\n    msr   basepri, r0             出临界区\n    ldmia sp!, {r0, r3}",
-          "narration": "第二段是换。先把 r0 和 r3 临时保到主栈，再把中断屏蔽抬到 80，配两条屏障指令，然后调一次 C 函数。全剧就这一句：换指针。回来立刻把屏蔽放回去，恢复现场。"
-        },
-        {
-          "id": "asm-load",
-          "kind": "code",
-          "title": "取：⑧ 到 ⑪，异常返回才是复活",
-          "codeLabel": "新任务的魂从它的栈里请回来",
-          "code": "!   ldr   r1, [r3]             ⑧ 新 TCB（指针已换人）\n    ldr   r0, [r1]                新任务的栈顶\n!   ldmia r0!, {r4-r11, r14}   ⑨ 还魂：软件帧弹回\n    tst   r14, #0x10\n    it    eq\n~   vldmiaeq r0!, {s16-s31}       浮点行李也领回\n!   msr   psp, r0              ⑩ PSP 指向新任务栈顶\n    isb\n!   bx    r14                  ⑪ 异常返回：硬件弹硬件帧",
-          "note": "⑪ 之后新任务从它上次停下的那条指令接着跑——PC 就在硬件帧里",
-          "narration": "第三段是取。从换过人的指针里拿新档案，取它的栈顶，弹回九个字的软件帧，浮点行李也领回，把 PSP 指向新栈顶。最后一条：异常返回。硬件按那个异常返回值自己选用哪摞栈、弹出八字硬件帧。新任务就从它上次被切走的那条指令接着跑，它自己完全不知道发生过什么。"
-        },
-        {
-          "id": "count-27",
-          "kind": "code",
-          "title": "十一条语义步骤，编出来是 27 条指令",
-          "codeLabel": "probe.sh 第 2 步实测账",
-          "code": "!正文指令条数 = 27 条（数到 bx lr 为止）\n!段大小      = 104 字节\n\n~ 0:  f3ef 8009   mrs    r0, PSP          ← ①\n~ 4:  f3bf 8f6f   isb    sy\n~ 8:  4b15        ldr    r3, [pc, #84]    ← ②\n~ a:  681a        ldr    r2, [r3, #0]\n~ …\n!58:  4770        bx     lr               ← ⑪",
-          "codeB": "十一段各自几条：\n ①2 ②2 ③3 ④⑤2 临界区保 1\n ⑥4 ⑦1 出临界区 3 ⑧2\n ⑨4 ⑩⑪3\n合计 27 条 = 90 字节正文\n~ 27 条里有 9 条是 16 位 Thumb\n~ .align 4 补 2 条 nop = 6 字节\n~ 字面量 4 字节 + 再 2 条 nop = 4 字节\n! 90 + 6 + 4 + 4 = 104 字节整段",
-          "codeBLabel": "分布与字节账",
-          "note": "数字会随工具链浮动；账不在条数，在一次切换只走一段直线代码——没有循环，没有函数内跳转",
-          "narration": "那十一段编出来到底多少条？我把目标文件反汇编数到异常返回为止：二十七条，整段一百零四字节。字节账也对得上——二十七条里有九条是十六位的压缩编码，正文只有九十字节；后面是编译器为对齐补的两条空操作六字节、一条存放全局地址的字面量四字节、末尾再两条空操作四字节，九十加六加四加四，正好一百零四。工具链一换这些数就会变，所以别背数字，背下面那句：一次切换只走一段直线代码，没有循环，也没有函数内的跳转。"
-        },
-        {
-          "id": "tcb-zero",
-          "kind": "code",
-          "title": "封棺为什么敢写偏移 0",
-          "codeLabel": "凭据在成员自己的注释里",
-          "code": "!tasks.c:360\n  volatile StackType_t * pxTopOfStack;\n  /**< Points to the location of the last item\n       placed on the tasks stack.\n       THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */\n\n反汇编里三处 #0 全指同一个约定：\n   a:  681a   ldr  r2, [r3, #0]   取当前 TCB\n  1a:  6010   str  r0, [r2, #0]   封\n  3e:  6819   ldr  r1, [r3, #0]   起 → 40: ldr r0, [r1, #0]",
-          "codeB": "~一个容易认错的同名陷阱：\n\n[[bad]]task.h:171 也有 pxTopOfStack\n\n~ 但它属于 TaskStatus_t——\n~ 那是 uxTaskGetSystemInfo() 给外部看的信息结构，\n~ 不是 TCB。\n\n!移植层要写的偏移 0，永远指 tasks.c 里那个。",
-          "codeBLabel": "别认错结构体",
-          "note": "移植层和内核之间的接口，就是「第一个成员永远是栈顶」这一句话",
-          "narration": "封棺那条为什么敢往偏移零写？因为内核立了铁律，而且不是口口相传——铁律原文就写在这个成员自己的注释里：这必须是结构体第一个成员。顺带一个我踩过的认错：另一个头文件里也有个同名成员，但它属于给外部看的信息结构，不是任务档案。偏移零永远指前面那个。"
-        },
-        {
-          "id": "decision",
-          "kind": "card",
-          "tone": "gold",
-          "title": "决策与执行分离",
-          "bullets": [
-            "C 部分只改一个指针：选谁就绪、优先级怎么比（F3 位图 + CLZ）",
-            "汇编部分只搬寄存器：压九个、取九个、指一次栈",
-            "两边唯一的接口是那个字：栈顶住在档案第一个成员"
-          ],
-          "narration": "把这一节收个口。整个切换，C 只换了一个指针，体力活全在二十七条汇编里。决策跟执行分得干干净净：选谁上场是调度器的事，怎么换魂是移植层的事，两边唯一的接口就是那个字——栈顶住在档案第一个成员。"
-        },
-        {
-          "id": "name-map",
-          "kind": "code",
-          "title": "断点为什么打不上：一行宏把名字换掉了",
-          "codeLabel": "probe.sh 第 1 步：三层对应",
-          "code": "port.c:505          void xPortPendSVHandler( void )\n                        ← 内核源码写的名字\n\n!FreeRTOSConfig.h:76  #define xPortPendSVHandler PendSV_Handler\n                        ← 预处理阶段整体改名\n\nstartup_stm32f407xx.s:111  .word PendSV_Handler\n                        ← 向量表躺的是这个",
-          "codeB": "!nm 的实际输出：\n  00000000 T PendSV_Handler\n  00000000 T SVC_Handler\n  00000000 T pxPortInitialiseStack\n  00000000 t prvTaskExitError\n\n~ 大写 T：全局符号\n~ 小写 t：文件内静态符号\n\n!xPortPendSVHandler 在目标文件里根本不存在",
-          "codeBLabel": "编出来只剩右边那个",
-          "note": "改名只发生在 SVC / PendSV / SysTick 这三个 handler 上；其它函数按源码名直接断",
-          "narration": "现在回到开场那个坑。内核源码里它确实叫那个长名字，但工程的配置文件里有一行宏，把它整体替换成了向量表用的名字。预处理一过，长名字就不存在了。看目标文件的符号表，只剩短的那个。所以断点要断改名之后的。而且注意大小写：T 是全局，小写 t 是文件内静态——改名只发生在那三个异常入口上，别的函数照源码名断。"
-        },
-        {
-          "id": "gdb-steps",
-          "kind": "code",
-          "title": "目击实验：三个容易读错的点",
-          "codeLabel": "照着敲就能对上动画每一帧",
-          "code": "b PendSV_Handler\np pxCurrentTCB          记下旧任务档案地址\np/x $psp                此刻 PSP 指硬件帧最低字\nx/8xw $psp              硬件帧 8 字\n!stepi 8                 走到第 9 条 str（还没执行）\n!p/x $r0                 ④ 压完的栈顶——PSP 到 ⑩ 才改，只能看 r0\n!x/9xw $r0               软件帧 9 字\nx/8xw $r0+36             再往上 8 字是硬件帧\nfinish\np pxCurrentTCB          已换人",
-          "codeB": "~三条为什么：\n\n1 [[bad]]别在入口读软件帧\n~ stmdb 改的是 r0，PSP 直到第十条才被更新\n\n2 [[bad]]是 9 不是 8\n~ r4 到 r11 八个，加异常返回值一个\n\n3 等式 r0+36 == psp 只在无浮点时成立\n~ 走浮点分支要多压十六字 = 64 字节",
-          "codeBLabel": "每条都有实测出处",
-          "note": "进阶：任务里加一行浮点运算，看第 ③ 条走不走那个相等分支",
-          "narration": "把动画里的每一帧在真板上抓到。注意第一条：断在入口时只能读硬件帧，软件帧还没压。想读它，得单步过那条压栈指令，而且只能看 r0——因为压栈改的是 r0，主栈指针要到第十条才被更新。第二条，数的是九不是八，多那一个就是异常返回值。第三条等式只在没有浮点行李时成立。"
-        },
-        {
-          "id": "forge-src",
-          "kind": "code",
-          "title": "没跑过的任务，第一帧是伪造的",
-          "codeLabel": "port.c:202 pxPortInitialiseStack",
-          "code": "~   pxTopOfStack--;                对齐空位（不写）\n!   *pxTopOfStack = portINITIAL_XPSR;                    xPSR\n    pxTopOfStack--;\n!   *pxTopOfStack = pxCode & portSTART_ADDRESS_MASK;     PC\n    pxTopOfStack--;\n!   *pxTopOfStack = portTASK_RETURN_ADDRESS;             LR\n~   pxTopOfStack -= 5;               R12 R3 R2 R1（不写）\n!   *pxTopOfStack = pvParameters;                        R0\n    pxTopOfStack--;\n!   *pxTopOfStack = portINITIAL_EXC_RETURN;              EXC_RETURN\n~   pxTopOfStack -= 8;               R11 到 R4（不写）",
-          "codeB": "!probe.sh 第 5 步当场把回退量加起来：\n  指针回退 17 个字\n  加最后停住的落点共 18 个字 = 72 字节\n\n对得上账：\n  硬件帧 8 + 软件帧 9 + 对齐 1 = 18\n\n~ 18 个字里只有 5 个被真正写过\n~ 剩下 13 个故意留脏——\n~ 源码原话：省代码空间，跳过寄存器初始化",
-          "codeBLabel": "实测长度账",
-          "note": "形状必须和被切走时严格一致，否则起棺那四条指令会读错位置",
-          "narration": "最后一块拼图：一个刚创建、从没被中断过的任务，没有硬件替它压那一帧。所以第一帧是手工造的。我把源码里的回退量当场加了一遍：指针回退十七个字，加上停住的落点共十八个字，七十二字节。硬件帧八、软件帧九、对齐一，严丝合缝对上。十八个字里只真写了五个，剩下十三个故意留脏——省代码空间，反正这些寄存器接下来会被任务自己覆盖。"
-        },
-        {
-          "id": "forge-imm",
-          "kind": "code",
-          "title": "三个立即数撑起整个开场",
-          "codeLabel": "port.c:92 / :93 / :100",
-          "code": "!portINITIAL_XPSR        = 0x01000000\n~  └─ bit24 = 1：ARMv7-M 规定异常返回时这个保留位必须为 1\n~     它同时就是 Thumb 状态位 → 新任务以 Thumb 模式开跑\n\n!portINITIAL_EXC_RETURN  = 0xfffffffd\n~  bit2=1 出栈用 PSP  bit3=1 回线程模式\n! bit4=1 这趟没有浮点行李 → 初始帧 18 个字，不是 26 个\n\n!portSTART_ADDRESS_MASK  = 0xfffffffe\n~  └─ 清掉函数指针低位。Thumb 状态由 xPSR 说了算，\n~     不许 PC 的第 0 位越权",
-          "codeB": "!编译产物里能直接看到前两条：\n\n  14:  f04f 7280   mov.w  r2, #16777216  ; 0x1000000\n  22:  f023 0201   bic.w  r2, r3, #1\n\n~ LR 那一格填的是这个：\n! portTASK_RETURN_ADDRESS → prvTaskExitError\n\n~ 它做的事：触发断言 + 关中断 + 死循环\n! 任务函数 return，就是掉进这里",
-          "codeBLabel": "probe.sh 第 5 步 objdump",
-          "note": "初始帧的 EXC_RETURN bit4 = 1，所以第一次入场连浮点帧都不占位",
-          "narration": "三个立即数解释一切。xPSR 填一个第 24 位为一的值，因为这个保留位在架构上必须是 1，而它正好就是 Thumb 状态位——新任务从此以 16 位指令模式开跑。异常返回值第 4 位为一，说这趟没有浮点行李。任务函数地址还要跟上一个偶数掩码，把指针低位清掉，因为模式由 xPSR 说了算。这两件事在编译产物里就是两条指令。而 LR 那一格填的是个陷阱函数。"
-        },
-        {
-          "id": "forge-trap",
-          "kind": "card",
-          "tone": "danger",
-          "title": "任务函数不许 return",
-          "bullets": [
-            "没地方可回：源码原话 there is nothing to return to",
-            "真返回了 → 触发 configASSERT，关中断，死循环",
-            "症状：程序莫名卡住、断言在没人预料的地方炸",
-            "正确退出：vTaskDelete( NULL )"
-          ],
-          "narration": "所以这条坑现在能解释了：任务函数写了 return，没地方可回，直接掉进那个关中断死循环的陷阱。症状就是程序莫名卡住，或者断言在你想不到的地方炸。要退出，调删除自己那个接口。"
-        },
-        {
-          "id": "punch",
-          "kind": "card",
-          "tone": "gold",
-          "title": "换魂术一句话",
-          "bullets": [
-            "PendSV 最后上场，因为它优先级全系统最低",
-            "r4-r11 手工进栈，栈顶藏进档案第一个成员",
-            "换个指针换个魂，异常返回新人生"
-          ],
-          "narration": "回到那句锚点。PendSV 最后上场，r4 到 r11 手工进栈，栈顶藏进任务档案；换个指针换个魂，异常返回新人生。上下文切换从此没有黑盒，这是理解一切实时系统行为的总钥匙。"
-        },
-        {
-          "id": "cta",
-          "kind": "outro",
-          "title": "三个数一条命令复现",
-          "sub": "code/rtos/01-freertos-lab · sh probe.sh · 不需要开发板",
-          "narration": "复现很便宜：进 code/rtos/01-freertos-lab，跑 probe.sh，五步一次跑完——符号改名链、二十七条反汇编、三行铁账、优先级账、伪造帧的长度账。只要一把交叉编译器，不需要开发板。通往单片机之路 F2 本集讲全。"
-        },
-        {
-          "id": "teaser",
-          "kind": "outro",
-          "title": "下一集 · F3：调度器怎么选任务",
-          "sub": "32 个优先级选 1 个，只要一条 CLZ 指令",
-          "narration": "下一集回答这一集留下的问题：那个换指针的动作，究竟怎么选下一个任务？答案是一张位图加一条前导零计数指令，三十多个优先级选一个只要一个周期。"
-        }
-      ]
-    },
-    "douyin": {
-      "size": [
-        1080,
-        1920
-      ],
-      "targetSec": [
-        45,
-        75
-      ],
-      "reuseFrom": "bilibili",
-      "pick": [
-        "hook-01",
-        "why-systick-not",
-        "cs-2",
-        "cs-3",
-        "frame-split",
-        "count-27",
-        "tcb-zero",
-        "name-map",
-        "forge-src",
-        "punch",
-        "cta"
-      ],
-      "narration": {
-        "hook-01": "两个任务同时在跑，其实是每毫秒一次的偷梁换柱。",
-        "why-systick-not": "切换不敢在 SysTick 里做——那会把某个中断切走一半。",
-        "cs-2": "一条指令压九个字，栈顶藏进任务档案，这叫封棺。",
-        "cs-3": "全剧只有一句 C：换个指针，决策到此为止。",
-        "frame-split": "硬件管八个字，软件补九个字，这是调用约定的账。",
-        "count-27": "数到异常返回为止：二十七条指令，一百零四字节。",
-        "tcb-zero": "偏移零不是猜的，铁律原文写在成员自己的注释里。",
-        "name-map": "断点打不上，因为一行宏把函数名整个换掉了。",
-        "forge-src": "没跑过的任务，第一帧是手工伪造的十八个字。",
-        "punch": "换个指针换个魂，异常返回新人生。",
-        "cta": "三个数一条命令复现，通往单片机之路 F2 本集讲全。"
-      },
-      "set": {
-        "frame-split": {
-          "title": "硬件一半，软件一半\nAAPCS 的账"
-        },
-        "name-map": {
-          "title": "断点打不上：\n一行宏\n换了名字"
-        },
-        "why-systick-not": {
-          "code": "SysTick（每 1ms）\n  └─ xTaskIncrementTick() 发现：有更高优先级任务就绪了\n       └─ 它不切换，只写一笔挂起位\n\n!portmacro.h:99   portNVIC_INT_CTRL_REG =\n!                 *( volatile uint32_t * ) 0xe000ed04\n!portmacro.h:100  portNVIC_PENDSVSET_BIT = ( 1UL << 28UL )\n!portmacro.h:91   portYIELD_WITHIN_API() 的全部动作 = 写这一笔\n\nPendSV（优先级最低，永远排队到最后）\n  └─ 真正的换魂在这里执行"
-        }
-      }
     }
   }
 }

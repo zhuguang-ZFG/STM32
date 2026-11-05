@@ -1,24 +1,84 @@
 {
   "id": "c3-volatile",
-  "title": "你的 volatile 白加了",
+  "title": "你的 volatile 白加了：一条 testb 的轮询，和六个变体的顺序",
   "badge": "C3",
-  "voice": "zh-CN-YunxiNeural",
-  "rate": "+4%",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
   "fps": 30,
   "sampleRate": 44100,
   "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "-O0": "杠 O 零",
+    "-O2": "杠 O 二",
+    "0x830": "零 x 八三零",
+    "0x400": "零 x 四零零",
+    "0x404": "零 x 四零四",
+    "0x408": "零 x 四零八",
+    "0x40c": "零 x 四零 c",
+    "0x3000": "零 x 三零零零",
+    "0x1000": "零 x 一零零零",
+    "0x40": "零 x 四零",
+    "0x": "零 x ",
+    "testb": "test b",
+    "jmp": "jump",
+    "poll_plain": "poll plain",
+    "poll_volatile": "poll volatile",
+    "delay_plain": "delay plain",
+    "delay_volatile": "delay volatile",
+    "cfg_plain": "config plain",
+    "cfg_volatile": "config volatile",
+    "isr_toggle": "I S R toggle",
+    "xorl": "xor l",
+    "orl": "or l",
+    "leal": "lea l",
+    "nop": "nop",
+    "ret": "return",
+    "ldr": "L D R",
+    "str": "S T R",
+    "orr": "O R R",
+    "bic": "B I C",
+    "BSRR": "B S R R",
+    "GPIOF": "G P I O F",
+    "GPIO": "G P I O",
+    "PRIMASK": "P R I M A S K",
+    "DSB": "D S B",
+    "DMB": "D M B",
+    "ISB": "I S B",
+    "CMSIS": "C M S I S",
+    "__IO": "下划线下划线 I O",
+    "uint32_t": "u int 三十二 t",
+    "gcc": "g c c",
+    "as-if": "as if",
+    "Cortex-M4": "Cortex M 四",
+    "Cortex-M": "Cortex M",
+    "ISR": "I S R",
+    "RTOS": "R T O S",
+    "DMA": "D M A",
+    "D-cache": "D cache",
+    "USART": "U S A R T",
+    "MODER": "mode 寄存器",
+    "OTYPER": "output type 寄存器"
+  },
   "cover": {
+    "variant": "vs",
     "kicker": "通往单片机之路 · C3",
     "line1": "你的 volatile",
-    "line2": "白加了",
+    "line2": "白加了？",
     "vs": {
       "left": "-O0 灯在闪",
       "right": "-O2 灯灭了",
-      "motif": "led"
+      "labels": [
+        "DOCUMENTED",
+        "DOCUMENTED"
+      ]
     },
-    "proof": "!   ldr   r3, [r3]         ← 读进 r3，就这一次\n.L4:\n!   b     .L4              ← 空转，只盯 r3",
+    "tag": "文档灯态 · 代码实跑",
+    "siteNote": "寄存器级 · 代码可复现",
+    "proof": "!poll_plain：testb $1，.L3 原地 jmp\n!delay_plain：整条只剩 ret\n!cfg_plain：三次 |= 并成 orl $7\n!A 变体：先写 0x830 开时钟，再读 0x400",
+    "proofShort": "!poll_plain：testb 一次，随后原地 jmp\n!delay_plain：只剩 ret\n!cfg_plain：orl $7 并掉三次",
     "num": "1 次",
-    "numNote": "整个轮询循环，内存被读的次数"
+    "numNote": "poll_plain 整个循环只剩一条 testb，之后原地打转"
   },
   "platforms": {
     "bilibili": {
@@ -30,29 +90,61 @@
         480,
         720
       ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头与合同"
+        },
+        {
+          "at": "crime-intro",
+          "title": "四个现场"
+        },
+        {
+          "at": "var-intro",
+          "title": "六个变体"
+        },
+        {
+          "at": "fix-intro",
+          "title": "三条补法"
+        },
+        {
+          "at": "fix-when",
+          "title": "收束"
+        }
+      ],
       "scenes": [
         {
           "id": "hook-01",
           "kind": "hook",
-          "title": "-O0 灯在闪。",
-          "sub": "-O2 灯灭了。源码一个字都没改。",
-          "narration": "同一份 blink，一个字的源码都没改，只是把编译选项从 -O0 换成 -O2，板子上的灯就不闪了。是谁把它改坏了？编译器，还是我们自己？这一集就顺着这条线，一路挖到你烧进芯片的那几条指令。"
+          "title": "-O0 灯在闪，-O2 灯灭了",
+          "sub": "同一份 blink，源码没改；这句话先当传闻",
+          "narration": "文档里流传一句话：同一份 blink，源码没改，-O0 灯在闪，-O2 灯灭了。这一集把它拆开：四个现场在宿主机上跑，六个变体在 Cortex-M4 上编。",
+          "emphasis": [
+            "-O2"
+          ]
         },
         {
           "id": "hook-02",
-          "kind": "hook",
-          "title": "三处防线",
+          "kind": "card",
+          "title": "三处 volatile，各站一班岗",
           "codeLabel": "整个驱动只有三处 volatile",
-          "code": "#define GPIOF_BSRR   (*(volatile uint32_t *)(GPIOF_BASE + 0x18UL))\n\nstatic void delay(volatile uint32_t count)\n{\n    while (count--) { __asm__ volatile (\"nop\"); }\n}",
-          "narration": "这份代码里 volatile 只出现在三个地方：寄存器宏里一个，delay 函数的参数上一个，循环体里一个 nop。今天就把它们一个一个拔掉，看看会发生什么——顺便把网上那句最流行的说法，也一并拔掉。"
+          "code": "#define GPIOF_BSRR   (*(volatile uint32_t *)(GPIOF_BASE + BSRR_OFF))\n\nstatic void delay(volatile uint32_t count)\n{\n    while (count--) { __asm__ volatile (\"nop\"); }\n}",
+          "narration": "这份驱动里，volatile 只站了三班岗：寄存器宏、delay 参数、循环体里的 nop。它们不是一回事。逐个拔掉，看哪一班真在拦编译器。",
+          "emphasis": [
+            "volatile"
+          ]
         },
         {
           "id": "hook-03",
           "kind": "card",
           "tone": "gold",
           "kicker": "先说结论",
-          "title": "编译器没坏，它只是太聪明",
-          "narration": "结论先放这儿：它没写错一个字节。它只是把你在单线程下看不出差别的部分，当成了不存在。它没错，它只是按合同办事——而那份合同，是你自己签的。"
+          "title": "编译器没坏",
+          "note": "它只是按合同办事",
+          "narration": "先把结论摆出来：编译器没有算错。它按 C 标准的合同办事，只对程序的可观察行为负责。单线程里看不出的部分，它有权当你没写。合同是你签的。",
+          "emphasis": [
+            "合同"
+          ]
         },
         {
           "id": "asif-1",
@@ -61,8 +153,9 @@
           "t0": 0,
           "t1": 3,
           "smil": "stretch",
-          "note": "as-if 规则：优化器只对可观察行为负责",
-          "narration": "编译器手里有一条授权，叫 as-if 规则：只要程序最终可观察的行为不变，它想怎么改就怎么改——缓存你的读，删你的写，合并你的判断。注意这句话的口径：可观察行为，指的是单线程里你能看见的东西。"
+          "title": "as-if：只对可观察行为负责",
+          "note": "读可缓存，写可删除，判断可合并",
+          "narration": "第一条授权叫 as-if：只要最终可观察的行为不变，读可以缓存，写可以删除，判断可以合并。编译器眼里只有抽象机器和一条执行流；芯片上那台会自己变的机器，不在模型里。"
         },
         {
           "id": "asif-2",
@@ -71,7 +164,8 @@
           "t0": 3,
           "t1": 6,
           "smil": "stretch",
-          "narration": "于是这段轮询，它只读了一次。判断不满足，就跳回那条 jmp 原地空转，内存里的值再也不会被看一眼。硬件后来置了位，它完全不知道——你的灯不亮，可代码看起来完全正确。"
+          "title": "轮询只读一次，然后原地空转",
+          "narration": "于是这段轮询只读了一次。日志里 poll_plain 就一条 testb，不满足就跳进 .L3，原地 jmp 自己。硬件后来置了位，它也不会再看一眼。"
         },
         {
           "id": "asif-3",
@@ -80,7 +174,8 @@
           "t0": 6,
           "t1": 9,
           "smil": "stretch",
-          "narration": "把 volatile 加回去，合同换了：每一次使用都必须真的去访存，不许缓存，不许删，也不许凭空多造一次。访存次数，等于你源码里写的次数——右边这栏，一圈一次，一条都没被省。"
+          "title": "加上 volatile，每圈都真读",
+          "narration": "把 volatile 加回去，合同换了：源码里每一次使用都要真的访存。日志里的 poll_volatile，testb 回到了 .L6 循环体里，每一圈都读一次。"
         },
         {
           "id": "asif-4",
@@ -89,7 +184,8 @@
           "t0": 9,
           "t1": 12,
           "smil": "stretch",
-          "narration": "但这份合同只管登门，不管排队。它不保证这一串操作是原子的，也不保证它们中间没人能插进来。这一点，是后面所有事故的伏笔。"
+          "title": "合同只管次数，不管排队",
+          "narration": "但这份合同只管道访存次数，不管排队。它不保证一串操作原子，也不保证中间没人插进来。后面所有事故，根都在这句话上。"
         },
         {
           "id": "why-hw",
@@ -97,11 +193,11 @@
           "kicker": "它为什么会认错",
           "title": "优化器眼里只有一块内存",
           "bullets": [
-            "它不知道地址后面挂的是 USART",
+            "它不知道地址后面挂着 USART",
             "硬件会自己改值，这不在它的模型里",
-            "volatile 是你唯一能递给它的那句说明"
+            "volatile 是递过去的一句说明"
           ],
-          "narration": "编译器不是瞎猜，是它的模型里根本没有硬件这件事。你写的指针，它看到的是一块普通内存；而那块内存后面挂着的寄存器，会自己变。volatile 就是你唯一能递给它的那句说明。"
+          "narration": "为什么它会认错？它拿到的是一块普通内存的视图。地址后面挂的是串口、定时器，会自己变；这件事没写进类型里。volatile 就是递过去的那句说明：这个地址，每次都当真。"
         },
         {
           "id": "knives",
@@ -114,122 +210,160 @@
             "看起来没人再读的写，直接删掉",
             "连续的几次访问，并成一次"
           ],
-          "narration": "具体手法就三种：缓存你的读，删除看似没用的写，合并连续的访问。单线程程序里，这三招全部合法；换到单片机上，每一招都可能是现场一条事故记录。"
+          "narration": "手法就三样：把读进寄存器的值当成内存里的值；把没人再读的写删掉；把连续的几次访问并成一次。单线程里三招都合法，到单片机上，每一招都可能是事故。",
+          "emphasis": [
+            "合并"
+          ]
         },
         {
           "id": "crime-intro",
           "kind": "card",
           "kicker": "第二幕",
-          "title": "四个犯罪现场",
+          "title": "四个现场",
           "bullets": [
             "轮询死等",
             "延时消失",
             "三次写并一次",
-            "中断里的读-改-写"
+            "读改写被插队"
           ],
-          "narration": "接下来四个现场。每个现场我都摆两份汇编：x86 那份最好读，Cortex-M4 那份，才是真正要烧进你手里这颗芯片的。我不念助记符，只念它在干什么。"
+          "narration": "接下来四个现场。先看宿主 gcc 反汇编，指令短、读得清；再去 Cortex-M4 的六个变体里看同一件事。我不念助记符，只说它把哪次访存弄丢了。",
+          "emphasis": [
+            "四个现场"
+          ]
         },
         {
           "id": "poll-read",
           "kind": "card",
-          "kicker": "怎么看这两栏",
+          "kicker": "怎么看汇编",
           "title": "只盯三件事",
           "bullets": [
-            "循环里还有没有第二条 ldr",
+            "循环里还有没有第二条读",
             "写回落在哪一行",
             "循环边界包住了哪几条"
           ],
-          "narration": "读汇编别硬记指令，就看三件事：循环里还有没有第二条读，写回落在哪一行，循环边界到底包住了哪几条。这三件事一确认，优化器的动作你一眼就能看见。"
+          "narration": "读汇编不用背指令表，只盯三件事：循环里还有没有第二条读，写回落在哪一行，循环边界到底包住了谁。三眼看完，优化器动过哪里就藏不住。"
         },
         {
           "id": "poll-x86",
           "kind": "code",
           "title": "现场一：轮询死等",
-          "codeLabel": "你写的 C",
-          "code": "int wait_flag(void)\n{\n    while (!(status & 1u)) { }\n    return 42;\n}",
-          "codeBLabel": "x86 -O2",
-          "codeB": "!poll_plain:\n!   testb   $1, status(%rip)   ← 只读这一次\n    je      .L3\n    movl    $42, %eax\n    ret\n!.L3:\n!   jmp     .L3              ← 从此不再看内存",
-          "narration": "第一个现场，等标志位置位。不加 volatile，-O2 编出来就是一条 testb、一条 je。内存它只看一眼，不满足就跳回这行 jmp 死转。这一条 testb，就是你板子上那颗灯不亮的全部原因。"
+          "codeLabel": "你写的 C：poll_plain",
+          "code": "unsigned int g_status;\n\nint poll_plain(void)\n{\n    while (!(g_status & 1u)) { }\n    return 42;\n}",
+          "codeBLabel": "宿主 gcc -O2，poll_plain 全文",
+          "codeB": "poll_plain:\n    testb   $1, g_status(%rip)\n    je      .L3\n    movl    $42, %eax\n    ret\n.L3:\n    jmp     .L3",
+          "narration": "第一个现场，等一个标志位。C 只有一行 while，-O2 下编成 testb、je、movl、ret，.L3 是一条 jmp 自己。内存只被 testb 读过一次，之后判断全靠标志寄存器。",
+          "emphasis": [
+            "testb",
+            ".L3"
+          ]
         },
         {
           "id": "poll-m4",
           "kind": "code",
-          "title": "同一个轮询，在 Cortex-M4 上",
-          "codeLabel": "你写的 C",
-          "code": "while (!(status & 1u)) { }",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "!poll_plain:\n    ldr   r3, .L7\n!   ldr   r3, [r3]         ← 读进 r3，就这一次\n    lsls  r3, r3, #31\n    bmi   .L5\n!.L4:\n!   b     .L4              ← 空转，只盯 r3\n.L5:\n    movs  r0, #42\n    bx    lr",
-          "narration": "换到 M4 上，故事一模一样：一条 ldr 把值搬进 r3，之后所有判断都在 r3 里做。你盯着灯等它灭，可程序里根本没有第二条 ldr。看循环边界：它只包住一条 b，判断用的值早就不在内存里了。"
+          "title": "循环边界只包住一条 jmp",
+          "codeLabel": "还是 poll_plain，换个角度看循环",
+          "code": "while (!(g_status & 1u)) { }\nreturn 42;",
+          "codeBLabel": "宿主 gcc -O2：循环里没有第二次读",
+          "codeB": "poll_plain:\n    testb   $1, g_status(%rip)\n    je      .L3\n    movl    $42, %eax\n    ret\n.L3:\n    jmp     .L3",
+          "narration": "再放大一次：.L3 下面只有一条 jmp .L3，循环边界里没有第二条读。值早被 testb 搬进了标志寄存器，之后判断都在寄存器里做。你盯着灯，程序里却没有第二次访存。",
+          "emphasis": [
+            "jmp"
+          ]
         },
         {
           "id": "poll-vol",
           "kind": "code",
-          "title": "加回 volatile，差别就一条指令",
-          "codeLabel": "你写的 C",
-          "code": "while (!(v_status & 1u)) { }",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "poll_volatile:\n    ldr   r2, .L13\n!.L10:\n!   ldr   r3, [r2, #4]     ← 每转一圈真读一次\n    lsls  r3, r3, #31\n    bpl   .L10\n    movs  r0, #42\n    bx    lr",
-          "narration": "把 volatile 加回去，ldr 就回到循环体里。整段代码只多了这一条访存，可它决定你的程序能不能等到硬件。串口收不到数据、TXE 永远不置位，很多时候就栽在这一条上。"
+          "title": "加回 volatile，循环就回来了",
+          "codeLabel": "只改声明：volatile unsigned int",
+          "code": "volatile unsigned int v_status;\n\nint poll_volatile(void)\n{\n    while (!(v_status & 1u)) { }\n    return 42;\n}",
+          "codeBLabel": "宿主 gcc -O2，poll_volatile 全文",
+          "codeB": "poll_volatile:\n    .p2align 4\n.L6:\n    testb   $1, v_status(%rip)\n    je      .L6\n    movl    $42, %eax\n    ret",
+          "narration": "同一段轮询，只把状态变量声明成 volatile，循环就回来了。现在 .L6 里每一圈都 testb 一次 v_status，读到置位才往下走。两段代码的差别不在算法，只在类型上那一个词。",
+          "emphasis": [
+            "testb",
+            ".L6"
+          ]
         },
         {
           "id": "delay-m4",
           "kind": "code",
           "title": "现场二：延时整个消失",
-          "codeLabel": "delay 少了参数上的 volatile",
-          "code": "static void delay(uint32_t count)\n{\n    while (count--) { __asm__ volatile (\"nop\"); }\n}",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "!delay_plain:\n!   bx   lr            ← 空函数，直接返回\n\n~; 参数加上 volatile 之后：\ndelay_volatile:\n    str   r0, [sp, #4]\n.L17:\n    ldr   r3, [sp, #4]\n    subs  r2, r3, #1\n    str   r2, [sp, #4]\n    bne   .L17\n    bx    lr",
-          "narration": "第二个现场是软件延时。参数不带 volatile，整个 delay 被优化成一条返回，几百毫秒的延时一帧都不剩。灯不是闪得快，是两次翻转挤在了同一瞬间。你会以为延时还在，其实它连函数体都没了。"
+          "codeLabel": "参数不带 volatile",
+          "code": "void delay_plain(unsigned int n)\n{\n    while (n--) { }\n}",
+          "codeBLabel": "宿主 gcc -O2：两个版本并排",
+          "codeB": "delay_plain:\n    ret\n\ndelay_volatile:\n    movl    %ecx, 8(%rsp)\n.L11:\n    movl    8(%rsp), %eax\n    leal    -1(%rax), %edx\n    testl   %eax, %eax\n    movl    %edx, 8(%rsp)\n    jne     .L11\n    ret",
+          "narration": "第二个现场是软件延时。参数不带 volatile，函数体又没有副作用，-O2 交出来的 delay_plain 只剩 ret。循环没了，时间也没了。参数改成 volatile，delay_volatile 每圈读、减、存、比较，一圈不少。",
+          "emphasis": [
+            "ret"
+          ]
         },
         {
           "id": "rmw-x86",
           "kind": "code",
-          "title": "现场三：三次写被并成一次",
-          "codeLabel": "你写的 C",
-          "code": "reg->cr |= 1u;\nreg->cr |= 2u;\nreg->cr |= 4u;",
-          "codeBLabel": "x86 -O2",
-          "codeB": "!cfg_plain:\n!   orl    $7, (%rcx)      ← 三次并一次\n    ret\n\n~; volatile 版：\ncfg_volatile:\n    orl    $1, (%rcx)\n    orl    $2, (%rcx)\n    orl    $4, (%rcx)\n    ret",
-          "narration": "第三个现场，配置寄存器连着或上三个位。不加 volatile，x86 上直接合成一条 orl $7。有的寄存器满不在乎，有的在乎得非常——而你事先不会知道自己是哪一种。"
+          "title": "现场三：三次写并成一次",
+          "codeLabel": "你写的 C：连着或三个位",
+          "code": "p->cr |= 1u;\np->cr |= 2u;\np->cr |= 4u;",
+          "codeBLabel": "宿主 gcc -O2：cfg_plain 与 cfg_volatile",
+          "codeB": "cfg_plain:\n    orl     $7, (%rcx)\n    ret\n\ncfg_volatile:\n    orl     $1, (%rcx)\n    orl     $2, (%rcx)\n    orl     $4, (%rcx)\n    ret",
+          "narration": "第三个现场，配置寄存器连着或三个位。不带 volatile，cfg_plain 被合成一条 orl $7，三次写变一次。带上 volatile，cfg_volatile 老老实实三条 orl。对外设寄存器，少的那两次写可能就是三个使能位。",
+          "emphasis": [
+            "$7"
+          ]
         },
         {
           "id": "rmw-m4",
           "kind": "code",
-          "title": "M4 上多了一层：读-改-写",
-          "codeLabel": "你写的 C",
-          "code": "reg->cr |= 1u;   /* 再来两次 */",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "!cfg_plain:\n    ldr   r3, [r0]\n!   orr   r3, r3, #7\n!   str   r3, [r0]\n    bx    lr\n\n~volatile：ldr/orr/str 三组，\n~一次都不许省。",
-          "narration": "M4 上看得更清楚：读出来、或上、写回去。加了 volatile，读改写就是三组，一次都不许省。但请记住，三次访存并不等于三次原子操作。"
+          "title": "一次写，背后仍是读-改-写",
+          "codeLabel": "C 里一句或等",
+          "code": "p->cr |= 1u;",
+          "codeBLabel": "宿主 gcc -O2：volatile 版三条都在",
+          "codeB": "cfg_volatile:\n    orl     $1, (%rcx)\n    orl     $2, (%rcx)\n    orl     $4, (%rcx)\n    ret",
+          "narration": "还要看清一层：C 里一句或等，落到机器上仍是读、改、写。宿主把三条 orl 摆在一起，每条都要把内存读回来、改完再写回去。volatile 保证三次都在，却不保证中间不被打断。",
+          "emphasis": [
+            "cfg_volatile"
+          ]
         },
         {
           "id": "isr-m4",
           "kind": "code",
           "title": "现场四：volatile 不是锁",
           "codeLabel": "中断和主循环同时碰它",
-          "code": "/* ISR 与 main 都会执行 */\nshared_flag ^= 1u;",
-          "codeBLabel": "Cortex-M4 -O2（有 volatile）",
-          "codeB": "isr_toggle:\n    ldr   r2, .L23\n!   ldr   r3, [r2, #8]   ← ① 读\n!   eor   r3, r3, #1       ← ② 改\n!   str   r3, [r2, #8]     ← ③ 写\n    bx    lr",
-          "narration": "第四个现场最贵。就算加了 volatile，异或还是读、改、写三步。三步都真的访存，可第一步和第三步之间，中断照样插得进来。丢的那一次更新不会留下任何日志，最后只变成现场那句『偶尔失灵一次』。"
+          "code": "volatile unsigned int shared_flag;\n\nvoid isr_toggle(void)\n{\n    shared_flag ^= 1u;\n}",
+          "codeBLabel": "宿主 gcc -O2 与模型现场",
+          "codeB": "isr_toggle:\n    xorl    $1, shared_flag(%rip)\n    ret\n\n!4 次 xor 之后 shared_flag = 0\n!值对，但每一步都不是原子的",
+          "narration": "第四个现场最贵。中断和主循环都碰同一个标志，哪怕有 volatile，异或仍是读-改-写。宿主把它缩成一条 xorl，看着像一步；模型连跑四次，值回到零，结论却说：值对，每一步都不是原子的。",
+          "emphasis": [
+            "xorl"
+          ]
         },
         {
           "id": "crime-say",
           "kind": "card",
           "tone": "danger",
           "kicker": "四个现场，一句话",
-          "title": "volatile 管的是次数，不是安全",
-          "narration": "四个现场看下来：你的访存次数它一次都不许少；可这一串操作怎么排队、中间能不能被打断，它一个字都没提。"
+          "title": "volatile 管次数，不管安全",
+          "narration": "四个现场收成一句：volatile 保证你写的每一次访存都算数；它不管这一串操作怎么排队，也不管中间能不能被打断。次数和安全，从来是两件事。",
+          "emphasis": [
+            "次数"
+          ]
         },
         {
           "id": "var-intro",
           "kind": "card",
           "kicker": "第三幕",
-          "title": "六变体：把三处防线逐个拔掉",
+          "title": "六变体：逐个拔",
           "bullets": [
-            "每个变体只少一处 volatile",
-            "其余代码完全相同",
-            "只看 -O2 下 main 的前十二条"
+            "A 三处全在",
+            "B 只缺参数",
+            "C 缺参数和 nop",
+            "D 只缺 nop",
+            "F 只缺宏",
+            "E 三处全缺"
           ],
-          "narration": "第三幕动真格。blink 板上的三处 volatile，排列组合出六个变体，每个只少一处，其余完全相同。每个变体的现象、汇编、原因，接下来一个一个过。"
+          "narration": "下一幕动真格。三处 volatile 排列组合，做出六个变体：A 全在，B 少参数，C 少参数和 nop，D 少 nop，F 少宏，E 全少。每个只动一处，其余不改。日志只截 main 开头一段，我就只讲截出来的行。",
+          "emphasis": [
+            "六变体"
+          ]
         },
         {
           "id": "var-howto",
@@ -237,146 +371,187 @@
           "title": "你自己也能跑",
           "codeLabel": "复现命令",
           "code": "sh code/c/03-volatile/blink-variants.sh\n# 默认拿 ../../stm32/00-blink/main.c\n# 改 -O 档：CFLAGS 自己加 -O0 / -O1 / -O3",
-          "codeBLabel": "它做了什么",
-          "codeB": "~用 sed 精确删掉那三处 volatile，\n~其余一个字符都不动：\n\n   宏 volatile   参数 volatile   nop\nA      有            有          有\nB      有            无          有\nC      有            无          无\nD      有            有          无\nF      无            有          有\nE      无            无          无",
-          "narration": "这一屏就是六个配方的全部信息：用 sed 精确删掉那三处 volatile，其余一个字符都不动。脚本就在仓库里，换个 -O 档重跑，故事还会换一个讲法。"
+          "codeBLabel": "用 sed 精确删 volatile，其余不动",
+          "codeB": "A   宏有   参数有   nop有\nB   宏有   参数无   nop有\nC   宏有   参数无   nop无\nD   宏有   参数有   nop无\nF   宏无   参数有   nop有\nE   宏无   参数无   nop无",
+          "narration": "脚本用 sed 精确删 volatile，其余不动。六行就是配方：A 三处全有；B 只缺参数；C 缺参数和 nop；D 只缺 nop；F 只缺宏；E 全缺。换 -O 档重跑，配方不变。"
         },
         {
           "id": "var-A",
           "kind": "code",
-          "title": "变体 A：仓库现状",
-          "codeLabel": "宏 有 / 参数 有 / nop 有 → 灯闪",
-          "code": "volatile 三处全在。\n这是唯一「对」的那一份。",
-          "codeBLabel": "Cortex-M4 -O2 的 main",
-          "codeB": "    ldr   r2, [pc, #112]\n    ldr   r1, [pc, #116]\n    ldr.w r3, [r2, #2096]\n    orr.w r3, r3, #32\n!   str.w r3, [r2, #2096]  ← 先开 GPIOF 时钟\n    ldr.w r3, [r1, #1024]\n    bic.w r3, r3, #12288\n!   str.w r3, [r1, #1024]  ← 再配 PF6 为输出\n    orr.w r3, r3, #4096\n    str.w r3, [r1, #1024]",
-          "narration": "变体 A 就是仓库里的样子。看 main 的开头：开时钟那次写，老老实实排在配引脚之前，跟你源码里的顺序一模一样。这就是 volatile 给你的默认排序。"
+          "title": "变体 A：三处都在，顺序不动",
+          "codeLabel": "宏 有 / 参数 有 / nop 有",
+          "code": "三处 volatile 全在。\n这是唯一「对」的那一份。",
+          "codeBLabel": "Cortex-M4 -O2 的 main 开头（取基址的两条 ldr 略）",
+          "codeB": "ldr.w   r3, [r2, #2096]   ; 0x830\norr.w   r3, r3, #32\nstr.w   r3, [r2, #2096]   ; 0x830\nldr.w   r3, [r1, #1024]   ; 0x400\nbic.w   r3, r3, #12288    ; 0x3000\nstr.w   r3, [r1, #1024]   ; 0x400\nldr.w   r3, [r1, #1024]   ; 0x400\norr.w   r3, r3, #4096     ; 0x1000\nstr.w   r3, [r1, #1024]   ; 0x400\nldr.w   r3, [r1, #1028]   ; 0x404",
+          "narration": "先看 A，三处 volatile 都在。日志截出的开头：先读 0x830，或上 32，写回，开 GPIOF 时钟；然后才读 0x400 的 MODER，清 12288，写回，再读、或上 4096、写回。",
+          "emphasis": [
+            "0x830",
+            "0x400"
+          ]
         },
         {
           "id": "var-B",
           "kind": "code",
-          "title": "变体 B：只拔参数的 volatile",
-          "codeLabel": "宏 有 / 参数 无 / nop 有 → 灯还闪",
-          "code": "delay(uint32_t count)\n{\n    while (count--) { __asm__ volatile (\"nop\"); }\n}",
-          "codeBLabel": "Cortex-M4 -O2 的 main",
-          "codeB": "~和 A 是同一条 pattern，\n~只是寄存器编号换了：\n    ldr   r1, [pc, #112]\n    ldr   r2, [pc, #116]\n    ldr.w r3, [r1, #2096]\n    orr.w r3, r3, #32\n    str.w r3, [r1, #2096]\n    ldr.w r3, [r2, #1024]\n\n!循环还在：nop / subs / bne\n!延时被 nop 兜住了",
-          "narration": "变体 B 只把 delay 参数上的 volatile 拔掉。结果呢？灯照样闪。因为循环体里那条 nop 自己就带着 volatile，它一道防线就够。网上那句说得最绝对的话，在这儿第一次站不住。"
+          "title": "变体 B：只拔参数，开头同形",
+          "codeLabel": "宏 有 / 参数 无 / nop 有",
+          "code": "static void delay(uint32_t count)\n{\n    while (count--) { __asm__ volatile (\"nop\"); }\n}",
+          "codeBLabel": "Cortex-M4 -O2 的 main 开头（取基址的两条 ldr 略）",
+          "codeB": "ldr.w   r3, [r1, #2096]   ; 0x830\norr.w   r3, r3, #32\nstr.w   r3, [r1, #2096]   ; 0x830\nldr.w   r3, [r2, #1024]   ; 0x400\nbic.w   r3, r3, #12288    ; 0x3000\nstr.w   r3, [r2, #1024]   ; 0x400\nldr.w   r3, [r2, #1024]   ; 0x400\norr.w   r3, r3, #4096     ; 0x1000\nstr.w   r3, [r2, #1024]   ; 0x400\nldr.w   r3, [r2, #1028]   ; 0x404",
+          "narration": "B 只拔掉 delay 参数上的 volatile。看 main 开头这十行，和 A 逐条同形，只是两个基址寄存器对调了编号。参数那处改动在 delay 里，日志没截到；文档记录的板级现象是灯照闪，nop 仍是防线。",
+          "emphasis": [
+            "nop"
+          ]
         },
         {
           "id": "var-C",
           "kind": "code",
-          "title": "变体 C：再拔掉 nop",
-          "codeLabel": "宏 有 / 参数 无 / nop 无 → 灯不闪",
-          "code": "delay(uint32_t count)\n{\n    while (count--) { }   /* nop 也没了 */\n}",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "!delay 被优化成空函数：\n!   bx  lr\n\n~调用点整个内联掉，\n~拉高和拉低两次写挤在一起：\n   str.w r3, [r1, #24]   ; BSRR 置位\n   str.w r3, [r1, #24]   ; BSRR 复位\n\n!中间一条等待都没有",
-          "narration": "把 nop 也拔掉，才是变体 C。这时候 delay 彻底是个空函数，调用点被整个内联掉，拉高和拉低两条写挤在一起。肉眼看到的不是快闪，是常亮。"
+          "title": "变体 C：两道防线一起撤",
+          "codeLabel": "宏 有 / 参数 无 / nop 无",
+          "code": "static void delay(uint32_t count)\n{\n    while (count--) { }\n}",
+          "codeBLabel": "Cortex-M4 -O2 的 main 开头，加宿主同类形状",
+          "codeB": "ldr.w   r2, [r0, #2096]   ; 0x830\norr.w   r2, r2, #32\nstr.w   r2, [r0, #2096]   ; 0x830\nldr.w   r0, [r3, #1024]   ; 0x400\nbic.w   r0, r0, #12288    ; 0x3000\nstr.w   r0, [r3, #1024]   ; 0x400\nldr.w   r0, [r3, #1024]   ; 0x400\norr.w   r0, r0, #4096     ; 0x1000\nstr.w   r0, [r3, #1024]   ; 0x400\nldr.w   r0, [r3, #1028]   ; 0x404\n\n; 宿主 delay_plain（同类形状）\ndelay_plain:\n    ret",
+          "narration": "C 把参数 volatile 和 nop 一起拔掉。日志截出的 main 开头仍与 A 同形，先开时钟再配引脚；差别在 delay。宿主已经给过形状：没有副作用、没有 volatile 的计数循环，整条只剩 ret。两道防线一起撤，延时才消失。",
+          "emphasis": [
+            "ret"
+          ]
         },
         {
           "id": "var-D",
           "kind": "code",
-          "title": "变体 D：只拔 nop，参数留着",
-          "codeLabel": "宏 有 / 参数 有 / nop 无 → 灯还闪",
-          "code": "static void delay(volatile uint32_t count)\n{\n    while (count--) { }   /* 无 nop */\n}",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "    ldr   r2, [pc, #112]\n    ldr   r1, [pc, #116]\n    ldr.w r3, [r2, #2096]\n    orr.w r3, r3, #32\n    str.w r3, [r2, #2096]\n\n!循环保留，计数却在 r3 里，\n!一条 ldr、一条 str 都没有\n    subs  r3, r3, #1\n    bne   .",
-          "narration": "变体 D 反过来：只拔 nop，参数还留着 volatile。灯照样闪，但计数已经搬进寄存器，不再占内存。volatile 保证的是每一次使用都可见，不是必须住在内存里。"
+          "title": "变体 D：只拔 nop，循环还在",
+          "codeLabel": "宏 有 / 参数 有 / nop 无",
+          "code": "static void delay(volatile uint32_t count)\n{\n    while (count--) { }\n}",
+          "codeBLabel": "宿主 gcc -O2：delay_volatile 的循环形状",
+          "codeB": "delay_volatile:\n    movl    %ecx, 8(%rsp)\n.L11:\n    movl    8(%rsp), %eax\n    leal    -1(%rax), %edx\n    testl   %eax, %eax\n    movl    %edx, 8(%rsp)\n    jne     .L11\n    ret",
+          "narration": "D 反过来，只拔 nop，参数还带 volatile。delay 的循环留住了：宿主那份 delay_volatile 每圈都要把计数从栈上读回来、减一、再写回。nop 没了，volatile 还逼着它每圈访存。文档记录的板级结果是灯照闪。",
+          "emphasis": [
+            "delay_volatile"
+          ]
         },
         {
           "id": "var-F",
           "kind": "code",
-          "title": "变体 F：只拔宏的 volatile——最阴的一个",
-          "codeLabel": "宏 无 / 参数 有 / nop 有 → 灯：偶尔不对",
-          "code": "#define GPIOF_MODER  (*(uint32_t *)(GPIOF_BASE + 0x00UL))",
-          "codeBLabel": "注意这两条的先后",
-          "codeB": "    ldr   r1, [pc, #104]\n    ldr   r2, [pc, #108]\n!   ldr.w r3, [r1, #1024]  ← 先读 GPIOF_MODER\n    ldr.w r4, [r2, #2096]\n    ldr.w r0, [r1, #1028]\n    orr.w r4, r4, #32\n    bic.w r3, r3, #12288\n!   str.w r4, [r2, #2096]  ← 这行才开 GPIOF 时钟\n    orr.w r3, r3, #4096\n    str.w r3, [r1, #1024]",
-          "narration": "变体 F 只把寄存器宏的 volatile 去掉，是六个里最阴的。读引脚模式的那条 ldr，被提到了开时钟那条写的前面。现象不是灯不闪，是偶尔配不上、换颗芯片就不好使——这种 bug，你抓十年都不一定能留下证据。"
+          "title": "变体 F：读被提到开时钟之前",
+          "codeLabel": "宏 无 / 参数 有 / nop 有",
+          "code": "#define GPIOF_MODER  (*(uint32_t *)(GPIOF_BASE + MODER_OFF))",
+          "codeBLabel": "Cortex-M4 -O2 的 main 开头（取基址的两条 ldr 略）",
+          "codeB": "ldr.w   r3, [r1, #1024]   ; 0x400\nldr.w   r4, [r2, #2096]   ; 0x830\nldr.w   r0, [r1, #1028]   ; 0x404\norr.w   r4, r4, #32\nbic.w   r3, r3, #12288    ; 0x3000\nstr.w   r4, [r2, #2096]   ; 0x830\norr.w   r3, r3, #4096     ; 0x1000\nldr.w   r2, [r1, #1032]   ; 0x408\nstr.w   r3, [r1, #1024]   ; 0x400\nldr.w   r3, [r1, #1036]   ; 0x40c",
+          "narration": "F 只拔寄存器宏的 volatile，是六个里最阴的。看顺序：先读 0x400 的 MODER，再读 0x830，再读 0x404，然后才把 32 写进 0x830 开时钟。源码先开时钟再配引脚，机器码把读提到了前面。灯可能照常，也可能换芯片就配不上。",
+          "emphasis": [
+            "0x400",
+            "0x830"
+          ]
         },
         {
           "id": "var-E",
           "kind": "code",
           "title": "变体 E：三处全拔",
-          "codeLabel": "宏 无 / 参数 无 / nop 无 → 灯全黑",
+          "codeLabel": "宏 无 / 参数 无 / nop 无",
           "code": "三处 volatile 全部拔掉。\n这是最接近「裸奔」的一份。",
-          "codeBLabel": "Cortex-M4 -O2",
-          "codeB": "    ldr   r2, [pc, #44]\n    ldr   r4, [pc, #48]\n!   ldr.w r3, [r2, #1024]  ← 三次读全部提前\n    ldr.w r0, [r4, #2096]\n    ldr.w r1, [r2, #1028]\n    bic.w r3, r3, #12288\n    orr.w r0, r0, #32\n    orr.w r3, r3, #4096\n    bic.w r1, r1, #64\n!   str.w r0, [r4, #2096]  ← 三次写全部推后\n    str.w r3, [r2, #1024]",
-          "note": "本集里有那份「main 只剩一条 b」的完整取证",
-          "narration": "三处全拔的变体 E：读全部提前，写全部推后，延时彻底没了影。再狠一点的工具链，会把这些写当成没人再读的死写直接删光，main 只剩一条原地跳转。"
+          "codeBLabel": "Cortex-M4 -O2 的 main 开头（取基址的两条 ldr 略）",
+          "codeB": "ldr.w   r3, [r2, #1024]   ; 0x400\nldr.w   r0, [r4, #2096]   ; 0x830\nldr.w   r1, [r2, #1028]   ; 0x404\nbic.w   r3, r3, #12288    ; 0x3000\norr.w   r0, r0, #32\norr.w   r3, r3, #4096     ; 0x1000\nbic.w   r1, r1, #64       ; 0x40\nstr.w   r0, [r4, #2096]   ; 0x830\nstr.w   r3, [r2, #1024]   ; 0x400\nstr.w   r1, [r2, #1028]   ; 0x404",
+          "narration": "E 三处全拔。三条读先挤到前面：0x400、0x830、0x404；中间才做位运算；三条写全推到后面：0x830、0x400、0x404。读提前、写推后，中间那段等待没影了。",
+          "emphasis": [
+            "0x400",
+            "0x830"
+          ]
         },
         {
           "id": "var-trap",
           "kind": "card",
           "tone": "danger",
           "kicker": "把流行说法改一改",
-          "title": "「靠 nop 兜住就行」",
+          "title": "两道保险，别当一道",
           "bullets": [
-            "B：只拔参数，nop 一道防线就够",
-            "C：两处一起拔，延时才整个消失",
-            "E：全拔，外设写可能整个蒸发"
+            "B 只拔参数：nop 还兜得住",
+            "C 连 nop 一起拔：延时才消失",
+            "E 全拔：读和写的顺序整段反过来"
           ],
-          "narration": "所以那句流行说法得改成这样：循环体里的 nop 本身就是一道独立防线，只拔参数它还能兜住；要连它一起拔，延时才真的整个消失。别把两道保险，当成一道。"
+          "narration": "那句流行话得改：只拔参数 volatile，nop 还站着，B 灯照闪；把 nop 也拔掉，延时才真的消失；三处全拔，顺序整段反过来。两道保险，别当一道。",
+          "emphasis": [
+            "nop"
+          ]
         },
         {
           "id": "fix-intro",
           "kind": "card",
           "kicker": "第四幕",
-          "title": "怎么补：三条原则",
+          "title": "三条补法",
           "bullets": [
             "能一位写的，别读-改-写",
             "该排队的，插屏障",
             "跨执行流的，进临界区"
           ],
-          "narration": "第四幕讲怎么补。原则按便宜的程度排：先换写法，再插屏障，最后才请出临界区。"
+          "narration": "怎么补？按代价从低到高排：先换寄存器写法，能一次写就别读改写；再插屏障，把该排队的访问排好；最后才请临界区，处理跨执行流的读改写。",
+          "emphasis": [
+            "三条补法"
+          ]
         },
         {
           "id": "fix-bsrr",
           "kind": "code",
-          "title": "补法一：能一位写就别读-改-写",
+          "title": "补法一：能一位写，别读改写",
           "codeLabel": "STM32 的 BSRR 是写生效",
           "code": "GPIOF_BSRR = 1UL << 6;          /* 置位 */\nGPIOF_BSRR = 1UL << (6 + 16);   /* 复位 */",
-          "codeBLabel": "为什么这就安全了",
-          "codeB": "~读-改-写要三步：\n    ldr / orr / str\n!   ← 中间被打断，更新就丢了\n\nBSRR 只有一次写：\n!   str\n!   ← 写 1 生效，硬件自己保证\n~置位区和复位区互不干扰",
-          "narration": "第一，寄存器设计早就替你想好了。BSRR 是写生效，写 1 就置位，不用读回来。只有一次写，中断想插也插不进来。"
+          "codeBLabel": "为什么这就安全",
+          "codeB": "~读-改-写要三步：读、改、写\n!   ← 中间被打断，更新就丢了\n\nBSRR 只有一次写：\n!   str\n!   ← 写 1 生效，硬件自己保证\n~置位区和复位区互不干扰",
+          "narration": "第一招最便宜：换写法。BSRR 写一生效，置位写低半区，复位写高半区，不需要先读旧值。一次写就完成，中断想插也没有读改写那道缝。",
+          "emphasis": [
+            "BSRR"
+          ]
         },
         {
           "id": "fix-barrier",
           "kind": "code",
-          "title": "补法二：该排队就插屏障",
+          "title": "补法二：该排队，就插屏障",
           "codeLabel": "你写的 C",
-          "code": "buf[0] = 0x5a;\n__DSB();\nGPIOF_BSRR = 1UL << 6;",
+          "code": "buf[0] = sample;\n__DSB();\nGPIOF_BSRR = 1UL << 6;",
           "codeBLabel": "三个屏障各管一段",
           "codeB": "~__DMB  只保证访问的先后顺序\n~__DSB  等前面的访问真的落地\n~__ISB  让后面的指令重新取\n\n!M4 是弱序，还有写缓冲：\n!先写内存、再翻引脚，\n!外面可能先看到引脚动了。",
-          "narration": "第二，volatile 不管先后。要排队就得插屏障：DMB 管顺序，DSB 管落地，ISB 管重新取指。M4 是弱序还有写缓冲，先写内存再翻引脚，是经典事故现场。"
+          "narration": "第二招，屏障。volatile 只管访存，不管先后。M4 是弱序，还有写缓冲；先写内存、再翻引脚，外面可能先看到引脚动了。DSB 等落地，DMB 管顺序，ISB 管重新取。",
+          "emphasis": [
+            "__DSB"
+          ]
         },
         {
           "id": "fix-critical",
           "kind": "code",
-          "title": "补法三：跨执行流的，进临界区",
+          "title": "补法三：跨执行流，进临界区",
           "codeLabel": "保护一段读-改-写",
           "code": "uint32_t primask = __get_PRIMASK();\n__disable_irq();\nshared_flag ^= 1u;\n__set_PRIMASK(primask);",
           "codeBLabel": "注意",
           "codeB": "!关中断保护的是数据，\n!不是可见性。\n\n~和 volatile 是两回事：\n~volatile 管编译器，\n~临界区管执行流。",
-          "narration": "第三，读改写会被打断，就进临界区：进去之前把 PRIMASK 存下来，出来原样恢复。别用裸的关中断开中断，那会把上层的中断状态一起洗掉。"
+          "narration": "第三招，临界区。读改写会被打断，就把这一段关进不可打断的窗口：进去前存下 PRIMASK，出来原样恢复。别用裸的关中断再开中断，那会把上层状态一起洗掉。",
+          "emphasis": [
+            "PRIMASK"
+          ]
         },
         {
           "id": "fix-cache",
           "kind": "card",
           "title": "有 cache 的芯片，还得再管一层",
           "bullets": [
-            "M4 没 cache：volatile 到此够用",
+            "M4 没有 cache：volatile 到此够用",
             "M7 有 D-cache：搬运之前要清",
             "DMA 缓冲区还要管对齐"
           ],
-          "narration": "顺带一句：M4 没有 cache，volatile 到这儿就够用，你写的每一次访存都会真的走到总线上。上到带 D-cache 的 M7，光 volatile 就不够了——还得操心缓存清理和 DMA 缓冲区对齐，那是另一集的账。"
+          "narration": "补一句边界。M4 没有数据 cache，volatile 到此够用，每次访存都真的走到总线上。上到带 D-cache 的 M7，光 volatile 就不够：搬运前要清缓存，DMA 还要管对齐。",
+          "emphasis": [
+            "D-cache"
+          ]
         },
         {
           "id": "fix-cmsis",
           "kind": "code",
-          "title": "顺便回答一个疑问：CMSIS 里为什么满地 __IO",
+          "title": "CMSIS 里为什么满地 __IO",
           "codeLabel": "CMSIS 的 GPIO 结构体",
           "code": "typedef struct {\n  __IO uint32_t MODER;\n  __IO uint32_t OTYPER;\n  /* ... */\n} GPIO_TypeDef;",
           "codeBLabel": "为什么",
           "codeB": "~__IO 就是 volatile 的宏别名\n\n!地址后面挂着硬件，\n!每个字段都必须标。\n\n~反过来，纯软件的代码\n~到处加 volatile，\n~就是在交性能税。",
-          "narration": "有人问 CMSIS 里为什么满地 __IO——它就是 volatile 的宏别名。地址后面挂着硬件，每个字段都该标。反过来，纯软件的代码到处补 volatile，就是在交一笔看不见的性能税。"
+          "narration": "顺便回答一个疑问：CMSIS 里为什么满地 __IO？它就是 volatile 的宏别名。地址后面挂着硬件，每个字段都该标。反过来，纯软件热路径到处补 volatile，就是交性能税。",
+          "emphasis": [
+            "__IO"
+          ]
         },
         {
           "id": "fix-when",
@@ -388,20 +563,20 @@
             "ISR 与 main 共享的标志：加了只是入场券",
             "纯软件热路径：能不加就不加"
           ],
-          "narration": "最后给一张清单。寄存器，该加，CMSIS 早帮你标好了；和中断共享的标志位，加了只是拿到入场券，原子性还得另想办法；纯软件的热路径，能不加就别加。"
+          "narration": "带走一张清单。寄存器该加，CMSIS 已经标好；和中断共享的标志，加了只是入场券，原子性另想办法；纯软件热路径能不加就不加。标准只有一条：这个值会不会在编译器背后变。"
         },
         {
           "id": "fix-layers",
           "kind": "card",
           "tone": "good",
-          "kicker": "把这集折成三层",
+          "kicker": "折成三层",
           "title": "三层各管一件事",
           "bullets": [
             "编译器这层：volatile 管访存次数",
             "总线这层：屏障管访问顺序",
             "执行流这层：临界区、原子指令管打断"
           ],
-          "narration": "把这集折成三层：编译器这一层，volatile 管次数；总线这一层，屏障管顺序；执行流这一层，关中断和原子指令管打断。三层各自独立，缺一层就有一层的事故。"
+          "narration": "把整集折成三层：编译器这层，volatile 管访存次数；总线这层，屏障管顺序；执行流这层，临界区和原子指令管打断。三层各管一件事，缺一层就有一层事故。"
         },
         {
           "id": "punch",
@@ -409,15 +584,30 @@
           "tone": "gold",
           "kicker": "一句话带走",
           "title": "volatile 管登门，不管排队",
-          "narration": "记这一句就够了：volatile 管登门，不管排队。它保证你的每一次访存都算数；原子和顺序，得靠别的机制。"
+          "bullets": [
+            "A 的顺序能看，F 的顺序会倒",
+            "延时靠两道防线，不是一道",
+            "读改写要原子，就得另请临界区"
+          ],
+          "narration": "记一句就够：volatile 管登门，不管排队。它保证每一次访存都算数；原子和顺序，得另请屏障和临界区。下次看到 volatile，先问：我要次数，还是安全？",
+          "emphasis": [
+            "volatile"
+          ]
         },
         {
           "id": "cta",
-          "kind": "hook",
-          "title": "自己跑一遍",
-          "sub": "灯闪不闪，别听我说",
-          "code": "sh code/c/03-volatile/blink-variants.sh",
-          "narration": "别听我说。仓库里这个脚本一次跑出六个变体的汇编，换个 -O 档，故事就换一个讲法。"
+          "kind": "outro",
+          "title": "全部取证一条命令",
+          "sub": "sh code/c/03-volatile/probe.sh",
+          "bullets": [
+            "宿主 gcc 16.1.0：七个函数体",
+            "交叉段：六个变体各截 main 开头",
+            "灯的现象来自文档，不是本次 probe"
+          ],
+          "narration": "屏上这些指令，都是本机一条命令跑出来的：宿主 gcc 16.1.0 打七个函数体，交叉段把六个变体的 main 开头截出来。灯的现象来自文档，这一集没有板子。全文和脚本在开源书。",
+          "emphasis": [
+            "16.1.0"
+          ]
         },
         {
           "id": "teaser",
@@ -427,7 +617,7 @@
             "C4 结构体与 ABI",
             "对齐、填充、按值传递的代价"
           ],
-          "narration": "下一集讲结构体和 ABI：为什么驱动里要用一个结构体罩住整组寄存器，以及多出来那几个填充字节，最后花在了哪儿。"
+          "narration": "下一集进 C4：为什么驱动里要用结构体罩住整组寄存器，字段之间为什么冒出填充字节，按值传结构体又要搬多少东西。这集讲完 volatile 的边界，下集讲布局。"
         }
       ]
     },
@@ -441,6 +631,28 @@
         75
       ],
       "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "poll-m4",
+          "title": "轮询死读"
+        },
+        {
+          "at": "var-C",
+          "title": "六个变体"
+        },
+        {
+          "at": "fix-bsrr",
+          "title": "三条补法"
+        },
+        {
+          "at": "punch",
+          "title": "收束"
+        }
+      ],
       "pick": [
         "hook-01",
         "asif-2",
@@ -458,52 +670,163 @@
         "cta"
       ],
       "set": {
+        "hook-01": {
+          "head": 0,
+          "tail": 0,
+          "title": "同一份 blink\n-O0 闪，-O2 灭",
+          "sub": "灯的现象来自文档记录",
+          "emphasis": [
+            "-O2"
+          ]
+        },
+        "asif-2": {
+          "head": 0,
+          "tail": 0,
+          "title": "轮询只读一次",
+          "note": "之后原地 jmp，硬件变了也不知道"
+        },
+        "asif-3": {
+          "head": 0,
+          "tail": 0,
+          "title": "加回 volatile，每圈真读",
+          "note": "testb 回到循环体里"
+        },
         "poll-m4": {
-          "codeB": "!poll_plain:\n    ldr   r3, .L7\n!   ldr   r3, [r3]      ← 只读这一次\n    lsls  r3, r3, #31\n    bmi   .L5\n!.L4:\n!   b     .L4           ← 空转只盯 r3"
+          "head": 0,
+          "tail": 0,
+          "title": "循环里只剩\n一条 jmp",
+          "codeB": "poll_plain:\n    testb $1, g_status(%rip)\n    je .L3\n    movl $42, %eax\n    ret\n.L3:\n    jmp .L3",
+          "emphasis": [
+            "jmp .L3"
+          ]
         },
         "delay-m4": {
-          "code": "static void delay(uint32_t count)\n{\n    while (count--) {\n        __asm__ volatile (\"nop\");\n    }\n}",
-          "codeB": "!delay_plain:\n!   bx   lr        ← 空函数，直接返回\n\ndelay_volatile:\n    str   r0, [sp, #4]\n.L17:\n    ldr   r3, [sp, #4]\n    subs  r2, r3, #1\n    str   r2, [sp, #4]\n    bne   .L17\n    bx    lr"
+          "head": 0,
+          "tail": 0,
+          "title": "延时只剩\n一条 ret",
+          "codeB": "delay_plain:\n    ret\n\ndelay_volatile:\n.L11:\n    movl 8(%rsp), %eax\n    leal -1(%rax), %edx\n    testl %eax, %eax\n    movl %edx, 8(%rsp)\n    jne .L11\n    ret",
+          "emphasis": [
+            "ret"
+          ]
         },
-        "var-F": {
-          "code": "#define GPIOF_MODER\\\n  (*(uint32_t *)(GPIOF_BASE +\\\n                 0x00UL))",
-          "codeB": "    ldr   r1, [pc, #104]\n    ldr   r2, [pc, #108]\n!   ldr.w r3, [r1, #1024]  ← 先读\n    ldr.w r4, [r2, #2096]\n!   str.w r4, [r2, #2096]  ← 开时钟\n    orr.w r3, r3, #4096\n    str.w r3, [r1, #1024]",
-          "title": "只拔宏的 volatile"
+        "rmw-m4": {
+          "head": 0,
+          "tail": 0,
+          "title": "三次写\n并成一次",
+          "codeB": "cfg_plain:\n    orl $7, (%rcx)\n    ret\n\ncfg_volatile:\n    orl $1, (%rcx)\n    orl $2, (%rcx)\n    orl $4, (%rcx)\n    ret",
+          "emphasis": [
+            "orl $7"
+          ]
+        },
+        "isr-m4": {
+          "head": 0,
+          "tail": 0,
+          "title": "volatile\n不是锁",
+          "codeB": "isr_toggle:\n    xorl $1, shared_flag(%rip)\n    ret\n\n!4 次 xor 之后 = 0\n!值对，每一步都不原子",
+          "emphasis": [
+            "xorl"
+          ]
         },
         "var-C": {
-          "code": "delay(uint32_t count)\n{\n    while (count--) { }\n}",
-          "codeB": "!delay 被优化成空函数：\n!   bx  lr\n\n~调用点整个内联掉，\n~拉高和拉低两次写挤在一起：\n   str.w r3, [r1, #24] ; BSRR 置位\n   str.w r3, [r1, #24] ; BSRR 复位\n\n!中间一条等待都没有"
+          "head": 0,
+          "tail": 0,
+          "title": "两道防线\n一起撤",
+          "codeB": "delay_plain:\n    ret\n\n; main 开头与 A 同形\n; 先开时钟，再配引脚",
+          "emphasis": [
+            "ret"
+          ]
+        },
+        "var-F": {
+          "head": 0,
+          "tail": 0,
+          "title": "读被提到\n开时钟之前",
+          "code": "#define GPIOF_MODER \\\n  (*(uint32_t *)(GPIOF_BASE + MODER_OFF))",
+          "codeB": "ldr.w r3, [r1, #1024] ; 0x400\nldr.w r4, [r2, #2096] ; 0x830\nldr.w r0, [r1, #1028] ; 0x404\norr.w r4, r4, #32\nstr.w r4, [r2, #2096] ; 0x830",
+          "emphasis": [
+            "0x400",
+            "0x830"
+          ]
+        },
+        "var-trap": {
+          "head": 0,
+          "tail": 0,
+          "title": "两道保险\n别当一道",
+          "bullets": [
+            "B 只拔参数：灯照闪",
+            "C 连 nop 一起拔：延时消失",
+            "E 全拔：读提前、写推后"
+          ],
+          "emphasis": [
+            "nop"
+          ]
         },
         "fix-bsrr": {
-          "code": "/* 置位 */\nGPIOF_BSRR = 1UL << 6;\n/* 复位 */\nGPIOF_BSRR = 1UL << (6 + 16);"
+          "head": 0,
+          "tail": 0,
+          "title": "一次写\n不留缝",
+          "code": "GPIOF_BSRR = 1UL << 6;\n/* 复位写高半区 */",
+          "emphasis": [
+            "BSRR"
+          ]
+        },
+        "fix-barrier": {
+          "head": 0,
+          "tail": 0,
+          "title": "要排队\n就插屏障",
+          "code": "buf[0] = sample;\n__DSB();\nGPIOF_BSRR = 1UL << 6;",
+          "emphasis": [
+            "__DSB"
+          ]
+        },
+        "punch": {
+          "head": 0,
+          "tail": 0,
+          "title": "管登门\n不管排队",
+          "bullets": [
+            "顺序会倒：F 先读后开时钟",
+            "延时两道防线：参数和 nop",
+            "原子要另请临界区"
+          ],
+          "emphasis": [
+            "临界区"
+          ]
+        },
+        "cta": {
+          "head": 0,
+          "tail": 0,
+          "title": "一条命令\n全部取证",
+          "sub": "sh code/c/03-volatile/probe.sh",
+          "emphasis": [
+            "16.1.0"
+          ]
         }
       },
       "narration": {
-        "hook-01": "同一份代码，-O0 灯闪，-O2 灯灭。",
-        "asif-2": "它只读了一次，然后就再也不看了。",
-        "asif-3": "加了 volatile，每一圈都真的去读。",
-        "poll-m4": "这条 ldr 少一次，灯就永远等不到。",
-        "delay-m4": "延时被优化成空函数，两次翻转挤一起。",
-        "rmw-m4": "三次写并成一次，有的寄存器真会不动。",
-        "isr-m4": "三步都访存，三步之间照样被插队。",
-        "var-C": "两处一起拔，延时才整个消失。",
-        "var-F": "最阴的一个：顺序倒了，偶尔配不上。",
-        "var-trap": "那句流行说法，错在把两道保险当一道。",
-        "fix-bsrr": "BSRR 写一次就生效，中断插不进来。",
-        "fix-barrier": "要排队就插屏障，M4 有写缓冲。",
+        "hook-01": "同一份 blink，-O0 灯闪，-O2 灯灭。",
+        "asif-2": "轮询只读一次，之后原地空转。",
+        "asif-3": "加了 volatile，每圈真读，次数回来。",
+        "poll-m4": "只改一个词，testb 回到循环里。",
+        "delay-m4": "参数没 volatile，延时只剩 ret。",
+        "rmw-m4": "三次或写并成 orl 7；volatile 版三条都在。",
+        "isr-m4": "一条 xorl 看似一步，读改写仍不原子。",
+        "var-C": "参数和 nop 一起拔，延时才真消失。",
+        "var-F": "只拔宏 volatile，读被提到开时钟前。",
+        "var-trap": "两道保险别当一道：B 还闪，C 才灭。",
+        "fix-bsrr": "BSRR 一次写入就生效，整条路径上没有读改写的缝。",
+        "fix-barrier": "volatile 不管顺序，排队加屏障。",
         "punch": "volatile 管登门，不管排队。",
-        "cta": "仓库里跑一遍，别听我说。"
+        "cta": "全部指令一条命令跑出，全书见。"
       }
     }
   },
   "publish": {
     "bilibili": {
       "titles": [
-        "你的 volatile 白加了——-O2 之后，灯真的不闪了",
-        "编译器没坏：一个 volatile 引发的四个现场事故",
-        "volatile 管登门，不管排队 | 单片机 C 语言第三讲"
+        "你的 volatile 白加了：-O2 之后，轮询只剩一条 testb",
+        "同一份 blink 六个变体：读被提到开时钟之前，顺序是怎么倒的",
+        "volatile 管登门，不管排队｜四个现场与六个变体"
       ],
-      "intro": "同一份 blink，源码一个字没改，把 -O0 换成 -O2，灯就不闪了。\n这一集把驱动里那三处 volatile 逐个拔掉，做出六个变体，在 x86 和 Cortex-M4 两份汇编里看个清楚：\n轮询为什么会死等、软件延时为什么会整个消失、三次寄存器写为什么被并成一次、加了 volatile 的读-改-写为什么照样会被中断插队。\n\n六变体脚本：code/c/03-volatile/blink-variants.sh，本集把 C3 讲全。\n屏上所有汇编都是本机 -O2 实跑反汇编出来的，不是抄的。\n\n时间轴在下方，可以直接跳到你关心的那个变体。",
+      "intro": "同一份 blink，源码没改，-O0 灯在闪，-O2 灯灭了——这句话在文档里流传很广。这一集把它拆开：四个现场在宿主机 gcc 16.1.0 上跑反汇编，六个变体在 Cortex-M4 上编出来。\n\n① 轮询：poll_plain 只剩一条 testb，判断不满足就跳进 .L3，原地 jmp，内存再也不读；poll_volatile 的 testb 回到 .L6 循环里，每圈真读。\n\n② 延时：参数不带 volatile、循环体又没有副作用，delay_plain 整条只剩 ret；参数带上 volatile，delay_volatile 每圈读、减、存、比较，一圈不少。\n\n③ 写合并：三次 |= 被 cfg_plain 合成一条 orl $7；cfg_volatile 老老实实三条 orl。C 里一句或等，机器层仍是读-改-写。\n\n④ 共享标志：宿主把异或缩成一条 xorl，模型连跑四次值回到零，可脚本的结论是「值对，每一步都不是原子的」。volatile 保证访存，不保证原子。\n\n⑤ 六变体：A 三处全在，先写 0x830 开时钟，再读 0x400 配引脚；B 只拔参数，main 开头与 A 同形；F 只拔宏，读 0x400 被提到开时钟之前；E 三处全拔，三条读提前、三条写推后。\n\n⑥ 补法：BSRR 一次写生效；该排队就插 DSB/DMB/ISB；跨执行流的读改写进临界区。三层各管一件事。\n\n⚠️ 灯的闪灭是文档里的板级记录，不是本次 probe 观测；本次日志只打印宿主七个函数体、三行现场结论，以及六个变体各自的 main 开头一段，没有打印函数尾部，也不据此推断指令条数。\n\n全部取证：sh code/c/03-volatile/probe.sh。完整图文与代码在开源书《通往单片机之路》C3 章。",
       "tags": [
         "单片机",
         "STM32",
@@ -521,11 +844,11 @@
     },
     "douyin": {
       "titles": [
-        "volatile 到底保护什么？-O2 反汇编一眼看清",
-        "你写的 volatile 可能白加了",
-        "编译器没坏，它只是太聪明"
+        "你的 volatile 可能白加了",
+        "-O2 之后，轮询只剩一条 testb",
+        "六个变体：顺序是怎么倒的"
       ],
-      "intro": "同一份代码，只把 -O0 换成 -O2，板子上的灯就不闪了。\nvolatile 管登门，不管排队。全篇和六变体脚本都在本集里。\n",
+      "intro": "同一份 blink，-O0 灯在闪，-O2 灯灭了——这句话来自文档记录。这一集用本机 probe 拆开看：poll_plain 只剩一条 testb，之后原地 jmp；delay_plain 整条只剩 ret；三次 |= 被并成一条 orl $7；一条 xorl 看着像一步，读改写仍然不原子。Cortex-M4 的六个变体里，A 先写 0x830 开时钟再读 0x400，F 只拔宏就把读提到了开时钟之前，E 三处全拔后三条读提前、三条写推后。补法就三条：BSRR 一次写、该排队插屏障、跨执行流进临界区。全部指令本机一条命令跑出，不要开发板：sh code/c/03-volatile/probe.sh。灯的现象不是本次 probe 观测。\n",
       "tags": [
         "单片机",
         "STM32",
@@ -535,36 +858,48 @@
       ],
       "topics": [
         "知识",
-        "科技"
+        "科技数码"
       ],
-      "caption": "-O0 灯在闪，-O2 灯灭了\n源码一个字没改，编译器也没坏\n#C语言 #嵌入式 #GPIO",
-      "pinned": "完整图文在「通往单片机之路」C3《volatile：跟编译器约法三章》。六个变体、两份 -O2 反汇编，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/blink-variants.sh",
-      "repro": "sh code/c/03-volatile/blink-variants.sh"
+      "caption": "-O0 灯在闪，-O2 灯灭了（文档记录）\n轮询只剩一条 testb\n#C语言 #嵌入式 #STM32",
+      "pinned": "完整图文在「通往单片机之路」C3《volatile：跟编译器约法三章》。四个现场加六个变体，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/probe.sh",
+      "repro": "sh code/c/03-volatile/probe.sh"
     },
     "zhihu": {
       "titles": [
-        "把驱动里的 volatile 逐个拔掉，六个变体的汇编都在这",
-        "volatile 到底管什么？四个拔掉的现场，编译器一个都没报错"
+        "把 volatile 逐个拔掉：六个变体的 main 开头都在这",
+        "volatile 到底管什么？四个现场，编译器一个都没报错"
       ],
-      "intro": "三处 volatile 逐个拔掉，做出六个变体，在 x86 和 Cortex-M4 两份 -O2 反汇编里看个清楚：轮询为什么会死等、软件延时为什么会整个消失、三次寄存器写为什么被并成一次、加了 volatile 的读-改-写为什么照样会被中断插队。\nvolatile 管的是登门，不管排队。\n取证脚本：code/c/03-volatile/blink-variants.sh，本集把 C3 讲全。\n屏上所有汇编都是本机 -O2 实跑反汇编出来的，非摘抄。",
+      "intro": "同一份 blink，源码没改，-O0 灯在闪，-O2 灯灭了——这是文档里的板级记录，不是本次 probe 观测。这一集在宿主机上跑四个现场：poll_plain 只剩一条 testb，之后原地 jmp；delay_plain 整条只剩 ret；三次 |= 被并成一条 orl $7；一条 xorl 看着像一步，读改写仍不原子。再把三处 volatile 逐个拔掉，做出六个变体：A 三处全在，先写 0x830 开时钟再读 0x400；B 只拔参数，main 开头与 A 同形；F 只拔宏，读被提到开时钟之前；E 三处全拔，三条读提前、三条写推后。补法三条：BSRR 一次写、该排队插屏障、跨执行流进临界区。volatile 管登门，不管排队。全部取证一条命令：sh code/c/03-volatile/probe.sh。",
       "domain": "科学工程",
       "mark": "个人观点仅供参考",
-      "original": true
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集选「个人观点仅供参考」与已发章节同口径。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "C语言",
+        "volatile",
+        "STM32",
+        "嵌入式",
+        "编译器"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
     },
     "xiaohongshu": {
-      "title": "编译器没坏，它只是太聪明",
-      "body": "同一份代码，只把 -O0 换成 -O2，板子上的灯就不闪了。\nvolatile 管登门，不管排队。\n\n复现：sh code/c/03-volatile/blink-variants.sh",
+      "title": "一条 testb 后，轮询就再也不看内存",
+      "body": "同一份 blink，-O0 灯在闪，-O2 灯灭了——这是文档里的板级记录，不是本次 probe 观测。\n\n本机四个现场：poll_plain 只剩一条 testb，不满足就原地 jmp；delay_plain 整条只剩 ret；三次 |= 被并成一条 orl $7；一条 xorl 看着像一步，读改写仍不原子。\n\n六个变体里，A 三处全在，先写 0x830 开时钟再读 0x400；B 只拔参数，main 开头与 A 同形；F 只拔宏，读被提到开时钟之前；E 三处全拔，三条读提前、三条写推后。\n\n补法三条：BSRR 一次写生效；该排队就插 DSB/DMB/ISB；跨执行流的读改写进临界区。\n\n复现：sh code/c/03-volatile/probe.sh",
       "topics": [
         "单片机",
         "STM32",
         "C语言"
       ],
       "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
-      "pinned": "六个变体、两份 -O2 反汇编，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/blink-variants.sh",
-      "repro": "sh code/c/03-volatile/blink-variants.sh",
+      "pinned": "四个现场加六个变体，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/probe.sh",
+      "repro": "sh code/c/03-volatile/probe.sh",
       "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
       "collection": "通往单片机之路",
-      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
     }
   }
 }

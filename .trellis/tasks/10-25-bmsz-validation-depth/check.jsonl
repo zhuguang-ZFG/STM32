@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/implement.md", "reason": "逐期验收命令与故意失败样例——check 阶段按此逐条复跑并核对报错原文"}
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md", "reason": "Acceptance Criteria 三分验收基线"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "契约变更后此文件必须已收录新门签名；缺失即视为未完成"}
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md", "reason": "对照物原文：判断某条约束是否被放宽时需要回到 BMS-Z 的原始语义"}

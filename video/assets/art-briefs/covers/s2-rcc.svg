@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s2-rcc 封面手绘 v2 · 立式配电柜正视图 · 2×3 六道门 · 右下门透钴蓝光 -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- 柜体（微手绘圆角） -->
+    <rect x="560" y="360" width="800" height="1180" rx="36"/>
+    <!-- 柜顶提手环 -->
+    <circle cx="960" cy="300" r="34"/>
+    <!-- 分隔横梁两道 -->
+    <path d="M560 753 q200 14 400 7 t400 -5"/>
+    <path d="M560 1147 q200 14 400 7 t400 -5"/>
+    <!-- 中缝竖梁 -->
+    <path d="M953 360 q8 200 4 400 t4 400 t-4 380"/>
+    <!-- 五扇灰门（2×3 网格，右下除外） -->
+    <rect x="612" y="412"  width="288" height="290" rx="26" fill="#f2f4f7"/>
+    <rect x="1020" y="412" width="288" height="290" rx="26" fill="#f2f4f7"/>
+    <rect x="612" y="805"  width="288" height="290" rx="26" fill="#f2f4f7"/>
+    <rect x="1020" y="805" width="288" height="290" rx="26" fill="#f2f4f7"/>
+    <rect x="612" y="1198" width="288" height="290" rx="26" fill="#f2f4f7"/>
+    <!-- 门把手（左五扇） -->
+    <circle cx="856" cy="556" r="12" fill="#1a1a1a"/>
+    <circle cx="1264" cy="556" r="12" fill="#1a1a1a"/>
+    <circle cx="856" cy="949" r="12" fill="#1a1a1a"/>
+    <circle cx="1264" cy="949" r="12" fill="#1a1a1a"/>
+    <circle cx="856" cy="1342" r="12" fill="#1a1a1a"/>
+  </g>
+  <!-- 第六扇门：钴蓝 + 放射光 -->
+  <rect x="1020" y="1198" width="288" height="290" rx="26" fill="#3451b2" stroke="#1a1a1a" stroke-width="14" stroke-linejoin="round"/>
+  <g stroke="#3451b2" stroke-width="12" stroke-linecap="round">
+    <path d="M1000 1140 l-40 -48"/><path d="M1164 1128 l6 -62"/><path d="M1330 1140 l42 -50"/>
+    <path d="M988 1360 l-56 -22"/><path d="M1332 1362 l58 -24"/>
+  </g>
+  <!-- 右下角小钥匙 -->
+  <g stroke="#1a1a1a" stroke-width="12" stroke-linecap="round" fill="none">
+    <circle cx="1552" cy="1592" r="52"/>
+    <circle cx="1552" cy="1592" r="18"/>
+    <path d="M1552 1644 l0 168 q0 20 22 20 l40 0"/>
+    <path d="M1586 1762 l40 0"/><path d="M1586 1806 l40 0"/>
+  </g>
+  <!-- 地面两笔 -->
+  <path d="M420 1560 q-70 10 -130 4 M1500 1560 q-60 8 -120 6" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+</svg>

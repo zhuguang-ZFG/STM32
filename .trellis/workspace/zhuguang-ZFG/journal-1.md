@@ -627,3 +627,704 @@ comment 步补 --go（闸门另起一张 I_HAVE_USER_OK_COMMENT）并真发出 1
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: BMS-Z 对齐：验证纵深（门禁脚本/文档对账/PDF 契约/下载打包/dist 对账）
+
+**Date**: 2026-10-25
+**Task**: BMS-Z 对齐：验证纵深（门禁脚本/文档对账/PDF 契约/下载打包/dist 对账）
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+对照姊妹项目 BMS-Z 补齐验证纵深：新增 local-gates(.ps1/.sh)、docs-check、pages-check、search-check、check_pdf、publish_downloads、links.yml+.lychee.toml、ruff.toml+lint job；runner 钉 ubuntu-24.04；补 CITATION/SECURITY/CoC/根 CHANGELOG。全量本地门禁 24 pass/0 fail/0 skip。
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d87f513` | (see git log) |
+| `ca9b756` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+## Session 13: AI 章有趣度增量 + 印前字体子集双坑修复
+
+**Date**: 2026-10-27
+**Task**: 10-27-ai-dev-deepen 验收面内继续（用户明示不新建任务）
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+干区外科润色 5 处（A0 选型段、A3 配置/拓扑/四问/收尾），事实 token 多重集零漂移、口癖预算内、零新字符。印前重建连破两坑：其他任务未提交改动致 庭/胆/讯 缺子集（SimSun 回退）→ 子集 2144→2147 字；provenance 漂移致 Cascadia Mono 未钉轴（源文件实为可变字体）→ 全书代码嵌成无名 Type3 → 重钉 wght=400/700。最终 13 门 + 印前电池 + 回归三件套全绿。
+
+### Main Changes
+
+- docs/ai/00-pair-not-ghost.md:313、docs/ai/03-toolflow-mcp.md:128/130/306/324（仅散文框定段，不可动清单零触碰）
+- docs/ai/03-toolflow-mcp.md:328 「第六章」→「第六节」（跨模型评审采纳；修后全链复验）
+- mcu-book/print/fonts/ 九支 woff2 重建（mono 钉 wght=400/700；覆盖 2147 字；provenance.json 同步）
+- 详见 .trellis/tasks/10-27-ai-dev-deepen/implement.md「实施实录（2026-10-27 有趣度增量）」
+
+### Git Commits
+
+无（工作区改动，与既有 368 处未提交改动共存）
+
+### Testing
+
+- prose_guard compare ×2「不可动清单：全部一致」；single 口癖预算内；新字符零缺（含 :328 修复后复跑）
+- `npm run docs:build` ✓
+- check_pdf 13 门「全部通过」；widow 0 / orphan 0 / U+2011 0 / 灰点 0
+- pytest 72 passed；anim-lint 109/109；art_guard 100 枚 0 违规
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 用户过目 A0/A3 润色段（任务 Phase 7 验收面）
+- `.temp/interest-orig/` 为 docs/ai 唯一 pre-polish 基线，保留勿清
+
+## Session 14: AI 章第二轮有趣度增量（A1/A4）
+
+**Date**: 2026-10-27
+**Task**: 10-27-ai-dev-deepen（续，不新建）
+**Branch**: feat/video-v2-remaster
+
+### Summary
+
+六章全量复扫定位剩余干点：A0/A2/A5 与 A1/A4 节级意象已饱和（强行加喻有负收益），仅三处扁平连接句值得动。
+
+### Main Changes
+
+- docs/ai/01-prompt-patterns.md:224 「措辞是天气，你要看的是地形」
+- docs/ai/04-hallucination-defense.md:230 窗口意象 + 「先问在不在，再问对不对」；:260 「越往下越贵」
+- docs/ai/04-hallucination-defense.md:178-183 删 §二三条「工作推论」复读块（180/181 分别复述 :172/:155，评审 advisory 属实；保留 :48 埋点与 :172 收束，常见坑坑体复盘不动）
+
+### Git Commits
+
+无（工作区改动，与既有未提交改动共存）
+
+### Testing
+
+- prose_guard compare ×2「不可动清单：全部一致」；single 预算内（A1 ×1 / A4 ×1）；零新字符
+- `npm run docs:build` ✓；check_pdf 13 门「全部通过」；widow 0 / orphan 0 / U+2011 0 / 灰点 0；三句新文确认进 PDF
+- pytest 72 passed；anim-lint 109/109；art_guard 100 枚 0 违规
+- 删脂后复验：compare 一致、预算内、零新字符；重排 13 门全过、电池全 0、回归三件套绿；PDF 确认块无残留且 :48/:172 原句在
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 用户过目 A1/A4 三处润色句与 A4 §二删脂（并入 Phase 7 验收面）
+- `.temp/interest-orig/` 内 A1/A4 快照为本轮基线，保留勿清
+
+## Session 15: AI 章第四轮（复读扫描 + A0 句式去叠）
+
+**Date**: 2026-10-27
+**Task**: 10-27-ai-dev-deepen（续，不新建）
+**Branch**: feat/video-v2-remaster
+
+### Summary
+
+针对 gates 盲区（复述/句式疲劳）做机械扫描后外科处置：六章句级近重复与「不是X，是Y」密度全量判读，命中均为合法重复类；唯一动刀点为 A0:315 双叠转折句。
+
+### Main Changes
+
+- docs/ai/00-pair-not-ghost.md:315 删填充转折「这不是行业默契的修辞，是三个独立来源可以互相印证的事实陈述」→「三个来源互相印证，这本身就是本章工作观的外部证据」（保留章旨级强转「不是本书的口味，是工具提供者自己写下的边界」）
+- 工具：.temp/fat_scan.py（句级 LCS + 句式计数，可复跑）
+
+### Git Commits
+
+无（工作区改动，与既有未提交改动共存）
+
+### Testing
+
+- prose_guard compare「不可动清单：全部一致」；single 预算内（——×2）；零新字符
+- `npm run docs:build` ✓；check_pdf 13 门「全部通过」；widow 0 / orphan 0；PDF 四断言 PASS
+- pytest 72 passed；anim-lint 109/109；art_guard 100 枚 0 违规
+- task_verify：unverified（project-or-git-baseline-unavailable，docs/ai 未入 git）
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 用户过目 A0:315（并入 Phase 7 验收面，累计 11 点）
+- 六章文字面判定为维护水位：再要求继续时方向是逐字句微调或事实/结构层，无批量目标
+- `.temp/fat-orig/` 为 R4 基线；`.temp/interest-orig/` 各轮基线均保留勿清
+
+## Session 16: R5 插图生动化（AI 部题花重绘）
+
+**Date**: 2026-10-27
+**Task**: 10-27-ai-dev-deepen（续，不新建）
+**Branch**: feat/video-v2-remaster
+
+### Summary
+
+用户指令转向插图生动度。题花密度对照全书范本判四枚扁平（A0/A1/A2/A5），按各章母题重绘；A3/A4 语义完备不动。文字面复扫零干区、零改动。
+
+### Main Changes
+
+- `mcu-book/book/assets/chapter-art/ai-00/01/02/05-*.svg` 重绘（890/1080/1024/1157B → 1602/2029/2273/2069B，入全书范本带）：A0 分布+采样→草稿→放大镜→终审印章；A1 夹板工单→齿轮机头模型→带勾草稿；A2 手册↔断开箭头+三问+放大镜对账→带表笔板卡（实测作丝印）；A5 传送带源文→双闸门→成书
+- A2 视觉复核修正：双向箭头原穿镜片与对勾交叉 → 断成两段短箭头让镜头坐缺口
+
+### Git Commits
+
+无（工作区改动，与既有未提交改动共存）
+
+### Testing
+
+- 视觉核验：白底 3 倍临时副本光栅（`:img` 黑布坑绕过），视觉模型逐要素确认四枚无重叠/穿字/越界
+- art_guard 100 枚 0 违规；anim-lint 109/109（未动复跑）
+- `npm run docs:build` ✓；build_print 1168 页字体全 Type0 具名；check_pdf 13 门「全部通过」
+- PDF 断言 v3 PASS：get_toc 定位章页 + 题花字号带 5.9pt（e06 对照 7.6pt 校准）六章标签全命中；pytest 72 passed
+- 新标签字符 ⊆ 字体子集域 2260 字；文本零改动（prose_guard 不适用）
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 用户过目四枚重绘题花（并入 Phase 7 验收面）
+- `.temp/art-orig/` 为本轮 pre-redraw 基线，保留勿清；`.temp/view-*.svg` 为视觉核验临时件
+
+## Session 17: R5b 几何对位复审（bbox 算术抓 R5 残留缺陷 + A3/A4 补判重绘）
+
+### What Happened
+
+- Advisory 以 bbox 算术证 R5 有实缺陷（视觉模型「布局已核」不构成几何证据）：A0 放大镜与终审章双悬空（镜片距纸 11u、章距纸缘 59u）；A5 全图零曲线（100 枚中唯一）；另 A0/A2 共用放大镜母题（2/6 重复）
+- R5b 四处修：A0 删镜（归 A2）+ 章加大压纸角 + 纸右缘在章覆盖段留缺口（视觉复核揪出缘线穿「终/审」二字之间）；A5 弯带+柱沉+物件齐落带面+signature 波；A3 撤「语义完备」判定整体重绘（回环齿轮模型+三管线接手册叠/构建终端/方波三具体站点，原版底波穿串口日志框）；A4 撤判定重绘（真落差决策树+四异叶子：摊开书/交叠纸/采样线探针/播放钮；「抽样信」经正文 6 处用例证为章内术语，非截断）
+- 流程事故：A3 首写文件名调换（ai-03-mcp-toolflow ≠ 章节 slug ai-03-toolflow-mcp）成孤儿，构建未读到、art_guard 100→101 暴露；归位复 100
+- 六枚 720×440 主插画盘点（advisory 优先级主张）：各章核心时刻/生态图各司其职，判不动
+
+### Testing
+
+- bbox 断言 19 项 PASS；白底黑描边 3 倍光栅视觉复核：A0 缺口干净、A3 三管线零穿越、A4 下垂成立无穿入
+- art_guard 100 枚 0 违规；anim-lint 109；docs:build ✓；重排 1168 页 185.3×260.3mm 字体 5 支 Type0 具名；check_pdf 13 门全过；pytest 72 passed
+- PDF 断言 v4：TOC 二级定章页（level-1 是部不是章）+ 5.9pt 字号带，六章标签全命中（A0 p985…A5 p1073）
+- 题花 45 用字对 sans-regular woff2 cmap 直查零缺字；prose_guard --single 六章预算全绿（零文本改动）
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 用户过目 R5b 后的六枚题花（Phase 7 验收面：文字 11 点 + 全套重绘题花）
+- 教训入档：bbox 断言须含线段×矩形/文字相交类；题花文件名必须匹配章节 slug；多文件误传 prose_guard 会触发成对比较假红
+
+## Session 18: 书级趣味性批 1（C 篇抽象基础 8 章）
+
+### What Happened
+
+- 续用任务 `10-27-book-interest-polish`（书级语义，非 AI 面 deepen）。三槽位全书扫描：回扣 grep 恰中六试点=已闭环（P2 实质早由先前润色轮完成，仅复选框未勾）；`> 🎯` 钩子覆 117 文件；非试点收尾（S6/C1 抽查）止于成就清单无回扣 → H1 成立（约 88 章缺槽 2+3）
+- 批 1 = C0/C1/C3–C8（PRD 批次序「抽象基础」居首，8≤10）：每章「先跑起来」插押注句、「你做到了」插「回到开场」回扣段，纯散文，不改标题/围栏/行内码/事实 token
+- 基线：`.temp/cbatch-orig/` 8 枚（pre-batch）；`.temp/pilot-orig/` 6 枚为会话起点态（pre-pilot 基线早于本会话、不可从 git 重建——P3 报告以槽位位置清单服务抽评）
+- 方法论收敛（prose_guard compare 假红教训的推广）：插入文本自带 **0 反引号 span、0 阿拉伯数字 token**（裸中文数词/裸标识符安全，C8 全净为证），守卫即零违规；C4/C6 fence 后双空行一并修正
+
+### Testing
+
+- prose_guard --single ×8：口癖预算全绿（——·散文 1–2、一句话 0、记住：0、下一站 1）
+- prose_guard compare ×8 vs `.temp/cbatch-orig/`：不可动清单全部一致（零事实 token 漂移）
+- 净增字数：+0.9%～+3.1%（上限 12%）；docs:gen 86/86；reading:check 78 篇 ±40% 内；docs:build ✓；pytest 72 passed
+- 印前重排（build_print/check_pdf/PDF 断言）按 PRD 推延至试点文本定稿验收，本轮文本级全绿
+
+### Status
+
+[OK] **Completed**（P4 批 1）
+
+### Next Steps
+
+- 用户抽评 ≥2 章（试点 + 批 1）后开批 2；候选：B 篇构建工具或 S 篇外设
+- implement.md P3 第四项（用户抽评）与 P5 待验收后勾选
+- 保留勿清：`.temp/pilot-orig/`、`.temp/cbatch-orig/`
+
+## Session 19: 书级趣味性批 2（B 篇构建工具 7 章，整篇槽位闭环）
+
+### What Happened
+
+- 用户「继续改进优化」授权批 2。全书缺口扫描（83 章有先跑起来+你做到了双锚，回扣 grep）：缺槽分布 S17/E12/rt-thread8/freertos8/G9/B7/AI6；AI 篇属 deepen 验收面不动
+- 批 2 = B0–B6（B7 已是试点），补完后 B 篇 8 章槽 2+3 全覆盖；含两枚长章 02-elf、03-linker-script
+- 槽 2 押注逐章对准本地判分锚点（B1 三行关键数字、B2 入口地址差一、B3 两份 bin 尺寸、B4 单步计数、B5 队尾大户、B0 目录清单、B6 停机才可写）；槽 3 回扣开场框架逐章换结构（那句/那笔/那位/那本/那对），落实批 1 记下的反模板约束
+- 插入延续零 token 方法论（零反引号 span、零阿拉伯数字、零破折号），守卫首跑即全绿零返工
+
+### Testing
+
+- prose_guard --single ×7 口癖全绿；compare ×7 vs `.temp/bbatch-orig/` 不可动清单全部一致
+- 净增 +0.9%～+2.7%（上限 12%）；docs:build ✓；pytest 72 passed；reading:check 78 篇；links:check 157 链接
+- 印前重排仍按 PRD 推延至文本定稿验收
+
+### Status
+
+[OK] **Completed**（P4 批 2）
+
+### Next Steps
+
+- 剩余缺口：S 篇 16、E 篇 12、rtos 两支 16、G 篇 9、AI 篇 6（AI 篇待 deepen 验收后再议）；批 2 选批时已按全路径核对、AI 篇明确排除在 deepen 验收面之外
+- 批 3 候选：S 篇（章数最多，含两枚超长章 14-pwr、16-debug-hardfault）
+- 保留勿清：`.temp/bbatch-orig/`（批 2 基线）
+
+## Session 20: 书级趣味性批 3（S 篇外设开段 S1–S9）
+
+### What Happened
+
+- 用户「同意继续」授权批 3，按建议走 S 篇；S10-dac 已是试点，本批取连续 9 章 S1–S9（≤10 上限），S11–S17 留批 4
+- 槽 2 押注全部本地可判分或上板即时可判：S1 三住户谁住外设街（CPUID）、S2 默认版跑哪个钟（内部钟）、S3 共阳写低才亮、S4 门牌落在五到十之间（六）、S5 LOAD 减一、S6 动 CCR 频率不动、S7 波特率错一格出乱码、S8 计数器减到零跳回、S9 十二刀半格以内；B4 教训落实：每章菜单先核正文答案锚再落笔（S1 特意先 grep PPB/口诀行）
+- 槽 3 回扣开场继续换框架（那一口你押谁/那一口替你判了/那一口就是第一课/门牌是六/押减一的那口/动 CCR 的那一口/乱码那一口的账/跳回去那一口/半格以内的那一口），零模板复制
+- 顺手修一处存量口癖：S3 :33「BSRR 一句话发令」→「一声令下」（快照原件即报预算超 1，compare 2→2 证明非本轮引入；修后 2→1）
+
+### Testing
+
+- prose_guard --single ×9 口癖全绿；compare ×9 vs `.temp/sbatch-orig/` 不可动清单全部一致（零事实 token 漂移）
+- 净增 +1.4%～+1.9%（上限 12%）；docs:build ✓（46.62s）；pytest 72 passed；reading:check 78 篇；links:check 157 链接
+- 印前重排仍按 PRD 推延至文本定稿验收
+
+### Status
+
+[OK] **Completed**（P4 批 3）
+
+### Next Steps
+
+- 批 4 候选：S 篇尾段 S11–S17（7 章，含超长章 14-pwr、16-debug-hardfault）；之后 E 篇 12、rtos 两支 16、G 篇 9
+- 保留勿清：`.temp/sbatch-orig/`（批 3 基线，9 枚合计 91000 字符）
+
+## Session 21: 批 3 去模板化 + 书级美感诊断
+
+### What Happened
+
+- advisory 指出 S 批 17 处同框架（先押一口 ×9 + 那一口 ×8）；用户同步反馈「还是不够好看美观优秀」。先修模板：18 处开头重写为 9 个零重复框架（押个名字/押个数/押一题/先猜一把/出个选择题/三个答案押一个/押个结局/押个现场/押个精度），回扣起句全部脱离「那一口」句式（S4 原本非模板未动）
+- 零 token 纪律全程保持（菜单仍含正确答案、零阿拉伯数字/反引号/破折号）
+- 干区抽查 S2/S4/S5 中段：S4 链路节有角色拟人与归属故事、S2 六步每步带死法后果、S5 有「阴险」「第 50 天前后必爆」——中段非干区，无需补刀；文字面美感短板确认为开头模板（已修）
+- 美感下一杠杆定位：题花丰富度。100 枚 chapter-art 尺寸分布 min 475 / p25 1301 / 中位 1562 / p75 1790 / max 2585（初记 101 枚 max 156769 为 wc total 行伪影，Session 22 修正）；对照 R5 范本带 1900–2600B，章题花低于 1200B 的有 10 枚（gd32-08、c-07、build-02-elf、build-03-linker-script、rtos-freertos-06/07、esp32-00-env、stm32-17-watchdog-reset、lab-e01-blink、stm32-06-tim）；附录类题花薄属正常，不计
+
+### Testing
+
+- prose_guard --single ×9 全绿；compare ×9 vs `.temp/sbatch-orig/` 不可动清单全部一致；「先押一口/那一口」全书 S 批零残留；净增回落至 +0～+1%
+- docs:build ✓（36.97s）；pytest/reading/links 同批复跑（Session 21 交付时引用结果）
+
+### Status
+
+[OK] **Completed**（批 3 修正轮 + 诊断）
+
+### Next Steps
+
+- 美感主建议：题花重绘批（10 枚薄弱章题花，复用 R5 管线：SVG 重绘入 1900–2600B 范本带 → 白底光栅 :img 视觉核验 → art_guard/anim-lint → 印前断言），或先批 4（S11–S17 文字槽位）
+- 保留勿清：`.temp/sbatch-orig/`（批 3 基线）
+
+## Session 22: 章首题花接入网页版（advisory 验证 + 实现）
+
+### What Happened
+
+- advisory（concern）证实闭环：docs/ 全站题花此前零渲染（唯一 grep 命中是 ai/05 命令表格文字提及）。实现走 anim 同款构建期内联：config.mts md 规则按 env 相对路径 slug（stm32/06-tim.md → stm32-06-tim）读 mcu-book/book/assets/chapter-art/<slug>.svg，存在即以 html_block 注入 H1 之后（镜像印前「标题 → 题花」相邻关系），缺失静默跳过，feTurbulence/<filter 硬门与 build_html.py chapter_art_html 同口径；无组件、无 public 拷贝、单一事实源
+- custom.css 加 .chapter-art（max-width 460px 居中、margin -0.25rem auto 0.6rem）+ --cover-ink 双主题令牌（浅 #123b33 / 暗 #a3c4b9）；资产 SVG 本就写 stroke/fill="var(--cover-ink, #123b33)"，内联进 DOM 后变量穿透，深浅两套自动适配（<img> 引用穿不过 CSS 变量边界，故必须内联）
+- 覆盖率：94 书文件 94 枚题花全命中（A–F 附录图不映射 web URL，仅印前用）；dist 94 页含 chapter-art、各 index 页零残留、位置紧随 </h1>
+- perf 预算第四次上调（有据）：反事实构建（临时关注入）实测题花对搜索索引贡献仅 +7.0KB raw / +1.9KB br（94 枚 SVG 共 1479 字符文本以二元组令牌入索引，整串不入正文）；无题花索引 4090.9KB raw / 710.5KB br 本已双超 10-13 校准限（4050/690）——超限为 10-13 以来正文增写累积，非题花引入。largestChunkBr 690→760、searchIndexRaw 4050→4400，注释注明实测与归因
+
+### Testing
+
+- docs:build ✓（94 页注入）；perf 全绿（shell 139.7/140、largest 712.3/760、index raw 4096.5/4400）；search 2113 标题 / a11y 131 页 / reading 78 章 / links 157 / pytest 72 全过
+- 浏览器受控核验（重启后 preview）：浅/暗墨令牌翻转 rgb(18,59,51) ↔ rgb(163,196,185)、H1 下间距 16.2px、460px 居中（centerOff 0）、375px 移动端宽 295px 无横向溢出
+
+### Status
+
+[OK] **Completed**（网页版题花从零渲染到 94 章全覆盖）
+
+### Next Steps
+
+- 二选一待用户定向：A）题花重绘批（10 枚薄弱章题花入 1900–2600B 范本带，复用 R5 管线）；B）批 4 文字槽位 S11–S17（7 章，含 14-pwr 21.2k、16-debug-hardfault 18.7k）
+- 未动 docs/ai/05-this-book-pipeline.md（deepen 验收面禁止混入）；保留勿清：`.temp/sbatch-orig/`
+- 工具教训 ×2：①wc -c 输出的 total 行会混进统计（count+1、max=总量），分位数须先剔除再算；②vitepress preview 的 sirv 静态索引不随 dist 重建刷新，重建后必须重启 preview，否则新哈希 CSS 404、页面全裸——曾误判为 CSS 编译失败，curl 直打服务端 404 后定位
+
+### 追记：advisory 复核——搜索索引污染修复（同日）
+
+- 采纳一条（concern 属实）：题花 `<text>` 标签经 renderSearch 进了索引正文——tim 首节 token 表抓到 ccrcnt（CCR/CNT 剥标签后熔接成伪 token）、数越/过阈/→ 等题花独有 token；违反 search-render.mjs 头部「不索引 SVG 序列化数据」的自有契约。修复：renderSearch 在剥 `<pre>` 旁增剥 `<div class="chapter-art">…</div>`（资产零 foreignObject，非贪婪截断安全）
+- 验证：剥后 ccrcnt 全索引消失、数越/过阈只剩 esp32 散文合法命中、tim 首节 57→48 token 全为正文词；索引原文 4098.1 → 4091.1 KB（≈关题花反事实 4090.9，题花贡献归零）；94 页注入不回归；search:check 2113 标题 ✓；perf 全绿（711.5/760、4091.1/4400）；perf-budget 注释同步修正并补摊比核算（索引字节/正文字节 2.14 → 2.13 不升反降，超限确为正文增长 1,740,970 → 1,964,854 B）
+- 排查方法记档：MiniSearch 序列化索引是 `[token, {field:{docId:…}}]` 对数组（dist chunks/@localSearchIndexroot.*.js 内 `const t='…'` 包装），可 node 解析做章节级 token 归因；ASCII 探针要防熔接（ccrcnt）、CJK 探针用题花独有二元组（数越/过阈，全 docs 散文 grep 反证）
+- 其余 advisory 判定：陈旧 preview/构建期内联/TEMP 守卫恢复/917 实测值/工具用法五条均已于前轮闭环或经本轮复核不成立（守卫行在位、917 已是实测值、transformPageData 方案与已交付内联同效），无动作
+
+## Session 23: 题花重绘批闭环（10 枚薄弱章题花入范本带 + 字体子集陈旧性修复）
+
+### What Happened
+
+- 三波重绘 10 枚薄弱题花（原 1020–1193B、共 11209B）入 1900–2600B 范本带：波 1 stm32-06-tim 2395 / c-07-ub-misra 2273 / build-03-linker-script 2187；波 2 build-02-elf 1974 / esp32-00-env 2414 / lab-e01-blink 2183；波 3 gd32-08-mtime-delay 1984 / rtos-freertos-06-notify-event-timer 2213 / rtos-freertos-07-heap 2252 / stm32-17-watchdog-reset 2067。每枚保原标签语义（mtime/mtimecmp/MTIP、任务通知/TCB 邮箱、heap_4、喂狗/迟到即复位……），叙事升维：TIM 军刀三刃、ELF 解剖台+readelf 放大镜、idf.py→USB→小板首次对话、BSRR 位卡点灯+1Hz 方波、电表跨限 MTIP 小旗、纸飞机直投邮箱+大叉划掉排队信封（不排队不拷贝）、内存条墙溶解合并+malloc 大件入位、喂狗环+迟到时钟→复位键
+- 每波验证链：art_check 标签 ⊆ sans cmap（新入域 $ idf.py/你好/红/任务A/IWDG/malloc/空闲/释放 全 NONE）→ art_guard 100-0 → mkview 白底光栅（:img 对透明底线稿画黑布，工具坑沿用）→ 视觉模型逐要素核验。波 1 揪出 CNT 与小闪电仅 4px 间距，CNT x 66→58 修复后复核通过；heap 首稿 1463B 未入带，补邻格空闲标注+墙溶解碎屑+malloc 收尾后 2252B
+- A4 印前门暴露字体子集陈旧性：check_pdf 字体门新挂 IAAAAA+SimSun（首见 p197）。归因：全书仅 2 处 10pt 正文（'窥' build/06-flash-debug.md:171、'喘' stm32/06-tim.md:277，均为批 1–3 押注/回扣句），subset woff2 生成早于该批散文落字（域 2147）。修复＝按 provenance 原规格重跑 subset_fonts.py（9 支、2147→2153），重建 PDF 后门复绿——非管线改动，纯数据滞后
+- PDF 题花断言 v5（.temp/art_pdf_assert_rbatch.py）：get_toc 定位章页（章号前缀 S/C/B/P/V/F + 实验 E01）+ 字号带 5.0–8.6pt 判据，10 章标签全命中（5.9–6.8pt），承 v3/v4 拒空洞证据教训
+
+### Testing
+
+- art_guard 100 枚 0 违规 / anim-lint 109 全过 / docs:build ✓ / docs:check ✓（137 md、244ms）
+- build_print：1171 页（+3 为重绘后回流）、185.3×260.3mm、5 支字体全 Type0 具名；check_pdf 13 门「印前契约：全部通过」（含字体门复绿）
+- pytest 72 passed（字体重生成后复跑）；PDF 断言 v5 10/10 PASS
+
+### Status
+
+[OK] **Completed**（A 题花重绘批全绿闭环；波批快照 `.temp/rbatch-orig/` 保留勿清）
+
+### Next Steps
+
+- 批 4 文字槽位 S11–S17（7 章，含 14-pwr 21.2k、16-debug-hardfault 18.7k）——等用户过目 A 面后进入
+- 工具教训：①todo `done` 传 items[] 会静默整表标完（已报 xd://report_issue，workaround＝rm 后重建，done 只用单数 task）；②glob 200 条结果上限会藏住根级 package.json/anim-lint.mjs，根目录发现用 ls/find；③print/fonts/ 在 mcu-book/print/ 下而非 mcu-book/fonts/（glob 缩进层级易误读）
+
+### 追记：跨模型 advisory 批量复核（同日，A 批收尾后）
+
+- 11 条迟到回执逐条对照，9 条系已闭环事项的重复通知（SimSun 归因链/子集九条配方含 Cascadia 轴向钉死/断言章前缀实测/glob 截断改 ls/todo items[] bug 已上报），无增量动作
+- 1 条现场验证：重绘是否保留 `role="img"`+`aria-label`（art_guard 不查、a11y-check 只管 `<img alt>`，grep 是唯一判据）——10/10 双属性在位，aria-label 语义完整非空壳（如 stm32-17「喂狗循环箭头围着小狗和骨头转；若迟到时钟走过点…」），读屏输出无回归
+- 1 条采纳为后续实践：视觉核验提问避免逐项念出预期画面（模型顺向确认偏差）；波 1 CNT×闪电 4px 险撞系提示式提问下仍命中的实例，下次题花批至少一枚改零提示提问
+
+## Session 24: 批 4 文字槽位缩编落地（S11/S12 两章精准手术，五章 no-op）
+
+### What Happened
+
+- B0 盘点+advisory 复核推翻原案七章插花：五王已湿（S13 直性子/顶出/三道防呆、S14 押注回扣书挡 14 条、S15 单向门、S16 法医体系、S17 反例自带「狗永远不叫」落点），全批插花=增重不增趣。终版缩编：主刀 S11 L205–280（总线卡死恢复+DMA，七章唯一整段干区）+副刀 S12 L188–204（分频+DMA 节）；S13–S17 no-op。快照 `.temp/b4-orig/`
+- S11 四拍（17891→18386 字节，+1.0%）：①总线卡死开篇茶话会拍（主持人中场晕倒、客人半字悬嘴边）②九脉冲拍 ③DMA 拍（主人亲自递话 vs 帮手端整盘字节按节拍往 DR 放）④TC 括注（帮手放空盘子≠最后一个字已出口）。S12 一拍（18981 字节 +0.2%）：移位环=全场最不用盯的员工，时钟一响必然换位，递料交 DMA
+- prose_guard compare 抓到真问题：S11 首稿合并句掉事实 token `9个`×1（原句「9 个时钟」「9 个脉冲」两处，改写只留前者）→ 原句 verbatim 保留+比喻句追加其后，复绿。fact_tokens 多重集全等判据有效防 token 漂移
+- 工具坑：edit 的 `PUT 208.<:` 语法无效（正确 `PUT <208:`），流式预览失败连带中止同批并行 edit；同文件插入行与上一段间需手动补空行否则粘连成段
+
+### Testing
+
+- prose_guard --single：S11 ——散文 2/2、S12 1/2，一句话/记住 散文 0 ✓；compare ×2 不可动清单全部一致 ✓
+- 字符域：新增字（S11 专于倒刚嘴客宣布帮悬敲晕杯然爬盘端补请递 / S12 响盯递）全 ⊆ serif cmap NONE missing → 子集无需重跑
+- docs:check 137 md ✓ / docs:build 33.21s ✓ / pytest 72 passed
+- build_print+check_pdf：1171 页、185.3×260.3mm、印前 13 门「全部通过」、体量 ×1.05
+
+### Status
+
+[OK] **Completed**（B 批 4 缩编全绿闭环；快照 `.temp/b4-orig/` 保留勿清）
+
+### Next Steps
+
+- 10-27-book-interest-polish 任务收口候选：批 1–4 全闭环，等用户验收后可归档
+- 教训：todo `done` 按注册文本匹配——门序随缩编收窄不改 todo 挂名文案，按原文案勾毕
+
+## Session 25: 批 5 文字槽位落地（E 篇 esp32 13 章押注/回扣闭环）
+
+### What Happened
+
+- C0 干区定位：书级散文抛光剩余 E/G/F/R/lab 五片；按 Session 21 排队批 5 = E 篇。E 篇 14 章中仅 02-gpio-matrix 已有押注/回扣书挡（押结果/开场锚），其余 13 章（00/01/03–13）全 0/0 → 整篇槽位闭环。基线快照 `.temp/ebatch-orig/`
+- 13 章 × 2 拍：押注落「先跑起来」quick win 段后（00 无该节、落「第一步」节头后），回扣落「你做到了」清单后 `<div class="achievement">` 前。押注框架 13 式全新互不重复（押出身/押一棒/押方向/认内鬼/押一层/押分家人/押闲差/押趟车大站/押没省掉的/押一笔/押份遗产/押数量级/押盲区），避开 S 篇 9 式与 02「押结果」；回扣起句 13 式零重复（出身揭晓/你押的那一棒/方向押完翻底牌/内鬼就是/字节睡在/分家人是/闲差押中了/大站点完名/没省掉的是/断电判分的结果/遗产清点/带宽对完账/不叫的原因）
+- 判分锚点全部取自各章 quick win 可观测量：rst:0x1 ROM 第一棒、sdkconfig/sdkconfig.h 双形态、helper 半截链、ring buffer 中层、DC 分家人、硬件 fade 闲差、六状态大站、add_peer 登记、NVS 断电计数、RTC 遗产、精髓带宽算式、TWDT 出勤≠产出
+- 零阿拉伯数字（防 fact_tokens 多重集漂移）+ 零破折号 + 零行内代码三条纪律。compare 首跑抓到 08/09 插入散文带反引号（行内代码 41→43 / 64→65 段违规）→ 去反引号改裸词（init/add_peer）复绿；事实 token 13 章零漂移。净增 +1.2%～+5.4%/章，均 ≪12%
+- 字符域：6 字全书首见（乖勤卒谜跪鬼＝乖乖/出勤/小卒/猜谜/第一个跪/内鬼）出 serif cmap → 按 provenance 九支完整口径重跑 subset_fonts.py（2153→2159）。工具坑两枚：①CLI 静态字体轴向须留空 `Family|source||output`，provenance 记录的 "static" 是输出格式不是输入格式；②脚本 docstring 示例只列 2 支 serif，全量口径以 provenance.json 的 fonts/charsFrom 为准（部分重跑会因 emoji/符号并集缺字退码 1）
+
+### Testing
+
+- prose_guard --single ×13：——散文 0–2/2、一句话/记住 散文 0，全部预算内 ✓；compare ×13（vs `.temp/ebatch-orig/`）不可动清单全部一致 ✓（08/09 行内代码修复后复跑）
+- subset 九支重跑：2159 字、乖勤卒谜跪鬼 union NONE missing、provenance.json 已登记
+- docs:check 137 md / 331ms ✓；docs:build 39.48s ✓；pytest 72 passed（28.76s）
+- build_print+check_pdf：1173 页（+2 回流）、185.3×260.3mm、5 支可嵌入轮廓字体、印前 13 门「全部通过」、体量 ×1.05（509s）
+
+### Status
+
+[OK] **Completed**（E 批 5 全绿闭环；快照 `.temp/ebatch-orig/` 保留勿清）
+
+### Next Steps
+
+- 批 6 候选（Session 21 排队）：rtos 两支（F 篇 freertos / R 篇 rtthread）→ G 篇 gd32 → lab；等用户验收 E 批后推进
+- 10-27-book-interest-polish 批 1–5 全闭环，归档与否待用户拍板
+
+### 评审轮追记（外部模型反馈处置）
+
+- 采纳修复 ×2：01/04 押注拍原落点横在冒号引导句与其表格/console 之间（「这是本章最实用的调试入口：」「下面是本机实测：」）→ 纯移位至冒号段之前（01 押注 L43→L41、04 L47→L45），文本零改动；双章 --single + compare 复跑绿（零 token 漂移、不可动清单一致）
+- 采纳认知：prose_guard 有 `--additions`（compare_additive，tools/prose_guard.py:180/226）＝纯插入轮专用门，只拒原文全文未见的新 fact token、允许复用章内数字与新增行内代码；本批已按更严的 compare 多重集全等收官不回改，批 6 起纯插入轮应改用之
+- 拒绝 ×1：「恢复 10/12/13 被剥数字」——16MB（10 你做到了 bullet）、500ms+2000ms（13 bullet）就在回扣上方一行，12 算式由押注指向精髓行，写回＝与相邻 bullet 冗余，且须把已全绿的严格门降级为 additions 门
+- 后验 ×2：全书押注框架 grep 清单（B/C/S 篇各 7 式 vs 本批 13 式）零碰撞；「那一口/回到开场」回扣起句在 13 章零命中（既有 11 处全在 C 篇×8、esp32/02、gd32/01、stm32/10）
+- 过期 ×4：subset 九支全量口径（已按此执行且全绿）；批 5=E 篇结构槽位方案（与实际一致）；fat_scan 密度 pass；docs/rtos 21 md 递归计数——后两条记为批 6 候选研判依据
+- 移位后重建 docs:check/build + build_print/check_pdf，保持源与产物一致
+
+## Session 26: 批 6 文字槽位落地（rtos 两支 16 章押注/回扣闭环）
+
+### What Happened
+
+- C0 盘点：rtos 两支 17 章中 F03-scheduler 已有嵌入式书挡（押下一次亮灯属于谁 + 回到那帧被冻结的 tick）跳过，16 章 × 2 拍 = 32 处；基线快照 `.temp/rtos-orig/`（17 文件 4540 行）
+- 事实核验先行：F01 首行日志=high（main.c 先建 low 后 high、vTaskStartScheduler 才启动）；F00/F05/F07 剧透规避三案（F00 押注前移至首个 c 块栅栏后、F05 弃押真凶改押解药机制、F07 弃押邻居改押空闲链表合并接头）；R 篇押注主打双 OS 对照角（嫁妆/平线/翻译官/名册/落点/乡音）与 F 篇单内核观察角区分
+- 押注 16 式全新（死活/头一行/响不响/睡法/解药/首付/接头/房东/辈分/嫁妆/骨架数/平不平/翻译官/名册/落点/乡音）+ 回扣起句 16 式零重复；全部锚定 quick win 可观测量、判分依托本章精髓、零新事实
+- C2 抓到 F00/F02「一句话」散文口癖 3 处——orig 快照同样失败证实为原文本既有（非本批引入），按全书口癖纪律保义改写：一句话判据→判据只有一条、配置文档里的一句话→只写在配置文档里、核心动作一句话→核心动作只有一步；行内代码/链接/加粗逐字保留，--additions 复跑绿
+- 字符域：4 新字（乡炮羊衔）九支首见 → 按 provenance 完整口径重跑 subset_fonts.py（2159→2163）
+- 工具坑：自写字符检查首版 int/str 类型错配假报 1299 字全缺（t.cmap 键是 int，与 str 字符集合相减恒空）——改 ord() 码点比较后真相为 4 字真缺；教训：对账脚本先小样本对拍再信结果
+
+### Testing
+
+- prose_guard --single ×16 预算内（——散文 0–2/2、一句话/记住 散文 0）+ --additions ×16 vs `.temp/rtos-orig/` 不可动清单一致 ✓；净增 +0.8%～+2.5%/章 ≪12%
+- 框架后验：32 短语全书唯一（F05 实际句式「解药先押下」），F03 既有书挡保持 1 不受扰
+- subset 九支重跑：2163 字、union 2273→2277、乡炮羊衔 missing NONE、provenance.json 已登记
+- docs:check 137 md/315ms ✓；docs:build 39.85s ✓；pytest 72 passed（31.15s）
+- build_print：1173 页、185.3×260.3mm、5 支可嵌入轮廓字体、大纲 802 条；check_pdf 印前 13 门「全部通过」、体量 源文 849,411 / PDF 894,002 字（×1.05）
+
+### Status
+
+[OK] **Completed**（批 6 rtos 16 章全绿闭环；快照 `.temp/rtos-orig/` 保留勿清）
+
+### Next Steps
+
+- 批 7 候选（Session 21 排队）：G 篇 gd32 → lab；等用户验收批 6 后推进
+- 10-27-book-interest-polish 批 1–6 全闭环，归档与否待用户拍板
+
+## Session 27: 批 7 三面改进闭环（G 篇文字修复 + 题花全量验证 + 动画审计修复）
+
+### What Happened
+
+- 文字：G 篇 9 章 --additions 复核抓 2 处事实值违规——G00 版本号「15.2.1」（印前不可核验的浮值）删除改「行李是零」工具链复用叙述、G06「各最多 16 级」（NVIC 记忆惯性串到 CLIC）删除改 level/priority 两维拆解 + 0x5FA 钥匙句；两章 compare_additive 复跑「不可动清单：全部一致」
+- 插图：题花线收口——100 枚 chapter-art 全量 art_guard（御舆模式）0 违规；AI 三张（00/01/02）生产件确认已含评审终态（02 的双向箭头分左右两段+中间镜片对勾、「实测」为板内丝印），art_check 标签缺字 NONE；rbatch 10 枚重建后 PDF 断言 10/10 PASS
+- 动画：按规范跑提交前必查 `--font-scale 1.10`（CI Linux 字体模拟）抓到 struct-alignment ④ 页脚行出界（x=36 起本地宽 ~650，×1.1 右缘 751>720）——删冗余从句「；位域只在工具链固定时用」（阶段面板正文 L89 已有同义句「工具链不固定就别拿它罩硬件」），纯删字符零新字；基线 + 1.10 复跑双绿
+- --dots 34 张压字明细逐项判级（审计明言不计失败）：gpio-config 绿灌色/值格子均画在字后（desc 明言设计意图）、rtt-finsh-dispatch 终端块光标压命令行（有意光标画法）、esp32-driver-layers 飞行块 z 序修复注释在案（字画块后）——均非缺陷；esp32-ota-rollback 投票区 10×6px×2 时刻擦边不足半字，记录跳过
+- 工具坑：todo 工具 done op 误标（传单项却标 5 项、随后 start 报 Missing task content）已上报 xd://report_issue，init 重建后续用
+
+### Testing
+
+- G 篇：--single 9/9 预算内、--additions 9/9 vs `.temp/gbatch-orig/` 不可动清单一致、18 押注/回扣短语全书唯一、新字符 ⊆ 2277 并集（本批纯删零新字）
+- 动画：anim:lint 109 ✓、anim:audit 基线 109 ✓、--font-scale 1.10 109 ✓（修复前 1 张失败）
+- 全量：docs:check 137 md ✓、docs:gen 86/86 章 + 109 动画、docs:build 44.74s ✓、pytest 72 passed（35.63s）
+- 印前：book:pdf 1173 页 185.3×260.3mm、5 支可嵌入轮廓字体、大纲 802 条（478.5s）；check_pdf 印前 13 门「全部通过」；体量 源文 850,999 / PDF 895,461 字（×1.05）
+- art_pdf_assert_rbatch：10/10 PASS（S6/C7/B3/B2/P0/V3/F6/F7/S17/E01，标签字号 5.9–6.8pt 在 5.0–8.6pt 带内）
+
+### Status
+
+[OK] **Completed**（批 7 G 篇 + 插图 + 动画三面全绿闭环；`.temp/gbatch-orig/` 与 `.temp/rbatch-orig/` 保留勿清）
+
+### Next Steps
+
+- 批 7 三栏汇报用户验收；后续候选 G 篇 → lab 线（Session 21 排队）
+- 10-27-book-interest-polish 批 1–7 全闭环，归档与否待用户拍板
+
+## Session 28: 押注泄题修复轮（advisory 审计 + 5 章押注/回扣重写）
+
+### What Happened
+
+- 外部 advisory 疑点：G 篇章头押注（预测问句）被紧邻脚手架（结构表行/动画标题/引导段）直接作答 = 泄题。逐章判级 9 章：G00（表行一「编译旗逐字相同」作答行李问）、G03（表行一/二「0 起编号」「CTL0/1/2」逐字作答）、G05（表行三/四「没有 CPACR」「没有硬件两读」断言半问）、G06（动画节 ECLIC 两维 + 表行二「16 level + 16 priority」作答拆维问）、G07（动画节泄露 4MHz/绕 PLL1/×27/108M 路线数）→ 5 处坐实必修
+- 拒修/保留判定：G08 advisory 证据不成立；G02（动画标题「AF 复用的 16 选 1 选择器」）、G09（「RISC-V 点灯闭环」）中性不泄；G04 表行「TRNG 等独有」泄枚举半问但「等」留活口、SDIO 分频器半问未泄 → 保留不修（半修比多修更差的反向同理：全修同类坐实项，误报不凑数）
+- 修复策略：表格属不可动清单（--additions 保护）→ 只改押注散文不改表；泄题判据 = 断言直接答案，只列主题（「中断号地图｜总线归属」式）不算。每章换到未泄半问，且 qw 前文同步复查（G00 qw L38「同一组编译旗」只答旧注不碰新注）
+- 5 组新押注/回扣（bet 换问 + 回扣同步换「对答案」锚）：G00 开箱单（三件套谁管向量表/谁拉 200MHz/谁划地盘）↔ 开箱对上；G03 排门牌（8 对 6 独有三名字、八路总线归属）↔ 门牌对上（USART5/UART6/UART7，USART0 与 USART5 挂 APB2 其余 APB1）；G05 工序单（搬 .data/清 .bss/调 SystemInit/进 main 的指令拼写）↔ 工序单对上（ldr/str → la/lw/sw）；G06 两扇门（shv 置 1/置 0 各进哪扇、0x5FA 认不认）↔ 两扇门对答案（硬件直跳/公共入口 mcause 分发/钥匙不认）；G07 算盘（25 的什么性质卡死直分、绕 PLL1 每步凑哪个数）↔ 算盘对上（25 是 5 的倍数 4 不是，÷ PREDV1_DIV5、×8、再 ÷ PREDV0_DIV10）
+- 审计中抓到 G07 表行一「0x04 陷阱与消失的 PLL 寄存器」会泄候选押注（0x04 偏移住户/四位域）→ 弃 0x04/PLL 半问换 25-性质问；新 fact token 逐词核基线计数（USART6 在 G03 原文 0 次 → 全文不出现；裸 40/10 不安全 → 用 ÷ PREDV1_DIV5 原形）；唯一域外字符「岔」→ 改「两扇门」
+
+### Testing
+
+- 泄题复查（本轮验收核心）：5 章新押注 vs 全部前置脚手架（qw/动画节/结构表）逐行核对——G00 表行三只列三件套名单不派分工、G03 表行三只标「总线归属」主题、G05 表行二只承诺对照表、G06 行二「向量/非向量」行五「shv 模式」均主题级、G07 表行三只承诺「推导」不给 5 的倍数论证；0x5FA/三个独有名/门派分配/5 的倍数在全部脚手架零断言
+- prose：--single 5/5 预算内（——散文 ≤2、一句话/记住 0）、--additions 5/5 vs `.temp/gbatch-orig/`「不可动清单：全部一致」+ 事实 token ⊆ 章原文
+- 唯一性与字符域：10 新短语（开箱单/排门牌/工序单/两扇门/算盘 + 五个「对上」起句）全书各 1 次；G 篇九式开场互不重复；5 文件全文字符 ⊆ 2277 并集
+- 全链：docs:check 137 md ✓、docs:gen 86/86 + 109 动画 + 47 工程、docs:build 42.70s、pytest 72 passed
+- 印前：book:pdf 1173 页 185.3×260.3mm、5 支可嵌入轮廓字体、大纲 802 条（450.8s）；check_pdf 印前 13 门「全部通过」；体量 源文 851,390 / PDF 896,024 字（×1.05）
+- art_pdf_assert_rbatch：10/10 PASS（TOC 动态定位章首页，页移免疫；实测页码未动，S6 p281…E01 p933 原位）
+
+### Status
+
+[OK] **Completed**（5 章押注泄题修复全绿闭环；G01/G02/G04/G08/G09 未动；快照 `.temp/gbatch-orig/`、`.temp/rbatch-orig/` 保留勿清）
+
+### Next Steps
+
+- 连同批 7 一并汇报用户验收；归档 vs 批 8（G 篇 → lab 线）待拍板
+
+## Session 29: 批 8 E 篇「先猜」装置落地（lab 线 8 章 + 预存违规修复）
+
+### What Happened
+
+- 审计：E 篇 8 章章头引语/收尾段已生动（E04 火星探路者剧本、E06 偷电贼算账在），表格功能性强；缺口是 8 章零「先猜」预测时刻。S4（nvic-exti L42「敲回车之前，先猜一把…丢了直觉才丢分」）与 P2（gpio-matrix L92）已有单点惯例，E 篇应复用此心理装置而非发明新体系
+- 设计：每章「原理一句话」节尾加一段押注（约 50 字），问句全部瞄准**留在读者板子上的答案**（数量级/误差/听感/两 OS 谁离理论近），预期现象/理论时间线/步骤只给定性或理论值——泄题在结构上不可能，无需逐章回扣段；答案锚即各章「实测记录」表。index.md 使用规则补第 2 条信条「上板前先猜一把」引用 S4 收句作全系列座右铭
+- 8 组起句各异（改参数前先猜/抓包前先估/上探头前先猜/烧录前先押一注/换挡前先猜/上电前先押一记/动手前先猜/开播前先押耳朵），答案落点各异（秒表/光标/探头读数/串口日志/波形/万用表/串口/喇叭）
+- 抓到并修复 e04 预存口癖违规：思考题 2「查资料补一句话」触发「一句话·散文 1 处 > 预算 0」（快照复跑坐实为存量、非本批引入），改「查资料补一行」
+- 字符域预检抓到「咔哒」域外（2277 并集）→ E08 弃拟声词改「周期性的还是随机的」；token 预检：25%/6000/2500/10kΩ/1kΩ/1g 全部在章原文（1g 靠 L47 image alt）
+
+### Testing
+
+- 泄题复查：8 注 vs 各章章头引语/预期现象/步骤逐条核对——E01 无倍率、E02 无帧宽、E03 明文不预填误差、E04 理论值≠实测值+OS 对比未断言、E05 无陡度比、E06 只说「明显下降」、E07 预期现象只覆盖加速度计、E08 明文不宣称缓冲临界值 → 全部留给板子
+- prose：--single 9/9（e04 修复后）；--additions 9/9 vs `.temp/ebatch-orig/`「不可动清单：全部一致」+ 事实 token 合规
+- 唯一性与字符域：9 新起句 grep 全书各恰 1 次；9 文件全文字符 ⊆ 2277 并集
+- 全链：docs:check 137 md ✓、docs:gen 86/86+109+47、docs:build 44.24s、pytest 72 passed
+- 印前：book:pdf 1173 页 185.3×260.3mm、5 支可嵌入轮廓字体（454.4s）；check_pdf 印前 13 门「全部通过」；体量 源文 851,787 / PDF 896,305 字（×1.05）；art_pdf_assert_rbatch 10/10 PASS（E01 p933 原位，E 篇增量吸收在页余量内）
+
+### Status
+
+[OK] **Completed**（批 8 E 篇先猜装置全绿闭环；`.temp/gbatch-orig/`、`.temp/rbatch-orig/` 保留勿清；`.temp/ebatch-orig/` 为本批基线，内含早前会话的 esp32 件勿动）
+
+### Next Steps
+
+- 批 8 汇报用户验收；10-27-book-interest-polish 批 1–8 闭环，归档与否待拍板
+
+### 修复轮追记（同 session，advisory 复审触发）
+
+- 外部审计抓到真缺陷：8 条押注与原理句之间漏空行，Markdown 懒延续会并成一段，与 G 篇「押注独立成段」惯例不一致 → 8 章各补 1 个空行
+- 验证途中踩检查器 bug：段落判据 `endswith('</p>')` 的 40 字符回看窗口把押注自身的开标签 `<p>` 也吞进去，对一切独立段恒 False；bg_78 repr 定案分隔符实为 `</p>\r\n<p>`（text 模式读取归一成 \n 后修正判据 `("</p>\n<p>"+b) in html` 即过）——中途两次 ✗ 均为假阴性，磁盘内容早已正确；「陈旧落盘/僵尸管线」假设均被 mtime 与 md5 证伪
+- 终验：print HTML 8/8 独立段；站点 HTML（docs/.vitepress/dist/lab/，此前误判为「无 lab 页」——只搜了 mcu-book/dist/，advisory 指正后补验）8/8 独立段；PDF 文本块层 8/8 独立块（p934/939/944/948/955/961/965/969，前块尾均为原理句收束）；prose --single/--additions 8/8 复跑；docs:check 137、docs:gen 86+109+47、docs:build 34.1s、pytest 72 passed；book:pdf 1173 页（518.9s）；印前 13 门全部通过（PDF 896,448 字 ×1.05）；art_pdf_assert_rbatch 10/10 exit=0（E01 p933 原位）
+- advisory 其余两条核销：docs-check.mjs 实在仓库根 scripts/（npm 从 mcu-book 跑解析无碍）；E 篇 integrity 复核 8 注零未实测断言（6000/2500 明标「理论账」、25% 引步骤 2 手算值）——无需改动
+
+## Session 30: 批 9 S 篇后半「先猜」装置落地（stm32 11–17 七章）
+
+### What Happened
+
+- 审计升级：批 8 后用户令「继续找下一面」。装置覆盖盘点发现此前的 grep pattern 漏检多种形态——单字「押|先猜|赌一把」漏「押个数」（S02）与「下注」（S10 L29 已有）；扩到「预测|遮住」又发现 B07 L27「先预测再执行」、G01 L25「先遮住下文结论…算完再往下读」也已有装置。真缺口收敛为 S 篇后半 7 章：11-i2c / 12-spi / 13-flash-iap / 14-pwr / 15-spl-anatomy / 16-debug-hardfault / 17-watchdog-reset
+- 全书覆盖图景（正文成稿章，剔 index/报告/模板）：C 9/9、P 14/14、F 17/17、B 7/8→8/8（B07 误判修正）、G 9/10→10/10（G01 误判修正）、S 9/17→16/17（S00-env 环境章除外全满）。剩 ai 5、projects 2、rtos compare 2、S00 留批 10 候选
+- 设计（S 篇「押定再读」型，答案留在章节后文）：每章 quick win 节末加独立押注段，半问瞄准该章最有反直觉张力的事实，全部避开章头精髓/板卡事实/动画节此前已断言的角度——S11 页边界绕回、S12 移位环收发同拍、S13 先解锁先擦除、S14 Standby 后主/备份 SRAM 谁记得、S15 库 vs 手写体积、S16 addr2line 报行是真凶还是邻居、S17 WWDG 喂早同样复位
+- 起句家族扩容 7 个新 lead（落点后改归宿/交换/顺序/失忆/体积/真凶/喂养），与既有 40+「押个X」成员全书唯一
+
+### Testing
+
+- 预检抓两起撞车：「先押个落点」已存在于 R6 L38 → S11 改「先押个归宿」；字符域「熬」「勤」不在 2260 字子集 → S14 改「撑过长夜」、S17 改「越频繁越稳」
+- prose：--single 7/7、--additions vs `.temp/ibatch-orig/`（本批基线）7/7「不可动清单：全部一致」；7 注零裸数字、fact token ⊆ 章原文、口癖零
+- 四层独立段：md 层空行隔离 7/7；站点 HTML（docs/.vitepress/dist/stm32/）7/7；print HTML（`("</p>\n<p>"+bet)` 判据）7/7；PDF 文本块 7/7（p345/358/372/385/405/417/434 均以押注句起头）
+- 全链：docs:check 137 ✓、docs:build 39.4s（含 gen）、pytest 72 passed；book:pdf 1173 页 469s、5 支可嵌入轮廓字体；check_pdf 印前 13 门全部通过（源文 852,369 / PDF 897,245 字 ×1.05）；art_pdf_assert_rbatch 10/10 exit=0（S17 p433 题花原位）
+
+### Status
+
+[OK] **Completed**（批 9 S 篇后半 7 章先猜装置全绿闭环；`.temp/ibatch-orig/` 为本批基线保留勿清）
+
+### Next Steps
+
+- 批 9 汇报用户验收；批 10 候选：ai 5 章、projects 2 章、rtos compare 2 章、S00-env；装置形态盘点法（多 pattern 防漏检）已沉淀本 session
+
+
+## Session 31: B站合集搬运 18 条 + 抖音台账收口（10-16 解锁后续）
+
+### What Happened
+
+- 用户令「继续上传抖音b站建合集」。先跑 bili-health 归属表：18 条视频系列已全部在「STM32」合集（9411799/小节 10536952，第 46–67/67 位，10-25 前后另一条线挂入）——10-16 PRD 的前提（站内无归属）已过时。新建空合集「通往单片机之路」9435811（小节 10566117，封面/简介已挂）后向用户拍板，用户选「搬进新合集」（与抖音 mix、小红书合集同名同口径；STM32 回归纯章节品，其简介本就写「几十秒短讲不收在这里」）
+- 契约踩坑三连（均有独立证据）：① episodes/add body 必须 camelCase（sectionId + episodes[{aid,cid,title,charging_pay}]，csrf 走 query）——snake_case 会被静默忽略仍返回 code=0（biliup season.rs / DanmakuRender / hnucjx technical.md 三源一致）；② 稿件已属他季时 add 返回 code=20080 拒绝 → 不支持直搬，必须先 del 再 add；③ del 走 form id=<episode_id>&csrf，episode_id 是小节条目 id 非 aid，从 GET season/section?id= 的 episodes[].id 拿。bili-API-collect 仓库 2026-01 因律师函清空，契约只能靠生产实现源码
+- 执行：c3-volatile 单条试点（del→add→member 端验证）通过后批量 17 条（逐条 del + 一次 add 保序）。批量后校验全挂经查是校验脚本自身 off-by-one（c3 试点占 l2[0]，17 条应从 l2[1] 起对位），非服务端伪象——权威端复读顺序严格系列顺序（episode_id 230360723→230360837 递增），脚本已修正；s5 抖音评论与计划源全文 diff 仅「49 天 vs 49.7 天」一处（224/226 字），台账按实措辞不写「逐字一致」
+- 抖音收口：s5 评论核实已发（cid=7698991097133728562 at=2026-10-21T05:42Z stick_position=0），补登台账；f5+s5 并入待置顶清单（现 19 条全部未置顶，置顶只能 App 长按）
+
+### Testing
+
+- member 端：新小节 10566117 恰 18 条顺序=series.json；旧小节 10536952 剩 49
+- 公共端（PRD 验收门 bili-health.mjs）：18/18 逐条回显「通往单片机之路 第k/18条」k=1..18 顺序正确；view.ugc_season 是公共缓存，写后验收必须用 member 端 season/section，公共端只作最终传播确认
+- video/publish/bili-collection.mjs join 子命令已修为 camelCase 契约并注释防再踩
+
+### Status
+
+[OK] **Completed**（10-16-bili-season-after-unlock 验收闭环：合集建成+18 条挂载+逐条回显；抖音 19 条台账/评论全核清，仅剩 App 手工置顶）
+
+### Next Steps
+
+- 用户 App 手工置顶 19 条（清单 .temp/douyin-run/待置顶清单.md）
+- ai4fw 视频（10-28 任务）未渲染未发布，不在本轮范围
+
+
+## Session 32: 批 10 收口（rtos compare 2 + S00-env 押注）+ 印前终验
+
+### What Happened
+
+- 批 10 补齐最后 3 章「先押再读」装置：rtos/compare/00-side-by-side（对表之前先押个左右舵）、compare/01-choose（走树之前先押个站位）、stm32/00-env（动手之前先押个分工）。AI 5 章与 projects 2 章经审计已有装置，不动。
+- 三注均为独立段、零阿拉伯数字、零反引号、零「——」；新字符全部落在书稿字符并集内（「岔」不在域，01-choose 改「顺着树往下走」）；起句全书唯一（避开既有「先押个方向」「先押个落点」「押个数」「下注」家族）。
+- 手法：延续「半问 + 答案在后文」——compare 两章分别押「优先级方向换不换边」与「四样全占的树落点」，S00 押「谁翻译、谁送进芯片」，答案分别在总览对照表、场景树与记忆锚点节。
+
+### Testing
+
+- prose：--single 3/3 预算内（破折号 ≤2、一句话 0、记住 0）；--additions vs `.temp/jbatch-orig/` 3/3「不可动清单：全部一致」且无新增 fact token。
+- 站点链：docs:check 137 md ✓、pytest 72 passed、reading:check 78 章 ✓、docs:build 43.80s ✓；站点 HTML 三注均独立 <p>。
+- 印前链（本轮重建）：book:pdf 1174 页（paged 267.5s，源文 853,183 / PDF 897,973 字 ×1.05）；寡行守卫检查 326 断点回移 43（整块 5）；check_pdf 13 门全部通过；art_pdf_assert_rbatch 10/10 PASS。
+- PDF 文本块层：PyMuPDF 定位三注 3/3 独立块（p211 / p642 / p649，均为正文段落块，非并入上下段）。
+
+### Status
+
+[OK] **Completed**（10-27-book-interest-polish 批 1–10 全部闭环；`.temp/jbatch-orig/` 为本批基线保留）
+
+### Next Steps
+
+- 用户验收批 10；任务归档待拍板。
+- 视频侧转入 10-22-video-v2-remaster Wave C（s14/s16/s2/s4/s7），首集 s2-rcc。
+
+
+## Session 33: Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验
+
+**Date**: 2026-11-05
+**Task**: Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+完成推荐 A 卡片布局、30 张正式素材、同源导读与过期门、锚点误报修复及 13 页 PPT 复验；质量门通过，按确认计划提交并归档，既有工作区修改保留。
+
+### Main Changes
+
+### Changes
+
+- 正式化 29 张竖版金句卡与 1 张横版封面：源码/共享 CSS/渲染与检查命令归入 scripts/social-cards，正式 PNG/摘要/联系表放 video/assets/social-cards/book；主句与小注保持接收基线，内容组间距 36px，横版封面字节不变。
+- 精排导读从 docs/reference/book.md 同源生成，接入站点书籍入口；源文/生成器/HTML 摘要由 docs:build 前置检查。修复 VitePress 对独立 HTML 的路由拦截、hero 标题配色继承与旧附录笔误。
+- pages-check 屏蔽 script/style 里的伪 href，保留真实错误行号；新增回归测试。传播资产可执行契约与复盘已落 .trellis/spec/docs-site/presentation-assets.md。
+- 旧 PPT 13 页复验通过，含观众屏同步/宫格/备注/计时/遮屏/重连/排练/标注/自动翻页；2 条既有版式警告保留解释。
+
+### Validation
+
+- npm run quality 全绿：122 项单元测试、47 工程、111 动画、138 Markdown、132 构建页、2616 锚点链接、2116 可检索标题。
+- Python 72 passed；导读 390px/1440px 两项浏览器回归通过；29 卡文字/来源/边界/间距与 30 图摘要/尺寸通过。
+- 本轮提交不改变被验收的代码或素材字节，未重复跑整本 PDF。
+
+### Completion
+
+- 用户回复「继续下一步」确认提交计划，三项 work commit：afd543f、08d0c3c、696c194。
+- 任务已归档至 .trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout（归档提交 eae36b1）。
+- 旧任务 13 张 PNG、未跟踪 PPT、旧 spec 与联系表混合修改保持工作区，未并入本轮提交；未推送远端。
+- 用户审美终验、平台投稿、guizang-voice 旧文样本仍独立延期。其他 Trellis 任务未作状态变更。
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `afd543f` | (see git log) |
+| `08d0c3c` | (see git log) |
+| `696c194` | (see git log) |
+
+### Testing
+
+- 已完成 quality（122 项单元测试）、72 项 Python 测试、2 项导读浏览器回归、30 图资产与 PPT 全链路验证，详见本节 Validation 与归档任务 research/verification.md。
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 34: ai4fw 视频号发布
+
+**Date**: 2026-11-05
+**Task**: ai4fw 视频号发布
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+视频号 ai4fw 已发表；短标题空格修正、声明原创弹窗确认、视频 ID 与台账落盘；小红书账号异常，用户指示停止上传/评论，置顶评论未发送且不再重试。
+
+### Main Changes
+
+- 视频号 ai4fw 发表完成：`wx.mp4` 上传，描述/短标题/封面/位置/标注/声明原创按用户确认落表；列表状态「原创审核中」，视频 ID `export/UzFfBgAAxLiJNGsvWCOPk8zT4DCaHweWiuhuxnNDBuHhb1nJ_g`。
+- 新增 `.temp/ai4fw-wx.mjs`：隐藏 file input 直塞、`insertText` 描述、浮层 Esc、标注读 `.select-display`、封面直塞隐藏 image input、`--go` + `.temp/wx-run/I_HAVE_USER_OK=ai4fw` 闸门、发表后台账。
+- 修正 `video/publish/copy-ai4fw.md`：短标题中文逗号被平台判特殊字符，改为空格；声明原创需在「原创权益」弹窗勾协议再点「声明原创」。
+- 任务 `10-28-social-video-ai-tools` notes 记录发表状态与小红书账号异常停止指令；台账 `wx-ledger.jsonl` / `ai4fw-published.txt` / `wx-posted.txt` 已写。
+
+### Validation
+
+- `node .temp/ai4fw-wx.mjs --resume` 三次：描述/短标题/位置/标注/封面/声明原创全部读回，短标题无红字校验错误。
+- `node .temp/ai4fw-wx.mjs --go --resume` 退出 0，点发表后跳转 `post/list`。
+- 列表页第一张 ai4fw 卡片：369 描述、原创审核中、2026-11-05 20:59；视频 ID 由「复制视频ID」读回。
+- 封面预览截图为 `douyin-cover.png` 的 369 画面；位置=不显示位置、合集未选、链接未选、活动不参与、不定时、标注=无需标注。
+
+### Completion
+
+- 四平台发布链：B站、抖音、小红书早前已发；视频号本轮已发。
+- 小红书账号异常，用户 2026-11-05 指示停止上传/评论；置顶评论只填了 264 字未发送，已删除 ai4fw 的 xhs 发布/评论闸门，不再重试。视频号原创审核状态需稍后复查；本轮记录随任务提交，未推送 git。
+
+### Next Steps
+
+- 稍后刷新视频号列表，确认原创审核状态。
+- 小红书不再执行上传/评论/合集/编辑动作；保留已发布内容，不删除/不改。

@@ -13,7 +13,7 @@
 //   node scripts/anim-audit.mjs --dir docs/public/images/labs  # 审静态示意图目录（同一套出界/压字规则）
 //
 // 为什么需要 --font-scale：图里写的是 'Segoe UI','Microsoft YaHei' 字栈，Windows 本地用雅黑，
-// CI 的 ubuntu-latest 上没有雅黑，Chromium 退回 Noto Sans CJK——同一串中文宽约 5~8%。
+// CI 的 ubuntu-24.04 上没有雅黑，Chromium 退回 Noto Sans CJK——同一串中文宽约 5~8%。
 // 于是"本地全绿、CI 报 8 张出界"成了常态，且本地无从复现。这个开关按倍率放大文字的墨水盒
 // （宽度绕水平中心、竖向绕基线），把 CI 的字体度量搬到本地来。
 import { readdirSync, readFileSync } from 'node:fs'

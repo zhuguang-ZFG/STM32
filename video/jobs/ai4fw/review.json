@@ -1,0 +1,37 @@
+{
+ "video_sha256": "fb6362e13bc06b963d016e8bf65d3a40eb97e9567a740c91be16e2351340c7d8",
+ "content": {
+  "status": "pass",
+  "evidence": "旁白八拍与画面一一对应：钩子页 369 大字、四模块卡（lemo 格架墙/huashu-art 调色盘卡/huashu-motion 记谱帧/sweety 豆人）、选型四行表、CTA 清单+计数器；抽帧 5/8/25/37/46/55/61/63s 全部与脚本一致"
+ },
+ "visual": {
+  "status": "pass",
+  "evidence": "10 处抽帧目检：风格统一（白纸黑线+单橙焦点+红蓝箭头），无元素错位/穿字；水印「通往单片机之路」低对比可见不遮挡；字幕高亮数字与关键词正常"
+ },
+ "motion": {
+  "status": "pass",
+  "evidence": "抽帧确认逐笔绘制时序正确：v01 三段顺序、v02 格架逐格、v06 谱线先行、表格骨架→图标→箭头→标签累积、计数器 0→369 滚动完成（63s 帧定格 369 个仓库）"
+ },
+ "audio": {
+  "status": "pass",
+  "evidence": "工程门 PASS：分层混音（旁白+builtin:curious 音乐床+sfx+笔声）残差/相关达标，caption_sync PASS，响度 -17.6 LUFS、TP -2.0 无削波"
+ },
+ "privacy": {
+  "status": "pass",
+  "evidence": "无个人信息；水印为频道品牌「通往单片机之路」；提及仓库均为公开开源项目（lemo-opuscar/huashu-art-motion/huashu-motion/sweety-handdraw-video）"
+ },
+ "continuous_playback": {
+  "status": "not_done",
+  "evidence": "本环境无播放器；以 0/2/5/8/11/14/25/37/46/55/61/63s 共 12 处抽帧替代连续播放检查，各页绘制时序与收尾状态均正常"
+ },
+ "listening": {
+  "status": "not_done",
+  "evidence": "本环境无音频输出设备；以工程门客观测量替代（分层混音残差、响度、削波、字幕同步全部 PASS）"
+ },
+ "limitations": [
+  "防搬运水印为低对比慢浮动，可被裁剪规避，仅提高搬运成本",
+  "卡拉OK为 cue 级跟读高亮（引擎无逐字渐进高亮）",
+  "互动为视觉层 callout（旁白已固定）"
+ ],
+ "rejections": []
+}

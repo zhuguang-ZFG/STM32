@@ -10,21 +10,15 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+// 锚点算法单一事实来源在 docs-check.mjs（GitHub 规则：不折叠连续空白）。
+// 原先本地的 slug() 把 \s+ 折叠成一个 "-"，与 GitHub 实际行为不符，已删除。
+import { slugify } from './docs-check.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const FILES = ['README.md', 'CONTRIBUTING.md']
 
 // [text](target) —— 排除图片（前面带 !），图片坏了自己看得见
 const LINK = /(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
-
-/** GitHub 风格锚点：小写、丢标点、空格转连字符；中文原样保留。 */
-function slug(heading) {
-  return heading
-    .trim()
-    .toLowerCase()
-    .replace(/[`~!@#$%^&*()+=<>?:"'{}|,.;\/\[\]]/g, '')
-    .replace(/\s+/g, '-')
-}
 
 function anchorsIn(text) {
   const set = new Set()
@@ -37,7 +31,7 @@ function anchorsIn(text) {
     }
     if (inFence) continue
     const m = line.match(/^(#{1,6})\s+(.*)$/)
-    if (m) set.add(slug(m[2]))
+    if (m) set.add(slugify(m[2]))
   }
   return set
 }
