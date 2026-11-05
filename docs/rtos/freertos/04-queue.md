@@ -75,6 +75,8 @@ typedef struct QueueDefinition
 
 读三遍那个 `union`：**队列和信号量共享同一个结构体**，信号量就是 `uxItemSize=0` 的队列（没有数据只有计数），互斥锁再多带一个持有者指针。所以 F5 的信号量 API 全是 `xQueueGenericSend/Receive` 的马甲。`uxItemSize=0` 这个分支马上在下一节现身。
 
+![FreeRTOS 队列环形缓冲：入队 memcpy 到队尾、出队 memcpy 到局部变量；指针回绕，传值不传址](/figures/rtos-04-queue.svg)
+
 ## 二、拷贝入队：memcpy + 指针回绕
 
 真正搬数据的 `prvCopyDataToQueue`（节选）：

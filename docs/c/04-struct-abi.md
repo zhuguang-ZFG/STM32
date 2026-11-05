@@ -103,6 +103,8 @@ typedef struct { uint32_t b; uint8_t a; uint8_t c; } Packed_t;
 /* 手算：b@0, a@4, c@5, tail-pad 2 → sizeof=8 */
 ```
 
+![结构体对齐：char a、int b、char c 之间插入 3 字节填充，sizeof 从 6 变 12](/figures/c-04-struct-abi.svg)
+
 ## 三、填充可视化
 
 `probe.c` 跑出的真实输出：

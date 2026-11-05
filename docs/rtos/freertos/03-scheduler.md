@@ -95,6 +95,8 @@ listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB, &( pxReadyTasksLists[ uxTopPriority ]
 
 > **【注】** 网上很多文章说"`uxTopReadyPriority` 是位图"，只对了一半：位图是**移植优化路径**的形态；通用路径里它是标量。读源码先看 `configUSE_PORT_OPTIMISED_TASK_SELECTION` 是哪条路，再谈语义。这也是读 FreeRTOS 的通用方法论：**一切结论先问配置宏**。
 
+![调度器就绪位图：uxTopReadyPriority 标出哪些优先级有任务，CLZ 找最高位，再到对应就绪链表取任务](/figures/rtos-03-scheduler.svg)
+
 ## 二、入库动作：两步走
 
 任务就绪时（新建/解除阻塞/延时到期），走同一个宏（tasks.c）：

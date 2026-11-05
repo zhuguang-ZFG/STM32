@@ -1,8 +1,8 @@
 {
   "source": "docs/reference/book.md",
-  "sourceHash": "af0c2796b173df10321b850ac4ce388f6393a538eb4b24387f132db852244238",
+  "sourceHash": "dd9e776389b04f65205cecbd341b73d682c4dbb62667100ed68acca745195529",
   "generatorHash": "742dce87a326cbe92c0571ed38d843cc64c372f4f84333fae8f34fcf9b7e9063",
-  "htmlHash": "edd59cf36579ec243bbc03c213ee728f40d64fb3cc2b3caa0994718d852c1a21",
+  "htmlHash": "6213e9ee2871b6f1308150c6c5db0de9c96b9bf63b384e8d8503918d6919bfba",
   "renderer": "guizang-page-skill/scripts/render.mjs",
   "rendererHash": "f81b7eeb2c7da7ac1cc006da88b17ec5a1b9726d769d75981b159ab88bfa8954",
   "canonical": "https://zhuguang-zfg.github.io/mcu/reference/book.html",
