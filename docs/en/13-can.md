@@ -159,6 +159,11 @@ When several nodes start talking at once, each one listens to the bus while it s
 
 **Takeaway:** When several nodes start together, they arbitrate **bit by bit**. A node that sent recessive but sees dominant drops out and listens. The winner's frame is **not corrupted**. **A numerically smaller ID has higher priority.**
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-arb-ladder.png" width="760" alt="Handraw: two nodes arbitrating bit by bit, decided at bit8 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: A sends 0x100 and B sends 0x0F0; SOF and bit10/bit9 agree on both sides, and at bit8 A sends a recessive 1 while B drives a dominant 0, so the bus reads 0 — A hears that it lost and its remaining cells switch to receiving; the ladder below copies the chapter's priority table. What it proves: dominant overwrites recessive, the first 0 wins, the loser neither retransmits nor raises an error frame, and the winner loses not one bit. What it does not prove: this is the logic of an 11-bit standard ID, not how bit stuffing eats time, bus length or termination, and it is not a scope capture. Source: [RM0008 Rev 21 bxCAN](#source-rm0008-can).</sub>
+</p>
+
 | Standard ID | Priority | Typical use |
 | --- | --- | --- |
 | `0x000` | Highest | Emergency / control |

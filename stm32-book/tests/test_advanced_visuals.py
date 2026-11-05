@@ -79,7 +79,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
-        15,
+        16,
         (
             "timer-pwm.svg",
             "sample-05-pwm-edge-flow.svg",
@@ -93,6 +93,7 @@ CHAPTERS = {
             "timer-modes.svg",
             "sample-05-pwm-debug.svg",
             "ch05-pwm-debug.png",
+            "ch05-capture-pulse.png",
             "pwm-breath.gif",
             "sample-05-deadtime.svg",
             "ch05-deadtime.png",
@@ -179,13 +180,14 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "13-CAN总线.md": (
-        13,
+        14,
         (
             "can-arbitration.svg",
             "sample-13-can-arb-flow.svg",
             "sample-13-can-bit.svg",
             "ch13-can-bit.png",
             "can-500k.gif",
+            "ch13-arb-ladder.png",
             "sample-13-bit-quanta.svg",
             "ch13-bit-quanta.png",
             "sample-13-filter-fifo.svg",

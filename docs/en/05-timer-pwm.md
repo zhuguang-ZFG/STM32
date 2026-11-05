@@ -219,6 +219,11 @@ Frequency versus resolution, at the same fCK_PSC:
 
 Input capture uses the counter the other way round. When the outside signal changes, the hardware copies the current CNT into CCR at once, like a race timer pressing the stopwatch at the finish line. Subtract two captured values and you have the period or the pulse width. The encoder interface watches two square waves 90° apart. Which one changes first decides whether the counter goes up or down, so the count is the motor's position.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-capture-pulse.png" width="760" alt="Handraw: three latched edges and the pulse-width arithmetic (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three latched edges on PA0 — the two rising edges read the same CCR because CNT wrapped from 999 back to 0; the three boxes work out 0504 − 0004 = 500 counts x 1 us = 500 us of high level, the period with one ARR+1 added = 1 ms → 1 kHz, and 500/1000 = 50% duty. What it proves: width and frequency come from subtracting two CCR reads and multiplying by the count period — no voltmeter needed — and an overflow must be paid back one ARR+1. What it does not prove: this is arithmetic at a 72 MHz ÷ 72 = 1 MHz count clock, not the signal generator's real jitter, capture filter settings or interrupt latency, and it is not a scope capture. Source: [RM0008 Rev 21 ch.15](#source-rm0008-tim).</sub>
+</p>
+
 | Function | How it works | Use |
 | --- | --- | --- |
 | Input capture | On an edge, CNT is latched into CCR | Measure frequency, pulse width, or duty |

@@ -2095,5 +2095,20 @@
   "type": "comparison",
   "chapter": "16",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep 1.8 µs 沿用时钟、Stop 5.4 µs 走 HSI 8 MHz、Standby 50 µs 走复位；WKUP 只认 PA0 上升沿；不是实拍。"
+ },
+ "illustrations/handraw/ch05-capture-pulse.png": {
+  "type": "calculation",
+  "chapter": "05",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三个边沿把 CNT 抄进 CCR：0504 − 0004 = 500 数 × 1 µs = 500 µs；周期差 0 补 ARR+1 = 1000 → 1 kHz；占空比 50%；不是实拍。"
+ },
+ "illustrations/handraw/ch08-byte-exchange.png": {
+  "type": "technical",
+  "chapter": "08",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。主从两个移位寄存器经 MOSI/MISO 构成环，8 个沿换一个字节；9F FF FF FF 换回 ?? EF 40 17，rx[0] 是剩菜不是厂商号；不是实拍。"
+ },
+ "illustrations/handraw/ch13-arb-ladder.png": {
+  "type": "comparison",
+  "chapter": "13",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。A 发 0x100、B 发 0x0F0 逐位比，bit8 上 A 的隐性 1 被显性 0 盖掉退出；B 继续发完不重传；ID 越小优先级越高；不是实拍。"
  }
 }

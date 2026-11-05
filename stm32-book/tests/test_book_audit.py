@@ -134,6 +134,7 @@ class BookAuditTests(unittest.TestCase):
                 "ch05-pwm-1khz.png", "pwm-1khz.gif", "sample-05-timebase-math.svg",
                 "ch05-timebase-math.png", "sample-05-shadow-regs.svg", "ch05-shadow-regs.png",
                 "timer-modes.svg", "sample-05-pwm-debug.svg", "ch05-pwm-debug.png",
+                "ch05-capture-pulse.png",
                 "pwm-breath.gif", "sample-05-deadtime.svg", "ch05-deadtime.png",
             ),
         }
@@ -167,7 +168,8 @@ class BookAuditTests(unittest.TestCase):
             "08": (
 
                 "spi-transfer.svg", "sample-08-spi-jedec-flow.svg", "sample-08-spi-jedec.svg",
-                "ch08-spi-jedec.png", "spi-jedec.gif", "sample-08-mode0-edges.svg",
+                "ch08-spi-jedec.png", "spi-jedec.gif", "ch08-byte-exchange.png",
+                "sample-08-mode0-edges.svg",
                 "sample-08-cpha-modes.svg", "ch08-cpha-modes.png", "sample-08-br-table.svg",
                 "ch08-br-table.png", "sample-08-nss-multi.svg", "ch08-nss-multi.png",
                 "sample-08-bus-compare.svg", "sample-08-spi-triage.svg", "ch08-spi-triage.png",
@@ -219,7 +221,8 @@ class BookAuditTests(unittest.TestCase):
             "13": (
 
                 "can-arbitration.svg", "sample-13-can-arb-flow.svg", "sample-13-can-bit.svg",
-                "ch13-can-bit.png", "can-500k.gif", "sample-13-bit-quanta.svg",
+                "ch13-can-bit.png", "can-500k.gif", "ch13-arb-ladder.png",
+                "sample-13-bit-quanta.svg",
                 "ch13-bit-quanta.png", "sample-13-filter-fifo.svg", "ch13-filter-fifo.png",
                 "sample-13-can-triage.svg", "ch13-can-triage.png", "sample-13-tec-busoff.svg",
                 "ch13-tec-busoff.png",
