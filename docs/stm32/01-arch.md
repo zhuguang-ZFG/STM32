@@ -84,6 +84,8 @@ F407 在其中的实际落位（RM0090 §2.3 表 1）：
 
 ## 二、总线矩阵：谁快谁慢
 
+![Cortex-M4 内核单元：FPU/MPU/NVIC/DWT/ITM](/figures/stm32-01-m4-core.svg)
+
 内核不只有一根总线。Cortex-M4 有三个出口：**I-Code** 取指令、**D-Code** 取数据/常量（两者只覆盖 Code 区）、**System** 管其余一切（外设、SRAM、PPB）。
 
 F407 把这些口和 DMA1、DMA2、以太网 MAC、USB HS 一起接到一张多层 AHB 总线矩阵上，再连向 Flash 接口、SRAM、AHB1/AHB2 外设、FSMC。矩阵是**并发**的：DMA 在搬 SRAM 时，CPU 能同时从 Flash 取指，这正是 [S8 DMA](08-dma.md) 敢说"不占指令周期"的底气。

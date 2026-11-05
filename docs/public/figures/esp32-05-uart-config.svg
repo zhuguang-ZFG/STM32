@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="uart_config_t 八字段落位：baud_rate 进 CLKDIV，data/parity/stop 进 LCR，流控与时钟源进 CONF0"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<rect x="8" y="10" width="136" height="72" rx="3" stroke-width="1.4"/>
+<text x="12" y="22" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">uart_config_t</text>
+<text x="12" y="34" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">baud_rate</text> <text x="12" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">data_bits</text>
+<text x="12" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">parity</text> <text x="12" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">stop_bits</text>
+<text x="76" y="34" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">flow_ctrl</text> <text x="76" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">rx_thresh</text>
+<text x="76" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">source_clk</text> <text x="76" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">flags</text>
+<rect x="160" y="14" width="152" height="16" rx="3" stroke-width="1.4"/> <text x="164" y="27" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">UART_CLKDIV</text>
+<rect x="160" y="36" width="152" height="16" rx="3" stroke-width="1.4"/> <text x="164" y="49" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">UART_LCR</text>
+<rect x="160" y="58" width="152" height="16" rx="3" stroke-width="1.4"/> <text x="164" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">UART_CONF0</text>
+<path d="M144 30 C 152 30, 154 22, 160 22" stroke-width="2.2"/>
+<path d="M144 50 C 152 50, 154 44, 160 44" stroke-width="2.2"/>
+<path d="M144 66 C 152 66, 154 66, 160 66" stroke-width="1.8"/>
+<text x="164" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">8 字段 → 3 组寄存器</text>
+</g></svg>

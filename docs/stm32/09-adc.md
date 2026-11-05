@@ -131,6 +131,8 @@ probe 第一行就是换算：`LSB = 3.30/4096 = 0.000806 V（0.806 mV = 805.7 �
 
 ## 五、工作模式：单次、连续、扫描、DMA、外部触发
 
+![ADC 规则组 SQR 轮转 vs 注入组插队](/figures/stm32-09-adc-groups.svg)
+
 五个开关在 CR1/CR2 里各就各位（行号见第一节的表）：
 
 - **单次 vs 连续**：CONT=0 时 SWSTART 打一发转一次；CONT=1（bit1）转完立刻再来一发，`st-adc.h:834` 的 `ADC_CR2_CONTINUOUS` 宏就是往 bit1 移位。

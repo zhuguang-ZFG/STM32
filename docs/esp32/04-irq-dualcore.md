@@ -149,6 +149,8 @@ CPU 取指 → Cache 命中？ → 命中：直接返回指令
 
 ## 三、中断分配器："总机"上的 99 条线
 
+![中断分配器：99 条线分到 CPU0/CPU1](/figures/esp32-04-int-alloc.svg)
+
 STM32 上中断和向量是**一一对应**的（[S4](../stm32/04-nvic-exti.md)：`EXTI0_IRQn = 6` → 固定向量槽）。ESP32-S3 是**中断矩阵**：外设的中断源可以**路由**到某个核的某个中断级。
 
 **规模**（实测 `components/soc/esp32s3/include/soc/interrupts.h`，`sh probe.sh` 第 1 段让编译器把整张枚举打出来）：

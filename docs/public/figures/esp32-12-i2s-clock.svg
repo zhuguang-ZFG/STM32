@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="I2S 时钟账：MCLK = 256×fs，BCK = fs×位宽×声道，LRCK = fs；16kHz/16bit/双声道给出 4.096MHz/512kHz"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">I2S 时钟比</text>
+<rect x="8" y="18" width="96" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">MCLK 4.096M</text>
+<path d="M104 27 L128 27" stroke-width="2.2"/> <text x="116" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">÷8</text>
+<rect x="128" y="18" width="96" height="18" rx="3" stroke-width="1.4"/> <text x="132" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">BCK 512k</text>
+<path d="M176 36 L176 52" stroke-width="2.2"/> <text x="180" y="48" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">÷32</text>
+<rect x="128" y="52" width="96" height="18" rx="3" stroke-width="1.4"/> <text x="132" y="65" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">LRCK 16k</text>
+<rect x="8" y="52" width="96" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="65" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">16bit × 2ch</text>
+<path d="M104 61 L128 61" stroke-width="2.2"/>
+<text x="8" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">MCLK=256×fs · BCK=fs×16×2</text>
+</g></svg>

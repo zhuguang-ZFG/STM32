@@ -13,7 +13,7 @@ description: 94 章成书：单文件 HTML（动画即播）与 16 开印前 PDF
 
 | 产物 | 适合 | 特性 |
 |---|---|---|
-| [📖 HTML 版](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html) | 屏幕通读 | 单文件约 6 MB，所有图片内嵌，**断网可读**；171 张机制动画与架构图随文呈现（动画打开即播）；每章开头有「本章罗盘」，章末自测答案集中在附录 C |
+| [📖 HTML 版](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html) | 屏幕通读 | 单文件约 6 MB，所有图片内嵌，**断网可读**；181 张机制动画与架构图随文呈现（动画打开即播）；每章开头有「本章罗盘」，章末自测答案集中在附录 C |
 | [📄 PDF 版](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book-print.pdf) | 打印 / 平板批注 | **16 开 185×260 mm**（非 A4），衬线正文 + 黑体标题 + 等宽代码，全部真字体嵌入；带页码的纸面目录、版权页、术语索引、勘误与贡献页；正文页码从 1 起，末页 N/N |
 
 两个文件都由 CI 在每次 push 时从仓库源文档重新构建并随站点发布。书没有"过期副本"，永远是 main 的快照。

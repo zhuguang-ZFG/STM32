@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="STM32 Flash 擦除与编程序列：解锁 → SER/AR → STRT → 等 BSY；编程 PG=1 写半字再等 BSY"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">擦除</text>
+<rect x="8" y="18" width="72" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">解锁 KEY</text>
+<path d="M80 27 L88 27" stroke-width="2.2"/>
+<rect x="88" y="18" width="64" height="18" rx="3" stroke-width="1.4"/> <text x="92" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">SER + AR</text>
+<path d="M152 27 L160 27" stroke-width="2.2"/>
+<rect x="160" y="18" width="62" height="18" rx="3" stroke-width="1.4"/> <text x="164" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">STRT</text>
+<path d="M222 27 L230 27" stroke-width="2.2"/>
+<rect x="230" y="18" width="82" height="18" rx="3" stroke-width="1.4"/> <text x="234" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">等 BSY=0</text>
+<text x="8" y="52" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">编程</text>
+<rect x="8" y="58" width="72" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">PG=1</text>
+<path d="M80 67 L88 67" stroke-width="2.2"/>
+<rect x="88" y="58" width="72" height="18" rx="3" stroke-width="1.4"/> <text x="92" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">写半字</text>
+<path d="M160 67 L168 67" stroke-width="2.2"/>
+<rect x="168" y="58" width="72" height="18" rx="3" stroke-width="1.4"/> <text x="172" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">等 BSY=0</text>
+<text x="248" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">FLASH_SR</text>
+</g></svg>

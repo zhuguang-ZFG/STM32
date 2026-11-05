@@ -52,6 +52,8 @@ minutes: 45
 
 ## 一、I2S 协议：音频的"传送带"
 
+![I2S 时钟账：MCLK/BCK/LRCK 的比例](/figures/esp32-12-i2s-clock.svg)
+
 I2S（Inter-IC Sound）是飞利浦定下的芯片间音频串行协议，本质是"按帧移位"，和 [S12 SPI](../stm32/12-spi.md) 同源（都是同步移位），但多了一层"帧=左右声道"的语义。
 
 四根线：

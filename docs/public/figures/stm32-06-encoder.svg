@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="正交编码器：A/B 两路相差 90°，硬件按边沿顺序加减，A/B 双边沿共 4 倍频"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">正交解码：边沿顺序定方向</text>
+<path d="M16 20 L56 20 L56 32 L96 32 L96 20 L136 20 L136 32 L176 32" stroke-width="2.2"/>
+<text x="8" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">A</text>
+<path d="M26 44 L66 44 L66 56 L106 56 L106 44 L146 44 L146 56 L186 56" stroke-width="1.8"/>
+<text x="8" y="48" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">B</text>
+<path d="M56 14 L56 72" stroke-width="1.2" stroke-dasharray="2 2"/> <path d="M96 14 L96 72" stroke-width="1.2" stroke-dasharray="2 2"/>
+<text x="56" y="80" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">4 个边沿 = 4 倍频</text>
+<rect x="200" y="18" width="112" height="18" rx="3" stroke-width="1.4"/> <text x="204" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">A 领先 B → +1</text>
+<rect x="200" y="44" width="112" height="18" rx="3" stroke-width="1.4"/> <text x="204" y="57" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">B 领先 A → -1</text>
+<text x="200" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">CNT 由硬件自算</text>
+</g></svg>
