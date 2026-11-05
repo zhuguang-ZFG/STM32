@@ -101,6 +101,8 @@ NVIC 有六组寄存器，每组都是"一位管一个中断"的位图：
 - **数组下标 = IRQn / 32**，**位号 = IRQn % 32**（对 ISER/ICER/ISPR/ICPR/IABR）；
 - **IP 字节地址 = 0xE000E400 + IRQn**（对 IPR）。
 
+![NVIC 地址公式：IRQn 6 推出向量槽 22（偏移 0x0058）、ISER 第 0 组 bit 6 与 IP 字节 0xE000E406](/figures/stm32-04-nvic-addr.svg)
+
 probe 把七个代表性中断整张表打了出来（宿主编译期 `_Static_assert` 已逐格核对，见 `probe.c:38-79`）：
 
 ```text
