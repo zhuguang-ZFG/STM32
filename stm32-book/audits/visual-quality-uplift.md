@@ -335,7 +335,7 @@ zh + en for 21 new assets (42 insert ops) via `tools/sample_figs_quality5/embed_
 
 - Shared classic anims FA-002 remake (**done 2026-11-04**): `nvic-interrupt-flow`, `dma-circular`, `freertos-scheduler`, `rtos-system-layers`, `network-packet-journey`, plus appendix A `uart-idle-dma` — reproducible via `tools/sample_figs_classic_shared/remake_shared.py`; ROWS locked; `prefers-reduced-motion` + continuous-line CSS. Handraw static plates left as-is.
 - Appendix B–E: no mechanism anims (handraw-only) — no anim polish needed. Appendix A embeds remade `uart-idle-dma.svg`.
-- Optional denser remakes of older pre-uplift static plates that already met density bar — deferred.
+- Optional denser remakes of older pre-uplift static plates that already met density bar — **partly done 2026-11-05**: the six `sample-*-triage` plates (ch01/ch06/ch08/ch09/ch10/ch12) were rebuilt from text walls into pictures (11,816 → 5,470 chars, 60 → 303 shapes, 125 → 18 sentences over 55 chars). Drawings live in `tools/triage_plates.py` and are imported by the chapter generators that own each file name. Audit: `audits/b8-plate-redraw.md`.
 - Video / narration / Bilibili / `contact_sheet.py` remain PAUSED (owner).
 - PDF rebuild of zh+en into `stm32-book/dist` is optional post-gate nicety, not a gate for this anim pass.
 

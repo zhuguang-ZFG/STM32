@@ -1,42 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="串口三岔口：乱码先按实际 fCK 重算 BRR，无输出先查交叉与时钟门，丢字节先读 SR 再读 DR">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="串口乱码先按实际 fCK 重算 BRR，无输出先查交叉与时钟门，丢字节先读 SR 再读 DR">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">串口三岔口：乱码先按实际 fCK 重算 BRR，无输出先查交叉与时钟门，丢字节先读 SR 再读 DR</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 06 · RM0008 Rev 21 ch.27 · DS5319 Rev 20</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">串口三岔口：乱码、没输出、丢字节</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · USART1 115200 8N1 · PCLK2 72 MHz</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">06</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  USART1 115200 8N1  PCLK2 72 MHz  SR 0x00  DR 0x04  BRR 0x08</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three symptoms, three branches: garbled, silent, or missing bytes</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USARTDIV = fPCLK / (16 × baud)    BRR = mantissa &lt;&lt; 4 | fraction</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  乱码  Garbled bytes</text>
-<rect x="40" y="184" width="880" height="208" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="214" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">the divider does not match the clock that actually feeds USART1</text>
-<text x="56" y="242" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USART1, PCLK2 72 MHz, 115200: 72e6 / (16 × 115200) = 39.0625</text>
-<text x="56" y="268" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">mantissa 39 = 0x27, fraction 0.0625 × 16 = 1  →  BRR = 0x271, error 0 %</text>
-<text x="56" y="296" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSE fails at startup, RCC falls back to HSI 8 MHz, and the code still divides by 72 MHz:</text>
-<text x="56" y="322" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8e6 / (16 × 39.0625) = 12800 baud  →  9× slower than 115200</text>
-<text x="56" y="350" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: RCC_CFGR SWS bits 3:2 — 00 = HSI, 01 = HSE, 10 = PLL</text>
-<text x="56" y="376" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">fix the clock tree first; rewriting BRR cannot repair a 9× clock error</text>
-<text x="40" y="424" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  无输出  No bytes at all</text>
-<rect x="40" y="438" width="880" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="468" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">check the wire, then the clock gate; nothing else can silence a whole port</text>
-<text x="56" y="496" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TX must reach the peer's RX: PA9 pin 30 → peer RX, PA10 pin 31 ← peer TX</text>
-<text x="56" y="522" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a TX-to-TX cable looks right and sends nothing anywhere</text>
-<text x="56" y="550" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USART1 gate: RCC_APB2ENR bit 14 (0x40021018)</text>
-<text x="56" y="576" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USART2 gate: RCC_APB1ENR bit 17    USART3 gate: RCC_APB1ENR bit 18    (0x4002101C)</text>
-<text x="56" y="604" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">gate off: BRR writes land nowhere, SR reads 0x00C0 (TXE|TC), the line stays high</text>
-<text x="56" y="628" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: short PA9 to PA10 and echo one byte before blaming the USB-TTL adapter</text>
-<text x="40" y="670" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  丢字节  Lost bytes</text>
-<rect x="40" y="684" width="880" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="712" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RXNE still set when the next word finishes: ORE, and the clear order is the fix</text>
-<text x="56" y="740" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the shift register is overwritten while RDR keeps the older byte</text>
-<text x="56" y="766" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">clear: read SR 0x00, then read DR 0x04 — read DR alone leaves ORE set</text>
-<text x="56" y="794" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: an ISR that reads SR once and DR once per byte keeps ORE at 0</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。USARTDIV、ORE 清除与 APB 时钟位来自 RM0008 Rev 21 第 27 章；引脚来自 DS5319 Rev 20 图 8。</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="40" y="75" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="88" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">同一 100 µs 窗口：115200 走完 10 位一帧，12800 还卡在起始位</text>
+<text x="40" y="116" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">期望 115200：8.68 µs/位，10 位一帧</text>
+<path d="M 230 138.64 L 230.00 138.64 L 258.00 138.64 L 258.00 107.36 L 286.00 107.36 L 286.00 138.64 L 314.00 138.64 L 314.00 107.36 L 342.00 107.36 L 342.00 138.64 L 370.00 138.64 L 370.00 107.36 L 398.00 107.36 L 398.00 138.64 L 426.00 138.64 L 426.00 107.36 L 454.00 107.36 L 454.00 138.64 L 482.00 138.64 L 482.00 107.36 L 510.00 107.36" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="518" y="128" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">≈ 87 µs</text>
+<text x="40" y="176" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">实际 12800：78 µs/位（慢 9×）</text>
+<path d="M 230 198.64 L 448 198.64 L 448 167.36 L 510 167.36" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="518" y="188" font-size="11" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">帧走不完</text>
+<line x1="230" y1="210" x2="510" y2="210" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="230" y="226" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0 µs</text>
+<text x="510" y="226" font-size="10" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">100 µs</text>
+<rect x="568" y="84" width="352" height="146" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="582" y="108" font-size="13.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BRR 是一步除法，不是猜</text>
+<text x="582" y="132" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USARTDIV = 72e6 / (16 × 115200)</text>
+<text x="582" y="152" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">         = 39.0625 → 0x271（误差 0%）</text>
+<text x="582" y="172" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HSI 8 MHz 还按 72 MHz 算 → 12,800</text>
+<text x="582" y="214" font-size="11.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">RCC_CFGR SWS[3:2]：00=HSI  01=HSE  10=PLL</text>
+<rect x="40" y="250" width="880" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="250" width="4" height="112" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="60" y="277" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">①</text>
+<text x="86" y="277" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">乱码：分频对不上真正喂进去的时钟</text>
+<text x="60" y="302" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HSE 起振失败 → RCC 回落 HSI 8 MHz，代码仍按 72 MHz 算 BRR</text>
+<text x="60" y="321" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读 RCC_CFGR 的 SWS 位确认真实时钟；改 BRR 修不好 9 倍的时钟差</text>
+<text x="60" y="340" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：读 RCC_CFGR 的 SWS，确认 PLL 的源是 HSE 还是 HSI；别拿 BRR 掩盖时钟</text>
+<rect x="40" y="378" width="880" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="378" width="4" height="112" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="60" y="405" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">②</text>
+<text x="86" y="405" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">没输出：先量线，再查时钟门</text>
+<text x="60" y="430" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA9(30) → 对方 RX；PA10(31) ← 对方 TX；TX 接 TX 看起来对，其实什么都不发</text>
+<text x="60" y="449" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1 门控 RCC_APB2ENR bit 14（0x40021018）；门关着 BRR 写进去也不生效</text>
+<text x="60" y="468" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：把 PA9 与 PA10 短接回环一个字节，先排除 USB-TTL</text>
+<rect x="40" y="506" width="880" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="506" width="4" height="112" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="60" y="533" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③</text>
+<text x="86" y="533" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">丢字节：ORE 没清，或清的顺序错</text>
+<text x="60" y="558" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">下一个字来时 RXNE 还没读走 → 移位寄存器被覆盖，ORE 置位</text>
+<text x="60" y="577" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清 ORE 必须按顺序：先读 SR(0x00) 再读 DR(0x04)；只读 DR 清不掉，接收停死</text>
+<text x="60" y="596" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：连续发 256 字节，末了 SR 的 ORE 位必须还是 0</text>
+<text x="40" y="660" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">判定顺序</text>
+<rect x="144" y="640" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="249" y="662.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">确认真实 fCK</text>
+<line x1="360" y1="658" x2="377" y2="658" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="384.00,658.00 377.00,661.50 377.00,654.50" fill="#5b3a8c" opacity="1"/>
+<rect x="390" y="640" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="495" y="662.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">量线 + 时钟门</text>
+<line x1="606" y1="658" x2="623" y2="658" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="630.00,658.00 623.00,661.50 623.00,654.50" fill="#5b3a8c" opacity="1"/>
+<rect x="636" y="640" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="741" y="662.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ORE 清对顺序</text>
+<text x="40" y="712" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟不对时，BRR 只是把错误算得更精确；先读 RCC_CFGR 的 SWS 位。</text>
+<line x1="24" y1="836" x2="936" y2="836" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="858" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。USARTDIV、ORE 清除与 APB 时钟位来自 RM0008 Rev 21 第 27 章；引脚来自 DS5319 Rev 20。</text>
+<text x="936" y="858" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

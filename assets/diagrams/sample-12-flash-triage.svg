@@ -1,43 +1,193 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="擦除报错先读 CR.LOCK 与 1 KB 页边界；写不进去看半字与 0xFFFF；读回不对按 0x08004800、0xB800 逐页比对">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="闪存 64 个 1 KB 页：擦不掉先读 CR.LOCK，写不进看半字与 0xFFFF，读不回按 0x08004800 的 46 页逐页比对">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">擦写三岔口：擦不掉、写不进、读不回</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 12 · RM0008 Rev 21 ch.3</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">闪存三岔口：擦不掉、写不进、读不回</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · 1 KB 页 × 64 · RM0008 Rev 21 ch.3</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">12</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  64 KB 闪存 · 1 KB 页共 64 页（0–63）· 第 63 页从 0x0800FC00 起</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three failures in the order the controller reports them: erase, program, read back</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CR.LOCK · CR.PER · CR.PG · CR.STRT    SR.BSY · SR.EOP · SR.PGERR    keys 0x45670123 then 0xCDEF89AB</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  擦除没生效：SR 报错，或页里还是旧数据</text>
-<text x="920" y="170" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CR.LOCK · CR.PER · SR.BSY</text>
-<rect x="40" y="184" width="880" height="196" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="214" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: the page still holds old bytes, or SR comes back with an error after STRT</text>
-<text x="56" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: KEY2 was written before KEY1 — CR.LOCK stays 1 and every erase returns an error</text>
-<text x="56" y="266" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: the address is not on a 1 KB page boundary — 0x08004800 is; 0x08004400 is; 0x08004200 is not</text>
-<text x="56" y="292" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause C: STRT was set while SR.BSY was still 1; the second command is dropped</text>
-<text x="56" y="318" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: read CR.LOCK = 0 first, then use an address whose low 10 bits are 0, and poll SR.BSY</text>
-<text x="56" y="344" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">probe: erase one page and read it back — 0xFFFF everywhere means the erase itself worked</text>
-<text x="40" y="412" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  写不进去：SR.PGERR，或只有一半落盘</text>
-<text x="920" y="412" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CR.PG · SR.PGERR</text>
-<rect x="40" y="426" width="880" height="196" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="456" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: the half-word write returns an error, or a 32-bit store leaves only 16 bits changed</text>
-<text x="56" y="482" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: the address is odd — this C8 programs half-words at even addresses only, never bytes</text>
-<text x="56" y="508" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: the target is not 0xFFFF yet; programming only turns 1 into 0, so a rewrite needs an erase</text>
-<text x="56" y="534" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause C: CR.PG was never set, so the store ran as ordinary memory access and nothing was programmed</text>
-<text x="56" y="560" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: erase the page, read 0xFFFF, then write one 32-bit value as two half-words</text>
-<text x="56" y="586" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">probe: read back the whole 0xB800 range from 0x08004800; one wrong half-word marks its page</text>
-<text x="40" y="650" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  读回不对：写说成功，比对失败</text>
-<text x="920" y="650" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xB800 · 0x08010000</text>
-<rect x="40" y="664" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="694" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: every step looks clean, yet the CRC over the app does not match</text>
-<text x="56" y="720" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: the last page was written as 0x0801FC00 — that address is not in this 64 KB at all</text>
-<text x="56" y="746" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: read-out protection was put back to 0xA5, and that transition mass-erases the whole Flash</text>
-<text x="56" y="772" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: 46 pages from 0x08004800 to 0x08010000, 0xB800 bytes — compare page by page, not once</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。页、半字与钥匙来自 RM0008 Rev 21 第 3 章；读保护 0xA5 来自 PM0075。</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="40" y="75" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="88" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">64 KB = 8 × 8 个格子，不是一根长条</text>
+<rect x="40" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="65" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0</text>
+<rect x="90" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="115" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<rect x="140" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="165" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<rect x="190" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="215" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<rect x="240" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="265" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<rect x="290" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="315" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<rect x="340" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="365" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<rect x="390" y="104" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="415" y="125" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<rect x="40" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="65" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8</text>
+<rect x="90" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="115" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9</text>
+<rect x="140" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="165" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10</text>
+<rect x="190" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="215" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">11</text>
+<rect x="240" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="265" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12</text>
+<rect x="290" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="315" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">13</text>
+<rect x="340" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="365" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14</text>
+<rect x="390" y="138" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1e4d63" stroke-width="1"/>
+<text x="415" y="159" font-size="10" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">15</text>
+<rect x="40" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<text x="65" y="193" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">16</text>
+<rect x="90" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<text x="115" y="193" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">17</text>
+<rect x="140" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="2"/>
+<text x="165" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">18</text>
+<rect x="190" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">19</text>
+<rect x="240" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">20</text>
+<rect x="290" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">21</text>
+<rect x="340" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">22</text>
+<rect x="390" y="172" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="193" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">23</text>
+<rect x="40" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="65" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24</text>
+<rect x="90" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="115" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">25</text>
+<rect x="140" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="165" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">26</text>
+<rect x="190" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">27</text>
+<rect x="240" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">28</text>
+<rect x="290" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">29</text>
+<rect x="340" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">30</text>
+<rect x="390" y="206" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="227" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">31</text>
+<rect x="40" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="65" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">32</text>
+<rect x="90" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="115" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">33</text>
+<rect x="140" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="165" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">34</text>
+<rect x="190" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">35</text>
+<rect x="240" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">36</text>
+<rect x="290" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">37</text>
+<rect x="340" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">38</text>
+<rect x="390" y="240" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="261" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">39</text>
+<rect x="40" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="65" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">40</text>
+<rect x="90" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="115" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">41</text>
+<rect x="140" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="165" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">42</text>
+<rect x="190" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">43</text>
+<rect x="240" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">44</text>
+<rect x="290" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">45</text>
+<rect x="340" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">46</text>
+<rect x="390" y="274" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="295" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">47</text>
+<rect x="40" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="65" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">48</text>
+<rect x="90" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="115" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">49</text>
+<rect x="140" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="165" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">50</text>
+<rect x="190" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">51</text>
+<rect x="240" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">52</text>
+<rect x="290" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">53</text>
+<rect x="340" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">54</text>
+<rect x="390" y="308" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="329" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">55</text>
+<rect x="40" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="65" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">56</text>
+<rect x="90" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="115" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">57</text>
+<rect x="140" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="165" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">58</text>
+<rect x="190" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="215" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">59</text>
+<rect x="240" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="265" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">60</text>
+<rect x="290" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="315" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">61</text>
+<rect x="340" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="365" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">62</text>
+<rect x="390" y="342" width="50" height="34" fill="#f1f5f7" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1"/>
+<text x="415" y="363" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">63</text>
+<rect x="40" y="392" width="12" height="12" fill="#1e4d63" opacity="1" rx="2"/>
+<text x="60" y="402" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0–15 引导 16 KB</text>
+<text x="290" y="402" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08000000</text>
+<rect x="40" y="416" width="12" height="12" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="60" y="426" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">16–17 参数 2 KB</text>
+<text x="290" y="426" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08004000</text>
+<rect x="40" y="440" width="12" height="12" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="60" y="450" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">18–63 APP 46 KB = 0xB800</text>
+<text x="290" y="450" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08010000 止</text>
+<text x="40" y="478" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 18 页（粗框）= 0x08004800，APP 从这里起</text>
+<rect x="40" y="492" width="400" height="38" fill="#fbfaf7" opacity="1" rx="2" stroke="#8f2d2d" stroke-width="1.5" stroke-dasharray="4 4"/>
+<text x="52" y="516" font-size="12.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 127 页 = 0x0801FC00，不在这 64 KB 里</text>
+<rect x="490" y="88" width="430" height="190" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="490" y="88" width="4" height="190" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="510" y="115" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">①</text>
+<text x="536" y="115" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">擦除没生效</text>
+<text x="510" y="140" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CR.LOCK=0 → KEY1 0x45670123 → KEY2 0xCDEF89AB</text>
+<text x="510" y="159" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CR.PER=1 → CR.STRT=1 → 轮询 SR.BSY</text>
+<text x="510" y="178" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">钥匙反序：LOCK 恒 1，每条擦除命令都报错</text>
+<text x="510" y="197" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">地址低 10 位不为 0，或 STRT 撞上 BSY 未落</text>
+<text x="510" y="216" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：擦一页读回全 0xFFFF，说明擦除本身通了</text>
+<rect x="490" y="290" width="430" height="190" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="490" y="290" width="4" height="190" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="510" y="317" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">②</text>
+<text x="536" y="317" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写不进去</text>
+<text x="510" y="342" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">半字 16 位、偶地址：0x1234 5678 拆两次写</text>
+<text x="510" y="361" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">只能 1→0：目标必须先擦成 0xFFFF</text>
+<text x="510" y="380" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SR.PGERR：地址为奇 / 目标不是 0xFFFF / CR.PG 没置</text>
+<text x="510" y="399" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：从 0x08004800 回读 0xB800，坏半字定位到页</text>
+<rect x="490" y="492" width="430" height="190" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="490" y="492" width="4" height="190" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="510" y="519" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③</text>
+<text x="536" y="519" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">读回不对</text>
+<text x="510" y="544" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08004800 + 0xB800 = 46 页，逐页比对</text>
+<text x="510" y="563" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PM0075 读保护 0xA5 → 整片擦除</text>
+<text x="510" y="582" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写得干净但 CRC 不对：先怀疑越界页 0x0801FC00</text>
+<text x="510" y="601" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：差异落在哪一页，就只重写那一页</text>
+<text x="40" y="726" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">判定顺序</text>
+<rect x="144" y="706" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="249" y="728.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">看 CR.LOCK 与页边界</text>
+<line x1="360" y1="724" x2="377" y2="724" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="384.00,724.00 377.00,727.50 377.00,720.50" fill="#5b3a8c" opacity="1"/>
+<rect x="390" y="706" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="495" y="728.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">看半字与 0xFFFF</text>
+<line x1="606" y1="724" x2="623" y2="724" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="630.00,724.00 623.00,727.50 623.00,720.50" fill="#5b3a8c" opacity="1"/>
+<rect x="636" y="706" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="741" y="728.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">逐页比对 0xB800</text>
+<line x1="24" y1="836" x2="936" y2="836" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="858" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。页、半字与钥匙来自 RM0008 Rev 21 第 3 章；读保护来自 PM0075。</text>
+<text x="936" y="858" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

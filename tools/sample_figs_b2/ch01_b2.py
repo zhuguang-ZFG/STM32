@@ -14,6 +14,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from svgkit import Svg, T
 
+from triage_plates import debug_connect  # shared plate drawing, one source of truth
+
 
 def _credit(canvas: Svg, note: str) -> None:
     canvas.line(24, canvas.h - 36, canvas.w - 24, canvas.h - 36, stroke=T.GRID, sw=1)
@@ -82,75 +84,6 @@ def build_accept() -> Svg:
     _credit(canvas, "自绘。64 KB / 20 KB 与两个起点来自 DS5319 与本章；产物取 examples/spl-f1-blink 的构建输出。")
     return canvas
 
-
-def debug_connect() -> Svg:
-    canvas = Svg(
-        960,
-        990,
-        "ELF 已生成却连不上：先查 PA13/PA14 复用，再查供电与共地，最后才动 adapter speed",
-        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 表 5 · openocd/bluepill-stlink.cfg",
-    )
-    canvas.header(tag="01", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  Cortex-Debug + OpenOCD  arm-none-eabi-gdb",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "the ELF exists and the build is green, so this failure is past the build boundary",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK    pin 7 NRST    pin 44 BOOT0",
-                size=14, fill=T.AMBER)
-
-    canvas.text(40, 170, "第一环  PA13/PA14 被复用成 GPIO", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 188, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "symptom: No target connected, or every SWD attempt fails after one flash",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "symptom: the part still boots, but the two debug pins are ordinary GPIO from then on",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 266, "checkpoint: the .ioc has SYS → Debug = Serial Wire", size=15,
-                fill=T.AMBER, weight="700")
-    canvas.text(56, 292, "and the generated GPIO init does not list PA13 or PA14 as an output",
-                size=13, fill=T.MUTED)
-    canvas.text(56, 318, "recovery: BOOT0 high, connect, erase, set Serial Wire, flash again",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 344, "No Debug is a one-way door here; no C change reopens the port",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 400, "第二环  供电与共地先量，再谈别的", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 414, 880, 188, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 444, "symptom: Cannot access target, No STM32 target found, a link that drops",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 470, "pin 35 VSS_2 and pin 36 VDD_2 sit beside the debug pins and must not float",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 496, "checkpoint: 3V3 to GND reads 3.3 V, and probe GND is board GND", size=15,
-                fill=T.AMBER, weight="700")
-    canvas.text(56, 522, "this lab powers the BluePill over Micro-USB; do not parallel the probe's 3.3 V",
-                size=13, fill=T.MUTED)
-    canvas.text(56, 548, "pin 7 NRST is not an SWD signal, but it is how a probe hard-resets the chip",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 574, "a dead rail and a miscounted pin report the same error",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 630, "第三环  接口与 cfg：速率是最后才动的旋钮", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 644, 880, 188, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 674, "symptom: the probe attaches sometimes, or drops right after reset",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 700, "openocd/bluepill-stlink.cfg: transport select hla_swd / adapter speed 1000",
-                size=14, fill=T.AMBER, mono=True)
-    canvas.text(56, 726, "checkpoint: launch.json configFiles loads that cfg, not an older copy", size=15,
-                fill=T.AMBER, weight="700")
-    canvas.text(56, 752, "then lower adapter speed below 1000 and retry, one knob at a time",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 778, "target/stm32f1x.cfg is this part's target file; the ELF path stays as it is",
-                size=13, fill=T.MUTED)
-    canvas.text(56, 804, "a stale ST-Link firmware reports DFU errors; upgrade it first",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 862, "查的顺序  环 1 → 环 2 → 环 3", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 876, 880, 66, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 906, "do not rewrite main while the line is not connected",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 932, "do not change -O2 to fix an attach failure; the build already succeeded",
-                size=14, fill=T.TEXT)
-    _credit(canvas, "自绘。脚位来自 DS5319 Rev 20 表 5；速率与 transport 取自 openocd/bluepill-stlink.cfg。")
-    return canvas
 
 
 def flash_path() -> Svg:

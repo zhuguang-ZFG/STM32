@@ -18,6 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from svgkit import Svg, T
 
+from triage_plates import spi_triage  # shared plate drawing, one source of truth
+
 
 def _credit(canvas: Svg, note: str) -> None:
     canvas.line(24, canvas.h - 36, canvas.w - 24, canvas.h - 36, stroke=T.GRID, sw=1)
@@ -145,68 +147,6 @@ def cpha_modes() -> Svg:
     canvas.text(56, 806, "W25Q64, ST7789 and most parts here run Mode 0; Mode 3 is the other common choice, Mode 1/2 are rare",
                 size=14, fill=T.TEXT)
     _credit(canvas, "自绘。CPOL/CPHA 采样边沿与分频定义来自 RM0008 Rev 21 第 25 章。")
-    return canvas
-
-
-def spi_triage() -> Svg:
-    canvas = Svg(
-        960,
-        880,
-        "SPI 三岔口：全 0xFF 查片选与 MISO，无时钟查 SPE/MSTR，只在高 BR 出错先降速",
-        "STM32F103C8T6 · chapter 08 · RM0008 Rev 21 第 25 章 · DS5319 Rev 20 表 5",
-    )
-    canvas.header(tag="08", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48 pin 14..17   SPI1 on APB2 72 MHz   Mode 0   BR=010",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "branch on what came back on the wire: all 0xFF, no clock at all, or correct only at low BR",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "PA4 = CS (low for the whole transfer)   PA5 = SCK   PA6 = MISO   PA7 = MOSI",
-                size=13, fill=T.AMBER, mono=True)
-
-    canvas.text(40, 168, "岔口一  读回全 0xFF  MISO 恒高", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 180, 880, 166, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 208, "0xFF on every byte means nothing is driving MISO; a floating input reads 1",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 234, "check 1: PA4 must sit low from the first SCK edge to the last, and high between commands",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 260, "PA4 stuck high leaves the slave in Hi-Z; PA4 stuck low merges two commands into one frame",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 286, "check 2: PA6 is pin 16 — a broken jumper, a missing GND, or an unpowered part all read 0xFF",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 312, "if the byte is 0x00 instead, something holds the line low: swap MOSI/MISO, or fix CPOL/CPHA",
-                size=14, fill=T.TEXT)
-
-    canvas.text(40, 362, "岔口二  没有 SCK  时钟不动", size=16, fill=T.AMBER, weight="700")
-    canvas.rect(40, 374, 880, 166, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 402, "SPI1 cannot clock until SPE = 1 and MSTR = 1 in CR1",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 428, "SPE = CR1 bit 6, MSTR = CR1 bit 2; both reset to 0, and a master needs both",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 454, "MSTR = 0 leaves the part as a slave: it waits for an external clock that never comes",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 480, "check the gate: RCC_APB2ENR bit 12 (0x40021018); with it off CR1 reads back 0x0000",
-                size=14, fill=T.TEXT, mono=True)
-    canvas.text(56, 506, "PA5 must be alternate-function push-pull: GPIOA_CRL nibble 5 = 0xB, not input or analog",
-                size=14, fill=T.TEXT)
-
-    canvas.text(40, 556, "岔口三  低速对、高速错", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 568, 880, 166, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 596, "BR=000 is 72 / 2 = 36 MHz; a W25Q64 on jumper wires is not specified at that rate",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 622, "set BR = 010 (÷8 = 9 MHz) and repeat the exact same transaction before changing anything else",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 648, "if the ID comes back 0xEF 0x40 0x17 at 9 MHz, the protocol is right and the limit is the wire",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 674, "climb one step at a time: 010 → 001 (18 MHz); stop at the first bad read and keep the last good BR",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 700, "a scope at the slave end separates rounded edges from a slave that is not rated for the rate",
-                size=14, fill=T.TEXT)
-
-    canvas.text(40, 762, "查的顺序  先片选与 MISO → 再时钟 → 最后才降速", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 774, 880, 46, fill=T.BG2, stroke=T.GREEN, rx=8)
-    canvas.text(56, 800, "0xFF is a select or wiring fault; silence is an enable fault; only a low-BR pass makes speed the suspect",
-                size=13, fill=T.TEXT)
-    _credit(canvas, "自绘。SPE/MS 与 BR 分频来自 RM0008 Rev 21 第 25 章；引脚来自 DS5319 Rev 20 表 5。")
     return canvas
 
 

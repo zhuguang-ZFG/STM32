@@ -1,46 +1,103 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="DMA 传输不动了：CNDTR 不减、数据错位、TC 中断不进，三个岔口一次只改一个寄存器">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="DMA 不动了先读 CNDTR：不减查 EN 与通道映射，写错址查 PSIZE/MSIZE 与 MINC，归零不中断查 TCIF 清除">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 传输不动了：CNDTR 不减、数据错位、TC 中断不进，三个岔口一次只改一个寄存器</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 10 · DMA1 7 channels</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 不动了：三个旋钮，一次只拧一个</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · DMA1 7 通道 · RM0008 Rev 21 ch.13</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">10</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA 传输不动了：先读 CNDTR，再看目的缓冲区，最后看中断标志</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three branches, one register field each: EN / PSIZE-MSIZE-MINC / TCIE-IFCR</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DMA1_Channel5 (USART1_RX)  CPAR=0x40013804  CMAR=0x20000100  CNDTR=0x0080 at t0</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  CNDTR 不减：事务从未启动</text>
-<text x="920" y="170" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CCR.EN</text>
-<rect x="40" y="184" width="880" height="178" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="214" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: CNDTR still reads 0x0080, no byte reached the buffer, and TCIF5 is 0</text>
-<text x="56" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: CCR.EN = 0 (bit 0): CPAR, CMAR and CNDTR were written, then the channel was never enabled</text>
-<text x="56" y="266" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: the peripheral request never arrives: USART1_RX is hard-wired to DMA1 channel 5, not 4 or 6</text>
-<text x="56" y="292" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B check: USART_CR3.DMAR = 1, and RXNE sets on every received byte; no RXNE, no request</text>
-<text x="56" y="318" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: order matters — CPAR, CMAR, CNDTR, then CCR, and EN = 1 last</text>
-<text x="56" y="344" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">probe: set EN from the debugger and watch CNDTR fall; if it falls, the request path was the fault</text>
-<text x="40" y="396" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  数据错位或全写同一地址：宽度与自增</text>
-<text x="920" y="396" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CCR.PSIZE · CCR.MSIZE · CCR.MINC</text>
-<rect x="40" y="410" width="880" height="178" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="440" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: bytes arrive shifted by one, or every item overwrites CMAR[0] while CNDTR counts down</text>
-<text x="56" y="466" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: PSIZE[1:0] (CCR 9:8) and MSIZE[1:0] (CCR 11:10) disagree: items are truncated or padded</text>
-<text x="56" y="492" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: MINC = 0 (CCR bit 7): the memory address never increments, so each item writes the same word</text>
-<text x="56" y="518" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">not a bug: PINC = 0 (CCR bit 6) on a fixed data register such as USART_DR is the normal setting</text>
-<text x="56" y="544" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: for 8-bit USART1_RX set PSIZE = MSIZE = 00, MINC = 1, PINC = 0; CMAR 32-bit aligned</text>
-<text x="56" y="570" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">probe: break after 4 items; CMAR must grow by 4 bytes at MSIZE = 00 and by 8 at MSIZE = 01</text>
-<text x="40" y="622" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  CNDTR 归零但 TC 中断不进：标志与使能</text>
-<text x="920" y="622" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CCR.TCIE · IFCR.CTCIF5</text>
-<rect x="40" y="636" width="880" height="152" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="666" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: CNDTR reaches 0 and TCIF5 sets, but the ISR never runs</text>
-<text x="56" y="692" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause A: TCIF5 was already 1 from an earlier run — a set flag blocks a new interrupt until cleared</text>
-<text x="56" y="718" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">fix A: write 1 to CTCIF5 (DMA_IFCR bit 17 for channel 5); writing 0 leaves the flag set</text>
-<text x="56" y="744" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cause B: TCIE = 0 (CCR bit 1); TEIE and HTIE also silent, so error and half-transfer never surface</text>
-<text x="56" y="770" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint: enable the DMA1_Channel5 IRQ in NVIC, then clear all four flags before re-arming</text>
-<rect x="40" y="800" width="880" height="32" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="821" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  F103 仅 DMA1（7 通道）；CNDTR 计配置宽度的数据项数，不是字节：8-bit × 0x0080 = 128 B，16-bit 同值 = 256 B。</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。通道映射与 CR/IFCR 语义来自 RM0008 Rev 21 第 13 章；DMA1 结构来自 DS5319 Rev 20 第 2.3.13 节。</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="40" y="75" width="3" height="18" fill="#075e84" opacity="1"/>
+<text x="52" y="88" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">一条事务：外设寄存器 → 内存缓冲，CNDTR 数到 0</text>
+<rect x="40" y="106" width="150" height="54" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="115" y="131.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CPAR</text>
+<text x="115" y="148" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x40013804 USART1_DR</text>
+<line x1="194" y1="133" x2="229" y2="133" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="236.00,133.00 229.00,136.50 229.00,129.50" fill="#075e84" opacity="1"/>
+<text x="215" y="127" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">请求</text>
+<text x="240" y="100" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CMAR 缓冲 · MINC=1 每项 +1</text>
+<rect x="240" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="259" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0</text>
+<rect x="280" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="299" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<line x1="278" y1="119" x2="272" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="268.00,119.00 272.00,117.00 272.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="320" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="339" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<line x1="318" y1="119" x2="312" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="308.00,119.00 312.00,117.00 312.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="360" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="379" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<line x1="358" y1="119" x2="352" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="348.00,119.00 352.00,117.00 352.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="400" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="419" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<line x1="398" y1="119" x2="392" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="388.00,119.00 392.00,117.00 392.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="440" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="459" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<line x1="438" y1="119" x2="432" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="428.00,119.00 432.00,117.00 432.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="480" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="499" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<line x1="478" y1="119" x2="472" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="468.00,119.00 472.00,117.00 472.00,121.00" fill="#075e84" opacity="1"/>
+<rect x="520" y="108" width="38" height="22" fill="#f1f5f7" opacity="1" rx="2" stroke="#075e84" stroke-width="1"/>
+<text x="539" y="124" font-size="10" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<line x1="518" y1="119" x2="512" y2="119" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<polygon points="508.00,119.00 512.00,117.00 512.00,121.00" fill="#075e84" opacity="1"/>
+<text x="556" y="124" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">…</text>
+<rect x="576" y="106" width="150" height="54" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="651" y="131.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CNDTR</text>
+<text x="651" y="148" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0080 项（不是字节）</text>
+<line x1="728" y1="133" x2="765" y2="133" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="772.00,133.00 765.00,136.50 765.00,129.50" fill="#1b5c45" opacity="1"/>
+<text x="760" y="118" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0080</text>
+<text x="760" y="154" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000</text>
+<line x1="736" y1="128" x2="784" y2="128" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="800" y="108" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HT</text>
+<text x="800" y="124" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">TC</text>
+<text x="824" y="108" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0040</text>
+<text x="824" y="124" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000</text>
+<rect x="40" y="176" width="880" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<text x="54" y="198" font-size="13.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">顺序固定：CPAR → CMAR → CNDTR → CCR.EN=1</text>
+<text x="54" y="220" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">8-bit × 0x0080 项 = 128 B；16-bit 同值 = 256 B —— CNDTR 数的是数据项</text>
+<rect x="40" y="250" width="880" height="96" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="250" width="4" height="96" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="60" y="277" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">①</text>
+<text x="86" y="277" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CNDTR 不减：事务从未启动</text>
+<text x="60" y="302" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CCR.EN（bit 0）= 0 → 三个地址写完就停在那里</text>
+<text x="60" y="321" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1_RX 硬连 DMA1 通道 5，不是 4 或 6；USART_CR3.DMAR 也要为 1</text>
+<text x="60" y="340" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：从调试器把 EN 置 1，看 CNDTR 是否开始减 —— 会减就是请求路径的锅</text>
+<rect x="40" y="358" width="880" height="96" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="358" width="4" height="96" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="60" y="385" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">②</text>
+<text x="86" y="385" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">数据错位或全写同址：宽度与自增</text>
+<text x="60" y="410" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PSIZE[9:8] ≠ MSIZE[11:10] → 截断或补零；MINC（bit 7）= 0 → 每项写同一字</text>
+<text x="60" y="429" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1_RX 用 PSIZE=MSIZE=00、MINC=1、PINC=0（外设地址固定是正常的）</text>
+<text x="60" y="448" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：传 4 项后断点，CMAR 每次应 +4 字节（MSIZE=00），+8 则 MSIZE=01</text>
+<rect x="40" y="466" width="880" height="96" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="466" width="4" height="96" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="60" y="493" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③</text>
+<text x="86" y="493" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CNDTR 归零但 TC 中断不进：标志与使能</text>
+<text x="60" y="518" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">旧 TCIF5 还挂着 → 新中断被挡住；写 1 到 CTCIF5（IFCR bit 17）才清</text>
+<text x="60" y="537" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TCIE（bit 1）= 0 时 TC、HT、TE 全静默；NVIC 里 DMA1_Channel5 也要开</text>
+<text x="60" y="556" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自检：清零四个标志后再武装，CNDTR 归零那一刻必须进一次 ISR</text>
+<text x="40" y="604" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">三个旋钮</text>
+<rect x="144" y="584" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="249" y="606.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">读 CNDTR 有没有减</text>
+<line x1="360" y1="602" x2="377" y2="602" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="384.00,602.00 377.00,605.50 377.00,598.50" fill="#5b3a8c" opacity="1"/>
+<rect x="390" y="584" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="495" y="606.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">看目的缓冲有没有动</text>
+<line x1="606" y1="602" x2="623" y2="602" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="630.00,602.00 623.00,605.50 623.00,598.50" fill="#5b3a8c" opacity="1"/>
+<rect x="636" y="584" width="210" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="741" y="606.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">看 TCIF5 有没有清</text>
+<text x="40" y="664" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注：F103 只有 DMA1（7 通道）；CNDTR 按配置宽度计数据项，8-bit 通道 0x0080 = 128 字节。</text>
+<line x1="24" y1="836" x2="936" y2="836" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="858" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。通道映射与 CR/IFCR 语义来自 RM0008 Rev 21 第 13 章；DMA1 结构来自 DS5319 Rev 20。</text>
+<text x="936" y="858" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

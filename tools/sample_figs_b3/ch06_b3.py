@@ -18,74 +18,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from svgkit import Svg, T
 
+from triage_plates import baud_triage  # shared plate drawing, one source of truth
+
 
 def _credit(canvas: Svg, note: str) -> None:
     canvas.line(24, canvas.h - 36, canvas.w - 24, canvas.h - 36, stroke=T.GRID, sw=1)
     canvas.text(24, canvas.h - 16, note, size=11, fill=T.MUTED)
     canvas.text(canvas.w - 24, canvas.h - 16, "自绘 · 静态 · CC BY 4.0", size=11, fill=T.DIM, anchor="end")
 
-
-def baud_triage() -> Svg:
-    canvas = Svg(
-        960,
-        880,
-        "串口三岔口：乱码先按实际 fCK 重算 BRR，无输出先查交叉与时钟门，丢字节先读 SR 再读 DR",
-        "STM32F103C8T6 · chapter 06 · RM0008 Rev 21 ch.27 · DS5319 Rev 20",
-    )
-    canvas.header(tag="06", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  USART1 115200 8N1  PCLK2 72 MHz  SR 0x00  DR 0x04  BRR 0x08",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "three symptoms, three branches: garbled, silent, or missing bytes",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "USARTDIV = fPCLK / (16 × baud)    BRR = mantissa << 4 | fraction",
-                size=13, fill=T.AMBER, mono=True)
-
-    canvas.text(40, 170, "岔口一  乱码  Garbled bytes", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 184, 880, 208, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 214, "the divider does not match the clock that actually feeds USART1",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 242, "USART1, PCLK2 72 MHz, 115200: 72e6 / (16 × 115200) = 39.0625",
-                size=14, fill=T.AMBER, mono=True)
-    canvas.text(56, 268, "mantissa 39 = 0x27, fraction 0.0625 × 16 = 1  →  BRR = 0x271, error 0 %",
-                size=14, fill=T.AMBER, mono=True)
-    canvas.text(56, 296, "HSE fails at startup, RCC falls back to HSI 8 MHz, and the code still divides by 72 MHz:",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 322, "8e6 / (16 × 39.0625) = 12800 baud  →  9× slower than 115200",
-                size=14, fill=T.RED, mono=True)
-    canvas.text(56, 350, "checkpoint: RCC_CFGR SWS bits 3:2 — 00 = HSI, 01 = HSE, 10 = PLL",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 376, "fix the clock tree first; rewriting BRR cannot repair a 9× clock error",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 424, "岔口二  无输出  No bytes at all", size=16, fill=T.AMBER, weight="700")
-    canvas.rect(40, 438, 880, 200, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 468, "check the wire, then the clock gate; nothing else can silence a whole port",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 496, "TX must reach the peer's RX: PA9 pin 30 → peer RX, PA10 pin 31 ← peer TX",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 522, "a TX-to-TX cable looks right and sends nothing anywhere",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 550, "USART1 gate: RCC_APB2ENR bit 14 (0x40021018)",
-                size=14, fill=T.AMBER, mono=True)
-    canvas.text(56, 576, "USART2 gate: RCC_APB1ENR bit 17    USART3 gate: RCC_APB1ENR bit 18    (0x4002101C)",
-                size=14, fill=T.AMBER, mono=True)
-    canvas.text(56, 604, "gate off: BRR writes land nowhere, SR reads 0x00C0 (TXE|TC), the line stays high",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 628, "checkpoint: short PA9 to PA10 and echo one byte before blaming the USB-TTL adapter",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 670, "岔口三  丢字节  Lost bytes", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 684, 880, 140, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 712, "RXNE still set when the next word finishes: ORE, and the clear order is the fix",
-                size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 740, "the shift register is overwritten while RDR keeps the older byte",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 766, "clear: read SR 0x00, then read DR 0x04 — read DR alone leaves ORE set",
-                size=14, fill=T.RED, mono=True)
-    canvas.text(56, 794, "checkpoint: an ISR that reads SR once and DR once per byte keeps ORE at 0",
-                size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。USARTDIV、ORE 清除与 APB 时钟位来自 RM0008 Rev 21 第 27 章；引脚来自 DS5319 Rev 20 图 8。")
-    return canvas
 
 
 def idle_dma() -> Svg:

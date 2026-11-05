@@ -27,7 +27,16 @@ def text_hash(svg: str) -> str:
 
 
 def rebuild_rows() -> tuple[str, int, str]:
-    svgs = sorted(ASSETS.rglob("*.svg"), key=lambda p: p.relative_to(ASSETS).as_posix())
+    svgs = sorted(
+        (
+            p
+            for p in ASSETS.rglob("*.svg")
+            # handraw knowledge track is a separate family with its own contract
+            # (test_handraw_track.py); test_sample_svg_c excludes it too.
+            if not p.relative_to(ASSETS).as_posix().startswith("illustrations/handraw/")
+        ),
+        key=lambda p: p.relative_to(ASSETS).as_posix(),
+    )
     lines = []
     for path in svgs:
         rel = path.relative_to(ASSETS).as_posix()
@@ -97,16 +106,26 @@ def update_audit() -> dict[str, list[str]]:
     }
     seq = {k: chapter_assets(p) for k, p in zh_files.items()}
     text = AUDIT.read_text(encoding="utf-8")
+    original = text
     for cid, assets in seq.items():
         body = ",\n                ".join(f'"{a}"' for a in assets)
         new_tuple = f'"{cid}": (\n                {body},\n            )'
         pat = rf'"{cid}":\s*\((?:[^()]|\([^()]*\))*?\)'
+        current = re.search(pat, text)
+        if current and re.findall(
+            r'"([^"]+)"', current.group(0).split("(", 1)[1]
+        ) == assets:
+            print(f"audit {cid}: {len(assets)} assets, unchanged")
+            continue
         text2, n = re.subn(pat, new_tuple, text, count=1)
         if n != 1:
             raise SystemExit(f"audit replace failed for {cid}: {n}")
         text = text2
         print(f"audit {cid}: {len(assets)} assets")
-    AUDIT.write_text(text, encoding="utf-8")
+    if text == original:
+        print("audit unchanged")
+    else:
+        AUDIT.write_text(text, encoding="utf-8")
     return seq
 
 

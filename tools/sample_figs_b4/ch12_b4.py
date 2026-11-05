@@ -27,74 +27,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from svgkit import Svg, T
 
+from triage_plates import flash_triage  # shared plate drawing, one source of truth
+
 
 def _credit(canvas: Svg, note: str) -> None:
     canvas.line(24, canvas.h - 36, canvas.w - 24, canvas.h - 36, stroke=T.GRID, sw=1)
     canvas.text(24, canvas.h - 16, note, size=11, fill=T.MUTED)
     canvas.text(canvas.w - 24, canvas.h - 16, "自绘 · 静态 · CC BY 4.0", size=11, fill=T.DIM, anchor="end")
 
-
-def flash_triage() -> Svg:
-    canvas = Svg(
-        960,
-        880,
-        "擦除报错先读 CR.LOCK 与 1 KB 页边界；写不进去看半字与 0xFFFF；读回不对按 0x08004800、0xB800 逐页比对",
-        "STM32F103C8T6 · chapter 12 · RM0008 Rev 21 ch.3",
-    )
-    canvas.header(title="擦写三岔口：擦不掉、写不进、读不回", tag="12", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  64 KB 闪存 · 1 KB 页共 64 页（0–63）· 第 63 页从 0x0800FC00 起",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "three failures in the order the controller reports them: erase, program, read back",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "CR.LOCK · CR.PER · CR.PG · CR.STRT    SR.BSY · SR.EOP · SR.PGERR    keys 0x45670123 then 0xCDEF89AB",
-                size=13, fill=T.AMBER, mono=True)
-
-    canvas.text(40, 170, "岔口一  擦除没生效：SR 报错，或页里还是旧数据", size=16, fill=T.RED, weight="700")
-    canvas.text(920, 170, "CR.LOCK · CR.PER · SR.BSY", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 184, 880, 196, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 214, "symptom: the page still holds old bytes, or SR comes back with an error after STRT",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 240, "cause A: KEY2 was written before KEY1 — CR.LOCK stays 1 and every erase returns an error",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 266, "cause B: the address is not on a 1 KB page boundary — 0x08004800 is; 0x08004400 is; 0x08004200 is not",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 292, "cause C: STRT was set while SR.BSY was still 1; the second command is dropped",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 318, "checkpoint: read CR.LOCK = 0 first, then use an address whose low 10 bits are 0, and poll SR.BSY",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 344, "probe: erase one page and read it back — 0xFFFF everywhere means the erase itself worked",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 412, "岔口二  写不进去：SR.PGERR，或只有一半落盘", size=16, fill=T.AMBER, weight="700")
-    canvas.text(920, 412, "CR.PG · SR.PGERR", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 426, 880, 196, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 456, "symptom: the half-word write returns an error, or a 32-bit store leaves only 16 bits changed",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 482, "cause A: the address is odd — this C8 programs half-words at even addresses only, never bytes",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 508, "cause B: the target is not 0xFFFF yet; programming only turns 1 into 0, so a rewrite needs an erase",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 534, "cause C: CR.PG was never set, so the store ran as ordinary memory access and nothing was programmed",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 560, "checkpoint: erase the page, read 0xFFFF, then write one 32-bit value as two half-words",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 586, "probe: read back the whole 0xB800 range from 0x08004800; one wrong half-word marks its page",
-                size=13, fill=T.MUTED)
-
-    canvas.text(40, 650, "岔口三  读回不对：写说成功，比对失败", size=16, fill=T.VIOLET, weight="700")
-    canvas.text(920, 650, "0xB800 · 0x08010000", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 664, 880, 150, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 694, "symptom: every step looks clean, yet the CRC over the app does not match",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 720, "cause A: the last page was written as 0x0801FC00 — that address is not in this 64 KB at all",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 746, "cause B: read-out protection was put back to 0xA5, and that transition mass-erases the whole Flash",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 772, "checkpoint: 46 pages from 0x08004800 to 0x08010000, 0xB800 bytes — compare page by page, not once",
-                size=13, fill=T.MUTED)
-
-    _credit(canvas, "自绘。页、半字与钥匙来自 RM0008 Rev 21 第 3 章；读保护 0xA5 来自 PM0075。")
-    return canvas
 
 
 def boot_compare() -> Svg:

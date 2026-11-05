@@ -1,46 +1,173 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="990" viewBox="0 0 960 990" role="img" aria-label="ELF 已生成却连不上：先查 PA13/PA14 复用，再查供电与共地，最后才动 adapter speed">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="990" viewBox="0 0 960 990" role="img" aria-label="ELF 生成却连不上：先查 PA13/PA14 是否被复用成 GPIO，再查供电与共地，最后才动 adapter speed">
 
 
 <rect x="0" y="0" width="960" height="990" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ELF 已生成却连不上：先查 PA13/PA14 复用，再查供电与共地，最后才动 adapter speed</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">连不上 SWD：五根线、三个环、一个单向门</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · DS5319 Rev 20 表 5 · openocd/bluepill-stlink.cfg</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LQFP48  Cortex-Debug + OpenOCD  arm-none-eabi-gdb</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the ELF exists and the build is green, so this failure is past the build boundary</text>
-<text x="40" y="138" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK    pin 7 NRST    pin 44 BOOT0</text>
-<text x="40" y="170" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一环  PA13/PA14 被复用成 GPIO</text>
-<rect x="40" y="184" width="880" height="188" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="214" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">symptom: No target connected, or every SWD attempt fails after one flash</text>
-<text x="56" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">symptom: the part still boots, but the two debug pins are ordinary GPIO from then on</text>
-<text x="56" y="266" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">checkpoint: the .ioc has SYS → Debug = Serial Wire</text>
-<text x="56" y="292" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">and the generated GPIO init does not list PA13 or PA14 as an output</text>
-<text x="56" y="318" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">recovery: BOOT0 high, connect, erase, set Serial Wire, flash again</text>
-<text x="56" y="344" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">No Debug is a one-way door here; no C change reopens the port</text>
-<text x="40" y="400" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第二环  供电与共地先量，再谈别的</text>
-<rect x="40" y="414" width="880" height="188" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="444" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">symptom: Cannot access target, No STM32 target found, a link that drops</text>
-<text x="56" y="470" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 VSS_2 and pin 36 VDD_2 sit beside the debug pins and must not float</text>
-<text x="56" y="496" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">checkpoint: 3V3 to GND reads 3.3 V, and probe GND is board GND</text>
-<text x="56" y="522" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">this lab powers the BluePill over Micro-USB; do not parallel the probe's 3.3 V</text>
-<text x="56" y="548" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 7 NRST is not an SWD signal, but it is how a probe hard-resets the chip</text>
-<text x="56" y="574" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a dead rail and a miscounted pin report the same error</text>
-<text x="40" y="630" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第三环  接口与 cfg：速率是最后才动的旋钮</text>
-<rect x="40" y="644" width="880" height="188" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="674" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">symptom: the probe attaches sometimes, or drops right after reset</text>
-<text x="56" y="700" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">openocd/bluepill-stlink.cfg: transport select hla_swd / adapter speed 1000</text>
-<text x="56" y="726" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">checkpoint: launch.json configFiles loads that cfg, not an older copy</text>
-<text x="56" y="752" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">then lower adapter speed below 1000 and retry, one knob at a time</text>
-<text x="56" y="778" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">target/stm32f1x.cfg is this part's target file; the ELF path stays as it is</text>
-<text x="56" y="804" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a stale ST-Link firmware reports DFU errors; upgrade it first</text>
-<text x="40" y="862" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">查的顺序  环 1 → 环 2 → 环 3</text>
-<rect x="40" y="876" width="880" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="906" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">do not rewrite main while the line is not connected</text>
-<text x="56" y="932" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">do not change -O2 to fix an attach failure; the build already succeeded</text>
-<line x1="24" y1="954" x2="936" y2="954" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="974" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。脚位来自 DS5319 Rev 20 表 5；速率与 transport 取自 openocd/bluepill-stlink.cfg。</text>
-<text x="936" y="974" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="40" y="92" width="150" height="196" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="115" y="116" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link</text>
+<text x="115" y="134" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">hla_swd</text>
+<text x="56" y="160" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3V3</text>
+<line x1="102" y1="156" x2="232" y2="156" stroke="#8f2d2d" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="160" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只供电，不与板载 3.3 V 并联</text>
+<text x="56" y="186" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
+<line x1="102" y1="182" x2="232" y2="182" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="186" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针地与板地必须是同一个地</text>
+<text x="56" y="212" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWDIO</text>
+<line x1="102" y1="208" x2="232" y2="208" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="212" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">34 / PA13</text>
+<text x="56" y="238" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWCLK</text>
+<line x1="102" y1="234" x2="232" y2="234" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="238" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">37 / PA14</text>
+<text x="56" y="264" font-size="11.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NRST</text>
+<line x1="102" y1="260" x2="232" y2="260" stroke="#7a4e00" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="238" y="264" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">7 / 复位，不是 SWD 信号</text>
+<rect x="566" y="96" width="300" height="300" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="716" y="136" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LQFP48</text>
+<text x="716" y="158" font-size="11.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">俯视：只标要用的 6 个脚</text>
+<line x1="544" y1="114" x2="560" y2="114" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="128" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>
+<line x1="544" y1="138" x2="560" y2="138" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="152" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2</text>
+<line x1="544" y1="162" x2="560" y2="162" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="176" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3</text>
+<line x1="544" y1="186" x2="560" y2="186" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="200" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">4</text>
+<line x1="544" y1="210" x2="560" y2="210" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="224" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5</text>
+<line x1="544" y1="234" x2="560" y2="234" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="248" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">6</text>
+<line x1="544" y1="258" x2="560" y2="258" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="552" y="272" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7</text>
+<line x1="544" y1="282" x2="560" y2="282" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="296" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8</text>
+<line x1="544" y1="306" x2="560" y2="306" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="320" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">9</text>
+<line x1="544" y1="330" x2="560" y2="330" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="344" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">10</text>
+<line x1="544" y1="354" x2="560" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="368" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">11</text>
+<line x1="544" y1="378" x2="560" y2="378" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="552" y="392" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12</text>
+<line x1="584" y1="398" x2="584" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="584" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">13</text>
+<line x1="608" y1="398" x2="608" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="608" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14</text>
+<line x1="632" y1="398" x2="632" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="632" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">15</text>
+<line x1="656" y1="398" x2="656" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="656" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">16</text>
+<line x1="680" y1="398" x2="680" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="680" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">17</text>
+<line x1="704" y1="398" x2="704" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="704" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">18</text>
+<line x1="728" y1="398" x2="728" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="728" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">19</text>
+<line x1="752" y1="398" x2="752" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="752" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">20</text>
+<line x1="776" y1="398" x2="776" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="776" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">21</text>
+<line x1="800" y1="398" x2="800" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="800" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">22</text>
+<line x1="824" y1="398" x2="824" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="824" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">23</text>
+<line x1="848" y1="398" x2="848" y2="414" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="848" y="428" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24</text>
+<line x1="868" y1="370" x2="884" y2="370" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="384" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">25</text>
+<line x1="868" y1="346" x2="884" y2="346" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="360" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">26</text>
+<line x1="868" y1="322" x2="884" y2="322" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="336" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">27</text>
+<line x1="868" y1="298" x2="884" y2="298" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="312" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">28</text>
+<line x1="868" y1="274" x2="884" y2="274" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="288" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">29</text>
+<line x1="868" y1="250" x2="884" y2="250" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="264" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">30</text>
+<line x1="868" y1="226" x2="884" y2="226" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="240" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">31</text>
+<line x1="868" y1="202" x2="884" y2="202" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="216" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">32</text>
+<line x1="868" y1="178" x2="884" y2="178" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="876" y="192" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">33</text>
+<line x1="868" y1="154" x2="884" y2="154" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="876" y="168" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">34</text>
+<line x1="868" y1="130" x2="884" y2="130" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="876" y="144" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">35</text>
+<line x1="868" y1="106" x2="884" y2="106" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="876" y="120" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">36</text>
+<line x1="840" y1="74" x2="840" y2="90" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="840" y="104" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">37</text>
+<line x1="816" y1="74" x2="816" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="816" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">38</text>
+<line x1="792" y1="74" x2="792" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="792" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">39</text>
+<line x1="768" y1="74" x2="768" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="768" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">40</text>
+<line x1="744" y1="74" x2="744" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="744" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">41</text>
+<line x1="720" y1="74" x2="720" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="720" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">42</text>
+<line x1="696" y1="74" x2="696" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="696" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">43</text>
+<line x1="672" y1="74" x2="672" y2="90" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="672" y="104" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">44</text>
+<line x1="648" y1="74" x2="648" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="648" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">45</text>
+<line x1="624" y1="74" x2="624" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="624" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">46</text>
+<line x1="600" y1="74" x2="600" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="600" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">47</text>
+<line x1="576" y1="74" x2="576" y2="90" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="576" y="104" font-size="9.5" fill="#d7dce1" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">48</text>
+<text x="590" y="246" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">红脚 = 必须接对的 6 个</text>
+<text x="596" y="270" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">7  NRST</text>
+<text x="596" y="291" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">34 PA13 SWDIO</text>
+<text x="596" y="312" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">35 VSS_2 · 36 VDD_2</text>
+<text x="596" y="333" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">37 PA14 SWCLK</text>
+<text x="596" y="354" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">44 BOOT0</text>
+<text x="590" y="372" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">其余 42 脚不标：</text>
+<text x="590" y="390" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">别把 35/36 数成 34/37。</text>
+<rect x="40" y="434" width="880" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="434" width="4" height="76" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="60" y="460" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">①</text>
+<text x="86" y="460" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">复用：No Debug 是单向门</text>
+<text x="86" y="482" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYS → Debug 选了 No Debug，生成代码把 PA13/PA14 配成推挽输出；</text>
+<text x="86" y="500" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">程序一跑调试口就消失，下一次连接失败 —— 改 C 代码关不回来。</text>
+<rect x="40" y="522" width="880" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="522" width="4" height="76" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="60" y="548" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">②</text>
+<text x="86" y="548" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">供电与共地：先量 3V3，再谈别的</text>
+<text x="86" y="570" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 VSS_2 与 36 VDD_2 紧挨调试脚，常被数错；探针地必须与板地同地。</text>
+<text x="86" y="588" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">本实验室用 Micro-USB 供电，不要再并探针的 3.3 V。</text>
+<rect x="40" y="610" width="880" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="40" y="610" width="4" height="76" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="60" y="636" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③</text>
+<text x="86" y="636" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">接口与 cfg：速率是最后一个旋钮</text>
+<text x="86" y="658" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bluepill-stlink.cfg：transport select hla_swd / adapter speed 1000；</text>
+<text x="86" y="676" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">launch.json 要加载这份 cfg，别指向旧副本；ST-Link 固件旧会报 DFU 错误。</text>
+<rect x="40" y="704" width="880" height="86" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="54" y="728" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">救砖：BOOT0 拉高 → 上电 → 接上 → 擦除 → SYS 选 Serial Wire → 烧回 → BOOT0 归零</text>
+<text x="54" y="752" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">顺序不能换：先让芯片从系统存储器起来，SWD 才有机会接上；接上之后才谈得到改选项字节。</text>
+<text x="54" y="774" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">别为了连不上就改 -O2 或重写 main —— 编译已经过了，故障在板子和线。</text>
+<text x="40" y="824" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">排查顺序</text>
+<rect x="144" y="804" width="200" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="244" y="826.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">复用 Debug=Serial Wire</text>
+<line x1="350" y1="822" x2="367" y2="822" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="374.00,822.00 367.00,825.50 367.00,818.50" fill="#5b3a8c" opacity="1"/>
+<rect x="380" y="804" width="200" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="480" y="826.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">量 3V3 与共地</text>
+<line x1="586" y1="822" x2="603" y2="822" stroke="#5b3a8c" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="610.00,822.00 603.00,825.50 603.00,818.50" fill="#5b3a8c" opacity="1"/>
+<rect x="616" y="804" width="200" height="36" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="716" y="826.5" font-size="12.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">最后才降 adapter speed</text>
+<line x1="24" y1="946" x2="936" y2="946" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="968" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。脚位来自 DS5319 Rev 20 表 5；速率与 transport 取自 openocd/bluepill-stlink.cfg。</text>
+<text x="936" y="968" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>
