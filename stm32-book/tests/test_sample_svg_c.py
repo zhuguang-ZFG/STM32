@@ -141,7 +141,7 @@ diagrams/sample-01-rdp-unlock.svg 960x880 8337 68ed19a2ca697b797351a08ea7ef63f1f
 diagrams/sample-01-swd-vectors.svg 960x980 7365 2e08712dfff9ee901d17be08e83d3496b7d34b02f3ddd73a7565d230a6291b56
 diagrams/sample-02-boot-mode.svg 960x620 14370 cdcd87d572ac7b40b3d2347c8e851c51aeb4b29d9a7c82054025bc98cb456751
 diagrams/sample-02-bus-matrix.svg 960x880 7375 88d9726b1d4072f7122df48bac9abe41a38e96471716166074085d5ddfbb70d4
-diagrams/sample-02-clock-tree.svg 960x860 7439 41c1657ce8a1e34119ae2946ab5f10034fe5c83ef21fa50b4a1520861a1a98f2
+diagrams/sample-02-clock-tree.svg 960x860 14183 9235cf0b71451abd5de4dd18bb274cec2801bb8fb432087799052ca09a55ab4f
 diagrams/sample-02-flash-latency.svg 960x880 6871 6ca3bd42e32ec03d640bbf05f8f1e9ef68d33df4b03bffe66deece2b2853e55e
 diagrams/sample-02-hse-fail.svg 960x720 16158 497b0d449566deabbab5c1e24d0f5f11094e20bb6372f1a6b20d4a41eb2da707
 diagrams/sample-02-pll-lock.svg 960x880 10856 f2d079c74323214fd995403c50b4f9490cbdbdfffe4e004f6d26c46f30768e2f
@@ -166,7 +166,7 @@ diagrams/sample-06-idle-dma.svg 960x840 15348 8a0b80e12adc2e955f0105a482b40b4f8c
 diagrams/sample-06-tx-rx-crossover.svg 960x880 6968 fbe536043a67ff814ac8c076f13d25647774ae61bd961d446dc6a679c2302178
 diagrams/sample-06-uart-frame.svg 960x820 12513 2da90d7d086d7eabf7a11f50cbe53f3387f1b0e3ed8b97b7781ff4a41be516ee
 diagrams/sample-07-i2c-addr.svg 960x920 6654 5d8aeb4df50370a3885d46d17f086e582dab7875ce914911efb247b07e8d7e5a
-diagrams/sample-07-i2c-triage.svg 960x880 15555 e883d49128b6ad56b242d8f1178dc70d67f1014bfb42f958c41bf34677d54a1d
+diagrams/sample-07-i2c-triage.svg 960x880 16559 0f511b0d673f3fdff3435be888415204339ebdb7a2727db6a1ca2027590b7bdc
 diagrams/sample-07-pullup-cap.svg 960x880 7804 8e8eeb28a80cf788b23f02b01fa301dae7454c84b618fe8fd0fbc6c71d813194
 diagrams/sample-07-sr-restart.svg 960x880 8115 cceb578c44a66a2a6ee75d3af68b2f5fb94800051e2d6f6cad557766ee21a4f5
 diagrams/sample-07-start-ack.svg 960x880 7267 c5d9b22469eba2d8cc91a5de66fc48a427780655e53f27f2fef1d7c3f9f9b119
@@ -207,7 +207,7 @@ diagrams/sample-14-pma-map.svg 960x880 7636 aea0d7087ef6f7098294592050f891aa4964
 diagrams/sample-14-usb-enum.svg 960x980 12237 ca8e7dff037ef54ba47e138ce4010f8471d3af4506e1cc12afe95ab622ba6eca
 diagrams/sample-14-usbpre-48.svg 960x880 8434 4f0613fdf91f0c8e230431bf7cd198cdcce6b3a111938dc09e8be37aac6378b9
 diagrams/sample-15-fromisr.svg 960x880 6908 6be5fd0850c4ee6f744d6fef75a2264d9752db4dc6bfc3dc0808afc8a4fa313a
-diagrams/sample-15-rtos-prio.svg 960x960 6831 a6c5ccb5affa24af61ec70b68a8fff13810af20309f0a3cf1549a59b3b24a842
+diagrams/sample-15-rtos-prio.svg 960x960 10852 1a93dca0ff2d3f75ed07fdf75932902669b5acfa0606d6f6ff4ffbe439262036
 diagrams/sample-15-rtos-triage.svg 960x880 32920 532a344a2bc920e3ed45a7328839e0e2e58d3e8cee194c26c44cdaaf5b4b531f
 diagrams/sample-15-task-states.svg 960x880 7968 7e869e871a969afdd2b008f4216655d687c2b8f84d23139f4595f5a7caca3ec6
 diagrams/sample-16-clock-restore.svg 960x880 8622 4d5484967019fb3e4f2d1f57860f95149dd9dbc8a9cf4946f33df936f6dbeea9

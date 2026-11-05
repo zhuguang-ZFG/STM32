@@ -182,7 +182,7 @@
  "diagrams/sample-02-clock-tree.svg": {
   "type": "technical",
   "chapter": "02",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48。第 5 脚 PD0、第 6 脚 PD1 进来的 8 MHz，PLLMUL=0111、PLLSRC=1、PLLXTPRE=0，得到 72 MHz。PCLK1 = 36 MHz，PCLK2 ="
+  "caption": "▲ 自绘。把树画出来：HSE 8 MHz（PD0/PD1）→ PLL ×9 → SYSCLK/HCLK 72，APB1 ÷2 到 PCLK1 36（TIM ×2 回 72）、APB2 到 PCLK2 72；右侧三路 ADC ÷6 = 12、USBPRE=0 ÷1.5 = 48、MCO PLL/2 = 36；Flash LATENCY = 2 挂在 HCLK 上；红色失败路径是 HSE 停振回 HSI 8 MHz。"
  },
  "illustrations/handraw/ch02-clock-tree.png": {
   "type": "technical",
@@ -646,7 +646,7 @@
  "diagrams/sample-07-i2c-triage.svg": {
   "type": "triage",
   "chapter": "07",
-  "caption": "▲ 自绘。岔口一：SDA 卡低、SCL 空闲高时形不成 START，每次 HAL 调用都返回 BUSY——把 SCL 当开漏 GPIO 手动发最多 9 个脉冲（8 个数据位加 1 个 ACK 恰好放掉从机咬住的那一位），逐个时钟采样 SDA"
+  "caption": "▲ 自绘。三岔口各带证据：SDA 卡低配 9 个 SCL 脉冲与第 9 拍释放的波形；NACK 岔口画 A6..A0 + R/W 的字节格（0x3C 左移成 0x78）；时钟拉伸岔口画主机松手后期望与从机按住的对比虚线。"
  },
  "illustrations/handraw/ch07-i2c-triage.png": {
   "type": "triage",
@@ -1172,7 +1172,7 @@
  "diagrams/sample-15-rtos-prio.svg": {
   "type": "comparison",
   "chapter": "15",
-  "caption": "▲ 自绘。STM32F103C8T6。上半部分是例程正常跑的样子：SysTick 1 ms 一格，HAL 时基在 TIM4，优先级 2 在跑、优先级 1 在等，LED 栈 128 字 = 512 字节，EXTI0 抢占优先级 5。下半部分是"
+  "caption": "▲ 自绘。两把尺子并排：NVIC 数字越小越急（0 最急、5 是 FromISR 及格线、15 最缓），FreeRTOS 任务数字越大越先跑（KEY=2 先于 LED/UART=1）；换算条：tick 1 ms、128 words = 512 bytes、5 << 4 = 0x50；失败路径是 EXTI0 配成 0/4 时 FromISR 触发 configASSERT。"
  },
  "illustrations/handraw/ch15-rtos-prio.png": {
   "type": "comparison",
