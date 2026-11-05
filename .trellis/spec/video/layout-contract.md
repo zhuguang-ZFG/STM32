@@ -22,10 +22,10 @@ openStage(browser, { platform, size, safe, scenes, kicker, badge, sections })
 ```
 
 ```bash
-npm run video:lint                # 18 集全量契约校验（含 sections 五条判据）
+npm run video:lint                # 当前 episode 集全量契约校验（含 sections 五条判据；2026-10 基线为 18 集）
 npm run video:check -- [id…] [--platform p]   # 只跑舞台 + 排版审计，不渲帧、不写 video/out/
 node .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/fill-probe.mjs <epId> [platform] [--sections f.json] [--out 前缀]
-node .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/fill-sweep.mjs   # 18 集 × 双平台逐场填充分布
+node .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/fill-sweep.mjs   # 2026-10 基线：18 集 × 双平台逐场填充分布
 ```
 
 ## 3. Contracts
@@ -67,7 +67,7 @@ node .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/fill
 
 - Good：`card` 场用「面板长满 + 内容框内居中」（`.lay-card{justify-content:stretch}` +
   `.cardpanel{flex:1 1 auto;justify-content:center}`）——横版 8 场 0.45→0.82，且框本身是可见物体，
-  18 集 125 场横版 card 全部 82%（几何决定，与内容量无关）。竖版 card 不参与（它本来就有 0.85/0.67，
+  2026-10 测量：18 集 125 场横版 card 全部 82%（几何决定，与内容量无关）。竖版 card 不参与（它本来就有 0.85/0.67，
   套过去会变成"巨框里三行字"）。
 - Base：`code`/`hook` 保持 `justify-content:center`，只把 `.lay` 的 gap 从 1.6u/2.4u 抬到横版 4u、竖版 2.4u。
   读数横版 code 0.64 / hook 0.59，是一组居中、间距均匀的内容。
@@ -83,7 +83,7 @@ node .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/fill
 - 每条新判据都要**造一次故意的失败**并留下报错原文，否则它可能是死代码：
   ① 横版也渲染 `.secbar` → 必须报「进度杠重复」；② 页头 chip 塞 42 字 → 必须报「越出画布」。
 - 版式改动必须**看截图**，不能只看分数：`fill-probe` 的 `fill` 能被"把内容拆开"刷高（见 §5 Bad）。
-- 改完跑 `fill-sweep.mjs` 复核 18 集分布没有回退，跑 `md5sum -c research/out-md5-before.txt --quiet`
+- 改完跑 `fill-sweep.mjs` 复核当时 18 集基线分布没有回退（当前集数从 `episodes/*/episode.json` 重算），跑 `md5sum -c research/out-md5-before.txt --quiet`
   证明没碰已发布产物（`video:check` 不写 `video/out/`；`video:build` 会，未发布集才允许跑）。
 - **给某一集写了 `sections` 就不止跑审计**：审计只查几何（越界/相叠/进度杠唯一），不查页头**说的是不是真话**；
   而 `validateSections` 只查稿子自洽（`at` 命中该平台 `resolveScenes` 出来的真实 id、不重复、递增、title ≤12 字），

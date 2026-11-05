@@ -49,14 +49,14 @@ v2 episode 的最小骨架（只示范字段形状；`sections` 实际必须 3�
 
 ## 2. v1 兼容线（硬性）
 
-`formatVersion` 缺席/为 1 的 19 份 `episode.json`（18 集成片 + c3b 竖版变体）必须与改版前完全一致：
+`formatVersion` 缺席/为 1 的集必须与改版前完全一致（2026-11-05 当前是 `ai4fw` 与 `c3b-volatile` 两份）：
 
 - `pageHtml` 不传 `formatVersion`（或传 1）时，输出与 Task 0 金样例**逐字节相同**：
   `video/tests/fixtures/page-v1-s5-bilibili.html`、`page-v1-s5-douyin.html`。禁止改夹具，
   也禁止为 v2 改 `video/src/layout.mjs` 的 v1 分支（v2 分支只能新增、不能重排 v1 输出）。
 - `stateKey(frame, opacity, reveal)` 的 v1 串一字不变，见 §7。
 - `audioFilter` 的 v1 滤镜串一字不变（Task 8 的硬回归）。
-- `npm run video:lint` 的 19 行通过文案与场次数不变；`npm run video:check` 的 v1 逐场读数不变。
+- `npm run video:lint` 对 v1 集的通过文案与场次数不变（行数按当时 episode 集计，不写死历史总数）；`npm run video:check` 的 v1 逐场读数不变。
 - v2 的 DOM/CSS/客户端方法只能由 `formatVersion === 2` 分支注入；v1 页面多一个 `data-beat-target`
   都会让 Task 4 的 `layout-v1.test.mjs` 变红。
 - v1 集**不要**为了“先试试”写 v2 字段：lint 不查，build 也不读，只会留下会腐烂的死数据。
@@ -244,8 +244,8 @@ v2 在**有 beat 或有转场**时追加两段（`beat` 为 null 且 `transition
 
 ```bash
 npm run video:test                                    # 跑 video/tests/**/*.test.mjs
-npm run video:test -- video/tests/spec-v2.test.mjs    # 跑单个测试文件
-npm run video:lint                                    # 19 份 episode.json 全量契约校验
+node --test video/tests/spec-v2.test.mjs              # 只跑一个文件（不要用 npm run video:test -- <file>）
+npm run video:lint                                    # 当时 episode 集的全量契约校验（只读）
 npm run video:check -- <id> [--platform <p>]          # 舞台 + 排版审计，不渲帧、不写 video/out/
 npm run video:build -- <id> [--stills]                # 会写 video/out/：只在 Task 0 归档校验通过后用
 ```
@@ -253,9 +253,9 @@ npm run video:build -- <id> [--stills]                # 会写 video/out/：只�
 - `video:test` 脚本用 glob（`node --test "video/tests/**/*.test.mjs"`）而不是目录参数：本机 Node 24.14.0
   的 `--test` 会把目录位置参数当模块去 require，报 `Cannot find module ...\video\tests`。
   新增测试只要放在 `video/tests/` 下、命名 `*.test.mjs` 就会被自动收进来。
-- `video:lint` 的期望：19 行通过（18 集成片 + c3b 竖版），输出与 Task 0 基线逐字相同。
-- `video:check` 的期望：通过行数 = 平台数（19 集里 c3b 只有竖版 → 37），`跳过` 计数 0。
-- `video:test -- <文件>` 里显式文件与 glob 命中同一路径时 Node 会去重，不会跑两遍。
+- `video:lint` 的期望：当前所有 `episode.json` 各一行通过；v1 夹具所在的 `s5-systick` 仍按 v1 基线，不把 2026-10 的 19 行当成永久数字。2026-11-05 实跑为 19/20：`ai4fw` 缺 `voice`/`platforms`/`cover.line1`，属存量内容缺口，补齐前不得写"全绿"。
+- `video:check` 的期望：通过行数 = 目标集里实际声明且已有时间轴的平台数，`跳过` 计数 0。2026-10 的历史样本是 19 集 37 个平台配置；当前集数从 `video/episodes/*/episode.json` 计算。
+- `npm run video:test -- <文件>` 会先执行脚本自带的 glob，再追加该文件；Node 只对同一路径去重，所以它**不是**单文件模式。单文件必须直接 `node --test <文件>`。
 
 ## 9. 校验失败原文（Task 2 已落地）
 

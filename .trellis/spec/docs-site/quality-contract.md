@@ -14,7 +14,7 @@
 - `npm run firmware:check`：ARM/host 全工程、五场景切换、初始 SP 与 Thumb 复位向量验证。登记了 `probe` 的 arm-make 工程，建完 ELF 还会跑一遍 `probe.sh`（无板取证：宿主断言 → 与 CMSIS/正文对账 → 交叉反汇编）。
 - `npm run test:browser`：构建后运行；先 `npx playwright install chromium`。本机可 `PLAYWRIGHT_CHANNEL=msedge`。
 - `npm run site:measure -- current [output-directory]`：测量产物与搜索延迟加载，默认输出 test-results/performance。
-- `node scripts/project-catalog.mjs --matrix`：仅向 stdout 输出 JSON `{include:[{path,target}]}`，供 CI 消费。
+- `node scripts/project-catalog.mjs --matrix`：仅向 stdout 输出 JSON `{include:[{path,target,variant,defaults}]}`，供 CI 消费；只列 `kind=esp-idf` 工程，`faults:true` 的工程出 `normal` 与 `faults` 两行。`defaults` 是分号分隔的单字符串（`sdkconfig.defaults`，故障版 `sdkconfig.defaults;sdkconfig.defaults.faults`），直接喂 `-D SDKCONFIG_DEFAULTS`，不是数组。无参数运行时只做登记校验并打印工程数。
 - `npm run docs:check`：全站文档一致性门（`scripts/docs-check.mjs`）——相对链接与锚点、Markdown 卫生（控制字符、`\(\)`）、仓库自链按工作树核对、**手写数字声明对账**、CITATION/CHANGELOG 与 manifest 口径对账。只读源文件，不需构建。
 - `npm run pages:check`：产物锚点门（`scripts/pages-check.mjs`）——扫 `docs/.vitepress/dist` 每个页面的 `#fragment` 链接，要求目标页真有那个 `id`。需先构建；支持 `--dist <dir>`（部署侧对 artifact 用 `--dist site`）。
 - 产物锚点门先清空 `script/style` 原始文本再提取 href，保留行号；JS 中的 CSS 选择器不是实际链接。独立 HTML 导读的过期门与入口检查见 [presentation-assets.md](presentation-assets.md)。
@@ -25,7 +25,10 @@
 
 ## 3. Contracts
 
-- `code/projects.json` 数组：`id` 唯一；`path` 为 `code/<board>/<project>`；`kind` 为 arm-make/esp-idf/host-probe/host-make；`entry` 必须存在且与类型一致。ESP 的 `target` 必须是 esp32s3，RTOS `scenes=[1,2,3,4,5]`。可选 `probe`：只允许 arm-make，值必须是 `probe.sh` 且文件真实存在——它是"板级固件 + 无板取证"同目录共存的唯一登记方式（`host-probe` 那一类是纯取证工程，有自己的目录与 entry）。CI 侧 `arm-host` job 会把 `.trellis/ref/cmsis` 固定到 cmsis-device-f4 `v2.6.11` + CMSIS_5 `5.9.0` 并校验 sha256，取证脚本的头文件对账因此在 CI 上有第二来源；交叉反汇编那一步只在本机钉住的工具链版本上判定，别的版本打印跳过。
+- `code/projects.json` 数组：`id` 唯一且匹配 `[a-z0-9-]+`；`path` 为 `code/<board>/<project>`；`kind` 为 arm-make/esp-idf/host-probe/host-make；`entry` 必须存在且与类型一致（`arm-make`/`host-make` → `Makefile`、`esp-idf` → `CMakeLists.txt`、`host-probe` → `probe.sh`）。ESP 的 `target` 必须是 `esp32s3`；`faults:true` 只影响矩阵是否多出 `faults` 行。可选 `probe`：只允许 arm-make，值必须是 `probe.sh` 且文件真实存在——它是"板级固件 + 无板取证"同目录共存的唯一登记方式（`host-probe` 那一类是纯取证工程，有自己的目录与 entry）。
+- 可选 `scenes`：只允许 arm-make，且必须是三种精确形状之一 `[1,2,3,4,5]`、`[1,2,3,4,5,6]`、`[1,6]`；`firmware:check` 按升序逐场景 `make -B DEMO_SCENE=n`，并做"相邻场景产物不同 + 切回首场景字节可复现 + 非法场景被拒"的断言。新增场景必须同时改 Makefile 的 `filter` 校验和本清单，不能只写 JSON。
+- 可选 `variants`：只允许 arm-make，非空数组；每项 `dir` 匹配 `build/[a-z0-9-]+`，`args` 非空且每项只接受 `MODE=[0-3]` 或 `FAULTS=[01]`。`firmware:check` 用 `-B` 逐个变体构建，断言 normal/faults 产物不同、重跑首变体字节一致，并确认 `MODE=99` 非零退出。变体目录必须与 Makefile 的 `BUILD` 拼接规则一致。
+- CI 侧 `arm-host` job 会把 `.trellis/ref/cmsis` 固定到 cmsis-device-f4 `v2.6.11` + CMSIS_5 `5.9.0` 并校验 sha256，取证脚本的头文件对账因此在 CI 上有第二来源；交叉反汇编那一步只在本机钉住的工具链版本上判定，别的版本打印跳过。ESP32 job 用 `idf.py -B build/ci-$VARIANT -D SDKCONFIG=$PWD/build/ci-$VARIANT/sdkconfig -D SDKCONFIG_DEFAULTS=$DEFAULTS set-target esp32s3`，随后同一组参数 `build size`，并从 `project_description.json` 断言 target；普通与故障版共用该模板，靠矩阵的 `variant/defaults` 区分。
 - 章节：title 非空字符串，status=done/building，difficulty=1/2/3，minutes 正整数。非法值使生成进程非零退出，不能降级为告警再产出数据。
 - 实验额外字段：code_status=ready/planned、hardware_status=pending/verified、code_note 非空、projects 为工程 ID 数组。ready 必须引用工程；verified 必须有 docs/ 下的 evidence 文件。
 - status 只表示文稿；LabStatus/LabOverview 从元数据与 progress.json 显示时长、难度、代码状态和实测状态。禁止将成稿数说成实测数。
@@ -43,6 +46,10 @@
 |---|---|
 | 空目录 | 不计工程 |
 | 有构建入口但未登记 / 路径失效 / 重复 ID | 报错 |
+| `scenes` 不是 `[1,2,3,4,5]`/`[1,2,3,4,5,6]`/`[1,6]`，或挂在 host/esp 工程 | 报错（`非法场景列表`）；不允许"先写 JSON 再补 Makefile" |
+| `variants.dir` 不在 `build/`、`args` 含 `MODE=4`/`FAULTS=2` 等 | 报错（`非法构建变体`）；矩阵不产出该行 |
+| `faults:true` 但缺 `sdkconfig.defaults.faults` | 矩阵仍会产出 `faults` 行，构建在 IDF 阶段失败；登记时先核对文件存在 |
+| `probe` 挂在非 arm-make、值不是 `probe.sh` 或文件不存在 | 报错（`probe 钩子非法`） |
 | minutes=0、difficulty=4、status=finished | 报错 |
 | 实测 verified 但无证据 | 报错 |
 | 任一 CI job 失败/取消/跳过 | 不部署 |
@@ -66,7 +73,7 @@
 
 ## 6. Tests Required
 
-- tests/catalog.test.mjs：空目录、失效入口、未登记工程、重复与目标错配。
+- tests/catalog.test.mjs：空目录、失效入口、未登记工程、重复与目标错配、probe 钩子（arm-make 限定与真实文件）。`variants`/`scenes` 的非法输入目前只由 `project-catalog.mjs` 源码校验与 `firmware:check` 实跑拦截，测试尚未覆盖；规范不得据此宣称已有回归保护。
 - tests/nav.test.mjs：sidebar 全量（正例）、漏登记被拦截（反例，GD32 回归）、锚点/尾斜杠归一。
 - tests/seo.test.mjs：meta 抽取与空值、单页分享卡齐全、og:image/url 必须绝对 URL、sitemap 丢 base 前缀被拦截（反例）、robots 缺项。
 - tests/perf.test.mjs：压缩体积计算、首屏资源抽取去重、预算内通过、超预算逐项点名、搜索索引单独设限。
