@@ -46,6 +46,11 @@ Set bit 24 of `DEMCR` at `0xE000EDFC` before clearing `DWT_CYCCNT` at `0xE000100
 
 This M3 has 6 hardware breakpoints. Setting a 7th in flash makes the debugger refuse or fail to stop. The Cortex-M7 in an STM32F7 or H7 has 8, so do not copy that number from an H7 tutorial.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-bp-comparators.png" width="760" alt="Handraw: the M3's six breakpoint comparators and the fate of the seventh (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the left panel draws the six comparators as six slots, each already given a job; a 7th breakpoint has no slot — the debugger errors out or never stops; the right side contrasts the M3's 6 with the M7's (F7/H7) 8. What it proves: the hardware breakpoint count is a hard ceiling — when the comparators run out you retire an old one, the 7th does not queue. What it does not prove: this is a sketch of FPB comparator count, not how software breakpoints (BKPT instructions) or RAM breakpoints behave. Source: [PM0056 DWT](#source-pm0056-dwt).</sub>
+</p>
+
 Pin 34 PA13 is SWDIO. Pin 37 PA14 is SWCLK. Pin 39 PB3 is JTDO after reset. PB3 switches to TRACESWO only after JTAG is turned off and SWD is kept. Probe PB3 for SWO straight after power-up and you see nothing. See [DS5319](#source-ds5319-swd).
 
 ## Key figures

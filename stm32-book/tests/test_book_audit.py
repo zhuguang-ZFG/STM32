@@ -244,7 +244,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "14": (
 
-                "usb-enumeration.svg", "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
+                "usb-enumeration.svg", "ch14-enum-checklist.png",
+                "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
                 "ch14-usb-enum.png", "usb-48m.gif", "sample-14-usbpre-48.svg",
                 "ch14-usbpre-48.png", "sample-14-pma-map.svg", "ch14-pma-map.png",
                 "usb-enumeration-zh.gif", "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
@@ -280,7 +281,8 @@ class BookAuditTests(unittest.TestCase):
             ),
             "17": (
 
-                "debug-swo.svg", "sample-17-cfsr-flow.svg", "sample-17-cfsr.svg",
+                "debug-swo.svg", "ch17-bp-comparators.png",
+                "sample-17-cfsr-flow.svg", "sample-17-cfsr.svg",
                 "ch17-cfsr.png", "cfsr-read.gif", "sample-17-swd-pins.svg",
                 "ch17-swd-pins.png", "sample-17-obs-compare.svg", "ch17-obs-compare.png",
                 "sample-17-cfsr-bits.svg", "ch17-cfsr-bits.png", "fault-triage-ladder.svg",
@@ -303,7 +305,8 @@ class BookAuditTests(unittest.TestCase):
 
                 "toolchain-flow.svg", "sample-18-boot0-flow.svg", "sample-18-boot-triage.svg",
                 "ch18-boot-triage.png", "boot0-low.gif", "sample-18-link-map.svg",
-                "ch18-link-map.png", "sample-18-hardfault-ladder.svg", "ch18-hardfault-ladder.png",
+                "ch18-link-map.png", "ch18-multi-def.png",
+                "sample-18-hardfault-ladder.svg", "ch18-hardfault-ladder.png",
                 "sample-18-faq-compare.svg", "ch18-faq-compare.png", "sample-18-uart-garbled.svg",
                 "ch18-uart-garbled.png",
             ),

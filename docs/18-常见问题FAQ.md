@@ -151,6 +151,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **原因**：变量写在头文件里且未加 `static`/`extern`，被多个 `.c` 包含。
 - **解决**：头文件只放 `extern` 声明，定义放 `.c`。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-multi-def.png" width="760" alt="Handraw：定义写进头文件，两个 .c 各定义一遍（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上半是错的写法——`sensor.h` 里写 `int count;`，`main.c` 和 `motor.c` 各包含一次，各自得到一份定义，链接器报 multiple definition；下半是对的写法——头文件只写 `extern int count;`，定义在 `sensor.c` 里全项目只此一份。证明什么：`extern` 是「到别处找定义」，头文件里只有声明才能被随便包含。不能证明什么：这是链接行为的示意，不涉及 `static` 修饰的文件内私有变量与 inline 的特例。约定见 [examples/](#source-project-examples)。</sub>
+</p>
+
 **C6 `printf` 输出乱码或没有输出**
 - **现象**：串口收到乱码或空白。
 - **原因**：`printf` 的浮点/半主机配置、或 `_write`/`__io_putchar` 未重定向。

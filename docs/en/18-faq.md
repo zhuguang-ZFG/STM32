@@ -151,6 +151,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Cause**: a variable was defined in a header without `static` or `extern`, and several `.c` files included it.
 - **Fix**: the header holds only an `extern` declaration. The definition lives in a `.c` file.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-multi-def.png" width="760" alt="Handraw: a definition in a header, compiled once per including .c (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the wrong half — `int count;` in `sensor.h`, included by `main.c` and `motor.c`, each translation unit gets its own definition, and the linker reports multiple definition; the right half — the header holds `extern int count;` and the one definition lives in `sensor.c`. What it proves: `extern` means "the definition is elsewhere"; only a declaration may be included freely. What it does not prove: this sketches the linker's view, not the special cases of file-private `static` variables or `inline`. The convention is in [examples/](#source-project-examples).</sub>
+</p>
+
 **C6 `printf` prints garbage, or prints nothing**
 - **Symptom**: the serial port receives garbage or blank lines.
 - **Cause**: `printf` floating-point or semihosting setup, or `_write` / `__io_putchar` was never redirected.

@@ -39,6 +39,11 @@ The clock and the descriptors in this chapter are for the STM32F103C8T6. The USB
 
 Pin 32 PA11 = USB_DM and pin 33 PA12 = USB_DP. A full-speed device needs a 1.5 kΩ pull-up between D+ and 3.3 V, on the pin 33 side. The host tells the device speed from which line is pulled high: put the pull-up on pin 32, D−, and the host takes it for a low-speed device and never treats it as full speed. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan). The 1.5 kΩ value is printed in note 2 of DS5319 Table 45. RM0008 only says an external pull-up is needed and gives no value.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-enum-checklist.png" width="760" alt="Handraw: the five gates an unknown USB device must line up (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: five gates, one row each — 48 MHz (USBPRE = 0, 72 ÷ 1.5), the D+ 1.5 kΩ pull-up (PA12 side), the standard requests (address 0 first asks the first 8 descriptor bytes), descriptor lengths (the config total length must match the byte count, CDC 67 B), and endpoint buffers; the strip below maps where it stalls: reading descriptors → clock or fields, reading config → total length, the last step → endpoint not ready. What it proves: the gates are ANDs — one wrong and Device Manager says unknown device forever. What it does not prove: this is a triage checklist, not an analyzer capture, and host-side driver matching is another story. Source: [RM0008](#source-rm0008-rcc) and [DS5319 Rev 20 Table 5](#source-ds5319-usbcan).</sub>
+</p>
+
 USB on the F103 is a full-speed device, not a host, so it cannot drive a USB stick or a keyboard. Full speed is 12 Mbit/s. Low speed, 1.5 Mbit/s, is not one of its modes. See [RM0008](#source-rm0008-usb).
 
 In this repository's example the device descriptor is `0x12` long, 18 bytes, and `bMaxPacketSize0` is 64. VID is `0x1209` and PID is `0x0001`, a placeholder pair for test boards. The `0x0483/0x5740` seen in many ST examples is not what this descriptor holds. The configuration set's `wTotalLength` is `0x0043`, 67 bytes: the configuration, interface, and endpoint descriptors added together, not 18. `bMaxPower = 0x32` counts in 2 mA units, so it means 100 mA. See [examples in this repo](#source-project-examples).

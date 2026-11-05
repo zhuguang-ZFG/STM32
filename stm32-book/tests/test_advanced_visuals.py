@@ -201,9 +201,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "14-USB.md": (
-        15,
+        16,
         (
             "usb-enumeration.svg",
+            "ch14-enum-checklist.png",
             "sample-14-usb-48m-flow.svg",
             "sample-14-usb-enum.svg",
             "ch14-usb-enum.png",
@@ -262,9 +263,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "17-调试与性能优化.md": (
-        14,
+        15,
         (
             "debug-swo.svg",
+            "ch17-bp-comparators.png",
             "sample-17-cfsr-flow.svg",
             "sample-17-cfsr.svg",
             "ch17-cfsr.png",
@@ -302,7 +304,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "18-常见问题FAQ.md": (
-        13,
+        14,
         (
             "toolchain-flow.svg",
             "sample-18-boot0-flow.svg",
@@ -311,6 +313,7 @@ CHAPTERS = {
             "boot0-low.gif",
             "sample-18-link-map.svg",
             "ch18-link-map.png",
+            "ch18-multi-def.png",
             "sample-18-hardfault-ladder.svg",
             "ch18-hardfault-ladder.png",
             "sample-18-faq-compare.svg",
