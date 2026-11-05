@@ -315,7 +315,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 <p align="center">
   <img src="../assets/diagrams/sample-15-rtos-triage.svg" width="760" alt="任务不动、栈溢出、优先级异常：1 ms 一个 tick，128 字是 512 字节，FromISR 的抢占优先级数值至少 5">
-  <br><sub>▲ 自绘。排错三岔口：任务不动先看调度器起没起，tick 是 1 ms 一格；栈溢出记住 128 字 = 512 字节；中断里用错 API，FromISR 的抢占优先级数值至少要 5。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
+  <br><sub>▲ 自绘。看哪里：顶部两条时基（内核 SysTick 1 ms / HAL TIM4），左列三道闸门通向 `vTaskStartScheduler()`，中列把 128 字画成 128 个格子、按字节只给四分之一，右列两条方向相反的优先级轴加 0–4 禁区；下方是 10240 字节堆的分账，以及 3 ms + 10 tick = 13 ms 与 `vTaskDelayUntil` 的 10 ms 对照。任务不动先看调度器起没起，tick 是 1 ms 一格；栈溢出记住 128 字 = 512 字节；中断里用错 API，FromISR 的抢占优先级数值至少要 5。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
 </p>
 
 ## 硬件与接线

@@ -214,3 +214,18 @@
 验证：`measure_svg --all` → 324 / 0 / 0；`test_sample_svg_c` 1 passed（`ROWS` 仍 324，重锁 9 行）；`check_assets` 全通过；`slop_lint` 干净；全量 pytest 188 passed（5 分 50 秒）。
 
 保留未动的一张：`i2c-transaction` 要真正动起来必须去掉「静态可打印」的契约测试断言（`assertNotIn("<style", i2c)`），这属于改测试策略，按规矩需要所有者点头，所以本轮只把它画得更完整（补 SDA 波形与采样点），动画仍由 `i2c-timing.gif` 承担。
+
+## 14. 四张文字墙重绘（B11）
+
+`walls.py` 按「字符数 / 图元数」排序，前四名依次是 ch01 闪存下载、ch15 RTOS、ch17 性能、ch16 低功耗。四张都只有 8–12 个图元、24–41 段文字，属于「用方框装散文」。按 B8/B9 的方法重画：先把章节里的数字核一遍，再把每条结论变成可看的结构。
+
+| 文件 | 改前 chars / shapes | 改后 | 画了什么 |
+|---|---|---|---|
+| `sample-01-flash-triage` | 1,652 / 10（165.2） | 1,145 / 49（**23.4**） | 顶部一条链证明「attach 通了，前面都无罪」（OpenOCD → ST-Link → 第 34/37 脚 → 内核 halted ✓ → Flash ✗）；三列岔口各带三个编号检查点 + 修法框；底部 2.7 V 编程下限量程条（红区 + 刻度）与 `adapter speed 1000 → 100` |
+| `sample-15-rtos-triage` | 1,639 / 10（163.9） | 1,061 / 166（**6.4**） | 顶部两条时基（SysTick 1 ms / TIM4）；左列三道闸门 → `vTaskStartScheduler()`；中列把 128 字画成 16×8 个格，并画出「按字节只给 32 格」的缺口；右列两条方向相反的优先级轴 + 0–4 禁区 + `0x50 = 5 << 4`；下方 10240 字节堆按 512/768/1024/7936 分账，再画 3 ms + 10 tick = 13 ms 与 `vTaskDelayUntil` 的 10 ms |
+| `sample-17-perf-triage` | 1,329 / 9（147.7） | 982 / 129（**7.6**） | 顶部两次读数夹住被测代码的时间轴 + 72 格刻度；左上读数为 0 的因果与按收益排序的修改阶梯；右上 -Og/-O2/-Os 三栏各核周期数、代码大小、输出一致；下半 CFSR → HFSR → BFAR 冻结链、bit15 判定门、栈帧里 PC 的位置（SP + 0x18）与三类常见原因 |
+| `sample-16-pwr-triage` | 1,468 / 10（146.8） | 1,038 / 48（**21.6**） | 顶部对数刻度把 14.4 mA / 14 µA / 2 µA 摆到一条尺上；左列两个模式位（SCB_SCR SLEEPDEEP、PWR_CR PDDS）与 LPDS；中列 HSI 8 MHz 与 PLL 72 MHz 的条对比 12800 / 115200；右列逐项泄漏（IWDG 3.4 µA、LSI 3.2 µA、10 kΩ 0.33 mA、LED 2 mA）；下方 Standby 四格条件 + 四种唤醒时间条 |
+
+图注同步改写（zh / en 各 4 张）：补「看哪里」的具体结构，原有「证明什么 / 不证明什么」与出处保留。数字全部与章节正文对齐：2.7 V 编程下限见 DS5319、`0x50 = 5 << 4` 与 128 字 = 512 字节见 FreeRTOS 章、72 计数 = 1 µs 见 PM0056 DWT、14 µA 与 5.4 µs 见 DS5319 表 16 与表 26。
+
+四张图的生成器与磁盘逐字节一致（`ch01_b2` / `ch15_b4` / `ch16_b4` / `ch17_b4` 重跑无差异），`update_locks.py` 重锁 4 行，`ROWS` 仍 324。`measure_svg --all` → 324 / 0 / 0；`check_assets` 全通过；`build_html --check` zh + en 均 PASS；`audit_book` 与上一轮相比只有章节字符数变化（caption 变长），deficit 与 parity 不变。

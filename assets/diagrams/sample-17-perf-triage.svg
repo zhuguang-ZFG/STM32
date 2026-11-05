@@ -1,54 +1,208 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="排错三岔口：读数为 0 查 bit 24；72 MHz 下 72 个计数是 1 µs；BFAR 要 CFSR bit 15 为 1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="性能三岔口：DWT 读数为 0 先查 bit 24；72 MHz 下 72 个计数是 1 µs；BFAR 要 CFSR bit 15 才可信">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">排错三岔口：读数为 0 查 bit 24；72 MHz 下 72 个计数是 1 µs；BFAR 要 CFSR bit 15 为 1</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">性能三岔口：先测出来、同条件比较、冻结现场</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 17 · DWT / optimization / HardFault</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">17</text>
-<text x="40" y="84" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">性能排错三岔口：一个是测量坏了，一个是条件换了，一个是现场没冻结</text>
-<text x="40" y="110" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three forks, one order: measure first, compare like with like, freeze the fault</text>
-<text x="40" y="134" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DWT_CYCCNT 0xE0001004 · 72 MHz: 72 counts = 1 µs   CFSR 0xE000ED28 · BFAR 0xE000ED38</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  觉得慢：先测周期，别先猜循环</text>
-<text x="920" y="170" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DEMCR bit 24 · DWT_CYCCNT</text>
-<rect x="40" y="182" width="880" height="198" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="206" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">现象</text>
-<text x="112" y="206" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">觉得慢就去展开汇编，改到满意为止，却没人说得出到底快了多少</text>
-<text x="56" y="232" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">检查</text>
-<text x="112" y="232" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先把 DEMCR 0xE000EDFC 的 bit 24 置 1，再清 DWT_CYCCNT 0xE0001004</text>
-<text x="112" y="258" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">72 MHz 下 72 个计数是 1 µs；被测代码夹在两次读数之间，跑多次取个数</text>
-<text x="56" y="284" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口</text>
-<text x="112" y="284" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读数是 0：bit 24 没置，两次读数之差就是 0 —— 先修测量，别改代码</text>
-<text x="112" y="310" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">dt 有数：按收益排序改，DMA 卸载 &gt; 优化等级 &gt; 减少浮点/除法 &gt; Cache/预取 &gt; 汇编</text>
-<text x="112" y="336" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">顺序：先量出来，再只改一处，改完立刻复现刚才的现象</text>
-<text x="40" y="396" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  优化后时序变了：换条件就没有对照</text>
-<text x="920" y="396" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">-Og / -O2 / -Os</text>
-<rect x="40" y="408" width="880" height="198" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="432" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">现象</text>
-<text x="112" y="432" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优化等级一升，断言还在，时序却变了：以为按顺序发生的读写被重排</text>
-<text x="56" y="458" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">检查</text>
-<text x="112" y="458" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一测试向量在 -Og、-O2、-Os 下各记周期、代码大小和输出一致性</text>
-<text x="112" y="484" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对照必须同条件：先有 bit 24 和 CYCCNT 的基线，再改优化等级</text>
-<text x="56" y="510" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口</text>
-<text x="112" y="510" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">三项都一致：接受这次优化，把周期数写进记录</text>
-<text x="112" y="536" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">有一项不一致：回 -Og 定位，与硬件时序有关的变量标 volatile，再跑原测试</text>
-<text x="112" y="562" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">改优化等级本身不是问题，用不同条件的两组数比较才是</text>
-<text x="40" y="622" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  栈或内存异常：先冻结 CFSR，再决定信不信 BFAR</text>
-<text x="920" y="622" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CFSR[15] · BFAR 0xE000ED38</text>
-<rect x="40" y="634" width="880" height="198" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="658" font-size="12" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">现象</text>
-<text x="112" y="658" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一进 HardFault 就只复位，现场没了；BFAR 里有个数，却对不上这次访问</text>
-<text x="56" y="684" font-size="12" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">检查</text>
-<text x="112" y="684" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">冻住现场：CFSR 0xE000ED28 → HFSR 0xE000ED2C（FORCED bit 30 = 0x40000000）→ BFAR</text>
-<text x="112" y="710" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再从栈里取 PC：R0 起算第 6 个字，SP + 0x18；用同一个 ELF 跑 addr2line -e -f -C</text>
-<text x="56" y="736" font-size="12" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口</text>
-<text x="112" y="736" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CFSR bit 15 = 1：BFAR 才是这次出错的地址，拿它去对源码行</text>
-<text x="112" y="762" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit 15 = 0：BFAR 是旧值，不能用；IMPRECISERR 下栈 PC 也可能不是最初写错的位置</text>
-<text x="112" y="788" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因表：UNDEFINSTR 栈被冲；INVSTATE 跳转目标 bit0=0；FORCED 且 CFSR=0 查 VTOR 与链接脚本</text>
+<text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先把测量修好：DWT_CYCCNT 在两次读数之间只数周期</text>
+<rect x="24" y="92" width="560" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="38" y="114" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DEMCR 0xE000EDFC bit24 = 1</text>
+<line x1="38" y1="140" x2="546" y2="140" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="70" y1="130" x2="70" y2="150" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="70" y="124" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">T0 读</text>
+<line x1="300" y1="130" x2="300" y2="150" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="300" y="124" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">被测代码</text>
+<line x1="470" y1="130" x2="470" y2="150" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="470" y="124" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">T1 读</text>
+<line x1="300" y1="146" x2="339" y2="146" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="344.00,146.00 339.00,148.50 339.00,143.50" fill="#5e6872" opacity="1"/>
+<line x1="344" y1="146" x2="305" y2="146" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="300.00,146.00 305.00,143.50 305.00,148.50" fill="#5e6872" opacity="1"/>
+<text x="362" y="150" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Δ 周期数</text>
+<text x="600" y="104" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">72 MHz 下 72 个计数 = 1 µs</text>
+<line x1="600" y1="114" x2="600" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="604.4" y1="114" x2="604.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="608.8" y1="114" x2="608.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="613.2" y1="114" x2="613.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="617.6" y1="114" x2="617.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="622" y1="114" x2="622" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="626.4" y1="114" x2="626.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="630.8" y1="114" x2="630.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="635.2" y1="114" x2="635.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="639.6" y1="114" x2="639.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="644" y1="114" x2="644" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="648.4" y1="114" x2="648.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="652.8" y1="114" x2="652.8" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="657.2" y1="114" x2="657.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="661.6" y1="114" x2="661.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="666" y1="114" x2="666" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="670.4" y1="114" x2="670.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="674.8" y1="114" x2="674.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="679.2" y1="114" x2="679.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="683.6" y1="114" x2="683.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="688" y1="114" x2="688" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="692.4" y1="114" x2="692.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="696.8" y1="114" x2="696.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="701.2" y1="114" x2="701.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="705.6" y1="114" x2="705.6" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="710" y1="114" x2="710" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="714.4" y1="114" x2="714.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="718.8" y1="114" x2="718.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="723.2" y1="114" x2="723.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="727.6" y1="114" x2="727.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="732" y1="114" x2="732" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="736.4" y1="114" x2="736.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="740.8" y1="114" x2="740.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="745.2" y1="114" x2="745.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="749.6" y1="114" x2="749.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="754" y1="114" x2="754" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="758.4" y1="114" x2="758.4" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="762.8" y1="114" x2="762.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="767.2" y1="114" x2="767.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="771.6" y1="114" x2="771.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="776" y1="114" x2="776" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="780.4" y1="114" x2="780.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="784.8" y1="114" x2="784.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="789.2" y1="114" x2="789.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="793.6" y1="114" x2="793.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="798" y1="114" x2="798" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="802.4" y1="114" x2="802.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="806.8" y1="114" x2="806.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="811.2" y1="114" x2="811.2" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="815.6" y1="114" x2="815.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="820" y1="114" x2="820" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="824.4" y1="114" x2="824.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="828.8" y1="114" x2="828.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="833.2" y1="114" x2="833.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="837.6" y1="114" x2="837.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="842" y1="114" x2="842" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="846.4" y1="114" x2="846.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="850.8" y1="114" x2="850.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="855.2" y1="114" x2="855.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="859.6" y1="114" x2="859.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="864" y1="114" x2="864" y2="128" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="868.4" y1="114" x2="868.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="872.8" y1="114" x2="872.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="877.2" y1="114" x2="877.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="881.6" y1="114" x2="881.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="886" y1="114" x2="886" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="890.4" y1="114" x2="890.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="894.8" y1="114" x2="894.8" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="899.2" y1="114" x2="899.2" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="903.6" y1="114" x2="903.6" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="908" y1="114" x2="908" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="912.4" y1="114" x2="912.4" y2="121" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="600" y="150" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一格 13.9 ns</text>
+<rect x="24" y="176" width="440" height="244" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="24" y="176" width="440" height="5" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="38" y="206" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 读数为 0：测量坏了，不是代码快</text>
+<text x="38" y="226" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DEMCR bit24 · DWT_CYCCNT 0xE0001004</text>
+<text x="38" y="254" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">两次读数一样 → Δ = 0</text>
+<text x="38" y="274" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit24 没置 1，计数器根本没在数；先修测量，再谈优化。</text>
+<text x="38" y="304" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">改的顺序（收益从大到小）：</text>
+<rect x="38" y="313" width="8" height="14" fill="#075e84" opacity="0.85" rx="2"/>
+<text x="56" y="324" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA 卸载搬运</text>
+<rect x="38" y="331" width="8" height="14" fill="#075e84" opacity="0.73" rx="2"/>
+<text x="56" y="342" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优化等级 -Og → -O2</text>
+<rect x="38" y="349" width="8" height="14" fill="#075e84" opacity="0.61" rx="2"/>
+<text x="56" y="360" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">减少浮点与除法</text>
+<rect x="38" y="367" width="8" height="14" fill="#075e84" opacity="0.49" rx="2"/>
+<text x="56" y="378" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cache / 预取（F1 没有）</text>
+<rect x="38" y="385" width="8" height="14" fill="#075e84" opacity="0.37" rx="2"/>
+<text x="56" y="396" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">手写汇编</text>
+<text x="274" y="304" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只改一处，改完立刻复现</text>
+<rect x="480" y="176" width="456" height="244" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="480" y="176" width="456" height="5" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="494" y="206" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 升优化等级后时序变了：条件不再相同</text>
+<text x="494" y="226" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">同一测试向量 × 三种优化等级</text>
+<rect x="494" y="238" width="132" height="96" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="506" y="260" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">-Og</text>
+<text x="506" y="278" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">基线</text>
+<circle cx="512" cy="296" r="4" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1"/>
+<text x="524" y="300" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">周期数</text>
+<circle cx="512" cy="311" r="4" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1"/>
+<text x="524" y="315" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">代码大小</text>
+<circle cx="512" cy="326" r="4" fill="#fbfaf7" opacity="1" stroke="#075e84" stroke-width="1"/>
+<text x="524" y="330" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">输出一致</text>
+<rect x="638" y="238" width="132" height="96" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="650" y="260" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">-O2</text>
+<text x="650" y="278" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">重排读写</text>
+<circle cx="656" cy="296" r="4" fill="#fbfaf7" opacity="1" stroke="#7a4e00" stroke-width="1"/>
+<text x="668" y="300" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">周期数</text>
+<circle cx="656" cy="311" r="4" fill="#fbfaf7" opacity="1" stroke="#7a4e00" stroke-width="1"/>
+<text x="668" y="315" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">代码大小</text>
+<circle cx="656" cy="326" r="4" fill="#fbfaf7" opacity="1" stroke="#7a4e00" stroke-width="1"/>
+<text x="668" y="330" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">输出一致</text>
+<rect x="782" y="238" width="132" height="96" fill="#f1f5f7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="794" y="260" font-size="12" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">-Os</text>
+<text x="794" y="278" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">体积优先</text>
+<circle cx="800" cy="296" r="4" fill="#fbfaf7" opacity="1" stroke="#5b3a8c" stroke-width="1"/>
+<text x="812" y="300" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">周期数</text>
+<circle cx="800" cy="311" r="4" fill="#fbfaf7" opacity="1" stroke="#5b3a8c" stroke-width="1"/>
+<text x="812" y="315" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">代码大小</text>
+<circle cx="800" cy="326" r="4" fill="#fbfaf7" opacity="1" stroke="#5b3a8c" stroke-width="1"/>
+<text x="812" y="330" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">输出一致</text>
+<text x="494" y="358" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">三项都一致才接受这次优化，并把周期数写进记录；有一项不一致回 -Og 定位，</text>
+<text x="494" y="376" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">和硬件时序有关的变量标 volatile，再跑原测试。</text>
+<text x="494" y="400" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">拿两个不同条件的数去比较，才是真正的问题来源。</text>
+<rect x="24" y="436" width="912" height="300" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<rect x="24" y="436" width="912" height="5" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="38" y="466" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ HardFault：先冻结 CFSR → HFSR → BFAR，再决定信不信 BFAR</text>
+<rect x="38" y="486" width="186" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="50" y="510" font-size="13" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CFSR</text>
+<text x="50" y="528" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xE000ED28</text>
+<text x="50" y="544" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">哪一类错误</text>
+<line x1="226" y1="518" x2="231" y2="518" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="236.00,518.00 231.00,520.50 231.00,515.50" fill="#5e6872" opacity="1"/>
+<rect x="238" y="486" width="186" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="250" y="510" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">HFSR</text>
+<text x="250" y="528" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xE000ED2C</text>
+<text x="250" y="544" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FORCED = bit30</text>
+<line x1="426" y1="518" x2="431" y2="518" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="436.00,518.00 431.00,520.50 431.00,515.50" fill="#5e6872" opacity="1"/>
+<rect x="438" y="486" width="186" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="450" y="510" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">BFAR</text>
+<text x="450" y="528" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xE000ED38</text>
+<text x="450" y="544" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">出错地址（有条件）</text>
+<rect x="638" y="486" width="284" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="650" y="510" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CFSR bit15</text>
+<rect x="650" y="520" width="118" height="22" fill="#1b5c45" opacity="0.28" rx="4"/>
+<text x="659" y="536" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">= 1 → 信 BFAR</text>
+<rect x="778" y="520" width="132" height="22" fill="#8f2d2d" opacity="0.28" rx="4"/>
+<text x="787" y="536" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">= 0 → 旧值，弃用</text>
+<text x="38" y="576" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再从栈里取 PC：R0 起算第 6 个字 = SP + 0x18，用同一个 ELF 跑 addr2line</text>
+<rect x="38" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="58" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R0</text>
+<rect x="84" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="104" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R1</text>
+<rect x="130" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="150" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R2</text>
+<rect x="176" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="196" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R3</text>
+<rect x="222" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="242" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">R12</text>
+<rect x="268" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="288" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LR</text>
+<rect x="314" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#1b5c45" stroke-width="2"/>
+<text x="334" y="606" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC</text>
+<rect x="360" y="586" width="40" height="30" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="380" y="606" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">xPSR</text>
+<text x="314" y="632" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SP + 0x18</text>
+<text x="38" y="660" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">常见原因对号入座：</text>
+<text x="38" y="684" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">UNDEFINSTR</text>
+<text x="38" y="702" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">栈被冲，返回地址变成非法指令</text>
+<text x="338" y="684" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">INVSTATE</text>
+<text x="338" y="702" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">跳转目标 bit0 = 0（Thumb 位丢了）</text>
+<text x="638" y="684" font-size="10.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FORCED 且 CFSR = 0</text>
+<text x="638" y="702" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">查 VTOR 与链接脚本的向量表</text>
+<rect x="24" y="752" width="912" height="34" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="38" y="774" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">顺序不能反：先让测量可信，再保证两组数同条件，最后才是冻结现场 —— 跳过前两步，改的每一处都是猜的。</text>
 <line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。故障寄存器地址来自 PM0056；DWT 使能顺序按本章时序表，先 bit 24，再 CYCCNT。</text>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。故障寄存器地址来自 PM0056；DWT 使能顺序按本章时序表，先 bit 24 再 CYCCNT。</text>
 <text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

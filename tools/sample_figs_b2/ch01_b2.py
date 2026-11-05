@@ -144,47 +144,133 @@ def flash_path() -> Svg:
     return canvas
 
 
+def _wrap(c: Svg, x: float, y: float, s: str, w: float, size: float,
+          color: str, lh: float = 16, mono: bool = False) -> float:
+    """按像素宽度折行；返回下一行的基线。"""
+    from svgkit import text_width
+    words, line, yy = s.split(), "", y
+    for word in words:
+        probe = (line + " " + word).strip()
+        if text_width(probe, size, mono) > w and line:
+            c.text(x, yy, line, size=size, fill=color, mono=mono)
+            yy += lh
+            line = word
+        else:
+            line = probe
+    if line:
+        c.text(x, yy, line, size=size, fill=color, mono=mono)
+        yy += lh
+    return yy
+
+
 def flash_triage() -> Svg:
     canvas = Svg(
         960,
-        920,
+        800,
         "attach 已通过、卡在下载或校验：按下载失败、校验失败、烧进去了但没跑三岔口排查",
         "STM32F103C8T6 · chapter 01 · RM0008 2.5 · DS5319 Rev 20",
     )
     canvas.header(tag="01", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  OpenOCD reports `target state: halted`, yet the flash step fails",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "attach is proven, so the debug port, the probe and the cfg are innocent",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "branch by the exact error line before touching anything    3V3 > 2.7 V always assumed",
-                size=13, fill=T.AMBER, mono=True)
 
-    canvas.text(40, 170, "岔口一  Flash Download failed", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 184, 880, 200, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 214, "checkpoint 1: the Flash algorithm must match 64 KB medium density, not 128 KB", size=14, fill=T.TEXT)
-    canvas.text(56, 240, "checkpoint 2: the option byte RDP may be set — the part refuses mass writes (RM0008 2.5)", size=14, fill=T.TEXT)
-    canvas.text(56, 266, "checkpoint 3: a previous run left the core in a weird state — retry with connect under reset", size=14, fill=T.TEXT)
-    canvas.text(56, 296, "fix: select the C8T6 algorithm, full chip erase, then download again", size=15, fill=T.AMBER, weight="700")
-    canvas.text(56, 322, "note: removing RDP by the 0x00A5 key triggers a mass erase — user code is gone", size=13, fill=T.MUTED)
+    # ① 先把「哪一段已经证明没问题」画成链：attach 通了，前面的环节都不用再怀疑
+    canvas.text(30, 82, "OpenOCD reports `target state: halted`, yet the flash step fails",
+                size=14.5, fill=T.TEXT, weight="700")
+    chain = [
+        ("OpenOCD", "cfg 已加载", T.CYAN, True),
+        ("ST-Link", "USB 枚举通过", T.CYAN, True),
+        ("PA13 / PA14", "第 34 / 37 脚", T.CYAN, True),
+        ("Cortex-M3", "halted ✓", T.GREEN, True),
+        ("Flash 写入", "✗ 失败", T.RED, False),
+    ]
+    cx, cw2, gap = 30, 168, 30
+    for i, (name, note, color, ok) in enumerate(chain):
+        x = cx + i * (cw2 + gap)
+        canvas.rect(x, 96, cw2, 56, fill=T.PANEL, stroke=color,
+                    sw=2 if not ok else 1.5, rx=8)
+        canvas.text(x + 12, 120, name, size=12.5, fill=T.TEXT, weight="700")
+        canvas.text(x + 12, 140, note, size=10.5, fill=color)
+        if i < len(chain) - 1:
+            canvas.arrow(x + cw2 + 2, 124, x + cw2 + gap - 4, 124,
+                         color=T.STROKE, sw=1.5, head=6)
+    canvas.text(30, 174,
+                "attach 通了，工具、探针、接线、cfg 都已证明可用 —— 剩下的问题都在写入这一侧。"
+                "先看 OpenOCD 打印的那一行，再决定查哪个岔口。",
+                size=11.5, fill=T.MUTED)
 
-    canvas.text(40, 424, "岔口二  Verification failed", size=16, fill=T.AMBER, weight="700")
-    canvas.rect(40, 438, 880, 168, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 468, "the write claimed success but the read-back differs: suspect the physical link first", size=14, fill=T.TEXT)
-    canvas.text(56, 494, "measure 3V3 under load; a droop below 2.7 V corrupts flash writes silently", size=14, fill=T.TEXT)
-    canvas.text(56, 520, "drop `adapter speed 1000` to 100 and retry; swap the USB cable and port", size=14, fill=T.TEXT)
-    canvas.text(56, 550, "fix: stable power first, then a slower clock; never fix verify errors in software", size=14, fill=T.AMBER)
+    # ② 三个岔口：每列症状 → 三个检查点 → 一句修法
+    branches = [
+        ("①", "Flash Download failed", "Error: flash download failed",
+         T.RED,
+         [("算法要和 64 KB 中密度匹配", "128 KB 的算法会在高地址报错"),
+          ("RDP 选项字节可能还锁着", "读保护状态下拒绝改写，RM0008 2.5"),
+          ("内核停在上次失败的怪状态", "改用 connect under reset 重新接")],
+         "选中 C8T6 的算法 → 全片擦除 → 再下载",
+         "解除 RDP（键 0x00A5）会整片擦除，用户代码一起没了"),
+        ("②", "Verification failed", "Error: verify failed",
+         T.AMBER,
+         [("写入说成功、回读不一样", "先怀疑物理链路，不要先改软件"),
+          ("带载量 3V3，看有没有下跌", "低于 2.7 V 时闪存写入会静默出错"),
+          ("把 adapter speed 1000 降到 100", "再换一根线和另一个 USB 口")],
+         "先稳住供电，再降时钟；校验错不能靠软件糊过去",
+         "3.3 V 是空载值；下载时电流上升，表笔要留在板子上"),
+        ("③", "下载成功却没有运行", "wrote … but no LED",
+         T.VIOLET,
+         [("BOOT0 还挂在 1", "复位后进系统存储器，闪存里的程序根本没取指"),
+          ("bin 头 8 字节对不对", "00 50 00 20 25 07 00 08：栈顶 + Reset_Handler"),
+          ("向量表基址是 0x08000000", ".ld 起点写错，第一次取指就跑飞")],
+         "BOOT0 = 0 → 按复位 → 还不动就用示波器看 NRST",
+         "“下载成功”只说明字节进去了，不说明它会跑")]
 
-    canvas.text(40, 646, "岔口三  下载成功但没有运行", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 660, 880, 148, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 690, "checkpoint 1: BOOT0 may still be wired high — reset then enters the bootloader, not Flash", size=14, fill=T.TEXT)
-    canvas.text(56, 716, "checkpoint 2: the bin must start with 00 50 00 20 25 07 00 08 (stack + Reset_Handler)", size=14, fill=T.TEXT, mono=True)
-    canvas.text(56, 742, "checkpoint 3: the vector table base is 0x08000000; a wrong .ld start breaks the fetch", size=14, fill=T.TEXT)
-    canvas.text(56, 772, "fix: set BOOT0 = 0, press reset, and watch NRST with the scope if it still will not run", size=14, fill=T.AMBER)
+    by = 190
+    bw, bgap = 290, 15
+    for i, (num, title, errline, color, checks, fix, note) in enumerate(branches):
+        x = 30 + i * (bw + bgap)
+        canvas.rect(x, by, bw, 372, fill=T.PANEL, stroke=color, rx=8)
+        canvas.rect(x, by, bw, 5, fill=color, rx=2)
+        canvas.text(x + 16, by + 32, num, size=15, fill=color, weight="700")
+        canvas.text(x + 40, by + 32, title, size=14, fill=T.TEXT, weight="700")
+        canvas.text(x + 16, by + 52, errline, size=10, fill=color, mono=True)
+        yy = by + 78
+        for cnum, (head, detail) in enumerate(checks, 1):
+            canvas.circle(x + 22, yy - 4, 8, fill=T.BG2, stroke=color, sw=1.5)
+            canvas.text(x + 22, yy, str(cnum), size=9.5, anchor="middle",
+                        fill=color, weight="700")
+            canvas.text(x + 38, yy, head, size=11.5, fill=T.TEXT, weight="600")
+            yy = _wrap(canvas, x + 38, yy + 15, detail, bw - 54, 10.5, T.MUTED,
+                       lh=13) + 7
+        canvas.rect(x + 12, by + 268, bw - 24, 56, fill=T.BG2, stroke=color,
+                    rx=4)
+        _wrap(canvas, x + 24, by + 288, fix, bw - 48, 11, T.GREEN, lh=14)
+        _wrap(canvas, x + 24, by + 336, note, bw - 48, 9.5, T.DIM, lh=12)
 
-    canvas.text(40, 824, "不证明什么", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 838, 880, 38, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 862, "a clean verify proves the bytes match, not that the timing or the peripherals behave", size=14, fill=T.TEXT)
-    _credit(canvas, "自绘。RDP 键值与页擦除语义来自 RM0008 2.5；容量与算法名来自 DS5319 Rev 20；bin 头样例来自 examples/spl-f1-blink。")
+    # ③ 岔口二那条「先量电压」值得画出来：2.7 V 是编程下限，不是建议值
+    gy = 586
+    canvas.text(30, gy, "为什么不先改代码：VDD 掉到 2.7 V 以下，写入就已经不可信了",
+                size=12, fill=T.TEXT, weight="600")
+    canvas.rect(30, gy + 10, 560, 22, fill=T.BG2, stroke=T.GRID, rx=4)
+    x0, x1, v0, v1 = 30, 590, 2.0, 3.6
+    def vx(v):
+        return x0 + (v - v0) / (v1 - v0) * (x1 - x0)
+    canvas.rect(x0, gy + 10, vx(2.7) - x0, 22, fill=T.RED, rx=4, opacity=0.28)
+    canvas.rect(vx(3.3) - 6, gy + 6, 12, 30, fill=T.GREEN, rx=2)
+    for v, lab in ((2.0, "2.0"), (2.7, "2.7"), (3.3, "3.3"), (3.6, "3.6")):
+        canvas.line(vx(v), gy + 32, vx(v), gy + 38, stroke=T.STROKE, sw=1)
+        canvas.text(vx(v), gy + 50, lab + " V", size=10, anchor="middle",
+                    fill=T.MUTED, mono=True)
+    canvas.text(vx(2.7) + 8, gy + 26, "编程电压下限 2.7 V", size=10.5, fill=T.RED)
+    canvas.text(620, gy + 18, "adapter speed", size=11, fill=T.MUTED)
+    canvas.chip(720, gy + 4, 70, 26, "1000", color=T.AMBER, size=12)
+    canvas.arrow(796, gy + 17, 820, gy + 17, color=T.STROKE, sw=1.5, head=6)
+    canvas.chip(826, gy + 4, 70, 26, "100", color=T.GREEN, size=12)
+
+    # ④ 边界：verify 干净证明什么、不证明什么
+    canvas.rect(30, gy + 62, 900, 34, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(44, gy + 84,
+                "verify 干净 = 字节一致；它不证明时序、外设、栈深与中断行为 —— 那要靠逻辑分析仪和断点",
+                size=11.5, fill=T.TEXT)
+
+    _credit(canvas, "自绘。RDP 与页擦除见 RM0008 2.5；容量与算法名见 DS5319 Rev 20；"
+                    "2.7 V 为 DS5319 编程电压下限。")
     return canvas
 
 

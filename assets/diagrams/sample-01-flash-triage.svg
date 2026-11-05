@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="920" viewBox="0 0 960 920" role="img" aria-label="attach 已通过、卡在下载或校验：按下载失败、校验失败、烧进去了但没跑三岔口排查">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="800" viewBox="0 0 960 800" role="img" aria-label="attach 已通过、卡在下载或校验：按下载失败、校验失败、烧进去了但没跑三岔口排查">
 
 
-<rect x="0" y="0" width="960" height="920" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="800" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
@@ -9,32 +9,116 @@
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 01 · RM0008 2.5 · DS5319 Rev 20</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  OpenOCD reports `target state: halted`, yet the flash step fails</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">attach is proven, so the debug port, the probe and the cfg are innocent</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">branch by the exact error line before touching anything    3V3 &gt; 2.7 V always assumed</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  Flash Download failed</text>
-<rect x="40" y="184" width="880" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="214" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint 1: the Flash algorithm must match 64 KB medium density, not 128 KB</text>
-<text x="56" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint 2: the option byte RDP may be set — the part refuses mass writes (RM0008 2.5)</text>
-<text x="56" y="266" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint 3: a previous run left the core in a weird state — retry with connect under reset</text>
-<text x="56" y="296" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">fix: select the C8T6 algorithm, full chip erase, then download again</text>
-<text x="56" y="322" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">note: removing RDP by the 0x00A5 key triggers a mass erase — user code is gone</text>
-<text x="40" y="424" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  Verification failed</text>
-<rect x="40" y="438" width="880" height="168" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="468" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the write claimed success but the read-back differs: suspect the physical link first</text>
-<text x="56" y="494" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">measure 3V3 under load; a droop below 2.7 V corrupts flash writes silently</text>
-<text x="56" y="520" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">drop `adapter speed 1000` to 100 and retry; swap the USB cable and port</text>
-<text x="56" y="550" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">fix: stable power first, then a slower clock; never fix verify errors in software</text>
-<text x="40" y="646" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  下载成功但没有运行</text>
-<rect x="40" y="660" width="880" height="148" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="690" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint 1: BOOT0 may still be wired high — reset then enters the bootloader, not Flash</text>
-<text x="56" y="716" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">checkpoint 2: the bin must start with 00 50 00 20 25 07 00 08 (stack + Reset_Handler)</text>
-<text x="56" y="742" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">checkpoint 3: the vector table base is 0x08000000; a wrong .ld start breaks the fetch</text>
-<text x="56" y="772" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">fix: set BOOT0 = 0, press reset, and watch NRST with the scope if it still will not run</text>
-<text x="40" y="824" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">不证明什么</text>
-<rect x="40" y="838" width="880" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="862" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a clean verify proves the bytes match, not that the timing or the peripherals behave</text>
-<line x1="24" y1="884" x2="936" y2="884" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="904" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。RDP 键值与页擦除语义来自 RM0008 2.5；容量与算法名来自 DS5319 Rev 20；bin 头样例来自 examples/spl-f1-blink。</text>
-<text x="936" y="904" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<text x="30" y="82" font-size="14.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OpenOCD reports `target state: halted`, yet the flash step fails</text>
+<rect x="30" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="42" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OpenOCD</text>
+<text x="42" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cfg 已加载</text>
+<line x1="200" y1="124" x2="218" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="224.00,124.00 218.00,127.00 218.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="228" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="240" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link</text>
+<text x="240" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB 枚举通过</text>
+<line x1="398" y1="124" x2="416" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="422.00,124.00 416.00,127.00 416.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="426" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="438" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PA13 / PA14</text>
+<text x="438" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 34 / 37 脚</text>
+<line x1="596" y1="124" x2="614" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="620.00,124.00 614.00,127.00 614.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="624" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="636" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cortex-M3</text>
+<text x="636" y="140" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">halted ✓</text>
+<line x1="794" y1="124" x2="812" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="818.00,124.00 812.00,127.00 812.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="822" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="2"/>
+<text x="834" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 写入</text>
+<text x="834" y="140" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">✗ 失败</text>
+<text x="30" y="174" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">attach 通了，工具、探针、接线、cfg 都已证明可用 —— 剩下的问题都在写入这一侧。先看 OpenOCD 打印的那一行，再决定查哪个岔口。</text>
+<rect x="30" y="190" width="290" height="372" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="30" y="190" width="290" height="5" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="46" y="222" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">①</text>
+<text x="70" y="222" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash Download failed</text>
+<text x="46" y="242" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Error: flash download failed</text>
+<circle cx="52" cy="264" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="52" y="268" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="68" y="268" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">算法要和 64 KB 中密度匹配</text>
+<text x="68" y="283" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">128 KB 的算法会在高地址报错</text>
+<circle cx="52" cy="299" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="52" y="303" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="68" y="303" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">RDP 选项字节可能还锁着</text>
+<text x="68" y="318" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读保护状态下拒绝改写，RM0008 2.5</text>
+<circle cx="52" cy="334" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="52" y="338" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="68" y="338" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">内核停在上次失败的怪状态</text>
+<text x="68" y="353" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">改用 connect under reset 重新接</text>
+<rect x="42" y="458" width="266" height="56" fill="#f1f5f7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="54" y="478" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">选中 C8T6 的算法 → 全片擦除 → 再下载</text>
+<text x="54" y="526" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">解除 RDP（键 0x00A5）会整片擦除，用户代码一起没了</text>
+<rect x="335" y="190" width="290" height="372" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="335" y="190" width="290" height="5" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="351" y="222" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">②</text>
+<text x="375" y="222" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Verification failed</text>
+<text x="351" y="242" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">Error: verify failed</text>
+<circle cx="357" cy="264" r="8" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="357" y="268" font-size="9.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="373" y="268" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">写入说成功、回读不一样</text>
+<text x="373" y="283" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先怀疑物理链路，不要先改软件</text>
+<circle cx="357" cy="299" r="8" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="357" y="303" font-size="9.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="373" y="303" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">带载量 3V3，看有没有下跌</text>
+<text x="373" y="318" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低于 2.7 V 时闪存写入会静默出错</text>
+<circle cx="357" cy="334" r="8" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="357" y="338" font-size="9.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="373" y="338" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">把 adapter speed 1000 降到 100</text>
+<text x="373" y="353" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再换一根线和另一个 USB 口</text>
+<rect x="347" y="458" width="266" height="56" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="359" y="478" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先稳住供电，再降时钟；校验错不能靠软件糊过去</text>
+<text x="359" y="526" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V 是空载值；下载时电流上升，表笔要留在板子上</text>
+<rect x="640" y="190" width="290" height="372" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<rect x="640" y="190" width="290" height="5" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="656" y="222" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③</text>
+<text x="680" y="222" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">下载成功却没有运行</text>
+<text x="656" y="242" font-size="10" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">wrote … but no LED</text>
+<circle cx="662" cy="264" r="8" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="662" y="268" font-size="9.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="678" y="268" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">BOOT0 还挂在 1</text>
+<text x="678" y="283" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">复位后进系统存储器，闪存里的程序根本没取指</text>
+<circle cx="662" cy="299" r="8" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="662" y="303" font-size="9.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="678" y="303" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">bin 头 8 字节对不对</text>
+<text x="678" y="318" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">00 50 00 20 25 07 00 08：栈顶 +</text>
+<text x="678" y="331" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Reset_Handler</text>
+<circle cx="662" cy="347" r="8" fill="#f1f5f7" opacity="1" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="662" y="351" font-size="9.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="678" y="351" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">向量表基址是 0x08000000</text>
+<text x="678" y="366" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">.ld 起点写错，第一次取指就跑飞</text>
+<rect x="652" y="458" width="266" height="56" fill="#f1f5f7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="664" y="478" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0 = 0 → 按复位 → 还不动就用示波器看</text>
+<text x="664" y="492" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST</text>
+<text x="664" y="526" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">“下载成功”只说明字节进去了，不说明它会跑</text>
+<text x="30" y="586" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">为什么不先改代码：VDD 掉到 2.7 V 以下，写入就已经不可信了</text>
+<rect x="30" y="596" width="560" height="22" fill="#f1f5f7" opacity="1" rx="4" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="30" y="596" width="245" height="22" fill="#8f2d2d" opacity="0.28" rx="4"/>
+<rect x="479" y="592" width="12" height="30" fill="#1b5c45" opacity="1" rx="2"/>
+<line x1="30" y1="618" x2="30" y2="624" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="30" y="636" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2.0 V</text>
+<line x1="275" y1="618" x2="275" y2="624" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="275" y="636" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2.7 V</text>
+<line x1="485" y1="618" x2="485" y2="624" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="485" y="636" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.3 V</text>
+<line x1="590" y1="618" x2="590" y2="624" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="590" y="636" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.6 V</text>
+<text x="283" y="612" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">编程电压下限 2.7 V</text>
+<text x="620" y="604" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">adapter speed</text>
+<rect x="720" y="590" width="70" height="26" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="755" y="607.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">1000</text>
+<line x1="796" y1="603" x2="814" y2="603" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="820.00,603.00 814.00,606.00 814.00,600.00" fill="#5e6872" opacity="1"/>
+<rect x="826" y="590" width="70" height="26" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="861" y="607.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">100</text>
+<rect x="30" y="648" width="900" height="34" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="44" y="670" font-size="11.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">verify 干净 = 字节一致；它不证明时序、外设、栈深与中断行为 —— 那要靠逻辑分析仪和断点</text>
+<line x1="24" y1="764" x2="936" y2="764" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="784" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。RDP 与页擦除见 RM0008 2.5；容量与算法名见 DS5319 Rev 20；2.7 V 为 DS5319 编程电压下限。</text>
+<text x="936" y="784" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

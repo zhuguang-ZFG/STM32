@@ -119,76 +119,164 @@ def mode_compare() -> Svg:
     return canvas
 
 
+def _wrap(c: Svg, x: float, y: float, s: str, w: float, size: float,
+          color: str, lh: float = 15, mono: bool = False) -> float:
+    from svgkit import text_width
+    words, line, yy = s.split(), "", y
+    for word in words:
+        probe = (line + " " + word).strip()
+        if text_width(probe, size, mono) > w and line:
+            c.text(x, yy, line, size=size, fill=color, mono=mono)
+            yy += lh
+            line = word
+        else:
+            line = probe
+    if line:
+        c.text(x, yy, line, size=size, fill=color, mono=mono)
+        yy += lh
+    return yy
+
+
 def pwr_triage() -> Svg:
     canvas = Svg(
         960,
         880,
-        "进不去 Stop、醒来串口乱码、电流降不下来：14 µA 要 SLEEPDEEP=1 且 PDDS=0，醒来是 HSI 8 MHz，2 µA 只在 LSI、IWDG、LSE、RTC 全关时成立",
+        "低功耗三岔口：先确认真进了 Stop，再看醒来的时钟，最后用差值法抓耗电大户",
         "STM32F103C8T6 · chapter 16 · DS5319 Rev 20 表 16",
     )
-    canvas.header(title="低功耗三岔口：模式、时钟、电流", tag="16", tag_color=T.CYAN)
-    canvas.text(40, 86, "低功耗三岔口：先确认真进了 Stop，再看醒来的时钟，最后用差值法抓耗电大户",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "three branches: mode latch / clock restore / idle current",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138,
-                "SLEEPDEEP=1  PDDS=0  →  Stop 14 µA    唤醒 5.4 µs  →  HSI 8 MHz",
-                size=13, fill=T.AMBER, mono=True)
+    canvas.header(title="低功耗三岔口：模式、时钟、电流",
+                  tag="16", tag_color=T.CYAN)
 
-    canvas.text(40, 170, "岔口一  进不去 Stop：电流还是 mA 级", size=16, fill=T.RED, weight="700")
-    canvas.text(920, 170, "SLEEPDEEP · PDDS · PWR_CR", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 184, 880, 174, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 214, "症状：电流还在 14.4 mA 量级，醒来也不用重配时钟——它根本没进 Stop",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 240, "原因 A：SLEEPDEEP 没置 1，只进了 Sleep。进 Stop 要 SLEEPDEEP=1、PDDS=0",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 266, "原因 B：PDDS 写成 1，那是 Standby：SRAM 和寄存器丢失，醒来从复位向量重启",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 292, "原因 C：WFI 前还有挂起中断，或 SWD/JTAG、USB 芯片在漏电，量不到 14 µA 那一格",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 318, "检查点：14 µA 要求低功耗稳压器 PWR_LOWPOWERREGULATOR_ON，且不开 IWDG",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 344, "探针：0.1 Ω 采样电阻串 3V3，用差分探头看进入瞬间的电流台阶",
-                size=13, fill=T.MUTED)
+    # 顶条：三档电流按对数刻度排开，「µA 与 mA 差三个数量级」一眼可见
+    canvas.text(24, 82, "先给三个数找到位置：对数刻度，差的是数量级",
+                size=12.5, fill=T.TEXT, weight="700")
+    import math
+    stages = [("运行 14.4 mA", 14400, T.RED), ("Stop 14 µA", 14, T.AMBER),
+              ("Standby 2 µA", 2, T.CYAN)]
+    x0, x1 = 120, 700
 
-    canvas.text(40, 386, "岔口二  醒来跑飞：时钟停在 HSI 8 MHz", size=16, fill=T.AMBER, weight="700")
-    canvas.text(920, 386, "BRR 0x271 · 8 MHz vs 72 MHz", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 400, 880, 174, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 430, "症状：一帧串口乱码，或定时器变慢、外设不工作",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 456, "原因：Stop 退出后系统时钟是 HSI 8 MHz，不是 16 MHz，也不是 72 MHz",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 482, "数值：BRR 仍是 0x271，8e6 / (16 × 39.0625) = 12800；主机还停在 115200，差 9 倍",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 508, "修复：醒来第一件事调 SystemClock_Config()，PLL 回 72 MHz 后再发下一个字节",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 534, "定时唤醒：F103 没有 F4 的周期唤醒定时器，用 RTC 闹钟，LSE 32.768 kHz、PRL = 32767 得 1 Hz",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 560, "别忘了：Stop 期间 SysTick 不跳，1000 Hz 的 1 ms 节拍要在醒来后重新对齐",
-                size=13, fill=T.MUTED)
+    def lx(ua: float) -> float:
+        return x0 + (math.log10(ua) - math.log10(1.5)) / (math.log10(20000) - math.log10(1.5)) * (x1 - x0)
 
-    canvas.text(40, 612, "岔口三  电流降不下来：µA 那一格的门槛", size=16, fill=T.VIOLET, weight="700")
-    canvas.text(920, 612, "IWDG · GPIO_MODE_ANALOG · 0.33 mA", size=11, fill=T.MUTED,
-                anchor="end", mono=True)
-    canvas.rect(40, 626, 880, 164, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 654, "症状：进了 Stop 还是几十 µA 到 mA，或者待机被写成 2~3 µA 一个区间",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 680, "原因 A：IWDG 在 Stop 和 Standby 里照走 LSI，而 14 µA 那一格不含独立看门狗",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 706, "原因 B：悬空输入脚翻转漏电，配成模拟输入 GPIO_MODE_ANALOG；输出脚给定电平",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 732, "原因 C：10 kΩ 上拉在 3.3 V 下约 0.33 mA，一颗 2 mA 的 LED 常亮就全白费",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 758, "探针：先全关测干净底电流，再逐个打开做差值法；万用表 µA 档会拖低电压",
-                size=13, fill=T.MUTED)
+    canvas.line(x0, 128, x1, 128, stroke=T.GRID, sw=1)
+    for ua, lab in ((2, "2 µA"), (14, "14 µA"), (1000, "1 mA"), (14400, "14 mA")):
+        canvas.line(lx(ua), 122, lx(ua), 134, stroke=T.STROKE, sw=1)
+        canvas.text(lx(ua), 148, lab, size=9.5, anchor="middle", fill=T.MUTED,
+                    mono=True)
+    for i, (lab, ua, color) in enumerate(stages):
+        canvas.circle(lx(ua), 128, 7, fill=color)
+        canvas.text(lx(ua), 112 - i * 0, lab, size=10.5, anchor="middle",
+                    fill=color, weight="700")
 
-    canvas.rect(40, 796, 880, 40, fill=T.BG2, stroke=T.GREEN, rx=8)
-    canvas.text(56, 812, "底注  Standby 的 2 µA 只属于 LSI、IWDG、LSE、RTC 全关那一格：LSI 开 3.2 µA，加 IWDG 3.4 µA。",
-                size=12, fill=T.TEXT)
-    canvas.text(56, 828, "14 µA 与 24 µA 是 3.3 V、25 °C 的典型值，5.4 µs 与 3.6 µs 是表 26 的唤醒时间；200 µA 与 180 µA 是 85 °C 最大值。",
-                size=12, fill=T.TEXT)
+    # 面板 A：模式锁存
+    ay, ah = 168, 236
+    canvas.rect(24, ay, 290, ah, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.rect(24, ay, 290, 5, fill=T.RED, rx=2)
+    canvas.text(38, ay + 30, "① 进不去 Stop", size=13, fill=T.TEXT, weight="700")
+    canvas.text(38, ay + 50, "电流停在 mA 级", size=10, fill=T.RED, mono=True)
+    canvas.text(38, ay + 74, "两个位都要对：", size=11, fill=T.TEXT)
+    canvas.rect(38, ay + 84, 262, 26, fill=T.BG2, stroke=T.GREEN, rx=4)
+    canvas.text(50, ay + 102, "SCB_SCR  SLEEPDEEP = 1", size=10, fill=T.GREEN,
+                mono=True)
+    canvas.rect(38, ay + 114, 262, 26, fill=T.BG2, stroke=T.GREEN, rx=4)
+    canvas.text(50, ay + 132, "PWR_CR   PDDS = 0", size=10, fill=T.GREEN,
+                mono=True)
+    canvas.text(38, ay + 160, "PDDS = 1 就是 Standby：", size=10.5, fill=T.RED)
+    canvas.text(38, ay + 178, "SRAM / 寄存器丢，醒来走复位", size=10, fill=T.MUTED)
+    canvas.text(38, ay + 200, "还要 PWR_CR LPDS = 1（低功耗稳压器）", size=9.5,
+                fill=T.MUTED, mono=True)
+    canvas.text(38, ay + 218, "且不开 IWDG —— 14 µA 那一格不含它", size=9.5,
+                fill=T.RED)
 
-    _credit(canvas, "自绘。电流与唤醒时间来自 DS5319 Rev 20 表 16 与表 26；IWDG 在 Stop 继续计数来自 RM0008 看门狗；12800 bit/s 由本章的 0x271 与 8 MHz 算出。")
+    # 面板 B：醒来先 HSI 8 MHz
+    bx, bw = 326, 300
+    canvas.rect(bx, ay, bw, ah, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    canvas.rect(bx, ay, bw, 5, fill=T.AMBER, rx=2)
+    canvas.text(bx + 14, ay + 30, "② 醒来跑飞", size=13, fill=T.TEXT,
+                weight="700")
+    canvas.text(bx + 14, ay + 50, "同一个 0x271，波特率差 9 倍", size=10,
+                fill=T.AMBER, mono=True)
+    canvas.text(bx + 14, ay + 74, "Stop 退出后的系统时钟：", size=11, fill=T.TEXT)
+    bars = [("HSI 8 MHz", 8, "12800 bit/s", T.AMBER),
+            ("PLL 72 MHz", 72, "115200 bit/s", T.GREEN)]
+    for i, (lab, mhz, note, color) in enumerate(bars):
+        y = ay + 88 + i * 46
+        canvas.text(bx + 14, y, f"{lab} → {note}", size=10.5, fill=color,
+                    weight="600")
+        canvas.rect(bx + 14, y + 8, mhz / 72 * 246, 14, fill=color, rx=2,
+                    opacity=0.8)
+    canvas.text(bx + 14, ay + 190, "醒来第一件事：SystemClock_Config()",
+                size=10.5, fill=T.GREEN)
+    canvas.text(bx + 14, ay + 208, "定时叫醒靠 RTC 闹钟：LSE 32.768 kHz，", size=9.5,
+                fill=T.MUTED)
+    canvas.text(bx + 14, ay + 222, "PRL = 32767 → 1 Hz（F103 无周期唤醒定时器）",
+                size=9.5, fill=T.MUTED)
+
+    # 面板 C：µA 门槛的差值法
+    cx, cw = 638, 298
+    canvas.rect(cx, ay, cw, ah, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.rect(cx, ay, cw, 5, fill=T.CYAN, rx=2)
+    canvas.text(cx + 14, ay + 30, "③ 电流降不下来", size=13, fill=T.TEXT,
+                weight="700")
+    canvas.text(cx + 14, ay + 50, "差值法：先测底，再逐个打开", size=10,
+                fill=T.CYAN, mono=True)
+    leaks = [("IWDG 走 LSI", "+3.4 µA", 0.02, T.RED),
+             ("LSI 单开", "+3.2 µA", 0.02, T.AMBER),
+             ("10 kΩ 上拉 @3.3 V", "0.33 mA", 0.35, T.VIOLET),
+             ("2 mA LED 常亮", "2 mA", 1.0, T.RED),
+             ("悬空输入脚翻转", "µA~mA", 0.5, T.AMBER)]
+    for i, (name, val, frac, color) in enumerate(leaks):
+        y = ay + 72 + i * 30
+        canvas.text(cx + 14, y + 10, name, size=10, fill=T.TEXT)
+        canvas.rect(cx + 14, y + 16, 180, 6, fill=T.BG2, stroke=T.GRID, rx=2)
+        canvas.rect(cx + 14, y + 16, 180 * frac, 6, fill=color, rx=2)
+        canvas.text(cx + 200, y + 22, val, size=9.5, fill=color, mono=True)
+    canvas.text(cx + 14, ay + 226, "悬空脚配 GPIO_MODE_ANALOG；输出脚给定电平",
+                size=9, fill=T.MUTED)
+
+    # 底条：Standby 的 2 µA 只属于一格
+    by = 424
+    canvas.rect(24, by, 912, 92, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(38, by + 24, "别把一格的条件当成整个模式：Standby 的 2 µA 有前提",
+                size=12.5, fill=T.TEXT, weight="700")
+    conds = [("LSI / IWDG / LSE / RTC 全关", "2 µA", T.GREEN),
+             ("LSI 开着", "3.2 µA", T.AMBER),
+             ("LSI + IWDG 都开", "3.4 µA", T.RED),
+             ("Stop 用主稳压器", "24 µA", T.MUTED)]
+    for i, (cond, val, color) in enumerate(conds):
+        x = 38 + i * 222
+        canvas.rect(x, by + 38, 208, 42, fill=T.PANEL, stroke=color, rx=4)
+        canvas.text(x + 10, by + 56, cond, size=9.5, fill=T.MUTED)
+        canvas.text(x + 10, by + 72, val, size=12, fill=color, weight="700",
+                    mono=True)
+
+    # 唤醒时间对照
+    ty = 532
+    canvas.text(24, ty, "唤醒时间不是加法：先到第一条指令，再算 PLL 锁定",
+                size=12.5, fill=T.TEXT, weight="700")
+    wakes = [("Stop · 低功耗稳压器", "5.4 µs", 0.36, T.GREEN),
+             ("Stop · 主稳压器", "3.6 µs", 0.24, T.CYAN),
+             ("Sleep", "1.8 µs", 0.12, T.VIOLET),
+             ("Standby（走复位）", "50 µs", 1.0, T.AMBER)]
+    for i, (name, val, frac, color) in enumerate(wakes):
+        y = ty + 16 + i * 26
+        canvas.text(24, y + 14, name, size=10.5, fill=T.TEXT)
+        canvas.rect(220, y + 4, 420, 12, fill=T.BG2, stroke=T.GRID, rx=2)
+        canvas.rect(220, y + 4, max(6, 420 * frac), 12, fill=color, rx=2,
+                    opacity=0.8)
+        canvas.text(652, y + 14, val, size=10.5, fill=color, mono=True)
+    canvas.text(700, ty + 40, "PLL 锁定最大 200 µs，", size=10, fill=T.MUTED)
+    canvas.text(700, ty + 58, "不与唤醒时间相加称呼。", size=10, fill=T.MUTED)
+    canvas.text(700, ty + 76, "14 / 24 µA 是 3.3 V·25 °C 典型值；", size=9.5,
+                fill=T.DIM)
+    canvas.text(700, ty + 92, "200 / 180 µA 是 85 °C 最大值。", size=9.5,
+                fill=T.DIM)
+
+    canvas.rect(24, 674, 912, 34, fill=T.BG2, stroke=T.GREEN, rx=8)
+    canvas.text(38, 696,
+                "排查顺序：先确认模式位真的进了 Stop（电流台阶），再修唤醒后的时钟，最后才用差值法一颗颗抓耗电。",
+                size=11, fill=T.TEXT)
+    _credit(canvas, "自绘。电流与唤醒时间来自 DS5319 Rev 20 表 16 与表 26；IWDG 在 Stop 继续计数来自 RM0008 看门狗；12800 bit/s 由本章 0x271 与 8 MHz 算出。")
     return canvas
 
 

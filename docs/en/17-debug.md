@@ -340,7 +340,7 @@ void Measure(void)
 
 <p align="center">
   <img src="../../assets/diagrams/sample-17-perf-triage.svg" width="760" alt="Triage, three branches: zero readings check bit 24; at 72 MHz 72 counts are 1 us; BFAR requires CFSR bit 15 set">
-  <br><sub>▲ Drawn for this book. Triage, three branches: DWT reads zero — check whether DEMCR bit 24 (TRCENA) is set; at 72 MHz exactly 72 counts are 1 us — do not mistake 720000 for 1 s; BFAR is valid only when CFSR bit 15 is set. Sources: [PM0056 DWT](#source-pm0056-dwt) and [PM0056](#source-pm0056).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the top is the two-read timeline around the measured code with a 72-count ruler for 1 us; the upper left ranks fixes by payoff for a zero reading, the upper right lists the cycle count, code size and output agreement to compare across -Og/-O2/-Os; the lower half is the CFSR -> HFSR -> BFAR freeze chain, the bit15 gate, and where PC sits in the stack frame (SP + 0x18). DWT reads zero — check whether DEMCR bit 24 (TRCENA) is set; at 72 MHz exactly 72 counts are 1 us — do not mistake 720000 for 1 s; BFAR is valid only when CFSR bit 15 is set. Sources: [PM0056 DWT](#source-pm0056-dwt) and [PM0056](#source-pm0056).</sub>
 </p>
 
 <p align="center">

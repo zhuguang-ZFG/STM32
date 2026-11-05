@@ -352,7 +352,7 @@ __HAL_RCC_USART2_CLK_DISABLE();
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-pwr-triage.svg" width="760" alt="Stop never entered, garbled serial after wake, current will not drop: 14 uA needs SLEEPDEEP=1 and PDDS=0, wake runs HSI 8 MHz, and 2 uA holds only with LSI, IWDG, LSE and RTC all off">
-  <br><sub>▲ Drawn for this book. Triage, three branches: Stop never entered — SLEEPDEEP=1 with PDDS=0 is the 14 uA cell; garbled serial after wake — the clock still runs HSI 8 MHz while BRR was computed for 72 MHz; the current will not drop — 2 uA requires LSI, IWDG, LSE and RTC all off. Sources: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: a log-scale ruler across the top places 14.4 mA, 14 uA and 2 uA on one line; the left column shows the two mode bits (SCB_SCR SLEEPDEEP=1, PWR_CR PDDS=0), the middle compares HSI 8 MHz with PLL 72 MHz at 12800 versus 115200, the right lists the leaks one by one; below sit the four Standby cells and a wake-time bar chart. Stop never entered — SLEEPDEEP=1 with PDDS=0 is the 14 uA cell; garbled serial after wake — the clock still runs HSI 8 MHz while BRR was computed for 72 MHz; the current will not drop — 2 uA requires LSI, IWDG, LSE and RTC all off. Sources: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
 </p>
 
 <p align="center">

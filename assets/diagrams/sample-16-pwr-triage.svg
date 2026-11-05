@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="进不去 Stop、醒来串口乱码、电流降不下来：14 µA 要 SLEEPDEEP=1 且 PDDS=0，醒来是 HSI 8 MHz，2 µA 只在 LSI、IWDG、LSE、RTC 全关时成立">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="低功耗三岔口：先确认真进了 Stop，再看醒来的时钟，最后用差值法抓耗电大户">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
@@ -9,39 +9,110 @@
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 16 · DS5319 Rev 20 表 16</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">低功耗三岔口：先确认真进了 Stop，再看醒来的时钟，最后用差值法抓耗电大户</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">three branches: mode latch / clock restore / idle current</text>
-<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SLEEPDEEP=1  PDDS=0  →  Stop 14 µA    唤醒 5.4 µs  →  HSI 8 MHz</text>
-<text x="40" y="170" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  进不去 Stop：电流还是 mA 级</text>
-<text x="920" y="170" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SLEEPDEEP · PDDS · PWR_CR</text>
-<rect x="40" y="184" width="880" height="174" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="214" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：电流还在 14.4 mA 量级，醒来也不用重配时钟——它根本没进 Stop</text>
-<text x="56" y="240" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 A：SLEEPDEEP 没置 1，只进了 Sleep。进 Stop 要 SLEEPDEEP=1、PDDS=0</text>
-<text x="56" y="266" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 B：PDDS 写成 1，那是 Standby：SRAM 和寄存器丢失，醒来从复位向量重启</text>
-<text x="56" y="292" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 C：WFI 前还有挂起中断，或 SWD/JTAG、USB 芯片在漏电，量不到 14 µA 那一格</text>
-<text x="56" y="318" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">检查点：14 µA 要求低功耗稳压器 PWR_LOWPOWERREGULATOR_ON，且不开 IWDG</text>
-<text x="56" y="344" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针：0.1 Ω 采样电阻串 3V3，用差分探头看进入瞬间的电流台阶</text>
-<text x="40" y="386" font-size="16" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  醒来跑飞：时钟停在 HSI 8 MHz</text>
-<text x="920" y="386" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BRR 0x271 · 8 MHz vs 72 MHz</text>
-<rect x="40" y="400" width="880" height="174" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="430" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：一帧串口乱码，或定时器变慢、外设不工作</text>
-<text x="56" y="456" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因：Stop 退出后系统时钟是 HSI 8 MHz，不是 16 MHz，也不是 72 MHz</text>
-<text x="56" y="482" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数值：BRR 仍是 0x271，8e6 / (16 × 39.0625) = 12800；主机还停在 115200，差 9 倍</text>
-<text x="56" y="508" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">修复：醒来第一件事调 SystemClock_Config()，PLL 回 72 MHz 后再发下一个字节</text>
-<text x="56" y="534" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">定时唤醒：F103 没有 F4 的周期唤醒定时器，用 RTC 闹钟，LSE 32.768 kHz、PRL = 32767 得 1 Hz</text>
-<text x="56" y="560" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">别忘了：Stop 期间 SysTick 不跳，1000 Hz 的 1 ms 节拍要在醒来后重新对齐</text>
-<text x="40" y="612" font-size="16" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  电流降不下来：µA 那一格的门槛</text>
-<text x="920" y="612" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">IWDG · GPIO_MODE_ANALOG · 0.33 mA</text>
-<rect x="40" y="626" width="880" height="164" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="654" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：进了 Stop 还是几十 µA 到 mA，或者待机被写成 2~3 µA 一个区间</text>
-<text x="56" y="680" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 A：IWDG 在 Stop 和 Standby 里照走 LSI，而 14 µA 那一格不含独立看门狗</text>
-<text x="56" y="706" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 B：悬空输入脚翻转漏电，配成模拟输入 GPIO_MODE_ANALOG；输出脚给定电平</text>
-<text x="56" y="732" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原因 C：10 kΩ 上拉在 3.3 V 下约 0.33 mA，一颗 2 mA 的 LED 常亮就全白费</text>
-<text x="56" y="758" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针：先全关测干净底电流，再逐个打开做差值法；万用表 µA 档会拖低电压</text>
-<rect x="40" y="796" width="880" height="40" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="812" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  Standby 的 2 µA 只属于 LSI、IWDG、LSE、RTC 全关那一格：LSI 开 3.2 µA，加 IWDG 3.4 µA。</text>
-<text x="56" y="828" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">14 µA 与 24 µA 是 3.3 V、25 °C 的典型值，5.4 µs 与 3.6 µs 是表 26 的唤醒时间；200 µA 与 180 µA 是 85 °C 最大值。</text>
+<text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先给三个数找到位置：对数刻度，差的是数量级</text>
+<line x1="120" y1="128" x2="700" y2="128" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="137.567" y1="122" x2="137.567" y2="134" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="137.567" y="148" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 µA</text>
+<line x1="256.395" y1="122" x2="256.395" y2="134" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="256.395" y="148" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14 µA</text>
+<line x1="517.065" y1="122" x2="517.065" y2="134" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="517.065" y="148" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1 mA</text>
+<line x1="679.94" y1="122" x2="679.94" y2="134" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="679.94" y="148" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14 mA</text>
+<circle cx="679.94" cy="128" r="7" fill="#8f2d2d" opacity="1"/>
+<text x="679.94" y="112" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">运行 14.4 mA</text>
+<circle cx="256.395" cy="128" r="7" fill="#7a4e00" opacity="1"/>
+<text x="256.395" y="112" font-size="10.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 14 µA</text>
+<circle cx="137.567" cy="128" r="7" fill="#075e84" opacity="1"/>
+<text x="137.567" y="112" font-size="10.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Standby 2 µA</text>
+<rect x="24" y="168" width="290" height="236" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="24" y="168" width="290" height="5" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="38" y="198" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 进不去 Stop</text>
+<text x="38" y="218" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">电流停在 mA 级</text>
+<text x="38" y="242" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">两个位都要对：</text>
+<rect x="38" y="252" width="262" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="50" y="270" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SCB_SCR  SLEEPDEEP = 1</text>
+<rect x="38" y="282" width="262" height="26" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="50" y="300" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PWR_CR   PDDS = 0</text>
+<text x="38" y="328" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PDDS = 1 就是 Standby：</text>
+<text x="38" y="346" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SRAM / 寄存器丢，醒来走复位</text>
+<text x="38" y="368" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">还要 PWR_CR LPDS = 1（低功耗稳压器）</text>
+<text x="38" y="386" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">且不开 IWDG —— 14 µA 那一格不含它</text>
+<rect x="326" y="168" width="300" height="236" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="326" y="168" width="300" height="5" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="340" y="198" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 醒来跑飞</text>
+<text x="340" y="218" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">同一个 0x271，波特率差 9 倍</text>
+<text x="340" y="242" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop 退出后的系统时钟：</text>
+<text x="340" y="256" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">HSI 8 MHz → 12800 bit/s</text>
+<rect x="340" y="264" width="27.3333" height="14" fill="#7a4e00" opacity="0.8" rx="2"/>
+<text x="340" y="302" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">PLL 72 MHz → 115200 bit/s</text>
+<rect x="340" y="310" width="246" height="14" fill="#1b5c45" opacity="0.8" rx="2"/>
+<text x="340" y="358" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">醒来第一件事：SystemClock_Config()</text>
+<text x="340" y="376" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">定时叫醒靠 RTC 闹钟：LSE 32.768 kHz，</text>
+<text x="340" y="390" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PRL = 32767 → 1 Hz（F103 无周期唤醒定时器）</text>
+<rect x="638" y="168" width="298" height="236" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="638" y="168" width="298" height="5" fill="#075e84" opacity="1" rx="2"/>
+<text x="652" y="198" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 电流降不下来</text>
+<text x="652" y="218" font-size="10" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">差值法：先测底，再逐个打开</text>
+<text x="652" y="250" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IWDG 走 LSI</text>
+<rect x="652" y="256" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="652" y="256" width="3.6" height="6" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="838" y="262" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+3.4 µA</text>
+<text x="652" y="280" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI 单开</text>
+<rect x="652" y="286" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="652" y="286" width="3.6" height="6" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="838" y="292" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+3.2 µA</text>
+<text x="652" y="310" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10 kΩ 上拉 @3.3 V</text>
+<rect x="652" y="316" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="652" y="316" width="63" height="6" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="838" y="322" font-size="9.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0.33 mA</text>
+<text x="652" y="340" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2 mA LED 常亮</text>
+<rect x="652" y="346" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="652" y="346" width="180" height="6" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="838" y="352" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 mA</text>
+<text x="652" y="370" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">悬空输入脚翻转</text>
+<rect x="652" y="376" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="652" y="376" width="90" height="6" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="838" y="382" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">µA~mA</text>
+<text x="652" y="394" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">悬空脚配 GPIO_MODE_ANALOG；输出脚给定电平</text>
+<rect x="24" y="424" width="912" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="38" y="448" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别把一格的条件当成整个模式：Standby 的 2 µA 有前提</text>
+<rect x="38" y="462" width="208" height="42" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="48" y="480" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI / IWDG / LSE / RTC 全关</text>
+<text x="48" y="496" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">2 µA</text>
+<rect x="260" y="462" width="208" height="42" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="270" y="480" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI 开着</text>
+<text x="270" y="496" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3.2 µA</text>
+<rect x="482" y="462" width="208" height="42" fill="#f1f5f7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="492" y="480" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI + IWDG 都开</text>
+<text x="492" y="496" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3.4 µA</text>
+<rect x="704" y="462" width="208" height="42" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="714" y="480" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop 用主稳压器</text>
+<text x="714" y="496" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">24 µA</text>
+<text x="24" y="532" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">唤醒时间不是加法：先到第一条指令，再算 PLL 锁定</text>
+<text x="24" y="562" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop · 低功耗稳压器</text>
+<rect x="220" y="552" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="220" y="552" width="151.2" height="12" fill="#1b5c45" opacity="0.8" rx="2"/>
+<text x="652" y="562" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5.4 µs</text>
+<text x="24" y="588" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop · 主稳压器</text>
+<rect x="220" y="578" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="220" y="578" width="100.8" height="12" fill="#075e84" opacity="0.8" rx="2"/>
+<text x="652" y="588" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.6 µs</text>
+<text x="24" y="614" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Sleep</text>
+<rect x="220" y="604" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="220" y="604" width="50.4" height="12" fill="#5b3a8c" opacity="0.8" rx="2"/>
+<text x="652" y="614" font-size="10.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1.8 µs</text>
+<text x="24" y="640" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Standby（走复位）</text>
+<rect x="220" y="630" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
+<rect x="220" y="630" width="420" height="12" fill="#7a4e00" opacity="0.8" rx="2"/>
+<text x="652" y="640" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">50 µs</text>
+<text x="700" y="572" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PLL 锁定最大 200 µs，</text>
+<text x="700" y="590" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不与唤醒时间相加称呼。</text>
+<text x="700" y="608" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">14 / 24 µA 是 3.3 V·25 °C 典型值；</text>
+<text x="700" y="624" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">200 / 180 µA 是 85 °C 最大值。</text>
+<rect x="24" y="674" width="912" height="34" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="38" y="696" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">排查顺序：先确认模式位真的进了 Stop（电流台阶），再修唤醒后的时钟，最后才用差值法一颗颗抓耗电。</text>
 <line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。电流与唤醒时间来自 DS5319 Rev 20 表 16 与表 26；IWDG 在 Stop 继续计数来自 RM0008 看门狗；12800 bit/s 由本章的 0x271 与 8 MHz 算出。</text>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。电流与唤醒时间来自 DS5319 Rev 20 表 16 与表 26；IWDG 在 Stop 继续计数来自 RM0008 看门狗；12800 bit/s 由本章 0x271 与 8 MHz 算出。</text>
 <text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>
