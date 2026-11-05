@@ -1779,3 +1779,27 @@ html.dark .vp-doc .custom-block:hover {
 html.dark .chapter-art {
   --cover-ink: #a3c4b9;
 }
+
+/* ===== 章节手绘机制图（docs/public/figures/*.svg，config.mts 构建期内联）=====
+   与题花同一墨色令牌：浅色深墨、深色亮墨；SVG 在 DOM 里，变量穿透得了。
+   画布 320×88，正文栏宽下按容器等比缩放，不设固定像素宽。 */
+.hand-figure {
+  --cover-ink: #123b33;
+  margin: 1.1rem auto 0.9rem;
+  max-width: 720px;
+}
+.hand-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.hand-figure figcaption {
+  margin-top: 0.45rem;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+}
+html.dark .hand-figure {
+  --cover-ink: #a3c4b9;
+}
