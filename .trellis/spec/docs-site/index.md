@@ -10,6 +10,7 @@ VitePress 站点的一切（页面、侧边栏、主题、动画、图片）。
 | [content.md](content.md) | 章节页模板执行细则、风格落地检查、动画与图片操作 |
 | [animation.md](animation.md) | 动画视觉与时间轴规范：色板/字号、SMIL 阶段槽位、三件动效武器、站点内联机制、`anim-audit.html` 版式审计（墨水盒判压字） |
 | [architecture-diagram.md](architecture-diagram.md) | 架构图层规范：动画/架构图/题图三分工、stack-diagram 产图工作流、图标来源契约、印刷兼容与 CLAIMS 口径 |
+| [presentation-assets.md](presentation-assets.md) | 精排导读与金句卡：同源生成、独立 HTML 入口、过期检查、文字基线、截图与浏览器验收 |
 
 ## 快速命令
 

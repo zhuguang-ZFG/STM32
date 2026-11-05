@@ -17,6 +17,7 @@
 - `node scripts/project-catalog.mjs --matrix`：仅向 stdout 输出 JSON `{include:[{path,target}]}`，供 CI 消费。
 - `npm run docs:check`：全站文档一致性门（`scripts/docs-check.mjs`）——相对链接与锚点、Markdown 卫生（控制字符、`\(\)`）、仓库自链按工作树核对、**手写数字声明对账**、CITATION/CHANGELOG 与 manifest 口径对账。只读源文件，不需构建。
 - `npm run pages:check`：产物锚点门（`scripts/pages-check.mjs`）——扫 `docs/.vitepress/dist` 每个页面的 `#fragment` 链接，要求目标页真有那个 `id`。需先构建；支持 `--dist <dir>`（部署侧对 artifact 用 `--dist site`）。
+- 产物锚点门先清空 `script/style` 原始文本再提取 href，保留行号；JS 中的 CSS 选择器不是实际链接。独立 HTML 导读的过期门与入口检查见 [presentation-assets.md](presentation-assets.md)。
 - `npm run search:check`：搜索可达性门（`scripts/search-check.mjs`）——用站内同一套 tokenizer 载入产物索引，逐个章节/小节标题**真查一次**，要求命中该标题所在页面。需先构建。
 - `npm run book:pdfcheck`：PDF 出版契约门（`mcu-book/check_pdf.py`）——元数据、大纲条数、封面无页码、逐页 `N / total`、结构页无页眉、逐页页眉与映射一致。
 - `npm run book:pack` / `publish_downloads.py --verify <dir>`：下载打包（稳定名 + `-vX.Y.Z` 版本名 + `SHA256SUMS.txt` + `book-downloads.json` + 落地页，staging→整体替换）；`--verify` 用 hashlib 逐条核对既有包。
