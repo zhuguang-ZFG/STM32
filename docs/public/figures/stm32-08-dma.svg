@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="DMA 环形缓冲：写指针由 DMA 推进，读指针由 CPU 消费；半满 HT 与全满 TC 各触发一次中断"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<circle cx="150" cy="44" r="30" stroke-width="1.4"/>
+<circle cx="150" cy="44" r="22" stroke-width="1.2" stroke-dasharray="2 3"/>
+<text x="150" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">环形缓冲</text>
+<text x="96" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">HT</text> <text x="96" y="82" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">TC</text>
+<text x="196" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">DMA 写</text> <text x="196" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">CPU 读</text>
+<path d="M112 18 C 120 26, 128 32, 136 36" stroke-width="2.2"/>
+<path d="M188 78 C 180 70, 172 64, 164 60" stroke-width="2.2"/>
+<path d="M150 14 C 150 20, 150 24, 150 30" stroke-width="1.8"/>
+<path d="M150 74 C 150 68, 150 64, 150 58" stroke-width="1.8"/>
+</g></svg>

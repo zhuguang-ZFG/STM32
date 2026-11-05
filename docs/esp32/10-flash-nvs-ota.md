@@ -107,6 +107,8 @@ subtype 户口本（本章主角全在这）：
 
 实践铁律：**两个 ota 槽等大**。轮流坐庄的两个庄家地位必须对称：不等大不会立刻报错，但构建系统会在"固件只装得进部分 app 槽"时警告（Partition Size Checks），OTA 轮转的隐患从第一天就埋下。
 
+![ESP32 Flash 分区与 OTA：otadata 指向当前 app 槽，新固件写入另一槽；失败可回滚](/figures/esp32-10-flash-nvs-ota.svg)
+
 ## 二、NVS 机制：磨损均衡的键值库
 
 在 STM32 上手写 Flash 存储（[S13](../stm32/13-flash-iap.md)），三件事全得自己扛：擦除粒度、掉电半写、寿命摊薄。ESP-IDF 把它们打包成了 NVS（Non-Volatile Storage），**带磨损均衡的键值库**，Wi-Fi 凭据、设备配置、计数器的标准住所。官方定位说得很直白：为"大量小值"设计，别拿它塞大 blob（大文件走文件系统分区）。

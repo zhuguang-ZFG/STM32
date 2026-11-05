@@ -13,7 +13,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "tools"))
 
+import art_guard  # noqa: E402
 import build_print  # noqa: E402
 import check_pdf  # noqa: E402
 
@@ -58,6 +60,13 @@ class PrintVectorGuardTests(unittest.TestCase):
         problems = check_pdf.check_raster_budget(_Doc([1] * 60))
         self.assertTrue(problems)
         self.assertIn("光栅图 60 张", problems[0])
+
+    def test_inline_figures_are_pure_vector(self) -> None:
+        figures = sorted((ROOT.parent / "docs" / "public" / "figures").glob("*.svg"))
+        self.assertGreaterEqual(len(figures), 10)
+        for figure in figures:
+            with self.subTest(figure=figure.name):
+                self.assertEqual([], art_guard.check_svg(figure))
 
 
 if __name__ == "__main__":

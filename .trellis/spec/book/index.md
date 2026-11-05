@@ -51,8 +51,11 @@ python -m unittest discover mcu-book/tests -v
 | 印前版式 / 字体 / 索引 / 页眉 | `npm run book:pdf`，再 `python mcu-book/check_pdf.py <印前PDF>`；样张不能替代全书验收 |
 | 下载包 | `python mcu-book/publish_downloads.py --out-dir .temp/book-downloads`，再 `--verify .temp/book-downloads` |
 
-## 已知实现疑点（不在本层修）
+## 已修复的实现疑点
 
-F01：`.github/workflows/book.yml` 与 `quality.yml` 先跑 `build_html.py --pdf`（A4），再跑无参数
-`check_pdf.py`（默认读印前 PDF）。这是静态接口矛盾，本轮只登记，不声称 CI 已失败或已修复；
-若要改 CI，必须同时确定发布产物、构建成本与失败传播，不能只改默认路径。
+F01（2026-11-05 修复）：`.github/workflows/book.yml` 与 `quality.yml` 原先先跑 `build_html.py --pdf`
+（A4），再跑无参数 `check_pdf.py`（默认读印前 PDF），干净 CI 必因 `mcu-deep-book-print.pdf`
+不存在而红。两条 workflow 现在都在 A4 之后跑
+`python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html`，再跑 `check_pdf.py`；
+Book CI 另补 `actions/setup-node` + `npm ci`，提供 `pagedjs`。验证：PR #2 的 `book`/`checks`
+全绿，本地 1174 页、13/13 通过。

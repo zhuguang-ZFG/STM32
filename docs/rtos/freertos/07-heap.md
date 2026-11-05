@@ -169,6 +169,8 @@ void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCB,
 
 **选型建议**：长期产品优先静态分配（零失败风险）。如果必须动态创建任务（如运行时加载插件），用 heap_4 + 严格的 `configTOTAL_HEAP_SIZE` 计算 + `xPortGetMinimumEverFreeHeapSize` 监控。
 
+![heap_4 空闲链表：按地址排序，释放时只有相邻空闲块才合并；不相邻的洞保留](/figures/rtos-freertos-07-heap.svg)
+
 ## 三、碎片实验：总空闲 ≠ 最大连续块
 
 场景 5 的完整证据链（串口日志）：

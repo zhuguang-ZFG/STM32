@@ -70,6 +70,8 @@ F4 的每个 DMA 控制器有 8 条**流（Stream）**，每条流可以接 8 �
 
 **选错控制器是最常见的"配置都对但数据不来"**：时钟开了、引脚对了、流也配了，就是控制器选成了 DMA1。USART1_RX 的常用取值是 **DMA2 Stream5 Channel4**（也可走 Stream2 Channel4）。以 RM0090 Table 43 为准，别背。
 
+![DMA 环形缓冲：写指针由 DMA 推进，读指针由 CPU 消费；半满 HT 与全满 TC 各触发一次中断](/figures/stm32-08-dma.svg)
+
 ## 二、三地址一长度：PAR、M0AR、NDTR
 
 一次 DMA 传输要告诉硬件三件事：
