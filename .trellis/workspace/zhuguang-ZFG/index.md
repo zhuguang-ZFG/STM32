@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 33
+- **Total Sessions**: 34
 - **Last Active**: 2026-11-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1295 | Active |
+| `journal-1.md` | ~1349 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 34 | 2026-11-05 | ai4fw 视频号发布 | - | `feat/video-v2-remaster` |
 | 33 | 2026-11-05 | Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验 | `afd543f`, `08d0c3c`, `696c194` | `feat/video-v2-remaster` |
 | 12 | 2026-10-25 | BMS-Z 对齐：验证纵深（门禁脚本/文档对账/PDF 契约/下载打包/dist 对账） | `d87f513`, `ca9b756` | `feat/video-v2-remaster` |
 | 11 | 2026-10-18 | xhs 驱动改进：虚拟列表扫卡、只读 collectioncheck、xhs-verify 整列对账与台账对齐 | `22cfba3`, `61942e7`, `bb293bf`, `60f048c` | `main` |

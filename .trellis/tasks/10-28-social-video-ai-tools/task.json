@@ -21,6 +21,6 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "2026-11-05 视频号已发表，列表状态「原创审核中」，视频 ID export/UzFfBgAAxLiJNGsvWCOPk8zT4DCaHweWiuhuxnNDBuHhb1nJ_g；B站/抖音/小红书早前已发。视频号表单与台账在 .temp/wx-run/，发布闸门与脚本 .temp/ai4fw-wx.mjs。小红书账号异常，用户 2026-11-05 指示停止上传/评论：置顶评论未发送，已删除 ai4fw 的 xhs 发布/评论闸门，不再重试。",
   "meta": {}
 }

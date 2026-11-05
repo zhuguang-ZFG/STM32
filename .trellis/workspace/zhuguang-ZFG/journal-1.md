@@ -1293,3 +1293,38 @@ comment 步补 --go（闸门另起一张 I_HAVE_USER_OK_COMMENT）并真发出 1
 ### Next Steps
 
 - None - task complete
+
+
+## Session 34: ai4fw 视频号发布
+
+**Date**: 2026-11-05
+**Task**: ai4fw 视频号发布
+**Branch**: `feat/video-v2-remaster`
+
+### Summary
+
+视频号 ai4fw 已发表；短标题空格修正、声明原创弹窗确认、视频 ID 与台账落盘；小红书账号异常，用户指示停止上传/评论，置顶评论未发送且不再重试。
+
+### Main Changes
+
+- 视频号 ai4fw 发表完成：`wx.mp4` 上传，描述/短标题/封面/位置/标注/声明原创按用户确认落表；列表状态「原创审核中」，视频 ID `export/UzFfBgAAxLiJNGsvWCOPk8zT4DCaHweWiuhuxnNDBuHhb1nJ_g`。
+- 新增 `.temp/ai4fw-wx.mjs`：隐藏 file input 直塞、`insertText` 描述、浮层 Esc、标注读 `.select-display`、封面直塞隐藏 image input、`--go` + `.temp/wx-run/I_HAVE_USER_OK=ai4fw` 闸门、发表后台账。
+- 修正 `video/publish/copy-ai4fw.md`：短标题中文逗号被平台判特殊字符，改为空格；声明原创需在「原创权益」弹窗勾协议再点「声明原创」。
+- 任务 `10-28-social-video-ai-tools` notes 记录发表状态与小红书账号异常停止指令；台账 `wx-ledger.jsonl` / `ai4fw-published.txt` / `wx-posted.txt` 已写。
+
+### Validation
+
+- `node .temp/ai4fw-wx.mjs --resume` 三次：描述/短标题/位置/标注/封面/声明原创全部读回，短标题无红字校验错误。
+- `node .temp/ai4fw-wx.mjs --go --resume` 退出 0，点发表后跳转 `post/list`。
+- 列表页第一张 ai4fw 卡片：369 描述、原创审核中、2026-11-05 20:59；视频 ID 由「复制视频ID」读回。
+- 封面预览截图为 `douyin-cover.png` 的 369 画面；位置=不显示位置、合集未选、链接未选、活动不参与、不定时、标注=无需标注。
+
+### Completion
+
+- 四平台发布链：B站、抖音、小红书早前已发；视频号本轮已发。
+- 小红书账号异常，用户 2026-11-05 指示停止上传/评论；置顶评论只填了 264 字未发送，已删除 ai4fw 的 xhs 发布/评论闸门，不再重试。视频号原创审核状态需稍后复查；本轮记录随任务提交，未推送 git。
+
+### Next Steps
+
+- 稍后刷新视频号列表，确认原创审核状态。
+- 小红书不再执行上传/评论/合集/编辑动作；保留已发布内容，不删除/不改。
