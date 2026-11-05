@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="任务通知：TCB 里 32 位 ulNotifiedValue 加状态位，三种写入语义都不经过队列对象"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">TCB</text>
+<rect x="8" y="18" width="128" height="58" rx="3" stroke-width="1.4"/>
+<rect x="14" y="32" width="116" height="16" rx="3" stroke-width="1.4"/> <text x="18" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">ulNotifiedValue[0]</text> <text x="126" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">32b</text>
+<rect x="14" y="54" width="62" height="14" rx="3" stroke-width="1.4"/> <text x="18" y="64" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">状态 0/1</text>
+<rect x="168" y="8" width="144" height="16" rx="3" stroke-width="1.4"/> <text x="172" y="19" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">+1 计数（give）</text>
+<rect x="168" y="32" width="144" height="16" rx="3" stroke-width="1.4"/> <text x="172" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">覆盖 v（overwrite）</text>
+<rect x="168" y="56" width="144" height="16" rx="3" stroke-width="1.4"/> <text x="172" y="67" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">置位 bits（setbits）</text>
+<path d="M168 16 C 156 16, 150 30, 142 36" stroke-width="2.2"/>
+<path d="M168 40 L142 40" stroke-width="2.2"/>
+<path d="M168 64 C 156 64, 150 52, 142 46" stroke-width="2.2"/>
+<text x="168" y="82" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">无队列对象 · 无拷贝</text>
+<text x="8" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">take 读后清零</text>
+</g></svg>

@@ -8,9 +8,9 @@ title: 更新日志
 
 站点统计（成稿章节 / 实验 / 动画 / 工程数）由 `npm run docs:gen` 扫描全站章节 frontmatter 得出，[首页学习地图](/)与本页同源。
 
-## 2026-11-05 · 20 张章节手绘机制图
+## 2026-11-05 · 30 张章节手绘机制图
 
-- **章节插图**：两轮新增 20 张 320×88 纯矢量手绘机制图。第一轮解释五段内存地图、volatile 寄存器缓存、AAPCS 参数落位、COBS 帧布局、优先级反转与继承、heap_4 相邻块合并、DMA 环形缓冲水位、SAR 逐次逼近、窗口看门狗刷新窗口、ESP32 OTA 分区与回滚；第二轮补指针步长、结构体对齐、定时器时基、UART 帧、I2C 起止与地址、SPI 全双工移位环、Flash/IAP、低功耗三档、调度器就绪位图、队列环形缓冲。图源在 `docs/public/figures/`，正文按章节就近内联。
+- **章节插图**：三轮新增 30 张 320×88 纯矢量手绘机制图。第一轮解释五段内存地图、volatile 寄存器缓存、AAPCS 参数落位、COBS 帧布局、优先级反转与继承、heap_4 相邻块合并、DMA 环形缓冲水位、SAR 逐次逼近、窗口看门狗刷新窗口、ESP32 OTA 分区与回滚；第二轮补指针步长、结构体对齐、定时器时基、UART 帧、I2C 起止与地址、SPI 全双工移位环、Flash/IAP、低功耗三档、调度器就绪位图、队列环形缓冲；第三轮补查表法状态机、严格别名、PLL 分频链、NVIC 地址公式、SysTick 无符号回绕、R-2R 与 PWM+RC、CFSR 19 位点图、TCB 32 位通知邮箱、两份优先级刻度、ESP32 断电边界。图源在 `docs/public/figures/`，正文按章节就近内联。
 - **门禁**：`art_guard` 全量零违规（无滤镜/无 id/两档笔压）；`test_print_vectors.py` 新增 `test_inline_figures_are_pure_vector`，防止后续插入的图被滤镜版或位图替换。
 
 ## 2026-10-27 · 新增第十一部「AI 辅助开发」六章成稿
@@ -21,7 +21,7 @@ title: 更新日志
 
 ## 2026-11-03 · 首批 4 张架构图入书（stack-diagram 路线）
 
-- **161 张机制动画与架构图**：用 stack-diagram（白底瓷砖 + 官方 logo + 正交连线）累计新增 24 张静态架构图并入站入书——首批 `toolchain-pipeline`（B0）、`idf-anatomy`（P3）、`wifi-stack`（P8）、`rtos-side-by-side`（对比 0）；批二 `memory-map`（C1）、`boot-sequence`（B4）、`context-switch`（F2）；批三 `dma-paths`（S8）、`linker-map`（B3）、`scheduler-structs`（F3）、`ota-slots`（P10）；批四 `exti-chain`（S4 四层关卡）、`boot-relay`（P1 三棒静态版图，与接力动画互补）、`rcu-tree`（G1 时钟树）；批五 `sem-mutex`（F5 马甲家族）、`device-ops`（R4 设备框架调用链）、`i2c-bus`（S11 两线开漏拓扑）、`map-audit`（B5 size 公式）；批六 `logger-flow`（J1 记录器五站数据流）、`pwr-domains`（S14 三档供电域矩阵）；批八 `usart-rename-map`（G3 七条偏移轨，八串口两套牌）、`spl-anatomy`（S15 三板斧→GPIO_Init→四段寄存器）、`rtt-three-floors`（R0 三层楼与 INIT 登记）、`heap-free-list`（F7 空闲链表按地址排、相邻才拼）；新增项目篇首个机制动画 `logger-queue-overflow`（样本队列满则丢新，显式过载保护）。图源 HTML 与数据驱动生成器 `gen_batch3.py`/`gen_batch4.py`/`gen_batch5.py`/`gen_batch6.py`/`gen_batch8.py` 存 `scripts/arch-diagrams/`，PNG 交付 `docs/public/arch/`；与动画分工：动画演因果，架构图定静态结构。
+- **171 张机制动画与架构图**：用 stack-diagram（白底瓷砖 + 官方 logo + 正交连线）累计新增 24 张静态架构图并入站入书——首批 `toolchain-pipeline`（B0）、`idf-anatomy`（P3）、`wifi-stack`（P8）、`rtos-side-by-side`（对比 0）；批二 `memory-map`（C1）、`boot-sequence`（B4）、`context-switch`（F2）；批三 `dma-paths`（S8）、`linker-map`（B3）、`scheduler-structs`（F3）、`ota-slots`（P10）；批四 `exti-chain`（S4 四层关卡）、`boot-relay`（P1 三棒静态版图，与接力动画互补）、`rcu-tree`（G1 时钟树）；批五 `sem-mutex`（F5 马甲家族）、`device-ops`（R4 设备框架调用链）、`i2c-bus`（S11 两线开漏拓扑）、`map-audit`（B5 size 公式）；批六 `logger-flow`（J1 记录器五站数据流）、`pwr-domains`（S14 三档供电域矩阵）；批八 `usart-rename-map`（G3 七条偏移轨，八串口两套牌）、`spl-anatomy`（S15 三板斧→GPIO_Init→四段寄存器）、`rtt-three-floors`（R0 三层楼与 INIT 登记）、`heap-free-list`（F7 空闲链表按地址排、相邻才拼）；新增项目篇首个机制动画 `logger-queue-overflow`（样本队列满则丢新，显式过载保护）。图源 HTML 与数据驱动生成器 `gen_batch3.py`/`gen_batch4.py`/`gen_batch5.py`/`gen_batch6.py`/`gen_batch8.py` 存 `scripts/arch-diagrams/`，PNG 交付 `docs/public/arch/`；与动画分工：动画演因果，架构图定静态结构。
 - **新机器门**：`prose_guard.py --single` 单章口癖门（破折号散文面 ≤2、一句话/记住：散文本体 0）；`test_part_art.py` 分部隔页题图覆盖测试（manifest × part_art 非空、零滤镜零 href）；art_guard 题图达 100 枚 0 违规。
 
 ## 2026-10-24 · 整书离线版 v1.0.0：88 章首次装订，随站点发布到 `/mcu/book/`

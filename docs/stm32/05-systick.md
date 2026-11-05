@@ -145,6 +145,8 @@ if (sim_read_ctrl(&b) & CTRL_COUNTFLAG) got_wrong++;
 
 ## 五、时间换算与回绕：超时判断只有一种是安全的
 
+![无符号回绕：先减再比，跨回绕仍正确](/figures/stm32-05-tick-wrap.svg)
+
 1 个时钟 $= 1/168\text{MHz} = 125/21$ ns ≈ 5.952ns。整数公式 `ns = c*1000/168`（向零截断）：c=1 → 5ns，c=168 → 1000ns = 1µs（整 µs 无损），c=1000 → 5952ns = 5.952µs（按整数 µs 取 5µs，丢掉 0.952µs）。probe [5]：
 
 ```text

@@ -86,6 +86,8 @@ EXTI0          6     22 0x0058        0     6 0xE000E100 0xE000E406
 
 ## 二、NVIC 寄存器块：IRQn/32 与 IRQn%32 的寻址公式
 
+![NVIC 地址公式：IRQn/32 定位字，IRQn%32 定位位](/figures/stm32-04-irq-address.svg)
+
 NVIC 有六组寄存器，每组都是"一位管一个中断"的位图：
 
 | 寄存器 | 作用 |

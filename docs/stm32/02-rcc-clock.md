@@ -74,6 +74,8 @@ HSE/HSI 两个水源、PLL 这个泵站、SW 这个总闸、AHB/APB 两条输电
 
 ## 二、PLL 手算：M/N/P/Q 一个都不能猜
 
+![PLL 分频链：M/N/P/Q 各管一段频率](/figures/stm32-02-pll-chain.svg)
+
 公式（RM0090 Rev 18 §7.2.3）：
 
 - `f(VCO) = f(PLL 输入) × PLLN / PLLM`

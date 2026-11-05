@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="断电边界：Deep sleep 只留 RTC 域，RTC_DATA_ATTR 变量保命，普通全局变量随数字域一起清零"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<rect x="6" y="6" width="308" height="72" rx="4" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="14" y="16" width="170" height="54" rx="3" stroke-width="1.4"/> <text x="18" y="28" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">数字域</text>
+<rect x="22" y="34" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="26" y="45" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">CPU</text>
+<rect x="80" y="34" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="84" y="45" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">SRAM</text>
+<rect x="138" y="34" width="40" height="16" rx="3" stroke-width="1.4"/> <text x="142" y="45" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">外设</text>
+<text x="18" y="66" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Deep sleep 断电</text>
+<rect x="192" y="16" width="114" height="54" rx="3" stroke-width="1.4"/> <text x="196" y="28" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">RTC 域</text>
+<rect x="198" y="34" width="64" height="16" rx="3" stroke-width="1.4"/> <text x="202" y="45" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">RTC 慢存</text>
+<text x="266" y="45" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">boot_count</text>
+<rect x="198" y="54" width="64" height="12" rx="3" stroke-width="1.4"/> <text x="202" y="63" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">RTC 定时</text>
+<path d="M188 16 L188 70" stroke-width="1.2" stroke-dasharray="3 2"/> <text x="188" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">断电边界</text>
+<text x="8" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">普通全局变量 ×      RTC_DATA_ATTR ✓</text>
+</g></svg>

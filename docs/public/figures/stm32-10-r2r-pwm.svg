@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="R-2R 电阻网络逐位加权得到连续电压，PWM+RC 只是平均值近似、带纹波"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="10" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">R-2R</text> <text x="170" y="10" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">PWM+RC</text>
+<path d="M160 8 L160 78" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="10" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">b3</text> <text x="10" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">b2</text> <text x="10" y="57" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">b1</text> <text x="10" y="71" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">b0</text>
+<path d="M28 26 L52 26" stroke-width="1.8"/> <path d="M74 26 L100 26" stroke-width="1.8"/>
+<path d="M28 40 L52 40" stroke-width="1.8"/> <path d="M74 40 L100 40" stroke-width="1.8"/>
+<path d="M28 54 L52 54" stroke-width="1.8"/> <path d="M74 54 L100 54" stroke-width="1.8"/>
+<path d="M28 68 L52 68" stroke-width="1.8"/> <path d="M74 68 L100 68" stroke-width="1.8"/>
+<rect x="52" y="21" width="20" height="10" rx="3" stroke-width="1.4"/> <rect x="52" y="35" width="20" height="10" rx="3" stroke-width="1.4"/> <rect x="52" y="49" width="20" height="10" rx="3" stroke-width="1.4"/> <rect x="52" y="63" width="20" height="10" rx="3" stroke-width="1.4"/>
+<text x="56" y="28" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2R</text> <text x="56" y="42" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2R</text> <text x="56" y="56" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2R</text> <text x="56" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2R</text>
+<path d="M100 18 L100 76" stroke-width="2.2"/>
+<path d="M100 47 L128 47" stroke-width="2.2"/> <text x="132" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Vout</text>
+<text x="10" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">4096 级</text>
+<path d="M172 60 L172 36 L192 36 L192 60 L212 60 L212 36 L232 36 L232 60 L252 60" stroke-width="2.2"/>
+<path d="M252 48 L258 48" stroke-width="1.4"/> <rect x="258" y="40" width="20" height="16" rx="3" stroke-width="1.4"/> <text x="262" y="51" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">RC</text>
+<path d="M278 50 C 286 50, 292 46, 304 46" stroke-width="1.8"/>
+<text x="286" y="64" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">纹波</text>
+</g></svg>

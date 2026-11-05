@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="PLL 分频链：8MHz 先除 M 到 1MHz，乘 N 到 336MHz VCO，再除 P 得 168MHz、除 Q 得 48MHz"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<rect x="8" y="12" width="40" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="25" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">8MHz</text>
+<rect x="84" y="12" width="40" height="18" rx="3" stroke-width="1.4"/> <text x="88" y="25" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">1MHz</text>
+<rect x="160" y="12" width="64" height="18" rx="3" stroke-width="1.4"/> <text x="164" y="25" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">VCO 336M</text>
+<rect x="264" y="12" width="48" height="18" rx="3" stroke-width="1.4"/> <text x="268" y="25" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">168MHz</text>
+<path d="M48 21 L84 21" stroke-width="2.2"/> <text x="66" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">/M=8</text>
+<path d="M124 21 L160 21" stroke-width="2.2"/> <text x="142" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">×N=336</text>
+<path d="M224 21 L264 21" stroke-width="2.2"/> <text x="244" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">/P=2</text>
+<text x="268" y="44" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">SYSCLK</text>
+<path d="M192 30 L192 52 L56 52 L56 62" stroke-width="1.8"/>
+<text x="120" y="48" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">/Q=7</text>
+<rect x="8" y="62" width="96" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="75" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">48MHz USB</text>
+</g></svg>
