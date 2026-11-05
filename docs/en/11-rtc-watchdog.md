@@ -333,7 +333,7 @@ HAL_WWDG_Refresh(&hwwdg);
 
 <p align="center">
   <img src="../../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL must be 32767 for 1 Hz; a zeroed clock after reset points at VBAT; the alarm compares a 32-bit seconds counter">
-  <br><sub>▲ Drawn for this book. Triage, three branches: time runs fast or slow — check PRL first, 32767 turns 32.768 kHz into 1 Hz; the clock zeroes after reset — check whether VBAT and the backup domain lost power; the alarm never fires — remember it compares a 32-bit seconds counter. Sources: [RM0008 RTC](#source-rm0008-rtc) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the divider chain on top runs 32.768 kHz through ÷(PRL+1) to 1 Hz, and the two rows below work out PRL = 32767 against 32768 — the latter is 30.5 ppm slow, about 2.6 s a day; the three columns carry the structure — (1) the 30–60 kHz range bar for LSI with 40 kHz marked as typical, which no integer PRL can tame; (2) the VBAT-to-backup-domain path with the `BKP_DR1 = 0xA5A5` test and the DBP unlock; (3) a one-day seconds ruler with `ALR = 28800 s` placed on it and the date/weekday mask. The bottom strip is the three clock sources, where changing the source changes the divider. Sources: [RM0008 RTC](#source-rm0008-rtc) and [DS5319 Rev 20](#source-ds5319-rtc).</sub>
 </p>
 
 <p align="center">

@@ -58,7 +58,7 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 <p align="center">
   <img src="../assets/diagrams/sample-12-iap-map.svg" width="760" alt="中容量是 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字">
-  <br><sub>▲ 自绘。STM32F103C8T6，中容量，64 KB，1 KB 一页。图上按顺序画出：先写 0x45670123，再写 0xCDEF89AB，半字写入 APP，然后从 0x08004800 取 MSP，从 0x08004804 取复位地址，把 VTOR 写成 0x08004800。图里另外标出三种出错情况：钥匙顺序反了、末页写成 0x0801FC00、VTOR 还是 0。出处是 [RM0008 Rev 21 第 3 章](#source-rm0008-flash) 和 [PM0056](#source-pm0056-vector)。</sub>
+  <br><sub>▲ 自绘。看哪里：最上面把 64 KB 画成 16 × 4 共 64 个格子，一格一页 1 KB——绿色 16 页是 Bootloader、琥珀色 2 页是参数区、紫色 46 页是 APP，格子里标出第 0、16、18、63 页；中间五步是写入顺序（KEY1 → KEY2 → 擦除 → 半字写入 → 校验），每步写明地址或寄存器；下面左边是编程语义——擦除后读 0xFFFF，写入只能按位把 1 变 0，所以从 0 变 1 必须先擦整页，C8 只认半字；右边三条是三种失败各自的特征；再往下是跳转只认的三个位置：0x08004800 的 MSP、0x08004804 的复位地址、写成 0x08004800 的 VTOR。出处是 [RM0008 Rev 21 第 3 章](#source-rm0008-flash) 和 [PM0056](#source-pm0056-vector)。</sub>
 </p>
 
 <p align="center">

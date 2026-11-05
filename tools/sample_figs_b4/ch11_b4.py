@@ -126,55 +126,169 @@ def rtc_triage() -> Svg:
     canvas = Svg(
         960,
         880,
-        "PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器",
+        "PRL = 32767 才是 1 Hz；复位后归零查 VBAT 与 0xA5A5；闹钟比的是 32 位秒计数器",
         "STM32F103C8T6 · chapter 11 · DS5319 Rev 20 表 25 · RM0008 Rev 21 第 18 章",
     )
-    canvas.header(tag="11", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LSE 32.768 kHz  PRL = 32767  VBAT pin 1  BKP_DR1 = 0xA5A5",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "three symptoms, three branches: slow seconds, lost time, silent alarm",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138, "1 Hz = 32768 / (PRL + 1) → PRL = 32767      LSI 30 / 40 / 60 kHz 只给范围，不给保证",
-                size=13, fill=T.AMBER, mono=True)
+    canvas.header(title="RTC 三岔口：偏慢、归零、闹钟不响", tag="11", tag_color=T.CYAN)
 
-    _branch(
-        canvas, 170, T.AMBER, "岔口一  秒脉冲偏慢：分频比是 (PRL + 1)", 196,
-        "32768 Hz 除以 (PRL + 1)：写 32768 就是 32769 分频，秒脉冲偏慢",
-        [
-            ("PRL 写 32767 才是 32768 分频，正好 1 Hz。分频比里那个 +1 不能漏", T.TEXT),
-            ("LSI 典型 40 kHz，实际在 30 到 60 kHz 之间漂：任何整数 PRL 都得不到稳定的 1 Hz", T.TEXT),
-            ("40 kHz 只是表 25 的典型值，不是保证值；要走得准只能上 LSE 32.768 kHz", T.AMBER),
-            ("LSE 占着第 3 脚 PC14 与第 4 脚 PC15，这两只脚就不能再当 GPIO", T.TEXT),
-        ],
-        "checkpoint：先确认走的是 LSE 不是 LSI，再谈 PRL；量 1 Hz 输出或隔天读秒差",
-    )
+    # ① 分频链
+    canvas.text(24, 82, "先把分频链摆出来：分频比是 (PRL + 1)，不是 PRL", size=12.5,
+                fill=T.TEXT, weight="700")
+    canvas.rect(24, 92, 250, 44, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(38, 112, "LSE 32.768 kHz", size=11, fill=T.CYAN, weight="700")
+    canvas.text(38, 128, "第 3 脚 PC14 / 第 4 脚 PC15", size=9, fill=T.MUTED)
+    canvas.arrow(278, 114, 322, 114, color=T.STROKE, sw=1.5, head=6)
+    canvas.rect(326, 92, 200, 44, fill=T.PANEL2, stroke=T.AMBER, rx=8)
+    canvas.text(426, 112, "÷ (PRL + 1)", size=11, anchor="middle", fill=T.AMBER,
+                weight="700", mono=True)
+    canvas.text(426, 128, "写进 RTC_PRL 的值再加一", size=9, anchor="middle",
+                fill=T.MUTED)
+    canvas.arrow(530, 114, 574, 114, color=T.STROKE, sw=1.5, head=6)
+    canvas.rect(578, 92, 130, 44, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(643, 112, "1 Hz", size=12, anchor="middle", fill=T.GREEN,
+                weight="700")
+    canvas.text(643, 128, "秒计数器 +1", size=9, anchor="middle", fill=T.MUTED)
 
-    _branch(
-        canvas, 396, T.RED, "岔口二  复位后时间归零：备份域没续上", 196,
-        "备份域靠第 1 脚 VBAT 续电；主电源掉了、纽扣电池没接，日历就归零",
-        [
-            ("上电先读 BKP_DR1：读到 0xA5A5 才读时间，不匹配才初始化日历并写回魔法值", T.TEXT),
-            ("写备份域前先开 PWR 与 BKP 时钟并置位 PWR_CR.DBP；没解锁，寄存器写不进去", T.TEXT),
-            ("C8 是 10 个 16 位备份寄存器，共 20 字节；资料里的 42 个是大容量型号", T.TEXT),
-            ("F1 的 RTC 只有 32 位秒计数器，年月日要软件换算；F4 才是 BCD 的 TR/DR", T.TEXT),
-        ],
-        "checkpoint：断开主电源 60 s 再恢复，时间差与 BKP 标记都在，续电链才算通",
-    )
+    rows = [(T.GREEN, "PRL = 32767", "32768 ÷ 32768 = 1.000000 Hz", "✓ 正好 1 Hz"),
+            (T.RED, "PRL = 32768", "32768 ÷ 32769 = 0.9999695 Hz", "✗ 慢 30.5 ppm ≈ 2.6 s/天")]
+    for i, (color, key, calc, verdict) in enumerate(rows):
+        y = 148 + i * 30
+        canvas.rect(24, y, 912, 26, fill=T.BG2 if i == 0 else T.PANEL,
+                    stroke=T.GRID, rx=4)
+        canvas.text(36, y + 18, key, size=10, fill=color, mono=True)
+        canvas.text(180, y + 18, calc, size=10, fill=T.TEXT, mono=True)
+        canvas.text(560, y + 18, verdict, size=10, fill=color)
 
-    _branch(
-        canvas, 622, T.VIOLET, "岔口三  闹钟不响：比的是秒计数器", 160,
-        "F1 的 RTC_ALR 比较的是 32 位秒计数器，不是年月日",
-        [
-            ("每天触发要掩掉日期与星期：AlarmMask = RTC_ALARMMASK_DATEWEEKDAY", T.TEXT),
-            ("先 HAL_RTC_GetTime 再 HAL_RTC_GetDate：读日期会锁存时间寄存器", T.TEXT),
-            ("F4 换成 BCD 日历与 RTC_ALRMxR，可按秒/分/时/日/星期掩码匹配", T.TEXT),
-        ],
-        "checkpoint：先确认闹钟中断已使能，再看 ALR 落在哪个秒数上",
-    )
+    # ② 三个岔口
+    ay, ah = 220, 300
+    cards = [
+        (24, T.GREEN, "① 秒脉冲偏慢", "先确认源，再谈 PRL"),
+        (326, T.AMBER, "② 复位后归零", "备份域没续上"),
+        (628, T.VIOLET, "③ 闹钟不响", "比的是秒，不是日期"),
+    ]
+    for x, color, title, sub in cards:
+        canvas.rect(x, ay, 292, ah, fill=T.PANEL, stroke=color, rx=8)
+        canvas.rect(x, ay, 292, 5, fill=color, rx=2)
+        canvas.text(x + 14, ay + 28, title, size=12.5, fill=T.TEXT, weight="700")
+        canvas.text(x + 14, ay + 46, sub, size=9.5, fill=color)
 
-    canvas.rect(40, 800, 880, 30, fill=T.BG2, stroke=T.GREEN, rx=8)
-    canvas.text(56, 820, "底注  断点停在 HAL_Delay 里被复位是 IWDG 没冻住，先用 __HAL_DBGMCU_FREEZE_IWDG()，不是 RTC 的问题。",
-                size=12, fill=T.TEXT)
+    # ① LSI 范围条
+    cx = 38
+    canvas.text(cx, ay + 72, "LSI 备选：只给范围，不给保证", size=9.5, fill=T.TEXT)
+    bx, bw2 = cx, 264
+    canvas.rect(bx, ay + 80, bw2, 14, fill=T.BG2, stroke=T.GRID, rx=2)
+    lo = bx + bw2 * (30 - 25) / 40
+    hi = bx + bw2 * (60 - 25) / 40
+    canvas.rect(lo, ay + 80, hi - lo, 14, fill=T.RED, rx=2, opacity=0.22)
+    typ = bx + bw2 * (40 - 25) / 40
+    canvas.line(typ, ay + 76, typ, ay + 98, stroke=T.AMBER, sw=2)
+    canvas.text(bx, ay + 110, "25 kHz", size=8, fill=T.MUTED, mono=True)
+    canvas.text(bx + bw2, ay + 110, "65 kHz", size=8, fill=T.MUTED, anchor="end",
+                mono=True)
+    canvas.text(typ, ay + 110, "40（典型）", size=8, anchor="middle", fill=T.AMBER,
+                mono=True)
+    canvas.text(cx, ay + 134, "30–60 kHz 漂：任何整数 PRL", size=9.5, fill=T.TEXT)
+    canvas.text(cx, ay + 150, "都得不到稳定的 1 Hz", size=9.5, fill=T.RED)
+    canvas.text(cx, ay + 174, "表 25 的 40 kHz 是典型值，", size=9.5, fill=T.MUTED)
+    canvas.text(cx, ay + 190, "不是每片都保证的值", size=9.5, fill=T.MUTED)
+    canvas.text(cx, ay + 214, "LSE 占了 PC14/PC15，", size=9.5, fill=T.TEXT)
+    canvas.text(cx, ay + 230, "这两只脚就不能再当 GPIO", size=9.5, fill=T.TEXT)
+    canvas.rect(cx, ay + 250, 264, 30, fill=T.BG2, stroke=T.GREEN, rx=4)
+    canvas.text(cx + 10, ay + 269, "量 1 Hz 输出，或隔天读秒差", size=9,
+                fill=T.GREEN)
+
+    # ② VBAT 与魔法值
+    cx = 340
+    canvas.text(cx, ay + 72, "VBAT 第 1 脚续电，掉主电靠它", size=9.5, fill=T.TEXT)
+    canvas.rect(cx, ay + 82, 120, 30, fill=T.PANEL2, stroke=T.CYAN, rx=4)
+    canvas.text(cx + 60, ay + 101, "VBAT 第 1 脚", size=9, anchor="middle",
+                fill=T.CYAN, mono=True)
+    canvas.arrow(cx + 124, ay + 97, cx + 150, ay + 97, color=T.STROKE, sw=1.5, head=5)
+    canvas.rect(cx + 154, ay + 82, 110, 30, fill=T.PANEL2, stroke=T.CYAN, rx=4)
+    canvas.text(cx + 209, ay + 96, "备份域", size=9.5, anchor="middle", fill=T.TEXT)
+    canvas.text(cx + 209, ay + 108, "10 × 16 位 = 20 B", size=8, anchor="middle",
+                fill=T.MUTED, mono=True)
+    canvas.text(cx, ay + 130, "上电先读 BKP_DR1", size=9.5, fill=T.TEXT)
+    flow = [("= 0xA5A5", "读时间", T.GREEN), ("≠ 0xA5A5", "初始化日历并写回", T.RED)]
+    for i, (test, act, color) in enumerate(flow):
+        y = ay + 142 + i * 26
+        canvas.text(cx + 4, y, test, size=9, fill=color, mono=True)
+        canvas.arrow(cx + 62, y - 3, cx + 78, y - 3, color=color, sw=1, head=4)
+        canvas.text(cx + 84, y, act, size=9, fill=T.TEXT)
+    canvas.text(cx, ay + 202, "写备份域前：开 PWR 与 BKP 时钟，", size=9.5,
+                fill=T.TEXT)
+    canvas.text(cx, ay + 218, "再置 PWR_CR.DBP（没解锁写不进）", size=9.5,
+                fill=T.AMBER)
+    canvas.text(cx, ay + 240, "F1 只有 32 位秒计数，年月日软件算", size=9.5,
+                fill=T.MUTED)
+    canvas.rect(cx, ay + 250, 264, 30, fill=T.BG2, stroke=T.AMBER, rx=4)
+    canvas.text(cx + 10, ay + 269, "断主电 60 s，看时间差与标记", size=9,
+                fill=T.AMBER)
+
+    # ③ 闹钟标尺
+    cx = 642
+    canvas.text(cx, ay + 72, "RTC_ALR 比的是 32 位秒计数", size=9.5, fill=T.TEXT)
+    sx, sw2 = cx, 264
+    canvas.rect(sx, ay + 88, sw2, 12, fill=T.BG2, stroke=T.GRID, rx=2)
+    ticks = [(0, "0"), (21600, "6 h"), (43200, "12 h"), (64800, "18 h"), (86400, "24 h")]
+    for sec, lab in ticks:
+        px = sx + sw2 * sec / 86400
+        canvas.line(px, ay + 100, px, ay + 106, stroke=T.GRID, sw=1)
+        canvas.text(px, ay + 120, lab, size=8, fill=T.MUTED, anchor="middle",
+                    mono=True)
+    alarm = sx + sw2 * 28800 / 86400
+    canvas.line(alarm, ay + 84, alarm, ay + 104, stroke=T.RED, sw=2)
+    canvas.text(alarm + 4, ay + 82, "ALR = 28800 s", size=8.5, fill=T.RED, mono=True)
+    canvas.text(cx, ay + 144, "写 08:00 却按日期匹配 → 不响", size=9.5, fill=T.TEXT)
+    canvas.text(cx, ay + 160, "每天触发要掩掉日期与星期：", size=9.5, fill=T.TEXT)
+    canvas.text(cx, ay + 176, "RTC_ALARMMASK_DATEWEEKDAY", size=8.5, fill=T.VIOLET,
+                mono=True)
+    canvas.text(cx, ay + 200, "先 HAL_RTC_GetTime 再 GetDate", size=9.5, fill=T.TEXT)
+    canvas.text(cx, ay + 216, "读日期会锁存时间寄存器", size=9.5, fill=T.MUTED)
+    canvas.text(cx, ay + 240, "F4 才是 BCD 的 TR/DR + RTC_ALRMxR", size=9.5,
+                fill=T.MUTED)
+    canvas.rect(cx, ay + 250, 264, 30, fill=T.BG2, stroke=T.VIOLET, rx=4)
+    canvas.text(cx + 10, ay + 269, "先看中断使能，再看 ALR 落在哪秒", size=9,
+                fill=T.VIOLET)
+
+    # ③ 底部：机型差异与调试陷阱
+    by = 542
+    canvas.text(24, by, "两处容易记混的地方", size=12.5, fill=T.TEXT, weight="700")
+    notes = [(T.CYAN, "备份寄存器数量", "C8（中容量）是 10 个 16 位，共 20 字节；", "资料里的 42 个是大容量型号"),
+             (T.RED, "断点进来时间归零", "IWDG 没冻住：先 __HAL_DBGMCU_FREEZE_IWDG()，", "这不是 RTC 的问题")]
+    for i, (color, head, l1, l2) in enumerate(notes):
+        x = 24 + i * 462
+        canvas.rect(x, by + 12, 450, 62, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(x + 14, by + 32, head, size=10.5, fill=color, weight="700")
+        canvas.text(x + 14, by + 50, l1, size=9.5, fill=T.TEXT)
+        canvas.text(x + 14, by + 66, l2, size=9.5, fill=T.MUTED)
+
+    canvas.rect(24, 636, 912, 56, fill=T.BG2, stroke=T.GREEN, rx=8)
+    canvas.text(40, 660, "三个岔口各自的第一个动作：确认时钟源是 LSE；读 BKP_DR1；确认闹钟中断已使能。",
+                size=11, fill=T.TEXT)
+    canvas.text(40, 680, "三者都是先看「是不是我以为的那条路」，再谈寄存器数值。", size=11,
+                fill=T.MUTED)
+
+    # ④ 时钟源三选一
+    sy = 712
+    canvas.text(24, sy, "三种时钟源：精度差在源头，换 PRL 补不回来", size=12.5,
+                fill=T.TEXT, weight="700")
+    srcs = [(T.GREEN, "LSE", "32.768 kHz 晶振", "第 3 / 4 脚，走时才准"),
+            (T.AMBER, "LSI", "40 kHz 典型，30–60 kHz", "内部 RC，只作备用"),
+            (T.CYAN, "HSE ÷ 128", "8 MHz ÷ 128 = 62.5 kHz", "精度跟外部晶振走")]
+    for i, (color, name, freq, note) in enumerate(srcs):
+        x = 24 + i * 236
+        canvas.rect(x, sy + 12, 224, 56, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(x + 12, sy + 32, name, size=11, fill=color, weight="700")
+        canvas.text(x + 12, sy + 48, freq, size=9.5, fill=T.TEXT, mono=True)
+        canvas.text(x + 12, sy + 62, note, size=8.5, fill=T.MUTED)
+    canvas.rect(740, sy + 12, 196, 56, fill=T.PANEL2, stroke=T.VIOLET, rx=8)
+    canvas.text(838, sy + 33, "RTC 分频链", size=10.5, anchor="middle",
+                fill=T.VIOLET, weight="700")
+    canvas.text(838, sy + 49, "RTCCLK → (PRL+1) → 1 Hz", size=8, anchor="middle",
+                fill=T.MUTED, mono=True)
+    canvas.text(838, sy + 62, "换源就等于换 PRL", size=8.5, anchor="middle",
+                fill=T.MUTED)
 
     _credit(canvas, "自绘。VBAT 与备份寄存器来自 DS5319 Rev 20 表 25；PRL、RTC_ALR 与 DBP 解锁来自 RM0008 Rev 21 第 18 章。")
     return canvas

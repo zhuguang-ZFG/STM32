@@ -334,7 +334,7 @@ HAL_WWDG_Refresh(&hwwdg);
 
 <p align="center">
   <img src="../assets/diagrams/sample-11-rtc-triage.svg" width="760" alt="PRL = 32767 才是 1 Hz；复位后归零查 VBAT；闹钟比的是 32 位秒计数器">
-  <br><sub>▲ 自绘。排错三岔口：时间快慢不一，先查 PRL 是不是 32767——32.768 kHz 减一才是 1 Hz；复位后时间归零，查 VBAT 与备份域有没有掉电；闹钟不响，记住比较对象是 32 位秒计数器。出处是 [RM0008 RTC](#source-rm0008-rtc) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
+  <br><sub>▲ 自绘。看哪里：顶部是分频链（32.768 kHz → ÷(PRL+1) → 1 Hz），下面两行把 PRL = 32767 与 32768 算给你看——后者慢 30.5 ppm，约每天 2.6 秒；三列岔口各带结构：① LSI 的 30–60 kHz 范围条与 40 kHz 典型值刻度，说明任何整数 PRL 都不稳；② VBAT 第 1 脚到备份域的续电链，加 `BKP_DR1 = 0xA5A5` 的判定分支与 DBP 解锁；③ 一天的秒计数标尺上标出 `ALR = 28800 s`，以及要掩掉日期与星期。最下面三种时钟源与「换源等于换 PRL」。出处是 [RM0008 RTC](#source-rm0008-rtc) 和 [DS5319 Rev 20](#source-ds5319-rtc)。</sub>
 </p>
 
 <p align="center">

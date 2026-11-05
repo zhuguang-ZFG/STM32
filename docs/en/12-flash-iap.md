@@ -57,7 +57,7 @@ The "no protection" value for readout protection is `0xA5`. Setting it back to `
 
 <p align="center">
   <img src="../../assets/diagrams/sample-12-iap-map.svg" width="760" alt="Medium-density Flash uses 1 KB pages. The application starts at 0x08004800 and is 0xB800 bytes long. The jump loads word 0 and word 1.">
-  <br><sub>▲ Drawn for this book. STM32F103C8T6, medium-density, 64 KB, 1 KB pages. In order, the figure writes 0x45670123, then 0xCDEF89AB, programs a half-word into the application, loads the MSP from 0x08004800 and the reset address from 0x08004804, and sets VTOR to 0x08004800. It also marks three faults: the keys reversed, the last page taken as 0x0801FC00, and VTOR left at 0. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the 64 KB is drawn as 16 x 4 cells of 1 KB — green for the 16 bootloader pages, amber for the 2 parameter pages, violet for the 46 app pages, with pages 0, 16, 18 and 63 numbered; the five steps below are the write order (KEY1, KEY2, erase, half-word program, verify) with the address or register for each; on the left is the programming rule — erased reads 0xFFFF and a write can only turn 1 into 0, so going from 0 to 1 needs a page erase, and the C8 accepts only half-words; on the right are the three failures and their signatures; the last row is the jump, which reads only the MSP at 0x08004800, the reset address at 0x08004804 and VTOR set to 0x08004800. Sources: [RM0008 Rev 21 chapter 3](#source-rm0008-flash) and [PM0056](#source-pm0056-vector).</sub>
 </p>
 
 <p align="center">

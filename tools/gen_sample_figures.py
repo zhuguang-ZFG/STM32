@@ -433,29 +433,122 @@ def iap_map() -> Svg:
         "中容量 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字",
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 chapter 3",
     )
-    canvas.header(tag="12", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  medium-density  64 KB", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "1 KB pages. page 0 at 0x08000000. page 63 at 0x0800FC00", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "map ends before 0x08010000. 16 KB + 2 KB + 46 KB = 64 KB", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  KEY1 then KEY2, then a half-word, then the two words", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 170, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "write 0x45670123, then 0xCDEF89AB. LOCK clears", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "program a half-word on an even address inside the APP", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "Bootloader 0x08000000, 16 KB, 16 pages, ends at 0x08004000", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "parameters 0x08004000, 2 KB, 2 pages, ends at 0x08004800", size=14, fill=T.TEXT)
-    canvas.text(56, 318, "APP 0x08004800, 46 KB, 0xB800, ends at 0x08010000", size=14, fill=T.AMBER)
-    canvas.text(56, 340, "MSP at 0x08004800. Reset_Handler at 0x08004804. VTOR = 0x08004800", size=13, fill=T.MUTED)
-    canvas.text(40, 380, "失败路径  reversed keys, a last page past 64 KB, or VTOR left at 0", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 394, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 424, "KEY2 before KEY1 leaves LOCK set. The erase returns an error", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 450, "0x0801FC00 is outside this 64 KB", size=14, fill=T.RED)
-    canvas.text(56, 476, "VTOR left at 0 still vectors interrupts into the bootloader", size=14, fill=T.AMBER)
-    canvas.text(56, 502, "an erased half-word reads 0xFFFF. programming only turns 1 into 0", size=13, fill=T.MUTED)
-    canvas.rect(40, 544, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 574, "旁注  byte programming is void on this C8", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 600, "0xA5 stays in chapter 01. This figure does not draw option bytes", size=14, fill=T.TEXT)
-    canvas.text(56, 626, "USART on pin 30 PA9 and pin 31 PA10 is a side note, not a frame", size=14, fill=T.AMBER)
-    canvas.text(56, 652, "do not draw system memory on this user-Flash map", size=13, fill=T.MUTED)
+    canvas.header(title="64 页闪存与写入顺序：解锁、半字写入、两个字跳转",
+                  tag="12", tag_color=T.CYAN)
+
+    # ① 64 页网格
+    canvas.text(24, 82, "整块闪存就是 64 页：STM32F103C8T6 · medium-density · LQFP48 · 64 × 1 KB = 64 KB",
+                size=12.5, fill=T.TEXT, weight="700")
+    gx, gy, cw, ch2, gap = 24, 96, 46, 28, 5
+    for page in range(64):
+        col, row = page % 16, page // 16
+        x = gx + col * (cw + gap)
+        y = gy + row * (ch2 + gap)
+        if page < 16:
+            color, fill_ = T.GREEN, 0.22
+        elif page < 18:
+            color, fill_ = T.AMBER, 0.34
+        else:
+            color, fill_ = T.VIOLET, 0.16
+        canvas.rect(x, y, cw, ch2, fill=color, rx=2, opacity=fill_)
+        canvas.rect(x, y, cw, ch2, fill="none", stroke=color, sw=1, rx=2)
+        if page in (0, 16, 18, 63):
+            canvas.text(x + cw / 2, y + ch2 / 2 + 3.2, str(page), size=8.5,
+                        anchor="middle", fill=T.TEXT, mono=True)
+    legend = [(T.GREEN, "0–15 页  Bootloader 16 KB"),
+              (T.AMBER, "16–17 页  参数区 2 KB"),
+              (T.VIOLET, "18–63 页  APP 46 KB")]
+    for i, (color, note) in enumerate(legend):
+        x = 24 + i * 300
+        canvas.rect(x, 246, 12, 12, fill=color, rx=2, opacity=0.35)
+        canvas.rect(x, 246, 12, 12, fill="none", stroke=color, sw=1, rx=2)
+        canvas.text(x + 20, 256, note, size=9.5, fill=T.MUTED)
+    canvas.text(24, 276, "页边界：第 0 页 0x08000000 · 第 16 页 0x08004000 · 第 18 页 0x08004800 · 第 63 页 0x0800FC00 · 整块止于 0x08010000",
+                size=9, fill=T.MUTED, mono=False)
+
+    # ② 写入顺序
+    fy = 312
+    canvas.text(24, fy, "写入顺序：先解锁，再写半字，最后把两个字装进 CPU",
+                size=12.5, fill=T.TEXT, weight="700")
+    steps = [("KEY1", "0x45670123 → FLASH->KEYR", T.CYAN),
+             ("KEY2", "0xCDEF89AB → LOCK 清零", T.CYAN),
+             ("擦除", "按页擦，整页变 0xFFFF", T.AMBER),
+             ("写入", "半字、偶地址，1 只能变 0", T.GREEN),
+             ("校验", "读回比对，失败重擦重写", T.GREEN)]
+    for i, (head, body, color) in enumerate(steps):
+        x = 24 + i * 182
+        canvas.rect(x, fy + 12, 168, 58, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(x + 12, fy + 32, head, size=11, fill=color, weight="700")
+        canvas.text(x + 12, fy + 48, body, size=8.5, fill=T.TEXT, mono=True)
+        if i < 4:
+            canvas.arrow(x + 170, fy + 41, x + 180, fy + 41, color=T.STROKE,
+                         sw=1.5, head=4)
+
+    # ③ 编程语义 + 失败路径
+    by = 412
+    canvas.rect(24, by, 448, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(38, by + 24, "编程语义：擦除是 1，写只能把 1 变 0", size=11,
+                fill=T.GREEN, weight="700")
+    bits = [(1, 1), (1, 0), (0, 0), (1, 1)]
+    canvas.text(38, by + 48, "擦除后", size=9, fill=T.MUTED)
+    canvas.text(38, by + 78, "想写入", size=9, fill=T.MUTED)
+    canvas.text(38, by + 108, "结果", size=9, fill=T.MUTED)
+    for i, (src, dst) in enumerate(bits):
+        x = 92 + i * 34
+        canvas.rect(x, by + 36, 26, 20, fill=T.BG2, stroke=T.GRID, rx=2)
+        canvas.text(x + 13, by + 51, str(src), size=10, anchor="middle",
+                    fill=T.TEXT, mono=True)
+        canvas.rect(x, by + 66, 26, 20, fill=T.BG2, stroke=T.GRID, rx=2)
+        canvas.text(x + 13, by + 81, str(dst), size=10, anchor="middle",
+                    fill=T.TEXT, mono=True)
+        ok = src == 1 or dst == 0
+        canvas.rect(x, by + 96, 26, 20, fill=T.GREEN if ok else T.RED, rx=2,
+                    opacity=0.22)
+        canvas.rect(x, by + 96, 26, 20, fill="none",
+                    stroke=T.GREEN if ok else T.RED, sw=1, rx=2)
+        canvas.text(x + 13, by + 111, str(src & dst), size=10, anchor="middle",
+                    fill=T.GREEN if ok else T.RED, mono=True)
+    canvas.text(250, by + 51, "0xFFFF", size=9, fill=T.MUTED, mono=True)
+    canvas.text(250, by + 81, "半字值", size=9, fill=T.MUTED)
+    canvas.text(250, by + 111, "按位与", size=9, fill=T.MUTED)
+    canvas.text(38, by + 134, "想从 0 变 1 必须先擦整页；C8 上按字节写是无效的，只认半字",
+                size=9, fill=T.TEXT)
+
+    canvas.rect(488, by, 448, 150, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(502, by + 24, "三种失败，各有一个特征", size=11, fill=T.RED,
+                weight="700")
+    fails = [("KEY2 先写", "LOCK 仍置位，擦除返回错误"),
+             ("末页写成 0x0801FC00", "越出这 64 KB —— 这块到 0x08010000 为止"),
+             ("VTOR 留在 0", "中断仍进 Bootloader 的向量表")]
+    for i, (head, body) in enumerate(fails):
+        y = by + 48 + i * 34
+        canvas.circle(510, y - 4, 8, fill=T.BG2, stroke=T.RED, sw=1.5)
+        canvas.text(510, y - 0.5, str(i + 1), size=8.5, anchor="middle",
+                    fill=T.RED, weight="700")
+        canvas.text(526, y, head, size=10, fill=T.TEXT, weight="600")
+        canvas.text(526, y + 15, body, size=9, fill=T.MUTED)
+
+    # ④ 跳转
+    jy = 588
+    canvas.text(24, jy, "跳转只认两个地址上的两个字，外加向量表基址", size=12.5,
+                fill=T.VIOLET, weight="700")
+    cells = [("0x08004800", "第 0 字 = 初始 MSP", T.CYAN),
+             ("0x08004804", "第 1 字 = Reset_Handler", T.CYAN),
+             ("SCB->VTOR", "写 0x08004800", T.VIOLET)]
+    for i, (addr, note, color) in enumerate(cells):
+        x = 24 + i * 306
+        canvas.rect(x, jy + 12, 292, 54, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(x + 12, jy + 32, addr, size=10.5, fill=color, mono=True,
+                    weight="700")
+        canvas.text(x + 12, jy + 50, note, size=9.5, fill=T.TEXT)
+
+    # ⑤ 与本章其它图的分工
+    canvas.rect(24, 682, 912, 60, fill=T.BG2, stroke=T.GREEN, rx=8)
+    canvas.text(40, 706, "这张图画用户闪存本身；系统存储器与两条启动路径在上一张对比图里。",
+                size=10.5, fill=T.TEXT)
+    canvas.text(40, 726, "串口刷写在 PA9/PA10（第 30/31 脚）；选项字节 0xA5 属于第 01 章的读保护。",
+                size=10.5, fill=T.MUTED)
+
     _credit(canvas, "自绘。页和钥匙来自 RM0008 Rev 21 第 3 章；两字来自 PM0056。")
     return canvas
 
