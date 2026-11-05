@@ -1102,7 +1102,7 @@
  "diagrams/sample-14-usb-enum.svg": {
   "type": "technical",
   "chapter": "14",
-  "caption": "▲ 自绘。STM32F103C8T6。图中正确的配置是 USBPRE = 0、48 MHz、第 33 脚 D+ 上接 1.5 kΩ、设备描述符 18 字节、配置集合 67 字节。错误配置是 USBPRE = 1，USB 时钟变成 72 MH"
+  "caption": "▲ 自绘。左边主机与设备之间画 DM/DP 两根线，DP 经 1.5 kΩ 上拉到 3.3 V；右边时钟门 USBPRE = 0 分频到 48 MHz，= 1 时 72 MHz 主机读描述符失败；下面两条描述符字节条：设备 18 B（VID/PID 0x1209/0x0001）加配置集合 67 B（wTotalLength 0x0043、bMaxPower 0x32）。"
  },
  "illustrations/handraw/ch14-usb-enum.png": {
   "type": "triage",
@@ -1484,7 +1484,7 @@
  "diagrams/sample-19-milestone-triage.svg": {
   "type": "triage",
   "chapter": "19",
-  "caption": "▲ 自绘。项目三岔口：贪多 / 跳步 / 无证据。出处是 [配套例程](#source-project-examples) 与本章验收门图。"
+  "caption": "▲ 自绘。上排五个里程碑门：点亮→采集→传输→存储→升级，门未过不许跳；下面三个岔口各带纠正——一槽一位四选一、模块门先过再集成、肉眼闪灯不算记录要有时间戳。"
  },
  "illustrations/handraw/ch19-milestone-triage.png": {
   "type": "triage",
@@ -1669,7 +1669,7 @@
  "diagrams/sample-22-sim-triage.svg": {
   "type": "triage",
   "chapter": "22",
-  "caption": "▲ 自绘。仿真三岔口。出处是 [DS5319](#source-ds5319)、[Wokwi Blue Pill 板定义](#source-wokwi-bluepill) 和 [Renode STM32 文档](#source-renode"
+  "caption": "▲ 自绘。左列同一份固件配支持表卡片：GPIO/EXTI/TIM 有，DMA/RTC/IWDG Wokwi 没有；右侧三个岔口各带一句纠正——模型缺口移出仿真验收、主机环境先跑最小 blink 并固定版本、板级物理仿真门与真板门分列。"
  },
  "illustrations/handraw/ch22-sim-triage.png": {
   "type": "triage",
