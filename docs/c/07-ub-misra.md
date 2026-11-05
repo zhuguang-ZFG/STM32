@@ -158,7 +158,7 @@ if (n < 32u) {
 
 ## 三、严格别名：float 与 uint32 互看的正确姿势
 
-![严格别名：指针强转是 UB，union/memcpy 才定义良好](/figures/c-07-strict-alias.svg)
+![严格别名：指针强转是 UB，union/memcpy 才是合法写法](/figures/c-07-strict-alias.svg)
 
 C 规定：访问对象必须用**兼容类型**的左值表达式，少数例外（`char*` 谁都能指、加过限定符的同类型、union 自己的成员）。拿 `uint32_t*` 去解引用一个 float 对象，就是"严格别名违规"，UB 三兄弟里最隐蔽的一个，因为**它十年都不一定发作**。
 
