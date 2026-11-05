@@ -37,6 +37,15 @@ export function auditPage(html) {
     if (!/\balt=/i.test(tag)) issues.push('img missing alt')
   }
 
+  // 2b. 章节手绘机制图在构建期内联成 <figure class="hand-figure"><svg …>，
+  //     不再是 <img>，上面那条 alt 检查因此看不到它们；无障碍名改由 SVG 自身的
+  //     role="img" + 非空 aria-label 承载，这里单独把守，防止塞进没名字的图。
+  const handFigures = [...html.matchAll(/<figure class="hand-figure"[^>]*>\s*(<svg\b[^>]*>)/gi)]
+  for (const [, svgTag] of handFigures) {
+    const label = /\baria-label="([^"]*)"/i.exec(svgTag)
+    if (!label || !label[1].trim()) issues.push('hand-figure missing aria-label')
+  }
+
   // 3. 每个按钮都有可访问名（aria-label / title / 文本内容）
   // 注：title 不是最佳实践，但 VitePress 内置 UI（主题切换、代码复制）用 title 承载名称，
   //     静态审计以「有名称」为基线，不苛求最佳实践来源。

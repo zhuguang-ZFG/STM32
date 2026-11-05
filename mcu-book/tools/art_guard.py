@@ -58,6 +58,16 @@ def check_svg(path: Path, yuyu: bool = True) -> list[str]:
     if size > MAX_BYTES:
         errors.append(f"{size} 字节超预算 {MAX_BYTES}")
 
+    # 文本节点里的裸 < 或 & 会在 VitePress 构建期把内联 SVG 当 HTML 解析而炸
+    # （2026-11-05 实测：`retry<6` 触发 vue compiler 的 attribute name 报错）。
+    # 实体写法（&lt; &amp;）放行，裸字符一律拒绝。
+    for m in re.finditer(r"<text\b[^>]*>(.*?)</text>", text, re.S):
+        body = m.group(1)
+        if "<" in body:
+            errors.append(f"文本含裸 '<'（须写 &lt;）：{body[:40]!r}")
+        if re.search(r"&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)", body):
+            errors.append(f"文本含裸 '&'（须写 &amp;）：{body[:40]!r}")
+
     # 手绘感：笔压分级硬信号；曲线命令不足仅提示
     d_attrs = re.findall(r'\bd="([^"]+)"', text)
     curves = sum(1 for d in d_attrs for _ in re.findall(r"[CcQqAa]", d))
