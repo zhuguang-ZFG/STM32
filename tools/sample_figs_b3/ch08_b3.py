@@ -175,9 +175,10 @@ def bus_compare() -> Svg:
          "双方自有波特率", "调试打印 / 模组", T.AMBER),
     ]
     heads = ("总线", "线数", "信号", "多设备", "双工", "时钟/节拍", "典型负载")
-    xs = [40, 120, 230, 420, 580, 720, 860]
-    # widths derived from xs; last col to 920
-    rights = [120, 230, 420, 580, 720, 860, 920]
+    # 「典型负载」列原来只有 60 px，"Flash / 显示屏" 这类值会溢出到卡片外；
+    # 按实测宽度重分：负载 100，信号列仍留 190 给 "SCK+MOSI+MISO+CS"。
+    xs = [40, 108, 196, 371, 531, 681, 805]
+    rights = [108, 196, 371, 531, 681, 805, 920]
     widths = [rights[i] - xs[i] for i in range(7)]
     y0 = 140
     for i, h in enumerate(heads):

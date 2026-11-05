@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import math
 import os
+import unicodedata
 
 
 class T:
@@ -53,6 +54,39 @@ class T:
 def esc(s) -> str:
     return (str(s).replace("&", "&amp;").replace("<", "&lt;")
             .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def text_width(s: str, size: float, mono: bool = False) -> float:
+    """Advance width estimate: wide (CJK/fullwidth) glyphs are 1 em, the rest ~0.52 em."""
+    total = 0.0
+    for ch in s:
+        if unicodedata.east_asian_width(ch) in "WF":
+            total += size
+        else:
+            total += size * (0.56 if mono else 0.52)
+    return total
+
+
+def fit_text(s: str, size: float, max_w: float, min_size: float = 14.0,
+             mono: bool = False) -> tuple[str, float]:
+    """Shrink then ellipsize `s` until it fits `max_w`, so nothing runs off the canvas.
+
+    Returns (text, size). Shrinking is preferred: a slightly smaller title still reads,
+    a clipped one does not.
+    """
+    s = str(s)
+    # The estimator tracks the median real width (1.008x) but its right tail
+    # reaches 1.2x, so leave 5% headroom: titles that fit stay at full size.
+    budget = max_w / 1.05
+    while size > min_size and text_width(s, size, mono) > budget:
+        size -= 0.5
+    if text_width(s, size, mono) <= budget:
+        return s, size
+    cut = s
+    while cut and text_width(cut + "…", size, mono) > budget:
+        cut = cut[:-1]
+    return (cut + "…") if cut else "…", size
+
 
 class Svg:
     """一张 SVG 画布。所有方法都返回 self 或生成的元素字符串。"""
@@ -191,6 +225,22 @@ class Svg:
         self.parts.append(el)
         return el
 
+    def rot_text(self, x, y, s, angle=90, size=11, fill=T.TEXT, weight="normal",
+                 mono=True, anchor="start") -> str:
+        """绕 (x, y) 旋转的标签；引脚名用它沿边排，避免相邻脚互相压。
+
+        旋转不影响文字内容，只是排版；与 text() 同一套字体与颜色参数。
+        """
+        family = T.MONO if mono else T.FONT
+        a = [f'x="{x:g}"', f'y="{y:g}"', f'font-size="{size:g}"',
+             f'fill="{fill}"', f'text-anchor="{anchor}"', f'font-family="{family}"']
+        if weight != "normal":
+            a.append(f'font-weight="{weight}"')
+        a.append(f'transform="rotate({angle:g} {x:g} {y:g})"')
+        el = f"<text {' '.join(a)}>{esc(s)}</text>"
+        self.parts.append(el)
+        return el
+
     # ---------------- 组合元件 ----------------
 
     def box(self, x, y, w, h, label="", sub="", fill=T.PANEL, stroke=T.STROKE,
@@ -300,12 +350,15 @@ class Svg:
         self.rect(0, 0, self.w, 58, fill=T.BG2)
         self.line(0, 58, self.w, 58, stroke=T.STROKE, sw=1)
         self.rect(0, 0, 4, 58, fill=tag_color)
-        self.text(22, 32, title, size=20, weight="700")
+        tag_w = 14 + len(tag) * 9 if tag else 0
+        right = (self.w - tag_w - 22 - 12) if tag else (self.w - 22)
+        title, title_size = fit_text(title, 20, right - 22)
+        self.text(22, 32, title, size=title_size, weight="700")
         if subtitle:
-            self.text(22, 50, subtitle, size=12, fill=T.MUTED)
+            sub, sub_size = fit_text(subtitle, 12, self.w - 44, min_size=10)
+            self.text(22, 50, sub, size=sub_size, fill=T.MUTED)
         if tag:
-            w = 14 + len(tag) * 9
-            self.chip(self.w - w - 22, 15, w, 28, tag, color=tag_color, size=12)
+            self.chip(self.w - tag_w - 22, 15, tag_w, 28, tag, color=tag_color, size=12)
         return self
 
     def footer(self, note="", color=T.DIM,

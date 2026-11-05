@@ -32,7 +32,7 @@
 <line x1="524" y1="92" x2="524" y2="452" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <polygon points="524.00,452.00 521.00,445.00 527.00,445.00" fill="#5e6872" opacity="1"/>
 <polygon points="524.00,92.00 527.00,99.00 521.00,99.00" fill="#5e6872" opacity="1"/>
-<text x="540" y="270" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抽象层次提高 →</text>
+<text x="524" y="84" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">抽象层次提高 ↑</text>
 <rect x="600" y="92" width="260" height="150" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="618" y="118" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">怎么选？</text>
 <text x="618" y="140" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">学习 / 做项目：HAL + CubeMX</text>

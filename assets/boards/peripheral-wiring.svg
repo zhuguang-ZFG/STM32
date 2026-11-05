@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="常用外设接线总览">
+<title>常用外设接线总览</title>
 <style>
 
 .wf140{stroke-dasharray:6 8;animation:wf140-flow 1.8s linear infinite;}@keyframes wf140-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
@@ -16,6 +17,7 @@
 .wf288{stroke-dasharray:6 8;animation:wf288-flow 1.8s linear infinite;}@keyframes wf288-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
 
 .wf362{stroke-dasharray:6 8;animation:wf362-flow 1.8s linear infinite;}@keyframes wf362-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-14px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
@@ -77,17 +79,17 @@
 <rect x="40" y="452" width="258" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="40" y="452" width="3" height="76" fill="#8f2d2d" opacity="1" rx="2"/>
 <text x="54" y="476" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">资源冲突要先查</text>
-<text x="54" y="494" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1 的 PA5~PA7 与 ADC、TIM2 复用；一</text>
+<text x="54" y="494" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SPI1 的 PA5~PA7 与 ADC、TIM2 复用；一个引脚同…</text>
 <text x="54" y="510" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">个引脚同一时刻只能有一个功能</text>
 <rect x="314" y="452" width="258" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="314" y="452" width="3" height="76" fill="#7a4e00" opacity="1" rx="2"/>
 <text x="328" y="476" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">电平要匹配</text>
-<text x="328" y="494" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HC-05、OLED、W25Q64 都是 3.3 V 器件，</text>
+<text x="328" y="494" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HC-05、OLED、W25Q64 都是 3.3 V 器件，5 V 模块…</text>
 <text x="328" y="510" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">5 V 模块（如继电器）需电平转换或三极管驱动</text>
 <rect x="588" y="452" width="258" height="76" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="588" y="452" width="3" height="76" fill="#1b5c45" opacity="1" rx="2"/>
 <text x="602" y="476" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">共地是前提</text>
-<text x="602" y="494" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">所有外设必须与开发板 GND 相连；只接信号线不接地是最常见</text>
+<text x="602" y="494" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">所有外设必须与开发板 GND 相连；只接信号线不接地…</text>
 <text x="602" y="510" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">的「玄学故障」</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完整接线表见各章「硬件与接线」小节与 examples/*/README.md</text>

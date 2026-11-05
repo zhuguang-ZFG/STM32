@@ -54,7 +54,6 @@
 <circle cx="234" cy="236" r="3.4" fill="#5b6472" opacity="1"/>
 <text x="280" y="280" font-size="11.5" fill="#dfe6f0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">STM32F103</text>
 <text x="280" y="295" font-size="9" fill="#8b98b0" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ZET6 · LQFP144</text>
-<text x="280" y="358" font-size="8.5" fill="#dbeafe" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">72 MHz · 512 KB Flash · 64 KB SRAM</text>
 <rect x="420" y="152" width="150" height="40" fill="#08224a" opacity="1" rx="4" stroke="#075e84" stroke-width="1"/>
 <text x="495" y="176" font-size="8.5" fill="#cfe0ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LCD 接口 (FSMC)</text>
 <rect x="420" y="202" width="150" height="34" fill="#08224a" opacity="1" rx="4" stroke="#075e84" stroke-width="1"/>
@@ -96,9 +95,9 @@
 <circle cx="172" cy="282" r="10" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
 <circle cx="172" cy="282" r="5" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
 <text x="172" y="304" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">WK_UP</text>
-<circle cx="190" cy="292" r="10" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
-<circle cx="190" cy="292" r="5" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
-<text x="190" y="314" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RESET</text>
+<circle cx="80" cy="342" r="10" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
+<circle cx="80" cy="342" r="5" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
+<text x="80" y="364" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RESET</text>
 <rect x="420" y="412" width="150" height="40" fill="#08224a" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
 <text x="495" y="436" font-size="9" fill="#cfe0ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">JTAG/SWD 20 pin</text>
 <rect x="100" y="432" width="130" height="30" fill="#08224a" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
@@ -191,7 +190,7 @@
 <rect x="464" y="486" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="464" y="486" width="200" height="3" fill="#1b5c45" opacity="1" rx="2"/>
 <text x="476" y="512" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">存储</text>
-<text x="476" y="532" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">512 KB Flash · 64 KB SRAM</text>
+<text x="476" y="532" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">512 KB Flash · 64 KB SRAM</text>
 <rect x="676" y="486" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="676" y="486" width="200" height="3" fill="#5b3a8c" opacity="1" rx="2"/>
 <text x="688" y="512" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设数量</text>

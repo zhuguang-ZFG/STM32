@@ -358,7 +358,8 @@ def layers_hal_ll_reg() -> Svg:
         s.text(60, y + 47, note, size=10.5, fill=T.MUTED)
         y += 72
     s.double_arrow(524, 92, 524, 452, color=T.STROKE, sw=1.5)
-    s.text(540, 270, "抽象层次提高 →", size=11, fill=T.MUTED)
+    # 标签放在箭头顶端：中段 540,270 会被右侧面板压住，下端是注释框
+    s.text(524, 84, "抽象层次提高 ↑", size=11, anchor="middle", fill=T.MUTED)
 
     s.rect(600, 92, 260, 150, fill=T.PANEL2, stroke=T.STROKE, rx=8)
     s.text(618, 118, "怎么选？", size=13, fill=T.TEXT, weight="700")
@@ -420,7 +421,7 @@ def project_structure() -> Svg:
             s.line(x - 14, y, x - 4, y, stroke=T.STROKE, sw=1)
         s.text(x, y, text_, size=11.5 if depth else 13, fill=color,
                mono=depth > 0, weight="700" if bold else "normal")
-        y += 26
+        y += 24
 
     s.rect(520, 92, 340, 210, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(538, 118, "四条铁律", size=13, fill=T.TEXT, weight="700")
@@ -443,8 +444,8 @@ def project_structure() -> Svg:
         s.text(538, yy, k, size=10.5, mono=True, fill=T.AMBER)
         s.text(578, yy, v, size=10.5, fill=T.MUTED)
 
-    s.rect(40, 480, 820, 50, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 510, "小技巧：把 BSP 目录做成 Git 子模块或独立仓库，"
+    s.rect(40, 462, 820, 50, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(58, 492, "小技巧：把 BSP 目录做成 Git 子模块或独立仓库，"
                     "换芯片时只需改初始化，业务代码可整体复用。", size=11,
            fill=T.MUTED)
     s.footer("完整示例见 examples/ 目录，每个示例都给出 CubeMX 配置要点与文件清单")

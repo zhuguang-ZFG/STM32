@@ -42,11 +42,7 @@ def _color(name: str) -> str:
 
 def _rot_text(s: Svg, x, y, text, angle, size, fill):
     """绕 (x, y) 旋转。顶边 -90 让字往上长，底边 90 让字往下长，避免和邻脚重叠。"""
-    s.add(
-        f'<text x="{x:g}" y="{y:g}" font-size="{size:g}" fill="{fill}" '
-        f'text-anchor="start" font-family="{T.MONO}" '
-        f'transform="rotate({angle:g} {x:g} {y:g})">{text}</text>'
-    )
+    s.rot_text(x, y, text, angle=angle, size=size, fill=fill)
 
 
 def lqfp(title, subtitle, pins, cite, chip_lines):

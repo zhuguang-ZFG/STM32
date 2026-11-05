@@ -23,90 +23,146 @@ def _credit(canvas: Svg, note: str) -> None:
 
 
 def hse_fail() -> Svg:
-    canvas = Svg(
+    """同一份分频账，两种时钟：72 MHz 对得上，8 MHz 全错档。
+
+    画的是字段与算式，不是波形；每个数字都能在章节正文里找到出处。
+    """
+    c = Svg(
         960,
-        900,
+        720,
         "HSE 停振后 SYSCLK 落在 HSI 8 MHz：115200 变 12800，1 ms 变 9 ms",
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 §7.3.2",
     )
-    canvas.header(tag="02", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  HSE 8 MHz on pin 5 PD0 / pin 6 PD1", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "PLLXTPRE=0  PLLSRC=1  PLLMUL=0111  8 MHz x 9 = 72 MHz", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "72 MHz: SYSCLK = HCLK = PCLK2, PCLK1 = 36 MHz, LATENCY = 2, USART1 BRR = 0x271", size=14, fill=T.AMBER)
+    c.header(tag="02", tag_color=T.CYAN)
 
-    canvas.text(40, 170, "正常路径  the 72 MHz ledger adds up", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "USART1 at 115200: 72e6 / (16 x 115200) = 39.0625, BRR 0x271, error 0%", size=14, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "SysTick reload 72000 at 72 MHz is 1.000 ms", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "RCC_CR HSERDY = 1 and PLLRDY = 1; RCC_CFGR SWS = 10 means the PLL drives SYSCLK", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "LATENCY = 2 is the 48 to 72 MHz row, 2.7 V to 3.6 V; 24 to 48 MHz is 1 and below 24 MHz is 0", size=13, fill=T.MUTED)
-    canvas.text(56, 318, "this row is what the code was written against; nothing below re-tunes it", size=13, fill=T.MUTED)
+    # ---- 正常路径：HSE → PLL ×9 → 72 MHz ----
+    c.text(40, 94, "正常：HSE 8 MHz 经 PLL ×9 上到 72 MHz", size=17,
+           fill=T.GREEN, weight="700")
+    c.box(40, 112, 162, 56, "HSE 8 MHz", "PD0/PD1 · 5/6 脚", stroke=T.GREEN)
+    c.arrow(204, 140, 236, 140, color=T.GREEN)
+    c.box(238, 112, 172, 56, "PLL ×9", "PLLMUL=0111 · PLLSRC=1",
+          stroke=T.GREEN)
+    c.arrow(412, 140, 444, 140, color=T.GREEN)
+    c.box(446, 112, 190, 56, "SYSCLK 72 MHz", "SWS=10 · HCLK 72 MHz",
+          stroke=T.GREEN)
+    c.box(672, 96, 268, 46, "USART1 → 115200",
+          "72e6/(16×115200)=39.0625 · BRR 0x271", stroke=T.GREEN, size=13)
+    c.box(672, 152, 268, 46, "SysTick 重装 72000", "→ 1.000 ms",
+          stroke=T.GREEN, size=13)
+    c.box(672, 208, 268, 46, "FLASH LATENCY=2", "48–72 MHz 档，配得上",
+          stroke=T.GREEN, size=13)
+    for yy in (119, 175, 231):
+        c.arrow(638, 140, 670, yy, color=T.GREEN, sw=1.5, head=6)
 
-    canvas.text(40, 380, "失败路径  HSE stops, CSS falls back to HSI 8 MHz", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 394, 880, 150, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 424, "SYSCLK drops to 8 MHz, SWS reads 00, the PLL is off, the NMI keeps firing", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 450, "the same BRR 0x271 now divides 8 MHz: 8e6 / (16 x 39.0625) = 12800 baud", size=14, fill=T.RED)
-    canvas.text(56, 476, "115200 to 12800 is exactly one ninth, 88.9% slow; the receiver reports framing errors", size=14, fill=T.RED)
-    canvas.text(56, 502, "SysTick reload 72000 becomes 9.000 ms, so a delay written as 1 s takes 9 s", size=14, fill=T.AMBER)
-    canvas.text(56, 528, "none of this is a baud rounding problem; it is the wrong clock behind a correct divider", size=13, fill=T.MUTED)
+    c.line(40, 286, 920, 286, stroke=T.GRID, sw=1)
 
-    canvas.text(40, 588, "检查点  read these three before touching the code", size=16, fill=T.CYAN, weight="700")
-    canvas.rect(40, 602, 880, 150, fill=T.PANEL, stroke=T.CYAN, rx=8)
-    canvas.text(56, 632, "RCC_CR bit 17 HSERDY: 0 means the crystal never started, so PLLMUL never gets an input", size=14, fill=T.TEXT, weight="700")
-    canvas.text(56, 658, "RCC_CFGR [21:18] PLLMUL = 0111, [17] PLLXTPRE = 0, [16] PLLSRC = 1, [3:2] SWS = 10", size=14, fill=T.TEXT)
-    canvas.text(56, 684, "FLASH_ACR [2:0] LATENCY = 2 in this band; 8 MHz alone would only need 0", size=14, fill=T.TEXT)
-    canvas.text(56, 710, "a 2.7 V rail and a probe on PD0 are worth more than one more build", size=13, fill=T.MUTED)
+    # ---- 失败路径：CSS 切 HSI，同一份分频全错档 ----
+    c.text(40, 318, "停振：CSS 把 SYSCLK 切到 HSI 8 MHz，分频一个没改", size=17,
+           fill=T.RED, weight="700")
+    c.box(40, 336, 162, 56, "HSE 停振", "HSERDY=0", stroke=T.RED,
+          color=T.RED)
+    # 交叉线画在方框右上角，比在框内写 ✗ 更清楚，也不压住框里的字
+    c.line(168, 340, 186, 358, stroke=T.RED, sw=2)
+    c.line(186, 340, 168, 358, stroke=T.RED, sw=2)
+    c.arrow(204, 364, 236, 364, color=T.RED, dash="5 3")
+    c.text(220, 350, "CSS", size=11, fill=T.RED, anchor="middle")
+    c.box(238, 336, 172, 56, "HSI 8 MHz", "内部 RC · 上电默认", stroke=T.RED)
+    c.arrow(412, 364, 444, 364, color=T.RED)
+    c.box(446, 336, 190, 56, "SYSCLK 8 MHz", "SWS=00 · PLL 已关", stroke=T.RED,
+          color=T.RED)
+    c.box(672, 320, 268, 46, "同一份 0x271 → 12800",
+          "8e6/(16×39.0625) · 慢 88.9%", stroke=T.RED, color=T.RED, size=13)
+    c.box(672, 376, 268, 46, "SysTick 72000 → 9.000 ms",
+          "代码写 1 s，实际 9 s", stroke=T.RED, color=T.RED, size=13)
+    c.box(672, 432, 268, 46, "LATENCY=2 仍生效",
+          "8 MHz 只需 0，没人重算", stroke=T.RED, color=T.RED, size=13)
+    for yy in (343, 399, 455):
+        c.arrow(638, 364, 670, yy, color=T.RED, sw=1.5, head=6)
 
-    canvas.rect(40, 782, 880, 70, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 812, "旁注  8 MHz is the reset clock, not a repaired 72 MHz", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 838, "write CSSC in the NMI or the handler re-enters forever; LATENCY 2 at 8 MHz is safe but proves nobody recomputed", size=13, fill=T.MUTED)
+    # ---- 9 倍差：同一份分频，两根长度 ----
+    c.text(40, 512, "115200 与 12800 是同一份分频，差 9 倍；不是波特率凑不出来",
+           size=13, fill=T.MUTED)
+    c.rect(40, 522, 560, 16, fill=T.PANEL, stroke=T.GREEN, rx=4)
+    c.rect(40, 522, 560, 16, fill=T.GREEN, opacity=0.22, rx=4)
+    c.text(610, 535, "115200（72 MHz）", size=11, fill=T.GREEN)
+    c.rect(40, 550, 62, 16, fill=T.PANEL, stroke=T.RED, rx=4)
+    c.rect(40, 550, 62, 16, fill=T.RED, opacity=0.22, rx=4)
+    c.text(610, 563, "12800（8 MHz，÷9）", size=11, fill=T.RED)
 
-    _credit(canvas, "自绘。分频与等待来自 RM0008 Rev 21 第 7.3.2 节；BRR 39.0625 与 0x271 来自第 06 章；64 KB 与脚位来自 DS5319 Rev 20。")
-    return canvas
+    # ---- 检查点：三个寄存器读数 + 处置 ----
+    c.text(40, 600, "检查点：三个读数，先定住时钟，再谈波特率", size=15,
+           fill=T.CYAN, weight="700")
+    c.box(40, 612, 200, 50, "RCC_CR[17] HSERDY", "0 = 晶振没起振", stroke=T.CYAN,
+          size=12)
+    c.box(252, 612, 200, 50, "RCC_CFGR[3:2] SWS", "00 = 系统跑在 HSI", stroke=T.CYAN,
+          size=12)
+    c.box(464, 612, 200, 50, "FLASH_ACR[2:0]", "2 仍生效，8 MHz 只需 0",
+          stroke=T.CYAN, size=12)
+    c.box(676, 612, 264, 50, "NMI 里写 CSSC", "否则 NMI 一直重进",
+          stroke=T.VIOLET, color=T.VIOLET, size=12)
+
+    _credit(c, "自绘。倍频与等待周期来自 RM0008 Rev 21 第 7.3.2 节；BRR 39.0625 与 0x271 来自第 06 章；引脚与容量来自 DS5319 Rev 20。")
+    return c
 
 
 def boot_mode() -> Svg:
-    canvas = Svg(
+    """BOOT1/BOOT0 决定 0x00000000 别名到哪块本体，三个组合画成开关而不是句子。"""
+    c = Svg(
         960,
-        920,
+        620,
         "BOOT0=1 且 BOOT1=1 从 SRAM 起：取到的是上电随机内容",
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 §3.4 Table 9",
     )
-    canvas.header(tag="02", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  pin 44 BOOT0, BOOT1 shared with PB2", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "the pair is latched on the 4th rising edge of SYSCLK after reset", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "0x00000000 is only an alias: bodies sit at 0x08000000, 0x1FFFF000 and 0x20000000", size=14, fill=T.AMBER)
+    c.header(tag="02", tag_color=T.CYAN)
 
-    canvas.text(40, 170, "正常路径  BOOT1 = 0, BOOT0 = 0, main Flash", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "0x00000000 aliases the 64 KB image at 0x08000000, which ends at 0x08010000", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "word 0 is the initial MSP, word 1 is Reset_Handler, and only then does main run", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "SWD programming and a normal power-up both leave BOOT0 low", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "the image cannot change this: the pin decides, the linker script only places bytes", size=13, fill=T.MUTED)
+    c.text(40, 92, "0x00000000 只是别名：取指来源由 BOOT0 / BOOT1 决定", size=17,
+           fill=T.TEXT, weight="700")
+    c.box(40, 116, 158, 46, "BOOT0 · 第 44 脚", "复位期间量这一脚", stroke=T.AMBER,
+          size=12)
+    c.box(40, 176, 158, 46, "BOOT1 = PB2", "与 GPIO 共脚", stroke=T.AMBER,
+          size=12)
+    c.arrow(200, 139, 230, 155, color=T.AMBER)
+    c.arrow(200, 199, 230, 183, color=T.AMBER)
+    c.box(232, 130, 176, 78, "启动选择", "复位后按这两脚取指", stroke=T.VIOLET,
+          size=13)
 
-    canvas.text(40, 380, "失败路径  BOOT1 = 1, BOOT0 = 1, SRAM", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 394, 880, 150, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 424, "0x00000000 aliases SRAM at 0x20000000, 20 KB up to 0x20005000", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 450, "word 0 is power-on SRAM: that is not a stack top, and word 1 is not code", size=14, fill=T.RED)
-    canvas.text(56, 476, "execution never reaches main: the core faults or jumps wild", size=14, fill=T.RED)
-    canvas.text(56, 502, "the image in Flash is intact at 0x08000000 and simply not fetched", size=14, fill=T.AMBER)
-    canvas.text(56, 528, "SRAM loses everything at power-down, so this is a debug state, not a delivery", size=13, fill=T.MUTED)
+    c.box(468, 104, 452, 50, "主 Flash · 0x0800 0000",
+          "64 KB 到 0x0801 0000 · 第 0 字 MSP，第 1 字 Reset_Handler",
+          stroke=T.GREEN, size=13)
+    c.box(468, 166, 452, 50, "系统存储器 · 0x1FFF F000",
+          "出厂 Bootloader · 串口 ISP 下载", stroke=T.AMBER, size=13)
+    c.box(468, 228, 452, 50, "内置 SRAM · 0x2000 0000",
+          "20 KB 到 0x2000 5000 · 上电随机内容", stroke=T.RED, size=13)
+    for yy in (129, 191, 253):
+        c.arrow(410, 169, 466, yy, color=T.VIOLET, sw=1.5, head=6)
 
-    canvas.text(40, 588, "对照  the three rows behind the alias", size=16, fill=T.CYAN, weight="700")
-    canvas.rect(40, 602, 880, 120, fill=T.PANEL, stroke=T.CYAN, rx=8)
-    canvas.text(56, 632, "BOOT1=0  BOOT0=0    main Flash at 0x08000000, the case that runs the book", size=14, fill=T.GREEN)
-    canvas.text(56, 658, "BOOT1=0  BOOT0=1    system memory at 0x1FFFF000, the factory UART ISP loader", size=14, fill=T.TEXT)
-    canvas.text(56, 684, "BOOT1=1  BOOT0=1    SRAM at 0x20000000, RAM content only, gone at power-down", size=14, fill=T.RED)
-    canvas.text(56, 710, "0x1FFFB000 belongs to the interconnect line and 0x08080000 to XL density; neither is this C8", size=13, fill=T.MUTED)
+    c.text(40, 312, "三种组合：BOOT0=0 时 BOOT1 随便（x）", size=14,
+           fill=T.MUTED, weight="700")
+    rows = [
+        ("0", "0", "主 Flash · 正常运行", T.GREEN),
+        ("0", "1", "系统存储器 · 串口 ISP 救砖", T.AMBER),
+        ("1", "1", "内置 SRAM · 上电随机，掉电即失", T.RED),
+    ]
+    for i, (b1, b0, label, col) in enumerate(rows):
+        y = 330 + i * 54
+        c.text(40, y + 20, "BOOT1", size=11, fill=T.DIM, mono=True)
+        c.box(88, y, 44, 30, b1, "", stroke=col, size=13)
+        c.text(148, y + 20, "BOOT0", size=11, fill=T.DIM, mono=True)
+        c.box(196, y, 44, 30, b0, "", stroke=col, size=13)
+        c.arrow(246, y + 15, 276, y + 15, color=col, sw=1.5, head=6)
+        c.box(278, y, 420, 30, label, "", stroke=col, color=col, size=12)
 
-    canvas.text(40, 770, "检查点  three readings before the next reset", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 784, 880, 100, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 814, "meter pin 44 and PB2 with reset held: 1 and 1 is the SRAM alias, not Flash", size=14, fill=T.TEXT, weight="700")
-    canvas.text(56, 840, "read 0x00000000 over SWD: a sane MSP lands inside 0x20000000 to 0x20005000", size=14, fill=T.TEXT)
-    canvas.text(56, 866, "setting BOOT pins inside main is one reset too late", size=13, fill=T.MUTED)
+    c.text(40, 520, "检查点：三处读数，比再烧一次快", size=15, fill=T.CYAN,
+           weight="700")
+    c.box(40, 532, 268, 50, "复位期间量第 44 脚", "1 且 PB2 = 1 → 落到 SRAM",
+          stroke=T.CYAN, size=12)
+    c.box(324, 532, 268, 50, "读 0x00000000 的第 0 字", "落进 0x2000 0000 段才对",
+          stroke=T.CYAN, size=12)
+    c.box(608, 532, 312, 50, "运行中改 BOOT 引脚", "要等下一次复位才生效",
+          stroke=T.VIOLET, color=T.VIOLET, size=12)
 
-    _credit(canvas, "自绘。启动区别名与锁存点来自 RM0008 Rev 21 第 3.4 节表 9；脚位与 64 KB / 20 KB 来自 DS5319 Rev 20。")
-    return canvas
+    _credit(c, "自绘。启动区别名与选择表来自 RM0008 Rev 21 第 3.4 节表 9；引脚与 64 KB / 20 KB 来自 DS5319 Rev 20。")
+    return c
 
 
 FIGURES = [

@@ -52,8 +52,10 @@ def gpio_blink() -> Svg:
 
     # ---------------- 左：电路 ----------------
     s.rect(40, 80, 470, 262, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    s.text(58, 106, "外接 LED：高电平点亮（BluePill 板载灯是 PC13，低电平才亮）",
+    s.text(58, 100, "外接 LED：高电平点亮",
            size=12, fill=T.TEXT, weight="600")
+    s.text(58, 116, "BluePill 板载灯是 PC13，低电平才亮",
+           size=11, fill=T.MUTED)
 
     # MCU
     s.rect(62, 130, 150, 150, fill=T.PANEL2, stroke=T.CYAN, rx=8)
@@ -168,9 +170,11 @@ def gpio_input_interrupt() -> Svg:
            size=11.5, mono=True, fill=T.MUTED)
     y = 176
     s.rect(58, y - 14, 784, 40, fill=T.BG2, stroke=T.GRID, rx=8)
+    hit = 6
     for i in range(14):
         s.rect(62 + i * 56, y - 10, 52, 32, fill=T.PANEL2, stroke=T.STROKE, rx=4)
-        s.text(88 + i * 56, y + 10, "读", size=11, anchor="middle", fill=T.MUTED)
+        if i != hit:   # 命中的那格会被高亮块盖住，写了也看不见
+            s.text(88 + i * 56, y + 10, "读", size=11, anchor="middle", fill=T.MUTED)
     s.rect(62 + 6 * 56, y - 10, 52, 32, fill=T.AMBER, rx=4, opacity=0.85,
            cls="hit")
     s.text(88 + 6 * 56, y + 10, "命中", size=11, anchor="middle", fill="#fbfaf7",

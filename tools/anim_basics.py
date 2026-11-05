@@ -141,8 +141,8 @@ def boot_sequence() -> Svg:
         s.rect(x, y, bw, bh, fill=color, rx=8, cls=f"b{i}", opacity=0.12)
 
     s.title_block(40, 400, "向量表（前 8 个字节决定 CPU 从哪里开始）", color=T.CYAN)
-    s.rect(40, 406, 470, 104, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.code(56, 436, [
+    s.rect(40, 406, 470, 112, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.code(56, 434, [
         "0x0000_0000  MSP 初值     ; Flash 启动时别名到 0x0800_0000",
         "0x0000_0004  Reset_Handler",
         "0x0000_0008  NMI_Handler",

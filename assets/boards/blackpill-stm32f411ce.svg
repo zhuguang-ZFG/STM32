@@ -65,12 +65,12 @@
 <text x="566" y="133" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PC13</text>
 <rect x="610" y="138" width="12" height="8" fill="#8f2d2d" opacity="1" rx="2" stroke="#00000088" stroke-width="1.5"/>
 <text x="616" y="133" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PWR</text>
-<circle cx="690" cy="330" r="12" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
-<circle cx="690" cy="330" r="7" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
-<text x="690" y="354" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST</text>
-<circle cx="620" cy="330" r="12" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
-<circle cx="620" cy="330" r="7" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
-<text x="620" y="354" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0</text>
+<circle cx="690" cy="300" r="12" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
+<circle cx="690" cy="300" r="7" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
+<text x="690" y="324" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NRST</text>
+<circle cx="620" cy="300" r="12" fill="#2b3038" opacity="1" stroke="#59606c" stroke-width="2"/>
+<circle cx="620" cy="300" r="7" fill="#d8b23a" opacity="1" stroke="#8d7420" stroke-width="1"/>
+<text x="620" y="324" font-size="8.5" fill="#e8f1ff" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0</text>
 <rect x="300" y="300" width="60" height="18" fill="#0a0d13" opacity="1" rx="2" stroke="#e2b23c" stroke-width="1.5"/>
 <circle cx="310" cy="309" r="5" fill="#e2b23c" opacity="1"/>
 <circle cx="330" cy="309" r="5" fill="#e2b23c" opacity="1"/>
@@ -234,7 +234,7 @@
 <rect x="464" y="522" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="464" y="522" width="200" height="3" fill="#1b5c45" opacity="1" rx="2"/>
 <text x="476" y="548" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">存储</text>
-<text x="476" y="568" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">512 KB Flash · 128 KB SRAM</text>
+<text x="476" y="568" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">512 KB Flash · 128 KB SRAM</text>
 <rect x="676" y="522" width="200" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <rect x="676" y="522" width="200" height="3" fill="#7a4e00" opacity="1" rx="2"/>
 <text x="688" y="548" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">下载方式</text>

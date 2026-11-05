@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from svgkit import Svg, T, anim_blink, anim_flow, anim_tx
+from svgkit import Svg, T, fit_text, anim_blink, anim_flow, anim_tx
 
 W, H = 900, 620
 
@@ -58,7 +58,8 @@ def header(s, x, y, n, pitch, side="top", labels=None, label_size=9,
                    anchor="middle", fill=T.TEXT)
 
 
-def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10):
+def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10,
+         n=None):
     """画一颗 LQFP 芯片（带四边引脚）。"""
     s.rect(cx - w / 2 - 8, cy - h / 2 - 8, w + 16, h + 16, fill="#0a0d13",
            stroke="#2a3242", rx=4)
@@ -76,21 +77,27 @@ def chip(s, cx, cy, w, h, name, sub="", color="#1b1f28", pins=4, pin_side=10):
     if sub:
         s.text(cx, cy + 13, sub, size=9, anchor="middle", fill="#8b98b0",
                mono=True)
+    if n is not None:
+        callout(s, cx - w / 2 - 18, cy - h / 2 - 18, n)
 
 
-def crystal(s, x, y, w=46, h=20, label="8 MHz"):
+def crystal(s, x, y, w=46, h=20, label="8 MHz", n=None):
     s.rect(x, y, w, h, fill="#c9ced6", stroke="#8d949e", rx=4)
     s.rect(x + 5, y + 4, w - 10, h - 8, fill="#e7ebf0", rx=2)
     s.text(x + w / 2, y + h + 12, label, size=8.5, anchor="middle", fill=SILK)
+    if n is not None:
+        callout(s, x - 12, y - 12, n)
 
 
-def button(s, cx, cy, r=13, label="RST"):
+def button(s, cx, cy, r=13, label="RST", n=None):
     s.circle(cx, cy, r, fill="#2b3038", stroke="#59606c", sw=2)
     s.circle(cx, cy, r - 5, fill="#d8b23a", stroke="#8d7420", sw=1)
     s.text(cx, cy + r + 12, label, size=8.5, anchor="middle", fill=SILK)
+    if n is not None:
+        callout(s, cx + r + 14, cy - r - 6, n)
 
 
-def usb(s, x, y, w=54, h=44, kind="micro", side="left"):
+def usb(s, x, y, w=54, h=44, kind="micro", side="left", n=None, label_dx=0):
     body = "#c9ced6"
     s.rect(x, y, w, h, fill=body, stroke="#8d949e", rx=4)
     s.rect(x + 5, y + 5, w - 10, h - 10, fill="#8d949e", rx=2)
@@ -98,25 +105,33 @@ def usb(s, x, y, w=54, h=44, kind="micro", side="left"):
         s.rect(x + 8, y + h / 2 - 7, w - 14, 14, fill="#5d6470", rx=2)
     elif kind == "type-c":
         s.rect(x + 8, y + h / 2 - 5, w - 14, 10, fill="#5d6470", rx=4)
-    s.text(x + w / 2, y - 8, f"{kind} USB", size=9, anchor="middle", fill=SILK)
+    s.text(x + w / 2 + label_dx, y - 8, f"{kind} USB", size=9, anchor="middle",
+           fill=SILK)
+    if n is not None:
+        callout(s, x + w + 16, y + h / 2, n)
 
 
-def smd(s, x, y, w, h, label, color="#2b3038"):
+def smd(s, x, y, w, h, label, color="#2b3038", n=None):
     """小贴片元件 + 丝印标注。"""
     s.rect(x, y, w, h, fill=color, stroke="#4a5260", rx=2)
     s.rect(x - 3, y + 1, 3, h - 2, fill="#c9ced6")
     s.rect(x + w, y + 1, 3, h - 2, fill="#c9ced6")
     if label:
         s.text(x + w / 2, y - 5, label, size=8.5, anchor="middle", fill=SILK)
+    if n is not None:
+        callout(s, x + w + 3 + 14, y + h / 2, n)
 
 
-def led_smd(s, x, y, color, label=""):
+def led_smd(s, x, y, color, label="", n=None):
     s.rect(x, y, 12, 8, fill=color, rx=2, stroke="#00000088")
     if label:
         s.text(x + 6, y - 5, label, size=8.5, anchor="middle", fill=SILK)
+    if n is not None:
+        callout(s, x + 6, y + 8 + 14, n)
 
 
 def callout(s, x, y, n, color=T.CYAN):
+    """编号徽标。坐标是徽标圆心；元件请用各自的 n= 参数自动挂角。"""
     s.circle(x, y, 10, fill=T.BG, stroke=color, sw=2)
     s.text(x, y + 4, str(n), size=11, anchor="middle", fill=color, weight="700")
 
@@ -138,7 +153,9 @@ def specs(s, x, y, items, w=200, h=58, gap=12):
         s.rect(xx, y, w, h, fill=T.PANEL, stroke=T.STROKE, rx=8)
         s.rect(xx, y, w, 3, fill=color, rx=2)
         s.text(xx + 12, y + 26, k, size=11, fill=T.MUTED)
-        s.text(xx + 12, y + 46, v, size=13, fill=T.TEXT, weight="700")
+        # 卡片宽度固定 200，长值（如「SWD（PA13/PA14）· 串口 ISP」）按宽度降号
+        v, vs = fit_text(v, 13, w - 24, min_size=10)
+        s.text(xx + 12, y + 46, v, size=vs, fill=T.TEXT, weight="700")
 
 
 # --------------------------------------------------------------------------- 蓝色药丸
@@ -162,19 +179,19 @@ def bluepill() -> Svg:
     header(s, 170, by + 18, 20, 28, side="top", labels=top, label_dy=-24)
     header(s, 170, by + bh - 34, 20, 28, side="bottom", labels=bot, label_dy=34)
 
-    chip(s, 450, 227, 96, 96, "STM32F103", "C8T6 · LQFP48", pins=6)
+    chip(s, 450, 227, 96, 96, "STM32F103", "C8T6 · LQFP48", pins=6, n=3)
     s.text(450, 300, "72 MHz · 64 KB Flash · 20 KB SRAM", size=9.5,
            anchor="middle", fill=SILK)
     s.text(450, 132, "Blue Pill", size=13, anchor="middle", fill="#7fd4ff",
            weight="700")
 
-    crystal(s, 236, 150, 46, 20, "8 MHz HSE")
-    crystal(s, 236, 246, 46, 20, "32.768 kHz LSE")
-    smd(s, 640, 140, 34, 20, "RT9193-33")
-    smd(s, 170, 250, 26, 14, "1.5k D+")
+    crystal(s, 236, 150, 46, 20, "8 MHz HSE", n=1)
+    crystal(s, 236, 246, 46, 20, "32.768 kHz LSE", n=2)
+    smd(s, 640, 140, 34, 20, "RT9193-33", n=4)
+    smd(s, 170, 250, 26, 14, "1.5k D+", n=8)
     led_smd(s, 560, 140, T.RED, "PWR")
-    led_smd(s, 610, 140, T.GREEN, "PC13")
-    button(s, 690, 300, 13, "NRST")
+    led_smd(s, 610, 140, T.GREEN, "PC13", n=7)
+    button(s, 690, 300, 13, "NRST", n=6)
 
     # BOOT 跳线
     for i, name in enumerate(("BOOT0", "BOOT1")):
@@ -185,17 +202,10 @@ def bluepill() -> Svg:
         s.text(300, y - 6, name, size=8.5, fill=SILK)
     s.rect(306, 292, 18, 14, fill="#1b1f28", rx=2)
     s.rect(306, 322, 18, 14, fill="#1b1f28", rx=2)
-    s.text(370, 300, "跳线帽短接 1-2：从 Flash 启动", size=8.5, fill=SILK)
+    s.text(370, 286, "跳线帽短接 1-2：从 Flash 启动", size=8.5, fill=SILK)
 
-    # 编号标注
-    callout(s, 236, 150, 1)
-    callout(s, 236, 246, 2)
-    callout(s, 450, 227, 3)
-    callout(s, 640, 140, 4)
-    callout(s, 330, 300, 5)
-    callout(s, 690, 300, 6)
-    callout(s, 616, 140, 7)
-    callout(s, 170, 250, 8)
+    # 编号标注：徽标由各元件自己挂在外框外侧（n=），5 号是跳线，挂左边
+    callout(s, 286, 310, 5)
 
     legend(s, 40, 410, [
         (1, "8 MHz 外部晶振（HSE）：PLL ×9 → 72 MHz 系统时钟"),
@@ -241,8 +251,8 @@ def blackpill() -> Svg:
     smd(s, 660, 150, 32, 18, "LDO 3V3")
     led_smd(s, 560, 138, T.GREEN, "PC13")
     led_smd(s, 610, 138, T.RED, "PWR")
-    button(s, 690, 330, 12, "NRST")
-    button(s, 620, 330, 12, "BOOT0")
+    button(s, 690, 300, 12, "NRST")
+    button(s, 620, 300, 12, "BOOT0")
     s.rect(300, 300, 60, 18, fill="#0a0d13", stroke=GOLD, rx=2)
     for j in range(3):
         s.circle(310 + j * 20, 309, 5, fill=GOLD)
@@ -302,15 +312,15 @@ def nucleo_f411re() -> Svg:
     s.text(bx + 89, by + 112, "断开后可用外部 ST-Link", size=8, anchor="middle",
            fill="#9db8ff")
 
-    chip(s, bx + 300, by + 190, 104, 104, "STM32F411", "RET6 · LQFP64", pins=7)
+    chip(s, bx + 300, by + 190, 104, 104, "STM32F411", "RET6 · LQFP64", pins=7, n=1)
     s.text(bx + 300, by + 262, "100 MHz · 512 KB Flash · 128 KB SRAM", size=9,
            anchor="middle", fill="#dbeafe")
 
-    crystal(s, bx + 200, by + 60, 42, 18, "8 MHz X3")
+    crystal(s, bx + 200, by + 60, 42, 18, "8 MHz X3", n=3)
     crystal(s, bx + 210, by + 330, 42, 18, "32.768 kHz")
     button(s, bx + 60, by + 210, 12, "B2 RESET")
-    button(s, bx + 60, by + 262, 12, "B1 USER")
-    led_smd(s, bx + 300, by + 60, T.GREEN, "LD2 PA5")
+    button(s, bx + 60, by + 262, 12, "B1 USER", n=4)
+    led_smd(s, bx + 300, by + 60, T.GREEN, "LD2 PA5", n=5)
     led_smd(s, bx + 250, by + 60, T.RED, "LD1 PWR")
     led_smd(s, bx + 350, by + 60, T.AMBER, "LD3 COM")
     s.rect(bx + 330, by + 300, 90, 46, fill="#0a1f5e", stroke="#7aa2ff", rx=4)
@@ -326,12 +336,9 @@ def nucleo_f411re() -> Svg:
     s.text(bx + bw - 21, by + 146, "CN10（右 38 pin）", size=8.5,
            anchor="end", fill="#dbeafe")
 
-    callout(s, bx + 300, by + 190, 1)
-    callout(s, bx + 89, by + 40, 2)
-    callout(s, bx + 200, by + 60, 3)
-    callout(s, bx + 60, by + 262, 4)
-    callout(s, bx + 310, by + 60, 5)
-    callout(s, bx + 375, by + 322, 6)
+    # 2 号标 ST-Link 模块、6 号标 Arduino 接口：两者不是元件函数，直接给圆心
+    callout(s, bx + 170, by + 22, 2)
+    callout(s, bx + 425, by + 352, 6)
 
     px = 540
     s.rect(px, 96, 320, 232, fill=T.PANEL, stroke=T.STROKE, rx=8)
@@ -385,16 +392,16 @@ def f4_discovery() -> Svg:
     s.text(bx + 72, by + 158, "CN2 SWD 排针", size=8, anchor="middle",
            fill="#9db8ff")
 
-    chip(s, bx + 260, by + 150, 104, 104, "STM32F407", "VGT6 · LQFP100", pins=7)
-    s.text(bx + 260, by + 222, "168 MHz · 1 MB Flash · 192 KB SRAM", size=9,
-           anchor="middle", fill="#dbeafe")
+    chip(s, bx + 260, by + 150, 104, 104, "STM32F407", "VGT6 · LQFP100", pins=7,
+         n=1)
+    # 主频/存储在下方 specs 卡片里已有，图内不再复述一行
 
-    crystal(s, bx + 200, by + 60, 40, 18, "8 MHz")
+    crystal(s, bx + 200, by + 60, 40, 18, "8 MHz", n=8)
     crystal(s, bx + 330, by + 60, 40, 18, "32.768 kHz")
     for i, (name, col) in enumerate((("LD3", T.GREEN), ("LD4", T.ORANGE),
                                      ("LD5", T.RED), ("LD6", T.BLUE))):
-        led_smd(s, bx + 150 + i * 46, by + 268, col, name)
-    s.text(bx + 240, by + 292, "4 颗用户 LED：PD12~PD15", size=8, fill="#dbeafe")
+        led_smd(s, bx + 150 + i * 46, by + 300, col, name)
+    s.text(bx + 240, by + 276, "4 颗用户 LED：PD12~PD15", size=8, fill="#dbeafe")
     button(s, bx + 150, by + 244, 11, "B1 PA0")
     button(s, bx + 60, by + 300, 11, "RESET")
 
@@ -409,21 +416,19 @@ def f4_discovery() -> Svg:
     s.rect(bx + 340, by + 296, 120, 24, fill="#08214a", stroke="#7aa2ff", rx=4)
     s.text(bx + 400, by + 313, "MP45DT02 MEMS 麦克风", size=8, anchor="middle",
            fill="#9db8ff")
-    usb(s, bx + 462, by + 110, 44, 40, "micro")
-    s.text(bx + 500, by + 108, "USB OTG FS", size=8.5, anchor="middle",
+    usb(s, bx + 462, by + 110, 44, 40, "micro", n=3, label_dx=-14)
+    s.text(bx + 460, by + 166, "USB OTG FS", size=8.5, anchor="middle",
            fill="#dbeafe")
     for i in range(24):
         s.rect(bx + 8, by + 200 + i * 5, 8, 4, fill=GOLD, rx=2)
         s.rect(bx + bw - 16, by + 200 + i * 5, 8, 4, fill=GOLD, rx=2)
 
-    callout(s, bx + 260, by + 150, 1)
-    callout(s, bx + 72, by + 68, 2)
-    callout(s, bx + 500, by + 120, 3)
-    callout(s, bx + 248, by + 249, 4)
-    callout(s, bx + 400, by + 248, 5)
-    callout(s, bx + 400, by + 308, 6)
-    callout(s, bx + 220, by + 268, 7)
-    callout(s, bx + 200, by + 60, 8)
+    # 元件类徽标已由 n= 挂在外框外侧；剩余四个是纯色块，给块内左上角
+    callout(s, bx + 44, by + 32, 2)
+    callout(s, bx + 188, by + 224, 4)
+    callout(s, bx + 328, by + 220, 5)
+    callout(s, bx + 328, by + 284, 6)
+    callout(s, bx + 136, by + 304, 7)
 
     legend(s, 592, 130, [
         (1, "主控 STM32F407VGT6：168 MHz，带 FPU/DSP"),
@@ -463,9 +468,8 @@ def f103zet6_dev() -> Svg:
     s.text(bx + bw / 2, by + 24, "STM32F103ZET6 开发板", size=13,
            anchor="middle", fill="#bcd8ff", weight="700")
 
+    # 主频/存储在下方 specs 卡片里已有，图内不再复述一行
     chip(s, bx + 240, by + 190, 110, 110, "STM32F103", "ZET6 · LQFP144", pins=8)
-    s.text(bx + 240, by + 266, "72 MHz · 512 KB Flash · 64 KB SRAM",
-           size=8.5, anchor="middle", fill="#dbeafe")
 
     blocks = [
         ("LCD 接口 (FSMC)", bx + 380, by + 60, 150, 40, T.CYAN),
@@ -491,7 +495,7 @@ def f103zet6_dev() -> Svg:
     led_smd(s, bx + 80, by + 132, T.BLUE, "DS1")
     for i, name in enumerate(("KEY0", "KEY1", "WK_UP")):
         button(s, bx + 40 + i * 46, by + 190, 10, name)
-    button(s, bx + 150, by + 200, 10, "RESET")
+    button(s, bx + 40, by + 250, 10, "RESET")
     s.rect(bx + 380, by + 320, 150, 40, fill="#08224a", stroke=T.AMBER, rx=4)
     s.text(bx + 455, by + 344, "JTAG/SWD 20 pin", size=9, anchor="middle",
            fill="#cfe0ff")
@@ -552,7 +556,7 @@ def pinout_bluepill() -> Svg:
             "自绘矢量结构图（非实拍照片）：48 脚编号、名称与常用复用功能")
     s.header(tag="引脚图", tag_color=T.AMBER)
 
-    cx, cy, cs = 400, 300, 200
+    cx, cy, cs = 330, 295, 300
     s.rect(cx - cs / 2, cy - cs / 2, cs, cs, fill="#1b1f28", stroke="#39424f",
            rx=4)
     s.circle(cx - cs / 2 + 14, cy - cs / 2 + 14, 5, fill="#5b6472")
@@ -598,8 +602,9 @@ def pinout_bluepill() -> Svg:
         s.line(x, cy + cs / 2, x, cy + cs / 2 + 16, stroke=GOLD, sw=2)
         s.text(x, cy + cs / 2 + 28, str(i + 13), size=8, anchor="middle",
                fill=T.DIM, mono=True)
-        s.text(x, cy + cs / 2 + 44, nm, size=8.5, anchor="middle",
-               fill=style(nm), mono=True)
+        # 底边脚名竖排：12 个脚只有 25 px 间距，横排的 "PB2/BOOT1" 会压住邻居
+        s.rot_text(x + 3, cy + cs / 2 + 36, nm, angle=90, size=8.5,
+                   fill=style(nm))
     for i, nm in enumerate(right):
         y = cy + cs / 2 - (i + 0.5) * pitch
         s.line(cx + cs / 2, y, cx + cs / 2 + 16, y, stroke=GOLD, sw=2)
@@ -611,8 +616,8 @@ def pinout_bluepill() -> Svg:
         s.line(x, cy - cs / 2 - 16, x, cy - cs / 2, stroke=GOLD, sw=2)
         s.text(x, cy - cs / 2 - 22, str(i + 37), size=8, anchor="middle",
                fill=T.DIM, mono=True)
-        s.text(x, cy - cs / 2 - 34, nm, size=8.5, anchor="middle",
-               fill=style(nm), mono=True)
+        s.rot_text(x - 3, cy - cs / 2 - 30, nm, angle=-90, size=8.5,
+                   fill=style(nm))
 
     px = 570
     s.rect(px, 130, 290, 320, fill=T.PANEL, stroke=T.STROKE, rx=8)
@@ -639,17 +644,6 @@ def pinout_bluepill() -> Svg:
         s.text(px + 14, yy, k, size=9.5, mono=True, fill=c)
         s.text(px + 132, yy, v, size=9, fill=T.MUTED)
 
-    s.rect(40, 470, 820, 100, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 496, "看引脚图的 5 个要点", size=12.5, fill=T.TEXT, weight="700")
-    notes = [
-        "① 电源：VDD_1/2/3 各配 100 nF 去耦电容，VDDA 加 10 nF + 1 µF，VBAT 接 3.3 V 或纽扣电池",
-        "② NRST 内部已有上拉，外部只需 100 nF 到地，不必再并 10 kΩ",
-        "③ BOOT0 必须有 10 kΩ 下拉，否则上电可能进入系统存储器（串口下载）模式",
-        "④ 5 V 容忍：数据手册标 FT 的引脚可接 5 V 数字信号；VDDA / 模拟输入不能超 3.3 V",
-        "⑤ 未使用的 IO 建议配成模拟输入或输出低，可显著降低功耗（见 docs/16 章）",
-    ]
-    for i, n in enumerate(notes):
-        s.text(58, 518 + i * 18, n, size=10.5, fill=T.MUTED)
     s.footer("引脚编号以 ST 官方数据手册 DS5319（F103x8/B）第 4 章 Pinouts 为准")
     return s
 
@@ -716,7 +710,8 @@ def peripheral_wiring() -> Svg:
         s.rect(x, 452, 258, 76, fill=T.BG2, stroke=T.STROKE, rx=8)
         s.rect(x, 452, 3, 76, fill=color, rx=2)
         s.text(x + 14, 476, t, size=12, fill=T.TEXT, weight="700")
-        s.text(x + 14, 494, note[:30], size=9.5, fill=T.MUTED)
+        line, ls = fit_text(note, 9.5, 258 - 30, min_size=9)
+        s.text(x + 14, 494, line, size=ls, fill=T.MUTED)
         if len(note) > 30:
             s.text(x + 14, 510, note[30:], size=9.5, fill=T.MUTED)
     s.footer("完整接线表见各章「硬件与接线」小节与 examples/*/README.md")

@@ -368,7 +368,7 @@ def ch10_dma_phases() -> Svg:
         x = 40 + i * 230
         c.rect(x, 120, 210, 140, fill=T.PANEL, stroke=col, rx=8)
         c.text(x + 105, 160, t, size=16, anchor="middle", fill=col, weight="700")
-        c.text(x + 20, 200, d, size=13, fill=T.TEXT)
+        c.text(x + 20, 200, d, size=11.5, fill=T.TEXT)
         if i < 3:
             c.arrow(x + 214, 190, x + 226, 190, color=T.STROKE, sw=2)
     c.rect(40, 300, 880, 160, fill=T.BG2, stroke=T.CYAN, rx=8)

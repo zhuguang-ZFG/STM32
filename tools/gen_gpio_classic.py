@@ -69,7 +69,8 @@ def open_drain() -> Svg:
 
         bus_y = 196
         s.line(px + 24, bus_y, px + 420, bus_y, stroke=T.CYAN, sw=2)
-        s.text(px + 28, bus_y - 12, "总线（如 SDA）", size=11, fill=T.CYAN)
+        # 标签放在总线下方：上方 86..122 是 Rp 的方框，会和标签叠在一起
+        s.text(px + 28, bus_y + 22, "总线（如 SDA）", size=11, fill=T.CYAN)
 
         # 总线上挂的其他开漏设备
         s.line(px + 360, bus_y, px + 360, bus_y + 8, stroke=T.STROKE, sw=1.5)
@@ -108,7 +109,7 @@ def open_drain() -> Svg:
                    fill=T.MUTED)
             s.text(px + 28, 386, "低电平是主动拉出来的", size=11, fill=T.MUTED)
         else:
-            s.text(mx + 36, 254, "截止", size=12, fill=T.AMBER, weight="700")
+            s.text(mx + 36, 276, "截止", size=12, fill=T.AMBER, weight="700")
             s.text(mx + 36, 300, "输出级 = 高阻（Hi-Z）", size=13,
                    fill=T.AMBER, weight="700")
             s.text(mx + 36, 322, "引脚对地近似断开", size=10.5, fill=T.MUTED)
@@ -498,7 +499,7 @@ def debounce() -> Svg:
     for t0, t1, lab in ((6, 14, "抖动：触点弹跳"), (60, 68, "释放抖动")):
         s.rect(tx(t0), 118, tx(t1) - tx(t0), 160, fill=T.RED, opacity=0.07,
                stroke=T.RED, dash="4 3", sw=1)
-        s.text(tx((t0 + t1) / 2), 108, lab, size=11, anchor="middle",
+        s.text(tx((t0 + t1) / 2), 134, lab, size=11, anchor="middle",
                fill=T.RED, weight="700")
         s.text(tx((t0 + t1) / 2), 306, "≈8 ms", size=10, anchor="middle",
                fill=T.MUTED, mono=True)

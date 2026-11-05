@@ -85,12 +85,12 @@
 <rect x="682" y="258" width="196" height="84" fill="#8e2f5b" opacity="0.12" rx="8" class="b7"/>
 <rect x="40" y="387" width="3" height="18" fill="#075e84" opacity="1"/>
 <text x="52" y="400" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">向量表（前 8 个字节决定 CPU 从哪里开始）</text>
-<rect x="40" y="406" width="470" height="104" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="436" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0000  MSP 初值     ; Flash 启动时别名到 0x0800_0000</text>
-<text x="56" y="455" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0004  Reset_Handler</text>
-<text x="56" y="474" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0008  NMI_Handler</text>
-<text x="56" y="493" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_000C  HardFault_Handler</text>
-<text x="56" y="512" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">; 外设 IRQn 的入口 = VTOR + 4×(IRQn+16)</text>
+<rect x="40" y="406" width="470" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="434" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0000  MSP 初值     ; Flash 启动时别名到 0x0800_0000</text>
+<text x="56" y="453" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0004  Reset_Handler</text>
+<text x="56" y="472" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_0008  NMI_Handler</text>
+<text x="56" y="491" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x0000_000C  HardFault_Handler</text>
+<text x="56" y="510" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">; 外设 IRQn 的入口 = VTOR + 4×(IRQn+16)</text>
 <rect x="530" y="406" width="330" height="104" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="548" y="428" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">BOOT0 / BOOT1 决定启动映射</text>
 <text x="548" y="452" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BOOT0=0</text>
