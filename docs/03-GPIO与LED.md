@@ -217,7 +217,7 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
 
 ## 硬件与接线
 
-> **真证轨现状：** 下图为两张 Blue Pill 板卡第三方实拍（均为 CC BY-SA 4.0：Avandalen `Blue_Pill.jpg`；Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`，2018-09-08），只用于识别板卡整体外观与引脚排布（板载 PC13 LED 位置据板卡原理图/丝印，图中过小难以分辨），不是本书实验的测量证据。**PC13 LED 特写与万用表/逻辑分析仪截图仍待补**——禁止 AI 生成图冒充。上面的 Handraw 与 stack 图只属于知识轨（标注「原理示意/非实拍」），不得登记为真证。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md，照片来源与许可登记在 assets/photos/README.md。
+> **真证轨现状：** 下图为三张 Blue Pill 板卡第三方实拍（两张 CC BY-SA 4.0：Avandalen `Blue_Pill.jpg`；Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`，2018-09-08；一张 MIT：Paul Gallagher / tardate `BluePill_usb_powered.jpg`，USB 供电、一颗板载 LED 点亮），只用于识别板卡整体外观与引脚排布（板载 PC13 LED 位置据板卡原理图/丝印，图中过小难以分辨；MIT 那张点亮的灯无法判定是否为 PC13），不是本书实验的测量证据。**PC13 LED 特写与万用表/逻辑分析仪截图仍待补**——禁止 AI 生成图冒充。上面的 Handraw 与 stack 图只属于知识轨（标注「原理示意/非实拍」），不得登记为真证。知识轨文件与 SHA-256 登记在 stm32-book/audits/ch03-converge-gate.md，照片来源与许可登记在 assets/photos/README.md。
 
 <figure class="photo-spread">
   <div class="photo-pair">
@@ -225,6 +225,11 @@ GPIO 配置要同时回答三个问题：信号由谁驱动、空闲时由谁定
     <img src="../assets/photos/bluepill-stm32f103c8t6-popolon.jpg" alt="Blue Pill / Core Learning Board 俯视实拍（STM32F103C8T6），Popolon 2018-09-08">
   </div>
   <figcaption>▲ 硬件参照照（两张 CC BY-SA 4.0 实拍）：左 Avandalen / Wikimedia Commons <code>Blue_Pill.jpg</code>；右 Popolon / Wikimedia Commons <code>Core Learning Board module Arduino STM32 F103 C8T6.jpg</code>（2018-09-08）。主控均为 STM32F103C8T6——与本章实验板卡同型号。板载 PC13 LED 位于 USB 座一侧（据原理图/丝印，图中过小难以分辨）。仅用于板卡外观与引脚排布识别；PC13 LED 特写与表计截图仍缺；不含接线与测量画面，不是实验测量证据。来源与处理见 <code>assets/photos/README.md</code>。</figcaption>
+</figure>
+
+<figure class="photo-spread">
+  <img src="../assets/photos/bluepill-stm32f103c8t6-tardate-usb.jpg" alt="Blue Pill 开发板（STM32F103C8T6）USB 供电实拍，一颗板载 LED 点亮（Paul Gallagher）">
+  <figcaption>▲ 实拍：Paul Gallagher / <code>tardate/LittleArduinoProjects</code>（MIT，Copyright (c) 2014 Paul Gallagher）。板卡为 STM32F103C8T6 Blue Pill，USB 供电，一颗板载 LED 点亮。图中丝印不可辨，无法确认这颗灯是 PC13 用户灯还是电源灯，所以它不是 PC13 LED 特写；也不含表计画面，不是实验测量证据。来源与处理见 <code>assets/photos/README.md</code>。</figcaption>
 </figure>
 
 | 开发板 | 外设 | 引脚 | 备注 |

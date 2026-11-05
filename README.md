@@ -251,7 +251,7 @@ STM32/
 ## 素材是怎么来的（可复现）
 
 板卡图、引脚图和下面命令里的教学 GIF 用 Python 标准库就能重新生成。`assets/gif/*-zh.gif` 由 `tools/svg2gif.py` 从 SVG 采样，需要本机 Chrome 和 Pillow。
-`assets/photos/` 的两张 CC0 实拍不由脚本生成，来源页、处理方式与 SHA-256 记录在该目录的 README：
+`assets/photos/` 的五张第三方实拍不由脚本生成，来源页、处理方式与 SHA-256 记录在该目录的 README：
 
 ```bash
 # 生成 SVG 动画（CSS/SMIL 动画，GitHub 页面直接播放）
@@ -293,8 +293,8 @@ sole development line = **`main`**。合流规格见 [`stm32-book/BOOK_CLASSIC_C
 ## 许可与声明
 
 - **代码**（`examples/`、`tools/`）采用 [MIT License](LICENSE)。
-- **文档与仓库原创图片**采用 **CC BY 4.0**；`assets/photos/` 中两张第三方实拍保持其 **CC0 1.0** 许可。转载/二次创作请按对应资产的来源记录署名。
-- SVG / GIF / 引脚图均为作者自绘或程序生成；`assets/photos/` 的两张 Nucleo-64 实拍来自 Wikimedia Commons，采用 CC0 1.0，作者、原图页与处理记录见 [照片清单](assets/photos/README.md)。STM32、Nucleo、Discovery 等是 STMicroelectronics 的商标，本仓库仅用于学习交流，与 ST 官方无隶属关系。
+- **文档与仓库原创图片**采用 **CC BY 4.0**；`assets/photos/` 中五张第三方实拍保持原许可（Nucleo-64 ×2 为 **CC0 1.0**，Blue Pill ×2 为 **CC BY-SA 4.0**，Blue Pill ×1 为 **MIT**）。转载/二次创作请按对应资产的来源记录署名。
+- SVG / GIF / 引脚图均为作者自绘或程序生成；`assets/photos/` 的两张 Nucleo-64 与两张 Blue Pill 实拍来自 Wikimedia Commons，一张 Blue Pill 实拍来自 GitHub `tardate/LittleArduinoProjects`，作者、原图页与处理记录见 [照片清单](assets/photos/README.md)。STM32、Nucleo、Discovery 等是 STMicroelectronics 的商标，本仓库仅用于学习交流，与 ST 官方无隶属关系。
 
 ## Roadmap
 

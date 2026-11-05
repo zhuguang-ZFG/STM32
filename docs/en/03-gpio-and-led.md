@@ -216,7 +216,7 @@ The worked example for this orderable is in Principle and boundary, and it is an
 
 ## Hardware and wiring
 
-> **Evidence-track status:** The figures below are two third-party Blue Pill photographs (both CC BY-SA 4.0: Avandalen `Blue_Pill.jpg`; Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`, 2018-09-08). They are only for recognizing the board's overall look and pin layout (the onboard PC13 LED sits on the USB-connector side per the board schematic/silkscreen; too small to resolve in these photos) — not a measurement from this book's lab. **A PC13 LED close-up and the meter or logic-analyzer capture from this experiment are still to be supplied** — do not use an AI-generated image as evidence. The Handraw and stack figures above are knowledge-track only (labeled principle diagram / not a photograph) and must not be registered as evidence-track. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
+> **Evidence-track status:** The figures below are three third-party Blue Pill photographs (two CC BY-SA 4.0: Avandalen `Blue_Pill.jpg`; Popolon `Core Learning Board module Arduino STM32 F103 C8T6.jpg`, 2018-09-08; one MIT: Paul Gallagher / tardate `BluePill_usb_powered.jpg`, USB-powered with one onboard LED lit). They are only for recognizing the board's overall look and pin layout (the onboard PC13 LED sits on the USB-connector side per the board schematic/silkscreen; too small to resolve in these photos, and the lit LED in the MIT photo cannot be identified as PC13) — not a measurement from this book's lab. **A PC13 LED close-up and the meter or logic-analyzer capture from this experiment are still to be supplied** — do not use an AI-generated image as evidence. The Handraw and stack figures above are knowledge-track only (labeled principle diagram / not a photograph) and must not be registered as evidence-track. Knowledge-track files and SHA-256 values are recorded in stm32-book/audits/ch03-converge-gate.md; photo source and license are registered in assets/photos/README.md.
 
 <figure class="photo-spread">
   <div class="photo-pair">
@@ -224,6 +224,11 @@ The worked example for this orderable is in Principle and boundary, and it is an
     <img src="../../assets/photos/bluepill-stm32f103c8t6-popolon.jpg" alt="Top-down photograph of a Blue Pill / Core Learning Board (STM32F103C8T6), Popolon 2018-09-08">
   </div>
   <figcaption>▲ Hardware reference photos (two CC BY-SA 4.0 photographs): left Avandalen / Wikimedia Commons <code>Blue_Pill.jpg</code>; right Popolon / Wikimedia Commons <code>Core Learning Board module Arduino STM32 F103 C8T6.jpg</code> (2018-09-08). Both carry the STM32F103C8T6 — the same part used in this chapter's lab. The onboard PC13 LED sits on the USB-connector side (per schematic/silkscreen; too small to resolve here). Use them only to recognize the board's overall look and pin layout; a PC13 LED close-up and meter capture are still missing; these photos contain no wiring or measurement scene and are not experimental evidence. Source and processing are in <code>assets/photos/README.md</code>.</figcaption>
+</figure>
+
+<figure class="photo-spread">
+  <img src="../../assets/photos/bluepill-stm32f103c8t6-tardate-usb.jpg" alt="Photograph of a USB-powered Blue Pill board (STM32F103C8T6) with one onboard LED lit (Paul Gallagher)">
+  <figcaption>▲ Photo: Paul Gallagher / <code>tardate/LittleArduinoProjects</code> (MIT, Copyright (c) 2014 Paul Gallagher). The board is an STM32F103C8T6 Blue Pill on USB power with one onboard LED lit. The silkscreen is not readable, so it cannot be confirmed whether this is the PC13 user LED or the power LED; it is not a PC13 LED close-up, and it contains no meter scene, so it is not experimental evidence. Source and processing are in <code>assets/photos/README.md</code>.</figcaption>
 </figure>
 
 | Board | Peripheral | Pin | Notes |

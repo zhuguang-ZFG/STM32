@@ -406,7 +406,7 @@ def app_e_license():
     f = Fig("app-e-license", "许可边界 / license boundary")
     rows = [
         ("docs/ · 原创图文", "CC BY 4.0", GREEN_D),
-        ("assets/photos/ 两张 Nucleo", "CC0 1.0", BLUE_D),
+        ("assets/photos/ 五张第三方实拍", "CC0 ×2 · CC BY-SA 4.0 ×2 · MIT ×1", BLUE_D),
         ("examples/ · tools/ · 代码片段", "MIT", AMBER_STROKE),
         ("ST / Arm / 第三方手册与源码", "不转载；只链文档号与必要事实", RED),
     ]

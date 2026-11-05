@@ -36,7 +36,7 @@ Tutorials are easy to find and still fail in the same three ways:
 | **You do not know the board or the pins.** | **Structure drawings**, a full pinout, and a wiring overview. All drawn, not photographed. |
 | **Copied examples do not build.** | Each example is HAL you can compile, plus the CubeMX settings and the usual traps. |
 
-> **Honest note:** mechanism figures are original vector drawings or generated GIFs, not vendor product photographs. Two Nucleo-64 photos are CC0 assets with provenance recorded in [`assets/photos/README.md`](../../assets/photos/README.md). For official schematics, use the links in [chapter 21](21-board-maps.md).
+> **Honest note:** mechanism figures are original vector drawings or generated GIFs, not vendor product photographs. Five third-party photos (two CC0 Nucleo-64, two CC BY-SA 4.0 Blue Pill, one MIT Blue Pill) have provenance recorded in [`assets/photos/README.md`](../../assets/photos/README.md). For official schematics, use the links in [chapter 21](21-board-maps.md).
 
 ## Start here
 

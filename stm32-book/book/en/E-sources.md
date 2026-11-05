@@ -32,10 +32,10 @@ The way the book is organized borrows a method used for another book in the same
 
 <p align="center">
   <img src="../../../assets/illustrations/handraw/app-e-license.png" width="760" alt="Handraw: license boundary (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CC BY / CC0 / MIT; third-party manuals are linked, not redistributed. Not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CC BY / CC0 / CC BY-SA / MIT; third-party manuals are linked, not redistributed. Not a photo.</sub>
 </p>
 - `docs/`, original drawings outside `assets/photos/`, and the original prose and layout of this book: **CC BY 4.0**. A republication or adaptation names the author, links the source, and says what changed.
-- Two Nucleo-64 photographs in `assets/photos/` stay **CC0 1.0**. The author, the original page, the processed size, and the SHA-256 are in that directory's README.
+- The five third-party photographs in `assets/photos/` keep their original licenses: two Nucleo-64 photos are **CC0 1.0**, two Blue Pill photos (Avandalen, Popolon) are **CC BY-SA 4.0**, and one Blue Pill photo (Paul Gallagher / tardate) is **MIT**. The author, the original page, the processed size, and the SHA-256 are in that directory's README.
 - `examples/`, `tools/`, and code fragments: **MIT**. The full terms are the repository `LICENSE`.
 - Material from ST, Arm, FreeRTOS, USB-IF, IETF, OASIS, Wokwi, Renode, and other third-party repositories: this book supplies links, document numbers, a few necessary facts, and its own wording. It does not redistribute their manuals, specifications, or source. Those rights stay with the owners.
 - STM32, STM32Cube, Nucleo, Discovery, Keil, IAR, FreeRTOS, and similar names belong to their owners. This project is not affiliated with those companies.

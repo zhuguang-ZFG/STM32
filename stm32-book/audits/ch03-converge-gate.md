@@ -17,7 +17,7 @@
 | 教学合同七项+先备 | manifest 仅有 question/deliverable/boundary/sources | 中英 `chapter_guides` 补齐 prerequisites/minimum_victory/mechanism/failure_branch/memory_anchor/exit_check；保留三件套供 compass 渲染 |
 | 最小胜利 vs 手册密度 | 视频后直接「原理与适用范围」+ 长表；最小胜利埋在实验/代码 | 视频后插入「最小胜利 / Minimum victory」，手册表仍在核心原理之后 |
 | Handraw 引用 | `ch03-handdraw.svg` 只在短片/分镜，**章正文未引用** | 最小胜利节嵌入 Handraw 图 + SHA-256 |
-| 真证轨 | BluePill 板卡外观实拍已补两张（CC BY-SA 4.0：Avandalen `bluepill-stm32f103c8t6.jpg` + Popolon `bluepill-stm32f103c8t6-popolon.jpg`，哈希见 tools/check_assets.py 与 assets/photos/README.md），仅板卡识别；PC13 LED 特写与表计/示波器截图仍缺；Handraw/stack 为知识轨「原理示意/非实拍」；Nucleo 照片与本章无关 | 硬件节「真证轨现状」+ 知识轨哈希；测量证据缺口保留 |
+| 真证轨 | BluePill 板卡外观实拍已补三张（CC BY-SA 4.0：Avandalen `bluepill-stm32f103c8t6.jpg` + Popolon `bluepill-stm32f103c8t6-popolon.jpg`；MIT：Paul Gallagher / tardate `bluepill-stm32f103c8t6-tardate-usb.jpg`，USB 供电、一颗板载 LED 点亮，丝印不可辨、不判定为 PC13；哈希见 tools/check_assets.py 与 assets/photos/README.md），仅板卡识别；PC13 LED 特写与表计/示波器截图仍缺；Handraw/stack 为知识轨「原理示意/非实拍」；Nucleo 照片与本章无关 | 硬件节「真证轨现状」+ 知识轨哈希；测量证据缺口保留 |
 | 失败分支证据 | 「常见坑与出处」五行已含现象/原因/处理/出处 | 保留；最小胜利失败时指向该表三行；未删可区分证据 |
 | 旁白节拍指纹 | 改前：10 拍同构尾（口诀/实验/合上书） | **已改**：短片 7 拍 + 长片 purpose 交错；已 regen 成片与 media-report |
 | 同构填料 | 「学习目标」五条清单偏目录腔 | 改写成离开检查动作/判断；标题保留以兼容既有 sample 测试 |
@@ -192,7 +192,7 @@
 - PDF **人工**翻页目检：**未做**（zh/en PDF **构建**已 passed，见文末）。
 - `task_verify`：**unverified（absent-tool）**，仓库无入口。
 - 全书 `check_assets`：仍因 ch18–20 960p FAIL（与 ch03 无关）。
-- BluePill 板卡外观照片：已补（CC BY-SA 4.0 第三方实拍，仅板卡识别）；PC13 共阳测量画面（万用表/示波器截图）仍 **待补**。
+- BluePill 板卡外观照片：已补（CC BY-SA 4.0 ×2 + MIT ×1 第三方实拍，仅板卡识别；MIT 那张 LED 点亮但不判定为 PC13）；PC13 共阳测量画面（万用表/示波器截图）仍 **待补**。
 - 注：短片/长片节拍去同构与 ch03 短片 1080p 重生已在上文/文末记录，不再列未跑。
 
 ### Sepia 删除/回退（本轮）
