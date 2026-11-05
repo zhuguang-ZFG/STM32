@@ -73,7 +73,7 @@ description: 全站引证的一手资料总表：芯片手册与内核文档的�
 | D9 | P. Koopman, T. Chakravarty. **Cyclic Redundancy Code (CRC) Polynomial Selection for Embedded Networks.** *Proc. DSN 2004*, pp. 145–154. DOI [10.1109/DSN.2004.1311885](https://doi.org/10.1109/DSN.2004.1311885) | [C8](../c/08-framed-protocol.md) 为什么选 CRC-16/CCITT 而不是随手挑一个多项式、[P10](../esp32/10-flash-nvs-ota.md) NVS 的 CRC32 |
 | D10 | E. W. Dijkstra. **Solution of a Problem in Concurrent Programming Control.** *Commun. ACM* 8(9): 569, 1965. DOI [10.1145/365559.365617](https://doi.org/10.1145/365559.365617) | [F5](../rtos/freertos/05-sem-mutex.md)、[C5](../c/05-func-pointer.md)：互斥这件事的起点，一页纸 |
 | D11 | G. Reeves. **What Really Happened on Mars?** *RISKS Digest* 19.49, 1997-12. | [F5](../rtos/freertos/05-sem-mutex.md)、[E04](../lab/e04-priority-inversion.md)：火星探路者优先级反转事故的一手复盘（JPL 工程师原文） |
-| D12 | J. Ganssle. **Great Watchdog Timers for Embedded Systems.** [ganssle.com](https://www.ganssle.com/watchdogs.htm) | [S17](../stm32/17-watchdog-reset.md)、[P13](../esp32/13-watchdog-health.md)：窗口看门狗为什么比"定时喂狗"可靠 |
+| D12 | J. Ganssle. **Great Watchdog Timers for Embedded Systems.** [ganssle.com（Wayback 存档）](https://web.archive.org/web/20241214122124/https://www.ganssle.com/watchdogs.htm) | [S17](../stm32/17-watchdog-reset.md)、[P13](../esp32/13-watchdog-health.md)：窗口看门狗为什么比"定时喂狗"可靠 |
 | D13 | S. Cheshire, M. Baker. **Consistent Overhead Byte Stuffing.** *IEEE/ACM Trans. Networking* 7(2): 159–172, 1999. DOI [10.1109/90.769765](https://doi.org/10.1109/90.769765) | [C8](../c/08-framed-protocol.md)：0x00 只当帧尾、开销有固定上限——帧协议选 COBS 而不是转义或长度前缀的理由 |
 
 ## E　书 {#books}

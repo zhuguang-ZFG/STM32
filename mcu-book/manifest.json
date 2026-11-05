@@ -595,9 +595,9 @@
     "d12": {
       "title": "Ganssle. Great Watchdog Timers for Embedded Systems",
       "authority": "资深工程师工程随笔（非规范）",
-      "url": "https://www.ganssle.com/watchdogs.htm",
-      "snapshot": "文章当前版",
-      "accessed": "2026-10-23",
+      "url": "https://web.archive.org/web/20241214122124/https://www.ganssle.com/watchdogs.htm",
+      "snapshot": "Wayback Machine 存档（2024-12-14）",
+      "accessed": "2026-11-05",
       "license": "作者站点条款（仅链接与引用）",
       "scope": "S17/P13 窗口看门狗为什么比定时喂狗可靠。"
     },
