@@ -284,6 +284,8 @@ Overlay 锚点未达：无（ch08 已在 gap-close 补齐）。
 
 ## 9. 开放缺口清单
 
+> **2026-11-05 现状注记**：本清单基于 B6 基线 `8794d00`。其后 Batch A–G 已完成视频重制（见 `video-regen-plan.md`）、知识轨全书覆盖（见 `handraw-knowledge-track-29.md`）与锚点锁定值 re-baseline；本节所列缺口以 Overlay 现状为准逐条复核，未再出现的视为已闭合。
+
 1. ~~ch08 Overlay 锚点缺口 1~~ → **已关闭**（见 §9.1 / b7-gap-close）。
 2. ~~ch24、ch25 缺 GitHub OSS source 卡~~ → **已关闭**（`project-examples` / `stlink-tools`）。
 3. ST revision 未全书钉死。

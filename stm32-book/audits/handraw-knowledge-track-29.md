@@ -84,7 +84,7 @@
 
 ## 7. 遗留（不冒充完成）
 
-- 29 短片 + 29 长片的可复现重制（`audits/video-regen-plan.md`）仍开放；
-- `task_verify` 分列报告仍开放（无该工具，诚实挂账）；
-- ch03 PC13 LED 特写与表计实拍、L4 整板电流实测等真证轨缺口仍按原文挂账；
+- ~~29 短片 + 29 长片的可复现重制~~ **已完成**（2026-11-05 Batch A–G：见 `audits/video-regen-plan.md` Status 与 `audits/task-verify-equivalent-2026-11-05.md`）；
+- ~~`task_verify` 分列报告~~ **已完成**（等价分列落盘，工具本体缺失如实保留为 unverified）；
+- ch03 PC13 LED 特写与表计实拍、L4 整板电流实测等真证轨缺口仍按原文挂账（需真板与仪器）；
 - 本轮 3 处外观小疵（§3）如需返工，改 `fig_chNN.py` 对应坐标后重渲染即可。
