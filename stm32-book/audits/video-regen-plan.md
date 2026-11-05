@@ -81,6 +81,11 @@ python tools/gen_long_lesson.py --report 00
 5. Full 29×2 regen is multi-hour; stay batched; PDF rebuild already done this session (zh+en).
 
 ## Status
+## Status
+
+- [x] 全书反同构指纹普查（**2026-11-05**，收尾轮）：29 章相邻章最后两拍 0 重复；「合上书，三问」模板清零；口诀保留于 00/02/21/23，互不相邻。
+- [x] 收尾门（**2026-11-05**）：pytest 182 passed；check_assets 1962/1962（hd_chapters=29）；slop_lint 干净；audit_book zh/en 锚点各 439、低于目标 0；PDF zh/en 重建（含 Batch A–G 全部旁白稿源）。
+
 
 - [x] Inventory
 - [x] This plan file
