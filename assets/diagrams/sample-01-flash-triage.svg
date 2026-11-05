@@ -10,29 +10,29 @@
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">01</text>
 <text x="30" y="82" font-size="14.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OpenOCD reports `target state: halted`, yet the flash step fails</text>
-<rect x="30" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="30" y="96" width="164" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="42" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">OpenOCD</text>
 <text x="42" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">cfg 已加载</text>
-<line x1="200" y1="124" x2="218" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="224.00,124.00 218.00,127.00 218.00,121.00" fill="#5e6872" opacity="1"/>
-<rect x="228" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="240" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link</text>
-<text x="240" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB 枚举通过</text>
-<line x1="398" y1="124" x2="416" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="422.00,124.00 416.00,127.00 416.00,121.00" fill="#5e6872" opacity="1"/>
-<rect x="426" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="438" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PA13 / PA14</text>
-<text x="438" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 34 / 37 脚</text>
-<line x1="596" y1="124" x2="614" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="620.00,124.00 614.00,127.00 614.00,121.00" fill="#5e6872" opacity="1"/>
-<rect x="624" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="636" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cortex-M3</text>
-<text x="636" y="140" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">halted ✓</text>
-<line x1="794" y1="124" x2="812" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<polygon points="818.00,124.00 812.00,127.00 812.00,121.00" fill="#5e6872" opacity="1"/>
-<rect x="822" y="96" width="168" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="2"/>
-<text x="834" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 写入</text>
-<text x="834" y="140" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">✗ 失败</text>
+<line x1="196" y1="124" x2="204" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="210.00,124.00 204.00,127.00 204.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="214" y="96" width="164" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="226" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link</text>
+<text x="226" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB 枚举通过</text>
+<line x1="380" y1="124" x2="388" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="394.00,124.00 388.00,127.00 388.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="398" y="96" width="164" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="410" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PA13 / PA14</text>
+<text x="410" y="140" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 34 / 37 脚</text>
+<line x1="564" y1="124" x2="572" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="578.00,124.00 572.00,127.00 572.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="582" y="96" width="164" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="594" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cortex-M3</text>
+<text x="594" y="140" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">halted ✓</text>
+<line x1="748" y1="124" x2="756" y2="124" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="762.00,124.00 756.00,127.00 756.00,121.00" fill="#5e6872" opacity="1"/>
+<rect x="766" y="96" width="164" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="2"/>
+<text x="778" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 写入</text>
+<text x="778" y="140" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">✗ 失败</text>
 <text x="30" y="174" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">attach 通了，工具、探针、接线、cfg 都已证明可用 —— 剩下的问题都在写入这一侧。先看 OpenOCD 打印的那一行，再决定查哪个岔口。</text>
 <rect x="30" y="190" width="290" height="372" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
 <rect x="30" y="190" width="290" height="5" fill="#8f2d2d" opacity="1" rx="2"/>

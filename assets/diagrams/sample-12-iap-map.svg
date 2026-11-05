@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="980" viewBox="0 0 960 980" role="img" aria-label="中容量 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="800" viewBox="0 0 960 800" role="img" aria-label="中容量 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字">
 
 
-<rect x="0" y="0" width="960" height="980" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="800" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
@@ -240,7 +240,7 @@
 <rect x="24" y="682" width="912" height="60" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
 <text x="40" y="706" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这张图画用户闪存本身；系统存储器与两条启动路径在上一张对比图里。</text>
 <text x="40" y="726" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">串口刷写在 PA9/PA10（第 30/31 脚）；选项字节 0xA5 属于第 01 章的读保护。</text>
-<line x1="24" y1="944" x2="936" y2="944" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="964" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。页和钥匙来自 RM0008 Rev 21 第 3 章；两字来自 PM0056。</text>
-<text x="936" y="964" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<line x1="24" y1="764" x2="936" y2="764" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="784" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。页和钥匙来自 RM0008 Rev 21 第 3 章；两字来自 PM0056。</text>
+<text x="936" y="784" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

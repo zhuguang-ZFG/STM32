@@ -429,7 +429,7 @@ def iwdg_1s() -> Svg:
 def iap_map() -> Svg:
     canvas = Svg(
         960,
-        980,
+        800,
         "中容量 1 KB 页；APP 从 0x08004800 起，长度 0xB800；跳转要装入第 0 字和第 1 字",
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 chapter 3",
     )

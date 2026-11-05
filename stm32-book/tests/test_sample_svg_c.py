@@ -194,7 +194,7 @@ diagrams/sample-11-rtc-triage.svg 960x880 24897 bec2ebf69948092bce9a8237f31e387e
 diagrams/sample-11-wdg-compare.svg 960x880 13910 01eb45735fbb10af2251a9c62a7d7139244a1a6f137f80f87d7706309ad86231
 diagrams/sample-12-boot-compare.svg 960x880 17488 ed2057c17e5d2fb70e4bcdc929f9c478e2605bf28aa8a990f43fbc4a6e96c0a0
 diagrams/sample-12-flash-triage.svg 960x880 30987 2bb3a1e89b09429b86a59c3bfa3ecaaba2deebb3be5299644a4efef8d837e414
-diagrams/sample-12-iap-map.svg 960x980 32694 8d392251dec0cbf09de290279ff5c5cdcc9870eea17d2a5eaf4ac442c53a203d
+diagrams/sample-12-iap-map.svg 960x800 32694 8d392251dec0cbf09de290279ff5c5cdcc9870eea17d2a5eaf4ac442c53a203d
 diagrams/sample-12-key-order.svg 960x880 8534 6db99921b2dfabde6ff1acf6cd0e4bac0ff05123d0558ce2004a63993c242451
 diagrams/sample-12-page-erase.svg 960x880 7721 7df17f82535b7d8f4a75f1aa8558701402f7f88471131a547b8f95c3e37654bc
 diagrams/sample-13-bit-quanta.svg 960x880 7797 4c760c2142e525ee23bd4905018fe65bafc57ef686eb0a226eedd3e046e8b664

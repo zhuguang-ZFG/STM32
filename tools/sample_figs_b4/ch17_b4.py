@@ -114,46 +114,6 @@ def obs_compare() -> Svg:
 
 
 # ---------------------------------------------------------------- figure 2
-# Three forks, same internal shape: symptom -> check -> branch.
-BANDS = [
-    (
-        T.RED,
-        "岔口一  觉得慢：先测周期，别先猜循环",
-        "DEMCR bit 24 · DWT_CYCCNT",
-        "觉得慢就去展开汇编，改到满意为止，却没人说得出到底快了多少",
-        ["先把 DEMCR 0xE000EDFC 的 bit 24 置 1，再清 DWT_CYCCNT 0xE0001004",
-         "72 MHz 下 72 个计数是 1 µs；被测代码夹在两次读数之间，跑多次取个数"],
-        ["读数是 0：bit 24 没置，两次读数之差就是 0 —— 先修测量，别改代码",
-         "dt 有数：按收益排序改，DMA 卸载 > 优化等级 > 减少浮点/除法 > Cache/预取 > 汇编"],
-        "顺序：先量出来，再只改一处，改完立刻复现刚才的现象",
-        T.MUTED,
-    ),
-    (
-        T.AMBER,
-        "岔口二  优化后时序变了：换条件就没有对照",
-        "-Og / -O2 / -Os",
-        "优化等级一升，断言还在，时序却变了：以为按顺序发生的读写被重排",
-        ["同一测试向量在 -Og、-O2、-Os 下各记周期、代码大小和输出一致性",
-         "对照必须同条件：先有 bit 24 和 CYCCNT 的基线，再改优化等级"],
-        ["三项都一致：接受这次优化，把周期数写进记录",
-         "有一项不一致：回 -Og 定位，与硬件时序有关的变量标 volatile，再跑原测试"],
-        "改优化等级本身不是问题，用不同条件的两组数比较才是",
-        T.MUTED,
-    ),
-    (
-        T.VIOLET,
-        "岔口三  栈或内存异常：先冻结 CFSR，再决定信不信 BFAR",
-        "CFSR[15] · BFAR 0xE000ED38",
-        "一进 HardFault 就只复位，现场没了；BFAR 里有个数，却对不上这次访问",
-        ["冻住现场：CFSR 0xE000ED28 → HFSR 0xE000ED2C（FORCED bit 30 = 0x40000000）→ BFAR",
-         "再从栈里取 PC：R0 起算第 6 个字，SP + 0x18；用同一个 ELF 跑 addr2line -e -f -C"],
-        ["CFSR bit 15 = 1：BFAR 才是这次出错的地址，拿它去对源码行",
-         "bit 15 = 0：BFAR 是旧值，不能用；IMPRECISERR 下栈 PC 也可能不是最初写错的位置"],
-        "原因表：UNDEFINSTR 栈被冲；INVSTATE 跳转目标 bit0=0；FORCED 且 CFSR=0 查 VTOR 与链接脚本",
-        T.TEXT,
-    ),
-]
-
 
 def _wrap(c: Svg, x: float, y: float, s: str, w: float, size: float,
           color: str, lh: float = 15, mono: bool = False) -> float:

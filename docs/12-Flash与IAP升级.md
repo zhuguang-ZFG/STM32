@@ -269,7 +269,7 @@ SCB->VTOR = 0x08004800UL;   /* 必须与 Bootloader 约定一致 */
 
 <p align="center">
   <img src="../assets/diagrams/sample-12-boot-compare.svg" width="760" alt="常驻 Bootloader 走 0x08000000 的 16 KB，出厂系统存储器不占这 64 KB；两条路都在复位时选好，之后共用 0x08004800 的 46 KB">
-  <br><sub>▲ 自绘。看哪里：最上面是一条 64 KB 的分区尺，16 KB Bootloader、2 KB 参数、46 KB APP 三段与四个地址对齐，右侧方框是片外的系统存储器（0x1FFFF000，不占这 64 KB）；下面两张卡逐行对比两条路的复位电平、首次取指、刷写通道与账面；中间的紫色块是分水岭——链接脚本、`SCB->VTOR`、头两个字三处必须一致；再下面写出两条路各自坏掉时的样子。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0056 向量表](#source-pm0056-vector)。</sub>
+  <br><sub>▲ 自绘。看哪里：最上面是一条 64 KB 的分区尺，16 KB Bootloader、2 KB 参数、46 KB APP 三段与四个地址对齐，右侧方框是系统存储器（0x1FFFF000）——它也在芯片内部，只是不在这块 64 KB 主闪存里；下面两张卡逐行对比两条路的复位电平、首次取指、刷写通道与账面；中间的紫色块是分水岭——链接脚本、`SCB->VTOR`、头两个字三处必须一致；再下面写出两条路各自坏掉时的样子。出处是 [RM0008 Flash](#source-rm0008-flash) 和 [PM0056 向量表](#source-pm0056-vector)。</sub>
 </p>
 
 <p align="center">

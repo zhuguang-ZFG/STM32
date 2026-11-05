@@ -182,7 +182,7 @@ def flash_triage() -> Svg:
         ("Cortex-M3", "halted ✓", T.GREEN, True),
         ("Flash 写入", "✗ 失败", T.RED, False),
     ]
-    cx, cw2, gap = 30, 168, 30
+    cx, cw2, gap = 30, 164, 20
     for i, (name, note, color, ok) in enumerate(chain):
         x = cx + i * (cw2 + gap)
         canvas.rect(x, 96, cw2, 56, fill=T.PANEL, stroke=color,
