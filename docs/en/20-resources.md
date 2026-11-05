@@ -166,6 +166,11 @@ Three steps. **(1) Pick the manual, RM or DS. (2) Ctrl+F the register name or th
 | 2 | Search a keyword | Search the register name (for example `TIMx_CCR1`) or the bit name (for example `CEN`) |
 | 3 | Read the context | Read the timing diagrams and formulas in the functional-description chapter, then go back to the register bits |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-manual-route.png" width="760" alt="Handraw: the three-step manual route worked through two examples (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top row is the main route — (1) pick the manual (RM owns registers and timing, DS owns pins and electrical limits, AN owns methods), (2) Ctrl+F the register or bit name, (3) read the functional-description chapter for timing and formulas; below, the two examples each walk it once: the TIM1 duty goes to RM0008, searches CCR1, lands in chapter 15; PA11 as USB goes to DS5319, searches PA11, reads the Alternate functions column. What it proves: one three-step route covers both kinds of questions, and when Chinese searches fail, switch to English keywords plus the manual number. What it does not prove: this sketches the search route only — the manuals' content is authoritative in the original PDFs. Source: this chapter's "three steps" section.</sub>
+</p>
+
 **Example 1: "How is the TIM1 PWM duty cycle calculated?"**
 - Open **RM0008**, search `CCR1`, and land in chapter 15, Advanced-control timers.
 - Read the "PWM mode" section: duty cycle = `CCR1 / (ARR+1)`, frequency = `fCK_CNT / (ARR+1)`.

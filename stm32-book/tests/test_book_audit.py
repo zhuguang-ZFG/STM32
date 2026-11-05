@@ -67,6 +67,7 @@ class BookAuditTests(unittest.TestCase):
         chapter = self.by_id["19"]
         assets = (
             "peripheral-wiring.svg",
+            "ch19-ab-partition.png",
             "sample-19-slot-fill-flow.svg",
             "sample-19-flash-fit.svg",
             "ch19-flash-fit.png",
@@ -312,7 +313,8 @@ class BookAuditTests(unittest.TestCase):
             ),
             "19": (
 
-                "peripheral-wiring.svg", "sample-19-slot-fill-flow.svg", "sample-19-flash-fit.svg",
+                "peripheral-wiring.svg", "ch19-ab-partition.png",
+                "sample-19-slot-fill-flow.svg", "sample-19-flash-fit.svg",
                 "ch19-flash-fit.png", "one-slot.gif", "sample-19-pick-ladder.svg",
                 "ch19-pick-ladder.png", "dma-buffer-ownership.svg", "iap-acceptance-gates.svg",
                 "ch19-iap-gates.png", "network-debug-ladder.svg", "rtos-startup-gates.svg",
@@ -324,7 +326,8 @@ class BookAuditTests(unittest.TestCase):
                 "project-structure.svg", "sample-20-evidence-flow.svg", "sample-20-lookup-flow.svg",
                 "sample-20-manual-names.svg", "ch20-manual-names.png", "manual-choice-map.svg",
                 "ch20-manual-choice.png", "sample-20-lib-compare.svg", "ch20-lib-compare.png",
-                "firmware-stack-choice.svg", "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
+                "firmware-stack-choice.svg", "ch20-manual-route.png",
+                "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
                 "single-build-contract.svg", "sample-20-evidence-triage.svg", "ch20-evidence-triage.png",
             ),
             "21": (
@@ -393,7 +396,8 @@ class BookAuditTests(unittest.TestCase):
             "27": (
 
                 "network-packet-journey.svg", "sample-27-rmii-checklist.svg", "ch27-rmii-signals.png",
-                "network-cache-ownership.svg", "ch27-cache-dma.png", "sample-27-tcp-framing.svg",
+                "network-cache-ownership.svg", "ch27-cache-dma.png", "ch27-pbuf-chain.png",
+                "sample-27-tcp-framing.svg",
                 "ch27-api-context.png", "sample-27-link-dhcp-flow.svg", "network-online-state.svg",
                 "tcp-byte-stream.svg", "ch27-tcp-framing.png", "sample-27-link-triage.svg",
                 "ch27-backoff.png", "network-debug-ladder.svg",

@@ -2140,5 +2140,20 @@
   "type": "technical",
   "chapter": "18",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。定义写进头文件，每个包含它的 .c 各得一份定义，链接器报 multiple definition；改成 extern 声明加 .c 定义；不是实拍。"
+ },
+ "illustrations/handraw/ch19-ab-partition.png": {
+  "type": "calculation",
+  "chapter": "19",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同比例的两条闪存条：单 APP 方案 16+2+46 = 64 KB 正好到 0x08010000；A/B 双分区 110 KB，B 槽从 0x08010000 起步全在片外；不是实拍。"
+ },
+ "illustrations/handraw/ch20-manual-route.png": {
+  "type": "comparison",
+  "chapter": "20",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。查手册三步：定手册（RM/DS/AN）、Ctrl+F 寄存器或位名、读功能描述；例 1 走 RM0008 搜 CCR1，例 2 走 DS5319 搜 PA11；不是实拍。"
+ },
+ "illustrations/handraw/ch27-pbuf-chain.png": {
+  "type": "technical",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一条消息拆成三个 pbuf 的链，想连续就先拷出来；引用跟着所有权走，pbuf_free() 每份引用恰好一次，漏 free 堆耗尽、多 free 当场崩；不是实拍。"
  }
 }

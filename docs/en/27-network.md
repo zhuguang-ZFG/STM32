@@ -135,6 +135,11 @@ Invalidating a narrow, unaligned range can discard unrelated dirty variables sha
 - A pbuf may be chained; application data need not be contiguous.
 - A successful send normally means “accepted locally,” not “processed by the remote application.”
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-pbuf-chain.png" width="760" alt="Handraw: one message split into a pbuf chain, and the reference rules (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top splits "HELLO WORLD 123" into three pbufs joined by next pointers — to treat it as one contiguous buffer you must copy it out first; the lower left holds the reference rules — receiving holds one reference, handing the pbuf on hands the reference over, and when you are done pbuf_free() runs exactly once; the lower right holds the two failure modes — a missed free exhausts the heap after hours, a double free crashes on the spot. What it proves: a pbuf carries ownership; whoever holds the reference does the free. What it does not prove: this sketches the reference relationships, not the zero-copy RX overwrite window or a concrete memory-pool layout. Source: this chapter's pitfalls list ([lwIP pitfalls](#source-lwip-pitfalls)).</sub>
+</p>
+
 ## The three lwIP APIs and their thread boundaries
 
 

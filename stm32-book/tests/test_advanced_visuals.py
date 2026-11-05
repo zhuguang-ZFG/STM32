@@ -283,9 +283,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "19-项目实战合集.md": (
-        16,
+        17,
         (
             "peripheral-wiring.svg",
+            "ch19-ab-partition.png",
             "sample-19-slot-fill-flow.svg",
             "sample-19-flash-fit.svg",
             "ch19-flash-fit.png",
@@ -378,7 +379,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
-        15,
+        16,
         (
             "project-structure.svg",
             "sample-20-evidence-flow.svg",
@@ -390,6 +391,7 @@ CHAPTERS = {
             "sample-20-lib-compare.svg",
             "ch20-lib-compare.png",
             "firmware-stack-choice.svg",
+            "ch20-manual-route.png",
             "instrument-evidence-ladder.svg",
             "ch20-evidence-ladder.png",
             "single-build-contract.svg",
@@ -457,13 +459,14 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "27-网络与协议栈.md": (
-        14,
+        15,
         (
             "network-packet-journey.svg",
             "sample-27-rmii-checklist.svg",
             "ch27-rmii-signals.png",
             "network-cache-ownership.svg",
             "ch27-cache-dma.png",
+            "ch27-pbuf-chain.png",
             "sample-27-tcp-framing.svg",
             "ch27-api-context.png",
             "sample-27-link-dhcp-flow.svg",
