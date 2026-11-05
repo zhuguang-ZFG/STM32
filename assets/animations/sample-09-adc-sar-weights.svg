@@ -2,17 +2,29 @@
 <title>SAR weight walk</title>
 <style>
 @keyframes w0-flash{0%,0.00%{opacity:0.06}0.25%,3.00%{opacity:0.35}3.25%,100%{opacity:0.06}}
-.w0{animation:w0-flash 6.5s linear infinite;}
+.w0{animation:w0-flash 8.4s linear infinite;}
 @keyframes w1-flash{0%,16.67%{opacity:0.06}16.92%,19.67%{opacity:0.35}19.92%,100%{opacity:0.06}}
-.w1{animation:w1-flash 6.5s linear infinite;}
+.w1{animation:w1-flash 8.4s linear infinite;}
 @keyframes w2-flash{0%,33.33%{opacity:0.06}33.58%,36.33%{opacity:0.35}36.58%,100%{opacity:0.06}}
-.w2{animation:w2-flash 6.5s linear infinite;}
+.w2{animation:w2-flash 8.4s linear infinite;}
 @keyframes w3-flash{0%,50.00%{opacity:0.06}50.25%,53.00%{opacity:0.35}53.25%,100%{opacity:0.06}}
-.w3{animation:w3-flash 6.5s linear infinite;}
+.w3{animation:w3-flash 8.4s linear infinite;}
 @keyframes w4-flash{0%,66.67%{opacity:0.06}66.92%,69.67%{opacity:0.35}69.92%,100%{opacity:0.06}}
-.w4{animation:w4-flash 6.5s linear infinite;}
+.w4{animation:w4-flash 8.4s linear infinite;}
 @keyframes w5-flash{0%,83.33%{opacity:0.06}83.58%,86.33%{opacity:0.35}86.58%,100%{opacity:0.06}}
-.w5{animation:w5-flash 6.5s linear infinite;}
+.w5{animation:w5-flash 8.4s linear infinite;}
+@keyframes d0-flash{0%,0.00%{opacity:0.12}0.25%,3.00%{opacity:1.0}3.25%,100%{opacity:0.12}}
+.d0{animation:d0-flash 8.4s linear infinite;}
+@keyframes d1-flash{0%,16.67%{opacity:0.12}16.92%,19.67%{opacity:1.0}19.92%,100%{opacity:0.12}}
+.d1{animation:d1-flash 8.4s linear infinite;}
+@keyframes d2-flash{0%,33.33%{opacity:0.12}33.58%,36.33%{opacity:1.0}36.58%,100%{opacity:0.12}}
+.d2{animation:d2-flash 8.4s linear infinite;}
+@keyframes d3-flash{0%,50.00%{opacity:0.12}50.25%,53.00%{opacity:1.0}53.25%,100%{opacity:0.12}}
+.d3{animation:d3-flash 8.4s linear infinite;}
+@keyframes d4-flash{0%,66.67%{opacity:0.12}66.92%,69.67%{opacity:1.0}69.92%,100%{opacity:0.12}}
+.d4{animation:d4-flash 8.4s linear infinite;}
+@keyframes d5-flash{0%,83.33%{opacity:0.12}83.58%,86.33%{opacity:1.0}86.58%,100%{opacity:0.12}}
+.d5{animation:d5-flash 8.4s linear infinite;}
 @keyframes m0-flash{0%,0.00%{opacity:0.06}0.25%,5.00%{opacity:0.35}5.25%,100%{opacity:0.06}}
 .m0{animation:m0-flash 5.0s linear infinite;}
 @keyframes m1-flash{0%,25.00%{opacity:0.06}25.25%,30.00%{opacity:0.35}30.25%,100%{opacity:0.06}}
@@ -40,6 +52,7 @@
 <rect x="40" y="100" width="128" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="w0"/>
 <line x1="172" y1="150" x2="169" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="176.00,150.00 169.00,153.50 169.00,146.50" fill="#5e6872" opacity="1"/>
+<circle cx="182" cy="150" r="4.6" fill="#1b5c45" opacity="1" class="d0"/>
 <rect x="180" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="244" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b10</text>
 <text x="244" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1024</text>
@@ -47,6 +60,7 @@
 <rect x="180" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w1"/>
 <line x1="312" y1="150" x2="309" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="316.00,150.00 309.00,153.50 309.00,146.50" fill="#5e6872" opacity="1"/>
+<circle cx="322" cy="150" r="4.6" fill="#075e84" opacity="1" class="d1"/>
 <rect x="320" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="384" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b9</text>
 <text x="384" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">512</text>
@@ -54,6 +68,7 @@
 <rect x="320" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w2"/>
 <line x1="452" y1="150" x2="449" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="456.00,150.00 449.00,153.50 449.00,146.50" fill="#5e6872" opacity="1"/>
+<circle cx="462" cy="150" r="4.6" fill="#075e84" opacity="1" class="d2"/>
 <rect x="460" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="524" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b8</text>
 <text x="524" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">256</text>
@@ -61,6 +76,7 @@
 <rect x="460" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w3"/>
 <line x1="592" y1="150" x2="589" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="596.00,150.00 589.00,153.50 589.00,146.50" fill="#5e6872" opacity="1"/>
+<circle cx="602" cy="150" r="4.6" fill="#075e84" opacity="1" class="d3"/>
 <rect x="600" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="664" y="132" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">…</text>
 <text x="664" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">…</text>
@@ -68,6 +84,7 @@
 <rect x="600" y="100" width="128" height="100" fill="#075e84" opacity="0.12" rx="8" class="w4"/>
 <line x1="732" y1="150" x2="729" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="736.00,150.00 729.00,153.50 729.00,146.50" fill="#5e6872" opacity="1"/>
+<circle cx="742" cy="150" r="4.6" fill="#075e84" opacity="1" class="d4"/>
 <rect x="740" y="100" width="128" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
 <text x="804" y="132" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">b0</text>
 <text x="804" y="158" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1</text>

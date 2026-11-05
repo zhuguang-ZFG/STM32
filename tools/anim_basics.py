@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from svgkit import (Svg, T, anim_flow, anim_tx)
+from svgkit import (Svg, T, anim_flow, anim_tx, css_kf)
 
 W, H = 900, 620
 
@@ -133,12 +133,34 @@ def boot_sequence() -> Svg:
             s.arrow(x + bw / 2, y + bh + 2, x + bw / 2, y + bh + 44,
                     color=T.STROKE, sw=2, head=6)
             s.text(x + bw / 2 + 10, y + bh + 30, "换行继续", size=11, fill=T.DIM)
-    s.add_style(_step_highlight("b", 8, period=7.2))
+    CYCLE = 9.6
+    s.add_style(_step_highlight("b", 8, period=CYCLE))
     for i, (label, sub, color) in enumerate(steps):
         r, c = divmod(i, 4)
         x = x0 + c * (bw + gap)
         y = y0 + r * (bh + 66)
         s.rect(x, y, bw, bh, fill=color, rx=8, cls=f"b{i}", opacity=0.12)
+
+    # PC 指针：第一行从左走到右，换行后第二行接着走 —— 读者能看到「它在哪一步」
+    css = []
+    for row in range(2):
+        t_in = row * 50 + 1.5
+        t_out = row * 50 + 48.5
+        css.append(css_kf(f"pc{row}-hop", [
+            ("0%", "transform:translateX(0px);opacity:0"),
+            (f"{t_in:.2f}%", "transform:translateX(0px);opacity:1"),
+            (f"{t_out:.2f}%", f"transform:translateX({3 * (bw + gap)}px);opacity:1"),
+            (f"{min(t_out + 1.5, 100):.2f}%", f"transform:translateX({3 * (bw + gap)}px);opacity:0"),
+            ("100%", "transform:translateX(0px);opacity:0"),
+        ]))
+        css.append(f".pc{row}{{animation:pc{row}-hop {CYCLE}s steps(4) infinite;}}")
+    s.add_style("\n".join(css))
+    for row in range(2):
+        ty = y0 + row * (bh + 66) + bh - 20
+        s.rect(x0 + 6, ty, 30, 16, fill=T.TEXT, rx=4, cls=f"pc{row}",
+               opacity=0.9)
+        s.text(x0 + 21, ty + 12, "PC", size=9, anchor="middle", fill=T.BG,
+               weight="700", mono=True, cls=f"pc{row}")
 
     s.title_block(40, 400, "向量表（前 8 个字节决定 CPU 从哪里开始）", color=T.CYAN)
     s.rect(40, 406, 470, 112, fill=T.BG2, stroke=T.STROKE, rx=8)
@@ -227,8 +249,23 @@ def clock_tree() -> Svg:
     for i, (a, b) in enumerate(gaps):
         s.line(a, y + 36, b, y + 36, stroke=T.CYAN, sw=2, cls="clk")
         s.circle(a, y + 36, 4.5, fill=T.CYAN, cls=f"pulse{i}")
-        s.add_style(anim_tx(f".pulse{i}", dur="1.2s", x1=0, x2=max(8, b - a - 8)))
-    s.add_style(anim_flow(".clk", dur="1.2s", dash="5 11", shift=-16))
+    # 一个时钟脉冲按 HSE → PLLA → SYSCLK → HCLK 的顺序走完，读的时候能跟上
+    # 每一跳 1.3 s，共 5.2 s；token 到尾后停一下再重来
+    cycle, hop, run = 5.2, 1.3, 0.9
+    css = []
+    for i, (a, b) in enumerate(gaps):
+        t0 = i * hop / cycle * 100
+        t1 = (i * hop + run) / cycle * 100
+        css.append(css_kf(f"pulse{i}-hop", [
+            ("0%", "transform:translateX(0px);opacity:0"),
+            (f"{t0:.2f}%", "transform:translateX(0px);opacity:1"),
+            (f"{t1:.2f}%", f"transform:translateX({max(8, b - a - 8)}px);opacity:1"),
+            (f"{min(t1 + 3, 99.0):.2f}%", f"transform:translateX({max(8, b - a - 8)}px);opacity:0"),
+            ("100%", "transform:translateX(0px);opacity:0"),
+        ]))
+        css.append(f".pulse{i}{{animation:pulse{i}-hop {cycle}s linear infinite;}}")
+    css.append(anim_flow(".clk", dur="2.6s", dash="5 11", shift=-16))
+    s.add_style("\n".join(css))
 
     y2 = 244
     s.line(790, y + 72, 790, y2, stroke=T.CYAN, sw=2)

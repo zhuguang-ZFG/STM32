@@ -2,29 +2,53 @@
 <title>ADC 逐次逼近（SAR）到底在做什么</title>
 <style>
 @keyframes s0-sq{0%,0.00%{opacity:0.08}0.30%,3.75%{opacity:0.4}4.05%,100%{opacity:0.08}}
-.s0{animation:s0-sq 6.0s linear infinite;}
+.s0{animation:s0-sq 8.4s linear infinite;}
 @keyframes s1-sq{0%,8.33%{opacity:0.08}8.63%,12.08%{opacity:0.4}12.38%,100%{opacity:0.08}}
-.s1{animation:s1-sq 6.0s linear infinite;}
+.s1{animation:s1-sq 8.4s linear infinite;}
 @keyframes s2-sq{0%,16.67%{opacity:0.08}16.97%,20.42%{opacity:0.4}20.72%,100%{opacity:0.08}}
-.s2{animation:s2-sq 6.0s linear infinite;}
+.s2{animation:s2-sq 8.4s linear infinite;}
 @keyframes s3-sq{0%,25.00%{opacity:0.08}25.30%,28.75%{opacity:0.4}29.05%,100%{opacity:0.08}}
-.s3{animation:s3-sq 6.0s linear infinite;}
+.s3{animation:s3-sq 8.4s linear infinite;}
 @keyframes s4-sq{0%,33.33%{opacity:0.08}33.63%,37.08%{opacity:0.4}37.38%,100%{opacity:0.08}}
-.s4{animation:s4-sq 6.0s linear infinite;}
+.s4{animation:s4-sq 8.4s linear infinite;}
 @keyframes s5-sq{0%,41.67%{opacity:0.08}41.97%,45.42%{opacity:0.4}45.72%,100%{opacity:0.08}}
-.s5{animation:s5-sq 6.0s linear infinite;}
+.s5{animation:s5-sq 8.4s linear infinite;}
 @keyframes s6-sq{0%,50.00%{opacity:0.08}50.30%,53.75%{opacity:0.4}54.05%,100%{opacity:0.08}}
-.s6{animation:s6-sq 6.0s linear infinite;}
+.s6{animation:s6-sq 8.4s linear infinite;}
 @keyframes s7-sq{0%,58.33%{opacity:0.08}58.63%,62.08%{opacity:0.4}62.38%,100%{opacity:0.08}}
-.s7{animation:s7-sq 6.0s linear infinite;}
+.s7{animation:s7-sq 8.4s linear infinite;}
 @keyframes s8-sq{0%,66.67%{opacity:0.08}66.97%,70.42%{opacity:0.4}70.72%,100%{opacity:0.08}}
-.s8{animation:s8-sq 6.0s linear infinite;}
+.s8{animation:s8-sq 8.4s linear infinite;}
 @keyframes s9-sq{0%,75.00%{opacity:0.08}75.30%,78.75%{opacity:0.4}79.05%,100%{opacity:0.08}}
-.s9{animation:s9-sq 6.0s linear infinite;}
+.s9{animation:s9-sq 8.4s linear infinite;}
 @keyframes s10-sq{0%,83.33%{opacity:0.08}83.63%,87.08%{opacity:0.4}87.38%,100%{opacity:0.08}}
-.s10{animation:s10-sq 6.0s linear infinite;}
+.s10{animation:s10-sq 8.4s linear infinite;}
 @keyframes s11-sq{0%,91.67%{opacity:0.08}91.97%,95.42%{opacity:0.4}95.72%,100%{opacity:0.08}}
-.s11{animation:s11-sq 6.0s linear infinite;}
+.s11{animation:s11-sq 8.4s linear infinite;}
+@keyframes r0-fix{0%{opacity:0}0.00%{opacity:0}3.40%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r0{animation:r0-fix 8.4s linear infinite;}
+@keyframes r1-fix{0%{opacity:0}8.33%{opacity:0}11.73%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r1{animation:r1-fix 8.4s linear infinite;}
+@keyframes r2-fix{0%{opacity:0}16.67%{opacity:0}20.07%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r2{animation:r2-fix 8.4s linear infinite;}
+@keyframes r3-fix{0%{opacity:0}25.00%{opacity:0}28.40%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r3{animation:r3-fix 8.4s linear infinite;}
+@keyframes r4-fix{0%{opacity:0}33.33%{opacity:0}36.73%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r4{animation:r4-fix 8.4s linear infinite;}
+@keyframes r5-fix{0%{opacity:0}41.67%{opacity:0}45.07%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r5{animation:r5-fix 8.4s linear infinite;}
+@keyframes r6-fix{0%{opacity:0}50.00%{opacity:0}53.40%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r6{animation:r6-fix 8.4s linear infinite;}
+@keyframes r7-fix{0%{opacity:0}58.33%{opacity:0}61.73%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r7{animation:r7-fix 8.4s linear infinite;}
+@keyframes r8-fix{0%{opacity:0}66.67%{opacity:0}70.07%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r8{animation:r8-fix 8.4s linear infinite;}
+@keyframes r9-fix{0%{opacity:0}75.00%{opacity:0}78.40%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r9{animation:r9-fix 8.4s linear infinite;}
+@keyframes r10-fix{0%{opacity:0}83.33%{opacity:0}86.73%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r10{animation:r10-fix 8.4s linear infinite;}
+@keyframes r11-fix{0%{opacity:0}91.67%{opacity:0}95.07%{opacity:1}96%{opacity:1}99%{opacity:0}100%{opacity:0}}
+.r11{animation:r11-fix 8.4s linear infinite;}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -38,54 +62,54 @@
 <text x="844" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">09 ADC</text>
 <text x="40" y="96" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">12 位 SAR 寄存器：从 bit11 开始逐位试填</text>
 <rect x="40" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="71" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit11</text>
-<text x="71" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="71" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit11</text>
 <rect x="40" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s0"/>
 <rect x="108" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="139" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit10</text>
-<text x="139" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="139" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit10</text>
 <rect x="108" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s1"/>
 <rect x="176" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="207" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit9</text>
-<text x="207" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="207" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit9</text>
 <rect x="176" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s2"/>
 <rect x="244" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="275" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit8</text>
-<text x="275" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="275" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit8</text>
 <rect x="244" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s3"/>
 <rect x="312" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="343" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit7</text>
-<text x="343" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="343" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit7</text>
 <rect x="312" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s4"/>
 <rect x="380" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="411" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit6</text>
-<text x="411" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="411" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit6</text>
 <rect x="380" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s5"/>
 <rect x="448" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="479" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit5</text>
-<text x="479" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="479" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit5</text>
 <rect x="448" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s6"/>
 <rect x="516" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="547" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit4</text>
-<text x="547" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="547" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit4</text>
 <rect x="516" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s7"/>
 <rect x="584" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="615" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit3</text>
-<text x="615" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="615" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit3</text>
 <rect x="584" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s8"/>
 <rect x="652" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="683" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit2</text>
-<text x="683" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="683" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit2</text>
 <rect x="652" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s9"/>
 <rect x="720" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="751" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit1</text>
-<text x="751" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="751" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit1</text>
 <rect x="720" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s10"/>
 <rect x="788" y="108" width="62" height="42" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="819" y="126" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit0</text>
-<text x="819" y="142" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">?</text>
+<text x="819" y="124" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bit0</text>
 <rect x="788" y="108" width="62" height="42" fill="#7a4e00" opacity="0.18" rx="8" class="s11"/>
-<text x="40" y="172" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当前正在比较的位会被点亮；比较完就固定下来（1 或 0）</text>
+<text x="71" y="143" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r0">1</text>
+<text x="139" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r1">0</text>
+<text x="207" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r2">0</text>
+<text x="275" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r3">0</text>
+<text x="343" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r4">0</text>
+<text x="411" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r5">0</text>
+<text x="479" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r6">0</text>
+<text x="547" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r7">0</text>
+<text x="615" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r8">0</text>
+<text x="683" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r9">0</text>
+<text x="751" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r10">0</text>
+<text x="819" y="143" font-size="14" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="r11">0</text>
+<text x="40" y="172" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当前正在比较的位会被点亮；判定为 1 的位留下，判定为 0 的位也留下（例：VIN = 0.5 × VREF → 0x800）</text>
 <rect x="40" y="194" width="400" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="58" y="220" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">比较器在比较什么</text>
 <text x="58" y="246" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DAC 输出（当前猜测值）</text>

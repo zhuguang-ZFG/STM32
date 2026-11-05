@@ -2,21 +2,25 @@
 <title>上电之后发生了什么</title>
 <style>
 @keyframes b0-flash{0%,0.00%{opacity:0.08}0.30%,2.75%{opacity:0.42}3.05%,100%{opacity:0.08}}
-.b0{animation:b0-flash 7.2s linear infinite;}
+.b0{animation:b0-flash 9.6s linear infinite;}
 @keyframes b1-flash{0%,12.50%{opacity:0.08}12.80%,15.25%{opacity:0.42}15.55%,100%{opacity:0.08}}
-.b1{animation:b1-flash 7.2s linear infinite;}
+.b1{animation:b1-flash 9.6s linear infinite;}
 @keyframes b2-flash{0%,25.00%{opacity:0.08}25.30%,27.75%{opacity:0.42}28.05%,100%{opacity:0.08}}
-.b2{animation:b2-flash 7.2s linear infinite;}
+.b2{animation:b2-flash 9.6s linear infinite;}
 @keyframes b3-flash{0%,37.50%{opacity:0.08}37.80%,40.25%{opacity:0.42}40.55%,100%{opacity:0.08}}
-.b3{animation:b3-flash 7.2s linear infinite;}
+.b3{animation:b3-flash 9.6s linear infinite;}
 @keyframes b4-flash{0%,50.00%{opacity:0.08}50.30%,52.75%{opacity:0.42}53.05%,100%{opacity:0.08}}
-.b4{animation:b4-flash 7.2s linear infinite;}
+.b4{animation:b4-flash 9.6s linear infinite;}
 @keyframes b5-flash{0%,62.50%{opacity:0.08}62.80%,65.25%{opacity:0.42}65.55%,100%{opacity:0.08}}
-.b5{animation:b5-flash 7.2s linear infinite;}
+.b5{animation:b5-flash 9.6s linear infinite;}
 @keyframes b6-flash{0%,75.00%{opacity:0.08}75.30%,77.75%{opacity:0.42}78.05%,100%{opacity:0.08}}
-.b6{animation:b6-flash 7.2s linear infinite;}
+.b6{animation:b6-flash 9.6s linear infinite;}
 @keyframes b7-flash{0%,87.50%{opacity:0.08}87.80%,90.25%{opacity:0.42}90.55%,100%{opacity:0.08}}
-.b7{animation:b7-flash 7.2s linear infinite;}
+.b7{animation:b7-flash 9.6s linear infinite;}
+@keyframes pc0-hop{0%{transform:translateX(0px);opacity:0}1.50%{transform:translateX(0px);opacity:1}48.50%{transform:translateX(642px);opacity:1}50.00%{transform:translateX(642px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pc0{animation:pc0-hop 9.6s steps(4) infinite;}
+@keyframes pc1-hop{0%{transform:translateX(0px);opacity:0}51.50%{transform:translateX(0px);opacity:1}98.50%{transform:translateX(642px);opacity:1}100.00%{transform:translateX(642px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pc1{animation:pc1-hop 9.6s steps(4) infinite;}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -83,6 +87,10 @@
 <rect x="254" y="258" width="196" height="84" fill="#1e4d63" opacity="0.12" rx="8" class="b5"/>
 <rect x="468" y="258" width="196" height="84" fill="#5b3a8c" opacity="0.12" rx="8" class="b6"/>
 <rect x="682" y="258" width="196" height="84" fill="#8e2f5b" opacity="0.12" rx="8" class="b7"/>
+<rect x="46" y="172" width="30" height="16" fill="#17202a" opacity="0.9" rx="4" class="pc0"/>
+<text x="61" y="184" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="pc0">PC</text>
+<rect x="46" y="322" width="30" height="16" fill="#17202a" opacity="0.9" rx="4" class="pc1"/>
+<text x="61" y="334" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" class="pc1">PC</text>
 <rect x="40" y="387" width="3" height="18" fill="#075e84" opacity="1"/>
 <text x="52" y="400" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">向量表（前 8 个字节决定 CPU 从哪里开始）</text>
 <rect x="40" y="406" width="470" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>

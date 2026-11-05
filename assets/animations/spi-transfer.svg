@@ -5,10 +5,18 @@
 .mosi{stroke-dasharray:8 12;animation:mosi-flow 1.4s linear infinite;}@keyframes mosi-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-20px}}
 
 .miso{stroke-dasharray:8 12;animation:miso-flow 1.4s linear infinite;}@keyframes miso-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-20px}}
-@keyframes bit0-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit0{animation:bit0-mv 1.6s linear infinite 0.0s;}
-@keyframes bit1-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit1{animation:bit1-mv 1.6s linear infinite 0.4s;}
-@keyframes bit2-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit2{animation:bit2-mv 1.6s linear infinite 0.8s;}
-@keyframes bit3-mv{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(148px);opacity:0}}.bit3{animation:bit3-mv 1.6s linear infinite 1.2s;}
+@keyframes bit0-mv{0%{transform:translateX(0);opacity:0}12%{opacity:1}84%{opacity:1}96%{transform:translateX(148px);opacity:0}100%{transform:translateX(148px);opacity:0}}.bit0{animation:bit0-mv 3.4s ease-in-out infinite 0.00s;}
+@keyframes bit1-mv{0%{transform:translateX(0);opacity:0}12%{opacity:1}84%{opacity:1}96%{transform:translateX(148px);opacity:0}100%{transform:translateX(148px);opacity:0}}.bit1{animation:bit1-mv 3.4s ease-in-out infinite 0.42s;}
+@keyframes bit2-mv{0%{transform:translateX(0);opacity:0}12%{opacity:1}84%{opacity:1}96%{transform:translateX(148px);opacity:0}100%{transform:translateX(148px);opacity:0}}.bit2{animation:bit2-mv 3.4s ease-in-out infinite 0.85s;}
+@keyframes bit3-mv{0%{transform:translateX(0);opacity:0}12%{opacity:1}84%{opacity:1}96%{transform:translateX(148px);opacity:0}100%{transform:translateX(148px);opacity:0}}.bit3{animation:bit3-mv 3.4s ease-in-out infinite 1.27s;}
+@keyframes sm0-on{0%{opacity:0.15}0.00%{opacity:0.15}2.00%{opacity:1}9.00%{opacity:0.35}100%{opacity:0.15}}.sm0{animation:sm0-on 3.4s linear infinite;}
+@keyframes sm1-on{0%{opacity:0.15}12.50%{opacity:0.15}14.50%{opacity:1}21.50%{opacity:0.35}100%{opacity:0.15}}.sm1{animation:sm1-on 3.4s linear infinite;}
+@keyframes sm2-on{0%{opacity:0.15}25.00%{opacity:0.15}27.00%{opacity:1}34.00%{opacity:0.35}100%{opacity:0.15}}.sm2{animation:sm2-on 3.4s linear infinite;}
+@keyframes sm3-on{0%{opacity:0.15}37.50%{opacity:0.15}39.50%{opacity:1}46.50%{opacity:0.35}100%{opacity:0.15}}.sm3{animation:sm3-on 3.4s linear infinite;}
+@keyframes sm4-on{0%{opacity:0.15}50.00%{opacity:0.15}52.00%{opacity:1}59.00%{opacity:0.35}100%{opacity:0.15}}.sm4{animation:sm4-on 3.4s linear infinite;}
+@keyframes sm5-on{0%{opacity:0.15}62.50%{opacity:0.15}64.50%{opacity:1}71.50%{opacity:0.35}100%{opacity:0.15}}.sm5{animation:sm5-on 3.4s linear infinite;}
+@keyframes sm6-on{0%{opacity:0.15}75.00%{opacity:0.15}77.00%{opacity:1}84.00%{opacity:0.35}100%{opacity:0.15}}.sm6{animation:sm6-on 3.4s linear infinite;}
+@keyframes sm7-on{0%{opacity:0.15}87.50%{opacity:0.15}89.50%{opacity:1}96.50%{opacity:0.35}100%{opacity:0.15}}.sm7{animation:sm7-on 3.4s linear infinite;}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -70,6 +78,14 @@
 <line x1="40" y1="236" x2="40" y2="296" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <line x1="40" y1="296" x2="840" y2="296" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <path d="M 40 285.36 L 40.00 285.36 L 90.00 285.36 L 90.00 248.64 L 140.00 248.64 L 140.00 285.36 L 190.00 285.36 L 190.00 248.64 L 240.00 248.64 L 240.00 285.36 L 290.00 285.36 L 290.00 248.64 L 340.00 248.64 L 340.00 285.36 L 390.00 285.36 L 390.00 248.64 L 440.00 248.64 L 440.00 285.36 L 490.00 285.36 L 490.00 248.64 L 540.00 248.64 L 540.00 285.36 L 590.00 285.36 L 590.00 248.64 L 640.00 248.64 L 640.00 285.36 L 690.00 285.36 L 690.00 248.64 L 740.00 248.64 L 740.00 285.36 L 790.00 285.36 L 790.00 248.64 L 840.00 248.64" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<circle cx="90" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm0"/>
+<circle cx="190" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm1"/>
+<circle cx="290" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm2"/>
+<circle cx="390" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm3"/>
+<circle cx="490" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm4"/>
+<circle cx="590" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm5"/>
+<circle cx="690" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm6"/>
+<circle cx="790" cy="248" r="4.2" fill="#7a4e00" opacity="1" class="sm7"/>
 <text x="40" y="318" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Mode 0：上升沿采样，下降沿移位。SPI 高位先出（和 UART 相反）。想读 1 字节必须同时发 1 字节，没数据就发 0xFF。</text>
 <rect x="40" y="343" width="3" height="18" fill="#075e84" opacity="1"/>
 <text x="52" y="356" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CPOL / CPHA 四种模式（选错就读不到数据）</text>

@@ -116,58 +116,106 @@ def uart_frame() -> Svg:
 
 
 def i2c_transaction() -> Svg:
-    s = Svg(W, H, "I2C 一次完整读写事务",
-            "START → 7 位地址 + R/W → ACK → 数据字节 → ACK → STOP")
+    """静态时序图：contract test 要求这张没有 <style>（PDF 版直接读第一帧）。
+
+    动起来的是配套的 assets/gif/i2c-timing.gif；这里把同一个事务画成一张
+    能打印的图：SDA / SCL 都画出来，采样点标在 SCL 高电平中间。
+    """
+    s = Svg(W, H, "I2C 一次完整写事务：SDA 的一个字节怎么走完",
+            "START → 7 位地址 + W → ACK → 数据字节 → ACK → STOP；点上标出每一拍的采样位置")
     s.header(tag="07 I2C", tag_color=T.GREEN)
 
     # 写 0xA5 到地址 0x3C：7 位地址是 0111100，不是 8 位写法 0x78
     cells = [
-        ("ST", "", T.RED),
+        ("START", "", T.RED),
         ("0", "A6", T.VIOLET), ("1", "A5", T.VIOLET), ("1", "A4", T.VIOLET),
         ("1", "A3", T.VIOLET), ("1", "A2", T.VIOLET), ("0", "A1", T.VIOLET),
         ("0", "A0", T.VIOLET),
-        ("0", "W", T.CYAN), ("0", "AK", T.GREEN),
+        ("0", "W", T.CYAN), ("0", "ACK", T.GREEN),
         ("1", "D7", T.AMBER), ("0", "D6", T.AMBER), ("1", "D5", T.AMBER),
         ("0", "D4", T.AMBER), ("0", "D3", T.AMBER), ("1", "D2", T.AMBER),
         ("0", "D1", T.AMBER), ("1", "D0", T.AMBER),
-        ("0", "AK", T.GREEN), ("SP", "", T.RED),
+        ("0", "ACK", T.GREEN), ("STOP", "", T.RED),
     ]
-    x0, cw = 28, 42
-    s.text(28, 96, "SDA 位（0x3C = 0111100，写 0xA5；数据在 SCL 为低时才允许变化）",
-           size=12, fill=T.MUTED)
+    n = len(cells)
+    x0, cw, pad = 30, 40, 4
+
+    phases = [("START", 0, 1, T.RED), ("地址 7 位 + W", 1, 9, T.VIOLET),
+              ("ACK", 9, 10, T.GREEN), ("数据 0xA5", 10, 18, T.AMBER),
+              ("ACK", 18, 19, T.GREEN), ("STOP", 19, 20, T.RED)]
+    for label, a, b, color in phases:
+        xa, xb = x0 + a * cw, x0 + b * cw
+        s.rect(xa + 1, 76, xb - xa - 2, 18, fill=T.PANEL, stroke=color, rx=4)
+        s.text((xa + xb) / 2, 89, label, size=10, anchor="middle", fill=color,
+               weight="600")
+
     for i, (bit, tag, color) in enumerate(cells):
         x = x0 + i * cw
-        s.rect(x, 108, cw - 4, 44, fill=T.PANEL, stroke=color, rx=4)
-        s.text(x + (cw - 4) / 2, 126, bit, size=13, anchor="middle",
-               fill=color, weight="700", mono=True)
+        s.rect(x, 104, cw - pad, 44, fill=T.PANEL, stroke=color, rx=4)
+        s.text(x + (cw - pad) / 2, 122, bit,
+               size=13 if tag else 9, anchor="middle", fill=color,
+               weight="700", mono=bool(tag))
         if tag:
-            s.text(x + (cw - 4) / 2, 144, tag, size=9, anchor="middle",
+            s.text(x + (cw - pad) / 2, 140, tag, size=9, anchor="middle",
                    fill=T.DIM)
-    s.text(28, 172, "ST/SP：SCL 为高时 SDA 下降=START、上升=STOP。AK 是第 9 拍，由从机拉低。",
-           size=11, fill=T.MUTED)
-    # SCL 示意：数据位期间先低后高，SDA 在低电平区变化
-    s.text(28, 198, "SCL", size=12, fill=T.CYAN, mono=True)
-    scl = []
-    for bit, tag, _c in cells:
-        if tag in ("",):
-            scl += [1, 1]
-        else:
-            scl += [0, 1]
-    s.waveform(28, 206, 20 * cw, 36, scl, color=T.CYAN, sw=2)
 
-    # 右侧要点
-    s.rect(40, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    s.text(58, 380, "为什么必须加上拉电阻", size=12.5, fill=T.TEXT, weight="700")
+    # SDA 与 SCL 的真实形状：SDA 只在 SCL 低时变；START/STOP 在 SCL 高时跳变
+    sda_hi, sda_lo = 232, 268
+    scl_hi, scl_lo = 312, 348
+    levels = [1] + [int(c[0]) if c[1] else (0 if c[0] == "STOP" else 1)
+                    for c in cells[1:]]
+
+    d = [f"M {x0} {sda_hi}"]
+    d.append(f"H {x0 + cw * 0.55:.1f}")
+    d.append(f"L {x0 + cw * 0.55 + 6:.1f} {sda_lo}")      # START：SCL 高时 SDA 下降
+    for i in range(1, n - 1):
+        xa = x0 + i * cw + 2
+        yy = sda_hi if levels[i] else sda_lo
+        d.append(f"L {xa:.1f} {yy}")
+        d.append(f"H {x0 + (i + 1) * cw:.1f}")
+    last = x0 + (n - 1) * cw
+    d.append(f"H {last + cw * 0.45:.1f}")
+    d.append(f"L {last + cw * 0.45 + 6:.1f} {sda_hi}")     # STOP：SCL 高时 SDA 上升
+    s.path(" ".join(d), stroke=T.VIOLET, sw=2)
+    s.text(x0 + 2, sda_hi - 10, "SDA", size=11, fill=T.VIOLET, weight="700",
+           mono=True)
+
+    d = [f"M {x0} {scl_hi}"]
+    d.append(f"H {x0 + cw:.1f}")                            # START 期间 SCL 为高
+    for i in range(1, n - 1):
+        xa = x0 + i * cw
+        d.append(f"L {xa:.1f} {scl_lo}")
+        d.append(f"H {xa + cw * 0.45:.1f}")
+        d.append(f"L {xa + cw * 0.45:.1f} {scl_hi}")
+        d.append(f"H {xa + cw:.1f}")
+    d.append(f"H {x0 + n * cw:.1f}")
+    s.path(" ".join(d), stroke=T.CYAN, sw=2)
+    s.text(x0 + 2, scl_hi - 10, "SCL", size=11, fill=T.CYAN, weight="700",
+           mono=True)
+
+    # 采样点：一个点对应一位，位置在 SCL 高电平中间
+    for i in range(1, n - 1):
+        sx = x0 + i * cw + cw * 0.78
+        sy = sda_hi if levels[i] else sda_lo
+        s.circle(sx, sy, 3.4, fill=T.TEXT)
+        s.line(sx, sy, sx, 306, stroke=T.GRID, sw=1)
+
+    s.text(30, 372, "SDA 只能在 SCL 为低的窗口里变；START / STOP 反过来，必须在 SCL 高时跳变。"
+                    "第 9 拍 ACK 是接收方把 SDA 拉低，不是发送方。",
+           size=11, fill=T.MUTED)
+
+    s.rect(40, 392, 400, 116, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(58, 416, "为什么必须加上拉电阻", size=12.5, fill=T.TEXT, weight="700")
     for i, t in enumerate([
         "I2C 是开漏输出：只能拉低，不能拉高",
         "上拉电阻决定上升沿速度与功耗",
         "3.3 V / 400 kHz：4.7 kΩ 是安全默认值",
         "总线电容 > 200 pF 时减小到 2.2 kΩ",
     ]):
-        s.text(58, 404 + i * 20, "· " + t, size=11, fill=T.MUTED)
+        s.text(58, 440 + i * 19, "· " + t, size=11, fill=T.MUTED)
 
-    s.rect(460, 356, 400, 132, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    s.text(478, 380, "地址陷阱：0x3C 还是 0x78？", size=12.5, fill=T.TEXT,
+    s.rect(460, 392, 400, 116, fill=T.PANEL, stroke=T.STROKE, rx=8)
+    s.text(478, 416, "地址陷阱：0x3C 还是 0x78？", size=12.5, fill=T.TEXT,
            weight="700")
     for i, t in enumerate([
         "7 位 0x3C 左移 1 位 = 8 位写地址 0x78",
@@ -175,10 +223,10 @@ def i2c_transaction() -> Svg:
         "扫描器若打印 0x78，右移才是手册上的 0x3C",
         "总线上所有设备地址不能重复",
     ]):
-        s.text(478, 404 + i * 20, "· " + t, size=11, fill=T.MUTED)
+        s.text(478, 440 + i * 19, "· " + t, size=11, fill=T.MUTED)
 
-    s.rect(40, 500, 820, 30, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 520, "总线卡死自救：把 SCL 当普通 IO 手动发 9 个脉冲 + 一个 STOP，"
+    s.rect(40, 520, 820, 30, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(58, 540, "总线卡死自救：把 SCL 当普通 IO 手动发 9 个脉冲 + 一个 STOP，"
                     "再 HAL_I2C_DeInit / Init 重新初始化", size=11, fill=T.AMBER)
     s.footer("标准 100 kHz / 快速 400 kHz / 快速+ 1 MHz；SCL 高电平时间与上拉阻值强相关")
     return s
@@ -215,14 +263,16 @@ def spi_transfer() -> Svg:
     s.add_style(anim_flow(".mosi", dur="1.4s", dash="8 12", shift=-20))
     s.add_style(anim_flow(".miso", dur="1.4s", dash="8 12", shift=-20))
 
-    # 移动的 bit
+    # 移动的 bit：一拍一个，3.4 s 走完 4 个，够慢才数得清
+    PERIOD = 3.4
     for i in range(4):
         s.circle(426, 150, 4.5, fill=T.CYAN, cls=f"bit{i}")
     s.add_style("\n".join(
         css_kf(f"bit{i}-mv", [("0%", "transform:translateX(0);opacity:0"),
-                              ("15%", "opacity:1"), ("85%", "opacity:1"),
+                              ("12%", "opacity:1"), ("84%", "opacity:1"),
+                              ("96%", "transform:translateX(148px);opacity:0"),
                               ("100%", "transform:translateX(148px);opacity:0")])
-        + f".bit{i}{{animation:bit{i}-mv 1.6s linear infinite {i * 0.4:.1f}s;}}"
+        + f".bit{i}{{animation:bit{i}-mv {PERIOD}s ease-in-out infinite {i * PERIOD / 8:.2f}s;}}"
         for i in range(4)))
 
     # SCK 波形
@@ -232,6 +282,17 @@ def spi_transfer() -> Svg:
            fill=T.MUTED)
     s.axis(40, 236, 800, 60)
     s.waveform(40, 240, 800, 54, [0, 1] * 8, color=T.AMBER, sw=2)
+    # 8 个采样点跟着拍子亮：上升沿采样，不是下降沿
+    for k in range(8):
+        s.circle(40 + 50 * (2 * k + 1), 248, 4.2, fill=T.AMBER, cls=f"sm{k}")
+    s.add_style("\n".join(
+        css_kf(f"sm{k}-on", [("0%", "opacity:0.15"),
+                             (f"{k / 8 * 100:.2f}%", "opacity:0.15"),
+                             (f"{k / 8 * 100 + 2.0:.2f}%", "opacity:1"),
+                             (f"{k / 8 * 100 + 9.0:.2f}%", "opacity:0.35"),
+                             ("100%", "opacity:0.15")])
+        + f".sm{k}{{animation:sm{k}-on {PERIOD}s linear infinite;}}"
+        for k in range(8)))
     s.text(40, 318, "Mode 0：上升沿采样，下降沿移位。SPI 高位先出（和 UART 相反）。"
                     "想读 1 字节必须同时发 1 字节，没数据就发 0xFF。",
            size=11, fill=T.MUTED)
@@ -291,21 +352,45 @@ def can_arbitration() -> Svg:
         s.text(x0 + j * cw + cw / 2, 112, str(10 - j), size=9,
                anchor="middle", fill=T.DIM)
 
+    CYCLE = 6.6
     for i, (name, hexid, bstr, color) in enumerate(ids):
         y = 132 + i * 62
-        s.text(40, y + 24, name, size=12, fill=color, weight="600")
-        s.text(40, y + 42, hexid, size=11, mono=True, fill=T.MUTED)
+        drop = " drop" if i else ""
+        s.text(40, y + 24, name, size=12, fill=color, weight="600",
+               cls=f"lb{i}{drop}")
+        s.text(40, y + 42, hexid, size=11, mono=True, fill=T.MUTED,
+               cls=f"lb{i}{drop}")
         for j, ch in enumerate(bstr):
             x = x0 + j * cw
             win = (ch == "0") or (i == 0)
             s.rect(x, y, cw - 6, 40, fill=T.PANEL2 if win else T.PANEL,
-                   stroke=T.STROKE, rx=4)
+                   stroke=T.STROKE, rx=4, cls=f"cell{i}{drop}")
             s.text(x + (cw - 6) / 2, y + 26, ch, size=14, anchor="middle",
-                   fill=color if win else T.DIM, mono=True, cls=f"c{i}")
+                   fill=color if win else T.DIM, mono=True,
+                   cls=f"bit{i}{drop}")
+        # 胜者标「仲裁中」，输家标「退出」——B/C 在 bit9 就丢了
         s.text(x0 + bits * cw + 8, y + 26, "仲裁中" if i == 0 else "退出",
-               size=11, fill=T.GREEN if i == 0 else T.RED)
-    # 高亮逐位扫描 + 失败节点变暗
-    s.add_style(_seq_flash("c", 3, period=5.0, window=0.7, peak=1, rest=0.55))
+               size=11, fill=T.GREEN if i == 0 else T.RED,
+               cls=f"verdict{i}")
+        # 每一行放一个扫描框，和位列同步推进
+        s.rect(x0, y - 3, cw - 6, 46, fill="none", stroke=color, rx=4, sw=1.5,
+               cls=f"w{i}{drop}")
+
+    css = []
+    # 扫描框按拍推进：11 位 = 11 步，走完停在第 11 位
+    for i in range(3):
+        css.append(css_kf(f"w{i}-scan", [("0%", "transform:translateX(0px)"),
+                                         ("92%", f"transform:translateX({(bits - 1) * cw}px)"),
+                                         ("100%", f"transform:translateX({(bits - 1) * cw}px)")])
+                   + f".w{i}{{animation:w{i}-scan {CYCLE}s steps({bits}) infinite;}}")
+    # 输家在比较到 bit9 时变暗（第 2 拍），胜者保持
+    css.append(css_kf("drop-f", [("0%", "opacity:1"),
+                                 ("14%", "opacity:1"),
+                                 ("20%", "opacity:0.28"),
+                                 ("96%", "opacity:0.28"),
+                                 ("100%", "opacity:1")])
+               + f".drop{{animation:drop-f {CYCLE}s linear infinite;}}")
+    s.add_style("\n".join(css))
 
     s.rect(40, 326, 820, 96, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 350, "为什么叫「非破坏性」仲裁", size=12.5, fill=T.TEXT,

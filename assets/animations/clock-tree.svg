@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="时钟树：8 MHz 晶振如何变成 72 MHz">
 <title>时钟树：8 MHz 晶振如何变成 72 MHz</title>
 <style>
-@keyframes pulse0-tx{0%{transform:translateX(0px)}100%{transform:translateX(8px)}}
-.pulse0{animation:pulse0-tx 1.2s linear infinite 0s;}
-@keyframes pulse1-tx{0%{transform:translateX(0px)}100%{transform:translateX(12px)}}
-.pulse1{animation:pulse1-tx 1.2s linear infinite 0s;}
-@keyframes pulse2-tx{0%{transform:translateX(0px)}100%{transform:translateX(42px)}}
-.pulse2{animation:pulse2-tx 1.2s linear infinite 0s;}
-@keyframes pulse3-tx{0%{transform:translateX(0px)}100%{transform:translateX(12px)}}
-.pulse3{animation:pulse3-tx 1.2s linear infinite 0s;}
+@keyframes pulse0-hop{0%{transform:translateX(0px);opacity:0}0.00%{transform:translateX(0px);opacity:1}17.31%{transform:translateX(8px);opacity:1}20.31%{transform:translateX(8px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pulse0{animation:pulse0-hop 5.2s linear infinite;}
+@keyframes pulse1-hop{0%{transform:translateX(0px);opacity:0}25.00%{transform:translateX(0px);opacity:1}42.31%{transform:translateX(12px);opacity:1}45.31%{transform:translateX(12px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pulse1{animation:pulse1-hop 5.2s linear infinite;}
+@keyframes pulse2-hop{0%{transform:translateX(0px);opacity:0}50.00%{transform:translateX(0px);opacity:1}67.31%{transform:translateX(42px);opacity:1}70.31%{transform:translateX(42px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pulse2{animation:pulse2-hop 5.2s linear infinite;}
+@keyframes pulse3-hop{0%{transform:translateX(0px);opacity:0}75.00%{transform:translateX(0px);opacity:1}92.31%{transform:translateX(12px);opacity:1}95.31%{transform:translateX(12px);opacity:0}100%{transform:translateX(0px);opacity:0}}
+.pulse3{animation:pulse3-hop 5.2s linear infinite;}
 
-.clk{stroke-dasharray:5 11;animation:clk-flow 1.2s linear infinite;}@keyframes clk-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
+.clk{stroke-dasharray:5 11;animation:clk-flow 2.6s linear infinite;}@keyframes clk-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-16px}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 

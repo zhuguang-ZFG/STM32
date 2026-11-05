@@ -225,7 +225,11 @@ def adc_sar_weights() -> Svg:
         s.rect(x, 100, 128, 100, fill=col, rx=8, cls=f"w{i}", opacity=0.12)
         if i < 5:
             s.arrow(x + 132, 150, x + 136, 150, color=T.STROKE, sw=2)
-    css.append(_step_highlight("w", 6, period=6.5, window=0.18))
+            # 台阶之间跟一个 token，眼睛能顺着它从 b11 走到 b0
+            s.circle(x + 142, 150, 4.6, fill=col, cls=f"d{i}")
+    css.append(_step_highlight("w", 6, period=8.4, window=0.18))
+    css.append(_step_highlight("d", 6, period=8.4, window=0.18, peak=1.0,
+                               rest=0.12))
 
     s.title_block(40, 240, "Sample time vs soft sources (ADCCLK ≤ 14 MHz)", color=T.CYAN)
     rows = [

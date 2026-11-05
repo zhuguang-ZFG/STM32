@@ -183,12 +183,32 @@ def adc_sar() -> Svg:
         b = 11 - i
         x = 40 + i * 68
         s.rect(x, 108, 62, 42, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(x + 31, 126, f"bit{b}", size=10, anchor="middle", fill=T.MUTED)
-        s.text(x + 31, 142, "?", size=13, anchor="middle", fill=T.DIM, mono=True)
+        s.text(x + 31, 124, f"bit{b}", size=10, anchor="middle", fill=T.MUTED)
         s.rect(x, 108, 62, 42, fill=T.AMBER, rx=8, opacity=0.18, cls=f"s{i}")
-    s.add_style(_seq_flash("s", 12, period=6.0, window=0.45, peak=0.4, rest=0.08))
-    s.text(40, 172, "当前正在比较的位会被点亮；比较完就固定下来（1 或 0）",
-           size=11, fill=T.DIM)
+    # 12 拍 × 0.7 s：每一位比较完就把判定结果写进格子，读完能看见 0x800 成形
+    PERIOD = 8.4
+    s.add_style(_seq_flash("s", 12, period=PERIOD, window=0.45, peak=0.4, rest=0.08))
+    resolved = [1] + [0] * 11
+    css = []
+    for i in range(12):
+        b = 11 - i
+        x = 40 + i * 68
+        s.text(x + 31, 143, str(resolved[i]), size=14, anchor="middle",
+               fill=T.AMBER if resolved[i] else T.MUTED, weight="700", mono=True,
+               cls=f"r{i}")
+        t0 = i / 12 * 100
+        css.append(css_kf(f"r{i}-fix", [
+            ("0%", "opacity:0"),
+            (f"{t0:.2f}%", "opacity:0"),
+            (f"{t0 + 3.4:.2f}%", "opacity:1"),
+            ("96%", "opacity:1"),
+            ("99%", "opacity:0"),
+            ("100%", "opacity:0"),
+        ]))
+        css.append(f".r{i}{{animation:r{i}-fix {PERIOD}s linear infinite;}}")
+    s.add_style("\n".join(css))
+    s.text(40, 172, "当前正在比较的位会被点亮；判定为 1 的位留下，判定为 0 的位也留下"
+                    "（例：VIN = 0.5 × VREF → 0x800）", size=11, fill=T.DIM)
 
     s.rect(40, 194, 400, 150, fill=T.PANEL, stroke=T.STROKE, rx=8)
     s.text(58, 220, "比较器在比较什么", size=12.5, fill=T.TEXT, weight="700")
@@ -533,13 +553,25 @@ def lowpower_wakeup() -> Svg:
         s.text(60, y + 68, note, size=10, fill=T.MUTED)
         s.text(470, y + 26, "唤醒源：" + wake, size=11, fill=T.CYAN)
         s.text(470, y + 48, "典型电流：" + cur, size=11, fill=T.AMBER)
-        w = int(120 * (0.9 - i * 0.35))
+        # 三档按「先量 Sleep、再量 Stop、再量 Standby」的顺序长出条形，
+        # 长度就是相对电流：条形自己会说明谁更省
+        target = 0.9 - i * 0.35
         s.rect(470, y + 58, 120, 12, fill=T.BG2, stroke=T.STROKE, rx=2)
-        s.rect(471, y + 59, w, 10, fill=color, rx=2, cls=f"pw{i}")
-    s.add_style("\n".join(
-        css_kf(f"pw{i}-f", [("0%,100%", "opacity:.35"), ("50%", "opacity:1")])
-        + f".pw{i}{{animation:pw{i}-f 2.4s ease-in-out infinite {i * 0.4:.1f}s;}}"
-        for i in range(3)))
+        s.rect(471, y + 59, 118, 10, fill=color, rx=2, cls=f"pw{i}")
+        s.text(598, y + 68, f"相对电流 {target:.2f}", size=10, fill=T.MUTED)
+    CYCLE = 6.6
+    css = []
+    for i in range(3):
+        t0 = i * 22 + 6
+        css.append(css_kf(f"pw{i}-grow", [
+            ("0%", "transform:scaleX(0)"),
+            (f"{t0:.2f}%", "transform:scaleX(0)"),
+            (f"{t0 + 12:.2f}%", f"transform:scaleX({0.9 - i * 0.35:.3f})"),
+            ("100%", f"transform:scaleX({0.9 - i * 0.35:.3f})"),
+        ]))
+        css.append(f".pw{i}{{animation:pw{i}-grow {CYCLE}s ease-out infinite;"
+                   "transform-box:fill-box;transform-origin:left center;}")
+    s.add_style("\n".join(css))
 
     s.rect(40, 384, 400, 148, fill=T.BG2, stroke=T.STROKE, rx=8)
     s.text(58, 410, "省电的五个动作（按收益排序）", size=12.5, fill=T.TEXT,

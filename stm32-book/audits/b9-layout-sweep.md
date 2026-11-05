@@ -193,3 +193,24 @@
 3. **`gen_animations.py` 仍不是 `g0-boot-swd` / `uart-frame` 的权威写入者**：全量重跑会把这两个文件退回旧标题与旧关键帧时序。本批继续用 `git checkout` 还原，结论不变（§10）。
 
 对账后的最终状态：`measure_svg.py --all` → `324 files / 0 bad / 0 issues`；`test_sample_svg_c` 1 passed、`ROWS` 324 行；`check_assets` 全部通过（链接 1,964/1,964）；`build_html --check` zh / en 均 PASS；`audit_book` 与 b8 的字段差异只有 ch02 的字符数（caption 重写所致，+81 zh / +163 en），deficit 与 parity 一律不变。
+
+## 13. 动画提升（B10）
+
+版面清扫解决的是「不出界、不压字」，这一节解决「动不动、看懂不懂」。先用脚本给 65 张动画打分（循环周期、是否有物体位移、有无缓动/阶跃、有无阶段标记、有无 reduced-motion），再逐张改。
+
+| 文件 | 改前 | 改后 |
+|---|---|---|
+| `i2c-transaction` | 位表 + 只有 SCL 一条波形，0 个动画 | 静态时序图：SDA 与 SCL 都画出来，每拍一个采样点 + 竖直引导线（**保持无 `<style>`**：契约测试要求这张能直接打印，动起来的是配套 `i2c-timing.gif`） |
+| `clock-tree` | 4 个 token 各自 1.2 s 空转，读不出先后 | 一个时钟脉冲按 HSE→PLL→SYSCLK→HCLK 顺序走，每跳 1.3 s、总 5.2 s；虚线流动放慢到 2.6 s |
+| `spi-transfer` | 1.6 s 走完 4 个 bit，SCK 波形是死的 | 3.4 s / 4 个 bit，上升沿上 8 个采样点按拍点亮，和移动的 bit 同步 |
+| `can-arbitration` | 整行一起闪（`c0/c1/c2` 类挂在每一行所有位上），看不到「第几位分出胜负」 | 扫描框按 11 位逐位推进（6.6 s，`steps(11)`），B/C 在 bit9 输掉时整行降到 28 % 不透明度，胜者保持「仲裁中」 |
+| `adc-sar` | 12 个格子一直写「?」，正文却说「比较完就固定下来」 | 每拍把判定结果写进格子（0x800 逐位成形），8.4 s 走完 12 拍；「?」占位符删掉，避免和结果文字重叠 |
+| `sample-09-adc-sar-weights` | 台阶只有高亮走，没有东西在走 | 台阶之间加 token（`d{i}`），和高亮同步从 b11 走到 b0；周期 6.5→8.4 s |
+| `boot-sequence` | 8 个步骤逐个亮，但看不出「CPU 在哪」 | 加 PC 指针：第一行走完换行，第二行接着走，`steps(4)` 跳格；周期 7.2→9.6 s |
+| `lowpower-wakeup` | 三根电流条一起呼吸（2.4 s 脉冲），长度不变 | 按 Sleep→Stop→Standby 顺序长出条形（6.6 s），条形长度就是相对电流 0.90 / 0.55 / 0.20，旁边标数值 |
+
+顺带修掉两处几何隐患：`rx=6` 不在锁允许的 `{2,4,8}` 里（新增扫描框用错了），以及 SAR 的 `?` 与结果文字同位重叠（12 处 OVER）。
+
+验证：`measure_svg --all` → 324 / 0 / 0；`test_sample_svg_c` 1 passed（`ROWS` 仍 324，重锁 9 行）；`check_assets` 全通过；`slop_lint` 干净；全量 pytest 188 passed（5 分 50 秒）。
+
+保留未动的一张：`i2c-transaction` 要真正动起来必须去掉「静态可打印」的契约测试断言（`assertNotIn("<style", i2c)`），这属于改测试策略，按规矩需要所有者点头，所以本轮只把它画得更完整（补 SDA 波形与采样点），动画仍由 `i2c-timing.gif` 承担。
