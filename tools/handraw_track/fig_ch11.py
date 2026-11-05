@@ -24,9 +24,11 @@ def wwdg_window():
     f.rect(ax0 + 360, ay - 34, 200, 68, color=GREEN_D, fill=WHITE, sw=2.4)
     f.text(ax0 + 460, ay + 12, "安全喂狗区", size=20, color=GREEN_D,
            anchor="middle", weight="bold")
-    f.rect(ax0 + 560, ay - 34, 512, 68, color=RED, fill=WHITE, sw=2.4)
-    f.text(ax0 + 816, ay + 12, "喂晚了：减穿 0x40，T6 清零，复位", size=20,
+    f.rect(ax0 + 560, ay - 34, 312, 68, color=RED, fill=WHITE, sw=2.4)
+    f.text(ax0 + 716, ay - 8, "喂晚了：减穿 0x40", size=19,
            color=RED, anchor="middle", weight="bold")
+    f.text(ax0 + 716, ay + 22, "T6 清零，复位", size=14,
+           color=RED, anchor="middle")
     # 轴与刻度
     f.stroke([(ax0, ay + 44), (ax1, ay + 44)], color=INK, sw=2.6, amp=1.2)
     ticks = [("0x7F", ax0, "起"), ("0x50", ax0 + 360, "W"), ("0x40", ax0 + 560, ""),

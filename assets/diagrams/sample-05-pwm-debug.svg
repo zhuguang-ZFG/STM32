@@ -32,7 +32,7 @@
 <text x="374" y="356" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">TIM3_CCER bit 0 = 1</text>
 <text x="374" y="378" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CCMR1 OC1M = 110</text>
 <text x="374" y="406" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CC1E = 0 → OC1 到不了引脚</text>
-<rect x="680" y="300" width="250" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<rect x="680" y="300" width="232" height="140" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="694" y="328" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">环 ③ GPIO 复用</text>
 <text x="694" y="356" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">CRL[27:24] = 0xB</text>
 <text x="694" y="378" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">TIM3_REMAP = 00</text>
@@ -41,9 +41,9 @@
 <polygon points="358.00,370.00 351.00,373.50 351.00,366.50" fill="#1b5c45" opacity="1"/>
 <line x1="612" y1="370" x2="671" y2="370" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="678.00,370.00 671.00,373.50 671.00,366.50" fill="#1b5c45" opacity="1"/>
-<circle cx="922" cy="370" r="26" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="2"/>
-<text x="922" y="366" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PA6</text>
-<text x="922" y="384" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 16 脚</text>
+<circle cx="932" cy="370" r="20" fill="#fbfaf7" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="932" y="368" font-size="11" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PA6</text>
+<text x="932" y="384" font-size="8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 16 脚</text>
 <rect x="680" y="456" width="250" height="54" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
 <text x="692" y="478" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">REMAP ≠ 00 → 波形跑到</text>
 <text x="692" y="496" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PB4 或 PC6，PA6 安静</text>

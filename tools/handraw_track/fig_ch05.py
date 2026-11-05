@@ -36,36 +36,36 @@ def capture_pulse():
            anchor="middle")
 
     # ---- 中：三个账本盒子 ----
-    by, bh = 432, 128
+    by, bh = 428, 140
     f.rect(84, by, 300, bh, color=GREEN_D, fill=WHITE, sw=2.4)
-    f.text(100, by + 34, "高电平", size=22, color=GREEN_D, weight="bold")
-    f.multi(100, by + 66, ["0504 − 0004 = 500 个数", "× 1 µs"],
-            size=19, color=INK, lh=26)
-    f.text(100, by + 112, "= 500 µs", size=24, color=GREEN_D, weight="bold")
+    f.text(100, by + 32, "高电平", size=22, color=GREEN_D, weight="bold")
+    f.multi(100, by + 64, ["0504 − 0004 = 500 个数", "× 1 µs"],
+            size=18, color=INK, lh=25)
+    f.text(100, by + 120, "= 500 µs", size=24, color=GREEN_D, weight="bold")
 
     f.rect(412, by, 344, bh, color=BLUE_D, fill=WHITE, sw=2.4)
-    f.text(428, by + 34, "周期", size=22, color=BLUE_D, weight="bold")
-    f.multi(428, by + 66, ["0004 − 0004 = 0：差被吃掉了", "补上 ARR+1 = 1000 个数"],
-            size=19, color=INK, lh=26)
-    f.text(428, by + 112, "= 1 ms → 1 kHz", size=24, color=BLUE_D, weight="bold")
+    f.text(428, by + 32, "周期", size=22, color=BLUE_D, weight="bold")
+    f.multi(428, by + 64, ["0004 − 0004 = 0：差被吃掉了", "补上 ARR+1 = 1000 个数"],
+            size=18, color=INK, lh=25)
+    f.text(428, by + 120, "= 1 ms → 1 kHz", size=24, color=BLUE_D, weight="bold")
 
     f.rect(784, by, 280, bh, color=AMBER_STROKE, fill=WHITE, sw=2.4)
-    f.text(800, by + 34, "占空比", size=22, color=AMBER_STROKE, weight="bold")
-    f.text(800, by + 68, "500 / 1000", size=19, color=INK)
-    f.text(800, by + 112, "= 50%", size=24, color=AMBER_STROKE, weight="bold")
+    f.text(800, by + 32, "占空比", size=22, color=AMBER_STROKE, weight="bold")
+    f.text(800, by + 66, "500 / 1000", size=18, color=INK)
+    f.text(800, by + 120, "= 50%", size=24, color=AMBER_STROKE, weight="bold")
 
     # ---- 下：溢出补偿与计数时钟 ----
-    f.rect(84, 588, 620, 92, color=RED, fill=WHITE, sw=2.4)
-    f.text(100, 618, "溢出要自己补：两个沿之间数到 999 又绕回 0", size=20,
+    f.rect(84, 596, 620, 92, color=RED, fill=WHITE, sw=2.4)
+    f.text(100, 626, "溢出要自己补：两个沿之间数到 999 又绕回 0", size=20,
            color=RED, weight="bold")
-    f.multi(100, 646, ["更新中断里给差值加 ARR+1；或用 PWM 输入模式，硬件两沿一起锁"],
+    f.multi(100, 654, ["更新中断里给差值加 ARR+1；或用 PWM 输入模式，硬件两沿一起锁"],
             size=18, color=INK, lh=26)
 
-    f.rect(732, 588, 332, 92, color=MUTED, fill=WHITE, sw=2.2)
-    f.multi(748, 616, ["72 MHz ÷ (71+1) = 1 MHz", "1 个数 = 1 µs（与 PWM 同组数）"],
+    f.rect(732, 596, 332, 92, color=MUTED, fill=WHITE, sw=2.2)
+    f.multi(748, 624, ["72 MHz ÷ (71+1) = 1 MHz", "1 个数 = 1 µs（与 PWM 同组数）"],
             size=18, color=INK, lh=28)
 
-    f.htext(84, 726, "口诀：捕获锁的是 CNT，两个沿相减再乘计数周期", size=24,
+    f.htext(84, 732, "口诀：捕获锁的是 CNT，两个沿相减再乘计数周期", size=24,
             color=INK, weight="bold", hl=True)
     return f
 

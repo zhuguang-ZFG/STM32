@@ -23,16 +23,16 @@ def multi_def():
            weight="bold")
     f.text(136, 258, "int count;   ← 这是定义", size=18, color=INK)
     # 两个 .c
-    f.rect(520, 176, 250, 82, color=INK, fill=WHITE, sw=2.2)
+    f.rect(520, 176, 250, 88, color=INK, fill=WHITE, sw=2.2)
     f.text(645, 202, "main.c", size=19, color=INK, anchor="middle",
            weight="bold")
-    f.text(536, 234, "#include \"sensor.h\"", size=16, color=MUTED)
-    f.text(536, 250, "→ 定义了一份 count", size=16, color=INK)
-    f.rect(520, 276, 250, 82, color=INK, fill=WHITE, sw=2.2)
-    f.text(645, 302, "motor.c", size=19, color=INK, anchor="middle",
+    f.text(536, 232, "#include \"sensor.h\"", size=15, color=MUTED)
+    f.text(536, 256, "→ 定义了一份 count", size=15, color=INK)
+    f.rect(520, 282, 250, 88, color=INK, fill=WHITE, sw=2.2)
+    f.text(645, 308, "motor.c", size=19, color=INK, anchor="middle",
            weight="bold")
-    f.text(536, 334, "#include \"sensor.h\"", size=16, color=MUTED)
-    f.text(536, 350, "→ 又定义了一份 count", size=16, color=INK)
+    f.text(536, 338, "#include \"sensor.h\"", size=15, color=MUTED)
+    f.text(536, 362, "→ 又定义了一份 count", size=15, color=INK)
     f.arrow(420, 244, 512, 216, color=RED, bend=0.08)
     f.arrow(420, 260, 512, 312, color=RED, bend=-0.08)
     f.rect(836, 226, 216, 96, color=RED, fill=WHITE, sw=2.2)
@@ -50,7 +50,7 @@ def multi_def():
     f.rect(520, 454, 250, 82, color=GREEN_D, fill=WHITE, sw=2.2)
     f.text(645, 480, "sensor.c", size=19, color=GREEN_D, anchor="middle",
            weight="bold")
-    f.text(536, 512, "int count = 0;   ← 全项目只有这一份", size=15, color=INK)
+    f.text(536, 512, "int count = 0; ← 只有这一份", size=14, color=INK)
     f.text(836, 470, "main.c / motor.c", size=18, color=INK, weight="bold")
     f.text(836, 498, "拿同一份符号用，", size=16, color=MUTED)
     f.text(836, 520, "链接一次通过 ✓", size=17, color=GREEN_D, weight="bold")

@@ -215,26 +215,26 @@ def clock_tree() -> Svg:
     node(210, 392, 180, 56, "TIM2–7 = 72", "定时器时钟", T.BLUE)
     # 右下三路
     branches = [
-        ("ADC 预分频 ÷6", "ADCCLK = 12 MHz", "ADCPRE=01 → 18 MHz，越过 14 MHz 上限", T.AMBER, 292),
-        ("USBPRE=0", "USBCLK = 48 MHz", "USBPRE=1 → 72 MHz，读描述符失败", T.AMBER, 372),
-        ("pin 29 PA8 · MCO", "PLL/2 = 36 MHz", "MCO=111；直送 72 MHz 越过 50 MHz 上限", T.AMBER, 452),
+        ("ADC 预分频 ÷6", "ADCCLK = 12 MHz", "ADCPRE=01 → 18 MHz，越过 14 MHz 上限", T.AMBER, 384),
+        ("USBPRE=0", "USBCLK = 48 MHz", "USBPRE=1 → 72 MHz，读描述符失败", T.AMBER, 456),
+        ("pin 29 PA8 · MCO", "PLL/2 = 36 MHz", "MCO=111；直送 72 MHz 越过 50 MHz 上限", T.AMBER, 528),
     ]
     for label, val, note, c, by in branches:
-        canvas.arrow(577, 222, 702, by + 37, color=T.MUTED, sw=1.5, head=6, dash="4 4")
-        canvas.rect(704, by, 216, 74, fill=T.BG, stroke=c, rx=4)
-        canvas.text(812, by + 22, label, size=12, fill=c, anchor="middle", weight="700")
-        canvas.text(812, by + 44, val, size=11, fill=T.TEXT, anchor="middle", mono=True)
-        canvas.text(812, by + 63, note, size=10, fill=T.MUTED, anchor="middle")
+        canvas.arrow(577, 222, 702, by + 32, color=T.MUTED, sw=1.5, head=6, dash="4 4")
+        canvas.rect(704, by, 216, 64, fill=T.BG, stroke=c, rx=4)
+        canvas.text(812, by + 20, label, size=12, fill=c, anchor="middle", weight="700")
+        canvas.text(812, by + 38, val, size=11, fill=T.TEXT, anchor="middle", mono=True)
+        canvas.text(812, by + 55, note, size=10, fill=T.MUTED, anchor="middle")
 
     # ---- 失败分支：HSE 停振 ----
-    canvas.rect(40, 540, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 568, "失败路径  HSE 停振：CSS 时钟安全系统", size=15, fill=T.RED, weight="700")
-    canvas.text(56, 596, "SYSCLK 立刻回到 HSI 8 MHz，PLL 关掉——USART1 的 0x271 在 8 MHz 上只剩 12800", size=13, fill=T.TEXT)
-    canvas.text(56, 622, "NMI 一直进来，直到软件写 CSSC；同一棵 ×9 的树配 LATENCY=0 也取指失败", size=13, fill=T.RED)
+    canvas.rect(40, 608, 880, 116, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 636, "失败路径  HSE 停振：CSS 时钟安全系统", size=15, fill=T.RED, weight="700")
+    canvas.text(56, 662, "SYSCLK 立刻回到 HSI 8 MHz，PLL 关掉——USART1 的 0x271 在 8 MHz 上只剩 12800", size=13, fill=T.TEXT)
+    canvas.text(56, 686, "NMI 一直进来，直到软件写 CSSC；同一棵 ×9 的树配 LATENCY=0 也取指失败", size=13, fill=T.RED)
 
-    canvas.rect(40, 686, 880, 90, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 714, "旁注  互联型（F105/F107）第 8.3.2 节在这颗 C8 上作废", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 740, "OTGFSPRE、PLLMUL 的 000x 保留与 x6.5 都不写进这颗料；0111 仍是 ×9，0000 仍是 ×2；无源晶振不开 bypass", size=12, fill=T.TEXT)
+    canvas.rect(40, 738, 880, 74, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 764, "旁注  互联型（F105/F107）第 8.3.2 节在这颗 C8 上作废", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 790, "OTGFSPRE、PLLMUL 的 000x 保留与 x6.5 都不写进这颗料；0111 仍是 ×9，0000 仍是 ×2；无源晶振不开 bypass", size=12, fill=T.TEXT)
     _credit(canvas, "自绘。树来自 RM0008 Rev 21 第 7.3.2 节与第 7.2.7 节；脚位来自 DS5319 Rev 20 图 8。")
     return canvas
 

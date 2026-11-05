@@ -54,16 +54,16 @@ def pwm_debug() -> Svg:
          "MODE6 = 00 → 脚还是输入"),
     ]
     for rx_, title, l1, l2, l3 in rings:
-        canvas.rect(rx_, 300, 250, 140, fill=T.PANEL, stroke=T.CYAN, rx=8)
+        canvas.rect(rx_, 300, 232 if rx_ == 680 else 250, 140, fill=T.PANEL, stroke=T.CYAN, rx=8)
         canvas.text(rx_ + 14, 328, title, size=14, fill=T.CYAN, weight="700")
         canvas.text(rx_ + 14, 356, l1, size=12, fill=T.TEXT, mono=True)
         canvas.text(rx_ + 14, 378, l2, size=12, fill=T.TEXT, mono=True)
         canvas.text(rx_ + 14, 406, l3, size=11, fill=T.GREEN)
     canvas.arrow(292, 370, 358, 370, color=T.GREEN, sw=2, head=7)
     canvas.arrow(612, 370, 678, 370, color=T.GREEN, sw=2, head=7)
-    canvas.circle(922, 370, 26, fill=T.BG, stroke=T.GREEN, sw=2)
-    canvas.text(922, 366, "PA6", size=12, fill=T.GREEN, anchor="middle", weight="700")
-    canvas.text(922, 384, "第 16 脚", size=9, fill=T.MUTED, anchor="middle")
+    canvas.circle(932, 370, 20, fill=T.BG, stroke=T.GREEN, sw=2)
+    canvas.text(932, 368, "PA6", size=11, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(932, 384, "第 16 脚", size=8, fill=T.MUTED, anchor="middle")
 
     # 环① 的专属症状
     canvas.rect(680, 456, 250, 54, fill=T.BG2, stroke=T.AMBER, rx=4)

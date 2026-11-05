@@ -53,20 +53,20 @@ def ab_partition():
                             ("A 槽", 46, GREEN_D), ("B 槽", 46, RED)], scale)
     f.stroke([(end_x, 356), (end_x, 434)], color=INK, sw=2.4, amp=1.0)
     f.text(end_x - 8, 448, "0x08010000", size=16, color=INK, anchor="end")
-    f.text(84, 462, "B 槽从 0x08010000 起步——正好从闪存的结束地址开始，直到 0x0801B800 都在片外",
+    f.text(84, 474, "B 槽从 0x08010000 起步——正好从闪存的结束地址开始，直到 0x0801B800 都在片外",
            size=18, color=RED, weight="bold")
-    f.htext(84, 500, "16 + 2 + 46 + 46 = 110 KB，C8 装不下", size=21,
+    f.htext(84, 512, "16 + 2 + 46 + 46 = 110 KB，C8 装不下", size=21,
             color=RED, weight="bold", hl=True)
 
     # ---- 真要双分区 ----
-    f.rect(84, 528, 1008, 96, color=BLUE_D, fill=WHITE, sw=2.4)
-    f.text(100, 558, "真要双分区，是另一套设计", size=21, color=BLUE_D,
+    f.rect(84, 542, 1008, 96, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(100, 572, "真要双分区，是另一套设计", size=21, color=BLUE_D,
            weight="bold")
-    f.multi(100, 588, ["把 46 KB 切成两个 23 KB 槽，APP 也要跟着缩小",
+    f.multi(100, 602, ["把 46 KB 切成两个 23 KB 槽，APP 也要跟着缩小",
                        "先算地址再画内存图：0x08000000 + 0x1B800 = 0x0801B800，一看越界就该停手"],
             size=18, color=INK, lh=27)
 
-    f.text(84, 672, "闪存容量与结束地址按 DS5319 的存储器表；第 12 章的单槽方案见该章正文", size=17,
+    f.text(84, 686, "闪存容量与结束地址按 DS5319 的存储器表；第 12 章的单槽方案见该章正文", size=17,
            color=MUTED)
     return f
 

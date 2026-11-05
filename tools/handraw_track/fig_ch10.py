@@ -37,7 +37,7 @@ def channel_map():
         else:
             f.text(300, y + 27, "（空着）", size=16, color=MUTED)
         y += 46
-    f.text(140, 546, "没有 DMA2 —— 「DMA2（5 通道）」那一行属于大容量型号", size=17,
+    f.text(140, 546, "没有 DMA2——「5 通道」那行是大容量型号", size=17,
            color=RED, weight="bold")
 
     # ---- 右：F4 编号搬过来的下场 ----
