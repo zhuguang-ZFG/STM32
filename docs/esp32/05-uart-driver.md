@@ -84,6 +84,8 @@ ISR 只负责把字节从 FIFO 搬进 ring buffer、把事件丢进队列。**�
 
 ## 三、uart_config_t：八字段落位
 
+![uart_config_t 八字段落位到 CLKDIV/LCR/CONF0](/figures/esp32-05-uart-config.svg)
+
 ```c
 uart_config_t cfg = {
     .baud_rate  = 115200,          // 波特率（驱动内部算分频）

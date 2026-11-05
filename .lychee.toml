@@ -56,10 +56,6 @@ exclude = [
   # 连续两轮复现，浏览器/curl --http1.1 均可开），非死链。月度复查；换稳定镜像或
   # lychee 修复该协商问题后删除本条。
   '^https?://www\.st\.com/resource/',
-  # 整书 PDF 由 Book CI 构建并经 deploy 发布到 gh-pages；2026-10-26 前 Book CI 因
-  # CI 环境缺 pytest 一直未绿，线上从未有过该产物。pytest 已入 requirements 修复，
-  # 本次 push 的巡检仍先于部署跑，故临时放行——**PDF 上线后的首次月度复查必须删除本条**。
-  '^https?://zhuguang-zfg\.github\.io/mcu/book/mcu-deep-book-print\.pdf',
 ]
 
 # 外站常见 30x 链（doi → 出版社登录页、CDN 跳转）需要多于默认 5 跳。
