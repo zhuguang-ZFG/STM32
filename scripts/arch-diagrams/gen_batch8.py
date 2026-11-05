@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """批 8 架构图生成器（G3 / S15 / R0 / F7）。铁律同前：边坐标逐条手工核算。
 
 坐标依据 stack-diagram/references/geometry.md：节点框 132×100（left=cx-66），
@@ -6,10 +5,11 @@
 下 tile 顶 top-4」，肘形的横段一律放在两行之间的空带里，逐条确认该 x 走廊在
 y1..y2 之间不穿过任何节点框。
 """
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = io.open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
+TEMPLATE = open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
 
 
 def group(x, y, w, h, label, icon=None, kind='ga'):
@@ -210,5 +210,5 @@ SPECS.append(dict(
 for spec in SPECS:
     html = build_html(spec)
     out = os.path.join(ROOT, spec['file'] + '.html')
-    io.open(out, 'w', encoding='utf-8', newline='\n').write(html)
+    open(out, 'w', encoding='utf-8', newline='\n').write(html)
     print('written', out)

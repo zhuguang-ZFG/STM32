@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 """批 4 架构图生成器：数据 → stack-diagram 源 HTML。
 铁律同批 3：边坐标逐条手工核算（节点 132×100、tile mid=+30、肘形走廊走空带、
 横边 tile 缘 ±34/4、竖边 box-bottom→tile-top / 反向终点 box底+4）。"""
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = io.open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
+TEMPLATE = open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
 
 def group(x, y, w, h, label, icon=None, kind='ga'):
     img = f'<img src="%%ICON_{icon}%%" alt="">' if icon else ''
@@ -128,5 +128,5 @@ SPECS.append(dict(
 for spec in SPECS:
     html = build_html(spec)
     out = os.path.join(ROOT, spec['file'] + '.html')
-    io.open(out, 'w', encoding='utf-8', newline='\n').write(html)
+    open(out, 'w', encoding='utf-8', newline='\n').write(html)
     print('written', out)

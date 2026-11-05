@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 """批 3 架构图生成器：数据 → stack-diagram 源 HTML。
 坐标规则内建（geometry.md）：节点 132×100、tile mid=+30、组框 bottom≥last tile top+150、
 竖边 box-bottom→tile-top（反向则终点=box底+4）、肘形边走空带走廊、横边 tile 缘 ±34/4。
 边坐标逐条手工核算，生成器只做确定性渲染。"""
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-TEMPLATE = io.open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
+TEMPLATE = open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
 
 def group(x, y, w, h, label, icon=None, kind='ga'):
     img = f'<img src="%%ICON_{icon}%%" alt="">' if icon else ''
@@ -163,5 +163,5 @@ SPECS.append(dict(
 for spec in SPECS:
     html = build_html(spec)
     out = os.path.join(ROOT, spec['file'] + '.html')
-    io.open(out, 'w', encoding='utf-8', newline='\n').write(html)
+    open(out, 'w', encoding='utf-8', newline='\n').write(html)
     print('written', out)

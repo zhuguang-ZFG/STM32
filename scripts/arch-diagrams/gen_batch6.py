@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 """批 6 架构图生成器。铁律同前：边坐标逐条手工核算。
 批 6 新增：tile dark（深底）表示断电域，由 build_html 注入 CSS。"""
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = io.open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
+TEMPLATE = open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
 
 DARK_CSS = '.tile.dark { background: var(--color-graphite); border-color: var(--color-graphite); } .tile.dark img { opacity: .35; }'
 
@@ -119,5 +119,5 @@ SPECS[-1]['legend'] = [('睡得更深 →', ' n dash')]
 for spec in SPECS:
     html = build_html(spec)
     out = os.path.join(ROOT, spec['file'] + '.html')
-    io.open(out, 'w', encoding='utf-8', newline='\n').write(html)
+    open(out, 'w', encoding='utf-8', newline='\n').write(html)
     print('written', out)

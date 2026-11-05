@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 """批 5 架构图生成器。铁律同前：边坐标逐条手工核算。"""
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = io.open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
+TEMPLATE = open(os.path.join(ROOT, 'boot-sequence.html'), encoding='utf-8').read()
 
 def group(x, y, w, h, label, icon=None, kind='ga'):
     img = f'<img src="%%ICON_{icon}%%" alt="">' if icon else ''
@@ -150,5 +150,5 @@ SPECS.append(dict(
 for spec in SPECS:
     html = build_html(spec)
     out = os.path.join(ROOT, spec['file'] + '.html')
-    io.open(out, 'w', encoding='utf-8', newline='\n').write(html)
+    open(out, 'w', encoding='utf-8', newline='\n').write(html)
     print('written', out)

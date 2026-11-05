@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 """批 7 金句卡生成器：16 张（零改写，文字全部取自各章「一句话记住」原文）。"""
-import io, os, re
+import os
+import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = ROOT
@@ -61,7 +61,7 @@ for c in CARDS:
         r += f'      <div class="row"><span class="mark" style="color:var(--accent)">{mark}</span><span class="t">{t}</span>{dd}</div>\n'
     rows_html += TPL.format(sid=c['sid'], chap=c['chap'], giant=c['giant'], rows=r.rstrip('\n'), src=c['src'])
 
-style = re.search(r'<style>[\s\S]*?</style>', io.open(CSS_SRC, encoding='utf-8').read()).group(0)
+style = re.search(r'<style>[\s\S]*?</style>', open(CSS_SRC, encoding='utf-8').read()).group(0)
 style = style.replace('.giant { font-size:76px;', '.giant { font-size:56px;')
 
 page = f'''<!DOCTYPE html>
@@ -75,5 +75,5 @@ page = f'''<!DOCTYPE html>
 {rows_html}</body>
 </html>
 '''
-io.open(f'{OUT}/batch7.html', 'w', encoding='utf-8', newline='\n').write(page)
+open(f'{OUT}/batch7.html', 'w', encoding='utf-8', newline='\n').write(page)
 print('batch7.html written,', len(CARDS), 'cards')
