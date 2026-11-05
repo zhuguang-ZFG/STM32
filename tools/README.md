@@ -2,7 +2,7 @@
 
 本目录里画 SVG 和 GIF 的脚本只用 Python 标准库。
 `gen_narrated.py` 与 `gen_long_lesson.py` 是例外：海报要 Pillow，SVG 栅格化要 Playwright + Chromium，成片还要 edge-tts、ffmpeg，以及能访问微软语音服务的网络。
-`assets/photos/` 的两张 CC0 实拍是带来源、许可和 SHA-256 记录的外部二进制资产，不由这些生成脚本重建。`make assets` 只重画海报，不重跑配音（在线语音不是逐比特稳定的）。
+`assets/photos/` 的五张第三方实拍（CC0 ×2、CC BY-SA 4.0 ×2、MIT ×1）是带来源、许可和 SHA-256 记录的外部二进制资产，不由这些生成脚本重建。`make assets` 只重画海报，不重跑配音（在线语音不是逐比特稳定的）。
 
 ## 快速开始
 

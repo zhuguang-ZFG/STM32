@@ -121,7 +121,7 @@ python stm32-book/build_html.py --lang en --check
 ## 许可
 
 - 书稿原创正文、版式和原创图片：CC BY 4.0；
-- `assets/photos/` 两张第三方 Nucleo-64 实拍：保持原 CC0 1.0，作者、原图页和处理记录见该目录 README；
+- `assets/photos/` 五张第三方实拍保持原许可：Nucleo-64 ×2 为 CC0 1.0，Blue Pill ×2 为 CC BY-SA 4.0，Blue Pill ×1 为 MIT；作者、原图页和处理记录见该目录 README；
 - 构建器、测试与代码片段：MIT；
 - 外部手册和仓库只作链接与事实引用，不随本书再分发；各自权利归原权利人。
 

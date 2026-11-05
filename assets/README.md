@@ -1,6 +1,6 @@
 # 可视化资产清单
 
-> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的两张实拍来自 Wikimedia Commons，均为 CC0，作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
+> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的五张第三方实拍保持原许可（CC0 ×2、CC BY-SA 4.0 ×2、MIT ×1），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
 > ```bash

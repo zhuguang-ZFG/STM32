@@ -115,7 +115,8 @@ class BookAuditTests(unittest.TestCase):
                 "sample-03-gpio-bsrr-flow.svg", "sample-03-gpio-led.svg", "ch03-pa0-ok-pc13-wrong.png",
                 "ch03-gpio-three-questions.png", "ch03-push-pull-vs-open-drain.png", "sample-03-current-path.svg",
                 "ch03-led-current-limit.png", "sample-03-moder-map.svg", "bluepill-stm32f103c8t6.jpg",
-                "bluepill-stm32f103c8t6-popolon.jpg", "stack-gpio-pc13-led.png", "pinout-bluepill.svg",
+                "bluepill-stm32f103c8t6-popolon.jpg", "bluepill-stm32f103c8t6-tardate-usb.jpg",
+                "stack-gpio-pc13-led.png", "pinout-bluepill.svg",
                 "led-blink.gif", "sample-03-exti-vs-poll.svg", "ch03-poll-vs-exti.png",
             ),
             "04": (

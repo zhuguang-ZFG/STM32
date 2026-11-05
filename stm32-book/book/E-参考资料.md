@@ -30,10 +30,10 @@
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/app-e-license.png" width="760" alt="Handraw：许可边界（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。CC BY / CC0 / MIT；第三方手册不转载。非实拍。</sub>
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。CC BY / CC0 / CC BY-SA / MIT；第三方手册不转载。非实拍。</sub>
 </p>
 - `docs/`、除 `assets/photos/` 外的原创图形资产与本书原创正文/版式：**CC BY 4.0**。转载或改编须署名、链接来源并说明修改。
-- `assets/photos/` 中两张 Nucleo-64 实拍保持原 **CC0 1.0**；作者、原图页、处理尺寸和 SHA-256 见照片目录 README。
+- `assets/photos/` 中五张第三方实拍保持原许可：两张 Nucleo-64 为 **CC0 1.0**，两张 Blue Pill（Avandalen、Popolon）为 **CC BY-SA 4.0**，一张 Blue Pill（Paul Gallagher / tardate）为 **MIT**；作者、原图页、处理尺寸和 SHA-256 见照片目录 README。
 - `examples/`、`tools/` 与代码片段：**MIT**。完整条款以仓库根 `LICENSE` 为准。
 - ST、Arm、FreeRTOS、USB-IF、IETF、OASIS、Wokwi、Renode 与第三方仓库内容：本书只提供链接、文档号、少量必要事实和独立表述，不再分发其手册、规范或源码；各自权利与商标归原权利人。
 - STM32、STM32Cube、Nucleo、Discovery、Keil、IAR、FreeRTOS 等名称与标识归各自权利人。本项目与这些公司没有隶属关系。
