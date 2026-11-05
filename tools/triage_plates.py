@@ -238,7 +238,11 @@ def baud_triage() -> Svg:
     c.title_block(M, 88, "同一 100 µs 窗口：115200 走完 10 位一帧，12800 还卡在起始位")
     frame = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]  # 起始位 + 0x55（LSB 先，8 位）+ 停止位 = 10 位
     c.text(M, 116, "期望 115200：8.68 µs/位，10 位一帧", size=12, fill=T.MUTED)
-    c.waveform(M + 190, 100, 280, 46, frame, color=T.GREEN, sw=1.5)
+    # 100 µs 窗口 = 280 px；10 位一帧 86.8 µs 只占 243 px，其余是空闲高电平
+    fw = 280 * 86.8 / 100
+    c.waveform(M + 190, 100, fw, 46, frame, color=T.GREEN, sw=1.5)
+    c.path(f"M {M + 190 + fw:.1f} {100 + 46 * 0.16:.1f} L {M + 470} {100 + 46 * 0.16:.1f}",
+           stroke=T.GREEN, sw=1.5)
     c.text(M + 478, 128, "≈ 87 µs", size=11, mono=True, fill=T.GREEN)
 
     c.text(M, 176, "实际 12800：78 µs/位（慢 9×）", size=12, fill=T.MUTED)
