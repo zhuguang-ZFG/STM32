@@ -2110,5 +2110,20 @@
   "type": "comparison",
   "chapter": "13",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。A 发 0x100、B 发 0x0F0 逐位比，bit8 上 A 的隐性 1 被显性 0 盖掉退出；B 继续发完不重传；ID 越小优先级越高；不是实拍。"
+ },
+ "illustrations/handraw/ch06-ore-fe.png": {
+  "type": "technical",
+  "chapter": "06",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ORE：RXNE 没人读时字节 2 覆盖移位寄存器；FE：停止位在第 8/9/10 采样点是低，坏字节照样进 DR；清除都是先读 SR（0x00）再读 DR（0x04）；不是实拍。"
+ },
+ "illustrations/handraw/ch10-channel-map.png": {
+  "type": "comparison",
+  "chapter": "10",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 只有一条 DMA1 共 7 通道，ADC1→通道 1、USART1_TX→通道 4、USART1_RX→通道 5；F4 的 DMA2 Stream 5 照搬过来不报错但 CNDTR 不动；不是实拍。"
+ },
+ "illustrations/handraw/ch11-wwdg-window.png": {
+  "type": "technical",
+  "chapter": "11",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。计数器 0x7F 数到 0x3F，W=0x50 分三段：高于 0x50 喂狗立刻复位、[0x40, 0x50] 安全、减穿 0x40 复位；64 格 × 910 µs = 58.25 ms；不是实拍。"
  }
 }

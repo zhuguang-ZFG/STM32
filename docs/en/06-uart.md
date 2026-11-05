@@ -46,6 +46,11 @@ At 115200 and 8N1, one bit is about 8.68 µs and a 10-bit frame is about 86.8 µ
 
 When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The bad byte still lands in `USART_DR`. To clear FE, read SR and then DR; reading DR alone does not clear it. Whether you get an interrupt depends on the RXNE interrupt or EIE in CR3 being enabled. FE does not raise an interrupt on its own, so do not assume a framing error always reaches the interrupt handler.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-ore-fe.png" width="760" alt="Handraw: the ORE overwrite timeline and the FE stop-bit samples (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top half is ORE — RXNE is still unread when byte 2 arrives, the shift register is overwritten, ORE sets, and byte 1 is still in DR; the bottom half is FE — 0xA5 sent LSB first (1 0 1 0 0 1 0 1), the stop bit low at samples 8/9/10, FE set, the bad byte still in DR; the box below gives the clear order: read SR (0x00) first, then DR (0x04). What it proves: neither flag clears itself, the reversed order clears nothing, and FE alone never raises an interrupt. What it does not prove: this is the logic timing at 115200 8N1, not scope waveforms or interrupt latency. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
+</p>
+
 ## Key figures
 
 

@@ -40,6 +40,11 @@ The C8 is medium-density. It has one DMA1 with 7 channels and no DMA2. The "DMA2
 
 The three requests this chapter uses on the C8: ADC1 on DMA1 channel 1, USART1_TX on DMA1 channel 4, USART1_RX on DMA1 channel 5. The full map is in [RM0008 Rev 21 chapter 13](#source-rm0008-dma).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-channel-map.png" width="760" alt="Handraw: the C8's one DMA1 with its seven channels, and what porting F4 numbers does (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the left panel is the C8's single DMA1 with its seven channels and this chapter's three requests in place (ADC1 → channel 1, USART1_TX → channel 4, USART1_RX → channel 5, the rest idle); the right panels are what porting F4 numbers does — the writes raise no error but CNDTR never moves, because the C8 has no DMA2 at all. What it proves: match the request to the channel first; a config that raises no error is not a config that moves data — breakpoint the CNDTR. What it does not prove: this is the medium-density C8 map, not the high-density DMA2 or the F4's FIFO behavior. Source: [RM0008 Rev 21 ch.13](#source-rm0008-dma).</sub>
+</p>
+
 `CNDTR` counts data items not yet moved, in the configured width, not in bytes. With an 8-half-word buffer and `CNDTR` reading 3, `8 − 3 = 5` samples have been written, which is `5 × 2 = 10` bytes. The half-transfer interrupt fires at sample 4, when 8 bytes are written, not 4. Read `CNDTR` as remaining bytes and "3 left" becomes 3 bytes, so every slice you cut is shifted.
 
 In circular mode the hardware reloads `CNDTR` when it reaches zero, so `length − CNDTR` is only the position in the current lap, not cumulative progress. To know where the writer is, use `Size` from the callback and the `old_pos` you saved last time, as Appendix A does.

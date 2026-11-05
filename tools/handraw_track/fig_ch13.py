@@ -15,7 +15,8 @@ CX0 = 300
 def _cell(f, cx, y, s, color=INK, fill=WHITE, sw=2.2, bold=True, tcolor=None):
     f.rect(cx, y, CW, 56, color=color, fill=fill, sw=sw)
     f.text(cx + CW / 2, y + 36, s, size=21, color=tcolor or (color if fill == WHITE
-           else WHITE), anchor="middle", weight="bold" if bold else "normal")
+           else WHITE), anchor="middle", weight="bold" if bold else "normal",
+           halo=(fill == WHITE))
 
 
 def arb_ladder():

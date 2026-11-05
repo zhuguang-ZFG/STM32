@@ -151,7 +151,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "06": (
 
-                "uart-frame.svg", "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
+                "uart-frame.svg", "ch06-ore-fe.png",
+                "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
                 "ch06-uart-frame.png", "uart-idle.gif", "sample-06-frame-annotated.svg",
                 "uart-bits.gif", "sample-06-baud-formula.svg", "ch06-baud-formula.png",
                 "sample-06-baud-triage.svg", "ch06-baud-triage.png", "sample-06-tx-rx-crossover.svg",
@@ -184,7 +185,8 @@ class BookAuditTests(unittest.TestCase):
             ),
             "10": (
 
-                "dma-circular.svg", "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
+                "dma-circular.svg", "ch10-channel-map.png",
+                "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
                 "ch10-dma-cndtr.png", "dma-cndtr.gif", "sample-10-mem2mem-vs-peri.svg",
                 "ch10-mem2mem-vs-peri.png", "sample-10-dma-triage.svg", "ch10-dma-triage.png",
                 "sample-10-dma-phases.svg", "ch10-dma-phases.png", "dma-buffer-ownership.svg",
@@ -204,7 +206,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "11": (
 
-                "iwdg-window.svg", "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
+                "iwdg-window.svg", "ch11-wwdg-window.png",
+                "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
                 "ch11-iwdg-1s.png", "iwdg-1s.gif", "sample-11-backup-domain.svg",
                 "ch11-backup-domain.png", "sample-11-wdg-compare.svg", "ch11-wdg-compare.png",
                 "sample-11-iwdg-math.svg", "ch11-iwdg-math.png", "watchdog-reset-evidence.svg",

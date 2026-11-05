@@ -121,9 +121,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "10-DMA.md": (
-        15,
+        16,
         (
             "dma-circular.svg",
+            "ch10-channel-map.png",
             "sample-10-dma-circular-ht.svg",
             "sample-10-dma-cndtr.svg",
             "ch10-dma-cndtr.png",
@@ -141,9 +142,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "11-RTC与看门狗.md": (
-        14,
+        15,
         (
             "iwdg-window.svg",
+            "ch11-wwdg-window.png",
             "sample-11-iwdg-feed-flow.svg",
             "sample-11-iwdg-1s.svg",
             "ch11-iwdg-1s.png",
