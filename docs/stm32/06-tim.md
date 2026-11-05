@@ -66,6 +66,8 @@ CNT 往上涨、ARR 给它设了终点、CCR 在中间设了一个"开关点"，
 
 为什么是 83 和 999 而不是 84 和 1000？因为硬件数的是"0 到 PSC"和"0 到 ARR"，写进去的数比你想的少 1。**漏掉这个"+1"，1kHz 会配成 999Hz 或 1001Hz**，示波器上才发现。
 
+![定时器时基：PSC 分频后的计数时钟推动 CNT 从 0 数到 ARR，CNT 小于 CCR 时 PWM 为高](/figures/stm32-06-tim.svg)
+
 ## 二、定时中断：1 秒翻灯，和 SysTick 分工
 
 定时中断是最简单的用法：配置 PSC/ARR，开 `DIER.UIE`，在 `TIMx_IRQHandler` 里清 `SR.UIF` 再翻灯。

@@ -76,6 +76,8 @@ F407 是 1MB Flash，11 个扇区大小不等（RM0090 §3，CMSIS F4 头文件�
 1. **参数区与代码区物理隔离**：别把参数塞进代码扇区的空隙，擦参数等于擦代码，PC 瞬间跑飞。F407 最后一个 128KB 扇区是首选（如果 App 用不满前面 10 个扇区）。
 2. **IAP 双固件布局**：Bootloader 住扇区 0（16KB 足够放一个最小 bootloader），App 从扇区 1 起；App 的起始地址 = `0x08004000`，这正是第五节跳转函数的 `app_addr`。Bootloader 的链接脚本 `ORIGIN` 落 `0x08000000`、App 的 `ORIGIN` 落 `0x08004000`，这就是 [B3 链接脚本](../build/03-linker-script.md) 里那条 MEMORY 规则的实战场景。
 
+![Flash 扇区与 IAP：Bootloader 跳转到 app，参数区单独占一扇；擦除按扇区，写入按字](/figures/stm32-13-flash-iap.svg)
+
 ## 二、解锁序列：两把钥匙与并行度
 
 Flash 上锁后，CR 的 PG/SER/MER 全部被硬件忽略（防误写）。解锁是把 KEY1、KEY2 顺序写进 KEYR：
