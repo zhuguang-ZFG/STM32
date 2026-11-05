@@ -12,11 +12,12 @@
 | audit en（deficit / parity） | 0 / 29 章 True；asset_sequence_equal 全 True |
 | check_assets | SVG 390/390 合法；链接 1,964/1,964 有效；照片 5/5 哈希与尺寸 |
 | build_html | zh `--check` PASS（29 章）；en `--check` PASS（29 章） |
-| pytest 全量 | 见 §11（本轮全量跑，结果以 §11 记录为准） |
+| pytest 全量 | 188 passed（0 failed） |
 | 生成器确定性 | 6 个章生成器重跑，13/13 图与磁盘字节一致（含未改动的 7 张） |
 | 版面 lint | 6/6 图 0 问题（无出界、无压边、无文字互压、无「先画后被面板盖住」） |
+| slop_lint | 干净：没有机械命中 |
 
-工具口径：`python tools/audit_book.py --format json --write .temp/b8-audit.json`（cwd=仓库根）；`python tools/check_assets.py`（cwd=仓库根）；`python build_html.py --check --lang zh|en`（cwd=stm32-book/）。
+工具口径：`python tools/audit_book.py --format json --write .temp/b8-audit.json`（cwd=仓库根）；`python tools/check_assets.py`（cwd=仓库根）；`python build_html.py --check --lang zh|en`（cwd=stm32-book/）；`python tools/slop_lint.py`（cwd=仓库根）。
 
 ## 2. 改前缺陷清单
 
