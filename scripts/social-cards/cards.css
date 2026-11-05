@@ -1,0 +1,33 @@
+:root {
+  --paper: #f7f8fa;
+  --ink: #16213a;
+  --muted: #6b7280;
+  --accent: #3451b2;
+  --ok: #3eaf7c;
+  --warn: #d97706;
+  --rule: #d5d9e0;
+  --mono: Consolas, "Microsoft YaHei", monospace;
+  --disp: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #e8eaee; font-family: var(--disp); padding: 40px; display: grid; gap: 40px; justify-content: center; }
+.poster { width: 750px; height: 1000px; background: var(--paper); color: var(--ink); padding: 72px 64px 56px; display: flex; flex-direction: column; }
+.kicker { font-family: var(--mono); font-size: 15px; letter-spacing: .14em; color: var(--accent); font-weight: 700; }
+.kicker .no { color: var(--muted); }
+.hr { height: 1.5px; flex: none; background: var(--ink); margin-top: 26px; }
+.content { display: flex; flex-direction: column; justify-content: center; gap: 36px; flex: 1; min-height: 0; padding: 36px 0; }
+.giant { font-size: var(--title-size, 60px); font-weight: 300; line-height: 1.2; letter-spacing: .01em; }
+.giant .em { color: var(--accent); }
+.giant.small { font-size: 64px; }
+.quote { font-size: 27px; line-height: 1.72; font-weight: 400; }
+.quote .hl { color: var(--accent); }
+.row { display: grid; grid-template-columns: var(--mark-width, 56px) minmax(0, 1fr) minmax(0, 180px); align-items: baseline; gap: 18px; padding: 20px 0; border-top: 1px solid var(--rule); }
+.row:first-child { border-top: 1.5px solid var(--ink); }
+.row .mark { font-family: var(--mono); font-weight: 700; font-size: 24px; white-space: nowrap; }
+.row .mark.yes { color: var(--ok); }
+.row .mark.no { color: var(--warn); }
+.row .t { font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
+.row .d { font-size: 17px; line-height: 1.55; color: var(--muted); overflow-wrap: anywhere; text-align: right; }
+.row:not(:has(.d)) { grid-template-columns: var(--mark-width, 56px) minmax(0, 1fr); }
+.foot { flex: none; display: flex; justify-content: space-between; gap: 16px; align-items: baseline; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.foot .brand { color: var(--accent); font-weight: 700; white-space: nowrap; }

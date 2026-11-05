@@ -6,7 +6,11 @@
   "license": "Apache-2.0",
   "scripts": {
     "docs:dev": "npm run docs:gen && vitepress dev docs",
-    "docs:build": "npm run docs:gen && vitepress build docs",
+    "docs:build": "npm run guide:check && npm run docs:gen && vitepress build docs",
+    "guide:generate": "node scripts/book-guide/generate.mjs",
+    "guide:check": "node scripts/book-guide/generate.mjs --check",
+    "cards:render": "node scripts/social-cards/render.mjs",
+    "cards:check": "node scripts/social-cards/render.mjs --check",
     "docs:preview": "vitepress preview docs",
     "anim:lint": "node scripts/anim-lint.mjs",
     "anim:audit": "node scripts/anim-audit.mjs",

@@ -7,6 +7,8 @@ description: 94 章成书：单文件 HTML（动画即播）与 16 开印前 PDF
 
 > 🎯 网页适合跳读，书适合通读。这一页是整书的入口：同一份 94 章正文，装订成 11 个分部 + 7 份附录的单文件 HTML 与 16 开印前 PDF——断网可读、打印不丢内容，与在线站点同一份数据源。
 
+<a href="../book-guide/index.html" target="_self">打开精排导读</a>：宽屏单页版，保留本页完整内容，支持目录跳转。
+
 ## 两个产物
 
 | 产物 | 适合 | 特性 |
@@ -30,7 +32,7 @@ npm run book:check      # 临时目录验证整书契约
 npm run book:pdf        # 产出 mcu-book/dist/ 下的 HTML 与 PDF（需本机 Chrome/Edge）
 ```
 
-构建器、manifest 与六份附录的维护说明见 [mcu-book/README](https://github.com/zhuguang-ZFG/mcu/blob/main/mcu-book/README.md)。
+构建器、manifest 与七份附录的维护说明见 [mcu-book/README](https://github.com/zhuguang-ZFG/mcu/blob/main/mcu-book/README.md)。
 ## 参与校对与贡献
 
 - **勘误**：到 [仓库 Issues](https://github.com/zhuguang-ZFG/mcu/issues) 提交，注明章节号（如 S7）、原文一句、建议改法与出处；书内「勘误与贡献」页也是同一个入口。
