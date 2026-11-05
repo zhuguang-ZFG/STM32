@@ -26,13 +26,15 @@ VIDEO = ROOT / "assets" / "video"
 def measure(mp4: Path) -> dict:
     got = subprocess.run(
         ["ffmpeg", "-hide_banner", "-nostats",
-         "-i", str(mp4), "-filter_complex", "ebur128", "-f", "null", "-"],
+         "-i", str(mp4), "-filter_complex", "ebur128=peak=true", "-f", "null", "-"],
         capture_output=True, timeout=600,
     )
     text = (got.stderr or b"").decode("utf-8", "replace")
-    integrated = re.search(r"I:\s*(-?[\d.]+)\s*LUFS", text)
-    peak = re.search(r"Peak:\s*(-?[\d.]+)\s*dBFS", text)
-    lra = re.search(r"LRA:\s*(-?[\d.]+)\s*LU", text)
+    # ebur128 的逐秒运行行也含 I:/Peak:，起始值恒为 -70；只取最终 Summary 段。
+    summary = text.split("Summary:", 1)[-1] if "Summary:" in text else text
+    integrated = re.search(r"I:\s*(-?[\d.]+)\s*LUFS", summary)
+    peak = re.search(r"Peak:\s*(-?[\d.]+)\s*dBFS", summary)
+    lra = re.search(r"LRA:\s*(-?[\d.]+)\s*LU", summary)
     dur = re.search(r"Duration:\s*(\d+):(\d+):([\d.]+)", text)
     seconds = None
     if dur:

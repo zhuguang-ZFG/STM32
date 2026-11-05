@@ -54,6 +54,11 @@ unverified 一律写明原因，不冒充通过。
 | ch21–28 长课 storyboard 自编（Batch G-1/2） | passed | 八份 storyboard 各 28 场景五角色，逐条取材本章正文；--check 全过；Xiaoxiao 成片 media-report 十项全 True（546.7/629.3/688.4/713.9/719.1/672.0/700.6/652.7 s 估算，实测见各 media-report） |
 | ch21–28 短片 1080p + hd_chapters 扩围（Batch G-3） | passed | 八章结尾拍反同构改写；NARRATED_SCALE=2 重配音；check_assets hd_chapters 扩至 29 章后 1962/1962 全过；final-videos/ch26–28 已建立 |
 | 29 短片 + 29 长片由当前源可再生 | passed | 29 长课 storyboard/media-report/字幕/联系表齐备；29 短片 1080p mp4+srt+poster；反同构指纹 00–28 相邻互异 |
+| 29 短片响度审计（ffmpeg ebur128） | passed | I = −16.0 ~ −16.3 LUFS、Peak = −0.2 ~ −1.8 dBFS，29/29 实测（`audits/shorts-loudness.json`，工具 `tools/shorts_loudness.py`） |
+| task_verify 机器可读报告 | passed | `tools/task_verify.py` 实跑 12 项：9 passed / 0 failed / 3 unverified（真板与工具本体两项 manual），overall=passed_with_unverified（`audits/task-verify-report.json`） |
+| ch03 真证轨照片（manual → unverified） | **unverified** | 需真板拍摄 PC13 点亮特写；OSS 替代检索已做（2026-11-05，Wikimedia Commons API）：`Blue Pill STM32` 命中 2（均为已在库素材）、`STM32F103 breadboard` 与 `STM32 LED blinking` 命中 0——自由许可素材中无点亮特写，缺口诚实挂账 |
+| L4 整板电流实测（manual → unverified） | **unverified** | 需 NUCLEO-L476RG 与电流分析仪；已引用 ST AN4746 官方典型实测作对照来源，不冒充本仓库实测 |
+| task_verify 工具本体 | passed | **等价工具已自建**：`tools/task_verify.py`（checks 清单逐项执行，passed/failed/unverified 分列，unverified 不冒充通过）+ `task-verify-report.json` 机器可读输出 |
 | `task_verify` 工具本体 | **unverified** | 工具不存在；本文件即等价分列记录 |
 
 ## 4. 逐章审计（§11.3 第一项）的对账
