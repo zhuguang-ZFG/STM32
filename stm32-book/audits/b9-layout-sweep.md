@@ -62,7 +62,7 @@
 | 编号徽标挂点 | `tools/gen_boards.py` `_badge()` + `chip/crystal/smd/led_smd/button/usb(n=…)` | 徽标挂在元件外框**外侧**（芯片在引脚环外角），与元件几何同源，不再手填 23 个圆心 |
 | 卡片内文字 | `gen_boards.specs()`、`peripheral-wiring` 提示条 | 用 `fit_text()` 按宽度降号，替代按字数截断 |
 
-### 3.2 全库几何修复（26 张）
+### 3.2 全库几何修复（28 张）
 
 | 文件 | 修了什么 |
 |---|---|
@@ -94,7 +94,7 @@
 
 ## 4. 三类型归属（§15.1-23）
 
-两张重绘板都是**排错图**（第三类）：画面承担「顺着故障分支走一遍」——HSE 停振板让读者看见同一份分频在被 CSS 换掉时钟后逐项失效；BOOT 板让读者看见「同一个 0x00000000 可能落在三块本体上」。其余 24 张只改排版，不改变类型归属。
+两张重绘板都是**排错图**（第三类）：画面承担「顺着故障分支走一遍」——HSE 停振板让读者看见同一份分频在被 CSS 换掉时钟后逐项失效；BOOT 板让读者看见「同一个 0x00000000 可能落在三块本体上」。其余 26 张只改排版，不改变类型归属。
 
 ## 5. 锚点与 gap（无变化）
 
@@ -161,7 +161,7 @@
 
 命令与结果（按执行顺序）：
 
-1. `python tools/gen_sample_figures.py`、`python tools/sample_figs_b2/ch01_b2.py assets/diagrams` —— 26 张中 8 张变化，全为标题字号（`text_hash` 不变，`bytes` 变）。
+1. `python tools/gen_sample_figures.py`、`python tools/sample_figs_b2/ch01_b2.py assets/diagrams` 与 `ch00_b2.py` —— 28 张中 10 张变化，全为标题字号（`text_hash` 不变，`bytes` 变）。
 2. `python .temp/measure_svg.py --all` —— 依次收敛到 `324 files / 0 bad / 0 issues`（CLIP / EDGE / OVER / COVER / OVFL 五类合计）。
 3. `.temp/lint_svg.py`（自绘/无动画/着色调色板/stroke-width/rx 五条锁）—— 全库 0 问题。
 4. `python tools/check_assets.py` —— 全部通过（SVG 合法、链接 1,964/1,964、照片 5/5）。
