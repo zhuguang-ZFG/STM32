@@ -181,7 +181,7 @@ int main(void)
 
 五步对号：**① 开时钟 → ② CTL0 四位配置 → ③ OCTL 初值 → ④ BOP/BC 原子翻转 → ⑤ mtime delay**。三点说明：
 
-- **时钟位换总线了**：S3/G2 的 GPIO 时钟在 AHB1ENR/RCU_AHB1EN，VF103 在 **RCU_APB2EN** bit2~6（PA~PE 逐一对应，gd32vf103_rcu.h:165-169），"外设像 F1"的又一处落地（F1 的 GPIO 时钟就在 APB2）。照搬 F407 的 AHB1 肌肉记忆，连寄存器都摸错。
+- **时钟位换总线了**：S3/G2 的 GPIO 时钟在 AHB1ENR/RCU_AHB1EN；VF103 在 **RCU_APB2EN** bit2~6（PA~PE 逐一对应，gd32vf103_rcu.h:165-169），"外设像 F1"的又一处落地（F1 的 GPIO 时钟就在 APB2）。照搬 F407 的 AHB1 肌肉记忆，连寄存器都摸错。
 - **④ 的极性由硬件定**：共阳灯低电平亮：初值给高（灭），BOP 置高是"灭"、BC 清零才是"亮"；共阴反过来。不看原理图抄极性，程序对灯不亮。
 - **⑤ 的时间观来自 V3**：mtime 27MHz、1ms=27000 tick，delay 精度受整 tick 限制，500ms 误差在微秒级，肉眼与逻辑分析仪都无感。
 
