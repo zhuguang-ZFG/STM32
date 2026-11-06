@@ -152,7 +152,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "06": (
 
-                "uart-frame.svg", "ch06-ore-fe.png",
+                "uart-frame.svg", "ch06-ore-fe.png", "sample-06-ore-overwrite-flow.svg",
                 "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
                 "ch06-uart-frame.png", "uart-idle.gif", "sample-06-frame-annotated.svg",
                 "uart-bits.gif", "sample-06-baud-formula.svg", "ch06-baud-formula.png",
@@ -207,7 +207,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "11": (
 
-                "iwdg-window.svg", "ch11-wwdg-window.png",
+                "iwdg-window.svg", "ch11-wwdg-window.png", "sample-11-wwdg-window-flow.svg",
                 "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
                 "ch11-iwdg-1s.png", "iwdg-1s.gif", "sample-11-backup-domain.svg",
                 "ch11-backup-domain.png", "sample-11-wdg-compare.svg", "ch11-wdg-compare.png",
@@ -414,6 +414,7 @@ class BookAuditTests(unittest.TestCase):
                 "rtos-owner-task.svg", "ch28-owner-task.png", "sample-28-three-times.svg",
                 "rtos-deadline-budget.svg", "ch28-three-times.png", "freertos-scheduler.svg",
                 "rtos-config-paths.svg", "rtos-startup-gates.svg", "ch28-wdg-supervisor.png",
+                "sample-28-supervisor-flow.svg",
                 "sample-28-fault-triage.svg",
                 "ch28-fault-triage.png",
             ),

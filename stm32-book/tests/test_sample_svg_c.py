@@ -45,12 +45,14 @@ animations/sample-02-pll-lock-flow.svg 900x620 11446 3d8b2716cc664bb71a9f3e27abf
 animations/sample-03-gpio-bsrr-flow.svg 900x620 9618 ead08cad37fff01490142f2a28b925468502dbd62b9141978913277c9d332ed4
 animations/sample-04-nvic-preempt-flow.svg 900x620 12598 87e309312f1025e2de38ea0266832a1b8a58c13206f2d4d77d9a0adc78bce3d9
 animations/sample-05-pwm-edge-flow.svg 900x620 9893 91b5019ada07f3750ad0a2cd9fc81dbdc9885065d1b433862da22f1a6d2549d6
+animations/sample-06-ore-overwrite-flow.svg 900x620 12505 d722311e1cdc95f4f05acf0229494dc0462b2552e833ec668cb59b9a5ad98be8
 animations/sample-06-uart-baud-wire.svg 900x620 16145 97ca1000a2361f44ddd9b5c10cf82708c621f5e3f638cd09bc27557215e12f4e
 animations/sample-07-i2c-ack-flow.svg 900x620 12425 7a99ec37e70b0551940dad29b77e20e0715c6d598354bcc2a6e13c412ce681e5
 animations/sample-08-spi-jedec-flow.svg 900x620 12505 a9aa29411b1f77c1904b235f9c93b293d0adcc234b836533013037162bcaec57
 animations/sample-09-adc-sar-weights.svg 900x620 14849 e39f754a56549a0438cd616d60d7888759b4c8dd80f582f205cf971b7a80ef40
 animations/sample-10-dma-circular-ht.svg 900x620 9941 ce79db41f9172b5fd45d210c320339c720c2fa046100ed0b497987a98de3a5cb
 animations/sample-11-iwdg-feed-flow.svg 900x620 12430 b2f0f5b06accd15edd555be102020e99785e8453c2f98e3f05988cf1653fd627
+animations/sample-11-wwdg-window-flow.svg 900x620 12495 06ae723564b535385d4e948d105b9208c19a594d2f97ad4b3b29cf28db8b81a6
 animations/sample-12-iap-jump-flow.svg 900x620 12467 a2278d2c320a80ae5550bda20ec02c20cca61178ccb2a63aaaff316fc968765a
 animations/sample-13-can-arb-flow.svg 900x620 12423 b45bd81edac827b659601482baf202f6bfe7e9e0201cb3792df6568861c9cfc9
 animations/sample-14-usb-48m-flow.svg 900x620 12452 107c0d23a8af44c712191d23bc06ef4e9aefc3ee69038549537246d6fe8be09c
@@ -72,6 +74,7 @@ animations/sample-26-clk-cfg-en-flow.svg 900x620 12399 1d145cce8706ff787eaf1b225
 animations/sample-27-link-dhcp-flow.svg 900x620 12389 66aa93e8307316606e806b408842d5b783b63bf1121be0c0bf9811f383cef909
 animations/sample-28-isr-owner-flow.svg 900x620 12420 aa875db87c818c54d6152e2611feec274628cdcab0207b8e2239e0261cd27f75
 animations/sample-28-owner-flow.svg 900x620 13550 751e413262886ed40075c2623f83eb4093ee0d7647df09572c624968aa1fb324
+animations/sample-28-supervisor-flow.svg 900x620 12565 c4574a3ceea2d8468aac23d39246adff7e0007c308ab1fc453c4b96aab23beac
 animations/sample-f-repo-lane-flow.svg 900x620 12404 dbfa548a78f0e7865cd806cbe25a7a494e7980a624256fbd2aceb5b8731ca66b
 animations/simulation-acceptance-gates.svg 900x620 10660 c0316576a9b8a6c45011d4a1fce3f884228ffa2a0788561d983b43227aa9e146
 animations/spi-transfer.svg 900x620 21147 579ddd86d159809dc4c667a0bf1faf652c1c0538d4d155f6f7187896df7a3968
@@ -569,7 +572,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(324, len(found))
+        self.assertEqual(327, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

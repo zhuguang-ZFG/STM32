@@ -2185,5 +2185,20 @@
   "type": "technical",
   "chapter": "28",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三个关键任务各持 epoch，监督任务检查全部健康条件后才刷新 IWDG；任务自己喂会产生任务全卡、中断还在喂的假健康；不是实拍。"
+ },
+ "animations/sample-06-ore-overwrite-flow.svg": {
+  "type": "technical",
+  "chapter": "06",
+  "caption": "▲ 自绘矢量动画（FA-002）。字节 1 落地 → RXNE=1 没人读 → 字节 2 到 → 覆盖 → ORE 置位 → 先 SR 后 DR 清除。"
+ },
+ "animations/sample-11-wwdg-window-flow.svg": {
+  "type": "technical",
+  "chapter": "11",
+  "caption": "▲ 自绘矢量动画（FA-002）。0x7F 逐拍下数 → 0x50 开窗 → 窗口内喂 → 0x40 地板 → 0x3F 复位。"
+ },
+ "animations/sample-28-supervisor-flow.svg": {
+  "type": "technical",
+  "chapter": "28",
+  "caption": "▲ 自绘矢量动画（FA-002）。任务 A/B/C 更新 epoch → 监督者全查 → 喂 IWDG → 健康。"
  }
 }

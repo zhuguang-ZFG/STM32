@@ -142,10 +142,11 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "11-RTC与看门狗.md": (
-        15,
+        16,
         (
             "iwdg-window.svg",
             "ch11-wwdg-window.png",
+            "sample-11-wwdg-window-flow.svg",
             "sample-11-iwdg-feed-flow.svg",
             "sample-11-iwdg-1s.svg",
             "ch11-iwdg-1s.png",
@@ -484,7 +485,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        20,
+        21,
         (
             "rtos-system-layers.svg",
             "sample-28-four-concepts.svg",
@@ -504,6 +505,7 @@ CHAPTERS = {
             "rtos-config-paths.svg",
             "rtos-startup-gates.svg",
             "ch28-wdg-supervisor.png",
+            "sample-28-supervisor-flow.svg",
             "sample-28-fault-triage.svg",
             "ch28-fault-triage.png",
         ),

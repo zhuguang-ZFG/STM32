@@ -510,6 +510,11 @@ monotonic_ms | boot_id | component | event | state | sequence | result | detail
   <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左边三个关键任务各持一个 epoch，跑完一轮有效工作才更新；中间监督任务检查所有 epoch、队列积压、内存水位和状态机，全部健康才刷新 IWDG；右边红卡是假健康——任务全卡但某个中断还在喂。证明什么：喂狗权收归监督者，每个任务自己喂会产生假健康。不能证明什么：这是设计模式的示意，不涉及具体 RTOS 的定时器粒度与 epoch 位宽。出处是 [FreeRTOS](#source-freertos-1132)。</sub>
 </p>
 
+<p align="center">
+  <img src="../assets/animations/sample-28-supervisor-flow.svg" width="760" alt="看门狗监督者机制动画：任务 A/B/C 各自更新 epoch，监督者全查，全部健康才刷新 IWDG">
+  <br><sub>▲ 自绘矢量动画（FA-002）。任务 A → B → C 各自更新 epoch → 监督者检查全部 epoch、队列积压、内存水位与状态机 → 全部健康才刷新 IWDG → 无复位。证明什么：喂狗权在监督者手里，一轮健康巡视走完才喂。不能证明什么：假健康（任务全卡、中断还在喂）的故事在手绘图里；也不是调度器实测。出处是 [FreeRTOS](#source-freertos-1132)。</sub>
+</p>
+
 ## 低功耗与 RTOS
 
 RTOS 能在没有就绪任务时进入 idle，但系统能否 Stop 取决于完整约束：

@@ -45,6 +45,11 @@ The window watchdog (WWDG) is different: it resets on an early feed and on a lat
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the counter runs 0x7F down to 0x3F and W = 0x50 splits the run into three zones — feeding above 0x50 resets at once, [0x40, 0x50] is the safe feed zone, and rolling below 0x40 (T6 cleared) resets too; each cell is about 910 us and the full 64 cells are 58.25 ms. What it proves: the WWDG punishes an early feed and a late one, the exact opposite of the IWDG, which only punishes late. What it does not prove: 58.25 ms is a typical value at 36 MHz and prescaler 8, not a guarantee, and LSI drift onto the IWDG is another story. Source: [RM0008 Rev 21 ch.19](#source-rm0008-wdg).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/animations/sample-11-wwdg-window-flow.svg" width="760" alt="Animation of the WWDG window: counting down from 0x7F, the feed window opening at 0x50, feeding inside [0x40, 0x50], the 0x40 floor, and the reset at 0x3F">
+  <br><sub>▲ Vector animation drawn for this book (FA-002). Start at 0x7F → count down 910 us per tick → the feed window opens at 0x50 → feed inside [0x40, 0x50] → roll below 0x40 (T6 cleared) → reset at 0x3F. What it proves: a feed is legal only inside that window; early and late both reset. What it does not prove: the zone arithmetic lives on the handraw plate; not a scope capture. Source: [RM0008 Rev 21 ch.19](#source-rm0008-wdg).</sub>
+</p>
+
 Some code fragments set Reload to its maximum, 4095. The timeout is then `(4095 + 1) / 625 = 6.5536` s, which is the "about 6.5 s" in the labs. Everywhere else this chapter works with the 624 second.
 
 The RTC runs from the LSE crystal, 32.768 kHz, on pin 3 PC14-OSC32_IN and pin 4 PC15-OSC32_OUT. The RTC divides by `(PRL + 1)`, so PRL = 32767 turns 32768 Hz into 1 Hz, and PRL = 32768 does not. A typical 40 kHz LSI that drifts anywhere in 30–60 kHz has no integer PRL that gives a steady 1 Hz, so an accurate RTC needs the LSE. When the main supply is gone, pin 1 VBAT powers the backup domain. Before writing it, enable the PWR and BKP clocks and set DBP in `PWR_CR`. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc).

@@ -51,6 +51,11 @@ When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The b
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top half is ORE — RXNE is still unread when byte 2 arrives, the shift register is overwritten, ORE sets, and byte 1 is still in DR; the bottom half is FE — 0xA5 sent LSB first (1 0 1 0 0 1 0 1), the stop bit low at samples 8/9/10, FE set, the bad byte still in DR; the box below gives the clear order: read SR (0x00) first, then DR (0x04). What it proves: neither flag clears itself, the reversed order clears nothing, and FE alone never raises an interrupt. What it does not prove: this is the logic timing at 115200 8N1, not scope waveforms or interrupt latency. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
 </p>
 
+<p align="center">
+  <img src="../../assets/animations/sample-06-ore-overwrite-flow.svg" width="760" alt="Animation of the ORE overwrite moment: byte 1 lands, RXNE sets, byte 2 arrives, the shift register is overwritten, ORE latches, then the ordered clear">
+  <br><sub>▲ Vector animation drawn for this book (FA-002). Byte 1 lands → RXNE=1 unread → byte 2 arrives → the shift register is overwritten → ORE latches → clear by reading SR (0x00) then DR (0x04). What it proves: the later byte is the one lost, byte 1 is still in DR, and neither flag clears itself. What it does not prove: the stop-bit sampling story lives on the handraw plate and the frame-annotated figure; not a scope capture. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
+</p>
+
 ## Key figures
 
 
