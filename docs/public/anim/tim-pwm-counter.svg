@@ -46,7 +46,7 @@
     <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.75;1" dur="12s" repeatCount="indefinite"/>
   </path>
   <text x="120" y="290" font-size="12" fill="#1a7f56">高：CNT &lt; CCR</text>
-  <text x="300" y="340" font-size="12" fill="#888">低：CNT ≥ CCR</text>
+  <text x="560" y="362" font-size="12" fill="#888">低：CNT ≥ CCR</text>
 
   <!-- 公式条 -->
   <text x="360" y="395" font-size="12" fill="#333" font-family="Consolas,monospace" text-anchor="middle">f = 84MHz/(PSC+1)/(ARR+1) = 84M/84/1000 = 1kHz · 占空比 = CCR/(ARR+1) = 500/1000 = 50%</text>
