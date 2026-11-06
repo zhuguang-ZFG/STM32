@@ -12,8 +12,8 @@ minutes: 30
 ## 本章精髓
 
 1. 有没有：GD32F4xx 比 STM32F407 多 USBHS（高速 USB）、TRNG（真随机数）、更多串口（G3）；STM32F407 有而 GD32 可能没有或不同的：OTG_FS/OTG_HS（GD32 用 USBHS 替代）。
-2. 一不一样：都有 CAN/SDIO/EXMC(FSMC)/ENET，但寄存器命名与位布局有差异：GD32 统一用 CTL 命名风格（G3 已见）。位级差异已按官方库头文件（V3.3.3）+ **用户手册 Rev3.0** 双层核验：CAN 位时序**逐位相同到连复位值 0x0123 0000 都一样**、ENET 描述符同为 4 字/8 字双模，而 **SDIO 分频器 GD32 比 STM32 宽一位**（DIV[8:0] vs CLKDIV[7:0]，第 9 位藏在 bit31）。
-3. 引脚可以不动：USBHS 的 **ULPI 12 根信号与 STM32F407 OTG_HS_ULPI 同脚同 AF（AF10）**：跑 ULPI PHY 的板子换芯片不用改布线，换的是固件库。
+2. 一不一样：都有 CAN/SDIO/EXMC(FSMC)/ENET，但寄存器命名与位布局有差异：GD32 统一用 CTL 命名风格（G3 已见）。位级差异已按官方库头文件（V3.3.3）+ **用户手册 Rev3.0** 双层核验。CAN 位时序**逐位相同到连复位值 0x0123 0000 都一样**；ENET 描述符同为 4 字/8 字双模；**SDIO 分频器 GD32 比 STM32 宽一位**（DIV[8:0] vs CLKDIV[7:0]，第 9 位藏在 bit31）。
+3. 引脚可以不动：USBHS 的 **ULPI 12 根信号与 STM32F407 OTG_HS_ULPI 同脚同 AF（AF10）**。跑 ULPI PHY 的板子换芯片不用改布线，换的是固件库。
 4. 迁移纪律：先查"有没有"（外设存在性），再查"一不一样"（寄存器映射**与位宽**），最后查"引脚分配"（datasheet）。三步缺一步就翻车。
 
 - **能理解**：为什么"有没有"比"一不一样"更优先：外设不存在，寄存器映射再对也白搭。
@@ -71,7 +71,7 @@ minutes: 30
 
 ## 二、USBHS 替代 OTG：高速 USB 的方案差异
 
-STM32F407 用 **OTG_FS + OTG_HS**（On-The-Go 全速+高速 USB），GD32F4xx 用 **USBHS**（USB High Speed）。两者都支持高速 USB（480Mbps），但实现方案与寄存器布局不同：
+STM32F407 用 **OTG_FS + OTG_HS**（On-The-Go 全速+高速 USB）；GD32F4xx 用 **USBHS**（USB High Speed）。两者都支持高速 USB（480Mbps），但实现方案与寄存器布局不同：
 
 | 维度 | STM32F407 OTG_HS | GD32F4xx USBHS |
 |---|---|---|
@@ -83,7 +83,7 @@ STM32F407 用 **OTG_FS + OTG_HS**（On-The-Go 全速+高速 USB），GD32F4xx �
 
 迁移含义：STM32 的 USB 代码（OTG_HS 驱动）不能直接套 GD32，寄存器名与方案都不同。GD32 有自己的 USBHS 库（V3.3.3 为 `GD32F4xx_usb_library`，寄存器宏在 `driver/Include/drv_usb_regs.h`，不再叫 `gd32f4xx_usbhs.h`），移植要换库。
 
-**但引脚可以不动。** datasheet §2.6.5/§2.6.6 逐脚核对的结果是：GD32F407 的 ULPI 12 根信号与 STM32F407 OTG_HS_ULPI **同脚同 AF 号（AF10）**：
+**但引脚可以不动。** datasheet §2.6.5/§2.6.6 逐脚核对的结果是：GD32F407 的 ULPI 12 根信号，与 STM32F407 OTG_HS_ULPI **同脚同 AF 号（AF10）**——两颗芯片共用同一套 ULPI 引脚排布：
 
 | ULPI 信号 | GD32F407 引脚 | 对 STM32F407 |
 |---|---|---|
@@ -95,11 +95,11 @@ STM32F407 用 **OTG_FS + OTG_HS**（On-The-Go 全速+高速 USB），GD32F4xx �
 
 硬件层面这意味着：**跑 ULPI PHY 的 STM32F407 板子，PCB 可以原样换上 GD32F407**——换的是固件库，不是布线。
 
-> **【注】** 本表只核到"哪根信号在哪个脚、哪个 AF 号"这一层；USBHS 与 OTG_HS 的**寄存器位级**差异仍以 `GD32F4xx_usb_library/driver/drv_usb_regs.h` 与 UM §29 为准（**OTG 双模已由官方库 host+device 双栈证据背书**，V3.3.3）。几个 D 线还有额外候选脚（文字版 datasheet 的宽表抽取有歧义，未逐一断言）。真要排 PCB，请回查 Table 2-9 ~ 2-17 的 AF10 列。
+> **【注】** 本表只核到"哪根信号在哪个脚、哪个 AF 号"这一层。USBHS 与 OTG_HS 的**寄存器位级**差异仍以 `GD32F4xx_usb_library/driver/drv_usb_regs.h` 与 UM §29 为准（**OTG 双模已由官方库 host+device 双栈证据背书**，V3.3.3）。几个 D 线还有额外候选脚（文字版 datasheet 的宽表抽取有歧义，未逐一断言）。真要排 PCB，请回查 Table 2-9 ~ 2-17 的 AF10 列。
 
 ## 三、EXMC 替代 FSMC：外部存储器控制器的改名
 
-STM32F407 叫 **FSMC**（Flexible Static Memory Controller），GD32F4xx 叫 **EXMC**（External Memory Controller）：功能类似（驱动 SRAM/NOR/PSRAM/NAND/SDRAM），命名与寄存器布局有差异：
+STM32F407 叫 **FSMC**（Flexible Static Memory Controller），GD32F4xx 叫 **EXMC**（External Memory Controller）。两者功能类似，都用来驱动 SRAM/NOR/PSRAM/NAND/SDRAM，但命名与寄存器布局有差异：
 
 | 维度 | STM32F407 FSMC | GD32F4xx EXMC |
 |---|---|---|
@@ -125,7 +125,7 @@ STM32F407 叫 **FSMC**（Flexible Static Memory Controller），GD32F4xx 叫 **E
 
 ### CAN 的"复位值指纹"
 
-最能说明两家关系的不是名字，是**复位值**。CAN_BT 和 CAN_BTR 都在偏移 0x1C、复位值都是 `0x0123 0000`，这个数字拆开看是 SJW=0、BS2=1、BS1=2、BAUDPSC=0 的一组默认位时序。**同一个偏移、同一组位域、同一个非零复位值**，巧合不到这个程度：位时序这块是逐位复刻的。好消息是迁移时 CAN 波特率计算公式（`tq=(1+BAUDPSC)×tPCLK1`、`tBS1=(1+BS1)×tq`、`tBS2=(1+BS2)×tq`，UM §26.3.7）可以**原样搬过来**，连算出来的寄存器值都不用改。
+最能说明两家关系的不是名字，是**复位值**。CAN_BT 和 CAN_BTR 都在偏移 0x1C、复位值都是 `0x0123 0000`，这个数字拆开看是 SJW=0、BS2=1、BS1=2、BAUDPSC=0 的一组默认位时序。**同一个偏移、同一组位域、同一个非零复位值**，巧合不到这个程度：位时序这块是逐位复刻的。好消息是迁移时 CAN 波特率计算公式可以**原样搬过来**：`tq=(1+BAUDPSC)×tPCLK1`、`tBS1=(1+BS1)×tq`、`tBS2=(1+BS2)×tq`（UM §26.3.7）。连算出来的寄存器值都不用改。
 
 ### SDIO 的分频器比 STM32 宽一位
 
@@ -140,7 +140,9 @@ STM32F407 叫 **FSMC**（Flexible Static Memory Controller），GD32F4xx 叫 **E
 
 凭证：UM §24.8.2（p700-701）↔ RM0090 §31.9.2。
 
-**迁移含义，两条**：① 从 GD32 搬到 STM32 时，若原代码用了 DIV > 255，**bit31 会被当保留位丢掉**，SDIO_CK 会悄悄变快（分频变小），卡识别阶段要求 < 400kHz，这正是最容易踩的地方；② 反方向从 STM32 搬到 GD32 完全安全（高位本来是 0）。这也是"**按偏移对照还不够，还要按位宽对照**"的典型案例：寄存器名、偏移、公式三样全同，偏偏位宽多一位。
+**迁移含义，两条**。其一，从 GD32 搬到 STM32 时，若原代码用了 DIV > 255，**bit31 会被当保留位丢掉**，SDIO_CK 悄悄变快（分频变小）。卡识别阶段要求 < 400kHz，这正是最容易踩的地方。其二，反方向从 STM32 搬到 GD32 完全安全，高位本来就是 0。
+
+这也是"**按偏移对照还不够，还要按位宽对照**"的典型案例：寄存器名、偏移、公式三样全同，偏偏位宽多一位。
 
 这三个外设的移植策略：**功能存在性确认后，逐个寄存器按偏移 + 按位宽双重对照**。CAN 的 CR1→CTL0 命名迁移同 G3 USART 的规律（GD32 统一 CTL 命名）。
 
@@ -178,10 +180,10 @@ TRNG 的存在让 GD32 在安全/加密场景比 STM32F407 多一个硬件基础
 
 - **按 STM32 外设名找 GD32**：FSMC 在 GD32 叫 EXMC，OTG_HS 叫 USBHS：名字不同，搜不到以为"没有"。
 - **编号差 1 忘换**：STM32 SPI1 → GD32 SPI0、TIM1 → TIMER0，编号不换基址全错。
-- **USB 方案直接套代码**：STM32 的 OTG_HS 驱动不能直接套 GD32 USBHS：方案不同，要换库。
+- **USB 方案直接套代码**：STM32 的 OTG_HS 驱动不能直接套 GD32 USBHS。方案不同，要换库。
 - **TRNG 当 ADC 噪声用**：GD32 有真 TRNG，别再用 ADC 噪声凑随机数：硬件 TRNG 更安全更快。
-- **引脚复用号不查 GD32 表**：GD32 的 AF 编号可能与 STM32 不同（G2 已见），同一功能可能在不同引脚，查 GD32 datasheet，别套 STM32 引脚表。
-- **只对偏移不对位宽**：SDIO 分频就是反例：寄存器名、偏移、`/(DIV+2)` 公式三样全同，偏偏 GD32 的 DIV 多一位且第 9 位藏在 bit31。从 GD32 往 STM32 搬时这一位会被当保留位丢掉，SDIO_CK 悄悄变快（卡识别阶段要求 < 400kHz，正是最容易炸的地方）。
+- **引脚复用号不查 GD32 表**：GD32 的 AF 编号可能与 STM32 不同（G2 已见），同一功能可能在不同引脚。查 GD32 datasheet，别套 STM32 引脚表。
+- **只对偏移不对位宽**：SDIO 分频就是反例：寄存器名、偏移、`/(DIV+2)` 公式三样全同，偏偏 GD32 的 DIV 多一位且第 9 位藏在 bit31。从 GD32 往 STM32 搬时这一位会被当保留位丢掉，SDIO_CK 悄悄变快。卡识别阶段要求 < 400kHz，正是最容易炸的地方。
 
 ## 短自测
 
@@ -192,7 +194,7 @@ TRNG 的存在让 GD32 在安全/加密场景比 STM32F407 多一个硬件基础
 <details><summary>看答案</summary>FSMC → EXMC（External Memory Controller）；OTG_HS → USBHS（USB High Speed）。两者功能类似（驱动外部存储器/高速 USB），但命名与寄存器布局不同，移植要换库、按偏移对照。不过 **ULPI 的 12 根引脚两边同脚同 AF（AF10）**：改固件不改布线。</details>
 
 3. GD32 的外设编号与 STM32 有什么规律性差异？举三例。
-<details><summary>看答案</summary>GD32 几乎所有外设编号从 0 起（比 STM32 小 1）：SPI1→SPI0、TIM1→TIMER0、USART1→USART0、ADC1→ADC0、CAN1→CAN0、DMA1→DMA0。迁移时别按 STM32 编号找 GD32 基址。</details>
+<details><summary>看答案</summary>GD32 几乎所有外设编号都从 0 起，比 STM32 小 1：SPI1→SPI0、TIM1→TIMER0、USART1→USART0、ADC1→ADC0、CAN1→CAN0、DMA1→DMA0。迁移时别按 STM32 的编号去找 GD32 基址。</details>
 
 4. 把一个 STM32F407 工程移植到 GD32F4xx，三步检查是什么？
 <details><summary>看答案</summary>①存在性检查：扫工程用到的外设，查"有没有"表：GD32 没有的换方案（OTG→USBHS），GD32 多的可利用（TRNG）。②寄存器映射检查：对存在的外设查命名（CR→CTL、BRR→BAUD）与偏移，按偏移不按名字，位级以头文件为准，**还要对位宽**（SDIO 的 DIV 多一位）。③引脚分配检查：查 GD32 datasheet 的引脚复用表，AF 编号可能不同，同一功能可能在不同引脚。</details>
@@ -201,7 +203,9 @@ TRNG 的存在让 GD32 在安全/加密场景比 STM32F407 多一个硬件基础
 <details><summary>看答案</summary>STM32F407 没有独立 TRNG，要用 ADC 噪声做软件随机数方案（质量差、有偏、慢）。GD32 有硬件 TRNG（真随机数发生器），用物理噪声源生成真随机数，质量高、无偏、快，适合加密密钥生成。移植时把 STM32 的 ADC 噪声随机数方案换成 GD32 TRNG 直接读。</details>
 
 6. CAN_BT 和 CAN_BTR 哪些地方相同到"不可能是巧合"？这对迁移意味着什么？
-<details><summary>看答案</summary>偏移同为 **0x1C**、复位值同为 **0x0123 0000**、六个字段位位置逐位相同（b31 静默模式 / b30 回环 / b25:24 SJW / b22:20 BS2↔TS2 / b19:16 BS1↔TS1 / b9:0 BAUDPSC↔BRP），连位时序计算公式都一样。意味着 **CAN 波特率算出来的寄存器值可以原样搬**，只需改寄存器名和外设编号（CAN1→CAN0）。</details>
+<details><summary>看答案</summary>
+偏移同为 **0x1C**，复位值同为 **0x0123 0000**，六个字段的位位置逐位相同（b31 静默模式 / b30 回环 / b25:24 SJW / b22:20 BS2↔TS2 / b19:16 BS1↔TS1 / b9:0 BAUDPSC↔BRP）。连位时序计算公式都一样。
+这意味着 **CAN 波特率算出来的寄存器值可以原样搬**，只需改寄存器名和外设编号（CAN1→CAN0）。</details>
 
 7. SDIO 的分频器两边差在哪？哪个迁移方向有风险？
 <details><summary>看答案</summary>STM32 是 CLKDIV[7:0]（8 位，0~255），GD32 是 DIV[8:0]（9 位，0~511），第 9 位 **DIV[8] 单独放在 bit31**，正好落在 ST 的保留位区。公式两边同为 `SDIOCLK/(DIV+2)`。风险方向是 **GD32 → STM32**：原来用了 DIV > 255 的配置，bit31 被当保留位丢掉后分频变小、SDIO_CK 变快，卡识别阶段（要求 &lt; 400kHz）会直接失败。反方向（STM32 → GD32）安全，高位本来是 0。</details>

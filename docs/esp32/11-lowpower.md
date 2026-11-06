@@ -7,16 +7,19 @@ minutes: 35
 
 # P11 低功耗：Deep Sleep 之后，谁还记得你
 
-> 🎯 Wi-Fi 芯片谈低功耗像让短跑运动员学睡觉——但只要搞清楚"睡多深、谁叫醒、醒来剩什么"，电池供电的 ESP32 产品依然成立：Deep Sleep 下 µA 级，ULP 协处理器替你站岗。
+> 🎯 Wi-Fi 芯片谈低功耗，像让短跑运动员学睡觉。但只要回答三个问题——**睡多深、谁叫醒、醒来还剩什么**——电池供电的 ESP32 产品就成立。Deep Sleep 下电流做到 µA 级，ULP 协处理器替你站岗。
 
 ## 本章精髓
 
-1. 睡眠矩阵：Light sleep（CPU 暂停、RAM 保持、外设可唤醒，ms 级回神）vs Deep sleep（数字域断电，只留 RTC 域，µA 级，**唤醒=复位重启**）：对照 [S14](../stm32/14-pwr.md) 的三档，哲学相同，ESP 的 RTC 域戏份更重。
-2. 唤醒源全家桶：定时器（esp_sleep_enable_timer_wakeup）、GPIO/EXT0/EXT1、触摸、UART、ULP：唤醒源决定系统怎么设计（定时上报选定时器，按键唤醒选 EXT）。
-3. ULP 协处理器是"守夜人"：主核睡死时，这颗超低功耗小核可跑简单程序（读 ADC/I2C、数脉冲）：达到阈值才唤醒主核，电池产品的终极杀器（FSM/RISC-V 两代 ULP 简介）。
+1. **两档睡眠**。Light sleep 只是 CPU 暂停，RAM 保持、外设可唤醒，毫秒级回神。Deep sleep 把数字域整个断电，只留 RTC 域，电流降到 µA 级。
+   代价是：**Deep sleep 醒来 = 复位重启**，程序从 `app_main` 重新跑。对照 [S14](../stm32/14-pwr.md) 的 Sleep/Stop/Standby 三档，ESP 少一档、但把 RTC 域这场戏演得更重。
+2. **唤醒源有五路**：定时器 `esp_sleep_enable_timer_wakeup`、GPIO（EXT0/EXT1）、触摸、UART、ULP。
+   选哪一路，决定了产品怎么设计：定时上报就选定时器，按键唤醒就选 EXT。
+3. **ULP 是守夜人**。主核睡死时，这颗超低功耗小核还在跑。它能读 ADC/I2C、能数脉冲，只有达到阈值才把主核叫醒。
+   这是电池产品的终极省电手段（本章简介 FSM 与 RISC-V 两代 ULP）。
 
 - **能理解**：为什么 Deep sleep 唤醒=复位重启（数字域断电，CPU/RAM 全没）；为什么 EXT0/EXT1 只能用 RTC GPIO（普通 GPIO 在数字域，断电就废）；为什么 Wi-Fi 没关就睡电流下不来（射频/协议栈还在跑）。
-- **能用**：写出周期上报器六步骨架（醒来→采→连→发→关 Wi-Fi→睡），用 RTC_DATA_ATTR 跨复位保存计数，用 esp_sleep_get_wakeup_cause 分诊唤醒原因。
+- **能用**：写出周期上报器的六步骨架（醒来→采→连→发→关 Wi-Fi→睡）。用 `RTC_DATA_ATTR` 跨复位保存计数，用 `esp_sleep_get_wakeup_cause` 判断这次为什么醒来。
 
 ## 先修
 
@@ -47,7 +50,7 @@ Light 与 Deep 的四列差异、RTC 内存的“遗言”、ULP 守夜人：Dee
 
 ## 一、睡眠矩阵：Light vs Deep 四列对照
 
-ESP32 睡眠分两档（对应 [S14 STM32](../stm32/14-pwr.md) 的 Sleep/Stop/Standby 三档中后两档）：Light sleep 与 Deep sleep。先看四列对照：
+ESP32 的睡眠分两档：Light sleep 与 Deep sleep。它们大致对应 [S14 STM32](../stm32/14-pwr.md) 的 Stop 与 Standby。先看四列对照：
 
 | 维度 | Light sleep | Deep sleep |
 |---|---|---|
@@ -59,13 +62,13 @@ ESP32 睡眠分两档（对应 [S14 STM32](../stm32/14-pwr.md) 的 Sleep/Stop/St
 | 电流 | 几 mA 量级 | µA 级 |
 | 回神时间 | ms 级 | ms 级（外加复位重启代价） |
 
-哲学与 S14 一致：睡得越深，省得越多，但醒来代价越大。STM32 三档里，ESP 的 Light ≈ Stop（RAM 保持、外设部分活），ESP 的 Deep ≈ Standby（域断电、靠 RTC 留遗言）。区别在 ESP 没有对应 STM32 Sleep（仅 CPU 停、外设全活）那档：因为 ESP 的"轻睡"默认就包含 Modem sleep（关射频），与 STM32 Sleep 不是一个量级的省电。
+哲学与 S14 一致：睡得越深，省得越多，但醒来代价越大。STM32 三档里，ESP 的 Light ≈ Stop（RAM 保持、外设部分活），ESP 的 Deep ≈ Standby（域断电、靠 RTC 留遗言）。差别在于 ESP 没有对应 STM32 Sleep 的那一档。STM32 的 Sleep 只停 CPU、外设全活；ESP 的"轻睡"默认连射频一起关（Modem sleep）。两者省电根本不是一个量级。
 
 关键认知：**Deep sleep 唤醒 = 复位重启**。`setup()` 从头跑一遍，全局变量全丢（除非放 RTC 内存）。这是新手最大的认知颠覆："我刚才不是还在跑吗？怎么又 setup 了？"因为数字域 RAM 失电了，CPU 从复位向量重新启动。Light sleep 不一样：从 `esp_light_sleep_start()` 下一行继续跑，像 `vTaskDelay` 一样。
 
 ## 二、RTC 内存与慢速内存：跨 Deep sleep 的"遗言"
 
-Deep sleep 把数字域 RAM 全断了，但 RTC 域还活着：RTC 域里有一块 RTC slow memory 专门给跨 sleep 的状态用。IDF 用属性宏把变量放进这块内存：
+Deep sleep 会断掉整个数字域 RAM，但 RTC 域还活着。RTC 域里有一块 RTC slow memory，专门用来存"跨睡眠还想过夜"的状态。IDF 用属性宏把变量放进这块内存。只要给变量加个宏，它就住在 RTC 域里：
 
 ```c
 RTC_DATA_ATTR int boot_count = 0;   /* 跨 Deep sleep 保持；仅上电冷启动才清零 */
@@ -79,7 +82,7 @@ void app_main(void) {
 }
 ```
 
-`RTC_DATA_ATTR`：变量放进 RTC slow memory，Deep sleep 期间保持，**只有上电（冷启动）才初始化为 0**，看门狗复位等也保持。所以 `boot_count` 每次 Deep sleep 醒来 +1，能跨复位累计。
+`RTC_DATA_ATTR`：变量放进 RTC slow memory。Deep sleep 期间保持；**只有上电（冷启动）才清零**，看门狗复位同样保持。所以 `boot_count` 每次 Deep sleep 醒来 +1，能跨复位累计。
 
 存放规则速查：
 
@@ -97,7 +100,7 @@ void app_main(void) {
 
 ## 三、唤醒源配置：五种主流唤醒
 
-Deep sleep 只能被 RTC 域唤醒源叫醒（普通 GPIO 在数字域，断电就废了）。五种主流唤醒源逐个看：
+Deep sleep 只能被 RTC 域唤醒源叫醒（普通 GPIO 在数字域，断电就废了）。主流唤醒源有五种，逐个看：
 
 **1. 定时器唤醒**（最常用，周期上报）：
 
@@ -135,13 +138,13 @@ esp_sleep_enable_touchpad_wakeup();
 
 触摸传感器是 RTC 域外设，Deep sleep 也能跑。适合"触摸按键唤醒"产品。
 
-**5. UART 唤醒**（特定模式）：
+**5. UART 唤醒**（特定模式）。
 
 ```c
 esp_sleep_enable_uart_wakeup(0);  /* UART0 收到一定数量字节唤醒 */
 ```
 
-注意 UART 唤醒是 Light sleep 主用，Deep sleep 下 UART 唤醒能力有限（依赖具体芯片，详见 TRM），本章不展开，参考 [E06](../lab/e06-lowpower-current.md) 实验配置。
+UART 唤醒主要用在 Light sleep。Deep sleep 下的 UART 唤醒能力有限，且因芯片而异（详见 TRM）。本章不展开，配置见 [E06](../lab/e06-lowpower-current.md)。
 
 唤醒后分诊原因（任何低功耗产品必做）：
 
@@ -200,11 +203,11 @@ void app_main(void) {
 
 `wifi_connect_blocking()` 的实现：在 P8 事件骨架基础上用信号量等 `IP_EVENT_STA_GOT_IP`，主任务等信号量，事件 handler 给信号量。这是"事件驱动 + 同步等待"的标准拼装。
 
-续航估算（量级）：假设活跃 200 mA 持续 2 秒（连+发），Deep sleep 10 µA 持续 10 分钟（600 秒），平均电流 ≈ 200mA·2s/602s + 10µA·600s/602s ≈ 0.67 mA + 0.01 mA ≈ 0.68 mA。CR2032（约 220 mAh）续航 ≈ 220/0.68 ≈ 323 小时 ≈ 13 天。如果唤醒间隔拉到 1 小时，平均电流降到约 0.11 mA，续航约 90 天。**唤醒间隔越长，Deep sleep 占比越高，续航越长**：这是电池 IoT 产品的核心设计杠杆。具体数值以 datasheet §Power consumption 与 [E06 实测](../lab/e06-lowpower-current.md) 为准。
+续航估算（只算量级）。假设活跃 200 mA 持续 2 秒（连接+发送），Deep sleep 10 µA 持续 600 秒，平均电流 ≈ 200mA·2s/602s + 10µA·600s/602s ≈ 0.68 mA。CR2032（约 220 mAh）续航 ≈ 220/0.68 ≈ 323 小时 ≈ 13 天。如果唤醒间隔拉到 1 小时，平均电流降到约 0.11 mA，续航约 90 天。**唤醒间隔越长，Deep sleep 占比越高，续航越长**：这是电池 IoT 产品的核心设计杠杆。具体数值以 datasheet §Power consumption 与 [E06 实测](../lab/e06-lowpower-current.md) 为准。
 
 ## 五、ULP 协处理器：守夜人
 
-主核 Deep sleep 睡死时，ULP 协处理器还在 RTC 域里跑：这颗超低功耗小核是电池产品的"守夜人"，周期性醒来读 ADC/I2C、数脉冲，达到阈值才唤醒主核。主核能睡得更久（不用频繁醒来轮询），ULP 的 µA 级功耗远低于主核频繁唤醒的 mA 级。
+主核进入 Deep sleep 后，ULP 协处理器仍在 RTC 域里运行。这颗超低功耗小核就是电池产品的"守夜人"：周期性醒来读 ADC/I2C、数脉冲，达到阈值才唤醒主核。主核能睡得更久（不用频繁醒来轮询），ULP 的 µA 级功耗远低于主核频繁唤醒的 mA 级。
 
 两代 ULP：
 
@@ -287,10 +290,10 @@ ULP-RISC-V（S2/S3）更现代：直接用 C 写，有 GCC 工具链，算力稍
 <details><summary>看答案</summary>Deep sleep 期间数字域断电，普通 GPIO 的输入检测电路也在数字域，断电就检测不了电平变化。只有 RTC GPIO（GPIO 多路复用器接到 RTC 域的引脚）在 Deep sleep 时还有电，能检测电平变化触发唤醒。所以选唤醒脚必须查 TRM 的 RTC GPIO 清单，不是任意 GPIO 都能 EXT0/EXT1 唤醒。</details>
 
 4. 周期上报器的六步铁律里，"关 Wi-Fi"（esp_wifi_stop）这一步为什么不能省？
-<details><summary>看答案</summary>Wi-Fi 协议栈和射频在 Deep sleep 前没停，状态机在跑、射频可能还在 Beacon 唤醒周期：直接进 Deep sleep，协议栈状态会乱（醒来 start 时报错或重连失败），而且射频/协议栈的功耗把 Deep sleep 的 µA 级拉高到 mA 级，省电效果全没。esp_wifi_disconnect 加 esp_wifi_stop 把协议栈停干净，醒来重新 start，干净利落。</details>
+<details><summary>看答案</summary>Wi-Fi 协议栈和射频在 Deep sleep 前没停：状态机还在跑，射频可能还在 Beacon 唤醒周期。直接睡下去会有两个后果。其一，协议栈状态会乱，醒来 `start` 时报错或重连失败。其二，射频和协议栈的功耗会把 Deep sleep 的 µA 级拉高到 mA 级，省电效果全部作废。esp_wifi_disconnect 加 esp_wifi_stop 把协议栈停干净，醒来重新 start，干净利落。</details>
 
 5. ULP 适合做什么、不适合做什么？为什么主核睡死时 ULP 还能跑？
-<details><summary>看答案</summary>ULP 适合"阈值哨兵"，周期性读 ADC/I2C、数脉冲、比较阈值，达到条件才唤醒主核。主核能睡更久不用频繁醒来轮询，ULP 的 µA 级远低于主核频繁唤醒的 mA 级。不适合跑业务逻辑：ULP 算力/内存极小（RTC slow memory 几 KB），FSM 版只有有限指令集，RISC-V 版虽有 C 编译器但仍弱。主核睡时 ULP 能跑，因为 ULP 在 RTC 域，独立于数字域供电，数字域断电不影响 RTC 域，ULP 周期性执行 RTC slow memory 里的程序，达到条件通过 SW 中断唤醒主核（触发复位重启）。</details>
+<details><summary>看答案</summary>ULP 适合"阈值哨兵"，周期性读 ADC/I2C、数脉冲、比较阈值，达到条件才唤醒主核。主核能睡更久不用频繁醒来轮询，ULP 的 µA 级远低于主核频繁唤醒的 mA 级。不适合跑业务逻辑：ULP 算力/内存极小（RTC slow memory 几 KB），FSM 版只有有限指令集，RISC-V 版虽有 C 编译器但仍弱。主核睡着时 ULP 还能跑，原因在供电分区：ULP 在 RTC 域，数字域断电不影响它。ULP 周期性执行 RTC slow memory 里的程序，满足条件就通过 SW 中断唤醒主核（主核走复位重启）。</details>
 
 ## 对照表：本章概念 → 仓库与上游落点
 

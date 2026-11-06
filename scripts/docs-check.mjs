@@ -240,6 +240,39 @@ export function checkHygiene(root) {
   return problems
 }
 
+// `<details><summary>…</summary>` 之后若跟一个空行，Markdown 的 HTML 块在此结束；
+// 随后正文按普通段落解析。此时闭合标签若粘在段落末尾，产物是 <p>…</details></p>——
+// 交叉嵌套，VitePress 的 Vue 编译期直接报 "Element is missing end tag"。闭合必须独立成行。
+function checkDetailsNesting(root) {
+  const problems = []
+  for (const rel of collectMarkdown(root)) {
+    const lines = fs.readFileSync(path.join(root, rel), 'utf8').split(/\r?\n/)
+    let inFence = false
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      if (/^```/.test(line.trim())) {
+        inFence = !inFence
+        continue
+      }
+      if (inFence) continue
+      if (!/<details[^>]*>/.test(line) || /<\/details>/.test(line)) continue
+      if ((lines[i + 1] ?? '').trim() !== '') continue
+      for (let k = i + 1; k < Math.min(lines.length, i + 60); k++) {
+        if (!/<\/details>/.test(lines[k])) continue
+        if (lines[k].trim() !== '</details>') {
+          problems.push(
+            `${rel}:${k + 1} <details> 开标签后有空行，` +
+              `闭合标签却粘在正文行末（第 ${i + 1} 行开启）——会编译成 <p>…</details></p>，` +
+              'Vue 报 Element is missing end tag；闭合请独立成行',
+          )
+        }
+        break
+      }
+    }
+  }
+  return problems
+}
+
 // 本仓库自链：github.com/zhuguang-ZFG/mcu/blob/<ref>/<path>
 const SELF_BLOB = /https:\/\/github\.com\/zhuguang-ZFG\/mcu\/blob\/([^/\s)]+)\/([^\s)]+)/g
 
@@ -489,6 +522,7 @@ function main() {
   const sections = [
     ['相对链接与锚点', checkLinks(ROOT)],
     ['Markdown 卫生', checkHygiene(ROOT)],
+    ['details 嵌套', checkDetailsNesting(ROOT)],
     ['仓库自链', checkSelfBlobLinks(ROOT)],
     ['手写数字声明', checkNumberClaims(ROOT)],
     ['引用与发布口径', [...checkCitation(ROOT), ...checkChangelog(ROOT)]],

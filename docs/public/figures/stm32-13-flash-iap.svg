@@ -3,7 +3,7 @@
 <rect x="16" y="24" width="90" height="24" rx="3" stroke-width="1.4"/> <rect x="112" y="24" width="120" height="24" rx="3" stroke-width="1.4"/> <rect x="238" y="24" width="66" height="24" rx="3" stroke-width="1.4"/>
 <text x="61" y="40" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">Bootloader</text> <text x="172" y="40" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">app</text> <text x="271" y="40" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">参数区</text>
 <path d="M106 36 C 112 30, 112 30, 116 30" stroke-width="2.2"/>
-<text x="108" y="22" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">跳转</text>
+<text x="99" y="21" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">跳转</text>
 <rect x="16" y="60" width="110" height="20" rx="3" stroke-width="1.4" stroke-dasharray="3 2"/> <rect x="150" y="60" width="90" height="20" rx="3" stroke-width="1.4" stroke-dasharray="3 2"/>
 <text x="71" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">擦除：1 扇区</text> <text x="195" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">写入：4 字节</text>
 </g></svg>

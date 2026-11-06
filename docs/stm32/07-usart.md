@@ -76,6 +76,8 @@ baud = f_PCLK / BRR
 
 所以 BRR 必须由**实际的** PCLK 算出来，不能写死。PCLK 变了，BRR 就得跟着变，改了时钟树、串口就乱码，根子在这里。
 
+![BRR 的来历：PCLK 与 baud 相除后拆成整数 Mantissa 与小数 Fraction 两个字段](/figures/stm32-07-usart-brr.svg)
+
 > **【注 2】** 上面那两条公式看起来把 BRR 当纯整数分母，而 RM0090 把它拆成 `DIV_Mantissa[15:4]` + `DIV_Fraction[3:0]`，写法是 `USARTDIV = Mantissa + Fraction/16`、`baud = f_PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好就是寄存器里那 16 位，**整个寄存器的值就是分母**。所以固件直接写一个整数（139 = 0x8B → Mantissa 8、Fraction 11），不需要先算小数再拼字段；寄存器的 1 位粒度已经是硬件能给的最细分频，不存在"小数位还没用上"。
 
 误差表（`code/stm32/03-uart-dma/probe.sh` 第 1 步本机实跑打印的那八行，逐行由 `BAUD_FROM_PCLK` / `PCLK_OF_BRR` 这两个固件宏算出；第 2 步再拿这张表与正文逐行 diff，改一个数就红）：

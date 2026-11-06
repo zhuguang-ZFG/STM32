@@ -85,7 +85,7 @@ RTOS 的坑都长在"不熟悉"上：FreeRTOS 的优先级数值大=高、RT-Thr
 ## 短自测
 
 1. ESP32 项目为什么几乎一定用 IDF 自带 FreeRTOS？换 RTOS 的代价是什么？
-<details><summary>看答案</summary>ESP32 的 Wi-Fi/BLE 协议栈、电源管理、双核 SMP 调度都深度集成在 IDF 里，IDF 内置的就是 FreeRTOS SMP 适配版。换 RTOS 要把协议栈、电源管理、双核调度全部重新对接，工作量以人月计，且享受不到乐鑫的持续维护。换 RTOS 的成本远大于换 RTOS 的收益，所以"平台绑定"让选型答案几乎唯一。</details>
+<details><summary>看答案</summary>ESP32 的 Wi-Fi/BLE 协议栈、电源管理、双核 SMP 调度都深度集成在 IDF 里，IDF 内置的就是 FreeRTOS SMP 适配版。换 RTOS 要把协议栈、电源管理、双核调度全部重新对接，工作量以人月计，且享受不到乐鑫的持续维护。换 RTOS 的成本远大于收益，所以"平台绑定"让选型答案几乎唯一。</details>
 
 2. 什么项目特征让你选 RT-Thread 标准版而不是 FreeRTOS？给出量化判断标准。
 <details><summary>看答案</summary>项目要碰"联网/存储/UI/OTA"组件中的 3 个以上，RT-Thread 标准版的软件包中心（menuconfig 勾选+pkgs --update）能省几个月。量化标准：数你的项目要用的组件数，碰 3 个以上选 RT-Thread 标准版（生态优势压倒性），碰 0-1 个选 FreeRTOS（极简无生态开销），碰 2 个看团队熟悉度。</details>

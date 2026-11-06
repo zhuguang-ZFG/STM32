@@ -77,7 +77,7 @@ GDB ──(TCP 3333)──> OpenOCD ──(USB)──> ST-Link ──(SWD)──
 > reset run                     # ⑤ 复位运行（PC 指向复位向量）
 ```
 
-第 ③ 步"擦+写"最绕：OpenOCD 不能直接从 USB 往 Flash 寄存器写：Flash 编程有严格时序（解锁→擦→写→等 BSY，[S13](../stm32/13-flash-iap.md)）。OpenOCD 的办法是**把一段"擦写算法"（几十行 ARM 机器码）灌进芯片 RAM**，让 CPU 自己跑这段算法去操作 Flash 控制器。OpenOCD 只负责传数据、发"开始执行算法"的命令。这就是 program 必须选对 target 配置的原因：不同芯片的擦写算法不同，配错了算法跑错寄存器，Flash 写不进去，甚至写坏。
+第 ③ 步"擦+写"最绕：OpenOCD 不能直接从 USB 往 Flash 寄存器写：Flash 编程有严格时序（解锁→擦→写→等 BSY，[S13](../stm32/13-flash-iap.md)）。OpenOCD 的办法是**把一段"擦写算法"（几十行 ARM 机器码）灌进芯片 RAM**，让 CPU 自己跑这段算法去操作 Flash 控制器；CPU 跑算法比 OpenOCD 从 USB 逐个寄存器写，更快也更可靠。OpenOCD 只负责传数据、发"开始执行算法"的命令。这就是 program 必须选对 target 配置的原因：不同芯片的擦写算法不同，配错了算法跑错寄存器，Flash 写不进去，甚至写坏。
 
 > **【注】** 这也解释了 [S13](../stm32/13-flash-iap.md) 的"擦写关键路径放 RAM 执行"为什么是工业标准：OpenOCD 的烧录本身就是这么干的。你的 IAP bootloader 跳转函数（关中断→MSP→VTOR→跳）做的事和 OpenOCD 的"灌算法进 RAM 再让它跑"同构。
 
@@ -98,7 +98,7 @@ GDB ──(TCP 3333)──> OpenOCD ──(USB)──> ST-Link ──(SWD)──
 | `info registers` | 看所有寄存器 | 崩溃现场、调用约定核对 |
 | `continue` | 继续跑 | 单步完放它走 |
 
-`monitor` 前缀是发给 OpenOCD 的命令（reset/flash/sleep），不带 monitor 是发给 GDB 自己的（break/x/continue）。区分这条线：`monitor reset halt` 是 OpenOCD 让芯片复位停住，`break main` 是 GDB 设断点。
+`monitor` 前缀是发给 OpenOCD 的命令（reset/flash/sleep）；不带 monitor 是发给 GDB 自己的（break/x/continue）。区分这条线：`monitor reset halt` 是 OpenOCD 让芯片复位停住，`break main` 是 GDB 设断点。
 
 ## 四、断点的硬件：FPB 比较器 vs BKPT 改写
 

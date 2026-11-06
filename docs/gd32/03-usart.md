@@ -7,7 +7,7 @@ minutes: 30
 
 # G3 USART 增强点：从命名到数量的差异清单
 
-> 🎯 STM32F407 有 6 个串口（USART1/2/3/6 + UART4/5），GD32F4xx 有 **8 个**（USART0/1/2/5 + UART3/4/6/7）——多出来的不只是数量，寄存器命名也从 CR1/CR2/CR3 换成了 CTL0/CTL1/CTL2。本章把差异逐项点名，迁移时按表翻译。
+> 🎯 STM32F407 有 6 个串口（USART1/2/3/6 + UART4/5），GD32F4xx 有 **8 个**（USART0/1/2/5 + UART3/4/6/7）——多出来的不只是数量：寄存器命名也从 CR1/CR2/CR3 换成了 CTL0/CTL1/CTL2。本章把差异逐项点名，迁移时按表翻译。
 
 ## 本章精髓
 
@@ -67,7 +67,7 @@ GD32F4xx 串口全家福（中断号已在 `gd32f4xx.h` 核对）：
 2. **多 3 个串口**：USART5（APB2）、UART6/7（APB1）是 GD32 独有，STM32F407 没有。
 3. **USART5 挂 APB2**：与其他 USART 的 APB1 归属不同，时钟使能位在 RCU_APB2EN，别找错。
 
-> **【注】** GD32 的 USART0/1/2/5 是"同步/异步"（带 SCK 引脚，可做 SPI 主从），UART3/4/6/7 是"纯异步"（无 SCK），对应 STM32 的 USART vs UART 区分。
+> **【注】** GD32 的 USART0/1/2/5 是"同步/异步"（带 SCK 引脚，可做 SPI 主从）；UART3/4/6/7 是"纯异步"（无 SCK），对应 STM32 的 USART vs UART 区分。
 
 ## 二、寄存器命名：CR1/2/3 → CTL0/1/2
 
@@ -105,7 +105,7 @@ GD32 库的统一命名风格：所有外设的控制寄存器都叫 **CTL**（C
 | TC | **TC**（不变） | 传输完成 |
 | IDLE | **IDLE**（不变） | 空闲 |
 
-GD32 的位命名风格：**动作位加 EN 后缀**（UEN/REN/TEN），**状态位用 B（Buffer）替代 X**（RBNE vs RXNE = Receive Buffer Not Empty vs Receive Not Empty）。
+GD32 的位命名风格有两条规律。**动作位加 EN 后缀**（UEN/REN/TEN）；**状态位用 B（Buffer）替代 X**（RBNE vs RXNE = Receive Buffer Not Empty vs Receive Not Empty）。
 
 ## 三、中断号地图：8 个 IRQn
 
@@ -122,7 +122,7 @@ UART6_IRQn  = 82,    // APB1，GD32 独有
 UART7_IRQn  = 83,    // APB1，GD32 独有
 ```
 
-中断号不连续（39→52 跳了 13，53→71 跳了 18）：GD32 的中断向量表布局与 STM32 不同。迁移时**不要按 STM32 的中断号找 GD32 的**，按上表对照。
+中断号不连续：39→52 跳了 13，53→71 跳了 18。GD32 的中断向量表布局与 STM32 不同。迁移时**不要按 STM32 的中断号找 GD32 的**，按上表对照。
 
 ## 四、增强点：GD32 独有功能（已按 V3.3.3 头文件核验）
 
@@ -149,7 +149,7 @@ GD32 标准外设库的 USART API 与 STM32 SPL 的对照（函数名风格不�
 | `USART_GetFlagStatus(USART1, TXE)` | `usart_flag_get(USART0, USART_FLAG_TBE)` | TBE 替代 TXE |
 | `USART_ITConfig(USART1, RXNE, ENABLE)` | `usart_interrupt_enable(USART0, USART_INT_RBNE)` | RBNE 替代 RXNE |
 
-GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`），**参数不打包结构体**（直接传 baud/word_len 等），**宏名加 FLAG/INT 前缀**。读库姿势照旧（[S15 SPL 解剖](../stm32/15-spl-anatomy.md)）：拿到 `usart_init` 先问"它动了 CTL0/1/2 的哪几位"，按偏移对答案。
+GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`）；**参数不打包结构体**（直接传 baud/word_len 等）；**宏名加 FLAG/INT 前缀**。读库姿势照旧（[S15 SPL 解剖](../stm32/15-spl-anatomy.md)）：拿到 `usart_init` 先问"它动了 CTL0/1/2 的哪几位"，按偏移对答案。
 
 ## 记忆锚点
 
@@ -186,7 +186,7 @@ GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`�
 <details><summary>看答案</summary>GD32 叫 RBNE（Receive Buffer Not Empty）和 TBE（Transmit Buffer Empty）。规律：状态位用 B（Buffer）替代 X（STM32 的 RXNE = Receive Not Empty，GD32 加了 Buffer 更直白）；动作位加 EN 后缀（UEN/REN/TEN）。迁移时把 STM32 的 RXNE/TXE 宏名换成 RBNE/TBE。</details>
 
 5. GD32 库的 `usart_init` 与 STM32 SPL 的 `USART_Init` 在 API 风格上有什么差异？
-<details><summary>看答案</summary>STM32 SPL 用结构体打包（USART_InitTypeDef 含 baud/word_len/stop/parity/mode 传给 USART_Init），GD32 库直接传参数（usart_init(USART0, baud, word_len, stop, parity, mode) 不打包）。命名风格：STM32 驼峰大写（USART_Init），GD32 小写下划线（usart_init）。功能等价，代码风格不同。</details>
+<details><summary>看答案</summary>STM32 SPL 用结构体打包（USART_InitTypeDef 含 baud/word_len/stop/parity/mode 传给 USART_Init）；GD32 库直接传参数（usart_init(USART0, baud, word_len, stop, parity, mode) 不打包）。命名风格：STM32 驼峰大写（USART_Init），GD32 小写下划线（usart_init）。功能等价，代码风格不同。</details>
 
 ## 对照表：本章概念 → 仓库与上游落点
 
