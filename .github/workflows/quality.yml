@@ -35,6 +35,10 @@ jobs:
           if-no-files-found: ignore
       - name: 动画版式审计（出界 / 压字，Linux 字体度量）
         run: npm run anim:audit
+      - name: 题图版式审计（出界 / 压字，放大 1.08 留余量）
+        run: node scripts/anim-audit.mjs --dir docs/public/figures --font-scale 1.08
+      - name: 题图规格门（纯矢量 / 笔压分级 / 字号下限）
+        run: python3 mcu-book/tools/art_guard.py --dir docs/public/figures
       - id: catalog
         name: 从已校验工程清单生成 S3 矩阵
         run: echo "matrix=$(node scripts/project-catalog.mjs --matrix)" >> "$GITHUB_OUTPUT"
