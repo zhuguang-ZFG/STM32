@@ -105,7 +105,7 @@ GD32 库的统一命名风格：所有外设的控制寄存器都叫 **CTL**（C
 | TC | **TC**（不变） | 传输完成 |
 | IDLE | **IDLE**（不变） | 空闲 |
 
-GD32 的位命名风格：**动作位加 EN 后缀**（UEN/REN/TEN），**状态位用 B（Buffer）替代 X**（RBNE vs RXNE = Receive Buffer Not Empty vs Receive Not Empty）。
+GD32 的位命名风格有两条规律。**动作位加 EN 后缀**（UEN/REN/TEN）；**状态位用 B（Buffer）替代 X**（RBNE vs RXNE = Receive Buffer Not Empty vs Receive Not Empty）。
 
 ## 三、中断号地图：8 个 IRQn
 
@@ -122,7 +122,7 @@ UART6_IRQn  = 82,    // APB1，GD32 独有
 UART7_IRQn  = 83,    // APB1，GD32 独有
 ```
 
-中断号不连续（39→52 跳了 13，53→71 跳了 18）：GD32 的中断向量表布局与 STM32 不同。迁移时**不要按 STM32 的中断号找 GD32 的**，按上表对照。
+中断号不连续：39→52 跳了 13，53→71 跳了 18。GD32 的中断向量表布局与 STM32 不同。迁移时**不要按 STM32 的中断号找 GD32 的**，按上表对照。
 
 ## 四、增强点：GD32 独有功能（已按 V3.3.3 头文件核验）
 
@@ -149,7 +149,7 @@ GD32 标准外设库的 USART API 与 STM32 SPL 的对照（函数名风格不�
 | `USART_GetFlagStatus(USART1, TXE)` | `usart_flag_get(USART0, USART_FLAG_TBE)` | TBE 替代 TXE |
 | `USART_ITConfig(USART1, RXNE, ENABLE)` | `usart_interrupt_enable(USART0, USART_INT_RBNE)` | RBNE 替代 RXNE |
 
-GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`），**参数不打包结构体**（直接传 baud/word_len 等），**宏名加 FLAG/INT 前缀**。读库姿势照旧（[S15 SPL 解剖](../stm32/15-spl-anatomy.md)）：拿到 `usart_init` 先问"它动了 CTL0/1/2 的哪几位"，按偏移对答案。
+GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`）；**参数不打包结构体**（直接传 baud/word_len 等）；**宏名加 FLAG/INT 前缀**。读库姿势照旧（[S15 SPL 解剖](../stm32/15-spl-anatomy.md)）：拿到 `usart_init` 先问"它动了 CTL0/1/2 的哪几位"，按偏移对答案。
 
 ## 记忆锚点
 

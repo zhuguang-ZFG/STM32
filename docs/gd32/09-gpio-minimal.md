@@ -97,9 +97,9 @@ GPIOx_MODER &= ~(3UL << (pin * 2U));      GPIO_CTL0(x) &= ~(0xFUL << (pin * 4U))
 GPIOx_MODER |=  (1UL << (pin * 2U));      GPIO_CTL0(x) |=  (0x8UL << (pin * 4U));  /* 四位合体 0b1000 */
 ```
 
-照搬 S3 的 0x3 掩码会留下两个旧位，是"模式改不干净"的暗病，配复用脚时尤其致命（残留位能把推挽变开漏，信号半死不活）。
+照搬 S3 的 0x3 掩码会留下两个旧位，是"模式改不干净"的暗病。配复用脚时尤其致命：残留位能把推挽变开漏，信号半死不活。
 
-要上拉/下拉输入：MD=00、CTL=10，再写 OCTL 对应位：F1 血统的"输出锁存器"兼任上拉/下拉选择（写 1 上拉、写 0 下拉），这是与 S3 PUPDR 独立寄存器的又一个结构差异（已按用户手册实证：UM §7.5 配置表 Input pull-up=CTL10+OCTL1、pull-down=CTL10+OCTL0）。复用输出（如 USART_TX）：MD 选速度、CTL 选"复用推挽"，重映射候选脚多时还要动 AFIO：三件套见 [V1 第七节](06-clic-irq.md) 第 3、4 步。
+要上拉/下拉输入：MD=00、CTL=10，再写 OCTL 对应位。F1 血统的"输出锁存器"兼任上拉/下拉选择（写 1 上拉、写 0 下拉），这是与 S3 PUPDR 独立寄存器的又一个结构差异（已按用户手册实证：UM §7.5 配置表 Input pull-up=CTL10+OCTL1、pull-down=CTL10+OCTL0）。复用输出（如 USART_TX）：MD 选速度、CTL 选"复用推挽"，重映射候选脚多时还要动 AFIO：三件套见 [V1 第七节](06-clic-irq.md) 第 3、4 步。
 
 ## 三、数据四剑客：ISTAT/OCTL/BOP/BC
 
