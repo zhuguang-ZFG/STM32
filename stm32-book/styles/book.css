@@ -230,7 +230,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
 }
 @media print {
   :root { color-scheme: light; /* @tokens print */ }
-  @page { size: A4; margin: 16mm 15mm 18mm; }
+  @page { size: A4; margin: 16mm 15mm 17mm; }
   body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; background: #10242e; }
@@ -248,9 +248,11 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   h2, h3, h4, h5, h6 { bookmark-level: none; }
   p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
   .photo-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: 9pt; line-height: 1.4; }
+  figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: 8.5pt; line-height: 1.3; }
   sub { font-size: 9pt; line-height: 1.4; }
-  img { max-height: 200mm; }
+  img { max-height: 165mm; }
+  figure:not(.part-plate):not(.wide-figure) img { max-width: 88%; }
+  figure img { margin: 0 auto .15rem; }
   .table-scroll { overflow: visible; break-inside: auto; }
   .table-scroll table { min-width: 0; }
   .wide-figure { overflow: visible; }
@@ -258,7 +260,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   thead { display: table-header-group; break-after: avoid-page; page-break-after: avoid; }
   tr { break-inside: avoid-page; page-break-inside: avoid; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; break-inside: auto; page-break-inside: auto; line-height: 1.45; }
-  figure { background: transparent; }
+  figure { background: transparent; padding: .2rem .45rem .15rem; margin: calc(var(--space-figure) * 0.67) auto; }
   tbody tr:nth-child(even) > td { background: transparent; }
   #appendix-glossary .table-scroll th:first-child,
   #appendix-glossary .table-scroll td:first-child { position: static; left: auto; box-shadow: none; }

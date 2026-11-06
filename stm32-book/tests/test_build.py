@@ -326,7 +326,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="toc-jump"', html)
         self.assertIn(">目录</a>", html)
         self.assertIn("position: sticky", html)
-        self.assertIn("max-height: 200mm", html)
+        self.assertIn("max-height: 165mm", html)
         self.assertIn("break-before: avoid-page", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
@@ -1260,8 +1260,11 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("--ink: #111", printed)
         self.assertIn("--muted: #444", printed)
         self.assertIn("--accent: #075e84", printed)
-        self.assertIn("figure { background: transparent; }", printed)
-        self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
+        self.assertIn(
+            "figure { background: transparent; padding: .2rem .45rem .15rem; margin: calc(var(--space-figure) * 0.67) auto; }",
+            printed,
+        )
+        self.assertIn("@page { size: A4; margin: 16mm 15mm 17mm; }", printed)
         self.assertIn("h1, h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }", printed)
         caption = self._css_rule(printed, "figcaption")
         self.assertIn("break-before: avoid-page", caption)
@@ -1528,8 +1531,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("page-break-inside: auto", pre_print)
         self.assertNotIn("avoid", pre_print)
         caption = self._css_rule(printed, "figcaption")
-        self.assertIn("font-size: 9pt", caption)
-        self.assertIn("line-height: 1.4", caption)
+        self.assertIn("font-size: 8.5pt", caption)
+        self.assertIn("line-height: 1.3", caption)
         self.assertIn("break-before: avoid-page", caption)
         self.assertIn("page-break-before: avoid", caption)
         self.assertIn("break-inside: avoid-page", caption)
@@ -1538,8 +1541,11 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("font-size: 9pt", printed_sub)
         self.assertIn("line-height: 1.4", printed_sub)
         self.assertIn("position: static", self._css_rule(printed, ".contents > section > h2"))
-        self.assertIn("figure { background: transparent; }", printed)
-        self.assertIn("@page { size: A4; margin: 16mm 15mm 18mm; }", printed)
+        self.assertIn(
+            "figure { background: transparent; padding: .2rem .45rem .15rem; margin: calc(var(--space-figure) * 0.67) auto; }",
+            printed,
+        )
+        self.assertIn("@page { size: A4; margin: 16mm 15mm 17mm; }", printed)
 
     def test_css_token_extract_contract(self) -> None:
         tokens_path = BOOK_DIR / "styles" / "tokens.json"
@@ -1606,7 +1612,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "0391297fb6f9d6616983b6f5031f10b86068d033653b610b06eb48969d130508",
+            "4d40fc4ce74cf27582e34850ca2e5b55830fbedab51b0de6f0720d383d5e61ee",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
@@ -2215,7 +2221,10 @@ class BookBuildContractTests(unittest.TestCase):
             r"\.chapter > header[^{]*\{[^}]*page-break-after:\s*avoid",
         )
         self.assertIn("--spine: #c4552a", print_css)
-        self.assertIn("figure { background: transparent; }", print_css)
+        self.assertIn(
+            "figure { background: transparent; padding: .2rem .45rem .15rem; margin: calc(var(--space-figure) * 0.67) auto; }",
+            print_css,
+        )
         self.assertIn("position: static", print_css)
         self.assertIn("bookmark-level: none", print_css)
 
