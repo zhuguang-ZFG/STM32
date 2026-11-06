@@ -155,8 +155,8 @@ def three_times():
     for i, (t1, t2) in enumerate(rules):
         x = bx0 + i * (bw + gap)
         f.rect(x, 560, bw, 128, color=GREEN, fill=WHITE)
-        f.multi(x + 24, 604, [t1], size=25, color=GREEN_D, weight="bold")
-        f.multi(x + 24, 646, [t2], size=22, color=INK)
+        f.multi(x + 24, 604, [t1], size=21, color=GREEN_D, weight="bold")
+        f.multi(x + 24, 648, [t2], size=20, color=INK)
     return f
 
 

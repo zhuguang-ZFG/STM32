@@ -14,12 +14,12 @@ def app_a_invariants():
     ]
     y = 150
     for num, c, a, b in items:
-        f.circle(96, y + 28, 28, color=c, fill=WHITE, sw=3)
-        f.htext(96, y + 36, num, size=28, color=c, anchor="middle", weight="bold")
-        f.rect(140, y, 900, 72, color=c, fill=WHITE, sw=2.5)
-        f.htext(170, y + 32, a, size=28, color=c, weight="bold")
-        f.text(170, y + 58, b, size=22, color=MUTED)
-        y += 92
+        f.circle(96, y + 30, 28, color=c, fill=WHITE, sw=3)
+        f.htext(96, y + 38, num, size=28, color=c, anchor="middle", weight="bold")
+        f.rect(140, y, 900, 84, color=c, fill=WHITE, sw=2.5)
+        f.htext(170, y + 32, a, size=26, color=c, weight="bold")
+        f.text(170, y + 66, b, size=20, color=MUTED)
+        y += 100
     f.htext(W / 2, 560, "先写不变量，再选契约 A 或 B；两类代码拼在一起最容易丢字节",
             size=24, color=BLUE_D, anchor="middle", weight="bold", hl=True)
     return f
@@ -78,7 +78,7 @@ def app_a_contract_b():
 def app_a_isr_boundary():
     f = Fig("app-a-isr-boundary", "ISR 与业务层边界 / ISR vs application")
     cols = [
-        ("ISR 可做", GREEN_D, ["有界拷贝到环", "dropped_bytes++", "记 ORE/FE/NE", "FromISR 通知（优先级合规）"]),
+        ("ISR 可做", GREEN_D, ["有界拷贝到环", "dropped_bytes++", "记 ORE/FE/NE", "FromISR 通知", "（优先级合规）"]),
         ("ISR 禁止", RED, ["解析 JSON", "拿互斥量阻塞", "长日志打印", "业务状态机推进"]),
         ("可观察状态", BLUE_D, ["DMA 写位置", "软件写/读位置", "队列满计数", "UART 错误计数"]),
     ]
@@ -141,9 +141,9 @@ def app_b_four_rows():
 def app_b_channel_desc():
     f = Fig("app-b-channel-desc", "通道与描述符再对三行 / channel & descriptor")
     cols = [
-        ("spi-flash", GREEN_D, ["0x9F → EF 40 17", "BR=010 @72 MHz → SCK 9 MHz", "全 0/FF = 接线或模式错"]),
-        ("usb-cdc", BLUE_D, ["USBPRE=0 → 48 MHz", "配置集 67 字节", "VID/PID 0x1209/0x0001"]),
-        ("freertos-task", AMBER_STROKE, ["栈深单位是字", "128 字 = 512 字节", "当成字节 → 一创建就 HardFault"]),
+        ("spi-flash", GREEN_D, ["0x9F → EF 40 17", "BR=010 @ 72 MHz", "→ SCK 9 MHz", "全 0/FF = 接线或模式错"]),
+        ("usb-cdc", BLUE_D, ["USBPRE=0 → 48 MHz", "配置集 67 字节", "VID/PID", "0x1209 / 0x0001"]),
+        ("freertos-task", AMBER_STROKE, ["栈深单位是字", "128 字 = 512 字节", "当成字节 →", "一创建就 HardFault"]),
     ]
     cw, gap = 340, 24
     x0 = (W - (cw * 3 + gap * 2)) / 2
@@ -151,7 +151,7 @@ def app_b_channel_desc():
         x = x0 + i * (cw + gap)
         f.rect(x, 150, cw, 360, color=c, fill=WHITE, sw=3)
         f.htext(x + cw / 2, 210, t, size=28, color=c, anchor="middle", weight="bold")
-        f.multi(x + 28, 280, lines, size=24, color=INK, lh=50)
+        f.multi(x + 28, 280, lines, size=20, color=INK, lh=46)
     f.htext(W / 2, 570, "第三表：请求号 · 描述符长度 · 栈的单位",
             size=24, color=MUTED, anchor="middle")
     return f
@@ -160,11 +160,11 @@ def app_b_channel_desc():
 def app_b_run_order():
     f = Fig("app-b-run-order", "推荐跑法五步 / useful order")
     steps = [
-        ("1", "先闭环", "gpio → exti → timer", GREEN_D),
-        ("2", "再加一条外设", "uart · i2c · spi · adc", BLUE_D),
-        ("3", "再谈状态", "rtc · iap · can · usb", AMBER_STROKE),
-        ("4", "并发最后", "freertos-task", RED),
-        ("5", "旧库单独", "spl-f1-blink（勿混 HAL）", MUTED),
+        ("1", "先闭环", ["gpio →", "exti →", "timer"], GREEN_D),
+        ("2", "再加一条外设", ["uart · i2c", "spi · adc"], BLUE_D),
+        ("3", "再谈状态", ["rtc · iap", "can · usb"], AMBER_STROKE),
+        ("4", "并发最后", ["freertos-", "task"], RED),
+        ("5", "旧库单独", ["spl-f1-blink", "（勿混 HAL）"], MUTED),
     ]
     x = 60
     for num, title, detail, c in steps:
@@ -172,9 +172,7 @@ def app_b_run_order():
         f.circle(x + 100, 240, 28, color=c, fill=WHITE, sw=3)
         f.htext(x + 100, 248, num, size=28, color=c, anchor="middle", weight="bold")
         f.htext(x + 100, 310, title, size=26, color=c, anchor="middle", weight="bold")
-        f.multi(x + 20, 360, detail.split(" · ") if " · " in detail else [detail],
-                size=20, color=INK, lh=32, anchor="start")
-        # fix multi for short strings
+        f.multi(x + 20, 360, detail, size=18, color=INK, lh=32, anchor="start")
         x += 215
     f.htext(W / 2, 540, "调度问题与驱动问题分开：裸机行为可解释后，才上 RTOS",
             size=24, color=MUTED, anchor="middle")

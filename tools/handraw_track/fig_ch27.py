@@ -107,19 +107,19 @@ def tcp_framing():
     # header sketch
     f.rect(96, 250, 560, 372, color=BLUE, fill=WHITE)
     rows = [
-        ("magic 0x534E", "先确认这是我们的协议", BLUE_D),
+        ("magic 0x534E", "先确认是我们的协议", BLUE_D),
         ("ver + type", "版本与消息类型", BLUE_D),
-        ("payload_len", "网络字节序；先读长度再收体", GREEN_D),
-        ("sequence", "业务序号，回执可对账", GREEN_D),
+        ("payload_len", "网络字节序；先读长度", GREEN_D),
+        ("sequence", "业务序号，回执对账", GREEN_D),
         ("payload", "…", INK),
-        ("CRC32", "TLS 也不能替代业务校验", AMBER_STROKE),
+        ("CRC32", "TLS 也不能替代校验", AMBER_STROKE),
     ]
     yy = 286
     for name, note, c in rows:
         f.rect(120, yy, 232, 42, color=c, fill=WHITE)
         f.text(236, yy + 30, name, size=23, color=c, anchor="middle",
                weight="bold")
-        f.text(580, yy + 30, note, size=21, color=MUTED, anchor="middle")
+        f.text(510, yy + 30, note, size=20, color=MUTED, anchor="middle")
         yy += 55
     # right notes
     f.multi(880, 300, ["应用协议至少定义：", "魔数 / 版本 / 长度", "类型 / 序号 / 完整性",
