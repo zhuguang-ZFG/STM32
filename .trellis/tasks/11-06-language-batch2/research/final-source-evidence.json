@@ -1,0 +1,58 @@
+{
+  "chapters": [
+    {
+      "file": "docs/build/01-four-steps.md",
+      "changedLines": [
+        27,
+        34,
+        36,
+        58,
+        75,
+        77,
+        79,
+        140,
+        159,
+        160,
+        162,
+        171
+      ],
+      "before": {
+        "count": 75,
+        "longShare": 2.7,
+        "avg": 30.5
+      },
+      "after": {
+        "count": 83,
+        "longShare": 1.2,
+        "avg": 30
+      },
+      "includesHtmlContainersUnchanged": true,
+      "candidateMatches": true
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "changedLines": [
+        16,
+        17,
+        31,
+        48,
+        131,
+        133,
+        135
+      ],
+      "before": {
+        "count": 143,
+        "longShare": 8.4,
+        "avg": 32.2
+      },
+      "after": {
+        "count": 150,
+        "longShare": 7.3,
+        "avg": 31.6
+      },
+      "includesHtmlContainersUnchanged": true,
+      "candidateMatches": true
+    }
+  ],
+  "pinnedInputsUnchanged": true
+}
