@@ -120,6 +120,11 @@ SPI is like two people swapping cards across a table. Master and slave each hold
 
 How the shift works: master and slave each have an 8-bit shift register, and the two form a ring. On each clock edge both sides shift one bit out and one bit in. After 8 clocks, one byte has been exchanged.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-byte-exchange.png" width="760" alt="Handraw: the full-duplex shift ring and the four-row JEDEC ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top half shows the master and slave shift registers joined through MOSI/MISO into one ring, each SCK edge shifting one bit out and one bit in on both sides; the bottom half is the four-row JEDEC ledger — 9F FF FF FF sent, ?? EF 40 17 received. What it proves: 8 clocks exchange one byte in both directions at once; rx[0] is the tail of the previous transaction, so the id is assembled from rx[1] on. What it does not prove: this is the logic at BR=010 (9 MHz), not setup/hold margins, CS setup delay or real waveforms, and it is not a logic-analyzer capture. Source: [RM0008 Rev 21 §25.5.1](#source-rm0008-spi).</sub>
+</p>
+
 ### 2. The four CPOL/CPHA modes
 
 

@@ -106,11 +106,42 @@ def pinmux():
     return f
 
 
+def g0_f1_compare():
+    f = Fig("ch23-g0-f1-compare", "G071RB 与 F103C8 对照卡 / three cards before you leave")
+    rows = [
+        ("第 1 脚", "F103：VBAT", "G071：PC11——从左边往下数", RED),
+        ("复位脚", "F103：NRST 专用脚", "G071：PF2 复位功能", AMBER_STROKE),
+        ("BOOT", "F103：独立 BOOT0 焊盘", "G071：与 SWCLK 共用 PA14，复位后内部下拉", BLUE_D),
+        ("USB", "F103：全速设备控制器", "G071：UCPD（Type-C 用），不是设备控制器", GREEN_D),
+        ("CAN", "F103：bxCAN 有", "G071：没有 CAN，别在图上找发送脚", RED),
+        ("PC13–15", "F103：PC13 带 LED", "G071：开关电流约 3 mA、≤2 MHz、≤30 pF", AMBER_STROKE),
+    ]
+    y = 140
+    for item, f1, g0, c in rows:
+        f.rect(84, y, 190, 62, color=c, fill=WHITE, sw=2.2)
+        f.text(179, y + 38, item, size=21, color=c, anchor="middle",
+               weight="bold")
+        f.rect(288, y, 330, 62, color=INK, fill=WHITE, sw=1.8)
+        f.text(300, y + 38, f1, size=18, color=INK)
+        f.rect(630, y, 462, 62, color=c, fill=WHITE, sw=1.8)
+        f.text(642, y + 38, g0, size=18, color=INK)
+        y += 78
+    f.text(300, 128, "F103C8（对照）", size=19, color=MUTED, anchor="middle")
+    f.text(700, 128, "G071RB（DS12232 表 12）", size=19, color=MUTED,
+           anchor="middle")
+    f.htext(84, 640, "口诀：R 是 64 只脚，B 是 128 KB；复位在 PF2，USB 是 UCPD",
+            size=23, color=INK, weight="bold", hl=True)
+    f.text(84, 678, "与 F1 对照着记，迁移才不会踩空；默认状态是模拟输入，不是 F1 的浮空输入", size=17,
+           color=MUTED)
+    return f
+
+
 FIGS = {
     "ch23-part-id": part_id,
     "ch23-pin-compare": pin_compare,
     "ch23-boot-latch": boot_latch,
     "ch23-pinmux": pinmux,
+    "ch23-g0-f1-compare": g0_f1_compare,
 }
 
 if __name__ == "__main__":

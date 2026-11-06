@@ -176,30 +176,68 @@ def clock_tree() -> Svg:
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 第 7.3.2 节",
     )
     canvas.header(tag="02", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  中密度", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "pin 5 PD0  pin 6 PD1  HSE 8 MHz", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "PLLXTPRE=0  PLLSRC=1  PLLMUL=0111  8 x 9 = 72 MHz", size=14, fill=T.TEXT)
-    canvas.text(40, 164, "SYSCLK = HCLK = 72 MHz    PCLK1 = 36 MHz    PCLK2 = 72 MHz", size=14, fill=T.AMBER)
-    canvas.text(40, 190, "TIM2-TIM7 = 72 MHz    ADCCLK = 12 MHz    USBPRE=0  USBCLK = 48 MHz", size=14, fill=T.TEXT)
-    canvas.text(40, 216, "正常路径  LATENCY=2    CSS 未触发    pin 29 PA8  MCO = PLL/2 = 36 MHz", size=15, fill=T.GREEN, weight="700")
-    canvas.rect(40, 230, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 258, "48 MHz 到 72 MHz 这一档 LATENCY=2", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 284, "0 到 24 MHz 是 0，24 到 48 MHz 是 1。电压档 2.7-3.6 V", size=14, fill=T.GREEN)
-    canvas.text(56, 310, "MCO=111 送出 36 MHz，低于 50 MHz", size=14, fill=T.TEXT)
-    canvas.text(56, 336, "RM0008 Rev 21 第 7.3.2 节。第 8.3.2 节在这颗料上作废", size=13, fill=T.MUTED)
-    canvas.text(56, 360, "旁注：ADCPRE=01 得到 18 MHz，越过 14 MHz。MCO 直接送 72 MHz 也越过 50 MHz", size=13, fill=T.AMBER)
-    canvas.text(40, 406, "失败路径  同一棵 x9 的树，LATENCY=0", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 420, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 450, "只把 PLL 改成 x9，LATENCY=0，取指失败", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 476, "HSE 停振：SYSCLK 回到 HSI 8 MHz，PLL 关掉", size=14, fill=T.RED)
-    canvas.text(56, 502, "NMI 一直进来，直到软件写 CSSC", size=14, fill=T.AMBER)
-    canvas.text(56, 528, "不把 18 MHz 和 72 MHz 的 MCO 再画成第三条完整的树", size=13, fill=T.MUTED)
-    canvas.rect(40, 570, 880, 90, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 600, "旁注  互联型第 8.3.2 节在 STM32F103C8T6 上作废", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 626, "OTGFSPRE、PLLMUL 的 000x 保留、以及 x6.5，不写进这颗 C8", size=14, fill=T.TEXT)
-    canvas.text(56, 650, "0111 仍是 x9，0000 仍是 x2。无源晶振不开 bypass", size=13, fill=T.MUTED)
+    canvas.text(40, 122, "先把树画出来，再读寄存器：每个箭头就是一个分频/倍频位", size=15, fill=T.TEXT, weight="700")
+
+    # ---- 树主干 ----
+    def node(x, y, w, h, l1, l2, c, fill=None):
+        canvas.rect(x, y, w, h, fill=fill or T.BG, stroke=c, rx=4, sw=2)
+        canvas.text(x + w / 2, y + 26, l1, size=14, fill=c, anchor="middle", weight="700")
+        canvas.text(x + w / 2, y + 48, l2, size=11, fill=T.MUTED, anchor="middle")
+
+    node(40, 160, 180, 62, "HSE 8 MHz", "pin 5 PD0 · pin 6 PD1", T.CYAN)
+    canvas.arrow(222, 191, 262, 191, color=T.CYAN, sw=2, head=7)
+    canvas.text(242, 176, "PLL ×9", size=12, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(244, 212, "0111", size=10, fill=T.MUTED, anchor="middle", mono=True)
+    canvas.text(40, 240, "PLLXTPRE=0 · PLLSRC=1 · PLLMUL=0111：8 × 9 = 72 MHz，不是 8 × 8", size=12, fill=T.CYAN, mono=True)
+    node(266, 160, 180, 62, "SYSCLK 72", "PLLSRC=1 HSE", T.GREEN)
+    canvas.arrow(448, 191, 488, 191, color=T.GREEN, sw=2, head=7)
+    node(492, 160, 170, 62, "HCLK 72", "AHB 不分频", T.GREEN)
+    # Flash 等待
+    canvas.rect(700, 150, 220, 84, fill=T.PANEL, stroke=T.GREEN, rx=4)
+    canvas.text(810, 176, "Flash LATENCY=2", size=14, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(810, 198, "0–24:0   24–48:1", size=11, fill=T.MUTED, anchor="middle", mono=True)
+    canvas.text(810, 216, "48–72:2（2.7–3.6 V）", size=11, fill=T.MUTED, anchor="middle", mono=True)
+    canvas.line(662, 191, 700, 191, stroke=T.GREEN, sw=2)
+
+    # APB1 / APB2 分支
+    canvas.line(577, 222, 577, 262, stroke=T.GREEN, sw=2)
+    canvas.line(577, 262, 300, 262, stroke=T.GREEN, sw=2)
+    canvas.arrow(300, 262, 300, 288, color=T.GREEN, sw=2, head=7)
+    canvas.line(577, 262, 850, 262, stroke=T.GREEN, sw=2)
+    canvas.arrow(850, 262, 850, 288, color=T.GREEN, sw=2, head=7)
+    canvas.text(430, 254, "APB1 ÷2", size=12, fill=T.MUTED, weight="700")
+    canvas.text(700, 254, "APB2 不分频", size=12, fill=T.MUTED, weight="700")
+    node(210, 292, 180, 62, "PCLK1 36", "APB1 外设", T.BLUE)
+    node(760, 292, 180, 62, "PCLK2 72", "APB2 外设", T.GREEN)
+    # TIM ×2 与 ADC/USB/MCO
+    canvas.arrow(300, 354, 300, 388, color=T.BLUE, sw=2, head=7)
+    canvas.text(312, 376, "TIM ×2（预分频≠1 时翻倍）", size=11, fill=T.BLUE)
+    node(210, 392, 180, 56, "TIM2–7 = 72", "定时器时钟", T.BLUE)
+    # 右下三路
+    branches = [
+        ("ADC 预分频 ÷6", "ADCCLK = 12 MHz", "ADCPRE=01 → 18 MHz，越过 14 MHz 上限", T.AMBER, 384),
+        ("USBPRE=0", "USBCLK = 48 MHz", "USBPRE=1 → 72 MHz，读描述符失败", T.AMBER, 456),
+        ("pin 29 PA8 · MCO", "PLL/2 = 36 MHz", "MCO=111；直送 72 MHz 越过 50 MHz 上限", T.AMBER, 528),
+    ]
+    for label, val, note, c, by in branches:
+        canvas.arrow(577, 222, 702, by + 32, color=T.MUTED, sw=1.5, head=6, dash="4 4")
+        canvas.rect(704, by, 216, 64, fill=T.BG, stroke=c, rx=4)
+        canvas.text(812, by + 20, label, size=12, fill=c, anchor="middle", weight="700")
+        canvas.text(812, by + 38, val, size=11, fill=T.TEXT, anchor="middle", mono=True)
+        canvas.text(812, by + 55, note, size=10, fill=T.MUTED, anchor="middle")
+
+    # ---- 失败分支：HSE 停振 ----
+    canvas.rect(40, 608, 880, 116, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 636, "失败路径  HSE 停振：CSS 时钟安全系统", size=15, fill=T.RED, weight="700")
+    canvas.text(56, 662, "SYSCLK 立刻回到 HSI 8 MHz，PLL 关掉——USART1 的 0x271 在 8 MHz 上只剩 12800", size=13, fill=T.TEXT)
+    canvas.text(56, 686, "NMI 一直进来，直到软件写 CSSC；同一棵 ×9 的树配 LATENCY=0 也取指失败", size=13, fill=T.RED)
+
+    canvas.rect(40, 738, 880, 74, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 764, "旁注  互联型（F105/F107）第 8.3.2 节在这颗 C8 上作废", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 790, "OTGFSPRE、PLLMUL 的 000x 保留与 x6.5 都不写进这颗料；0111 仍是 ×9，0000 仍是 ×2；无源晶振不开 bypass", size=12, fill=T.TEXT)
     _credit(canvas, "自绘。树来自 RM0008 Rev 21 第 7.3.2 节与第 7.2.7 节；脚位来自 DS5319 Rev 20 图 8。")
     return canvas
+
 
 
 def pwm_1khz() -> Svg:
@@ -681,29 +719,68 @@ def usb_enum() -> Svg:
         "STM32F103C8T6 LQFP48 · RM0008 Rev 21 USB device",
     )
     canvas.header(tag="14", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  USB device, not a host", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "pin 32 PA11 = DM    pin 33 PA12 = DP", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "1.5 kilohm from 3.3 V to DP. USBPRE = 0. clock 48 MHz", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  the host sees D+ pulled up", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 170, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "device descriptor 18 bytes. bMaxPacketSize0 = 64", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "VID/PID 0x1209/0x0001", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "configuration set length 67. wTotalLength 0x0043", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "bMaxPower 0x32 = 100 mA", size=14, fill=T.AMBER)
-    canvas.text(56, 318, "full-speed bulk and interrupt ceiling is 64. notification endpoint 8 is allowed", size=13, fill=T.MUTED)
-    canvas.text(40, 380, "失败路径  USBPRE = 1, the USB clock becomes 72 MHz", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 394, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 424, "the host fails while reading the descriptor", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 450, "72 / 1.5 is not applied", size=14, fill=T.RED)
-    canvas.text(56, 476, "480 Mbit/s is void on this part", size=14, fill=T.AMBER)
-    canvas.rect(40, 524, 880, 150, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  1.5 kilohm tied to DM is not this full-speed device", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "a bulk or interrupt wMaxPacketSize of 1023 is the wrong class", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "0x0483/0x5740 is not this repository descriptor", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "do not draw a CAN transceiver or ULPI on this figure", size=13, fill=T.MUTED)
-    canvas.text(56, 656, "shared vector stays a side note: see the source card", size=13, fill=T.MUTED)
+    canvas.text(40, 122, "枚举的第一课：时钟 48 MHz、D+ 上拉、描述符长度——三样都对主机才开口", size=15, fill=T.TEXT, weight="700")
+
+    # ---- 左：主机与设备的连接 ----
+    canvas.rect(40, 152, 250, 120, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(165, 200, "主机", size=22, fill=T.CYAN, anchor="middle", weight="700")
+    canvas.text(165, 232, "问描述符的是它", size=13, fill=T.MUTED, anchor="middle")
+    canvas.rect(40, 392, 250, 120, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(165, 438, "设备 STM32", size=20, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(165, 468, "pin 32 PA11 = DM", size=12, fill=T.TEXT, anchor="middle", mono=True)
+    canvas.text(165, 490, "pin 33 PA12 = DP", size=12, fill=T.TEXT, anchor="middle", mono=True)
+    # DM / DP 两条线
+    canvas.line(120, 272, 120, 392, stroke=T.MUTED, sw=2)
+    canvas.text(108, 338, "DM (PA11)", size=11, fill=T.MUTED, anchor="end", mono=True)
+    canvas.line(190, 272, 190, 392, stroke=T.GREEN, sw=2)
+    canvas.text(178, 338, "DP (PA12)", size=11, fill=T.GREEN, anchor="end", mono=True)
+    # 1.5 kΩ 上拉到 3.3 V
+    canvas.line(190, 330, 232, 330, stroke=T.AMBER, sw=2)
+    canvas.rect(232, 316, 56, 28, fill=T.BG, stroke=T.AMBER, rx=2)
+    canvas.text(260, 335, "1.5 kΩ", size=11, fill=T.AMBER, anchor="middle", weight="700")
+    canvas.line(288, 330, 316, 330, stroke=T.AMBER, sw=2)
+    canvas.text(324, 335, "→ 3.3 V", size=12, fill=T.AMBER, weight="700")
+    canvas.text(232, 368, "接错到 DM 会被当低速", size=11, fill=T.RED)
+
+    # ---- 右：时钟门 ----
+    canvas.rect(470, 152, 450, 360, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(486, 182, "时钟门：USBPRE 只有两档", size=15, fill=T.CYAN, weight="700")
+    canvas.rect(486, 202, 170, 64, fill=T.BG, stroke=T.CYAN, rx=4)
+    canvas.text(571, 230, "PLL 72 MHz", size=15, fill=T.TEXT, anchor="middle", weight="700")
+    canvas.text(571, 252, "来自第 02 章", size=11, fill=T.MUTED, anchor="middle")
+    canvas.arrow(658, 234, 688, 234, color=T.GREEN, sw=2, head=7)
+    canvas.text(686, 218, "USBPRE = 0", size=11, fill=T.GREEN, weight="700", anchor="end")
+    canvas.text(686, 262, "÷ 1.5", size=12, fill=T.GREEN, weight="700", anchor="end")
+    canvas.rect(690, 202, 210, 64, fill=T.BG, stroke=T.GREEN, rx=4)
+    canvas.text(795, 230, "48 MHz ✓", size=16, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(795, 252, "全速设备要的频率", size=11, fill=T.MUTED, anchor="middle")
+    # 红分支
+    canvas.arrow(658, 234, 688, 380, color=T.RED, sw=2, head=7, dash=None)
+    canvas.text(640, 330, "USBPRE = 1：不分频", size=12, fill=T.RED, weight="700")
+    canvas.rect(690, 348, 210, 64, fill=T.BG, stroke=T.RED, rx=4)
+    canvas.text(795, 376, "72 MHz ✗", size=16, fill=T.RED, anchor="middle", weight="700")
+    canvas.text(795, 398, "主机读描述符失败", size=11, fill=T.RED, anchor="middle")
+    canvas.text(486, 448, "480 Mbit/s 在这颗料上不成立——这是全速 12 Mbit/s 的设备", size=13, fill=T.AMBER)
+    canvas.text(486, 476, "bulk / interrupt 的 wMaxPacketSize 上限是 64，1023 是别的类", size=13, fill=T.MUTED)
+
+    # ---- 下：两条描述符字节条 ----
+    canvas.text(40, 590, "描述符是字节数对出来的：18 字节设备 + 67 字节配置集合", size=15, fill=T.TEXT, weight="700")
+    canvas.rect(40, 606, 288, 58, fill=T.BG, stroke=T.GREEN, rx=4)
+    canvas.text(184, 632, "设备描述符 18 B", size=14, fill=T.GREEN, anchor="middle", weight="700")
+    canvas.text(184, 654, "VID/PID 0x1209 / 0x0001", size=11, fill=T.TEXT, anchor="middle", mono=True)
+    canvas.rect(340, 606, 580, 58, fill=T.BG, stroke=T.BLUE, rx=4)
+    canvas.text(630, 632, "配置集合 67 B（wTotalLength = 0x0043）", size=14, fill=T.BLUE, anchor="middle", weight="700")
+    canvas.text(630, 654, "bMaxPower 0x32 = 100 mA　·　bMaxPacketSize0 = 64", size=11, fill=T.TEXT, anchor="middle", mono=True)
+    canvas.text(40, 696, "总长度算错，枚举常常卡在选择配置之前——先数字节再谈驱动", size=13, fill=T.TEXT)
+    canvas.text(40, 722, "0x0483/0x5740 不是本仓库的描述符；1.5 kΩ 接到 DM 也不是这台全速设备", size=13, fill=T.RED)
+
+    canvas.rect(40, 756, 880, 116, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 786, "旁注  这张图只画枚举的入场条件", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 812, "不画 CAN 收发器与 ULPI；USB 中断与 CAN 共用向量的细节看源卡", size=13, fill=T.TEXT)
+    canvas.text(56, 838, "图证明时钟/上拉/长度三道入场条件；不证明主机驱动的匹配过程", size=12, fill=T.MUTED)
     _credit(canvas, "自绘。48 MHz 来自已冻结的 USBPRE；脚位来自 DS5319 Rev 20 表 5；长度来自本仓库 usb-cdc。")
     return canvas
+
 
 
 def rtos_prio() -> Svg:
@@ -714,28 +791,57 @@ def rtos_prio() -> Svg:
         "STM32F103C8T6 · FreeRTOS Kernel V11.3.2",
     )
     canvas.header(tag="15", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  Cortex-M3  no FPU  GROUP_4", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "SysTick tick = 1 ms. HAL time base = TIM4, not SysTick", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "5 << 4 = 0x50. EXTI0 priority 5 may call FromISR", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  task priority 2 runs, task priority 1 waits", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "KEY is priority 2. LED and UART are priority 1", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "LED stack 128 words = 512 bytes", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "EXTI0 preemption priority 5 may xQueueSendFromISR", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "the numeric task order is the opposite of NVIC", size=14, fill=T.AMBER)
-    canvas.text(56, 318, "configTICK_RATE_HZ = 1000", size=13, fill=T.MUTED)
-    canvas.text(40, 370, "失败路径  the same EXTI preemption priority is 0", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 414, "calling FromISR stops in configASSERT", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 440, "priority number 4 is also too urgent", size=14, fill=T.RED)
-    canvas.text(56, 466, "NVIC number 0 is the most urgent interrupt", size=14, fill=T.AMBER)
-    canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  128 words is not 128 bytes", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "HAL left on SysTick makes HAL_Delay stick", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "task priority 1 is not ahead of task priority 2", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "do not draw the 8-register exception entry on this figure", size=13, fill=T.MUTED)
+    canvas.text(40, 122, "两把尺子别混用：NVIC 数字越小越急，FreeRTOS 任务数字越大越先跑", size=15, fill=T.TEXT, weight="700")
+
+    # ---- 左：NVIC 尺子 ----
+    canvas.rect(40, 152, 400, 380, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.text(240, 184, "NVIC 抢占优先级（GROUP_4）", size=16, fill=T.CYAN, anchor="middle", weight="700")
+    nvic = [("0", "最急", T.RED), ("4", "也太急：FromISR 会触发 configASSERT", T.RED),
+            ("5", "EXTI0 在这里：可以调 FromISR", T.GREEN), ("15", "最缓", T.MUTED)]
+    y = 210
+    for num, note, c in nvic:
+        canvas.rect(70, y, 60, 40, fill=T.BG, stroke=c, rx=4)
+        canvas.text(100, y + 26, num, size=16, fill=c, anchor="middle", weight="700")
+        canvas.text(146, y + 26, note, size=12, fill=c)
+        y += 56
+    canvas.text(70, 448, "数字 0 的中断最急——和任务优先级正好相反", size=13, fill=T.AMBER, weight="700")
+    canvas.text(70, 476, "5 << (8 - 4) = 0x50 写进 NVIC 寄存器", size=12, fill=T.MUTED, mono=True)
+    canvas.arrow(220, 396, 220, 380, color=T.MUTED, sw=1.5, head=6)
+
+    # ---- 右：任务尺子 ----
+    canvas.rect(520, 152, 400, 380, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(720, 184, "FreeRTOS 任务优先级", size=16, fill=T.GREEN, anchor="middle", weight="700")
+    tasks = [("2", "KEY：priority 2，先跑（数字大）", T.GREEN),
+             ("1", "LED、UART：priority 1，后跑", T.AMBER)]
+    y = 214
+    for num, note, c in tasks:
+        canvas.rect(550, y, 60, 40, fill=T.BG, stroke=c, rx=4)
+        canvas.text(580, y + 26, num, size=16, fill=c, anchor="middle", weight="700")
+        canvas.text(626, y + 26, note, size=12, fill=c)
+        y += 56
+    canvas.rect(550, 330, 340, 70, fill=T.BG, stroke=T.GREEN, rx=4)
+    canvas.text(720, 356, "128 words = 512 bytes", size=14, fill=T.GREEN, anchor="middle", weight="700", mono=True)
+    canvas.text(720, 380, "栈深单位是字（StackType_t），不是字节", size=12, fill=T.TEXT, anchor="middle")
+    canvas.text(550, 436, "configTICK_RATE_HZ = 1000 → 一个 tick 1 ms", size=13, fill=T.TEXT)
+    canvas.text(550, 462, "HAL 的时基挪到 TIM4，SysTick 留给内核", size=12, fill=T.MUTED)
+    canvas.text(550, 488, "HAL 还挂在 SysTick 上，HAL_Delay 会卡死", size=12, fill=T.AMBER)
+
+    # ---- 下：FromISR 判定 ----
+    canvas.rect(40, 560, 880, 170, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 590, "失败路径  EXTI0 的抢占优先级配成 0（或 4）", size=15, fill=T.RED, weight="700")
+    canvas.text(56, 618, "在 ISR 里调 xQueueSendFromISR → configASSERT 停机", size=14, fill=T.RED, weight="700")
+    canvas.text(56, 646, "数值优先级必须 ≥ 5（5 << 4 = 0x50 是及格线）；NVIC 的 0 是最急，不是最缓", size=13, fill=T.TEXT)
+    canvas.text(56, 674, "不画 8 寄存器异常入栈的图——那是第 04 章的内容", size=12, fill=T.MUTED)
+    canvas.htext = None
+
+    canvas.rect(40, 746, 880, 116, fill=T.BG2, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 776, "旁注  这张图只对齐两把尺子和三条换算", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 802, "tick = 1 ms ｜ 128 words = 512 bytes ｜ FromISR 及格线 = 数值 5", size=13, fill=T.TEXT, mono=True)
+    canvas.text(56, 828, "证明对应关系与及格线；不证明调度器内部实现与具体工程的栈水位", size=12, fill=T.MUTED)
     _credit(canvas, "自绘。移位来自 FreeRTOS Kernel V11.3.2；栈和 TIM4 来自本仓库 freertos-task。")
     return canvas
+
+
 
 def stop_wake() -> Svg:
     canvas = Svg(
@@ -748,11 +854,11 @@ def stop_wake() -> Svg:
                   tag="16", tag_color=T.CYAN)
 
     # ① 进 Stop 需要的三个位
-    canvas.text(24, 82, "进 Stop 是三个位同时成立，少一个就进错模式", size=12.5,
+    canvas.text(24, 82, "先选择 Stop，再用 LPDS 选择稳压器；模式位不保证电流值", size=12.5,
                 fill=T.TEXT, weight="700")
     bits = [("SLEEPDEEP=1", "SCB->SCR，决定睡深不睡浅", T.GREEN),
             ("PDDS=0", "PWR->CR，0 是 Stop，1 是 Standby", T.AMBER),
-            ("LPDS=1", "用低功耗稳压器，才有 14 uA", T.CYAN)]
+            ("LPDS=1", "低功耗稳压器；14 uA 还须满足测量条件", T.CYAN)]
     for i, (head, note, color) in enumerate(bits):
         x = 24 + i * 306
         canvas.rect(x, 94, 292, 52, fill=T.PANEL, stroke=color, rx=8)
@@ -774,7 +880,7 @@ def stop_wake() -> Svg:
         canvas.rect(250, y, w, 20, fill="none", stroke=color, sw=1.5, rx=2)
         canvas.text(250 + w + 8, y + 14, value, size=9.5, fill=color, mono=True)
         canvas.text(24, y + 34, note, size=8.5, fill=T.MUTED)
-    canvas.text(700, cy + 30, "IWDG 单开一项就再 +3.4 uA", size=9, fill=T.RED)
+    canvas.text(700, cy + 30, "Stop 加 IWDG：表 16 未给电流", size=9, fill=T.RED)
     canvas.text(700, cy + 46, "表 16 的条件里写明关掉它", size=9, fill=T.MUTED)
 
     # ③ 唤醒时间轴
@@ -784,19 +890,18 @@ def stop_wake() -> Svg:
     axis_y = ty + 78
     canvas.line(60, axis_y, 900, axis_y, stroke=T.STROKE, sw=1.5)
     segs = [("进入 Stop", 60, 200, T.MUTED, "pin 10 PA0 上的 EXTI 一直在等"),
-            ("唤醒：HSI 8 MHz", 200, 400, T.GREEN, "第一条指令就跑在 8 MHz，5.4 us"),
-            ("SystemClock_Config", 400, 620, T.AMBER, "重开 PLL，回 72 MHz"),
-            ("PLL 锁定 ≤ 200 us", 620, 860, T.CYAN, "锁不上就超时")]
+            ("唤醒：HSI 8 MHz", 200, 400, T.GREEN, "事件至首条指令 5.4 us"),
+            ("SystemClock_Config", 400, 620, T.AMBER, "重开 HSE / PLL 并等待就绪"),
+            ("业务恢复：72 MHz", 620, 860, T.CYAN, "切回 PLL 后再用原波特率")]
     for name, x1, x2, color, note in segs:
         canvas.rect(x1, axis_y - 26, x2 - x1 - 4, 52, fill=color, rx=4, opacity=0.22)
         canvas.rect(x1, axis_y - 26, x2 - x1 - 4, 52, fill="none", stroke=color,
                     sw=1.5, rx=4)
         canvas.text(x1 + 8, axis_y - 6, name, size=9.5, fill=color, weight="700")
         canvas.text(x1 + 8, axis_y + 12, note, size=8.5, fill=T.TEXT)
-    canvas.text(200, axis_y + 44, "5.4 us", size=9, fill=T.GREEN, mono=True)
-    canvas.text(620, axis_y + 44, "200 us", size=9, fill=T.CYAN, mono=True)
-    canvas.text(60, axis_y + 44, "0", size=9, fill=T.MUTED, mono=True)
-    canvas.text(24, axis_y + 68, "唤醒时间报 5.4 us 时，说的是到第一条指令；串口能用的时间要把 PLL 锁定的 200 us 加上。",
+    canvas.text(200, axis_y + 44, "事件 → 首条指令：5.4 us", size=9, fill=T.GREEN, mono=True)
+    canvas.text(620, axis_y + 44, "PLL lock max 200 us", size=9, fill=T.CYAN, mono=True)
+    canvas.text(24, axis_y + 68, "阶段宽度不代表耗时。5.4 us 到首条指令；HSE 起振、PLL 锁定和软件恢复另行计时。",
                 size=9.5, fill=T.MUTED)
 
     # ④ 0x271 陷阱
@@ -804,7 +909,7 @@ def stop_wake() -> Svg:
     canvas.text(24, by, "最容易漏的一步：醒来重配时钟，否则 0x271 不是 115200", size=12.5,
                 fill=T.TEXT, weight="700")
     canvas.rect(24, by + 12, 912, 150, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(38, by + 36, "USART1->BRR = 0x271 = 39.0625（16 倍过采样）", size=9.5,
+    canvas.text(38, by + 36, "BRR 原始值 0x271 = 625；USARTDIV = 39.0625（16 倍过采样）", size=9.5,
                 fill=T.MUTED, mono=True)
     rates = [("72 MHz: 72e6 / (16 × 39.0625)", 115200, "115200", T.GREEN, 1.0),
              ("8 MHz: 8e6 / (16 × 39.0625)", 12800, "12800", T.RED, 12800 / 115200)]
@@ -825,7 +930,7 @@ def stop_wake() -> Svg:
 
     # ⑤ 这张图不覆盖什么
     canvas.rect(24, 648, 912, 62, fill=T.BG2, stroke=T.CYAN, rx=8)
-    canvas.text(40, 672, "Standby 的 2 uA 与唤醒 1.8 ms 另算一格；F4 的周期唤醒定时器在 C8 上不存在。",
+    canvas.text(40, 672, "Standby 全关条件典型 2 uA，唤醒 50 us；F4 的周期唤醒定时器在 C8 上不存在。",
                 size=10.5, fill=T.TEXT)
     canvas.text(40, 692, "这里也不画第 06 章的 UART 位帧 —— 12800 与 115200 的差别在位宽，不在帧格式。",
                 size=10, fill=T.MUTED)
@@ -845,55 +950,67 @@ def cfsr_read() -> Svg:
     canvas.text(40, 86, "STM32F103C8T6  Cortex-M3  no FPU", size=16, fill=T.TEXT, weight="700")
     canvas.text(40, 112, "CFSR 0xE000ED28    HFSR 0xE000ED2C    BFAR 0xE000ED38", size=14, fill=T.CYAN)
     canvas.text(40, 138, "FORCED is bit 30, value 0x40000000. PC is stacked word 6", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  bit 15 is 1, and DEMCR bit 24 is already 1", size=16, fill=T.GREEN, weight="700")
+    canvas.text(40, 170, "Fault address: first save the snapshot, then test BFARVALID", size=16, fill=T.GREEN, weight="700")
     canvas.rect(40, 184, 880, 160, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "bit 15 = 1, so BFAR is this access", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "DEMCR 0xE000EDFC bit 24, then DWT_CYCCNT 0xE0001004", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "72 counts at 72 MHz are 1 us", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "this M3 has 6 hardware breakpoints", size=14, fill=T.AMBER)
-    canvas.text(56, 318, "PC is the 6th stacked word", size=13, fill=T.MUTED)
-    canvas.text(40, 370, "失败路径  bit 15 is 0, or bit 24 was never set", size=16, fill=T.RED, weight="700")
+    canvas.text(56, 214, "bit 15 = 1: the saved BFAR contains a valid fault address", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 240, "Save BFAR/MMFAR before checking their VALID bits; avoid nested updates.", size=14, fill=T.GREEN)
+    canvas.text(56, 266, "Use the stacked PC with the matching ELF, not BFAR, for addr2line.", size=14, fill=T.TEXT)
+    canvas.text(56, 292, "IMPRECISERR: stacked PC can be later than the original bad write.", size=14, fill=T.AMBER)
+    canvas.text(56, 318, "PC is word index 6 at frame base + 0x18; check for stacking errors first.", size=13, fill=T.MUTED)
+    canvas.text(40, 370, "bit 15 = 0: do not use BFAR as a fault address", size=16, fill=T.RED, weight="700")
     canvas.rect(40, 384, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 414, "bit 15 = 0. The value in BFAR is not this access", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 440, "bit 24 = 0. The cycle delta is 0", size=14, fill=T.RED)
-    canvas.text(56, 466, "8 hardware breakpoints are the M7 count and are void here", size=14, fill=T.AMBER)
+    canvas.text(56, 414, "The address is invalid even if it looks plausible.", size=15, fill=T.TEXT, weight="700")
+    canvas.text(56, 440, "Continue with the saved fault flags and trusted frame contents.", size=14, fill=T.RED)
+    canvas.text(56, 466, "UNDEFINSTR / INVSTATE: inspect the instruction and return path.", size=14, fill=T.AMBER)
     canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  pin 39 is still JTDO after reset", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "TRACESWO is the remap column, not the power-up name", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "do not draw an SWO waveform on this figure", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "do not draw the 8-register timing waveform", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。故障地址来自 PM0056。DWT 使能顺序是先 0xE000EDFC bit 24，再 0xE0001004。")
+    canvas.text(56, 554, "Independent timing test: DEMCR 0xE000EDFC bit 24 = 1", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 580, "Then enable DWT_CTRL.CYCCNTENA; read DWT_CYCCNT 0xE0001004.", size=14, fill=T.TEXT)
+    canvas.text(56, 606, "72 counts at 72 MHz are 1 us; zero delta also needs CYCCNTENA checked.", size=14, fill=T.AMBER)
+    canvas.text(56, 632, "F103: 6 FPB comparators; PB3 pin 39 = JTDO / TRACESWO.", size=13, fill=T.MUTED)
+    canvas.text(40, 703, "Check STKERR / MSTKERR independently: even a valid BFAR does not prove a complete frame.", size=13, fill=T.RED)
+    _credit(canvas, "自绘。寄存器与入栈边界：PM0056 / ARM DUI0552A；DWT 还需 CYCCNTENA，计数换算按 72 MHz。")
     return canvas
 
 
 def boot_triage() -> Svg:
-    canvas = Svg(
-        960,
-        960,
-        "认不出芯片时先看第 34 脚、第 37 脚和第 44 脚；BOOT0 为 1 且 BOOT1 为 0 时跑的是 0x1FFFF000",
-        "STM32F103C8T6 LQFP48 · DS5319 Rev 20 Figure 31 / Table 5",
-    )
+    canvas = Svg(960, 960, "先区分：SWD 连不上，还是复位后应用没运行",
+                 "STM32F103C8T6 · LQFP48 · DS5319 / RM0008 Rev 21")
     canvas.header(tag="18", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  LQFP48  first look when the probe sees no target", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "pin 7 NRST has 0.1 uF. pin 44 is BOOT0", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  BOOT0 = 0, the CPU starts at 0x08000000", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "probe on pin 34 and pin 37, common ground, 3.3 V", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "BOOT0 = 0 selects main Flash at 0x08000000", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "Flash is 64 KB. SRAM is 20 KB", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "look at the wires before the optimizer", size=13, fill=T.MUTED)
-    canvas.text(40, 360, "失败路径  BOOT0 = 1 and BOOT1 = 0", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 374, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 404, "the CPU is in system memory at 0x1FFFF000", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 430, "the image in Flash looks as if it was never programmed", size=14, fill=T.RED)
-    canvas.text(56, 456, "changing -O2 before checking these pins is the other miss", size=14, fill=T.AMBER)
-    canvas.rect(40, 514, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 544, "旁注  pin 35 is VSS_2, not SWCLK", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 570, "that mistake is already drawn in chapter 01", size=14, fill=T.TEXT)
-    canvas.text(56, 596, "do not draw 38 icons on this figure", size=14, fill=T.AMBER)
-    canvas.text(56, 622, "do not draw CFSR bits here", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。0.1 uF 来自 DS5319 Rev 20 图 31。启动地址来自 RM0008。")
+    canvas.text(40, 100, "SWD 识别：先检查电气连接与复位状态", size=22, fill=T.CYAN, weight="700")
+    canvas.rect(40, 130, 248, 176, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    canvas.rect(672, 130, 248, 176, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    canvas.text(164, 161, "调试探针", size=19, fill=T.CYAN, anchor="middle", weight="700")
+    canvas.text(796, 161, "F103C8 · LQFP48", size=18, fill=T.GREEN, anchor="middle", weight="700")
+    for y, left, right, direction in (
+        (200, "SWDIO", "PA13 · 第 34 脚", "both"),
+        (242, "SWCLK", "PA14 · 第 37 脚", "out"),
+        (284, "GND", "GND", "wire"),
+    ):
+        canvas.text(64, y, left, size=17, fill=T.TEXT)
+        canvas.text(696, y, right, size=17, fill=T.TEXT)
+        canvas.line(290, y-6, 668, y-6, stroke=T.CYAN, sw=2)
+        if direction in ("both", "out"):
+            canvas.arrow(620, y-6, 668, y-6, color=T.CYAN)
+        if direction == "both":
+            canvas.arrow(338, y-6, 290, y-6, color=T.CYAN)
+    canvas.text(40, 346, "目标供电 3.3 V；VTref 感知目标电平，供电方式查探针。", size=18, fill=T.TEXT)
+    canvas.text(40, 378, "NRST 第 7 脚，外部电容 0.1 µF 按 DS5319 图 31；第 35 脚是 VSS_2。", size=17, fill=T.MUTED)
+    canvas.line(40, 414, 920, 414, stroke=T.GRID)
+    canvas.text(40, 454, "复位启动：检查 BOOT0 第 44 脚与 BOOT1（PB2）", size=22, fill=T.GREEN, weight="700")
+    canvas.text(40, 488, "复位后 SYSCLK 第 4 个上升沿锁存启动选择。", size=18, fill=T.MUTED)
+    for y, condition, memory, address, color in (
+        (520, "BOOT0 = 0 · BOOT1 任意", "主 Flash", "0x08000000", T.GREEN),
+        (610, "BOOT0 = 1 · BOOT1 = 0", "系统存储器", "0x1FFFF000", T.AMBER),
+        (700, "BOOT0 = 1 · BOOT1 = 1", "SRAM", "0x20000000", T.CYAN),
+    ):
+        canvas.text(56, y+35, condition, size=18, fill=T.TEXT, mono=True)
+        canvas.arrow(414, y+29, 490, y+29, color=color)
+        canvas.rect(508, y, 396, 64, fill=T.PANEL, stroke=color, rx=8)
+        canvas.text(528, y+27, memory, size=18, fill=color, weight="700")
+        canvas.text(884, y+51, address, size=18, fill=T.TEXT, anchor="end", mono=True)
+    canvas.text(40, 824, "BOOT 选择启动存储区；不能仅凭 BOOT0 电平判断 SWD 是否能读到目标。", size=18, fill=T.TEXT)
+    canvas.text(40, 860, "应用仍需有效镜像与向量；Flash / 系统存储器映射到 0，SRAM 有专用启动机制。", size=17, fill=T.MUTED)
+    _credit(canvas, "自绘。DS5319 图 31 / 引脚表；RM0008 Rev 21 §3.4，启动选择与调试连接分开检查。")
     return canvas
 
 

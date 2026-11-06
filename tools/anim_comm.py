@@ -334,90 +334,68 @@ def spi_transfer() -> Svg:
 
 
 def can_arbitration() -> Svg:
-    s = Svg(W, H, "CAN 非破坏性仲裁：ID 越小优先级越高",
-            "三个节点同时发送，逐位比较：显性 0 覆盖隐性 1，输了的一方自动退出且不丢帧")
-    s.header(tag="13 CAN", tag_color=T.ORANGE)
-
-    # 11 位 ID，左边是 bit10。0x100=0b00100000000，比 0x200/0x300 更小
-    ids = [("节点 A", "0x100", "00100000000", T.CYAN),
-           ("节点 B", "0x200", "01000000000", T.GREEN),
-           ("节点 C", "0x300", "01100000000", T.VIOLET)]
-    bits = 11
-    cw = 62
-    x0 = 130
-    # 表头
-    s.text(x0 + bits * cw / 2, 92, "11 位标识符（标准帧）", size=12,
-           anchor="middle", fill=T.MUTED)
-    for j in range(bits):
-        s.text(x0 + j * cw + cw / 2, 112, str(10 - j), size=9,
-               anchor="middle", fill=T.DIM)
-
-    CYCLE = 6.6
-    for i, (name, hexid, bstr, color) in enumerate(ids):
-        y = 132 + i * 62
-        drop = " drop" if i else ""
-        s.text(40, y + 24, name, size=12, fill=color, weight="600",
-               cls=f"lb{i}{drop}")
-        s.text(40, y + 42, hexid, size=11, mono=True, fill=T.MUTED,
-               cls=f"lb{i}{drop}")
-        for j, ch in enumerate(bstr):
-            x = x0 + j * cw
-            win = (ch == "0") or (i == 0)
-            s.rect(x, y, cw - 6, 40, fill=T.PANEL2 if win else T.PANEL,
-                   stroke=T.STROKE, rx=4, cls=f"cell{i}{drop}")
-            s.text(x + (cw - 6) / 2, y + 26, ch, size=14, anchor="middle",
-                   fill=color if win else T.DIM, mono=True,
-                   cls=f"bit{i}{drop}")
-        # 胜者标「仲裁中」，输家标「退出」——B/C 在 bit9 就丢了
-        s.text(x0 + bits * cw + 8, y + 26, "仲裁中" if i == 0 else "退出",
-               size=11, fill=T.GREEN if i == 0 else T.RED,
-               cls=f"verdict{i}")
-        # 每一行放一个扫描框，和位列同步推进
-        s.rect(x0, y - 3, cw - 6, 46, fill="none", stroke=color, rx=4, sw=1.5,
-               cls=f"w{i}{drop}")
-
-    css = []
-    # 扫描框按拍推进：11 位 = 11 步，走完停在第 11 位
-    for i in range(3):
-        css.append(css_kf(f"w{i}-scan", [("0%", "transform:translateX(0px)"),
-                                         ("92%", f"transform:translateX({(bits - 1) * cw}px)"),
-                                         ("100%", f"transform:translateX({(bits - 1) * cw}px)")])
-                   + f".w{i}{{animation:w{i}-scan {CYCLE}s steps({bits}) infinite;}}")
-    # 输家在比较到 bit9 时变暗（第 2 拍），胜者保持
-    css.append(css_kf("drop-f", [("0%", "opacity:1"),
-                                 ("14%", "opacity:1"),
-                                 ("20%", "opacity:0.28"),
-                                 ("96%", "opacity:0.28"),
-                                 ("100%", "opacity:1")])
-               + f".drop{{animation:drop-f {CYCLE}s linear infinite;}}")
-    s.add_style("\n".join(css))
-
-    s.rect(40, 326, 820, 96, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 350, "为什么叫「非破坏性」仲裁", size=12.5, fill=T.TEXT,
-           weight="700")
-    for i, t in enumerate([
-        "B、C 在 bit9 发隐性 1，读回 A 的显性 0，立刻退出；0x100 最小所以 A 赢",
-        "退出的节点不会丢失数据，等总线空闲后自动重发（硬件自动完成）",
-        "因此 CAN 不会像以太网那样「碰撞后随机退避」，实时性可预测",
-    ]):
-        s.text(58, 374 + i * 20, "· " + t, size=11, fill=T.MUTED)
-
-    s.title_block(40, 442, "一帧数据还包含什么", color=T.CYAN)
-    items = [("SOF", "1 位起始"), ("ID", "11/29 位标识符"),
-             ("RTR/IDE", "帧类型与格式"), ("DLC", "数据长度 0~8"),
-             ("Data", "0~8 字节"), ("CRC", "15 位 + 1 位界定符"),
-             ("ACK 槽", "接收方拉低应答"), ("EOF", "7 位隐性结束")]
-    for i, (k, v) in enumerate(items):
-        x = 40 + (i % 4) * 208
-        y = 456 + (i // 4) * 42
-        s.rect(x, y, 196, 34, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(x + 12, y + 15, k, size=11.5, fill=T.CYAN, mono=True)
-        s.text(x + 12, y + 29, v, size=10, fill=T.MUTED)
-    s.text(40, 544, "位填充：连续 5 个相同位后必须插入 1 个相反位，"
-                    "保证接收方能持续同步；差分电平 CANH−CANL ≈ 2 V（显性）/ 0 V（隐性）",
-           size=10.5, fill=T.MUTED)
-    s.footer("波特率 = 1 / (tq × (1 + BS1 + BS2))，采样点建议放在 75%~87.5% 处")
-    return s
+    canvas = Svg(W, H, "CAN：发 1 却读到 0，就退出仲裁",
+                 "标准数据帧 · 11 位 ID · 高位先比 · 这里只画仲裁逻辑，不按实际位时间播放")
+    canvas.header(tag="13 CAN", tag_color=T.ORANGE)
+    origin, cell_width = 150, 60
+    nodes = (
+        ("A", "0x100", "00100000000", T.CYAN),
+        ("B", "0x200", "01000000000", T.GREEN),
+        ("C", "0x300", "01100000000", T.VIOLET),
+    )
+    canvas.text(40, 96, "三节点同时开始；bit9 是第一次不同的一位。", size=19, weight="700")
+    canvas.rect(origin + cell_width - 4, 107, cell_width + 2, 335,
+                fill=T.AMBER, opacity=0.12, rx=4)
+    for column in range(11):
+        canvas.text(origin + column * cell_width + 25, 126, str(10 - column),
+                    size=14, anchor="middle", fill=T.MUTED, mono=True)
+    for row, (name, identifier, bit_string, color) in enumerate(nodes):
+        vertical = 144 + row * 72
+        canvas.text(40, vertical + 23, f"节点 {name}", size=17, fill=color, weight="700")
+        canvas.text(40, vertical + 44, identifier, size=14, mono=True)
+        for column, bit in enumerate(bit_string):
+            horizontal = origin + column * cell_width
+            listening = row > 0 and column > 1
+            canvas.rect(horizontal, vertical, 50, 46, fill=T.PANEL,
+                        stroke=T.STROKE, rx=4)
+            canvas.text(horizontal + 25, vertical + 30, "—" if listening else bit,
+                        size=21, fill=T.MUTED if listening else color,
+                        mono=True, anchor="middle", weight="700")
+        if row > 0:
+            canvas.text(824, vertical + 29, "转接收", size=15, fill=T.RED)
+    canvas.text(40, 382, "总线", size=18, fill=T.CYAN, weight="700")
+    canvas.text(40, 402, "显性 0 优先", size=13, fill=T.MUTED)
+    for column, bit in enumerate(nodes[0][2]):
+        horizontal = origin + column * cell_width
+        canvas.rect(horizontal, 360, 50, 46, fill=T.PANEL2,
+                    stroke=T.CYAN, rx=4)
+        canvas.text(horizontal + 25, 391, bit, size=21, fill=T.CYAN,
+                    anchor="middle", weight="700", mono=True)
+    canvas.rect(origin - 3, 355, 56, 56, fill="none", stroke=T.CYAN,
+                sw=2, rx=4, cls="bit-scan moving")
+    canvas.rect(origin + cell_width - 3, 211, 56, 128, fill="none", stroke=T.RED,
+                sw=2, rx=4, cls="loss-mark moving", opacity=0)
+    canvas.line(origin + cell_width + 25, 412, origin + cell_width + 25, 436,
+                stroke=T.AMBER, sw=2)
+    canvas.text(40, 472, "bit9：A 发 0，B/C 发 1；总线是 0，B/C 退出并改为接收。",
+                size=18, weight="700")
+    canvas.text(40, 507, "A 继续发送，帧没有被破坏；B/C 失去仲裁不产生错误帧。", size=17)
+    canvas.text(40, 539, "自动重发开启时，B/C 等总线空闲后再竞争；关闭时需软件重新请求发送。",
+                size=15, fill=T.MUTED)
+    positions = []
+    for column in range(11):
+        positions.append(f"{column * 8}%{{transform:translateX({column * cell_width}px)}}")
+    positions.append("100%{transform:translateX(600px)}")
+    canvas.add_style(
+        "@keyframes bit-scan{" + "".join(positions) + "}"
+        ".bit-scan{animation:bit-scan 9s steps(1,end) infinite}"
+        "@keyframes loss-mark{0%,11%{opacity:0}12%,100%{opacity:1}}"
+        ".loss-mark{animation:loss-mark 9s steps(1,end) infinite}"
+        "@media (prefers-reduced-motion:reduce){*{animation:none!important}.moving{display:none}}"
+        "@media print{*{animation:none!important}.moving{display:none}}"
+    )
+    canvas.footer("RM0008 Rev 21 §24.7 · 自绘逻辑示意；不表示位填充、电平幅值或总线测量结果")
+    return canvas
 
 
 # --------------------------------------------------------------------------- USB 枚举

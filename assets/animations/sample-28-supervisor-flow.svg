@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="看门狗：任何关键任务停滞，都不能喂">
+<title>看门狗：任何关键任务停滞，都不能喂</title>
+<style>
+
+@keyframes report{0%,5%{transform:translateX(0);opacity:0}8%{opacity:1}30%{transform:translateX(56px);opacity:1}31%,100%{opacity:0}}
+@keyframes missing{0%,5%{transform:translateX(0);opacity:0}8%{opacity:1}30%{transform:translateX(56px);opacity:1}31%,100%{opacity:0}}
+@keyframes pass{0%,32%,47%,100%{opacity:0}34%,45%{opacity:1}}
+@keyframes fail{0%,78%,95%,100%{opacity:0}80%,93%{opacity:1}}
+.report0,.report2{animation:report 6s linear infinite}.report1{animation:missing 12s linear infinite}
+.pass{animation:pass 12s linear infinite}.fail{animation:fail 12s linear infinite}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}.moving{display:none}}
+@media print{*{animation:none!important}.moving{display:none}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">看门狗：任何关键任务停滞，都不能喂</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">epoch 是完成工作后递增的进度计数；任务之间没有 A→B→C 的执行依赖</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">28</text>
+<text x="40" y="98" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">每个任务只汇报进度；只有监督任务能刷新 IWDG。</text>
+<rect x="40" y="125" width="275" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="177.5" y="151" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任务 A · 采样</text>
+<text x="177.5" y="174" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完成一批采样 → epoch++</text>
+<line x1="322" y1="158" x2="389" y2="158" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="396.00,158.00 389.00,161.50 389.00,154.50" fill="#1b5c45" opacity="1"/>
+<circle cx="330" cy="158" r="5" fill="#1b5c45" opacity="1" class="report0 moving"/>
+<rect x="40" y="217" width="275" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="177.5" y="243" font-size="17" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任务 B · 协议</text>
+<text x="177.5" y="266" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完成一次有效事务 → epoch++</text>
+<line x1="322" y1="250" x2="389" y2="250" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="396.00,250.00 389.00,253.50 389.00,246.50" fill="#075e84" opacity="1"/>
+<circle cx="330" cy="250" r="5" fill="#075e84" opacity="1" class="report1 moving"/>
+<rect x="40" y="309" width="275" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="177.5" y="335" font-size="17" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任务 C · 存储</text>
+<text x="177.5" y="358" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">完成一次写入 → epoch++</text>
+<line x1="322" y1="342" x2="389" y2="342" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="396.00,342.00 389.00,345.50 389.00,338.50" fill="#7a4e00" opacity="1"/>
+<circle cx="330" cy="342" r="5" fill="#7a4e00" opacity="1" class="report2 moving"/>
+<rect x="404" y="125" width="222" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="515" y="160" font-size="22" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">监督任务</text>
+<text x="420" y="205" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">各任务按自身期限前进？</text>
+<text x="420" y="241" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">队列积压在界限内？</text>
+<text x="420" y="277" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">内存水位正常？</text>
+<text x="420" y="313" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">状态机没有卡住？</text>
+<line x1="631" y1="181" x2="663" y2="181" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="670.00,181.00 663.00,184.50 663.00,177.50" fill="#1b5c45" opacity="1"/>
+<line x1="631" y1="302" x2="663" y2="302" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="670.00,302.00 663.00,305.50 663.00,298.50" fill="#8f2d2d" opacity="1"/>
+<rect x="680" y="145" width="180" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="770" y="171" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">全部通过</text>
+<text x="770" y="194" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">监督者刷新 IWDG</text>
+<rect x="680" y="266" width="180" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="770" y="292" font-size="17" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任一项失败</text>
+<text x="770" y="315" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">停止刷新，等待复位</text>
+<text x="40" y="420" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对照一轮检查：</text>
+<rect x="40" y="439" width="820" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="467" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">A 前进、B 前进、C 前进，其他条件通过 → 喂狗</text>
+<rect x="40" y="493" width="820" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="521" font-size="17" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 超过自己的期限仍未前进，即使 A/C 正常 → 不喂狗</text>
+<circle cx="648" cy="181" r="5" fill="#1b5c45" opacity="1" class="pass moving"/>
+<circle cx="648" cy="302" r="5" fill="#8f2d2d" opacity="1" class="fail moving"/>
+<text x="40" y="563" font-size="15" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">故障摘要尽力保存并设截止点；保存失败也不能继续喂狗。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘系统设计模式 · 不表示具体调度顺序或硬件测量结果</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · STM32 知识库</text>
+</svg>

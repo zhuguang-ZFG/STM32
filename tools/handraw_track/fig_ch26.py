@@ -109,7 +109,7 @@ def timeout_poll():
     f.multi(140, 176, ["while (USART_GetFlagStatus(", "  USART1, USART_FLAG_TXE",
                        "  ) == RESET) {", "  if (spin_limit-- == 0U)", "    return -1;",
                        "}", "USART_SendData(USART1, byte);"],
-            size=22, color=INK, lh=34)
+            size=18, color=INK, lh=30)
     f.htext(880, 176, "SPL 不会替你超时", size=27, color=RED, anchor="middle",
             weight="bold", hl=True)
     f.multi(880, 222, ["USART_SendData() 只写 DR", "没有 HAL 那种", "timeout 参数", "", "等 TXE 的循环", "自己写边界"],

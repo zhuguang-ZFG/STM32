@@ -36,63 +36,66 @@ def evidence_triage() -> Svg:
         "STM32 · chapter 20 · manuals & evidence ladder",
     )
     canvas.header(title="证据三岔口：手册、仪器、固件栈", tag="20", tag_color=T.CYAN)
-    canvas.text(40, 86, "查资料卡住时：先确认打开的是哪本手册，再确认仪器是否越级，最后才谈换栈",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "three branches: wrong manual / wrong instrument / wrong firmware stack",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138,
-                "DS pin & limits → RM registers → PM vectors → AN recipes → UM tools",
-                size=13, fill=T.AMBER, mono=True)
+    canvas.text(40, 122, "卡住时先分岔：是手册拿错、仪器跳级，还是栈选错", size=15, fill=T.TEXT, weight="700")
+    _ring = (80, 170)
+    canvas.circle(80, 168, 17, fill=T.CYAN, stroke=T.CYAN, sw=1.5)
+    canvas.text(80, 174, "？", size=15, fill=T.BG, anchor="middle", weight="700")
+    canvas.text(106, 174, "查证卡住了", size=14, fill=T.TEXT, weight="700")
 
-    canvas.text(40, 170, "岔口一  手册找错：在 AN 里找电气上限", size=16, fill=T.RED, weight="700")
-    canvas.text(920, 170, "DS / RM / PM", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 184, 880, 174, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 214, "症状：搜了半天「推荐电流」，却打开了应用笔记或论坛帖",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 240, "原因 A：把 AN 当 DS——电气上限与引脚复用只在数据手册成立",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 266, "原因 B：把 HAL 符号当寄存器名去 RM 里搜，自然搜不到",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 292, "原因 C：F1 的问题打开了 F4 的 RM，外设地址与位域对不上",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 318, "检查点：引脚/极限→DS；位域/状态机→RM；启动与内核→PM；配方→AN",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 344, "探针：先写清订货号与手册编号+Rev，再摘句子；无编号的「经验」不进正文",
-                size=13, fill=T.MUTED)
+    # 岔口一：手册拿错
+    canvas.rect(40, 206, 880, 182, fill=T.PANEL, stroke=T.RED, rx=8)
+    canvas.text(56, 234, "岔口一  手册拿错：在 AN 和论坛帖里找电气上限", size=15, fill=T.RED, weight="700")
+    canvas.text(56, 262, "症状：拿 HAL 符号搜 RM；F1 的问题打开 F4 的 RM", size=13, fill=T.TEXT)
+    spines = [("DS", "引脚与极限", T.CYAN), ("RM", "位域与状态机", T.GREEN),
+              ("PM", "内核与向量", T.AMBER), ("AN", "配方与做法", T.VIOLET)]
+    for i, (name, what, c) in enumerate(spines):
+        sx = 620 + i * 74
+        canvas.rect(sx, 224, 58, 118, fill=T.BG, stroke=c, rx=4)
+        canvas.rot_text(sx + 40, 336, name, angle=-90, size=15, fill=c, weight="700")
+        canvas.text(sx + 29, 356, what[:3], size=9, fill=T.MUTED, anchor="middle")
+        canvas.text(sx + 29, 368, what[3:], size=9, fill=T.MUTED, anchor="middle")
+    canvas.text(56, 292, "对号：引脚与极限 → DS；位域与状态机 → RM；启动与内核 → PM；配方 → AN", size=13, fill=T.TEXT)
+    canvas.text(56, 318, "先写订货号 + 手册编号 + Rev，再摘句子", size=12, fill=T.MUTED)
+    canvas.text(56, 344, "F1 的问题配 F1 的手册，地址和位域才对得上", size=12, fill=T.MUTED)
+    canvas.arrow(120, 200, 120, 206, color=T.RED, sw=2, head=7)
 
-    canvas.text(40, 386, "岔口二  仪器越级：还没日志就上示波器", size=16, fill=T.AMBER, weight="700")
-    canvas.text(920, 386, "evidence ladder", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 400, 880, 174, fill=T.PANEL, stroke=T.AMBER, rx=8)
-    canvas.text(56, 430, "症状：示波器波形很漂亮，但问题其实是链接脚本或选项字节",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 456, "原因：跳过构建日志 → 调试器 → 运行日志 → 逻辑分析仪 → 示波器 的阶梯",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 482, "数值：链接失败用 map；认不出芯片用 SWD 电压；位时序才需要逻辑分析仪",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 508, "修复：按 instrument-evidence-ladder 逐级留证据，上一级无结论不跳级",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 534, "电源纹波与 μA 级电流才上专用探头；万用表 μA 档会拖低电压，别当精密表",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 560, "探针：每级至少留一张截图或一段日志哈希，写进排错笔记",
-                size=13, fill=T.MUTED)
+    # 岔口二：仪器越级
+    canvas.rect(40, 408, 880, 202, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    canvas.text(56, 436, "岔口二  仪器越级：还没看日志就上示波器", size=15, fill=T.AMBER, weight="700")
+    canvas.text(56, 464, "症状：波形很漂亮，问题其实出在链接脚本或选项字节", size=13, fill=T.TEXT)
+    steps = ["构建日志", "调试器", "运行日志", "逻辑分析仪", "示波器"]
+    base = 570
+    for i, name in enumerate(steps):
+        sx = 400 + i * 96
+        sy = base - i * 26
+        canvas.rect(sx, sy, 92, 34, fill=T.BG, stroke=T.AMBER, rx=4)
+        canvas.text(sx + 46, sy + 22, name, size=10, fill=T.TEXT, anchor="middle")
+        if i:
+            canvas.line(sx - 4, sy + 34, sx - 4, sy + 8, stroke=T.MUTED, sw=1)
+    canvas.circle(446, 556, 6, fill=T.RED)
+    canvas.text(56, 544, "从最低一级起步，", size=13, fill=T.TEXT)
+    canvas.text(56, 566, "上一级没有结论不跳级", size=13, fill=T.AMBER, weight="700")
+    canvas.text(56, 492, "链接失败看 map；认不出芯片看 SWD 电压；位时序才轮到逻辑分析仪", size=13, fill=T.TEXT)
+    canvas.text(56, 518, "每级留一张截图或一段日志，写进排错笔记", size=12, fill=T.MUTED)
+    canvas.arrow(120, 402, 120, 408, color=T.AMBER, sw=2, head=7)
 
-    canvas.text(40, 612, "岔口三  固件栈选错：新项目硬上 SPL", size=16, fill=T.VIOLET, weight="700")
-    canvas.text(920, 612, "HAL / LL / SPL / libopencm3", size=11, fill=T.MUTED, anchor="end", mono=True)
-    canvas.rect(40, 626, 880, 164, fill=T.PANEL, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 654, "症状：教程是 SPL，芯片是 G0/H7；或把 libopencm3 当 ST 支持栈",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 680, "原因 A：新项目应优先 HAL/LL；锁版 F1 维护才继续 SPL",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 706, "原因 B：轻量裸机可以对照 libopencm3，但手册冲突仍以 ST 官方为准",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 732, "原因 C：CubeMX 生成与手写寄存器混用，时钟初始化打两次",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 758, "探针：用 firmware-stack-choice 图对号；选定后全工程统一，不混两套启动文件",
-                size=13, fill=T.MUTED)
+    # 岔口三：栈选错
+    canvas.rect(40, 630, 880, 164, fill=T.PANEL, stroke=T.VIOLET, rx=8)
+    canvas.text(56, 658, "岔口三  固件栈选错：新项目硬上 SPL", size=15, fill=T.VIOLET, weight="700")
+    canvas.text(56, 686, "症状：教程是 SPL，芯片是 G0/H7；把 libopencm3 当 ST 官方栈", size=13, fill=T.TEXT)
+    forks = [("新项目", "HAL / LL", T.GREEN), ("锁版 F1 维护", "继续 SPL", T.AMBER),
+             ("轻量裸机", "libopencm3 对照", T.CYAN)]
+    for i, (left, right, c) in enumerate(forks):
+        fy = 712 + i * 26
+        canvas.text(400, fy, left, size=12, fill=T.TEXT)
+        canvas.arrow(492, fy - 4, 540, fy - 4, color=c, sw=1.5, head=6)
+        canvas.text(552, fy, right, size=12, fill=c, weight="700")
+    canvas.text(56, 712, "手册冲突时以 ST 官方为准", size=12, fill=T.MUTED)
+    canvas.text(56, 734, "选定后全工程统一，不混两套启动文件", size=12, fill=T.MUTED)
+    canvas.arrow(120, 388, 120, 396, color=T.VIOLET, sw=2, head=7)
 
-    canvas.rect(40, 806, 880, 30, fill=T.BG2, stroke=T.GREEN, rx=8)
-    canvas.text(56, 826, "底注  手册编号+Rev 是证据的身份证；没有编号的截图只算线索，不算结论。",
-                size=12, fill=T.TEXT)
+    canvas.rect(40, 810, 880, 30, fill=T.BG2, stroke=T.GREEN, rx=8)
+    canvas.text(56, 830, "底注  手册编号+Rev 是证据的身份证；没有编号的截图只算线索，不算结论。", size=12, fill=T.TEXT)
 
     credit(canvas, "自绘。手册分工与证据阶对照本章 manual-choice-map / instrument-evidence-ladder；栈选择对照 firmware-stack-choice。")
     return canvas

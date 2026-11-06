@@ -297,8 +297,8 @@ def fault_triage_ladder() -> Svg:
             "栈帧 PC/LR、CFSR/HFSR 与有效地址寄存器逐层收窄；没有证据前不靠猜测改优化级别")
     s.header(tag="17 故障 · IG-008", tag_color=T.RED)
     steps = [
-        ("1", "冻结现场", "禁中断 · 不继续运行", T.RED),
-        ("2", "读栈帧", "PC / LR / xPSR", T.AMBER),
+        ("1", "保存快照", "地址先于 VALID 位", T.RED),
+        ("2", "核对栈帧", "EXC_RETURN / 入栈错误", T.AMBER),
         ("3", "分类", "CFSR / HFSR", T.CYAN),
         ("4", "地址有效?", "BFARVALID / MMARVALID", T.VIOLET),
         ("5", "源码定位", "addr2line + ELF", T.GREEN),
@@ -319,7 +319,7 @@ def fault_triage_ladder() -> Svg:
     rows = [
         ("PRECISERR", "精确总线错误：栈 PC 通常可用"),
         ("IMPRECISERR", "异步写错误：PC 可能只是后来位置"),
-        ("BFARVALID", "置位后才读取 BFAR"),
+        ("BFARVALID", "置位才使用已保存的 BFAR"),
         ("FORCED", "可配置 Fault 被升级到 HardFault"),
     ]
     for i, (flag, note) in enumerate(rows):

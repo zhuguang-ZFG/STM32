@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="ORE：旧字节留下，新字节丢失">
+<title>ORE：旧字节留下，新字节丢失</title>
+<style>
+
+@keyframes incoming{0%,8%{transform:translateX(0);opacity:0}10%{opacity:1}30%{transform:translateX(34px);opacity:1}31%,100%{opacity:0}}
+@keyframes loss{0%,30%,61%,100%{opacity:0}32%,59%{opacity:.18}}
+@keyframes clear{0%,62%{transform:translateX(0);opacity:0}64%{opacity:1}83%{transform:translateX(32px);opacity:1}84%,100%{opacity:0}}
+.incoming{animation:incoming 10s linear infinite}.loss{animation:loss 10s linear infinite}.clear{animation:clear 10s linear infinite}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}.moving{display:none}}
+@media print{*{animation:none!important}.moving{display:none}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ORE：旧字节留下，新字节丢失</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103 · RXNE、ORE 与两级接收缓冲</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">06</text>
+<text x="40" y="95" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 字节 1 已进 DR，CPU 还没读；字节 2 又接收完了</text>
+<rect x="40" y="124" width="250" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="165" y="150" font-size="17" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RX 线上</text>
+<text x="165" y="173" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">字节 1 = 0xA5；字节 2 = 0x5A</text>
+<rect x="350" y="124" width="230" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="465" y="150" font-size="17" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">接收移位寄存器</text>
+<text x="465" y="173" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">字节 2 等待交给 DR</text>
+<rect x="640" y="124" width="220" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="750" y="150" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DR / RDR</text>
+<text x="750" y="173" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">仍保存字节 1：0xA5</text>
+<line x1="294" y1="157" x2="337" y2="157" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="344.00,157.00 337.00,160.50 337.00,153.50" fill="#075e84" opacity="1"/>
+<line x1="584" y1="157" x2="627" y2="157" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="634.00,157.00 627.00,160.50 627.00,153.50" fill="#8f2d2d" opacity="1"/>
+<line x1="607" y1="140" x2="607" y2="174" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="601" y1="140" x2="613" y2="152" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="610" y="213" font-size="15" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RXNE=1：DR 还没腾空</text>
+<circle cx="304" cy="157" r="6" fill="#075e84" opacity="1" class="incoming moving"/>
+<text x="40" y="259" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 新字节不能覆盖 DR；ORE=1 报告来不及取数</text>
+<rect x="40" y="286" width="250" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="165" y="312" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">字节 1：保留</text>
+<text x="165" y="335" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读 DR 仍能取出 0xA5</text>
+<rect x="325" y="286" width="250" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="450" y="312" font-size="17" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">字节 2：丢失</text>
+<text x="450" y="335" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">移位寄存器随后被覆盖</text>
+<rect x="610" y="286" width="250" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="735" y="312" font-size="17" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">标志：RXNE=1，ORE=1</text>
+<text x="735" y="335" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">清标志不会找回丢失的字节</text>
+<rect x="325" y="286" width="250" height="66" fill="#8f2d2d" opacity="0" rx="8" class="loss moving"/>
+<text x="40" y="397" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ CPU 按顺序处理：先 SR，后 DR</text>
+<rect x="40" y="420" width="250" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="165" y="446" font-size="17" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先读 SR（0x00）</text>
+<text x="165" y="469" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">保存错误状态</text>
+<rect x="355" y="420" width="270" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="490" y="446" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">再读 DR（0x04）</text>
+<text x="490" y="469" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">取出旧字节，完成清除序列</text>
+<line x1="298" y1="453" x2="340" y2="453" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="347.00,453.00 340.00,456.50 340.00,449.50" fill="#075e84" opacity="1"/>
+<text x="650" y="443" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RXNE → 0</text>
+<text x="650" y="473" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ORE → 0</text>
+<circle cx="306" cy="453" r="6" fill="#1b5c45" opacity="1" class="clear moving"/>
+<text x="40" y="529" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只读 DR 会清 RXNE，但不构成 ORE / FE 所需的 SR→DR 清除序列。</text>
+<text x="40" y="554" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">115200 8N1：约 8.68 µs/位，86.8 µs/帧；动画已放慢。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RM0008 Rev 21 §27.3.3 / §27.6.1 · 原理示意，非示波器实测</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · STM32 知识库</text>
+</svg>

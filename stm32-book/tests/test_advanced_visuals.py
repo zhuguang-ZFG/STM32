@@ -79,7 +79,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
-        15,
+        16,
         (
             "timer-pwm.svg",
             "sample-05-pwm-edge-flow.svg",
@@ -93,6 +93,7 @@ CHAPTERS = {
             "timer-modes.svg",
             "sample-05-pwm-debug.svg",
             "ch05-pwm-debug.png",
+            "ch05-capture-pulse.png",
             "pwm-breath.gif",
             "sample-05-deadtime.svg",
             "ch05-deadtime.png",
@@ -120,9 +121,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "10-DMA.md": (
-        15,
+        16,
         (
             "dma-circular.svg",
+            "ch10-channel-map.png",
             "sample-10-dma-circular-ht.svg",
             "sample-10-dma-cndtr.svg",
             "ch10-dma-cndtr.png",
@@ -140,9 +142,11 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "11-RTC与看门狗.md": (
-        14,
+        16,
         (
             "iwdg-window.svg",
+            "ch11-wwdg-window.png",
+            "sample-11-wwdg-window-flow.svg",
             "sample-11-iwdg-feed-flow.svg",
             "sample-11-iwdg-1s.svg",
             "ch11-iwdg-1s.png",
@@ -179,13 +183,14 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "13-CAN总线.md": (
-        13,
+        14,
         (
             "can-arbitration.svg",
             "sample-13-can-arb-flow.svg",
             "sample-13-can-bit.svg",
             "ch13-can-bit.png",
             "can-500k.gif",
+            "ch13-arb-ladder.png",
             "sample-13-bit-quanta.svg",
             "ch13-bit-quanta.png",
             "sample-13-filter-fifo.svg",
@@ -197,9 +202,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "14-USB.md": (
-        15,
+        16,
         (
             "usb-enumeration.svg",
+            "ch14-enum-checklist.png",
             "sample-14-usb-48m-flow.svg",
             "sample-14-usb-enum.svg",
             "ch14-usb-enum.png",
@@ -217,7 +223,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "15-FreeRTOS入门.md": (
-        16,
+        17,
         (
             "freertos-scheduler.svg",
             "sample-15-rtos-tick-flow.svg",
@@ -235,6 +241,7 @@ CHAPTERS = {
             "sample-15-rtos-triage.svg",
             "rtos-startup-gates.svg",
             "ch15-prio-inherit.png",
+            "ch15-psp-msp.png",
         ),
     ),
     ROOT / "docs" / "16-低功耗设计.md": (
@@ -258,9 +265,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "17-调试与性能优化.md": (
-        14,
+        15,
         (
             "debug-swo.svg",
+            "ch17-bp-comparators.png",
             "sample-17-cfsr-flow.svg",
             "sample-17-cfsr.svg",
             "ch17-cfsr.png",
@@ -277,9 +285,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "19-项目实战合集.md": (
-        16,
+        17,
         (
             "peripheral-wiring.svg",
+            "ch19-ab-partition.png",
             "sample-19-slot-fill-flow.svg",
             "sample-19-flash-fit.svg",
             "ch19-flash-fit.png",
@@ -298,7 +307,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "18-常见问题FAQ.md": (
-        13,
+        14,
         (
             "toolchain-flow.svg",
             "sample-18-boot0-flow.svg",
@@ -307,6 +316,7 @@ CHAPTERS = {
             "boot0-low.gif",
             "sample-18-link-map.svg",
             "ch18-link-map.png",
+            "ch18-multi-def.png",
             "sample-18-hardfault-ladder.svg",
             "ch18-hardfault-ladder.png",
             "sample-18-faq-compare.svg",
@@ -316,7 +326,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
-        13,
+        14,
         (
             "bluepill-stm32f103c8t6.svg",
             "sample-21-crystal-boot-flow.svg",
@@ -329,16 +339,18 @@ CHAPTERS = {
             "sample-21-power-swd.svg",
             "sample-21-hse-load.svg",
             "ch21-hse-load.png",
+            "ch21-minimal-five.png",
             "sample-21-nrst-boot0.svg",
             "ch21-nrst-boot0.png",
         ),
     ),
     ROOT / "docs" / "23-STM32G0引脚.md": (
-        12,
+        13,
         (
             "pinout-stm32g071rb-lqfp64.svg",
             "ch23-part-id.png",
             "pinout-bluepill.svg",
+            "ch23-g0-f1-compare.png",
             "sample-23-boot0-swclk.svg",
             "sample-23-boot-latch.svg",
             "ch23-boot-latch.png",
@@ -351,7 +363,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "24-STM32L4引脚.md": (
-        15,
+        16,
         (
             "pinout-stm32l476rg-lqfp64.svg",
             "ch24-part-id.png",
@@ -360,6 +372,7 @@ CHAPTERS = {
             "sample-24-stop2-retain.svg",
             "sample-24-mode-compare.svg",
             "ch24-modes.png",
+            "ch24-sram2-retain.png",
             "l4-stop2-evidence.svg",
             "sample-24-wake-restore-flow.svg",
             "ch24-wake-clocks.png",
@@ -371,7 +384,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
-        15,
+        16,
         (
             "project-structure.svg",
             "sample-20-evidence-flow.svg",
@@ -383,6 +396,7 @@ CHAPTERS = {
             "sample-20-lib-compare.svg",
             "ch20-lib-compare.png",
             "firmware-stack-choice.svg",
+            "ch20-manual-route.png",
             "instrument-evidence-ladder.svg",
             "ch20-evidence-ladder.png",
             "single-build-contract.svg",
@@ -391,9 +405,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
-        14,
+        15,
         (
             "toolchain-flow.svg",
+            "ch22-sim-verdict.png",
             "sample-22-sim-pick-flow.svg",
             "simulator-comparison.svg",
             "ch22-sim-compare.png",
@@ -410,11 +425,12 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "25-STM32H7引脚.md": (
-        16,
+        17,
         (
             "pinout-stm32h743zi-lqfp144.svg",
             "ch25-part-id.png",
             "h7-power-domains.svg",
+            "ch25-power-domains.png",
             "ch25-pin-compare.png",
             "sample-25-voltage-scale.svg",
             "ch25-rev-vos.png",
@@ -450,13 +466,14 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "27-网络与协议栈.md": (
-        14,
+        15,
         (
             "network-packet-journey.svg",
             "sample-27-rmii-checklist.svg",
             "ch27-rmii-signals.png",
             "network-cache-ownership.svg",
             "ch27-cache-dma.png",
+            "ch27-pbuf-chain.png",
             "sample-27-tcp-framing.svg",
             "ch27-api-context.png",
             "sample-27-link-dhcp-flow.svg",
@@ -469,7 +486,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        19,
+        21,
         (
             "rtos-system-layers.svg",
             "sample-28-four-concepts.svg",
@@ -488,6 +505,8 @@ CHAPTERS = {
             "freertos-scheduler.svg",
             "rtos-config-paths.svg",
             "rtos-startup-gates.svg",
+            "ch28-wdg-supervisor.png",
+            "sample-28-supervisor-flow.svg",
             "sample-28-fault-triage.svg",
             "ch28-fault-triage.png",
         ),

@@ -31,8 +31,15 @@
 9. 今天把 GPIO 示例的图打开，编译出固件，确认 C13 的灯在闪。做不到，先别开串口和 I2C 的图。能闪，再换下一张图，一次只换一个不确定的点。
 10. 每个实验用三句话收尾：仿真证明了什么，真板新增证明了什么，还有什么没证明。三句写全，双轨才算诚实。
 
+
 </details>
+
 <!-- /video:ch22 -->
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-sim-verdict.png" width="760" alt="Handraw: the three-sentence closing, one column each (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three columns, one per sentence — (1) what the simulation proved (the ELF and the current model agree: the GPIO/EXTI/TIM wiring and behavior hold in the model); (2) what the real board added (supply, pins, electrical waveforms, clocks, power — the same ELF is re-verified); (3) what remains unproven (the Wokwi BluePill model has no DMA/RTC/IWDG, and whatever you could not see goes into the residual-risk note). What it proves: all three sentences written out is what makes the dual track honest, and you change one uncertain point at a time. What it does not prove: this is a recording discipline, not an evaluation report, and Renode's port 3456 is just this chapter's script choice. Source: [Wokwi](#source-wokwi-bluepill) and [Renode](#source-renode-stm32).</sub>
+</p>
 ## Learning goals
 
 - [ ] Open this repo's BluePill diagram in Wokwi, and explain the pin aliases.

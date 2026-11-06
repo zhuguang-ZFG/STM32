@@ -2,96 +2,67 @@
 <title>Stop wake restore</title>
 <style>
 
-.f0{stroke-dasharray:6 12;animation:f0-flow 1.2s linear infinite;}@keyframes f0-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
+      @keyframes restore-position {
+        0%,12%{transform:translateX(0)} 20%,32%{transform:translateX(168px)}
+        40%,52%{transform:translateX(336px)} 60%,72%{transform:translateX(504px)}
+        80%,100%{transform:translateX(672px)}
+      }
+      .restore-dot{animation:restore-position 7s linear infinite}
+      @media(prefers-reduced-motion:reduce){.restore-dot{animation:none!important;display:none}}
+      @media print{.restore-dot{animation:none!important;display:none}}
 
-.f1{stroke-dasharray:6 12;animation:f1-flow 1.2s linear infinite;}@keyframes f1-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
-
-.f2{stroke-dasharray:6 12;animation:f2-flow 1.2s linear infinite;}@keyframes f2-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
-
-.f3{stroke-dasharray:6 12;animation:f3-flow 1.2s linear infinite;}@keyframes f3-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
-
-.f4{stroke-dasharray:6 12;animation:f4-flow 1.2s linear infinite;}@keyframes f4-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-18px}}
-@keyframes s0-flash{0%,0.00%{opacity:0.06}0.25%,3.33%{opacity:0.35}3.58%,100%{opacity:0.06}}
-.s0{animation:s0-flash 7.0s linear infinite;}
-@keyframes s1-flash{0%,16.67%{opacity:0.06}16.92%,20.00%{opacity:0.35}20.25%,100%{opacity:0.06}}
-.s1{animation:s1-flash 7.0s linear infinite;}
-@keyframes s2-flash{0%,33.33%{opacity:0.06}33.58%,36.67%{opacity:0.35}36.92%,100%{opacity:0.06}}
-.s2{animation:s2-flash 7.0s linear infinite;}
-@keyframes s3-flash{0%,50.00%{opacity:0.06}50.25%,53.33%{opacity:0.35}53.58%,100%{opacity:0.06}}
-.s3{animation:s3-flash 7.0s linear infinite;}
-@keyframes s4-flash{0%,66.67%{opacity:0.06}66.92%,70.00%{opacity:0.35}70.25%,100%{opacity:0.06}}
-.s4{animation:s4-flash 7.0s linear infinite;}
-@keyframes s5-flash{0%,83.33%{opacity:0.06}83.58%,86.67%{opacity:0.35}86.92%,100%{opacity:0.06}}
-.s5{animation:s5-flash 7.0s linear infinite;}
-@media (prefers-reduced-motion: reduce){*{animation:none!important}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<metadata>FA-002 · IG-009 · knowledge-track sequence</metadata>
 <rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 唤醒：HSI 8 MHz 装回 72 MHz 再开串口</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 醒来：先恢复时钟，再发送</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103 · PPRE2 不分频 · BRR 保持 0x271</text>
 <rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="862" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16</text>
-<rect x="40" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="100" y="132" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STOP</text>
-<text x="100" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">LP reg</text>
-<rect x="40" y="100" width="120" height="100" fill="#075e84" opacity="0.12" rx="8" class="s0"/>
-<line x1="164" y1="150" x2="167" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="174.00,150.00 167.00,153.50 167.00,146.50" fill="#5e6872" opacity="1"/>
-<line x1="164" y1="150" x2="174" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f0"/>
-<rect x="178" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="238" y="132" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">WAKE</text>
-<text x="238" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA0/RTC</text>
-<rect x="178" y="100" width="120" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="s1"/>
-<line x1="302" y1="150" x2="305" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="312.00,150.00 305.00,153.50 305.00,146.50" fill="#5e6872" opacity="1"/>
-<line x1="302" y1="150" x2="312" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f1"/>
-<rect x="316" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="376" y="132" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HSI</text>
-<text x="376" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8 MHz</text>
-<rect x="316" y="100" width="120" height="100" fill="#7a4e00" opacity="0.12" rx="8" class="s2"/>
-<line x1="440" y1="150" x2="443" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="450.00,150.00 443.00,153.50 443.00,146.50" fill="#5e6872" opacity="1"/>
-<line x1="440" y1="150" x2="450" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f2"/>
-<rect x="454" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="514" y="132" font-size="13" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PLL</text>
-<text x="514" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">72 MHz</text>
-<rect x="454" y="100" width="120" height="100" fill="#5b3a8c" opacity="0.12" rx="8" class="s3"/>
-<line x1="578" y1="150" x2="581" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="588.00,150.00 581.00,153.50 581.00,146.50" fill="#5e6872" opacity="1"/>
-<line x1="578" y1="150" x2="588" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f3"/>
-<rect x="592" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="652" y="132" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">UART</text>
-<text x="652" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">re-init</text>
-<rect x="592" y="100" width="120" height="100" fill="#1b5c45" opacity="0.12" rx="8" class="s4"/>
-<line x1="716" y1="150" x2="719" y2="150" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="726.00,150.00 719.00,153.50 719.00,146.50" fill="#5e6872" opacity="1"/>
-<line x1="716" y1="150" x2="726" y2="150" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1" class="f4"/>
-<rect x="730" y="100" width="120" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="790" y="132" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">115200</text>
-<text x="790" y="160" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">clean</text>
-<rect x="730" y="100" width="120" height="100" fill="#075e84" opacity="0.12" rx="8" class="s5"/>
-<rect x="40" y="217" width="3" height="18" fill="#1b5c45" opacity="1"/>
-<text x="52" y="230" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">Happy restore — 12800 bit/s miss stays on sample-16-clock-restore</text>
-<rect x="40" y="265" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="289" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Stop current</text>
-<text x="840" y="289" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">14 µA LP regulator, no IWDG (DS)</text>
-<rect x="40" y="309" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="333" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Wake clock</text>
-<text x="840" y="333" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSI 8 MHz until SystemClock_Config</text>
-<rect x="40" y="353" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="377" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Restore</text>
-<text x="840" y="377" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PLL back to 72 MHz</text>
-<rect x="40" y="397" width="820" height="38" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="421" font-size="13" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">UART proof</text>
-<text x="840" y="421" font-size="13" fill="#17202a" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">115200 after restore</text>
-<rect x="40" y="450" width="820" height="70" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="478" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Motion advances Stop→wake→HSI→PLL→UART — continuous teaching line.</text>
-<text x="56" y="500" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Current-table nuance stays on sample-16-mode-current.</text>
+<text x="40" y="96" font-size="17" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">硬件完成唤醒；恢复到 72 MHz 由软件完成。</text>
+<rect x="40" y="124" width="148" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="114" y="158" font-size="15" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop</text>
+<text x="114" y="189" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSE / PLL 关</text>
+<line x1="191" y1="174" x2="198" y2="174" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="205.00,174.00 198.00,177.50 198.00,170.50" fill="#5e6872" opacity="1"/>
+<rect x="208" y="124" width="148" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="282" y="158" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EXTI 唤醒</text>
+<text x="282" y="189" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSI 8 MHz</text>
+<line x1="359" y1="174" x2="366" y2="174" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="373.00,174.00 366.00,177.50 366.00,170.50" fill="#5e6872" opacity="1"/>
+<rect x="376" y="124" width="148" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="450" y="158" font-size="15" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置 HSE / PLL</text>
+<text x="450" y="189" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">等待就绪位</text>
+<line x1="527" y1="174" x2="534" y2="174" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="541.00,174.00 534.00,177.50 534.00,170.50" fill="#5e6872" opacity="1"/>
+<rect x="544" y="124" width="148" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="618" y="158" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">切换 SYSCLK</text>
+<text x="618" y="189" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">确认 SWS</text>
+<line x1="695" y1="174" x2="702" y2="174" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="709.00,174.00 702.00,177.50 702.00,170.50" fill="#5e6872" opacity="1"/>
+<rect x="712" y="124" width="148" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="786" y="158" font-size="15" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USART1 TX</text>
+<text x="786" y="189" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">115200 bit/s</text>
+<line x1="114" y1="250" x2="786" y2="250" stroke="#d7dce1" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="114" cy="250" r="4" fill="#5e6872" opacity="1"/>
+<circle cx="282" cy="250" r="4" fill="#5e6872" opacity="1"/>
+<circle cx="450" cy="250" r="4" fill="#5e6872" opacity="1"/>
+<circle cx="618" cy="250" r="4" fill="#5e6872" opacity="1"/>
+<circle cx="786" cy="250" r="4" fill="#5e6872" opacity="1"/>
+<circle cx="114" cy="250" r="7" fill="#1b5c45" opacity="1" class="restore-dot"/>
+<text x="40" y="290" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">位置表示先后顺序，间距不表示实际耗时。</text>
+<rect x="40" y="320" width="820" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="60" y="350" font-size="18" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">恢复后：发 0x55，检查 TX 位宽</text>
+<text x="60" y="381" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">72 MHz / 625 = 115200 bit/s</text>
+<text x="60" y="410" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单个位宽约 8.68 µs；GPIO 标记可区分唤醒与软件恢复。</text>
+<rect x="40" y="450" width="820" height="84" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="60" y="480" font-size="17" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">若跳过恢复：8 MHz / 625 = 12800 bit/s</text>
+<text x="60" y="511" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一 BRR，位宽变为 78.125 µs；先核对时钟，再检查主机设置。</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · Stop 唤醒时钟恢复，非电流探头波形</text>
-<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · RM0008 Rev 21 PWR/RCC/USART · 顺序示意，非实测波形</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32 知识库</text>
 </svg>

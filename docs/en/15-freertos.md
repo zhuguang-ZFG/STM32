@@ -1,11 +1,11 @@
 # 15 Getting Started with FreeRTOS
 > 中文：[15 FreeRTOS 入门](../15-FreeRTOS入门.md)
 
-> Two tasks blinking independently do not prove a real-time system. Measure task period, longest blocking time, stack margin, and queue peak, and prove that FromISR priorities stay inside the kernel boundary.
+> When a key event arrives, can its task respond in time? Follow one interrupt as it wakes a task, then measure periods, waiting times, and stack margin.
 
 <p align="center">
   <img src="../../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS task-state transitions and preemptive scheduling">
-  <br><sub>▲ Animation: FreeRTOS task-state transitions and preemptive scheduling (vector animation drawn by the author, not a live recording)</sub>
+  <br><sub>▲ L runs while H waits on a queue. At 1.5 ms the ISR sends an event and requests a switch, allowing H to run before the next tick. At 2.5 ms H blocks again and L resumes. Times are teaching values; ISR and switching time are omitted. Author-drawn vector animation, not a measured trace.</sub>
 </p>
 
 <!-- video:ch15 -->
@@ -34,17 +34,19 @@
 <!-- /video:ch15 -->
 ## Principle and scope
 
+Start with the repository's `examples/freertos-task`: the LED blinks periodically, and pressing PA0 prints `KEY pressed` on the UART. To observe scheduling, toggle one spare GPIO in the EXTI callback and another after KEY receives the queued data. Compare the edges with a logic analyzer. KEY has a higher priority than LED; after the event is queued and a switch requested, KEY can take over on ISR exit without waiting for another tick. If response is delayed, check the queue-send result, EXTI priority, and `portYIELD_FROM_ISR`, then whether KEY is waiting for the UART mutex. These are experiment instructions; no board measurements are supplied here.
+
 Every number in this chapter is for the STM32F103C8T6 and the repository example `examples/freertos-task`. The interrupt priority grouping is the same as in chapter 04: `NVIC_PRIORITYGROUP_4`, all 4 bits for preemption and 0 bits of subpriority.
 
-`configTICK_RATE_HZ = 1000`, so the kernel wakes once every 1 ms. That wake-up is one tick. The kernel only keeps time in ticks, so it cannot promise a deadline shorter than 1 ms. SysTick belongs to the kernel, which means HAL needs another timer for its own time base. The example uses TIM4, as its README says. If both sides take SysTick, `HAL_Delay` never returns. See [examples in this repo](#source-project-examples).
+The example sets `configTICK_RATE_HZ = 1000`, giving a 1 ms tick. Delays and timeouts count ticks, but events can wake tasks between ticks; 1 ms is not a lower bound on every response. The example assigns SysTick to the kernel and TIM4 to HAL so their timebase handlers do not overwrite each other. Sharing SysTick requires deliberate integration of the handlers and counters; a faulty configuration can leave `HAL_Delay` stuck. See [examples in this repo](#source-project-examples).
 
 For tasks, a larger priority number runs first, the opposite of the NVIC. In the example KEY is 2 and LED and UART are 1, so when all three are ready KEY runs first. The NVIC still treats a smaller number as more urgent, so keep the two rules apart. The idle task is priority 0.
 
-An interrupt that calls a `...FromISR` function needs a preemption priority number of 5 or a larger number. The 5 comes from `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`: the chip only uses the top 4 bits, and `5 << (8 − 4) = 0x50`. The kernel never masks interrupts more urgent than 5 (0 to 4). Calling FromISR from one of them can collide with data the kernel is in the middle of changing, so the kernel stops in `configASSERT` to tell you. The example sets `EXTI0` to 5. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
+In this configuration, an interrupt that calls a `...FromISR` function needs a preemption priority number of 5 or a larger number. The 5 comes from `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`: the chip only uses the top 4 bits, and `5 << (8 − 4) = 0x50`. More urgent interrupts (0 to 4) remain unmasked by the kernel's BASEPRI critical sections. They must not call FreeRTOS APIs, which could interrupt a kernel data update. With an effective `configASSERT`, API paths that validate interrupt priority can help catch this error. The example sets `EXTI0` to 5. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
 
-The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 words = 512 bytes, KEY is 192 words = 768 bytes, and UART is 256 words = 1024 bytes. Read 128 as 128 bytes and the task gets a quarter of the stack it needs; the first `printf` overflows it.
+In this example, `xTaskCreate` measures stack depth in words of 4 bytes. LED uses 128 words = 512 bytes, KEY 192 words = 768 bytes, and UART 256 words = 1024 bytes. Mistaking a requirement of 128 words for 128 bytes and allocating only 32 words leaves a quarter of the intended capacity. If a `printf` call is followed by a HardFault, check the stack watermark and overflow hook; printing alone does not establish stack overflow as the cause.
 
-`vTaskDelay(10)` means "wait 10 more ticks from now". A task that works for 3 ms and then calls it runs with a period near 13 ms. For a fixed 10 ms period, use `vTaskDelayUntil`, which counts from the last wake-up. When several tasks share the UART, protect it with a mutex, which has priority inheritance. A binary semaphore does not. heap_4 merges neighbouring free blocks, so it fragments less.
+`vTaskDelay(10)` means "wait 10 more ticks from now". A task that works for 3 ms and then calls it has a period near 13 ms, also affected by tick phase and scheduling. For a 10 ms target period, `vTaskDelayUntil` calculates the next wake time from the previous planned wake time; actual execution can still jitter or overrun. Prefer a mutex when tasks share a UART: it provides priority inheritance, which a binary semaphore lacks. heap_4 merges adjacent free blocks, but allocation can still fail.
 
 ## Key figures
 
@@ -79,7 +81,7 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 | Stacks | 128 words = 512 bytes | KEY 192 words = 768 bytes. UART 256 words = 1024 bytes |
 | Interrupt | number 5 may call FromISR | number 0 stops in `configASSERT`. `0x50 = 5 << 4` |
 | Time base | the kernel uses SysTick | HAL uses TIM4 |
-| Delay | 3 ms of work, then `vTaskDelay(10)` | the period is near 13 ms. `vTaskDelayUntil` of 10 ms stays 10 ms |
+| Delay | 3 ms of work, then `vTaskDelay(10)` | The period is near 13 ms. `vTaskDelayUntil` advances planned wakes by 10 ms; actual execution can jitter |
 
 ## Pitfalls and sources
 
@@ -89,9 +91,9 @@ The `xTaskCreate` stack depth is in words, and one word is 4 bytes. LED is 128 w
 | The interrupt stops in `configASSERT` | The preemption number is smaller than 5 | Write `EXTI0` as 5 or a larger number | [FreeRTOS](#source-freertos-syscall) | With 4 priority bits, 5 shifted left by 4 is `0x50`. A numerically smaller interrupt must not call FromISR |
 | A priority 1 task runs over a priority 2 task | Task priority was treated like the NVIC | A numerically larger task priority runs first | [FreeRTOS](#source-freertos-syscall) | A numerically larger task priority runs first |
 | KEY does not run ahead of LED in the example | Both tasks were given the same priority | Write KEY as 2, and LED and UART as 1 | [examples in this repo](#source-project-examples) | In `examples/freertos-task`, KEY's task priority is 2 and LED and UART are 1 |
-| The stack note says 128 and a print overflows | A word was read as a byte | 128 is in words, which is 512 bytes | [examples in this repo](#source-project-examples) | LED is 128 words, KEY is 192 words, UART is 256 words |
+| HardFault after printing | Stack margin may be low, or a pointer or another fault may be involved | Check word/byte units, the stack watermark, and fault registers | [examples in this repo](#source-project-examples) | LED 128 words = 512 bytes, KEY 192 words = 768 bytes, UART 256 words = 1024 bytes |
 | The key interrupt asserts as soon as it is entered | The EXTI preemption priority is too urgent | Write the `EXTI0` preemption priority as 5 | [examples in this repo](#source-project-examples) | The example sets the `EXTI0` preemption priority to 5 |
-| Two tasks interleave on the UART | A binary semaphore was used to protect the resource | Use a mutex | [FreeRTOS](#source-freertos-syscall) | A mutex has priority inheritance. A binary semaphore does not |
+| Two tasks interleave on the UART | Protection does not cover the complete send, or a path bypasses it | Check every send entry; hold a mutex for the full transaction | [FreeRTOS](#source-freertos-syscall) | A binary semaphore can serialize access, but lacks mutex ownership and priority inheritance |
 | The period grows | `vTaskDelay(10)` does not include the time already spent before the call | Use `vTaskDelayUntil` for a fixed period | [FreeRTOS](#source-freertos-syscall) | When one tick is 1 ms, time already spent before the call is not inside `vTaskDelay` |
 
 ## Learning goals
@@ -127,16 +129,16 @@ Bare metal is "a main loop plus interrupts" (foreground/background). The more ta
 
 <p align="center">
   <img src="../../assets/diagrams/sample-15-task-states.svg" width="760" alt="FreeRTOS states: Running / Ready / Blocked / Suspended">
-  <br><sub>▲ Drawn for this book. 1 ms tick; 128 words=512 bytes; do not share SysTick with HAL.</sub>
+  <br><sub>▲ Author-drawn task states. Ready waits for the CPU; Blocked waits for an event or timeout; Suspended needs an explicit resume. An event wake need not wait for a tick.</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch15-task-states.png" width="760" alt="Handraw: FreeRTOS four states Running/Ready/Blocked/Suspended (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). One Running task per core; Ready waits for tick; Blocked waits on an object; Suspended is held aside; not a photo.</sub>
+  <br><sub>▲ One task runs at a time on this single core. Ready has everything it needs except CPU time; Blocked waits for time or an event; Suspended waits for an explicit resume. Hand-drawn explanation, not a measured trace.</sub>
 </p>
 
 
-A task moves among running, ready, blocked, suspended, and deleted. **The CPU is given to someone else only when a task is blocked or suspended**, so every task needs a blocking point.
+A task moves among running, ready, blocked, suspended, and deleted. **A higher-priority task becoming ready can preempt a lower-priority task. Equal-priority tasks rotate when time slicing is enabled, and `taskYIELD` can yield voluntarily.** Blocking waits without occupying the CPU and gives lower-priority tasks a chance to run. A task that stays ready can starve lower-priority tasks; with time slicing disabled, it can also starve equal-priority tasks.
 
 | State | Meaning | How you enter | How you leave |
 | --- | --- | --- | --- |
@@ -160,12 +162,12 @@ Suspended          Running ──────────────► Blocked
 
 ### 3. SysTick and the scheduler (the fight with HAL over the timebase)
 
-FreeRTOS uses **SysTick** by default to produce a 1 ms tick (`configTICK_RATE_HZ`). HAL also uses SysTick for `HAL_Delay`. **They cannot share it.** When you bring up the RTOS, move the HAL timebase to another timer.
+The ARM_CM3 port normally uses **SysTick** for the kernel tick, configured here as 1 ms. HAL also defaults to SysTick; this example moves HAL to TIM4, giving each counter its own handler and making faults easier to isolate. To share SysTick, check the handler, frequency, and behavior before and after scheduler startup.
 
 | Conflict | What you see | Fix |
 | --- | --- | --- |
 | FreeRTOS and HAL both want SysTick | `HAL_Delay` hangs, and the tick misbehaves | In CubeMX: SYS → Timebase Source, change it to **TIM4** |
-| Tick rate | `configTICK_RATE_HZ` defaults to 1000 (1 ms) | A shorter slice is more responsive and costs more |
+| Tick rate | This example sets `configTICK_RATE_HZ` to 1000 (1 ms) | A higher rate gives finer tick timing and more interrupt overhead; frequency alone does not guarantee real-time response |
 | Time slicing | Tasks at the same priority share the CPU | `configUSE_TIME_SLICING=1` (on by default) |
 
 ### 4. Priority and preemption
@@ -194,17 +196,17 @@ STM32F103C8T6 is a Cortex-M3 and has no FPU. Pick the `ARM_CM3` port layer. The 
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). R=B+C+S; blocking + execution + higher-priority interference; worst case must finish before the deadline; averages cannot replace worst case; not a photo.</sub>
 </p>
 
-A critical section uses `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` to mask interrupts and protect shared data. **Any interrupt that calls an `xxxFromISR` API must have a priority number ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`.**
+In the ARM_CM3 port, `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` use BASEPRI to mask some interrupts. This configuration masks configurable priorities 5–15, leaving 0–4 able to interrupt; those interrupts must not call FreeRTOS APIs. The unshifted priority 5 passed to NVIC interfaces corresponds to `0x50` in the register. Compare priorities in the same representation; do not compare 5 directly with the shifted `configMAX_SYSCALL_INTERRUPT_PRIORITY` value `0x50`.
 
 | Macro | What it does |
 | --- | --- |
 | `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` | A task-level critical section. It can nest |
-| `taskENTER_CRITICAL_FROM_ISR()` | An interrupt-level critical section |
-| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | The lowest priority number that is still allowed to call a FreeRTOS API (a larger number is a lower priority) |
+| `taskENTER_CRITICAL_FROM_ISR()` | Saves the previous mask; restore it with the matching exit API |
+| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | Shifted BASEPRI threshold; here `0x50` corresponds to NVIC priority 5 |
 | `configKERNEL_INTERRUPT_PRIORITY` | The priority of the kernel's own interrupts (PendSV / SysTick) |
 
 > [!WARNING]
-> The common `configASSERT` dead loop means **the interrupt priority number was set too small (the priority was too high)** and it crossed the range `configMAX_SYSCALL_INTERRUPT_PRIORITY` allows. On STM32, with 4 priority bits, that macro is often `5 << (8-4) = 0x50`, which means the interrupt priority number must be ≥ 5.
+> If execution stops in an interrupt-priority `configASSERT`, check the active IRQ's priority and priority grouping. With 4 priority bits and a threshold of `5 << (8-4) = 0x50`, an IRQ calling FromISR needs a numeric priority ≥ 5. With assertions disabled, or without a validation path, the same mistake may instead corrupt data.
 
 ### 6. Comparing the IPC options
 
@@ -212,7 +214,7 @@ A **queue** carries data. A **semaphore** synchronizes or counts. A **mutex** pr
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch15-prio-inherit.png" width="760" alt="Handraw: priority inheritance — a low task holds the mutex while a mid task preempts it and a high task blocks (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three lanes are three tasks on one core; L takes the mutex first, M preempts it once ready, and H blocks on the same mutex. At that moment L is boosted to H's priority, which keeps M off the CPU until L releases, after which H runs and L drops back. What it proves: inheritance turns H's wait from "how long M runs" into "how long the critical section is". What it does not prove: no timings are measured, and it does not cover calling a mutex from an ISR (which needs the FromISR API) or multi-core. Source: [FreeRTOS kernel docs](#source-freertos-syscall).</sub>
+  <br><sub>▲ M preempts L while L holds the mutex. When H requests that mutex and blocks, L inherits H's priority and runs ahead of M. L releases, H takes the mutex, and L's priority drops back. Dashed frames show waiting; solid bars show execution, aligned to the same events. Inheritance removes M's interference; ISRs and higher-priority tasks can still extend the wait. A hand-drawn, single-core example with three tasks and one mutex, not a measured trace. Mutexes have no FromISR interface. See [FreeRTOS kernel docs](#source-freertos-syscall).</sub>
 </p>
 
 | Mechanism | Use | Can it carry data? | Cost | Interrupt-safe API |
@@ -236,7 +238,7 @@ The stack argument to `xTaskCreate` is in **words (4 bytes)**, not bytes. A stac
 | Start from experience | 128 words for a simple task; 256 to 512 words if it uses printf or floating point |
 | Measure the watermark | `uxTaskGetStackHighWaterMark()` reports the smallest number of free words ever seen |
 | Large local arrays | A big array inside a function sits on the stack. Prefer `static` or global |
-| Nested interrupts | An ISR uses the current task's stack, so leave room for the interrupt |
+| Interrupts and switching | The first hardware exception frame uses the task's PSP; ISR functions and nested exceptions use MSP. Budget both stacks |
 | Overflow detection | `configCHECK_FOR_STACK_OVERFLOW=2`, and implement `vApplicationStackOverflowHook` |
 
 ```c
@@ -244,9 +246,14 @@ The stack argument to `xTaskCreate` is in **words (4 bytes)**, not bytes. A stac
 UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 ```
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-psp-msp.png" width="760" alt="Cortex-M3 PSP task stack and MSP exception stack: the first hardware frame stays on the task stack; ISRs and nesting use MSP">
+  <br><sub>▲ The left column follows task A's PSP; the right is the shared exception MSP. When an IRQ interrupts the task, hardware first saves R0–R3, R12, LR, PC, and xPSR on A's stack, then the ISR uses MSP. A PendSV switch also saves R4–R11 and writes PSP into the TCB. Eight registers take 32 B, with alignment margin also required. A task watermark does not measure MSP headroom. Hand-drawn explanation, not to address or capacity scale; based on [PM0056](#source-pm0056-nvic) and the [FreeRTOS ARM_CM3 port](#source-freertos-syscall).</sub>
+</p>
+
 ### 8. Priority inversion and priority inheritance
 
-**Priority inversion** is a high-priority task being held up, indirectly, by a low-priority task. A FreeRTOS **mutex** has **priority inheritance** built in, which squeezes that window down to a very short time.
+In the figure, high-priority H waits for a mutex held by low-priority L, while medium-priority M preempts L. This is priority inversion. The mutex lets L inherit H's priority temporarily, keeping M from delaying L further. It neither guarantees a short wait nor resolves deadlock automatically.
 
 | Idea | What you see | What to do |
 | --- | --- | --- |
@@ -254,11 +261,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 | Priority inheritance | The low task temporarily inherits the high task's priority, so it can release sooner | A FreeRTOS mutex does this automatically |
 | Deadlock | Two tasks each hold one lock and wait for the other | Always lock in the same order, and use a timeout: `xSemaphoreTake(..., timeout)` |
 
-> A binary semaphore does **not** have priority inheritance. It is only for "an event happened." To protect a resource, use `xSemaphoreCreateMutex()`.
+> A binary semaphore can signal events or serialize access, but has neither ownership nor priority inheritance. For a resource shared by tasks, normally choose `xSemaphoreCreateMutex()` and hold it for the entire protected operation.
 
 <p align="center">
   <img src="../../assets/diagrams/rtos-owner-task.svg" width="820" alt="Several tasks queue complete transactions to one peripheral-owner task, which controls chip select, DMA, timeout, and recovery">
-  <br><sub>▲ A mutex protects one function call; a complete transaction containing chip select, DMA, waits, and recovery is often safer in one owner task. The figure cannot prove queue capacity or deadlines; measure peak depth and longest response (FA-002 · IG-011 · C-03/C-10/C-27/C-31).</sub>
+  <br><sub>▲ A mutex can span several function calls. For asynchronous DMA, protection must last until transfer completion or recovery finishes. Alternatively, one owner task can accept queued requests and manage chip select, DMA, timeout, and recovery together. Measure queue peak and longest response (FA-002 · IG-011 · C-03/C-10/C-27/C-31).</sub>
 </p>
 
 <p align="center">
@@ -320,7 +327,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 <p align="center">
   <img src="../../assets/diagrams/sample-15-rtos-triage.svg" width="760" alt="Task not moving, stack overflow, wrong priority: one tick is 1 ms, 128 words are 512 bytes, FromISR needs a numerical preempt priority of at least 5">
-  <br><sub>▲ Drawn for this book. Where to look: two timebase boxes across the top (kernel SysTick at 1 ms, HAL on TIM4); the left column stacks three gates in front of `vTaskStartScheduler()`; the middle draws 128 words as 128 cells and shows what a byte-sized stack leaves; the right puts the two opposite priority axes next to the forbidden 0-4 band; underneath, the 10240-byte heap is split three ways and 3 ms + 10 ticks = 13 ms sits beside vTaskDelayUntil's 10 ms. The task never runs — check whether the scheduler started, one tick is 1 ms; stack overflow — remember 128 words are 512 bytes; the wrong API in an interrupt — FromISR needs a numerical preempt priority of at least 5. Sources: [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
+  <br><sub>▲ Choose a column by the symptom. A task never runs: check creation results and timebases. HardFault after printing: check stack units and the watermark. An assertion inside an interrupt: check the FromISR priority boundary. Each central cell is 4 B; the 32 dark cells provide only a quarter of the intended 128 cells. The numeric priority threshold ≥5 applies to this configuration. The heap budget below has yet to deduct TCBs, queues, kernel allocations and other overhead. The timing comparison shows about 13 ms with relative delay versus a 10 ms target with absolute delay, omitting tick phase and scheduling jitter. Drawn diagram, based on [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) and [freertos-task](#source-project-examples).</sub>
 </p>
 
 ## Hardware and wiring
@@ -426,7 +433,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 }
 ```
 
-> **The single most important CubeMX step**: change `SYS → Timebase Source` from **SysTick to TIM4**. Otherwise HAL and FreeRTOS fight over SysTick, and `HAL_Delay` hangs.
+> **CubeMX settings for this example**: change `SYS → Timebase Source` from **SysTick to TIM4**. Keeping SysTick requires integrating the HAL and kernel timebases; replacing just one handler is insufficient.
 
 ## Hands-on labs
 
@@ -442,7 +449,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ### 11. Relative delay, absolute period, and software timers
 
-`vTaskDelay(n)` waits n ticks from **this call**. Time the task spends doing its own work stretches the period further and further. For a fixed period, use `vTaskDelayUntil`.
+`vTaskDelay(n)` waits n ticks from **this call**, so the task's work adds to the period. `vTaskDelayUntil` advances the previous planned wake time instead. With the 10 ms target below, actual entry still depends on interrupts, scheduling, and whether the work overruns.
 
 ```c
 TickType_t last = xTaskGetTickCount();

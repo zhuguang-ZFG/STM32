@@ -90,15 +90,21 @@ def bus_triage() -> Svg:
                 size=14, fill=T.AMBER)
 
     canvas.text(40, 678, "岔口三  SCL 被拉低不动：先认时钟拉伸", size=16, fill=T.VIOLET, weight="700")
-    canvas.rect(40, 692, 880, 120, fill=T.PANEL, stroke=T.VIOLET, rx=8)
+    canvas.rect(40, 692, 880, 150, fill=T.PANEL, stroke=T.VIOLET, rx=8)
     canvas.text(56, 720, "SCL stays low after the master lets go: the slave is stretching the clock, the bus is not dead",
                 size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 745, "wait for SCL to rise; every I2C master, the STM32 peripheral included, must tolerate a stretched low",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 770, "if it never rises, read SCL as GPIO and time it high with a TIM, then run the 9-pulse clear",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 795, "checkpoint: a stretched low can outlast the HAL Timeout; prove the level first, then raise the timeout",
-                size=13, fill=T.MUTED)
+    canvas.text(56, 745, "wait for SCL to rise; every I2C master must tolerate a stretched low", size=14, fill=T.TEXT)
+    canvas.text(56, 770, "if it never rises: read SCL as GPIO, time it with a TIM, then run the 9-pulse clear", size=14, fill=T.TEXT)
+    canvas.text(56, 795, "a stretched low can outlast the HAL timeout: prove the level first", size=13, fill=T.MUTED)
+    # 拉伸时序小图：主机想放手，从机按住
+    rx0 = 680
+    canvas.text(rx0 - 10, 742, "SCL", size=11, fill=T.MUTED, anchor="end")
+    canvas.line(rx0, 738, rx0 + 40, 738, stroke=T.GREEN, sw=2)
+    canvas.line(rx0 + 40, 738, rx0 + 40, 758, stroke=T.GREEN, sw=2)
+    canvas.line(rx0 + 40, 758, rx0 + 220, 758, stroke=T.RED, sw=2)
+    canvas.line(rx0 + 40, 738, rx0 + 220, 738, stroke=T.MUTED, sw=1.5, dash="4 4")
+    canvas.text(rx0 + 50, 782, "虚线 = 主机松手后的期望", size=10, fill=T.MUTED)
+    canvas.text(rx0 + 50, 798, "从机按住：低电平更长", size=11, fill=T.RED)
 
     canvas.text(40, 828, "清除只还你一条空闲的线，不解释从机为何停在半个字节上", size=13, fill=T.MUTED)
     _credit(canvas, "自绘。总线清除与时钟拉伸来自 UM10204 Rev 6 第 3 章；I2C 寄存器语义来自 RM0008 Rev 21 第 26 章。")

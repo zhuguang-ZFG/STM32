@@ -184,7 +184,7 @@ When the output is silent or the frequency is wrong, read the three rings below 
 
 <p align="center">
   <img src="../../assets/diagrams/sample-05-pwm-debug.svg" width="820" alt="A waveform with the wrong period stops at the PSC/ARR ratio; a completely silent PA6 means reading CC1E in TIM3_CCER and the alternate-function bits in GPIOA_CRL">
-  <br><sub>▲ Drawn for this book. Where to look: three rings, top to bottom. Ring ① reads TIM3_PSC = 71 and TIM3_ARR = 999 back and recomputes 72e6 / (72 × 1000) = 1000 Hz; the same pair divided by 36 MHz gives 500 Hz. Ring ② reads CC1E = 1 in bit 0 of TIM3_CCER, with OC1M[6:4] = 110 in TIM3_CCMR1 selecting PWM mode 1. Ring ③ reads GPIOA_CRL[27:24] = 0xB: CNF6 = 10 is alternate-function push-pull and MODE6 = 11 is 50 MHz, while TIM3_REMAP = 00 keeps the channel on pin 16 PA6. What it proves: the read-backs separate a frequency error from a dead pin — in the lower half only the 36 MHz row still leaves a 500 Hz waveform; CC1E = 0 and MODE6 = 00 both leave PA6 quiet, and a non-zero remap moves the waveform to PB4 or PC6. What it does not prove: the duty set by CCR, the probe ground, or whether chapter 08 has taken PA6 as SPI1_MISO; TIM1's extra BDTR bit 15 MOE at offset 0x44 is only named, not drawn. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
+  <br><sub>▲ Drawn for this book. Where to look: the top row of three waveforms is the verdict — 1 kHz passes, 500 Hz off by a whole ratio checks ring ① only, and a dead line checks rings ②③; the three-ring signal chain runs left to right into PA6. Ring ① reads TIM3_PSC = 71 and TIM3_ARR = 999 back and recomputes 72e6 / (72 × 1000) = 1000 Hz; the same pair divided by 36 MHz gives 500 Hz. Ring ② reads CC1E = 1 in bit 0 of TIM3_CCER, with OC1M[6:4] = 110 in TIM3_CCMR1 selecting PWM mode 1. Ring ③ reads GPIOA_CRL[27:24] = 0xB: CNF6 = 10 is alternate-function push-pull and MODE6 = 11 is 50 MHz, while TIM3_REMAP = 00 keeps the channel on pin 16 PA6. What it proves: the read-backs separate a frequency error from a dead pin — the 500 Hz verdict tile is exactly what a ring-①-only error looks like; CC1E = 0 and MODE6 = 00 both leave PA6 quiet, and a non-zero remap moves the waveform to PB4 or PC6. What it does not prove: the duty set by CCR, the probe ground, or whether chapter 08 has taken PA6 as SPI1_MISO; TIM1's extra BDTR bit 15 MOE at offset 0x44 is only named, not drawn. Sources: [RM0008 Rev 21 chapter 15](#source-rm0008-tim) and [DS5319 Rev 20 Table 5](#source-ds5319-tim).</sub>
 </p>
 
 <p align="center">
@@ -218,6 +218,11 @@ Frequency versus resolution, at the same fCK_PSC:
 ### 5. Input capture, the encoder, and slave mode
 
 Input capture uses the counter the other way round. When the outside signal changes, the hardware copies the current CNT into CCR at once, like a race timer pressing the stopwatch at the finish line. Subtract two captured values and you have the period or the pulse width. The encoder interface watches two square waves 90° apart. Which one changes first decides whether the counter goes up or down, so the count is the motor's position.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-capture-pulse.png" width="760" alt="Handraw: three latched edges and the pulse-width arithmetic (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three latched edges on PA0 — the two rising edges read the same CCR because CNT wrapped from 999 back to 0; the three boxes work out 0504 − 0004 = 500 counts x 1 us = 500 us of high level, the period with one ARR+1 added = 1 ms → 1 kHz, and 500/1000 = 50% duty. What it proves: width and frequency come from subtracting two CCR reads and multiplying by the count period — no voltmeter needed — and an overflow must be paid back one ARR+1. What it does not prove: this is arithmetic at a 72 MHz ÷ 72 = 1 MHz count clock, not the signal generator's real jitter, capture filter settings or interrupt latency, and it is not a scope capture. Source: [RM0008 Rev 21 ch.15](#source-rm0008-tim).</sub>
+</p>
 
 | Function | How it works | Use |
 | --- | --- | --- |

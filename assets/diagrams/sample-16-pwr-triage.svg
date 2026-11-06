@@ -20,7 +20,7 @@
 <line x1="679.94" y1="122" x2="679.94" y2="134" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="679.94" y="148" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14 mA</text>
 <circle cx="679.94" cy="128" r="7" fill="#8f2d2d" opacity="1"/>
-<text x="679.94" y="112" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">运行 14.4 mA</text>
+<text x="679.94" y="112" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Sleep 14.4 mA</text>
 <circle cx="256.395" cy="128" r="7" fill="#7a4e00" opacity="1"/>
 <text x="256.395" y="112" font-size="10.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 14 µA</text>
 <circle cx="137.567" cy="128" r="7" fill="#075e84" opacity="1"/>
@@ -54,26 +54,21 @@
 <rect x="638" y="168" width="298" height="5" fill="#075e84" opacity="1" rx="2"/>
 <text x="652" y="198" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 电流降不下来</text>
 <text x="652" y="218" font-size="10" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">差值法：先测底，再逐个打开</text>
-<text x="652" y="250" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IWDG 走 LSI</text>
-<rect x="652" y="256" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="652" y="256" width="3.6" height="6" fill="#8f2d2d" opacity="1" rx="2"/>
-<text x="838" y="262" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+3.4 µA</text>
-<text x="652" y="280" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LSI 单开</text>
-<rect x="652" y="286" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="652" y="286" width="3.6" height="6" fill="#7a4e00" opacity="1" rx="2"/>
-<text x="838" y="292" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">+3.2 µA</text>
-<text x="652" y="310" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10 kΩ 上拉 @3.3 V</text>
-<rect x="652" y="316" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="652" y="316" width="63" height="6" fill="#5b3a8c" opacity="1" rx="2"/>
-<text x="838" y="322" font-size="9.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0.33 mA</text>
+<text x="652" y="250" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop 加 IWDG</text>
+<line x1="652" y1="259" x2="818" y2="259" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="830" y="257" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">查实测</text>
+<text x="652" y="280" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Standby + LSI</text>
+<line x1="652" y1="289" x2="818" y2="289" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="830" y="287" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.2 µA 总值</text>
+<text x="652" y="310" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">10 kΩ 两端压差 3.3 V</text>
+<line x1="652" y1="319" x2="818" y2="319" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="830" y="317" font-size="9.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0.33 mA</text>
 <text x="652" y="340" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">2 mA LED 常亮</text>
-<rect x="652" y="346" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="652" y="346" width="180" height="6" fill="#8f2d2d" opacity="1" rx="2"/>
-<text x="838" y="352" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 mA</text>
-<text x="652" y="370" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">悬空输入脚翻转</text>
-<rect x="652" y="376" width="180" height="6" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="652" y="376" width="90" height="6" fill="#7a4e00" opacity="1" rx="2"/>
-<text x="838" y="382" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">µA~mA</text>
+<line x1="652" y1="349" x2="818" y2="349" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="830" y="347" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">2 mA</text>
+<text x="652" y="370" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">悬空输入脚</text>
+<line x1="652" y1="379" x2="818" y2="379" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="830" y="377" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">依电平测量</text>
 <text x="652" y="394" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">悬空脚配 GPIO_MODE_ANALOG；输出脚给定电平</text>
 <rect x="24" y="424" width="912" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
 <text x="38" y="448" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">别把一格的条件当成整个模式：Standby 的 2 µA 有前提</text>
@@ -92,15 +87,15 @@
 <text x="24" y="532" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">唤醒时间不是加法：先到第一条指令，再算 PLL 锁定</text>
 <text x="24" y="562" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop · 低功耗稳压器</text>
 <rect x="220" y="552" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="220" y="552" width="151.2" height="12" fill="#1b5c45" opacity="0.8" rx="2"/>
+<rect x="220" y="552" width="45.36" height="12" fill="#1b5c45" opacity="0.8" rx="2"/>
 <text x="652" y="562" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">5.4 µs</text>
 <text x="24" y="588" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop · 主稳压器</text>
 <rect x="220" y="578" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="220" y="578" width="100.8" height="12" fill="#075e84" opacity="0.8" rx="2"/>
+<rect x="220" y="578" width="30.24" height="12" fill="#075e84" opacity="0.8" rx="2"/>
 <text x="652" y="588" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">3.6 µs</text>
 <text x="24" y="614" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Sleep</text>
 <rect x="220" y="604" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>
-<rect x="220" y="604" width="50.4" height="12" fill="#5b3a8c" opacity="0.8" rx="2"/>
+<rect x="220" y="604" width="15.12" height="12" fill="#5b3a8c" opacity="0.8" rx="2"/>
 <text x="652" y="614" font-size="10.5" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">1.8 µs</text>
 <text x="24" y="640" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Standby（走复位）</text>
 <rect x="220" y="630" width="420" height="12" fill="#f1f5f7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1.5"/>

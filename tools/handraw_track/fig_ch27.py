@@ -107,19 +107,19 @@ def tcp_framing():
     # header sketch
     f.rect(96, 250, 560, 372, color=BLUE, fill=WHITE)
     rows = [
-        ("magic 0x534E", "先确认这是我们的协议", BLUE_D),
+        ("magic 0x534E", "先确认是我们的协议", BLUE_D),
         ("ver + type", "版本与消息类型", BLUE_D),
-        ("payload_len", "网络字节序；先读长度再收体", GREEN_D),
-        ("sequence", "业务序号，回执可对账", GREEN_D),
+        ("payload_len", "网络字节序；先读长度", GREEN_D),
+        ("sequence", "业务序号，回执对账", GREEN_D),
         ("payload", "…", INK),
-        ("CRC32", "TLS 也不能替代业务校验", AMBER_STROKE),
+        ("CRC32", "TLS 也不能替代校验", AMBER_STROKE),
     ]
     yy = 286
     for name, note, c in rows:
         f.rect(120, yy, 232, 42, color=c, fill=WHITE)
         f.text(236, yy + 30, name, size=23, color=c, anchor="middle",
                weight="bold")
-        f.text(580, yy + 30, note, size=21, color=MUTED, anchor="middle")
+        f.text(510, yy + 30, note, size=20, color=MUTED, anchor="middle")
         yy += 55
     # right notes
     f.multi(880, 300, ["应用协议至少定义：", "魔数 / 版本 / 长度", "类型 / 序号 / 完整性",
@@ -157,12 +157,58 @@ def backoff():
     return f
 
 
+def pbuf_chain():
+    f = Fig("ch27-pbuf-chain", "pbuf 是所有权：链上走，引用跟着走 / pbuf is ownership")
+    # top: one message split across a chain
+    f.text(W / 2, 128, "应用想发的「HELLO WORLD 123」，lwIP 交出来的可能是一条 pbuf 链",
+           size=25, color=MUTED, anchor="middle")
+    chain = [("pbuf 1", "HE", GREEN_D), ("pbuf 2", "LLO ", BLUE_D),
+             ("pbuf 3", "WORLD 123", AMBER_STROKE)]
+    x = 96
+    for i, (name, data, c) in enumerate(chain):
+        f.rect(x, 152, 300, 128, color=c, fill=WHITE)
+        f.text(x + 150, 190, name, size=26, color=c, anchor="middle",
+               weight="bold")
+        f.text(x + 150, 240, f"payload「{data}」", size=23, color=INK,
+               anchor="middle")
+        if i < 2:
+            f.arrow(x + 306, 216, x + 366, 216, color=INK, bend=0.0, head=13)
+            f.text(x + 336, 198, "next", size=20, color=MUTED, anchor="middle")
+        x += 360
+    f.text(W / 2, 322, "想当一段连续内存用就先拷出来；直接引用就把链走完",
+           size=24, color=INK, anchor="middle")
+    # left: reference rules
+    f.rect(96, 356, 560, 260, color=GREEN, fill=WHITE)
+    f.htext(376, 396, "引用规则", size=27, color=GREEN_D, anchor="middle",
+            weight="bold")
+    f.multi(126, 442, ["收到 pbuf：你持有一份引用，数据活着",
+                       "转手（交给别的任务/队列）：",
+                       "　引用跟着走，别再替它 free",
+                       "自己用完：pbuf_free() 一次，恰好一次"],
+            size=24, color=INK, lh=37)
+    # right: two failure modes
+    f.rect(680, 356, 376, 260, color=RED, fill=WHITE)
+    f.htext(868, 396, "两种死法", size=27, color=RED, anchor="middle",
+            weight="bold", hl=True)
+    f.multi(708, 442, ["漏 free：几小时后堆耗尽，",
+                       "　新连接建不起来",
+                       "多 free：当场崩，",
+                       "　现场是无辜的路过代码"],
+            size=24, color=INK, lh=37)
+    f.panel(96, 640, 960, 84, AMBER_FILL)
+    f.rect(96, 640, 960, 84, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 692, "谁持引用谁负责 free——交出去就别再碰", size=28, color=INK,
+           anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
     "ch27-rmii-signals": rmii_signals,
     "ch27-cache-dma": cache_dma,
     "ch27-api-context": api_context,
     "ch27-tcp-framing": tcp_framing,
     "ch27-backoff": backoff,
+    "ch27-pbuf-chain": pbuf_chain,
 }
 
 if __name__ == "__main__":

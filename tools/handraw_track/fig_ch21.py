@@ -148,12 +148,48 @@ def nrst_boot0():
     return f
 
 
+def minimal_five():
+    f = Fig("ch21-minimal-five", "最小系统五件事 / measure these before blaming code")
+    # 中间的芯片
+    f.rect(460, 320, 232, 180, color=INK, fill=WHITE)
+    f.htext(576, 396, "STM32F103C8T6", size=24, color=INK, anchor="middle",
+            weight="bold")
+    f.text(576, 434, "LQFP48", size=19, color=MUTED, anchor="middle")
+    blocks = [
+        ("电源", "3.3 V 进每一对 VDD/VSS，", "封装上每一对都要接，不能空着", GREEN_D, 84, 140, 360),
+        ("去耦", "100 nF × 每个 VDD + 10 µF；", "VDDA 单独滤波，缺了 ADC 跳", BLUE_D, 724, 140, 360),
+        ("复位", "NRST：10 kΩ 上拉 + 100 nF", "到地 + 按键；悬空易误复位", AMBER_STROKE, 84, 320, 360),
+        ("BOOT", "BOOT0 用 10 kΩ 下拉；", "BOOT0 = 0 从主闪存启动", RED, 724, 320, 360),
+        ("晶振", "8 MHz HSE + 负载电容；", "32.768 kHz LSE 焊盘留给 RTC", MUTED, 84, 500, 360),
+    ]
+    targets = {(84, 140): 352, (724, 140): 352, (84, 320): 406,
+               (724, 320): 406, (84, 500): 470}
+    for name, l1, l2, c, bx, by, bw in blocks:
+        f.rect(bx, by, bw, 92, color=c, fill=WHITE)
+        f.text(bx + 18, by + 36, name, size=25, color=c, weight="bold")
+        f.text(bx + 18, by + 64, l1, size=18, color=INK)
+        f.text(bx + 18, by + 86, l2, size=18, color=INK)
+        tx = targets[(bx, by)]
+        if bx < 400:
+            f.arrow(bx + bw + 4, by + 46, 464, tx, color=c, bend=0.10, sw=2.6,
+                    head=11)
+        else:
+            f.arrow(bx - 4, by + 46, 688, tx, color=c, bend=-0.10, sw=2.6,
+                    head=11)
+    f.panel(84, 632, 984, 78, AMBER_FILL)
+    f.rect(84, 632, 984, 78, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 682, "板子不工作：先量这五样，再怀疑你的程序", size=27,
+           color=INK, anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
     "ch21-board-compare": board_compare,
     "ch21-vdd-3v3": vdd_3v3,
     "ch21-usb-ttl": usb_ttl,
     "ch21-hse-load": hse_load,
     "ch21-nrst-boot0": nrst_boot0,
+    "ch21-minimal-five": minimal_five,
 }
 
 if __name__ == "__main__":

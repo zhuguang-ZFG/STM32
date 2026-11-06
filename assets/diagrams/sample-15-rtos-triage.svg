@@ -5,220 +5,225 @@
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RTOS 三岔口：调度器、栈的单位、优先级方向</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RTOS 排错：先确认启动，再核对栈与优先级</text>
 <text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 15 · FreeRTOS Kernel V11.3.2</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">15</text>
-<text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先看时基：内核和 HAL 不能抢同一只 SysTick</text>
+<text x="24" y="82" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">本例时基分工：内核用 SysTick，HAL 用 TIM4</text>
 <rect x="24" y="92" width="300" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="38" y="112" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SysTick · 1 ms</text>
-<text x="38" y="130" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">归内核：一个 tick 一个格</text>
+<text x="38" y="112" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SysTick · 1000 Hz</text>
+<text x="38" y="130" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">内核计时：1 tick = 1 ms</text>
 <rect x="340" y="92" width="300" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="354" y="112" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">TIM4 · HAL 时基</text>
-<text x="354" y="130" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">本例程的 SYS → Timebase</text>
+<text x="354" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">TIM4 · HAL 时基</text>
+<text x="354" y="130" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CubeMX：SYS → Timebase Source</text>
 <rect x="656" y="92" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="670" y="112" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">两边都占 SysTick</text>
-<text x="670" y="130" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HAL_Delay 卡住不返回</text>
-<rect x="24" y="158" width="300" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="670" y="112" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">若 HAL_Delay 卡住</text>
+<text x="670" y="130" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先查 HAL tick 是否还在递增</text>
+<rect x="24" y="158" width="300" height="290" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
 <rect x="24" y="158" width="300" height="5" fill="#8f2d2d" opacity="1" rx="2"/>
-<text x="38" y="188" font-size="13.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 任务不动</text>
-<text x="38" y="208" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">vTaskStartScheduler() 不返回</text>
+<text x="38" y="188" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① 任务不动</text>
+<text x="38" y="210" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动后应切到任务，不再返回 main</text>
 <circle cx="46" cy="230" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
 <text x="46" y="234" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<text x="62" y="234" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 被两边共用</text>
-<text x="62" y="249" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYS 改成 TIM4</text>
-<circle cx="46" cy="265" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="46" y="269" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<text x="62" y="269" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">移植层选了 ARM_CM4F</text>
-<text x="62" y="284" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">M3 无 FPU → 启动即 HardFault</text>
-<circle cx="46" cy="300" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="46" y="304" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
-<text x="62" y="304" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">xTaskCreate 返回 pdFAIL</text>
-<text x="62" y="319" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">堆 10240 字节不够分</text>
-<rect x="36" y="356" width="276" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="48" y="376" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针：调度器启动前逐个看返回值</text>
-<text x="48" y="392" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">三块任务栈都从这 10240 字节里出</text>
-<rect x="336" y="158" width="300" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="62" y="234" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 被两边共用</text>
+<text x="62" y="254" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYS 改成 TIM4</text>
+<circle cx="46" cy="277" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="46" y="281" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="62" y="281" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">移植层选了 ARM_CM4F</text>
+<text x="62" y="301" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">M3 无 FPU → 启动即 HardFault</text>
+<circle cx="46" cy="324" r="8" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="46" y="328" font-size="9.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="62" y="328" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">xTaskCreate 返回 pdFAIL</text>
+<text x="62" y="348" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">检查 10240 字节堆的剩余容量</text>
+<rect x="36" y="396" width="276" height="40" fill="#f1f5f7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="48" y="416" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动前逐个检查任务创建返回值</text>
+<text x="48" y="432" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动函数返回：再查内核任务分配</text>
+<rect x="336" y="158" width="300" height="290" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
 <rect x="336" y="158" width="300" height="5" fill="#7a4e00" opacity="1" rx="2"/>
-<text x="350" y="188" font-size="13.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 一 printf 就 HardFault</text>
+<text x="350" y="188" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② 打印后 HardFault：查栈</text>
 <text x="350" y="208" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">xTaskCreate depth 的单位是字（4 B）</text>
-<rect x="352" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="220" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="233" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="246" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="259" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="272" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="285" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="298" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="352" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="369" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="386" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="403" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="420" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="437" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="454" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="471" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="488" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="505" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="522" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="539" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="556" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="573" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="590" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<rect x="607" y="311" width="15.5" height="11.5" fill="#e5f3f8" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
-<text x="352" y="338" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">128 格，一格 4 字节 = 512 字节</text>
-<text x="352" y="354" font-size="10.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当成 128 字节来给：只剩 32 格</text>
-<rect x="352" y="360" width="542.5" height="7" fill="#7a4e00" opacity="1" rx="2"/>
-<rect x="896" y="360" width="1632" height="7" fill="#8f2d2d" opacity="0.35" rx="2"/>
-<text x="352" y="388" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">剩下的 96 格被调用链和中断嵌套吃掉 → 溢出</text>
-<rect x="648" y="158" width="300" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<rect x="352" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="369" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="386" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="403" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="420" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="437" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="454" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="471" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="488" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="505" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="522" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="539" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="556" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="573" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="590" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="607" y="222" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="352" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="369" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="386" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="403" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="420" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="437" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="454" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="471" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="488" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="505" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="522" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="539" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="556" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="573" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="590" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="607" y="239" width="15.5" height="15.5" fill="#7a4e00" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1"/>
+<rect x="352" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="256" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="352" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="273" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="352" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="290" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="352" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="307" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="352" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="324" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="352" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="369" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="386" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="403" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="420" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="437" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="454" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="471" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="488" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="505" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="522" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="539" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="556" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="573" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="590" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<rect x="607" y="341" width="15.5" height="15.5" fill="#fbfaf7" opacity="1" rx="2" stroke="#d7dce1" stroke-width="1"/>
+<text x="352" y="372" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">128 格，一格 4 字节 = 512 字节</text>
+<text x="352" y="388" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">当成 128 字节来给：只剩 32 格</text>
+<rect x="352" y="394" width="68" height="7" fill="#7a4e00" opacity="1" rx="2"/>
+<rect x="420" y="394" width="204" height="7" fill="#8f2d2d" opacity="0.35" rx="2"/>
+<text x="352" y="414" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">深色 32 格 = 128 B，少分配了 96 格</text>
+<text x="352" y="432" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">是否溢出：看栈水位与溢出钩子</text>
+<rect x="648" y="158" width="300" height="290" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
 <rect x="648" y="158" width="300" height="5" fill="#5b3a8c" opacity="1" rx="2"/>
-<text x="662" y="188" font-size="13.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 优先级方向反了</text>
+<text x="662" y="188" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 核对优先级方向</text>
 <text x="662" y="208" font-size="10" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x50 = 5 &lt;&lt; (8 − 4)</text>
-<text x="664" y="230" font-size="10" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">任务优先级：数值大 = 急</text>
+<text x="664" y="230" font-size="12.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">任务优先级：数值大，优先运行</text>
 <line x1="664" y1="236" x2="932" y2="236" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <line x1="784" y1="236" x2="926" y2="236" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <polygon points="932.00,236.00 926.00,239.00 926.00,233.00" fill="#075e84" opacity="1"/>
-<text x="664" y="264" font-size="10" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NVIC 抢占：数值小 = 急</text>
+<text x="664" y="264" font-size="12.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">NVIC 抢占：数值小，优先响应</text>
 <line x1="664" y1="270" x2="932" y2="270" stroke="#7a4e00" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <line x1="812" y1="270" x2="670" y2="270" stroke="#7a4e00" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
 <polygon points="664.00,270.00 670.00,267.00 670.00,273.00" fill="#7a4e00" opacity="1"/>
 <rect x="664" y="284" width="60" height="22" fill="#8f2d2d" opacity="0.28" rx="4"/>
 <text x="694" y="299" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">0–4</text>
-<text x="734" y="299" font-size="10" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">禁区：不许调 FromISR</text>
+<text x="734" y="299" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">禁止调用 FromISR</text>
 <rect x="878" y="284" width="30" height="22" fill="#e5f3f8" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
 <text x="893" y="299" font-size="11" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
-<text x="662" y="324" font-size="10" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x50 = 5 &lt;&lt; 4 → EXTI0 抢占填 5</text>
-<text x="662" y="344" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">优先级反转：二值信号量没继承，换互斥量</text>
-<text x="662" y="362" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针：GPIO 翻转量最长等待，两种锁各测一次</text>
-<text x="662" y="384" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数值进了 0–4：中断里一调 FromISR 就停 configASSERT</text>
-<text x="24" y="430" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">10240 字节堆怎么分：三块任务栈 + 剩余</text>
-<rect x="24" y="442" width="45" height="30" fill="#075e84" opacity="0.85" rx="4"/>
-<text x="46.5" y="462" font-size="10" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">LED 512 B</text>
-<rect x="69" y="442" width="67.5" height="30" fill="#1b5c45" opacity="0.85" rx="4"/>
-<text x="102.75" y="462" font-size="10" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">KEY 768 B</text>
-<rect x="136.5" y="442" width="90" height="30" fill="#7a4e00" opacity="0.85" rx="4"/>
-<text x="181.5" y="462" font-size="10" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">UART 1024 B</text>
-<rect x="226.5" y="442" width="697.5" height="30" fill="#5e6872" opacity="0.25" rx="4"/>
-<text x="575.25" y="462" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">空闲 7936 B</text>
-<text x="24" y="490" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">三块任务栈 2304 B；xTaskCreate 返回 pdFAIL 时先看这里，而不是先加栈</text>
-<text x="24" y="508" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">周期为什么是 13 ms 而不是 10 ms</text>
-<rect x="24" y="520" width="430" height="34" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<rect x="24" y="520" width="99.2308" height="34" fill="#7a4e00" opacity="0.8" rx="4"/>
-<text x="30" y="542" font-size="10" fill="#fbfaf7" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">干活 3 ms</text>
-<text x="131.231" y="542" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelay(10) = 10 ms</text>
-<text x="466" y="542" font-size="11" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">= 13 ms</text>
-<rect x="24" y="564" width="330.769" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<rect x="24" y="564" width="330.769" height="30" fill="#1b5c45" opacity="0.25" rx="4"/>
-<text x="30" y="584" font-size="10" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelayUntil：从上一次醒来算，仍是 10 ms</text>
-<text x="466" y="584" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">= 10 ms</text>
-<text x="24" y="614" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">内核只按 tick 记时间：1000 Hz 就是 1 ms 一格，比 1 ms 更短的期限它保证不了。</text>
-<rect x="24" y="630" width="900" height="34" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="38" y="652" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这三条都改完才轮到调优：先用 TIM4 起调度器，再按字核栈，最后按数值 5 设中断。</text>
+<text x="662" y="328" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">本例 EXTI0 填 5：0x50 = 5 &lt;&lt; 4</text>
+<text x="662" y="352" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0–4 中调 FromISR：触发 configASSERT</text>
+<text x="662" y="382" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">若是优先级反转：比较二值信号量与互斥量</text>
+<text x="662" y="403" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">互斥量有优先级继承；用 GPIO 量最长等待</text>
+<text x="662" y="431" font-size="11.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数值 5 适用本例的 4 位 NVIC 优先级配置</text>
+<text x="24" y="480" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">10240 字节堆：先扣三块任务栈，再计算其他开销</text>
+<rect x="24" y="492" width="45" height="30" fill="#075e84" opacity="0.85" rx="4"/>
+<rect x="69" y="492" width="67.5" height="30" fill="#1b5c45" opacity="0.85" rx="4"/>
+<rect x="136.5" y="492" width="90" height="30" fill="#7a4e00" opacity="0.85" rx="4"/>
+<rect x="226.5" y="492" width="697.5" height="30" fill="#5e6872" opacity="0.25" rx="4"/>
+<text x="575.25" y="512" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">尚未扣除其他开销：7936 B</text>
+<rect x="24" y="533" width="12" height="12" fill="#075e84" opacity="1" rx="2"/>
+<text x="44" y="544" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LED 512 B</text>
+<rect x="204" y="533" width="12" height="12" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="224" y="544" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">KEY 768 B</text>
+<rect x="384" y="533" width="12" height="12" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="404" y="544" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">UART 1024 B</text>
+<text x="24" y="570" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">栈合计 2304 B；7936 B 还要放 TCB、队列、内核任务及分配开销，并非实际空闲堆。</text>
+<text x="24" y="610" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">工作 3 ms，再延时 10 tick：周期会累积工作时间</text>
+<rect x="24" y="622" width="430" height="34" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="24" y="622" width="99.2308" height="34" fill="#7a4e00" opacity="0.8" rx="4"/>
+<text x="30" y="644" font-size="12" fill="#fbfaf7" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">工作 3 ms</text>
+<text x="131.231" y="644" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelay(10) = 10 ms</text>
+<text x="466" y="644" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">约 13 ms</text>
+<rect x="24" y="666" width="330.769" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="24" y="666" width="330.769" height="30" fill="#1b5c45" opacity="0.25" rx="4"/>
+<text x="30" y="686" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">vTaskDelayUntil：按上次计划唤醒时刻算</text>
+<text x="466" y="686" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">目标周期 10 ms</text>
+<text x="24" y="716" font-size="12.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">图示忽略 tick 相位与调度抖动；1000 Hz 下，延时 API 的分辨率为 1 ms。</text>
+<rect x="24" y="732" width="900" height="34" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="38" y="754" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">验证顺序：创建返回值 → 任务实际运行 → 栈水位 → 中断优先级 → 实测周期与最长等待。</text>
 <line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。优先级、FromISR 与堆语义来自 FreeRTOS Kernel V11.3.2；栈、TIM4 与任务优先级来自本仓库 freertos-task。</text>
 <text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>

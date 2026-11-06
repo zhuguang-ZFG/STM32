@@ -872,113 +872,134 @@ def rtos_tick():
     return g
 
 def stop_wake_gif():
-    """Wake from Stop, move the clock from 8 MHz back to 72 MHz, then mark 115200.
-
-    The failed baud and the other Stop cell stay on the static SVG.
-    """
-    g = Gif(W, H, delay=12)
+    """An HSE/PLL example: wake on HSI, restore and verify clocks, then transmit."""
+    g = Gif(W, H, delay=90)
+    paper, panel = (251, 250, 247), (241, 245, 247)
+    ink, muted = (23, 32, 42), (94, 104, 114)
+    blue, green, grid = (30, 77, 99), (27, 92, 69), (215, 220, 225)
     stages = [
-        ("STOP", True, False, False, False, False),
-        ("WAKE ON HSI", True, True, False, False, False),
-        ("8 MHz", True, True, True, False, False),
-        ("PLL ON", True, True, True, True, False),
-        ("72 MHz", True, True, True, True, True),
-        ("115200", True, True, True, True, True),
+        ("STOP", "OFF", "CPU SLEEPS"),
+        ("WAKE ON HSI", "HSI 8 MHz", "RESTORE CLOCKS"),
+        ("WAIT HSE", "HSI 8 MHz", "CHECK HSERDY"),
+        ("WAIT PLL", "HSI 8 MHz", "CHECK PLLRDY"),
+        ("SWITCH SYSCLK", "PLL 72 MHz", "CONFIRM SWS=PLL"),
+        ("UART READY", "PLL 72 MHz", "TX 115200"),
     ]
-    for index, (line, stop, wake, hsi, pll, uart) in enumerate(stages):
+    labels = ["STOP", "HSI", "HSE", "PLL", "SWS", "TX"]
+    for index, (state, clock, action) in enumerate(stages):
         c = Canvas(W, H)
-        chrome(c, "STOP WAKE", "HSI", "AUX GIF  115200")
-        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if stop else C.STROKE)
-        c.text("STOP", 55, 58, C.CYAN if stop else C.DIM, 1)
-        c.text("LP REG", 45, 84, C.TEXT if stop else C.DIM, 1)
-        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if wake else C.STROKE)
-        c.text("WAKE", 210, 58, C.GREEN if wake else C.DIM, 1)
-        c.text("PA0/RTC", 190, 84, C.TEXT if wake else C.DIM, 1)
-        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if hsi else C.STROKE)
-        c.text("HSI", 365, 58, C.AMBER if hsi else C.DIM, 1)
-        c.text("8 MHz", 350, 84, C.TEXT if hsi else C.DIM, 1)
-        c.panel(16, 126, 210, 36, C.PANEL, C.VIOLET if pll else C.STROKE)
-        c.text("PLL 72 MHz" if pll else "PLL OFF", 28, 140, C.TEXT if pll else C.DIM, 1)
-        c.panel(250, 126, 210, 36, C.PANEL2 if uart else C.PANEL, C.STROKE)
-        c.text("UART 115200" if uart else "UART HOLD", 262, 140, C.TEXT if uart else C.DIM, 1)
-        c.text("0x271", 16, 180, C.MUTED, 1)
-        c.text(line, 16, 206, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 16, 228, C.MUTED, 1)
-        c.text("8 MHz THEN 72 MHz", 16, 252, C.GREEN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 274, C.DIM, 1)
+        c.fill_rect(0, 0, W, H, paper)
+        c.fill_rect(0, 0, W, 30, panel)
+        c.text("STOP WAKE", 16, 11, blue, 1)
+        c.text("STM32F103", 386, 11, muted, 1)
+        for n, label in enumerate(labels):
+            x = 16 + n * 76
+            active = n == index
+            c.panel(x, 46, 66, 28, (237, 244, 238) if active else panel,
+                    green if active else grid, 2 if active else 1)
+            c.text_c(label, x + 33, 56, green if active else muted, 1)
+            if n < 5:
+                c.line(x + 68, 59, x + 73, 59, muted)
+                c.line(x + 71, 57, x + 73, 59, muted)
+                c.line(x + 71, 61, x + 73, 59, muted)
+        c.text(state, 16, 96, ink, 2)
+        c.text("SYSCLK", 16, 128, muted, 1)
+        c.text(clock, 16, 146, blue, 2)
+        c.text(action, 16, 177, green, 1)
+        c.panel(300, 94, 164, 104, panel, grid)
+        c.text("USART1 TX", 316, 110, muted, 1)
+        c.text("SEND" if index == 5 else "HOLD", 316, 134,
+               green if index == 5 else muted, 2)
+        c.text("BRR=0x271", 316, 161, ink, 1)
+        c.text("PCLK2=72 MHz" if index >= 4 else "WAIT CLOCKS", 316, 180, muted, 1)
+        c.hline(16, 214, 448, grid)
+        c.text("HSI 8 MHz -> HSE READY -> PLL READY", 16, 228, ink, 1)
+        c.text("SW=PLL; WAIT SWS=PLL; THEN TX 115200", 16, 246, ink, 1)
+        c.text("EXAMPLE: HSE 8 MHz, PLL x9, APB2 /1", 16, 264, muted, 1)
+        c.text("SEQUENCE ONLY - NOT A TIMING MEASUREMENT", 16, 286, muted, 1)
         g.add(c)
     return g
 
 def cfsr_read_gif():
-    """Read CFSR, see bit 15 set, then let 72 counts finish 1 us.
-
-    A clear bit 15 and a cycle delta of 0 stay on the static SVG.
-    """
-    g = Gif(W, H, delay=12)
-    stages = [
-        ("READ CFSR", True, False, False, False),
-        ("0xE000ED28", True, True, False, False),
-        ("bit 15 = 1", True, True, True, False),
-        ("COUNT 24", True, True, True, True),
-        ("COUNT 72", True, True, True, True),
-        ("1 us", True, True, True, True),
-    ]
-    for index, (line, cfsr, addr, bit, dwt) in enumerate(stages):
+    """BFAR validity and an independent 72 MHz DWT count, displayed side by side."""
+    g = Gif(W, H, delay=70)
+    paper, panel = (251, 250, 247), (241, 245, 247)
+    ink, muted = (23, 32, 42), (94, 104, 114)
+    blue, green, grid = (30, 77, 99), (27, 92, 69), (215, 220, 225)
+    for count in (0, 12, 24, 48, 60, 72):
         c = Canvas(W, H)
-        chrome(c, "CFSR", "DWT", "AUX GIF  1 us")
-        c.panel(16, 42, 210, 70, C.PANEL, C.CYAN if cfsr else C.STROKE)
-        c.text("CFSR", 90, 58, C.CYAN if cfsr else C.DIM, 1)
-        c.text("0xE000ED28" if addr else "READ", 40, 84, C.TEXT if cfsr else C.DIM, 1)
-        c.panel(250, 42, 210, 70, C.PANEL, C.GREEN if bit else C.STROKE)
-        c.text("BFARVALID", 290, 58, C.GREEN if bit else C.DIM, 1)
-        c.text("bit 15 = 1" if bit else "PENDING", 290, 84, C.TEXT if bit else C.DIM, 1)
-        c.panel(16, 126, 444, 36, C.PANEL2 if dwt else C.PANEL, C.STROKE)
-        dlabel = "72 COUNTS = 1 us" if index >= 5 else ("COUNT 72" if index == 4 else ("COUNT 24" if index == 3 else "DWT IDLE"))
-        c.text(dlabel, 28, 140, C.TEXT if dwt else C.DIM, 1)
-        c.text("72 MHz", 16, 180, C.MUTED, 1)
-        c.text(line, 16, 206, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 16, 228, C.MUTED, 1)
-        c.text("bit 15 = 1", 16, 252, C.GREEN, 1)
-        c.text("72 COUNTS = 1 us", 16, 274, C.CYAN, 1)
-        c.text("PRINT THE MISS ON THE STATIC SVG", 16, 294, C.DIM, 1)
+        c.fill_rect(0, 0, W, H, paper)
+        c.fill_rect(0, 0, W, 30, panel)
+        c.text("FAULT ADDRESS  |  CYCLE COUNT", 16, 11, blue, 1)
+        c.vline(239, 46, 214, grid)
+        c.text("CFSR", 16, 50, blue, 2)
+        c.text("0xE000ED28", 16, 79, muted, 1)
+        c.text("bit 15 = 1", 16, 105, green, 1)
+        c.text("BFARVALID", 16, 123, green, 1)
+        c.line(97, 140, 97, 153, green)
+        c.line(93, 149, 97, 153, green)
+        c.line(101, 149, 97, 153, green)
+        c.text("BFAR", 16, 165, blue, 2)
+        c.text("0xE000ED38", 16, 194, muted, 1)
+        c.text("VALID ADDRESS", 16, 215, ink, 1)
+        c.text("IF NOT VALID: DO NOT USE BFAR", 16, 246, muted, 1)
+
+        c.text("DWT", 258, 50, green, 2)
+        c.text("DEMCR.TRCENA=1", 258, 79, muted, 1)
+        c.text("DWT.CYCCNTENA=1", 258, 97, muted, 1)
+        c.text("72 MHz - CYCLE DELTA", 258, 123, ink, 1)
+        c.text(f"{count:02d} / 72", 258, 148, green, 2)
+        c.panel(258, 178, 206, 18, panel, grid)
+        if count:
+            c.fill_rect(260, 180, round(202 * count / 72), 14, green)
+        c.text("72 COUNTS = 1 us", 258, 215, ink, 1)
+        c.text("SEPARATE FROM FAULT", 258, 246, muted, 1)
+        c.hline(16, 274, 448, grid)
+        c.text("SCHEMATIC - NOT A BOARD RECORDING", 16, 286, muted, 1)
         g.add(c)
     return g
 
 def boot0_low():
-    """Pin 44 is 0 and the probe sits on pins 34 and 37.
-
-    The high BOOT pin and an optimizer edit stay on the static SVG.
-    """
-    g = Gif(W, H, delay=12)
+    """BOOT0 Flash-entry example, separate from SWD electrical readiness."""
+    g = Gif(W, H, delay=90)
+    paper, panel = (251, 250, 247), (241, 245, 247)
+    ink, muted = (23, 32, 42), (94, 104, 114)
+    blue, green, grid = (30, 77, 99), (27, 92, 69), (215, 220, 225)
     stages = [
-        ("PA13 SWDIO", True, False, False, False, False),
-        ("PA14 SWCLK", True, True, False, False, False),
-        ("GND COMMON", True, True, True, False, False),
-        ("3.3 V SENSE", True, True, True, True, False),
-        ("BOOT0 PIN44", True, True, True, True, True),
-        ("BOOT0 = 0", True, True, True, True, True),
+        ("RESET RELEASE", "BOOT PINS MUST BE STABLE"),
+        ("SAMPLE BOOT", "4TH SYSCLK RISING EDGE"),
+        ("FLASH ALIAS", "0x08000000 ALSO AT 0x0"),
+        ("READ MSP", "FIRST WORD AT 0x00000000"),
+        ("READ RESET", "SECOND WORD AT 0x00000004"),
+        ("CHECK IMAGE", "VALID MSP + THUMB VECTOR"),
     ]
-    for index, (line, io, clk, gnd, vcc, boot) in enumerate(stages):
+    for index, (state, detail) in enumerate(stages):
         c = Canvas(W, H)
-        chrome(c, "BOOT0", "SWD", "AUX GIF  TARGET")
-        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if io else C.STROKE)
-        c.text("PA13", 56, 58, C.CYAN if io else C.DIM, 1)
-        c.text("pin 34", 40, 84, C.TEXT if io else C.DIM, 1)
-        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if clk else C.STROKE)
-        c.text("PA14", 208, 58, C.GREEN if clk else C.DIM, 1)
-        c.text("pin 37", 192, 84, C.TEXT if clk else C.DIM, 1)
-        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if boot else C.STROKE)
-        c.text("BOOT0", 350, 58, C.AMBER if boot else C.DIM, 1)
-        c.text("pin 44", 348, 84, C.TEXT if boot else C.DIM, 1)
-        c.panel(16, 126, 220, 36, C.PANEL2 if gnd else C.PANEL, C.STROKE)
-        c.text("GND SHARED" if gnd else "GND ?", 28, 140, C.TEXT if gnd else C.DIM, 1)
-        c.panel(248, 126, 212, 36, C.PANEL, C.GREEN if vcc else C.STROKE)
-        c.text("3.3 V SENSE" if vcc else "VCC ?", 260, 140, C.TEXT if vcc else C.DIM, 1)
-        c.text(line, 16, 190, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
-        c.text("BOOT0 = 0", 16, 240, C.GREEN, 1)
-        c.text("TARGET SEEN AT 0x08000000", 16, 262, C.CYAN, 1)
-        c.text("PRINT HIGH BOOT ON THE STATIC SVG", 16, 284, C.DIM, 1)
+        c.fill_rect(0, 0, W, H, paper)
+        c.fill_rect(0, 0, W, 30, panel)
+        c.text("BOOT ENTRY  |  SWD CONNECTION", 16, 11, blue, 1)
+        c.text("pin 44: BOOT0 = 0; BOOT1 ANY", 16, 47, green, 1)
+        c.text(state, 16, 70, blue, 2)
+        c.text(detail, 16, 99, ink, 1)
+        for n in range(6):
+            c.fill_rect(16 + n * 38, 120, 28, 5, green if n == index else grid)
+        c.text("FLASH 0x08000000 -> ALIAS 0x0", 16, 151, ink, 1)
+        c.text("0x00000000 -> MSP", 16, 178, green if index == 3 else ink, 1)
+        c.text("0x00000004 -> RESET VECTOR", 16, 201, green if index == 4 else ink, 1)
+        c.text("RESET VECTOR bit 0 = 1", 16, 224, ink, 1)
+        c.text("BOOT PINS DO NOT VALIDATE CODE", 16, 251, muted, 1)
+        c.vline(266, 43, 222, grid)
+        c.text("SWD CHECK", 284, 48, blue, 1)
+        c.text("pin 34: PA13", 284, 78, ink, 1)
+        c.text("SWDIO", 284, 95, muted, 1)
+        c.text("pin 37: PA14", 284, 121, ink, 1)
+        c.text("SWCLK", 284, 138, muted, 1)
+        c.text("GND + VDD/VTref", 284, 164, ink, 1)
+        c.text("NRST / PROBE SETTINGS", 284, 187, muted, 1)
+        c.text("READING CHIP ID", 284, 224, ink, 1)
+        c.text("IS NOT RUNNING APP", 284, 251, muted, 1)
+        c.hline(16, 274, 448, grid)
+        c.text("SEQUENCE ONLY - NOT A BOARD RECORDING", 16, 286, muted, 1)
         g.add(c)
     return g
 

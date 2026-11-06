@@ -282,80 +282,82 @@ def nvic_interrupt_flow() -> Svg:
 
 
 def debug_swo() -> Svg:
-    s = Svg(W, H, "调试与跟踪：SWD + SWO/ITM", "不用串口也能 printf，还能定位 HardFault")
+    s = Svg(W, H, "SWD 双向调试，SWO 单向跟踪",
+            "STM32F103 · SWDIO 传数据，SWCLK 给时钟；跟踪字符另走 PB3")
     s.header(tag="17 调试", tag_color=T.ORANGE)
 
-    # 左：连线
-    s.rect(40, 82, 420, 250, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    s.text(58, 108, "接线（4 线 SWD + 1 线 SWO）", size=13, fill=T.TEXT,
-           weight="600")
-    s.rect(62, 130, 110, 170, fill=T.PANEL2, stroke=T.CYAN, rx=8)
-    s.text(117, 154, "ST-Link", size=13, anchor="middle", fill=T.CYAN,
-           weight="600")
-    s.text(117, 174, "调试器", size=11, anchor="middle", fill=T.MUTED)
-    s.rect(310, 130, 130, 170, fill=T.PANEL2, stroke=T.GREEN, rx=8)
-    s.text(375, 154, "STM32", size=13, anchor="middle", fill=T.GREEN,
-           weight="600")
-    s.text(375, 174, "Cortex-M", size=11, anchor="middle", fill=T.MUTED)
-    wires = [("SWCLK", T.BLUE, 188), ("SWDIO", T.CYAN, 210),
-             ("SWO", T.AMBER, 232), ("NRST", T.RED, 254),
-             ("GND", T.MUTED, 276)]
-    for name, color, y in wires:
-        s.line(172, y, 310, y, stroke=color, sw=2)
-        s.text(241, y - 6, name, size=10.5, anchor="middle", fill=color,
-               mono=True)
-        s.circle(292 if name == "SWO" else 180, y, 3.4, fill=color,
-                 cls=None if name == "GND" else f"w{name}")
-    s.text(58, 314, "SWO=PB3，方向是 MCU → 调试器；必须共地。廉价 ST-Link 常没接 SWO",
-           size=11, fill=T.AMBER)
-    s.add_style(
-        "@keyframes swd-run{0%{transform:translateX(0);opacity:0}"
-        "15%{opacity:1}85%{opacity:1}100%{transform:translateX(110px);opacity:0}}"
-        "@keyframes swo-run{0%{transform:translateX(0);opacity:0}"
-        "15%{opacity:1}85%{opacity:1}100%{transform:translateX(-110px);opacity:0}}"
-        ".wSWDIO{animation:swd-run 1.6s linear infinite;}"
-        ".wSWCLK{animation:swd-run 1.6s linear infinite .4s;}"
-        ".wSWO{animation:swo-run 1.2s linear infinite .2s;}"
-        ".wNRST{animation:swd-run 2s linear infinite .8s;}"
-    )
-
-    # 右：ITM 输出
-    s.rect(480, 82, 380, 250, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(498, 108, "ITM 输出（SWV Console）", size=13, fill=T.TEXT, weight="600")
-    s.code(498, 136, [
-        "ITM_SendChar('T');        // 重定向 printf",
-        "",
-        "T=25.4C  adc=1024",
-        "T=25.6C  adc=1031",
-        "T=25.6C  adc=1028",
-        "T=25.7C  adc=1035",
-    ], size=11.5, lh=18, color=T.GREEN, cls="itm")
-    s.add_style(
-        "@keyframes itm-fade{0%,10%{opacity:.15}40%,100%{opacity:1}}"
-        ".itm{animation:itm-fade 3s linear infinite;}"
-    )
-    s.text(498, 300, "异步 SWO 常见 2 MHz（约 2 Mbit/s，不是 2 MB/s）", size=11,
-           fill=T.MUTED)
-    s.text(498, 320, "比 UART 少占一个串口，且不干扰被测程序时序", size=11,
-           fill=T.MUTED)
-
-    # 下：HardFault 定位
-    s.title_block(40, 364, "HardFault 四步定位法", color=T.RED)
-    steps = [
-        ("① CFSR / HFSR", "0xE000ED28 / ED2C", "总线、用法还是取指错误"),
-        ("② BFAR / MMFAR", "0xE000ED38 / ED34", "非法访问落到哪个地址"),
-        ("③ 反查 PC", "栈帧 PC → addr2line", "对应到哪一行 C"),
-        ("④ 常见原因", "空指针 / 栈溢出", "越界、递归、中断里用浮点"),
+    # SWD is bidirectional data plus a probe-driven clock. Neither reset nor
+    # voltage reference is a stream of debug packets.
+    s.rect(40, 88, 180, 227, fill=T.PANEL2, stroke=T.BLUE, rx=4, sw=2)
+    s.rect(680, 88, 180, 227, fill=T.PANEL, stroke=T.STROKE, rx=4, sw=2)
+    s.text(56, 113, "STM32F103", size=17, fill=T.BLUE, weight="700")
+    s.text(56, 133, "目标板 · Cortex-M3", size=12, fill=T.MUTED)
+    s.text(696, 113, "调试探针", size=17, weight="700")
+    s.text(696, 133, "需支持 SWO 接收", size=12, fill=T.MUTED)
+    wires = [
+        (167, "PA13", "SWDIO", "数据 · 双向", T.BLUE, "both"),
+        (199, "PA14", "SWCLK", "时钟 · 探针输出", T.BLUE, "left"),
+        (231, "NRST", "nRESET", "低有效复位 · 可选连接", T.RED, "reset"),
+        (263, "VDD", "VTref", "目标电压参考 · 非探针供电输出", T.MUTED, "right"),
+        (295, "GND", "GND", "共地", T.MUTED, "none"),
     ]
-    for i, (t, sub, note) in enumerate(steps):
-        x = 40 + i * 206
-        s.rect(x, 376, 196, 82, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(x + 14, 400, t, size=12.5, fill=T.TEXT, weight="700")
-        s.text(x + 14, 420, sub, size=10.5, mono=True, fill=T.CYAN)
-        s.text(x + 14, 442, note, size=10, fill=T.MUTED)
-        if i < 3:
-            s.arrow(x + 198, 417, x + 204, 417, color=T.STROKE, sw=2, head=5)
-    s.footer("DWT->CYCCNT 可做微秒级计时：使能 DWT_CTRL 后读 CYCCNT，比 HAL_GetTick 精确 1000 倍")
+    for y, pin, port, role, color, direction in wires:
+        s.text(204, y + 4, pin, size=14, mono=True, anchor="end", fill=color)
+        s.text(696, y + 4, port, size=14, mono=True, fill=color)
+        s.text(450, y - 10, role, size=13, anchor="middle", fill=color)
+        if direction == "both":
+            s.arrow(450, y, 222, y, color=color, sw=2)
+            s.arrow(450, y, 678, y, color=color, sw=2)
+        elif direction in ("left", "reset"):
+            s.arrow(678, y, 222, y, color=color, sw=2,
+                    dash="5 5" if direction == "reset" else None)
+        elif direction == "right":
+            s.arrow(222, y, 678, y, color=color, sw=1.5)
+        else:
+            s.line(222, y, 678, y, stroke=color, sw=1.5)
+    s.text(40, 339, "SWD 调试通道与下面的 SWO 输出通道分开；SWO 不占用 USART。",
+           size=14, fill=T.BLUE)
+
+    # A software trace byte follows the same five labelled stages in every
+    # frame. The moving dot denotes order, not measured link latency.
+    s.line(40, 356, 860, 356, stroke=T.GRID, sw=1)
+    s.text(40, 384, "一个字符怎样到达 SWV 控制台", size=17, weight="700", fill=T.GREEN)
+    stages = [
+        (40, 132, "固件", "写入字符 'A'"),
+        (218, 132, "ITM", "Port 0"),
+        (396, 132, "TPIU", "打包与串行输出"),
+        (574, 132, "PB3", "TRACESWO"),
+        (752, 108, "探针→主机", "SWV：'A'"),
+    ]
+    for i, (x, width, label, note) in enumerate(stages):
+        s.rect(x, 405, width, 64, fill=T.PANEL, stroke=T.GREEN, rx=4, sw=1.5)
+        s.text(x + width / 2, 432, label, size=17, anchor="middle",
+               fill=T.GREEN, weight="700")
+        s.text(x + width / 2, 453, note, size=12, anchor="middle", fill=T.MUTED)
+        s.line(x + width / 2, 470, x + width / 2, 493, stroke=T.GREEN, sw=1)
+        if i < len(stages) - 1:
+            s.arrow(x + width + 4, 437, stages[i + 1][0] - 4, 437,
+                    color=T.GREEN, sw=2, head=6)
+    s.arrow(106, 493, 806, 493, color=T.GREEN, sw=1.5, head=6)
+    s.circle(106, 493, 5, fill=T.GREEN, cls="trace-byte")
+    s.text(40, 528, "先配置 ITM、异步 TRACE 与 PB3；主机接收设置须与稳定的 HCLK、SWO 分频匹配。",
+           size=13, fill=T.MUTED)
+    s.text(40, 552, "printf 需重定向到 ITM；写日志有开销，等待或丢弃取决于输出实现与接收状态。",
+           size=13, fill=T.MUTED)
+    s.add_style(
+        "@keyframes trace-byte{"
+        "0%,8%{transform:translateX(0);opacity:1}"
+        "22%,28%{transform:translateX(178px);opacity:1}"
+        "42%,48%{transform:translateX(356px);opacity:1}"
+        "62%,68%{transform:translateX(534px);opacity:1}"
+        "82%,92%{transform:translateX(700px);opacity:1}"
+        "97%,100%{transform:translateX(700px);opacity:0}}"
+        ".trace-byte{animation:trace-byte 6.4s linear infinite;}"
+        "@media(prefers-reduced-motion:reduce){"
+        ".trace-byte{animation:none!important;display:none}}"
+        "@media print{.trace-byte{animation:none!important;display:none}}"
+    )
+    s.footer(note="点的移动仅表示传输顺序", label="自绘矢量动画 · 原理示意 / 非实拍")
     return s
 
 

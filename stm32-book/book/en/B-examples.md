@@ -68,7 +68,7 @@ The four rows above match clocks and bit time. These three are in the third tabl
 
 <p align="center">
   <img src="../../../assets/illustrations/handraw/app-b-delivery.png" width="760" alt="Handraw: delivery record fields (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Part/tools/wiring/expected/actual/boundary/reproduce; compiling is not done. Not a photo.</sub>
+  <br><sub>▲ Record the part, tools, wiring, expected and observed results, limits, and reproduction steps. Compilation alone does not complete the experiment. Hand-drawn checklist, not a photo.</sub>
 </p>
 Keep one table in your own lab notes:
 

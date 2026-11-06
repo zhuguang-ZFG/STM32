@@ -41,6 +41,11 @@ One application. The bootloader starts at `0x08000000` for 16 KB, the parameter 
 
 The A/B dual-slot update seen online needs a second `0xB800` image: `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, past `0x08010000`, so it does not fit on the C8. Chapter 12 has one application slot. A real dual-slot scheme would cut the 46 KB into two 23 KB slots and shrink the application to match, which is a different design. Flash ends at `0x08010000`. See [DS5319](#source-ds5319-swd).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-ab-partition.png" width="760" alt="Handraw: the single-slot and A/B dual-slot flash maps drawn to the same scale (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: two flash bars at the same scale — the top one is chapter 12's single-slot map (Boot 16 K + parameters 2 K + app 46 K = 64 K, ending exactly at 0x08010000); the bottom one is the online A/B dual-slot, where slot B starts at 0x08010000 — exactly where the flash ends — and runs to 0x0801B800 entirely off-chip. What it proves: 16 + 2 + 46 + 46 = 110 KB does not fit; do the address arithmetic before drawing the memory map. What it does not prove: this is capacity arithmetic, not image verification or rollback policy, and not a linker-map screenshot. Source: [DS5319](#source-ds5319-swd).</sub>
+</p>
+
 `64 * 1024 = 65536`. SRAM on the C8 is 20 KB, which is 20480 bytes. 65536 is larger than 20480. So a 64 KB sample buffer in the logic-analyzer project does not link on the C8. Shrink it to a dozen KB or so, or move to a chip with more SRAM and check its datasheet.
 
 The denominator is 4096. Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. The conversion is the one from chapter 09. See [RM0008 ADC](#source-rm0008-adc).

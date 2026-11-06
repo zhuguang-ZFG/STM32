@@ -70,6 +70,11 @@ The next figure puts four power boundaries that are easy to conflate on one page
 </p>
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch25-power-domains.png" width="760" alt="Handraw: the D1/D2/D3 domains with VCAP, VDD33USB, and PDR_ON (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: inside the chip, D1, D2, and D3 each get a cell with the note that each can have its clock gated or its power cut separately; on the right, three pins — VCAP1/2 point at the core regulator, VDD33USB pin 95 is USB-only, and PDR_ON pin 143 governs brownout reset. What it proves: separately switchable domains are the first structural difference from F1/F4. What it does not prove: a structural sketch gives no capacitor values and replaces no board schematic; for current figures go to the electrical characteristics. Source: [RM0433](#source-rm0433).</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/illustrations/handraw/ch25-pin-compare.png" width="760" alt="Handraw: F1/F4 vs H7 pins (原理示意)">
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pin 1 is PE2; VCAP1=71, VCAP2=106 with external caps; pin 95 VDD33USB; pin 143 PDR_ON; pin 138 BOOT0; CAN is FDCAN, not bxCAN; not a photo.</sub>
 </p>

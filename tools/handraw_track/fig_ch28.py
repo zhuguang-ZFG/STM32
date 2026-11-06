@@ -155,8 +155,8 @@ def three_times():
     for i, (t1, t2) in enumerate(rules):
         x = bx0 + i * (bw + gap)
         f.rect(x, 560, bw, 128, color=GREEN, fill=WHITE)
-        f.multi(x + 24, 604, [t1], size=25, color=GREEN_D, weight="bold")
-        f.multi(x + 24, 646, [t2], size=22, color=INK)
+        f.multi(x + 24, 604, [t1], size=21, color=GREEN_D, weight="bold")
+        f.multi(x + 24, 648, [t2], size=20, color=INK)
     return f
 
 
@@ -188,12 +188,51 @@ def fault_triage():
     return f
 
 
+
+def wdg_supervisor():
+    f = Fig("ch28-wdg-supervisor", "看门狗由健康监督者喂 / one supervisor, all epochs")
+    # 左：三个任务各自汇报 epoch
+    f.text(96, 140, "epoch 是工作进度计数：做完有效工作才加一，每个任务按自己的期限检查", size=21,
+           color=MUTED)
+    tasks = [("任务 A（采样）", GREEN_D), ("任务 B（协议）", BLUE_D),
+             ("任务 C（存储）", AMBER_STROKE)]
+    y = 168
+    for index, (name, c) in enumerate(tasks):
+        f.rect(96, y, 340, 76, color=c, fill=WHITE)
+        f.text(116, y + 46, name, size=22, color=c, weight="bold")
+        f.rect(330, y + 22, 84, 34, color=c, fill=WHITE, sw=1.8)
+        f.text(372, y + 45, ("12→13", "7→8", "25→26")[index], size=16, color=INK, anchor="middle")
+        y += 92
+    f.arrow(440, 300, 560, 300, color=INK, bend=0.06)
+    # 中：监督任务
+    f.rect(566, 170, 330, 260, color=GREEN_D, fill=WHITE)
+    f.htext(731, 210, "监督任务", size=26, color=GREEN_D, anchor="middle",
+            weight="bold")
+    f.multi(590, 252, ["按各任务期限检查进度，", "再看队列、内存和状态机；", "全部健康才刷新 IWDG"], size=20,
+            color=INK, lh=32)
+    f.arrow(731, 434, 731, 486, color=GREEN_D, bend=0.0, head=11)
+    f.rect(600, 492, 262, 56, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(731, 528, "IWDG 刷新", size=22, color=GREEN_D, anchor="middle",
+           weight="bold")
+    # 右：假健康
+    f.rect(924, 170, 132, 260, color=RED, fill=WHITE)
+    f.multi(990, 210, ["假健康：", "B 已卡住，", "A 或中断", "仍在喂狗"], size=19,
+            color=RED, lh=30, anchor="middle")
+    f.panel(96, 600, 960, 82, AMBER_FILL)
+    f.rect(96, 600, 960, 82, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 632, "任一关键任务超期未前进：停止喂狗，尽力保存最小摘要",
+           size=23, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 665, "摘要写入也有截止点；写入失败不妨碍看门狗复位",
+           size=19, color=INK, anchor="middle")
+    return f
+
 FIGS = {
     "ch28-four-concepts": four_concepts,
     "ch28-os-compare": os_compare,
     "ch28-owner-task": owner_task,
     "ch28-three-times": three_times,
     "ch28-fault-triage": fault_triage,
+    "ch28-wdg-supervisor": wdg_supervisor,
 }
 
 if __name__ == "__main__":

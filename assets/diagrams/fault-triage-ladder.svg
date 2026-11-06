@@ -11,14 +11,14 @@
 <text x="808" y="33.32" font-size="12" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">17 故障 · IG-008</text>
 <rect x="24" y="104" width="150" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
 <text x="42" y="135" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">1</text>
-<text x="99" y="162" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">冻结现场</text>
-<text x="99" y="192" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">禁中断 · 不继续运行</text>
+<text x="99" y="162" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">保存快照</text>
+<text x="99" y="192" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">地址先于 VALID 位</text>
 <line x1="177" y1="164" x2="191" y2="164" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="197.00,164.00 191.00,167.00 191.00,161.00" fill="#075e84" opacity="1"/>
 <rect x="200" y="104" width="150" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
 <text x="218" y="135" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">2</text>
-<text x="275" y="162" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">读栈帧</text>
-<text x="275" y="192" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PC / LR / xPSR</text>
+<text x="275" y="162" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">核对栈帧</text>
+<text x="275" y="192" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">EXC_RETURN / 入栈错误</text>
 <line x1="353" y1="164" x2="367" y2="164" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="373.00,164.00 367.00,167.00 367.00,161.00" fill="#075e84" opacity="1"/>
 <rect x="376" y="104" width="150" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
@@ -44,7 +44,7 @@
 <text x="60" y="364" font-size="10.2" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IMPRECISERR</text>
 <text x="180" y="364" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">异步写错误：PC 可能只是后来位置</text>
 <text x="60" y="390" font-size="10.2" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">BFARVALID</text>
-<text x="180" y="390" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">置位后才读取 BFAR</text>
+<text x="180" y="390" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">置位才使用已保存的 BFAR</text>
 <text x="60" y="416" font-size="10.2" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">FORCED</text>
 <text x="180" y="416" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可配置 Fault 被升级到 HardFault</text>
 <rect x="568" y="274" width="294" height="178" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>

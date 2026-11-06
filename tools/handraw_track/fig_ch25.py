@@ -141,12 +141,44 @@ def pinmux():
     return f
 
 
+
+def power_domains():
+    f = Fig("ch25-power-domains", "H7 的三个电源域 / D1 · D2 · D3, switched apart")
+    f.text(96, 138, "芯片内部分成 D1、D2、D3 三个电源域，可以分别关时钟或断电", size=22,
+           color=MUTED)
+    # 芯片框
+    f.rect(96, 164, 700, 400, color=INK, fill=WHITE, sw=2.6)
+    domains = [("D1", "CPU 与 AXI 一侧", GREEN_D, 128, 196),
+               ("D2", "外设总线一侧", BLUE_D, 128, 320),
+               ("D3", "低功耗一侧", AMBER_STROKE, 128, 444)]
+    for name, note, c, x, y in domains:
+        f.rect(x, y, 260, 100, color=c, fill=WHITE, sw=2.2)
+        f.text(x + 130, y + 44, name, size=27, color=c, anchor="middle",
+               weight="bold")
+        f.text(x + 130, y + 78, note, size=18, color=MUTED, anchor="middle")
+        f.text(470, y + 56, "↔ 可单独关时钟或断电", size=19, color=INK)
+    # 右侧三只脚
+    pins = [("VCAP1/2", "指向内核稳压器", GREEN_D, 164),
+            ("VDD33USB", "第 95 脚，USB 专用", BLUE_D, 318),
+            ("PDR_ON", "第 143 脚，掉电复位", RED, 472)]
+    for name, note, c, y in pins:
+        f.rect(840, y, 252, 110, color=c, fill=WHITE, sw=2.2)
+        f.text(966, y + 44, name, size=23, color=c, anchor="middle",
+               weight="bold")
+        f.text(966, y + 80, note, size=17, color=INK, anchor="middle")
+    f.panel(96, 604, 996, 76, AMBER_FILL)
+    f.rect(96, 604, 996, 76, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 650, "结构关系示意：不给出电容值，也不替代目标板原理图；要电流去电气特性",
+           size=23, color=INK, anchor="middle", weight="bold")
+    return f
+
 FIGS = {
     "ch25-part-id": part_id,
     "ch25-pin-compare": pin_compare,
     "ch25-rev-vos": rev_vos,
     "ch25-clock-math": clock_math,
     "ch25-pinmux": pinmux,
+    "ch25-power-domains": power_domains,
 }
 
 if __name__ == "__main__":

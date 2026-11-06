@@ -457,6 +457,19 @@ class BookBuildContractTests(unittest.TestCase):
         untouched = self.builder.semanticize_figures("<p>plain</p>")
         self.assertEqual("<p>plain</p>", untouched)
 
+    def test_semanticize_figures_renders_caption_code_and_links(self) -> None:
+        rendered = (
+            '<p align="center"><img src="a.svg"><br>'
+            '<sub>▲ 先看 `CAN_MCR.NART`，参见 [RM0008](#source-rm0008). '
+            '<a href="https://example.com">现有链接</a>；`[literal](#keep)`。</sub></p>'
+        )
+        converted = self.builder.semanticize_figures(rendered)
+        self.assertIn('<code>CAN_MCR.NART</code>', converted)
+        self.assertIn('<a href="#source-rm0008">RM0008</a>', converted)
+        self.assertNotIn('](#source-', converted)
+        self.assertIn('<a href="https://example.com">现有链接</a>', converted)
+        self.assertIn('<code>[literal](#keep)</code>', converted)
+
     def test_english_book_mode_drops_serial_footer_lines(self) -> None:
         raw = """# 00 Title
 
@@ -697,7 +710,6 @@ class BookBuildContractTests(unittest.TestCase):
         from playwright.sync_api import sync_playwright
 
         with tempfile.TemporaryDirectory() as tmp:
-            output = self.builder.build_html(Path(tmp))
             candidates = self.builder._browser_candidates(None)
             launch_args = {"headless": True}
             if candidates:
@@ -710,16 +722,19 @@ class BookBuildContractTests(unittest.TestCase):
                         is_mobile=True,
                         color_scheme="light",
                     )
-                    page.goto(output.resolve().as_uri(), wait_until="load")
-                    page.wait_for_function(
-                        "Array.from(document.images).every(img => img.complete && img.naturalWidth > 0)"
-                    )
-                    overflow = page.evaluate(
-                        "document.documentElement.scrollWidth - document.documentElement.clientWidth"
-                    )
+                    for language, manifest in (("zh", "manifest.json"), ("en", "manifest-en.json")):
+                        with self.subTest(language=language):
+                            output = self.builder.build_html(Path(tmp), BOOK_DIR / manifest)
+                            page.goto(output.resolve().as_uri(), wait_until="load")
+                            page.wait_for_function(
+                                "Array.from(document.images).every(img => img.complete && img.naturalWidth > 0)"
+                            )
+                            overflow = page.evaluate(
+                                "document.documentElement.scrollWidth - document.documentElement.clientWidth"
+                            )
+                            self.assertEqual(0, overflow)
                 finally:
                     browser.close()
-        self.assertEqual(0, overflow)
 
     def test_mobile_wide_tables_scroll_without_crushing_columns(self) -> None:
         from playwright.sync_api import sync_playwright

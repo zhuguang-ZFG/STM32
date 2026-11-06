@@ -67,6 +67,7 @@ class BookAuditTests(unittest.TestCase):
         chapter = self.by_id["19"]
         assets = (
             "peripheral-wiring.svg",
+            "ch19-ab-partition.png",
             "sample-19-slot-fill-flow.svg",
             "sample-19-flash-fit.svg",
             "ch19-flash-fit.png",
@@ -134,6 +135,7 @@ class BookAuditTests(unittest.TestCase):
                 "ch05-pwm-1khz.png", "pwm-1khz.gif", "sample-05-timebase-math.svg",
                 "ch05-timebase-math.png", "sample-05-shadow-regs.svg", "ch05-shadow-regs.png",
                 "timer-modes.svg", "sample-05-pwm-debug.svg", "ch05-pwm-debug.png",
+                "ch05-capture-pulse.png",
                 "pwm-breath.gif", "sample-05-deadtime.svg", "ch05-deadtime.png",
             ),
         }
@@ -150,7 +152,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "06": (
 
-                "uart-frame.svg", "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
+                "uart-frame.svg", "ch06-ore-fe.png", "sample-06-ore-overwrite-flow.svg",
+                "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
                 "ch06-uart-frame.png", "uart-idle.gif", "sample-06-frame-annotated.svg",
                 "uart-bits.gif", "sample-06-baud-formula.svg", "ch06-baud-formula.png",
                 "sample-06-baud-triage.svg", "ch06-baud-triage.png", "sample-06-tx-rx-crossover.svg",
@@ -167,7 +170,8 @@ class BookAuditTests(unittest.TestCase):
             "08": (
 
                 "spi-transfer.svg", "sample-08-spi-jedec-flow.svg", "sample-08-spi-jedec.svg",
-                "ch08-spi-jedec.png", "spi-jedec.gif", "sample-08-mode0-edges.svg",
+                "ch08-spi-jedec.png", "spi-jedec.gif", "ch08-byte-exchange.png",
+                "sample-08-mode0-edges.svg",
                 "sample-08-cpha-modes.svg", "ch08-cpha-modes.png", "sample-08-br-table.svg",
                 "ch08-br-table.png", "sample-08-nss-multi.svg", "ch08-nss-multi.png",
                 "sample-08-bus-compare.svg", "sample-08-spi-triage.svg", "ch08-spi-triage.png",
@@ -182,7 +186,8 @@ class BookAuditTests(unittest.TestCase):
             ),
             "10": (
 
-                "dma-circular.svg", "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
+                "dma-circular.svg", "ch10-channel-map.png",
+                "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
                 "ch10-dma-cndtr.png", "dma-cndtr.gif", "sample-10-mem2mem-vs-peri.svg",
                 "ch10-mem2mem-vs-peri.png", "sample-10-dma-triage.svg", "ch10-dma-triage.png",
                 "sample-10-dma-phases.svg", "ch10-dma-phases.png", "dma-buffer-ownership.svg",
@@ -202,7 +207,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "11": (
 
-                "iwdg-window.svg", "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
+                "iwdg-window.svg", "ch11-wwdg-window.png", "sample-11-wwdg-window-flow.svg",
+                "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
                 "ch11-iwdg-1s.png", "iwdg-1s.gif", "sample-11-backup-domain.svg",
                 "ch11-backup-domain.png", "sample-11-wdg-compare.svg", "ch11-wdg-compare.png",
                 "sample-11-iwdg-math.svg", "ch11-iwdg-math.png", "watchdog-reset-evidence.svg",
@@ -219,7 +225,8 @@ class BookAuditTests(unittest.TestCase):
             "13": (
 
                 "can-arbitration.svg", "sample-13-can-arb-flow.svg", "sample-13-can-bit.svg",
-                "ch13-can-bit.png", "can-500k.gif", "sample-13-bit-quanta.svg",
+                "ch13-can-bit.png", "can-500k.gif", "ch13-arb-ladder.png",
+                "sample-13-bit-quanta.svg",
                 "ch13-bit-quanta.png", "sample-13-filter-fifo.svg", "ch13-filter-fifo.png",
                 "sample-13-can-triage.svg", "ch13-can-triage.png", "sample-13-tec-busoff.svg",
                 "ch13-tec-busoff.png",
@@ -238,7 +245,8 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "14": (
 
-                "usb-enumeration.svg", "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
+                "usb-enumeration.svg", "ch14-enum-checklist.png",
+                "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
                 "ch14-usb-enum.png", "usb-48m.gif", "sample-14-usbpre-48.svg",
                 "ch14-usbpre-48.png", "sample-14-pma-map.svg", "ch14-pma-map.png",
                 "usb-enumeration-zh.gif", "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
@@ -249,7 +257,7 @@ class BookAuditTests(unittest.TestCase):
                 "freertos-scheduler.svg", "sample-15-rtos-tick-flow.svg", "sample-15-rtos-prio.svg",
                 "ch15-rtos-prio.png", "rtos-tick.gif", "sample-15-task-states.svg",
                 "ch15-task-states.png", "rtos-deadline-budget.svg", "ch15-deadline-budget.png",
-                "ch15-prio-inherit.png", "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
+                "ch15-prio-inherit.png", "ch15-psp-msp.png", "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
                 "ch15-fromisr.png", "sample-15-rtos-triage.svg", "rtos-startup-gates.svg",
             ),
         }
@@ -274,7 +282,8 @@ class BookAuditTests(unittest.TestCase):
             ),
             "17": (
 
-                "debug-swo.svg", "sample-17-cfsr-flow.svg", "sample-17-cfsr.svg",
+                "debug-swo.svg", "ch17-bp-comparators.png",
+                "sample-17-cfsr-flow.svg", "sample-17-cfsr.svg",
                 "ch17-cfsr.png", "cfsr-read.gif", "sample-17-swd-pins.svg",
                 "ch17-swd-pins.png", "sample-17-obs-compare.svg", "ch17-obs-compare.png",
                 "sample-17-cfsr-bits.svg", "ch17-cfsr-bits.png", "fault-triage-ladder.svg",
@@ -297,13 +306,15 @@ class BookAuditTests(unittest.TestCase):
 
                 "toolchain-flow.svg", "sample-18-boot0-flow.svg", "sample-18-boot-triage.svg",
                 "ch18-boot-triage.png", "boot0-low.gif", "sample-18-link-map.svg",
-                "ch18-link-map.png", "sample-18-hardfault-ladder.svg", "ch18-hardfault-ladder.png",
+                "ch18-link-map.png", "ch18-multi-def.png",
+                "sample-18-hardfault-ladder.svg", "ch18-hardfault-ladder.png",
                 "sample-18-faq-compare.svg", "ch18-faq-compare.png", "sample-18-uart-garbled.svg",
                 "ch18-uart-garbled.png",
             ),
             "19": (
 
-                "peripheral-wiring.svg", "sample-19-slot-fill-flow.svg", "sample-19-flash-fit.svg",
+                "peripheral-wiring.svg", "ch19-ab-partition.png",
+                "sample-19-slot-fill-flow.svg", "sample-19-flash-fit.svg",
                 "ch19-flash-fit.png", "one-slot.gif", "sample-19-pick-ladder.svg",
                 "ch19-pick-ladder.png", "dma-buffer-ownership.svg", "iap-acceptance-gates.svg",
                 "ch19-iap-gates.png", "network-debug-ladder.svg", "rtos-startup-gates.svg",
@@ -315,7 +326,8 @@ class BookAuditTests(unittest.TestCase):
                 "project-structure.svg", "sample-20-evidence-flow.svg", "sample-20-lookup-flow.svg",
                 "sample-20-manual-names.svg", "ch20-manual-names.png", "manual-choice-map.svg",
                 "ch20-manual-choice.png", "sample-20-lib-compare.svg", "ch20-lib-compare.png",
-                "firmware-stack-choice.svg", "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
+                "firmware-stack-choice.svg", "ch20-manual-route.png",
+                "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
                 "single-build-contract.svg", "sample-20-evidence-triage.svg", "ch20-evidence-triage.png",
             ),
             "21": (
@@ -326,11 +338,12 @@ class BookAuditTests(unittest.TestCase):
                 "f4-discovery.svg", "f103zet6-dev.svg", "pinout-bluepill.svg",
                 "sample-21-usb-ttl.svg", "ch21-usb-ttl.png", "peripheral-wiring.svg",
                 "sample-21-power-swd.svg", "sample-21-hse-load.svg", "ch21-hse-load.png",
-                "sample-21-nrst-boot0.svg", "ch21-nrst-boot0.png",
+                "ch21-minimal-five.png", "sample-21-nrst-boot0.svg", "ch21-nrst-boot0.png",
             ),
             "22": (
 
-                "toolchain-flow.svg", "sample-22-sim-pick-flow.svg", "simulator-comparison.svg",
+                "toolchain-flow.svg", "ch22-sim-verdict.png",
+                "sample-22-sim-pick-flow.svg", "simulator-comparison.svg",
                 "ch22-sim-compare.png", "sample-22-wokwi-scope.svg", "ch22-wokwi-scope.png",
                 "simulation-model-boundary.svg", "sample-22-renode-path.svg", "ch22-renode-path.png",
                 "sample-22-sim-triage.svg", "ch22-sim-triage.png", "sample-22-hw-gap.svg",
@@ -352,6 +365,7 @@ class BookAuditTests(unittest.TestCase):
             "23": (
 
                 "pinout-stm32g071rb-lqfp64.svg", "ch23-part-id.png", "pinout-bluepill.svg",
+                "ch23-g0-f1-compare.png",
                 "sample-23-boot0-swclk.svg", "sample-23-boot-latch.svg", "ch23-boot-latch.png",
                 "g0-boot-swd.svg", "sample-23-boot-source-flow.svg", "sample-23-f1-g0-compare.svg",
                 "ch23-pin-compare.png", "sample-23-f1-copy-traps.svg", "ch23-pinmux.png",
@@ -360,13 +374,15 @@ class BookAuditTests(unittest.TestCase):
 
                 "pinout-stm32l476rg-lqfp64.svg", "ch24-part-id.png", "nucleo-f411re-embedded-world.jpg",
                 "nucleo-f401re-embedded-world.jpg", "sample-24-stop2-retain.svg", "sample-24-mode-compare.svg",
-                "ch24-modes.png", "l4-stop2-evidence.svg", "sample-24-wake-restore-flow.svg",
+                "ch24-modes.png", "ch24-sram2-retain.png",
+                "l4-stop2-evidence.svg", "sample-24-wake-restore-flow.svg",
                 "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
                 "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
             ),
             "25": (
 
                 "pinout-stm32h743zi-lqfp144.svg", "ch25-part-id.png", "h7-power-domains.svg",
+                "ch25-power-domains.png",
                 "ch25-pin-compare.png", "sample-25-voltage-scale.svg", "ch25-rev-vos.png",
                 "h7-revision-clock-decision.svg", "sample-25-hse-to-480-flow.svg", "ch25-clock-math.png",
                 "h7-clock-chain.svg", "h7-startup-evidence.svg", "h7-pinmux-conflicts.svg",
@@ -384,7 +400,8 @@ class BookAuditTests(unittest.TestCase):
             "27": (
 
                 "network-packet-journey.svg", "sample-27-rmii-checklist.svg", "ch27-rmii-signals.png",
-                "network-cache-ownership.svg", "ch27-cache-dma.png", "sample-27-tcp-framing.svg",
+                "network-cache-ownership.svg", "ch27-cache-dma.png", "ch27-pbuf-chain.png",
+                "sample-27-tcp-framing.svg",
                 "ch27-api-context.png", "sample-27-link-dhcp-flow.svg", "network-online-state.svg",
                 "tcp-byte-stream.svg", "ch27-tcp-framing.png", "sample-27-link-triage.svg",
                 "ch27-backoff.png", "network-debug-ladder.svg",
@@ -396,7 +413,9 @@ class BookAuditTests(unittest.TestCase):
                 "nucleo-f401re-embedded-world.jpg", "sample-28-isr-owner-flow.svg", "sample-28-owner-flow.svg",
                 "rtos-owner-task.svg", "ch28-owner-task.png", "sample-28-three-times.svg",
                 "rtos-deadline-budget.svg", "ch28-three-times.png", "freertos-scheduler.svg",
-                "rtos-config-paths.svg", "rtos-startup-gates.svg", "sample-28-fault-triage.svg",
+                "rtos-config-paths.svg", "rtos-startup-gates.svg", "ch28-wdg-supervisor.png",
+                "sample-28-supervisor-flow.svg",
+                "sample-28-fault-triage.svg",
                 "ch28-fault-triage.png",
             ),
         }
@@ -414,14 +433,15 @@ class BookAuditTests(unittest.TestCase):
         expected_assets = (
             "pinout-stm32l476rg-lqfp64.svg", "ch24-part-id.png", "nucleo-f411re-embedded-world.jpg",
             "nucleo-f401re-embedded-world.jpg", "sample-24-stop2-retain.svg", "sample-24-mode-compare.svg",
-            "ch24-modes.png", "l4-stop2-evidence.svg", "sample-24-wake-restore-flow.svg",
+            "ch24-modes.png", "ch24-sram2-retain.png", "l4-stop2-evidence.svg",
+            "sample-24-wake-restore-flow.svg",
             "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
             "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
         )
 
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(14, edition["pdf_visual_anchors"])
+            self.assertEqual(15, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(2, edition["photos"])
             self.assertEqual(2, edition["animations"])

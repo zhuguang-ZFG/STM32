@@ -5,8 +5,8 @@
 > Loopback can prove the bxCAN transmit/receive path, but not the transceiver, termination, or differential bus. A two-node test must also reconcile CAN_H/CAN_L, ESR counters, and receive-FIFO data.
 
 <p align="center">
-  <img src="../../assets/animations/can-arbitration.svg" width="760" alt="CAN non-destructive arbitration and bit stuffing">
-  <br><sub>▲ Animation: CAN arbitration and bit stuffing (vector drawing, not a photograph)</sub>
+  <img src="../../assets/animations/can-arbitration.svg" width="760" alt="Three CAN nodes arbitrate: 0x100 wins over 0x200 and 0x300 at bit9">
+  <br><sub>▲ Three nodes start together. The scan moves from the most significant ID bit to the least significant. At bit9, B/C send 1 but read 0 and leave arbitration; A keeps transmitting. The bus row preserves the winning frame's bits. Drawn logic animation, not a capture; stuffing is omitted and playback does not represent actual bit timing.</sub>
 </p>
 
 <!-- video:ch13 -->
@@ -75,7 +75,7 @@ The medium-density vector table names this interrupt `USB_LP_CAN_RX0`, and USB i
   <br><sub>▲ Animated version. It shows only the correct setup: eight 250 ns quanta, a 75% sample point, and 500 kbit/s. The printed book has only the static figure above.</sub>
 </p>
 
-Arbitration and bit stuffing are shown in `can-arbitration.svg` at the top of the chapter.
+The opening `can-arbitration.svg` shows bitwise arbitration; stuffing is explained below.
 
 ## Timing and state
 
@@ -155,9 +155,12 @@ A CAN frame has no recipient. It says what the message is about, and that is the
 
 ### 4. Non-destructive arbitration
 
-When several nodes start talking at once, each one listens to the bus while it sends its ID. Dominant overrides recessive, so the side whose ID has the first 0 wins. The loser notices "I sent a 1 but the bus shows 0", goes quiet at once, switches to receiving, and tries again when the bus is free. The winner is never disturbed, and not one bit of its message is damaged. The lower the ID, the higher the priority.
+When nodes with different IDs start transmitting together, each sends its ID from the most significant bit down while reading the bus. At the first differing bit, a node that sends recessive 1 but reads dominant 0 stops transmitting and becomes a receiver. The remaining contenders keep comparing bits until one sender remains. Its frame has not been corrupted: this is **non-destructive arbitration**. Among standard data frames, **a lower numeric ID has higher priority**.
 
-**Takeaway:** When several nodes start together, they arbitrate **bit by bit**. A node that sent recessive but sees dominant drops out and listens. The winner's frame is **not corrupted**. **A numerically smaller ID has higher priority.**
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-arb-ladder.png" width="760" alt="Handraw: two nodes arbitrating bit by bit, decided at bit8 (原理示意)">
+  <br><sub>▲ Here only two nodes compete: A sends 0x100, B sends 0x0F0. SOF, bit10 and bit9 match. At bit8, A sends 1 but reads 0; its later cells switch to receiving while B keeps transmitting. The ladder below gives standard data-frame ID priorities. This hand-drawn logic diagram does not establish stuffing overhead, bus length or correct termination, and is not a scope capture. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).</sub>
+</p>
 
 | Standard ID | Priority | Typical use |
 | --- | --- | --- |
@@ -166,7 +169,7 @@ When several nodes start talking at once, each one listens to the bus while it s
 | `0x500` | Middle | Status |
 | `0x7FF` | Lowest | Logs |
 
-> Arbitration happens in the arbitration field. A loser becomes a receiver and retries when the bus is idle. **That retry is not an error frame and does not burn the error counters.**
+> Losing arbitration in the arbitration field is normal competition. It causes neither an error frame nor an increase in the error counters. On bxCAN, `CAN_MCR.NART` controls automatic retransmission: with `NART=0`, a loser waits for an idle bus and competes again; with `NART=1`, hardware makes one attempt, and software must request a later transmission. See RM0008 Rev 21 §24.9.1.
 
 ### 5. Baud rate and sample point
 

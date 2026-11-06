@@ -29,62 +29,31 @@ audit_static = _common.audit_static
 
 
 def faq_compare() -> Svg:
-    canvas = Svg(
-        960,
-        880,
-        "编译链接、下载调试、外设、硬件、RTOS 五域各有第一探针，不要把五处配置一次全改",
-        "STM32F103C8T6 · chapter 18 · RM0008 / DS5319",
-    )
-    canvas.header(title="FAQ 五域对照：先问哪一把尺子", tag="18", tag_color=T.CYAN)
-    canvas.text(40, 86, "同一块板五个症状域：探针不同，证据不同，禁止混改",
-                size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "five domains · one first probe each · no shotgun config edits",
-                size=14, fill=T.CYAN)
-    canvas.text(40, 138,
-                "map 文件 → SWD 电压 → 时钟/引脚 → 3V3·NRST·BOOT0 → 栈与优先级",
-                size=13, fill=T.AMBER, mono=True)
-
-    cols = (
-        (40, "编译链接", "map / undefined", T.BLUE, "第一探针", "arm-none-eabi-nm\n看缺谁", "常见假阳性", "改了源码却\n没进链接"),
-        (220, "下载调试", "SWD 认不出", T.CYAN, "第一探针", "3V3 / NRST\nBOOT0=0", "常见假阳性", "线序对了\n但板没上电"),
-        (400, "外设", "串口乱码", T.GREEN, "第一探针", "PCLK 与 BRR\n同口径", "常见假阳性", "只改波特率\n不查时钟树"),
-        (580, "硬件", "复位连环", T.AMBER, "第一探针", "NRST 波形\n去耦电容", "常见假阳性", "换程序不\n查供电纹波"),
-        (760, "RTOS", "任务饿死", T.VIOLET, "第一探针", "uxTaskGet\nStackHighWater", "常见假阳性", "加延时掩盖\n优先级反转"),
-    )
-    for x, title, symptom, color, probe_h, probe, false_h, false in cols:
-        canvas.rect(x, 168, 168, 52, fill=T.BG2, stroke=color, rx=8)
-        canvas.text(x + 84, 190, title, size=15, fill=color, anchor="middle", weight="700")
-        canvas.text(x + 84, 210, symptom, size=11, fill=T.MUTED, anchor="middle")
-
-        canvas.rect(x, 232, 168, 150, fill=T.PANEL, stroke=color, rx=8)
-        canvas.text(x + 84, 258, probe_h, size=12, fill=color, anchor="middle", weight="700")
-        for i, line in enumerate(probe.split("\n")):
-            canvas.text(x + 84, 286 + i * 22, line, size=13, fill=T.TEXT, anchor="middle")
-        canvas.line(x + 16, 330, x + 152, 330, stroke=T.GRID, sw=1)
-        canvas.text(x + 84, 352, "一次只动一处", size=12, fill=T.MUTED, anchor="middle")
-
-        canvas.rect(x, 396, 168, 150, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        canvas.text(x + 84, 422, false_h, size=12, fill=T.RED, anchor="middle", weight="700")
-        for i, line in enumerate(false.split("\n")):
-            canvas.text(x + 84, 450 + i * 22, line, size=13, fill=T.TEXT, anchor="middle")
-        canvas.line(x + 16, 494, x + 152, 494, stroke=T.GRID, sw=1)
-        canvas.text(x + 84, 520, "证据未到先别改", size=12, fill=T.MUTED, anchor="middle")
-
-    canvas.rect(40, 568, 880, 96, fill=T.BG2, stroke=T.GREEN, rx=8)
-    canvas.text(56, 598, "读图顺序：先落域 → 只做该域第一探针 → 有证据再改一处配置 → 回看现象。",
-                size=14, fill=T.TEXT)
-    canvas.text(56, 626, "五域并排不是让你一次改五处；交叉域（例如串口乱码其实是时钟）先回外设列的时钟探针。",
-                size=13, fill=T.TEXT)
-    canvas.text(56, 650, "BOOT0 高电平进系统存储器、NRST 被拉低，都先归下载调试域，不要先怀疑应用代码。",
-                size=13, fill=T.MUTED)
-
-    canvas.rect(40, 684, 880, 72, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    canvas.text(56, 710, "底注  认不出芯片：先量 3V3 与 NRST，再确认 BOOT0=0；编译失败：先看 map 与 undefined reference。",
-                size=12, fill=T.TEXT)
-    canvas.text(56, 734, "串口乱码：PCLK 与 USART_BRR 必须同一时钟树口径；RTOS 饿死：先看栈水位与优先级，再加延时。",
-                size=12, fill=T.TEXT)
-
-    credit(canvas, "自绘。五域第一探针归纳自本章 FAQ 表与 RM0008 启动 / DS5319 NRST·SWD；不替代逐条排错正文。")
+    canvas = Svg(960, 880, "FAQ：从症状找到下一项检查", "编译链接 / 下载调试 / 外设 / 硬件 / RTOS")
+    canvas.header(tag="18", tag_color=T.CYAN)
+    canvas.text(40, 104, "保存一次失败的日志或波形，再选下面对应的一行。", size=21, fill=T.TEXT, weight="700")
+    canvas.text(40, 162, "症状", size=19, fill=T.MUTED)
+    canvas.text(316, 162, "检查什么", size=19, fill=T.MUTED)
+    canvas.text(650, 162, "读到什么才往下查", size=19, fill=T.MUTED)
+    for y, label, symptom, check, detail, evidence, next_step, color in (
+        (196, "编译链接", "未定义 / 区域溢出", "构建日志、map 与符号表", "区分缺少输入与容量不足", "缺哪个符号或哪个段超限", "再核对源文件或链接区域", T.CYAN),
+        (307, "下载调试", "SWD 读不到目标", "供电、共地、线序与 NRST", "PA13 / PA14 · 第 34 / 37 脚", "探针能否稳定读取目标 ID", "能连接后再查烧录和启动", T.BLUE),
+        (418, "外设", "USART1 收到乱码", "SWS、PPRE2 与完整 BRR", "用 PCLK2 换算波特率", "TX 位宽与接收设置是否一致", "再查接线、电平和数据格式", T.GREEN),
+        (529, "硬件", "板卡反复复位", "供电与 NRST 波形", "让波形与失败时刻对应", "电压跌落或复位脉冲", "再查负载、去耦与复位电路", T.AMBER),
+        (640, "RTOS", "某任务一直没运行", "任务状态、优先级与阻塞点", "栈水位另作内存余量检查", "任务被阻塞，还是就绪却未调度", "再查等待条件与高优先级负载", T.VIOLET),
+    ):
+        canvas.line(40, y-12, 920, y-12, stroke=T.GRID)
+        canvas.rect(40, y+2, 4, 77, fill=color)
+        canvas.text(60, y+24, label, size=21, fill=color, weight="700")
+        canvas.text(60, y+60, symptom, size=17, fill=T.TEXT)
+        canvas.text(316, y+24, check, size=17, fill=T.TEXT, weight="700")
+        canvas.text(316, y+60, detail, size=15, fill=T.MUTED)
+        canvas.arrow(598, y+36, 628, y+36, color=color)
+        canvas.text(650, y+24, evidence, size=17, fill=T.TEXT)
+        canvas.text(650, y+60, next_step, size=15, fill=T.MUTED)
+    canvas.line(40, 748, 920, 748, stroke=T.GRID)
+    canvas.text(40, 790, "BOOT 选择启动存储区；任务栈水位也不能证明任务获得了 CPU。", size=19, fill=T.TEXT)
+    credit(canvas, "自绘。FAQ 检查索引；观测结果用于缩小范围，不代表已经证明根因。")
     return canvas
 
 

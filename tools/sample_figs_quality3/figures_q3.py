@@ -292,10 +292,10 @@ def ch14_pma_map() -> Svg:
 def ch15_task_states() -> Svg:
     c = Svg(960, 880, "FreeRTOS task states", "Ready / Running / Blocked / Suspended")
     c.header(tag="15", tag_color=T.CYAN)
-    c.text(40, 86, "One Running task per core. Ready waits for the tick; Blocked waits on an object.", size=15, fill=T.TEXT, weight="700")
+    c.text(40, 86, "One Running task per core. Ready waits for CPU time; Blocked waits for time or an event.", size=15, fill=T.TEXT, weight="700")
     states = [
         ("Running", "on CPU", "highest ready", T.GREEN),
-        ("Ready", "in ready list", "waiting for tick", T.CYAN),
+        ("Ready", "in ready list", "waiting for CPU", T.CYAN),
         ("Blocked", "delay / queue / sem", "event exits block", T.AMBER),
         ("Suspended", "vTaskSuspend", "explicit only", T.VIOLET),
     ]
@@ -308,14 +308,14 @@ def ch15_task_states() -> Svg:
     c.rect(40, 290, 880, 130, fill=T.BG2, stroke=T.AMBER, rx=8)
     c.text(56, 324, "Tick = 1 ms when configTICK_RATE_HZ = 1000. Priority 2 preempts priority 1.", size=14, fill=T.AMBER, weight="700")
     c.text(56, 354, "Stack depth is in words: LED 128 words = 512 bytes (not 128 bytes).", size=13, fill=T.TEXT)
-    c.text(56, 384, "HAL SysTick fights FreeRTOS — move HAL timebase to another timer (often TIM4).", size=13, fill=T.MUTED)
+    c.text(56, 384, "This example uses SysTick for the kernel and TIM4 for HAL; sharing needs integration.", size=13, fill=T.MUTED)
     c.rect(40, 440, 880, 120, fill=T.PANEL, stroke=T.RED, rx=8)
-    c.text(56, 474, "Fail: vTaskDelay(10) drift — use vTaskDelayUntil for fixed period.", size=14, fill=T.RED, weight="700")
-    c.text(56, 504, "Fail: blocking forever in a high-priority task starves everything below.", size=13, fill=T.TEXT)
+    c.text(56, 474, "vTaskDelayUntil advances planned wake times; actual entry can still jitter.", size=14, fill=T.RED, weight="700")
+    c.text(56, 504, "A high-priority task that stays Ready can starve lower priorities; blocking frees the CPU.", size=13, fill=T.TEXT)
     c.text(56, 534, "configASSERT catches many priority / ISR API mistakes early.", size=13, fill=T.MUTED)
     c.rect(40, 580, 880, 90, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    c.text(56, 614, "State card before the tick GIF — makes Ready vs Blocked visible.", size=14, fill=T.TEXT, weight="700")
-    c.text(56, 644, "Pairs with sample-15-rtos-prio and rtos-tick.gif.", size=13, fill=T.MUTED)
+    c.text(56, 614, "An event can wake a task between two ticks; Ready does not mean waiting for a tick.", size=14, fill=T.TEXT, weight="700")
+    c.text(56, 644, "Suspended needs an explicit resume; a timeout does not resume it.", size=13, fill=T.MUTED)
     credit(c, "Hand-drawn. Task model from FreeRTOS kernel docs; numbers match chapter labs.")
     return c
 
@@ -377,10 +377,10 @@ def ch16_mode_current() -> Svg:
     c.rect(40, 440, 880, 120, fill=T.BG2, stroke=T.RED, rx=8)
     c.text(56, 474, "Do not merge Stop's 14 µA and 24 µA into a fake '20 µA' band.", size=14, fill=T.RED, weight="700")
     c.text(56, 504, "Do not call VBAT 1.4 µA 'Standby current'. IWDG keeps counting in Stop.", size=13, fill=T.TEXT)
-    c.text(56, 534, "Blue Pill LED/LDO/USB leak — µA claims need a bare minimum board.", size=13, fill=T.MUTED)
+    c.text(56, 534, "Measure LED, LDO, USB paths and probe back-power on the actual board.", size=13, fill=T.MUTED)
     c.rect(40, 580, 880, 90, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    c.text(56, 614, "Current ledger before the wake GIF — DS numbers vs board reality.", size=14, fill=T.TEXT, weight="700")
-    c.text(56, 644, "Pairs with sample-16-stop-compare and lowpower-current-evidence.", size=13, fill=T.MUTED)
+    c.text(56, 614, "Use the matching voltage, temperature and enabled-clock conditions.", size=14, fill=T.TEXT, weight="700")
+    c.text(56, 644, "Board input current also includes regulators and external loads.", size=13, fill=T.MUTED)
     credit(c, "Hand-drawn. Currents from DS5319 tables; conditions named on the card.")
     return c
 
@@ -412,20 +412,20 @@ def ch16_clock_restore() -> Svg:
     c.text(56, 504, "Second line must be clean 115200 — that is the restore evidence.", size=13, fill=T.TEXT)
     c.text(56, 534, "WKUP on Standby is rising edge on PA0 — falling edge that woke Stop may fail.", size=13, fill=T.MUTED)
     c.rect(40, 580, 880, 90, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    c.text(56, 614, "Mechanism card for §3 STOP wake — numbers match stop-wake.gif.", size=14, fill=T.TEXT, weight="700")
-    c.text(56, 644, "Knowledge track; oscilloscope current waveforms stay on the evidence figure.", size=13, fill=T.MUTED)
+    c.text(56, 614, "Mark ISR entry and clock-restore completion on two GPIOs.", size=14, fill=T.TEXT, weight="700")
+    c.text(56, 644, "Check the 0x55 bit width: 8.68 us after restore, 78.125 us at HSI 8 MHz.", size=13, fill=T.MUTED)
     credit(c, "Hand-drawn. Post-Stop clock behavior from RM0008 PWR/RCC; UART math from chapter.")
     return c
 
 
 def ch17_swd_pins() -> Svg:
     c = Svg(960, 880, "SWD debug pins", "SWDIO / SWCLK / NRST — keep them free")
-    c.header(tag="11" if False else "17", tag_color=T.CYAN)
+    c.header(tag="17", tag_color=T.CYAN)
     c.text(40, 86, "Cortex-M3 debug on F103: two-wire SWD plus reset. JTAG needs more pins.", size=15, fill=T.TEXT, weight="700")
     pins = [
         ("PA13", "SWDIO", "bidirectional data", "do not reuse casually", T.CYAN),
         ("PA14", "SWCLK", "clock from probe", "keep short wires", T.GREEN),
-        ("NRST", "reset", "under probe control", "debounce / pull-up", T.AMBER),
+        ("NRST", "reset", "probe may drive reset", "connect-under-reset recovery", T.AMBER),
         ("PB3", "SWO", "ITM trace out", "conflicts with JTDO", T.VIOLET),
     ]
     for i, (pin, name, note, warn, col) in enumerate(pins):
@@ -436,12 +436,12 @@ def ch17_swd_pins() -> Svg:
         c.text(360, y + 36, note, size=13, fill=T.TEXT)
         c.text(880, y + 36, warn, size=13, fill=T.MUTED, anchor="end")
     c.rect(40, 420, 880, 130, fill=T.BG2, stroke=T.AMBER, rx=8)
-    c.text(56, 454, "M3 hardware breakpoints: 6. Burning them on data watches eats the budget fast.", size=14, fill=T.AMBER, weight="700")
+    c.text(56, 454, "F103: 6 FPB instruction comparators; data watchpoints use separate DWT hardware.", size=14, fill=T.AMBER, weight="700")
     c.text(56, 484, "SWO printf needs DEMCR + TPIU setup; baud must match the viewer.", size=13, fill=T.TEXT)
-    c.text(56, 514, "If SWD pins become GPIO without a fallback, you brick the debug path.", size=13, fill=T.MUTED)
+    c.text(56, 514, "If firmware disables SWD, try connect-under-reset with NRST wired.", size=13, fill=T.MUTED)
     c.rect(40, 570, 880, 100, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    c.text(56, 604, "Pin card for §1 SWD vs JTAG — before the CFSR deep dive.", size=14, fill=T.TEXT, weight="700")
-    c.text(56, 634, "Knowledge track; pairs with debug-swo animation.", size=13, fill=T.MUTED)
+    c.text(56, 604, "Share GND. Connect VTref to the target voltage reference as the probe requires.", size=14, fill=T.TEXT, weight="700")
+    c.text(56, 634, "PB3 is a trace output only when trace pins are enabled; check the board routing.", size=13, fill=T.MUTED)
     credit(c, "Hand-drawn. SWD pinout from DS5319 / PM0056 debug chapter.")
     return c
 
@@ -449,12 +449,12 @@ def ch17_swd_pins() -> Svg:
 def ch17_cfsr_bits() -> Svg:
     c = Svg(960, 880, "CFSR bit map", "Read 0xE000ED28; BFARVALID is bit 15")
     c.header(tag="17", tag_color=T.AMBER)
-    c.text(40, 86, "HardFault kit: CFSR → HFSR → BFAR (only if bit 15 = 1) → stacked PC.", size=15, fill=T.TEXT, weight="700")
+    c.text(40, 86, "Save the fault snapshot before decoding CFSR or mapping a trusted stacked PC.", size=15, fill=T.TEXT, weight="700")
     rows = [
         ("CFSR", "0xE000ED28", "configurable fault status", T.CYAN),
         ("HFSR", "0xE000ED2C", "FORCED = bit 30 (0x40000000)", T.GREEN),
         ("BFAR", "0xE000ED38", "bus fault address", T.AMBER),
-        ("BFARVALID", "CFSR bit 15", "1 => BFAR is this fault", T.VIOLET),
+        ("BFARVALID", "CFSR bit 15", "1 => valid fault address", T.VIOLET),
     ]
     for i, (t, n, note, col) in enumerate(rows):
         y = 120 + i * 70
@@ -463,12 +463,12 @@ def ch17_cfsr_bits() -> Svg:
         c.text(240, y + 36, n, size=14, fill=T.TEXT, mono=True, weight="700")
         c.text(880, y + 36, note, size=13, fill=T.MUTED, anchor="end")
     c.rect(40, 420, 880, 130, fill=T.BG2, stroke=T.RED, rx=8)
-    c.text(56, 454, "bit 15 = 0: BFAR holds a stale value — do not addr2line from it.", size=14, fill=T.RED, weight="700")
-    c.text(56, 484, "DWT cycle counter: 72 counts @ 72 MHz = 1 us (enable DEMCR bit 24 first).", size=13, fill=T.TEXT)
-    c.text(56, 514, "Freeze the stacked frame before changing optimizer level or 'just resetting'.", size=13, fill=T.MUTED)
+    c.text(56, 454, "bit 15 = 0: BFAR is invalid. addr2line takes a code address, not BFAR.", size=14, fill=T.RED, weight="700")
+    c.text(56, 484, "IMPRECISERR does not update BFAR; the stacked PC may follow the bad write.", size=13, fill=T.TEXT)
+    c.text(56, 514, "STKERR / MSTKERR can leave an incomplete frame; check before using its PC.", size=13, fill=T.MUTED)
     c.rect(40, 570, 880, 100, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    c.text(56, 604, "Register card for §4 HardFault kit — pairs with cfsr-read.gif.", size=14, fill=T.TEXT, weight="700")
-    c.text(56, 634, "Addresses from PM0056; knowledge track, not a live CoreSight dump.", size=13, fill=T.MUTED)
+    c.text(56, 604, "Save BFAR/MMFAR before testing VALID; higher-priority faults can update them.", size=14, fill=T.TEXT, weight="700")
+    c.text(56, 634, "DWT is a separate test: enable TRCENA and CYCCNTENA; 72 counts at 72 MHz = 1 us.", size=13, fill=T.MUTED)
     credit(c, "Hand-drawn. CFSR/HFSR/BFAR from PM0056; 72-count timing from chapter.")
     return c
 
