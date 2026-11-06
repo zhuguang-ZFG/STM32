@@ -1,0 +1,317 @@
+{
+  "longSentence": 60,
+  "files": {
+    "docs/build/00-toolchain.md": {
+      "longShare": 8.5,
+      "avg": 36
+    },
+    "docs/build/01-four-steps.md": {
+      "longShare": 2.7,
+      "avg": 30.5
+    },
+    "docs/build/02-elf.md": {
+      "longShare": 8.4,
+      "avg": 32.2
+    },
+    "docs/build/03-linker-script.md": {
+      "longShare": 1.4,
+      "avg": 32.3
+    },
+    "docs/build/04-startup.md": {
+      "longShare": 6.7,
+      "avg": 33.9
+    },
+    "docs/build/05-map-size.md": {
+      "longShare": 8.3,
+      "avg": 32.1
+    },
+    "docs/build/06-flash-debug.md": {
+      "longShare": 17.1,
+      "avg": 40.8
+    },
+    "docs/build/07-build-system.md": {
+      "longShare": 9.5,
+      "avg": 35.2
+    },
+    "docs/c/00-c-in-mcu.md": {
+      "longShare": 16.4,
+      "avg": 38.4
+    },
+    "docs/c/01-memory-model.md": {
+      "longShare": 7,
+      "avg": 33.6
+    },
+    "docs/c/02-pointer.md": {
+      "longShare": 11.1,
+      "avg": 35.4
+    },
+    "docs/c/03-volatile.md": {
+      "longShare": 12.6,
+      "avg": 39.2
+    },
+    "docs/c/04-struct-abi.md": {
+      "longShare": 2.2,
+      "avg": 30
+    },
+    "docs/c/05-func-pointer.md": {
+      "longShare": 0,
+      "avg": 29.8
+    },
+    "docs/c/06-abi-stack.md": {
+      "longShare": 9.2,
+      "avg": 34.4
+    },
+    "docs/c/07-ub-misra.md": {
+      "longShare": 11.6,
+      "avg": 33.8
+    },
+    "docs/c/08-framed-protocol.md": {
+      "longShare": 3.2,
+      "avg": 31.1
+    },
+    "docs/esp32/00-env.md": {
+      "longShare": 5.1,
+      "avg": 30.4
+    },
+    "docs/esp32/01-arch-boot.md": {
+      "longShare": 10.5,
+      "avg": 34.6
+    },
+    "docs/esp32/02-gpio-matrix.md": {
+      "longShare": 8.1,
+      "avg": 32.7
+    },
+    "docs/esp32/03-idf-anatomy.md": {
+      "longShare": 4.8,
+      "avg": 30.2
+    },
+    "docs/esp32/04-irq-dualcore.md": {
+      "longShare": 6.9,
+      "avg": 34.1
+    },
+    "docs/esp32/05-uart-driver.md": {
+      "longShare": 12.2,
+      "avg": 35.1
+    },
+    "docs/esp32/06-spi-i2c-driver.md": {
+      "longShare": 9.5,
+      "avg": 36.5
+    },
+    "docs/esp32/07-timer-ledc.md": {
+      "longShare": 5.3,
+      "avg": 29.1
+    },
+    "docs/esp32/08-wifi.md": {
+      "longShare": 12.8,
+      "avg": 40.4
+    },
+    "docs/esp32/09-bt-espnow.md": {
+      "longShare": 16.4,
+      "avg": 40.4
+    },
+    "docs/esp32/10-flash-nvs-ota.md": {
+      "longShare": 19.8,
+      "avg": 43
+    },
+    "docs/esp32/11-lowpower.md": {
+      "longShare": 7.3,
+      "avg": 34.4
+    },
+    "docs/esp32/12-audio-path.md": {
+      "longShare": 11.9,
+      "avg": 35.3
+    },
+    "docs/esp32/13-watchdog-health.md": {
+      "longShare": 4.5,
+      "avg": 30.9
+    },
+    "docs/gd32/00-env.md": {
+      "longShare": 13.3,
+      "avg": 37.2
+    },
+    "docs/gd32/01-rcu-clock.md": {
+      "longShare": 15.6,
+      "avg": 40.4
+    },
+    "docs/gd32/02-gpio-af.md": {
+      "longShare": 16.5,
+      "avg": 42
+    },
+    "docs/gd32/03-usart.md": {
+      "longShare": 18.1,
+      "avg": 42.1
+    },
+    "docs/gd32/04-periph-diff.md": {
+      "longShare": 20.7,
+      "avg": 43
+    },
+    "docs/gd32/05-riscv-toolchain.md": {
+      "longShare": 7.8,
+      "avg": 35.3
+    },
+    "docs/gd32/06-clic-irq.md": {
+      "longShare": 17.1,
+      "avg": 42.1
+    },
+    "docs/gd32/07-rcu-108m.md": {
+      "longShare": 19,
+      "avg": 39
+    },
+    "docs/gd32/08-mtime-delay.md": {
+      "longShare": 6.1,
+      "avg": 33.6
+    },
+    "docs/gd32/09-gpio-minimal.md": {
+      "longShare": 18.1,
+      "avg": 41.6
+    },
+    "docs/rtos/compare/00-side-by-side.md": {
+      "longShare": 14.1,
+      "avg": 41.6
+    },
+    "docs/rtos/compare/01-choose.md": {
+      "longShare": 16.7,
+      "avg": 42.3
+    },
+    "docs/rtos/freertos/00-why-rtos.md": {
+      "longShare": 9.6,
+      "avg": 34.6
+    },
+    "docs/rtos/freertos/01-task-tcb.md": {
+      "longShare": 13,
+      "avg": 31
+    },
+    "docs/rtos/freertos/02-context-switch.md": {
+      "longShare": 15,
+      "avg": 39.4
+    },
+    "docs/rtos/freertos/03-scheduler.md": {
+      "longShare": 10.3,
+      "avg": 34.8
+    },
+    "docs/rtos/freertos/04-queue.md": {
+      "longShare": 9.2,
+      "avg": 34.4
+    },
+    "docs/rtos/freertos/05-sem-mutex.md": {
+      "longShare": 4.7,
+      "avg": 34.2
+    },
+    "docs/rtos/freertos/06-notify-event-timer.md": {
+      "longShare": 11,
+      "avg": 35.8
+    },
+    "docs/rtos/freertos/07-heap.md": {
+      "longShare": 10.2,
+      "avg": 30.6
+    },
+    "docs/rtos/freertos/08-port-f407.md": {
+      "longShare": 9.6,
+      "avg": 34.6
+    },
+    "docs/rtos/rtthread/00-arch.md": {
+      "longShare": 10.6,
+      "avg": 36.1
+    },
+    "docs/rtos/rtthread/01-thread-sched.md": {
+      "longShare": 11,
+      "avg": 36.7
+    },
+    "docs/rtos/rtthread/02-ipc.md": {
+      "longShare": 10.6,
+      "avg": 37.7
+    },
+    "docs/rtos/rtthread/03-mem.md": {
+      "longShare": 7.5,
+      "avg": 34.3
+    },
+    "docs/rtos/rtthread/04-device.md": {
+      "longShare": 12.8,
+      "avg": 40.9
+    },
+    "docs/rtos/rtthread/05-finsh.md": {
+      "longShare": 13.6,
+      "avg": 37.8
+    },
+    "docs/rtos/rtthread/06-env-menuconfig.md": {
+      "longShare": 13.9,
+      "avg": 36.8
+    },
+    "docs/rtos/rtthread/07-port-f407.md": {
+      "longShare": 19.3,
+      "avg": 42.3
+    },
+    "docs/stm32/00-env.md": {
+      "longShare": 2.5,
+      "avg": 30.4
+    },
+    "docs/stm32/01-arch.md": {
+      "longShare": 8.9,
+      "avg": 34.2
+    },
+    "docs/stm32/02-rcc-clock.md": {
+      "longShare": 10.5,
+      "avg": 34.8
+    },
+    "docs/stm32/03-gpio.md": {
+      "longShare": 7.1,
+      "avg": 30.7
+    },
+    "docs/stm32/04-nvic-exti.md": {
+      "longShare": 16.4,
+      "avg": 43.8
+    },
+    "docs/stm32/05-systick.md": {
+      "longShare": 7,
+      "avg": 34
+    },
+    "docs/stm32/06-tim.md": {
+      "longShare": 10.9,
+      "avg": 36.4
+    },
+    "docs/stm32/07-usart.md": {
+      "longShare": 2.6,
+      "avg": 29.8
+    },
+    "docs/stm32/08-dma.md": {
+      "longShare": 6.1,
+      "avg": 31.7
+    },
+    "docs/stm32/09-adc.md": {
+      "longShare": 5.7,
+      "avg": 32.6
+    },
+    "docs/stm32/10-dac.md": {
+      "longShare": 8.5,
+      "avg": 37.7
+    },
+    "docs/stm32/11-i2c.md": {
+      "longShare": 12.6,
+      "avg": 34.6
+    },
+    "docs/stm32/12-spi.md": {
+      "longShare": 18.8,
+      "avg": 41
+    },
+    "docs/stm32/13-flash-iap.md": {
+      "longShare": 12.4,
+      "avg": 38.9
+    },
+    "docs/stm32/14-pwr.md": {
+      "longShare": 15.9,
+      "avg": 37.8
+    },
+    "docs/stm32/15-spl-anatomy.md": {
+      "longShare": 7.8,
+      "avg": 35.1
+    },
+    "docs/stm32/16-debug-hardfault.md": {
+      "longShare": 13.2,
+      "avg": 36.2
+    },
+    "docs/stm32/17-watchdog-reset.md": {
+      "longShare": 3.3,
+      "avg": 30.5
+    }
+  }
+}

@@ -11,12 +11,14 @@ minutes: 40
 
 ## 本章精髓
 
-1. `IRAM_ATTR` 是生存问题不是性能问题：Cache 关闭窗口内，只有 IRAM/ROM 里的代码可取指，ISR 本体、它调用的函数、用到的 rodata 全要排查（`esp_intr_alloc` 的 `ESP_INTR_FLAG_IRAM` 标志强制约束）。
-2. 中断分配器是"总机"：S3 有 **99 个中断源编号**（实测 `ETS_MAX_INTR_SOURCE = 99`，编号 0–98），经中断矩阵分配到两个核的 **7 级**中断，`esp_intr_alloc` 把外设源、优先级、所属核绑在一起。
+1. **`IRAM_ATTR` 是生存问题，不是性能问题**。Cache 关闭的那段窗口里，只有 IRAM/ROM 里的代码能取指。所以 ISR 本体、它调用的函数、它用到的 rodata，三样都要排查。
+   `esp_intr_alloc` 的 `ESP_INTR_FLAG_IRAM` 标志会强制这个约束。
+2. **中断分配器是"总机"**。S3 有 **99 个中断源编号**（实测 `ETS_MAX_INTR_SOURCE = 99`，编号 0–98），经中断矩阵分配到两个核的 **7 级**中断。
+   `esp_intr_alloc` 一次把外设源、优先级、所属核三样绑在一起。
 3. 双核 SMP 的共享规矩：FreeRTOS 在 S3 上是 SMP 单实例（任务可跑任意核，也可 `xTaskCreatePinnedToCore` 钉核），核间共享数据用自旋锁/`portMUX`，**中断与任务、核与核之间 `volatile` 完全不够**（回 [C3](../c/03-volatile.md) 的边界清单）。
 
 - **能理解**：`IRAM_ATTR` 只是往链接器段里一塞（`".iram1"`），真正保证"能在关 Cache 时跑"的是**整条调用链**都在 IRAM，包括它读的常量。
-- **能用**：给一个外设挂中断时，能正确选 `ESP_INTR_FLAG_LEVELx` 与 `ESP_INTR_FLAG_IRAM`，并知道什么时候必须用 `portMUX` 而不是 `volatile`。
+- **能用**：给外设挂中断时，能正确选 `ESP_INTR_FLAG_LEVELx` 与 `ESP_INTR_FLAG_IRAM`；并知道什么时候必须用 `portMUX`，而不是 `volatile`。
 
 ## 先修
 
@@ -71,9 +73,9 @@ $ # 第 6 段：断链的现场在调用指令的目标地址里，不在段名�
     403766b2:  retw.n
 ```
 
-**判据**：`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的那个地址在 Flash 映射段：Cache 一关，`entry` 之后第一条取指就无门。`isr_tight` 的 `call8` 目标还在 IRAM 区间内，这才是真的 IRAM-safe。地址区间一律以 `.map` 里的 `Memory Configuration` 为准：esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`（初代 ESP32 是 `0x400xxxxx` 一片，两代的数字不能互抄）。
+**判据**：`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的那个地址落在 Flash 映射段。Cache 一关，`entry` 之后第一条取指就无门。`isr_tight` 的 `call8` 目标还在 IRAM 区间内，这才是真的 IRAM-safe。地址区间一律以 `.map` 里的 `Memory Configuration` 为准。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`。初代 ESP32 则是 `0x400xxxxx` 一片——两代的数字不能互抄。
 
-还有一个只有实跑才会撞见的坑：这个工程里没有真的外设去 `esp_intr_alloc` 这些 ISR，IDF 默认带 `-Wl,--gc-sections`，**没人引用的函数会被整段收掉**，第一版探针工程 `nm` 里只剩 `app_main` 和 `g_hits`，七个符号一个都不剩。现在 `main.c` 里那张 `g_isr_table` 就是为了钉住它们，顺便把这条记下来：你写在磁盘上的 ISR，链接器可能根本没让它进 ELF。
+还有一个只有实跑才会撞见的坑。这个工程里没有真的外设去 `esp_intr_alloc` 这些 ISR，而 IDF 默认带 `-Wl,--gc-sections`，**没人引用的函数会被整段收掉**。第一版探针工程 `nm` 里只剩 `app_main` 和 `g_hits`，七个符号一个都不剩。现在 `main.c` 里那张 `g_isr_table` 就是为了钉住它们，顺便把这条记下来：你写在磁盘上的 ISR，链接器可能根本没让它进 ELF。
 
 ## 小节结构
 
@@ -116,7 +118,7 @@ CPU 取指 → Cache 命中？ → 命中：直接返回指令
 #define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)
 ```
 
-就这么简单：`IRAM_ATTR` 干的事是**把这段代码放进名为 `.iram1` 的链接段**，由链接脚本安排到内部 SRAM（可执行区）。它不是"加速"，是"改变落址"。
+就这么简单：`IRAM_ATTR` 干的事，是**把这段代码放进名为 `.iram1` 的链接段**，再由链接脚本安排到内部 SRAM（可执行区）。它不是"加速"，是"改变落址"。
 
 **但把它加在 ISR 函数上只是第一步**。真正的约束是**整条执行链**都要可达：
 
@@ -134,7 +136,7 @@ CPU 取指 → Cache 命中？ → 命中：直接返回指令
 4. **不要**在里面调 `printf`、`malloc`、任何可能碰 Flash 的 API；
 5. 需要跨 ISR/任务传数据 → 用 `...FromISR` API（它们本身就是 IRAM-safe 的）。
 
-**`ESP_INTR_FLAG_IRAM` 是声明侧的开关**（`components/esp_hw_support/include/esp_intr_alloc.h:42`）：
+**`ESP_INTR_FLAG_IRAM` 是声明侧的开关**（`components/esp_hw_support/include/esp_intr_alloc.h:42`）。
 
 ```c
 #define ESP_INTR_FLAG_IRAM          (1<<10) ///< ISR can be called if cache is disabled
@@ -151,13 +153,13 @@ CPU 取指 → Cache 命中？ → 命中：直接返回指令
 
 ![中断分配器：99 条线分到 CPU0/CPU1](/figures/esp32-04-int-alloc.svg)
 
-STM32 上中断和向量是**一一对应**的（[S4](../stm32/04-nvic-exti.md)：`EXTI0_IRQn = 6` → 固定向量槽）。ESP32-S3 是**中断矩阵**：外设的中断源可以**路由**到某个核的某个中断级。
+STM32 上中断和向量是**一一对应**的（[S4](../stm32/04-nvic-exti.md)：`EXTI0_IRQn = 6` → 固定向量槽 22），定向量槽）。ESP32-S3 是**中断矩阵**：外设的中断源可以**路由**到某个核的某个中断级。
 
 **规模**（实测 `components/soc/esp32s3/include/soc/interrupts.h`，`sh probe.sh` 第 1 段让编译器把整张枚举打出来）：
 
 - 枚举体在第 18–117 行，从 `ETS_WIFI_MAC_INTR_SOURCE = 0` 排到 `ETS_DMA_EXTMEM_REJECT_SOURCE = 98`；随后第 118 行是 `ETS_MAX_INTR_SOURCE`，编译器打印它的值是 **99**，注释写着 "number of interrupt sources"。
-- **99 是编号槽位的数量（0–98），不是"有 99 个不同的名字"**：这一张表里 98 个名字只覆盖 95 个不同编号，编号 23、33、34、46 没有名字（保留位），而 57/58/59 各被两个名字占用（`ETS_SYSTIMER_TARGETn_EDGE_INTR_SOURCE = ETS_SYSTIMER_TARGETn_INTR_SOURCE`，三条 EDGE 是同值别名）。
-- 所以按源编号路由时，`ETS_MAX_INTR_SOURCE` 才是数组边界的正确写法（`esp_isr_names[ETS_MAX_INTR_SOURCE]` 就是这么声明的），别拿"行数"当数量。
+- **99 是编号槽位的数量（0–98），不是"有 99 个不同的名字"**。这张表里 98 个名字只覆盖 95 个不同编号：23、33、34、46 是保留位没有名字，57/58/59 各被两个名字占用（`ETS_SYSTIMER_TARGETn_EDGE_INTR_SOURCE = ETS_SYSTIMER_TARGETn_INTR_SOURCE`）。MER_TARGETn_INTR_SOURCE`，三条 EDGE 是同值别名）。
+- 所以按源编号路由时，`ETS_MAX_INTR_SOURCE` 才是数组边界的正确写法（`esp_isr_names[ETS_MAX_INTR_SOURCE]` 就是这么声明的）。别拿"行数"当数量。
 
 **中断级**（`components/esp_hw_support/include/esp_intr_alloc.h:33-43`）：
 
@@ -195,7 +197,7 @@ esp_err_t esp_intr_alloc(int source, int flags, intr_handler_t handler, void *ar
 
 S3 是双核（`SOC_CPU_CORES_NUM = 2`，[P1](01-arch-boot.md) 已引）。FreeRTOS 在 S3 上跑 **SMP**：默认情况下任务可以调度到任意核。
 
-**需要控制时用钉核版 API**（`components/freertos/FreeRTOS-Kernel/include/freertos/task.h:382-389`）：
+**需要控制核归属时，用钉核版 API**（`components/freertos/FreeRTOS-Kernel/include/freertos/task.h:382-389`）。
 
 ```c
 extern BaseType_t xTaskCreatePinnedToCore( TaskFunction_t pxTaskCode,
@@ -210,9 +212,9 @@ extern BaseType_t xTaskCreatePinnedToCore( TaskFunction_t pxTaskCode,
 比 `xTaskCreate` 多最后一个参数 `xCoreID`：
 
 - `0` / `1`：钉到 PRO_CPU / APP_CPU；
-- `tskNO_AFFINITY`：不钉核（调度器自由安排）。实测 `task.h:206` 定义为 `( BaseType_t ) 0x7FFFFFFF`，紧跟着第 207 行一条 `Todo: Update tskNO_AFFINITY value to -1` 的注释，所以它**不是 -1**，别按 -1 去猜它的值。
+- `tskNO_AFFINITY`：不钉核（调度器自由安排）。实测 `task.h:206` 把它定义为 `( BaseType_t ) 0x7FFFFFFF`，紧跟的第 207 行还有一条 `Todo: Update tskNO_AFFINITY value to -1` 的注释。所以它**不是 -1**，别按 -1 去猜值。
 
-函数注释紧接着写明了这一点（`:391-392`）：**"Call the 'PinnedToCore' version with `tskNO_AFFINITY` to create an unpinned task."**。而且 `xTaskCreate` 的函数体（`:394` 起）就一句 `return xTaskCreatePinnedToCore( pxTaskCode, ... )`，包装关系是写在源码里的，不是推测。
+函数注释紧接着写明了这一点（`:391-392`）：**"Call the 'PinnedToCore' version with `tskNO_AFFINITY` to create an unpinned task."**。而且 `xTaskCreate` 的函数体（`:394` 起）只有一句 `return xTaskCreatePinnedToCore( pxTaskCode, ... )`。包装关系明明白白写在源码里，不是推测。
 
 **什么时候该钉核**：
 
@@ -224,7 +226,7 @@ extern BaseType_t xTaskCreatePinnedToCore( TaskFunction_t pxTaskCode,
 
 ## 五、共享数据：`volatile` 不够，要用自旋锁
 
-这是 [C3 volatile 边界清单](../c/03-volatile.md) 的直接延续。在双核 + 中断的 ESP32 上，`volatile` **保证不了**任何一件事：
+这是 [C3 volatile 边界清单](../c/03-volatile.md) 的直接延续。在双核 + 中断的 ESP32 上，`volatile` **保证不了**任何一件事。把需求拆开看：
 
 | 需求 | `volatile` 能做吗 | 正确做法 |
 |---|---|---|
@@ -289,14 +291,14 @@ xQueueSend(...) / xTaskNotifyGive(...)  /* 用内核对象，别自己造轮子 
 ## 记忆锚点
 
 ::: tip 一句话记住
-**Cache 一关 Flash 里没代码：ISR 要么进 IRAM（还要带上它调的函数和常量），要么老实被推迟；双核共享别信 volatile，上 portMUX。**
+**Cache 一关 Flash 里没代码：ISR 要么进 IRAM（还要带上它调的函数和常量），要么老实被推迟。双核共享别信 volatile，上 portMUX。**
 :::
 
 **延伸**：IRAM 纪律动画见 [P4 动画](/anim/iram-discipline.svg)；volatile 的局限性在 [C3](../c/03-volatile.md) 详解；STM32 NVIC 对照见 [S4](../stm32/04-nvic-exti.md)。
 
 ## 实物实验
 
-- ~~写一个带 `IRAM_ATTR` 的 ISR 和一个不带的，`idf.py build` 后用 `arm-none-eabi-nm` 对比符号地址~~。这条已经在「先跑起来」里用**本机实跑**填掉了，而且原写法有两处错：ESP-IDF 用的不是 `arm-none-eabi-*` 而是 `xtensa-esp-elf-nm`，判据地址也不是 `0x400xxxxx`（那是初代 ESP32）。上板只剩一件静态取证做不到的事：**真的把 Cache 关一次**，在 NVS 提交期间触发这个中断，看它崩不崩。
+- ~~写一个带 `IRAM_ATTR` 的 ISR 和一个不带的，`idf.py build` 后用 `arm-none-eabi-nm` 对比符号地址~~。这条已经在「先跑起来」里用**本机实跑**填掉了。原写法有两处错：ESP-IDF 用的不是 `arm-none-eabi-*`，而是 `xtensa-esp-elf-nm`；判据地址也不是 `0x400xxxxx`（那是初代 ESP32）。上板只剩一件静态取证做不到的事：**真的把 Cache 关一次**，在 NVS 提交期间触发这个中断，看它崩不崩。
 - 给一个 GPIO 中断同时挂 `ESP_INTR_FLAG_LEVEL1` 与 `ESP_INTR_FLAG_IRAM`，在 ISR 里**故意**调 `printf`，观察它在 Flash 操作期间是否崩溃（**这是反例实验，小心使用**；**待上机回填**）。
 - 用 `xTaskCreatePinnedToCore(..., xCoreID)` 分别传 `0`、`1`、`tskNO_AFFINITY` 创建同一个任务，在任务里打印 `xPortGetCoreID()`，记录三种情况下任务实际落在哪个核（**待上机回填**）。
 - 把 `ESP_INTR_FLAG_LEVEL1` 改成 `LEVEL3`，观察中断响应行为（**待上机回填**）。
@@ -305,7 +307,7 @@ xQueueSend(...) / xTaskNotifyGive(...)  /* 用内核对象，别自己造轮子 
 
 - **只给 ISR 本体标 `IRAM_ATTR`**：它调用的函数、它读的字符串还在 Flash 里，关 Cache 时照样崩。**整条链**都要排查。
 - **声明了 `ESP_INTR_FLAG_IRAM` 却没做到**：这比不声明更糟，不声明只是被推迟（安全），声明了却是**直接崩**。
-- **ISR 里调 `printf`/`malloc`**：既可能碰 Flash，又可能违反 ISR 礼仪（[S4](../stm32/04-nvic-exti.md) 的"中断里只做快递分拣"）。用 `...FromISR` API 或只置标志。
+- **ISR 里调 `printf`/`malloc`**：既可能碰 Flash，又可能违反 ISR 礼仪（[S4](../stm32/04-nvic-exti.md) 说过"中断里只做快递分拣"）。用 `...FromISR` API 或只置标志。
 - **用 `volatile` 代替锁**：在双核 + 中断面前，`volatile` 既保证不了原子性也保证不了可见性。核间共享必须上 `portMUX` 或内核对象。
 - **无脑钉核**：`xTaskCreatePinnedToCore` 用得越多，调度器越没得选，负载均衡失效。只在**有理由**时钉。
 - **中断级越高越好**：级别高意味着它可能**抢占内核自己的临界区**，而高优先级 ISR **不能**调用大部分内核 API。默认从 `LEVEL1` 起步，确有需要再升。
@@ -326,7 +328,7 @@ STM32 的 Flash 是**原地执行**的（地址空间直接映射，CPU 直接�
 <details>
 <summary>看答案</summary>
 
-它把代码放进 `.iram1` 段（`components/esp_common/include/esp_attr.h:23`：`#define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)`），由链接脚本安排到内部 SRAM。**加在 ISR 本体上不够**：ISR 调用的所有非内联函数、以及它读的所有 rodata（字符串、`const` 查表）也必须在 IRAM，否则整条链上有一环在 Flash 就崩。
+它把代码放进 `.iram1` 段（`components/esp_common/include/esp_attr.h:23`：`#define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)`），_)`），由链接脚本安排到内部 SRAM。**加在 ISR 本体上不够**：ISR 调用的所有非内联函数、以及它读的所有 rodata（字符串、`const` 查表）也必须在 IRAM，否则整条链上有一环在 Flash 就崩。
 
 </details>
 
@@ -354,7 +356,7 @@ STM32 的 Flash 是**原地执行**的（地址空间直接映射，CPU 直接�
 <details>
 <summary>看答案</summary>
 
-两个原因：**① 非原子**，`n++` 是"读-改-写"三步，另一个核或 ISR 可能插在中间，导致丢失更新；**② 无可见性/顺序保证**，`volatile` 只阻止编译器优化掉这次访问，不提供跨核的同步语义。正确做法是 `portENTER_CRITICAL(&mux)` 包住读-改-写（`portMUX_TYPE` 是自旋锁，`portmacro.h:188`），或干脆用内核对象（队列、通知）代替裸变量。
+两个原因：**① 非原子**，`n++` 是"读-改-写"三步，另一个核或 ISR 可能插在中间，导致丢失更新；**② 无可见性/顺序保证**，`volatile` 只阻止编译器优化掉这次访问，不提供跨核的同步语义。正确做法是用 `portENTER_CRITICAL(&mux)` 包住读-改-写（`portMUX_TYPE` 是自旋锁，`portmacro.h:188`）；或者干脆用内核对象（队列、通知）代替裸变量。
 
 </details>
 

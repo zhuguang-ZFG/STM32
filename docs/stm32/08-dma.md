@@ -66,6 +66,8 @@ minutes: 30
 F4 的每个 DMA 控制器有 8 条**流（Stream）**，每条流可以接 8 个**通道（Channel）**里的一个。所以一个 DMA 请求要选对两样东西：流 × 通道。
 
 - **DMA1**：APB1 上的外设（USART2/3、I2C、SPI2/3、TIM2~7 等）。
+![DMA 二级选择：先选控制器，再选流，最后由通道决定接哪个外设请求](/figures/stm32-08-dma-stream.svg)
+
 - **DMA2**：APB2 上的外设（USART1/6、SPI1、ADC3、TIM1/8 等）以及 SDIO、DCMI。
 
 **选错控制器是最常见的"配置都对但数据不来"**：时钟开了、引脚对了、流也配了，就是控制器选成了 DMA1。USART1_RX 的常用取值是 **DMA2 Stream5 Channel4**（也可走 Stream2 Channel4）。以 RM0090 Table 43 为准，别背。

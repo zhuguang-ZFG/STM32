@@ -66,7 +66,9 @@ GD32F4xx 每个 GPIO 端口有 **12 个寄存器**（gd32f4xx_gpio.h:52-63），
 | 0x28 | —（无） | **BC**（bit clear） | GD32 独有：独立清零寄存器 |
 | 0x2C | —（无） | **TG**（bit toggle） | GD32 独有：硬件翻转寄存器 |
 
-前 10 行的规律一眼看穿：**偏移、位宽、编码全部相同，只有名字换了**。GD32 的命名习惯是"把类型塞进缩写"：CTL 是 control、OMODE 是 output mode、OSPD 是 output speed、PUD 是 pull-up/down、ISTAT 是 input status、OCTL 是 output control。名字更长，但和 STM32 一样可以按"每脚占多少位"直接推。
+前 10 行的规律一眼看穿：**偏移、位宽、编码全部相同，只有名字换了**。
+
+GD32 的命名习惯是"把类型塞进缩写"：CTL 是 control，OMODE 是 output mode，OSPD 是 output speed，PUD 是 pull-up/down，ISTAT 是 input status，OCTL 是 output control。名字更长，但和 STM32 一样能按"每脚占多少位"直接推。
 
 改名记忆钩子：
 
@@ -76,7 +78,9 @@ GD32F4xx 每个 GPIO 端口有 **12 个寄存器**（gd32f4xx_gpio.h:52-63），
 - **BOP 是 BSRR 的 GD32 名**：bit operate，布局同款（低 16 置位、高 16 复位，gd32f4xx_gpio.h:174-206）；
 - **复用叫 AFSEL0/AFSEL1**：比 AFRL/AFRH 更好认：数字 0 管 pin0~7、数字 1 管 pin8~15，见名知义。
 
-> **【注】LOCK 寄存器两边都有但坑位不同**：STM32 的 LCKR 有著名的 LCKK 写序列坑；GD32 的 LOCK 键序列已按用户手册实证（F4xx UM p185）：**Write 1→Write 0→Write 1→Read 0→Read 1**，与 STM32 完全同款；LKK 在 bit16，序列期间 LK[15:0] 必须保持不变，锁定后直到复位才解锁。本站工程暂不用锁定功能。
+> **【注】LOCK 寄存器两边都有，坑位相同**。STM32 的 LCKR 有著名的 LCKK 写序列坑；GD32 的 LOCK 键序列已按用户手册实证（F4xx UM p185）：**Write 1 → Write 0 → Write 1 → Read 0 → Read 1**。
+>
+> 细节也和 STM32 同款：LKK 在 bit16，序列期间 LK[15:0] 必须保持不变，锁定后直到复位才解锁。本站工程暂不用锁定功能。
 
 ## 二、基址与使能：连地址都没换
 
@@ -100,7 +104,7 @@ GPIOF 开时钟一行，两边只差寄存器名：
 RCC_AHB1ENR |= (1UL << 5);          RCU_AHB1EN |= (1UL << 5);   /* 都是 bit5 */
 ```
 
-为什么能像到这个份上？F4 系的 AHB1 外设布局是 ARM 生态的"行业事实标准"，GD32F4xx 对 STM32F4 做的是**高兼容设计**：外设基址、总线挂载刻意对齐，迁移成本压到"改宏名"级别。这正是 G 篇"对照学习"能省力七成的底牌。
+为什么能像到这个份上？F4 系的 AHB1 外设布局早就是 ARM 生态的"行业事实标准"。GD32F4xx 对 STM32F4 做的正是**高兼容设计**：外设基址、总线挂载都刻意对齐，迁移成本压到"改宏名"这一级。这正是 G 篇"对照学习"能省力七成的底牌。
 
 但"兼容"≠"相同"：G1 已经演示过 RCU 内部位域有差异（HDRF/HDSRF 回执、SCSS 解码），本章第四节会看到速度档标签的小差异。**基址相同给你迁移便利，位域还得逐个核**，这是 G 篇的总纪律。
 
@@ -175,9 +179,9 @@ S3 背过的"配置四维"编码，在 GD32 **逐位相同**（全部出自 gd32
 
 1. **第四档的真名是 200MHz**，不是库注释里含糊的"more than 50MHz"，也不是 STM32 的 100MHz。对照 STM32F407 datasheet 的同款表（2/25/50/100MHz 四档），GD32 把第四档的标称值翻了一倍。
 2. **档位名是标称值，不是能跑到的频率**。`IO_Speed = 2 MHz` 这档在 10pF 轻载下实测能到 30MHz；反过来 200MHz 档挂 50pF 只剩 130MHz。真正决定边沿的是**档位 + 负载电容**两个变量，表里每档三列就是这个意思。
-3. datasheet 注 (4) 还压了一道天花板：**最高频率不得超过 168 MHz**（F407 的核心上限）：200MHz 这个标称值在 F407 上吃不满，它是给 F450/F470 的高主频档留的。
+3. datasheet 注 (4) 还压了一道天花板：**最高频率不得超过 168 MHz**（F407 的核心上限）。也就是说，200MHz 这个标称值在 F407 上根本吃不满——它是给 F450/F470 的高主频档留的。
 
-> ⚠️ **四个引脚是例外**：datasheet 注 (3) 明说 **PC13 / PC14 / PC15 / PI8 走的是 Power Switch 供电**，只能取到很小的电流，输出模式下**速度不得超过 2 MHz**（最大负载 30pF）。这四个脚在 STM32F407 上同样是"备份域弱驱动"脚（PC13-PC15 接 LXTAL/侵入检测），两边都别拿来驱动高速信号或直推 LED。
+> ⚠️ **四个引脚是例外**。datasheet 注 (3) 明说 **PC13 / PC14 / PC15 / PI8 走 Power Switch 供电**，只能取到很小的电流。它们做输出时**速度不得超过 2 MHz**（最大负载 30pF）。这四个脚在 STM32F407 上同样是"备份域弱驱动"脚（PC13-PC15 接 LXTAL/侵入检测），两边都别拿来驱动高速信号或直推 LED。
 
 所以 S3 的 PF6 点灯流程翻译成 GD32，一个字都不用改逻辑，只换寄存器名：
 
@@ -210,7 +214,7 @@ G1 已核过一个实例：**PA8 输出 CK_OUT0 用 AF0**（`gpio_af_set(GPIOA, 
 
 本章把那条"逐脚核对"的作业也做了：**USART0_TX = AF7**，候选脚 **PA9 / PB6 / PA15**（datasheet Table 2-9 / 2-10 的 AF7 列，p60-63）。前两个与 STM32F407 的 USART1_TX（PA9/PB6，AF7）**同号同脚**：GD32 的 USART0 就是 STM32 USART1 的岗位（G3 会讲这套错位编号），连 AF 号都没动。
 
-**但第三个脚是 GD32 加的**：STM32F407 的 PA15 只有 JTDI / TIM2_CH1 / SPI1_NSS / SPI3_NSS，**没有 USART1_TX**（STM32F407 datasheet Table 9，p66）。同一张表看两遍，"大量重合"和"全部重合"的差别就在这种脚上。
+**但第三个脚是 GD32 加的**。STM32F407 的 PA15 只有 JTDI / TIM2_CH1 / SPI1_NSS / SPI3_NSS，**没有 USART1_TX**（STM32F407 datasheet Table 9，p66）。同一张表看两遍，"大量重合"和"全部重合"的差别就在这种脚上。
 
 > **所以纪律不能省**：拿 STM32 的 AF 表当 GD32 用，PA9/PB6 这种脚会碰巧对，PA15 这种脚会让你以为"GD32 没有"；反过来把 GD32 工程搬回 STM32，PA15 当 TX 用会**静默失效**（AF7 在 STM32 PA15 上是空位）。GD32 多出来的那几个串口（USART5~7，G3 讲）在 STM32F407 上更没有对应岗位，AF 号无从对照。迁移时的正确姿势永远是**按脚查表**，不是按记忆填号。
 
@@ -252,7 +256,7 @@ GPIO_PUD(gpiox) &= ~GPIO_PUPD_MASK(pin);            /* 清 PUD              */
 GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            */
 ```
 
-一个字都没超出本章第四节：**库函数就是手写寄存器的 for 循环封装**，S3 第五节对 GPIO_Init 说过的话，对 GD32 原样成立。掩码/置位宏 `GPIO_MODE_SET(n, mode)`、`GPIO_MODE_MASK(n)` 就定义在 gd32f4xx_gpio.h:319-324。
+这里一个字都没超出本章第四节：**库函数就是手写寄存器的 for 循环封装**。S3 第五节对 `GPIO_Init` 说过的话，对 GD32 原样成立。掩码/置位宏 `GPIO_MODE_SET(n, mode)`、`GPIO_MODE_MASK(n)` 就定义在 gd32f4xx_gpio.h:319-324。
 
 ## 记忆锚点
 
@@ -274,8 +278,8 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 2. **以为 BOP 高 16 位不能用、非写 BC 不可**：两者都能清零（BOP 高 16 位、BC 低 16 位），官方库走 BC。但**置位只有 BOP 低 16 位**一条路，不存在"置位版 BC"。
 3. **用 OCTL 读-改-写翻转**：GD32 有现成 TG 一条写搞定，还不用读：OCTL `^=` 的中断插队坑（S3 第二节）在 GD32 完全可以绕开。
 4. **AF 写了 AFSEL 忘改 CTL**：CTL[1:0] 还是 00/01（输入/输出），外设接不进引脚：复用要成对（CTL=10 + AFSEL 选号），S3 的坑原样平移。
-5. **速度档照抄 STM32 的"100MHz"**：GD32 第四档库里叫 GPIO_OSPEED_MAX（"more than 50MHz"），datasheet 的真名是 **IO_Speed = 200 MHz**（Table 4-28），两边都不是 100MHz。照 STM32 的 100MHz 设计时序余量，在 GD32 上要么保守浪费、要么按错档算边沿。
-6. **拿 PC13~PC15 / PI8 当普通高速脚**：这四个脚走 Power Switch 供电，输出模式**上限 2MHz**（datasheet 注 (3)），配 200MHz 档也不会变快，只会让人以为"配了就有"。
+5. **速度档照抄 STM32 的"100MHz"**。GD32 第四档库里叫 `GPIO_OSPEED_MAX`，注释写 "more than 50MHz"；datasheet 的真名是 **IO_Speed = 200 MHz**（Table 4-28）。两边都不是 100MHz。照 STM32 的 100MHz 设计时序余量，在 GD32 上要么保守浪费、要么按错档算边沿。
+6. **拿 PC13~PC15 / PI8 当普通高速脚**。这四个脚走 Power Switch 供电，输出模式**上限 2MHz**（datasheet 注 (3)）。配 200MHz 档也不会变快，只会让人以为"配了就有"。
 
 ## 短自测
 
@@ -291,7 +295,9 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 2. 置位只有**一条路**：BOP 低 16 位（BOP0~BOP15）。清零有两条路：BOP 高 16 位（CR0~CR15）或 BC 低 16 位，官方库 gpio_bit_reset 走 BC。不存在"独立置位寄存器"。
 3. STM32 翻转要 ODR 读-改-写三条指令（ldr/eor/str），中间可被中断插队、丢状态；GD32 写 TG 对应脚位一条 str 原子完成，还不需要读，点灯循环连状态变量都省了。
 4. PA11 属于 pin8~15，写 **AFSEL1**（对应 STM32 的 AFRH）；nibble 索引按 pin 对 8 取余（11 对 8 = 3），即 AFSEL1 的 bits[15:12]（第 3 个 nibble）。写成 bits[43:40] 或 pin 本身当索引是典型错。
-5. STM32F4 的 11 档明确标 100MHz；GD32 的 LEVEL3 库里只叫 GPIO_OSPEED_MAX、注释说 "max speed more than 50MHz"，**库头文件不承诺数字**，但 datasheet Table 4-28 承诺了：**IO_Speed = 200 MHz**，且按负载给出 200/170/130MHz（CL=10/30/50pF）。所以差别有两层：**库含糊 vs datasheet 明确**，以及**标称 200MHz vs STM32 的 100MHz**。迁移时别按 100MHz 设计时序余量，也别忘了 datasheet 注 (4) 的 168MHz 天花板。
+5. STM32F4 的 11 档明确标 100MHz。GD32 的 LEVEL3 库里只叫 `GPIO_OSPEED_MAX`，注释写 "max speed more than 50MHz"，**库头文件不承诺数字**；但 datasheet Table 4-28 承诺了：**IO_Speed = 200 MHz**，并给出 200/170/130MHz（CL=10/30/50pF）三档上限。
+
+   所以差别有两层：**库含糊 vs datasheet 明确**，以及**标称 200MHz vs STM32 的 100MHz**。迁移时别按 100MHz 设计时序余量，也别忘了 datasheet 注 (4) 的 168MHz 天花板。
 
 </details>
 
