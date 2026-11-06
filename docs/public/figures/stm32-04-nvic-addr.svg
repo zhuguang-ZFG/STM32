@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="NVIC 地址公式：IRQn 6 推出槽号 22、ISER[0] bit 6 与 IP 字节 0xE000E406"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="NVIC 地址公式：IRQn 6 推出槽号 22、ISER[0] bit 6 与 IP 字节 0xE000E406"><g transform="translate(+16.2,-2)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <rect x="8" y="6" width="84" height="24" rx="3" stroke-width="1.4"/>
 <text x="12" y="19" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">IRQn = 6</text>
 <text x="12" y="27" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">EXTI0</text>

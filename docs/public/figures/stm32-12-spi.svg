@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="SPI 全双工移位环：主机与从机各有一个 8 位移位寄存器，MOSI 与 MISO 两根线同时移出一位、移入一位"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="SPI 全双工移位环：主机与从机各有一个 8 位移位寄存器，MOSI 与 MISO 两根线同时移出一位、移入一位"><g transform="translate(0,-5.8)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <rect x="20" y="18" width="120" height="38" rx="4" stroke-width="1.4"/>
 <rect x="180" y="18" width="120" height="38" rx="4" stroke-width="1.4"/>
 <text x="80" y="34" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">主机</text>

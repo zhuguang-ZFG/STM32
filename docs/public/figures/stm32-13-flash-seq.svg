@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="STM32 Flash 擦除与编程序列：解锁 → SER/SNB → STRT → 等 BSY；编程 PG=1 写 32 位字再等 BSY"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="STM32 Flash 擦除与编程序列：解锁 → SER/SNB → STRT → 等 BSY；编程 PG=1 写 32 位字再等 BSY"><g transform="translate(0,+2.5)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">擦除</text>
 <rect x="8" y="18" width="72" height="18" rx="3" stroke-width="1.4"/> <text x="12" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">解锁 KEY</text>
 <path d="M80 27 L88 27" stroke-width="2.2"/>
