@@ -53,7 +53,7 @@ ESP32-S3 的蓝牙是**单模 BLE**（不支持经典蓝牙 Classic BT），符�
 - **Host（主机）**：以库形式链接进你的固件，管上层协议（GAP/GATT/L2CAP），**这一层你有两套选**：
   - **NimBLE**（Apache Mynewt 开源）：BLE 专用、轻量，运行时 RAM 占用小，S3 上的首选；
   - **Bluedroid**：历史栈，功能全（在支持 Classic BT 的芯片上能跑经典蓝牙），体积大、API 偏底层。
-  二者在 menuconfig 里互斥：`Component config → Bluetooth → Host → NimBLE` 或 `Bluedroid`（Kconfig 符号 `CONFIG_BT_NIMBLE` vs `CONFIG_BT_BLUEDROID`，同启会报错）。S3 既然没有 Classic BT，选 NimBLE 即可，除非你要复用老 Bluedroid 例程。
+  二者在 menuconfig 里互斥：`Component config → Bluetooth → Host → NimBLE` 或 `Bluedroid`（Kconfig 符号 `CONFIG_BT_NIMBLE` vs `CONFIG_BT_BLUEDROID`，同启会报错）。S3 既然没有 Classic BT，选 NimBLE 即可——除非你要复用老 Bluedroid 例程。
 - **HCI**：SoC 内部 Controller 与 Host 都在同一颗芯片，没有物理 UART HCI 线，走的是 **VHCI**（virtual HCI，软件回调对接）。所以代码里看不到 `/dev/hci0`，调 `esp_bt_controller_init`/`enable` 就把控制器拉起来。
 
 板卡与版本前提（本章事实基准）：立创·实战派 ESP32-S3、ESP-IDF **v5.5.2**；ESP-NOW 头在 `components/esp_wifi/include/esp_now.h`，BT 协议栈在 `components/bt/`。和 [P8 Wi-Fi](08-wifi.md) 一样，蓝牙初始化也要 `nvs_flash_init`：校准数据与 MAC 都存 NVS（同 P8 第一坑）。
@@ -150,7 +150,7 @@ ESP-NOW 不另起射频，它复用 Wi-Fi 的 PHY/MAC，所以**和 Wi-Fi 同信
 
 - **未连 Wi-Fi 时**：ESP-NOW 仍能跑（无连接模式），用默认信道；两块都没连路由器、信道一致即可互通。
 - **连了路由器时**：板子的 Wi-Fi 信道被路由器锁死（比如路由器在 6 信道）。这时 `peer.channel = 0` 让对板"跟随当前 STA 信道"，但**对板也得在同一信道**，否则 `esp_now_send` 返回 `ESP_ERR_ESPNOW_CHAN`（头里明确列了这个错误码）。常见坑第二坑就是这个：A 板连了路由器在信道 6，B 板没连、停在信道 1，互相发不出去。
-- **STA + ESP-NOW 同启**：照 [P8](08-wifi.md) 骨架六步初始化 Wi-Fi，再 `esp_now_init`，两者共用底层，初始化顺序是 wifi_init/start 在前、esp_now_init 在后（ESP-NOW 依赖 Wi-Fi 已 start）。
+- **STA + ESP-NOW 同启**：照 [P8](08-wifi.md) 骨架六步初始化 Wi-Fi，再 `esp_now_init`，两者共用底层。初始化顺序是 wifi_init/start 在前、esp_now_init 在后（ESP-NOW 依赖 Wi-Fi 已 start）。
 
 排查信道不一致：`esp_wifi_get_channel(&primary, &second)` 打印两板当前信道对比；不一致就调整让对板跟随，或干脆两板都不连路由器走默认信道。这套分诊思路和 P8 的 reason code 分诊同构：错误码是入口，不是终点。
 
