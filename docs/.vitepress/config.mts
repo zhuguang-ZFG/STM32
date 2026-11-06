@@ -144,6 +144,30 @@ export default defineConfig({
           i--
         }
       })
+      // 书籍正文写的是 <AnimFigure src="/anim/x.svg" />（mcu-book/build_html.py 的 ANIM_TAG 认这种形式，
+      // 印前把它渲染成静态 <img class="anim">）。站点侧原本只认 ![图注](/anim/x.svg)，
+      // 于是这类页面整块舞台是空的：没有 SVG、没有按钮。
+      // 独立标签经 block 解析后是顶层 html_inline（紧随一个只含同行尾空白的 inline）；
+      // 围栏和缩进代码在该阶段已是 fence/code_block，同行文字落在 paragraph 的 inline 里，
+      // 都不会命中。因此在 inline 解析前只把整行匹配的顶层 html_inline 换成 html_block：
+      // 代码示例保持原文，caption 也不会像图片 alt 那样被 Markdown 二次解析；直接复用 emit。
+      md.core.ruler.before('inline', 'anim-figure-tag', (state: any) => {
+        const tokens = state.tokens
+        let lines: string[] | undefined
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i]
+          if (token.type !== 'html_inline' || token.level !== 0) continue
+          if (!token.map || token.map[1] - token.map[0] !== 1) continue
+          const match = /^<AnimFigure\s+src="\/anim\/([\w-]+)\.svg"(?:\s+caption="([^"]*)")?\s*\/>$/.exec(token.content)
+          if (!match) continue
+          lines ??= state.src.split('\n')
+          if (lines[token.map[0]].trim() !== token.content) continue
+          const block = new state.Token('html_block', '', 0)
+          block.content = emit(match[1], match[2] || '') + '\n'
+          block.map = token.map
+          tokens[i] = block
+        }
+      })
       // 章节手绘机制图：![图注](/figures/x.svg) 独占一行时内联整棵 SVG，
       // 与章首题花同一墨色令牌；缺文件保持原样，交给 VitePress 死链检查兜底。
       md.core.ruler.after('anim-figure-block', 'hand-figure', (state: any) => {

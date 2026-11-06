@@ -604,6 +604,27 @@ html.dark {
   box-shadow: none;
   border-radius: 8px;
 }
+/* 手机上最需要放大：行内 SVG 已被正文容器压到 ~284px，
+   而 card 若是 94vw 再减掉 36px 内距、外加滚动条，实际只剩 ~273px——
+   点"放大"反而更小。窄屏改成接近满宽，保证严格大于行内。 */
+@media (max-width: 768px) {
+  .anim-lightbox {
+    padding: 4px;
+  }
+  .anim-lightbox__card {
+    width: 100%;
+    padding: 6px;
+  }
+  /* 光"比行内宽"不够：720 单位画布在 375px 屏上只放到 0.45×，
+     11px 的规格下限字号实际只剩 4.9px，照样读不了。
+     这里给画布一个宽度下限并允许横向平移，字号回到 ~10px 起。 */
+  .anim-lightbox__stage {
+    overflow-x: auto;
+  }
+  .anim-lightbox__stage svg {
+    min-width: 680px;
+  }
+}
 .anim-lightbox__close {
   position: sticky;
   float: right;

@@ -1,0 +1,3 @@
+{"file":".trellis/spec/docs-site/animation.md","reason":"保留两种作者入口与动画行为"}
+{"file":".trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md","reason":"旧实现代码块污染与真实 renderer 证据"}
+{"file":".trellis/tasks/11-06-animation-d2-closure/prd.md","reason":"按 R1–R5 验收；新增回归需审查，task_verify 独立报告"}
