@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="GPIO 输出速度四档：上升沿越陡，翻转越快，但振铃与 EMI 越大"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="GPIO 输出速度四档：上升沿越陡，翻转越快，但振铃与 EMI 越大"><g transform="translate(0,+2.9)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">OSPEEDR 四档</text>
 <path d="M30 18 L78 18 L110 12" stroke-width="1.8"/>
 <text x="8" y="22" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2M</text>

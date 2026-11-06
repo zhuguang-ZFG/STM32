@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="SPL 三层基础设施：基址宏给名字、结构体收字段、位掩码给位号"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="SPL 三层基础设施：基址宏给名字、结构体收字段、位掩码给位号"><g transform="translate(+33.5,+1.5)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">三层叠加，函数只是翻译</text>
 <rect x="8" y="18" width="176" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">① 基址宏：GPIOA_BASE = 0x40020000</text>
 <path d="M96 34 L96 40" stroke-width="1.8"/>

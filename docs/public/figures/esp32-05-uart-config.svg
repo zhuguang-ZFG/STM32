@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="uart_config_t 八字段落位：baud_rate 进 CLKDIV，data/parity/stop 进 LCR，流控与时钟源进 CONF0"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="uart_config_t 八字段落位：baud_rate 进 CLKDIV，data/parity/stop 进 LCR，流控与时钟源进 CONF0"><g transform="translate(0,-3)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
 <rect x="8" y="10" width="136" height="72" rx="3" stroke-width="1.4"/>
 <text x="12" y="22" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">uart_config_t</text>
 <text x="12" y="34" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">baud_rate</text> <text x="12" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">data_bits</text>
