@@ -71,7 +71,7 @@ Sleep 只停 CPU、Stop 停 1.2V 域时钟保留 SRAM、Standby 几乎全断电�
 
 ## 一、三档对比：停什么、留什么、谁唤醒、醒来到哪
 
-供电域矩阵先看图：深底是断电的域——Run 全活，Stop 停 1.2V 域时钟但 SRAM/RTC 还在，Standby 只剩备份域守夜。
+供电域矩阵先看图，深底是断电的域：Run 全活，Stop 停 1.2V 域时钟但 SRAM/RTC 还在，Standby 只剩备份域守夜。
 
 ![三档睡眠供电域矩阵：深底为断电域，Standby 只留 RTC 与备份 SRAM](/arch/pwr-domains.png)
 
