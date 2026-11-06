@@ -86,9 +86,13 @@ export function readAnim(name) {
   return cache.get(name)
 }
 
+// 一张图里 dur 不止一个：阶段组的 dur 是主时间轴，脉冲/爬线另有自己的短 dur。
+// "一轮"要取最长者——与 scripts/anim-lint.mjs 的主时长口径（Math.max）一致。
+// 取首个匹配会把 12s 主轴读成 1.5s：标签、进度条周期，以及"减少动效"的静止帧
+// （setCurrentTime(dur*0.9)）全跟着错，静止帧会停在第①阶段而不是结论帧。
 export function animDuration(raw) {
-  const m = raw.match(/dur="([\d.]+)s"/)
-  return m ? m[1] : ''
+  const durs = [...raw.matchAll(/dur="([\d.]+)s"/g)].map((m) => Number(m[1]))
+  return durs.length ? String(Math.max(...durs)) : ''
 }
 
 export function decorateAnim(raw, slug) {

@@ -40,8 +40,15 @@ function toggle() {
 // 全屏副本不复制 DOM：用同一份 markup 再渲染一份。SMIL 各自跑，
 // 打开时把当前时刻与暂停状态同步过去，保证"减少动效"用户看到的是静止帧。
 function openLightbox() {
+  lastFocus = document.activeElement
   lightbox.value = true
-  nextTick(syncLightbox)
+  // 对话框打开后背景不该还能滚：滚轮会穿透到页面，手机上尤其明显。
+  document.body.style.overflow = 'hidden'
+  nextTick(() => {
+    syncLightbox()
+    // 焦点必须进到对话框里，否则键盘用户仍停在后面正文的第一个控件上。
+    lightboxStage.value?.closest('.anim-lightbox__card')?.querySelector('.anim-lightbox__close')?.focus()
+  })
 }
 
 function syncLightbox() {
@@ -56,14 +63,41 @@ function syncLightbox() {
 }
 
 function closeLightbox() {
+  if (!lightbox.value) return
   lightbox.value = false
+  document.body.style.overflow = ''
+  // 回到触发它的"放大"按钮，键盘阅读的位置不丢。
+  lastFocus?.focus?.()
+  lastFocus = null
 }
 
 function onKey(e) {
-  if (e.key === 'Escape') closeLightbox()
+  if (!lightbox.value) return
+  if (e.key === 'Escape') {
+    closeLightbox()
+    return
+  }
+  if (e.key !== 'Tab') return
+  // 焦点圈在对话框内：出得去的对话框等于把键盘用户丢回正文。
+  const card = lightboxStage.value?.closest('.anim-lightbox__card')
+  const items = card
+    ? [...card.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])')].filter((el) => !el.disabled)
+    : []
+  if (!items.length) return
+  const first = items[0]
+  const last = items[items.length - 1]
+  const active = document.activeElement
+  if (e.shiftKey && (active === first || !card.contains(active))) {
+    e.preventDefault()
+    last.focus()
+  } else if (!e.shiftKey && (active === last || !card.contains(active))) {
+    e.preventDefault()
+    first.focus()
+  }
 }
 
 let observer = null
+let lastFocus = null
 
 onMounted(() => {
   // 尊重系统偏好但不替用户做决定：默认停在静止帧，点「播放」即可跑起来。
@@ -96,6 +130,8 @@ onMounted(() => {
 onUnmounted(() => {
   observer?.disconnect()
   window.removeEventListener('keydown', onKey)
+  // 组件在对话框打开期间被卸载（路由切走）时别把页面永久锁死。
+  if (lightbox.value) document.body.style.overflow = ''
 })
 </script>
 

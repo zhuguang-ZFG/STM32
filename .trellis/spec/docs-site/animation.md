@@ -58,6 +58,15 @@
 - `config.mts` 的 `anim-figure-block` 规则把独占一行的 `![](/anim/x.svg)` 换成 `<AnimFigure>`，
   并把 SVG 原文转义后作为属性内联进该页 chunk（不进共享 chunk，避免每页都背 34 张图）。
   段落里塞 `<figure>` 会被 HTML 解析器挪走 → hydration mismatch，所以必须拆出 `<p>`。
+- **两种作者写法都成立**：站点侧认 `![图注](/anim/x.svg)`；书籍正文的 `<AnimFigure src="/anim/x.svg" />`
+  （`mcu-book/build_html.py:63` 的 `ANIM_TAG` 认它，印前渲染成静态 `<img class="anim">`）
+  由 `config.mts` 的 `anim-figure-tag` 在 block 解析后、inline 解析前识别独占源码一行的顶层 `html_inline`，直接复用 `emit(name, caption)` 内联 SVG。
+  三页 `build/00-toolchain.md`、`build/06-flash-debug.md`、`c/00-c-in-mcu.md` 用后者——
+  **不要为了"统一"把它们改回图片语法**，那样会丢掉书籍侧的 `caption`/静态图语义。
+
+  **边界**：不得在 block 前全局改写 `state.src`；那会污染围栏/注释并吞掉四空格代码缩进。
+  `fence`/`code_block`、注释及与正文同行的标签保持原样；caption 不经图片 alt 二次解析。
+  `tests/animation-markdown.test.mjs` 用真实 VitePress 配置覆盖代码保真、LF/CRLF、0–3 空格、图注转义与混排。
 - `decorateAnim()` 给每个 `id` 加 `af-<slug>-` 前缀（同页多图时 `url(#arr)` 会串到上一张图的箭头），
   并保留自闭合 `/`（少了它 `<rect/>` 会把后面的兄弟节点吞成子节点）。
 - `AnimFigure.vue` 提供播放/暂停、进度条、`prefers-reduced-motion` 默认停在静止帧；
