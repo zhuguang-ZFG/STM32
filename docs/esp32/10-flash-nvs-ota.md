@@ -7,13 +7,13 @@ minutes: 45
 
 # P10 16MB 的版图：分区表、NVS 与 OTA
 
-> 🎯 STM32 的 Flash 布局是你链接脚本里画的；ESP32 的 16MB Flash 归一张 **CSV 分区表** 管：哪块放 bootloader、哪块放 app、哪块存参数——而 OTA 的全部秘密，就是"两个 app 分区轮流坐庄 + 一个 otadata 记票"。
+> 🎯 STM32 的 Flash 布局是你链接脚本里画的；ESP32 的 16MB Flash 归一张 **CSV 分区表** 管：哪块放 bootloader、哪块放 app、哪块存参数。而 OTA 的全部秘密，就是"两个 app 分区轮流坐庄 + 一个 otadata 记票"。
 
 ## 本章精髓
 
-1. 分区表 CSV 逐字段 name/type/subtype/offset/size/flags：`factory`（出厂 app）、`ota_0/ota_1`（升级候选）、`nvs`（键值存储）、`phy_init`（射频校准）、`spiffs/fatfs`（文件系统），16MB 的每一 KB 都有户口。
-2. NVS 是"磨损均衡的键值库"：nvs_set/get 背后是按页管理+CRC 校验+掉电安全的迷你文件系统，Wi-Fi 凭据、设备配置、计数器的标准住所（别再自己写 Flash 扇区了，对照 [S13](../stm32/13-flash-iap.md) 的手工方案）。
-3. OTA 双槽机制：新固件写进另一个 ota 分区→校验→otadata 指向新槽→重启→**新固件自检通过后 esp_ota_mark_app_valid_cancel_rollback**，在启用 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 时，否则下次启动才会回滚旧槽："防变砖"不是口号，是这套状态机。
+1. 分区表 CSV 逐字段 name/type/subtype/offset/size/flags：`factory`（出厂 app）、`ota_0/ota_1`（升级候选）、`nvs`（键值存储）、`phy_init`（射频校准）、`spiffs/fatfs`（文件系统）。16MB 的每一 KB 都有户口。
+2. NVS 是"磨损均衡的键值库"：nvs_set/get 背后是按页管理+CRC 校验+掉电安全的迷你文件系统。Wi-Fi 凭据、设备配置、计数器的标准住所（别再自己写 Flash 扇区了，对照 [S13](../stm32/13-flash-iap.md) 的手工方案）。
+3. OTA 双槽机制：新固件写进另一个 ota 分区→校验→otadata 指向新槽→重启。**新固件自检通过后 esp_ota_mark_app_valid_cancel_rollback**，这一步只在启用 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 时需要；否则下次启动才会回滚旧槽。"防变砖"不是口号，是这套状态机。
 
 回滚选项默认未启用；先配置 bootloader，再验证 NEW → PENDING_VERIFY → VALID/ABORTED 状态。不能将不开回滚时的行为套入此流程。
 
@@ -105,7 +105,7 @@ subtype 户口本（本章主角全在这）：
 2. 构建时 gen_esp32part.py 把 CSV 编译成二进制烧进 0x8000；`idf.py partition-table` 打印解析结果，改完表先跑它，对齐、越界当场报错，不用等烧录翻车。
 3. 内置的 "Factory app, two OTA definitions" 是 4MB 视角的参考布局（factory/ota_0/ota_1 各 1M），16MB 板照着扩容即可。
 
-实践铁律：**两个 ota 槽等大**。轮流坐庄的两个庄家地位必须对称：不等大不会立刻报错，但构建系统会在"固件只装得进部分 app 槽"时警告（Partition Size Checks），OTA 轮转的隐患从第一天就埋下。
+实践铁律：**两个 ota 槽等大**。轮流坐庄的两个庄家地位必须对称。不等大不会立刻报错，但构建系统会在"固件只装得进部分 app 槽"时警告（Partition Size Checks）——OTA 轮转的隐患从第一天就埋下。
 
 ![ESP32 Flash 分区与 OTA：otadata 指向当前 app 槽，新固件写入另一槽；失败可回滚](/figures/esp32-10-flash-nvs-ota.svg)
 
@@ -150,7 +150,7 @@ nvs_close(h);
 
 ## 三、boot_count 实战：第一笔持久化资产
 
-IDF 官方 examples/storage/nvs_rw_value 就是一个"重启计数器"（键名 restart_cnt），我们把它还原成最小形态：
+IDF 官方 examples/storage/nvs_rw_value 就是一个"重启计数器"（键名 restart_cnt）。我们把它还原成最小形态：
 
 ```c
 #include <stdio.h>
@@ -188,7 +188,7 @@ void app_main(void)
 烧录后连续断电重启五次，monitor 里看到 1→2→3→4→5。三个关键点值得逐行咂摸：
 
 - **首次启动**：第 ③ 步 NOT_FOUND，count 保持初值 0，打印 1："读不到旧值"被翻译成"第一次"，不需要额外的标志位。
-- **重启不等于丢数据**：断电、按 EN 复位、monitor 里 Ctrl-T Ctrl-R 热复位，三种方式对 NVS 毫无区别，重启后读到的都是上次 commit 落盘的那个值。掉电安全不靠运气，靠的是第二节"半条目 CRC 不过被当不存在"的机制。
+- **重启不等于丢数据**：断电、按 EN 复位、monitor 里 Ctrl-T Ctrl-R 热复位，三种方式对 NVS 毫无区别——重启后读到的都是上次 commit 落盘的那个值。掉电安全不靠运气，靠的是第二节"半条目 CRC 不过被当不存在"的机制。
 - **第 ④ 步在 Flash 里发生了什么**：set 没有碰旧条目，而是在活动页追加了一个新条目（同 key 以最新为准）；重启几十次后活动页写满，库自动做 Erasing 整理（页满后的自动整理行为），你一行代码都不用写。
 
 举一反三：把"每次启动 +1"换成"上次连的 Wi-Fi""累计运行秒数""报警次数"：所有"断电要记住的事"都是这一个模式的变体。
@@ -223,7 +223,7 @@ esp_restart();
 两处设计值得品味：
 
 - `esp_ota_get_next_update_partition()` 从当前运行槽出发轮转找下一个，你不用算"现在 0 号所以写 1 号"。
-- `esp_ota_end()` 是校验闸门：刚写完的镜像不是合法 app（或开了安全启动后签名不过），直接返回 ESP_ERR_OTA_VALIDATE_FAILED，坏 bin 在这被拦下，而不是变砖后才发现。
+- `esp_ota_end()` 是校验闸门：刚写完的镜像不是合法 app（或开了安全启动后签名不过），直接返回 ESP_ERR_OTA_VALIDATE_FAILED。坏 bin 在这被拦下，而不是变砖后才发现。
 
 **然后是本章最重要的一段事实**：上面五步只是"换庄"。防变砖的"自证清白"状态机，**只在 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 打开后才存在（默认未启用）**。官方文档的 App OTA State 全图：
 
@@ -253,7 +253,7 @@ esp_restart();
 - 只有 ota 槽会回滚，factory 槽不参与回滚（官方明确）。
 - 开了回滚、当前固件还停在 PENDING_VERIFY 时就发起下一次 OTA，`esp_ota_begin()` 直接报 ESP_ERR_OTA_ROLLBACK_INVALID_STATE：先把上一版转正，再升级下一版。
 
-最后一条工具链事实：CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 编译在 **bootloader** 里，menuconfig 改完必须 `idf.py flash` 连 bootloader 一起重烧，只烧 app 不生效，与常见坑 4"分区表与 boot 不同步"是同一类失配。
+最后一条工具链事实：CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 编译在 **bootloader** 里。menuconfig 改完必须 `idf.py flash` 连 bootloader 一起重烧，只烧 app 不生效，与常见坑 4"分区表与 boot 不同步"是同一类失配。
 
 ## 五、本地 OTA 演练：切庄、转正与回滚三连
 
@@ -319,7 +319,7 @@ if (esp_ota_get_state_partition(running, &st) == ESP_OK
 
 - **Flash 加密**：Flash 落盘密文、运行时由硬件透明加解密，密钥固化在 eFuse（一次性烧写），防"拆片读固件"。menuconfig 分 Development/Release 两档：前者可反复试错，后者一次性烧死。第一节 flags 提过：app、bootloader、分区表、otadata、nvs_keys 这五类**无条件加密**，其余分区要落密文得标 encrypted。
 - **安全启动（Secure Boot）**：信任链 ROM→bootloader→app：bootloader 用 eFuse 里的公钥摘要验 app 签名。效果：**没签名的 bin bootloader 直接拒收**。配合 OTA：esp_ota_end 的校验闸从"拦坏镜像"升级到"拦未签名镜像"（签名验证失败同样返回 ESP_ERR_OTA_VALIDATE_FAILED）。
-- **anti-rollback**：第四节的状态机防"新固件挂了"（可用性），防不了"故意刷旧版"（安全性：旧版的漏洞还没修）。CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK（与回滚选项配套使用）在镜像描述符 esp_app_desc_t 里引入 secure_version，bootloader 只选"版本号不低于芯片内已固化值"的镜像，只许升不许降。两个细节：secure_version 只有 16 位（升级次数有限）；factory/test 槽不参与这套机制。
+- **anti-rollback**：第四节的状态机防"新固件挂了"（可用性），防不了"故意刷旧版"（安全性：旧版的漏洞还没修）。CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK（与回滚选项配套使用）在镜像描述符 esp_app_desc_t 里引入 secure_version。bootloader 只选"版本号不低于芯片内已固化值"的镜像，只许升不许降。两个细节：secure_version 只有 16 位（升级次数有限）；factory/test 槽不参与这套机制。
 - **NVS 加密**：前门上了锁（固件加密），后门还敞着（Wi-Fi 密码明文躺在 NVS）：nvs_keys 分区存密钥，把参数也密文化。官方提醒：NVS 加密防篡改防读取，但防不了"整分区擦除"这种暴力。
 - **不开安全启动也要签 OTA**：CONFIG_SECURE_SIGNED_APPS_NO_SECURE_BOOT，不上安全启动硬件链，但 OTA 镜像仍要求签名验证，性价比很高的中间档。
 
