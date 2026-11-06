@@ -11,7 +11,7 @@ minutes: 60
 
 ## 本章精髓
 
-1. **七大寄存器全部改名、不改岗**：CTL↔MODER、OMODE↔OTYPER、OSPD↔OSPEEDR、PUD↔PUPDR、ISTAT↔IDR、OCTL↔ODR、BOP↔BSRR：偏移 0x00~0x1C 逐字相同，位宽与编码也相同，**名字是唯一差异**（gd32f4xx_gpio.h:52-63）。
+1. **七大寄存器全部改名、不改岗**：CTL↔MODER、OMODE↔OTYPER、OSPD↔OSPEEDR、PUD↔PUPDR、ISTAT↔IDR、OCTL↔ODR、BOP↔BSRR。偏移 0x00~0x1C 逐字相同，位宽与编码也相同，**名字是唯一差异**（gd32f4xx_gpio.h:52-63）。
 2. **GD32 多两件兵器**：`BC`（0x28，独立清零）和 `TG`（0x2C，**硬件翻转**），STM32F4 压根没有这两个寄存器。点灯的"读-改-写翻转"在 GD32 是一条 `str`。
 3. **基址与使能位与 STM32F4 完全相同**：GPIOA=0x40020000、GPIOF=0x40021400，时钟使能 `RCU_AHB1EN` bit0~bit8（GPIOA~GPIOI）；连"忘开时钟"这个新手第一大坑，两边都长一个样。
 4. **编码一字不差**：模式 0/1/2/3=输入/输出/复用/模拟，上下拉 0/1/2=浮空/上/下，推挽开漏 0/1，S3 背过的"先清后置"肌肉记忆**原样可用**。
