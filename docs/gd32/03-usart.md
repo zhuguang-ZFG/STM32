@@ -186,7 +186,7 @@ GD32 库的风格：**函数名小写下划线**（`usart_init` vs `USART_Init`�
 <details><summary>看答案</summary>GD32 叫 RBNE（Receive Buffer Not Empty）和 TBE（Transmit Buffer Empty）。规律：状态位用 B（Buffer）替代 X（STM32 的 RXNE = Receive Not Empty，GD32 加了 Buffer 更直白）；动作位加 EN 后缀（UEN/REN/TEN）。迁移时把 STM32 的 RXNE/TXE 宏名换成 RBNE/TBE。</details>
 
 5. GD32 库的 `usart_init` 与 STM32 SPL 的 `USART_Init` 在 API 风格上有什么差异？
-<details><summary>看答案</summary>STM32 SPL 用结构体打包（USART_InitTypeDef 含 baud/word_len/stop/parity/mode 传给 USART_Init），GD32 库直接传参数（usart_init(USART0, baud, word_len, stop, parity, mode) 不打包）。命名风格：STM32 驼峰大写（USART_Init），GD32 小写下划线（usart_init）。功能等价，代码风格不同。</details>
+<details><summary>看答案</summary>STM32 SPL 用结构体打包（USART_InitTypeDef 含 baud/word_len/stop/parity/mode 传给 USART_Init）；GD32 库直接传参数（usart_init(USART0, baud, word_len, stop, parity, mode) 不打包）。命名风格：STM32 驼峰大写（USART_Init），GD32 小写下划线（usart_init）。功能等价，代码风格不同。</details>
 
 ## 对照表：本章概念 → 仓库与上游落点
 
