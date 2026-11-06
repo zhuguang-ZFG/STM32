@@ -1,0 +1,55 @@
+{
+  "scope": "planning only; B1/B2 bounded prose; no source edits",
+  "measurements": [
+    {
+      "file": "docs/build/01-four-steps.md",
+      "sha256": "98e8a0b5776a591f493a6bdeaf18da3c03d380d0fdbde731b4df9aae7277c642",
+      "metrics": {
+        "count": 75,
+        "longShare": 2.7,
+        "avg": 30.5
+      }
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "sha256": "cc5d9f47ab2fef59edbaa56599f0d2afcf00dda5b2906db620bd334dc0bc32e5",
+      "metrics": {
+        "count": 143,
+        "longShare": 8.4,
+        "avg": 32.2
+      }
+    },
+    {
+      "file": "docs/build/00-toolchain.md",
+      "sha256": "ddc0b844b519b933fb2463378ad92f379a56cdc81ed959c9bc062dc3abb86e45",
+      "metrics": {
+        "count": 98,
+        "longShare": 6.1,
+        "avg": 31.9
+      }
+    },
+    {
+      "file": ".prose-baseline.json",
+      "sha256": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b"
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "sha256": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869"
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "sha256": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9"
+    }
+  ],
+  "graph": "Only unrelated clideck indexed, behind11; mcu context/impact unavailable",
+  "checksRun": [
+    "Existing metrics() called directly on current B0/B1/B2"
+  ],
+  "notRun": [
+    "prose:check",
+    "reading:check",
+    "book:check",
+    "docs:build",
+    "task_verify"
+  ]
+}

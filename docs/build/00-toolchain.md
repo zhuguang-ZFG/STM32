@@ -7,13 +7,13 @@ minutes: 25
 
 # B0 工具链全景：交叉编译四件套各管什么
 
-> 🎯 你电脑是 x86 的，芯片是 ARM 的——在"鸡"上孵"鸭"蛋，这就是交叉编译。负责孵蛋的是一套叫 toolchain 的组合拳：gcc 翻译、binutils 打杂、gdb 看诊、newlib 供血。
+> 🎯 电脑是 x86 的，芯片是 ARM 的。在"鸡"上孵"鸭"蛋：编译器在电脑运行，生成的程序交给芯片运行。这就是交叉编译。
 
 ## 本章精髓
 
-1. "交叉"在哪：编译器本身跑在 x86-64（build），产出的机器码属于 ARM Cortex-M4（target），`arm-none-eabi-` 前缀就是这个身份的铭牌。
-2. 四件套分工：gcc（编译+链接调度）、binutils（as/ld/objcopy/objdump/nm/readelf）、gdb（调试）、newlib（给裸机用的精简 C 库）。
-3. 为什么裸机没有 glibc 可用：没有 Linux 系统调用，printf 的"输出"都不知往哪去。newlib 允许你只实现几个 `_write` 钩子就把 printf 接到串口（S7 实操）。
+1. "交叉"在哪：编译器本身跑在 x86-64（build），产出的机器码属于 ARM Cortex-M4（target）。先分清谁在运行、谁是产物，再看 `arm-none-eabi-` 前缀。
+2. 工具链（toolchain）是配合使用的一组工具。四件套各有分工：gcc 调度编译和链接，binutils 提供 as/ld/objcopy/objdump/nm/readelf 等工具，gdb 负责调试，newlib 提供给裸机用的精简 C 库。
+3. 为什么裸机没有 glibc 可用：没有 Linux 系统调用，printf 就没有现成的输出去处。newlib 留出底层接口，你实现几个 `_write` 钩子，就能把 printf 接到串口（S7 实操）。
 
 - **能理解**：`arm-none-eabi-` 三段命名各管什么；为什么裸机不能用 glibc。
 - **能用**：`-print-search-dirs` / `-dumpspecs` 自查工具链环境，PATH 冲突能自救。
@@ -24,16 +24,16 @@ minutes: 25
 
 ## 先跑起来（10 分钟 quick win）
 
-跑这两条，把工具链的"五脏六腑"看个大概：
+先查两个问题：这套工具链到哪里找文件？gcc 又怎样调用其他工具？
 
-跑之前先押一题：这条 ARM 版的编译器找启动文件和库时，会不会顺路去翻宿主机上那个本机编译器的抽屉？押一个会或不会，再对输出里那份目录清单。
+跑之前先猜：ARM 编译器会使用自己安装目录里的库，还是宿主机本机编译器的库？运行后对照目录清单，看它实际指向哪里。
 
 ```bash
 arm-none-eabi-gcc -print-search-dirs     # 它去哪儿找库和头文件
 arm-none-eabi-gcc -dumpspecs | more      # gcc 内部的"调度剧本"
 ```
 
-`-print-search-dirs` 列出 libraries/startup files/include 的搜索路径，你装的工具链到底从哪儿捞 `crt0.o`、`libc.a`，一目了然。`-dumpspecs` 是 gcc 的"调度剧本"：哪个阶段调哪个 binutils 工具、按什么顺序，全在里面。
+`-print-search-dirs` 列出 libraries/startup files/include 的搜索路径。先看目录属于哪套工具链，再找 `crt0.o`、`libc.a` 的来源。`-dumpspecs` 则给出 gcc 的内部规则：哪个阶段调用哪个 binutils 工具、按什么顺序调用。原来那份"调度剧本"，说的就是这些规则。
 
 ## 本机工具链事实
 
@@ -58,19 +58,19 @@ arm-none-eabi-gcc -dumpspecs | more      # gcc 内部的"调度剧本"
 
 <AnimFigure src="/anim/toolchain-relay.svg" />
 
-一次编译涉及三个"角色"：
+先分清两个对象：编译器本身也是一个程序；它处理源码后，还会生成另一个程序。读下面的三个"角色"时，别把编译器与它的产物混在一起：
 
 - **build**：编译器自己跑在什么机器上（你的 x86-64 PC）；
 - **host**：产出的**编译器**跑在什么机器上（一般也是 x86-64 PC）；
 - **target**：产出的**机器码**属于什么体系（ARM Cortex-M4）。
 
-普通 PC 开发 build=host=target=x86，叫**本机编译**。嵌入式 build=host=x86、target=ARM，叫**交叉编译**：编译器和被编译的程序跑在两个不同的体系上。`arm-none-eabi-gcc` 就是 target=arm 的交叉 gcc；它的 build/host 都是 x86（你在 PC 上跑它），但它吐出来的是 ARM 机器码。
+普通 PC 开发 build=host=target=x86，叫**本机编译**。嵌入式 build=host=x86、target=ARM，叫**交叉编译**：运行编译器的机器，与运行编译产物的芯片，使用不同体系。`arm-none-eabi-gcc` 就是 target=arm 的交叉 gcc。它的 build/host 都是 x86，也就是在 PC 上运行；生成的却是交给 ARM 芯片执行的机器码。
 
 为什么不能直接用系统 gcc 编 F407：系统 gcc 的 target 是 x86-64，吐 x86 机器码，F407 的 ARM 内核根本不认识。必须装一套 target=arm 的交叉工具链。前缀 `arm-none-eabi-` 是区分本机版与交叉版的标准做法：`gcc` 编 x86，`arm-none-eabi-gcc` 编 ARM。
 
 ## 二、binutils 兵器谱：七件兵器各一招
 
-gcc 是总指挥，但真正"打"的是 binutils 这套工具。本站 B2/B5 两章几乎全是它们的戏份：
+gcc 负责调度，binutils 里的工具各做一项具体工作：汇编、链接、转换格式或查看固件。查本站 B2/B5 的编译产物时，会反复用到下表里的工具：
 
 | 工具 | 一招鲜 | 本站用到处 |
 |---|---|---|
@@ -90,7 +90,7 @@ gcc 是总指挥，但真正"打"的是 binutils 这套工具。本站 B2/B5 两
 
 C 标准库（printf/malloc/string.h）在 PC 上由 glibc 提供，但 glibc 依赖 Linux 系统调用，裸机没有 OS，没有 `write()` 系统调用，printf 的"输出"不知往哪去。
 
-**newlib** 是为裸机/嵌入式设计的精简 C 库：它把"系统相关"的部分抽成一组**钩子函数**，你只需实现几个底层钩子，上层 printf/malloc 就能工作：
+**newlib** 也是 C 库，但面向裸机/嵌入式。它把依赖具体系统的工作留给一组**钩子函数**：库调用这些函数，底层实现由你补上。这样，上层仍然使用 printf/malloc，底层才处理串口输出、堆空间等具体问题：
 
 | 钩子 | 干什么 | 本站实现处 |
 |---|---|---|
@@ -99,7 +99,9 @@ C 标准库（printf/malloc/string.h）在 PC 上由 glibc 提供，但 glibc �
 | `_close/_lseek/_read/_isatty` | 文件操作占位 | 裸机一般空实现 |
 | `_exit/_kill/_getpid` | 进程占位 | 裸机一般空实现 |
 
-关键设计：**newlib 不替你决定"输出到哪"**：你实现 `_write` 把字节塞进 UART 寄存器，printf 就走串口；塞进 SWO，就走 ITM；塞进 Semihosting（[B6](06-flash-debug.md)），就走调试器回 PC。同一份 printf 代码，钩子不同，出口不同。这是 [S7](../stm32/07-usart.md) printf 重定向的全部原理，也是 [C7](../c/07-ub-misra.md) 里"UB 最怕库内部优化"的库层反面：newlib 把"系统依赖"外提成钩子，让裸机也能用标准 C 库。
+以 printf 为例，**newlib 不替你决定"输出到哪"**。你实现 `_write`，把收到的字节写进 UART 寄存器，printf 就走串口。也可以把输出接到 SWO，经 ITM 输出；或接到 Semihosting（[B6](06-flash-debug.md)），经调试器送回 PC。
+
+上层仍是同一份 printf 代码，改变的是底层钩子的实现。这就是 [S7](../stm32/07-usart.md) 的 printf 重定向。再对照 [C7](../c/07-ub-misra.md) 里的"UB 最怕库内部优化"：库内的行为会影响上层代码；这里 newlib 则把系统相关的工作明确交给钩子，让裸机也能使用标准 C 库。
 
 ## 四、版本与来源：为什么别用"打包版杂牌军"
 
@@ -160,7 +162,7 @@ ARM 官方维护 **Arm GNU Toolchain**（gcc/binutils/newlib/gdb 一体打包）
 - 工具链从"一坨 exe"变成职责分明的四件套；
 - 会查 gcc 的搜索路径和调度剧本，环境问题能自救。
 
-开场那句「在鸡上孵鸭蛋」现在能落到实处了：孵蛋这套家什各有分工，翻译、打杂、看诊、供血四个抽屉，往哪儿伸手你都能自查。下次环境报错说找不到某个文件，先别急着重装，看一眼它自己的搜索路径，答案常常就在那一屏里。
+开场那句「在鸡上孵鸭蛋」，现在对应的是明确的分工：工具在电脑上运行，产物交给芯片执行。下次环境报错说找不到某个文件，先别急着重装。先查工具链的搜索路径，确认它找的是哪套文件。
 
 <div class="achievement">
 ✅ 下一站：<a href="01-four-steps.html">B1 四步构建</a>：把 main.c 一步步变成机器码，中间产物全留下。
