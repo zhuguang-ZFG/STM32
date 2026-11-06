@@ -67,6 +67,7 @@
   **边界**：不得在 block 前全局改写 `state.src`；那会污染围栏/注释并吞掉四空格代码缩进。
   `fence`/`code_block`、注释及与正文同行的标签保持原样；caption 不经图片 alt 二次解析。
   `tests/animation-markdown.test.mjs` 用真实 VitePress 配置覆盖代码保真、LF/CRLF、0–3 空格、图注转义与混排。
+  主题以 `defineAsyncComponent(() => import('./AnimFigure.vue'))` 注册：无动画的首页不加载控件运行时，含动画页面仍由 SSR 输出图形并加载控件；保留 140KB 首屏预算，不靠放宽门限吸收增长。
 - `decorateAnim()` 给每个 `id` 加 `af-<slug>-` 前缀（同页多图时 `url(#arr)` 会串到上一张图的箭头），
   并保留自闭合 `/`（少了它 `<rect/>` 会把后面的兄弟节点吞成子节点）。
 - `AnimFigure.vue` 提供播放/暂停、进度条、`prefers-reduced-motion` 默认停在静止帧；
