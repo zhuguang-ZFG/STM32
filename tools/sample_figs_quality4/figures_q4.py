@@ -236,55 +236,62 @@ def ch18_uart_garbled() -> Svg:
 
 
 def ch19_pick_ladder() -> Svg:
-    c = Svg(960, 880, "Project pick ladder", "★ count vs skills you already accepted")
-    c.header(tag="19", tag_color=T.CYAN)
-    c.text(40, 86, "Pick the smallest project that forces one new bus — not the coolest demo GIF.", size=15, fill=T.TEXT, weight="700")
-    tiers = [
-        ("★★", "BT car / DHT logger", "need: UART + GPIO", "adds: one sensor bus", T.GREEN),
-        ("★★★", "ADC+DMA scope / USB / IAP", "need: DMA or USB clock", "adds: buffers + accept", T.AMBER),
-        ("★★★★", "LA / CAN / balance / gateway", "need: Stage C gates", "adds: RTOS or multi-node", T.VIOLET),
-    ]
-    for i, (stars, names, need, adds, col) in enumerate(tiers):
-        y = 120 + i * 130
-        c.rect(40, y, 880, 110, fill=T.PANEL, stroke=col, rx=8)
-        c.text(56, y + 34, stars, size=20, fill=col, weight="700")
-        c.text(160, y + 34, names, size=15, fill=T.TEXT, weight="700")
-        c.text(56, y + 68, need, size=13, fill=T.MUTED)
-        c.text(480, y + 68, adds, size=13, fill=T.TEXT)
-    c.rect(40, 530, 880, 140, fill=T.BG2, stroke=T.GREEN, rx=8)
-    c.text(56, 564, "Milestone rule: each week ends with a scriptable accept (LED/UART/file/hash).", size=14, fill=T.GREEN, weight="700")
-    c.text(56, 596, "Flash budget reminder: boot 16 KB + gap + APP 0xB800 on 64 KB C8 — see one-slot.gif.", size=13, fill=T.TEXT)
-    c.text(56, 628, "If SRAM < 4 KB free in map, drop printf/float before adding another task.", size=13, fill=T.MUTED)
-    credit(c, "Hand-drawn. Project selection ladder for ch19.")
+    c=Svg(960,880,"选题：从已验证的模块向前走一步","按输入、传输与容量选项目；星级不代替硬件核对")
+    c.header(tag="19",tag_color=T.CYAN)
+    c.text(40,104,"先选一个能独立重建和验收的结果",size=24,fill=T.TEXT,weight="700")
+    rows=(
+        (164,"已有 UART / PWM", "小车：命令 → 转向 / 停止", "断开遥控后进入预定停止状态",T.GREEN),
+        (346,"已有 ADC / DMA", "采集：稳定半区 → 主机 / 屏幕", "处理完前，DMA 不覆盖仍在使用的数据",T.CYAN),
+        (528,"已有模块和错误记录", "系统：CAN / IAP / RTOS", "先验收失败与恢复，再扩大节点或任务",T.AMBER),
+    )
+    for y,known,project,evidence,color in rows:
+        c.rect(40,y,262,96,fill=T.PANEL,stroke=color,rx=8)
+        c.text(60,y+40,known,size=21,fill=color,weight="700")
+        c.text(60,y+73,"现有能力",size=18,fill=T.MUTED)
+        c.arrow(312,y+48,370,y+48,color=color,sw=2)
+        c.text(392,y+35,project,size=22,fill=T.TEXT,weight="700")
+        c.text(392,y+76,evidence,size=18,fill=T.MUTED)
+    c.line(40,682,920,682,stroke=T.GRID)
+    c.text(40,730,"C8：64 KB Flash / 20 KB SRAM；先复算缓冲与镜像。",size=21,fill=T.CYAN)
+    c.text(40,774,"需要片内 CAN 时核对具体型号：F411 无 bxCAN，F407 有。",size=20,fill=T.TEXT)
+    c.text(40,814,"所选项目只增加已列明的一项不确定性，并留下复现步骤。",size=18,fill=T.MUTED)
+    credit(c,"自绘。项目组合见本章；芯片能力以对应数据手册为准。")
     return c
 
 
 def ch19_sram_budget() -> Svg:
-    c = Svg(960, 880, "SRAM 20 KB budget", "stacks + DMA buffers + .bss on F103C8")
-    c.header(tag="19", tag_color=T.AMBER)
-    c.text(40, 86, "Projects die in RAM before Flash: count buffers with the 20 KB ceiling visible.", size=15, fill=T.TEXT, weight="700")
-    rows = [
-        (".data+.bss", "~2–6 KB", "globals / tables", T.CYAN),
-        ("Main stack", "1–2 KB", "startup default", T.GREEN),
-        ("Task stacks", "N × 256–1024 B", "FreeRTOS", T.AMBER),
-        ("DMA ping-pong", "2 × ADC buf", "scope lab", T.VIOLET),
-        ("Heap", "configTOTAL_HEAP", "printf cost", T.RED),
-        ("Headroom", "≥2 KB", "interrupt nesting", T.CYAN),
-    ]
-    for i, (t, a, b, col) in enumerate(rows):
-        x = 40 + (i % 3) * 300
-        y = 120 + (i // 3) * 160
-        c.rect(x, y, 280, 140, fill=T.PANEL, stroke=col, rx=8)
-        c.text(x + 24, y + 36, t, size=15, fill=col, weight="700", mono=True)
-        c.text(x + 24, y + 72, a, size=16, fill=T.TEXT, weight="700", mono=True)
-        c.text(x + 24, y + 106, b, size=13, fill=T.MUTED)
-    c.rect(40, 460, 880, 140, fill=T.BG2, stroke=T.GREEN, rx=8)
-    c.text(56, 494, "Worked example: 2×1024 ADC + 3×512 stacks + 4 KB .bss ≈ 9 KB — fits with margin.", size=14, fill=T.GREEN, weight="700")
-    c.text(56, 526, "2×4096 ADC + fat printf heap ⇒ HardFault that looks like 'DMA bug'.", size=13, fill=T.TEXT)
-    c.text(56, 558, "Check map: `_end` / `_estack` gap; on RTOS also `xPortGetFreeHeapSize()`.", size=13, fill=T.MUTED)
-    c.rect(40, 620, 880, 80, fill=T.PANEL, stroke=T.RED, rx=8)
-    c.text(56, 654, "Trap: copying an F4 128 KB-RAM demo buffer sizes into BluePill.", size=14, fill=T.RED, weight="700")
-    credit(c, "Hand-drawn. SRAM budget card for F103C8 projects.")
+    c=Svg(960,880,"SRAM 预算：外层只计一次，堆内再细分","STM32F103C8T6 · 20480 B · 下列数值仅为预算示例")
+    c.header(tag="19",tag_color=T.AMBER)
+    c.text(40,106,"示例：heap_4 的 ucHeap 已属于 .bss",size=24,fill=T.TEXT,weight="700")
+    scale=880/20480
+    segments=((4096,"其他静态",T.CYAN),(8192,"ucHeap",T.GREEN),(2048,"MSP / C 堆",T.AMBER),(6144,"未分配地址空间",T.MUTED))
+    x=40
+    for size,label,color in segments:
+        width=size*scale
+        c.rect(x,184,width,84,fill=T.PANEL,stroke=color,rx=2)
+        if width>100:c.text(x+width/2,221,label,size=20,fill=color,anchor="middle",weight="700")
+        c.text(x+width/2,303,str(size)+" B",size=18,fill=color,anchor="middle")
+        if label=="MSP / C 堆":
+            c.line(x+width/2,182,x+width/2,154,stroke=color)
+            c.text(x+width/2,140,"MSP / C 堆预留",size=18,fill=color,anchor="middle")
+        x+=width
+    c.text(40,351,"4096 + 8192 + 2048 + 6144 = 20480 B",size=23,fill=T.CYAN,mono=True)
+    c.text(40,390,"这不是板上测量；未分配区不等于可保证的安全余量。",size=19,fill=T.MUTED)
+    c.line(40,425,920,425,stroke=T.GRID)
+    c.text(40,470,"展开 8192 B ucHeap：动态分配发生在这块内部",size=22,fill=T.GREEN,weight="700")
+    x=40
+    for size,label,color in ((4096,"动态任务栈",T.GREEN),(2048,"TCB / 队列等",T.CYAN),(2048,"heap 剩余",T.MUTED)):
+        width=size*880/8192
+        c.rect(x,510,width,98,fill=T.PANEL,stroke=color,rx=2)
+        c.text(x+width/2,549,label,size=20,fill=color,anchor="middle")
+        c.text(x+width/2,584,str(size)+" B",size=19,fill=color,anchor="middle")
+        x+=width
+    c.text(40,650,"TCB / 队列等已含管理开销；动态分配不能再加到外层。",size=22,fill=T.RED,weight="700")
+    c.line(40,688,920,688,stroke=T.GRID)
+    c.text(40,733,"map：核对静态段和 MSP 预留；DMA 缓冲按实际字节数列入。",size=19,fill=T.TEXT)
+    c.text(40,774,"运行：核对最小剩余堆、任务栈水位与中断栈峰值。",size=19,fill=T.TEXT)
+    c.text(40,814,"换分配器或改用静态任务后，按实际存储对象重算包含关系。",size=18,fill=T.MUTED)
+    credit(c,"自绘。DS5319 容量；FreeRTOS heap_4 / tasks.c 的分配关系。")
     return c
 
 

@@ -60,7 +60,7 @@ animations/sample-15-rtos-tick-flow.svg 900x620 12460 4d5c39f47b4bb681ff857b0fc5
 animations/sample-16-stop-wake-flow.svg 900x620 8897 9d5a87ae62c49aa5ee7a3c2d6dff1349867a52cc5d853c3f66570b9d7babc23a
 animations/sample-17-cfsr-flow.svg 900x620 7556 b205e001d3ae79d3d322fb58dc772a377b295ad712e8baa6b7013c3a733bf578
 animations/sample-18-boot0-flow.svg 900x620 10780 0b56640e1d752a4c673c82ea41dafa4ce670ac7093d638415aa60f7f51336068
-animations/sample-19-slot-fill-flow.svg 900x620 12364 e0fd9282611a21e24a3b229723a67ae23ef41f832f58d3ee2b7f68eae6841039
+animations/sample-19-slot-fill-flow.svg 900x620 9013 630529d8f627b438baaf4e983b3d30583d69d96444dc6dfd8200928d8822fcda
 animations/sample-20-evidence-flow.svg 900x620 12387 5d0ae27dcf1bf67fd51d8e367041a3e46b0855f6e7edd8478d6c69aea21020fd
 animations/sample-20-lookup-flow.svg 900x620 13330 31fd3cd26a383eb0c9af27c1426564d827322c1e57e8c71b9c4bdb516f23fdf9
 animations/sample-21-crystal-boot-flow.svg 900x620 12410 d3ee93e687a24642cba3951e23dd5ec60d6105113a982d638ce552c868a2b065
@@ -115,7 +115,7 @@ diagrams/h7-pinmux-conflicts.svg 900x560 7106 422b66ce1b659f837216d750bf10f80f96
 diagrams/h7-power-domains.svg 900x560 7154 d0da1b09891335ae1afac71e6beacd6d00a43a9d3151e6838eed336ea3cfb69d
 diagrams/h7-revision-clock-decision.svg 900x560 5940 7e7f3f5dc844f2c1e9e3e02506b4797dfd75a6723145dd17a3be4823bb2a5e29
 diagrams/h7-startup-evidence.svg 900x560 7720 d0bed6f9b648d7755ecc13a1c0d1123ea6f014332e4ad5982b5733f602fea29a
-diagrams/iap-acceptance-gates.svg 900x560 9398 0f4a6a1d0b50ba2cd5ecb820a736639b669f50d94f2f751253e89f52f2249d3b
+diagrams/iap-acceptance-gates.svg 900x560 8519 ccf2be6cc78c4d5542bc42a897f529340c3ae77484c399917b05d581482f741a
 diagrams/instrument-evidence-ladder.svg 900x560 6398 17eb1364f9b45c92a06969a294b1f31180503cd3879200f8ce8209ce1229c510
 diagrams/interrupt-priority.svg 900x560 11942 7f3d8b282ed7342a56b598694137c3091ca4bd4a10acc73cd5a651a9b0c7fe05
 diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f0596565606f77ef6f757d3559900d66f
@@ -228,10 +228,10 @@ diagrams/sample-18-faq-compare.svg 960x880 12390 2a822ef3b4cc63e579425ce454f1fa2
 diagrams/sample-18-hardfault-ladder.svg 960x880 7310 bfdee7612ee4e2f4447d9e2da48dd55c1f850b9b0661e418195021c7eb02913a
 diagrams/sample-18-link-map.svg 960x880 7575 d29fee7de38afbdacd08f7f253c9ef48889b3ee2d4d6ce7574da9bd72796490d
 diagrams/sample-18-uart-garbled.svg 960x880 7802 d37a8eeff0a02f3eebe7a7760e3847ea95d89bb1ab7be6368726143f53b30c80
-diagrams/sample-19-flash-fit.svg 960x980 6533 d2cf0662543657786e0dc4d3341cffdffe459035fb80771ffc5b3fe474e7cc42
-diagrams/sample-19-milestone-triage.svg 960x880 12890 2d81be3ac422aa19d92f00f67deac15db0b4b6a723ed9a4b9b0a9e9acd159897
-diagrams/sample-19-pick-ladder.svg 960x880 6333 9d8d7f1f5f767fae3192d07ec1bf47a610192f6db6970ac02cf767853b546068
-diagrams/sample-19-sram-budget.svg 960x880 8164 1cca5bafe536f79ba5e839b922207993a2380dba29c6f8ce8b8d721432fda29a
+diagrams/sample-19-flash-fit.svg 960x980 8909 4d1fa03a52e3daaac8909b349a8d9e080083a05a4c3fcf6468823b25bd406e78
+diagrams/sample-19-milestone-triage.svg 960x880 7933 aab175cd99e0eef2882e5f5577827a11c0538dad884f216309b6b7f54a234f19
+diagrams/sample-19-pick-ladder.svg 960x880 7074 ff01cd141df3b8f13315b144cbc23025cb9c213e9c1cfb860f2298e725ea2101
+diagrams/sample-19-sram-budget.svg 960x880 8421 b040cc21038928965d8d85c70e7756d5f8c1c8e78e6002df674f96935a16b89f
 diagrams/sample-20-evidence-triage.svg 960x880 15493 f020f7b8851ce0f9eb96c94c66b84a2cbe85ce3f46f0a528c80139f0fc82090d
 diagrams/sample-20-lib-compare.svg 960x880 7087 e21bc651fc7514c94cde9da5da071ca5719adbf6d1a293f1114644b9f9045d98
 diagrams/sample-20-manual-names.svg 960x880 9516 5ca7540881d3df9fae17ae57c541f648b4c8dd918d4c0c921e10b458dae0c65a
@@ -585,7 +585,7 @@ class SampleSvgCTests(unittest.TestCase):
             for path in gifs
         )
         self.assertEqual(
-            "976aaf0487d75a2fda6767afd69b4bf9c0f7a07ffa890f4ffd3f325196eb022e",
+            "4f558fe7c4b8653b4a0f8840f9416a66aa09fc3a242d74dbfda6392f5f57c43e",
             hashlib.sha256(listing.encode("utf-8")).hexdigest(),
         )
 

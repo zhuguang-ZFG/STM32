@@ -1015,34 +1015,43 @@ def boot_triage() -> Svg:
 
 
 def flash_fit() -> Svg:
-    canvas = Svg(
-        960,
-        980,
-        "C8 只有一张 0xB800 的 APP；两张是 110 KB；65536 字节大于 20 KB SRAM",
-        "STM32F103C8T6 · chapter 12 map · DS5319 64 KB / 20 KB",
-    )
-    canvas.header(tag="19", tag_color=T.CYAN)
-    canvas.text(40, 86, "STM32F103C8T6  Flash 0x08000000 to 0x08010000  SRAM 20 KB", size=16, fill=T.TEXT, weight="700")
-    canvas.text(40, 112, "16 KB + 2 KB + 46 KB = 64 KB. APP length 0xB800", size=14, fill=T.CYAN)
-    canvas.text(40, 138, "SRAM 20 KB = 20480 bytes", size=14, fill=T.AMBER)
-    canvas.text(40, 170, "正常路径  one application ends before 0x08010000", size=16, fill=T.GREEN, weight="700")
-    canvas.rect(40, 184, 880, 150, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    canvas.text(56, 214, "bootloader 0x08000000, 16 KB, ends at 0x08004000", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 240, "parameters 0x08004000, 2 KB, ends at 0x08004800", size=14, fill=T.GREEN)
-    canvas.text(56, 266, "one APP at 0x08004800, 0xB800, ends at 0x08010000", size=14, fill=T.TEXT)
-    canvas.text(56, 292, "denominator 4096. Code 2048 is 1.65 V", size=13, fill=T.MUTED)
-    canvas.text(40, 360, "失败路径  a second 0xB800 and a 65536-byte array", size=16, fill=T.RED, weight="700")
-    canvas.rect(40, 374, 880, 130, fill=T.PANEL, stroke=T.RED, rx=8)
-    canvas.text(56, 404, "16 + 2 + 46 + 46 = 110 KB, drawn out to 0x0801B800", size=15, fill=T.TEXT, weight="700")
-    canvas.text(56, 430, "that end is outside this 64 KB", size=14, fill=T.RED)
-    canvas.text(56, 456, "65536 bytes is larger than 20480 bytes of SRAM", size=14, fill=T.AMBER)
-    canvas.rect(40, 524, 880, 140, fill=T.BG2, stroke=T.VIOLET, rx=8)
-    canvas.text(56, 554, "旁注  denominator 4095 is the miss, not this path", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(56, 580, "133 bytes is an application frame, not one 64-byte USB packet", size=14, fill=T.TEXT)
-    canvas.text(56, 606, "do not draw a motor pin. Do not draw a WS2812 waveform", size=14, fill=T.AMBER)
-    canvas.text(56, 632, "chapter 12 does not have a second slot", size=13, fill=T.MUTED)
-    _credit(canvas, "自绘。地图来自第 12 章。64 KB 与 20 KB 来自 DS5319。")
-    return canvas
+    c = Svg(960, 980, "C8：先核对 Flash 和 SRAM 的边界", "STM32F103C8T6 · 所有结束地址均为上界，不属于分区")
+    c.header(tag="19", tag_color=T.CYAN)
+    c.text(40, 102, "单 APP：16 KB + 2 KB + 46 KB = 64 KB", size=23, fill=T.GREEN, weight="700")
+    scale = 7.4
+    for y,segments in ((148,(("Boot",16,T.CYAN),("",2,T.AMBER),("APP",46,T.GREEN))),
+                       (334,(("Boot",16,T.CYAN),("",2,T.AMBER),("A",46,T.GREEN),("B",46,T.RED)))):
+        x=40
+        for label,kib,color in segments:
+            width=kib*scale
+            c.rect(x,y,width,56,fill=T.PANEL,stroke=color,rx=2)
+            if label:
+                c.text(x+width/2,y+34,label,size=20,fill=color,anchor="middle",weight="700")
+            x+=width
+    c.line(40+17*scale,205,40+17*scale,215,stroke=T.AMBER,sw=1.5)
+    c.line(40+17*scale,215,332,215,stroke=T.AMBER,sw=1.5)
+    c.text(342,235,"参数区 2 KB",size=20,fill=T.AMBER)
+    for x,y,label in ((40,132,"0x08000000"),(40+16*scale,231,"0x08004000"),
+                      (40+18*scale,260,"0x08004800"),(40+64*scale,132,"0x08010000")):
+        c.text(x,y,label,size=17,fill=T.TEXT,mono=True)
+    c.line(40+64*scale,140,40+64*scale,412,stroke=T.RED,sw=2,dash="6 6")
+    c.text(40,302,"两张同样的 APP：16 + 2 + 46 + 46 = 110 KB",size=22,fill=T.RED,weight="700")
+    c.text(40+64*scale+14,424,"B 从上界开始，全部越界",size=18,fill=T.RED)
+    c.text(40+110*scale,462,"0x0801B800",size=19,fill=T.RED,anchor="end",mono=True)
+    c.text(40,508,"APP 长度 0xB800；参数区 2 KB 不应当作可随意覆盖的空隙。",size=19,fill=T.TEXT)
+    c.line(40,542,920,542,stroke=T.GRID)
+    c.text(40,583,"SRAM：65536 字节数组已经大于整块 20480 字节",size=22,fill=T.AMBER,weight="700")
+    c.rect(40,616,65536*.012,64,fill=T.PANEL,stroke=T.RED,rx=2)
+    c.rect(40,616,20480*.012,64,fill=T.BG2,stroke=T.GREEN,rx=2)
+    c.text(58,655,"20 KB = 20480",size=20,fill=T.GREEN,weight="700")
+    c.text(600,655,"数组 65536 B",size=20,fill=T.RED,anchor="middle")
+    c.text(40,719,"图按同一比例比较；还没计入其他全局变量、栈和堆。",size=18,fill=T.MUTED)
+    c.line(40,751,920,751,stroke=T.GRID)
+    c.text(40,795,"ADC：2048 × 3.3 / 4096 = 1.65 V（名义参考电压）",size=20,fill=T.CYAN)
+    c.text(40,840,"USB：应用帧 133 B = 64 + 64 + 5 B；FS bulk 包上限 64 B。",size=20,fill=T.VIOLET)
+    c.text(40,886,"范围放得下只是起点；镜像有效性、缓冲所有权和失败恢复另行验证。",size=18,fill=T.TEXT)
+    _credit(c,"自绘。DS5319 容量；第 12 章单槽布局；RM0008 ADC。")
+    return c
 
 
 def main() -> None:

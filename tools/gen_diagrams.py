@@ -214,49 +214,32 @@ def watchdog_reset_evidence() -> Svg:
 
 
 def iap_acceptance_gates() -> Svg:
-    s = Svg(W, H, "IAP 升级要过五道门",
-            "接收、边界、校验、跳转和应用心跳逐关验收；任一门失败都留在 Bootloader")
-    s.header(tag="12 升级 · IG-010", tag_color=T.VIOLET)
-    gates = [
-        ("Receive", "长度 / CRC", T.CYAN),
-        ("Range", "APP slot 内", T.AMBER),
-        ("Vector", "MSP + Reset", T.GREEN),
-        ("Jump", "VTOR / MSP", T.VIOLET),
-        ("Heartbeat", "app version", T.PINK),
-    ]
-    x0, y, bw, gap = 24, 110, 150, 26
-    for i, (name, proof, color) in enumerate(gates):
-        x = x0 + i * (bw + gap)
-        s.rect(x, y, bw, 108, fill=T.PANEL, stroke=color, rx=8)
-        s.text(x + bw / 2, y + 38, name, size=12, anchor="middle", mono=True,
-               fill=color, weight="800")
-        s.text(x + bw / 2, y + 75, proof, size=10, anchor="middle", fill=T.MUTED)
-        if i < 4:
-            s.arrow(x + bw + 3, y + 54, x + bw + gap - 3, y + 54,
-                    color=T.CYAN, sw=2, head=6)
-
-    s.rect(44, 270, 512, 178, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(64, 302, "失败留在 Bootloader", size=13, fill=T.TEXT, weight="800")
-    failures = [
-        ("CRC 错", "不擦旧 APP；请求重传"),
-        ("越界", "拒绝写 Bootloader / 参数区"),
-        ("MSP 不在 SRAM", "镜像无效，不跳转"),
-        ("Reset 不在 slot", "镜像无效，不跳转"),
-        ("无 heartbeat", "回滚或下次启动回 Bootloader"),
-    ]
-    for i, (symptom, action) in enumerate(failures):
-        yy = 331 + i * 23
-        s.text(64, yy, symptom, size=10.2, mono=True, fill=T.RED, weight="700")
-        s.text(190, yy, action, size=10.2, fill=T.MUTED)
-
-    s.rect(582, 270, 276, 178, fill=T.PANEL, stroke=T.GREEN, rx=8)
-    s.text(602, 302, "最小交付证据", size=13, fill=T.GREEN, weight="800")
-    s.text(602, 338, "image length + CRC", size=10.2, mono=True, fill=T.MUTED)
-    s.text(602, 366, "slot start / end", size=10.2, mono=True, fill=T.MUTED)
-    s.text(602, 394, "vector[0] / vector[1]", size=10.2, mono=True, fill=T.MUTED)
-    s.text(602, 422, "boot_id + app_version", size=10.2, mono=True, fill=T.MUTED)
-    s.footer("视觉规范：FA-002 概念连续线 · IG-010 阶段进阶 · C-03 / C-10 / C-27 / C-31",
-             label="自绘矢量图 · STM32 知识库")
+    s=Svg(W,H,"IAP：写入检查和启动确认分开验收","单槽示例：保留可重新下载的 Bootloader 入口；旧 APP 不保证留存")
+    s.header(tag="12 / 19 · IAP",tag_color=T.VIOLET)
+    steps=(("边界 / 长度","先于擦写",T.CYAN),("接收 / 写入","仅 APP 区",T.AMBER),
+           ("完成后校验","CRC + 向量",T.GREEN),("跳转 / 启动","版本心跳",T.VIOLET))
+    for i,(label,detail,color) in enumerate(steps):
+        x=28+i*218
+        s.rect(x,102,190,88,fill=T.PANEL,stroke=color,rx=8)
+        s.text(x+95,136,label,size=20,fill=color,anchor="middle",weight="700")
+        s.text(x+95,170,detail,size=17,fill=T.MUTED,anchor="middle")
+        if i<3:s.arrow(x+194,146,x+213,146,color=T.STROKE,sw=2,head=6)
+    s.text(34,231,"写入前越界",size=19,fill=T.RED,weight="700")
+    s.arrow(184,224,224,224,color=T.RED,sw=2)
+    s.text(242,231,"拒绝擦写；Bootloader / 参数区不在 APP 写入范围内。",size=18,fill=T.TEXT)
+    s.text(34,283,"传输 / 校验失败",size=19,fill=T.RED,weight="700")
+    s.arrow(214,276,254,276,color=T.RED,sw=2)
+    s.text(272,283,"不跳转，请求重传；写入中的旧 APP 可能已被覆盖。",size=18,fill=T.TEXT)
+    s.text(34,335,"MSP / Reset 无效",size=19,fill=T.RED,weight="700")
+    s.arrow(224,328,264,328,color=T.RED,sw=2)
+    s.text(282,335,"留在 Bootloader；核对栈顶范围、对齐与 Thumb 入口。",size=18,fill=T.TEXT)
+    s.text(34,387,"跳转后无心跳",size=19,fill=T.AMBER,weight="700")
+    s.arrow(204,380,244,380,color=T.AMBER,sw=2)
+    s.text(262,387,"启动未通过；预先设计超时复位和重新下载入口。",size=18,fill=T.TEXT)
+    s.line(28,419,872,419,stroke=T.GRID)
+    s.text(34,453,"记录 length、CRC、slot 范围、vector[0/1]、boot_id 与 app_version。",size=18,fill=T.CYAN)
+    s.text(34,490,"自动回退需要仍然完好的旧镜像和可恢复的切换记录，单槽不提供这项保证。",size=18,fill=T.TEXT)
+    s.footer("自绘矢量图 · 单槽恢复边界；双镜像回退另行设计",label="FA-002 · IG-010 · C-03/C-10/C-27/C-31")
     return s
 
 
