@@ -10,24 +10,22 @@
 <path d="M82 68 L88 62" stroke-width="1.8"/>
 <path d="M124 26 L130 20" stroke-width="1.8"/>
 <text x="106" y="47" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">环形缓冲</text>
-<path d="M130 20 L170 30" stroke-width="2.2"/>
-<path d="M130 68 L170 64" stroke-width="2.2"/>
+<path d="M130 20 C 144 23, 158 26, 170 30" stroke-width="2.2"/>
+<path d="M130 68 C 144 67, 158 65, 170 64" stroke-width="2.2"/>
 <path d="M164 27 L170 30 L166 35" stroke-width="1.8"/>
 <path d="M164 60 L170 64 L165 68" stroke-width="1.8"/>
 <text x="154" y="14" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">写（DMA 推进）</text>
 <text x="154" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">读（CPU 消费）</text>
 <rect x="176" y="18" width="120" height="52" rx="6" stroke-width="2.2"/>
-<path d="M184 26 L184 62" stroke-width="1.4"/>
-<path d="M199 26 L199 62" stroke-width="1.4"/>
-<path d="M214 26 L214 62" stroke-width="1.4"/>
-<path d="M229 26 L229 62" stroke-width="1.4"/>
-<path d="M244 26 L244 62" stroke-width="1.4"/>
-<path d="M259 26 L259 62" stroke-width="1.4"/>
-<path d="M274 26 L274 62" stroke-width="1.4"/>
-<path d="M237 22 L237 66" stroke-width="1.4" stroke-dasharray="4 3"/>
-<text x="237" y="80" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">半满 HT</text>
-<path d="M284 22 L284 66" stroke-width="1.8"/>
-<text x="284" y="80" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">全满 TC</text>
-<path d="M184 44 L232 44" stroke-width="2.2"/>
-<path d="M226 40 L232 44 L226 48" stroke-width="1.8"/>
+<path d="M191 26 L191 62" stroke-width="1.4"/>
+<path d="M206 26 L206 62" stroke-width="1.4"/>
+<path d="M221 26 L221 62" stroke-width="1.4"/>
+<path d="M251 26 L251 62" stroke-width="1.4"/>
+<path d="M266 26 L266 62" stroke-width="1.4"/>
+<path d="M281 26 L281 62" stroke-width="1.4"/>
+<path d="M236 22 L236 66" stroke-width="1.4" stroke-dasharray="4 3"/>
+<text x="236" y="80" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">半满 HT</text>
+<text x="296" y="80" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">全满 TC</text>
+<path d="M176 44 C 196 43, 216 45, 236 44" stroke-width="2.2"/>
+<path d="M230 40 L236 44 L230 48" stroke-width="1.8"/>
 </g></svg>
