@@ -1,10 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="五段内存地图：代码、只读数据、已初始化数据、零初始化数据、堆与栈"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
-<path d="M14 24 C 80 22, 220 26, 306 23" stroke-width="2.2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="五段内存地图：代码与只读数据住 Flash，已初始化数据、零初始化数据、堆与栈住 RAM；.data 的初值另存一份在 Flash"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="61" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">Flash 掉电不丢</text>
+<text x="211" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">RAM 断电即失</text>
+<path d="M14 20 L14 16 C 50 15, 80 16, 108 16 L108 20" stroke-width="1.4"/>
+<path d="M116 20 L116 16 C 180 15, 250 16, 306 16 L306 20" stroke-width="1.4"/>
 <rect x="14" y="28" width="292" height="38" rx="4" stroke-width="1.4"/>
-<path d="M66 28 L66 66" stroke-width="1.4"/> <path d="M112 28 L112 66" stroke-width="1.4"/> <path d="M158 28 L158 66" stroke-width="1.4"/> <path d="M206 28 L206 66" stroke-width="1.4"/>
+<path d="M66 28 L66 66" stroke-width="1.4"/> <path d="M112 28 L112 66" stroke-width="2.2"/> <path d="M158 28 L158 66" stroke-width="1.4"/> <path d="M206 28 L206 66" stroke-width="1.4"/>
 <text x="40" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">.text</text> <text x="89" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">.rodata</text> <text x="135" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">.data</text> <text x="182" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">.bss</text>
 <text x="230" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">heap →</text> <text x="278" y="43" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">← stack</text>
 <path d="M208 53 C 218 53, 224 51, 232 51" stroke-width="2.2"/>
 <path d="M302 53 C 292 53, 286 51, 278 51" stroke-width="2.2"/>
-<text x="18" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x0800_0000</text> <text x="242" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x2000_0000</text>
+<text x="18" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x0800_0000</text> <text x="114" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0x2000_0000</text>
+<text x="306" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="end">.data 初值另存 Flash</text>
 </g></svg>
