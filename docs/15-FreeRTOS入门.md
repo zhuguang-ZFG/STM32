@@ -2,11 +2,11 @@
 
 > English: [FreeRTOS](en/15-freertos.md)
 
-> 两个任务都在闪灯，不代表系统满足实时要求。要量任务周期、最长阻塞、栈余量和队列峰值，并证明 FromISR 优先级没有越过内核边界。
+> 按键事件到了，任务能否及时接手？先看一次中断如何唤醒任务，再量周期、等待时间和栈余量。
 
 <p align="center">
   <img src="../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS 任务状态迁移与抢占式调度">
-  <br><sub>▲ 动画：FreeRTOS 任务状态迁移与抢占式调度（作者自绘矢量动画，非实拍）</sub>
+  <br><sub>▲ H 等队列时，L 运行；1.5 ms 时 ISR 送入事件并请求切换，H 可在下一个 tick 前接手；2.5 ms 时 H 再次阻塞，L 继续。时间为教学设定，省略 ISR 和切换耗时。自绘矢量动画，非实测。</sub>
 </p>
 
 <!-- video:ch15 -->
@@ -35,17 +35,19 @@
 <!-- /video:ch15 -->
 ## 原理与适用范围
 
+先运行仓库的 `examples/freertos-task`：LED 周期闪烁，按下 PA0 后串口输出 `KEY pressed`。要观察调度，在 EXTI 回调和 KEY 任务收到队列数据后各翻转一个空闲 GPIO，用逻辑分析仪比较两条边沿。KEY 的优先级高于 LED；事件入队且请求切换后，它可以在 ISR 退出时接手，无须等下一次 tick。若迟迟不响应，先查队列发送结果、EXTI 优先级和 `portYIELD_FROM_ISR`，再查任务是否卡在串口锁上。这里给的是实验步骤，未附板上测量值。
+
 本章的数字都按 STM32F103C8T6 和仓库例程 `examples/freertos-task` 算。中断优先级分组和第 04 章一样：`NVIC_PRIORITYGROUP_4`，4 位全给抢占，子优先级 0 位。
 
-`configTICK_RATE_HZ = 1000`，内核每 1 ms 醒一次，这一下叫一个 tick。内核只按 tick 记时间，所以比 1 ms 更短的期限它保证不了。SysTick 归内核用，HAL 自己的时基就得换一只定时器，例程用的是 TIM4（README 里写着）。如果两边都去抢 SysTick，`HAL_Delay` 会一直卡着不返回。见 [本仓库例程](#source-project-examples)。
+例程设 `configTICK_RATE_HZ = 1000`，每个 tick 为 1 ms。延时和超时按 tick 计数，事件唤醒则可以发生在两个 tick 之间；1 ms 不是所有任务响应的下限。例程让 SysTick 服务内核、TIM4 服务 HAL，避免两个时基的处理逻辑互相覆盖。共用 SysTick 需要专门整合处理函数与计数关系，配置不当会使 `HAL_Delay` 卡住。见 [本仓库例程](#source-project-examples)。
 
 任务优先级是数字越大越先跑，正好和 NVIC 反过来。例程里 KEY 是 2，LED 和 UART 是 1，三个同时就绪时 KEY 先跑。NVIC 还是数字越小越急，两套规则别混着记。空闲任务的优先级是 0。
 
-调用 `...FromISR` 的中断，抢占优先级数值必须大于等于 5。这个 5 来自 `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`：芯片只用高 4 位，`5 << (8 − 4) = 0x50`。比 5 更急的中断（0 到 4）内核不会屏蔽，在里面调 FromISR 会撞上内核正在改的数据，所以内核直接停在 `configASSERT` 提醒你。例程把 `EXTI0` 设成 5。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
+本例调用 `...FromISR` 的中断，抢占优先级数值必须大于等于 5。这个 5 来自 `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`：芯片只用高 4 位，`5 << (8 − 4) = 0x50`。比 5 更急的中断（0 到 4）不受内核的 BASEPRI 临界区屏蔽，不能在其中调用 FreeRTOS API，否则可能打断内核数据更新。启用有效的 `configASSERT` 后，带优先级校验的 API 路径可帮助发现这类错误。例程把 `EXTI0` 设成 5。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
 
-`xTaskCreate` 的栈深度按字算，一字 4 字节。LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。把 128 当成 128 字节，栈只给了四分之一，`printf` 一调就溢出。
+本例中，`xTaskCreate` 的栈深度按字算，一字 4 字节。LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。若把所需的 128 字误当成 128 字节、只分配 32 字，容量就只剩四分之一。调用 `printf` 后若出现 HardFault，要结合栈水位和溢出钩子检查，不能只凭打印动作断定是栈溢出。
 
-`vTaskDelay(10)` 是「从现在起再等 10 个 tick」。任务先干了 3 ms 活再调它，周期就变成约 13 ms。要固定 10 ms 周期，用 `vTaskDelayUntil`，它从上一次醒来的时刻算。几个任务共用串口时用互斥量，它带优先级继承，二值信号量没有。heap_4 会把相邻的空闲块合并，碎片少一些。
+`vTaskDelay(10)` 是「从现在起再等 10 个 tick」。任务先干了 3 ms 活再调它，周期约 13 ms，另受 tick 相位和调度影响。目标是 10 ms 周期时，用 `vTaskDelayUntil` 从上次计划唤醒时刻推算下一次；实际开始执行仍可能有抖动或超期。几个任务共用串口时优先选互斥量，它带优先级继承，二值信号量没有。heap_4 会合并相邻空闲块，但仍须检查分配是否成功。
 
 ## 关键插图
 
@@ -80,7 +82,7 @@
 | 栈 | 128 字 = 512 字节 | KEY 192 字 = 768 字节。UART 256 字 = 1024 字节 |
 | 中断 | 数值 5 可以调用 FromISR | 数值 0 停在 `configASSERT`。`0x50 = 5 << 4` |
 | 时基 | 内核用 SysTick | HAL 用 TIM4 |
-| 延时 | 工作 3 ms 再 `vTaskDelay(10)` | 周期接近 13 ms。`vTaskDelayUntil` 的 10 ms 仍是 10 ms |
+| 延时 | 工作 3 ms 再 `vTaskDelay(10)` | 周期接近 13 ms。`vTaskDelayUntil` 按 10 ms 递推计划时刻，实际入口仍有抖动 |
 
 ## 常见坑与出处
 
@@ -90,9 +92,9 @@
 | 一进中断就停在 `configASSERT` | 抢占优先级数值比 5 更小 | `EXTI0` 写成 5 或更靠后的数 | [FreeRTOS](#source-freertos-syscall) | 4 位优先级时，5 左移 4 位是 `0x50`。数值更小的中断不得调用 FromISR |
 | 优先级 1 的任务压过优先级 2 | 把任务优先级当成了 NVIC | 任务优先级数值大的先跑 | [FreeRTOS](#source-freertos-syscall) | 任务优先级数值更大的先跑 |
 | 例程里 KEY 没有压过 LED | 两个任务写成了同一个优先级 | KEY 写 2，LED 和 UART 写 1 | [本仓库例程](#source-project-examples) | `examples/freertos-task` 里 KEY 的任务优先级是 2，LED 和 UART 是 1 |
-| 栈说明书写 128，一打印就溢出 | 把字当成了字节 | 128 的单位是字，等于 512 字节 | [本仓库例程](#source-project-examples) | LED 128 字，KEY 192 字，UART 256 字 |
+| 打印后 HardFault | 可能栈余量不足，也可能是指针等错误 | 核对字/字节、栈水位和故障寄存器 | [本仓库例程](#source-project-examples) | LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节 |
 | 按键中断一进来就断言 | EXTI 抢占优先级过急 | `EXTI0` 的抢占优先级写成 5 | [本仓库例程](#source-project-examples) | 例程把 `EXTI0` 的抢占优先级设成 5 |
-| 两个任务的串口叠在一起 | 用二值信号量保护了资源 | 用互斥量 | [FreeRTOS](#source-freertos-syscall) | 互斥量有优先级继承。二值信号量没有 |
+| 两个任务的串口叠在一起 | 同步对象未覆盖完整发送过程，或存在绕过保护的路径 | 检查所有发送入口；用互斥量覆盖完整事务 | [FreeRTOS](#source-freertos-syscall) | 二值信号量也能串行化访问，但没有互斥量的所有权和优先级继承 |
 | 周期越来越长 | `vTaskDelay(10)` 不包含调用前已经花掉的时间 | 固定周期用 `vTaskDelayUntil` | [FreeRTOS](#source-freertos-syscall) | 一个 tick 是 1 ms 时，调用前已经花掉的时间不包含在 `vTaskDelay` 里 |
 
 ## 学习目标
@@ -128,12 +130,12 @@ FreeRTOS 解决的是调度与同步，不会自动保证截止时间。任务�
 
 <p align="center">
   <img src="../assets/diagrams/sample-15-task-states.svg" width="760" alt="FreeRTOS 四态：Running / Ready / Blocked / Suspended">
-  <br><sub>▲ 自绘。1 ms 节拍；128 字=512 字节；别和 HAL 抢 SysTick。</sub>
+  <br><sub>▲ 自绘任务状态图。Ready 等 CPU；Blocked 等事件或超时；Suspended 要显式恢复。事件唤醒不必等到 tick。</sub>
 </p>
 
 <p align="center">
   <img src="../assets/illustrations/handraw/ch15-task-states.png" width="760" alt="Handraw：FreeRTOS 四态 Running/Ready/Blocked/Suspended（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。每核只有一个 Running；Ready 等 tick；Blocked 等对象；Suspended 被搁置；不是实拍。</sub>
+  <br><sub>▲ 单核同一时刻只有一个 Running。Ready 已具备运行条件，等待调度；Blocked 等待时间或事件；Suspended 等显式恢复。手绘原理图，非实测。</sub>
 </p>
 
 
@@ -160,12 +162,12 @@ Suspended       Running ─────────► Blocked
 
 ### 3. SysTick 与调度器（关键：和 HAL 抢时基）
 
-FreeRTOS 默认用 **SysTick** 产生 1 ms 节拍（`configTICK_RATE_HZ`）；而 HAL 也用 SysTick 做 `HAL_Delay`。**两者不能共用**——上 RTOS 时要把 HAL 时基改到别的定时器。
+ARM_CM3 移植通常用 **SysTick** 提供内核节拍；本例配置为 1 ms。HAL 的默认时基也用 SysTick，本例将它改到 TIM4。这样两套计数各有入口，调试时也容易区分。若要共用 SysTick，必须核对处理函数、频率和调度器启动前后的行为。
 
 | 冲突点 | 现象 | 解决 |
 | --- | --- | --- |
 | FreeRTOS 与 HAL 抢 SysTick | `HAL_Delay` 卡死、tick 异常 | CubeMX：SYS → Timebase Source 改为 **TIM4** |
-| 节拍频率 | `configTICK_RATE_HZ` 默认 1000（1 ms） | 时间片越小实时性越好、开销越大 |
+| 节拍频率 | 本例 `configTICK_RATE_HZ` 为 1000（1 ms） | 提高频率可缩小 tick 计时粒度，也增加中断开销；不能单凭频率保证实时性 |
 | 时间片轮转 | 同优先级任务共享 CPU | `configUSE_TIME_SLICING=1`（默认开） |
 
 ### 4. 优先级与抢占
@@ -194,17 +196,17 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
   <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。R=B+C+S；阻塞+执行+高优先级干扰；最坏值必须早于截止点；平均值不能替代最坏值；不是实拍。</sub>
 </p>
 
-临界区用 `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 关中断保护共享数据；**调用任何 `xxxFromISR` 的中断，其优先级数值必须 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY`**。
+在 ARM_CM3 移植中，`taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` 用 BASEPRI 屏蔽一部分中断。本例屏蔽数值 5–15 的可配置中断，0–4 仍可进入，因此它们不能调用 FreeRTOS API。传给 NVIC 接口的未移位数值 5，对应寄存器中的 `0x50`；比较时要用相同的表示法，不能直接拿 5 与 `configMAX_SYSCALL_INTERRUPT_PRIORITY` 的 `0x50` 比大小。
 
 | 宏 | 作用 |
 | --- | --- |
 | `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` | 任务级临界区，可嵌套 |
-| `taskENTER_CRITICAL_FROM_ISR()` | 中断级临界区 |
-| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | 能调用 FreeRTOS API 的中断优先级下限（数值越大优先级越低） |
+| `taskENTER_CRITICAL_FROM_ISR()` | 保存原屏蔽值；退出时用对应接口恢复 |
+| `configMAX_SYSCALL_INTERRUPT_PRIORITY` | 已移位的 BASEPRI 阈值；本例 `0x50` 对应 NVIC 数值 5 |
 | `configKERNEL_INTERRUPT_PRIORITY` | 内核自身中断（PendSV/SysTick）优先级 |
 
 > [!WARNING]
-> 常见断言 `configASSERT` 死循环，就是**中断优先级数值设得太小（优先级太高）**，超过了 `configMAX_SYSCALL_INTERRUPT_PRIORITY` 允许的范围。STM32 用 4 位优先级时，该宏常配成 `5 << (8-4) = 0x50`，即中断优先级数值要 ≥ 5。
+> 若停在中断优先级校验的 `configASSERT`，先看当前 IRQ 的数值与优先级分组。STM32 用 4 位优先级、阈值为 `5 << (8-4) = 0x50` 时，调用 FromISR 的 IRQ 数值应 ≥ 5。未启用断言或未经过校验路径时，错误配置也可能直接造成数据损坏。
 
 ### 6. 任务间通信（IPC）对比
 
@@ -224,7 +226,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 
 <p align="center">
   <img src="../assets/illustrations/handraw/ch15-prio-inherit.png" width="760" alt="Handraw：优先级继承时序——低优先级持锁时被中优先级抢占，高优先级等锁（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三条车道是三个任务在单核上的时间片，L 先拿到互斥量，M 就绪后抢占，H 就绪后卡在同一个锁上；H 阻塞的那一刻 L 临时升到 H 的优先级，把 M 挡在后面，等 L 给还锁，H 才跑起来，L 再回到低优先级。证明什么：继承把「H 的等待」从「M 跑多久」变成「临界区多长」。不能证明什么：这张图不量时间，不覆盖 ISR 里误用互斥量（本该用 FromISR 接口）与多核场景，也不是实测波形。出处见 [FreeRTOS 内核文档](#source-freertos-syscall)。</sub>
+  <br><sub>▲ L 持锁时被 M 抢占；H 请求同一把锁并阻塞，L 便继承 H 的优先级，得以越过 M 继续运行。L 释放后 H 取得锁，L 回落。虚框表示等待，实色表示运行；两段沿同一事件线对齐。继承消除了 M 的干扰，ISR 和更高优先级任务等仍会延长等待。单核、三任务、一把锁的手绘原理图，非实测；互斥量没有 FromISR 接口。见 [FreeRTOS 内核文档](#source-freertos-syscall)。</sub>
 </p>
 
 ### 7. 任务栈大小估算
@@ -236,7 +238,7 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 | 经验值起步 | 简单任务 128 字，含 printf/浮点 256~512 字 |
 | 实测水位 | 用 `uxTaskGetStackHighWaterMark()` 看剩余最小空闲字数 |
 | 局部大数组 | 函数内大数组占栈，尽量改 `static` 或全局 |
-| 中断嵌套 | ISR 用当前任务的栈，栈要留足中断开销 |
+| 中断与切换 | 首次异常的硬件帧占当前任务 PSP；ISR 函数与嵌套用 MSP，两边分别留余量 |
 | 溢出检测 | `configCHECK_FOR_STACK_OVERFLOW=2` + 实现 `vApplicationStackOverflowHook` |
 
 ```c
@@ -244,9 +246,14 @@ STM32F103C8T6 是 Cortex-M3，没有 FPU。移植层要选 `ARM_CM3`，选了带
 UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 ```
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-psp-msp.png" width="760" alt="Cortex-M3 任务栈 PSP 与异常栈 MSP：首次硬件帧留在任务栈，ISR 和嵌套使用 MSP">
+  <br><sub>▲ 左边跟随任务 A 的 PSP，右边是异常处理共用的 MSP。IRQ 打断任务时，硬件先在 A 的栈中保存 R0–R3、R12、LR、PC、xPSR；进入 ISR 后用 MSP。PendSV 切换再保存 R4–R11，并把 PSP 写入 TCB。8 个寄存器占 32 B，还须留对齐余量。任务水位不能代替 MSP 预算。手绘原理图，未按地址或容量比例绘制；依据 [PM0056](#source-pm0056-nvic) 与 [FreeRTOS ARM_CM3 移植](#source-freertos-syscall)。</sub>
+</p>
+
 ### 8. 优先级反转与优先级继承
 
-**优先级反转**是高优先级任务被低优先级任务（间接）拖住；FreeRTOS 的**互斥量**内置**优先级继承**，能把它压到很短。
+高优先级任务 H 等待低优先级任务 L 持有的锁，而中优先级任务 M 又抢占 L，这就是图中的优先级反转。互斥量让 L 临时继承 H 的优先级，避免 M 继续拖住 L；它不保证等待一定很短，也不自动解决死锁。
 
 | 概念 | 现象 | 对策 |
 | --- | --- | --- |
@@ -254,11 +261,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 | 优先级继承 | 低任务临时继承高任务优先级，尽快释放 | FreeRTOS Mutex 自动做 |
 | 死锁 | 两任务各持一把锁互相等 | 统一加锁顺序，用超时 `xSemaphoreTake(..., timeout)` |
 
-> 二值信号量**没有**优先级继承，只适合「事件通知」；保护资源一定要用 `xSemaphoreCreateMutex()`。
+> 二值信号量可以做事件通知，也能串行化访问，但没有所有权与优先级继承。任务之间保护共享资源，通常选 `xSemaphoreCreateMutex()`；锁必须覆盖整个受保护过程。
 
 <p align="center">
   <img src="../assets/diagrams/rtos-owner-task.svg" width="820" alt="多个任务经队列把完整事务交给唯一外设所有者任务，由所有者统一片选、DMA、超时和恢复">
-  <br><sub>▲ 互斥量只能保护一次函数调用；包含片选、DMA、等待和恢复的完整事务更适合交给唯一所有者任务。图不能证明队列深度和截止时间足够，仍要测峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。</sub>
+  <br><sub>▲ 互斥量可以跨多次函数调用持有；异步 DMA 事务要一直保护到传输完成或恢复结束。也可由唯一所有者任务接收队列请求，统一管理片选、DMA、超时和恢复。仍需测队列峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
 <p align="center">
@@ -320,7 +327,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 <p align="center">
   <img src="../assets/diagrams/sample-15-rtos-triage.svg" width="760" alt="任务不动、栈溢出、优先级异常：1 ms 一个 tick，128 字是 512 字节，FromISR 的抢占优先级数值至少 5">
-  <br><sub>▲ 自绘。看哪里：顶部两条时基（内核 SysTick 1 ms / HAL TIM4），左列三道闸门通向 `vTaskStartScheduler()`，中列把 128 字画成 128 个格子、按字节只给四分之一，右列两条方向相反的优先级轴加 0–4 禁区；下方是 10240 字节堆的分账，以及 3 ms + 10 tick = 13 ms 与 `vTaskDelayUntil` 的 10 ms 对照。任务不动先看调度器起没起，tick 是 1 ms 一格；栈溢出记住 128 字 = 512 字节；中断里用错 API，FromISR 的抢占优先级数值至少要 5。出处是 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
+  <br><sub>▲ 先按现象选一列：任务不运行，查创建返回值和时基；打印后 HardFault，核对栈单位并读水位；中断中断言，查 FromISR 的优先级边界。中间每格 4 B，深色 32 格只占所需 128 格的四分之一。右侧的数值 ≥5 适用本例配置。下方堆预算还未扣除 TCB、队列和内核等开销；周期图比较相对延时约 13 ms 与绝对延时目标 10 ms，省略 tick 相位和调度抖动。自绘示意，依据 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall) 和 [freertos-task](#source-project-examples)。</sub>
 </p>
 
 ## 硬件与接线
@@ -426,7 +433,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 }
 ```
 
-> **CubeMX 最关键一步**：`SYS → Timebase Source` 从 **SysTick 改成 TIM4**，否则 HAL 和 FreeRTOS 抢 SysTick，`HAL_Delay` 会卡死。
+> **本例 CubeMX 配置**：`SYS → Timebase Source` 从 **SysTick 改成 TIM4**。若保留 SysTick，须自行整合 HAL 与内核时基，不能只替换其中一个处理函数。
 
 ## 动手实验
 
@@ -442,7 +449,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 ### 11. 相对延时、绝对周期，和软件定时器
 
-`vTaskDelay(n)` 从**这一次调用**再等 n 个 tick，任务自己干活的时间会把周期越拖越长。要固定周期，用 `vTaskDelayUntil`。
+`vTaskDelay(n)` 从**这一次调用**再等 n 个 tick，工作时间会加进周期。`vTaskDelayUntil` 则递推上次计划唤醒时刻。下面以 10 ms 为目标，实际入口仍受中断、调度和工作超期影响。
 
 ```c
 TickType_t last = xTaskGetTickCount();

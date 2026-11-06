@@ -257,7 +257,7 @@ class BookAuditTests(unittest.TestCase):
                 "freertos-scheduler.svg", "sample-15-rtos-tick-flow.svg", "sample-15-rtos-prio.svg",
                 "ch15-rtos-prio.png", "rtos-tick.gif", "sample-15-task-states.svg",
                 "ch15-task-states.png", "rtos-deadline-budget.svg", "ch15-deadline-budget.png",
-                "ch15-prio-inherit.png", "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
+                "ch15-prio-inherit.png", "ch15-psp-msp.png", "rtos-owner-task.svg", "ch15-owner-task.png", "sample-15-fromisr.svg",
                 "ch15-fromisr.png", "sample-15-rtos-triage.svg", "rtos-startup-gates.svg",
             ),
         }

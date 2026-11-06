@@ -500,21 +500,21 @@ monotonic_ms | boot_id | component | event | state | sequence | result | detail
 
 ### Only the health supervisor feeds the watchdog
 
-Letting every task feed the watchdog can report false health while the product is dead. A stronger design is:
+Task B can stall while task A keeps feeding the watchdog, hiding B's failure. A timer interrupt that feeds unconditionally can hide a stalled main loop too. Giving one supervisor the feed authority lets it check that every critical job is making progress on time.
 
-1. Each critical task updates its health epoch only after completing meaningful work.
-2. A supervisor checks every epoch, queue backlog, memory watermarks, and critical state machines.
+1. Each critical task updates its health epoch, a work-progress counter, only after completing meaningful work. Incrementing it in an empty loop proves no useful progress.
+2. A supervisor checks progress against each task's own completion deadline, then checks queue backlog, memory watermarks, and critical state machines. A task waiting for an event may be idle by design; its counter need not increase on every supervisor check.
 3. It refreshes the hardware watchdog only when all health conditions pass.
-4. On failure, it persists a minimal bounded fault summary and lets the watchdog reset; persistence also has a deadline.
+4. On any failure, it stops refreshing and attempts to save a minimal fault summary within a deadline. A failed save must not cause feeding to continue.
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch28-wdg-supervisor.png" width="760" alt="Handraw: one health supervisor feeds the watchdog (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: on the left, three critical tasks each hold an epoch that they update only after a round of meaningful work; in the middle, the supervisor checks every epoch, queue backlog, memory watermarks, and state machines, and refreshes the IWDG only when everything is healthy; the red card on the right is the false health — every task stuck while some interrupt keeps feeding. What it proves: the feed belongs to the supervisor; per-task feeding reports false health. What it does not prove: a design-pattern sketch, not RTOS timer granularity or epoch width. Source: [FreeRTOS](#source-freertos-1132).</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). The counters show completed work. The supervisor checks each task's deadline, queues, memory, and state machines. At the right, B has stalled while A or an interrupt keeps feeding: false health. This is a system design pattern proposed in the book, not a health guarantee supplied by the kernel or evidence of timer granularity, epoch width, or measured response. Kernel mechanisms: [FreeRTOS](#source-freertos-1132).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/animations/sample-28-supervisor-flow.svg" width="760" alt="Animation of the watchdog supervisor: tasks A/B/C each update their epoch, the supervisor checks everything, and the IWDG is fed only when all are healthy">
-  <br><sub>▲ Vector animation drawn for this book (FA-002). Task A → B → C each update their epoch → the supervisor checks every epoch, the queue backlog, the watermarks and the state machines → the IWDG is refreshed only when everything passes → no reset. What it proves: the feed belongs to the supervisor, and one health round completes before it. What it does not prove: the false-health story (tasks stuck while an interrupt keeps feeding) lives on the handraw plate; not a scheduler trace. Source: [FreeRTOS](#source-freertos-1132).</sub>
+  <br><sub>▲ Vector animation drawn for this book (FA-002). Tasks report separately. All pass in the first round; in the second, B misses its progress deadline, so feeding stops even though A/C still work. Arrows show progress reports, not a fixed A→B→C execution dependency. This design comparison gives no measured schedule or deadlines. Kernel mechanisms: [FreeRTOS](#source-freertos-1132).</sub>
 </p>
 
 ## Low power with an RTOS

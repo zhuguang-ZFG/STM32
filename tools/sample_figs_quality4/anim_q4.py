@@ -122,38 +122,67 @@ def flash_swd_flow() -> Svg:
 
 
 def boot0_faq_flow() -> Svg:
-    s = Svg(W, H, "FAQ BOOT0 low path", "jumper 0 → Flash alias → app runs")
-    s.header(title="FAQ：BOOT0 拉低后从 Flash 启动", subtitle="mechanism · FA-002 continuous-line",
+    s = Svg(W, H, "Boot pin sampling and boot memory selection",
+            "STM32F103C8T6 · FA-002 · BOOT 选择启动存储器，应用是否有效还要检查向量")
+    s.header(title="复位后，BOOT 引脚决定从哪里启动",
              tag="18", tag_color=T.CYAN)
+
+    s.rect(40, 104, 250, 148, fill=T.PANEL, stroke=T.CYAN, rx=4, sw=2)
+    s.text(56, 132, "复位释放", size=18, weight="700", fill=T.CYAN)
+    s.text(56, 163, "第 4 个 SYSCLK 上升沿", size=16)
+    s.text(56, 188, "锁存 BOOT0 与 BOOT1", size=16)
+    s.text(56, 220, "BOOT0：pin 44  ·  BOOT1：PB2", size=13, fill=T.MUTED)
+    s.line(290, 178, 350, 178, stroke=T.STROKE, sw=2)
+    s.line(350, 124, 350, 308, stroke=T.STROKE, sw=2)
+    branches = [
+        (86, "BOOT0 = 0 · BOOT1 任意", "主 Flash", "0x08000000", T.GREEN),
+        (178, "BOOT0 = 1 · BOOT1 = 0", "系统存储器", "0x1FFFF000", T.AMBER),
+        (270, "BOOT0 = 1 · BOOT1 = 1", "SRAM", "0x20000000", T.VIOLET),
+    ]
     css = []
-    steps = [
-        ("CHECK", "pin44", T.CYAN),
-        ("LOW", "BOOT0=0", T.GREEN),
-        ("FLASH", "0x08000000", T.AMBER),
-        ("MSP", "stack", T.VIOLET),
-        ("PC", "Reset", T.GREEN),
-        ("APP", "runs", T.CYAN),
-    ]
-    _flow_row(s, steps, css)
-    s.title_block(40, 230, "Symptom 'flash ok, dead after reset' — measure BOOT0 before rewriting C", color=T.GREEN)
-    rows = [
-        ("Meter", "BOOT0 near 0 V to GND", T.CYAN),
-        ("Silk", "jumper on '0' / Flash", T.AMBER),
-        ("Vectors", "first two words look like stack+Thumb", T.GREEN),
-        ("Next", "if still dead → CFSR ladder", T.VIOLET),
-    ]
-    for i, (a, b, col) in enumerate(rows):
-        y = 265 + i * 44
-        s.rect(40, y, 820, 38, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(56, y + 24, a, size=13, fill=col, weight="700", mono=True)
-        s.text(840, y + 24, b, size=13, fill=T.TEXT, anchor="end")
-    s.rect(40, 450, 820, 70, fill=T.BG2, stroke=T.RED, rx=8)
-    s.text(56, 478, "High BOOT / ISP mode stays on static FAQ cards + boot0-low.gif.", size=13, fill=T.TEXT)
-    s.text(56, 500, "Do not animate optimizer -O0 myths here.", size=12, fill=T.MUTED)
-    css.append("@media (prefers-reduced-motion: reduce){*{animation:none!important}}")
+    for i, (y, condition, name, address, color) in enumerate(branches):
+        s.arrow(350, y + 38, 408, y + 38, color=color, sw=2, head=6)
+        s.rect(410, y, 450, 76, fill=T.PANEL, stroke=color, rx=4, sw=1.5)
+        s.text(426, y + 26, condition, size=15, fill=color, weight="700")
+        s.text(426, y + 54, name, size=17)
+        s.text(844, y + 54, address, size=17, mono=True, anchor="end", fill=color)
+        s.circle(290, 178, 4, fill=color, cls=f"boot-route boot-route-{i}")
+        dy = y + 38 - 178
+        # One possible selection per third of the loop. All three conditions
+        # remain printed; the animation duration is not a hardware timescale.
+        a, b, c, d = i * 33.333, i * 33.333 + 4, i * 33.333 + 12, i * 33.333 + 20
+        e = min(i * 33.333 + 31, 99.999)
+        css.append(
+            f"@keyframes boot-route-{i}{{"
+            f"0%,{a:.3f}%{{transform:translate(0,0);opacity:0}}"
+            f"{a + 0.1:.3f}%{{transform:translate(0,0);opacity:1}}"
+            f"{b:.3f}%{{transform:translate(60px,0);opacity:1}}"
+            f"{c:.3f}%{{transform:translate(60px,{dy}px);opacity:1}}"
+            f"{d:.3f}%,{e:.3f}%{{transform:translate(118px,{dy}px);opacity:1}}"
+            f"{min(e + 0.1, 100):.3f}%,100%{{transform:translate(118px,{dy}px);opacity:0}}}}"
+            f".boot-route-{i}{{animation:boot-route-{i} 9s linear infinite;}}"
+        )
+    s.text(40, 284, "采样后按组合选择一支", size=14, fill=T.MUTED)
+    s.text(40, 309, "不由探针是否连上决定", size=14, fill=T.MUTED)
+
+    s.line(40, 367, 860, 367, stroke=T.GRID, sw=1)
+    s.text(40, 397, "Flash 启动：0x08000000 的内容在 0x00000000 可读", size=17,
+           fill=T.GREEN, weight="700")
+    s.rect(40, 414, 820, 72, fill=T.PANEL, stroke=T.STROKE, rx=4)
+    s.text(56, 440, "0x00000000 · 第 1 字", size=15, mono=True)
+    s.arrow(316, 435, 376, 435, color=T.GREEN, sw=2, head=6)
+    s.text(396, 440, "初始 MSP", size=16, fill=T.GREEN)
+    s.text(56, 468, "0x00000004 · 第 2 字", size=15, mono=True)
+    s.arrow(316, 463, 376, 463, color=T.GREEN, sw=2, head=6)
+    s.text(396, 468, "Reset 向量 · bit 0 = 1（Thumb）", size=16, fill=T.GREEN)
+    s.text(40, 521, "BOOT0 = 0 只选中 Flash；MSP、复位向量和程序镜像仍须有效。",
+           size=15)
+    s.text(40, 549, "探针读 ID 另查供电、共地、PA13 / PA14 与复位；读到 ID 不等于应用已运行。",
+           size=14, fill=T.MUTED)
+    css.append("@media(prefers-reduced-motion:reduce){.boot-route{animation:none!important;display:none}}")
+    css.append("@media print{.boot-route{animation:none!important;display:none}}")
     s.add_style("\n".join(css))
-    s.footer(note="自绘矢量动画 · FA-002 · FAQ BOOT0 路径",
-             label="自绘矢量动画 · STM32 知识库")
+    s.footer(note="每次复位只选择一个启动入口", label="自绘矢量动画 · 原理示意 / 非实拍")
     return s
 
 

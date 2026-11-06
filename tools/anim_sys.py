@@ -464,142 +464,133 @@ def flash_iap() -> Svg:
 
 
 def freertos_scheduler() -> Svg:
-    s = Svg(W, H, "FreeRTOS 任务调度：状态机 + 甘特",
-            "SysTick=1 ms；就绪队列挑最高优先级；同优先级时间片轮转")
-    s.header(title="FreeRTOS 调度：状态迁移与单核甘特",
-             subtitle="mechanism · FA-002 continuous-line · configTICK_RATE_HZ=1000",
-             tag="15 FreeRTOS", tag_color=T.PINK)
-    css = []
-    states = [
-        ("就绪 Ready", 70, 100, T.GREEN, "st0", "在就绪链表等选中"),
-        ("运行 Running", 390, 100, T.CYAN, "st1", "独占 CPU（单核）"),
-        ("阻塞 Blocked", 390, 220, T.AMBER, "st2", "Delay / Queue / Sem"),
-        ("挂起 Suspended", 70, 220, T.VIOLET, "st3", "vTaskSuspend"),
-    ]
-    for name, x, y, color, cls, sub in states:
-        s.rect(x, y, 190, 70, fill=T.PANEL, stroke=color, rx=8)
-        s.text(x + 95, y + 28, name, size=13, anchor="middle", fill=T.TEXT, weight="700")
-        s.text(x + 95, y + 52, sub, size=10, anchor="middle", fill=T.MUTED)
-        s.rect(x, y, 190, 70, fill=color, rx=8, opacity=0.14, cls=cls)
-    css.append(_step_highlight("st", 4, period=5.6, window=0.2, peak=0.34))
-    s.arrow(264, 130, 386, 130, color=T.GREEN, sw=2, cls="e-flow")
-    s.text(325, 118, "调度选中", size=10, anchor="middle", fill=T.GREEN)
-    s.arrow(584, 130, 720, 130, color=T.CYAN, sw=2, head=6)
-    s.text(652, 118, "抢占/时间片", size=10, anchor="middle", fill=T.MUTED)
-    s.line(720, 130, 720, 88, stroke=T.CYAN, sw=2)
-    s.arrow(720, 88, 264, 88, color=T.CYAN, sw=2, head=6)
-    s.line(264, 88, 264, 130, stroke=T.CYAN, sw=2)
-    s.arrow(485, 174, 485, 216, color=T.AMBER, sw=2, head=6)
-    s.text(496, 198, "vTaskDelay", size=10, fill=T.AMBER)
-    s.line(390, 255, 262, 255, stroke=T.AMBER, sw=2)
-    s.arrow(262, 255, 165, 255, color=T.AMBER, sw=2, head=6)
-    s.text(280, 274, "超时 / 事件", size=10, fill=T.AMBER)
-    css.append(anim_flow(".e-flow", dur="1.3s", dash="6 8", shift=-14))
-    s.text(40, 318, "单核甘特（同刻仅一条色带）· Tick=1 ms", size=12, fill=T.MUTED)
-    rows = [
-        ("T1 pri=3", T.CYAN, [(0, 8), (24, 6)]),
-        ("T2 pri=2", T.GREEN, [(8, 8)]),
-        ("T3 pri=1", T.AMBER, [(16, 8)]),
-        ("Idle", T.DIM, [(30, 2)]),
-    ]
-    scale = 700 / 32
-    for i, (name, color, spans) in enumerate(rows):
-        y = 334 + i * 34
-        s.text(40, y + 20, name, size=11, fill=color, mono=True)
-        s.rect(150, y, 700, 26, fill=T.BG2, stroke=T.GRID, rx=4)
-        for x0, w in spans:
-            s.rect(150 + x0 * scale, y + 2, w * scale - 1, 22, fill=color, rx=4, opacity=0.88)
-        for t in range(0, 33, 4):
-            s.line(150 + t * scale, y, 150 + t * scale, y + 26, stroke=T.GRID, sw=1)
-    s.line(150, 328, 150, 472, stroke=T.RED, sw=1.5, cls="cursor")
-    css.append(anim_tx(".cursor", dur="5s", x1=0, x2=700))
-    s.text(150, 488, "0 ms", size=9, fill=T.DIM)
-    s.text(850, 488, "32 ms", size=9, fill=T.DIM, anchor="end")
-    s.rect(40, 500, 820, 56, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(56, 522, "铁律：数字越大优先级越高（与 NVIC 相反）· ISR 只用 FromISR · 用 HighWaterMark 看栈",
-           size=12, fill=T.TEXT, weight="700")
-    s.text(56, 542, "坑：未创建任务就 StartScheduler；在 ISR 里调阻塞 API 触发断言。对齐 sample-15-rtos-tick-flow。",
-           size=11, fill=T.MUTED)
-    css.append(REDUCED)
-    s.add_style("\n".join(css))
-    s.footer(note="自绘矢量动画 · FA-002 · FreeRTOS 调度机制，非 Tracealyzer 实拍",
-             label="自绘矢量动画 · STM32 知识轨")
+    s = Svg(W, H, "FreeRTOS：事件到了，不必等下一个 tick",
+            "单核抢占式 · configUSE_PREEMPTION=1 · configTICK_RATE_HZ=1000 · 放慢的逻辑示意")
+    s.header(tag="15 RTOS", tag_color=T.GREEN)
+    states = (
+        ("就绪 Ready", 40, 120, 220, T.GREEN, "具备运行条件，等待 CPU"),
+        ("运行 Running", 350, 120, 230, T.CYAN, "单核同一时刻只有一个任务"),
+        ("阻塞 Blocked", 660, 120, 200, T.AMBER, "等待队列或延时到期"),
+        ("挂起 Suspended", 40, 284, 220, T.VIOLET, "显式暂停，不因超时唤醒"),
+    )
+    for name, x, y, width, color, detail in states:
+        s.rect(x, y, width, 80 if y == 120 else 64, fill=T.PANEL, stroke=color, rx=8)
+        s.text(x + width / 2, y + 29, name, size=18, fill=color, weight="700", anchor="middle")
+        s.text(x + width / 2, y + 54, detail, size=13, anchor="middle")
+    s.arrow(266, 156, 344, 156, color=T.GREEN, sw=2, head=6)
+    s.text(305, 142, "选中", size=14, anchor="middle", fill=T.GREEN)
+    s.arrow(344, 184, 266, 184, color=T.CYAN, sw=2, head=6)
+    s.text(305, 218, "抢占 / 轮转", size=13, anchor="middle", fill=T.CYAN)
+    s.arrow(586, 156, 654, 156, color=T.AMBER, sw=2, head=6)
+    s.text(620, 142, "等待", size=14, anchor="middle", fill=T.AMBER)
+    s.path("M760 114 V88 H150 V114", stroke=T.AMBER, sw=2)
+    s.arrow(150, 100, 150, 114, color=T.AMBER, sw=2, head=6)
+    s.text(455, 81, "事件到达 / 超时 → 回到 Ready", size=16, anchor="middle", fill=T.AMBER)
+    s.circle(760, 114, 5, fill=T.AMBER, cls="wake moving")
+    s.arrow(70, 204, 70, 278, color=T.VIOLET, sw=2, head=6)
+    s.text(83, 239, "挂起", size=13, fill=T.VIOLET)
+    s.arrow(230, 278, 230, 204, color=T.VIOLET, sw=2, head=6)
+    s.text(240, 239, "恢复", size=13, fill=T.VIOLET)
+    s.text(350, 319, "下面只演示：队列事件唤醒高优先级任务。", size=17, weight="700")
+    s.text(350, 345, "挂起和等待事件是两种不同状态。", size=15, fill=T.MUTED)
+    origin, scale = 160, 200
+    for row, (name, color, spans) in enumerate((
+        ("H · 优先级 2", T.CYAN, ((1.5, 2.5),)),
+        ("L · 优先级 1", T.GREEN, ((0, 1.5), (2.5, 3))),
+    )):
+        y = 400 + row * 56
+        s.text(40, y + 25, name, size=16, fill=color, weight="700")
+        s.rect(origin, y, 600, 34, fill=T.PANEL, stroke=T.GRID, rx=4)
+        for start, end in spans:
+            s.rect(origin + start * scale, y, (end - start) * scale, 34, fill=color, rx=4)
+    s.text(200, 424, "H 阻塞，等队列", size=15, fill=T.AMBER)
+    s.text(560, 424, "H 运行", size=15, fill=T.BG, anchor="middle", weight="700")
+    s.text(310, 480, "L 运行", size=15, fill=T.BG, anchor="middle", weight="700")
+    s.text(710, 480, "L 继续", size=14, fill=T.BG, anchor="middle", weight="700")
+    s.text(710, 424, "阻塞", size=14, fill=T.AMBER, anchor="middle")
+    s.line(460, 390, 460, 494, stroke=T.RED, sw=2, dash="4 4")
+    s.text(460, 379, "1.5 ms：ISR 发事件并请求切换", size=16, anchor="middle", fill=T.RED)
+    s.line(660, 390, 660, 494, stroke=T.AMBER, sw=1.5, dash="4 4")
+    for tick in range(4):
+        x = origin + tick * scale
+        s.line(x, 494, x, 503, stroke=T.STROKE)
+        s.text(x, 522, f"{tick} ms", size=14, anchor="middle", mono=True)
+    s.text(760, 542, "2.5 ms：H 再次等队列", size=14, anchor="end", fill=T.AMBER)
+    s.line(origin, 394, origin, 490, stroke=T.RED, sw=2, cls="cursor moving")
+    s.text(40, 569, "H 无须等下一个 tick；实际响应仍受 ISR、临界区和调度开销影响。", size=16)
+    s.add_style("""
+@keyframes rtos-cursor{0%,8%{transform:translateX(0)}44%,60%{transform:translateX(300px)}92%,100%{transform:translateX(600px)}}
+@keyframes rtos-wake{0%,43.9%{transform:translate(0,0);opacity:0}44%{transform:translate(0,0);opacity:1}48%{transform:translate(0,-26px)}56%{transform:translate(-610px,-26px)}60%{transform:translate(-610px,0);opacity:1}61%,100%{transform:translate(-610px,0);opacity:0}}
+.cursor{animation:rtos-cursor 12s linear infinite}.wake{animation:rtos-wake 12s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.moving{display:none}}
+@media print{*{animation:none!important}.moving{display:none}}
+""")
+    s.footer(note="FreeRTOS Kernel V11.3.2 · 时间为教学设定，省略 ISR / 切换耗时",
+             label="自绘矢量动画 · FA-002")
     return s
 
 
 
 def lowpower_wakeup() -> Svg:
-    s = Svg(W, H, "三种低功耗模式与唤醒方式",
-            "STM32 的低功耗只有三件事：关时钟、关电源域、留一个唤醒源")
+    s = Svg(W, H, "三种低功耗模式的唤醒路径",
+            "动画只演示先后关系；电流与唤醒时间按对应数据手册条件读取")
     s.header(tag="16 低功耗", tag_color=T.CYAN)
 
-    modes = [
-        ("Sleep 睡眠", "WFI / WFE", "任意中断",
-         "外设时钟还在，电流仍高（查 DS）",
-         "内核停，外设继续跑。不要记成固定的 1 mA", T.GREEN),
-        ("Stop 停止", "HAL_PWR_EnterSTOPMode", "EXTI / RTC / 唤醒脚",
-         "主时钟停振后降到 µA 级（查 DS）",
-         "SRAM 与 RTC 保持，唤醒后必须重配时钟", T.AMBER),
-        ("Standby 待机", "HAL_PWR_EnterSTANDBYMode", "WKUP 脚 / RTC 闹钟",
-         "F103 DS 典型值约 2 µA（非本仓库实测）",
-         "只留备份域，唤醒等于复位，程序从头跑", T.RED),
+    # 三条路径共用一条时间方向。点沿箭头移动，静态画面仍能读懂状态变化。
+    paths = [
+        ("Sleep 睡眠", "WFI / WFE", "中断或事件", "继续执行", T.GREEN,
+         ["运行", "Sleep", "原时钟继续"]),
+        ("Stop 停止", "SLEEPDEEP=1 · PDDS=0", "EXTI / RTC 事件", "恢复后继续", T.AMBER,
+         ["运行", "Stop", "HSI 8 MHz", "恢复系统时钟", "继续业务"]),
+        ("Standby 待机", "SLEEPDEEP=1 · PDDS=1", "WKUP / RTC / NRST / IWDG", "复位启动", T.RED,
+         ["运行", "Standby", "唤醒复位", "复位向量"]),
     ]
-    for i, (name, api, wake, cur, note, color) in enumerate(modes):
-        y = 92 + i * 96
-        s.rect(40, y, 820, 84, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.rect(40, y, 5, 84, fill=color, rx=2)
-        s.text(60, y + 26, name, size=14, fill=T.TEXT, weight="700")
-        s.text(60, y + 48, api, size=10.5, mono=True, fill=color)
-        s.text(60, y + 68, note, size=10, fill=T.MUTED)
-        s.text(470, y + 26, "唤醒源：" + wake, size=11, fill=T.CYAN)
-        s.text(470, y + 48, "典型电流：" + cur, size=11, fill=T.AMBER)
-        # 三档按「先量 Sleep、再量 Stop、再量 Standby」的顺序长出条形，
-        # 长度就是相对电流：条形自己会说明谁更省
-        target = 0.9 - i * 0.35
-        s.rect(470, y + 58, 120, 12, fill=T.BG2, stroke=T.STROKE, rx=2)
-        s.rect(471, y + 59, 118, 10, fill=color, rx=2, cls=f"pw{i}")
-        s.text(598, y + 68, f"相对电流 {target:.2f}", size=10, fill=T.MUTED)
-    CYCLE = 6.6
-    css = []
-    for i in range(3):
-        t0 = i * 22 + 6
-        css.append(css_kf(f"pw{i}-grow", [
-            ("0%", "transform:scaleX(0)"),
-            (f"{t0:.2f}%", "transform:scaleX(0)"),
-            (f"{t0 + 12:.2f}%", f"transform:scaleX({0.9 - i * 0.35:.3f})"),
-            ("100%", f"transform:scaleX({0.9 - i * 0.35:.3f})"),
-        ]))
-        css.append(f".pw{i}{{animation:pw{i}-grow {CYCLE}s ease-out infinite;"
-                   "transform-box:fill-box;transform-origin:left center;}")
-    s.add_style("\n".join(css))
+    for row, (name, entry, wake, outcome, color, steps) in enumerate(paths):
+        y = 82 + row * 120
+        s.rect(40, y, 820, 104, fill=T.PANEL, stroke=T.STROKE, rx=8)
+        s.rect(40, y, 5, 104, fill=color, rx=2)
+        s.text(60, y + 24, name, size=16, fill=T.TEXT, weight="700")
+        s.text(60, y + 45, entry, size=10.5, mono=True, fill=color)
+        s.text(60, y + 67, "唤醒：" + wake, size=10, fill=T.CYAN)
+        s.text(60, y + 88, "结果：" + outcome, size=10, fill=T.MUTED)
+        left, right = 300, 806
+        step_w = (right - left) / max(1, len(steps) - 1)
+        xs = [left + i * step_w for i in range(len(steps))]
+        yy = y + 57
+        for i, (x, label) in enumerate(zip(xs, steps)):
+            s.circle(x, yy, 8, fill=T.BG2, stroke=color, sw=2)
+            if i:
+                s.arrow(xs[i - 1] + 10, yy, x - 10, yy, color=color, sw=2, head=6)
+            s.text(x, y + 82, label, size=12, fill=T.TEXT, anchor="middle")
+        # 每条路径一个移动点；点不承载数值，只提醒读者按箭头读顺序。
+        s.circle(left, yy, 5, fill=color, cls=f"wake-dot wake-dot-{row}")
 
-    s.rect(40, 384, 400, 148, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 410, "省电的五个动作（按收益排序）", size=12.5, fill=T.TEXT,
-           weight="700")
-    for i, t in enumerate([
-        "① 未使用的 GPIO 配成模拟输入或输出低",
-        "② 关掉用不到的外设时钟（__HAL_RCC_*_CLK_DISABLE）",
-        "③ 降低主频：功耗与频率基本成正比",
-        "④ 用 DMA 搬数据，减少 CPU 唤醒次数",
-        "⑤ 传感器分时供电（用 MOSFET 控制电源）",
-    ]):
-        s.text(58, 434 + i * 20, t, size=10.5, fill=T.MUTED)
-
-    s.rect(460, 384, 400, 148, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    s.text(478, 410, "进入 Stop 模式的代码骨架", size=12.5, fill=T.TEXT,
-           weight="700")
-    s.code(478, 434, [
-        "HAL_SuspendTick();          // 先停 SysTick",
-        "HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON,",
-        "                       PWR_STOPENTRY_WFI);",
-        "SystemClock_Config();       // 唤醒后必须重配时钟！",
-        "HAL_ResumeTick();",
-    ], size=10, lh=18, color=T.GREEN)
-
-    s.rect(40, 534, 820, 22, fill=T.BG2, stroke=T.STROKE, rx=8)
-    s.text(58, 550, "测功耗要用 µA 档万用表串在电源上；USB 调试器反向供电会污染测量结果",
+    s.rect(40, 454, 820, 72, fill=T.BG2, stroke=T.STROKE, rx=8)
+    s.text(58, 480, "读图顺序", size=12, fill=T.TEXT, weight="700")
+    s.text(148, 480, "先看睡前状态 → 再看唤醒源 → 最后看醒来后的时钟或复位路径。",
+           size=11, fill=T.MUTED)
+    s.text(58, 505, "Stop 的 5.4 µs 是事件到第一条指令的指标；PLL 锁定和业务恢复另行计时。",
            size=10.5, fill=T.AMBER)
-    s.footer("F1 唤醒后 HSE 需要重新起振，务必重新调用 SystemClock_Config()，否则串口全乱码")
+    s.text(40, 554, "IWDG 超时是复位；Sleep / Stop 的中断与事件必须事先配置。", size=12, fill=T.MUTED)
+    s.footer("顺序示意 · 非实测波形", label="自绘矢量动画 · STM32F103")
+
+    css = []
+    for i, row in enumerate(paths):
+        n = len(row[-1])
+        frames = [
+            ("0%", "transform:translateX(0px);opacity:0"),
+            ("8%", "transform:translateX(0px);opacity:1"),
+        ]
+        for j in range(1, n):
+            pct = 8 + 78 * j / (n - 1)
+            state = f"transform:translateX({506 * j / (n - 1):.1f}px);opacity:1"
+            frames.extend([(f"{pct - 5:.2f}%", state), (f"{pct:.2f}%", state)])
+        frames.append(("100%", "transform:translateX(506px);opacity:0"))
+        css.append(css_kf(f"wake-dot-{i}-move", frames))
+        css.append(f".wake-dot-{i}{{animation:wake-dot-{i}-move 6.6s ease-in-out infinite;}}")
+    css.append("@media (prefers-reduced-motion: reduce){.wake-dot{display:none!important}}"
+               "@media print{*{animation:none!important}.wake-dot{display:none!important}}")
+    s.add_style("\n".join(css))
     return s
 
 

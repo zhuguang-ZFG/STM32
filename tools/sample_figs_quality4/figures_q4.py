@@ -136,84 +136,102 @@ def ch01_rdp_unlock() -> Svg:
 
 
 def ch18_link_map() -> Svg:
-    c = Svg(960, 880, "Link map triage", "region overflow vs wrong FLASH ORIGIN")
+    c = Svg(960, 880, "链接失败：先对照容量，再读段的落点", "STM32F103C8T6 · Flash 64 KB / SRAM 20 KB")
     c.header(tag="18", tag_color=T.CYAN)
-    c.text(40, 86, "Build fails in the linker: read the region line before rewriting C. Numbers are F103C8.", size=15, fill=T.TEXT, weight="700")
-    boxes = [
-        ("FLASH", "64 KB", "ORIGIN 0x08000000", "LENGTH 64K", T.CYAN),
-        ("RAM", "20 KB", "ORIGIN 0x20000000", "LENGTH 20K", T.GREEN),
-        ("overflow", ".text too big", "shrink -O0 debug", "or wrong chip", T.AMBER),
-        ("wrong ORIGIN", "0x08000000≠VTOR", "boots to fault", "map vs .ld", T.RED),
-    ]
-    for i, (t, a, b, d, col) in enumerate(boxes):
-        x = 40 + (i % 2) * 460
-        y = 120 + (i // 2) * 140
-        c.rect(x, y, 440, 120, fill=T.PANEL, stroke=col, rx=8)
-        c.text(x + 24, y + 32, t, size=16, fill=col, weight="700")
-        c.text(x + 24, y + 60, a, size=14, fill=T.TEXT, mono=True, weight="700")
-        c.text(x + 24, y + 88, f"{b} · {d}", size=13, fill=T.MUTED)
-    c.rect(40, 420, 880, 140, fill=T.BG2, stroke=T.GREEN, rx=8)
-    c.text(56, 454, "Checklist: chip define (STM32F103xB) → .ld LENGTH → map FILE size → OpenOCD flash bank.", size=14, fill=T.GREEN, weight="700")
-    c.text(56, 486, "C8 vs CB: 64 KB vs 128 KB — a 'works on my bigger chip' binary dies on BluePill.", size=13, fill=T.TEXT)
-    c.text(56, 518, "`arm-none-eabi-size` text+data must fit Flash; bss+data must fit 20 KB RAM.", size=13, fill=T.MUTED)
-    c.rect(40, 580, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
-    c.text(56, 614, "FAQ pattern: 'undefined reference' is link inputs; 'region overflow' is capacity.", size=14, fill=T.RED, weight="700")
-    c.text(56, 646, "Do not paste random .ld from F4 into an F1 tree.", size=13, fill=T.MUTED)
-    credit(c, "Hand-drawn. Link-map triage for FAQ build failures.")
+    c.text(40, 104, "地址轴只比较容量；具体占用以本次 map 文件为准。", size=20, fill=T.TEXT, weight="700")
+    for y, label, width, start, end, color in (
+        (158, "Flash · 64 KB", 704, "0x08000000", "0x08010000", T.CYAN),
+        (306, "SRAM · 20 KB", 220, "0x20000000", "0x20005000", T.GREEN),
+    ):
+        c.text(40, y, label, size=23, fill=color, weight="700")
+        c.rect(40, y+20, width, 44, fill=T.BG2, stroke=color, rx=2)
+        c.line(40, y+64, 40, y+77, stroke=color, sw=2)
+        c.line(40+width, y+64, 40+width, y+77, stroke=color, sw=2)
+        c.text(40, y+105, start, size=17, fill=T.TEXT, mono=True)
+        c.text(40+width+18, y+51, end, size=17, fill=T.TEXT, mono=True)
+    c.text(40, 450, "初始化的 .data 占两处", size=22, fill=T.AMBER, weight="700")
+    c.rect(40, 474, 340, 76, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    c.text(210, 505, "Flash：初值（LMA）", size=18, fill=T.CYAN, anchor="middle", weight="700")
+    c.text(210, 532, ".text / .rodata 也存放于此", size=15, fill=T.TEXT, anchor="middle")
+    c.arrow(388, 512, 560, 512, color=T.AMBER)
+    c.text(474, 492, "启动时复制", size=15, fill=T.MUTED, anchor="middle")
+    c.rect(572, 474, 348, 76, fill=T.PANEL, stroke=T.GREEN, rx=8)
+    c.text(746, 505, "SRAM：运行地址（VMA）", size=18, fill=T.GREEN, anchor="middle", weight="700")
+    c.text(746, 532, ".bss 清零；栈和堆另留空间", size=15, fill=T.TEXT, anchor="middle")
+    c.line(40, 586, 920, 586, stroke=T.GRID)
+    c.text(40, 626, "region overflowed", size=21, fill=T.RED, weight="700", mono=True)
+    c.text(40, 661, "读报错区域、LENGTH 与段占用；包括保留区、对齐和栈/堆。", size=18, fill=T.TEXT)
+    c.text(40, 713, "链接通过，复位后没运行", size=21, fill=T.CYAN, weight="700")
+    c.text(40, 748, "再对照镜像位置、启动向量、BOOT 与 VTOR；ORIGIN 和 VTOR 各有用途。", size=18, fill=T.TEXT)
+    c.text(40, 797, "size 是汇总，map 才能显示每段和符号的地址；容量上界不包含终点地址。", size=17, fill=T.MUTED)
+    credit(c, "自绘矢量图 · F103C8 容量与链接段关系；无虚构占用量。")
     return c
 
 
 def ch18_hardfault_ladder() -> Svg:
-    c = Svg(960, 880, "HardFault ladder", "CFSR first, then BFAR/MMFAR if valid")
+    c = Svg(960, 880, "HardFault：地址和栈帧分开核对", "CFSR 0xE000ED28 · BFAR 0xE000ED38")
     c.header(tag="18", tag_color=T.AMBER)
-    c.text(40, 86, "Debug attach lives, LED dead after a pointer bug: climb CFSR before rewriting peripherals.", size=15, fill=T.TEXT, weight="700")
-    steps = [
-        ("1", "Halt", "ctrl-c / break", T.CYAN),
-        ("2", "CFSR", "0xE000ED28", T.GREEN),
-        ("3", "valid?", "BFARVALID bit15", T.AMBER),
-        ("4", "BFAR", "faulting addr", T.VIOLET),
-        ("5", "stacked PC", "exception frame", T.CYAN),
-        ("6", "fix", "one root cause", T.GREEN),
-    ]
-    for i, (n, t, a, col) in enumerate(steps):
-        x = 40 + (i % 3) * 300
-        y = 120 + (i // 3) * 140
-        c.rect(x, y, 280, 120, fill=T.PANEL, stroke=col, rx=8)
-        c.text(x + 24, y + 34, f"{n}. {t}", size=16, fill=col, weight="700")
-        c.text(x + 24, y + 70, a, size=14, fill=T.TEXT, mono=True)
-    c.rect(40, 420, 880, 140, fill=T.BG2, stroke=T.GREEN, rx=8)
-    c.text(56, 454, "Bit 15 = 1 ⇒ trust BFAR. Bit 15 = 0 ⇒ ignore BFAR; use stacked PC + disassembly.", size=14, fill=T.GREEN, weight="700")
-    c.text(56, 486, "Common F1 miss: unaligned half-word on Flash write path; another: NULL vtable after bad VTOR.", size=13, fill=T.TEXT)
-    c.text(56, 518, "Pairs with sample-17-cfsr-bits — FAQ chapter links the ladder to symptoms.", size=13, fill=T.MUTED)
-    c.rect(40, 580, 880, 110, fill=T.PANEL, stroke=T.RED, rx=8)
-    c.text(56, 614, "Trap: reading BFAR when BFARVALID=0 and chasing a stale address for an hour.", size=14, fill=T.RED, weight="700")
-    c.text(56, 646, "Trap: disabling HardFault_Handler print and losing the only breadcrumb.", size=13, fill=T.MUTED)
-    credit(c, "Hand-drawn. HardFault ladder from ARMv7-M + RM0008 debug notes.")
+    c.rect(40, 106, 880, 108, fill=T.PANEL, stroke=T.CYAN, rx=8)
+    c.text(60, 145, "先保存 BFAR / MMFAR，再读取对应有效位", size=23, fill=T.CYAN, weight="700")
+    c.text(60, 182, "一并保存 CFSR、HFSR、EXC_RETURN 与可用栈帧；以下解读同一快照。", size=18, fill=T.TEXT)
+    c.arrow(480, 218, 480, 256, color=T.STROKE)
+    c.text(480, 294, "BFARVALID · CFSR bit 15", size=23, fill=T.TEXT, anchor="middle", weight="700")
+    c.line(480, 312, 480, 330, stroke=T.STROKE)
+    c.line(256, 330, 704, 330, stroke=T.STROKE)
+    c.arrow(256, 330, 256, 366, color=T.GREEN)
+    c.arrow(704, 330, 704, 366, color=T.RED)
+    c.text(280, 354, "1", size=19, fill=T.GREEN)
+    c.text(728, 354, "0", size=19, fill=T.RED)
+    for x, title, detail, color in (
+        (40, "使用保存的 BFAR 地址", "结合故障类型与访问指令解释", T.GREEN),
+        (496, "舍弃保存的 BFAR 地址", "数值看起来合理也不能用于定位", T.RED),
+    ):
+        c.rect(x, 370, 424, 108, fill=T.PANEL, stroke=color, rx=8)
+        c.text(x+20, 411, title, size=21, fill=color, weight="700")
+        c.text(x+20, 449, detail, size=17, fill=T.TEXT)
+    c.line(40, 520, 920, 520, stroke=T.GRID)
+    c.text(40, 563, "继续检查异常栈帧", size=23, fill=T.CYAN, weight="700")
+    c.text(40, 604, "STKERR / MSTKERR：入栈失败，不能假定 frame 中每个字段都完整。", size=18, fill=T.RED)
+    c.text(40, 644, "先验证 MSP / PSP、栈边界与 EXC_RETURN，再解释选定 frame 的 PC。", size=18, fill=T.TEXT)
+    c.text(40, 684, "IMPRECISERR：异常可滞后于写访问，栈中 PC 未必是肇事指令。", size=18, fill=T.TEXT)
+    c.rect(40, 728, 880, 72, fill=T.PANEL, stroke=T.AMBER, rx=8)
+    c.text(60, 759, "定位源码使用同一份 ELF 与可信 PC；BFAR 是访问地址。", size=19, fill=T.AMBER, weight="700")
+    c.text(60, 786, "MMFAR 同样先保存，再检查 MMARVALID；避免在故障中阻塞打印。", size=16, fill=T.MUTED)
+    credit(c, "自绘矢量图 · ARM DUI0552A §4.3.10–4.3.15；采集、地址有效性与栈完整性分别判断。")
     return c
 
 
 def ch18_uart_garbled() -> Svg:
-    c = Svg(960, 880, "UART garbled checklist", "baud · HSE · swap TX/RX · 3.3 V")
-    c.header(tag="18", tag_color=T.VIOLET)
-    c.text(40, 86, "Serial monitor shows junk: measure the clock path before rewriting string code.", size=15, fill=T.TEXT, weight="700")
-    rows = [
-        ("Baud math", "72e6 / (16*39) ≈ 115384", "target 115200", "ok within 1%", T.CYAN),
-        ("Wrong SYSCLK", "think 72, run 8 HSI", "baud ×9 off", "garbled solid", T.AMBER),
-        ("TX/RX swap", "PA9/PA10 vs USB-TTL", "no RX data", "swap once", T.GREEN),
-        ("Level", "5 V TTL into PA10", "risk damage", "use 3.3 V adapter", T.RED),
-    ]
-    for i, (t, a, b, d, col) in enumerate(rows):
-        y = 120 + i * 100
-        c.rect(40, y, 880, 88, fill=T.PANEL, stroke=col, rx=8)
-        c.text(56, y + 28, t, size=15, fill=col, weight="700")
-        c.text(280, y + 28, a, size=13, fill=T.TEXT, mono=True)
-        c.text(620, y + 28, b, size=13, fill=T.TEXT)
-        c.text(56, y + 58, d, size=13, fill=T.MUTED)
-    c.rect(40, 540, 880, 120, fill=T.BG2, stroke=T.GREEN, rx=8)
-    c.text(56, 574, "Order: confirm HSE/PLL SWS → USART_BRR → wiring → terminal 8N1 → then code.", size=14, fill=T.GREEN, weight="700")
-    c.text(56, 606, "Scope TX idle-high at 3.3 V; bit width ~8.68 µs at 115200.", size=13, fill=T.TEXT)
-    c.text(56, 636, "If only Chinese Windows COM is wrong, try 115200 8N1 in a second terminal first.", size=13, fill=T.MUTED)
-    credit(c, "Hand-drawn. UART FAQ checklist with F103 72 MHz / 115200 numbers.")
+    c = Svg(960, 880, "串口乱码：沿时钟和 TX 信号逐段检查", "USART1 · PPRE2 = 1 · BRR 保持 0x271")
+    c.header(tag="18", tag_color=T.CYAN)
+    c.text(40, 101, "先读 SWS 与 APB2 分频，得到 USART1 的 PCLK2。", size=21, fill=T.TEXT, weight="700")
+    c.text(40, 141, "BRR raw = 0x271 = 625；USARTDIV = 39 + 1/16 = 39.0625", size=19, fill=T.CYAN, mono=True)
+    for y, clock, baud, width, length, color in (
+        (204, "PCLK2 = 72 MHz", "115200 bit/s", "8.68 µs", 78, T.GREEN),
+        (352, "PCLK2 = 8 MHz", "12800 bit/s", "78.125 µs", 702, T.RED),
+    ):
+        c.text(40, y, clock, size=22, fill=color, weight="700")
+        c.text(40, y+37, f"PCLK2 / 625 = {baud}", size=19, fill=T.TEXT, mono=True)
+        c.line(178, y+75, 880, y+75, stroke=T.GRID)
+        c.line(178, y+56, 178, y+94, stroke=color, sw=2)
+        c.line(178+length, y+56, 178+length, y+94, stroke=color, sw=2)
+        c.arrow(178, y+75, 178+length, y+75, color=color)
+        c.text(40, y+82, width, size=18, fill=color, mono=True)
+    c.text(40, 494, "两行按同一比例画单个位宽；数值为换算，不是实测波形。", size=18, fill=T.MUTED)
+    c.line(40, 529, 920, 529, stroke=T.GRID)
+    c.text(40, 571, "再核对接线与主机设置", size=23, fill=T.CYAN, weight="700")
+    c.text(60, 622, "MCU PA9 · TX", size=20, fill=T.GREEN, mono=True)
+    c.arrow(316, 615, 620, 615, color=T.GREEN)
+    c.text(654, 622, "USB-TTL · RX", size=20, fill=T.TEXT, mono=True)
+    c.text(60, 669, "MCU PA10 · RX", size=20, fill=T.CYAN, mono=True)
+    c.arrow(620, 662, 316, 662, color=T.CYAN)
+    c.text(654, 669, "USB-TTL · TX", size=20, fill=T.TEXT, mono=True)
+    c.text(60, 716, "GND", size=20, fill=T.TEXT, mono=True)
+    c.line(316, 709, 620, 709, stroke=T.STROKE, sw=2)
+    c.text(654, 716, "GND", size=20, fill=T.TEXT, mono=True)
+    c.text(40, 771, "使用 3.3 V 逻辑电平；两端波特率、数据位、校验与停止位一致。", size=18, fill=T.TEXT)
+    c.text(40, 808, "HSE 没就绪时程序可能停在等待；当前 SYSCLK 必须从 SWS 核实。", size=17, fill=T.MUTED)
+    credit(c, "自绘矢量图 · RM0008 USART/RCC；波特率按 PCLK2 与完整 BRR 换算。")
     return c
 
 

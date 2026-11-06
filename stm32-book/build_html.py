@@ -377,12 +377,19 @@ def prepare_chapter_markdown(
 def semanticize_figures(rendered: str) -> str:
     """Turn the known centered image + sub caption into figure/figcaption."""
 
+    def caption_markup(value: str) -> str:
+        """Preserve the small Markdown vocabulary used in source figure captions."""
+        markup = markdown.markdown(value, output_format="html5")
+        paragraph = re.fullmatch(r"<p>(.*?)</p>", markup, re.DOTALL)
+        return paragraph.group(1) if paragraph else value
+
     def replace(match: re.Match[str]) -> str:
         images = match.group("images").strip()
         caption = match.group("caption")
         attributes = ' class="wide-figure" tabindex="0"' if "wide-figure" in match.group("attrs") else ""
         if caption and caption.strip():
             text = re.sub(r"^\s*▲\s*", "", caption.strip())
+            text = caption_markup(text)
             return f"<figure{attributes}>{images}<figcaption>{text}</figcaption></figure>"
         return f"<figure{attributes}>{images}</figure>"
 

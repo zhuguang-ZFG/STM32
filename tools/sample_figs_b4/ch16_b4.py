@@ -44,7 +44,7 @@ def mode_compare() -> Svg:
     cols = (
         (160, "Sleep", "打个盹", "SLEEPDEEP=0", T.GREEN),
         (411, "Stop", "睡一觉，醒来对表", "SLEEPDEEP=1 PDDS=0", T.CYAN),
-        (662, "Standby", "关机，醒来重启", "SLEEPDEEP=1 PDDS=1", T.VIOLET),
+        (662, "Standby", "主电源域关，醒来重启", "SLEEPDEEP=1 PDDS=1", T.VIOLET),
     )
     for x, name, tagline, regs, color in cols:
         canvas.rect(x, 168, 246, 56, fill=T.BG2, stroke=color, rx=8)
@@ -72,12 +72,12 @@ def mode_compare() -> Svg:
 
     canvas.text(40, 358, "唤醒源", size=13, fill=T.TEXT, weight="700")
     canvas.text(40, 378, "谁把它叫醒", size=11, fill=T.MUTED)
-    canvas.text(172, 354, "任意中断或事件", size=13, fill=T.TEXT)
-    canvas.text(172, 376, "NVIC 使能的中断都算", size=12, fill=T.MUTED)
-    canvas.text(423, 354, "EXTI 16 条、RTC", size=13, fill=T.TEXT)
-    canvas.text(423, 376, "IWDG、USB 唤醒", size=12, fill=T.MUTED)
+    canvas.text(172, 354, "满足条件的中断或事件", size=13, fill=T.TEXT)
+    canvas.text(172, 376, "看 WFI/WFE 与 NVIC/优先级配置", size=11, fill=T.MUTED)
+    canvas.text(423, 354, "EXTI（含 RTC / USB 唤醒）", size=12, fill=T.TEXT)
+    canvas.text(423, 376, "IWDG / NRST 走复位", size=12, fill=T.MUTED)
     canvas.text(674, 354, "WKUP 引脚（PA0 上升沿）", size=13, fill=T.TEXT)
-    canvas.text(674, 376, "RTC 闹钟、IWDG、NRST", size=12, fill=T.MUTED)
+    canvas.text(674, 376, "RTC 闹钟；IWDG / NRST 复位", size=12, fill=T.MUTED)
 
     canvas.text(40, 438, "唤醒时间", size=13, fill=T.TEXT, weight="700")
     canvas.text(40, 458, "到第一条指令", size=11, fill=T.MUTED)
@@ -86,7 +86,7 @@ def mode_compare() -> Svg:
     canvas.text(423, 434, "5.4 µs", size=15, fill=T.CYAN, weight="700")
     canvas.text(423, 458, "主稳压器那格 3.6 µs", size=12, fill=T.TEXT)
     canvas.text(674, 434, "50 µs", size=15, fill=T.VIOLET, weight="700")
-    canvas.text(674, 458, "然后从复位向量重启", size=12, fill=T.TEXT)
+    canvas.text(674, 458, "经复位启动，到第一条指令", size=12, fill=T.TEXT)
 
     canvas.text(40, 520, "唤醒后时钟", size=13, fill=T.TEXT, weight="700")
     canvas.text(40, 540, "本章的主坑", size=11, fill=T.MUTED)
@@ -110,7 +110,7 @@ def mode_compare() -> Svg:
                 size=13, fill=T.TEXT)
 
     canvas.rect(40, 744, 880, 58, fill=T.PANEL, stroke=T.STROKE, rx=8)
-    canvas.text(56, 766, "底注  14.4 mA 与 14 µA 差 1000 倍，三档不能写在同一行 mA 里；电流都是典型值，不是最大值。",
+    canvas.text(56, 766, "14.4 mA 与 14 µA 相差约 1000 倍；三种模式条件不同，电流都是典型值，不是最大值。",
                 size=12, fill=T.TEXT)
     canvas.text(56, 788, "1.4 µA 是备份域 IDD_VBAT，不是整机 Standby；表 16 没有「Stop 加 IWDG」这一格。",
                 size=12, fill=T.TEXT)
@@ -151,7 +151,7 @@ def pwr_triage() -> Svg:
     canvas.text(24, 82, "先给三个数找到位置：对数刻度，差的是数量级",
                 size=12.5, fill=T.TEXT, weight="700")
     import math
-    stages = [("运行 14.4 mA", 14400, T.RED), ("Stop 14 µA", 14, T.AMBER),
+    stages = [("Sleep 14.4 mA", 14400, T.RED), ("Stop 14 µA", 14, T.AMBER),
               ("Standby 2 µA", 2, T.CYAN)]
     x0, x1 = 120, 700
 
@@ -220,17 +220,16 @@ def pwr_triage() -> Svg:
                 weight="700")
     canvas.text(cx + 14, ay + 50, "差值法：先测底，再逐个打开", size=10,
                 fill=T.CYAN, mono=True)
-    leaks = [("IWDG 走 LSI", "+3.4 µA", 0.02, T.RED),
-             ("LSI 单开", "+3.2 µA", 0.02, T.AMBER),
-             ("10 kΩ 上拉 @3.3 V", "0.33 mA", 0.35, T.VIOLET),
-             ("2 mA LED 常亮", "2 mA", 1.0, T.RED),
-             ("悬空输入脚翻转", "µA~mA", 0.5, T.AMBER)]
-    for i, (name, val, frac, color) in enumerate(leaks):
+    leaks = [("Stop 加 IWDG", "查实测", T.RED),
+             ("Standby + LSI", "3.2 µA 总值", T.AMBER),
+             ("10 kΩ 两端压差 3.3 V", "0.33 mA", T.VIOLET),
+             ("2 mA LED 常亮", "2 mA", T.RED),
+             ("悬空输入脚", "依电平测量", T.AMBER)]
+    for i, (name, val, color) in enumerate(leaks):
         y = ay + 72 + i * 30
         canvas.text(cx + 14, y + 10, name, size=10, fill=T.TEXT)
-        canvas.rect(cx + 14, y + 16, 180, 6, fill=T.BG2, stroke=T.GRID, rx=2)
-        canvas.rect(cx + 14, y + 16, 180 * frac, 6, fill=color, rx=2)
-        canvas.text(cx + 200, y + 22, val, size=9.5, fill=color, mono=True)
+        canvas.line(cx + 14, y + 19, cx + 180, y + 19, stroke=T.GRID, sw=1)
+        canvas.text(cx + 192, y + 17, val, size=9.5, fill=color, mono=True)
     canvas.text(cx + 14, ay + 226, "悬空脚配 GPIO_MODE_ANALOG；输出脚给定电平",
                 size=9, fill=T.MUTED)
 
@@ -254,9 +253,9 @@ def pwr_triage() -> Svg:
     ty = 532
     canvas.text(24, ty, "唤醒时间不是加法：先到第一条指令，再算 PLL 锁定",
                 size=12.5, fill=T.TEXT, weight="700")
-    wakes = [("Stop · 低功耗稳压器", "5.4 µs", 0.36, T.GREEN),
-             ("Stop · 主稳压器", "3.6 µs", 0.24, T.CYAN),
-             ("Sleep", "1.8 µs", 0.12, T.VIOLET),
+    wakes = [("Stop · 低功耗稳压器", "5.4 µs", 5.4 / 50, T.GREEN),
+             ("Stop · 主稳压器", "3.6 µs", 3.6 / 50, T.CYAN),
+             ("Sleep", "1.8 µs", 1.8 / 50, T.VIOLET),
              ("Standby（走复位）", "50 µs", 1.0, T.AMBER)]
     for i, (name, val, frac, color) in enumerate(wakes):
         y = ty + 16 + i * 26

@@ -76,7 +76,7 @@ def arb_ladder():
             size=18, color=INK, lh=27)
 
     # ---- 优先级梯 ----
-    f.text(620, 546, "ID 越小优先级越高（章里的表）", size=19, color=MUTED)
+    f.text(620, 546, "标准数据帧：ID 小的优先", size=19, color=MUTED)
     ladder = [("0x000", "紧急/控制", 380), ("0x100", "实时控制", 300),
               ("0x500", "状态上报", 220), ("0x7FF", "非关键/日志", 150)]
     yy = 560
@@ -85,7 +85,7 @@ def arb_ladder():
         f.text(632, yy + 19, f"{idv}  {use}", size=15, color=INK)
         yy += 32
 
-    f.htext(84, 726, "输的一方不用重传、不产生错误帧，赢的一方一位没坏——这就是「非破坏」",
+    f.htext(84, 726, "A 输后转接收、稍后再争总线；B 的帧继续发送，仲裁没有破坏它",
             size=23, color=INK, weight="bold", hl=True)
     return f
 

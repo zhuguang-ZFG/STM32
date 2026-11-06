@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ch11 knowledge-track figure (facts from docs/11, RM0008 Rev 21 ch.19).
+"""ch11 knowledge-track figure (facts from docs/11, RM0008 Rev 21 ch.20).
 
 The window watchdog counts 0x7F down to 0x3F on a 36 MHz / prescaler-8 tick
 (4096 x 8 / 36e6 = 910.2 us per count, 64 counts = 58.25 ms). With W = 0x50,
@@ -13,63 +13,41 @@ def wwdg_window():
     f = Fig("ch11-wwdg-window",
             "窗口看门狗：喂早喂晚都复位 / feed too early or too late, both reset")
 
-    # ---- 主尺：0x7F 数到 0x3F ----
-    f.text(84, 138, "计数器从 0x7F 往下数，每格约 910 µs（(1/36 MHz) × 4096 × 8），全程 64 格 = 58.25 ms",
-           size=20, color=MUTED)
-    ax0, ax1, ay = 140, 1012, 208
-    # 三段：太早 / 安全 / 太晚
-    f.rect(ax0, ay - 34, 360, 68, color=RED, fill=WHITE, sw=2.4)
-    f.text(ax0 + 180, ay + 12, "喂早了：立刻复位", size=20, color=RED,
-           anchor="middle", weight="bold")
-    f.rect(ax0 + 360, ay - 34, 200, 68, color=GREEN_D, fill=WHITE, sw=2.4)
-    f.text(ax0 + 460, ay + 12, "安全喂狗区", size=20, color=GREEN_D,
-           anchor="middle", weight="bold")
-    f.rect(ax0 + 560, ay - 34, 312, 68, color=RED, fill=WHITE, sw=2.4)
-    f.text(ax0 + 716, ay - 8, "喂晚了：减穿 0x40", size=19,
-           color=RED, anchor="middle", weight="bold")
-    f.text(ax0 + 716, ay + 22, "T6 清零，复位", size=14,
-           color=RED, anchor="middle")
-    # 轴与刻度
-    f.stroke([(ax0, ay + 44), (ax1, ay + 44)], color=INK, sw=2.6, amp=1.2)
-    ticks = [("0x7F", ax0, "起"), ("0x50", ax0 + 360, "W"), ("0x40", ax0 + 560, ""),
-             ("0x3F", ax1, "复位")]
-    for label, tx, note in ticks:
-        f.stroke([(tx, ay + 40), (tx, ay + 56)], color=INK, sw=2.2, amp=0.8)
-        f.text(tx, ay + 82, label, size=19, color=INK, anchor="middle",
-               weight="bold")
-        if note:
-            f.text(tx, ay + 108, note, size=15, color=MUTED, anchor="middle")
-    # 窗口线
-    f.stroke([(ax0 + 360, ay + 34), (ax0 + 360, ay + 140)], color=AMBER_STROKE,
-             sw=2.4, amp=1.0, dash="6 6")
-    f.text(ax0 + 372, ay + 132, "W[6:0] = 0x50：不能早于这条线", size=17,
-           color=AMBER_STROKE, weight="bold")
-    # 三段的喂狗判决，直接标在轴下
-    f.text(ax0 + 180, ay + 108, "这段喂 ✗", size=18, color=RED,
-           anchor="middle", weight="bold")
-    f.text(ax0 + 460, ay + 108, "这段喂 ✓", size=18, color=GREEN_D,
-           anchor="middle", weight="bold")
-    f.text(ax0 + 790, ay + 108, "这段喂 ✗", size=18, color=RED,
-           anchor="middle", weight="bold")
-
-    # ---- 换算盒 ----
-    f.rect(84, 392, 500, 108, color=BLUE_D, fill=WHITE, sw=2.4)
-    f.text(100, 422, "超时怎么来的", size=20, color=BLUE_D, weight="bold")
-    f.multi(100, 452, ["(1/36e6) × 4096 × 8 × 64 = 58.25 ms",
-                       "36 MHz 是 PCLK1，预分频 8，0x7F 起步共 64 格"],
-            size=18, color=INK, lh=27)
-
-    # ---- IWDG 对照 ----
-    f.rect(612, 392, 480, 108, color=MUTED, fill=WHITE, sw=2.2)
-    f.text(628, 422, "和独立看门狗就差在这", size=20, color=MUTED, weight="bold")
-    f.multi(628, 452, ["IWDG：只罚晚，早喂没事",
-                       "WWDG：早喂、晚喂都罚，代码跑太快也躲不掉"],
-            size=18, color=INK, lh=27)
-
-    f.htext(84, 560, "W 是「不能早于」的下限线：比它还高喂狗=复位，比 0x40 低也是复位",
+    f.text(84, 138, "PCLK1 = 36 MHz，预分频 8；每格约 910.2 µs，横轴按计数差等比例",
+           size=21, color=MUTED)
+    start, window, floor, end = 128, 786, 1010, 1024
+    f.rect(start, 182, window - start, 58, color=RED, fill=WHITE, sw=2.4)
+    f.rect(window, 182, floor - window, 58, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.rect(floor, 182, end - floor, 58, color=RED, fill=RED, sw=2.0)
+    f.text(440, 218, "计数 T > W：此时喂狗立刻复位", size=23, color=RED, anchor="middle")
+    f.text(898, 218, "允许喂狗", size=22, color=GREEN_D, anchor="middle", weight="bold")
+    f.stroke([(start, 258), (end, 258)], color=INK, sw=2.4, amp=0.4)
+    for tick in range(65):
+        position = start + tick * 14
+        f.stroke([(position, 250), (position, 266)], color=INK, sw=1.2, amp=0.2)
+    for label, position in (("0x7F", start), ("0x50 = W", window)):
+        f.text(position, 302, label, size=20, color=INK, anchor="middle", weight="bold")
+    f.stroke([(floor, 267), (floor, 282), (958, 282)], color=INK, sw=1.6, amp=0.2)
+    f.text(958, 306, "0x40", size=17, color=INK, anchor="middle")
+    f.stroke([(end, 267), (end, 282), (1072, 282)], color=RED, sw=1.6, amp=0.2)
+    f.text(1072, 306, "0x3F", size=17, color=RED, anchor="middle")
+    f.text(440, 337, "47 拍才到窗口：约 42.78 ms", size=20, color=RED, anchor="middle")
+    f.text(898, 337, "再过 17 拍会复位", size=18, color=GREEN_D, anchor="middle")
+    f.arrow(898, 368, 128, 368, color=GREEN_D, bend=0.0, head=12)
+    f.text(510, 399, "在 T=0x48 重载 0x7F → 回到起点，再数下一轮", size=21,
+           color=GREEN_D, anchor="middle", weight="bold")
+    f.rect(84, 438, 500, 112, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(100, 470, "一直不喂：64 拍后复位", size=22, color=BLUE_D, weight="bold")
+    f.multi(100, 501, ["4096 × 8 / 36e6 ≈ 910.2 µs/拍",
+                       "64 拍 ≈ 58.25 ms；0x40→0x3F 时复位"], size=18, color=INK, lh=29)
+    f.rect(612, 438, 480, 112, color=MUTED, fill=WHITE, sw=2.2)
+    f.text(628, 470, "IWDG 没有这个喂狗窗口", size=22, color=MUTED, weight="bold")
+    f.multi(628, 501, ["IWDG：超时前可重载；早喂不复位",
+                       "WWDG：0x40 ≤ T ≤ 0x50 才可重载"], size=18, color=INK, lh=29)
+    f.htext(84, 604, "喂狗是重载计数器；成功喂狗后，不会沿原倒计时继续走向复位",
             size=23, color=INK, weight="bold", hl=True)
-    f.text(84, 598, "喂狗 = 把初值重写进计数器；58.25 ms 是典型值不是保证值", size=18,
-           color=MUTED)
+    f.text(84, 647, "这些时间按给定 PCLK1 复算，不是板上测量值；W 是计数上限，不是时间下限寄存器。",
+           size=18, color=MUTED)
     return f
 
 

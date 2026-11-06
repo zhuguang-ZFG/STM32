@@ -32,25 +32,29 @@
 
 </details>
 <!-- /video:ch11 -->
+## Check that the watchdog can reset the board
+
+Set this chapter's IWDG example to prescaler 64 and Reload=624. Let it run, then temporarily disable the refresh call in the loop. Expect a restart after roughly one second; read `IWDGRSTF` at startup to confirm an IWDG reset. Once the timing and feed location are clear, continue with RTC and WWDG. This chapter's hands-on labs describe GPIO timing, reset flags, and repeated measurements.
+
 ## Principle and scope
 
-Every number in this chapter is for the STM32F103C8T6. The IWDG 1 second matches Appendix D: prescaler 64, Reload = 624, LSI at its typical 40 kHz, which counts at 625 Hz. LSI is an on-chip RC oscillator, and Table 25 gives its range as 30 / 40 / 60 kHz (min / typical / max), so this 1 second is only typical.
+This chapter uses the STM32F103C8T6. The IWDG runs from its independent on-chip RC clock, LSI. At the typical 40 kHz, prescaler 64 gives 625 counts per second. Reload=624 plus the formula's extra count gives a typical one-second timeout. The datasheet specifies LSI as 30 / 40 / 60 kHz (minimum / typical / maximum), so an actual timeout need not be exactly one second.
 
-`T = 64 / 40000 × (624 + 1) = 1` s. Reload written as 625 adds one count: `(625 + 1) / 625` s. With the same prescaler and reload, LSI = 30 kHz gives `64 / 30000 × 625 = 4/3` s and LSI = 60 kHz gives `64 / 60000 × 625 = 2/3` s, exactly half the 30 kHz figure. Appendix D says "about half" because 30 kHz and 60 kHz are the ends of the datasheet range, not a measurement of any one part. The longest step is about 26 s, also from Appendix D; the manual gives no guaranteed maximum. The independent watchdog resets only when the count reaches 0. An early feed does not reset it. See [RM0008 Rev 21 chapter 19](#source-rm0008-wdg) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).
+The calculation is `T = 64 / 40000 × (624 + 1) = 1` s. Writing Reload=625 adds a tick, giving `(625 + 1) / 625` s. With the prescaler and reload unchanged, the datasheet endpoints give `64 / 30000 × 625 = 4/3` s at 30 kHz and `64 / 60000 × 625 = 2/3` s at 60 kHz. The latter is exactly half the former. Appendix D says "about half" to retain the distinction between range endpoints and measurements of one chip. Its longest setting, about 26 s, is likewise not a guaranteed maximum timeout. The IWDG has no early-feed window: refreshing before timeout does not reset it for feeding early. See [RM0008 Rev 21 chapter 19](#source-rm0008-wdg) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).
 
 The window watchdog (WWDG) is different: it resets on an early feed and on a late one. With PCLK1 = 36 MHz, prescaler 8, and the counter starting at `0x7F`, the timeout is `(1/36e6) × 4096 × 8 × 64 = 58.25` ms. With the window at `0x50`, feeding while the counter is still above `0x50` resets at once.
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch11-wwdg-window.png" width="760" alt="Handraw: the WWDG count axis split into three zones by the W = 0x50 line (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the counter runs 0x7F down to 0x3F and W = 0x50 splits the run into three zones — feeding above 0x50 resets at once, [0x40, 0x50] is the safe feed zone, and rolling below 0x40 (T6 cleared) resets too; each cell is about 910 us and the full 64 cells are 58.25 ms. What it proves: the WWDG punishes an early feed and a late one, the exact opposite of the IWDG, which only punishes late. What it does not prove: 58.25 ms is a typical value at 36 MHz and prescaler 8, not a guarantee, and LSI drift onto the IWDG is another story. Source: [RM0008 Rev 21 ch.19](#source-rm0008-wdg).</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). The scale follows the count differences: 47 ticks from 0x7F to 0x50, then 17 more until reset at 0x3F. Reloading is allowed at `0x40 ≤ T ≤ 0x50` and returns the counter to its initial value. At PCLK1=36 MHz and prescaler 8, one tick is about 910.2 µs and 64 ticks are about 58.25 ms; actual clock error is not included. Source: [RM0008 Rev 21 ch.20](#source-rm0008-wdg).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/animations/sample-11-wwdg-window-flow.svg" width="760" alt="Animation of the WWDG window: counting down from 0x7F, the feed window opening at 0x50, feeding inside [0x40, 0x50], the 0x40 floor, and the reset at 0x3F">
-  <br><sub>▲ Vector animation drawn for this book (FA-002). Start at 0x7F → count down 910 us per tick → the feed window opens at 0x50 → feed inside [0x40, 0x50] → roll below 0x40 (T6 cleared) → reset at 0x3F. What it proves: a feed is legal only inside that window; early and late both reset. What it does not prove: the zone arithmetic lives on the handraw plate; not a scope capture. Source: [RM0008 Rev 21 ch.19](#source-rm0008-wdg).</sub>
+  <br><sub>▲ Vector animation drawn for this book (FA-002). The green path reloads 0x7F at T=0x48 and starts a new round. The red path never reloads and resets at 0x40→0x3F. The animation is slowed; the return and timeout paths remain readable when motion is disabled. Source: [RM0008 Rev 21 ch.20](#source-rm0008-wdg).</sub>
 </p>
 
-Some code fragments set Reload to its maximum, 4095. The timeout is then `(4095 + 1) / 625 = 6.5536` s, which is the "about 6.5 s" in the labs. Everywhere else this chapter works with the 624 second.
+Some code fragments set Reload to its maximum, 4095. The timeout is then `(4095 + 1) / 625 = 6.5536` s, which is the "about 6.5 s" in the labs. Elsewhere, Reload=624 gives one second at the typical 40 kHz LSI frequency.
 
 The RTC runs from the LSE crystal, 32.768 kHz, on pin 3 PC14-OSC32_IN and pin 4 PC15-OSC32_OUT. The RTC divides by `(PRL + 1)`, so PRL = 32767 turns 32768 Hz into 1 Hz, and PRL = 32768 does not. A typical 40 kHz LSI that drifts anywhere in 30–60 kHz has no integer PRL that gives a steady 1 Hz, so an accurate RTC needs the LSE. When the main supply is gone, pin 1 VBAT powers the backup domain. Before writing it, enable the PWR and BKP clocks and set DBP in `PWR_CR`. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc).
 
@@ -222,9 +226,9 @@ An early feed does not reset the IWDG. An early feed that resets is the window w
 
 **How to feed it**:
 
-- **Feed from the main loop.** Simplest, but a dead loop inside one function defeats it.
-- **Feed from a timer or an interrupt.** Fine for the IWDG, but a stuck interrupt will also reset you by mistake.
-- **Each task feeds once.** In an RTOS, every critical task feeds. If any one of them stalls, the chip resets.
+- **Feed from the main loop.** Refresh after a round of necessary work. If a function loops forever and prevents the next refresh, the watchdog times out and resets the chip.
+- **Feed from a timer or an interrupt.** An interrupt that keeps feeding can hide a deadlocked main loop; the feed no longer proves that business work is progressing.
+- **Feed from a health supervisor.** Critical RTOS tasks report progress only after meaningful work. A supervisor checks each task against its own deadline, plus queue backlog, memory watermarks, and state machines, and feeds only when all pass. Other tasks must not keep feeding after one critical task stalls.
 - **The WWDG window.** You are forced to feed inside a window that is not too early and not too late. That catches "running too fast" (a clock gone wrong) and "running too slow."
 
 <p align="center">

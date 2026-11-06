@@ -31,11 +31,11 @@ def ore_fe():
              sw=2.8, amp=1.0)
     f.text(545, 240, "置 1，没人读", size=17, color=GREEN_D, weight="bold")
     f.arrow(830, 246, 830, 196, color=RED, bend=0.0, head=10)
-    f.text(846, 214, "字节 2 直接覆盖", size=17, color=RED, weight="bold")
+    f.text(846, 214, "字节 2 进不了 DR", size=17, color=RED, weight="bold")
     f.rect(1000, 188, 92, 40, color=RED, fill=RED, sw=2.2)
     f.text(1046, 214, "ORE", size=19, color=WHITE, anchor="middle",
            weight="bold", halo=False)
-    f.text(320, 306, "字节 1 还在 DR，字节 2 丢了；ORE 置位后每来一个字都重复这套覆盖",
+    f.text(320, 306, "DR 留着字节 1；字节 2 无法转入，移位寄存器随后被新数据覆盖",
            size=17, color=INK)
 
     # ---- 中：FE 帧 ----
@@ -61,7 +61,7 @@ def ore_fe():
     f.rect(1024, 366, 68, 44, color=RED, fill=RED, sw=2.2)
     f.text(1058, 394, "FE", size=19, color=WHITE, anchor="middle",
            weight="bold", halo=False)
-    f.text(320, 480, "0xA5 的数据位没错也白搭：坏字节照样进 DR，会不会进中断要看 RXNE 中断或 EIE",
+    f.text(320, 480, "图中未发生 ORE：坏字节仍进 DR；FE 本身不单独触发中断，DMA 模式可用 EIE",
            size=17, color=INK)
 
     # ---- 下：清除顺序 ----
@@ -69,15 +69,15 @@ def ore_fe():
     f.text(100, 538, "清 ORE / FE 的顺序不能反", size=21, color=GREEN_D,
            weight="bold")
     f.multi(100, 568, ["① 先读一次 SR（偏移 0x00）　② 再读一次 DR（偏移 0x04）",
-                       "顺序反了标志清不掉，后面的字节会全部卡住"],
+                       "清错误标志后还要检查接收流程；已丢的字节不会回来"],
             size=18, color=INK, lh=27)
 
     f.rect(752, 508, 340, 100, color=AMBER_STROKE, fill=WHITE, sw=2.2)
-    f.multi(768, 538, ["只读 DR 清不掉标志", "读错一次，浪费一次重试",
-                       "串口助手上的表现：卡死"],
+    f.multi(768, 538, ["只读 DR：会清 RXNE", "清 ORE / FE：先 SR 后 DR",
+                       "两种清除动作要分开看"],
             size=17, color=INK, lh=27)
 
-    f.htext(84, 656, "ORE 丢的是后来的字节，FE 不丢出事的字节——两个都在等一次「先 SR 后 DR」",
+    f.htext(84, 656, "ORE：来不及取；FE：停止位不对。先保存 SR，再读 DR 处理数据与错误",
             size=22, color=INK, weight="bold", hl=True)
     return f
 

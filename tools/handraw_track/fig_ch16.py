@@ -1,72 +1,193 @@
 # -*- coding: utf-8 -*-
-"""ch16 knowledge-track figure: which wake sources each low-power mode accepts.
+"""Six reproducible chapter-16 plates: wake paths, current conditions, triage,
+Stop/UART branches, retained state and a GPIO/bit-width experiment.
 
-Facts from docs/16: Sleep resumes the pre-sleep clock at 1.8 us, Stop restarts on
-the 8 MHz HSI at 5.4 us, Standby goes through the reset vector at 50 us; WKUP is
-the rising edge on pin 10 PA0, and a falling-edge EXTI wakes Stop but not Standby.
+DS5319 Rev 20 supplies the conditional current and first-instruction timings;
+RM0008 Rev 21 and Arm DUI0552A supply clock, EXTI, reset and WFI/WFE behavior.
+These are mechanism illustrations, never board measurements.
 """
 from hd import *
 
 
 def wake_matrix():
-    f = Fig("ch16-wake-matrix", "三种睡法，叫醒的方式不一样 / what can wake you")
-
-    cols = [("醒后时钟", 470), ("到第一条指令", 640), ("能唤醒", 830), ("叫不醒", 1035)]
-    for label, cx in cols:
-        f.text(cx, 146, label, size=21, color=MUTED, anchor="middle")
-
+    f = Fig("ch16-wake-matrix", "醒来后，是接着跑，还是重新启动？")
+    f.text(72, 143, "模式", size=21, color=MUTED)
+    f.text(270, 143, "退出条件（STM32F103）", size=21, color=MUTED)
+    f.text(758, 143, "退出后的程序", size=21, color=MUTED)
     rows = [
-        ("Sleep", GREEN_D, "沿用睡前时钟", "1.8 µs",
-         "任意中断", "—"),
-        ("Stop", BLUE_D, "HSI 8 MHz", "5.4 µs",
-         "EXTI 边沿（含下降沿）· RTC", "普通中断"),
-        ("Standby", RED, "走复位向量", "50 µs",
-         "WKUP 第 10 脚上升沿 · RTC", "下降沿 EXTI"),
+        ("Sleep", GREEN_D,
+         ["WFI：满足 NVIC 与优先级条件的中断", "WFE：已配置的事件"],
+         ["沿用睡前时钟", "退出等待后继续"], "1.8 µs"),
+        ("Stop", BLUE_D,
+         ["WFI：EXTI 中断 + NVIC 使能", "WFE：EXTI 事件；RTC 闹钟走 EXTI17"],
+         ["先用 HSI 8 MHz", "本书再恢复 72 MHz"], "5.4 µs · LP 稳压器"),
+        ("Standby", RED,
+         ["WKUP：第 10 脚 PA0 上升沿；RTC 闹钟", "NRST、IWDG 复位也能退出"],
+         ["从复位向量重启", "普通 SRAM 不保留"], "50 µs"),
     ]
+    for i, (name, color, sources, result, timing) in enumerate(rows):
+        y = 164 + i * 146
+        f.panel(60, y, 1032, 128, WHITE)
+        f.rect(60, y, 1032, 128, color=color, sw=2.4)
+        f.text(80, y + 51, name, size=28, color=color, weight="bold")
+        f.multi(270, y + 38, sources, size=20, color=INK, lh=32)
+        f.arrow(690, y + 51, 735, y + 51, color=color)
+        f.multi(758, y + 38, result, size=21, color=color, lh=32)
+        f.text(270, y + 105, "事件至第一条指令：" + timing, size=19, color=MUTED)
+    f.text(72, 648, "先配唤醒源，再进入低功耗。", size=24, color=INK, weight="bold")
+    f.multi(72, 686, [
+        "Stop 的 EXTI 可以选下降沿；Standby 的 WKUP 固定认上升沿。",
+        "IWDG 超时是复位，不能当作 Stop 的普通返回。",
+        "时间为 DS5319 表 26 的典型值；不含 PLL 恢复与后续业务。",
+    ], size=21, color=MUTED, lh=32)
+    return f
 
-    y = 168
-    for name, color, clock, t, can, cannot in rows:
-        f.panel(60, y, 1032, 104, WHITE)
-        f.rect(60, y, 1032, 104, color=color, sw=2.4, fill=None)
-        f.rect(60, y, 214, 104, color=color, sw=2.4, fill=WHITE)
-        f.text(167, y + 64, name, size=28, color=color, anchor="middle",
-               weight="bold")
-        f.text(470, y + 44, clock, size=20, color=INK, anchor="middle")
-        f.text(640, y + 46, t, size=24, color=color, anchor="middle",
-               weight="bold")
-        f.multi(726, y + 34, [can[i:i + 13] for i in (0, 13) if can[i:i + 13]],
-                size=18, color=INK, lh=26)
-        f.multi(948, y + 34, [cannot[i:i + 10] for i in (0, 10) if cannot[i:i + 10]],
-                size=18, color=MUTED, lh=26)
-        y += 116
 
-    # 唤醒时间梯
-    f.text(60, 528, "醒来多久：越深的睡法越贵", size=22, color=MUTED)
-    bw, bh = 330, 42
-    for i, (label, us, color) in enumerate((("Sleep 1.8", 1.8, GREEN_D),
-                                            ("Stop 5.4", 5.4, BLUE_D),
-                                            ("Standby 50", 50, RED))):
-        yy = 544 + i * 52
-        f.text(64, yy + 28, label, size=19, color=color, weight="bold")
-        f.rect(212, yy, max(bw * us / 50, 8), bh, color=color, fill=WHITE,
-               sw=2.2)
-        f.text(556, yy + 28, f"{us} µs", size=19, color=color)
+def mode_current():
+    f = Fig("ch16-mode-current", "电流差多少，先把单位和条件放在一起")
+    f.text(72, 142, "DS5319 表 16 · 3.3 V、25°C 典型值 · 非板上实测", size=21, color=MUTED)
+    # 真正的对数刻度：14400 / 14 / 2 µA，避免用任意柱高暗示比例。
+    x0, x1, y = 118, 1026, 250
+    pos = lambda ua: x0 + math.log10(ua) / 5 * (x1 - x0)
+    f.line(x0, y, x1, y, color=INK)
+    for ua, label in [(1, "1 µA"), (10, "10 µA"), (100, "100 µA"), (1000, "1 mA"), (10000, "10 mA"), (100000, "100 mA")]:
+        x = pos(ua)
+        f.line(x, y - 7, x, y + 7, color=MUTED, sw=1.8)
+        f.text(x, y + 35, label, size=18, color=MUTED, anchor="middle")
+    for ua, name, color in [(2, "Standby 2 µA", BLUE_D), (14, "Stop 14 µA", GREEN_D), (14400, "Sleep 14.4 mA", AMBER_STROKE)]:
+        x = pos(ua)
+        f.circle(x, y, 7, color=color, fill=color)
+        label_y = y - 42 if ua == 14 else y - 74
+        f.line(x, y - 12, x, label_y + 12, color=color)
+        f.text(x, label_y, name, size=22, color=color, anchor="middle", weight="bold")
+    f.text(576, 332, "对数刻度：相邻刻度差 10 倍", size=20, color=MUTED, anchor="middle")
+    cells = [
+        (60, 374, "Sleep · 72 MHz", AMBER_STROKE, ["外设全开 14.4 mA", "外设全关 5.5 mA"]),
+        (590, 374, "Stop · 无 IWDG", GREEN_D, ["低功耗稳压器 14 µA", "主稳压器 24 µA"]),
+        (60, 568, "Standby", BLUE_D, ["LSI / IWDG / LSE / RTC 全关：2 µA", "LSI 开：3.2 µA；加 IWDG：3.4 µA"]),
+        (590, 568, "VBAT 备份域", RED, ["LSE 与 RTC 开：1.4 µA", "测量边界不同，不能当成整机 Standby"]),
+    ]
+    for x, yy, title, color, lines in cells:
+        f.rect(x, yy, 502, 164, color=color, fill=WHITE)
+        f.text(x + 22, yy + 42, title, size=25, color=color, weight="bold")
+        f.multi(x + 22, yy + 82, lines, size=20, color=INK, lh=34)
+    return f
 
-    f.rect(620, 540, 472, 168, color=AMBER_STROKE, fill=WHITE, sw=2.4)
-    f.text(636, 570, "两件事先做，再睡", size=22, color=AMBER_STROKE,
-           weight="bold")
-    f.multi(636, 600, ["① 先武装唤醒源：按键配边沿，RTC 设闹钟",
-                       "② 醒来清标志，否则同一面旗又把你叫醒",
-                       "IWDG 一旦启动就停不下来，超时是复位不是唤醒"],
-            size=18, color=INK, lh=28)
 
-    f.htext(560, 748, "PDDS=1 的 Standby 醒来看起来就是一次上电", size=21,
-            color=INK, weight="bold", hl=True, anchor="middle")
+def pwr_triage():
+    f = Fig("ch16-pwr-triage", "低功耗不对劲，先分清是哪一种现象")
+    cases = [
+        ("01", "没有真正进入 Stop", RED,
+         ["读回 SLEEPDEEP=1、PDDS=0", "查 EXTI / 外设 / RTC 是否仍有挂起标志"],
+         ["先排除刚睡就醒", "LPDS 选择稳压器；两位模式位不保证 14 µA"]),
+        ("02", "醒来后 UART 乱码", BLUE_D,
+         ["查 SYSCLK 是否仍是 HSI 8 MHz", "同一个 BRR 0x271：12800 ≠ 115200"],
+         ["恢复本书的 72 MHz 时钟树", "在恢复完成之后，再发送 0x55 检查位宽"]),
+        ("03", "能睡能醒，电流仍高", GREEN_D,
+         ["区分 MCU 电源支路与整板输入电流", "核对 IWDG / LSI / LSE / RTC 和稳压器条件"],
+         ["逐项断开 LED、调试器和外设", "记录差值；同时查引脚反向供电与 LDO 静态电流"]),
+    ]
+    for i, (num, title, color, checks, nexts) in enumerate(cases):
+        y = 150 + i * 204
+        f.rect(60, y, 1032, 182, color=color, fill=WHITE)
+        f.text(82, y + 44, num, size=30, color=color, weight="bold")
+        f.text(150, y + 44, title, size=27, color=color, weight="bold")
+        f.multi(82, y + 87, checks, size=20, color=INK, lh=31)
+        f.arrow(82, y + 140, 130, y + 140, color=color)
+        f.text(150, y + 144, nexts[0], size=21, color=color, weight="bold")
+        f.text(150, y + 170, nexts[1], size=18, color=MUTED)
+    return f
+
+
+def stop_wake():
+    f = Fig("ch16-stop-wake", "Stop 醒来后，串口为何慢了 9 倍？")
+    f.text(72, 144, "STM32F103C8T6 · USART1 · PPRE2 不分频 · BRR 始终为 0x271", size=21, color=MUTED)
+    f.rect(72, 174, 1008, 120, color=GREEN_D, fill=WHITE)
+    f.text(96, 213, "Stop：SLEEPDEEP=1、PDDS=0；LPDS=1 选低功耗稳压器", size=24, color=GREEN_D)
+    f.text(96, 253, "14 µA：3.3 V、25°C 典型值，振荡器关、无 IWDG（DS5319 表 16）", size=21, color=INK)
+    f.arrow(576, 300, 576, 336, color=BLUE_D)
+    f.rect(292, 344, 568, 108, color=BLUE_D, fill=WHITE)
+    f.text(576, 382, "EXTI 唤醒 → 第一条指令用 HSI 8 MHz", size=24, color=BLUE_D, anchor="middle")
+    f.text(576, 420, "5.4 µs：事件到首条指令，非 HSI 运行时长", size=20, color=MUTED, anchor="middle")
+    f.arrow(460, 460, 318, 506, color=GREEN_D)
+    f.arrow(692, 460, 834, 506, color=RED)
+    f.rect(72, 516, 480, 190, color=GREEN_D, fill=WHITE)
+    f.rect(600, 516, 480, 190, color=RED, fill=WHITE)
+    f.text(96, 555, "恢复本书的 72 MHz 时钟树", size=25, color=GREEN_D, weight="bold")
+    f.text(624, 555, "跳过时钟恢复，仍用 8 MHz", size=25, color=RED, weight="bold")
+    f.text(96, 599, "72 MHz ÷ 625 = 115200 bit/s", size=24, color=INK)
+    f.text(624, 599, "8 MHz ÷ 625 = 12800 bit/s", size=24, color=INK)
+    f.text(96, 649, "主机仍设 115200：位宽匹配", size=22, color=GREEN_D)
+    f.text(624, 649, "主机仍设 115200：收到乱码", size=22, color=RED)
+    f.text(96, 683, "HSE 起振、PLL 锁定后再发下一字节", size=19, color=MUTED)
+    f.text(624, 683, "115200 / 12800 = 9；帧格式未改变", size=19, color=MUTED)
+    f.text(576, 754, "PLL 锁定最大 200 µs；它与 5.4 µs 是不同指标。", size=22, color=MUTED, anchor="middle")
+    return f
+
+
+def stop_compare():
+    f = Fig("ch16-stop-compare", "省电之外，还要选醒来后保留什么")
+    f.text(72, 143, "STM32F103 · 系统时钟与普通 SRAM / 寄存器的去向", size=22, color=MUTED)
+    rows = [
+        (GREEN_D, "Sleep", "内核时钟暂停", ["系统时钟继续", "外设按配置运行"], "普通 SRAM / 寄存器保持", "继续原程序", "SLEEPDEEP=0"),
+        (BLUE_D, "Stop", "HSI / HSE / PLL 关", ["唤醒先用 HSI 8 MHz", "本书随后恢复 72 MHz"], "普通 SRAM / 寄存器保持", "继续原程序", "SLEEPDEEP=1 · PDDS=0"),
+        (RED, "Standby", "1.8 V 电源域关闭", ["退出后走复位启动", "重新初始化业务状态"], "普通 SRAM 丢失；备份域保留", "从复位向量重启", "SLEEPDEEP=1 · PDDS=1"),
+    ]
+    for i, (color, name, title, lines, state, dest, regs) in enumerate(rows):
+        y = 171 + i * 188
+        f.rect(60, y, 1032, 166, color=color, fill=WHITE)
+        f.text(82, y + 43, name, size=31, color=color, weight="bold")
+        f.text(82, y + 83, regs, size=17, color=MUTED)
+        f.text(340, y + 43, title, size=24, color=INK, weight="bold")
+        f.multi(340, y + 80, lines, size=20, color=MUTED, lh=31)
+        f.arrow(664, y + 75, 714, y + 75, color=color)
+        f.text(742, y + 48, dest, size=25, color=color, weight="bold")
+        f.text(742, y + 91, state.split("；")[0], size=20, color=INK)
+        if "；" in state:
+            f.text(742, y + 124, state.split("；")[1], size=20, color=INK)
+    f.text(576, 766, "Stop / Standby 的 RTC、LSI、LSE 是否运行，仍取决于各自配置。", size=21, color=MUTED, anchor="middle")
+    return f
+
+
+def clock_restore():
+    f = Fig("ch16-clock-restore", "恢复时钟，用 GPIO 标记与位宽来核对")
+    f.text(72, 143, "PA0 边沿 → ISR 标记 A → 时钟恢复 → 标记 B → UART 0x55", size=23, color=INK)
+    steps = [(124, "PA0", "唤醒边沿", BLUE_D), (414, "标记 A", "ISR 入口", BLUE_D),
+             (704, "标记 B", "72 MHz 已恢复", GREEN_D), (994, "USART1", "开始发送", GREEN_D)]
+    for i, (x, title, note, color) in enumerate(steps):
+        f.circle(x, 219, 9, color=color, fill=WHITE)
+        f.text(x, 190, title, size=24, color=color, anchor="middle", weight="bold")
+        f.text(x, 260, note, size=21, color=INK, anchor="middle")
+        if i < len(steps) - 1:
+            f.arrow(x + 15, 219, steps[i + 1][0] - 15, 219, color=color)
+    f.text(576, 309, "A 包含中断入口延迟；A→B 含时钟配置。上方间距不代表耗时。", size=20, color=MUTED, anchor="middle")
+    f.line(72, 340, 1080, 340, color=MUTED, sw=1.2)
+    f.text(72, 386, "同一时间尺下的单个位宽（理论值，非仪器截图）", size=24, color=INK, weight="bold")
+    x0, scale = 350, 7.8
+    for y, rate, us, clock, color in [(466, "115200 bit/s", 1e6 / 115200, "恢复后：72 MHz", GREEN_D),
+                                      (604, "12800 bit/s", 1e6 / 12800, "未恢复：HSI 8 MHz", RED)]:
+        f.text(72, y - 3, rate, size=24, color=color, weight="bold")
+        f.text(72, y + 30, clock, size=20, color=MUTED)
+        end = x0 + us * scale
+        f.stroke([(x0 - 32, y - 32), (x0, y - 32), (x0, y + 14), (end, y + 14), (end, y - 32), (1040, y - 32)], color=color)
+        f.text((x0 + end) / 2, y + 51, f"{us:.3f} µs", size=20, color=color, anchor="middle")
+    f.line(x0, 699, 1052, 699, color=MUTED, sw=1.4)
+    for us in (0, 10, 30, 50, 70, 90):
+        x = x0 + us * scale
+        f.line(x, 693, x, 705, color=MUTED, sw=1.3)
+        f.text(x, 731, str(us), size=18, color=MUTED, anchor="middle")
+    f.text(1052, 762, "时间 / µs", size=19, color=MUTED, anchor="end")
+    f.text(72, 762, "USART1：PPRE2 不分频，BRR 保持 0x271", size=20, color=MUTED)
     return f
 
 
 FIGS = {
     "ch16-wake-matrix": wake_matrix,
+    "ch16-mode-current": mode_current,
+    "ch16-pwr-triage": pwr_triage,
+    "ch16-stop-wake": stop_wake,
+    "ch16-stop-compare": stop_compare,
+    "ch16-clock-restore": clock_restore,
 }
 
 if __name__ == "__main__":

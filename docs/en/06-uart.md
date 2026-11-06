@@ -32,28 +32,34 @@
 
 </details>
 <!-- /video:ch06 -->
+## Start with one byte
+
+Use this chapter's USART1 transmit example to send `0x55`. Connect a logic analyzer to PA9 and GND and decode at 115200, 8N1. Expect about 8.68 µs per bit, 86.8 µs for the ten-bit frame, and a decoded byte of `0x55`. This checks transmission only. For a loopback, disconnect the external transmitter, connect PA9 to PA10, and have the program receive and compare the byte. If the transmit waveform is wrong, check the clock, pin mode, and `BRR` before adding DMA or packet parsing.
+
 ## Principle and scope
 
 The frame and baud numbers in this chapter are for the STM32F103C8T6 in LQFP48. USART1 sits on APB2; with a 72 MHz core, PCLK2 is also 72 MHz, and the peripheral base is `0x40013800`. The default pins are PA9 = USART1_TX = pin 30 and PA10 = USART1_RX = pin 31, from [DS5319 Rev 20 Figure 8](#source-ds5319-usart). After reset USART1 is not on PB6/PB7; to use those pins you enable the AFIO clock and set the remap.
 
 The F103 receiver samples with a clock at 16 times the baud rate, so each bit is sampled 16 times. The stop bit is decided by a majority vote of samples 8, 9, and 10. The start bit is checked at those three and also at samples 3, 5, and 7, which filters out glitches on the line; see [RM0008 27.3.3](#source-rm0008-usart). Data bits also use the middle three samples.
 
-At 16×, `USARTDIV = fPCLK / (16 × baud)`. At 72 MHz and 115200, `72e6 / (16 × 115200) = 39.0625`. The integer part 39 is 0x27, the fraction is `0.0625 × 16 = 1`, so BRR = `0x271`. Working back, `72e6 / (16 × 39.0625) = 115200`, and the divider error is 0. `USART_BRR` is at offset `0x08`, with the fraction in the low 4 bits. This matches Appendix D. The "0.16% error at 115200" you often see online comes from two other cases: USART2 on the 36 MHz APB1, BRR `0x138`, or dropping the fraction and dividing by 39 alone. That is not what writing `0x271` does.
+The peripheral clock is divided to produce the baud rate. At 16× oversampling, `USARTDIV = fPCLK / (16 × baud)`. For USART1 at PCLK2=72 MHz and 115200 baud, `72e6 / (16 × 115200) = 39.0625`. The integer 39 is 0x27 and the fraction is `0.0625 × 16 = 1`, giving BRR=`0x271`. `USART_BRR` is at offset `0x08`, with the fraction in its low 4 bits.
+
+Working back, `72e6 / (16 × 39.0625) = 115200`: the divider error is 0, the same operating point used in Appendix D. The familiar error of about 0.16% belongs to another configuration: USART2 on APB1=36 MHz with BRR=`0x138`, or a 72 MHz calculation that drops the fraction and uses 39 alone. That is not what writing `0x271` does. Zero rounding error does not remove the external clock's frequency error.
 
 The F103 has only 16× oversampling. `USART_CR1` is at offset `0x0C`, and bits 31:14 are reserved; there is no OVER8 bit as on the F4. For 8× oversampling you need another family.
 
 At 115200 and 8N1, one bit is about 8.68 µs and a 10-bit frame is about 86.8 µs. RM0008 calls one full frame time of high level an idle line. The IDLE flag says only that the line has been quiet for about one frame time; it does not say the other side has finished sending a packet. With circular DMA reception, `Size` in the callback is where DMA has written up to, not the number of bytes that just arrived.
 
-When the stop bit is not high at its samples, hardware sets `USART_SR.FE`. The bad byte still lands in `USART_DR`. To clear FE, read SR and then DR; reading DR alone does not clear it. Whether you get an interrupt depends on the RXNE interrupt or EIE in CR3 being enabled. FE does not raise an interrupt on its own, so do not assume a framing error always reaches the interrupt handler.
+When the stop-bit majority vote is low, hardware sets `USART_SR.FE`. The figure shows FE without a simultaneous overrun, so the bad byte still enters `USART_DR`. Reading DR clears RXNE; clearing FE requires reading SR then DR. FE does not independently request an interrupt: reception uses RXNEIE, and the error interrupt for DMA reception also depends on EIE in CR3.
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch06-ore-fe.png" width="760" alt="Handraw: the ORE overwrite timeline and the FE stop-bit samples (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top half is ORE — RXNE is still unread when byte 2 arrives, the shift register is overwritten, ORE sets, and byte 1 is still in DR; the bottom half is FE — 0xA5 sent LSB first (1 0 1 0 0 1 0 1), the stop bit low at samples 8/9/10, FE set, the bad byte still in DR; the box below gives the clear order: read SR (0x00) first, then DR (0x04). What it proves: neither flag clears itself, the reversed order clears nothing, and FE alone never raises an interrupt. What it does not prove: this is the logic timing at 115200 8N1, not scope waveforms or interrupt latency. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). At the top, byte 2 cannot enter DR while RXNE remains set, so ORE is raised. Below, stop-bit samples 8/9/10 are all low: FE is set, but the bad byte still enters DR. The bottom panel gives the clear sequence: read SR (0x00), then DR (0x04). This explains the logic, not measured waveforms or interrupt latency. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/animations/sample-06-ore-overwrite-flow.svg" width="760" alt="Animation of the ORE overwrite moment: byte 1 lands, RXNE sets, byte 2 arrives, the shift register is overwritten, ORE latches, then the ordered clear">
-  <br><sub>▲ Vector animation drawn for this book (FA-002). Byte 1 lands → RXNE=1 unread → byte 2 arrives → the shift register is overwritten → ORE latches → clear by reading SR (0x00) then DR (0x04). What it proves: the later byte is the one lost, byte 1 is still in DR, and neither flag clears itself. What it does not prove: the stop-bit sampling story lives on the handraw plate and the frame-annotated figure; not a scope capture. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
+  <br><sub>▲ Vector animation drawn for this book (FA-002). Follow three stages: byte 1 stays in DR; byte 2 arrives and raises ORE; the CPU reads SR then DR to save the status and retrieve the old byte. Time is slowed to show the register relationship; this is not a scope capture. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
 </p>
 
 ## Key figures

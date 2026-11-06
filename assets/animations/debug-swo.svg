@@ -1,8 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="调试与跟踪：SWD + SWO/ITM">
-<title>调试与跟踪：SWD + SWO/ITM</title>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="SWD 双向调试，SWO 单向跟踪">
+<title>SWD 双向调试，SWO 单向跟踪</title>
 <style>
-@keyframes swd-run{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(110px);opacity:0}}@keyframes swo-run{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(-110px);opacity:0}}.wSWDIO{animation:swd-run 1.6s linear infinite;}.wSWCLK{animation:swd-run 1.6s linear infinite .4s;}.wSWO{animation:swo-run 1.2s linear infinite .2s;}.wNRST{animation:swd-run 2s linear infinite .8s;}
-@keyframes itm-fade{0%,10%{opacity:.15}40%,100%{opacity:1}}.itm{animation:itm-fade 3s linear infinite;}
+@keyframes trace-byte{0%,8%{transform:translateX(0);opacity:1}22%,28%{transform:translateX(178px);opacity:1}42%,48%{transform:translateX(356px);opacity:1}62%,68%{transform:translateX(534px);opacity:1}82%,92%{transform:translateX(700px);opacity:1}97%,100%{transform:translateX(700px);opacity:0}}.trace-byte{animation:trace-byte 6.4s linear infinite;}@media(prefers-reduced-motion:reduce){.trace-byte{animation:none!important;display:none}}@media print{.trace-byte{animation:none!important;display:none}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
@@ -10,69 +9,79 @@
 <rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#9a3412" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">调试与跟踪：SWD + SWO/ITM</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不用串口也能 printf，还能定位 HardFault</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SWD 双向调试，SWO 单向跟踪</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103 · SWDIO 传数据，SWCLK 给时钟；跟踪字符另走 PB3</text>
 <rect x="819" y="15" width="59" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="848.5" y="33.32" font-size="12" fill="#9a3412" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">17 调试</text>
-<rect x="40" y="82" width="420" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="58" y="108" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">接线（4 线 SWD + 1 线 SWO）</text>
-<rect x="62" y="130" width="110" height="170" fill="#e5f3f8" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="117" y="154" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ST-Link</text>
-<text x="117" y="174" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调试器</text>
-<rect x="310" y="130" width="130" height="170" fill="#e5f3f8" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="375" y="154" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">STM32</text>
-<text x="375" y="174" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Cortex-M</text>
-<line x1="172" y1="188" x2="310" y2="188" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="241" y="182" font-size="10.5" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWCLK</text>
-<circle cx="180" cy="188" r="3.4" fill="#1e4d63" opacity="1" class="wSWCLK"/>
-<line x1="172" y1="210" x2="310" y2="210" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="241" y="204" font-size="10.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWDIO</text>
-<circle cx="180" cy="210" r="3.4" fill="#075e84" opacity="1" class="wSWDIO"/>
-<line x1="172" y1="232" x2="310" y2="232" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="241" y="226" font-size="10.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWO</text>
-<circle cx="292" cy="232" r="3.4" fill="#7a4e00" opacity="1" class="wSWO"/>
-<line x1="172" y1="254" x2="310" y2="254" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="241" y="248" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NRST</text>
-<circle cx="180" cy="254" r="3.4" fill="#8f2d2d" opacity="1" class="wNRST"/>
-<line x1="172" y1="276" x2="310" y2="276" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="241" y="270" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
-<circle cx="180" cy="276" r="3.4" fill="#5e6872" opacity="1"/>
-<text x="58" y="314" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWO=PB3，方向是 MCU → 调试器；必须共地。廉价 ST-Link 常没接 SWO</text>
-<rect x="480" y="82" width="380" height="250" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="498" y="108" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ITM 输出（SWV Console）</text>
-<text x="498" y="136" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm">ITM_SendChar('T');        // 重定向 printf</text>
-<text x="498" y="154" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm"></text>
-<text x="498" y="172" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm">T=25.4C  adc=1024</text>
-<text x="498" y="190" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm">T=25.6C  adc=1031</text>
-<text x="498" y="208" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm">T=25.6C  adc=1028</text>
-<text x="498" y="226" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" class="itm">T=25.7C  adc=1035</text>
-<text x="498" y="300" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">异步 SWO 常见 2 MHz（约 2 Mbit/s，不是 2 MB/s）</text>
-<text x="498" y="320" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">比 UART 少占一个串口，且不干扰被测程序时序</text>
-<rect x="40" y="351" width="3" height="18" fill="#8f2d2d" opacity="1"/>
-<text x="52" y="364" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">HardFault 四步定位法</text>
-<rect x="40" y="376" width="196" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="54" y="400" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">① CFSR / HFSR</text>
-<text x="54" y="420" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xE000ED28 / ED2C</text>
-<text x="54" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">总线、用法还是取指错误</text>
-<line x1="238" y1="417" x2="239" y2="417" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="244.00,417.00 239.00,419.50 239.00,414.50" fill="#5e6872" opacity="1"/>
-<rect x="246" y="376" width="196" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="260" y="400" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">② BFAR / MMFAR</text>
-<text x="260" y="420" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0xE000ED38 / ED34</text>
-<text x="260" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">非法访问落到哪个地址</text>
-<line x1="444" y1="417" x2="445" y2="417" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="450.00,417.00 445.00,419.50 445.00,414.50" fill="#5e6872" opacity="1"/>
-<rect x="452" y="376" width="196" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="466" y="400" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">③ 反查 PC</text>
-<text x="466" y="420" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">栈帧 PC → addr2line</text>
-<text x="466" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对应到哪一行 C</text>
-<line x1="650" y1="417" x2="651" y2="417" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="656.00,417.00 651.00,419.50 651.00,414.50" fill="#5e6872" opacity="1"/>
-<rect x="658" y="376" width="196" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="672" y="400" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">④ 常见原因</text>
-<text x="672" y="420" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">空指针 / 栈溢出</text>
-<text x="672" y="442" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">越界、递归、中断里用浮点</text>
+<rect x="40" y="88" width="180" height="227" fill="#e5f3f8" opacity="1" rx="4" stroke="#1e4d63" stroke-width="2"/>
+<rect x="680" y="88" width="180" height="227" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="2"/>
+<text x="56" y="113" font-size="17" fill="#1e4d63" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103</text>
+<text x="56" y="133" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">目标板 · Cortex-M3</text>
+<text x="696" y="113" font-size="17" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">调试探针</text>
+<text x="696" y="133" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">需支持 SWO 接收</text>
+<text x="204" y="171" font-size="14" fill="#1e4d63" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA13</text>
+<text x="696" y="171" font-size="14" fill="#1e4d63" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWDIO</text>
+<text x="450" y="157" font-size="13" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数据 · 双向</text>
+<line x1="450" y1="167" x2="229" y2="167" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="222.00,167.00 229.00,163.50 229.00,170.50" fill="#1e4d63" opacity="1"/>
+<line x1="450" y1="167" x2="671" y2="167" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="678.00,167.00 671.00,170.50 671.00,163.50" fill="#1e4d63" opacity="1"/>
+<text x="204" y="203" font-size="14" fill="#1e4d63" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PA14</text>
+<text x="696" y="203" font-size="14" fill="#1e4d63" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">SWCLK</text>
+<text x="450" y="189" font-size="13" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟 · 探针输出</text>
+<line x1="678" y1="199" x2="229" y2="199" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="222.00,199.00 229.00,195.50 229.00,202.50" fill="#1e4d63" opacity="1"/>
+<text x="204" y="235" font-size="14" fill="#8f2d2d" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">NRST</text>
+<text x="696" y="235" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">nRESET</text>
+<text x="450" y="221" font-size="13" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低有效复位 · 可选连接</text>
+<line x1="678" y1="231" x2="229" y2="231" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="5 5"/>
+<polygon points="222.00,231.00 229.00,227.50 229.00,234.50" fill="#8f2d2d" opacity="1"/>
+<text x="204" y="267" font-size="14" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VDD</text>
+<text x="696" y="267" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VTref</text>
+<text x="450" y="253" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">目标电压参考 · 非探针供电输出</text>
+<line x1="222" y1="263" x2="671" y2="263" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="678.00,263.00 671.00,266.50 671.00,259.50" fill="#5e6872" opacity="1"/>
+<text x="204" y="299" font-size="14" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
+<text x="696" y="299" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
+<text x="450" y="285" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">共地</text>
+<line x1="222" y1="295" x2="678" y2="295" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="40" y="339" font-size="14" fill="#1e4d63" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWD 调试通道与下面的 SWO 输出通道分开；SWO 不占用 USART。</text>
+<line x1="40" y1="356" x2="860" y2="356" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="384" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一个字符怎样到达 SWV 控制台</text>
+<rect x="40" y="405" width="132" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="106" y="432" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">固件</text>
+<text x="106" y="453" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">写入字符 'A'</text>
+<line x1="106" y1="470" x2="106" y2="493" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="176" y1="437" x2="208" y2="437" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="214.00,437.00 208.00,440.00 208.00,434.00" fill="#1b5c45" opacity="1"/>
+<rect x="218" y="405" width="132" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="284" y="432" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ITM</text>
+<text x="284" y="453" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Port 0</text>
+<line x1="284" y1="470" x2="284" y2="493" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="354" y1="437" x2="386" y2="437" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="392.00,437.00 386.00,440.00 386.00,434.00" fill="#1b5c45" opacity="1"/>
+<rect x="396" y="405" width="132" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="462" y="432" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">TPIU</text>
+<text x="462" y="453" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">打包与串行输出</text>
+<line x1="462" y1="470" x2="462" y2="493" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="532" y1="437" x2="564" y2="437" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="570.00,437.00 564.00,440.00 564.00,434.00" fill="#1b5c45" opacity="1"/>
+<rect x="574" y="405" width="132" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="640" y="432" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PB3</text>
+<text x="640" y="453" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TRACESWO</text>
+<line x1="640" y1="470" x2="640" y2="493" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="710" y1="437" x2="742" y2="437" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="748.00,437.00 742.00,440.00 742.00,434.00" fill="#1b5c45" opacity="1"/>
+<rect x="752" y="405" width="108" height="64" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="806" y="432" font-size="17" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">探针→主机</text>
+<text x="806" y="453" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SWV：'A'</text>
+<line x1="806" y1="470" x2="806" y2="493" stroke="#1b5c45" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="106" y1="493" x2="800" y2="493" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="806.00,493.00 800.00,496.00 800.00,490.00" fill="#1b5c45" opacity="1"/>
+<circle cx="106" cy="493" r="5" fill="#1b5c45" opacity="1" class="trace-byte"/>
+<text x="40" y="528" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先配置 ITM、异步 TRACE 与 PB3；主机接收设置须与稳定的 HCLK、SWO 分频匹配。</text>
+<text x="40" y="552" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">printf 需重定向到 ITM；写日志有开销，等待或丢弃取决于输出实现与接收状态。</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DWT-&gt;CYCCNT 可做微秒级计时：使能 DWT_CTRL 后读 CYCCNT，比 HAL_GetTick 精确 1000 倍</text>
-<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">点的移动仅表示传输顺序</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · 原理示意 / 非实拍</text>
 </svg>

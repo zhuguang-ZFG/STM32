@@ -4,8 +4,8 @@
 > A datasheet value of 14 µA does not mean a BluePill will measure 14 µA. Board leakage, the debugger, wake peaks, and active time belong in one current waveform and average-current account.
 
 <p align="center">
-  <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="Sleep, Stop, and Standby, and the sources that wake each one">
-  <br><sub>▲ Animation: the three low-power modes, Sleep / Stop / Standby, and their wake sources (vector animation drawn by the author, not a live recording)</sub>
+  <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="Sleep resumes, Stop restores the working clock from HSI, and Standby restarts through reset">
+  <br><sub>▲ Three wake paths. Moving dots show execution order, not elapsed time. Stop's normal return and Standby's reset startup follow separate paths. Drawn vector animation, not a measurement.</sub>
 </p>
 
 <!-- video:ch16 -->
@@ -34,6 +34,12 @@
 <!-- /video:ch16 -->
 ## Principle and scope
 
+Start with an experiment that needs no microamp meter: wake from Stop and send one correctly timed UART frame.
+
+In this book's 72 MHz project, configure PA0 for falling-edge EXTI wake. Toggle one spare GPIO at the wake ISR entry, toggle another after `SystemClock_Config()` completes, then send `0x55` through USART1. Connect a logic analyzer to PA0, both markers, and TX. At 115200 bit/s, one bit should last about 8.68 µs. If BRR remains `0x271` while the clock stays on the 8 MHz HSI, the bit lasts 78.125 µs: 12800 bit/s.
+
+The interval from the PA0 edge to the first GPIO marker includes interrupt entry and software delay. It is not the datasheet's 5.4 µs measurement. The second marker separates the clock-restoration stage. Once the order and bit width are right, connect the current instrument and capture a full sleep, wake, and sampling period.
+
 The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. Every current below is a DS5319 Rev 20 Table 16 typical at 3.3 V and 25°C. Each number belongs to one cell of that table, and cells with different conditions do not mix. See [DS5319 Table 16](#source-ds5319-pwr).
 
 Low-power regulator, oscillators off, independent watchdog off: 14 µA. Main regulator still on, same other conditions: 24 µA. 20 µA is not a Table 16 cell. The 85°C values 200 µA and 180 µA are maximums, not typicals. 1.4 µA is `IDD_VBAT` for the backup domain with LSE and the RTC on. It is not the whole-chip Standby current.
@@ -42,17 +48,17 @@ Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and
 
 Sleep at 72 MHz is 14.4 mA typical with every peripheral on, and 5.5 mA typical with every peripheral off, still at 25°C and 3.3 V.
 
-After Stop exits, the system clock is the 8 MHz HSI, not 16 MHz and not 72 MHz. See [RM0008 clocks](#source-rm0008-rcc). Table 26's 5.4 µs is the low-power-regulator cell, from the wake event to the first user instruction, still on that 8 MHz clock. The main-regulator cell is 3.6 µs. Sleep is 1.8 µs and keeps the clock from before the sleep. Standby is 50 µs to the first instruction, then the reset path. The PLL lock maximum is 200 µs. Do not add it to 5.4 µs and call the sum the wake-up time.
+After Stop exits, the system clock is the 8 MHz HSI, not 16 MHz and not 72 MHz. See [RM0008 clocks](#source-rm0008-rcc). Table 26's 5.4 µs is the low-power-regulator cell, from the wake event to the first user instruction, still on that 8 MHz clock. The main-regulator cell is 3.6 µs. Sleep is 1.8 µs and keeps the clock from before the sleep. Standby goes through reset startup, reaching the first instruction after 50 µs. The PLL lock maximum is 200 µs. Do not add it to 5.4 µs and call the sum the wake-up time.
 
-PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The fix is to restore the PLL to 72 MHz after waking and before the next byte; the line is then 115200 again. See [RM0008 USART](#source-rm0008-usart). The frame format is the one from chapter 06.
+PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, its raw integer value is 625. With 16-times oversampling, it decodes to `USARTDIV = 39.0625`, so `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The fix is to restore the PLL to 72 MHz after waking and before the next byte; the line is then 115200 again. See [RM0008 USART](#source-rm0008-usart). The frame format is the one from chapter 06.
 
 Sleep keeps the clock from before the sleep. The tick in `examples/freertos-task` is 1000 Hz, which is 1 ms. Left at that rate, Sleep wakes every 1 ms. SysTick does not tick during Stop. See [examples in this repo](#source-project-examples).
 
-With `PDDS=1`, SRAM and the ordinary registers are lost, and wake-up enters through the reset vector. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop. It is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). Chapter 03 hangs a 270 Ω lamp on this pin and chapter 09 uses it as ADC12_IN0. For this chapter's lab, connect only the wake-up key.
+Standby (`SLEEPDEEP=1`, `PDDS=1`) loses ordinary SRAM and registers and restarts through the reset vector. `PWR_CSR.SBF` identifies a previous Standby entry. Exit sources include WKUP, the RTC alarm, NRST, and an IWDG reset. WKUP is a rising edge on pin 10 PA0. A falling EXTI can wake Stop; it is not Standby's WKUP. See [DS5319 pin 10](#source-ds5319-adc). Chapter 03 connects a 270 Ω LED load to this pin and chapter 09 uses it as ADC12_IN0. For this chapter's lab, connect only the wake-up key.
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch16-wake-matrix.png" width="760" alt="Handraw: the wake sources and wake times of Sleep, Stop and Standby (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three rows are the three ways to sleep, each giving the clock you wake on, the time to the first instruction, what can wake it and what cannot; the three bars below compare 1.8, 5.4 and 50 us, and the card on the right lists the two things to do before sleeping. What it proves: the deeper the sleep, the slower and narrower the wake path — Standby only accepts the rising edge on pin 10 PA0 and the RTC, so a falling-edge EXTI that wakes Stop will not wake it, and waking looks like a power-on. What it does not prove: this is a digest of the manual and this chapter's measurements, not a current trace, and Table 16 gives no value for Stop with IWDG running. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 Rev 21 ch.18 and ch.19](#source-rm0008-rtc).</sub>
+  <br><sub>▲ Sleep keeps its clock, Stop resumes on HSI 8 MHz, and Standby restarts from the reset vector. An IWDG timeout is a reset, not a normal return from Stop. Hand-drawn mechanism, not a measurement. Times: [DS5319 Rev 20 Table 26](#source-ds5319-pwr); RTC routing: [RM0008 Rev 21](#source-rm0008-rtc).</sub>
 </p>
 
 The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapter 11 RTC alarm: LSE at 32.768 kHz, PRL = 32767, a 1 Hz second counter. See [RM0008 RTC](#source-rm0008-rtc).
@@ -68,12 +74,12 @@ The F103 has no F4-style periodic wake-up timer. For a timed wake, use the chapt
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-wake.svg" width="760" alt="Stop with the low-power regulator is 14 µA typical. Wake-up is the 8 MHz HSI. Leaving 0x271 in place produces 12800 bit/s.">
-  <br><sub>▲ Drawn for this book. Where to look: the three bits on top are what entering Stop takes (SLEEPDEEP=1, PDDS=0, LPDS=1); the two current bars below show 14 µA on the low-power regulator against 24 µA on the main one, so the difference is the regulator, not the mode; the timeline then runs from the EXTI wake through 5.4 µs on the 8 MHz HSI to `SystemClock_Config()` restoring the PLL at 72 MHz with up to 200 µs of lock; the last two bars are 0x271 at 72 MHz giving 115200 against 8 MHz giving 12800, a factor of nine. Source: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
+  <br><sub>▲ Drawn for this book. SLEEPDEEP and PDDS select the mode; LPDS selects the regulator. The typical 5.4 µs interval ends at the first instruction. Restoring 72 MHz also requires HSE startup, PLL lock, and software configuration. The bottom compares 115200 and 12800 bit/s with the same BRR, `0x271`. Conditions: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch16-stop-wake.png" width="760" alt="Handraw: Stop 14 μA and wake clock (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). SLEEPDEEP=1, PDDS=0 → Stop 14 μA; wake starts on HSI 8 MHz; leaving 0x271 yields 12800 bit/s; not a photo.</sub>
+  <br><sub>▲ Two branches after wake: restoring 72 MHz gives 115200 with the original BRR; staying on HSI 8 MHz gives only 12800 bit/s. The 14 µA value also requires the low-power regulator, 3.3 V, 25°C, no IWDG, and the other stated conditions. Hand-drawn mechanism, not a measurement.</sub>
 </p>
 
 <p align="center">
@@ -100,7 +106,7 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 | Standby, `PDDS=1` | restart from the reset vector; 50 µs to the first instruction | right |
 | Standby current | 2 µA only with LSI, IWDG, LSE, and RTC off; LSI on is 3.2 µA; IWDG on as well is 3.4 µA | do not write 2 to 3 µA |
 | Backup domain | 1.4 µA with LSE and the RTC on | not whole-chip Standby |
-| Pin 10 PA0 | the Stop key uses rising-edge WKUP, or this chapter's EXTI | no lamp or ADC input on it meanwhile |
+| Pin 10 PA0 | This chapter uses falling-edge EXTI for Stop; Standby uses rising-edge WKUP | No LED or ADC input on it meanwhile |
 
 ## Pitfalls and sources
 
@@ -110,7 +116,7 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 | Standby is quoted as 2 to 3 µA | Three cells were folded into one range | Write 2 µA, 3.2 µA, or 3.4 µA according to LSI and IWDG | [DS5319](#source-ds5319-pwr) | The 2 µA cell requires LSI, IWDG, LSE, and RTC all off. 1.4 µA is the backup domain, not the whole chip |
 | The first UART frame after wake is garbage | The clock is still HSI while BRR was computed for 72 MHz | Call `SystemClock_Config()` before the next byte | [RM0008 USART](#source-rm0008-usart) | With the HSI at 8 MHz and BRR still `0x271`, the baud rate is 12800. 115200 is the 72 MHz cell |
 | A comment gives the HSI two frequencies | Another family's 16 MHz was written onto the F103 | Write 8 MHz on the F103 | [RM0008 clocks](#source-rm0008-rcc) | The F1 power-up HSI is 8 MHz. 16 MHz is the HSI of the F4 and others |
-| Sleep current will not fall, and the comment says once per second | The tick was left at 1000 Hz | That is every 1 ms, not once per second. Suspend the tick before Sleep | [examples in this repo](#source-project-examples) | `examples/freertos-task` documents a 1000 Hz tick, 1 ms. This row does not show that SysTick keeps ticking during Stop |
+| Sleep current will not fall, and the comment says once per second | The tick was left at 1000 Hz | A wake can occur every 1 ms; bare-metal code can suspend the HAL tick, while an RTOS should use tickless idle | [examples in this repo](#source-project-examples) | `examples/freertos-task` uses a 1000 Hz tick. SysTick stops during Stop; check which source drives the HAL timebase and the scheduler |
 | The F4 periodic wake API was called | The F103 does not have that timer | Use the chapter 11 RTC alarm | [RM0008 RTC](#source-rm0008-rtc) | Timed wake on the F103 is not that F4 API. PRL = 32767 is 1 Hz |
 | 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Table 16 has no Stop-plus-IWDG figure |
 | A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP |
@@ -119,7 +125,7 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 
 - [ ] Use one table to state, for Sleep / Stop / Standby, the current, the wake sources, the wake time, and what state is kept.
 - [ ] Know the difference between `WFI` and `WFE`, and what wakes each of them.
-- [ ] Remember that after STOP wakes you **must reconfigure the clock**, or every peripheral is wrong.
+- [ ] Decide whether the post-Stop HSI meets the application needs, and restore this book's 72 MHz clock tree before reusing its peripheral settings.
 - [ ] Turn off peripherals and clocks you are not using, and put GPIO into a state that does not draw current.
 - [ ] Know the selection points for a battery supply, and how to measure the power.
 
@@ -130,12 +136,12 @@ Low-power acceptance records the static floor, wake peak, active duration, perio
 
 <p align="center">
   <img src="../../assets/diagrams/sample-16-stop-compare.svg" width="760" alt="Sleep is 14.4 mA and keeps 72 MHz; Stop is 14 uA and wakes on HSI 8 MHz needing a clock reconfiguration; Standby is 2 uA and restarts from the reset vector">
-  <br><sub>▲ Drawn for this book. Three modes compared: Sleep 14.4 mA and it keeps 72 MHz; Stop 14 uA and it wakes on HSI 8 MHz, so the clock must be reconfigured; Standby 2 uA and it restarts from the reset vector. The three rows carry different conditions and must not share one line. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+  <br><sub>▲ Drawn comparison table. The current row includes conditions: Sleep at 72 MHz with peripherals on or off, Stop with either regulator, and Standby with the stated LSI/IWDG settings. Wake sources and execution paths have separate rows, distinguishing IWDG reset from interrupt return. Sources: [DS5319 Rev 20 Tables 16 and 26](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch16-stop-compare.png" width="760" alt="Handraw: Sleep / Stop / Standby compare (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Sleep ~14.4 mA keeps 72 MHz; Stop 14 μA needs clock restore; Standby 2 μA restarts from reset vector; not a photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch16-stop-compare.png" width="760" alt="Sleep and Stop retain ordinary SRAM; Standby loses it and restarts from the reset vector">
+  <br><sub>▲ Choose a mode by the state the program needs to retain. Sleep keeps the clock; Stop keeps SRAM but resumes on HSI; Standby restarts. RTC, LSI, and LSE operation still depends on configuration. Hand-drawn mechanism, not a measurement.</sub>
 </p>
 
 ### 1. The three low-power modes compared
@@ -152,7 +158,7 @@ Low-power acceptance records the static floor, wake peak, active duration, perio
 </p>
 
 
-The more you save, the slower the wake, and the less state you keep. **Sleep keeps the CPU state. Stop keeps SRAM and the registers. Standby loses almost everything (only the RTC and the backup domain remain).**
+Wake time increases across this chapter's three operating points. **Sleep and Stop retain ordinary SRAM and registers. Standby powers down the main domain, retaining mainly the backup domain and Standby circuitry.** Current values still need their clock and regulator conditions.
 
 | Item | Sleep | Stop | Standby |
 | --- | --- | --- | --- |
@@ -160,22 +166,24 @@ The more you save, the slower the wake, and the less state you keep. **Sleep kee
 | Typical current (F1 at 3.3 V, 25°C) | Peripherals on: 14.4 mA. Peripherals off: 5.5 mA | Low-power regulator: 14 µA. Main regulator: 24 µA. Both cells require the independent watchdog off | 2 µA only when LSI, IWDG, LSE, and RTC are all off. LSI on is 3.2 µA. LSI and IWDG on is 3.4 µA. 1.4 µA is the backup domain |
 | Clocks | The system clock is still running | HSI / HSE / PLL off; only LSI / LSE | All off; only LSI / LSE |
 | SRAM / registers | All kept | All kept | **Lost** (except the backup domain) |
-| Wake sources | Any interrupt or event | EXTI (16 lines), RTC, IWDG, USB wake | WKUP pin, RTC alarm, IWDG, NRST |
-| Wake time | 1.8 µs, on the clock that was already running | Low-power regulator 5.4 µs, main regulator 3.6 µs, on the 8 MHz HSI. This does not include restoring the PLL to 72 MHz | 50 µs to the first instruction, then a restart from the reset vector |
-| After wake | Continues at the instruction after `WFI` | Continues at the instruction after `WFI` (configure the clock first) | **Restarts from the reset vector** |
+| Wake or exit sources | WFI: interrupts meeting NVIC and priority conditions; WFE: events | EXTI interrupts or events; RTC alarm through EXTI17, USB wake through EXTI18. IWDG timeout and NRST take the reset path | WKUP rising edge, RTC alarm, IWDG reset, NRST; all restart through reset |
+| Wake time | 1.8 µs, on the clock that was already running | Low-power regulator 5.4 µs, main regulator 3.6 µs, on the 8 MHz HSI. This does not include restoring the PLL to 72 MHz | Reset startup, reaching the first instruction after 50 µs |
+| After wake | Usually handles the IRQ, then continues; a WFE event need not enter an ISR | Usually handles the IRQ, then continues; restore the clock as needed before application work | **Restarts from the reset vector** |
 | Registers | `SLEEPDEEP=0` | `SLEEPDEEP=1`, `PDDS=0` | `SLEEPDEEP=1`, `PDDS=1` |
 
-> A way to remember it: **Sleep is a nap. Stop is a real sleep (when you wake, you reset your watch). Standby is power-off (waking is a reboot).**
+> Follow where execution goes: Sleep keeps the clock; Stop keeps state but resumes on HSI; Standby restarts. Some power domains still run in each mode, so Standby is not the same as removing board power.
 
 ### 2. WFI and WFE
 
-`WFI` (Wait For Interrupt) wakes on **any interrupt**. `WFE` (Wait For Event) wakes on an **event**. You can raise one yourself with `SEV`, which fits "synchronize a pipeline, or more than one core, without an interrupt."
+The F103 here has one core. `WFI` (Wait For Interrupt) waits for a qualifying interrupt. `WFE` (Wait For Event) can also receive an event without entering an ISR. Both need a configured wake path; swapping the instruction alone is not enough.
 
 | Instruction | Wake condition | Notes |
 | --- | --- | --- |
-| `__WFI()` | An enabled interrupt or event is pending | The one you use most. Any NVIC-enabled interrupt can wake it |
-| `__WFE()` | The event register is set (including `SEV` and interrupts) | The event can come from a peripheral or from a software `SEV` |
+| `__WFI()` | An NVIC-enabled interrupt meeting the current priority conditions, among other causes | Common path: wake, handle ISR, return and continue. PRIMASK can defer the ISR without necessarily preventing wake |
+| `__WFE()` | The event register is set; if already 1, clear it and return immediately | F103 supports EXTI events; `SEVONPEND` can produce an event when an interrupt becomes pending |
 | `__SEV()` | — | Software sends an event, paired with WFE |
+
+In Stop, WFI requires an EXTI interrupt and its NVIC channel enabled; WFE requires EXTI event configuration. Before sleeping, handle stale flags according to the peripheral rules and recheck the condition, or sleep may end immediately. The event register records that an event occurred; it is not a counting queue. Arm wake rules also involve exception masks and current priority. Leaving the wait state does not always mean immediately running an interrupt handler.
 
 ```c
 /* Enter Sleep: wait for any interrupt to wake */
@@ -191,12 +199,12 @@ __WFI();
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch16-clock-restore.png" width="760" alt="Handraw: Stop wake clock restore chain (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). WAKE → HSI 8 MHz → PLL 72 MHz → then 115200; after Stop, HSE/PLL are off; not a photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch16-clock-restore.png" width="760" alt="GPIO markers separate ISR entry and restored clocks, with 115200 and 12800 bit widths drawn on one time scale">
+  <br><sub>▲ The two GPIO markers separate ISR entry from clock restoration. Below, 8.681 µs and 78.125 µs bit widths use the same time scale. Sending `0x55` makes alternating edges easy to see. Drawn theoretical timing, not an instrument capture.</sub>
 </p>
 
 
-Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. Call `SystemClock_Config()` again. If BRR is still `0x271`, the line is 12800 bit/s, not 115200.
+Entering Stop turns HSE and the PLL off. **After wake, the system clock is the 8 MHz HSI**, not 16 MHz. This book calls `SystemClock_Config()` to restore 72 MHz before reusing the original UART and timer settings. An application designed for HSI may keep it, provided its peripheral dividers and software timebase match. With BRR still `0x271`, the line is 12800 bit/s, not 115200.
 
 ```c
 /* After wake you must reconfigure the clock */
@@ -218,26 +226,29 @@ Saving power is not only about entering the mode. It is also about **turning off
 | --- | --- | --- |
 | Peripheral clocks | `__HAL_RCC_xxx_CLK_DISABLE()` | A clock on an unused peripheral is wasted current |
 | Floating input pins | Set them to analog input, `GPIO_MODE_ANALOG` | Turns off the Schmitt trigger and stops the toggle leakage |
-| Output pins | Drive a fixed level (so there is no load) | A floating output can oscillate |
-| Pull-up / pull-down | Disable them when you do not need them | They are a continuous leak |
-| Debug port | Turn off the SWD / JTAG pins | The debug logic draws current (`__HAL_RCC_GPIOA_CLK` related) |
+| Output pins | Choose the sleep level for the external circuit | Avoid load current, bus contention, and back-powering an unpowered peripheral |
+| Pull-up / pull-down | Keep only bias and wake resistors that are needed | A path to the opposite rail draws continuous current |
+| Debug port | Check DBGMCU low-power debug retention bits and disconnect the probe for measurement | Retained debug clocks and probe back-power can change the result; SWD need not always be disabled |
 | LEDs and divider resistors | Disconnect them with a MOSFET switch | Quiet killers of standby current |
 
 ### 5. Battery-powered design
 
-On a battery device you **add up the whole budget**. Average current is the active current times the duty cycle, plus the sleep current. Divide the battery capacity by that and you have the runtime.
+Runtime is battery capacity divided by average current. Multiply each interval's current by its duration, add the results, then divide by the period. A wake peak also has a duration; the Stop floor alone cannot predict runtime.
 
 | Point | What it means |
 | --- | --- |
-| Average current | `I_avg = I_active × t_active / T + I_sleep` |
+| Two-state average current | `I_avg = [I_active×t_active + I_sleep×(T−t_active)] / T` |
+| Small-duty-cycle approximation | When `t_active ≪ T`, `I_avg ≈ I_active×t_active/T + I_sleep` |
 | Runtime estimate | `runtime (h) = battery capacity (mAh) / I_avg (mA)` |
 | LDO quiescent current | Pick a low-Iq LDO (for example under 1 µA), or the LDO eats the standby budget |
-| Pull-up / pull-down | Each 10 kΩ pull-up at 3.3 V is about 0.33 mA. Several of them are fatal |
+| Pull-up / pull-down | A 10 kΩ resistor draws about 0.33 mA with 3.3 V across it; do not charge that current to a pulled-up input held high |
 | Divider sampling | The divider resistors leak all the time. Connect them with a MOSFET only while you sample |
 | Watchdog | The IWDG still runs from the LSI in Stop. Plan the feed and the wake |
 
 > Example: both currents below are assumptions, not Table 16 or Table 18 cells. A node wakes for 100 ms every 60 s to sample (assume 20 mA while active) and spends the rest at an assumed 20 µA:
 > `I_avg ≈ 20 mA × (0.1/60) + 0.02 mA ≈ 0.053 mA`. On a 1000 mAh battery the theoretical runtime is about **780 days**.
+
+This estimate excludes battery self-discharge, changes in usable capacity, regulator losses, and extra wakes. For a waveform with more intervals, use `I_avg = Σ(I_k×t_k)/T`, or integrate the entire current period.
 
 ### 6. How to measure power
 
@@ -257,21 +268,21 @@ On a battery device you **add up the whole budget**. Average current is the acti
 
 ### 7. Low-power design checklist
 
-Before you enter the mode, walk this list. Most cases of "standby current will not come down" missed one of these lines.
+Once sleep and wake work, check the circuit items below to reduce the current floor.
 
 | Check | What to do | Typical leak / waste |
 | --- | --- | --- |
 | Clocks | Turn off HSE, PLL, and peripheral clocks you are not using | An unused peripheral clock is wasted current |
 | GPIO | Unused pins as analog inputs; output pins at a fixed level | A floating input toggles and leaks |
-| Pull-up / pull-down | Keep only the ones you need. Delete the rest | Each 10 kΩ is about 0.33 mA |
+| Pull-up / pull-down | Keep the bias and wake resistors you need | About 0.33 mA with 3.3 V across 10 kΩ |
 | LEDs and indicators | Switch them with a MOSFET. Do not leave them on | One 2 mA LED is already fatal |
 | Peripheral supply | Cut VCC to a sensor with a MOSFET when you are not using it | Sensor quiescent current is easy to forget |
-| Debug port | Production firmware turns SWD / JTAG off | The debug logic draws current the whole time |
+| Debug port | Disable unneeded low-power debug retention and remeasure with the probe removed | Check DBGMCU retention bits and back-power paths |
 | LDO | Pick a low-Iq part (under 1 µA) | The LDO itself eats the standby current |
 | Wake sources | Keep only the interrupts and the RTC you need | Extra interrupts cause extra wakes |
 | Watchdog | Plan the feed and the wake while you are in Stop | The IWDG still runs from the LSI in Stop |
 
-> From experience: first turn **everything** that might draw current off, measure a clean floor, then turn things back on one at a time. The difference tells you who the real consumer is.
+Keep the circuits required for power and wake, measure a baseline, then reconnect loads one at a time. Changing one item per measurement gives each current difference a clear cause.
 
 ## Hardware and wiring
 
@@ -284,9 +295,11 @@ Before you enter the mode, walk this list. Most cases of "standby current will n
 | Any | Current measurement | A sense resistor in series with 3V3 | Watch it with a power profiler or a scope |
 
 > [!WARNING]
-> On a BluePill, the on-board **LED, the LDO, and the USB chip all leak**. To measure a real microamp current, use a bare-chip minimal board, and disconnect the debugger and the LED.
+> BluePill board input current includes the LED, LDO quiescent current, and connected USB, serial, sensor, or other loads. The F103 USB peripheral is inside the MCU; check the actual board schematic for external pull-ups and power wiring. To measure microamps in the MCU supply branch, isolate those loads and check for back-power through the probe or signal lines.
 
 ## Code
+
+Read these Sleep/Stop snippets as bare-metal HAL code with a SysTick-driven HAL timebase. An RTOS should enter low power through its tickless-idle and time-compensation mechanisms; do not directly suspend its scheduler tick. Stop returns on HSI. This example resumes the HAL tick before clock configuration so its timeout waits can run; verify that the timebase matches again after the clock is restored. The wake ISR should record the cause and handle flags, leaving UART logs with the original settings until restoration completes.
 
 **① Sleep mode (wait for any interrupt)**
 
@@ -335,6 +348,8 @@ STM32F103C8T6 does not have the F4 periodic wake-up timer. Do not call that API.
 
 **⑤ Cut GPIO leakage**
 
+First build a mask of pins that are actually unused, then replace `GPIO_PIN_All` below. PA0 is this chapter's wake source, PA13/PA14 are SWD, and other pins may connect to sensors or external pull-ups. Do not convert these to analog inputs as part of a whole-port change.
+
 ```c
 /* Before low power, set floating pins to analog input so the input buffer stops toggling and leaking */
 GPIO_InitTypeDef io = {0};
@@ -356,8 +371,8 @@ __HAL_RCC_USART2_CLK_DISABLE();
 
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-16-pwr-triage.svg" width="760" alt="Stop never entered, garbled serial after wake, current will not drop: 14 uA needs SLEEPDEEP=1 and PDDS=0, wake runs HSI 8 MHz, and 2 uA holds only with LSI, IWDG, LSE and RTC all off">
-  <br><sub>▲ Drawn for this book. Where to look: a log-scale ruler across the top places 14.4 mA, 14 uA and 2 uA on one line; the left column shows the two mode bits (SCB_SCR SLEEPDEEP=1, PWR_CR PDDS=0), the middle compares HSI 8 MHz with PLL 72 MHz at 12800 versus 115200, the right lists the leaks one by one; below sit the four Standby cells and a wake-time bar chart. Stop never entered — SLEEPDEEP=1 with PDDS=0 is the 14 uA cell; garbled serial after wake — the clock still runs HSI 8 MHz while BRR was computed for 72 MHz; the current will not drop — 2 uA requires LSI, IWDG, LSE and RTC all off. Sources: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
+  <img src="../../assets/diagrams/sample-16-pwr-triage.svg" width="760" alt="Check Stop mode bits and pending flags, the post-wake HSI clock, then measurement boundaries and external loads">
+  <br><sub>▲ Drawn troubleshooting chart. Check bits and flags for a mode-entry problem, clocks for a post-wake UART problem, then regulator, enabled clocks, and board loads for excess current. SLEEPDEEP=1 with PDDS=0 selects Stop; it does not guarantee 14 µA. Conditions: [DS5319 Rev 20 Table 16](#source-ds5319-pwr) and [RM0008 clocks](#source-rm0008-rcc).</sub>
 </p>
 
 <p align="center">
@@ -368,13 +383,13 @@ __HAL_RCC_USART2_CLK_DISABLE();
 ## Hands-on labs
 
 1. **Mode baseline:** Measure Run, Sleep, Stop, and Standby on the same hardware. Record supply voltage, board loads, static current, and wake source; do not report a board result as the MCU specification.
-2. **Stop recovery evidence:** On a PA0 wake, mark entry and completion of `SystemClock_Config()` on GPIO and measure wake time. Then send `0x55` and confirm restored 115200 timing.
+2. **Stop recovery evidence:** Capture the PA0 edge, ISR-entry GPIO marker, and marker after `SystemClock_Config()` to separate wake response from clock restoration. Then send `0x55` and confirm 115200 timing. GPIO markers include software delay and do not directly measure the datasheet's first-instruction interval.
 3. **Periodic average current:** Wake every 5 s from RTC, sample the ADC, send one frame, and sleep again. Save the full current waveform, integrate Iavg, and compare it with the state-times-duration formula.
 4. **Leakage isolation:** Disconnect debugger, LED, USB, and sensors one at a time and record each floor-current delta. Compare the final result only with the matching mode and temperature in the target datasheet.
 
 ### 8. The last word before the rail falls: PVD
 
-PVD watches VDD. When the voltage falls through the threshold it enters an interrupt, so you can write the critical variables into the backup registers before a real reset. It does not replace the watchdog, and it does not give you a number for "how many milliseconds you still have." The threshold and the hysteresis come from the level table in the reference manual.
+PVD watches VDD. With EXTI16 and NVIC configured, crossing the selected threshold can trigger an interrupt to record a supply failure early. The snippet below configures the detector and omits the handler. Completing a backup-register or Flash write before reset depends on supply hold-up, write time, and minimum operating voltage; PVD promises no fixed number of milliseconds. Check the reference manual for thresholds and hysteresis.
 
 ```c
 PWR_PVDTypeDef pvd = {0};
@@ -399,6 +414,6 @@ Self-test:
 - RM0008, *STM32F10xxx Reference Manual*, Chapter 5, Power control (PWR) (`LPDS` / `PDDS` / `CWUF` in `PWR_CR`, and WFI / WFE).
 - RM0090, *STM32F4 Reference Manual*, Chapter 5 PWR, and Chapter 26 RTC (periodic wake).
 - Datasheet DS: typical and maximum current in each mode, wake time, and VBAT parameters.
-- Application note AN4365, *How to improve ADC accuracy on STM32F4* (includes notes related to low-power sampling), and ST's application notes on low-power design.
+- Arm, *Cortex-M3 Devices Generic User Guide* (ARM DUI 0552A), §2.5 Power management, WFI/WFE instructions, and SCR; distinguishes wake conditions from interrupt handling.
 - Related chapters: [Chapter 11](11-rtc-watchdog.md), RTC and the watchdogs, and [Chapter 09](09-adc-dac.md), ADC.
 - Figure: `../../assets/animations/lowpower-wakeup.svg` (vector drawing by the author).

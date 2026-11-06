@@ -223,7 +223,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "15-FreeRTOS入门.md": (
-        16,
+        17,
         (
             "freertos-scheduler.svg",
             "sample-15-rtos-tick-flow.svg",
@@ -241,6 +241,7 @@ CHAPTERS = {
             "sample-15-rtos-triage.svg",
             "rtos-startup-gates.svg",
             "ch15-prio-inherit.png",
+            "ch15-psp-msp.png",
         ),
     ),
     ROOT / "docs" / "16-低功耗设计.md": (
