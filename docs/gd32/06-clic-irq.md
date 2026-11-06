@@ -12,7 +12,7 @@ minutes: 35
 ## 本章精髓
 
 1. **中断控制器换名换架构**：**ECLIC**（Enhanced Core-Level Interrupt Controller，Bumblebee 内核私有，Nuclei 与 Andes 联合开发）取代 ARM 的 NVIC。RISC-V 标准的 software / timer / external 三类中断它都管，外部中断源数交给芯片定（GD32VF103 在 `gd32vf103.h` 里用 `CLIC_INT_*` 与 `*_IRQn` 编号）。
-2. **优先级变成两维**：**level（抢占级，最多 16 级，决定能否打断别人）+ priority（同级排序，最多 16 级）**，不是 ARM 那套"4 位单一优先级 + PRIGROUP 切分组 + 0x5FA 钥匙"。
+2. **优先级变成两维**：**level（抢占级，最多 16 级，决定能否打断别人）+ priority（同级排序，最多 16 级）**。不是 ARM 那套"4 位单一优先级 + PRIGROUP 切分组 + 0x5FA 钥匙"。
 3. **"向量"换语义**：ARM 是"向量表第 N 项放 ISR 地址，硬件读表跳转"；ECLIC 是"每个中断有 shv 位，置 1 即**向量直跳**到该中断专属入口，置 0 则进公共入口再软件分发"，省了一张大表，但每个要向量的中断都得显式配入口。
 
 ## 先修
@@ -188,7 +188,7 @@ ECLIC 的"向量直跳"省了 ARM 那张大表，但代价是每个要用向量�
 
 **驱动频率**（手册 §3.1 + GD32VF103 注记）：mtime 由 SoC 的 `mtime_toggle_a` 脉冲驱动，每检测到一个边沿 mtime 加 1。GD32VF103 上 `rtc_clk = core_clk_aon / 4`，所以 **mtime 自增频率 = core_clk_aon / 4**。若核心跑 108MHz，mtime 约 27MHz 自增（`core_clk_aon` 与核心时钟同源同频的关系已由 [V3](08-mtime-delay.md) 收案：手册 §2.1）。
 
-**推论**：MTIME 是 64 位递增 + 软件比较，意味着"周期定时"要软件每次中断后把 mtimecmp 加一个周期（不像 SysTick 硬件自动重装），这是 RTOS port 到 RISC-V 必须处理的差异（[V3](08-mtime-delay.md) 详述）。SysTick 的"写一次 LOAD 一劳永逸"在 MTIME 上不成立。
+**推论**：MTIME 是 64 位递增 + 软件比较，意味着"周期定时"要软件每次中断后把 mtimecmp 加一个周期（不像 SysTick 硬件自动重装）。这是 RTOS port 到 RISC-V 必须处理的差异（[V3](08-mtime-delay.md) 详述）。SysTick 的"写一次 LOAD 一劳永逸"在 MTIME 上不成立。
 
 ## 七、对照落地：配通 EXTI0，与 S4 六步逐条对比
 
