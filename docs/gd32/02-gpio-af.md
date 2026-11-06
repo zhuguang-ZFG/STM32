@@ -290,16 +290,12 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 5. GD32 的 GPIO_OSPEED_MAX（11）和 STM32F4 OSPEEDR 的 11 档（100MHz）有什么微妙差别？
 
 <details><summary><b>参考答案（先自己想完再展开）</b></summary>
-
 1. 0x00 CTL（↔MODER）、0x04 OMODE（↔OTYPER）、0x08 OSPD（↔OSPEEDR）、0x0C PUD（↔PUPDR）、0x10 ISTAT（↔IDR）、0x14 OCTL（↔ODR）、0x18 BOP（↔BSRR）。偏移、位宽、编码全同，只有名字换了（gd32f4xx_gpio.h:52-63）。
 2. 置位只有**一条路**：BOP 低 16 位（BOP0~BOP15）。清零有两条路：BOP 高 16 位（CR0~CR15）或 BC 低 16 位，官方库 gpio_bit_reset 走 BC。不存在"独立置位寄存器"。
 3. STM32 翻转要 ODR 读-改-写三条指令（ldr/eor/str），中间可被中断插队、丢状态；GD32 写 TG 对应脚位一条 str 原子完成，还不需要读，点灯循环连状态变量都省了。
 4. PA11 属于 pin8~15，写 **AFSEL1**（对应 STM32 的 AFRH）；nibble 索引按 pin 对 8 取余（11 对 8 = 3），即 AFSEL1 的 bits[15:12]（第 3 个 nibble）。写成 bits[43:40] 或 pin 本身当索引是典型错。
 5. STM32F4 的 11 档明确标 100MHz。GD32 的 LEVEL3 库里只叫 `GPIO_OSPEED_MAX`，注释写 "max speed more than 50MHz"，**库头文件不承诺数字**；但 datasheet Table 4-28 承诺了：**IO_Speed = 200 MHz**，并给出 200/170/130MHz（CL=10/30/50pF）三档上限。
-
-   所以差别有两层：**库含糊 vs datasheet 明确**，以及**标称 200MHz vs STM32 的 100MHz**。迁移时别按 100MHz 设计时序余量，也别忘了 datasheet 注 (4) 的 168MHz 天花板。
-
-</details>
+   所以差别有两层：**库含糊 vs datasheet 明确**，以及**标称 200MHz vs STM32 的 100MHz**。迁移时别按 100MHz 设计时序余量，也别忘了 datasheet 注 (4) 的 168MHz 天花板。</details>
 
 ## 对照表：本章概念 → 仓库落点
 

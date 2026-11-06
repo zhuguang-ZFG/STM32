@@ -316,49 +316,29 @@ xQueueSend(...) / xTaskNotifyGive(...)  /* 用内核对象，别自己造轮子 
 
 **1. 为什么"代码在 Flash 里"这条在 STM32 上无所谓，在 ESP32 上是生死问题？**
 
-<details>
-<summary>看答案</summary>
-
-STM32 的 Flash 是**原地执行**的（地址空间直接映射，CPU 直接从 Flash 取指，没有中间层）。ESP32-S3 的代码在外部 Flash，通过 **Cache 映射窗口**执行：系统写 Flash 时会**暂时禁用 Cache**，此时映射窗口失效，CPU 从 Flash **取不到指令**。所以 ISR 若在 Flash 里，关 Cache 期间被触发就是崩溃（除非没声明 IRAM-safe，被推迟）。
-
-</details>
+<details><summary>看答案</summary>
+STM32 的 Flash 是**原地执行**的（地址空间直接映射，CPU 直接从 Flash 取指，没有中间层）。ESP32-S3 的代码在外部 Flash，通过 **Cache 映射窗口**执行：系统写 Flash 时会**暂时禁用 Cache**，此时映射窗口失效，CPU 从 Flash **取不到指令**。所以 ISR 若在 Flash 里，关 Cache 期间被触发就是崩溃（除非没声明 IRAM-safe，被推迟）。</details>
 
 **2. `IRAM_ATTR` 到底做了什么？加在 ISR 上够吗？**
 
-<details>
-<summary>看答案</summary>
-
-它把代码放进 `.iram1` 段（`components/esp_common/include/esp_attr.h:23`：`#define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)`），_)`），由链接脚本安排到内部 SRAM。**加在 ISR 本体上不够**：ISR 调用的所有非内联函数、以及它读的所有 rodata（字符串、`const` 查表）也必须在 IRAM，否则整条链上有一环在 Flash 就崩。
-
-</details>
+<details><summary>看答案</summary>
+它把代码放进 `.iram1` 段（`components/esp_common/include/esp_attr.h:23`：`#define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)`），_)`），由链接脚本安排到内部 SRAM。**加在 ISR 本体上不够**：ISR 调用的所有非内联函数、以及它读的所有 rodata（字符串、`const` 查表）也必须在 IRAM，否则整条链上有一环在 Flash 就崩。</details>
 
 **3. 不声明 `ESP_INTR_FLAG_IRAM` 会怎样？**
 
-<details>
-<summary>看答案</summary>
-
-系统会在 Flash 操作（Cache 禁用）期间**推迟**这个中断，ISR 不会被调用，等到 Cache 恢复再执行。这是**安全但可能有延迟**的行为。相反，声明了 `ESP_INTR_FLAG_IRAM` 就是承诺"我能在关 Cache 时跑"，系统不再推迟，代价是你必须真的保证整条链可达。
-
-</details>
+<details><summary>看答案</summary>
+系统会在 Flash 操作（Cache 禁用）期间**推迟**这个中断，ISR 不会被调用，等到 Cache 恢复再执行。这是**安全但可能有延迟**的行为。相反，声明了 `ESP_INTR_FLAG_IRAM` 就是承诺"我能在关 Cache 时跑"，系统不再推迟，代价是你必须真的保证整条链可达。</details>
 
 **4. S3 有多少个中断源？几个中断级？**
 
-<details>
-<summary>看答案</summary>
-
+<details><summary>看答案</summary>
 **99 个中断源编号（0–98）**，实测 `components/soc/esp32s3/include/soc/interrupts.h`：枚举体第 18–117 行，最后一项 `ETS_DMA_EXTMEM_REJECT_SOURCE` 编译器打印出来是 98，紧跟的第 118 行 `ETS_MAX_INTR_SOURCE` = **99**。注意 99 说的是编号槽位：那 98 个名字只覆盖 95 个不同编号（23/33/34/46 是保留位，三条 `..._EDGE_INTR_SOURCE` 与各自 TARGET 同值）。
-**7 个级别**：`ESP_INTR_FLAG_LEVEL1..LEVEL6`（`1<<1`..`1<<6`）加 `ESP_INTR_FLAG_NMI`（`1<<7`，源码注释直说 "Level 7 interrupt vector"），见 `components/esp_hw_support/include/esp_intr_alloc.h:33-39`。位号就是级别号，`probe.sh` 第 8 段逐条对过账。
-
-</details>
+**7 个级别**：`ESP_INTR_FLAG_LEVEL1..LEVEL6`（`1<<1`..`1<<6`）加 `ESP_INTR_FLAG_NMI`（`1<<7`，源码注释直说 "Level 7 interrupt vector"），见 `components/esp_hw_support/include/esp_intr_alloc.h:33-39`。位号就是级别号，`probe.sh` 第 8 段逐条对过账。</details>
 
 **5. 双核之间共享一个计数器，为什么 `volatile int n; n++;` 是错的？**
 
-<details>
-<summary>看答案</summary>
-
-两个原因：**① 非原子**，`n++` 是"读-改-写"三步，另一个核或 ISR 可能插在中间，导致丢失更新；**② 无可见性/顺序保证**，`volatile` 只阻止编译器优化掉这次访问，不提供跨核的同步语义。正确做法是用 `portENTER_CRITICAL(&mux)` 包住读-改-写（`portMUX_TYPE` 是自旋锁，`portmacro.h:188`）；或者干脆用内核对象（队列、通知）代替裸变量。
-
-</details>
+<details><summary>看答案</summary>
+两个原因：**① 非原子**，`n++` 是"读-改-写"三步，另一个核或 ISR 可能插在中间，导致丢失更新；**② 无可见性/顺序保证**，`volatile` 只阻止编译器优化掉这次访问，不提供跨核的同步语义。正确做法是用 `portENTER_CRITICAL(&mux)` 包住读-改-写（`portMUX_TYPE` 是自旋锁，`portmacro.h:188`）；或者干脆用内核对象（队列、通知）代替裸变量。</details>
 
 ## 对照表：本章概念 → 仓库落点
 
