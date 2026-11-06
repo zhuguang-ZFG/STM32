@@ -7,7 +7,7 @@ minutes: 30
 
 # G3 USART 增强点：从命名到数量的差异清单
 
-> 🎯 STM32F407 有 6 个串口（USART1/2/3/6 + UART4/5），GD32F4xx 有 **8 个**（USART0/1/2/5 + UART3/4/6/7）——多出来的不只是数量，寄存器命名也从 CR1/CR2/CR3 换成了 CTL0/CTL1/CTL2。本章把差异逐项点名，迁移时按表翻译。
+> 🎯 STM32F407 有 6 个串口（USART1/2/3/6 + UART4/5），GD32F4xx 有 **8 个**（USART0/1/2/5 + UART3/4/6/7）——多出来的不只是数量：寄存器命名也从 CR1/CR2/CR3 换成了 CTL0/CTL1/CTL2。本章把差异逐项点名，迁移时按表翻译。
 
 ## 本章精髓
 
@@ -67,7 +67,7 @@ GD32F4xx 串口全家福（中断号已在 `gd32f4xx.h` 核对）：
 2. **多 3 个串口**：USART5（APB2）、UART6/7（APB1）是 GD32 独有，STM32F407 没有。
 3. **USART5 挂 APB2**：与其他 USART 的 APB1 归属不同，时钟使能位在 RCU_APB2EN，别找错。
 
-> **【注】** GD32 的 USART0/1/2/5 是"同步/异步"（带 SCK 引脚，可做 SPI 主从），UART3/4/6/7 是"纯异步"（无 SCK），对应 STM32 的 USART vs UART 区分。
+> **【注】** GD32 的 USART0/1/2/5 是"同步/异步"（带 SCK 引脚，可做 SPI 主从）；UART3/4/6/7 是"纯异步"（无 SCK），对应 STM32 的 USART vs UART 区分。
 
 ## 二、寄存器命名：CR1/2/3 → CTL0/1/2
 
