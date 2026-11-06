@@ -93,7 +93,7 @@ STM32F407 用 **OTG_FS + OTG_HS**（On-The-Go 全速+高速 USB）；GD32F4xx �
 | ULPI_STP | PC0 | 同脚 |
 | ULPI_NXT | PC3（另有候选 **PH4**，与 I2C1_SCL 共脚） | 同脚 |
 
-硬件层面这意味着：**跑 ULPI PHY 的 STM32F407 板子，PCB 可以原样换上 GD32F407**——换的是固件库，不是布线。
+硬件层面这意味着：**跑 ULPI PHY 的 STM32F407 板子，PCB 可以原样换上 GD32F407**，换的是固件库，不是布线。
 
 > **【注】** 本表只核到"哪根信号在哪个脚、哪个 AF 号"这一层。USBHS 与 OTG_HS 的**寄存器位级**差异仍以 `GD32F4xx_usb_library/driver/drv_usb_regs.h` 与 UM §29 为准（**OTG 双模已由官方库 host+device 双栈证据背书**，V3.3.3）。几个 D 线还有额外候选脚（文字版 datasheet 的宽表抽取有歧义，未逐一断言）。真要排 PCB，请回查 Table 2-9 ~ 2-17 的 AF10 列。
 

@@ -105,7 +105,7 @@ subtype 户口本（本章主角全在这）：
 2. 构建时 gen_esp32part.py 把 CSV 编译成二进制烧进 0x8000；`idf.py partition-table` 打印解析结果，改完表先跑它，对齐、越界当场报错，不用等烧录翻车。
 3. 内置的 "Factory app, two OTA definitions" 是 4MB 视角的参考布局（factory/ota_0/ota_1 各 1M），16MB 板照着扩容即可。
 
-实践铁律：**两个 ota 槽等大**。轮流坐庄的两个庄家地位必须对称。不等大不会立刻报错，但构建系统会在"固件只装得进部分 app 槽"时警告（Partition Size Checks）——OTA 轮转的隐患从第一天就埋下。
+实践铁律：**两个 ota 槽等大**。轮流坐庄的两个庄家地位必须对称。不等大不会立刻报错，但构建系统会在"固件只装得进部分 app 槽"时警告（Partition Size Checks），OTA 轮转的隐患从第一天就埋下。
 
 ![ESP32 Flash 分区与 OTA：otadata 指向当前 app 槽，新固件写入另一槽；失败可回滚](/figures/esp32-10-flash-nvs-ota.svg)
 
