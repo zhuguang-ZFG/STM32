@@ -187,38 +187,64 @@ def boot0_faq_flow() -> Svg:
 
 
 def slot_fill_flow() -> Svg:
-    s = Svg(W, H, "One APP slot fill", "16 KB + 2 KB + 0xB800 → 0x08010000")
-    s.header(title="单槽：16 KB 引导 + 2 KB 缝 + 0xB800 应用", subtitle="mechanism · FA-002 continuous-line",
+    s = Svg(W, H, "Single APP slot address ranges",
+            "STM32F103C8T6 · FA-002 · Boot 16 KiB + 参数 2 KiB + APP 46 KiB = 64 KiB")
+    s.header(title="单槽 Flash：先算范围，再放镜像",
              tag="19", tag_color=T.AMBER)
+    x0, unit, y, height = 66, 12, 178, 66
+    x1, x2, end = x0 + 16 * unit, x0 + 18 * unit, x0 + 64 * unit
+    s.text(40, 100, "64 KiB Flash · 1 KiB = 1024 字节", size=19, weight="700")
+    s.text(40, 128, "地址条按容量比例绘制；参数区用于保存数据。", size=15, fill=T.MUTED)
+    ranges = [
+        (x0, 16 * unit, T.CYAN, T.PANEL2),
+        (x1, 2 * unit, T.AMBER, T.BG2),
+        (x2, 46 * unit, T.GREEN, T.PANEL),
+    ]
     css = []
-    steps = [
-        ("BOOT", "16 KB", T.CYAN),
-        ("GAP", "2 KB", T.GREEN),
-        ("APP0", "0x08004800", T.AMBER),
-        ("SIZE", "0xB800", T.VIOLET),
-        ("END", "0x08010000", T.GREEN),
-        ("FIT", "64 KB", T.CYAN),
-    ]
-    _flow_row(s, steps, css)
-    s.title_block(40, 230, "Single image only — second slot / SRAM overflow stay on static SVG", color=T.GREEN)
+    for i, (x, width, color, fill) in enumerate(ranges):
+        s.rect(x, y, width, height, fill=fill, stroke=color, sw=1.5)
+        s.rect(x, y - 4, width, height + 8, stroke=color, sw=2,
+               cls=f"slot-range slot-range-{i}", opacity=0)
+        a, b = i * 33.333, min((i + 1) * 33.333 - 1, 99)
+        css.append(
+            f"@keyframes slot-range-{i}{{0%,{a:.3f}%{{opacity:0}}"
+            f"{a + .1:.3f}%,{b:.3f}%{{opacity:1}}"
+            f"{b + .1:.3f}%,100%{{opacity:0}}}}"
+            f".slot-range-{i}{{animation:slot-range-{i} 7.2s steps(1,end) infinite;}}"
+        )
+    s.text((x0 + x1) / 2, 207, "Bootloader", size=18, anchor="middle", fill=T.CYAN, weight="700")
+    s.text((x0 + x1) / 2, 231, "16 KiB", size=16, anchor="middle", fill=T.CYAN)
+    s.text((x2 + end) / 2, 207, "APP · 46 KiB", size=21, anchor="middle", fill=T.GREEN, weight="700")
+    s.text((x2 + end) / 2, 232, "长度 0xB800", size=16, anchor="middle", fill=T.GREEN)
+    s.line((x1 + x2) / 2, y - 1, (x1 + x2) / 2, 154, stroke=T.AMBER, sw=1.5)
+    s.text((x1 + x2) / 2, 150, "参数 2 KiB", size=15, anchor="middle", fill=T.AMBER)
+    for x in (x0, x1, x2, end):
+        s.line(x, y + height + 2, x, y + height + 14, stroke=T.STROKE, sw=1)
+    s.text(x0, 276, "0x08000000", size=15, mono=True, fill=T.CYAN)
+    s.line(x1, 258, x1, 287, stroke=T.CYAN, sw=1)
+    s.text(x1 - 8, 304, "0x08004000", size=15, mono=True, anchor="end", fill=T.CYAN)
+    s.line(x2, 258, x2, 316, stroke=T.AMBER, sw=1)
+    s.text(x2 + 8, 332, "0x08004800", size=15, mono=True, fill=T.AMBER)
+    s.text(end, 276, "0x08010000", size=15, mono=True, anchor="end", fill=T.GREEN)
+    s.text(end, 302, "排他上限 · 不包含这个地址", size=14, anchor="end", fill=T.MUTED)
+    s.line(40, 354, 860, 354, stroke=T.GRID, sw=1)
     rows = [
-        ("Boot", "0x08000000 .. 16 KB", T.CYAN),
-        ("APP base", "0x08004800", T.AMBER),
-        ("Length", "0xB800 ends at 0x08010000", T.GREEN),
-        ("C8 ceiling", "64 KB Flash total", T.VIOLET),
+        ("Bootloader", "[0x08000000, 0x08004000)  ·  16 KiB", T.CYAN),
+        ("参数区", "[0x08004000, 0x08004800)  ·  2 KiB", T.AMBER),
+        ("APP", "[0x08004800, 0x08010000)  ·  46 KiB", T.GREEN),
     ]
-    for i, (a, b, col) in enumerate(rows):
-        y = 265 + i * 44
-        s.rect(40, y, 820, 38, fill=T.PANEL, stroke=T.STROKE, rx=8)
-        s.text(56, y + 24, a, size=13, fill=col, weight="700", mono=True)
-        s.text(840, y + 24, b, size=13, fill=T.TEXT, anchor="end")
-    s.rect(40, 450, 820, 70, fill=T.BG2, stroke=T.RED, rx=8)
-    s.text(56, 478, "Motion fills one slot math — not a dual-bank story.", size=13, fill=T.TEXT)
-    s.text(56, 500, "Oversized .bss demos stay on sample-19-sram-budget.", size=12, fill=T.MUTED)
-    css.append("@media (prefers-reduced-motion: reduce){*{animation:none!important}}")
+    for i, (name, value, color) in enumerate(rows):
+        yy = 389 + i * 36
+        s.text(40, yy, name, size=17, fill=color, weight="700")
+        s.text(842, yy, value, size=16, mono=True, anchor="end")
+    s.text(40, 505, "最后有效字节：0x0800FFFF；0x08004800 + 0xB800 = 0x08010000。",
+           size=15, fill=T.GREEN)
+    s.text(40, 542, "容量放得下，仍需检查镜像有效性与掉电恢复；单槽没有第二份 APP 备份。",
+           size=15, fill=T.MUTED)
+    css.append("@media(prefers-reduced-motion:reduce){.slot-range{animation:none!important;display:none}}")
+    css.append("@media print{.slot-range{animation:none!important;display:none}}")
     s.add_style("\n".join(css))
-    s.footer(note="自绘矢量动画 · FA-002 · 单槽 Flash 布局",
-             label="自绘矢量动画 · STM32 知识库")
+    s.footer(note="范围分配示意，播放速度不代表写入速度", label="自绘矢量动画 · 原理示意 / 非实拍")
     return s
 
 

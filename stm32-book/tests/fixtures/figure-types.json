@@ -1005,7 +1005,7 @@
  "diagrams/iap-acceptance-gates.svg": {
   "type": "triage",
   "chapter": "12",
-  "caption": "▲ 升级门：任一检查失败都留在 Bootloader 的升级模式；单槽没有旧镜像可退，A/B 双槽或外部备份才有回滚。跳到 APP 只能证明控制流离开 Bootloader；应用版本心跳才证明新镜像完成启动（FA-002 · IG-010 "
+  "caption": "▲ IAP 验收：先检查范围再擦写；传输或校验失败时留在 Bootloader 等待重传，此时旧 APP 可能已被覆盖。跳转后用版本心跳确认启动；无心跳时依靠预先设计的复位和下载入口恢复（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。"
  },
  "illustrations/handraw/ch12-acceptance-gates.png": {
   "type": "triage",
@@ -1449,12 +1449,12 @@
  "diagrams/sample-19-flash-fit.svg": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 自绘。上段是放得下的布局：16 KB、2 KB 和一张 0xB800，结束在 0x08010000 之前；SRAM 20 KB，也就是 20480 字节。中段是放不下的两种：第二张 0xB800 从 0x08010000 画到 0x08"
+  "caption": "▲ 自绘。先算 Flash 与 SRAM，再核对 ADC 比例和 USB 分包。C8 的 64 KB Flash 不能容纳两张 46 KB APP，20 KB SRAM 也放不下 65536 字节缓冲。见第 12 章布局和 [DS5319](#source-ds5319-swd)。"
  },
  "illustrations/handraw/ch19-flash-fit.png": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT 16 KB + PARAM 2 KB + APP 0xB800；两张 APP=110 KB 放不下；65536>20480；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Flash 中留一张 0xB800 的 APP；SRAM 缓冲须与栈、全局变量共同分配，不能只比较单个数组。"
  },
  "gif/one-slot.gif": {
   "type": "technical",
@@ -1469,12 +1469,12 @@
  "illustrations/handraw/ch19-pick-ladder.png": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。选最小能逼出一条新总线的项目；星级对齐已通过的验收技能；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。按已经掌握的采集、通信和缓冲技能选题，每轮新增一种尚未验证的能力。"
  },
  "illustrations/handraw/ch19-iap-gates.png": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。长度与 CRC → 槽位 → 向量 → 跳转 → 应用心跳；坏镜像拒绝并回滚；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每一关都需有拒绝或恢复出口。回滚依赖旧镜像仍然存在，不能由单 APP 布局自动获得。"
  },
  "diagrams/network-debug-ladder.svg": {
   "type": "triage",
@@ -1484,22 +1484,22 @@
  "diagrams/sample-19-milestone-triage.svg": {
   "type": "triage",
   "chapter": "19",
-  "caption": "▲ 自绘。上排五个里程碑门：点亮→采集→传输→存储→升级，门未过不许跳；下面三个岔口各带纠正——一槽一位四选一、模块门先过再集成、肉眼闪灯不算记录要有时间戳。"
+  "caption": "▲ 自绘。项目三岔口：贪多 / 跳步 / 无证据。出处是 [配套例程](#source-project-examples) 与本章验收门图。"
  },
  "illustrations/handraw/ch19-milestone-triage.png": {
   "type": "triage",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。贪多 / 跳步 / 无证据；一槽一位、每槽可演示、合入前要有通过门；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每轮新增一种能力，完成独立测试再集成；失败时保留输入、状态和恢复结果。"
  },
  "diagrams/sample-19-sram-budget.svg": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 自绘。F103C8 先数缓冲区，再加任务。"
+  "caption": "▲ 自绘预算示例。heap_4 的 ucHeap 已计入静态占用，动态任务栈和内核对象在其中分配，不能再次加到总量上。"
  },
  "illustrations/handraw/ch19-sram-budget.png": {
   "type": "technical",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。F103C8 先数缓冲区再加任务；合计 20480；基址 0x20000000；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 的 20480 字节从 0x20000000 起分配；全局缓冲、堆和任务栈都要进入同一份预算。"
  },
  "animations/sample-20-evidence-flow.svg": {
   "type": "technical",
@@ -2149,7 +2149,7 @@
  "illustrations/handraw/ch19-ab-partition.png": {
   "type": "calculation",
   "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同比例的两条闪存条：单 APP 方案 16+2+46 = 64 KB 正好到 0x08010000；A/B 双分区 110 KB，B 槽从 0x08010000 起步全在片外；不是实拍。"
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。两条 Flash 使用同一比例：单 APP 布局占满 64 KB；再加一张 46 KB 镜像便越过 0x08010000。容量放得下只是第一步，校验和回滚还需独立设计。见 [DS5319](#source-ds5319-swd)。"
  },
  "illustrations/handraw/ch20-manual-route.png": {
   "type": "comparison",

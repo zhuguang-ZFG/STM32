@@ -1,72 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="范围太大、跳过里程碑、集成无证据：一槽一位、每槽可演示、合入前要有通过门">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="项目卡住时，沿第一条失败边界检查">
 
 
 <rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
 <rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
 <line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">项目三岔口：范围、里程碑、证据</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 19 · project milestones</text>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">项目卡住时，沿第一条失败边界检查</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每个项目选择自己的模块路径；不是所有项目都需要存储和升级</text>
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">19</text>
-<text x="40" y="122" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">选题卡住时先分清：是贪多、是跳步，还是没有可演示证据</text>
-<text x="40" y="158" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主线的走法：五个门，门未过不许跳</text>
-<rect x="60" y="252" width="150" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="86" cy="280" r="13" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="86" y="285" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<text x="108" y="286" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">点亮</text>
-<line x1="212" y1="272" x2="229.675" y2="249.504" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="234.00,244.00 232.43,251.67 226.92,247.34" fill="#1b5c45" opacity="1"/>
-<rect x="236" y="230" width="150" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="262" cy="258" r="13" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="262" y="263" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<text x="284" y="264" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">采集</text>
-<line x1="388" y1="250" x2="405.675" y2="227.504" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="410.00,222.00 408.43,229.67 402.92,225.34" fill="#1b5c45" opacity="1"/>
-<rect x="412" y="208" width="150" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="438" cy="236" r="13" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="438" y="241" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
-<text x="460" y="242" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">传输</text>
-<line x1="564" y1="228" x2="581.675" y2="205.504" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="586.00,200.00 584.43,207.67 578.92,203.34" fill="#1b5c45" opacity="1"/>
-<rect x="588" y="186" width="150" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="614" cy="214" r="13" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="614" y="219" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
-<text x="636" y="220" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">存储</text>
-<line x1="740" y1="206" x2="757.675" y2="183.504" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="762.00,178.00 760.43,185.67 754.92,181.34" fill="#1b5c45" opacity="1"/>
-<rect x="764" y="164" width="150" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="790" cy="192" r="13" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="790" y="197" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
-<text x="812" y="198" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">升级</text>
-<text x="60" y="324" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每个门留一段 10 秒演示或串口日志哈希；合入 PR 必须附上</text>
-<rect x="40" y="330" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="358" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  范围太大：十个外设一起上</text>
-<text x="56" y="386" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：原理图画满了，哪个都点不亮；半成品分支互相踩脚</text>
-<text x="56" y="416" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一槽一位——本周只许一个可演示槽，四选一：</text>
-<rect x="470" y="396" width="100" height="32" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="520" y="417" font-size="13" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">灯</text>
-<rect x="580" y="396" width="100" height="32" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="630" y="417" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">串口</text>
-<rect x="690" y="396" width="100" height="32" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="740" y="417" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ADC</text>
-<rect x="800" y="396" width="100" height="32" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="850" y="417" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">一帧 USB</text>
-<text x="56" y="452" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">其余需求写进下一槽的验收表：输入、预期现象、失败时保留的日志</text>
-<rect x="40" y="496" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="56" y="524" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  跳过里程碑：直接拼整机</text>
-<text x="56" y="552" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：单模块曾经亮过，一接线就全灭；谁先坏说不清</text>
-<text x="56" y="580" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">模块门先过：每个外设单独通过演示，才允许进集成分支</text>
-<text x="56" y="608" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">64 KB 里同时塞 Bootloader + APP + 胖日志会挤爆一槽——先看 flash-fit 的账</text>
-<text x="56" y="630" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">IAP 槽：先确认 APP 链接脚本与向量表，再谈 YMODEM；顺序反了只会砖机</text>
-<rect x="40" y="662" width="880" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="690" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  集成无证据：现象在、数据不在</text>
-<text x="56" y="718" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：「好像稳定了」但复现不了；比赛现场第一次失败</text>
-<text x="56" y="746" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">肉眼闪灯不算记录：换逻辑分析仪/串口日志，带时间戳</text>
-<text x="56" y="774" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA/中断路径改过，要有 CNDTR 或错误计数的前后对比</text>
-<rect x="40" y="798" width="880" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="56" y="818" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  「好像稳定了」不是证据——可演示、可复现、可核对，三样齐了才算一个里程碑。</text>
+<text x="40" y="110" font-size="24" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先回答：这次新增的结果，能否单独演示？</text>
+<rect x="40" y="164" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="60" y="205" font-size="23" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">需求同时增加</text>
+<text x="60" y="240" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="213" x2="409" y2="213" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,213.00 409.00,216.50 409.00,209.50" fill="#8f2d2d" opacity="1"/>
+<text x="440" y="199" font-size="24" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">范围</text>
+<text x="440" y="241" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只保留一个可验证输入 / 输出</text>
+<rect x="40" y="346" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="60" y="387" font-size="23" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单模块还没跑通</text>
+<text x="60" y="422" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="395" x2="409" y2="395" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,395.00 409.00,398.50 409.00,391.50" fill="#7a4e00" opacity="1"/>
+<text x="440" y="381" font-size="24" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">模块</text>
+<text x="440" y="423" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">断开其他模块，保留配置和错误码</text>
+<rect x="40" y="528" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="60" y="569" font-size="23" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单独正常，组合失败</text>
+<text x="60" y="604" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="577" x2="409" y2="577" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,577.00 409.00,580.50 409.00,573.50" fill="#075e84" opacity="1"/>
+<text x="440" y="563" font-size="24" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">集成</text>
+<text x="440" y="605" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">比较时序、资源和缓冲所有权</text>
+<line x1="40" y1="678" x2="920" y2="678" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="40" y="722" font-size="22" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">输入 / 配置</text>
+<line x1="218" y1="715" x2="271" y2="715" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="278.00,715.00 271.00,718.50 271.00,711.50" fill="#075e84" opacity="1"/>
+<text x="300" y="722" font-size="22" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">预期与实测</text>
+<line x1="478" y1="715" x2="531" y2="715" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="538.00,715.00 531.00,718.50 531.00,711.50" fill="#1b5c45" opacity="1"/>
+<text x="560" y="722" font-size="22" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败注入与恢复</text>
+<text x="40" y="777" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">交付记录要包含板卡、固件、接线、复现步骤和已知限制。</text>
+<text x="40" y="814" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">证据可用波形、日志或缓冲记录；按要验证的机制选择。</text>
 <line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。里程碑顺序与一槽一位对照本章里程碑表与 flash-fit / sram-budget；IAP 槽位对照第 12 章。</text>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。本章项目推进方法；按具体项目选择模块与验收项。</text>
 <text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

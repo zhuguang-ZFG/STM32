@@ -35,26 +35,26 @@
 <!-- /video:ch19 -->
 ## Principle and scope
 
-All ten projects use the STM32F103C8T6. Before starting one, do the arithmetic: does it fit in 64 KB of Flash and 20 KB of SRAM, and do its addresses and conversions match chapters 12 and 09? Many projects stall not because the code is wrong but because the plan never fit on this chip.
+Choose one project and write down its input, one observable output, and a failure condition before checking the hardware table. The capacity examples below use the STM32F103C8T6's 64 KB Flash and 20 KB SRAM as a baseline. Individual projects also select larger devices; the fragments do not all belong on one BluePill. Keep addresses and conversions consistent with chapters 12 and 09.
 
 One application. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` for 46 KB, length `0xB800`, ending before `0x08010000`. `16 + 2 + 46 = 64`. That is the same map as in chapter 12 and in `examples/iap-bootloader`. See [repository examples](#source-project-examples).
 
-The A/B dual-slot update seen online needs a second `0xB800` image: `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, past `0x08010000`, so it does not fit on the C8. Chapter 12 has one application slot. A real dual-slot scheme would cut the 46 KB into two 23 KB slots and shrink the application to match, which is a different design. Flash ends at `0x08010000`. See [DS5319](#source-ds5319-swd).
+A second `0xB800` image makes `16 + 2 + 46 + 46 = 110` KB. `0x08000000 + 0x1B800 = 0x0801B800`, beyond the C8's end boundary at `0x08010000`. Chapter 12 has one application slot. Dividing the remaining 46 KB into two 23 KB slots is only capacity arithmetic: vector alignment, image linking, metadata, and rollback states still need a separate design. See [DS5319](#source-ds5319-swd).
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch19-ab-partition.png" width="760" alt="Handraw: the single-slot and A/B dual-slot flash maps drawn to the same scale (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: two flash bars at the same scale — the top one is chapter 12's single-slot map (Boot 16 K + parameters 2 K + app 46 K = 64 K, ending exactly at 0x08010000); the bottom one is the online A/B dual-slot, where slot B starts at 0x08010000 — exactly where the flash ends — and runs to 0x0801B800 entirely off-chip. What it proves: 16 + 2 + 46 + 46 = 110 KB does not fit; do the address arithmetic before drawing the memory map. What it does not prove: this is capacity arithmetic, not image verification or rollback policy, and not a linker-map screenshot. Source: [DS5319](#source-ds5319-swd).</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Both Flash bars use the same scale. The single-application layout fills 64 KB; another 46 KB image crosses 0x08010000. Fitting the image is the first step; validation and rollback need their own design. See [DS5319](#source-ds5319-swd).</sub>
 </p>
 
 `64 * 1024 = 65536`. SRAM on the C8 is 20 KB, which is 20480 bytes. 65536 is larger than 20480. So a 64 KB sample buffer in the logic-analyzer project does not link on the C8. Shrink it to a dozen KB or so, or move to a chip with more SRAM and check its datasheet.
 
-The denominator is 4096. Code 2048 is 1.65 V at a nominal 3.3 V. A denominator of 4095 is off by one LSB. The conversion is the one from chapter 09. See [RM0008 ADC](#source-rm0008-adc).
+The nominal LSB of a 12-bit ADC is Vref/4096. With that scale, code 2048 gives 1.65 V at a nominal 3.3 V. Full-endpoint scaling with 4095 changes the slope: the difference depends on the code and approaches one LSB near full scale, rather than being exactly one LSB everywhere. Actual voltage also depends on Vref, offset, and gain error. See [RM0008 ADC](#source-rm0008-adc).
 
 The application frame is `4 + 128 + 1 = 133` bytes. The chapter 14 full-speed bulk packet limit is 64 bytes, so 133 bytes go out as three packets, 64 + 64 + 5. The endpoint descriptor's `wMaxPacketSize` stays 64, not 133. The 48 MHz USB clock and VID/PID `0x1209/0x0001` are in chapter 14.
 
 Project 8 uses 120 Ω at each end, pins PB8 and PB9, and 500 kbit/s, matching chapter 13. Pick a 5 V or 3.3 V transceiver from the bill of materials. See [repository examples](#source-project-examples).
 
-Do not put the direction pin on pin 10 PA0. That pin is PA0-WKUP and also ADC12_IN0. See [DS5319 ADC](#source-ds5319-adc). Pick a free GPIO on your board and update the `MOTOR_DIR_PIN` define to match.
+This chapter reserves pin 10 PA0 for LED, ADC, or wake-up experiments. Choose another free GPIO for motor direction and update `MOTOR_DIR_PIN`. PA0-WKUP and ADC12_IN0 are alternative functions; PA0 can be an ordinary output when it is not already in use. See [DS5319 ADC](#source-ds5319-adc).
 
 Add one new peripheral per pass and get it working before the next, so that when something breaks there is only one suspect. The WS2812 timing in project 6 comes from the LED vendor's datasheet, not from RM0008.
 
@@ -69,16 +69,16 @@ Add one new peripheral per pass and get it working before the next, so that when
 
 <p align="center">
   <img src="../../assets/diagrams/sample-19-flash-fit.svg" width="760" alt="The C8 has one application of length 0xB800. Two of them are 110 KB. 65536 bytes is larger than 20 KB of SRAM.">
-  <br><sub>▲ Drawn for this book. The top band is a layout that fits: 16 KB, 2 KB, and one 0xB800 image ending before 0x08010000, with 20 KB of SRAM, which is 20480 bytes. The middle band shows two that do not: a second 0xB800 from 0x08010000 to 0x0801B800, and a 65536-byte array past 20480. The bottom band marks two common mistakes: an ADC denominator of 4095, and treating 133 bytes as one USB packet. Sources: the chapter 12 Flash layout and the 64 KB / 20 KB figures in [DS5319](#source-ds5319-swd).</sub>
+  <br><sub>▲ Drawn for this book. Budget Flash and SRAM, then check ADC scaling and USB packetization. The C8's 64 KB Flash cannot hold two 46 KB applications; its 20 KB SRAM cannot hold a 65536-byte buffer. See the chapter 12 layout and [DS5319](#source-ds5319-swd).</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch19-flash-fit.png" width="760" alt="Handraw: C8 one-slot Flash/SRAM fit (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT 16 KB + PARAM 2 KB + APP 0xB800; two APP copies = 110 KB do not fit; 65536>20480; not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Flash holds one application of length 0xB800. SRAM buffers share space with stacks and globals, so comparing one array with total RAM is not enough.</sub>
 </p>
 
 <p align="center">
-  <img src="../../assets/gif/one-slot.gif" width="640" alt="16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000">
+  <img src="../../assets/gif/one-slot.gif" width="640" alt="Highlighting the ranges of Boot 16 KB, parameters 2 KB, and APP 46 KB, with exclusive upper limit 0x08010000">
   <br><sub>▲ Animated version. It shows only the layout that fits: 16 KB, 2 KB, and one 0xB800 image fill up to 0x08010000. The printed book has only the static figure above.</sub>
 </p>
 
@@ -94,7 +94,7 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 | Two `0xB800` images | 110 KB | `0x0801B800` | does not fit. Chapter 12 has one application slot |
 | SRAM | 20480 bytes | on chip | fits |
 | A 65536-byte array | `64 * 1024` | past SRAM | does not fit on the C8 |
-| ADC | denominator 4096 | code 2048 is 1.65 V | denominator 4095 fails |
+| ADC | nominal scale Vref/4096 | code 2048 is 1.65 V at Vref=3.3 V | Distinguish endpoint scaling and measured calibration |
 | USB | application frame of 133 bytes | packet limit 64 bytes | 133 has to be split |
 
 ## Pitfalls and sources
@@ -104,7 +104,7 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 | The update plan says two applications and cites chapter 12 | A different design was written as this chapter's map | Bring up one `0xB800` application on the C8 first | [repository examples](#source-project-examples) | The application length in `examples/iap-bootloader` is `0xB800`. Chapter 12 has no second slot |
 | The second image is linked past `0x08010000` | The 64 KB already ended | Stop at `0x08010000` | [DS5319](#source-ds5319-swd) | STM32F103x8 Flash is 64 KB. Two 46 KB images plus 16 KB and 2 KB are 110 KB |
 | The logic-analyzer buffer does not link on the C8 | `64 * 1024` is larger than the C8's SRAM | Do not compile 65536 bytes into the C8 | [DS5319](#source-ds5319-swd) | SRAM is 20 KB, which is 20480 bytes. 65536 is larger |
-| The scope voltage is off by one LSB | The denominator was 4095 | Use 4096 | [RM0008 ADC](#source-rm0008-adc) | Code 2048 is 1.65 V at a nominal 3.3 V. 4095 is off by one LSB |
+| The scope voltage differs from nominal conversion | The scale, Vref, or calibration conditions differ | Check Vref/4096, then reference voltage and error | [RM0008 ADC](#source-rm0008-adc) | Code 2048 is 1.65 V at nominal 3.3 V; the 4095-versus-4096 difference varies with code |
 | The acquisition card writes 133 bytes as the endpoint packet length | The application frame was treated as the packet limit | A full-speed bulk packet is at most 64 bytes | [repository examples](#source-project-examples) | 133 is `4 + 128 + 1`. It is not the chapter 14 packet limit |
 | The car's direction pin is written on PA0 | It collides with the other uses of pin 10 | Move it off pin 10 | [DS5319 ADC](#source-ds5319-adc) | Pin 10 is PA0-WKUP and also ADC12_IN0 |
 | Two CAN nodes do not agree on the rate | The two nodes use different bit-timing settings | Use 500 kbit/s and 120 Ω at each end | [repository examples](#source-project-examples) | The example prescaler is 9, and the pins are PB8 and PB9 |
@@ -112,13 +112,13 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-19-pick-ladder.svg" width="760" alt="Pick ladder: star count vs skills you already accepted">
+  <img src="../../assets/diagrams/sample-19-pick-ladder.svg" width="760" alt="Choose from verified modules, project outputs, and acceptance evidence, then check target resources">
   <br><sub>▲ Drawn for this book. Pick the smallest project that forces one new bus.</sub>
 </p>
 
 <p align="center">
-  <img src="../../assets/illustrations/handraw/ch19-pick-ladder.png" width="760" alt="Handraw: pick ladder stars vs accepted skills (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Pick the smallest project that forces one new bus; stars map to skills already accepted; not a photo.</sub>
+  <img src="../../assets/illustrations/handraw/ch19-pick-ladder.png" width="760" alt="Handraw: from input and output to peripherals, data, and timing, expanding as needed and checking chip capability (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Choose from the sampling, communication, and buffer skills already demonstrated. Add one unverified capability per iteration.</sub>
 </p>
 
 
@@ -140,7 +140,7 @@ The wiring overview for the projects is `peripheral-wiring.svg`. It covers wirin
 | Time | 2~4 days |
 | Difficulty | ★★ |
 
-**Approach**: the phone app sends a one-character command (`F`/`B`/`L`/`R`/`S`). A UART interrupt, or the idle-line interrupt, receives the byte. You parse it and set motor direction and PWM duty. On the `L298N`, `IN1`/`IN2` set direction and `ENA` takes the PWM for speed.
+**Approach**: receive `F/B/L/R/S` from the phone and set direction and PWM in a task or the main loop. Each `L298N` motor needs `IN1/IN2` and an enable input, `ENA`; the `SetMotor` below has only one DIR output per motor and does not implement that wiring. Complete forward, reverse, brake, and coast states from the driver's truth table. `S` only sets PWM to zero, which does not establish the stop mode. Declare the static `SetMotor` before `Car_HandleCmd` as well.
 
 **Key code**:
 
@@ -187,7 +187,7 @@ static void SetMotor(uint8_t id, int8_t duty)
 | Time | 3~5 days |
 | Difficulty | ★★ |
 
-**Approach**: the RTC wakes the chip on a period (see [chapter 11](11-rtc-watchdog.md)). Read the sensor, draw it on the OLED, append it to a circular log in the W25Q64, and export CSV when a UART command arrives. The SHT30 is I2C, and it is more accurate and more stable than a DHT11.
+**Approach**: on each RTC interval (see [chapter 11](11-rtc-watchdog.md)), read the sensor, update the display, and append to W25Q64; export CSV over UART. The fragment only shows a record format and advancing address: `wr` returns to `LOG_BASE` after reset, and wrapping erases only the first sector. It does not manage erasure across the region or provide wear leveling. A usable log also needs sector pre-erasure, write-completion checks, a commit marker or checksum, and a startup scan to recover the write pointer. Test interrupted writes to establish which records survive power loss.
 
 **Key code**:
 
@@ -224,7 +224,7 @@ void Log_Append(const Record_t *r)
 | Time | 1~2 weeks |
 | Difficulty | ★★★ |
 
-**Approach**: a timer triggers the ADC at even intervals. DMA copies samples into a buffer in a circle. In the half-transfer and transfer-complete interrupts, draw the half that is already full. The sample rate is the timer trigger frequency, so the time base is a timer setting.
+**Approach**: TIM triggers the ADC while DMA fills a circular buffer. HT hands off the first half; TC hands off the second. The sample rate equals the timer trigger rate only when each trigger completes one single-channel conversion without missed triggers. Drawing inside the callbacks below demonstrates the half-buffer indices. In practice, notify a task or the main loop and finish reading or copying before DMA rewrites that half. A 512-point buffer allows `256 / sample_rate` seconds per half; record overruns rather than treating the refresh comment as a timing guarantee.
 
 **Key code**:
 
@@ -253,7 +253,7 @@ static float Code2Volt(uint16_t code)
 
 <p align="center">
   <img src="../../assets/diagrams/dma-buffer-ownership.svg" width="820" alt="In an ADC acquisition project, DMA writes a circular buffer while the CPU processes only stable halves handed off by HT and TC">
-  <br><sub>▲ Acquisition projects establish buffer ownership before frame rate or UI work. The figure does not prove sample rate or analog accuracy; timer, ADC, and input-voltage evidence are still required.</sub>
+  <br><sub>▲ HT/TC hand off the half just completed. The CPU must finish before the next rewrite. Check sample rate and analog accuracy separately against the timer, ADC, and input voltage.</sub>
 </p>
 
 ## 4. USB data-acquisition card (★★★ intermediate)
@@ -267,7 +267,9 @@ static float Code2Volt(uint16_t code)
 | Time | 1~2 weeks |
 | Difficulty | ★★★ |
 
-**Approach**: ADC plus DMA captures one frame. Pack it (header, sequence number, CRC) and send it with `CDC_Transmit_FS`. For more speed, a vendor-specific class with a bulk endpoint skips the CDC overhead. The host is Python (`pyserial` or `pyusb`): parse the frames and plot them live.
+**Approach**: capture with ADC and DMA, then package a header, sequence number, and checksum for the host to parse with pyserial or pyusb. The code calls `Checksum8`, which is not a CRC. CDC already uses bulk data endpoints; any speed gain from a vendor class depends on the protocol, buffering, and host implementation.
+
+`CDC_Transmit_FS` commonly retains the buffer for asynchronous transmission, so the local stack array `frame` can become invalid after this function returns. Ignoring BUSY can also lose frames. Keep each buffer alive until completion and handle BUSY, disconnects, and queue backpressure. The 133-byte application frame still uses 64 + 64 + 5 packets; one host read need not contain one frame.
 
 **Key code**:
 
@@ -293,7 +295,7 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 
 ## 5. Remote IAP update (★★★ intermediate)
 
-**Requirements**: after the device leaves the factory, it receives new firmware over UART, CAN, or a network and updates itself. A failed update rolls back. The board does not become a brick.
+**Requirements**: receive and validate new firmware over UART, CAN, or a network, and retain a recovery receive path after an interrupted update. Rolling back to an old version requires extra image storage and state management.
 
 | Item | Contents |
 | --- | --- |
@@ -302,7 +304,9 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 | Time | 1~2 weeks |
 | Difficulty | ★★★ |
 
-**Approach**: on the C8, bring up the one application from chapter 12 first. The bootloader starts at `0x08000000` for 16 KB, the parameter block starts at `0x08004000` for 2 KB, and the application starts at `0x08004800` with length `0xB800`, ending before `0x08010000`. Chapter 12 has no second slot. A second image of the same `0xB800` is 110 KB and ends at `0x0801B800`. Cutting the 46 KB into two 23 KB images is a different design. Do not write it as "see chapter 12".
+**Approach**: first implement chapter 12's single application: a 16 KB bootloader at `0x08000000`, a 2 KB parameter block at `0x08004000`, and a `0xB800` application at `0x08004800`, ending before `0x08010000`. A second image of the same length brings the total to 110 KB, ending at `0x0801B800`. After erasing a single slot, no old application remains for rollback; on failure, stay in the bootloader for retransmission. Two 23 KB slots are only the capacity starting point for another design.
+
+The fragment sketches a dual-slot selection interface and cannot implement that single-slot layout. It does not range-check `pending` or `active`, so `p.app_crc[p.pending]` can read out of bounds; `Crc32(p.pending)` also leaves the image address, length, and algorithm unspecified. Add slot-boundary and vector checks and power-loss-safe metadata commits before using it. A `magic` value alone does not validate an image.
 
 **Key code**:
 
@@ -334,12 +338,12 @@ uint32_t Boot_SelectApp(void)
 
 <p align="center">
   <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="A remote-update project accepts image length and CRC, slot range, vectors, jump, and application heartbeat in sequence">
-  <br><sub>▲ An update project must reject bad images, confirm the new version, and recover after an interrupted transfer. “The UART finished and code jumped” is not enough.</sub>
+  <br><sub>▲ Check image range and integrity, then vectors, the jump, and the application heartbeat. A bad image needs a recovery path; receiving again in one slot and rolling back to a retained image are different capabilities.</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch19-iap-gates.png" width="760" alt="Handraw: IAP gates length·CRC·slot·vector·heartbeat (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Length and CRC → slot → vector → jump → app heartbeat; reject bad image and rollback; not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Each gate needs a rejection or recovery exit. Rollback depends on retaining the old image; a single application slot does not provide it.</sub>
 </p>
 
 ## 6. WS2812 LED-strip controller (★★ intermediate)
@@ -353,7 +357,9 @@ uint32_t Boot_SelectApp(void)
 | Time | 3~5 days |
 | Difficulty | ★★ |
 
-**Approach**: a WS2812 uses a **single-wire return-to-zero code** (`T0H=0.4µs`, `T1H=0.8µs`, period 1.25µs) to send 24-bit GRB. **TIM+DMA** produces that waveform: encode each bit as two compare values, and let DMA stream them out. `T0H=0.4µs`, `T1H=0.8µs`, and the 1.25µs period are the LED vendor's timing, not RM0008.
+**Approach**: encode GRB using the datasheet for the exact LED revision. The example values `T0H=0.4µs`, `T1H=0.8µs`, and period `1.25µs` do not cover every WS2812/WS2812B revision; check the reset-low interval separately. PWM plus DMA normally updates one CCR value per bit period. CCR sets the high time, and the remainder of that same period supplies the low time.
+
+The fragment streams the high and low durations as two successive CCR values. In ordinary PWM mode, that produces two PWM periods, not one valid data bit. Correct this encoding sketch before flashing it: use one compare value per bit, check the DMA request timing, CCR preload, transfer width, `n <= LED_NUM`, and reset interval, then measure the waveform.
 
 **Key code**:
 
@@ -393,7 +399,9 @@ void WS2812_Encode(const uint8_t *grb, uint16_t n)
 | Time | 2~4 weeks |
 | Difficulty | ★★★★ |
 
-**Approach**: a timer fires quickly. In the ISR, read a whole GPIO port's IDR as one byte into a ring buffer. When the trigger condition is met, stop, then bulk-upload over USB. The host decodes protocols and draws the traces (a small cousin of PulseView).
+**Approach**: the fragment reads GPIOC's low eight bits in a TIM interrupt; it does not configure DMA. Interrupt latency, other interrupts, and the port-read cost all affect the sampling interval. Sampling GPIO through DMA is a separate implementation that requires checking the target's request mapping and bus path. Verify the sample period and input protection before adding triggers and host decoding.
+
+The ring overwrites samples after `65536 / sample_rate` seconds. Once stopped, use `la_wr` to find the oldest sample and send data in time order. `LA_Upload()` neither waits for CDC completion nor handles BUSY, so it cannot guarantee delivery of every 512-byte block. Keep sampling stopped while USB uses the buffer. The TIM callback also needs an instance check to exclude other timers.
 
 **Key code**:
 
@@ -474,7 +482,7 @@ void Node_Report(uint8_t node, int16_t temp_x10, uint16_t humi_x10)
 | Time | 3~6 weeks |
 | Difficulty | ★★★★ |
 
-**Approach**: an attitude estimate (complementary filter or Kalman) gives the tilt angle. A **cascaded PID** follows: an outer angle loop, an inner rate loop, then an encoder speed loop on top. The output is PWM. The control period is fixed (for example 5 ms), in a timer interrupt or an RTOS task, so it stays real-time.
+**Approach**: check the attitude estimate's axes, units, and motor polarity before tuning balance. The fragment contains angle P and gyro-feedback D, with no integral term, speed loop, or complete cascaded PID. The 5 ms period is a scheduling target; measure execution time and jitter. Move blocking IMU reads out of the ISR and verify the control task's deadline. Gains 25.0/0.8 are examples, not established values for your chassis.
 
 **Key code**:
 
@@ -514,7 +522,9 @@ void Control_Loop_5ms(void)
 | Time | 3~6 weeks |
 | Difficulty | ★★★★ |
 
-**Approach**: split the work into a sample task, a display task, a communications task, and a supervisor task. A **queue** carries data. An **event group** waits for several conditions at once. A **mutex** protects a shared peripheral (the I2C bus). The supervisor feeds the watchdog and schedules low power (Stop when the system is idle).
+**Approach**: give sampling, display, and communication their own tasks; pass data through queues and protect shared peripherals with a mutex. For CAN, use an F407 with bxCAN or add an external CAN controller to an F411; a transceiver alone cannot supply the controller. Enter Stop through the kernel's idle/tickless path after it confirms sleep is safe, with wake-up clock restoration and time compensation. A supervisor seeing an empty queue is not sufficient.
+
+The fragment assumes successful queue and event-group creation, a queue item size of `sizeof(SensorData_t)`, and initialized fields in every item sent. `xQueueSend` copies an item. An event bit reports a condition; it neither passes `d` to the display task nor counts each sample. If display and communication need the same data, distribute it separately or use a protected snapshot. Two consumers receiving from one queue do not get broadcast copies.
 
 **Key code**:
 
@@ -556,26 +566,26 @@ static void vCommTask(void *arg)
 
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-19-milestone-triage.svg" width="760" alt="Scope creep, skipped milestones, integration without evidence: one slot, one demo, a gate before merge">
+  <img src="../../assets/diagrams/sample-19-milestone-triage.svg" width="760" alt="Diagnose scope, module, and integration failures, retaining input, observed results, and recovery records">
   <br><sub>▲ Drawn for this book. Three project branches: scope / skipped gate / no evidence. Sources: [project examples](#source-project-examples) and this chapter's acceptance gates.</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch19-milestone-triage.png" width="760" alt="Handraw: milestone triage three forks (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Scope creep / skipped gates / no evidence; one slot one feature, each slot demoable, merge after pass gate; not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Add one capability per iteration and test it alone before integration. On failure, retain the input, state, and recovery result.</sub>
 </p>
 
 ## Hands-on labs (picking a project and moving it forward)
 
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-19-sram-budget.svg" width="760" alt="SRAM 20 KB budget: stacks, DMA, .bss">
-  <br><sub>▲ Drawn for this book. Count buffers on C8 before adding tasks.</sub>
+  <img src="../../assets/diagrams/sample-19-sram-budget.svg" width="760" alt="A 20 KB SRAM budget expands dynamic task stacks and objects inside the heap to avoid counting them twice">
+  <br><sub>▲ A hypothetical budget drawn for this book. heap_4's ucHeap is already part of static storage. Dynamic task stacks and kernel objects are allocated inside it and must not be added to the total again.</sub>
 </p>
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch19-sram-budget.png" width="760" alt="Handraw: SRAM 20 KB budget stacks·DMA·.bss (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). On F103C8 count buffers first then add tasks; total 20480; base 0x20000000; not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Budget the C8's 20480 bytes from 0x20000000 as one space shared by global buffers, heap, and task stacks.</sub>
 </p>
 
 

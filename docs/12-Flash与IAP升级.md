@@ -2,7 +2,7 @@
 
 > English: [Flash and IAP](en/12-flash-iap.md)
 
-> 收到固件并跳转不等于升级成功。Bootloader 必须先证明长度、范围、CRC 和向量表都有效；应用还要回报版本心跳，否则应留在 Bootloader 的升级模式继续等待重传。单槽没有旧镜像可回退，回滚需要 A/B 双槽或外部备份。
+> 收到固件并跳转不等于升级成功。Bootloader 必须先核对长度、范围、CRC 和向量表，再交出控制权；应用版本心跳用于确认启动。若跳转后没有心跳，需要预先设计超时复位和重新下载入口。单槽没有旧镜像可回退，回滚还需要完好的备份和可恢复的切换记录。
 
 <p align="center">
   <img src="../assets/animations/flash-iap.svg" width="760" alt="IAP 在线升级：Bootloader + APP 双区跳转">
@@ -211,8 +211,8 @@ IAP 把 Flash 分成 **Bootloader 区 + 参数区 + APP 区**；上电先跑 Boo
 > F4 擦除以扇区为单位，参数区若与 Bootloader 同扇区会被一起擦掉，所以参数区要**独占一个扇区**。
 
 <p align="center">
-  <img src="../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="IAP 镜像依次通过长度与 CRC、槽位边界、向量表、跳转和应用心跳五道验收门">
-  <br><sub>▲ 升级门：任一检查失败都留在 Bootloader 的升级模式；单槽没有旧镜像可退，A/B 双槽或外部备份才有回滚。跳到 APP 只能证明控制流离开 Bootloader；应用版本心跳才证明新镜像完成启动（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
+  <img src="../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="IAP 写入前检查范围，写入后核对 CRC 和向量，再跳转并确认应用心跳">
+  <br><sub>▲ IAP 验收：先检查范围再擦写；传输或校验失败时留在 Bootloader 等待重传，此时旧 APP 可能已被覆盖。跳转后用版本心跳确认启动；无心跳时依靠预先设计的复位和下载入口恢复（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。</sub>
 </p>
 
 <p align="center">

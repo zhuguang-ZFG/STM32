@@ -1004,40 +1004,49 @@ def boot0_low():
     return g
 
 def one_slot():
-    """Fill 16 KB, 2 KB, and one 0xB800 image up to 0x08010000.
-
-    The second image and the oversized SRAM array stay on the static SVG.
-    """
-    g = Gif(W, H, delay=12)
+    """16 KB and 2 KB in the older labels mean KiB; the APP length is 0xB800."""
+    g = Gif(W, H, delay=100)
+    paper, panel = (251, 250, 247), (241, 245, 247)
+    ink, muted = (23, 32, 42), (94, 104, 114)
+    blue, amber, green = (30, 77, 99), (122, 78, 0), (27, 92, 69)
+    grid = (215, 220, 225)
     stages = [
-        ("BOOT 16 KB", True, False, False, False, False),
-        ("END 0x08004000", True, True, False, False, False),
-        ("GAP 2 KB", True, True, True, False, False),
-        ("APP 0x08004800", True, True, True, True, False),
-        ("LEN 0xB800", True, True, True, True, True),
-        ("END 0x08010000", True, True, True, True, True),
+        ("BOOT 16 KiB", "[0x08000000, 0x08004000)", 0),
+        ("PARAM 2 KiB", "[0x08004000, 0x08004800)", 1),
+        ("APP 46 KiB", "[0x08004800, 0x08010000)", 2),
+        ("APP: 0xB800", "0x08004800 + 0xB800 = 0x08010000", 2),
+        ("END EXCLUSIVE", "LAST VALID BYTE: 0x0800FFFF", -1),
+        ("64 KiB TOTAL", "16 + 2 + 46 = 64 KiB", -1),
     ]
-    for index, (line, boot, end16, gap, app, length) in enumerate(stages):
+    for state, detail, active in stages:
         c = Canvas(W, H)
-        chrome(c, "ONE SLOT", "64 KB", "AUX GIF  APP")
-        c.panel(16, 42, 140, 70, C.PANEL, C.CYAN if boot else C.STROKE)
-        c.text("BOOT", 56, 58, C.CYAN if boot else C.DIM, 1)
-        c.text("16 KB", 48, 84, C.TEXT if boot else C.DIM, 1)
-        c.panel(168, 42, 140, 70, C.PANEL, C.GREEN if gap else C.STROKE)
-        c.text("GAP", 214, 58, C.GREEN if gap else C.DIM, 1)
-        c.text("2 KB", 208, 84, C.TEXT if gap else C.DIM, 1)
-        c.panel(320, 42, 140, 70, C.PANEL, C.AMBER if app else C.STROKE)
-        c.text("APP", 360, 58, C.AMBER if app else C.DIM, 1)
-        c.text("0xB800", 344, 84, C.TEXT if app else C.DIM, 1)
-        c.panel(16, 126, 300, 36, C.PANEL2 if end16 else C.PANEL, C.STROKE)
-        c.text("0x08004000 MARK" if end16 else "BOOT WINDOW", 28, 140, C.TEXT if end16 else C.DIM, 1)
-        c.panel(328, 126, 132, 36, C.PANEL, C.GREEN if length else C.STROKE)
-        c.text("FIT" if length else "...", 370, 140, C.TEXT if length else C.DIM, 1)
-        c.text(line, 16, 190, C.TEXT, 1)
-        c.text(f"FRAME {index + 1} OF 6", 16, 214, C.MUTED, 1)
-        c.text("16 KB + 2 KB + 0xB800", 16, 240, C.GREEN, 1)
-        c.text("ENDS AT 0x08010000", 16, 262, C.CYAN, 1)
-        c.text("PRINT SLOT-2 ON THE STATIC SVG", 16, 284, C.DIM, 1)
+        c.fill_rect(0, 0, W, H, paper)
+        c.fill_rect(0, 0, W, 30, panel)
+        c.text("SINGLE APP SLOT", 16, 11, blue, 1)
+        c.text("1 KiB=1024 B", 373, 11, muted, 1)
+        c.text(state, 16, 45, ink, 2)
+        c.text(detail, 16, 72, muted, 1)
+        # Seven pixels per KiB: the 16/2/46 ranges have exact 112/14/322 widths.
+        regions = [(16, 112, blue), (128, 14, amber), (142, 322, green)]
+        for n, (x, width, color) in enumerate(regions):
+            c.panel(x, 109, width, 48, panel, color, 2 if n == active else 1)
+            if n == active:
+                c.fill_rect(x, 109, width, 4, color)
+        c.text_c("BOOT 16", 72, 129, blue, 1)
+        c.text_c("APP 46 KiB", 303, 129, green, 1)
+        c.line(135, 109, 135, 99, amber)
+        c.text_c("PARAM 2 KiB", 135, 88, amber, 1)
+        c.text("0x08000000", 16, 165, blue, 1)
+        c.text("0x08010000", 394, 165, green, 1)
+        c.line(128, 158, 128, 183, blue)
+        c.text("0x08004000", 58, 189, blue, 1)
+        c.line(142, 158, 142, 201, amber)
+        c.text("0x08004800", 150, 207, amber, 1)
+        c.text("EXCLUSIVE", 401, 183, muted, 1)
+        c.hline(16, 227, 448, grid)
+        c.text("16 + 2 + 46 = 64 KiB; ONE APP COPY", 16, 241, ink, 1)
+        c.text("CAPACITY IS NOT IMAGE VALIDITY OR POWER-FAIL RECOVERY", 16, 261, muted, 1)
+        c.text("RANGES ONLY - NOT A WRITE TIMING MEASUREMENT", 16, 286, muted, 1)
         g.add(c)
     return g
 

@@ -1,7 +1,7 @@
 # 12 Flash and IAP Updates
 > 中文：[12 Flash 与 IAP 升级](../12-Flash与IAP升级.md)
 
-> Receiving an image and jumping to it does not prove an update succeeded. The bootloader must validate length, range, CRC, and vectors, and the application must report a version heartbeat or the system should stay on the old image or roll back.
+> Receiving an image and jumping to it does not prove an update succeeded. The bootloader checks length, range, CRC, and vectors before handing over control; an application version heartbeat confirms startup. Recovery without a heartbeat requires a reset timeout and download entry designed in advance. A single slot has no old image to restore. Rollback also needs an intact backup and a recoverable switch record.
 
 <p align="center">
   <img src="../../assets/animations/flash-iap.svg" width="760" alt="IAP update: bootloader plus app, two regions, and the jump">
@@ -210,8 +210,8 @@ IAP splits Flash into a **bootloader region, a parameter region, and an app regi
 > F4 erases by sector. If the parameter region shares a sector with the bootloader, they are erased together, so the parameter region has to **own a sector by itself**.
 
 <p align="center">
-  <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="An IAP image passes length and CRC, slot range, vector, jump, and application-heartbeat gates">
-  <br><sub>▲ Update gates: any failed check stays in the bootloader and preserves the last valid image. Reaching the app proves only that control left the bootloader; the version heartbeat proves that the new image completed startup (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
+  <img src="../../assets/diagrams/iap-acceptance-gates.svg" width="820" alt="IAP checks the range before writing, validates CRC and vectors afterward, then jumps and checks the application heartbeat">
+  <br><sub>▲ IAP acceptance: check the range before erasing. A transfer or validation failure keeps the bootloader waiting for retransmission; the old app may already be overwritten. After the jump, confirm startup with a version heartbeat. Recovery without a heartbeat requires a reset and download entry designed in advance (FA-002 · IG-010 · C-03/C-10/C-27/C-31).</sub>
 </p>
 
 <p align="center">
