@@ -215,6 +215,12 @@ Frequency versus resolution, at the same fCK_PSC:
 
 > **the higher the PWM frequency, the fewer ARR steps you have left for duty, and the resolution gets worse.** The two fight each other. Split the difference for the job.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-resolution-grid.png" width="760" alt="Handraw: duty steps = ARR+1 cells per lap (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Same 72 MHz: 10 kHz gets 7200 cells per lap, a 50 Hz servo gets 20000; the cells per lap are the duty steps, and higher frequency means fewer of them; not a photo.</sub>
+</p>
+
+
 ### 5. Input capture, the encoder, and slave mode
 
 Input capture uses the counter the other way round. When the outside signal changes, the hardware copies the current CNT into CCR at once, like a race timer pressing the stopwatch at the finish line. Subtract two captured values and you have the period or the pulse width. The encoder interface watches two square waves 90° apart. Which one changes first decides whether the counter goes up or down, so the count is the motor's position.
@@ -408,6 +414,12 @@ HAL_TIM_Base_Start_IT(&htim2);
 
 Measure a pulse width with input capture. If the ADC must sample on a fixed interval, send the update event through master mode (TRGO) instead of software-triggering it from the main loop.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-trgo-adc.png" width="760" alt="Handraw: TRGO fires the ADC on a fixed schedule (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). TIM3's 1 ms update event starts the ADC through TRGO, the spacing is guaranteed by hardware; software triggers from the main loop jitter when it gets busy; not a photo.</sub>
+</p>
+
+
 ```c
 TIM_MasterConfigTypeDef mst = {0};
 mst.MasterOutputTrigger = TIM_TRGO_UPDATE;          /* one pulse on every overflow */
@@ -416,6 +428,12 @@ HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
 ```
 
 Quadrature looks at both phases: B lagging A by about 90° is one direction, and B leading is the other. With only one square wave, the hardware cannot tell forward from reverse.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-quadrature.png" width="760" alt="Handraw: quadrature decode in both directions (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). At every A edge read B: forward B=0 counts up, reverse B=1 counts down; one wire alone cannot tell direction; not a photo.</sub>
+</p>
+
 
 Before leaving this chapter, keep the 1 kHz/50% output trace, the three duty-step traces, and one input-capture reading, and derive PSC, ARR, and CCR from the 72 MHz timer clock.
 

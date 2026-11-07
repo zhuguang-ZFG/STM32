@@ -216,6 +216,12 @@ PWM 就是让一个开关每秒开合成千上万次，负载只感受到平均�
 
 > **PWM 频率越高，可用于调节占空比的 ARR 档位越少，分辨率越低**——两者矛盾，按需折中。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-resolution-grid.png" width="760" alt="Handraw：一圈的格子数 = 占空比的档位数（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。同一 72 MHz：10 kHz 一圈 7200 格、50 Hz 舵机 20000 格；一圈的格子数就是占空比的档位数，频率越高档位越少；不是实拍。</sub>
+</p>
+
+
 ### 5. 输入捕获 / 编码器 / 从模式
 
 输入捕获反过来用计数器：外面的信号一跳变，硬件立刻把当时的 CNT 抄进 CCR，就像赛跑终点的计时员按下秒表。两次抄下的数一减，就是周期或脉宽。编码器接口看两路相差 90° 的方波，谁先跳变决定往上数还是往下数，计数器的值直接就是电机转过的位置。
@@ -409,6 +415,12 @@ HAL_TIM_Base_Start_IT(&htim2);
 
 测脉宽用输入捕获；要让 ADC 按固定间隔采样，用主模式把更新事件送出去（TRGO），不要在主循环里软件触发。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-trgo-adc.png" width="760" alt="Handraw：TRGO 主模式触发 ADC 的采样时间轴（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。</sub>
+</p>
+
+
 ```c
 TIM_MasterConfigTypeDef mst = {0};
 mst.MasterOutputTrigger = TIM_TRGO_UPDATE;          /* 每次溢出送一个脉冲 */
@@ -417,6 +429,12 @@ HAL_TIMEx_MasterConfigSynchronization(&htim3, &mst);
 ```
 
 正交编码看两相：B 比 A 落后约 90° 是一个方向，超前是另一个方向。只有一路方波时，硬件分不清正反转。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch05-quadrature.png" width="760" alt="Handraw：正交编码两个方向的解码（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。A 跳变时看 B：正转 B=0 加一，反转 B=1 减一；只有一路分不清正反；不是实拍。</sub>
+</p>
+
 
 离开本章前，应保留 1kHz/50% 输出波形、三档占空比波形和一次输入捕获读数，并能从 72 MHz 反算 PSC、ARR 与 CCR。
 

@@ -135,8 +135,9 @@ class BookAuditTests(unittest.TestCase):
                 "ch05-pwm-1khz.png", "pwm-1khz.gif", "sample-05-timebase-math.svg",
                 "ch05-timebase-math.png", "sample-05-shadow-regs.svg", "ch05-shadow-regs.png",
                 "timer-modes.svg", "sample-05-pwm-debug.svg", "ch05-pwm-debug.png",
-                "ch05-capture-pulse.png",
+                "ch05-resolution-grid.png", "ch05-capture-pulse.png",
                 "pwm-breath.gif", "sample-05-deadtime.svg", "ch05-deadtime.png",
+                "ch05-trgo-adc.png", "ch05-quadrature.png",
             ),
         }
         for chapter_id, assets in expected.items():
