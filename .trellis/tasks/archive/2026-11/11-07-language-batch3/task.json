@@ -1,0 +1,30 @@
+{
+  "id": "language-batch3",
+  "name": "language-batch3",
+  "title": "语言通俗化第三批：B3 链接脚本与 B4 启动过程",
+  "description": "B3五处、B4三处白名单散文已完成并验证；用户已确认本批提交与发布计划，原有工作严格隔离。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-07",
+  "completedAt": "2026-11-07",
+  "branch": "docs/language-b3-b4-release",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": "755ff3f",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "docs/build/03-linker-script.md",
+    "docs/build/04-startup.md",
+    "docs/reference/changelog.md"
+  ],
+  "notes": "用户本轮选择“按计划提交并发布”，授权三文档提交、本批任务归档与会话记录，独立分支PR全绿后合并并验证线上。正文提交755ff3f；严格保护、prose、reading、docs、任务context本轮重跑全过，内容等于既有已验源码。远程CI与部署待实际结果；不扩大其他章或事实修订。",
+  "meta": {}
+}
