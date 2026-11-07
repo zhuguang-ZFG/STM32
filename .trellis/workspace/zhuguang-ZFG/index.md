@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 35
+- **Total Sessions**: 36
 - **Last Active**: 2026-11-07
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1363 | Active |
+| `journal-1.md` | ~1396 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 36 | 2026-11-07 | B5/B6 language batch-four release | `7acc5fa` | `docs/language-b5-b6-release` |
 | 35 | 2026-11-07 | B3/B4 第三批提交与发布交接 | `755ff3f` | `docs/language-b3-b4-release` |
 | 34 | 2026-11-05 | ai4fw 视频号发布 | - | `feat/video-v2-remaster` |
 | 33 | 2026-11-05 | Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验 | `afd543f`, `08d0c3c`, `696c194` | `feat/video-v2-remaster` |

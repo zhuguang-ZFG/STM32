@@ -1361,3 +1361,36 @@ comment 步补 --go（闸门另起一张 I_HAVE_USER_OK_COMMENT）并真发出 1
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: B5/B6 language batch-four release
+
+**Date**: 2026-11-07
+**Task**: B5/B6 language batch-four release
+**Branch**: `docs/language-b5-b6-release`
+
+### Summary
+
+Approved seven-line B5/B6 prose and changelog committed; strict guards plus prose/reading/docs checks pass; archived only batch4 with corrected context paths. User authorized push and merge only after all PR checks pass; remote CI still pending at journal time. Operator task_verify unverified (baseline unavailable); 214 pinned inputs and 42 user files unchanged.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7acc5fa` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
