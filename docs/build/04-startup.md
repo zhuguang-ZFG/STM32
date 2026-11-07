@@ -15,7 +15,7 @@ minutes: 30
 2. Reset_Handler 的四道工序：**使能 FPU**（CPACR，硬浮点编译的生死开关）→ 搬 .data（Flash→RAM）→ 清 .bss → 跳 main：[C1](../c/01-memory-model.md) 的"三段旅程"在这里闭环。
 3. Boot 引脚决定"0 号地址是谁"：用户 Flash / 系统 Bootloader / SRAM 三种映射的区别（霸天虎正常就是从用户 Flash 启）。
 
-- **能理解**：为什么"全局变量天生有初值"是句善意的谎言（第三节的搬家现场）。
+- **能理解**：指出"全局变量天生有初值"这句话背后，初值存在哪、由谁搬到变量的位置（第三节的搬家现场）。
 - **能用**：打开 [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) 逐行讲出每条指令在干什么，并在 GDB 里从复位单步验证。
 
 ## 先修
@@ -95,7 +95,7 @@ Makefile 里写着 `-mfloat-abi=hard -mfpu=fpv4-sp-d16`：这是**编译器的�
 
 ## 三、搬家：.data 的 Flash→RAM 之旅
 
-"全局变量天生就有初值"，这是 C 给你的承诺，但硬件不认账。初值**存**在 Flash（占空间、断电不丢），变量**用**在 RAM（可读写）；中间的搬运，得有人干。搬运工就是这段循环（启动文件原文）：
+"全局变量天生就有初值"，这是 C 给你的承诺，但硬件不认账。先看两处位置：初值**存**在 Flash（占空间、断电不丢），变量**用**在 RAM（可读写）。把初值从前一处搬到后一处，是启动代码的工作；下面就是负责搬运的循环（启动文件原文）：
 
 ```asm
   ldr   r0, =_sdata        /* RAM 目标起点 */
@@ -121,7 +121,7 @@ Makefile 里写着 `-mfloat-abi=hard -mfpu=fpv4-sp-d16`：这是**编译器的�
 | `adds r3, r3, #4` | 偏移前进一个字 | |
 | `cmp r4, r1` / `bcc` | 目标地址到 `_edata` 了吗？没到继续 | 先判断后干活（`b .L_check_copy` 开局直跳），**长度为零的 .data 也安全** |
 
-三个符号全是链接脚本发的"地址条"：`_sidata = LOADADDR(.data)`（初值仓库在 Flash 的位置），`_sdata`/`_edata` 是 .data 段在 RAM 的头尾（`>RAM AT> FLASH` 就是说"运行在 RAM，初值存 Flash"）。
+三个符号都是链接脚本给启动文件用的地址：`_sidata = LOADADDR(.data)` 指向 Flash 中的初值起点，`_sdata`/`_edata` 给出 .data 段在 RAM 的头尾。把这两处位置放在一起看，`>RAM AT> FLASH` 表达的就是"运行在 RAM，初值存 Flash"。
 
 ## 四、清零：.bss 的归零仪式
 
