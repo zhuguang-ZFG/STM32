@@ -226,12 +226,52 @@ def wdg_supervisor():
            size=19, color=INK, anchor="middle")
     return f
 
+
+def memory_regions():
+    f = Fig("ch28-memory-regions",
+            "五块内存不是一回事 / five memory regions, five risk lists")
+
+    regions = [
+        (84, "线程栈", "调用帧 · 局部变量 · 保存上下文",
+         "最坏调用链、printf/浮点、嵌套中断", "填充水位 · 溢出钩子", GREEN_D),
+        (275, "内核对象池/堆", "TCB · 队列 · 定时器",
+         "动态创建失败、碎片", "启动前预算 · 最小空闲记录", BLUE_D),
+        (466, "C 库堆", "malloc/new · 部分 libc",
+         "线程安全、与 RTOS 堆重复计数", "唯一分配器与锁策略", RED),
+        (657, "DMA 缓冲", "外设与 CPU 共享",
+         "可达性、对齐、Cache 一致性", "链接 map · 地址断言", AMBER_STROKE),
+    ]
+    by, bh = 168, 210
+    for x, title, who, risk, verify, col in regions:
+        f.rect(x, by, 172, bh, color=col, fill=WHITE, sw=2.6)
+        f.text(x + 12, by + 30, title, size=19, color=col, weight="bold")
+        f.multi(x + 12, by + 62, ["谁用："] + [who], size=15, color=INK, lh=21)
+        f.multi(x + 12, by + 108, ["风险："] + [risk], size=15, color=INK, lh=21)
+        f.multi(x + 12, by + 158, ["验证："] + [verify], size=15, color=col, lh=21)
+    # 持久化区横条
+    f.rect(84, 402, 745, 96, color=MUTED, fill=WHITE, sw=2.6)
+    f.multi(104, 424,
+            ["持久化区（Flash / 备份 SRAM）：掉电撕裂 · 版本不兼容 · 写放大",
+             "验证：双副本 · CRC · 版本管理 · 故障注入"],
+            size=17, color=INK, lh=26)
+    # 结论
+    f.rect(84, 530, 984, 168, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.multi(104, 560,
+            ["量产系统：长期对象在初始化阶段静态创建",
+             "确需动态生命周期：谁分配、谁释放、失败回滚、重复释放怎么发现",
+             "malloc 失败改成返回空数据 = 隐藏资源耗尽，不是恢复策略"],
+            size=20, color=INK, lh=32)
+    f.text(104, 668, "五块区域各自的风险与验证方法不同 —— 别用一张台账管全部",
+           size=20, color=GREEN_D, weight="bold")
+    return f
+
 FIGS = {
     "ch28-four-concepts": four_concepts,
     "ch28-os-compare": os_compare,
     "ch28-owner-task": owner_task,
     "ch28-three-times": three_times,
     "ch28-fault-triage": fault_triage,
+    "ch28-memory-regions": memory_regions,
     "ch28-wdg-supervisor": wdg_supervisor,
 }
 

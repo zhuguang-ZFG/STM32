@@ -183,6 +183,65 @@ def minimal_five():
     return f
 
 
+def fake_id():
+    f = Fig("ch21-fake-id", "山寨板鉴定：丝印 vs 寄存器 / identity record")
+    f.text(W / 2, 130, "买的「F103C8T6」先别急着跑程序：四个外观疑点，拿三个身份寄存器对账",
+           size=21, color=MUTED, anchor="middle")
+
+    # ---- 左：丝印/外观会撒谎（四个疑点，全部来自正文「变种与山寨」行）----
+    f.rect(70, 168, 450, 312, color=RED, fill=WHITE)
+    f.htext(295, 210, "丝印会撒谎", size=26, color=RED, anchor="middle",
+            weight="bold", hl=True)
+    items = [
+        ("兼容芯片冒充", "「C8T6」实为 CS32F103/APM32 等兼容芯片"),
+        ("Flash 缩水", "只有 64 KB 却标 128 KB"),
+        ("缺 LSE 晶振", "RTC 不走时"),
+        ("劣质 LDO", "稳压偷工，板子发热"),
+    ]
+    y = 258
+    for name, detail in items:
+        f.circle(96, y - 7, 4.5, color=RED, fill=AMBER_FILL, sw=2.0)
+        f.text(114, y, name, size=20, color=RED, weight="bold")
+        f.text(114, y + 28, detail, size=17, color=INK)
+        y += 56
+
+    # ---- 中：对账箭头 ----
+    f.text(576, 306, "读出来", size=17, color=MUTED, anchor="middle")
+    f.text(576, 350, "对账", size=17, color=MUTED, anchor="middle")
+    f.arrow(524, 326, 628, 326, color=INK, sw=2.6, bend=0.0, head=10)
+
+    # ---- 右：三个身份寄存器（RM0008 第 30 章，地址照抄正文代码）----
+    f.rect(632, 168, 450, 312, color=GREEN_D, fill=WHITE)
+    f.htext(857, 210, "寄存器不会", size=26, color=GREEN_D, anchor="middle",
+            weight="bold", hl=True)
+    regs = [
+        ("Device ID @ 0xE0042000", "0x410 = F103 中等容量"),
+        ("Flash 容量 @ 0x1FFFF7E0（低 16 位）", "报 64 KB 才是正品 C8"),
+        ("UID 唯一 ID @ 0x1FFFF7E8", "96 位唯一 ID，读 3 个字"),
+    ]
+    y = 256
+    for name, val in regs:
+        f.rect(656, y - 22, 402, 74, color=GREEN_D, fill=None, sw=1.6,
+               amp=1.2, double=False, r=8)
+        f.text(674, y + 4, name, size=19, color=INK, weight="bold")
+        f.text(674, y + 34, val, size=17, color=GREEN_D)
+        y += 78
+
+    # ---- 下：身份记录五件套 ----
+    f.panel(70, 516, 1010, 92, AMBER_FILL)
+    f.rect(70, 516, 1010, 92, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 554, "身份记录五件套：拍丝印 · Device ID · Flash 容量 · UID · 供电电压",
+           size=23, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 588, "任何不一致都单独列出，不用「山寨」两个字代替具体证据",
+           size=18, color=MUTED, anchor="middle")
+
+    f.htext(W / 2, 656, "丝印和手册冲突时，这份记录就是裁决书",
+            size=26, color=RED, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 700, "正品 F103C8 = Device ID 0x410 + Flash 64 KB；对不上就写进身份记录",
+           size=19, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch21-board-compare": board_compare,
     "ch21-vdd-3v3": vdd_3v3,
@@ -190,6 +249,7 @@ FIGS = {
     "ch21-hse-load": hse_load,
     "ch21-nrst-boot0": nrst_boot0,
     "ch21-minimal-five": minimal_five,
+    "ch21-fake-id": fake_id,
 }
 
 if __name__ == "__main__":

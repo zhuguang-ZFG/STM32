@@ -128,6 +128,11 @@ The next figure branches on the revision before entering supply and PLL configur
 | VDD33USB | Supply connection required by the USB PHY | Neither the core supply nor a GPIO |
 | PDR_ON | Hardware boundary between the internal supply supervisor and an external supervisor | Not a generic chip-enable pin or an NRST substitute |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch25-vcap-caps.png" width="760" alt="Handraw: VCAP pins are the core regulator's capacitors (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). VCAP1 = pin 71, VCAP2 = pin 106, the capacitors required by the core regulator; not ordinary decoupling pins, never tie them directly to VDD, never omit them; pick the value only from the VCAP electrical section of DS12110; not a photo.</sub>
+</p>
+
 Configure the supply scheme once during early startup. The example below explicitly defines `BOARD_POWER_SUPPLY` for an **LDO board**. On an SMPS design, change the board-level design and software selection together according to ST's hardware documentation; do not copy this line blindly.
 
 ## From 8 MHz HSE to 480 MHz: a reproducible clock chain

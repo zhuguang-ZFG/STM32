@@ -136,12 +136,87 @@ def g0_f1_compare():
     return f
 
 
+def boot_tree():
+    f = Fig("ch23-boot-tree", "G0x1 启动判定树 / boot decision tree")
+
+    # legend: the three outcomes, one chip each
+    def chip_row(x0, y0, items, size=18, gap=40, chip=30, chip_h=24):
+        x = x0
+        for name, c in items:
+            f.rect(x, y0, chip, chip_h, color=c, fill=WHITE, sw=2.4,
+                   double=False)
+            f.text(x + chip + 8, y0 + chip_h - 5, name, size=size, color=c,
+                   weight="bold")
+            w = chip + 8 + text_w(name, size)
+            x += w + gap
+
+    def node(cx, cy, w, h, label, color=INK, size=22, sub=None, sub_color=None,
+             sub_size=16, border_sw=2.6):
+        f.rect(cx - w / 2, cy - h / 2, w, h, color=color, fill=WHITE,
+               sw=border_sw)
+        if sub:
+            f.text(cx, cy - 2, label, size=size, color=color, anchor="middle",
+                   weight="bold")
+            f.text(cx, cy + h / 2 - 13, sub, size=sub_size,
+                   color=sub_color or MUTED, anchor="middle")
+        else:
+            f.text(cx, cy + size * 0.36, label, size=size, color=color,
+                   anchor="middle", weight="bold")
+
+    def edge(x0, y0, x1, y1, label, lx, ly):
+        f.arrow(x0, y0, x1, y1, color=INK, sw=2.4, bend=0.08, head=10)
+        f.text(lx, ly, label, size=19, color=INK, anchor="middle",
+               weight="bold")
+
+    chip_row(300, 112, [("Main Flash", GREEN_D), ("System memory", BLUE_D),
+                        ("Embedded SRAM", AMBER_STROKE)])
+
+    # level 1: BOOT_LOCK
+    node(576, 190, 250, 58, "① BOOT_LOCK = 1 ?")
+    # level 2: nBOOT_SEL
+    node(760, 320, 250, 58, "② nBOOT_SEL = 1 ?")
+    # level 3: pin path / option-bit path
+    node(480, 450, 280, 58, "③ BOOT0 脚（PA14）")
+    node(990, 450, 280, 58, "④ nBOOT0（选项位）")
+    # level 4: nBOOT1 switches
+    node(465, 580, 190, 58, "⑤ nBOOT1 = ?")
+    node(970, 580, 170, 58, "⑥ nBOOT1 = ?")
+    # leaves
+    node(175, 320, 300, 76, "Main Flash", color=GREEN_D, size=24,
+         sub="强制优先 · 拉 PA14 覆盖不了", sub_color=RED, border_sw=3.0)
+    node(180, 580, 200, 54, "Main Flash", color=GREEN_D, size=22)
+    node(700, 580, 200, 54, "Main Flash", color=GREEN_D, size=22)
+    node(300, 700, 210, 54, "System memory", color=BLUE_D, size=21)
+    node(590, 700, 210, 54, "Embedded SRAM", color=AMBER_STROKE, size=21)
+    node(830, 700, 200, 54, "System memory", color=BLUE_D, size=21)
+    node(1055, 700, 190, 54, "Embedded SRAM", color=AMBER_STROKE, size=21)
+
+    # edges
+    edge(516, 219, 175, 282, "=1", 346, 246)
+    edge(636, 219, 760, 291, "=0", 698, 246)
+    edge(700, 349, 480, 421, "=0", 590, 381)
+    edge(820, 349, 990, 421, "=1", 905, 381)
+    edge(400, 479, 180, 553, "=0", 290, 512)
+    edge(520, 479, 465, 551, "=1", 492, 512)
+    edge(910, 479, 700, 553, "=1", 805, 512)
+    edge(1010, 479, 970, 551, "=0", 987, 512)
+    edge(405, 609, 300, 673, "=1", 352, 638)
+    edge(525, 609, 590, 673, "=0", 557, 638)
+    edge(910, 609, 830, 673, "=1", 862, 638)
+    edge(1025, 609, 1055, 673, "=0", 1035, 638)
+
+    f.htext(W / 2, 752, "nBOOT_SEL 选的是『用引脚还是选项位路径』，不是 Bootloader 开关",
+            size=22, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch23-part-id": part_id,
     "ch23-pin-compare": pin_compare,
     "ch23-boot-latch": boot_latch,
     "ch23-pinmux": pinmux,
     "ch23-g0-f1-compare": g0_f1_compare,
+    "ch23-boot-tree": boot_tree,
 }
 
 if __name__ == "__main__":

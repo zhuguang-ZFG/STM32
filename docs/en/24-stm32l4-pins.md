@@ -188,6 +188,11 @@ PA11/PA12 appear under both CAN1 and OTG_FS. Only one function at a time. Same c
 4. Choose the Stop wake clock. ST's L476 Stop 2 example selects MSI explicitly with `__HAL_RCC_WAKEUPSTOP_CLK_CONFIG(RCC_STOP_WAKEUPCLOCK_MSI)`.
 5. Suspend SysTick. Otherwise the 1 ms tick becomes the first interrupt and you measure a chip that wakes every millisecond.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-sleep-checklist.png" width="760" alt="Handraw: Stop 2 pre-sleep checklist（原理示意）">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Finish non-interruptible transactions; one wake source: disable, clear flags/pending, re-enable; unused GPIOs analog; wake clock RCC_STOP_WAKEUPCLOCK_MSI; suspend SysTick or the 1 ms tick is the first interrupt; not a photo.</sub>
+</p>
+
 ### 2. At IRQ entry: capture evidence before HAL clears it
 
 In the pinned STM32CubeL4 example, `RTC_WKUP_IRQHandler()` calls `HAL_RTCEx_WakeUpTimerIRQHandler()` directly. In the pinned HAL driver commit `71a58f9d...`, that handler clears the RTC wake-up EXTI line, clears `RTC_FLAG_WUTF`, and only then calls the callback. The HAL callback is already too late to read the original bits; reading them after `HAL_PWREx_EnterSTOP2Mode()` returns is later still.

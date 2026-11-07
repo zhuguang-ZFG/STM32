@@ -146,6 +146,40 @@ def sram2_retain():
     return f
 
 
+def sleep_checklist():
+    f = Fig("ch24-sleep-checklist", "Stop 2 入睡前五步 / pre-sleep checklist")
+    f.htext(W / 2, 114, "进入前：先证明可以睡——五步做完才轮到 WFI", size=24,
+            color=INK, anchor="middle", weight="bold", hl=True)
+    rows = [
+        ("1", "等不可中断事务收尾", GREEN_D,
+         "UART / DMA / Flash 写入等不可中断事务结束；记录缓冲区仍归谁"),
+        ("2", "只留一个预期唤醒源（RTC/EXTI/WKUP/LPTIM）", BLUE_D,
+         "先禁用 → 清外设标志、EXTI/NVIC pending、PWR 唤醒标志 → 再重新使能"),
+        ("3", "不用的 GPIO 收进模拟态", AMBER_STROKE,
+         "设为模拟、无上下拉；外部上拉、传感器和 VDDUSB 仍会产生板级电流"),
+        ("4", "选好 Stop 唤醒时钟 · ST 示例显式选 MSI", BLUE_D,
+         "__HAL_RCC_WAKEUPSTOP_CLK_CONFIG(RCC_STOP_WAKEUPCLOCK_MSI)"),
+        ("5", "暂停 SysTick", RED,
+         "否则 1 ms tick 会成为第一个中断——测到的是『每毫秒醒一次』，不是 Stop 2"),
+    ]
+    y = 156
+    for num, label, c, detail in rows:
+        f.rect(84, y, 984, 84, color=c, fill=WHITE)
+        f.circle(134, y + 42, 25, color=c, sw=2.8, fill=WHITE)
+        f.text(134, y + 51, num, size=26, color=c, anchor="middle",
+               weight="bold")
+        f.text(178, y + 37, label, size=23, color=c, weight="bold")
+        f.text(178, y + 68, detail, size=19, color=INK)
+        y += 98
+    f.rect(84, 650, 984, 78, color=RED, fill=WHITE)
+    f.text(110, 681, "症状：一进 Stop 2 就醒", size=21, color=RED,
+           weight="bold")
+    f.text(110, 711, "SysTick、旧 EXTI/RTC/PWR 标志或浮空唤醒脚仍有效 → "
+           "暂停 tick，按『禁用 → 清标志 → 重新使能』处理唯一唤醒源",
+           size=17, color=INK)
+    return f
+
+
 FIGS = {
     "ch24-part-id": part_id,
     "ch24-modes": modes,
@@ -153,6 +187,7 @@ FIGS = {
     "ch24-pin-mux": pin_mux,
     "ch24-idd": idd,
     "ch24-sram2-retain": sram2_retain,
+    "ch24-sleep-checklist": sleep_checklist,
 }
 
 if __name__ == "__main__":

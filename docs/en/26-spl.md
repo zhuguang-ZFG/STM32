@@ -306,6 +306,11 @@ Check every boundary:
 - Clear rules differ. USART ORE still requires reading SR then DR; do not substitute a similar-looking clear function.
 - An ISR does not perform blocking output, a complete I2C transaction, Flash erase, or a long delay. Preserve minimal evidence and hand off work.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-irq-no-callback.png" width="760" alt="Handraw: SPL interrupts have no callback dispatcher (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). HAL goes IRQHandler → HAL_GPIO_EXTI_Callback(); SPL writes the handler in stm32f10x_it.c: check the real source, clear the pending bit, hand off only an event; vectors may be shared, ORE still reads SR then DR; not a photo.</sub>
+</p>
+
 ## 7. DMA: two drivers are not wired together automatically
 
 USART1 TX needs at least:

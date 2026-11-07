@@ -344,7 +344,13 @@ Production invariants:
 5. Bound records, chains, and concurrent handshakes; measure peak heap/stack.
 6. Distinguish `close_notify`, reset, timeout, and certificate failure; do not rapidly retry certificate errors forever.
 
-A conventional MQTT/TLS port number is not security evidence. Authentication mode, verification result, negotiated version/cipher, and peer identity are.
+A conventional MQTT/TLS port number is not security evidence. Authentication mode, verification result, negotiated
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-tls-prereqs.png" width="760" alt="Handraw: four TLS client prerequisites and the authmode trap (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Trusted CA, hostname, real entropy and trusted time are all required; VERIFY_NONE still completes a handshake but guarantees no identity; not a photo.</sub>
+</p>
+ version/cipher, and peer identity are.
 
 ## Wi-Fi and cellular modules: the stack moved, the state machine did not
 

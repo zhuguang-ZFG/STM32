@@ -2310,5 +2310,45 @@
   "type": "concept",
   "chapter": "18",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排错五步：复现→最小化→二分→看证据→对照手册，每步一个假设同一条件复测；三条铁律压底；不是实拍。"
+ },
+ "illustrations/handraw/ch27-tls-prereqs.png": {
+  "type": "concept",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。受信 CA、主机名、真实熵源、可信时间缺一不可；VERIFY_NONE 握手照样成功但身份无担保；不是实拍。"
+ },
+ "illustrations/handraw/ch28-memory-regions.png": {
+  "type": "comparison",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。线程栈/内核池/C 库堆/DMA 缓冲/持久化区各有风险与验证方法；malloc 失败返回空数据不是恢复策略；不是实拍。"
+ },
+ "illustrations/handraw/ch21-fake-id.png": {
+  "type": "triage",
+  "chapter": "21",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。山寨识别：Device ID @0xE0042000 报 0x410、Flash 容量 @0x1FFFF7E0、UID 96 位；丝印与手册冲突时以读回为准；不是实拍。"
+ },
+ "illustrations/handraw/ch22-pin-alias.png": {
+  "type": "concept",
+  "chapter": "22",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Wokwi 键名 A0/C13/GND.1 映射 BluePill 的 PA0/PC13/地；写成 PA0 图会接不上；出处 wokwi-boards board.json；不是实拍。"
+ },
+ "illustrations/handraw/ch25-vcap-caps.png": {
+  "type": "technical",
+  "chapter": "25",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VCAP1/VCAP2 = 脚 71/106，接内核稳压器电容：不能接 VDD、不能省、不是去耦；F1 无此脚；不是实拍。"
+ },
+ "illustrations/handraw/ch26-irq-no-callback.png": {
+  "type": "technical",
+  "chapter": "26",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPL 中断无回调：stm32f10x_it.c 里查来源→清挂起→交接事件；ISR 不做阻塞发送/Flash 擦除/长延时；不是实拍。"
+ },
+ "illustrations/handraw/ch23-boot-tree.png": {
+  "type": "concept",
+  "chapter": "23",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G0 启动判定树：BOOT_LOCK=1 强制 Main；nBOOT_SEL 选脚采样或选项位；空片可转 Bootloader；不是实拍。"
+ },
+ "illustrations/handraw/ch24-sleep-checklist.png": {
+  "type": "concept",
+  "chapter": "24",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进 Stop 2 前五步：等事务结束、清唤醒源再使能、不用脚设模拟、选唤醒时钟、暂停 SysTick；不是实拍。"
  }
 }

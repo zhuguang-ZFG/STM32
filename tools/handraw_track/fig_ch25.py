@@ -172,6 +172,56 @@ def power_domains():
            size=23, color=INK, anchor="middle", weight="bold")
     return f
 
+def vcap_caps():
+    f = Fig("ch25-vcap-caps", "VCAP 是内核稳压器的电容脚 / caps for the core")
+    f.text(96, 128, "DS12110 Figure 7：内核供电有两只 VCAP；外接电容值去电气节查，图上不标",
+           size=20, color=MUTED)
+    # 左：芯片内的内核稳压器与两只外接电容
+    f.rect(90, 156, 470, 314, color=INK, sw=2.4)
+    f.text(110, 188, "STM32H743 芯片内", size=18, color=MUTED)
+    f.rect(140, 212, 320, 84, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(300, 248, "内核稳压器", size=25, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(300, 280, "输出电容必须外接", size=17, color=MUTED, anchor="middle")
+    f.line(190, 296, 190, 470, color=INK, sw=2.2)
+    f.line(390, 296, 390, 470, color=INK, sw=2.2)
+    f.line(190, 470, 190, 524, color=INK, sw=2.2)
+    f.line(390, 470, 390, 524, color=INK, sw=2.2)
+    f.text(212, 502, "脚 71 VCAP1", size=21, color=GREEN_D, weight="bold")
+    f.text(412, 502, "脚 106 VCAP2", size=21, color=GREEN_D, weight="bold")
+    for xc in (190, 390):
+        f.line(xc - 28, 532, xc + 28, 532, color=INK, sw=3.4)
+        f.line(xc - 28, 548, xc + 28, 548, color=INK, sw=3.4)
+        f.line(xc, 548, xc, 578, color=INK, sw=2.2)
+        f.circle(xc, 586, 5, color=INK, sw=2.0)
+    f.text(238, 549, "外接电容", size=19, color=INK)
+    f.text(96, 622, "容值只按 DS12110 的 VCAP 电气节选；本图不标电容值",
+           size=19, color=MUTED)
+    # 右：一行表格带出的三个不能
+    f.text(640, 188, "一行表格，三个不能", size=24, color=RED, weight="bold")
+    rows = [("直接接 VDD", "它们不是供电输入脚"),
+            ("省掉电容", "内核稳压离不开这两只"),
+            ("当普通去耦脚挪作他用", "手册原话：不是普通去耦脚")]
+    y = 210
+    for t, s in rows:
+        f.rect(640, y, 440, 84, color=RED, fill=WHITE, sw=2.2)
+        f.text(668, y + 52, "×", size=40, color=RED, weight="bold")
+        f.text(714, y + 36, t, size=23, color=INK, weight="bold")
+        f.text(714, y + 66, s, size=18, color=MUTED)
+        y += 92
+    f.rect(640, 508, 440, 84, color=BLUE, fill=WHITE, sw=2.2)
+    f.text(660, 540, "F1 呢？", size=21, color=BLUE_D, weight="bold")
+    f.text(660, 572, "内核供电在 F1 内部完成，没有 VCAP 脚", size=19, color=INK)
+    # 底：失效模式与封装核对
+    f.panel(90, 640, 990, 92, AMBER_FILL)
+    f.rect(90, 640, 990, 92, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 676, "没按电气节装电容 → 内核不起振或随机死（迁移排错表第一行）",
+           size=23, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 710, "封装核对从 PE2（第 1 脚）开始，同时确认两只 VCAP 与目标板实际连接",
+           size=20, color=INK, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch25-part-id": part_id,
     "ch25-pin-compare": pin_compare,
@@ -179,6 +229,7 @@ FIGS = {
     "ch25-clock-math": clock_math,
     "ch25-pinmux": pinmux,
     "ch25-power-domains": power_domains,
+    "ch25-vcap-caps": vcap_caps,
 }
 
 if __name__ == "__main__":
