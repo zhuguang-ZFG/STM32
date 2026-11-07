@@ -12,10 +12,10 @@ minutes: 25
 ## 本章精髓
 
 1. `size` 的三列是三种资源：text（Flash：代码+只读）、data（Flash 存初值+RAM 住人）、bss（纯 RAM）：Flash 占用=text+data，RAM 占用=data+bss。
-2. map 文件的三板斧：Archive member 表（谁被从库里捞出来）、Memory Map（每个符号的落位）、 discarded 段（被 gc-sections 辞退的）。
+2. map 文件的三板斧各查一件事：Archive member 表查谁被从库里捞出来，Memory Map 查每个符号的落位， discarded 段查谁被 gc-sections 辞退。
 3. 优化的顺序：先看大项（库/表/缓冲区），再谈 -O 级别；方向错了 -O2 也救不了你。
 
-- **能理解**：为什么带初值的数组让 Flash 和 RAM 双涨、加 const 后 data 回落 text 涨；为什么 bin 比 text+data 大。
+- **能理解**：解释为什么带初值的数组让 Flash 和 RAM 双涨，加 const 后 data 回落、text 涨；再解释为什么 bin 比 text+data 大。
 - **能用**：`size`/`nm --size-sort`/`map` 三把刀完成一次"揪出大尾巴"审计。
 
 ## 先修
@@ -32,7 +32,7 @@ arm-none-eabi-nm -S --size-sort build/blink.elf    # 符号按大小排，倒数
 grep -A3 "Discarded input" build/blink.map | more  # 谁被辞退了
 ```
 
-`size` 一行三列就把 Flash/RAM 占用算清；`nm --size-sort` 把符号按体积排队，最大几个一目了然；`map` 的 Discarded 段告诉你 gc-sections 辞退了谁。
+`size` 的三列用来算 Flash/RAM 占用；要找体积最大的几个符号，就看 `nm --size-sort`；要查 gc-sections 辞退了谁，就看 `map` 的 Discarded 段。
 
 ## 小节结构
 
@@ -44,7 +44,7 @@ grep -A3 "Discarded input" build/blink.map | more  # 谁被辞退了
 | 瘦身工具箱 | -ffunction-sections+--gc-sections、-Os、去未用库、const 归位 | 配置 |
 | CCM 腾挪 | 大缓冲搬进 CCM 的链接脚本配合（B3 联动） | 配置 |
 
-**map 分析的下游应用**：审计完体积，下一步通常是"Flash 不够装"或"要做 IAP 双区"，这时回看 [S13 Flash 与 IAP](../stm32/13-flash-iap.md) 的分区布局，以及 [B3 链接脚本](03-linker-script.md) 的段排布。map 文件告诉你"现在住哪"，链接脚本决定"将来搬哪"。
+**map 分析的下游应用**：审计完体积，遇到"Flash 不够装"或"要做 IAP 双区"，就回看 [S13 Flash 与 IAP](../stm32/13-flash-iap.md) 的分区布局，以及 [B3 链接脚本](03-linker-script.md) 的段排布。这里分清两件事：map 文件告诉你"现在住哪"，链接脚本决定"将来搬哪"。
 
 ## 动画：size → map → nm 三板斧
 

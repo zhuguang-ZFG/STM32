@@ -16,7 +16,7 @@ minutes: 30
 3. 断点有两副面孔：硬件断点（FPB 比较器，数量有限，Flash 里也能下）vs 软件断点（改写成 BKPT 指令，RAM 才行，数量不限）；GDB 的 `hbreak` 与 `break` 由此分家。
 
 - **能理解**：为什么烧录要把"擦写算法"灌进 RAM 代劳；为什么 Flash 里的代码用 `break` 有时失败而 `hbreak` 总能成。
-- **能用**：OpenOCD 常驻 + GDB 连上，完成 halt/load/读写内存/单步/断点一整套调试流。
+- **能用**：先让 OpenOCD 常驻，再用 GDB 连上；随后完成 halt/load/读写内存/单步/断点这一整套调试流。
 
 ## 先修
 
@@ -47,7 +47,7 @@ GDB 里再玩三招：`x/4xw 0x20000000`（读 RAM）、`set {int}0x20000000 = 0
 
 <AnimFigure src="/anim/swd-debug-chain.svg" />
 
-一条命令（如 `x/4xw 0x20000000` 读 RAM）走过的链路：
+以 `x/4xw 0x20000000` 读 RAM 为例：从左边的 GDB 开始，沿箭头看到最右边的内存地址：
 
 ```
 GDB ──(TCP 3333)──> OpenOCD ──(USB)──> ST-Link ──(SWD)──> 芯片 DP ──> AP ──> 总线矩阵 ──> 0x20000000
@@ -98,7 +98,7 @@ GDB ──(TCP 3333)──> OpenOCD ──(USB)──> ST-Link ──(SWD)──
 | `info registers` | 看所有寄存器 | 崩溃现场、调用约定核对 |
 | `continue` | 继续跑 | 单步完放它走 |
 
-`monitor` 前缀是发给 OpenOCD 的命令（reset/flash/sleep）；不带 monitor 是发给 GDB 自己的（break/x/continue）。区分这条线：`monitor reset halt` 是 OpenOCD 让芯片复位停住，`break main` 是 GDB 设断点。
+带 `monitor` 前缀时，命令发给 OpenOCD（reset/flash/sleep）；不带 monitor 时，由 GDB 自己处理（break/x/continue）。对照这两个例子：`monitor reset halt` 是 OpenOCD 让芯片复位停住，`break main` 是 GDB 设断点。
 
 ## 四、断点的硬件：FPB 比较器 vs BKPT 改写
 
