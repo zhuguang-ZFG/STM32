@@ -200,20 +200,47 @@ def _to_xhtml_document(body_html: str, title: str, css_href: str) -> tuple[bytes
             parent.insert(idx, child)
             idx += 1
         parent.remove(a)
-    # HTML parsing puts every element in no namespace; EPUB XHTML requires
-    # the XHTML namespace on everything and the SVG namespace inside <svg>.
-    for el in doc.iter():
+    # Rebuild the tree under a root that declares the XHTML namespace as the
+    # DEFAULT (unprefixed). lxml.html otherwise serializes every element with
+    # an "html:" prefix - valid XML that epubcheck accepts, but readers that
+    # parse content documents in HTML mode see unknown <html:xxx> elements
+    # and refuse to render the chapter ("does not meet specifications").
+    new_root = etree.Element("{%s}html" % XHTML_NS, nsmap={None: XHTML_NS})
+    new_head = etree.SubElement(new_root, "{%s}head" % XHTML_NS)
+    meta = etree.SubElement(new_head, "{%s}meta" % XHTML_NS)
+    meta.set("charset", "utf-8")
+    for child in list(head):
+        new_head.append(child)
+    new_body = etree.SubElement(new_root, "{%s}body" % XHTML_NS)
+    new_body.set("class", "epub-body")
+    for child in list(body):
+        new_body.append(child)
+    for el in new_root.iter():
         if isinstance(el.tag, str) and not el.tag.startswith("{"):
             el.tag = "{%s}%s" % (XHTML_NS, el.tag)
-    for svgel in doc.xpath("//*[local-name()='svg']"):
-        for el in svgel.iter():
+    # inline SVG subtrees carry their own default SVG namespace declaration,
+    # exactly like hand-written XHTML+SVG
+    for svgel in list(new_root.iter("{%s}svg" % XHTML_NS)):
+        new_svg = etree.Element("{%s}svg" % SVG_NS, nsmap={None: SVG_NS})
+        for k, v in svgel.attrib.items():
+            if k.lower() in ("xmlns", "xmlns:xlink"):
+                continue  # the new element declares these itself
+            new_svg.set(k, v)
+        parent = svgel.getparent()
+        idx = parent.index(svgel)
+        parent.insert(idx, new_svg)
+        for child in list(svgel):
+            new_svg.append(child)
+        parent.remove(svgel)
+        for el in new_svg.iter():
             if isinstance(el.tag, str):
                 el.tag = "{%s}%s" % (SVG_NS, el.tag.rsplit("}", 1)[-1])
-    has_svg = bool(doc.xpath("//*[local-name()='svg']"))
-    out = etree.tostring(doc, method="xml", encoding="utf-8",
+    has_svg = any(True for _ in new_root.iter("{%s}svg" % SVG_NS))
+    out = etree.tostring(new_root, method="xml", encoding="utf-8",
                          xml_declaration=True, pretty_print=False)
+    out = out.replace(b"<?xml version='1.0' encoding='utf-8'?>",
+                      b'<?xml version="1.0" encoding="utf-8"?>')
     return out, has_svg
-
 
 def _collect_ids(body_html: str) -> set[str]:
     return set(re.findall(r'id="([^"]+)"', body_html))
