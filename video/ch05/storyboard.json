@@ -870,8 +870,8 @@
     },
     {
       "scene_id": "ch05-s28",
-      "title": "合上书，三问",
-      "purpose": "recall",
+      "title": "把时基交给波特率",
+      "purpose": "failure",
       "prerequisite": [
         "ch05-s01",
         "ch05-s02",
@@ -901,18 +901,19 @@
         "ch05-s26",
         "ch05-s27"
       ],
-      "narration": "合上书，三问。PSC 和 ARR 谁决定频率？CCR 决定什么？输入捕获锁进去的是电压，还是当时的 CNT？",
+      "narration": "这一章的账读平了：72 MHz 经 PSC 和 ARR 分出 1 kHz 的节拍，CCR 单独决定占空比，输入捕获锁住的是边沿那一瞬的 CNT。下一章串口把同一套分频思路换成波特率发生器——分频错了，PWM 只是波形难看；波特率错了，收到的就全是乱码。带上你的波形和读回值，进第 06 章。",
       "on_screen": [
-        "谁决定频率",
-        "谁决定占空比",
-        "捕获锁的是什么"
+        "PSC×ARR 分出 1 kHz",
+        "CCR 定占空比",
+        "下一章：波特率分频"
       ],
       "visual_source": "illustrations/ch05-handdraw.svg",
       "fact_source": [
-        "docs/05-定时器与PWM.md#核心原理"
+        "docs/05-定时器与PWM.md#核心原理",
+        "docs/06-串口UART.md#核心原理"
       ],
-      "memory_anchor": "合上书，三问",
-      "evidence_type": "concept"
+      "memory_anchor": "时基分频，下一章换波特率",
+      "evidence_type": "diagnosis"
     }
   ]
 }
