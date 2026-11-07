@@ -1,0 +1,30 @@
+{
+  "id": "language-batch4",
+  "name": "language-batch4",
+  "title": "语言通俗化第四批：B5 体积审计与 B6 烧录调试",
+  "description": "按已批准B5四处、B6三处白名单实施语言通俗化，保护事实与结构；本地验证后交文字验收。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-07",
+  "completedAt": "2026-11-07",
+  "branch": "docs/language-b5-b6-release",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": "7acc5fa",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "docs/build/05-map-size.md",
+    "docs/build/06-flash-debug.md",
+    "docs/reference/changelog.md"
+  ],
+  "notes": "本地实施与桌面手机交互已完成；用户随后明确要求提交、推送、合并并确认CI全绿，且确认正文/归档/日志三笔提交分组。仅发布本批，不夹带11-02工作，不改测试或门禁；下一批获准在发布完成后另建任务进入规划，未授权改写。task_verify仍unverified。",
+  "meta": {}
+}

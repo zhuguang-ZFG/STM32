@@ -1,0 +1,8 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"正文风格、事实纪律及既有检查入口"}
+{"file":".trellis/spec/book/index.md","reason":"正文与书稿工艺边界、strict guard保护合同"}
+{"file":".trellis/tasks/10-26-prose-polish/design.md","reason":"保留作者声音与数字事实、代码、表格等不可动清单"}
+{"file":".trellis/tasks/archive/2026-11/11-07-language-batch4/prd.md","reason":"本批需求R1-R6及验收AC1-AC6"}
+{"file":".trellis/tasks/archive/2026-11/11-07-language-batch4/design.md","reason":"B5四行B6三行白名单和冻结疑点"}
+{"file":".trellis/tasks/archive/2026-11/11-07-language-batch4/implement.md","reason":"先审阅后实施、候选与落盘双门及页面证明"}
+{"file":".trellis/tasks/archive/2026-11/11-07-language-batch4/research/reading-evidence.md","reason":"七组原句、方向样例与理解收益，避免盲改"}
+{"file":".trellis/tasks/archive/2026-11/11-07-language-batch4/research/source-evidence.json","reason":"15输入与七行原文来源、用户工作SHA观测基线"}
