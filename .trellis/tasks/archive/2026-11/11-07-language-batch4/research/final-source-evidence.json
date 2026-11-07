@@ -1,0 +1,100 @@
+{
+  "baselineCommit": "6742ab5546f009acfe5f72022e847689864cb7c5",
+  "chapters": [
+    {
+      "file": "docs/build/05-map-size.md",
+      "sha256": "ea4996d6791b54308f2eaaa49e9274efce1b9d3d271fb77681c5bbaca9c6621b",
+      "changedLines": [
+        15,
+        18,
+        35,
+        47
+      ],
+      "candidateMatches": true,
+      "metricsBefore": {
+        "count": 96,
+        "longShare": 8.3,
+        "avg": 32.1
+      },
+      "metricsAfter": {
+        "count": 96,
+        "longShare": 8.3,
+        "avg": 32.2
+      }
+    },
+    {
+      "file": "docs/build/06-flash-debug.md",
+      "sha256": "236a3bcd9281e9c55d6edee4c04c6e506ab727facd538252a526b450a4c775f2",
+      "changedLines": [
+        19,
+        50,
+        101
+      ],
+      "candidateMatches": true,
+      "metricsBefore": {
+        "count": 84,
+        "longShare": 15.5,
+        "avg": 40.2
+      },
+      "metricsAfter": {
+        "count": 85,
+        "longShare": 15.3,
+        "avg": 40
+      }
+    }
+  ],
+  "pinnedInputs": [
+    {
+      "file": ".prose-baseline.json",
+      "unchanged": true
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "unchanged": true
+    },
+    {
+      "file": "package.json",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "unchanged": true
+    },
+    {
+      "file": "docs/build/00-toolchain.md",
+      "unchanged": true
+    },
+    {
+      "file": "docs/build/01-four-steps.md",
+      "unchanged": true
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "unchanged": true
+    },
+    {
+      "file": "docs/build/03-linker-script.md",
+      "unchanged": true
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "unchanged": true
+    }
+  ]
+}
