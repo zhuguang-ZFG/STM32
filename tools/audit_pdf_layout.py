@@ -35,7 +35,7 @@ MM = 72 / 25.4
 PAGE_W, PAGE_H = 210 * MM, 297 * MM
 LEFT, RIGHT = 15 * MM, PAGE_W - 15 * MM
 BOTTOM = PAGE_H - 18 * MM
-STAMP_TOP = PAGE_H - 22 * MM  # footer rule/label live below this line
+STAMP_TOP = PAGE_H - 17 * MM  # printed margin; footer rule/label live below this line
 
 PDFS = (
     (REPO / "stm32-book/dist/stm32-practical-book.pdf", "zh"),
@@ -57,7 +57,11 @@ def _content_rects(page: pymupdf.Page) -> list[pymupdf.Rect]:
     rects += [
         d["rect"]
         for d in page.get_drawings()
-        if d["rect"].y1 < STAMP_TOP - 2 and d["rect"].height > 3
+        # skip the page-background fill Chromium paints across the whole
+        # content box, and anything in the stamped footer zone
+        if d["rect"].y1 < STAMP_TOP - 2
+        and d["rect"].height > 3
+        and not (d["rect"].width > 500 and d["rect"].height > 700)
     ]
     return rects
 
@@ -138,25 +142,79 @@ def scan(path: Path) -> dict:
     for item in issues["bottom_gap"]:
         band = 200 if item["gap_pt"] < 250 else (350 if item["gap_pt"] < 400 else 999)
         biggest[band] += 1
+    chapters = _chapter_anchor_stats(doc)
     return {
         "file": path.name,
         "pages": doc.page_count,
         "summary": summary,
         "gap_bands": {"150-249pt": biggest[200], "250-349pt": biggest[350], ">=350pt": biggest[999]},
+        "chapters": chapters,
         "issues": issues,
     }
+
+
+def _has_visual_anchor(page: pymupdf.Page) -> bool:
+    """A page carries a visual anchor if it holds a figure-sized raster or
+    a vector plate cluster (the inline SVG plates print as drawings)."""
+    for im in page.get_image_info():
+        if im["bbox"][3] < STAMP_TOP - 2 and (im["bbox"][3] - im["bbox"][1]) > 60:
+            return True
+    for d in page.get_drawings():
+        r = d["rect"]
+        if r.y1 < STAMP_TOP - 2 and r.width > 250 and r.height > 100:
+            if not (r.width > 500 and r.height > 700):  # page background fill
+                return True
+    return False
+
+
+def _chapter_anchor_stats(doc: pymupdf.Document) -> list[dict]:
+    """Per TOC level-2 section: visual anchors and the longest run of pages
+    without one (BOOK_REDESIGN_SPEC 11: 每章锚点与最大无图区间)."""
+    sections = [(page, title) for lvl, title, page in doc.get_toc() if lvl == 2]
+    if not sections:
+        sections = [(page, title) for lvl, title, page in doc.get_toc()]
+    anchors = [
+        _has_visual_anchor(doc[i]) and i + 1 or 0 for i in range(doc.page_count)
+    ]
+    stats = []
+    for idx, (start, title) in enumerate(sections):
+        end = sections[idx + 1][0] - 1 if idx + 1 < len(sections) else doc.page_count
+        if end < start:
+            continue
+        span = range(start, end + 1)
+        count = sum(1 for p in span if anchors[p - 1])
+        worst = run = 0
+        for p in span:
+            run = 0 if anchors[p - 1] else run + 1
+            worst = max(worst, run)
+        stats.append(
+            {
+                "title": title[:40],
+                "pages": end - start + 1,
+                "anchors": count,
+                "max_fig_free_pages": worst,
+            }
+        )
+    return stats
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", type=Path, help="write the full report here")
+    parser.add_argument("--lang", choices=("zh", "en"), help="audit only one language")
     parser.add_argument("--max-gap-pages", type=int, default=None,
                         help="fail if more pages than this have a bottom gap over 150pt")
+    parser.add_argument("--min-anchors", type=int, default=None,
+                        help="fail if any TOC section carries fewer visual anchors")
+    parser.add_argument("--max-fig-free-pages", type=int, default=None,
+                        help="fail if any TOC section has a longer figure-free page run")
     args = parser.parse_args(argv)
 
     reports = []
     failed = False
     for path, lang in PDFS:
+        if args.lang and lang != args.lang:
+            continue
         if not path.exists():
             print(f"{lang}: missing {path}")
             failed = True
@@ -164,15 +222,37 @@ def main(argv: list[str] | None = None) -> int:
         report = scan(path)
         reports.append(report)
         gaps = report["summary"]["bottom_gap"]
+        hard = sum(
+            report["summary"][k]
+            for k in ("margin_overflow", "orphan_heading", "caption_orphan", "near_blank")
+        )
+        stats = report["chapters"]
+        thin = [c for c in stats if args.min_anchors is not None and c["anchors"] < args.min_anchors]
+        longfree = [
+            c for c in stats
+            if args.max_fig_free_pages is not None and c["max_fig_free_pages"] > args.max_fig_free_pages
+        ]
         print(
             f"{lang}: {report['pages']}p  gaps>150pt={gaps} "
             f"{report['gap_bands']}  overflow={report['summary']['margin_overflow']} "
             f"orphan_h={report['summary']['orphan_heading']} "
             f"caption_orphan={report['summary']['caption_orphan']} "
-            f"near_blank={report['summary']['near_blank']}"
+            f"near_blank={report['summary']['near_blank']}  "
+            f"anchors[min={min((c['anchors'] for c in stats), default=0)} "
+            f"max_free={max((c['max_fig_free_pages'] for c in stats), default=0)}]"
         )
         if args.max_gap_pages is not None and gaps > args.max_gap_pages:
             failed = True
+        if hard:
+            failed = True
+        if thin:
+            failed = True
+            for c in thin:
+                print(f"  {lang} thin anchors: {c['title']} ({c['anchors']})")
+        if longfree:
+            failed = True
+            for c in longfree:
+                print(f"  {lang} long figure-free run: {c['title']} ({c['max_fig_free_pages']}p)")
     if args.json:
         args.json.write_text(
             json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8"
