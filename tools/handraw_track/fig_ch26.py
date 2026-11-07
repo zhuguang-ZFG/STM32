@@ -125,12 +125,69 @@ def timeout_poll():
     return f
 
 
+def irq_no_callback():
+    f = Fig("ch26-irq-no-callback", "SPL 中断：没有回调替你分发 / no callback layer")
+    f.text(96, 128, "学习目标原话：SPL 中断没有 HAL 回调，必须在 IRQHandler 中检查并清除标志",
+           size=20, color=MUTED)
+    # 左：HAL 车道
+    f.rect(90, 156, 460, 330, color=BLUE, fill=WHITE)
+    f.text(110, 190, "HAL：库替你分发", size=23, color=BLUE_D, weight="bold")
+    f.rect(130, 210, 380, 46, color=BLUE_D, fill=WHITE, sw=2.0)
+    f.text(320, 240, "EXTI0_IRQHandler", size=20, color=INK, anchor="middle")
+    f.arrow(320, 256, 320, 276, color=MUTED, sw=2.2, head=8)
+    f.rect(130, 280, 380, 46, color=BLUE_D, fill=WHITE, sw=2.0)
+    f.text(320, 310, "HAL_GPIO_EXTI_Callback()", size=19, color=INK,
+           anchor="middle")
+    f.arrow(320, 326, 320, 346, color=MUTED, sw=2.2, head=8)
+    f.rect(130, 350, 380, 46, color=BLUE_D, fill=WHITE, sw=2.0)
+    f.text(320, 380, "你的代码在回调里跑", size=20, color=INK, anchor="middle")
+    f.text(110, 430, "事件由库一路转发到回调", size=18, color=MUTED)
+    # 右：SPL 车道
+    f.rect(610, 156, 460, 330, color=GREEN, fill=WHITE)
+    f.text(630, 190, "SPL：没有回调替你分发", size=23, color=GREEN_D,
+           weight="bold")
+    f.rect(650, 210, 380, 46, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(840, 240, "EXTI0_IRQHandler（stm32f10x_it.c）", size=18, color=INK,
+           anchor="middle")
+    f.arrow(840, 256, 840, 276, color=MUTED, sw=2.2, head=8)
+    f.text(858, 272, "① 查真实来源", size=18, color=RED, weight="bold")
+    f.rect(650, 280, 380, 46, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(840, 310, "EXTI_GetITStatus(EXTI_Line0)", size=19, color=INK,
+           anchor="middle")
+    f.arrow(840, 326, 840, 346, color=MUTED, sw=2.2, head=8)
+    f.text(858, 342, "② 清挂起", size=18, color=RED, weight="bold")
+    f.rect(650, 350, 380, 46, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(840, 380, "EXTI_ClearITPendingBit(EXTI_Line0)", size=18, color=INK,
+           anchor="middle")
+    f.arrow(840, 396, 840, 416, color=MUTED, sw=2.2, head=8)
+    f.text(858, 412, "③ 只交接事件", size=18, color=RED, weight="bold")
+    f.rect(650, 420, 380, 46, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(840, 450, "g_key_event = 1U（事件给主循环）", size=19, color=INK,
+           anchor="middle")
+    # 下：对账清单
+    f.text(90, 522, "必须逐项对账：", size=22, color=INK, weight="bold")
+    checks = [
+        (90, 538, AMBER_STROKE, "EXTI_Init 只配线；端口映射要", "GPIO_EXTILineConfig()"),
+        (596, 538, BLUE_D, "NVIC 分组与通道", "NVIC_PriorityGroupConfig() + NVIC_Init()"),
+        (90, 606, RED, "向量可能共用", "IRQHandler 必须查真实来源"),
+        (596, 606, MUTED, "清除规则按外设不同", "ORE：读 SR 再读 DR"),
+    ]
+    for x, y, c, t, d in checks:
+        f.rect(x, y, 486, 58, color=c, fill=WHITE, sw=2.2)
+        f.text(x + 18, y + 24, t, size=17, color=c, weight="bold")
+        f.text(x + 18, y + 46, d, size=17, color=INK)
+    f.htext(W / 2, 700, "ISR 只交接事件：不做阻塞发送、完整 I2C 事务、Flash 擦除或长延时",
+            size=22, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch26-four-layers": four_layers,
     "ch26-defines": defines,
     "ch26-init-steps": init_steps,
     "ch26-spl-hal": spl_hal,
     "ch26-timeout-poll": timeout_poll,
+    "ch26-irq-no-callback": irq_no_callback,
 }
 
 if __name__ == "__main__":

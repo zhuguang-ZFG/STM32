@@ -104,6 +104,11 @@ The pin name is not `PA0`. It is the key in the Wokwi board file. The source is
 | `B6` / `B7` | PB6 / PB7 = I2C1 | i2c-oled |
 | `GND.1` `3V3.1` | ground / 3.3 V | every external part |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch22-pin-alias.png" width="760" alt="Handraw: Wokwi key names mapped to chip pins (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Seven key-name pairs: C13→PC13 (on-board LED, lit when low), A0→PA0, A1/A4→PA1/PA4, A6→PA6 = TIM3_CH1, A9/A10→PA9/PA10 = USART1, B6/B7→PB6/PB7 = I2C1, GND.1/3V3.1→ground/3.3 V; write PA0 and the diagram will not connect; not a photo.</sub>
+</p>
+
 The on-board LED is already soldered to PC13, so a blink lab can flash without drawing another LED. The `gpio-blink` diagram also draws the external LED on PA0, which is the second lamp in that example.
 
 ### Each core example has its own diagram

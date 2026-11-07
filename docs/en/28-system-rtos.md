@@ -274,6 +274,12 @@ A mapping is not equivalence:
 
 Prefer creating long-lived production objects statically during initialization. If objects truly have dynamic lifetimes, define who allocates, who frees, how failure rolls back, and how a double free is detected. Returning empty data after `malloc` fails hides resource exhaustion; it is not recovery.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-memory-regions.png" width="760" alt="Handraw: five memory regions, five risk lists (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Thread stacks, kernel pools, the C heap, DMA buffers and persistent storage each carry their own risks and verification; returning empty data on malloc failure hides exhaustion; not a photo.</sub>
+</p>
+
+
 ## FreeRTOS V11.3.2: a compact kernel; compose the system
 
 This chapter freezes **FreeRTOS Kernel V11.3.2**. The kernel supplies tasks, queues, mutexes, semaphores, notifications, event groups, software timers, and several heap implementations. It neither requires a device model nor supplies STM32 drivers, a shell, or a filesystem automatically.

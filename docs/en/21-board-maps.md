@@ -294,6 +294,11 @@ void Chip_PrintIdentity(void)
 
 > Redirect `printf` first ([chapter 06](06-uart.md) and [chapter 17](17-debug.md)). If the **Flash size does not match the marking** (a C8 that reports 128 KB), you usually have a compatible chip or a remarked clone. **Device id `0x410` is a medium-density F103.** Any other value belongs in the Device ID table of RM0008.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-fake-id.png" width="760" alt="Handraw: clone check, silkscreen vs registers (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). The silkscreen can lie: a CS32F103/APM32 inside a C8T6 skin, 128 KB marked over 64 KB, a missing LSE (RTC will not run), a hot cheap LDO. The registers cannot: Device ID @ 0xE0042000 should read 0x410, Flash size @ 0x1FFFF7E0 (low 16 bits) should read 64 KB on a genuine C8, the UID @ 0x1FFFF7E8 is 96 bits in 3 words; when marking and manual disagree, the identity record is the verdict; not a photo.</sub>
+</p>
+
 ## Pitfalls and troubleshooting
 
 

@@ -309,6 +309,11 @@ void EXTI0_IRQHandler(void)
 - 清除规则按外设不同：有的写专用清除位，有的要求读状态再读数据。USART 的 ORE 仍遵守“读 SR 再读 DR”，不能用一个看起来相似的 Clear 函数代替。
 - ISR 不做阻塞发送、I2C 完整事务、Flash 擦除或长延时；只保存最小证据并交给主循环/任务。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-irq-no-callback.png" width="760" alt="Handraw：SPL 中断没有回调替你分发（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。HAL 走 IRQHandler → HAL_GPIO_EXTI_Callback()；SPL 直接在 stm32f10x_it.c 的 IRQHandler 里查真实来源、清挂起、只交接事件；向量可能共用，ORE 读 SR 再读 DR；不是实拍。</sub>
+</p>
+
 ## 7. DMA 模型：SPL 不会自动把两个驱动绑在一起
 
 以 USART1 TX 为例，至少要完成三件事：

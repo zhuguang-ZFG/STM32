@@ -104,6 +104,11 @@
 | `B6` / `B7` | PB6 / PB7 = I2C1 | i2c-oled |
 | `GND.1` `3V3.1` | 地 / 3.3 V | 所有外接零件 |
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch22-pin-alias.png" width="760" alt="Handraw：Wokwi 键名对照芯片的脚（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。七组键名对照：C13→PC13（板载灯，低电平亮）、A0→PA0、A1/A4→PA1/PA4、A6→PA6=TIM3_CH1、A9/A10→PA9/PA10=USART1、B6/B7→PB6/PB7=I2C1、GND.1/3V3.1→地/3.3 V；写成 PA0 这样的芯片名，图会接不上；不是实拍。</sub>
+</p>
+
 板载灯已经焊在 PC13 上，点灯实验不用再画一颗灯也能看到闪。`gpio-blink` 的图额外画了 PA0 那颗外接灯，对应示例里的第二盏。
 
 ### 核心示例各有一份图

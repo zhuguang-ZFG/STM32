@@ -168,6 +168,61 @@ def sim_verdict():
     return f
 
 
+def pin_alias():
+    f = Fig("ch22-pin-alias", "Wokwi 键名 → 芯片的脚 / board.json pin aliases")
+    f.text(W / 2, 128, "图里的名字是 Wokwi 板文件里的键，写成 PA0 这样的芯片名，图会接不上",
+           size=21, color=MUTED, anchor="middle")
+
+    # ---- 三列表头 ----
+    f.text(230, 166, "Wokwi 键名", size=19, color=BLUE_D, anchor="middle",
+           weight="bold")
+    f.text(560, 166, "芯片的脚", size=19, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(940, 166, "本仓库谁在用", size=19, color=MUTED, anchor="middle",
+           weight="bold")
+
+    # ---- 七组键名对照（与正文映射表逐行一致）----
+    rows = [
+        ("C13", "PC13 板载灯 · 低电平亮", "gpio-blink", True),
+        ("A0", "PA0", "gpio-blink 外接灯、\nexti-key 按键、adc 通道 0", False),
+        ("A1 / A4", "PA1 / PA4", "adc-dma", False),
+        ("A6", "PA6 = TIM3_CH1", "timer-pwm", False),
+        ("A9 / A10", "PA9 / PA10 = USART1", "uart-dma-idle（串口监视器）", False),
+        ("B6 / B7", "PB6 / PB7 = I2C1", "i2c-oled", False),
+        ("GND.1 / 3V3.1", "地 / 3.3 V", "所有外接零件", False),
+    ]
+    y = 184
+    for key, pin, who, hot in rows:
+        fill = AMBER_FILL if hot else WHITE
+        ckey = AMBER_STROKE if hot else BLUE_D
+        cpin = AMBER_STROKE if hot else GREEN_D
+        f.rect(120, y, 220, 48, color=ckey, fill=fill, sw=2.2, double=False)
+        f.text(230, y + 31, key, size=19, color=ckey, anchor="middle",
+               weight="bold")
+        f.arrow(348, y + 24, 400, y + 24, color=INK, sw=2.2, bend=0.0, head=9)
+        f.rect(408, y, 304, 48, color=cpin, fill=fill, sw=2.2, double=False)
+        f.text(560, y + 31, pin, size=19, color=INK, anchor="middle",
+               weight="bold")
+        if "\n" in who:
+            a, b = who.split("\n")
+            f.text(760, y + 20, a, size=17, color=MUTED)
+            f.text(760, y + 40, b, size=17, color=MUTED)
+        else:
+            f.text(760, y + 31, who, size=18, color=MUTED)
+        y += 56
+
+    # ---- 下：机制与出处 ----
+    f.panel(90, 606, 970, 96, AMBER_FILL)
+    f.rect(90, 606, 970, 96, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 644, "写成 PA0 这样的芯片名，图会接不上 —— 图里只认 C13、A0 这样的键",
+           size=23, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 680, "板载灯已焊在 PC13、低电平亮；再外接一颗，要分清看的是哪一颗",
+           size=18, color=MUTED, anchor="middle")
+    f.text(W / 2, 736, "出处：wokwi-boards 的 boards/stm32-bluepill/board.json",
+           size=19, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch22-sim-compare": sim_compare,
     "ch22-wokwi-scope": wokwi_scope,
@@ -175,6 +230,7 @@ FIGS = {
     "ch22-sim-triage": sim_triage,
     "ch22-hw-gap": hw_gap,
     "ch22-sim-verdict": sim_verdict,
+    "ch22-pin-alias": pin_alias,
 }
 
 

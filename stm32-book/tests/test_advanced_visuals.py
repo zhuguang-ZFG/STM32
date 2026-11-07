@@ -341,7 +341,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
-        14,
+        15,
         (
             "bluepill-stm32f103c8t6.svg",
             "sample-21-crystal-boot-flow.svg",
@@ -357,10 +357,11 @@ CHAPTERS = {
             "ch21-minimal-five.png",
             "sample-21-nrst-boot0.svg",
             "ch21-nrst-boot0.png",
+            "ch21-fake-id.png",
         ),
     ),
     ROOT / "docs" / "23-STM32G0引脚.md": (
-        13,
+        14,
         (
             "pinout-stm32g071rb-lqfp64.svg",
             "ch23-part-id.png",
@@ -375,10 +376,11 @@ CHAPTERS = {
             "ch23-pin-compare.png",
             "sample-23-f1-copy-traps.svg",
             "ch23-pinmux.png",
+            "ch23-boot-tree.png",
         ),
     ),
     ROOT / "docs" / "24-STM32L4引脚.md": (
-        16,
+        17,
         (
             "pinout-stm32l476rg-lqfp64.svg",
             "ch24-part-id.png",
@@ -396,6 +398,7 @@ CHAPTERS = {
             "sample-24-idd-jp6.svg",
             "ch24-idd.png",
             "l4-idd-bench.svg",
+            "ch24-sleep-checklist.png",
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
@@ -421,7 +424,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (
-        15,
+        16,
         (
             "toolchain-flow.svg",
             "ch22-sim-verdict.png",
@@ -438,10 +441,11 @@ CHAPTERS = {
             "sample-22-hw-gap.svg",
             "ch22-hw-gap.png",
             "simulation-acceptance-gates.svg",
+            "ch22-pin-alias.png",
         ),
     ),
     ROOT / "docs" / "25-STM32H7引脚.md": (
-        17,
+        18,
         (
             "pinout-stm32h743zi-lqfp144.svg",
             "ch25-part-id.png",
@@ -460,10 +464,11 @@ CHAPTERS = {
             "sample-25-migrate-triage.svg",
             "sample-25-dcache-dma.svg",
             "network-cache-ownership.svg",
+            "ch25-vcap-caps.png",
         ),
     ),
     ROOT / "docs" / "26-STM32F10x标准外设库SPL.md": (
-        14,
+        15,
         (
             "spl-ownership-boundary.svg",
             "ch26-four-layers.png",
@@ -479,10 +484,11 @@ CHAPTERS = {
             "ch26-timeout-poll.png",
             "nvic-interrupt-flow.svg",
             "dma-circular.svg",
+            "ch26-irq-no-callback.png",
         ),
     ),
     ROOT / "docs" / "27-网络与协议栈.md": (
-        15,
+        16,
         (
             "network-packet-journey.svg",
             "sample-27-rmii-checklist.svg",
@@ -499,10 +505,11 @@ CHAPTERS = {
             "sample-27-link-triage.svg",
             "ch27-backoff.png",
             "network-debug-ladder.svg",
+            "ch27-tls-prereqs.png",
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        21,
+        22,
         (
             "rtos-system-layers.svg",
             "sample-28-four-concepts.svg",
@@ -525,6 +532,7 @@ CHAPTERS = {
             "sample-28-supervisor-flow.svg",
             "sample-28-fault-triage.svg",
             "ch28-fault-triage.png",
+            "ch28-memory-regions.png",
         ),
     ),
 }

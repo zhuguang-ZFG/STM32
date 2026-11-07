@@ -130,6 +130,11 @@ Keep three boundaries attached to this table:
 2. `nBOOT_SEL=0` selects PA14; `=1` selects the `nBOOT0/nBOOT1` path. Factory defaults do not replace field readback because a bootloader, old project, or production step may have changed them.
 3. If Main Flash is selected while the empty-flash checker finds the user area empty, the device can enter the system bootloader instead. This additional DS12232/AN2606 path means “Main in the table” does not guarantee execution from 0x08000000 on an empty device.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch23-boot-tree.png" width="760" alt="Handraw: G0x1 boot decision tree（原理示意）">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). BOOT_LOCK=1 forces Main Flash; nBOOT_SEL=0 reads PA14, =1 reads nBOOT0/nBOOT1; nBOOT1=1 System memory, =0 Embedded SRAM; an empty user area can still enter the bootloader; not a photo.</sub>
+</p>
+
 ### Shared-pin hardware: stable sampling and debug drive must coexist
 
 

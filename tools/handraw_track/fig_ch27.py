@@ -202,6 +202,43 @@ def pbuf_chain():
     return f
 
 
+
+def tls_prereqs():
+    f = Fig("ch27-tls-prereqs",
+            "TLS：能握手不等于安全 / a successful handshake is not security")
+
+    # ---- 上：四个前提门 ----
+    f.text(84, 126, "TLS 客户端四个前提：缺一个，身份或保密就塌一角",
+           size=22, color=MUTED)
+    gates = [(84, "受信 CA", "证书链要能验到根"),
+             (352, "主机名匹配", "set_hostname 一致"),
+             (620, "可靠随机数", "CTR_DRBG 真实熵源"),
+             (888, "可信时间", "证书有效期才判得了")]
+    for x, title, sub in gates:
+        f.rect(x, 168, 180, 110, color=BLUE_D, fill=WHITE, sw=2.6)
+        f.multi(x + 14, 196, [title, sub], size=19, color=BLUE_D, weight="bold", lh=30)
+
+    # ---- 中：VERIFY_NONE 陷阱 ----
+    f.rect(84, 320, 984, 170, color=RED, fill=WHITE, sw=2.6)
+    f.text(104, 352, "陷阱：认证模式关掉（VERIFY_NONE）", size=22, color=RED, weight="bold")
+    f.multi(104, 388,
+            ["握手照样成功 —— 但只证明加密通道建立了",
+             "服务器身份没有任何人担保：仿冒服务器也能握手成功",
+             "时间没建立之前，证书有效期根本判断不了"],
+            size=19, color=INK, lh=30)
+
+    # ---- 下：生产不变量 ----
+    f.rect(84, 530, 984, 160, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.multi(104, 560,
+            ["生产不变量：VERIFY_REQUIRED + set_hostname 验证证书链",
+             "CTR_DRBG 由真实熵源播种（硬件 RNG 也要健康检测）",
+             "私钥不进 Git、不进日志；量产设备唯一凭据，规划吊销与轮换",
+             "证书错误别无限快速重试；区分 close_notify / reset / 超时"],
+            size=19, color=INK, lh=30)
+    f.text(104, 748, "真正的证据：认证模式、验证结果、协商版本与对端身份 —— 不是端口",
+           size=20, color=GREEN_D, weight="bold")
+    return f
+
 FIGS = {
     "ch27-rmii-signals": rmii_signals,
     "ch27-cache-dma": cache_dma,
@@ -209,6 +246,7 @@ FIGS = {
     "ch27-tcp-framing": tcp_framing,
     "ch27-backoff": backoff,
     "ch27-pbuf-chain": pbuf_chain,
+    "ch27-tls-prereqs": tls_prereqs,
 }
 
 if __name__ == "__main__":
