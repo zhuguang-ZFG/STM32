@@ -269,6 +269,11 @@ VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 真实 V_in = ADC_Read(ch) × VDDA / 4096
 ```
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-vrefint-cal.png" width="760" alt="Handraw：Vrefint 反推真实 VDDA（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上面一串是从读到修的链条——ADC1 通道 17 接片内约 1.20 V 的固定基准（先置 TSVREFE），读出码值按 VDDA = 1.20 V × 4096 ÷ code 反推，再用这个 VDDA 换算别的通道；中间是同一把尺的两种长度：VDDA 名义 3.3 V 时码 2048 对应 1.65 V，若 CH17 自己只读出 2048，说明 VDDA 实际只有 2.40 V，此时 2048 只对应 1.20 V，1 LSB 也从 0.806 mV 变成 0.586 mV。证明什么：换算式里的 VDDA 不是常数，先量尺子再读数，顺序不能反。不能证明什么：1.20 V 是典型值不是单片校准值，F103C8 上没有 F4 那样的出厂 VREFINT_CAL；ADC2 的通道 16/17 接 VSS，Vrefint 只能从 ADC1 读。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。</sub>
+</p>
+
 > F4/L4 等系列提供**出厂校准值** `TS_CAL1`(30°C)/`TS_CAL2`(110°C) 与 `VREFINT_CAL`，存于系统存储区，直接读取即可，精度远高于查典型值。
 
 ### 6. DAC 输出模式、缓冲器与噪声

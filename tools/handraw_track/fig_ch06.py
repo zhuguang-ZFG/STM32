@@ -82,8 +82,85 @@ def ore_fe():
     return f
 
 
+def sample_points():
+    f = Fig("ch06-sample-points",
+            "16 倍过采样：起始位问 3、5、7，表决看 8、9、10 / sample points in one bit")
+
+    f.text(84, 136, "RX 空闲为高。下降沿一到，接收器按 16 倍波特率数采样点：一位 16 格",
+           size=20, color=MUTED)
+
+    # ---- 上：起始位放大，16 格与确认/表决点 ----
+    f.text(84, 178, "起始位：先确认，再表决（放大看）", size=21, color=GREEN_D,
+           weight="bold")
+    hi, lo = 210, 272
+    # 毛刺（撑不满一位）→ 空闲 → 真正的起始位（16 格）→ 下一位
+    f.stroke([(84, hi), (150, hi), (150, lo), (205, lo), (205, hi),
+              (420, hi), (420, lo), (820, lo), (820, hi), (1064, hi)],
+             color=BLUE_D, sw=3.2, amp=1.0)
+    f.text(177, 318, "毛刺", size=16, color=RED, anchor="middle", weight="bold")
+    f.text(84, 346, "毛刺：3/5/7 已回高 → 丢弃", size=17, color=RED,
+           weight="bold")
+    # 16 个格子编号
+    for k in range(1, 17):
+        cx = 420 + (k - 1) * 25 + 12.5
+        f.text(cx, 300, str(k), size=13, color=MUTED, anchor="middle")
+    # 确认点 3/5/7（绿）与表决点 8/9/10（蓝），都压在低电平线上
+    for k in (3, 5, 7):
+        f.circle(420 + (k - 1) * 25 + 12.5, lo, 7, color=GREEN_D, fill=GREEN)
+    for k in (8, 9, 10):
+        f.circle(420 + (k - 1) * 25 + 12.5, lo, 7, color=BLUE_D, fill=BLUE)
+    f.text(545, 346, "3、5、7 都是 0 → 起始位确认", size=17, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.text(632, 372, "8、9、10 三点表决：落在位中间", size=17, color=BLUE_D,
+           anchor="middle", weight="bold")
+    f.text(942, 196, "下一位起：数据位", size=15, color=MUTED, anchor="middle")
+
+    # ---- 中：一帧 10 位，色条 = 采样点落点 ----
+    f.text(84, 436, "一帧 10 位，每位 16 格：色条 = 采样点落点", size=21,
+           color=INK, weight="bold")
+    names = ["起", "D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "停"]
+    for i, nm in enumerate(names):
+        cx = 84 + i * 92
+        f.rect(cx, 458, 88, 60, color=INK, fill=WHITE, sw=2.0)
+        f.text(cx + 44, 480, nm, size=17, color=INK, anchor="middle",
+               weight="bold")
+        # 16 格的细刻度
+        for j in range(1, 16):
+            f.line(cx + j * 5.5, 488, cx + j * 5.5, 514, color=MUTED, sw=0.8,
+                   amp=0.3, opacity=0.25)
+        if i == 0:
+            # 起始位：3/5/7 确认条 + 8/9/10 表决条
+            f.rect(cx + 11, 490, 27.5, 18, color=GREEN_D, fill=GREEN, sw=1.6,
+                   r=2, double=False)
+        f.rect(cx + 38.5, 490, 16.5, 18, color=AMBER_STROKE, fill=AMBER_FILL,
+               sw=1.6, r=2, double=False)
+    f.text(84, 546, "绿条：起始位确认点（3、5、7）", size=17, color=GREEN_D,
+           weight="bold")
+    f.text(360, 546, "琥珀条：表决点（8、9、10）= 位中间", size=17,
+           color=AMBER_STROKE, weight="bold")
+
+    # ---- 下：过采样档位与时间账 ----
+    f.rect(84, 590, 552, 96, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(100, 622, "F103 固定 16 倍过采样", size=20, color=GREEN_D,
+           weight="bold")
+    f.multi(100, 652, ["CR1 位 31:14 保留，没有 OVER8 位", "想用 8 倍过采样得换系列"],
+            size=17, color=INK, lh=26)
+
+    f.rect(664, 590, 400, 96, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(680, 622, "115200 8N1 的时间账", size=20, color=BLUE_D,
+           weight="bold")
+    f.multi(680, 652, ["一位约 8.68 µs；一帧 10 位约 86.8 µs",
+                       "16 倍时钟把每位切成 16 格"],
+            size=17, color=INK, lh=26)
+
+    f.htext(84, 716, "口诀：起始位先问 3、5、7，数据与停止位看 8、9、10",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch06-ore-fe": ore_fe,
+    "ch06-sample-points": sample_points,
 }
 
 if __name__ == "__main__":

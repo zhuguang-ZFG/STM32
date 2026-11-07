@@ -90,8 +90,65 @@ def arb_ladder():
     return f
 
 
+def filter_mask():
+    f = Fig("ch13-filter-mask",
+            "掩码逐位打分，列表精确点名 / mask grades bit by bit, list names exact IDs")
+
+    f.text(84, 138, "两种配法：掩码模式逐位打分，列表模式精确点名；标准 ID 还要左移 5 位放对位置",
+           size=21, color=MUTED)
+
+    # ---- 左：掩码模式 ----
+    f.rect(84, 168, 480, 216, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(100, 200, "掩码模式：逐位打分", size=22, color=BLUE_D, weight="bold")
+    f.multi(100, 238, ["掩码位 = 1 → 这一位必须相同",
+                       "掩码位 = 0 → 这一位不关心"], size=19, color=INK, lh=30)
+    f.multi(100, 306, ["本章例：掩码 0x7FF << 5",
+                       "→ 11 位 ID 全部必须匹配"], size=18, color=BLUE_D, lh=28)
+
+    # ---- 右：列表模式 ----
+    f.rect(596, 168, 468, 216, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(612, 200, "列表模式：精确点名", size=22, color=GREEN_D, weight="bold")
+    f.multi(612, 238, ["只收写进过滤器的 ID，一位都不能差",
+                       "32 位位宽：一个完整 ID（标准+扩展）",
+                       "16 位位宽：两个标准 ID",
+                       "命中的报文进绑定的 FIFO0/FIFO1"], size=18, color=INK, lh=30)
+
+    # ---- 中下：0x123 << 5 的位条 ----
+    f.text(84, 424, "标准 ID 写进 FilterIdHigh：0x123 << 5 = 0x2460", size=21,
+           color=INK, weight="bold")
+    bits = [0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0]   # 0x2460, b15..b0
+    for i, b in enumerate(bits):
+        cx = 84 + i * 52
+        if i < 11:
+            f.rect(cx, 452, 46, 46, color=AMBER_STROKE, fill=AMBER_FILL, sw=1.8)
+            f.text(cx + 23, 483, str(b), size=19, color=INK, anchor="middle",
+                   weight="bold")
+        else:
+            f.rect(cx, 452, 46, 46, color=MUTED, fill=GRAY_FILL, sw=1.4)
+            f.text(cx + 23, 483, str(b), size=19, color=MUTED, anchor="middle")
+    f.text(367, 442, "0x123 的 11 位 ID（001 0010 0011）", size=15, color=MUTED,
+           anchor="middle")
+    f.text(783, 442, "左移补的 5 个 0", size=15, color=MUTED, anchor="middle")
+    f.text(84, 524, "位放对了，掩码才逐位比得起来", size=18, color=MUTED)
+
+    # ---- 不左移的下场 ----
+    f.rect(84, 552, 980, 96, color=RED, fill=WHITE, sw=2.4)
+    f.text(104, 584, "不左移：位置全错，掩码一位都对不上", size=21, color=RED,
+           weight="bold")
+    f.multi(104, 616, ["总线上明明有帧，邮箱却一直是空的",
+                       "本章写入：FilterIdHigh = 0x123 << 5，FilterMaskIdHigh = 0x7FF << 5"],
+            size=18, color=INK, lh=26)
+
+    f.htext(84, 690, "掩码定「哪些位必须一样」，左移定「ID 放哪」——两处都对，邮箱才有帧",
+            size=23, color=INK, weight="bold", hl=True)
+    f.text(84, 730, "例值 0x123 / 0x7FF 取自本章例程；图为匹配行为示意，未画全部 32 位位域。",
+           size=18, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch13-arb-ladder": arb_ladder,
+    "ch13-filter-mask": filter_mask,
 }
 
 if __name__ == "__main__":

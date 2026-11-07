@@ -42,6 +42,11 @@ The frame and baud numbers in this chapter are for the STM32F103C8T6 in LQFP48. 
 
 The F103 receiver samples with a clock at 16 times the baud rate, so each bit is sampled 16 times. The stop bit is decided by a majority vote of samples 8, 9, and 10. The start bit is checked at those three and also at samples 3, 5, and 7, which filters out glitches on the line; see [RM0008 27.3.3](#source-rm0008-usart). Data bits also use the middle three samples.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-sample-points.png" width="760" alt="Handraw: where the 16x oversampling points sit (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). RX idles high; after the falling edge the receiver counts samples at 16 times the baud rate: the start bit is confirmed at samples 3, 5, and 7 to filter glitches, then decided by the 8/9/10 majority vote; data and stop bits use the middle three samples. At 115200 8N1 one bit is about 8.68 µs. The F103 is fixed at 16x oversampling and CR1 has no OVER8 bit. Source: [RM0008 27.3.3](#source-rm0008-usart).</sub>
+</p>
+
 The peripheral clock is divided to produce the baud rate. At 16× oversampling, `USARTDIV = fPCLK / (16 × baud)`. For USART1 at PCLK2=72 MHz and 115200 baud, `72e6 / (16 × 115200) = 39.0625`. The integer 39 is 0x27 and the fraction is `0.0625 × 16 = 1`, giving BRR=`0x271`. `USART_BRR` is at offset `0x08`, with the fraction in its low 4 bits.
 
 Working back, `72e6 / (16 × 39.0625) = 115200`: the divider error is 0, the same operating point used in Appendix D. The familiar error of about 0.16% belongs to another configuration: USART2 on APB1=36 MHz with BRR=`0x138`, or a 72 MHz calculation that drops the fraction and uses 39 alone. That is not what writing `0x271` does. Zero rounding error does not remove the external clock's frequency error.

@@ -42,6 +42,11 @@ This chapter uses the STM32F103C8T6. The IWDG runs from its independent on-chip 
 
 The calculation is `T = 64 / 40000 × (624 + 1) = 1` s. Writing Reload=625 adds a tick, giving `(625 + 1) / 625` s. With the prescaler and reload unchanged, the datasheet endpoints give `64 / 30000 × 625 = 4/3` s at 30 kHz and `64 / 60000 × 625 = 2/3` s at 60 kHz. The latter is exactly half the former. Appendix D says "about half" to retain the distinction between range endpoints and measurements of one chip. Its longest setting, about 26 s, is likewise not a guaranteed maximum timeout. The IWDG has no early-feed window: refreshing before timeout does not reset it for feeding early. See [RM0008 Rev 21 chapter 19](#source-rm0008-wdg) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-lsi-drift.png" width="760" alt="Handraw: LSI drift swings the IWDG 1 s timeout between 2/3 and 4/3 s (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Prescaler 64 and Reload 624 unchanged; LSI 30 kHz → 4/3 s, 40 kHz → 1 s nominal, 60 kHz → 2/3 s, the last exactly half the first; leave margin across the 30–60 kHz range; not a photo.</sub>
+</p>
+
 The window watchdog (WWDG) is different: it resets on an early feed and on a late one. With PCLK1 = 36 MHz, prescaler 8, and the counter starting at `0x7F`, the timeout is `(1/36e6) × 4096 × 8 × 64 = 58.25` ms. With the window at `0x50`, feeding while the counter is still above `0x50` resets at once.
 
 <p align="center">

@@ -199,6 +199,11 @@ After the mapping table, DMA stalls on the F103 also fall into a fixed three bra
 
 Setting up DMA means answering a few questions. Peripheral to memory, or the other way? Stop after one round, or wrap to the start and keep going? After each item, should the source and destination addresses move on? How many bytes per item? A peripheral data register has only one address, so the peripheral side stays put while the memory side moves on. That is the most common combination.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-request-beat.png" width="760" alt="Handraw: the handshake of one DMA transfer beat (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top row is one beat in order — the peripheral raises one request each time it is ready (USART1_RX sets RXNE on every received byte, and CR3.DMAR=1 lets it through), the request rides the hard-wired line to DMA1 channel 5 (not 4 or 6), simultaneous requests are arbitrated by the fixed channel priority plus the software priority, and then DMA reads CPAR once, writes CMAR once, and decrements CNDTR by 1. The middle row is the three elements: the peripheral address never moves (a peripheral register has one address), the memory address steps on by one item each beat, and CNDTR counts items of the configured width, minus 1 per beat; configure in the order CPAR → CMAR → CNDTR → CCR, with EN last. The bottom row closes the lap: when CNDTR reaches 0, normal mode stops with TC and circular mode reloads and keeps going; the moving is done by the DMA master on AHB while the CPU keeps computing. What it proves: configure once, handshake forever — every beat is triggered by a peripheral request and moves one item. What it does not prove: the request map, direction, and width still have to be checked against the RM0008 map and the real peripheral; the F4 streams and FIFO are not covered. Source: [RM0008 Rev 21 ch.13](#source-rm0008-dma).</sub>
+</p>
+
 | Mode / setting | Key bits | What it means |
 | --- | --- | --- |
 | Peripheral → memory | `DIR=0` (F4) / `CCR.DIR` | ADC or UART_RX into an array |

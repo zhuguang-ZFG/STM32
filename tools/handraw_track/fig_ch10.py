@@ -73,8 +73,70 @@ def channel_map():
     return f
 
 
+def request_beat():
+    """One transfer beat: request -> arbitrate -> move one item -> count down."""
+    f = Fig("ch10-request-beat",
+            "一拍搬运：请求来了才动 / one request, one item")
+
+    f.text(84, 132, "DMA 平时不动：外设每就绪一次，它才走一拍——请求、仲裁、搬运、记账",
+           size=21, color=MUTED)
+
+    beats = [
+        (84, 216, GREEN_D, "① 外设就绪",
+         ["USART1_RX 收到 1 字节", "RXNE 置 1", "CR3.DMAR=1 才放行"]),
+        (324, 216, BLUE_D, "② 请求上硬连线",
+         ["USART1_RX → DMA1 通道 5", "不是 4 也不是 6", "配错就永远等不到"]),
+        (564, 216, AMBER_STROKE, "③ 仲裁",
+         ["多通道同时请求时", "通道间固定优先级", "+ 软件优先级"]),
+        (804, 260, RED, "④ 搬一拍",
+         ["读一次 CPAR", "写一次 CMAR", "CNDTR 减 1"]),
+    ]
+    for x, w, col, title, lines in beats:
+        f.rect(x, 156, w, 140, color=col, fill=WHITE, sw=2.4)
+        f.text(x + 14, 186, title, size=20, color=col, weight="bold")
+        f.multi(x + 14, 214, lines, size=15, color=INK, lh=25)
+    f.arrow(302, 226, 322, 226, color=INK, sw=2.4, bend=0.0)
+    f.arrow(542, 226, 562, 226, color=INK, sw=2.4, bend=0.0)
+    f.arrow(782, 226, 802, 226, color=INK, sw=2.4, bend=0.0)
+
+    # ---- 中：三大要素 ----
+    f.text(84, 344, "启动前写好的三样，每一拍都绕着它们转：", size=21, color=INK)
+    regs = [
+        (84, 300, BLUE_D, "CPAR：外设地址",
+         ["外设寄存器只有一个地址", "整轮都不挪（PINC=0）", "配固定数据寄存器是正常配置"]),
+        (412, 300, GREEN_D, "CMAR：内存地址",
+         ["数组在内存里的位置", "每搬一项往后挪一格（MINC=1）", "内存那头往后挪"]),
+        (740, 324, RED, "CNDTR：剩余项数",
+         ["数的是配置宽度的项", "不是字节", "每搬一项减 1"]),
+    ]
+    for x, w, col, title, lines in regs:
+        f.rect(x, 368, w, 124, color=col, fill=WHITE, sw=2.4)
+        f.text(x + 14, 398, title, size=20, color=col, weight="bold")
+        f.multi(x + 14, 426, lines, size=15, color=INK, lh=24)
+
+    f.rect(84, 516, 980, 44, color=MUTED, fill=WHITE, sw=2.0)
+    f.text(102, 545, "配置顺序：CPAR → CMAR → CNDTR → CCR，EN 最后置 1，之后每个请求各搬各的",
+           size=17, color=INK)
+
+    # ---- 下：CPU 与收尾 ----
+    f.rect(84, 584, 470, 116, color=MUTED, fill=WHITE, sw=2.2)
+    f.text(100, 614, "搬运时 CPU 在干嘛", size=20, color=MUTED, weight="bold")
+    f.multi(100, 642, ["DMA 是 AHB 上的主设备，自己上总线", "CPU 继续算别的，一拍也不用等"],
+            size=15, color=INK, lh=24)
+
+    f.rect(594, 584, 470, 116, color=BLUE_D, fill=WHITE, sw=2.2)
+    f.text(610, 614, "CNDTR 减到 0 之后", size=20, color=BLUE_D, weight="bold")
+    f.multi(610, 642, ["普通模式：停下，产生 TC 中断", "循环模式：硬件重装，接着搬下一圈"],
+            size=15, color=INK, lh=24)
+
+    f.htext(84, 736, "外设不挪、内存 +1、计数 −1：等请求才动，动完接着等",
+            size=23, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch10-channel-map": channel_map,
+    "ch10-request-beat": request_beat,
 }
 
 if __name__ == "__main__":

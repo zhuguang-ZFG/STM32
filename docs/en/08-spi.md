@@ -46,6 +46,11 @@ To read the ID, the master sends `{0x9F, 0xFF, 0xFF, 0xFF}`. SPI is full duplex,
 
 When the three bytes do not match `0xEF 0x40 0x17`, the usual cause is MOSI and MISO swapped. Other causes: chip select never goes high, so the next command runs on from the last one; a Transmit that never reads MISO leaves an old byte in the receive register for the next read; CPHA set to the second edge shifts every byte by one bit.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-cs-bracket.png" width="760" alt="Handraw: chip-select bracket timing (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PA4 (pin 14) is a push-pull chip select: low starts the transaction, high ends it; CS falls before the first sampling edge and rises after the last falling edge. Some devices latch the byte only on the chip-select rising edge; with PA4 held low, the next command runs on from the last one. In Mode 0 SCK idles low and samples on the rising edge. Source: [RM0008 Rev 21 ch.25](#source-rm0008-spi) and [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
+</p>
+
 ## Key figures
 
 

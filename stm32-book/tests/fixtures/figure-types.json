@@ -2220,5 +2220,35 @@
   "type": "technical",
   "chapter": "05",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。"
+ },
+ "illustrations/handraw/ch09-vrefint-cal.png": {
+  "type": "calculation",
+  "chapter": "09",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CH17 读 Vrefint ≈1.20 V 反推 VDDA：VDDA = 1.20×4096÷code；再算真实 V_in；F103C8 无出厂 VREFINT_CAL；不是实拍。"
+ },
+ "illustrations/handraw/ch10-request-beat.png": {
+  "type": "technical",
+  "chapter": "10",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RXNE=1 且 DMAR=1 放行请求，DMA1 通道 5 一拍读 CPAR 写 CMAR、CNDTR 减 1；配置顺序 CPAR→CMAR→CNDTR→CCR；不是实拍。"
+ },
+ "illustrations/handraw/ch11-lsi-drift.png": {
+  "type": "calculation",
+  "chapter": "11",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI 30–60 kHz 使标称 1 s 的 IWDG 实际在 2/3–4/3 s 之间摆动（Reload 624 不变）；按范围留余量；不是单颗实测。"
+ },
+ "illustrations/handraw/ch13-filter-mask.png": {
+  "type": "technical",
+  "chapter": "13",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。掩码位=1 必须匹配；FilterIdHigh = 0x123<<5 = 0x2460，掩码 0x7FF<<5；不左移则邮箱一直空；不是实拍。"
+ },
+ "illustrations/handraw/ch06-sample-points.png": {
+  "type": "technical",
+  "chapter": "06",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。16 倍过采样：起始位第 3/5/7 点确认、数据与停止位取 8/9/10 三点表决；毛刺在 3/5/7 被滤掉；不是实拍。"
+ },
+ "illustrations/handraw/ch08-cs-bracket.png": {
+  "type": "technical",
+  "chapter": "08",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA4 括住一次事务：Mode 0 上升沿采样、8 拍一字节；CS 不拉高则两条命令粘成 16 拍；有的从机在上升沿才收下；不是实拍。"
  }
 }

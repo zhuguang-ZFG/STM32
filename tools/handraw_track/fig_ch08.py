@@ -94,8 +94,107 @@ def byte_exchange():
     return f
 
 
+def cs_bracket():
+    f = Fig("ch08-cs-bracket",
+            "片选是括号：先拉低，再给时钟，最后才拉高 / chip select brackets the transaction")
+
+    f.text(84, 136, "PA4（第 14 脚）推挽输出当片选：拉低 = 开始，拉高 = 结束",
+           size=20, color=MUTED)
+
+    # ---- 上：一个字节的括号（Mode 0）----
+    f.text(84, 178, "一个字节的括号（Mode 0：SCK 空闲低，上升沿采样）", size=21,
+           color=INK, weight="bold")
+    # CS 行
+    f.text(92, 224, "CS", size=18, color=RED, weight="bold")
+    f.stroke([(140, 200), (190, 200), (190, 236), (800, 236), (800, 200),
+              (1064, 200)], color=RED, sw=3.2, amp=1.0)
+    # SCK 行：8 个脉冲
+    f.text(92, 306, "SCK", size=18, color=BLUE_D, weight="bold")
+    pts = [(140, 318)]
+    for k in range(8):
+        r_ = 250 + 65 * k
+        pts += [(r_, 318), (r_, 282), (r_ + 32, 282), (r_ + 32, 318)]
+    pts += [(1064, 318)]
+    f.stroke(pts, color=BLUE_D, sw=3.0, amp=1.0)
+    for k in range(8):
+        f.circle(250 + 65 * k, 282, 5.5, color=GREEN_D, fill=GREEN)
+    # MOSI 行：位格对齐到「下降沿换位、上升沿采样」
+    f.text(92, 366, "MOSI", size=18, color=INK, weight="bold")
+    f.line(150, 362, 217, 362, color=MUTED, sw=1.6, dash="5 6", opacity=0.6)
+    f.line(737, 362, 1064, 362, color=MUTED, sw=1.6, dash="5 6", opacity=0.6)
+    bits = "10011111"          # 0x9F，MSB 先发
+    for k, b in enumerate(bits):
+        x = 217 + 65 * k
+        f.rect(x, 340, 65, 44, color=INK, fill=WHITE, sw=2.0)
+        f.text(x + 32.5, 368, b, size=20, color=INK, anchor="middle",
+               weight="bold")
+    f.text(477, 410, "0x9F，MSB 先发：换位在下降沿，采样在上升沿", size=17,
+           color=MUTED, anchor="middle")
+    # 三个阶段小标注
+    f.text(220, 264, "先拉低", size=16, color=RED, anchor="middle",
+           weight="bold")
+    f.text(510, 264, "上升沿采样 ×8", size=16, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(768, 264, "再拉高", size=16, color=RED, anchor="middle",
+           weight="bold")
+    f.arrow(810, 196, 878, 182, color=RED, sw=2.0, bend=0.0, head=9)
+    f.text(890, 178, "有的从机此刻才把字节收下", size=16, color=RED,
+           weight="bold")
+    # 三句结论
+    f.text(84, 440, "CS↓ 早于第 1 个采样沿", size=19, color=RED, weight="bold")
+    f.text(436, 440, "每个上升沿采 1 位", size=19, color=GREEN_D, weight="bold")
+    f.text(712, 440, "最后一个下降沿之后才 CS↑", size=19, color=BLUE_D,
+           weight="bold")
+
+    # ---- 中：括号装命令，一条一个 ----
+    f.text(84, 486, "括号装命令：CS 拉低到拉高之间，正好一条命令", size=21,
+           color=INK, weight="bold")
+    # 左：正确
+    f.stroke([(92, 522), (116, 522), (116, 548), (296, 548), (296, 522),
+              (348, 522), (348, 548), (528, 548), (528, 522), (552, 522)],
+             color=RED, sw=2.8, amp=0.9)
+    pts = [(92, 600)]
+    for span in (116, 348):
+        for k in range(8):
+            r_ = span + 22.5 * k
+            pts += [(r_, 600), (r_, 576), (r_ + 11, 576), (r_ + 11, 600)]
+    pts += [(552, 600)]
+    f.stroke(pts, color=BLUE_D, sw=2.4, amp=0.8)
+    f.text(322, 516, "CS↑", size=13, color=GREEN_D, anchor="middle")
+    f.text(206, 628, "命令 A（8 拍）", size=16, color=INK, anchor="middle")
+    f.text(438, 628, "命令 B（8 拍）", size=16, color=INK, anchor="middle")
+    f.text(92, 656, "对：一条命令一个括号", size=20, color=GREEN_D,
+           weight="bold")
+    # 右：错误（一直压低）
+    f.stroke([(588, 522), (612, 522), (612, 548), (1040, 548), (1040, 522),
+              (1064, 522)], color=RED, sw=2.8, amp=0.9)
+    pts = [(588, 600)]
+    for k in range(16):
+        r_ = 612 + 26.75 * k
+        pts += [(r_, 600), (r_, 576), (r_ + 13, 576), (r_ + 13, 600)]
+    pts += [(1064, 600)]
+    f.stroke(pts, color=BLUE_D, sw=2.4, amp=0.8)
+    f.line(819, 540, 819, 610, color=RED, sw=1.8, dash="4 5")
+    f.text(819, 628, "第 9 拍起已是下一条命令", size=15, color=RED,
+           anchor="middle")
+    f.text(588, 656, "错：PA4 一直压低 → 粘成一条 16 拍长帧", size=20,
+           color=RED, weight="bold")
+
+    # ---- 下：做法与口诀 ----
+    f.rect(84, 688, 560, 66, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.multi(100, 714, ["PA4 是推挽输出，不是硬件 NSS：何时拉低、拉多久由代码决定",
+                       "每条事务结束把 PA4 拉高，下一包才有自己的括号"],
+            size=17, color=INK, lh=28)
+    f.rect(672, 688, 392, 66, color=AMBER_STROKE, fill=WHITE, sw=2.2)
+    f.text(688, 718, "口诀：先拉低，再给时钟，最后拉高", size=19,
+           color=AMBER_STROKE, weight="bold")
+    f.text(688, 744, "有的从机在 CS↑ 才把字节收下", size=15, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch08-byte-exchange": byte_exchange,
+    "ch08-cs-bracket": cs_bracket,
 }
 
 if __name__ == "__main__":
