@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 34
-- **Last Active**: 2026-11-05
+- **Total Sessions**: 35
+- **Last Active**: 2026-11-07
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1349 | Active |
+| `journal-1.md` | ~1363 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 35 | 2026-11-07 | B3/B4 第三批提交与发布交接 | `755ff3f` | `docs/language-b3-b4-release` |
 | 34 | 2026-11-05 | ai4fw 视频号发布 | - | `feat/video-v2-remaster` |
 | 33 | 2026-11-05 | Skill spec 收口提交与归档：卡片产线、导读入口及 PPT 复验 | `afd543f`, `08d0c3c`, `696c194` | `feat/video-v2-remaster` |
 | 12 | 2026-10-25 | BMS-Z 对齐：验证纵深（门禁脚本/文档对账/PDF 契约/下载打包/dist 对账） | `d87f513`, `ca9b756` | `feat/video-v2-remaster` |
