@@ -66,7 +66,7 @@
 <rect x="40" y="400" width="820" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
 <text x="56" y="424" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Highlight order: mode → type → BSRR → pin. First frame keeps both ON/OFF formulas.</text>
 <text x="56" y="444" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Nucleo PA5 is often active-high — polarity follows the schematic, not this PC13 path.</text>
-<circle cx="820" cy="160" r="14" fill="#8f2d2d" opacity="0.85" class="ledpulse"/>
+<circle cx="850" cy="160" r="14" fill="#8f2d2d" opacity="0.85" class="ledpulse"/>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · BSRR/PC13 机制，非板级实拍</text>
 <text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>

@@ -131,8 +131,8 @@ def gpio_bsrr_flow() -> Svg:
     s.text(56, 444, "Nucleo PA5 is often active-high — polarity follows the schematic, not this PC13 path.",
            size=12, fill=T.MUTED)
 
-    # soft LED pulse marker
-    s.circle(820, 160, 14, fill=T.RED, cls="ledpulse", opacity=0.85)
+    # soft LED pulse marker (right of the "active-low" label, clear of its ink)
+    s.circle(850, 160, 14, fill=T.RED, cls="ledpulse", opacity=0.85)
     css.append(
         "@keyframes ledpulse{0%,45%{opacity:0.25}50%,95%{opacity:0.95}100%{opacity:0.25}}"
         ".ledpulse{animation:ledpulse 2s linear infinite;}"

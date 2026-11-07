@@ -39,7 +39,6 @@
 <text x="770" y="274" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo">RX → 接 PA9</text>
 <text x="770" y="308" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo">GND → GND</text>
 <text x="770" y="342" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo">3.3 V 电平（或设跳线）</text>
-<text x="770" y="376" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="770" y="410" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo">验收：115200 8N1</text>
 <text x="770" y="444" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="22" text-anchor="middle" fill="#2F2E2B" class="t-halo">空闲高电平 ~3.3 V</text>
 <path d="M460.0 254.0 Q510.0 254.0 555.0 254.0" fill="none" stroke="#2F2E2B" stroke-width="2.8" stroke-linecap="round"/>

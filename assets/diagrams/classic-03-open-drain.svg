@@ -10,7 +10,7 @@
 <rect x="789" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="863.5" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">ch03-s08 · 开漏机制</text>
 <rect x="24" y="84" width="444" height="320" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="246" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 0：NMOS 导通，主动拉低</text>
+<text x="188" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 0：NMOS 导通，主动拉低</text>
 <rect x="330" y="96" width="108" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
 <text x="384" y="115" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ODR 写 0</text>
 <line x1="48" y1="196" x2="444" y2="196" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
@@ -41,7 +41,7 @@
 <text x="52" y="364" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流：3.3 V → Rp → NMOS → GND</text>
 <text x="52" y="386" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低电平是主动拉出来的</text>
 <rect x="492" y="84" width="444" height="320" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="714" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 1：NMOS 截止，输出级高阻</text>
+<text x="656" y="116" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写 1：NMOS 截止，输出级高阻</text>
 <rect x="798" y="96" width="108" height="30" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
 <text x="852" y="115" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ODR 写 1</text>
 <line x1="516" y1="196" x2="912" y2="196" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>

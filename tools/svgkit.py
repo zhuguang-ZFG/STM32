@@ -384,6 +384,8 @@ class Svg:
 
     def code(self, x, y, lines, size=13, lh=19, color=T.GREEN, cls=None) -> "Svg":
         for i, ln in enumerate(lines):
+            if not ln.strip():
+                continue  # blank source line: keep the row slot, emit no <text>
             self.text(x, y + i * lh, ln, size=size, mono=True, fill=color, cls=cls)
         return self
 

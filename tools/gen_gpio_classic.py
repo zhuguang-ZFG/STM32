@@ -62,7 +62,9 @@ def open_drain() -> Svg:
     ]
     for title, px, color, closed in panels:
         s.rect(px, 84, 444, 320, fill=T.PANEL, stroke=color, rx=8)
-        s.text(px + 222, 116, title, size=15, anchor="middle", weight="700")
+        # title centered on the left part of the panel so it never runs
+        # under the ODR state badge at px+306
+        s.text(px + 164, 116, title, size=15, anchor="middle", weight="700")
         s.rect(px + 306, 96, 108, 30, fill=T.BG2, stroke=T.STROKE, rx=4)
         s.text(px + 360, 115, "ODR 写 0" if closed else "ODR 写 1",
                size=11, anchor="middle", mono=True, fill=T.MUTED)

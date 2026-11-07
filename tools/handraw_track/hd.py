@@ -217,6 +217,8 @@ class Fig:
     # -- text -----------------------------------------------------------
     def text(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
              font=HAND, ls=None, halo=True):
+        if not str(s).strip():
+            return  # empty spacer line: keep the row slot, emit no <text>
         weightattr = f' font-weight="{weight}"' if weight != "normal" else ""
         anchorattr = f' text-anchor="{anchor}"' if anchor != "start" else ""
         halocl = ' class="t-halo"' if halo else ""

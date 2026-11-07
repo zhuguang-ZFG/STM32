@@ -51,7 +51,6 @@ def boot_compare() -> Svg:
     canvas.text(24, 82, "先看这块 64 KB：两条路要在同一张地图上比较", size=12.5,
                 fill=T.TEXT, weight="700")
     bx, bw = 24, 800
-    canvas.text(bx, 100, "", size=9.5, fill=T.MUTED, mono=True)
     parts = [("Bootloader", "16 KB · 16 页", 16, T.GREEN),
              ("参数", "2 KB · 2 页", 2, T.AMBER),
              ("APP", "46 KB · 0xB800", 46, T.VIOLET)]

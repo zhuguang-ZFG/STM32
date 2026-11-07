@@ -343,8 +343,8 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 
 <p align="center">
-  <img src="../../assets/diagrams/sample-02-flash-latency.svg" width="760" alt="FLASH_ACR LATENCY bands versus SYSCLK">
-  <br><sub>▲ Drawn for this book. Raise LATENCY before raising SYSCLK; reverse when lowering.</sub>
+  <img src="../../assets/diagrams/sample-02-flash-latency.svg" width="760" alt="FLASH_ACR LATENCY bands versus SYSCLK: 0/1/2 wait cycles">
+  <br><sub>▲ Drawn for this book. Wait-state bands: raise LATENCY before raising SYSCLK; reverse when lowering. Knowledge track.</sub>
 </p>
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch02-flash-latency.png" width="760" alt="Handraw: Flash wait-state bands (原理示意)">

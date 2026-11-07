@@ -73,7 +73,6 @@
 <text x="56" y="408" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 1) HAL 库</text>
 <text x="56" y="425" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);</text>
 <text x="56" y="442" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">HAL_Delay(500);</text>
-<text x="56" y="459" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
 <text x="56" y="476" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">// 2) 寄存器（BSRR 原子操作）</text>
 <text x="56" y="493" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = GPIO_PIN_5;      // 置 1</text>
 <text x="56" y="510" font-size="11.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GPIOA-&gt;BSRR = GPIO_PIN_5 &lt;&lt; 16; // 清 0</text>

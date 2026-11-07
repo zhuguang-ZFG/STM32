@@ -8,10 +8,8 @@
 <text x="230" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#1F4680" class="t-halo">Wokwi</text>
 <text x="230" y="220" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">看什么</text>
 <text x="230" y="248" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">看接线与现象</text>
-<text x="230" y="276" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="230" y="304" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明</text>
 <text x="230" y="332" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明 GPIO/EXTI/I²C/TIM</text>
-<text x="230" y="360" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="230" y="388" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">不能证明</text>
 <text x="230" y="416" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">不证明真实边沿与 DMA</text>
 <rect x="416" y="128" width="300" height="360" rx="6" fill="#FFFFFF"/>
@@ -21,10 +19,8 @@
 <text x="566" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#2E5F42" class="t-halo">Renode</text>
 <text x="566" y="220" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">看什么</text>
 <text x="566" y="248" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">可脚本化机器模型</text>
-<text x="566" y="276" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="304" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明</text>
 <text x="566" y="332" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明 ELF/UART/外设访问</text>
-<text x="566" y="360" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="388" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">不能证明</text>
 <text x="566" y="416" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">实现随版本与平台描述变</text>
 <rect x="752" y="128" width="300" height="360" rx="6" fill="#FFFFFF"/>
@@ -34,10 +30,8 @@
 <text x="902" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#B3392F" class="t-halo">目标真板</text>
 <text x="902" y="220" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">看什么</text>
 <text x="902" y="248" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">供电·时钟·硅片</text>
-<text x="902" y="276" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="902" y="304" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明</text>
 <text x="902" y="332" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">能证明波形/电流/revision</text>
-<text x="902" y="360" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="902" y="388" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">不能证明</text>
 <text x="902" y="416" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">最终验收边界在这里</text>
 <path d="M859.7 534.3 L840.7 535.8 L820.6 541.2 L821.0 542.1 L793.8 541.3 L767.5 544.4 L739.7 544.1 L712.7 546.2 L712.3 545.7 L685.0 545.9 L658.6 547.9 L630.9 545.4 L603.6 548.5 L576.1 548.1 L576.1 547.6 L547.9 547.9 L519.6 547.3 L492.3 547.0 L464.3 546.2 L436.2 547.1 L435.2 546.8 L402.9 545.3 L370.1 541.3 L338.1 540.5 L337.4 540.8 L319.7 538.8 L301.2 534.2 L301.9 533.6 L320.7 531.5 L339.2 527.5 L339.2 527.8 L372.0 525.3 L405.2 523.4 L438.7 521.6 L437.9 522.9 L466.2 522.7 L493.4 521.3 L520.7 521.0 L548.5 520.9 L575.8 520.4 L575.9 520.5 L604.1 520.3 L631.8 520.7 L659.2 522.3 L687.6 522.6 L715.8 522.3 L715.0 522.7 L749.4 524.2 L782.3 526.2 L816.2 527.3 L816.5 528.3 L838.8 531.6 L859.9 533.9" fill="#F6D576"/>

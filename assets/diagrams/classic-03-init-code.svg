@@ -12,15 +12,12 @@
 <rect x="24" y="84" width="604" height="400" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="44" y="118" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">①  __HAL_RCC_GPIOC_CLK_ENABLE();  /* 先开 GPIOC 时钟 */</text>
 <text x="44" y="142" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   __HAL_RCC_GPIOA_CLK_ENABLE();  /* 用到哪个口开哪个 */</text>
-<text x="44" y="166" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
 <text x="44" y="190" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">②  GPIO_InitTypeDef gpio = {0};</text>
 <text x="44" y="214" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Pin   = GPIO_PIN_13;</text>
 <text x="44" y="238" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Mode  = GPIO_MODE_OUTPUT_PP;</text>
 <text x="44" y="262" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Pull  = GPIO_NOPULL;</text>
 <text x="44" y="286" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">   gpio.Speed = GPIO_SPEED_FREQ_LOW;</text>
-<text x="44" y="310" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
 <text x="44" y="334" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">③  HAL_GPIO_Init(GPIOC, &amp;gpio);   /* 写进 CRL/CRH */</text>
-<text x="44" y="358" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
 <text x="44" y="382" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">④  while (1) {</text>
 <text x="44" y="406" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">       HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);</text>
 <text x="44" y="430" font-size="12.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">       HAL_Delay(500);             /* 500 ms -&gt; 1 Hz */</text>
