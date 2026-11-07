@@ -233,8 +233,38 @@ def _rewrite_anchors(body_html: str, id_to_file: dict[str, str],
     return re.sub(r'href="#([^"]*)"', replace, body_html)
 
 
+def render_cover_png(html_path: Path, out_png: Path) -> bool:
+    """Rasterize the #cover section of a built book HTML with Chromium.
+    Optional: returns False when playwright/Chromium is unavailable."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return False
+    try:
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(headless=True)
+            try:
+                page = browser.new_page(
+                    viewport={"width": 1200, "height": 1697},
+                    device_scale_factor=2)
+                page.goto(html_path.resolve().as_uri(), wait_until="load")
+                page.wait_for_function(
+                    "Array.from(document.images).every(img => "
+                    "img.complete && img.naturalWidth > 0)", timeout=30_000)
+                el = page.query_selector("#cover")
+                if el is None:
+                    return False
+                el.screenshot(path=str(out_png))
+                return out_png.exists()
+            finally:
+                browser.close()
+    except Exception:
+        return False
+
+
 def build_epub(book_html: str, out_path: Path, language: str,
-               title: str | None = None) -> dict:
+               title: str | None = None,
+               cover_png: bytes | None = None) -> dict:
     main_m = re.search(r"<main class=\"book\">(.*)</main>", book_html, re.S)
     if not main_m:
         raise SystemExit("book HTML has no <main class=\"book\">")
@@ -261,9 +291,16 @@ def build_epub(book_html: str, out_path: Path, language: str,
 
     # pass 2: rewrite cross-file anchors and serialize
     svg_files: set[str] = set()
+    sections: dict[str, list[tuple[str, str]]] = {}
     for name, klass, seg_id, body in bodies:
         body = _rewrite_anchors(body, id_to_file, name)
         seg_title = _segment_title(body) or seg_id or name
+        if klass in ("chapter", "appendix"):
+            sections[name] = [
+                (h.get("id") or "", re.sub(r"\s+", " ", "".join(h.itertext()).strip()))
+                for h in lhtml.fromstring(f"<div>{body}</div>").xpath(
+                    "//*[local-name()='h2' or local-name()='h3']")
+            ]
         payload, has_svg = _to_xhtml_document(body, seg_title, "epub.css")
         files[f"OEBPS/{name}"] = payload
         if has_svg:
@@ -297,6 +334,14 @@ def build_epub(book_html: str, out_path: Path, language: str,
            'xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' + language + '" lang="' + language + '">',
            '<head><title>TOC</title><link rel="stylesheet" type="text/css" href="epub.css"/></head>',
            '<body><nav epub:type="toc" id="toc"><h1>' + ("目录" if language.startswith("zh") else "Contents") + '</h1><ol>']
+    def _section_list(name: str) -> str:
+        items = sections.get(name) or []
+        rows = "".join(
+            f'<li><a href="{name}#{_x(fid)}">{_x(title)}</a></li>'
+            for fid, title in items if fid
+        )
+        return f"<ol>{rows}</ol>" if rows else ""
+
     in_part = False
     li_open = False
     for kind, name, seg_title in nav_items:
@@ -319,7 +364,8 @@ def build_epub(book_html: str, out_path: Path, language: str,
         if li_open:
             nav.append("</li>")
             li_open = False
-        nav.append(f'<li><a href="{name}">{_x(seg_title)}</a>')
+        sub = _section_list(name) if kind in ("chapter", "appendix") else ""
+        nav.append(f'<li><a href="{name}">{_x(seg_title)}</a>{sub}')
         li_open = True
     if li_open:
         nav.append("</li>")
@@ -337,21 +383,41 @@ def build_epub(book_html: str, out_path: Path, language: str,
     ncx = ['<?xml version="1.0" encoding="utf-8"?>',
            '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">',
            '<head><meta name="dtb:uid" content="urn:uuid:' + uid + '"/>'
-           '<meta name="dtb:depth" content="1"/>'
+           '<meta name="dtb:depth" content="2"/>'
            '<meta name="dtb:totalPageCount" content="0"/>'
            '<meta name="dtb:maxPageNumber" content="0"/></head>',
            '<docTitle><text>' + _x(doc_title) + '</text></docTitle>',
            '<navMap>']
+    order = 0
     for i, (kind, name, seg_title) in enumerate(nav_items, 1):
-        ncx.append(f'<navPoint id="np{i}" playOrder="{i}">'
+        order += 1
+        subs = sections.get(name) if kind in ("chapter", "appendix") else []
+        if not subs:
+            ncx.append(f'<navPoint id="np{i}" playOrder="{order}">'
+                       f'<navLabel><text>{_x(seg_title)}</text></navLabel>'
+                       f'<content src="{name}"/></navPoint>')
+            continue
+        ncx.append(f'<navPoint id="np{i}" playOrder="{order}">'
                    f'<navLabel><text>{_x(seg_title)}</text></navLabel>'
-                   f'<content src="{name}"/></navPoint>')
+                   f'<content src="{name}"/>')
+        for fid, stitle in subs:
+            if not fid:
+                continue
+            order += 1
+            ncx.append(f'<navPoint id="np{i}s{order}" playOrder="{order}">'
+                       f'<navLabel><text>{_x(stitle)}</text></navLabel>'
+                       f'<content src="{name}#{_x(fid)}"/></navPoint>')
+        ncx.append('</navPoint>')
     ncx.append('</navMap></ncx>')
     files["OEBPS/toc.ncx"] = "\n".join(ncx).encode("utf-8")
 
     manifest = ['<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
                 '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
                 '<item id="css" href="epub.css" media-type="text/css"/>']
+    if cover_png:
+        files["OEBPS/cover-image.png"] = cover_png
+        manifest.insert(0, '<item id="cover-image" href="cover-image.png" '
+                           'media-type="image/png" properties="cover-image"/>')
     for i, (name, klass, seg_title) in enumerate(spine, 1):
         props = ' properties="svg"' if name in svg_files else ""
         manifest.append(f'<item id="s{i:02d}" href="{name}" media-type="application/xhtml+xml"{props}/>')
@@ -469,7 +535,13 @@ def main(argv: list[str] | None = None) -> int:
             failed = True
             continue
         book_html = html_path.read_text(encoding="utf-8")
-        info = build_epub(book_html, out_path, language, title)
+        cover_png = None
+        cover_tmp = out_path.with_suffix(".cover.png")
+        if render_cover_png(html_path, cover_tmp):
+            cover_png = cover_tmp.read_bytes()
+        if cover_tmp.exists():
+            cover_tmp.unlink()
+        info = build_epub(book_html, out_path, language, title, cover_png)
         errors = _validate(out_path)
         print(f"{html_path.name} -> {info['out']}: spine={info['spine']} "
               f"images={info['images']} {info['bytes']} bytes "

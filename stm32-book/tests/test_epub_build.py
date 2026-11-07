@@ -30,6 +30,7 @@ BOOK_HTML = f"""<!doctype html>
 <section class="part-divider" id="part-p0"><h1>第一部分</h1></section>
 <article class="chapter" id="chapter-00">
 <header><h1 id="ch00-1">如何学习 STM32</h1></header>
+<h2 id="ch00-2">最小胜利</h2>
 <p align="center"><img src="{_DATA}" width="10" alt="示意"></p>
 <p>先读<a href="#ch01-1">下一章</a>和<a href="#ch00-1">本章小节</a>。</p>
 </article>
@@ -81,6 +82,15 @@ class EpubBuildTests(unittest.TestCase):
             seg = zf.read("OEBPS/seg06.xhtml").decode("utf-8")
             self.assertIn('href="seg07.xhtml#ch01-1"', seg)
             self.assertIn('href="#ch00-1"', seg)
+
+    def test_nav_nests_section_level(self) -> None:
+        with zipfile.ZipFile(self.out) as zf:
+            nav = zf.read("OEBPS/nav.xhtml").decode("utf-8")
+            self.assertIn('href="seg06.xhtml#ch00-2"', nav)
+            self.assertIn("最小胜利", nav)
+            ncx = zf.read("OEBPS/toc.ncx").decode("utf-8")
+            self.assertIn('content src="seg06.xhtml#ch00-2"', ncx)
+            self.assertIn('dtb:depth" content="2"', ncx)
 
     def test_nav_covers_spine_order(self) -> None:
         with zipfile.ZipFile(self.out) as zf:
