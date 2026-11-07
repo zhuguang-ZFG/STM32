@@ -392,6 +392,11 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 | FAULTMASK | Those, plus HardFault | `__disable_fault_irq()` |
 | BASEPRI | The ones whose number is not urgent enough | `__set_BASEPRI(prio << (8 - __NVIC_PRIO_BITS))` |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch04-mask-gates.png" width="760" alt="Handraw: what each of the three master gates blocks (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PRIMASK masks every maskable interrupt, FAULTMASK adds HardFault, BASEPRI only the band at or past the threshold; none of the three stops NMI; not a register screenshot.</sub>
+</p>
+
 EXTI lines are shared by **pin number**: PA0 and PB0 both sit on EXTI0, so they cannot both be external interrupts at once. To change the port, write `AFIO->EXTICR` (F1) or `SYSCFG->EXTICR` (F4). They are not two lines in parallel.
 
 Before leaving this chapter, keep the button-event count, the before/after debounce count, and one preemption trace, and explain why PA0 and PB0 cannot occupy two independent EXTI0 lines.

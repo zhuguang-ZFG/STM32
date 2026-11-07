@@ -98,6 +98,12 @@ The 1 Hz high and low times are not a GPIO speed-bit result. High 500 ms and low
 
 The register is `GPIOx_LCKR` at offset `0x18`. Source: [RM0008 Rev 21 section 9.2.7](#source-rm0008-gpio).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-lckr-sequence.png" width="760" alt="Handraw: the LCKR lock sequence — write 1, 0, 1, then read twice（原理示意）">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). GPIOx_LCKR at offset 0x18: the mask stays unchanged, LCKK is written 1-0-1, then two reads — the second must confirm LCKK = 1, locked until reset; not a register screenshot.</sub>
+</p>
+
+
 ## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | What the source shows |

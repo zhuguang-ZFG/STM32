@@ -234,6 +234,11 @@ Every USB device comes out of reset at address 0. The host uses that temporary a
 
 > At steps 3 or 4, check device-descriptor length and 48 MHz first. At step 6, check `wTotalLength`. At step 7, check endpoint address, PMA, and whether the buffer is armed.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-ctrl-transfer.png" width="760" alt="Handraw: the three control-transfer stages (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). SETUP request → DATA → STATUS; EP0 is two-way, bMaxPacketSize0 = 64; Set Address takes effect once the status stage is done; at address 0 the first 8 descriptor bytes come first; not a photo.</sub>
+</p>
+
 
 <p align="center">
   <img src="../../assets/diagrams/sample-14-descriptor-map.svg" width="760" alt="Device descriptor 18 bytes; configuration collection 67 bytes = 9+9+5+5+4+5+7+9+7+7; VID/PID 0x1209/0x0001; bulk endpoint 64 bytes, notification endpoint 8 bytes">

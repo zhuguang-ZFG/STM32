@@ -114,7 +114,7 @@ class BookAuditTests(unittest.TestCase):
 
                 "gpio-blink.svg", "ch03-handdraw.svg", "ch03-common-anode-before-after.png",
                 "sample-03-gpio-bsrr-flow.svg", "sample-03-gpio-led.svg", "ch03-pa0-ok-pc13-wrong.png",
-                "ch03-gpio-three-questions.png", "ch03-push-pull-vs-open-drain.png", "sample-03-current-path.svg",
+                "ch03-lckr-sequence.png", "ch03-gpio-three-questions.png", "ch03-push-pull-vs-open-drain.png", "sample-03-current-path.svg",
                 "ch03-led-current-limit.png", "sample-03-moder-map.svg", "bluepill-stm32f103c8t6.jpg",
                 "bluepill-stm32f103c8t6-popolon.jpg", "bluepill-stm32f103c8t6-tardate-usb.jpg",
                 "stack-gpio-pc13-led.png", "pinout-bluepill.svg",
@@ -127,7 +127,7 @@ class BookAuditTests(unittest.TestCase):
                 "ch04-priority-group.png", "interrupt-priority.svg", "ch04-preempt-vs-sub.png",
                 "gpio-input-interrupt.svg", "sample-04-exti-line-map.svg", "ch04-exti-line-map.png",
                 "sample-04-exti-triage.svg", "ch04-exti-triage.png", "sample-04-tail-chaining.svg",
-                "ch04-tail-chaining.png",
+                "ch04-tail-chaining.png", "ch04-mask-gates.png",
             ),
             "05": (
 
@@ -165,7 +165,8 @@ class BookAuditTests(unittest.TestCase):
                 "i2c-transaction.svg", "sample-07-i2c-ack-flow.svg", "sample-07-i2c-addr.svg",
                 "ch07-i2c-addr.png", "i2c-addr.gif", "sample-07-pullup-cap.svg",
                 "ch07-pullup-cap.png", "sample-07-start-ack.svg", "ch07-start-ack.png",
-                "i2c-timing.gif", "sample-07-sr-restart.svg", "ch07-sr-restart.png",
+                "i2c-timing.gif", "ch07-clock-stretch.png",
+                "sample-07-sr-restart.svg", "ch07-sr-restart.png",
                 "sample-07-i2c-triage.svg", "ch07-i2c-triage.png",
             ),
             "08": (
@@ -222,7 +223,8 @@ class BookAuditTests(unittest.TestCase):
                 "flash-iap.svg", "sample-12-iap-jump-flow.svg", "sample-12-iap-map.svg",
                 "ch12-iap-map.png", "iap-jump.gif", "sample-12-page-erase.svg",
                 "ch12-page-erase.png", "sample-12-flash-triage.svg", "ch12-flash-triage.png",
-                "sample-12-key-order.svg", "ch12-key-order.png", "iap-acceptance-gates.svg",
+                "sample-12-key-order.svg", "ch12-key-order.png", "ch12-halfword-loop.png",
+                "iap-acceptance-gates.svg",
                 "ch12-acceptance-gates.png", "sample-12-boot-compare.svg", "ch12-boot-compare.png",
             ),
             "13": (
@@ -253,7 +255,8 @@ class BookAuditTests(unittest.TestCase):
                 "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
                 "ch14-usb-enum.png", "usb-48m.gif", "sample-14-usbpre-48.svg",
                 "ch14-usbpre-48.png", "sample-14-pma-map.svg", "ch14-pma-map.png",
-                "usb-enumeration-zh.gif", "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
+                "usb-enumeration-zh.gif", "ch14-ctrl-transfer.png",
+                "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
                 "pinout-bluepill.svg", "instrument-evidence-ladder.svg", "ch14-evidence-ladder.png",
             ),
             "15": (

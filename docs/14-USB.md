@@ -235,6 +235,11 @@ F1 全速设备最多 **8 个双向端点（EP0~EP7）**；端点 FIFO 共享 **
 
 > 卡在第 3/4 步时先核对设备描述符长度与 48 MHz；卡在第 6 步核对 `wTotalLength`；卡在第 7 步核对端点地址、PMA 和缓冲区是否已就绪。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch14-ctrl-transfer.png" width="760" alt="Handraw：控制传输三拍（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。SETUP 请求→DATA 数据→STATUS 状态；EP0 双向、bMaxPacketSize0 = 64；SET_ADDRESS 等状态传输走完再生效；GET_DESCRIPTOR 地址 0 先交前 8 字节；不是实拍。</sub>
+</p>
+
 
 <p align="center">
   <img src="../assets/diagrams/sample-14-descriptor-map.svg" width="760" alt="设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7，VID/PID 0x1209/0x0001，批量端点 64 字节、通知端点 8 字节">

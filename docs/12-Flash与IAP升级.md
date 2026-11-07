@@ -174,6 +174,11 @@ Flash 平时是锁着的，防止程序跑飞时乱写。开锁要按顺序往�
 3. **编程**：置 `CR.PG=1`，向目标地址写**半字**，轮询 `SR.BSY`。
 4. **上锁**：置 `CR.LOCK=1`。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-halfword-loop.png" width="760" alt="Handraw：半字写入的 BSY 循环（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先擦五拍 PER/AR/STRT/BSY/EOP；再写 PG=1→半字→等 BSY→地址 +2 循环；32 位分两次半字；写完 LOCK=1；不是实拍。</sub>
+</p>
+
 **F4 差异**：用 `FLASH_CR` 的 `SER` 位 + `SNB[3:0]` 选择扇区号擦除；编程用 `PSIZE` 选位宽；注意 F4 的 Flash 电压范围（`VPP`）与「编程并行位」设置。
 
 HAL 库把上述流程封装为：
