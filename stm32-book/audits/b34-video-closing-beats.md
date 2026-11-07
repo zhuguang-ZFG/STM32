@@ -26,10 +26,13 @@
   （PSC×ARR 分出 1 kHz、CCR 定占空比、输入捕获锁 CNT）收拢，再把同一套
   72 MHz 分频思路交给第 06 章的波特率发生器；fact_source 增加
   `docs/06-串口UART.md#核心原理`（锚点实测存在）。
-- `video/ch18/storyboard.json` ch18-s28：`合上书三问`（recall）→
-  `把铁律带进项目现场`（failure / diagnosis）。旁白收拢排错五步与三条铁律，
+- `video/ch18/storyboard.json` ch18-s28：`合上书三问` →
+  `把铁律带进项目现场`。旁白收拢排错五步与三条铁律，
   把方法论交给第 19 章多模块项目现场；fact_source 增加
   `docs/19-项目实战合集.md#原理与适用范围`（锚点实测存在）。
+  purpose/evidence_type 保持 recall 不变：ch16–20 的五类角色计数是
+  `test_classic_l5` 冻结合同（recall 必须为 2），首轮 CI（run
+  42331186877）踩中该断言后已改回，收尾拍的去同构改标题与旁白即足。
 - 两章的 s27 recall 拍保留，五类 purpose（hook/mechanism/failure/experiment/
   recall）在各自分镜中仍齐备。
 

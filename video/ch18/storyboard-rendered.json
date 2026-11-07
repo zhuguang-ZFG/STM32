@@ -861,7 +861,7 @@
     {
       "scene_id": "ch18-s28",
       "title": "把铁律带进项目现场",
-      "purpose": "failure",
+      "purpose": "recall",
       "prerequisite": [
         "ch18-s27"
       ],
@@ -877,7 +877,7 @@
         "docs/19-项目实战合集.md#原理与适用范围"
       ],
       "memory_anchor": "能测别猜，带进项目",
-      "evidence_type": "diagnosis",
+      "evidence_type": "recall",
       "start": 633.45,
       "duration": 26.63,
       "subtitle_ref": "ch18.srt#28",
