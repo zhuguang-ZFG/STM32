@@ -67,3 +67,17 @@ bbox 阈值降级为 SOFT 记录）后假阳性清零。
   全部通过；四份改动文档 slop_lint 无命中。
 - ch28-memory-regions 修复前后由根会话 Read 复核（修复前「嵌套中断」
   「保存上下文」「复计数」确实不可见）。
+
+## 追加：内容文档序列化形态修复（读者报障「不符合规范」）
+
+读者打开 EPUB 报「Can not load content here. Does not meet specifications」。
+根因：B36 的命名空间迁移让 lxml 把全部内容文档序列化为 **`<html:html
+xmlns:html="…">` 前缀形态**——XML 合法（epubcheck 通过），但按 HTML 模式解析
+内容文档的阅读器把 `html:xxx` 当未知元素，整章拒绝渲染。
+
+修复（`_to_xhtml_document`）：以 `nsmap={None: XHTML_NS}` 的默认命名空间根
+重建树（零前缀输出），内联 SVG 子树自带 `xmlns="…/2000/svg"` 默认声明
+（与手写 XHTML+SVG 一致），XML 声明改双引号，`<head>` 首位补
+`<meta charset="utf-8"/>`；SVG 源里自带的 `xmlns` 属性复制时过滤防重复声明。
+双语重打包后：epubcheck 仍 0 错 0 警，MuPDF（真实 EPUB 引擎）打开渲染正常
+（zh 1033 页 / en 1140 页合成页，648/650 条目录），`html:` 前缀残留 0。
