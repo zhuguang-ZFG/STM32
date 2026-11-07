@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Six deterministic project planning plates: capacities are not measurements.
+"""Seven deterministic project planning plates: capacities are not measurements.
 
 F103C8 capacities: DS5319. Single-slot map: chapter12/iap-bootloader.
 heap_4 budget shows an explicit hypothetical allocation, not a measured map.
+USB frame split: chapter14 full-speed bulk limit is 64 bytes per packet.
 """
 from hd import *
 
@@ -197,6 +198,66 @@ def sram_budget():
     return f
 
 
+def usb_split():
+    f = Fig("ch19-usb-split", "应用帧 133 字节，拆成 64 + 64 + 5 三包发送")
+    f.text(72, 143, "项目 4 USB 采集卡 · 应用帧 = 帧头 + 序号 + 样本 + 校验 · 全速批量一包上限 64 字节",
+           size=23, color=MUTED)
+
+    # ---- ① 应用帧的组成 ----
+    f.text(72, 182, "① 应用帧的组成", size=25, color=BLUE_D, weight="bold")
+    parts = [(72, 220, "帧头", "0xAA 0x55 · 2 B", BLUE_D),
+             (304, 212, "序号", "seq · 2 B", GREEN_D),
+             (528, 388, "样本 · 64 个 × 2 字节", "128 B", AMBER_STROKE),
+             (928, 152, "校验", "1 B", RED)]
+    for x, w, name, sub, color in parts:
+        f.rect(x, 205, w, 76, color=color, fill=WHITE, sw=2.4)
+        f.text(x + w / 2, 235, name, size=23 if w > 160 else 22, color=color,
+               anchor="middle", weight="bold")
+        f.text(x + w / 2, 264, sub, size=18, color=INK, anchor="middle")
+    # 分组括线：4 B / 128 B / 1 B
+    for x0, x1, label in [(72, 516, "4 B（帧头 + 序号）"), (528, 916, "128 B"), (928, 1080, "1 B")]:
+        f.line(x0, 298, x1, 298, color=MUTED, sw=1.6)
+        f.line(x0, 298, x0, 306, color=MUTED, sw=1.6)
+        f.line(x1, 298, x1, 306, color=MUTED, sw=1.6)
+        f.text((x0 + x1) / 2, 330, label, size=20, color=MUTED, anchor="middle")
+    f.text(72, 368, "4 + 128 + 1 = 133 字节", size=27, color=BLUE_D, weight="bold")
+    f.text(1080, 368, "主机用 pyserial 或 pyusb 解帧", size=20, color=MUTED, anchor="end")
+
+    # ---- ② 发送时拆包（同比例条） ----
+    f.text(72, 410, "② 发送时拆包 · 全速批量一包上限 64 字节", size=25, color=BLUE_D, weight="bold")
+    f.text(1080, 408, "包 3 · 5 B", size=22, color=AMBER_STROKE, anchor="end", weight="bold")
+    f.line(1072, 413, 1062, 429, color=AMBER_STROKE, sw=2)
+    x0, scale, by, bh = 72, 1008 / 133, 430, 70
+    x = x0
+    for name, kib, color in [("包 1", 64, BLUE_D), ("包 2", 64, GREEN_D), ("", 5, AMBER_STROKE)]:
+        width = kib * scale
+        f.rect(x, by, width, bh, color=color, fill=WHITE, sw=2.2, double=False)
+        if width > 95:
+            f.text(x + width / 2, by + 31, name, size=23, color=color, anchor="middle", weight="bold")
+            f.text(x + width / 2, by + 59, f"{kib:g} B", size=21, color=MUTED, anchor="middle")
+        x += width
+    for bx, label in [(72, "0"), (72 + 64 * scale, "64"), (72 + 128 * scale, "128")]:
+        f.line(bx, by + bh, bx, by + bh + 8, color=MUTED, sw=1.6)
+        f.text(bx, by + bh + 28, label, size=19, color=MUTED, anchor="middle")
+    f.line(1080, by + bh, 1080, by + bh + 8, color=MUTED, sw=1.6)
+    f.text(72, 552, "64 + 64 + 5 = 133 字节 · 拆成三包发送 · 条长按同一比例", size=25,
+           color=GREEN_D, weight="bold")
+
+    # ---- ③ 规则与坑 ----
+    f.rect(72, 585, 482, 84, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(92, 615, "端点描述符 wMaxPacketSize", size=21, color=GREEN_D, weight="bold")
+    f.text(92, 645, "仍写 64，不能写 133", size=20, color=INK)
+    f.rect(598, 585, 482, 84, color=RED, fill=WHITE, sw=2.4)
+    f.text(618, 615, "常见坑：把 133 写成端点包长", size=21, color=RED, weight="bold")
+    f.text(618, 645, "全速批量一包最多 64 字节", size=20, color=INK)
+
+    f.htext(72, 706, "133 是应用帧长度；64 才是一包上限。拆三包发送，描述符仍写 64。",
+            size=23, color=INK, weight="bold", hl=True)
+    f.text(72, 742, "校验是 Checksum8，不是 CRC；USB 时钟 48 MHz 与 VID/PID 0x1209/0x0001 见第 14 章。",
+           size=19, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch19-ab-partition": ab_partition,
     "ch19-flash-fit": flash_fit,
@@ -204,6 +265,7 @@ FIGS = {
     "ch19-iap-gates": iap_gates,
     "ch19-milestone-triage": milestone_triage,
     "ch19-sram-budget": sram_budget,
+    "ch19-usb-split": usb_split,
 }
 
 if __name__ == "__main__":

@@ -181,6 +181,62 @@ def clock_restore():
     return f
 
 
+def pvd_window():
+    f = Fig("ch16-pvd-window", "PVD：掉电前的最后一声")
+    f.text(84, 140, "PVD 监视 VDD（STM32F103）· 例程选 PWR_PVDLEVEL_6 档 · 别把档位背成毫伏数，电压与迟滞以 RM 为准",
+           size=19, color=MUTED)
+
+    # ---- 三条参考线（相对位置，非毫伏值）----
+    f.line(100, 256, 1064, 256, color=MUTED, sw=2.0, dash="7 7", opacity=0.8)
+    f.text(1060, 246, "门槛 + 迟滞：回升再报（RM 为准）", size=17, color=MUTED,
+           anchor="end")
+    f.line(100, 300, 1064, 300, color=BLUE_D, sw=2.2, dash="7 7")
+    f.text(1060, 288, "所选门槛：具体电压见 RM", size=17, color=BLUE_D,
+           anchor="end")
+    f.line(100, 520, 1064, 520, color=RED, sw=2.2, dash="7 7")
+    f.text(1060, 546, "最低工作电压：低于它，写入不再有保证", size=18,
+           color=RED, anchor="end")
+
+    # ---- 抢救窗口：斜线阴影 ----
+    for i in range(8):
+        x0 = 436 + i * 18
+        f.line(x0, 500, x0 + 24, 324, color=MUTED, sw=2.2, amp=0.8,
+               opacity=0.3)
+    f.text(514, 402, "② 抢救窗口", size=22, color=AMBER_STROKE,
+           anchor="middle", weight="bold")
+
+    # ---- VDD 下落曲线 ----
+    curve = [(100, 190), (300, 184), (380, 200), (430, 300), (475, 392),
+             (520, 454), (560, 502), (600, 520), (648, 560)]
+    f.stroke(curve, color=BLUE_D, sw=3.2, amp=1.2)
+    f.arrowhead(648, 560, 48, 40, color=BLUE_D, head=12)
+    f.text(104, 176, "VDD", size=20, color=BLUE_D, weight="bold")
+
+    # ---- 两个事件点 ----
+    f.circle(430, 300, 7, color=RED, fill=RED)
+    f.text(446, 294, "①", size=24, color=RED, weight="bold")
+    f.circle(600, 520, 7, color=RED, fill=RED)
+    f.text(616, 506, "③", size=24, color=RED, weight="bold")
+
+    # ---- 底：三段说明 ----
+    f.rect(84, 588, 300, 124, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(100, 620, "① 下穿门槛：报警", size=20, color=GREEN_D, weight="bold")
+    f.multi(100, 650, ["配好 EXTI16 与 NVIC；", "IT_RISING_FALLING：",
+                       "下穿、回升都报"], size=17, color=INK, lh=23)
+    f.rect(424, 588, 300, 124, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(440, 620, "② 抢救窗口：只做保存", size=20, color=AMBER_STROKE,
+           weight="bold")
+    f.multi(440, 650, ["把关键数据写进备份域或闪存", "能写多久看：供电余量、",
+                       "写入时间、最低工作电压"], size=17, color=INK, lh=23)
+    f.rect(764, 588, 300, 124, color=RED, fill=WHITE, sw=2.4)
+    f.text(780, 620, "③ PVD 不承诺的事", size=20, color=RED, weight="bold")
+    f.multi(780, 650, ["没有固定的剩余毫秒数；", "它是掉电通知，",
+                       "不是备用电池"], size=17, color=INK, lh=23)
+    f.htext(576, 748, "门槛一穿就喊；还剩多少毫秒，PVD 不说，余量自己留",
+            size=24, color=INK, weight="bold", anchor="middle", hl=True)
+    return f
+
+
 FIGS = {
     "ch16-wake-matrix": wake_matrix,
     "ch16-mode-current": mode_current,
@@ -188,6 +244,7 @@ FIGS = {
     "ch16-stop-wake": stop_wake,
     "ch16-stop-compare": stop_compare,
     "ch16-clock-restore": clock_restore,
+    "ch16-pvd-window": pvd_window,
 }
 
 if __name__ == "__main__":

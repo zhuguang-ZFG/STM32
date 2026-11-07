@@ -247,6 +247,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 ```
 
 <p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-stack-watermark.png" width="760" alt="Handraw: task stack grows downward, watermark and overflow hook (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Stacks are given in words of 4 B: 128 words = 512 B; mistaking words for bytes allocates only 32 words, a quarter of the capacity. The watermark line is the smallest number of free words uxTaskGetStackHighWaterMark() has seen; near 0, enlarge the stack. configCHECK_FOR_STACK_OVERFLOW=2 plus vApplicationStackOverflowHook catches the overflow in the act; not a photo.</sub>
+</p>
+
+<p align="center">
   <img src="../../assets/illustrations/handraw/ch15-psp-msp.png" width="760" alt="Cortex-M3 PSP task stack and MSP exception stack: the first hardware frame stays on the task stack; ISRs and nesting use MSP">
   <br><sub>▲ The left column follows task A's PSP; the right is the shared exception MSP. When an IRQ interrupts the task, hardware first saves R0–R3, R12, LR, PC, and xPSR on A's stack, then the ISR uses MSP. A PendSV switch also saves R4–R11 and writes PSP into the TCB. Eight registers take 32 B, with alignment margin also required. A task watermark does not measure MSP headroom. Hand-drawn explanation, not to address or capacity scale; based on [PM0056](#source-pm0056-nvic) and the [FreeRTOS ARM_CM3 port](#source-freertos-syscall).</sub>
 </p>

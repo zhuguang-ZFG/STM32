@@ -418,6 +418,11 @@ Keep the trigger and failure scene, then reduce to a minimal project. Test one h
 
 > Three house rules: **if you can measure it, do not guess**, **share ground before you study the signal**, and **change one thing at a time**.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-five-steps.png" width="760" alt="Handraw: the five debugging steps Reproduce→Minimize→Bisect→Evidence→Manual (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). The five steps and their purposes come from the table in the text; verify one hypothesis at a time and rerun under the same conditions; the three house rules sit on the same plate. Not a photo.</sub>
+</p>
+
 ## Hands-on labs (practice at debugging)
 
 1. **Build boundary:** On a temporary branch, remove one include path. Save the first complete error, compile command, and successful exit code after repair; do not capture only the final line.

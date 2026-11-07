@@ -193,6 +193,11 @@ The FPB implements hardware execution breakpoints by comparing instruction addre
 
 > When you reach the limit, delete old breakpoints and check whether the tool supports software breakpoints at the required address. A conditional hardware breakpoint still occupies a comparator. Some conditions require a halt for host-side evaluation, which disturbs timing.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-halt-timing.png" width="760" alt="Handraw: breakpoints / single-step halt the core and disturb timing (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). On a hit the core halts and the debugger reads the PC, variables, and registers of that moment; a conditional hardware breakpoint still occupies 1 comparator, and some conditions are judged by the host after the halt, which disturbs timing. Keep the core running through the timing window; an empty interval still includes the cost of reading the counter. Not a photo.</sub>
+</p>
+
 ### 4. The three-piece HardFault kit
 
 
