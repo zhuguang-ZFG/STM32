@@ -2250,5 +2250,35 @@
   "type": "technical",
   "chapter": "08",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA4 括住一次事务：Mode 0 上升沿采样、8 拍一字节；CS 不拉高则两条命令粘成 16 拍；有的从机在上升沿才收下；不是实拍。"
+ },
+ "illustrations/handraw/ch04-mask-gates.png": {
+  "type": "concept",
+  "chapter": "04",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIMASK 挡 0–15、FAULTMASK 再挡 HardFault 只留 NMI、BASEPRI 只挡数值 ≥ 阈值的一截；GROUP_4 下 0 最急 15 最缓；不是实拍。"
+ },
+ "illustrations/handraw/ch07-clock-stretch.png": {
+  "type": "technical",
+  "chapter": "07",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。从机拉低 SCL 延长时钟，SCL 线与低电平最长的器件定拍；SDA 拉伸期间不动；拉过 HAL 超时即 BUSY；不是实拍。"
+ },
+ "illustrations/handraw/ch12-halfword-loop.png": {
+  "type": "technical",
+  "chapter": "12",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。擦除五拍 PER→AR→STRT→BSY→EOP；编程循环 PG→写半字→等 BSY→地址+2→LOCK；擦后读 0xFFFF，写只能 1 变 0；不是实拍。"
+ },
+ "illustrations/handraw/ch14-ctrl-transfer.png": {
+  "type": "technical",
+  "chapter": "14",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。控制传输三拍 SETUP/DATA/STATUS；EP0 双向 64 字节；SET_ADDRESS 状态走完地址才生效；GET_DESCRIPTOR 地址 0 先交前 8 字节；不是实拍。"
+ },
+ "illustrations/handraw/ch02-flash-fetch-wait.png": {
+  "type": "technical",
+  "chapter": "02",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz 每次取指多等两拍；先写 LATENCY=010 再切 PLL；顺序错了跑飞或 HardFault；不是实拍。"
+ },
+ "illustrations/handraw/ch03-lckr-sequence.png": {
+  "type": "technical",
+  "chapter": "03",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LCKR 锁定五步：写 1、写 0、再写 1，读两次，第二次 LCKK=1 才锁住；中途错序锁中止；不是实拍。"
  }
 }

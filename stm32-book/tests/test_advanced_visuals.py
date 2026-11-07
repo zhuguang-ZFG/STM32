@@ -55,7 +55,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "03-GPIO与LED.md": (
-        19,
+        20,
         (
             "gpio-blink.svg",
             "ch03-handdraw.svg",
@@ -76,6 +76,7 @@ CHAPTERS = {
             "led-blink.gif",
             "sample-03-exti-vs-poll.svg",
             "ch03-poll-vs-exti.png",
+            "ch03-lckr-sequence.png",
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
@@ -169,7 +170,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "12-Flash与IAP升级.md": (
-        15,
+        16,
         (
             "flash-iap.svg",
             "sample-12-iap-jump-flow.svg",
@@ -186,6 +187,7 @@ CHAPTERS = {
             "ch12-acceptance-gates.png",
             "sample-12-boot-compare.svg",
             "ch12-boot-compare.png",
+            "ch12-halfword-loop.png",
         ),
     ),
     ROOT / "docs" / "13-CAN总线.md": (
@@ -209,7 +211,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "14-USB.md": (
-        16,
+        17,
         (
             "usb-enumeration.svg",
             "ch14-enum-checklist.png",
@@ -227,6 +229,7 @@ CHAPTERS = {
             "pinout-bluepill.svg",
             "instrument-evidence-ladder.svg",
             "ch14-evidence-ladder.png",
+            "ch14-ctrl-transfer.png",
         ),
     ),
     ROOT / "docs" / "15-FreeRTOS入门.md": (

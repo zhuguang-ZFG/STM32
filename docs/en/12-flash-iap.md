@@ -173,6 +173,11 @@ Flash is normally locked, so a runaway program cannot scribble on it. To unlock 
 3. **Program**: set `CR.PG=1`, write a **half-word** to the target address, and poll `SR.BSY`.
 4. **Lock**: set `CR.LOCK=1`.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-halfword-loop.png" width="760" alt="Handraw: the half-word programming loop (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Erase first: PER/AR/STRT/BSY/EOP; then PG=1 → half-word → wait BSY → address +2, repeat; a 32-bit value takes two half-word writes; CR.LOCK=1 at the end; not a photo.</sub>
+</p>
+
 **What is different on F4**: erase by setting the `SER` bit in `FLASH_CR` and selecting the sector number with `SNB[3:0]`. Programming uses `PSIZE` to choose the width. Watch the F4 Flash voltage range (`VPP`) and the "programming parallelism" setting.
 
 The HAL wraps that sequence as:

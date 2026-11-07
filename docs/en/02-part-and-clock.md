@@ -361,6 +361,12 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 > Wait states are the LATENCY bits in `FLASH_ACR`. Set them wrong and the chip hangs or fetches bad instructions.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch02-flash-fetch-wait.png" width="760" alt="Handraw: instruction-fetch wait states — what LATENCY means（原理示意）">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 0–24/24–48/48–72 MHz map to 0/1/2 wait cycles; at 72 MHz each fetch waits two extra cycles; write LATENCY=2 in FLASH_ACR before switching SW; not a scope capture.</sub>
+</p>
+
+
 ### 8. How the clock tree differs by family (the points that matter)
 
 | Family | Max SYSCLK | PLL shape | Notes |

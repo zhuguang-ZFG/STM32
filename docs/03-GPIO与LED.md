@@ -99,6 +99,12 @@ PC13、PC14、PC15 走电源开关。同一份数据手册的注 5 给出的界�
 
 寄存器是 `GPIOx_LCKR`，偏移 `0x18`。出处是 [RM0008 Rev 21 第 9.2.7 节](#source-rm0008-gpio)。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch03-lckr-sequence.png" width="760" alt="Handraw：LCKR 锁定序列——写 1、写 0、再写 1、读两次（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。GPIOx_LCKR（偏移 0x18）掩码不变，LCKK 写 1-0-1 后连读两次，第二次 LCKK=1 锁到复位；不是寄存器截图。</sub>
+</p>
+
+
 ## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |

@@ -393,6 +393,11 @@ HAL_NVIC_EnableIRQ(TIM2_IRQn);
 | FAULTMASK | 再加 HardFault | `__disable_fault_irq()` |
 | BASEPRI | 数值不够优先的那些 | `__set_BASEPRI(prio << (8 - __NVIC_PRIO_BITS))` |
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-mask-gates.png" width="760" alt="Handraw：三把总闸各挡哪一段（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。PRIMASK 全关可屏蔽、FAULTMASK 连 HardFault、BASEPRI 只关数值 ≥ 阈值的一截；三把闸都拦不住 NMI；不是寄存器截图。</sub>
+</p>
+
 EXTI 线是按**引脚号**共用的：PA0 和 PB0 都连在 EXTI0 上，不能同时做外部中断。要换端口，改 `AFIO->EXTICR`（F1）或 `SYSCFG->EXTICR`（F4），不是两条线并行。
 
 离开本章前，应有按键事件计数、消抖前后对比和一张抢占波形；同时能解释为什么 PA0 与 PB0 不能各占一条独立的 EXTI0。
