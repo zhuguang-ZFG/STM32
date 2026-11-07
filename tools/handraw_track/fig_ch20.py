@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
-"""ch20 knowledge-track figure (facts from docs/20).
+"""ch20 knowledge-track figures (facts from docs/20).
 
-The three-step manual lookup: pick the manual (RM for registers/timing, DS
-for pins/electrical, AN for methods), Ctrl+F the register or bit name, then
-read the functional description for timing and formulas. Worked example 1:
-TIM1 duty -> RM0008, search CCR1, ch.15, duty = CCR1/(ARR+1). Example 2:
-PA11 as USB -> DS5319, search PA11, the Alternate functions column.
+manual_route: the three-step manual lookup — pick the manual (RM for
+registers/timing, DS for pins/electrical, AN for methods), Ctrl+F the
+register or bit name, then read the functional description for timing and
+formulas. Worked example 1: TIM1 duty -> RM0008, search CCR1, ch.15,
+duty = CCR1/(ARR+1). Example 2: PA11 as USB -> DS5319, search PA11, the
+Alternate functions column.
+
+cube_suite: the official tool division of labor — CubeMX (configuration,
+generates init code) -> CubeIDE (build and debug on Eclipse+GCC) ->
+CubeProgrammer (flash hex/bin, option bytes, readout protection); the trio
+covers 90% of scenarios, CubeMonitor watches run-time variables and power.
 """
 from hd import *
 
@@ -60,8 +66,50 @@ def manual_route():
     return f
 
 
+def cube_suite():
+    f = Fig("ch20-cube-suite",
+            "三件套分工：配置 → 编译调试 → 烧录 / the Cube trio")
+    f.text(72, 143, "第 20 章 · ST 的资料全部免费，从 st.com 出发 · 三件套即可覆盖 90% 场景",
+           size=23, color=MUTED)
+
+    # ---- 三件套流水线 ----
+    tools = [(72, "CubeMX", "配置",
+              ["图形化配置", "引脚、时钟、外设", "生成初始化代码"], BLUE_D),
+             (430, "CubeIDE", "编译调试",
+              ["编译与调试", "在同一个工程里", "基于 GCC"], GREEN_D),
+             (788, "CubeProgrammer", "烧录 / 选项字节",
+              ["烧录 hex / bin", "读写选项字节", "解除读保护"], AMBER_STROKE)]
+    y0, bw, bh = 185, 292, 180
+    for x, name, role, lines, color in tools:
+        f.rect(x, y0, bw, bh, color=color, fill=WHITE, sw=2.6)
+        f.text(x + 20, y0 + 44, name, size=25, color=color, weight="bold")
+        f.text(x + 20, y0 + 78, role, size=21, color=INK, weight="bold")
+        f.multi(x + 20, y0 + 110, lines, size=18, color=INK, lh=26)
+    f.arrow(368, 275, 424, 275, color=INK, bend=0.0)
+    f.arrow(726, 275, 782, 275, color=INK, bend=0.0)
+
+    # ---- 第四件：CubeMonitor（不在三件套内） ----
+    f.rect(331, 435, 490, 104, color=MUTED, fill=WHITE, dash="7 6", double=False)
+    f.text(576, 471, "CubeMonitor（三件套之外）", size=24, color=MUTED,
+           anchor="middle", weight="bold")
+    f.text(576, 507, "运行时变量可视化 · 功耗监测（配合 X-NUCLEO）", size=18,
+           color=INK, anchor="middle")
+
+    f.line(72, 585, 1080, 585, color=MUTED, sw=1.3)
+    f.htext(72, 628, "配置用 CubeMX · 编译调试用 CubeIDE · 烧录和选项字节用 CubeProgrammer",
+            size=23, color=INK, weight="bold", hl=True)
+    f.text(72, 672, "三件套即可覆盖 90% 场景；数据手册、参考手册、应用笔记也从 st.com 下载。",
+           size=21, color=INK)
+    f.text(72, 706, "工具怎么用查 UM：UM 讲工具 / 评估板 / 库的使用说明（如 CubeMX / CubeIDE 的 UM）。",
+           size=21, color=INK)
+    f.text(72, 740, "本图整理本章「官方资源地图」一节的工具分工；各工具能力以官方文档为准。",
+           size=19, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch20-manual-route": manual_route,
+    "ch20-cube-suite": cube_suite,
 }
 
 if __name__ == "__main__":

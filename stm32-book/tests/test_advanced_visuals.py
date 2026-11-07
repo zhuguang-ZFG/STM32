@@ -233,7 +233,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "15-FreeRTOS入门.md": (
-        17,
+        18,
         (
             "freertos-scheduler.svg",
             "sample-15-rtos-tick-flow.svg",
@@ -252,10 +252,11 @@ CHAPTERS = {
             "rtos-startup-gates.svg",
             "ch15-prio-inherit.png",
             "ch15-psp-msp.png",
+            "ch15-stack-watermark.png",
         ),
     ),
     ROOT / "docs" / "16-低功耗设计.md": (
-        15,
+        16,
         (
             "lowpower-wakeup.svg",
             "sample-16-stop-wake-flow.svg",
@@ -272,10 +273,11 @@ CHAPTERS = {
             "sample-16-pwr-triage.svg",
             "ch16-pwr-triage.png",
             "ch16-wake-matrix.png",
+            "ch16-pvd-window.png",
         ),
     ),
     ROOT / "docs" / "17-调试与性能优化.md": (
-        15,
+        16,
         (
             "debug-swo.svg",
             "ch17-bp-comparators.png",
@@ -292,10 +294,11 @@ CHAPTERS = {
             "fault-triage-ladder.svg",
             "sample-17-perf-triage.svg",
             "ch17-perf-triage.png",
+            "ch17-halt-timing.png",
         ),
     ),
     ROOT / "docs" / "19-项目实战合集.md": (
-        17,
+        18,
         (
             "peripheral-wiring.svg",
             "ch19-ab-partition.png",
@@ -314,10 +317,11 @@ CHAPTERS = {
             "ch19-milestone-triage.png",
             "sample-19-sram-budget.svg",
             "ch19-sram-budget.png",
+            "ch19-usb-split.png",
         ),
     ),
     ROOT / "docs" / "18-常见问题FAQ.md": (
-        14,
+        15,
         (
             "toolchain-flow.svg",
             "sample-18-boot0-flow.svg",
@@ -333,6 +337,7 @@ CHAPTERS = {
             "ch18-faq-compare.png",
             "sample-18-uart-garbled.svg",
             "ch18-uart-garbled.png",
+            "ch18-five-steps.png",
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
@@ -394,7 +399,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
-        16,
+        17,
         (
             "project-structure.svg",
             "sample-20-evidence-flow.svg",
@@ -412,6 +417,7 @@ CHAPTERS = {
             "single-build-contract.svg",
             "sample-20-evidence-triage.svg",
             "ch20-evidence-triage.png",
+            "ch20-cube-suite.png",
         ),
     ),
     ROOT / "docs" / "22-仿真实验Wokwi与Renode.md": (

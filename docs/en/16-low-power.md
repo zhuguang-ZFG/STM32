@@ -399,6 +399,11 @@ HAL_PWR_ConfigPVD(&pvd);
 HAL_PWR_EnablePVD();
 ```
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-pvd-window.png" width="760" alt="Handraw: PVD threshold, rescue window and minimum operating voltage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PVD watches VDD; with EXTI16 and NVIC configured, falling through the selected threshold raises an interrupt that writes key data into the backup domain or Flash. How long the write can last depends on supply hold-up, write time, and the minimum operating voltage; PVD gives no fixed number of milliseconds. Thresholds in the drawing are relative positions, not millivolt values; not a photo.</sub>
+</p>
+
 Sleep current is not a fixed 1 mA either. The core is stopped, but the peripheral clocks are still on, and the current is usually still in the milliamp range. Stop is the mode that reaches the microamp range. The numbers in the comparison table above are the order of magnitude from the datasheet. They are not a measurement from a board in this repo. If you are writing them into a paper or a battery budget, open the datasheet for that exact part and copy the column that matches the clocks you turned off.
 
 Before leaving this chapter, keep four mode baselines, Stop wake plus restored 115200 evidence, one integrated periodic-current trace, and a delta table from removing each external load.

@@ -61,6 +61,11 @@
 
 ST's documents are free, and you start from **st.com**. For development, **CubeMX (configuration) + CubeIDE (build and debug) + CubeProgrammer (flash and option bytes)** covers most of what you will do.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-cube-suite.png" width="760" alt="Handraw: the Cube trio — configure, build and debug, flash (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). CubeMX draws the pinout, clocks, and peripherals and generates the init code; CubeIDE builds and debugs in one place; CubeProgrammer flashes hex/bin, reads and writes option bytes, and clears readout protection. The trio covers most scenarios; CubeMonitor, outside the trio, watches run-time variables and power; not a photo.</sub>
+</p>
+
 | Resource | Site or name | What it is for |
 | --- | --- | --- |
 | ST website | st.com | Download datasheets, reference manuals, and application notes |

@@ -214,6 +214,49 @@ def uart_garbled():
     return f
 
 
+def five_steps():
+    f = Fig("ch18-five-steps", "排错五步：从复现到手册")
+    f.text(72, 128, "保留触发条件和失败现场；每次只验证一个假设。", size=22, color=MUTED)
+
+    steps = [
+        (72, "复现", ["记录触发条件、", "频率、运行负载"], "区分稳定失败与偶发", GREEN_D),
+        (281, "最小化", ["退到只点灯 /", "只回环的最小工程"], "配置问题还是逻辑问题", BLUE_D),
+        (490, "二分", ["注释一半代码，", "或逐个外设使能"], "定位引入问题的模块", AMBER_STROKE),
+        (699, "看证据", ["串口日志 / 波形 /", "CFSR · BFAR"], "用数据代替猜测", RED),
+        (908, "对照手册", ["查 RM / DS 的", "寄存器与时序"], "「以为对」是否真对", BLUE_D),
+    ]
+    for i, (x, name, action, purpose, col) in enumerate(steps):
+        f.rect(x, 168, 172, 120, color=col, fill=WHITE)
+        f.circle(x + 86, 168, 22, color=col, fill=WHITE, sw=2.6)
+        f.text(x + 86, 176, str(i + 1), size=22, color=col, anchor="middle",
+               weight="bold")
+        f.text(x + 86, 222, name, size=26, color=col, anchor="middle", weight="bold")
+        f.multi(x + 86, 250, action, size=18, color=INK, lh=26, anchor="middle")
+        f.text(x + 86, 318, purpose, size=17, color=MUTED, anchor="middle")
+    for x0, x1 in ((248, 277), (457, 486), (666, 695), (875, 904)):
+        f.arrow(x0, 228, x1, 228, color=INK, sw=2.4, bend=0)
+
+    # 修改后回到复现：同一条件复测
+    f.stroke([(994, 342), (994, 396), (158, 396), (158, 352)],
+             color=RED, sw=2.2, amp=1.2, dash="7 7", opacity=0.9)
+    f.arrowhead(158, 350, 0, -1, color=RED, head=10)
+    f.htext(576, 424, "每次只验证一个假设 · 修改后用同一条件复测", size=21, color=RED,
+            anchor="middle", weight="bold", hl=True)
+
+    f.line(72, 456, 1080, 456, color=MUTED, sw=1.3)
+
+    # 三条铁律
+    f.text(72, 498, "三条铁律", size=27, color=INK, weight="bold")
+    rules = [(72, "能测就别猜", GREEN_D), (416, "先共地再看信号", BLUE_D),
+             (760, "改一处只改一处", RED)]
+    for x, rule, col in rules:
+        f.rect(x, 518, 320, 84, color=col, fill=WHITE)
+        f.text(x + 160, 570, rule, size=28, color=col, anchor="middle", weight="bold")
+    f.text(72, 646, "猜测式修改会让两个错误叠在一起，最后谁也不认领。", size=20, color=MUTED)
+    f.text(72, 696, "五步有顺序：先复现、再最小化；前两步走完还不知道范围，再二分、看证据。", size=21, color=INK)
+    return f
+
+
 FIGS = {
     "ch18-multi-def": multi_def,
     "ch18-boot-triage": boot_triage,
@@ -221,6 +264,7 @@ FIGS = {
     "ch18-hardfault-ladder": hardfault_ladder,
     "ch18-faq-compare": faq_compare,
     "ch18-uart-garbled": uart_garbled,
+    "ch18-five-steps": five_steps,
 }
 
 if __name__ == "__main__":

@@ -247,6 +247,11 @@ UBaseType_t free_words = uxTaskGetStackHighWaterMark(xTask);
 ```
 
 <p align="center">
+  <img src="../assets/illustrations/handraw/ch15-stack-watermark.png" width="760" alt="Handraw：任务栈向下增长，水位与溢出钩子（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。栈按字（4 B）分配：128 字 = 512 B，误当字节只分 32 字、容量只剩 1/4；水位线是 uxTaskGetStackHighWaterMark() 看到的剩余最小空闲字数，接近 0 就加大；configCHECK_FOR_STACK_OVERFLOW=2 加 vApplicationStackOverflowHook 在溢出时抓现场；不是实拍。</sub>
+</p>
+
+<p align="center">
   <img src="../assets/illustrations/handraw/ch15-psp-msp.png" width="760" alt="Cortex-M3 任务栈 PSP 与异常栈 MSP：首次硬件帧留在任务栈，ISR 和嵌套使用 MSP">
   <br><sub>▲ 左边跟随任务 A 的 PSP，右边是异常处理共用的 MSP。IRQ 打断任务时，硬件先在 A 的栈中保存 R0–R3、R12、LR、PC、xPSR；进入 ISR 后用 MSP。PendSV 切换再保存 R4–R11，并把 PSP 写入 TCB。8 个寄存器占 32 B，还须留对齐余量。任务水位不能代替 MSP 预算。手绘原理图，未按地址或容量比例绘制；依据 [PM0056](#source-pm0056-nvic) 与 [FreeRTOS ARM_CM3 移植](#source-freertos-syscall)。</sub>
 </p>

@@ -2280,5 +2280,35 @@
   "type": "technical",
   "chapter": "03",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LCKR 锁定五步：写 1、写 0、再写 1，读两次，第二次 LCKK=1 才锁住；中途错序锁中止；不是实拍。"
+ },
+ "illustrations/handraw/ch15-stack-watermark.png": {
+  "type": "technical",
+  "chapter": "15",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。1 字 = 4 B，128 字 = 512 B，误当字节容量剩 1/4；高水位看最小空闲；configCHECK_FOR_STACK_OVERFLOW=2；不是实拍。"
+ },
+ "illustrations/handraw/ch16-pvd-window.png": {
+  "type": "concept",
+  "chapter": "16",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PVD 下穿/回升都报（EXTI16），不提供固定剩余毫秒；写备份域或闪存前看供电余量；不是实拍。"
+ },
+ "illustrations/handraw/ch19-usb-split.png": {
+  "type": "technical",
+  "chapter": "19",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。133 字节应用帧拆 64+64+5 三包，wMaxPacketSize 仍写 64；帧头 0xAA 0x55 + seq + 128 B 样本 + Checksum8；不是实拍。"
+ },
+ "illustrations/handraw/ch20-cube-suite.png": {
+  "type": "concept",
+  "chapter": "20",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CubeMX 配置、CubeIDE 编译调试、CubeProgrammer 烧录/选项字节，三件套覆盖 90% 场景；CubeMonitor 在其外；不是实拍。"
+ },
+ "illustrations/handraw/ch17-halt-timing.png": {
+  "type": "technical",
+  "chapter": "17",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。条件断点仍占一个比较器，命中→内核暂停→读现场，计时区间被污染；零差先查是否在单步；不是实拍。"
+ },
+ "illustrations/handraw/ch18-five-steps.png": {
+  "type": "concept",
+  "chapter": "18",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排错五步：复现→最小化→二分→看证据→对照手册，每步一个假设同一条件复测；三条铁律压底；不是实拍。"
  }
 }

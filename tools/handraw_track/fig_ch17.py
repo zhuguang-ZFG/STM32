@@ -193,6 +193,69 @@ def perf_triage():
     return f
 
 
+def halt_timing():
+    f = Fig("ch17-halt-timing", "断点 / 单步：停一下，时序就变一次")
+    f.text(72, 128, "命中 → 内核暂停 → 主机读现场；读的是此刻的 PC / 变量 / 寄存器。", size=22, color=MUTED)
+
+    # ---- 上：同一程序的两种时间线 ----
+    f.text(72, 174, "连续运行", size=25, color=GREEN_D, weight="bold")
+    f.text(216, 174, "计时区间内保持内核连续运行", size=21, color=INK)
+    f.fillrect(420, 194, 400, 40, GRAY_FILL, r=4)
+    f.line(150, 214, 1010, 214, color=GREEN_D, sw=3)
+    for x in (220, 320, 420, 520, 620, 720, 820, 920):
+        f.circle(x, 214, 6, color=GREEN_D, fill=WHITE, sw=2)
+    f.text(620, 262, "浅色一段是计时窗口：里面没有人打扰，读数才属于这段代码", size=18, color=MUTED, anchor="middle")
+
+    f.text(72, 302, "命中断点", size=25, color=RED, weight="bold")
+    f.line(150, 342, 462, 342, color=BLUE_D, sw=3)
+    for x in (220, 320, 420):
+        f.circle(x, 342, 6, color=BLUE_D, fill=WHITE, sw=2)
+    f.stroke([(452, 330), (482, 354)], color=RED, sw=3.6, amp=0.8)
+    f.stroke([(452, 354), (482, 330)], color=RED, sw=3.6, amp=0.8)
+    f.text(467, 314, "命中", size=19, color=RED, anchor="middle", weight="bold")
+    f.rect(500, 314, 240, 56, color=RED, fill=WHITE)
+    f.text(620, 349, "内核暂停 · 调试器读现场", size=19, color=RED, anchor="middle", weight="bold")
+    f.line(756, 342, 1010, 342, color=BLUE_D, sw=3)
+    for x in (770, 870, 970):
+        f.circle(x, 342, 6, color=BLUE_D, fill=WHITE, sw=2)
+    f.htext(620, 396, "恢复后程序继续，但节奏里多了一段停顿：扰动时序", size=20, color=RED, anchor="middle", weight="bold", hl=True)
+
+    f.line(72, 432, 1080, 432, color=MUTED, sw=1.3)
+
+    # ---- 左下：条件断点的判断链 ----
+    f.text(72, 466, "条件断点：判断发生在暂停之后", size=25, color=BLUE_D, weight="bold")
+    f.rect(72, 486, 250, 50, color=BLUE_D, fill=WHITE)
+    f.text(197, 518, "FPB 比较指令地址", size=21, color=BLUE_D, anchor="middle", weight="bold")
+    f.arrow(197, 540, 197, 562, color=INK, bend=0)
+    f.rect(72, 566, 250, 50, color=RED, fill=WHITE)
+    f.text(197, 598, "内核暂停", size=22, color=RED, anchor="middle", weight="bold")
+    f.arrow(197, 620, 197, 642, color=INK, bend=0)
+    f.rect(72, 646, 250, 50, color=AMBER_STROKE, fill=WHITE)
+    f.text(197, 678, "主机判断条件", size=21, color=AMBER_STROKE, anchor="middle", weight="bold")
+    f.arrow(326, 658, 392, 646, color=GREEN_D, bend=0)
+    f.arrow(326, 674, 392, 708, color=BLUE_D, bend=0)
+    f.rect(400, 624, 168, 44, color=GREEN_D, fill=WHITE, double=False)
+    f.text(484, 653, "满足：停住读", size=19, color=GREEN_D, anchor="middle", weight="bold")
+    f.rect(400, 688, 168, 44, color=BLUE_D, fill=WHITE, double=False)
+    f.text(484, 717, "不满足：继续", size=19, color=BLUE_D, anchor="middle", weight="bold")
+    f.text(72, 762, "条件硬件断点仍占 1 个比较器", size=20, color=INK)
+
+    # ---- 右下：DWT 窗口最怕中途停 ----
+    f.text(620, 470, "DWT 窗口：要求连续运行", size=25, color=GREEN_D, weight="bold")
+    f.text(680, 500, "t0", size=19, color=BLUE_D)
+    f.line(680, 510, 680, 566, color=BLUE_D, sw=1.6, dash="5 5")
+    f.text(1020, 500, "t1", size=19, color=BLUE_D, anchor="end")
+    f.line(1020, 510, 1020, 566, color=BLUE_D, sw=1.6, dash="5 5")
+    f.rect(724, 524, 252, 50, color=GREEN_D, fill=WHITE)
+    f.text(850, 556, "被测代码", size=23, color=GREEN_D, anchor="middle", weight="bold")
+    f.circle(770, 614, 16, color=RED, fill=WHITE, sw=2.6)
+    f.line(759, 625, 781, 603, color=RED, sw=2.6, amp=0.8)
+    f.circle(770, 614, 5, color=RED, fill=RED)
+    f.text(800, 621, "断点 / 单步都让内核停下来", size=21, color=RED, weight="bold")
+    f.multi(620, 676, ["DWT 读数为 0 时，先查是否在单步；", "空窗口也包含读计数器的开销。"], size=20, color=INK, lh=38)
+    return f
+
+
 FIGS = {
     "ch17-bp-comparators": bp_comparators,
     "ch17-cfsr": cfsr,
@@ -200,6 +263,7 @@ FIGS = {
     "ch17-obs-compare": obs_compare,
     "ch17-cfsr-bits": cfsr_bits,
     "ch17-perf-triage": perf_triage,
+    "ch17-halt-timing": halt_timing,
 }
 
 if __name__ == "__main__":

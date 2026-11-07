@@ -130,10 +130,68 @@ def task_states():
     return f
 
 
+def stack_watermark():
+    f = Fig("ch15-stack-watermark", "栈往下长：水位量余量，钩子抓现场")
+    f.text(84, 140, "STM32F103 · Cortex-M3 · 任务栈用 PSP 向下增长 · 1 字 = 4 B · ISR 与嵌套用 MSP，两边分别留余量",
+           size=20, color=MUTED)
+
+    # ---- 左：一列栈，向下增长，水位线记历史最深 ----
+    f.rect(84, 170, 460, 380, color=BLUE_D, fill=WHITE)
+    f.text(104, 202, "LED 任务的栈：128 字 = 512 B", size=22, color=BLUE_D,
+           weight="bold")
+    f.text(160, 240, "栈顶 · 高地址（初始 SP）", size=17, color=MUTED)
+    f.fillrect(162, 252, 116, 104, AMBER_FILL)          # 已用（历史最深）
+    f.fillrect(162, 356, 116, 132, GRAY_FILL)           # 空闲（剩余）
+    f.rect(160, 250, 120, 240, color=BLUE_D, sw=2.6)
+    f.line(160, 356, 280, 356, color=RED, sw=2.4, dash="6 5")
+    f.line(280, 356, 340, 356, color=RED, sw=1.6, dash="4 5", opacity=0.7)
+    f.text(348, 362, "水位线：历史最深", size=18, color=RED, weight="bold")
+    f.text(220, 314, "已用（最深时）", size=17, color=INK, anchor="middle")
+    f.text(220, 428, "空闲（剩余）", size=17, color=INK, anchor="middle")
+    f.text(140, 512, "栈底 · 低地址", size=17, color=MUTED)
+    f.text(104, 534, "水位接近 0 就要加大；示意未按地址与容量比例绘制",
+           size=17, color=MUTED)
+
+    # ---- 右：穿到底会发生什么 ----
+    f.rect(608, 170, 460, 380, color=RED, fill=WHITE)
+    f.text(628, 202, "一旦穿到底，会发生什么", size=22, color=RED,
+           weight="bold")
+    f.rect(628, 236, 420, 64, color=RED, fill=WHITE, sw=2.2)
+    f.text(644, 262, "栈太小：一路写到栈底以下", size=20, color=INK)
+    f.text(644, 288, "下面就是别的任务或堆的地盘", size=18, color=MUTED)
+    f.arrow(838, 306, 838, 340, color=RED, bend=0, head=9)
+    f.rect(628, 348, 420, 64, color=RED, fill=PAPER, sw=2.2)
+    f.text(644, 374, "表现：随机 HardFault", size=20, color=RED, weight="bold")
+    f.text(644, 400, "现场不像栈问题，最难查", size=18, color=INK)
+    f.rect(628, 436, 420, 94, color=AMBER_STROKE, fill=WHITE, sw=2.2)
+    f.text(644, 466, "单位给错，容量只剩 1/4", size=20, color=AMBER_STROKE,
+           weight="bold")
+    f.text(644, 492, "把 128 字误当 128 字节 → 只分 32 字", size=18, color=INK)
+    f.text(644, 516, "含 printf / 浮点：256~512 字起步", size=18, color=MUTED)
+
+    # ---- 底：两个抓手 ----
+    f.rect(84, 592, 476, 118, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(100, 624, "抓手一 · 运行期量水位", size=21, color=GREEN_D,
+           weight="bold")
+    f.multi(100, 656, ["uxTaskGetStackHighWaterMark()：",
+                       "返回剩余最小空闲字数，接近 0 就要加大"],
+            size=18, color=INK, lh=26)
+    f.rect(592, 592, 476, 128, color=RED, fill=WHITE, sw=2.4)
+    f.text(608, 622, "抓手二 · 出错抓现场", size=21, color=RED, weight="bold")
+    f.multi(608, 654, ["configCHECK_FOR_STACK_OVERFLOW = 2",
+                       "+ vApplicationStackOverflowHook()：断点里",
+                       "看是哪个任务溢出"],
+            size=18, color=INK, lh=26)
+    f.htext(576, 748, "栈按字给；水位管平时，钩子抓现场", size=24,
+            color=INK, weight="bold", anchor="middle", hl=True)
+    return f
+
+
 FIGS = {
     "ch15-prio-inherit": prio_inherit,
     "ch15-psp-msp": psp_msp,
     "ch15-task-states": task_states,
+    "ch15-stack-watermark": stack_watermark,
 }
 
 if __name__ == "__main__":

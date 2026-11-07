@@ -52,6 +52,11 @@ The nominal LSB of a 12-bit ADC is Vref/4096. With that scale, code 2048 gives 1
 
 The application frame is `4 + 128 + 1 = 133` bytes. The chapter 14 full-speed bulk packet limit is 64 bytes, so 133 bytes go out as three packets, 64 + 64 + 5. The endpoint descriptor's `wMaxPacketSize` stays 64, not 133. The 48 MHz USB clock and VID/PID `0x1209/0x0001` are in chapter 14.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-usb-split.png" width="760" alt="Handraw: the 133-byte application frame split into three packets, 64 + 64 + 5 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). The application frame is 4 + 128 + 1 = 133 bytes; the full-speed bulk limit is 64 bytes per packet, so it goes out as three packets and the endpoint descriptor keeps `wMaxPacketSize` at 64; not a photo.</sub>
+</p>
+
 Project 8 uses 120 Ω at each end, pins PB8 and PB9, and 500 kbit/s, matching chapter 13. Pick a 5 V or 3.3 V transceiver from the bill of materials. See [repository examples](#source-project-examples).
 
 This chapter reserves pin 10 PA0 for LED, ADC, or wake-up experiments. Choose another free GPIO for motor direction and update `MOTOR_DIR_PIN`. PA0-WKUP and ADC12_IN0 are alternative functions; PA0 can be an ordinary output when it is not already in use. See [DS5319 ADC](#source-ds5319-adc).
