@@ -268,6 +268,11 @@ VDDA       = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 real V_in  = ADC_Read(ch) × VDDA / 4096
 ```
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-vrefint-cal.png" width="760" alt="Handraw: working the real VDDA back from Vrefint (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top chain is the whole procedure — ADC1 channel 17 sits on an internal reference of about 1.20 V (enable TSVREFE first); read its code, work back with VDDA = 1.20 V × 4096 / code, then convert the other channels with that VDDA. The middle shows the same code axis twice: at a nominal 3.3 V, code 2048 is 1.65 V; if CH17 itself only reads 2048, the real VDDA is 2.40 V, and 2048 now means 1.20 V, with 1 LSB moving from 0.806 mV to 0.586 mV. What it proves: the VDDA in the formula is not a constant — measure the ruler first, then read. What it does not prove: 1.20 V is a typical value, not a per-device calibration; the F103C8 has no factory VREFINT_CAL like the F4, and ADC2 channels 16/17 are tied to VSS, so Vrefint is readable only through ADC1. Source: [RM0008 Rev 21 ch.11](#source-rm0008-adc).</sub>
+</p>
+
 > F4, L4, and similar families provide **factory calibration values**: `TS_CAL1` (30°C), `TS_CAL2` (110°C), and `VREFINT_CAL`. They live in the system memory area. Read them directly. They are far more accurate than looking up a typical value.
 
 ### 6. DAC output modes, the buffer, and noise

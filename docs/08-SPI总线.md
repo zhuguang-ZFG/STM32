@@ -47,6 +47,11 @@ Mode 0 是 CPOL = 0、CPHA = 0：空闲时 SCK 为低，在第一个边沿（上
 
 读回的三个字节对不上 `0xEF 0x40 0x17`，最常见的原因是 MOSI 和 MISO 接反了。另外几种：片选一直不拉高，下一条命令会接在上一条后面；只调用 Transmit、不读 MISO，下一次读到的是上次留在接收寄存器里的字节；CPHA 配成第二沿，字节会错一位。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-cs-bracket.png" width="760" alt="Handraw：片选括号时序（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。PA4（第 14 脚）推挽输出当片选：拉低表示开始，拉高表示结束；CS↓ 早于第 1 个采样沿，最后一个下降沿之后才拉高。有的从机只在片选上升沿才把数据收下；PA4 一直为低，下一条命令会接在上一条后面。Mode 0 下 SCK 空闲为低、上升沿采样。出处是 [RM0008 Rev 21 第 25 章](#source-rm0008-spi) 与 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
+</p>
+
 ## 关键插图
 
 

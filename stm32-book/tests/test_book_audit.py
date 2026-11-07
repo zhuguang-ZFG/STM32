@@ -153,7 +153,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "06": (
 
-                "uart-frame.svg", "ch06-ore-fe.png", "sample-06-ore-overwrite-flow.svg",
+                "uart-frame.svg", "ch06-sample-points.png", "ch06-ore-fe.png", "sample-06-ore-overwrite-flow.svg",
                 "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
                 "ch06-uart-frame.png", "uart-idle.gif", "sample-06-frame-annotated.svg",
                 "uart-bits.gif", "sample-06-baud-formula.svg", "ch06-baud-formula.png",
@@ -170,7 +170,7 @@ class BookAuditTests(unittest.TestCase):
             ),
             "08": (
 
-                "spi-transfer.svg", "sample-08-spi-jedec-flow.svg", "sample-08-spi-jedec.svg",
+                "spi-transfer.svg", "ch08-cs-bracket.png", "sample-08-spi-jedec-flow.svg", "sample-08-spi-jedec.svg",
                 "ch08-spi-jedec.png", "spi-jedec.gif", "ch08-byte-exchange.png",
                 "sample-08-mode0-edges.svg",
                 "sample-08-cpha-modes.svg", "ch08-cpha-modes.png", "sample-08-br-table.svg",
@@ -182,7 +182,8 @@ class BookAuditTests(unittest.TestCase):
                 "adc-sar.svg", "sample-09-adc-sar-weights.svg", "sample-09-adc-sar.svg",
                 "ch09-adc-sar.png", "adc-sample.gif", "sample-09-vref-rails.svg",
                 "ch09-vref-rails.png", "sample-09-sar-ladder.svg", "ch09-sar-ladder.png",
-                "sar-adc.gif", "ch09-scan-sequence.png", "dma-circular.svg", "sample-09-sample-time.svg",
+                "sar-adc.gif", "ch09-scan-sequence.png", "dma-circular.svg",
+                "ch09-vrefint-cal.png", "sample-09-sample-time.svg",
                 "ch09-sample-time.png", "sample-09-adc-triage.svg", "ch09-adc-triage.png",
             ),
             "10": (
@@ -191,7 +192,8 @@ class BookAuditTests(unittest.TestCase):
                 "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
                 "ch10-dma-cndtr.png", "dma-cndtr.gif", "sample-10-mem2mem-vs-peri.svg",
                 "ch10-mem2mem-vs-peri.png", "sample-10-dma-triage.svg", "ch10-dma-triage.png",
-                "sample-10-dma-phases.svg", "ch10-dma-phases.png", "dma-buffer-ownership.svg",
+                "sample-10-dma-phases.svg", "ch10-dma-phases.png", "ch10-request-beat.png",
+                "dma-buffer-ownership.svg",
                 "dma-ring.gif", "sample-10-cndtr-ledger.svg", "ch10-cndtr-ledger.png",
             ),
         }
@@ -208,7 +210,7 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "11": (
 
-                "iwdg-window.svg", "ch11-wwdg-window.png", "sample-11-wwdg-window-flow.svg",
+                "iwdg-window.svg", "ch11-lsi-drift.png", "ch11-wwdg-window.png", "sample-11-wwdg-window-flow.svg",
                 "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
                 "ch11-iwdg-1s.png", "iwdg-1s.gif", "sample-11-backup-domain.svg",
                 "ch11-backup-domain.png", "sample-11-wdg-compare.svg", "ch11-wdg-compare.png",
@@ -229,7 +231,8 @@ class BookAuditTests(unittest.TestCase):
                 "ch13-can-bit.png", "can-500k.gif", "ch13-arb-ladder.png",
                 "sample-13-bit-quanta.svg",
                 "ch13-bit-quanta.png", "sample-13-filter-fifo.svg", "ch13-filter-fifo.png",
-                "sample-13-can-triage.svg", "ch13-can-triage.png", "sample-13-tec-busoff.svg",
+                "ch13-filter-mask.png", "sample-13-can-triage.svg", "ch13-can-triage.png",
+                "sample-13-tec-busoff.svg",
                 "ch13-tec-busoff.png",
             ),
         }

@@ -92,8 +92,78 @@ def scan_sequence():
     return f
 
 
+def vrefint_cal():
+    """Vrefint (ADC1 CH17, about 1.20 V) measured back to the real VDDA."""
+    f = Fig("ch09-vrefint-cal",
+            "Vrefint 反推 VDDA：先量尺子，再读数 / measure the ruler, then read")
+
+    # ---- 上：机制链 ----
+    f.text(84, 132, "VDDA 本身就是量尺：先用片内固定的 1.20 V 把尺子量一遍，再读别的通道",
+           size=21, color=MUTED)
+    f.rect(84, 156, 280, 118, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(100, 188, "ADC1 通道 17", size=21, color=GREEN_D, weight="bold")
+    f.multi(100, 216, ["内部基准 ≈ 1.20 V", "先置 TSVREFE 才接通"],
+            size=16, color=INK, lh=25)
+    f.arrow(366, 213, 410, 213, color=INK, sw=2.4, bend=0.0)
+    f.rect(414, 156, 260, 118, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(430, 188, "读 CH17 的码", size=21, color=BLUE_D, weight="bold")
+    f.multi(430, 216, ["ADC_Read(Vrefint_CH17)", "典型值，不是出厂校准"],
+            size=16, color=INK, lh=25)
+    f.arrow(678, 213, 722, 213, color=INK, sw=2.4, bend=0.0)
+    f.rect(726, 156, 338, 118, color=RED, fill=WHITE, sw=2.4)
+    f.text(742, 188, "反推并修正", size=21, color=RED, weight="bold")
+    f.multi(742, 216, ["VDDA = 1.20 V × 4096 ÷ code",
+                       "真实 V_in = code × VDDA ÷ 4096"],
+            size=16, color=INK, lh=25)
+
+    # ---- 中：同一把尺的两种长度 ----
+    f.text(84, 324, "同一个码 2048（半量程），尺子长度不同，它代表的电压就不同：",
+           size=21, color=INK)
+
+    def ruler(x, y, w, mid_v, color):
+        f.line(x, y, x + w, y, color=INK, sw=2.4)
+        for xx in (x, x + w / 2, x + w):
+            f.line(xx, y - 9, xx, y + 9, color=INK, sw=2.0)
+        f.text(x + w / 2, y - 18, mid_v, size=18, color=color, anchor="middle",
+               weight="bold")
+        f.text(x, y + 34, "0", size=16, color=MUTED, anchor="middle")
+        f.text(x + w / 2, y + 34, "2048", size=16, color=MUTED, anchor="middle")
+        f.text(x + w, y + 34, "4096", size=16, color=MUTED, anchor="middle")
+
+    # 左：名义 3.3 V
+    f.rect(84, 352, 464, 204, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(102, 384, "VDDA 真是 3.30 V 时（正文换算）", size=20,
+           color=AMBER_STROKE, weight="bold")
+    ruler(108, 446, 416, "2048 ↔ 1.65 V", AMBER_STROKE)
+    f.multi(102, 512, ["1 LSB = 3.3 V ÷ 4096 ≈ 0.806 mV",
+                       "量化误差天生 ±0.5 LSB"],
+            size=16, color=INK, lh=25)
+
+    # 右：Vrefint 反推出的 2.4 V
+    f.rect(600, 352, 464, 204, color=RED, fill=WHITE, sw=2.4)
+    f.text(618, 384, "CH17 只读出 2048：VDDA 实际 = 2.40 V", size=20,
+           color=RED, weight="bold")
+    ruler(624, 446, 416, "2048 ↔ 1.20 V", RED)
+    f.multi(618, 512, ["1.20 × 4096 ÷ 2048 = 2.40 V（尺子短了）",
+                       "1 LSB ≈ 0.586 mV；还按 3.3 V 算就整体虚高"],
+            size=16, color=INK, lh=25)
+
+    # ---- 下：别踩 ----
+    f.rect(84, 580, 980, 108, color=MUTED, fill=WHITE, sw=2.2)
+    f.multi(102, 610, [
+        "ADC2 的通道 16/17 接 VSS——Vrefint 只能从 ADC1 读",
+        "1.20 V 是典型值：F4 才有出厂 VREFINT_CAL，F103C8 没有",
+        "LQFP48 没有独立 VREF+，第 9 脚 VDDA 就是量尺，跌 1% 全表偏 1%",
+    ], size=17, color=INK, lh=26)
+
+    f.htext(84, 724, "先读 CH17 反推 VDDA，再换算别的通道——顺序不能反",
+            size=23, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch09-scan-sequence": scan_sequence,
+    "ch09-vrefint-cal": vrefint_cal,
 }
 
 if __name__ == "__main__":

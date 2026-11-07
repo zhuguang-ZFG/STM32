@@ -235,6 +235,11 @@ F1 的 bxCAN 有 **14 个过滤器组** 和 **2 个接收 FIFO**；过滤器把�
 
 > F4 的 bxCAN 结构与之类似（也是 14 组过滤器 + 2 FIFO，见 RM0090 第 32 章 Controller area network），寄存器命名基本一致。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-filter-mask.png" width="760" alt="Handraw：掩码模式逐位打分、列表模式精确点名（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。掩码位 1 必须匹配、0 不关心；列表模式收精确 ID；标准 ID 以 FilterIdHigh = 0x123 << 5 写入，低 5 位补 0——不左移，总线上有帧邮箱也空；不是实拍。</sub>
+</p>
+
 
 <p align="center">
   <img src="../assets/diagrams/sample-13-can-triage.svg" width="760" alt="预分频 8 配 10 个份额是 450 kbit/s；邮箱空是没左移 5 位；错误帧暴涨查采样点">

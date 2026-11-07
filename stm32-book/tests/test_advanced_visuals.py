@@ -103,7 +103,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "09-ADC与DAC.md": (
-        16,
+        17,
         (
             "adc-sar.svg",
             "sample-09-adc-sar-weights.svg",
@@ -121,10 +121,11 @@ CHAPTERS = {
             "sample-09-adc-triage.svg",
             "ch09-adc-triage.png",
             "ch09-scan-sequence.png",
+            "ch09-vrefint-cal.png",
         ),
     ),
     ROOT / "docs" / "10-DMA.md": (
-        16,
+        17,
         (
             "dma-circular.svg",
             "ch10-channel-map.png",
@@ -142,10 +143,11 @@ CHAPTERS = {
             "dma-ring.gif",
             "sample-10-cndtr-ledger.svg",
             "ch10-cndtr-ledger.png",
+            "ch10-request-beat.png",
         ),
     ),
     ROOT / "docs" / "11-RTC与看门狗.md": (
-        16,
+        17,
         (
             "iwdg-window.svg",
             "ch11-wwdg-window.png",
@@ -163,6 +165,7 @@ CHAPTERS = {
             "watchdog-reset-evidence.svg",
             "sample-11-rtc-triage.svg",
             "ch11-rtc-triage.png",
+            "ch11-lsi-drift.png",
         ),
     ),
     ROOT / "docs" / "12-Flash与IAP升级.md": (
@@ -186,7 +189,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "13-CAN总线.md": (
-        14,
+        15,
         (
             "can-arbitration.svg",
             "sample-13-can-arb-flow.svg",
@@ -202,6 +205,7 @@ CHAPTERS = {
             "ch13-can-triage.png",
             "sample-13-tec-busoff.svg",
             "ch13-tec-busoff.png",
+            "ch13-filter-mask.png",
         ),
     ),
     ROOT / "docs" / "14-USB.md": (

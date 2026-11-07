@@ -234,6 +234,11 @@ On **F1, APB1 = 36 MHz**:
 
 > F4 bxCAN is the same shape (14 banks + 2 FIFOs, RM0090 chapter 32). Register names mostly match.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-filter-mask.png" width="760" alt="Handraw: mask mode grades bit by bit, list mode matches exact IDs (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). A mask bit of 1 must match, 0 is don't-care; list mode takes exact IDs; the standard ID goes in as FilterIdHigh = 0x123 << 5 with five zero bits appended — without the shift, frames are on the bus but the mailbox stays empty; not a photo.</sub>
+</p>
+
 
 <p align="center">
   <img src="../../assets/diagrams/sample-13-can-triage.svg" width="760" alt="Prescaler 8 with 10 time quanta gives 450 kbit/s; an empty mailbox means the standard ID was not shifted left by 5; exploding error frames point at the sample point">

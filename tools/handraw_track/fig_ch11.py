@@ -51,8 +51,57 @@ def wwdg_window():
     return f
 
 
+def lsi_drift():
+    f = Fig("ch11-lsi-drift",
+            "LSI 漂移：标称 1 秒，实际 2/3 ~ 4/3 秒 / LSI drift: the 1 s timeout swings")
+
+    f.text(84, 138, "预分频 64、Reload 624 不变；只有 LSI 在 30 / 40 / 60 kHz 之间漂",
+           size=21, color=MUTED)
+
+    # 标称 1 s 竖线：40 kHz 那条的右缘正好落在它上面
+    f.stroke([(714, 178), (714, 452)], color=MUTED, sw=1.6, amp=0.6, dash="6 7",
+             opacity=0.75)
+    f.text(714, 168, "标称 1 s", size=17, color=MUTED, anchor="middle")
+
+    bars = [
+        ("LSI = 30 kHz（最小）", 840, BLUE_D, "4/3 s（偏长）", 196, "in"),
+        ("LSI = 40 kHz（典型）", 630, GREEN_D, "1 s（标称）", 292, "in"),
+        ("LSI = 60 kHz（最大）", 420, RED, "2/3 s（偏短）", 388, "out"),
+    ]
+    for label, wdt, color, value, y, where in bars:
+        f.rect(84, y, wdt, 56, color=color, fill=WHITE, sw=2.4)
+        f.text(100, y + 36, label, size=21, color=color, weight="bold")
+        if where == "in":
+            f.text(84 + wdt - 14, y + 36, value, size=21, color=color,
+                   anchor="end", weight="bold")
+        else:
+            f.text(84 + wdt + 14, y + 36, value, size=21, color=color,
+                   weight="bold")
+
+    f.text(84, 480, "条长按超时等比例画：60 kHz 档（2/3 s）恰是 30 kHz 档（4/3 s）的一半",
+           size=18, color=MUTED)
+
+    f.rect(84, 508, 480, 116, color=RED, fill=WHITE, sw=2.4)
+    f.text(100, 540, "板上会偏短或偏长", size=21, color=RED, weight="bold")
+    f.multi(100, 572, ["30 / 40 / 60 kHz 是范围端点，不是单颗实测",
+                       "超时留余量，不要卡在标称值上"], size=18, color=INK, lh=28)
+
+    f.rect(596, 508, 468, 116, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(612, 540, "不变的公式", size=21, color=BLUE_D, weight="bold")
+    f.multi(612, 572, ["T = 64 ÷ f_LSI × (Reload + 1)",
+                       "40 kHz ÷ 64 → 每秒 625 个数 → 标称 1 s"], size=18,
+            color=INK, lh=28)
+
+    f.htext(84, 668, "喂狗节奏别卡在标称 1 s：按 30–60 kHz 的范围留余量",
+            size=24, color=INK, weight="bold", hl=True)
+    f.text(84, 708, "条长按超时等比例；时间为手册端点复算值，不是板上实测；Reload 始终写 624。",
+           size=18, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch11-wwdg-window": wwdg_window,
+    "ch11-lsi-drift": lsi_drift,
 }
 
 if __name__ == "__main__":
