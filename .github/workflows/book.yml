@@ -67,6 +67,9 @@ jobs:
       - name: Build HTML and PDF deliverables
         run: python stm32-book/build_html.py --pdf
 
+      - name: Audit print layout
+        run: python tools/audit_pdf_layout.py --lang zh --max-gap-pages 130 --min-anchors 8 --max-fig-free-pages 5
+
       - name: Upload offline book
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
@@ -99,6 +102,9 @@ jobs:
 
       - name: Build English HTML and PDF
         run: python stm32-book/build_html.py --lang en --pdf
+
+      - name: Audit print layout
+        run: python tools/audit_pdf_layout.py --lang en --max-gap-pages 130 --min-anchors 8 --max-fig-free-pages 5
 
       - name: Upload English offline book
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
