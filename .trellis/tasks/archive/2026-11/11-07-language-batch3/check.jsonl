@@ -1,0 +1,7 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"核对结构、事实边界及既有站点检查"}
+{"file":".trellis/spec/book/index.md","reason":"核对正文保护与book装配边界"}
+{"file":".trellis/tasks/11-07-language-batch3/prd.md","reason":"逐项核对R1-R6及AC1-AC6"}
+{"file":".trellis/tasks/11-07-language-batch3/design.md","reason":"拒绝八处白名单外改动、禁止顺带事实修订"}
+{"file":".trellis/tasks/11-07-language-batch3/implement.md","reason":"候选和落盘双校验、真实浏览器验证、三分检查结果"}
+{"file":".trellis/tasks/11-07-language-batch3/research/reading-evidence.md","reason":"比较理解收益而非只看口癖计数"}
+{"file":".trellis/tasks/11-07-language-batch3/research/source-evidence.json","reason":"核对来源漂移、原文与冻结验证输入哈希"}

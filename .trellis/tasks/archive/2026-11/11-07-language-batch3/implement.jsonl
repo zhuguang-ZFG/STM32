@@ -1,0 +1,8 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"正文风格、事实纪律与既有检查入口"}
+{"file":".trellis/spec/book/index.md","reason":"正文措辞与整书工艺边界、strict guard 保护合同"}
+{"file":".trellis/tasks/10-26-prose-polish/design.md","reason":"保留作者声音、不可动清单及事实 token 的既有约定"}
+{"file":".trellis/tasks/11-07-language-batch3/prd.md","reason":"本批需求、保护范围与验收标准"}
+{"file":".trellis/tasks/11-07-language-batch3/design.md","reason":"B3五处B4三处白名单与冻结疑点"}
+{"file":".trellis/tasks/11-07-language-batch3/implement.md","reason":"审阅后实施步骤及验证交付门"}
+{"file":".trellis/tasks/11-07-language-batch3/research/reading-evidence.md","reason":"原句卡点与四组方向样例，不把指标当理解效果"}
+{"file":".trellis/tasks/11-07-language-batch3/research/source-evidence.json","reason":"只读来源哈希、八处原句及验证输入观测基线"}
