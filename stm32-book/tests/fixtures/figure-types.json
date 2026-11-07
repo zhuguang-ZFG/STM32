@@ -2205,5 +2205,20 @@
   "type": "technical",
   "chapter": "28",
   "caption": "▲ 自绘矢量动画（FA-002）。任务各自汇报进度，第一轮全部健康才喂；第二轮 B 超期停滞，A/C 仍工作也不能喂。"
+ },
+ "illustrations/handraw/ch05-resolution-grid.png": {
+  "type": "comparison",
+  "chapter": "05",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同一 72 MHz：10 kHz 一圈 7200 格、50 Hz 舵机 20000 格；一圈的格子数就是占空比的档位数，频率越高档位越少；不是实拍。"
+ },
+ "illustrations/handraw/ch05-quadrature.png": {
+  "type": "technical",
+  "chapter": "05",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。A 跳变时看 B：正转 B=0 加一，反转 B=1 减一；只有一路分不清正反；不是实拍。"
+ },
+ "illustrations/handraw/ch05-trgo-adc.png": {
+  "type": "technical",
+  "chapter": "05",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。"
  }
 }

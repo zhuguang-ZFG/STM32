@@ -22,8 +22,8 @@ spine 顺序与整书一致：封面 → 版权页 → 版本与修订 → 怎�
 - **分节**：对 `<main class="book">` 做标签深度切片，取顶层 section/article
   （589 对标签自平衡校验）；显式拒绝不平衡输入。
 - **图像**：571 个 data-URI（SVG/PNG/GIF/JPEG）按内容哈希去重后提取为
-  `images/imgNNNN.*`（去重后 546 个），`src` 改为相对引用；wide-figure 的
-  `<a href="图像">` 缩放链接解包（EPUB 的 `<a>` 只能指向 spine 条目）。
+  images 目录下的 imgNNNN 文件（按内容哈希去重后 546 个），src 改为相对引用；wide-figure 的
+  缩放链接（以图片文件为 href 的 a 元素）解包：EPUB 的 a 元素只能指向 spine 条目。
 - **XHTML**：lxml 解析后统一迁移命名空间（全部元素 → XHTML 命名空间，
   `<svg>` 子树 → SVG 命名空间）；章头被 `<span>` 包裹的标题提升出短语容器
   （印刷 HTML 的合法写法在 XHTML schema 中不允许）；剥离 toc-jump 等屏幕交互件。
