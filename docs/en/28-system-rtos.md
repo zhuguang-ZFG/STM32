@@ -276,7 +276,7 @@ Prefer creating long-lived production objects statically during initialization. 
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch28-memory-regions.png" width="760" alt="Handraw: five memory regions, five risk lists (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Thread stacks, kernel pools, the C heap, DMA buffers and persistent storage each carry their own risks and verification; returning empty data on malloc failure hides exhaustion; not a photo.</sub>
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Thread stacks, kernel pools, the C heap, DMA buffers and persistent storage each carry their own risks and verification; returning empty data on malloc failure is not a recovery strategy; not a photo.</sub>
 </p>
 
 

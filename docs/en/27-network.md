@@ -344,7 +344,7 @@ Production invariants:
 5. Bound records, chains, and concurrent handshakes; measure peak heap/stack.
 6. Distinguish `close_notify`, reset, timeout, and certificate failure; do not rapidly retry certificate errors forever.
 
-A conventional MQTT/TLS port number is not security evidence. Authentication mode, verification result, negotiated
+A conventional MQTT/TLS port number is only a deployment convention, not security evidence. The real evidence is the authentication mode, the verification result, the negotiated version and cipher suite, and the peer's identity.
 
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch27-tls-prereqs.png" width="760" alt="Handraw: four TLS client prerequisites and the authmode trap (原理示意)">
@@ -399,7 +399,7 @@ Before replaying actuator commands, check expiry, current device state, and idem
 ## Layered diagnosis and PCAP evidence
 
 <p align="center">
-  <img src="../../assets/diagrams/network-debug-ladder.svg" width="820" alt="A diagnosis ladder from PHY and ARP through TCP, TLS, and MQTT">
+  <img src="../../assets/diagrams/network-debug-ladder.svg" width="820" alt="A diagnosis ladder for STM32 networks, from PHY and ARP through IP, TCP, TLS, and MQTT">
   <br><sub>▲ The first failed layer is the current boundary. Preserve PCAP, register/error snapshots, and configuration, then change one variable.</sub>
 </p>
 

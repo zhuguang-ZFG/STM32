@@ -364,6 +364,8 @@ def iwdg_window() -> Svg:
     s.rect(40, 304, 820, 116, fill=T.BG2, stroke=T.STROKE, rx=8)
     heads = ["", "时钟源", "超时范围", "能发现「跑太快」", "适用场景"]
     for i, hd in enumerate(heads):
+        if not hd:
+            continue  # empty corner cell of the table: emit no <text>
         s.text(60 + i * 160, 326, hd, size=11, fill=T.CYAN, weight="600")
     rows = [("IWDG", "LSI 40 kHz", "约 0.1 ms ~ 26 s", "不能",
              "主时钟挂了也能复位"),

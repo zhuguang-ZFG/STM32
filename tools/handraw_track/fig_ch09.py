@@ -35,11 +35,11 @@ def scan_sequence():
         f.rect(356, yy, 96, 50, color=color, fill=None, sw=2.0)
         f.text(404, yy + 33, us, size=20, color=INK, anchor="middle")
 
-    f.text(84, 470, "周期 = 采样档 + 12.5（SAR 的 12 位加一次保持）", size=21,
+    f.text(84, 470, "周期 = 采样档 + 12.5（SAR 的 12 位加一次保持）", size=18,
            color=INK)
-    f.text(84, 500, "ADCCLK = 72 MHz ÷ 6 = 12 MHz，不是 14 MHz", size=21,
+    f.text(84, 500, "ADCCLK = 72 MHz ÷ 6 = 12 MHz，不是 14 MHz", size=18,
            color=MUTED)
-    f.text(84, 530, "C8 上 ÷4 会得到 18 MHz，超过 14 MHz 上限", size=21,
+    f.text(84, 530, "C8 上 ÷4 会得到 18 MHz，超过 14 MHz 上限", size=18,
            color=RED)
 
     # ---- 右：时间条 ----

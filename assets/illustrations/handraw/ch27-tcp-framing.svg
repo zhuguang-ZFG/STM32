@@ -41,7 +41,6 @@
 <text x="880" y="300" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo">应用协议至少定义：</text>
 <text x="880" y="340" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo">魔数 / 版本 / 长度</text>
 <text x="880" y="380" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo">类型 / 序号 / 完整性</text>
-<text x="880" y="420" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="880" y="460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo">只有应用层规则</text>
 <text x="880" y="500" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" text-anchor="middle" fill="#2F2E2B" class="t-halo">能把字节流还原成消息</text>
 <text x="576.0" y="74" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#2F2E2B">TCP 是字节流，帧自己定 / define the frame</text>

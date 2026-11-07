@@ -8,16 +8,12 @@
 <text x="246" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#1F4680" class="t-halo">BluePill</text>
 <text x="246" y="214" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">F103C8T6</text>
 <text x="246" y="240" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">LQFP48 · 72 MHz</text>
-<text x="246" y="266" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="246" y="292" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">Flash/RAM</text>
 <text x="246" y="318" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">64 KB / 20 KB</text>
-<text x="246" y="344" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="246" y="370" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">调试器</text>
 <text x="246" y="396" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">外接 ST-LINK</text>
-<text x="246" y="422" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="246" y="448" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">5V 容忍</text>
 <text x="246" y="474" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">少数 FT 脚</text>
-<text x="246" y="500" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="246" y="526" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">USB 路径</text>
 <text x="246" y="552" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">需外电路</text>
 <rect x="416" y="128" width="300" height="470" rx="6" fill="#FFFFFF"/>
@@ -27,16 +23,12 @@
 <text x="566" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#2E5F42" class="t-halo">BlackPill</text>
 <text x="566" y="214" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">F411CEU6</text>
 <text x="566" y="240" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">UFQFPN48 · 100 MHz</text>
-<text x="566" y="266" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="292" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">Flash/RAM</text>
 <text x="566" y="318" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">512 KB / 128 KB</text>
-<text x="566" y="344" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="370" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">调试器</text>
 <text x="566" y="396" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">外接 ST-LINK</text>
-<text x="566" y="422" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="448" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">5V 容忍</text>
 <text x="566" y="474" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">多数 FT 仍看 DS</text>
-<text x="566" y="500" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="566" y="526" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">USB 路径</text>
 <text x="566" y="552" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">板载器件口</text>
 <rect x="736" y="128" width="300" height="470" rx="6" fill="#FFFFFF"/>
@@ -46,16 +38,12 @@
 <text x="886" y="168" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#A8801F" class="t-halo">Nucleo-F411RE</text>
 <text x="886" y="214" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">F411RET6</text>
 <text x="886" y="240" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">LQFP64 · 100 MHz</text>
-<text x="886" y="266" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="886" y="292" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">Flash/RAM</text>
 <text x="886" y="318" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">512 KB / 128 KB</text>
-<text x="886" y="344" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="886" y="370" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">调试器</text>
 <text x="886" y="396" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">板载 ST-LINK/V2-1</text>
-<text x="886" y="422" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="886" y="448" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">5V 容忍</text>
 <text x="886" y="474" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">按 UM/DS 脚注</text>
-<text x="886" y="500" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo"></text>
 <text x="886" y="526" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">USB 路径</text>
 <text x="886" y="552" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif" font-size="18" text-anchor="middle" fill="#2F2E2B" class="t-halo">ST-LINK+用户 USB</text>
 <path d="M908.2 644.8 L884.6 648.6 L861.0 651.0 L861.7 651.0 L831.6 652.7 L802.4 655.1 L772.7 655.3 L743.9 656.1 L743.5 655.7 L715.2 655.4 L688.3 655.3 L660.1 655.3 L632.4 656.0 L603.7 657.4 L576.2 656.9 L576.3 657.3 L548.7 656.8 L521.0 656.7 L493.0 656.0 L465.5 656.3 L437.1 655.5 L409.3 656.7 L410.0 656.3 L378.9 655.4 L347.9 653.0 L317.9 652.6 L287.5 651.6 L287.6 651.5 L268.5 646.8 L250.5 645.4 L250.3 644.8 L272.7 642.5 L293.9 638.3 L294.5 638.6 L323.6 638.1 L351.4 637.2 L380.5 635.4 L409.5 633.5 L409.6 633.8 L437.5 633.5 L465.3 632.8 L493.2 632.5 L520.6 631.0 L547.9 631.5 L576.0 631.2 L576.1 632.4 L603.2 631.7 L631.0 631.9 L659.5 632.6 L687.1 634.2 L714.1 634.4 L741.6 633.2 L741.8 632.7 L770.5 634.2 L798.9 634.5 L827.4 638.0 L857.1 638.8 L857.2 638.4 L882.2 641.4 L908.4 644.8" fill="#F6D576"/>

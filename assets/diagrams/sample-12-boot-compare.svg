@@ -10,7 +10,6 @@
 <rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
 <text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">12</text>
 <text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先看这块 64 KB：两条路要在同一张地图上比较</text>
-<text x="24" y="100" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace"></text>
 <rect x="24" y="106" width="198" height="44" fill="#1b5c45" opacity="0.24" rx="4"/>
 <rect x="24" y="106" width="198" height="44" fill="none" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
 <text x="32" y="126" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Bootloader</text>

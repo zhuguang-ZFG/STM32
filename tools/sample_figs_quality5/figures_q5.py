@@ -371,7 +371,6 @@ def f_ask_before() -> Svg:
         c.text(56, y + 28, t, size=16, fill=T.GREEN, weight="700")
         c.text(280, y + 28, a, size=14, fill=T.TEXT)
         c.text(560, y + 28, b, size=14, fill=T.MUTED)
-        c.text(56, y + 56, "", size=1, fill=T.MUTED)
     c.rect(40, 590, 880, 110, fill=T.BG2, stroke=T.CYAN, rx=8)
     c.text(56, 624, "Template: chip + package, clock tree, pin table row, failing command, expected byte.", size=14, fill=T.CYAN, weight="700")
     c.text(56, 656, "Skip 'urgent' — attach the evidence instead.", size=13, fill=T.MUTED)
