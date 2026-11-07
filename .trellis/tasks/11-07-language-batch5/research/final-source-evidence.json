@@ -1,0 +1,160 @@
+{
+  "baselineCommit": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+  "file": "docs/build/07-build-system.md",
+  "beforeSha256": "3de591b83b328e2358ea050aa665387186f15f293f2df59b55af9715ebb1176d",
+  "finalSha256": "99d91a5fd257f24d16cd1bb2cc71689c834d08568781cfb5d731b3589169090c",
+  "changedLines": [
+    27,
+    51,
+    116,
+    134
+  ],
+  "finalMatchesCheckedCandidate": true,
+  "strictCandidatePassed": true,
+  "metrics": {
+    "before": {
+      "count": 95,
+      "longShare": 9.5,
+      "avg": 35.2
+    },
+    "candidate": {
+      "count": 96,
+      "longShare": 9.4,
+      "avg": 34.9
+    }
+  },
+  "frozenInputs": [
+    {
+      "file": ".prose-baseline.json",
+      "bytes": 6741,
+      "sha256": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b"
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "bytes": 12473,
+      "sha256": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9"
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "bytes": 7047,
+      "sha256": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869"
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "bytes": 6170,
+      "sha256": "8690b07ebbb0eb2ede0b846da2347686c2e3cea84da04aa810fa3c262d04d75c"
+    },
+    {
+      "file": "scripts/docs-check.mjs",
+      "bytes": 25535,
+      "sha256": "7a5f79d04084e0931c5a6976f252f617c7d01c930def426d9da45d68afde0b9b"
+    },
+    {
+      "file": "scripts/book-guide/generate.mjs",
+      "bytes": 4875,
+      "sha256": "0d3ccc52f1f19bbae0cf5925394870ef7d6d7a83d1072651f05c0e07ebfd2c0b"
+    },
+    {
+      "file": "scripts/gen-progress.mjs",
+      "bytes": 9933,
+      "sha256": "d3e5d6464b6852b0b8a26b4240a591ee74c85d4b165831639bf290676b99ef10"
+    },
+    {
+      "file": "package.json",
+      "bytes": 3058,
+      "sha256": "c39c8c05dc340a5e4c6b1f49ca36ed222a17bd2755b5d1d6bfa2f6eada13ee86"
+    },
+    {
+      "file": "package-lock.json",
+      "bytes": 118815,
+      "sha256": "37700bf56ee7d744ab4842666b2eb315ce0f969989e4e9393f21965db2961daa"
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "bytes": 6833,
+      "sha256": "32380cd1b64440166b91d19af9c18d257da00b1d99186bdedee142e6853783ab"
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "bytes": 2324,
+      "sha256": "26d4e9c3cf0dd4aea7a1d7c3de24ab6c0a1507810d394afef17e3704e3ff787e"
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "bytes": 1864,
+      "sha256": "d4929d664c4512024bc5fd7c0cde72fc4cf629518de3e359a2f348d09e1c8504"
+    },
+    {
+      "file": ".github/workflows/links.yml",
+      "bytes": 2579,
+      "sha256": "98c45ed211292240562d6e6d05f50d5fd3d2cf1269cf9e70c29a1ae6f08634db"
+    },
+    {
+      "file": "mcu-book/build_html.py",
+      "bytes": 81333,
+      "sha256": "41decdd1e8967227975d20aa04f1354ee96e4e7f1ba3c626d58995831aee9386"
+    },
+    {
+      "file": "docs/build/index.md",
+      "bytes": 1547,
+      "sha256": "998b01b4375aaf4b6843662deee1ec5069fde77d0cac19b10f332ee32e226a18"
+    },
+    {
+      "file": "docs/curriculum.json",
+      "bytes": 19959,
+      "sha256": "81099e02b62b2da1871ea7ad1437fe6ddf1672d1045fe800d2f82117e4be1f5f"
+    },
+    {
+      "file": "docs/.vitepress/config.mts",
+      "bytes": 24646,
+      "sha256": "64fe6d48c0ba3b1f74ebbf59f39a4fecc99d6b56666ba0aca1bf9d93f3d883b5"
+    },
+    {
+      "file": "mcu-book/manifest.json",
+      "bytes": 124121,
+      "sha256": "8d999e63a23c28fda9395d5424604dcc3b4483e874d1162384be71de799d39bd"
+    },
+    {
+      "file": "code/stm32/00-blink/Makefile",
+      "bytes": 1915,
+      "sha256": "2cb02fe5dc04742e87013fa818e9d4796d750775bbff08611ce629a38883f84c"
+    },
+    {
+      "file": "docs/build/00-toolchain.md",
+      "bytes": 12488,
+      "sha256": "ddc0b844b519b933fb2463378ad92f379a56cdc81ed959c9bc062dc3abb86e45"
+    },
+    {
+      "file": "docs/build/01-four-steps.md",
+      "bytes": 16692,
+      "sha256": "6627bf6e405e98972cf8fd2f0f315e9ff2355e4fbe6776b7efac825af1522866"
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "bytes": 27494,
+      "sha256": "eb7161200277de0622b34f7f0e6f51fef85cfa3c506e5eb7b440f70d38a6e4fe"
+    },
+    {
+      "file": "docs/build/03-linker-script.md",
+      "bytes": 25515,
+      "sha256": "a7dab7dd9ce64f3126ed6be52166206d32fbc49ed35dbff965834062f1c4c3d4"
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "bytes": 13141,
+      "sha256": "96a9fd3a3e3d2bf2b600e67693234cfcbd73415b40bfee58511c72200e5d4735"
+    },
+    {
+      "file": "docs/build/05-map-size.md",
+      "bytes": 12757,
+      "sha256": "ea4996d6791b54308f2eaaa49e9274efce1b9d3d271fb77681c5bbaca9c6621b"
+    },
+    {
+      "file": "docs/build/06-flash-debug.md",
+      "bytes": 13255,
+      "sha256": "236a3bcd9281e9c55d6edee4c04c6e506ab727facd538252a526b450a4c775f2"
+    }
+  ],
+  "verificationInputCount": 214,
+  "userFileCount": 42
+}

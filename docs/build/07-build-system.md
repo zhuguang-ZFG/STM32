@@ -24,7 +24,7 @@ minutes: 30
 
 ## 先跑起来（10 分钟 quick win）
 
-先预测再执行：第一次干跑会列出哪些命令？只碰一下源文件后，是全部重建，还是只有一条路径变脏？如果你的预测是“构建系统会自己理解文件内容”，这十分钟会把这个直觉推翻。
+先预测再执行：第一次干跑会列出哪些命令？只碰一下源文件后，会全部重建，还是只重建受它影响的目标？如果你的预测是“构建系统会自己理解文件内容”，这十分钟会把这个直觉推翻。
 
 ```bash
 make clean && make -n        # 干跑：把将执行的命令全列出，不真做
@@ -48,7 +48,7 @@ touch main.c && make -n      # 只动了 main.c，看依赖图如何"局部重�
 
 ## 动画：依赖图与局部重建
 
-依赖图画出"谁影响谁"，mtime 比对决定"要不要重建"，touch 改一个文件看只有哪些路径被重建。盯住"局部重建"三个字，这是构建系统的核心价值。
+依赖图画出"谁影响谁"，mtime 比对决定"要不要重建"。touch 改一个文件后，沿图看看哪些目标会受影响。读这张图时，盯住"局部重建"三个字。
 
 ![构建系统依赖图与局部重建](/anim/build-dep-graph.svg)
 
@@ -113,7 +113,7 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)   # 不试链接（交叉链�
 
 两条铁律（骨架坑列表）：① 工具链文件必须在 `project()` 之前 `set(CMAKE_TOOLCHAIN_FILE ...)`，否则 CMake 用主机 gcc 探测环境、编出 x86 的东西；② `CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` 让 CMake 不试运行编译产物（交叉编译的产物在 PC 上跑不了）。
 
-CMake 的价值在"规模"：两百个文件分二十个目录，`add_subdirectory` 递归管理，每个目录一个 `CMakeLists.txt`，比手写一个大 Makefile 好维护。代价是多一层"生成"步骤（`cmake -B build` 生成，`make -C build` 构建）。
+CMake 的价值在"规模"：两百个文件分在二十个目录，用 `add_subdirectory` 递归管理，每个目录各有一个 `CMakeLists.txt`，不用把所有内容挤进一个大 Makefile。代价是多一步"生成"：先用 `cmake -B build` 生成，再用 `make -C build` 构建。
 
 ## 四、IDF 组件机制：idf_component_register 圈地
 
@@ -131,7 +131,7 @@ idf_component_register(
 
 `REQUIRES` vs `PRIV_REQUIRES`：前者把依赖组件的头文件也暴露给"依赖我的组件"（传递），后者只给本组件实现用（不传递），这是 C/C++ 接口与实现分离在构建层的体现。骨架坑列表的"循环依赖"（A REQUIRES B、B REQUIRES A）解法：抽出公共部分进 C，A/B 都 REQUIRES C，不再互引。
 
-IDF 用 CMake 圈组件、Kconfig 管配置、idf.py 调度，三层叠在一起，底层还是 B1 那四步（预处理→编译→汇编→链接）。
+IDF 的三层分工：CMake 管组件，Kconfig 管配置，idf.py 负责调度。三层叠在一起，底层还是 B1 那四步（预处理→编译→汇编→链接）。
 
 ## 五、Kconfig 一维：配置如何流进代码
 
