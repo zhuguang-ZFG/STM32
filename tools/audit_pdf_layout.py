@@ -147,7 +147,7 @@ def scan(path: Path) -> dict:
         "file": path.name,
         "pages": doc.page_count,
         "summary": summary,
-        "gap_bands": {"150-249pt": biggest[200], "250-349pt": biggest[350], ">=350pt": biggest[999]},
+        "gap_bands": {"150-249pt": biggest[200], "250-399pt": biggest[350], ">=400pt": biggest[999]},
         "chapters": chapters,
         "issues": issues,
     }
@@ -204,6 +204,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--lang", choices=("zh", "en"), help="audit only one language")
     parser.add_argument("--max-gap-pages", type=int, default=None,
                         help="fail if more pages than this have a bottom gap over 150pt")
+    parser.add_argument("--max-large-gap-pages", type=int, default=None,
+                        help="fail if more pages than this have a bottom gap of 250pt or more")
     parser.add_argument("--min-anchors", type=int, default=None,
                         help="fail if any TOC section carries fewer visual anchors")
     parser.add_argument("--max-fig-free-pages", type=int, default=None,
@@ -243,6 +245,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         if args.max_gap_pages is not None and gaps > args.max_gap_pages:
             failed = True
+        large = report["gap_bands"]["250-399pt"] + report["gap_bands"][">=400pt"]
+        if args.max_large_gap_pages is not None and large > args.max_large_gap_pages:
+            failed = True
+            print(f"  {lang} large bottom gaps: {large} pages >= 250pt")
         if hard:
             failed = True
         if thin:

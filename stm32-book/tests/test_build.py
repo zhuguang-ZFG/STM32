@@ -326,7 +326,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="toc-jump"', html)
         self.assertIn(">目录</a>", html)
         self.assertIn("position: sticky", html)
-        self.assertIn("max-height: 165mm", html)
+        self.assertIn("max-height: 120mm", html)
         self.assertIn("break-before: avoid-page", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
@@ -1612,7 +1612,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "4d40fc4ce74cf27582e34850ca2e5b55830fbedab51b0de6f0720d383d5e61ee",
+            "f9e3c106bc355e306f25c96dc385e3e3b7009529e25964a74e27e157019391c0",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
