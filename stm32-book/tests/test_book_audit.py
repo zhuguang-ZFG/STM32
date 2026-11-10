@@ -82,16 +82,24 @@ class BookAuditTests(unittest.TestCase):
             else:
                 self.assertLessEqual(gap, self.GAP_CAP_CHARS, (cid, gap))
 
-    # B54 en gap close-out (2026-11-10): the eight chapters with the largest
-    # English gaps hold a 2,000-char budget; zh gates above stay unchanged.
+    # B54/B55 en gap close-out (2026-11-10/11): the chapters below hold a
+    # 2,000-char budget in the English edition; zh gates above stay unchanged.
     EN_GAP_BATCH_BUDGETS = {
         "04": 2000,
+        "05": 2000,
+        "08": 2000,
+        "09": 2000,
+        "10": 2000,
         "11": 2000,
         "12": 2000,
+        "13": 2000,
+        "14": 2000,
         "15": 2000,
         "16": 2000,
+        "17": 2000,
         "18": 2000,
         "19": 2000,
+        "20": 2000,
         "28": 2000,
     }
 
@@ -182,12 +190,12 @@ class BookAuditTests(unittest.TestCase):
             ),
             "05": (
 
-                "timer-pwm.svg", "sample-05-pwm-edge-flow.svg", "sample-05-pwm-1khz.svg",
-                "ch05-pwm-1khz.png", "pwm-1khz.gif", "sample-05-timebase-math.svg",
+
+                "timer-pwm.svg", "sample-05-pwm-edge-flow.svg", "sample-05-pwm-1khz.svg", "ch05-pwm-1khz.png",
+                "pwm-1khz.gif", "ch05-timer-ladder.png", "sample-05-timebase-math.svg",
                 "ch05-timebase-math.png", "sample-05-shadow-regs.svg", "ch05-shadow-regs.png",
-                "timer-modes.svg", "sample-05-pwm-debug.svg", "ch05-pwm-debug.png",
-                "ch05-resolution-grid.png", "ch05-capture-pulse.png",
-                "pwm-breath.gif", "sample-05-deadtime.svg", "ch05-deadtime.png",
+                "timer-modes.svg", "sample-05-pwm-debug.svg", "ch05-pwm-debug.png", "ch05-resolution-grid.png",
+                "ch05-capture-pulse.png", "pwm-breath.gif", "sample-05-deadtime.svg", "ch05-deadtime.png",
                 "ch05-trgo-adc.png", "ch05-quadrature.png",
             ),
         }
@@ -223,33 +231,34 @@ class BookAuditTests(unittest.TestCase):
             ),
             "08": (
 
-                "spi-transfer.svg", "ch08-cs-bracket.png", "sample-08-spi-jedec-flow.svg", "sample-08-spi-jedec.svg",
-                "ch08-spi-jedec.png", "spi-jedec.gif", "ch08-byte-exchange.png",
-                "sample-08-mode0-edges.svg",
-                "sample-08-cpha-modes.svg", "ch08-cpha-modes.png", "sample-08-br-table.svg",
-                "ch08-br-table.png", "sample-08-nss-multi.svg", "ch08-nss-multi.png",
-                "ch08-cs-triage.png",
+
+                "spi-transfer.svg", "ch08-cs-bracket.png", "sample-08-spi-jedec-flow.svg",
+                "sample-08-spi-jedec.svg", "ch08-spi-jedec.png", "spi-jedec.gif", "ch08-id-assembly.png",
+                "ch08-byte-exchange.png", "sample-08-mode0-edges.svg", "sample-08-cpha-modes.svg",
+                "ch08-cpha-modes.png", "sample-08-br-table.svg", "ch08-br-table.png", "sample-08-nss-multi.svg",
+                "ch08-nss-multi.png", "ch08-cs-triage.png", "ch08-page-write-flow.png",
                 "sample-08-bus-compare.svg", "sample-08-spi-triage.svg", "ch08-spi-triage.png",
             ),
             "09": (
 
-                "adc-sar.svg", "ch09-adcclk-budget.png", "sample-09-adc-sar-weights.svg", "sample-09-adc-sar.svg",
-                "ch09-adc-sar.png", "adc-sample.gif", "sample-09-vref-rails.svg",
-                "ch09-vref-rails.png", "sample-09-sar-ladder.svg", "ch09-sar-ladder.png",
-                "sar-adc.gif", "ch09-scan-sequence.png", "dma-circular.svg",
-                "ch09-vrefint-cal.png", "ch09-pa0-analog-config.png", "ch09-dac-buffer.png",
-                "sample-09-sample-time.svg",
+
+                "adc-sar.svg", "ch09-adcclk-budget.png", "ch09-part-scope.png", "sample-09-adc-sar-weights.svg",
+                "sample-09-adc-sar.svg", "ch09-adc-sar.png", "adc-sample.gif", "ch09-tconv-floor.png",
+                "ch09-evidence-lanes.png", "sample-09-vref-rails.svg", "ch09-vref-rails.png",
+                "sample-09-sar-ladder.svg", "ch09-sar-ladder.png", "sar-adc.gif", "ch09-mode-stops.png",
+                "ch09-scan-sequence.png", "dma-circular.svg", "ch09-vrefint-cal.png",
+                "ch09-pa0-analog-config.png", "ch09-dac-buffer.png", "sample-09-sample-time.svg",
                 "ch09-sample-time.png", "sample-09-adc-triage.svg", "ch09-adc-triage.png",
             ),
             "10": (
 
-                "dma-circular.svg", "ch10-channel-map.png",
-                "sample-10-dma-circular-ht.svg", "sample-10-dma-cndtr.svg",
-                "ch10-dma-cndtr.png", "dma-cndtr.gif", "sample-10-mem2mem-vs-peri.svg",
-                "ch10-mem2mem-vs-peri.png", "sample-10-dma-triage.svg", "ch10-dma-triage.png",
-                "sample-10-dma-phases.svg", "ch10-dma-phases.png", "ch10-request-beat.png",
-                "dma-buffer-ownership.svg",
-                "dma-ring.gif", "sample-10-cndtr-ledger.svg", "ch10-cndtr-ledger.png",
+
+                "dma-circular.svg", "ch10-channel-map.png", "sample-10-dma-circular-ht.svg",
+                "sample-10-dma-cndtr.svg", "ch10-dma-cndtr.png", "dma-cndtr.gif", "ch10-goal-evidence.png",
+                "sample-10-mem2mem-vs-peri.svg", "ch10-mem2mem-vs-peri.png", "ch10-two-level-bind.png",
+                "sample-10-dma-triage.svg", "ch10-dma-triage.png", "sample-10-dma-phases.svg",
+                "ch10-dma-phases.png", "ch10-request-beat.png", "dma-buffer-ownership.svg", "dma-ring.gif",
+                "sample-10-cndtr-ledger.svg", "ch10-cndtr-ledger.png",
             ),
         }
         for chapter_id, assets in expected.items():
@@ -282,15 +291,13 @@ class BookAuditTests(unittest.TestCase):
             ),
             "13": (
 
-                "can-arbitration.svg", "sample-13-can-arb-flow.svg", "sample-13-can-bit.svg",
-                "ch13-can-bit.png", "can-500k.gif", "ch13-pitfall-triage.png",
-                "ch13-diff-levels.png",
-                "ch13-data-frame.png", "ch13-arb-ladder.png",
-                "sample-13-bit-quanta.svg",
-                "ch13-bit-quanta.png", "sample-13-filter-fifo.svg", "ch13-filter-fifo.png",
-                "ch13-filter-mask.png", "sample-13-can-triage.svg", "ch13-can-triage.png",
-                "sample-13-tec-busoff.svg",
-                "ch13-tec-busoff.png",
+
+                "can-arbitration.svg", "ch13-remap-decision.png", "sample-13-can-arb-flow.svg",
+                "sample-13-can-bit.svg", "ch13-can-bit.png", "can-500k.gif", "ch13-pitfall-triage.png",
+                "ch13-diff-levels.png", "ch13-data-frame.png", "ch13-arb-ladder.png",
+                "sample-13-bit-quanta.svg", "ch13-bit-quanta.png", "sample-13-filter-fifo.svg",
+                "ch13-filter-fifo.png", "ch13-filter-mask.png", "sample-13-can-triage.svg",
+                "ch13-can-triage.png", "sample-13-tec-busoff.svg", "ch13-tec-busoff.png",
             ),
         }
         for chapter_id, assets in expected.items():
@@ -306,13 +313,12 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "14": (
 
-                "usb-enumeration.svg", "ch14-enum-checklist.png",
-                "sample-14-usb-48m-flow.svg", "sample-14-usb-enum.svg",
-                "ch14-usb-enum.png", "usb-48m.gif", "sample-14-usbpre-48.svg",
-                "ch14-usbpre-48.png", "sample-14-pma-map.svg", "ch14-pma-map.png",
-                "usb-enumeration-zh.gif", "ch14-ctrl-transfer.png",
-                "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
-                "ch14-cdc-vs-hid.png",
+
+                "usb-enumeration.svg", "ch14-enum-checklist.png", "sample-14-usb-48m-flow.svg",
+                "sample-14-usb-enum.svg", "ch14-usb-enum.png", "usb-48m.gif", "ch14-usb-can-conflict.png",
+                "sample-14-usbpre-48.svg", "ch14-usbpre-48.png", "ch14-transfer-pick.png",
+                "sample-14-pma-map.svg", "ch14-pma-map.png", "usb-enumeration-zh.gif", "ch14-ctrl-transfer.png",
+                "sample-14-descriptor-map.svg", "ch14-descriptor-map.png", "ch14-cdc-vs-hid.png",
                 "pinout-bluepill.svg", "instrument-evidence-ladder.svg", "ch14-evidence-ladder.png",
             ),
             "15": (
@@ -346,13 +352,14 @@ class BookAuditTests(unittest.TestCase):
             ),
             "17": (
 
-                "debug-swo.svg", "ch17-bp-comparators.png",
-                "sample-17-cfsr-flow.svg", "sample-17-cfsr.svg",
-                "ch17-cfsr.png", "cfsr-read.gif", "sample-17-swd-pins.svg",
-                "ch17-swd-pins.png", "sample-17-obs-compare.svg", "ch17-obs-compare.png",
-                "ch17-halt-timing.png", "sample-17-cfsr-bits.svg", "ch17-cfsr-bits.png", "fault-triage-ladder.svg",
-                "ch17-dwt-window.png", "sample-17-perf-triage.svg", "ch17-perf-triage.png",
-                "ch17-swo-path.png",
+
+                "debug-swo.svg", "ch17-stack-frame.png", "ch17-bp-comparators.png", "sample-17-cfsr-flow.svg",
+                "sample-17-cfsr.svg", "ch17-cfsr.png", "cfsr-read.gif", "ch17-comp-pools.png",
+                "sample-17-swd-pins.svg", "ch17-swd-pins.png", "sample-17-obs-compare.svg",
+                "ch17-obs-compare.png", "ch17-halt-timing.png", "sample-17-cfsr-bits.svg", "ch17-cfsr-bits.png",
+                "fault-triage-ladder.svg", "ch17-dwt-window.png", "ch17-recover-ladder.png",
+                "sample-17-perf-triage.svg", "ch17-perf-triage.png", "ch17-swo-path.png",
+                "ch17-fault-record.png",
             ),
         }
         for chapter_id, assets in expected.items():
@@ -387,12 +394,14 @@ class BookAuditTests(unittest.TestCase):
             ),
             "20": (
 
-                "project-structure.svg", "sample-20-evidence-flow.svg", "sample-20-lookup-flow.svg", "ch20-cube-suite.png",
-                "sample-20-manual-names.svg", "ch20-manual-names.png", "manual-choice-map.svg",
-                "ch20-manual-choice.png", "sample-20-lib-compare.svg", "ch20-lib-compare.png",
-                "firmware-stack-choice.svg", "ch20-manual-route.png", "ch20-dma-f1-vs-f4.png",
-                "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
+
+                "project-structure.svg", "sample-20-evidence-flow.svg", "sample-20-lookup-flow.svg",
+                "ch20-cube-suite.png", "sample-20-manual-names.svg", "ch20-manual-names.png",
+                "manual-choice-map.svg", "ch20-manual-choice.png", "sample-20-lib-compare.svg",
+                "ch20-lib-compare.png", "firmware-stack-choice.svg", "ch20-manual-route.png",
+                "ch20-dma-f1-vs-f4.png", "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
                 "single-build-contract.svg", "sample-20-evidence-triage.svg", "ch20-evidence-triage.png",
+                "ch20-exit-kit.png",
             ),
             "21": (
 

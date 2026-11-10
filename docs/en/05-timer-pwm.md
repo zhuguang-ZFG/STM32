@@ -106,6 +106,12 @@ Determine the timer input clock before calculating PSC and ARR. CCR only sets th
 
 A timer is a counter that ticks along with a clock, plus a few comparators. The classes differ in how many extras they carry. A basic timer only counts, which makes it a good alarm clock. A general-purpose timer adds 4 channels, so it can drive PWM and measure pulses. An advanced timer adds complementary outputs and dead time for motor drives. SysTick is the one built into the core, and HAL and RTOS both use it as their heartbeat.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch05-timer-ladder.png" width="760" alt="Handraw: the timer class ladder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three ascending rungs — basic counts only, general-purpose adds 4 channels (PWM / capture / encoder), advanced adds complementary outputs, dead time and break, with MOE on the top rung; SysTick and the watchdog sit on a side branch, and the C8's general-purpose timers carry a 16-bit tag; Proves each class is the one below plus extras, so pick the lowest rung that has the feature you need; Cannot show register offsets or measured waveforms, and the class table stays the lookup; See [RM0008 Rev 21 chapter 15](#source-rm0008-tim).</sub>
+</p>
+
 | Class | Instance | Width | What is special | Typical use |
 | --- | --- | --- | --- | --- |
 | Advanced | TIM1/TIM8 | 16-bit | Complementary outputs, dead time, break, MOE | Motors, three-phase PWM |

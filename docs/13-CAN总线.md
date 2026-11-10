@@ -45,6 +45,12 @@ BluePill 上用第一种重映射：第 45 脚 PB8 = CAN_RX，第 46 脚 PB9 = C
 
 第二种重映射是第 5 脚 PD0、第 6 脚 PD1。LQFP48 上这两只脚接着 HSE 晶振，CAN 搬过去会停掉 8 MHz 晶振。见 [DS5319](#source-ds5319-clock)。RM0008 §9.3.3 也写明，36、48 和 64 脚的封装不能把 CAN 重映射到端口 D。第 45、46 脚同时是第 07 章 I2C1 的重映射脚，一个工程里只能给 CAN 或 I2C 之一。见 [DS5319](#source-ds5319-i2c)。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-remap-decision.png" width="760" alt="Handraw：CAN 引脚三选一（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三段梯子依次排除 PA11/PA12（第 14 章 USB 要用 D−/D+）、PD0/PD1（LQFP48 上是 HSE 晶振，且 36/48/64 脚封装不能重映射到端口 D）、落到 PB8/PB9（第 45/46 脚，也是 I2C1 的重映射脚）；证明什么：这块板只能选 PB8/PB9，而且这一对脚只给 CAN 或 I2C 之一；不能证明什么：板上实际接线、收发器供电与总线电平。出处：[DS5319 Rev 20 表 5](#source-ds5319-usbcan)、[RM0008 Rev 21](#source-rm0008-can)。</sub>
+</p>
+
 MCU 的 PB8/PB9 不能直接接总线，要先进收发器的 RXD/TXD，由收发器输出 CANH/CANL。总线两端各接一只 120 Ω，跨在 CANH 与 CANL 之间。两只并联后的直流负载是 60 Ω。60 Ω 不是电缆的特性阻抗，电缆的特性阻抗约是 120 Ω，终端电阻是按它选的。
 
 总线上只有一个节点、又没开回环模式时，发出的帧没人应答。每次发送尝试都是 ACK 错误，发送错误计数每次加 8，连续十六次尝试到 128，节点进入 error-passive：它仍然重传，但只发被动错误标志。标准规定 error-passive 的发送方再遇到 ACK 错误时不再增加 TEC，所以无 ACK 的单节点会一直重传同一帧，不会到 256。TEC 超过 255（也就是到 256）才会 Bus-Off；恢复要等总线上出现 128 次、每次 11 个连续隐性位。过滤器用 32 位掩码时，标准 ID 写进 `FilterIdHigh` 要左移 5 位。不左移，总线上明明有帧，邮箱却一直是空的。F103 有 14 组过滤器和 2 个接收 FIFO。见 [本仓库例程](#source-project-examples)。

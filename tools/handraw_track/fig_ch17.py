@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Six deterministic chapter 17 knowledge plates.
+"""Thirteen deterministic chapter 17 knowledge plates.
 
 F103 pin/FPB facts follow the chapter's RM0008 / DS5319 / PM0056 sources.
 Fault semantics were checked against ARM DUI0552A pp.4-24..4-31.
@@ -367,7 +367,183 @@ def halt_timing():
     return f
 
 
+def stack_frame():
+    f = Fig("ch17-stack-frame", "异常栈帧只有八格，PC 在帧首 +0x18")
+    f.text(84, 138, "正常完成异常压栈后，帧起点为 R0；按字编号 0–7。", size=18, color=MUTED)
+
+    x0, w, gap = 84, 112, 13
+    regs = ["R0", "R1", "R2", "R3", "R12", "LR", "PC", "xPSR"]
+    for i, reg in enumerate(regs):
+        x = x0 + i * (w + gap)
+        pc = reg == "PC"
+        color = AMBER_STROKE if pc else INK
+        f.rect(x, 186, w, 128, color=color,
+               fill=(AMBER_FILL if pc else WHITE), sw=2.4)
+        f.text(x + w / 2, 232, f"字 {i}", size=16, color=MUTED, anchor="middle")
+        f.text(x + w / 2, 274, reg, size=34 if len(reg) < 3 else 26,
+               color=(AMBER_STROKE if pc else BLUE_D), anchor="middle", weight="bold")
+        f.text(x + w / 2, 302, f"SP+0x{i * 4:02X}", size=13, color=MUTED,
+               anchor="middle")
+
+    # dimension from the frame start to PC: six words = 0x18
+    pc_x = x0 + 6 * (w + gap)
+    y = 350
+    f.line(x0, y, pc_x, y, color=AMBER_STROKE, sw=2.2)
+    f.line(x0, y - 8, x0, y + 8, color=AMBER_STROKE, sw=2.2)
+    f.line(pc_x, y - 8, pc_x, y + 8, color=AMBER_STROKE, sw=2.2)
+    f.text((x0 + pc_x) / 2, y - 10, "帧首（R0）→ PC：6 个字 = 0x18",
+           size=19, color=AMBER_STROKE, anchor="middle", weight="bold")
+    f.text(pc_x + w / 2, y + 14, "PC = stack[6]", size=15,
+           color=AMBER_STROKE, anchor="middle")
+
+    cards = [
+        (84, "PRECISERR", GREEN_D, ["PC 指向出错指令", "帧完整且类型支持时才可用"]),
+        (408, "IMPRECISERR", AMBER_STROKE, ["PC 可能已越过原始写", "本身不更新 BFAR"]),
+        (732, "STKERR / MSTKERR", RED, ["压栈可能不完整", "先核对栈地址与内容"]),
+    ]
+    for x, head, color, lines in cards:
+        f.rect(x, 392, 312, 142, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 22, 430, head, size=21, color=color, weight="bold")
+        f.multi(x + 22, 472, lines, size=18, color=INK, lh=32)
+
+    f.text(84, 596, "八格顺序固定；读到这八格，不等于每一格都能安全解引用。",
+           size=20, color=INK)
+    f.htext(84, 650, "先确认帧完整与故障类型，再拿 PC 去对 addr2line",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(84, 706, "本图是栈帧结构示意，不是某次故障的栈内存实测。",
+           size=17, color=MUTED)
+    return f
+
+
+def comp_pools():
+    f = Fig("ch17-comp-pools", "两个池子：FPB 6 格给代码，DWT 4 格给数据")
+    f.text(84, 138, "名额互不共享；条件硬件断点仍占 1 个 FPB 格。", size=18,
+           color=MUTED)
+
+    f.rect(84, 176, 474, 366, color=BLUE_D, fill=WHITE, sw=2.5)
+    f.text(110, 216, "FPB 池 · 6 格", size=24, color=BLUE_D, weight="bold")
+    f.text(110, 244, "按取指地址匹配硬件代码断点", size=16, color=MUTED)
+    for i in range(6):
+        col, row = i % 2, i // 2
+        x, y = 110 + col * 210, 262 + row * 74
+        f.rect(x, y, 196, 62, color=BLUE_D, fill=WHITE, sw=2.0, double=False)
+        f.text(x + 14, y + 26, f"FP_COMP{i}", size=19, color=BLUE_D, weight="bold")
+        f.text(x + 14, y + 49, "指令地址", size=14, color=MUTED)
+    f.text(110, 508, "第 7 个代码断点：先释放一格", size=18, color=RED,
+           weight="bold")
+    f.text(110, 532, "条件断点仍占 1 个 FPB 格", size=16, color=INK)
+
+    f.rect(594, 176, 474, 366, color=GREEN_D, fill=WHITE, sw=2.5)
+    f.text(620, 216, "DWT 池 · 4 格", size=24, color=GREEN_D, weight="bold")
+    f.text(620, 244, "按数据地址匹配观察点", size=16, color=MUTED)
+    for i in range(4):
+        col, row = i % 2, i // 2
+        x, y = 620 + col * 210, 262 + row * 74
+        f.rect(x, y, 196, 62, color=GREEN_D, fill=WHITE, sw=2.0, double=False)
+        f.text(x + 14, y + 26, f"DWT_COMP{i}", size=19, color=GREEN_D,
+               weight="bold")
+        f.text(x + 14, y + 49, "数据地址", size=14, color=MUTED)
+    f.text(620, 438, "观察变量读写，或承担其他 DWT 跟踪任务。", size=16,
+           color=INK)
+    f.text(620, 486, "4 格只数数据观察点", size=18, color=GREEN_D, weight="bold")
+    f.text(620, 510, "与 FPB 各自计数，互不借名额", size=16, color=INK)
+
+    f.line(84, 568, 1068, 568, color=MUTED, sw=1.3)
+    rows = [
+        (604, "条件硬件断点", "仍占 1 个 FPB 格；有些条件要暂停后由主机判断", BLUE_D),
+        (646, "软件断点 BKPT", "不在这两个池子里；能否放下取决于工具与存储条件", AMBER_STROKE),
+        (688, "M7 的 8 个比较器", "不在这颗 M3 的池子里，教程数字不能照搬", RED),
+    ]
+    for y, head, note, color in rows:
+        f.circle(94, y - 7, 5, color=color, fill=color)
+        f.text(116, y, head, size=19, color=color, weight="bold")
+        f.text(348, y, note, size=18, color=INK)
+    f.htext(84, 738, "代码断点找 FPB，观察数据找 DWT：两个预算分开算",
+            size=21, color=INK, weight="bold", hl=True)
+    return f
+
+
+def recover_ladder():
+    f = Fig("ch17-recover-ladder", "连不上时，按四级阶梯排查")
+    f.text(84, 138, "从电气前提开始，最后才动启动配置。", size=18, color=MUTED)
+
+    f.line(118, 196, 118, 646, color=MUTED, sw=2.2, dash="7 7")
+    steps = [
+        (184, "1", "共地 + VTref", MUTED,
+         ["GND 必须共地，VTref 是目标电压参考。", "不要把两个电源输出直接相连。"]),
+        (300, "2", "接 NRST：connect under reset", BLUE_D,
+         ["复位期间抢先连接。", "应用关掉调试时，先用这一级。"]),
+        (416, "3", "保留 SWD：PA13 / PA14", GREEN_D,
+         ["不改成普通 GPIO。", "SWJ_CFG 只关 JTAG 时，SWD 仍可用。"]),
+        (532, "4", "启动配置：进系统存储器", AMBER_STROKE,
+         ["让应用暂不执行，再重新烧录。", "这是应用关掉调试时的最后手段。"]),
+    ]
+    for y, num, head, color, lines in steps:
+        f.circle(118, y + 50, 24, color=color, fill=WHITE, sw=2.4)
+        f.text(118, y + 58, num, size=24, color=color, anchor="middle",
+               weight="bold")
+        f.rect(170, y, 898, 100, color=color, fill=WHITE, sw=2.4)
+        f.text(194, y + 38, head, size=22, color=color, weight="bold")
+        f.multi(194, y + 70, lines, size=17, color=INK, lh=26)
+    for y in (284, 400, 516):
+        f.arrow(118, y, 118, y + 16, color=MUTED, bend=0, head=8)
+
+    f.htext(84, 692, "顺序不能倒：电气前提 → 复位时序 → 引脚保留 → 启动配置",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(84, 738, "本图是排查顺序示意，不是某块板或某支探针的连接实测。",
+           size=17, color=MUTED)
+    return f
+
+
+def fault_record():
+    f = Fig("ch17-fault-record", "故障记录：先存下来，离场后再打印")
+    f.text(84, 138, "异常处理里只做定长保存；输出与 addr2line 留到安全环境。",
+           size=18, color=MUTED)
+
+    steps = [
+        (84, "① 异常入口", BLUE_D, ["压栈完成，先别 printf", "把现场读进记录"]),
+        (336, "② 存定长记录", AMBER_STROKE, ["栈 PC/LR、CFSR/HFSR", "有效位、ELF 哈希"]),
+        (588, "③ 离开处理函数", GREEN_D, ["记录留在存储里", "不在 handler 里等输出"]),
+        (840, "④ 安全环境输出", BLUE_D, ["在安全环境打印记录", "同一份 ELF 跑 addr2line"]),
+    ]
+    for x, head, color, lines in steps:
+        f.rect(x, 176, 224, 154, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 18, 214, head, size=21, color=color, weight="bold")
+        f.multi(x + 18, 258, lines, size=15.5, color=INK, lh=28)
+    for x in (308, 560, 812):
+        f.arrow(x + 2, 253, x + 26, 253, color=INK, bend=0, head=9)
+
+    f.rect(84, 362, 984, 122, color=INK, fill="#FBF3DD", sw=2.2, double=False)
+    f.text(108, 396, "定长记录里放什么（一次写入，不依赖 printf）", size=20,
+           color=INK, weight="bold")
+    fields = ["栈 PC / LR", "CFSR / HFSR", "BFAR / MMFAR 有效位", "ELF 哈希"]
+    for i, name in enumerate(fields):
+        x = 108 + i * 232
+        f.rect(x, 414, 216, 52, color=AMBER_STROKE, fill=WHITE, sw=2.0,
+               double=False)
+        f.text(x + 108, 446, name, size=17, color=AMBER_STROKE, anchor="middle",
+               weight="bold")
+
+    f.rect(84, 506, 984, 104, color=RED, fill=WHITE, sw=2.4)
+    f.text(108, 542, "handler 里的 printf 为什么危险", size=21, color=RED,
+           weight="bold")
+    for name, x in (("可能阻塞", 108), ("再次触发异常", 420), ("使用已损坏的栈", 700)):
+        f.text(x, 584, "• " + name, size=19, color=INK)
+
+    f.htext(84, 660, "记录先于输出：先保住现场，再决定怎么打印", size=22,
+            color=INK, weight="bold", hl=True)
+    f.text(84, 706, "记录能否留存，取决于放在哪里、以及复位方式。", size=18,
+           color=INK)
+    f.text(84, 742, "本图是流程示意，不是某次 HardFault 的实录。", size=16,
+           color=MUTED)
+    return f
+
+
 FIGS = {
+    "ch17-stack-frame": stack_frame,
+    "ch17-comp-pools": comp_pools,
+    "ch17-recover-ladder": recover_ladder,
+    "ch17-fault-record": fault_record,
     "ch17-bp-comparators": bp_comparators,
     "ch17-cfsr": cfsr,
     "ch17-swd-pins": swd_pins,

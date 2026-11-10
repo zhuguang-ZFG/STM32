@@ -355,6 +355,12 @@ addr2line -e build/app.elf -f -C $(PC)
 
 Before leaving this chapter, keep a build-environment inventory, four manual references with revision and page, one five-layer evidence set, and one clean-rebuild comparison.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-exit-kit.png" width="760" alt="Handraw: the four chapter-exit cards (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the four cards you leave the chapter with — build environment (compiler version, preset, ELF hash), four manual entries (DS/RM/ES with revision and page, plus a cannot-prove slot), one five-layer evidence set for an SPI Flash read, and one clean-rebuild ELF/map diff; Proves each card proves only its own column — build ownership, traceability to a page, whether the evidence chain reaches the pin, whether a rebuild diff can be attributed; Cannot turn the checklist into a measurement or replace the manual text. See the Hands-on labs and the closing checklist.</sub>
+</p>
+
 ## Related resources
 
 - ST's website: st.com (the manual download center). The official forum is community.st.com.

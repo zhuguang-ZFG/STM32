@@ -49,6 +49,12 @@ The temperature sensor needs a sample time of at least 17.1 µs. `17.1e-6 × 12e
 
 DS5319 says every medium-density device has two 12-bit ADCs. The C8 has ADC1 and ADC2, no ADC3, and no DAC, so `HAL_DAC_Start` produces no output. A DAC exists on high-density F103 parts and on the F4. The DAC buffer, noise, and triangle wave in the core ideas below apply only to parts that have a DAC. Source: [DS5319 Rev 20](#source-ds5319-adc).
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-part-scope.png" width="760" alt="Handraw: three parts, four capability rows (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three columns (F103C8 medium density, high-density F103, F4) against four rows — DAC present, conversion adder 12.5 or 12 cycles, power-up calibration, factory calibration values; Proves the DAC and calibration passages apply only to parts that have them, so HAL_DAC_Start produces no output on the C8; Cannot serve as a selection table, and it is not a measurement. See [DS5319](#source-ds5319-adc).</sub>
+</p>
+
 LQFP48 pin 10 PA0 = ADC12_IN0. The reference is pin 9 VDDA itself; this package has no separate VREF+, which appears only on packages with 100 pins or more. Chapter 03 lit an LED from pin 10 as a push-pull output. Reconfigure it as an analog input before sampling, or you read back the level the output is driving. Pin 14 PA4 on the C8 is ADC12_IN4 / SPI1_NSS and has no DAC_OUT1 function.
 
 Voltage = code × VDDA / 4096. At a nominal 3.3 V, 1 LSB = `3.3 / 4096 ≈ 0.806` mV, the 806 µV in the table later in this chapter. Code 2048 is `2048 / 4096 = 1/2`, exactly 1.65 V at a nominal 3.3 V. Dividing by 4095 pushes every reading slightly high, by about one LSB near full scale.
@@ -95,6 +101,12 @@ The opening `adc-sar.svg` and `sar-adc.gif` in the core ideas show all 12 bit-by
 
 ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-tconv-floor.png" width="760" alt="Handraw: the 14-cycle conversion floor (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three gates in series — ADCCLK capped at 14 MHz (÷6 gives 12 MHz here), a sample segment long enough to charge the sample capacitor (1.5 cycles is only 125 ns, a 100 kΩ source needs about 7.8 µs), and the fixed 12.5-cycle adder; Proves the shortest conversion at 12 MHz is 14 cycles, about 1.167 µs, and that shortening the sample cannot go below that floor; Cannot give a measured conversion time and leaves out trigger and DMA overhead. See [RM0008](#source-rm0008-adc).</sub>
+</p>
+
 ## Pitfalls and sources
 
 | What you see | Why | What to do | Source | What the source shows |
@@ -114,6 +126,12 @@ ADC clock 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
 - [ ] Configure the four conversion modes — single, continuous, scan, and discontinuous — and use DMA for multi-channel acquisition.
 - [ ] Use the internal temperature sensor and Vrefint to work backward to the die temperature and the real VDDA.
 - [ ] Know the DAC output modes, and how the output buffer changes accuracy and noise.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-evidence-lanes.png" width="760" alt="Handraw: three evidence lanes (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three evidence lanes — input voltage at the pin, ADC configuration and status (ADON/EOC, SMPR, ADCCLK), and the code array in memory (order, HT/TC, CNDTR) — with a single printed voltage crossed out between them; Proves one number cannot separate quantization, source impedance, and buffer order, while each lane rules out its own class of error; Cannot replace a meter or an oscilloscope, and it records no measurement. See [RM0008](#source-rm0008-adc).</sub>
+</p>
 
 ## Core ideas
 
@@ -209,6 +227,12 @@ On F1, `SMPx[2:0]` can be 1.5 / 7.5 / 13.5 / 28.5 / 41.5 / 55.5 / 71.5 / 239.5 A
 ### 3. Four conversion modes
 
 The four modes differ in when the ADC stops. Single converts once each time you ask. Continuous starts again as soon as it finishes and never stops. Scan works down a list of channels in order. Discontinuous splits a long list so that each trigger converts only a few channels. Real projects most often use scan plus continuous, with DMA moving the results.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-mode-stops.png" width="760" alt="Handraw: where the four modes stop (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: four lanes leaving the same trigger — single stops after one conversion, continuous restarts at once, scan walks the SQR list, discontinuous pauses after n channels — and a bottom lane stacking scan, continuous, and circular DMA; Proves the four modes differ only in when the ADC stops and what starts it again, not in resolution or sample time; Cannot prove register bit values or channel order, and it is not a captured waveform. See [RM0008](#source-rm0008-adc).</sub>
+</p>
 
 Single is for sampling on demand and saving power. Continuous is for live monitoring. Scan walks several channels. Discontinuous means "one trigger converts a group."
 

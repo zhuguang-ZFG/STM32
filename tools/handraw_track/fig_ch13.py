@@ -294,7 +294,67 @@ def pitfall_triage():
     return f
 
 
+def remap_decision():
+    f = Fig("ch13-remap-decision",
+            "CAN 引脚三选一：前两档排除，落到 PB8/PB9 / the pin-pair decision")
+
+    f.text(84, 138,
+           "三档依次比：复位默认 → 端口 D → 第 45/46 脚；前两档排除，最后一档还得和 I2C 二选一",
+           size=21, color=MUTED)
+
+    rows = [
+        ("1", 176, "复位默认", "PA11 / PA12", "第 32 / 33 脚",
+         "CAN_RX / CAN_TX",
+         ["也是 USB 的 D− / D+", "第 14 章 USB 要用这一对脚"],
+         "排除", RED, "DS5319 表 5", None),
+        ("2", 356, "第二种重映射", "PD0 / PD1", "第 5 / 6 脚", "",
+         ["LQFP48 上接着 HSE 晶振，", "搬过去会停掉 8 MHz 晶振",
+          "36/48/64 脚封装不能选端口 D"],
+         "排除", RED, "DS5319 · RM0008 §9.3.3", None),
+        ("3", 536, "第一种重映射", "PB8 / PB9", "第 45 / 46 脚",
+         "CAN_RX / CAN_TX",
+         ["也是 I2C1 的重映射脚（第 07 章）", "这一对脚只给 CAN 或 I2C 之一"],
+         "落定", GREEN_D, "DS5319 表 5", 1),
+    ]
+
+    for n, y, label, pins, npins, roles, why, verdict, vc, src, hl in rows:
+        cy = y + 70
+        f.circle(140, cy, 26, color=INK, fill=WHITE, sw=2.6)
+        f.text(140, cy + 9, n, size=24, color=INK, anchor="middle",
+               weight="bold", halo=True)
+        f.line(166, cy, 196, cy, color=INK, sw=2.2, amp=0.6)
+        f.rect(196, y, 872, 140, color=INK, fill=WHITE, sw=2.6, double=False)
+        f.text(216, y + 28, label, size=16, color=BLUE_D, weight="bold")
+        f.text(216, y + 66, pins, size=26, color=BLUE_D, weight="bold")
+        f.text(216, y + 92, npins, size=15, color=MUTED)
+        if roles:
+            f.text(216, y + 114, roles, size=14, color=MUTED)
+        lh, size = 30, 18
+        y0 = y + 76 - (len(why) - 1) * lh / 2 + 7
+        for i, s in enumerate(why):
+            if hl is not None and i == hl:
+                f.htext(480, y0 + i * lh, s, size=size, color=INK,
+                        weight="bold", hl=True)
+            else:
+                f.text(480, y0 + i * lh, s, size=size, color=INK)
+        f.rect(846, y + 30, 126, 44, color=vc, fill=WHITE, sw=2.4, double=False)
+        f.text(909, y + 60, verdict, size=22, color=vc, anchor="middle",
+               weight="bold")
+        f.text(909, y + 104, src, size=14, color=MUTED, anchor="middle")
+
+    f.arrow(140, 274, 140, 396, color=RED, sw=2.6, bend=0.0, head=10)
+    f.arrow(140, 454, 140, 576, color=RED, sw=2.6, bend=0.0, head=10)
+    f.arrow(140, 636, 140, 694, color=GREEN_D, sw=2.6, bend=0.0, head=10)
+
+    f.panel(84, 700, 984, 66, AMBER_FILL)
+    f.rect(84, 700, 984, 66, color=AMBER_STROKE, sw=2.6)
+    f.text(576, 742, "BluePill：PB8/PB9，一对脚只给 CAN 或 I2C 之一",
+           size=21, color=INK, anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
+    "ch13-remap-decision": remap_decision,
     "ch13-pitfall-triage": pitfall_triage,
     "ch13-diff-levels": diff_levels,
     "ch13-data-frame": data_frame,

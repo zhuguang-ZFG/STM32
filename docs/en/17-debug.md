@@ -44,6 +44,12 @@ After HardFault, preserve the state before interpreting `CFSR` (`0xE000ED28`) an
 
 After exception stacking completes normally, the basic frame contains R0, R1, R2, R3, R12, LR, PC, xPSR. Counting R0 as word 0, PC is `stack[6]`, or SP + 0x18 from the start of that frame. For `PRECISERR`, PC points to the faulting instruction; with `IMPRECISERR`, it may have advanced past the original write. `STKERR` or `MSTKERR` means the frame might be incomplete: check its address and contents before dereferencing it.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-stack-frame.png" width="760" alt="Handraw: the eight-word exception frame and where PC sits (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the eight-word frame card (R0–R3, R12, LR, PC, xPSR) with PC as word 6 at frame start + 0x18; Proves PC locates the faulting instruction only when the frame is complete and the fault type supports it — PRECISERR points at it, IMPRECISERR may have advanced, STKERR/MSTKERR needs the stack checked first; Cannot show any one fault's real stack contents, and completeness still comes from CFSR and the stack address. See [PM0056](#source-pm0056).</sub>
+</p>
+
 Before measuring, set `DEMCR` (`0xE000EDFC`) bit 24 (`TRCENA`), clear `DWT_CYCCNT` (`0xE0001004`), and set `CYCCNTENA`. At 72 MHz, 72 counts are 1 µs. Either missing enable can stop the counter. For a zero delta, also check for single-stepping, repeated inspection of a stale variable, and measured code removed by the compiler. See [PM0056 DWT](#source-pm0056-dwt).
 
 This M3 has 6 hardware breakpoints. Setting a 7th in flash makes the debugger refuse or fail to stop. The Cortex-M7 in an STM32F7 or H7 has 8, so do not copy that number from an H7 tutorial.
@@ -94,6 +100,12 @@ SWO and ITM printing are in the opening `debug-swo.svg` animation. The static fi
 | Counter stopped | bit 24 or `CYCCNTENA` is 0 | No increase even while running continuously |
 | Hardware breakpoints | 6 | Cortex-M3. An M7 has 8 |
 | Pins | pin 34 PA13, pin 37 PA14 | SWD. Pin 39 PB3 is JTDO by default |
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-comp-pools.png" width="760" alt="Handraw: the FPB and DWT comparator pools (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: two pools that never share slots — the FPB's 6 instruction-address comparators and the DWT's 4 data-address comparators; Proves the budgets count separately, a conditional hardware breakpoint still takes one FPB slot, and a 7th code breakpoint means releasing an old one; Cannot show this chip's real occupancy, and neither pool counts a software BKPT or an M7's 8 comparators. See [PM0056 DWT](#source-pm0056-dwt).</sub>
+</p>
 
 ## Pitfalls and sources
 
@@ -357,6 +369,12 @@ void Measure(void)
 
 The probe's 3V3 connection is usually target-voltage reference VTref; check the specific probe before using it as a power source. Do not connect two power outputs together. SWO support is not limited to the two models in the table: check the actual hardware, firmware, and wiring. On a Nucleo, verify the SWO route against the board revision and solder bridges.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-recover-ladder.png" width="760" alt="Handraw: the four-step recovery ladder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the four-step ladder — common GND with VTref, NRST for connect under reset, SWD kept on PA13/PA14, and the boot configuration that enters system memory; Proves the electrical prerequisites and reset timing come first, with the boot configuration as the last resort when the application disables debug; Cannot show a real attach on any board or probe, which still depends on firmware, probe and wiring. See [DS5319](#source-ds5319-swd), [PM0056](#source-pm0056).</sub>
+</p>
+
 > [!WARNING]
 > **GND must be common**, and the probe needs the correct target-voltage reference. Also connect NRST for connect under reset. If the application disables debug, try connecting under reset. Another option is to use the chip's boot configuration to enter system memory, keeping the application from running while you reprogram it.
 
@@ -430,6 +448,12 @@ void Fault_Enable(void)
 **④ HardFault handler (pair it with the stack unwind in section 4, and print the registers directly)**
 
 Use this version in controlled debugging after checking the frame and log channel. A fault-time `printf` can block, fault again, or use an already damaged stack. A deployed fault recorder should first save a fixed amount of data, then output it in a safe context.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-fault-record.png" width="760" alt="Handraw: save-first fault recorder (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the four steps after exception entry — save a fixed-length record (stacked PC/LR, CFSR/HFSR, valid flags, ELF hash), leave the handler, then print in a safe context and run addr2line; Proves a fault-time printf can block, fault again, or use an already damaged stack, so the record comes before any output; Cannot show a real HardFault capture, and survival depends on where the record is stored and how the part resets. See [PM0056](#source-pm0056).</sub>
+</p>
 
 ```c
 void hard_fault_handler_c(uint32_t *stack)

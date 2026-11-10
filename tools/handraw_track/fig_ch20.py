@@ -107,6 +107,114 @@ def cube_suite():
     return f
 
 
+def exit_kit():
+    f = Fig("ch20-exit-kit",
+            "章末四张交付卡：构建 · 来源 · 证据 · 重建 / four exit cards")
+    f.text(W / 2, 122,
+           "四张卡各证一栏：构建归谁 · 追到哪页 · 到没到引脚 · 差异能否追因",
+           size=20, color=MUTED, anchor="middle")
+
+    def card(x, y, w, h, color, num, title):
+        f.rect(x, y, w, h, color=color, fill=WHITE, sw=2.4)
+        f.circle(x + 34, y + 30, 17, color=color, sw=2.0, fill=GRAY_FILL)
+        f.text(x + 34, y + 38, num, size=18, color=color, anchor="middle",
+               weight="bold")
+        f.text(x + 62, y + 38, title, size=20, color=color, weight="bold")
+
+    def stamp(x, y, kind, text):
+        ok = kind == "证明"
+        c = GREEN_D if ok else RED
+        tw = 40 if ok else 64
+        f.rect(x, y - 15, tw, 22, color=c, fill=WHITE, sw=1.6,
+               double=False, amp=1.0, r=4)
+        f.text(x + tw / 2, y + 1, kind, size=13, color=c, anchor="middle",
+               weight="bold")
+        f.text(x + tw + 8, y + 1, text, size=15, color=INK)
+
+    # ---- ① 构建环境卡 ----
+    card(84, 142, 480, 304, BLUE_D, "1", "构建环境卡")
+    entries = [("CubeIDE", 100), ("VS Code", 212), ("CLion", 324), ("CI", 436)]
+    for name, ex in entries:
+        f.rect(ex, 194, 100, 30, color=BLUE_D, fill=GRAY_FILL, sw=1.6,
+               double=False, amp=1.0, r=4)
+        f.text(ex + 50, 214, name, size=14, color=INK, anchor="middle")
+    f.line(150, 232, 486, 232, color=BLUE_D, sw=1.6, amp=1.2)
+    for _, ex in entries:
+        f.line(ex + 50, 224, ex + 50, 232, color=BLUE_D, sw=1.4, amp=0.8)
+    f.arrow(318, 232, 318, 250, color=BLUE_D, bend=0.0, head=8)
+    f.rect(100, 252, 436, 36, color=BLUE_D, fill=WHITE, sw=1.8,
+           double=False, amp=1.2)
+    f.text(318, 276, "同一个 CMakePreset（debug）· 一份定义", size=16,
+           color=BLUE_D, anchor="middle", weight="bold")
+    f.text(100, 316, "记录：编译器版本 · preset · ELF 哈希", size=15,
+           color=INK)
+    f.text(100, 342, "四个入口只换界面，不换源文件与宏", size=15, color=MUTED)
+    f.line(100, 362, 548, 362, color=MUTED, sw=1.0, dash="5 5", amp=0.8)
+    stamp(100, 390, "证明", "构建归同一个 preset，换 IDE 不换定义")
+    stamp(100, 418, "不能证明", "生成的固件功能正确")
+
+    # ---- ② 来源卡 ×4 ----
+    card(588, 142, 480, 304, GREEN_D, "2", "来源卡 ×4")
+    rows = [("DS · 引脚", 188), ("DS · 电气上限", 220),
+            ("RM · 寄存器位", 252), ("ES · 勘误", 284)]
+    for name, ry in rows:
+        f.rect(604, ry, 168, 26, color=GREEN_D, fill=GRAY_FILL, sw=1.5,
+               double=False, amp=1.0, r=4)
+        f.text(616, ry + 19, name, size=14, color=INK)
+        f.text(788, ry + 19, "rev ____ · 页 ____", size=14, color=MUTED)
+    f.text(604, 330, "每条问题一张卡：来源 + revision + 页码", size=14,
+           color=MUTED)
+    f.text(604, 368, "不能证明：", size=15, color=RED, weight="bold")
+    f.line(694, 374, 1000, 374, color=RED, sw=1.4, dash="5 5", amp=0.8)
+    f.text(1006, 370, "自己填", size=12, color=MUTED)
+    stamp(604, 420, "证明", "结论能追到某页与 revision")
+
+    # ---- ③ 五层证据 ----
+    card(84, 462, 480, 296, AMBER_STROKE, "3", "五层证据：一次 SPI 读 Flash")
+    f.text(100, 520, "同一次读 Flash，五张票分开存", size=14, color=MUTED)
+    layers = ["构建日志", "寄存器读回", "运行日志", "逻辑解码", "示波器波形"]
+    ty = 532
+    for i, name in enumerate(layers):
+        f.rect(100, ty, 448, 26, color=AMBER_STROKE, fill=WHITE, sw=1.8,
+               double=False, amp=1.0, r=4, dash="6 4")
+        f.circle(122, ty + 13, 8, color=AMBER_STROKE, sw=1.5, fill=GRAY_FILL)
+        f.text(122, ty + 18, str(i + 1), size=11, color=INK, anchor="middle",
+               weight="bold")
+        f.text(142, ty + 19, name, size=15, color=INK)
+        f.text(532, ty + 18, "L%d" % (i + 1), size=12, color=MUTED,
+               anchor="end")
+        ty += 31
+    f.line(100, 694, 548, 694, color=MUTED, sw=1.0, dash="5 5", amp=0.8)
+    stamp(100, 718, "证明", "五层都存，覆盖范围分开写")
+    stamp(100, 744, "不能证明", "票齐不等于结论对")
+
+    # ---- ④ 重建对比 ----
+    card(588, 462, 480, 296, RED, "4", "干净重建：ELF / map 对比")
+    f.text(604, 512, "清空可重建的 build → 固定依赖重建", size=14,
+           color=MUTED)
+    for bx, label in ((622, "旧 ELF / map"), (850, "新 ELF / map")):
+        f.rect(bx, 542, 168, 64, color=RED, fill=GRAY_FILL, sw=1.8,
+               double=False, amp=1.2)
+        f.text(bx + 84, 578, label, size=16, color=INK, anchor="middle",
+               weight="bold")
+    f.arrow(794, 574, 846, 574, color=RED, bend=0.0, head=9)
+    f.text(820, 552, "diff", size=13, color=RED, anchor="middle",
+           weight="bold")
+    f.arrow(820, 610, 820, 634, color=RED, bend=0.0, head=9)
+    f.line(620, 640, 1036, 640, color=RED, sw=1.6, amp=1.0)
+    tags = [("工具链", 604, 96), ("宏", 712, 68), ("源文件", 792, 110),
+            ("链接脚本", 914, 138)]
+    for name, tx, tw in tags:
+        f.line(tx + tw / 2, 640, tx + tw / 2, 648, color=RED, sw=1.4, amp=0.8)
+        f.rect(tx, 648, tw, 28, color=RED, fill=WHITE, sw=1.6,
+               double=False, amp=1.0, r=4)
+        f.text(tx + tw / 2, 667, name, size=14, color=INK, anchor="middle")
+    f.line(604, 696, 1052, 696, color=MUTED, sw=1.0, dash="5 5", amp=0.8)
+    stamp(604, 724, "证明", "每个差异都能归到四类之一")
+    stamp(604, 748, "不能证明", "追因前，不能判是谁改的")
+    return f
+
+
 def dma_f1_vs_f4():
     f = Fig("ch20-dma-f1-vs-f4",
             "F4 的 DMA 结论能不能搬到 F1：三个差异先核对")
@@ -138,6 +246,7 @@ def dma_f1_vs_f4():
 
 FIGS = {
     "ch20-dma-f1-vs-f4": dma_f1_vs_f4,
+    "ch20-exit-kit": exit_kit,
     "ch20-manual-route": manual_route,
     "ch20-cube-suite": cube_suite,
 }
