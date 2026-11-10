@@ -1,6 +1,6 @@
 # STM32 书籍与视频经典化改造 SPECS
 
-状态：执行基线 v1 · 2026-11-02 · 改造前冻结
+状态：执行基线 v1 · 2026-11-02 冻结 · 2026-11-10 关闭（SP-08 全项已逐项取证；unverified 分列；收口记录见 `audits/b53-spec-closeout.md`）
 
 适用范围：`docs/00–28`、`docs/en/00–28`、`assets/`、`stm32-book/`、`tools/`、`final-videos/` 及新增的视频可复现源文件。
 
@@ -175,19 +175,38 @@ python stm32-book/build_html.py --lang en --pdf
 
 PDF 串行构建。实际浏览器检查使用生成后的页面，不能只跑测试。视频检查命令与结果按章记录在验证报告中。
 
-### 总完成检查
+### 总完成检查（2026-11-10 全项复核，证据索引见 `audits/b53-spec-closeout.md`）
 
-- [ ] 29 个中文章节和 29 个英文章节均有逐项审计记录，无跳章。
-- [ ] 29 条短片与 29 条长片均由当前源重新生成，字幕、分镜和成片哈希对应。
-- [ ] 五个技能都在实际产物中留下可审查用途，非只安装不调用。
-- [ ] 双语 HTML/PDF 同源、书签/索引/来源/许可一致，页面和页样已目检。
-- [ ] 全部联系表已检查；每章五类关键场景没有缺图、文字溢出、黑帧或音画错位。
-- [ ] 基线 146 项测试和新增合同全部通过；没有通过删测试、改策略获得绿灯。
-- [ ] `task_verify` 已运行，passed / failed / unverified 分开报告；unverified 不冒充通过。
-- [ ] 文档、生成命令、来源、许可证、CREDITS 和变更记录同步；临时 smoke 文件不进入发布源。
-- [ ] 目标 Goal 只有在上述当前状态证据逐项复核后才能标记完成。
+- [x] 29 个中文章节和 29 个英文章节均有逐项审计记录，无跳章。
+      （`tools/audit_book.py` 逐章指标由 `test_book_audit.py` / `test_advanced_visuals.py` 锁定；
+      B51 按 PDF TOC 抽样 15 页覆盖七个分部，见 `audits/b51-final-acceptance.md`）
+- [x] 29 条短片与 29 条长片均由当前源重新生成，字幕、分镜和成片哈希对应。
+      （`audits/video-regen-plan.md` 批次 A–G 全勾；逐章 `storyboard-rendered.json`、
+      `media-report.json`、SRT 与联系表随源可重建，反同构指纹已登记）
+- [x] 五个技能都在实际产物中留下可审查用途，非只安装不调用。
+      （stack-diagram / dsh-guizang-design（humanizer-zh）/ handraw-style / unslop 见
+      `b53` 技能证据表；image-prompt-reverse 见
+      `audits/visual-anchors-reverse-2026-11-10.md`，五锚点中英提示词与媒介边界）
+- [x] 双语 HTML/PDF 同源、书签/索引/来源/许可一致，页面和页样已目检。
+      （同一 builder `build_html.py --check` zh/en 均 PASS（29 章）；EPUB 各 49 spine /
+      621 images；页面目检 15/15 见 b51；来源与许可见 `CREDITS.md` 与
+      `check_assets.py` 照片 5/5）
+- [x] 全部联系表已检查；每章五类关键场景没有缺图、文字溢出、黑帧或音画错位。
+      （逐章 `contact-sheet.jpg` 与 media-report 十项检查；Handraw 联系表见
+      `audits/handraw-knowledge-track-29.md`，视频联系表见 `video-regen-plan.md`）
+- [x] 基线 146 项测试和新增合同全部通过；没有通过删测试、改策略获得绿灯。
+      （pytest 196 passed，见 b51 / b53 验证记录；新增合同以失败复现→通过方式加入，
+      历史锁只做等值重钉，无删除测试）
+- [x] `task_verify` 已运行，passed / failed / unverified 分开报告；unverified 不冒充通过。
+      （`audits/task-verify-report.json`：9 passed / 0 failed / 3 unverified；
+      `audits/task-verify-equivalent-2026-11-05.md` 记录三项诚实未验证）
+- [x] 文档、生成命令、来源、许可证、CREDITS 和变更记录同步；临时 smoke 文件不进入发布源。
+      （生成命令随各 batch 审计落盘；`.gitignore` 排除 `.temp/`、`final-videos/`、
+      `wechat-mp/` 等临时产物）
+- [x] 目标 Goal 只有在上述当前状态证据逐项复核后才能标记完成。
+      （本清单即逐项复核结果，2026-11-10）
 
-## SP-09 第一批执行清单（L1，尚未开始改造）
+## SP-09 第一批执行清单（L1 · 已完成；遗留仅为 SP-08 登记的 unverified 项）
 
 1. 冻结 ch03 中文/英文、短片、长片的基线页面和五类场景抽帧。
 2. 写 ch03 缺陷清单：电流路径、低电平点亮、推挽/开漏、寄存器顺序、失败证据分别由谁解释。

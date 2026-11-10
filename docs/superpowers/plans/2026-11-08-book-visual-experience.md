@@ -1,6 +1,8 @@
 # 书籍视觉体验提升计划（B46–B51）
 
 日期：2026-11-08　基线：`df89879`（B45 合并）
+状态：B46–B51 全部执行完毕（2026-11-10），另含 B52 遗留超线收口；验收见
+`stm32-book/audits/b51-final-acceptance.md`，spec 收口见 `stm32-book/audits/b53-spec-closeout.md`。
 依据：`stm32-book/BOOK_REDESIGN_SPEC.md` 第 6、11、12 节
 
 ## 现状（`python tools/audit_book.py` 实测）

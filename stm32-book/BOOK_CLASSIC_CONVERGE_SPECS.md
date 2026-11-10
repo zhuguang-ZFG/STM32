@@ -2,7 +2,7 @@
 
 | 字段 | 值 |
 | --- | --- |
-| 状态 | Overlay Draft 1 · §15 三表模板已在 ch03 落盘；ch03 硬门仅余 `task_verify`（unverified 已分列记账）与真证照片；PDF 页眉乱码（非嵌入 CJK 字体）已修复并重建 |
+| 状态 | 已关闭 · 2026-11-10（Overlay 条款随 Book 2.0 v1.3.1 发布落地：§15 三表落盘、§6.4 视觉锚点反推、ch03 硬门；收口记录见 `audits/b53-spec-closeout.md`，锚点证据见 `audits/visual-anchors-reverse-2026-11-10.md`） |
 | 日期 | 2026-11-03（America/Adak 本地日） |
 | 文件名 | stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md |
 | 基座分支 | `feat/book-video-classic`（0 behind `main`） |

@@ -118,7 +118,10 @@ docs02 归第一部，故第一部抽 3 章（00/01/02），第二至六部各 2
   [#95 b50](https://github.com/zhuguang-ZFG/STM32/pull/95)、
   [#99 b52](https://github.com/zhuguang-ZFG/STM32/pull/99)（原 #96 同因关闭，重开）、
   [#97 b51](https://github.com/zhuguang-ZFG/STM32/pull/97)。
-  遗留：合并进行中（#91/#98/#93/#95 已合）。合并流程教训：GitHub 在 base 分支
+  结项（2026-11-10 终态）：**全部 PR 已合并且分支已删**（#91 → #98 → #93 →
+  #94 → #95 → #99 → #97 依次合并）。`main` 末提交 `9a1d131` 的 Book CI
+  success，`release-fetch` 同提交 success；v1.3.1 已发布（非 draft，
+  4 资产：中英 HTML/PDF）。合并流程教训：GitHub 在 base 分支
   被删时自动**关闭**依赖它的 PR（不会自动重定向），且关闭态 PR 不能改 base。
   正确顺序：先改下一个 PR 的 base → 再合并并删当前分支；合并与删分支必须在
   一次成功调用里完成，API 抖动时先验证状态再继续（#92/#96 因此被关闭，
