@@ -301,6 +301,92 @@ def two_firmware():
     return f
 
 
+def migrate_boundary():
+    f = Fig("ch24-migrate-boundary",
+            "抄 F1 工程：四个第一分歧边界 / first boundary to check")
+
+    f.text(84, 130, "症状看着都像「代码没改对」——先定位在哪一层，再动一行代码",
+           size=20, color=MUTED)
+
+    bands = [
+        ("引脚与供电", BLUE_D,
+         ["晶振脚写成 PD0/PD1 → L4 的 HSE 在 PH0/PH1",
+          "USB 枚举不起来 → 脚 48 VDDUSB 悬空"]),
+        ("唤醒与时钟", GREEN_D,
+         ["一进 Stop 2 就醒 → SysTick、旧标志或浮空唤醒脚",
+          "醒来串口乱码 → PLL/SYSCLK 未恢复"]),
+        ("负载与调试", AMBER_STROKE,
+         ["Stop 2 电流偏大 → 调试器、GPIO、LED、回灌",
+          "串表后随机复位 → 仪表负担电压"]),
+        ("测量与账本", RED,
+         ["测得接近 2 µA 却续航差 → 漏掉唤醒电荷",
+          "封面 1.1 µA 当上限 → 那是指定条件下的典型值"]),
+    ]
+    y = 160
+    for name, color, lines in bands:
+        f.rect(84, y, 984, 96, color=color, fill=WHITE, sw=2.4)
+        f.rect(100, y + 18, 200, 60, color=color, fill=WHITE, sw=2.0)
+        f.text(200, y + 56, name, size=20, color=color, anchor="middle",
+               weight="bold")
+        f.multi(324, y + 38, lines, size=17, color=INK, lh=30)
+        y += 112
+
+    f.text(84, 640, "同一个症状，先问：是脚接错、时钟没回、负载没断，还是账算错？",
+           size=18, color=INK)
+
+    f.htext(84, 712, "口诀：先认边界，再改一处——引脚、时钟、负载、测量各查各的",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
+def slow_meter():
+    f = Fig("ch24-slow-meter",
+            "慢表只看见 2 µA：8 ms 尖峰漏在采样点之间 / missed samples")
+
+    f.text(84, 128,
+           "同一个 1 s 周期：8 ms 活动尖峰按比例只有约 7 px 宽，表若采不到就只剩平台",
+           size=19, color=MUTED)
+
+    # ---- 上：1 s 轴与慢表采样点 ----
+    f.line(96, 300, 1056, 300, color=INK, sw=2.4)
+    f.text(1064, 306, "t", size=18, color=MUTED)
+    f.line(96, 286, 1056, 286, color=GREEN_D, sw=2.6, amp=0.6)
+    f.text(660, 272, "992 ms @ 2 µA", size=18, color=GREEN_D,
+           anchor="middle")
+    f.fillrect(170, 150, 8, 136, RED)
+    f.text(190, 168, "8 ms @ 5 mA", size=17, color=RED, weight="bold")
+    for x in (150, 360, 560, 760, 960):
+        f.circle(x, 286, 7, color=BLUE_D, sw=2.0, fill=WHITE)
+    f.text(560, 330, "慢表的采样点：全都落在睡眠平台上", size=17,
+           color=BLUE_D, anchor="middle")
+
+    # ---- 中：表读数 vs 整周期真账 ----
+    f.rect(84, 356, 470, 160, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(104, 390, "表读出：≈ 2 µA", size=21, color=BLUE_D,
+           weight="bold")
+    f.multi(104, 424, ["尖峰落在两个采样点之间", "表只看到睡眠平台",
+                       "续航账从此对不上"], size=17, color=INK, lh=28)
+
+    f.rect(598, 356, 470, 160, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(618, 390, "整周期真账：≈ 42 µA", size=21, color=GREEN_D,
+           weight="bold")
+    f.multi(618, 424, ["8 ms × 5 mA + 992 ms × 2 µA", "= 0.041984 mA·s",
+                       "I_avg = 41.984 µA"], size=17, color=INK, lh=28)
+
+    # ---- 下：采样率与验收页 ----
+    f.rect(84, 536, 984, 100, color=RED, fill=WHITE, sw=2.4)
+    f.text(104, 568, "采样率下限：f_s ≥ 10 / t_min，t_min = 8 ms → f_s ≥ 1.25 kHz",
+           size=19, color=RED, weight="bold")
+    f.text(104, 600, "同时记录 MCU 端 VDD——漏掉尖峰和漏掉条件，账都不可复现",
+           size=17, color=INK)
+    f.text(104, 626, "验收页：模式、电流、条件各一行；典型值不是上下限",
+           size=17, color=INK)
+
+    f.htext(84, 712, "口诀：先算采样率，再读 µA——漏掉尖峰，账少一位",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch24-part-id": part_id,
     "ch24-modes": modes,
@@ -312,6 +398,8 @@ FIGS = {
     "ch24-irq-order": irq_order,
     "ch24-duty-integration": duty_integration,
     "ch24-two-firmware": two_firmware,
+    "ch24-migrate-boundary": migrate_boundary,
+    "ch24-slow-meter": slow_meter,
 }
 
 if __name__ == "__main__":

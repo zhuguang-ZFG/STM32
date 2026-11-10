@@ -376,6 +376,11 @@ PC13_OUT = 0;   /* 直接写 0/1，无需读改写，等效于 ODR */
 | RC 滤波 | 硬件加 0.1µF 电容 + 电阻 |
 | 施密特触发器 | 硬件整形 |
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch03-debounce-recheck.png" width="760" alt="Handraw：软件消抖的 20 ms 复查与边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左侧三步——读到低先当毛刺、等 10–20 ms（代码里就是 HAL_Delay(20)）、再读一次；仍为低才判定按下，回到高就丢弃。右侧是边界——每轮塞 100 ms 阻塞任务会吞掉短按，所以第 04 章改用 EXTI；硬件路线可以上 RC（0.1 µF）或施密特触发器。证明什么：软件消抖就是「看见低不算数，20 ms 后还低才算按下」；不能证明什么：不含按键抖动的实际波形，也不是示波器实测。出处：[RM0008 第 9.2.7 节](#source-rm0008-gpio)。</sub>
+</p>
 ```c
 /* 软件消抖：等待稳定 */
 static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)

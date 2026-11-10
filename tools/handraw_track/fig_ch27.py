@@ -387,6 +387,46 @@ def sendall_loop():
     return f
 
 
+def udp_tcp_contract():
+    f = Fig("ch27-udp-tcp-contract",
+            "UDP 与 TCP：两份运输合同 / two transport contracts")
+
+    f.text(84, 130,
+           "先问需求再选协议：消息边界、可靠性、拥塞控制、多播各归谁",
+           size=20, color=MUTED)
+
+    f.rect(84, 158, 470, 262, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(104, 196, "UDP · 数据报", size=22, color=BLUE_D, weight="bold")
+    f.multi(104, 238, ["每个 datagram 自带边界",
+                       "丢失 / 乱序 / 重复：应用处理",
+                       "拥塞控制：应用负责，",
+                       "不能无节制发送",
+                       "支持多播 / 广播"], size=17, color=INK, lh=32)
+
+    f.rect(598, 158, 470, 262, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(618, 196, "TCP · 字节流", size=22, color=GREEN_D, weight="bold")
+    f.multi(618, 238, ["没有消息边界，必须自行分帧",
+                       "连接内重传、排序、去重字节流",
+                       "拥塞控制内置",
+                       "不支持多播 / 广播"], size=17, color=INK, lh=32)
+
+    f.rect(84, 452, 984, 88, color=RED, fill=WHITE, sw=2.4)
+    f.text(104, 484, "UDP 不是「更实时的 TCP」", size=20, color=RED,
+           weight="bold")
+    f.text(104, 516, "要重传、窗口、顺序和分片，最终可能重新造一个更差的 TCP",
+           size=17, color=INK)
+
+    f.rect(84, 562, 984, 88, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(104, 594, "周期传感器数据：允许下一帧覆盖上一帧", size=20,
+           color=GREEN_D, weight="bold")
+    f.text(104, 626, "UDP 可减少队头阻塞，但仍要带序号和时间戳", size=17,
+           color=INK)
+
+    f.htext(84, 722, "口诀：先选合同——边界归谁、可靠归谁，再谈协议和端口",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch27-at-offload": at_offload,
     "ch27-sendall-loop": sendall_loop,
@@ -399,6 +439,7 @@ FIGS = {
     "ch27-backoff": backoff,
     "ch27-pbuf-chain": pbuf_chain,
     "ch27-tls-prereqs": tls_prereqs,
+    "ch27-udp-tcp-contract": udp_tcp_contract,
 }
 
 if __name__ == "__main__":

@@ -85,8 +85,11 @@ class BookAuditTests(unittest.TestCase):
     # B54/B55 en gap close-out (2026-11-10/11): the chapters below hold a
     # 2,000-char budget in the English edition; zh gates above stay unchanged.
     EN_GAP_BATCH_BUDGETS = {
+        "02": 2000,
+        "03": 2000,
         "04": 2000,
         "05": 2000,
+        "07": 2000,
         "08": 2000,
         "09": 2000,
         "10": 2000,
@@ -100,6 +103,8 @@ class BookAuditTests(unittest.TestCase):
         "18": 2000,
         "19": 2000,
         "20": 2000,
+        "24": 2000,
+        "27": 2000,
         "28": 2000,
     }
 
@@ -178,6 +183,7 @@ class BookAuditTests(unittest.TestCase):
                 "bluepill-stm32f103c8t6-popolon.jpg", "bluepill-stm32f103c8t6-tardate-usb.jpg",
                 "stack-gpio-pc13-led.png", "pinout-bluepill.svg",
                 "led-blink.gif", "sample-03-exti-vs-poll.svg", "ch03-poll-vs-exti.png",
+                "ch03-debounce-recheck.png",
             ),
             "04": (
 
@@ -223,9 +229,9 @@ class BookAuditTests(unittest.TestCase):
             "07": (
 
                 "i2c-transaction.svg", "ch07-ccr-timing.png", "sample-07-i2c-ack-flow.svg", "sample-07-i2c-addr.svg",
-                "ch07-i2c-addr.png", "i2c-addr.gif", "sample-07-pullup-cap.svg",
+                "ch07-i2c-addr.png", "i2c-addr.gif", "ch07-pin-owner.png", "sample-07-pullup-cap.svg",
                 "ch07-pullup-cap.png", "sample-07-start-ack.svg", "ch07-start-ack.png",
-                "i2c-timing.gif", "ch07-clock-stretch.png",
+                "i2c-timing.gif", "ch07-clock-stretch.png", "ch07-two-owners.png",
                 "sample-07-sr-restart.svg", "ch07-sr-restart.png",
                 "sample-07-i2c-triage.svg", "ch07-i2c-triage.png",
             ),
@@ -456,7 +462,8 @@ class BookAuditTests(unittest.TestCase):
                 "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
                 "ch24-sleep-checklist.png", "ch24-irq-order.png",
                 "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
-                "ch24-duty-integration.png", "ch24-two-firmware.png",
+                "ch24-duty-integration.png", "ch24-migrate-boundary.png", "ch24-two-firmware.png",
+                "ch24-slow-meter.png",
             ),
             "25": (
 
@@ -485,6 +492,7 @@ class BookAuditTests(unittest.TestCase):
                 "sample-27-tcp-framing.svg",
                 "ch27-api-context.png", "sample-27-link-dhcp-flow.svg", "network-online-state.svg",
                 "tcp-byte-stream.svg", "ch27-tcp-framing.png", "ch27-sendall-loop.png",
+                "ch27-udp-tcp-contract.png",
                 "ch27-tls-prereqs.png",
                 "ch27-at-offload.png",
                 "sample-27-link-triage.svg",
@@ -522,12 +530,13 @@ class BookAuditTests(unittest.TestCase):
             "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
             "ch24-sleep-checklist.png", "ch24-irq-order.png",
             "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
-            "ch24-duty-integration.png", "ch24-two-firmware.png",
+            "ch24-duty-integration.png", "ch24-migrate-boundary.png", "ch24-two-firmware.png",
+            "ch24-slow-meter.png",
         )
 
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(19, edition["pdf_visual_anchors"])
+            self.assertEqual(21, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(2, edition["photos"])
             self.assertEqual(2, edition["animations"])

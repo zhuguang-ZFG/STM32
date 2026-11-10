@@ -167,9 +167,98 @@ def ccr_timing():
     return f
 
 
+def pin_owner():
+    f = Fig("ch07-pin-owner",
+            "PB6/PB7 的归属：一只脚一个主人 / one pin, one owner")
+
+    f.text(84, 130,
+           "复位后 I2C1 在 PB6/PB7（第 42、43 脚）；重映射后到 PB8/PB9（第 45、46 脚）",
+           size=20, color=MUTED)
+
+    # ---- 左：复位默认 ----
+    f.rect(84, 158, 462, 196, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(104, 194, "复位默认 · I2C1", size=22, color=BLUE_D, weight="bold")
+    f.multi(104, 232, ["PB6 = SCL（第 42 脚）",
+                       "PB7 = SDA（第 43 脚）",
+                       "两只脚复用开漏，外接 4.7 kΩ 到 3.3 V"], size=17,
+           color=INK, lh=30)
+
+    # ---- 右：重映射 ----
+    f.rect(606, 158, 462, 196, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(626, 194, "重映射后 · I2C1", size=22, color=GREEN_D, weight="bold")
+    f.multi(626, 232, ["PB8 = SCL（第 45 脚）",
+                       "PB9 = SDA（第 46 脚）",
+                       "同一对脚，只是换了个位置"], size=17, color=INK,
+           lh=30)
+    f.arrow(556, 256, 598, 256, color=MUTED, sw=2.2, bend=0.0)
+    f.text(577, 240, "重映射", size=14, color=MUTED, anchor="middle")
+
+    # ---- 中：USART1 也来抢 ----
+    f.rect(84, 392, 984, 142, color=AMBER_STROKE, fill=WHITE, sw=2.6)
+    f.text(104, 428, "USART1 也能进 PB6/PB7", size=21, color=AMBER_STROKE,
+           weight="bold")
+    f.multi(104, 462, ["USART1_TX / USART1_RX 可以映射到这两只脚——但要开重映射，不是复位默认",
+                       "同一时间，这两只脚只能给一个外设用"], size=17,
+           color=INK, lh=30)
+
+    # ---- 下：症状与处理 ----
+    f.rect(84, 566, 984, 92, color=RED, fill=WHITE, sw=2.4)
+    f.text(104, 598, "波形跑到 PB8/PB9，或串口占了 PB6", size=20, color=RED,
+           weight="bold")
+    f.text(104, 630, "先查是不是开了重映射、USART1 配到了哪只脚——再回来谈波形",
+           size=17, color=INK)
+
+    f.htext(84, 730, "口诀：一只脚一个主人——先查归属，再查波形",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
+def two_owners():
+    f = Fig("ch07-two-owners",
+            "软件模拟与硬件 I2C：时序在谁手里 / bit-bang or peripheral")
+
+    f.text(84, 130,
+           "同一个 I2C 总线，两条控制路线：时序放在固件里，还是交给外设",
+           size=20, color=MUTED)
+
+    f.rect(84, 158, 452, 236, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(104, 196, "软件模拟（GPIO 翻转）", size=21, color=GREEN_D,
+           weight="bold")
+    f.multi(104, 238, ["两只普通引脚",
+                       "一位一位按时序翻转",
+                       "慢一点，但每一步都在你手里",
+                       "哪个引脚都能用"], size=17, color=INK, lh=34)
+
+    f.rect(616, 158, 452, 236, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(636, 196, "硬件 I2C", size=21, color=BLUE_D, weight="bold")
+    f.multi(636, 238, ["时序交给外设去跑",
+                       "CPU 省事",
+                       "从机拉住 SDA 时，F1 的外设",
+                       "容易卡在忙状态"], size=17, color=INK, lh=34)
+
+    f.rect(84, 428, 984, 118, color=RED, fill=WHITE, sw=2.6)
+    f.text(104, 462, "卡住了就读「总线死锁恢复」", size=20, color=RED,
+           weight="bold")
+    f.multi(104, 494, ["把 SCL 配成开漏 GPIO，手动翻转 9 次，再发 STOP",
+                       "然后重新 HAL_I2C_Init 复位外设"], size=17, color=INK,
+           lh=28)
+
+    f.rect(84, 576, 984, 84, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(104, 608, "所以不少 F1 项目宁可用软件模拟：慢，但每步可控",
+           size=19, color=AMBER_STROKE, weight="bold")
+    f.text(104, 640, "要 CPU 省事就上硬件外设；要每步可控就自己翻电平",
+           size=17, color=INK)
+
+    f.htext(84, 724, "口诀：时序在谁手里，卡住就找谁——先发 9 个时钟，再复位外设",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch07-clock-stretch": clock_stretch,
     "ch07-ccr-timing": ccr_timing,
+    "ch07-pin-owner": pin_owner,
+    "ch07-two-owners": two_owners,
 }
 
 if __name__ == "__main__":

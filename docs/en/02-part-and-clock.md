@@ -103,6 +103,11 @@ ADC sample time is in chapter 09. Source: [RM0008 Rev 21 section 7.3.2](#source-
 | The waveform on MCO is too fast for the pin | SYSCLK at 72 MHz was driven straight onto PA8 | Drive PLL÷2, which is 36 MHz | [RM0008](#source-rm0008-rcc) | The clock sent to the MCO pin must not exceed 50 MHz |
 | ADC was set to ÷4 to go faster | ADCPRE=01 produces 18 MHz | Change it back to ÷6, which is 12 MHz | [RM0008](#source-rm0008-rcc) | 14 MHz is the ceiling. ÷4 produces 18 MHz. Sample time is in chapter 09 |
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch02-part-funnel.png" width="760" alt="Handraw: filter first, look up the order code last (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: five requirements on the left (pins, Flash/RAM, peripherals, clock, temperature); three sieves in the middle — package T=36 · C=48 · R=64 · V=100 · Z=144, Flash 4=16K … G=1M, peripherals and clock; only the surviving C8T6 on the right before the full order code is checked; Proves the sieves answer “is it enough?” while the datasheet answers “which one”; Cannot show the datasheet's ordering or pinout tables, and it is not a photo. See [DS5319](#source-ds5319-clock), [RM0008](#source-rm0008-rcc).</sub>
+</p>
 ## Learning goals
 - [ ] Split an STM32 part number piece by piece (what every character of STM32F103C8T6 means)
 - [ ] Pick among F0/F1/F3/F4/F7/G0/G4/H7/L0/L4 for a real need
@@ -404,6 +409,11 @@ uint32_t ppre1 = (cfgr & RCC_CFGR_PPRE1) >> 8;     /* APB1 divider */
 
 Before the first write to a peripheral, call `__HAL_RCC_*_CLK_ENABLE()`. Power-up default is HSI at 8 MHz, not the 72 MHz shown on the Cube configuration page. If `SystemClock_Config()` has not completed, read `SWS` instead of guessing the core frequency from whether UART output looks normal.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch02-clock-gate.png" width="760" alt="Handraw: open the clock gate before touching registers (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: gate closed on the left — writes read back 0; gate open — reads and writes mean something; power-up order on the right (① __HAL_RCC_*_CLK_ENABLE() ② HAL_xxx_Init() ③ touch registers) — reversed, it initializes a closed gate; Proves the gate must be open before a peripheral's first register write; Cannot show what SystemClock_Config() does inside or each peripheral's clock-tree settings, and it is not a measured waveform. See [RM0008](#source-rm0008-rcc), [DS5319](#source-ds5319-clock).</sub>
+</p>
 | Mechanism | What it does | One thing to remember |
 | --- | --- | --- |
 | Peripheral clock gate | If you do not turn it on, that peripheral does not exist | `CLK_ENABLE` first, then `HAL_xxx_Init` |

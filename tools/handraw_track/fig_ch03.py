@@ -76,8 +76,70 @@ def lckr_sequence():
     return f
 
 
+def debounce_recheck():
+    f = Fig("ch03-debounce-recheck",
+            "软件消抖：看见低 → 等 20 ms → 再看一眼 / debounce re-check")
+
+    f.text(84, 130,
+           "抖动窗口约 10–20 ms：读到低先别信，等一会儿再确认一次",
+           size=21, color=MUTED)
+
+    # ---- 左：复查流程 ----
+    f.rect(84, 168, 560, 92, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(104, 204, "① 读到低电平", size=21, color=BLUE_D, weight="bold")
+    f.text(104, 236, "先当它是毛刺：变化后要等 10–20 ms 再确认", size=17,
+           color=INK)
+
+    f.arrow(364, 260, 364, 292, color=MUTED, sw=2.2, bend=0.0)
+
+    f.rect(84, 294, 560, 92, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(104, 330, "② 等 10–20 ms", size=21, color=BLUE_D,
+           weight="bold")
+    f.text(104, 362, "代码里就是 HAL_Delay(20)——复查窗口", size=17,
+           color=INK)
+
+    f.arrow(364, 386, 364, 418, color=MUTED, sw=2.2, bend=0.0)
+
+    f.rect(84, 420, 560, 92, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(104, 456, "③ 再读一次", size=21, color=BLUE_D, weight="bold")
+    f.text(104, 488, "仍为低 → 判定按下；回到高 → 毛刺，丢弃", size=17,
+           color=INK)
+
+    f.rect(84, 552, 268, 64, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(218, 592, "是：判定按下", size=19, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.rect(376, 552, 268, 64, color=MUTED, fill=WHITE, sw=2.2)
+    f.text(510, 592, "否：丢弃，继续扫", size=19, color=MUTED,
+           anchor="middle", weight="bold")
+    f.arrow(240, 512, 218, 548, color=GREEN_D, sw=2.0, bend=0.0)
+    f.arrow(500, 512, 510, 548, color=MUTED, sw=2.0, bend=0.0)
+
+    # ---- 右：边界与硬件路线 ----
+    f.rect(700, 168, 368, 448, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(720, 204, "边界：主循环会被堵住", size=21, color=AMBER_STROKE,
+           weight="bold")
+    f.multi(720, 244, [
+        "每轮塞 100 ms 阻塞任务，",
+        "短按会被吞掉——记录漏按",
+        "或响应延迟，再拆掉阻塞重测。",
+    ], size=17, color=INK, lh=32)
+    f.text(720, 360, "第 04 章改用 EXTI：",
+           size=18, color=GREEN_D, weight="bold")
+    f.text(720, 390, "边沿交给中断，主循环", size=17, color=INK)
+    f.text(720, 414, "不再由轮询兜底。", size=17, color=INK)
+    f.text(720, 470, "硬件路线：RC 滤波（0.1 µF）", size=17, color=MUTED)
+    f.text(720, 496, "或施密特触发器整形。", size=17, color=MUTED)
+    f.text(720, 552, "定时器扫描：按周期采样，", size=17, color=MUTED)
+    f.text(720, 576, "多次一致才接受。", size=17, color=MUTED)
+
+    f.htext(84, 700, "口诀：看见低不算数，20 ms 后还低才算按下",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch03-lckr-sequence": lckr_sequence,
+    "ch03-debounce-recheck": debounce_recheck,
 }
 
 if __name__ == "__main__":
