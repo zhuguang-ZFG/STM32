@@ -100,6 +100,12 @@ The full enumeration sequence is in `usb-enumeration.svg` at the top of the chap
 | An interrupt or bulk endpoint is set to 1023 | That ceiling belongs to isochronous | The ceiling for those two classes at full speed is 64. 1023 is isochronous only | [examples in this repo](#source-project-examples) | The example bulk endpoint is 64 bytes and the notification endpoint is 8 bytes |
 | Linked with the CAN example, the receive interrupt is shared | The two examples use one vector | Keep the examples apart. Do not leave CAN on PA11/PA12 | [RM0008](#source-rm0008-usb) | The printed medium-density name is `USB_LP_CAN_RX0`. The connectivity table prints `USB_LP_CAN1_RX0`. USB on this part is a device, not a host |
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-usb-can-conflict.png" width="760" alt="Handraw: the three resources USB and CAN share (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three things USB and CAN share on one F103 — PA11/PA12, the 512-byte dedicated SRAM, and the single USB_LP_CAN_RX0 vector (printed USB_LP_CAN1_RX0 in the connectivity table) — with a pick-one gate underneath; Proves the conflict sits in chip resources, not in code, so the two examples cannot share a project; Cannot prove that CAN timing holds after the PB8/PB9 remap, and it is not a capture. See [RM0008](#source-rm0008-usb).</sub>
+</p>
+
 ## Learning goals
 
 - [ ] Separate USB 2.0 low-speed (1.5 Mbps), full-speed (12 Mbps), and high-speed (480 Mbps), and know which STM32 parts do which.
@@ -150,6 +156,12 @@ USB is a conversation chaired by the computer. The host calls on a device, and o
 The four transfer types divide one bus in four different ways. Control introduces and configures the device. Bulk is freight: arriving late is acceptable, but a damaged packet is retried. Interrupt gives small messages such as key reports a regular chance to be polled. Isochronous reserves time for sound or video and never goes back for a missed packet, because late audio is no longer useful.
 
 **Takeaway:** Trade latency against reliability. **Control** is for enumeration. **Bulk** moves bytes and retries. **Interrupt** is small and bounded. **Isochronous** keeps a time slot and is allowed to drop data.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-transfer-pick.png" width="760" alt="Handraw: the four-question transfer picker (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: a four-question picker — enumeration or a class request (control), a late packet that can be retried (bulk), small periodic latency-bounded data (interrupt), stale data that is worthless (isochronous) — each leaf naming its endpoint type; Proves the four types are four trade-offs of latency against reliability, not four speeds; Cannot check whether one endpoint configuration is legal, and it is not a capture. See [RM0008](#source-rm0008-usb) and the USB 2.0 spec chapter 9.</sub>
+</p>
 
 | Type | Trait | Typical use | Bandwidth reserved |
 | --- | --- | --- | --- |

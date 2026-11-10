@@ -328,12 +328,272 @@ def adcclk_budget():
     return f
 
 
+def part_scope():
+    """Three parts x four capability rows (DAC, adder, calibration, factory)."""
+    f = Fig("ch09-part-scope", "三种型号，四行能力 / three parts, four rows")
+    f.text(84, 124, "同一段 DAC 与校准文字，只在带这些功能的型号上成立",
+           size=21, color=MUTED)
+
+    label_x, label_w = 84, 240
+    cols = [(324, GREEN_D, "F103C8 中容量"),
+            (572, BLUE_D, "F103 大容量"),
+            (820, AMBER_STROKE, "F4")]
+    top, hdr_h, row_h = 142, 64, 104
+    f.rect(label_x, top, label_w, hdr_h, color=MUTED, fill=WHITE, sw=2.2)
+    f.text(label_x + 16, top + 40, "能力 / 型号", size=18, color=MUTED,
+           weight="bold")
+    for x, color, name in cols:
+        f.rect(x, top, 248, hdr_h, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 124, top + 40, name, size=19, color=color, anchor="middle",
+               weight="bold")
+
+    rows = [
+        ("DAC 有无", [
+            (["无：调用没有输出"], RED, "✗"),
+            (["有：大容量才有"], GREEN_D, "✓"),
+            (["有：DAC1 / DAC2"], GREEN_D, "✓"),
+        ]),
+        ("转换段", [
+            (["12.5 周期"], INK, ""),
+            (["12.5 周期"], INK, ""),
+            (["12 周期"], INK, ""),
+        ]),
+        ("上电校准", [
+            (["要：ADON 后置 CAL"], INK, ""),
+            (["要（同 F1）"], INK, ""),
+            (["不要", "（HAL 无此步）"], INK, ""),
+        ]),
+        ("出厂校准值", [
+            (["没有", "（典型值非出厂）"], RED, "✗"),
+            (["F1 典型值", "不是出厂校准"], MUTED, ""),
+            (["TS_CAL1 / TS_CAL2", "VREFINT_CAL"], GREEN_D, "✓"),
+        ]),
+    ]
+    for i, (label, cells) in enumerate(rows):
+        y = top + hdr_h + i * row_h
+        f.rect(label_x, y, label_w, row_h, color=MUTED, fill=WHITE, sw=2.0)
+        f.text(label_x + 16, y + 52, label, size=18, color=INK, weight="bold")
+        for (x, color, _), (lines, tcolor, mark) in zip(cols, cells):
+            f.rect(x, y, 248, row_h, color=color, fill=WHITE, sw=1.8)
+            if len(lines) == 1:
+                f.text(x + 14, y + 52, lines[0], size=16, color=tcolor)
+            else:
+                f.multi(x + 14, y + 40, lines, size=16, color=tcolor, lh=25)
+            if mark:
+                f.text(x + 222, y + 34, mark, size=22, color=tcolor,
+                       anchor="middle", weight="bold")
+
+    f.rect(84, 640, 984, 84, color=MUTED, fill=WHITE, sw=2.2)
+    f.multi(102, 670, [
+        "DS5319：中容量都有两个 12 位 ADC；C8 有 ADC1/ADC2，没有 ADC3，没有 DAC",
+        "DAC 缓冲器、噪声与上电校准那几段，只对带这些功能的型号成立",
+    ], size=17, color=INK, lh=28)
+
+    f.htext(84, 760, "先查型号有没有这个外设，再照抄那段配置",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
+def tconv_floor():
+    """Three gates in series end at the 14-cycle floor."""
+    f = Fig("ch09-tconv-floor",
+            "一次转换的三道闸 / three gates to one conversion")
+    f.text(84, 124, "ADCCLK、采样段、转换段依次收窄；最短也绕不过 14 周期",
+           size=21, color=MUTED)
+
+    cards = [
+        (84, GREEN_D, "闸一 · ADCCLK",
+         ["≤ 14 MHz 硬上限", "72 ÷ 6 = 12 MHz", "÷4 得 18 MHz，越限"]),
+        (426, BLUE_D, "闸二 · 采样段",
+         ["1.5 周期只有 125 ns", "100 kΩ 源约需 7.8 µs", "充不满就带上次电压"]),
+        (768, AMBER_STROKE, "闸三 · 12.5 周期",
+         ["SAR 12 位加一次保持", "固定跟在采样之后", "不能再削"]),
+    ]
+    for x, color, head, lines in cards:
+        f.rect(x, 156, 300, 160, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 16, 192, head, size=20, color=color, weight="bold")
+        f.multi(x + 16, 226, lines, size=16, color=INK, lh=27)
+    f.arrow(388, 236, 420, 236, color=INK, sw=2.4, bend=0.0)
+    f.arrow(730, 236, 762, 236, color=INK, sw=2.4, bend=0.0)
+
+    f.htext(576, 388, "1.5 + 12.5 = 14 周期", size=28, color=INK,
+            weight="bold", hl=True, anchor="middle")
+
+    f.text(84, 448, "把 14 周期摊开（ADCCLK = 12 MHz）", size=18,
+           color=MUTED)
+    bx, by, bw, bh = 84, 482, 900, 72
+    gw = bw * 1.5 / 14
+    f.fillrect(bx, by, gw, bh, GREEN)
+    f.fillrect(bx + gw, by, bw - gw, bh, BLUE)
+    f.rect(bx, by, gw, bh, color=GREEN_D, fill=None, sw=2.2)
+    f.rect(bx + gw, by, bw - gw, bh, color=BLUE_D, fill=None, sw=2.2)
+    f.text(bx + gw / 2, by - 8, "采样 1.5", size=15, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.text(bx + gw + (bw - gw) / 2, by + 44, "转换 12.5 周期", size=18,
+           color=WHITE, anchor="middle", weight="bold", halo=False)
+    f.text(bx, by + bh + 26, "0", size=15, color=MUTED, anchor="middle")
+    f.text(bx + bw, by + bh + 26, "14 周期 = 1.167 µs", size=17, color=INK,
+           anchor="end", weight="bold")
+    f.line(bx + bw, by - 24, bx + bw, by + bh + 6, color=RED, sw=2.4,
+           dash="8 6")
+    f.text(bx + bw + 12, by + 10, "下限", size=16, color=RED, weight="bold")
+
+    f.rect(84, 596, 984, 88, color=INK, fill=WHITE, sw=2.2)
+    f.text(104, 628, "最短一次转换 = 14 周期 ≈ 1.167 µs", size=21,
+           color=INK, weight="bold")
+    f.text(104, 660, "继续把采样削下去，也到不了 14 周期以下", size=17,
+           color=MUTED)
+
+    f.text(84, 716, "1.167 µs 是按 12 MHz 算出的下限；触发与 DMA 开销另计。",
+           size=16, color=MUTED)
+    f.htext(84, 752, "先守住 14 周期这个地板，再谈采样率", size=22,
+            color=INK, weight="bold", hl=True)
+    return f
+
+
+def evidence_lanes():
+    """Three evidence lanes around one crossed-out printed voltage."""
+    f = Fig("ch09-evidence-lanes", "三份证据，一个数不够 / three evidence lanes")
+    f.text(84, 120, "串口只打印一个电压，分不清量化误差、源阻抗与缓冲区顺序",
+           size=20, color=MUTED)
+
+    f.rect(496, 138, 160, 64, color=RED, fill=WHITE, sw=2.6)
+    f.line(506, 148, 528, 157, color=RED, sw=3.2)
+    f.line(624, 181, 646, 192, color=RED, sw=3.2)
+    f.line(646, 148, 624, 157, color=RED, sw=3.2)
+    f.line(528, 181, 506, 192, color=RED, sw=3.2)
+    f.text(576, 178, "1.65 V", size=24, color=INK, anchor="middle",
+           weight="bold")
+    f.text(486, 176, "只打印一个电压", size=17, color=RED, anchor="end")
+    f.text(666, 176, "分不开三类误差", size=17, color=MUTED)
+
+    f.arrow(520, 206, 236, 258, color=INK, sw=2.2, bend=0.10)
+    f.arrow(576, 206, 576, 258, color=INK, sw=2.2, bend=0.0)
+    f.arrow(632, 206, 916, 258, color=INK, sw=2.2, bend=0.10)
+
+    lanes = [
+        (84, GREEN_D, "① 引脚电压", "输入与码值对账",
+         ["万用表量 V_in", "低 / 中 / 高三点", "记录实测 VDDA", "换算电压对码值"]),
+        (424, BLUE_D, "② 配置与状态", "外设状态对账",
+         ["ADON / EOC 状态", "SMPR 采样档", "ADCCLK 12 MHz", "校准前后各一组"]),
+        (764, AMBER_STROKE, "③ 内存码值数组", "内存结果对账",
+         ["数组顺序对齐 SQR", "HT / TC 次数", "CNDTR 剩余计数", "64 个半字的记录"]),
+    ]
+    for x, color, head, sub, items in lanes:
+        f.rect(x, 270, 304, 252, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 16, 306, head, size=20, color=color, weight="bold")
+        f.text(x + 16, 332, sub, size=15, color=MUTED)
+        f.line(x + 16, 346, x + 288, 346, color=color, sw=1.4, dash="6 5")
+        for j, item in enumerate(items):
+            f.circle(x + 24, 371 + j * 33, 4, color=color, sw=1.6)
+            f.text(x + 38, 377 + j * 33, item, size=16, color=INK)
+
+    f.rect(84, 548, 984, 92, color=MUTED, fill=WHITE, sw=2.2)
+    f.text(102, 582,
+           "一个数分不开量化误差、源阻抗与缓冲区顺序；三条道各排除一类",
+           size=17, color=INK)
+    f.text(102, 614, "它们都不能替代万用表或示波器，本身不记录任何实测",
+           size=17, color=INK)
+
+    f.htext(84, 704, "先凑齐三份证据，再动一个参数", size=22,
+            color=INK, weight="bold", hl=True)
+    return f
+
+
+def mode_stops():
+    """Four lanes from one trigger, plus the scan+continuous+DMA stack."""
+    f = Fig("ch09-mode-stops", "四条道，同一次触发 / four lanes, one trigger")
+    f.text(84, 118, "四种模式只在「什么时候停、什么让它再开始」上不同",
+           size=20, color=MUTED)
+
+    f.rect(212, 130, 180, 50, color=INK, fill=WHITE, sw=2.2)
+    f.text(302, 162, "同一次触发", size=18, color=INK, anchor="middle",
+           weight="bold")
+
+    labels = [
+        (190, "单次 Single", "叫一声转一次"),
+        (290, "连续 Continuous", "转完立即重启"),
+        (390, "扫描 Scan", "按 SQR 走完清单"),
+        (490, "间断 Discontinuous", "走 n 个就暂停"),
+    ]
+    for y, name, sub in labels:
+        f.rect(318, y, 750, 92, color=MUTED, fill=WHITE, sw=1.8)
+        f.text(84, y + 38, name, size=20, color=INK, weight="bold")
+        f.text(84, y + 64, sub, size=16, color=MUTED)
+
+    # trigger bus drawn over the lane cards
+    f.line(302, 180, 302, 536, color=INK, sw=2.4)
+    for y in (236, 336, 436, 536):
+        f.circle(330, y, 3.5, color=INK, sw=1.4)
+        f.line(302, y, 330, y, color=INK, sw=2.0)
+
+    # lane 1: single
+    y = 190
+    f.rect(338, y + 18, 170, 56, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(423, y + 52, "转换 1 次", size=17, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.arrow(512, y + 46, 552, y + 46, color=INK, sw=2.4, bend=0.0)
+    f.rect(556, y + 18, 110, 56, color=RED, fill=WHITE, sw=2.2)
+    f.text(611, y + 52, "停", size=18, color=RED, anchor="middle",
+           weight="bold")
+    f.text(690, y + 51, "转完就停，等下一次触发", size=16, color=MUTED)
+
+    # lane 2: continuous
+    y = 290
+    f.rect(338, y + 18, 300, 56, color=BLUE_D, fill=WHITE, sw=2.2)
+    f.text(488, y + 52, "转换完立即重启", size=17, color=BLUE_D,
+           anchor="middle", weight="bold")
+    f.arrow(620, y + 12, 360, y + 12, color=GREEN_D, sw=2.2, bend=0.05,
+            head=10)
+    f.text(660, y + 51, "一直不停，直到关掉", size=16, color=MUTED)
+
+    # lane 3: scan
+    y = 390
+    for j, ch in enumerate(("CH0", "CH1", "CH2", "CH3")):
+        bx = 338 + j * 98
+        f.rect(bx, y + 18, 90, 56, color=AMBER_STROKE, fill=WHITE, sw=2.0)
+        f.text(bx + 45, y + 52, ch, size=17, color=AMBER_STROKE,
+               anchor="middle", weight="bold")
+    f.text(744, y + 51, "走完清单才停", size=16, color=MUTED)
+
+    # lane 4: discontinuous
+    y = 490
+    f.rect(338, y + 18, 170, 56, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(423, y + 52, "n 个通道", size=17, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.arrow(512, y + 46, 552, y + 46, color=INK, sw=2.4, bend=0.0)
+    f.rect(556, y + 18, 110, 56, color=RED, fill=WHITE, sw=2.2)
+    f.text(611, y + 52, "暂停", size=18, color=RED, anchor="middle",
+           weight="bold")
+    f.text(690, y + 51, "等下一次触发再走 n 个", size=16, color=MUTED)
+
+    # bottom: the common stack
+    f.rect(84, 602, 984, 104, color=INK, fill=WHITE, sw=2.4)
+    f.text(104, 634, "项目常态：扫描 + 连续 + DMA 循环", size=19,
+           color=INK, weight="bold")
+    stack = [(104, "SQR 多通道"), (404, "连续重启"), (704, "DMA 循环搬数")]
+    for bx, name in stack:
+        f.rect(bx, 648, 250, 46, color=BLUE_D, fill=WHITE, sw=2.0)
+        f.text(bx + 125, 677, name, size=16, color=BLUE_D, anchor="middle",
+               weight="bold")
+    f.arrow(356, 671, 400, 671, color=INK, sw=2.2, bend=0.0)
+    f.arrow(656, 671, 700, 671, color=INK, sw=2.2, bend=0.0)
+
+    f.htext(84, 752, "扫描 + 连续 + DMA 是常态，单次与间断按需用", size=22,
+            color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch09-scan-sequence": scan_sequence,
     "ch09-vrefint-cal": vrefint_cal,
     "ch09-pa0-analog-config": pa0_two_configs,
     "ch09-dac-buffer": dac_buffer,
     "ch09-adcclk-budget": adcclk_budget,
+    "ch09-part-scope": part_scope,
+    "ch09-tconv-floor": tconv_floor,
+    "ch09-evidence-lanes": evidence_lanes,
+    "ch09-mode-stops": mode_stops,
 }
 
 if __name__ == "__main__":

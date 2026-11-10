@@ -108,6 +108,12 @@ The page is 256 bytes. Sources: [RM0008](#source-rm0008-spi) and the [example](#
 - [ ] Compare bit-banged SPI with the hardware peripheral, and know DMA can refresh a display
 - [ ] Read a W25Q64 ID, read and write a page, and initialize an ST7789
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-id-assembly.png" width="760" alt="Handraw: four receive slots assembled into a 24-bit ID (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: four receive slots rx[0]–rx[3] on the left feed one 24-bit word on the right, with rx[0] struck out and rx[1], rx[2], rx[3] tagged 16, 8, and 0 shifts left; Proves the id uses only rx[1]=0xEF (Winbond), rx[2]=0x40 (memory type, not capacity) and rx[3]=0x17 (capacity), and the three fields shift and OR into 0xEF4017; Cannot prove shift timing or a sampling edge — this is a byte-to-field map, not a logic-analyzer capture. See [RM0008 Rev 21 §25.5.1](#source-rm0008-spi) and the [example](#source-project-examples).</sub>
+</p>
+
 ## Core ideas
 
 Every SCK edge moves one bit on both MOSI and MISO. A master that wants to read must still transmit dummy bytes; checking the transmit array alone does not prove what the slave returned.
@@ -340,6 +346,12 @@ The full project is in [`examples/spi-flash/`](../../examples/spi-flash/).
 3. **Lab 3 (memory result):** Program a known 16-byte pattern, read it into an array, and compare every byte. ST7789 DMA refresh is an extension; frame-rate appearance does not replace the Flash readback.
 
 Before leaving this chapter, keep one four-wire JEDEC capture, status-register records before and after WREN, and the 16-byte readback comparison.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-page-write-flow.png" width="760" alt="Handraw: the five rungs of a page write (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: five rungs start at CS low with 0x06 (WREN), CS high ends the write-enable transaction and sets WEL, CS low again sends 0x02 (PAGE PROGRAM) plus one 256-byte page, and CS high leads into the poll loop that reads 0x05 until bit 0 of the status byte clears; Proves write-enable is its own transaction (skip it and WEL stays clear, so the data does not change) and the busy bit belongs to the flash status byte, not SPI_SR; Cannot prove page-boundary wrap, programming time or any waveform — not a logic-analyzer capture. See [RM0008 Rev 21 ch.25](#source-rm0008-spi) and the [example](#source-project-examples).</sub>
+</p>
 
 ### 6. SPI registers that matter (F1)
 

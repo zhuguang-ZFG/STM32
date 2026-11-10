@@ -110,6 +110,12 @@ The circular-mode animations `dma-circular.svg` and `dma-ring.gif` are in the co
 - [ ] Use the transfer-complete (TC) and half-transfer (HT) interrupts to process data while it is still arriving.
 - [ ] Understand bus contention between DMA and the CPU, and the cache-coherency problem on H7 and F7.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-goal-evidence.png" width="760" alt="Handraw: five evidence rungs for the learning goals (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: five rungs, one per learning goal, each carrying the one thing you can point at — a row of the map, USART1_TX = channel 4 and USART1_RX = channel 5, the DIR and CIRC bits, HT at sample 4 (8 bytes) against TC at N, the AHB master and no D-Cache on F1; Proves a goal has to land on a number, a bit, or a reading — code that runs is not evidence; Cannot stand in for the map table or prove any board measurement. See [RM0008 Rev 21 ch.13](#source-rm0008-dma).</sub>
+</p>
+
 ## Core ideas
 
 DMA understands neither frames nor sample groups. It moves a configured number of fixed-width items, and the CPU interprets the buffer boundary. Treating CNDTR as bytes is the common slicing error for half-word and word transfers.
@@ -131,6 +137,12 @@ DMA understands neither frames nor sample groups. It moves a configured number o
 DMA is the chip's porter. The CPU tells it where to carry from, where to carry to, and how much, and then it runs back and forth on the bus by itself and reports when it is done. On the F1, the porters are split by workstation, and each workstation takes jobs from a fixed set of peripherals. The F4 adds a layer: you first choose a workstation (the stream), then one of its 8 sockets (the channel), so one peripheral can move to another workstation.
 
 On F1, a peripheral request is fixed to one DMA channel. On F4, you first bind the request to a stream, then pick the channel with `CHSEL`. That is more flexible.
+
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch10-two-level-bind.png" width="760" alt="Handraw: one-level vs two-level request binding (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: on the left F1 has one level — the USART1_RX request is soldered to channel 5, and a config on channel 4 waits forever; on the right F4 has two — the request goes into CHSEL (CH4 for USART1_RX), the stream is chosen in software through SxCR, so RX lands on DMA2 Stream 5 and TX on Stream 7, also CH4; Proves F1 picks a channel while F4 settles the stream first and lets CHSEL pick the channel; Cannot cover FIFO, burst, or priority arbitration, or guarantee a stream number on a given board; those come from RM0090 Table 42/43. See [RM0090](#source-rm0090).</sub>
+</p>
 
 | Item | STM32F1 (RM0008, Chapter 13, DMA controller) | STM32F4 (RM0090, Chapter 9, DMA controller) |
 | --- | --- | --- |

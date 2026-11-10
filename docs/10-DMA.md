@@ -111,6 +111,12 @@ USART1_TX 还是第 06 章那个第 30 脚 PA9。ADC 的采样时间见第 09 �
 - [ ] 会用传输完成（TC）/半传输（HT）中断实现「边收边处理」。
 - [ ] 理解 DMA 与 CPU 的总线争抢，以及 H7/F7 的 Cache 一致性问题。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-goal-evidence.png" width="760" alt="Handraw：学习目标的五个落点（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五级梯子对应五条学习目标，每级只挂一个能指认的东西——映射表的一行、USART1_TX=通道 4 与 USART1_RX=通道 5、DIR/CIRC 两个位、HT 在第 4 个采样（8 字节）而 TC 在 N、AHB 主设备与 F1 没有 D-Cache；证明什么：目标要落成编号、位或读数，「代码能跑」不算；不能证明什么：这张卡不是映射表，也不含任何板上测量。出处是本章正文与 [RM0008 Rev 21 第 13 章](#source-rm0008-dma)。</sub>
+</p>
+
 ## 核心原理
 
 DMA 不理解“帧”或“采样组”，只按配置搬固定宽度的数据项。CPU 负责解释数组边界；把 CNDTR 当成字节数，是半字和字传输最常见的切片错误。
@@ -132,6 +138,12 @@ DMA 不理解“帧”或“采样组”，只按配置搬固定宽度的数据�
 DMA 是芯片里的搬运工，CPU 告诉它从哪搬、搬到哪、搬多少，它自己在总线上来回跑，搬完再报告。F1 的搬运工按「工位」分工，每个工位只接固定几家外设的活。F4 多了一层：先选工位（流），再在工位上的 8 个插口里选一个（通道），同一家外设能换到别的工位上去。
 
 F1 一个外设请求固定绑到某条 DMA 通道；F4 先把请求绑到「流」，再用 `CHSEL` 选通道，灵活性更高。
+
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch10-two-level-bind.png" width="760" alt="Handraw：一层与两层的请求绑定（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左边 F1 只有一层——USART1_RX 的请求线焊在通道 5 上，配到通道 4 就永远等不到；右边 F4 有两层——请求先进 CHSEL（USART1_RX 是 CH4），Stream 由软件在 SxCR 里选，同一请求落在 DMA2 Stream 5，TX 落在 Stream 7、同样 CH4；证明什么：F1 选通道，F4 先定 Stream 再由 CHSEL 定 Channel；不能证明什么：不涉及 FIFO、突发与优先级仲裁，也不保证某块板的流号，仍要查 RM0090 表 42/43。出处：本章正文与 [RM0090](#source-rm0090)。</sub>
+</p>
 
 | 项 | STM32F1（RM0008 第 13 章 DMA 控制器） | STM32F4（RM0090 第 9 章 DMA 控制器） |
 | --- | --- | --- |

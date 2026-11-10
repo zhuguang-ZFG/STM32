@@ -1571,6 +1571,11 @@
   "chapter": "05",
   "type": "calculation"
  },
+ "illustrations/handraw/ch05-timer-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：定时器按配件分三级——基本只计数，通用加 4 通道，高级再加互补、死区与 MOE；SysTick 与看门狗在旁支。",
+  "chapter": "05",
+  "type": "concept"
+ },
  "illustrations/handraw/ch05-trgo-adc.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。",
   "chapter": "05",
@@ -1677,8 +1682,18 @@
   "chapter": "08",
   "type": "triage"
  },
+ "illustrations/handraw/ch08-id-assembly.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：W25Q64 四个接收槽——rx[0] 作废，rx[1..3] 移位拼成 0xEF4017。",
+  "chapter": "08",
+  "type": "technical"
+ },
  "illustrations/handraw/ch08-nss-multi.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。共享 SCK/MOSI/MISO，每片独立 CS；不可两片共一片选；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-page-write-flow.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：页写五级台阶——WREN、WEL、PAGE PROGRAM、忙位轮询，跳过 WREN 则数据不变。",
   "chapter": "08",
   "type": "technical"
  },
@@ -1712,8 +1727,23 @@
   "chapter": "09",
   "type": "comparison"
  },
+ "illustrations/handraw/ch09-evidence-lanes.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：三条证据道——引脚电压、ADC 配置状态、内存码值数组，单打印一个电压不够。",
+  "chapter": "09",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch09-mode-stops.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：四种转换模式的差别只在「何时停、何时再启动」。",
+  "chapter": "09",
+  "type": "comparison"
+ },
  "illustrations/handraw/ch09-pa0-analog-config.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：同一只 PA0 配推挽输出与配模拟输入的两卡对比，LQFP48 三根脚与「先改脚，再开 ADC」；证明模式不配模拟输入，采样数字永远不动；不能替代实际接线，也不是实测引脚波形。出处 RM0008、DS5319。",
+  "chapter": "09",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch09-part-scope.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：三型号对四能力——DAC、转换附加周期、上电校准、出厂校准值。",
   "chapter": "09",
   "type": "comparison"
  },
@@ -1730,6 +1760,11 @@
  },
  "illustrations/handraw/ch09-scan-sequence.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SQR 序列四通道的采样档与总周期；14 + 26 + 68 + 252 = 360 周期 = 12 MHz 下 30 µs；温度通道要 239.5 档；不是实拍。",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch09-tconv-floor.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：三道闸串联——ADCCLK 上限、采样充电、12.5 周期附加，得 14 周期下限。",
   "chapter": "09",
   "type": "calculation"
  },
@@ -1768,6 +1803,11 @@
   "chapter": "10",
   "type": "triage"
  },
+ "illustrations/handraw/ch10-goal-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：五条学习目标各配一个可指认证据——编号、位或读数。",
+  "chapter": "10",
+  "type": "concept"
+ },
  "illustrations/handraw/ch10-mem2mem-vs-peri.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。流式外设用 peri；块拷贝用 mem2mem；不是实拍。",
   "chapter": "10",
@@ -1777,6 +1817,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RXNE=1 且 DMAR=1 放行请求，DMA1 通道 5 一拍读 CPAR 写 CMAR、CNDTR 减 1；配置顺序 CPAR→CMAR→CNDTR→CCR；不是实拍。",
   "chapter": "10",
   "type": "technical"
+ },
+ "illustrations/handraw/ch10-two-level-bind.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：F1 请求焊死通道，F4 先定 Stream 再由 CHSEL 选 Channel。",
+  "chapter": "10",
+  "type": "comparison"
  },
  "illustrations/handraw/ch11-backup-domain.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VBAT 续电备份域；LSE 优先，LSI 仅备用；不是实拍。",
@@ -1935,6 +1980,11 @@
   "chapter": "13",
   "type": "triage"
  },
+ "illustrations/handraw/ch13-remap-decision.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：CAN 引脚三选一——PA11/PA12 归 USB、PD0/PD1 归晶振、落定 PB8/PB9 且与 I2C1 二选一。",
+  "chapter": "13",
+  "type": "triage"
+ },
  "illustrations/handraw/ch13-tec-busoff.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TEC≥128 被动；>255 Bus-Off；单节点无 ACK 停在 128；恢复 128×11 隐性位；不是实拍。",
   "chapter": "13",
@@ -1969,6 +2019,16 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。512 字节 PMA 共享 EP0..EP7；IN/OUT 站在主机侧；重叠会毁包；不是实拍。",
   "chapter": "14",
   "type": "technical"
+ },
+ "illustrations/handraw/ch14-transfer-pick.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：四问选型树——控制/批量/中断/等时的实时性与可靠性取舍。",
+  "chapter": "14",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch14-usb-can-conflict.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：USB 与 CAN 共用 PA11/PA12、512 字节 SRAM 与一条中断向量，二选一。",
+  "chapter": "14",
+  "type": "comparison"
  },
  "illustrations/handraw/ch14-usb-enum.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USBPRE=0→48 MHz；D+ 1.5 kΩ；设备 18 字节+配置 67 字节；USBPRE=1 变 72 MHz 失败；不是实拍。",
@@ -2116,10 +2176,20 @@
   "review": "2026-11-05 人工复核：结构/关系概念图",
   "type": "concept"
  },
+ "illustrations/handraw/ch17-comp-pools.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：FPB 6 个指令比较器与 DWT 4 个数据比较器互不共享名额。",
+  "chapter": "17",
+  "type": "comparison"
+ },
  "illustrations/handraw/ch17-dwt-window.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：t0 与 t1 两次读数夹住的计时窗口，读取开销与窗口内中断都会混进差值；证明 Δ 只有在测过空窗基线、反汇编确认代码仍在窗口内时才可比较；不能替代实测性能数据。出处 PM0056 DWT。",
   "chapter": "17",
   "type": "triage"
+ },
+ "illustrations/handraw/ch17-fault-record.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：故障先存定长记录再离场输出，避免在异常里 printf。",
+  "chapter": "17",
+  "type": "technical"
  },
  "illustrations/handraw/ch17-halt-timing.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。条件断点仍占一个比较器，命中→内核暂停→读现场，计时区间被污染；零差先查是否在单步；不是实拍。",
@@ -2135,6 +2205,16 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。t0、t1 夹住被测代码；零差先查 TRCENA、CYCCNTENA 和运行方式。72 计数 = 1 µs 的前提是内核运行于 72 MHz。",
   "chapter": "17",
   "type": "triage"
+ },
+ "illustrations/handraw/ch17-recover-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：探针连不上时的四级梯子——共地 VTref、NRST、SWD、启动配置。",
+  "chapter": "17",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch17-stack-frame.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：八格异常栈帧，PC 在第 6 格，精确/非精确/栈错误决定能否取 PC。",
+  "chapter": "17",
+  "type": "technical"
  },
  "illustrations/handraw/ch17-swd-pins.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWDIO 双向传输，SWCLK 由探针驱动；SWO 从 PB3 单向返回。GND 共地，VTref 用于感知目标电压，NRST 供复位下连接使用。",
@@ -2295,6 +2375,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先 DS/RM/PM 对号，再选证据阶，最后才动固件栈；不是实拍。",
   "chapter": "20",
   "type": "triage"
+ },
+ "illustrations/handraw/ch20-exit-kit.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）：章末四张交付卡——构建环境、来源卡、五层证据、干净重建对比。",
+  "chapter": "20",
+  "type": "concept"
  },
  "illustrations/handraw/ch20-lib-compare.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一个项目冻结一套库与版本；HAL 主流、SPL 锁旧 F1、LL 近寄存器、libopencm3 轻量；不是实拍。",

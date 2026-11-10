@@ -45,6 +45,12 @@ A BluePill uses the first remap: pin 45 PB8 = CAN_RX, pin 46 PB9 = CAN_TX. The r
 
 The second remap is pin 5 PD0 and pin 6 PD1. On LQFP48 those pins carry the HSE crystal, so moving CAN there stops the 8 MHz crystal. See [DS5319](#source-ds5319-clock). RM0008 section 9.3.3 also says 36-pin, 48-pin, and 64-pin packages cannot remap CAN to port D. Pins 45 and 46 are also the I2C1 remap from chapter 07, so one project can give them to CAN or to I2C, not both. See [DS5319](#source-ds5319-i2c).
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-remap-decision.png" width="760" alt="Handraw: the CAN pin-pair decision (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three rungs rule out PA11/PA12 (chapter 14 USB needs D−/D+), then PD0/PD1 (HSE crystal on LQFP48, and 36/48/64-pin packages cannot remap CAN to port D), and land on PB8/PB9 (pins 45/46, also the I2C1 remap); Proves this board can only pick PB8/PB9, and that pair goes to CAN or I2C, not both; Cannot show board wiring, transceiver supply, or bus levels. See [DS5319 Rev 20 Table 5](#source-ds5319-usbcan) and [RM0008 Rev 21](#source-rm0008-can).</sub>
+</p>
+
 PB8 and PB9 do not go straight onto the bus. They connect to the transceiver's RXD and TXD, and the transceiver drives CANH and CANL. Each end of the bus has one 120 Ω resistor between CANH and CANL. The two in parallel are a 60 Ω DC load. 60 Ω is not the cable impedance; the cable is about 120 Ω, and the terminators are chosen to match it.
 
 A node alone on the bus and not in loopback gets no acknowledge for its frames. Each transmission attempt is an ACK error, so the transmit error counter rises by 8. After sixteen consecutive attempts it reaches 128 and the node becomes error-passive: it still retransmits, but only sends passive error flags. The standard stops a passive sender from raising TEC on further ACK errors, so this single node keeps retransmitting the same frame and never reaches 256. Bus-off needs TEC above 255 (that is, 256); recovery waits for 128 occurrences of 11 consecutive recessive bits. With a 32-bit mask filter, a standard ID written to `FilterIdHigh` must be shifted left by 5. Without the shift, frames are on the bus but the mailbox stays empty. The F103 has 14 filter banks and 2 receive FIFOs. See [examples in this repo](#source-project-examples).

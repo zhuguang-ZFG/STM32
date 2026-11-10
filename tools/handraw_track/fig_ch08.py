@@ -6,6 +6,8 @@ every SCK edge shifts one bit out and one bit in on both sides. The JEDEC read
 sends 9F FF FF FF and simultaneously receives ?? EF 40 17 — rx[0] is the tail
 of the previous transaction, not the vendor id.
 """
+import math
+
 from hd import *
 
 
@@ -278,10 +280,154 @@ def cs_triage():
     return f
 
 
+def page_write_flow():
+    f = Fig("ch08-page-write-flow",
+            "页写入的五级台阶：WREN 先走，0x02 才生效 / five rungs, one page")
+
+    f.text(84, 136, "W25Q64 一页 256 字节：写使能是独立事务，忙位在状态字节里",
+           size=19, color=MUTED)
+    f.htext(84, 176, "五级台阶：写使能 → 页编程 → 轮询", size=20,
+            color=INK, weight="bold", hl=True)
+
+    # ---- 五级台阶：CS↓ 0x06 → CS↑ → CS↓ 0x02 → CS↑ → 0x05 轮询 ----
+    step_x = [84, 260, 436, 612, 788, 964]
+    step_y = [568, 488, 408, 328, 248]
+    pts = [(step_x[0], step_y[0])]
+    for k in range(1, 5):
+        pts.append((step_x[k], step_y[k - 1]))
+        pts.append((step_x[k], step_y[k]))
+    pts.append((step_x[5], step_y[4]))
+    f.stroke(pts, color=INK, sw=3.2, amp=1.0)
+    f.stroke([(x + 1.6, y + 2.0) for x, y in pts], color=INK, sw=1.2,
+             amp=1.4, opacity=0.24)
+
+    steps = [
+        ("CS↓ 发 0x06", "WREN · 写使能事务", RED),
+        ("CS↑ 结束事务", "WEL 置位 = 1", GREEN_D),
+        ("CS↓ 发 0x02", "PAGE PROGRAM", RED),
+        ("CS↑ 编程开始", "芯片进入忙状态", MUTED),
+        ("轮询 0x05", "bit0=0 才结束", BLUE_D),
+    ]
+    for k, (line1, line2, col) in enumerate(steps):
+        x, y = step_x[k], step_y[k]
+        f.circle(x + 26, y - 28, 15, color=col, fill=WHITE, sw=2.2)
+        f.text(x + 26, y - 22, str(k + 1), size=16, color=col,
+               anchor="middle", weight="bold")
+        f.text(x + 48, y - 32, line1, size=17, color=col, weight="bold")
+        f.text(x + 48, y - 10, line2, size=13.5, color=INK)
+
+    # 第 3 级：一页 256 字节的注释
+    f.arrow(448, 440, 448, 414, color=MUTED, sw=1.6, bend=0.0, head=7)
+    f.text(460, 446, "＋ 一页 256 字节", size=13.5, color=INK)
+
+    # 第 5 级：轮询 0x05 的循环箭头
+    cx, cy, rr = 838, 290, 20
+    a0, sweep = 2.0, 2 * math.pi - 1.2
+    loop_pts = [(cx + rr * math.cos(a0 + sweep * i / 20),
+                 cy + rr * math.sin(a0 + sweep * i / 20)) for i in range(21)]
+    f.stroke(loop_pts, color=BLUE_D, sw=2.4, amp=0.5)
+    f.arrowhead(loop_pts[-1][0], loop_pts[-1][1],
+                -math.sin(a0 + sweep), math.cos(a0 + sweep),
+                color=BLUE_D, head=9)
+    f.text(866, 296, "bit0=1 → 再读", size=12.5, color=BLUE_D, weight="bold")
+    f.arrow(964, 248, 1038, 248, color=GREEN_D, bend=0.0, head=9)
+    f.text(974, 232, "bit0=0 → 完成", size=12.5, color=GREEN_D, weight="bold")
+
+    # ---- 支路：跳过 WREN，直接 0x02 被忽略 ----
+    f.circle(108, 580, 4.5, color=RED, fill=RED, sw=1.5, amp=0.4)
+    f.stroke([(108, 580), (108, 636), (600, 636), (600, 442)],
+             color=RED, sw=2.2, amp=0.8, dash="7 7", opacity=0.9)
+    f.line(590, 422, 610, 442, color=RED, sw=2.8, amp=0.6)
+    f.line(590, 442, 610, 422, color=RED, sw=2.8, amp=0.6)
+    f.text(620, 432, "0x02 被忽略", size=14, color=RED, weight="bold")
+    f.text(132, 622, "支路：跳过 WREN（例程实验二）", size=15, color=RED,
+           weight="bold")
+    f.text(132, 660, "WEL=0 → 命令被忽略，数据不变", size=15, color=RED)
+
+    f.htext(84, 700, "写使能是独立的一次事务：WEL=0 时 0x02 不写任何数据",
+            size=20, color=INK, weight="bold", hl=True)
+    f.text(84, 732, "忙位是 0x05 读回的 Flash 状态字节 bit0，不是 SPI_SR；本图只画命令顺序，不是波形",
+           size=13.5, color=MUTED)
+    return f
+
+
+def id_assembly():
+    f = Fig("ch08-id-assembly",
+            "ID 要自己拼：四个接收槽，只取后三个 / four slots, one 24-bit word")
+
+    f.text(84, 136, "W25Q64 的 JEDEC 读：MOSI 发 9F FF FF FF，MISO 在同一串 SCK 里收回四个字节",
+           size=19, color=MUTED)
+
+    # ---- 左：四个接收槽 ----
+    f.text(84, 196, "MISO 收回来的四个字节", size=20, color=INK,
+           weight="bold")
+
+    slots = [
+        ("rx[0] = ??", "命令回显 · 丢弃", RED, 245),
+        ("rx[1] = 0xEF", "厂商号 · Winbond", GREEN_D, 341),
+        ("rx[2] = 0x40", "存储器类型（不是容量）", BLUE_D, 437),
+        ("rx[3] = 0x17", "容量 64 Mbit → W25Q64", AMBER_STROKE, 533),
+    ]
+    for label, note, col, yy in slots:
+        f.rect(100, yy, 360, 74, color=col, fill=WHITE, sw=2.2)
+        f.text(118, yy + 34, label, size=22, color=col, weight="bold")
+        f.text(118, yy + 58, note, size=13.5, color=MUTED)
+    # rx[0] 划掉
+    f.line(106, 318, 454, 247, color=RED, sw=2.4, amp=0.8, opacity=0.75)
+    f.line(106, 247, 454, 318, color=RED, sw=2.4, amp=0.8, opacity=0.75)
+    f.stroke([(460, 282), (534, 282)], color=RED, sw=2.0, amp=0.6,
+             dash="6 6")
+    f.arrowhead(540, 282, 1, 0, color=RED, head=9)
+    f.line(540, 270, 552, 294, color=RED, sw=2.4, amp=0.4)
+    f.line(552, 270, 540, 294, color=RED, sw=2.4, amp=0.4)
+    f.text(566, 276, "不进 ID", size=14, color=RED, weight="bold")
+
+    # ---- 右：一个 24 位字，高字节在上 ----
+    f.text(800, 196, "拼成一个 24 位字", size=20, color=INK, weight="bold")
+    f.text(800, 220, "高字节在上，低字节在下", size=13.5, color=MUTED)
+
+    wx, wy, ww, ch = 800, 330, 260, 96
+    f.rect(wx, wy, ww, ch * 3, color=AMBER_STROKE, fill=WHITE, sw=2.6)
+    f.line(wx, wy + ch, wx + ww, wy + ch, color=AMBER_STROKE, sw=2.2)
+    f.line(wx, wy + 2 * ch, wx + ww, wy + 2 * ch, color=AMBER_STROKE, sw=2.2)
+    cells = [
+        ("bit 23..16", "0xEF", "厂商号 Winbond", GREEN_D),
+        ("bit 15..8", "0x40", "类型 ≠ 容量", BLUE_D),
+        ("bit 7..0", "0x17", "容量 64 Mbit", AMBER_STROKE),
+    ]
+    for k, (bits, val, name, col) in enumerate(cells):
+        top = wy + k * ch
+        f.text(wx + 14, top + 22, bits, size=12.5, color=MUTED)
+        f.text(wx + ww / 2, top + 62, val, size=32, color=col,
+               anchor="middle", weight="bold")
+        f.text(wx + ww / 2, top + 86, name, size=13, color=INK,
+               anchor="middle")
+
+    # ---- 三条移位线：rx[1]→EF，rx[2]→40，rx[3]→17 ----
+    shifts = [
+        (341 + 37, 330 + 48, "左移 16 位", GREEN_D),
+        (437 + 37, 330 + 96 + 48, "左移 8 位", BLUE_D),
+        (533 + 37, 330 + 192 + 48, "不移位（<<0）", AMBER_STROKE),
+    ]
+    for sy, ty, tag, col in shifts:
+        f.arrow(460, sy, wx - 4, ty, color=col, sw=2.6, bend=0.0, head=10)
+        f.text(556, sy - 18, tag, size=15, color=col, weight="bold")
+
+    f.htext(wx + ww / 2, 660, "= 0xEF4017", size=36, color=INK,
+            anchor="middle", weight="bold", hl=True)
+    f.htext(84, 700, "丢掉 rx[0]，取 rx[1..3]；0x40 是类型，不是容量",
+            size=20, color=INK, weight="bold", hl=True)
+    f.text(84, 732, "三个字节各就各位：高 8 位、中 8 位、低 8 位；拼 ID 只做移位与按位或",
+           size=13.5, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch08-byte-exchange": byte_exchange,
     "ch08-cs-bracket": cs_bracket,
     "ch08-cs-triage": cs_triage,
+    "ch08-page-write-flow": page_write_flow,
+    "ch08-id-assembly": id_assembly,
 }
 
 if __name__ == "__main__":

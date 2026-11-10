@@ -219,8 +219,82 @@ def trgo_trigger_adc():
     return f
 
 
+def timer_ladder():
+    f = Fig("ch05-timer-ladder",
+            "定时器三级台阶：按需要的功能选最低一级 / the timer ladder")
+
+    f.text(84, 138, "自下而上：基本 → 通用 → 高级；每一级 = 上一级加配件",
+           size=20, color=MUTED)
+    f.text(1064, 138, "台阶高度只示层级，不按比例", size=16, color=MUTED,
+           anchor="end")
+
+    # ---- 台阶本体：三级实心踏步，自下而上 ----
+    for x, y, w, h in ((84, 596, 220, 104), (304, 468, 220, 232),
+                       (524, 340, 220, 360)):
+        f.fillrect(x, y, w, h, "#F4EFE0", r=0)
+    f.stroke([(84, 700), (84, 596), (304, 596), (304, 468),
+              (524, 468), (524, 340), (744, 340), (744, 700)],
+             color=INK, sw=2.8, amp=1.3, close=True)
+
+    # 每级相对下一级的增量（正文的“多了 / 再加上”）
+    f.text(104, 636, "起点：无外部通道", size=16, color=MUTED)
+    f.text(322, 508, "+ 4 个通道", size=18, color=BLUE_D, weight="bold")
+    f.text(542, 380, "+ 互补 / 死区 / 刹车", size=16, color=RED)
+
+    # ---- 最低一级：基本 ----
+    f.rect(96, 448, 196, 132, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(112, 480, "① 基本定时器", size=20, color=GREEN_D, weight="bold")
+    f.text(112, 514, "只会数数", size=18, color=INK)
+    f.text(112, 542, "适合当闹钟", size=18, color=INK)
+    f.text(112, 568, "没有外部通道", size=15, color=MUTED)
+
+    # ---- 中间一级：通用，C8 上是 16 位 ----
+    f.rect(316, 320, 196, 132, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(332, 352, "② 通用定时器", size=20, color=BLUE_D, weight="bold")
+    f.text(332, 386, "4 个通道", size=18, color=INK)
+    f.text(332, 412, "PWM / 捕获 / 编码器", size=16, color=INK)
+    f.text(332, 438, "F4 等系列：32 位", size=14, color=MUTED)
+    f.rect(400, 290, 96, 30, color=AMBER_STROKE, fill=AMBER_FILL, sw=1.8,
+           r=8, double=False)
+    f.text(448, 311, "C8 16 位", size=14, color=INK, anchor="middle",
+           weight="bold")
+
+    # ---- 最高一级：高级，MOE 标在这一级 ----
+    f.rect(536, 192, 196, 132, color=RED, fill=WHITE, sw=2.6)
+    f.text(552, 224, "③ 高级定时器", size=20, color=RED, weight="bold")
+    f.text(552, 258, "互补输出", size=18, color=INK)
+    f.text(552, 284, "死区 · 刹车", size=18, color=INK)
+    f.htext(552, 314, "MOE 为 0 → 无输出", size=16, color=INK,
+            weight="bold", hl=True, pad=6)
+
+    # ---- 旁支：SysTick 与看门狗，不在主台阶上 ----
+    f.line(744, 700, 796, 700, color=INK, sw=2.4, amp=0.8)
+    f.line(796, 700, 796, 300, color=INK, sw=2.4, amp=0.9)
+    f.line(796, 300, 820, 300, color=INK, sw=2.2, amp=0.6)
+    f.line(796, 500, 820, 500, color=INK, sw=2.2, amp=0.6)
+
+    f.rect(820, 220, 244, 160, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(838, 258, "SysTick", size=23, color=BLUE_D, weight="bold")
+    f.text(838, 294, "内核自带", size=18, color=INK)
+    f.text(838, 326, "HAL 和 RTOS", size=18, color=INK)
+    f.text(838, 354, "都拿它当心跳", size=18, color=INK)
+
+    f.rect(820, 420, 244, 160, color=RED, fill=WHITE, sw=2.6)
+    f.text(838, 458, "看门狗", size=23, color=RED, weight="bold")
+    f.text(838, 490, "IWDG / WWDG", size=18, color=INK)
+    f.text(838, 522, "独立 / 窗口", size=18, color=INK)
+    f.text(838, 552, "程序跑飞就复位", size=18, color=INK)
+
+    f.text(806, 622, "旁支：不在主台阶上", size=17, color=MUTED)
+
+    f.htext(84, 744, "先数需要的配件，再停在与它匹配的最低一级", size=21,
+            color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch05-capture-pulse": capture_pulse,
+    "ch05-timer-ladder": timer_ladder,
     "ch05-resolution-grid": resolution_grid,
     "ch05-quadrature": quadrature_decode,
     "ch05-trgo-adc": trgo_trigger_adc,
