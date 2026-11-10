@@ -68,16 +68,26 @@ git diff --check                                     # 0
 
 版式门（`tools/audit_pdf_layout.py`，命令行同 CI）：
 
-| 门 | 结果 |
-|---|---|
-| zh | gaps>150pt=144/145、≥250pt=11/15、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** |
-| en（本地 Windows） | gaps>150pt=131/145、≥250pt=18/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1（≥250pt 超 3 页） |
-| en（CI Ubuntu） | 见 PR checks（run ID 回填） |
+| 门 | 本地（Windows） | CI（Ubuntu，run 42854117259） |
+|---|---|---|
+| zh | 538p、gaps>150pt=144/145、≥250pt=11/15、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** | 529p、141/145、14/15、硬缺陷 0、anchors[min=11 max_free=3] → **exit 0**（job book） |
+| en | 568p、131/145、≥250pt=18/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1 | 560p、126/145、11/15、硬缺陷 0、anchors[min=11 max_free=5] → **exit 0**（job book-en） |
 
-本地 en 超线与 B51 记录的平台分页噪声同型（同提交 Windows 16 vs CI Ubuntu 12）：
-18 个 ≥250pt 页均无溢出/孤行硬缺陷，抽样 p270/p271/p191/p432/p464/p516 渲染目检为
-既有「下一不可拆块（表/图/代码）放不下」推页模式，图块自身未溢出。合并门以 CI 为准，
-未改图宽凑本地页数。
+本地 en 超线与 B51 记录的平台分页噪声同型（同提交 Windows 16 vs CI Ubuntu 12）。
+18 个 ≥250pt 页逐页归因（继承页首块，PyMuPDF 复算 + 感知哈希核验图源）：
+
+- 11 页由 Handraw 图块推页：仅 2 页为本批新图（P271→ch16-wake-ladder、
+  P307→ch18-pin-card），其余 9 页为既有老图随分页漂移；
+- 6 页由 SVG 版画推页（P44/P47/P62/P191/P308/P347），1 页为前置目录（P5）；
+- 0 页由表格或代码块造成；相对 B51 基线 16 页，新增恰为这 2 页新图缺口。
+  14 个缺口值与 B51 561 页基线逐位相同（如 P342→P347、P427→P432），
+  P210/P261 两处消失。
+
+均无溢出/孤行硬缺陷；合并门以 CI 为准，未改图宽凑本地页数。
+CI 实测 en 560p、≥250pt=11（B51 CI 基线 12）——+29 张图后大留白页反而少 1 页，
+本地 18 确认为平台分页噪声。
+zh 侧 11 个 ≥250pt 页中 5 页继承页以 Handraw 图为首块（P201/P243/P254/P281/P355），
+zh 门 exit 0 已通过。
 
 ## 页样目检
 
@@ -88,4 +98,5 @@ git diff --check                                     # 0
 ## 遗留
 
 - en 其余 13 章 >2,000（B55 候选，spec §8）。
-- 本地 en ≥250pt 18 > 15 按 B51 平台噪声条款交 CI 门判定。
+- 本地 en ≥250pt 18 > 15 已按 B51 平台噪声条款验证：CI en 11/15 通过
+  （run 42854117259 · job book-en），不构成树缺陷。
