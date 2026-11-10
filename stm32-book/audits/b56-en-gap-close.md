@@ -67,13 +67,14 @@ git diff --check                                                 # 0
 
 版式门（`tools/audit_pdf_layout.py`，命令行同 CI）：
 
-| 门 | 本地（Windows） | CI（Ubuntu） |
+| 门 | 本地（Windows） | CI（Ubuntu，run [42897414427](https://github.com/zhuguang-ZFG/STM32/actions/runs/42897414427)） |
 |---|---|---|
-| zh | 545p、gaps>150pt=136/145、≥250pt=**9/15**、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** | 待 CI 回填 |
-| en | 581p、134/145、≥250pt=20/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1 | 待 CI 回填 |
+| zh | 545p、gaps>150pt=136/145、≥250pt=9/15、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** | 535p、133/145、≥250pt=**14/15**、硬缺陷 0、anchors[min=11 max_free=3] → **exit 0** |
+| en | 581p、134/145、≥250pt=20/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1 | 572p、131/145、≥250pt=**13/15**、硬缺陷 0、anchors[min=11 max_free=5] → **exit 0** |
 
-- 本地 en ≥250pt=20 与 B55 完全同数（20），B51（本地 16 vs CI 12）、B54（18 vs 11）、
-  B55（20 vs 12）同型，属 Windows/Ubuntu 分页差异；合并门以 CI 为准，未改图宽/图位凑本地页数。
+- CI 两 job（`book`/`book-en`）全绿；197 测试 394.0s OK，`--check` zh PASS，slop-lint 干净。
+- 本地 en ≥250pt=20 在 Ubuntu 收敛到 13，与 B51（16 vs 12）、B54（18 vs 11）、
+  B55（20 vs 12）同型，确认为平台分页噪声，与 B56 新图无关联性。
 
 ## 本地 en 超线归因
 
@@ -87,7 +88,8 @@ P319、P320、P359、P444、P457、P459、P472、P477、P529。
   其中 P47、P132（B55 存量）在插入新图后已不再超线。
 - 其余 17 页为既有图文表混排页的分页漂移（章末/FAQ/网络章各 2–3 页），集合由 B55 清单
   随 +4 页整体后移（-3 平移匹配 11/20，其余为递增偏移）。
-- 合并门以 CI 为准；若 CI en ≥250pt 超 15 再单独归因，不在本波预调图。
+- CI 实测 en ≥250pt=13/15 通过；本地 20 与 B55 同数同型，确认为平台分页噪声，
+  未改动任何图宽/图位。
 
 ## 页样目检
 
