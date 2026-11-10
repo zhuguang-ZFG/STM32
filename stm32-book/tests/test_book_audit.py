@@ -57,6 +57,31 @@ class BookAuditTests(unittest.TestCase):
                 self.assertGreaterEqual(chapter["target_visual_anchors"], 3)
             self.assertEqual(item["zh"]["target_visual_anchors"], item["en"]["target_visual_anchors"])
 
+    # spec 6.3 / plan B46: at most 1,200 chars without a visual anchor (zh).
+    # Known overages are pinned individually so this gate blocks any NEW or
+    # WORSE violation; drain GAP_TRANSIENT_OVERAGES as close-out lands and
+    # keep only individually approved exceptions.
+    GAP_CAP_CHARS = 1200
+    GAP_APPROVED_EXCEPTIONS = {
+        "26": (1231, "audits/b48-gap-figures.md"),
+    }
+    # B52 gap close-out (2026-11-10): every transient chapter drained to <= 1200.
+    # Keep the dict (empty) so the gate still rejects new overages; approved
+    # exceptions live in GAP_APPROVED_EXCEPTIONS.
+    GAP_TRANSIENT_OVERAGES = {}
+
+    def test_zh_visual_gap_distribution_gate(self) -> None:
+        for item in self.payload["chapters"]:
+            gap = item["zh"]["max_visual_gap_chars"]
+            cid = item["id"]
+            if cid in self.GAP_APPROVED_EXCEPTIONS:
+                pinned, _ref = self.GAP_APPROVED_EXCEPTIONS[cid]
+                self.assertLessEqual(gap, pinned, (cid, gap, pinned))
+            elif cid in self.GAP_TRANSIENT_OVERAGES:
+                self.assertLessEqual(gap, self.GAP_TRANSIENT_OVERAGES[cid], (cid, gap))
+            else:
+                self.assertLessEqual(gap, self.GAP_CAP_CHARS, (cid, gap))
+
     def test_bilingual_visual_sequence_matches_repaired_chapters(self) -> None:
         for item in self.payload["chapters"]:
             self.assertIsInstance(item["parity"]["asset_sequence_equal"], bool)
@@ -75,6 +100,7 @@ class BookAuditTests(unittest.TestCase):
             "one-slot.gif",
             "sample-19-pick-ladder.svg",
             "ch19-pick-ladder.png",
+            "ch19-log-ring.png",
             "dma-buffer-ownership.svg",
             "iap-acceptance-gates.svg",
             "ch19-iap-gates.png",
@@ -95,15 +121,17 @@ class BookAuditTests(unittest.TestCase):
         chapter = self.by_id["01"]
         expected_assets = (
             "boot-sequence.svg", "sample-01-swd-vectors.svg", "ch01-swd-vectors.png",
-            "swd-fetch.gif", "sample-01-flash-swd-flow.svg", "sample-01-env-compare.svg",
-            "ch01-four-envs-one-elf.png", "single-build-contract.svg", "sample-01-flash-path.svg",
-            "ch01-three-flash-paths.png", "project-structure.svg", "sample-01-rdp-unlock.svg",
-            "ch01-rdp-unlock.png", "sample-01-flash-triage.svg", "ch01-flash-triage.png",
-            "sample-01-debug-connect.svg", "ch01-debug-connect-rings.png", "sample-01-build-accept.svg",
+            "swd-fetch.gif", "sample-01-flash-swd-flow.svg", "ch01-boot-first-words.png",
+            "sample-01-env-compare.svg", "ch01-four-envs-one-elf.png", "single-build-contract.svg",
+            "sample-01-flash-path.svg", "ch01-three-flash-paths.png", "ch01-one-elf-evidence.png",
+            "project-structure.svg", "sample-01-rdp-unlock.svg", "ch01-rdp-unlock.png",
+            "ch01-rdp-unlock-paths.png", "ch01-main-skeleton.png", "sample-01-flash-triage.svg",
+            "ch01-flash-triage.png", "sample-01-debug-connect.svg", "ch01-debug-connect-rings.png",
+            "sample-01-build-accept.svg",
         )
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(18, edition["pdf_visual_anchors"])
+            self.assertEqual(22, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(expected_assets, edition["asset_sequence"])
         for field in ("h2_delta", "h3_delta", "table_delta", "code_block_delta"):
@@ -124,7 +152,8 @@ class BookAuditTests(unittest.TestCase):
             "04": (
 
                 "nvic-interrupt-flow.svg", "sample-04-nvic-preempt-flow.svg", "sample-04-exception-stack.svg",
-                "ch04-exception-stack.png", "nvic-preempt.gif", "sample-04-priority-group.svg",
+                "ch04-exception-stack.png", "nvic-preempt.gif", "ch04-preempt-timeline.png",
+                "sample-04-priority-group.svg",
                 "ch04-priority-group.png", "interrupt-priority.svg", "ch04-preempt-vs-sub.png",
                 "gpio-input-interrupt.svg", "sample-04-exti-line-map.svg", "ch04-exti-line-map.png",
                 "sample-04-exti-triage.svg", "ch04-exti-triage.png", "sample-04-tail-chaining.svg",
@@ -156,14 +185,15 @@ class BookAuditTests(unittest.TestCase):
 
                 "uart-frame.svg", "ch06-sample-points.png", "ch06-ore-fe.png", "sample-06-ore-overwrite-flow.svg",
                 "sample-06-uart-baud-wire.svg", "sample-06-uart-frame.svg",
-                "ch06-uart-frame.png", "uart-idle.gif", "sample-06-frame-annotated.svg",
+                "ch06-uart-frame.png", "uart-idle.gif", "ch06-baud-budget.png",
+                "sample-06-frame-annotated.svg",
                 "uart-bits.gif", "sample-06-baud-formula.svg", "ch06-baud-formula.png",
                 "sample-06-baud-triage.svg", "ch06-baud-triage.png", "sample-06-tx-rx-crossover.svg",
                 "ch06-tx-rx-crossover.png", "sample-06-idle-dma.svg", "ch06-idle-dma.png",
             ),
             "07": (
 
-                "i2c-transaction.svg", "sample-07-i2c-ack-flow.svg", "sample-07-i2c-addr.svg",
+                "i2c-transaction.svg", "ch07-ccr-timing.png", "sample-07-i2c-ack-flow.svg", "sample-07-i2c-addr.svg",
                 "ch07-i2c-addr.png", "i2c-addr.gif", "sample-07-pullup-cap.svg",
                 "ch07-pullup-cap.png", "sample-07-start-ack.svg", "ch07-start-ack.png",
                 "i2c-timing.gif", "ch07-clock-stretch.png",
@@ -177,15 +207,17 @@ class BookAuditTests(unittest.TestCase):
                 "sample-08-mode0-edges.svg",
                 "sample-08-cpha-modes.svg", "ch08-cpha-modes.png", "sample-08-br-table.svg",
                 "ch08-br-table.png", "sample-08-nss-multi.svg", "ch08-nss-multi.png",
+                "ch08-cs-triage.png",
                 "sample-08-bus-compare.svg", "sample-08-spi-triage.svg", "ch08-spi-triage.png",
             ),
             "09": (
 
-                "adc-sar.svg", "sample-09-adc-sar-weights.svg", "sample-09-adc-sar.svg",
+                "adc-sar.svg", "ch09-adcclk-budget.png", "sample-09-adc-sar-weights.svg", "sample-09-adc-sar.svg",
                 "ch09-adc-sar.png", "adc-sample.gif", "sample-09-vref-rails.svg",
                 "ch09-vref-rails.png", "sample-09-sar-ladder.svg", "ch09-sar-ladder.png",
                 "sar-adc.gif", "ch09-scan-sequence.png", "dma-circular.svg",
-                "ch09-vrefint-cal.png", "sample-09-sample-time.svg",
+                "ch09-vrefint-cal.png", "ch09-pa0-analog-config.png", "ch09-dac-buffer.png",
+                "sample-09-sample-time.svg",
                 "ch09-sample-time.png", "sample-09-adc-triage.svg", "ch09-adc-triage.png",
             ),
             "10": (
@@ -214,7 +246,7 @@ class BookAuditTests(unittest.TestCase):
 
                 "iwdg-window.svg", "ch11-lsi-drift.png", "ch11-wwdg-window.png", "sample-11-wwdg-window-flow.svg",
                 "sample-11-iwdg-feed-flow.svg", "sample-11-iwdg-1s.svg",
-                "ch11-iwdg-1s.png", "iwdg-1s.gif", "sample-11-backup-domain.svg",
+                "ch11-iwdg-1s.png", "iwdg-1s.gif", "ch11-backup-path.png", "sample-11-backup-domain.svg",
                 "ch11-backup-domain.png", "sample-11-wdg-compare.svg", "ch11-wdg-compare.png",
                 "sample-11-iwdg-math.svg", "ch11-iwdg-math.png", "watchdog-reset-evidence.svg",
                 "sample-11-rtc-triage.svg", "ch11-rtc-triage.png",
@@ -227,6 +259,7 @@ class BookAuditTests(unittest.TestCase):
                 "sample-12-key-order.svg", "ch12-key-order.png", "ch12-halfword-loop.png",
                 "iap-acceptance-gates.svg",
                 "ch12-acceptance-gates.png", "sample-12-boot-compare.svg", "ch12-boot-compare.png",
+                "ch12-ymodem-flow.png", "ch12-option-bytes.png",
             ),
             "13": (
 
@@ -260,6 +293,7 @@ class BookAuditTests(unittest.TestCase):
                 "ch14-usbpre-48.png", "sample-14-pma-map.svg", "ch14-pma-map.png",
                 "usb-enumeration-zh.gif", "ch14-ctrl-transfer.png",
                 "sample-14-descriptor-map.svg", "ch14-descriptor-map.png",
+                "ch14-cdc-vs-hid.png",
                 "pinout-bluepill.svg", "instrument-evidence-ladder.svg", "ch14-evidence-ladder.png",
             ),
             "15": (
@@ -284,8 +318,10 @@ class BookAuditTests(unittest.TestCase):
         expected = {
             "16": (
 
-                "lowpower-wakeup.svg", "ch16-wake-matrix.png", "sample-16-stop-wake-flow.svg", "sample-16-stop-wake.svg",
-                "ch16-stop-wake.png", "stop-wake.gif", "sample-16-stop-compare.svg",
+                "lowpower-wakeup.svg", "ch16-no-ammeter-check.png", "ch16-wake-matrix.png",
+                "sample-16-stop-wake-flow.svg", "sample-16-stop-wake.svg",
+                "ch16-stop-wake.png", "stop-wake.gif", "ch16-cell-triage.png",
+                "sample-16-stop-compare.svg",
                 "ch16-stop-compare.png", "sample-16-mode-current.svg", "ch16-mode-current.png",
                 "sample-16-clock-restore.svg", "ch16-clock-restore.png", "lowpower-current-evidence.svg",
                 "sample-16-pwr-triage.svg", "ch16-pwr-triage.png", "ch16-pvd-window.png",
@@ -297,7 +333,8 @@ class BookAuditTests(unittest.TestCase):
                 "ch17-cfsr.png", "cfsr-read.gif", "sample-17-swd-pins.svg",
                 "ch17-swd-pins.png", "sample-17-obs-compare.svg", "ch17-obs-compare.png",
                 "ch17-halt-timing.png", "sample-17-cfsr-bits.svg", "ch17-cfsr-bits.png", "fault-triage-ladder.svg",
-                "sample-17-perf-triage.svg", "ch17-perf-triage.png",
+                "ch17-dwt-window.png", "sample-17-perf-triage.svg", "ch17-perf-triage.png",
+                "ch17-swo-path.png",
             ),
         }
         for chapter_id, assets in expected.items():
@@ -319,14 +356,14 @@ class BookAuditTests(unittest.TestCase):
                 "ch18-link-map.png", "ch18-multi-def.png",
                 "sample-18-hardfault-ladder.svg", "ch18-hardfault-ladder.png",
                 "sample-18-faq-compare.svg", "ch18-faq-compare.png", "sample-18-uart-garbled.svg",
-                "ch18-uart-garbled.png", "ch18-five-steps.png",
+                "ch18-uart-garbled.png", "ch18-peripheral-triage.png", "ch18-five-steps.png",
             ),
             "19": (
 
                 "peripheral-wiring.svg", "ch19-ab-partition.png", "ch19-usb-split.png",
                 "sample-19-slot-fill-flow.svg", "sample-19-flash-fit.svg",
                 "ch19-flash-fit.png", "one-slot.gif", "sample-19-pick-ladder.svg",
-                "ch19-pick-ladder.png", "dma-buffer-ownership.svg", "iap-acceptance-gates.svg",
+                "ch19-pick-ladder.png", "ch19-log-ring.png", "dma-buffer-ownership.svg", "iap-acceptance-gates.svg",
                 "ch19-iap-gates.png", "network-debug-ladder.svg", "rtos-startup-gates.svg",
                 "sample-19-milestone-triage.svg", "ch19-milestone-triage.png", "sample-19-sram-budget.svg",
                 "ch19-sram-budget.png",
@@ -336,7 +373,7 @@ class BookAuditTests(unittest.TestCase):
                 "project-structure.svg", "sample-20-evidence-flow.svg", "sample-20-lookup-flow.svg", "ch20-cube-suite.png",
                 "sample-20-manual-names.svg", "ch20-manual-names.png", "manual-choice-map.svg",
                 "ch20-manual-choice.png", "sample-20-lib-compare.svg", "ch20-lib-compare.png",
-                "firmware-stack-choice.svg", "ch20-manual-route.png",
+                "firmware-stack-choice.svg", "ch20-manual-route.png", "ch20-dma-f1-vs-f4.png",
                 "instrument-evidence-ladder.svg", "ch20-evidence-ladder.png",
                 "single-build-contract.svg", "sample-20-evidence-triage.svg", "ch20-evidence-triage.png",
             ),
@@ -344,11 +381,13 @@ class BookAuditTests(unittest.TestCase):
 
                 "bluepill-stm32f103c8t6.svg", "sample-21-crystal-boot-flow.svg", "sample-21-board-compare.svg",
                 "ch21-board-compare.png", "sample-21-vdd-3v3.svg", "ch21-vdd-3v3.png",
-                "bluepill-stm32f103c8t6.svg", "blackpill-stm32f411ce.svg", "nucleo-f411re.svg",
+                "bluepill-stm32f103c8t6.svg", "bluepill-stm32f103c8t6.jpg", "bluepill-stm32f103c8t6-popolon.jpg",
+                "blackpill-stm32f411ce.svg", "nucleo-f411re.svg", "nucleo-f411re-embedded-world.jpg",
                 "f4-discovery.svg", "f103zet6-dev.svg", "pinout-bluepill.svg",
                 "sample-21-usb-ttl.svg", "ch21-usb-ttl.png", "peripheral-wiring.svg",
                 "sample-21-power-swd.svg", "sample-21-hse-load.svg", "ch21-hse-load.png",
                 "ch21-minimal-five.png", "ch21-fake-id.png", "sample-21-nrst-boot0.svg", "ch21-nrst-boot0.png",
+                "ch21-identity-triage.png",
             ),
             "22": (
 
@@ -377,8 +416,10 @@ class BookAuditTests(unittest.TestCase):
                 "pinout-stm32g071rb-lqfp64.svg", "ch23-part-id.png", "pinout-bluepill.svg",
                 "ch23-g0-f1-compare.png",
                 "sample-23-boot0-swclk.svg", "sample-23-boot-latch.svg", "ch23-boot-latch.png",
-                "g0-boot-swd.svg", "ch23-boot-tree.png", "sample-23-boot-source-flow.svg", "sample-23-f1-g0-compare.svg",
+                "g0-boot-swd.svg", "ch23-boot-tree.png", "sample-23-boot-source-flow.svg",
+                "ch23-swd-triage.png", "sample-23-f1-g0-compare.svg",
                 "ch23-pin-compare.png", "sample-23-f1-copy-traps.svg", "ch23-pinmux.png",
+                "ch23-lab-evidence.png",
             ),
             "24": (
 
@@ -387,7 +428,9 @@ class BookAuditTests(unittest.TestCase):
                 "ch24-modes.png", "ch24-sram2-retain.png",
                 "l4-stop2-evidence.svg", "sample-24-wake-restore-flow.svg",
                 "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
-                "ch24-sleep-checklist.png", "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
+                "ch24-sleep-checklist.png", "ch24-irq-order.png",
+                "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
+                "ch24-duty-integration.png", "ch24-two-firmware.png",
             ),
             "25": (
 
@@ -395,9 +438,9 @@ class BookAuditTests(unittest.TestCase):
                 "ch25-power-domains.png",
                 "ch25-pin-compare.png", "sample-25-voltage-scale.svg", "ch25-rev-vos.png",
                 "h7-revision-clock-decision.svg", "ch25-vcap-caps.png", "sample-25-hse-to-480-flow.svg", "ch25-clock-math.png",
-                "h7-clock-chain.svg", "h7-startup-evidence.svg", "h7-pinmux-conflicts.svg",
+                "h7-clock-chain.svg", "h7-startup-evidence.svg", "ch25-hal-clock-values.png", "h7-pinmux-conflicts.svg",
                 "ch25-pinmux.png", "sample-25-migrate-triage.svg", "sample-25-dcache-dma.svg",
-                "network-cache-ownership.svg",
+                "network-cache-ownership.svg", "ch25-clock-evidence.png",
             ),
             "26": (
 
@@ -428,12 +471,12 @@ class BookAuditTests(unittest.TestCase):
                 "sample-28-os-compare.svg", "ch28-os-compare.png", "nucleo-f411re-embedded-world.jpg",
                 "nucleo-f401re-embedded-world.jpg", "sample-28-isr-owner-flow.svg", "sample-28-owner-flow.svg",
                 "rtos-owner-task.svg", "ch28-owner-task.png", "sample-28-three-times.svg",
-                "rtos-deadline-budget.svg", "ch28-three-times.png", "ch28-memory-regions.png",
-                "freertos-scheduler.svg",
+                "rtos-deadline-budget.svg", "ch28-three-times.png", "ch28-isr-divergence.png",
+                "ch28-memory-regions.png", "freertos-scheduler.svg", "ch28-h745-contracts.png",
                 "rtos-config-paths.svg", "rtos-startup-gates.svg", "ch28-wdg-supervisor.png",
                 "sample-28-supervisor-flow.svg",
                 "sample-28-fault-triage.svg",
-                "ch28-fault-triage.png",
+                "ch28-fault-triage.png", "ch28-experiment-evidence.png", "ch28-review-evidence.png",
             ),
         }
         for chapter_id, assets in expected.items():
@@ -453,12 +496,14 @@ class BookAuditTests(unittest.TestCase):
             "ch24-modes.png", "ch24-sram2-retain.png", "l4-stop2-evidence.svg",
             "sample-24-wake-restore-flow.svg",
             "ch24-wake-clocks.png", "sample-24-wake-triage.svg", "ch24-pin-mux.png",
-            "ch24-sleep-checklist.png", "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
+            "ch24-sleep-checklist.png", "ch24-irq-order.png",
+            "sample-24-idd-jp6.svg", "ch24-idd.png", "l4-idd-bench.svg",
+            "ch24-duty-integration.png", "ch24-two-firmware.png",
         )
 
         for language in ("zh", "en"):
             edition = chapter[language]
-            self.assertEqual(16, edition["pdf_visual_anchors"])
+            self.assertEqual(19, edition["pdf_visual_anchors"])
             self.assertEqual(0, edition["visual_anchor_deficit"])
             self.assertEqual(2, edition["photos"])
             self.assertEqual(2, edition["animations"])

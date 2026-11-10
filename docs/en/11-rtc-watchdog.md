@@ -109,6 +109,11 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 | WWDG | PCLK1 = 36 MHz | prescaler 8, counter `0x7F` | — | 58.25 ms | Feeding above `0x50` resets |
 | Comparison | 64 | 4095 | 4096 | 6.5536 s | Does not replace Reload 624 |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-backup-path.png" width="760" alt="Handraw: the backup domain's power path, reset boundary, and write gate (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at (1) the left: VDD and pin 1 VBAT feed the on-chip switch, which powers only the backup domain (RTC seconds counter, BKP_DR1–DR10, LSE); (2) the middle red arrow is NRST, IWDG, WWDG, and power-on reset, stopped at the reset boundary — the main domain is cleared and the backup domain is not; (3) the two lower cells are the write gate (PWR/BKP clocks plus PWR_CR.DBP) and the first-power-up test (a magic value in BKP_DR1, given in the code below). Proves that "the calendar still runs, the program is gone" is two separate facts — power and a reset boundary; with main power gone, VBAT keeps the counter and the backup registers. Cannot replace backup-domain current, LSE start-up time, or coin-cell life, and it is not a board photograph. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).</sub>
+</p>
+
 ## Pitfalls and sources
 
 | What you see | Why | What to do | Source | What the source shows |

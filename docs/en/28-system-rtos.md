@@ -243,6 +243,11 @@ Cortex-M exception priority and RTOS task priority are different spaces. Task pr
 
 **First-divergence check:** did the hardware pending bit appear → is NVIC enabled → did the ISR run → was the event enqueued → did the target thread become ready → did the scheduler switch? Do not jump from “the task printed nothing” to “the RTOS is broken.”
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-isr-divergence.png" width="760" alt="Handraw: six gates from ISR to task (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the six gates from the hardware pending bit to the scheduler switch, each with one readable piece of evidence; proves a lost ISR-to-task event can be localised gate by gate instead of jumping from “the task prints nothing” to “the RTOS is broken”; cannot replace a measured interrupt latency, and it is not measured timing. See [FreeRTOS 11.3.2](#source-freertos-1132), [PM0056](#source-pm0056).</sub>
+</p>
+
 ## IPC semantics matter more than names
 
 | Intent | FreeRTOS | RT-Thread | Zephyr | CMSIS-RTOS2 |
@@ -326,6 +331,11 @@ HSEM provides atomic ownership and interrupt notification. It neither carries th
 | Startup and recovery | Which core initializes shared state, `ready`/generation values, heartbeat, resynchronization after one-core reset, and responsibility for whole-device reset | Freeze or reset M7 and M4 separately; the surviving core enters the specified degraded/safe state instead of waiting forever on an old generation |
 
 This table is a design and acceptance protocol, not a claim that this repository has completed H745 hardware measurements. An HSEM or heartbeat timeout must choose an explicit retry, one-core restart, whole-device reset, or safe-output action; “keep waiting” is not a default recovery policy.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-h745-contracts.png" width="760" alt="Handraw: the five H745 inter-core contracts (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the five layers — shared memory, ownership and visibility, HSEM sync, message protocol, boot and recovery — and what each freezes or injects; proves the layers are accepted separately and that HSEM only gives atomic ownership plus an interrupt notification, carrying no payload and managing no M7 cache; cannot replace an H745 measurement, and these are not H745 hardware results. See [RM0399](#source-rm0399), [frozen stm32h745xx.h](#source-stm32h745-header).</sub>
+</p>
 
 ## RT-Thread v5.3.0: kernel, device framework, and components
 
@@ -619,6 +629,11 @@ Freeze the control, network, and logging tasks one at a time. The health supervi
 
 Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Implement only GPIO interrupt → fixed-size event → worker thread → UART result. Hold input frequency and log schema constant. Compare object semantics, configuration, stack budget, and ISR boundaries before touching networking or filesystems.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-experiment-evidence.png" width="760" alt="Handraw: four progressive labs and their evidence (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at each lab's action and its acceptance evidence; proves a progressive lab series hands over falsifiable evidence rather than “it ran”; cannot replace a real deadline or stack-watermark measurement, and it is not measured data. See [FreeRTOS 11.3.2](#source-freertos-1132), [Zephyr 4.4.2](#source-zephyr-442).</sub>
+</p>
+
 ## Selection review checklist
 
 - [ ] The target MCU/board has a maintainable BSP and every critical driver in the frozen version.
@@ -644,6 +659,11 @@ Keep the current FreeRTOS, RT-Thread, or Zephyr system and choose one other. Imp
 8. Why does tickless idle not prove that the whole board reaches its lowest-power state?
 9. Why is an STM32H745-class M7+M4 normally not treated as symmetric SMP?
 10. Under which conditions should the health supervisor refresh the hardware watchdog?
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-review-evidence.png" width="760" alt="Handraw: ten review items folded into four evidence lines (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at ten review items folded into four quadrants — version and maintenance, budget, timing evidence, ownership and recovery; proves the review asks for re-testable evidence, and any item without it fails; cannot choose a system for you, and it is not a scoring sheet. See [FreeRTOS 11.3.2](#source-freertos-1132), [CMSIS-RTOS2 2.3.0](#source-cmsis-640).</sub>
+</p>
 
 ## Related resources
 

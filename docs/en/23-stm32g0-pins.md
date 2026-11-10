@@ -138,15 +138,14 @@ Keep three boundaries attached to this table:
 ### Shared-pin hardware: stable sampling and debug drive must coexist
 
 
+- DS12232 Table 12 note 6: after reset, PA13 has its internal pull-up, PA14 its internal pull-down, and both enter the SWD alternate function. The internal pull-down does not cancel an arbitrary strong external pull-up.
+- When PA14 selects boot, check pull resistors, series resistance, and jumpers against AN5096 and the probe's drive capability. Do not clamp SWCLK with a strong pull-up. If a product does not need a field boot pin, `nBOOT_SEL=1, nBOOT0=1` selects Main Flash without depending on PA14 at boot.
+- The application can still break post-boot SWD by reassigning PA13/PA14 as GPIO, disabling debug, or entering low power. That is a different failure boundary from selecting the wrong boot area; diagnose them separately.
+
 <p align="center">
   <img src="../../assets/animations/sample-23-boot-source-flow.svg" width="720" alt="G0 boot-source decision flow">
   <br><sub>▲ Hand-drawn CSS animation (FA-002). option → BOOT0 → vectors → SWD.</sub>
 </p>
-
-
-- DS12232 Table 12 note 6: after reset, PA13 has its internal pull-up, PA14 its internal pull-down, and both enter the SWD alternate function. The internal pull-down does not cancel an arbitrary strong external pull-up.
-- When PA14 selects boot, check pull resistors, series resistance, and jumpers against AN5096 and the probe's drive capability. Do not clamp SWCLK with a strong pull-up. If a product does not need a field boot pin, `nBOOT_SEL=1, nBOOT0=1` selects Main Flash without depending on PA14 at boot.
-- The application can still break post-boot SWD by reassigning PA13/PA14 as GPIO, disabling debug, or entering low power. That is a different failure boundary from selecting the wrong boot area; diagnose them separately.
 
 ### SWD loss: controlled connection and protection branches
 
@@ -158,6 +157,11 @@ Keep three boundaries attached to this table:
    - RDP Level 1: `BOOT_LOCK=1` cannot simply be cleared in place. RM0444 permits clearing only when already at Level 0, or after **Level 1 → Level 0 with a full mass-erase**. The erase destroys user contents and requires explicit authorization, backup, and a maintenance procedure. Confirm that a path to request it actually exists; never present it as a default recovery button.
    - RDP Level 2: irreversible; no RDP-downgrade recovery path exists. With `BOOT_LOCK=1 + RDP Level 1` and no application-set `DBG_SWEN`, do not claim that Under Reset, a bootloader, or mass-erase is necessarily reachable.
 5. **Read back after reset only if the operation actually succeeded:** perform the tool's option-byte launch or specified reset flow, read the option bytes again, then verify Main Flash startup and SWD hot attach. A successful write response does not prove the new values were active for the current boot. A failed write or connection remains a failed outcome, not a “recovered” result.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch23-swd-triage.png" width="760" alt="Handraw: SWD-loss triage — preserve the scene, controlled connect, RDP branches (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the left column (① preserve the scene, ② Under Reset controlled connect, ③ read before writing, ④ verify by reading back), the three RDP Level 0/1/2 branches on the right, and the dashed failure-path band at the bottom; proves reachability differs by protection state — Level 1 needs L1→L0 with a full mass-erase, Level 2 is irreversible, and a successful write does not prove the new values are active for this boot; cannot prove that a particular part will connect, and clearing rules defer to RM0444 itself; it is not measured. See [RM0444](#source-rm0444), [DS12232](#source-ds12232).</sub>
+</p>
 
 > **RDP and complement boundary:** never lower RDP blindly to “unlock” a board. Level 2 is irreversible, and Level 1 → Level 0 triggers a mass erase. `BOOT_LOCK` can always be set, but clearing it is restricted by the RDP conditions above. **An option-byte/complement mismatch forces `BOOT_LOCK=1`, and an RDP mismatch defaults to Level 1**. Readback must therefore check values and complements, not just one field. Preserve the scene and required data first; mass erase is not a default repair button.
 
@@ -197,12 +201,6 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
   <br><sub>▲ Drawn for this book. Same peripheral name ≠ same pin; trust the DS table.</sub>
 </p>
 
-<p align="center">
-  <img src="../../assets/illustrations/handraw/ch23-pinmux.png" width="760" alt="Handraw: G071RB AF quick map (原理示意)">
-  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PA14=BOOT0+SWCLK; USART/I2C/SPI homes; remap PA9/PA10 only after SYSCFG_CFGR1; not a photo.</sub>
-</p>
-
-
 | What you see | Why | Fix |
 | --- | --- | --- |
 | The part boots into system memory and SWD looks wrong | PA14 is both SWCLK and BOOT0 | Read `BOOT_LOCK/nBOOT_SEL/nBOOT0/nBOOT1`; distinguish a boot-source error from an application reassigning debug pins before choosing recovery |
@@ -210,6 +208,11 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
 | A push-pull LED on PC13 is dim and the edges are soft | Note 1's current and speed limits | Move the LED to a normal GPIO |
 | Pulling PA14 high still does not enter the bootloader | `BOOT_LOCK=1`, or `nBOOT_SEL=1` excludes the pin from selection | Read every truth-table input first instead of repeatedly changing the level |
 | The old boot area remains after writing option bytes | The new values have not passed the required reset/load sequence, or only the write return value was checked | Run the specified option-byte launch/reset, then read back after reset and verify startup plus SWD |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch23-pinmux.png" width="760" alt="Handraw: G071RB AF quick map (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PA14=BOOT0+SWCLK; USART/I2C/SPI homes; remap PA9/PA10 only after SYSCFG_CFGR1; not a photo.</sub>
+</p>
 
 ## Hands-on labs
 
@@ -219,6 +222,11 @@ After reset, PA11 / PA12 are PA11 / PA12. Table 12 note 5: SYSCFG_CFGR1 can rema
 4. **Controlled recovery:** On a recoverable board, connect under reset and record settings, readback, Main Flash boot after reset, and hot attach. Any mass erase requires a separate backup and decision.
 
 Before leaving this chapter, keep a package reconciliation, PA9 AF source, complete boot-input snapshot, and one SWD recovery record that did not depend on erase.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch23-lab-evidence.png" width="760" alt="Handraw: four actions, four artefacts to take away (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the four actions — package reconciliation, alternate-function evidence, read-only boot audit, controlled recovery — and the artefact each leaves; proves the deliverable is four concrete artefacts, not “I did the lab”; cannot replace the DS12232 tables, and these are not measured package checks. See [DS12232](#source-ds12232), [project examples](#source-project-examples).</sub>
+</p>
 
 Self-test:
 

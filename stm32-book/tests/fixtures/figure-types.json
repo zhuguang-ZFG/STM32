@@ -1,2404 +1,2584 @@
 {
- "animations/toolchain-flow.svg": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 动画：编译 → 链接 → 烧录 → 运行 的完整数据流（作者自绘矢量图）"
- },
- "animations/sample-00-boot-fetch-flow.svg": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 自绘矢量动画（FA-002）。BOOT0→别名→向量→运行。"
- },
- "diagrams/sample-00-boot-state.svg": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 自绘。STM32F103C8T6。上半部分是正常情况：经 SWDIO（PA13）和 SWCLK（PA14）把程序写入 0x08000000，BOOT0=0 时 0x00000000 别名到这块闪存。下半部分是 BOOT1=0 且 BOO"
- },
- "illustrations/handraw/ch00-boot0-fetch.png": {
-  "type": "comparison",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照 BOOT0 如何改写 0x00000000 别名目标；不是烧录日志，也不是板级实拍。"
- },
- "diagrams/sample-00-boot-triage.svg": {
-  "type": "triage",
-  "chapter": "00",
-  "caption": "▲ 自绘。三环排查，顺序从上到下。第一环量 MCU 端 VDD 与 VSS 之间的 3.3 V，只保留 Micro-USB 一个主供电；第二环确认第 44 脚 BOOT0 = 0，此时 0x00000000 别名到 0x08000000；第"
- },
- "illustrations/handraw/ch00-boot-triage-rings.png": {
-  "type": "triage",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三环顺序：供电、BOOT0、再 SWD；第一环不过不要改代码。不是万用表读数实拍。"
- },
- "diagrams/sample-00-three-ways.svg": {
-  "type": "comparison",
-  "chapter": "00",
-  "caption": "▲ 自绘。第一周只选一条车道；混用三个 API 会烧掉整周。"
- },
- "illustrations/handraw/ch00-three-api-lanes.png": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同一外设三种抽象高度；本书入门推荐 HAL。不是 IDE 截图。"
- },
- "diagrams/sample-00-roadmap-gates.svg": {
-  "type": "concept",
-  "chapter": "00",
-  "caption": "▲ 自绘。每阶段有可测门槛；别跳过 UART 验收去追 RTOS。"
- },
- "illustrations/handraw/ch00-roadmap-three-stages.png": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每级可测量，过关再往下；不是进度条实拍。"
- },
- "diagrams/sample-00-accept-gate.svg": {
-  "type": "calculation",
-  "chapter": "00",
-  "caption": "▲ 自绘。三道门槛各占一格，各画各的证据：门 1 是 0 Error 日志、产物来自 STM32F103C8Tx_FLASH.ld、烧到 0x08000000；门 2 是 PC13 的 1 Hz 方波，500 ms 高加 50"
- },
- "illustrations/handraw/ch00-accept-three-gates.png": {
-  "type": "technical",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三道验收门槛；只看编译过不等于通过。不是构建日志截图。"
- },
- "diagrams/sample-00-learn-loop.svg": {
-  "type": "triage",
-  "chapter": "00",
-  "caption": "▲ 自绘。闭环四步一轮：读 RM0008 第 9 章里你需要的那一个寄存器 → 写最小代码（APB2ENR 置 IOPCEN、CRH[23:20] 写 0x2、ODR 翻转 ODR13）→ 烧到 0x08000000 并在 BOOT0 = "
- },
- "illustrations/handraw/ch00-learn-loop-four-steps.png": {
-  "type": "concept",
-  "chapter": "00",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。四步闭环；跳手册抄代码会停在不能解释。不是课堂照片。"
- },
- "diagrams/first-lab-wiring.svg": {
-  "type": "calculation",
-  "chapter": "00",
-  "caption": "▲ 首次接线：只保留一个主供电路径，先检查 BOOT0=0 和共地，再量 MCU 端 3.3V。USB-TTL 留到 UART 章节。本图是接线边界示意，不是开发板实拍，也不替代目标克隆板的原理图（FA-029 · IG-002 · C-0"
- },
- "diagrams/first-success-gates.svg": {
-  "type": "concept",
-  "chapter": "00",
-  "caption": "▲ 验收阶梯：先确认 ELF/AXF，再确认 0x08000000 烧录校验、BOOT0=0 后进入 main，最后量 PC13 的 1 s 周期。灯亮只能证明某一时刻有电平，不能单独证明构建产物、复位路径和频率都正确（FA-002 · I"
+ "animations/adc-sar.svg": {
+  "caption": "▲ 动画：ADC 采样保持 + 逐次逼近（SAR）比较过程（作者自绘矢量动画，非实拍）",
+  "chapter": "09",
+  "type": "technical"
  },
  "animations/boot-sequence.svg": {
-  "type": "technical",
+  "caption": "▲ 动画：上电复位后 CPU 取向量表、启动流程（作者自绘矢量图）",
   "chapter": "01",
-  "caption": "▲ 动画：上电复位后 CPU 取向量表、启动流程（作者自绘矢量图）"
- },
- "diagrams/sample-01-swd-vectors.svg": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48。第 34 脚 PA13 = SWDIO，第 37 脚 PA14 = SWCLK。第 35 脚是 VSS_2，第 36 脚是 VDD_2。第 44 脚 BOOT0 = 0 时，0x00000"
- },
- "illustrations/handraw/ch01-swd-vectors.png": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWDIO/SWCLK/GND 与复位后 SP/Reset 落在合法区间；不是连线照片，也不是烧录日志。"
- },
- "gif/swd-fetch.gif": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 动图版，只演示正常的一次：SWD 写完闪存，CPU 读出 MSP 和 Reset_Handler，并标出第 34 脚和第 37 脚。印刷版只有上面的静态图。"
- },
- "animations/sample-01-flash-swd-flow.svg": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 自绘矢量动画（FA-002）。烧录→复位→MSP/Reset。"
- },
- "diagrams/sample-01-env-compare.svg": {
-  "type": "comparison",
-  "chapter": "01",
-  "caption": "▲ 自绘。IDE 只是调用者；契约是同一 ELF 与烧录脚本。"
- },
- "illustrations/handraw/ch01-four-envs-one-elf.png": {
-  "type": "comparison",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CubeIDE / Keil / IAR / VS Code+OpenOCD 四条工具链汇到同一 ELF/HEX；不是 IDE 截图。"
- },
- "diagrams/single-build-contract.svg": {
-  "type": "concept",
-  "chapter": "01",
-  "caption": "▲ 一个工程只保留一套构建事实：源文件、宏、头文件路径、工具链和链接脚本都由同一入口定义。IDE 负责调用；ELF、map 和 bin 分别承担调试下载、内存核对和裸二进制交付（FA-002 · IG-012 · C-03/C-10/C-2"
- },
- "diagrams/sample-01-flash-path.svg": {
-  "type": "calculation",
-  "chapter": "01",
-  "caption": "▲ 自绘。看哪里：上半是 SWD 路径——主机工具 → ST-Link → PA13/PA14 → Flash；下半是 BOOT0=1 复位后的 ROM bootloader 两条传输（USART1 与 USB DFU）。证明什么：三条路径"
- },
- "illustrations/handraw/ch01-three-flash-paths.png": {
-  "type": "concept",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWD 调试器、UART/USB 系统 Bootloader、用户自定义 Bootloader 三条进 Flash 的路径；不是烧录界面截图。"
- },
- "diagrams/project-structure.svg": {
-  "type": "calculation",
-  "chapter": "01",
-  "caption": "▲ 工程边界：`.ioc`、源码、启动文件与链接脚本共同决定 ELF；`.map` 用来核对段和符号，`.bin` 用于裸二进制交付。图中的目录名是常见组织方式，不是 CubeMX、Keil 或 CMake 的强制结构（FA-002 · I"
- },
- "diagrams/sample-01-rdp-unlock.svg": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 自绘。退出 RDP1 必整片擦除；先别怀疑 SWD 线。"
- },
- "illustrations/handraw/ch01-rdp-unlock.png": {
-  "type": "technical",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Option Bytes 里 RDP 从 Level 1/2 降回 Level 0 会整片擦除主 Flash；不是 Programmer 实拍。"
- },
- "diagrams/sample-01-flash-triage.svg": {
-  "type": "triage",
-  "chapter": "01",
-  "caption": "▲ 自绘。看哪里：三个岔口各有一列症状、检查点与修法——岔口一核对 64 KB 中容量算法与 RDP 选项字节；岔口二先量 3V3 再降 `adapter speed`；岔口三看 BOOT0 是否还挂在 1、bin 头八字节与 0x0800"
- },
- "illustrations/handraw/ch01-flash-triage.png": {
-  "type": "triage",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。供电 → SWD 线序 → 复位/BOOT0 → Option Bytes/RDP → 接口选型；不是故障实拍。"
- },
- "diagrams/sample-01-debug-connect.svg": {
-  "type": "triage",
-  "chapter": "01",
-  "caption": "▲ 自绘。三环按顺序查，每环一个检查点。第一环是第 34 脚 PA13 和第 37 脚 PA14 被复用成普通 GPIO：`.ioc` 里 SYS → Debug 必须是 `Serial Wire`，生成的 GPIO 初始化不该把这两只脚列"
- },
- "illustrations/handraw/ch01-debug-connect-rings.png": {
-  "type": "triage",
-  "chapter": "01",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。物理层 SWD → 调试适配器 → 主机驱动/OpenOCD → IDE 会话；不是连线照片。"
- },
- "diagrams/sample-01-build-accept.svg": {
-  "type": "calculation",
-  "chapter": "01",
-  "caption": "▲ 自绘。上半部分：一次链接写出 `.elf`，同一条命令用 `-Wl,-Map=` 写出 `.map`，`objcopy -O binary` 再从这个 ELF 吐出 `.bin`。ELF 带符号和调试信息，所以断点能停在源码行；`.bi"
- },
- "animations/clock-tree.svg": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 动画：HSE 8MHz → PLL ×9 → 72MHz 的时钟树倍频过程（作者自绘矢量图）"
- },
- "animations/sample-02-pll-lock-flow.svg": {
-  "type": "triage",
-  "chapter": "02",
-  "caption": "▲ 自绘矢量动画（FA-002）。上锁步骤推进；失败回落见 clock-css GIF / HSE-fail 静图。"
- },
- "diagrams/sample-02-clock-tree.svg": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 自绘。把树画出来：HSE 8 MHz（PD0/PD1）→ PLL ×9 → SYSCLK/HCLK 72，APB1 ÷2 到 PCLK1 36（TIM ×2 回 72）、APB2 到 PCLK2 72；右侧三路 ADC ÷6 = 12、USBPRE=0 ÷1.5 = 48、MCO PLL/2 = 36；Flash LATENCY = 2 挂在 HCLK 上；红色失败路径是 HSE 停振回 HSI 8 MHz。"
- },
- "illustrations/handraw/ch02-clock-tree.png": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSE 8 MHz 经 PLL×9 到 SYSCLK 72 MHz，再分到 PCLK1/PCLK2/ADC/USB；不是示波器实拍。"
- },
- "gif/clock-css.gif": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 动图版，只演示 HSE 停振后 CSS 把系统时钟切回 HSI 的过程。印刷版只有上面的静态图。"
- },
- "diagrams/sample-02-bus-matrix.svg": {
-  "type": "concept",
-  "chapter": "02",
-  "caption": "▲ 自绘。总线挂载图：算波特率/定时器前先问外设在哪条总线。"
- },
- "illustrations/handraw/ch02-bus-matrix.png": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。算波特率/定时器前先问外设在哪条总线、PCLK 是多少；不是芯片显微照片。"
- },
- "animations/memory-map.svg": {
-  "type": "concept",
-  "chapter": "02",
-  "caption": "▲ 动画：Cortex-M 存储器映射（Flash/SRAM/外设/系统区）（作者自绘矢量图）"
- },
- "diagrams/sample-02-boot-mode.svg": {
-  "type": "comparison",
-  "chapter": "02",
-  "caption": "▲ 自绘。上半是 BOOT1=0、BOOT0=0：0x00000000 别名到 0x08000000 的 64 KB 闪存，第 0 字是 MSP，第 1 字是 Reset_Handler。中间是 BOOT1=1、BOOT0=1：同一地址别名"
- },
- "illustrations/handraw/ch02-boot-alias.png": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT1/BOOT0 三态把 0x00000000 别名到 Flash / 系统存储器 / SRAM；不是板级实拍。"
- },
- "diagrams/sample-02-pll-lock.svg": {
-  "type": "calculation",
-  "chapter": "02",
-  "caption": "▲ 自绘。PLL 上锁台账：HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2。知识轨，非示波器实拍。"
- },
- "illustrations/handraw/ch02-pll-lock-steps.png": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2；升频前先加等待周期；不是寄存器截图。"
- },
- "diagrams/peripheral-bus.svg": {
-  "type": "concept",
-  "chapter": "02",
-  "caption": "▲ 图示：AHB/APB1/APB2 上分别挂载哪些外设（作者自绘矢量图）"
- },
- "diagrams/sample-02-hse-fail.svg": {
-  "type": "calculation",
-  "chapter": "02",
-  "caption": "▲ 自绘。上半是 72 MHz 的账：USART1 的 115200 由 72 MHz 除出 39.0625，BRR 写 0x271，SysTick 重装 72000 是 1.000 ms；RCC_CR 的 HSERDY 与 PLLRDY "
- },
- "illustrations/handraw/ch02-hse-fail-fallback.png": {
-  "type": "technical",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CSS 把 SYSCLK 从 72 MHz 切回 HSI 8 MHz 后，仍按 72 MHz 算的波特率/SysTick 会错；不是示波器实拍。"
- },
- "diagrams/sample-02-flash-latency.svg": {
-  "type": "calculation",
-  "chapter": "02",
-  "caption": "▲ 自绘。等待周期频段：升频先加 LATENCY，降频后减。知识轨。"
- },
- "illustrations/handraw/ch02-flash-latency.png": {
-  "type": "calculation",
-  "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0–24/24–48/48–72 MHz 对应 LATENCY 0/1/2；升频先加、降频后减；不是手册扫描件。"
- },
- "animations/gpio-blink.svg": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 动画：GPIO 推挽输出点亮 LED（电平、电流、波形同步，作者自绘矢量图）"
- },
- "illustrations/ch03-handdraw.svg": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。说明写值与共阳电流方向，不是万用表读数，也不是实拍。文件 "
- },
- "illustrations/handraw/ch03-common-anode-before-after.png": {
-  "type": "comparison",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。左右对照写 0 与写 1 时共阳电流通断；不是万用表读数，也不是板级实拍。"
- },
- "animations/sample-03-gpio-bsrr-flow.svg": {
-  "type": "concept",
-  "chapter": "03",
-  "caption": "▲ 自绘矢量动画（FA-002）。模式→类型→BSRR→引脚；极性跟原理图。"
- },
- "diagrams/sample-03-gpio-led.svg": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48：PA0 是第 10 脚，PC13 是第 2 脚。上半部分是正确接法：3.3 V 经推挽和 270 Ω 到 LED；260 Ω 是 (3.3 − 2.0) / 0.005 的商。下半部分是把"
- },
- "illustrations/handraw/ch03-pa0-ok-pc13-wrong.png": {
-  "type": "comparison",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照 PA0 正确外接灯与把同一电流搬到 PC13 的错误；不是实拍接线图。"
- },
- "illustrations/handraw/ch03-gpio-three-questions.png": {
-  "type": "technical",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。配置前先答清驱动者、空闲电平与脚归属；不是寄存器截图。"
- },
- "illustrations/handraw/ch03-push-pull-vs-open-drain.png": {
-  "type": "comparison",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。推挽主动拉高/拉低，开漏只拉低、高靠外拉；不是示波器波形。"
- },
- "diagrams/sample-03-current-path.svg": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 自绘估算（EST）。2.2k≈0.59 mA；330≈3.9 mA。不是实验室读数。"
- },
- "illustrations/handraw/ch03-led-current-limit.png": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。用估算压降与目标电流选电阻；不是实测电流读数。"
- },
- "diagrams/sample-03-moder-map.svg": {
-  "type": "concept",
-  "chapter": "03",
-  "caption": "▲ 自绘。四寄存器配置 + BSRR 原子写；禁止 ODR 读改写。"
- },
- "photos/bluepill-stm32f103c8t6.jpg": {
-  "type": "truth-track",
-  "chapter": "03",
-  "caption": ""
- },
- "photos/bluepill-stm32f103c8t6-popolon.jpg": {
-  "type": "truth-track",
-  "chapter": "03",
-  "caption": ""
- },
- "photos/bluepill-stm32f103c8t6-tardate-usb.jpg": {
-  "type": "truth-track",
-  "chapter": "03",
-  "caption": ""
- },
- "diagrams/stack-gpio-pc13-led.png": {
-  "type": "calculation",
-  "chapter": "03",
-  "caption": "▲ 知识轨（原理示意/非实拍）。上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。"
- },
- "boards/pinout-bluepill.svg": {
-  "type": "concept",
-  "chapter": "23",
-  "caption": "▲ 迁移对照只比较边界：电源脚、BOOT、SWD 和目标外设。F1 的引脚号、启动规则和寄存器不能直接套到 G0；具体结论仍以 G071 的 DS/RM 为准。"
- },
- "gif/led-blink.gif": {
-  "type": "technical",
-  "chapter": "03",
-  "caption": "▲ 实验预期：PC13 低有效，每 500ms 翻转一次得到 1s 周期。动画只能说明逻辑关系；验收仍要读 ODR/IDR 或测量引脚周期。"
- },
- "diagrams/sample-03-exti-vs-poll.svg": {
-  "type": "comparison",
-  "chapter": "03",
-  "caption": "▲ 自绘对照。GPIO 章先点灯；事件输入在 NVIC/EXTI 章继续。"
- },
- "illustrations/handraw/ch03-poll-vs-exti.png": {
-  "type": "comparison",
-  "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照主循环轮询占用与边沿中断路径；不是示波器实拍，也不是真证照片。"
- },
- "animations/nvic-interrupt-flow.svg": {
-  "type": "technical",
-  "chapter": "04",
-  "caption": "▲ 动画：中断响应全流程（入栈现场 → 取向量 → ISR → 出栈，作者自绘矢量图）"
- },
- "animations/sample-04-nvic-preempt-flow.svg": {
-  "type": "technical",
-  "chapter": "04",
-  "caption": "▲ 自绘矢量动画（FA-002）。TIM2→EXTI0→入栈→ISR→返回。"
- },
- "diagrams/sample-04-exception-stack.svg": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。上半部分：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xP"
- },
- "illustrations/handraw/ch04-exception-stack.png": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。抢占 1 的 EXTI0 打断抢占 2 的 TIM2，现场八寄存器入栈；不是示波器实拍。"
- },
- "gif/nvic-preempt.gif": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 动图版，只演示 EXTI0 成功抢占 TIM2 的过程。印刷版只有上面的静态图。"
- },
- "diagrams/sample-04-priority-group.svg": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 自绘。AIRCR PRIGROUP 切分 4 个优先级位；同抢占互不打断。"
- },
- "illustrations/handraw/ch04-priority-group.png": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIGROUP 切分抢占/子优先级；同抢占互不打断；不是寄存器截图。"
- },
- "diagrams/interrupt-priority.svg": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 图示：抢占优先级 vs 子优先级的仲裁示意（作者自绘矢量图）"
- },
- "illustrations/handraw/ch04-preempt-vs-sub.png": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。更小抢占数优先级更高能打断；同抢占只靠子优先级排队；不是调试器实拍。"
- },
- "animations/gpio-input-interrupt.svg": {
-  "type": "comparison",
-  "chapter": "04",
-  "caption": "▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）"
- },
- "diagrams/sample-04-exti-line-map.svg": {
-  "type": "concept",
-  "chapter": "04",
-  "caption": "▲ 自绘。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ。"
- },
- "illustrations/handraw/ch04-exti-line-map.png": {
-  "type": "technical",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ；不是芯片显微照片。"
- },
- "diagrams/sample-04-exti-triage.svg": {
-  "type": "triage",
-  "chapter": "04",
-  "caption": "▲ 自绘。STM32F103C8T6，按键在 PA0，EXTI0_IRQn = 6。看哪里：按 PA0 边沿到 ISR 的顺序读四个寄存器——RCC_APB2ENR 的 bit 2（IOPAEN）、AFIO_EXTICR1 的 [3:0]（"
- },
- "illustrations/handraw/ch04-exti-triage.png": {
-  "type": "triage",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。IOPAEN → EXTICR → IMR → NVIC_ISER 四环都通才进 ISR；PR 置位不等于进中断；不是板级实拍。"
- },
- "diagrams/sample-04-tail-chaining.svg": {
-  "type": "technical",
-  "chapter": "04",
-  "caption": "▲ 自绘。入栈约 12 周期；尾链约 6。别空谈“6 周期 ISR”。"
- },
- "illustrations/handraw/ch04-tail-chaining.png": {
-  "type": "calculation",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。入栈约 12 周期，尾链约 6；别把硬件尾链开销当成整个 ISR 时长；不是示波器实拍。"
- },
- "animations/timer-pwm.svg": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 动画：定时器计数、比较匹配与 PWM 占空比（呼吸灯，作者自绘矢量图）"
- },
- "animations/sample-05-pwm-edge-flow.svg": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 自绘矢量动画（FA-002）。1 kHz、50% 高电平 500 µs。"
- },
- "diagrams/sample-05-pwm-1khz.svg": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 16 脚 PA6 = TIM3_CH1。计数时钟 72 MHz，PSC = 71，ARR = 999，CCR = 500。上半部分是正确的波形：周期 1 ms，高电平 500 µs，频"
- },
- "illustrations/handraw/ch05-pwm-1khz.png": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上半 72 MHz→1000 Hz；下半误用 36 MHz→500 Hz；不是示波器实拍。"
- },
- "gif/pwm-1khz.gif": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 动图版，只演示 1000 Hz、高电平 500 µs 的正确波形。印刷版只有上面的静态图。"
- },
- "diagrams/sample-05-timebase-math.svg": {
-  "type": "calculation",
-  "chapter": "05",
-  "caption": "▲ 自绘。PSC=71 ARR=999 CCR=500 与章内宏一致。"
- },
- "illustrations/handraw/ch05-timebase-math.png": {
-  "type": "calculation",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz→(PSC+1)→(ARR+1)→1 kHz；CCR/1000=50%；不是实拍。"
- },
- "diagrams/sample-05-shadow-regs.svg": {
-  "type": "concept",
-  "chapter": "05",
-  "caption": "▲ 自绘。ARPE/OCxPE：写预装载，UE 才锁进影子。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch05-shadow-regs.png": {
-  "type": "concept",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。写预装载，UE 才锁进影子；无预装载易出短脉冲；不是实拍。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "animations/timer-modes.svg": {
-  "type": "calculation",
-  "chapter": "05",
-  "caption": "▲ 计数状态：CNT、ARR 和 CCR 的关系决定更新事件与比较输出。动画首帧在 PDF 中仍可读；它说明顺序和边界，不是示波器实测波形（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。"
- },
- "diagrams/sample-05-pwm-debug.svg": {
-  "type": "triage",
-  "chapter": "05",
-  "caption": "▲ 自绘。判据画在上一排：1 kHz 通过、500 Hz 差整数倍只查环①、全无查环②③；下面信号链 PSC/ARR → CCER → CRL 画到 PA6，REMAP ≠ 00 波形跑到 PB4/PC6。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，72e6 / (72 × 1000) = 1000 Hz；按 36 MHz 除得到 500 Hz。环 ②"
- },
- "illustrations/handraw/ch05-pwm-debug.png": {
-  "type": "triage",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。①分频比 ②CC1E/OC1M ③GPIO 复用；后环修不了前环；不是实拍。"
- },
- "gif/pwm-breath.gif": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 呼吸灯只展示 CCR 随时间变化的结果。频率是否仍为 1kHz、三档占空比是否正确，要以实验一和实验二保存的波形为准。"
- },
- "diagrams/sample-05-deadtime.svg": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 自绘。BDTR DTG + MOE；半桥实验才需要。"
- },
- "illustrations/handraw/ch05-deadtime.png": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CHx/CHxN 双沿死区；无 DT 有直通风险；半桥实验才需要；不是实拍。"
- },
- "animations/uart-frame.svg": {
-  "type": "concept",
-  "chapter": "06",
-  "caption": "▲ 动画：UART 帧结构逐位时序（起始位/数据位/校验/停止位，作者自绘矢量图）"
- },
- "animations/sample-06-uart-baud-wire.svg": {
-  "type": "calculation",
-  "chapter": "06",
-  "caption": "▲ 自绘矢量动画（FA-002）。公式台账 + 交叉流动 + 位高亮。"
- },
- "diagrams/sample-06-uart-frame.svg": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 30 脚 PA9 = USART1_TX，第 31 脚 PA10 = USART1_RX。帧是 0xA5，LSB 先发。一位约 8.68 µs，10 位约 86.8 µs。BRR `0"
- },
- "illustrations/handraw/ch06-uart-frame.png": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Idle/Start/8 数据 LSB/Stop；115200 一位约 8.68 µs；不是示波器实拍。"
- },
- "gif/uart-idle.gif": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 动图版，只演示一帧结束后线保持高电平、满 86.8 µs 后出现 IDLE。印刷版只有上面的静态图。"
- },
- "diagrams/sample-06-frame-annotated.svg": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 自绘。LSB first；115200 位宽≈8.68 µs。知识轨线语法。"
- },
- "gif/uart-bits.gif": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 动画：UART 逐位发送（含波特率时间轴，程序生成 GIF）"
- },
- "diagrams/sample-06-baud-formula.svg": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 自绘。同一波特率字符串，PCLK 不同则 BRR 不同。"
- },
- "illustrations/handraw/ch06-baud-formula.png": {
-  "type": "comparison",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USART1 72 MHz vs USART2 36 MHz；抄 BRR 会差约 2 倍；不是实拍。"
- },
- "diagrams/sample-06-baud-triage.svg": {
-  "type": "triage",
-  "chapter": "06",
-  "caption": "▲ 自绘。岔口一：`USARTDIV = fPCLK / (16 × baud)`，USART1 在 PCLK2 72 MHz、115200 下是 39.0625，BRR `0x271`，误差 0；若 HSE 启动失败回落 HSI 8 MH"
- },
- "illustrations/handraw/ch06-baud-triage.png": {
-  "type": "triage",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。乱码查 fCK/BRR；无输出查交叉与时钟门；丢字节先读 SR 再读 DR；不是实拍。"
- },
- "diagrams/sample-06-tx-rx-crossover.svg": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 自绘接线规则。TX-TX 会永远沉默；5V TTL 进 3V3 有风险。"
- },
- "illustrations/handraw/ch06-tx-rx-crossover.png": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。MCU TX→适配器 RX；共地；禁 5 V 灌 3.3 V 脚；不是实拍。"
- },
- "diagrams/sample-06-idle-dma.svg": {
-  "type": "comparison",
-  "chapter": "06",
-  "caption": "▲ 自绘。`DMAR = CR3 bit 6` 让每次 RXNE 都触发 DMA 请求，DMA1 通道 5（USART1_RX 的固定映射）把字节搬进 256 项环形缓冲（CIRC=1，CNDTR 从 256 递减、归零回卷）；线上保持高满"
- },
- "illustrations/handraw/ch06-idle-dma.png": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。DMA 搬字节，IDLE 划帧界，CNDTR 差值=帧长；不是实拍。"
- },
- "animations/i2c-transaction.svg": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 动画：I2C 完整事务（START、地址、ACK、数据、STOP，作者自绘矢量图）"
- },
- "animations/sample-07-i2c-ack-flow.svg": {
-  "type": "triage",
-  "chapter": "07",
-  "caption": "▲ 自绘矢量动画（FA-002）。0x78 → 第 9 拍 ACK；NACK 见排查卡。"
- },
- "diagrams/sample-07-i2c-addr.svg": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 自绘。STM32F103C8T6。第 42 脚 PB6 = SCL，第 43 脚 PB7 = SDA，两只 4.7 kΩ 接到 3.3 V。PCLK1 = 36 MHz，I2C_CCR = 0x801E，目标 400 kHz，偏差 ±2"
- },
- "illustrations/handraw/ch07-i2c-addr.png": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HAL 写地址 0x78 有 ACK；填 0x3C 则线上无 ACK；不是实拍。"
- },
- "gif/i2c-addr.gif": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 动图版，只演示正确的写地址：START，线上移出 0x78，第 9 个时钟 ACK，并标出 0x801E 和 4.7 kΩ。印刷版只有上面的静态图。"
- },
- "diagrams/sample-07-pullup-cap.svg": {
-  "type": "concept",
-  "chapter": "07",
-  "caption": "▲ 自绘。4.7 k 是起点；长线/多从机要加测量。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch07-pullup-cap.png": {
-  "type": "concept",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。电容越大上拉宜更强；4.7 kΩ 只是起点；不是实拍。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "diagrams/sample-07-start-ack.svg": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 自绘。HAL 0x3C"
- },
- "illustrations/handraw/ch07-start-ack.png": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SDA↓且 SCL=1 为 START；第 9 时钟从机拉低=ACK；不是实拍。"
- },
- "gif/i2c-timing.gif": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 动画：I2C 时序细节（程序生成 GIF）"
- },
- "diagrams/sample-07-sr-restart.svg": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 自绘。MPU6050/EEPROM 典型：写指针 → Sr → 读。"
- },
- "illustrations/handraw/ch07-sr-restart.png": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。写寄存器指针后 Sr 再读；中间不要 STOP；不是实拍。"
- },
- "diagrams/sample-07-i2c-triage.svg": {
-  "type": "triage",
-  "chapter": "07",
-  "caption": "▲ 自绘。三岔口各带证据：SDA 卡低配 9 个 SCL 脉冲与第 9 拍释放的波形；NACK 岔口画 A6..A0 + R/W 的字节格（0x3C 左移成 0x78）；时钟拉伸岔口画主机松手后期望与从机按住的对比虚线。"
- },
- "illustrations/handraw/ch07-i2c-triage.png": {
-  "type": "triage",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SDA 卡低补 SCL；NACK 查 7/8 位地址；SCL 卡低是拉伸；不是实拍。"
- },
- "animations/spi-transfer.svg": {
-  "type": "concept",
-  "chapter": "08",
-  "caption": "▲ 动画：SPI 全双工移位与 CPOL/CPHA 四种模式时序（作者自绘矢量图）"
- },
- "animations/sample-08-spi-jedec-flow.svg": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 自绘矢量动画（FA-002）。CS↓ 0x9F → EF 40 17 @ 9 MHz。"
- },
- "diagrams/sample-08-spi-jedec.svg": {
-  "type": "concept",
-  "chapter": "08",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48。第 14 脚 PA4 = CS（推挽，事务期间为低），第 15 脚 PA5 = SCK，第 16 脚 PA6 = MISO，第 17 脚 PA7 = MOSI。CPOL = 0，CPHA "
- },
- "illustrations/handraw/ch08-spi-jedec.png": {
-  "type": "triage",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0x9F→EF4017；MISO/MOSI 对调则失败；不是示波器实拍。"
- },
- "gif/spi-jedec.gif": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 动图版，只演示正常读 ID 的过程，SCK 为 9 MHz。印刷版只有上面的静态图。"
- },
- "diagrams/sample-08-mode0-edges.svg": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 自绘。CPOL0 CPHA0：第一个上升沿采样；JEDEC Flash 常用。"
- },
- "diagrams/sample-08-cpha-modes.svg": {
-  "type": "concept",
-  "chapter": "08",
-  "caption": "▲ 自绘。列头是 CPOL（0=空闲低、1=空闲高），行头是 CPHA（0=第 1 个边沿采样、1=第 2 个边沿采样），每格画 NSS/SCK/MOSI mini 波形并用圆点标出采样边沿。边沿编号跟着 CPOL 走：NSS 拉低后的第一"
- },
- "illustrations/handraw/ch08-cpha-modes.png": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CPOL 定空闲电平，CPHA 定采样边沿；Mode0 最常用；不是实拍。"
- },
- "diagrams/sample-08-br-table.svg": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 自绘。SPI1@72 MHz，BR=010 → 9 MHz，与 JEDEC GIF 一致。"
- },
- "illustrations/handraw/ch08-br-table.png": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPI1@72 MHz，BR=010→9 MHz 实验档；面包板勿开太快；不是实拍。"
- },
- "diagrams/sample-08-nss-multi.svg": {
-  "type": "concept",
-  "chapter": "08",
-  "caption": "▲ 自绘。共用 SCK/MOSI/MISO；同时拉低两个 CS 会顶总线。"
- },
- "illustrations/handraw/ch08-nss-multi.png": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。共享 SCK/MOSI/MISO，每片独立 CS；不可两片共一片选；不是实拍。"
- },
- "diagrams/sample-08-bus-compare.svg": {
-  "type": "comparison",
-  "chapter": "08",
-  "caption": "▲ 自绘。三总线对照：SPI 四线全双工、每从机一根 CS、主机驱动 SCK；I2C 两线开漏、地址寻址、半双工；UART 点对点异步、双方自有波特率。本图只整理线数/寻址/双工关系，不替代 [RM0008](#source-rm0008-"
- },
- "diagrams/sample-08-spi-triage.svg": {
-  "type": "triage",
-  "chapter": "08",
-  "caption": "▲ 自绘。岔口一：读回全 0xFF 说明没有器件在驱动 MISO（悬空读 1）——查 PA4 是否在整个事务期间保持低（卡高从机进 Hi-Z，卡低把两条命令并成一帧）、PA6（第 16 脚）接线与供电；读回 0x00 则是有东西把线拉低：M"
- },
- "illustrations/handraw/ch08-spi-triage.png": {
-  "type": "triage",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。全 0xFF 查 CS/MISO；无时钟查 SPE/MSTR；高速才错则降分频；不是实拍。"
- },
- "animations/adc-sar.svg": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 动画：ADC 采样保持 + 逐次逼近（SAR）比较过程（作者自绘矢量动画，非实拍）"
- },
- "animations/sample-09-adc-sar-weights.svg": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 自绘矢量动画（FA-002）。权重高亮 MSB→LSB，不是空转弹跳。"
- },
- "diagrams/sample-09-adc-sar.svg": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 10 脚 PA0 = ADC12_IN0，第 9 脚 VDDA 为参考。ADCCLK = 12 MHz。上半部分是一次正常转换：采样开关闭合再断开，比较器从 MSB 开始比较，最长一档"
- },
- "illustrations/handraw/ch09-adc-sar.png": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK 12 MHz；最长 239.5+12.5=21 µs；采样太短则电容仍是上次电压；不是示波器实拍。"
- },
- "gif/adc-sample.gif": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 动图版，只演示一次正常的采样和 MSB 比较。印刷版只有上面的静态图。"
- },
- "diagrams/sample-09-vref-rails.svg": {
-  "type": "calculation",
-  "chapter": "09",
-  "caption": "▲ 自绘。Code/4095×Vref+；绝对伏特先标 EST。"
- },
- "illustrations/handraw/ch09-vref-rails.png": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Code/4095×Vref+；绝对伏特先标 EST；不是实拍。"
- },
- "diagrams/sample-09-sar-ladder.svg": {
-  "type": "concept",
-  "chapter": "09",
-  "caption": "▲ 自绘。MSB→LSB 权重；EOC 后读 DR。动画见 sample-09-adc-sar-weights。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch09-sar-ladder.png": {
-  "type": "concept",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。MSB→LSB 权重；EOC 后读 DR；不是实拍。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "gif/sar-adc.gif": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 动画：SAR ADC 逐次逼近比较过程（程序生成光栅动画，非实拍）"
- },
- "animations/dma-circular.svg": {
-  "type": "calculation",
-  "chapter": "09",
-  "caption": "▲ 多通道结果从同一个 ADC_DR 依次进入数组，HT/TC 只说明哪一半可处理。图不能证明通道顺序、数据宽度或采样时间正确，这三项仍要和 SQR、DMA 配置及波形对账（FA-002 · IG-012 · C-03/C-10/C-27/"
- },
- "diagrams/sample-09-sample-time.svg": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 自绘。ADCCLK≤14 MHz；软源拉长 SMP。"
- },
- "illustrations/handraw/ch09-sample-time.png": {
-  "type": "technical",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK≤14 MHz；软源拉长 SMP；不是实拍。"
- },
- "diagrams/sample-09-adc-triage.svg": {
-  "type": "triage",
-  "chapter": "09",
-  "caption": "▲ 自绘。岔口一：末位抖动不是随机噪声，是采样电容没充满——`t_s ≈ (R_AIN + 1 kΩ) × 8 pF × ln(2^14) ≈ (R_AIN + 1 kΩ) × 78 ns`，100 kΩ 源阻抗需要约 7.8 µs，而 1"
- },
- "illustrations/handraw/ch09-adc-triage.png": {
-  "type": "triage",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：采样未充满 / VDDA 钳位 / 上电未校准；不是实拍。"
- },
- "animations/sample-10-dma-circular-ht.svg": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 自绘矢量动画（FA-002）。A/B 半区交替可读；请求线流动。"
- },
- "diagrams/sample-10-dma-cndtr.svg": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。图下半部分是把同一个读数当成字节时切错的"
- },
- "illustrations/handraw/ch10-dma-cndtr.png": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。8 个半字缓冲；CNDTR=3 时已写 5 采样/10 字节；HT=4 采样/8 字节；按字节切开位置会错；不是实拍。"
- },
- "gif/dma-cndtr.gif": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 动图版，演示 CNDTR 从 8 减到 3，标出已写 5 个采样、10 字节。印刷版只有上面的静态图。"
- },
- "diagrams/sample-10-mem2mem-vs-peri.svg": {
-  "type": "comparison",
-  "chapter": "10",
-  "caption": "▲ 自绘决策表。流式外设用 peri；块拷贝用 mem2mem。"
- },
- "illustrations/handraw/ch10-mem2mem-vs-peri.png": {
-  "type": "comparison",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。流式外设用 peri；块拷贝用 mem2mem；不是实拍。"
- },
- "diagrams/sample-10-dma-triage.svg": {
-  "type": "triage",
-  "chapter": "10",
-  "caption": "▲ 自绘。以 DMA1 通道 5（USART1_RX）、CPAR=0x40013804、CMAR=0x20000100、CNDTR=0x0080 为例。岔口一：CNDTR 停在 0x0080、TCIF5 为 0——`CCR.EN`（位 0）"
- },
- "illustrations/handraw/ch10-dma-triage.png": {
-  "type": "triage",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CNDTR 卡住 / 宽度错位 / CIRC=0 只跑一轮；不是实拍。"
- },
- "diagrams/sample-10-dma-phases.svg": {
-  "type": "concept",
-  "chapter": "10",
-  "caption": "▲ 自绘。环形模式 HT/TC；普通模式数到 0 停。"
- },
- "illustrations/handraw/ch10-dma-phases.png": {
-  "type": "concept",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。环形 HT/TC 交半区；普通模式 CNDTR=0 停；不是实拍。"
- },
- "diagrams/dma-buffer-ownership.svg": {
-  "type": "calculation",
-  "chapter": "10",
-  "caption": "▲ 所有权边界：DMA 正在写的半区不能由 CPU 当成稳定数据处理；HT/TC 只交出对应半区。CNDTR 统计配置宽度的数据项，不直接统计字节（FA-002 · IG-004 · C-03/C-10/C-27/C-31）。"
- },
- "gif/dma-ring.gif": {
-  "type": "concept",
-  "chapter": "10",
-  "caption": "▲ 循环缓冲区的写位置由 DMA 推进，CPU 只处理已经交出的半区。动画不能证明请求映射或数据宽度正确；仍要读取 CNDTR 并核对数组内容。"
- },
- "diagrams/sample-10-cndtr-ledger.svg": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 自绘。HT/TC 半区所有权；ISR 只置标志。"
- },
- "illustrations/handraw/ch10-cndtr-ledger.png": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HT/TC 半区所有权；ISR 只置标志；CNDTR 计配置宽度项；不是实拍。"
- },
- "animations/iwdg-window.svg": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 辅图。独立看门狗只惩罚喂晚。喂早也复位的是窗口看门狗。不播放这张图时，1 秒和减到 0 才复位都在静态主图上。（作者自绘矢量动画，非实拍）"
- },
- "animations/sample-11-iwdg-feed-flow.svg": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 自绘矢量动画（FA-002）。LSI→625 Hz→倒数→喂狗。"
- },
- "diagrams/sample-11-iwdg-1s.svg": {
-  "type": "concept",
-  "chapter": "11",
-  "caption": "▲ 自绘。STM32F103C8T6。LSI 典型 40 kHz，范围 30–60 kHz。预分频 64，计数频率 625 Hz，Reload = 624，在减到 0 之前喂狗，超时按典型值算是 1 秒，不是保证值。图里标出的出错情况是计数"
- },
- "illustrations/handraw/ch11-iwdg-1s.png": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI→÷64→625 Hz；Reload 624 典型 1 秒非保证；625 多一拍；不是实拍。"
- },
- "gif/iwdg-1s.gif": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 动图版，演示 625 Hz 的计数在减到 0 之前被喂狗，标出 Reload = 624 和 40 kHz 典型值。印刷版只有上面的静态图。"
- },
- "diagrams/sample-11-backup-domain.svg": {
-  "type": "concept",
-  "chapter": "11",
-  "caption": "▲ 自绘。VBAT 续电备份域；LSE 最准，LSI 仅作备用。"
- },
- "illustrations/handraw/ch11-backup-domain.png": {
-  "type": "concept",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VBAT 续电备份域；LSE 优先，LSI 仅备用；不是实拍。"
- },
- "diagrams/sample-11-wdg-compare.svg": {
-  "type": "comparison",
-  "chapter": "11",
-  "caption": "▲ 自绘。IWDG 递减到 0 就复位：LSI 40 kHz、预分频 64、Reload 624 正好 1 秒。WWDG 是带窗口的倒计时：约 58.25 ms 一程，计数值还大于 0x50 时喂狗同样复位，喂狗只允许在窗口内。出处是 [R"
- },
- "illustrations/handraw/ch11-wdg-compare.png": {
-  "type": "comparison",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。IWDG 减到 0 才复位；WWDG 窗口外喂狗也复位；不是实拍。"
- },
- "diagrams/sample-11-iwdg-math.svg": {
-  "type": "calculation",
-  "chapter": "11",
-  "caption": "▲ 自绘。超时用 (Reload+1)；写成 625 会多一拍。"
- },
- "illustrations/handraw/ch11-iwdg-math.png": {
-  "type": "calculation",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。超时用 (Reload+1)；624→1.000 s；写成 625 会多一拍；不是实拍。"
- },
- "diagrams/watchdog-reset-evidence.svg": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 看门狗闭环：故障、超时、复位原因和重启记录必须对得上。LED 或启动日志重新出现只能证明系统重启，不能单独证明复位来自 IWDG（FA-002 · IG-008 · C-03/C-10/C-27/C-31）。"
- },
- "diagrams/sample-11-rtc-triage.svg": {
-  "type": "triage",
-  "chapter": "11",
-  "caption": "▲ 自绘。排错三岔口：时间快慢不一，先查 PRL 是不是 32767——32.768 kHz 减一才是 1 Hz；复位后时间归零，查 VBAT 与备份域有没有掉电；闹钟不响，记住比较对象是 32 位秒计数器。出处是 [RM0008 RTC]"
- },
- "illustrations/handraw/ch11-rtc-triage.png": {
-  "type": "triage",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：PRL / VBAT 掉电 / 闹钟秒计数；不是实拍。"
- },
- "animations/flash-iap.svg": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 动画：IAP 在线升级 Bootloader + APP 双区跳转（作者自绘矢量动画，非实拍）"
- },
- "animations/sample-12-iap-jump-flow.svg": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 自绘矢量动画（FA-002）。KEY1→KEY2→半字→向量→VTOR。"
- },
- "diagrams/sample-12-iap-map.svg": {
-  "type": "concept",
-  "chapter": "12",
-  "caption": "▲ 自绘。STM32F103C8T6，中容量，64 KB，1 KB 一页。图上按顺序画出：先写 0x45670123，再写 0xCDEF89AB，半字写入 APP，然后从 0x08004800 取 MSP，从 0x08004804 取复位地",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch12-iap-map.png": {
-  "type": "concept",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Bootloader 16 KB + 参数 2 KB + APP 0x08004800/0xB800；KEY1→KEY2→半字→MSP/VTOR；不是实拍。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "gif/iap-jump.gif": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 动图版，演示先写 0x45670123、后写 0xCDEF89AB，一个半字写进 APP，再读出 MSP 和复位地址。印刷版只有上面的静态图。"
- },
- "diagrams/sample-12-page-erase.svg": {
-  "type": "calculation",
-  "chapter": "12",
-  "caption": "▲ 自绘。中容量 1 KB/页；C8 末页是 0x0800FC00。"
- },
- "illustrations/handraw/ch12-page-erase.png": {
-  "type": "calculation",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。1 KB/页；末页 0x0800FC00；擦除地址须落页边界；0x0801FC00 超出 C8 容量，不存在这个页；不是实拍。"
- },
- "diagrams/sample-12-flash-triage.svg": {
-  "type": "triage",
-  "chapter": "12",
-  "caption": "▲ 自绘。排错三岔口：擦除报错先读 CR.LOCK 位与 1 KB 页边界对不对；写不进去检查是不是按半字写、目标还停在 0xFFFF；读回不对就按 0x08004800、0xB800 逐页比对。出处是 [RM0008 Flash](#so"
- },
- "illustrations/handraw/ch12-flash-triage.png": {
-  "type": "triage",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CR.LOCK/页边界；半字与 0xFFFF；0xB800 读回比对；不是实拍。"
- },
- "diagrams/sample-12-key-order.svg": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 自绘。钥匙顺序反了锁打不开；跳转要装 MSP 与复位向量。"
- },
- "illustrations/handraw/ch12-key-order.png": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0x45670123 再 0xCDEF89AB；顺序反了 LOCK 不消；跳转要装 MSP 与复位向量；不是实拍。"
- },
- "diagrams/iap-acceptance-gates.svg": {
-  "type": "triage",
-  "chapter": "12",
-  "caption": "▲ IAP 验收：先检查范围再擦写；传输或校验失败时留在 Bootloader 等待重传，此时旧 APP 可能已被覆盖。跳转后用版本心跳确认启动；无心跳时依靠预先设计的复位和下载入口恢复（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。"
- },
- "illustrations/handraw/ch12-acceptance-gates.png": {
-  "type": "triage",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。接收/边界/向量/跳转/心跳；任一门失败留在 Bootloader；不是实拍。"
- },
- "diagrams/sample-12-boot-compare.svg": {
-  "type": "comparison",
-  "chapter": "12",
-  "caption": "▲ 自绘。两条启动路径对比：常驻 Bootloader 从 0x08000000 起占 16 KB，出厂系统存储器里的自举程序不占这 64 KB；路径在复位时由 BOOT0 选定，之后都汇聚到 0x08004800 的 46 KB APP。"
- },
- "illustrations/handraw/ch12-boot-compare.png": {
-  "type": "comparison",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。路径甲占 18 KB 用户闪存；路径乙不占 64 KB；都交到 0x08004800；不是实拍。"
+  "type": "technical"
  },
  "animations/can-arbitration.svg": {
-  "type": "technical",
+  "caption": "▲ CAN 三节点逐位仲裁：0x100 在 bit9 胜过 0x200 和 0x300；输家转接收，总线保留胜出帧的位。自绘逻辑动画，省略位填充，非实拍。",
   "chapter": "13",
-  "caption": "▲ CAN 三节点逐位仲裁：0x100 在 bit9 胜过 0x200 和 0x300；输家转接收，总线保留胜出帧的位。自绘逻辑动画，省略位填充，非实拍。"
+  "type": "technical"
  },
- "animations/sample-13-can-arb-flow.svg": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 自绘矢量动画（FA-002）。Sync→BS1→75% 采样→BS2→2 µs。"
- },
- "diagrams/sample-13-can-bit.svg": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 自绘。STM32F103C8T6。图上半部分是正确配置：8 个 250 ns 的时间份额，采样点 75%，一位 2 µs，500 kbit/s，预分频 9，SJW = 1，CANH 与 CANL 之间接 120 Ω。下半部分是错误配置："
- },
- "illustrations/handraw/ch13-can-bit.png": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。预分频 9×8 份额=500 kbit/s；预分频 8×10 份额=450 kbit/s；PB8/PB9 + 120 Ω；不是实拍。"
- },
- "gif/can-500k.gif": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 动图版，只演示正确配置：8 个 250 ns 的时间份额，采样点 75%，500 kbit/s。印刷版只有上面的静态图。"
- },
- "diagrams/sample-13-bit-quanta.svg": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 自绘。采样点 75%；预分频写错会变成 450 kbit/s。"
- },
- "illustrations/handraw/ch13-bit-quanta.png": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sync1+BS1 5+BS2 2；Tq 250 ns；采样 75%；写错预分频变 450 kbit/s；不是实拍。"
- },
- "diagrams/sample-13-filter-fifo.svg": {
-  "type": "concept",
-  "chapter": "13",
-  "caption": "▲ 自绘。硬实时进 FIFO0，批量进 FIFO1；溢出要提速排空。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch13-filter-fifo.png": {
-  "type": "concept",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。硬实时进 FIFO0，批量进 FIFO1；溢出先提速排空；不是实拍。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "diagrams/sample-13-can-triage.svg": {
-  "type": "triage",
-  "chapter": "13",
-  "caption": "▲ 自绘。排错三岔口：APB1 36 MHz、预分频 8 配 10 个时间份额算出来是 450 kbit/s——这就是文档里的错误配置例；邮箱一直空，先查标准 ID 写 FilterIdHigh 是不是忘了左移 5 位（0x123 "
- },
- "illustrations/handraw/ch13-can-triage.png": {
-  "type": "triage",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：450 kbit/s；FilterIdHigh 左移 5 位；采样点对齐；不是实拍。"
- },
- "diagrams/sample-13-tec-busoff.svg": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 自绘。单节点无 ACK 只到 128；Bus-Off 要另造发送错误。"
- },
- "illustrations/handraw/ch13-tec-busoff.png": {
-  "type": "triage",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TEC≥128 被动；>255 Bus-Off；单节点无 ACK 停在 128；恢复 128×11 隐性位；不是实拍。"
- },
- "animations/usb-enumeration.svg": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 动画：USB 设备枚举全过程（复位 → 取描述符 → 分配地址 → 配置）（作者自绘矢量动画，非实拍）"
- },
- "animations/sample-14-usb-48m-flow.svg": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 自绘矢量动画（FA-002）。上拉→主机看见→USBPRE→描述符。"
- },
- "diagrams/sample-14-usb-enum.svg": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 自绘。左边主机与设备之间画 DM/DP 两根线，DP 经 1.5 kΩ 上拉到 3.3 V；右边时钟门 USBPRE = 0 分频到 48 MHz，= 1 时 72 MHz 主机读描述符失败；下面两条描述符字节条：设备 18 B（VID/PID 0x1209/0x0001）加配置集合 67 B（wTotalLength 0x0043、bMaxPower 0x32）。"
- },
- "illustrations/handraw/ch14-usb-enum.png": {
-  "type": "triage",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USBPRE=0→48 MHz；D+ 1.5 kΩ；设备 18 字节+配置 67 字节；USBPRE=1 变 72 MHz 失败；不是实拍。"
- },
- "gif/usb-48m.gif": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 动图版，只演示正常枚举：D+ 被上拉、48 MHz、18 字节、67 字节。印刷版只有上面的静态图。"
- },
- "diagrams/sample-14-usbpre-48.svg": {
-  "type": "triage",
-  "chapter": "14",
-  "caption": "▲ 自绘。全速硬性 48 MHz；USBPRE=1 会枚举失败。"
- },
- "illustrations/handraw/ch14-usbpre-48.png": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PLL 72 MHz÷1.5=48 MHz；USBPRE=1 主机拒读；先查时钟再怪 CDC；不是实拍。"
- },
- "diagrams/sample-14-pma-map.svg": {
-  "type": "concept",
-  "chapter": "14",
-  "caption": "▲ 自绘。IN/OUT 站在主机侧；PMA 重叠会毁掉包。"
- },
- "illustrations/handraw/ch14-pma-map.png": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。512 字节 PMA 共享 EP0..EP7；IN/OUT 站在主机侧；重叠会毁包；不是实拍。"
- },
- "gif/usb-enumeration-zh.gif": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 枚举逐步关系：抓包中的请求顺序应与状态机一致。动画能说明控制传输顺序，不能证明 48 MHz 精度、D+/D− 波形或描述符字段内容正确。"
- },
- "diagrams/sample-14-descriptor-map.svg": {
-  "type": "concept",
-  "chapter": "14",
-  "caption": "▲ 自绘。描述符层级树：设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7；VID/PID 0x1209/0x0001；批量端点 64 字节、通知端点 8 字节——CDC 的两个端点就挂在这棵树上，下一"
- },
- "illustrations/handraw/ch14-descriptor-map.png": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。设备 18 字节；配置集合 67=0x0043；VID/PID 0x1209/0x0001；不是实拍。"
- },
- "diagrams/instrument-evidence-ladder.svg": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ USB 各层证据不能互换：抓包能说明标准请求与描述符，示波器才说明 D+/D− 电气质量；设备管理器出现 COM 口也不能证明所有长度的 CDC 传输都正确（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。"
- },
- "illustrations/handraw/ch14-evidence-ladder.png": {
-  "type": "technical",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。日志→寄存器→串口→逻辑分析仪→示波器；COM 口出现不证明一切 CDC 长度都对；不是实拍。"
- },
- "animations/freertos-scheduler.svg": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ H 等队列时 L 运行；ISR 在两个 tick 之间唤醒 H；H 再次阻塞后 L 继续。自绘教学时序，非实测。"
- },
- "animations/sample-15-rtos-tick-flow.svg": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ 自绘矢量动画（FA-002）。节拍→就绪→prio2→128 字。"
- },
- "diagrams/sample-15-rtos-prio.svg": {
-  "type": "comparison",
-  "chapter": "15",
-  "caption": "▲ 自绘。两把尺子并排：NVIC 数字越小越急（0 最急、5 是 FromISR 及格线、15 最缓），FreeRTOS 任务数字越大越先跑（KEY=2 先于 LED/UART=1）；换算条：tick 1 ms、128 words = 512 bytes、5 << 4 = 0x50；失败路径是 EXTI0 配成 0/4 时 FromISR 触发 configASSERT。"
- },
- "illustrations/handraw/ch15-rtos-prio.png": {
-  "type": "comparison",
-  "chapter": "15",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。tick=1 ms；prio2 先于 prio1；128 字=512 字节；FromISR 抢占优先级数值≥5；写成 0 会 configASSERT；不是实拍。"
- },
- "gif/rtos-tick.gif": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ 动图版，只演示正常运行：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷版只有上面的静态图。"
- },
- "diagrams/sample-15-task-states.svg": {
-  "type": "comparison",
-  "chapter": "15",
-  "caption": "▲ Ready 等 CPU；Blocked 等事件或超时；Suspended 等显式恢复。事件唤醒不必等 tick。自绘原理图。"
- },
- "illustrations/handraw/ch15-task-states.png": {
-  "type": "concept",
-  "chapter": "15",
-  "caption": "▲ 单核同一时刻一个 Running；Ready 等 CPU；Blocked 等时间或事件；Suspended 等显式恢复。手绘原理图，非实测。"
- },
- "diagrams/rtos-deadline-budget.svg": {
-  "type": "calculation",
-  "chapter": "15",
-  "caption": "▲ 实时预算：`R = B + C + S`，验收看最坏响应 `Rmax` 是否早于截止点。图不能替代实际测量；ISR、互斥量持有时间、任务执行时间和队列峰值都要记录（FA-002 · IG-009 · C-03/C-10/C-27/C-3"
- },
- "illustrations/handraw/ch15-deadline-budget.png": {
-  "type": "calculation",
-  "chapter": "15",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。R=B+C+S；阻塞+执行+高优先级干扰；最坏值必须早于截止点；平均值不能替代最坏值；不是实拍。"
- },
- "diagrams/rtos-owner-task.svg": {
-  "type": "triage",
-  "chapter": "15",
-  "caption": "▲ 互斥量只能保护一次函数调用；包含片选、DMA、等待和恢复的完整事务更适合交给唯一所有者任务。图不能证明队列深度和截止时间足够，仍要测峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。"
- },
- "illustrations/handraw/ch15-owner-task.png": {
-  "type": "triage",
-  "chapter": "15",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。多任务经队列把完整事务交给唯一所有者；片选、DMA、超时和恢复落在同一状态机；不是实拍。"
- },
- "diagrams/sample-15-fromisr.svg": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ 自绘。队列/信号量任务版 API 禁止进中断。"
- },
- "illustrations/handraw/ch15-fromisr.png": {
-  "type": "comparison",
-  "chapter": "15",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ISR 只许 *FromISR；禁止 xQueueSend/vTaskDelay/malloc；抢占优先级数值至少 5；不是实拍。"
- },
- "diagrams/sample-15-rtos-triage.svg": {
-  "type": "triage",
-  "chapter": "15",
-  "caption": "▲ 自绘排错图。检查创建结果与时基；128 字 = 512 B，深色 32 格仅为四分之一；FromISR 数值优先级至少 5 适用本例配置。堆预算须扣除其他开销；周期图忽略 tick 相位与调度抖动。依据 FreeRTOS Kernel V11.3.2 与本仓库例程。"
- },
- "animations/rtos-startup-gates.svg": {
-  "type": "triage",
-  "chapter": "15",
-  "caption": "▲ `vTaskStartScheduler()` 返回不了并不等于系统已可用。每道启动门要给出成功、降级或失败结果；关键设备未就绪时，执行器和远程命令仍应保持关闭（FA-002 · IG-008 · C-03/C-10/C-27/C-31"
- },
- "animations/lowpower-wakeup.svg": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 三条唤醒路径。移动点表示执行顺序，速度不代表真实耗时；Stop 的普通返回与 Standby 的复位启动分开画。自绘矢量动画，非实测。"
- },
- "animations/sample-16-stop-wake-flow.svg": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 自绘矢量动画（FA-002）。Stop→唤醒→HSI→PLL→115200。"
- },
- "diagrams/sample-16-stop-wake.svg": {
-  "type": "calculation",
-  "chapter": "16",
-  "caption": "▲ 自绘。SLEEPDEEP 与 PDDS 选择模式，LPDS 选择稳压器。5.4 µs 是唤醒事件到第一条指令的典型时间；恢复 72 MHz 还要等待 HSE、PLL 和软件配置。下方用同一个 BRR `0x271` 算出 115200 与 12800 bit/s。电流与时间条件见 [DS5319 Rev 20 表 16、26](#source-ds5319-pwr)。"
- },
- "illustrations/handraw/ch16-stop-wake.png": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 唤醒后分成两条路：恢复 72 MHz，原 BRR 对应 115200；停在 HSI 8 MHz，同一 BRR 只有 12800 bit/s。14 µA 还要求低功耗稳压器、3.3 V、25°C、无 IWDG 等条件。手绘原理示意，非实测。"
- },
- "gif/stop-wake.gif": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 动图版，只演示正确流程：从 Stop 醒来，时钟从 8 MHz 装回 72 MHz，线上 115200。印刷版只有上面的静态图。"
- },
- "diagrams/sample-16-stop-compare.svg": {
-  "type": "comparison",
-  "chapter": "16",
-  "caption": "▲ 自绘对比表。电流一行同时给出条件：Sleep 按 72 MHz 与外设开关区分，Stop 按稳压器区分，Standby 按 LSI/IWDG 等配置区分。唤醒源与程序去向另列，避免把 IWDG 复位当成中断返回。出处：[DS5319 Rev 20 表 16、26](#source-ds5319-pwr) 与 [RM0008 时钟](#source-rm0008-rcc)。"
- },
- "illustrations/handraw/ch16-stop-compare.png": {
-  "type": "comparison",
-  "chapter": "16",
-  "caption": "▲ 先按程序需要保留的状态选模式：Sleep 保留原时钟，Stop 保留 SRAM 但醒来改用 HSI，Standby 重新启动。RTC、LSI、LSE 是否运行仍取决于配置。手绘原理示意，非实测。"
- },
- "diagrams/sample-16-mode-current.svg": {
-  "type": "concept",
-  "chapter": "16",
-  "caption": "▲ 自绘。勿把 14/24 µA 并成 20；1.4 µA 是备份域不是整机。"
- },
- "illustrations/handraw/ch16-mode-current.png": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。DS5319 @ 3.3 V、25°C 典型值；板级漏电另算；不是实拍。"
- },
- "diagrams/sample-16-clock-restore.svg": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 自绘。不重配时钟时 0x271 在 8 MHz 下是 12800。"
- },
- "illustrations/handraw/ch16-clock-restore.png": {
-  "type": "technical",
-  "chapter": "16",
-  "caption": "▲ 上方两个 GPIO 标记分开 ISR 入口和时钟恢复；下方按同一时间尺画出 8.681 µs 与 78.125 µs 的位宽。用 `0x55` 便于观察交替边沿。自绘理论图，非仪器截图。"
- },
- "diagrams/lowpower-current-evidence.svg": {
-  "type": "calculation",
-  "chapter": "16",
-  "caption": "▲ 电流账：底电流和峰值都要与时间一起积分，才能算平均电流。数据手册典型值、开发板实测和裸芯片实测属于不同边界；未断开 LED、USB 与调试器时不能据此评价 MCU 的 µA 指标（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。"
- },
- "diagrams/sample-16-pwr-triage.svg": {
-  "type": "triage",
-  "chapter": "16",
-  "caption": "▲ 自绘排查表。模式不对先读位与标志；醒后串口不对查时钟；电流偏高再查稳压器、常开时钟和板上负载。SLEEPDEEP=1、PDDS=0 只选择 Stop，不能保证测到 14 µA。条件见 [DS5319 Rev 20 表 16](#source-ds5319-pwr) 与 [RM0008 时钟](#source-rm0008-rcc)。"
- },
- "illustrations/handraw/ch16-pwr-triage.png": {
-  "type": "triage",
-  "chapter": "16",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进不去 Stop、醒来乱码、电流降不下来：先查 SLEEPDEEP/PDDS，再查 PLL 恢复，最后查 IWDG/LSI/LSE/RTC；不是实拍。"
+ "animations/clock-tree.svg": {
+  "caption": "▲ 动画：HSE 8MHz → PLL ×9 → 72MHz 的时钟树倍频过程（作者自绘矢量图）",
+  "chapter": "02",
+  "type": "technical"
  },
  "animations/debug-swo.svg": {
-  "type": "triage",
+  "caption": "▲ 动画：SWD 调试 + SWO/ITM 打印跟踪（作者自绘矢量动画，非实拍）",
   "chapter": "17",
-  "caption": "▲ 动画：SWD 调试 + SWO/ITM 打印跟踪（作者自绘矢量动画，非实拍）"
- },
- "animations/sample-17-cfsr-flow.svg": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 自绘矢量动画。先保存现场，再检查 BFARVALID 并解释地址；DWT 周期计数是另一项独立检查。"
- },
- "diagrams/sample-17-cfsr.svg": {
-  "type": "concept",
-  "chapter": "17",
-  "caption": "▲ 自绘。BFARVALID 决定能否使用保存的 BFAR；DWT 则需同时使能 TRCENA 与 CYCCNTENA。72 个计数仅在 72 MHz 下等于 1 µs；故障地址与耗时应分开判断。见 [PM0056](#source-pm0056) 和 [PM0056 DWT](#source-pm0056-dwt)。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "illustrations/handraw/ch17-cfsr.png": {
-  "type": "concept",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上半检查故障地址是否有效，下半检查周期计数是否启用。72 MHz 下 72 计数 = 1 µs，两项检查互不构成因果。",
-  "review": "2026-11-05 人工复核：结构/关系概念图"
- },
- "gif/cfsr-read.gif": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 左侧保留地址有效条件，右侧独立演示 72 MHz 下的周期换算，播放速度不代表实际耗时。印刷版可对照上方静态图。"
- },
- "diagrams/sample-17-swd-pins.svg": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 自绘。PA13/PA14 承担 SWD，PB3 可输出 SWO。误把 SWD 脚改成 GPIO 后，通常需要通过复位下连接恢复。"
- },
- "illustrations/handraw/ch17-swd-pins.png": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWDIO 双向传输，SWCLK 由探针驱动；SWO 从 PB3 单向返回。GND 共地，VTref 用于感知目标电压，NRST 供复位下连接使用。"
- },
- "diagrams/sample-17-obs-compare.svg": {
-  "type": "comparison",
-  "chapter": "17",
-  "caption": "▲ 自绘。断点会暂停内核，SWO 在运行中传出跟踪数据，故障记录保存 PC 与 CFSR 供事后分析。条件硬件断点仍占用比较器；记录能否留存取决于存储位置与复位方式。见 [PM0056 调试](#source-pm0056) 和 [DS5319 SWD](#source-ds5319-swd)。"
- },
- "illustrations/handraw/ch17-obs-compare.png": {
-  "type": "comparison",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。停住看变量、运行时跟踪、故障后留存，分别回答不同问题；选择时还要考虑时序扰动和记录是否完整。"
- },
- "diagrams/sample-17-cfsr-bits.svg": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 自绘。判读 CFSR 时分清故障类别与地址有效位；周期换算另按实际内核时钟计算。"
- },
- "illustrations/handraw/ch17-cfsr-bits.png": {
-  "type": "technical",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CFSR 的三个分区分别记录内存管理、总线和用法故障。先区分精确、非精确与压栈错误，再判断地址和栈 PC 是否可用。"
- },
- "diagrams/fault-triage-ladder.svg": {
-  "type": "triage",
-  "chapter": "17",
-  "caption": "▲ 故障阶梯。BFARVALID/MMARVALID 决定地址能否使用；`IMPRECISERR` 下栈 PC 可能已越过原始写操作。确认栈帧和故障类型后，再用同一份 ELF 定位源码。"
- },
- "diagrams/sample-17-perf-triage.svg": {
-  "type": "triage",
-  "chapter": "17",
-  "caption": "▲ 自绘。DWT 用两次读数夹住被测区间；比较 -Og/-O2/-Os 时，同时记录周期、代码大小和输出一致性。图中故障判读与性能测量是两套检查，BFAR 仍需通过 bit 15 验证。见 [PM0056 DWT](#source-pm0056-dwt) 和 [PM0056](#source-pm0056)。"
- },
- "illustrations/handraw/ch17-perf-triage.png": {
-  "type": "triage",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。t0、t1 夹住被测代码；零差先查 TRCENA、CYCCNTENA 和运行方式。72 计数 = 1 µs 的前提是内核运行于 72 MHz。"
- },
- "animations/sample-18-boot0-flow.svg": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 自绘矢量动画。BOOT0/BOOT1 决定复位后的启动位置；SWD 是否连通应独立检查。"
- },
- "diagrams/sample-18-boot-triage.svg": {
-  "type": "triage",
-  "chapter": "18",
-  "caption": "▲ 自绘。PA13/PA14、供电与 NRST 用于连接检查；BOOT0/BOOT1 用于判断启动位置。系统存储器启动不等于芯片认不出，也不表示 Flash 已被擦除。见 [DS5319](#source-ds5319-swd) 图 31、表 5 和 [RM0008 启动](#source-rm0008-boot)。"
- },
- "illustrations/handraw/ch18-boot-triage.png": {
-  "type": "triage",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT0=0 选 Flash；BOOT0=1 时再由 BOOT1 区分系统存储器与 SRAM。连接失败和选错启动位置是两条排查路径。"
- },
- "gif/boot0-low.gif": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 六帧演示 BOOT0=0 时的 Flash 映射、MSP 与复位向量读取；右侧的 SWD 接线独立检查。选中 Flash 后仍要核对镜像，印刷版可看上方静态图。"
- },
- "diagrams/sample-18-link-map.svg": {
-  "type": "concept",
-  "chapter": "18",
-  "caption": "▲ 自绘。C8=64 KB/20 KB；先读 region 再改 C。"
- },
- "illustrations/handraw/ch18-link-map.png": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先在 map 中核对区域起点与长度，再分清 .text、.data 的加载大小和 .bss 的 RAM 占用。"
- },
- "diagrams/sample-18-hardfault-ladder.svg": {
-  "type": "triage",
-  "chapter": "18",
-  "caption": "▲ 自绘。先保存 BFAR/MMFAR 与现场，再判读有效位。BFAR 是数据访问地址，栈 PC 是指令地址；两者不能互相替代。"
- },
- "illustrations/handraw/ch18-hardfault-ladder.png": {
-  "type": "triage",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CFSR（0xE000ED28）用于分类，bit 15 标记 BFAR 有效；IMPRECISERR 不保证 PC 指向原始写操作，压栈错误须先检查栈帧。"
- },
- "diagrams/sample-18-faq-compare.svg": {
-  "type": "comparison",
-  "chapter": "18",
-  "caption": "▲ 自绘。编译查日志与 map，连接查 ID，串口查位宽，复位查电源和 NRST，任务未运行时查状态与阻塞点。保留读数，再决定改哪一处。见 [RM0008 启动](#source-rm0008-boot) 和 [DS5319 NRST/SWD](#source-ds5319-nrst)。"
- },
- "illustrations/handraw/ch18-faq-compare.png": {
-  "type": "comparison",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。五类现象各选一项能区分原因的证据，保留修改前后的结果。"
- },
- "diagrams/sample-18-uart-garbled.svg": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 自绘。先确认 SWS/BRR，再怀疑字符串代码。"
- },
- "illustrations/handraw/ch18-uart-garbled.png": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先量位宽，再核对 USART 时钟和 BRR；TX 接对端 RX，电平须兼容且共地。"
- },
- "boards/peripheral-wiring.svg": {
-  "type": "concept",
-  "chapter": "19",
-  "caption": "▲ 图：常用外设接线总览，多数项目都从这张图起步（作者自绘矢量图，非实拍）"
- },
- "animations/sample-19-slot-fill-flow.svg": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 自绘矢量动画（FA-002）。单镜像布局算术。"
- },
- "diagrams/sample-19-flash-fit.svg": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 自绘。先算 Flash 与 SRAM，再核对 ADC 比例和 USB 分包。C8 的 64 KB Flash 不能容纳两张 46 KB APP，20 KB SRAM 也放不下 65536 字节缓冲。见第 12 章布局和 [DS5319](#source-ds5319-swd)。"
- },
- "illustrations/handraw/ch19-flash-fit.png": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Flash 中留一张 0xB800 的 APP；SRAM 缓冲须与栈、全局变量共同分配，不能只比较单个数组。"
- },
- "gif/one-slot.gif": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 动图版，只演示放得下的布局：16 KB、2 KB 和一张 0xB800 依次填到 0x08010000 为止。印刷版只有上面的静态图。"
- },
- "diagrams/sample-19-pick-ladder.svg": {
-  "type": "concept",
-  "chapter": "19",
-  "caption": "▲ 自绘。选最小能逼出一条新总线的项目。"
- },
- "illustrations/handraw/ch19-pick-ladder.png": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。按已经掌握的采集、通信和缓冲技能选题，每轮新增一种尚未验证的能力。"
- },
- "illustrations/handraw/ch19-iap-gates.png": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每一关都需有拒绝或恢复出口。回滚依赖旧镜像仍然存在，不能由单 APP 布局自动获得。"
- },
- "diagrams/network-debug-ladder.svg": {
-  "type": "triage",
-  "chapter": "19",
-  "caption": "▲ 多节点项目按最先失败的边界排查，不从应用日志直接跳到“总线坏了”。每层都要留下可复现证据和恢复动作。"
- },
- "diagrams/sample-19-milestone-triage.svg": {
-  "type": "triage",
-  "chapter": "19",
-  "caption": "▲ 自绘。项目三岔口：贪多 / 跳步 / 无证据。出处是 [配套例程](#source-project-examples) 与本章验收门图。"
- },
- "illustrations/handraw/ch19-milestone-triage.png": {
-  "type": "triage",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每轮新增一种能力，完成独立测试再集成；失败时保留输入、状态和恢复结果。"
- },
- "diagrams/sample-19-sram-budget.svg": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 自绘预算示例。heap_4 的 ucHeap 已计入静态占用，动态任务栈和内核对象在其中分配，不能再次加到总量上。"
- },
- "illustrations/handraw/ch19-sram-budget.png": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 的 20480 字节从 0x20000000 起分配；全局缓冲、堆和任务栈都要进入同一份预算。"
- },
- "animations/sample-20-evidence-flow.svg": {
-  "type": "technical",
-  "chapter": "20",
-  "caption": "▲ 自绘矢量动画（FA-002）。博客是线索，冻结 PDF 是契约。"
- },
- "animations/sample-20-lookup-flow.svg": {
-  "type": "concept",
-  "chapter": "20",
-  "caption": "▲ 动画：订货号 → DS → RM → PM → AN/UM（作者自绘矢量动画，非实拍）。出处是本章手册地图与 [项目致谢](#source-project-credits)。"
- },
- "diagrams/sample-20-manual-names.svg": {
-  "type": "technical",
-  "chapter": "20",
-  "caption": "▲ 自绘。先选对 PDF，再 Ctrl+F。"
- },
- "illustrations/handraw/ch20-manual-names.png": {
-  "type": "technical",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先选对 PDF 再 Ctrl+F；RM 寄存器、DS 参数、PM 封装、ES 勘误；不是实拍。"
- },
- "diagrams/manual-choice-map.svg": {
-  "type": "concept",
-  "chapter": "20",
-  "caption": "▲ 决策图：先问问题，再选手册（FA-002 · IG-008；作者自绘矢量图）"
- },
- "illustrations/handraw/ch20-manual-choice.png": {
-  "type": "technical",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先问问题再选手册；R 寄存器、D 数据、A 应用、U 工具；不是实拍。"
- },
- "diagrams/sample-20-lib-compare.svg": {
-  "type": "comparison",
-  "chapter": "20",
-  "caption": "▲ 自绘。一个项目冻结一套库与版本。"
- },
- "illustrations/handraw/ch20-lib-compare.png": {
-  "type": "comparison",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一个项目冻结一套库与版本；HAL 主流、SPL 锁旧 F1、LL 近寄存器、libopencm3 轻量；不是实拍。"
- },
- "diagrams/firmware-stack-choice.svg": {
-  "type": "comparison",
-  "chapter": "20",
-  "caption": "▲ 对比图：固件栈按项目边界选择，不按抽象高低排名（FA-029 · IG-004；作者自绘矢量图）"
- },
- "illustrations/handraw/ch20-evidence-ladder.png": {
-  "type": "technical",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。构建日志 → 调试器 → 运行日志 → 逻辑分析仪 → 示波器/电源分析；不要越级；不是实拍。"
- },
- "diagrams/sample-20-evidence-triage.svg": {
-  "type": "triage",
-  "chapter": "20",
-  "caption": "▲ 自绘。证据三岔口。出处是 [手册选择地图](#source-project-credits) 与 [stlink 工具集](#source-stlink-tools)。"
- },
- "illustrations/handraw/ch20-evidence-triage.png": {
-  "type": "triage",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先 DS/RM/PM 对号，再选证据阶，最后才动固件栈；不是实拍。"
- },
- "boards/bluepill-stm32f103c8t6.svg": {
-  "type": "concept",
-  "chapter": "21",
-  "caption": "▲ 图：BluePill STM32F103C8T6 最小系统板（作者自绘矢量结构图，非厂商实拍照片）"
- },
- "animations/sample-21-crystal-boot-flow.svg": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 自绘矢量动画（FA-002）。上电顺序：电源→晶振→BOOT0→向量。"
- },
- "diagrams/sample-21-board-compare.svg": {
-  "type": "comparison",
-  "chapter": "21",
-  "caption": "▲ 自绘对照（非实拍）。三板五问。出处是 [DS5319](#source-ds5319) 与 [项目致谢](#source-project-credits)。"
- },
- "illustrations/handraw/ch21-board-compare.png": {
-  "type": "comparison",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三板对照封装、调试器、5 V 与 USB 路径；不是实拍。"
- },
- "diagrams/sample-21-vdd-3v3.svg": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 自绘。先量 3V3，再怀疑固件。"
- },
- "illustrations/handraw/ch21-vdd-3v3.png": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先量 3V3 再怀疑固件；5 V→AMS1117→VDD/VDDA/VBAT；不是实拍。"
- },
- "diagrams/sample-21-usb-ttl.svg": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 自绘。TX/RX 交叉、共地；别把 5 V 灌进 PA10。"
- },
- "illustrations/handraw/ch21-usb-ttl.png": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TX→PA10、RX→PA9、共地 3.3 V；勿把 5 V 灌进 PA10；不是实拍。"
- },
- "animations/sample-21-power-swd.svg": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 动画：供电→复位→BOOT0→SWD（作者自绘矢量动画，非实拍）。出处是 [DS5319](#source-ds5319) 与 [项目致谢](#source-project-credits)。"
- },
- "diagrams/sample-21-hse-load.svg": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 自绘。HSERDY 不到先查晶振焊接，再怪 PLLMUL。"
- },
- "illustrations/handraw/ch21-hse-load.png": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSERDY 不到先查晶振焊接，再怪 PLLMUL；不是实拍。"
- },
- "diagrams/sample-21-nrst-boot0.svg": {
-  "type": "concept",
-  "chapter": "21",
-  "caption": "▲ 自绘。BOOT0=1 会跑系统存储器，不是“程序丢了”。"
- },
- "illustrations/handraw/ch21-nrst-boot0.png": {
-  "type": "technical",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT0=0 从 Flash；BOOT0=1 进系统存储器，不是程序丢了；不是实拍。"
- },
- "animations/sample-22-sim-pick-flow.svg": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 自绘矢量动画（FA-002）。选型→证明→移植。"
- },
- "diagrams/simulator-comparison.svg": {
-  "type": "comparison",
-  "chapter": "22",
-  "caption": "▲ 对比图：浏览器看接线，机器模型看访问，最终在真板验收（FA-029 · IG-004；作者自绘矢量图）"
- },
- "illustrations/handraw/ch22-sim-compare.png": {
-  "type": "comparison",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。模型复现逻辑后再上真板测量；仿真绿灯不能覆盖实测；不是实拍。"
- },
- "diagrams/sample-22-wokwi-scope.svg": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 自绘。浏览器绿了还要 BluePill 同款验收。"
- },
- "illustrations/handraw/ch22-wokwi-scope.png": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。逻辑/LED 适合；ADC/USB/晶振余量必须上桌；孪生验收在 BluePill；不是实拍。"
- },
- "diagrams/simulation-model-boundary.svg": {
-  "type": "concept",
-  "chapter": "22",
-  "caption": "▲ 分层图：一段固件要穿过哪些模型才能出现可见现象（FA-002 · IG-012；作者自绘矢量图）"
- },
- "diagrams/sample-22-renode-path.svg": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 自绘。先跑仓库两条脚本，再改平台文件。"
- },
- "illustrations/handraw/ch22-renode-path.png": {
-  "type": "concept",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。四步脚本路径；golden string 与真板一致；绿灯≠HSE 焊接；不是实拍。"
- },
- "diagrams/sample-22-sim-triage.svg": {
-  "type": "triage",
-  "chapter": "22",
-  "caption": "▲ 自绘。左列同一份固件配支持表卡片：GPIO/EXTI/TIM 有，DMA/RTC/IWDG Wokwi 没有；右侧三个岔口各带一句纠正——模型缺口移出仿真验收、主机环境先跑最小 blink 并固定版本、板级物理仿真门与真板门分列。"
- },
- "illustrations/handraw/ch22-sim-triage.png": {
-  "type": "triage",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先分岔再修；仿真与真板两句证明不能并成一句；不是实拍。"
- },
- "diagrams/sample-22-hw-gap.svg": {
-  "type": "concept",
-  "chapter": "22",
-  "caption": "▲ 自绘。双轨诚实：结构靠仿真，裕量靠桌面。"
- },
- "illustrations/handraw/ch22-hw-gap.png": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。sim 绿→desk 绿才算完成；晶振/USB/纹波仿真替不了；不是实拍。"
- },
- "animations/simulation-acceptance-gates.svg": {
-  "type": "technical",
-  "chapter": "22",
-  "caption": "▲ 动画：从仿真到真板的连续验收门（FA-002 · IG-009；作者自绘矢量动画，首帧可独立阅读）"
- },
- "boards/pinout-stm32g071rb-lqfp64.svg": {
-  "type": "concept",
-  "chapter": "23",
-  "caption": "▲ 引脚图：64 脚的名字和顺序来自 DS12232 Rev 5 Table 12 的 LQFP64 列（Figure 9 同一封装）。颜色只是阅读辅助，不是手册上的涂色。脚本生成，不是实拍。"
- },
- "illustrations/handraw/ch23-part-id.png": {
-  "type": "concept",
-  "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。M0+ @ 64 MHz、R=64 脚、B=128 KB；UCPD 不是 USB 设备控制器；无 CAN；不是实拍。"
- },
- "diagrams/sample-23-boot0-swclk.svg": {
-  "type": "technical",
-  "chapter": "23",
-  "caption": "▲ 自绘。先判定启动来源，再驱动 SWCLK。"
- },
- "animations/sample-23-boot-latch.svg": {
-  "type": "comparison",
-  "chapter": "23",
-  "caption": "▲ 动画：四个 SYSCLK 上升沿后锁存启动源（作者自绘矢量动画，非实拍）。出处是 [DS12232](#source-ds12232)、[RM0444](#source-rm0444) 与 [AN2606](#source-an2606"
- },
- "illustrations/handraw/ch23-boot-latch.png": {
-  "type": "calculation",
-  "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第四个 SYSCLK 上升沿锁存启动源；BOOT_LOCK / nBOOT_SEL 边界；不是实拍。"
+  "type": "triage"
+ },
+ "animations/dma-circular.svg": {
+  "caption": "▲ 多通道结果从同一个 ADC_DR 依次进入数组，HT/TC 只说明哪一半可处理。图不能证明通道顺序、数据宽度或采样时间正确，这三项仍要和 SQR、DMA 配置及波形对账（FA-002 · IG-012 · C-03/C-10/C-27/",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "animations/flash-iap.svg": {
+  "caption": "▲ 动画：IAP 在线升级 Bootloader + APP 双区跳转（作者自绘矢量动画，非实拍）",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "animations/freertos-scheduler.svg": {
+  "caption": "▲ H 等队列时 L 运行；ISR 在两个 tick 之间唤醒 H；H 再次阻塞后 L 继续。自绘教学时序，非实测。",
+  "chapter": "15",
+  "type": "technical"
  },
  "animations/g0-boot-swd.svg": {
-  "type": "triage",
+  "caption": "▲ 动画：复位后的启动配置在第四个 SYSCLK 上升沿锁存；nBOOT_SEL 决定看 PA14 还是选项位。Under Reset 只是受控连接尝试，RDP 与 DBG_SWEN 还会限制恢复可达性。程序生成示意，不是示波器实测。",
   "chapter": "23",
-  "caption": "▲ 动画：复位后的启动配置在第四个 SYSCLK 上升沿锁存；nBOOT_SEL 决定看 PA14 还是选项位。Under Reset 只是受控连接尝试，RDP 与 DBG_SWEN 还会限制恢复可达性。程序生成示意，不是示波器实测。"
+  "type": "triage"
  },
- "animations/sample-23-boot-source-flow.svg": {
-  "type": "technical",
-  "chapter": "23",
-  "caption": "▲ 自绘矢量动画（FA-002）。option → BOOT0 → 向量 → SWD。"
+ "animations/gpio-blink.svg": {
+  "caption": "▲ 动画：GPIO 推挽输出点亮 LED（电平、电流、波形同步，作者自绘矢量图）",
+  "chapter": "03",
+  "type": "calculation"
  },
- "diagrams/sample-23-f1-g0-compare.svg": {
-  "type": "comparison",
-  "chapter": "23",
-  "caption": "▲ 自绘。F1→G0 迁移五问对照。出处是 [DS12232](#source-ds12232) / [RM0444](#source-rm0444)；例程结构仅对照 [配套例程](#source-project-examples)。"
- },
- "illustrations/handraw/ch23-pin-compare.png": {
-  "type": "comparison",
-  "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第 1 脚、NRST、BOOT/SWD 共脚、复位后模拟输入；AF 看 DS12232 Table 13/14；不是实拍。"
- },
- "diagrams/sample-23-f1-copy-traps.svg": {
-  "type": "comparison",
-  "chapter": "23",
-  "caption": "▲ 自绘。同名外设 ≠ 同脚；以 DS 表为准。"
- },
- "illustrations/handraw/ch23-pinmux.png": {
-  "type": "technical",
-  "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA14=BOOT0+SWCLK；USART/I2C/SPI 脚位；PA9/PA10 重映射先动 SYSCFG_CFGR1；不是实拍。"
- },
- "boards/pinout-stm32l476rg-lqfp64.svg": {
-  "type": "concept",
-  "chapter": "24",
-  "caption": "▲ 引脚图：顺序来自 DS10198 Rev 11 Figure 16，并与 Table 16 的 LQFP64 列逐脚核对。颜色是阅读辅助。脚本生成，不是实拍。"
- },
- "illustrations/handraw/ch24-part-id.png": {
-  "type": "concept",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。M4F @ 80 MHz、1.71–3.6 V；VBAT 300 nA、Shutdown 30 nA、Standby 120 nA、Stop 2 1.1 µA、Run LDO 100 µA"
- },
- "photos/nucleo-f411re-embedded-world.jpg": {
-  "type": "truth-track",
-  "chapter": "28",
-  "caption": ""
- },
- "photos/nucleo-f401re-embedded-world.jpg": {
-  "type": "truth-track",
-  "chapter": "28",
-  "caption": ""
- },
- "diagrams/sample-24-stop2-retain.svg": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 自绘。Stop2 不是 RAM 永存；先画保持表再睡。"
- },
- "diagrams/sample-24-mode-compare.svg": {
-  "type": "comparison",
-  "chapter": "24",
-  "caption": "▲ 自绘。L4 低功耗四档对照。出处是 [RM0351](#source-rm0351)、[DS10198](#source-ds10198)、[AN4746](#source-an4746)；Cube 示例仅对照 [stm32cube-l"
- },
- "illustrations/handraw/ch24-modes.png": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep/Stop 0·1·2 从 WFI 下一条指令继续，SRAM1/2 保持；Standby/Shutdown 唤醒走复位，主 SRAM 丢；两类混记会把丢的 RAM 当还在；不是实"
- },
- "animations/l4-stop2-evidence.svg": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 动画：原始 RTC/EXTI/PWR 位必须在 IRQ 入口写入 Stop 2 保持的 SRAM；HAL handler 清位后，主循环消费的是软件记录而不是已经消失的硬件标志。程序生成示意，不是逻辑分析仪实测（FA-002 · IG-"
- },
- "animations/sample-24-wake-restore-flow.svg": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 自绘矢量动画（FA-002）。flag → 时钟 → 通信 → 应用。"
- },
- "illustrations/handraw/ch24-wake-clocks.png": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。STOPWUCK 选 MSI/HSI16 临时接管；SysTick、UART BRR、Flash LATENCY、ARR/PSC 都要按新时钟重算；USB 等 PLL 回来再用；不是实拍。"
- },
- "diagrams/sample-24-wake-triage.svg": {
-  "type": "triage",
-  "chapter": "24",
-  "caption": "▲ 自绘。Stop2 唤醒三岔口。出处是 [RM0351](#source-rm0351) 与 [stm32l4-hal-rtc](#source-stm32l4-hal-rtc) 捕获模式对照。"
- },
- "illustrations/handraw/ch24-pin-mux.png": {
-  "type": "comparison",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA11/PA12 是 CAN1 与 OTG_FS 抢脚，都要就 CAN 改 PB8/PB9；VDDUSB 脚 48 是电源不是 GPIO；BOOT0=60 不与 SWCLK 共用；不是实"
- },
- "diagrams/sample-24-idd-jp6.svg": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 自绘。JP6 积分是验收页；别用万用表拍脑袋。"
- },
- "illustrations/handraw/ch24-idd.png": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。JP6 串表只量 MCU IDD；ST-LINK/LED/回灌不在其中；万用表负担电压会让 VDD 下跌；f_s ≥ 10/t_min；不是实拍。"
- },
- "diagrams/l4-idd-bench.svg": {
-  "type": "triage",
-  "chapter": "24",
-  "caption": "▲ 接线图：电流仪串入 JP6，电压通道直接看 MCU 端 VDD，并排查 SWD、USB 和 GPIO 回灌。程序生成示意，不代表本仓库已经取得某个实测电流值（FA-029 · IG-002 · C-03/C-10/C-27/C-31）。"
- },
- "boards/pinout-stm32h743zi-lqfp144.svg": {
-  "type": "concept",
-  "chapter": "25",
-  "caption": "▲ 引脚图：144 脚的名字和顺序来自 DS12110 Rev 11 Figure 7（图号 MSv41917V4）。VCAP1 是脚 71，VCAP2 是脚 106，以该图上的标注为准。颜色是阅读辅助。脚本生成，不是实拍。"
- },
- "illustrations/handraw/ch25-part-id.png": {
-  "type": "concept",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Z=144 脚、I=2 MB Flash；1.62–3.6 V；D1/D2/D3 三域；2×FDCAN 与 2×OTG；封装核对从 PE2 起再数 VCAP1/2、VDD33USB、PDR"
- },
- "diagrams/h7-power-domains.svg": {
-  "type": "concept",
-  "chapter": "25",
-  "caption": "▲ 电源域图：供电脚、内核稳压器和片内域各归哪一层（FA-029 · IG-002；作者自绘矢量图）"
- },
- "illustrations/handraw/ch25-pin-compare.png": {
-  "type": "comparison",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第 1 脚 PE2；VCAP1=71、VCAP2=106 外接电容；脚 95 VDD33USB；脚 143 PDR_ON；脚 138 BOOT0；CAN 是 FDCAN 不是 bxCAN；"
- },
- "diagrams/sample-25-voltage-scale.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 自绘。VOS 就绪证据先于 PLL 锁频。"
- },
- "illustrations/handraw/ch25-rev-vos.png": {
-  "type": "comparison",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Rev Y/W 无 VOS0，VOS1 上限 400 MHz；Rev V 才可进 VOS0 到 480 MHz，每次换挡等 VOSRDY；读 DBGMCU->IDCODE 的 REV_ID"
- },
- "diagrams/h7-revision-clock-decision.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 决策图：先识别 silicon revision，再选择 400 或 480 MHz（FA-002 · IG-008；作者自绘矢量图）"
- },
- "animations/sample-25-hse-to-480-flow.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 自绘矢量动画（FA-002）。VOS → HSE → PLL1 → SYS。"
- },
- "illustrations/handraw/ch25-clock-math.png": {
-  "type": "calculation",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。8/PLLM4×PLLN/PLLP2：N=400 得 400 MHz，Rev V 改 N=480 得 480 MHz；CPU 480 / HCLK 240 / PCLK 120 / APB"
+ "animations/gpio-input-interrupt.svg": {
+  "caption": "▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）",
+  "chapter": "04",
+  "type": "comparison"
  },
  "animations/h7-clock-chain.svg": {
-  "type": "calculation",
+  "caption": "▲ 动画：8 MHz 到 400/480 MHz 的可复算时钟链（FA-002 · IG-009；作者自绘矢量动画，首帧可独立阅读）",
   "chapter": "25",
-  "caption": "▲ 动画：8 MHz 到 400/480 MHz 的可复算时钟链（FA-002 · IG-009；作者自绘矢量动画，首帧可独立阅读）"
+  "type": "calculation"
  },
- "diagrams/h7-startup-evidence.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 证据图：软件读回、独立输出与外设闭环互相校验（FA-002 · IG-010；作者自绘矢量图，非测量截图）"
+ "animations/i2c-transaction.svg": {
+  "caption": "▲ 动画：I2C 完整事务（START、地址、ACK、数据、STOP，作者自绘矢量图）",
+  "chapter": "07",
+  "type": "technical"
  },
- "diagrams/h7-pinmux-conflicts.svg": {
-  "type": "comparison",
-  "chapter": "25",
-  "caption": "▲ 冲突图：一只脚一次只有一个所有者（FA-029 · IG-011；作者自绘矢量图）"
+ "animations/iwdg-window.svg": {
+  "caption": "▲ 辅图。独立看门狗只惩罚喂晚。喂早也复位的是窗口看门狗。不播放这张图时，1 秒和减到 0 才复位都在静态主图上。（作者自绘矢量动画，非实拍）",
+  "chapter": "11",
+  "type": "technical"
  },
- "illustrations/handraw/ch25-pinmux.png": {
-  "type": "comparison",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA11/PA12 是 FDCAN1 与 OTG_FS 抢的脚，FDCAN1 迁 PD0/PD1 或 PB8/PB9；PB6/PB7 同理在 USART1 与 I2C1 之间二选一；不是实"
+ "animations/l4-stop2-evidence.svg": {
+  "caption": "▲ 动画：原始 RTC/EXTI/PWR 位必须在 IRQ 入口写入 Stop 2 保持的 SRAM；HAL handler 清位后，主循环消费的是软件记录而不是已经消失的硬件标志。程序生成示意，不是逻辑分析仪实测（FA-002 · IG-",
+  "chapter": "24",
+  "type": "technical"
  },
- "diagrams/sample-25-migrate-triage.svg": {
-  "type": "triage",
-  "chapter": "25",
-  "caption": "▲ 自绘。H7 迁移四步排错。出处是 [DS12110](#source-ds12110)、[RM0433](#source-rm0433)、[ES0392](#source-es0392)；Cube 时钟示例仅对照 [stm32cube-"
+ "animations/lowpower-wakeup.svg": {
+  "caption": "▲ 三条唤醒路径。移动点表示执行顺序，速度不代表真实耗时；Stop 的普通返回与 Standby 的复位启动分开画。自绘矢量动画，非实测。",
+  "chapter": "16",
+  "type": "technical"
  },
- "diagrams/sample-25-dcache-dma.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 自绘。CPU 看见的内存 ≠ DMA 看见的；先 clean/invalidate。"
- },
- "diagrams/network-cache-ownership.svg": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 所有权图：H7 Cache 与 DMA 交接的方向和顺序（FA-029 · IG-012；作者自绘矢量图）"
- },
- "diagrams/spl-ownership-boundary.svg": {
-  "type": "calculation",
-  "chapter": "26",
-  "caption": "▲ 所有权边界（自绘）：HAL、SPL 和寄存器不是三套硬件。迁移时要切换一条完整外设链，不能让两套库轮流接管同一实例。"
- },
- "illustrations/handraw/ch26-four-layers.png": {
-  "type": "concept",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。stm32f10x.h 管寄存器地址与位定义；外设头文件管结构体与声明；外设 .c 把字段写进寄存器；时钟、引脚、顺序、中断、超时、业务仍是你的工程的事；不是实拍。"
- },
- "diagrams/sample-26-file-matrix.svg": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 自绘。缺一个 .c = 声明有、链接无。"
- },
- "illustrations/handraw/ch26-defines.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。STM32F10X_MD 按料号选密度；USE_STDPERIPH_DRIVER 引入 conf.h；assert_param 发布版通常不执行，不能替代运行时处理；不是实拍。"
- },
- "animations/sample-26-clk-cfg-en-flow.svg": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 自绘矢量动画（FA-002）。RCC → 默认值 → Init → 使能。"
- },
- "animations/spl-init-pipeline.svg": {
-  "type": "concept",
-  "chapter": "26",
-  "caption": "▲ 连续动画（自绘）：四步依次点亮；下半部分把每类故障放回第一次可能出现的位置。HTML 中循环播放，PDF 保留可独立阅读的全链路第一帧。"
- },
- "illustrations/handraw/ch26-init-steps.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。开时钟 → StructInit 默认值 → 覆盖字段 → 显式 Cmd 使能；函数名可能不同，回 RM0008 与头文件原型核对；不是实拍。"
- },
- "diagrams/sample-26-spl-hal-compare.svg": {
-  "type": "comparison",
-  "chapter": "26",
-  "caption": "▲ 自绘。SPL↔HAL 对照。出处是 [STSW-STM32054](#source-stsw-stm32054)、[RM0008](#source-rm0008)；目录核对仅用 [spl-f1-mirror](#source-spl-f"
- },
- "illustrations/handraw/ch26-spl-hal.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。GPIO 时钟/配置、USART 收发、DMA 剩余项的 HAL 与 SPL V3.5.0 入口都落到同一组寄存器；只换函数名保留旧状态机最容易得到“能跑一会儿”的工程；不是实拍。"
- },
- "illustrations/handraw/ch26-dma-wiring.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：数据通路 USART1_DR → DMA1 Channel 4 → tx_buffer 与三件事——开 DMA1 时钟、按请求映射 Init 通道、USART_DMACmd 与 DMA_Cmd 两个开关都打开；证明 SPL 不会自动把两个驱动绑在一起，只做两件 CNDTR 不动；不能替代 RM0008 请求映射表与寄存器细节，也不是实测波形。出处 RM0008。"
- },
- "illustrations/handraw/ch26-call-chains.png": {
-  "type": "comparison",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十个外设的最小调用链都走同一条骨架——RCC 开时钟 → GPIO 配脚 → XXX_Init → XXX_Cmd → 标志/事件对账，每格下面标出该外设最容易漏的边界；证明「骨架一样、坑各不同」；不能替代对应章节的完整时序与寄存器细节，也不是实测波形。出处 RM0008、STSW-STM32054。"
- },
- "illustrations/handraw/ch26-migrate-steps.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：先冻结料号、SPL 版本、密度宏、编译器、晶振的可复现基线，再画外设所有权表，然后一次只迁一个外设、对比可见结果、清掉旧所有权；证明迁移是逐外设的对账过程，不是全局替换函数名；不能保证迁移后的认证与回归状态，那要靠逐项复测。出处 STSW-STM32054、spl-f1-mirror。"
- },
- "diagrams/sample-26-timeout-poll.svg": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 自绘。HAL 超时习惯不能带进 SPL 死循环。"
- },
- "illustrations/handraw/ch26-timeout-poll.png": {
-  "type": "triage",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USART_SendData() 只写 DR，等 TXE 的循环要自己写 spin_limit 或可靠时基截止时间，并定义恢复动作；不是实拍。"
- },
- "animations/network-packet-journey.svg": {
-  "type": "concept",
-  "chapter": "27",
-  "caption": "▲ 动画：一条 MQTT 消息穿过应用层、lwIP 与 Ethernet 硬件。每层的“成功”只证明该层，不自动证明上一层业务完成。"
- },
- "diagrams/sample-27-rmii-checklist.svg": {
-  "type": "concept",
-  "chapter": "27",
-  "caption": "▲ 自绘。先对清线，再怪 lwIP。"
- },
- "illustrations/handraw/ch27-rmii-signals.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。REF_CLK 50 MHz、TXD0/1+TX_EN、RXD0/1+CRS_DV、MDC+MDIO、NRST+strap、磁性件+RJ45 六组各验什么；link LED 只是线索，MD"
- },
- "illustrations/handraw/ch27-cache-dma.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TX 交接前 clean 整条 32 B line，RX 在 DMA 写完后 invalidate；未对齐窄区间 invalidate 会丢首尾 line 的脏变量；Ethernet DM"
- },
- "diagrams/sample-27-tcp-framing.svg": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 自绘。字节流≠消息；自己定帧。"
- },
- "illustrations/handraw/ch27-api-context.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。raw 只在 NO_SYS 主循环或 tcpip_thread；Netconn/socket 在应用任务；禁止在 Ethernet/定时器 IRQ 里直接调 tcp_write()/udp"
- },
- "animations/sample-27-link-dhcp-flow.svg": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 自绘矢量动画（FA-002）。PHY → link → IP → ping。"
+ "animations/memory-map.svg": {
+  "caption": "▲ 动画：Cortex-M 存储器映射（Flash/SRAM/外设/系统区）（作者自绘矢量图）",
+  "chapter": "02",
+  "type": "concept"
  },
  "animations/network-online-state.svg": {
-  "type": "triage",
+  "caption": "▲ 连续动画（自绘）：六道门沿时间轴依次点亮。link LED 只证明第一道门；哪一道门先失败，就在哪一层保留错误码、配置和抓包证据。",
   "chapter": "27",
-  "caption": "▲ 连续动画（自绘）：六道门沿时间轴依次点亮。link LED 只证明第一道门；哪一道门先失败，就在哪一层保留错误码、配置和抓包证据。"
+  "type": "triage"
  },
- "diagrams/tcp-byte-stream.svg": {
-  "type": "technical",
+ "animations/network-packet-journey.svg": {
+  "caption": "▲ 动画：一条 MQTT 消息穿过应用层、lwIP 与 Ethernet 硬件。每层的“成功”只证明该层，不自动证明上一层业务完成。",
   "chapter": "27",
-  "caption": "▲ 连续分镜（自绘）：上排是三次应用写入，中排是网络分段，下排是接收块。只有应用层长度/分隔规则能把字节流重新还原成消息。"
+  "type": "concept"
  },
- "illustrations/handraw/ch27-tcp-framing.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一次 send() 不对应一次 recv()；帧含 magic 0x534E、ver+type、payload_len（网络字节序）、sequence、CRC32；TLS 不能替代业务校验"
+ "animations/nvic-interrupt-flow.svg": {
+  "caption": "▲ 动画：中断响应全流程（入栈现场 → 取向量 → ISR → 出栈，作者自绘矢量图）",
+  "chapter": "04",
+  "type": "technical"
  },
- "diagrams/sample-27-link-triage.svg": {
-  "type": "triage",
-  "chapter": "27",
-  "caption": "▲ 自绘。联网分层排错阶梯。出处是 [RM0433](#source-rm0433)、[AN4839](#source-an4839)；开源对照 [stm32cube-h7-lwip](#source-stm32cube-h7-lwip) "
- },
- "illustrations/handraw/ch27-backoff.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。backoff = min(B_max, B_base×2^n)+jitter，n 有上限；link down 不建 socket，DNS/TCP/TLS/MQTT 分别计数，喂狗条件是网"
- },
- "illustrations/handraw/ch27-at-offload.png": {
-  "type": "concept",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏是模组里终止的 TCP/UDP/TLS 与 socket，右栏是 MCU 必须保留的——命令超时与重试上限、分帧缓存、业务幂等键、离线队列上限、喂狗条件；UART 只是字节通道，不是网络边界；证明「栈移走了，状态机没有消失」；不能替代具体模组 AT 手册的错误码与恢复时序，也不是实测日志。出处 RM0433、lwip-pitfalls。"
- },
- "illustrations/handraw/ch27-four-ledgers.png": {
-  "type": "calculation",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：RAM_net、goodput、loss_or_retry_rate、recovery_time 四本账各给一个可复算的式子与最低记录项；证明网络验收的每个数都能从测量复算回去；不能替代实测——账簿再全也不等于拔线、重启、弱网注入真的做过。出处 RM0433、AN4839、lwip-pitfalls。"
- },
- "illustrations/handraw/ch27-lab-ladder.png": {
-  "type": "triage",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：实验 A→D 逐级多证明一层——A 只证 L1–L3 连通，B 证 TCP 分帧不依赖一次 recv 边界，C 证 DHCP/DNS/MQTT 失败可定位，D 证 TLS 与 24 h 长期运行不劣化；证明层与层之间的依赖顺序；不能跳过：没过 A 的板子直接进 C，失败时无法归因。出处 stm32cube-h7-lwip、lwip-pitfalls。"
+ "animations/rtos-startup-gates.svg": {
+  "caption": "▲ `vTaskStartScheduler()` 返回不了并不等于系统已可用。每道启动门要给出成功、降级或失败结果；关键设备未就绪时，执行器和远程命令仍应保持关闭（FA-002 · IG-008 · C-03/C-10/C-27/C-31",
+  "chapter": "15",
+  "type": "triage"
  },
  "animations/rtos-system-layers.svg": {
-  "type": "concept",
+  "caption": "▲ 动画：RTOS 系统分层与生态选型。作者自绘矢量动画，不代表任何项目的实测时序。",
   "chapter": "28",
-  "caption": "▲ 动画：RTOS 系统分层与生态选型。作者自绘矢量动画，不代表任何项目的实测时序。"
+  "type": "concept"
  },
- "diagrams/sample-28-four-concepts.svg": {
-  "type": "concept",
-  "chapter": "28",
-  "caption": "▲ 自绘。先分概念，再选内核名字。"
+ "animations/sample-00-boot-fetch-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。BOOT0→别名→向量→运行。",
+  "chapter": "00",
+  "type": "technical"
  },
- "illustrations/handraw/ch28-four-concepts.png": {
-  "type": "concept",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。裸机一个大循环、前后台 ISR 置标志、RTOS 内核管调度与 IPC、Linux 要 MMU；内核只负责调度 · IPC · 软件定时器 · 临界区 · 内存分配；不是实拍。"
+ "animations/sample-01-flash-swd-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。烧录→复位→MSP/Reset。",
+  "chapter": "01",
+  "type": "technical"
  },
- "diagrams/sample-28-os-compare.svg": {
-  "type": "comparison",
-  "chapter": "28",
-  "caption": "▲ 自绘。四系统选型对照。出处是 [FreeRTOS 11.3.2](#source-freertos-1132)、[RT-Thread 5.3.0](#source-rtthread-530)、[Zephyr 4.4.2](#source"
+ "animations/sample-02-pll-lock-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。上锁步骤推进；失败回落见 clock-css GIF / HSE-fail 静图。",
+  "chapter": "02",
+  "type": "triage"
  },
- "illustrations/handraw/ch28-os-compare.png": {
-  "type": "comparison",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。FreeRTOS 11.3.2 小内核自行组合；RT-Thread 5.3.0 设备框架与软件包；Zephyr 4.4.2 Kconfig+Devicetree；CMSIS-RTOS2 2"
+ "animations/sample-03-gpio-bsrr-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。模式→类型→BSRR→引脚；极性跟原理图。",
+  "chapter": "03",
+  "type": "concept"
  },
- "animations/sample-28-isr-owner-flow.svg": {
-  "type": "technical",
-  "chapter": "28",
-  "caption": "▲ 自绘矢量动画（FA-002）。ISR 只投递，所有者才碰硬件。"
+ "animations/sample-04-nvic-preempt-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。TIM2→EXTI0→入栈→ISR→返回。",
+  "chapter": "04",
+  "type": "technical"
  },
- "animations/sample-28-owner-flow.svg": {
-  "type": "technical",
-  "chapter": "28",
-  "caption": "▲ 动画：IRQ→队列→所有者→执行器→监督者（作者自绘矢量动画，非实拍）。出处见本章 FreeRTOS/RT-Thread/Zephyr 版本钉死说明。"
- },
- "illustrations/handraw/ch28-owner-task.png": {
-  "type": "triage",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。两个任务直调 HAL_SPI_TransmitReceive 会把片选、DMA、恢复拆开；改成队列交给 flash_task 唯一所有者，xTaskNotify 回执 requester，"
- },
- "diagrams/sample-28-three-times.svg": {
-  "type": "calculation",
-  "chapter": "28",
-  "caption": "▲ 自绘。实时性来自预算，不来自 RTOS 商标。"
- },
- "illustrations/handraw/ch28-three-times.png": {
-  "type": "technical",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。release 起算，B 阻塞、C 执行、S 干扰，R = B + C + S；验收看最坏 R_max ≤ D，一个事务一个单调时钟截止点；不是实拍。"
- },
- "diagrams/rtos-config-paths.svg": {
-  "type": "comparison",
-  "chapter": "28",
-  "caption": "▲ 三列对比（自绘）：生态差异不只是 API 名字；配置入口、硬件描述、驱动模型和构建系统共同决定最终固件。迁移时应逐层对账。"
- },
- "diagrams/sample-28-fault-triage.svg": {
-  "type": "triage",
-  "chapter": "28",
-  "caption": "▲ 自绘。系统故障三岔口。出处是本章故障注入实验与 [FreeRTOS 11.3.2](#source-freertos-1132) 等开源 tag。"
- },
- "illustrations/handraw/ch28-fault-triage.png": {
-  "type": "triage",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：队列满要有满时策略；冻结任务仍喂狗则只允许健康监督者喂狗；驱动超时返回码回策略层；不是实拍。"
- },
- "illustrations/handraw/ch09-scan-sequence.png": {
-  "type": "calculation",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SQR 序列四通道的采样档与总周期；14 + 26 + 68 + 252 = 360 周期 = 12 MHz 下 30 µs；温度通道要 239.5 档；不是实拍。"
- },
- "illustrations/handraw/ch15-prio-inherit.png": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ L 持锁被 M 抢占；H 等锁使 L 继承 H 的优先级；释放后 H 运行、L 回落。继承消除 M 的干扰，其他干扰仍需预算。手绘原理图，非实测。"
- },
- "illustrations/handraw/ch15-psp-msp.png": {
-  "type": "technical",
-  "chapter": "15",
-  "caption": "▲ ARM_CM3 任务用 PSP，首次异常帧占任务栈；ISR 函数与嵌套用 MSP；PendSV 再保存 R4–R11。两边分别留余量。手绘原理图，非实测。"
- },
- "illustrations/handraw/ch16-wake-matrix.png": {
-  "type": "comparison",
-  "chapter": "16",
-  "caption": "▲ Sleep 保留原时钟，Stop 从 HSI 8 MHz 恢复，Standby 从复位向量重启。IWDG 超时属于复位，不能当成 Stop 的普通返回。手绘原理示意，非实测；时间取自 [DS5319 Rev 20 表 26](#source-ds5319-pwr)，RTC 路由见 [RM0008 Rev 21](#source-rm0008-rtc)。"
- },
- "illustrations/handraw/ch05-capture-pulse.png": {
-  "type": "calculation",
+ "animations/sample-05-pwm-edge-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。1 kHz、50% 高电平 500 µs。",
   "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三个边沿把 CNT 抄进 CCR：0504 − 0004 = 500 数 × 1 µs = 500 µs；周期差 0 补 ARR+1 = 1000 → 1 kHz；占空比 50%；不是实拍。"
- },
- "illustrations/handraw/ch08-byte-exchange.png": {
-  "type": "technical",
-  "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。主从两个移位寄存器经 MOSI/MISO 构成环，8 个沿换一个字节；9F FF FF FF 换回 ?? EF 40 17，rx[0] 是剩菜不是厂商号；不是实拍。"
- },
- "illustrations/handraw/ch13-arb-ladder.png": {
-  "type": "comparison",
-  "chapter": "13",
-  "caption": "▲ 手绘仲裁逻辑：A 发 0x100、B 发 0x0F0；bit8 上 A 发 1 却读到 0，转为接收，B 继续发送。输家后续按重发配置处理；标准数据帧的 ID 越小，优先级越高。非实拍。"
- },
- "illustrations/handraw/ch13-pitfall-triage.png": {
-  "type": "triage",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个常见现象各配第一处边界与出处标签（RM0008=参考手册、本仓库例程=examples/can-bxcan、DS5319=数据手册）；证明排错先对现象、再找边界、最后查出处；不能替代对应出处里的完整寄存器与电气细节，也不是实测波形。出处 RM0008、DS5319、本仓库例程。"
- },
- "illustrations/handraw/ch13-diff-levels.png": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：CAN_H 与 CAN_L 成对跳变，同一干扰同时打在两根线上压差不变，任一节点发显性整条线就是显性；证明「显性 0 盖过隐性 1」与两只 120 Ω 并联是 60 Ω 直流负载、不是电缆特性阻抗；不能据此判断总线长度、终端匹配或实测波形。出处 RM0008 Rev 21 bxCAN。"
- },
- "illustrations/handraw/ch13-data-frame.png": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：标准数据帧按位排开（SOF、11 位 ID、RTR、控制场、0–8 B 数据、CRC、ACK、EOF），位填充给接收方对表；证明「帧只写是什么、不写收件人」，所有节点都听、按 ID 决定收不收；不能据此判断填充后的总线占用时长、错误帧细节，也不是协议分析仪实测。出处 RM0008 Rev 21 bxCAN。"
- },
- "illustrations/handraw/ch06-ore-fe.png": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ORE：新字节不能转入未读 DR，旧字节保留；FE：本例停止位三次采样均低，坏字节仍进 DR。只读 DR 清 RXNE，清 ORE/FE 要先 SR 后 DR；不是实拍。"
- },
- "illustrations/handraw/ch10-channel-map.png": {
-  "type": "comparison",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 只有一条 DMA1 共 7 通道，ADC1→通道 1、USART1_TX→通道 4、USART1_RX→通道 5；F4 的 DMA2 Stream 5 照搬过来不报错但 CNDTR 不动；不是实拍。"
- },
- "illustrations/handraw/ch11-wwdg-window.png": {
-  "type": "technical",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。等比例计数轴，47 拍到 0x50，再过 17 拍到 0x3F 复位；[0x40, 0x50] 内重载返回 0x7F。PCLK1=36 MHz、预分频 8 时每拍约 910.2 µs，全程约 58.25 ms；不是实拍。"
- },
- "illustrations/handraw/ch17-bp-comparators.png": {
-  "type": "comparison",
-  "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。F103 的 6 个代码比较器用完后，要释放旧断点或换一种观测方法。给硬件断点加条件仍会占比较器；M7 的 8 个不能套到这里。见 [PM0056 DWT](#source-pm0056-dwt)。"
- },
- "illustrations/handraw/ch14-enum-checklist.png": {
-  "type": "comparison",
-  "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。未知 USB 设备要同时对上的五处：48 MHz、D+ 1.5 kΩ 上拉、标准请求、描述符长度、端点缓冲；卡在读描述符/读配置/最后一步各查各的；不是实拍。"
- },
- "illustrations/handraw/ch18-multi-def.png": {
-  "type": "technical",
-  "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上方的初始化定义 `int count = 0;` 随头文件进入两个翻译单元，产生重复符号。改为 `extern int count;` 声明，由一个 .c 文件负责定义；头文件保护宏只防同一翻译单元内重复包含。见 [examples/](#source-project-examples)。"
- },
- "illustrations/handraw/ch19-ab-partition.png": {
-  "type": "calculation",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。两条 Flash 使用同一比例：单 APP 布局占满 64 KB；再加一张 46 KB 镜像便越过 0x08010000。容量放得下只是第一步，校验和回滚还需独立设计。见 [DS5319](#source-ds5319-swd)。"
- },
- "illustrations/handraw/ch20-manual-route.png": {
-  "type": "comparison",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。查手册三步：定手册（RM/DS/AN）、Ctrl+F 寄存器或位名、读功能描述；例 1 走 RM0008 搜 CCR1，例 2 走 DS5319 搜 PA11；不是实拍。"
- },
- "illustrations/handraw/ch27-pbuf-chain.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一条消息拆成三个 pbuf 的链，想连续就先拷出来；引用跟着所有权走，pbuf_free() 每份引用恰好一次，漏 free 堆耗尽、多 free 当场崩；不是实拍。"
- },
- "illustrations/handraw/ch21-minimal-five.png": {
-  "type": "comparison",
-  "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。最小系统五件事：电源、去耦、复位、BOOT、晶振，各占一格用箭头指进芯片；先量这五样再怀疑程序；不是实拍。"
- },
- "illustrations/handraw/ch22-sim-verdict.png": {
-  "type": "comparison",
-  "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三句话收尾各一栏：仿真证明了什么、真板新增证明了什么、还有什么没证明（模型没有 DMA/RTC/IWDG）；三句写全双轨才算诚实；不是实拍。"
- },
- "illustrations/handraw/ch24-sram2-retain.png": {
-  "type": "technical",
-  "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SRAM2 三档对照：Sleep/Stop 照常保持、Standby 可选保持要置 RRS、Shutdown 更深；保持要按料号与 RRS 确认，最小状态放 RTC 后备寄存器；不是实拍。"
- },
- "illustrations/handraw/ch23-g0-f1-compare.png": {
-  "type": "comparison",
-  "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G071RB 与 F103C8 六行对照：第 1 脚 PC11、复位 PF2、BOOT 与 SWCLK 共 PA14、USB 是 UCPD、没有 CAN、PC13–15 限 3 mA/2 MHz/30 pF；不是实拍。"
- },
- "illustrations/handraw/ch25-power-domains.png": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。D1/D2/D3 三域可分别关时钟或断电；VCAP1/2 指向内核稳压器、VDD33USB 第 95 脚、PDR_ON 第 143 脚；不是实拍。"
- },
- "illustrations/handraw/ch28-wdg-supervisor.png": {
-  "type": "technical",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。epoch 是有效工作的进度计数；监督者按各任务期限、队列、内存及状态机判断，全部通过才喂 IWDG。B 卡住时 A 或中断仍喂是假健康；设计模式非实拍。"
+  "type": "technical"
  },
  "animations/sample-06-ore-overwrite-flow.svg": {
-  "type": "technical",
+  "caption": "▲ 自绘矢量动画（FA-002）。两级接收缓冲：旧字节留在 DR，新字节无法转入并丢失；先 SR 后 DR 处理 ORE。",
   "chapter": "06",
-  "caption": "▲ 自绘矢量动画（FA-002）。两级接收缓冲：旧字节留在 DR，新字节无法转入并丢失；先 SR 后 DR 处理 ORE。"
+  "type": "technical"
+ },
+ "animations/sample-06-uart-baud-wire.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。公式台账 + 交叉流动 + 位高亮。",
+  "chapter": "06",
+  "type": "calculation"
+ },
+ "animations/sample-07-i2c-ack-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。0x78 → 第 9 拍 ACK；NACK 见排查卡。",
+  "chapter": "07",
+  "type": "triage"
+ },
+ "animations/sample-08-spi-jedec-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。CS↓ 0x9F → EF 40 17 @ 9 MHz。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "animations/sample-09-adc-sar-weights.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。权重高亮 MSB→LSB，不是空转弹跳。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "animations/sample-10-dma-circular-ht.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。A/B 半区交替可读；请求线流动。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "animations/sample-11-iwdg-feed-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。LSI→625 Hz→倒数→喂狗。",
+  "chapter": "11",
+  "type": "technical"
  },
  "animations/sample-11-wwdg-window-flow.svg": {
-  "type": "technical",
+  "caption": "▲ 自绘矢量动画（FA-002）。两条独立路径：窗口内重载回到 0x7F；不重载则在 0x40→0x3F 时复位。",
   "chapter": "11",
-  "caption": "▲ 自绘矢量动画（FA-002）。两条独立路径：窗口内重载回到 0x7F；不重载则在 0x40→0x3F 时复位。"
+  "type": "technical"
+ },
+ "animations/sample-12-iap-jump-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。KEY1→KEY2→半字→向量→VTOR。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "animations/sample-13-can-arb-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。Sync→BS1→75% 采样→BS2→2 µs。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "animations/sample-14-usb-48m-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。上拉→主机看见→USBPRE→描述符。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "animations/sample-15-rtos-tick-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。节拍→就绪→prio2→128 字。",
+  "chapter": "15",
+  "type": "technical"
+ },
+ "animations/sample-16-stop-wake-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。Stop→唤醒→HSI→PLL→115200。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "animations/sample-17-cfsr-flow.svg": {
+  "caption": "▲ 自绘矢量动画。先保存现场，再检查 BFARVALID 并解释地址；DWT 周期计数是另一项独立检查。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "animations/sample-18-boot0-flow.svg": {
+  "caption": "▲ 自绘矢量动画。BOOT0/BOOT1 决定复位后的启动位置；SWD 是否连通应独立检查。",
+  "chapter": "18",
+  "type": "technical"
+ },
+ "animations/sample-19-slot-fill-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。单镜像布局算术。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "animations/sample-20-evidence-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。博客是线索，冻结 PDF 是契约。",
+  "chapter": "20",
+  "type": "technical"
+ },
+ "animations/sample-20-lookup-flow.svg": {
+  "caption": "▲ 动画：订货号 → DS → RM → PM → AN/UM（作者自绘矢量动画，非实拍）。出处是本章手册地图与 [项目致谢](#source-project-credits)。",
+  "chapter": "20",
+  "type": "concept"
+ },
+ "animations/sample-21-crystal-boot-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。上电顺序：电源→晶振→BOOT0→向量。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "animations/sample-21-power-swd.svg": {
+  "caption": "▲ 动画：供电→复位→BOOT0→SWD（作者自绘矢量动画，非实拍）。出处是 [DS5319](#source-ds5319) 与 [项目致谢](#source-project-credits)。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "animations/sample-22-sim-pick-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。选型→证明→移植。",
+  "chapter": "22",
+  "type": "technical"
+ },
+ "animations/sample-23-boot-latch.svg": {
+  "caption": "▲ 动画：四个 SYSCLK 上升沿后锁存启动源（作者自绘矢量动画，非实拍）。出处是 [DS12232](#source-ds12232)、[RM0444](#source-rm0444) 与 [AN2606](#source-an2606",
+  "chapter": "23",
+  "type": "comparison"
+ },
+ "animations/sample-23-boot-source-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。option → BOOT0 → 向量 → SWD。",
+  "chapter": "23",
+  "type": "technical"
+ },
+ "animations/sample-24-wake-restore-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。flag → 时钟 → 通信 → 应用。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "animations/sample-25-hse-to-480-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。VOS → HSE → PLL1 → SYS。",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "animations/sample-26-clk-cfg-en-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。RCC → 默认值 → Init → 使能。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "animations/sample-27-link-dhcp-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。PHY → link → IP → ping。",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "animations/sample-28-isr-owner-flow.svg": {
+  "caption": "▲ 自绘矢量动画（FA-002）。ISR 只投递，所有者才碰硬件。",
+  "chapter": "28",
+  "type": "technical"
+ },
+ "animations/sample-28-owner-flow.svg": {
+  "caption": "▲ 动画：IRQ→队列→所有者→执行器→监督者（作者自绘矢量动画，非实拍）。出处见本章 FreeRTOS/RT-Thread/Zephyr 版本钉死说明。",
+  "chapter": "28",
+  "type": "technical"
  },
  "animations/sample-28-supervisor-flow.svg": {
-  "type": "technical",
+  "caption": "▲ 自绘矢量动画（FA-002）。任务各自汇报进度，第一轮全部健康才喂；第二轮 B 超期停滞，A/C 仍工作也不能喂。",
   "chapter": "28",
-  "caption": "▲ 自绘矢量动画（FA-002）。任务各自汇报进度，第一轮全部健康才喂；第二轮 B 超期停滞，A/C 仍工作也不能喂。"
+  "type": "technical"
  },
- "illustrations/handraw/ch05-resolution-grid.png": {
-  "type": "comparison",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同一 72 MHz：10 kHz 一圈 7200 格、50 Hz 舵机 20000 格；一圈的格子数就是占空比的档位数，频率越高档位越少；不是实拍。"
+ "animations/simulation-acceptance-gates.svg": {
+  "caption": "▲ 动画：从仿真到真板的连续验收门（FA-002 · IG-009；作者自绘矢量动画，首帧可独立阅读）",
+  "chapter": "22",
+  "type": "technical"
  },
- "illustrations/handraw/ch05-quadrature.png": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。A 跳变时看 B：正转 B=0 加一，反转 B=1 减一；只有一路分不清正反；不是实拍。"
- },
- "illustrations/handraw/ch05-trgo-adc.png": {
-  "type": "technical",
-  "chapter": "05",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。"
- },
- "illustrations/handraw/ch09-vrefint-cal.png": {
-  "type": "calculation",
-  "chapter": "09",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CH17 读 Vrefint ≈1.20 V 反推 VDDA：VDDA = 1.20×4096÷code；再算真实 V_in；F103C8 无出厂 VREFINT_CAL；不是实拍。"
- },
- "illustrations/handraw/ch10-request-beat.png": {
-  "type": "technical",
-  "chapter": "10",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RXNE=1 且 DMAR=1 放行请求，DMA1 通道 5 一拍读 CPAR 写 CMAR、CNDTR 减 1；配置顺序 CPAR→CMAR→CNDTR→CCR；不是实拍。"
- },
- "illustrations/handraw/ch11-lsi-drift.png": {
-  "type": "calculation",
-  "chapter": "11",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI 30–60 kHz 使标称 1 s 的 IWDG 实际在 2/3–4/3 s 之间摆动（Reload 624 不变）；按范围留余量；不是单颗实测。"
- },
- "illustrations/handraw/ch13-filter-mask.png": {
-  "type": "technical",
-  "chapter": "13",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。掩码位=1 必须匹配；FilterIdHigh = 0x123<<5 = 0x2460，掩码 0x7FF<<5；不左移则邮箱一直空；不是实拍。"
- },
- "illustrations/handraw/ch06-sample-points.png": {
-  "type": "technical",
-  "chapter": "06",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。16 倍过采样：起始位第 3/5/7 点确认、数据与停止位取 8/9/10 三点表决；毛刺在 3/5/7 被滤掉；不是实拍。"
- },
- "illustrations/handraw/ch08-cs-bracket.png": {
-  "type": "technical",
+ "animations/spi-transfer.svg": {
+  "caption": "▲ 动画：SPI 全双工移位与 CPOL/CPHA 四种模式时序（作者自绘矢量图）",
   "chapter": "08",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA4 括住一次事务：Mode 0 上升沿采样、8 拍一字节；CS 不拉高则两条命令粘成 16 拍；有的从机在上升沿才收下；不是实拍。"
+  "type": "concept"
  },
- "illustrations/handraw/ch04-mask-gates.png": {
-  "type": "concept",
-  "chapter": "04",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIMASK 挡 0–15、FAULTMASK 再挡 HardFault 只留 NMI、BASEPRI 只挡数值 ≥ 阈值的一截；GROUP_4 下 0 最急 15 最缓；不是实拍。"
+ "animations/spl-init-pipeline.svg": {
+  "caption": "▲ 连续动画（自绘）：四步依次点亮；下半部分把每类故障放回第一次可能出现的位置。HTML 中循环播放，PDF 保留可独立阅读的全链路第一帧。",
+  "chapter": "26",
+  "type": "concept"
  },
- "illustrations/handraw/ch07-clock-stretch.png": {
-  "type": "technical",
-  "chapter": "07",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。从机拉低 SCL 延长时钟，SCL 线与低电平最长的器件定拍；SDA 拉伸期间不动；拉过 HAL 超时即 BUSY；不是实拍。"
+ "animations/timer-modes.svg": {
+  "caption": "▲ 计数状态：CNT、ARR 和 CCR 的关系决定更新事件与比较输出。动画首帧在 PDF 中仍可读；它说明顺序和边界，不是示波器实测波形（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。",
+  "chapter": "05",
+  "type": "calculation"
  },
- "illustrations/handraw/ch12-halfword-loop.png": {
-  "type": "technical",
-  "chapter": "12",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。擦除五拍 PER→AR→STRT→BSY→EOP；编程循环 PG→写半字→等 BSY→地址+2→LOCK；擦后读 0xFFFF，写只能 1 变 0；不是实拍。"
+ "animations/timer-pwm.svg": {
+  "caption": "▲ 动画：定时器计数、比较匹配与 PWM 占空比（呼吸灯，作者自绘矢量图）",
+  "chapter": "05",
+  "type": "technical"
  },
- "illustrations/handraw/ch14-ctrl-transfer.png": {
-  "type": "technical",
+ "animations/toolchain-flow.svg": {
+  "caption": "▲ 动画：编译 → 链接 → 烧录 → 运行 的完整数据流（作者自绘矢量图）",
+  "chapter": "00",
+  "type": "technical"
+ },
+ "animations/uart-frame.svg": {
+  "caption": "▲ 动画：UART 帧结构逐位时序（起始位/数据位/校验/停止位，作者自绘矢量图）",
+  "chapter": "06",
+  "type": "concept"
+ },
+ "animations/usb-enumeration.svg": {
+  "caption": "▲ 动画：USB 设备枚举全过程（复位 → 取描述符 → 分配地址 → 配置）（作者自绘矢量动画，非实拍）",
   "chapter": "14",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。控制传输三拍 SETUP/DATA/STATUS；EP0 双向 64 字节；SET_ADDRESS 状态走完地址才生效；GET_DESCRIPTOR 地址 0 先交前 8 字节；不是实拍。"
+  "type": "technical"
+ },
+ "boards/bluepill-stm32f103c8t6.svg": {
+  "caption": "▲ 图：BluePill STM32F103C8T6 最小系统板（作者自绘矢量结构图，非厂商实拍照片）",
+  "chapter": "21",
+  "type": "concept"
+ },
+ "boards/peripheral-wiring.svg": {
+  "caption": "▲ 图：常用外设接线总览，多数项目都从这张图起步（作者自绘矢量图，非实拍）",
+  "chapter": "19",
+  "type": "concept"
+ },
+ "boards/pinout-bluepill.svg": {
+  "caption": "▲ 迁移对照只比较边界：电源脚、BOOT、SWD 和目标外设。F1 的引脚号、启动规则和寄存器不能直接套到 G0；具体结论仍以 G071 的 DS/RM 为准。",
+  "chapter": "23",
+  "type": "concept"
+ },
+ "boards/pinout-stm32g071rb-lqfp64.svg": {
+  "caption": "▲ 引脚图：64 脚的名字和顺序来自 DS12232 Rev 5 Table 12 的 LQFP64 列（Figure 9 同一封装）。颜色只是阅读辅助，不是手册上的涂色。脚本生成，不是实拍。",
+  "chapter": "23",
+  "type": "concept"
+ },
+ "boards/pinout-stm32h743zi-lqfp144.svg": {
+  "caption": "▲ 引脚图：144 脚的名字和顺序来自 DS12110 Rev 11 Figure 7（图号 MSv41917V4）。VCAP1 是脚 71，VCAP2 是脚 106，以该图上的标注为准。颜色是阅读辅助。脚本生成，不是实拍。",
+  "chapter": "25",
+  "type": "concept"
+ },
+ "boards/pinout-stm32l476rg-lqfp64.svg": {
+  "caption": "▲ 引脚图：顺序来自 DS10198 Rev 11 Figure 16，并与 Table 16 的 LQFP64 列逐脚核对。颜色是阅读辅助。脚本生成，不是实拍。",
+  "chapter": "24",
+  "type": "concept"
+ },
+ "diagrams/dma-buffer-ownership.svg": {
+  "caption": "▲ 所有权边界：DMA 正在写的半区不能由 CPU 当成稳定数据处理；HT/TC 只交出对应半区。CNDTR 统计配置宽度的数据项，不直接统计字节（FA-002 · IG-004 · C-03/C-10/C-27/C-31）。",
+  "chapter": "10",
+  "type": "calculation"
+ },
+ "diagrams/fault-triage-ladder.svg": {
+  "caption": "▲ 故障阶梯。BFARVALID/MMARVALID 决定地址能否使用；`IMPRECISERR` 下栈 PC 可能已越过原始写操作。确认栈帧和故障类型后，再用同一份 ELF 定位源码。",
+  "chapter": "17",
+  "type": "triage"
+ },
+ "diagrams/firmware-stack-choice.svg": {
+  "caption": "▲ 对比图：固件栈按项目边界选择，不按抽象高低排名（FA-029 · IG-004；作者自绘矢量图）",
+  "chapter": "20",
+  "type": "comparison"
+ },
+ "diagrams/first-lab-wiring.svg": {
+  "caption": "▲ 首次接线：只保留一个主供电路径，先检查 BOOT0=0 和共地，再量 MCU 端 3.3V。USB-TTL 留到 UART 章节。本图是接线边界示意，不是开发板实拍，也不替代目标克隆板的原理图（FA-029 · IG-002 · C-0",
+  "chapter": "00",
+  "type": "calculation"
+ },
+ "diagrams/first-success-gates.svg": {
+  "caption": "▲ 验收阶梯：先确认 ELF/AXF，再确认 0x08000000 烧录校验、BOOT0=0 后进入 main，最后量 PC13 的 1 s 周期。灯亮只能证明某一时刻有电平，不能单独证明构建产物、复位路径和频率都正确（FA-002 · I",
+  "chapter": "00",
+  "type": "concept"
+ },
+ "diagrams/h7-pinmux-conflicts.svg": {
+  "caption": "▲ 冲突图：一只脚一次只有一个所有者（FA-029 · IG-011；作者自绘矢量图）",
+  "chapter": "25",
+  "type": "comparison"
+ },
+ "diagrams/h7-power-domains.svg": {
+  "caption": "▲ 电源域图：供电脚、内核稳压器和片内域各归哪一层（FA-029 · IG-002；作者自绘矢量图）",
+  "chapter": "25",
+  "type": "concept"
+ },
+ "diagrams/h7-revision-clock-decision.svg": {
+  "caption": "▲ 决策图：先识别 silicon revision，再选择 400 或 480 MHz（FA-002 · IG-008；作者自绘矢量图）",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "diagrams/h7-startup-evidence.svg": {
+  "caption": "▲ 证据图：软件读回、独立输出与外设闭环互相校验（FA-002 · IG-010；作者自绘矢量图，非测量截图）",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "diagrams/iap-acceptance-gates.svg": {
+  "caption": "▲ IAP 验收：先检查范围再擦写；传输或校验失败时留在 Bootloader 等待重传，此时旧 APP 可能已被覆盖。跳转后用版本心跳确认启动；无心跳时依靠预先设计的复位和下载入口恢复（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。",
+  "chapter": "12",
+  "type": "triage"
+ },
+ "diagrams/instrument-evidence-ladder.svg": {
+  "caption": "▲ USB 各层证据不能互换：抓包能说明标准请求与描述符，示波器才说明 D+/D− 电气质量；设备管理器出现 COM 口也不能证明所有长度的 CDC 传输都正确（FA-002 · IG-010 · C-03/C-10/C-27/C-31）。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "diagrams/interrupt-priority.svg": {
+  "caption": "▲ 图示：抢占优先级 vs 子优先级的仲裁示意（作者自绘矢量图）",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "diagrams/l4-idd-bench.svg": {
+  "caption": "▲ 接线图：电流仪串入 JP6，电压通道直接看 MCU 端 VDD，并排查 SWD、USB 和 GPIO 回灌。程序生成示意，不代表本仓库已经取得某个实测电流值（FA-029 · IG-002 · C-03/C-10/C-27/C-31）。",
+  "chapter": "24",
+  "type": "triage"
+ },
+ "diagrams/lowpower-current-evidence.svg": {
+  "caption": "▲ 电流账：底电流和峰值都要与时间一起积分，才能算平均电流。数据手册典型值、开发板实测和裸芯片实测属于不同边界；未断开 LED、USB 与调试器时不能据此评价 MCU 的 µA 指标（FA-002 · IG-009 · C-03/C-10/C-27/C-31）。",
+  "chapter": "16",
+  "type": "calculation"
+ },
+ "diagrams/manual-choice-map.svg": {
+  "caption": "▲ 决策图：先问问题，再选手册（FA-002 · IG-008；作者自绘矢量图）",
+  "chapter": "20",
+  "type": "concept"
+ },
+ "diagrams/network-cache-ownership.svg": {
+  "caption": "▲ 所有权图：H7 Cache 与 DMA 交接的方向和顺序（FA-029 · IG-012；作者自绘矢量图）",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "diagrams/network-debug-ladder.svg": {
+  "caption": "▲ 多节点项目按最先失败的边界排查，不从应用日志直接跳到“总线坏了”。每层都要留下可复现证据和恢复动作。",
+  "chapter": "19",
+  "type": "triage"
+ },
+ "diagrams/peripheral-bus.svg": {
+  "caption": "▲ 图示：AHB/APB1/APB2 上分别挂载哪些外设（作者自绘矢量图）",
+  "chapter": "02",
+  "type": "concept"
+ },
+ "diagrams/project-structure.svg": {
+  "caption": "▲ 工程边界：`.ioc`、源码、启动文件与链接脚本共同决定 ELF；`.map` 用来核对段和符号，`.bin` 用于裸二进制交付。图中的目录名是常见组织方式，不是 CubeMX、Keil 或 CMake 的强制结构（FA-002 · I",
+  "chapter": "01",
+  "type": "calculation"
+ },
+ "diagrams/rtos-config-paths.svg": {
+  "caption": "▲ 三列对比（自绘）：生态差异不只是 API 名字；配置入口、硬件描述、驱动模型和构建系统共同决定最终固件。迁移时应逐层对账。",
+  "chapter": "28",
+  "type": "comparison"
+ },
+ "diagrams/rtos-deadline-budget.svg": {
+  "caption": "▲ 实时预算：`R = B + C + S`，验收看最坏响应 `Rmax` 是否早于截止点。图不能替代实际测量；ISR、互斥量持有时间、任务执行时间和队列峰值都要记录（FA-002 · IG-009 · C-03/C-10/C-27/C-3",
+  "chapter": "15",
+  "type": "calculation"
+ },
+ "diagrams/rtos-owner-task.svg": {
+  "caption": "▲ 互斥量只能保护一次函数调用；包含片选、DMA、等待和恢复的完整事务更适合交给唯一所有者任务。图不能证明队列深度和截止时间足够，仍要测峰值与最长响应（FA-002 · IG-011 · C-03/C-10/C-27/C-31）。",
+  "chapter": "15",
+  "type": "triage"
+ },
+ "diagrams/sample-00-accept-gate.svg": {
+  "caption": "▲ 自绘。三道门槛各占一格，各画各的证据：门 1 是 0 Error 日志、产物来自 STM32F103C8Tx_FLASH.ld、烧到 0x08000000；门 2 是 PC13 的 1 Hz 方波，500 ms 高加 50",
+  "chapter": "00",
+  "type": "calculation"
+ },
+ "diagrams/sample-00-boot-state.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6。上半部分是正常情况：经 SWDIO（PA13）和 SWCLK（PA14）把程序写入 0x08000000，BOOT0=0 时 0x00000000 别名到这块闪存。下半部分是 BOOT1=0 且 BOO",
+  "chapter": "00",
+  "type": "technical"
+ },
+ "diagrams/sample-00-boot-triage.svg": {
+  "caption": "▲ 自绘。三环排查，顺序从上到下。第一环量 MCU 端 VDD 与 VSS 之间的 3.3 V，只保留 Micro-USB 一个主供电；第二环确认第 44 脚 BOOT0 = 0，此时 0x00000000 别名到 0x08000000；第",
+  "chapter": "00",
+  "type": "triage"
+ },
+ "diagrams/sample-00-learn-loop.svg": {
+  "caption": "▲ 自绘。闭环四步一轮：读 RM0008 第 9 章里你需要的那一个寄存器 → 写最小代码（APB2ENR 置 IOPCEN、CRH[23:20] 写 0x2、ODR 翻转 ODR13）→ 烧到 0x08000000 并在 BOOT0 = ",
+  "chapter": "00",
+  "type": "triage"
+ },
+ "diagrams/sample-00-roadmap-gates.svg": {
+  "caption": "▲ 自绘。每阶段有可测门槛；别跳过 UART 验收去追 RTOS。",
+  "chapter": "00",
+  "type": "concept"
+ },
+ "diagrams/sample-00-three-ways.svg": {
+  "caption": "▲ 自绘。第一周只选一条车道；混用三个 API 会烧掉整周。",
+  "chapter": "00",
+  "type": "comparison"
+ },
+ "diagrams/sample-01-build-accept.svg": {
+  "caption": "▲ 自绘。上半部分：一次链接写出 `.elf`，同一条命令用 `-Wl,-Map=` 写出 `.map`，`objcopy -O binary` 再从这个 ELF 吐出 `.bin`。ELF 带符号和调试信息，所以断点能停在源码行；`.bi",
+  "chapter": "01",
+  "type": "calculation"
+ },
+ "diagrams/sample-01-debug-connect.svg": {
+  "caption": "▲ 自绘。三环按顺序查，每环一个检查点。第一环是第 34 脚 PA13 和第 37 脚 PA14 被复用成普通 GPIO：`.ioc` 里 SYS → Debug 必须是 `Serial Wire`，生成的 GPIO 初始化不该把这两只脚列",
+  "chapter": "01",
+  "type": "triage"
+ },
+ "diagrams/sample-01-env-compare.svg": {
+  "caption": "▲ 自绘。IDE 只是调用者；契约是同一 ELF 与烧录脚本。",
+  "chapter": "01",
+  "type": "comparison"
+ },
+ "diagrams/sample-01-flash-path.svg": {
+  "caption": "▲ 自绘。看哪里：上半是 SWD 路径——主机工具 → ST-Link → PA13/PA14 → Flash；下半是 BOOT0=1 复位后的 ROM bootloader 两条传输（USART1 与 USB DFU）。证明什么：三条路径",
+  "chapter": "01",
+  "type": "calculation"
+ },
+ "diagrams/sample-01-flash-triage.svg": {
+  "caption": "▲ 自绘。看哪里：三个岔口各有一列症状、检查点与修法——岔口一核对 64 KB 中容量算法与 RDP 选项字节；岔口二先量 3V3 再降 `adapter speed`；岔口三看 BOOT0 是否还挂在 1、bin 头八字节与 0x0800",
+  "chapter": "01",
+  "type": "triage"
+ },
+ "diagrams/sample-01-rdp-unlock.svg": {
+  "caption": "▲ 自绘。退出 RDP1 必整片擦除；先别怀疑 SWD 线。",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "diagrams/sample-01-swd-vectors.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48。第 34 脚 PA13 = SWDIO，第 37 脚 PA14 = SWCLK。第 35 脚是 VSS_2，第 36 脚是 VDD_2。第 44 脚 BOOT0 = 0 时，0x00000",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "diagrams/sample-02-boot-mode.svg": {
+  "caption": "▲ 自绘。上半是 BOOT1=0、BOOT0=0：0x00000000 别名到 0x08000000 的 64 KB 闪存，第 0 字是 MSP，第 1 字是 Reset_Handler。中间是 BOOT1=1、BOOT0=1：同一地址别名",
+  "chapter": "02",
+  "type": "comparison"
+ },
+ "diagrams/sample-02-bus-matrix.svg": {
+  "caption": "▲ 自绘。总线挂载图：算波特率/定时器前先问外设在哪条总线。",
+  "chapter": "02",
+  "type": "concept"
+ },
+ "diagrams/sample-02-clock-tree.svg": {
+  "caption": "▲ 自绘。把树画出来：HSE 8 MHz（PD0/PD1）→ PLL ×9 → SYSCLK/HCLK 72，APB1 ÷2 到 PCLK1 36（TIM ×2 回 72）、APB2 到 PCLK2 72；右侧三路 ADC ÷6 = 12、USBPRE=0 ÷1.5 = 48、MCO PLL/2 = 36；Flash LATENCY = 2 挂在 HCLK 上；红色失败路径是 HSE 停振回 HSI 8 MHz。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "diagrams/sample-02-flash-latency.svg": {
+  "caption": "▲ 自绘。等待周期频段：升频先加 LATENCY，降频后减。知识轨。",
+  "chapter": "02",
+  "type": "calculation"
+ },
+ "diagrams/sample-02-hse-fail.svg": {
+  "caption": "▲ 自绘。上半是 72 MHz 的账：USART1 的 115200 由 72 MHz 除出 39.0625，BRR 写 0x271，SysTick 重装 72000 是 1.000 ms；RCC_CR 的 HSERDY 与 PLLRDY ",
+  "chapter": "02",
+  "type": "calculation"
+ },
+ "diagrams/sample-02-pll-lock.svg": {
+  "caption": "▲ 自绘。PLL 上锁台账：HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2。知识轨，非示波器实拍。",
+  "chapter": "02",
+  "type": "calculation"
+ },
+ "diagrams/sample-03-current-path.svg": {
+  "caption": "▲ 自绘估算（EST）。2.2k≈0.59 mA；330≈3.9 mA。不是实验室读数。",
+  "chapter": "03",
+  "type": "calculation"
+ },
+ "diagrams/sample-03-exti-vs-poll.svg": {
+  "caption": "▲ 自绘对照。GPIO 章先点灯；事件输入在 NVIC/EXTI 章继续。",
+  "chapter": "03",
+  "type": "comparison"
+ },
+ "diagrams/sample-03-gpio-led.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48：PA0 是第 10 脚，PC13 是第 2 脚。上半部分是正确接法：3.3 V 经推挽和 270 Ω 到 LED；260 Ω 是 (3.3 − 2.0) / 0.005 的商。下半部分是把",
+  "chapter": "03",
+  "type": "calculation"
+ },
+ "diagrams/sample-03-moder-map.svg": {
+  "caption": "▲ 自绘。四寄存器配置 + BSRR 原子写；禁止 ODR 读改写。",
+  "chapter": "03",
+  "type": "concept"
+ },
+ "diagrams/sample-04-exception-stack.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，NVIC_PRIORITYGROUP_4。上半部分：TIM2 抢占 2 正在执行，EXTI0（PA0，EXTI0_IRQn）以抢占 1、子优先级 0 打断它。入栈 8 个寄存器，从高地址到低地址是 xP",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "diagrams/sample-04-exti-line-map.svg": {
+  "caption": "▲ 自绘。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ。",
+  "chapter": "04",
+  "type": "concept"
+ },
+ "diagrams/sample-04-exti-triage.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，按键在 PA0，EXTI0_IRQn = 6。看哪里：按 PA0 边沿到 ISR 的顺序读四个寄存器——RCC_APB2ENR 的 bit 2（IOPAEN）、AFIO_EXTICR1 的 [3:0]（",
+  "chapter": "04",
+  "type": "triage"
+ },
+ "diagrams/sample-04-priority-group.svg": {
+  "caption": "▲ 自绘。AIRCR PRIGROUP 切分 4 个优先级位；同抢占互不打断。",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "diagrams/sample-04-tail-chaining.svg": {
+  "caption": "▲ 自绘。入栈约 12 周期；尾链约 6。别空谈“6 周期 ISR”。",
+  "chapter": "04",
+  "type": "technical"
+ },
+ "diagrams/sample-05-deadtime.svg": {
+  "caption": "▲ 自绘。BDTR DTG + MOE；半桥实验才需要。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "diagrams/sample-05-pwm-1khz.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 16 脚 PA6 = TIM3_CH1。计数时钟 72 MHz，PSC = 71，ARR = 999，CCR = 500。上半部分是正确的波形：周期 1 ms，高电平 500 µs，频",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "diagrams/sample-05-pwm-debug.svg": {
+  "caption": "▲ 自绘。判据画在上一排：1 kHz 通过、500 Hz 差整数倍只查环①、全无查环②③；下面信号链 PSC/ARR → CCER → CRL 画到 PA6，REMAP ≠ 00 波形跑到 PB4/PC6。环 ① 读回 TIM3_PSC = 71、TIM3_ARR = 999，72e6 / (72 × 1000) = 1000 Hz；按 36 MHz 除得到 500 Hz。环 ②",
+  "chapter": "05",
+  "type": "triage"
+ },
+ "diagrams/sample-05-shadow-regs.svg": {
+  "caption": "▲ 自绘。ARPE/OCxPE：写预装载，UE 才锁进影子。",
+  "chapter": "05",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-05-timebase-math.svg": {
+  "caption": "▲ 自绘。PSC=71 ARR=999 CCR=500 与章内宏一致。",
+  "chapter": "05",
+  "type": "calculation"
+ },
+ "diagrams/sample-06-baud-formula.svg": {
+  "caption": "▲ 自绘。同一波特率字符串，PCLK 不同则 BRR 不同。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "diagrams/sample-06-baud-triage.svg": {
+  "caption": "▲ 自绘。岔口一：`USARTDIV = fPCLK / (16 × baud)`，USART1 在 PCLK2 72 MHz、115200 下是 39.0625，BRR `0x271`，误差 0；若 HSE 启动失败回落 HSI 8 MH",
+  "chapter": "06",
+  "type": "triage"
+ },
+ "diagrams/sample-06-frame-annotated.svg": {
+  "caption": "▲ 自绘。LSB first；115200 位宽≈8.68 µs。知识轨线语法。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "diagrams/sample-06-idle-dma.svg": {
+  "caption": "▲ 自绘。`DMAR = CR3 bit 6` 让每次 RXNE 都触发 DMA 请求，DMA1 通道 5（USART1_RX 的固定映射）把字节搬进 256 项环形缓冲（CIRC=1，CNDTR 从 256 递减、归零回卷）；线上保持高满",
+  "chapter": "06",
+  "type": "comparison"
+ },
+ "diagrams/sample-06-tx-rx-crossover.svg": {
+  "caption": "▲ 自绘接线规则。TX-TX 会永远沉默；5V TTL 进 3V3 有风险。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "diagrams/sample-06-uart-frame.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 30 脚 PA9 = USART1_TX，第 31 脚 PA10 = USART1_RX。帧是 0xA5，LSB 先发。一位约 8.68 µs，10 位约 86.8 µs。BRR `0",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "diagrams/sample-07-i2c-addr.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6。第 42 脚 PB6 = SCL，第 43 脚 PB7 = SDA，两只 4.7 kΩ 接到 3.3 V。PCLK1 = 36 MHz，I2C_CCR = 0x801E，目标 400 kHz，偏差 ±2",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "diagrams/sample-07-i2c-triage.svg": {
+  "caption": "▲ 自绘。三岔口各带证据：SDA 卡低配 9 个 SCL 脉冲与第 9 拍释放的波形；NACK 岔口画 A6..A0 + R/W 的字节格（0x3C 左移成 0x78）；时钟拉伸岔口画主机松手后期望与从机按住的对比虚线。",
+  "chapter": "07",
+  "type": "triage"
+ },
+ "diagrams/sample-07-pullup-cap.svg": {
+  "caption": "▲ 自绘。4.7 k 是起点；长线/多从机要加测量。",
+  "chapter": "07",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-07-sr-restart.svg": {
+  "caption": "▲ 自绘。MPU6050/EEPROM 典型：写指针 → Sr → 读。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "diagrams/sample-07-start-ack.svg": {
+  "caption": "▲ 自绘。HAL 0x3C",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "diagrams/sample-08-br-table.svg": {
+  "caption": "▲ 自绘。SPI1@72 MHz，BR=010 → 9 MHz，与 JEDEC GIF 一致。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "diagrams/sample-08-bus-compare.svg": {
+  "caption": "▲ 自绘。三总线对照：SPI 四线全双工、每从机一根 CS、主机驱动 SCK；I2C 两线开漏、地址寻址、半双工；UART 点对点异步、双方自有波特率。本图只整理线数/寻址/双工关系，不替代 [RM0008](#source-rm0008-",
+  "chapter": "08",
+  "type": "comparison"
+ },
+ "diagrams/sample-08-cpha-modes.svg": {
+  "caption": "▲ 自绘。列头是 CPOL（0=空闲低、1=空闲高），行头是 CPHA（0=第 1 个边沿采样、1=第 2 个边沿采样），每格画 NSS/SCK/MOSI mini 波形并用圆点标出采样边沿。边沿编号跟着 CPOL 走：NSS 拉低后的第一",
+  "chapter": "08",
+  "type": "concept"
+ },
+ "diagrams/sample-08-mode0-edges.svg": {
+  "caption": "▲ 自绘。CPOL0 CPHA0：第一个上升沿采样；JEDEC Flash 常用。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "diagrams/sample-08-nss-multi.svg": {
+  "caption": "▲ 自绘。共用 SCK/MOSI/MISO；同时拉低两个 CS 会顶总线。",
+  "chapter": "08",
+  "type": "concept"
+ },
+ "diagrams/sample-08-spi-jedec.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48。第 14 脚 PA4 = CS（推挽，事务期间为低），第 15 脚 PA5 = SCK，第 16 脚 PA6 = MISO，第 17 脚 PA7 = MOSI。CPOL = 0，CPHA ",
+  "chapter": "08",
+  "type": "concept"
+ },
+ "diagrams/sample-08-spi-triage.svg": {
+  "caption": "▲ 自绘。岔口一：读回全 0xFF 说明没有器件在驱动 MISO（悬空读 1）——查 PA4 是否在整个事务期间保持低（卡高从机进 Hi-Z，卡低把两条命令并成一帧）、PA6（第 16 脚）接线与供电；读回 0x00 则是有东西把线拉低：M",
+  "chapter": "08",
+  "type": "triage"
+ },
+ "diagrams/sample-09-adc-sar.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，LQFP48 第 10 脚 PA0 = ADC12_IN0，第 9 脚 VDDA 为参考。ADCCLK = 12 MHz。上半部分是一次正常转换：采样开关闭合再断开，比较器从 MSB 开始比较，最长一档",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "diagrams/sample-09-adc-triage.svg": {
+  "caption": "▲ 自绘。岔口一：末位抖动不是随机噪声，是采样电容没充满——`t_s ≈ (R_AIN + 1 kΩ) × 8 pF × ln(2^14) ≈ (R_AIN + 1 kΩ) × 78 ns`，100 kΩ 源阻抗需要约 7.8 µs，而 1",
+  "chapter": "09",
+  "type": "triage"
+ },
+ "diagrams/sample-09-sample-time.svg": {
+  "caption": "▲ 自绘。ADCCLK≤14 MHz；软源拉长 SMP。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "diagrams/sample-09-sar-ladder.svg": {
+  "caption": "▲ 自绘。MSB→LSB 权重；EOC 后读 DR。动画见 sample-09-adc-sar-weights。",
+  "chapter": "09",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-09-vref-rails.svg": {
+  "caption": "▲ 自绘。Code/4095×Vref+；绝对伏特先标 EST。",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "diagrams/sample-10-cndtr-ledger.svg": {
+  "caption": "▲ 自绘。HT/TC 半区所有权；ISR 只置标志。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "diagrams/sample-10-dma-cndtr.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，只有 DMA1。USART1_TX 走通道 4，宽度是半字，缓冲区长度 8。CNDTR = 3 时已写 5 个采样、10 字节。半传输在第 4 个采样、8 字节。图下半部分是把同一个读数当成字节时切错的",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "diagrams/sample-10-dma-phases.svg": {
+  "caption": "▲ 自绘。环形模式 HT/TC；普通模式数到 0 停。",
+  "chapter": "10",
+  "type": "concept"
+ },
+ "diagrams/sample-10-dma-triage.svg": {
+  "caption": "▲ 自绘。以 DMA1 通道 5（USART1_RX）、CPAR=0x40013804、CMAR=0x20000100、CNDTR=0x0080 为例。岔口一：CNDTR 停在 0x0080、TCIF5 为 0——`CCR.EN`（位 0）",
+  "chapter": "10",
+  "type": "triage"
+ },
+ "diagrams/sample-10-mem2mem-vs-peri.svg": {
+  "caption": "▲ 自绘决策表。流式外设用 peri；块拷贝用 mem2mem。",
+  "chapter": "10",
+  "type": "comparison"
+ },
+ "diagrams/sample-11-backup-domain.svg": {
+  "caption": "▲ 自绘。VBAT 续电备份域；LSE 最准，LSI 仅作备用。",
+  "chapter": "11",
+  "type": "concept"
+ },
+ "diagrams/sample-11-iwdg-1s.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6。LSI 典型 40 kHz，范围 30–60 kHz。预分频 64，计数频率 625 Hz，Reload = 624，在减到 0 之前喂狗，超时按典型值算是 1 秒，不是保证值。图里标出的出错情况是计数",
+  "chapter": "11",
+  "type": "concept"
+ },
+ "diagrams/sample-11-iwdg-math.svg": {
+  "caption": "▲ 自绘。超时用 (Reload+1)；写成 625 会多一拍。",
+  "chapter": "11",
+  "type": "calculation"
+ },
+ "diagrams/sample-11-rtc-triage.svg": {
+  "caption": "▲ 自绘。排错三岔口：时间快慢不一，先查 PRL 是不是 32767——32.768 kHz 减一才是 1 Hz；复位后时间归零，查 VBAT 与备份域有没有掉电；闹钟不响，记住比较对象是 32 位秒计数器。出处是 [RM0008 RTC]",
+  "chapter": "11",
+  "type": "triage"
+ },
+ "diagrams/sample-11-wdg-compare.svg": {
+  "caption": "▲ 自绘。IWDG 递减到 0 就复位：LSI 40 kHz、预分频 64、Reload 624 正好 1 秒。WWDG 是带窗口的倒计时：约 58.25 ms 一程，计数值还大于 0x50 时喂狗同样复位，喂狗只允许在窗口内。出处是 [R",
+  "chapter": "11",
+  "type": "comparison"
+ },
+ "diagrams/sample-12-boot-compare.svg": {
+  "caption": "▲ 自绘。两条启动路径对比：常驻 Bootloader 从 0x08000000 起占 16 KB，出厂系统存储器里的自举程序不占这 64 KB；路径在复位时由 BOOT0 选定，之后都汇聚到 0x08004800 的 46 KB APP。",
+  "chapter": "12",
+  "type": "comparison"
+ },
+ "diagrams/sample-12-flash-triage.svg": {
+  "caption": "▲ 自绘。排错三岔口：擦除报错先读 CR.LOCK 位与 1 KB 页边界对不对；写不进去检查是不是按半字写、目标还停在 0xFFFF；读回不对就按 0x08004800、0xB800 逐页比对。出处是 [RM0008 Flash](#so",
+  "chapter": "12",
+  "type": "triage"
+ },
+ "diagrams/sample-12-iap-map.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6，中容量，64 KB，1 KB 一页。图上按顺序画出：先写 0x45670123，再写 0xCDEF89AB，半字写入 APP，然后从 0x08004800 取 MSP，从 0x08004804 取复位地",
+  "chapter": "12",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-12-key-order.svg": {
+  "caption": "▲ 自绘。钥匙顺序反了锁打不开；跳转要装 MSP 与复位向量。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "diagrams/sample-12-page-erase.svg": {
+  "caption": "▲ 自绘。中容量 1 KB/页；C8 末页是 0x0800FC00。",
+  "chapter": "12",
+  "type": "calculation"
+ },
+ "diagrams/sample-13-bit-quanta.svg": {
+  "caption": "▲ 自绘。采样点 75%；预分频写错会变成 450 kbit/s。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "diagrams/sample-13-can-bit.svg": {
+  "caption": "▲ 自绘。STM32F103C8T6。图上半部分是正确配置：8 个 250 ns 的时间份额，采样点 75%，一位 2 µs，500 kbit/s，预分频 9，SJW = 1，CANH 与 CANL 之间接 120 Ω。下半部分是错误配置：",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "diagrams/sample-13-can-triage.svg": {
+  "caption": "▲ 自绘。排错三岔口：APB1 36 MHz、预分频 8 配 10 个时间份额算出来是 450 kbit/s——这就是文档里的错误配置例；邮箱一直空，先查标准 ID 写 FilterIdHigh 是不是忘了左移 5 位（0x123 ",
+  "chapter": "13",
+  "type": "triage"
+ },
+ "diagrams/sample-13-filter-fifo.svg": {
+  "caption": "▲ 自绘。硬实时进 FIFO0，批量进 FIFO1；溢出要提速排空。",
+  "chapter": "13",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-13-tec-busoff.svg": {
+  "caption": "▲ 自绘。单节点无 ACK 只到 128；Bus-Off 要另造发送错误。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "diagrams/sample-14-descriptor-map.svg": {
+  "caption": "▲ 自绘。描述符层级树：设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7；VID/PID 0x1209/0x0001；批量端点 64 字节、通知端点 8 字节——CDC 的两个端点就挂在这棵树上，下一",
+  "chapter": "14",
+  "type": "concept"
+ },
+ "diagrams/sample-14-pma-map.svg": {
+  "caption": "▲ 自绘。IN/OUT 站在主机侧；PMA 重叠会毁掉包。",
+  "chapter": "14",
+  "type": "concept"
+ },
+ "diagrams/sample-14-usb-enum.svg": {
+  "caption": "▲ 自绘。左边主机与设备之间画 DM/DP 两根线，DP 经 1.5 kΩ 上拉到 3.3 V；右边时钟门 USBPRE = 0 分频到 48 MHz，= 1 时 72 MHz 主机读描述符失败；下面两条描述符字节条：设备 18 B（VID/PID 0x1209/0x0001）加配置集合 67 B（wTotalLength 0x0043、bMaxPower 0x32）。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "diagrams/sample-14-usbpre-48.svg": {
+  "caption": "▲ 自绘。全速硬性 48 MHz；USBPRE=1 会枚举失败。",
+  "chapter": "14",
+  "type": "triage"
+ },
+ "diagrams/sample-15-fromisr.svg": {
+  "caption": "▲ 自绘。队列/信号量任务版 API 禁止进中断。",
+  "chapter": "15",
+  "type": "technical"
+ },
+ "diagrams/sample-15-rtos-prio.svg": {
+  "caption": "▲ 自绘。两把尺子并排：NVIC 数字越小越急（0 最急、5 是 FromISR 及格线、15 最缓），FreeRTOS 任务数字越大越先跑（KEY=2 先于 LED/UART=1）；换算条：tick 1 ms、128 words = 512 bytes、5 << 4 = 0x50；失败路径是 EXTI0 配成 0/4 时 FromISR 触发 configASSERT。",
+  "chapter": "15",
+  "type": "comparison"
+ },
+ "diagrams/sample-15-rtos-triage.svg": {
+  "caption": "▲ 自绘排错图。检查创建结果与时基；128 字 = 512 B，深色 32 格仅为四分之一；FromISR 数值优先级至少 5 适用本例配置。堆预算须扣除其他开销；周期图忽略 tick 相位与调度抖动。依据 FreeRTOS Kernel V11.3.2 与本仓库例程。",
+  "chapter": "15",
+  "type": "triage"
+ },
+ "diagrams/sample-15-task-states.svg": {
+  "caption": "▲ Ready 等 CPU；Blocked 等事件或超时；Suspended 等显式恢复。事件唤醒不必等 tick。自绘原理图。",
+  "chapter": "15",
+  "type": "comparison"
+ },
+ "diagrams/sample-16-clock-restore.svg": {
+  "caption": "▲ 自绘。不重配时钟时 0x271 在 8 MHz 下是 12800。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "diagrams/sample-16-mode-current.svg": {
+  "caption": "▲ 自绘。勿把 14/24 µA 并成 20；1.4 µA 是备份域不是整机。",
+  "chapter": "16",
+  "type": "concept"
+ },
+ "diagrams/sample-16-pwr-triage.svg": {
+  "caption": "▲ 自绘排查表。模式不对先读位与标志；醒后串口不对查时钟；电流偏高再查稳压器、常开时钟和板上负载。SLEEPDEEP=1、PDDS=0 只选择 Stop，不能保证测到 14 µA。条件见 [DS5319 Rev 20 表 16](#source-ds5319-pwr) 与 [RM0008 时钟](#source-rm0008-rcc)。",
+  "chapter": "16",
+  "type": "triage"
+ },
+ "diagrams/sample-16-stop-compare.svg": {
+  "caption": "▲ 自绘对比表。电流一行同时给出条件：Sleep 按 72 MHz 与外设开关区分，Stop 按稳压器区分，Standby 按 LSI/IWDG 等配置区分。唤醒源与程序去向另列，避免把 IWDG 复位当成中断返回。出处：[DS5319 Rev 20 表 16、26](#source-ds5319-pwr) 与 [RM0008 时钟](#source-rm0008-rcc)。",
+  "chapter": "16",
+  "type": "comparison"
+ },
+ "diagrams/sample-16-stop-wake.svg": {
+  "caption": "▲ 自绘。SLEEPDEEP 与 PDDS 选择模式，LPDS 选择稳压器。5.4 µs 是唤醒事件到第一条指令的典型时间；恢复 72 MHz 还要等待 HSE、PLL 和软件配置。下方用同一个 BRR `0x271` 算出 115200 与 12800 bit/s。电流与时间条件见 [DS5319 Rev 20 表 16、26](#source-ds5319-pwr)。",
+  "chapter": "16",
+  "type": "calculation"
+ },
+ "diagrams/sample-17-cfsr-bits.svg": {
+  "caption": "▲ 自绘。判读 CFSR 时分清故障类别与地址有效位；周期换算另按实际内核时钟计算。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "diagrams/sample-17-cfsr.svg": {
+  "caption": "▲ 自绘。BFARVALID 决定能否使用保存的 BFAR；DWT 则需同时使能 TRCENA 与 CYCCNTENA。72 个计数仅在 72 MHz 下等于 1 µs；故障地址与耗时应分开判断。见 [PM0056](#source-pm0056) 和 [PM0056 DWT](#source-pm0056-dwt)。",
+  "chapter": "17",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "diagrams/sample-17-obs-compare.svg": {
+  "caption": "▲ 自绘。断点会暂停内核，SWO 在运行中传出跟踪数据，故障记录保存 PC 与 CFSR 供事后分析。条件硬件断点仍占用比较器；记录能否留存取决于存储位置与复位方式。见 [PM0056 调试](#source-pm0056) 和 [DS5319 SWD](#source-ds5319-swd)。",
+  "chapter": "17",
+  "type": "comparison"
+ },
+ "diagrams/sample-17-perf-triage.svg": {
+  "caption": "▲ 自绘。DWT 用两次读数夹住被测区间；比较 -Og/-O2/-Os 时，同时记录周期、代码大小和输出一致性。图中故障判读与性能测量是两套检查，BFAR 仍需通过 bit 15 验证。见 [PM0056 DWT](#source-pm0056-dwt) 和 [PM0056](#source-pm0056)。",
+  "chapter": "17",
+  "type": "triage"
+ },
+ "diagrams/sample-17-swd-pins.svg": {
+  "caption": "▲ 自绘。PA13/PA14 承担 SWD，PB3 可输出 SWO。误把 SWD 脚改成 GPIO 后，通常需要通过复位下连接恢复。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "diagrams/sample-18-boot-triage.svg": {
+  "caption": "▲ 自绘。PA13/PA14、供电与 NRST 用于连接检查；BOOT0/BOOT1 用于判断启动位置。系统存储器启动不等于芯片认不出，也不表示 Flash 已被擦除。见 [DS5319](#source-ds5319-swd) 图 31、表 5 和 [RM0008 启动](#source-rm0008-boot)。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "diagrams/sample-18-faq-compare.svg": {
+  "caption": "▲ 自绘。编译查日志与 map，连接查 ID，串口查位宽，复位查电源和 NRST，任务未运行时查状态与阻塞点。保留读数，再决定改哪一处。见 [RM0008 启动](#source-rm0008-boot) 和 [DS5319 NRST/SWD](#source-ds5319-nrst)。",
+  "chapter": "18",
+  "type": "comparison"
+ },
+ "diagrams/sample-18-hardfault-ladder.svg": {
+  "caption": "▲ 自绘。先保存 BFAR/MMFAR 与现场，再判读有效位。BFAR 是数据访问地址，栈 PC 是指令地址；两者不能互相替代。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "diagrams/sample-18-link-map.svg": {
+  "caption": "▲ 自绘。C8=64 KB/20 KB；先读 region 再改 C。",
+  "chapter": "18",
+  "type": "concept"
+ },
+ "diagrams/sample-18-uart-garbled.svg": {
+  "caption": "▲ 自绘。先确认 SWS/BRR，再怀疑字符串代码。",
+  "chapter": "18",
+  "type": "technical"
+ },
+ "diagrams/sample-19-flash-fit.svg": {
+  "caption": "▲ 自绘。先算 Flash 与 SRAM，再核对 ADC 比例和 USB 分包。C8 的 64 KB Flash 不能容纳两张 46 KB APP，20 KB SRAM 也放不下 65536 字节缓冲。见第 12 章布局和 [DS5319](#source-ds5319-swd)。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "diagrams/sample-19-milestone-triage.svg": {
+  "caption": "▲ 自绘。项目三岔口：贪多 / 跳步 / 无证据。出处是 [配套例程](#source-project-examples) 与本章验收门图。",
+  "chapter": "19",
+  "type": "triage"
+ },
+ "diagrams/sample-19-pick-ladder.svg": {
+  "caption": "▲ 自绘。选最小能逼出一条新总线的项目。",
+  "chapter": "19",
+  "type": "concept"
+ },
+ "diagrams/sample-19-sram-budget.svg": {
+  "caption": "▲ 自绘预算示例。heap_4 的 ucHeap 已计入静态占用，动态任务栈和内核对象在其中分配，不能再次加到总量上。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "diagrams/sample-20-evidence-triage.svg": {
+  "caption": "▲ 自绘。证据三岔口。出处是 [手册选择地图](#source-project-credits) 与 [stlink 工具集](#source-stlink-tools)。",
+  "chapter": "20",
+  "type": "triage"
+ },
+ "diagrams/sample-20-lib-compare.svg": {
+  "caption": "▲ 自绘。一个项目冻结一套库与版本。",
+  "chapter": "20",
+  "type": "comparison"
+ },
+ "diagrams/sample-20-manual-names.svg": {
+  "caption": "▲ 自绘。先选对 PDF，再 Ctrl+F。",
+  "chapter": "20",
+  "type": "technical"
+ },
+ "diagrams/sample-21-board-compare.svg": {
+  "caption": "▲ 自绘对照（非实拍）。三板五问。出处是 [DS5319](#source-ds5319) 与 [项目致谢](#source-project-credits)。",
+  "chapter": "21",
+  "type": "comparison"
+ },
+ "diagrams/sample-21-hse-load.svg": {
+  "caption": "▲ 自绘。HSERDY 不到先查晶振焊接，再怪 PLLMUL。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "diagrams/sample-21-nrst-boot0.svg": {
+  "caption": "▲ 自绘。BOOT0=1 会跑系统存储器，不是“程序丢了”。",
+  "chapter": "21",
+  "type": "concept"
+ },
+ "diagrams/sample-21-usb-ttl.svg": {
+  "caption": "▲ 自绘。TX/RX 交叉、共地；别把 5 V 灌进 PA10。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "diagrams/sample-21-vdd-3v3.svg": {
+  "caption": "▲ 自绘。先量 3V3，再怀疑固件。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "diagrams/sample-22-hw-gap.svg": {
+  "caption": "▲ 自绘。双轨诚实：结构靠仿真，裕量靠桌面。",
+  "chapter": "22",
+  "type": "concept"
+ },
+ "diagrams/sample-22-renode-path.svg": {
+  "caption": "▲ 自绘。先跑仓库两条脚本，再改平台文件。",
+  "chapter": "22",
+  "type": "technical"
+ },
+ "diagrams/sample-22-sim-triage.svg": {
+  "caption": "▲ 自绘。左列同一份固件配支持表卡片：GPIO/EXTI/TIM 有，DMA/RTC/IWDG Wokwi 没有；右侧三个岔口各带一句纠正——模型缺口移出仿真验收、主机环境先跑最小 blink 并固定版本、板级物理仿真门与真板门分列。",
+  "chapter": "22",
+  "type": "triage"
+ },
+ "diagrams/sample-22-wokwi-scope.svg": {
+  "caption": "▲ 自绘。浏览器绿了还要 BluePill 同款验收。",
+  "chapter": "22",
+  "type": "technical"
+ },
+ "diagrams/sample-23-boot0-swclk.svg": {
+  "caption": "▲ 自绘。先判定启动来源，再驱动 SWCLK。",
+  "chapter": "23",
+  "type": "technical"
+ },
+ "diagrams/sample-23-f1-copy-traps.svg": {
+  "caption": "▲ 自绘。同名外设 ≠ 同脚；以 DS 表为准。",
+  "chapter": "23",
+  "type": "comparison"
+ },
+ "diagrams/sample-23-f1-g0-compare.svg": {
+  "caption": "▲ 自绘。F1→G0 迁移五问对照。出处是 [DS12232](#source-ds12232) / [RM0444](#source-rm0444)；例程结构仅对照 [配套例程](#source-project-examples)。",
+  "chapter": "23",
+  "type": "comparison"
+ },
+ "diagrams/sample-24-idd-jp6.svg": {
+  "caption": "▲ 自绘。JP6 积分是验收页；别用万用表拍脑袋。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "diagrams/sample-24-mode-compare.svg": {
+  "caption": "▲ 自绘。L4 低功耗四档对照。出处是 [RM0351](#source-rm0351)、[DS10198](#source-ds10198)、[AN4746](#source-an4746)；Cube 示例仅对照 [stm32cube-l",
+  "chapter": "24",
+  "type": "comparison"
+ },
+ "diagrams/sample-24-stop2-retain.svg": {
+  "caption": "▲ 自绘。Stop2 不是 RAM 永存；先画保持表再睡。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "diagrams/sample-24-wake-triage.svg": {
+  "caption": "▲ 自绘。Stop2 唤醒三岔口。出处是 [RM0351](#source-rm0351) 与 [stm32l4-hal-rtc](#source-stm32l4-hal-rtc) 捕获模式对照。",
+  "chapter": "24",
+  "type": "triage"
+ },
+ "diagrams/sample-25-dcache-dma.svg": {
+  "caption": "▲ 自绘。CPU 看见的内存 ≠ DMA 看见的；先 clean/invalidate。",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "diagrams/sample-25-migrate-triage.svg": {
+  "caption": "▲ 自绘。H7 迁移四步排错。出处是 [DS12110](#source-ds12110)、[RM0433](#source-rm0433)、[ES0392](#source-es0392)；Cube 时钟示例仅对照 [stm32cube-",
+  "chapter": "25",
+  "type": "triage"
+ },
+ "diagrams/sample-25-voltage-scale.svg": {
+  "caption": "▲ 自绘。VOS 就绪证据先于 PLL 锁频。",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "diagrams/sample-26-file-matrix.svg": {
+  "caption": "▲ 自绘。缺一个 .c = 声明有、链接无。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "diagrams/sample-26-spl-hal-compare.svg": {
+  "caption": "▲ 自绘。SPL↔HAL 对照。出处是 [STSW-STM32054](#source-stsw-stm32054)、[RM0008](#source-rm0008)；目录核对仅用 [spl-f1-mirror](#source-spl-f",
+  "chapter": "26",
+  "type": "comparison"
+ },
+ "diagrams/sample-26-timeout-poll.svg": {
+  "caption": "▲ 自绘。HAL 超时习惯不能带进 SPL 死循环。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "diagrams/sample-27-link-triage.svg": {
+  "caption": "▲ 自绘。联网分层排错阶梯。出处是 [RM0433](#source-rm0433)、[AN4839](#source-an4839)；开源对照 [stm32cube-h7-lwip](#source-stm32cube-h7-lwip) ",
+  "chapter": "27",
+  "type": "triage"
+ },
+ "diagrams/sample-27-rmii-checklist.svg": {
+  "caption": "▲ 自绘。先对清线，再怪 lwIP。",
+  "chapter": "27",
+  "type": "concept"
+ },
+ "diagrams/sample-27-tcp-framing.svg": {
+  "caption": "▲ 自绘。字节流≠消息；自己定帧。",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "diagrams/sample-28-fault-triage.svg": {
+  "caption": "▲ 自绘。系统故障三岔口。出处是本章故障注入实验与 [FreeRTOS 11.3.2](#source-freertos-1132) 等开源 tag。",
+  "chapter": "28",
+  "type": "triage"
+ },
+ "diagrams/sample-28-four-concepts.svg": {
+  "caption": "▲ 自绘。先分概念，再选内核名字。",
+  "chapter": "28",
+  "type": "concept"
+ },
+ "diagrams/sample-28-os-compare.svg": {
+  "caption": "▲ 自绘。四系统选型对照。出处是 [FreeRTOS 11.3.2](#source-freertos-1132)、[RT-Thread 5.3.0](#source-rtthread-530)、[Zephyr 4.4.2](#source",
+  "chapter": "28",
+  "type": "comparison"
+ },
+ "diagrams/sample-28-three-times.svg": {
+  "caption": "▲ 自绘。实时性来自预算，不来自 RTOS 商标。",
+  "chapter": "28",
+  "type": "calculation"
+ },
+ "diagrams/simulation-model-boundary.svg": {
+  "caption": "▲ 分层图：一段固件要穿过哪些模型才能出现可见现象（FA-002 · IG-012；作者自绘矢量图）",
+  "chapter": "22",
+  "type": "concept"
+ },
+ "diagrams/simulator-comparison.svg": {
+  "caption": "▲ 对比图：浏览器看接线，机器模型看访问，最终在真板验收（FA-029 · IG-004；作者自绘矢量图）",
+  "chapter": "22",
+  "type": "comparison"
+ },
+ "diagrams/single-build-contract.svg": {
+  "caption": "▲ 一个工程只保留一套构建事实：源文件、宏、头文件路径、工具链和链接脚本都由同一入口定义。IDE 负责调用；ELF、map 和 bin 分别承担调试下载、内存核对和裸二进制交付（FA-002 · IG-012 · C-03/C-10/C-2",
+  "chapter": "01",
+  "type": "concept"
+ },
+ "diagrams/spl-ownership-boundary.svg": {
+  "caption": "▲ 所有权边界（自绘）：HAL、SPL 和寄存器不是三套硬件。迁移时要切换一条完整外设链，不能让两套库轮流接管同一实例。",
+  "chapter": "26",
+  "type": "calculation"
+ },
+ "diagrams/stack-gpio-pc13-led.png": {
+  "caption": "▲ 知识轨（原理示意/非实拍）。上图把“程序写值”与“电流方向”分开：写 0 时，PC13 输出级导通，电流从 3.3 V 经共阳 LED 和限流电阻流入引脚。它解释低电平点亮的原因，不给出实测电流，也不替代具体克隆板原理图。",
+  "chapter": "03",
+  "type": "calculation"
+ },
+ "diagrams/tcp-byte-stream.svg": {
+  "caption": "▲ 连续分镜（自绘）：上排是三次应用写入，中排是网络分段，下排是接收块。只有应用层长度/分隔规则能把字节流重新还原成消息。",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "diagrams/watchdog-reset-evidence.svg": {
+  "caption": "▲ 看门狗闭环：故障、超时、复位原因和重启记录必须对得上。LED 或启动日志重新出现只能证明系统重启，不能单独证明复位来自 IWDG（FA-002 · IG-008 · C-03/C-10/C-27/C-31）。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "gif/adc-sample.gif": {
+  "caption": "▲ 动图版，只演示一次正常的采样和 MSB 比较。印刷版只有上面的静态图。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "gif/boot0-low.gif": {
+  "caption": "▲ 六帧演示 BOOT0=0 时的 Flash 映射、MSP 与复位向量读取；右侧的 SWD 接线独立检查。选中 Flash 后仍要核对镜像，印刷版可看上方静态图。",
+  "chapter": "18",
+  "type": "technical"
+ },
+ "gif/can-500k.gif": {
+  "caption": "▲ 动图版，只演示正确配置：8 个 250 ns 的时间份额，采样点 75%，500 kbit/s。印刷版只有上面的静态图。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "gif/cfsr-read.gif": {
+  "caption": "▲ 左侧保留地址有效条件，右侧独立演示 72 MHz 下的周期换算，播放速度不代表实际耗时。印刷版可对照上方静态图。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "gif/clock-css.gif": {
+  "caption": "▲ 动图版，只演示 HSE 停振后 CSS 把系统时钟切回 HSI 的过程。印刷版只有上面的静态图。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "gif/dma-cndtr.gif": {
+  "caption": "▲ 动图版，演示 CNDTR 从 8 减到 3，标出已写 5 个采样、10 字节。印刷版只有上面的静态图。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "gif/dma-ring.gif": {
+  "caption": "▲ 循环缓冲区的写位置由 DMA 推进，CPU 只处理已经交出的半区。动画不能证明请求映射或数据宽度正确；仍要读取 CNDTR 并核对数组内容。",
+  "chapter": "10",
+  "type": "concept"
+ },
+ "gif/i2c-addr.gif": {
+  "caption": "▲ 动图版，只演示正确的写地址：START，线上移出 0x78，第 9 个时钟 ACK，并标出 0x801E 和 4.7 kΩ。印刷版只有上面的静态图。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "gif/i2c-timing.gif": {
+  "caption": "▲ 动画：I2C 时序细节（程序生成 GIF）",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "gif/iap-jump.gif": {
+  "caption": "▲ 动图版，演示先写 0x45670123、后写 0xCDEF89AB，一个半字写进 APP，再读出 MSP 和复位地址。印刷版只有上面的静态图。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "gif/iwdg-1s.gif": {
+  "caption": "▲ 动图版，演示 625 Hz 的计数在减到 0 之前被喂狗，标出 Reload = 624 和 40 kHz 典型值。印刷版只有上面的静态图。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "gif/led-blink.gif": {
+  "caption": "▲ 实验预期：PC13 低有效，每 500ms 翻转一次得到 1s 周期。动画只能说明逻辑关系；验收仍要读 ODR/IDR 或测量引脚周期。",
+  "chapter": "03",
+  "type": "technical"
+ },
+ "gif/nvic-preempt.gif": {
+  "caption": "▲ 动图版，只演示 EXTI0 成功抢占 TIM2 的过程。印刷版只有上面的静态图。",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "gif/one-slot.gif": {
+  "caption": "▲ 动图版，只演示放得下的布局：16 KB、2 KB 和一张 0xB800 依次填到 0x08010000 为止。印刷版只有上面的静态图。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "gif/pwm-1khz.gif": {
+  "caption": "▲ 动图版，只演示 1000 Hz、高电平 500 µs 的正确波形。印刷版只有上面的静态图。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "gif/pwm-breath.gif": {
+  "caption": "▲ 呼吸灯只展示 CCR 随时间变化的结果。频率是否仍为 1kHz、三档占空比是否正确，要以实验一和实验二保存的波形为准。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "gif/rtos-tick.gif": {
+  "caption": "▲ 动图版，只演示正常运行：1 ms 一格，优先级 2 在跑，优先级 1 在等，128 words = 512 bytes。印刷版只有上面的静态图。",
+  "chapter": "15",
+  "type": "technical"
+ },
+ "gif/sar-adc.gif": {
+  "caption": "▲ 动画：SAR ADC 逐次逼近比较过程（程序生成光栅动画，非实拍）",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "gif/spi-jedec.gif": {
+  "caption": "▲ 动图版，只演示正常读 ID 的过程，SCK 为 9 MHz。印刷版只有上面的静态图。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "gif/stop-wake.gif": {
+  "caption": "▲ 动图版，只演示正确流程：从 Stop 醒来，时钟从 8 MHz 装回 72 MHz，线上 115200。印刷版只有上面的静态图。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "gif/swd-fetch.gif": {
+  "caption": "▲ 动图版，只演示正常的一次：SWD 写完闪存，CPU 读出 MSP 和 Reset_Handler，并标出第 34 脚和第 37 脚。印刷版只有上面的静态图。",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "gif/uart-bits.gif": {
+  "caption": "▲ 动画：UART 逐位发送（含波特率时间轴，程序生成 GIF）",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "gif/uart-idle.gif": {
+  "caption": "▲ 动图版，只演示一帧结束后线保持高电平、满 86.8 µs 后出现 IDLE。印刷版只有上面的静态图。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "gif/usb-48m.gif": {
+  "caption": "▲ 动图版，只演示正常枚举：D+ 被上拉、48 MHz、18 字节、67 字节。印刷版只有上面的静态图。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "gif/usb-enumeration-zh.gif": {
+  "caption": "▲ 枚举逐步关系：抓包中的请求顺序应与状态机一致。动画能说明控制传输顺序，不能证明 48 MHz 精度、D+/D− 波形或描述符字段内容正确。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/ch03-handdraw.svg": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。说明写值与共阳电流方向，不是万用表读数，也不是实拍。文件 ",
+  "chapter": "03",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch00-accept-three-gates.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三道验收门槛；只看编译过不等于通过。不是构建日志截图。",
+  "chapter": "00",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch00-boot-triage-rings.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三环顺序：供电、BOOT0、再 SWD；第一环不过不要改代码。不是万用表读数实拍。",
+  "chapter": "00",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch00-boot0-fetch.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照 BOOT0 如何改写 0x00000000 别名目标；不是烧录日志，也不是板级实拍。",
+  "chapter": "00",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch00-learn-loop-four-steps.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。四步闭环；跳手册抄代码会停在不能解释。不是课堂照片。",
+  "chapter": "00",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch00-roadmap-three-stages.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每级可测量，过关再往下；不是进度条实拍。",
+  "chapter": "00",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch00-rtos-worth-it.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏「该上的三个信号」与右栏「不该上的两个信号」，底条「先问裸机+定时器调度能不能写完」；对应阶段三自测题「什么场景才值得上 RTOS」；证明 RTOS 是调度需求倒逼出来的；不能替代实际项目评估。出处 本章学习路线图。",
+  "chapter": "00",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch00-three-api-lanes.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同一外设三种抽象高度；本书入门推荐 HAL。不是 IDE 截图。",
+  "chapter": "00",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch01-boot-first-words.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：复位后从 0x00000000 别名取第 0 字 MSP、第 1 字 Reset_Handler 的取指顺序，与两个失败出口（Debug 被关/BOOT 配错）；证明「连不上/不运行」先查 BOOT 与 Debug 配置；不能替代 PM0056 向量表原文，也不是实测复位波形。出处 PM0056、RM0008、DS5319。",
+  "chapter": "01",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch01-debug-connect-rings.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。物理层 SWD → 调试适配器 → 主机驱动/OpenOCD → IDE 会话；不是连线照片。",
+  "chapter": "01",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch01-flash-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。供电 → SWD 线序 → 复位/BOOT0 → Option Bytes/RDP → 接口选型；不是故障实拍。",
+  "chapter": "01",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch01-four-envs-one-elf.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CubeIDE / Keil / IAR / VS Code+OpenOCD 四条工具链汇到同一 ELF/HEX；不是 IDE 截图。",
+  "chapter": "01",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch01-main-skeleton.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：HAL_Init → SystemClock_Config → MX_GPIO_Init → while(1) 的四步顺序与右侧注释，底条「前三步是 CubeMX 的合同」；证明骨架里哪几行不能删不能挪；不能替代实际工程文件，也不是运行截图。出处 本仓库 examples/gpio-blink。",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch01-one-elf-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：命令行、CLion、VS Code、CI 四个调用方共享同一套 CMake Preset 与同一产物 app.elf 的对照；证明四种方式产物等价、分歧只在调用入口；不能替代实际构建日志，也不是目录截图。出处 本仓库 examples。",
+  "chapter": "01",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch01-rdp-unlock-paths.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：GUI 四步与 OpenOCD 命令行两条解锁路径，整片擦除的必然性与「0xA5 ≠ 0xAA」红条；证明解锁代价是丢全部程序、写错键值不等于解除；不能替代 PM0075 流程原文，也不是实测操作。出处 PM0075、RM0008。",
+  "chapter": "01",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch01-rdp-unlock.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Option Bytes 里 RDP 从 Level 1/2 降回 Level 0 会整片擦除主 Flash；不是 Programmer 实拍。",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch01-swd-vectors.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWDIO/SWCLK/GND 与复位后 SP/Reset 落在合法区间；不是连线照片，也不是烧录日志。",
+  "chapter": "01",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch01-three-flash-paths.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWD 调试器、UART/USB 系统 Bootloader、用户自定义 Bootloader 三条进 Flash 的路径；不是烧录界面截图。",
+  "chapter": "01",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch02-boot-alias.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT1/BOOT0 三态把 0x00000000 别名到 Flash / 系统存储器 / SRAM；不是板级实拍。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch02-bus-matrix.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。算波特率/定时器前先问外设在哪条总线、PCLK 是多少；不是芯片显微照片。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch02-clock-tree.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSE 8 MHz 经 PLL×9 到 SYSCLK 72 MHz，再分到 PCLK1/PCLK2/ADC/USB；不是示波器实拍。",
+  "chapter": "02",
+  "type": "technical"
  },
  "illustrations/handraw/ch02-flash-fetch-wait.png": {
-  "type": "technical",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz 每次取指多等两拍；先写 LATENCY=010 再切 PLL；顺序错了跑飞或 HardFault；不是实拍。",
   "chapter": "02",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz 每次取指多等两拍；先写 LATENCY=010 再切 PLL；顺序错了跑飞或 HardFault；不是实拍。"
+  "type": "technical"
+ },
+ "illustrations/handraw/ch02-flash-latency.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：0–24/24–48/48–72 MHz 三档与 LATENCY=0/1/2 的对位，底部红条「顺序反了就是事故」；证明升频前先写等待周期是硬性顺序；不能替代 FLASH_ACR 寄存器定义，也不是实测取指波形。出处 RM0008。",
+  "chapter": "02",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch02-hse-fail-fallback.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CSS 把 SYSCLK 从 72 MHz 切回 HSI 8 MHz 后，仍按 72 MHz 算的波特率/SysTick 会错；不是示波器实拍。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch02-part-number-decode.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个色块与错位标注——STM32/F/103/C/8/T/6 各段含义，底条「C8 = 48 脚 · 64 KB Flash · LQFP · −40~85℃」；证明料号每段都有手册出处；不能替代数据手册订购信息表，也不是实物丝印照片。出处 DS5319。",
+  "chapter": "02",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch02-pll-lock-steps.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSERDY → PLLMUL×9 → SWS=10 → LATENCY=2；升频前先加等待周期；不是寄存器截图。",
+  "chapter": "02",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch03-common-anode-before-after.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。左右对照写 0 与写 1 时共阳电流通断；不是万用表读数，也不是板级实拍。",
+  "chapter": "03",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch03-gpio-three-questions.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。配置前先答清驱动者、空闲电平与脚归属；不是寄存器截图。",
+  "chapter": "03",
+  "type": "technical"
  },
  "illustrations/handraw/ch03-lckr-sequence.png": {
-  "type": "technical",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LCKR 锁定五步：写 1、写 0、再写 1，读两次，第二次 LCKK=1 才锁住；中途错序锁中止；不是实拍。",
   "chapter": "03",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LCKR 锁定五步：写 1、写 0、再写 1，读两次，第二次 LCKK=1 才锁住；中途错序锁中止；不是实拍。"
+  "type": "technical"
+ },
+ "illustrations/handraw/ch03-led-current-limit.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。用估算压降与目标电流选电阻；不是实测电流读数。",
+  "chapter": "03",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch03-pa0-ok-pc13-wrong.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照 PA0 正确外接灯与把同一电流搬到 PC13 的错误；不是实拍接线图。",
+  "chapter": "03",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch03-poll-vs-exti.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。对照主循环轮询占用与边沿中断路径；不是示波器实拍，也不是真证照片。",
+  "chapter": "03",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch03-push-pull-vs-open-drain.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。推挽主动拉高/拉低，开漏只拉低、高靠外拉；不是示波器波形。",
+  "chapter": "03",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch04-exception-stack.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。抢占 1 的 EXTI0 打断抢占 2 的 TIM2，现场八寄存器入栈；不是示波器实拍。",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch04-exti-line-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每条 EXTI 线只选一个端口；5–9 / 10–15 共用 IRQ；不是芯片显微照片。",
+  "chapter": "04",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch04-exti-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。IOPAEN → EXTICR → IMR → NVIC_ISER 四环都通才进 ISR；PR 置位不等于进中断；不是板级实拍。",
+  "chapter": "04",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch04-mask-gates.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIMASK 挡 0–15、FAULTMASK 再挡 HardFault 只留 NMI、BASEPRI 只挡数值 ≥ 阈值的一截；GROUP_4 下 0 最急 15 最缓；不是实拍。",
+  "chapter": "04",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch04-preempt-timeline.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五段时间线（TIM2 在跑→入栈 8 寄存器 12 HCLK≈167ns→EXTI0 执行→出栈返回→继续），与两卡对照（同抢占不嵌套、PRIMASK=1 挡可配置中断）；证明抢占按抢占位不看子优先级，数字越小越急；不能替代 PM0056 时序原文，也不是实测中断波形。出处 PM0056。",
+  "chapter": "04",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch04-preempt-vs-sub.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。更小抢占数优先级更高能打断；同抢占只靠子优先级排队；不是调试器实拍。",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch04-priority-group.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIGROUP 切分抢占/子优先级；同抢占互不打断；不是寄存器截图。",
+  "chapter": "04",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch04-tail-chaining.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。入栈约 12 周期，尾链约 6；别把硬件尾链开销当成整个 ISR 时长；不是示波器实拍。",
+  "chapter": "04",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch05-capture-pulse.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三个边沿把 CNT 抄进 CCR：0504 − 0004 = 500 数 × 1 µs = 500 µs；周期差 0 补 ARR+1 = 1000 → 1 kHz；占空比 50%；不是实拍。",
+  "chapter": "05",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch05-deadtime.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CHx/CHxN 双沿死区；无 DT 有直通风险；半桥实验才需要；不是实拍。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch05-pwm-1khz.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上半 72 MHz→1000 Hz；下半误用 36 MHz→500 Hz；不是示波器实拍。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch05-pwm-debug.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。①分频比 ②CC1E/OC1M ③GPIO 复用；后环修不了前环；不是实拍。",
+  "chapter": "05",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch05-quadrature.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。A 跳变时看 B：正转 B=0 加一，反转 B=1 减一；只有一路分不清正反；不是实拍。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch05-resolution-grid.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。同一 72 MHz：10 kHz 一圈 7200 格、50 Hz 舵机 20000 格；一圈的格子数就是占空比的档位数，频率越高档位越少；不是实拍。",
+  "chapter": "05",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch05-shadow-regs.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。写预装载，UE 才锁进影子；无预装载易出短脉冲；不是实拍。",
+  "chapter": "05",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch05-timebase-math.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz→(PSC+1)→(ARR+1)→1 kHz；CCR/1000=50%；不是实拍。",
+  "chapter": "05",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch05-trgo-adc.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM3 每 1 ms 的更新事件经 TRGO 启动 ADC，间隔由硬件保证；主循环软件触发忙起来就抖；不是实拍。",
+  "chapter": "05",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch06-baud-budget.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：波特率分频的取值链与误差条——72 MHz 对常用波特率逐个试算，标出误差 >2% 的红区；证明 115200 以上的档位为什么不能用；不能替代实际逻辑分析仪帧测量，也不是实测误差。出处 RM0008。",
+  "chapter": "06",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch06-baud-formula.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USART1 72 MHz vs USART2 36 MHz；抄 BRR 会差约 2 倍；不是实拍。",
+  "chapter": "06",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch06-baud-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。乱码查 fCK/BRR；无输出查交叉与时钟门；丢字节先读 SR 再读 DR；不是实拍。",
+  "chapter": "06",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch06-idle-dma.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。DMA 搬字节，IDLE 划帧界，CNDTR 差值=帧长；不是实拍。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch06-ore-fe.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ORE：新字节不能转入未读 DR，旧字节保留；FE：本例停止位三次采样均低，坏字节仍进 DR。只读 DR 清 RXNE，清 ORE/FE 要先 SR 后 DR；不是实拍。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch06-sample-points.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。16 倍过采样：起始位第 3/5/7 点确认、数据与停止位取 8/9/10 三点表决；毛刺在 3/5/7 被滤掉；不是实拍。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch06-tx-rx-crossover.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。MCU TX→适配器 RX；共地；禁 5 V 灌 3.3 V 脚；不是实拍。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch06-uart-frame.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Idle/Start/8 数据 LSB/Stop；115200 一位约 8.68 µs；不是示波器实拍。",
+  "chapter": "06",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch07-ccr-timing.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：PCLK1 → I2C_CCR → SCL 的取值链，TRISE 的算法与 100 k/400 k 两档对照；证明 CCR 写错总线就拉不起来的算账过程；不能替代示波器实测 SCL 周期，也不是总线截图。出处 RM0008。",
+  "chapter": "07",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch07-clock-stretch.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。从机拉低 SCL 延长时钟，SCL 线与低电平最长的器件定拍；SDA 拉伸期间不动；拉过 HAL 超时即 BUSY；不是实拍。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch07-i2c-addr.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HAL 写地址 0x78 有 ACK；填 0x3C 则线上无 ACK；不是实拍。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch07-i2c-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SDA 卡低补 SCL；NACK 查 7/8 位地址；SCL 卡低是拉伸；不是实拍。",
+  "chapter": "07",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch07-pullup-cap.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。电容越大上拉宜更强；4.7 kΩ 只是起点；不是实拍。",
+  "chapter": "07",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch07-sr-restart.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。写寄存器指针后 Sr 再读；中间不要 STOP；不是实拍。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch07-start-ack.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SDA↓且 SCL=1 为 START；第 9 时钟从机拉低=ACK；不是实拍。",
+  "chapter": "07",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-br-table.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPI1@72 MHz，BR=010→9 MHz 实验档；面包板勿开太快；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-byte-exchange.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。主从两个移位寄存器经 MOSI/MISO 构成环，8 个沿换一个字节；9F FF FF FF 换回 ?? EF 40 17，rx[0] 是剩菜不是厂商号；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-cpha-modes.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CPOL 定空闲电平，CPHA 定采样边沿；Mode0 最常用；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-cs-bracket.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA4 括住一次事务：Mode 0 上升沿采样、8 拍一字节；CS 不拉高则两条命令粘成 16 拍；有的从机在上升沿才收下；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-cs-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：软件 NSS 与硬件 NSS 两条路径的分诊，CS 时机不对时 JEDEC ID 读错的定位顺序；证明「ID 全 0/全 1」先查 CS 与模式再查 Flash；不能替代逻辑分析仪实测片选窗口，也不是实测波形。出处 RM0008、器件手册。",
+  "chapter": "08",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch08-nss-multi.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。共享 SCK/MOSI/MISO，每片独立 CS；不可两片共一片选；不是实拍。",
+  "chapter": "08",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch08-spi-jedec.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0x9F→EF4017；MISO/MOSI 对调则失败；不是示波器实拍。",
+  "chapter": "08",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch08-spi-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。全 0xFF 查 CS/MISO；无时钟查 SPE/MSTR；高速才错则降分频；不是实拍。",
+  "chapter": "08",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch09-adc-sar.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK 12 MHz；最长 239.5+12.5=21 µs；采样太短则电容仍是上次电压；不是示波器实拍。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch09-adc-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：采样未充满 / VDDA 钳位 / 上电未校准；不是实拍。",
+  "chapter": "09",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch09-adcclk-budget.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四档分频与右侧判定——÷2=36 MHz、÷4=18 MHz 都超 14 MHz 上限打红叉，÷6=12 MHz 是最高合法档、÷8=9 MHz 也合法只是更慢；底条提醒 RM0008 的「Tconv = 1 µs」是 14 MHz 特例，C8 按 12 MHz 算；证明 72 MHz 主频下 ÷6 是速度优先的合法选择而非唯一选择；不能替代时钟树配置，也不是实测波形。出处 RM0008。",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch09-dac-buffer.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：缓冲关（近满摆幅、输出阻抗约 15 kΩ）与缓冲开（能带载、两端削顶）的两卡对比，与底部红色两端条；证明带载优先与两端读数可信不可兼得；不能替代选型计算，也不是实测输出曲线。出处 RM0008。",
+  "chapter": "09",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch09-pa0-analog-config.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：同一只 PA0 配推挽输出与配模拟输入的两卡对比，LQFP48 三根脚与「先改脚，再开 ADC」；证明模式不配模拟输入，采样数字永远不动；不能替代实际接线，也不是实测引脚波形。出处 RM0008、DS5319。",
+  "chapter": "09",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch09-sample-time.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ADCCLK≤14 MHz；软源拉长 SMP；不是实拍。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch09-sar-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。MSB→LSB 权重；EOC 后读 DR；不是实拍。",
+  "chapter": "09",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch09-scan-sequence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SQR 序列四通道的采样档与总周期；14 + 26 + 68 + 252 = 360 周期 = 12 MHz 下 30 µs；温度通道要 239.5 档；不是实拍。",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch09-vref-rails.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Code/4095×Vref+；绝对伏特先标 EST；不是实拍。",
+  "chapter": "09",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch09-vrefint-cal.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CH17 读 Vrefint ≈1.20 V 反推 VDDA：VDDA = 1.20×4096÷code；再算真实 V_in；F103C8 无出厂 VREFINT_CAL；不是实拍。",
+  "chapter": "09",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch10-channel-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 只有一条 DMA1 共 7 通道，ADC1→通道 1、USART1_TX→通道 4、USART1_RX→通道 5；F4 的 DMA2 Stream 5 照搬过来不报错但 CNDTR 不动；不是实拍。",
+  "chapter": "10",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch10-cndtr-ledger.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HT/TC 半区所有权；ISR 只置标志；CNDTR 计配置宽度项；不是实拍。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch10-dma-cndtr.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。8 个半字缓冲；CNDTR=3 时已写 5 采样/10 字节；HT=4 采样/8 字节；按字节切开位置会错；不是实拍。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch10-dma-phases.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。环形 HT/TC 交半区；普通模式 CNDTR=0 停；不是实拍。",
+  "chapter": "10",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch10-dma-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CNDTR 卡住 / 宽度错位 / CIRC=0 只跑一轮；不是实拍。",
+  "chapter": "10",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch10-mem2mem-vs-peri.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。流式外设用 peri；块拷贝用 mem2mem；不是实拍。",
+  "chapter": "10",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch10-request-beat.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RXNE=1 且 DMAR=1 放行请求，DMA1 通道 5 一拍读 CPAR 写 CMAR、CNDTR 减 1；配置顺序 CPAR→CMAR→CNDTR→CCR；不是实拍。",
+  "chapter": "10",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch11-backup-domain.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VBAT 续电备份域；LSE 优先，LSI 仅备用；不是实拍。",
+  "chapter": "11",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch11-backup-path.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：VDD 掉电后后备域由 VBAT 续电的供电路径，与侵入/校准等后备寄存器的归属；证明 RTC 与备份寄存器为什么不随复位丢；不能替代实际功耗测量，也不是实测备份波形。出处 RM0008。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch11-iwdg-1s.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI→÷64→625 Hz；Reload 624 典型 1 秒非保证；625 多一拍；不是实拍。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch11-iwdg-math.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。超时用 (Reload+1)；624→1.000 s；写成 625 会多一拍；不是实拍。",
+  "chapter": "11",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch11-lsi-drift.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI 30–60 kHz 使标称 1 s 的 IWDG 实际在 2/3–4/3 s 之间摆动（Reload 624 不变）；按范围留余量；不是单颗实测。",
+  "chapter": "11",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch11-rtc-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：PRL / VBAT 掉电 / 闹钟秒计数；不是实拍。",
+  "chapter": "11",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch11-wdg-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。IWDG 减到 0 才复位；WWDG 窗口外喂狗也复位；不是实拍。",
+  "chapter": "11",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch11-wwdg-window.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。等比例计数轴，47 拍到 0x50，再过 17 拍到 0x3F 复位；[0x40, 0x50] 内重载返回 0x7F。PCLK1=36 MHz、预分频 8 时每拍约 910.2 µs，全程约 58.25 ms；不是实拍。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch12-acceptance-gates.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。接收/边界/向量/跳转/心跳；任一门失败留在 Bootloader；不是实拍。",
+  "chapter": "12",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch12-boot-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。路径甲占 18 KB 用户闪存；路径乙不占 64 KB；都交到 0x08004800；不是实拍。",
+  "chapter": "12",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch12-flash-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CR.LOCK/页边界；半字与 0xFFFF；0xB800 读回比对；不是实拍。",
+  "chapter": "12",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch12-halfword-loop.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。擦除五拍 PER→AR→STRT→BSY→EOP；编程循环 PG→写半字→等 BSY→地址+2→LOCK；擦后读 0xFFFF，写只能 1 变 0；不是实拍。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch12-iap-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Bootloader 16 KB + 参数 2 KB + APP 0x08004800/0xB800；KEY1→KEY2→半字→MSP/VTOR；不是实拍。",
+  "chapter": "12",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch12-key-order.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0x45670123 再 0xCDEF89AB；顺序反了 LOCK 不消；跳转要装 MSP 与复位向量；不是实拍。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch12-option-bytes.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏 F1（RDP=0xA5 不保护、无 Level 2、WRP 按页）与右栏 F4（0xAA/Level 1/0xCC 三档、WRP 按扇区）的对照，和底部红框两条不可逆边界；证明档位记错不是「换个值写回去」就能挽回——F4 的 0xCC 调试口也救不回，解除读保护要付出整片擦除；不能替代 RM0090/RM0008 选项字节寄存器定义，也不是实测操作。出处 RM0008、RM0090。",
+  "chapter": "12",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch12-page-erase.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。1 KB/页；末页 0x0800FC00；擦除地址须落页边界；0x0801FC00 超出 C8 容量，不存在这个页；不是实拍。",
+  "chapter": "12",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch12-ymodem-flow.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左侧四步的说话方（设备蓝 / 上位机绿）与右侧「卡住先查」——无 'C' 先查串口参数、NAK 循环查线或缓存、写完跳不了回到 §4 五道验收门；证明 YMODEM 的可靠性来自每包 CRC16 与整包 CRC 两道关，不是串口本身；不能替代 YMODEM 协议原文的包头字节定义，也不是实测抓包。出处 RM0008、本仓库例程。",
+  "chapter": "12",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-arb-ladder.png": {
+  "caption": "▲ 手绘仲裁逻辑：A 发 0x100、B 发 0x0F0；bit8 上 A 发 1 却读到 0，转为接收，B 继续发送。输家后续按重发配置处理；标准数据帧的 ID 越小，优先级越高。非实拍。",
+  "chapter": "13",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch13-bit-quanta.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sync1+BS1 5+BS2 2；Tq 250 ns；采样 75%；写错预分频变 450 kbit/s；不是实拍。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-can-bit.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。预分频 9×8 份额=500 kbit/s；预分频 8×10 份额=450 kbit/s；PB8/PB9 + 120 Ω；不是实拍。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-can-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：450 kbit/s；FilterIdHigh 左移 5 位；采样点对齐；不是实拍。",
+  "chapter": "13",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch13-data-frame.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：标准数据帧按位排开（SOF、11 位 ID、RTR、控制场、0–8 B 数据、CRC、ACK、EOF），位填充给接收方对表；证明「帧只写是什么、不写收件人」，所有节点都听、按 ID 决定收不收；不能据此判断填充后的总线占用时长、错误帧细节，也不是协议分析仪实测。出处 RM0008 Rev 21 bxCAN。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-diff-levels.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：CAN_H 与 CAN_L 成对跳变，同一干扰同时打在两根线上压差不变，任一节点发显性整条线就是显性；证明「显性 0 盖过隐性 1」与两只 120 Ω 并联是 60 Ω 直流负载、不是电缆特性阻抗；不能据此判断总线长度、终端匹配或实测波形。出处 RM0008 Rev 21 bxCAN。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-filter-fifo.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。硬实时进 FIFO0，批量进 FIFO1；溢出先提速排空；不是实拍。",
+  "chapter": "13",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch13-filter-mask.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。掩码位=1 必须匹配；FilterIdHigh = 0x123<<5 = 0x2460，掩码 0x7FF<<5；不左移则邮箱一直空；不是实拍。",
+  "chapter": "13",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch13-pitfall-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个常见现象各配第一处边界与出处标签（RM0008=参考手册、本仓库例程=examples/can-bxcan、DS5319=数据手册）；证明排错先对现象、再找边界、最后查出处；不能替代对应出处里的完整寄存器与电气细节，也不是实测波形。出处 RM0008、DS5319、本仓库例程。",
+  "chapter": "13",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch13-tec-busoff.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TEC≥128 被动；>255 Bus-Off；单节点无 ACK 停在 128；恢复 128×11 隐性位；不是实拍。",
+  "chapter": "13",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch14-cdc-vs-hid.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五维对照（用途/端点/带宽/数据单位/驱动）与底条选型结论——送日志/采样数据选 CDC，要系统当键盘鼠标读选 HID；证明两类差异落在配置集合里；不能替代实际枚举抓包，也不是设备管理器截图。出处 RM0008 USB。",
+  "chapter": "14",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch14-ctrl-transfer.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。控制传输三拍 SETUP/DATA/STATUS；EP0 双向 64 字节；SET_ADDRESS 状态走完地址才生效；GET_DESCRIPTOR 地址 0 先交前 8 字节；不是实拍。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch14-descriptor-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。设备 18 字节；配置集合 67=0x0043；VID/PID 0x1209/0x0001；不是实拍。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch14-enum-checklist.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。未知 USB 设备要同时对上的五处：48 MHz、D+ 1.5 kΩ 上拉、标准请求、描述符长度、端点缓冲；卡在读描述符/读配置/最后一步各查各的；不是实拍。",
+  "chapter": "14",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch14-evidence-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。日志→寄存器→串口→逻辑分析仪→示波器；COM 口出现不证明一切 CDC 长度都对；不是实拍。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch14-pma-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。512 字节 PMA 共享 EP0..EP7；IN/OUT 站在主机侧；重叠会毁包；不是实拍。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch14-usb-enum.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USBPRE=0→48 MHz；D+ 1.5 kΩ；设备 18 字节+配置 67 字节；USBPRE=1 变 72 MHz 失败；不是实拍。",
+  "chapter": "14",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch14-usbpre-48.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PLL 72 MHz÷1.5=48 MHz；USBPRE=1 主机拒读；先查时钟再怪 CDC；不是实拍。",
+  "chapter": "14",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch15-deadline-budget.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。R=B+C+S；阻塞+执行+高优先级干扰；最坏值必须早于截止点；平均值不能替代最坏值；不是实拍。",
+  "chapter": "15",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch15-fromisr.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。ISR 只许 *FromISR；禁止 xQueueSend/vTaskDelay/malloc；抢占优先级数值至少 5；不是实拍。",
+  "chapter": "15",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch15-owner-task.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。多任务经队列把完整事务交给唯一所有者；片选、DMA、超时和恢复落在同一状态机；不是实拍。",
+  "chapter": "15",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch15-prio-inherit.png": {
+  "caption": "▲ L 持锁被 M 抢占；H 等锁使 L 继承 H 的优先级；释放后 H 运行、L 回落。继承消除 M 的干扰，其他干扰仍需预算。手绘原理图，非实测。",
+  "chapter": "15",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch15-psp-msp.png": {
+  "caption": "▲ ARM_CM3 任务用 PSP，首次异常帧占任务栈；ISR 函数与嵌套用 MSP；PendSV 再保存 R4–R11。两边分别留余量。手绘原理图，非实测。",
+  "chapter": "15",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch15-rtos-prio.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。tick=1 ms；prio2 先于 prio1；128 字=512 字节；FromISR 抢占优先级数值≥5；写成 0 会 configASSERT；不是实拍。",
+  "chapter": "15",
+  "type": "comparison"
  },
  "illustrations/handraw/ch15-stack-watermark.png": {
-  "type": "technical",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。1 字 = 4 B，128 字 = 512 B，误当字节容量剩 1/4；高水位看最小空闲；configCHECK_FOR_STACK_OVERFLOW=2；不是实拍。",
   "chapter": "15",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。1 字 = 4 B，128 字 = 512 B，误当字节容量剩 1/4；高水位看最小空闲；configCHECK_FOR_STACK_OVERFLOW=2；不是实拍。"
+  "type": "technical"
+ },
+ "illustrations/handraw/ch15-task-states.png": {
+  "caption": "▲ 单核同一时刻一个 Running；Ready 等 CPU；Blocked 等时间或事件；Suspended 等显式恢复。手绘原理图，非实测。",
+  "chapter": "15",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch16-cell-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四行前提（哪只稳压器 / IWDG 开没开 / 是不是备份域 / Standby 分三格）各自给出的电流值与排除项；证明「2~3 µA」「20 µA」这类合并写法都是把前提不同的格子并成一格，引用前必须先对前提；不能替代 DS5319 表 16 的完整条件列，也不是实测电流。出处 DS5319 表 16。",
+  "chapter": "16",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch16-clock-restore.png": {
+  "caption": "▲ 上方两个 GPIO 标记分开 ISR 入口和时钟恢复；下方按同一时间尺画出 8.681 µs 与 78.125 µs 的位宽。用 `0x55` 便于观察交替边沿。自绘理论图，非仪器截图。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch16-mode-current.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。DS5319 @ 3.3 V、25°C 典型值；板级漏电另算；不是实拍。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch16-no-ammeter-check.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四条泳道（PA0 下降沿、GPIO① ISR 入口、GPIO② 时钟恢复后、TX）上三个红色标记的顺序，与底部两个判决框——位宽 ≈ 8.68 µs 说明 72 MHz 已恢复，78.125 µs 说明时钟停在 HSI 8 MHz、0x271 变成 12800；证明「先对顺序、再对位宽」可以在没有电流表时先排除唤醒与时钟恢复故障；不能替代数据手册 5.4 µs 的测量条件，也不是实测波形。出处 DS5319 表 26、RM0008 USART。",
+  "chapter": "16",
+  "type": "technical"
  },
  "illustrations/handraw/ch16-pvd-window.png": {
-  "type": "concept",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PVD 下穿/回升都报（EXTI16），不提供固定剩余毫秒；写备份域或闪存前看供电余量；不是实拍。",
   "chapter": "16",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PVD 下穿/回升都报（EXTI16），不提供固定剩余毫秒；写备份域或闪存前看供电余量；不是实拍。"
+  "type": "concept"
  },
- "illustrations/handraw/ch19-usb-split.png": {
-  "type": "technical",
-  "chapter": "19",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。133 字节应用帧拆 64+64+5 三包，wMaxPacketSize 仍写 64；帧头 0xAA 0x55 + seq + 128 B 样本 + Checksum8；不是实拍。"
+ "illustrations/handraw/ch16-pwr-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进不去 Stop、醒来乱码、电流降不下来：先查 SLEEPDEEP/PDDS，再查 PLL 恢复，最后查 IWDG/LSI/LSE/RTC；不是实拍。",
+  "chapter": "16",
+  "type": "triage"
  },
- "illustrations/handraw/ch20-cube-suite.png": {
-  "type": "concept",
-  "chapter": "20",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CubeMX 配置、CubeIDE 编译调试、CubeProgrammer 烧录/选项字节，三件套覆盖 90% 场景；CubeMonitor 在其外；不是实拍。"
+ "illustrations/handraw/ch16-stop-compare.png": {
+  "caption": "▲ 先按程序需要保留的状态选模式：Sleep 保留原时钟，Stop 保留 SRAM 但醒来改用 HSI，Standby 重新启动。RTC、LSI、LSE 是否运行仍取决于配置。手绘原理示意，非实测。",
+  "chapter": "16",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch16-stop-wake.png": {
+  "caption": "▲ 唤醒后分成两条路：恢复 72 MHz，原 BRR 对应 115200；停在 HSI 8 MHz，同一 BRR 只有 12800 bit/s。14 µA 还要求低功耗稳压器、3.3 V、25°C、无 IWDG 等条件。手绘原理示意，非实测。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch16-wake-matrix.png": {
+  "caption": "▲ Sleep 保留原时钟，Stop 从 HSI 8 MHz 恢复，Standby 从复位向量重启。IWDG 超时属于复位，不能当成 Stop 的普通返回。手绘原理示意，非实测；时间取自 [DS5319 Rev 20 表 26](#source-ds5319-pwr)，RTC 路由见 [RM0008 Rev 21](#source-rm0008-rtc)。",
+  "chapter": "16",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch17-bp-comparators.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。F103 的 6 个代码比较器用完后，要释放旧断点或换一种观测方法。给硬件断点加条件仍会占比较器；M7 的 8 个不能套到这里。见 [PM0056 DWT](#source-pm0056-dwt)。",
+  "chapter": "17",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch17-cfsr-bits.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CFSR 的三个分区分别记录内存管理、总线和用法故障。先区分精确、非精确与压栈错误，再判断地址和栈 PC 是否可用。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch17-cfsr.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上半检查故障地址是否有效，下半检查周期计数是否启用。72 MHz 下 72 计数 = 1 µs，两项检查互不构成因果。",
+  "chapter": "17",
+  "review": "2026-11-05 人工复核：结构/关系概念图",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch17-dwt-window.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：t0 与 t1 两次读数夹住的计时窗口，读取开销与窗口内中断都会混进差值；证明 Δ 只有在测过空窗基线、反汇编确认代码仍在窗口内时才可比较；不能替代实测性能数据。出处 PM0056 DWT。",
+  "chapter": "17",
+  "type": "triage"
  },
  "illustrations/handraw/ch17-halt-timing.png": {
-  "type": "technical",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。条件断点仍占一个比较器，命中→内核暂停→读现场，计时区间被污染；零差先查是否在单步；不是实拍。",
   "chapter": "17",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。条件断点仍占一个比较器，命中→内核暂停→读现场，计时区间被污染；零差先查是否在单步；不是实拍。"
+  "type": "technical"
+ },
+ "illustrations/handraw/ch17-obs-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。停住看变量、运行时跟踪、故障后留存，分别回答不同问题；选择时还要考虑时序扰动和记录是否完整。",
+  "chapter": "17",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch17-perf-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。t0、t1 夹住被测代码；零差先查 TRCENA、CYCCNTENA 和运行方式。72 计数 = 1 µs 的前提是内核运行于 72 MHz。",
+  "chapter": "17",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch17-swd-pins.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWDIO 双向传输，SWCLK 由探针驱动；SWO 从 PB3 单向返回。GND 共地，VTref 用于感知目标电压，NRST 供复位下连接使用。",
+  "chapter": "17",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch17-swo-path.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：printf → ITM 端口 0 → TPIU → PB3 → 探针五框链，中段三个参数（内核时钟、SWO 线速、链路使能）与底行按顺序查；证明字符到不了主机先查链路与参数而不是改 printf；不能替代探针实测。出处 PM0056。",
+  "chapter": "17",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch18-boot-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT0=0 选 Flash；BOOT0=1 时再由 BOOT1 区分系统存储器与 SRAM。连接失败和选错启动位置是两条排查路径。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch18-faq-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。五类现象各选一项能区分原因的证据，保留修改前后的结果。",
+  "chapter": "18",
+  "type": "comparison"
  },
  "illustrations/handraw/ch18-five-steps.png": {
-  "type": "concept",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排错五步：复现→最小化→二分→看证据→对照手册，每步一个假设同一条件复测；三条铁律压底；不是实拍。",
   "chapter": "18",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排错五步：复现→最小化→二分→看证据→对照手册，每步一个假设同一条件复测；三条铁律压底；不是实拍。"
+  "type": "concept"
  },
- "illustrations/handraw/ch27-sendall-loop.png": {
-  "type": "technical",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：顶部「deadline 只算一次」横幅、左侧五步循环（send → 部分发送回 ① → EAGAIN 算 remaining → 判 remaining ≤ 0 → select 再分派）与右侧四个出口 OK / TIMEOUT / CLOSED / ERROR；证明超时的真实边界——TIMEOUT 只说明本地发送窗口没推进，不证明服务端已处理；不能替代 lwip/sockets.h 的 errno 语义与实测抓包，也不是实测日志。出处 lwIP pitfalls。"
+ "illustrations/handraw/ch18-hardfault-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CFSR（0xE000ED28）用于分类，bit 15 标记 BFAR 有效；IMPRECISERR 不保证 PC 指向原始写操作，压栈错误须先检查栈帧。",
+  "chapter": "18",
+  "type": "triage"
  },
- "illustrations/handraw/ch27-tls-prereqs.png": {
-  "type": "concept",
-  "chapter": "27",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。受信 CA、主机名、真实熵源、可信时间缺一不可；VERIFY_NONE 握手照样成功但身份无担保；不是实拍。"
+ "illustrations/handraw/ch18-link-map.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先在 map 中核对区域起点与长度，再分清 .text、.data 的加载大小和 .bss 的 RAM 占用。",
+  "chapter": "18",
+  "type": "technical"
  },
- "illustrations/handraw/ch28-memory-regions.png": {
-  "type": "comparison",
-  "chapter": "28",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。线程栈/内核池/C 库堆/DMA 缓冲/持久化区各有风险与验证方法；malloc 失败返回空数据不是恢复策略；不是实拍。"
+ "illustrations/handraw/ch18-multi-def.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。上方的初始化定义 `int count = 0;` 随头文件进入两个翻译单元，产生重复符号。改为 `extern int count;` 声明，由一个 .c 文件负责定义；头文件保护宏只防同一翻译单元内重复包含。见 [examples/](#source-project-examples)。",
+  "chapter": "18",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch18-peripheral-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：九条 P 条目各配一项能区分原因的测量，第三列是按结果要改的那一处；证明外设排错先做能区分原因的测量、再改一处，而不是把时钟、引脚和参数一起改；不能替代各条目所指的寄存器与电气细节，也不是实测波形。出处是本章 P1–P9 条目及其引用的 RM0008、DS5319、本仓库例程。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch18-uart-garbled.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先量位宽，再核对 USART 时钟和 BRR；TX 接对端 RX，电平须兼容且共地。",
+  "chapter": "18",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-ab-partition.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。两条 Flash 使用同一比例：单 APP 布局占满 64 KB；再加一张 46 KB 镜像便越过 0x08010000。容量放得下只是第一步，校验和回滚还需独立设计。见 [DS5319](#source-ds5319-swd)。",
+  "chapter": "19",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch19-flash-fit.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Flash 中留一张 0xB800 的 APP；SRAM 缓冲须与栈、全局变量共同分配，不能只比较单个数组。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-iap-gates.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每一关都需有拒绝或恢复出口。回滚依赖旧镜像仍然存在，不能由单 APP 布局自动获得。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-log-ring.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：扇区条与回卷箭头（wr 顺序写、回卷只擦首扇区），绿卡「示例做到了」与红卡「可用日志还缺」，底条「掉电保哪些记录用断电测试确认」；证明示例代码只是起点不是可用日志；不能替代实际断电测试。出处 本章项目 2。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-milestone-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每轮新增一种能力，完成独立测试再集成；失败时保留输入、状态和恢复结果。",
+  "chapter": "19",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch19-pick-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。按已经掌握的采集、通信和缓冲技能选题，每轮新增一种尚未验证的能力。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-sram-budget.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 的 20480 字节从 0x20000000 起分配；全局缓冲、堆和任务栈都要进入同一份预算。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-usb-split.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。133 字节应用帧拆 64+64+5 三包，wMaxPacketSize 仍写 64；帧头 0xAA 0x55 + seq + 128 B 样本 + Checksum8；不是实拍。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch20-cube-suite.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CubeMX 配置、CubeIDE 编译调试、CubeProgrammer 烧录/选项字节，三件套覆盖 90% 场景；CubeMonitor 在其外；不是实拍。",
+  "chapter": "20",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch20-dma-f1-vs-f4.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三行对照——FIFO 阈值与突发档位 F4 有 F1 无，错误模型不同，底条「先核对外设差异再谈搬用」；证明跨系列结论不能跳过外设差异核对；不能替代 RM0090/RM0008 原文。出处 AN4031、RM0090、RM0008。",
+  "chapter": "20",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch20-evidence-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。构建日志 → 调试器 → 运行日志 → 逻辑分析仪 → 示波器/电源分析；不要越级；不是实拍。",
+  "chapter": "20",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch20-evidence-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先 DS/RM/PM 对号，再选证据阶，最后才动固件栈；不是实拍。",
+  "chapter": "20",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch20-lib-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一个项目冻结一套库与版本；HAL 主流、SPL 锁旧 F1、LL 近寄存器、libopencm3 轻量；不是实拍。",
+  "chapter": "20",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch20-manual-choice.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先问问题再选手册；R 寄存器、D 数据、A 应用、U 工具；不是实拍。",
+  "chapter": "20",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch20-manual-names.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先选对 PDF 再 Ctrl+F；RM 寄存器、DS 参数、PM 封装、ES 勘误；不是实拍。",
+  "chapter": "20",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch20-manual-route.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。查手册三步：定手册（RM/DS/AN）、Ctrl+F 寄存器或位名、读功能描述；例 1 走 RM0008 搜 CCR1，例 2 走 DS5319 搜 PA11；不是实拍。",
+  "chapter": "20",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch21-board-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三板对照封装、调试器、5 V 与 USB 路径；不是实拍。",
+  "chapter": "21",
+  "type": "comparison"
  },
  "illustrations/handraw/ch21-fake-id.png": {
-  "type": "triage",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。山寨识别：Device ID @0xE0042000 报 0x410、Flash 容量 @0x1FFFF7E0、UID 96 位；丝印与手册冲突时以读回为准；不是实拍。",
   "chapter": "21",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。山寨识别：Device ID @0xE0042000 报 0x410、Flash 容量 @0x1FFFF7E0、UID 96 位；丝印与手册冲突时以读回为准；不是实拍。"
+  "type": "triage"
+ },
+ "illustrations/handraw/ch21-hse-load.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSERDY 不到先查晶振焊接，再怪 PLLMUL；不是实拍。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch21-identity-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三步核对——读 Device ID/Flash 容量与 DS5319 对账、MCO/示波器实测主频、量各 VDD 电流压降，底条「任何一处不一致都单列记录」；证明识别兼容片靠读回证据不靠丝印；不能替代实际读回与测量。出处 DS5319。",
+  "chapter": "21",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch21-minimal-five.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。最小系统五件事：电源、去耦、复位、BOOT、晶振，各占一格用箭头指进芯片；先量这五样再怀疑程序；不是实拍。",
+  "chapter": "21",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch21-nrst-boot0.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BOOT0=0 从 Flash；BOOT0=1 进系统存储器，不是程序丢了；不是实拍。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch21-usb-ttl.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TX→PA10、RX→PA9、共地 3.3 V；勿把 5 V 灌进 PA10；不是实拍。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch21-vdd-3v3.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先量 3V3 再怀疑固件；5 V→AMS1117→VDD/VDDA/VBAT；不是实拍。",
+  "chapter": "21",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch22-hw-gap.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。sim 绿→desk 绿才算完成；晶振/USB/纹波仿真替不了；不是实拍。",
+  "chapter": "22",
+  "type": "technical"
  },
  "illustrations/handraw/ch22-pin-alias.png": {
-  "type": "concept",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Wokwi 键名 A0/C13/GND.1 映射 BluePill 的 PA0/PC13/地；写成 PA0 图会接不上；出处 wokwi-boards board.json；不是实拍。",
   "chapter": "22",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Wokwi 键名 A0/C13/GND.1 映射 BluePill 的 PA0/PC13/地；写成 PA0 图会接不上；出处 wokwi-boards board.json；不是实拍。"
+  "type": "concept"
  },
- "illustrations/handraw/ch25-vcap-caps.png": {
-  "type": "technical",
-  "chapter": "25",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VCAP1/VCAP2 = 脚 71/106，接内核稳压器电容：不能接 VDD、不能省、不是去耦；F1 无此脚；不是实拍。"
+ "illustrations/handraw/ch22-renode-path.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。四步脚本路径；golden string 与真板一致；绿灯≠HSE 焊接；不是实拍。",
+  "chapter": "22",
+  "type": "concept"
  },
- "illustrations/handraw/ch26-irq-no-callback.png": {
-  "type": "technical",
-  "chapter": "26",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPL 中断无回调：stm32f10x_it.c 里查来源→清挂起→交接事件；ISR 不做阻塞发送/Flash 擦除/长延时；不是实拍。"
+ "illustrations/handraw/ch22-sim-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。模型复现逻辑后再上真板测量；仿真绿灯不能覆盖实测；不是实拍。",
+  "chapter": "22",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch22-sim-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先分岔再修；仿真与真板两句证明不能并成一句；不是实拍。",
+  "chapter": "22",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch22-sim-verdict.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。三句话收尾各一栏：仿真证明了什么、真板新增证明了什么、还有什么没证明（模型没有 DMA/RTC/IWDG）；三句写全双轨才算诚实；不是实拍。",
+  "chapter": "22",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch22-wokwi-scope.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。逻辑/LED 适合；ADC/USB/晶振余量必须上桌；孪生验收在 BluePill；不是实拍。",
+  "chapter": "22",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch23-boot-latch.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第四个 SYSCLK 上升沿锁存启动源；BOOT_LOCK / nBOOT_SEL 边界；不是实拍。",
+  "chapter": "23",
+  "type": "calculation"
  },
  "illustrations/handraw/ch23-boot-tree.png": {
-  "type": "concept",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G0 启动判定树：BOOT_LOCK=1 强制 Main；nBOOT_SEL 选脚采样或选项位；空片可转 Bootloader；不是实拍。",
   "chapter": "23",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G0 启动判定树：BOOT_LOCK=1 强制 Main；nBOOT_SEL 选脚采样或选项位；空片可转 Bootloader；不是实拍。"
+  "type": "concept"
+ },
+ "illustrations/handraw/ch23-g0-f1-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G071RB 与 F103C8 六行对照：第 1 脚 PC11、复位 PF2、BOOT 与 SWCLK 共 PA14、USB 是 UCPD、没有 CAN、PC13–15 限 3 mA/2 MHz/30 pF；不是实拍。",
+  "chapter": "23",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch23-lab-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：封装对账、复用证据、只读启动审计、受控恢复四个动作，各自要带走的产出；证明离开本章的证据是四份具体工件，不是「做过实验」；不能代替 DS12232 原表，也不是实测封装核对结果。出处 DS12232、配套例程。",
+  "chapter": "23",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch23-part-id.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。M0+ @ 64 MHz、R=64 脚、B=128 KB；UCPD 不是 USB 设备控制器；无 CAN；不是实拍。",
+  "chapter": "23",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch23-pin-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第 1 脚、NRST、BOOT/SWD 共脚、复位后模拟输入；AF 看 DS12232 Table 13/14；不是实拍。",
+  "chapter": "23",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch23-pinmux.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA14=BOOT0+SWCLK；USART/I2C/SPI 脚位；PA9/PA10 重映射先动 SYSCFG_CFGR1；不是实拍。",
+  "chapter": "23",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch23-swd-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWD 失联分诊：保留现场 → Under Reset 受控连接 → 先读再写 → RDP L0/L1/L2 分支 → 复位读回；L1 需 L1→L0 整片擦除，L2 不可逆；不是实拍。",
+  "chapter": "23",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch24-duty-integration.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：1 s 轴上按比例只有约 7 px 的 8 ms 尖峰，以及下面两段电荷相加；证明 I_avg 是电荷除以整周期（此处 ≈42 µA），不是两个电流的算术平均（2.5 mA）；不涵盖你板子的波形、仪器带宽与板级负载，也不是实测。",
+  "chapter": "24",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch24-idd.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。JP6 串表只量 MCU IDD；ST-LINK/LED/回灌不在其中；万用表负担电压会让 VDD 下跌；f_s ≥ 10/t_min；不是实拍。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch24-irq-order.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五行五个时刻，WUTF 与 EXTI 唤醒线在哪一列从「还在」翻到「全 0」，② 那一行是唯一窗口；证明证据只能在 IRQ 入口取，HAL 在 callback 之前就清位，之后读到的只能是 0；不涵盖唤醒源是否唯一与中断延迟，也不是逻辑分析仪实测。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch24-modes.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep/Stop 0·1·2 从 WFI 下一条指令继续，SRAM1/2 保持；Standby/Shutdown 唤醒走复位，主 SRAM 丢；两类混记会把丢的 RAM 当还在；不是实",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch24-part-id.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。M4F @ 80 MHz、1.71–3.6 V；VBAT 300 nA、Shutdown 30 nA、Standby 120 nA、Stop 2 1.1 µA、Run LDO 100 µA",
+  "chapter": "24",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch24-pin-mux.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA11/PA12 是 CAN1 与 OTG_FS 抢脚，都要就 CAN 改 PB8/PB9；VDDUSB 脚 48 是电源不是 GPIO；BOOT0=60 不与 SWCLK 共用；不是实",
+  "chapter": "24",
+  "type": "comparison"
  },
  "illustrations/handraw/ch24-sleep-checklist.png": {
-  "type": "concept",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进 Stop 2 前五步：等事务结束、清唤醒源再使能、不用脚设模拟、选唤醒时钟、暂停 SysTick；不是实拍。",
   "chapter": "24",
-  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进 Stop 2 前五步：等事务结束、清唤醒源再使能、不用脚设模拟、选唤醒时钟、暂停 SysTick；不是实拍。"
+  "type": "concept"
+ },
+ "illustrations/handraw/ch24-sram2-retain.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SRAM2 三档对照：Sleep/Stop 照常保持、Standby 可选保持要置 RRS、Shutdown 更深；保持要按料号与 RRS 确认，最小状态放 RTC 后备寄存器；不是实拍。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch24-two-firmware.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左右两份固件都接到下面同一条 Stop 2 路径，只在证据输出上分叉；证明功能固件的 MCO/串口波形不能当低功耗结果，观测手段本身会抬高电流；不涵盖实际测量条件与仪器误差，也不是实测。",
+  "chapter": "24",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch24-wake-clocks.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。STOPWUCK 选 MSI/HSI16 临时接管；SysTick、UART BRR、Flash LATENCY、ARR/PSC 都要按新时钟重算；USB 等 PLL 回来再用；不是实拍。",
+  "chapter": "24",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch25-clock-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：复算、读回、实测三列证据卡与 Rev Y/W 红条——三个来源一致才收结论；证明单一来源的时钟结论不可靠；不能替代三处原始记录，也不是实测截图。出处 DS12110、ES0392、本仓库 examples。",
+  "chapter": "25",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch25-clock-math.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。8/PLLM4×PLLN/PLLP2：N=400 得 400 MHz，Rev V 改 N=480 得 480 MHz；CPU 480 / HCLK 240 / PCLK 120 / APB",
+  "chapter": "25",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch25-hal-clock-values.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：HSE → PLL1 → 480 MHz 到 SystemCoreClock 与 SystemD2Clock 的读回链，与 SysTick 按 480 还是 240 计的陷阱；证明读回值与复算值对不上时先查分频归属；不能替代实际寄存器读回，也不是实测截图。出处 DS12110、ES0392、本仓库 examples。",
+  "chapter": "25",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch25-part-id.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Z=144 脚、I=2 MB Flash；1.62–3.6 V；D1/D2/D3 三域；2×FDCAN 与 2×OTG；封装核对从 PE2 起再数 VCAP1/2、VDD33USB、PDR",
+  "chapter": "25",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch25-pin-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。第 1 脚 PE2；VCAP1=71、VCAP2=106 外接电容；脚 95 VDD33USB；脚 143 PDR_ON；脚 138 BOOT0；CAN 是 FDCAN 不是 bxCAN；",
+  "chapter": "25",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch25-pinmux.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PA11/PA12 是 FDCAN1 与 OTG_FS 抢的脚，FDCAN1 迁 PD0/PD1 或 PB8/PB9；PB6/PB7 同理在 USART1 与 I2C1 之间二选一；不是实",
+  "chapter": "25",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch25-power-domains.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。D1/D2/D3 三域可分别关时钟或断电；VCAP1/2 指向内核稳压器、VDD33USB 第 95 脚、PDR_ON 第 143 脚；不是实拍。",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch25-rev-vos.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Rev Y/W 无 VOS0，VOS1 上限 400 MHz；Rev V 才可进 VOS0 到 480 MHz，每次换挡等 VOSRDY；读 DBGMCU->IDCODE 的 REV_ID",
+  "chapter": "25",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch25-vcap-caps.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。VCAP1/VCAP2 = 脚 71/106，接内核稳压器电容：不能接 VDD、不能省、不是去耦；F1 无此脚；不是实拍。",
+  "chapter": "25",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-call-chains.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十个外设的最小调用链都走同一条骨架——RCC 开时钟 → GPIO 配脚 → XXX_Init → XXX_Cmd → 标志/事件对账，每格下面标出该外设最容易漏的边界；证明「骨架一样、坑各不同」；不能替代对应章节的完整时序与寄存器细节，也不是实测波形。出处 RM0008、STSW-STM32054。",
+  "chapter": "26",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch26-defines.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。STM32F10X_MD 按料号选密度；USE_STDPERIPH_DRIVER 引入 conf.h；assert_param 发布版通常不执行，不能替代运行时处理；不是实拍。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-dma-wiring.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：数据通路 USART1_DR → DMA1 Channel 4 → tx_buffer 与三件事——开 DMA1 时钟、按请求映射 Init 通道、USART_DMACmd 与 DMA_Cmd 两个开关都打开；证明 SPL 不会自动把两个驱动绑在一起，只做两件 CNDTR 不动；不能替代 RM0008 请求映射表与寄存器细节，也不是实测波形。出处 RM0008。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-four-layers.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。stm32f10x.h 管寄存器地址与位定义；外设头文件管结构体与声明；外设 .c 把字段写进寄存器；时钟、引脚、顺序、中断、超时、业务仍是你的工程的事；不是实拍。",
+  "chapter": "26",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch26-init-steps.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。开时钟 → StructInit 默认值 → 覆盖字段 → 显式 Cmd 使能；函数名可能不同，回 RM0008 与头文件原型核对；不是实拍。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-irq-no-callback.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPL 中断无回调：stm32f10x_it.c 里查来源→清挂起→交接事件；ISR 不做阻塞发送/Flash 擦除/长延时；不是实拍。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-migrate-steps.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：先冻结料号、SPL 版本、密度宏、编译器、晶振的可复现基线，再画外设所有权表，然后一次只迁一个外设、对比可见结果、清掉旧所有权；证明迁移是逐外设的对账过程，不是全局替换函数名；不能保证迁移后的认证与回归状态，那要靠逐项复测。出处 STSW-STM32054、spl-f1-mirror。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-spl-hal.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。GPIO 时钟/配置、USART 收发、DMA 剩余项的 HAL 与 SPL V3.5.0 入口都落到同一组寄存器；只换函数名保留旧状态机最容易得到“能跑一会儿”的工程；不是实拍。",
+  "chapter": "26",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch26-timeout-poll.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。USART_SendData() 只写 DR，等 TXE 的循环要自己写 spin_limit 或可靠时基截止时间，并定义恢复动作；不是实拍。",
+  "chapter": "26",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch27-api-context.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。raw 只在 NO_SYS 主循环或 tcpip_thread；Netconn/socket 在应用任务；禁止在 Ethernet/定时器 IRQ 里直接调 tcp_write()/udp",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-at-offload.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏是模组里终止的 TCP/UDP/TLS 与 socket，右栏是 MCU 必须保留的——命令超时与重试上限、分帧缓存、业务幂等键、离线队列上限、喂狗条件；UART 只是字节通道，不是网络边界；证明「栈移走了，状态机没有消失」；不能替代具体模组 AT 手册的错误码与恢复时序，也不是实测日志。出处 RM0433、lwip-pitfalls。",
+  "chapter": "27",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch27-backoff.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。backoff = min(B_max, B_base×2^n)+jitter，n 有上限；link down 不建 socket，DNS/TCP/TLS/MQTT 分别计数，喂狗条件是网",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-cache-dma.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TX 交接前 clean 整条 32 B line，RX 在 DMA 写完后 invalidate；未对齐窄区间 invalidate 会丢首尾 line 的脏变量；Ethernet DM",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-four-ledgers.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：RAM_net、goodput、loss_or_retry_rate、recovery_time 四本账各给一个可复算的式子与最低记录项；证明网络验收的每个数都能从测量复算回去；不能替代实测——账簿再全也不等于拔线、重启、弱网注入真的做过。出处 RM0433、AN4839、lwip-pitfalls。",
+  "chapter": "27",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch27-lab-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：实验 A→D 逐级多证明一层——A 只证 L1–L3 连通，B 证 TCP 分帧不依赖一次 recv 边界，C 证 DHCP/DNS/MQTT 失败可定位，D 证 TLS 与 24 h 长期运行不劣化；证明层与层之间的依赖顺序；不能跳过：没过 A 的板子直接进 C，失败时无法归因。出处 stm32cube-h7-lwip、lwip-pitfalls。",
+  "chapter": "27",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch27-pbuf-chain.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一条消息拆成三个 pbuf 的链，想连续就先拷出来；引用跟着所有权走，pbuf_free() 每份引用恰好一次，漏 free 堆耗尽、多 free 当场崩；不是实拍。",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-rmii-signals.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。REF_CLK 50 MHz、TXD0/1+TX_EN、RXD0/1+CRS_DV、MDC+MDIO、NRST+strap、磁性件+RJ45 六组各验什么；link LED 只是线索，MD",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-sendall-loop.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：顶部「deadline 只算一次」横幅、左侧五步循环（send → 部分发送回 ① → EAGAIN 算 remaining → 判 remaining ≤ 0 → select 再分派）与右侧四个出口 OK / TIMEOUT / CLOSED / ERROR；证明超时的真实边界——TIMEOUT 只说明本地发送窗口没推进，不证明服务端已处理；不能替代 lwip/sockets.h 的 errno 语义与实测抓包，也不是实测日志。出处 lwIP pitfalls。",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-tcp-framing.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一次 send() 不对应一次 recv()；帧含 magic 0x534E、ver+type、payload_len（网络字节序）、sequence、CRC32；TLS 不能替代业务校验",
+  "chapter": "27",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch27-tls-prereqs.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。受信 CA、主机名、真实熵源、可信时间缺一不可；VERIFY_NONE 握手照样成功但身份无担保；不是实拍。",
+  "chapter": "27",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch28-experiment-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四组实验各自的动作与验收证据；证明递进实验交出的是一组可证伪证据，不是「跑通了」；不能替代真实截止时间与栈水位的测量，也不是实测数据。出处 FreeRTOS 11.3.2、Zephyr 4.4.2。",
+  "chapter": "28",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch28-fault-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：队列满要有满时策略；冻结任务仍喂狗则只允许健康监督者喂狗；驱动超时返回码回策略层；不是实拍。",
+  "chapter": "28",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch28-four-concepts.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。裸机一个大循环、前后台 ISR 置标志、RTOS 内核管调度与 IPC、Linux 要 MMU；内核只负责调度 · IPC · 软件定时器 · 临界区 · 内存分配；不是实拍。",
+  "chapter": "28",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch28-h745-contracts.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：共享存储、所有权与可见性、HSEM 同步、消息协议、启动与恢复五层各自冻结什么、注入什么；证明五层要分别验收，HSEM 只给原子占用和中断通知，不搬 payload 也不替 M7 管 Cache；不能代替 H745 实测，也不是本仓库的 H745 硬件结果。出处 RM0399、冻结的 stm32h745xx.h。",
+  "chapter": "28",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch28-isr-divergence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：六道闸门从硬件 pending 位一直到调度器切换，每道下面写了一条可读证据；证明 ISR 到任务的事件丢失可以逐门定位，而不是从「任务没打印」直接跳到「RTOS 坏了」；不能替你测出具体中断延迟，也不是实测时序。出处 FreeRTOS 11.3.2、PM0056。",
+  "chapter": "28",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch28-memory-regions.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。线程栈/内核池/C 库堆/DMA 缓冲/持久化区各有风险与验证方法；malloc 失败返回空数据不是恢复策略；不是实拍。",
+  "chapter": "28",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch28-os-compare.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。FreeRTOS 11.3.2 小内核自行组合；RT-Thread 5.3.0 设备框架与软件包；Zephyr 4.4.2 Kconfig+Devicetree；CMSIS-RTOS2 2",
+  "chapter": "28",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch28-owner-task.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。两个任务直调 HAL_SPI_TransmitReceive 会把片选、DMA、恢复拆开；改成队列交给 flash_task 唯一所有者，xTaskNotify 回执 requester，",
+  "chapter": "28",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch28-review-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十条评审项落进版本与维护、预算、时间证据、所有权与恢复四个象限；证明评审要的是可复测证据，任一条答不出就是未通过；不能替你决定选哪套系统，也不是评分表。出处本章选型与来源表，FreeRTOS 11.3.2、CMSIS-RTOS2 2.3.0。",
+  "chapter": "28",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch28-three-times.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。release 起算，B 阻塞、C 执行、S 干扰，R = B + C + S；验收看最坏 R_max ≤ D，一个事务一个单调时钟截止点；不是实拍。",
+  "chapter": "28",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch28-wdg-supervisor.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。epoch 是有效工作的进度计数；监督者按各任务期限、队列、内存及状态机判断，全部通过才喂 IWDG。B 卡住时 A 或中断仍喂是假健康；设计模式非实拍。",
+  "chapter": "28",
+  "type": "technical"
+ },
+ "photos/bluepill-stm32f103c8t6-popolon.jpg": {
+  "caption": "",
+  "chapter": "03",
+  "type": "truth-track"
+ },
+ "photos/bluepill-stm32f103c8t6-tardate-usb.jpg": {
+  "caption": "",
+  "chapter": "03",
+  "type": "truth-track"
+ },
+ "photos/bluepill-stm32f103c8t6.jpg": {
+  "caption": "",
+  "chapter": "03",
+  "type": "truth-track"
+ },
+ "photos/nucleo-f401re-embedded-world.jpg": {
+  "caption": "",
+  "chapter": "28",
+  "type": "truth-track"
+ },
+ "photos/nucleo-f411re-embedded-world.jpg": {
+  "caption": "",
+  "chapter": "28",
+  "type": "truth-track"
  }
 }

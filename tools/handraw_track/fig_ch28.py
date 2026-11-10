@@ -265,6 +265,157 @@ def memory_regions():
            size=20, color=GREEN_D, weight="bold")
     return f
 
+# ---------------------------------------------------------------- fig 8
+def isr_divergence():
+    f = Fig("ch28-isr-divergence",
+            "任务没打印：先定位第一处分歧 / first divergence")
+    gates = [
+        ("1", "硬件 pending 位出现了吗？",
+         "读 EXTI->PR / 外设 SR；先确认事件真的发生过", BLUE_D),
+        ("2", "NVIC 使能、优先级放行了吗？",
+         "ISER 位、BASEPRI、configMAX_SYSCALL_INTERRUPT_PRIORITY", BLUE_D),
+        ("3", "ISR 真的进了吗？",
+         "ISR 首行翻转 GPIO 或计数；别拿 printf 当证据", GREEN_D),
+        ("4", "事件成功入队了吗？",
+         "xQueueSendFromISR 返回 pdTRUE / pdFALSE；通知同理", GREEN_D),
+        ("5", "目标线程就绪了吗？",
+         "被更高优先级占用、优先级数值填错、被锁阻塞", AMBER_STROKE),
+        ("6", "调度器切换了吗？",
+         "看 portYIELD_FROM_ISR 的调用点与临界区长度", RED),
+    ]
+    y = 138
+    for num, q, evidence, col in gates:
+        f.rect(84, y, 984, 72, color=col, fill=WHITE)
+        f.circle(126, y + 36, 20, color=col, sw=2.2, fill=WHITE)
+        f.text(126, y + 44, num, size=21, color=col, anchor="middle",
+               weight="bold")
+        f.text(160, y + 30, q, size=21, color=INK, weight="bold")
+        f.text(160, y + 58, "证据：" + evidence, size=16, color=MUTED)
+        y += 82
+    f.htext(W / 2, 654,
+            "任务「数值越大越高」，NVIC「数值越小越高」：两套空间不能互填",
+            size=20, color=RED, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 694,
+           "从「任务没打印」直接跳到「RTOS 坏了」，等于跳过六道闸门里的五道",
+           size=18, color=INK, anchor="middle")
+    f.text(W / 2, 728,
+           "每道闸门留一条可读证据：计数、返回码、优先级、切换次数",
+           size=17, color=MUTED, anchor="middle")
+    return f
+
+
+# ---------------------------------------------------------------- fig 9
+def h745_contracts():
+    f = Fig("ch28-h745-contracts",
+            "H745 双核：五层契约分别冻结 / five contracts")
+    layers = [
+        ("共享存储", "SRAM / 链接段", GREEN_D,
+         "两核都能访问的 SRAM 区域：起始、长度、对齐和结构体布局",
+         "不得藏进某一核私有的栈或链接段",
+         "注入越界长度、错误对齐和非法状态"),
+        ("所有权与可见性", "屏障 / Cache", GREEN_D,
+         "单写者/读者切换；交接边界的发布/获取顺序与内存屏障",
+         "映射可缓存区时按所有权 clean/invalidate",
+         "连更两代序号与 payload，读端只接受同一代"),
+        ("同步", "HSEM", AMBER_STROKE,
+         "HSEM ID 分配、持有者、最长持有、通知路径与超时降级",
+         "释放 HSEM 不等于业务消息已处理",
+         "占住一个 HSEM 或丢一次通知，另一核须超时并留因"),
+        ("消息协议", "线上格式", AMBER_STROKE,
+         "magic、版本、长度、序号、状态和兼容规则",
+         "共享 C 结构体也属于线上协议",
+         "注入未知版本、截断长度和重复序号"),
+        ("启动与恢复", "代际 / 心跳", RED,
+         "谁先初始化共享区、ready/代际号、心跳、单核复位重同步",
+         "整机复位责任必须显式指定",
+         "分别冻结或复位 M7/M4，存活核进预定降级态"),
+    ]
+    y = 128
+    for name, sub, col, freeze, own, inject in layers:
+        f.rect(84, y, 196, 104, color=col, fill=WHITE)
+        f.text(182, y + 48, name, size=19, color=col, anchor="middle",
+               weight="bold")
+        f.text(182, y + 76, sub, size=14, color=MUTED, anchor="middle")
+        f.text(300, y + 32, "冻结：" + freeze, size=16, color=INK)
+        f.text(300, y + 58, "补充：" + own, size=15.5, color=MUTED)
+        f.text(300, y + 86, "注入：" + inject, size=15.5, color=col)
+        y += 112
+    f.htext(W / 2, 706,
+            "HSEM 只给原子占用和中断通知：不搬 payload，也不替 M7 管 Cache",
+            size=19, color=RED, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 740, "「继续等」不是恢复策略：重试、重启单核、复位整机、保持安全输出，必须显式选一个",
+           size=16, color=INK, anchor="middle")
+    return f
+
+
+# ---------------------------------------------------------------- fig 10
+def experiment_evidence():
+    f = Fig("ch28-experiment-evidence",
+            "四组实验：每组交一份可验收证据 / four labs")
+    f.text(84, 126, "实验", size=16, color=MUTED, weight="bold")
+    f.text(384, 126, "动作", size=16, color=MUTED, weight="bold")
+    f.text(756, 126, "验收证据", size=16, color=MUTED, weight="bold")
+    rows = [
+        ("实验一", ["对象语义对账"],
+         ["队列深度 2 发三条消息：", "非阻塞 / 限时 / 永久等待"],
+         ["返回码、耗时、最终顺序", "知道队列满怎么进策略层"], GREEN_D),
+        ("实验二", ["所有者任务对比"],
+         ["两任务抢同一 SPI/I2C，", "DMA 完成前再发一次请求"],
+         ["稳定 busy / queued / timeout", "无片选或状态机交叉"], GREEN_D),
+        ("实验三", ["故障注入"],
+         ["依次冻结控制、", "网络、日志任务"],
+         ["监督者识别失败并停喂狗", "复位后能指认先失败项"], AMBER_STROKE),
+        ("实验四", ["跨系统垂直切片"],
+         ["GPIO 中断 → 定长事件 →", "工作线程 → UART"],
+         ["对象语义/配置/栈预算/ISR", "只用切片，不动网络与文件系统"], RED),
+    ]
+    y = 148
+    for label, sub, action, evidence, col in rows:
+        f.rect(84, y, 984, 104, color=col, fill=WHITE)
+        f.text(104, y + 40, label, size=19, color=col, weight="bold")
+        f.multi(104, y + 70, sub, size=16, color=INK)
+        f.multi(384, y + 40, action, size=15.5, color=INK, lh=24)
+        f.multi(756, y + 40, evidence, size=15, color=col, lh=24)
+        y += 116
+    f.text(84, 636, "共同前提：固定输入频率与日志格式；先做最小切片，再谈迁移与替换。",
+           size=19, color=INK)
+    f.htext(W / 2, 684,
+            "验收看返回码、时序和切换次数，不看「看起来正常」",
+            size=20, color=GREEN_D, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 720, "实验三的验收不是「最后复位了」，而是复位后能区分哪个健康条件先失败",
+           size=16, color=MUTED, anchor="middle")
+    return f
+
+
+# ---------------------------------------------------------------- fig 11
+def review_evidence():
+    f = Fig("ch28-review-evidence",
+            "选型评审十条，收敛成四条证据线 / four evidence lines")
+    quads = [
+        (90, 138, "版本与维护", GREEN_D,
+         ["可维护的 BSP 与关键驱动", "冻结内核 / BSP / 组件 /", "工具链 / 依赖仓库",
+          "CVE、勘误、上游修复", "有持续评估与升级流程"]),
+        (582, 138, "预算", BLUE_D,
+         ["Flash / SRAM / 线程栈", "网络与 TLS 峰值", "升级缓冲",
+          "队列、池、重试的上限", "与满时策略"]),
+        (90, 402, "时间证据", AMBER_STROKE,
+         ["最坏响应与端到端时延", "有测量方案，不只写「实时」",
+          "ISR 可调用 API", "NVIC 优先级与", "内核临界区规则"]),
+        (582, 402, "所有权与恢复", RED,
+         ["有状态外设与协议连接", "各有唯一所有者",
+          "启动依赖 / 降级态 /", "恢复预算 / 看门狗健康条件", "迁移用同一组输入复测"]),
+    ]
+    for x, y, head, col, items in quads:
+        f.rect(x, y, 480, 244, color=col, fill=WHITE)
+        f.htext(x + 24, y + 44, head, size=21, color=col, weight="bold", hl=True)
+        f.multi(x + 24, y + 84, items, size=16, color=INK, lh=27)
+    f.htext(W / 2, 684, "清单不是打分表：任一条答不出证据，这一项就是未通过",
+            size=20, color=RED, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 720, "证据要能复测；否则只是口头承诺，迁移时第一个失效",
+           size=17, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch28-four-concepts": four_concepts,
     "ch28-os-compare": os_compare,
@@ -273,6 +424,10 @@ FIGS = {
     "ch28-fault-triage": fault_triage,
     "ch28-memory-regions": memory_regions,
     "ch28-wdg-supervisor": wdg_supervisor,
+    "ch28-isr-divergence": isr_divergence,
+    "ch28-h745-contracts": h745_contracts,
+    "ch28-experiment-evidence": experiment_evidence,
+    "ch28-review-evidence": review_evidence,
 }
 
 if __name__ == "__main__":

@@ -80,8 +80,79 @@ def halfword_loop():
     return f
 
 
+def ymodem_flow():
+    f = Fig("ch12-ymodem-flow",
+            "YMODEM 四步：谁先说话 / who speaks first")
+    f.text(84, 130, "带 CRC 的可靠文件传输；每一步卡住时，先查这一格",
+           size=21, color=MUTED)
+
+    # two-lane roles
+    f.rect(84, 168, 180, 56, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(174, 203, "设备 Bootloader", size=18, color=BLUE_D,
+           anchor="middle", weight="bold")
+    f.rect(884, 168, 180, 56, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(974, 203, "上位机", size=18, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.line(264, 196, 884, 196, color=MUTED, sw=1.6, amp=0.6)
+
+    steps = [
+        ("① 设备周期发 'C'", "请求以 CRC 方式发送；收不到 'C' 先查波特率与共地", BLUE_D),
+        ("② 上位机发首包", "文件名 + 大小；设备据此定 APP 地址并擦页", GREEN_D),
+        ("③ 逐包数据 128/1024 B", "每包带 CRC16；校验过才写 Flash 并回 ACK，错了回 NAK 重发", BLUE_D),
+        ("④ 空包收尾", "整包 CRC 过了才置「APP 有效」标志，再复位跳转", GREEN_D),
+    ]
+    y = 256
+    for t, s, c in steps:
+        f.rect(84, y, 700, 78, color=c, fill=WHITE, sw=2.4)
+        f.text(108, y + 32, t, size=20, color=c, weight="bold")
+        f.text(108, y + 62, s, size=17, color=INK)
+        y += 94
+
+    f.rect(820, 256, 248, 360, color=RED, fill=WHITE, sw=2.4)
+    f.htext(944, 292, "卡住先查", size=19, color=RED, anchor="middle",
+            weight="bold", hl=True)
+    f.multi(944, 336, ["无 'C'：串口参数", "首包错：工具设置", "NAK 循环：线/缓存",
+                       "写完跳不了：", "五道验收门", "(本章 §4)"],
+            size=16, color=INK, lh=32, anchor="middle")
+    return f
+
+
+def option_bytes():
+    f = Fig("ch12-option-bytes",
+            "选项字节：F1 与 F4 的档位不一样 / option bytes differ")
+    f.text(84, 130, "读保护改错会整片擦除；F4 的 0xCC 不可逆。先备份，再动手",
+           size=20, color=RED, weight="bold")
+
+    # F1 column
+    f.rect(84, 176, 490, 330, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(329, 212, "STM32F1（本章 BluePill）", size=20, color=BLUE_D,
+           anchor="middle", weight="bold")
+    f.multi(112, 258, ["RDP = 0xA5：不保护", "RDP = 其他：读保护生效",
+                       "没有 Level 2 这一档", "解除读保护 = 整片擦除主闪存",
+                       "WRP 按页写保护", "USER：nRST_STOP / nRST_STDBY / WDG_SW"],
+            size=18, color=INK, lh=40)
+
+    # F4 column
+    f.rect(606, 176, 462, 330, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(837, 212, "STM32F4", size=20, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.multi(634, 258, ["RDP = 0xAA：Level 0，不保护", "RDP ≠ 0xAA/0xCC：Level 1（写 0x55）",
+                       "RDP = 0xCC：Level 2，不可逆", "WRP 按扇区写保护",
+                       "参数区与 Bootloader 同扇区", "= 擦参数会擦掉 Bootloader"],
+            size=18, color=INK, lh=40)
+
+    f.rect(84, 540, 984, 108, color=RED, fill=WHITE, sw=2.6)
+    f.htext(W / 2, 578, "两条不可逆边界", size=20, color=RED, anchor="middle",
+            weight="bold", hl=True)
+    f.text(W / 2, 620, "F4 写 0xCC 后无法再用调试口恢复；F1/F4 解除读保护都会擦整片 —— 先读回配置（HAL_FLASHEx_OBGetConfig），先备份",
+           size=16, color=INK, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch12-halfword-loop": halfword_loop,
+    "ch12-ymodem-flow": ymodem_flow,
+    "ch12-option-bytes": option_bytes,
 }
 
 if __name__ == "__main__":

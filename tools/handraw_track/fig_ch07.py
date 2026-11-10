@@ -96,8 +96,80 @@ def clock_stretch():
     return f
 
 
+def ccr_timing():
+    """Two CCR rows at PCLK1 = 36 MHz: 0x801E -> 400 kHz, 0x00B4 -> 100 kHz."""
+    f = Fig("ch07-ccr-timing",
+            "0x801E 与 0x00B4：36 MHz 下两行 CCR 的账 / two CCR rows at 36 MHz")
+
+    f.text(84, 126,
+           "PCLK1 = 36 MHz：一个计数 27.8 ns；快速模式 T = 3 × CCR / f，标准模式 T = 2 × CCR / f",
+           size=19, color=MUTED)
+
+    # ---- 上：快速模式 0x801E，一拍 3 个 CCR 单位 ----
+    f.text(84, 222, "0x801E", size=24, color=BLUE_D, weight="bold")
+    f.text(84, 250, "FAST=1, DUTY=0", size=14, color=MUTED)
+    f.text(84, 272, "CCR = 30", size=14, color=MUTED)
+    f.stroke([(240, 282), (240, 200), (493, 200), (493, 282), (1000, 282)],
+             color=BLUE_D, sw=3.0, amp=1.2)
+    f.text(366, 180, "T_high = 30 × 27.8 ns = 0.83 µs", size=14,
+           color=BLUE_D, anchor="middle")
+    f.text(746, 180, "T_low = 2 × 30 × 27.8 ns = 1.67 µs", size=14,
+           color=BLUE_D, anchor="middle")
+    f.line(240, 294, 1000, 294, color=MUTED, sw=1.3, amp=0.5)
+    f.line(240, 288, 240, 300, color=MUTED, sw=1.3, amp=0.4)
+    f.line(1000, 288, 1000, 300, color=MUTED, sw=1.3, amp=0.4)
+    f.text(620, 320, "一拍 2.5 µs → 400 kHz", size=17, color=BLUE_D,
+           anchor="middle", weight="bold")
+
+    # ---- 下：标准模式 0x00B4，一拍 2 个 CCR 单位 ----
+    f.text(84, 372, "0x00B4", size=24, color=GREEN_D, weight="bold")
+    f.text(84, 400, "FAST=0, DUTY=0", size=14, color=MUTED)
+    f.text(84, 422, "CCR = 180", size=14, color=MUTED)
+    f.stroke([(240, 432), (240, 350), (620, 350), (620, 432), (1000, 432)],
+             color=GREEN_D, sw=3.0, amp=1.2)
+    f.text(430, 330, "T_high = 180 × 27.8 ns = 5 µs", size=14,
+           color=GREEN_D, anchor="middle")
+    f.text(810, 330, "T_low = 180 × 27.8 ns = 5 µs", size=14,
+           color=GREEN_D, anchor="middle")
+    f.line(240, 444, 1000, 444, color=MUTED, sw=1.3, amp=0.5)
+    f.line(240, 438, 240, 450, color=MUTED, sw=1.3, amp=0.4)
+    f.line(1000, 438, 1000, 450, color=MUTED, sw=1.3, amp=0.4)
+    f.text(620, 470, "一拍 10 µs → 100 kHz", size=17, color=GREEN_D,
+           anchor="middle", weight="bold")
+
+    f.text(84, 502,
+           "0x801E：FAST=1、DUTY=0、CCR=0x01E=30；0x00B4：FAST=0、CCR=0xB4=180",
+           size=15, color=MUTED)
+    f.text(84, 526,
+           "两行横轴刻度不同：上一行 2.5 µs，下一行 10 µs；周期比 (3×30) : (2×180) = 1 : 4",
+           size=15, color=MUTED)
+
+    # ---- 两条边界：±2% 与没有 1 MHz ----
+    f.rect(84, 548, 476, 138, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(100, 578, "±2% 从哪来", size=19, color=BLUE_D, weight="bold")
+    f.multi(100, 608, ["表 41：PCLK1 取 10 MHz 的整数倍，400 kHz 才精确",
+                       "36 MHz 不是 → 表 42 注 2 给 ±2%",
+                       "这是时钟源的账，不是 CCR 写错"],
+            size=15, color=INK, lh=25)
+
+    f.rect(584, 548, 484, 138, color=RED, fill=WHITE, sw=2.4)
+    f.text(600, 578, "为什么没有 1 MHz", size=19, color=RED, weight="bold")
+    f.multi(600, 608, ["表 41 / 表 42 里没有 1 MHz 这一档",
+                       "F103 的 I2C 没有 Fast-mode Plus",
+                       "「可达 1 MHz」在这颗芯片上不成立"],
+            size=15, color=INK, lh=25)
+
+    f.htext(84, 720, "0x801E 不是魔法数：CCR = 30，一拍 = 3 × 30 ÷ 36 MHz = 2.5 µs",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(84, 750,
+           "两行都按 PCLK1 = 36 MHz 复算，不含晶振实际误差与从机时钟拉伸。",
+           size=15, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch07-clock-stretch": clock_stretch,
+    "ch07-ccr-timing": ccr_timing,
 }
 
 if __name__ == "__main__":

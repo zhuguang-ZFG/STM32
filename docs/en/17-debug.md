@@ -301,6 +301,11 @@ Use DWT to locate the slow section before choosing a change. Compare DMA for dat
 | Inline / macros | `static inline` on a hot function | Too much inlining grows the image |
 | Lookup tables | A LUT instead of computing it live | You spend Flash to buy speed |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-dwt-window.png" width="760" alt="Handraw: what the DWT window contains — read overheads, measured code, interrupts (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the whole span between the t₀ and t₁ reads: both read overheads and any interrupt inside the window enter Δcycles. It shows Δ is comparable only after an empty-window baseline, a disassembly check that the code is still inside the window, and fixed conditions; it cannot prove the same code is as fast with another input or clock, and it is not a measurement. See [PM0056 DWT](#source-pm0056-dwt).</sub>
+</p>
+
 **DWT timing (accurate to a CPU cycle)**:
 
 ```c
@@ -371,6 +376,11 @@ The probe's 3V3 connection is usually target-voltage reference VTref; check the 
 **① Redirect printf to SWO / ITM**
 
 This code only retargets character output; it does not configure trace hardware. The comment in `Log_Init()` simplifies initialization. The DBGMCU, ITM, TPIU, and probe setup described earlier is still required. The IDE's core-clock setting and SWO line rate are separate parameters.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch17-swo-path.png" width="760" alt="Handraw: the printf-over-SWO chain and its three parameters (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the five-box chain on top — printf → ITM port 0 → TPIU → PB3 TRACESWO → probe; the "three parameters" cards in the middle (core clock, SWO line rate, link enable — miss any one and no characters arrive); the ordered "check in this order" strip at the bottom; proves that when characters never reach the host you check the chain and parameters before touching printf; does not replace a probe measurement, nor a trace waveform. See [PM0056 ITM/TPIU](#source-pm0056).</sub>
+</p>
 
 ```c
 #include "stm32f1xx_hal.h"

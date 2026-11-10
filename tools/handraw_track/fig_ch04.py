@@ -84,8 +84,40 @@ def mask_gates():
     return f
 
 
+def preempt_timeline():
+    f = Fig("ch04-preempt-timeline",
+            "抢占什么时候发生：一条时间线与两个对照（167 ns 入栈）")
+    # 正常时间线
+    f.text(84, 132, "正常：EXTI0(抢占 1) 打断 TIM2(抢占 2) —— 12 HCLK ≈ 167 ns 入栈",
+           size=21, color=MUTED)
+    y = 190
+    segs = [
+        ("TIM2 ISR 在跑", 190, GREEN_D),
+        ("入栈 ×8 寄存器", 150, AMBER_STROKE),
+        ("EXTI0 取向量 + 执行", 240, RED),
+        ("出栈返回 TIM2", 150, AMBER_STROKE),
+        ("TIM2 继续", 128, GREEN_D),
+    ]
+    x = 84
+    for name, w, c in segs:
+        f.rect(x, y, w, 84, color=c, fill=WHITE, sw=2.6)
+        f.htext(x + w / 2, y + 50, name, size=18, color=c, anchor="middle")
+        x += w + 8
+    # 两个对照
+    f.rect(84, 330, 470, 180, color=RED, fill=WHITE, sw=2.6)
+    f.text(108, 368, "失败：抢占写成同一级", size=22, color=RED, weight="bold")
+    f.text(108, 404, "EXTI0 保持挂起，不发生嵌套入栈", size=18, color=INK)
+    f.text(108, 436, "数字越小越急；同抢占互不打断", size=18, color=MUTED)
+    f.rect(594, 330, 470, 180, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(618, 368, "PRIMASK = 1", size=22, color=BLUE_D, weight="bold")
+    f.text(618, 404, "可配置中断不进入，NMI 仍进入", size=18, color=INK)
+    f.text(618, 436, "临界区的门，不是关总中断", size=18, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch04-mask-gates": mask_gates,
+    "ch04-preempt-timeline": preempt_timeline,
 }
 
 if __name__ == "__main__":

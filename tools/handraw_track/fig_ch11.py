@@ -99,9 +99,85 @@ def lsi_drift():
     return f
 
 
+def backup_path():
+    """Backup-domain power path, reset boundary and DBP write gate."""
+    f = Fig("ch11-backup-path",
+            "备份域：VBAT 续电、复位碰不到 / why the calendar survives")
+
+    f.text(84, 126,
+           "主程序住主域，RTC 与 BKP 住备份域：供电、复位边界、写门三道关口",
+           size=18, color=MUTED)
+
+    # ---- ① 供电：VDD / VBAT 片内切换 ----
+    f.text(84, 166, "① 电：两路电源在片内切换", size=20, color=BLUE_D,
+           weight="bold")
+    f.rect(84, 184, 196, 64, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(182, 211, "VDD 3.3 V", size=19, color=BLUE_D, anchor="middle",
+           weight="bold")
+    f.text(182, 237, "主电源", size=14, color=MUTED, anchor="middle")
+    f.rect(84, 280, 196, 64, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(182, 307, "VBAT 第 1 脚", size=18, color=AMBER_STROKE,
+           anchor="middle", weight="bold")
+    f.text(182, 333, "CR2032 ~3 V", size=14, color=MUTED, anchor="middle")
+    f.rect(360, 196, 240, 146, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(480, 224, "片内电源切换", size=19, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.multi(376, 256, ["VDD 在：备份域用 VDD",
+                       "VDD 掉：切到 VBAT",
+                       "两路都掉：备份域复位"],
+            size=15, color=INK, lh=26)
+    f.arrow(282, 216, 356, 238, color=BLUE_D, sw=2.4, bend=0.0)
+    f.arrow(282, 312, 356, 300, color=AMBER_STROKE, sw=2.4, bend=0.0)
+
+    f.rect(650, 184, 418, 164, color=INK, fill=WHITE, sw=2.6)
+    f.text(674, 212, "备份域（VBAT 域）", size=19, color=INK, weight="bold")
+    f.multi(674, 244, ["RTC：32 位秒计数器",
+                       "BKP_DR1–DR10：10 × 16 位 = 20 字节",
+                       "LSE 32.768 kHz（PC14/PC15）"],
+            size=16, color=INK, lh=27)
+    f.arrow(602, 268, 646, 268, color=GREEN_D, sw=2.6, bend=0.0)
+
+    # ---- ② 复位边界 ----
+    f.text(84, 392, "② 复位：系统复位到不了备份域", size=20, color=RED,
+           weight="bold")
+    f.arrow(120, 524, 582, 524, color=RED, sw=3.2, bend=0.0)
+    f.text(120, 498, "系统复位：NRST / IWDG / WWDG / 上电", size=16, color=RED)
+    f.text(120, 556, "主域：CPU、RAM、Flash、外设清零重来", size=16, color=INK)
+    f.line(604, 462, 604, 586, color=RED, sw=3.6, amp=1.4)
+    for i in range(4):
+        f.line(604, 470 + i * 30, 622, 456 + i * 30, color=RED, sw=1.6)
+    f.text(596, 440, "复位边界", size=14, color=RED, anchor="middle")
+    f.rect(650, 462, 418, 124, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(674, 490, "备份域：这一刀砍不到", size=19, color=GREEN_D,
+           weight="bold")
+    f.multi(674, 520, ["RTC 秒计数、BKP_DR1–DR10 原样保留",
+                       "只有 VDD 与 VBAT 都掉，或 BDRST，才复位备份域"],
+            size=15.5, color=INK, lh=26)
+
+    # ---- ③ 写门与首次上电判断 ----
+    f.rect(84, 606, 476, 112, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(100, 636, "写门：DBP 不解锁，写不进", size=19, color=BLUE_D,
+           weight="bold")
+    f.multi(100, 666, ["先开 PWR 与 BKP 时钟，再置 PWR_CR.DBP = 1",
+                       "否则写 BKP_DR 与 RTC 设置不生效"],
+            size=15.5, color=INK, lh=26)
+
+    f.rect(584, 606, 484, 112, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(600, 636, "上电先问：是不是第一次", size=19, color=GREEN_D,
+           weight="bold")
+    f.multi(600, 666, ["读 BKP_DR1 的 0xA5A5：在 → 直接读时间",
+                       "不在 → 设日历，再把 0xA5A5 写回"],
+            size=15.5, color=INK, lh=26)
+
+    f.htext(84, 750, "复位后表还在走、程序没了：两件事分属两个域",
+            size=21, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch11-wwdg-window": wwdg_window,
     "ch11-lsi-drift": lsi_drift,
+    "ch11-backup-path": backup_path,
 }
 
 if __name__ == "__main__":

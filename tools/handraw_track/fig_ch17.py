@@ -193,6 +193,117 @@ def perf_triage():
     return f
 
 
+def dwt_window():
+    f = Fig("ch17-dwt-window", "计时窗口里，不只有被测代码")
+    f.text(72, 142, "t₀、t₁ 两次读取之间发生的一切，都计入 Δcycles。", size=23, color=MUTED)
+
+    # ---- 上：Δ 的构成 ----
+    f.text(170, 214, "t₀ = CYCCNT", size=22, color=BLUE_D, weight="bold", anchor="middle")
+    f.text(1010, 214, "t₁ = CYCCNT", size=22, color=BLUE_D, weight="bold", anchor="middle")
+    f.line(170, 261, 1010, 261, color=BLUE_D, sw=3)
+    f.line(170, 236, 170, 286, color=BLUE_D, sw=3)
+    f.line(1010, 236, 1010, 286, color=BLUE_D, sw=3)
+    f.rect(196, 233, 158, 56, color=AMBER_STROKE, fill=WHITE, sw=2.2, double=False)
+    f.text(275, 269, "读 t₀ 开销", size=21, color=AMBER_STROKE, anchor="middle", weight="bold")
+    f.rect(378, 233, 428, 56, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(592, 269, "被测代码 · 只关心这一段", size=22, color=GREEN_D, anchor="middle", weight="bold")
+    f.rect(830, 233, 158, 56, color=AMBER_STROKE, fill=WHITE, sw=2.2, double=False)
+    f.text(909, 269, "读 t₁ 开销", size=21, color=AMBER_STROKE, anchor="middle", weight="bold")
+    f.line(170, 312, 1010, 312, color=BLUE_D, sw=2.4)
+    f.line(170, 300, 170, 324, color=BLUE_D, sw=2.4)
+    f.line(1010, 300, 1010, 324, color=BLUE_D, sw=2.4)
+    f.text(576, 354, "Δcycles = t₁ − t₀ = 固定开销 + 被测代码（+ 窗口内的中断）",
+           size=23, color=BLUE_D, anchor="middle", weight="bold")
+
+    # ---- 中：三个可能混进窗口的东西 ----
+    cards = [
+        (72, "固定开销", BLUE_D,
+         ["两次读取与地址计算；", "空窗口也能测出非零值。"]),
+        (408, "被测代码", GREEN_D,
+         ["被优化掉，Δ 只剩开销；", "反汇编确认循环还在窗口内。"]),
+        (744, "窗口内中断", RED,
+         ["ISR 插进来，Δ 变长；", "重复测量，写明中断条件。"]),
+    ]
+    for x, head, color, lines in cards:
+        f.rect(x, 392, 312, 150, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 22, 428, head, size=24, color=color, weight="bold")
+        f.multi(x + 22, 470, lines, size=19, color=INK, lh=32)
+
+    # ---- 下：让差值可引用的三件事 ----
+    f.line(72, 572, 1080, 572, color=MUTED, sw=1.3)
+    f.text(72, 608, "让 Δ 能被引用，先做三件事", size=26, color=BLUE_D, weight="bold")
+    rules = [
+        (648, "基线", "先测一次空窗口，再解释差值。"),
+        (686, "代码在不在", "反汇编里找到被测循环。"),
+        (724, "同条件", "主频、输入、优化级别固定，再用运行频率换算 µs。"),
+    ]
+    for y, name, note in rules:
+        f.text(72, y, name, size=23, color=GREEN_D, weight="bold")
+        f.text(232, y, note, size=23, color=INK)
+    f.htext(72, 760, "两次读取之间发生的一切，都属于这次测量。", size=23,
+            color=RED, weight="bold", hl=True)
+    return f
+
+
+def swo_path():
+    f = Fig("ch17-swo-path", "printf 上 SWO：一条链，三个参数")
+    f.text(72, 138, "代码只把字符写进 ITM；字符能不能到主机，取决于后面的链路与配置。", size=22, color=MUTED)
+
+    # ---- 上：字符路径 ----
+    stages = [
+        (72, "printf", "字符重定向", BLUE_D),
+        (276, "ITM", "端口 0", BLUE_D),
+        (480, "TPIU", "跟踪输出", BLUE_D),
+        (684, "PB3", "TRACESWO", AMBER_STROKE),
+        (888, "探针 · IDE", "Serial Wire", GREEN_D),
+    ]
+    for x, head, sub, color in stages:
+        f.rect(x, 186, 176, 78, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 88, 222, head, size=20, color=color, anchor="middle", weight="bold")
+        f.text(x + 88, 250, sub, size=17, color=INK, anchor="middle")
+    for x in (248, 452, 656, 860):
+        f.arrow(x, 225, x + 28, 225, color=BLUE_D, bend=0)
+    f.text(72, 302, "SWO 走 PB3 的 TRACESWO，不占 USART；这段代码只负责写 ITM 端口 0。", size=21, color=MUTED)
+    f.line(72, 330, 1080, 330, color=MUTED, sw=1.3)
+
+    # ---- 中：三个独立参数 ----
+    f.text(72, 366, "三个参数，缺一个就看不到字符", size=25, color=BLUE_D, weight="bold")
+    cards = [
+        (72, "内核时钟", BLUE_D,
+         ["IDE 里填的内核频率", "要与实际 HCLK 一致。"]),
+        (408, "SWO 线速", AMBER_STROKE,
+         ["探针与 IDE 的速率", "要和跟踪输出匹配；", "不匹配就是乱码或无数据。"]),
+        (744, "链路使能", GREEN_D,
+         ["DBGMCU、ITM、TPIU", "和探针的 Serial Wire", "模式都要打开。"]),
+    ]
+    for x, head, color, lines in cards:
+        f.rect(x, 392, 312, 150, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 22, 428, head, size=24, color=color, weight="bold")
+        f.multi(x + 22, 470, lines, size=19, color=INK, lh=30)
+
+    # ---- 下：看不到字符时的排查顺序 ----
+    f.line(72, 572, 1080, 572, color=MUTED, sw=1.3)
+    f.text(72, 608, "看不到字符时，按顺序查", size=26, color=BLUE_D, weight="bold")
+    steps = [
+        (72, "① 探针", "Serial Wire + 跟踪", BLUE_D),
+        (350, "② ITM / TPIU", "使能", BLUE_D),
+        (628, "③ 时钟与线速", "两处一致", AMBER_STROKE),
+    ]
+    for x, head, sub, color in steps:
+        f.rect(x, 630, 230, 76, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 115, 664, head, size=20, color=color, anchor="middle", weight="bold")
+        f.text(x + 115, 692, sub, size=18, color=INK, anchor="middle")
+    for x in (306, 584):
+        f.arrow(x, 668, x + 38, 668, color=INK, bend=0)
+    f.arrow(862, 668, 898, 668, color=GREEN_D, bend=0)
+    f.rect(902, 630, 178, 76, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(991, 664, "主机有字符", size=20, color=GREEN_D, anchor="middle", weight="bold")
+    f.text(991, 692, "才算通了", size=18, color=INK, anchor="middle")
+    f.htext(72, 756, "改 printf 之前，先把链路和三个参数对齐。", size=23,
+            color=RED, weight="bold", hl=True)
+    return f
+
+
 def halt_timing():
     f = Fig("ch17-halt-timing", "断点 / 单步：停一下，时序就变一次")
     f.text(72, 128, "命中 → 内核暂停 → 主机读现场；读的是此刻的 PC / 变量 / 寄存器。", size=22, color=MUTED)
@@ -264,6 +375,8 @@ FIGS = {
     "ch17-cfsr-bits": cfsr_bits,
     "ch17-perf-triage": perf_triage,
     "ch17-halt-timing": halt_timing,
+    "ch17-dwt-window": dwt_window,
+    "ch17-swo-path": swo_path,
 }
 
 if __name__ == "__main__":

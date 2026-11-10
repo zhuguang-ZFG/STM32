@@ -241,6 +241,11 @@ Cortex-M 的异常优先级与 RTOS 任务优先级是两套空间。任务优�
 
 **第一处分歧检查**：硬件 pending 位是否出现 → NVIC 是否使能 → ISR 是否进入 → 事件是否成功入队 → 目标线程是否就绪 → 调度器是否切换。不要直接从“任务没打印”跳到“RTOS 坏了”。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-isr-divergence.png" width="760" alt="Handraw：ISR 到任务的第一处分歧六道闸门（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：六道闸门从硬件 pending 位一直到调度器切换，每道下面写了一条可读证据；证明 ISR 到任务的事件丢失可以逐门定位，而不是从「任务没打印」直接跳到「RTOS 坏了」；不能替你测出具体中断延迟，也不是实测时序。出处 [FreeRTOS 11.3.2](#source-freertos-1132)、[PM0056](#source-pm0056)。</sub>
+</p>
+
 ## IPC 的语义比名字重要
 
 | 意图 | FreeRTOS | RT-Thread | Zephyr | CMSIS-RTOS2 |
@@ -324,6 +329,11 @@ HSEM 提供原子占用和中断通知；它既不搬运 payload，也不替 Cor
 | 启动与恢复 | 哪一核先初始化共享区、`ready`/代际号、心跳、单核复位后的重同步和整机复位责任 | 分别冻结或复位 M7/M4，存活核进入预定降级/安全状态，不无限等待旧代际 |
 
 这张表是设计与验收协议，不是本仓库已经完成的 H745 硬件实测。若 HSEM 或心跳超时，恢复策略必须显式选择重试、重启单核、复位整机或保持安全输出，不能把“继续等”当默认方案。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-h745-contracts.png" width="760" alt="Handraw：H745 双核五层契约（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：共享存储、所有权与可见性、HSEM 同步、消息协议、启动与恢复五层各自冻结什么、注入什么；证明五层要分别验收，HSEM 只给原子占用和中断通知，不搬 payload 也不替 M7 管 Cache；不能代替 H745 实测，也不是本仓库的 H745 硬件结果。出处 [RM0399](#source-rm0399)、[冻结的 stm32h745xx.h](#source-stm32h745-header)。</sub>
+</p>
 
 ## RT-Thread v5.3.0：内核、设备框架与组件
 
@@ -617,6 +627,11 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 
 在 FreeRTOS、RT-Thread 或 Zephyr 中任选当前系统，再选另一套系统，只实现：GPIO 中断 → 定长事件 → 工作线程 → UART 结果。固定输入频率和日志格式，对比对象语义、配置文件、栈预算与 ISR 边界。不要一开始迁网络和文件系统。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-experiment-evidence.png" width="760" alt="Handraw：四组递进实验与验收证据（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四组实验各自的动作与验收证据；证明递进实验交出的是一组可证伪证据，不是「跑通了」；不能替代真实截止时间与栈水位的测量，也不是实测数据。出处 [FreeRTOS 11.3.2](#source-freertos-1132)、[Zephyr 4.4.2](#source-zephyr-442)。</sub>
+</p>
+
 ## 选型评审清单
 
 - [ ] 目标 MCU/板卡在所选冻结版本中有可维护 BSP 和关键驱动。
@@ -642,6 +657,11 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 8. tickless idle 为什么不等于整板一定进入最低功耗？
 9. STM32H745 这类 M7+M4 为什么通常不应直接当成对称 SMP？
 10. 健康监督者应在什么条件下刷新硬件看门狗？
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-review-evidence.png" width="760" alt="Handraw：选型评审十条收敛成四条证据线（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十条评审项落进版本与维护、预算、时间证据、所有权与恢复四个象限；证明评审要的是可复测证据，任一条答不出就是未通过；不能替你决定选哪套系统，也不是评分表。出处本章选型与来源表，[FreeRTOS 11.3.2](#source-freertos-1132)、[CMSIS-RTOS2 2.3.0](#source-cmsis-640)。</sub>
+</p>
 
 ## 相关资源
 

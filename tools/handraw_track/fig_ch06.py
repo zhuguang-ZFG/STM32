@@ -158,9 +158,86 @@ def sample_points():
     return f
 
 
+def baud_budget():
+    f = Fig("ch06-baud-budget",
+            "误差预算：10 位帧的半格 5% 怎么花 / baud budget across a 10-bit frame")
+
+    f.text(84, 132, "115200 8N1：一位 16 个采样格，一帧 10 位；两端的误差从起始沿一路累计到停止位",
+           size=18, color=MUTED)
+
+    # ---- 左上：一帧 10 位 ----
+    f.text(84, 172, "① 一帧 10 位，误差按位累计", size=21, color=GREEN_D,
+           weight="bold")
+    f.text(84, 276, "0xA5，LSB 先发；停止位仍取第 8、9、10 点", size=16,
+           color=MUTED)
+    labels = ["起", "0", "1", "2", "3", "4", "5", "6", "7", "停"]
+    cw = 64
+    for i, tag in enumerate(labels):
+        bx = 84 + i * cw
+        edge = RED if tag == "停" else BLUE_D
+        f.rect(bx, 192, cw, 48, color=edge, fill=WHITE, sw=1.8, r=4)
+        f.text(bx + cw / 2, 223, tag, size=16, color=edge, anchor="middle",
+               weight="bold")
+    f.text(724, 276, "半格 0.5 位 = 5%（帧尾边界）", size=17,
+           color=AMBER_STROKE, anchor="end", weight="bold")
+    f.stroke([(724, 248), (724, 262), (756, 262), (756, 248)],
+             color=AMBER_STROKE, sw=2.2)
+
+    # ---- 左下：错位随误差直线增长 ----
+    f.text(84, 318, "累计错位 = 10 × 合计误差 ε", size=20, color=GREEN_D,
+           weight="bold")
+    base, half = 612, 160            # 0.5 位 = 160 px
+    f.line(84, base, 700, base, color=MUTED, sw=2.0)
+    f.line(84, base, 84, base - half - 30, color=MUTED, sw=1.6, opacity=0.5)
+    f.text(96, 448, "半格 0.5 位 = 5% 硬边界", size=16, color=RED,
+           weight="bold")
+    f.line(84, base - half, 700, base - half, color=RED, sw=2.0,
+           dash="7 7", opacity=0.8)
+    bars = [(1, 32), (2, 64), (3, 96), (5, 160)]
+    for k, (pct, h) in enumerate(bars):
+        bx = 120 + k * 130
+        col = RED if pct == 5 else (AMBER_STROKE if pct == 3 else GREEN_D)
+        f.rect(bx, base - h, 72, h, color=col, fill=WHITE, sw=2.2, r=3)
+        f.text(bx + 36, base - h - 12, f"{pct * 0.1:.1f} 位", size=17,
+               color=col, anchor="middle", weight="bold")
+        f.text(bx + 36, base + 26, f"{pct}%", size=18, color=INK,
+               anchor="middle", weight="bold")
+    f.text(84, 676, "合计误差 ε = 本端误差 + 对端误差；两端各 1% 就是 2%",
+           size=16, color=INK)
+
+    # ---- 右列：5% 的分配 ----
+    f.text(752, 172, "半格 5% 怎么花", size=20, color=GREEN_D,
+           weight="bold")
+    cards = [
+        ("半格总余量", "0.5 位 = 5.0%", GREEN_D),
+        ("− 三点表决窗口半宽", "1/16 位 = 0.625%", MUTED),
+        ("− 起始沿识别", "1/16 位 = 0.625%", MUTED),
+        ("= 约 3.75%", "工程预算取 2%~3%", AMBER_STROKE),
+    ]
+    for k, (head, val, col) in enumerate(cards):
+        cy = 192 + k * 64
+        f.rect(752, cy, 316, 56, color=col, fill=WHITE, sw=2.0)
+        f.text(768, cy + 23, head, size=16, color=col)
+        f.text(768, cy + 46, val, size=17, color=INK, weight="bold")
+
+    f.text(752, 490, "实算对照（BRR 取整误差）", size=18, color=BLUE_D,
+           weight="bold")
+    f.multi(752, 522, [
+        "USART1 72 MHz：BRR 0x271 → 0%",
+        "USART2 36 MHz：BRR 0x138 → 0.16%",
+        "两端各留 1% 时钟误差 + 0.16%",
+        "≈ 2.3%：还在 3% 以内",
+    ], size=16, color=INK, lh=30)
+
+    f.htext(84, 722, "先算 ε总，再看帧尾：3% 以内留余量，5% 是硬边界；0x271 本身误差 0%",
+            size=21, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch06-ore-fe": ore_fe,
     "ch06-sample-points": sample_points,
+    "ch06-baud-budget": baud_budget,
 }
 
 if __name__ == "__main__":

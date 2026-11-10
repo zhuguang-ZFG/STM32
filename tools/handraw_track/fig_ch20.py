@@ -107,7 +107,37 @@ def cube_suite():
     return f
 
 
+def dma_f1_vs_f4():
+    f = Fig("ch20-dma-f1-vs-f4",
+            "F4 的 DMA 结论能不能搬到 F1：三个差异先核对")
+    f.text(84, 118, "示例 3 的前提：F1 的 DMA 没有 FIFO 和突发档位，照搬配置必出错",
+           size=21, color=MUTED)
+    rows = [
+        ("FIFO 阈值", "有（4 档阈值）", "无", RED),
+        ("突发档位 BURST", "有（4/8/16 beat）", "无", RED),
+        ("传输错误模型", "按 FIFO/突发检查", "简单 TE 标志", AMBER_STROKE),
+    ]
+    y = 168
+    f.text(84, y - 6, "特性", size=20, color=MUTED, weight="bold")
+    f.text(430, y - 6, "F4（RM0090/AN4031）", size=20, color=MUTED, weight="bold")
+    f.text(806, y - 6, "F1（RM0008）", size=20, color=MUTED, weight="bold")
+    y += 22
+    for dim, f4, f1, c in rows:
+        f.rect(84, y, 300, 78, color=c, fill=WHITE, sw=2.4)
+        f.text(100, y + 48, dim, size=21, color=c, weight="bold")
+        f.rect(430, y, 330, 78, color=INK, fill=WHITE, sw=2.0)
+        f.text(446, y + 48, f4, size=20, color=INK)
+        f.rect(806, y, 258, 78, color=INK, fill=WHITE, sw=2.0)
+        f.text(822, y + 48, f1, size=20, color=INK)
+        y += 96
+    f.rect(84, y + 12, 980, 66, color=RED, fill=WHITE, sw=2.6)
+    f.htext(W / 2, y + 48, "F4 的 DMA 优化结论先核对外设差异，再谈搬用",
+            size=22, color=RED, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
+    "ch20-dma-f1-vs-f4": dma_f1_vs_f4,
     "ch20-manual-route": manual_route,
     "ch20-cube-suite": cube_suite,
 }

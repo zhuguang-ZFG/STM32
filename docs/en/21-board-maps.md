@@ -104,6 +104,14 @@
 | Clones | A board sold as STM32F103C8T6 is often a CS32F103, APM32, or similar. Some mark 128 KB and only have 64 KB. Some omit the LSE (RTC will not run from it). Some swap in a hot cheap LDO |
 | Official photo | No official page (third-party board). The chip page and DS5319 are on ST's site |
 
+<figure class="photo-spread">
+  <div class="photo-pair">
+    <img src="../../assets/photos/bluepill-stm32f103c8t6.jpg" alt="Blue Pill (STM32F103C8T6) top view: on-board 8 MHz crystal, micro-USB, RT9193-33, two 2×20 headers">
+    <img src="../../assets/photos/bluepill-stm32f103c8t6-popolon.jpg" alt="Blue Pill / Core Learning Board (STM32F103C8T6): on-board LED near the USB connector, 2×20 headers">
+  </div>
+  <figcaption>▲ Photographs (not vector drawings). Left: Avandalen / Wikimedia Commons; right: Popolon / Wikimedia Commons, both CC BY-SA 4.0. Both show the third-party STM32F103C8T6 Blue Pill: use them to check the relative placement of the HSE crystal, micro-USB, LDO, and dual headers; the chip top marking and silkscreen are <strong>not</strong> legible, so they cannot tell a clone from a genuine part, nor confirm where the PC13 LED is soldered. Source, license, and SHA-256: <a href="../../assets/photos/README.md">assets/photos/README.md</a>.</figcaption>
+</figure>
+
 ### 2. BlackPill · STM32F411CEU6 (WeAct)
 
 ![blackpill](../../assets/boards/blackpill-stm32f411ce.svg)
@@ -135,6 +143,13 @@
 | Examples | No external debugger. Fits F4 versions of uart-dma-idle, adc-dma, freertos-task |
 | Notes | Official boards are rarely cloned. Watch the SB solder bridges if you want an external debugger. On F411, USB and CAN1 share pins |
 | Product page | `https://www.st.com/en/evaluation-tools/nucleo-f411re.html` |
+
+<figure class="photo-spread">
+  <div class="photo-pair">
+    <img src="../../assets/photos/nucleo-f411re-embedded-world.jpg" alt="Nucleo-F411RE exhibited at Embedded World 2016; ST-LINK on the upper half, target MCU on the lower half">
+  </div>
+  <figcaption>▲ Photograph. Nucleo-F411RE exhibited at Embedded World 2016 — the same model as the structure drawing above, the one board in this chapter where the photograph and the drawing match exactly. Photo: Ordercrazy / Thomas Springer, Wikimedia Commons, CC0 1.0. Use it to identify the ST-LINK half, the target MCU half, and the header layout; solder bridges (SB) and jumper states are not readable from the photo — defer to the ST product page and UM1724. Source and SHA-256: <a href="../../assets/photos/README.md">assets/photos/README.md</a>.</figcaption>
+</figure>
 
 ### 4. STM32F4-Discovery (F407VG)
 
@@ -325,6 +340,11 @@ void Chip_PrintIdentity(void)
 | The board gets hot | A poor LDO, or a short | Measure current, replace the LDO, find the short |
 | One function will not come out | That pin is already used | Check the pinout and the AF table, then move the function |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-identity-triage.png" width="760" alt="Handraw: the three checks when a board does not match its claims (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three checks — read back the Device ID and Flash size against DS5319, measure the actual SYSCLK on MCO or a scope, and measure current and voltage drop on each VDD — plus the red banner "list every mismatch separately; conclusions follow the evidence"; matches the pitfall "a compatible chip does not reach 72 MHz" and lab 1's identity record; proves a clone is identified by read-back evidence, not by the silkscreen; does not replace an actual read-back or measurement, nor a board photo. See [DS5319](#source-ds5319).</sub>
+</p>
+
 ## Hands-on labs
 
 1. **Identity record:** Photograph the marking and record Device ID, Flash size, UID, and supply voltage. List every mismatch explicitly instead of using “clone” as the evidence.
@@ -342,3 +362,4 @@ Before leaving this chapter, keep a board-identity record, a minimum-system sche
 - WeAct BlackPill (schematic and photos): `https://github.com/WeActTC/WeAct-STM32F411CEU6`.
 - Related chapters: [02 Choosing a part](02-part-and-clock.md), [01 Environment](01-dev-environment.md), [20 Resources](20-resources.md).
 - Drawings: seven **vector structure drawings** under `../../assets/boards/` (`bluepill-stm32f103c8t6.svg`, `blackpill-stm32f411ce.svg`, `nucleo-f411re.svg`, `f4-discovery.svg`, `f103zet6-dev.svg`, `pinout-bluepill.svg`, `peripheral-wiring.svg`). **None of them is a vendor photograph.**
+- Photographs: `../../assets/photos/` (Blue Pill ×2, Nucleo-F411RE, and more, third-party licenses CC0 / CC BY-SA / MIT); per-file source, license, and SHA-256 are recorded in `../../assets/photos/README.md`.

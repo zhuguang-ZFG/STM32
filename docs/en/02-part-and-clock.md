@@ -40,6 +40,11 @@ HSE enters on pin 5 PD0-OSC_IN and pin 6 PD1-OSC_OUT at 8 MHz. `PLLXTPRE=0` (HSE
 
 `FLASH_ACR` is at base `0x40022000`, offset `0x00`. LATENCY for 48 MHz to 72 MHz is `010`, which is 2. From 0 to 24 MHz it is 0. From 24 to 48 MHz it is 1. These steps assume a 2.7–3.6 V supply. Flash cannot keep up with 72 MHz, so each fetch waits two extra cycles. Set the PLL to ×9 but leave LATENCY at 0 and the CPU reads wrong instructions; the program runs away or lands in HardFault.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch02-flash-latency.png" width="760" alt="Handraw: the three LATENCY bands and the add-wait-states-first order (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three bands 0–24 / 24–48 / 48–72 MHz against LATENCY = 0 / 1 / 2, and the red banner "reverse the order and it is an accident"; proves that wait states must be written before raising SYSCLK; does not replace the FLASH_ACR register definition, nor a measured fetch waveform. See [RM0008 Rev 21](#source-rm0008-rcc).</sub>
+</p>
+
 With `USBPRE=0`, the 72 MHz PLL is divided by 1.5 and the result is 48 MHz. `USBPRE=1` does not divide, so the result is 72 MHz, which is not 48 MHz. `ADCPRE=10` is PCLK2÷6, and `72 / 6 = 12` MHz. `ADCPRE=01` is ÷4, which is 18 MHz and crosses the RM0008 ceiling of 14 MHz. Sample time and successive approximation are covered in chapter 09.
 
 When HSE stops and CSS is on, if HSE is the system clock directly or through the PLL, hardware switches to HSI and turns HSE off. If HSE was the PLL input, the PLL turns off too. The CSS interrupt is NMI. The NMI handler writes CSSC in `RCC_CIR`, or NMI keeps returning. The same event also reaches the TIM1 and TIM8 break inputs. After reset the system clock is HSI at 8 MHz, not the 72 MHz filled in by Cube. Chapter 04 covers how NMI preempts.
@@ -137,6 +142,11 @@ Take **STM32F103C8T6**:
 | A | (optional suffix) | Part of the order code; check the complete code in the datasheet instead of guessing that it can be omitted |
 
 So **STM32F103C8T6 = F1 performance line · 48 pins · 64 KB Flash · LQFP · −40 to 85 °C**.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch02-part-number-decode.png" width="760" alt="Handraw: STM32F103C8T6 part number decoded segment by segment (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the seven colored blocks with staggered labels — what STM32 / F / 103 / C / 8 / T / 6 each mean — and the banner "C8 = 48 pins · 64 KB Flash · LQFP · −40 to 85 °C"; proves every segment of the part number has a datasheet entry and ordering must use the complete code; does not replace the datasheet ordering-information table, nor a photo of the real silkscreen. See [DS5319](#source-ds5319-clock).</sub>
+</p>
 
 ### 2. Family comparison
 

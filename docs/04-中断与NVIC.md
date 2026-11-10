@@ -83,6 +83,11 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 
 入栈约 12 个 HCLK，72 MHz 下约 167 ns，和附录 D 一致。出处是 [PM0056 第 2.3.7 节](#source-pm0056-nvic)。`EXTI_PR` 的清除见 [RM0008](#source-rm0008-exti)。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-preempt-timeline.png" width="760" alt="Handraw：抢占时间线——EXTI0 打断 TIM2 的五段过程与两个对照（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上面五段时间线——TIM2 在跑、入栈 8 寄存器（12 HCLK ≈ 167 ns）、EXTI0 取向量执行、出栈返回、TIM2 继续；左下红卡「抢占写成同一级→保持挂起不嵌套」，右下蓝卡「PRIMASK=1 挡可配置中断、NMI 仍进」；证明抢占按抢占位不看子优先级，数字越小越急；不能替代 PM0056 时序原文，也不是实测中断波形。出处 [PM0056 第 2.3.7 节](#source-pm0056-nvic)。</sub>
+</p>
+
 ## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |

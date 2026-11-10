@@ -237,6 +237,73 @@ def pvd_window():
     return f
 
 
+def no_ammeter_check():
+    f = Fig("ch16-no-ammeter-check",
+            "没有电流表，先这样证明唤醒是对的 / prove wakeup without an ammeter")
+    f.text(84, 130, "逻辑分析仪四路：PA0 下降沿、两个 GPIO 标记、TX；先对顺序，再对位宽",
+           size=20, color=MUTED)
+
+    # timeline lanes
+    lanes = [
+        ("PA0 EXTI 下降沿", "唤醒源", BLUE_D, 210),
+        ("GPIO① ISR 入口翻转", "中断入口+软件延迟 ≠ 手册 5.4 µs", GREEN_D, 300),
+        ("GPIO② 时钟恢复后翻转", "分开「醒来」和「重配完成」两个阶段", GREEN_D, 390),
+        ("TX 发 0x55", "位宽是判决量", AMBER_STROKE, 480),
+    ]
+    for name, note, c, y in lanes:
+        f.text(84, y + 24, name, size=18, color=c, weight="bold")
+        f.text(400, y + 24, note, size=15, color=MUTED)
+        f.line(84, y + 40, 1068, y + 40, color=c, sw=1.8, amp=0.5)
+
+    # edge markers on lanes
+    f.line(300, 210, 300, 480, color=RED, sw=2.2, amp=0.4)
+    f.text(300, 198, "唤醒事件", size=14, color=RED, anchor="middle")
+    f.line(560, 300, 560, 480, color=RED, sw=2.2, amp=0.4)
+    f.text(560, 288, "①", size=16, color=RED, anchor="middle", weight="bold")
+    f.line(760, 390, 760, 480, color=RED, sw=2.2, amp=0.4)
+    f.text(760, 378, "②", size=16, color=RED, anchor="middle", weight="bold")
+
+    # verdict boxes
+    f.rect(84, 540, 470, 128, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(319, 576, "位宽 ≈ 8.68 µs", size=21, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(319, 612, "72 MHz 已恢复，USART1 = 115200 ✓", size=16, color=INK,
+           anchor="middle")
+    f.rect(598, 540, 470, 128, color=RED, fill=WHITE, sw=2.4)
+    f.text(833, 576, "位宽 = 78.125 µs", size=21, color=RED, anchor="middle",
+           weight="bold")
+    f.text(833, 612, "时钟停在 HSI 8 MHz：0x271 → 12800；先 SystemClock_Config()",
+           size=15, color=INK, anchor="middle")
+
+    f.text(W / 2, 712, "顺序与位宽都对上之后，再接电流仪测完整周期",
+           size=18, color=INK, anchor="middle")
+    return f
+
+
+def cell_triage():
+    f = Fig("ch16-cell-triage",
+            "引用电流格子前，先问三句 / three questions before citing a cell")
+    f.text(84, 130, "DS5319 表 16 的每格都有前提；条件不同不能混用",
+           size=20, color=MUTED)
+
+    qs = [
+        ("哪只稳压器？", "低功耗稳压器 14 µA；主稳压器 24 µA；20 µA 不是格子", BLUE_D),
+        ("IWDG 开没开？", "14 µA 那格不含 IWDG；IWDG 启动后停不下来，Stop/Standby 都计数", RED),
+        ("是不是备份域？", "1.4 µA 是 VBAT 备份域（LSE+RTC），不是整机 Standby", AMBER_STROKE),
+        ("Standby 分三格", "2 µA = LSI/IWDG/LSE/RTC 全关；LSI 开 3.2 µA；+IWDG 3.4 µA", GREEN_D),
+    ]
+    y = 186
+    for t, s, c in qs:
+        f.rect(84, y, 984, 92, color=c, fill=WHITE, sw=2.4)
+        f.text(108, y + 36, t, size=20, color=c, weight="bold")
+        f.text(108, y + 70, s, size=17, color=INK)
+        y += 108
+
+    f.text(W / 2, 650, "「2~3 µA」「20 µA」这类合并写法，都是把不同前提的格子并成了一格",
+           size=18, color=RED, anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
     "ch16-wake-matrix": wake_matrix,
     "ch16-mode-current": mode_current,
@@ -245,6 +312,8 @@ FIGS = {
     "ch16-stop-compare": stop_compare,
     "ch16-clock-restore": clock_restore,
     "ch16-pvd-window": pvd_window,
+    "ch16-no-ammeter-check": no_ammeter_check,
+    "ch16-cell-triage": cell_triage,
 }
 
 if __name__ == "__main__":

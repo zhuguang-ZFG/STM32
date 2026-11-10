@@ -197,6 +197,11 @@ If one of those is missing, review that item. You do not need to finish a C or c
 | Weeks 15–16 | Bring in FreeRTOS (tasks / queues / semaphores) | Tasks working together | When is an RTOS actually worth it? |
 | Weeks 17–18 | Integration, fault handling, IAP update | Firmware you can hand over, plus notes | How does a bootloader jump to the app? |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch00-rtos-worth-it.png" width="760" alt="Handraw: a two-column triage of when an RTOS is worth it (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the "go ahead" column on the left (tasks with different periods, real preemption needs, a state machine that no longer fits) versus the "don't" column on the right, and the banner "ask first whether bare metal plus a timer scheduler can finish it"; answers the stage-3 self-test "when is an RTOS actually worth it"; proves an RTOS is forced by scheduling needs, not a badge of professionalism; does not replace evaluating an actual project, nor a performance measurement. See the learning roadmap in this chapter.</sub>
+</p>
+
 ### 4. Hardware shopping list
 
 | Item | Suggested part | Price range (¥) | Required? | Notes |

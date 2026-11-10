@@ -265,6 +265,11 @@ CDC delivers a stream of bytes, so the application decides where one message end
 | Unit | Byte stream | A fixed report |
 | Typical | Debug log, data logger | Custom pad, macro keyboard, scanner |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch14-cdc-vs-hid.png" width="760" alt="Handraw: a five-dimension CDC versus HID comparison with a one-line pick (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the five comparison rows (use / endpoints / bandwidth / unit / driver) and the selection banner — logs and sampled data go to CDC, keyboard-or-mouse behavior goes to HID; proves the differences live in the configuration set, not in a class-name swap; does not replace an actual enumeration capture, nor a Device Manager screenshot. See [RM0008 USB](#source-rm0008-usb).</sub>
+</p>
+
 ### 7. CubeMX middleware
 
 The CubeMX pages are assembling one device from three layers. RCC supplies the 48 MHz clock. The USB peripheral owns D+/D- and the interrupt. The middleware supplies descriptors, endpoints, and class handlers. Enumeration fails if any layer is missing. A common mistake is to keep changing the CDC code when the real fault is the 48 MHz clock or VBUS sensing.

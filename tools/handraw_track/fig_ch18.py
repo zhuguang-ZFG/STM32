@@ -257,6 +257,42 @@ def five_steps():
     return f
 
 
+def peripheral_triage():
+    f = Fig("ch18-peripheral-triage", "九条外设 FAQ：先测什么，再改哪里")
+    f.text(72, 120, "每条症状先做一项能区分原因的测量；测出结果，再改一处。",
+           size=20, color=MUTED)
+
+    for x, label in ((88, "症状 · P1–P9"), (396, "先测什么（第一边界）"),
+                     (810, "按结果改哪里")):
+        f.text(x, 158, label, size=20, color=INK, weight="bold")
+    f.line(72, 172, 1080, 172, color=MUTED, sw=1.4)
+
+    rows = [
+        ("引脚写了没变化", "读 ODR，再量引脚电平", "开 RCC / 查模式复用"),
+        ("按一下进多条中断", "记两次进入的时间戳差", "只记事件；时间戳确认"),
+        ("收到的都是乱码", "量一位宽度与共地", "核 PCLK2 与 BRR"),
+        ("I2C 卡住或超时", "量 SCL/SDA 空闲电平", "补上拉、核地址、9 时钟"),
+        ("Flash 读回全 0xFF", "看片选与 MISO 采样沿", "W25Q 用 Mode0"),
+        ("ADC 读数一直跳", "量 VDDA 是否稳", "去耦、加长采样"),
+        ("PWM 没有波形", "读 CNT 是否在递增", "查 Start、AF 与通道"),
+        ("DMA 只搬一次", "读 CCR 确认模式位", "改 DMA_CIRCULAR"),
+        ("断电后时间归零", "查 LSE 起振与 VBAT", "按晶振选 5–15 pF"),
+    ]
+    y = 186
+    for i, (sym, probe, fix) in enumerate(rows):
+        f.rect(72, y, 272, 52, color=RED, fill=WHITE, sw=2.2)
+        f.text(86, y + 33, f"P{i + 1}", size=17, color=MUTED)
+        f.text(124, y + 33, sym, size=19, color=RED, weight="bold")
+        f.arrow(348, y + 26, 372, y + 26, color=MUTED, sw=2.4, bend=0, head=8)
+        f.rect(380, y, 380, 52, color=INK, fill=WHITE, sw=2.0)
+        f.text(396, y + 33, probe, size=18, color=INK)
+        f.arrow(764, y + 26, 788, y + 26, color=MUTED, sw=2.4, bend=0, head=8)
+        f.rect(796, y, 284, 52, color=GREEN_D, fill=WHITE, sw=2.2)
+        f.text(810, y + 33, fix, size=18, color=GREEN_D)
+        y += 64
+    return f
+
+
 FIGS = {
     "ch18-multi-def": multi_def,
     "ch18-boot-triage": boot_triage,
@@ -264,6 +300,7 @@ FIGS = {
     "ch18-hardfault-ladder": hardfault_ladder,
     "ch18-faq-compare": faq_compare,
     "ch18-uart-garbled": uart_garbled,
+    "ch18-peripheral-triage": peripheral_triage,
     "ch18-five-steps": five_steps,
 }
 

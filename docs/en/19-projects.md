@@ -194,6 +194,11 @@ static void SetMotor(uint8_t id, int8_t duty)
 
 **Approach**: on each RTC interval (see [chapter 11](11-rtc-watchdog.md)), read the sensor, update the display, and append to W25Q64; export CSV over UART. The fragment only shows a record format and advancing address: `wr` returns to `LOG_BASE` after reset, and wrapping erases only the first sector. It does not manage erasure across the region or provide wear leveling. A usable log also needs sector pre-erasure, write-completion checks, a commit marker or checksum, and a startup scan to recover the write pointer. Test interrupted writes to establish which records survive power loss.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-log-ring.png" width="760" alt="Handraw: the W25Q64 circular log region with done/missing columns (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the sector strip and wrap arrow — wr writes in order and wraps to the first sector at the end; the green card bottom left "the sample does" (fixed record format, advancing wr), the red card bottom right "a usable log still needs" (pre-erasure / write-completion check / commit marker / wear leveling), and the banner "which records survive power loss is confirmed by pull-the-plug tests, not guesses"; proves the sample code is a starting point, not a usable log; does not replace an actual power-cut test, nor a Flash measurement. See the project 2 approach in this chapter.</sub>
+</p>
+
 **Key code**:
 
 ```c

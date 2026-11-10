@@ -124,12 +124,12 @@ SPI 像两个人隔着桌子换牌。主机手里 8 张，从机手里 8 张，�
 | MISO | Master In Slave Out | 从→主 | 从机发 |
 | NSS/CS | Slave Select | 主→从 | 片选，低有效 |
 
-移位原理：主从各有一个 8 位移位寄存器，构成环形。每个时钟沿双方各移出 1 位、移入 1 位，8 个时钟后完成一次字节交换。
-
 <p align="center">
   <img src="../assets/illustrations/handraw/ch08-byte-exchange.png" width="760" alt="Handraw：全双工移位环与 JEDEC 四行账（原理示意）">
   <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上半是主机与从机各一个 8 位移位寄存器，经 MOSI/MISO 首尾相接构成环，SCK 每个沿两边各移出一位、移进一位；下半是读 JEDEC ID 的四行账，9F FF FF FF 换回 ?? EF 40 17。证明什么：8 个时钟沿换一个字节、收发同时发生；rx[0] 是上一包的剩菜，ID 要从 rx[1] 拼起。不能证明什么：这是 BR=010（9 MHz）下的逻辑关系图，不涉及建立/保持时间的裕量、CS 建立延迟与实际波形，也不是逻辑分析仪截图。出处是 [RM0008 Rev 21 第 25.5.1 节](#source-rm0008-spi)。</sub>
 </p>
+
+移位原理：主从各有一个 8 位移位寄存器，构成环形。每个时钟沿双方各移出 1 位、移入 1 位，8 个时钟后完成一次字节交换。
 
 ### 2. CPOL/CPHA 四种模式
 
@@ -214,6 +214,11 @@ SPI 的时钟由主机给，所以速度就是主机的总线时钟除以一个 
 | 软件 NSS | 普通 GPIO 控制片选，最灵活（推荐） |
 | 硬件 NSS | 由硬件管理，多主时用 |
 | 多从机 | 每个从机独立 CS，共用 SCK/MOSI/MISO |
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch08-cs-triage.png" width="760" alt="Handraw：片选失焦分诊（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上半左边是一个 CS 括号包住 8 个 SCK 沿，右边是主机与三片从机的 CS 拓扑（只有 A 低）；下半三张卡按「先查什么」分诊。证明什么：读回全 FF 先确认事务期间 CS 真的选中（没选中 MISO 悬空读 1，不是先降速率）；两条命令粘连先查 CS 有没有拉高；两片 CS 同时低会让两个从机一起驱动 MISO。不能证明什么：这是逻辑示意，不是逻辑分析仪波形，也不含 CS 建立/保持时间、菊花链或地址译码。出处是 [RM0008 Rev 21 第 25 章](#source-rm0008-spi) 与 [DS5319 Rev 20 表 5](#source-ds5319-spi)。</sub>
+</p>
 
 ### 5. 软件模拟 vs 硬件 SPI
 
