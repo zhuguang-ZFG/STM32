@@ -136,7 +136,7 @@ def option_bytes():
     f.rect(606, 176, 462, 330, color=GREEN_D, fill=WHITE, sw=2.6)
     f.text(837, 212, "STM32F4", size=20, color=GREEN_D, anchor="middle",
            weight="bold")
-    f.multi(634, 258, ["RDP = 0xAA：Level 0，不保护", "0xAA < RDP ≠ 0xCC：Level 1",
+    f.multi(634, 258, ["RDP = 0xAA：Level 0，不保护", "RDP ≠ 0xAA/0xCC：Level 1（写 0x55）",
                        "RDP = 0xCC：Level 2，不可逆", "WRP 按扇区写保护",
                        "参数区与 Bootloader 同扇区", "= 擦参数会擦掉 Bootloader"],
             size=18, color=INK, lh=40)
