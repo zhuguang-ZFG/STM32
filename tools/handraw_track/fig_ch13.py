@@ -146,7 +146,158 @@ def filter_mask():
     return f
 
 
+
+def diff_levels():
+    f = Fig("ch13-diff-levels",
+            "差分看压差：显性 0 盖过隐性 1 / dominant 0 wins")
+    f.text(84, 134, "同一干扰同时打在两根线上，压差不变——CAN 只认 CAN_H − CAN_L",
+           size=21, color=MUTED)
+    bits = [1, 0, 0, 1, 0, 1]
+    x0, bw = 220, 140
+    f.text(96, 214, "CAN_H", size=21, color=BLUE_D, weight="bold")
+    f.text(96, 336, "CAN_L", size=21, color=RED, weight="bold")
+    hp, lp = [], []
+    for i, b in enumerate(bits):
+        xa, xb = x0 + i * bw, x0 + (i + 1) * bw
+        hy, ly = (262, 274) if b else (206, 330)
+        hp += [(xa, hy), (xb, hy)]
+        lp += [(xa, ly), (xb, ly)]
+        f.text((xa + xb) / 2, 176, "1 隐性" if b else "0 显性", size=19,
+               color=MUTED if b else BLUE_D, anchor="middle", weight="bold")
+        if i:
+            f.line(xa, 160, xa, 344, color=GRAY_FILL, sw=1.6, amp=0.4, dash="4 6")
+    f.stroke(hp, color=BLUE_D, sw=3.4, amp=0.6)
+    f.stroke(lp, color=RED, sw=3.4, amp=0.6)
+    f.htext(84, 386, "压差 ≈ 2 V → 显性 0；压差 ≈ 0 V → 隐性 1；任一节点发显性，整条线就是显性",
+            size=20, color=INK)
+
+    # bus topology
+    f.line(150, 560, 1002, 560, color=BLUE_D, sw=3.2, amp=0.8)
+    f.line(150, 596, 1002, 596, color=RED, sw=3.2, amp=0.8)
+    for rx in (106, 1006):
+        f.rect(rx, 548, 40, 60, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+        f.text(rx + 20, 636, "120 Ω", size=19, color=AMBER_STROKE,
+               anchor="middle", weight="bold")
+    for nx in (220, 440, 660):
+        f.rect(nx, 420, 200, 48, color=GREEN_D, fill=WHITE, sw=2.4)
+        f.text(nx + 100, 452, "MCU · CAN 控制器", size=17, color=GREEN_D,
+               anchor="middle", weight="bold")
+        f.line(nx + 100, 468, nx + 100, 486, color=INK, sw=2.0, amp=0.4)
+        f.rect(nx + 30, 486, 140, 40, color=INK, fill=GRAY_FILL, sw=2.2)
+        f.text(nx + 100, 513, "收发器", size=18, color=INK, anchor="middle",
+               weight="bold")
+        f.line(nx + 80, 526, nx + 80, 560, color=BLUE_D, sw=2.2, amp=0.4)
+        f.line(nx + 120, 526, nx + 120, 596, color=RED, sw=2.2, amp=0.4)
+    f.multi(884, 440, ["MCU 侧 TX/RX", "是 TTL 电平"], size=17, color=MUTED, lh=26)
+    f.text(576, 666, "两只 120 Ω 接在 CANH–CANL 两端：并联直流 60 Ω，不是电缆特性阻抗",
+           size=19, color=INK, anchor="middle")
+    f.panel(84, 692, 984, 66, AMBER_FILL)
+    f.rect(84, 692, 984, 66, color=AMBER_STROKE, sw=2.6)
+    f.text(576, 734, "MCU 里只有控制器，收发器必须外接；1 Mbps ≤ 40 m，125 kbps 约 500 m",
+           size=21, color=INK, anchor="middle", weight="bold")
+    return f
+
+
+def data_frame():
+    f = Fig("ch13-data-frame",
+            "数据帧只写「是什么」，不写收件人 / the data frame")
+    f.text(84, 134, "标准数据帧，从左到右上线（位数）；所有节点都听，按 ID 自己决定收不收",
+           size=20, color=MUTED)
+    fields = [("SOF", "1", 64, INK), ("ID", "11 位", 170, BLUE_D),
+              ("RTR", "1", 64, BLUE_D), ("IDE r0", "2", 90, GREEN_D),
+              ("DLC", "4", 80, GREEN_D), ("数据", "0–8 B", 200, INK),
+              ("CRC", "15+1", 130, RED), ("ACK", "2", 70, AMBER_STROKE),
+              ("EOF", "7", 70, MUTED), ("IFS", "", 46, MUTED)]
+    x = 84
+    spans = {}
+    for name, bits, w, c in fields:
+        f.rect(x, 160, w, 76, color=c, fill=WHITE, sw=2.4, double=False)
+        f.text(x + w / 2, 190, name, size=18, color=c, anchor="middle", weight="bold")
+        f.text(x + w / 2, 222, bits, size=17, color=INK, anchor="middle")
+        spans[name] = (x, x + w)
+        x += w
+    groups = [("仲裁场", "ID", "RTR", BLUE_D), ("控制场", "IDE r0", "DLC", GREEN_D),
+              ("数据场", "数据", "数据", INK), ("CRC 场", "CRC", "CRC", RED)]
+    for label, a, b, c in groups:
+        xa, xb = spans[a][0] + 6, spans[b][1] - 6
+        f.stroke([(xa, 248), (xa, 258), (xb, 258), (xb, 248)], color=c, sw=2.2, amp=0.6)
+        f.text((xa + xb) / 2, 284, label, size=18, color=c, anchor="middle", weight="bold")
+    f.text(1068, 284, "EOF = 7 个隐性位", size=17, color=MUTED, anchor="end")
+
+    # left: standard vs extended
+    f.rect(84, 318, 470, 210, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(104, 354, "标准帧与扩展帧", size=22, color=BLUE_D, weight="bold")
+    f.multi(104, 394, ["标准帧：11 位 ID，IDE = 0",
+                       "扩展帧：11 位基础 ID + 18 位",
+                       "　　　　扩展 ID = 29 位，IDE = 1",
+                       "比 ID 时数值越小，优先级越高"],
+            size=19, color=INK, lh=33)
+    # right: bit stuffing
+    f.rect(578, 318, 490, 210, color=RED, fill=WHITE, sw=2.6)
+    f.text(598, 354, "位填充：给接收方对表", size=22, color=RED, weight="bold")
+    seq = ["0", "0", "0", "0", "0", "1", "0", "0"]
+    for i, s in enumerate(seq):
+        stuffed = i == 5
+        cx = 604 + i * 54
+        f.rect(cx, 376, 46, 46, color=RED if stuffed else INK,
+               fill=AMBER_FILL if stuffed else WHITE, sw=2.2, double=False)
+        f.text(cx + 23, 408, s, size=21, color=RED if stuffed else INK,
+               anchor="middle", weight="bold")
+    f.text(604 + 5 * 54 + 23, 446, "插入位", size=16, color=RED, anchor="middle")
+    f.multi(598, 482, ["连续 5 个相同位后插 1 个相反位，",
+                       "收端自动拿掉；CRC 定界符起的固定格式段不填充"],
+            size=17, color=INK, lh=28)
+
+    boxes = [("CRC", "15 位 + 1 位定界符；校验错就发错误帧", RED),
+             ("ACK", "发端发隐性；任一正确收到的节点拉显性", AMBER_STROKE),
+             ("单节点", "正常模式没人 ACK，发送会一直重试", BLUE_D)]
+    for i, (t, s, c) in enumerate(boxes):
+        y = 560 + i * 66
+        f.rect(84, y, 984, 54, color=c, fill=WHITE, sw=2.2, double=False)
+        f.text(108, y + 36, t, size=20, color=c, weight="bold")
+        f.text(220, y + 36, s, size=19, color=INK)
+    return f
+
+
+def pitfall_triage():
+    f = Fig("ch13-pitfall-triage",
+            "七个常见坑对号入座：现象 → 第一边界 → 出处 / pitfall triage")
+    f.text(84, 126, "先对现象，再找第一处边界，最后按标签查出处；不要从第三列开始改",
+           size=20, color=MUTED)
+    rows = [
+        ("线上是 450 kbit/s", "位时间除不尽 → 预分频 9、BS1 5、BS2 2", "RM0008", BLUE_D),
+        ("单节点帧一直重发", "无人 ACK → 先用回环，上总线要有应答节点", "RM0008", BLUE_D),
+        ("总线上有帧、邮箱空", "标准 ID 没左移 → FilterIdHigh 左移 5", "本仓库例程", GREEN_D),
+        ("两端都在报错", "位时间不一致或没接终端 → 两端各 120 Ω", "本仓库例程", GREEN_D),
+        ("CAN 占了 USB 的脚", "停在复位默认 → 重映射到第 45/46 脚", "DS5319", AMBER_STROKE),
+        ("重映射后晶振停", "第 5/6 脚是 HSE → 别把 CAN 放过去", "DS5319", AMBER_STROKE),
+        ("和 I2C 抢 PB8/PB9", "PB8/PB9 也是 I2C1 重映射 → 二选一", "DS5319", AMBER_STROKE),
+    ]
+    y = 158
+    for i, (sym, fix, tag, tc) in enumerate(rows):
+        f.circle(112, y + 26, 24, color=INK, fill=WHITE, sw=2.4)
+        f.text(112, y + 36, str(i + 1), size=22, color=INK, anchor="middle",
+               weight="bold", halo=True)
+        f.rect(150, y, 268, 56, color=RED, fill=WHITE, sw=2.4)
+        f.text(166, y + 36, sym, size=20, color=RED, weight="bold", halo=True)
+        f.arrow(428, y + 28, 470, y + 28, color=MUTED, sw=2.4)
+        f.rect(478, y, 420, 56, color=INK, fill=WHITE, sw=2.2)
+        f.text(494, y + 36, fix, size=18, color=INK, halo=True)
+        f.rect(918, y, 150, 56, color=tc, fill=WHITE, sw=2.4)
+        f.text(993, y + 36, tag, size=17, color=tc, anchor="middle", weight="bold",
+               halo=True)
+        y += 76
+    f.panel(84, y + 8, 984, 54, AMBER_FILL)
+    f.rect(84, y + 8, 984, 54, color=AMBER_STROKE, sw=2.6)
+    f.text(576, y + 42, "出处标签：RM0008 = 参考手册 · 本仓库例程 = examples/can-bxcan · DS5319 = 数据手册",
+           size=18, color=INK, anchor="middle", weight="bold")
+    return f
+
+
 FIGS = {
+    "ch13-pitfall-triage": pitfall_triage,
+    "ch13-diff-levels": diff_levels,
+    "ch13-data-frame": data_frame,
     "ch13-arb-ladder": arb_ladder,
     "ch13-filter-mask": filter_mask,
 }

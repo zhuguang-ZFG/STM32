@@ -216,6 +216,9 @@ int main(void)
 
 这段代码已用冻结 commit `afa743577f2784e95be2d5003380fdb84a702519` 的真实 CMSIS 设备头、RCC/GPIO 驱动、medium-density 启动文件和 F103C8 链接脚本完成编译链接；对应可复验工程在 [`examples/spl-f1-blink/`](../examples/spl-f1-blink/)，同时给出命令行、CLion 和 VS Code 三条共用 CMake 的开发入口。冻结镜像把 `core_cm3.h` 保存为 `core_cm3.h.old`，工程仅在缺少正式文件名时复制到构建目录。GNU Arm 10.3.1 实测 ELF 为 text 1976 B、data 20 B、bss 1028 B，并且符号表只有一个 `SysTick_Handler`。硬件验收仍不是“链接通过”：下载后 LED 应以约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 应等于真实主频；把系统时钟改掉后，闪烁周期也必须重新对账。
 
+## 5. HAL、SPL 与寄存器怎样对上
+
+下面不是机械替换表。HAL 往往维护 Handle 和状态，SPL 多数函数直接操作外设寄存器；把函数名换掉但保留旧状态机，最容易得到“能跑一会儿”的工程。
 
 <p align="center">
   <img src="../assets/diagrams/sample-26-spl-hal-compare.svg" width="760" alt="SPL 与 HAL/LL 在版本、初始化、中断、DMA 与迁移策略上的对照">
@@ -226,10 +229,6 @@ int main(void)
   <img src="../assets/illustrations/handraw/ch26-spl-hal.png" width="760" alt="Handraw：HAL 与 SPL 入口对照（原理示意）">
   <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。GPIO 时钟/配置、USART 收发、DMA 剩余项的 HAL 与 SPL V3.5.0 入口都落到同一组寄存器；只换函数名保留旧状态机最容易得到“能跑一会儿”的工程；不是实拍。</sub>
 </p>
-
-## 5. HAL、SPL 与寄存器怎样对上
-
-下面不是机械替换表。HAL 往往维护 Handle 和状态，SPL 多数函数直接操作外设寄存器；把函数名换掉但保留旧状态机，最容易得到“能跑一会儿”的工程。
 
 | 目标 | HAL 常见入口 | SPL V3.5.0 入口 | 最终硬件边界 |
 | --- | --- | --- | --- |
@@ -352,6 +351,11 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 边界与 HAL 相同：缓冲区在完成前必须继续存在；方向、宽度和增量必须与真实寄存器匹配；循环接收用 `DMA_GetCurrDataCounter()` 得到的是**剩余项数**，不是新增长度。F1 无 D-Cache，不代表这段代码能原样搬到 H7。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-dma-wiring.png" width="760" alt="Handraw：SPL 的 DMA 要亲手接线——USART1_TX → DMA1 Channel 4 → 缓冲区（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：数据通路 USART1_DR → DMA1 Channel 4 → tx_buffer 与三件事——开 DMA1 时钟、按请求映射 Init 通道、USART_DMACmd 与 DMA_Cmd 两个开关都打开；证明 SPL 不会自动把两个驱动绑在一起，只做两件 CNDTR 不动；不能替代 RM0008 请求映射表与寄存器细节，也不是实测波形。出处 [RM0008](#source-rm0008)。</sub>
+</p>
+
 ## 8. 各外设最小调用链
 
 | 外设 | SPL 最小调用链 | 最容易漏的边界 |
@@ -368,6 +372,11 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 | CAN | RCC/GPIO → `CAN_Init` → `CAN_FilterInit` → IRQ/NVIC → Transmit/Receive | 单节点正常模式无人 ACK |
 
 这张表只给顺序，不替代对应章节：时钟看第 2 章，GPIO 看第 3 章，NVIC 看第 4 章，TIM 看第 5 章，USART/I2C/SPI/ADC/DMA/CAN 分别看第 6–10、13 章。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-call-chains.png" width="760" alt="Handraw：十个外设共用一条 SPL 最小调用链骨架，每格标出最容易漏的边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十个外设的最小调用链都走同一条骨架——RCC 开时钟 → GPIO 配脚 → XXX_Init → XXX_Cmd → 标志/事件对账，每格下面标出该外设最容易漏的边界；证明「骨架一样、坑各不同」；不能替代对应章节的完整时序与寄存器细节，也不是实测波形。出处 [RM0008](#source-rm0008)、[STSW-STM32054](#source-stsw-stm32054)。</sub>
+</p>
 
 ## 9. 维护旧工程：先冻结，再迁移
 
@@ -391,6 +400,11 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 - 需要 CubeMX、现代中间件或同一套跨系列 BSP；
 - 旧工程混用了多个来源不明的 SPL 副本，已经无法确认版本；
 - 需要持续获得当前工具链与生态支持。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch26-migrate-steps.png" width="760" alt="Handraw：先冻结基线，再一次迁一个外设的五个步骤（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：先冻结料号、SPL 版本、密度宏、编译器、晶振的可复现基线，再画外设所有权表，然后一次只迁一个外设、对比可见结果、清掉旧所有权；证明迁移是逐外设的对账过程，不是全局替换函数名；不能保证迁移后的认证与回归状态，那要靠逐项复测。出处 [STSW-STM32054](#source-stsw-stm32054)、[spl-f1-mirror](#source-spl-f1-mirror)。</sub>
+</p>
 
 ## 10. 常见坑与排查
 

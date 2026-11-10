@@ -216,6 +216,9 @@ int main(void)
 
 The reproducible project is [`examples/spl-f1-blink/`](../../examples/spl-f1-blink/). It builds against the frozen source and shares one CMake truth across command line, CLion, and VS Code. The mirror stores `core_cm3.h` as `core_cm3.h.old`; the build only copies it when the proper filename is missing. With GNU Arm 10.3.1, the verified ELF had text 1976 B, data 20 B, bss 1028 B, and one `SysTick_Handler`. Those are build observations, not a hardware claim. Hardware acceptance still requires roughly 1 Hz on the LED and a `SystemCoreClock` that matches the actual clock.
 
+## 5. HAL, SPL, and the final register boundary
+
+This is not a mechanical replacement table. HAL often maintains handles and state; SPL usually writes peripheral registers directly.
 
 <p align="center">
   <img src="../../assets/diagrams/sample-26-spl-hal-compare.svg" width="760" alt="SPL versus HAL/LL on version, init, IRQ, DMA, and migration">
@@ -226,10 +229,6 @@ The reproducible project is [`examples/spl-f1-blink/`](../../examples/spl-f1-bli
   <img src="../../assets/illustrations/handraw/ch26-spl-hal.png" width="760" alt="Handraw: HAL vs SPL entries (原理示意)">
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). HAL and SPL entries for GPIO clock/config, USART data, and DMA counter land on the same registers; swapping names while keeping the old state machine yields a “works for a while” project; not a photo.</sub>
 </p>
-
-## 5. HAL, SPL, and the final register boundary
-
-This is not a mechanical replacement table. HAL often maintains handles and state; SPL usually writes peripheral registers directly.
 
 | Goal | Typical HAL entry | SPL V3.5.0 | Hardware boundary |
 | --- | --- | --- | --- |
@@ -347,6 +346,11 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 The buffer must remain alive until completion. Width, direction, and increment rules must match the register. `DMA_GetCurrDataCounter()` returns remaining **items**, not newly received bytes. F1 has no D-cache; that does not make this code portable to H7.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-dma-wiring.png" width="760" alt="Handraw: SPL DMA wiring you must do yourself — USART1_TX to DMA1 Channel 4 to the buffer (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the data path USART1_DR → DMA1 Channel 4 → tx_buffer and the three steps — clock DMA1, Init the channel per the request map, and open both switches (USART_DMACmd and DMA_Cmd); proves SPL does not wire the two drivers together, and with only two of the three done CNDTR never moves; cannot replace the RM0008 request map and register detail, and it is not measured waveforms. See [RM0008](#source-rm0008).</sub>
+</p>
+
 ## 8. Minimum peripheral chains
 
 | Peripheral | Minimum SPL chain | Boundary most often missed |
@@ -361,6 +365,11 @@ The buffer must remain alive until completion. Width, direction, and increment r
 | DMA | clock → DeInit/StructInit/Init → request → Cmd | fixed request map and width-based count |
 | Flash | unlock → clear → erase/program → status → lock | page/halfword alignment and power loss |
 | CAN | clocks/GPIO → Init → filter → IRQ/NVIC → Tx/Rx | one normal-mode node receives no ACK |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-call-chains.png" width="760" alt="Handraw: ten peripherals share one SPL minimum-call-chain skeleton, each cell marks the boundary most often missed (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the shared skeleton — RCC clock on → GPIO pins → XXX_Init → XXX_Cmd → flag/event reconciliation — with the boundary most often missed under each peripheral; proves "one skeleton, different traps"; does not replace the full timing and register detail of each chapter, and it is not measured waveforms. See [RM0008](#source-rm0008), [STSW-STM32054](#source-stsw-stm32054).</sub>
+</p>
 
 ## 9. Maintaining and migrating an old project
 
@@ -377,6 +386,11 @@ Keep SPL when an F1 product is already in production, evidence and certification
 ### When to migrate to HAL or LL
 
 Prefer HAL/LL when a new family has no SPL, CubeMX/current middleware is required, or the old project contains untraceable SPL copies.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch26-migrate-steps.png" width="760" alt="Handraw: freeze the baseline first, then migrate one peripheral at a time in five steps (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the sequence — freeze a reproducible baseline (part number, SPL version, density macro, compiler, crystal), draw the peripheral ownership table, migrate one peripheral at a time, compare visible results, remove old ownership; proves migration is a per-peripheral reconciliation, not a global search-and-replace of function names; it cannot guarantee re-certification or regression status — that needs item-by-item retesting. See [STSW-STM32054](#source-stsw-stm32054), [spl-f1-mirror](#source-spl-f1-mirror).</sub>
+</p>
 
 ## 10. Failure map
 
