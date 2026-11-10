@@ -250,7 +250,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   .photo-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: 8.5pt; line-height: 1.3; }
   sub { font-size: 9pt; line-height: 1.4; }
-  img { max-height: 165mm; }
+  img { max-height: 120mm; }
   figure:not(.part-plate):not(.wide-figure) img { max-width: 88%; }
   figure img { margin: 0 auto .15rem; }
   .table-scroll { overflow: visible; break-inside: auto; }
