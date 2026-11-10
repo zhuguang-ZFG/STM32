@@ -347,7 +347,8 @@ class BookAuditTests(unittest.TestCase):
 
                 "bluepill-stm32f103c8t6.svg", "sample-21-crystal-boot-flow.svg", "sample-21-board-compare.svg",
                 "ch21-board-compare.png", "sample-21-vdd-3v3.svg", "ch21-vdd-3v3.png",
-                "bluepill-stm32f103c8t6.svg", "blackpill-stm32f411ce.svg", "nucleo-f411re.svg",
+                "bluepill-stm32f103c8t6.svg", "bluepill-stm32f103c8t6.jpg", "bluepill-stm32f103c8t6-popolon.jpg",
+                "blackpill-stm32f411ce.svg", "nucleo-f411re.svg", "nucleo-f411re-embedded-world.jpg",
                 "f4-discovery.svg", "f103zet6-dev.svg", "pinout-bluepill.svg",
                 "sample-21-usb-ttl.svg", "ch21-usb-ttl.png", "peripheral-wiring.svg",
                 "sample-21-power-swd.svg", "sample-21-hse-load.svg", "ch21-hse-load.png",

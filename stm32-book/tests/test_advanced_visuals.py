@@ -349,7 +349,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
-        15,
+        18,
         (
             "bluepill-stm32f103c8t6.svg",
             "sample-21-crystal-boot-flow.svg",
@@ -366,6 +366,9 @@ CHAPTERS = {
             "sample-21-nrst-boot0.svg",
             "ch21-nrst-boot0.png",
             "ch21-fake-id.png",
+            "bluepill-stm32f103c8t6.jpg",
+            "bluepill-stm32f103c8t6-popolon.jpg",
+            "nucleo-f411re-embedded-world.jpg",
         ),
     ),
     ROOT / "docs" / "23-STM32G0引脚.md": (
