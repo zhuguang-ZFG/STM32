@@ -75,10 +75,14 @@ git diff --check                                                 # 0
 
 版式门（`tools/audit_pdf_layout.py`，命令行同 CI）：
 
-| 门 | 本地（Windows） | CI（Ubuntu） |
+| 门 | 本地（Windows） | CI（Ubuntu，run [42874582418](https://github.com/zhuguang-ZFG/STM32/actions/runs/42874582418)） |
 |---|---|---|
-| zh | 541p、gaps>150pt=130/145、≥250pt=8/15、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** | 待回填 |
-| en | 577p、132/145、≥250pt=20/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1 | 待回填 |
+| zh | 541p、gaps>150pt=130/145、≥250pt=8/15、硬缺陷 0、anchors[min=11 max_free=4] → **exit 0** | 533p、135/145、≥250pt=**13/15**、硬缺陷 0、anchors[min=11 max_free=3] → **exit 0** |
+| en | 577p、132/145、≥250pt=20/15、硬缺陷 0、anchors[min=11 max_free=4] → exit 1 | 569p、127/145、≥250pt=**12/15**、硬缺陷 0、anchors[min=11 max_free=5] → **exit 0** |
+
+- CI 两 job（`book`/`book-en`）全绿；197 测试 376.6s OK，`--check` zh/en PASS，
+  slop-lint 干净。本地 en ≥250pt=20 在 Ubuntu 收敛到 12，与 B51（16 vs 12）、
+  B54（18 vs 11）同型，确认为平台分页噪声，与 B55 图无关联性。
 
 ## 本地 en 超线归因（B51/B54 同型平台噪声）
 
@@ -105,5 +109,5 @@ P316、P317、P356、P441、P454、P456、P473、P525。
 ## 遗留
 
 - en 其余 5 章 >2,000（B56 候选：02=2228、03=2153、07=2142、24=2100、27=2030）。
-- 本地 en ≥250pt 20 > 15：按 B51 平台噪声条款处理，CI 结果回填后定论；
-  若 CI 超线，先按上节 20 页清单逐页归因，不动 B55 图。
+- 本地 en ≥250pt 20 > 15 已定论：CI en 为 12/15 通过，属 Windows/Ubuntu 分页差异，
+  未改动任何图宽/图位。
