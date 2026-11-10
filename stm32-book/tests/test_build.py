@@ -121,8 +121,22 @@ _TOKEN_LIGHT_KEYS = (
     "--leading-caption",
     "--leading-toc",
     "--leading-code",
+    "--space-code-block",
+    "--space-code-inline",
 )
 _TOKEN_COLOR_KEYS = _TOKEN_LIGHT_KEYS[:15]
+_TOKEN_PRINT_KEYS = _TOKEN_COLOR_KEYS + (
+    "--print-type-body",
+    "--print-leading-body",
+    "--print-type-caption",
+    "--print-leading-caption",
+    "--print-type-small",
+    "--print-fig-sm-width",
+    "--print-fig-sm-height",
+    "--print-fig-md-height",
+    "--print-fig-lg-width",
+    "--print-fig-lg-height",
+)
 _TOKEN_COVER_LOCK = ("--paper", "--ink", "--muted", "--warn", "--line", "--spine")
 
 
@@ -326,7 +340,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="toc-jump"', html)
         self.assertIn(">目录</a>", html)
         self.assertIn("position: sticky", html)
-        self.assertIn("max-height: 120mm", html)
+        self.assertIn("max-height: var(--print-fig-md-height)", html)
         self.assertIn("break-before: avoid-page", html)
         self.assertIn('id="imprint"', html)
         self.assertIn("版权页", html)
@@ -1382,7 +1396,7 @@ class BookBuildContractTests(unittest.TestCase):
 
         inline = self._css_rule(screen, ":not(pre) > code")
         self.assertIn("color-mix(in srgb, var(--accent) 18%, var(--paper))", inline)
-        self.assertIn("padding: .12em .35em", inline)
+        self.assertIn("padding: var(--space-code-block) var(--space-code-inline)", inline)
         self.assertIn("border-radius: .3em", inline)
         names = [part.split(":", 1)[0].strip() for part in inline.split(";") if part.strip()]
         self.assertNotIn("border", names)
@@ -1522,7 +1536,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("--code-ink: #111", print_root)
         self.assertNotIn("--font-sans", printed)
         self.assertNotIn("--type-body", printed)
-        self.assertIn("font-size: 9.5pt; line-height: 1.55", printed)
+        self.assertIn("font-size: var(--print-type-body); line-height: var(--print-leading-body)", printed)
         pre_print = self._css_rule(printed, "pre")
         self.assertIn("line-height: 1.45", pre_print)
         self.assertIn("white-space: pre-wrap", pre_print)
@@ -1531,14 +1545,14 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("page-break-inside: auto", pre_print)
         self.assertNotIn("avoid", pre_print)
         caption = self._css_rule(printed, "figcaption")
-        self.assertIn("font-size: 8.5pt", caption)
-        self.assertIn("line-height: 1.3", caption)
+        self.assertIn("font-size: var(--print-type-caption)", caption)
+        self.assertIn("line-height: var(--print-leading-caption)", caption)
         self.assertIn("break-before: avoid-page", caption)
         self.assertIn("page-break-before: avoid", caption)
         self.assertIn("break-inside: avoid-page", caption)
         self.assertIn("page-break-inside: avoid", caption)
         printed_sub = self._css_rule(printed, "sub")
-        self.assertIn("font-size: 9pt", printed_sub)
+        self.assertIn("font-size: var(--print-type-small)", printed_sub)
         self.assertIn("line-height: 1.4", printed_sub)
         self.assertIn("position: static", self._css_rule(printed, ".contents > section > h2"))
         self.assertIn(
@@ -1565,7 +1579,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertEqual(1, tokens["schema"])
         self.assertEqual(list(_TOKEN_LIGHT_KEYS), list(tokens["light"]))
         self.assertEqual(list(_TOKEN_COLOR_KEYS), list(tokens["dark"]))
-        self.assertEqual(list(_TOKEN_COLOR_KEYS), list(tokens["print"]))
+        self.assertEqual(list(_TOKEN_PRINT_KEYS), list(tokens["print"]))
         self.assertEqual(list(_TOKEN_COVER_LOCK), tokens["coverLock"])
 
         css_source = css_path.read_text(encoding="utf-8")
@@ -1612,7 +1626,7 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIsInstance(self.builder.CSS, str)
         self.assertEqual(self.builder.load_css(), self.builder.CSS)
         self.assertEqual(
-            "f9e3c106bc355e306f25c96dc385e3e3b7009529e25964a74e27e157019391c0",
+            "2d76f266788805f0219da9ad336a21cb41c23858aef8fddb87351574100673e7",
             hashlib.sha256(self.builder.CSS.encode("utf-8")).hexdigest(),
         )
         css = self.builder.CSS
@@ -1664,11 +1678,12 @@ class BookBuildContractTests(unittest.TestCase):
         def legal() -> dict:
             light = {key: "1" for key in _TOKEN_LIGHT_KEYS}
             colors = {key: "1" for key in _TOKEN_COLOR_KEYS}
+            print_keys = {key: "1" for key in _TOKEN_PRINT_KEYS}
             return {
                 "schema": 1,
                 "light": light,
                 "dark": dict(colors),
-                "print": dict(colors),
+                "print": print_keys,
                 "coverLock": list(_TOKEN_COVER_LOCK),
             }
 
@@ -2082,8 +2097,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn("clamp(2.15rem, 5.6vw, 3.7rem)", self._css_rule(screen, ".cover h1"))
         self.assertIn("clamp(1.05rem, 2.4vw, 1.35rem)", self._css_rule(screen, ".cover .subtitle"))
         self.assertIn("clamp(2rem, 5vw, 3.35rem)", self._css_rule(screen, ".part-divider h1"))
-        self.assertIn("font-size: 9.5pt", printed)
-        self.assertIn("font-size: 9pt", printed)
+        self.assertIn("font-size: var(--print-type-body)", printed)
+        self.assertIn("font-size: var(--print-type-small)", printed)
         self.assertIn(".imprint { break-before: auto; page-break-before: auto; }", printed)
         self.assertIn("background: #10242e", self._css_rule(printed, ".cover"))
         self.assertNotIn(".cover", dark)
