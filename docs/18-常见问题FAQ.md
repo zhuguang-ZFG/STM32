@@ -316,6 +316,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **原因**：LSE 未起振、VBAT 未接电池、负载电容过大。
 - **解决**：接 32.768 kHz 晶振，负载电容在 5 pF 到 15 pF 里按晶振选，6 pF 不是必须值；VBAT 接电池。第 3 脚和第 4 脚，PRL = 32767，见第 11 章。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-peripheral-triage.png" width="760" alt="Handraw：九条外设 FAQ 先测什么再改哪里（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：九条 P 条目各配一项能区分原因的测量，第三列是按结果要改的那一处；证明外设排错先做能区分原因的测量、再改一处，而不是把时钟、引脚和参数一起改；不能替代各条目所指的寄存器与电气细节，也不是实测波形。出处是本章 P1–P9 条目及其引用的 [RM0008](#source-rm0008-usart)、[DS5319](#source-ds5319-gpio)、[本仓库例程](#source-project-examples)。</sub>
+</p>
+
 ## 四、硬件
 
 **H1 LED 不亮**

@@ -2106,6 +2106,26 @@
   "chapter": "28",
   "caption": "▲ 自绘。系统故障三岔口。出处是本章故障注入实验与 [FreeRTOS 11.3.2](#source-freertos-1132) 等开源 tag。"
  },
+ "illustrations/handraw/ch28-isr-divergence.png": {
+  "type": "triage",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：六道闸门从硬件 pending 位一直到调度器切换，每道下面写了一条可读证据；证明 ISR 到任务的事件丢失可以逐门定位，而不是从「任务没打印」直接跳到「RTOS 坏了」；不能替你测出具体中断延迟，也不是实测时序。出处 FreeRTOS 11.3.2、PM0056。"
+ },
+ "illustrations/handraw/ch28-h745-contracts.png": {
+  "type": "technical",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：共享存储、所有权与可见性、HSEM 同步、消息协议、启动与恢复五层各自冻结什么、注入什么；证明五层要分别验收，HSEM 只给原子占用和中断通知，不搬 payload 也不替 M7 管 Cache；不能代替 H745 实测，也不是本仓库的 H745 硬件结果。出处 RM0399、冻结的 stm32h745xx.h。"
+ },
+ "illustrations/handraw/ch28-experiment-evidence.png": {
+  "type": "technical",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四组实验各自的动作与验收证据；证明递进实验交出的是一组可证伪证据，不是「跑通了」；不能替代真实截止时间与栈水位的测量，也不是实测数据。出处 FreeRTOS 11.3.2、Zephyr 4.4.2。"
+ },
+ "illustrations/handraw/ch28-review-evidence.png": {
+  "type": "comparison",
+  "chapter": "28",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十条评审项落进版本与维护、预算、时间证据、所有权与恢复四个象限；证明评审要的是可复测证据，任一条答不出就是未通过；不能替你决定选哪套系统，也不是评分表。出处本章选型与来源表，FreeRTOS 11.3.2、CMSIS-RTOS2 2.3.0。"
+ },
  "illustrations/handraw/ch28-fault-triage.png": {
   "type": "triage",
   "chapter": "28",
@@ -2125,6 +2145,16 @@
   "type": "technical",
   "chapter": "15",
   "caption": "▲ ARM_CM3 任务用 PSP，首次异常帧占任务栈；ISR 函数与嵌套用 MSP；PendSV 再保存 R4–R11。两边分别留余量。手绘原理图，非实测。"
+ },
+ "illustrations/handraw/ch16-no-ammeter-check.png": {
+  "type": "technical",
+  "chapter": "16",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四条泳道（PA0 下降沿、GPIO① ISR 入口、GPIO② 时钟恢复后、TX）上三个红色标记的顺序，与底部两个判决框——位宽 ≈ 8.68 µs 说明 72 MHz 已恢复，78.125 µs 说明时钟停在 HSI 8 MHz、0x271 变成 12800；证明「先对顺序、再对位宽」可以在没有电流表时先排除唤醒与时钟恢复故障；不能替代数据手册 5.4 µs 的测量条件，也不是实测波形。出处 DS5319 表 26、RM0008 USART。"
+ },
+ "illustrations/handraw/ch16-cell-triage.png": {
+  "type": "triage",
+  "chapter": "16",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四行前提（哪只稳压器 / IWDG 开没开 / 是不是备份域 / Standby 分三格）各自给出的电流值与排除项；证明「2~3 µA」「20 µA」这类合并写法都是把前提不同的格子并成一格，引用前必须先对前提；不能替代 DS5319 表 16 的完整条件列，也不是实测电流。出处 DS5319 表 16。"
  },
  "illustrations/handraw/ch16-wake-matrix.png": {
   "type": "comparison",
@@ -2306,6 +2336,16 @@
   "chapter": "07",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。从机拉低 SCL 延长时钟，SCL 线与低电平最长的器件定拍；SDA 拉伸期间不动；拉过 HAL 超时即 BUSY；不是实拍。"
  },
+ "illustrations/handraw/ch12-ymodem-flow.png": {
+  "type": "technical",
+  "chapter": "12",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左侧四步的说话方（设备蓝 / 上位机绿）与右侧「卡住先查」——无 'C' 先查串口参数、NAK 循环查线或缓存、写完跳不了回到 §4 五道验收门；证明 YMODEM 的可靠性来自每包 CRC16 与整包 CRC 两道关，不是串口本身；不能替代 YMODEM 协议原文的包头字节定义，也不是实测抓包。出处 RM0008、本仓库例程。"
+ },
+ "illustrations/handraw/ch12-option-bytes.png": {
+  "type": "comparison",
+  "chapter": "12",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏 F1（RDP=0xA5 不保护、无 Level 2、WRP 按页）与右栏 F4（0xAA/Level 1/0xCC 三档、WRP 按扇区）的对照，和底部红框两条不可逆边界；证明档位记错不是「换个值写回去」就能挽回——F4 的 0xCC 调试口也救不回，解除读保护要付出整片擦除；不能替代 RM0090/RM0008 选项字节寄存器定义，也不是实测操作。出处 RM0008、RM0090。"
+ },
  "illustrations/handraw/ch12-halfword-loop.png": {
   "type": "technical",
   "chapter": "12",
@@ -2351,6 +2391,11 @@
   "chapter": "17",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。条件断点仍占一个比较器，命中→内核暂停→读现场，计时区间被污染；零差先查是否在单步；不是实拍。"
  },
+ "illustrations/handraw/ch18-peripheral-triage.png": {
+  "type": "triage",
+  "chapter": "18",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：九条 P 条目各配一项能区分原因的测量，第三列是按结果要改的那一处；证明外设排错先做能区分原因的测量、再改一处，而不是把时钟、引脚和参数一起改；不能替代各条目所指的寄存器与电气细节，也不是实测波形。出处是本章 P1–P9 条目及其引用的 RM0008、DS5319、本仓库例程。"
+ },
  "illustrations/handraw/ch18-five-steps.png": {
   "type": "concept",
   "chapter": "18",
@@ -2391,10 +2436,35 @@
   "chapter": "26",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPL 中断无回调：stm32f10x_it.c 里查来源→清挂起→交接事件；ISR 不做阻塞发送/Flash 擦除/长延时；不是实拍。"
  },
+ "illustrations/handraw/ch23-swd-triage.png": {
+  "type": "triage",
+  "chapter": "23",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SWD 失联分诊：保留现场 → Under Reset 受控连接 → 先读再写 → RDP L0/L1/L2 分支 → 复位读回；L1 需 L1→L0 整片擦除，L2 不可逆；不是实拍。"
+ },
+ "illustrations/handraw/ch23-lab-evidence.png": {
+  "type": "technical",
+  "chapter": "23",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：封装对账、复用证据、只读启动审计、受控恢复四个动作，各自要带走的产出；证明离开本章的证据是四份具体工件，不是「做过实验」；不能代替 DS12232 原表，也不是实测封装核对结果。出处 DS12232、配套例程。"
+ },
  "illustrations/handraw/ch23-boot-tree.png": {
   "type": "concept",
   "chapter": "23",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。G0 启动判定树：BOOT_LOCK=1 强制 Main；nBOOT_SEL 选脚采样或选项位；空片可转 Bootloader；不是实拍。"
+ },
+ "illustrations/handraw/ch24-irq-order.png": {
+  "type": "technical",
+  "chapter": "24",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五行五个时刻，WUTF 与 EXTI 唤醒线在哪一列从「还在」翻到「全 0」，② 那一行是唯一窗口；证明证据只能在 IRQ 入口取，HAL 在 callback 之前就清位，之后读到的只能是 0；不涵盖唤醒源是否唯一与中断延迟，也不是逻辑分析仪实测。"
+ },
+ "illustrations/handraw/ch24-duty-integration.png": {
+  "type": "calculation",
+  "chapter": "24",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：1 s 轴上按比例只有约 7 px 的 8 ms 尖峰，以及下面两段电荷相加；证明 I_avg 是电荷除以整周期（此处 ≈42 µA），不是两个电流的算术平均（2.5 mA）；不涵盖你板子的波形、仪器带宽与板级负载，也不是实测。"
+ },
+ "illustrations/handraw/ch24-two-firmware.png": {
+  "type": "comparison",
+  "chapter": "24",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左右两份固件都接到下面同一条 Stop 2 路径，只在证据输出上分叉；证明功能固件的 MCO/串口波形不能当低功耗结果，观测手段本身会抬高电流；不涵盖实际测量条件与仪器误差，也不是实测。"
  },
  "illustrations/handraw/ch24-sleep-checklist.png": {
   "type": "concept",

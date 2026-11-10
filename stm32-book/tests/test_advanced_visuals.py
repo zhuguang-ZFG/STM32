@@ -170,7 +170,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "12-Flash与IAP升级.md": (
-        16,
+        18,
         (
             "flash-iap.svg",
             "sample-12-iap-jump-flow.svg",
@@ -188,6 +188,8 @@ CHAPTERS = {
             "sample-12-boot-compare.svg",
             "ch12-boot-compare.png",
             "ch12-halfword-loop.png",
+            "ch12-ymodem-flow.png",
+            "ch12-option-bytes.png",
         ),
     ),
     ROOT / "docs" / "13-CAN总线.md": (
@@ -259,13 +261,15 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "16-低功耗设计.md": (
-        16,
+        18,
         (
             "lowpower-wakeup.svg",
+            "ch16-no-ammeter-check.png",
             "sample-16-stop-wake-flow.svg",
             "sample-16-stop-wake.svg",
             "ch16-stop-wake.png",
             "stop-wake.gif",
+            "ch16-cell-triage.png",
             "sample-16-stop-compare.svg",
             "ch16-stop-compare.png",
             "sample-16-mode-current.svg",
@@ -324,7 +328,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "18-常见问题FAQ.md": (
-        15,
+        16,
         (
             "toolchain-flow.svg",
             "sample-18-boot0-flow.svg",
@@ -340,6 +344,7 @@ CHAPTERS = {
             "ch18-faq-compare.png",
             "sample-18-uart-garbled.svg",
             "ch18-uart-garbled.png",
+            "ch18-peripheral-triage.png",
             "ch18-five-steps.png",
         ),
     ),
@@ -364,7 +369,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "23-STM32G0引脚.md": (
-        14,
+        16,
         (
             "pinout-stm32g071rb-lqfp64.svg",
             "ch23-part-id.png",
@@ -375,15 +380,17 @@ CHAPTERS = {
             "ch23-boot-latch.png",
             "g0-boot-swd.svg",
             "sample-23-boot-source-flow.svg",
+            "ch23-swd-triage.png",
             "sample-23-f1-g0-compare.svg",
             "ch23-pin-compare.png",
             "sample-23-f1-copy-traps.svg",
             "ch23-pinmux.png",
+            "ch23-lab-evidence.png",
             "ch23-boot-tree.png",
         ),
     ),
     ROOT / "docs" / "24-STM32L4引脚.md": (
-        17,
+        20,
         (
             "pinout-stm32l476rg-lqfp64.svg",
             "ch24-part-id.png",
@@ -402,6 +409,9 @@ CHAPTERS = {
             "ch24-idd.png",
             "l4-idd-bench.svg",
             "ch24-sleep-checklist.png",
+            "ch24-irq-order.png",
+            "ch24-duty-integration.png",
+            "ch24-two-firmware.png",
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
@@ -519,7 +529,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "28-嵌入式系统与RTOS生态.md": (
-        22,
+        26,
         (
             "rtos-system-layers.svg",
             "sample-28-four-concepts.svg",
@@ -535,14 +545,18 @@ CHAPTERS = {
             "sample-28-three-times.svg",
             "rtos-deadline-budget.svg",
             "ch28-three-times.png",
+            "ch28-isr-divergence.png",
+            "ch28-memory-regions.png",
             "freertos-scheduler.svg",
+            "ch28-h745-contracts.png",
             "rtos-config-paths.svg",
             "rtos-startup-gates.svg",
             "ch28-wdg-supervisor.png",
             "sample-28-supervisor-flow.svg",
             "sample-28-fault-triage.svg",
             "ch28-fault-triage.png",
-            "ch28-memory-regions.png",
+            "ch28-experiment-evidence.png",
+            "ch28-review-evidence.png",
         ),
     ),
 }

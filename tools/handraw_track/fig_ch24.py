@@ -180,6 +180,127 @@ def sleep_checklist():
     return f
 
 
+def irq_order():
+    f = Fig("ch24-irq-order", "先快照，再让 HAL 清位 / snapshot before HAL clears")
+    f.text(72, 122, "同一个中断里的五个时刻：原始位还在 → 被 HAL 清零 → 只剩软件副本",
+           size=20, color=MUTED)
+    rows = [
+        ("①", "闹钟到期，芯片仍在 Stop 2",
+         "RTC_ISR.WUTF 与 EXTI 唤醒线置位，此刻没有任何代码在读取", "还在", GREEN_D),
+        ("②", "RTC_WKUP_IRQHandler 第一行",
+         "RTC->ISR / EXTI->PR1 / PWR->SR1 一次拷进保留 SRAM", "唯一窗口", GREEN_D),
+        ("③", "HAL_RTCEx_WakeUpTimerIRQHandler()",
+         "先清 EXTI RTC 唤醒线，再清 RTC_FLAG_WUTF：原始位从此消失", "清零", RED),
+        ("④", "HAL callback 或 EnterSTOP2 返回",
+         "这时再读 WUTF 只能是 0；『已经太晚』说的就是这里", "全 0", RED),
+        ("⑤", "主循环消费记录",
+         "只做 sequence 稳定复制，读 SRAM 副本，不再碰硬件位", "软件副本", BLUE_D),
+    ]
+    y = 152
+    for num, label, detail, badge, c in rows:
+        f.rect(72, y, 1008, 78, color=c, fill=WHITE)
+        f.circle(120, y + 39, 24, color=c, sw=2.6, fill=WHITE)
+        f.text(120, y + 47, num, size=24, color=c, anchor="middle", weight="bold")
+        f.text(166, y + 30, label, size=22, color=c, weight="bold")
+        f.text(166, y + 60, detail, size=18, color=INK)
+        f.rect(966, y + 14, 96, 30, color=c, fill=WHITE, double=False)
+        f.text(1014, y + 35, badge, size=17, color=c, anchor="middle",
+               weight="bold")
+        y += 92
+    f.rect(72, 616, 492, 100, color=GREEN_D, fill=WHITE)
+    f.text(96, 648, "对的顺序（本章代码）", size=20, color=GREEN_D, weight="bold")
+    f.multi(96, 680, ["快照 → __DMB → sequence++ →",
+                      "然后才调用 HAL（由它清位）"], size=18, color=INK, lh=30)
+    f.rect(588, 616, 492, 100, color=RED, fill=WHITE)
+    f.text(612, 648, "错的做法", size=20, color=RED, weight="bold")
+    f.multi(612, 680, ["callback / 返回后补读，或只打印",
+                       "『醒了』：读到的全是 0"], size=18, color=INK, lh=30)
+    f.htext(W / 2, 752, "证据只能是 IRQ 入口写进保留 SRAM 的快照", size=22,
+            color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+def duty_integration():
+    f = Fig("ch24-duty-integration", "一个周期的电荷账 / charge per cycle")
+    f.text(72, 120, "T = 1 s：活动+恢复 8 ms @ 5 mA，其余 992 ms @ 2 µA（按时间比例画）",
+           size=19, color=MUTED)
+    f.line(96, 300, 1056, 300, color=INK, sw=2.4)
+    f.text(1064, 306, "t", size=18, color=MUTED)
+    f.line(96, 288, 1056, 288, color=GREEN_D, sw=2.6, amp=0.6)
+    f.text(660, 274, "992 ms @ 2 µA（睡眠平台）", size=18, color=GREEN_D,
+           anchor="middle")
+    f.fillrect(170, 140, 8, 148, RED)
+    f.rect(170, 140, 8, 148, color=RED, sw=1.6, double=False)
+    f.arrow(322, 180, 188, 168, color=RED, bend=0.0)
+    f.text(330, 176, "8 ms 唤醒尖峰", size=20, color=RED, weight="bold")
+    f.text(330, 202, "按 1 s 的比例只有约 7 px 宽，采样一漏就没了", size=17,
+           color=MUTED)
+    f.rect(84, 356, 500, 196, color=BLUE_D, fill=WHITE)
+    f.text(108, 388, "① 先分段积分（Q = I × t）", size=20, color=BLUE_D,
+           weight="bold")
+    f.multi(108, 424, ["Q_active+wakeup = 5 mA × 0.008 s",
+                       "                = 0.040000 mA·s",
+                       "Q_sleep = 0.002 mA × 0.992 s",
+                       "        = 0.001984 mA·s"], size=19, color=INK, lh=34)
+    f.rect(608, 356, 460, 196, color=GREEN_D, fill=WHITE)
+    f.text(632, 388, "② 再除以整周期", size=20, color=GREEN_D, weight="bold")
+    f.multi(632, 424, ["Q_cycle = 0.040000 + 0.001984",
+                       "        = 0.041984 mA·s",
+                       "I_avg   ≈ 42 µA",
+                       "1000 mAh ÷ 0.042 A ≈ 2.72 年"], size=19, color=INK,
+            lh=34)
+    f.rect(84, 578, 984, 84, color=RED, fill=WHITE)
+    f.text(108, 610, "算术平均 (5 mA + 2 µA) / 2 = 2.5 mA，比真值大 ~60 倍",
+           size=20, color=RED, weight="bold")
+    f.text(108, 642, "错在把 8 ms 与 992 ms 当成等权；积分是按时间加权的", size=18,
+           color=INK)
+    f.htext(W / 2, 706, "采样率下限由最短脉冲决定：f_s ≥ 10 / 8 ms = 1.25 kHz",
+            size=22, color=INK, anchor="middle", weight="bold", hl=True)
+    f.text(72, 748, "电压变化时改用能量积分 E_cycle = Σ V[k]·I[k]·Δt；报告写清最小/平均/最大与原始波形",
+           size=17, color=MUTED)
+    return f
+
+
+def two_firmware():
+    f = Fig("ch24-two-firmware", "两份固件，一条低功耗路径 / one path, two builds")
+    f.text(72, 120, "功能固件证明闭环，测量固件证明电流；底下的 Stop 2 路径必须完全一致",
+           size=19, color=MUTED)
+    f.rect(72, 150, 492, 286, color=GREEN_D, fill=WHITE)
+    f.htext(96, 188, "A · 功能固件（带证据输出）", size=21, color=GREEN_D,
+            weight="bold")
+    f.multi(96, 228, ["允许：MCO、UART 日志、定时器翻转",
+                      "证明：唤醒源识别、时钟恢复、通信可用",
+                      "禁止：拿这份的电流去验收",
+                      "原因：观测手段本身抬高电流"], size=18, color=INK, lh=36)
+    f.text(96, 396, "用途：实验 A", size=18, color=GREEN_D, weight="bold")
+    f.rect(588, 150, 492, 286, color=BLUE_D, fill=WHITE)
+    f.htext(612, 188, "B · 测量固件（无日志）", size=21, color=BLUE_D,
+            weight="bold")
+    f.multi(612, 228, ["关掉：MCO、UART 日志、LED、无关传感器",
+                       "证明：Q_cycle、I_avg 与理想续航",
+                       "不能证明：通信时序是否可用",
+                       "用途：实验 B，JP6 串表 + 采样率"], size=18, color=INK,
+            lh=36)
+    f.text(612, 396, "f_s ≥ 10 / t_min 同样适用于这份", size=18, color=BLUE_D,
+           weight="bold")
+    f.arrow(318, 442, 318, 474, color=INK, bend=0.0)
+    f.arrow(834, 442, 834, 474, color=INK, bend=0.0)
+    f.panel(72, 478, 1008, 100, AMBER_FILL)
+    f.rect(72, 478, 1008, 100, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 516, "共用：同一 Stop 2 入口、同一 RTC 唤醒、同一时钟恢复函数",
+           size=22, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 550, "两份固件只在『证据往哪走』上分叉", size=18, color=INK,
+           anchor="middle")
+    f.rect(72, 598, 1008, 84, color=RED, fill=WHITE)
+    f.text(96, 630, "把功能固件的 MCO / 串口波形当低功耗结果 = 让观测手段污染被测值",
+           size=20, color=RED, weight="bold")
+    f.text(96, 662, "同一低功耗路径才有可比性；差异只能出现在证据输出", size=18,
+           color=INK)
+    f.htext(W / 2, 742, "实验 A 与实验 B 的电流数字不能互相引用", size=22,
+            color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch24-part-id": part_id,
     "ch24-modes": modes,
@@ -188,6 +309,9 @@ FIGS = {
     "ch24-idd": idd,
     "ch24-sram2-retain": sram2_retain,
     "ch24-sleep-checklist": sleep_checklist,
+    "ch24-irq-order": irq_order,
+    "ch24-duty-integration": duty_integration,
+    "ch24-two-firmware": two_firmware,
 }
 
 if __name__ == "__main__":

@@ -316,6 +316,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Cause**: LSE never started, VBAT has no battery, or the load capacitors are too large.
 - **Fix**: fit a 32.768 kHz crystal and a battery on VBAT. Choose the load capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. Pins 3 and 4, and PRL = 32767, stay with chapter 11.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-peripheral-triage.png" width="760" alt="Handraw: nine peripheral FAQ entries, what to measure first and what to change (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the nine P entries, each paired with one measurement that separates the causes, and the third column holding the single fix that result points to; proves peripheral debugging starts from a discriminating measurement and then changes one place, not the clock, pin and parameters together; cannot replace the register and electrical detail behind each entry, and it is not a measured trace. See [RM0008](#source-rm0008-usart), [DS5319](#source-ds5319-gpio), [examples in this repo](#source-project-examples).</sub>
+</p>
+
 ## 4. Hardware
 
 **H1 The LED stays dark**

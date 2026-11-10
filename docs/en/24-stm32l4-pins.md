@@ -258,6 +258,11 @@ static bool ConsumeStop2WakeEvidence(WakeEvidence *out)
 
 If the project permits wake sources other than RTC, each relevant IRQ must write the common software record before its HAL handler and add a `source` field. No RTC record then means "woken by something else," not "the MCU did not wake."
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-irq-order.png" width="760" alt="Handraw: five moments from the IRQ-entry snapshot to HAL clearing the bits (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the five moments and the column where WUTF and the EXTI wake line flip from present to zero, with row ② as the only window; proves the snapshot must be taken at IRQ entry because HAL clears before the callback, so later reads are always zero; cannot replace a check that the wake source is unique or measured interrupt latency, and it is not a logic-analyzer capture. See [RM0351](#source-rm0351), [stm32l4-hal-rtc](#source-stm32l4-hal-rtc).</sub>
+</p>
+
 ### 3. After wake: consume the record, restore clocks, then communicate
 
 The next functions isolate the reusable RTC Stop 2 and clock boundary. `SystemClock_Config()` must be the project's already-tested 80 MHz configuration. If HAL timeouts depend on SysTick, follow ST's example and resume the tick before calling the clock recovery function.
@@ -367,6 +372,11 @@ I_avg           = 0.041984 mA         = 41.984 µA
 
 An idealized 1000 mAh cell gives `1000 / 0.041984 = 23818 h ≈ 2.72 years`. That is an energy budget, not a lifetime promise. Effective capacity changes with temperature, discharge rate, and cutoff voltage. Add self-discharge, regulator quiescent current, sensor leakage, and aging separately. An instrument that misses the 8 ms pulse reports about 2 µA instead of about 42 µA.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-duty-integration.png" width="760" alt="Handraw: whole-cycle charge integration and average current (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the 8 ms spike that is only about 7 px wide on the 1 s axis, and the two charge terms added below it; proves I_avg is charge over the whole cycle (≈42 µA here), not the arithmetic mean of two currents (2.5 mA); cannot replace your board's waveform, instrument bandwidth, or board loads, and it is not measured. See [DS10198](#source-ds10198), [AN4746](#source-an4746).</sub>
+</p>
+
 ### 3. Acceptance format for comparable results
 
 Capture at least ten complete cycles for each configuration. Report minimum, mean, and maximum sleep plateau, active peak, `Q_cycle`, and `I_avg`, and retain the raw waveform. Compare against DS10198 only when VDD, temperature, mode, RTC/retention options, and debug conditions match. A typical value is not a limit. Before production, check ES0250 for the full order code and silicon revision; errata override general descriptions in the reference manual and application notes.
@@ -391,6 +401,11 @@ Capture at least ten complete cycles for each configuration. Report minimum, mea
 1. Wake from Stop 2 with RTC every 5 s. Turn the LED off before sleep and keep one GPIO as an oscilloscope marker.
 2. At `RTC_WKUP_IRQHandler()` entry, before the HAL handler, snapshot RTC/EXTI/PWR. After Stop returns, consume the retained-SRAM record, restore PLL/SYSCLK, and assert that `HAL_RCC_GetSysClockFreq()` and `SystemCoreClock` both equal 80 MHz.
 3. Restore one timer output and the UART; measure the timer frequency and one known byte frame. Deliberately skip clock restoration once, record the first boundary that deviates, then restore the code.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-two-firmware.png" width="760" alt="Handraw: functional and measurement builds sharing one low-power path (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the two builds both feeding the Stop 2 path below and diverging only in evidence output; proves MCO/UART traces from the functional build cannot stand in for low-power results, because the observation itself raises current; cannot replace real measurement conditions and instrument error, and it is not measured. See [stm32cube-l4-stop2](#source-stm32cube-l4-stop2), [RM0351](#source-rm0351).</sub>
+</p>
 
 **Lab B: measurement loop, with no logging**
 

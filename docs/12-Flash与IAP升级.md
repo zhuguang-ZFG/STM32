@@ -301,6 +301,11 @@ YMODEM 是带 CRC 校验的可靠文件传输协议，配合串口即可实现�
 
 > IAP 不需要额外硬件，只需一个能发文件的串口工具（SecureCRT / Xshell / 自写上位机）。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-ymodem-flow.png" width="760" alt="Handraw：YMODEM 四步谁先说话——'C'、首包、数据包 CRC16、空包收尾（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左侧四步的说话方（设备蓝 / 上位机绿）与右侧「卡住先查」——无 'C' 先查串口参数、NAK 循环查线或缓存、写完跳不了回到 §4 五道验收门；证明 YMODEM 的可靠性来自每包 CRC16 与整包 CRC 两道关，不是串口本身；不能替代 YMODEM 协议原文的包头字节定义，也不是实测抓包。出处 [RM0008](#source-rm0008-flash)、[本仓库例程](#source-project-examples)。</sub>
+</p>
+
 ## 代码实现
 
 **① Flash 擦除 + 编程（F1，按页）**
@@ -398,6 +403,11 @@ HAL_FLASHEx_OBGetConfig(&ob);   /* 看 RDPLevel / WRP，先别写 */
 ```
 
 写 RDP 的调用这里不贴。它会擦整片，复制进示例工程很容易把板子锁到读保护。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-option-bytes.png" width="760" alt="Handraw：F1 与 F4 选项字节档位对比与两条不可逆边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏 F1（RDP=0xA5 不保护、无 Level 2、WRP 按页）与右栏 F4（0xAA/Level 1/0xCC 三档、WRP 按扇区）的对照，和底部红框两条不可逆边界；证明档位记错不是「换个值写回去」就能挽回——F4 的 0xCC 调试口也救不回，解除读保护要付出整片擦除；不能替代 RM0090/RM0008 选项字节寄存器定义，也不是实测操作。出处 [RM0008](#source-rm0008-flash)、[RM0090](#source-rm0090)。</sub>
+</p>
 
 离开本章前，应有一份页写 CRC、三种坏镜像错误码和一次有效镜像的版本心跳；A/B 方案还要有中断升级后的旧版本启动证据。
 

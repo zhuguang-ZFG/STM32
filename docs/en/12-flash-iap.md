@@ -292,6 +292,11 @@ YMODEM is a reliable file-transfer protocol with a CRC check. Paired with a UART
 3. The device picks the app address, erases the matching pages, and receives **128-byte or 1024-byte** packets. After the CRC16 checks out, it writes Flash and replies `ACK`.
 4. When the transfer ends (an empty packet), it checks the CRC of the whole image, sets the "app is valid" flag, and resets or jumps.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-ymodem-flow.png" width="760" alt="Handraw: YMODEM four steps and who speaks first — 'C', first packet, data packets with CRC16, empty-packet finish (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the speaker of each step on the left (device in blue, host in green) and the "if it stalls" column on the right — no 'C' means checking the serial parameters, an NAK loop means the line or the buffer, and a failed jump sends you back to the five acceptance gates in §4; proves YMODEM's reliability comes from the per-packet CRC16 plus the whole-image CRC, not from the UART itself; cannot replace the protocol's header byte definitions and is not measured captures. See [RM0008](#source-rm0008-flash), [project examples](#source-project-examples).</sub>
+</p>
+
 ## Hardware and wiring
 
 | Board | Use | Pin | Notes |
@@ -399,6 +404,11 @@ HAL_FLASHEx_OBGetConfig(&ob);   /* inspect RDPLevel / WRP; do not write yet */
 ```
 
 The call that writes RDP is not shown here. It erases the whole chip. Copying it into a sample project is an easy way to lock the board into readout protection.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-option-bytes.png" width="760" alt="Handraw: F1 vs F4 option-byte levels and the two irreversible boundaries (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the left column for F1 (RDP = 0xA5 unprotected, no Level 2, WRP per page) against the right column for F4 (0xAA / Level 1 / 0xCC, WRP per sector), and the red box with the two irreversible boundaries; proves a wrong level is not fixed by "writing another value back" — on F4, 0xCC cannot be recovered even through the debug port, and clearing readout protection costs a whole-chip erase; cannot replace the option-byte register definitions in RM0090/RM0008 and is not measured operations. See [RM0008](#source-rm0008-flash), [RM0090](#source-rm0090).</sub>
+</p>
 
 Before leaving this chapter, keep one page-write CRC, stable error codes for the three bad images, and a version heartbeat from a valid image. An A/B design also needs proof that the old version boots after an interrupted update.
 

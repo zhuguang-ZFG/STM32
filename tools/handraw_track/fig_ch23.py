@@ -210,6 +210,97 @@ def boot_tree():
     return f
 
 
+def swd_triage():
+    f = Fig("ch23-swd-triage",
+            "SWD 失联：受控连接与保护分支 / reconnect triage")
+
+    f.text(84, 118, "应用改写 PA13/PA14、关调试或进低功耗 ≠ 本次启动选错区域：",
+           size=19, color=INK)
+    f.text(84, 146, "先把两个故障边界分开，再决定集合现场还是动选项字节。",
+           size=19, color=MUTED)
+
+    f.text(84, 184, "取证 → 连接 → 读回", size=21, color=GREEN_D,
+           weight="bold")
+    f.text(620, 184, "读到值后按保护状态分支", size=21, color=RED,
+           weight="bold")
+
+    steps = [
+        ("① 保留现场",
+         ["启动去向 · 能否进系统 Bootloader", "接 SWDIO · SWCLK · NRST · GND + 供电参考"]),
+        ("② 受控连接（Under Reset）",
+         ["只是尝试，不预设必通", "BOOT_LOCK=1 且 RDP L1 时调试能力停止"]),
+        ("③ 先读再写",
+         ["BOOT_LOCK · nBOOT1 · nBOOT_SEL · nBOOT0", "同时读 RDP 与选项字节互补值"]),
+    ]
+    branches = [
+        ("RDP Level 0", ["可清除或保持 BOOT_LOCK",
+                         "常规选 nBOOT_SEL=1, nBOOT0=1"], GREEN_D),
+        ("RDP Level 1", ["不能直接清 BOOT_LOCK",
+                         "先 L1→L0，代价是整片擦除"], AMBER_STROKE),
+        ("RDP Level 2", ["不可逆，没有降级路径",
+                         "不承诺 mass erase 一定可达"], RED),
+    ]
+    ys = (204, 310, 416)
+    for (t, subs), y in zip(steps, ys):
+        f.rect(84, y, 500, 92, color=GREEN_D, fill=WHITE, sw=2.4)
+        f.text(104, y + 30, t, size=20, color=GREEN_D, weight="bold")
+        f.multi(104, y + 56, subs, size=15, color=INK, lh=21)
+    for (t, subs, c), y in zip(branches, ys):
+        f.rect(620, y, 452, 92, color=c, fill=WHITE, sw=2.4)
+        f.text(640, y + 30, t, size=20, color=c, weight="bold")
+        f.multi(640, y + 56, subs, size=15, color=INK, lh=21)
+
+    # step 4: verify after a real write/reset
+    f.rect(84, 532, 988, 80, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(104, 562, "④ 复位并读回，才算验证", size=20, color=BLUE_D,
+           weight="bold")
+    f.text(104, 592, "写成功 ≠ 本轮生效：执行 option-byte launch 或规定复位，"
+                     "重读选项字节，再验证 Main Flash 启动与 SWD 热连接",
+           size=16, color=INK)
+
+    # failure path band
+    f.rect(84, 634, 988, 86, color=RED, fill=WHITE, sw=2.4, dash="7 6")
+    f.text(104, 664, "失败路径：不进入“已恢复”结论", size=19, color=RED,
+           weight="bold")
+    f.text(104, 692, "连不上或写不进 → 记为未决证据，不反复重连；整片擦除要授权、"
+                     "备份与可执行路径；互补值不匹配 → 强制 BOOT_LOCK=1、默认 RDP L1",
+           size=15, color=INK)
+
+    f.htext(W / 2, 752, "Under Reset 和清除 BOOT_LOCK 都不是无条件可达：先取证，再承诺恢复",
+            size=20, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+# ---------------------------------------------------------------- fig 9
+def lab_evidence():
+    f = Fig("ch23-lab-evidence", "四个动作 → 四份离开证据 / four artefacts")
+    rows = [
+        ("1", "封装对账", "从 Pin 1 数到 PF2-NRST，记录关键电源、PA14 与 NRST 的脚号",
+         "产出：封装对账表，和 PCB 封装逐项核对", GREEN_D),
+        ("2", "复用证据", "从 DS12232 Table 13 抄出 PA9 的完整 AF 行，标出 USART1_TX 与冲突功能",
+         "产出：PA9 复用来源；CubeMX 只作交叉检查", GREEN_D),
+        ("3", "只读启动审计", "记录 BOOT_LOCK/nBOOT1/nBOOT_SEL/nBOOT0、互补值、RDP 与 PA14 电平",
+         "产出：代入真值表的启动输入快照，不写选项字节", AMBER_STROKE),
+        ("4", "受控恢复", "Under Reset 记录连接参数、读回值、复位后 Main Flash 启动与热连接",
+         "产出：一次不依赖擦除的恢复记录；mass erase 另行备份", RED),
+    ]
+    y = 146
+    for num, title, action, artifact, col in rows:
+        f.rect(84, y, 984, 108, color=col, fill=WHITE)
+        f.circle(126, y + 54, 22, color=col, sw=2.4, fill=WHITE)
+        f.text(126, y + 62, num, size=22, color=col, anchor="middle",
+               weight="bold")
+        f.text(160, y + 38, title, size=21, color=col, weight="bold")
+        f.text(160, y + 68, action, size=16, color=INK)
+        f.text(160, y + 94, artifact, size=16, color=col)
+        y += 122
+    f.htext(W / 2, 664, "四份证据齐了，才算读懂了这颗料的脚",
+            size=21, color=INK, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 702, "任何一份靠记忆补写，离开本章就等于没做过；自测只检查你有没有带走这四份东西",
+           size=16.5, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch23-part-id": part_id,
     "ch23-pin-compare": pin_compare,
@@ -217,6 +308,8 @@ FIGS = {
     "ch23-pinmux": pinmux,
     "ch23-g0-f1-compare": g0_f1_compare,
     "ch23-boot-tree": boot_tree,
+    "ch23-swd-triage": swd_triage,
+    "ch23-lab-evidence": lab_evidence,
 }
 
 if __name__ == "__main__":

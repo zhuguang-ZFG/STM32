@@ -42,6 +42,11 @@ The interval from the PA0 edge to the first GPIO marker includes interrupt entry
 
 The working point is Stop on STM32F103C8T6 with the regulator in low-power mode, which is `PWR_LOWPOWERREGULATOR_ON`. Every current below is a DS5319 Rev 20 Table 16 typical at 3.3 V and 25°C. Each number belongs to one cell of that table, and cells with different conditions do not mix. See [DS5319 Table 16](#source-ds5319-pwr).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-no-ammeter-check.png" width="760" alt="Handraw: proving the wake is correct without an ammeter — four-signal order and the 0x55 bit-width verdict (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the order of the three red markers across the four lanes (PA0 falling edge, GPIO ① at ISR entry, GPIO ② after clock restoration, TX) and the two verdict boxes below — a bit width near 8.68 µs means 72 MHz is back, while 78.125 µs means the clock is still on the 8 MHz HSI and 0x271 has become 12800; proves "check the order first, then the bit width" clears wake and clock-restoration faults before any ammeter is involved; cannot replace the datasheet's 5.4 µs measurement conditions and is not measured waveforms. See [DS5319 Table 26](#source-ds5319-pwr), [RM0008 USART](#source-rm0008-usart).</sub>
+</p>
+
 Low-power regulator, oscillators off, independent watchdog off: 14 µA. Main regulator still on, same other conditions: 24 µA. 20 µA is not a Table 16 cell. The 85°C values 200 µA and 180 µA are maximums, not typicals. 1.4 µA is `IDD_VBAT` for the backup domain with LSE and the RTC on. It is not the whole-chip Standby current.
 
 Standby has three cells. 2 µA belongs only to the cell with LSI, IWDG, LSE, and RTC all off. LSI on is 3.2 µA. LSI and IWDG both on is 3.4 µA. Once started, the IWDG cannot be stopped and keeps counting in Stop and Standby (chapter 11). The 14 µA cell assumes the independent watchdog is off, so you cannot quote 14 µA with the IWDG running. Table 16 gives no Stop-plus-IWDG figure; measure it with a current meter if you need it. See [RM0008 watchdog](#source-rm0008-wdg).
@@ -107,6 +112,11 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 | Standby current | 2 µA only with LSI, IWDG, LSE, and RTC off; LSI on is 3.2 µA; IWDG on as well is 3.4 µA | do not write 2 to 3 µA |
 | Backup domain | 1.4 µA with LSE and the RTC on | not whole-chip Standby |
 | Pin 10 PA0 | This chapter uses falling-edge EXTI for Stop; Standby uses rising-edge WKUP | No LED or ADC input on it meanwhile |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-cell-triage.png" width="760" alt="Handraw: three questions before citing a current cell — regulator, IWDG, backup domain (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the four rows of preconditions (which regulator / is the IWDG on / is it the backup domain / Standby has three cells) with the current each one allows and what it rules out; proves that merged quotes like "2~3 µA" or "20 µA" combine cells with different preconditions, so the preconditions must match before citing a number; cannot replace the full condition columns of DS5319 Table 16 and is not measured current. See [DS5319 Table 16](#source-ds5319-pwr).</sub>
+</p>
 
 ## Pitfalls and sources
 
