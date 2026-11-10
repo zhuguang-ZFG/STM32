@@ -21,4 +21,4 @@
 
 ## 审计索引
 
-`stm32-book/audits/`：b47-typography-tiers、b48/b49-gap-figures、b50-hardware-evidence、b52-gap-close、b51-final-acceptance（含 B46→B51 前后对比与 15 页抽样目检记录）。
+`stm32-book/audits/`：b47-typography-tiers、b48/b49-gap-figures、b50-hardware-evidence、b52-gap-close、b51-final-acceptance（含 B46→B51 前后对比与 15 页抽样目检记录）、b53-spec-closeout（三份 Spec 关闭与证据索引）。

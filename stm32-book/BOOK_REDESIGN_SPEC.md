@@ -1,6 +1,6 @@
 # STM32 实战 Book 2.0 全书重构 Spec
 
-状态：Draft 1 · 2026-11-02
+状态：已发布 · Draft 1（2026-11-02）→ Book 2.0 v1.3.1（2026-11-10）；验收见 `stm32-book/audits/b51-final-acceptance.md`，spec 收口见 `stm32-book/audits/b53-spec-closeout.md`
 
 适用范围：`docs/00–28`、`docs/en/00–28`、`assets/`、`stm32-book/` 及其测试
 
