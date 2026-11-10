@@ -1287,8 +1287,22 @@ _CSS_LIGHT_KEYS = (
     "--leading-caption",
     "--leading-toc",
     "--leading-code",
+    "--space-code-block",
+    "--space-code-inline",
 )
 _CSS_COLOR_KEYS = _CSS_LIGHT_KEYS[:15]
+_CSS_PRINT_KEYS = _CSS_COLOR_KEYS + (
+    "--print-type-body",
+    "--print-leading-body",
+    "--print-type-caption",
+    "--print-leading-caption",
+    "--print-type-small",
+    "--print-fig-sm-width",
+    "--print-fig-sm-height",
+    "--print-fig-md-height",
+    "--print-fig-lg-width",
+    "--print-fig-lg-height",
+)
 _CSS_COVER_LOCK = ("--paper", "--ink", "--muted", "--warn", "--line", "--spine")
 _TOKEN_NAME = re.compile(r"^--[a-z0-9-]+$")
 _FORBIDDEN_VALUE = ("\n", "\r", ";", "{", "}", "url(", "@import", "@font-face", "!important")
@@ -1377,7 +1391,7 @@ def load_css(tokens_path: Path = TOKENS_PATH, css_path: Path = BOOK_CSS_PATH) ->
     printed = _section(tokens, "print")
     _require_keys("light", light, _CSS_LIGHT_KEYS)
     _require_keys("dark", dark, _CSS_COLOR_KEYS)
-    _require_keys("print", printed, _CSS_COLOR_KEYS)
+    _require_keys("print", printed, _CSS_PRINT_KEYS)
     for group in (light, dark, printed):
         for key, value in group.items():
             _require_value(key, value)

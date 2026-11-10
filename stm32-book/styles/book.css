@@ -149,7 +149,7 @@ th, td { border: 1px solid var(--line); padding: .55rem .7rem; vertical-align: t
 th { background: var(--panel); font-weight: 700; }
 tbody tr:nth-child(even) > td { background: color-mix(in srgb, var(--panel) 62%, var(--paper)); }
 code { font-family: var(--font-mono); font-size: var(--type-code); }
-:not(pre) > code { padding: .12em .35em; border-radius: .3em; background: color-mix(in srgb, var(--accent) 18%, var(--paper)); }
+:not(pre) > code { padding: var(--space-code-block) var(--space-code-inline); border-radius: .3em; background: color-mix(in srgb, var(--accent) 18%, var(--paper)); }
 pre {
   overflow-x: auto;
   max-width: 100%;
@@ -231,7 +231,7 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
 @media print {
   :root { color-scheme: light; /* @tokens print */ }
   @page { size: A4; margin: 16mm 15mm 17mm; }
-  body { font-size: 9.5pt; line-height: 1.55; orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  body { font-size: var(--print-type-body); line-height: var(--print-leading-body); orphans: 3; widows: 3; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .book { width: auto; max-width: none; }
   .cover { min-height: 245mm; page-break-after: always; background: #10242e; }
   .cover-sheet { min-height: 245mm; }
@@ -248,9 +248,13 @@ footer.book-footer { padding: 2.25rem var(--inset) 3.5rem; color: var(--muted); 
   h2, h3, h4, h5, h6 { bookmark-level: none; }
   p[align="center"], figure, .chapter-compass, .quick-check, blockquote, .source-card, img { break-inside: avoid-page; page-break-inside: avoid; }
   .photo-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: 8.5pt; line-height: 1.3; }
-  sub { font-size: 9pt; line-height: 1.4; }
-  img { max-height: 120mm; }
+  figcaption { break-before: avoid-page; page-break-before: avoid; break-inside: avoid-page; page-break-inside: avoid; font-size: var(--print-type-caption); line-height: var(--print-leading-caption); }
+  sub { font-size: var(--print-type-small); line-height: 1.4; }
+  img { max-height: var(--print-fig-md-height); }
+  /* 图版三档：按文档既有 width 档位映射。小=清单/单概念，中=标准证据图，大=全景对照 */
+  img[width="330"], img[width="640"], img[width="660"] { max-width: var(--print-fig-sm-width); max-height: var(--print-fig-sm-height); }
+  img[width="720"], img[width="760"] { max-height: var(--print-fig-md-height); }
+  img[width="820"], img[width="860"], img[width="880"] { max-width: var(--print-fig-lg-width); max-height: var(--print-fig-lg-height); }
   figure:not(.part-plate):not(.wide-figure) img { max-width: 88%; }
   figure img { margin: 0 auto .15rem; }
   .table-scroll { overflow: visible; break-inside: auto; }
