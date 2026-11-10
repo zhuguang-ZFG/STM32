@@ -1475,6 +1475,11 @@
   "chapter": "03",
   "type": "comparison"
  },
+ "illustrations/handraw/ch04-event-pipeline.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。一次按键到 ISR 的五段流水线：引脚事件、EXTI 认领、NVIC 仲裁、执行 ISR、返回；区分「何时发现」与「谁先跑」。",
+  "chapter": "04",
+  "type": "technical"
+ },
  "illustrations/handraw/ch04-exception-stack.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。抢占 1 的 EXTI0 打断抢占 2 的 TIM2，现场八寄存器入栈；不是示波器实拍。",
   "chapter": "04",
@@ -1490,8 +1495,18 @@
   "chapter": "04",
   "type": "triage"
  },
+ "illustrations/handraw/ch04-lab-evidence.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。本章实验证据链：EXTI 边沿、NVIC 抢占与尾链的观测点；不是示波器实拍。",
+  "chapter": "04",
+  "type": "technical"
+ },
  "illustrations/handraw/ch04-mask-gates.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PRIMASK 挡 0–15、FAULTMASK 再挡 HardFault 只留 NMI、BASEPRI 只挡数值 ≥ 阈值的一截；GROUP_4 下 0 最急 15 最缓；不是实拍。",
+  "chapter": "04",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch04-numbers-ledger.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。开读前对表：F103C8T6 / 72 MHz / GROUP_4 / 8 个寄存器约 12 HCLK 四个基准数字；后续时间线以它们为前提。",
   "chapter": "04",
   "type": "concept"
  },
@@ -1773,6 +1788,16 @@
   "chapter": "11",
   "type": "technical"
  },
+ "illustrations/handraw/ch11-bkp-magic.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BKP 魔法值判首次上电：先写魔数、读回核对、再清标记；复位不清备份域。",
+  "chapter": "11",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch11-debug-freeze.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。调试冻结 IWDG 的两条时间线：DBG_IWDG_STOP=1 时计数暂停、恢复调试后继续；IWDG 启动后只有复位能停。",
+  "chapter": "11",
+  "type": "technical"
+ },
  "illustrations/handraw/ch11-iwdg-1s.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI→÷64→625 Hz；Reload 624 典型 1 秒非保证；625 多一拍；不是实拍。",
   "chapter": "11",
@@ -1787,6 +1812,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。LSI 30–60 kHz 使标称 1 s 的 IWDG 实际在 2/3–4/3 s 之间摆动（Reload 624 不变）；按范围留余量；不是单颗实测。",
   "chapter": "11",
   "type": "calculation"
+ },
+ "illustrations/handraw/ch11-rtc-lines.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RTC 三条线：复位原因（RCC_CSR）、持久状态（BKP 魔数）、实际时间（PRL 32767）；缺一条就分不清重启与继续。",
+  "chapter": "11",
+  "type": "concept"
  },
  "illustrations/handraw/ch11-rtc-triage.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：PRL / VBAT 掉电 / 闹钟秒计数；不是实拍。",
@@ -1813,6 +1843,11 @@
   "chapter": "12",
   "type": "comparison"
  },
+ "illustrations/handraw/ch12-boot-decision.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。500 ms 等待窗口起跳；JumpToApp 五步与 YMODEM 五步各自的闸门；三处 0x08004800 必须一致。",
+  "chapter": "12",
+  "type": "technical"
+ },
  "illustrations/handraw/ch12-flash-triage.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。岔口：CR.LOCK/页边界；半字与 0xFFFF；0xB800 读回比对；不是实拍。",
   "chapter": "12",
@@ -1833,6 +1868,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。0x45670123 再 0xCDEF89AB；顺序反了 LOCK 不消；跳转要装 MSP 与复位向量；不是实拍。",
   "chapter": "12",
   "type": "technical"
+ },
+ "illustrations/handraw/ch12-last-page-math.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。最后一页擦除的页号与地址账：页大小、起始地址、写入边界一次算清。",
+  "chapter": "12",
+  "type": "calculation"
  },
  "illustrations/handraw/ch12-option-bytes.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏 F1（RDP=0xA5 不保护、无 Level 2、WRP 按页）与右栏 F4（0xAA/Level 1/0xCC 三档、WRP 按扇区）的对照，和底部红框两条不可逆边界；证明档位记错不是「换个值写回去」就能挽回——F4 的 0xCC 调试口也救不回，解除读保护要付出整片擦除；不能替代 RM0090/RM0008 选项字节寄存器定义，也不是实测操作。出处 RM0008、RM0090。",
@@ -1980,6 +2020,31 @@
   "chapter": "15",
   "type": "concept"
  },
+ "illustrations/handraw/ch15-tick-owner.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SysTick 同时是 HAL 时基与 FreeRTOS 节拍；改 TIM4 或共用时核对处理函数与频率。",
+  "chapter": "15",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch15-two-priority-rules.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。抢占优先级与时间片两条规则的分工；同抢占才轮到时间片。",
+  "chapter": "15",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch16-acceptance-record.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。低功耗验收五格（底电流、峰值、活跃时长、周期、唤醒原因）与 I_avg = Σ(I_k × t_k)/T 平均电流账。",
+  "chapter": "16",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch16-battery-budget.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。电池预算：平均电流 = Σ(I×t)/T 与容量折算；峰值与底电流分开记。",
+  "chapter": "16",
+  "type": "calculation"
+ },
+ "illustrations/handraw/ch16-board-vs-chip.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。整板 ⊃ MCU 支路 ⊃ 芯片 VDD 的电流边界；表 16 读数只在芯片支路条件下成立。",
+  "chapter": "16",
+  "type": "concept"
+ },
  "illustrations/handraw/ch16-cell-triage.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四行前提（哪只稳压器 / IWDG 开没开 / 是不是备份域 / Standby 分三格）各自给出的电流值与排除项；证明「2~3 µA」「20 µA」这类合并写法都是把前提不同的格子并成一格，引用前必须先对前提；不能替代 DS5319 表 16 的完整条件列，也不是实测电流。出处 DS5319 表 16。",
   "chapter": "16",
@@ -2020,8 +2085,18 @@
   "chapter": "16",
   "type": "technical"
  },
+ "illustrations/handraw/ch16-wake-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep 1.8 µs / Stop 3.6 µs / Stop 低功耗稳压器 5.4 µs / Standby 50 µs 的唤醒阶梯。",
+  "chapter": "16",
+  "type": "comparison"
+ },
  "illustrations/handraw/ch16-wake-matrix.png": {
   "caption": "▲ Sleep 保留原时钟，Stop 从 HSI 8 MHz 恢复，Standby 从复位向量重启。IWDG 超时属于复位，不能当成 Stop 的普通返回。手绘原理示意，非实测；时间取自 [DS5319 Rev 20 表 26](#source-ds5319-pwr)，RTC 路由见 [RM0008 Rev 21](#source-rm0008-rtc)。",
+  "chapter": "16",
+  "type": "comparison"
+ },
+ "illustrations/handraw/ch16-wfi-wfe.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。WFI 走中断进 ISR，WFE 走事件未必进 ISR；只换指令不改唤醒配置会失效。",
   "chapter": "16",
   "type": "comparison"
  },
@@ -2076,6 +2151,11 @@
   "chapter": "18",
   "type": "triage"
  },
+ "illustrations/handraw/ch18-download-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。下载失败 D1–D7 分诊：连接、下载、观察、运行四组各自的下一条线索。",
+  "chapter": "18",
+  "type": "triage"
+ },
  "illustrations/handraw/ch18-faq-compare.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。五类现象各选一项能区分原因的证据，保留修改前后的结果。",
   "chapter": "18",
@@ -2091,6 +2171,16 @@
   "chapter": "18",
   "type": "triage"
  },
+ "illustrations/handraw/ch18-hardware-extra.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。硬件补充 H5 晶振、H6 面包板、H7 共地三条；软件超时未必是软件根因。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch18-hardware-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。硬件类 FAQ 分诊：供电、晶振、接触三条先量后改。",
+  "chapter": "18",
+  "type": "triage"
+ },
  "illustrations/handraw/ch18-link-map.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。先在 map 中核对区域起点与长度，再分清 .text、.data 的加载大小和 .bss 的 RAM 占用。",
   "chapter": "18",
@@ -2101,8 +2191,23 @@
   "chapter": "18",
   "type": "technical"
  },
+ "illustrations/handraw/ch18-peripheral-roots.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。外设九条 FAQ 按根因归三栏：开关未开、配置不符、物理层未处理。",
+  "chapter": "18",
+  "type": "triage"
+ },
  "illustrations/handraw/ch18-peripheral-triage.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：九条 P 条目各配一项能区分原因的测量，第三列是按结果要改的那一处；证明外设排错先做能区分原因的测量、再改一处，而不是把时钟、引脚和参数一起改；不能替代各条目所指的寄存器与电气细节，也不是实测波形。出处是本章 P1–P9 条目及其引用的 RM0008、DS5319、本仓库例程。",
+  "chapter": "18",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch18-pin-card.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。BluePill 第 1 至 44 脚关键脚：VBAT、PC13、LSE、NRST、PA0、SWD、BOOT0 各自约束。",
+  "chapter": "18",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch18-rtos-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RTOS 类 FAQ 分诊：优先级、栈、ISR 调用三条先看现场。",
   "chapter": "18",
   "type": "triage"
  },
@@ -2116,6 +2221,16 @@
   "chapter": "19",
   "type": "calculation"
  },
+ "illustrations/handraw/ch19-balance-loop.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。直立环 5 ms PD 链：读姿态、err、kp×err − kd×gyro、Clamp、Motor_SetBoth。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-bt-car-chain.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。蓝牙 F/B/L/R/S 经 HC-05 与 Car_HandleCmd 到 SetMotor 两路 PWM 的指令链。",
+  "chapter": "19",
+  "type": "technical"
+ },
  "illustrations/handraw/ch19-flash-fit.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Flash 中留一张 0xB800 的 APP；SRAM 缓冲须与栈、全局变量共同分配，不能只比较单个数组。",
   "chapter": "19",
@@ -2123,6 +2238,11 @@
  },
  "illustrations/handraw/ch19-iap-gates.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。每一关都需有拒绝或恢复出口。回滚依赖旧镜像仍然存在，不能由单 APP 布局自动获得。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-la-sampling.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。逻辑分析仪采样：采样率、通道数与触发位置的关系；不是示波器实拍。",
   "chapter": "19",
   "type": "technical"
  },
@@ -2143,6 +2263,11 @@
  },
  "illustrations/handraw/ch19-sram-budget.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。C8 的 20480 字节从 0x20000000 起分配；全局缓冲、堆和任务栈都要进入同一份预算。",
+  "chapter": "19",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch19-usb-ownership.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。CDC 发送缓冲的三个所有权阶段：栈帧失效、异步持有活到完成、BUSY 忽略导致覆盖。",
   "chapter": "19",
   "type": "technical"
  },
@@ -2501,6 +2626,11 @@
   "chapter": "27",
   "type": "concept"
  },
+ "illustrations/handraw/ch28-distinguishing-experiment.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。故障注入验收流程与合格/不合格判决：复位后能指认先失败的健康条件。",
+  "chapter": "28",
+  "type": "triage"
+ },
  "illustrations/handraw/ch28-experiment-evidence.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四组实验各自的动作与验收证据；证明递进实验交出的是一组可证伪证据，不是「跑通了」；不能替代真实截止时间与栈水位的测量，也不是实测数据。出处 FreeRTOS 11.3.2、Zephyr 4.4.2。",
   "chapter": "28",
@@ -2513,6 +2643,11 @@
  },
  "illustrations/handraw/ch28-four-concepts.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。裸机一个大循环、前后台 ISR 置标志、RTOS 内核管调度与 IPC、Linux 要 MMU；内核只负责调度 · IPC · 软件定时器 · 临界区 · 内存分配；不是实拍。",
+  "chapter": "28",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch28-h745-boundaries.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。H745 双核边界：核间共享与外设归属；不是板级实拍。",
   "chapter": "28",
   "type": "concept"
  },
@@ -2531,6 +2666,11 @@
   "chapter": "28",
   "type": "comparison"
  },
+ "illustrations/handraw/ch28-migration-ledger.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。跨系统迁移六步与四类隐含行为；按语义迁移，不按函数名对照表。",
+  "chapter": "28",
+  "type": "technical"
+ },
  "illustrations/handraw/ch28-os-compare.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。FreeRTOS 11.3.2 小内核自行组合；RT-Thread 5.3.0 设备框架与软件包；Zephyr 4.4.2 Kconfig+Devicetree；CMSIS-RTOS2 2",
   "chapter": "28",
@@ -2545,6 +2685,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十条评审项落进版本与维护、预算、时间证据、所有权与恢复四个象限；证明评审要的是可复测证据，任一条答不出就是未通过；不能替你决定选哪套系统，也不是评分表。出处本章选型与来源表，FreeRTOS 11.3.2、CMSIS-RTOS2 2.3.0。",
   "chapter": "28",
   "type": "comparison"
+ },
+ "illustrations/handraw/ch28-rtthread-lifecycle.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。RT-Thread 设备 find → open → 失败检查的生命周期边界；语义回 BSP 核对。",
+  "chapter": "28",
+  "type": "technical"
  },
  "illustrations/handraw/ch28-three-times.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。release 起算，B 阻塞、C 执行、S 干扰，R = B + C + S；验收看最坏 R_max ≤ D，一个事务一个单调时钟截止点；不是实拍。",

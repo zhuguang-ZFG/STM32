@@ -149,10 +149,118 @@ def option_bytes():
     return f
 
 
+def last_page_math():
+    f = Fig("ch12-last-page-math",
+            "末页在哪：先算边界，再擦写 / find the edge first")
+    f.text(84, 128, "C8 的 64 KB 主闪存按 1 KB 分 64 页；地址算错一页，就会擦到不该擦的地方",
+           size=20, color=MUTED)
+
+    # ---- 地址尺 ----
+    x0, x1, y = 120, 1032, 246
+    f.line(x0, y, x1, y, color=INK, sw=2.6)
+    for i in range(9):
+        x = x0 + i * (x1 - x0) / 8
+        f.line(x, y - 9, x, y + 9, color=MUTED, sw=1.6)
+    f.text(x0, y + 40, "0x08000000", size=16, color=INK, anchor="middle")
+    f.text(x1, y + 40, "0x0800FFFF", size=16, color=INK, anchor="middle")
+    f.text((x0 + x1) / 2, y + 40, "64 KB = 64 页 × 1 KB", size=16,
+           color=MUTED, anchor="middle")
+
+    # 页 63 高亮
+    px = x1 - (x1 - x0) / 64
+    f.rect(px, y - 34, x1 - px, 26, color=RED, fill=WHITE, sw=2.2,
+           double=False)
+    f.text(x1, y - 46, "page 63（0x0800FC00 起）", size=15, color=RED,
+           anchor="end", weight="bold")
+
+    # ---- 影子行：128 KB 器件的页 ----
+    f.text(1032, y + 66, "0x0801FC00：128 KB 器件的末页 —— 不在这颗 C8 上",
+           size=15, color=RED, anchor="end", weight="bold")
+
+    # ---- APP 区 ----
+    f.rect(x0, 322, 840, 66, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(x0 + 20, 362, "APP：46 KB = 0xB800，0x08004800 → 0x08010000（末端不含）",
+           size=18, color=BLUE_D, weight="bold")
+
+    # ---- 两条硬规矩 ----
+    f.rect(84, 430, 470, 190, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(104, 466, "页内地址先对齐", size=20, color=GREEN_D, weight="bold")
+    f.multi(104, 498, ["擦除以页为单位：先算页号，", "再取页起点地址。",
+                       "page n 起点 = 0x08000000 + n × 1 KB。",
+                       "越界判断用「末地址 + 1」。"],
+            size=16, color=INK, lh=27)
+
+    f.rect(598, 430, 470, 190, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(618, 466, "写入以半字为单位", size=20, color=AMBER_STROKE,
+           weight="bold")
+    f.multi(618, 498, ["16-bit 半字：一个 32 位值写两次。",
+                       "地址按 2 字节对齐递增。",
+                       "擦除后读回 0xFFFF；", "只能把 1 写成 0。"],
+            size=16, color=INK, lh=27)
+
+    f.htext(W / 2, 700, "先画地址尺，再决定擦哪一页；容量对不上，先怀疑型号",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 748, "地址与容量数字来自本章正文「时序与状态」与坑表；本图是算术示意",
+           size=15, color=MUTED)
+    return f
+
+
+def boot_decision():
+    f = Fig("ch12-boot-decision",
+            "上电 500 ms 的岔路：升级，还是跳 APP")
+
+    f.text(84, 136, "Bootloader 从 0x08000000 起（16 KB）；分支只由一个条件决定：等 'U' 的 500 ms 内有没有收到命令",
+           size=18, color=MUTED)
+
+    f.rect(396, 158, 360, 82, color=INK, fill=WHITE, sw=2.2)
+    f.text(576, 190, "Uart_WaitForUpgrade(500)", size=21, color=INK,
+           anchor="middle", weight="bold")
+    f.text(576, 220, "500 ms 内收到 'U' 命令？", size=18, color=INK, anchor="middle")
+
+    f.arrow(470, 240, 350, 302, color=BLUE, bend=-0.12)
+    f.arrow(682, 240, 802, 302, color=GREEN_D, bend=0.12)
+    f.text(360, 268, "否", size=21, color=BLUE, weight="bold")
+    f.text(800, 268, "是", size=21, color=GREEN_D, weight="bold")
+
+    f.rect(84, 306, 476, 288, color=BLUE, fill=WHITE, sw=2.4)
+    f.text(110, 344, "JumpToApp：不升级，直接交班", size=21, color=BLUE_D, weight="bold")
+    f.multi(110, 384, [
+        "① 关中断；清 NVIC 的 ICER / ICPR；关 SysTick",
+        "② HAL_RCC_DeInit / HAL_DeInit 复位外设",
+        "③ MSP = 0x08004800 处的字[0]（栈初值）",
+        "④ VTOR = 0x08004800，开中断后立刻跳字[1]",
+        "⑤ 中间不能再插入任何代码",
+    ], size=16, color=INK, lh=33)
+
+    f.rect(592, 306, 476, 288, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(618, 344, "YMODEM：接收、校验、写入", size=21, color=GREEN_D, weight="bold")
+    f.multi(618, 384, [
+        "① 每包 128 或 1024 B，CRC16 通过才写，回 ACK",
+        "② 空包收尾后核对整包 CRC",
+        "③ 置「APP 有效」标志，复位或跳转",
+        "④ 任一步失败留在 Bootloader 等重传",
+        "⑤ 此时旧 APP 可能已被覆盖，单槽无从回退",
+    ], size=16, color=INK, lh=33)
+
+    f.panel(84, 616, 984, 68, "#FBEFD3", amp=1.8)
+    f.text(576, 646, "三处必须一致：链接脚本起始 0x08004800 · main 开头 SCB->VTOR = 0x08004800 · 跳转装 MSP 与复位向量",
+           size=17, color=INK, anchor="middle")
+    f.text(576, 672, "少改一处，中断就会跳回 Bootloader 的向量表", size=15,
+           color=MUTED, anchor="middle")
+
+    f.htext(84, 716, "500 ms 是起跳前的等待窗口，不是传输时限；两条路各有自己的闸门",
+            size=20, weight="bold")
+    f.text(84, 750, "左路闸门在跳转前清现场；右路闸门是每包 CRC16 与收尾整包 CRC；例程见 examples/iap-bootloader",
+           size=14, color=MUTED)
+    return f
+
+
 FIGS = {
+    "ch12-last-page-math": last_page_math,
     "ch12-halfword-loop": halfword_loop,
     "ch12-ymodem-flow": ymodem_flow,
     "ch12-option-bytes": option_bytes,
+    "ch12-boot-decision": boot_decision,
 }
 
 if __name__ == "__main__":

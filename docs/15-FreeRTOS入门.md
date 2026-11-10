@@ -45,6 +45,11 @@
 
 本例调用 `...FromISR` 的中断，抢占优先级数值必须大于等于 5。这个 5 来自 `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`：芯片只用高 4 位，`5 << (8 − 4) = 0x50`。比 5 更急的中断（0 到 4）不受内核的 BASEPRI 临界区屏蔽，不能在其中调用 FreeRTOS API，否则可能打断内核数据更新。启用有效的 `configASSERT` 后，带优先级校验的 API 路径可帮助发现这类错误。例程把 `EXTI0` 设成 5。见 [FreeRTOS Kernel V11.3.2](#source-freertos-syscall)。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-two-priority-rules.png" width="760" alt="Handraw：任务与中断两套优先级规则（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左列任务号大者先（2 > 1 > 0），右列中断号小者急（0 最急，FromISR 从 5 起），中间是移位值与 1 ms 时基分工。证明什么：两套编号方向相反，FromISR 只认数值 ≥5。不能证明什么：不是调度波形，也不含 configASSERT 的完整断言路径。出处：[FreeRTOS](#source-freertos-syscall)、[PM0056](#source-pm0056-nvic)。</sub>
+</p>
 本例中，`xTaskCreate` 的栈深度按字算，一字 4 字节。LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。若把所需的 128 字误当成 128 字节、只分配 32 字，容量就只剩四分之一。调用 `printf` 后若出现 HardFault，要结合栈水位和溢出钩子检查，不能只凭打印动作断定是栈溢出。
 
 `vTaskDelay(10)` 是「从现在起再等 10 个 tick」。任务先干了 3 ms 活再调它，周期约 13 ms，另受 tick 相位和调度影响。目标是 10 ms 周期时，用 `vTaskDelayUntil` 从上次计划唤醒时刻推算下一次；实际开始执行仍可能有抖动或超期。几个任务共用串口时优先选互斥量，它带优先级继承，二值信号量没有。heap_4 会合并相邻空闲块，但仍须检查分配是否成功。
@@ -169,6 +174,11 @@ ARM_CM3 移植通常用 **SysTick** 提供内核节拍；本例配置为 1 ms。
 | FreeRTOS 与 HAL 抢 SysTick | `HAL_Delay` 卡死、tick 异常 | CubeMX：SYS → Timebase Source 改为 **TIM4** |
 | 节拍频率 | 本例 `configTICK_RATE_HZ` 为 1000（1 ms） | 提高频率可缩小 tick 计时粒度，也增加中断开销；不能单凭频率保证实时性 |
 | 时间片轮转 | 同优先级任务共享 CPU | `configUSE_TIME_SLICING=1`（默认开） |
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch15-tick-owner.png" width="760" alt="Handraw：SysTick 的两个主人——HAL 时基与 FreeRTOS 节拍（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：SysTick 同时是 HAL 默认时基和 FreeRTOS 节拍（本例 configTICK_RATE_HZ = 1000，每 tick 1 ms）；两条出路——CubeMX 的 SYS → Timebase Source 改为 TIM4，或共用时把处理函数、频率与调度器启动前后的行为一起核对。证明什么：1 ms 是节拍不是任务响应下限，事件唤醒可以在两 tick 之间发生。不能证明什么：不是任务延迟实测，配错时 HAL_Delay 卡住的现象仍要回工程验证。出处：[FreeRTOS 系统调用阈值](#source-freertos-syscall)、[本仓库例程](#source-project-examples)。</sub>
+</p>
 
 ### 4. 优先级与抢占
 

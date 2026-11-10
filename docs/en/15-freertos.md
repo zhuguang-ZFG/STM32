@@ -44,6 +44,11 @@ For tasks, a larger priority number runs first, the opposite of the NVIC. In the
 
 In this configuration, an interrupt that calls a `...FromISR` function needs a preemption priority number of 5 or a larger number. The 5 comes from `configMAX_SYSCALL_INTERRUPT_PRIORITY = 0x50`: the chip only uses the top 4 bits, and `5 << (8 − 4) = 0x50`. More urgent interrupts (0 to 4) remain unmasked by the kernel's BASEPRI critical sections. They must not call FreeRTOS APIs, which could interrupt a kernel data update. With an effective `configASSERT`, API paths that validate interrupt priority can help catch this error. The example sets `EXTI0` to 5. See [FreeRTOS Kernel V11.3.2](#source-freertos-syscall).
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-two-priority-rules.png" width="760" alt="Handraw: the task and interrupt priority scales (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the left column runs task priority high-to-low (2 > 1 > 0); the right column runs NVIC priority low-number-first (0 is most urgent, FromISR starts at 5); the middle carries the shifted threshold and the 1 ms time-base split. Proves the two scales point in opposite directions and FromISR requires a numeric priority of at least 5. Cannot prove a scheduling trace or the full configASSERT path. See [FreeRTOS](#source-freertos-syscall) and [PM0056](#source-pm0056-nvic).</sub>
+</p>
 In this example, `xTaskCreate` measures stack depth in words of 4 bytes. LED uses 128 words = 512 bytes, KEY 192 words = 768 bytes, and UART 256 words = 1024 bytes. Mistaking a requirement of 128 words for 128 bytes and allocating only 32 words leaves a quarter of the intended capacity. If a `printf` call is followed by a HardFault, check the stack watermark and overflow hook; printing alone does not establish stack overflow as the cause.
 
 `vTaskDelay(10)` means "wait 10 more ticks from now". A task that works for 3 ms and then calls it has a period near 13 ms, also affected by tick phase and scheduling. For a 10 ms target period, `vTaskDelayUntil` calculates the next wake time from the previous planned wake time; actual execution can still jitter or overrun. Prefer a mutex when tasks share a UART: it provides priority inheritance, which a binary semaphore lacks. heap_4 merges adjacent free blocks, but allocation can still fail.
@@ -169,6 +174,11 @@ The ARM_CM3 port normally uses **SysTick** for the kernel tick, configured here 
 | FreeRTOS and HAL both want SysTick | `HAL_Delay` hangs, and the tick misbehaves | In CubeMX: SYS → Timebase Source, change it to **TIM4** |
 | Tick rate | This example sets `configTICK_RATE_HZ` to 1000 (1 ms) | A higher rate gives finer tick timing and more interrupt overhead; frequency alone does not guarantee real-time response |
 | Time slicing | Tasks at the same priority share the CPU | `configUSE_TIME_SLICING=1` (on by default) |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch15-tick-owner.png" width="760" alt="Handraw: SysTick's two owners — HAL time base and RTOS tick (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at SysTick serving both HAL's default time base and the FreeRTOS tick (configTICK_RATE_HZ = 1000, 1 ms per tick here); two ways out — set CubeMX SYS → Timebase Source to TIM4, or share SysTick after reconciling the handler, the frequency, and behavior around scheduler start. It shows 1 ms is the tick, not a task-response floor, and an event wake-up can land between two ticks. It cannot substitute for a task-latency measurement, and a HAL_Delay stall still needs a bench check. See [FreeRTOS syscall threshold](#source-freertos-syscall), [this repository's examples](#source-project-examples).</sub>
+</p>
 
 ### 4. Priority and preemption
 

@@ -322,6 +322,11 @@ V11 includes SMP scheduling support, but most STM32 Cortex-M projects still use 
 
 HSEM provides atomic ownership and interrupt notification. It neither carries the payload nor maintains the Cortex-M7 data cache. Review an inter-core channel as five separate contracts:
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-h745-boundaries.png" width="760" alt="Handraw: the three boundaries of HSEM (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top box is what HSEM provides — atomic ownership and notification; the three boundaries below are payload placement, M7 data-cache maintenance, and the order between release and processing. Proves the lock answers “who goes first”, not “has the cargo arrived”, and each boundary needs its own ownership and ordering rule. Cannot replace the RM0399 register definitions or pre-empt the five contracts' field and sequence rules. See [RM0399](#source-rm0399) and [the frozen stm32h745xx.h](#source-stm32h745-header).</sub>
+</p>
 | Layer | Freeze explicitly | Minimal fault injection and evidence |
 | --- | --- | --- |
 | Shared storage | An SRAM region reachable by both cores, its base, length, alignment, and structure layout; shared state must not hide in one core's private stack or linker section | Inject an out-of-range length, bad alignment, and illegal state; the receiver must reject them rather than continue dereferencing |
@@ -376,6 +381,11 @@ INIT_APP_EXPORT(app_uart_init);
 This demonstrates only lifecycle boundaries: find, open, and check failure. UART DMA, receive callbacks, and buffering must be verified in the v5.3.0 BSP driver; seeing `rt_device_read` does not prove identical blocking or timeout behavior across drivers.
 
 The framework's benefit is unified objects and components. Its risk is equally clear: DFS, SAL, FinSH, packages, and a POSIX layer consume Flash/RAM, threads, and startup dependencies. Every enabled component enters the object, stack, and failure budgets.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-rtthread-lifecycle.png" width="760" alt="Handraw: RT-Thread device find → open → check failure (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at rt_device_find("uart2") → RT_NULL returning -RT_ENOSYS → rt_device_open(..., RX_NON_BLOCKING) → error check → INIT_APP_EXPORT(app_uart_init). It shows this snippet demonstrates only the find, open, and check-failure lifecycle boundary. It cannot establish UART DMA, receive callbacks, or buffering — those go back to the v5.3.0 BSP driver, and rt_device_read must not be assumed to carry identical blocking and timeout semantics across drivers; every enabled component also adds Flash/RAM, threads, and startup dependencies. See [RT-Thread v5.3.0](#source-rtthread-530), [CMSIS-RTOS2 2.3.0](#source-cmsis-640).</sub>
+</p>
 
 ## Zephyr v4.4.2: configuration, hardware description, and subsystems build together
 
@@ -568,6 +578,11 @@ Do not mechanically replace functions. Instead:
 
 The hardest part is usually not which call replaces `xQueueSend`. It is undocumented behavior: what happens when a queue is full, what locks do when a task is deleted, where timer callbacks execute, and whether a driver assumes thread-local state.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-migration-ledger.png" width="760" alt="Handraw: six migration steps and the implicit-behavior ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the six-step ladder — list objects, write semantics, one vertical slice, replay with the same inputs, then network and storage, then delete the old adapter — and the four implicit behaviors of the original project: full-queue blocking, what locks do when a task is deleted, where timer callbacks execute, and whether a driver assumes thread-local state. It shows migration follows semantics, not a function-name table, changing one ownership boundary at a time. It cannot substitute for a real migration log; the behaviors surface only through experiments. See [FreeRTOS 11.3.2](#source-freertos-1132), [RT-Thread v5.3.0](#source-rtthread-530).</sub>
+</p>
+
 ## A reproducible system resource account
 
 For an STM32 with 256 KiB SRAM, begin with a static budget:
@@ -610,6 +625,11 @@ This is a calculation example. A real project must update it from the link map, 
 | Priority order changes after a CMSIS migration | abstraction priority mapping differs | log actual priority and ready order for every thread |
 | Watchdog does not reset although the product is dead | the wrong context still refreshes it | allow only the supervisor to feed; block each critical task deliberately |
 | Time drifts after tickless is enabled | low-power clock or compensation boundary | record monotonic tick, RTC, and an external reference edge together |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch28-distinguishing-experiment.png" width="760" alt="Handraw: fault-injection acceptance — naming the health condition that failed first (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at freeze one task → supervisor spots the failure → save a state summary → stop refreshing the watchdog → review after reset, plus the pass and fail verdict cards. It shows acceptance is not "it reset" but evidence of which health condition failed first. It cannot replace a board log: only one task is frozen at a time, and the summary must remain readable after reset. See [FreeRTOS 11.3.2](#source-freertos-1132), [Zephyr 4.4.2](#source-zephyr-442).</sub>
+</p>
 
 ## Four progressive labs
 

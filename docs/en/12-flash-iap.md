@@ -87,6 +87,11 @@ The opening animation `flash-iap.svg` shows the whole update flow. For page boun
 
 ## Pitfalls and sources
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-last-page-math.png" width="760" alt="Handraw: the last-page address arithmetic (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the 64 KB address ruler, page 63's start, the 0x0801FC00 ghost row, and the 46 KB app range. Proves the last-page boundary must be computed first, and 0x0801FC00 belongs to a 128 KB part, not this C8. Cannot prove a chip read-back and does not replace the RM erase timing. See [RM0008](#source-rm0008-flash) and “Timing and state” here.</sub>
+</p>
 | What you see | Why | What to do | Source | What the source shows |
 | --- | --- | --- | --- | --- |
 | The comment says low density, but the page size is right | The density name is wrong | Call this part medium-density. The page stays 1 KB, 64 pages | [RM0008](#source-rm0008-flash) | Medium-density parts erase 1 KB pages. 2 KB pages are on high-density parts |
@@ -374,6 +379,11 @@ int main(void)
 ```
 
 > The app project has to change the linker script: Flash origin `0x08004800`, and the length reduced to match. At the top of `main()`, set `SCB->VTOR = 0x08004800;`.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch12-boot-decision.png" width="760" alt="Handraw: the 500 ms window and the two jump/update paths (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at Uart_WaitForUpgrade(500) waiting only for a 'U'; the five-step JumpToApp on the left (mask interrupts and clear NVIC, reset peripherals, load MSP, set VTOR, enable interrupts and jump at once), the five-step YMODEM on the right (write only after a 128/1024 B packet passes CRC16, verify the whole image after the empty packet, set the app-valid flag, stay in the bootloader on failure, no rollback in a single slot), and the three places that must agree on 0x08004800. It shows 500 ms is the pre-jump window, not a transfer deadline, and each path has its own gate. It is not a real UART trace, and in a single slot the old app may already be overwritten. See [RM0008 Flash](#source-rm0008-flash), [PM0056 vector table](#source-pm0056-vector).</sub>
+</p>
 
 ## Hands-on labs
 

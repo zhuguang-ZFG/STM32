@@ -88,6 +88,11 @@ APP 区的第 0 个字是 MSP 初值，第 1 个字在 `0x08004804`，是 `Reset
 
 ## 常见坑与出处
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-last-page-math.png" width="760" alt="Handraw：末页地址算术（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：64 KB 地址尺、page 63 的起点、0x0801FC00 影子行、APP 46 KB 的区间。证明什么：末页边界要先算清，0x0801FC00 属于 128 KB 器件，不在这颗 C8 上。不能证明什么：不是芯片实读，也不替代 RM 的页擦除时序。出处：[RM0008](#source-rm0008-flash)、本章「时序与状态」。</sub>
+</p>
 | 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
 | --- | --- | --- | --- | --- |
 | 注释写成小容量，页大小却对 | 密度名用错了 | 密度名改成中容量。页仍是 1 KB，共 64 页 | [RM0008](#source-rm0008-flash) | 中容量按 1 KB 擦除。2 KB 一页的是大容量型号 |
@@ -373,6 +378,11 @@ int main(void)
 ```
 
 > APP 工程要修改链接脚本：Flash 起始 `0x08004800`、长度相应减少；并在 `main()` 开头 `SCB->VTOR = 0x08004800;`。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch12-boot-decision.png" width="760" alt="Handraw：500 ms 等待窗口与两条路各自的闸门（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：Uart_WaitForUpgrade(500) 只等 'U' 命令；左边 JumpToApp 五步（关中断清 NVIC、复位外设、装 MSP、设 VTOR、开中断立刻跳），右边 YMODEM 五步（128/1024 B 包 CRC16 通过才写、空包收尾核对整包 CRC、置 APP 有效标志、失败留在 Bootloader、单槽无从回退），以及三处必须一致的 0x08004800。证明什么：500 ms 是起跳前的等待窗口，不是传输时限，两条路各有自己的闸门。不能证明什么：不是真实串口波形，单槽失败时旧 APP 可能已被覆盖。出处：[RM0008 Flash](#source-rm0008-flash)、[PM0056 向量表](#source-pm0056-vector)。</sub>
+</p>
 
 ## 动手实验
 

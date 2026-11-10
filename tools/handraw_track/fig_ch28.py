@@ -305,6 +305,55 @@ def isr_divergence():
 
 
 # ---------------------------------------------------------------- fig 9
+def h745_boundaries():
+    f = Fig("ch28-h745-boundaries",
+            "HSEM 管所有权，不搬货 / ownership is not delivery")
+    f.text(84, 128, "双核共享的只有「谁拥有」这一件事；payload、cache、完成判据各自另有归属",
+           size=20, color=MUTED)
+
+    # 顶部：HSEM 能做什么
+    f.rect(84, 160, 984, 96, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(108, 196, "HSEM 提供的两件事", size=21, color=BLUE_D, weight="bold")
+    f.text(108, 232, "① 原子获取 / 释放：谁先拿到，谁拥有；② 可以给另一个核发中断通知",
+           size=17, color=INK)
+
+    # 三条边界
+    cards = [
+        ("边界一 · 通信", RED,
+         ["HSEM 不携带 payload。",
+          "数据放在双核可达的 SRAM，",
+          "所有权与缓冲区各自单独定义；",
+          "拿到锁不等于拿到数据。"]),
+        ("边界二 · 缓存", AMBER_STROKE,
+         ["M7 有 data cache。",
+          "cacheable 映射按所有权做",
+          "clean / invalidate；",
+          "HSEM 不做任何缓存维护。"]),
+        ("边界三 · 顺序", GREEN_D,
+         ["释放锁 ≠ 对端已处理。",
+          "完成与否要另有判据；",
+          "内存屏障不被释放动作替代，",
+          "顺序要单独写清楚。"]),
+    ]
+    for i, (title, color, lines) in enumerate(cards):
+        x = 84 + i * 336
+        f.rect(x, 288, 312, 226, color=color, fill=WHITE, sw=2.4)
+        f.text(x + 18, 326, title, size=20, color=color, weight="bold")
+        f.multi(x + 18, 360, lines, size=16, color=INK, lh=28)
+
+    # 底部：五层契约表的位置
+    f.rect(84, 548, 984, 118, color=MUTED, fill=WHITE, sw=2.0, dash="7 5")
+    f.text(108, 584, "五层契约表随后展开", size=20, color=INK, weight="bold")
+    f.multi(108, 616, [
+        "本图只立三条边界，不提前给出字段名与序号规则；",
+        "表的每一层分别回答：谁拥有、放在哪、何时可见、如何确认、失败怎么办。",
+    ], size=16, color=MUTED, lh=25)
+
+    f.htext(W / 2, 724, "锁解决「谁先来」，不解决「货到没到」",
+            size=23, color=INK, weight="bold", anchor="middle", hl=True)
+    return f
+
+
 def h745_contracts():
     f = Fig("ch28-h745-contracts",
             "H745 双核：五层契约分别冻结 / five contracts")
@@ -416,7 +465,131 @@ def review_evidence():
     return f
 
 
+def migration_ledger():
+    f = Fig("ch28-migration-ledger",
+            "迁移按语义走，不按函数名对照表 / migration order")
+    f.text(84, 140, "从一个系统迁到另一个系统 · 六步 · 每次只改变一个所有权边界",
+           size=19, color=MUTED)
+    steps = [("列对象清单", "线程、ISR、IPC、定时器、动态对象、驱动所有者", GREEN_D),
+             ("写清对象语义", "阻塞 / 超时 / 唤醒 / 公平性 / 优先级继承 / 删除", GREEN_D),
+             ("先迁一个垂直切片", "硬件事件 → IPC → 任务 → 输出证据", BLUE_D),
+             ("同一输入复测", "时延 / 栈水位 / 队列峰值 / 故障路径", BLUE_D),
+             ("再迁网络与存储", "每次只改变一个所有权边界", AMBER_STROKE),
+             ("删旧适配层", "不长期维持两套内核 API 与双重初始化", RED)]
+    for i, (head, detail, color) in enumerate(steps):
+        y = 170 + i * 72
+        f.rect(84, y, 560, 62, color=color, fill=WHITE, sw=2.2)
+        f.circle(114, y + 31, 17, color=color, sw=2.0)
+        f.text(114, y + 36, str(i + 1), size=15, color=color, anchor="middle", weight="bold")
+        f.text(144, y + 27, head, size=17, color=color, weight="bold")
+        f.text(144, y + 50, detail, size=13.5, color=INK)
+
+    f.rect(688, 170, 380, 422, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(710, 208, "最难迁的，不是函数名", size=18, color=AMBER_STROKE, weight="bold")
+    f.multi(710, 246, ["是原工程隐含的行为：",
+                       "· 队列满时，是否阻塞",
+                       "· 任务删除后，锁怎样处理",
+                       "· 定时器回调在哪个上下文",
+                       "· 驱动是否假设线程本地状态"], size=15, color=INK, lh=30)
+    f.text(710, 440, "这些是行为，不是名字。", size=15, color=INK)
+    f.text(710, 470, "名字能查，行为要测。", size=17, color=RED, weight="bold")
+    f.text(710, 540, "逐函数机械替换，", size=14, color=MUTED)
+    f.text(710, 564, "会把隐含行为拖到联调才暴露。", size=14, color=MUTED)
+
+    f.rect(84, 616, 984, 64, color=INK, fill=WHITE, sw=2.2)
+    f.htext(W / 2, 656, "xQueueSend 对应哪个函数，查文档就有；隐含行为只有试验能测出来。",
+            size=19, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+def distinguishing_experiment():
+    f = Fig("ch28-distinguishing-experiment",
+            "故障注入的验收：复位后能指认先倒下的条件")
+    f.text(84, 140, "实验三 · 依次冻结控制、网络、日志任务 · 监督者识别失败并停止喂狗",
+           size=18, color=MUTED)
+    flow = [("冻结一个任务", ["控制 / 网络 / 日志", "一次只冻结一个"], BLUE_D),
+            ("监督者识别失败", ["对应健康条件", "不再成立"], GREEN_D),
+            ("保存状态摘要", ["失败类型与现场", "复位后仍可读"], AMBER_STROKE),
+            ("停止刷新看门狗", ["让复位如实发生", "不是故障掩盖"], AMBER_STROKE),
+            ("复位后复盘", ["指认哪个条件", "先失败"], RED)]
+    for i, (head, subs, color) in enumerate(flow):
+        x = 64 + i * 206
+        f.rect(x, 172, 190, 84, color=color, fill=WHITE, sw=2.2)
+        f.text(x + 95, 202, head, size=16, color=color, anchor="middle", weight="bold")
+        f.multi(x + 95, 226, subs, size=12.5, color=INK, lh=18, anchor="middle")
+        if i:
+            f.arrow(x - 14, 214, x - 3, 214, color=INK, head=7, bend=0)
+
+    f.rect(72, 300, 482, 190, color=RED, fill=WHITE, sw=2.4)
+    f.text(94, 338, "不合格：只看到「复位了」", size=17.5, color=RED, weight="bold")
+    f.multi(94, 374, ["分不清哪个健康条件先失败",
+                      "复位成了唯一证据",
+                      "等于什么都没证明"], size=15.5, color=INK, lh=28)
+    f.rect(598, 300, 482, 190, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(620, 338, "合格：能指认先失败项", size=17.5, color=GREEN_D, weight="bold")
+    f.multi(620, 374, ["状态摘要在复位后还能读到",
+                       "知道先倒的是控制、网络还是日志",
+                       "同一实验可以复测"], size=15.5, color=INK, lh=28)
+
+    f.rect(72, 518, 1008, 130, color=AMBER_STROKE, fill=WHITE, sw=2.2)
+    f.text(94, 552, "实验纪律", size=17, color=AMBER_STROKE, weight="bold")
+    f.multi(94, 584, ["一次只冻结一个任务，其余变量保持不动",
+                      "监督者只在全部健康条件满足时才喂狗",
+                      "摘要与冻结顺序一起归档，复位后对照"], size=15, color=INK, lh=26)
+
+    f.htext(W / 2, 712, "验收不是「最后复位了」，而是复位后能区分哪一个健康条件先失败",
+            size=19, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
+def rtthread_lifecycle():
+    f = Fig("ch28-rtthread-lifecycle",
+            "RT-Thread 设备：find → open → 检查失败 / lifecycle first")
+    f.text(84, 140, "v5.3.0 设备框架 · 这段代码只展示生命周期边界",
+           size=19, color=MUTED)
+    chain = [('rt_device_find("uart2")', "名字或注册不同 → RT_NULL", BLUE_D),
+             ("RT_NULL → return -RT_ENOSYS", "设备未注册：先查配置与初始化级别", RED),
+             ("rt_device_open(..., RX_NON_BLOCKING)", "error ≠ RT_EOK → 置回 RT_NULL 并返回 error",
+              AMBER_STROKE),
+             ("INIT_APP_EXPORT(app_uart_init)", "放进分级启动序列，开机自动执行", GREEN_D)]
+    for i, (head, detail, color) in enumerate(chain):
+        y = 176 + i * 92
+        f.rect(84, y, 470, 74, color=color, fill=WHITE, sw=2.2)
+        f.text(104, y + 28, head, size=15.5, color=color, weight="bold")
+        f.text(104, y + 54, detail, size=13.5, color=INK)
+        if i < len(chain) - 1:
+            f.arrow(319, y + 76, 319, y + 88, color=color, head=7, bend=0)
+
+    f.rect(590, 176, 490, 180, color=RED, fill=WHITE, sw=2.4)
+    f.text(612, 212, "边界声明（本章代码）", size=17.5, color=RED, weight="bold")
+    f.multi(612, 248, ["只展示查找、打开、检查失败",
+                       "串口 DMA、接收回调、缓冲模式",
+                       "回到 v5.3.0 对应 BSP 驱动",
+                       "read 的阻塞与超时语义不能统一假设"], size=14.5, color=INK, lh=26)
+    f.rect(590, 374, 490, 152, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(612, 410, "每启用一个组件", size=17.5, color=AMBER_STROKE, weight="bold")
+    f.multi(612, 446, ["DFS / SAL / FinSH / 软件包 / POSIX 层",
+                       "增加 Flash/RAM、线程与初始化依赖",
+                       "对象数量、线程栈、失败路径计入预算"], size=14.5, color=INK, lh=26)
+
+    chips = [(72, INK, "本章代码覆盖", ["查找 · 打开 · 失败路径"]),
+             (406, BLUE_D, "要回 BSP 核对", ["串口 DMA · 接收回调 · 缓冲模式"]),
+             (740, RED, "不能假设", ["所有驱动 read 的阻塞与超时语义相同"])]
+    for x, color, head, lines in chips:
+        f.rect(x, 556, 316, 104, color=color, fill=WHITE, sw=2.2)
+        f.text(x + 18, 590, head, size=15.5, color=color, weight="bold")
+        f.multi(x + 18, 620, lines, size=13, color=INK, lh=22)
+
+    f.htext(84, 718, "find 到 open 只是生命周期；语义要回到冻结版本的 BSP 驱动里核对。",
+            size=19, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
+    "ch28-migration-ledger": migration_ledger,
+    "ch28-distinguishing-experiment": distinguishing_experiment,
+    "ch28-rtthread-lifecycle": rtthread_lifecycle,
+    "ch28-h745-boundaries": h745_boundaries,
     "ch28-four-concepts": four_concepts,
     "ch28-os-compare": os_compare,
     "ch28-owner-task": owner_task,
