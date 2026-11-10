@@ -181,6 +181,11 @@ static void SetMotor(uint8_t id, int8_t duty)
 
 **Where it can grow**: ultrasonic obstacle avoidance, encoders for distance or a closed loop, an OLED that shows speed, or a PS2 / 2.4 GHz remote instead of Bluetooth.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-bt-car-chain.png" width="760" alt="Handraw: Bluetooth command chain from phone to two PWM channels (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the chain from phone F/B/L/R/S through HC-05 and Car_HandleCmd into SetMotor — F/B ±60 on both channels, L 0/+60, R +60/0, S 0/0 — and the two DIR/PWM pins. It shows duty becomes |duty| × 999 / 100 (0–999) before TIM3 CH1/CH2, and motor 2 steers through GPIOA PIN_1. It cannot show a finished power stage: the example stops at DIR + PWM, the L298N IN1/IN2 + ENA truth table is not implemented, S only zeroes PWM and does not choose brake or coast, and the direction pin should not be PA0. See [DS5319 ADC](#source-ds5319-adc), [this repository's examples](#source-project-examples).</sub>
+</p>
+
 ## 2. Temperature and humidity logger (★★ beginner)
 
 **Requirements**: sample temperature and humidity on a schedule, show them, store the history, and export it over the serial port.
@@ -303,6 +308,11 @@ static void Upload_Frame(uint16_t *samples, uint16_t seq)
 
 **Where it can grow**: timestamps and a trigger, saving the stream to disk, synchronized extra channels, or a live FFT on the host.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-usb-ownership.png" width="760" alt="Handraw: three ownership stages of the CDC transmit buffer (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the three stages — the local frame[133] dying on return, CDC_Transmit_FS normally holding the transmit buffer asynchronously so it must live until completion, and a BUSY ignored so the next frame overwrites the in-flight buffer — plus the host-side AA 55 | seq | samples | Checksum8 frame. It shows buffer ownership belongs in the interface contract, with BUSY, disconnect, and back-pressure handled. It cannot claim the split is gone: 133 bytes still leave as 64 + 64 + 5, one host read is not one frame, and Checksum8 is not a CRC. See [this repository's examples](#source-project-examples), [DS5319 SWD](#source-ds5319-swd).</sub>
+</p>
+
 ## 5. Remote IAP update (★★★ intermediate)
 
 **Requirements**: receive and validate new firmware over UART, CAN, or a network, and retain a recovery receive path after an interrupted update. Rolling back to an old version requires extra image storage and state management.
@@ -411,6 +421,11 @@ void WS2812_Encode(const uint8_t *grb, uint16_t n)
 
 **Approach**: the fragment reads GPIOC's low eight bits in a TIM interrupt; it does not configure DMA. Interrupt latency, other interrupts, and the port-read cost all affect the sampling interval. Sampling GPIO through DMA is a separate implementation that requires checking the target's request mapping and bus path. Verify the sample period and input protection before adding triggers and host decoding.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-la-sampling.png" width="760" alt="Handraw: the two sampling implementations for the logic analyzer (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: implementation A reads GPIOC in a TIM interrupt, implementation B lets a TIM-triggered DMA move the byte; the bottom strip lists the three checks before switching. Proves the example fragment uses no DMA and that its interval jitter comes from the interrupt path; a DMA version must re-check request mapping and bus path. Cannot prove a measured sample stream; the ring buffer and BUSY contract are only unfolded in the next paragraph. See §7 here and [DS5319](#source-ds5319-swd).</sub>
+</p>
 The ring overwrites samples after `65536 / sample_rate` seconds. Once stopped, use `la_wr` to find the oldest sample and send data in time order. `LA_Upload()` neither waits for CDC completion nor handles BUSY, so it cannot guarantee delivery of every 512-byte block. Keep sampling stopped while USB uses the buffer. The TIM callback also needs an instance check to exclude other timers.
 
 **Key code**:
@@ -520,6 +535,11 @@ void Control_Loop_5ms(void)
 ```
 
 **Where it can grow**: a Bluetooth remote, an OLED for tuning the gains, line following with a camera, or a Kalman filter in place of the complementary filter.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch19-balance-loop.png" width="760" alt="Handraw: the 5 ms PD balance loop (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the 5 ms loop — read attitude, err = target − angle, out = kp × err − kd × gyro, Clamp ±1000, Motor_SetBoth — and the pre-flight checks for axis, units, and motor polarity. It shows the loop is angle P plus gyro D, with no integral term and no speed loop. It cannot validate 25.0/0.8, which are examples only; 5 ms is a scheduling target that needs measured execution time and jitter, and a blocking IMU read must move out of the ISR. See [this repository's examples](#source-project-examples).</sub>
+</p>
 
 ## 10. A FreeRTOS smart gateway (★★★★ a challenge)
 

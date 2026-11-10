@@ -43,6 +43,11 @@ In LQFP48, pin 34 PA13 = SWDIO, pin 37 PA14 = SWCLK, and pin 7 is NRST. Check sh
 
 Pin 44 BOOT0 = 0 selects main Flash at `0x08000000`, regardless of BOOT1. With BOOT0 = 1, BOOT1 = 0 selects system memory at `0x1FFFF000`, while BOOT1 = 1 selects SRAM (`0x20000000`). `0x1FFFB000` belongs to the connectivity-line F105/F107, not the C8. The BOOT pins are latched on the 4th SYSCLK rising edge after reset (chapter 00). These choices determine where execution starts; BOOT0 high alone does not prevent reading the ID over SWD. See [RM0008 boot](#source-rm0008-boot).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-pin-card.png" width="760" alt="Handraw: BluePill pin card, key pins 1 to 44 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the numbering direction on four sides — 1–12 left, 13–24 bottom, 25–36 right, 37–48 top — with pins 1/2/3/4/7/10, 34/35/37, and 44 circled. It shows VBAT, PC13 (sink-only, ≤3 mA, ≤2 MHz), LSE, NRST, PA0, SWDIO/SWCLK, and BOOT0 each carry their own constraint. It is not a board photo: pin 35 is VSS_2, not SWCLK, and booting from system memory does not mean the chip is unrecognizable. See [DS5319 SWD](#source-ds5319-swd), [RM0008 boot](#source-rm0008-boot).</sub>
+</p>
+
 The C8 has 64 KB of Flash and 20 KB of SRAM. After reset it starts on the 8 MHz HSI. If HSE fails to start, the startup code determines whether execution stops in an error handler or switches to another clock. An HSE failure during operation with CSS enabled has a separate hardware switching mechanism. Calculate USART1 baud from its actual PCLK2: with AHB and APB2 prescalers both at 1 and BRR still `0x271`, SYSCLK at 72 MHz gives 115200 bit/s and HSI at 8 MHz gives 12800 bit/s. Stop exit in chapter 16 explicitly selects HSI first, so check BRR before restoring the working clock there too. See [RM0008 USART](#source-rm0008-usart).
 
 LSE stays 32.768 kHz, pins 3 and 4, pin 1 VBAT, and PRL = 32767. Choose the capacitors in the 5 pF to 15 pF range with the crystal. 6 pF is not required. See [DS5319 LSE](#source-ds5319-lse).
@@ -215,6 +220,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 
 **D4 Breakpoints do nothing while debugging**
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-download-triage.png" width="760" alt="Handraw: download failure triage D1–D7 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the four groups — connect (D1/D2/D6), download (D3), observe (D4/D5), run (D7) — and the next clue for each. It shows connection faults call for measuring lines first, never for touching optimization, while run faults call for saving the scene before guessing at code. It is not a probe measurement, and CFSR classes must be followed by BFAR bit 15 before an address can be read. See [DS5319 SWD](#source-ds5319-swd), [this repository's examples](#source-project-examples).</sub>
+</p>
+
 - **Symptom**: a breakpoint is skipped, or the tool says you have too many.
 - **Cause**: the F103's 6 FPB code comparators are occupied, or the symbols do not match the programmed ELF. Read-only Flash does not prevent hardware breakpoints.
 - **Fix**: delete old breakpoints and match the ELF to the target. Software breakpoints need tool support for the storage location. A conditional hardware breakpoint still uses a comparator. The DWT has 4 separate comparators for data watchpoints and other trace tasks; use `-O0` or `-Og` only when source mapping needs a less optimized build.
@@ -288,6 +298,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 
 **P5 An SPI Flash read comes back all FF**
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-peripheral-roots.png" width="760" alt="Handraw: nine peripheral FAQs folded into root-cause columns (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at three columns — switch not on (P1/P7/P4), configuration mismatch (P3/P5/P6/P8), physical layer untouched (P2/P9/P4 bus held for 9 clocks). It shows one symptom can span two columns: a stuck I2C bus may be missing pull-ups or held low. It is not a live trace, and P4 appearing twice means classify before touching code. See [this repository's examples](#source-project-examples), [DS5319 GPIO](#source-ds5319-gpio).</sub>
+</p>
+
 - **Symptom**: the data you read is all 0xFF.
 - **Cause**: CS was never pulled low, CPOL/CPHA is the wrong mode, or MISO is not connected.
 - **Fix**: check the mode (a W25Q uses Mode 0), the chip-select timing, and the wiring.
@@ -347,6 +362,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Cause**: a supply dip, noise on reset, or a watchdog reset. NRST has an internal pull-up, so an unpopulated external part is not the same as a floating logic input.
 - **Fix**: save the RCC reset flags, then inspect supply and NRST. Add the 0.1 µF capacitor from pin 7 to ground as Figure 31 shows. See chapter 11 for watchdog periods and debug behavior.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-hardware-triage.png" width="760" alt="Handraw: hardware triage cards H1–H4 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: four cards H1–H4, each with its checks and its “cannot prove” line. Proves the LED, heat, current, and reset symptoms each have a first check — polarity, short, meter setup, reset flags — and the order matters more than the conclusion. Cannot prove measured results; a lit LED, a cool board, or a non-zero current does not by itself prove the firmware is right. See [DS5319](#source-ds5319-gpio), [RM0008](#source-rm0008-boot), and H1–H4 in this chapter.</sub>
+</p>
 **H5 The external crystal does not start**
 
 - **Symptom**: the wait for HSERDY or LSERDY times out; the application may stop in an error path.
@@ -360,6 +380,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Fix**: replace the wires, shorten them, and solder the signals that must be reliable.
 
 **H7 Serial and download problems that are really "share ground"**
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-hardware-extra.png" width="760" alt="Handraw: hardware add-ons H5 crystal, H6 breadboard, H7 shared ground (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the three add-on cards — H5 crystal, H6 breadboard, H7 shared ground. It shows H5's timeout is reported by software while the root cause may sit in the wiring and capacitors. It is not a scope measurement, and board swaps, rework, and ground checks still need item-by-item verification. See [DS5319](#source-ds5319-swd), [this repository's examples](#source-project-examples).</sub>
+</p>
 
 - **Symptom**: without a common ground you get garbage, or the probe cannot connect.
 - **Cause**: the two supplies sit at different ground potentials.
@@ -391,6 +416,11 @@ The whole path from compile to download is in the opening `toolchain-flow.svg` a
 - **Cause**: an ISR may call only the `FromISR` form.
 - **Fix**: use `xQueueSendFromISR` and `portYIELD_FROM_ISR`.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch18-rtos-triage.png" width="760" alt="Handraw: RTOS triage cards R1–R4 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: four cards R1–R4, one check each. Proves R1/R3 are configuration and resource problems while R2/R4 are priority and call-discipline problems; the two classes are fixed differently. Cannot prove a board trace, and the HardFault location is not the root cause. See [FreeRTOS](#source-freertos-syscall) and R1–R4 in this chapter.</sub>
+</p>
 **R5 A mysterious HardFault once an RTOS is running**
 
 - **Symptom**: HardFault shows up at random.

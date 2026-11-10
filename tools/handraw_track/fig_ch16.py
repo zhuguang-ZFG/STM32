@@ -304,7 +304,240 @@ def cell_triage():
     return f
 
 
+def battery_budget():
+    f = Fig("ch16-battery-budget",
+            "电池账本：一个周期里谁在花电 / one period, three numbers")
+    f.text(84, 128, "占空比 δ = t_active / T 往往远小于 1；平均值按一个完整周期算",
+           size=20, color=MUTED)
+
+    # ---- 周期条：醒 + 睡 ----
+    y, x0 = 200, 84
+    f.text(x0, y - 18, "一个周期 T（概念示意，长度不代表真实比例）", size=17,
+           color=MUTED)
+    f.rect(x0, y, 300, 78, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.text(x0 + 150, y + 32, "t_active：醒着", size=20, color=AMBER_STROKE,
+           anchor="middle", weight="bold")
+    f.text(x0 + 150, y + 60, "I_active：内核 + 外设都在要电", size=16,
+           color=INK, anchor="middle")
+    f.rect(x0 + 300, y, 684, 78, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(x0 + 642, y + 32, "T − t_active：睡着", size=20, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.text(x0 + 642, y + 60, "I_sleep：Stop / Standby 的电流地板", size=16,
+           color=INK, anchor="middle")
+
+    # ---- 公式带 ----
+    f.rect(84, 318, 984, 92, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(108, 352, "I_avg = ( I_active × t_active + I_sleep × (T − t_active) ) ÷ T",
+           size=21, color=BLUE_D, weight="bold")
+    f.text(108, 390, "续航 h ≈ 电池容量 (mAh) ÷ I_avg (mA)；先把一个周期画出来，再谈省电",
+           size=17, color=INK)
+
+    # ---- 两栏：地板不是全部 / 常驻漏电 ----
+    f.rect(84, 446, 470, 208, color=RED, fill=WHITE, sw=2.4)
+    f.text(104, 480, "地板单独决定不了续航", size=21, color=RED, weight="bold")
+    f.multi(104, 514, [
+        "Stop 地板再低，也挡不住",
+        "醒着那一段把电荷吃掉：",
+        "功耗 = 电流 × 时间，两段都要乘。",
+        "「地板 14 µA，所以能撑一年」",
+        "是漏掉了 t_active 的账。",
+    ], size=17, color=INK, lh=25)
+
+    f.rect(598, 446, 470, 208, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(618, 480, "常驻漏电也要进账本", size=21, color=BLUE_D, weight="bold")
+    f.multi(618, 514, [
+        "LDO 静态电流 Iq：典型值 <1 µA，仍要计入",
+        "10 kΩ 分压在 3.3 V 上：≈0.33 mA，一直流",
+        "分压串 MOS 门：只在采样窗口导通，窗口也算",
+        "IWDG 由 LSI 供钟：Stop 里照样计数",
+    ], size=17, color=INK, lh=27)
+
+    f.htext(W / 2, 706, "地板回答「睡着有多省」；续航还要问「醒多久、多久醒一次」",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 748, "公式与漏电项取自本章正文；本图是算术示意，不是实测曲线",
+           size=16, color=MUTED)
+    return f
+
+
+def wake_ladder():
+    f = Fig("ch16-wake-ladder",
+            "醒来的时间阶梯：到第一条指令要多久")
+
+    f.text(84, 136, "四种睡法的唤醒代价；阶梯高度只示量级，不按比例",
+           size=18, color=MUTED)
+
+    axis_y = 592
+    data = [
+        ("Sleep", "1.8 µs", "沿用睡前时钟", 132, BLUE),
+        ("Stop · 主稳压器", "3.6 µs", "醒来是 HSI 8 MHz", 186, GREEN_D),
+        ("Stop · 低功耗稳压器", "5.4 µs", "到第一条指令，仍是 HSI", 240, GREEN_D),
+        ("Standby", "50 µs", "从复位向量重启", 340, RED),
+    ]
+    for i, (name, t, note, h, col) in enumerate(data):
+        x = 96 + i * 240
+        y = axis_y - h
+        f.rect(x, y, 216, h, color=col, fill=WHITE, sw=2.4)
+        f.text(x + 108, y + 32, name, size=15.5, color=col, anchor="middle", weight="bold")
+        f.text(x + 108, y + 78, t, size=30, color=col, anchor="middle", weight="bold")
+        f.text(x + 108, y + h - 16, note, size=13, color=INK, anchor="middle")
+
+    f.line(84, axis_y, 1068, axis_y, color=INK, sw=2.2, amp=0.5)
+    for i in range(4):
+        cxx = 96 + i * 240 + 108
+        f.line(cxx, axis_y - 3, cxx, axis_y + 9, color=INK, sw=1.6, amp=0.2)
+    f.text(576, 622, "唤醒事件 → 第一条用户指令（典型值，条件见 DS5319 表 26）",
+           size=15, color=MUTED, anchor="middle")
+
+    f.text(576, 668, "PLL 锁定最长 200 µs 是另一项，不和 5.4 µs 相加；恢复 72 MHz 还要 HSE、PLL 与软件配置",
+           size=17, color=INK, anchor="middle")
+
+    f.htext(84, 718, "先问「醒来」到哪一步：第一条指令 ≠ 时钟恢复 ≠ 应用就绪",
+            size=20, weight="bold")
+    f.text(84, 750, "数字取自本章「时序与状态」与 DS5319 Rev 20 表 26；Standby 经复位启动，不是中断返回",
+           size=14, color=MUTED)
+    return f
+
+
+def acceptance_record():
+    f = Fig("ch16-acceptance-record",
+            "低功耗验收的五个格子：一个稳定数字不算数")
+
+    f.text(84, 136, "静态底电流之外，还要把峰值、活跃时间、周期和唤醒原因一起记下来",
+           size=18, color=MUTED)
+
+    cells = [
+        ("① 静态底电流", ["进 Stop 后的稳定值", "µA 档先算量程压降", "记：读数 + 量程档位"]),
+        ("② 唤醒峰值", ["醒来瞬间的电流尖峰", "峰值 × 时间也进平均", "记：采样电阻波形"]),
+        ("③ 活跃时长", ["醒来做事持续多久", "含时钟恢复与外设启动", "记：GPIO 标记前后"]),
+        ("④ 周期", ["多久醒一次", "周期决定占空比", "记：RTC 闹钟间隔"]),
+        ("⑤ 唤醒原因", ["引脚、RTC 还是看门狗", "醒来先读标志", "记：PWR / RCC 标志"]),
+    ]
+    for i, (head, lines) in enumerate(cells):
+        x = 84 + i * 212
+        f.rect(x, 196, 196, 236, color=INK, fill=WHITE, sw=2.0, double=False)
+        f.text(x + 16, 238, head, size=17, color=INK, weight="bold")
+        f.multi(x + 16, 282, lines, size=13.5, color=MUTED, lh=26)
+
+    f.panel(84, 464, 984, 74, "#E7EFE3", amp=1.8)
+    f.text(576, 496, "续航只认周期平均：I_avg = Σ(I_k × t_k) / T",
+           size=19, color=GREEN_D, anchor="middle", weight="bold")
+    f.text(576, 524, "底电流再低，活跃时间一长，平均值照样被抬起来",
+           size=14, color=INK, anchor="middle")
+
+    f.panel(84, 556, 984, 74, "#F7DCD8", amp=1.8)
+    f.text(576, 588, "电流表发现不了时钟问题：底电流对，串口仍可能是 12800",
+           size=19, color=RED, anchor="middle", weight="bold")
+    f.text(576, 616, "醒来后的 115200 要用「顺序 + 位宽」单独验证（见本章无电流表检查图）",
+           size=14, color=INK, anchor="middle")
+
+    f.htext(84, 700, "五个格子填齐，才叫一次低功耗验收",
+            size=20, weight="bold")
+    f.text(84, 736, "记录格式见本章「动手实验」第 1 条；本图是验收清单，不是实测数据",
+           size=14, color=MUTED)
+    return f
+
+
+def wfi_wfe():
+    f = Fig("ch16-wfi-wfe",
+            "WFI 与 WFE：一个等中断，一个等事件")
+
+    f.text(84, 136, "本章 F103 是单核；两种等待指令都要先配好唤醒路径，不能只换一条指令",
+           size=18, color=MUTED)
+
+    f.rect(84, 168, 476, 330, color=BLUE, fill=WHITE, sw=2.4)
+    f.text(110, 208, "WFI：等满足条件的中断", size=21, color=BLUE_D, weight="bold")
+    f.multi(110, 250, [
+        "中断须 NVIC 使能且过得了当前优先级",
+        "PRIMASK 可推迟 ISR，不一定阻止唤醒",
+        "Stop 里还要 EXTI 中断与 NVIC 通道使能",
+    ], size=16, color=INK, lh=40)
+
+    flow_l = [(110, 118, "中断"), (252, 136, "NVIC 仲裁"), (410, 126, "进 ISR")]
+    for bx, bw, name in flow_l:
+        f.rect(bx, 372, bw, 78, color=BLUE, fill=WHITE, sw=1.8, double=False)
+        f.text(bx + bw / 2, 404, name, size=14, color=INK, anchor="middle", weight="bold")
+        f.text(bx + bw / 2, 432, "再返回继续" if name == "进 ISR" else "", size=12.5,
+               color=MUTED, anchor="middle")
+    for bx, bw, _ in flow_l[:-1]:
+        f.arrow(bx + bw + 2, 411, bx + bw + 24, 411, color=BLUE, bend=0.0, head=8)
+
+    f.rect(592, 168, 476, 330, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(618, 208, "WFE：等事件寄存器", size=21, color=GREEN_D, weight="bold")
+    f.multi(618, 250, [
+        "事件已为 1：清零并立即返回",
+        "SEVONPEND 可让挂起中断产生事件",
+        "事件只记「发生过」，不是可累计队列",
+    ], size=16, color=INK, lh=40)
+
+    flow_r = [(618, 112, "事件"), (760, 136, "事件寄存器"), (926, 118, "直接返回")]
+    for bx, bw, name in flow_r:
+        f.rect(bx, 372, bw, 78, color=GREEN_D, fill=WHITE, sw=1.8, double=False)
+        f.text(bx + bw / 2, 404, name, size=14, color=INK, anchor="middle", weight="bold")
+        f.text(bx + bw / 2, 432, "未必进 ISR" if name == "直接返回" else "", size=12.5,
+               color=MUTED, anchor="middle")
+    for bx, bw, _ in flow_r[:-1]:
+        f.arrow(bx + bw + 2, 411, bx + bw + 24, 411, color=GREEN_D, bend=0.0, head=8)
+
+    f.panel(84, 528, 984, 84, "#FBEFD3", amp=1.8)
+    f.text(576, 560, "共同前提：入睡前清掉旧标志、确认唤醒源仍成立",
+           size=19, color=INK, anchor="middle", weight="bold")
+    f.text(576, 590, "只换指令不改配置，结果会「刚睡就醒」或「睡下去不醒」",
+           size=15, color=MUTED, anchor="middle")
+
+    f.htext(84, 676, "WFI 选中断语义，WFE 选事件语义；先配唤醒路径，再选指令",
+            size=20, weight="bold")
+    f.text(84, 714, "复位后的睡眠退出条件还受异常屏蔽与当前优先级影响；对照见本章 §2 表与 RM0008 第 5 章",
+           size=14, color=MUTED)
+    return f
+
+
+def board_vs_chip():
+    f = Fig("ch16-board-vs-chip",
+            "整板电流、MCU 支路、芯片格子：µA 指标只在最里面成立")
+
+    f.text(84, 136, "开发板读数是三层叠加的结果；DS5319 表 16 的 µA 只对应最里面那格",
+           size=18, color=MUTED)
+
+    f.rect(84, 170, 680, 426, color=INK, fill=WHITE, sw=2.4)
+    f.text(108, 204, "整板（USB 供电）", size=18, color=INK, weight="bold")
+
+    loads = ["LDO 静态电流", "板载 LED", "USB / 串口", "传感器"]
+    for i, name in enumerate(loads):
+        x = 108 + i * 162
+        f.rect(x, 218, 150, 44, color=AMBER_STROKE, fill="#FBEFD3", sw=1.8,
+               double=False)
+        f.text(x + 75, 246, name, size=14, color=INK, anchor="middle")
+
+    f.rect(124, 288, 600, 282, color=BLUE, fill=WHITE, sw=2.2)
+    f.text(146, 320, "MCU 支路（3V3）", size=17, color=BLUE_D, weight="bold")
+    f.text(146, 346, "含调试器与信号线可能的反向供电", size=13, color=MUTED)
+
+    f.rect(164, 368, 520, 176, color=GREEN_D, fill="#E7EFE3", sw=2.2)
+    f.text(184, 400, "芯片 VDD：表 16 的同一格", size=16, color=GREEN_D, weight="bold")
+    f.multi(184, 434, [
+        "Stop 低功耗稳压器 14 µA：3.3 V、25°C、无 IWDG",
+        "主稳压器 24 µA；20 µA 不是表 16 的格子",
+        "1.4 µA 是备份域 IDD_VBAT，不是整机",
+    ], size=14.5, color=INK, lh=30)
+
+    f.rect(800, 170, 268, 330, color=RED, fill=WHITE, sw=2.4)
+    f.text(822, 210, "要让 µA 读数成立", size=19, color=RED, weight="bold")
+    f.multi(822, 252, [
+        "断开调试器与 SWD 反向供电",
+        "断开 LED、USB、传感器负载",
+        "只留芯片支路，再对表 16 条件",
+        "电压与温度也要同一格",
+    ], size=15, color=INK, lh=36)
+
+    f.htext(84, 662, "板子上的 µA 不是芯片的 µA：先隔离负载，再谈指标",
+            size=20, weight="bold")
+    f.text(84, 700, "条件与格子见本章「原理与适用范围」；整板测量顺序见「动手实验」第 4 条",
+           size=14, color=MUTED)
+    return f
+
+
 FIGS = {
+    "ch16-battery-budget": battery_budget,
     "ch16-wake-matrix": wake_matrix,
     "ch16-mode-current": mode_current,
     "ch16-pwr-triage": pwr_triage,
@@ -314,6 +547,10 @@ FIGS = {
     "ch16-pvd-window": pvd_window,
     "ch16-no-ammeter-check": no_ammeter_check,
     "ch16-cell-triage": cell_triage,
+    "ch16-wake-ladder": wake_ladder,
+    "ch16-acceptance-record": acceptance_record,
+    "ch16-wfi-wfe": wfi_wfe,
+    "ch16-board-vs-chip": board_vs_chip,
 }
 
 if __name__ == "__main__":

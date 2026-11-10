@@ -43,6 +43,11 @@ LQFP48 封装的第 34 脚 PA13 = SWDIO、第 37 脚 PA14 = SWCLK，第 7 脚是
 
 第 44 脚 BOOT0 = 0 时从主闪存 `0x08000000` 启动，与 BOOT1 无关；BOOT0 = 1 时，BOOT1 = 0 选系统存储器 `0x1FFFF000`，BOOT1 = 1 选 SRAM（`0x20000000`）。`0x1FFFB000` 属于互联型 F105/F107，不能套给 C8。BOOT 脚在复位后 SYSCLK 的第 4 个上升沿锁存（第 00 章）。这些选择决定从哪里执行，不会仅因 BOOT0 拉高就使 SWD 无法读取 ID。见 [RM0008 启动](#source-rm0008-boot)。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-pin-card.png" width="760" alt="Handraw：BluePill 引脚卡——第 1 至 44 脚的关键脚（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四边编号方向（1–12 左边、13–24 底边、25–36 右边、37–48 顶边），红圈的第 1/2/3/4/7/10 脚、第 34/35/37 脚与第 44 脚。证明什么：VBAT、PC13（只灌电流 ≤3 mA、≤2 MHz）、LSE、NRST、PA0、SWDIO/SWCLK 与 BOOT0 各有自己的约束。不能证明什么：不是实物照片，第 35 脚是 VSS_2 不是 SWCLK，从系统存储器启动不等于芯片认不出。出处：[DS5319 SWD](#source-ds5319-swd)、[RM0008 启动](#source-rm0008-boot)。</sub>
+</p>
+
 C8 的闪存是 64 KB，SRAM 是 20 KB。复位后先以 HSI 8 MHz 工作；HSE 启动失败后程序是停在错误处理还是改用其他时钟，取决于启动代码。启用 CSS 后的运行中 HSE 故障另有硬件切换机制。串口要按 USART1 的实际 PCLK2 计算：AHB、APB2 分频均为 1 且 BRR 仍为 `0x271` 时，SYSCLK 72 MHz 对应 115200 bit/s，HSI 8 MHz 对应 12800 bit/s。第 16 章的 Stop 退出则明确先选 HSI，恢复时钟前同样要核对 BRR。见 [RM0008 USART](#source-rm0008-usart)。
 
 LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。电容按 5 pF 到 15 pF 的范围跟晶振一起选。6 pF 不是必须值。见 [DS5319 LSE](#source-ds5319-lse)。
@@ -215,6 +220,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 
 **D4 调试时断点不生效**
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-download-triage.png" width="760" alt="Handraw：下载失败 D1–D7 分诊（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：连接（D1/D2/D6）、下载（D3）、观察（D4/D5）、运行（D7）四组各自的下一条线索。证明什么：连接问题先量线、不看优化等级，运行问题先存现场、不猜代码。不能证明什么：不是探针实测，CFSR 分类之后还要看 BFAR 的 bit15 有效才读地址。出处：[DS5319 SWD](#source-ds5319-swd)、[本仓库例程](#source-project-examples)。</sub>
+</p>
+
 - **现象**：断点被跳过或提示数量超限。
 - **原因**：F103 的 6 个 FPB 代码比较器已占用，或当前代码与调试符号不匹配。Flash 只读并不妨碍硬件断点。
 - **解决**：删旧断点，确认 ELF 与目标固件一致；软件断点须由工具支持相应存储位置。条件硬件断点仍占比较器。DWT 的 4 个比较器另用于数据观察，与 FPB 预算独立；源码行对应不清时再查 `-O0/-Og` 构建。
@@ -288,6 +298,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 
 **P5 SPI 读 Flash 全 FF**
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-peripheral-roots.png" width="760" alt="Handraw：外设九条 FAQ 的根因三栏（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三栏——开关没开（P1/P7/P4）、配置对不上（P3/P5/P6/P8）、物理层没处理（P2/P9/P4 总线拉死 9 个时钟）。证明什么：同一现象可能跨两类，I2C 卡死既可能缺上拉，也可能总线被拉死。不能证明什么：不是现场波形，P4 出现在两栏，说明先分类再动手。出处：[本仓库例程](#source-project-examples)、[DS5319 GPIO](#source-ds5319-gpio)。</sub>
+</p>
+
 - **现象**：读回数据全是 0xFF。
 - **原因**：CS 没拉低、CPOL/CPHA 模式错、MISO 未接。
 - **解决**：核对模式（W25Q 用 Mode0）、片选时序、接线。
@@ -347,6 +362,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **原因**：电源跌落、复位线受干扰，或看门狗触发。NRST 有内部上拉，外部未接不等于逻辑悬空。
 - **解决**：保存 RCC 复位原因标志，再测电源与 NRST；外部电容按图 31 在第 7 脚接 0.1 µF 到地。看门狗周期与调试行为见第 11 章。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-hardware-triage.png" width="760" alt="Handraw：硬件四症状分诊 H1–H4（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：H1–H4 四张卡，每张给出判据与「不能证明什么」。证明什么：灯、热、电、复位四类症状各有先查项——极性、短路、表接法、复位标志，顺序比结论重要。不能证明什么：不是实测记录；灯亮、不烫、电流非零都不能单独证明固件正确。出处：[DS5319](#source-ds5319-gpio)、[RM0008](#source-rm0008-boot)、本章 H1–H4。</sub>
+</p>
 **H5 外部晶振不起振**
 
 - **现象**：等待 HSERDY 或 LSERDY 超时；应用可能停在错误处理。
@@ -360,6 +380,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **解决**：换线、缩短连线、关键信号焊死。
 
 **H7 串口/下载「共地」问题**
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-hardware-extra.png" width="760" alt="Handraw：H5 晶振、H6 面包板、H7 共地三条硬件补充（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：H5 晶振、H6 面包板、H7 共地三张补充卡。证明什么：H5 的「超时」是软件看到的，根因可能在线与电容。不能证明什么：不是示波器测量，换板、补焊与共地仍要逐项验证。出处：[DS5319](#source-ds5319-swd)、[本仓库例程](#source-project-examples)。</sub>
+</p>
 
 - **现象**：不共地就乱码/连不上。
 - **原因**：两个电源地电位不同。
@@ -391,6 +416,11 @@ LSE 仍是 32.768 kHz，第 3 脚和第 4 脚，第 1 脚 VBAT，PRL = 32767。�
 - **原因**：ISR 中只能用 `FromISR` 版本。
 - **解决**：改 `xQueueSendFromISR` + `portYIELD_FROM_ISR`。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch18-rtos-triage.png" width="760" alt="Handraw：RTOS 四症状分诊 R1–R4（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：R1–R4 四张卡，每张一张判据。证明什么：R1/R3 是配置与资源问题，R2/R4 是优先级与调用纪律问题，两类改法不同。不能证明什么：不是板上波形；HardFault 的位置不等于根因。出处：[FreeRTOS](#source-freertos-syscall)、本章 R1–R4。</sub>
+</p>
 **R5 程序莫名进 HardFault（带 RTOS）**
 
 - **现象**：随机 HardFault。

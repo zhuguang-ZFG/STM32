@@ -320,6 +320,11 @@ V11 系列包含 SMP 调度支持，但多数 STM32 Cortex-M 工程仍是单核�
 
 HSEM 提供原子占用和中断通知；它既不搬运 payload，也不替 Cortex-M7 维护数据 Cache。评审核间通道时，把下面五层分别冻结：
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-h745-boundaries.png" width="760" alt="Handraw：HSEM 的三条边界（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：顶部是 HSEM 提供的原子所有权与通知，下面三条边界分别是 payload 的存放、M7 data cache 的维护、释放与处理完成的顺序。证明什么：锁解决「谁先来」，不解决「货到没到」；三条边界都要单独定所有权与顺序。不能证明什么：不替代 RM0399 的寄存器定义，也不提前给出五层契约的字段与序号规则。出处：[RM0399](#source-rm0399)、[冻结的 stm32h745xx.h](#source-stm32h745-header)。</sub>
+</p>
 | 层 | 必须冻结 | 最小故障注入与证据 |
 | --- | --- | --- |
 | 共享存储 | 两核都可访问的 SRAM 区域、起始地址、长度、对齐和结构体布局；共享区不得藏进某一核私有的栈或链接段 | 注入越界长度、错误对齐和非法状态，接收端必须拒绝而不是继续解引用 |
@@ -374,6 +379,11 @@ INIT_APP_EXPORT(app_uart_init);
 这段代码只展示生命周期边界：查找、打开、检查失败。实际串口 DMA、接收回调与缓冲模式要回到 v5.3.0 对应 BSP 驱动；不能看到 `rt_device_read` 就假设所有驱动都具有相同的阻塞和超时语义。
 
 RT-Thread 的价值在于统一对象和组件；风险也在这里：启用 DFS、SAL、FinSH、软件包和 POSIX 层会增加 Flash/RAM、线程和初始化依赖。每启用一个组件，都要把对象数量、线程栈和失败路径计入系统预算。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-rtthread-lifecycle.png" width="760" alt="Handraw：RT-Thread 设备 find → open → 检查失败（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：rt_device_find("uart2") → RT_NULL 返回 -RT_ENOSYS → rt_device_open(..., RX_NON_BLOCKING) → 检查 error → INIT_APP_EXPORT(app_uart_init)。证明什么：这段代码只展示查找、打开、检查失败的生命周期边界。不能证明什么：串口 DMA、接收回调与缓冲模式要回到 v5.3.0 对应的 BSP 驱动，不能看到 rt_device_read 就假设所有驱动的阻塞与超时语义相同；另需注意，每启用一个组件都会增加 Flash/RAM、线程与初始化依赖。出处：[RT-Thread v5.3.0](#source-rtthread-530)、[CMSIS-RTOS2 2.3.0](#source-cmsis-640)。</sub>
+</p>
 
 ## Zephyr v4.4.2：配置、硬件描述与子系统共同生成固件
 
@@ -566,6 +576,11 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 
 最难迁的通常不是 `xQueueSend` 对应哪个函数，而是原工程隐含的行为：队列满时是否阻塞、任务删除后锁怎样处理、定时器回调在哪个上下文、驱动是否假设线程本地状态。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-migration-ledger.png" width="760" alt="Handraw：跨系统迁移六步与隐含行为账本（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左侧六步（列对象、写语义、垂直切片、同一输入复测、再迁网络与存储、删旧适配层），右侧四类隐含行为——队列满是否阻塞、任务删除后锁怎样处理、定时器回调在哪个上下文、驱动是否假设线程本地状态。证明什么：迁移按语义走，不按函数名对照表，每次只改变一个所有权边界。不能证明什么：不是某次真实迁移的耗时记录，隐含行为只有试验能暴露。出处：[FreeRTOS 11.3.2](#source-freertos-1132)、[RT-Thread v5.3.0](#source-rtthread-530)。</sub>
+</p>
+
 ## 一份可复算的系统资源账
 
 假设 STM32 有 256 KiB SRAM，先列出静态预算：
@@ -622,6 +637,11 @@ FreeRTOS 与 RT-Thread 的新版本都有多核能力，Zephyr 也支持部分 S
 ### 实验三：故障注入与监督看门狗
 
 依次冻结控制任务、网络任务和日志任务。健康监督者应识别不同失败，保存对应状态摘要，并停止刷新看门狗。验收不是“最后复位了”，而是复位后能区分哪一个健康条件先失败。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch28-distinguishing-experiment.png" width="760" alt="Handraw：故障注入的验收——指认先失败的健康条件（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：冻结一个任务 → 监督者识别失败 → 保存状态摘要 → 停止刷新看门狗 → 复位后复盘，以及合格与不合格两张判决卡。证明什么：验收不是「最后复位了」，而是复位后能区分哪一个健康条件先失败。不能证明什么：不是某块板的实测日志，一次只冻结一个任务，摘要要复位后仍可读。出处：[FreeRTOS 11.3.2](#source-freertos-1132)、[Zephyr 4.4.2](#source-zephyr-442)。</sub>
+</p>
 
 ### 实验四：同一垂直切片跨系统实现
 

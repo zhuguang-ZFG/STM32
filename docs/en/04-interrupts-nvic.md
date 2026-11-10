@@ -40,6 +40,11 @@ An exception with a higher preemption priority (a smaller number) may interrupt 
 
 On exit, if an exception is already pending, hardware may skip part of the unstack and the next stack. Tail-chaining cuts overhead. It does not change who may preempt. A lower priority does not enter a higher-priority ISR because tail-chaining is on. "Tail-chaining lets a lower priority insert itself into a higher one" is a common misunderstanding. PM0056 section 2.3.7 does not say how many cycles tail-chaining saves, so this chapter gives no number; the figure only shows one unstack-and-restack skipped.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch04-numbers-ledger.png" width="760" alt="Handraw: four baseline numbers before reading (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at four cards — part and clock (F103C8T6, 72 MHz, EXTI0 on PA0), priority grouping (GROUP_4, all four bits preempt), stacking cost (8 registers, about 12 HCLK ≈ 167 ns), and the button path (PA0 → EXTI0, EXTI0_IRQn = 6). It shows the later timelines and EXTI figures all rest on these four numbers, so changing any one obliges a recount. It cannot add the ISR body or tail-chaining savings, and it is not a scope capture. See [PM0056 §2.3.7](#source-pm0056-nvic), [RM0008 EXTICR](#source-rm0008-exti).</sub>
+</p>
+
 `PRIMASK` masks exceptions of configurable priority. NMI and HardFault still enter. `FAULTMASK` also masks HardFault and still leaves NMI. `BASEPRI` masks only the band whose priority number is greater than or equal to the threshold. NMI does not take part in the EXTI0 versus TIM2 preemption comparison. The three registers mask different ranges, so check which one you are using. Chapter 02 showed that the clock security system (CSS) interrupt arrives as NMI, which is why disabling interrupts does not stop it.
 
 A bare-metal priority setup does not automatically meet the chapter 15 FromISR constraint. FreeRTOS requires any interrupt that calls a FromISR function to have a priority number no smaller than the syscall threshold; see chapter 15 and the [FreeRTOS priority note](#source-freertos-priority).
@@ -108,6 +113,11 @@ Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Sourc
 ## Core ideas
 
 EXTI decides when an event is noticed; the NVIC decides which event runs first. Prompt detection is only one part of correctness. Flags, shared data, and ISR execution time still need separate evidence.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch04-event-pipeline.png" width="760" alt="Handraw: five stages from a button press to an ISR (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the five-stage pipeline — pin event (PA0 falling edge), EXTI claim (the edge sets EXTI_PR; a closed IMR stops it), NVIC arbitration (0 wins; equal preempt never nests), ISR (8-register stack, vector fetch), and return (tail-chain when work is pending). It shows EXTI decides when an event is noticed while NVIC decides who runs first, and subpriority only sorts simultaneously pending requests. It is not a timing capture, and the PRIMASK / FAULTMASK / BASEPRI gates are a separate class of evidence. See [PM0056](#source-pm0056-nvic), [RM0008 EXTICR](#source-rm0008-exti).</sub>
+</p>
 
 ### 1. Interrupt versus polling
 
@@ -330,6 +340,11 @@ The full project is in [`examples/exti-key/`](../../examples/exti-key/).
 2. **Lab 2 (bounce evidence):** Temporarily remove main-loop debounce and count the flags produced by 10 presses. Restore debounce and repeat. Keep both counts instead of judging by appearance.
 3. **Lab 3 (preemption evidence):** Add a TIM2 interrupt. In each ISR, drive one spare GPIO high on entry and low on exit. Capture both traces with a logic analyzer and verify that preemption priority 1 EXTI0 enters during preemption priority 2 TIM2.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch04-lab-evidence.png" width="760" alt="Handraw: what each of the three labs leaves behind (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: one card per lab, each with its steps and its check. Proves the cleared flag, the before/after bounce counts, and the two-trace nesting order are three reviewable kinds of evidence. Cannot prove existing waveforms or measured data; the plate only gives the experiment design and its criteria. See [PM0056](#source-pm0056-nvic) and [RM0008](#source-rm0008-exti).</sub>
+</p>
 ### 6. NVIC registers and functions
 
 | Item | Meaning |

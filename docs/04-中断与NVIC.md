@@ -41,6 +41,11 @@
 
 退出时若已有挂起异常，硬件可以省掉一部分出栈再入栈。尾链减少开销，不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR。「尾链打开后，低优先级也能插进高优先级」是常见误解。PM0056 第 2.3.7 节没有给出尾链省下多少周期，所以本章不给具体数字，图上只表示少了一次出栈再入栈。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-numbers-ledger.png" width="760" alt="Handraw：开读前对表——本章四个基准数字（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四张卡分别是芯片与时钟（F103C8T6、72 MHz、EXTI0 用 PA0）、优先级分组（GROUP_4，4 位全给抢占）、入栈代价（8 个寄存器、约 12 HCLK ≈ 167 ns）、按键通道（PA0 → EXTI0，EXTI0_IRQn = 6）。证明什么：后面的时间线、优先级和 EXTI 图都以这四个基准数为前提，改其中任何一项，后面图的数字都要重算。不能证明什么：12 HCLK 不含 ISR 正文与尾链省法，也不是示波器实测。出处：[PM0056 第 2.3.7 节](#source-pm0056-nvic)、[RM0008 EXTICR](#source-rm0008-exti)。</sub>
+</p>
+
 `PRIMASK` 关掉可配置优先级的中断，NMI 和 HardFault 仍能进入。`FAULTMASK` 再挡住 HardFault，仍留 NMI。`BASEPRI` 只挡住优先级数值大于等于阈值的那一截。NMI 不参加 EXTI0 和 TIM2 那种抢占比较。这三个寄存器挡住的范围各不相同，用之前先确认挡的是哪一段。第 02 章讲过时钟安全系统（CSS）的中断走 NMI，所以关中断也挡不住它。
 
 裸机这套配置不自动满足第 15 章的 FromISR 约束。FreeRTOS 规定，在中断里调用 FromISR 函数的中断，优先级数值不能小于系统调用阈值，具体见第 15 章和 [FreeRTOS 的优先级说明](#source-freertos-priority)。
@@ -109,6 +114,11 @@ EXTI 线按脚号共用：PA0 和 PB0 都在 EXTI0 上，不能同时做外部�
 ## 核心原理
 
 EXTI 解决的是“何时发现事件”，NVIC 解决的是“多个事件先处理谁”。事件被及时发现，不代表处理就正确；标志、共享数据和 ISR 执行时间仍要逐项验收。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-event-pipeline.png" width="760" alt="Handraw：一次按键到 ISR 的五个阶段（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：五段流水线——① 引脚事件（PA0 下降沿）② EXTI 认领（边沿置位 EXTI_PR，IMR 不开门就不往下走）③ NVIC 仲裁（0 最急，同抢占不嵌套）④ 执行 ISR（压 8 个寄存器、取向量）⑤ 返回（有挂起就尾链）。证明什么：EXTI 决定「何时注意到」，NVIC 决定「谁先跑」，子优先级只在多份请求同时挂起时排序、不产生嵌套。不能证明什么：不是时序实测，PRIMASK / FAULTMASK / BASEPRI 三个总闸的遮挡范围是另一类证据。出处：[PM0056](#source-pm0056-nvic)、[RM0008 EXTICR](#source-rm0008-exti)。</sub>
+</p>
 
 ### 1. 中断 vs 轮询
 
@@ -331,6 +341,11 @@ __enable_irq();           /* 开总中断 */
 2. **实验二（抖动证据）**：临时去掉主循环消抖，统计 10 次按键产生的标志次数；恢复消抖后重测。保留两组计数，不用“看起来稳定”代替结果。
 3. **实验三（抢占证据）**：增加 TIM2 中断，并让两个 ISR 分别在入口置高、出口置低一只空闲 GPIO。用逻辑分析仪捕获嵌套波形，验证抢占优先级 1 的 EXTI0 能插入抢占优先级 2 的 TIM2。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch04-lab-evidence.png" width="760" alt="Handraw：三个实验各自的证据（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：三个 Lab 各一卡，写清步骤与判据。证明什么：标志清零、去抖前后计数、双迹嵌套顺序，是三类可复查的证据。不能证明什么：不是已有波形或实测数据，图只给实验设计与判据。出处：[PM0056](#source-pm0056-nvic)、[RM0008](#source-rm0008-exti)。</sub>
+</p>
 ### 6. NVIC 相关寄存器与函数
 
 | 项目 | 说明 |

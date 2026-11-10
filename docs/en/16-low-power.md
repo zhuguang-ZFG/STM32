@@ -55,6 +55,11 @@ Sleep at 72 MHz is 14.4 mA typical with every peripheral on, and 5.5 mA typical 
 
 After Stop exits, the system clock is the 8 MHz HSI, not 16 MHz and not 72 MHz. See [RM0008 clocks](#source-rm0008-rcc). Table 26's 5.4 µs is the low-power-regulator cell, from the wake event to the first user instruction, still on that 8 MHz clock. The main-regulator cell is 3.6 µs. Sleep is 1.8 µs and keeps the clock from before the sleep. Standby goes through reset startup, reaching the first instruction after 50 µs. The PLL lock maximum is 200 µs. Do not add it to 5.4 µs and call the sum the wake-up time.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-wake-ladder.png" width="760" alt="Handraw: wake ladder 1.8 / 3.6 / 5.4 / 50 µs (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the ladder — Sleep 1.8 µs, Stop with the main regulator 3.6 µs, Stop with the low-power regulator 5.4 µs, Standby 50 µs. It shows each cell has its own condition, and 5.4 µs runs from the wake event to the first user instruction while the clock is still the 8 MHz HSI. It is not a board measurement here, and the 200 µs PLL lock maximum is not added to 5.4 µs. See [DS5319 Table 26](#source-ds5319-pwr), [RM0008 clocks](#source-rm0008-rcc).</sub>
+</p>
+
 PPRE2 is not divided on this book's clock tree. Before `SystemClock_Config()`, the USART1 kernel clock is 8 MHz. If BRR is still `0x271`, its raw integer value is 625. With 16-times oversampling, it decodes to `USARTDIV = 39.0625`, so `8e6 / (16 × 39.0625) = 12800`. A host that is still at 115200 is off by a factor of 9. The fix is to restore the PLL to 72 MHz after waking and before the next byte; the line is then 115200 again. See [RM0008 USART](#source-rm0008-usart). The frame format is the one from chapter 06.
 
 Sleep keeps the clock from before the sleep. The tick in `examples/freertos-task` is 1000 Hz, which is 1 ms. Left at that rate, Sleep wakes every 1 ms. SysTick does not tick during Stop. See [examples in this repo](#source-project-examples).
@@ -131,6 +136,11 @@ The opening `lowpower-wakeup.svg` animation shows the wake order of the modes. T
 | 14 µA is quoted while the IWDG is on | That cell excludes the independent watchdog | Do not cover a running IWDG with 14 µA | [RM0008 watchdog](#source-rm0008-wdg) | The IWDG keeps counting in Stop and Standby. Table 16 has no Stop-plus-IWDG figure |
 | A falling edge woke Stop, but Standby stays asleep | Standby's WKUP is a rising edge | Use a rising edge on pin 10 PA0 | [DS5319](#source-ds5319-adc) | Pin 10 is PA0-WKUP |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-acceptance-record.png" width="760" alt="Handraw: five record cells and the average-current ledger (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at what each of the five cells records — quiescent current, wake peak, active time, period, wake reason — and the I_avg = Σ(I_k × t_k)/T ledger. It shows measuring only quiescent current misses peaks and duration, and an ammeter cannot expose a clock fault: the quiescent current can be right while the UART still runs at 12800. It is not a current trace, and 14/24/1.4 µA hold only for the matching Table 16 cell. See [DS5319 Table 16](#source-ds5319-pwr), [this repository's examples](#source-project-examples).</sub>
+</p>
+
 ## Learning goals
 
 - [ ] Use one table to state, for Sleep / Stop / Standby, the current, the wake sources, the wake time, and what state is kept.
@@ -186,6 +196,11 @@ Wake time increases across this chapter's three operating points. **Sleep and St
 ### 2. WFI and WFE
 
 The F103 here has one core. `WFI` (Wait For Interrupt) waits for a qualifying interrupt. `WFE` (Wait For Event) can also receive an event without entering an ISR. Both need a configured wake path; swapping the instruction alone is not enough.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-wfi-wfe.png" width="760" alt="Handraw: WFI versus WFE wake paths (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at WFI — interrupt, NVIC arbitration, ISR, resume — against WFE — event, event register, return, possibly without an ISR. It shows both instructions need a configured wake path; swapping the instruction alone gives either a wake-up right after sleeping or none at all. It is not a wake-source measurement, and stale flags must be cleared and conditions still true before sleeping. See [DS5319 Table 26](#source-ds5319-pwr), [RM0008 RTC](#source-rm0008-rtc).</sub>
+</p>
 
 | Instruction | Wake condition | Notes |
 | --- | --- | --- |
@@ -245,6 +260,11 @@ Saving power is not only about entering the mode. It is also about **turning off
 
 Runtime is battery capacity divided by average current. Multiply each interval's current by its duration, add the results, then divide by the period. A wake peak also has a duration; the Stop floor alone cannot predict runtime.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-battery-budget.png" width="760" alt="Handraw: the battery runtime ledger over one period (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: one period splits into active and sleep with the average-current and runtime formulas; the right column lists four standing leaks — LDO Iq, a 10 kΩ divider, a MOSFET-gated divider, and the IWDG. Proves the Stop floor alone cannot predict runtime; active time and its frequency must be multiplied in. Cannot prove a measured current waveform, the later worked example, or battery self-discharge. See [DS5319](#source-ds5319-pwr) and the §5 formulas.</sub>
+</p>
 | Point | What it means |
 | --- | --- |
 | Two-state average current | `I_avg = [I_active×t_active + I_sleep×(T−t_active)] / T` |
@@ -306,6 +326,11 @@ Keep the circuits required for power and wake, measure a baseline, then reconnec
 
 > [!WARNING]
 > BluePill board input current includes the LED, LDO quiescent current, and connected USB, serial, sensor, or other loads. The F103 USB peripheral is inside the MCU; check the actual board schematic for external pull-ups and power wiring. To measure microamps in the MCU supply branch, isolate those loads and check for back-power through the probe or signal lines.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch16-board-vs-chip.png" width="760" alt="Handraw: whole board, MCU branch, and chip VDD current boundaries (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the nesting whole board (USB powered) ⊃ MCU branch (3V3) ⊃ chip VDD, with the LDO quiescent current, board LED, USB/serial, and sensor loads around it. It shows a Table 16 µA reading holds only on the chip branch at the same voltage and temperature. It is not a board-level current measurement: the debugger and SWD back-power, the LED, USB, and sensor loads must be removed before the reading can match Table 16. See [DS5319 Table 16](#source-ds5319-pwr), [this repository's examples](#source-project-examples).</sub>
+</p>
 
 ## Code
 

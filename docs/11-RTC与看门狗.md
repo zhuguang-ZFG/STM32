@@ -115,6 +115,7 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
   <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：① 左边 VDD 与第 1 脚 VBAT 两路电源进片内切换，只给备份域（RTC 秒计数器、BKP_DR1–DR10、LSE）供电；② 中间红色箭头是 NRST、IWDG、WWDG 与上电复位，撞在「复位边界」上，主域清零而备份域不动；③ 下面两格是写门（PWR/BKP 时钟加上 PWR_CR.DBP）与首次上电判断（BKP_DR1 的魔法值，正文代码给出）。证明什么：复位后表还在走、程序从复位向量重来，是供电与复位边界两件事；主电源掉了只要 VBAT 有电，表和备份寄存器就继续。不能证明什么：这是 RM0008 的域结构示意，不含备份域电流、LSE 起振时间与纽扣电池寿命，也不是板级实拍。出处是 [RM0008 Rev 21 第 18 章](#source-rm0008-rtc) 和 [DS5319 Rev 20 表 25](#source-ds5319-rtc)。</sub>
 </p>
 
+
 ## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |
@@ -126,6 +127,11 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
 | 预分频写成 32768，秒脉冲偏慢 | 分频比是 (PRL + 1) | 改成 32767 | [RM0008](#source-rm0008-rtc) | 分频比是 `(PRL + 1)`。32768 Hz 要写成 32767 才是 1 Hz |
 | 断点停住以后自己复位 | 调试时计数器还在减 | 调试时冻住 IWDG | [RM0008](#source-rm0008-wdg) | §19.3.3 印出配置位名 `DBG_IWDG_STOP`。调试时可以冻住独立看门狗。手册没给位号 |
 | 选项字节把看门狗改成上电就跑，软件关不掉 | `WDG_SW` 为 0 | `WDG_SW` 为 0 是硬件看门狗，为 1 才是软件看门狗 | [PM0075](#source-pm0075-rdp) | USER 字节的这一位：0 表示硬件看门狗，1 表示软件看门狗 |
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-rtc-lines.png" width="760" alt="Handraw：RTC 三条线——复位原因、持久状态、实际时间（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：VBAT 与 BKP 魔数、LSE 32.768 kHz 与 PRL 32767、IWDG Reload 624 在 LSI 30–60 kHz 下对应 4/3–2/3 s、RCC_CSR 的 IWDGRSTF/WWDGRSTF 与 boot_id。证明什么：复位原因、持久状态、实际时间缺一个就分不清「重启过」和「重启后还是原样」。不能证明什么：不是电流或波形实测，LSI 频率按手册 30–60 kHz 范围取，不是单颗芯片实测。出处：[RM0008 看门狗](#source-rm0008-wdg)、[DS5319 表 25](#source-ds5319-rtc)。</sub>
+</p>
 
 ## 学习目标
 
@@ -180,6 +186,11 @@ RTC 位于**备份域**，由 `VBAT` 供电，主电源掉电后仍能走时；�
 
 典型用法：上电先读一个「魔法值」（如 `0xA5A5`），若匹配说明之前初始化过，直接读时间；否则写入魔法值并初始化日历。
 
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-bkp-magic.png" width="760" alt="Handraw：BKP 魔数与上电流程（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上电→读 BKP_DR1→0xA5A5 的两条分支；下方是 F103C8 的十只 16-bit 与 F4 的二十只 32-bit。证明什么：魔数只决定「是否已初始化」，备份寄存器的容量与宽度按型号不同。不能证明什么：不代表走时准确（准不准由时钟源决定），也不是 VBAT 电流实测。出处：[RM0008](#source-rm0008-rtc)、[DS5319](#source-ds5319-rtc)。</sub>
+</p>
 ### 3. 日历、闹钟、唤醒与时间戳
 
 F1 的 RTC 其实只会数秒，年月日要靠软件拿秒数去算。闹钟就是「数到这个秒数时叫我」。F4 以后的 RTC 直接按年月日时分秒存，闹钟可以设成「每天 7 点」这样的规则，还多了周期唤醒和时间戳，适合配合低功耗模式定时醒来。
@@ -391,6 +402,11 @@ __HAL_DBGMCU_FREEZE_WWDG();
 ```
 
 IWDG 一旦 `HAL_IWDG_Init` 成功就停不下来，只有复位能关。选项字节里把 `WDG_SW` 写成 0，上电就由硬件看门狗接管，软件想关也关不掉。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-debug-freeze.png" width="760" alt="Handraw：调试时冻结 IWDG 的两条时间线（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：两条时间线——没有冻住时 LSI 继续数到 0 就复位，冻住时计数停、恢复调试后继续；冻结开关是 DBGMCU->CR 的 DBG_IWDG_STOP=1。证明什么：IWDG 一次启动只有复位能停，冻结只是调试手段。不能证明什么：手册只印位名没给位号，F1 写 DBGMCU->CR、F4 写 APB1FZ，宏 __HAL_DBGMCU_FREEZE_IWDG() 会选对寄存器；脱离调试器后照常计数，不能当成产品的看门狗策略。出处：[RM0008 看门狗](#source-rm0008-wdg)。</sub>
+</p>
 
 离开本章前，应有掉电前后的 RTC/BKP 记录、5 次 IWDG 延迟与 IWDGRSTF，以及 WWDG 早/晚/窗口内三组结果。
 

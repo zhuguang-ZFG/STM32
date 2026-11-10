@@ -114,6 +114,7 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at (1) the left: VDD and pin 1 VBAT feed the on-chip switch, which powers only the backup domain (RTC seconds counter, BKP_DR1–DR10, LSE); (2) the middle red arrow is NRST, IWDG, WWDG, and power-on reset, stopped at the reset boundary — the main domain is cleared and the backup domain is not; (3) the two lower cells are the write gate (PWR/BKP clocks plus PWR_CR.DBP) and the first-power-up test (a magic value in BKP_DR1, given in the code below). Proves that "the calendar still runs, the program is gone" is two separate facts — power and a reset boundary; with main power gone, VBAT keeps the counter and the backup registers. Cannot replace backup-domain current, LSE start-up time, or coin-cell life, and it is not a board photograph. See [RM0008 Rev 21 chapter 18](#source-rm0008-rtc) and [DS5319 Rev 20 Table 25](#source-ds5319-rtc).</sub>
 </p>
 
+
 ## Pitfalls and sources
 
 | What you see | Why | What to do | Source | What the source shows |
@@ -125,6 +126,11 @@ The opening `iwdg-window.svg` shows the window watchdog. "An early feed resets" 
 | A prescaler of 32768 makes the second pulse slow | The divider is (PRL + 1) | Change it to 32767 | [RM0008](#source-rm0008-rtc) | The divider is `(PRL + 1)`. 32768 Hz is 1 Hz only when written as 32767 |
 | The part resets by itself after a breakpoint | The counter kept running in debug | Freeze the IWDG while debugging | [RM0008](#source-rm0008-wdg) | §19.3.3 prints the configuration bit name `DBG_IWDG_STOP`. The independent watchdog can be frozen while debugging. No bit number is given |
 | Option bytes make the watchdog run from power-up and software cannot stop it | `WDG_SW` is 0 | 0 is the hardware watchdog and 1 is the software watchdog | [PM0075](#source-pm0075-rdp) | That bit in the USER byte: 0 means the hardware watchdog and 1 means the software watchdog |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-rtc-lines.png" width="760" alt="Handraw: three RTC lines — reset cause, persistent state, elapsed time (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at VBAT and the BKP magic, LSE 32.768 kHz with PRL 32767, IWDG reload 624 spanning 4/3–2/3 s across LSI 30–60 kHz, and RCC_CSR IWDGRSTF/WWDGRSTF with boot_id. It shows reset cause, persistent state, and elapsed time are three separate lines; miss one and a deliberate restart cannot be told from unchanged state. It cannot replace a current or waveform measurement, and LSI limits follow the datasheet 30–60 kHz range, not one measured part. See [RM0008 watchdog](#source-rm0008-wdg), [DS5319 Table 25](#source-ds5319-rtc).</sub>
+</p>
 
 ## Learning goals
 
@@ -179,6 +185,11 @@ The backup registers are sticky notes in that small room, and they survive a mai
 
 The usual pattern: on power-up, read a "magic value" (for example `0xA5A5`). If it matches, the calendar was already initialized, so just read the time. If it does not match, write the magic value and initialize the calendar.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-bkp-magic.png" width="760" alt="Handraw: the BKP magic value and the power-up flow (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: power-up → read BKP_DR1 → the two 0xA5A5 branches; below, the F103C8's ten 16-bit registers against the F4's twenty 32-bit ones. Proves the magic value only decides whether initialization already happened, while capacity and width depend on the part. Cannot prove timekeeping accuracy (the clock source decides that) and is not a VBAT current measurement. See [RM0008](#source-rm0008-rtc) and [DS5319](#source-ds5319-rtc).</sub>
+</p>
 ### 3. Calendar, alarm, wake-up, and timestamp
 
 The F1 RTC only counts seconds, and software turns the count into a date. An alarm is "tell me when the count reaches this many seconds". From the F4 on, the RTC stores the date and time directly, an alarm can follow a rule such as "every day at 7:00", and there is also periodic wake-up and timestamping, which suit waking from low-power modes on a schedule.
@@ -390,6 +401,11 @@ __HAL_DBGMCU_FREEZE_WWDG();
 ```
 
 Once `HAL_IWDG_Init` succeeds, the IWDG cannot be stopped. Only a reset turns it off. If you write `WDG_SW` to 0 in the option bytes, the hardware watchdog takes over at power-up, and software cannot turn it off either.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch11-debug-freeze.png" width="760" alt="Handraw: freezing the IWDG while debugging (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at two timelines — without freezing the LSI keeps counting to zero and resets; with DBG_IWDG_STOP=1 the counter freezes and resumes when debugging continues. It shows an IWDG cannot be stopped once started, so freezing is a debug-only measure. It cannot become a product watchdog strategy: the manual prints only the bit name, F1 writes DBGMCU->CR while F4 writes APB1FZ, and counting resumes once the debugger detaches. See [RM0008 watchdog](#source-rm0008-wdg).</sub>
+</p>
 
 Before leaving this chapter, keep the RTC/BKP record across power loss, five IWDG delays with IWDGRSTF, and the early/late/in-window WWDG results.
 

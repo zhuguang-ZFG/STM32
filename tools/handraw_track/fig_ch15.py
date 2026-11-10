@@ -187,11 +187,117 @@ def stack_watermark():
     return f
 
 
+def two_priority_rules():
+    f = Fig("ch15-two-priority-rules",
+            "两套编号，方向相反 / two priority scales, opposite directions")
+    f.text(84, 128, "任务号和中断号都叫「优先级」；一个越大越急，一个越小越急",
+           size=20, color=MUTED)
+
+    # ---- 左：任务优先级 ----
+    f.rect(84, 168, 470, 258, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(104, 204, "FreeRTOS 任务优先级", size=21, color=GREEN_D,
+           weight="bold")
+    rows = [("KEY 任务", "2", GREEN_D), ("LED / UART 任务", "1", GREEN_D),
+            ("idle 任务", "0", MUTED)]
+    for i, (name, num, c) in enumerate(rows):
+        y = 232 + i * 56
+        f.rect(104, y, 430, 44, color=c, fill=WHITE, sw=1.8, double=False)
+        f.text(124, y + 30, name, size=17, color=INK)
+        f.text(500, y + 30, num, size=20, color=c, anchor="end",
+               weight="bold")
+    f.text(104, 408, "数字大 = 更急；高优先级就绪立即抢占", size=15,
+           color=MUTED)
+
+    # ---- 右：NVIC 优先级 ----
+    f.rect(598, 168, 470, 258, color=RED, fill=WHITE, sw=2.4)
+    f.text(618, 204, "NVIC 中断优先级（GROUP_4）", size=21, color=RED,
+           weight="bold")
+    rows = [("最急：数值 0", "0", RED), ("FromISR 允许的起点", "5", AMBER_STROKE),
+            ("最缓：数值 15", "15", MUTED)]
+    for i, (name, num, c) in enumerate(rows):
+        y = 232 + i * 56
+        f.rect(618, y, 430, 44, color=c, fill=WHITE, sw=1.8, double=False)
+        f.text(638, y + 30, name, size=17, color=INK)
+        f.text(1014, y + 30, num, size=20, color=c, anchor="end",
+               weight="bold")
+    f.text(618, 408, "数字小 = 更急；0–4 不许调 FreeRTOS API", size=15,
+           color=MUTED)
+
+    # ---- 中间的换算 ----
+    f.rect(84, 458, 984, 132, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(108, 494, "阈值只有一条：能调 FromISR 的中断，NVIC 数值 ≥ 5", size=20,
+           color=BLUE_D, weight="bold")
+    f.text(108, 530, "寄存器里看到的是移位值：5 << (8 − 4) = 0x50；比较时两边要同一表示",
+           size=17, color=INK)
+    f.text(108, 562, "1 ms tick：SysTick 服务内核调度；TIM4 服务 HAL 的 1 ms 基准（HAL_GetTick）",
+           size=16, color=MUTED)
+
+    f.htext(W / 2, 656, "任务号往大读，中断号往小读；混着背，必错一个",
+            size=23, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 712, "示例优先级数值（KEY 2 / LED 1 / idle 0）与阈值 5 均取自本章正文",
+           size=15, color=MUTED)
+    return f
+
+
+def tick_owner():
+    f = Fig("ch15-tick-owner",
+            "一根 SysTick，两个老板：HAL 时基与 RTOS 节拍")
+
+    f.text(576, 142, "STM32F103：Cortex-M3 的系统定时器，默认 1 ms 一格",
+           size=16, color=MUTED, anchor="middle")
+
+    f.rect(456, 158, 240, 72, color=INK, fill=WHITE, sw=2.4)
+    f.text(576, 202, "SysTick", size=24, color=INK, anchor="middle", weight="bold")
+
+    f.arrow(510, 232, 322, 268, color=BLUE, bend=-0.12)
+    f.arrow(642, 232, 830, 268, color=GREEN_D, bend=0.12)
+
+    f.rect(84, 272, 476, 150, color=BLUE, fill=WHITE, sw=2.4)
+    f.text(110, 310, "HAL 默认时基：也挂 SysTick", size=20, color=BLUE_D, weight="bold")
+    f.multi(110, 348, [
+        "HAL_Delay / HAL_GetTick 按它计数",
+        "改到别的定时器，要在创建任务之前做完",
+    ], size=16, color=INK, lh=32)
+
+    f.rect(592, 272, 476, 150, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(618, 310, "FreeRTOS 节拍（本例 1000 Hz）", size=20,
+           color=GREEN_D, weight="bold")
+    f.multi(618, 348, [
+        "configTICK_RATE_HZ = 1000，每个 tick 1 ms",
+        "延时与超时按 tick 计；事件唤醒可在两 tick 之间",
+        "1 ms 是节拍，不是任务响应的下限",
+    ], size=16, color=INK, lh=30)
+
+    f.rect(84, 450, 476, 186, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.text(110, 490, "方案 A：分开（本仓库例程）", size=21, color=GREEN_D, weight="bold")
+    f.multi(110, 528, [
+        "CubeMX：SYS → Timebase Source 改为 TIM4",
+        "HAL 用 TIM4，内核用 SysTick",
+        "两套计数各有入口，调试时容易区分谁在走",
+    ], size=16, color=INK, lh=32)
+
+    f.rect(592, 450, 476, 186, color=RED, fill=WHITE, sw=2.4)
+    f.text(618, 490, "方案 B：共用 SysTick", size=21, color=RED, weight="bold")
+    f.multi(618, 528, [
+        "必须整合处理函数、频率和调度器启动前后行为",
+        "不能只替换其中一个处理函数",
+        "配错的现象：HAL_Delay 卡住、调度器起不来",
+    ], size=16, color=INK, lh=32)
+
+    f.htext(84, 690, "先决定 SysTick 归谁，再建任务；两个老板抢一根节拍，延时最先坏",
+            size=20, weight="bold")
+    f.text(84, 728, "方案 A 的对照见本章「常见坑」表与 examples/freertos-task 的 CubeMX 配置；本图是分工示意，不是波形",
+           size=14, color=MUTED)
+    return f
+
+
 FIGS = {
+    "ch15-two-priority-rules": two_priority_rules,
     "ch15-prio-inherit": prio_inherit,
     "ch15-psp-msp": psp_msp,
     "ch15-task-states": task_states,
     "ch15-stack-watermark": stack_watermark,
+    "ch15-tick-owner": tick_owner,
 }
 
 if __name__ == "__main__":

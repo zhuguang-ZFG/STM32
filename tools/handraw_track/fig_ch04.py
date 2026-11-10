@@ -115,7 +115,127 @@ def preempt_timeline():
     return f
 
 
+def lab_evidence():
+    f = Fig("ch04-lab-evidence",
+            "三个实验，各留下什么证据 / what each lab leaves behind")
+    f.text(84, 128, "实验不是「跑通就算」：每个 Lab 都要留下可复查的判据",
+           size=20, color=MUTED)
+
+    labs = [
+        ("Lab 1", "EXTI 清标志", BLUE_D,
+         ["按键一次，确认 EXTI_PR 的对应位被清掉",
+          "计数 10 次有效翻转",
+          "不出现「一按进十次」的连环中断"],
+         "证据：标志位清零 + 稳定计数"),
+        ("Lab 2", "去抖前后对比", GREEN_D,
+         ["同一次按键，记录去抖前的中断次数",
+          "再去抖后重复 10 次",
+          "两次计数写在同一张记录里"],
+         "证据：抖动被软件滤掉多少"),
+        ("Lab 3", "抢占真的发生", RED,
+         ["EXTI0 抢占 1，TIM2 抢占 2",
+          "两个 ISR 各自翻转一路 GPIO",
+          "双迹顺序：EXTI0 的进入/退出夹住 TIM2"],
+         "证据：嵌套顺序，不是「感觉很快」"),
+    ]
+    for i, (tag, title, color, lines, evidence) in enumerate(labs):
+        y = 160 + i * 182
+        f.rect(84, y, 984, 166, color=color, fill=WHITE, sw=2.4)
+        f.text(108, y + 38, tag, size=21, color=color, weight="bold")
+        f.text(196, y + 38, title, size=20, color=INK, weight="bold")
+        f.multi(108, y + 70, lines, size=16, color=INK, lh=26)
+        f.text(108, y + 152, evidence, size=15, color=color, weight="bold")
+
+    f.htext(W / 2, 724, "图给的是实验设计与判据；它不冒充已有波形",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 762, "三个 Lab 的步骤与计数取自本章「动手实验」；双迹需逻辑分析仪两路通道",
+           size=15, color=MUTED)
+    return f
+
+
+def numbers_ledger():
+    f = Fig("ch04-numbers-ledger",
+            "开读之前先对表：本章的四个基准数字")
+    f.text(84, 118, "全章算的都是这只 C8、这个分组；换任何一项，后面图的数字都要重查",
+           size=19, color=MUTED)
+
+    cards = [
+        ("① 芯片与时钟", BLUE_D,
+         ["STM32F103C8T6；SYSCLK = HCLK = 72 MHz",
+          "时钟树与附录 D 一致",
+          "EXTI0 用 PA0，不借第 10 脚以外的新脚"]),
+        ("② 优先级分组", GREEN_D,
+         ["HAL 默认 NVIC_PRIORITYGROUP_4",
+          "4 位全给抢占，子优先级 0 位",
+          "数值越小越优先；改分组要重新比"]),
+        ("③ 入栈代价", RED,
+         ["异常入口压 8 个寄存器",
+          "约 12 HCLK ≈ 167 ns @ 72 MHz",
+          "不含 ISR 正文与尾链的省法"]),
+        ("④ 按键通道", AMBER_STROKE,
+         ["PA0 → EXTI0，EXTI0_IRQn = 6",
+          "F1 先开 AFIO 时钟再写 EXTICR",
+          "线按脚号共用：PA0 与 PB0 抢同一根"]),
+    ]
+    for i, (tag, col, lines) in enumerate(cards):
+        x = 84 + (i % 2) * 512
+        y = 146 + (i // 2) * 268
+        f.rect(x, y, 472, 244, color=col, fill=WHITE, sw=2.4)
+        f.text(x + 24, y + 40, tag, size=22, color=col, weight="bold")
+        f.multi(x + 24, y + 84, lines, size=17, color=INK, lh=32)
+
+    f.htext(W / 2, 700, "图只给基准；真正的抢占与入栈过程在后面的时间线上",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 744, "四个数字取自本章「原理与适用范围」「时序与状态」「§4」；12 HCLK 见 PM0056 第 2.3.7 节",
+           size=15, color=MUTED)
+    return f
+
+
+def event_pipeline():
+    f = Fig("ch04-event-pipeline",
+            "从一次按键到一个 ISR：认领、仲裁、执行、返回")
+    f.text(84, 118, "五个阶段的归属不同；排错时先认出坏在哪一段",
+           size=19, color=MUTED)
+
+    stages = [
+        ("① 引脚事件", BLUE_D, ["PA0 的下降沿", "电平变化先变成边沿"]),
+        ("② 认领 EXTI", GREEN_D, ["边沿置 EXTI_PR 挂起位", "IMR 不开门就不往下走"]),
+        ("③ 仲裁 NVIC", AMBER_STROKE, ["比抢占优先级数值", "0 最急；同抢占不嵌套"]),
+        ("④ 执行 ISR", BLUE_D, ["压 8 个寄存器、取向量", "正文是用户代码"]),
+        ("⑤ 返回", RED, ["有挂起就尾链", "省一次出栈再入栈"]),
+    ]
+    bw, gap = 176, 26
+    for i, (tag, col, lines) in enumerate(stages):
+        x = 84 + i * (bw + gap)
+        f.rect(x, 190, bw, 196, color=col, fill=WHITE, sw=2.4)
+        f.text(x + 18, 228, tag, size=20, color=col, weight="bold")
+        f.multi(x + 18, 266, lines, size=15, color=INK, lh=26)
+        if i < 4:
+            f.arrow(x + bw + 2, 288, x + bw + gap - 2, 288, color=INK, sw=2.6)
+
+    f.rect(84, 432, 474, 108, color=BLUE_D, fill=WHITE, sw=2.2)
+    f.text(108, 466, "EXTI 决定何时被注意到", size=20, color=BLUE_D, weight="bold")
+    f.multi(108, 498, ["NVIC 决定谁先跑；两件事分开查"], size=16, color=INK, lh=26)
+    f.rect(594, 432, 474, 108, color=RED, fill=WHITE, sw=2.2)
+    f.text(618, 466, "子优先级不产生嵌套", size=20, color=RED, weight="bold")
+    f.multi(618, 498, ["只在多份请求同时挂起时排序"], size=16, color=INK, lh=26)
+
+    f.rect(84, 576, 984, 96, color=MUTED, fill=GRAY_FILL, sw=2.0, dash="7 5")
+    f.text(108, 608, "三个总闸在这条流水线外侧：", size=18, color=INK, weight="bold")
+    f.text(108, 642, "PRIMASK 挡可配置中断（NMI 仍进）· FAULTMASK 再挡 HardFault · BASEPRI 只挡 ≥ 阈值的那截",
+           size=16, color=INK)
+
+    f.htext(W / 2, 726, "记住分工：EXTI 管「注意到」，NVIC 管「谁先跑」",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(84, 762, "三个阶段名与总闸范围取自本章核心原理与 §11；尾链细节见 §10 的周期图",
+           size=15, color=MUTED)
+    return f
+
+
 FIGS = {
+    "ch04-numbers-ledger": numbers_ledger,
+    "ch04-event-pipeline": event_pipeline,
+    "ch04-lab-evidence": lab_evidence,
     "ch04-mask-gates": mask_gates,
     "ch04-preempt-timeline": preempt_timeline,
 }
