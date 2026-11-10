@@ -375,6 +375,11 @@ The full project is in [`examples/gpio-blink/`](../../examples/gpio-blink/).
 | RC filter | Add a 0.1 µF capacitor and a resistor in hardware |
 | Schmitt trigger | Shape it in hardware |
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch03-debounce-recheck.png" width="760" alt="Handraw: the 20 ms re-check and its boundary (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: three steps on the left — treat a low as a possible glitch, wait 10–20 ms (`HAL_Delay(20)`), read again; still low means pressed, back high means discard. The right side gives the boundary — a 100 ms blocking task per loop swallows short presses, so chapter 04 moves to EXTI; hardware can use an RC filter (0.1 µF) or a Schmitt trigger; Proves software debounce is “a low does not count until it is still low after 20 ms”; Cannot show the real bounce waveform on your button, and it is not an oscilloscope measurement. See [RM0008 section 9.2.7](#source-rm0008-gpio).</sub>
+</p>
 ```c
 /* software debounce: wait until it is stable */
 static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)

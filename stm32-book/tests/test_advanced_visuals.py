@@ -60,7 +60,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "03-GPIO与LED.md": (
-        20,
+        21,
         (
             "gpio-blink.svg",
             "ch03-handdraw.svg",
@@ -82,6 +82,7 @@ CHAPTERS = {
             "sample-03-exti-vs-poll.svg",
             "ch03-poll-vs-exti.png",
             "ch03-lckr-sequence.png",
+            "ch03-debounce-recheck.png",
         ),
     ),
     ROOT / "docs" / "05-定时器与PWM.md": (
@@ -357,7 +358,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "24-STM32L4引脚.md": (
-        20,
+        22,
         (
             "pinout-stm32l476rg-lqfp64.svg",
             "ch24-part-id.png",
@@ -378,7 +379,9 @@ CHAPTERS = {
             "ch24-sleep-checklist.png",
             "ch24-irq-order.png",
             "ch24-duty-integration.png",
+            "ch24-migrate-boundary.png",
             "ch24-two-firmware.png",
+            "ch24-slow-meter.png",
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
@@ -463,7 +466,7 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "27-网络与协议栈.md": (
-        20,
+        21,
         (
             "network-packet-journey.svg",
             "sample-27-rmii-checklist.svg",
@@ -478,6 +481,7 @@ CHAPTERS = {
             "tcp-byte-stream.svg",
             "ch27-tcp-framing.png",
             "ch27-sendall-loop.png",
+            "ch27-udp-tcp-contract.png",
             "ch27-tls-prereqs.png",
             "ch27-at-offload.png",
             "sample-27-link-triage.svg",

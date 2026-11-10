@@ -394,6 +394,11 @@ Capture at least ten complete cycles for each configuration. Report minimum, mea
 | The sleep plateau is about 2 µA but battery life is poor | Only the sleep level was read; periodic wake charge was missed | Integrate the complete cycle and calculate `I_avg` |
 | The cover's 1.1 µA is treated as an acceptance limit | It is a typical chip value under stated conditions | Set your own limit from measured conditions, DS10198, and ES0250 |
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-migrate-boundary.png" width="760" alt="Handraw: four first boundaries when copying an F1 project (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: four boundary groups — pins and supply (PD0/PD1 versus PH0/PH1, pin 48 VDDUSB), wake-up and clocks (SysTick and stale flags, PLL not restored), load and debug (debugger, GPIO, LEDs, back-feed, meter burden voltage), and measurement and ledger (missing wake-up charge, 1.1 µA as a limit); Proves classify the boundary first, then change one thing at a time; Cannot serve as a complete F1-to-L4 checklist, and does not replace the item-by-item conditions in DS10198 and RM0351. See [DS10198](#source-ds10198), [RM0351](#source-rm0351).</sub>
+</p>
 ## Hands-on labs
 
 **Lab A: functional loop, with evidence output**
@@ -414,6 +419,11 @@ Capture at least ten complete cycles for each configuration. Report minimum, mea
 3. Integrate the active/recovery interval and Stop 2 interval separately. Calculate `Q_cycle`, `I_avg`, and idealized lifetime; reconnect the debugger and repeat to quantify the difference.
 4. Save the raw waveform and calculation script. Do not present MCO or UART traces from the functional build as evidence from the low-power build.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch24-slow-meter.png" width="760" alt="Handraw: a slow meter misses the 8 ms spike and reads 2 µA (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the 8 ms spike is only about 7 px wide on the 1 s axis, and the slow meter's samples all land on the sleep plateau; the meter reads about 2 µA while the full-cycle integral is 0.041984 mA·s ≈ 42 µA; below sit f_s ≥ 10/t_min (t_min = 8 ms → ≥ 1.25 kHz) and the three-line acceptance page (mode, current, conditions); Proves a missed spike turns 42 µA into 2 µA; Cannot show your board's waveform, instrument bandwidth, or board loads, and it is not measured. See [DS10198](#source-ds10198), [AN4746](#source-an4746).</sub>
+</p>
 Self-test:
 
 1. Does Stop 2 wake through reset, or continue after `WFI/WFE`?

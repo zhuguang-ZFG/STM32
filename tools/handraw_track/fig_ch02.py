@@ -137,10 +137,147 @@ def part_number_decode():
     return f
 
 
+def part_funnel():
+    f = Fig("ch02-part-funnel",
+            "选型：先筛后用，再查完整订货号 / filter first, look up last")
+
+    f.text(84, 130,
+           "先用封装、存储器和外设排除不合适的料号，再按手册中的时钟树逐级计算",
+           size=21, color=MUTED)
+
+    # ---- 左：需求 ----
+    f.rect(84, 160, 280, 430, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(104, 196, "需求先写清", size=23, color=GREEN_D, weight="bold")
+    f.multi(104, 238, [
+        "① 要几个引脚？",
+        "② 多大 Flash / RAM？",
+        "③ 要哪些外设？",
+        "    USB / CAN / ADC / TIM",
+        "④ 主频要多快？",
+        "⑤ 什么温度等级？",
+    ], size=18, color=INK, lh=38)
+    f.text(104, 528, "问题越具体，筛得越快", size=17, color=MUTED)
+    f.text(104, 558, "同一系列也可能容量、", size=17, color=RED)
+    f.text(104, 580, "引脚、时钟都不同", size=17, color=RED, weight="bold")
+
+    # ---- 中：三把筛子 ----
+    sieves = [
+        (160, "① 封装与引脚", BLUE_D,
+         ["T=36 · C=48 · R=64 · V=100 · Z=144", "脚数不够，后面的都免谈"]),
+        (300, "② 存储器", GREEN_D,
+         ["4=16K · 6=32K · 8=64K · B=128K", "C=256K · E=512K · G=1M"]),
+        (440, "③ 外设与主频", AMBER_STROKE,
+         ["USB / CAN / ADC 在不在？", "103 = 72 MHz，带 USB 和 CAN"]),
+    ]
+    for y, name, col, lines in sieves:
+        f.rect(408, y, 340, 124, color=col, fill=WHITE, sw=2.6)
+        f.text(426, y + 34, name, size=21, color=col, weight="bold")
+        f.multi(426, y + 68, lines, size=16, color=INK, lh=30)
+    f.arrow(368, 260, 404, 220, color=MUTED, sw=2.2, bend=0.0)
+    f.arrow(368, 360, 404, 360, color=MUTED, sw=2.2, bend=0.0)
+    f.arrow(368, 460, 404, 500, color=MUTED, sw=2.2, bend=0.0)
+
+    # ---- 右：剩下的才查手册 ----
+    f.rect(792, 160, 276, 404, color=RED, fill=WHITE, sw=2.6)
+    f.text(812, 196, "剩下的才查手册", size=22, color=RED, weight="bold")
+    f.text(812, 240, "候选：STM32F103C8T6", size=18, color=INK,
+           weight="bold")
+    f.multi(812, 276, [
+        "48 脚 · 64 KB Flash",
+        "LQFP 封装",
+        "−40 ~ 85 °C",
+    ], size=17, color=INK, lh=30)
+    f.text(812, 388, "完整订货号以", size=17, color=MUTED)
+    f.text(812, 412, "数据手册为准，", size=17, color=MUTED)
+    f.text(812, 436, "不确定的字段不猜", size=17, color=MUTED)
+    f.arrow(752, 362, 788, 362, color=MUTED, sw=2.2, bend=0.0)
+
+    f.rect(84, 612, 984, 56, color=AMBER_STROKE, fill=WHITE, sw=2.2)
+    f.text(104, 648,
+           "筛子问的是「够不够用」，数据手册回答「到底是哪一颗」",
+           size=20, color=INK, weight="bold")
+
+    f.htext(84, 724, "口诀：封装、存储、外设先过筛——最后才逐字对订货号",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
+def clock_gate():
+    f = Fig("ch02-clock-gate",
+            "先开时钟，再摸寄存器 / gate first, then init")
+
+    f.text(84, 130,
+           "任何外设第一次写寄存器之前，都要先 __HAL_RCC_*_CLK_ENABLE()",
+           size=21, color=MUTED)
+
+    # ---- 左：门关 vs 门开 ----
+    f.rect(84, 160, 600, 330, color=INK, fill=WHITE, sw=2.4)
+    # 门关
+    f.rect(104, 190, 260, 270, color=MUTED, fill=GRAY_FILL, sw=2.2)
+    f.text(234, 224, "门关：没开 CLK_ENABLE", size=19, color=MUTED,
+           anchor="middle", weight="bold")
+    f.rect(144, 246, 180, 64, color=MUTED, fill=WHITE, sw=2.0)
+    f.text(234, 286, "外设（GPIO/I2C/…）", size=16, color=MUTED,
+           anchor="middle")
+    f.line(234, 310, 234, 350, color=MUTED, sw=2.2)
+    f.line(214, 330, 254, 370, color=RED, sw=3.0)
+    f.line(254, 330, 214, 370, color=RED, sw=3.0)
+    f.rect(144, 370, 180, 56, color=MUTED, fill=WHITE, sw=2.0)
+    f.text(234, 404, "RCC 时钟门（关）", size=16, color=MUTED,
+           anchor="middle")
+    f.text(234, 448, "读回 0，写入像写进虚空", size=16, color=RED,
+           anchor="middle", weight="bold")
+    # 门开
+    f.rect(436, 190, 228, 270, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(550, 224, "门开：先 CLK_ENABLE", size=19, color=GREEN_D,
+           anchor="middle", weight="bold")
+    f.rect(448, 246, 204, 64, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(550, 286, "外设正常工作", size=16, color=INK, anchor="middle")
+    f.line(550, 310, 550, 350, color=GREEN_D, sw=2.2)
+    f.rect(448, 370, 204, 56, color=GREEN_D, fill=WHITE, sw=2.0)
+    f.text(550, 404, "RCC 时钟门（开）", size=16, color=GREEN_D,
+           anchor="middle")
+    f.text(550, 448, "读写才有意义", size=16, color=GREEN_D,
+           anchor="middle", weight="bold")
+
+    # ---- 右：上电顺序 ----
+    f.rect(716, 160, 352, 330, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(736, 196, "上电顺序", size=22, color=BLUE_D, weight="bold")
+    steps = [
+        ("① __HAL_RCC_*_CLK_ENABLE()", "先把门打开", BLUE_D),
+        ("② HAL_xxx_Init()", "再初始化外设", GREEN_D),
+        ("③ 读写寄存器", "这时才有意义", AMBER_STROKE),
+    ]
+    for i, (head, note, col) in enumerate(steps):
+        y = 222 + i * 86
+        f.rect(736, y, 312, 66, color=col, fill=WHITE, sw=2.2)
+        f.text(752, y + 28, head, size=17, color=col, weight="bold")
+        f.text(752, y + 54, note, size=16, color=MUTED)
+        if i < 2:
+            f.arrow(892, y + 68, 892, y + 84, color=MUTED, sw=2.0,
+                    bend=0.0)
+    f.text(736, 480, "顺序反了，Init 写的是关着的门", size=16, color=RED,
+           anchor="start")
+
+    f.rect(84, 520, 984, 104, color=AMBER_STROKE, fill=WHITE, sw=2.2)
+    f.text(104, 556,
+           "上电默认是 HSI 8 MHz，不是 Cube 配置页上的 72 MHz",
+           size=19, color=INK, weight="bold")
+    f.text(104, 590,
+           "SystemClock_Config() 没运行到位时，先读 SWS——不要用串口输出反推主频",
+           size=18, color=INK)
+
+    f.htext(84, 700, "口诀：门不开，外设就不存在——先开时钟，再摸寄存器",
+            size=22, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch02-flash-fetch-wait": flash_fetch_wait,
     "ch02-flash-latency": flash_latency_ladder,
     "ch02-part-number-decode": part_number_decode,
+    "ch02-part-funnel": part_funnel,
+    "ch02-clock-gate": clock_gate,
 }
 
 if __name__ == "__main__":

@@ -1410,6 +1410,11 @@
   "chapter": "02",
   "type": "technical"
  },
+ "illustrations/handraw/ch02-clock-gate.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：门关写进去读回 0、门开读写才有意义，以及 ① CLK_ENABLE ② Init ③ 读写寄存器的上电顺序；证明任何外设第一次写寄存器前先开时钟；不展开时钟树配置，也不是实测波形。",
+  "chapter": "02",
+  "type": "concept"
+ },
  "illustrations/handraw/ch02-clock-tree.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。HSE 8 MHz 经 PLL×9 到 SYSCLK 72 MHz，再分到 PCLK1/PCLK2/ADC/USB；不是示波器实拍。",
   "chapter": "02",
@@ -1430,6 +1435,11 @@
   "chapter": "02",
   "type": "technical"
  },
+ "illustrations/handraw/ch02-part-funnel.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：需求五问 → 封装/存储器/外设三把筛子 → 候选 C8T6，最后才逐字对完整订货号；证明先筛后用，筛子问「够不够用」、数据手册回答「是哪一颗」；不替代订购信息与引脚复用表，也不是实物丝印。",
+  "chapter": "02",
+  "type": "concept"
+ },
  "illustrations/handraw/ch02-part-number-decode.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个色块与错位标注——STM32/F/103/C/8/T/6 各段含义，底条「C8 = 48 脚 · 64 KB Flash · LQFP · −40~85℃」；证明料号每段都有手册出处；不能替代数据手册订购信息表，也不是实物丝印照片。出处 DS5319。",
   "chapter": "02",
@@ -1444,6 +1454,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。左右对照写 0 与写 1 时共阳电流通断；不是万用表读数，也不是板级实拍。",
   "chapter": "03",
   "type": "comparison"
+ },
+ "illustrations/handraw/ch03-debounce-recheck.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：读到低 → 等 10–20 ms（HAL_Delay(20)）→ 再读一次，仍低才判按下；右侧边界：100 ms 阻塞会吞短按，第 04 章改 EXTI，硬件可上 RC 或施密特；不含实际抖动波形，也不是实测。",
+  "chapter": "03",
+  "type": "technical"
  },
  "illustrations/handraw/ch03-gpio-three-questions.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。配置前先答清驱动者、空闲电平与脚归属；不是寄存器截图。",
@@ -1641,6 +1656,11 @@
   "chapter": "07",
   "type": "triage"
  },
+ "illustrations/handraw/ch07-pin-owner.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：复位默认 I2C1 在 PB6/PB7（42/43），重映射后到 PB8/PB9（45/46）；USART1_TX/RX 也能进 PB6/PB7 但要开重映射，同一时间一只脚只给一个外设；波形跑偏或串口占脚时先查归属。",
+  "chapter": "07",
+  "type": "triage"
+ },
  "illustrations/handraw/ch07-pullup-cap.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。电容越大上拉宜更强；4.7 kΩ 只是起点；不是实拍。",
   "chapter": "07",
@@ -1656,6 +1676,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SDA↓且 SCL=1 为 START；第 9 时钟从机拉低=ACK；不是实拍。",
   "chapter": "07",
   "type": "technical"
+ },
+ "illustrations/handraw/ch07-two-owners.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：软件模拟两只普通脚逐位翻转、每步在手里；硬件 I2C 交给外设、CPU 省事但从机拉住 SDA 时 F1 容易卡忙；恢复路径是 9 个 SCL 时钟 + STOP + HAL_I2C_Init；不是实测总线波形。",
+  "chapter": "07",
+  "type": "comparison"
  },
  "illustrations/handraw/ch08-br-table.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SPI1@72 MHz，BR=010→9 MHz 实验档；面包板勿开太快；不是实拍。",
@@ -2531,6 +2556,11 @@
   "chapter": "24",
   "type": "technical"
  },
+ "illustrations/handraw/ch24-migrate-boundary.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：抄 F1 工程的四个第一分歧边界——引脚与供电、唤醒与时钟、负载与调试、测量与账本；证明同一症状先分边界再一次只改一处；不是完整迁移检查表，也不替代 DS10198/RM0351 的逐项条件。",
+  "chapter": "24",
+  "type": "triage"
+ },
  "illustrations/handraw/ch24-modes.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。Sleep/Stop 0·1·2 从 WFI 下一条指令继续，SRAM1/2 保持；Standby/Shutdown 唤醒走复位，主 SRAM 丢；两类混记会把丢的 RAM 当还在；不是实",
   "chapter": "24",
@@ -2550,6 +2580,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。进 Stop 2 前五步：等事务结束、清唤醒源再使能、不用脚设模拟、选唤醒时钟、暂停 SysTick；不是实拍。",
   "chapter": "24",
   "type": "concept"
+ },
+ "illustrations/handraw/ch24-slow-meter.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：1 s 轴上 8 ms 尖峰约 7 px，慢表采样点全落在睡眠平台 → 读数约 2 µA，整周期积分 0.041984 mA·s ≈ 42 µA；f_s ≥ 10/t_min；不涵盖你板子的波形与仪器带宽，也不是实测。",
+  "chapter": "24",
+  "type": "calculation"
  },
  "illustrations/handraw/ch24-sram2-retain.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。SRAM2 三档对照：Sleep/Stop 照常保持、Standby 可选保持要置 RRS、Shutdown 更深；保持要按料号与 RRS 确认，最小状态放 RTC 后备寄存器；不是实拍。",
@@ -2710,6 +2745,11 @@
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。受信 CA、主机名、真实熵源、可信时间缺一不可；VERIFY_NONE 握手照样成功但身份无担保；不是实拍。",
   "chapter": "27",
   "type": "concept"
+ },
+ "illustrations/handraw/ch27-udp-tcp-contract.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：UDP 保留 datagram 边界、可靠与拥塞归应用、支持多播；TCP 是字节流、连接内重传排序去重、拥塞内置、不支持多播；UDP 不是「更实时的 TCP」，周期覆盖场景仍要序号与时间戳。",
+  "chapter": "27",
+  "type": "comparison"
  },
  "illustrations/handraw/ch28-distinguishing-experiment.png": {
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。故障注入验收流程与合格/不合格判决：复位后能指认先失败的健康条件。",

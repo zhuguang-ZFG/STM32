@@ -319,6 +319,11 @@ Compute the deadline once, for example `send_all_until(fd, frame, frame_len, sys
 
 UDP is not “more real-time TCP.” If you add retransmission, windows, ordering, and fragmentation, you may build a worse TCP. If the next sensor frame can replace the previous one, UDP may avoid head-of-line blocking, but it still needs sequence and time.
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-udp-tcp-contract.png" width="760" alt="Handraw: two transport contracts, UDP and TCP (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: UDP on the left — datagrams keep boundaries, loss/reorder/duplicates and congestion belong to the application, multicast is supported; TCP on the right — a byte stream with no boundaries, you must frame it, retransmission/ordering/deduplication inside the connection, congestion control built in, no multicast; below, two boundaries — UDP is not “more real-time TCP,” and periodic data whose next frame may replace the previous one can avoid head-of-line blocking but still needs sequence and time; Proves choose the contract first (who owns boundaries, who owns reliability), then the protocol and port; Cannot cover MQTT QoS, TLS, or implementation performance, and it is not measured throughput. See [lwIP pitfalls](#source-lwip-pitfalls), [RM0433](#source-rm0433).</sub>
+</p>
 ## MQTT: QoS is not business exactly-once
 
 | QoS | Transport meaning | Device responsibility |
