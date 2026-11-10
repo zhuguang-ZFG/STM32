@@ -222,8 +222,82 @@ def vcap_caps():
     return f
 
 
+def clock_evidence():
+    f = Fig("ch25-clock-evidence",
+            "时钟验收三列证据 / three evidence columns for clocks")
+    # 条件链
+    f.panel(146, 118, 860, 78, AMBER_FILL)
+    f.rect(146, 118, 860, 78, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 156,
+           "HSE 8 MHz ÷ PLLM4 × PLLN480 ÷ PLLP2 = 480 MHz → HPRE÷2 → HCLK 240",
+           size=25, color=INK, anchor="middle", weight="bold")
+    # 三列
+    cols = [
+        (84, "① 复算（纸面）", BLUE_D, BLUE,
+         ["SYSCLK 480 MHz", "HCLK 240 MHz", "PCLK 120 MHz",
+          "APB 定时器 240（×2）", "MCO2/5 = 96 MHz"]),
+        (414, "② 软件读回（两值）", GREEN_D, GREEN,
+         ["SystemCoreClock", "= 480 000 000（CPU）",
+          "SystemD2Clock", "= 240 000 000（D2 总线）",
+          "读回是算出来的值：", "两值一致 ≠ 真实时钟"]),
+        (744, "③ 仪器实测（引脚）", AMBER_STROKE, AMBER_FILL,
+         ["PC9 MCO2 频率计", "读 96 MHz", "X2 晶振脚示波器",
+          "读 8 MHz", "任何一项对不上", "先停在时钟层排查"]),
+    ]
+    for x, title, stroke, fill, lines in cols:
+        f.rect(x, 226, 324, 330, color=stroke, fill=WHITE, sw=2.6)
+        f.panel(x + 10, 236, 304, 54, fill)
+        f.text(x + 162, 270, title, size=22, color=stroke, anchor="middle",
+               weight="bold")
+        f.multi(x + 168, 322, lines, size=21, color=INK, lh=44,
+                anchor="middle")
+    # 红条：Rev 限制
+    f.rect(84, 596, 984, 96, color=RED, fill=WHITE, sw=2.6)
+    f.htext(W / 2, 632, "Rev Y / W 不能凭 DS12110「最高 480 MHz」直接 VOS0 + 480",
+            size=23, color=RED, anchor="middle", weight="bold", hl=True)
+    f.text(W / 2, 668, "先查 ES0392 errata 与供电宏；rev、供电宏、复算、读回、实测五者一致才算时钟层过关",
+           size=19, color=INK, anchor="middle")
+    return f
+
+
+def hal_clock_values():
+    f = Fig("ch25-hal-clock-values",
+            "HAL 的两个时钟值与 SysTick 陷阱 / two HAL clock values")
+    # 左：两值来源链
+    f.rect(84, 150, 640, 300, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.htext(404, 196, "system_stm32h7xx.c 怎么算出两个值", size=24,
+            color=BLUE_D, anchor="middle", weight="bold")
+    steps = [
+        ("① 先算 CM7 CPU 频率", "PLLM/N/P → SystemCoreClock = 480 MHz", GREEN_D),
+        ("② 再由 HPRE 分频", "得到 D2 域总线 → SystemD2Clock = 240 MHz", BLUE_D),
+        ("③ HAL_RCC_ClockConfig()", "同时更新 SystemCoreClock、SystemD2Clock、HAL tick", AMBER_STROKE),
+    ]
+    y = 236
+    for t, s, c in steps:
+        f.rect(110, y, 588, 62, color=c, fill=WHITE)
+        f.text(132, y + 26, t, size=21, color=c, weight="bold")
+        f.text(132, y + 52, s, size=19, color=INK)
+        y += 74
+    # 右：SysTick 陷阱
+    f.rect(756, 150, 312, 300, color=RED, fill=WHITE, sw=2.6)
+    f.htext(912, 196, "SysTick 陷阱", size=24, color=RED, anchor="middle",
+            weight="bold", hl=True)
+    f.multi(912, 244, ["HAL 默认 SysTick", "用 CPU 时钟", "", "别把 HCLK=240 MHz", "填进去当 tick", "——差一倍"],
+            size=21, color=INK, lh=40, anchor="middle")
+    # 底：判读规则
+    f.panel(84, 500, 984, 110, AMBER_FILL)
+    f.rect(84, 500, 984, 110, color=AMBER_STROKE, sw=3.0)
+    f.text(W / 2, 540, "480 是 CPU、240 是总线——UART/PWM 的波特率与时基按各自挂在的时钟重算",
+           size=23, color=INK, anchor="middle", weight="bold")
+    f.text(W / 2, 580, "读回两值只证明「HAL 认为如此」；真实频率仍以 MCO2/频率计为准（见实验 5）",
+           size=20, color=INK, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch25-part-id": part_id,
+    "ch25-clock-evidence": clock_evidence,
+    "ch25-hal-clock-values": hal_clock_values,
     "ch25-pin-compare": pin_compare,
     "ch25-rev-vos": rev_vos,
     "ch25-clock-math": clock_math,

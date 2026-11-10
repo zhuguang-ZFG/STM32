@@ -82,6 +82,11 @@ EXTI lines are shared by pin number: PA0 and PB0 are both EXTI0, so they cannot 
 
 Stacking takes about 12 HCLK, about 167 ns at 72 MHz, matching Appendix D. Source: [PM0056 section 2.3.7](#source-pm0056-nvic). Clearing `EXTI_PR` is [RM0008](#source-rm0008-exti).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch04-preempt-timeline.png" width="760" alt="Handraw: the preemption timeline — EXTI0 interrupting TIM2 in five steps, plus two contrasts (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the five-step timeline on top — TIM2 running, stacking eight registers (12 HCLK ≈ 167 ns), EXTI0 vector fetch and execution, unstack and return, TIM2 resumes; the red card bottom left "preemption written equal → stays pending, no nested stack", the blue card bottom right "PRIMASK = 1 blocks configurable interrupts, NMI still enters"; proves preemption follows the preemption field, not subpriority — a smaller number wins; does not replace the PM0056 timing text, nor a measured interrupt waveform. See [PM0056 section 2.3.7](#source-pm0056-nvic).</sub>
+</p>
+
 ## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | What the source shows |

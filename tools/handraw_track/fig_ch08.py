@@ -192,9 +192,96 @@ def cs_bracket():
     return f
 
 
+def cs_triage():
+    f = Fig("ch08-cs-triage",
+            "片选失焦分诊：先看括号，再数几片 CS 低 / chip-select triage")
+
+    f.text(84, 134, "多从机共用 SCK/MOSI/MISO，每片一根 CS；同一时刻只允许一片为低",
+           size=19, color=MUTED)
+
+    # ---- 左上：一个括号包住一次事务 ----
+    f.text(84, 176, "① 一条事务 = 一个括号（Mode 0）", size=20,
+           color=GREEN_D, weight="bold")
+    f.text(92, 232, "CS", size=17, color=RED, weight="bold")
+    f.stroke([(140, 210), (190, 210), (190, 246), (470, 246), (470, 210),
+              (566, 210)], color=RED, sw=3.0, amp=1.0)
+    f.text(200, 200, "拉低", size=15, color=RED, weight="bold")
+    f.text(480, 200, "拉高", size=15, color=RED, weight="bold")
+    f.text(92, 288, "SCK", size=17, color=BLUE_D, weight="bold")
+    pts = [(140, 300)]
+    for k in range(8):
+        rx = 210 + 32 * k
+        pts += [(rx, 300), (rx, 268), (rx + 16, 268), (rx + 16, 300)]
+    pts += [(566, 300)]
+    f.stroke(pts, color=BLUE_D, sw=2.8, amp=1.0)
+    f.text(84, 340, "括号里 8 个沿换 1 个字节；CS↑ 之后才允许下一条命令",
+           size=16, color=INK)
+    f.text(84, 368, "一直压着 CS：下一条命令接在上一条后面，两包粘成一包",
+           size=16, color=RED, weight="bold")
+
+    # ---- 右上：每片一根 CS ----
+    f.text(584, 176, "② 每个从机一根 CS", size=20, color=GREEN_D,
+           weight="bold")
+    f.rect(584, 206, 110, 90, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.text(639, 245, "主机", size=17, color=BLUE_D, anchor="middle",
+           weight="bold")
+    f.text(639, 270, "SPI1", size=16, color=MUTED, anchor="middle")
+    f.line(694, 236, 800, 236, color=BLUE_D, sw=2.4)
+    f.line(800, 236, 800, 371, color=BLUE_D, sw=2.4)
+    f.text(704, 222, "SCK / MOSI / MISO 共用", size=14, color=BLUE_D)
+    for k, (tag, state, col) in enumerate((
+            ("从机 A · CS 低", "A", GREEN_D),
+            ("从机 B · CS 高", "B", MUTED),
+            ("从机 C · CS 高", "C", MUTED))):
+        sy = 206 + k * 70
+        f.line(800, sy + 25, 900, sy + 25, color=col, sw=2.2,
+               dash=None if col == GREEN_D else "6 6")
+        f.rect(900, sy, 156, 50, color=col, fill=WHITE, sw=2.2)
+        f.text(978, sy + 31, tag, size=15, color=col, anchor="middle",
+               weight="bold")
+    f.text(584, 400, "两片同时低 → 两个从机一起驱动 MISO，读数互撞", size=16,
+           color=RED, weight="bold")
+
+    # ---- 下：三张分诊卡 ----
+    cards = [
+        ("读回全 FF（换慢时钟也一样）", BLUE_D, [
+            "先查：事务期间 CS 真为低？",
+            "没选中 → MISO 悬空读 1",
+            "不是先降 SCK 速率",
+        ]),
+        ("第二条命令带出上一条尾巴", AMBER_STROKE, [
+            "先查：每条事务后 CS 拉高？",
+            "一直低 → 两条命令粘成一包",
+            "有的从机在 CS↑ 才收下",
+        ]),
+        ("两片从机读数打架、随机", RED, [
+            "先查：同时低了几片 CS？",
+            "两片都驱动 MISO = 冲突",
+            "初始化先把所有 CS 拉高",
+        ]),
+    ]
+    for k, (head, col, lines) in enumerate(cards):
+        cx = 84 + k * 340
+        f.rect(cx, 436, 320, 44, color=col, fill=WHITE, sw=2.2)
+        f.text(cx + 14, 465, head, size=15, color=col, weight="bold")
+        f.multi(cx + 14, 510, lines, size=15.5, color=INK, lh=28)
+
+    # ---- 底：软件 NSS 的边界 ----
+    f.rect(84, 606, 984, 72, color=GREEN_D, fill=WHITE, sw=2.2)
+    f.text(100, 636, "单主多从：软件 GPIO 管 CS（本章做法）；硬件 NSS 只在多主系统里出现",
+           size=18, color=GREEN_D, weight="bold")
+    f.text(100, 662, "PA4 还是普通推挽输出时，别再把它配成复用 NSS——两种管法只能选一种",
+           size=15, color=MUTED)
+
+    f.htext(84, 728, "口诀：先看 PA4 括号，再数同时低几片 CS；模式和速率放最后",
+            size=20, color=INK, weight="bold", hl=True)
+    return f
+
+
 FIGS = {
     "ch08-byte-exchange": byte_exchange,
     "ch08-cs-bracket": cs_bracket,
+    "ch08-cs-triage": cs_triage,
 }
 
 if __name__ == "__main__":

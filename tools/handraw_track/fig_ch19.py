@@ -258,7 +258,38 @@ def usb_split():
     return f
 
 
+def log_ring():
+    f = Fig("ch19-log-ring",
+            "W25Q64 循环日志区：wr 递增、回卷只擦首扇区")
+    # 扇区条
+    f.text(84, 132, "LOG_BASE 起一段连续扇区：wr 顺序写，写到末尾回卷到首扇区",
+           size=21, color=MUTED)
+    x = 84
+    y = 175
+    for i in range(6):
+        c = GREEN_D if i < 4 else AMBER_STROKE
+        f.rect(x, y, 150, 70, color=c, fill=WHITE, sw=2.4)
+        f.htext(x + 75, y + 42, f"扇区 {i}", size=19, color=c, anchor="middle")
+        x += 160
+    f.arrow(84 + 4 * 160 + 10, y + 90, 84 + 70, y + 90, color=INK, sw=2.4, head=8)
+    f.text(84 + 4 * 160 - 240, y + 122, "wr 到末尾 → 回卷", size=18, color=MUTED)
+    # 两条要点
+    f.rect(84, 356, 470, 150, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(108, 392, "示例做到了", size=21, color=GREEN_D, weight="bold")
+    f.text(108, 426, "记录格式固定（时间戳+温湿度×10）", size=18, color=INK)
+    f.text(108, 456, "wr 地址递增，重启回到 LOG_BASE", size=18, color=INK)
+    f.rect(594, 356, 470, 150, color=RED, fill=WHITE, sw=2.6)
+    f.text(618, 392, "可用日志还缺", size=21, color=RED, weight="bold")
+    f.text(618, 426, "逐扇区预擦 / 写完成检查 / 提交标记", size=18, color=INK)
+    f.text(618, 456, "磨损均衡 / 重启扫描恢复 wr", size=18, color=INK)
+    f.rect(84, 536, 980, 62, color=INK, fill=WHITE, sw=2.2)
+    f.htext(W / 2, 570, "掉电保哪些记录，用断电测试确认，不靠猜",
+            size=22, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
+    "ch19-log-ring": log_ring,
     "ch19-ab-partition": ab_partition,
     "ch19-flash-fit": flash_fit,
     "ch19-pick-ladder": pick_ladder,

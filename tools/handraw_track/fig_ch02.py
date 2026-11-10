@@ -83,8 +83,64 @@ def flash_fetch_wait():
     return f
 
 
+def flash_latency_ladder():
+    f = Fig("ch02-flash-latency",
+            "LATENCY 档位：先把等待周期加上，再切 SYSCLK（2.7–3.6 V）")
+    f.text(84, 118, "闪存跟不上 72 MHz：每个档位先查供电电压，再查 SYSCLK 落在哪一档",
+           size=21, color=MUTED)
+    bands = [
+        ("0 – 24 MHz", "LATENCY = 0", "0 个等待周期", GREEN_D),
+        ("24 – 48 MHz", "LATENCY = 1", "1 个等待周期", AMBER_STROKE),
+        ("48 – 72 MHz", "LATENCY = 2（010）", "2 个等待周期", RED),
+    ]
+    y = 165
+    for band, lat, wait, c in bands:
+        f.rect(84, y, 980, 88, color=c, fill=WHITE, sw=2.6)
+        f.text(112, y + 36, band, size=25, color=INK, weight="bold")
+        f.text(480, y + 36, lat, size=25, color=c, weight="bold")
+        f.text(480, y + 68, wait, size=19, color=MUTED)
+        y += 108
+    f.rect(84, y + 12, 980, 92, color=RED, fill=WHITE, sw=2.6)
+    f.text(112, y + 48, "顺序反了就是事故：只把 PLL 改成 ×9、LATENCY 还留在 0，",
+           size=21, color=RED, weight="bold")
+    f.text(112, y + 80, "CPU 读到错的指令——程序跑飞或进 HardFault。先写 2，再切时钟。",
+           size=21, color=RED)
+    return f
+
+
+def part_number_decode():
+    f = Fig("ch02-part-number-decode",
+            "STM32F103C8T6：七段料号逐段解码 / part number, decoded")
+    segs = [
+        ("STM32", "品牌", 120),
+        ("F", "系列", 90),
+        ("103", "子系列 增强型", 140),
+        ("C", "引脚 48", 105),
+        ("8", "Flash 64 KB", 125),
+        ("T", "封装 LQFP", 115),
+        ("6", "温度 −40~85℃", 145),
+    ]
+    x = 84
+    y = 200
+    for i, (s, m, w) in enumerate(segs):
+        c = (GREEN_D, BLUE_D, AMBER_STROKE, RED, GREEN_D, BLUE_D, AMBER_STROKE)[i]
+        f.rect(x, y, w, 76, color=c, fill=WHITE, sw=2.6)
+        f.htext(x + w / 2, y + 46, s, size=27, color=c, anchor="middle",
+                weight="bold")
+        f.text(x + 2, y + 108 + (34 if i % 2 else 0), m, size=17, color=INK)
+        x += w + 10
+    f.rect(84, 396, 980, 70, color=INK, fill=WHITE, sw=2.2)
+    f.htext(W / 2, 433, "C8 = 48 脚 · 64 KB Flash · LQFP · −40~85℃",
+            size=24, color=INK, anchor="middle", weight="bold", hl=True)
+    f.text(84, 508, "后缀 A 属订购代码：采购按数据手册完整料号核对，不靠猜。",
+           size=20, color=MUTED)
+    return f
+
+
 FIGS = {
     "ch02-flash-fetch-wait": flash_fetch_wait,
+    "ch02-flash-latency": flash_latency_ladder,
+    "ch02-part-number-decode": part_number_decode,
 }
 
 if __name__ == "__main__":

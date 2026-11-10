@@ -242,7 +242,30 @@ def fake_id():
     return f
 
 
+def identity_triage():
+    f = Fig("ch21-identity-triage",
+            "板子对不上账：三处核对再给结论")
+    f.text(84, 118, "「跑不出 72 MHz」「丝印对不上」先核对证据，别用「山寨」代替具体记录",
+           size=21, color=MUTED)
+    steps = [
+        ("① 读 Device ID / Flash 容量", "用调试器或 ISP 读回，与 DS5319 对账", GREEN_D),
+        ("② 主频实测", "MCO 或示波器量 SYSCLK，不只看丝印标称", BLUE_D),
+        ("③ 供电与发热", "量各 VDD 电流与压降，查去耦与 LDO", AMBER_STROKE),
+    ]
+    y = 165
+    for t, n, c in steps:
+        f.rect(84, y, 980, 88, color=c, fill=WHITE, sw=2.6)
+        f.text(112, y + 38, t, size=24, color=c, weight="bold")
+        f.text(112, y + 70, n, size=19, color=INK)
+        y += 106
+    f.rect(84, y + 12, 980, 66, color=RED, fill=WHITE, sw=2.6)
+    f.htext(W / 2, y + 48, "任何一处不一致都单列记录，结论以证据为准",
+            size=22, color=RED, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
+    "ch21-identity-triage": identity_triage,
     "ch21-board-compare": board_compare,
     "ch21-vdd-3v3": vdd_3v3,
     "ch21-usb-ttl": usb_ttl,

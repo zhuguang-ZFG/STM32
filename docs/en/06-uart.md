@@ -108,6 +108,11 @@ When the stop-bit majority vote is low, hardware sets `USART_SR.FE`. The figure 
 
 The 0.16% belongs only to the USART2 row. Source: [RM0008 section 27.3.3](#source-rm0008-usart).
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch06-baud-budget.png" width="760" alt="Handraw: baud-error budget across a 10-bit frame (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at: the 10-cell frame strip at the top left, the four bars below it (cumulative drift for total error 1%/2%/3%/5%), and the four budget cards on the right that spend the 5% half-bit allowance. What it proves: drift accumulates linearly over 10 bits, and 0.5 bit = 5% is the hard frame-end bound; after the 1/16-bit half-window of the 3-sample vote and 1/16-bit start-edge recognition, about 3.75% is left, so the engineering budget is 2%–3%; BRR `0x271` for USART1 is itself 0% error, leaving the margin for both clock sources. What it does not prove: this is 8N1 arithmetic at 16× oversampling, not a measured error of a real crystal pair, and it excludes temperature drift, trace delay, and edge jitter. Source: [RM0008 Rev 21 ch.27](#source-rm0008-usart).</sub>
+</p>
+
 ## Pitfalls and sources
 
 | Symptom | Cause | What to do | Source | What the source shows |

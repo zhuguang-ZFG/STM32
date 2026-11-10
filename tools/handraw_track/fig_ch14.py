@@ -118,7 +118,38 @@ def ctrl_transfer():
     return f
 
 
+def cdc_vs_hid():
+    f = Fig("ch14-cdc-vs-hid",
+            "CDC 与 HID 怎么选 / CDC versus HID at a glance")
+    rows = [
+        ("用途", "虚拟串口，字节流", "键盘/鼠标/报告"),
+        ("端点", "1 批量 IN + 1 批量 OUT (+1 中断 IN)", "1 中断 IN（+可选 OUT）"),
+        ("带宽", "高，可跑满全速", "低，受 bInterval 限"),
+        ("数据单位", "字节流，自己切消息", "固定格式报告 Report"),
+        ("驱动", "Win10+ 免驱", "全平台免驱"),
+    ]
+    f.rect(84, 150, 480, 56, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.htext(324, 184, "CDC：插上变串口", size=24, color=GREEN_D,
+            anchor="middle", weight="bold")
+    f.rect(594, 150, 470, 56, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.htext(829, 184, "HID：插上变键盘", size=24, color=BLUE_D,
+            anchor="middle", weight="bold")
+    y = 226
+    for dim, cdc, hid in rows:
+        f.text(84, y + 26, dim, size=20, color=MUTED, weight="bold")
+        f.rect(210, y, 354, 44, color=GREEN_D, fill=WHITE, sw=2.0)
+        f.text(222, y + 29, cdc, size=18, color=INK)
+        f.rect(594, y, 470, 44, color=BLUE_D, fill=WHITE, sw=2.0)
+        f.text(606, y + 29, hid, size=18, color=INK)
+        y += 58
+    f.rect(84, y + 10, 980, 66, color=INK, fill=WHITE, sw=2.2)
+    f.htext(W / 2, y + 45, "送日志/采样数据 → CDC；要系统当键盘鼠标读 → HID",
+            size=22, color=INK, anchor="middle", weight="bold", hl=True)
+    return f
+
+
 FIGS = {
+    "ch14-cdc-vs-hid": cdc_vs_hid,
     "ch14-enum-checklist": enum_checklist,
     "ch14-ctrl-transfer": ctrl_transfer,
 }

@@ -84,6 +84,11 @@ The trace pin is pin 39 PB3. Its default function is JTDO. TRACESWO appears only
 
 This table lists hardware state only. Pin 35 is VSS_2, pin 36 is VDD_2, and pin 7 is NRST.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-boot-first-words.png" width="760" alt="Handraw: after reset the CPU fetches two 32-bit words first — MSP and the reset entry — plus two ways the chain breaks (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the fetch order of the three boxes on top — reset (BOOT0=0) reads word 0 (MSP) and word 1 (Reset_Handler) through the 0x00000000 alias of 0x08000000 before reaching main; the two "breakage exits" below, each with symptom and recovery (Debug disabled → pull BOOT0 high to boot from system memory; BOOT0=1 with BOOT1=0 → fetches 0x1FFFF000, not SRAM); proves "cannot connect / does not run" calls for checking BOOT and Debug configuration before blaming the program; does not replace the PM0056 vector-table text, nor a measured reset waveform. See [PM0056](#source-pm0056-vector), [RM0008](#source-rm0008-boot), and [DS5319](#source-ds5319-swd).</sub>
+</p>
+
 ## Pitfalls and sources
 
 | What you see | Why | What to do | Source | What the source shows |
@@ -222,6 +227,11 @@ The complete build entry is [`examples/spl-f1-blink/`](../../examples/spl-f1-bli
 4. Create an **OpenOCD Download & Run** configuration with the CMake target, the ELF, `openocd/bluepill-stlink.cfg`, and `arm-none-eabi-gdb`.
 5. Run means build → program → verify → reset. Debug also starts OpenOCD on port 3333, loads the same ELF in GDB, and stops in `main`.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-one-elf-evidence.png" width="760" alt="Handraw: four callers share one build contract and produce the same ELF (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the four callers on top (CLI / CLion / VS Code / CI) each only press a button; the shared contract row below (CMakePresets.json, toolchain file, linker script, openocd/*.cfg); the check "the configure log must show exactly one arm-none-eabi-gcc" and the landing box "the same ELF"; proves "the IDE builds but CI does not" means the contract was copied, not that the tools differ; does not replace an actual build log, nor a CI screenshot. See [examples/spl-f1-blink](#source-project-examples) in this repository.</sub>
+</p>
+
 ### VS Code: a task builds; Cortex-Debug debugs
 
 1. Install C/C++, CMake Tools, and Cortex-Debug. Start `code .` from a terminal that already has the dependency environment.
@@ -270,6 +280,11 @@ The same thing from the command line (OpenOCD):
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg \
   -c "init; reset halt; stm32f1x unlock 0; reset; shutdown"
 ```
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-rdp-unlock-paths.png" width="760" alt="Handraw: two equivalent RDP unlock paths (GUI and OpenOCD) with the same cost (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the step-by-step correspondence between the four GUI steps and the OpenOCD command line with the "=" sign between them, and the amber banner "unprotect = full main-Flash erase"; the green box "F1 unprotected value 0xA5" and the red box "0xAA is not recognized (that is the F4 value)"; proves Apply in the GUI and stm32f1x unlock 0 are two entries to the same operation with the same cost; does not replace the PM0075 RDP flow text, nor a measured unlock operation. See [PM0075](#source-pm0075-rdp) and [RM0008](#source-rm0008-flash).</sub>
+</p>
 
 ## Hardware and wiring
 
@@ -330,6 +345,11 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 ```
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch01-main-skeleton.png" width="760" alt="Handraw: the four-step main.c contract — HAL_Init, clocks, GPIO, while (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the order of the four boxes and the notes beside them — HAL_Init starts SysTick (HAL_Delay works from here), without SystemClock_Config the chip stays at HSI 8 MHz, without MX_GPIO_Init the GPIOC clock is off and pin registers ignore writes, and only while(1) is "your code"; the red banner "the first three steps are the CubeMX contract"; proves which skeleton lines must not be deleted or moved; does not replace the actual project files, nor a run screenshot. See [examples/gpio-blink](#source-project-examples) in this repository.</sub>
+</p>
 
 The repository's `examples/spl-f1-blink/` uses the same CMake Preset from the CLI, CLion, VS Code, and CI:
 

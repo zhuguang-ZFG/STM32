@@ -191,6 +191,11 @@ Three steps. **(1) Pick the manual, RM or DS. (2) Ctrl+F the register name or th
 - Then go back to **RM0090** chapter 9, DMA, and search the `FIFO`, `BURST`, and `PL` bits. Check the FIFO threshold against the burst size.
 - Read the "DMA and the bus matrix" chapter so the priority and the bus contention make sense.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch20-dma-f1-vs-f4.png" width="760" alt="Handraw: the three DMA differences between F4 and F1 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three rows — the FIFO threshold and the burst settings exist on F4 but not on F1, and the error model differs (F4 checks against FIFO/burst, F1 has only a simple TE flag) — plus the red banner "check the peripheral differences before porting anything"; matches example 3 "why does a DMA transfer fail once in a while"; proves a cross-family conclusion cannot skip the peripheral-diff check; does not replace the RM0090/RM0008 text, nor a measurement. See AN4031, RM0090, and RM0008.</sub>
+</p>
+
 ## Hardware and wiring
 
 The "hardware" in this chapter is **tools and instruments**. They decide how fast you can debug and how fast you can learn. The table is a starting set.

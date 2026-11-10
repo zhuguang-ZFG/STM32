@@ -37,7 +37,12 @@
 
 本章的采样数字都按 STM32F103C8T6 算，ADC 时钟取附录 D 的 12 MHz，换算分母用 4096。C8 没有 DAC；换到 F4 时，转换时间和上电校准的写法也不一样，下面会分别说明。
 
-PCLK2 = 72 MHz，`ADCPRE=10`（÷6）得到 ADCCLK = 12 MHz。ADC 时钟上限是 14 MHz，选 ÷4 会得到 18 MHz，超过上限，所以 72 MHz 主频下只能用 ÷6。分频位怎么配见第 02 章的时钟树。RM0008 里常被引用的「`Tconv = 1 µs`」是 14 MHz、采样 1.5 周期时的例子，C8 跑 72 MHz 主频时到不了 14 MHz，按 12 MHz 算才对。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。
+PCLK2 = 72 MHz，`ADCPRE=10`（÷6）得到 ADCCLK = 12 MHz。ADC 时钟上限是 14 MHz，选 ÷4 会得到 18 MHz，超过上限；÷8（`ADCPRE=11`）得到 9 MHz 也合法，只是转换更慢。所以 72 MHz 主频下 ÷6 是最高合法档，速度优先选它。分频位怎么配见第 02 章的时钟树。RM0008 里常被引用的「`Tconv = 1 µs`」是 14 MHz、采样 1.5 周期时的例子，C8 跑 72 MHz 主频时到不了 14 MHz，按 12 MHz 算才对。出处是 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-adcclk-budget.png" width="760" alt="Handraw：ADC 时钟预算——72 MHz PCLK2 下四个分频档逐个试（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：四档分频与右侧判定——÷2=36 MHz、÷4=18 MHz 都超 14 MHz 上限打红叉，÷6=12 MHz 是最高合法档、÷8=9 MHz 也合法只是更慢；底条提醒 RM0008 的「Tconv = 1 µs」是 14 MHz 特例，C8 按 12 MHz 算；证明 72 MHz 主频下 ÷6 是速度优先的合法选择而非唯一选择；不能替代时钟树配置，也不是实测波形。出处 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。</sub>
+</p>
 
 SAR ADC 的工作过程：采样开关合上，输入经源阻抗给采样电容充电；开关断开，电容上的电压保持住；然后从 MSB 开始逐位比较 12 次。转换时间是采样周期再加 12.5 个 ADCCLK。最长采样档 239.5 加 12.5 等于 252 个周期，`252 / 12e6 = 21 µs`。12 MHz 下各档采样时间：1.5 周期 = 125 ns，13.5 周期 = 1.125 µs，55.5 周期 = 4.625 µs，71.5 周期 = 5.958 µs，239.5 周期 = 19.958 µs。F4 的转换是采样再加 12 个周期，不要混用。
 
@@ -276,6 +281,11 @@ VDDA      = 1.20 V × 4096 / ADC_Read(Vrefint_CH17)
 
 > F4/L4 等系列提供**出厂校准值** `TS_CAL1`(30°C)/`TS_CAL2`(110°C) 与 `VREFINT_CAL`，存于系统存储区，直接读取即可，精度远高于查典型值。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-pa0-analog-config.png" width="760" alt="Handraw：同一只 PA0 的点灯与采样两种配置（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：上半两卡对比——推挽输出时 ADC 读到被自己驱动的固定电平，模拟输入时输出级断开、引脚直连采样开关；下半 LQFP48 三根脚卡（VDDA/PA0/PA4）与「先改脚，再开 ADC」；证明引脚模式不配模拟输入，采样数字永远不动；不能替代实际接线，也不是实测引脚波形。出处 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。</sub>
+</p>
+
 ### 6. DAC 输出模式、缓冲器与噪声
 
 DAC 是 ADC 反过来：你给一个 0 到 4095 的数，它在引脚上给出对应的电压。输出缓冲器像一个跟班，打开以后能带动更重的负载，但它自己走不到 0 V 和 VDDA 的两头。想让电压按波形变化，就让定时器按固定节拍触发，DMA 每拍从表里取一个数送过去。
@@ -295,6 +305,11 @@ F1 DAC 为 12 位、双通道，输出电压 `V_out = Vref × DOR / 4096`；输�
 - 产生正弦/任意波形：定时器触发 + DMA 循环搬运查找表，触发频率决定输出频率。
 
 > F103C8（BluePill 常见型号）**没有 DAC**。DAC 从 F103 大容量（xC/xD/xE）和 F4 才有。中容量片子要模拟电压，用 PWM 加 RC，或者外接 DAC 芯片。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch09-dac-buffer.png" width="760" alt="Handraw：DAC 缓冲器——能带载但到不了 0 V 与 VDDA 两头（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：V_out = Vref × DOR/4096 的码值轴、缓冲关（BOFFx=1，输出阻抗约 15 kΩ、能近满摆幅）与缓冲开（BOFFx=0，能带载但两端被削）的两卡对比，以及底部红色两端条；证明「带载优先」与「两端读数可信」不可兼得；不能替代选型计算，也不是实测输出曲线。出处 [RM0008 Rev 21 第 11 章](#source-rm0008-adc)。</sub>
+</p>
 
 ## 硬件与接线
 

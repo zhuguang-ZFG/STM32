@@ -36,7 +36,12 @@
 
 Every sampling number in this chapter is for the STM32F103C8T6, with the 12 MHz ADC clock from Appendix D and 4096 as the conversion divisor. The C8 has no DAC. On an F4 the conversion time and the power-up calibration also differ; each is noted below.
 
-PCLK2 = 72 MHz, and `ADCPRE=10` (÷6) gives ADCCLK = 12 MHz. The ADC clock limit is 14 MHz. ÷4 would give 18 MHz, over the limit, so with a 72 MHz system clock ÷6 is the only choice. How to set the prescaler is in the chapter 02 clock tree. The often-quoted `Tconv = 1 µs` from RM0008 is the 14 MHz, 1.5-cycle example. A C8 running at 72 MHz cannot reach 14 MHz, so work from 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
+PCLK2 = 72 MHz, and `ADCPRE=10` (÷6) gives ADCCLK = 12 MHz. The ADC clock limit is 14 MHz. ÷4 would give 18 MHz, over the limit; ÷8 (`ADCPRE=11`) gives 9 MHz, also legal but slower. So at 72 MHz ÷6 is the fastest legal choice, which is what you normally pick. How to set the prescaler is in the chapter 02 clock tree. The often-quoted `Tconv = 1 µs` from RM0008 is the 14 MHz, 1.5-cycle example. A C8 running at 72 MHz cannot reach 14 MHz, so work from 12 MHz. Source: [RM0008 Rev 21 chapter 11](#source-rm0008-adc).
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-adcclk-budget.png" width="760" alt="Handraw: the ADC clock budget — trying all four prescalers at 72 MHz PCLK2 (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the four prescaler rows and the verdict marks — ÷2 = 36 MHz and ÷4 = 18 MHz both exceed the 14 MHz ceiling and get a red cross, ÷6 = 12 MHz is the fastest legal choice and ÷8 = 9 MHz is also legal but slower; the banner warns that RM0008's "Tconv = 1 µs" is a 14 MHz special case, and the C8 must be computed at 12 MHz; proves ÷6 at 72 MHz is the speed-first legal pick, not the only one; does not replace clock-tree configuration, nor a measured waveform. See [RM0008 Rev 21 chapter 11](#source-rm0008-adc).</sub>
+</p>
 
 How the SAR ADC works: the sample switch closes and the input charges the sample capacitor through the source impedance; the switch opens and the capacitor holds that voltage; then the converter compares 12 times, one bit at a time, starting at the MSB. Conversion time is the sample cycles plus 12.5 ADCCLK cycles. The longest sample step, 239.5 plus 12.5, is 252 cycles, and `252 / 12e6 = 21 µs`. Sample times at 12 MHz: 1.5 cycles = 125 ns, 13.5 cycles = 1.125 µs, 55.5 cycles = 4.625 µs, 71.5 cycles = 5.958 µs, and 239.5 cycles = 19.958 µs. On an F4 a conversion is the sample plus 12 cycles; do not mix the two.
 
@@ -275,6 +280,11 @@ real V_in  = ADC_Read(ch) × VDDA / 4096
 
 > F4, L4, and similar families provide **factory calibration values**: `TS_CAL1` (30°C), `TS_CAL2` (110°C), and `VREFINT_CAL`. They live in the system memory area. Read them directly. They are far more accurate than looking up a typical value.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-pa0-analog-config.png" width="760" alt="Handraw: one PA0 pin, two configs — blinking and sampling (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the two cards up top — push-pull output makes the ADC read its own driven level, while analog input disconnects the output stage so the pin feeds the sample switch directly; the three LQFP48 pin cards (VDDA / PA0 / PA4) below with "change the pin mode first, then enable the ADC"; proves that without analog input mode the sampled number never moves; does not replace actual wiring, nor a measured pin waveform. See [RM0008 Rev 21 chapter 11](#source-rm0008-adc).</sub>
+</p>
+
 ### 6. DAC output modes, the buffer, and noise
 
 A DAC is an ADC run backwards: you give it a number from 0 to 4095 and it puts the matching voltage on the pin. The output buffer is a helper that lets the pin drive a heavier load, but the buffer itself cannot reach all the way to 0 V or VDDA. To make the voltage follow a waveform, let a timer trigger at a fixed beat and have DMA feed one value from a table on each beat.
@@ -294,6 +304,11 @@ The F1 DAC is 12-bit and dual-channel. The output voltage is `V_out = Vref × DO
 - To make a sine or an arbitrary waveform: a timer trigger plus circular DMA of a lookup table. The trigger rate sets the output frequency.
 
 > The F103C8 (the part you usually find on a BluePill) **has no DAC**. The DAC shows up on high-density F103 (xC / xD / xE) and on F4. On a medium-density part, analog voltage means PWM plus an RC, or an external DAC chip.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch09-dac-buffer.png" width="760" alt="Handraw: the DAC buffer — drives the load but cannot reach 0 V or VDDA (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the code-value axis for V_out = Vref × DOR/4096, the two cards — buffer off (BOFFx=1, output impedance about 15 kΩ, near full swing) versus buffer on (BOFFx=0, drives the load but the rails get clipped) — and the red end-segment bar at the bottom; proves "load capacity" and "trustworthy readings at the rails" cannot both be had; does not replace a selection calculation, nor a measured output curve. See [RM0008 Rev 21 chapter 11](#source-rm0008-adc).</sub>
+</p>
 
 ## Hardware and wiring
 

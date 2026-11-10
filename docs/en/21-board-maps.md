@@ -340,6 +340,11 @@ void Chip_PrintIdentity(void)
 | The board gets hot | A poor LDO, or a short | Measure current, replace the LDO, find the short |
 | One function will not come out | That pin is already used | Check the pinout and the AF table, then move the function |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch21-identity-triage.png" width="760" alt="Handraw: the three checks when a board does not match its claims (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the three checks — read back the Device ID and Flash size against DS5319, measure the actual SYSCLK on MCO or a scope, and measure current and voltage drop on each VDD — plus the red banner "list every mismatch separately; conclusions follow the evidence"; matches the pitfall "a compatible chip does not reach 72 MHz" and lab 1's identity record; proves a clone is identified by read-back evidence, not by the silkscreen; does not replace an actual read-back or measurement, nor a board photo. See [DS5319](#source-ds5319).</sub>
+</p>
+
 ## Hands-on labs
 
 1. **Identity record:** Photograph the marking and record Device ID, Flash size, UID, and supply voltage. List every mismatch explicitly instead of using “clone” as the evidence.

@@ -123,12 +123,12 @@ SPI is like two people swapping cards across a table. Master and slave each hold
 | MISO | Master In Slave Out | Slave → master | The slave sends |
 | NSS/CS | Slave Select | Master → slave | Chip select, active low |
 
-How the shift works: master and slave each have an 8-bit shift register, and the two form a ring. On each clock edge both sides shift one bit out and one bit in. After 8 clocks, one byte has been exchanged.
-
 <p align="center">
   <img src="../../assets/illustrations/handraw/ch08-byte-exchange.png" width="760" alt="Handraw: the full-duplex shift ring and the four-row JEDEC ledger (原理示意)">
   <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the top half shows the master and slave shift registers joined through MOSI/MISO into one ring, each SCK edge shifting one bit out and one bit in on both sides; the bottom half is the four-row JEDEC ledger — 9F FF FF FF sent, ?? EF 40 17 received. What it proves: 8 clocks exchange one byte in both directions at once; rx[0] is the tail of the previous transaction, so the id is assembled from rx[1] on. What it does not prove: this is the logic at BR=010 (9 MHz), not setup/hold margins, CS setup delay or real waveforms, and it is not a logic-analyzer capture. Source: [RM0008 Rev 21 §25.5.1](#source-rm0008-spi).</sub>
 </p>
+
+How the shift works: master and slave each have an 8-bit shift register, and the two form a ring. On each clock edge both sides shift one bit out and one bit in. After 8 clocks, one byte has been exchanged.
 
 ### 2. The four CPOL/CPHA modes
 
@@ -213,6 +213,11 @@ Several slaves share SCK, MOSI and MISO, and each has its own CS. The master pul
 | Software NSS | An ordinary GPIO drives chip select. The most flexible choice (recommended) |
 | Hardware NSS | The hardware manages it. Used with multiple masters |
 | Several slaves | Each slave has its own CS. They share SCK, MOSI, and MISO |
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch08-cs-triage.png" width="760" alt="Handraw: chip-select triage (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at: the top-left CS bracket around eight SCK edges, the top-right CS topology with three slaves (only A is low), and the three triage cards below, each ordered by what to check first. What it proves: on an all-FF read, first confirm CS is actually asserted during the transaction (an unselected MISO floats to 1, so do not lower SCK first); when two commands merge, check that CS went high; two CS low at once make two slaves drive MISO together. What it does not prove: this is logic, not a logic-analyzer capture, and it excludes CS setup/hold time, daisy chains, and address decoding. Sources: [RM0008 Rev 21 ch.25](#source-rm0008-spi) and [DS5319 Rev 20 Table 5](#source-ds5319-spi).</sub>
+</p>
 
 ### 5. Bit-banged versus hardware SPI
 

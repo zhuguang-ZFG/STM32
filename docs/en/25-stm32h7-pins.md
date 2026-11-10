@@ -258,6 +258,12 @@ The next figure places the three evidence classes side by side so one software a
 </p>
 
 1. **Software readback:** require `HAL_RCC_GetSysClockFreq()` to report 480000000 and `HAL_RCC_GetHCLKFreq()` to report 240000000. This HAL's `HAL_RCC_ClockConfig()` updates `SystemCoreClock`, `SystemD2Clock`, and the HAL tick. The frozen `system_stm32h7xx.c` computes the CM7 CPU frequency first, then applies `HPRE` to obtain the D2 bus clock. Here `SystemCoreClock` is **480 MHz**, while `SystemD2Clock`/HCLK is **240 MHz**. The default HAL SysTick uses the CPU clock; do not configure it with HCLK = 240 MHz.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch25-hal-clock-values.png" width="760" alt="Handraw: where the two HAL clock values come from and the SysTick trap (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the order of the three boxes on the left — system_stm32h7xx.c first computes the CM7 CPU frequency (SystemCoreClock = 480 MHz), then applies HPRE for SystemD2Clock = 240 MHz, and HAL_RCC_ClockConfig() updates both values plus the HAL tick; the red SysTick trap on the right; the bottom rule "480 is the CPU, 240 is the bus"; proves which clock each readback describes and why they must not be mixed (self-test 6); does not replace a frequency-counter measurement, nor a measured result. See [DS12110](#source-ds12110) and the [frozen system_stm32h7xx.c](#source-project-examples) in this repository.</sub>
+</p>
+
 2. **Independent clock output:** after confirming that PC9 is available and does not conflict on the target board, output MCO2:
 
 ```c
@@ -350,6 +356,11 @@ Self-test:
 4. Why does “up to 480 MHz” in DS12110 not permit VOS0 + 480 MHz on Rev Y/W?
 5. With 8 MHz HSE bypass, `PLLM=4`, `PLLN=480`, `PLLP=2`, and the chapter's bus dividers, what are SYSCLK, HCLK, PCLK, the APB timer clock, and MCO2/5?
 6. Why is a 480 MHz software readback insufficient, what are `SystemCoreClock` and `SystemD2Clock` in this example, and which clocks do they describe?
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch25-clock-evidence.png" width="760" alt="Handraw: three evidence columns for clock acceptance — recalculation, software readback, instrument measurement (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Where to look: the source of each column's numbers — ① paper recalculation (PLLM/N/P to SYSCLK/HCLK/PCLK/MCO2), ② the two software readbacks (SystemCoreClock=480 is the CPU, SystemD2Clock=240 is the D2 bus), ③ instrument measurement (PC9 MCO2 frequency counter 96 MHz, X2 oscilloscope 8 MHz) — plus the red Rev Y/W VOS0 banner; proves readback ≠ measurement, and every question in lab 5 and self-test 5/6 above maps to one column; does not replace the original conditions of DS12110/ES0392, nor a measured waveform. See [DS12110](#source-ds12110), [ES0392](#source-es0392).</sub>
+</p>
 
 ## Related resources
 

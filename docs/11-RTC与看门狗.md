@@ -110,6 +110,11 @@ LSE 占着第 3 脚和第 4 脚时，这两只脚不能再当 GPIO。PC13 如果
 | WWDG | PCLK1 = 36 MHz | 预分频 8，初值 `0x7F` | — | 58.25 ms | 计数器大于 `0x50` 时喂狗复位 |
 | 对照 | 64 | 4095 | 4096 | 6.5536 s | 不取代 Reload 624 |
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch11-backup-path.png" width="760" alt="Handraw：备份域的供电路径、复位边界与写门（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：① 左边 VDD 与第 1 脚 VBAT 两路电源进片内切换，只给备份域（RTC 秒计数器、BKP_DR1–DR10、LSE）供电；② 中间红色箭头是 NRST、IWDG、WWDG 与上电复位，撞在「复位边界」上，主域清零而备份域不动；③ 下面两格是写门（PWR/BKP 时钟加上 PWR_CR.DBP）与首次上电判断（BKP_DR1 的魔法值，正文代码给出）。证明什么：复位后表还在走、程序从复位向量重来，是供电与复位边界两件事；主电源掉了只要 VBAT 有电，表和备份寄存器就继续。不能证明什么：这是 RM0008 的域结构示意，不含备份域电流、LSE 起振时间与纽扣电池寿命，也不是板级实拍。出处是 [RM0008 Rev 21 第 18 章](#source-rm0008-rtc) 和 [DS5319 Rev 20 表 25](#source-ds5319-rtc)。</sub>
+</p>
+
 ## 常见坑与出处
 
 | 现象 | 原因 | 处理 | 出处 | 出处里能查到什么 |

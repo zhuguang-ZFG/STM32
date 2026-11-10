@@ -11,8 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 CHAPTERS = {
     ROOT / "docs" / "00-如何学习STM32.md": (
-        16,
+        17,
         (
+            "ch00-rtos-worth-it.png",
             "toolchain-flow.svg",
             "sample-00-boot-fetch-flow.svg",
             "sample-00-boot-state.svg",
@@ -32,21 +33,25 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "01-开发环境搭建.md": (
-        18,
+        22,
         (
             "boot-sequence.svg",
             "sample-01-swd-vectors.svg",
             "ch01-swd-vectors.png",
             "swd-fetch.gif",
             "sample-01-flash-swd-flow.svg",
+            "ch01-boot-first-words.png",
             "sample-01-env-compare.svg",
             "ch01-four-envs-one-elf.png",
             "single-build-contract.svg",
             "sample-01-flash-path.svg",
             "ch01-three-flash-paths.png",
+            "ch01-one-elf-evidence.png",
             "project-structure.svg",
             "sample-01-rdp-unlock.svg",
             "ch01-rdp-unlock.png",
+            "ch01-rdp-unlock-paths.png",
+            "ch01-main-skeleton.png",
             "sample-01-flash-triage.svg",
             "ch01-flash-triage.png",
             "sample-01-debug-connect.svg",
@@ -104,8 +109,11 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "09-ADC与DAC.md": (
-        17,
+        20,
         (
+            "ch09-adcclk-budget.png",
+            "ch09-pa0-analog-config.png",
+            "ch09-dac-buffer.png",
             "adc-sar.svg",
             "sample-09-adc-sar-weights.svg",
             "sample-09-adc-sar.svg",
@@ -148,8 +156,9 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "11-RTC与看门狗.md": (
-        17,
+        18,
         (
+            "ch11-backup-path.png",
             "iwdg-window.svg",
             "ch11-wwdg-window.png",
             "sample-11-wwdg-window-flow.svg",
@@ -216,8 +225,9 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "14-USB.md": (
-        17,
+        18,
         (
+            "ch14-cdc-vs-hid.png",
             "usb-enumeration.svg",
             "ch14-enum-checklist.png",
             "sample-14-usb-48m-flow.svg",
@@ -284,8 +294,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "17-调试与性能优化.md": (
-        16,
+        18,
         (
+            "ch17-dwt-window.png",
+            "ch17-swo-path.png",
             "debug-swo.svg",
             "ch17-bp-comparators.png",
             "sample-17-cfsr-flow.svg",
@@ -305,8 +317,9 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "19-项目实战合集.md": (
-        18,
+        19,
         (
+            "ch19-log-ring.png",
             "peripheral-wiring.svg",
             "ch19-ab-partition.png",
             "sample-19-slot-fill-flow.svg",
@@ -349,8 +362,9 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "21-原理图与实物图鉴.md": (
-        18,
+        19,
         (
+            "ch21-identity-triage.png",
             "bluepill-stm32f103c8t6.svg",
             "sample-21-crystal-boot-flow.svg",
             "sample-21-board-compare.svg",
@@ -418,8 +432,9 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "20-学习资源与工具链.md": (
-        17,
+        18,
         (
+            "ch20-dma-f1-vs-f4.png",
             "project-structure.svg",
             "sample-20-evidence-flow.svg",
             "sample-20-lookup-flow.svg",
@@ -461,8 +476,10 @@ CHAPTERS = {
         ),
     ),
     ROOT / "docs" / "25-STM32H7引脚.md": (
-        18,
+        20,
         (
+            "ch25-hal-clock-values.png",
+            "ch25-clock-evidence.png",
             "pinout-stm32h743zi-lqfp144.svg",
             "ch25-part-id.png",
             "h7-power-domains.svg",
