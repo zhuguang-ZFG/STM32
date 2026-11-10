@@ -231,7 +231,9 @@ class BookAuditTests(unittest.TestCase):
             "13": (
 
                 "can-arbitration.svg", "sample-13-can-arb-flow.svg", "sample-13-can-bit.svg",
-                "ch13-can-bit.png", "can-500k.gif", "ch13-arb-ladder.png",
+                "ch13-can-bit.png", "can-500k.gif", "ch13-pitfall-triage.png",
+                "ch13-diff-levels.png",
+                "ch13-data-frame.png", "ch13-arb-ladder.png",
                 "sample-13-bit-quanta.svg",
                 "ch13-bit-quanta.png", "sample-13-filter-fifo.svg", "ch13-filter-fifo.png",
                 "ch13-filter-mask.png", "sample-13-can-triage.svg", "ch13-can-triage.png",
@@ -404,6 +406,8 @@ class BookAuditTests(unittest.TestCase):
                 "ch26-init-steps.png", "bluepill-stm32f103c8t6.svg", "sample-26-spl-hal-compare.svg",
                 "ch26-spl-hal.png", "sample-26-timeout-poll.svg", "ch26-timeout-poll.png",
                 "nvic-interrupt-flow.svg", "ch26-irq-no-callback.png", "dma-circular.svg",
+                "ch26-dma-wiring.png",
+                "ch26-call-chains.png", "ch26-migrate-steps.png",
             ),
             "27": (
 
@@ -411,9 +415,12 @@ class BookAuditTests(unittest.TestCase):
                 "network-cache-ownership.svg", "ch27-cache-dma.png", "ch27-pbuf-chain.png",
                 "sample-27-tcp-framing.svg",
                 "ch27-api-context.png", "sample-27-link-dhcp-flow.svg", "network-online-state.svg",
-                "tcp-byte-stream.svg", "ch27-tcp-framing.png", "ch27-tls-prereqs.png",
+                "tcp-byte-stream.svg", "ch27-tcp-framing.png", "ch27-sendall-loop.png",
+                "ch27-tls-prereqs.png",
+                "ch27-at-offload.png",
                 "sample-27-link-triage.svg",
                 "ch27-backoff.png", "network-debug-ladder.svg",
+                "ch27-four-ledgers.png", "ch27-lab-ladder.png",
             ),
             "28": (
 

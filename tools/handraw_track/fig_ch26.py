@@ -181,7 +181,124 @@ def irq_no_callback():
     return f
 
 
+
+def call_chains():
+    f = Fig("ch26-call-chains",
+            "SPL 调用链：骨架一样，坑各不同 / one skeleton, different traps")
+    steps = ["RCC 开时钟", "GPIO 配脚", "XXX_Init", "XXX_Cmd", "标志/事件对账"]
+    for i, s in enumerate(steps):
+        x = 84 + i * 200
+        f.rect(x, 128, 172, 64, color=BLUE_D, fill=WHITE, sw=2.6)
+        f.text(x + 86, 168, s, size=19, color=BLUE_D, anchor="middle", weight="bold")
+        if i:
+            f.arrow(x - 26, 160, x - 2, 160, color=BLUE, bend=0.0, head=9)
+    f.text(576, 228, "每个外设都是这条骨架的变体；真正出事的是右边那一格",
+           size=19, color=MUTED, anchor="middle")
+    traps = [("GPIO", "复用重映射还要开 AFIO 时钟"),
+             ("EXTI", "挂起位不清会反复进中断"),
+             ("TIM PWM", "TIM1/TIM8 还要 CtrlPWMOutputs"),
+             ("USART", "TXE 与 TC 不是同一个完成边界"),
+             ("I2C", "超时和总线恢复要自己写"),
+             ("SPI", "发一字节收一字节，收尾等 BSY"),
+             ("ADC", "F1 先复位校准、再校准，再转换"),
+             ("DMA", "请求映射固定，计数单位看宽度"),
+             ("Flash", "Unlock…Lock，页对齐、半字对齐"),
+             ("CAN", "单节点正常模式无人 ACK")]
+    for i, (p, t) in enumerate(traps):
+        col, row = i % 2, i // 2
+        x, y = 84 + col * 504, 256 + row * 96
+        f.rect(x, y, 480, 80, color=GREEN_D if col == 0 else RED, fill=WHITE,
+               sw=2.2, double=False)
+        f.text(x + 18, y + 49, p, size=20, color=GREEN_D if col == 0 else RED,
+               weight="bold")
+        f.text(x + 128, y + 49, t, size=18, color=INK)
+    f.text(576, 754, "这张图只给顺序；时钟、GPIO、NVIC、各外设细节回到对应章节",
+           size=18, color=MUTED, anchor="middle")
+    return f
+
+
+def migrate_steps():
+    f = Fig("ch26-migrate-steps",
+            "旧工程：先冻结，再一次迁一个外设 / freeze, then migrate")
+    steps = [("1 冻结基线", "料号·SPL版本·密度宏·编译器·晶振"),
+             ("2 画所有权表", "SPL / 裸寄存器 / 第三方，各管哪个外设"),
+             ("3 一次迁一个", "接线、时钟、输入和仪器条件都不变"),
+             ("4 对比可见结果", "电平·PWM 周期·UART 帧·Flash 校验"),
+             ("5 清掉旧所有权", "删旧初始化和 IRQ，不能双初始化")]
+    for i, (t, s) in enumerate(steps):
+        x, y = 84 + i * 150, 128 + i * 82
+        c = RED if i == 4 else BLUE_D
+        f.rect(x, y, 384, 70, color=c, fill=WHITE, sw=2.6)
+        f.text(x + 16, y + 30, t, size=20, color=c, weight="bold")
+        f.text(x + 16, y + 58, s, size=16, color=INK)
+        if i:
+            f.arrow(x - 110, y - 12, x - 8, y + 26, color=MUTED, bend=-0.25, head=9)
+    f.text(84, 548, "迁移不是全局替换函数名：每一步都要能回到上一步的可见结果",
+           size=19, color=MUTED)
+    f.rect(84, 574, 470, 180, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(104, 610, "保留 SPL", size=22, color=GREEN_D, weight="bold")
+    f.multi(104, 648, ["已量产 F1，测试都围绕 V3.5.0",
+                       "改动小，全量回归成本高",
+                       "团队能锁定编译器和库包"],
+            size=18, color=INK, lh=32)
+    f.rect(578, 574, 490, 180, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(598, 610, "迁到 HAL / LL", size=22, color=BLUE_D, weight="bold")
+    f.multi(598, 648, ["新系列没有对应 SPL",
+                       "要 CubeMX、中间件或跨系列 BSP",
+                       "SPL 副本来源不明，版本已说不清"],
+            size=18, color=INK, lh=32)
+    return f
+
+
+def dma_wiring():
+    f = Fig("ch26-dma-wiring",
+            "SPL 不会替你接线：USART1_TX 要亲手接到 DMA1 Channel 4 / wire it yourself")
+    f.text(84, 130, "三件事全做完，USART 的 DMA 请求才真的到达缓冲区；只做两件，CNDTR 一动不动",
+           size=20, color=MUTED)
+
+    # data path
+    f.rect(84, 168, 260, 96, color=BLUE_D, fill=WHITE, sw=2.6)
+    f.text(214, 204, "USART1", size=22, color=BLUE_D, anchor="middle", weight="bold")
+    f.text(214, 236, "DR 数据寄存器", size=17, color=INK, anchor="middle")
+    f.arrow(352, 216, 452, 216, color=INK, sw=3.0)
+    f.text(402, 196, "请求", size=16, color=MUTED, anchor="middle")
+    f.rect(462, 168, 280, 96, color=GREEN_D, fill=WHITE, sw=2.6)
+    f.text(602, 200, "DMA1 Channel 4", size=20, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(602, 234, "CPAR→DR · CMAR→buf · CNDTR 递减", size=15, color=INK,
+           anchor="middle")
+    f.arrow(750, 216, 850, 216, color=INK, sw=3.0)
+    f.text(800, 196, "搬运", size=16, color=MUTED, anchor="middle")
+    f.rect(860, 168, 208, 96, color=RED, fill=WHITE, sw=2.6)
+    f.text(964, 204, "tx_buffer", size=20, color=RED, anchor="middle", weight="bold")
+    f.text(964, 236, "完成前必须一直存在", size=15, color=INK, anchor="middle")
+
+    steps = [
+        ("1", "RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1)", "先给 DMA1 开时钟"),
+        ("2", "DMA_DeInit / StructInit / Init(Ch4)", "地址·方向·宽度·增量一次说清"),
+        ("3", "USART_DMACmd(USART1, USART_DMAReq_Tx) + DMA_Cmd(Ch4)", "请求开关 + 通道开关，两个都要"),
+    ]
+    y = 320
+    for n, code, note in steps:
+        f.circle(112, y + 24, 22, color=GREEN_D, fill=WHITE, sw=2.4)
+        f.text(112, y + 33, n, size=21, color=GREEN_D, anchor="middle", weight="bold",
+               halo=True)
+        f.rect(150, y, 640, 52, color=INK, fill=WHITE, sw=2.2)
+        f.text(166, y + 34, code, size=18, color=INK, halo=True)
+        f.text(810, y + 34, note, size=17, color=MUTED)
+        y += 70
+    f.panel(84, y + 12, 984, 96, AMBER_FILL)
+    f.rect(84, y + 12, 984, 96, color=AMBER_STROKE, sw=2.6)
+    f.multi(108, y + 44, ["边界：缓冲区在完成前必须继续存在；方向、宽度、增量要和真实寄存器匹配；",
+                          "DMA_GetCurrDataCounter() 读到的是剩余项数，不是新增长度；F1 无 D-Cache，搬到 H7 要另算"],
+            size=18, color=INK, lh=30)
+    return f
+
+
 FIGS = {
+    "ch26-dma-wiring": dma_wiring,
+    "ch26-call-chains": call_chains,
+    "ch26-migrate-steps": migrate_steps,
     "ch26-four-layers": four_layers,
     "ch26-defines": defines,
     "ch26-init-steps": init_steps,

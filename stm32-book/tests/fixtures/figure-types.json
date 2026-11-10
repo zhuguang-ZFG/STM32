@@ -1946,6 +1946,21 @@
   "chapter": "26",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。GPIO 时钟/配置、USART 收发、DMA 剩余项的 HAL 与 SPL V3.5.0 入口都落到同一组寄存器；只换函数名保留旧状态机最容易得到“能跑一会儿”的工程；不是实拍。"
  },
+ "illustrations/handraw/ch26-dma-wiring.png": {
+  "type": "technical",
+  "chapter": "26",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：数据通路 USART1_DR → DMA1 Channel 4 → tx_buffer 与三件事——开 DMA1 时钟、按请求映射 Init 通道、USART_DMACmd 与 DMA_Cmd 两个开关都打开；证明 SPL 不会自动把两个驱动绑在一起，只做两件 CNDTR 不动；不能替代 RM0008 请求映射表与寄存器细节，也不是实测波形。出处 RM0008。"
+ },
+ "illustrations/handraw/ch26-call-chains.png": {
+  "type": "comparison",
+  "chapter": "26",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：十个外设的最小调用链都走同一条骨架——RCC 开时钟 → GPIO 配脚 → XXX_Init → XXX_Cmd → 标志/事件对账，每格下面标出该外设最容易漏的边界；证明「骨架一样、坑各不同」；不能替代对应章节的完整时序与寄存器细节，也不是实测波形。出处 RM0008、STSW-STM32054。"
+ },
+ "illustrations/handraw/ch26-migrate-steps.png": {
+  "type": "technical",
+  "chapter": "26",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：先冻结料号、SPL 版本、密度宏、编译器、晶振的可复现基线，再画外设所有权表，然后一次只迁一个外设、对比可见结果、清掉旧所有权；证明迁移是逐外设的对账过程，不是全局替换函数名；不能保证迁移后的认证与回归状态，那要靠逐项复测。出处 STSW-STM32054、spl-f1-mirror。"
+ },
  "diagrams/sample-26-timeout-poll.svg": {
   "type": "technical",
   "chapter": "26",
@@ -2015,6 +2030,21 @@
   "type": "technical",
   "chapter": "27",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。backoff = min(B_max, B_base×2^n)+jitter，n 有上限；link down 不建 socket，DNS/TCP/TLS/MQTT 分别计数，喂狗条件是网"
+ },
+ "illustrations/handraw/ch27-at-offload.png": {
+  "type": "concept",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：左栏是模组里终止的 TCP/UDP/TLS 与 socket，右栏是 MCU 必须保留的——命令超时与重试上限、分帧缓存、业务幂等键、离线队列上限、喂狗条件；UART 只是字节通道，不是网络边界；证明「栈移走了，状态机没有消失」；不能替代具体模组 AT 手册的错误码与恢复时序，也不是实测日志。出处 RM0433、lwip-pitfalls。"
+ },
+ "illustrations/handraw/ch27-four-ledgers.png": {
+  "type": "calculation",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：RAM_net、goodput、loss_or_retry_rate、recovery_time 四本账各给一个可复算的式子与最低记录项；证明网络验收的每个数都能从测量复算回去；不能替代实测——账簿再全也不等于拔线、重启、弱网注入真的做过。出处 RM0433、AN4839、lwip-pitfalls。"
+ },
+ "illustrations/handraw/ch27-lab-ladder.png": {
+  "type": "triage",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：实验 A→D 逐级多证明一层——A 只证 L1–L3 连通，B 证 TCP 分帧不依赖一次 recv 边界，C 证 DHCP/DNS/MQTT 失败可定位，D 证 TLS 与 24 h 长期运行不劣化；证明层与层之间的依赖顺序；不能跳过：没过 A 的板子直接进 C，失败时无法归因。出处 stm32cube-h7-lwip、lwip-pitfalls。"
  },
  "animations/rtos-system-layers.svg": {
   "type": "concept",
@@ -2115,6 +2145,21 @@
   "type": "comparison",
   "chapter": "13",
   "caption": "▲ 手绘仲裁逻辑：A 发 0x100、B 发 0x0F0；bit8 上 A 发 1 却读到 0，转为接收，B 继续发送。输家后续按重发配置处理；标准数据帧的 ID 越小，优先级越高。非实拍。"
+ },
+ "illustrations/handraw/ch13-pitfall-triage.png": {
+  "type": "triage",
+  "chapter": "13",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个常见现象各配第一处边界与出处标签（RM0008=参考手册、本仓库例程=examples/can-bxcan、DS5319=数据手册）；证明排错先对现象、再找边界、最后查出处；不能替代对应出处里的完整寄存器与电气细节，也不是实测波形。出处 RM0008、DS5319、本仓库例程。"
+ },
+ "illustrations/handraw/ch13-diff-levels.png": {
+  "type": "technical",
+  "chapter": "13",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：CAN_H 与 CAN_L 成对跳变，同一干扰同时打在两根线上压差不变，任一节点发显性整条线就是显性；证明「显性 0 盖过隐性 1」与两只 120 Ω 并联是 60 Ω 直流负载、不是电缆特性阻抗；不能据此判断总线长度、终端匹配或实测波形。出处 RM0008 Rev 21 bxCAN。"
+ },
+ "illustrations/handraw/ch13-data-frame.png": {
+  "type": "technical",
+  "chapter": "13",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：标准数据帧按位排开（SOF、11 位 ID、RTR、控制场、0–8 B 数据、CRC、ACK、EOF），位填充给接收方对表；证明「帧只写是什么、不写收件人」，所有节点都听、按 ID 决定收不收；不能据此判断填充后的总线占用时长、错误帧细节，也不是协议分析仪实测。出处 RM0008 Rev 21 bxCAN。"
  },
  "illustrations/handraw/ch06-ore-fe.png": {
   "type": "technical",
@@ -2310,6 +2355,11 @@
   "type": "concept",
   "chapter": "18",
   "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排错五步：复现→最小化→二分→看证据→对照手册，每步一个假设同一条件复测；三条铁律压底；不是实拍。"
+ },
+ "illustrations/handraw/ch27-sendall-loop.png": {
+  "type": "technical",
+  "chapter": "27",
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：顶部「deadline 只算一次」横幅、左侧五步循环（send → 部分发送回 ① → EAGAIN 算 remaining → 判 remaining ≤ 0 → select 再分派）与右侧四个出口 OK / TIMEOUT / CLOSED / ERROR；证明超时的真实边界——TIMEOUT 只说明本地发送窗口没推进，不证明服务端已处理；不能替代 lwip/sockets.h 的 errno 语义与实测抓包，也不是实测日志。出处 lwIP pitfalls。"
  },
  "illustrations/handraw/ch27-tls-prereqs.png": {
   "type": "concept",

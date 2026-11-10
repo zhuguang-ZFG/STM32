@@ -100,6 +100,11 @@ MCU 的 PB8/PB9 不能直接接总线，要先进收发器的 RXD/TXD，由收�
 | 重映射到晶振脚之后时钟停了 | 那两只脚接着 HSE | 不要把 CAN 放到第 5 脚和第 6 脚 | [DS5319](#source-ds5319-clock) | LQFP48 第 5 脚是 PD0-OSC_IN，第 6 脚是 PD1-OSC_OUT |
 | 和 I2C 重映射抢同一对脚 | PB8/PB9 也是 I2C1 的重映射 | 这一对脚只给 CAN 或 I2C 之一 | [DS5319](#source-ds5319-i2c) | 第 45 脚 PB8、第 46 脚 PB9 是 I2C1 的重映射 |
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-pitfall-triage.png" width="760" alt="Handraw：七个常见坑对号入座——现象 → 第一边界 → 出处（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：七个常见现象各配第一处边界与出处标签（RM0008=参考手册、本仓库例程=examples/can-bxcan、DS5319=数据手册）；证明排错先对现象、再找边界、最后查出处；不能替代对应出处里的完整寄存器与电气细节，也不是实测波形。出处 [RM0008](#source-rm0008-can)、[DS5319](#source-ds5319-usbcan)、[本仓库例程](#source-project-examples)。</sub>
+</p>
+
 ## 学习目标
 
 - [ ] 理解差分电平、显性/隐性、位填充、CRC、ACK 的作用。
@@ -127,6 +132,11 @@ CAN 用一对差分线 `CAN_H`/`CAN_L` 传输，**显性（Dominant）代表逻�
 - 收发器（TJA1050 / SN65HVD230 等）负责把单片机的 `CAN_TX`/`CAN_RX` TTL 电平转换成差分电平。**MCU 内部只有 CAN 控制器，不含收发器，必须外接。**
 - 速率与长度经验：1 Mbps 时总线 ≤ 40 m；125 kbps 时可到约 500 m（速率越高距离越短）。
 
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-diff-levels.png" width="760" alt="Handraw：显性 0 盖过隐性 1，同一干扰打在两根线上压差不变（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：CAN_H 与 CAN_L 成对跳变，同一干扰同时打在两根线上压差不变，任一节点发显性整条线就是显性；证明「显性 0 盖过隐性 1」与两只 120 Ω 并联是 60 Ω 直流负载、不是电缆特性阻抗；不能据此判断总线长度、终端匹配或实测波形。出处 [RM0008 Rev 21 bxCAN](#source-rm0008-can)。</sub>
+</p>
+
 ### 2. 位填充、CRC 与 ACK
 
 接收方没有时钟线，只能靠数据里的跳变对表。如果连着发很多个相同的位，线上半天没有跳变，接收方的表就会慢慢走偏。所以 CAN 规定连续 5 个相同位之后自动插一个相反的位，接收方再自动拿掉。CRC 用来检查有没有传错。ACK 是只要总线上有任何一个节点正确收到，就在应答位上按一下，告诉发送方「有人收到了」。
@@ -153,6 +163,11 @@ CAN 的帧不写收件人，只写「这条消息是什么」，也就是 ID。�
 
 - **标准帧**：11 位 ID（`IDE=0`），兼容性好、开销小。
 - **扩展帧**：29 位 ID（`IDE=1`），由 11 位基础 ID + 18 位扩展 ID 组成。
+
+<p align="center">
+  <img src="../assets/illustrations/handraw/ch13-data-frame.png" width="760" alt="Handraw：标准数据帧按位排开，所有节点都听、按 ID 决定收不收（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。看哪里：标准数据帧按位排开（SOF、11 位 ID、RTR、控制场、0–8 B 数据、CRC、ACK、EOF），位填充给接收方对表；证明「帧只写是什么、不写收件人」，所有节点都听、按 ID 决定收不收；不能据此判断填充后的总线占用时长、错误帧细节，也不是协议分析仪实测。出处 [RM0008 Rev 21 bxCAN](#source-rm0008-can)。</sub>
+</p>
 
 ### 4. 非破坏性仲裁
 

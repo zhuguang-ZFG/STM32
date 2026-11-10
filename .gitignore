@@ -17,3 +17,4 @@ wechat-mp/
 final-videos/
 .temp/
 .tmp-*.js
+/nul

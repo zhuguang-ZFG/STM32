@@ -99,6 +99,11 @@ The opening `can-arbitration.svg` shows bitwise arbitration; stuffing is explain
 | The clock stops after a remap onto the crystal pins | Those pins carry HSE | Do not put CAN on pin 5 and pin 6 | [DS5319](#source-ds5319-clock) | LQFP48 pin 5 is PD0-OSC_IN and pin 6 is PD1-OSC_OUT |
 | The I2C remap wants the same pair | PB8/PB9 is also the I2C1 remap | Give that pair to either CAN or I2C | [DS5319](#source-ds5319-i2c) | Pin 45 PB8 and pin 46 PB9 are the I2C1 remap |
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-pitfall-triage.png" width="760" alt="Handraw: seven common pitfalls matched to symptom, first boundary, and source (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the seven symptoms, each paired with the first boundary to check and a source tag (RM0008 = reference manual, repo examples = examples/can-bxcan, DS5319 = datasheet); proves you debug by matching the symptom, then the boundary, then the source; it cannot replace the full register and electrical detail in each source, and it is not measured waveforms. See [RM0008](#source-rm0008-can), [DS5319](#source-ds5319-usbcan), [examples in this repo](#source-project-examples).</sub>
+</p>
+
 ## Learning goals
 
 - [ ] Explain differential levels, dominant/recessive, bit stuffing, CRC, and ACK.
@@ -126,6 +131,11 @@ CAN sends each bit on two twisted wires and looks at the voltage between them, n
 - A transceiver (TJA1050, SN65HVD230, …) turns the MCU's TTL `CAN_TX` / `CAN_RX` into the differential pair. **The MCU has only the controller. You must add a transceiver.**
 - Rule of thumb for length: about 40 m at 1 Mbps, about 500 m at 125 kbps. Faster means shorter.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-diff-levels.png" width="760" alt="Handraw: dominant 0 wins over recessive 1, common-mode interference leaves the differential unchanged (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at CAN_H and CAN_L moving as a pair: interference hits both wires at once and the difference stays intact, and any node driving dominant makes the whole bus dominant; proves "dominant 0 wins over recessive 1" and that two 120 Ω resistors in parallel are a 60 Ω DC load, not the cable impedance; cannot judge bus length, termination matching, or measured waveforms from it. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).</sub>
+</p>
+
 ### 2. Stuffing, CRC, ACK
 
 The receiver has no clock wire and keeps time from the edges in the data. If many identical bits go out in a row, the line sits without an edge and the receiver's clock slowly drifts. So CAN inserts an opposite bit after 5 identical bits, and the receiver removes it again. The CRC checks that nothing was garbled. ACK means any node on the bus that received the frame correctly presses down on the acknowledge bit, telling the sender "someone got it".
@@ -152,6 +162,11 @@ A CAN frame has no recipient. It says what the message is about, and that is the
 
 - **Standard frame:** 11-bit ID (`IDE=0`). Smaller overhead.
 - **Extended frame:** 29-bit ID (`IDE=1`), 11-bit base plus 18-bit extension.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch13-data-frame.png" width="760" alt="Handraw: the standard data frame laid out bit by bit, every node listens and decides by ID (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the standard data frame laid out bit by bit (SOF, 11-bit ID, RTR, control field, 0–8 bytes of data, CRC, ACK, EOF) with bit stuffing giving the receiver edges to sync on; proves a frame says what the message is, not who the recipient is — every node hears it and decides by ID; cannot judge stuffed bus occupancy time or error-frame details, and it is not analyzer capture. See [RM0008 Rev 21 bxCAN](#source-rm0008-can).</sub>
+</p>
 
 ### 4. Non-destructive arbitration
 

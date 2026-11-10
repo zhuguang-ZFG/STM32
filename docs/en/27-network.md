@@ -302,6 +302,11 @@ send_all_result_t send_all_until(int fd, const uint8_t *buf, size_t len,
 
 Compute the deadline once, for example `send_all_until(fd, frame, frame_len, sys_now() + 2000U)`. `SEND_ALL_TIMEOUT` means the local send window made no sufficient progress before 2 seconds. It still does not prove remote processing. Durable business completion needs an application ACK carrying the same sequence and idempotent handling on the server.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-sendall-loop.png" width="760" alt="Handraw: send_all with one deadline and four exits (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the top banner "compute the deadline once", the five-step loop on the left (send → partial send back to ① → EAGAIN computes remaining → check remaining ≤ 0 → select dispatches again), and the four exits on the right OK / TIMEOUT / CLOSED / ERROR; proves the real boundary of timeout — TIMEOUT only says the local send window did not advance, not that the server processed it; cannot replace the errno semantics of lwip/sockets.h or measured packet captures, and it is not measured logs. See [lwIP pitfalls](#source-lwip-pitfalls).</sub>
+</p>
+
 ## Choosing UDP or TCP
 
 | Requirement | UDP | TCP |
@@ -369,6 +374,11 @@ Commands need transaction state, one deadline, cancellation, and a reset path ba
 ### PPP
 
 PPP exposes the serial/cellular link as an lwIP netif and lets applications use sockets. You still manage dialing, authentication, MTU, flow control, cost, and weak-signal recovery. After PPP link-up, verify IP → DNS → TLS → application separately.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-at-offload.png" width="760" alt="Handraw: after the AT module takes over TCP/IP, the state machines the MCU must keep (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the left column — TCP/UDP/TLS and sockets terminated inside the module — against the right column the MCU must keep: command timeouts and retry caps, framing buffers, business idempotency keys, bounded offline queues, and watchdog conditions; the UART is only a byte pipe, not a network boundary; proves "the stack moved out, the state machine did not"; cannot replace the concrete module AT manual error codes and recovery timing, and it is not measured logs. See [RM0433](#source-rm0433), [lwip-pitfalls](#source-lwip-pitfalls).</sub>
+</p>
 
 ## Recovery: capped exponential backoff
 
@@ -444,6 +454,11 @@ recovery_time = first_application_success - fault_injection_time
 
 Report peaks: minimum free heap, minimum stack per task, maximum pbuf use, maximum concurrent connections, TLS handshake peak, and worst DNS/TCP/TLS latency. Stability acceptance includes cable removal, switch restart, DHCP changes, DNS failure, server restart, certificate error, and lossy links.
 
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-four-ledgers.png" width="760" alt="Handraw: RAM, goodput, loss/retry, and recovery-time ledgers, every number recomputable (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at the four ledgers — RAM_net, goodput, loss_or_retry_rate, recovery_time — each with a formula you can recompute and a minimum set of recorded values; proves every acceptance number can be traced back to a measurement; cannot replace measurement — a complete ledger does not mean cable pulls, restarts, and loss injection actually happened. See [RM0433](#source-rm0433), [AN4839](#source-an4839), [lwip-pitfalls](#source-lwip-pitfalls).</sub>
+</p>
+
 ## Four progressive labs
 
 ### A. ARP and ping only
@@ -475,6 +490,11 @@ Report peaks: minimum free heap, minimum stack per task, maximum pbuf use, maxim
 4. Credentials never enter logs; connections recover; heap, pbufs, and stacks do not degrade monotonically with reconnect count.
 
 The complete field list, executable TCP soak/fault peer, and report contract are in [`labs/ethernet-24h/`](../../labs/ethernet-24h/). A localhost smoke validates only the host harness; it is not STM32 hardware evidence.
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch27-lab-ladder.png" width="760" alt="Handraw: four progressive labs, each proves one more layer, failures attributed by layer (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Look at labs A→D, each proving one more layer — A proves only L1–L3 connectivity, B proves TCP framing does not depend on one recv boundary, C proves DHCP/DNS/MQTT failures are locatable, D proves TLS and 24-hour operation do not degrade; proves the dependency order between layers; you cannot skip: a board that failed A cannot enter C with attributable failures. See [stm32cube-h7-lwip](#source-stm32cube-h7-lwip), [lwip-pitfalls](#source-lwip-pitfalls).</sub>
+</p>
 
 ## Self-test
 
