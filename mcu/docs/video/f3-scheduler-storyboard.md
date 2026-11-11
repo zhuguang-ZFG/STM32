@@ -6,7 +6,7 @@
 ---
 
 ::: warning 本页是旧产线留下的分镜，成片已经不按它走
-这一集的现行事实源是 [`video/episodes/f3-scheduler/episode.json`](https://github.com/zhuguang-ZFG/mcu/blob/main/video/episodes/f3-scheduler/episode.json)，取证是 [`code/rtos/03-scheduler/probe.sh`](https://github.com/zhuguang-ZFG/mcu/blob/main/code/rtos/03-scheduler/probe.sh)（`sh probe.sh`，不需要开发板，只要交叉编译器加一份上游 FreeRTOS-Kernel V11.1.0）。页内四处与本机实测不符，留档不照做：
+这一集的现行事实源是 [`video/episodes/f3-scheduler/episode.json`](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/video/episodes/f3-scheduler/episode.json)，取证是 [`code/rtos/03-scheduler/probe.sh`](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/rtos/03-scheduler/probe.sh)（`sh probe.sh`，不需要开发板，只要交叉编译器加一份上游 FreeRTOS-Kernel V11.1.0）。页内四处与本机实测不符，留档不照做：
 
 - **`__CLZ` 不是这个端口里的名字**：GCC 的 ARM_CM4F 端口用的是 `ucPortCountLeadingZeros`（`portmacro.h:151`，函数体里一条 `clz %0, %1` 在 `:155`），选优宏 `portGET_HIGHEST_PRIORITY` 在 `:171`；
 - **附录那三条命令跑不通**：`code/rtos/freertos/03-scheduler/` 这个目录和里面的 `generic.c` / `m4f.c` / `tick.c` 都不存在。真办法不是手写三份等价 C，而是把内核的 `tasks.c` 按 `configUSE_PORT_OPTIMISED_TASK_SELECTION` 取 0 和 1 各编一遍，再逐条对照两份 `tasks.o`；

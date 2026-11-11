@@ -23,6 +23,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import MiniSearch from 'minisearch'
 import { loadSearchIndex } from './seo-check.mjs'
 import { tokenizeForSearch } from './search-tokenize.mjs'
+import { BASE } from './site-config.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DEFAULT_DIST = path.join(ROOT, 'docs', '.vitepress', 'dist')
@@ -58,13 +59,13 @@ export function plainHeading(text) {
 }
 
 /**
- * 产物里属于「这一页」的 URL 形态（不含 fragment；检索结果 id 形如 `/mcu/stm32/12-spi.html#段`）。
+ * 产物里属于「这一页」的 URL 形态（不含 fragment；检索结果 id 形如 `/STM32/mcu/stm32/12-spi.html#段`）。
  *
- * 必须**全等**比较而不是前缀：目录页 `/mcu/build/` 当前缀会把
- * `/mcu/build/00-toolchain.html#…` 也算成"翻到了导览页"——那是这一门最容易出的伪绿，
+ * 必须**全等**比较而不是前缀：目录页 `/STM32/mcu/build/` 当前缀会把
+ * `/STM32/mcu/build/00-toolchain.html#…` 也算成"翻到了导览页"——那是这一门最容易出的伪绿，
  * 2147 全绿不能建立在这上面。
  */
-export function pageHrefPaths(docsRel, base = '/STM32/mcu/') {
+export function pageHrefPaths(docsRel, base = BASE) {
   const noExt = docsRel.replace(/\.md$/, '')
   if (noExt === 'index') return [base, `${base}index.html`]
   if (noExt.endsWith('/index')) {
@@ -170,7 +171,7 @@ export function loadSearchable(indexJson) {
  *     所以这个决定必须写在这里，而不是靠一个不存在的参数默认值。
  * @returns {{ missing: {term: string, page: string, hits: number}[], checked: number }}
  */
-export function checkSearchHits(indexJson, entries, { base = '/STM32/mcu/' } = {}) {
+export function checkSearchHits(indexJson, entries, { base = BASE } = {}) {
   const ms = loadSearchable(indexJson)
   const missing = []
   for (const { term, page } of entries) {

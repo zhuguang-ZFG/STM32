@@ -151,7 +151,7 @@ STM32 的 TIM 一个外设包干时基+PWM+捕获；S3 拆成 GPTimer（计时�
 |---|---|
 | S3 通道数/位宽/低速模式 | `soc/soc_caps.h` SOC_LEDC_CHANNEL_NUM=8、SOC_LEDC_TIMER_BIT_WIDTH=14 |
 | fade API 与线程安全 | ESP-IDF v5.5.2 `components/esp_driver_ledc/include/driver/ledc.h` |
-| 实验 | [code/esp32/03-ledc-fade](https://github.com/zhuguang-ZFG/mcu/tree/main/code/esp32/03-ledc-fade) |
+| 实验 | [code/esp32/03-ledc-fade](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/esp32/03-ledc-fade) |
 | 动画 | [ledc-timer-channel.svg](/anim/ledc-timer-channel.svg) |
 | STM32 对照 | [S6 TIM](../stm32/06-tim.md) |
 

@@ -15,7 +15,7 @@
 
 ## 许可与再分发边界
 
-- **书稿正文、版式与机制动画**：Apache-2.0（与仓库 [LICENSE](https://github.com/zhuguang-ZFG/mcu/blob/main/LICENSE) 一致），可自由转载与二次创作，需保留署名与许可声明。
+- **书稿正文、版式与机制动画**：Apache-2.0（与仓库 [LICENSE](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/LICENSE) 一致），可自由转载与二次创作，需保留署名与许可声明。
 - **被逐行引用的上游代码**（FreeRTOS、ESP-IDF、CMSIS、HAL、SPL、GD32 固件库、RT-Thread）：本书仅链接、引用行号并独立表述，不随书再分发其源码；各归其上游许可。
 - **外部手册、规范、论文与书籍**：只作链接与事实引用（文档号/DOI/ISBN 与版本），权利归原权利人；注册表每张卡片都标了许可边界。
 - **商标**：STM32 是 ST 的商标，ESP32 是 Espressif 的商标，GD32 是兆易创新的商标，FreeRTOS/RT-Thread 归各自权利人；本书作为独立教学材料使用这些名称仅出于指称目的。

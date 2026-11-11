@@ -266,7 +266,7 @@ SPL 的 `TIM_TimeBaseInit()`/`TIM_OC1Init()` 做的是同一组落位，但 StdP
 | 概念 | 落点 |
 |---|---|
 | PSC/ARR/CCR/CCMR1/CCER 位定义 | ST CMSIS `stm32f407xx.h`（TIM_* 段） |
-| APB ×2 规则实测 | [code/stm32/02-tim-pwm/main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/02-tim-pwm/main.c) `timer_clock()` 与对照实验 |
+| APB ×2 规则实测 | [code/stm32/02-tim-pwm/main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/02-tim-pwm/main.c) `timer_clock()` 与对照实验 |
 | 无符号差值处理回绕 | 同上捕获循环 |
 | 引脚复用 | DS8626 Rev 9 Table 9（PA6/PA7 AF2） |
 | 动画 | [tim-pwm-counter.svg](/anim/tim-pwm-counter.svg)、[tim-input-capture.svg](/anim/tim-input-capture.svg)、[tim-hal-init-path.svg](/anim/tim-hal-init-path.svg)（§八对账） |

@@ -72,7 +72,7 @@ title: 更新日志
 - **打印不丢内容**：章节里 344 处 `<details>` 折叠块（大量是「参考答案」）在 PDF 里曾被收起状态直接打印——内容整个缺失。现在打印/PDF 前自动展开全部折叠块，重排后 PDF 从 693 页到 713 页，抽检两条此前丢失的答案已可全文检索。屏幕上那 109 张 SMIL 机制动画离屏自动暂停、系统「减少动效」偏好下停在首帧，与站点 AnimFigure 同口径。
 - **站点与书同源**：每个章节页顶部新增「本章罗盘」卡片，读取的就是整书的 `mcu-book/manifest.json`——站点展示与成书内容单一数据源。代价是外壳 chunk +23.4 KB (br)，性能预算按惯例核算上调（110→140 KB），理由写在 `scripts/perf-budget.mjs`。
 - **顺带修了 4 处站内死链**：F5「下一站」少写 `-timer`、P4 的 `../../` 越出站点 base、B7 收官与 C7 收官两处 `.md` 原始锚点（部署后 404）——都是整书构建器的零断链审计反向揪出来的。
-- **入口**：导航「资料 → 整书离线版」（[HTML](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html) / [PDF](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.pdf)），CI 每次 push 从 main 重出，书没有过期副本。
+- **入口**：导航「资料 → 整书离线版」（[HTML](https://zhuguang-zfg.github.io/STM32/mcu/book/mcu-deep-book.html) / [PDF](https://zhuguang-zfg.github.io/STM32/mcu/book/mcu-deep-book.pdf)），CI 每次 push 从 main 重出，书没有过期副本。
 
 ## 2026-10-14 · C3 抖音对照版 `c3b` 进仓 · 新动画第 102 张 · 上一条提交里那句引用不再悬空
 
@@ -311,4 +311,4 @@ title: 更新日志
 
 按依赖顺序推进骨架章成稿：C 篇（地基，尤其 C2 指针与 C6 栈帧）→ B 篇剩余（B1/B3）→ S 篇中断与外设（S4 NVIC、S12 SPI、S16 HardFault）→ RT-Thread 全线。实验 E04–E08 的实测数据回填（电流、波形参数）与实物照片补齐同批进行。
 
-想接手哪一篇，去 [仓库 Issue](https://github.com/zhuguang-ZFG/mcu/issues) 认领即可。
+想接手哪一篇，去 [仓库 Issue](https://github.com/zhuguang-ZFG/STM32/issues) 认领即可。

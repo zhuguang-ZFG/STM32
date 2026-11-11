@@ -6,11 +6,11 @@
 
 ### 我该买哪块板子？
 
-只有一块预算，**野火 STM32F407 霸天虎**：S 篇与 RTOS 移植全部按它写，资料最多、引脚全引出、调试接口标准。做语音/AIoT 才选 **立创·实战派 ESP32-S3**。两块都想买的话，先 STM32 后 ESP32：裸机地基打在前者更牢。清单与别花冤枉钱的配件见[在线版装备清单](https://zhuguang-zfg.github.io/mcu/guide/hardware.html)。
+只有一块预算，**野火 STM32F407 霸天虎**：S 篇与 RTOS 移植全部按它写，资料最多、引脚全引出、调试接口标准。做语音/AIoT 才选 **立创·实战派 ESP32-S3**。两块都想买的话，先 STM32 后 ESP32：裸机地基打在前者更牢。清单与别花冤枉钱的配件见[在线版装备清单](https://zhuguang-zfg.github.io/STM32/mcu/guide/hardware.html)。
 
 ### 没有数电/模电基础，能学吗？
 
-能，但别硬撑。你需要的是"看得懂原理图、知道上下拉和上电顺序"这一档，不是会设计滤波器。缺的这部分在本书靠两处补：[手册地图](https://zhuguang-zfg.github.io/mcu/guide/manuals.html) 教你查资料，[实验中心](/lab/e01-blink.md) 让你在板子上看到现象。
+能，但别硬撑。你需要的是"看得懂原理图、知道上下拉和上电顺序"这一档，不是会设计滤波器。缺的这部分在本书靠两处补：[手册地图](https://zhuguang-zfg.github.io/STM32/mcu/guide/manuals.html) 教你查资料，[实验中心](/lab/e01-blink.md) 让你在板子上看到现象。
 
 ### SPL、HAL、寄存器，到底学哪个？
 
@@ -54,15 +54,15 @@ E01/E02/E05 用串口打印或 LED 就能验；E03/E06/E07/E08 需要仪器（�
 
 ### 数字和事实怎么保证不出错？
 
-寄存器地址、引脚号必须有出处，写不出就标"以某手册某节为准"，禁止编数值；核对过的数值要有第二来源（CMSIS 头文件/官方手册）。这条纪律写在[贡献指南](https://github.com/zhuguang-ZFG/mcu/blob/main/CONTRIBUTING.md)，未回填的坑也都在页面上明说。
+寄存器地址、引脚号必须有出处，写不出就标"以某手册某节为准"，禁止编数值；核对过的数值要有第二来源（CMSIS 头文件/官方手册）。这条纪律写在[贡献指南](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/CONTRIBUTING.md)，未回填的坑也都在页面上明说。
 
 ### 发现错误怎么办？
 
-开 [Issue](https://github.com/zhuguang-ZFG/mcu/issues) 或直接提 PR。勘误是本项目的正式贡献类型，不是打扰。
+开 [Issue](https://github.com/zhuguang-ZFG/STM32/issues) 或直接提 PR。勘误是本项目的正式贡献类型，不是打扰。
 
 ### 可以转载/商用吗？
 
-内容是 [Apache-2.0](https://github.com/zhuguang-ZFG/mcu/blob/main/LICENSE)，引用的上游源码遵守各自许可证且已注明出处；实物照片与图表请勿单独摘走。
+内容是 [Apache-2.0](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/LICENSE)，引用的上游源码遵守各自许可证且已注明出处；实物照片与图表请勿单独摘走。
 
 ### 为什么这个项目参考"通往AGI之路"？
 

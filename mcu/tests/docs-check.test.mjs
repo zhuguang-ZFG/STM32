@@ -172,17 +172,23 @@ test('checkHygiene：其余控制字符（如 BEL）被点名', () => {
 
 /* ---------------- checkSelfBlobLinks：正反例 ---------------- */
 
-test('checkSelfBlobLinks：指向工作树存在路径 → 通过；不存在 → 点名', () => {
+test('checkSelfBlobLinks：新仓 mcu/ 前缀映射、旧仓历史链接、前缀丢失三类口径', () => {
   const dir = fixture({
     'code/x/main.c': 'int main(){}',
     'docs/a.md':
-      '[好](https://github.com/zhuguang-ZFG/mcu/blob/main/code/x/main.c) ' +
-      '[坏](https://github.com/zhuguang-ZFG/mcu/blob/main/code/x/ghost.c)',
+      '[新好](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/x/main.c) ' +
+      '[新坏](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/x/ghost.c) ' +
+      '[旧好](https://github.com/zhuguang-ZFG/mcu/blob/main/code/x/main.c) ' +
+      '[前缀丢失](https://github.com/zhuguang-ZFG/STM32/blob/main/code/x/main.c)',
   })
   const problems = checkSelfBlobLinks(dir)
-  assert.equal(problems.length, 1)
-  assert.match(problems[0], /docs\/a\.md:1/)
-  assert.match(problems[0], /code\/x\/ghost\.c/)
+  // 新坏（不存在）+ 前缀丢失（STM32 仓 mcu/ 之外）各记一条；新旧好链零报错
+  assert.equal(problems.length, 2)
+  assert.ok(problems.some((p) => p.includes('code/x/ghost.c')), '新仓 mcu/ 前缀链按剥前缀后的工作树路径对账')
+  assert.ok(
+    problems.some((p) => /STM32\/blob\/main\/code/.test(p) && p.includes('mcu/ 子树之外')),
+    '漏写 mcu/ 前缀的 STM32 自链必须被点名（GitHub 上会 404）',
+  )
 })
 
 /* ---------------- checkNumberClaims：正反例 ---------------- */
@@ -243,7 +249,7 @@ function metaFixture({ citation, changelog, siteChangelog, version = '1.0.0' } =
     title: '合成样书',
     version,
     author: '某人与贡献者',
-    repository: 'https://github.com/zhuguang-ZFG/mcu',
+    repository: 'https://github.com/zhuguang-ZFG/STM32',
   }
   return fixture({
     'mcu-book/manifest.json': JSON.stringify(manifest),
@@ -254,8 +260,8 @@ function metaFixture({ citation, changelog, siteChangelog, version = '1.0.0' } =
         'cff-version: 1.2.0',
         'title: "合成样书"',
         'version: 1.0.0',
-        'repository-code: "https://github.com/zhuguang-ZFG/mcu"',
-        'url: "https://zhuguang-zfg.github.io/mcu/"',
+        'repository-code: "https://github.com/zhuguang-ZFG/STM32"',
+        'url: "https://zhuguang-zfg.github.io/STM32/mcu/"',
         'authors:',
         '  - name: "某人与贡献者"',
       ].join('\n'),
@@ -263,7 +269,7 @@ function metaFixture({ citation, changelog, siteChangelog, version = '1.0.0' } =
   })
 }
 
-const BASE_URL = 'https://zhuguang-zfg.github.io/mcu/'
+const BASE_URL = 'https://zhuguang-zfg.github.io/STM32/mcu/'
 
 test('checkCitation：与 manifest/站点口径一致 → 通过；字段漂移 → 逐条点名', () => {
   const ok = metaFixture()
@@ -275,7 +281,7 @@ test('checkCitation：与 manifest/站点口径一致 → 通过；字段漂移 
       'cff-version: 1.2.0',
       'title: "合成样书"',
       'version: 0.9.9', // 与 manifest 漂移
-      'repository-code: "https://github.com/zhuguang-ZFG/mcu"',
+      'repository-code: "https://github.com/zhuguang-ZFG/STM32"',
       `url: "${BASE_URL}"`,
       'authors:',
       '  - name: "另一个人"', // 与 manifest.author 漂移

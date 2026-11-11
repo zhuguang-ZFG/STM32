@@ -3,7 +3,7 @@ import path from 'node:path'
 import os from 'node:os'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { HOST, BASE } from '../seo-check.mjs'
+import { HOST, BASE } from '../site-config.mjs'
 import { sha, checkGuide } from './contract.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))

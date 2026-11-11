@@ -44,8 +44,8 @@ DIST_DIR = ROOT / "dist"
 MANIFEST_PATH = ROOT / "manifest.json"
 OUTPUT_NAME = "mcu-deep-book.html"
 PDF_NAME = "mcu-deep-book.pdf"
-SITE_BASE = "https://zhuguang-zfg.github.io/mcu/"
-REPO_BASE = "https://github.com/zhuguang-ZFG/mcu"
+SITE_BASE = "https://zhuguang-zfg.github.io/STM32/mcu/"
+REPO_BASE = "https://github.com/zhuguang-ZFG/STM32"
 def chapter_count(manifest: dict) -> int:
     """正文章数从 manifest 推导：新部落地即自动纳入，不再钉死常量。"""
     return sum(len(part["files"]) for part in manifest["parts"])
@@ -451,16 +451,16 @@ def _safe_local_path(base: Path, raw_path: str, source_label: str) -> Path:
 def _resolve_md_target(source_file: Path, raw_path: str, source_label: str) -> Path:
     if raw_path.startswith("/"):
         return _safe_local_path(DOCS_DIR, raw_path, source_label)
-    # Site pages live under base /mcu/, so relative links (and their ../ counts)
+    # Site pages live under base /STM32/mcu/, so relative links (and their ../ counts)
     # resolve in URL space, which is one level deeper than the file system.
     import posixpath
 
     section = source_label.rsplit("/", 1)[0] if "/" in source_label else ""
-    url_dir = posixpath.join("/mcu", section) + "/"
+    url_dir = posixpath.join("/STM32/mcu", section) + "/"
     resolved = posixpath.normpath(posixpath.join(url_dir, raw_path))
-    if not resolved.startswith("/mcu/"):
+    if not resolved.startswith("/STM32/mcu/"):
         raise BuildError(f"local link escapes site base: {source_label}:{raw_path}")
-    return _safe_local_path(DOCS_DIR, resolved[len("/mcu"):], source_label)
+    return _safe_local_path(DOCS_DIR, resolved[len("/STM32/mcu"):], source_label)
 
 
 def _resolve_asset_target(source_file: Path, raw_path: str, source_label: str) -> Path:
@@ -484,9 +484,10 @@ def _data_uri(path: Path, source_label: str) -> str:
 
 def _repository_url(target: Path) -> str:
     relative = target.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
+    # 合并进 STM32 单仓后，GitHub 上的源码路径多一层 mcu/ 前缀。
     if target.is_dir():
-        return f"{REPO_BASE}/tree/main/{relative}"
-    return f"{REPO_BASE}/blob/main/{relative}"
+        return f"{REPO_BASE}/tree/main/mcu/{relative}"
+    return f"{REPO_BASE}/blob/main/mcu/{relative}"
 
 
 def site_url_for_chapter(chapter_path: str) -> str:

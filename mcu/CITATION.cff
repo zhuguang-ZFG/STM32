@@ -8,8 +8,8 @@ abstract: >-
   配套 47 个可构建工程、6 个附录，以及随站点发布的离线整书（单文件 HTML 与 A4 PDF）。
 authors:
   - name: "zhuguang-ZFG 与贡献者"
-repository-code: "https://github.com/zhuguang-ZFG/mcu"
-url: "https://zhuguang-zfg.github.io/mcu/"
+repository-code: "https://github.com/zhuguang-ZFG/STM32"
+url: "https://zhuguang-zfg.github.io/STM32/mcu/"
 license: "Apache-2.0"
 version: 1.0.0
 date-released: "2026-10-23"
@@ -25,5 +25,5 @@ keywords:
   - "寄存器"
 identifiers:
   - type: url
-    value: "https://github.com/zhuguang-ZFG/mcu/tree/main/mcu-book"
+    value: "https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/mcu-book"
     description: "整书构建器、书稿清单与出版契约门所在目录"

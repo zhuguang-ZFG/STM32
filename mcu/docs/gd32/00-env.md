@@ -178,7 +178,7 @@ GD32F4xx_Firmware_Library_V3.3.3/
 
 | 本章说的 | 仓库里哪一行 |
 |---|---|
-| 工具链零增量、`-DGD32F450` | [code/gd32/01-rcu-clock/Makefile:5-11](https://github.com/zhuguang-ZFG/mcu/blob/main/code/gd32/01-rcu-clock/Makefile) |
+| 工具链零增量、`-DGD32F450` | [code/gd32/01-rcu-clock/Makefile:5-11](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/gd32/01-rcu-clock/Makefile) |
 | 启动文件（GCC 版向量表 + Reset_Handler） | code/gd32/01-rcu-clock/startup_gd32f4xx.s:15-40 |
 | 链接脚本（Flash 0x08000000 / SRAM 0x20000000） | code/gd32/01-rcu-clock/gd32f4xx.ld |
 | 寄存器级手写访问 + 行号凭证 | code/gd32/01-rcu-clock/main.c:23-35 |

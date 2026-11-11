@@ -18,7 +18,7 @@ argument-hint: <episode-id>
 - **不可逆动作前那道闸不许跳。** 抖音的 `verify`、B站的 check、知乎的表单状态栏，都只读页面不写字。历史上 f3 连两次在发布前 0 秒崩，就是因为把 `verify` 做成了可跳过的一步。小红书那条线连发布本身都还没自动化——别把"顺手补上"当成收尾，得先有用户点头和实测证据。
 - **`FORCE_RESUBMIT=1` / `FREE_RESUBMIT=1` 只在用户明说之后用。** 不加就直接跑，重复稿会真发出去。
 - **一集的字只从 `video/episodes/<ep>/episode.json` 和 `video/out/<ep>/` 来**，脚本里不写字面量。缺字段就停手——抖音的 `publish.douyin.declare`（自主声明）没填就是必填项没满足，不替这一集猜。
-- **绝不在 CDP 连接上调 `browser.close()`。** 四条线共用 `D:/Users/mcu/.temp/douyin-profile` 起的那个有头浏览器（9223），close 会把浏览器一起带走，登录态要重新验。临时探针只 `page.close()`，靠进程退出断开——**但小红书那个常驻页本身就是登录现场，探针一律自己开新页，谁都不许关它**（关掉的后果见 §6）。
+- **绝不在 CDP 连接上调 `browser.close()`。** 四条线共用 `D:/Users/STM32/mcu/.temp/douyin-profile` 起的那个有头浏览器（9223），close 会把浏览器一起带走，登录态要重新验。临时探针只 `page.close()`，靠进程退出断开——**但小红书那个常驻页本身就是登录现场，探针一律自己开新页，谁都不许关它**（关掉的后果见 §6）。
 - **凭证不进 stdout，不进仓库。** B站工具统一丢弃含 `SESSDATA|bili_jct|access_token|refresh_token` 的响应；cookie 文件在 `C:/Users/zhugu/tools/biliup-rs/` 下，仓库外。`.env`、credentials 一类永不提交。
 
 ## 2. 一集走完全程

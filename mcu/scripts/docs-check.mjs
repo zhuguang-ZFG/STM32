@@ -13,7 +13,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import url from 'node:url'
-import { BASE, HOST } from './seo-check.mjs'
+import { BASE, HOST } from './site-config.mjs'
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..')
 
@@ -273,8 +273,15 @@ function checkDetailsNesting(root) {
   return problems
 }
 
-// 本仓库自链：github.com/zhuguang-ZFG/mcu/blob/<ref>/<path>
-const SELF_BLOB = /https:\/\/github\.com\/zhuguang-ZFG\/mcu\/blob\/([^/\s)]+)\/([^\s)]+)/g
+// 本仓库自链三种形态：
+//  新（合并后）：github.com/zhuguang-ZFG/STM32/blob/<ref>/mcu/<path> —— <path> 剥掉 mcu/ 前缀对账
+//  旧（合并前历史文档）：github.com/zhuguang-ZFG/mcu/blob/<ref>/<path> —— <path> 原样对账
+//     （旧仓目录结构与 MCU 项目根同构，旧链按 MCU 根解析仍然成立；历史文档不做无条件改写）
+//  前缀丢失/越域：STM32 单仓 blob 但路径不在 mcu/ 子树下 —— MCU 文档不许出现，当场点名
+//     （作者想链 mcu/ 内文件却漏写前缀时，GitHub 上 404，门必须在这里抓住）
+const SELF_BLOB_NEW = /https:\/\/github\.com\/zhuguang-ZFG\/STM32\/blob\/([^/\s)]+)\/mcu\/([^\s)]+)/g
+const SELF_BLOB_OLD = /https:\/\/github\.com\/zhuguang-ZFG\/mcu\/blob\/([^/\s)]+)\/([^\s)]+)/g
+const SELF_BLOB_OUTSIDE = /https:\/\/github\.com\/zhuguang-ZFG\/STM32\/blob\/[^/\s)]+\/(?!mcu\/)[^\s)]+/g
 
 /**
  * 仓库自链按工作树存在性校验：GitHub 路由对 blob 链接很宽容（404 也是渲染后才看见），
@@ -292,11 +299,20 @@ export function checkSelfBlobLinks(root) {
       }
       if (inFence) return
       let m
-      SELF_BLOB.lastIndex = 0
-      while ((m = SELF_BLOB.exec(line))) {
-        const relPath = safeDecode(m[2].split('#')[0])
-        if (!fs.existsSync(path.join(root, relPath))) {
-          problems.push(`${rel}:${i + 1} 自链 ${m[0]} 指向工作树里不存在的 ${relPath}`)
+      SELF_BLOB_OUTSIDE.lastIndex = 0
+      while ((m = SELF_BLOB_OUTSIDE.exec(line))) {
+        problems.push(
+          `${rel}:${i + 1} 自链 ${m[0]} 指向 STM32 仓库 mcu/ 子树之外——MCU 文档的仓库自链必须带 mcu/ 前缀`,
+        )
+      }
+      for (const re of [SELF_BLOB_NEW, SELF_BLOB_OLD]) {
+        let mm
+        re.lastIndex = 0
+        while ((mm = re.exec(line))) {
+          const relPath = safeDecode(mm[2].split('#')[0])
+          if (!fs.existsSync(path.join(root, relPath))) {
+            problems.push(`${rel}:${i + 1} 自链 ${mm[0]} 指向工作树里不存在的 ${relPath}`)
+          }
         }
       }
     })

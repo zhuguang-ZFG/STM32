@@ -4,13 +4,14 @@ import fs from 'node:fs'
 import { parse } from 'yaml'
 
 const read = (p) => parse(fs.readFileSync(p, 'utf8'))
-const quality = read('.github/workflows/quality.yml')
-const deploy = read('.github/workflows/deploy.yml')
-const book = read('.github/workflows/book.yml')
-const links = read('.github/workflows/links.yml')
+// 合并后 MCU 的 workflows 集中在仓库根（mcu-*.yml），测试从 mcu/ 内经 ../ 读取。
+const quality = read('../.github/workflows/mcu-quality.yml')
+const deploy = read('../.github/workflows/mcu-deploy.yml')
+const book = read('../.github/workflows/mcu-book.yml')
+const links = read('../.github/workflows/mcu-links.yml')
 
 test('deployment depends on the complete reusable gate for this commit', () => {
-  assert.equal(deploy.jobs.quality.uses, './.github/workflows/quality.yml')
+  assert.equal(deploy.jobs.quality.uses, './.github/workflows/mcu-quality.yml')
   assert.equal(deploy.jobs.deploy.needs, 'quality')
   assert.match(deploy.jobs.deploy.if, /needs\.quality\.result == 'success'/)
   assert.match(deploy.jobs.deploy.if, /refs\/heads\/main/)
@@ -42,7 +43,8 @@ test('Python 静态检查作为独立 job 存在，并钉住版本', () => {
   const ruff = steps.find((s) => String(s.uses || '').includes('ruff-action'))
   assert.ok(ruff, 'lint job 必须调用 ruff-action')
   assert.equal(ruff.with.version, '0.15.21', 'ruff 版本要钉住，否则规则集会在上游更新时变脸')
-  assert.equal(ruff.with.args, 'check')
+  assert.match(ruff.with.args, /^check/, 'lint 语义必须是 ruff check')
+  assert.ok(ruff.with.args.includes('mcu/ruff.toml'), '合并后配置集中在 mcu/ruff.toml，仍须显式 --config')
 })
 
 test('整书产物要被回收验证：构建之后必须跑 PDF 契约门与下载打包', () => {

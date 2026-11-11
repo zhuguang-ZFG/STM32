@@ -11,7 +11,7 @@ const { config } = await loadConfigFromFile(
   path.join(REPO, 'docs/.vitepress/config.mts'),
   REPO,
 )
-const md = await createMarkdownRenderer(path.join(REPO, 'docs'), config.markdown, '/mcu/')
+const md = await createMarkdownRenderer(path.join(REPO, 'docs'), config.markdown, '/STM32/mcu/')
 const TAG = '<AnimFigure src="/anim/toolchain-relay.svg" />'
 
 function parse(source) {

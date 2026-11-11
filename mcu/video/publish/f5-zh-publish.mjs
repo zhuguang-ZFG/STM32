@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // F5 在知乎停在草稿箱：点「发布视频」页面不动，上一版只看到 200 /api/v4/content/publish，
 // 分不清是前端拦下、还是服务端答了 200 但 body 里带 error。这一版专治这个——
 // 续传草稿（不重传 45 MB）、只点一次发布、把每个非 GET 请求的 error/code/message 原样打出来。
@@ -5,7 +7,7 @@
 import { chromium } from 'playwright'
 import { readFileSync, existsSync, writeFileSync, rmSync } from 'node:fs'
 const EP = 'f5-sem-mutex'
-const RUN = 'D:/Users/mcu/.temp/zh-run'
+const RUN = `${MCU_ROOT}/.temp/zh-run`
 const gate = `${RUN}/I_HAVE_USER_OK=${EP}`
 const marker = `${RUN}/${EP}-published.txt`
 if (existsSync(marker)) {
@@ -13,7 +15,7 @@ if (existsSync(marker)) {
   process.exit(1)
 }
 if (!existsSync(gate)) throw new Error(`没有闸门文件 ${gate}——不点发布`)
-const ep = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const ep = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const WANT = ep.publish.zhihu.titles[0]
 
 const b = await chromium.connectOverCDP('http://127.0.0.1:9223')
@@ -96,7 +98,7 @@ try {
     log(`点之后 ${(i + 1) * 5}s：`, JSON.stringify(s))
     if (s.ok) { ok = true; break }
   }
-  await page.screenshot({ path: `D:/Users/mcu/.temp/zh-run/${EP}-publish2.png`, fullPage: true, timeout: 30000 }).catch(() => {})
+  await page.screenshot({ path: `${MCU_ROOT}/.temp/zh-run/${EP}-publish2.png`, fullPage: true, timeout: 30000 }).catch(() => {})
   if (ok) {
     // 接口没吐链接时，「查看详情」点开的落地页是第二个来源
     const before = new Set(ctx.pages())

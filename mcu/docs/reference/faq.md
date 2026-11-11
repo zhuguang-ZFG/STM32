@@ -60,7 +60,7 @@ E01/E02/E05 用串口打印或 LED 就能验；E03/E06/E07/E08 需要仪器（�
 
 ### 数字和事实怎么保证不出错？
 
-寄存器地址、引脚号必须有出处，写不出就标"以某手册某节为准"，禁止编数值；核对过的数值要有第二来源（CMSIS 头文件/官方手册）。这条纪律写在 [贡献指南](https://github.com/zhuguang-ZFG/mcu/blob/main/CONTRIBUTING.md)，未回填的坑也都在页面上明说。
+寄存器地址、引脚号必须有出处，写不出就标"以某手册某节为准"，禁止编数值；核对过的数值要有第二来源（CMSIS 头文件/官方手册）。这条纪律写在 [贡献指南](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/CONTRIBUTING.md)，未回填的坑也都在页面上明说。
 
 ### 发现错误怎么办？
 
@@ -68,7 +68,7 @@ E01/E02/E05 用串口打印或 LED 就能验；E03/E06/E07/E08 需要仪器（�
 
 ### 可以转载/商用吗？
 
-内容是 [Apache-2.0](https://github.com/zhuguang-ZFG/mcu/blob/main/LICENSE)，引用的上游源码遵守各自许可证且已注明出处；实物照片与图表请勿单独摘走。
+内容是 [Apache-2.0](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/LICENSE)，引用的上游源码遵守各自许可证且已注明出处；实物照片与图表请勿单独摘走。
 
 ### 为什么这个项目参考"通往AGI之路"？
 

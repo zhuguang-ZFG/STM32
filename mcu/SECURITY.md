@@ -11,7 +11,7 @@
 
 ## 怎么报告
 
-文档或示例代码里如果有下面这类问题，请开 [Issue](https://github.com/zhuguang-ZFG/mcu/issues/new/choose) 并写清**文件、原文、依据**：
+文档或示例代码里如果有下面这类问题，请开 [Issue](https://github.com/zhuguang-ZFG/STM32/issues/new/choose) 并写清**文件、原文、依据**：
 
 - 会让人照着做出危险实验的步骤；
 - 把示例阈值/示例工程说成产品限值或实测结论；

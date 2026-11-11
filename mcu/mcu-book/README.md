@@ -23,7 +23,7 @@ python mcu-book/build_html.py --check    # 临时目录验证整书契约
 
 PDF 需要本机 Chrome/Edge（自动探测，也可 `--browser` 显式指定）；依赖版本见 `requirements.txt`（HTML 只需 Python-Markdown；PDF 另需 Playwright 与 PyMuPDF）。npm 侧入口：`npm run book:check / book:html / book:pdf`。
 
-**在线阅读**：push 到 main 后，站点部署流水线会把整书一并发布到 **<https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html>**（PDF 同目录），由 `quality.yml` 构建并随 `docs-site` artifact 一起上传。
+**在线阅读**：push 到 main 后，站点部署流水线会把整书一并发布到 **<https://zhuguang-zfg.github.io/STM32/mcu/book/mcu-deep-book.html>**（PDF 同目录），由 `mcu-quality.yml` 构建并随 `docs-site` artifact 一起上传。
 
 ## 质量检查
 
@@ -63,5 +63,5 @@ PDF 书签由构建器把 Chromium 的扁平标题大纲重排为**部(1) → �
 
 ## 许可
 
-- 正文、版式、动画与构建器：[Apache-2.0](https://github.com/zhuguang-ZFG/mcu/blob/main/LICENSE)（与仓库一致）；
+- 正文、版式、动画与构建器：[Apache-2.0](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/LICENSE)（与仓库一致）；
 - 被引用的上游手册/规范/论文/源码只作链接与事实引用，不随书再分发，各归其权利人。

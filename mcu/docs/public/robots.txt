@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://zhuguang-zfg.github.io/mcu/sitemap.xml
+Sitemap: https://zhuguang-zfg.github.io/STM32/mcu/sitemap.xml

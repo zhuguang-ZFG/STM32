@@ -93,6 +93,6 @@ I2S 把内存里的 PCM 样本按"位时钟×声道帧"的节奏推给 codec，c
 
 ## 附录：工程完整源码
 
-构建、接线与排查见[工程 README](https://github.com/zhuguang-ZFG/mcu/tree/main/code/esp32/05-audio-play)。
+构建、接线与排查见[工程 README](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/esp32/05-audio-play)。
 
 <<< ../../code/esp32/05-audio-play/main/main.c

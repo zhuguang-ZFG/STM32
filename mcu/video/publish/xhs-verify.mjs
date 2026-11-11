@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 只读核验：小红书「已发布」列表里有没有给定的这条笔记。
 // 为什么不用搜索框：2026-10-17 实测它会**偶发返回空结果**（同一前缀换个时刻能命中），不能当判据。
 // 为什么不用单滚轮：笔记管理是**虚拟列表**（只渲染可视区约 10 条），PageDown/滚轮/scrollTop 单用都不动——
@@ -14,7 +16,7 @@ import { chromium } from 'playwright'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { matchPublished } from './repost/xhs-match.mjs'
 
-const ROOT = 'D:/Users/mcu'
+const ROOT = `${MCU_ROOT}`
 const RUN = `${ROOT}/.temp/xhs-run`
 const arg = (name) => {
   const i = process.argv.findIndex((a) => a === name || a.startsWith(`${name}=`))

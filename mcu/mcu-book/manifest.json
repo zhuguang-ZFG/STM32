@@ -5,7 +5,7 @@
   "date": "2026-10-23",
   "language": "zh-CN",
   "author": "zhuguang-ZFG 与贡献者",
-  "repository": "https://github.com/zhuguang-ZFG/mcu",
+  "repository": "https://github.com/zhuguang-ZFG/STM32",
   "license": {
     "prose_and_images": "Apache-2.0",
     "code": "Apache-2.0"
@@ -748,7 +748,7 @@
     "mcu-code": {
       "title": "本仓库配套工程（code/，47 项）",
       "authority": "项目原始资料",
-      "url": "https://github.com/zhuguang-ZFG/mcu/tree/main/code",
+      "url": "https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code",
       "snapshot": "本书构建时的 code/ 与 code/projects.json（CI 按清单矩阵逐个验证）",
       "accessed": "2026-10-23",
       "license": "Apache-2.0",
@@ -766,7 +766,7 @@
     "mcu-anim": {
       "title": "机制动画库（docs/public/anim/，103 张 SMIL SVG）",
       "authority": "项目原始资料",
-      "url": "https://github.com/zhuguang-ZFG/mcu/tree/main/docs/public/anim",
+      "url": "https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/docs/public/anim",
       "snapshot": "本书构建时的动画目录；版式与色板规范见 .trellis/spec/docs-site/animation.md",
       "accessed": "2026-10-23",
       "license": "Apache-2.0",

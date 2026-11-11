@@ -6,19 +6,11 @@ import { tokenizeForSearch } from '../../scripts/search-tokenize.mjs'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+// @ts-ignore 纯 JS 站点身份单源（scripts/site-config.mjs）
+import { BASE, HOST, REPO, pageUrl } from '../../scripts/site-config.mjs'
 
-const HOST = 'https://zhuguang-zfg.github.io'
-const BASE = '/STM32/mcu/'
 const SITE_DESC = '寄存器级 STM32F407 × ESP32-S3 深度教学：C 语言精髓 · RTOS 双精讲 · 全程实物实验'
 const OG_IMAGE = `${HOST}${BASE}og-cover.png`
-
-// 页面相对路径 → 规范 URL：index 归一为目录，与 VitePress 产物路径一致。
-const pageUrl = (page: string) => {
-  let p = page.replace(/\.md$/, '.html')
-  if (p === 'index.html') p = ''
-  else p = p.replace(/\/index\.html$/, '/')
-  return `${HOST}${BASE}${p}`
-}
 const ART_DIR = join(
   dirname(fileURLToPath(import.meta.url)), '..', '..',
   'mcu-book', 'book', 'assets', 'chapter-art',
@@ -479,10 +471,10 @@ export default defineConfig({
         },
       ],
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/zhuguang-ZFG/mcu' }],
+    socialLinks: [{ icon: 'github', link: REPO }],
     outline: { level: [2, 3], label: '本页目录' },
     docFooter: { prev: '上一篇', next: '下一篇' },
-    editLink: { pattern: 'https://github.com/zhuguang-ZFG/mcu/edit/main/docs/:path', text: '在 GitHub 上编辑此页' },
+    editLink: { pattern: `${REPO}/edit/main/mcu/docs/:path`, text: '在 GitHub 上编辑此页' },
     lastUpdated: { text: '最后更新' },
   },
 })

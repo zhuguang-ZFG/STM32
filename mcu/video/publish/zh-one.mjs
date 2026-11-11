@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 知乎视频投稿：一集一个进程从头走到尾。选择器全部沿用 zh-step.mjs 实测过的那套，不新猜。
 //   node video/publish/zh-one.mjs --ep <id>            只填不发，走完把核对结果打出来
 //   node video/publish/zh-one.mjs --ep <id> --publish  填完再发；仍要 .temp/zh-run/I_HAVE_USER_OK=<id> 放行
@@ -5,17 +7,17 @@
 import { chromium } from 'playwright'
 import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs'
 
-const RUN = 'D:/Users/mcu/.temp/zh-run'
+const RUN = `${MCU_ROOT}/.temp/zh-run`
 mkdirSync(RUN, { recursive: true })
 function arg(n) { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : null }
 const EP = arg('--ep') || (() => { throw new Error('--ep 没给') })()
 const DO_PUBLISH = process.argv.includes('--publish')
 const TI = Number(arg('--title') ?? 0)
 
-const epj = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const epj = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const P = epj.publish?.zhihu
 if (!P) throw new Error(`episode.json 里没有 publish.zhihu：${EP}`)
-const F = { video: `D:/Users/mcu/video/out/${EP}/bilibili.mp4`, cover: `D:/Users/mcu/video/out/${EP}/zhihu-cover.png` }
+const F = { video: `${MCU_ROOT}/video/out/${EP}/bilibili.mp4`, cover: `${MCU_ROOT}/video/out/${EP}/zhihu-cover.png` }
 for (const [k, v] of Object.entries(F)) if (!existsSync(v)) throw new Error(`${k} 不存在：${v}`)
 
 const browser = await chromium.connectOverCDP('http://127.0.0.1:9223')

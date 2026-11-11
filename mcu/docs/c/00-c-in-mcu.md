@@ -129,7 +129,7 @@ GPIOF_BSRR = (1UL << (LED_R_PIN + 16));  /* BR6：PF6 拉低 → 红灯亮 */
 
 <<< ../../code/stm32/00-blink/stm32f407xx.ld
 
-附属入口：[去仓库看 00-blink 工程](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/00-blink)（star / 提 issue）。
+附属入口：[去仓库看 00-blink 工程](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/00-blink)（star / 提 issue）。
 
 ## 记忆锚点
 

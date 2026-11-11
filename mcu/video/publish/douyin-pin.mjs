@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 置顶自己那条导流评论。默认只探不点；带 --go 才真置顶。
 // 判据只认一条：置顶成功后，评论列表里出现「置顶」标记，且它挂在我们那条上。
 import { readFileSync } from 'node:fs'
@@ -6,14 +8,14 @@ import { chromium } from 'playwright'
 // 缺 --ep 不回落默认集：拿着 c3 的登记簿去置顶 f5 的评论，是"给别人家帖子做家务"。
 const EP = arg('--ep')
 if (!EP) throw new Error('缺 --ep <episode-id>（--ep x 和 --ep=x 都认）——不猜这是哪一集')
-const RUN = 'D:/Users/mcu/.temp/douyin-run'
+const RUN = `${MCU_ROOT}/.temp/douyin-run`
 const go = process.argv.includes('--go')
 function arg(name) { const i = process.argv.findIndex((a) => a === name || a.startsWith(`${name}=`)); if (i < 0) return null; const a = process.argv[i]; return a.includes('=') ? a.slice(a.indexOf('=') + 1) || null : process.argv[i + 1] ?? null }
 const head = (s, n) => s.slice(0, n)
 
-const md = readFileSync(`D:/Users/mcu/video/out/${EP}/发布-douyin.md`, 'utf8')
+const md = readFileSync(`${MCU_ROOT}/video/out/${EP}/发布-douyin.md`, 'utf8')
 const want = md.split(/^## /m).find((s) => s.startsWith('②')).match(/```text\n([\s\S]*?)```/)[1].trim()
-const line = readFileSync('D:/Users/mcu/.temp/douyin-submitted.txt', 'utf8').split('\n').find((l) => l.includes(`\t${EP}\t`))
+const line = readFileSync(`${MCU_ROOT}/.temp/douyin-submitted.txt`, 'utf8').split('\n').find((l) => l.includes(`\t${EP}\t`))
 if (!line) throw new Error(`登记簿里没有 ${EP}`)
 const aweme = line.split('\t')[2]
 

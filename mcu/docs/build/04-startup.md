@@ -16,7 +16,7 @@ minutes: 30
 3. Boot 引脚决定"0 号地址是谁"：用户 Flash / 系统 Bootloader / SRAM 三种映射的区别（霸天虎正常就是从用户 Flash 启）。
 
 - **能理解**：指出"全局变量天生有初值"这句话背后，初值存在哪、由谁搬到变量的位置（第三节的搬家现场）。
-- **能用**：打开 [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) 逐行讲出每条指令在干什么，并在 GDB 里从复位单步验证。
+- **能用**：打开 [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/startup_stm32f407xx.s) 逐行讲出每条指令在干什么，并在 GDB 里从复位单步验证。
 
 ## 先修
 
@@ -216,10 +216,10 @@ void SysTick_Handler(void) {  /* 你写的强符号，覆盖 weak 默认 */
 
 | 本章说的 | 仓库里哪一行 |
 |---|---|
-| 向量表头两项 | [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) `g_pfnVectors` 开头 |
+| 向量表头两项 | [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/startup_stm32f407xx.s) `g_pfnVectors` 开头 |
 | 使能 FPU 五条 + dsb/isb | 同文件 Reset_Handler 第 0 步 |
 | 搬家循环五条指令 | 同文件 `.L_copy_loop` |
-| `_estack` / `_sidata` / `_sdata` / `_edata` | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld) 第 16 / 88-97 行 |
+| `_estack` / `_sidata` / `_sdata` / `_edata` | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/stm32f407xx.ld) 第 16 / 88-97 行 |
 | weak 同名覆盖 | 启动文件尾部 `IRQ_DEFAULT` 宏 |
 | Boot 三映射 | [hardware.md](../guide/hardware.md) 板卡资料 |
 

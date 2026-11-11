@@ -219,7 +219,7 @@ SPL 的 `USART_Init()` 计算 BRR 用 `DIV_Mantissa/DIV_Fraction` 一对字段�
 | 概念 | 落点 |
 |---|---|
 | TXE/TC/RXNE/IDLE/ORE 位定义 | ST CMSIS `stm32f407xx.h`（USART_SR 段） |
-| `baud = PCLK/BRR` 实算 | [code/stm32/03-uart-dma/main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/03-uart-dma/main.c) `usart1_init()` |
+| `baud = PCLK/BRR` 实算 | [code/stm32/03-uart-dma/main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/03-uart-dma/main.c) `usart1_init()` |
 | IDLE 判帧 + DMA 环形 | 同上 `USART1_IRQHandler()` 与 `dma2_stream5_rx_init()` |
 | PA9/PA10 AF7 | DS8626 Rev 9 Table 9 |
 | 第二节那张误差表的八行 | `BAUD_FROM_PCLK` / `PCLK_OF_BRR`（`main.c`）→ `probe.c` §1/§6 → `probe.sh` 第 2c 步与正文逐行 diff，改一个数就红 |

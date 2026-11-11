@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // B站创作中心「合集」客户端。接口取自 bilibili-API-collect/docs/creativecenter/season.md：
 //   列表 GET  member.bilibili.com/x2/creative/web/seasons
 //   封面 POST member.bilibili.com/x/vu/web/cover/up        （base64，返回 biliimg URL）
@@ -10,7 +12,7 @@ import { readFileSync, existsSync, writeFileSync } from 'node:fs'
 const CAND = [
   'C:/Users/zhugu/tools/biliup-rs/biliupR-v0.2.4-x86_64-windows/cookies.json',
   'C:/Users/zhugu/tools/biliup-rs/cookies.json',
-  'D:/Users/mcu/cookies.json',
+  `${MCU_ROOT}/cookies.json`,
 ]
 const file = CAND.find((p) => existsSync(p))
 if (!file) { console.log('‼️ 找不到 cookies.json'); process.exit(1) }

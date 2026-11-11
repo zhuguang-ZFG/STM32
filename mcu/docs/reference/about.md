@@ -37,7 +37,7 @@ title: 关于我们与致谢
 | 野火霸天虎开发指南与原理图 | 野火电子 | 板级事实：RGB 灯 PF6/7/8 共阳 |
 | 立创·实战派 ESP32-S3 原理图与 wiki | 嘉立创 | 板级事实：N16R8、屏/双麦/喇叭/QMI8658、PSRAM 占 IO35/36/37 |
 
-引证纪律与"禁止编造数值"的完整约束写在 [贡献指南](https://github.com/zhuguang-ZFG/mcu/blob/main/CONTRIBUTING.md)；手册修订号、协议规范版本、论文 DOI 与书目的完整清单在 [参考文献](bibliography.md)。
+引证纪律与"禁止编造数值"的完整约束写在 [贡献指南](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/CONTRIBUTING.md)；手册修订号、协议规范版本、论文 DOI 与书目的完整清单在 [参考文献](bibliography.md)。
 
 ## 怎么参与
 
@@ -65,4 +65,4 @@ title: 关于我们与致谢
 
 ## 许可证与免责
 
-内容以 [Apache-2.0](https://github.com/zhuguang-ZFG/mcu/blob/main/LICENSE) 发布；引用的第三方源码遵守各自许可证。硬件操作有风险（供电、短路、烧毁引脚），本站的接线图与实验按作者实持板卡验证，你换板子请先自行核对原理图。站内标"待核验 / 待实测"的结论尚未闭环，请勿当作已验证数据引用。
+内容以 [Apache-2.0](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/LICENSE) 发布；引用的第三方源码遵守各自许可证。硬件操作有风险（供电、短路、烧毁引脚），本站的接线图与实验按作者实持板卡验证，你换板子请先自行核对原理图。站内标"待核验 / 待实测"的结论尚未闭环，请勿当作已验证数据引用。

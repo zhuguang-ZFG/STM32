@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 知乎视频投稿：连 9223 那个常驻浏览器，按名字执行一步，打印这一步看到了什么。
 // 每步只做一件可逆的事；唯一不可逆的 publish 要等闸门文件 .temp/zh-run/I_HAVE_USER_OK=<ep> 出现才动，
 // 那个文件只能来自对话里的点头，脚本不自己造。
@@ -8,7 +10,7 @@
 import { chromium } from 'playwright'
 import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs'
 
-const RUN = 'D:/Users/mcu/.temp/zh-run'
+const RUN = `${MCU_ROOT}/.temp/zh-run`
 mkdirSync(RUN, { recursive: true })
 const step = process.argv[2]
 function arg(name) { const i = process.argv.findIndex((a) => a === name || a.startsWith(`${name}=`)); if (i < 0) return null; const a = process.argv[i]; return a.includes('=') ? a.slice(a.indexOf('=') + 1) || null : process.argv[i + 1] ?? null }
@@ -17,14 +19,14 @@ const EP = arg('--ep')
 if (!EP) throw new Error('缺 --ep <episode-id>（--ep x 和 --ep=x 都认）——不猜这是哪一集')
 const TI = Number(arg('--title') ?? 0)
 
-const ep = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const ep = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const pub = ep.publish?.zhihu
 // 只读步骤（status/popup）不该因为这一集还没写 zhihu 文案就跑不动，所以把"必须有"推迟到真要填的步子。
 const needPub = () => { if (!pub) throw new Error(`episode.json 里没有 publish.zhihu：${EP}`); return pub }
 const F = {
-  video: `D:/Users/mcu/video/out/${EP}/bilibili.mp4`,
+  video: `${MCU_ROOT}/video/out/${EP}/bilibili.mp4`,
   // 16:9 那份（COVER_SIZES.zhihu）。拿 bilibili-cover.png 去喂会被面板在底部切掉一条证据徽章。
-  cover: `D:/Users/mcu/video/out/${EP}/zhihu-cover.png`,
+  cover: `${MCU_ROOT}/video/out/${EP}/zhihu-cover.png`,
 }
 // 知乎的横版片源就是 bilibili.mp4（1920×1080 以内，站内上限 1080P / 4h / 20GB）。
 if (arg('--video')) F.video = arg('--video')

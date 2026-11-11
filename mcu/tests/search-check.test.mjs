@@ -44,14 +44,21 @@ test('plainHeading 对齐渲染后词面：自定义锚点 / 链接 / 行内标�
 })
 
 test('pageHrefPaths：普通页用 .html，index 页用目录式 URL 与 index.html 双形态', () => {
-  assert.deepEqual(pageHrefPaths('stm32/12-spi.md'), ['/mcu/stm32/12-spi.html'])
-  assert.deepEqual(pageHrefPaths('build/index.md'), ['/mcu/build/', '/mcu/build/index.html'])
-  assert.deepEqual(pageHrefPaths('index.md'), ['/mcu/', '/mcu/index.html'])
+  assert.deepEqual(pageHrefPaths('stm32/12-spi.md'), ['/STM32/mcu/stm32/12-spi.html'])
+  assert.deepEqual(pageHrefPaths('build/index.md'), ['/STM32/mcu/build/', '/STM32/mcu/build/index.html'])
+  assert.deepEqual(pageHrefPaths('index.md'), ['/STM32/mcu/', '/STM32/mcu/index.html'])
+})
+
+test('pageHrefPaths：旧 base /mcu/ 形态是负例（防 base 回退假绿）', () => {
+  // 显式传旧 base 时函数原样拼接（兼容历史产物口径），但默认口径绝不许退回旧 base
+  assert.deepEqual(pageHrefPaths('stm32/12-spi.md', '/mcu/'), ['/mcu/stm32/12-spi.html'])
+  assert.notDeepEqual(pageHrefPaths('stm32/12-spi.md'), ['/mcu/stm32/12-spi.html'])
+  assert.notDeepEqual(pageHrefPaths('index.md'), ['/mcu/', '/mcu/index.html'])
 })
 
 test('checkSearchHits：目录页不能被同目录下的子页面冒充（全等而非前缀）', () => {
   const index = makeIndex([
-    { id: '/mcu/build/00-toolchain.html#学习目标', title: '工具链', titles: ['学习目标'], text: '章节路线导览' },
+    { id: '/STM32/mcu/build/00-toolchain.html#学习目标', title: '工具链', titles: ['学习目标'], text: '章节路线导览' },
   ])
   const { missing } = checkSearchHits(index, [{ term: '章节路线导览', page: 'build/index.md' }])
   assert.equal(missing.length, 1, '命中的是 build/00-toolchain.html，不是导览页本身，必须判红')
@@ -61,7 +68,7 @@ test('checkSearchHits：排在很后面也算可达（本门判可达性，不�
   // 通用标题（「小节结构」这类）的目标页常常排在第 20 名之外；设截断会把它判成缺陷（实测 715/2147 噪声）
   const docs = []
   for (let i = 0; i < 5; i++) {
-    docs.push({ id: `/mcu/x/page${i}.html#s`, title: '共同词 目标', titles: ['共同词'], text: '共同词 共同词' })
+    docs.push({ id: `/STM32/mcu/x/page${i}.html#s`, title: '共同词 目标', titles: ['共同词'], text: '共同词 共同词' })
   }
   const index = makeIndex(docs)
   assert.deepEqual(checkSearchHits(index, [{ term: '共同词', page: 'x/page4.md' }]).missing, [])
@@ -128,12 +135,12 @@ test('harvestEntries：frontmatter search:false 的页面整体跳过', () => {
 test('checkSearchHits：索引与查询同口径时，标题都能翻到自己那一页', () => {
   const index = makeIndex([
     {
-      id: '/mcu/stm32/12-spi.html#移位艺术',
+      id: '/STM32/mcu/stm32/12-spi.html#移位艺术',
       title: 'S12 SPI',
       titles: ['S12 SPI', '四根线的全双工移位'],
       text: '全双工的移位艺术',
     },
-    { id: '/mcu/rtos/index.html#章节路线', title: 'RTOS', titles: ['RTOS', '章节路线'], text: '章节路线' },
+    { id: '/STM32/mcu/rtos/index.html#章节路线', title: 'RTOS', titles: ['RTOS', '章节路线'], text: '章节路线' },
   ])
   const { missing, checked } = checkSearchHits(index, [
     { term: '四根线的全双工移位', page: 'stm32/12-spi.md' },
@@ -145,7 +152,7 @@ test('checkSearchHits：索引与查询同口径时，标题都能翻到自己�
 
 test('checkSearchHits：翻不到自己那页必须点名（页面串到别处也算失败）', () => {
   const index = makeIndex([
-    { id: '/mcu/other.html#x', title: '别页', titles: ['别页'], text: '全双工的移位艺术' },
+    { id: '/STM32/mcu/other.html#x', title: '别页', titles: ['别页'], text: '全双工的移位艺术' },
   ])
   const { missing } = checkSearchHits(index, [{ term: '四根线的全双工移位', page: 'stm32/12-spi.md' }])
   assert.equal(missing.length, 1)
@@ -155,7 +162,7 @@ test('checkSearchHits：翻不到自己那页必须点名（页面串到别处�
 test('checkSearchHits：索引被默认分词建过（config 少 tokenize）时必须判红', () => {
   const docs = [
     {
-      id: '/mcu/stm32/12-spi.html#x',
+      id: '/STM32/mcu/stm32/12-spi.html#x',
       title: 'S12 SPI',
       titles: ['S12 SPI'],
       text: '全双工的移位艺术，中文整段会成为单个 token',

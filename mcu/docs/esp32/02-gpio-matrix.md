@@ -137,7 +137,7 @@ GPIO0（BOOT）、GPIO45、GPIO46 等在上电/复位时被采样，决定启动
 | IO_MUX vs Matrix | ESP-IDF GPIO 文档（v5.5.2）+ TRM |
 | 芯片能力宏 | `components/soc/esp32s3/include/soc/soc_caps.h` |
 | 板卡引脚分配 | 立创 wiki（GPIO0=BOOT、GPIO10/11=扩展口、IO35~37=PSRAM） |
-| 换岗实验 | [code/esp32/01-gpio-matrix](https://github.com/zhuguang-ZFG/mcu/tree/main/code/esp32/01-gpio-matrix) |
+| 换岗实验 | [code/esp32/01-gpio-matrix](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/esp32/01-gpio-matrix) |
 | 动画 | [gpio-matrix-routing.svg](/anim/gpio-matrix-routing.svg) |
 
 ## 你做到了

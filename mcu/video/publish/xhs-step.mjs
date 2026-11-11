@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 小红书视频笔记的分步驱动：连 video/publish/xhs-daemon.mjs 起的那个常驻浏览器（9223），一次只做一步。
 // 为什么分步而不是一把梭：发布是不可逆的公开动作，而编辑器里的状态（选好的视频、填好的字）
 // 只活在那一页上——脚本一退、标签页一关就得重传。所以本驱动**绝不关掉工作标签页**，
@@ -7,7 +9,7 @@
 import { chromium } from 'playwright'
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
 
-const RUN = 'D:/Users/mcu/.temp/xhs-run'
+const RUN = `${MCU_ROOT}/.temp/xhs-run`
 mkdirSync(RUN, { recursive: true })
 const PUBLISH_URL = 'https://creator.xiaohongshu.com/publish/publish?target=video'
 const WORK_HOST = '/publish/publish'
@@ -25,11 +27,11 @@ function arg(name, dflt = null) {
 const EP = arg('--ep')
 if (!EP) throw new Error('缺 --ep <episode-id>（--ep x 和 --ep=x 都认）——不猜这是哪一集')
 
-const epFile = `D:/Users/mcu/video/episodes/${EP}/episode.json`
+const epFile = `${MCU_ROOT}/video/episodes/${EP}/episode.json`
 if (!existsSync(epFile)) throw new Error(`没有这一集：${epFile}`)
 const ep = JSON.parse(readFileSync(epFile, 'utf8'))
-const VIDEO = `D:/Users/mcu/video/out/${EP}/douyin.mp4`
-const COVER = `D:/Users/mcu/video/out/${EP}/douyin-cover.png`
+const VIDEO = `${MCU_ROOT}/video/out/${EP}/douyin.mp4`
+const COVER = `${MCU_ROOT}/video/out/${EP}/douyin-cover.png`
 
 const browser = await chromium.connectOverCDP('http://127.0.0.1:9223')
 const ctx = browser.contexts()[0]

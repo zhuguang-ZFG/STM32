@@ -1,4 +1,5 @@
 import { chromium } from '@playwright/test'
+import { BASE } from './site-config.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 import { gzipSync, brotliCompressSync } from 'node:zlib'
@@ -22,14 +23,14 @@ const server = spawn(process.execPath, ['node_modules/vitepress/bin/vitepress.js
 let browser
 try {
   for (let i=0;i<60;i++) {
-    try { if ((await fetch(origin+'/STM32/mcu/')).ok) break } catch {}
+    try { if ((await fetch(origin + BASE)).ok) break } catch {}
     await new Promise(r => setTimeout(r, 250))
   }
   browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined, headless: true })
   const page = await browser.newPage({ viewport: { width: 1365, height: 900 } })
   const errors=[]
   page.on('pageerror', e=>errors.push(e.message))
-  await page.goto(origin+'/STM32/mcu/', { waitUntil: 'networkidle' })
+  await page.goto(origin + BASE, { waitUntil: 'networkidle' })
   const initial = await page.evaluate(() => performance.getEntriesByType('resource').map(r => ({name:r.name, bytes:r.transferSize})))
   await page.locator('.VPNavBarSearch button').click()
   try { await page.locator('#localsearch-input').fill('I2C', {timeout:10000}) }
@@ -39,7 +40,7 @@ try {
   const results = await page.locator('.VPLocalSearchBox .result').count()
   await page.screenshot({ path: `${out}/${stage}-search.png` })
   await page.keyboard.press('Escape')
-  await page.goto(origin+'/mcu/stm32/02-rcc-clock.html', { waitUntil: 'networkidle' })
+  await page.goto(origin + BASE + 'stm32/02-rcc-clock.html', { waitUntil: 'networkidle' })
   const animationCount=await page.locator('.anim-figure').count()
   await page.locator('.anim-figure__btn').first().click()
   const paused=await page.locator('.anim-figure').first().evaluate(el=>el.querySelector('svg').animationsPaused())

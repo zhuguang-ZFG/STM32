@@ -51,16 +51,16 @@ test('resolveHref：外链 / 协议相对 / 纯# / 空锚点 / 无锚点 / 非 h
   assert.equal(resolveHref('', from), null)
   assert.equal(resolveHref('a.html#', from), null) // 空锚点
   assert.equal(resolveHref('a.html', from), null) // 无锚点
-  assert.equal(resolveHref('/mcu/anim/x.svg#v', from), null) // 资产内部语义，不是页面锚点
+  assert.equal(resolveHref('/STM32/mcu/anim/x.svg#v', from), null) // 资产内部语义，不是页面锚点
 })
 
 test('resolveHref：同页锚点、base 绝对路径、裸 base、目录、相对路径、query', () => {
   const from = 'stm32/03-gpio.html'
   assert.deepEqual(resolveHref('#vp', from), { target: from, fragment: 'vp' })
-  assert.deepEqual(resolveHref('/mcu/c/01.html#栈', from), { target: 'c/01.html', fragment: '栈' })
-  assert.deepEqual(resolveHref('/mcu/#hero', from), { target: 'index.html', fragment: 'hero' })
-  assert.deepEqual(resolveHref('/mcu#hero', from), { target: 'index.html', fragment: 'hero' })
-  assert.deepEqual(resolveHref('/mcu/guide/#开始', from), {
+  assert.deepEqual(resolveHref('/STM32/mcu/c/01.html#栈', from), { target: 'c/01.html', fragment: '栈' })
+  assert.deepEqual(resolveHref('/STM32/mcu/#hero', from), { target: 'index.html', fragment: 'hero' })
+  assert.deepEqual(resolveHref('/STM32/mcu#hero', from), { target: 'index.html', fragment: 'hero' })
+  assert.deepEqual(resolveHref('/STM32/mcu/guide/#开始', from), {
     target: 'guide/index.html',
     fragment: '开始',
   })
@@ -78,14 +78,21 @@ test('resolveHref：同页锚点、base 绝对路径、裸 base、目录、相�
   })
 })
 
+test('resolveHref：旧 base /mcu/ 形态判 outOfBase（防 base 回退假绿）', () => {
+  const from = 'stm32/03-gpio.html'
+  assert.deepEqual(resolveHref('/mcu/c/01.html#栈', from), { outOfBase: '/mcu/c/01.html' })
+  assert.deepEqual(resolveHref('/mcu/#hero', from), { outOfBase: '/mcu/' })
+  assert.deepEqual(resolveHref('/mcu#hero', from), { outOfBase: '/mcu' })
+})
+
 test('checkDistAnchors：同页 / 跨页 / base / 目录 / query 全过', () => {
   const dir = makeDist({
     'index.html': PAGE(
       [
         '<a href="#top">x</a>',
         '<a href="sub/page.html#sec-一">x</a>',
-        '<a href="/mcu/sub/page.html#sec-一">x</a>',
-        '<a href="/mcu/#首页">x</a>',
+        '<a href="/STM32/mcu/sub/page.html#sec-一">x</a>',
+        '<a href="/STM32/mcu/#首页">x</a>',
         '<a href="sub/page.html?q=1#sec-一">x</a>',
         '<a href="https://a.com/x.html#whatever">x</a>',
         '<a href="#">x</a>',
@@ -93,7 +100,7 @@ test('checkDistAnchors：同页 / 跨页 / base / 目录 / query 全过', () => 
       ].join(''),
       ['top', '首页'],
     ),
-    'sub/page.html': PAGE('<a href="/mcu/index.html#top">x</a>', ['sec-一']),
+    'sub/page.html': PAGE('<a href="/STM32/mcu/index.html#top">x</a>', ['sec-一']),
   })
   try {
     const { problems, checked, pages } = checkDistAnchors(dir)

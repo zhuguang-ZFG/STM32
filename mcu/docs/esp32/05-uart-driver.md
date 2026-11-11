@@ -171,7 +171,7 @@ case UART_DATA: {
 | 事件枚举与 uart_event_t | ESP-IDF v5.5.2 `components/esp_driver_uart/include/driver/uart.h` |
 | 驱动实现 | 同上 `components/esp_driver_uart/src/uart.c`（5.5.x 新路径） |
 | FIFO 长度 | `soc/soc_caps.h` SOC_UART_FIFO_LEN=128 |
-| 实验 | [code/esp32/02-uart-events](https://github.com/zhuguang-ZFG/mcu/tree/main/code/esp32/02-uart-events) |
+| 实验 | [code/esp32/02-uart-events](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/esp32/02-uart-events) |
 | 动画 | [idf-uart-events.svg](/anim/idf-uart-events.svg) |
 | STM32 手写版对照 | [S7 USART](../stm32/07-usart.md) |
 

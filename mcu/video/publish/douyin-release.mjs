@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 只重写"发布文案"，不重渲任何一帧：读 video/out/<ep>/douyin/timeline.json（产线 mux 时已断言过
 // 它和 mp4 实际时长差 < 1/fps），直接喂给 package.mjs 的 writeRelease。
 // 顺手产出 video/publish/douyin-plan.generated.md：投稿顺序、绝对路径、描述、置顶评论、封面，一张表抄完。
@@ -8,7 +10,7 @@ import { loadEpisode, platformConfig, resolveScenes } from '../src/spec.mjs'
 import { writeRelease } from '../src/package.mjs'
 import { fmtClock } from '../src/util.mjs'
 
-const ROOT = 'D:/Users/mcu'
+const ROOT = `${MCU_ROOT}`
 const series = JSON.parse(readFileSync(join(ROOT, 'video/series.json'), 'utf8'))
 const ORDER = series.episodes.map((e) => e.id)
 const byId = new Map(series.episodes.map((e) => [e.id, e]))
