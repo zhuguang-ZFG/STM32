@@ -57,5 +57,5 @@ mount-smoke.mjs 根入口断言：`page.goto` 读 meta-refresh 重定向页 body
 ## 收尾事项
 
 - lychee 合并窗口三条放行已删除（本提交）；main 上外链门将全量复验这些 URL 200。
-- `feat/mcu-merge-p1` 远端分支可删（已全部合入 main）；本地 worktree 待用户确认后清理。
-- 旧仓 `zhuguang-ZFG/mcu`：保留存活 + tag `mcu-pre-merge-archive`；是否归档/壳仓重定向为后续独立决策。
+- `feat/mcu-merge-p1` 远端分支与本地 worktree 已删除（2026-11-12 收尾执行）。
+- 旧仓 `zhuguang-ZFG/mcu`：已建归档壳仓——gh-pages 分支全部为跳转桩页（131 条路由含目录型 index），Pages 源切至 gh-pages，仓库已归档只读；整树历史与 tag `mcu-pre-merge-archive` 保留。
