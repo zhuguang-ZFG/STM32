@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zhuguang-zfg.github.io/mcu/sitemap.xml

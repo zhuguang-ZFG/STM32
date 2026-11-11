@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RISC-V 工具链流程：GCC → 链接脚本 → 启动文件 → 入口</title>
+  <desc>四阶段流程图：riscv-none-elf-gcc 编译、链接脚本指定内存布局、启动文件初始化、entry 入口跳转</desc>
+
+  <rect width="720" height="430" fill="#f6f8fa"/>
+
+  <!-- Title -->
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">GD32VF103 RISC-V 工具链流程</text>
+
+  <!-- Step 1: RISC-V GCC -->
+  <text x="90" y="50" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">① RISC-V GCC</text>
+  <rect x="20" y="58" width="140" height="90" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="90" y="78" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="90" dy="0" font-family="monospace" font-size="10">riscv-none-elf-gcc</tspan>
+    <tspan x="90" dy="14" fill="#666" font-size="10">-march=rv32imac</tspan>
+    <tspan x="90" dy="14" fill="#666" font-size="10">-mabi=ilp32</tspan>
+    <tspan x="90" dy="14" fill="#666" font-size="10">-mcmodel=medlow</tspan>
+  </text>
+
+  <!-- Arrow 1→2 -->
+  <path d="M160,103 L180,103" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Linker script -->
+  <text x="270" y="50" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">② 链接脚本</text>
+  <rect x="200" y="58" width="140" height="90" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="270" y="78" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="270" dy="0" font-family="monospace" font-size="10">gd32vf103xb.ld</tspan>
+    <tspan x="270" dy="14" fill="#666" font-size="10">FLASH 0x08000000</tspan>
+    <tspan x="270" dy="14" fill="#666" font-size="10">RAM 0x20000000</tspan>
+    <tspan x="270" dy="14" fill="#666" font-size="10">.data / .bss 布局</tspan>
+  </text>
+
+  <!-- Arrow 2→3 -->
+  <path d="M340,103 L360,103" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Startup file -->
+  <text x="450" y="50" font-size="13" font-weight="bold" fill="#d97706" text-anchor="middle">③ 启动文件</text>
+  <rect x="380" y="58" width="140" height="90" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="450" y="78" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="450" dy="0" font-family="monospace" font-size="10">startup_gd32vf103.s</tspan>
+    <tspan x="450" dy="14" fill="#666" font-size="10">向量表 → 复位入口</tspan>
+    <tspan x="450" dy="14" fill="#666" font-size="10">.data 从 Flash 搬 RAM</tspan>
+    <tspan x="450" dy="14" fill="#666" font-size="10">.bss 清零</tspan>
+  </text>
+
+  <!-- Arrow 3→4 -->
+  <path d="M520,103 L540,103" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Entry point -->
+  <text x="630" y="50" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle">④ 入口</text>
+  <rect x="560" y="58" width="140" height="90" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="630" y="78" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="630" dy="0" font-family="monospace" font-size="10">_start → main</tspan>
+    <tspan x="630" dy="14" fill="#666" font-size="10">初始化完成</tspan>
+    <tspan x="630" dy="14" fill="#666" font-size="10">进入用户代码</tspan>
+    <tspan x="630" dy="14" fill="#3eaf7c" font-size="10">✓ 点灯</tspan>
+  </text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Comparison with ARM -->
+  <rect x="20" y="165" width="340" height="110" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="185" font-size="12" font-weight="bold" fill="#3451b2">与 ARM Cortex-M 对照</text>
+  <text x="30" y="205" font-size="11" fill="#333">
+    <tspan x="30" dy="0" fill="#3451b2" font-weight="bold">ARM</tspan>
+    <tspan>：arm-none-eabi-gcc + cortex-m4</tspan>
+    <tspan x="30" dy="16" fill="#dc2626" font-weight="bold">RISC-V</tspan>
+    <tspan>：riscv-none-elf-gcc + rv32imac</tspan>
+    <tspan x="30" dy="16" fill="#d97706" font-weight="bold">相同点</tspan>
+    <tspan>：链接脚本 + 启动文件 + 向量表</tspan>
+    <tspan x="30" dy="16" fill="#666" font-size="10">流程同构，只是工具链前缀与架构参数不同</tspan>
+  </text>
+
+  <!-- Key differences -->
+  <rect x="380" y="165" width="320" height="110" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="390" y="185" font-size="12" font-weight="bold" fill="#3eaf7c">关键差异</text>
+  <text x="390" y="205" font-size="11" fill="#333">
+    <tspan x="390" dy="0">RV32IMAC（32 位整数+乘除+原子+压缩）</tspan>
+    <tspan x="390" dy="16">CLIC 替代 NVIC（[V1](../gd32/06-clic-irq.md)）</tspan>
+    <tspan x="390" dy="16">MTIME 替代 SysTick（[V3](../gd32/08-mtime-tick.md)）</tspan>
+    <tspan x="390" dy="16" fill="#666" font-size="10">OpenOCD 同样支持 RISC-V</tspan>
+  </text>
+
+  <!-- Verification commands -->
+  <rect x="20" y="290" width="680" height="70" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="310" font-size="12" font-weight="bold" fill="#d97706">自查命令</text>
+  <text x="30" y="330" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="30" dy="0">riscv-none-elf-gcc --version</tspan>
+    <tspan fill="#666"> → 确认工具链版本</tspan>
+    <tspan x="30" dy="16">riscv-none-elf-gcc -march=rv32imac -mabi=ilp32 -E -x c /dev/null</tspan>
+    <tspan fill="#666"> → 验证架构参数</tspan>
+  </text>
+
+  <!-- Bottom note -->
+  <rect x="20" y="375" width="680" height="40" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="360" y="400" font-size="11" fill="#333" text-anchor="middle">RISC-V 与 ARM 的嵌入式开发流程<tspan font-weight="bold" fill="#3451b2">同构</tspan>——掌握一套，另一套触类旁通</text>
+
+  <!-- Continuous animation: progress dot -->
+  <circle r="5" fill="#3451b2" opacity="0.8">
+    <animate attributeName="cx" values="90;270;450;630;90" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="103;103;103;103;103" dur="5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

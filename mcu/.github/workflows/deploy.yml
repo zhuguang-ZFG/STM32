@@ -1,0 +1,55 @@
+name: 部署站点到 GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    uses: ./.github/workflows/quality.yml
+
+  deploy:
+    # 可复用工作流的所有 jobs 成功才算 quality 成功；失败/取消/跳过均不发布。
+    needs: quality
+    if: github.ref == 'refs/heads/main' && needs.quality.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # 顺序有讲究：checkout 默认 clean=true，会 reset/clean 工作区——它必须排在
+      # download-artifact 之前，否则刚下载到 `site/` 的产物会被当成未跟踪文件清掉，
+      # 后面的 `--dist site` 就查了个空目录（不是"检查通过"，是没东西可查）。
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: site
+      # 为什么在部署前再查一遍：前面 quality 的检查跑在**源文件与刚构建的 dist** 上，
+      # 而这里落地的是一路传过来的 artifact。检查对象必须是真正要上线的那一份。
+      - name: 上线物锚点对账（对 artifact，不对源文件）
+        run: node scripts/pages-check.mjs --dist site
+      - name: 上线物搜索可达性对账
+        run: node scripts/search-check.mjs --dist site
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v5

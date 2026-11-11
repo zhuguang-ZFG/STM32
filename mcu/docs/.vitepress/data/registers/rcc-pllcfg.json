@@ -1,0 +1,20 @@
+{
+  "name": "RCC_PLLCFG",
+  "fullName": "PLL configuration register",
+  "address": "0x40023804",
+  "resetValue": "0x24003010",
+  "access": "R/W",
+  "rmRef": "RM0090 §5.3.3",
+  "width": 32,
+  "fields": [
+    { "name": "PLLR",    "bits": [30, 28], "reset": "0b010", "access": "R/W", "desc": "PLLR 分频 (2-7)：I2S/SAI 时钟源" },
+    { "name": "PLLQ",    "bits": [27, 24], "reset": "0b0001", "access": "R/W", "desc": "PLLQ 分频 (2-15)：USB 48MHz、RNG" },
+    { "name": "PLLSRC",  "bits": [22],     "reset": "0b0",   "access": "R/W", "desc": "PLL 时钟源：0=HSI, 1=HSE" },
+    { "name": "Reserved","bits": [21, 18], "reset": "0b0000","access": "-",   "desc": "保留" },
+    { "name": "PLLP",    "bits": [17, 16], "reset": "0b00",  "access": "R/W", "desc": "PLLP 分频：00=÷2, 01=÷4, 10=÷6, 11=÷8 → SYSCLK" },
+    { "name": "Reserved","bits": [15, 10], "reset": "0b000000","access":"-",  "desc": "保留" },
+    { "name": "PLLN",    "bits": [14, 6],  "reset": "0x030", "access": "R/W", "desc": "PLL 倍频系数 (50-432)：VCO = f_in/N × M" },
+    { "name": "Reserved","bits": [5],      "reset": "0b0",   "access": "-",   "desc": "保留" },
+    { "name": "PLLM",    "bits": [5, 0],   "reset": "0x10",  "access": "R/W", "desc": "PLL 输入分频 (2-63)：VCO_in = HSE/PLLM，推荐 1-2MHz" }
+  ]
+}

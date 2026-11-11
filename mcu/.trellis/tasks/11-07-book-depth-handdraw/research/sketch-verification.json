@@ -1,0 +1,60 @@
+{
+  "scope": "review-only two sketches; not production or complete chapter acceptance",
+  "artGuard": "2 sketches,0 violations; original tool unmodified",
+  "browser": [
+    {
+      "width": 390,
+      "documentWidth": 390,
+      "theme": "light",
+      "background": "rgb(255, 255, 255)",
+      "figures": [
+        {
+          "width": 310,
+          "minEffectiveLabelPx": 13.5625,
+          "textBoxesInside": true,
+          "ink": "rgb(18, 59, 51)"
+        },
+        {
+          "width": 310,
+          "minEffectiveLabelPx": 13.5625,
+          "textBoxesInside": true,
+          "ink": "rgb(18, 59, 51)"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "documentWidth": 390,
+      "theme": "dark",
+      "background": "rgb(23, 25, 28)",
+      "figures": [
+        {
+          "width": 310,
+          "minEffectiveLabelPx": 13.5625,
+          "textBoxesInside": true,
+          "ink": "rgb(163, 196, 185)"
+        },
+        {
+          "width": 310,
+          "minEffectiveLabelPx": 13.5625,
+          "textBoxesInside": true,
+          "ink": "rgb(163, 196, 185)"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "documentWidth": 1440,
+      "theme": "desktop-dark",
+      "svgWidths": [
+        800,
+        800
+      ]
+    }
+  ],
+  "limitations": [
+    "No PDF built this planning turn",
+    "No reader study or technical-source acceptance implied",
+    "No production docs/asset modifications"
+  ]
+}

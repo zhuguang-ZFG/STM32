@@ -1,0 +1,272 @@
+{
+  "sourceHash": "cbdbe79ea4796af538f120464a9cef79ec6b04855ddb19b5f8e22c8ff365034e",
+  "cards": [
+    {
+      "id": "card-c3",
+      "source": "docs/c/03-volatile.md",
+      "gaps": [
+        36,
+        36
+      ],
+      "bodyHeight": 566.28125
+    },
+    {
+      "id": "card-b1",
+      "source": "docs/build/01-four-steps.md",
+      "gaps": [
+        36,
+        36
+      ],
+      "bodyHeight": 561.40625
+    },
+    {
+      "id": "card-c1",
+      "source": "docs/c/01-memory-model.md",
+      "gaps": [
+        36,
+        36
+      ],
+      "bodyHeight": 517.40625
+    },
+    {
+      "id": "card-c0",
+      "source": "docs/c/00-c-in-mcu.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 278.6875
+    },
+    {
+      "id": "card-c2",
+      "source": "docs/c/02-pointer.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 325.03125
+    },
+    {
+      "id": "card-c4",
+      "source": "docs/c/04-struct-abi.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 469.71875
+    },
+    {
+      "id": "card-c5",
+      "source": "docs/c/05-func-pointer.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 396
+    },
+    {
+      "id": "card-c6",
+      "source": "docs/c/06-abi-stack.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 522.0625
+    },
+    {
+      "id": "card-c8",
+      "source": "docs/c/08-framed-protocol.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 397.375
+    },
+    {
+      "id": "card-f0",
+      "source": "docs/rtos/freertos/00-why-rtos.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 476.0625
+    },
+    {
+      "id": "card-b2",
+      "source": "docs/build/02-elf.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 325.03125
+    },
+    {
+      "id": "card-s7",
+      "source": "docs/stm32/07-usart.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 469.375
+    },
+    {
+      "id": "card-p2",
+      "source": "docs/esp32/02-gpio-matrix.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 495.71875
+    },
+    {
+      "id": "card-s2-rcc",
+      "source": "docs/stm32/02-rcc-clock.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 387.40625
+    },
+    {
+      "id": "card-s4-nvic",
+      "source": "docs/stm32/04-nvic-exti.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 386.71875
+    },
+    {
+      "id": "card-s14-pwr",
+      "source": "docs/stm32/14-pwr.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 387.40625
+    },
+    {
+      "id": "card-p3-idf",
+      "source": "docs/esp32/03-idf-anatomy.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 403.5625
+    },
+    {
+      "id": "card-p8-wifi",
+      "source": "docs/esp32/08-wifi.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 315.0625
+    },
+    {
+      "id": "card-p10-flash",
+      "source": "docs/esp32/10-flash-nvs-ota.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 320.21875
+    },
+    {
+      "id": "card-f2-switch",
+      "source": "docs/rtos/freertos/02-context-switch.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 319.875
+    },
+    {
+      "id": "card-f5-sem",
+      "source": "docs/rtos/freertos/05-sem-mutex.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 341.40625
+    },
+    {
+      "id": "card-f6-notify",
+      "source": "docs/rtos/freertos/06-notify-event-timer.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 440.09375
+    },
+    {
+      "id": "card-r2-ipc",
+      "source": "docs/rtos/rtthread/02-ipc.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 247.875
+    },
+    {
+      "id": "card-r4-device",
+      "source": "docs/rtos/rtthread/04-device.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 315.0625
+    },
+    {
+      "id": "card-g1-rcu",
+      "source": "docs/gd32/01-rcu-clock.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 315.0625
+    },
+    {
+      "id": "card-b3-linker",
+      "source": "docs/build/03-linker-script.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 387.40625
+    },
+    {
+      "id": "card-b4-startup",
+      "source": "docs/build/04-startup.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 387.0625
+    },
+    {
+      "id": "card-b5-map",
+      "source": "docs/build/05-map-size.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 387.0625
+    },
+    {
+      "id": "card-c7-ub",
+      "source": "docs/c/07-ub-misra.md",
+      "gaps": [
+        36
+      ],
+      "bodyHeight": 418.21875
+    }
+  ],
+  "files": {
+    "card-c3.png": "21d897933615eb75de7c6aabb517052fe1f04fd0a5bdc3d0df82b4f29b017d93",
+    "card-b1.png": "41c3ce44253bd03f0aae32a1c223b13d8c30516b78adad90aa9fcc3431f6009b",
+    "card-c1.png": "bde404e41e2c3c33e6c3859fc0cebbe5fd568b1c90bb9b18b7209cbb50396f4e",
+    "card-c0.png": "a250ae27d774ba67239b61538e0f47bbbd82c2a4bc4232d2cc37858f33c772bd",
+    "card-c2.png": "37ef1b0513cd22c032d38f69f7ec0a349ce83a348c30581da7b833a6d2f89592",
+    "card-c4.png": "d25e2468fff87c8b4c79d257a1d534b6a48fef712f8fc993f47c8f18b4a3a558",
+    "card-c5.png": "04a376ed703e91e612a6927783b5a089fec6fb2a01c2157ddbcf05ce06bc4d6d",
+    "card-c6.png": "f08cba34d481425153e6fab29f2f80b5cfabea7a5ede380245cc5f27f23e9260",
+    "card-c8.png": "c6d1937094302b60127ca26bcb468370800f054f441b4aafabeb747e37cf4a7a",
+    "card-f0.png": "a1c1da871ff304c23f1387f846306dd1bfdad9a4ff8fd8819e0e35ca93faaf16",
+    "card-b2.png": "e0eae5dd31f3e883aab33f96556508ec557474603d097583c9ef287f553ce057",
+    "card-s7.png": "c698c380ec7bd4f7ceba0b82bf45c3e020c2c7460fee0db88a1874eb07506957",
+    "card-p2.png": "a70b41c4fbb2c2d3cd0f3cbbc7605ec1eee9117a602695322fab90ad852ed951",
+    "card-s2-rcc.png": "295583a55cc890dd3f3d539ed695d9fff8e707bdd70e416585224ce7f0ec5bc8",
+    "card-s4-nvic.png": "ab1acbdd0a4434838b1814f4a7a758a3c13dc21daed80711c53d4ab1a0cde577",
+    "card-s14-pwr.png": "9fef0366b38f5d0b8ea3a307d990e51674e8fb84c0290e14534b3844d85cdfff",
+    "card-p3-idf.png": "84bf41fbe339da27d6e1d9a7287370fc5b1efd7d50619ad15ad4a752bcecc25b",
+    "card-p8-wifi.png": "ea6a80e345e5ed2043b959223af32fd6849bed84ef1f972baee60e0b6993240b",
+    "card-p10-flash.png": "e5524806707a3c1ae68a0f070ecc19ee3e22844b21a148e5886e3e229a428f95",
+    "card-f2-switch.png": "e18d65db21ab56b2e6e3192e24719cfb5bea3700c5e86a7b898dc3a89de0dd2f",
+    "card-f5-sem.png": "8e3235a5eec4355ece9d8b6e44771fb2486f67cf5d6cfbacce237798c94da279",
+    "card-f6-notify.png": "51f0ac655b78bd3360b018c6997c70e4585cad8f79e1e3b07bc3e3f4c4ab5ea3",
+    "card-r2-ipc.png": "3670c15d6429de6113e2f09d492f729e725df863ee8c64e0fbc9ceca4b7fd699",
+    "card-r4-device.png": "0c10a621519477b8da80dce1325dc78545286aac954cf3aaddca505bdaea09c0",
+    "card-g1-rcu.png": "7d3804628ce5ffe9fd6cec0c324f78eb7a4f9f1e84c06660e9cda2beffd3ffdd",
+    "card-b3-linker.png": "806bbe64fe61976b94ae025928aba629cfc193ffe5fe361d1642bec9aae7e87a",
+    "card-b4-startup.png": "7730369c5be106f1df721ebbfc0b0ec05fca0183a7211c70e20a9c83d355feb4",
+    "card-b5-map.png": "fe9f235138049a78db54059347afa81f9fe556ea0e022ac5a821ffa5f6309255",
+    "card-c7-ub.png": "909c325249a76f21b546aaa95a3b438c6286e6b94dd0bb97bc25e3e785a65c34",
+    "cover-c3-bili.png": "5ebbeea2d65a1f774e68a8417b704119b0a43b58dcbca9891aef40aee2545464"
+  }
+}

@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>IRAM 纪律：Cache 一关，Flash 里就没有代码了</title>
+  <desc>四阶段动画讲 ESP32-S3 最著名的铁律：应用代码住在外部 Flash、经 Cache 映射窗口取指；而写 Flash（NVS 提交/OTA/分区写）会暂时禁用 Cache，窗口一失效 Flash 里的指令就取不到。① 常态：两条取指路——IRAM 路永远可达（绿点一直跑），Flash 路经 Cache（蓝点在跑）；② 窗口：写 Flash 时 Cache 被禁用（红框封路），偏偏中断是异步的——板载触摸 FT6336G 的 INT（IO17，低有效）恰在此刻到来；③ 两种命运：没声明 ESP_INTR_FLAG_IRAM 的中断被系统推迟（安全但延迟不可控）；声明了 IRAM 却有链上一环在 Flash（ISR 调 printf、rodata 在 Flash）则取指无门直接崩——承诺必须是真；④ 正解：IRAM_ATTR 只是把代码放进 .iram1 段，要保证整条链可达（ISR 本体+调用的函数+rodata），传数据用 FromISR API；双核共享上 portMUX 自旋锁，volatile 既不保原子也不保可见。全程 IRAM 路的绿点始终在跑——这就是"IRAM 永远可达"的物理含义。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">IRAM 纪律：Cache 一关，Flash 里就没有代码了</text>
+  <text x="24" y="50" font-size="12" fill="#666">写 Flash（NVS/OTA）要暂时关 Cache——你的 ISR 在哪、声明了什么，决定它被推迟还是直接崩</text>
+
+  <!-- ===== 顶图（常驻）：取指的两条路 ===== -->
+  <rect x="40" y="64" width="640" height="128" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="86" font-size="13" font-weight="bold" fill="#3451b2">取指的两条路</text>
+  <rect x="56" y="104" width="84" height="82" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="98" y="142" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">CPU</text>
+  <text x="98" y="160" font-size="11" fill="#666" text-anchor="middle">取指</text>
+
+  <!--上路：IRAM（永远可达）-->
+  <line x1="140" y1="124" x2="236" y2="124" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="188" y="116" font-size="11" fill="#1a7f56" text-anchor="middle">永远可达</text>
+  <rect x="236" y="102" width="190" height="44" rx="6" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="331" y="120" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">IRAM 内部 SRAM</text>
+  <text x="331" y="138" font-size="11" fill="#1a7f56" text-anchor="middle" font-family="Consolas,monospace">0x4000_xxxx</text>
+
+  <!--下路：Cache → 外部 Flash -->
+  <line x1="140" y1="166" x2="236" y2="166" stroke="#3451b2" stroke-width="2"/>
+  <text x="188" y="158" font-size="11" fill="#94a3b8" text-anchor="middle">关了就没</text>
+  <rect x="236" y="144" width="170" height="44" rx="6" fill="#dbe7ff" stroke="#3451b2"/>
+  <text x="321" y="162" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">Cache 映射窗口</text>
+  <text x="321" y="180" font-size="11" fill="#3451b2" text-anchor="middle">写 Flash 时禁用</text>
+  <line x1="406" y1="166" x2="430" y2="166" stroke="#666" stroke-width="2"/>
+  <rect x="430" y="144" width="190" height="44" rx="6" fill="#f1f5f9" stroke="#666"/>
+  <text x="525" y="162" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">外部 Flash（代码住这）</text>
+  <text x="525" y="180" font-size="11" fill="#666" text-anchor="middle" font-family="Consolas,monospace">0x42xx_xxxx</text>
+
+  <!--上路取指点：一直跑（IRAM 永远可达）-->
+  <circle cx="146" cy="124" r="6" fill="#3eaf7c">
+    <animate attributeName="cx" values="146;230;146" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <!--下路取指点：只在常态跑；窗口期（阶段 2-4）被隐藏 -->
+  <circle cx="146" cy="166" r="6" fill="#3451b2" opacity="1">
+    <animate attributeName="cx" values="146;230;146" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+  </circle>
+
+  <!--窗口期覆盖（阶段 2-4）：Cache 禁用，封路 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="228" y="138" width="400" height="56" rx="6" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="624" y="132" font-size="11" font-weight="bold" fill="#dc2626" text-anchor="end">Cache 禁用中（写 Flash）</text>
+    <line x1="407" y1="157" x2="429" y2="175" stroke="#dc2626" stroke-width="3"/>
+    <line x1="407" y1="175" x2="429" y2="157" stroke="#dc2626" stroke-width="3"/>
+  </g>
+
+  <!-- ===== 阶段一：常态 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="208" width="640" height="180" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="232" font-size="13" font-weight="bold" fill="#3451b2">① 常态：绝大多数代码住在 Flash，取指走 Cache</text>
+    <text x="56" y="258" font-size="13" fill="#333">应用代码与 rodata 在外部 Flash，CPU 通过映射窗口取指：</text>
+    <text x="56" y="282" font-size="12" fill="#333" font-family="Consolas,monospace">Cache 命中 → 直接返回指令；未命中 → 去 Flash 读（慢，但能读）</text>
+    <text x="56" y="308" font-size="13" fill="#333">IRAM 里只住两类：启动早期代码 + 标了 <tspan font-family="Consolas,monospace" font-weight="bold">IRAM_ATTR</tspan> 的代码。</text>
+    <text x="56" y="336" font-size="12" fill="#666">地址判据（nm 一眼分清）：IRAM = 0x4000_xxxx；Flash 映射 = 0x42xx_xxxx。</text>
+  </g>
+
+  <!-- ===== 阶段二：窗口 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="208" width="640" height="180" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="232" font-size="13" font-weight="bold" fill="#dc2626">② 窗口：写 Flash 要暂时关 Cache</text>
+    <text x="56" y="258" font-size="13" fill="#333">NVS 提交 / OTA / esp_partition_write 期间 Cache 被禁用——此刻 Flash 里的指令取不到。</text>
+    <circle cx="66" cy="288" r="6" fill="#d97706">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="82" y="293" font-size="13" fill="#333">偏偏中断是异步的：板载触摸 FT6336G 的 INT（<tspan font-weight="bold" fill="#d97706">IO17，低有效</tspan>）此刻来了</text>
+    <text x="56" y="322" font-size="13" fill="#333">系统怎么处理它，取决于你 esp_intr_alloc 时声明了什么 ↓</text>
+    <text x="56" y="352" font-size="12" fill="#d97706">注意：这不是"会不会遇到"，是"你的哪个 ISR 会在窗口里被触发"。</text>
+  </g>
+
+  <!-- ===== 阶段三：两种命运 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="52" y="226" width="296" height="148" rx="8" fill="#fff7ed" stroke="#d97706"/>
+    <text x="68" y="250" font-size="13" font-weight="bold" fill="#d97706">没声明 ESP_INTR_FLAG_IRAM</text>
+    <text x="68" y="276" font-size="12" fill="#333">系统推迟这个中断：</text>
+    <text x="68" y="298" font-size="12" fill="#333">等 Cache 恢复后才调用你的 ISR</text>
+    <text x="68" y="320" font-size="12" fill="#333">安全，但延迟不可控</text>
+    <text x="68" y="352" font-size="12" font-weight="bold" fill="#d97706">✓ 系统兜底</text>
+    <rect x="372" y="226" width="296" height="148" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+    <text x="388" y="250" font-size="13" font-weight="bold" fill="#dc2626">声明了 IRAM，但链上有一环在 Flash</text>
+    <text x="388" y="276" font-size="12" fill="#333">系统不推迟（你承诺过）→ 立刻调用</text>
+    <text x="388" y="298" font-size="12" fill="#333">ISR 调 printf/读 rodata → 取指无门</text>
+    <text x="388" y="320" font-size="12" fill="#333">直接崩溃——比不声明更糟</text>
+    <text x="388" y="352" font-size="12" font-weight="bold" fill="#dc2626">✗ 承诺必须是真</text>
+  </g>
+
+  <!-- ===== 阶段四：正解 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="208" width="640" height="180" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="232" font-size="13" font-weight="bold" fill="#1a7f56">④ 正解：整条链搬进 IRAM + 双核用锁</text>
+    <text x="56" y="258" font-size="13" fill="#333">IRAM_ATTR 只是入场券（把代码放进 .iram1 段）——要保证的是整条链可达：</text>
+    <text x="56" y="282" font-size="12" fill="#333" font-family="Consolas,monospace">ISR 本体 + 它调用的所有函数 + 用到的 rodata 全部 IRAM_ATTR</text>
+    <text x="56" y="306" font-size="12" fill="#333" font-family="Consolas,monospace">传数据只用 ...FromISR API；ISR 里绝不调 printf/malloc</text>
+    <text x="56" y="332" font-size="13" fill="#333">双核共享：portMUX 自旋锁——volatile 既不保原子，也不保可见。</text>
+    <text x="56" y="360" font-size="12" fill="#1a7f56">判据回放：Cache 关着，顶图 IRAM 路的绿点照样在跑——这就是"永远可达"。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">① 常态：代码在 Flash 经 Cache 取指；IRAM 路（绿点）永远可达</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">② 窗口：写 Flash 关 Cache，IO17 触摸中断偏偏此刻异步到来</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">③ 两种命运：不声明 = 被推迟（安全）；声明了没做到 = 直接崩</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">④ 正解：整条链进 .iram1，传数据用 FromISR；双核共享上 portMUX</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,438)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

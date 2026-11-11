@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/docs-site/structure.md", "reason": "核对 sidebar 全量与四处同步是否满足"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "核对 quality 门禁与 CI 契约未被破坏"}

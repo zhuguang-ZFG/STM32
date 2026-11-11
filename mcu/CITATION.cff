@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "如引用本书，请使用以下格式。"
+type: book
+title: "通往单片机之路"
+abstract: >-
+  88 章证据驱动的单片机全书：寄存器级 STM32F407 × ESP32-S3 × 双 RTOS × GD32 对照。
+  每章先给核心问题、读完交付与论证边界，正文里的每个数字都回到本机实跑输出或芯片手册；
+  配套 47 个可构建工程、6 个附录，以及随站点发布的离线整书（单文件 HTML 与 A4 PDF）。
+authors:
+  - name: "zhuguang-ZFG 与贡献者"
+repository-code: "https://github.com/zhuguang-ZFG/mcu"
+url: "https://zhuguang-zfg.github.io/mcu/"
+license: "Apache-2.0"
+version: 1.0.0
+date-released: "2026-10-23"
+keywords:
+  - microcontroller
+  - embedded
+  - stm32
+  - esp32
+  - freertos
+  - rt-thread
+  - register-level
+  - "单片机"
+  - "寄存器"
+identifiers:
+  - type: url
+    value: "https://github.com/zhuguang-ZFG/mcu/tree/main/mcu-book"
+    description: "整书构建器、书稿清单与出版契约门所在目录"

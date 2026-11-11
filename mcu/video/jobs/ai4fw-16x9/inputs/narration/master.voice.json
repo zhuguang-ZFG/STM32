@@ -1,0 +1,137 @@
+{
+  "method": "semantic_chunks",
+  "identity": {
+    "engine": "edge-tts",
+    "voice": "zh-CN-YunyangNeural",
+    "rate": "+2%"
+  },
+  "seed": 2026,
+  "text": "不用视频大模型，一段代码直接出片。我盘了 369 个 AI 视频工具仓库，这四个框架最能打。第一个 lemo-opuscar，8300 多星。59 套给 Claude 深度调优的代码风格，代表作 OPUSCAR 98，一支六分半的样片塞进 98 种视觉风格，全程不碰视频模型。第二个 huashu-art-motion，花叔出品，5400 星。36 种艺术风格配 9 种解说语法，马里奥关卡 65 秒复原，连配乐都是代码合成的。第三个 huashu-motion，1700 星，路线完全不同：像写简谱一样，用 ABC 记谱描述动画，直接合成成片。第四个，你现在看到的这条手绘视频，就是 sweety-handdraw-video 做的，900 星，开源可复刻。怎么选？要现成风格，上 lemo；要讲解语法，花叔艺术流；要记谱合成，huashu-motion；要手绘口播，sweety。369 个仓库完整清单，评论区自取。",
+  "duration": 62.29,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "不用视频大模型，一段代码直接出片。",
+      "join": null,
+      "sha256": "2a38190ac95c5594923d22ff575e2ce1281b524cb0163bca73ff30cf93a9538f",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 2.41,
+        "cut": 2.44,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 1,
+      "text": "我盘了 369 个 AI 视频工具仓库，这四个框架最能打。",
+      "join": "beat",
+      "sha256": "3993e1e7cf4541a8358961ead67744e4cd3d1d8c2a7d370a05852838ba76d430",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 4.58,
+        "cut": 4.7,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 2,
+      "text": "第一个 lemo-opuscar，8300 多星。59 套给 Claude 深度调优的代码风格，代表作 OPUSCAR 98，一支六分半的样片塞进 98 种视觉风格，全程不碰视频模型。",
+      "join": "page",
+      "sha256": "4641af12e70cc2f149629f26fc1815d7de3f0bee849963b573e9985b512b4061",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 13.14,
+        "cut": 13.26,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 3,
+      "text": "第二个 huashu-art-motion，花叔出品，5400 星。36 种艺术风格配 9 种解说语法，马里奥关卡 65 秒复原，连配乐都是代码合成的。",
+      "join": "page",
+      "sha256": "28cc1d0f2b9afdcff6fd75cc166cdbb91d4093e775f35944d16da6bb56f67dd2",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 11.35,
+        "cut": 11.47,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 4,
+      "text": "第三个 huashu-motion，1700 星，路线完全不同：像写简谱一样，用 ABC 记谱描述动画，直接合成成片。",
+      "join": "page",
+      "sha256": "abdd6a99e1a9816f17de8bda91304994a64853c5c9b4bbfe6d1d1b46f43cae4d",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 8.24,
+        "cut": 8.36,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 5,
+      "text": "第四个，你现在看到的这条手绘视频，就是 sweety-handdraw-video 做的，900 星，开源可复刻。",
+      "join": "page",
+      "sha256": "023c742b18ad17b004de395f163fe9e314aa5be168c1290e67a5084867df443d",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 6.31,
+        "cut": 6.4,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 6,
+      "text": "怎么选？要现成风格，上 lemo；要讲解语法，花叔艺术流；要记谱合成，huashu-motion；要手绘口播，sweety。",
+      "join": "page",
+      "sha256": "a79e7548cd4306f5c73c0e824eb9d121b875d15c9e33cf09be76ec531cce714b",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 9.12,
+        "cut": 9.24,
+        "dropped_seconds": 0.0
+      }
+    },
+    {
+      "index": 7,
+      "text": "369 个仓库完整清单，评论区自取。",
+      "join": "page",
+      "sha256": "3237d6df314faa625bcfa913b36ddb10349c1ec04cb8f6e07ecb8a87df95fbcb",
+      "attempts": 1,
+      "tail": {
+        "status": "clean",
+        "speech_end": 3.12,
+        "cut": 3.24,
+        "dropped_seconds": 0.0
+      }
+    }
+  ],
+  "join_pause_seconds": {
+    "clause": 0.2,
+    "sentence": 0.3,
+    "beat": 0.4,
+    "page": 0.6
+  },
+  "gate": {
+    "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\inputs\\narration\\master.wav",
+    "duration_seconds": 62.29,
+    "tonal_lines_hz_persistence": [],
+    "pause_percentile": 5,
+    "pause_depth_db": -62.9,
+    "dc_offset": -0.0,
+    "peak_dbfs": -0.86,
+    "clipped_fraction": 0.0,
+    "status": "PASS",
+    "failures": []
+  },
+  "alignment": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\inputs\\narration\\alignment.json",
+  "subjective_listening": "not_performed"
+}

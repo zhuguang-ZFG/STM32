@@ -1,0 +1,6 @@
+{"file": ".trellis/tasks/10-16-video-layout-header-fill/research/baseline-20261017.md", "reason": "版式基线逐场实测：内带 y97–879、各 kind 填充、kicker 覆盖率、.ticks 已存在、safe 是死管道——所有改造目标以此为准，不许凭 PRD 立项时的印象动手"}
+{"file": ".trellis/tasks/10-16-video-layout-header-fill/design.md", "reason": "sections 契约、页头只随场次号渲染、两条填充杠杆与明确不动的清单（.cols/lay-anim/lay-outro/竖版 safe）"}
+{"file": "CONTRIBUTING.md", "reason": "内容质量最高法：屏上文案口径与风格契约；页头新增的小节标题要按它写，不能自造术语"}
+{"file": ".trellis/spec/docs-site/animation.md", "reason": "lay-anim 内嵌的是 docs/public/anim/*.svg（裸 SVG + 站点颜色映射），版式改造只许动外层容器尺寸与留白，不碰动画本体与色表"}
+{"file": ".agents/skills/video-release/SKILL.md", "reason": "投放线事实：已投 18 条的成片/发布稿对应关系与不可逆点，本任务「不回炉」约束的作用域以此为准"}
+{"file": "video/series.json", "reason": "片单与 format：两平台分辨率/时长/竖版重排不缩放的既有口径，改版式不许与之冲突"}

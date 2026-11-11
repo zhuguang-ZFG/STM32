@@ -1,0 +1,27 @@
+{
+  "name": "GPIOF_MODER",
+  "fullName": "GPIO port mode register",
+  "address": "0x48001400",
+  "resetValue": "0x00000000",
+  "access": "R/W",
+  "rmRef": "RM0090 §8.4.1",
+  "width": 32,
+  "fields": [
+    { "name": "MODER15", "bits": [31, 30], "reset": "0b00", "access": "R/W", "desc": "PF15 模式：00=输入, 01=通用输出, 10=复用, 11=模拟" },
+    { "name": "MODER14", "bits": [29, 28], "reset": "0b00", "access": "R/W", "desc": "PF14 模式" },
+    { "name": "MODER13", "bits": [27, 26], "reset": "0b00", "access": "R/W", "desc": "PF13 模式" },
+    { "name": "MODER12", "bits": [25, 24], "reset": "0b00", "access": "R/W", "desc": "PF12 模式" },
+    { "name": "MODER11", "bits": [23, 22], "reset": "0b00", "access": "R/W", "desc": "PF11 模式" },
+    { "name": "MODER10", "bits": [21, 20], "reset": "0b00", "access": "R/W", "desc": "PF10 模式" },
+    { "name": "MODER9",  "bits": [19, 18], "reset": "0b00", "access": "R/W", "desc": "PF9 模式" },
+    { "name": "MODER8",  "bits": [17, 16], "reset": "0b00", "access": "R/W", "desc": "PF8 模式" },
+    { "name": "MODER7",  "bits": [15, 14], "reset": "0b00", "access": "R/W", "desc": "PF7 模式" },
+    { "name": "MODER6",  "bits": [13, 12], "reset": "0b00", "access": "R/W", "desc": "PF6 模式：01=输出（LED）" },
+    { "name": "MODER5",  "bits": [11, 10], "reset": "0b00", "access": "R/W", "desc": "PF5 模式" },
+    { "name": "MODER4",  "bits": [9, 8],   "reset": "0b00", "access": "R/W", "desc": "PF4 模式" },
+    { "name": "MODER3",  "bits": [7, 6],   "reset": "0b00", "access": "R/W", "desc": "PF3 模式" },
+    { "name": "MODER2",  "bits": [5, 4],   "reset": "0b00", "access": "R/W", "desc": "PF2 模式" },
+    { "name": "MODER1",  "bits": [3, 2],   "reset": "0b00", "access": "R/W", "desc": "PF1 模式" },
+    { "name": "MODER0",  "bits": [1, 0],   "reset": "0b00", "access": "R/W", "desc": "PF0 模式" }
+  ]
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="定时器时基：PSC 分频后的计数时钟推动 CNT 从 0 数到 ARR，CNT 小于 CCR 时 PWM 为高"><g transform="translate(+5.5,-1.4)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="18" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">PSC</text> <text x="8" y="42" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">CNT</text> <text x="8" y="66" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">PWM</text>
+<path d="M46 22 L60 22" stroke-width="1.4"/> <path d="M60 22 L60 12" stroke-width="1.4"/> <path d="M60 12 L80 12" stroke-width="1.4"/> <path d="M80 12 L80 22" stroke-width="1.4"/> <path d="M80 22 L100 22" stroke-width="1.4"/>
+<path d="M100 22 L100 12" stroke-width="1.4"/> <path d="M100 12 L120 12" stroke-width="1.4"/> <path d="M120 12 L120 22" stroke-width="1.4"/> <path d="M120 22 L140 22" stroke-width="1.4"/>
+<path d="M46 42 L60 42 L60 28 L100 34 L100 20 L140 30 L140 42" stroke-width="2.2"/>
+<path d="M140 42 L300 42" stroke-width="1.2"/>
+<path d="M190 42 L190 12" stroke-width="1.2" stroke-dasharray="3 2"/>
+<text x="190" y="10" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">ARR</text>
+<path d="M46 66 L80 66" stroke-width="1.4"/> <path d="M80 66 L80 54" stroke-width="1.4"/> <path d="M80 54 L120 54" stroke-width="1.4"/> <path d="M120 54 L120 66" stroke-width="1.4"/> <path d="M120 66 L170 66" stroke-width="1.4"/> <path d="M170 66 L170 54" stroke-width="1.4"/> <path d="M170 54 L210 54" stroke-width="1.4"/> <path d="M210 54 L210 66" stroke-width="1.4"/> <path d="M210 66 L300 66" stroke-width="1.4"/>
+<path d="M150 78 L150 58" stroke-width="1.2" stroke-dasharray="3 2"/> <text x="150" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">CCR</text>
+</g></svg>

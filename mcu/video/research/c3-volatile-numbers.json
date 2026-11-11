@@ -1,0 +1,38 @@
+{
+  "ep": "c3-volatile",
+  "source": "code/c/03-volatile/probe.sh",
+  "evidence": {
+    "-1": "probe 日志 L39：leal -1(%rax), %edx（delay_volatile 的每圈减一）",
+    "0": "probe 日志 L65：现场4：4 次 xor 之后 shared_flag = 0（值对，但每一步都不是原子的）",
+    "0x1000": "probe 日志 L79/L107：orr.w r3, r3, #4096 ; 0x1000",
+    "0x3000": "probe 日志 L76/L104：bic.w r3, r3, #12288 ; 0x3000",
+    "0x40": "probe 日志 L148：bic.w r1, r1, #64 ; 0x40",
+    "0x400": "probe 日志 L75/L89/L103/L128：ldr.w r3, [r1, #1024] ; 0x400",
+    "0x404": "probe 日志 L81/L95/L109/L130：ldr.w r3, [r1, #1028] ; 0x404",
+    "0x408": "probe 日志 L135：ldr.w r2, [r1, #1032] ; 0x408",
+    "0x40c": "probe 日志 L137：ldr.w r3, [r1, #1036] ; 0x40c",
+    "0x830": "probe 日志 L72/L86/L100/L129：ldr.w r3, [r2, #2096] ; 0x830",
+    "1": "probe 日志 L6/L20：testb $1；L54：orl $1；L62：xorl $1；L8/L22：movl $42 前的返回路径",
+    "1024": "probe 日志 L75：ldr.w r3, [r1, #1024]（MODER 偏移）",
+    "1028": "probe 日志 L81：ldr.w r3, [r1, #1028]（OTYPER 偏移）",
+    "1032": "probe 日志 L135：ldr.w r2, [r1, #1032]（0x408）",
+    "1036": "probe 日志 L137：ldr.w r3, [r1, #1036]（0x40c）",
+    "12288": "probe 日志 L76：bic.w r3, r3, #12288（清 MODER 两位）",
+    "16.1.0": "probe 日志 L2：gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 16.1.0",
+    "2": "probe 日志 L55：orl $2, (%rcx)（cfg_volatile 的第二条写）",
+    "2096": "probe 日志 L72：ldr.w r3, [r2, #2096]（0x830）",
+    "32": "probe 日志 L73/L87/L101/L131：orr.w r3, r3, #32 或 orr.w r4, r4, #32",
+    "4": "probe 日志 L65：4 次 xor；L56：orl $4, (%rcx)",
+    "4096": "probe 日志 L79：orr.w r3, r3, #4096（0x1000）",
+    "42": "probe 日志 L8/L22：movl $42, %eax（poll_plain 与 poll_volatile 的返回值）",
+    "64": "probe 日志 L148：bic.w r1, r1, #64（0x40）",
+    "7": "probe 日志 L48：orl $7, (%rcx)（cfg_plain 把三次写并成一次）",
+    "8": "probe 日志 L33/L38/L41：movl %ecx, 8(%rsp) 与 movl 8(%rsp), %eax（delay_volatile 的栈槽）"
+  },
+  "exceptions": {
+    "00": "复现路径 ../../stm32/00-blink/main.c 的工程号，不是测量值",
+    "03": "复现路径 code/c/03-volatile 的章节号，不是测量值",
+    "6": "GPIOF 的引脚位号（PF6），源码 BSRR 置位/复位写法的常量；不是 probe 测量值",
+    "16": "BSRR 高半区相对置位位号的偏移（复位区 = 置位位号 + 16），源码常量；不是 probe 测量值"
+  }
+}

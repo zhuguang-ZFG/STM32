@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="低功耗三档：Sleep 只停 CPU，Stop 停时钟保 SRAM，Standby 全停且唤醒相当于复位"><g transform="translate(0,-4)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="12" y="28" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Sleep</text> <text x="12" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Stop</text> <text x="12" y="72" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Standby</text>
+<rect x="74" y="16" width="210" height="20" rx="3" stroke-width="1.4"/> <rect x="74" y="38" width="210" height="20" rx="3" stroke-width="1.4"/> <rect x="74" y="60" width="210" height="20" rx="3" stroke-width="1.4"/>
+<text x="179" y="30" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">CPU 停 · 外设跑 · 任意中断唤醒</text>
+<text x="179" y="52" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">时钟停 · SRAM 保 · EXTI 唤醒</text>
+<text x="179" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">全停 · 唤醒复位 · 功耗最低</text>
+<path d="M284 26 C 300 26, 306 44, 306 70" stroke-width="2.2"/>
+<path d="M306 70 l -4 -8 M306 70 l 8 -8" stroke-width="1.8"/>
+</g></svg>

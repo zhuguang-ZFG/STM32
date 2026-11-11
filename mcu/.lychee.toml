@@ -1,0 +1,72 @@
+# 外链巡检配置（CI 门禁：.github/workflows/links.yml）
+#
+# 为什么每一条放行都写理由：exclude / exclude_path 是"放行"，放行清单一旦失管，
+# 外链门就退化成装饰。所以这里的每一行都注明**为什么不能当死链看**与复查口径，
+# 而不是"跑红了就加一条"。月度复查见 links.yml 的 schedule。
+
+# 判定口径：
+#   accept —— 这些状态码算"链接活着"。401/403/412/418/429/440 是站点对无头 UA
+#     的正常反爬响应，不代表链接失效；把它们当死链只会逼着往下加 exclude，
+#     把真死链一起埋掉。
+accept = [
+  "200..=299",
+  "401",  # 需登录
+  "403",  # 反爬 / 需登录
+  "412",  # 预检条件失败（部分 CDN 对无头 UA 的响应）
+  "418",
+  "429",  # 限流，链接本身有效
+  "440",
+]
+
+# VitePress 的站内绝对路径（如 `/stm32/08-dma.md`）在文件系统里要落到 `docs/`。
+# 给一个 root dir，它们才会被解析成真实文件一并核对，而不是报
+# "Cannot resolve root-relative link" 噪声。
+root_dir = "docs"
+
+# 不参与巡检的路径（下载来的第三方源码、构建产物、临时目录）。
+# 注意：lychee 的这个字段是**正则**而不是 glob。
+exclude_path = [
+  "managed_components",  # Espressif 组件管理器下载的第三方源码，不是我们的链接
+  "node_modules",
+  "\\.temp",
+  "docs/\\.vitepress[/\\\\]dist",
+  "mcu-book[/\\\\]dist",
+]
+
+# 只巡检真实 URL：本仓库正文大量使用 VitePress 站内绝对路径（`/stm32/xx.md`），
+# 它们由 VitePress 的死链门（ignoreDeadLinks: false）与 scripts/docs-check.mjs
+# 的锚点门负责；在这里没有 scheme 的本地链接只会制造噪声。
+scheme = ["https", "http"]
+
+exclude = [
+  # 文档里作为"本地预览地址"出现的示例，不是可巡检的外链
+  '^https?://localhost',
+  # 占位 / 示例域名（正文举例用）
+  '^https?://a\.com',
+  # 站点证书链不全：leaf 证书有效（openssl 复测 2026-09-06 → 2026-12-05），
+  # 但中间证书缺失，严格校验的客户端（curl / lychee）报 Expired，
+  # 浏览器走 AIA 取中间证书可正常打开（--insecure 实测 200）。
+  # 它是硬件页引用的模组资料源，不是死链 —— 月度复查，站点补齐链后删除本条。
+  '^https?://www\.lcdwiki\.com',
+  # 登录墙：飞书社群文档对未登录请求是 accounts.feishu.cn ↔ login.feishu.cn 的 302 循环
+  # （实测 5 与 10 次重定向上限都在打转，落不到 200），链接本身有效、浏览器里能看。
+  # 月度复查；若哪天对外可直读就删掉本条。
+  '^https?://waytoagi\.feishu\.cn',
+  # st.com 资料库对 lychee 的 TLS/HTTP2 协商报 "HTTP/2 protocol error"（2026-10-26 起
+  # 连续两轮复现，浏览器/curl --http1.1 均可开），非死链。月度复查；换稳定镜像或
+  # lychee 修复该协商问题后删除本条。
+  '^https?://www\.st\.com/resource/',
+]
+
+# 外站常见 30x 链（doi → 出版社登录页、CDN 跳转）需要多于默认 5 跳。
+# 实测：调到 10 之后 doi.org/10.1007/3-540-60368-9_19 这类链就收敛了。
+max_redirects = 10
+
+# 超时与重试：外站偶发抖动不该判死链；links.yml 侧另有一次整轮重跑。
+timeout = 20
+retry_wait_time = 4
+max_retries = 3
+# 并发压到 8：单站被打爆会返回 429，反而制造假死链
+max_concurrency = 8
+
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"

@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RCC 时钟树：从 8MHz 晶振到 168MHz 主频</title>
+  <desc>四阶段动画：复位先跑 HSI 16MHz；HSE 8MHz 起振；PLL 经 M=8、N=336、P=2 锁定 168MHz（Q=7 出 48MHz 给 USB，VCO 输入限 1~2MHz）；MCO1 输出 SYSCLK/4=42MHz（理论值，待上板实测对账）。APB 分频不为 1 时定时器时钟乘 2。每一阶段的亮路由都是被逐点爬通的，节拍点沿 ÷M→×N→÷P→SW→AHB 一路跑，两级分频之后两个脉冲同时分头跑向 APB1/APB2。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RCC 时钟树：8MHz 晶振怎么变成 168MHz 主频</text>
+  <text x="24" y="50" font-size="12" fill="#666">HSE 8MHz → PLL（M=8 / N=336 / P=2 / Q=7）→ SYSCLK 168MHz → AHB/1、APB1/4、APB2/2 → 外设</text>
+
+  <!-- ===== 时钟源 ===== -->
+  <rect x="30" y="90" width="120" height="54" fill="#ffffff" stroke="#94a3b8" rx="8"/>
+  <text x="90" y="113" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">HSI 16MHz</text>
+  <text x="90" y="133" font-size="12" fill="#666" text-anchor="middle">内部 RC（复位默认）</text>
+
+  <rect x="30" y="200" width="120" height="54" fill="#ffffff" stroke="#94a3b8" rx="8"/>
+  <text x="90" y="223" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">HSE 8MHz</text>
+  <text x="90" y="243" font-size="12" fill="#666" text-anchor="middle">外部晶振</text>
+
+  <!-- ===== PLL 链 ===== -->
+  <rect x="200" y="200" width="70" height="54" fill="#ffffff" stroke="#3451b2" rx="8"/>
+  <text x="235" y="233" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">/M=8</text>
+  <rect x="330" y="200" width="70" height="54" fill="#ffffff" stroke="#3451b2" rx="8"/>
+  <text x="365" y="233" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">×N=336</text>
+  <rect x="450" y="170" width="64" height="36" fill="#ffffff" stroke="#3451b2" rx="6"/>
+  <text x="482" y="193" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">/P=2</text>
+  <rect x="450" y="226" width="64" height="36" fill="#ffffff" stroke="#3451b2" rx="6"/>
+  <text x="482" y="249" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">/Q=7</text>
+
+  <!-- PLL 连线（常显底图） -->
+  <g stroke="#94a3b8" stroke-width="2" fill="none">
+    <path d="M150,227 L200,227"/>
+    <path d="M270,227 L330,227"/>
+    <path d="M400,227 L450,188"/>
+    <path d="M400,227 L450,244"/>
+  </g>
+  <text x="300" y="216" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">1MHz</text>
+  <text x="300" y="270" font-size="12" fill="#d97706" text-anchor="middle">VCO 输入限 1~2MHz</text>
+  <text x="422" y="162" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">VCO 336MHz</text>
+  <text x="380" y="282" font-size="12" fill="#666" text-anchor="start">→ 48MHz</text>
+  <text x="380" y="298" font-size="12" fill="#666" text-anchor="start">→ USB OTG FS</text>
+
+  <!-- ===== SW 切换与 SYSCLK ===== -->
+  <rect x="520" y="150" width="70" height="44" fill="#ffffff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="555" y="177" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">SW</text>
+  <g stroke="#94a3b8" stroke-width="2" fill="none">
+    <path d="M150,117 L500,117 L500,165 L520,165"/>
+    <path d="M514,188 L520,188"/>
+    <path d="M590,172 L640,172 L640,128"/>
+  </g>
+  <text x="594" y="162" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="start">SYSCLK 168MHz</text>
+
+  <!-- MCO1 出口 -->
+  <rect x="616" y="84" width="94" height="44" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="663" y="103" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">MCO1 = /4</text>
+  <text x="663" y="121" font-size="12" fill="#666" text-anchor="middle">引到 PA8</text>
+  <text x="663" y="146" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">理论 42MHz</text>
+
+  <!-- ===== 总线分频 ===== -->
+  <rect x="520" y="230" width="70" height="36" fill="#ffffff" stroke="#3451b2" rx="6"/>
+  <text x="555" y="253" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">AHB /1</text>
+  <g stroke="#94a3b8" stroke-width="2" fill="none">
+    <path d="M555,194 L555,230"/>
+    <path d="M555,266 L425,320"/>
+    <path d="M555,266 L605,320"/>
+  </g>
+  <text x="566" y="216" font-size="12" fill="#666" text-anchor="start">HCLK 168MHz</text>
+
+  <rect x="360" y="320" width="130" height="40" fill="#ffffff" stroke="#3451b2" rx="6"/>
+  <text x="425" y="345" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">APB1 /4</text>
+  <text x="425" y="384" font-size="12" fill="#666" text-anchor="middle">PCLK1 = 42MHz</text>
+  <text x="425" y="404" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">定时器 ×2 = 84MHz</text>
+  <text x="425" y="424" font-size="12" fill="#888" text-anchor="middle">USART2/3、TIM2~7 等外设</text>
+
+  <rect x="540" y="320" width="130" height="40" fill="#ffffff" stroke="#3451b2" rx="6"/>
+  <text x="605" y="345" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">APB2 /2</text>
+  <text x="605" y="384" font-size="12" fill="#666" text-anchor="middle">PCLK2 = 84MHz</text>
+  <text x="605" y="404" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">定时器 ×2 = 168MHz</text>
+  <text x="605" y="424" font-size="12" fill="#888" text-anchor="middle">USART1/6、TIM1/8、ADC</text>
+
+  <!-- 分频器出来的时钟一直在往下送：两个节拍同时从 AHB 分头跑向 APB1 / APB2 -->
+  <circle r="3.5" fill="#3eaf7c">
+    <animateMotion calcMode="linear" path="M555,266 L425,320" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="3.5" fill="#3eaf7c">
+    <animateMotion calcMode="linear" path="M555,266 L605,320" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ===== 阶段 ①：复位 HSI（绿色路由被逐点爬通，一个 16MHz 的节拍沿折线跑向 SW） ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="30" y="90" width="120" height="54" fill="none" stroke="#3eaf7c" stroke-width="3" rx="8">
+      <animate attributeName="stroke-width" values="3;4.6;3" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M150,117 L500,117 L500,165 L520,165" stroke="#3eaf7c" stroke-width="4" fill="none"
+          pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.10;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <circle r="4" fill="#3eaf7c">
+      <animateMotion calcMode="linear" path="M150,117 L500,117 L500,165 L520,165" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="320" y="106" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">复位后 SYSCLK 先走这条路：16MHz</text>
+  </g>
+
+  <!-- ===== 阶段 ②：HSE 起振（晶振盒子每秒抖动一次，时钟爬进 /M） ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="30" y="200" width="120" height="54" fill="none" stroke="#d97706" stroke-width="3" rx="8">
+      <animate attributeName="stroke-width" values="3;5;3" keyTimes="0;0.5;1" dur="0.5s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M150,227 L200,227" stroke="#d97706" stroke-width="4" fill="none"
+          pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;1000;0;0" keyTimes="0;0.25;0.32;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <circle r="4" fill="#d97706">
+      <animateMotion calcMode="linear" path="M150,227 L200,227" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="90" y="192" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">等 HSERDY 置位</text>
+  </g>
+
+  <!-- ===== 阶段 ③：PLL 锁定 168MHz（一个节拍不停穿过 ÷M → ×N → ÷P → SW → AHB） ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <g fill="none" stroke="#3451b2" stroke-width="3">
+      <rect x="200" y="200" width="70" height="54" rx="8"/>
+      <rect x="330" y="200" width="70" height="54" rx="8"/>
+      <rect x="450" y="170" width="64" height="36" rx="6"/>
+      <path d="M270,227 L330,227" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+        <animate attributeName="stroke-dashoffset" values="1000;1000;0;0" keyTimes="0;0.50;0.55;1" dur="12s" repeatCount="indefinite"/>
+      </path>
+      <path d="M400,227 L450,188" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+        <animate attributeName="stroke-dashoffset" values="1000;1000;0;0" keyTimes="0;0.55;0.60;1" dur="12s" repeatCount="indefinite"/>
+      </path>
+      <path d="M514,188 L520,188"/>
+      <path d="M555,194 L555,230"/>
+    </g>
+    <circle r="4.5" fill="#3451b2">
+      <animateMotion calcMode="linear" path="M200,227 L270,227 L330,227 L400,227 L450,188 L514,188 L520,188 L555,194 L555,230" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <!-- 居中点 340→300：原右端 468 顶到 /P=2 标签（466 起），宽字体下相叠 -->
+    <text x="300" y="186" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">PLL 锁定（PLLRDY）：8÷8×336÷2 = 168MHz</text>
+  </g>
+
+  <!-- ===== 阶段 ④：MCO1 理论对账（待上板实测）——节拍一路爬到 PA8，然后每秒出一趟 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="616" y="84" width="94" height="44" fill="none" stroke="#3eaf7c" stroke-width="3" rx="8">
+      <animate attributeName="stroke-width" values="3;5;3" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M590,172 L640,172 L640,128" stroke="#3eaf7c" stroke-width="4" fill="none"
+          pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;1000;0;0" keyTimes="0;0.75;0.83;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <circle r="4" fill="#d97706">
+      <animateMotion calcMode="linear" path="M590,172 L640,172 L640,128" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="706" y="72" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="end">168÷4 = 42MHz，示波器对账</text>
+  </g>
+
+  <!-- ===== 阶段字幕 ===== -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="452">① 复位：先靠内部 HSI 16MHz 跑起来——不依赖任何外部元件</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="452">② HSE 起振：8MHz 外部晶振就绪，比内部 RC 更准更稳</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="452">③ PLL 锁定：8÷8×336÷2 = 168MHz；VCO 输入 1MHz 合规；Q=7 出 48MHz 给 USB</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="452">④ MCO1 对账：SYSCLK/4 = 42MHz 引到 PA8——程序以为 ≠ 硬件实际，量一下才算数</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,448)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

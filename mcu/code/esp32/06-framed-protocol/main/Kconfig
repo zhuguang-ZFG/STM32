@@ -1,0 +1,13 @@
+menu "Reliability protocol test faults"
+
+    config RELIABILITY_TEST_FAULTS
+        bool "Enable TEST_FAULT command (test builds only)"
+        default n
+        help
+            Enables the TEST_FAULT (0x7F) request handler so the host CLI can
+            inject a bounded fault: 1 = uart task stops servicing (simulated
+            hang), 2 = TX stepping pauses while RX parsing continues.
+            Keep disabled in normal builds: normal builds answer UNSUPPORTED
+            and never fault on their own.
+
+endmenu

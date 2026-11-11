@@ -1,0 +1,771 @@
+{
+  "id": "c7-ub",
+  "title": "未定义行为：编译器不欠你一个答案",
+  "badge": "C7",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "-O0": "杠 O 零",
+    "-O2": "杠 O 二",
+    "-fwrapv": "杠 f wrap v",
+    "16.1.0": "十六点一点零",
+    "15.2.1": "十五点二点一",
+    "0x3F800000": "零 x 三 f 八零零零零零",
+    "1065353216": "十亿六千五百三十五万三千二百一十六",
+    "INT_MAX": "int max",
+    "uint32_t": "u int 三十二 t",
+    "1UL": "一 U L",
+    "1u": "一 u",
+    "UBSan": "U B San",
+    "PendSV": "Pend S V",
+    "SysTick": "Sys tick",
+    "Cortex-M4": "Cortex M 四",
+    "Cortex-M": "Cortex M",
+    "gcc": "g c c",
+    "movs": "mov s",
+    "subs": "sub s",
+    "movne": "mov ne",
+    "xorl": "xor l",
+    "sall": "sal l",
+    "printf": "print f",
+    "memcpy": "mem copy",
+    "rbp": "r b p",
+    "edx": "e d x",
+    "eax": "e a x",
+    "ecx": "e c x",
+    "lr": "L R",
+    "r0": "r 零",
+    "r3": "r 三",
+    "UB": "U B"
+  },
+  "cover": {
+    "variant": "vs",
+    "kicker": "通往单片机之路 · C7",
+    "line1": "同一行移位",
+    "line2": "两档两个答案",
+    "vs": {
+      "left": "-O0：shift_oob = 2",
+      "right": "-O2：shift_oob = 0",
+      "labels": [
+        "MEASURED",
+        "MEASURED"
+      ]
+    },
+    "tag": "本机实跑 · 两档对照",
+    "siteNote": "日志逐行 · 无需开发板",
+    "proof": "!-O0：sall 真移位，33 被截成 1 → 2\n!-O2 main：xorl 清零，0 是编译器挑的\n!两档 bits_union / bits_memcpy 都是 0x3F800000",
+    "proofShort": "!-O0：sall 后得 2\n!-O2：xorl 得 0\n!位读法两档都是 0x3F800000",
+    "num": "2 / 0",
+    "numNote": "shift_oob(1u, 33u)：-O0 与 -O2 的本机读数",
+    "sizes": {
+      "bilibili": [
+        1920,
+        1200
+      ],
+      "douyin": [
+        1080,
+        1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "bigger-src",
+          "title": "恒真与折叠"
+        },
+        {
+          "at": "trap-1",
+          "title": "链条四幕"
+        },
+        {
+          "at": "shift-src",
+          "title": "移位红线"
+        },
+        {
+          "at": "alias-src",
+          "title": "别名与警告"
+        },
+        {
+          "at": "misra-a",
+          "title": "收束"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "同一行，两档两个答案",
+          "sub": "shift_oob(1u, 33u)：-O0 得 2，-O2 得 0（本机 gcc 16.1.0）",
+          "narration": "同一行 1u 左移 33 位：-O0 打印 2，-O2 打印 0。两个答案都出自本机 gcc 16.1.0，谁也不比谁更对。",
+          "emphasis": [
+            "33"
+          ]
+        },
+        {
+          "id": "hook-02",
+          "kind": "code",
+          "title": "源码没改，答案换了",
+          "codeLabel": "probe.c：移位计数走运行期",
+          "code": "uint32_t shift_oob(uint32_t v, uint32_t count)\n{\n    return v << count;\n}",
+          "codeB": "-O0   shift_oob(1u, 33u) = 2\n-O2   shift_oob(1u, 33u) = 0",
+          "codeBLabel": "同一行，两档读数",
+          "narration": "先看这一行：v 左移 count 位，count 由运行期传入。同一次构建，-O0 得 2，-O2 得 0；源码一个字没改，改的只是你递给编译器的合同。屏幕右边两行，就是同一行代码的两张脸。",
+          "emphasis": [
+            "33"
+          ]
+        },
+        {
+          "id": "hook-03",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "先把合同说清",
+          "title": "不是算错，是违约",
+          "bullets": [
+            "标准不给答案：折掉、删掉、换值都合法",
+            "UB 不等于报错：今天能跑，换档就变脸",
+            "你要的不是这次给几，是别踩线"
+          ],
+          "narration": "先把话说准：未定义行为不是算错，是违约。标准没有规定答案，编译器可以折掉、删掉，或者随手挑一个值。你要的不是它这次给几，而是让这段代码根本别踩线。合同是你签的，代价也得你付；这一集只教你看清条款。",
+          "emphasis": [
+            "违约"
+          ]
+        },
+        {
+          "id": "bigger-src",
+          "kind": "code",
+          "title": "x + 1 > x，反例被除名",
+          "codeLabel": "probe.c：is_bigger_after_inc",
+          "code": "int is_bigger_after_inc(int x)\n{\n    return x + 1 > x;\n}",
+          "note": "x = INT_MAX 时 x+1 溢出，是 UB；唯一的反例因此不算数",
+          "narration": "第一个案子只有一行：x 加一是否大于 x。数学上恒真，唯一的反例是 x 等于 INT_MAX；可那一刻加法已经越界，标准把这一步划成未定义。反例被宣布不存在，证明就成立了。这不是算术，是逻辑上的偷换：它先把你唯一的反例判了出局。",
+          "emphasis": [
+            "INT_MAX"
+          ]
+        },
+        {
+          "id": "bigger-readout",
+          "kind": "code",
+          "title": "三档读数：1、1、0",
+          "codeLabel": "probe.sh 第 1、2 步读数（整理），宿主 gcc 16.1.0",
+          "code": "is_bigger_after_inc(INT_MAX)\n\n-O0            = 1\n-O2            = 1\n-O2 -fwrapv    = 0",
+          "codeB": "每组 2/2 断言通过\n（只断言非 UB 的铁事实）",
+          "codeBLabel": "断言读数",
+          "narration": "三档读数摆在一起：-O0 是一，-O2 是一，加上 -fwrapv 之后变成零。前两档相同，说明折叠不是 -O2 的专利；第三档才是分水岭——溢出一旦被定义成回绕，编译器就失去『它不会发生』这条假设。每组 2/2 断言只核对非 UB 的事实，现象本身不断言，所以这组数字只能当现场记录，不能当标准答案。",
+          "emphasis": [
+            "-fwrapv"
+          ]
+        },
+        {
+          "id": "bigger-arm",
+          "kind": "code",
+          "title": "M4 的 -O2：整个函数只剩两行",
+          "codeLabel": "arm-none-eabi-gcc 15.2.1 · Cortex-M4 · -O2",
+          "code": "is_bigger_after_inc:\n    movs    r0, #1\n    bx      lr",
+          "narration": "把同一份源码交给交叉工具链 15.2.1。-O2 下 is_bigger_after_inc 只剩两行：movs r0,#1，然后 bx lr。加法和比较都不见了。它的推理很直：你保证不喂 INT_MAX，这个比较就永远为真。函数体因此可以缩成一句『返回一』，连参数都不必再看。",
+          "emphasis": [
+            "movs"
+          ]
+        },
+        {
+          "id": "bigger-host-o0",
+          "kind": "code",
+          "title": "-O0 也没有逐行照做",
+          "codeLabel": "宿主 gcc 16.1.0 -O0 的函数体",
+          "code": "is_bigger_after_inc:\n    pushq   %rbp\n    movq    %rsp, %rbp\n    movl    %ecx, 16(%rbp)\n    movl    $1, %eax\n    popq    %rbp\n    ret",
+          "narration": "别以为 -O0 会逐行照做。宿主这份 -O0 函数体：进栈，把参数存进 16(%rbp)，紧接着 movl $1,%eax 返回。加法和比较在函数体里已经没了。所谓 -O0，只是优化开得最少，不是不许折叠；优化关小了，也不等于每一步都照源码走。",
+          "emphasis": [
+            "$1"
+          ]
+        },
+        {
+          "id": "bigger-host-o2",
+          "kind": "code",
+          "title": "四个 call 变成立即数",
+          "codeLabel": "宿主 gcc 16.1.0 -O2 的 main（节选）",
+          "code": "movl    $1, %edx          # is_bigger 的返回值\nleaq    .LC0(%rip), %rcx\ncall    printf\n...\nxorl    %edx, %edx        # shift_oob 的返回值\n...\nmovl    $1065353216, %edx # 0x3F800000",
+          "codeB": "两条位读法都得到 1065353216",
+          "codeBLabel": "同一份 main 里的常量",
+          "narration": "到 -O2，main 里那四个函数的 call 全没了：第一个 printf 直接吃立即数一；移位那格是 xorl %edx,%edx，等于零；两份位读法都塞 1065353216，也就是 0x3F800000。零不是算出来的，是编译器挑的。日志注释写得更直白：UB 之后，它爱给什么给什么。两档读数都真实，却没有一个是标准答案。",
+          "emphasis": [
+            "1065353216"
+          ]
+        },
+        {
+          "id": "bigger-wrapv",
+          "kind": "code",
+          "title": "-fwrapv：函数必须真算",
+          "codeLabel": "15.2.1 · Cortex-M4 · -O2 -fwrapv",
+          "code": "is_bigger_after_inc:\n    mvn     r3, #-2147483648\n    subs    r0, r0, r3\n    it      ne\n    movne   r0, #1\n    bx      lr",
+          "narration": "同一个函数，加上 -fwrapv，交叉汇编立刻长回来：mvn 造出 INT_MAX，subs 做减法，it ne 条件执行，movne 再把一放回去。它不再假定溢出不存在，只好老老实实算。一个旗子，换的是合同：从『不可能发生』换成『按回绕发生』。合同一换，汇编的形状就换。",
+          "emphasis": [
+            "subs"
+          ]
+        },
+        {
+          "id": "trap-1",
+          "kind": "anim",
+          "anim": "ub-compiler-trap",
+          "t0": 0,
+          "t1": 3,
+          "smil": "stretch",
+          "title": "链条第一幕：源码",
+          "note": "x + 1 > x，例外 INT_MAX 是 UB",
+          "narration": "动画第一幕，源代码：x 加一大于 x，旁边标着唯一的例外 INT_MAX，而那个例外正好踩在未定义上。整条链的起点，就是这一行。",
+          "emphasis": [
+            "INT_MAX"
+          ]
+        },
+        {
+          "id": "trap-2",
+          "kind": "anim",
+          "anim": "ub-compiler-trap",
+          "t0": 3,
+          "t1": 6,
+          "smil": "stretch",
+          "title": "第二幕：按合同读",
+          "note": "承诺不溢出 → 反例分支删除",
+          "narration": "第二幕，编译器不按算术读，它按合同读。你承诺不让它溢出，它就把反例分支整个删掉，连痕迹都不留。删得合法，才是最难防的地方。"
+        },
+        {
+          "id": "trap-3",
+          "kind": "anim",
+          "anim": "ub-compiler-trap",
+          "t0": 6,
+          "t1": 9,
+          "smil": "stretch",
+          "title": "第三幕：只剩返回 1",
+          "note": "加法、比较、跳转全部消失",
+          "narration": "第三幕，输出：汇编里只剩返回一。源码里的加法、比较、跳转，一条都没有留下。你写的是表达式，它交的是结论。",
+          "emphasis": [
+            "返回 1"
+          ]
+        },
+        {
+          "id": "trap-4",
+          "kind": "anim",
+          "anim": "ub-compiler-trap",
+          "t0": 9,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "第四幕：运行时对账",
+          "note": "你等 0，拿到 1",
+          "narration": "第四幕，运行时对账：你等的是零，拿到手的是一。链条到这里闭合——合同一签，答案就由不得你。动画走完，现实里只需要换一档优化。",
+          "emphasis": [
+            "0",
+            "1"
+          ]
+        },
+        {
+          "id": "sneak-card",
+          "kind": "card",
+          "tone": "danger",
+          "kicker": "最容易搞反的一条",
+          "title": "UB 最吓人的形态，是安静",
+          "bullets": [
+            "崩溃会逼你查；它不崩，只改逻辑",
+            "今天对，明天换档就翻脸",
+            "账单常寄到几个月以后"
+          ],
+          "narration": "最该记住的不是崩溃，是安静。程序照常跑，只在 INT_MAX 上撒谎；等你把缓存、状态机、协议层都盖上去，它才在别处翻车。崩溃会逼你查，安静不会。UB 最贵的账单，往往寄到几个月以后。",
+          "emphasis": [
+            "安静"
+          ]
+        },
+        {
+          "id": "shift-src",
+          "kind": "code",
+          "title": "移位：计数一走运行期，警告就失明",
+          "codeLabel": "probe.c：shift_oob",
+          "code": "uint32_t shift_oob(uint32_t v, uint32_t count)\n{\n    return v << count;\n}\n\nshift_oob(1u, 33u);   /* 计数运行期才定 */",
+          "narration": "第二个案子是移位。函数只有一句 v 左移 count，count 却来自运行期参数。编译期看不见值，警告也帮不上忙，只能等某一档编译给出它的答案。先把源码和调用摆在一起，再看两档机器码怎么分岔。",
+          "emphasis": [
+            "count"
+          ]
+        },
+        {
+          "id": "shift-asm",
+          "kind": "code",
+          "title": "-O0 的 2：硬件把 33 截成 1",
+          "codeLabel": "宿主 gcc 16.1.0 -O0 的 shift_oob（节选）",
+          "code": "movl    16(%rbp), %edx\nmovl    %eax, %ecx\nsall    %cl, %edx\nmovl    %edx, %eax",
+          "codeB": "33 & 31 = 1\n1u << 1 = 2",
+          "codeBLabel": "为什么是 2：33 截成 1",
+          "narration": "为什么 -O0 得二？它真发了一条 sall。x86 的 32 位移位器只取计数的低五位，33 被截成一，1u 左移一位得二。这个二是硬件顺手兜的，不是 C 标准给的。换一台机器，兜法就可能不一样，所以它只能当现场，不能当保证。",
+          "emphasis": [
+            "sall"
+          ]
+        },
+        {
+          "id": "shift-fold",
+          "kind": "code",
+          "title": "-O2 的 0：编译器挑的答案",
+          "codeLabel": "宿主 gcc 16.1.0 -O2 的 main（节选）",
+          "code": "xorl    %edx, %edx\ncall    printf",
+          "codeB": "计数 >= 32 → UB\n有符号计数为负 → UB\n(int)1 << 31 → UB",
+          "codeBLabel": "三条 UB 红线",
+          "narration": "到 -O2，函数调用消失，main 用 xorl %edx,%edx 把零递给 printf。零不是移位算出来的，是编译器认出 UB 之后挑的。移位有三条红线：计数不小于位宽、有符号计数为负、左移穿过符号位。踩中任何一条，答案都不再由你定；它给零只是这次最省，不是规定。",
+          "emphasis": [
+            "xorl"
+          ]
+        },
+        {
+          "id": "safe-mask",
+          "kind": "code",
+          "title": "安全写法：类型先行，计数先证",
+          "codeLabel": "两条纪律",
+          "code": "mask = 1UL << pin;\n\nif (n < 32u) {\n    mask = 1u << n;\n} else {\n    return false;\n}",
+          "narration": "安全写法两条：字面量先带上类型，用 1UL 挡住符号位那条红线；计数必须可证小于位宽，常量就编译期算，运行期就先查，不满足直接拒绝。别把决定权交给硬件，也别指望优化器替你兜底。两句话，换的是可证明。",
+          "emphasis": [
+            "1UL"
+          ]
+        },
+        {
+          "id": "wrapv-norescue",
+          "kind": "card",
+          "kicker": "破一个幻想",
+          "title": "-fwrapv 不救移位",
+          "bullets": [
+            "它只管有符号加、减、乘的回绕",
+            "实测 -fwrapv 下 shift_oob 仍是 0",
+            "移位前先证明计数 < 位宽"
+          ],
+          "narration": "再破一个幻想：-fwrapv 不救移位。它只把有符号加减乘的溢出定义成回绕。实测同一个旗子下，shift_oob(1u, 33u) 仍是零。移位的活路只有一条：移之前先证明计数合法。旗子管加乘，不管移位；别拿一把钥匙开两扇门。",
+          "emphasis": [
+            "-fwrapv"
+          ]
+        },
+        {
+          "id": "alias-src",
+          "kind": "code",
+          "title": "强转指针取位：违约的一行",
+          "codeLabel": "alias-violate.c 第 13 行",
+          "code": "uint32_t bits_reinterpret(float f)\n{\n    return *(uint32_t *)&f;\n}",
+          "narration": "第三个案子，严格别名。想看 float 的位模式，很多人直接把指针强转再解引用。C 要求访问对象用兼容类型的左值；这一行不是风格问题，是违约。它今天能跑，不代表明天换一档优化还能跑。",
+          "emphasis": [
+            "uint32_t"
+          ]
+        },
+        {
+          "id": "alias-warn",
+          "kind": "code",
+          "title": "警告原文：波浪线压在解引用上",
+          "codeLabel": "gcc 16.1.0 -O2 -Wstrict-aliasing",
+          "code": "alias-violate.c:13:13: warning: dereferencing\ntype-punned pointer will break strict-aliasing\nrules [-Wstrict-aliasing]\n   13 |     return *(uint32_t *)&f;\n      |             ^~~~~~~~~~~~~~",
+          "narration": "编译器抓得住这一刀。警告原文写着：解引用类型双关指针，会破坏严格别名规则——文件 13 行 13 列，波浪线正压在解引用上。注意，它只是警告，不是错误；继续编，它照样给你一个二进制，也照样可以按违规来优化。",
+          "emphasis": [
+            "-Wstrict-aliasing"
+          ]
+        },
+        {
+          "id": "alias-why",
+          "kind": "card",
+          "kicker": "它为什么在意",
+          "title": "别名分析是优化的地基",
+          "bullets": [
+            "敢假设这次写不碰那个对象",
+            "才敢合并读、重排写",
+            "你打洞，它按没洞继续算"
+          ],
+          "narration": "为什么它在意？别名分析是优化的地基。编译器敢假设这次整数写不会碰到那个 float，才敢合并两次读、把写重排到读前面。你违规访问，就是在这条假设上打洞；它不会停下来问你，只会按没有洞继续算。"
+        },
+        {
+          "id": "alias-legal",
+          "kind": "code",
+          "title": "两种合法位读，同一个位串",
+          "codeLabel": "probe.c：union 与 memcpy",
+          "code": "union { float f; uint32_t u; } pun;\npun.f = f;\nreturn pun.u;\n\nuint32_t u;\nmemcpy(&u, &f, sizeof u);\nreturn u;",
+          "codeB": "bits_union(1.0f)   = 0x3F800000\nbits_memcpy(1.0f)  = 0x3F800000",
+          "codeBLabel": "实测：两种位读法",
+          "narration": "合法的位读法有两条：union 双关，写一个成员读另一个；memcpy 搬进整数，标准保证合法，位模式一个不差。实测两种都给 0x3F800000，位串一致。跨类型取位，以 memcpy 为锚，别用指针强转；要的是位，不是地址游戏。",
+          "emphasis": [
+            "memcpy"
+          ]
+        },
+        {
+          "id": "warns3",
+          "kind": "code",
+          "title": "三条警告，各抓一种",
+          "codeLabel": "gcc 16.1.0 -O2 的警告原文（节选）",
+          "code": "oob-static.c:19:14: warning: 'x' is used uninitialized\n    [-Wuninitialized]\noob-static.c:18:9:  note: 'x' was declared here\noob-static.c:12:10: warning: array subscript 7 is\n    above array bounds of 'int[4]' [-Warray-bounds=]\noob-static.c:8:12:  note: while referencing 'table'\nalias-violate.c:13:13: warning: type-punned\n    pointer will break strict-aliasing rules [-Wstrict-aliasing]",
+          "narration": "警告能抓的不止别名。日志里还有两条：未初始化变量在 19 行 14 列被读，声明在 18 行 9 列；常量下标 7 越过 int[4] 的边界，表在 8 行 12 列声明。三条都来自本机实跑，原文节选，没有补写。",
+          "emphasis": [
+            "uninitialized"
+          ]
+        },
+        {
+          "id": "ubsan-honest",
+          "kind": "card",
+          "kicker": "诚实记录",
+          "title": "UBSan 这一步，这次跳过了",
+          "bullets": [
+            "本工具链没有 UBSan 运行库",
+            "脚本第 4 步直接跳过，没有输出",
+            "嵌入式交叉链上这很常见"
+          ],
+          "narration": "运行期还有一道防线叫 UBSan，但这次没跑成：本工具链没有 UBSan 运行库，脚本第 4 步直接跳过。没有输出就是没有输出。嵌入式交叉链上这很常见，能依靠的还是编译期警告和静态检查——而它们抓不全，别把警告清零当成证明。",
+          "emphasis": [
+            "UBSan"
+          ]
+        },
+        {
+          "id": "misra-a",
+          "kind": "card",
+          "kicker": "带走一张检查表 ①",
+          "title": "前三条：溢出、移位、取位",
+          "bullets": [
+            "有符号运算先问边界值",
+            "移位计数移前先验证",
+            "取位走 union 或 memcpy"
+          ],
+          "narration": "把这些收成一张检查表。第一，所有有符号运算都问一句：边界值会不会溢出。第二，移位计数在移之前验证。第三，取位模式走 union 或 memcpy，别强转指针。三条都对着前面的现场，不是凭空加的规矩。",
+          "emphasis": [
+            "memcpy"
+          ]
+        },
+        {
+          "id": "misra-b",
+          "kind": "card",
+          "kicker": "带走一张检查表 ②",
+          "title": "后两条，加上警告的边界",
+          "bullets": [
+            "声明即初始化",
+            "越界只发生在数组圈内",
+            "警告是网，不是墙"
+          ],
+          "narration": "第四，声明即初始化；第五，越界只发生在数组圈内。回看日志的三条警告：常量下标、未初始化、类型双关都被点名；但运行期才出现的计数、藏得很深的别名，编译器未必看得见。警告是网，不是墙。",
+          "emphasis": [
+            "数组圈内"
+          ]
+        },
+        {
+          "id": "misra-philosophy",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "折成一句",
+          "title": "自由发挥处，只留一种解释",
+          "narration": "这五条指向同一件事：凡是标准没规定、编译器可以自由发挥的地方，都用写法钉死成唯一解释。UB 不是让你猜答案，是让你别把问题递出去。能证明的代码，才敢交给优化器。",
+          "emphasis": [
+            "一种解释"
+          ]
+        },
+        {
+          "id": "hardfault-link",
+          "kind": "card",
+          "kicker": "换个角度",
+          "title": "合同里那条你没读过的",
+          "bullets": [
+            "编译器只是把合同执行到底",
+            "UB 条款允许折掉、删掉、换掉",
+            "签字之前，先读一遍"
+          ],
+          "narration": "换个角度：编译器不是故意整你，它只是把合同执行到底。真正危险的是合同里那条你没读过的 UB 条款——你签了字，却不知道它允许对方折掉、删掉或换掉你的代码。读一遍，再签字。"
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "一句话带走",
+          "title": "这道题，标准答案不存在",
+          "bullets": [
+            "1u<<33：-O0 得 2，-O2 得 0",
+            "x+1>x：-fwrapv 把 1 变 0",
+            "证明靠没有 UB，不靠跑通"
+          ],
+          "narration": "带走一句：UB 这道题，标准答案根本不存在。同一行 1u<<33，-O0 给 2，-O2 给 0，都不算错；x+1>x 加上 -fwrapv，又从 1 变成 0。证明你正确的不是昨天跑通，是代码里没有 UB；警告清零只是起点，不是证明。",
+          "emphasis": [
+            "标准答案"
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "一条命令，全部读数",
+          "sub": "sh code/c/07-ub-misra/probe.sh",
+          "bullets": [
+            "宿主 gcc 16.1.0：三档对照",
+            "交叉 15.2.1：两段汇编",
+            "UBSan 跳过，日志写明"
+          ],
+          "narration": "屏上这些读数，都是本机一条命令跑出来的：宿主 gcc 16.1.0 三档对照、三条警告原文，交叉 15.2.1 两段汇编。UBSan 那一步跳过了，日志里写得明白。脚本和全文在开源书。",
+          "emphasis": [
+            "16.1.0"
+          ]
+        },
+        {
+          "id": "teaser",
+          "kind": "outro",
+          "title": "下一集 F2：PendSV 换魂",
+          "sub": "为什么切换不能在 SysTick 里直接做",
+          "narration": "C 系列到这里收官。下一集进 F2：上下文切换为什么放在 PendSV，为什么它和 SysTick 的优先级都要压到最低。UB 的合同已经钉住——别把未定义递出去；下一集看调度器怎么换魂。"
+        }
+      ]
+    },
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "bigger-src",
+          "title": "恒真"
+        },
+        {
+          "at": "shift-asm",
+          "title": "移位"
+        },
+        {
+          "at": "trap-2",
+          "title": "合同"
+        },
+        {
+          "at": "alias-warn",
+          "title": "别名"
+        },
+        {
+          "at": "misra-philosophy",
+          "title": "收束"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "bigger-src",
+        "bigger-arm",
+        "bigger-host-o0",
+        "shift-asm",
+        "shift-fold",
+        "trap-2",
+        "alias-warn",
+        "misra-philosophy",
+        "punch",
+        "cta"
+      ],
+      "set": {
+        "hook-01": {
+          "title": "同一行移位\n两档两个答案",
+          "sub": "shift_oob：-O0 得 2，-O2 得 0",
+          "emphasis": [
+            "2",
+            "0"
+          ]
+        },
+        "bigger-src": {
+          "title": "x+1>x\n反例被除名",
+          "note": "INT_MAX 是唯一的反例，也正好是 UB",
+          "beatMap": [{ "at": 1, "reveal": "code:0-3" }],
+          "emphasis": [
+            "INT_MAX"
+          ]
+        },
+        "bigger-arm": {
+          "title": "M4 的 -O2\n只剩两行",
+          "code": "is_bigger_after_inc:\n    movs    r0, #1\n    bx      lr",
+          "beatMap": [{ "at": 1, "reveal": "code:0-2" }],
+          "emphasis": [
+            "movs"
+          ]
+        },
+        "bigger-host-o0": {
+          "title": "-O0 也不是\n逐行照做",
+          "codeB": "is_bigger_after_inc:\n    movl    $1, %eax\n    ret",
+          "codeBLabel": "宿主 -O0 的汇编",
+          "beatMap": [{ "at": 1, "reveal": "code:0-6" }, { "at": 2, "reveal": "codeB:0-2" }],
+          "emphasis": [
+            "$1"
+          ]
+        },
+        "shift-asm": {
+          "title": "硬件把 33\n截成了 1",
+          "codeB": "33 & 31 = 1\n1u << 1 = 2",
+          "codeBLabel": "为什么是 2：33 截成 1",
+          "beatMap": [{ "at": 1, "reveal": "code:0-3" }, { "at": 2, "reveal": "codeB:0-1" }],
+          "emphasis": [
+            "33"
+          ]
+        },
+        "shift-fold": {
+          "title": "0 是编译器\n挑的答案",
+          "codeB": "计数 >= 32      → UB\n(int)1 << 31    → UB",
+          "codeBLabel": "两条 UB 红线",
+          "beatMap": [{ "at": 1, "reveal": "code:0-1" }, { "at": 2, "reveal": "codeB:0-1" }],
+          "emphasis": [
+            "31"
+          ]
+        },
+        "trap-2": {
+          "title": "读的是合同\n不是算术",
+          "note": "反例分支被合法删除"
+        },
+        "alias-warn": {
+          "title": "警告原文\n压在解引用上",
+          "code": "alias-violate.c:13:13: warning:\ntype-punned pointer will break\nstrict-aliasing rules\n   13 |     return *(uint32_t *)&f;\n      |             ^~~~~~~~~~~~~~",
+          "beatMap": [{ "at": 1, "reveal": "code:0-4" }],
+          "emphasis": [
+            "13:13"
+          ]
+        },
+        "misra-philosophy": {
+          "title": "标准没写的\n写法钉死",
+          "bullets": [
+            "标准没规定的地方，用写法钉死",
+            "UB 不是猜答案，是别递问题",
+            "能证明，才敢交给优化器"
+          ],
+          "emphasis": [
+            "钉死"
+          ]
+        },
+        "punch": {
+          "title": "答案不归你定",
+          "bullets": [
+            "1u<<33：-O0 得 2，-O2 得 0",
+            "x+1>x：-fwrapv 把 1 变 0",
+            "证明靠没有 UB，不靠跑通"
+          ],
+          "emphasis": [
+            "2",
+            "0"
+          ]
+        },
+        "cta": {
+          "title": "一条命令\n全部读数",
+          "sub": "sh code/c/07-ub-misra/probe.sh",
+          "emphasis": [
+            "16.1.0"
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "同一行 1u<<33，-O0 打印 2，-O2 打印 0，这是未定义行为，都不算错。",
+        "bigger-src": "x 加一大于 x，唯一的反例刚好踩在未定义上。",
+        "bigger-arm": "编到 Cortex-M4，整个函数只剩 movs 和一条返回。",
+        "bigger-host-o0": "-O0 也没照实算，函数体里只剩一句装载常量一。",
+        "shift-asm": "2 不是标准给的，是硬件把计数 33 截成了一。",
+        "shift-fold": "0 也不是算出来的，是编译器认出 UB 之后挑的。",
+        "trap-2": "编译器读的是合同，不是算术；反例分支被删了。",
+        "alias-warn": "一行强转，警告原文正指着那次解引用。",
+        "misra-philosophy": "标准没规定的地方，用写法钉死成唯一解释。",
+        "punch": "这道题没有标准答案，两档给 2 和 0 都不算错。",
+        "cta": "全部读数一条命令跑出，UBSan 跳过也写明。"
+      }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "同一行 1u<<33：-O0 得 2、-O2 得 0，两个答案都不是标准答案",
+        "x+1>x 被折成恒真：加一个 -fwrapv 才肯真算",
+        "三条警告抓得住常量越界，抓不住运行期移位计数"
+      ],
+      "intro": "同一行 1u 左移 33 位，-O0 打印 2，-O2 打印 0——两个答案都来自本机 gcc 16.1.0，但都不是标准答案。这一集把未定义行为拆成三组现场。\n\n① 有符号溢出：x+1>x 在 -O0 与 -O2 下都读 1，加上 -fwrapv 才回到 0；交叉 15.2.1 把整个函数折成 movs r0,#1 两行，加旗后才用 mvn/subs/movne 真算。宿主 -O0 的函数体里，加法和比较也只剩 movl $1,%eax，-O2 的 main 里那四个函数的 call 全没了。\n\n② 移位越界：-O0 发 sall，33 被截成 1，得 2；-O2 用 xorl 把 0 递给 printf；-fwrapv 也救不了，shift_oob(1u,33u) 仍是 0。\n\n③ 严格别名：强转指针解引用触发 -Wstrict-aliasing，原文在 13:13；常量下标 7 越过 int[4] 在 12:10 被 -Warray-bounds 点名；未初始化读取在 19:14 被 -Wuninitialized 点名。合法位读用 union 或 memcpy，三档都得到 0x3F800000。\n\nUBSan 这次跳过：本工具链没有运行库，日志里只有跳过说明，没有任何运行期输出。全部读数来自 sh code/c/07-ub-misra/probe.sh，不需要开发板。",
+      "tags": [
+        "单片机",
+        "C语言",
+        "未定义行为",
+        "UB",
+        "编译器优化",
+        "嵌入式",
+        "gcc"
+      ],
+      "topics": [
+        "科技数码",
+        "知识",
+        "校园学习"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "同一行移位：-O0 给 2，-O2 给 0",
+        "编译器把你的代码当合同，不是当算术",
+        "UB 这道题，标准答案不存在"
+      ],
+      "intro": "同一行 1u<<33，-O0 得 2，-O2 得 0，两个答案都不是标准答案。x+1>x 在宿主两档都读 1，-fwrapv 才让它回到 0；交叉 15.2.1 -O2 把函数折成 movs r0,#1 两行。移位的 0 是编译器挑的，2 是硬件把 33 截成 1 兜出来的。严格别名、数组越界、未初始化各领一条警告，位置在 13:13、12:10、19:14；合法位读 union 与 memcpy 都给 0x3F800000。UBSan 没跑成：本工具链没有运行库，日志写明跳过。全部读数本机一条命令跑出，不需要开发板。",
+      "tags": [
+        "单片机",
+        "C语言",
+        "未定义行为",
+        "嵌入式",
+        "程序员"
+      ],
+      "topics": [
+        "知识",
+        "科技数码"
+      ],
+      "caption": "同一行 1u<<33：两个答案\n-O0 得 2，-O2 得 0\n#C语言 #未定义行为 #嵌入式",
+      "pinned": "完整图文在「通往单片机之路」C7《未定义行为》。三档读数、三条警告原文、两段交叉汇编，全部本机实跑：sh code/c/07-ub-misra/probe.sh",
+      "repro": "sh code/c/07-ub-misra/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "同一行 1u<<33，-O0 给 2、-O2 给 0：UB 现场对账",
+        "gcc 16.1.0 三档实测：x+1>x 为什么在 -O0 也折叠"
+      ],
+      "intro": "同一行 1u 左移 33 位，-O0 打印 2，-O2 打印 0，两个答案都来自本机 gcc 16.1.0。这一集把未定义行为拆成三组现场：\n\n有符号溢出：x+1>x 在 -O0 与 -O2 都读 1，加 -fwrapv 才回到 0；交叉 15.2.1 的 -O2 把函数折成 movs r0,#1，加旗后改用 mvn/subs/movne 真算。宿主 -O0 的函数体里，加法和比较也只剩 movl $1,%eax，-O2 的 main 里那四个函数的 call 全没了。\n\n移位越界：-O0 发 sall，33 被截成 1，得 2；-O2 用 xorl 给出 0；-fwrapv 救不了移位，shift_oob(1u,33u) 仍是 0。\n\n严格别名：强转指针解引用触发 -Wstrict-aliasing，原文在 13:13；常量下标 7 越过 int[4] 在 12:10 被点名；未初始化读取在 19:14 被点名。合法位读用 union 或 memcpy，三档都得到 0x3F800000。\n\nUBSan 这次没跑成：本工具链没有运行库，日志里只有跳过说明。全部读数来自 sh code/c/07-ub-misra/probe.sh。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集选「个人观点仅供参考」与已发章节同口径。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "C语言",
+        "未定义行为",
+        "编译器",
+        "嵌入式",
+        "gcc"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
+    },
+    "xiaohongshu": {
+      "title": "0 是编译器挑的，2 是硬件兜的",
+      "body": "同一行 1u<<33，-O0 得 2，-O2 得 0——两个答案都来自本机 gcc 16.1.0，但都不是标准答案。\n\n有符号溢出：x+1>x 在 -O0 与 -O2 都读 1，加 -fwrapv 才回到 0；交叉 15.2.1 -O2 把函数折成 movs r0,#1 两行。宿主 -O0 的函数体里，加法和比较也只剩 movl $1,%eax。\n\n移位越界：-O0 的 sall 把 33 截成 1，得 2；-O2 的 xorl 给出 0；-fwrapv 不救移位，shift_oob(1u,33u) 仍是 0。\n\n严格别名：强转指针解引用被 -Wstrict-aliasing 点名在 13:13；常量下标 7 越过 int[4] 在 12:10；未初始化读取在 19:14。合法位读 union 与 memcpy 都给 0x3F800000。\n\nUBSan 跳过：本工具链没有运行库，日志写明。\n\n复现：sh code/c/07-ub-misra/probe.sh",
+      "topics": [
+        "单片机",
+        "C语言",
+        "未定义行为"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "三档读数、三条警告原文、两段交叉汇编，全部本机一条命令跑出，不需要开发板：sh code/c/07-ub-misra/probe.sh",
+      "repro": "sh code/c/07-ub-misra/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

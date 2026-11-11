@@ -1,0 +1,28 @@
+{
+  "id": "spec-plan-continuation",
+  "name": "spec-plan-continuation",
+  "title": "B0 工具链全景：语言通俗化试点",
+  "description": "用户选择新增书籍改造并接受单章通俗化路线；B0试点规划待审阅，不推进F02，不自动扩展全书。",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "fix/animation-reading-boundaries",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "docs/build/00-toolchain.md"
+  ],
+  "notes": "",
+  "meta": {}
+}

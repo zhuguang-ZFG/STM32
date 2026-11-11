@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>ESP32 睡眠矩阵：Light 眯一会 · Deep 睡死 · ULP 守夜</title>
+  <desc>六阶段动画：ESP32 的低功耗哲学是"睡多深、谁叫醒、醒来剩什么"。① Light sleep：CPU 时钟门控、RAM 保持、外设大多在——esp_light_sleep_start() 下一行继续，像 vTaskDelay 醒来，ms 级回神，电流 mA 级（轻睡默认含关射频的 Modem sleep）。② Deep sleep：数字域断电，CPU/SRAM 全失——唤醒=复位重启，setup() 从头跑，全局变量全丢，只有 RTC 域带电（所以 EXT0/EXT1 只能用 RTC GPIO，普通 GPIO 断电就废），电流 µA 级。③ 醒来先分诊：esp_sleep_get_wakeup_cause() 返回 TIMER/EXT0/EXT1/TOUCH/UART/ULP，UNDEFINED 是冷启动——新设备首次跑要走不同分支。④ 遗言放 RTC：RTC_DATA_ATTR 变量进 RTC slow memory，跨 Deep sleep 保持、只有冷启动清零；容量 8KB 量级，ULP 程序也住这里。⑤ ULP 守夜：主核睡死时 ULP 协处理器在 RTC 域周期读 ADC/数脉冲，超阈值才 SW 中断唤醒主核——主核睡得更久，µA 级远低于主核频繁醒的 mA 级；但 ULP 只适合哨兵循环，别跑业务。⑥ 周期上报六步铁律：分诊→采→连→发→关 Wi-Fi→睡——esp_wifi_stop() 不能省，射频没关就睡协议栈会乱、电流下不来；唤醒间隔越长续航越长。图中数字域 CPU/SRAM 在 Deep 阶段变灰表示断电，RTC 域的 ULP 采样点持续闪烁、boot_count 每 6 秒 +1 表示跨复位计数，唤醒箭头周期性射入数字域。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">ESP32 睡眠矩阵：Light 眯一会 · Deep 睡死 · ULP 守夜</text>
+  <text x="24" y="50" font-size="12" fill="#666">Deep sleep 唤醒 = 复位重启——状态只能藏进 RTC 内存；ULP 在 RTC 域替主核站岗</text>
+
+  <defs>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a7f56"/>
+    </marker>
+  </defs>
+
+  <!-- Light 卡：阶段①高亮 -->
+  <rect x="40" y="60" width="310" height="104" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="42" y="62" width="306" height="4" rx="2" fill="#3451b2"/>
+  <rect x="42" y="66" width="306" height="96" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+  </rect>
+  <text x="56" y="84" font-size="13" font-weight="bold" fill="#3451b2">① Light sleep 眯一会</text>
+  <text x="56" y="104" font-size="11.5" fill="#333">停：CPU 时钟门控——暂停不失忆</text>
+  <text x="56" y="122" font-size="11.5" fill="#333">留：RAM 保持 · 外设大多在</text>
+  <text x="56" y="140" font-size="11.5" fill="#333">醒：GPIO / Timer / UART 等外设</text>
+  <text x="56" y="158" font-size="11.5" fill="#333">醒后：下一行继续（像 vTaskDelay）· mA 级</text>
+
+  <!-- Deep 卡：阶段②高亮 -->
+  <rect x="370" y="60" width="310" height="104" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="372" y="62" width="306" height="4" rx="2" fill="#1a7f56"/>
+  <rect x="372" y="66" width="306" height="96" rx="6" fill="#d8f3e5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+  </rect>
+  <text x="386" y="84" font-size="13" font-weight="bold" fill="#1a7f56">② Deep sleep 睡死</text>
+  <text x="386" y="104" font-size="11.5" fill="#333">停：数字域断电——CPU / SRAM 全失</text>
+  <text x="386" y="122" font-size="11.5" fill="#333">留：仅 RTC 域带电（唤醒源都在这）</text>
+  <text x="386" y="140" font-size="11.5" fill="#333">醒：只有 RTC 域唤醒源叫得醒</text>
+  <text x="386" y="158" font-size="11.5" fill="#333">醒后：= 复位重启，setup() 从头 · µA 级</text>
+
+  <!-- 数字域：Deep 阶段起 CPU/SRAM 变灰 -->
+  <rect x="48" y="174" width="270" height="156" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="62" y="194" font-size="12" font-weight="bold" fill="#333">数字域（CPU · SRAM · 大多数外设）</text>
+  <rect x="64" y="204" width="110" height="44" rx="6" fill="#f8fafc" stroke="#cbd5e1">
+    <animate attributeName="fill" calcMode="discrete" values="#f8fafc;#f1f5f9;#f1f5f9" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </rect>
+  <text x="119" y="224" font-size="12" font-weight="bold" text-anchor="middle" fill="#333">CPU 双核
+    <animate attributeName="fill" calcMode="discrete" values="#333;#94a3b8;#94a3b8" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </text>
+  <text x="119" y="240" font-size="11" text-anchor="middle" fill="#666">跑代码
+    <animate attributeName="fill" calcMode="discrete" values="#666;#94a3b8;#94a3b8" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </text>
+  <rect x="190" y="204" width="110" height="44" rx="6" fill="#f8fafc" stroke="#cbd5e1">
+    <animate attributeName="fill" calcMode="discrete" values="#f8fafc;#f1f5f9;#f1f5f9" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </rect>
+  <text x="245" y="224" font-size="12" font-weight="bold" text-anchor="middle" fill="#333">SRAM
+    <animate attributeName="fill" calcMode="discrete" values="#333;#94a3b8;#94a3b8" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </text>
+  <text x="245" y="240" font-size="11" text-anchor="middle" fill="#666">全局变量
+    <animate attributeName="fill" calcMode="discrete" values="#666;#94a3b8;#94a3b8" keyTimes="0;0.167;1" dur="18s" repeatCount="indefinite"/>
+  </text>
+  <!-- 数字域状态行：Light 版 / Deep 版 分时显示 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <text x="62" y="272" font-size="12" font-weight="bold" fill="#3451b2">Light：时钟门控——暂停但不失忆</text>
+    <text x="62" y="292" font-size="11" fill="#666">任意中断 ms 级回神，回到暂停点继续</text>
+    <text x="62" y="312" font-size="11" fill="#666">电流 mA 级（轻睡默认已关射频）</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;1;1;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <text x="62" y="272" font-size="12" font-weight="bold" fill="#dc2626">Deep：断电——CPU / SRAM 全失</text>
+    <text x="62" y="292" font-size="11" fill="#666">数字域 RAM 失电，全局变量全丢</text>
+    <text x="62" y="312" font-size="11" fill="#666">电流 µA 级（只有 RTC 域在耗电）</text>
+  </g>
+
+  <!-- RTC 域：永远带电 -->
+  <rect x="378" y="174" width="294" height="156" rx="8" fill="#ffffff" stroke="#3eaf7c"/>
+  <text x="392" y="194" font-size="12" font-weight="bold" fill="#1a7f56">RTC 域（Deep sleep 期间带电）</text>
+  <rect x="392" y="204" width="130" height="52" rx="6" fill="#eef7f1" stroke="#3eaf7c"/>
+  <text x="457" y="222" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">RTC slow mem</text>
+  <g font-family="Consolas,monospace" font-size="12" fill="#1a7f56" text-anchor="middle">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0" keyTimes="0;0.33;0.66;1" dur="18s" repeatCount="indefinite"/><text x="457" y="242">boot_count=1</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.33;0.66;1" dur="18s" repeatCount="indefinite"/><text x="457" y="242">boot_count=2</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0" keyTimes="0;0.33;0.66;1" dur="18s" repeatCount="indefinite"/><text x="457" y="242">boot_count=3</text></g>
+  </g>
+  <rect x="392" y="266" width="130" height="52" rx="6" fill="#ffffff" stroke="#3eaf7c"/>
+  <text x="457" y="284" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">ULP 守夜</text>
+  <text x="457" y="300" font-size="11" fill="#666" text-anchor="middle">读 ADC · 数脉冲</text>
+  <circle cx="457" cy="311" r="3.5" fill="#3eaf7c">
+    <animate attributeName="opacity" values="1;0.15;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <rect x="538" y="204" width="120" height="52" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="598" y="224" font-size="11" font-weight="bold" fill="#333" text-anchor="middle">Timer · EXT0 · EXT1</text>
+  <text x="598" y="240" font-size="11" fill="#666" text-anchor="middle">Touch · UART（有限）</text>
+  <rect x="538" y="266" width="120" height="52" rx="6" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="598" y="284" font-size="11.5" font-weight="bold" fill="#92400e" text-anchor="middle">醒来分诊</text>
+  <text x="598" y="300" font-size="11" fill="#666" text-anchor="middle">get_wakeup_cause</text>
+
+  <!-- 唤醒箭头：RTC 域周期性射入数字域 -->
+  <line x1="372" y1="250" x2="324" y2="250" stroke="#1a7f56" stroke-width="2" marker-end="url(#arrG)">
+    <animate attributeName="x2" values="372;324;324" keyTimes="0;0.5;1" dur="6s" repeatCount="indefinite"/>
+  </line>
+  <text x="348" y="240" font-size="11" fill="#1a7f56" text-anchor="middle">唤醒</text>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① Light 眯一会：CPU 暂停、RAM 保持</text>
+    <text x="56" y="380" font-size="12" fill="#333">esp_light_sleep_start() 下一行继续——像 vTaskDelay 醒来，ms 级回神</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">外设大多保持，GPIO/Timer/UART 都能唤醒；ESP 的轻睡默认含 Modem sleep（关射频）</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">② Deep 睡死：唤醒 = 复位重启</text>
+    <text x="56" y="380" font-size="12" fill="#333">数字域断电，CPU/SRAM 全失——setup() 从头跑，全局变量全丢（数字域 SRAM 失电）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">EXT0/EXT1 只能用 RTC GPIO（普通 GPIO 断电就废）——选唤醒脚先查 TRM 清单</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">③ 醒来先分诊：esp_sleep_get_wakeup_cause()</text>
+    <text x="56" y="380" font-size="12" fill="#333">返回 TIMER / EXT0 / EXT1 / TOUCH / UART / ULP；UNDEFINED = 冷启动（首次上电）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">周期上报器第一步就是分诊：Deep 醒来续计数，冷启动清零——新设备首次跑要走不同分支</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">④ 遗言放 RTC：RTC_DATA_ATTR 跨 Deep sleep</text>
+    <text x="56" y="380" font-size="12" fill="#333">变量进 RTC slow memory：跨 sleep 保持，只有冷启动才清零（看门狗复位也保持）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">RTC_NOINIT 连冷启动都不清（脏值风险）；容量 8KB 量级——ULP 程序也住这里，要权衡</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">⑤ ULP 守夜：主核睡死，ULP 在 RTC 域站岗</text>
+    <text x="56" y="380" font-size="12" fill="#333">周期读 ADC/数脉冲，超阈值才 SW 中断唤醒主核——主核睡得更久，µA 级 &lt;&lt; mA 级</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">ULP 只适合"读-比-唤醒"哨兵循环——算力/内存极小，别拿它跑业务</text>
+  </g>
+
+  <!-- 阶段六 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;1;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#dc2626">⑥ 周期上报六步：分诊 → 采 → 连 → 发 → 关 Wi-Fi → 睡</text>
+    <text x="56" y="380" font-size="12" fill="#333">第 ⑤ 步 esp_wifi_stop() 不能省：射频没关就睡，协议栈状态乱 + 电流下不来</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">唤醒间隔越长，Deep 占比越高，续航越长——电池 IoT 产品的核心设计杠杆</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;1" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">① Light 眯一会：RAM 保持，下一行继续，mA 级</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">② Deep 睡死：唤醒=复位，setup() 从头，µA 级</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ 醒来先分诊：get_wakeup_cause，冷启动走 UNDEFINED</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ 遗言放 RTC：RTC_DATA_ATTR 跨 sleep，冷启动才清零</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ ULP 守夜：RTC 域站岗，超阈值才叫醒主核</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;1;0" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑥ 六步铁律：分诊→采→连→发→关 Wi-Fi→睡</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(594,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+    <circle cx="90" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.167;0.333;0.5;0.667;0.833;1" dur="18s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

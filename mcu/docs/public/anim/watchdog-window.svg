@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>看门狗双雄：IWDG 只管活着，WWDG 还管节奏</title>
+  <desc>看门狗双雄对照。① IWDG 独立看门狗：LSI 32kHz 驱动的 12 位递减计数器，从 reload 往下数，喂狗（KR 写 0xAAAA）等于重装；主时钟挂了它照样数，数到 0 无条件复位——它只证明"还有人活着"，不证明"活干对了"，所以喂狗要放监督任务里而不是定时中断里。② 超时：主循环卡死/任务死锁导致无人喂狗，计数到 0 复位；RCC_CSR 留旗标、.noinit 区留遗言；LSI 容差让名义 2 秒实际 1.36~3.76 秒，超时预算要留裕量。③ WWDG 窗口看门狗：计数从 0x7F 递减，T[6:0] 到 0x3F 产生下溢复位；只有 T 小于 Window 才允许刷新——喂早了是窗口违例复位，喂晚了是下溢复位，两头都是死。④ 正确姿势：每周期把刷新落在 (0x3F, 0x5F) 窗口内（教学工程 PCLK1/8 一拍 2.048ms，窗口约 65ms）——喂狗时刻本身就是节奏证明，比 IWDG 的"活着"严一级。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">看门狗双雄：IWDG 只管活着，WWDG 还管节奏</text>
+  <text x="24" y="50" font-size="12" fill="#666">IWDG 倒数到 0 复位、喂狗=重装；WWDG 只许在窗口内刷新——喂早了同样复位</text>
+
+  <!-- IWDG 区 -->
+  <text x="48" y="78" font-size="13" font-weight="bold" fill="#3451b2">IWDG 独立看门狗（LSI 32kHz 驱动——主时钟挂了它照样数）</text>
+  <text x="200" y="94" font-size="11.5" fill="#1a7f56" opacity="0">喂狗 = 重装（KR 写 0xAAAA）<animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.6;0.75;1" dur="4s" repeatCount="indefinite"/></text>
+  <rect x="120" y="98" width="440" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <rect x="120" y="98" width="440" height="24" rx="4" fill="#3eaf7c">
+    <animate attributeName="width" values="440;0;440;440" keyTimes="0;0.7;0.71;1" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <text x="566" y="115" font-size="11.5" fill="#dc2626">到 0 → 复位</text>
+  <rect x="544" y="98" width="16" height="24" fill="#dc2626" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+  </rect>
+  <text x="120" y="138" font-size="11.5" fill="#666">prescaler=64 · reload=999 · 名义 32kHz ≈ 2s（LSI 容差 17~47kHz，DS8626 表35）</text>
+
+  <!-- WWDG 区 -->
+  <text x="48" y="172" font-size="13" font-weight="bold" fill="#d97706">WWDG 窗口看门狗（PCLK1=16MHz/8 → 一拍 2.048ms，T 从 0x7F 递减）</text>
+  <text x="240" y="188" font-size="11" fill="#92400e" text-anchor="middle">早喂区：T &gt; Window</text>
+  <text x="476" y="188" font-size="11" fill="#1a7f56" text-anchor="middle">可喂窗口：0x3F &lt; T &lt; 0x5F</text>
+  <rect x="120" y="192" width="240" height="30" fill="#fdf0d5"/>
+  <rect x="360" y="192" width="232" height="30" fill="#d8f3e5"/>
+  <rect x="592" y="192" width="8" height="30" fill="#dc2626"/>
+  <rect x="120" y="192" width="480" height="30" fill="none" stroke="#cbd5e1"/>
+  <text x="122" y="240" font-size="11" fill="#666" font-family="Consolas,monospace">T=0x7F</text>
+  <text x="360" y="240" font-size="11" fill="#666" font-family="Consolas,monospace">W=0x5F</text>
+  <text x="586" y="240" font-size="11" fill="#666" font-family="Consolas,monospace" text-anchor="end">0x40</text>
+  <text x="600" y="240" font-size="11" fill="#dc2626" font-family="Consolas,monospace">0x3F</text>
+
+  <!-- 游标：T 递减（左 0x7F → 右 0x3F），4s 一轮 -->
+  <line x1="130" y1="186" x2="130" y2="236" stroke="#3451b2" stroke-width="3">
+    <animate attributeName="x1" values="130;590" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="130;590" dur="4s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- 窗口内刷新 ✓（节拍脉冲） -->
+  <circle cx="470" cy="207" r="6" fill="#3eaf7c">
+    <animate attributeName="opacity" values="0.25;1;0.25" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="470" y="240" font-size="11" fill="#1a7f56" text-anchor="middle">✓ 窗口内刷新</text>
+
+  <!-- 阶段三的 ✗ 标记 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="240" y="211" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">✗ 早喂复位</text>
+    <text x="580" y="211" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="end">✗ 下溢复位</text>
+  </g>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="256" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="278" font-size="13.5" font-weight="bold" fill="#3451b2">① IWDG：12 位倒数，喂狗 = 重装</text>
+    <text x="56" y="300" font-size="12" fill="#333">独立 LSI 32kHz 驱动，不依赖主时钟——主频配挂了它照样数，这是"独立"的含义</text>
+    <text x="56" y="320" font-size="12" fill="#333">喂狗 = 向 KR 写 0xAAAA：计数器重装回 reload；教学工程 prescaler=64/reload=999 ≈ 2s</text>
+    <text x="56" y="340" font-size="12" fill="#d97706">只证明"还有人活着"，不证明"活干对了"——喂狗要放监督任务里，别放定时中断里瞎喂</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="256" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="278" font-size="13.5" font-weight="bold" fill="#dc2626">② 超时复位：卡死没人喂</text>
+    <text x="56" y="300" font-size="12" fill="#333">主循环死等 / 任务死锁 → 无人喂狗 → 计数到 0 → IWDG_RST 无条件复位</text>
+    <text x="56" y="320" font-size="12" fill="#333">复位后从向量表重来，现场全丢——.noinit 区 + RCC_CSR 旗标是仅存的"遗言"</text>
+    <text x="56" y="340" font-size="12" fill="#333">LSI 容差 17~47kHz（DS8626 表35）：名义 2s 实际 1.36~3.76s——超时预算要留裕量</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="256" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="278" font-size="13.5" font-weight="bold" fill="#d97706">③ WWDG：喂早了也复位</text>
+    <text x="56" y="300" font-size="12" fill="#333">计数从 0x7F 递减，T[6:0] 到 0x3F 产生下溢复位；PCLK1=16MHz/8 → 一拍 2.048ms</text>
+    <text x="56" y="320" font-size="12" fill="#333">只有 T &lt; Window（教学工程 Window=0x5F）才允许刷新：早喂 = 窗口违例，同样复位</text>
+    <text x="56" y="340" font-size="12" fill="#d97706">它检查的是"节奏"：代码必须在规定时间带内完成工作——比 IWDG 的"活着"严一级</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="256" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="278" font-size="13.5" font-weight="bold" fill="#1a7f56">④ 喂在窗口内：两头都是死</text>
+    <text x="56" y="300" font-size="12" fill="#333">每周期刷新落在 (0x3F, 0x5F)：窗口宽 32 拍 ≈ 65ms；工程取 0x40 &lt; T &lt; 0x5F 避边界</text>
+    <text x="56" y="320" font-size="12" fill="#333">早喂（T &gt; 0x5F）复位 / 晚喂（T ≤ 0x3F）复位——喂狗时刻本身就是"进度证明"</text>
+    <text x="56" y="340" font-size="12" fill="#333">WWDG 期限必须匹配任务周期（教学 30ms），不能套用 IWDG 的 500ms——两把尺子两套账</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="392">① IWDG 倒数+重装：只证明活着，不证明干对了</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="392">② 卡死没人喂：数到 0 复位，旗标留遗言</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="392">③ WWDG 窗口：早喂 = 违例复位，晚喂 = 下溢复位</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="392">④ 刷新落窗口内：喂狗时刻证明节奏正确</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,414)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

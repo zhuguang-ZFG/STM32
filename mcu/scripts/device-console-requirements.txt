@@ -1,0 +1,3 @@
+# scripts/device-console.py 的串口子命令唯一第三方依赖（离线 self-test 只用标准库）。
+# 固定版本：3.5（本地实测可用；info/status/command/fault/log 才会 import serial）。
+pyserial==3.5

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>STM32F407 学习路线图：从架构到实战</title>
+  <desc>S 篇导览路线图：S0 环境→S1 架构→S2 时钟→S3 GPIO→S4 中断→S5 SysTick→S6-S12 外设→S13-S17 进阶</desc>
+
+  <rect width="720" height="400" fill="#f6f8fa"/>
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">STM32F407 寄存器主线路线图</text>
+
+  <!-- Row 1: Foundation -->
+  <rect x="20" y="40" width="100" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="70" y="64" font-size="10" fill="#333" text-anchor="middle">S0 环境</text>
+  <path d="M120,60 L140,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="140" y="40" width="100" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="190" y="64" font-size="10" fill="#333" text-anchor="middle">S1 架构</text>
+  <path d="M240,60 L260,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="260" y="40" width="100" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="310" y="64" font-size="10" fill="#333" text-anchor="middle">S2 时钟</text>
+  <path d="M360,60 L380,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="380" y="40" width="100" height="40" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="430" y="64" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">S3 GPIO</text>
+  <path d="M480,60 L500,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="500" y="40" width="100" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="550" y="64" font-size="10" fill="#333" text-anchor="middle">S4 中断</text>
+  <path d="M600,60 L620,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="620" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="660" y="64" font-size="10" fill="#333" text-anchor="middle">S5 心跳</text>
+
+  <!-- Row 2: Peripherals -->
+  <text x="30" y="105" font-size="11" fill="#666">外设篇（S6-S12）</text>
+  <rect x="20" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="62" y="136" font-size="9" fill="#333" text-anchor="middle">S6 TIM</text>
+
+  <rect x="115" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="157" y="136" font-size="9" fill="#333" text-anchor="middle">S7 USART</text>
+
+  <rect x="210" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="252" y="136" font-size="9" fill="#333" text-anchor="middle">S8 DMA</text>
+
+  <rect x="305" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="347" y="136" font-size="9" fill="#333" text-anchor="middle">S9 ADC</text>
+
+  <rect x="400" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="442" y="136" font-size="9" fill="#333" text-anchor="middle">S10 DAC</text>
+
+  <rect x="495" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="537" y="136" font-size="9" fill="#333" text-anchor="middle">S11 I2C</text>
+
+  <rect x="590" y="115" width="85" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="632" y="136" font-size="9" fill="#333" text-anchor="middle">S12 SPI</text>
+
+  <!-- Row 3: Advanced -->
+  <text x="30" y="175" font-size="11" fill="#666">进阶篇（S13-S17）</text>
+  <rect x="20" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="80" y="206" font-size="9" fill="#333" text-anchor="middle">S13 Flash/IAP</text>
+
+  <rect x="150" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="210" y="206" font-size="9" fill="#333" text-anchor="middle">S14 低功耗</text>
+
+  <rect x="280" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="340" y="206" font-size="9" fill="#333" text-anchor="middle">S15 SPL 解剖</text>
+
+  <rect x="410" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="470" y="206" font-size="9" fill="#333" text-anchor="middle">S16 HardFault</text>
+
+  <rect x="540" y="185" width="140" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="610" y="206" font-size="9" fill="#333" text-anchor="middle">S17 看门狗/复位</text>
+
+  <!-- Key milestones -->
+  <rect x="20" y="240" width="680" height="60" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="260" font-size="12" font-weight="bold" fill="#3451b2">关键里程碑</text>
+  <text x="30" y="280" font-size="11" fill="#333">
+    <tspan fill="#3eaf7c" font-weight="bold">S3 GPIO</tspan>
+    <tspan> → 第一个点灯 | </tspan>
+    <tspan fill="#d97706" font-weight="bold">S6-S12</tspan>
+    <tspan> → 外设全通 | </tspan>
+    <tspan fill="#dc2626" font-weight="bold">S16</tspan>
+    <tspan> → 崩溃取证</tspan>
+  </text>
+
+  <!-- Prerequisites -->
+  <rect x="20" y="315" width="680" height="70" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="335" font-size="12" font-weight="bold" fill="#d97706">先修知识</text>
+  <text x="30" y="355" font-size="11" fill="#333">
+    <tspan>C 语言基础（</tspan>
+    <tspan fill="#3451b2">C0-C7</tspan>
+    <tspan>）+ 构建全流程（</tspan>
+    <tspan fill="#3451b2">B0-B7</tspan>
+    <tspan>）→ 开始 S 篇</tspan>
+  </text>
+  <text x="30" y="375" font-size="10" fill="#666" font-style="italic">每章配动画 + 短自测 + 实物实验，学完可独立开发 STM32 项目</text>
+
+  <defs><marker id="a" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="#666"/></marker></defs>
+
+  <circle r="4" fill="#3451b2" opacity="0.7">
+    <animate attributeName="cx" values="70;190;310;430;550;660" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="60;60;60;60;60;60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

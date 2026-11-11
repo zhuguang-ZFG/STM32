@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>UART 初始化：手写与 HAL，先关外设再改参数</title>
+  <desc>四阶段动画：左列是手写 usart1_init() 的四步，右列是 hal_uart.c @1f6451c 的 HAL_UART_Init()（L357）调用链，中间是 USART1 寄存器的最终状态。阶段①板级——时钟与引脚，手写塞在主函数里，HAL 拆进 MspInit 回调且仅在句柄状态 RESET 时调用；阶段②一次落——HAL 先关掉 UE 再调 UART_SetConfig（L3731），CR1/CR2/CR3 一批写完，OVER8 过采样位与模式位同批（L3752-3756）；阶段③波特率——BRR 就是 PCLK/baud 同一个公式，过采样只换 SAMPLING8/SAMPLING16 分频宏（L3787/3791）；阶段④纪律——所有参数落位后才 __HAL_UART_ENABLE（L417），读库＝按 RM0090 偏移逐寄存器对账。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">UART 初始化：手写 vs HAL，两条路同一组寄存器</text>
+  <text x="24" y="50" font-size="12" fill="#666">左＝手写 usart1_init() · 右＝HAL_UART_Init()（hal_uart.c @1f6451c）· 中＝USART1 寄存器</text>
+
+  <!-- ===== 三列卡片 ===== -->
+  <rect x="40" y="80" width="220" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="150" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">手写路径</text>
+  <rect x="54" y="128" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="151" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">RCC APB2EN1 · GPIO AF7</text>
+  <rect x="54" y="178" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="201" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR1/2/3 模式位 · UE 后置</text>
+  <rect x="54" y="228" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="251" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">BRR = PCLK/baud 手算</text>
+  <rect x="54" y="278" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="301" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR2.STOP · CR3 按需</text>
+
+  <rect x="280" y="80" width="160" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="360" y="100" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">USART1 寄存器</text>
+  <rect x="292" y="126" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="141" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CR1 UE·TE·RE·M</text>
+  <rect x="292" y="164" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="179" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CR1 .OVER8</text>
+  <rect x="292" y="202" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="217" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CR2 .STOP</text>
+  <rect x="292" y="240" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="255" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CR3（本例全 0）</text>
+  <rect x="292" y="278" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="293" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">BRR = PCLK/baud</text>
+
+  <rect x="460" y="80" width="220" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="570" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">HAL 路径</text>
+  <rect x="474" y="128" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="151" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">HAL_UART_MspInit() L398</text>
+  <rect x="474" y="178" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="201" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">UART_SetConfig() L3731</text>
+  <rect x="474" y="228" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="251" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">SAMPLING8/16 L3787</text>
+  <rect x="474" y="278" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="301" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">__HAL_UART_ENABLE L417</text>
+
+  <!-- ===== 生长箭头 ===== -->
+  <path d="M252,240 L252,240" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrB8)">
+    <animate attributeName="d" values="M252,240 L252,240;M252,240 L252,240;M252,240 L286,240;M252,240 L286,240" keyTimes="0;0.12;0.3;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <path d="M468,240 L468,240" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrB8)">
+    <animate attributeName="d" values="M468,240 L468,240;M468,240 L468,240;M468,240 L434,240;M468,240 L434,240" keyTimes="0;0.12;0.3;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <defs>
+    <marker id="arrB8" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 寄存器点亮（累积） ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="126" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="141" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR1 UE·TE·RE·M</text>
+    <rect x="292" y="164" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="179" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR1 .OVER8</text>
+    <rect x="292" y="202" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="217" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR2 .STOP</text>
+    <rect x="292" y="240" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="255" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR3（本例全 0）</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="278" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="293" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">BRR = PCLK/baud</text>
+  </g>
+
+  <!-- OVER8 同批写入警戒 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="164" width="136" height="22" fill="none" stroke="#d97706" stroke-width="2" rx="3"/>
+    <text x="360" y="348" font-size="11" font-weight="bold" fill="#92400e" text-anchor="middle">OVER8 与模式位同批写入（L3752）</text>
+  </g>
+
+  <!-- ===== 当前步高亮环 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="128" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="128" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="178" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="178" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="228" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="228" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="278" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="278" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 板级：时钟引脚——手写塞进 init，HAL 交给 MspInit 回调</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">② 一次落：先关 UE 再改，CR1/2/3 一批写完（L3752）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ 波特率：同一个 PCLK/baud 公式，过采样只是换分频宏</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 纪律：参数全落位才使能——HAL 先关 UE 改完再开（L417）</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,404)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

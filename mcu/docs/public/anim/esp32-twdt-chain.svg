@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>ESP32 任务看门狗：TWDT 的订阅、喂狗与超时链条</title>
+  <desc>五阶段动画：任务能调度不等于系统完成了关键工作，TWDT 盯的是"任务是否按期服务"。① 订阅：esp_task_wdt_init(2000ms, trigger_panic) 初始化，给名为 health 的 user 注册订阅——监督者自己卡住时也必须有尚未刷新的硬件超时来源，所以 supervisor 单独注册 user；空闲任务监测保留，init 返回已初始化时改用 reconfigure。② 正常链：worker 每 100ms 完成一轮工作并上报进展（deadline 500ms），comm 每轮有限读取字节并上报；supervisor 每 50ms 巡检一次，health_supervise() 返回 true 才执行 reset_user 喂狗；空闲通信也要上报——证明服务循环完成了检查；portMUX 保护跨核共享的 health 状态，先拿锁再读时间。③ 判据不能反：true 才喂、false 表示该停止喂狗——条件写反等于任务卡死了还在喂，看门狗永远不响；停止监督服务时不能 delete_user，删掉被监视对象会取消超时来源。④ 超时链条：fault 1 停止 worker 进展 → supervisor 停止喂狗 → TWDT 2000ms 到点 → panic 打印后复位；任务故障要让出 CPU 才能真正测到 TWDT；watchdog 不纠正 UART 协议错误，坏帧由 CRC 和重新同步处理。⑤ 复位取证：RTC_NOINIT 故障记录带 magic/version/CRC，结合 esp_reset_reason 原值判断是否可解释——普通冷启动不能把随机 RAM 当历史；OpenOCD 可能禁用 watchdog，硬件实验应断开调试器重新上电。图中 TWDT 框内的倒数条每 2 秒从满到空（对应 2000ms 超时），喂狗脉冲持续闪烁——只要喂狗还在，倒数到头前就会被重置。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">ESP32 任务看门狗：TWDT 的订阅、喂狗与超时链条</text>
+  <text x="24" y="50" font-size="12" fill="#666">worker 500ms 完工 · 监督 50ms 巡检 · TWDT 2000ms 兜底——没人喂狗才复位</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- 三卡：worker / comm / supervisor -->
+  <rect x="40" y="60" width="200" height="96" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="42" y="62" width="196" height="4" rx="2" fill="#3451b2"/>
+  <text x="56" y="84" font-size="13" font-weight="bold" fill="#3451b2">worker 任务</text>
+  <text x="56" y="104" font-size="11.5" fill="#333">每 100ms 完成一轮工作</text>
+  <text x="56" y="122" font-size="11.5" fill="#333">deadline 500ms</text>
+  <text x="56" y="140" font-size="11.5" fill="#333">完成即上报进展 → health</text>
+
+  <rect x="260" y="60" width="200" height="96" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="262" y="62" width="196" height="4" rx="2" fill="#3451b2"/>
+  <text x="276" y="84" font-size="13" font-weight="bold" fill="#3451b2">comm 通信</text>
+  <text x="276" y="104" font-size="11.5" fill="#333">每轮有限读取字节</text>
+  <text x="276" y="122" font-size="11.5" fill="#333">处理发送并上报</text>
+  <text x="276" y="140" font-size="11.5" fill="#333">deadline 500ms</text>
+
+  <rect x="480" y="60" width="200" height="96" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="482" y="62" width="196" height="4" rx="2" fill="#d97706"/>
+  <text x="496" y="84" font-size="13" font-weight="bold" fill="#92400e">supervisor 监督</text>
+  <text x="496" y="104" font-size="11.5" fill="#333">50ms 巡检一次</text>
+  <text x="496" y="122" font-size="11.5" fill="#333">health_supervise() 判生死</text>
+  <text x="496" y="140" font-size="11.5" fill="#333">true 才喂 / false 停止喂</text>
+
+  <!-- 链条图：上排 产出→快照→判定 -->
+  <text x="48" y="172" font-size="12" font-weight="bold" fill="#666">喂狗链条（正常时每一步都在转）</text>
+  <rect x="56" y="186" width="90" height="52" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="56" y="186" width="90" height="52" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <text x="101" y="208" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">worker</text>
+  <text x="101" y="224" font-size="11" fill="#666" text-anchor="middle">100ms/轮</text>
+  <rect x="56" y="186" width="90" height="52" rx="6" fill="#fdf0d5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <text x="101" y="250" font-size="11" fill="#dc2626" text-anchor="middle">fault 1：卡死
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </text>
+
+  <rect x="156" y="186" width="90" height="52" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="156" y="186" width="90" height="52" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <text x="201" y="208" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">comm</text>
+  <text x="201" y="224" font-size="11" fill="#666" text-anchor="middle">有限读取</text>
+
+  <line x1="246" y1="212" x2="294" y2="212" stroke="#666" marker-end="url(#arr)"/>
+  <text x="270" y="202" font-size="11" fill="#666" text-anchor="middle">上报进展</text>
+
+  <rect x="300" y="180" width="150" height="64" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="300" y="180" width="150" height="64" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="375" y="202" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">health 状态</text>
+  <text x="375" y="218" font-size="11" fill="#666" text-anchor="middle">portMUX 跨核快照</text>
+  <text x="375" y="234" font-size="11" fill="#666" text-anchor="middle">deadline 500ms</text>
+
+  <line x1="450" y1="212" x2="494" y2="212" stroke="#666" marker-end="url(#arr)"/>
+  <text x="472" y="202" font-size="11" fill="#666" text-anchor="middle">50ms 巡检</text>
+
+  <rect x="500" y="180" width="176" height="64" rx="6" fill="#fdf0d5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="500" y="180" width="176" height="64" rx="6" fill="#ffffff" stroke="#d97706"/>
+  <text x="588" y="202" font-size="12" font-weight="bold" fill="#92400e" text-anchor="middle">supervisor 判定</text>
+  <text x="588" y="218" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">health_supervise()</text>
+  <text x="588" y="234" font-size="11" fill="#666" text-anchor="middle">true 喂 / false 停</text>
+
+  <!-- 下排：喂狗 → TWDT → 超时复位 -->
+  <line x1="588" y1="244" x2="588" y2="256" stroke="#666" marker-end="url(#arr)"/>
+  <rect x="500" y="258" width="176" height="52" rx="6" fill="#ffffff" stroke="#3eaf7c"/>
+  <text x="588" y="278" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">喂狗 reset_user</text>
+  <text x="588" y="296" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">esp_task_wdt_reset_user</text>
+
+  <line x1="496" y1="284" x2="456" y2="284" stroke="#666" marker-end="url(#arr)"/>
+  <circle cx="476" cy="284" r="4" fill="#3eaf7c">
+    <animate attributeName="opacity" values="1;0.15;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="476" y="272" font-size="11" fill="#1a7f56" text-anchor="middle">喂狗脉冲</text>
+
+  <rect x="300" y="258" width="150" height="64" rx="6" fill="#fdf0d5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="300" y="258" width="150" height="64" rx="6" fill="#ffffff" stroke="#333"/>
+  <text x="375" y="278" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">TWDT 硬件计时器</text>
+  <text x="375" y="294" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">timeout = 2000ms</text>
+  <rect x="312" y="300" width="126" height="8" rx="4" fill="#f1f5f9"/>
+  <rect x="312" y="300" width="126" height="8" rx="4" fill="#d97706">
+    <animate attributeName="width" values="126;0" keyTimes="0;1" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <text x="375" y="318" font-size="11" fill="#888" text-anchor="middle">倒数 2s 一轮：喂狗会重置它
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+  </text>
+
+  <line x1="296" y1="290" x2="252" y2="290" stroke="#dc2626" marker-end="url(#arrR)"/>
+  <text x="274" y="280" font-size="11" fill="#dc2626" text-anchor="middle">无人喂到点</text>
+
+  <rect x="56" y="258" width="190" height="64" rx="6" fill="#fdf0d5" stroke="#dc2626"/>
+  <text x="151" y="278" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">超时 → panic 打印</text>
+  <text x="151" y="294" font-size="11" fill="#666" text-anchor="middle">trigger_panic = true</text>
+  <text x="151" y="310" font-size="11" fill="#666" text-anchor="middle">打印现场后复位</text>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① 订阅：esp_task_wdt_init(2000ms, trigger_panic) + add_user("health")</text>
+    <text x="56" y="380" font-size="12" fill="#333">supervisor 自己也要有尚未刷新的硬件超时来源——所以单独注册 user</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">init 返回已初始化时改用 reconfigure，其他错误不能忽略；空闲任务监测保留</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">② 正常链：worker 按期上报 → supervisor 确认 → 喂狗</text>
+    <text x="56" y="380" font-size="12" fill="#333">空闲通信也要上报：证明服务循环完成了检查，不是等用户持续发数据</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">portMUX 保护跨核共享的 health：先拿锁再读时间，避免把旧时间戳写回</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">③ 判据不能反：true 才喂狗，false 表示该停止喂</text>
+    <text x="56" y="380" font-size="12" fill="#333">条件写反 = 任务卡死了还在喂——看门狗永远不响</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">停止监督服务时不能 delete_user：删掉被监视对象会取消超时来源</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#dc2626">④ 超时链条：fault 1 停 worker → 停喂 → TWDT 2000ms 到点</text>
+    <text x="56" y="380" font-size="12" fill="#333">panic 配置为打印后复位；任务故障要让出 CPU，才能真正测到 TWDT</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">watchdog 不纠正 UART 协议错误——坏帧由 CRC 和重新同步处理（C8 分工）</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">⑤ 复位取证：RTC_NOINIT 记录 + esp_reset_reason 分诊</text>
+    <text x="56" y="380" font-size="12" fill="#333">故障记录带 magic/version/CRC——普通冷启动不能把随机 RAM 当历史</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">OpenOCD 可能禁用 watchdog——硬件实验应断开调试器并重新上电</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="438">① 订阅：2000ms + panic，supervisor 自己也注册 user</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="438">② 正常链：worker 按期上报，supervisor 确认后才喂狗</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ 判据不能反：true 才喂，false 是停止喂狗</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ fault 1：worker 卡死 → 停喂 → TWDT 超时 panic 复位</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ 复位取证：RTC_NOINIT + reset_reason，冷启动不算历史</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="16s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 410" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="J1 接线与配置双槽：电位器滑片接 PA0，PB6/PB7 接 AT24C02 并各 4.7k 上拉，PA9/PA10 交叉接 USB-TTL，全部共地；EEPROM 256 字节分成两个 128 字节槽，先作废目标槽提交标记，分页写 127 字节，回读校验后写 0xA5 提交标记">
+  <rect width="720" height="410" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">J1 霸天虎接线与配置双槽</text>
+  <text x="24" y="50" font-size="12" fill="#666">先拆掉旧实验的 PA6→PA0 跳线；USB-TTL 选 3.3V 电平；三路外设与板子共地</text>
+
+  <!-- 电位器 -->
+  <rect x="24" y="70" width="150" height="110" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="99" y="90" font-size="13" font-weight="bold" fill="#a16207" text-anchor="middle">电位器 10k 级</text>
+  <text x="164" y="116" font-size="12" fill="#333" text-anchor="end">一端 → 3.3V</text>
+  <text x="164" y="140" font-size="12" fill="#333" text-anchor="end">滑片</text>
+  <text x="164" y="164" font-size="12" fill="#333" text-anchor="end">一端 → GND</text>
+
+  <!-- F407 -->
+  <rect x="270" y="70" width="180" height="180" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="360" y="90" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">霸天虎 F407</text>
+  <g font-size="12" fill="#333" font-family="Consolas,monospace">
+    <text x="280" y="140">PA0 ADC1_IN0</text>
+    <text x="440" y="116" text-anchor="end">PB6 SCL</text>
+    <text x="440" y="140" text-anchor="end">PB7 SDA</text>
+    <text x="440" y="200" text-anchor="end">PA9  TX</text>
+    <text x="440" y="224" text-anchor="end">PA10 RX</text>
+  </g>
+  <text x="300" y="186" font-size="12" fill="#666">TIM2 触发 ADC</text>
+  <text x="300" y="204" font-size="12" fill="#666">DMA 搬两半字</text>
+
+  <!-- AT24C02 -->
+  <rect x="546" y="70" width="150" height="110" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="621" y="90" font-size="13" font-weight="bold" fill="#1a7f56" text-anchor="middle">AT24C02</text>
+  <text x="556" y="116" font-size="12" fill="#333">SCL</text>
+  <text x="556" y="140" font-size="12" fill="#333">SDA</text>
+  <text x="556" y="162" font-size="12" fill="#666">A0~A2、WP 接地</text>
+
+  <!-- USB-TTL -->
+  <rect x="546" y="186" width="150" height="64" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="686" y="202" font-size="13" font-weight="bold" fill="#a16207" text-anchor="end">USB-TTL</text>
+  <text x="556" y="200" font-size="12" fill="#333">RXD</text>
+  <text x="556" y="224" font-size="12" fill="#333">TXD</text>
+  <text x="686" y="224" font-size="12" fill="#666" text-anchor="end">→ 主机</text>
+
+  <!-- 连线 -->
+  <line x1="174" y1="136" x2="270" y2="136" stroke="#d97706" stroke-width="2"/>
+  <line x1="450" y1="112" x2="546" y2="112" stroke="#3451b2" stroke-width="2"/>
+  <line x1="450" y1="136" x2="546" y2="136" stroke="#1a7f56" stroke-width="2"/>
+  <text x="498" y="106" font-size="12" fill="#666" text-anchor="middle">4.7k 上拉</text>
+  <line x1="450" y1="196" x2="546" y2="196" stroke="#c0392b" stroke-width="2"/>
+  <line x1="450" y1="220" x2="546" y2="220" stroke="#333" stroke-width="2"/>
+  <text x="498" y="246" font-size="12" fill="#c0392b" text-anchor="middle">TX 对 RX</text>
+  <!-- 共地 -->
+  <path d="M99 180 V262 H621 V250" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <line x1="360" y1="250" x2="360" y2="262" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="200" y="256" font-size="12" fill="#666" text-anchor="middle">GND 共地</text>
+
+  <!-- 双槽 -->
+  <text x="24" y="290" font-size="13" font-weight="bold" fill="#3451b2">256 字节 = 两个 128 字节槽；最后 1 字节 0xA5 是提交标记</text>
+  <text x="20" y="318" font-size="12" fill="#1a7f56">A</text>
+  <rect x="34" y="304" width="314" height="22" fill="#e6f6ee" stroke="#3eaf7c"/>
+  <text x="191" y="320" font-size="12" fill="#1a7f56" text-anchor="middle">旧配置 generation N，全程不动</text>
+  <rect x="348" y="304" width="26" height="22" fill="#3eaf7c"/>
+  <text x="361" y="320" font-size="12" fill="#fff" text-anchor="middle">A5</text>
+  <text x="20" y="352" font-size="12" fill="#c0392b">B</text>
+  <rect x="34" y="338" width="314" height="22" fill="#fff" stroke="#3451b2" stroke-dasharray="5 3"/>
+  <text x="191" y="354" font-size="12" fill="#3451b2" text-anchor="middle">LOG1 · schema · 配置 · gen N+1 · CRC</text>
+  <rect x="348" y="338" width="26" height="22" fill="#fdecea" stroke="#c0392b"/>
+  <text x="361" y="354" font-size="12" fill="#c0392b" text-anchor="middle">00</text>
+  <g font-size="12" fill="#333">
+    <text x="396" y="314">① 先把 B 的标记写成 00（作废）</text>
+    <text x="396" y="332">② 前 127 字节按 8 字节页分批写</text>
+    <text x="396" y="350">③ 回读比对 127 字节</text>
+    <text x="396" y="368">④ 最后写 A5，再整槽回读一次</text>
+  </g>
+  <rect x="24" y="376" width="672" height="26" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <text x="360" y="394" font-size="12" fill="#a16207" text-anchor="middle">启动时选"有效且 generation 最新"的槽；任一步掉电，B 都不带 A5，自动退回 A</text>
+</svg>

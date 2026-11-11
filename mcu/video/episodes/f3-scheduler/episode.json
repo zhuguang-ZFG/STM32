@@ -1,0 +1,835 @@
+{
+  "id": "f3-scheduler",
+  "title": "调度器：一条 clz 选人，背后还有三笔账",
+  "badge": "F3",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "configUSE_PORT_OPTIMISED_TASK_SELECTION": "config use port optimised task selection",
+    "ucPortCountLeadingZeros": "u c port count leading zeros",
+    "xTaskIncrementTick": "x task increment tick",
+    "uxTopReadyPriority": "u x top ready priority",
+    "taskYIELD_WITHIN_API": "task yield within A P I",
+    "portmacro.h": "port macro 点 h",
+    "portable.h": "portable 点 h",
+    "FreeRTOS.h": "free R T O S 点 h",
+    "tasks.c": "tasks 点 c",
+    "tasks.o": "tasks 点 o",
+    "xPendedTicks": "x pended ticks",
+    "xItemValue": "x item value",
+    "vTaskDelay": "v task delay",
+    "SysTick": "system tick",
+    "RT-Thread": "R T thread",
+    "CM4F": "C M 四 F",
+    "uint8_t": "uint 八",
+    "#error": "error",
+    "clz": "C L Z",
+    "uxtb": "U X T B",
+    "beq": "B E Q",
+    "bcs": "B C S",
+    "V11.1.0": "V 十一 点 一 点 零"
+  },
+  "cover": {
+    "variant": "vs",
+    "kicker": "通往单片机之路 · F3",
+    "line1": "同一张就绪表",
+    "line2": "最坏 31 次，还是 1 次",
+    "vs": {
+      "left": "通用路：最坏 31 次",
+      "right": "位图路：每次 1 次",
+      "labels": [
+        "MEASURED",
+        "MEASURED"
+      ]
+    },
+    "tag": "本机 probe · 反汇编与模拟器",
+    "siteNote": "寄存器级 · 日志逐行可查",
+    "proof": "!n=32：通用路最坏 31 次判空\n!位图路 10 次选择，10 次 clz\n!不写配置 = 写 1：两份 tasks.o 相同",
+    "proofShort": "!最坏 31 次 vs 每次 1 次\n!不写配置 = 写 1，逐字节相同",
+    "num": "31 次",
+    "numNote": "n=32 时通用路最坏一次选择的判空次数；位图路每次 1 次",
+    "sizes": {
+      "bilibili": [
+        1920,
+        1200
+      ],
+      "douyin": [
+        1080,
+        1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "fork-01",
+          "title": "谁选的路"
+        },
+        {
+          "at": "body-01",
+          "title": "两副机身"
+        },
+        {
+          "at": "scan-01",
+          "title": "跑一遍账"
+        },
+        {
+          "at": "ram-01",
+          "title": "租子与天花板"
+        },
+        {
+          "at": "tick-01",
+          "title": "tick 与链表"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "32 级里挑最高的",
+          "sub": "两条路，一行配置",
+          "narration": "调度器每换一次任务，都要在就绪表里挑最高的那一级。三十二个优先级，FreeRTOS 备了两条路：一条问一次，一条往下摸。",
+          "emphasis": [
+            "32"
+          ]
+        },
+        {
+          "id": "hook-02",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "先说结论",
+          "title": "声明只有一行，语义有两套",
+          "sub": "位图只在优化路径成立；通用路径里它是层号",
+          "narration": "先把结论放这儿：把 uxTopReadyPriority 当位图读，只在优化路径成立；那一行声明里，位图的一位对应一级，换到通用路径，它只是一个层号。分岔的开关是配置宏，不是文档里抄来的默认值。",
+          "emphasis": [
+            "位图"
+          ]
+        },
+        {
+          "id": "fork-01",
+          "kind": "code",
+          "title": "分岔是编译期的",
+          "codeLabel": "tasks.c:159 起的 #if",
+          "code": "#if ( configUSE_PORT_OPTIMISED_TASK_SELECTION == 0 )\n    /* 通用实现：往下摸 */\n#else\n    /* 端口实现：问硬件 */\n#endif",
+          "narration": "第一问：谁决定走哪条路。不是运行时判断，是预处理。tasks.c 的第一百五十九行起，一个 #if 把两份实现隔开；同一份文件里，三千九百零三到三千九百二十四行还有内层的分岔，编译器只看见其中一份。",
+          "emphasis": [
+            "#if"
+          ]
+        },
+        {
+          "id": "fork-02",
+          "kind": "code",
+          "title": "两个默认值，谁先落地",
+          "codeLabel": "portmacro.h:144：端口默认 1",
+          "code": "/* portmacro.h:144 */\n#ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION\n#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1\n#endif",
+          "codeBLabel": "FreeRTOS.h:2766：通用层默认 0",
+          "codeB": "/* FreeRTOS.h:2766 */\n#ifndef configUSE_PORT_OPTIMISED_TASK_SELECTION\n#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0\n#endif",
+          "narration": "两个头文件各留了一份默认值：端口写一，通用层写零。谁先生效，看 include 顺序。FreeRTOS.h 第六十四行先包含你的配置头，第一百零七行才包含 portable.h；端口层在那一刻已经把宏定成一，通用层后面那句 #ifndef 就没机会了。",
+          "emphasis": [
+            "2766"
+          ]
+        },
+        {
+          "id": "fork-03",
+          "kind": "card",
+          "tone": "good",
+          "title": "不写，等于写 1",
+          "sub": "两份 tasks.o 逐字节相同；选优函数 140 对 140，写 0 是 160",
+          "narration": "实测三份：同一份源码，配置里不写、写一、写零，各编一次。不写与写一的目标文件逐字节相同，编出的选优函数同为一百四十字节；写零那份一百六十。结论：在 CM4F 端口上，不写就是写一；网上那句默认零，在这里不成立。",
+          "emphasis": [
+            "140"
+          ]
+        },
+        {
+          "id": "body-01",
+          "kind": "code",
+          "title": "端口只换三件事",
+          "codeLabel": "portmacro.h 的三条宏",
+          "code": "#define portRECORD_READY_PRIORITY( p, b )  ( b ) |= ( 1UL << ( p ) )\n#define portRESET_READY_PRIORITY( p, b )   ( b ) &= ~( 1UL << ( p ) )\n#define portGET_HIGHEST_PRIORITY( t, b ) \\\n    t = ( 31UL - ucPortCountLeadingZeros( ( b ) ) )",
+          "narration": "优化路径不动链表数组，只改三笔账：就绪时把第几位置一，离开时清掉，选人时问最高位。位的编号就是优先级，一位对应一级。三个宏全是位运算，没有循环，也没有比较。",
+          "emphasis": [
+            "31UL"
+          ]
+        },
+        {
+          "id": "body-02",
+          "kind": "code",
+          "title": "通用路径从缓存往下摸",
+          "codeLabel": "tasks.c 的选择循环（原文骨架）",
+          "code": "UBaseType_t uxTopPriority = uxTopReadyPriority;\nwhile( listLIST_IS_EMPTY( &pxReadyTasksLists[ uxTopPriority ] ) )\n{\n    configASSERT( uxTopPriority );\n    --uxTopPriority;\n}\nuxTopReadyPriority = uxTopPriority;",
+          "narration": "通用路径把同一个变量当层号：从上次记住的高度开始，链表空就减一，直到碰上非空。每个优先级一条链表，层号只是起点，非空与否要一条条问。选完再把层号存回去——它是缓存，不是位图。",
+          "emphasis": [
+            "uxTopReadyPriority"
+          ]
+        },
+        {
+          "id": "body-03",
+          "kind": "code",
+          "title": "两份机身并排",
+          "codeLabel": "位图路：clz 之后 rsb #31（-O0）",
+          "code": "  22: ldr  r3, [r7, #4]\n  24: clz  r3, r3\n  28: strb r3, [r7, #3]\n  2a: ldrb r3, [r7, #3]\n  2c: rsb  r3, r3, #31",
+          "codeBLabel": "通用路：递减循环（同一函数，-O0）",
+          "codeB": "  2c: ldr  r2, [r7, #4]\n  2e: mov  r3, r2\n  30: lsls r3, r3, #2\n  32: add  r3, r2\n  34: lsls r3, r3, #2\n  36: add  r3, r1\n  38: ldr  r3, [r3, #0]\n  3a: cmp  r3, #0\n  3c: beq.n 24 <vTaskSwitchContext+0x24>",
+          "narration": "并排看：左边五条，装载、clz、按字节存、按字节读、三十一减；右边先算出第几号链表，再读头、比较，最后一条 beq 往回跳。左边没有回头路，右边有。往回跳的那条边，就是循环。",
+          "emphasis": [
+            "clz",
+            "beq.n"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "title"
+            },
+            {
+              "at": 2,
+              "reveal": "code:0-4"
+            },
+            {
+              "at": 3,
+              "reveal": "codeB:0-8"
+            }
+          ]
+        },
+        {
+          "id": "body-04",
+          "kind": "card",
+          "title": "58 条对 70 条，回边 0 对 1",
+          "sub": "整个 vTaskSwitchContext，-O0 数出来的",
+          "narration": "数完整个函数：位图路五十八条，向后跳一次都没有；通用路七十条，多出一条回边。差别不在开头，在形状：一条定长，一条随层数变长。指令数只是表象，回边才是成本。",
+          "emphasis": [
+            "58"
+          ]
+        },
+        {
+          "id": "body-05",
+          "kind": "code",
+          "title": "clz 是端口写进去的",
+          "codeLabel": "portmacro.h:151 的内联汇编",
+          "code": "static inline uint8_t ucPortCountLeadingZeros( uint32_t ulBitmap )\n{\n    uint8_t ucReturn;\n    __asm volatile ( \"clz %0, %1\" : \"=r\" ( ucReturn ) : \"r\" ( ulBitmap ) : \"memory\" );\n    return ucReturn;\n}",
+          "narration": "clz 不是编译器猜的，是端口作者写的内联汇编：输入一个三十二位数，输出前导零个数；返回类型是 uint8_t，一个字节。内核不写循环，把这活儿交给指令集。",
+          "emphasis": [
+            "uint8_t"
+          ]
+        },
+        {
+          "id": "body-06",
+          "kind": "card",
+          "tone": "warn",
+          "title": "uint8_t 留下一次字节往返",
+          "sub": "-O0：clz 后 strb，再 ldrb，才 rsb",
+          "narration": "代价在返回宽度：clz 给出三十二位结果，函数却声明返回 uint8_t。-O0 的机身先按字节存进栈，再按字节读回来，然后才做三十一减。存一次读一次，不是算法需要，是类型留下的。换个编译器版本，这一对不一定还在，但类型转换跑不掉。",
+          "emphasis": [
+            "uint8_t"
+          ]
+        },
+        {
+          "id": "body-07",
+          "kind": "code",
+          "title": "-O2 之后，疤痕还在",
+          "codeLabel": "同一段的 -O2 机身",
+          "code": "  16: clz  r3, r3\n  1a: uxtb r3, r3\n  1e: rsb  r3, r3, #31",
+          "narration": "换 -O2 再编：clz 留着，三十一减也留着，字节存读换成寄存器里一条 uxtb。整支函数由一百四十字节瘦到九十二。结论：一条指令选优不是 -O0 的偶然，uxtb 也不是；类型转换在优化档里换了个形状，没有消失。",
+          "emphasis": [
+            "uxtb"
+          ]
+        },
+        {
+          "id": "scan-01",
+          "kind": "card",
+          "kicker": "第四幕 · 同一张事件表",
+          "title": "循环到底跑几遍",
+          "sub": "两条规则各抄一个小程序：一个记判空，一个记 clz",
+          "narration": "形状看完了，下一个问题是次数。把两条规则各抄成一个宿主小程序：一条链表数组加层号缓存，一条位图加 clz 计数；喂同一张事件表，各自记判空与 clz 的次数。门禁只有一条：两边选出的优先级必须一样。",
+          "emphasis": [
+            "clz"
+          ]
+        },
+        {
+          "id": "scan-02",
+          "kind": "code",
+          "title": "n=5：平均 2.10 次",
+          "codeLabel": "同一张事件表，configMAX_PRIORITIES=5",
+          "code": "事件 23 个，其中选择 10 次；两条路选出不同优先级的次数 = 0\n通用路累计判空 21 次，平均每次选择 2.10 次\n位图路累计 clz 10 次，平均 1.00 次\n通用路最坏：第 4 次选择，缓存停在 4，判空 5 次",
+          "narration": "五级优先级先跑。事件表二十三个事件、十次选择，两边分歧为零，这是门禁。通用路累计判空二十一次，除以十次选择，平均二点一零；最坏那一次摸了五下。位图路每次就一次 clz，平均一点零零。门禁先过，次数才作数。",
+          "emphasis": [
+            "2.10"
+          ]
+        },
+        {
+          "id": "scan-03",
+          "kind": "code",
+          "title": "n=32：平均 5.10 次",
+          "codeLabel": "同一张事件表，configMAX_PRIORITIES=32",
+          "code": "事件 23 个，其中选择 10 次；两条路选出不同优先级的次数 = 0\n通用路累计判空 51 次，平均每次选择 5.10 次\n位图路累计 clz 10 次，平均 1.00 次\n通用路最坏：第 9 次选择，缓存停在 30，判空 31 次",
+          "narration": "优先级总数改成三十二，事件表不动，只改这一个宏。通用路的累计判空涨到五十一次，十次选择一除，平均五点一零。最坏那一回缓存记着三十，可真正有任务的层是零，中间三十层全空，一路减到零，整整三十一下。位图路仍是十次 clz，平均一点零零，一次都没多。",
+          "emphasis": [
+            "5.10"
+          ]
+        },
+        {
+          "id": "scan-04",
+          "kind": "card",
+          "tone": "gold",
+          "title": "平均值骗人，最坏值不骗",
+          "sub": "n=5 最坏 5 次；n=32 最坏 31 次",
+          "narration": "缓存确实有用：任务连着跑，最高层很少挪窝，常见情况摸两三层就停。可一旦缓存记着高处、能跑的却落到底层，这一趟就得走满三十一步。平均值把这种日子摊薄了：二点一零、五点一零都好看，可调度器保的是最坏那一拍——五，或者三十一。结论：平均是账面，最坏才是底线。",
+          "emphasis": [
+            "31"
+          ]
+        },
+        {
+          "id": "ram-01",
+          "kind": "code",
+          "title": "每条链表收 20 字节",
+          "codeLabel": "两次 size -A 与一次除法",
+          "code": "configMAX_PRIORITIES = 5  → pxReadyTasksLists = 100 字节\nconfigMAX_PRIORITIES = 33 → pxReadyTasksLists = 660 字节\n\nsizeof(List_t) = (660 − 100) ÷ (33 − 5) = 20 字节",
+          "narration": "选优是一条指令，租金在别处：每个优先级养一条链表。把优先级总数编成五和三十三，链接符号表直接给出数组大小：一百与六百六十。拿两个读数一除，每条二十字节——这是 List_t 的宽度。",
+          "emphasis": [
+            "20"
+          ]
+        },
+        {
+          "id": "ram-02",
+          "kind": "code",
+          "title": "20 字节拆开",
+          "codeLabel": "list.h：List_t 的三个成员",
+          "code": "UBaseType_t uxNumberOfItems;   /* 4 */\nListItem_t *pxIndex;          /* 4 */\nMiniListItem_t xListEnd;      /* 12 */\n                              /* 4 + 4 + 12 = 20 */",
+          "narration": "二十字节由三段拼成：一个计数，记着挂了多少项；一个指针，指向当前遍历节点；一个十二字节的哨兵。双向链表要首尾成环，哨兵得同时握住前驱、后继和自己的值，所以占三个字。本工程关了完整性检查，没多出字段，四加四加十二，正好二十。",
+          "emphasis": [
+            "12"
+          ]
+        },
+        {
+          "id": "ram-03",
+          "kind": "code",
+          "title": "乘 20 被拆成移位",
+          "codeLabel": "机身里的下标算术",
+          "code": "  30: lsls r3, r3, #2   /* i × 4 */\n  32: add  r3, r2       /* + i → × 5 */\n  34: lsls r3, r3, #2   /* × 4 → × 20 */\n  36: add  r3, r1       /* + 数组基址 */",
+          "narration": "这个乘二十在机身里不叫乘法：先左移两位得四倍，再加回自己得五倍，再左移两位得二十，最后加数组基址。两条移位加两条加法，编译器认为比一条乘法便宜。乘法指令不是没有，是没用上。",
+          "emphasis": [
+            "20"
+          ]
+        },
+        {
+          "id": "ram-04",
+          "kind": "card",
+          "title": "速查器本身只有 4 字节",
+          "sub": "位图还是层号，格子一样大",
+          "narration": "两条路共用变量，各占四字节。位图也好、层号也好，装它的格子一样大。差别不在占多少内存，在这四个字节怎么读：一张开关表，还是一个层号。宽度相同，语义不同。",
+          "emphasis": [
+            "4"
+          ]
+        },
+        {
+          "id": "cap-01",
+          "kind": "code",
+          "title": "33 级：一边照编，一边被拒",
+          "codeLabel": "通用路：33 级，660 字节",
+          "code": "NPRIO=33, SCHED_SEL=0\n→ tasks.o 编出来了\n→ pxReadyTasksLists = 660 字节",
+          "codeBLabel": "位图路：portmacro.h:162 当场拦下",
+          "codeB": "portmacro.h:162:10: error: #error\nconfigUSE_PORT_OPTIMISED_TASK_SELECTION\ncan only be set to 1 when configMAX_PRIORITIES\nis less than or equal to 32.",
+          "narration": "优先级总数填三十三，结果分成两半：通用路编译通过，只是就绪数组从一百涨到六百六十字节；位图路直接报错，连目标文件都不生成。报错原文的意思是：这个开关只许在优先级总数不超过三十二时打开。一边照常产出，一边当场停工。",
+          "emphasis": [
+            "#error"
+          ]
+        },
+        {
+          "id": "cap-02",
+          "kind": "card",
+          "tone": "warn",
+          "title": "拦人的是端口，不是内核",
+          "sub": "#error 在 portmacro.h:162；被拒那次没有目标文件",
+          "narration": "报错在哪个文件：不是 tasks.c，是 portmacro.h。说明天花板由移植层画，内核没画。为什么是三十二？那张图只有三十二个二进制位，一位一级，多一级就没地方放。被拒那次编译的目录里，确实找不到 tasks.o。",
+          "emphasis": [
+            "portmacro.h"
+          ]
+        },
+        {
+          "id": "cap-03",
+          "kind": "anim",
+          "anim": "rtt-bitmap-256",
+          "t0": 0,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "另一条路：两级位图 32×8",
+          "note": "RT-Thread 撑 256 级：一次不够就两次",
+          "narration": "同一道题，RT-Thread 要二百五十六级。一个三十二位装不下，就用两级位图：先找哪个字节非空，再找字节里最高的位，两次 clz 拼出答案。32×8 不是口令，是两级索引的尺寸。结论：三十二是这张位图的天花板，不是优先级的天花板；加一层索引，天花板就抬高。",
+          "emphasis": [
+            "256"
+          ]
+        },
+        {
+          "id": "tick-01",
+          "kind": "anim",
+          "anim": "systick-tick",
+          "t0": 0,
+          "t1": 12,
+          "smil": "loop",
+          "title": "tick：有人按节拍",
+          "note": "SysTick 倒数到零 → 重载 → 进中断",
+          "narration": "选优不是自己跑起来的，有人按节拍。SysTick 倒数到零、重载、进中断，中断里调 xTaskIncrementTick。这个函数每一拍都被叫一次，它做的每件事都值得数。它不选人，它只决定要不要选人。",
+          "emphasis": [
+            "SysTick"
+          ]
+        },
+        {
+          "id": "tick-02",
+          "kind": "code",
+          "title": "三件事，三段源码",
+          "codeLabel": "tasks.c：4699 / 4714 / 4789",
+          "code": "xTickCount = xConstTickCount;                  /* 4699 拍号加一 */\nif( xConstTickCount >= xNextTaskUnblockTime )  /* 4714 先剪枝 */\n    ...                                         /* 4737 再醒人 */\nxSwitchRequired = pdTRUE;                      /* 4789 请求切换 */",
+          "narration": "函数里三件事，源码顺序固定：先拍号加一，再拿新拍号跟最早唤醒时刻比一次，追上了才进醒人循环，最后按需要请求切换。三段依次落在四千六百九十九、四千七百一十四、四千七百八十九行；请求切换另有两处，在四千八百一十六和四千八百六十五行。",
+          "emphasis": [
+            "4714"
+          ]
+        },
+        {
+          "id": "tick-03",
+          "kind": "code",
+          "title": "剪枝在第 39 条",
+          "codeLabel": "xTaskIncrementTick 的 -O0 机身",
+          "code": "  4e: ldr   r2, [r7, #24]\n  50: cmp   r2, r3\n  52: bcc.w 1a6 <xTaskIncrementTick+0x1a6>\n\n整个函数 237 条指令；这次比较是第 39 条",
+          "narration": "第二件事在机身里长这样：先装载，再比较，然后一条 bcc 往前跳。整个函数二百三十七条指令，这次比较排第三十九。跳过的那一大段正是醒人循环；常态一拍只多这一下比较，追上了才进大段。",
+          "emphasis": [
+            "39"
+          ]
+        },
+        {
+          "id": "tick-04",
+          "kind": "card",
+          "title": "为什么只查队首",
+          "sub": "插入按 xItemValue 升序；队首没到点，后面全没到点",
+          "narration": "为什么敢只看队首？延时链表按 xItemValue 升序插入，队首就是最早该醒的那个。队首没到点，后面全没到点，循环可以直接停。结论：排序的代价付在插入时，换来每一拍只问一次。",
+          "emphasis": [
+            "xItemValue"
+          ]
+        },
+        {
+          "id": "tick-05",
+          "kind": "anim",
+          "anim": "list-insert",
+          "t0": 0,
+          "t1": 15,
+          "smil": "stretch",
+          "title": "两条链表，两种插法",
+          "note": "就绪链表插队尾；延时链表按值找位",
+          "narration": "内核里的链表只有两种插法。就绪链表不排序，新任务插队尾，轮转靠队尾进、循环出；延时链表按唤醒时刻找位置，队首永远最早。一个管轮转，一个管守时；插法不同，代价也不同。",
+          "emphasis": [
+            "队尾"
+          ]
+        },
+        {
+          "id": "tick-06",
+          "kind": "code",
+          "title": "35 条对 55 条，0 对 1 条回边",
+          "codeLabel": "vListInsertEnd：插队尾，O(1)",
+          "code": "vListInsertEnd   35 条指令\n后向跳转          0 条\n四根指针改完收工",
+          "codeBLabel": "vListInsert：按值找位，O(n)",
+          "codeB": "vListInsert      55 条指令\n后向跳转          1 条\n  38: bcs.n 28 <vListInsert+0x28>\n沿链表逐个比 xItemValue",
+          "narration": "两个插入函数的机身差得很远：往队尾塞的那个，三十五条指令，没有一条向后跳，四根指针改完就结束；按值定位的那个，五十五条，多出一条 bcs 回边，用来沿链继续找。前者 O 一，后者 O n。结论：延时表敢只看队首，是因为插入时已经按值排好；查询省下的，插入时付了。",
+          "emphasis": [
+            "bcs.n"
+          ]
+        },
+        {
+          "id": "vdelay-01",
+          "kind": "anim",
+          "anim": "vtaskdelay-lifecycle",
+          "t0": 0,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "vTaskDelay：挂表、让出、被叫醒",
+          "note": "任务不在就绪表里，tick 到点才搬回来",
+          "narration": "三段机制串起来，vTaskDelay 就清楚了：先把当前任务从就绪表摘下，按唤醒时刻插进延时表，再让出 CPU。这段时间里它不占就绪位，也不在运行，等于从调度视野里消失。等 tick 把节点搬到就绪队尾，它才重新有资格被选。所谓延时，不是原地打转，是离场再返场。",
+          "emphasis": [
+            "tick"
+          ]
+        },
+        {
+          "id": "vdelay-02",
+          "kind": "code",
+          "title": "函数体里没有一个等",
+          "codeLabel": "tasks.c:2435 的骨架",
+          "code": "void vTaskDelay( const TickType_t xTicksToDelay )\n{\n    ...\n    prvAddCurrentTaskToDelayedList( xTicksToDelay, pdFALSE ); /* 2457 */\n    taskYIELD_WITHIN_API();                                   /* 让出 */\n}",
+          "narration": "把函数摊开：算唤醒时刻，挂进延时链表，恢复调度，再让出。没有自旋，没有 while。一次延时就是两次链表动作加一次切换——任务真的从就绪表里消失了。醒来时它已经在队尾。",
+          "emphasis": [
+            "taskYIELD_WITHIN_API"
+          ]
+        },
+        {
+          "id": "vdelay-03",
+          "kind": "card",
+          "tone": "warn",
+          "title": "调度器暂停时，只记账",
+          "sub": "tasks.c:4907：xPendedTicks += 1",
+          "narration": "还有一个分支：调度器被挂起时，tick 照进来，但函数只把 xPendedTicks 加一返回，拍号不前进，也不选人。恢复调度时，欠下的拍补跑。结论：挂起不是停表，是记账，恢复时一起还。",
+          "emphasis": [
+            "xPendedTicks"
+          ]
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "一句话记住",
+          "title": "位图问一次，通用摸到底",
+          "bullets": [
+            "路径：不写 = 1，写 0 换机身",
+            "选优：clz、rsb #31、uxtb",
+            "上限：32 位；33 级被拦",
+            "tick：拍号、剪枝、醒人、切换"
+          ],
+          "narration": "一句话收：位图路问一次 clz，通用路一层层摸到非空；三十二是端口定的上限，tick 三件事按源码顺序排好。读 FreeRTOS，先问配置宏，再谈结论。配置不同，答案就不同。",
+          "emphasis": [
+            "clz"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "title"
+            },
+            {
+              "at": 2,
+              "reveal": "bullets:0-3"
+            }
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "不用板子，一条命令",
+          "sub": "sh code/rtos/03-scheduler/probe.sh",
+          "bullets": [
+            "交叉 15.2.1；内核 V11.1.0",
+            "宿主 gcc 跑模拟器与断言",
+            "板级读数：没有"
+          ],
+          "narration": "这一屏的每条指令、每个字节数、那句 #error，都来自本机一次 probe：交叉工具链十五点二点一，内核 V11.1.0，宿主编译器跑模拟器，不需要开发板。下一集看优先级反转，为什么高优先级也会被拖住。结论：先问配置宏，再看机身。",
+          "emphasis": [
+            "15.2.1"
+          ]
+        }
+      ]
+    },
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "fork-03",
+          "title": "选路"
+        },
+        {
+          "at": "body-03",
+          "title": "两副机身"
+        },
+        {
+          "at": "scan-02",
+          "title": "账本"
+        },
+        {
+          "at": "tick-04",
+          "title": "收束"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "fork-03",
+        "body-03",
+        "body-04",
+        "scan-02",
+        "scan-03",
+        "scan-04",
+        "ram-01",
+        "cap-01",
+        "tick-04",
+        "punch",
+        "cta"
+      ],
+      "set": {
+        "hook-01": {
+          "head": 0,
+          "tail": 0,
+          "title": "32 级里\n挑最高",
+          "sub": "两条路，一行配置",
+          "emphasis": [
+            "32"
+          ]
+        },
+        "fork-03": {
+          "head": 0,
+          "tail": 0,
+          "title": "不写，\n就是写 1",
+          "bullets": [
+            "两份 tasks.o 相同",
+            "选优都 140 字节",
+            "写 0 是 160"
+          ],
+          "emphasis": [
+            "140"
+          ]
+        },
+        "body-03": {
+          "head": 0,
+          "tail": 0,
+          "title": "一条 clz\n加一次减法",
+          "codeB": "",
+          "code": "24: clz  r3, r3\n28: strb r3, [r7, #3]\n2a: ldrb r3, [r7, #3]\n2c: rsb  r3, r3, #31",
+          "note": "通用路是往回跳的循环",
+          "emphasis": [
+            "clz"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-3"
+            }
+          ]
+        },
+        "body-04": {
+          "head": 0,
+          "tail": 0,
+          "title": "58 条零回边\n70 条一回边",
+          "bullets": [
+            "位图路 58 条，回边 0",
+            "通用路 70 条，回边 1"
+          ],
+          "emphasis": [
+            "58"
+          ]
+        },
+        "scan-02": {
+          "head": 0,
+          "tail": 0,
+          "title": "5 级：平均\n2.10 次",
+          "code": "事件 23 个，选择 10 次，分歧 0\n通用路判空 21 次，平均 2.10\n位图路 clz 10 次，平均 1.00\n最坏第 4 次选择，判空 5 次",
+          "emphasis": [
+            "2.10"
+          ]
+        },
+        "scan-03": {
+          "head": 0,
+          "tail": 0,
+          "title": "32 级：最坏\n31 次",
+          "code": "事件 23 个，选择 10 次，分歧 0\n通用路判空 51 次，平均 5.10\n位图路 clz 10 次，平均 1.00\n最坏第 9 次选择，判空 31 次",
+          "emphasis": [
+            "31"
+          ]
+        },
+        "scan-04": {
+          "head": 0,
+          "tail": 0,
+          "title": "平均骗人\n最坏不骗",
+          "bullets": [
+            "5 级最坏 5 次",
+            "32 级最坏 31 次"
+          ],
+          "emphasis": [
+            "31"
+          ]
+        },
+        "ram-01": {
+          "head": 0,
+          "tail": 0,
+          "title": "每级\n20 字节",
+          "code": "5 级：100 字节\n33 级：660 字节\n(660 − 100) ÷ (33 − 5) = 20",
+          "emphasis": [
+            "20"
+          ]
+        },
+        "cap-01": {
+          "head": 0,
+          "tail": 0,
+          "title": "33 级\n当场被拒",
+          "codeB": "",
+          "code": "portmacro.h:162:10: error: #error\nconfigUSE_PORT_OPTIMISED_TASK_SELECTION\ncan only be set to 1\nwhen configMAX_PRIORITIES <= 32",
+          "note": "通用路照编，660 字节",
+          "emphasis": [
+            "#error"
+          ]
+        },
+        "tick-04": {
+          "head": 0,
+          "tail": 0,
+          "title": "为什么\n只查队首",
+          "bullets": [
+            "插入按唤醒时刻排序",
+            "队首没到点，后面都没到"
+          ],
+          "emphasis": [
+            "队首"
+          ]
+        },
+        "punch": {
+          "head": 0,
+          "tail": 0,
+          "title": "clz 问一次",
+          "bullets": [
+            "不写 = 1；写 0 换机身",
+            "clz、rsb #31、uxtb",
+            "32 位上限；33 级被拦",
+            "tick：拍号、剪枝、醒人、切换"
+          ],
+          "emphasis": [
+            "clz"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "bullets:0-3"
+            }
+          ]
+        },
+        "cta": {
+          "head": 0,
+          "tail": 0,
+          "title": "一条命令\n全部取证",
+          "sub": "sh code/rtos/03-scheduler/probe.sh",
+          "bullets": [
+            "15.2.1 + V11.1.0",
+            "宿主 gcc 跑模拟",
+            "板级：没有"
+          ],
+          "emphasis": [
+            "15.2.1"
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "三十二级里挑最高，两条路：问一次，还是往下摸。",
+        "fork-03": "不写配置，等于写一：两份 tasks.o 逐字节相同。",
+        "body-03": "一条 clz 加三十一减，对上一条往回跳的 beq。",
+        "body-04": "五十八条零回边，对七十条一回边。",
+        "scan-02": "五级：通用路平均二点一零次，位图路每次一次。",
+        "scan-03": "三十二级：最坏一次摸了三十一下。",
+        "scan-04": "调度器赌的是最坏，不是平均。",
+        "ram-01": "每多一级，多一条二十字节的链表。",
+        "cap-01": "三十三级？位图路被 portmacro.h 的 #error 拦下。",
+        "tick-04": "延时表按唤醒时刻排序，每拍只问队首。",
+        "punch": "clz 问一次，tick 三件事，先问配置宏。",
+        "cta": "一条 probe 全部取证，不用开发板。"
+      }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "一条 clz 选人：FreeRTOS 调度器两条路的机身对账",
+        "不写配置就是写 1：CM4F 端口默认值的一次实测",
+        "32 位位图的天花板：33 级优先级被谁拦下"
+      ],
+      "intro": "这一集只认一份日志：上游 FreeRTOS-Kernel V11.1.0，交叉工具链 15.2.1，宿主 gcc 跑模拟器，没有开发板。调度器选最高优先级有两条路：位图路一条 clz 加一次 rsb #31，通用路从缓存往下摸。走哪条由 configUSE_PORT_OPTIMISED_TASK_SELECTION 决定，而这个宏有两个默认值——端口层写 1，通用层写 0，胜负由 include 顺序定。实测：配置里不写这一行与写 1 的两份 tasks.o 逐字节相同，选优函数都是 140 字节；写 0 是 160 字节。\n\n同一条事件表跑十次选择：5 级时通用路累计判空 21 次、平均 2.10、最坏 5 次；32 级时累计 51 次、平均 5.10、最坏 31 次；位图路始终 10 次 clz、平均 1.00。RAM 账：每级一条 20 字节的链表，pxReadyTasksLists 从 100 字节涨到 660 字节；33 级位图路被 portmacro.h:162 一句 #error 当场拒绝，通用路照编。\n\n复现：sh code/rtos/03-scheduler/probe.sh。完整图文在开源书《通往单片机之路》F3 章。",
+      "tags": [
+        "FreeRTOS",
+        "RTOS",
+        "单片机",
+        "嵌入式",
+        "调度器",
+        "源码阅读",
+        "Cortex-M4"
+      ],
+      "topics": [
+        "科技数码",
+        "知识",
+        "校园学习"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "一条 clz 选人，通用路摸 31 下",
+        "不写配置等于写 1：两份机身相同",
+        "33 级优先级，被一句 #error 拦下"
+      ],
+      "intro": "调度器每一拍都要挑最高的就绪链表。位图路一条 clz 加一次减法；通用路从缓存往下摸，5 级平均 2.10 次，32 级最坏 31 次。走哪条看配置宏：不写等于写 1，两份 tasks.o 逐字节相同。全部本机 probe，不用开发板。",
+      "tags": [
+        "FreeRTOS",
+        "单片机",
+        "RTOS",
+        "程序员",
+        "嵌入式"
+      ],
+      "topics": [
+        "知识",
+        "科技数码"
+      ],
+      "caption": "32 级里挑最高，两条路差在哪\n一条 clz，对一层层往下摸\n#FreeRTOS #调度器 #位图",
+      "declare": "内容为个人观点或见解",
+      "declareNote": "抖音发布页的「自主声明」是必填项：不选时点发布不报错、页面原地不动。选项取与知乎 mark 同一口径的那条——文案是人组织的，edge-tts 只是朗读工具。",
+      "pinned": "完整图文在「通往单片机之路」F3《调度器：位图、tick 与阻塞延时》。不写配置等于写 1，两份 tasks.o 逐字节相同；33 级会被 portmacro.h:162 的 #error 拦下。复现：sh code/rtos/03-scheduler/probe.sh",
+      "repro": "sh code/rtos/03-scheduler/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "一条 clz 选人：FreeRTOS 调度器两条路的机身对账",
+        "32 位位图的天花板：33 级优先级被谁拦下"
+      ],
+      "intro": "这份日志只有上游 FreeRTOS-Kernel V11.1.0 与交叉工具链 15.2.1，没有开发板。调度器选最高优先级有两条路：位图路一条 clz 加一次 rsb #31，通用路从缓存往下摸。走哪条由 configUSE_PORT_OPTIMISED_TASK_SELECTION 决定，端口层默认 1，通用层默认 0，include 顺序决定谁先生效。实测：不写与写 1 的两份 tasks.o 逐字节相同，选优函数都是 140 字节；写 0 是 160 字节。同一张事件表十次选择：5 级时通用路累计判空 21 次、平均 2.10、最坏 5 次；32 级时累计 51 次、平均 5.10、最坏 31 次；位图路始终 10 次 clz、平均 1.00。RAM 账：每级一条 20 字节的链表，pxReadyTasksLists 从 100 字节涨到 660 字节；33 级位图路被 portmacro.h:162 一句 #error 拒绝，通用路照编。复现：sh code/rtos/03-scheduler/probe.sh。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集选「个人观点仅供参考」与已发章节同口径。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "FreeRTOS",
+        "调度器",
+        "位图",
+        "嵌入式",
+        "C语言"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
+    },
+    "xiaohongshu": {
+      "title": "最坏 31 次，还是 1 次",
+      "body": "调度器每一拍都要挑最高的就绪链表。\n\n位图路一条 clz 加一次减法；通用路从缓存往下摸，5 级平均 2.10 次，32 级最坏 31 次。走哪条看配置宏：不写等于写 1，两份 tasks.o 逐字节相同。\n\n33 级会被 portmacro.h:162 的 #error 拦下；每多一级，多一条 20 字节的链表。全部本机 probe，不用开发板。\n\n复现：sh code/rtos/03-scheduler/probe.sh",
+      "topics": [
+        "FreeRTOS",
+        "单片机",
+        "RTOS"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "最坏 31 次与每次 1 次的对照、不写配置等于写 1、33 级被 #error 拦下，都在里面：sh code/rtos/03-scheduler/probe.sh",
+      "repro": "sh code/rtos/03-scheduler/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

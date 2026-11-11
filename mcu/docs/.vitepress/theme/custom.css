@@ -1,0 +1,1826 @@
+/* 通往单片机之路 自定义样式 */
+
+:root {
+  --mcu-brand: #3451b2;
+  --mcu-accent: #3eaf7c;
+  --mcu-warn: #d97706;
+  /* 首页 hero 标题品牌渐变 */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #3451b2 35%, #3eaf7c);
+}
+
+/* ===== 中文正文阅读节奏 ===== */
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.9;
+}
+.vp-doc li + li {
+  margin-top: 2px;
+}
+.vp-doc h2 {
+  margin-top: 2.2em;
+}
+.vp-doc h3 {
+  margin-top: 1.8em;
+}
+
+/* ===== 表格：全宽 + 品牌表头 + 斑马纹 + 悬停 ===== */
+.vp-doc table {
+  width: 100%;
+  margin: 16px 0;
+}
+.vp-doc table th {
+  background: var(--mcu-brand);
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vp-doc table tr:nth-child(even) td {
+  background: var(--vp-c-bg-soft);
+}
+.vp-doc table tr:hover td {
+  background: rgba(52, 81, 178, 0.07);
+}
+
+/* ===== 旁白 blockquote（【注】）：品牌色左侧卡 ===== */
+.vp-doc blockquote {
+  border-left: 4px solid var(--mcu-brand);
+  background: var(--vp-c-bg-soft);
+  padding: 10px 16px;
+  border-radius: 0 8px 8px 0;
+}
+.vp-doc blockquote > p {
+  color: var(--vp-c-text-1);
+}
+
+/* ===== 短自测 details/summary：折叠答题卡 ===== */
+.vp-doc details {
+  border: 1px solid var(--mcu-brand);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 14px 0;
+  background: var(--vp-c-bg-soft);
+}
+.vp-doc details summary {
+  cursor: pointer;
+  color: var(--mcu-brand);
+}
+.vp-doc details summary:hover {
+  text-decoration: underline;
+}
+.vp-doc details[open] {
+  background: var(--vp-c-bg);
+}
+.vp-doc details[open] summary {
+  margin-bottom: 8px;
+}
+
+/* ===== 动画视觉令牌（AnimFigure 内联 SVG 用）=====
+   图里仍写死浅色 fill，保证 /anim/x.svg 单独打开也能看；
+   内联进站点后由下面这些类覆盖 presentation attribute，深浅主题各一套。 */
+:root {
+  --mcu-anim-bg: #f6f8fa;
+  --mcu-anim-card: #ffffff;
+  --mcu-anim-panel: #f8fafc;
+  --mcu-anim-line: #cbd5e1;
+  --mcu-anim-ink: #24292f;
+  --mcu-anim-sub: #57606a;
+  --mcu-anim-muted: #94a3b8;
+  --mcu-anim-brand: #3451b2;
+  --mcu-anim-accent: #3eaf7c;
+  --mcu-anim-accent-deep: #1a7f56;
+  --mcu-anim-warn: #d97706;
+  --mcu-anim-warn-deep: #92400e;
+  --mcu-anim-gold: #e7c54b;
+  --mcu-anim-danger: #dc2626;
+  --mcu-anim-wash-blue: #dbe7ff;
+  --mcu-anim-wash-green: #d8f3e5;
+  --mcu-anim-wash-amber: #fdf0d5;
+  --mcu-anim-font: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+}
+html.dark {
+  --mcu-anim-bg: #1e222a;
+  --mcu-anim-card: #262c36;
+  --mcu-anim-panel: #222831;
+  --mcu-anim-line: #3b4453;
+  --mcu-anim-ink: #e6eaf2;
+  --mcu-anim-sub: #a9b3c1;
+  --mcu-anim-muted: #7b8696;
+  --mcu-anim-brand: #8ab4ff;
+  --mcu-anim-accent: #4fd196;
+  --mcu-anim-accent-deep: #7ee0b4;
+  --mcu-anim-warn: #f0b45c;
+  --mcu-anim-warn-deep: #f5c97a;
+  --mcu-anim-gold: #e6c95f;
+  --mcu-anim-danger: #ff8a80;
+  --mcu-anim-wash-blue: rgba(138, 180, 255, 0.14);
+  --mcu-anim-wash-green: rgba(79, 209, 150, 0.14);
+  --mcu-anim-wash-amber: rgba(240, 180, 92, 0.14);
+}
+
+.anim-figure {
+  display: block;
+  margin: 1.6em auto;
+  max-width: 760px;
+}
+.anim-figure__stage {
+  display: block;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--mcu-anim-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.anim-figure__stage:hover {
+  border-color: var(--mcu-brand);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(52, 81, 178, 0.14);
+}
+.anim-figure__stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--mcu-anim-font);
+}
+
+/* 图内元素：类覆盖 SVG 的 presentation attribute（属性优先级最低，无需 !important） */
+.anim-figure__stage svg .a-bg { fill: var(--mcu-anim-bg); }
+.anim-figure__stage svg .a-card { fill: var(--mcu-anim-card); }
+.anim-figure__stage svg .a-panel { fill: var(--mcu-anim-panel); }
+.anim-figure__stage svg .a-line { fill: var(--mcu-anim-line); }
+.anim-figure__stage svg .a-ink { fill: var(--mcu-anim-ink); }
+.anim-figure__stage svg .a-sub { fill: var(--mcu-anim-sub); }
+.anim-figure__stage svg .a-muted { fill: var(--mcu-anim-muted); }
+.anim-figure__stage svg .a-brand { fill: var(--mcu-anim-brand); }
+.anim-figure__stage svg .a-accent { fill: var(--mcu-anim-accent); }
+.anim-figure__stage svg .a-accent-deep { fill: var(--mcu-anim-accent-deep); }
+.anim-figure__stage svg .a-warn { fill: var(--mcu-anim-warn); }
+.anim-figure__stage svg .a-warn-deep { fill: var(--mcu-anim-warn-deep); }
+.anim-figure__stage svg .a-gold { fill: var(--mcu-anim-gold); }
+.anim-figure__stage svg .a-danger { fill: var(--mcu-anim-danger); }
+.anim-figure__stage svg .a-wash-blue { fill: var(--mcu-anim-wash-blue); }
+.anim-figure__stage svg .a-wash-green { fill: var(--mcu-anim-wash-green); }
+.anim-figure__stage svg .a-wash-amber { fill: var(--mcu-anim-wash-amber); }
+.anim-figure__stage svg .s-brand { stroke: var(--mcu-anim-brand); }
+.anim-figure__stage svg .s-accent { stroke: var(--mcu-anim-accent); }
+.anim-figure__stage svg .s-accent-deep { stroke: var(--mcu-anim-accent-deep); }
+.anim-figure__stage svg .s-warn { stroke: var(--mcu-anim-warn); }
+.anim-figure__stage svg .s-danger { stroke: var(--mcu-anim-danger); }
+.anim-figure__stage svg .s-card { stroke: var(--mcu-anim-card); }
+.anim-figure__stage svg .s-line { stroke: var(--mcu-anim-line); }
+.anim-figure__stage svg .s-muted { stroke: var(--mcu-anim-muted); }
+.anim-figure__stage svg .s-sub { stroke: var(--mcu-anim-sub); }
+.anim-figure__stage svg .a-mono {
+  font-family: var(--vp-font-family-mono);
+  letter-spacing: 0;
+}
+
+.anim-figure__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--vp-c-text-3);
+}
+.anim-figure__btn {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.74rem;
+  line-height: 1;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.anim-figure__btn:hover {
+  border-color: var(--mcu-brand);
+  color: var(--mcu-brand);
+}
+.anim-figure__progress {
+  flex: 1;
+  min-width: 80px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--vp-c-divider);
+  overflow: hidden;
+}
+/* 进度条只动 transform：动 width 每帧都要重排，演示中心 69 条一起动就是 69 次主线程布局。 */
+.anim-figure__progress i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--mcu-brand), var(--mcu-accent));
+  animation: mcu-anim-timeline linear infinite;
+}
+/* 视口外自动停（见 AnimFigure.vue）也要停进度条，回到视口时它与 SMIL 时间轴仍同步。 */
+.anim-figure.is-paused .anim-figure__progress i,
+.anim-figure.is-offscreen .anim-figure__progress i {
+  animation-play-state: paused;
+}
+@keyframes mcu-anim-timeline {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.anim-figure__caption {
+  flex-basis: 100%;
+  color: var(--vp-c-text-3);
+  font-size: 0.8rem;
+}
+.anim-figure--missing {
+  border: 1px dashed var(--mcu-warn);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  color: var(--vp-c-text-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-figure__progress i {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ===== 动画图：居中 + 白底卡片，适配深浅主题 ===== */
+.vp-doc img[src*="/anim/"] {
+  display: block;
+  margin: 1.2em auto;
+  max-width: 720px;
+  width: 100%;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--mcu-anim-bg);
+  padding: 8px;
+}
+
+/* ===== 记忆锚点框：本章最值得记住的一件事 ===== */
+.vp-doc .memory-anchor {
+  border-left: 4px solid var(--mcu-accent);
+  background: var(--vp-c-bg-soft);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+
+/* ===== "你做到了" 成就清单 ===== */
+.vp-doc .achievement {
+  border: 1px dashed var(--mcu-accent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  background: var(--vp-c-bg-soft);
+}
+
+/* ===== 实验卡片 ===== */
+.vp-doc .lab-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+}
+
+/* ===== 寄存器位域表格紧凑化 ===== */
+.vp-doc table.regbits th {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.85em;
+}
+
+/* ===== 首页"从这三章开始"引导带 ===== */
+.mcu-start {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+}
+.mcu-start h2 {
+  border-top: none;
+  padding-top: 0;
+  text-align: center;
+}
+
+/* ===== 首页学习地图（LearningMap.vue） ===== */
+.mcu-map {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 8px;
+}
+
+/* 入场动效：滚到可见区后，统计块淡入、轨道逐条滑入、章节 chip 逐颗浮现。
+   全部用 transform/opacity（纯合成），并受 is-reduced 关闭。 */
+.mcu-map__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 8px 0 28px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.mcu-map.is-visible .mcu-map__stats {
+  opacity: 1;
+  transform: none;
+}
+
+.mcu-track {
+  margin: 18px 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.45s ease var(--d, 0s), transform 0.45s ease var(--d, 0s);
+}
+.mcu-map.is-visible .mcu-track {
+  opacity: 1;
+  transform: none;
+}
+
+.vp-doc .mcu-chips li {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease var(--d, 0s), transform 0.4s ease var(--d, 0s);
+}
+.mcu-map.is-visible .mcu-chips li {
+  opacity: 1;
+  transform: none;
+}
+
+.mcu-track__bar i {
+  display: block;
+  height: 100%;
+  background: var(--mcu-accent);
+  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 尊重系统"减少动效"：不动、不渐入、进度条直接落位 */
+.mcu-map.is-reduced .mcu-map__stats,
+.mcu-map.is-reduced .mcu-track,
+.mcu-map.is-reduced .mcu-chips li {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+.mcu-map.is-reduced .mcu-track__bar i {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mcu-map__stats,
+  .mcu-track,
+  .vp-doc .mcu-chips li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+.mcu-stat {
+  min-width: 116px;
+  padding: 10px 14px;
+  text-align: center;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--vp-c-bg-soft);
+}
+.mcu-stat b {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--mcu-brand);
+}
+.mcu-stat b i {
+  font-style: normal;
+  font-size: 0.95rem;
+  color: var(--vp-c-text-3);
+}
+.mcu-stat span {
+  font-size: 0.78rem;
+  color: var(--vp-c-text-2);
+}
+
+.mcu-track {
+  margin: 18px 0;
+}
+.mcu-track__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mcu-track__name {
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--vp-c-text-1);
+}
+.mcu-track__name:hover {
+  color: var(--mcu-brand);
+  text-decoration: none;
+}
+.mcu-track__count {
+  font-size: 0.78rem;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
+}
+.mcu-track__bar {
+  flex: 1;
+  min-width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--vp-c-divider);
+  overflow: hidden;
+}
+.mcu-track__bar i {
+  display: block;
+  height: 100%;
+  background: var(--mcu-accent);
+}
+
+/* 首页地图在 .vp-doc 内，VitePress 的 `.vp-doc ul` 与 `.vp-doc li+li` 特异性更高，
+   这里必须带上 .vp-doc 前缀才能压掉列表圆点和行距。 */
+.vp-doc .mcu-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.vp-doc .mcu-chips li {
+  margin: 0;
+}
+.mcu-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+.mcu-chip em {
+  font-style: normal;
+  font-size: 0.7rem;
+  opacity: 0.75;
+}
+.mcu-chip.is-done {
+  color: var(--mcu-brand);
+  background: rgba(52, 81, 178, 0.09);
+}
+.mcu-chip.is-done:hover {
+  background: rgba(52, 81, 178, 0.16);
+  text-decoration: none;
+}
+.mcu-chip.is-building {
+  color: var(--vp-c-text-3);
+  border-color: var(--vp-c-divider);
+  border-style: dashed;
+}
+.mcu-chip.is-building:hover {
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+}
+
+/* 实验总览验证进度提示 */
+.mcu-verify-summary {
+  margin: 12px 0 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+  font-size: 0.92rem;
+}
+.mcu-verify-summary a {
+  color: var(--mcu-brand);
+  font-weight: 500;
+  margin-left: 8px;
+}
+.mcu-verify-summary a:hover {
+  text-decoration: underline;
+}
+
+/* ===== 无障碍：skip-link + 键盘焦点 ===== */
+/* 全站 AI 生成声明（AiNotice.vue，挂在 #doc-after）：低调但对比度达标，不抢正文 */
+.mcu-ai-notice {
+  margin-top: 32px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.mcu-ai-notice p { margin: 0; }
+.mcu-ai-notice a {
+  color: var(--vp-c-brand-1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mcu-skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 9999;
+  padding: 10px 18px;
+  border-radius: 6px;
+  background: var(--mcu-brand);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.mcu-skip-link:focus-visible {
+  top: 12px;
+  outline: 3px solid var(--mcu-accent);
+  outline-offset: 3px;
+}
+
+/* 强化键盘焦点环：站点外壳与交互元素统一 */
+.vp-doc a:focus-visible,
+.vp-doc button:focus-visible,
+.vp-doc input:focus-visible,
+.vp-doc select:focus-visible,
+.VPNavBarSearch button:focus-visible,
+.VPNavScreenMenu button:focus-visible,
+.VPSidebarItem .item:focus-visible,
+.mcu-skip-link:focus-visible {
+  outline: 3px solid var(--mcu-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 深色模式下焦点环对比度 */
+.dark .mcu-skip-link:focus-visible,
+.dark .vp-doc a:focus-visible,
+.dark .vp-doc button:focus-visible,
+.dark .VPNavBarSearch button:focus-visible,
+.dark .VPSidebarItem .item:focus-visible {
+  outline-color: #4ade80;
+}
+
+/* ===== 动画放大查看（AnimFigure lightbox） ===== */
+.anim-figure__zoom {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.74rem;
+  line-height: 1;
+  padding: 4px 10px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.anim-figure__zoom:hover {
+  border-color: var(--mcu-brand);
+  color: var(--mcu-brand);
+}
+.anim-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 20, 35, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vh 3vw;
+}
+.anim-lightbox__card {
+  position: relative;
+  background: var(--mcu-anim-bg);
+  border-radius: 14px;
+  padding: 16px 18px 12px;
+  width: min(94vw, 900px);
+  max-height: 92vh;
+  overflow: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+.anim-lightbox__stage {
+  border-color: transparent;
+  box-shadow: none;
+  border-radius: 8px;
+}
+/* 手机上最需要放大：行内 SVG 已被正文容器压到 ~284px，
+   而 card 若是 94vw 再减掉 36px 内距、外加滚动条，实际只剩 ~273px——
+   点"放大"反而更小。窄屏改成接近满宽，保证严格大于行内。 */
+@media (max-width: 768px) {
+  .anim-lightbox {
+    padding: 4px;
+  }
+  .anim-lightbox__card {
+    width: 100%;
+    padding: 6px;
+  }
+  /* 光"比行内宽"不够：720 单位画布在 375px 屏上只放到 0.45×，
+     11px 的规格下限字号实际只剩 4.9px，照样读不了。
+     这里给画布一个宽度下限并允许横向平移，字号回到 ~10px 起。 */
+  .anim-lightbox__stage {
+    overflow-x: auto;
+  }
+  .anim-lightbox__stage svg {
+    min-width: 680px;
+  }
+}
+.anim-lightbox__close {
+  position: sticky;
+  float: right;
+  top: 0;
+  z-index: 1;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.anim-lightbox__close:hover {
+  border-color: var(--mcu-warn);
+  color: var(--mcu-warn);
+}
+
+/* ===== 视觉增强：代码块美化 ===== */
+.vp-doc div[class*='language-'] {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin: 1.2em 0;
+}
+.vp-doc div[class*='language-']::before {
+  content: attr(class);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.vp-doc pre {
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.vp-doc pre code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
+}
+
+/* ===== 视觉增强：自定义 Callout 盒子 ===== */
+.mcu-callout {
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 1.4em 0;
+  position: relative;
+  overflow: hidden;
+}
+.mcu-callout::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+.mcu-callout-title {
+  font-weight: 600;
+  font-size: 1.05em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mcu-callout-content {
+  font-size: 0.95em;
+  line-height: 1.7;
+}
+.mcu-callout-content p {
+  margin: 0.5em 0;
+}
+.mcu-callout-content p:first-child {
+  margin-top: 0;
+}
+.mcu-callout-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tip 盒子 */
+.mcu-callout.tip {
+  background: linear-gradient(135deg, rgba(62, 175, 124, 0.08), rgba(62, 175, 124, 0.04));
+  border: 1px solid rgba(62, 175, 124, 0.2);
+}
+.mcu-callout.tip::before {
+  background: var(--mcu-accent);
+}
+.mcu-callout.tip .mcu-callout-title {
+  color: var(--mcu-accent);
+}
+
+/* Warning 盒子 */
+.mcu-callout.warning {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.08), rgba(217, 119, 6, 0.04));
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+.mcu-callout.warning::before {
+  background: var(--mcu-warn);
+}
+.mcu-callout.warning .mcu-callout-title {
+  color: var(--mcu-warn);
+}
+
+/* Info 盒子 */
+.mcu-callout.info {
+  background: linear-gradient(135deg, rgba(52, 81, 178, 0.08), rgba(52, 81, 178, 0.04));
+  border: 1px solid rgba(52, 81, 178, 0.2);
+}
+.mcu-callout.info::before {
+  background: var(--mcu-brand);
+}
+.mcu-callout.info .mcu-callout-title {
+  color: var(--mcu-brand);
+}
+
+/* Danger 盒子 */
+.mcu-callout.danger {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.08), rgba(220, 38, 38, 0.04));
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+.mcu-callout.danger::before {
+  background: #dc2626;
+}
+.mcu-callout.danger .mcu-callout-title {
+  color: #dc2626;
+}
+
+/* ===== 视觉增强：章节状态徽章 ===== */
+.mcu-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.mcu-status-badge.done {
+  background: rgba(62, 175, 124, 0.15);
+  color: var(--mcu-accent);
+}
+.mcu-status-badge.wip {
+  background: rgba(217, 119, 6, 0.15);
+  color: var(--mcu-warn);
+}
+.mcu-status-badge.planned {
+  background: rgba(102, 102, 102, 0.15);
+  color: #666;
+}
+
+/* ===== 视觉增强：目录美化 ===== */
+.vp-doc .table-of-contents {
+  background: var(--vp-c-bg-soft);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 1.5em 0;
+  border: 1px solid var(--vp-c-divider);
+}
+.vp-doc .table-of-contents-title {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--mcu-brand);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--mcu-brand);
+}
+.vp-doc .table-of-contents ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.vp-doc .table-of-contents li {
+  margin: 6px 0;
+  line-height: 1.6;
+}
+.vp-doc .table-of-contents a {
+  color: var(--vp-c-text-2);
+  text-decoration: none;
+  transition: color 0.2s, padding-left 0.2s;
+  display: block;
+  padding: 2px 0;
+}
+.vp-doc .table-of-contents a:hover {
+  color: var(--mcu-brand);
+  padding-left: 6px;
+}
+
+/* ===== 视觉增强：链接下划线动效 ===== */
+.vp-doc a {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.mcu-track__name)::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--mcu-brand);
+  transition: width 0.3s ease;
+}
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.mcu-track__name):hover::after {
+  width: 100%;
+}
+
+/* ===== 视觉增强：图片阴影 ===== */
+.vp-doc img:not([src*="/anim/"]) {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.vp-doc img:not([src*="/anim/"]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== 视觉增强：引用块渐变左边框 ===== */
+.vp-doc blockquote {
+  position: relative;
+  background: linear-gradient(135deg, var(--vp-c-bg-soft), var(--vp-c-bg));
+}
+.vp-doc blockquote::after {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 3em;
+  color: var(--mcu-brand);
+  opacity: 0.15;
+  font-family: Georgia, serif;
+}
+
+/* ===== 移动端优化 ===== */
+@media (max-width: 768px) {
+  .vp-doc h1 {
+    font-size: 1.8em;
+  }
+  .vp-doc h2 {
+    font-size: 1.5em;
+  }
+  .vp-doc h3 {
+    font-size: 1.25em;
+  }
+  .vp-doc table {
+    font-size: 0.9em;
+  }
+  .vp-doc pre {
+    font-size: 0.85em;
+  }
+  .mcu-callout {
+    padding: 12px 16px;
+  }
+}
+
+/* ================================================================
+   视觉享受升级 —— 让学习成为一种愉悦
+   ================================================================ */
+
+/* ===== 标题层级：渐变 + 左侧色带 ===== */
+.vp-doc h1 {
+  font-size: 2.1em;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--mcu-brand) 30%, var(--mcu-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-bottom: 0.3em;
+  border-bottom: 3px solid var(--mcu-brand);
+  margin-bottom: 0.6em;
+}
+.vp-doc h2 {
+  position: relative;
+  padding-left: 16px;
+  border-left: 4px solid var(--mcu-accent);
+  color: var(--mcu-brand);
+}
+.vp-doc h2::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 16px;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mcu-accent), transparent);
+}
+.vp-doc h3 {
+  color: var(--vp-c-text-1);
+  position: relative;
+}
+.vp-doc h3::before {
+  content: '▸';
+  color: var(--mcu-accent);
+  margin-right: 6px;
+  font-size: 0.9em;
+}
+
+/* ===== 代码块：圆角阴影 + 语言标签 ===== */
+.vp-doc div[class*='language-'] {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.vp-doc div[class*='language-']:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+html.dark .vp-doc div[class*='language-'] {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+html.dark .vp-doc div[class*='language-']:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+.vp-doc pre {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+}
+.vp-doc pre code {
+  font-variant-ligatures: contextual;
+}
+
+/* ===== 链接：渐变下划线生长 ===== */
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.anim-figure__btn) {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.anim-figure__btn)::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mcu-brand), var(--mcu-accent));
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.anim-figure__btn):hover::after {
+  width: 100%;
+}
+.vp-doc a:not(.header-anchor):not(.mcu-chip):not(.anim-figure__btn):hover {
+  color: var(--mcu-brand);
+}
+
+/* ===== 按钮微交互：按下回弹 ===== */
+.anim-figure__btn,
+.anim-figure__zoom,
+.vp-doc button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.anim-figure__btn:hover,
+.anim-figure__zoom:hover {
+  background: var(--mcu-brand);
+  color: white;
+  border-color: var(--mcu-brand);
+  transform: scale(1.05);
+}
+.anim-figure__btn:active,
+.anim-figure__zoom:active,
+.vp-doc button:active {
+  transform: scale(0.96);
+}
+
+/* ===== 折叠卡片：展开阴影 ===== */
+.vp-doc details {
+  transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.vp-doc details[open] {
+  box-shadow: 0 2px 12px rgba(52, 81, 178, 0.08);
+  border-color: var(--mcu-accent);
+}
+.vp-doc details summary {
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.vp-doc details summary:hover {
+  padding-left: 4px;
+  color: var(--mcu-accent);
+}
+
+/* ===== 图片：悬浮抬升 ===== */
+.vp-doc img:not(.anim-figure__stage svg) {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.vp-doc img:not(.anim-figure__stage svg):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== 动画容器增强 ===== */
+.anim-figure__stage {
+  transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.35s ease,
+              transform 0.35s ease;
+}
+.anim-figure__stage:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(52, 81, 178, 0.15);
+  border-color: var(--mcu-brand);
+}
+.anim-figure__progress i {
+  box-shadow: 0 0 8px rgba(52, 81, 178, 0.4);
+}
+
+/* ===== 表格增强：表头渐变 ===== */
+.vp-doc table th {
+  background: linear-gradient(135deg, var(--mcu-brand), #4a6ad4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+html.dark .vp-doc table th {
+  background: linear-gradient(135deg, #2a3a6e, #1e2d52);
+  box-shadow: inset 0 -2px 0 var(--mcu-accent);
+}
+.vp-doc table tr:hover td {
+  background: rgba(52, 81, 178, 0.06);
+  transition: background 0.2s ease;
+}
+html.dark .vp-doc table tr:hover td {
+  background: rgba(138, 180, 255, 0.06);
+}
+
+/* ===== 首页特性卡片 ===== */
+.VPFeature {
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--vp-c-divider);
+}
+.VPFeature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(52, 81, 178, 0.1);
+  border-color: var(--mcu-brand);
+}
+
+/* ===== 侧边栏：活跃项高亮 ===== */
+.VPSidebarItem.is-active > .item .link {
+  background: linear-gradient(90deg, rgba(52, 81, 178, 0.08), transparent);
+  border-left: 3px solid var(--mcu-brand);
+  padding-left: 13px;
+  font-weight: 600;
+}
+.VPSidebarItem > .item .link {
+  transition: all 0.2s ease;
+  border-radius: 0 6px 6px 0;
+}
+.VPSidebarItem > .item .link:hover {
+  background: var(--vp-c-bg-soft);
+}
+
+/* ===== 暗色模式统一 ===== */
+html.dark .vp-doc blockquote {
+  background: rgba(30, 34, 42, 0.6);
+  border-left-color: var(--mcu-brand);
+}
+html.dark .vp-doc details {
+  background: rgba(30, 34, 42, 0.4);
+  border-color: rgba(138, 180, 255, 0.2);
+}
+html.dark .vp-doc details[open] {
+  background: rgba(38, 44, 54, 0.6);
+  border-color: rgba(79, 209, 150, 0.3);
+}
+html.dark .vp-doc .memory-anchor,
+html.dark .vp-doc .achievement,
+html.dark .vp-doc .lab-card {
+  background: rgba(30, 34, 42, 0.5);
+}
+
+/* ===== 移动端增强 ===== */
+@media (max-width: 768px) {
+  .vp-doc {
+    font-size: 15.5px;
+    padding: 0 18px;
+  }
+  .vp-doc h1 {
+    font-size: 1.7em;
+  }
+  .vp-doc h2 {
+    font-size: 1.4em;
+    padding-left: 12px;
+  }
+  .vp-doc h2::after {
+    width: 40px;
+  }
+  .vp-doc h3::before {
+    display: none;
+  }
+  /* 表格横向滚动 */
+  .vp-doc table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  /* 触摸友好按钮 */
+  .anim-figure__btn,
+  .anim-figure__zoom {
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    min-height: 36px;
+  }
+  /* 代码块紧凑 */
+  .vp-doc pre {
+    font-size: 0.84em;
+    padding: 12px;
+  }
+  /* 动画容器 */
+  .anim-figure__stage {
+    border-radius: 8px;
+  }
+  .anim-figure__stage:hover {
+    transform: none;
+  }
+}
+
+/* ===== 小屏手机 ===== */
+@media (max-width: 480px) {
+  .vp-doc {
+    font-size: 15px;
+    padding: 0 16px;
+  }
+  .vp-doc h1 {
+    font-size: 1.55em;
+  }
+  .VPFeature {
+    padding: 16px;
+  }
+}
+
+/* ===== 尊重"减少动效"偏好 ===== */
+@media (prefers-reduced-motion: reduce) {
+  .vp-doc a:not(.header-anchor)::after,
+  .anim-figure__btn,
+  .anim-figure__zoom,
+  .anim-figure__stage,
+  .vp-doc div[class*='language-'],
+  .vp-doc details,
+  .vp-doc img {
+    transition: none;
+  }
+  .vp-doc div[class*='language-']:hover,
+  .anim-figure__stage:hover,
+  .vp-doc img:hover {
+    transform: none;
+  }
+}
+
+/* ===== Glass morphism navigation ===== */
+.VPNav {
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+
+:root.dark .VPNav {
+  background: rgba(27, 27, 31, 0.72) !important;
+}
+
+.VPLocalNav,
+.VPSidebar {
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Custom scrollbar ===== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(52, 81, 178, 0.2);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 81, 178, 0.4);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:root.dark ::-webkit-scrollbar-thumb {
+  background: rgba(52, 81, 178, 0.3);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+:root.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 81, 178, 0.5);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ===== Smooth page transitions ===== */
+.VPContent {
+  animation: mcu-fade-in 0.3s ease-out;
+}
+
+@keyframes mcu-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Enhanced callouts with icons ===== */
+.vp-doc .custom-block.tip {
+  position: relative;
+  border-left: 4px solid var(--vp-c-green-1);
+}
+
+.vp-doc .custom-block.tip::before {
+  content: '💡';
+  position: absolute;
+  top: 12px;
+  left: -14px;
+  width: 24px;
+  height: 24px;
+  background: var(--vp-c-green-1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(62, 175, 124, 0.3);
+}
+
+.vp-doc .custom-block.warning {
+  position: relative;
+  border-left: 4px solid var(--vp-c-yellow-1);
+}
+
+.vp-doc .custom-block.warning::before {
+  content: '⚠️';
+  position: absolute;
+  top: 12px;
+  left: -14px;
+  width: 24px;
+  height: 24px;
+  background: var(--vp-c-yellow-1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+
+.vp-doc .custom-block.danger {
+  position: relative;
+  border-left: 4px solid var(--vp-c-red-1);
+}
+
+.vp-doc .custom-block.danger::before {
+  content: '🔥';
+  position: absolute;
+  top: 12px;
+  left: -14px;
+  width: 24px;
+  height: 24px;
+  background: var(--vp-c-red-1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* ===== Enhanced code blocks with line glow ===== */
+.vp-doc div[class*='language-']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--mcu-brand), var(--mcu-accent), var(--mcu-brand));
+  background-size: 200% 100%;
+  animation: mcu-code-glow 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.vp-doc div[class*='language-']:hover::before {
+  opacity: 1;
+}
+
+@keyframes mcu-code-glow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ===== Floating TOC indicator ===== */
+.VPDocAsideOutline .outline-marker {
+  background: var(--mcu-brand);
+  box-shadow: 0 0 8px rgba(52, 81, 178, 0.4);
+}
+
+/* ===== Achievement badges animation ===== */
+.achievement {
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(52, 81, 178, 0.1) 50%,
+    transparent 70%
+  );
+  animation: mcu-shine 3s ease-in-out infinite;
+}
+
+@keyframes mcu-shine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* ===== Enhanced search with glow ===== */
+.VPLocalNavSearch button,
+.VPNavBarSearch button {
+  transition: all 0.2s;
+}
+
+.VPLocalNavSearch button:hover,
+.VPNavBarSearch button:hover {
+  box-shadow: 0 0 0 2px rgba(52, 81, 178, 0.2);
+}
+
+/* ===== Card hover lift for VPFeature ===== */
+.VPFeature {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.VPFeature:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+:root.dark .VPFeature:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== Smooth anchor scrolling ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== Enhanced selection color ===== */
+::selection {
+  background: rgba(52, 81, 178, 0.2);
+  color: var(--vp-c-text-1);
+}
+
+:root.dark ::selection {
+  background: rgba(52, 81, 178, 0.3);
+}
+
+/* ===== Loading skeleton animation ===== */
+@keyframes mcu-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.mcu-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--vp-c-bg-soft) 25%,
+    var(--vp-c-bg-mute) 50%,
+    var(--vp-c-bg-soft) 75%
+  );
+  background-size: 400% 100%;
+  animation: mcu-skeleton 1.5s ease-in-out infinite;
+}
+
+/* ===== Enhanced focus states ===== */
+*:focus-visible {
+  outline: 2px solid var(--mcu-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===== Print styles ===== */
+@media print {
+  .VPNav,
+  .VPLocalNav,
+  .VPDocAside,
+  .mcu-hero,
+  .mcu-features,
+  .mcu-scroll-progress,
+  .mcu-back-top {
+    display: none !important;
+  }
+
+  .vp-doc {
+    font-size: 12pt;
+  }
+}
+
+/* ===== Scroll progress bar ===== */
+.mcu-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--mcu-brand), var(--mcu-accent), var(--mcu-brand));
+  background-size: 200% 100%;
+  animation: mcu-progress-shimmer 2s linear infinite;
+  z-index: 9999;
+  transition: width 0.1s ease-out;
+  box-shadow: 0 0 8px rgba(52, 81, 178, 0.4);
+}
+
+@keyframes mcu-progress-shimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ===== Back to top ===== */
+.mcu-back-top {
+  position: fixed;
+  right: 24px;
+  bottom: 88px;
+  z-index: 9998;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--mcu-brand);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.mcu-back-top:hover {
+  transform: translateY(-3px);
+  background: var(--mcu-brand);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(52, 81, 178, 0.35);
+}
+
+.mcu-fade-enter-active,
+.mcu-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.mcu-fade-enter-from,
+.mcu-fade-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcu-back-top,
+  .mcu-back-top:hover {
+    transition: none;
+    transform: none;
+  }
+  .mcu-fade-enter-active,
+  .mcu-fade-leave-active {
+    transition: none;
+  }
+}
+
+/* ===== Section reveal animations ===== */
+.mcu-start,
+.mcu-map {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mcu-start.is-visible,
+.mcu-map.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== Enhanced hero section gradient mesh ===== */
+.mcu-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(52, 81, 178, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(62, 175, 124, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(52, 81, 178, 0.04) 0%, transparent 50%);
+  animation: mcu-mesh-drift 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+:root.dark .mcu-hero::before {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(52, 81, 178, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(62, 175, 124, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(52, 81, 178, 0.08) 0%, transparent 50%);
+}
+
+@keyframes mcu-mesh-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(2%, -1%) rotate(1deg); }
+  66% { transform: translate(-1%, 2%) rotate(-1deg); }
+}
+
+/* ===== Feature card entrance is handled by McuFeatures.vue IntersectionObserver ===== */
+
+/* ===== Stat number count-up glow ===== */
+.mcu-hero-stats .mcu-stat:nth-child(1) .mcu-stat-num {
+  animation: mcu-stat-glow 3s ease-in-out infinite;
+}
+.mcu-hero-stats .mcu-stat:nth-child(2) .mcu-stat-num {
+  animation: mcu-stat-glow 3s ease-in-out infinite 0.5s;
+}
+.mcu-hero-stats .mcu-stat:nth-child(3) .mcu-stat-num {
+  animation: mcu-stat-glow 3s ease-in-out infinite 1s;
+}
+
+@keyframes mcu-stat-glow {
+  0%, 100% { text-shadow: 0 0 10px rgba(52, 81, 178, 0.2); }
+  50% { text-shadow: 0 0 20px rgba(52, 81, 178, 0.5), 0 0 40px rgba(52, 81, 178, 0.2); }
+}
+
+/* ===== Badge shimmer ===== */
+.mcu-hero-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.mcu-hero-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: mcu-badge-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes mcu-badge-shimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+/* ===== Learning map section polish ===== */
+.mcu-map {
+  position: relative;
+}
+
+.mcu-map::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vp-c-divider), transparent);
+}
+
+/* ===== Table row enter animation ===== */
+.vp-doc table tr {
+  transition: background 0.2s ease;
+}
+
+/* ===== Custom block enhanced shadows ===== */
+.vp-doc .custom-block {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.vp-doc .custom-block:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.dark .vp-doc .custom-block:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Nav link hover glow ===== */
+.VPNavBarMenuLink a:hover,
+.VPNavBarMenuGroup button:hover {
+  text-shadow: 0 0 10px rgba(52, 81, 178, 0.3);
+}
+
+/* ===== Sidebar item active glow ===== */
+.VPSidebarItem.is-active > .item .link {
+  box-shadow: inset 0 0 20px rgba(52, 81, 178, 0.04);
+}
+
+/* ===== Footer polish ===== */
+.VPFooter {
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Responsive hero adjustments ===== */
+@media (max-width: 960px) {
+  .mcu-hero {
+    min-height: 70vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .mcu-hero::before {
+    display: none;
+  }
+}
+
+/* ===== Respect reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .mcu-scroll-progress,
+  .mcu-hero::before,
+  .mcu-hero-badge::after {
+    animation: none;
+  }
+  .mcu-start,
+  .mcu-map {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .mcu-features .mcu-feature-card {
+    animation: none;
+    opacity: 1;
+  }
+  .mcu-hero-stats .mcu-stat-num {
+    animation: none;
+    text-shadow: none;
+  }
+}
+
+/* ===== Home page section spacing ===== */
+.mcu-start h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.mcu-start h2::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--mcu-brand), var(--mcu-accent));
+}
+
+/* ===== VitePress feature cards: enhanced icon ===== */
+.VPFeature .icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.VPFeature:hover .icon {
+  transform: scale(1.1);
+}
+
+/* ===== Nav brand badge glow ===== */
+.VPNavBar .VPNavBarTitle .title {
+  transition: text-shadow 0.3s;
+}
+
+.VPNavBar .VPNavBarTitle:hover .title {
+  text-shadow: 0 0 12px rgba(52, 81, 178, 0.2);
+}
+
+/* ===== Doc footer enhanced ===== */
+.vp-doc .prev-next {
+  border-top: 1px solid var(--vp-c-divider);
+  margin-top: 3em;
+  padding-top: 1.5em;
+}
+
+.vp-doc .pager-link {
+  transition: all 0.2s;
+  border-radius: 10px;
+}
+
+.vp-doc .pager-link:hover {
+  border-color: var(--mcu-brand);
+  box-shadow: 0 2px 12px rgba(52, 81, 178, 0.08);
+}
+
+/* ===== Edit link subtle animation ===== */
+.vp-doc .edit-link {
+  transition: color 0.2s, transform 0.2s;
+}
+
+.vp-doc .edit-link:hover {
+  color: var(--mcu-brand);
+}
+
+.vp-doc .edit-link:hover svg {
+  transform: translateX(2px);
+}
+
+.vp-doc .edit-link svg {
+  transition: transform 0.2s;
+}
+
+/* ===== Outline/TOC active item pulse ===== */
+.VPDocAsideOutline .outline-marker {
+  transition: height 0.2s ease, background 0.2s;
+  box-shadow: 0 0 6px rgba(52, 81, 178, 0.3);
+}
+
+/* ===== Search dialog backdrop blur ===== */
+.VPDoc .VPNav .VPNavBarSearch {
+  transition: opacity 0.2s;
+}
+
+/* ===== Last updated text polish ===== */
+.vp-doc .last-updated {
+  font-size: 0.82em;
+  color: var(--vp-c-text-3);
+}
+
+.vp-doc .last-updated .prefix {
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+
+/* ===== 章首题花（与印前同源资产，config.mts 构建期内联进每章 H1 之后）=====
+   墨色走 --cover-ink：SVG 里写的是 var(--cover-ink, #123b33)，
+   浅色沿用印前深墨，深色换亮墨——SVG 内联在 DOM 里，变量穿透得了。 */
+.chapter-art {
+  --cover-ink: #123b33;
+  max-width: 460px;
+  margin: -0.25rem auto 0.6rem;
+}
+.chapter-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+html.dark .chapter-art {
+  --cover-ink: #a3c4b9;
+}
+
+/* ===== 章节手绘机制图（docs/public/figures/*.svg，config.mts 构建期内联）=====
+   与题花同一墨色令牌：浅色深墨、深色亮墨；SVG 在 DOM 里，变量穿透得了。
+   画布 320×88，正文栏宽下按容器等比缩放，不设固定像素宽。 */
+.hand-figure {
+  --cover-ink: #123b33;
+  margin: 1.1rem auto 0.9rem;
+  max-width: 720px;
+}
+.hand-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.hand-figure figcaption {
+  margin-top: 0.45rem;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+}
+html.dark .hand-figure {
+  --cover-ink: #a3c4b9;
+}

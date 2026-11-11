@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>P3 Kconfig 三阶管线：定义 → sdkconfig → sdkconfig.h</title>
+  <desc>三阶段动画：ESP-IDF 的配置系统是一条三阶管线。① Kconfig 定义：每个组件的 Kconfig 文件声明配置项的名字、类型、默认值和依赖关系，menuconfig 读取它们生成菜单树——890 个配置项来自 40 多个 Kconfig 文件；② sdkconfig 文本：用户在 menuconfig 里改完配置，所有选择写入 sdkconfig 纯文本文件（KEY=VALUE 格式），可 git 跟踪、可 diff 对比；③ sdkconfig.h 宏：构建时 gen_sdkconfig 脚本把 sdkconfig 转成 C 宏头文件，代码里 #ifdef CONFIG_WIFI_SSID 直接编译期分支。连续动效：配置项沿管线从 Kconfig 流向 sdkconfig 再流向 sdkconfig.h。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">P3 Kconfig 三阶管线：从菜单定义到 C 宏</text>
+  <text x="24" y="50" font-size="12" fill="#666">40+ 个 Kconfig → 890 项 sdkconfig → #ifdef CONFIG_xxx 编译期分支</text>
+
+  <!-- 管线示意（常驻） -->
+  <rect x="40" y="66" width="180" height="40" rx="6" fill="#dbe7ff" stroke="#3451b2"/>
+  <text x="56" y="90" font-size="12" font-weight="bold" fill="#3451b2">Kconfig 定义</text>
+  <line x1="224" y1="86" x2="268" y2="86" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowK)"/>
+  <rect x="272" y="66" width="180" height="40" rx="6" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="288" y="90" font-size="12" font-weight="bold" fill="#92400e">sdkconfig 文本</text>
+  <line x1="456" y1="86" x2="500" y2="86" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowK)"/>
+  <rect x="504" y="66" width="180" height="40" rx="6" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="520" y="90" font-size="12" font-weight="bold" fill="#1a7f56">sdkconfig.h 宏</text>
+  <defs><marker id="arrowK" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/></marker></defs>
+
+  <!-- 流动粒子 -->
+  <circle cx="224" cy="86" r="4" fill="#d97706">
+    <animate attributeName="cx" values="224;268;268;224" keyTimes="0;0.3;0.7;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="456" cy="86" r="4" fill="#3eaf7c">
+    <animate attributeName="cx" values="456;500;500;456" keyTimes="0;0.3;0.7;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 阶段一：Kconfig 定义 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="130" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="154" font-size="13" font-weight="bold" fill="#3451b2">① Kconfig 定义：每个组件声明自己的配置项</text>
+    <text x="56" y="180" font-size="12" font-family="Consolas,monospace" fill="#333">config WIFI_SSID</text>
+    <text x="56" y="198" font-size="12" font-family="Consolas,monospace" fill="#333">    string "WiFi SSID"</text>
+    <text x="56" y="216" font-size="12" font-family="Consolas,monospace" fill="#333">    default "myssid"</text>
+    <text x="56" y="234" font-size="12" font-family="Consolas,monospace" fill="#333">    range 1 32</text>
+    <text x="56" y="260" font-size="12" fill="#666">40+ 个组件各有 Kconfig 文件，menuconfig 扫描全部文件生成菜单树。</text>
+    <text x="56" y="280" font-size="12" fill="#666">890 个配置项——类型（bool/int/string）、默认值、依赖关系全在这里定义。</text>
+  </g>
+
+  <!-- 阶段二：sdkconfig 文本 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="130" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="154" font-size="13" font-weight="bold" fill="#3451b2">② sdkconfig 文本：menuconfig 的选择落盘为 KEY=VALUE</text>
+    <text x="56" y="180" font-size="12" font-family="Consolas,monospace" fill="#333"># sdkconfig（节选，890 行）</text>
+    <text x="56" y="200" font-size="12" font-family="Consolas,monospace" fill="#333">CONFIG_WIFI_SSID="myssid"</text>
+    <text x="56" y="220" font-size="12" font-family="Consolas,monospace" fill="#333">CONFIG_WIFI_PASSWORD="mypass"</text>
+    <text x="56" y="240" font-size="12" font-family="Consolas,monospace" fill="#333">CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y</text>
+    <text x="56" y="260" font-size="12" font-family="Consolas,monospace" fill="#333"># CONFIG_FREERTOS_HZ is not set</text>
+    <text x="56" y="286" font-size="12" fill="#d97706">纯文本，可 git 跟踪、可 diff 对比。sdkconfig.defaults 是种子，menuconfig 的改动追加覆盖。</text>
+  </g>
+
+  <!-- 阶段三：sdkconfig.h 宏 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="130" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="154" font-size="13" font-weight="bold" fill="#3451b2">③ sdkconfig.h：构建时生成 C 宏，代码里直接 #ifdef</text>
+    <text x="56" y="180" font-size="12" font-family="Consolas,monospace" fill="#333">/* 自动生成，勿手动编辑 */</text>
+    <text x="56" y="200" font-size="12" font-family="Consolas,monospace" fill="#333">#define CONFIG_WIFI_SSID "myssid"</text>
+    <text x="56" y="220" font-size="12" font-family="Consolas,monospace" fill="#333">#define CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240 1</text>
+    <text x="56" y="248" font-size="12" fill="#333">C 代码里：</text>
+    <text x="56" y="268" font-size="12" font-family="Consolas,monospace" fill="#333">#ifdef CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240</text>
+    <text x="56" y="286" font-size="12" font-family="Consolas,monospace" fill="#333">    set_cpu_freq(240);  // 编译期分支，零运行时开销</text>
+    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#333">#endif</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;1" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="360">① Kconfig：40+ 文件定义 890 个配置项——类型、默认值、依赖</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="360">② sdkconfig：KEY=VALUE 纯文本，git 可跟踪，diff 可对比</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="360">③ sdkconfig.h：C 宏头文件，#ifdef 编译期分支，零运行时开销</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,390)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2" keyTimes="0;0.333;0.667;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

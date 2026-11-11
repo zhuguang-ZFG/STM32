@@ -1,0 +1,38 @@
+{
+  "ep": "c5-func-pointer",
+  "source": ".temp/v2-facts/c5-probe.log",
+  "evidence": {
+    "0": "probe 日志 L12：ldrb r2, [r0, #0]（状态偏移 0）；L30：strb r0, [r4, #0]（写回偏移 0）；L32：movs r3, #0（字母事件号 0）；L36：.word 0x00000000（占位值为 0；空槽直接 blx 跳到地址 0 是调用语义）；源码断言里的 0 是字面量，不是 probe 读数",
+    "0x0": "probe 日志 L36：.word 0x00000000（字面池里的表基址占位，链接期才填真地址）",
+    "0x22": "probe 日志 L40：133: 22: 4798 blx r3（全文件第二条 blx 的地址；133 是反汇编清单行号，不是源码行号）",
+    "0x30": "probe 日志 L18：sub.w r3, r1, #48 ; 0x30（数字分类的减数）",
+    "0x42": "probe 日志 L16：cmp r3, #66 ; 0x42（与 B 比较大写掩码结果）",
+    "0x47": "probe 日志 L11：cmp r1, #71 ; 0x47（先与字符 G 比较）",
+    "0x92": "probe 日志 L25：add.w r3, r3, r2, lsl #2（下标计算段起点 0x92）",
+    "0x96": "probe 日志 L26：ldr r2, [pc, #20] ; 指向 0xac（取表基址占位）",
+    "0x98": "probe 日志 L27：mov r0, r4（把结构体指针放进 r0，给动作函数传参）",
+    "0x9a": "probe 日志 L28：ldr.w r3, [r2, r3, lsl #2]（按字下标取函数地址；地址 = 基址 + 下标×4）",
+    "0x9e": "probe 日志 L29：blx r3（fsm_feed 的间接调用）；L39 再列一次 9e: blx r3",
+    "0xa0": "probe 日志 L30：strb r0, [r4, #0]（调用返回后写回状态）",
+    "0xac": "probe 日志 L26：ldr r2, [pc, #20] ; (ac <fsm_feed+0x3c>)；L36：ac: .word 0x00000000",
+    "0xef": "probe 日志 L15：and.w r3, r1, #239 ; 0xef（B/R 共用的掩码）",
+    "1": "probe 日志 L34：movs r3, #1（数字事件号 1）；环形缓冲源码里的 +1 与断言里的 1 是源码字面量，不是 probe 读数",
+    "10": "probe 日志 L21：cmp r1, #10（换行判断）",
+    "10.3.1": "probe 日志 L7：交叉工具链：10.3.1",
+    "16.1.0": "probe 日志 L2：宿主工具链：gcc 16.1.0",
+    "2": "probe 日志 L24：moveq r3, #2（换行事件号 2）；L25：lsl #2（下标乘四的左移位数）",
+    "20": "probe 日志 L26：ldr r2, [pc, #20]（字面池相对偏移 20）",
+    "239": "probe 日志 L15：and.w r3, r1, #239（0xef，大写掩码）",
+    "3": "probe 日志 L23：movne r3, #3（其它字符事件号 3）",
+    "48": "probe 日志 L18：sub.w r3, r1, #48（ASCII 数字起点）",
+    "560": "probe 日志 L4：== 断言通过 560/560 ==",
+    "66": "probe 日志 L16：cmp r3, #66（字符 B 的编号）",
+    "7": "probe 日志 L3：A 派（牺牲一格）可用 7 格",
+    "71": "probe 日志 L11：cmp r1, #71（字符 G 的编号）",
+    "8": "probe 日志 L3：B 派（单调索引）可用 8 格",
+    "9": "probe 日志 L19：cmp r3, #9（数字区间上界）"
+  },
+  "exceptions": {
+    "05": "复现路径 code/c/05-func-pointer 的章节号；不是 probe 读数"
+  }
+}

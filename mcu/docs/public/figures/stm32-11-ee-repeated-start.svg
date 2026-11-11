@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="EEPROM 读回用重复 START：写地址 0xA0 后不 STOP，重复 START 再发 0xA1，NACK+STOP 收尾"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">写地址 → 重复 START → 读</text>
+<rect x="8" y="18" width="48" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">START</text>
+<path d="M56 26 L64 26" stroke-width="2.2"/>
+<rect x="64" y="18" width="48" height="16" rx="3" stroke-width="1.4"/> <text x="68" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0xA0</text>
+<path d="M112 26 L120 26" stroke-width="2.2"/>
+<rect x="120" y="18" width="42" height="16" rx="3" stroke-width="1.4"/> <text x="124" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">ACK</text>
+<path d="M162 26 L170 26" stroke-width="2.2"/>
+<rect x="170" y="18" width="76" height="16" rx="3" stroke-width="1.4"/> <text x="174" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">重复 START</text>
+<path d="M246 26 L254 26" stroke-width="2.2"/>
+<rect x="254" y="18" width="50" height="16" rx="3" stroke-width="1.4"/> <text x="258" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0xA1</text>
+<rect x="8" y="48" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="59" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">数据</text>
+<path d="M60 56 L68 56" stroke-width="2.2"/>
+<rect x="68" y="48" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="72" y="59" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">NACK</text>
+<path d="M120 56 L128 56" stroke-width="2.2"/>
+<rect x="128" y="48" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="132" y="59" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">STOP</text>
+<text x="8" y="78" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">页写后等 tWR，再 ACK polling</text>
+</g></svg>

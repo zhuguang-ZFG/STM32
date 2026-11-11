@@ -1,0 +1,96 @@
+{
+  "generated": "2026-10-28",
+  "generator": "mcu-book/subset_fonts.py",
+  "license": "SIL Open Font License 1.1（Noto / Cascadia 系列；见同目录 OFL.txt）",
+  "charsFrom": [
+    "docs",
+    "docs\\public",
+    "mcu-book\\book",
+    "mcu-book\\manifest.json",
+    "mcu-book\\build_html.py"
+  ],
+  "insuranceSet": "ASCII + 常用中英标点 + 框线/箭头/数学符号（见脚本 INSURANCE）",
+  "fonts": [
+    {
+      "family": "Noto Serif SC",
+      "axes": "wght=400",
+      "source": "C:\\Windows\\Fonts\\NotoSerifSC-VF.ttf",
+      "sourceSha256": "a4aed9985a5916fbf6690456f8732a9fccd517938e353165d4142b4f11a39280",
+      "output": "mcu-book\\print\\fonts\\serif-regular.woff2",
+      "bytes": 403828,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Serif SC",
+      "axes": "wght=700",
+      "source": "C:\\Windows\\Fonts\\NotoSerifSC-VF.ttf",
+      "sourceSha256": "a4aed9985a5916fbf6690456f8732a9fccd517938e353165d4142b4f11a39280",
+      "output": "mcu-book\\print\\fonts\\serif-bold.woff2",
+      "bytes": 415980,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Sans SC",
+      "axes": "wght=400",
+      "source": "C:\\Windows\\Fonts\\NotoSansSC-VF.ttf",
+      "sourceSha256": "763146584cf0710223441356b4395e279021b0806c196614377a7a0174ae074a",
+      "output": "mcu-book\\print\\fonts\\sans-regular.woff2",
+      "bytes": 312540,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Sans SC",
+      "axes": "wght=700",
+      "source": "C:\\Windows\\Fonts\\NotoSansSC-VF.ttf",
+      "sourceSha256": "763146584cf0710223441356b4395e279021b0806c196614377a7a0174ae074a",
+      "output": "mcu-book\\print\\fonts\\sans-bold.woff2",
+      "bytes": 319692,
+      "chars": 2163
+    },
+    {
+      "family": "Cascadia Mono",
+      "axes": "wght=400",
+      "source": "C:\\Windows\\Fonts\\CascadiaMono.ttf",
+      "sourceSha256": "0e141cb99609f6f10ad05313fd1807d5cc9e28658dcbb35ab162e52ff67dc718",
+      "output": "mcu-book\\print\\fonts\\mono-regular.woff2",
+      "bytes": 14216,
+      "chars": 2163
+    },
+    {
+      "family": "Cascadia Mono",
+      "axes": "wght=700",
+      "source": "C:\\Windows\\Fonts\\CascadiaMono.ttf",
+      "sourceSha256": "0e141cb99609f6f10ad05313fd1807d5cc9e28658dcbb35ab162e52ff67dc718",
+      "output": "mcu-book\\print\\fonts\\mono-bold.woff2",
+      "bytes": 14564,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Emoji",
+      "axes": "static",
+      "source": ".temp\\NotoEmoji.ttf",
+      "sourceSha256": "988621dc5c9a75eb6144f28faae30317a8e3421b68b28740747b3d739e2326b8",
+      "output": "mcu-book\\print\\fonts\\emoji-regular.woff2",
+      "bytes": 13252,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Sans Symbols 2",
+      "axes": "static",
+      "source": ".temp\\NotoSansSymbols2.ttf",
+      "sourceSha256": "f56f4b90e7653ee69d88593c337bd9bb3cad6e4c0d1b4ef55bf0424ec8cc7c95",
+      "output": "mcu-book\\print\\fonts\\symbols-regular.woff2",
+      "bytes": 13832,
+      "chars": 2163
+    },
+    {
+      "family": "Noto Sans Math",
+      "axes": "static",
+      "source": ".temp\\NotoSansMath.ttf",
+      "sourceSha256": "3cbaf44af13f592bc7f7172a50edab4c73ac2f3d19af2d697a01ebd3288e322d",
+      "output": "mcu-book\\print\\fonts\\math-regular.woff2",
+      "bytes": 18288,
+      "chars": 2163
+    }
+  ]
+}

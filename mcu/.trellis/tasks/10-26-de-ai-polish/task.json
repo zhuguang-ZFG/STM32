@@ -1,0 +1,29 @@
+{
+  "id": "de-ai-polish",
+  "name": "de-ai-polish",
+  "title": "去AI味精修：文字/图片/封面",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-10-26",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "feat/video-v2-remaster",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-26-prose-polish",
+    "10-26-cover-art"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

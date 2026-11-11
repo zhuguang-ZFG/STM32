@@ -1,0 +1,636 @@
+{
+  "baselineCommit": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+  "stage": "planning-only; formal docs and full candidate untouched",
+  "scope": [
+    {
+      "file": "docs/build/07-build-system.md",
+      "sha256": "3de591b83b328e2358ea050aa665387186f15f293f2df59b55af9715ebb1176d",
+      "changes": [
+        {
+          "id": "B7-A",
+          "line": 27,
+          "original": "先预测再执行：第一次干跑会列出哪些命令？只碰一下源文件后，是全部重建，还是只有一条路径变脏？如果你的预测是“构建系统会自己理解文件内容”，这十分钟会把这个直觉推翻。",
+          "direction": "先预测再执行：第一次干跑会列出哪些命令？只碰一下源文件后，会全部重建，还是只重建受它影响的目标？如果你的预测是“构建系统会自己理解文件内容”，这十分钟会把这个直觉推翻。",
+          "problem": "“一条路径变脏”需要先懂构建系统行话，无法直接对应预期观察。",
+          "benefit": "预测对象变成会重建的目标，不用先理解“脏路径”的比喻。"
+        },
+        {
+          "id": "B7-B",
+          "line": 51,
+          "original": "依赖图画出\"谁影响谁\"，mtime 比对决定\"要不要重建\"，touch 改一个文件看只有哪些路径被重建。盯住\"局部重建\"三个字，这是构建系统的核心价值。",
+          "direction": "依赖图画出\"谁影响谁\"，mtime 比对决定\"要不要重建\"。touch 改一个文件后，沿图看看哪些目标会受影响。读这张图时，盯住\"局部重建\"三个字。",
+          "problem": "三种动作挤在一句里，结尾只强调价值，没有给读图对象。",
+          "benefit": "按关系、判断、受影响目标的顺序看图；不再重复抽象价值判断。"
+        },
+        {
+          "id": "B7-C",
+          "line": 116,
+          "original": "CMake 的价值在\"规模\"：两百个文件分二十个目录，`add_subdirectory` 递归管理，每个目录一个 `CMakeLists.txt`，比手写一个大 Makefile 好维护。代价是多一层\"生成\"步骤（`cmake -B build` 生成，`make -C build` 构建）。",
+          "direction": "CMake 的价值在\"规模\"：两百个文件分在二十个目录，用 `add_subdirectory` 递归管理，每个目录各有一个 `CMakeLists.txt`，不用把所有内容挤进一个大 Makefile。代价是多一步\"生成\"：先用 `cmake -B build` 生成，再用 `make -C build` 构建。",
+          "problem": "规模例子与生成代价靠名词短语和括号连接，两个命令的动作顺序不够直接。",
+          "benefit": "保留原规模例子和四段行内代码，读者能区分目录管理与先生成后构建。"
+        },
+        {
+          "id": "B7-D",
+          "line": 134,
+          "original": "IDF 用 CMake 圈组件、Kconfig 管配置、idf.py 调度，三层叠在一起，底层还是 B1 那四步（预处理→编译→汇编→链接）。",
+          "direction": "IDF 的三层分工：CMake 管组件，Kconfig 管配置，idf.py 负责调度。三层叠在一起，底层还是 B1 那四步（预处理→编译→汇编→链接）。",
+          "problem": "“圈组件”和“调度”连用，把角色分工压成口号。",
+          "benefit": "把原有三个工具与三个工作对应，保留 B1 四步联系，不补新API语义。"
+        }
+      ],
+      "metricsBefore": {
+        "count": 95,
+        "longShare": 9.5,
+        "avg": 35.2
+      },
+      "directionMetrics": {
+        "count": 96,
+        "longShare": 9.4,
+        "avg": 34.9
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "file": "docs/build/07-build-system.md",
+      "bytes": 15082,
+      "sha256": "3de591b83b328e2358ea050aa665387186f15f293f2df59b55af9715ebb1176d"
+    },
+    {
+      "file": ".prose-baseline.json",
+      "bytes": 6741,
+      "sha256": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b"
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "bytes": 12473,
+      "sha256": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9"
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "bytes": 7047,
+      "sha256": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869"
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "bytes": 6170,
+      "sha256": "8690b07ebbb0eb2ede0b846da2347686c2e3cea84da04aa810fa3c262d04d75c"
+    },
+    {
+      "file": "scripts/docs-check.mjs",
+      "bytes": 25535,
+      "sha256": "7a5f79d04084e0931c5a6976f252f617c7d01c930def426d9da45d68afde0b9b"
+    },
+    {
+      "file": "scripts/book-guide/generate.mjs",
+      "bytes": 4875,
+      "sha256": "0d3ccc52f1f19bbae0cf5925394870ef7d6d7a83d1072651f05c0e07ebfd2c0b"
+    },
+    {
+      "file": "scripts/gen-progress.mjs",
+      "bytes": 9933,
+      "sha256": "d3e5d6464b6852b0b8a26b4240a591ee74c85d4b165831639bf290676b99ef10"
+    },
+    {
+      "file": "package.json",
+      "bytes": 3058,
+      "sha256": "c39c8c05dc340a5e4c6b1f49ca36ed222a17bd2755b5d1d6bfa2f6eada13ee86"
+    },
+    {
+      "file": "package-lock.json",
+      "bytes": 118815,
+      "sha256": "37700bf56ee7d744ab4842666b2eb315ce0f969989e4e9393f21965db2961daa"
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "bytes": 6833,
+      "sha256": "32380cd1b64440166b91d19af9c18d257da00b1d99186bdedee142e6853783ab"
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "bytes": 2324,
+      "sha256": "26d4e9c3cf0dd4aea7a1d7c3de24ab6c0a1507810d394afef17e3704e3ff787e"
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "bytes": 1864,
+      "sha256": "d4929d664c4512024bc5fd7c0cde72fc4cf629518de3e359a2f348d09e1c8504"
+    },
+    {
+      "file": ".github/workflows/links.yml",
+      "bytes": 2579,
+      "sha256": "98c45ed211292240562d6e6d05f50d5fd3d2cf1269cf9e70c29a1ae6f08634db"
+    },
+    {
+      "file": "mcu-book/build_html.py",
+      "bytes": 81333,
+      "sha256": "41decdd1e8967227975d20aa04f1354ee96e4e7f1ba3c626d58995831aee9386"
+    },
+    {
+      "file": "docs/build/index.md",
+      "bytes": 1547,
+      "sha256": "998b01b4375aaf4b6843662deee1ec5069fde77d0cac19b10f332ee32e226a18"
+    },
+    {
+      "file": "docs/curriculum.json",
+      "bytes": 19959,
+      "sha256": "81099e02b62b2da1871ea7ad1437fe6ddf1672d1045fe800d2f82117e4be1f5f"
+    },
+    {
+      "file": "docs/.vitepress/config.mts",
+      "bytes": 24646,
+      "sha256": "64fe6d48c0ba3b1f74ebbf59f39a4fecc99d6b56666ba0aca1bf9d93f3d883b5"
+    },
+    {
+      "file": "mcu-book/manifest.json",
+      "bytes": 124121,
+      "sha256": "8d999e63a23c28fda9395d5424604dcc3b4483e874d1162384be71de799d39bd"
+    },
+    {
+      "file": "code/stm32/00-blink/Makefile",
+      "bytes": 1915,
+      "sha256": "2cb02fe5dc04742e87013fa818e9d4796d750775bbff08611ce629a38883f84c"
+    },
+    {
+      "file": "docs/build/00-toolchain.md",
+      "bytes": 12488,
+      "sha256": "ddc0b844b519b933fb2463378ad92f379a56cdc81ed959c9bc062dc3abb86e45"
+    },
+    {
+      "file": "docs/build/01-four-steps.md",
+      "bytes": 16692,
+      "sha256": "6627bf6e405e98972cf8fd2f0f315e9ff2355e4fbe6776b7efac825af1522866"
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "bytes": 27494,
+      "sha256": "eb7161200277de0622b34f7f0e6f51fef85cfa3c506e5eb7b440f70d38a6e4fe"
+    },
+    {
+      "file": "docs/build/03-linker-script.md",
+      "bytes": 25515,
+      "sha256": "a7dab7dd9ce64f3126ed6be52166206d32fbc49ed35dbff965834062f1c4c3d4"
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "bytes": 13141,
+      "sha256": "96a9fd3a3e3d2bf2b600e67693234cfcbd73415b40bfee58511c72200e5d4735"
+    },
+    {
+      "file": "docs/build/05-map-size.md",
+      "bytes": 12757,
+      "sha256": "ea4996d6791b54308f2eaaa49e9274efce1b9d3d271fb77681c5bbaca9c6621b"
+    },
+    {
+      "file": "docs/build/06-flash-debug.md",
+      "bytes": 13255,
+      "sha256": "236a3bcd9281e9c55d6edee4c04c6e506ab727facd538252a526b450a4c775f2"
+    }
+  ],
+  "verificationInputs": {
+    "count": 214,
+    "sha256ByPath": {
+      "tests/a11y.test.mjs": "3591a9e9c2b246d12227d27ff595256ca958ae21e0ab922ca0bbcce1495a5afe",
+      "tests/animation-markdown.test.mjs": "36acc51146d5e7b7e547376b705f0c71451f569ea50077423828a7f39fed2827",
+      "tests/book-guide.test.mjs": "0670f59538679e424d6aef57bdca199cca3f12a2cb7a52d4196cf703df00ade0",
+      "tests/browser/book-guide.spec.mjs": "ad74938c237a7ac56d96529ddde1bb01ed43575d0b10eb4e28d004d5d7ffa0cb",
+      "tests/browser/site.spec.mjs": "6def7293d322f28f7ecebfeb7b9ec0be9d8b4711b5f489510bf25745e945b77c",
+      "tests/catalog.test.mjs": "ca8fcbf10559f0326976c76525404cf3b5280067259e363a99fca0fd918bb8ef",
+      "tests/content-encoding.test.mjs": "1fb0c642e3b52e48608471de9a372d0faa71414262751008bc917471bc49c835",
+      "tests/curriculum.test.mjs": "762ffe0ba02f4ac0bea9f27d52420a59a653f1385d4b5df5a9984d31667d5cbb",
+      "tests/device-cli.test.mjs": "d4f99f1c8d086976a48c1f1d56fce5d78c67985c29d7cdf7a2de4652067ddfc2",
+      "tests/docs-check.test.mjs": "2fa1fe0656f04fa13fba211681091682b60b931fbba67f1aa40270afa88e8f53",
+      "tests/logger-cli.test.mjs": "dd73a9c95b0cb05c385c35a87e4fa1c7d132d8b184a1115f6142133fdbbc24e9",
+      "tests/metadata.test.mjs": "d211a0170396bfc2fa6bff7b0435f1d1d8f39e8ad6a1e4407d2623069f542785",
+      "tests/nav.test.mjs": "152c5e95284b86d88be498fef6a7d306378c7eeb9d0aa0f2fca183e80bb4d98c",
+      "tests/pages-check.test.mjs": "179192d8c22cf8f71f53749f50227a5144427df07945f6b7fc5aa7f926c74125",
+      "tests/perf.test.mjs": "ea71c160e92448e232500f7bbc391c7081f69632976933b5fbd4609fcbbab115",
+      "tests/reading-time.test.mjs": "85862f7271a61ba0ed22e6de0aa9f9b4ffb205813cfae8e7db884fb2d2182ff4",
+      "tests/search-check.test.mjs": "c47061381c23615e5a7ebd8ab5114f86643f484841aa67dd2db02ed9c6fc5d93",
+      "tests/search.test.mjs": "3427ce0765ae6efcd13c4415bbe97a2ce106d375f2d0cd0304042721c4731b1e",
+      "tests/seo.test.mjs": "4fd071605c52409335ffc21b0b924347d125eaafb13351ee7f5ba6d2685b3d6b",
+      "tests/workflow.test.mjs": "47533693b09ca1d654803ccd7255cff28e8c76381992d193053f630433d7a417",
+      "mcu-book/tests/test_art_guard.py": "365c87c64bd5eb8d4bf3bb7610f03ed0041c9dffd3efa90725e5a3245f20ed3d",
+      "mcu-book/tests/test_build.py": "d7a387d6fd15bb388c114ddab11f218659a4f1262adb5cc1adb86b884d1b0f34",
+      "mcu-book/tests/test_check_pdf.py": "95cdc3b036790499eabbad4e1260647757bf7eaa9dc9899f0b679002fa5a807a",
+      "mcu-book/tests/test_part_art.py": "0b98b86f72ea4ffcf72e76fa5a155195c2ee62727b6d99122b338c8c31031d27",
+      "mcu-book/tests/test_print_html_freeze.py": "0aacc24fc41768346c4c6cf09d5b557cf4f4df44ab00e6280e313395bb9795cf",
+      "mcu-book/tests/test_print_outline.py": "82b246d1a19d8be5fc79d1f12ba988823e6146257045fda0d4f0e7add349e164",
+      "mcu-book/tests/test_print_vectors.py": "38c64a83b090e72f283431ec4ffe2cbaa6427a669f784a5edc6954e44c17f1a3",
+      "mcu-book/tests/test_prose_guard.py": "abb6507c0619daeb1281d2e40d06da20f3ee971d8224db5b5728a938bb5e322e",
+      "mcu-book/tests/test_publish_downloads.py": "81cd70dc290fc5f86be85df9a17c86046d05f8e57d8b4ca3622200f6064772e0",
+      "mcu-book/tools/art_guard.py": "c55a86bef3789130734dc609b0088b09d4effce676505fa2e72ace54a4a7d550",
+      "mcu-book/tools/prose_guard.py": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9",
+      "mcu-book/tools/text_audit.py": "b7449f6a3cdd40a1a40861a0fec4b2d2976e369c78c1af79216ec4fc7f40f911",
+      "scripts/a11y-check.mjs": "55914b26745faca5a98246fc03428974b296fa41cf04b79572ebee44a499adac",
+      "scripts/anim-audit.html": "029ec66250439ae60c90a28ee99f7eac865ac9d89697839b801de2ebc408203d",
+      "scripts/anim-audit.mjs": "b480e4a214de6e5dcf3475c376076eaed9a13f75221bcc951c2b1b8950252758",
+      "scripts/anim-lint.mjs": "7182be26f7d0e16b3e7771372eaeb1049669d31c5a774f2a249fa712e7f7c7ad",
+      "scripts/anim-metadata-codemod.mjs": "fe78190e184f29fc7969af07169dbcb12095b849260185fd2dc4e6f4fd9e2834",
+      "scripts/anim-shot.html": "f0c0c742b5c4d41a6751d991969adea4157daf8d0cc799bd195664061951d90e",
+      "scripts/arch-diagrams/batch7.html": "2ef820cef260885c3099393776d89315de9f620cae8a66be1fce0767ea2b1a5f",
+      "scripts/arch-diagrams/boot-relay.html": "ff30bf5044525cd25c63606668476b760748207c0309395e317da9194dd916df",
+      "scripts/arch-diagrams/boot-relay.out.html": "db61aad0aa9668380de0cf99648f4ac179dbd8867e815f5f9668acdc2ced33b2",
+      "scripts/arch-diagrams/boot-relay.png": "230930055a3399ee22bc01ee37e11daba685da1b97251496d7defa263af014fc",
+      "scripts/arch-diagrams/boot-sequence.html": "e6b49266d3a5444e2629b0f76cbdd40e8bcf47c58ac2c538ead70b8c0cd3730e",
+      "scripts/arch-diagrams/boot-sequence.out.html": "e54f4cf11820416348750e5dbd6acfb5ae6c76a9a4faf0e86a10b173f3901d9c",
+      "scripts/arch-diagrams/boot-sequence.png": "673a1dfe27ed30cc41db9ed9c53538fbb05cd8da1f5cf6776e6370b9ef7b7036",
+      "scripts/arch-diagrams/context-switch.html": "7fdec501183434a1cea82f70b10cb2f9fe90060f9d17e4b5c10d6c5632bb1680",
+      "scripts/arch-diagrams/context-switch.out.html": "4fa5159af534a31c86dbe3d90de6da6eec534d34a2c012f78b045a0e74d25bfc",
+      "scripts/arch-diagrams/context-switch.png": "e35db63c620b4ee743792957833e078127a73575903fecc99284bcddff02094a",
+      "scripts/arch-diagrams/device-ops.html": "f8dfb4177e43582e50863ef607a3909d52c4af9ac6d383521c842894c90ff004",
+      "scripts/arch-diagrams/device-ops.out.html": "d7b6bb770def76061a282ead2a4a7f816fb281ef547728183302beba071efbe6",
+      "scripts/arch-diagrams/device-ops.png": "ff3d4fb1fa3b08727700343282c4d3d6d704b74513495408d847ce21251697bb",
+      "scripts/arch-diagrams/dma-paths.html": "f865c32fd0fd65f832dc31e3f404ef18581e5eb409453d41533b570f0589261a",
+      "scripts/arch-diagrams/dma-paths.out.html": "4f2af1cb8567e08ae41d3972b93e43cc50cba88766b7d6f70faece24f67a0f28",
+      "scripts/arch-diagrams/dma-paths.png": "b700f062025752bda8ebb820f5f23900d4d35f62423b6321ee8f05fdf266e55a",
+      "scripts/arch-diagrams/exti-chain.html": "c5108bc03f56d6baaa5e42e16802aefb75345c4af0601814572f39c64301cadf",
+      "scripts/arch-diagrams/exti-chain.out.html": "b3bf32f18d5ee92a8fae2e35ac6e63b8878a2c4245d8e368d2d2b90a64636e86",
+      "scripts/arch-diagrams/exti-chain.png": "e2c29c207a824dd74a5139dad2e5580108661b1331c778ec4c75341ea8045f6d",
+      "scripts/arch-diagrams/gen_batch3.py": "d02ea1c4c45ac6bf578e4f23349ed31c5c925bd8f0cfb5e8fe8a6768e6bcefa8",
+      "scripts/arch-diagrams/gen_batch4.py": "25b2c55682d055cbb03bfab09b4fac93517dcd166888d1974e0ee5b5ed6b59c6",
+      "scripts/arch-diagrams/gen_batch5.py": "4cea6ba4594148b08ea52c7abdd7c7f538931c103f7e83c2c58e9f533e2e8b6c",
+      "scripts/arch-diagrams/gen_batch6.py": "c083ae48e35f317ae5882f598b8cf9c926ed6593de01adda1fda9b2ed1d6cbbf",
+      "scripts/arch-diagrams/gen_batch8.py": "865d2d0d0398563a402f25ad25ed891a8dd2cb4cb03cfee65e1cb6e69f2ae167",
+      "scripts/arch-diagrams/gen_cards_batch2.py": "a9c537184bf06aa6419938f1fcc3ba33e94706d5580b5c736b8ef90dc746fe69",
+      "scripts/arch-diagrams/heap-free-list.html": "50493a405f92f3aa063b33dca30868ff8199c0f928fc6167f8494c2d2b46da81",
+      "scripts/arch-diagrams/heap-free-list.out.html": "8a482a402a5fd73b06d0e5f2a766c6e9d31ee7391237b8f22f5a2a6c7a638bd9",
+      "scripts/arch-diagrams/heap-free-list.png": "fc5707aeb917c2461324a7c87af4b978471d23d244525bf04098a8cdcd141590",
+      "scripts/arch-diagrams/i2c-bus.html": "43b3b69ecbd134b086fc1717ff3659a32b541d5628f7401d87180912333d7a93",
+      "scripts/arch-diagrams/i2c-bus.out.html": "a9f16419fa08b4b5c108ff81befd32c63ed03ae241ec5c250961bd3a5784f944",
+      "scripts/arch-diagrams/i2c-bus.png": "a28e5938e143b8fb8753537e1603e1f49a90c5b082d40534731c4433ba8d4677",
+      "scripts/arch-diagrams/icons/arm.svg": "40c6c2e13838ed21d652f2c9b53fee557447ea3a453e6f8fa80276309dd3781e",
+      "scripts/arch-diagrams/icons/bell.svg": "fb132949f78e4cea5dbc1446692dfa8adf7021e4531dd65e7a6f1decccf3635e",
+      "scripts/arch-diagrams/icons/binary.svg": "78aca293caf52f4adca282f6534b3dc50ce13b0dd14033fe0e5e03f7d180e1a6",
+      "scripts/arch-diagrams/icons/box.svg": "58695b063e6ef86dc669e00fcc23028de90e2b5499892c40a5f752ebcce0843b",
+      "scripts/arch-diagrams/icons/braces.svg": "3e448dd66d6168d53c3acfd387732201068bb2242a6f64d64830b57137e4c6aa",
+      "scripts/arch-diagrams/icons/cable.svg": "d6c94343336a1758a7b23952441b733be7206354d084a12372129fe8e3cc7291",
+      "scripts/arch-diagrams/icons/cmake.svg": "c3a8a666d1ceaa0ab92e8d267c3e03e56a62a73c84a6722c92b23e79886f99b4",
+      "scripts/arch-diagrams/icons/cpu.svg": "85dbda5456c336bb3078347437ef4173c0b5a700957dc44f58a331c188ff7798",
+      "scripts/arch-diagrams/icons/database.svg": "27e8e00aca56d1739d8c001eba28b65250da8dab6ba010f84167fcb188f1accd",
+      "scripts/arch-diagrams/icons/espressif.svg": "1be429cb09fbd7df2fc4f91f00a73e80f9edf2c5be2a60ba7a8f7ae2795f0cc0",
+      "scripts/arch-diagrams/icons/file-code.svg": "8c135ea84e6cd966f6f18c42f7d26cab5eb6c74acd65a59697f9e78c39692b12",
+      "scripts/arch-diagrams/icons/file.svg": "4111f422628b904d2bb99bf9df18e33704f73be9468f92c51c0843542cfc5f3f",
+      "scripts/arch-diagrams/icons/folder.svg": "844a100e86745a936f369ff120568ac3882143b78b977d71514efe741f18efef",
+      "scripts/arch-diagrams/icons/freertos.png": "685a207e234552de17df7eb065553740c0f0784bcabe300ba99025fc31202bb4",
+      "scripts/arch-diagrams/icons/globe.svg": "fba98bab720b42ec6f6cae202677395a7b4925c446b85bca9a076d3d1a2b9105",
+      "scripts/arch-diagrams/icons/gnu.svg": "822e0837a595931b84bd99144b68c8bbbb0dfb15604e0a0a44d70c4e647b964d",
+      "scripts/arch-diagrams/icons/layers.svg": "34373eb150d31a81ce83a52821a878cb5b2e51a47446d48bf007a52344dbd081",
+      "scripts/arch-diagrams/icons/list-tree.svg": "7433032ed692198981f94f9d7b3f251097e8bf3c56d12eddb56289a566942dd3",
+      "scripts/arch-diagrams/icons/manifest.json": "6d4203975887515f04056a85b83a6d6b60c0fc8bfd3a08a5108c753f77472d9c",
+      "scripts/arch-diagrams/icons/memory.svg": "3cd28e0351a4e3ab5df997694e9fb491727f964541a2df7acdc47a28013a84fd",
+      "scripts/arch-diagrams/icons/network.svg": "04e8e036cba3434a463ee4524e701e68b1fe84b47f3a0bb812d07f9b0f5e39d9",
+      "scripts/arch-diagrams/icons/radio.svg": "c87bb5dd757af9c36e1fefebdb75bd4441b792da7024df927e4ccde1d4228337",
+      "scripts/arch-diagrams/icons/rtthread.png": "b9a7b3159cb3fdcde73065cbb810b80e478d1c3c9bc8e850bf84ad2349b6f347",
+      "scripts/arch-diagrams/icons/settings.svg": "9681a2f769f2dfc6a4f0a2b38b9e8aa241ba403f6bcefeb5ff026c5dd13462e1",
+      "scripts/arch-diagrams/icons/st.svg": "45b0dd13bb58518f94fba8e5ef7fa11c3c1bb7fb42d5c065b8d582aa0454e7cf",
+      "scripts/arch-diagrams/icons/terminal.svg": "d3dab9c24724547a516fc408af7bdd39a9d405161e4eee411f660b8f2d5c217f",
+      "scripts/arch-diagrams/icons/usb.svg": "7254940db0124cfac6de9567604cde1723d3a009ec7f52ae33d856246a4616f4",
+      "scripts/arch-diagrams/icons/wifi.svg": "cee06df0a4a952b9277accc75ad51fda2a91e4b20ce598066450e132219df965",
+      "scripts/arch-diagrams/icons/workflow.svg": "f6f794a51a144c4fcfbc21133f0faa3b53c0f73ea5b1635b7222dba52681c253",
+      "scripts/arch-diagrams/idf-anatomy.html": "e36ae865cb4a2d2859fb5d6cf20160eb116b5c2cb327d2bb0a196e71e62f270a",
+      "scripts/arch-diagrams/idf-anatomy.out.html": "241e90b0f7fcbc6be9431d210f1cf4b8e2635d903e2c7f8e9026856c4d408a25",
+      "scripts/arch-diagrams/idf-anatomy.png": "54541272e53517afab04eb47885a7ebe18291ebd970193411a2181bfe6c4dd19",
+      "scripts/arch-diagrams/linker-map.html": "223de2c44a80f30d6367a51459ecc03e1467fcb9b023c67671ca20a65281063b",
+      "scripts/arch-diagrams/linker-map.out.html": "e5350978844d205798bd3a239f2a3189a214593520f21e210612e826d64ec74f",
+      "scripts/arch-diagrams/linker-map.png": "81d77f445d1aaa648d945a837b8ea63171bffd507fa003163b215ba679c523cb",
+      "scripts/arch-diagrams/logger-flow.html": "e3b375a6f420c0cc09982f089b4c8ab9ff0dfaab324e83ca70389485f410bed4",
+      "scripts/arch-diagrams/logger-flow.out.html": "ef3c854ff4fab7eb4777cd621fb6a74fa687b9bf1329242fdb5450f0fad5f13e",
+      "scripts/arch-diagrams/logger-flow.png": "d714968bce0abbf2e64641d190560cbd4081ae85593f6835d16cc41a97930e50",
+      "scripts/arch-diagrams/map-audit.html": "c3fe6b6959154e7827217a091b4df21d175d6c5c1719233650d377e0eaab1400",
+      "scripts/arch-diagrams/map-audit.out.html": "accd665846541bd4e0c635fa3ff207899c0e04526d63ce90b40626cdd05cc9d7",
+      "scripts/arch-diagrams/map-audit.png": "41ca4f5581f68daa2a1bafdcc1e08f619ac0425413a237f14a1bdf24178e3368",
+      "scripts/arch-diagrams/memory-map.html": "7b0a066d01a5ad01cd78f5a8b1106854cbfef98f78f564051d974e2e73cd593b",
+      "scripts/arch-diagrams/memory-map.out.html": "d18b2a14f63ba62e0110540a4802974d567b123cfc39b4c9dab8c0d3736a6a2a",
+      "scripts/arch-diagrams/memory-map.png": "6493ed1a15139e14adeb138d28f74517e6fd66698dee48bf6fe0bb5e41d15058",
+      "scripts/arch-diagrams/ota-slots.html": "8192e42c02abc4d42c570bd5b15e8f0c144578f66e6f2c5eabb8e40028a950de",
+      "scripts/arch-diagrams/ota-slots.out.html": "95824cd69e258683998dea2b59382632d1cd1bf99e61684673559d623ed2b869",
+      "scripts/arch-diagrams/ota-slots.png": "8f51bd1a6ccfaefe3d91da67fa0e6f45530bf4d443ff2a80adb4175e0f8b4866",
+      "scripts/arch-diagrams/pwr-domains.html": "4d5b0d4bff4c85f9f5964d4cedaa13bac4ee3297c48fa6f5578c25637943811b",
+      "scripts/arch-diagrams/pwr-domains.out.html": "fe599a85d3ef21d13e0c1081ae9b3e9c6f959022b102ca61218ec8cd65a5878c",
+      "scripts/arch-diagrams/pwr-domains.png": "88e0669dbe50fd1a2af08ccc97f9c7d279bfa97f912ce2358b6408099aff7428",
+      "scripts/arch-diagrams/rcu-tree.html": "8b984160dc116a28c873b564bb79dac5451b885769b2d4a8fa499e4264d5592e",
+      "scripts/arch-diagrams/rcu-tree.out.html": "59ac26844d6866bac930296671356ad4917cadb9abc6789cc28349a6dbb7a364",
+      "scripts/arch-diagrams/rcu-tree.png": "249dda97fdf6c939071eef7c222e68c117802f45a37e3d31ad75f9a8ef0e10b2",
+      "scripts/arch-diagrams/rtos-side-by-side.html": "28cba639f21c3faea84da439098b7c171d2f05d5a50befab0bce7df39b5fcc6c",
+      "scripts/arch-diagrams/rtos-side-by-side.out.html": "1459d3b00d8e993830622d4bc6c31f9dedeb2d647739c4668eea706293bfeb08",
+      "scripts/arch-diagrams/rtos-side-by-side.png": "1fe72f395ab26511295cf7be6cd294befc59d5f6e84e5fd58dc4d890aafa843e",
+      "scripts/arch-diagrams/rtt-three-floors.html": "719d80cdcbd169d25a905458aca0bc406b7e67c05460cedabee5eda0d9e2024d",
+      "scripts/arch-diagrams/rtt-three-floors.out.html": "71274a5dc11e1a9ea6abaf7b7158b009053ac94cb3096e907e68557e9342c3fd",
+      "scripts/arch-diagrams/rtt-three-floors.png": "10d9b97cca0457c686ee342d70e0e933dd80e34a06c702e9f03b16e3cd116645",
+      "scripts/arch-diagrams/scheduler-structs.html": "2388ac5396c832509e5567e400e24f744e967fc24a6da47dea3c00890ebeaf15",
+      "scripts/arch-diagrams/scheduler-structs.out.html": "1b556361180ed4acbd76920c16bea11e1e12b320a674273724c347cfcdee928c",
+      "scripts/arch-diagrams/scheduler-structs.png": "23a653ce0053b2214cc548e3239669838fef767842b6e2ce4d0556c89589cb46",
+      "scripts/arch-diagrams/sem-mutex.html": "2ee052636795fe02a9a8248ad72c83ec8ef0b1b039365d3c9e9ffb6ee6eed139",
+      "scripts/arch-diagrams/sem-mutex.out.html": "cc46edcd5b9a6d830928f4bb6da0d6fe3dfa58fe6fca124e72baebecf63c6bbc",
+      "scripts/arch-diagrams/sem-mutex.png": "3515f5a8239e2a07ef7f43499270b2fcce42083745c4a6afb5d6d65d352aa2d2",
+      "scripts/arch-diagrams/spl-anatomy.html": "b0606164e14d9841227f85433749c2d68f2a64a1a8709b2b57801fc546ec2299",
+      "scripts/arch-diagrams/spl-anatomy.out.html": "9e0ed65e4d5f52ef1832d0ee2f4e065411311a31d1e67d31346458627c180e94",
+      "scripts/arch-diagrams/spl-anatomy.png": "7e79e53ec0fe2fd299fb7feb0850d02fef28eea4169bd306ef091983ba2ee232",
+      "scripts/arch-diagrams/toolchain-pipeline.html": "9b6d929557eaa316beecdad098d8fd1a6d057ee57092bec678a6887df1af1e8a",
+      "scripts/arch-diagrams/toolchain-pipeline.out.html": "dea4f2176da196044ee4e9023a0bcf4803f7f821619122c0b865645c456e5b8b",
+      "scripts/arch-diagrams/toolchain-pipeline.png": "b5aaa836fe1e97eb49ab2698d5556109bd16115f264ffc4d43946ed9864089be",
+      "scripts/arch-diagrams/usart-rename-map.html": "974be9ee17b1b7ec4ab27231d91160c7b051e8e96eb39bccc4bd7a7b29839a68",
+      "scripts/arch-diagrams/usart-rename-map.out.html": "5dc0ee493d8dced0d827e6a57dcbbcec976ff8978c0c57e703801c5aabb2eb87",
+      "scripts/arch-diagrams/usart-rename-map.png": "07397829a1a6279b4801f822d4c6d91028f9d72a72050ed5bbb4538e3fd367cf",
+      "scripts/arch-diagrams/wifi-stack.html": "bb229790fd2d7ba28b2eb96ca7dda41cd6a92ab32de03bd9f4b8f80eeb8d2a5e",
+      "scripts/arch-diagrams/wifi-stack.out.html": "116d9d4efe0ece4764e2ba0fe12d22b43058a616a7f2778bc7e073894a4a6f0c",
+      "scripts/arch-diagrams/wifi-stack.png": "2c7d2350efc4cd7d3bf4befb970f79b0c0d34665dc0cf87ac6dd2336610e5bc6",
+      "scripts/arm-env.sh": "b4a5ff2757a78848c8bc583ad63feca12f3d7ffb17f806dfcf007c7cbc2ee109",
+      "scripts/book-guide/contract.mjs": "bd06792a846b8838ab5c1cbd994717eee36c2d939fbcc03d5fb3ea3b763b4223",
+      "scripts/book-guide/generate.mjs": "0d3ccc52f1f19bbae0cf5925394870ef7d6d7a83d1072651f05c0e07ebfd2c0b",
+      "scripts/book-guide/README.md": "9331509ade50307c30c5200f07dc696d6fbf5ff0399d7390ab5195e427e59ac2",
+      "scripts/book-guide/site.css": "9abc4830ed9297cf280419fdd12075cbfe765a7d3671c0f5a0c984a58cc94cf0",
+      "scripts/check-firmware.mjs": "38bcbec76e1cddd9551ead2500287c52e432706137677728f182d21972e0c568",
+      "scripts/content-metadata.mjs": "fea59c7125544a67ceb89225df8e7451171bc4456d200510857e165260cb6a0f",
+      "scripts/curriculum.mjs": "d68108aa107b48eeb727ea267a925914744549c582eb7a30448a136fd76089dc",
+      "scripts/device-console-requirements.txt": "79145e12ec85875e23034146f460e5ea09ce8ceaec107518d23379f02ff62881",
+      "scripts/device-console.py": "becfe20d8bcdd47939bc80615f4d68f62f08785e4a199e10f98023600b9aa5eb",
+      "scripts/docs-check.mjs": "7a5f79d04084e0931c5a6976f252f617c7d01c930def426d9da45d68afde0b9b",
+      "scripts/gen-og-cover.py": "582f5fa8fb204371052f45fdf7e57302252e6772777092fe6db92dffbe237425",
+      "scripts/gen-progress.mjs": "d3e5d6464b6852b0b8a26b4240a591ee74c85d4b165831639bf290676b99ef10",
+      "scripts/links-check.mjs": "8b454b12115735c6c192e3634acda31c64ffd002a5b0bfabdf1bc432a7883fff",
+      "scripts/local-gates.ps1": "c14c512b8daa3bf8b12dd168b576bad94deb4b59d96db54029af1745530837c5",
+      "scripts/local-gates.sh": "ce5dde575fd74f6fb3ee583b746cd8735b14133211f54c8df1d64ec9ab4a40ef",
+      "scripts/measure-site.mjs": "ce7ba83e079bb44b19899e00bc2da140d1894cab30ac3b381b4d0b3a4aa88fd8",
+      "scripts/nav-check.mjs": "f0997d74ce5b5f2704c2ca4650695cc9156b52210271ee67dbd80c8e52b02389",
+      "scripts/pages-check.mjs": "4f059b994a24008eb7cceb553d3db1a9955c26f7969fa33d41cdf2c6d1d0d698",
+      "scripts/perf-budget.mjs": "f51469c6bfed0f8043f2bdf50d4779052daa12abe46f55e953f55754e7b8f244",
+      "scripts/project-catalog.mjs": "ac8a7915fcdeb2d8c95133987f4f766c6e138178e81076c842ebe9ea021bd242",
+      "scripts/prose-readability.mjs": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869",
+      "scripts/reading-time.mjs": "8690b07ebbb0eb2ede0b846da2347686c2e3cea84da04aa810fa3c262d04d75c",
+      "scripts/search-check.mjs": "8051aafebf2d74a77e144616b54fdec02e504f2dc8a4cf7bed55c8d523519ae9",
+      "scripts/search-render.mjs": "93fab8a7f9d3e30d9700d1ee69cc7608f800e141e6bef23a0426f898ff9a7afd",
+      "scripts/search-tokenize.mjs": "daa08e114cdd07781172e939dfba2a1f7173b668fdd7de409d9612bb92c7394a",
+      "scripts/seo-check.mjs": "6ed641021164c6f6c929916cbd344db919702bf1882a5787ecfe1d06f57c7d28",
+      "scripts/social-cards/cards.css": "8911ae65b324a67dc56dae054a4a35d46db28023c63ae86c1730c6aa934a77fc",
+      "scripts/social-cards/cards.json": "48161260678fb2a47b45b050a74c9aa867b438a9a33f2ee437286909462fc364",
+      "scripts/social-cards/cover.html": "c6288a49659d6dbec178d642db208861bbcd6753211ac6dea3ed61567de4e718",
+      "scripts/social-cards/README.md": "1095c7dbfb49600bec2f84349fccda55953fba49de2d3e950388a2311e57e95e",
+      "scripts/social-cards/render.mjs": "c172888b9c1efd958e2c09d290505012e0cdce163eec516baec570b210bafbcb",
+      ".github/workflows/book.yml": "26d4e9c3cf0dd4aea7a1d7c3de24ab6c0a1507810d394afef17e3704e3ff787e",
+      ".github/workflows/deploy.yml": "d4929d664c4512024bc5fd7c0cde72fc4cf629518de3e359a2f348d09e1c8504",
+      ".github/workflows/links.yml": "98c45ed211292240562d6e6d05f50d5fd3d2cf1269cf9e70c29a1ae6f08634db",
+      ".github/workflows/quality.yml": "32380cd1b64440166b91d19af9c18d257da00b1d99186bdedee142e6853783ab",
+      ".trellis/scripts/add_session.py": "76e039218f30a752b062c0d93614ff36c554c21a45434c665f905f048b13b7b9",
+      ".trellis/scripts/common/active_task.py": "8ac10263a88262aeaec2c600b33f3761f99d80c305718609a3bef97a2ff08938",
+      ".trellis/scripts/common/cli_adapter.py": "d2530211e4c290bd89406650a942d9bedfcba0803e5ecdd1c8d86cd4cb541306",
+      ".trellis/scripts/common/config.py": "f456a3bebdb9ebf873a835c849b0314c8ba46378549af97ccc4d99848b9ec12e",
+      ".trellis/scripts/common/developer.py": "f5f833123abe68890171b4da825a324216d24913f6b5ad9245afc556424ffd7b",
+      ".trellis/scripts/common/git.py": "e14817be7de122d3a106f509c2825aeb9669d962ba73ba241642d2931cfdf1d6",
+      ".trellis/scripts/common/git_context.py": "fa30ced454f1a91ffc9f8b2abeb32225e3447cbdc90bad783797374eba07265d",
+      ".trellis/scripts/common/io.py": "d7f0d70189966b22945574d0ee8d58bb8becb40b2930e513fbcbacbc06854fe0",
+      ".trellis/scripts/common/log.py": "471df6895cfac80f995edebbf9974f6b7440634b7a688f28b8331c868bc0f3cf",
+      ".trellis/scripts/common/packages_context.py": "efe158d7c99c2268851d0216fbb08de22836e418a8dbeb73575b8cc249eed7b7",
+      ".trellis/scripts/common/paths.py": "05898ef136cc7c4d861b05fbf2b16d53ddd3e6f311a231d4fcfcb81bde7c45ee",
+      ".trellis/scripts/common/safe_commit.py": "baa5c82324eb62154374ec63394ecdc8609bb37d93892e3bcb88f452bb7d6446",
+      ".trellis/scripts/common/session_context.py": "19927c62d3fd70fecf70da0c5b25c6c81e63683f8a594a1ae3b5d6c115070368",
+      ".trellis/scripts/common/tasks.py": "4436a8b0b53c270a35989e26d9dbd92669408c6562d88c02083a404562da85fe",
+      ".trellis/scripts/common/task_context.py": "d174684d417bbe2fafc26b6afcddb264c7dc519527bb24d2055cd27daaad9b55",
+      ".trellis/scripts/common/task_queue.py": "0be61f713462b1fe4574927c82fc4704e678afe72dcb9813543aedf2f9e9e0c5",
+      ".trellis/scripts/common/task_store.py": "0810ca640b7423dce39bdf0528120438bbeae49e443dc105d9eea28b1824b9a6",
+      ".trellis/scripts/common/task_utils.py": "907cfab47731ce8071e5d0f550ef34d569a4b52e1dc2162a1a313fe9d4b8d5a5",
+      ".trellis/scripts/common/trellis_config.py": "0839dcf90ebbd77712c276930a89335b3313927051650c91d220fb51ca2a6a3c",
+      ".trellis/scripts/common/types.py": "9962081cc2608fb9d1deb32c6880e336f62cdca6b338e7ae813304701e155ee9",
+      ".trellis/scripts/common/workflow_phase.py": "f2b5fcf0c40cedcf3d7d0ad8023d141fa4095caf0302d73f2a73e1bc04b5692b",
+      ".trellis/scripts/common/__init__.py": "3d5e9347141f0296319a5beb29d69ae714c5a474b9078caeb3edd7c5f6562e22",
+      ".trellis/scripts/get_context.py": "ca5bf9e90bdb1d75d3de182b95f820f9d108ab28793d29097b24fd71315adcf5",
+      ".trellis/scripts/get_developer.py": "84c27076323c3e0f2c9c8ed16e8aa865e225d902a187c37e20ee1a46e7142d8f",
+      ".trellis/scripts/hooks/linear_sync.py": "e09cc4ce4699aada908808718698f33f705a3edf55c4dcf8f777ad892f80ca79",
+      ".trellis/scripts/init_developer.py": "f9e6c0d882406e81c8cd6b1c5abb204b0befc0069ff89cf650cd536a80f8c60e",
+      ".trellis/scripts/task.py": "46a94e4acf1c967fe5c3606ba5d1572cd0c43033a16fe01de55ac568954e6c18",
+      ".trellis/scripts/__init__.py": "1242be5b972094c2e141aecbe81a4efd478f6534e3d5e28306374e6a18fcf46c",
+      "package.json": "c39c8c05dc340a5e4c6b1f49ca36ed222a17bd2755b5d1d6bfa2f6eada13ee86",
+      "package-lock.json": "37700bf56ee7d744ab4842666b2eb315ce0f969989e4e9393f21965db2961daa",
+      ".prose-baseline.json": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b",
+      ".lychee.toml": "663a829e8783e57656efc45b3292547687dca5317884bd67029566296f6ac608"
+    }
+  },
+  "userWork": {
+    "directory": ".trellis/tasks/11-02-skill-remaster",
+    "files": 42,
+    "sha256ByPath": {
+      ".trellis/tasks/11-02-skill-remaster/deliverables/annotations.json": "8ef2c4b21f6e3d90cbd9f28dc9b6b3743b867bbf371ec7d126dc5d8e839a1212",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/book-guide.html": "9d99ced05efbf1ed8aa2d1d624d6c94e61ec89f242257a7fd9643dd041830df4",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b1.png": "be24334916f3c79cfe5da70de2833d440583aa014e6a202144f0b5574908763a",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b2.png": "5794213f857835056f468b12c0f7aa76e968babc1f5f77789cab6f18fd02bedc",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c0.png": "6d39c7d5bfe9ea9f8c114eb96cb7a7439ed7971ad3b671ed3dde0530fd7f8a2e",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c1.png": "492f30502f832f11bfe96c3e3264e4ced152ca87d7e376bf0b1cba0989143bf3",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c2.png": "60f5771d98a7be4c81eceeb133bbf499c0866387e97cc6e0fb9175bc29a5a05a",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c3.png": "ac89cd2adae1678049643b45e3e453ce327c685adaa3c2680efc83b5504932ec",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c4.png": "8e9fe7641ac2d7747759489c0fcb5dc7ea585c293e5a10bd2801672ccf664231",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c5.png": "a420b2810a2e2b549a52a4e6d814f0f51ea21db1622a927e98dad54f0d6f1de4",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c6.png": "34f2d2d1756331f6abff93c0721d4c88a44dd6265c5775786189b39a9851e4c7",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c8.png": "7bd88d833662e5d3075d63e2978aaf61efd338c3db92e2958b90cdcdfaa883fb",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-f0.png": "721e0ecb56f3758827879686e3843b825dc3836879f0c837ee5e530846a6b21d",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-p2.png": "157999119e3c5c4dda8fb165e370e111744d56ad777108bc97af0e079b128a7c",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-s7.png": "d8bad610569dbeecaab8eccd1755d63c6b2663c69d27e93c24f9286645f6379e",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b3-linker.png": "b37a0f1eabb5322c904b85871480558ccba27716c1c7643ba2c393cb8e359415",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b4-startup.png": "28e44d9889948eaea02b6c74d6a275eb85187aa7c08845e2c04dd6f4ed848793",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b5-map.png": "911ae37b402352af46ad886e0d9b7b5556635066d86d3674adbf7794a76cd258",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-c7-ub.png": "14e3cefcc7670ab5c70316082e651739cdbed669fdd1aec2e17db4de14ff29e5",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f2-switch.png": "c288ac9a2e9980a53a8dc4c98518aa5a7471029ec5074cb614d6c709a5addf50",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f5-sem.png": "025faeae04441a5f782d7a5786e2d787027ce2ccd0f2fa14e4df7cf3f224bf1b",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f6-notify.png": "c9ac163aa42bca237a975285f10ebb7cc502d0b8442c2f2d27236f4f8bf5f06b",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-g1-rcu.png": "c94196d3a85b745b29656f46ba721d8c8f4daf582d335f6e938efaeff784f3d7",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p10-flash.png": "647b34cce9edeeeb93be8dffa8cc5f64f7d27a151b22168caa89d8595bcdbbf9",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p3-idf.png": "3da7ea682bdf4ea290c2b9755b5f18cf537553b78b0fd2d0241e7dbba97d0a2f",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p8-wifi.png": "c29359cfcb17178ba346eebebb76560d9bd70e4f621e2969ffac43ac6ad2ccc2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r2-ipc.png": "4bb49b9a121bef367488c06d29ab0d49959aca2e8f6b3c5770ccfb39c906e326",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r4-device.png": "7e71cb2757f6a7cc0c2e9f8d954093152e744f803e1c48e9f5d4f77cef0a6550",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s14-pwr.png": "55b1ea189ce469417a55ee54c3f3be06d42e308d81ce992f5891bd0440c7e690",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s2-rcc.png": "1286d1d35079bbbcb3baefc24529c5ff02d02f73b50b3065c4566290e8b9163d",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s4-nvic.png": "b01efd32658852f87a595f1a395f4315edf947d04b94ccb5b5ea5f96550045e8",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cover-c3-bili.png": "5ebbeea2d65a1f774e68a8417b704119b0a43b58dcbca9891aef40aee2545464",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/09-boot-sequence.png": "673a1dfe27ed30cc41db9ed9c53538fbb05cd8da1f5cf6776e6370b9ef7b7036",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-boot-relay.png": "230930055a3399ee22bc01ee37e11daba685da1b97251496d7defa263af014fc",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-i2c-bus.png": "a28e5938e143b8fb8753537e1603e1f49a90c5b082d40534731c4433ba8d4677",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-logger-flow.png": "d714968bce0abbf2e64641d190560cbd4081ae85593f6835d16cc41a97930e50",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-map-audit.png": "41ca4f5581f68daa2a1bafdcc1e08f619ac0425413a237f14a1bdf24178e3368",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-rcu-tree.png": "249dda97fdf6c939071eef7c222e68c117802f45a37e3d31ad75f9a8ef0e10b2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-sem-mutex.png": "3515f5a8239e2a07ef7f43499270b2fcce42083745c4a6afb5d6d65d352aa2d2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/index.html": "8b7f32a2e280d2f4a1204f2ffdb8421ce5c1cac8a42eb1a72995373746241765",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/review-sheet.html": "a29aa9e4eebd3c2dc7750a2b9ea53fc1cc71789bef8cdfb4df4f06888cbb0e6e",
+      ".trellis/tasks/11-02-skill-remaster/specs.md": "cf2ca61bd02c4d67a6047365a29b96fa02e2a7697e8fd44c388891d58c9420d7"
+    },
+    "paths": [
+      ".trellis/tasks/11-02-skill-remaster/deliverables/annotations.json",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/book-guide.html",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b1.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b2.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c0.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c1.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c2.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c3.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c4.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c5.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c6.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c8.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-f0.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-p2.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-s7.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b3-linker.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b4-startup.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b5-map.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-c7-ub.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f2-switch.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f5-sem.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f6-notify.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-g1-rcu.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p10-flash.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p3-idf.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p8-wifi.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r2-ipc.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r4-device.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s14-pwr.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s2-rcc.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s4-nvic.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cover-c3-bili.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/09-boot-sequence.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-boot-relay.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-i2c-bus.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-logger-flow.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-map-audit.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-rcu-tree.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-sem-mutex.png",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/index.html",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/review-sheet.html",
+      ".trellis/tasks/11-02-skill-remaster/specs.md"
+    ]
+  },
+  "directionFeasibility": {
+    "strictCompareErrors": [],
+    "changedLines": [
+      27,
+      51,
+      116,
+      134
+    ],
+    "mode": "in-memory planning direction only; no candidate or docs written"
+  },
+  "originalSurface": {
+    "url": "https://zhuguang-zfg.github.io/mcu/build/07-build-system.html",
+    "title": "B7 构建系统：从手写 Makefile 到 CMake 与 scons | 通往单片机之路",
+    "desktopWidth": 1440,
+    "desktopDocumentWidth": 1440,
+    "pre": 7,
+    "images": 0,
+    "svg": 2,
+    "details": 4,
+    "headings": [
+      {
+        "id": "本章精髓",
+        "text": "本章精髓"
+      },
+      {
+        "id": "先修",
+        "text": "先修"
+      },
+      {
+        "id": "先跑起来-10-分钟-quick-win",
+        "text": "先跑起来（10 分钟 quick win）"
+      },
+      {
+        "id": "小节结构",
+        "text": "小节结构"
+      },
+      {
+        "id": "动画-依赖图与局部重建",
+        "text": "动画：依赖图与局部重建"
+      },
+      {
+        "id": "一、make-依赖图-目标-依赖-规则三要素",
+        "text": "一、Make 依赖图：目标/依赖/规则三要素"
+      },
+      {
+        "id": "二、makefile-解剖-00-blink-写了张什么图",
+        "text": "二、Makefile 解剖：00-blink 写了张什么图"
+      },
+      {
+        "id": "三、cmake-一层抽象-生成构建文件",
+        "text": "三、CMake 一层抽象：生成构建文件"
+      },
+      {
+        "id": "四、idf-组件机制-idf-component-register-圈地",
+        "text": "四、IDF 组件机制：idf_component_register 圈地"
+      },
+      {
+        "id": "五、kconfig-一维-配置如何流进代码",
+        "text": "五、Kconfig 一维：配置如何流进代码"
+      },
+      {
+        "id": "六、scons-对照-rt-thread-的另一套衣服",
+        "text": "六、scons 对照：RT-Thread 的另一套衣服"
+      },
+      {
+        "id": "记忆锚点",
+        "text": "记忆锚点"
+      },
+      {
+        "id": "实物实验",
+        "text": "实物实验"
+      },
+      {
+        "id": "常见坑",
+        "text": "常见坑"
+      },
+      {
+        "id": "短自测",
+        "text": "短自测"
+      },
+      {
+        "id": "对照表-本章概念-→-仓库与上游落点",
+        "text": "对照表：本章概念 → 仓库与上游落点"
+      },
+      {
+        "id": "你做到了",
+        "text": "你做到了"
+      }
+    ],
+    "imageFailures": 0,
+    "mobile": {
+      "width": 390,
+      "documentWidth": 390,
+      "outlineButton": "本页目录",
+      "codeOverflows": 7,
+      "paragraphsFit": true
+    }
+  },
+  "limitations": [
+    "Memory-only compare is planning feasibility, not before/candidate or final docs acceptance.",
+    "No formal chapter edits, new tests, runner or policy edits.",
+    "Technical questions are frozen, not confirmed bug reports.",
+    "No local make/touch/clean/flash, firmware, board or full PDF run for this planning task."
+  ],
+  "previousRelease": {
+    "pr": "https://github.com/zhuguang-ZFG/mcu/pull/16",
+    "comment": "https://github.com/zhuguang-ZFG/mcu/pull/16#issuecomment-6702978610",
+    "mergeCommit": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+    "mainRuns": [
+      {
+        "id": 42342475841,
+        "name": "Book CI",
+        "head": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+        "conclusion": "success",
+        "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/42342475841"
+      },
+      {
+        "id": 42342475860,
+        "name": "部署站点到 GitHub Pages",
+        "head": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+        "conclusion": "success",
+        "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/42342475860"
+      },
+      {
+        "id": 42342475837,
+        "name": "外链巡检",
+        "head": "3083db13d35fc61ea264dab90c0fa5469ddcffb8",
+        "conclusion": "success",
+        "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/42342475837"
+      }
+    ],
+    "all18PrSuccess": true,
+    "liveSevenReplaced": true
+  }
+}

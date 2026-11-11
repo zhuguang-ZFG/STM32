@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s14-pwr 封面手绘 v2 · FA-013 · 三张床：睁一只眼 / 熟睡 / 空床字条（床头板+床垫+床腿一体） -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 床 1 · Sleep：睁一只眼 -->
+    <rect x="150" y="940" width="30" height="390" rx="12" fill="#ffffff"/>
+    <rect x="150" y="1180" width="470" height="120" rx="26" fill="#ffffff"/>
+    <path d="M560 1300 l0 90 M590 1300 l0 90" fill="none"/>
+    <circle cx="330" cy="1120" r="66" fill="#ffffff"/>
+    <circle cx="306" cy="1108" r="8" fill="#1a1a1a" stroke="none"/>
+    <path d="M330 1094 q20 -8 34 4" fill="none"/>
+    <path d="M304 1148 l52 0"/>
+    <rect x="400" y="1128" width="200" height="88" rx="24" fill="#f2f4f7"/>
+    <!-- 床 2 · Stop：钴蓝头熟睡 + 枕头 + 鼾息三横 -->
+    <rect x="750" y="940" width="30" height="390" rx="12" fill="#ffffff"/>
+    <rect x="750" y="1180" width="470" height="120" rx="26" fill="#ffffff"/>
+    <path d="M1160 1300 l0 90 M1190 1300 l0 90" fill="none"/>
+    <circle cx="930" cy="1120" r="66" fill="#3451b2"/>
+    <path d="M906 1104 l18 0 M942 1104 l18 0" stroke="#ffffff"/>
+    <path d="M910 1140 l36 0" stroke="#ffffff"/>
+    <rect x="1010" y="1150" width="170" height="70" rx="30" fill="#f2f4f7"/>
+    <path d="M1090 1020 l36 0 M1078 976 l30 0 M1096 932 l24 0" stroke-width="10"/>
+    <!-- 床 3 · Standby：空床 + 钴蓝字条 -->
+    <rect x="1350" y="940" width="30" height="390" rx="12" fill="#ffffff"/>
+    <rect x="1350" y="1180" width="470" height="120" rx="26" fill="#ffffff"/>
+    <path d="M1760 1300 l0 90 M1790 1300 l0 90" fill="none"/>
+    <rect x="1500" y="1090" width="140" height="92" rx="10" fill="#3451b2" transform="rotate(-9 1570 1136)"/>
+    <path d="M1530 1120 l80 0 M1536 1150 l60 0" stroke="#ffffff" stroke-width="10" transform="rotate(-9 1570 1136)"/>
+  </g>
+  <!-- 地面一笔 -->
+  <path d="M140 1420 q820 56 1640 0" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+</svg>

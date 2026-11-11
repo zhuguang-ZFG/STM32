@@ -1,0 +1,45 @@
+/* Integrate the skill's page with local photography and system fonts. */
+.hero-cover {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  background: var(--bg);
+  overflow: visible;
+}
+.hero-cover::before { display: none; }
+.hero-cover .hero-bg {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: contain;
+  object-position: center;
+  opacity: 1;
+  mix-blend-mode: normal;
+  background: var(--bg);
+}
+.hero-cover .hero-overlay {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  inset: auto;
+  padding: 32px 36px 32px 0;
+  justify-content: center;
+  background: var(--bg);
+}
+.hero-cover h1, :lang(zh) .hero-cover h1 {
+  color: var(--fg);
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  line-height: 1.25;
+}
+.hero-cover .hero-kicker { color: var(--accent); }
+.hero-cover .hero-subtitle { color: var(--fg); opacity: .75; }
+@media (max-width: 640px) {
+  .hero-cover { grid-template-columns: minmax(0, 1fr); }
+  .hero-cover .hero-bg { grid-column: 1; grid-row: 2; min-height: 0; height: 200px; }
+  .hero-cover .hero-overlay { padding: 24px 0; }
+  .hero-cover h1, :lang(zh) .hero-cover h1 { font-size: 1.85rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>S15 SPL GPIO_Init 解剖：结构体 → 位偏移 → 寄存器</title>
+  <desc>四阶段动画：GPIO_Init 一个函数拆解为三步流水线。① 结构体打包：GPIO_InitTypeDef 把 MODER/OTYPER/OSPEEDR/PUPDR 四张寄存器表打包成四个字段，用户填结构体不碰寄存器；② 逐 pin 循环：GPIO_Init 对 GPIO_Pin_0 到 GPIO_Pin_15 逐引脚处理，先清旧位再置新位——"先清后置"保留同端口其他引脚的配置；③ 位偏移计算：position = log2(pin)，mask = 0x03 &lt;&lt; (position*2)，把引脚号翻译成寄存器位偏移；④ 寄存器落位：四段写操作依次完成 MODER→OTYPER→OSPEEDR→PUPDR，一次调用配好一个引脚的全部电气参数。连续动效：数据流从结构体字段沿箭头流向寄存器。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">S15 GPIO_Init 解剖：库是怎么封装寄存器的</text>
+  <text x="24" y="50" font-size="12" fill="#666">结构体打包参数 → 逐 pin 循环 → 位偏移计算 → 四段寄存器写入</text>
+
+  <!-- 结构体示意（常驻） -->
+  <rect x="40" y="66" width="300" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="86" font-size="12" font-weight="bold" fill="#3451b2">GPIO_InitTypeDef</text>
+  <text x="56" y="106" font-size="11" font-family="Consolas,monospace" fill="#333">.GPIO_Pin  .GPIO_Mode  .GPIO_Speed  .GPIO_PuPd</text>
+
+  <!-- 寄存器示意（常驻） -->
+  <rect x="380" y="66" width="300" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="396" y="86" font-size="12" font-weight="bold" fill="#1a7f56">GPIOx 寄存器组</text>
+  <text x="396" y="106" font-size="11" font-family="Consolas,monospace" fill="#333">MODER  OTYPER  OSPEEDR  PUPDR</text>
+
+  <!-- 传送箭头 -->
+  <line x1="344" y1="92" x2="374" y2="92" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 3"/>
+  <circle cx="344" cy="92" r="4" fill="#d97706">
+    <animate attributeName="cx" values="344;374;374;344" keyTimes="0;0.4;0.6;1" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 阶段一：结构体打包 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="140" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="164" font-size="13" font-weight="bold" fill="#3451b2">① 结构体打包：四个字段对应四张寄存器表</text>
+    <text x="56" y="190" font-size="12" font-family="Consolas,monospace" fill="#333">GPIO_InitTypeDef gpio;</text>
+    <text x="56" y="210" font-size="12" font-family="Consolas,monospace" fill="#333">gpio.GPIO_Pin   = GPIO_Pin_6;         // 哪个引脚</text>
+    <text x="56" y="230" font-size="12" font-family="Consolas,monospace" fill="#333">gpio.GPIO_Mode  = GPIO_Mode_OUT;      // → MODER[13:12]</text>
+    <text x="56" y="250" font-size="12" font-family="Consolas,monospace" fill="#333">gpio.GPIO_Speed = GPIO_Speed_50MHz;   // → OSPEEDR[13:12]</text>
+    <text x="56" y="270" font-size="12" font-family="Consolas,monospace" fill="#333">gpio.GPIO_PuPd  = GPIO_PuPd_NOPULL;   // → PUPDR[13:12]</text>
+    <text x="56" y="296" font-size="12" fill="#666">用户只填结构体，不碰寄存器。OTYPER（推挽/开漏）本章省略——默认推挽。</text>
+  </g>
+
+  <!-- 阶段二：逐 pin 循环 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="140" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="164" font-size="13" font-weight="bold" fill="#3451b2">② 逐 pin 循环：一次调用可配多个引脚</text>
+    <text x="56" y="190" font-size="12" font-family="Consolas,monospace" fill="#333">for (pinpos = 0; pinpos &lt; 16; pinpos++) {</text>
+    <text x="56" y="210" font-size="12" font-family="Consolas,monospace" fill="#333">    if ((GPIO_InitStruct-&gt;GPIO_Pin) &amp; (1 &lt;&lt; pinpos)) {</text>
+    <text x="72" y="230" font-size="12" font-family="Consolas,monospace" fill="#333">/* 先清旧位 */  GPIOx-&gt;MODER &amp;= ~(0x03 &lt;&lt; (pinpos*2));</text>
+    <text x="72" y="250" font-size="12" font-family="Consolas,monospace" fill="#333">/* 再置新位 */  GPIOx-&gt;MODER |=  (mode &lt;&lt; (pinpos*2));</text>
+    <text x="56" y="270" font-size="12" font-family="Consolas,monospace" fill="#333">}}</text>
+    <text x="56" y="296" font-size="12" fill="#d97706">"先清后置"而非直接赋值——保留同端口其他 15 个引脚的配置不变。</text>
+  </g>
+
+  <!-- 阶段三：位偏移计算 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="140" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="164" font-size="13" font-weight="bold" fill="#3451b2">③ 位偏移计算：引脚号 → 寄存器位位置</text>
+    <text x="56" y="192" font-size="12" font-family="Consolas,monospace" fill="#333">position = Position[GPIO_Pin]  // __builtin_ctz，即 log2(pin)</text>
+    <text x="56" y="214" font-size="12" font-family="Consolas,monospace" fill="#333">GPIO_Pin_6 → position = 6</text>
+    <text x="56" y="240" font-size="12" fill="#333">每个引脚占 <tspan fill="#dc2626" font-weight="bold">2 位</tspan>，所以偏移 = position × 2 = <tspan fill="#dc2626" font-weight="bold">12</tspan></text>
+    <text x="56" y="264" font-size="12" font-family="Consolas,monospace" fill="#333">mask = 0x03 &lt;&lt; 12  =  0x00003000  // MODER[13:12]</text>
+    <text x="56" y="296" font-size="12" fill="#666">16 个引脚 × 2 位 = 32 位，刚好填满一个 32 位寄存器。</text>
+  </g>
+
+  <!-- 阶段四：四段写入 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="140" width="640" height="170" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="164" font-size="13" font-weight="bold" fill="#3451b2">④ 四段写入：一次 GPIO_Init 配齐全部电气参数</text>
+    <text x="56" y="190" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOx-&gt;MODER   = (GPIOx-&gt;MODER   &amp; ~mask) | (mode  &lt;&lt; shift);</text>
+    <text x="56" y="212" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOx-&gt;OTYPER  = (GPIOx-&gt;OTYPER  &amp; ~pmask) | (otype &lt;&lt; pos);</text>
+    <text x="56" y="234" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOx-&gt;OSPEEDR = (GPIOx-&gt;OSPEEDR &amp; ~mask) | (speed &lt;&lt; shift);</text>
+    <text x="56" y="256" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOx-&gt;PUPDR   = (GPIOx-&gt;PUPDR   &amp; ~mask) | (pupd  &lt;&lt; shift);</text>
+    <text x="56" y="284" font-size="12" fill="#666">四段全是"先清后置"——和我们在 S3 手写的位操作一模一样，</text>
+    <text x="56" y="300" font-size="12" fill="#666">只是库用循环和变量替代了硬编码常量。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="380">① 结构体打包：用户填字段，不碰寄存器——防错的第一层</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="380">② 逐 pin 循环：先清后置，保留同端口其他引脚配置</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="380">③ 位偏移：position × 2 = 寄存器位位置（每引脚 2 位）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="380">④ 四段写入：MODER→OTYPER→OSPEEDR→PUPDR，和手写完全同构</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,410)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

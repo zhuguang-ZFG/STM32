@@ -1,0 +1,1127 @@
+{
+ "epId": "f5-sem-mutex",
+ "episodePath": "D:\\Users\\mcu\\video\\episodes\\f5-sem-mutex\\episode.json",
+ "rows": [
+  {
+   "platform": "bilibili",
+   "index": 0,
+   "id": "hook-01",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 255.1,
+   "contentBottom": 721.2,
+   "usedPx": 466.2,
+   "bandPx": 853.2,
+   "fill": 0.546,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 1,
+   "id": "card-01",
+   "kind": "card",
+   "kicker": "先说结论",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 298,
+   "contentBottom": 678.3,
+   "usedPx": 380.3,
+   "bandPx": 853.2,
+   "fill": 0.446,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 2,
+   "id": "code-01",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 3,
+   "id": "code-02",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 4,
+   "id": "code-03",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 5,
+   "id": "code-04",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 228.5,
+   "contentBottom": 747.8,
+   "usedPx": 519.2,
+   "bandPx": 853.2,
+   "fill": 0.609,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 6,
+   "id": "code-05",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 339.1,
+   "contentBottom": 637.2,
+   "usedPx": 298.1,
+   "bandPx": 853.2,
+   "fill": 0.349,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 7,
+   "id": "card-02",
+   "kind": "card",
+   "kicker": "所以前半集",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 253.1,
+   "contentBottom": 723.2,
+   "usedPx": 470,
+   "bandPx": 853.2,
+   "fill": 0.551,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 8,
+   "id": "anim-01",
+   "kind": "anim",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 97.2,
+   "contentBottom": 879.1,
+   "usedPx": 781.9,
+   "bandPx": 853.2,
+   "fill": 0.916,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "animbox",
+    "note"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 9,
+   "id": "code-06",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 10,
+   "id": "code-07",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 323.3,
+   "contentBottom": 653,
+   "usedPx": 329.7,
+   "bandPx": 853.2,
+   "fill": 0.386,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 11,
+   "id": "code-08",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 12,
+   "id": "card-03",
+   "kind": "card",
+   "kicker": "重叠",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 298,
+   "contentBottom": 678.3,
+   "usedPx": 380.3,
+   "bandPx": 853.2,
+   "fill": 0.446,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 13,
+   "id": "code-09",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 275.9,
+   "contentBottom": 700.4,
+   "usedPx": 424.5,
+   "bandPx": 853.2,
+   "fill": 0.497,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 14,
+   "id": "code-10",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 15,
+   "id": "hook-02",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 286.7,
+   "contentBottom": 689.6,
+   "usedPx": 403,
+   "bandPx": 853.2,
+   "fill": 0.472,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 16,
+   "id": "code-11",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 17,
+   "id": "code-12",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 18,
+   "id": "code-13",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 19,
+   "id": "code-14",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 339.1,
+   "contentBottom": 637.2,
+   "usedPx": 298.1,
+   "bandPx": 853.2,
+   "fill": 0.349,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 20,
+   "id": "card-04",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 279.5,
+   "contentBottom": 696.8,
+   "usedPx": 417.3,
+   "bandPx": 853.2,
+   "fill": 0.489,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 21,
+   "id": "code-15",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 260.1,
+   "contentBottom": 716.2,
+   "usedPx": 456,
+   "bandPx": 853.2,
+   "fill": 0.535,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 22,
+   "id": "code-16",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 23,
+   "id": "code-17",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 275.9,
+   "contentBottom": 700.4,
+   "usedPx": 424.5,
+   "bandPx": 853.2,
+   "fill": 0.497,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 24,
+   "id": "code-18",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 275.9,
+   "contentBottom": 700.4,
+   "usedPx": 424.5,
+   "bandPx": 853.2,
+   "fill": 0.497,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 25,
+   "id": "card-05",
+   "kind": "card",
+   "kicker": "编译期",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 253.1,
+   "contentBottom": 723.2,
+   "usedPx": 470,
+   "bandPx": 853.2,
+   "fill": 0.551,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 26,
+   "id": "anim-02",
+   "kind": "anim",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 97.2,
+   "contentBottom": 879.1,
+   "usedPx": 781.9,
+   "bandPx": 853.2,
+   "fill": 0.916,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "animbox",
+    "note"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 27,
+   "id": "code-19",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 307.5,
+   "contentBottom": 668.8,
+   "usedPx": 361.3,
+   "bandPx": 853.2,
+   "fill": 0.423,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 28,
+   "id": "code-20",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 323.3,
+   "contentBottom": 653,
+   "usedPx": 329.7,
+   "bandPx": 853.2,
+   "fill": 0.386,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 29,
+   "id": "sim-binary",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 291.7,
+   "contentBottom": 684.6,
+   "usedPx": 392.9,
+   "bandPx": 853.2,
+   "fill": 0.46,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 30,
+   "id": "sim-mutex",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 260.1,
+   "contentBottom": 716.2,
+   "usedPx": 456,
+   "bandPx": 853.2,
+   "fill": 0.535,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 31,
+   "id": "punch-01",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 279.5,
+   "contentBottom": 696.8,
+   "usedPx": 417.3,
+   "bandPx": 853.2,
+   "fill": 0.489,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 32,
+   "id": "card-06",
+   "kind": "card",
+   "kicker": "这两个数的身份",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 298,
+   "contentBottom": 678.3,
+   "usedPx": 380.3,
+   "bandPx": 853.2,
+   "fill": 0.446,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 33,
+   "id": "punch",
+   "kind": "card",
+   "kicker": "一句话记住",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 275.7,
+   "contentBottom": 700.6,
+   "usedPx": 425,
+   "bandPx": 853.2,
+   "fill": 0.498,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 34,
+   "id": "cta",
+   "kind": "outro",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 391.5,
+   "contentBottom": 584.8,
+   "usedPx": 193.3,
+   "bandPx": 853.2,
+   "fill": 0.227,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": true,
+   "blocks": [
+    "title",
+    "sub",
+    "url"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 0,
+   "id": "hook-01",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 350.3,
+   "contentBottom": 1327.8,
+   "usedPx": 977.5,
+   "bandPx": 1305.6,
+   "fill": 0.749,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 1,
+   "id": "card-01",
+   "kind": "card",
+   "kicker": "先说结论",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 367.7,
+   "contentBottom": 1310.4,
+   "usedPx": 942.7,
+   "bandPx": 1305.6,
+   "fill": 0.722,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 2,
+   "id": "code-02",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 589.7,
+   "contentBottom": 1088.4,
+   "usedPx": 498.7,
+   "bandPx": 1305.6,
+   "fill": 0.382,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 3,
+   "id": "code-11",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 589.7,
+   "contentBottom": 1088.4,
+   "usedPx": 498.7,
+   "bandPx": 1305.6,
+   "fill": 0.382,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 4,
+   "id": "code-13",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 589.7,
+   "contentBottom": 1088.4,
+   "usedPx": 498.7,
+   "bandPx": 1305.6,
+   "fill": 0.382,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 5,
+   "id": "code-17",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 569.6,
+   "contentBottom": 1108.5,
+   "usedPx": 539,
+   "bandPx": 1305.6,
+   "fill": 0.413,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 6,
+   "id": "card-05",
+   "kind": "card",
+   "kicker": "编译期",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 283.9,
+   "contentBottom": 1394.2,
+   "usedPx": 1110.3,
+   "bandPx": 1305.6,
+   "fill": 0.85,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 7,
+   "id": "sim-binary",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 496.8,
+   "contentBottom": 1181.3,
+   "usedPx": 684.5,
+   "bandPx": 1305.6,
+   "fill": 0.524,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 8,
+   "id": "sim-mutex",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 496.8,
+   "contentBottom": 1181.3,
+   "usedPx": 684.5,
+   "bandPx": 1305.6,
+   "fill": 0.524,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 9,
+   "id": "punch-01",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 386.4,
+   "contentBottom": 1291.7,
+   "usedPx": 905.3,
+   "bandPx": 1305.6,
+   "fill": 0.693,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 10,
+   "id": "card-06",
+   "kind": "card",
+   "kicker": "这两个数的身份",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 367.7,
+   "contentBottom": 1310.4,
+   "usedPx": 942.7,
+   "bandPx": 1305.6,
+   "fill": 0.722,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 11,
+   "id": "punch",
+   "kind": "card",
+   "kicker": "一句话记住",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 400.8,
+   "contentBottom": 1277.3,
+   "usedPx": 876.6,
+   "bandPx": 1305.6,
+   "fill": 0.671,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路 · F5"
+   },
+   "ticksVisible": false,
+   "blocks": [
+    "cardpanel"
+   ]
+  }
+ ]
+}

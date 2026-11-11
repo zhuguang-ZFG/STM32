@@ -1,0 +1,1989 @@
+{
+  "title": "通往单片机之路",
+  "subtitle": "把一颗芯片讲透：以 STM32F407 为主线，对照 GD32 与 ESP32-S3，从寄存器一路走进双 RTOS。",
+  "version": "1.0.0",
+  "date": "2026-10-23",
+  "language": "zh-CN",
+  "author": "zhuguang-ZFG 与贡献者",
+  "repository": "https://github.com/zhuguang-ZFG/mcu",
+  "license": {
+    "prose_and_images": "Apache-2.0",
+    "code": "Apache-2.0"
+  },
+  "parts": [
+    {
+      "id": "pc",
+      "title": "第一部分 C 语言精髓：嵌入式是另一种 C",
+      "goal": "在碰任何外设之前，把内存模型、指针、volatile、ABI、栈帧与未定义行为的地基打进肌肉记忆，每一课都能用宿主机上的反汇编与 probe 脚本复现。",
+      "files": [
+        "c/00-c-in-mcu.md",
+        "c/01-memory-model.md",
+        "c/02-pointer.md",
+        "c/03-volatile.md",
+        "c/04-struct-abi.md",
+        "c/05-func-pointer.md",
+        "c/06-abi-stack.md",
+        "c/07-ub-misra.md",
+        "c/08-framed-protocol.md"
+      ],
+      "intro": "这一部不教语法，教「同一种语言在另一种机器上的另一种脾气」。九堂课全部在宿主机上取证：probe.sh 跑出段归属，反汇编对着 -O0/-O2 讲 volatile 翻脸，AAPCS 逐寄存器对账。嵌入式 C 的地基不需要开发板，需要的是把「编译器替你做了什么」从假设变成证据。读完的标志：看到 *(volatile uint32_t*)0x40021418 = 1UL<<22 不再是咒语，你能说出地址、类型、volatile 各自管什么。"
+    },
+    {
+      "id": "pb",
+      "title": "第二部分 构建与运行全过程",
+      "goal": "从源码到机器码再到板上运行：四步构建、ELF 解剖、链接脚本、启动过程、map 审计、烧录调试与构建系统，每道工序的产物都亲手拆开对账。",
+      "files": [
+        "build/00-toolchain.md",
+        "build/01-four-steps.md",
+        "build/02-elf.md",
+        "build/03-linker-script.md",
+        "build/04-startup.md",
+        "build/05-map-size.md",
+        "build/06-flash-debug.md",
+        "build/07-build-system.md"
+      ],
+      "intro": "源码到灯亮之间隔着四道工序和一串契约，多数教程一句「make 就行了」带过，这一部把每道工序的产物拆开对账：预处理的上千行展开、.o 里恒为 0 的地址栏、链接脚本删一个词初值就变随机数、map 文件里谁吃了 Flash。取证全部可在宿主机复跑。读完的标志：固件出错时，你的排查顺序从「重烧一遍」变成「先看死在哪一环」。"
+    },
+    {
+      "id": "ps",
+      "title": "第三部分 STM32F407 寄存器主线",
+      "goal": "不碰 HAL、不点 CubeMX：从 RCC 时钟树到看门狗，18 站走完「手册 → 寄存器 → 库源码 → 实物」的完整闭环，对芯片的信任来自手册而不是库。",
+      "files": [
+        "stm32/00-env.md",
+        "stm32/01-arch.md",
+        "stm32/02-rcc-clock.md",
+        "stm32/03-gpio.md",
+        "stm32/04-nvic-exti.md",
+        "stm32/05-systick.md",
+        "stm32/06-tim.md",
+        "stm32/07-usart.md",
+        "stm32/08-dma.md",
+        "stm32/09-adc.md",
+        "stm32/10-dac.md",
+        "stm32/11-i2c.md",
+        "stm32/12-spi.md",
+        "stm32/13-flash-iap.md",
+        "stm32/14-pwr.md",
+        "stm32/15-spl-anatomy.md",
+        "stm32/16-debug-hardfault.md",
+        "stm32/17-watchdog-reset.md"
+      ],
+      "intro": "18 站走完一条闭环：手册 → 寄存器 → 库源码 → 实物。这一部刻意不碰 HAL 与 CubeMX：工具会把会出错的决策藏起来，而学习就是把决策重新自己做一遍。每个外设都从 RM0090 的位定义出发，配上霸天虎板上可复现的工程。读完的标志：换一颗没玩过的芯片，只看手册能在两小时里把 USART 收发跑起来。"
+    },
+    {
+      "id": "pf",
+      "title": "第四部分 FreeRTOS 精讲（内核源码级）",
+      "goal": "对着 FreeRTOS V11.1.0 源码逐行走读：任务与 TCB、上下文切换、调度器、队列、信号量与互斥量、内存管理，直到亲手把它移植上霸天虎。",
+      "files": [
+        "rtos/freertos/00-why-rtos.md",
+        "rtos/freertos/01-task-tcb.md",
+        "rtos/freertos/02-context-switch.md",
+        "rtos/freertos/03-scheduler.md",
+        "rtos/freertos/04-queue.md",
+        "rtos/freertos/05-sem-mutex.md",
+        "rtos/freertos/06-notify-event-timer.md",
+        "rtos/freertos/07-heap.md",
+        "rtos/freertos/08-port-f407.md"
+      ],
+      "intro": "对着 V11.1.0 的源码逐行走读：xTaskCreate 六步、PendSV 换魂术、O(1) 选优的位图与 CLZ、队列结构体的双生设计、heap_4 何时合并何时永远留洞。RTOS 最怕被讲成 API 说明书，这一部讲的是「内核到底替你做了什么、又付出了什么」。读完的标志：能向别人讲清「中断里为什么不能调用阻塞函数」，并给出源码依据。"
+    },
+    {
+      "id": "pr",
+      "title": "第五部分 RT-Thread 精讲",
+      "goal": "从线程调度到 IPC 全家桶、内存管理、设备框架、finsh 控制台与 env 工具链，理解国产 RTOS 的工程哲学，并完成霸天虎移植。",
+      "files": [
+        "rtos/rtthread/00-arch.md",
+        "rtos/rtthread/01-thread-sched.md",
+        "rtos/rtthread/02-ipc.md",
+        "rtos/rtthread/03-mem.md",
+        "rtos/rtthread/04-device.md",
+        "rtos/rtthread/05-finsh.md",
+        "rtos/rtthread/06-env-menuconfig.md",
+        "rtos/rtthread/07-port-f407.md"
+      ],
+      "intro": "同一块板子，另一套内核哲学：万物皆对象、设备框架按名取柄、finsh 控制台、Env 点单式构建。FreeRTOS 教你内核是什么，RT-Thread 教你内核之上怎么组织工程。设备框架与组件生态是另一套问题。移植走 Nano 最小集，五项验收可上板复跑。读完的标志：知道「内核 + 组件」两层各管什么，不再把一个组件的行为算到内核头上。"
+    },
+    {
+      "id": "px",
+      "title": "第六部分 双 OS 对照与选型",
+      "goal": "同一个概念在两套内核里各长什么样：逐项对照任务、调度、IPC 与内存管理，把选型从口味之争变成按约束推导。",
+      "files": [
+        "rtos/compare/00-side-by-side.md",
+        "rtos/compare/01-choose.md"
+      ],
+      "intro": "把两套内核摆上同一张解剖台：二十个维度逐项对照，从优先级数值方向、选优算法，到堆管理与配置哲学。对照的目的不是评高下，而是练迁移能力：知道哪些参数要翻译、哪些习惯必须扔，最后落进一棵可执行的选型决策树。读完的标志：面对新项目，能用约束（预算、生态、认证）推导选型，而不是凭口味。"
+    },
+    {
+      "id": "pe",
+      "title": "第七部分 ESP32-S3 + ESP-IDF",
+      "goal": "换一条技术路线：GPIO 矩阵、IDF 工程解剖、双核中断、驱动框架、Wi-Fi 与 ESP-NOW、分区表/NVS/OTA、低功耗、音频链路与看门狗健康监督。",
+      "files": [
+        "esp32/00-env.md",
+        "esp32/01-arch-boot.md",
+        "esp32/02-gpio-matrix.md",
+        "esp32/03-idf-anatomy.md",
+        "esp32/04-irq-dualcore.md",
+        "esp32/05-uart-driver.md",
+        "esp32/06-spi-i2c-driver.md",
+        "esp32/07-timer-ledc.md",
+        "esp32/08-wifi.md",
+        "esp32/09-bt-espnow.md",
+        "esp32/10-flash-nvs-ota.md",
+        "esp32/11-lowpower.md",
+        "esp32/12-audio-path.md",
+        "esp32/13-watchdog-health.md"
+      ],
+      "intro": "换一条技术路线：GPIO 矩阵的引脚自由、双核与 IRAM 纪律、驱动框架的事件模型、Wi-Fi 状态机与退避重连、NVS/OTA 的掉电安全、音频链路的三道门。IDF 把 FreeRTOS 当出厂形态，P 篇也是 F 篇知识在真实产品里的落点。读完的标志：明白为什么 ISR 必须进 IRAM、拿到 IP 之后为什么还要自己写指数退避。"
+    },
+    {
+      "id": "pg",
+      "title": "第八部分 GD32 双系对照",
+      "goal": "G 篇把 GD32F4xx 与 STM32F407 逐字段对照，V 篇用 GD32VF103 丈量 RISC-V 内核、CLIC 中断与 MTIME。迁移能力就是在对照里练出来的。",
+      "files": [
+        "gd32/00-env.md",
+        "gd32/01-rcu-clock.md",
+        "gd32/02-gpio-af.md",
+        "gd32/03-usart.md",
+        "gd32/04-periph-diff.md",
+        "gd32/05-riscv-toolchain.md",
+        "gd32/06-clic-irq.md",
+        "gd32/07-rcu-108m.md",
+        "gd32/08-mtime-delay.md",
+        "gd32/09-gpio-minimal.md"
+      ],
+      "intro": "国产化迁移不是「换头文件」：G 篇把 GD32F4xx 与 STM32F407 逐字段对账：同名不同义的位、多出来的串口、200MHz 的分频账；V 篇用 GD32VF103 丈量 RISC-V：工具链、启动文件、CLIC 中断、MTIME 时基整套换血。对照是练迁移能力最狠的方式：差异表就是迁移清单。读完的标志：拿到任何「类 STM32」芯片，知道先对哪几笔账。"
+    },
+    {
+      "id": "pl",
+      "title": "第九部分 实物实验中心",
+      "goal": "逻辑分析仪、示波器、电流表下场：UART 抓帧、PWM 实测、优先级反转复现、I2C 解码、功耗账本，每个理论结论都在真实波形与读数上钉一次。",
+      "files": [
+        "lab/e01-blink.md",
+        "lab/e02-logic-uart.md",
+        "lab/e03-scope-pwm.md",
+        "lab/e04-priority-inversion.md",
+        "lab/e05-i2c-eeprom.md",
+        "lab/e06-lowpower-current.md",
+        "lab/e07-qmi8658.md",
+        "lab/e08-audio-play.md"
+      ],
+      "intro": "眼见为实需要仪器下场：逻辑分析仪抓一个 'A' 字节的低位先行、示波器对账 PSC/ARR/CCR 与每个沿、双 OS 复现优先级反转里被吃掉的 3500ms、I2C 抓包逐字节标注 ACK、电流表算出电池能活几天。每个实验都写明仪器、接线与预期现象，未回填的实测老老实实标「待上板实测」。读完的标志：看到「不工作」，你有一套可观察、可二分的排查动作。"
+    },
+    {
+      "id": "pj",
+      "title": "第十部分 双板综合项目",
+      "goal": "把全部知识组装成两台可交付的传感器记录器：采样、滤波、队列、持久化、故障注入与恢复路径，全程可观察。",
+      "files": [
+        "projects/01-f407-logger.md",
+        "projects/02-s3-logger.md"
+      ],
+      "intro": "把全部知识组装成两台可交付的记录器：电位器/六轴 → 滤波 → 16 槽队列 → 主机 CSV，外加配置双槽轮转、看门狗健康监督与四种故障注入。J1/J2 共用公共核心层，port 层只随硬件变，这就是跨平台复用的实战答案。读完的标志：面对「做个小设备」，你先列故障清单，再写第一行代码。"
+    },
+    {
+      "id": "pa",
+      "title": "第十一部分 AI 辅助开发",
+      "goal": "把大模型变成你的结对工程师：提示词给约束、输出对手册、工具化工作流、幻觉有防御，最后用这本书自身的生产线自证。",
+      "files": [
+        "ai/00-pair-not-ghost.md",
+        "ai/01-prompt-patterns.md",
+        "ai/02-manual-reconciliation.md",
+        "ai/03-toolflow-mcp.md",
+        "ai/04-hallucination-defense.md",
+        "ai/05-this-book-pipeline.md"
+      ],
+      "intro": "模型写代码很快，错得也快：总线归属张冠李戴、位语义张冠李戴、你的板子接线它永远看不见。这一部不教你用哪个 AI，教你怎么当 AI 产出的审计员：三段式提示词先把需求钉死，RM0090 逐位对账把假设打回证据，MCP 工具流让模型自己读手册跑构建，最后一章解剖这本书自己的 AI 生产线。读完的标志：模型给你的每一段寄存器代码，你先看它替你做主了哪些决定。"
+    }
+  ],
+  "appendices": [
+    {
+      "id": "appendix-engineering",
+      "title": "附录 A 工程深读：从 IDLE 中断到完整帧协议的五个契约",
+      "file": "A-工程深读.md"
+    },
+    {
+      "id": "appendix-examples",
+      "title": "附录 B 配套工程索引（47 个可编译验证的工程）",
+      "file": "B-例程索引.md"
+    },
+    {
+      "id": "appendix-exercises",
+      "title": "附录 C 章末自测参考答案",
+      "file": "C-习题答案.md"
+    },
+    {
+      "id": "appendix-glossary",
+      "title": "附录 D 术语速查：一句话讲透一个名词",
+      "file": "D-术语表.md"
+    },
+    {
+      "id": "appendix-references",
+      "title": "附录 E 来源、版本与许可",
+      "file": "E-参考资料.md"
+    },
+    {
+      "id": "appendix-faq",
+      "title": "附录 F 常见问题 FAQ",
+      "file": "F-常见问题.md"
+    },
+    {
+      "id": "appendix-oss-map",
+      "title": "附录 G 开源项目与社区地图",
+      "file": "G-开源地图.md"
+    }
+  ],
+  "sources": {
+    "a1": {
+      "title": "RM0090 — STM32F405/415/407/417 Reference Manual",
+      "authority": "ST 官方参考手册",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417.pdf",
+      "snapshot": "Rev 22，2026-05；使用时核对 ST 文档中心当前修订版",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（本书仅链接并引用文档号与页码）",
+      "scope": "S 篇全部寄存器口径：时钟树、GPIO、NVIC/EXTI、TIM、USART、DMA、ADC/DAC、I2C/SPI、Flash/IAP、PWR、看门狗。"
+    },
+    "a2": {
+      "title": "DS8626 — STM32F405xx/407xx Datasheet",
+      "authority": "ST 官方数据手册",
+      "url": "https://www.st.com/resource/en/datasheet/stm32f407vg.pdf",
+      "snapshot": "Rev 12，2026-03",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（仅链接与引用）",
+      "scope": "引脚复用表、电气参数、ADC 采样时间、功耗典型值。"
+    },
+    "a3": {
+      "title": "PM0214 — STM32 Cortex-M4 Programming Manual",
+      "authority": "ST 官方编程手册",
+      "url": "https://www.st.com/resource/en/programming_manual/pm0214-stm32-cortexm4-mcus-programming-manual-stmicroelectronics.pdf",
+      "snapshot": "未核版本；使用时核对当前修订版",
+      "accessed": "2026-10-23",
+      "license": "ST 文档条款（仅链接与引用）",
+      "scope": "NVIC/SCB、异常模型、SysTick、故障寄存器与内核行为。"
+    },
+    "a4": {
+      "title": "CMSIS_5 core_cm4.h（内核外设定义）",
+      "authority": "Arm 官方头文件",
+      "url": "https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/Core/Include/core_cm4.h",
+      "snapshot": "5.9.0，sha256 f5b63d52…（CI 逐字节校验）",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0（上游仓库条款）",
+      "scope": "NVIC/SysTick/SCB 寄存器定义与内核内联函数口径。"
+    },
+    "a5": {
+      "title": "Cortex-M4 Technical Reference Manual（DDI 0439）",
+      "authority": "Arm 官方技术参考",
+      "url": "https://developer.arm.com/documentation/ddi0439/latest",
+      "snapshot": "未核版本",
+      "accessed": "2026-10-23",
+      "license": "Arm 文档条款（仅链接与引用）",
+      "scope": "内核框图、指令时序、SysTick 与调试组件。"
+    },
+    "a6": {
+      "title": "ARMv7-M Architecture Reference Manual（DDI 0403E.e）",
+      "authority": "Arm 官方架构手册",
+      "url": "https://developer.arm.com/documentation/ddi0403/latest",
+      "snapshot": "E.e",
+      "accessed": "2026-10-23",
+      "license": "Arm 文档条款（仅链接与引用）",
+      "scope": "异常入栈帧、EXC_RETURN、BASEPRI、懒堆叠的权威定义。"
+    },
+    "a7": {
+      "title": "ESP32-S3 Technical Reference Manual",
+      "authority": "Espressif 官方技术参考手册",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-s3_technical_reference_manual_cn.pdf",
+      "snapshot": "未核版本；使用时核对当前修订版",
+      "accessed": "2026-10-23",
+      "license": "Espressif 文档条款（仅链接与引用）",
+      "scope": "P 篇 GPIO 矩阵、EXTI/双核、LEDC、I2S、RTC 与看门狗寄存器。"
+    },
+    "a8": {
+      "title": "ESP32-S3 Series Datasheet",
+      "authority": "Espressif 官方数据手册",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_cn.pdf",
+      "snapshot": "未核版本",
+      "accessed": "2026-10-23",
+      "license": "Espressif 文档条款（仅链接与引用）",
+      "scope": "引脚、电气、模组 N16R8 的 PSRAM 占用（IO35/36/37）。"
+    },
+    "a9": {
+      "title": "ESP-IDF Programming Guide v5.5.2",
+      "authority": "Espressif 官方编程指南",
+      "url": "https://docs.espressif.com/projects/esp-idf/zh_CN/v5.5.2/api-reference/index.html",
+      "snapshot": "v5.5.2（与代码基准同版；URL 必须带 v5.5）",
+      "accessed": "2026-10-23",
+      "license": "Espressif 文档条款（仅链接与引用）",
+      "scope": "P 篇全部 API：驱动框架、Wi-Fi、NVS/OTA、功耗管理、TWDT。"
+    },
+    "a10": {
+      "title": "GD32F4xx User Manual",
+      "authority": "兆易创新官方用户手册",
+      "url": "https://www.gd32mcu.com/download/downDocumentByType?dataId=331&dataType=5",
+      "snapshot": "Rev 3.0，2024-01",
+      "accessed": "2026-10-23",
+      "license": "厂商文档条款（仅链接与引用）",
+      "scope": "G 篇 RCU/GPIO/USART 等外设与 STM32F4 的逐字段对照基准。"
+    },
+    "a11": {
+      "title": "GD32F407xx Datasheet",
+      "authority": "兆易创新官方数据手册",
+      "url": "https://www.gd32mcu.com/download/downDocumentByType?dataId=331&dataType=2",
+      "snapshot": "Rev 2.7",
+      "accessed": "2026-10-23",
+      "license": "厂商文档条款（仅链接与引用）",
+      "scope": "G 篇引脚与 AF 复用表。"
+    },
+    "a12": {
+      "title": "GD32F470 Product Brief",
+      "authority": "兆易创新官方简介",
+      "url": "https://www.gd32mcu.com/download/downDocumentByType?dataId=331&dataType=8",
+      "snapshot": "当前版",
+      "accessed": "2026-10-23",
+      "license": "厂商文档条款（仅链接与引用）",
+      "scope": "G0 选型对比（F407 vs F470）。"
+    },
+    "a13": {
+      "title": "GD32VF103 User Manual",
+      "authority": "兆易创新官方用户手册",
+      "url": "https://www.gd32mcu.com/download/downDocumentByType?dataId=32&dataType=5",
+      "snapshot": "Rev 1.0，2019-06",
+      "accessed": "2026-10-23",
+      "license": "厂商文档条款（仅链接与引用）",
+      "scope": "V 篇外设（RCU/GPIO/USART）。"
+    },
+    "a14": {
+      "title": "Bumblebee Core Datasheet",
+      "authority": "芯来科技内核文档",
+      "url": "https://www.gd32mcu.com/download/downDocumentByType?dataId=32&dataType=8",
+      "snapshot": "Rev 1.0，2019-08-28",
+      "accessed": "2026-10-23",
+      "license": "厂商文档条款（仅链接与引用）",
+      "scope": "V 篇 ECLIC、MTIME/MTIMECMP 与 1/4 主频时间源。"
+    },
+    "b1": {
+      "title": "UM10204 — I²C-bus specification and user manual",
+      "authority": "NXP 官方规范",
+      "url": "https://www.nxp.com/docs/en/user-guide/UM10204.pdf",
+      "snapshot": "Rev. 7，2021-10",
+      "accessed": "2026-10-23",
+      "license": "NXP 文档条款（仅链接与引用）",
+      "scope": "S11/E05 起始/停止/ACK 时序、重复起始与总线恢复依据。"
+    },
+    "b2": {
+      "title": "Motorola SPI Block Guide（S12SPIV3）",
+      "authority": "Motorola/Freescale 工程文档（事实标准）",
+      "url": "https://www.nxp.com/docs/en/reference-manual/S12SPIV3.pdf",
+      "snapshot": "V03.06",
+      "accessed": "2026-10-23",
+      "license": "文档条款（仅链接与引用）",
+      "scope": "S12 CPOL/CPHA 四模式的出处。"
+    },
+    "b3": {
+      "title": "I²S bus specification",
+      "authority": "Philips 规范",
+      "url": "https://www.nxp.com/docs/en/data-sheet/S1D11305.pdf",
+      "snapshot": "1986-02，1996-06-05 修订",
+      "accessed": "2026-10-23",
+      "license": "文档条款（仅链接与引用）",
+      "scope": "P12/E08 左右声道与 WS 时序。"
+    },
+    "b4": {
+      "title": "Universal Serial Bus Specification Revision 2.0",
+      "authority": "USB-IF 规范",
+      "url": "https://www.usb.org/document-library/usb-20-specification",
+      "snapshot": "Revision 2.0，2000-04-27",
+      "accessed": "2026-10-23",
+      "license": "USB-IF 文档条款（仅链接与引用）",
+      "scope": "G4 USBHS 背景。"
+    },
+    "b5": {
+      "title": "UTMI+ Low Pin Interface (ULPI) Specification",
+      "authority": "行业标准规范",
+      "url": "https://www.ulpi.org/ulpi1_1.pdf",
+      "snapshot": "Revision 1.1，2004-10-20",
+      "accessed": "2026-10-23",
+      "license": "规范条款（仅链接与引用）",
+      "scope": "G4：GD32F4 与 F407 的 ULPI 12 根信号同脚同 AF。"
+    },
+    "b6": {
+      "title": "CAN Specification · ISO 11898-1:2015",
+      "authority": "Robert Bosch GmbH / ISO 标准",
+      "url": "https://www.bosch-mobility.com/en/products-and-services/mobility/hardware-and-software/can/can-classic/",
+      "snapshot": "Version 2.0，1991 · ISO 11898-1:2015",
+      "accessed": "2026-10-23",
+      "license": "标准条款（仅链接与引用）",
+      "scope": "G4 bxCAN 位时序逐位对照。"
+    },
+    "c1": {
+      "title": "ISO/IEC 9899:2011（C11）；免费草案 WG14 N1570",
+      "authority": "ISO C 标准及工作组草案",
+      "url": "https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf",
+      "snapshot": "N1570，2011-04-12",
+      "accessed": "2026-10-23",
+      "license": "标准草案公开分发（引用条款号）",
+      "scope": "C2/C3/C7：对象模型、volatile 语义、附录 J.2 未定义行为清单。"
+    },
+    "c2": {
+      "title": "MISRA C:2012（含 Amendment）· MISRA C:2023",
+      "authority": "MISRA 编码指南",
+      "url": "https://www.misra.org.uk/product/misra-c-2023/",
+      "snapshot": "2013 · 2023",
+      "accessed": "2026-10-23",
+      "license": "MISRA 条款（仅引用规则编号）",
+      "scope": "C7 规则取舍与「嵌入式十条」。"
+    },
+    "c3": {
+      "title": "Executable and Linking Format (ELF) Specification",
+      "authority": "TIS 行业规范",
+      "url": "https://refspecs.linuxbase.org/elf/elf.pdf",
+      "snapshot": "Version 1.2，1995-05",
+      "accessed": "2026-10-23",
+      "license": "规范公开分发（仅链接与引用）",
+      "scope": "B2/C1 文件视图与段视图两副目录。"
+    },
+    "c4": {
+      "title": "Procedure Call Standard for the Arm Architecture（AAPCS32，IHI 0042）",
+      "authority": "Arm 官方 ABI 标准",
+      "url": "https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst",
+      "snapshot": "abi-aa 仓库当前版",
+      "accessed": "2026-10-23",
+      "license": "Arm 文档条款（仅链接与引用）",
+      "scope": "C4/C6 对齐与填充、r0–r3 传参、偶奇寄存器对。"
+    },
+    "c5": {
+      "title": "AN298 — Cortex-M4(F) Lazy Stacking and Context Switching",
+      "authority": "Arm 官方应用笔记",
+      "url": "https://developer.arm.com/documentation/dai0298/latest",
+      "snapshot": "DAI0298A，2012-03",
+      "accessed": "2026-10-23",
+      "license": "Arm 文档条款（仅链接与引用）",
+      "scope": "F2 为什么大多数中断不付 FPU 帧的钱。"
+    },
+    "c6": {
+      "title": "Cortex-M4 Devices Generic User Guide（DUI 0553）",
+      "authority": "Arm 官方用户指南",
+      "url": "https://developer.arm.com/documentation/dui0553/latest",
+      "snapshot": "未核版本",
+      "accessed": "2026-10-23",
+      "license": "Arm 文档条款（仅链接与引用）",
+      "scope": "S 篇 CMSIS 内核函数（__WFI、NVIC_*）口径。"
+    },
+    "c7": {
+      "title": "GNU ld 手册（binutils）",
+      "authority": "GNU 工具链官方手册",
+      "url": "https://sourceware.org/binutils/docs/ld/",
+      "snapshot": "当前版；区域属性只认 r/w/x/a/i/l",
+      "accessed": "2026-10-23",
+      "license": "GNU Free Documentation License",
+      "scope": "B3 MEMORY/SECTIONS 语法；B5 map 三板斧。"
+    },
+    "c8": {
+      "title": "RISC-V ISA：Vol. I Unprivileged · Vol. II Privileged",
+      "authority": "RISC-V International 官方规范",
+      "url": "https://riscv.org/technical/specifications/",
+      "snapshot": "20191213 · 20211203",
+      "accessed": "2026-10-23",
+      "license": "规范公开分发（仅链接与引用）",
+      "scope": "V0/V3 指令集、mtime/mtimecmp 语义、CSR 编号。"
+    },
+    "c9": {
+      "title": "Core-Local Interrupt Controller (CLIC) 规范草案",
+      "authority": "RISC-V 工作组草案",
+      "url": "https://github.com/riscv/riscv-fast-interrupt",
+      "snapshot": "草案仓库当前版",
+      "accessed": "2026-10-23",
+      "license": "仓库许可（仅链接与引用）",
+      "scope": "V1：Bumblebee 的 ECLIC 是它的增强实现。"
+    },
+    "d1": {
+      "title": "Liu & Layland. Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment. J. ACM 20(1): 46–61, 1973",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1145/321738.321743",
+      "snapshot": "DOI 10.1145/321738.321743",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；本书仅链接与引用结论",
+      "scope": "F3 固定优先级抢占式调度与 69.3% 利用率上界。"
+    },
+    "d2": {
+      "title": "Sha, Rajkumar & Lehoczky. Priority Inheritance Protocols. IEEE Trans. Computers 39(9): 1175–1185, 1990",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/12.57058",
+      "snapshot": "DOI 10.1109/12.57058",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "F5/R2 优先级继承、E04 复现依据。"
+    },
+    "d3": {
+      "title": "Masmano et al. TLSF: a New Dynamic Memory Allocator for Real-Time Systems. ECRTS 2004, pp. 79–88",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/EMRTS.2004.1311009",
+      "snapshot": "DOI 10.1109/EMRTS.2004.1311009",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "R3 两级隔离适配 O(1) 分配的原始出处。"
+    },
+    "d4": {
+      "title": "Wilson et al. Dynamic Storage Allocation: A Survey and Critical Review. IWMM 1995, LNCS 986, pp. 1–116",
+      "authority": "同行评审综述",
+      "url": "https://doi.org/10.1007/3-540-60368-9_19",
+      "snapshot": "DOI 10.1007/3-540-60368-9_19",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "F7/R3 碎片、首次适配/最佳适配/隔离适配的代价。"
+    },
+    "d5": {
+      "title": "Lamport. Proving the Correctness of Multiprocess Programs. IEEE TSE SE-3(2): 125–143, 1977",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/TSE.1977.229904",
+      "snapshot": "DOI 10.1109/TSE.1977.229904",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "C5 单生产者单消费者环形缓冲不加锁为什么是对的。"
+    },
+    "d6": {
+      "title": "McCreary & Gray. All-MOS Charge Redistribution ADC Techniques — Part I. IEEE JSSC 10(6): 371–379, 1975",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/JSSC.1975.1050629",
+      "snapshot": "DOI 10.1109/JSSC.1975.1050629",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "S9 片上 SAR ADC 电容阵列电荷再分配。"
+    },
+    "d7": {
+      "title": "Eide & Regehr. Volatiles Are Miscompiled, and What to Do About It. EMSOFT 2008, pp. 255–264",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1145/1450058.1450093",
+      "snapshot": "DOI 10.1145/1450058.1450093",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "C3 十三款编译器 volatile 错编实测与访问函数对策。"
+    },
+    "d8": {
+      "title": "Wang et al. Towards Optimization-Safe Systems: Analyzing the Impact of Undefined Behavior. SOSP 2013, pp. 260–275",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1145/2517349.2522728",
+      "snapshot": "DOI 10.1145/2517349.2522728",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "C7 优化器利用 UB 删掉安全检查的真实案例集。"
+    },
+    "d9": {
+      "title": "Koopman & Chakravarty. CRC Polynomial Selection for Embedded Networks. DSN 2004, pp. 145–154",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/DSN.2004.1311885",
+      "snapshot": "DOI 10.1109/DSN.2004.1311885",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "C8 为什么选 CRC-16/CCITT；P10 NVS 的 CRC32。"
+    },
+    "d10": {
+      "title": "Dijkstra. Solution of a Problem in Concurrent Programming Control. Commun. ACM 8(9): 569, 1965",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1145/365559.365617",
+      "snapshot": "DOI 10.1145/365559.365617",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "F5/C5 互斥这件事的起点。"
+    },
+    "d11": {
+      "title": "Reeves. What Really Happened on Mars? RISKS Digest 19.49, 1997-12",
+      "authority": "JPL 工程师一手复盘（工程随笔）",
+      "url": "https://catless.ncl.ac.uk/Risks/19.49.html#subj1.1",
+      "snapshot": "RISKS Digest 19.49",
+      "accessed": "2026-10-23",
+      "license": "转载条款（仅链接与引用）",
+      "scope": "F5/E04 火星探路者优先级反转事故。"
+    },
+    "d12": {
+      "title": "Ganssle. Great Watchdog Timers for Embedded Systems",
+      "authority": "资深工程师工程随笔（非规范）",
+      "url": "https://web.archive.org/web/20241214122124/https://www.ganssle.com/watchdogs.htm",
+      "snapshot": "Wayback Machine 存档（2024-12-14）",
+      "accessed": "2026-11-05",
+      "license": "作者站点条款（仅链接与引用）",
+      "scope": "S17/P13 窗口看门狗为什么比定时喂狗可靠。"
+    },
+    "d13": {
+      "title": "Cheshire & Baker. Consistent Overhead Byte Stuffing. IEEE/ACM Trans. Networking 7(2): 159–172, 1999",
+      "authority": "同行评审论文",
+      "url": "https://doi.org/10.1109/90.769765",
+      "snapshot": "DOI 10.1109/90.769765",
+      "accessed": "2026-10-23",
+      "license": "版权方保留权利；仅链接与引用",
+      "scope": "C8 帧协议选 COBS 而不是转义或长度前缀的理由。"
+    },
+    "e1": {
+      "title": "Joseph Yiu. The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors, 3rd ed. Newnes, 2013",
+      "authority": "教科书（ISBN 978-0-12-408082-9）",
+      "url": "https://www.elsevier.com/books/the-definitive-guide-to-arm-cortex-m3-and-cortex-m4-processors/yiu/978-0-12-408082-9",
+      "snapshot": "3rd ed., 2013",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用观点与章节）",
+      "scope": "S1/S4/S16、F2：异常模型、双栈指针、懒堆叠。"
+    },
+    "e2": {
+      "title": "John R. Levine. Linkers and Loaders. Morgan Kaufmann, 2000",
+      "authority": "教科书（ISBN 1-55860-496-0）",
+      "url": "https://linker-and-loader.com/",
+      "snapshot": "2000 版；作者站点有章节草稿",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用）",
+      "scope": "B2–B4 符号决议与重定位。"
+    },
+    "e3": {
+      "title": "俞甲子、石凡、潘爱民.《程序员的自我修养——链接、装载与库》. 电子工业出版社, 2009",
+      "authority": "中文教科书（ISBN 978-7-121-08511-9）",
+      "url": "https://book.douban.com/subject/3232130/",
+      "snapshot": "2009 版",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用）",
+      "scope": "B 篇最佳中文伴侣书。"
+    },
+    "e4": {
+      "title": "Richard Barry. Mastering the FreeRTOS Real Time Kernel, v1.1.0",
+      "authority": "FreeRTOS 官方教程书",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel-Book",
+      "snapshot": "v1.1.0",
+      "accessed": "2026-10-23",
+      "license": "上游许可（仅链接与引用）",
+      "scope": "F 篇 API 口径（本站讲内核源码，它讲用法）。"
+    },
+    "e5": {
+      "title": "Knuth. The Art of Computer Programming, Vol. 1, 3rd ed., §2.5",
+      "authority": "教科书（ISBN 978-0-201-89683-1）",
+      "url": "https://www-cs-faculty.stanford.edu/~knuth/taocp.html",
+      "snapshot": "3rd ed., 1997",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用）",
+      "scope": "F7 边界标记法——heap_4 合并空闲块的祖师爷。"
+    },
+    "e6": {
+      "title": "Kernighan & Ritchie. The C Programming Language, 2nd ed. Prentice Hall, 1988",
+      "authority": "教科书（ISBN 0-13-110362-8）",
+      "url": "https://www.pearson.com/en-us/subject-catalog/p/c-programming-language-2nd-edition/P20000000CP8",
+      "snapshot": "2nd ed., 1988",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用）",
+      "scope": "C 篇默认先修。"
+    },
+    "e7": {
+      "title": "刘火良、杨森.《RT-Thread 内核实现与应用开发实战指南——基于 STM32》. 机械工业出版社, 2019",
+      "authority": "中文教科书（ISBN 978-7-111-62677-4）",
+      "url": "https://book.douban.com/subject/34703357/",
+      "snapshot": "2019 版",
+      "accessed": "2026-10-23",
+      "license": "版权书（仅引用）",
+      "scope": "R 篇伴侣书（从零手写内核的路线）。"
+    },
+    "f1": {
+      "title": "FreeRTOS/FreeRTOS-Kernel",
+      "authority": "FreeRTOS 官方内核源码",
+      "url": "https://github.com/FreeRTOS/FreeRTOS-Kernel/tree/V11.1.0",
+      "snapshot": "V11.1.0，portable/GCC/ARM_CM4F；ESP-IDF 内置 V10.5.1 SMP 改版不混读",
+      "accessed": "2026-10-23",
+      "license": "MIT（上游仓库）",
+      "scope": "F 篇全部行号与结构体依据。"
+    },
+    "f2": {
+      "title": "espressif/esp-idf",
+      "authority": "Espressif 官方框架源码",
+      "url": "https://github.com/espressif/esp-idf/tree/v5.5.2",
+      "snapshot": "v5.5.2；CI 用 espressif/idf:v5.5.2 容器构建",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0（上游仓库）",
+      "scope": "P 篇驱动框架与 soc_caps.h 结论。"
+    },
+    "f3": {
+      "title": "STMicroelectronics/cmsis_device_f4（stm32f407xx.h）",
+      "authority": "ST 官方 CMSIS 器件头文件",
+      "url": "https://github.com/STMicroelectronics/cmsis_device_f4/tree/v2.6.11",
+      "snapshot": "v2.6.11，sha256 bd21220e…（CI 逐字节校验）",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0（上游仓库）",
+      "scope": "寄存器基址与位域第二来源（GPIOF=0x40021400 等）。"
+    },
+    "f4": {
+      "title": "STMicroelectronics/stm32f4xx_hal_driver",
+      "authority": "ST 官方 HAL 源码",
+      "url": "https://github.com/STMicroelectronics/stm32f4xx_hal_driver",
+      "snapshot": "@ 1f6451c",
+      "accessed": "2026-10-23",
+      "license": "BSD-3-Clause（上游仓库）",
+      "scope": "S2/S6/S7/S8 的库源码上游对照。"
+    },
+    "f5": {
+      "title": "STM32F4 StdPeriph Library（SPL）",
+      "authority": "ST 官方标准外设库",
+      "url": "https://www.st.com/en/embedded-software/stsw-stm32039.html",
+      "snapshot": "V1.8.0（官方未随 GitHub 分发，取自板卡资料盘）",
+      "accessed": "2026-10-23",
+      "license": "ST 固件条款（仅链接与讲解 API）",
+      "scope": "S3/S11/S12/S15 的库封装对照。"
+    },
+    "f6": {
+      "title": "GigaDevice GD32F4xx Firmware Library",
+      "authority": "兆易创新官方固件库",
+      "url": "https://github.com/GigaDevice Semiconductor/GD32F4xx_Firmware_Library",
+      "snapshot": "V3.3.3 @ 10d02f4",
+      "accessed": "2026-10-23",
+      "license": "上游许可（仅链接与引用）",
+      "scope": "G 篇 RCU/FMC 逐字段对照。"
+    },
+    "f7": {
+      "title": "GigaDevice GD32VF103 Firmware Library",
+      "authority": "兆易创新官方固件库",
+      "url": "https://github.com/GigaDevice Semiconductor/GD32VF103_Firmware_Library",
+      "snapshot": "@ 7ab0521",
+      "accessed": "2026-10-23",
+      "license": "上游许可（仅链接与引用）",
+      "scope": "V 篇固件库与启动文件。"
+    },
+    "f8": {
+      "title": "RT-Thread/rt-thread",
+      "authority": "RT-Thread 官方内核源码",
+      "url": "https://github.com/RT-Thread/rt-thread",
+      "snapshot": "未固定 tag：CI 稀疏检出 master（src、include、libcpu/arm/cortex-m4）——已知可复现性缺口",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0（上游仓库）",
+      "scope": "R 篇行号依据；行号可能随上游漂移。"
+    },
+    "mcu-code": {
+      "title": "本仓库配套工程（code/，47 项）",
+      "authority": "项目原始资料",
+      "url": "https://github.com/zhuguang-ZFG/mcu/tree/main/code",
+      "snapshot": "本书构建时的 code/ 与 code/projects.json（CI 按清单矩阵逐个验证）",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0",
+      "scope": "章节配套的寄存器版/RTOS/IDF 示例工程：入口、构建方式与验证状态。"
+    },
+    "mcu-lab": {
+      "title": "实物实验中心与装备清单",
+      "authority": "项目原始资料",
+      "url": "https://zhuguang-zfg.github.io/mcu/guide/hardware.html",
+      "snapshot": "本书构建时的 docs/guide/hardware.md 与 docs/lab/",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0",
+      "scope": "基准板卡（霸天虎/实战派 S3）、仪器与接线实测口径。"
+    },
+    "mcu-anim": {
+      "title": "机制动画库（docs/public/anim/，103 张 SMIL SVG）",
+      "authority": "项目原始资料",
+      "url": "https://github.com/zhuguang-ZFG/mcu/tree/main/docs/public/anim",
+      "snapshot": "本书构建时的动画目录；版式与色板规范见 .trellis/spec/docs-site/animation.md",
+      "accessed": "2026-10-23",
+      "license": "Apache-2.0",
+      "scope": "正文机制动画的图形化讲解；HTML 版随书内嵌播放。"
+    },
+    "ai-copilot-vscode-overview": {
+      "id": "ai-copilot-vscode-overview",
+      "title": "Build with AI in VS Code（agents 总览；原 Copilot agent mode 文档现汇入此体系）",
+      "authority": "Microsoft — Visual Studio Code 官方文档",
+      "url": "https://code.visualstudio.com/docs/agents/overview",
+      "snapshot": "页面标注 10/21/2026；docs 已将 chat/agent mode 重排为 Agents 章节，旧 /docs/copilot/chat/chat-agent-mode 已跳转",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图（VS Code 内 agent 定位与 harness 概念）；A3（agent loop 官方定义、permissions/approvals 权限机制、MCP servers 接入）；A4（『AI can produce incorrect code…You remain responsible』）。"
+    },
+    "ai-copilot-vscode-agentmode-blog": {
+      "id": "ai-copilot-vscode-agentmode-blog",
+      "title": "Introducing GitHub Copilot agent mode (preview) — VS Code 官方博客",
+      "authority": "Microsoft — Visual Studio Code 官方博客",
+      "url": "https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode",
+      "snapshot": "2025-02-24 发布；agent mode 首次以 preview 亮相的公告文",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 工具流：agent 模式『读错误输出—自动修正—循环直至任务完成』工作机制的一手时间锚点与机制描述。"
+    },
+    "ai-copilot-vscode-cpp": {
+      "id": "ai-copilot-vscode-cpp",
+      "title": "C/C++ for Visual Studio Code（C/C++ 语言支持页）",
+      "authority": "Microsoft — Visual Studio Code 官方文档",
+      "url": "https://code.visualstudio.com/docs/languages/cpp",
+      "snapshot": "页面标注 10/21/2026",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 嵌入式 C 工作流可用性：Microsoft C/C++ 扩展（ms-vscode.cpptools）提供 IntelliSense/调试，同页确认 GitHub Copilot 在 C/C++ 工作流内提供编码建议——即嵌入式 C 开发在 VS Code 内可直接使用 Copilot 全家桶。"
+    },
+    "ai-copilot-github-cloud": {
+      "id": "ai-copilot-github-cloud",
+      "title": "GitHub Copilot on GitHub.com（含 Copilot cloud agent；旧 about-coding-agent 页 301 至此）",
+      "authority": "GitHub 官方文档",
+      "url": "https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github",
+      "snapshot": "页面无显式日期（docs.github.com 持续更新），2026-10-27 抓取；文内已含 cloud agent / code review / automations 新口径",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 云端 agent 定位；A3（cloud agent 在 ephemeral 云开发环境编辑文件、跑测试与 linter）；A4（官方明示 59 分钟会话上限、单分支单 PR 限制，以及『Logs do not replace your own review and testing』『can produce incorrect or suboptimal code, including…security vulnerabilities』）。"
+    },
+    "ai-copilot-ccr-cpp": {
+      "id": "ai-copilot-ccr-cpp",
+      "title": "GitHub Copilot code review now supports C, C++, Kotlin, and Swift — GitHub Changelog",
+      "authority": "GitHub 官方 changelog",
+      "url": "https://github.blog/changelog/2025-04-23-github-copilot-code-review-now-supports-c-c-kotlin-and-swift/",
+      "snapshot": "2025-04-23 发布",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0/A4 嵌入式 C 可用性：Copilot code review 自 2025-04 起支持 C/C++（覆盖 PR 中逾 90% 文件类型）；配合 Using GitHub Copilot code review 文档（docs.github.com）可见评审入口覆盖 VS Code / Visual Studio / JetBrains（含 CLion）/ Xcode / gh CLI。"
+    },
+    "ai-claude-code-overview": {
+      "id": "ai-claude-code-overview",
+      "title": "Claude Code Docs — Overview",
+      "authority": "Anthropic 官方文档（code.claude.com/docs）",
+      "url": "https://code.claude.com/docs/en/overview",
+      "snapshot": "页面无显式日期，2026-10-27 抓取；内容已含 Desktop/Web 表面、Agent SDK、scheduled tasks 等 2026 年新口径",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图（Claude Code 定义与四种表面：terminal/IDE extension/desktop/web）；A1（CLAUDE.md 官方说法）；A3（MCP 官方说法、hooks、skills、sub-agents、CLI 可管道化 `claude -p`）。"
+    },
+    "ai-claude-code-memory": {
+      "id": "ai-claude-code-memory",
+      "title": "How Claude remembers your project（memory 机制页）",
+      "authority": "Anthropic 官方文档",
+      "url": "https://code.claude.com/docs/en/memory",
+      "snapshot": "页面无显式日期；正文引用 CLI v2.1.211–v2.1.285 行为差异，判定为 2026 年下半年现行版本",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A1/A3 记忆机制底稿：CLAUDE.md（user/project/local/managed 四作用域、目录层级加载、@import）与 auto memory（~/.claude/projects/<project>/memory/、MEMORY.md 索引首 200 行或 25KB 载入）；AGENTS.md 兼容；『Claude treats them as context, not enforced configuration』——A4 幻觉/纪律防御的制度化对照。"
+    },
+    "ai-claude-code-repo": {
+      "id": "ai-claude-code-repo",
+      "title": "anthropics/claude-code — 官方仓库 README",
+      "authority": "Anthropic 官方 GitHub 仓库",
+      "url": "https://github.com/anthropics/claude-code",
+      "snapshot": "README 现行版，2026-10-27 抓取",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 agentic coding 一手定义：『an agentic coding tool that lives in your terminal, understands your codebase, edits files, runs commands』——比 overview 页营销语更贴『结对工程师』口径。"
+    },
+    "ai-cursor-docs": {
+      "id": "ai-cursor-docs",
+      "title": "Cursor Documentation 首页（产品定位）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs",
+      "snapshot": "页面无显式日期；Models 表已列 Claude Opus 5.5 / GPT-5.6 / Gemini 3.8 等 2026 下半年模型，判定为现行版",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0 工具地图：『Cursor is a coding agent for building ambitious software』——官方把整款产品定位为 coding agent 而非『带 AI 的编辑器』（定位语，部分属营销口径，引用时取能力句不取形容词）。"
+    },
+    "ai-cursor-agent": {
+      "id": "ai-cursor-agent",
+      "title": "Cursor Docs — Agent（Agent 机制总览）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs/agent/overview",
+      "snapshot": "页面无显式日期，2026-10-27 抓取；含 /goal、side chats 等 2026 新特性",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 工具流：Agent 三构件（Instructions/Tools/Model）；工具清单（编辑文件、跑终端命令、浏览器、图片生成、提问澄清）；『There is no limit on the number of tool calls』；Checkpoints 快照回滚；运行中 steering/排队消息——与 VS Code/Claude Code 的工具流图互为对照。"
+    },
+    "ai-cursor-run-modes": {
+      "id": "ai-cursor-run-modes",
+      "title": "Cursor Docs — Run Modes（Auto-review / Allowlist / Run Everything 与沙箱）",
+      "authority": "Anysphere — Cursor 官方文档",
+      "url": "https://cursor.com/docs/agent/security/run-modes",
+      "snapshot": "页内 Changelog 表：v3.6（2026-05-29）Auto-review 成推荐默认、v3.23（2026-10-01）新增 Read access Workspace 模式——日期线索以此表为准",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 权限与安全边界主来源：三档运行模式、后端 LLM 分类器（可读 ReadFile/Grep/Glob/ListDir）、『Auto-review is not a security boundary』、macOS Seatbelt / Linux Landlock+seccomp 沙箱、Cloud Agents 不走 Run Modes。"
+    },
+    "ai-mcp-spec": {
+      "id": "ai-mcp-spec",
+      "title": "Model Context Protocol Specification（latest，协议版本 2026-07-28）",
+      "authority": "Model Context Protocol 官方规范（现隶属 Linux Foundation AAIF）",
+      "url": "https://modelcontextprotocol.io/specification/latest",
+      "snapshot": "协议版本 2026-07-28（latest 别名解析至此）；规范用语遵循 BCP 14 / RFC 2119",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 MCP 是什么的一手规范定义：开放协议、JSON-RPC 2.0、Hosts/Clients/Servers 三方、Server 三大特性 Resources/Prompts/Tools、安全原则（用户明示同意、工具调用前须授权）——ai-mcp-toolflow.svg 的规范层底稿。"
+    },
+    "ai-mcp-architecture": {
+      "id": "ai-mcp-architecture",
+      "title": "MCP — Architecture overview",
+      "authority": "Model Context Protocol 官方文档",
+      "url": "https://modelcontextprotocol.io/docs/learn/architecture",
+      "snapshot": "对应协议版本 2026-07-28，2026-10-27 抓取",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3 架构图底稿：host 为每个 server 建一个 client；本地 STDIO server 通常服务单 client、远程 Streamable HTTP 服务多 client；两层划分（data layer / transport layer）；三大 primitives 定义与 */list、tools/call 方法；声明 LSP 式生态标准化愿景。"
+    },
+    "ai-mcp-servers": {
+      "id": "ai-mcp-servers",
+      "title": "modelcontextprotocol/servers — 官方参考实现仓库 README",
+      "authority": "MCP steering group 官方仓库",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "snapshot": "README 现行版（仓库 91.6k stars，2026-10-27 抓取）；reference servers 仅 7 个，更多服务器走 MCP Registry",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A3『官方 reference servers 有哪些类别』的直接答案：在册 reference 为 Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time；GitHub、GitLab、Google Drive、Postgres、SQLite、Slack 等已归档至 servers-archived；官方明示其为教学示例『not as production-ready solutions』。"
+    },
+    "ai-mcp-anthropic-donation": {
+      "id": "ai-mcp-anthropic-donation",
+      "title": "Donating MCP to the Agentic AI Foundation — Anthropic 官方公告",
+      "authority": "Anthropic 官方新闻",
+      "url": "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation",
+      "snapshot": "2025-12 公告（Linux Foundation 2025-12-09 新闻稿口径一致）",
+      "accessed": "2026-10-27",
+      "license": "厂商官方文档条款（仅链接与引用断言）",
+      "scope": "A0/A3 治理事实：MCP 由 Anthropic 捐赠给 Linux Foundation 下设 Agentic AI Foundation（与 Block goose、OpenAI AGENTS.md 同为创始项目；Google/Microsoft/AWS/Cloudflare/Bloomberg 支持）；官方 Registry 上线；2025-11-25 spec 引入异步操作、无状态化、server 身份与官方 extensions。"
+    }
+  },
+  "chapter_guides": {
+    "ai/00-pair-not-ghost.md": {
+      "question": "AI 都能写出能跑的代码了，我为什么还要学寄存器和 RTOS？",
+      "deliverable": "一张「模型能替你做与不能替你做」清单 + 2026 工具地图（Copilot/Claude Code/Cursor/MCP 各一条官方可引定位）+ 学习阶段与工作阶段两用法边界。",
+      "boundary": "只立工作观；对账在 A2、提示词在 A1，不展开任何模型原理；不评价任何具体产品优劣，只引官方定位（访问日期 2026-10-27，界面会变、方法论不变）。",
+      "sources": [
+        "ai-copilot-vscode-overview",
+        "ai-claude-code-overview",
+        "ai-cursor-run-modes",
+        "ai-mcp-spec",
+        "mcu-code"
+      ]
+    },
+    "ai/01-prompt-patterns.md": {
+      "question": "同样一个外设需求，为什么有人一句话搞定、有人贴五十行还被模型带偏？",
+      "deliverable": "三段式提示词模板（上下文/约束/验收）+ 同一霸道者点灯任务的弱强提示对照实录 + 模型「替你做主」决定清单。",
+      "boundary": "工具深度配置在 A3，对账验收细则只引 A2 不展开；提示词中文书写、术语保留英文原词；案例全部基于霸道者点灯任务，不评价具体产品优劣。",
+      "sources": [
+        "a1",
+        "ai-cursor-agent",
+        "ai-claude-code-overview",
+        "mcu-code"
+      ]
+    },
+    "ai/02-manual-reconciliation.md": {
+      "question": "模型给的 RCC/GPIO 初始化能过编译，烧进板子灯不亮，怎么知道它错在哪一位？",
+      "deliverable": "对账三问清单（名/位/序）+ 以霸道者 PF6 共阳红灯为靶子的逐位对账全表 + 证据三元组回喂句范例，含总线归属、硬件语境、位语义、顺序四类幻觉的实锤改法。",
+      "boundary": "对账流程以 RM0090 §2.3/§7.3/§8.4 与板卡原理图为唯一判据；点灯例子的上板现象属预期逻辑结果，读者须在自己的板子上复现；弱强提示对照与工具流分别在 A1/A3，本章不展开；不评价任何具体 AI 产品。",
+      "sources": [
+        "a1",
+        "mcu-code"
+      ]
+    },
+    "ai/03-toolflow-mcp.md": {
+      "question": "让模型自己看手册、自己跑构建，和把错误粘给它，差在哪？",
+      "deliverable": "MCP 三角色架构解说（Host/Client/Server、三类原语）+ 三个嵌入式场景实录（读手册快照/跑交叉构建/串口日志回喂证据三元组）+ agent 权限与安全边界清单。",
+      "boundary": "消费侧为主，不教自建 MCP server；对账与验收细则只引 A2 不展开；场景演示全用仓库既有工程，不引入新工程；引用官方口径带访问日期，界面会变、方法论不变。",
+      "sources": [
+        "ai-mcp-spec",
+        "ai-mcp-architecture",
+        "ai-mcp-servers",
+        "ai-cursor-run-modes",
+        "ai-claude-code-memory"
+      ]
+    },
+    "ai/04-hallucination-defense.md": {
+      "question": "模型编的寄存器名能有多像真的？",
+      "deliverable": "八类幻觉类型学（A2 四类手册层 + 假库函数/假引证/假勘误/假芯片特性四类话语层）+ 「正确性定义在哪」验证决策树 + 每类最低成本验证动作清单。",
+      "boundary": "案例限于 S 篇/P 篇已学外设（GPIO/USART/LEDC/Matrix），不引新外设知识；A2 的对账流程不重复，本章只讲「错的样子」与分流入口；不评价具体产品。",
+      "sources": [
+        "a1",
+        "ai-claude-code-memory",
+        "ai-copilot-github-cloud",
+        "mcu-code"
+      ]
+    },
+    "ai/05-this-book-pipeline.md": {
+      "question": "「把大模型当结对工程师」到底灵不灵？这本书本身就是实验。",
+      "deliverable": "本书 AI 生产线解剖：八道工序与十几道门、三个真实事故与长出的门（滤镜光栅化/幽灵连字符/数字漂移）、AI 的四个角色（采集/起草/评审/对账）、每条论断配复现命令的度量表、四条 AI 不许碰的边界。",
+      "boundary": "讲工作流证据不讲工具安装；行号引证以成稿当期仓库为准；「待上板实测」纪律不因自动化而豁免；门的阈值只许变严不许变松。",
+      "sources": [
+        "mcu-code",
+        "ai-copilot-vscode-overview"
+      ]
+    },
+    "c/00-c-in-mcu.md": {
+      "question": "同样一行 C，在 PC 上越界是段错误弹窗，到单片机上为什么变成隔壁外设寄存器被改写、没有弹窗只有事故？",
+      "deliverable": "一张裸机 C 与应用 C 四维差异清单（无 OS、内存按 KB、直碰硬件、复位向量起跑），加一条用『向 0x40021418 写 32 位值』口径描述的寄存器写，并在 00-blink 三个文件里各指认一处落点。",
+      "boundary": "本章只立世界观：启动文件逐行走读在 B4、volatile 合同在 C3、交叉工具链配置在 B0/B1；HardFault 只交代形态，定位方法在 S16，CCM 内存不展开。",
+      "sources": [
+        "a3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/01-memory-model.md": {
+      "question": "int g_init = 5 上电瞬间 RAM 里为什么不是 5？初值存在哪、谁搬来，.bss 凭什么一个字节 Flash 都不占？",
+      "deliverable": "一张 11 个对象的段归属实测表（nm 地址/字母/占哪种介质）加一笔 const 经济学手算：256 字节表 .data 256→0、.text 148→404，sh probe.sh 一条命令复现。",
+      "boundary": "结论以本工程链接脚本为准（.rodata 并入 .text，nm 字母会骗人，判断介质只看地址前缀）；_Min_Stack 只是链接期下限，运行期栈溢出它不管；CCM 与 DMA 的坑在 S8。",
+      "sources": [
+        "c3",
+        "c7",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/02-pointer.md": {
+      "question": "点灯咒语里地址、类型、volatile 各管什么？为什么把 uint32_t* 换成 uint16_t*，灯就『亮得下不来』？",
+      "deliverable": "一份 read/write 六函数的宽度对照汇编（ldrb/ldrh/ldr、strb/strh/str）加一张 const 三组合『锁谁/放行谁』表，索引与宏两种写法编出逐字节相同机器码的对照记录。",
+      "boundary": "『合法的 C 指针值』不等于『可访问的地址』，最终裁判是存储映射；volatile 的完整合同在 C3、野指针 HardFault 定位在 S16、结构体封装寄存器在 C4，均不在本章展开。",
+      "sources": [
+        "c1",
+        "a3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/03-volatile.md": {
+      "question": "volatile 到底向编译器承诺了什么，为什么加了 volatile 的共享标志仍然可能出错？",
+      "deliverable": "一份 -O0/-O2 反汇编对照（volatile 有无各一版）和一张『volatile 保证/不保证』清单。",
+      "boundary": "volatile 不提供原子性与顺序性；并发正确性要靠本章末尾的访问函数/关中断方案，而非更多 volatile。",
+      "sources": [
+        "c1",
+        "d7",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/04-struct-abi.md": {
+      "question": "GPIO_TypeDef 凭什么罩住整组寄存器？成员偏移由谁担保，位域和 pack(1) 为什么是硬件寄存器的禁区？",
+      "deliverable": "三个结构体的偏移/填充手算（Padded_t=12、Packed_t=8）经 offsetof 与 _Static_assert 验证，附对齐三规则表和位域改掩码宏的替代写法。",
+      "boundary": "布局规则出自 AAPCS32，位域分配顺序是实现定义、换编译器即翻车，不能外推；pack(1) 的正确用途是协议帧不是寄存器；参数怎么进函数属 C6 的调用约定，不属本章。",
+      "sources": [
+        "c4",
+        "c1",
+        "f3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/05-func-pointer.md": {
+      "question": "中断驱动代码为什么总在排列组合『函数指针+状态机+环形缓冲』三件套？读写指针相等时，缓冲到底是空还是满？",
+      "deliverable": "一份 560/560 断言通过的 probe 记录：fsm_feed 的 blx r3 反汇编逐行注解、环形缓冲 A/B 派容量对照（物理 8 格可用 7 vs 8）与发布/获取屏障写法。",
+      "boundary": "免锁证明只对单生产单消费成立：双方改同一索引就要上临界区（S7/F4 展开）；atomic_signal_fence 只挡编译器重排，总线序与多核可见性（DMB/DSB、cache）不在本章。",
+      "sources": [
+        "d5",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/06-abi-stack.md": {
+      "question": "一次函数调用，参数凭什么送得到、函数凭什么回得来？mix(int, long long) 里 r1 为什么被白白跳过？",
+      "deliverable": "一张 AAPCS 寄存器分工表加三段汇编注解（sum6 第 5/6 参数走栈、non_leaf 的 push {r4,lr}…pop {r4,pc}、add_d 走 d0/d1），宿主一帧 64 字节、M4 同函数 24 字节的实测账。",
+      "boundary": "帧字节数随编译器与目标变（64 vs 24），别拿宿主数字套芯片；soft/hard ABI 目标文件不能混链只点到为止；HardFault 挖栈中 PC 在 S16、RTOS 上下文切换在 F2。",
+      "sources": [
+        "c4",
+        "a3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/07-ub-misra.md": {
+      "question": "昨天还能跑的代码，换个优化等级就变脸，编译器凭什么把 x+1>x 折叠成恒真？哪些写法是裸机上的定时炸弹？",
+      "deliverable": "一份三档实测记录：is_bigger_after_inc(INT_MAX) 在 -O0/-O2/-fwrapv 下读数变化、1u<<33 两档对照，配『嵌入式 MISRA 十条』与警告/UBSan/静态分析三道防线的编译旗清单。",
+      "boundary": "新工具链连 -O0 都做折叠，『-O0 能跑=代码正确』作废，且读数随工具链版本变、引用汇编须注明版本；-fwrapv 只救有符号加减乘，移位三条红线一条不救。",
+      "sources": [
+        "c1",
+        "c2",
+        "d8",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "c/08-framed-protocol.md": {
+      "question": "UART 只保证字节按序到，丢一个字节之后，解析器凭什么还认得出下一帧、不把两段残帧拼成一段？",
+      "deliverable": "一笔 seq=7 INFO 请求的全手算：6 字节 raw→CRC 0xB0CC→COBS 编码 10 字节线上帧，与 Python 独立实现逐字节核对；一张三态八计数的状态转移表。",
+      "boundary": "CRC 检得出随机损坏、防不了篡改（要带密钥的 MAC）；序号只用于配对响应，不是安全凭据；COBS 开销恒 1 字节的前提是帧 ≤254 字节，74 字节上限不能套到更大帧。",
+      "sources": [
+        "d13",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/00-toolchain.md": {
+      "question": "在 x86 的电脑上给 ARM 芯片产代码，到底是谁在干活？裸机没有 glibc，printf 的输出凭什么还有出路？",
+      "deliverable": "一张四件套分工表（gcc/binutils/newlib/gdb）加 newlib 钩子表（_write/_sbrk 干什么），附 --version、-print-search-dirs、where 三条工具链环境自查输出。",
+      "boundary": "本章是全景：ELF 解剖在 B2、链接脚本在 B3、GDB 十命令实战在 B6、printf 重定向实操在 S7，钩子只点名不实现；工具链行为随版本（本站 xPack 15.2.1）变。",
+      "sources": [
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/01-four-steps.md": {
+      "question": "make 一秒跑完的构建拆开是哪四道工序？『头文件找不到』和『undefined reference』为什么死在不同阶段？",
+      "deliverable": "一套手动四步构建的全套中间产物：main.i、main.s、main.o 地址栏全 0、blink.elf 段表，加三类报错原文与阶段的对照分诊表。",
+      "boundary": "标本是两文件裸机工程：库的反复扫描、multilib 目录选择与链接脚本语法在 B0/B3；.o 的地址栏恒为 0，最终地址只能查 .elf，不能拿 .o 证据推断烧录地址。",
+      "sources": [
+        "e3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/02-elf.md": {
+      "question": "34KB 的 blink.elf 烧进芯片只有 660 字节，差额是什么？节表和程序头两套目录各自在回答谁的问题？",
+      "deliverable": "一份五刀解剖记录：ELF 头五字段、A 标记筛出 660 字节、.data 行 VirtAddr/PhysAddr/FileSiz/MemSiz 四数读法、nm 地址流水账、tag 加减 const 的 8 字节 RAM 对照实验。",
+      "boundary": "实测数字出自 xPack 15.2.1 -g3，换版本 .debug_* 个数会变、地址与结构关系不变；readelf 与 nm 差 1 是 Thumb 位口径，只属 Cortex-M；反汇编里的『乱码』是数据被读成指令，不是编译器坏了。",
+      "sources": [
+        "c3",
+        "e2",
+        "e3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/03-linker-script.md": {
+      "question": "只删掉 AT> 一个词，链接烧录全通过、初值却成了随机数，链接脚本到底跟谁签了哪几份契约？",
+      "deliverable": "六刀可复跑取证：删 KEEP 后 bin 少 392 字节、删 AT> 后 _sidata==_sdata、CCM 段三态 bin 胀到 134MB 再收回 576 字节，附 RAM 手算与 overflowed 验算。",
+      "boundary": "图纸与启动文件是一套榫卯：链接脚本单方面开 .ccmram 房间、启动文件没有第二条拷贝循环，初值照旧是垃圾，『图纸对』推不出『运行对』；板上现象未实测，结论停在链接期与文件期。",
+      "sources": [
+        "c7",
+        "e2",
+        "e3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/04-startup.md": {
+      "question": "从复位向量到 main 之间的每一步，谁配栈、谁搬 .data、谁清 .bss，各是哪段代码在干活？",
+      "deliverable": "一张从 0x08000000 取栈指针、取复位向量到进入 main 的时序清单，和一份自写启动文件逐行注解。",
+      "boundary": "本章讲裸机启动；RTOS 启动（调度器先于 main 的场景）在 F 篇另讲，不在本章外推。",
+      "sources": [
+        "a3",
+        "c7",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/05-map-size.md": {
+      "question": "加了一个库固件从 20KB 涨到 200KB，谁吃的？Flash=text+data、RAM=data+bss 这两笔账凭什么成立？",
+      "deliverable": "一次『揪大尾巴』审计记录：size 三列心算 Flash/RAM、nm --size-sort 大户排名、map 三板斧（Archive/Memory Map/Discarded）定位，加 4KB 数组三连改（bss/data/const）的 size 对比。",
+      "boundary": "_Min_Stack 只是链接期下限，运行期栈溢出不报错、其检测不在本章；bin 比 text+data 大是段间空隙按地址铺平所致，不是账错；先砍大项再谈 -Os，方向错了优化级别救不了。",
+      "sources": [
+        "c7",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/06-flash-debug.md": {
+      "question": "烧录和调试为什么是同一件事，SWD 两根线凭什么在 CPU 停住时也能读写全片地址空间？",
+      "deliverable": "一条 GDB 实战记录（reset halt/load/x/set/si/break/hbreak 各一次）加 OpenOCD program 五步日志逐行注解：halt→探测→擦写算法灌 RAM→verify→reset。",
+      "boundary": "FPB 只有 6 个比较器（Cortex-M0/M0+ 只有 2 个），断点预算随芯片变不能外推；Semihosting 在不接调试器时 BKPT 即 HardFault，量产必须关；SWD 报文格式与 JTAG 不在本章。",
+      "sources": [
+        "a6",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "build/07-build-system.md": {
+      "question": "两个文件用 Makefile 绰绰有余，两百个文件二十个组件怎么办？依赖图和 Kconfig 各自解决哪一维问题？",
+      "deliverable": "一张手画并用 make -n 干跑验证的 00-blink 依赖图，一个 toolchain.cmake 在 project() 之前的两目录 CMake 裸机骨架，加 IDF（CMake）与 RT-Thread（scons+Kconfig）的机制对照表。",
+      "boundary": "构建系统管『怎么编』，Kconfig 管『编什么』，两维正交、不可互相外推；IDF 组件机制在 P3、RT-Thread 的 env/menuconfig 全流程在 R6；CMake 全语法与 IDE 生成器不在本章。",
+      "sources": [
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/00-env.md": {
+      "question": "不用 IDE，四个文本文件怎么变成板上闪烁的灯？每一步产物由谁生成、装错了去哪查？",
+      "deliverable": "一次完整的构建烧录记录：elf/bin/hex/map 四产物清单（各述用途）、make flash 的 Verified OK 日志，外加 GDB 读 RCC_AHB1ENR bit5=1 的一次会话。",
+      "boundary": "只管 Windows 下四件套装通与第一次点灯：编译链接四步的原理在 B 篇、SWD 协议细节在 B6，均不展开；约 1Hz 闪烁是 HSI 软件延时、频率不准属正常；代码已静态核对 RM0090，板上现象待上板实测反馈。",
+      "sources": [
+        "a1",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "stm32/01-arch.md": {
+      "question": "寄存器地址是背出来的还是推出来的，GPIOA 为什么恰好是 0x40020000，位带别名地址怎么算？",
+      "deliverable": "一张 4GB 分区骨架图（0800/2000/4000/E000 四区口诀展开）加一笔 GPIOF->ODR bit6 的位带别名手算 0x42428298，与 probe.sh 的 _Static_assert 和 -O2 反汇编互证。",
+      "boundary": "位带只覆盖 SRAM/外设区前 1MB，别名公式不能外推到全区；总线仲裁的动态翻车实验（DMA 够不着 CCM）在 S8；位带断言与反汇编已在本机复现，「灯亮/不亮」的肉眼现象待上板回填。",
+      "sources": [
+        "a1",
+        "a3",
+        "f3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/02-rcc-clock.md": {
+      "question": "从 8MHz 晶振到 168MHz：M/N/P/Q 怎么选才落进芯片允许的窗口？提频六步的顺序为什么不能乱？",
+      "deliverable": "一笔任意晶振的 M/N/P/Q 手算（每项落在 RM0090 允许范围并给出寄存器字 0x07405408）、提频六步顺序表，以及 probe.sh 宿主断言全绿加 -O2 字面量池同字对账输出。",
+      "boundary": "HSE 晶振值未核实：正文以 8/25MHz 两例演示，套用前以板卡规格书为准；宏填错时回读自洽但引脚频率错（差 114240000Hz 的那组实账），MCO1 实测对账待上板；PLL 抖动与频谱特性不展开。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "f4",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/03-gpio.md": {
+      "question": "配置一个引脚为什么要按序填四张表？改一个位为什么必须走 BSRR，而 ODR |= 是隐患？",
+      "deliverable": "PF6 点亮的逐寄存器演算（MODER/OTYPER/OSPEEDR/PUPDR 每张表的位段值与先清后置写法）、一张推挽 vs 开漏对照表，加 PA9=USART1_TX 查 AF 表配 MODER+AFRH 的示范。",
+      "boundary": "本章讲通用机制与 F407 的寄存器版图，不背复用表，某引脚能当什么 AF 以 DS8626 Table 9 为准；OSPEEDR 与 EMI、驱动电流等电气量只给原则不给实测；I2C 开漏的总线纪律完整展开在 S11。",
+      "sources": [
+        "a1",
+        "a2",
+        "f5",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/04-nvic-exti.md": {
+      "question": "门铃响到进 ISR 中间隔着哪三层配置？IRQn=37 怎么换算成 ISER 下标、位号和 IP 字节地址？",
+      "deliverable": "一张 IRQn→向量槽/ISER 下标/位号/IP 地址换算表（52 条断言对撞过 CMSIS 头文件）加六步外部中断落地清单，每步注明漏掉后的典型死法。",
+      "boundary": "全部数字在 F407 上取证（4 位优先级、82 个外设中断、越界优先级在本字节内静默截断），不能外推到优先级位数不同的芯片；RTOS 下的中断管理与 BASEPRI 玩法归 F 篇；按键抢占嵌套实验是设计的实物验证项。",
+      "sources": [
+        "a1",
+        "a3",
+        "f3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/05-systick.md": {
+      "question": "168MHz 要 1ms，LOAD 为什么是 167999？忘减一、COUNTFLAG 被偷读一次，各自的代价是什么？",
+      "deliverable": "42/42 断言的 probe 输出加三笔账：任意频率/周期的 LOAD 手算、忘减一的 5.95ppm 日漂移 514ms 推算、回绕安全超时 (now-then)>=timeout 与朴素写法的反例对拍。",
+      "boundary": "只管内核自带的 24 位 SysTick：单次最长约 99.86ms，超了 SysTick_Config 拒配、硬截断则 ISR 快 737 倍；更长周期换 TIM（S6）；相位漂移是逐拍模型推算，板上长周期实测未做；RTOS tick 归 F 篇。",
+      "sources": [
+        "a3",
+        "f3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/06-tim.md": {
+      "question": "更新频率公式里的两个 +1 从哪来？APB1=/4 时 TIM3 的时钟为什么是 84MHz 而不是 42MHz？",
+      "deliverable": "一笔 1kHz PWM 的 PSC=83/ARR=999 手算、占空比=CCR/(ARR+1) 的呼吸灯代码，以及 APB1 从 /1 切到 /2 前后定时器时钟纹丝不动的一次对照实验记录。",
+      "boundary": "PWM 时基可编译可算，输入捕获的板上测频与 PA6→PA0 自测闭环仍待实测（回绕/丢边沿判定已有宿主测试覆盖）；编码器接口只有配置与状态机讲解、无配套工程；TIM1/8 的 BDTR/互补输出等高级特性不覆盖。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "f4",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/07-usart.md": {
+      "question": "波特率误差、TXE/TC 标志与 IDLE+DMA 环形接收怎样连成一条不丢字节的串口链路？",
+      "deliverable": "一笔 168MHz 下 USARTDIV 手算、一张 TXE/TC/IDLE 事件表，以及 IDLE+DMA 环形缓冲的读写指针不变量。",
+      "boundary": "IDLE 只表示线路空闲，不等于业务协议的一帧；本章不覆盖 RS485 半双工与流控。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/08-dma.md": {
+      "question": "时钟引脚全配对但数据不来：流和通道怎么选？环形与双缓冲为什么保证不停机、却不保证不丢数据？",
+      "deliverable": "USART1_RX 的 DMA2 逐位落位（PAR/M0AR/NDTR/CIRC，清标志写 HIFCR 不碰 HISR）加一张环形/正常/双缓冲覆盖风险对照表，配 GDB 读 NDTR 从 64 倒数回跳的观察记录。",
+      "boundary": "DMA 请求映射表（RM0090 Table 42/43）本轮未取得表正文：工程取值按常用映射给出、显式标注待上板实测确认；FIFO/突发模式不展开（只走直接模式）；CCM 够不着 DMA 是 F407 布局事实，不外推。",
+      "sources": [
+        "a1",
+        "f3",
+        "f4",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/09-adc.md": {
+      "question": "12 次比较怎么锁定 4096 分之一？100kΩ 高阻源只给 3 拍采样，读数为什么成了虚焦照片？",
+      "deliverable": "probe 跑出的 12 行 SAR 试探表（2.00V→0x9B2、误差 0.42LSB）加一张按源阻抗选 SMP 档的 τ=9.01·RC 换算表，含「只给 3 拍残差 2886 LSB」那一列。",
+      "boundary": "SAR 与采样时间是理想模型加 datasheet 典型参数（R_ADC=2kΩ/C_ADC=4pF 为假设值）的宿主推算，3 vs 480 拍的板上对比未做；VREFINT_CAL 校准地址本地无法核实、明标待回填不编造；注入组与双 ADC 交织不覆盖。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "d6",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/10-dac.md": {
+      "question": "TIM 打拍、DMA 递谱、DAC 开嗓，84MHz 为什么除不出精确 1kHz/64 点？右对齐写错会怎样？",
+      "deliverable": "一笔样本率/表长/波形频率手算（含 1312.5 不整除的两条取舍与表长 84 的精确解）加 TIM6→DAC→DMA 的寄存器级启动序列（DAC 侧先就位再使能 DMA 流）。",
+      "boundary": "本章代码为内联示例、无独立可编译工程；示波器看 1kHz 与砍表长看退化的板上实验未记录；输出缓冲阻抗给量级、具体值以 datasheet 为准；DAC 的 WAVE 噪声/三角生成与双通道同步不覆盖。",
+      "sources": [
+        "a1",
+        "f3",
+        "f5",
+        "mcu-anim"
+      ]
+    },
+    "stm32/11-i2c.md": {
+      "question": "I2C 难在哪一拍？清 ADDR 为什么必须先读 SR1 再读 SR2，读 EEPROM 收尾为什么先 NACK 再 STOP？",
+      "deliverable": "42MHz 下 CCR=210、TRISE=43 的 100kHz 手算，一张写事务事件链表（START→SB→ADDR→TXE→BTF 每拍的等待与清除动作），加 AT24C02 页 8 字节/tWR 5ms/ACK polling 三连坑对策。",
+      "boundary": "E05 寄存器级工程编译通过，但板上波形与 PulseView 解码待实测；多主仲裁只讲线与原理，SMBus/10 位地址不覆盖；总线恢复 9 脉冲与 DMA 模式给的是代码框架，未逐拍验证。",
+      "sources": [
+        "b1",
+        "a1",
+        "f5",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/12-spi.md": {
+      "question": "只想读一个字节为什么也必须往 DR 假写 0xFF？CPOL/CPHA 错配为何不报错、症状是什么？",
+      "deliverable": "一段四步 spi_xfer（等 TXE→按字节写 DR→等 RXNE→读走，BSY 清零后才放片选）加 W25Q 读 JEDEC ID/页写/忙等的命令序列，附模式 0 与 3 的时序四宫格。",
+      "boundary": "W25Q 命令集以你手上型号的 Winbond 手册为准，本章给框架不背型号表；代码为内联示例，读 ID 与页写读回的板上实测未记录；42MHz 档只给布线约束，信号完整性设计不展开。",
+      "sources": [
+        "a1",
+        "a2",
+        "b2",
+        "f3",
+        "f5",
+        "mcu-anim"
+      ]
+    },
+    "stm32/13-flash-iap.md": {
+      "question": "程序能改写自己住的 Flash 吗？IAP 跳转为什么必须先关中断再设 VTOR 和 MSP，这个顺序能换吗？",
+      "deliverable": "一张 11 扇区布局图（参数区选址依据）加 flash_unlock/erase/write 的逐位寄存器序列，和 jump_to_app 五步跳转函数，每步附「为什么是这个顺序」的注解。",
+      "boundary": "例程为内联代码、无独立工程：断电半擦回退、RDP 三级都未经板载验证（Level 2 是一行代码毁片的单向门，量产前别碰）；外部 SPI Flash 备份只链接到 S12；擦写关键路径搬 RAM 执行只给做法不展开。",
+      "sources": [
+        "a1",
+        "a3",
+        "f3",
+        "f5",
+        "mcu-anim"
+      ]
+    },
+    "stm32/14-pwr.md": {
+      "question": "Stop 醒来一切照跑但数全错：慢 10.5 倍怎么算出来的？Standby 为什么醒来即复位、遗言放哪？",
+      "deliverable": "三档睡眠四列对照表（停什么/留什么/谁唤醒/醒来到哪）加三笔实账：SysTick 1ms 变 10.5ms、BRR=729 变 10973 baud、IWDG 八码七分频超时表；位号与地址已同 CMSIS 逐条对账。",
+      "boundary": "位号、地址、指令流均经宿主对账，但三档电流只给量级，具体数值以 datasheet Power consumption 节为准，实测在 E06 且未回填；RTC 日历只给链路框架，细节以 RM0090 RTC 章为准；IWDG 深入玩法在 S17。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "f5",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/15-spl-anatomy.md": {
+      "question": "GPIO_Init 拆开还是不是我们手写的那几行？SPL 枚举值为什么直接就是寄存器位段的值？",
+      "deliverable": "一份 SPL 三板斧拆解（结构体打包/位操作翻译/断言看门）加 GPIO_Init 逐行与手写版的配对表，和一张「何时手写何时用库」的判断框架（初始化用库、热路径手写）。",
+      "boundary": "解剖对象是 SPL V1.8.0，HAL 只有哲学对比、逐行对照已分散在各章的库解析小节；体积/开销的具体数字指向 B5 的 map 审计方法，本章不实测；库行号以你手头的分发为准。",
+      "sources": [
+        "f5",
+        "f3",
+        "a1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "stm32/16-debug-hardfault.md": {
+      "question": "程序跳进 HardFault 后，怎样从压栈的寄存器现场反查出是哪条指令、哪个非法访问引发的？",
+      "deliverable": "一份 CFSR/HFSR/BFAR 解读表和一次从 fault 地址回到 C 源码行的完整取证记录。",
+      "boundary": "本章解决『事后取证』；时序类 bug（偶发、与优化相关）还需 DWT/逻辑分析仪，不在本章范围。",
+      "sources": [
+        "a3",
+        "a6",
+        "mcu-code"
+      ]
+    },
+    "stm32/17-watchdog-reset.md": {
+      "question": "中断里准时喂狗、任务却卡死了，喂狗到底该证明什么？WWDG 为什么喂早了也复位？",
+      "deliverable": "一张 IWDG 超时三档表（LSI 17/32/47kHz→约 1.36/2.00/3.76s）加一笔 WWDG 窗口手算（约 67.6ms 开窗、131ms 复位），和故障注入命令到 NRST 复位的时间预算线（MODE=0 约 2.7s，区间 2.06~4.46s）。",
+      "boundary": "时间预算与三档超时是按 RM0090/DS8626 计算：板上 NRST 脉冲时刻、复位标志组合与 LSI 实测值均待上板，实验记录表为空；health 模块平台无关、宿主可测，但三任务切分是本项目架构而非唯一解；调试冻结位只有断电重上电才清，否则复位实验无效。",
+      "sources": [
+        "a1",
+        "a2",
+        "f3",
+        "mcu-code",
+        "d12",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/00-why-rtos.md": {
+      "question": "超级循环明明跑得好好的，凭什么说它注定失败，改成状态机、调换代码行序都救不回来吗？",
+      "deliverable": "一份「任务×周期×最坏执行时间」的裸机可行性账（ΣWCET ≤ min(T)），配 probe.sh 实测记录：阻塞版该翻 12 次的灯中位只翻 5 次、15ms 短按五局全丢、2ms 的活摆第一行与最后一行分不出胜负（中位 1.49 vs 1.60 ms）。",
+      "boundary": "时间数字出自宿主机 mingw gcc 五局中位（Windows 随时抢走十几毫秒，单局不可引用），指令条数出自交叉链反汇编（逐位稳定）；真板复现属实物实验、RTOS 修复在 F1，本章只负责「裸机为什么死」，不负责「RTOS 怎么活」。",
+      "sources": [
+        "mcu-code",
+        "f1",
+        "mcu-anim",
+        "mcu-lab"
+      ]
+    },
+    "rtos/freertos/01-task-tcb.md": {
+      "question": "从没被中断打断过的新任务，第一口栈是谁摆好的，凭什么 PendSV 一弹栈它就「开跑」了？",
+      "deliverable": "xTaskCreate 六步走查（分栈→分 TCB→化妆→填本→挂货架→触发调度）＋ GDB 实测：x/16xw 指认新任务栈里的 xPSR=0x01000000、PC、LR=prvTaskExitError、r0，再附一份 N 任务的 RAM 账单（TCB＋栈，单位是字不是字节）。",
+      "boundary": "行号对 FreeRTOS-Kernel V11.1.0 ARM_CM4F 端口说话（tasks.c:358 / port.c:202）；ESP-IDF 内置的 V10.5.1 SMP 修改版不同源，行号与结论不混读；栈深只给估算公式与水位实测方法，具体数值要自己上板量。",
+      "sources": [
+        "f1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/02-context-switch.md": {
+      "question": "PendSV 里那几十条指令凭什么能冻结一个任务的世界，哪些寄存器硬件存、哪些软件存、FPU 何时才存？",
+      "deliverable": "一张异常入栈帧布局图和一份 xPortPendSVHandler 逐行注解，标出 r4-r11、s16-s31 各自由谁压栈。",
+      "boundary": "本章讲 CM4F 端口；带 MPU 的隔离切换与 RISC-V 端口不在本章，SMP 多核切换更不能从本章外推。",
+      "sources": [
+        "a6",
+        "c5",
+        "f1",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/03-scheduler.md": {
+      "question": "每毫秒都要选人，凭什么 O(1)，两条选优路径谁在生效，tick 为什么只瞄一眼延时队首？",
+      "deliverable": "一张双路径实测表：三份 tasks.o 逐字节对照（不写与写 1 完全相同、.text 均 140 字节，写 0 为 160），两条路 58 vs 70 条指令，宿主机模拟器判空对照，外加 (660−100)÷(33−5)=20 字节/级的 List_t 推算。",
+      "boundary": "位图＋CLZ 只在 configUSE_PORT_OPTIMISED_TASK_SELECTION=1 且优先级 ≤32 时成立（=33 会被 portmacro.h 的 #error 拦下）；优先级该怎么分（速率单调、利用率上界）不在本章，那是 D1 论文的领地；全部数字出自 V11.1.0 三份编译产物实测。",
+      "sources": [
+        "f1",
+        "d1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/04-queue.md": {
+      "question": "队列满了发送方睡在哪、中断里为什么不能调普通版，一个结构体怎么同时当队列和信号量？",
+      "deliverable": "一张 Queue_t 五要素结构图（环形三指针＋两张按优先级排的候客名单＋ union 双生）＋「按键 EXTI → xQueueSendFromISR → 任务 portMAX_DELAY 收走翻灯」的可跑管道与串口日志。",
+      "boundary": "只解剖 V11.1.0 queue.c 的单核路径；队列集（Queue Set）仅点名、选型细节留 F6；大对象传指针只给所有权纪律不给方案；SMP 行为不外推，中断优先级撞 configMAX_SYSCALL 的崩溃机制在 F2/F5 展开。",
+      "sources": [
+        "f1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/05-sem-mutex.md": {
+      "question": "H 等 L 手里的锁、M 在一旁狂跑，高优先级为什么反而垫底，继承在源码哪几行把 L 抬起来？",
+      "deliverable": "E04 三任务剧本双版本执行序判读（二值信号量 waited≈6000ms vs 互斥量≈2500ms，并说清两个数的理论/模型值身份）＋ xTaskPriorityInherit「判→改→搬」三步逐行注解与四种锁选型表。",
+      "boundary": "≈6000/≈2500 是按剧本参数推出的理论值，sim_invert.c 复现也只是模型值，E04 板上实测表至今空白，不能当串口日志引用；继承不防死锁（D2 的结论），多锁只给顺序纪律；行号与 ISR 取锁无持有者的结论对 V11.1.0 说话。",
+      "sources": [
+        "d2",
+        "d11",
+        "f1",
+        "mcu-lab",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/06-notify-event-timer.md": {
+      "question": "软定时器回调里为什么禁止 vTaskDelay，「共用守护任务所以零成本」这句流行说法错在哪？",
+      "deliverable": "一笔 nm 量出的 RAM 账：configUSE_TIMERS=1 即付 1312 B（守护任务 1128＋命令队列 184）、每定时器 56 B、.bss 另有 60 B 不归 configTOTAL_HEAP_SIZE 管；加五幕模拟的迟到/补拍/欠账表（Σ(耗时÷周期) 过 1 就发散）。",
+      "boundary": "字节数与五幕数字出自本机 heap_4＋CM4F＋V11.1.0、配置就是 01-freertos-lab 那份（通知槽=1、队列长 8），配置一换账就换；「快 45%」是历史某版本的实测，不能当无条件结论；分派规则用行号钉在上游，内核一升级脚本变红而非悄悄给错数。",
+      "sources": [
+        "f1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/07-heap.md": {
+      "question": "总空闲明明还有 4KB，为什么连 2KB 都分不出来，heap_4 什么时候合并、什么时候永远留洞？",
+      "deliverable": "场景 5 证据链日志：boot free → after ABC → free B 后 big ok?=0（总空闲够、最大连续块不够）→ free A 相邻合并 → big ok?=1；外加 heap_1/2/4/5 指标 API 逐文件可用性表与 configTOTAL_HEAP_SIZE 预算公式（栈＋TCB＋队列，余量 30%）。",
+      "boundary": "指标可用性按 V11.1.0 逐文件核对（xPortGetMinimumEverFreeHeapSize 只有 heap_4/5 有），「历史最低水位」不是碎片率；heap_5 多区只讲配置与 CCM 禁 DMA 原则，硬件依据在 S8、TLSF 对照路线在 R3；动态任务栈来自堆的结论不适用于静态创建与 MSP 主栈。",
+      "sources": [
+        "f1",
+        "d4",
+        "e5",
+        "d3",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/freertos/08-port-f407.md": {
+      "question": "裸机工程接上 FreeRTOS 到底要动几处，三个异常怎么改名接管，两份优先级宏各管谁？",
+      "deliverable": "一份移植清单跑出可验产物：FreeRTOSConfig.h 三行 #define 映射、nm 出 SVC/PendSV/SysTick 三个 T 符号落在 port.o、size 三段 text 43156 / data 2168 / bss 19208，并算清 heap 池子与 _Min_Stack_Size 两套独立预算。",
+      "boundary": "所有数字是编译期/链接期实测，上板串口输出与板上现象标注「待回填」；本工程跑 HSI 16MHz 不启 PLL，拿 168MHz 套节拍计算会错 10 倍；结论限单核 ARM_CM4F 端口（-mfloat-abi=hard 与端口目录绑定），RISC-V/MPU/SMP 移植不能外推。",
+      "sources": [
+        "f1",
+        "mcu-code",
+        "mcu-anim",
+        "a3"
+      ]
+    },
+    "rtos/rtthread/00-arch.md": {
+      "question": "finsh 凭什么 list_thread/list_sem 一把梭，万物继承 rt_object 是怎么用纯 C 做出来的？",
+      "deliverable": "一张三层架构图（内核/组件/软件包对应 src/components/packages 目录）＋ rt_object→rt_thread 首成员继承的源码指认 ＋ INIT_BOARD/DEVICE/COMPONENT/APP_EXPORT 段位触发时机表。",
+      "boundary": "结论以 RT-Thread 5.x master 为准，全章刻意不钉行号（版本未固定 tag、字段名会漂），落点只给到官方仓库文件路径；本章只给世界观，调度/IPC/设备机制分别在 R1/R2/R4；Nano 与标准版取舍只给规则，实际移植在 R7。",
+      "sources": [
+        "f8",
+        "e7",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/01-thread-sched.md": {
+      "question": "256 级优先级怎么还能 O(1) 选优，二级位图两次查表各查什么，比 FreeRTOS 多付哪笔账？",
+      "deliverable": "一张 rt_thread × tskTCB 双列对照表（对象头、内嵌 rt_timer、优先级方向相反三处差异标出）＋ 二级位图 i×8+j 选优推演 ＋ create/init 两种创建的内存来源表与 startup 两步纪律。",
+      "boundary": "「数小=高」只对 RT-Thread 默认语义成立，与 FreeRTOS 反向、与 NVIC 同向，三家不可混背；源码以 master 为准不钉行号；GDB 对照双 OS 就绪表内存布局的实验要两份固件上板（R7/F8 工程）才落地，本章只给方法。",
+      "sources": [
+        "f8",
+        "f1",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/02-ipc.md": {
+      "question": "信号量、互斥量、事件、邮箱、消息队列要背五套 API 吗，它们共用哪副骨架，排队秩序谁说了算？",
+      "deliverable": "一张通用 IPC 骨架图（rt_ipc_object 的 suspend_list ＋ 五种对象的特殊字段标注）＋「中断 release 信号量→线程 take、邮箱传指针」双管道代码与 list_sem/list_mailbox 在册观测。",
+      "boundary": "E04 的 RT-Thread 版双跑在本章是剧本与预期，板上两份日志待实测回填（E04 实测表仍空白）；源码以 master 为准不钉行号；互斥量整条路径禁入 ISR 只给纪律、中断侧源码不展开；与 FreeRTOS 的继承对照只到字段与三步动作同构，不比性能。",
+      "sources": [
+        "f8",
+        "d2",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/03-mem.md": {
+      "question": "实时路径上分配内存凭什么不能随手 rt_malloc，TLSF 的「近 O(1)」与内存池的 O(1) 差在哪？",
+      "deliverable": "rt_mp_alloc 与 rt_malloc 同申请量各跑 1 万次的 rt_tick 耗时对比记录 ＋ memheap/slab/TLSF/内存池按「规模×确定性×碎片」的分治选型表，外加池块用尽时 timeout 挂起等待的行为观察。",
+      "boundary": "「近 O(1)」是复杂度论证、碎片有界的证明在 D3 论文，本章不给实测数字；源码以 master 为准不钉行号；FreeRTOS 侧只对照到 heap_1~5 能力阶梯（F7），其无内置内存池的补救方案不在本章展开。",
+      "sources": [
+        "f8",
+        "d3",
+        "d4",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/04-device.md": {
+      "question": "换一块板，应用层凭什么可以一行不动，ops 表和「按名取柄」怎么把驱动做成可插拔商品？",
+      "deliverable": "一个能被 list_device 看见的自写设备全流程（蜂鸣器：rt_device 继承＋ops 表＋INIT_DEVICE_EXPORT 注册）＋ PIN 三行点灯与 S3 寄存器版的并排对照 ＋ GET_PIN('C',12)=44 的编号推算。",
+      "boundary": "结构与行为以 RT-Thread 5.x components/drivers 为准、不钉行号；rx_indicate 的调用上下文因配置而异，本章按中断上下文立「只搬运不干活」的规矩；纳秒级时序（WS2812 类）应绕过框架直写寄存器，该路径实现不在本章；FreeRTOS 无框架的替代范式在 F4。",
+      "sources": [
+        "f8",
+        "e7",
+        "mcu-anim",
+        "mcu-lab"
+      ]
+    },
+    "rtos/rtthread/05-finsh.md": {
+      "question": "敲一行 list_thread 回车就出线程表，命令是怎么被钉进固件、运行时又按名字找到的？",
+      "deliverable": "MSH_CMD_EXPORT 宏展开等价代码（三字段结构体＋SECTION＋used）＋ map 文件里 FSymTab 段与 KEEP 界桩定位记录 ＋ 一个实测过的 led <index> <on|off> 自定义命令（含 usage 与错误返回码）。",
+      "boundary": "宏展开标注「字段名随版本微调」，以 RT-Thread 5.x master 为准不钉行号；RAM/Flash 是裁剪相关的量级估计（finsh 栈 2~4KB、整套 msh 约 10~20KB Flash），非实测数字；量产裁剪只给开关与攻击面提示，不给安全审计流程。",
+      "sources": [
+        "f8",
+        "e7",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/06-env-menuconfig.md": {
+      "question": "menuconfig 勾一个 MQTT，源码凭什么自动进构建，Kconfig 到 rtconfig.h 的宏链路怎么走？",
+      "deliverable": "一次完整点单记录（menuconfig 勾 cJSON → pkgs --update 拉源码 → scons -j8 出固件 → 烧录解析 JSON 串口打印）＋ 为自写组件补一条 Kconfig 选项并在菜单里出现，外加 BSP 三区（board/libraries/applications）职责图。",
+      "boundary": "本章只讲工具链路（配置与构建是正交两维），不碰内核机制；命令与菜单以当期 Env/RT-Thread master 为准，版本未固定、界面与选项会漂；scons 与 CMake 的深对照在 B7，ESP-IDF 侧只借 P3/P0 做参照不展开。",
+      "sources": [
+        "f8",
+        "e7",
+        "mcu-anim"
+      ]
+    },
+    "rtos/rtthread/07-port-f407.md": {
+      "question": "FreeRTOS 靠 SVC 起第一个任务，RT-Thread 为什么不用，Nano 移植到底要手写哪几件？",
+      "deliverable": "一份 Nano 四件套清单（内核源码＋rtconfig.h＋board.c＋链接脚本）与 board.c 三件事实现（时钟/SysTick 1ms/rt_system_heap_init 堆边界），配五项验收记录：tick 在涨、双线程异频闪、finsh 应答、list_device 在册、malloc 不崩。",
+      "boundary": "本仓库配套工程（code/rtos/02-rt-thread-lab）只走 Nano 路线；标准版「就近抄 BSP 改三步（时钟/引脚/内存）」是方法论，无配套工程与实测背书；源码行为以 RT-Thread master 为准（未固定 tag、不钉行号），HardFault 取证细节回 S16。",
+      "sources": [
+        "f8",
+        "f1",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "rtos/compare/00-side-by-side.md": {
+      "question": "学完两套内核怎么才不串味，同一个概念两副答案，迁移时哪些参数要翻译、哪些习惯必须扔？",
+      "deliverable": "一张 20 维度总览对照表（任务对象/优先级方向/选优算法/堆管理/驱动模型/配置哲学…）＋ 迁移坑清单（优先级数值反向、pvPortMalloc 与 rt_malloc 不可混用、静态创建参数形态不同），再拿 Zephyr 按同维度建档一遍。",
+      "boundary": "对照停在机制与 API 形态层，无双 OS 同板性能实测；FreeRTOS 侧结论对 V11.1.0、RT-Thread 侧对 master（不钉行号），两列证据状态不对等；Zephyr 列是 30 分钟建档练习不是深评测；内存分歧的学术背景只在延伸阅读点名（D3/D4）。",
+      "sources": [
+        "f1",
+        "f8",
+        "d3",
+        "d4",
+        "mcu-anim"
+      ]
+    },
+    "rtos/compare/01-choose.md": {
+      "question": "面对同一块板子，凭什么在 FreeRTOS 与 RT-Thread 之间做选择，哪些差异真实影响你的项目？",
+      "deliverable": "一张按项目约束（ROM/RAM 预算、生态、中间件、认证）打分的决策表，并写明自己当前项目该选谁、为什么。",
+      "boundary": "结论只对中小型裸机迁移场景负责；安全认证、大型中间件生态的需求要另行调研当期版本。",
+      "sources": [
+        "f1",
+        "f8",
+        "mcu-code"
+      ]
+    },
+    "esp32/00-env.md": {
+      "question": "为什么装 ESP-IDF 要 1GB『全家桶』，idf.py build 和 flash 背后分别是谁在干活？",
+      "deliverable": "一条可复跑的全链路记录：ESP-IDF CMD 里 idf.py --version 出 v5.5.x、设备管理器认出 CH340 COM 口、flash monitor 打印芯片信息并 10 秒周期重启，外加一张手默的最小工程结构图（顶层 CMakeLists/main 组件/sdkconfig/build）。",
+      "boundary": "本章只保证『跑得通』：idf.py 的调度细节 P3 才拆、三个 bin 的关系 P1 才讲；流程以 Windows 离线安装器 + 立创实战派 S3 为主线，macOS/Linux 与其他板卡不在射程。",
+      "sources": [
+        "a9",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/01-arch-boot.md": {
+      "question": "从复位到 app_main 之间是谁在接力？串口只打到 rst:0x1 就没了该查哪一棒？",
+      "deliverable": "一张『串口 banner 行 → 启动三棒』排查表和 app_main 身世证据链（esp_startup_start_app → xTaskCreatePinnedToCore(main_task) → app_main → vTaskDelete），配 idf.py partition-table 实表与 partitions_singleapp.csv 的对照记录。",
+      "boundary": "讲到『app_main 被谁调用』为止，main task 之后的调度与 SMP 细节归 RTOS 篇；IRAM 铁律只立不拆（P4 展开）；banner 对照与栈溢出实验标注『待上板回填』，现有证据是源码行号加本机 idf.py size/.map 构建产物，行号以 v5.5.2 为准。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "esp32/02-gpio-matrix.md": {
+      "question": "ESP32-S3 为什么任何外设都能接到几乎任何引脚，哪些引脚偏偏不行？",
+      "deliverable": "一张 GPIO 矩阵路由图和 strapping/Flash/USB 引脚『禁区』清单，配一份可复跑的 io_mux 对照实验。",
+      "boundary": "矩阵解决数字信号路由；引脚的电气规格（驱动能力/耐压）仍要查数据手册，矩阵改变不了。",
+      "sources": [
+        "a7",
+        "a8",
+        "a9",
+        "f2",
+        "mcu-code"
+      ]
+    },
+    "esp32/03-idf-anatomy.md": {
+      "question": "三行 CMakeLists 凭什么编出上千个文件？menuconfig 里的选择怎么变成代码里的宏？",
+      "deliverable": "一条 CONFIG 项的三段取证链：Kconfig 定义 → sdkconfig 固化值 → sdkconfig.h 宏各记一处（gpio-matrix 实测 890 项），加一份删掉 REQUIRES 后的构建报错样本和一个自己拆的最小组件骨架。",
+      "boundary": "拆的是 IDF 构建流水线的『形状』，CMake 语言与手写 Makefile 对照归 B7；idf.py --help 子命令对照标注『待上机回填』；890 项是 gpio-matrix 工程的实测口径，换工程换版本数字会变；源码行号以本机 v5.5.2 为准。",
+      "sources": [
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "esp32/04-irq-dualcore.md": {
+      "question": "Cache 关闭窗口里中断来了，ISR 放在 Flash 里为什么会崩？标了 IRAM_ATTR 还不够吗？",
+      "deliverable": "probe.sh 四条调用链的 nm 落址表：isr_leaky 本体在 0x4037xxxx 而 callx8 目标落在 0x42xxxxxx 的『断链』证据，加 99 中断源（0–98）× 7 级 × 2 核的 esp_intr_alloc 参数选型表。",
+      "boundary": "落址取证是链接期静态证据（本机实跑、无需板子）；『Cache 关闭期间真的崩/被推迟』、钉核落点、LEVEL3 对比实验均标注『待上机回填』，动态行为尚无板上记录；地址区间是 esp32s3 口径，初代 ESP32 的 0x400xxxxx 不能互抄；SMP 调度细节在 RTOS 篇。",
+      "sources": [
+        "a7",
+        "a9",
+        "f1",
+        "f2",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "esp32/05-uart-driver.md": {
+      "question": "IDF 的 UART 驱动比手写中断+环形缓冲多买了什么？事件和字节各走哪条路？",
+      "deliverable": "一张三层缓冲数据路径图（硬件 FIFO 128B → 驱动 ring buffer → 用户 buf，标出 FIFO_OVF/BUFFER_FULL 两个溢出点）和一段用 timeout_flag 判帧尾的不定长接收代码（02-uart-events 可烧可跑）。",
+      "boundary": "只解剖 UART 驱动的事件模型与用法，不逐行读 uart.c 两千行实现；RS485/IRDA 等特殊模式与波特率误差计算不展开（回 S7）；115200 连发 10KB、调小 ring buffer 复现溢出属实验清单项，本章未附实测记录。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "esp32/06-spi-i2c-driver.md": {
+      "question": "为什么驱动要先配总线再挂设备？一句 transmit_receive 把 I2C 的时序礼仪代劳了什么？",
+      "deliverable": "一份 QMI8658 链路自检记录（7 位地址 0x6a、WHO_AM_I 回 0x05、SDA=GPIO1/SCL=GPIO2、10Hz 六轴打印）加 ST7789 点亮三步流程（初始化序列 → CASET/RASET 开窗 → RAMWR 刷 RGB565，DC 电平分令数）。",
+      "boundary": "QMI8658 链路是 E07 工程实测，但 ST7789 的 GPIO 编号与初始化序列以立创 wiki/屏手册为准、成稿待核对，刷屏帧率（40M/80M 对比）与板上现象标注『待实测』；I2C/SPI 电气细节与时序手法回 S11/S12，本章不重复。",
+      "sources": [
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/07-timer-ledc.md": {
+      "question": "S3 为什么把定时器和 PWM 拆成 GPTimer/LEDC 两个外设？分辨率和频率为什么不能同时拉满？",
+      "deliverable": "一段可跑的两级配置 + 硬件 fade 呼吸灯代码（GPIO10、5kHz/10 位，03-ledc-fade），配 f=时钟/2^位数的频率-位数取舍表（舵机 50Hz/14 位 ↔ 音频 20kHz/≤10 位）和 S3 能力清单（8 通道/14 位/仅低速，soc_caps.h 实读）。",
+      "boundary": "S3 只有 8 通道、14 位、低速模式，经典 ESP32 的 16 通道/高速模式结论不能外推；GPTimer 抖动方差与 fade 线性度要逻辑分析仪实测（E03）才有数字，章内只给量级判断；MCPWM 与输入捕获不涉及（回 S6）。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/08-wifi.md": {
+      "question": "esp_wifi_connect 之后该怎么等？路由器一重启，设备为什么就永远离线了？",
+      "deliverable": "教科书骨架六步初始化代码（NVS→netif→event loop→注册回调→init→start）+ 带 1s→60s 指数退避、esp_timer 外置的重连 handler，加一张 WIFI_EVENT/IP_EVENT 与 reason code 速查分诊表。",
+      "boundary": "只走 STA 联网主线，AP/SoftAP、多接口并存与 ESP-NOW 共存不展开（P9）；socket/LwIP 应用编程不在范围，GOT_IP 只是网络可用的起点；退避上限 60s 是产品权衡值不是规范；重启路由器量化断连/重连耗时属实物实验项。",
+      "sources": [
+        "a9",
+        "f2",
+        "mcu-anim"
+      ]
+    },
+    "esp32/09-bt-espnow.md": {
+      "question": "两块板不接路由器怎么隔空通信？BLE 的 GATT 和 ESP-NOW 各适合什么场景？",
+      "deliverable": "一套双板『按键→灯』ESP-NOW 互传工程（init→add_peer→send 三步、send_cb 回执失败计数当链路质量计），加 NimBLE/Bluedroid 取舍表和 GATT 服务-特征-CCC 订阅模型图。",
+      "boundary": "S3 是单模 BLE、无经典蓝牙，Bluedroid 的功能全优势在这用不上；ESP-NOW 定位小数据快通道，单包 250 字节（v1.0）之外的分片重组、大文件传输要应用层自己造；双板互传与边走边测丢包率需两块板，属实物实验。",
+      "sources": [
+        "a9",
+        "f2",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/10-flash-nvs-ota.md": {
+      "question": "16MB Flash 谁来分地？NVS 写一半断电还作数吗？OTA 为什么必须两个等大的 app 槽？",
+      "deliverable": "一张 16MB 双 ota 槽分区表 CSV（app offset 0x10000 对齐）、一个断电五次计数 1→5 的 boot_count 持久化最小例、一次完整本地 OTA 演练日志（写另一槽→切槽→自检转正→故意不转正看 PENDING_VERIFY 自动回滚）。",
+      "boundary": "回滚状态机只在 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE 开启后存在（默认未启用），不开时坏固件照样坐庄、不会自动回滚，不能把默认行为套进回滚流程；立创板默认表多为 factory+大存储、无 ota 槽，玩 OTA 先换表；Flash 加密/安全启动只画概念地图不实操（eFuse 不可逆）。",
+      "sources": [
+        "a9",
+        "f2",
+        "d9",
+        "mcu-anim"
+      ]
+    },
+    "esp32/11-lowpower.md": {
+      "question": "Deep sleep 一觉醒来为什么像冷启动从 app_main 重跑？变量怎么活过断电？",
+      "deliverable": "Light/Deep 四列对照表（RAM/外设/唤醒方式/唤醒后状态）+ 周期上报器六步骨架（RTC_DATA_ATTR 跨睡计数、esp_sleep_get_wakeup_cause 分诊），附 CR2032≈90 天、18650≈150 天两笔续航手算。",
+      "boundary": "电流数值以 datasheet §Power consumption 与 E06 实测为准（章内明确『不编造』），续航是理论上限、实测要打 LDO 漏电折扣；ULP 只给两代对比与开发流程地图、不教编程；UART 深睡唤醒能力依芯片而异、见 TRM，本章不展开。",
+      "sources": [
+        "a7",
+        "a8",
+        "a9",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/12-audio-path.md": {
+      "question": "音频芯片为什么 I2C 和 I2S 两套线并用？MCLK 没给或给错为什么会无声？",
+      "deliverable": "一张 麦→ES7210→I2S RX→S3→I2S TX→ES8311→NS4150B→喇叭 全链路图（带宽账：16kHz×16bit→512kHz BCK、MCLK=256×fs=4.096MHz），加一段 E08 实测能响的『滴』（stereo 双槽位填同一份样本、PA_EN 走 PCA9557 bit1 而非 GPIO）。",
+      "boundary": "E08 只实测打通播放（ES8311 DAC）路径；ES7210 采集与耳返回环给的是骨架，往返约 20ms+ 的延迟账是估算、待上板实测；AEC/VAD/Opus/唤醒词只给位置地图（『另一个故事』）；I2C 地址与 I2S 引脚以立创 wiki 原理图为准、成稿待逐项核对。",
+      "sources": [
+        "b3",
+        "a9",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "esp32/13-watchdog-health.md": {
+      "question": "任务都在按时让出 CPU 却一直不出活，默认 TWDT 为什么看不见？喂狗条件怎么写才算数？",
+      "deliverable": "一个可跑的 health user 监督工程（07-watchdog-health）：锁内读时间/锁外 reset_user 的 supervise 循环、fault 1/2 两条时间线预算（约 t0+2.6~2.8s 复位、监督停喂记 mask 0x80）和复位后 esp_reset_reason + RTC_NOINIT_ATTR 记录回放。",
+      "boundary": "时间线数字是按任务周期推的模型，实际复位时刻与 panic 后的 reset reason 枚举值均『待上板记录』（章末实验记录表当前为空）；只动 TWDT，IWDT 保持默认、RTC_WDT/XTWDT 不涉及；连过 OpenOCD 的板子 IWDT/TWDT 已被关且不再打开，测复位必须重新上电。",
+      "sources": [
+        "a9",
+        "f1",
+        "f2",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "gd32/00-env.md": {
+      "question": "GD32 与 STM32 同内核，工具链真能一字不改复用吗？官方库 V3.3.3 那堆文件各归哪层？",
+      "deliverable": "一次 make 编过 G1 工程的记录（证明 xPack 工具链零增量），加一张官方库两层结构的文件归类表。",
+      "boundary": "全部结论停在宿主机「编过」这一层，未上板；固件包顶层目录名待官方包核对，F470 容量事实出自 Product Brief 而非数据手册；链接官方库 .c 的库函数级路线不在本章范围。",
+      "sources": [
+        "f6",
+        "a12",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "gd32/01-rcu-clock.md": {
+      "question": "GD32F450 默认 200MHz 的 PLL 账怎么算？比 STM32 多出的电压握手与 Flash 等待留白怎么处理？",
+      "deliverable": "一笔手算的 25÷25×400÷2=200MHz 分频账、本工程与官方 system 文件的逐条对照表，和 CK_OUT0 量频对账方案。",
+      "boundary": "Flash 零等待只实证到 F407 数据手册的 168MHz 档，F450/F470 的 200MHz 档明确不做外推；两份手册均无「频率↔等待」对照表，保守超配值与 PA8≈50MHz 量频都待上板实测。",
+      "sources": [
+        "a1",
+        "a10",
+        "a11",
+        "f6",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "gd32/02-gpio-af.md": {
+      "question": "GD32F4 的 GPIO 与 STM32F4 逐字段对照，哪些位同名同义、哪些同名不同义、哪些干脆换了位置？",
+      "deliverable": "一张 GPIO 寄存器 F4↔GD32F4 逐位对照表，标出必须改代码的差异位和可以直接照抄的部分。",
+      "boundary": "对照只覆盖本书实验用到的模式；未列出的封装/引脚要以 GD32 数据手册对应料号重新核对。",
+      "sources": [
+        "a1",
+        "a10",
+        "a11",
+        "f6",
+        "mcu-anim"
+      ]
+    },
+    "gd32/03-usart.md": {
+      "question": "STM32 串口代码搬到 GD32，编号、寄存器名、中断号各错位多少？按什么纪律翻译才不出错？",
+      "deliverable": "一张 8 串口对照表（编号/总线/中断号/STM32 对应）加 CR→CTL、BRR→BAUD 的寄存器映射表与增强点位号清单。",
+      "boundary": "位级事实只核到 V3.3.3 头文件，CLEN/SCEN 等增强的时序语义待上板实测；USART5/UART6/7 为 GD32 独有，引脚分配只能查 GD32 数据手册，STM32 引脚表无从对照。",
+      "sources": [
+        "a1",
+        "f6",
+        "mcu-code"
+      ]
+    },
+    "gd32/04-periph-diff.md": {
+      "question": "把 STM32F407 工程移植到 GD32F4xx，哪些外设根本没有、哪些看着同名位宽却藏坑？",
+      "deliverable": "一张外设「有没有」对照表加移植三步清单，附位级实证：CAN_BT 复位值 0x01230000 全等、SDIO DIV 第 9 位藏在 bit31。",
+      "boundary": "USBHS 与 OTG_HS 的寄存器位级未逐位断言，以 drv_usb_regs.h 与 UM §29 为准；ULPI 个别 D 线候选脚在 datasheet 宽表抽取中有歧义，未逐一断言；结论限定 F4xx↔F407，子型号以各自 datasheet 为准。",
+      "sources": [
+        "a1",
+        "a10",
+        "a11",
+        "b6",
+        "f6",
+        "mcu-anim"
+      ]
+    },
+    "gd32/05-riscv-toolchain.md": {
+      "question": "从 ARM 搬到 RISC-V，编译旗和启动文件到底哪几处变了？为什么没有 FPU 要开、栈要自己设？",
+      "deliverable": "一张 -march/-mabi 对 ARM 四旗的编译旗对照表，加 start_gd32vf103.S 与 ARM 启动文件的逐段工序对照（点名删掉的「开 FPU」一节）。",
+      "boundary": "结论停在宿主机编译与反汇编层，未上板；复位向量装入是 Bumblebee 的实现定义行为，不能外推到其他 RISC-V 核；108M 档 Flash 等待拍数 UM 无映射表，待实测。",
+      "sources": [
+        "c8",
+        "a13",
+        "f7",
+        "mcu-anim"
+      ]
+    },
+    "gd32/06-clic-irq.md": {
+      "question": "RISC-V 的 CLIC 与 Cortex-M 的 NVIC 在中断入口、优先级和压栈上有哪些本质不同？",
+      "deliverable": "一张 NVIC↔ECLIC 机制对照表和一份 CLIC 中断入口汇编的逐行注解。",
+      "boundary": "Bumblebee 的 CLIC 是规范草案的厂商增强实现；结论不能直接平移到其他 RISC-V 内核。",
+      "sources": [
+        "a13",
+        "a14",
+        "c9",
+        "f7"
+      ]
+    },
+    "gd32/07-rcu-108m.md": {
+      "question": "同样叫 RCU，VF103 的 0x04 为什么不是 PLL？108MHz 分频链怎么推、G1 的哪些步骤消失？",
+      "deliverable": "每种时钟源一条手推分频链（8M÷2×27、25M 绕 PLL1 两圈、IRC8M÷2），加 SystemCoreClockUpdate 回读公式的手算对账。",
+      "boundary": "CKOUT0 引脚 UM 全文不点名，PA8 只是 F1 血统约定、待上板扫脚确认；108M 档 Flash 等待拍数待实测；档位函数按 HXTAL_VALUE 板宏分叉，结论绑定 8M/25M 两类板。",
+      "sources": [
+        "f6",
+        "a13",
+        "f7",
+        "mcu-anim"
+      ]
+    },
+    "gd32/08-mtime-delay.md": {
+      "question": "没有 SysTick 的 RISC-V 拿什么计时？为什么 mtime 按主频四分之一走、64 位读写还有纪律？",
+      "deliverable": "一段宿主可跑的 tick 预演（108M 档 1ms=27000），加 delay_ms 与周期 tick ISR 代码：高-低-高读、先高后低写、cmp 加周期续约。",
+      "boundary": "mtime 地址以本芯片官方库实证（0xD1000000）为准，不是 QEMU 惯例布局，换核必重查；调试器指定执行期间 mtime 停走，标定必须脱机做；mcountinhibit 位定义待 ISA 手册核验。",
+      "sources": [
+        "a14",
+        "c8",
+        "f7",
+        "mcu-anim"
+      ]
+    },
+    "gd32/09-gpio-minimal.md": {
+      "question": "G2 的「七表全同」为什么到 VF103 失效？怎么判出 F1 血统并拼出第一个点灯闭环？",
+      "deliverable": "一个可烧录的五步点灯工程（启动+链接+SystemInit+CTL 配置+mtime 延时）和三条上板验收记录：1 秒闪、SCSS=2、mtime≈27MHz。",
+      "boundary": "G2 的 F4xx 结论对本章不适用，掩码/移位/总线全要重查；LED 极性与引脚待仓库基准板指定后回填；速度档电气语义上板前按 UM 复核，VF103 无 TG 仅为头文件实证。",
+      "sources": [
+        "a1",
+        "a13",
+        "f7",
+        "mcu-anim"
+      ]
+    },
+    "lab/e01-blink.md": {
+      "question": "为什么拉低 PF6 红灯才亮，而不开 GPIOF 时钟连写 BSRR 都无效？",
+      "deliverable": "一段能跑的寄存器版 blink 固件（构建→烧录→灯闪全链路走通）加一张秒表实测表：默认与改短延时各粗测 10 个周期，并能指认 RCC/MODER/BSRR 各自动了哪一位。",
+      "boundary": "红灯闪烁现象待上板实测回填，约 1Hz 只是软件延时推算（±30% 属正常）；计时精度不在承诺内，精确时序留给 SysTick 章；只走板载灯的寄存器直控路线，外接 LED 电路与库函数开发不涉及。",
+      "sources": [
+        "a1",
+        "mcu-code",
+        "mcu-lab"
+      ]
+    },
+    "lab/e02-logic-uart.md": {
+      "question": "没有时钟线的 UART，分析仪凭什么把一串电平还原成字节？'A' 的 0x41 为何要倒着数？",
+      "deliverable": "一屏 'A' 帧逐位标注的抓包记录（起始位→低位先行的 1000 0010→停止位），附采样率、触发与解码器参数，外加一笔用最窄脉宽反推波特率的手算。",
+      "boundary": "抓包与解码现象待上板实测回填；本章只教读波形与反推波特率，USART 外设配置细节在 S7；24MHz 分析仪的能力上限（更高波特率、边沿质量、电平标准）不可外推，16 倍过采样机理只作思考题。",
+      "sources": [
+        "a1",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "lab/e03-scope-pwm.md": {
+      "question": "示波器上那段方波，怎样从 PSC/ARR/CCR 的配置反推出每个沿的来历？",
+      "deliverable": "一张定时器参数→理论波形→实测波形的对照记录（改 CCR 的占空比、改 ARR 的频率、fade 渐变各一组），附探头档位设置。",
+      "boundary": "板上波形以实测回填为准，文中预期值与误差范围未上板前只是推算；高频效应（振铃、串扰）超出本章仪器能力；RC 低通只做『穷人版 DAC』的定性验证，不进入滤波器设计。",
+      "sources": [
+        "a1",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "lab/e04-priority-inversion.md": {
+      "question": "同一剧本下 H 的等待，信号量版比互斥量版多出的 3500ms 究竟被谁吃掉了？",
+      "deliverable": "一张双 OS×两版本的四组对照表（FreeRTOS/RT-Thread × 信号量/互斥量），记录 H 等待时长并逐项与理论时间线对表。",
+      "boundary": "理论时间线是按 1ms 节拍剧本推算的非实测数据，结论以上板日志为准（节拍抖动会带来几 ms 偏差）；继承只缓解不根治，天花板协议与死锁仅思考题点到；临界区误写成 vTaskDelay 实验即失效，本页只警示不展开。",
+      "sources": [
+        "d2",
+        "d11",
+        "f1",
+        "mcu-code",
+        "mcu-anim",
+        "mcu-lab"
+      ]
+    },
+    "lab/e05-i2c-eeprom.md": {
+      "question": "一次『写后读』要在总线上发出哪些字节？重复 START 与末字节 NACK 为什么不能省？",
+      "deliverable": "两屏解码记录（写事务与随机读事务各一，逐字节标注 START/ACK/重复 START/NACK/STOP）加上拉电阻对比，及串口 read=0x5A PASS 证据。",
+      "boundary": "抓包与读回现象待上板实测回填；只覆盖单主 100kHz 场景，时钟拉伸、多主仲裁与快速模式不展开，重复 START 的原子性动机只给提示；EEPROM 写入中途断电的损坏行为未验证，仅用 ACK polling 规避写周期。",
+      "sources": [
+        "b1",
+        "a1",
+        "mcu-code",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "lab/e06-lowpower-current.md": {
+      "question": "手册里的 µA 数字怎么换算成电池能活几天？芯片睡眠电流为什么不等于整板电流？",
+      "deliverable": "一张双板各四档的电流实测表（F407 全速/Sleep/Stop/Standby，S3 含 Wi-Fi 各档），加一笔 CR2032 220mAh 续航手算（按占空比分解出平均电流）与一个『偷电贼』拔除前后对比。",
+      "boundary": "本实验无独立配套工程（固件为 planned），需把 S14/P11 内联代码搬进自己工程；文中续航算例数值是演示假设，各档电流不预填 µA 结论；芯片手册电流≠整板输入电流，LDO 与板载负载须另计，深睡档结论受 µA 档仪器分辨率制约。",
+      "sources": [
+        "a2",
+        "a8",
+        "mcu-lab",
+        "mcu-anim"
+      ]
+    },
+    "lab/e07-qmi8658.md": {
+      "question": "从 WHO_AM_I 应答 0x05 到串口打出 g/dps，地址、量程、字节序哪一环错了会读到 0xFF？",
+      "deliverable": "一段能跑的 IDF 读数工程（WHO_AM_I 自检→配置→10Hz 打印），加三组动作实测记录：平放 Z≈1g、竖立重力换轴、摇晃合值偏离 1g。",
+      "boundary": "板上读数待实测回填；10Hz 串口打印不是无丢样采集（芯片内部 250Hz），采样率结论不可外推；陀螺漂移、融合与校准明确留作后话，本章止于原始量换算；换算链按 ±4g/±512dps 固定量程，改量程须重算 LSB。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code"
+      ]
+    },
+    "lab/e08-audio-play.md": {
+      "question": "一声『滴』要过三道门：I2C 配 codec、I2S 送样本、扩展器开功放，哑火时先查哪道？",
+      "deliverable": "一段能跑的放音工程（1kHz 滴声 1 秒 + 8 音符旋律，串口显示进度），加一次调小 DMA 缓冲引发断音再恢复的实测记录，MCLK/BCLK 可由 16kHz/16bit 复算。",
+      "boundary": "放音现象待实测，DMA 缓冲断音临界值未测出、本章不宣称下限；采样率音质取舍与全双工耳返只出现在思考题；功放控制路径（PCA9557 bit1）以立创 wiki 为据核对，尚非板上验证证据。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-anim"
+      ]
+    },
+    "projects/01-f407-logger.md": {
+      "question": "传感器失联、队列积压、配置写一半断电，记录器如何把每种故障变成可观察的明确状态？",
+      "deliverable": "一套跑通『电位器→滤波→16 槽队列→主机 CSV』全链路的 F407 工程与 console 脚本操作记录，附 fault 1–4 注入日志对照与一次 configure→save→重启加载新 generation 的验证。",
+      "boundary": "全页板上结果待实测：故障注入表标注的是预期逻辑结果，EEPROM 写入中断电与看门狗真实复位路径未上板验证；ADC 原码未测 VDDA 不得当校准电压；无流控 UART 不能确认对端真实接收；S3 平台差异与 NVS 结论归 J2。",
+      "sources": [
+        "a1",
+        "f1",
+        "mcu-code",
+        "mcu-lab"
+      ]
+    },
+    "projects/02-s3-logger.md": {
+      "question": "同一份记录器核心跨到 S3，配置存储和看门狗为什么不能照搬 F407 方案，port 层要换什么？",
+      "deliverable": "S3 版记录器跑通『六轴→滤波→队列→CSV』同一条链路，附 NVS set_blob→commit→回读比对验证、fault 1–4 日志，及 F407/S3 决策差异（NVS 单 blob、TWDT）对照笔记。",
+      "boundary": "全页待实测：NVS 掉电恢复明确要求本板实验、不能从 F407 双槽模型直接推导；故障表为预期逻辑结果非实测；QMI8658 内部 250Hz 不等于应用侧 10Hz 无丢样，采集率结论不可互换；OTA 回滚只在自测题出现，不构成本章结论。",
+      "sources": [
+        "a7",
+        "a9",
+        "f2",
+        "mcu-code",
+        "mcu-lab"
+      ]
+    }
+  }
+}

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>幻觉防御决策树：正确性定义在哪，验证动作就在哪</title>
+  <desc>幻觉防御决策树。1 入口问题：模型给的这段话，正确性定义在哪？2 四个分支：定义在手册——逐位对账，查 § 章节号（总线/位语义/顺序/硬件语境四类雷的家）；定义在数学与规范——计算与对拍；定义在经验与风格——可以抽样信，但留个心眼；不上手册也不落板的中间地带——跑起来看现象。3 每片叶子标最低成本验证动作：寄存器类查手册章节号、库函数类 grep 头文件、勘误类查 ST errata、特性类查数据手册特性表。4 软约束不防幻觉：CLAUDE.md 只是 context，真正的护栏是构建门与对账流程。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <defs>
+    <marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#24292f">幻觉防御决策树</text>
+
+  <!-- 根 -->
+  <rect x="230" y="56" width="260" height="52" rx="10" fill="#ffffff" stroke="#333" stroke-width="2.2"/>
+  <text x="360" y="78" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#24292f">这段话的正确性定义在哪？</text>
+  <text x="360" y="96" text-anchor="middle" font-size="11" fill="#57606a">定义在哪，验证动作就在哪</text>
+
+  <!-- 分支 -->
+  <path d="M280 108 L160 160" fill="none" stroke="#333" stroke-width="2" marker-end="url(#ah5)"/>
+  <path d="M330 108 L300 160" fill="none" stroke="#333" stroke-width="2" marker-end="url(#ah5)"/>
+  <path d="M400 108 L420 160" fill="none" stroke="#333" stroke-width="2" marker-end="url(#ah5)"/>
+  <path d="M460 108 L560 160" fill="none" stroke="#333" stroke-width="2" marker-end="url(#ah5)"/>
+
+  <!-- 叶 1：手册 -->
+  <rect x="56" y="164" width="168" height="118" rx="10" fill="#eef2ff" stroke="#3451b2" stroke-width="2"/>
+  <text x="140" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#3451b2">手册（必须逐位）</text>
+  <text x="140" y="206" text-anchor="middle" font-size="11" fill="#24292f">寄存器 / 位语义 / 顺序</text>
+  <text x="140" y="222" text-anchor="middle" font-size="11" fill="#24292f">四类雷的家</text>
+  <rect x="76" y="236" width="128" height="32" rx="16" fill="#ffffff" stroke="#3451b2" stroke-width="1.4"/>
+  <text x="140" y="250" text-anchor="middle" font-size="11" fill="#3451b2">动作：查 § 章节号</text>
+  <text x="140" y="264" text-anchor="middle" font-size="11" fill="#3451b2">§2.3 / §7.3 / §8.4</text>
+
+  <!-- 叶 2：数学规范 -->
+  <rect x="236" y="164" width="140" height="118" rx="10" fill="#eef7f1" stroke="#1a7f56" stroke-width="2"/>
+  <text x="306" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1a7f56">数学 / 规范</text>
+  <text x="306" y="206" text-anchor="middle" font-size="11" fill="#24292f">分频系数、CRC、</text>
+  <text x="306" y="222" text-anchor="middle" font-size="11" fill="#24292f">协议字段</text>
+  <rect x="252" y="236" width="108" height="32" rx="16" fill="#ffffff" stroke="#1a7f56" stroke-width="1.4"/>
+  <text x="306" y="250" text-anchor="middle" font-size="11" fill="#1a7f56">动作：计算对拍</text>
+  <text x="306" y="264" text-anchor="middle" font-size="11" fill="#1a7f56">重算 + 单测</text>
+
+  <!-- 叶 3：经验风格 -->
+  <rect x="388" y="164" width="140" height="118" rx="10" fill="#fdf0d5" stroke="#d97706" stroke-width="2"/>
+  <text x="458" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#92400e">经验 / 风格</text>
+  <text x="458" y="206" text-anchor="middle" font-size="11" fill="#24292f">命名、结构、</text>
+  <text x="458" y="222" text-anchor="middle" font-size="11" fill="#24292f">样板写法</text>
+  <rect x="404" y="236" width="108" height="32" rx="16" fill="#ffffff" stroke="#d97706" stroke-width="1.4"/>
+  <text x="458" y="250" text-anchor="middle" font-size="11" fill="#92400e">动作：抽样信</text>
+  <text x="458" y="264" text-anchor="middle" font-size="11" fill="#92400e">抽查一段足够</text>
+
+  <!-- 叶 4：中间地带 -->
+  <rect x="540" y="164" width="148" height="118" rx="10" fill="#f1f5f9" stroke="#666" stroke-width="2"/>
+  <text x="614" y="186" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#24292f">中间地带</text>
+  <text x="614" y="206" text-anchor="middle" font-size="11" fill="#24292f">不上手册、不落板</text>
+  <text x="614" y="222" text-anchor="middle" font-size="11" fill="#24292f">的应用逻辑</text>
+  <rect x="556" y="236" width="116" height="32" rx="16" fill="#ffffff" stroke="#666" stroke-width="1.4"/>
+  <text x="614" y="250" text-anchor="middle" font-size="11" fill="#24292f">动作：跑起来看现象</text>
+  <text x="614" y="264" text-anchor="middle" font-size="11" fill="#24292f">最小实验裁决</text>
+
+  <!-- 底部：软约束警示 + 类型注记 -->
+  <rect x="76" y="306" width="568" height="52" rx="8" fill="#ffffff" stroke="#cf222e" stroke-width="2"/>
+  <text x="360" y="328" text-anchor="middle" font-size="11.5" fill="#cf222e">软约束不防幻觉：CLAUDE.md 只是 context，不是门禁</text>
+  <text x="360" y="348" text-anchor="middle" font-size="12" fill="#57606a">真正的护栏是构建门与对账流程——模型承认错误不等于模型改正了错误</text>
+
+  <text x="360" y="388" text-anchor="middle" font-size="11" fill="#94a3b8">幻觉类别注记：总线归属 · 位语义 · 顺序 · 硬件语境 · 假库函数 · 假页码 · 假勘误 · 假特性</text>
+
+  <!-- 流动令牌：沿四条分支落下 -->
+  <circle r="5" fill="#3451b2" cx="280" cy="108">
+    <animate attributeName="cx" values="280;160" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="108;160" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#3eaf7c" cx="330" cy="108">
+    <animate attributeName="cx" values="330;300" dur="4s" begin="1s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="108;160" dur="4s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#d97706" cx="460" cy="108">
+    <animate attributeName="cx" values="460;560" dur="4s" begin="2s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="108;160" dur="4s" begin="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

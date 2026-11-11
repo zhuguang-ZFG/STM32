@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 390" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="J2 接线与 NVS 保存：QMI8658 板载在 GPIO1/2、地址 0x6A；协议走 UART1 GPIO10 TX、GPIO11 RX 接 3.3V USB-TTL，USB 口只做烧录和日志；save 依次执行 nvs_set_blob、nvs_commit、回读比对，全部成功才回 SAVED">
+  <rect width="720" height="390" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">J2 实战派 S3 接线与 NVS 保存</text>
+  <text x="24" y="50" font-size="12" fill="#666">IMU 板载零接线；协议帧走 UART1，与 USB 口上的调试日志分开，互不干扰</text>
+
+  <!-- 电脑 -->
+  <rect x="24" y="100" width="136" height="80" fill="#fff" stroke="#666" stroke-width="2" rx="8"/>
+  <text x="92" y="120" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">电脑</text>
+  <text x="92" y="142" font-size="12" fill="#333" text-anchor="middle">flash monitor</text>
+  <text x="92" y="162" font-size="12" fill="#666" text-anchor="middle">看调试日志</text>
+  <line x1="160" y1="140" x2="200" y2="140" stroke="#666" stroke-width="2"/>
+  <text x="180" y="132" font-size="12" fill="#666" text-anchor="middle">USB</text>
+
+  <!-- S3 -->
+  <rect x="200" y="70" width="250" height="160" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="325" y="90" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">立创实战派 ESP32-S3</text>
+  <rect x="214" y="104" width="120" height="104" fill="#e6f6ee" stroke="#3eaf7c" rx="6"/>
+  <text x="274" y="124" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">QMI8658 板载</text>
+  <text x="274" y="146" font-size="12" fill="#333" text-anchor="middle">地址 0x6A</text>
+  <text x="274" y="166" font-size="12" fill="#333" text-anchor="middle">SDA GPIO1</text>
+  <text x="274" y="186" font-size="12" fill="#333" text-anchor="middle">SCL GPIO2</text>
+  <g font-size="12" fill="#333" font-family="Consolas,monospace" text-anchor="end">
+    <text x="440" y="144">GPIO10 TX</text>
+    <text x="440" y="168">GPIO11 RX</text>
+    <text x="440" y="192">GND</text>
+  </g>
+
+  <!-- USB-TTL -->
+  <rect x="546" y="100" width="150" height="104" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="686" y="120" font-size="13" font-weight="bold" fill="#a16207" text-anchor="end">USB-TTL 3V3</text>
+  <text x="556" y="144" font-size="12" fill="#333">RXD</text>
+  <text x="556" y="168" font-size="12" fill="#333">TXD</text>
+  <text x="556" y="192" font-size="12" fill="#333">GND</text>
+  <text x="686" y="168" font-size="12" fill="#666" text-anchor="end">→ 主机</text>
+  <line x1="450" y1="140" x2="546" y2="140" stroke="#c0392b" stroke-width="2"/>
+  <line x1="450" y1="164" x2="546" y2="164" stroke="#333" stroke-width="2"/>
+  <line x1="450" y1="188" x2="546" y2="188" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="498" y="132" font-size="12" fill="#c0392b" text-anchor="middle">TX 对 RX</text>
+  <text x="621" y="222" font-size="12" fill="#666" text-anchor="middle">device-console 走这里</text>
+
+  <!-- NVS 保存 -->
+  <text x="24" y="260" font-size="13" font-weight="bold" fill="#3451b2">save 的 NVS 路径：命名空间 mcu_logger，键 config，128 字节 blob</text>
+  <g font-size="12" text-anchor="middle" font-family="Consolas,monospace">
+    <rect x="24" y="272" width="140" height="30" fill="#e8edfb" stroke="#3451b2" rx="4"/><text x="94" y="292" fill="#3451b2">nvs_set_blob</text>
+    <rect x="186" y="272" width="140" height="30" fill="#e8edfb" stroke="#3451b2" rx="4"/><text x="256" y="292" fill="#3451b2">nvs_commit</text>
+    <rect x="348" y="272" width="140" height="30" fill="#e8edfb" stroke="#3451b2" rx="4"/><text x="418" y="292" fill="#3451b2">nvs_get_blob 比对</text>
+    <rect x="510" y="272" width="100" height="30" fill="#e6f6ee" stroke="#3eaf7c" rx="4"/><text x="560" y="292" fill="#1a7f56">SAVED</text>
+  </g>
+  <g fill="#3451b2">
+    <path d="M168 282 L180 287 L168 292 Z"/><path d="M330 282 L342 287 L330 292 Z"/><path d="M492 282 L504 287 L492 292 Z"/>
+  </g>
+  <text x="24" y="326" font-size="12" fill="#c0392b">任一步失败 → 回错误码 4，storage_errors 加 1，不回 SAVED</text>
+  <text x="24" y="346" font-size="12" fill="#333">启动时缺键或镜像无效 → 用安全默认值，saved_generation = 0；NVS 初始化失败也不擦整个分区</text>
+  <rect x="24" y="356" width="672" height="26" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <text x="360" y="374" font-size="12" fill="#a16207" text-anchor="middle">NVS 掉电时的表现要在本板实测，不能拿 J1 的 EEPROM 双槽模型直接类推</text>
+</svg>

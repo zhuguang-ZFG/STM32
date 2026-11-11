@@ -1,0 +1,31 @@
+{
+  "id": "knowledge-closure",
+  "name": "knowledge-closure",
+  "title": "知识闭环：事实纠错、前置章节、可靠性与综合项目",
+  "description": "四阶段知识闭环；用户确认 F407 与 S3 均做完整本地记录器，等待方案审阅。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-10-07",
+  "completedAt": "2026-10-08",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-07-knowledge-fact-corrections",
+    "10-07-knowledge-prerequisites",
+    "10-07-knowledge-reliability",
+    "10-07-knowledge-capstone"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

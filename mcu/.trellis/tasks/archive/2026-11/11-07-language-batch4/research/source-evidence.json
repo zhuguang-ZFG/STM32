@@ -1,0 +1,186 @@
+{
+  "baselineCommit": "6742ab5546f009acfe5f72022e847689864cb7c5",
+  "stage": "planning-only",
+  "metricsMethod": "Existing metrics() export, read-only; not a verdict of readability or factual correctness.",
+  "inputs": [
+    {
+      "file": "docs/build/05-map-size.md",
+      "bytes": 12732,
+      "sha256": "11e2814d90b0aa9611989c6fd61c2948d23c5a8783f404f482add222bf23436d",
+      "metrics": {
+        "count": 96,
+        "longShare": 8.3,
+        "avg": 32.1
+      }
+    },
+    {
+      "file": "docs/build/06-flash-debug.md",
+      "bytes": 13178,
+      "sha256": "44cf04702ceb518f54c4b74e582f2d16951b9088b8029d9c6a8c49dfd2263967",
+      "metrics": {
+        "count": 84,
+        "longShare": 15.5,
+        "avg": 40.2
+      }
+    },
+    {
+      "file": ".prose-baseline.json",
+      "bytes": 6741,
+      "sha256": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b"
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "bytes": 12473,
+      "sha256": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9"
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "bytes": 7047,
+      "sha256": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869"
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "bytes": 6170,
+      "sha256": "8690b07ebbb0eb2ede0b846da2347686c2e3cea84da04aa810fa3c262d04d75c"
+    },
+    {
+      "file": "package.json",
+      "bytes": 3058,
+      "sha256": "c39c8c05dc340a5e4c6b1f49ca36ed222a17bd2755b5d1d6bfa2f6eada13ee86"
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "bytes": 6833,
+      "sha256": "32380cd1b64440166b91d19af9c18d257da00b1d99186bdedee142e6853783ab"
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "bytes": 2324,
+      "sha256": "26d4e9c3cf0dd4aea7a1d7c3de24ab6c0a1507810d394afef17e3704e3ff787e"
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "bytes": 1864,
+      "sha256": "d4929d664c4512024bc5fd7c0cde72fc4cf629518de3e359a2f348d09e1c8504"
+    },
+    {
+      "file": "docs/build/00-toolchain.md",
+      "bytes": 12488,
+      "sha256": "ddc0b844b519b933fb2463378ad92f379a56cdc81ed959c9bc062dc3abb86e45"
+    },
+    {
+      "file": "docs/build/01-four-steps.md",
+      "bytes": 16692,
+      "sha256": "6627bf6e405e98972cf8fd2f0f315e9ff2355e4fbe6776b7efac825af1522866"
+    },
+    {
+      "file": "docs/build/02-elf.md",
+      "bytes": 27494,
+      "sha256": "eb7161200277de0622b34f7f0e6f51fef85cfa3c506e5eb7b440f70d38a6e4fe"
+    },
+    {
+      "file": "docs/build/03-linker-script.md",
+      "bytes": 25515,
+      "sha256": "a7dab7dd9ce64f3126ed6be52166206d32fbc49ed35dbff965834062f1c4c3d4"
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "bytes": 13141,
+      "sha256": "96a9fd3a3e3d2bf2b600e67693234cfcbd73415b40bfee58511c72200e5d4735"
+    }
+  ],
+  "scope": [
+    {
+      "file": "docs/build/05-map-size.md",
+      "allowedOriginalLines": [
+        {
+          "line": 15,
+          "text": "2. map 文件的三板斧：Archive member 表（谁被从库里捞出来）、Memory Map（每个符号的落位）、 discarded 段（被 gc-sections 辞退的）。"
+        },
+        {
+          "line": 18,
+          "text": "- **能理解**：为什么带初值的数组让 Flash 和 RAM 双涨、加 const 后 data 回落 text 涨；为什么 bin 比 text+data 大。"
+        },
+        {
+          "line": 35,
+          "text": "`size` 一行三列就把 Flash/RAM 占用算清；`nm --size-sort` 把符号按体积排队，最大几个一目了然；`map` 的 Discarded 段告诉你 gc-sections 辞退了谁。"
+        },
+        {
+          "line": 47,
+          "text": "**map 分析的下游应用**：审计完体积，下一步通常是\"Flash 不够装\"或\"要做 IAP 双区\"，这时回看 [S13 Flash 与 IAP](../stm32/13-flash-iap.md) 的分区布局，以及 [B3 链接脚本](03-linker-script.md) 的段排布。map 文件告诉你\"现在住哪\"，链接脚本决定\"将来搬哪\"。"
+        }
+      ]
+    },
+    {
+      "file": "docs/build/06-flash-debug.md",
+      "allowedOriginalLines": [
+        {
+          "line": 19,
+          "text": "- **能用**：OpenOCD 常驻 + GDB 连上，完成 halt/load/读写内存/单步/断点一整套调试流。"
+        },
+        {
+          "line": 50,
+          "text": "一条命令（如 `x/4xw 0x20000000` 读 RAM）走过的链路："
+        },
+        {
+          "line": 101,
+          "text": "`monitor` 前缀是发给 OpenOCD 的命令（reset/flash/sleep）；不带 monitor 是发给 GDB 自己的（break/x/continue）。区分这条线：`monitor reset halt` 是 OpenOCD 让芯片复位停住，`break main` 是 GDB 设断点。"
+        }
+      ]
+    }
+  ],
+  "userWork": {
+    "directory": ".trellis/tasks/11-02-skill-remaster",
+    "files": 42,
+    "sha256ByPath": {
+      ".trellis/tasks/11-02-skill-remaster/deliverables/annotations.json": "8ef2c4b21f6e3d90cbd9f28dc9b6b3743b867bbf371ec7d126dc5d8e839a1212",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/book-guide.html": "9d99ced05efbf1ed8aa2d1d624d6c94e61ec89f242257a7fd9643dd041830df4",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b1.png": "be24334916f3c79cfe5da70de2833d440583aa014e6a202144f0b5574908763a",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-b2.png": "5794213f857835056f468b12c0f7aa76e968babc1f5f77789cab6f18fd02bedc",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c0.png": "6d39c7d5bfe9ea9f8c114eb96cb7a7439ed7971ad3b671ed3dde0530fd7f8a2e",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c1.png": "492f30502f832f11bfe96c3e3264e4ced152ca87d7e376bf0b1cba0989143bf3",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c2.png": "60f5771d98a7be4c81eceeb133bbf499c0866387e97cc6e0fb9175bc29a5a05a",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c3.png": "ac89cd2adae1678049643b45e3e453ce327c685adaa3c2680efc83b5504932ec",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c4.png": "8e9fe7641ac2d7747759489c0fcb5dc7ea585c293e5a10bd2801672ccf664231",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c5.png": "a420b2810a2e2b549a52a4e6d814f0f51ea21db1622a927e98dad54f0d6f1de4",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c6.png": "34f2d2d1756331f6abff93c0721d4c88a44dd6265c5775786189b39a9851e4c7",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-c8.png": "7bd88d833662e5d3075d63e2978aaf61efd338c3db92e2958b90cdcdfaa883fb",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-f0.png": "721e0ecb56f3758827879686e3843b825dc3836879f0c837ee5e530846a6b21d",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-p2.png": "157999119e3c5c4dda8fb165e370e111744d56ad777108bc97af0e079b128a7c",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/card-s7.png": "d8bad610569dbeecaab8eccd1755d63c6b2663c69d27e93c24f9286645f6379e",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b3-linker.png": "b37a0f1eabb5322c904b85871480558ccba27716c1c7643ba2c393cb8e359415",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b4-startup.png": "28e44d9889948eaea02b6c74d6a275eb85187aa7c08845e2c04dd6f4ed848793",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-b5-map.png": "911ae37b402352af46ad886e0d9b7b5556635066d86d3674adbf7794a76cd258",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-c7-ub.png": "14e3cefcc7670ab5c70316082e651739cdbed669fdd1aec2e17db4de14ff29e5",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f2-switch.png": "c288ac9a2e9980a53a8dc4c98518aa5a7471029ec5074cb614d6c709a5addf50",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f5-sem.png": "025faeae04441a5f782d7a5786e2d787027ce2ccd0f2fa14e4df7cf3f224bf1b",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-f6-notify.png": "c9ac163aa42bca237a975285f10ebb7cc502d0b8442c2f2d27236f4f8bf5f06b",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-g1-rcu.png": "c94196d3a85b745b29656f46ba721d8c8f4daf582d335f6e938efaeff784f3d7",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p10-flash.png": "647b34cce9edeeeb93be8dffa8cc5f64f7d27a151b22168caa89d8595bcdbbf9",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p3-idf.png": "3da7ea682bdf4ea290c2b9755b5f18cf537553b78b0fd2d0241e7dbba97d0a2f",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-p8-wifi.png": "c29359cfcb17178ba346eebebb76560d9bd70e4f621e2969ffac43ac6ad2ccc2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r2-ipc.png": "4bb49b9a121bef367488c06d29ab0d49959aca2e8f6b3c5770ccfb39c906e326",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-r4-device.png": "7e71cb2757f6a7cc0c2e9f8d954093152e744f803e1c48e9f5d4f77cef0a6550",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s14-pwr.png": "55b1ea189ce469417a55ee54c3f3be06d42e308d81ce992f5891bd0440c7e690",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s2-rcc.png": "1286d1d35079bbbcb3baefc24529c5ff02d02f73b50b3065c4566290e8b9163d",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cards-batch7/card-s4-nvic.png": "b01efd32658852f87a595f1a395f4315edf947d04b94ccb5b5ea5f96550045e8",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/cover-c3-bili.png": "5ebbeea2d65a1f774e68a8417b704119b0a43b58dcbca9891aef40aee2545464",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/09-boot-sequence.png": "673a1dfe27ed30cc41db9ed9c53538fbb05cd8da1f5cf6776e6370b9ef7b7036",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-boot-relay.png": "230930055a3399ee22bc01ee37e11daba685da1b97251496d7defa263af014fc",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-i2c-bus.png": "a28e5938e143b8fb8753537e1603e1f49a90c5b082d40534731c4433ba8d4677",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-logger-flow.png": "d714968bce0abbf2e64641d190560cbd4081ae85593f6835d16cc41a97930e50",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-map-audit.png": "41ca4f5581f68daa2a1bafdcc1e08f619ac0425413a237f14a1bdf24178e3368",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-rcu-tree.png": "249dda97fdf6c939071eef7c222e68c117802f45a37e3d31ad75f9a8ef0e10b2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/images/10-sem-mutex.png": "3515f5a8239e2a07ef7f43499270b2fcce42083745c4a6afb5d6d65d352aa2d2",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/ppt/index.html": "8b7f32a2e280d2f4a1204f2ffdb8421ce5c1cac8a42eb1a72995373746241765",
+      ".trellis/tasks/11-02-skill-remaster/deliverables/review-sheet.html": "a29aa9e4eebd3c2dc7750a2b9ea53fc1cc71789bef8cdfb4df4f06888cbb0e6e",
+      ".trellis/tasks/11-02-skill-remaster/specs.md": "cf2ca61bd02c4d67a6047365a29b96fa02e2a7697e8fd44c388891d58c9420d7"
+    }
+  },
+  "limitations": [
+    "Only planning authorized; no candidate chapter or docs mutation.",
+    "Graph has no mcu index; no graph context/impact evidence.",
+    "Technical concerns recorded as frozen questions, not verified bug findings.",
+    "Operator test baseline is separate; no test, runner, CI or policy mutation."
+  ]
+}

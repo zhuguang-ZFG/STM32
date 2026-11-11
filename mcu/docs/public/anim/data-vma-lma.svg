@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>链接脚本：.data 的两个住址（VMA 与 LMA）</title>
+  <desc>四阶段动画：链接脚本不是代码，是三份契约——圈地（MEMORY）、分房（SECTIONS）、门牌（_estack/_sidata/_sdata/_edata/_sbss/_ebss 留给启动文件兑现）。① 图纸三件事：FLASH 1MB @0x08000000、RAM 128KB @0x20000000，.isr_vector 住头排靠 KEEP 保命；② 一个段两个住址：.data 的 VMA=0x20000000（运行时的家，CPU 按 ldr 寻址）、LMA=0x08000218（初值寄存在 Flash，objcopy 与烧录器按 LMA 装货），一句 "&gt;RAM AT&gt; FLASH" 绑定两址；③ 启动搬运：Reset_Handler 的循环从 _sidata 取货、写进 _sdata、到 _edata 停——货从 Flash 搬进 RAM，上电瞬间 CPU 才能用；④ 反例与判据：删掉 AT&gt; FLASH，三条 LOAD 塌成两条、_sidata == _sdata == 0x20000000，启动循环"把 0x20000000 拷到 0x20000000"一个字节没搬——链接不报错、烧录不报错，g_live 上电读到随机值。判据一条：nm 里 _sidata 必须是 0x0800xxxx。图上真在跑的东西：一块"初值货物"持续从 Flash 寄存处运往 RAM 的家。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">链接脚本：.data 的两个住址——人在 RAM，货在 Flash</text>
+  <text x="24" y="50" font-size="12" fill="#666">&gt;RAM AT&gt; FLASH 一句绑定两个地址：VMA 是运行的家，LMA 是初值寄存处；删掉 AT&gt; 一个字节也搬不动</text>
+
+  <!-- ===== 顶图（常驻）：Flash 与 RAM 两块地 ===== -->
+  <rect x="40" y="64" width="310" height="76" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="54" y="84" font-size="11" font-weight="bold" fill="#666">FLASH 1MB @ 0x0800_0000（LMA 侧：初值寄存处）</text>
+  <rect x="54" y="94" width="100" height="34" rx="3" fill="#dbe7ff" stroke="#3451b2"/><text x="104" y="115" font-size="11" fill="#3451b2" text-anchor="middle">.isr_vector + .text</text>
+  <rect x="162" y="94" width="60" height="34" rx="3" fill="#fdf0d5" stroke="#d97706"><animate attributeName="opacity" values="0.6;1;0.6" dur="1.2s" repeatCount="indefinite"/></rect>
+  <text x="192" y="109" font-size="11" font-weight="bold" fill="#d97706" text-anchor="middle">.data</text>
+  <text x="192" y="122" font-size="11" fill="#92400e" text-anchor="middle" font-family="Consolas,monospace">@0x08000218</text>
+  <text x="236" y="115" font-size="11" fill="#94a3b8">← _sidata</text>
+  <text x="300" y="132" font-size="11" fill="#94a3b8" text-anchor="middle"></text>
+
+  <rect x="370" y="64" width="310" height="76" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="384" y="84" font-size="11" font-weight="bold" fill="#666">RAM 128KB @ 0x2000_0000（VMA 侧：运行时的家）</text>
+  <rect x="384" y="94" width="70" height="34" rx="3" fill="#d8f3e5" stroke="#3eaf7c"/><text x="419" y="109" font-size="11" font-weight="bold" fill="#1a7f56" text-anchor="middle">.data</text>
+  <text x="419" y="122" font-size="11" fill="#1a7f56" text-anchor="middle" font-family="Consolas,monospace">@0x20000000</text>
+  <text x="462" y="109" font-size="11" fill="#94a3b8">← _sdata .. _edata</text>
+  <rect x="560" y="94" width="60" height="34" rx="3" fill="#f1f5f9" stroke="#94a3b8"/><text x="590" y="115" font-size="11" fill="#64748b" text-anchor="middle">.bss 清零</text>
+
+  <!-- 搬运货物：Flash → RAM（真在跑） -->
+  <circle cx="228" cy="168" r="7" fill="#d97706">
+    <animate attributeName="cx" values="228;360;360;228" keyTimes="0;0.5;0.55;1" dur="2.4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="300" y="158" font-size="11" fill="#d97706" text-anchor="middle">初值货物：启动时从 _sidata 运往 _sdata</text>
+  <line x1="228" y1="168" x2="360" y2="168" stroke="#d97706" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- ===== 阶段一：图纸三件事 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="188" width="640" height="166" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="212" font-size="13" font-weight="bold" fill="#3451b2">① 图纸产出的不是代码，是三份契约</text>
+    <text x="56" y="238" font-size="13" fill="#333"><tspan font-weight="bold">圈地 MEMORY</tspan>（FLASH 1MB、RAM 128KB，ORIGIN/LENGTH 错一个就是"盖在别人家的房子"）；</text>
+    <text x="56" y="262" font-size="13" fill="#333"><tspan font-weight="bold">分房 SECTIONS</tspan>（.isr_vector 住头排——KEEP() 保命：硬件读它但不出现在符号表里，gc 认不得）；</text>
+    <text x="56" y="286" font-size="13" fill="#333"><tspan font-weight="bold">门牌六符号</tspan>（_estack/_sidata/_sdata/_edata/_sbss/_ebss）——不是给 C 用的，是给启动文件用的。</text>
+    <text x="56" y="314" font-size="12" font-family="Consolas,monospace" fill="#666">第 1 刀实录：删 KEEP → bin 从 660 变 268 字节，readelf 还留着尺寸 0 的段名当遗照。</text>
+    <text x="56" y="338" font-size="12" fill="#d97706">上电后芯片把两条指令机器码当 SP/PC 用——板子毫无反应的排查入口：nm 找 g_pfnVectors。</text>
+  </g>
+
+  <!-- ===== 阶段二：VMA/LMA 双住址 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="188" width="640" height="166" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="212" font-size="13" font-weight="bold" fill="#3451b2">② 一个段、两个住址：&gt;RAM AT&gt; FLASH 逐词读</text>
+    <text x="56" y="238" font-size="13" fill="#333"><tspan font-family="Consolas,monospace" font-weight="bold">&gt;RAM</tspan> = 运行时住在 RAM（VMA=0x20000000，CPU 的 ldr 按它寻址）；</text>
+    <text x="56" y="262" font-size="13" fill="#333"><tspan font-family="Consolas,monospace" font-weight="bold">AT&gt; FLASH</tspan> = 初值行李寄存 Flash（LMA=0x08000218，objcopy 与烧录器按它装货）。</text>
+    <text x="56" y="290" font-size="12" font-family="Consolas,monospace" fill="#666">_sidata = LOADADDR(.data);   /* :91 —— 门牌在段之前就发，取的是 LMA */</text>
+    <text x="56" y="316" font-size="12" fill="#666">map 实测：.data  0x20000000  0x4  load address 0x08000218</text>
+    <text x="56" y="340" font-size="12" fill="#1a7f56">CCM 离群地块最见价值：漏写 AT&gt; → objcopy 补零，660 字节的 bin 膨胀到 134,217,744 字节。</text>
+  </g>
+
+  <!-- ===== 阶段三：启动搬运 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="188" width="640" height="166" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="212" font-size="13" font-weight="bold" fill="#1a7f56">③ 施工队来取货：Reset_Handler 的搬运循环</text>
+    <text x="56" y="238" font-size="12" font-family="Consolas,monospace" fill="#333">ldr r4, [r2, r3]   @ 从 _sidata 取（r2=LMA=0x08000218）</text>
+    <text x="56" y="262" font-size="12" font-family="Consolas,monospace" fill="#333">str r4, [r0, r3]   @ 写进 _sdata  （r0=VMA=0x20000000）</text>
+    <text x="56" y="286" font-size="12" font-family="Consolas,monospace" fill="#333">cmp ... bcc        @ 到 _edata 为止；随后清零循环 _sbss.._ebss</text>
+    <text x="56" y="312" font-size="13" fill="#333">门牌是链接期算出的常量，物化进字面量池——启动文件不需要"知道"你有几个全局变量。</text>
+    <text x="56" y="338" font-size="12" fill="#d97706">_sbss == _edata：清零循环的起点＝搬运循环的终点，两个循环共用一条自增存（str.w r3,[r2],#4）。</text>
+  </g>
+
+  <!-- ===== 阶段四：反例与判据 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="188" width="640" height="170" rx="8" fill="#fff7ed" stroke="#d97706"/>
+    <text x="56" y="212" font-size="13" font-weight="bold" fill="#dc2626">④ 第 2 刀：删掉 AT&gt; FLASH——一切照旧，只有初值没了</text>
+    <text x="56" y="238" font-size="13" fill="#333">三条 LOAD 塌成两条；<tspan font-family="Consolas,monospace" font-weight="bold">_sidata == _sdata == 0x20000000</tspan>——</text>
+    <text x="56" y="260" font-size="13" fill="#333">启动循环"把 0x20000000 拷到 0x20000000"，一个字节也没搬。</text>
+    <text x="56" y="288" font-size="13" fill="#333">链接不报错、烧录不报错、readelf 漂亮；多数时候程序"看起来在跑"（RAM 恰好残留上次的值）。</text>
+    <text x="56" y="316" font-size="13" fill="#dc2626">上电瞬间 RAM 是随机数——g_live 读到多少全看运气和温度。</text>
+    <text x="56" y="342" font-size="13" fill="#1a7f56" font-weight="bold">判据只有一条：nm 里 _sidata 必须是 0x0800xxxx（Flash 地址）。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">① 图纸三件事：圈地、分房、留门牌——KEEP 保向量表，门牌留给启动文件</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">② 双住址：VMA=0x20000000 运行的家；LMA=0x08000218 初值寄存处</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">③ 启动搬运：从 _sidata 取货写进 _sdata、到 _edata 停——门牌在这里兑现</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">④ 删 AT&gt; 的反例：_sidata==_sdata，一字节没搬——判据：nm 查 _sidata 必须 0x0800xxxx</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,438)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

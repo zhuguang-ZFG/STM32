@@ -1,0 +1,223 @@
+{
+  "masterIdentity": {
+    "expected": 36,
+    "selected": 36,
+    "passed": [
+      {
+        "file": "video/out/c2-pointer/bilibili.mp4",
+        "sha256": "3f90dd710cac24190e58eb9ce9df6520103809c53bc379f3f60026fc90e9e51c"
+      },
+      {
+        "file": "video/out/c2-pointer/douyin.mp4",
+        "sha256": "f39ad7afffb53d2429b494176eb9238f39e91399be1a3745f5daf83dc16e3cb7"
+      },
+      {
+        "file": "video/out/c3-volatile/bilibili.mp4",
+        "sha256": "ac611f55a5867cb700ab400b2274319cf65cfa412d7872c4cc590c5a7c7944b2"
+      },
+      {
+        "file": "video/out/c3-volatile/douyin.mp4",
+        "sha256": "7f6def91696d9b699d23aa4dd69c0c8b38233ae4cf360e74aa4b513b91e1a519"
+      },
+      {
+        "file": "video/out/c4-struct-abi/bilibili.mp4",
+        "sha256": "4d5aa017b25637eb02e205b2587ba5a95d68e94f08dcb7866256aa491494d423"
+      },
+      {
+        "file": "video/out/c4-struct-abi/douyin.mp4",
+        "sha256": "657d1f6e0f20c117ade9d062c4780939b796c278c9752c2c444ace38ae41c5c1"
+      },
+      {
+        "file": "video/out/c5-func-pointer/bilibili.mp4",
+        "sha256": "89ef23cfb8c319c3bde99da5e151537ec14e93321e8e6cf6e31fdd853bbec5ef"
+      },
+      {
+        "file": "video/out/c5-func-pointer/douyin.mp4",
+        "sha256": "fbe48ee6a03b5a256a5c52605b15ddf4b486fe96a8939c49fe4528fe5fdf0d13"
+      },
+      {
+        "file": "video/out/c6-abi-stack/bilibili.mp4",
+        "sha256": "a4d89a41c4a69a43101f14016b8a3a106422cc48e379cff3d2cbffae2877485a"
+      },
+      {
+        "file": "video/out/c6-abi-stack/douyin.mp4",
+        "sha256": "687a250feeea45411140c9292f6eadd60016dac39cdc2de37f9cd618486b3c8f"
+      },
+      {
+        "file": "video/out/c7-ub/bilibili.mp4",
+        "sha256": "bc7c6fa324e05fbaf3689466bd2ac8429c8ce1eb6683b7c705a8ba395aa158a3"
+      },
+      {
+        "file": "video/out/c7-ub/douyin.mp4",
+        "sha256": "d717515e394a6d6191d70d00b9430a29c2bc18586430e5a42e701623761bc550"
+      },
+      {
+        "file": "video/out/f0-why-rtos/bilibili.mp4",
+        "sha256": "d457ed3cbe2f31447d30337409283799566de925eee365531188582cf98861bf"
+      },
+      {
+        "file": "video/out/f0-why-rtos/douyin.mp4",
+        "sha256": "a27aaaeda3ac37d620312678cae2fab254196bef96deeae063b0c3203d2a5db5"
+      },
+      {
+        "file": "video/out/f2-context-switch/bilibili.mp4",
+        "sha256": "91bf5db7f54d1ccaf2f5fe46deb6a111f147f0efba4613ee3a39d5e548219ebf"
+      },
+      {
+        "file": "video/out/f2-context-switch/douyin.mp4",
+        "sha256": "6033a622b83a3e1132ca0d932c480149a2d76ab3539f806cbf4ad9115e85cb54"
+      },
+      {
+        "file": "video/out/f3-scheduler/bilibili.mp4",
+        "sha256": "3660331f2faa84fc306369b99334d1b8cd28a14559af8e54909b3d657cef6fd6"
+      },
+      {
+        "file": "video/out/f3-scheduler/douyin.mp4",
+        "sha256": "23e5a637ce89b7a4c3376531ee6494e01fa3b3e9bf0d01337462907f9f6413f7"
+      },
+      {
+        "file": "video/out/f5-sem-mutex/bilibili.mp4",
+        "sha256": "15f92e025dc365de15e443a50a1f0cfa2415cf5bdb85839af49875cab770c4dc"
+      },
+      {
+        "file": "video/out/f5-sem-mutex/douyin.mp4",
+        "sha256": "55066addca098bd3f4139f4940f9aea1b512d2ee45a41b93886bbb3a5d10a105"
+      },
+      {
+        "file": "video/out/f6-timers/bilibili.mp4",
+        "sha256": "e297136291325b3409a969ab3d6a1b6350fef0ba31680ed6e94472fd7c81b0eb"
+      },
+      {
+        "file": "video/out/f6-timers/douyin.mp4",
+        "sha256": "f67ee1f41a85998eb52f77a88dfc6231182fd304a78e0dd613e5a4f74cd6cbb9"
+      },
+      {
+        "file": "video/out/p4-iram/bilibili.mp4",
+        "sha256": "ebeee80371f10d596714a024666c9be1d79d9514801125e10ebb28fd6d1ff21c"
+      },
+      {
+        "file": "video/out/p4-iram/douyin.mp4",
+        "sha256": "a971ba98fe472d25a8dad619741475db968eb18800834fe9dee8576d9d51696d"
+      },
+      {
+        "file": "video/out/s14-pwr/bilibili.mp4",
+        "sha256": "cd55547535481197c844394e2acfcfedb2c1871e1e67eb0e9857f0d0acf9a534"
+      },
+      {
+        "file": "video/out/s14-pwr/douyin.mp4",
+        "sha256": "b1436cec60e01e9b7473f80295d5c7e97b574584810af3bf0307a5c5b024e546"
+      },
+      {
+        "file": "video/out/s16-hardfault/bilibili.mp4",
+        "sha256": "6642114a71a9da651f91ae3cfd001314d4ab054616a21e0552068f0bb6c9fddf"
+      },
+      {
+        "file": "video/out/s16-hardfault/douyin.mp4",
+        "sha256": "528b3f3bd0c3aaecf23b84602ccd8735bbda4fdb297fd31c6e0680c2df8361ae"
+      },
+      {
+        "file": "video/out/s2-rcc/bilibili.mp4",
+        "sha256": "f48adf87c0735af80217e0b7d22b6e0894f75f0926cc5734ad899e556c14f34b"
+      },
+      {
+        "file": "video/out/s2-rcc/douyin.mp4",
+        "sha256": "8f6a1aa4c933313755448c017cc2ec613f0a29865b5d1c45a0a134234e3655d0"
+      },
+      {
+        "file": "video/out/s4-nvic/bilibili.mp4",
+        "sha256": "b08e76e22d2149e3f7fbd31f4fcd58ee87977e47862b5d31c7361f9b5b43ec9a"
+      },
+      {
+        "file": "video/out/s4-nvic/douyin.mp4",
+        "sha256": "a713b4ebc3d99188e34847e0477b930d6406ead7e112b5cdd6edbbe66d9b4cac"
+      },
+      {
+        "file": "video/out/s5-systick/bilibili.mp4",
+        "sha256": "b897951b0cab802af00a81b84b9efeab04e1c8d683598dd82b366205c184326b"
+      },
+      {
+        "file": "video/out/s5-systick/douyin.mp4",
+        "sha256": "b2d942508e098efce8a0f9b6e52c11a8353b4d877d4297c3d6721e74424b0da5"
+      },
+      {
+        "file": "video/out/s7-usart-baud/bilibili.mp4",
+        "sha256": "1e26856913f4ae5251990ee438542da3172de5f1417decba2a802aea07674354"
+      },
+      {
+        "file": "video/out/s7-usart-baud/douyin.mp4",
+        "sha256": "5c738f992cb775d9f984082d3a113e7403ecaa964bd97822395090d4f1b080c7"
+      }
+    ],
+    "missing": [],
+    "mismatched": []
+  },
+  "bookAndJobIdentities": {
+    "mcu-book/dist/mcu-deep-book.html": {
+      "bytes": 10803192,
+      "mtime": "2026-11-06T17:29:30.470Z",
+      "sha256": "93ceeae01cb158ba326adf2050fa3768cdd781bc7cb0caf3a51c4b4ced1d8ff1"
+    },
+    "mcu-book/dist/mcu-deep-book.pdf": {
+      "bytes": 29255021,
+      "mtime": "2026-11-06T17:42:31.870Z",
+      "sha256": "4b604c5c81312f699766daab46f6d34906c41d324acde0e7770ff1497dbec388"
+    },
+    "mcu-book/dist/mcu-deep-book-print.pdf": {
+      "bytes": 17350920,
+      "mtime": "2026-11-06T01:30:59.728Z",
+      "sha256": "7b05df2112ba4f1ea092a8e608fdfaa7fbf459d672940b486f64a9bb4c5dc38c"
+    },
+    "mcu-book/book/G-开源地图.md": {
+      "bytes": 15883,
+      "mtime": "2026-11-06T17:49:08.293Z",
+      "sha256": "750c10f4a8569f2555140d9c5117660bd465a440c63ce062a6b0149f2c7b2512"
+    },
+    "video/jobs/ai4fw/review.json": {
+      "bytes": 2043,
+      "mtime": "2026-10-28T11:42:02.771Z",
+      "sha256": "55c9721b1d5bde98133822c5c13e29a66497d1e8de901b18393a0e4d4c8a8903"
+    },
+    "video/jobs/ai4fw-16x9/review.json": {
+      "bytes": 1359,
+      "mtime": "2026-10-28T11:59:25.971Z",
+      "sha256": "8848c39cc0143818cea6ca1f195946fa41329c9c939b17621d9b052a5eb472e0"
+    },
+    "video/publish/copy-ai4fw.md": {
+      "bytes": 3938,
+      "mtime": "2026-11-05T13:07:55.384Z",
+      "sha256": "40c413e5a932fbb96f468de5ab77672b470a0dd702b76f97ed15fa6a00365703"
+    }
+  },
+  "epub": {
+    "builder": false,
+    "checker": false,
+    "npm": false
+  },
+  "prose": [
+    {
+      "task": "11-06-spec-plan-continuation",
+      "file": "docs/build/00-toolchain.md",
+      "candidateMatches": true
+    },
+    {
+      "task": "11-06-language-batch2",
+      "file": "docs/build/01-four-steps.md",
+      "candidateMatches": true
+    },
+    {
+      "task": "11-06-language-batch2",
+      "file": "docs/build/02-elf.md",
+      "candidateMatches": true
+    },
+    {
+      "task": "11-07-language-batch5",
+      "file": "docs/build/07-build-system.md",
+      "candidateMatches": true
+    }
+  ],
+  "limits": [
+    "Hashes prove byte identity to retained checksum entries, not current visual/audio/online acceptance.",
+    "PDF stat/hash is not PDF contract or source freshness proof.",
+    "ffprobe proves codec/frame/size/duration metadata only."
+  ]
+}

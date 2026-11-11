@@ -1,0 +1,72 @@
+name: 外链巡检
+#
+# 为什么单独一个 workflow：站点侧的死链由 VitePress（ignoreDeadLinks: false）与
+# scripts/docs-check.mjs 守，那是**仓库内**的链接；指向站外的 3000+ 条 URL 没人管——
+# 外站改版、证书过期、域名报废都只有读者点下去才知道。
+#
+# 为什么两轮：外站偶发 5xx / 限流会让第一轮假红。第一轮失败后等 180 秒复跑，
+# 并且把第一轮的报告挪成隐藏文件，避免第二轮把自己生成的报告当成待巡检输入。
+on:
+  push:
+    branches: [main]
+    paths: ['**/*.md', '.lychee.toml', '.github/workflows/links.yml']
+  pull_request:
+    paths: ['**/*.md', '.lychee.toml', '.github/workflows/links.yml']
+  # 月度复查：.lychee.toml 里的放行清单（证书链不全、反爬）要定期重看，
+  # 站点修好之后就该把那条删掉，不能让放行清单变成化石。
+  schedule:
+    - cron: '23 3 5 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: links-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  lychee:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 链接巡检（第 1 轮）
+        id: round1
+        # 有意 continue-on-error：这一轮只是探测，最终判定看第 2 轮
+        continue-on-error: true
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config .lychee.toml --no-progress
+            './docs/**/*.md' './README.md' './CONTRIBUTING.md' './mcu-book/**/*.md' './code/**/*.md'
+          output: lychee-report-1.md
+          fail: true
+
+      - name: 等外站缓一下（第 1 轮红了才等）
+        if: steps.round1.outcome == 'failure'
+        run: sleep 180
+
+      - name: 把第 1 轮报告挪开（别让第 2 轮扫到自己的报告）
+        if: steps.round1.outcome == 'failure'
+        run: mv lychee-report-1.md .lychee-report-1.md
+
+      - name: 链接巡检（第 2 轮）
+        if: steps.round1.outcome == 'failure'
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config .lychee.toml --no-progress
+            './docs/**/*.md' './README.md' './CONTRIBUTING.md' './mcu-book/**/*.md' './code/**/*.md'
+          output: lychee-report-2.md
+          fail: true
+
+      - name: 留证（两轮的报告都上传）
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-reports
+          path: |
+            lychee-report-*.md
+            .lychee-report-1.md
+          if-no-files-found: ignore

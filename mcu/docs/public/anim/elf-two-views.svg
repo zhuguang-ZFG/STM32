@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 458" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>一个 ELF 两副目录：节表管抽屉，程序头管装车</title>
+  <desc>四阶段动画，数字全部来自标本 elf_probe.elf 的 readelf -S 与 readelf -l 实测输出。中间那条带子是文件里真实的字节顺序：0x0000 起是 52 字节的 ELF 头和对齐垫子，0x1000 起才是 .isr_vector 与 .text，0x2000 起是 .data 的初值镜像，再往后是符号、字符串、调试信息与节表本身。②上面的目录是节表，回答"东西怎么分抽屉"：.text 的 Addr=08000188 与 Off=001188 差 0x1000，因为前面 4096 字节只装了一个头；.bss 是 NOBITS，只登记不给货。③下面的目录是程序头，回答"怎么装车、卸到哪个地址"：第二条 LOAD 的 VirtAddr=0x20000000 而 PhysAddr=0x08000244，FileSiz=0x0c 而 MemSiz=0x00020，差的 0x14 正是 .bss 那 20 字节——这对地址就是链接脚本里 &gt;RAM AT&gt; FLASH 与 _sidata 兑现出来的结果。④烧录只认有 A 标记且有货的部分：blink.elf 有 20 个节，带 A 的只有 5 个，真正进芯片的是 660 字节，另外 33,944 字节全是给人看的说明书，objcopy -O binary 一刀扔掉。</desc>
+  <rect width="720" height="458" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">一个 ELF 两副目录：节表管抽屉，程序头管装车</text>
+  <text x="24" y="50" font-size="12" fill="#666">中间是文件真实字节，上下两套目录各答各的问题；数字来自 readelf -S 与 readelf -l 的实测输出。</text>
+
+  <defs>
+    <marker id="arrB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 上：节表 ===== -->
+  <rect x="40" y="64" width="640" height="110" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="54" y="84" font-size="13" font-weight="bold" fill="#3451b2">链接视图：节表（readelf -S，标本 elf_probe.elf）</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333">
+    <text x="56" y="104">[1] .isr_vector  PROGBITS  Addr 08000000  Off 001000  Size 000188  A</text>
+    <text x="56" y="119">[2] .text        PROGBITS        08000188      001188      0000bc  AX</text>
+    <text x="56" y="134">[3] .data        PROGBITS        20000000      002000      00000c  WA</text>
+    <text x="56" y="149">[4] .bss         NOBITS          2000000c      00200c      000014  WA</text>
+    <text x="56" y="164">[5] ._user_heap_stack NOBITS     20000020      002020      000600  WA</text>
+  </g>
+
+  <!-- ===== 中：文件真实字节 ===== -->
+  <rect x="40" y="200" width="640" height="36" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+  <rect x="48" y="204" width="140" height="28" fill="#e2e8f0" stroke="#cbd5e1"/>
+  <text x="56" y="222" font-size="11" font-family="Consolas,monospace" fill="#333">0x0000 头·垫子</text>
+  <rect x="194" y="204" width="190" height="28" fill="#dbe7ff" stroke="#cbd5e1"/>
+  <text x="202" y="222" font-size="11" font-family="Consolas,monospace" fill="#333">0x1000 .isr_vector .text</text>
+  <rect x="390" y="204" width="90" height="28" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="398" y="222" font-size="11" font-family="Consolas,monospace" fill="#333">0x2000 0x0c</text>
+  <rect x="486" y="204" width="120" height="28" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="494" y="222" font-size="11" font-family="Consolas,monospace" fill="#888">符号·字符串·调试</text>
+  <rect x="612" y="204" width="60" height="28" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="620" y="222" font-size="11" font-family="Consolas,monospace" fill="#888">节表</text>
+
+  <!-- ===== 下：程序头 ===== -->
+  <rect x="40" y="266" width="640" height="108" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="54" y="286" font-size="13" font-weight="bold" fill="#3451b2">执行视图：程序头（readelf -l，同一个文件）</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333">
+    <text x="56" y="304">Type Offset    VirtAddr    PhysAddr    FileSiz  MemSiz  Flg</text>
+    <text x="56" y="319">LOAD 0x001000  0x08000000  0x08000000  0x00244  0x00244  R E</text>
+    <text x="56" y="334">LOAD 0x002000  0x20000000  0x08000244  0x0000c  0x00020  RW</text>
+    <text x="56" y="349">LOAD 0x000020  0x20000020  0x08000250  0x00000  0x00600  RW</text>
+    <text x="56" y="366" fill="#666">00→.isr_vector .text ｜ 01→.data .bss ｜ 02→._user_heap_stack</text>
+  </g>
+
+  <!-- ===== ① 谁连谁 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M284,174 L284,204" fill="none" stroke="#3451b2" stroke-width="3" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.2;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <path d="M284,232 L284,262" fill="none" stroke="#3451b2" stroke-width="3" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.2;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <path d="M435,174 L435,204" fill="none" stroke="#d97706" stroke-width="3" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.25;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+    <path d="M435,232 L435,262" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.25;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ===== ② 节表读法 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="50" y="108" width="560" height="14" fill="#dbe7ff" opacity="0.5"/>
+    <rect x="50" y="138" width="560" height="14" fill="#fdf0d5" opacity="0.6">
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/>
+    </rect>
+    <text x="540" y="119" font-size="11" font-weight="bold" fill="#3451b2">差 0x1000</text>
+    <text x="540" y="149" font-size="11" font-weight="bold" fill="#92400e">不给货</text>
+    <path d="M340,176 L340,198" fill="none" stroke="#3451b2" stroke-width="2" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ===== ③ 程序头读法 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="50" y="323" width="400" height="14" fill="#d8f3e5" opacity="0.6">
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/>
+    </rect>
+    <text x="460" y="334" font-size="11" font-weight="bold" fill="#1a7f56">差的 0x14 是 .bss</text>
+    <rect x="322" y="338" width="0" height="2" fill="#1a7f56">
+      <animate attributeName="width" values="0;115;115" keyTimes="0;0.6;1" dur="4s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- ===== ④ objcopy 一刀 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="486" y="205" width="0" height="27" fill="#f8fafc">
+      <animate attributeName="width" values="0;186;186" keyTimes="0;0.55;1" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="194" y="204" width="190" height="28" fill="none" stroke="#3eaf7c" stroke-width="2"/>
+    <rect x="390" y="204" width="90" height="28" fill="none" stroke="#3eaf7c" stroke-width="2"/>
+    <g stroke="#dc2626" stroke-width="3">
+      <line x1="500" y1="208" x2="516" y2="224"/>
+      <line x1="516" y1="208" x2="500" y2="224"/>
+      <animate attributeName="opacity" values="0.35;1;0.35" dur="1s" repeatCount="indefinite"/>
+    </g>
+    <text x="440" y="252" font-size="12" font-weight="bold" fill="#1a7f56">有货的 ALLOC 才进芯片</text>
+  </g>
+
+  <!-- ===== 阶段字幕 ===== -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">① 同一个文件两套目录：节表回答"怎么分抽屉"，程序头回答"怎么装车"</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">② 节表里 Addr 是住址、Off 是货架号；NOBITS 只登记不给货</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">③ 程序头里 VMA 与 LMA 分家，FileSiz 与 MemSiz 之差就是启动工作量</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">④ 换 blink.elf 看：20 个节只有 5 个带 A，进芯片的是 660 字节</text></g>
+  </g>
+
+  <!-- ===== 阶段解说 ===== -->
+  <g font-size="12" fill="#333">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="418">blink.elf 同位置算出的是 PhysAddr=0x08000294：因为它的 .data 是空的，行李一件没带</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="418">住址 08000188 与货架号 001188 差 0x1000——前面 4096 字节只装了 52 字节的头</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="418">这条 LOAD 把 .data 与 .bss 并在一起：搬完顺手清，正是 Reset_Handler 里那两个相邻循环</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="418">34,604 − 660 = 33,944 字节全是说明书：objcopy -O binary 一刀把它们扔掉</text></g>
+  </g>
+
+  <!-- ===== 阶段指示点 ===== -->
+  <g transform="translate(630,438)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

@@ -1,0 +1,54 @@
+{
+  "databaseId": 37492733587,
+  "headSha": "286d692e124f484557c8fb8c1c1780c0fc7dccd3",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587",
+  "jobs": [
+    {
+      "name": "quality / arm-host",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369357124"
+    },
+    {
+      "name": "quality / checks",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369357981"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/00-hello, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369838760"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/02-uart-events, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369838798"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/04-qmi8658, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369838876"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/03-ledc-fade, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369838953"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/01-gpio-matrix, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369839009"
+    },
+    {
+      "name": "quality / esp32 (code/esp32/05-audio-play, esp32s3)",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369839045"
+    },
+    {
+      "name": "deploy",
+      "conclusion": "success",
+      "url": "https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112371108055"
+    }
+  ]
+}

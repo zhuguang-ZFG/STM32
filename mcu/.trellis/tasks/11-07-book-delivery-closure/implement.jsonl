@@ -1,0 +1,12 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"章节骨架、事实纪律与阅读结构"}
+{"file":".trellis/spec/book/index.md","reason":"正文/装配/印前职责与原守卫"}
+{"file":".trellis/spec/docs-site/architecture-diagram.md","reason":"动画架构题花分工与资产管线"}
+{"file":".trellis/tasks/11-07-book-delivery-closure/prd.md","reason":"本任务边界、需求和可核验AC"}
+{"file":".trellis/tasks/11-07-book-delivery-closure/design.md","reason":"接口、保护、责任和依赖"}
+{"file":".trellis/tasks/11-07-book-delivery-closure/implement.md","reason":"顺序、审阅门与实际验证要求"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md","reason":"逐点理解与说人话判据，不用代理指标代替"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md","reason":"机制图复用、可读性和跨端/印前验收"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json","reason":"保护现有全部来源、214runner与42用户文件"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md","reason":"全部工程收口、设备/基线前提与不绕过规则"}
+{"file":".trellis/spec/book/print-contract.md","reason":"完整16开PDF原13项合同"}
+{"file":".trellis/spec/firmware-common/index.md","reason":"host/交叉/固件与上板证据分级"}

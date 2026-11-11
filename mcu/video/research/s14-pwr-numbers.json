@@ -1,0 +1,20 @@
+{
+  "ep": "s14-pwr",
+  "source": "code/stm32/14-pwr/probe.sh（gcc 16.1.0 宿主 + xPack GCC 15.2.1 -O2 交叉）与 .temp/v2-facts/s14-probe.log；复位/位号口径见 RM0090 Rev 18",
+  "evidence": {
+    "probe 第 1 步 §3 时钟账：运行 168MHz 下 1ms 装载值 167999；醒来 16MHz 下 15999；装载值不改，周期 = 0x00019A28（10500 µs，µs×10 定点口径）；改对 = 0x00002710（1000 µs）；比例 168000000 / 16000000 = 10.5；旁白写作 168 兆、16 兆、10500 微秒、除以 1000、10.5ms": ".temp/v2-facts/s14-probe.log 第 3 节逐行（含 0x00019A28 / 0x00002710 两条 ✓）；probe.sh 第 1 步",
+    "probe 第 1 步 USART：PCLK2 84 兆（84MHz）时 BRR=729（0x2D9）→ 115226.0 baud，误差 +0.023%；PCLK2 8 兆（8MHz）下同一 BRR 真波特率 10973；8MHz 要 115200 应重算 BRR=69（0x45）": "s14-probe.log 第 3 节 USART 四行；0x00002ADD = 10973",
+    "probe 第 3 步实测三行：Sleep CR=0x00004200 SCR=0x00000010（SLEEPDEEP=0 PDDS=0）；Stop CR=0x00004201 SCR=0x00000014（LPDS=0x00000001）；Standby CR=0x00004202 SCR=0x00000014（PDDS=0x00000001）；入睡前基线 CR=0x4200 SCR=0x10": "s14-probe.log 第 1 节断言行：Sleep 完全不动 CR = 0x00004200；Stop 的 CR bit0 = 0x00000001；Standby 的 CR bit1 = 0x00000001",
+    "objdump enter_sleep：1d0 ldr r1,[pc,#28] 指向 0x40007000；1d2 mov.w #3758153728（0xe000e000）；1d6 ldr r0,[r1,#0]；1d8 ldr.w [r2,#3344]（0xd10）；1dc str 原样写回；1e2 bic.w #4；1e6 dsb sy（f3bf 8f4f）；1ea wfi；1ec bx lr（4770）": "s14-probe.log 第 3 部分 enter_sleep 反汇编；xPack 15.2.1 -O2",
+    "objdump enter_stop：1f4 ldr [pc,#48]；200 bic #2；204 orr #4；208 orr #1；20c str；20e str；212 dsb sy（f3bf 8f4f）；216 wfi；218 ldr；21a ldr；21c str；21e movw #15999（0x3e7f）；222 str [r2,#20]；第 5 条才是 LOAD；224 bx lr": "s14-probe.log 第 3 部分 enter_stop 反汇编；wfi 之后 6 条 / 14 字节",
+    "wfi 之后：Sleep 1 条 / 2 字节；Stop 6 条 / 14 字节；Standby 7 条 / 18 字节": "s14-probe.log 第 3 部分「wfi 之后还剩多少指令」三行",
+    "objdump enter_standby：234 ldr [pc,#52]；236 mov.w #3758153728；23a push；23c ldr；23e ldr [r0,#3344]；242 bic #1；246 orr #4；24a orr #2；24e str；250 str；254 dsb sy；258 wfi；25a 起 7 条：25a ldr [pc,#20]；25c ldr [r3,#2164]（0x874）；260 ldr [r2,#4]；262 bl 190 <reset_cause_decode>；266 ldr [pc,#12]；268 str；26a pop；0x40023000 + 0x874 = 0x40023874，源码写 RCC_BASE + 0x74": "s14-probe.log 第 3 部分 enter_standby 反汇编；2164 = 0x874；bl 目标 190",
+    "build/main_o2.o（-O2）：text/data/bss = 788 / 4 / 4（总 796）；固件本体 CR=0x4205 SCR=0x4 LOAD=0x3E7F；DBGMCU_CR 0x37 → 0x30（bic #7）；地址表 PWR_CR 0x40007000、RCC_CSR 0x40023874、SysTick_LOAD 0xE000E014、SCB_SCR 0xE000ED10、DBGMCU_CR 0xE0042004、BKPSRAM 0x40024000、SCS 0xE000E000；位号对账 29 条、地址对账 10 个": "s14-probe.log 第 2 部分 29 条位号 + 10 个地址；第 3 部分 size 行 text 788 data 4 bss 4",
+    "probe §4 备份域：备份 SRAM = 4096 字节 = 1024 个 32 位字（0x400）；DBP=0 返回 −1、BRE 没开返回 −2、越界 n > 1024 返回 −3，数组仍是 0；遗言 0xA5A5A5A5 / 0xDEADBEEF；五笔解锁 PWREN(28) → DBP(8) → CSR BRE(9) → BKPSRAMEN(18) → RTCEN(15)；回执位 BRR(bit3)": "s14-probe.log 第 5 节四种回执；位号表第 2 节",
+    "probe §6 唤醒源：空腹三个查询 EWUP / EXTI17 / EXTI16 全部返回 −1；屏蔽寄存器 1<<17 落成 0x00020000；PA0 是线 0，EWUP 管不到 EXTI17；RTC 唤醒线 EXTI18": "s14-probe.log 第 6 节三个查询与屏蔽寄存器落值",
+    "probe §7 复位原因：0x0C000000 + 0x00000000 → 0x0C；0x08000000 + 0x00000002 → 0x09；0x20000000 → 0x20；0x10000000 → 0x10；0x82000000 → 0x82；七个标志 POR 27 / PIN 26 / BOR 25 / SFT 28 / IWDG 29 / WWDG 30 / LPWR 31；RMVF 24": "s14-probe.log 第 7 节五组现场；位号表复位标志行",
+    "probe §4 看门狗：PR 编码 /4 /8 /16 /32 /64 /128 /256 /256（PR=6 与 7 同为 0x100）；reload=4095、LSI=32kHz 下 511 ms / 1023 ms / 2047 ms / 4095 ms / 8190 ms / 16380 ms / 32760 ms / 32760 ms；±5% 时 485~536、3890~4299、31122~34398；按 /512 会算成 65520 ms；最长 32760 毫秒、高估 65520 毫秒": "s14-probe.log 第 4 节八行超时表与 /512 反例",
+    "审计与发布文案：位号 29 条、地址 10 个；发布介绍写电池产品 99% 的时间在睡觉": "本集对账段；publish.bilibili.intro"
+  },
+  "exceptions": {}
+}

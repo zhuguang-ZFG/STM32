@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>事件组：ANY/ALL 两类等待者与汇总清位</title>
+  <desc>四阶段动画：一个事件组 24 位公告栏；A 等 bit0（ANY），B 等 bit0|bit1（ALL）。只置 bit0 时只有 A 醒；再置 bit1 后 B 也醒；清位在所有等待者都看完之后按 uxBitsToClear 汇总一次清掉（event_groups.c xEventGroupSetBits）。唤醒信号是从置位的那一格爬到任务框的箭头，还在等的任务用慢节拍呼吸；最后阶段一条扫描带横过两格，表示汇总清位只发生一次。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">事件组：24 位公告栏，两类等待者，一次汇总清位</text>
+  <text x="24" y="50" font-size="12" fill="#666">同一次 SetBits 里所有满足条件的都醒 · 清位是汇总清，不是先醒者独占 · TickType_t 32 位 → 可用 24 位</text>
+
+  <!-- ===== 公告栏 ===== -->
+  <rect x="40" y="80" width="300" height="120" fill="#ffffff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="56" y="104" font-size="13" font-weight="bold" fill="#3451b2">事件组 uxEventBits</text>
+  <g font-size="12" font-family="Consolas,monospace" font-weight="bold">
+    <!-- bit0 -->
+    <rect x="60" y="120" width="56" height="28" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
+    <text x="88" y="139" text-anchor="middle" fill="#666">bit0=0<animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="88" y="139" text-anchor="middle" fill="#3eaf7c" opacity="0">bit0=1<animate attributeName="opacity" calcMode="discrete" values="0;1;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <!-- bit1 -->
+    <rect x="124" y="120" width="56" height="28" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
+    <text x="152" y="139" text-anchor="middle" fill="#666">bit1=0<animate attributeName="opacity" calcMode="discrete" values="1;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="152" y="139" text-anchor="middle" fill="#3eaf7c" opacity="0">bit1=1<animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="200" y="139" fill="#888">…（共 24 个可用位）</text>
+  </g>
+  <text x="56" y="176" font-size="11" fill="#666">高 8 位是内核控制位，不能等</text>
+
+  <!-- 清位扫描带：④ 一次汇总清，扫过 bit0、bit1 两个格子（不是先醒者单独清） -->
+  <rect x="52" y="116" width="60" height="36" fill="none" stroke="#3451b2" stroke-width="3" rx="4" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <animate attributeName="x" values="52;52;124;124" keyTimes="0;0.75;0.94;1" dur="12s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- ===== 等待者 ===== -->
+  <rect x="380" y="80" width="300" height="56" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="396" y="102" font-size="12" font-weight="bold" fill="#3eaf7c">任务 A：等 bit0（ANY）</text>
+  <text x="396" y="124" font-size="11" fill="#666">bit0=1 就醒</text>
+
+  <rect x="380" y="144" width="300" height="56" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="396" y="166" font-size="12" font-weight="bold" fill="#d97706">任务 B：等 bit0|bit1（ALL）</text>
+  <text x="396" y="188" font-size="11" fill="#666">两个都齐才醒</text>
+
+  <!-- ===== 唤醒标记 ===== -->
+  <g font-size="12" font-weight="bold">
+    <text x="690" y="108" text-anchor="end" fill="#3eaf7c" opacity="0">醒了 ✓<animate attributeName="opacity" calcMode="discrete" values="0;1;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="690" y="172" text-anchor="end" fill="#d97706" opacity="0">醒了 ✓<animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+  </g>
+
+  <!-- 唤醒信号真的从公告栏爬到任务框：② bit0 → A 醒；③ bit1 → B 也醒 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="116" y1="114" x2="116" y2="114" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrW)">
+      <animate attributeName="x2" values="116;116;376;376" keyTimes="0;0.25;0.36;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="180" y1="158" x2="180" y2="158" stroke="#d97706" stroke-width="3" marker-end="url(#arrW2)">
+      <animate attributeName="x2" values="180;180;376;376" keyTimes="0;0.50;0.61;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- 还在等的任务用慢节拍呼吸：A 只阻塞在①，B 一直阻塞到③ -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="380" y="80" width="300" height="56" fill="none" stroke="#3eaf7c" stroke-width="3" rx="8">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="380" y="144" width="300" height="56" fill="none" stroke="#d97706" stroke-width="3" rx="8">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <defs>
+    <marker id="arrW" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3eaf7c"/>
+    </marker>
+    <marker id="arrW2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 汇总清位 ===== -->
+  <rect x="40" y="220" width="640" height="70" fill="#ffffff" stroke="#3451b2" rx="8"/>
+  <text x="56" y="242" font-size="13" font-weight="bold" fill="#3451b2">SetBits 的内部动作（V11.1.0 event_groups.c:547 起）</text>
+  <text x="56" y="262" font-size="12" font-family="Consolas,monospace" fill="#666">1. 置位 → 2. 走完整条等待列表，满足条件的全部唤醒（各自把等的位并进 uxBitsToClear）</text>
+  <text x="56" y="280" font-size="12" font-family="Consolas,monospace" fill="#666">3. 列表走完后：uxEventBits &amp;= ~uxBitsToClear —— 一次汇总清</text>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="330">① 初始：bit0=0、bit1=0，A 和 B 都阻塞在等待列表里</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="330">② 只置 bit0：A 醒（ANY 满足），B 继续等（ALL 不满足）——各按各的条件</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="330">③ 再置 bit1：B 也醒了——同一次 SetBits 里所有满足者都醒，不分先后</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="330">④ 清位：等所有人都看完之后按 uxBitsToClear 汇总清一次——不是先醒者独占</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,314)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

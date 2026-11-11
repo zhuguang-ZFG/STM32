@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 450" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RTOS 选型决策树：按项目约束选 FreeRTOS 或 RT-Thread</title>
+  <desc>四阶段决策动画：资源约束→功能需求→生态偏好→最终选择，展示双 OS 对照后的选型逻辑</desc>
+
+  <rect width="720" height="450" fill="#f6f8fa"/>
+
+  <!-- Decision node 1: Resource constraint -->
+  <text x="360" y="22" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">① 资源约束</text>
+  <rect x="260" y="30" width="200" height="50" rx="25" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="360" y="55" font-size="12" fill="#333" text-anchor="middle">RAM &lt; 32KB？</text>
+  <text x="200" y="75" font-size="11" fill="#dc2626" font-weight="bold">是 → FreeRTOS</text>
+  <text x="480" y="75" font-size="11" fill="#3eaf7c" font-weight="bold">否 → 下一步</text>
+
+  <!-- Arrow down -->
+  <path d="M360,80 L360,100" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Decision node 2: Feature needs -->
+  <text x="360" y="118" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">② 功能需求</text>
+  <rect x="240" y="126" width="240" height="50" rx="25" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="360" y="151" font-size="12" fill="#333" text-anchor="middle">需要设备框架 / shell？</text>
+  <text x="170" y="172" font-size="11" fill="#666">否 → FreeRTOS</text>
+  <text x="500" y="172" font-size="11" fill="#3eaf7c" font-weight="bold">是 → RT-Thread</text>
+
+  <!-- Arrow down -->
+  <path d="M360,176 L360,196" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Decision node 3: Ecosystem -->
+  <text x="360" y="214" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">③ 生态偏好</text>
+  <rect x="230" y="222" width="260" height="50" rx="25" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="247" font-size="12" fill="#333" text-anchor="middle">偏好 SCons / 包管理器？</text>
+  <text x="170" y="268" font-size="11" fill="#666">否 → FreeRTOS</text>
+  <text x="500" y="268" font-size="11" fill="#3eaf7c" font-weight="bold">是 → RT-Thread</text>
+
+  <!-- Arrow down -->
+  <path d="M360,272 L360,292" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Final result -->
+  <text x="360" y="310" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">④ 最终选择</text>
+  <rect x="180" y="318" width="160" height="50" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="260" y="348" font-size="12" fill="#3451b2" font-weight="bold" text-anchor="middle">FreeRTOS</text>
+  <text x="260" y="362" font-size="10" fill="#666" text-anchor="middle">极简 · 内核小</text>
+
+  <rect x="380" y="318" width="160" height="50" rx="8" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="460" y="348" font-size="12" fill="#3eaf7c" font-weight="bold" text-anchor="middle">RT-Thread</text>
+  <text x="460" y="362" font-size="10" fill="#666" text-anchor="middle">组件丰富 · 生态全</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Key insight -->
+  <rect x="20" y="390" width="680" height="45" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="412" font-size="11" fill="#333" text-anchor="middle">两者内核同构（任务/队列/信号量），选型看生态与组件——不是"谁更好"，是"谁更合适"</text>
+  <text x="360" y="428" font-size="10" fill="#666" text-anchor="middle" font-style="italic">详细对照见 [对比 0](../rtos/compare/00-side-by-side.md)</text>
+
+  <!-- Continuous animation: decision path highlight -->
+  <circle r="6" fill="#d97706" opacity="0.7">
+    <animate attributeName="cx" values="360;360;360;260;460" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="55;151;247;343;343" dur="5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,72 @@
+{
+  "title": "S14 低功耗自测",
+  "chapter": "s14-pwr",
+  "questions": [
+    {
+      "q": "Stop 与 Standby 在寄存器层的差别，说到底动了哪两位？",
+      "options": [
+        "A. PWR_CR.LPDS 与 PWR_CR.FPDS",
+        "B. SCB->SCR.SLEEPDEEP 与 PWR_CR.PDDS",
+        "C. PWR_CSR.SBF 与 PWR_CSR.WUF",
+        "D. RCC_CSR.DEEPSLEEPRESETF 与 PWR_CR.VOS"
+      ],
+      "answer": 1,
+      "a": "本机 probe.sh 实跑三档定档：Sleep → CR=0x4200 / SCR=0x10（CR 一个位没动）；Stop → CR=0x4201 / SCR=0x14；Standby → CR=0x4202 / SCR=0x14。三档的差别只有 SLEEPDEEP(bit2) 与 PDDS(bit1)：SLEEPDEEP=0 是 Sleep；SLEEPDEEP=1 且 PDDS=0 是 Stop；SLEEPDEEP=1 且 PDDS=1 是 Standby。LPDS/FPDS/VOS 只是 Stop 下的省电选项，不决定档位。"
+    },
+    {
+      "q": "Stop 醒来把 SysTick 恢复成 168MHz 的装载值，但 USART 的 BRR 留着没重算（PCLK2 此刻还是 8MHz）。实际打出去的波特率是多少？",
+      "options": [
+        "A. 仍是 115200，BRR 与时钟无关",
+        "B. 115226 baud，误差千分之二，能通",
+        "C. 10973 baud，差 5%，对端收到的是帧错",
+        "D. 0 baud，外设直接停摆"
+      ],
+      "answer": 2,
+      "a": "usart_baud_from_brr(729, 8MHz) 实测 10973 baud。BRR 是分频数不是波特率本身：729 在 84MHz 下是 115226.0（+0.023%，能通），时钟掉到 8MHz 后同一个数变成 10973。8MHz 下要 115200 得重算成 BRR=69。凡是『数 = 时钟 / 目标』的寄存器（SysTick LOAD、BRR、TIM ARR/PSC）醒来都得重算。"
+    },
+    {
+      "q": "BKPSRAM 写入前只开了 DBP、没开 PWR_CSR.BRE。probe.sh 实测 bkp_store() 的返回值和数组内容是？",
+      "options": [
+        "A. 返回 0，数组写进去了，但断电会丢",
+        "B. 返回 −2，数组仍是 0——看着写成功，其实是空气",
+        "C. 返回 −1，说明 DBP 也没生效",
+        "D. 硬卡死在写总线上"
+      ],
+      "answer": 1,
+      "a": "实测：DBP=0 → −1；有 DBP 无 BRE → −2 且假寄存器数组全 0；超容量 → −3；三关全过 → 0。DBP（PWR_CR bit8）是写保护开关，BRE（PWR_CSR bit9）是备份调压器的供电开关，两个寄存器两个职责。缺供电时写总线不会报错，只会静默丢掉——比崩溃更难查。"
+    },
+    {
+      "q": "想让 RTC 闹钟（EXTI 线 17）唤醒 Stop，只把 PWR_CSR.EWUP 置 1 够不够？",
+      "options": [
+        "A. 够，EWUP 就是深度睡眠唤醒总开关",
+        "B. 不够，还要额外置 RCC_BDCR.RTCEN 才算唤醒使能",
+        "C. 不够，EWUP 只管 PA0/EXTI 线 0；线 17 得写 EXTI_IMR",
+        "D. 够，但必须先关掉 SysTick 才能用 RTC 唤醒"
+      ],
+      "answer": 2,
+      "a": "探针实测：只配 EWUP 再查 17 号线 → −1，照样睡死；EXTI_IMR 写 1<<17 落进去的是 0x00020000，配好之后 17 号才返回 0。EWUP 是 PA0（EXTI 线 0）专用的唤醒使能，不在 EXTI_IMR 里；RTC 闹钟是线 17、RTC 唤醒是线 18，都走 EXTI_IMR。RTCEN 管的是 RTC 上不上电，不是唤醒路由。"
+    },
+    {
+      "q": "IWDG 的 PR 有 8 个编码值，RLR=4095、LSI=32kHz 时最长超时是多少？按『每个码再翻一倍』推到 /512 会算成多少？",
+      "options": [
+        "A. 32760 ms；想当然会算成 65520 ms——高估整整两倍",
+        "B. 65520 ms；PR=7 就是 /512",
+        "C. 16380 ms；PR=7 与 PR=5 同档",
+        "D. 8190 ms；第八个码保留不可用"
+      ],
+      "answer": 0,
+      "a": "八个码对应 /4 /8 /16 /32 /64 /128 /256 /256 —— PR=6 与 PR=7 同为 /256，最后一个码不新增分频。最长超时 256×4095×1000/32000 = 32760 ms。按 /512 想算出 65520 ms，正好高估两倍：你以为狗还能撑一分多钟，它半分钟就咬。LSI ±5% 时下界是 31122 ms，喂狗周期要按最坏的算。"
+    },
+    {
+      "q": "反汇编 enter_standby()，wfi 之后还有 7 条指令 / 18 个字节。这说明了什么？",
+      "options": [
+        "A. 编译器没优化好，应该删掉",
+        "B. 唤醒后依次执行这 7 条，所以重配时钟的代码可以写在这里",
+        "C. 这段代码永远不执行：Standby 的醒法是复位，18 字节静静躺在 Flash 里",
+        "D. 这 7 条由硬件在唤醒前代为执行"
+      ],
+      "answer": 2,
+      "a": "同一次实跑里 Sleep 的 wfi 之后是 1 条 / 2 字节（直接返回），Stop 是 6 条 / 14 字节（会执行，所以重配时钟写在这里才有地方放），Standby 是 7 条 / 18 字节且永不执行——Standby 关掉调压器，醒来走的是上电复位序列。这也是为什么状态必须睡前写进备份域：函数里 wfi 之后那半截连它准备读复位标志的 ldr 都不会跑。"
+    }
+  ]
+}

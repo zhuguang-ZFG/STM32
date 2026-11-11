@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>删掉三处 volatile，-O2 把 37 条的 main 删成 2 条</title>
+  <desc>同一份 00-blink/main.c、同一个 arm-none-eabi-gcc 15.2.1 -mcpu=cortex-m4 -mthumb -O2，只把寄存器宏、delay 参数、循环体 nop 这三处 volatile 删掉：main 从 37 条指令塌成 b.n 0 &lt;main&gt; 加一条 nop，八次外设写一次不剩。</desc>
+
+  <rect width="720" height="560" fill="#f6f8fa"/>
+  <text x="360" y="30" font-size="24" font-weight="bold" fill="#3451b2" text-anchor="middle">同一份 main.c，同一个 -O2，只删掉三处 volatile</text>
+
+  <defs>
+    <marker id="arrR" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="10" refX="14" refY="5" orient="auto">
+      <polygon points="0 0, 14 5, 0 10" fill="#dc2626"/>
+    </marker>
+    <marker id="arrD" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="12" refX="14" refY="6" orient="auto">
+      <polygon points="0 0, 14 6, 0 12" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- 上：A 仓库现状，八次外设写逐条消失 -->
+  <rect x="16" y="44" width="688" height="272" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="36" y="72" font-size="20" font-weight="bold" fill="#333">A · 仓库现状</text>
+  <text x="684" y="72" font-size="20" font-weight="bold" fill="#3eaf7c" text-anchor="end">main = 37 条</text>
+
+  <g font-family="Consolas,monospace" font-size="18" fill="#333">
+    <text x="36" y="102">c:  str.w r3, [r2, #2096]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.05;0.09;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="130">18: str.w r3, [r1, #1024]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.08;0.12;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="158">24: str.w r3, [r1, #1024]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.11;0.15;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="186">30: str.w r3, [r1, #1028]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.14;0.18;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="214">3c: str.w r3, [r1, #1032]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.17;0.21;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="242">4e: str.w r3, [r1, #1036]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.20;0.24;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="270">54: str.w r4, [r1, #1048]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.23;0.27;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="36" y="298">64: str.w r0, [r1, #1048]<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.26;0.30;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+  </g>
+  <g font-size="16" fill="#666">
+    <text x="330" y="102">开 GPIOF 时钟<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.05;0.09;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="130">GPIOF_MODER<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.08;0.12;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="158">MODER 第二次<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.11;0.15;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="186">GPIOF_OTYPER<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.14;0.18;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="214">GPIOF_OSPEEDR<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.17;0.21;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="242">GPIOF_PUPDR<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.20;0.24;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="270">BSRR 灭 PF6<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.23;0.27;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+    <text x="330" y="298">BSRR 亮 PF6<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.26;0.30;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+  </g>
+
+  <!-- 中：塌缩 -->
+  <path d="M360 322 L360 346" stroke="#d97706" stroke-width="4" marker-end="url(#arrD)"/>
+  <text x="392" y="340" font-size="18" font-weight="bold" fill="#d97706">删掉这 3 处 volatile</text>
+
+  <!-- 下：E 三处全删，跟着显形 -->
+  <rect x="16" y="354" width="688" height="110" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="36" y="382" font-size="20" font-weight="bold" fill="#333">E · 三处全删</text>
+  <text x="684" y="382" font-size="20" font-weight="bold" fill="#dc2626" text-anchor="end">main = 2 条</text>
+  <text x="36" y="414" font-family="Consolas,monospace" font-size="19" fill="#333">0:  b.n   0 &lt;main&gt;<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.34;0.38;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+  <text x="330" y="414" font-size="17" font-weight="bold" fill="#dc2626">跳回自己<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.34;0.38;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+  <text x="36" y="444" font-family="Consolas,monospace" font-size="19" fill="#333">2:  nop<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.37;0.41;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+  <text x="330" y="444" font-size="17" fill="#666">剩下还在执行的全部<animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.37;0.41;0.86;1" dur="8s" repeatCount="indefinite"/></text>
+
+  <!-- 自环：dashoffset 从第 0 帧就在走 -->
+  <circle cx="600" cy="427" r="22" fill="none" stroke="#dc2626" stroke-width="4" stroke-dasharray="30 108" stroke-linecap="round">
+    <animate attributeName="stroke-dashoffset" values="138;0" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  <path d="M622 427 L636 427" stroke="#dc2626" stroke-width="3" marker-end="url(#arrR)"/>
+  <text x="672" y="433" font-size="16" fill="#dc2626" text-anchor="middle">原地</text>
+
+  <!-- 结论条 -->
+  <rect x="16" y="478" width="688" height="42" rx="6" fill="#fdf0d5" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="506" font-size="20" font-weight="bold" fill="#92400e" text-anchor="middle">37 条 → 2 条：编译器没写错，它只是认定没人会再看这些值</text>
+  <text x="360" y="544" font-size="14" fill="#666" text-anchor="middle">复现：sh code/c/03-volatile/blink-variants.sh　xPack gcc 15.2.1　-O2</text>
+</svg>

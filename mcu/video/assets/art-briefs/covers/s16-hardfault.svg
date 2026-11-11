@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s16-hardfault 封面手绘 · FE-038 · 倒下的芯片现场 + 放大镜 + 脚印划痕指向小门 -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <rect x="300" y="1180" width="360" height="240" rx="24" fill="#ffffff" transform="rotate(-10 480 1300)"/>
+    <g transform="rotate(-10 480 1300)">
+      <circle cx="380" cy="1260" r="10" fill="#1a1a1a" stroke="none"/>
+      <circle cx="380" cy="1340" r="10" fill="#1a1a1a" stroke="none"/>
+      <path d="M420 1230 l0 140 M470 1230 l0 140 M520 1230 l0 140" stroke-width="10"/>
+    </g>
+    <rect x="240" y="1080" width="520" height="420" rx="20" stroke-dasharray="18 22" stroke-width="10"/>
+    <circle cx="1280" cy="900" r="190" fill="#ffffff"/>
+    <circle cx="1280" cy="900" r="150"/>
+    <path d="M1410 1040 l180 180" stroke-width="22"/>
+  </g>
+  <g stroke="#3451b2" stroke-width="12" stroke-linecap="round">
+    <path d="M700 1330 q60 -14 110 8"/>
+    <path d="M860 1300 q60 -14 110 8"/>
+    <path d="M1020 1270 q60 -14 110 8"/>
+    <path d="M1130 1240 Q1200 1120 1280 1030" fill="none"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M1620 620 l0 -160 q0 -26 26 -26 l120 0 q26 0 26 26 l0 220" fill="#3451b2"/>
+    <circle cx="1706" cy="560" r="12" fill="#ffffff" stroke="none"/>
+    <path d="M240 1520 q-40 8 -80 6 M1580 1530 q60 8 120 4" stroke-width="10"/>
+  </g>
+</svg>

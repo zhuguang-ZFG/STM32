@@ -1,0 +1,7 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"正文结构与事实纪律复核"}
+{"file":".trellis/spec/book/index.md","reason":"strict guard和整书装配检查口径"}
+{"file":".trellis/tasks/10-26-prose-polish/design.md","reason":"保留作者声音与受保护事实token"}
+{"file":".trellis/tasks/11-07-language-batch5/prd.md","reason":"按需求与AC逐一验收，不将规划算实施"}
+{"file":".trellis/tasks/11-07-language-batch5/design.md","reason":"检查四行边界、冻结技术疑点和额外结构"}
+{"file":".trellis/tasks/11-07-language-batch5/research/reading-evidence.md","reason":"核对四处真实理解收益和原句"}
+{"file":".trellis/tasks/11-07-language-batch5/research/source-evidence.json","reason":"来源和冻结输入是否漂移，用户工作是否完整保持"}

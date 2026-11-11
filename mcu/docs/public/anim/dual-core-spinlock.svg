@@ -1,0 +1,223 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420">
+  <title>Dual-Core Spinlock Mechanism</title>
+  <desc>Animation showing how a spinlock coordinates access to a shared resource between two MCU cores. Core 0 acquires the lock first while Core 1 spins waiting. After Core 0 releases, Core 1 acquires the lock and enters its critical section.</desc>
+
+  <!-- Background -->
+  <rect width="720" height="420" fill="#f6f8fa"/>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#333">Dual-Core Spinlock Mechanism</text>
+
+  <!-- Stage indicator pills -->
+  <g font-family="sans-serif" font-size="11">
+    <rect x="175" y="38" width="80" height="18" rx="4" fill="#3eaf7c" stroke="none">
+      <animate attributeName="opacity" values="1;0.3;0.3;0.3;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </rect>
+    <text x="215" y="51" text-anchor="middle" fill="#fff" font-size="11">1. Idle</text>
+    <rect x="265" y="38" width="80" height="18" rx="4" fill="#dc2626" stroke="none">
+      <animate attributeName="opacity" values="0.3;1;0.3;0.3;0.3" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </rect>
+    <text x="305" y="51" text-anchor="middle" fill="#fff" font-size="11">2. Lock</text>
+    <rect x="355" y="38" width="80" height="18" rx="4" fill="#d97706" stroke="none">
+      <animate attributeName="opacity" values="0.3;0.3;1;0.3;0.3" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </rect>
+    <text x="395" y="51" text-anchor="middle" fill="#fff" font-size="11">3. Switch</text>
+    <rect x="445" y="38" width="80" height="18" rx="4" fill="#3451b2" stroke="none">
+      <animate attributeName="opacity" values="0.3;0.3;0.3;1;0.3" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </rect>
+    <text x="485" y="51" text-anchor="middle" fill="#fff" font-size="11">4. Swap</text>
+  </g>
+
+  <!-- ===== CORE 0 BOX ===== -->
+  <rect x="40" y="68" width="180" height="120" rx="8" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="40" y="68" width="180" height="26" rx="8" fill="#3451b2" stroke="none"/>
+  <rect x="40" y="86" width="180" height="8" fill="#3451b2" stroke="none"/>
+  <text x="130" y="86" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#fff">Core 0 (CM0+)</text>
+
+  <!-- Core 0 status LED -->
+  <circle cx="60" cy="112" r="6" fill="#666" stroke="none">
+    <animate attributeName="fill" values="#666;#d97706;#dc2626;#666;#666" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+
+  <!-- Core 0 activity text -->
+  <text x="130" y="117" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#666">Idle</text>
+
+  <!-- Core 0 status label (changes per stage) -->
+  <text x="130" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#666">idle
+    <animate attributeName="opacity" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="130" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#d97706" opacity="0">
+    trying LOCK...
+    <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="130" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#dc2626" opacity="0">
+    critical_sect()
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="130" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#3eaf7c" opacity="0">
+    unlock(); idle
+    <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+
+  <!-- Core 0 small activity bars -->
+  <rect x="60" y="152" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+  <rect x="60" y="152" width="0" height="4" rx="2" fill="#3451b2" stroke="none">
+    <animate attributeName="width" values="0;40;140;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </rect>
+  <rect x="60" y="162" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+  <rect x="60" y="162" width="0" height="4" rx="2" fill="#3451b2" stroke="none">
+    <animate attributeName="width" values="0;20;140;30;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </rect>
+  <rect x="60" y="172" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+
+  <!-- ===== CORE 1 BOX ===== -->
+  <rect x="500" y="68" width="180" height="120" rx="8" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="500" y="68" width="180" height="26" rx="8" fill="#3451b2" stroke="none"/>
+  <rect x="500" y="86" width="180" height="8" fill="#3451b2" stroke="none"/>
+  <text x="590" y="86" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#fff">Core 1 (CM0+)</text>
+
+  <!-- Core 1 status LED -->
+  <circle cx="520" cy="112" r="6" fill="#666" stroke="none">
+    <animate attributeName="fill" values="#666;#666;#dc2626;#d97706;#666" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+
+  <!-- Core 1 status label -->
+  <text x="590" y="117" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#666">Idle</text>
+
+  <text x="590" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#666">idle
+    <animate attributeName="opacity" values="1;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="590" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#dc2626" opacity="0">
+    SPINNING...
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="590" y="138" text-anchor="middle" font-family="monospace" font-size="12" fill="#d97706" opacity="0">
+    trying LOCK...
+    <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+
+  <!-- Core 1 small activity bars -->
+  <rect x="520" y="152" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+  <rect x="520" y="152" width="0" height="4" rx="2" fill="#3451b2" stroke="none">
+    <animate attributeName="width" values="0;0;0;40;140" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </rect>
+  <rect x="520" y="162" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+  <rect x="520" y="162" width="0" height="4" rx="2" fill="#3451b2" stroke="none">
+    <animate attributeName="width" values="0;0;0;20;140" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </rect>
+  <rect x="520" y="172" width="140" height="4" rx="2" fill="#e2e8f0" stroke="none"/>
+
+  <!-- ===== LOCK SYMBOL (center) ===== -->
+  <!-- Dashed connection lines from cores to lock -->
+  <line x1="220" y1="128" x2="310" y2="128" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="410" y1="128" x2="500" y2="128" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- Lock pulse ring (visible when locked) -->
+  <circle cx="360" cy="128" r="50" fill="none" stroke="#dc2626" stroke-width="2" opacity="0">
+    <animate attributeName="opacity" values="0;0.4;0.4;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    <animate attributeName="r" values="50;58;58;50;50" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+
+  <!-- Lock outer circle -->
+  <circle cx="360" cy="128" r="50" fill="#fff" stroke="#e2e8f0" stroke-width="2.5"/>
+
+  <!-- Lock colored inner circle -->
+  <circle cx="360" cy="128" r="44" fill="#3eaf7c" stroke="none">
+    <animate attributeName="fill" values="#3eaf7c;#dc2626;#dc2626;#3eaf7c;#3eaf7c" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+
+  <!-- Padlock shackle (U-shape) -->
+  <path d="M348 122 L348 112 C348 102 372 102 372 112 L372 122" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Padlock body -->
+  <rect x="343" y="122" width="34" height="22" rx="3" fill="#fff" stroke="none"/>
+  <!-- Keyhole -->
+  <circle cx="360" cy="131" r="4" fill="#333" stroke="none"/>
+  <rect x="358" y="133" width="4" height="7" rx="1" fill="#333" stroke="none"/>
+
+  <!-- Lock state label -->
+  <text x="360" y="198" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#3eaf7c">
+    FREE
+    <animate attributeName="opacity" values="1;0;0;1;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+  <text x="360" y="198" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#dc2626" opacity="0">
+    LOCKED
+    <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </text>
+
+  <!-- ===== SPINNING ARROW (continuous rotation around lock) ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0 360 128" to="360 360 128" dur="2s" repeatCount="indefinite"/>
+      <!-- Curved arrow arc at radius ~62 from center (360,128) -->
+      <path d="M360 66 A62 62 0 1 1 305 158" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Arrowhead at end of arc -->
+      <polygon points="305,158 312,148 298,150" fill="#d97706" stroke="none"/>
+    </g>
+  </g>
+
+  <!-- ===== OPERATION ARROWS ===== -->
+
+  <!-- Core 0 -> Lock: Acquire arrow (Stage 2) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    <line x1="222" y1="108" x2="308" y2="118" stroke="#d97706" stroke-width="2.5"/>
+    <polygon points="308,118 298,112 300,124" fill="#d97706" stroke="none"/>
+    <text x="262" y="102" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#d97706">LOCK()</text>
+  </g>
+
+  <!-- Lock -> Core 0: Release arrow (Stage 3) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    <line x1="308" y1="138" x2="222" y2="148" stroke="#3eaf7c" stroke-width="2.5"/>
+    <polygon points="222,148 232,142 230,154" fill="#3eaf7c" stroke="none"/>
+    <text x="262" y="162" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#3eaf7c">UNLOCK()</text>
+  </g>
+
+  <!-- Core 1 -> Lock: Acquire arrow (Stage 3-4) -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    <line x1="498" y1="108" x2="412" y2="118" stroke="#d97706" stroke-width="2.5"/>
+    <polygon points="412,118 422,112 420,124" fill="#d97706" stroke="none"/>
+    <text x="458" y="102" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#d97706">LOCK()</text>
+  </g>
+
+  <!-- ===== SHARED RESOURCE BOX ===== -->
+  <!-- Dashed lines from lock to shared resource -->
+  <line x1="360" y1="205" x2="360" y2="268" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <rect x="240" y="270" width="240" height="60" rx="8" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="240" y="270" width="240" height="24" rx="8" fill="#333" stroke="none"/>
+  <rect x="240" y="286" width="240" height="8" fill="#333" stroke="none"/>
+  <text x="360" y="287" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#fff">Shared Resource</text>
+
+  <!-- Shared resource content -->
+  <text x="360" y="312" text-anchor="middle" font-family="monospace" font-size="11" fill="#666">e.g. UART, Flash, shared buffer</text>
+
+  <!-- Access indicator on shared resource -->
+  <circle cx="256" cy="310" r="5" fill="#666" stroke="none">
+    <animate attributeName="fill" values="#666;#dc2626;#dc2626;#666;#666" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+  <circle cx="464" cy="310" r="5" fill="#666" stroke="none">
+    <animate attributeName="fill" values="#666;#666;#dc2626;#dc2626;#666" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+  </circle>
+
+  <!-- ===== BOTTOM ANNOTATION ===== -->
+  <text x="360" y="358" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#666">
+    Only one core executes in the critical section at a time
+  </text>
+
+  <!-- Pseudocode annotation -->
+  <text x="360" y="378" text-anchor="middle" font-family="monospace" font-size="11" fill="#666">
+    while(spinlock_try_acquire() == BUSY) ;  // spin
+  </text>
+  <text x="360" y="396" text-anchor="middle" font-family="monospace" font-size="11" fill="#666">
+    critical_section();  spinlock_release();
+  </text>
+
+  <!-- Continuous pulsing indicator -->
+  <circle cx="360" cy="210" r="3" fill="#d97706">
+    <animate attributeName="r" values="3;6;3" keyTimes="0;0.5;1" dur="2s" calcMode="linear" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.3;1" keyTimes="0;0.5;1" dur="2s" calcMode="linear" repeatCount="indefinite"/>
+  </circle>
+</svg>

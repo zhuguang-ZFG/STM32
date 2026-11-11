@@ -1,0 +1,384 @@
+[
+  {
+    "id": "c-01-memory-model",
+    "path": "code/c/01-memory-model",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "c-02-pointer",
+    "path": "code/c/02-pointer",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "c-03-volatile",
+    "path": "code/c/03-volatile",
+    "kind": "host-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "c-04-struct-abi",
+    "path": "code/c/04-struct-abi",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "c-05-func-pointer",
+    "path": "code/c/05-func-pointer",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "esp32-00-hello",
+    "path": "code/esp32/00-hello",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "esp32-01-gpio-matrix",
+    "path": "code/esp32/01-gpio-matrix",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "esp32-02-uart-events",
+    "path": "code/esp32/02-uart-events",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "esp32-03-ledc-fade",
+    "path": "code/esp32/03-ledc-fade",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "gd32-01-rcu-clock",
+    "path": "code/gd32/01-rcu-clock",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "rtos-01-freertos-lab",
+    "path": "code/rtos/01-freertos-lab",
+    "kind": "arm-make",
+    "entry": "Makefile",
+    "scenes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  },
+  {
+    "id": "rtos-02-rt-thread-lab",
+    "path": "code/rtos/02-rt-thread-lab",
+    "kind": "arm-make",
+    "entry": "Makefile",
+    "scenes": [
+      1,
+      6
+    ]
+  },
+  {
+    "id": "stm32-00-blink",
+    "path": "code/stm32/00-blink",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-01-arch",
+    "path": "code/stm32/01-arch",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-01-arch-board",
+    "path": "code/stm32/01-arch-board",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-01-rcc-clock",
+    "path": "code/stm32/01-rcc-clock",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-02-tim-pwm",
+    "path": "code/stm32/02-tim-pwm",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-03-uart-dma",
+    "path": "code/stm32/03-uart-dma",
+    "kind": "arm-make",
+    "entry": "Makefile",
+    "probe": "probe.sh"
+  },
+  {
+    "id": "stm32-09-adc",
+    "path": "code/stm32/09-adc",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "toolchain-01-four-steps",
+    "path": "code/toolchain/01-four-steps",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "toolchain-02-elf",
+    "path": "code/toolchain/02-elf",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "toolchain-03-linker",
+    "path": "code/toolchain/03-linker",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-04-i2c-eeprom",
+    "path": "code/stm32/04-i2c-eeprom",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "esp32-04-qmi8658",
+    "path": "code/esp32/04-qmi8658",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "esp32-05-audio-play",
+    "path": "code/esp32/05-audio-play",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "c-06-abi-stack",
+    "path": "code/c/06-abi-stack",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-04-nvic-exti",
+    "path": "code/stm32/04-nvic-exti",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-04-nvic-exti-board",
+    "path": "code/stm32/04-nvic-exti-board",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-05-systick",
+    "path": "code/stm32/05-systick",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-05-systick-board",
+    "path": "code/stm32/05-systick-board",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "stm32-14-pwr",
+    "path": "code/stm32/14-pwr",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-16-debug-hardfault",
+    "path": "code/stm32/16-debug-hardfault",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "common-behavior",
+    "path": "code/common/behavior",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "common-reliability",
+    "path": "code/common/reliability",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-05-framed-protocol",
+    "path": "code/stm32/05-framed-protocol",
+    "kind": "arm-make",
+    "entry": "Makefile"
+  },
+  {
+    "id": "esp32-06-framed-protocol",
+    "path": "code/esp32/06-framed-protocol",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3",
+    "faults": true
+  },
+  {
+    "id": "esp32-07-watchdog-health",
+    "path": "code/esp32/07-watchdog-health",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3",
+    "faults": true
+  },
+  {
+    "id": "c-07-ub-misra",
+    "path": "code/c/07-ub-misra",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-06-watchdog-health",
+    "path": "code/stm32/06-watchdog-health",
+    "kind": "arm-make",
+    "entry": "Makefile",
+    "variants": [
+      {
+        "args": [
+          "MODE=0",
+          "FAULTS=0"
+        ],
+        "dir": "build/mode-0-faults-0"
+      },
+      {
+        "args": [
+          "MODE=0",
+          "FAULTS=1"
+        ],
+        "dir": "build/mode-0-faults-1"
+      },
+      {
+        "args": [
+          "MODE=1",
+          "FAULTS=0"
+        ],
+        "dir": "build/mode-1-faults-0"
+      },
+      {
+        "args": [
+          "MODE=1",
+          "FAULTS=1"
+        ],
+        "dir": "build/mode-1-faults-1"
+      },
+      {
+        "args": [
+          "MODE=2",
+          "FAULTS=0"
+        ],
+        "dir": "build/mode-2-faults-0"
+      },
+      {
+        "args": [
+          "MODE=2",
+          "FAULTS=1"
+        ],
+        "dir": "build/mode-2-faults-1"
+      },
+      {
+        "args": [
+          "MODE=3",
+          "FAULTS=0"
+        ],
+        "dir": "build/mode-3-faults-0"
+      },
+      {
+        "args": [
+          "MODE=3",
+          "FAULTS=1"
+        ],
+        "dir": "build/mode-3-faults-1"
+      }
+    ]
+  },
+  {
+    "id": "common-logger",
+    "path": "code/common/logger",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "stm32-07-sensor-logger",
+    "path": "code/stm32/07-sensor-logger",
+    "kind": "arm-make",
+    "entry": "Makefile",
+    "variants": [
+      {
+        "args": [
+          "MODE=0",
+          "FAULTS=0"
+        ],
+        "dir": "build/mode-0-faults-0"
+      },
+      {
+        "args": [
+          "MODE=0",
+          "FAULTS=1"
+        ],
+        "dir": "build/mode-0-faults-1"
+      }
+    ]
+  },
+  {
+    "id": "esp32-08-sensor-logger",
+    "path": "code/esp32/08-sensor-logger",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3",
+    "faults": true
+  },
+  {
+    "id": "esp32-09-iram-discipline",
+    "path": "code/esp32/09-iram-discipline",
+    "kind": "esp-idf",
+    "entry": "CMakeLists.txt",
+    "target": "esp32s3"
+  },
+  {
+    "id": "rtos-00-why-rtos",
+    "path": "code/rtos/00-why-rtos",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "rtos-03-scheduler",
+    "path": "code/rtos/03-scheduler",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "rtos-05-sem-mutex",
+    "path": "code/rtos/05-sem-mutex",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  },
+  {
+    "id": "rtos-06-timers",
+    "path": "code/rtos/06-timers",
+    "kind": "host-probe",
+    "entry": "probe.sh"
+  }
+]

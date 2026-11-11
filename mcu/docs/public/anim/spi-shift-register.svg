@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440">
+  <title>SPI 移位寄存器环：为什么发送 == 接收</title>
+  <desc>四阶段动画展示 SPI 主从设备移位寄存器头尾相连形成环形，MOSI 和 MISO 反向传输，每个时钟周期数据同时移位，证明发送和接收是同一物理过程的两面。</desc>
+  
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">SPI 移位寄存器环：为什么发送 == 接收</text>
+  <text x="24" y="50" font-size="12" fill="#666">主从移位寄存器头尾相连，每个时钟周期数据同时移位</text>
+  
+  <!-- Stage indicators -->
+  <g transform="translate(648, 52)" fill="#3451b2">
+    <circle r="5" opacity="1">
+      <animate attributeName="opacity" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="18" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="36" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="54" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+  </g>
+  
+  <!-- Stage titles -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1">
+      <text x="24" y="80">阶段 1：初始状态</text>
+      <animate attributeName="opacity" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 2：第 1 个时钟</text>
+      <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 3：第 2 个时钟</text>
+      <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 4：完成交换</text>
+      <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+  </g>
+  
+  <!-- Master shift register -->
+  <g transform="translate(120, 140)">
+    <text x="0" y="-10" font-size="12" fill="#333" font-weight="600">Master 移位寄存器</text>
+    
+    <!-- 8 bits -->
+    <g>
+      <rect x="0" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="20" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">1</text>
+      <animate attributeName="opacity" values="1;1;1;1;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g>
+      <rect x="45" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="65" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="90" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="110" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="135" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="155" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="180" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="200" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="225" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="245" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="270" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="290" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="315" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="335" y="26" text-anchor="middle" font-size="16" fill="#3451b2" font-weight="600">0</text>
+    </g>
+  </g>
+  
+  <!-- Slave shift register -->
+  <g transform="translate(120, 260)">
+    <text x="0" y="-10" font-size="12" fill="#333" font-weight="600">Slave 移位寄存器</text>
+    
+    <g>
+      <rect x="0" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="20" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="45" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="65" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="90" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="110" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="135" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="155" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="180" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="200" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="225" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="245" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">1</text>
+    </g>
+    <g>
+      <rect x="270" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="290" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">0</text>
+    </g>
+    <g>
+      <rect x="315" y="0" width="40" height="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="4"/>
+      <text x="335" y="26" text-anchor="middle" font-size="16" fill="#3eaf7c" font-weight="600">1</text>
+    </g>
+  </g>
+  
+  <!-- MOSI arrow (Master → Slave) -->
+  <g>
+    <path d="M 480 160 Q 520 210 480 260" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#arrowOrange)"/>
+    <text x="530" y="210" font-size="12" fill="#d97706" font-weight="600">MOSI</text>
+  </g>
+  
+  <!-- MISO arrow (Slave → Master) -->
+  <g>
+    <path d="M 100 260 Q 60 210 100 160" fill="none" stroke="#3451b2" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    <text x="30" y="210" font-size="12" fill="#3451b2" font-weight="600">MISO</text>
+  </g>
+  
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#d97706"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#3451b2"/>
+    </marker>
+  </defs>
+  
+  <!-- Clock pulse animation -->
+  <g transform="translate(360, 360)">
+    <text x="0" y="0" font-size="12" fill="#333" text-anchor="middle">SCK 时钟</text>
+    <path d="M -100 20 L -80 20 L -80 10 L -60 10 L -60 20 L -40 20 L -40 10 L -20 10 L -20 20 L 0 20 L 0 10 L 20 10 L 20 20 L 40 20 L 40 10 L 60 10 L 60 20 L 80 20 L 80 10 L 100 10" 
+          fill="none" stroke="#dc2626" stroke-width="2" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Key insight box -->
+  <g transform="translate(120, 380)">
+    <rect x="0" y="0" width="480" height="50" fill="#dbe7ff" stroke="#3451b2" stroke-width="2" rx="8"/>
+    <text x="240" y="20" text-anchor="middle" font-size="13" fill="#3451b2" font-weight="600">核心洞察</text>
+    <text x="240" y="38" text-anchor="middle" font-size="12" fill="#333">每个时钟周期，主从寄存器同时移位，发送和接收是同一物理过程的两面</text>
+  </g>
+</svg>

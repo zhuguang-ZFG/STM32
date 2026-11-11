@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 450" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RT-Thread 内存池：块大小一刀切，换 O(1) 的确定性</title>
+  <desc>RT-Thread 内存管理四阶段。① 三套堆按用途分治：memheap 管多段物理内存拼接（链表，简单够用）；slab 是内核小对象的快车道（定长块，碎片免疫）；TLSF 面向通用大块（两级位图近 O(1)，与调度器二级位图同源）。② 内存池 rt_mp：rt_mp_create 一池 N 块、块大小创建时一刀切定死；空闲块用链表串起来，free_list 指向链头——没有分裂没有合并，块天生一样大，这就是"碎片免疫"的来源。③ rt_mp_alloc：从 free_list 摘下链头块返回——O(1)，与池大小和碎片状态无关；没有"找一块够用的"搜索过程；代价是块大小不能挑，要 17 字节也得领 32 字节的块。④ rt_mp_free：挂回 free_list 头部，O(1) LIFO；对照 rt_malloc（TLSF）：查两级位图 → 取块 → 可能分裂，释放要查邻居合并——近 O(1) 但常数大；实时路径选池子的理由是耗时恒定、抖动可预算。</desc>
+  <rect width="720" height="450" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RT-Thread 内存池：块大小一刀切，换 O(1) 的确定性</text>
+  <text x="24" y="50" font-size="12" fill="#666">三套堆按用途分治；内存池没有搜索没有分裂——摘链头分配、挂链头释放</text>
+
+  <!-- 三套堆卡片 -->
+  <rect x="40" y="62" width="205" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="52" y="80" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#3451b2">memheap</text>
+  <text x="52" y="98" font-size="11.5" fill="#333">多段物理内存拼接</text>
+  <text x="52" y="112" font-size="11" fill="#666">链表管理 · 简单够用</text>
+  <rect x="258" y="62" width="205" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="270" y="80" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#3451b2">slab</text>
+  <text x="270" y="98" font-size="11.5" fill="#333">内核小对象快车道</text>
+  <text x="270" y="112" font-size="11" fill="#666">定长块 · 碎片免疫</text>
+  <rect x="476" y="62" width="205" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="488" y="80" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#3451b2">TLSF</text>
+  <text x="488" y="98" font-size="11.5" fill="#333">通用大块</text>
+  <text x="488" y="112" font-size="11" fill="#666">两级位图 · 近 O(1)</text>
+
+  <defs>
+    <marker id="mpArw" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3eaf7c"/></marker>
+  </defs>
+
+  <!-- 内存池容器 -->
+  <rect x="40" y="132" width="400" height="112" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="52" y="150" font-size="12.5" font-weight="bold" fill="#1a7f56">内存池 rt_mp</text>
+  <text x="150" y="150" font-family="Consolas,monospace" font-size="11.5" fill="#1a7f56">free_list（链头）</text>
+  <path d="M 252 148 C 210 154, 120 152, 78 156" stroke="#3eaf7c" stroke-width="2" fill="none" marker-end="url(#mpArw)" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="3s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 块阵列：8×4；已用=蓝，空闲=绿 -->
+  <rect x="52" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="97" y="158" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="142" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="187" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="232" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="277" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="322" y="158" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="367" y="158" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="52" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="97" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="142" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="187" y="179" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="232" y="179" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="277" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="322" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="367" y="179" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="52" y="200" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="97" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="142" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="187" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="232" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="277" y="200" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="322" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="367" y="200" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="52" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="97" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="142" y="221" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+  <rect x="187" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="232" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="277" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="322" y="221" width="42" height="20" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="0.8"/>
+  <rect x="367" y="221" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="0.8"/>
+
+  <!-- 主角块 (r0,c4)：阶段 3 被摘走（蓝覆盖 + 高亮闪） -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="232" y="158" width="42" height="20" fill="#dbe7ff" stroke="#3451b2" stroke-width="1.2"/>
+    <rect x="229" y="155" width="48" height="26" fill="none" stroke="#d97706" stroke-width="2.5">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
+    </rect>
+    <text x="282" y="172" font-size="11.5" fill="#d97706">← 这块被摘走</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="282" y="172" font-size="11.5" fill="#1a7f56">释放：挂回链头</text>
+  </g>
+
+  <!-- 耗时形态对照面板 -->
+  <rect x="470" y="132" width="210" height="112" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="480" y="150" font-size="12" font-weight="bold" fill="#3451b2">耗时形态（示意）</text>
+  <text x="508" y="180" font-size="11" fill="#1a7f56" text-anchor="middle">恒定</text>
+  <rect x="495" y="186" width="26" height="36" fill="#3eaf7c"/>
+  <text x="508" y="236" font-family="Consolas,monospace" font-size="11" fill="#1a7f56" text-anchor="middle">rt_mp_alloc</text>
+  <text x="598" y="164" font-size="11" fill="#666" text-anchor="middle">随状态波动</text>
+  <rect x="585" y="192" width="26" height="30" fill="#d97706">
+    <animate attributeName="height" values="30;52;24;44;30" keyTimes="0;0.25;0.5;0.75;1" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="192;170;198;178;192" keyTimes="0;0.25;0.5;0.75;1" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <text x="598" y="236" font-family="Consolas,monospace" font-size="11" fill="#666" text-anchor="middle">rt_malloc</text>
+  <text x="575" y="256" font-size="11" fill="#94a3b8" text-anchor="middle">示意：相对形态，非实测数值</text>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="264" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="286" font-size="13.5" font-weight="bold" fill="#3451b2">① 三套堆，按用途分治</text>
+    <text x="56" y="308" font-size="12" fill="#333">memheap：多段物理内存统一管理（链表拼接，简单够用）</text>
+    <text x="56" y="328" font-size="12" fill="#333">slab：内核小对象快车道——定长块高速缓存，碎片免疫</text>
+    <text x="56" y="348" font-size="12" fill="#333">TLSF：通用大块——两级位图近 O(1)，与调度器二级位图同源（R1）</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="264" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="286" font-size="13.5" font-weight="bold" fill="#1a7f56">② 内存池：固定块 + 空闲链表</text>
+    <text x="56" y="308" font-size="12" fill="#333">rt_mp_create：一池 N 块，块大小创建时一刀切定死</text>
+    <text x="56" y="328" font-size="12" fill="#333">空闲块用链表串起来，free_list 指向链头——池子里只有一种尺寸</text>
+    <text x="56" y="348" font-size="12" fill="#1a7f56">没有分裂没有合并：块天生一样大，这就是"碎片免疫"的来源</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="264" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="286" font-size="13.5" font-weight="bold" fill="#d97706">③ rt_mp_alloc：摘链头，一步完成</text>
+    <text x="56" y="308" font-size="12" fill="#333">从 free_list 摘下链头块返回——O(1)，与池大小和碎片状态无关</text>
+    <text x="56" y="328" font-size="12" fill="#333">没有"找一块够用的"搜索过程：块只有一种尺寸，谁都是"正好"</text>
+    <text x="56" y="348" font-size="12" fill="#d97706">代价：块大小不能挑——要 17 字节也得领 32 字节的块（内部浪费）</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="264" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="286" font-size="13.5" font-weight="bold" fill="#3451b2">④ rt_mp_free 与 rt_malloc 对照</text>
+    <text x="56" y="308" font-size="12" fill="#333">释放 = 挂回 free_list 头部：O(1)，LIFO——刚释放的块下次最先被领走</text>
+    <text x="56" y="328" font-size="12" fill="#333">rt_malloc（TLSF）：查两级位图 → 取块 → 可能分裂；释放查邻居合并——近 O(1) 但常数大</text>
+    <text x="56" y="348" font-size="12" fill="#1a7f56">实时路径选池子的理由：耗时恒定 = 抖动可预算（口诀：实时路径内存池）</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">① 三套堆按用途分治：memheap / slab / TLSF</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">② 池：块大小一刀切，空闲链表串起</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">③ alloc 摘链头 O(1)：没有搜索没有分裂</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">④ free 挂回链头 O(1)；rt_malloc 有位图与合并常数</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,418)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

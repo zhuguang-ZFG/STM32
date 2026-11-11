@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>C 语言精髓路线图：从内存到 ABI</title>
+  <desc>C 篇导览路线图：C0 嵌入式 C→C1 内存→C2 指针→C3 volatile→C4 结构体→C5 函数指针→C6 栈帧→C7 UB→C8 帧协议</desc>
+
+  <rect width="720" height="380" fill="#f6f8fa"/>
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">C 语言精髓路线图</text>
+
+  <!-- Main flow -->
+  <rect x="20" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="60" y="69" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">C0 世界观</text>
+  <path d="M100,65 L115,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="115" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="155" y="69" font-size="10" fill="#333" text-anchor="middle">C1 内存</text>
+  <path d="M195,65 L210,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="210" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="250" y="69" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">C2 指针</text>
+  <path d="M290,65 L305,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="305" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="345" y="69" font-size="10" fill="#333" text-anchor="middle">C3 volatile</text>
+  <path d="M385,65 L400,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="400" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="440" y="69" font-size="10" fill="#333" text-anchor="middle">C4 结构体</text>
+  <path d="M480,65 L495,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="495" y="45" width="80" height="40" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="535" y="69" font-size="10" fill="#333" text-anchor="middle">C5 函数指针</text>
+  <path d="M575,65 L590,65" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="590" y="45" width="110" height="40" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="645" y="69" font-size="10" fill="#333" text-anchor="middle">C6 调用约定</text>
+
+  <!-- C7 and C8 -->
+  <rect x="200" y="105" width="140" height="40" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="270" y="129" font-size="10" fill="#333" text-anchor="middle">C7 UB 与 MISRA</text>
+
+  <rect x="380" y="105" width="140" height="40" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="450" y="129" font-size="10" fill="#333" text-anchor="middle">C8 帧协议</text>
+
+  <!-- Core insights -->
+  <rect x="20" y="165" width="330" height="100" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="185" font-size="12" font-weight="bold" fill="#3451b2">核心洞察</text>
+  <text x="30" y="205" font-size="11" fill="#333">
+    <tspan fill="#3eaf7c" font-weight="bold">C2 指针</tspan>
+    <tspan> = 寄存器访问的基础</tspan>
+  </text>
+  <text x="30" y="225" font-size="11" fill="#333">
+    <tspan fill="#3451b2" font-weight="bold">C3 volatile</tspan>
+    <tspan> = 硬件寄存器的合同</tspan>
+  </text>
+  <text x="30" y="245" font-size="11" fill="#333">
+    <tspan fill="#dc2626" font-weight="bold">C6 调用约定</tspan>
+    <tspan> = 栈帧/中断/RTOS 的基础</tspan>
+  </text>
+  <text x="30" y="260" font-size="10" fill="#666" font-style="italic">每章配动画 + 反汇编取证 + 短自测</text>
+
+  <!-- Key formula -->
+  <rect x="370" y="165" width="330" height="100" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="380" y="185" font-size="12" font-weight="bold" fill="#3eaf7c">点灯公式</text>
+  <text x="380" y="210" font-size="11" fill="#333" font-family="monospace">
+    <tspan>*(volatile uint32_t*)</tspan>
+  </text>
+  <text x="380" y="230" font-size="11" fill="#333" font-family="monospace">
+    <tspan>  0x40021418 = ...</tspan>
+  </text>
+  <text x="380" y="255" font-size="10" fill="#666">
+    <tspan>C2 指针 + C3 volatile + C4 结构体</tspan>
+  </text>
+
+  <!-- Outcome -->
+  <rect x="20" y="285" width="680" height="45" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="305" font-size="12" font-weight="bold" fill="#d97706">学完能做到</text>
+  <text x="30" y="322" font-size="11" fill="#333">用"地址+宽度"描述每次寄存器写，能读反汇编判断编译器是否"听话"，能写可移植的帧协议解析器</text>
+
+  <!-- Prerequisites -->
+  <rect x="20" y="345" width="680" height="25" rx="4" fill="#ffffff" stroke="#666" stroke-width="1"/>
+  <text x="360" y="362" font-size="10" fill="#666" text-anchor="middle">先修：大学 C 语言课程 | 并行：S3 GPIO（寄存器实操验证）</text>
+
+  <defs><marker id="a" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="#666"/></marker></defs>
+
+  <circle r="4" fill="#3451b2" opacity="0.7">
+    <animate attributeName="cx" values="60;155;250;345;440;535;645" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="65;65;65;65;65;65;65" dur="5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

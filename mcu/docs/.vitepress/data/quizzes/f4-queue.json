@@ -1,0 +1,61 @@
+{
+  "title": "F4 队列自测",
+  "chapter": "f4-queue",
+  "questions": [
+    {
+      "q": "为什么说\"信号量就是队列\"？源码依据是什么？",
+      "options": [
+        "A. API 名字相近，只是叫法习惯",
+        "B. QueueDefinition 用 union 复用存储：uxItemSize=0 时发送只维护计数、不 memcpy——信号量=无数据的队列",
+        "C. 信号量内部另有一套独立结构，只是接口长得像",
+        "D. 互斥锁才是队列，普通信号量不是"
+      ],
+      "answer": 1,
+      "a": "同一个 QueueDefinition：uxItemSize=0 时 prvCopyDataToQueue 不做数据拷贝只记计数；互斥锁再挂上持有者指针和优先级继承逻辑。xSemaphoreGive 实际展开成 xQueueGenericSend。"
+    },
+    {
+      "q": "队列已满，xQueueGenericSend 与 xQueueOverwrite 的行为差异是？",
+      "options": [
+        "A. 两者都返回失败，只是错误码不同",
+        "B. 普通发送阻塞在 xTasksWaitingToSend；Overwrite 直接覆盖队首旧值、永远成功",
+        "C. Overwrite 会先清空整个队列再写入",
+        "D. 普通发送丢新数据返回成功；Overwrite 丢旧数据返回失败"
+      ],
+      "answer": 1,
+      "a": "普通发送\"一个都不能丢\"（命令/数据流），满了就挂起等空位；Overwrite 面向\"只要最新值\"（心跳/状态广播），要求队列长度 1，旧值被直接替换、发送永不失败。"
+    },
+    {
+      "q": "中断里调队列 API 为什么必须用 FromISR 版本？",
+      "options": [
+        "A. 中断里堆栈太小，普通版本参数放不下",
+        "B. FromISR 版本更快，纯性能考虑",
+        "C. 中断上下文没有\"任务\"可挂起、不能中途切换上下文；是否需要让出用 pxHigherPriorityTaskWoken 带回，在中断末尾统一结算",
+        "D. 普通版本会破坏队列数据，FromISR 版本不会"
+      ],
+      "answer": 2,
+      "a": "阻塞/切换都必须发生在\"任务\"上下文。FromISR 把叫醒谁、要不要 YIELD 作为输出参数带出，配合 portYIELD_FROM_ISR 在中断出口统一结算——让出时机合法且只切一次。"
+    },
+    {
+      "q": "发送方拷贝完数据后可能当场 YIELD，判断依据是什么？",
+      "options": [
+        "A. 队列剩余空间为零",
+        "B. 被叫醒的等待者优先级高于当前任务——xTaskRemoveFromEventList 返回 pdTRUE",
+        "C. 系统节拍中断恰好到来",
+        "D. 发送超时时间到了"
+      ],
+      "answer": 1,
+      "a": "若 xTasksWaitingToReceive 非空就叫醒等待者；等待名单按优先级排序，被叫醒者优先级更高时返回 pdTRUE，queueYIELD_IF_USING_PREEMPTION 当场让出——数据一到，最高优先级的消费者立刻接手。"
+    },
+    {
+      "q": "prvCopyDataToQueue 写数据时队列缓冲区已到尾端，怎么处理？",
+      "options": [
+        "A. 拒绝本次写入返回失败",
+        "B. memmove 整个缓冲区腾出空间",
+        "C. 分两段拷贝：先写到物理尾端，再从头写剩余字节（环形回绕）",
+        "D. 自动扩容队列存储区"
+      ],
+      "answer": 2,
+      "a": "队列存储是固定环形缓冲：跨越尾端的数据按 pcWriteTo 分两段 memcpy 回绕写入——这就是\"环形存储+两张名单\"里环形二字的来历，FreeRTOS-Kernel V11.1.0 queue.c 的 prvCopyDataToQueue。"
+    }
+  ]
+}

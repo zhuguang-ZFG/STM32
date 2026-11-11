@@ -1,0 +1,180 @@
+{
+  "dependency_sha256": "fbbfd33d70f729011b6a6bc232851c116cd4a89ead2adea4462888a6ce26fc1a",
+  "style_sha256": "46448cf896325fc46c7573fbedb68ba529a6f630d239719d861552b1661d7ff3",
+  "images": [
+    {
+      "source": "../inputs/images/cover169.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：横屏封面——代码窗口+红箭头+橙色齿孔胶片+三行标题，风格与正片一致",
+      "sha256": "7c1a6cdb1bc4584dd375d7cf94a56af27bd0a98f9fd01c1c1859178d65d01604",
+      "brief_file": "briefs/cover.md",
+      "prompt_file": "prompts/cover.md",
+      "brief_sha256": "afda697900e495622aea251d7f65db5dbe0f375969c5e6a18f31117616b6dae3",
+      "prompt_sha256": "bb83b5aa504ad91e5479f5c6b69e073b226de266472b07727872c43dea2893f9"
+    },
+    {
+      "source": "../inputs/images/v01.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：窗口/箭头/胶片三段清晰，胶片上下两排齿孔，橙色仅胶片",
+      "sha256": "91d2562e037fe392d31153bd6d046c7f0fcad885ca42663d734421476c769dfc",
+      "brief_file": "briefs/v01.md",
+      "prompt_file": "prompts/v01.md",
+      "brief_sha256": "efe279e44a888015a89a4af3238f518d93b9e2a980af7d34ca481b3faf8ea375",
+      "prompt_sha256": "f558cfd8b43b3b2bde3156217c16c8b48548ff63d00c21203e63d1fd8a23f634"
+    },
+    {
+      "source": "../inputs/images/v02.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：九宫格格架+中心橙格、蓝箭头指向正确",
+      "sha256": "7ffd3dc4653625ce3fb477a41c57b29ebd34d741e803237d954b565fa448519a",
+      "brief_file": "briefs/v02.md",
+      "prompt_file": "prompts/v02.md",
+      "approved_crops": [
+        [
+          55,
+          115,
+          1025,
+          946
+        ]
+      ],
+      "brief_sha256": "268fb1983533deddda92fa535b6c77e1ca167e3ddb3c84c8b50b1ffd5b06eca8",
+      "prompt_sha256": "9d1bd10de4eb25c2c990891b8f4bc4080892b3b737391bace98ce12c06c36a44"
+    },
+    {
+      "source": "../inputs/images/v03.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：星徽带绶带、卷轴带拖尾胶片与齿孔、箭头无穿线",
+      "sha256": "0ecbd655eb6981ee0a3e5794fa7d2c9ace5d7e8e23e3c3e6b1703da2577753f3",
+      "brief_file": "briefs/v03.md",
+      "prompt_file": "prompts/v03.md",
+      "approved_crops": [
+        [
+          95,
+          911,
+          955,
+          1591
+        ]
+      ],
+      "brief_sha256": "b8a9ee1637cecae6ee967bddbb23a56d8e88bbdb2ab1946e1d8d170e44b2f525",
+      "prompt_sha256": "eb5a25db2376ad136b4ea12558db35af02353bb1fd4daf68eb99b6723c29dd8d"
+    },
+    {
+      "source": "../inputs/images/v04.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：调色盘色格（一格橙色圆环）、小卡两线、红箭头指向正确",
+      "sha256": "6332ccd1e0576953f51c6e579a28424d352eba1e5a5e185af92e626fee96f591",
+      "brief_file": "briefs/v04.md",
+      "prompt_file": "prompts/v04.md",
+      "approved_crops": [
+        [
+          53,
+          203,
+          857,
+          1079
+        ]
+      ],
+      "brief_sha256": "6acf15a2e5d96bd582c160bf5f22f7edc2582d30ffada69f31bfd1a29df463dd",
+      "prompt_sha256": "588cbde30bc8993427ff362205a913b6b11ed12e183c8f833d73bf7127ee8643"
+    },
+    {
+      "source": "../inputs/images/v05.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：像素蘑菇阶梯线闭合，双音符完整",
+      "sha256": "2d6cefce77a3bb9fb3eceba813f57f84a6a83b8539478e4d50f7fbedf2c6c98f",
+      "brief_file": "briefs/v05.md",
+      "prompt_file": "prompts/v05.md",
+      "approved_crops": [
+        [
+          281,
+          1057,
+          1063,
+          1687
+        ]
+      ],
+      "brief_sha256": "dc99bac9550d02035a5301eaced3cceaa6f00d7df54748ca0c8675e61b9ac412",
+      "prompt_sha256": "bf770a4c8509d326addb70e5c9d8cbcef4cf1ad3cdb4628e22bfbeb9c9b0bc23"
+    },
+    {
+      "source": "../inputs/images/v06.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "新鲜命名复核：五线谱+带齿孔边框与播放三角的橙色视频播放图标、蓝箭头 ✓",
+      "sha256": "e79b441492633f6f521e65e5cc871e4b9c819a109d2cb3a126ba7f5d7e673832",
+      "brief_file": "briefs/v06.md",
+      "prompt_file": "prompts/v06.md",
+      "approved_crops": [
+        [
+          86,
+          505,
+          1001,
+          1536
+        ]
+      ],
+      "brief_sha256": "cdfd72184c03a2b8e2780246500efa829679454054f237e3d5b336ec70567424",
+      "prompt_sha256": "7a5623a027e99902bdf6012c44f35dc8f8f69b7483adfee02bd6f99240303661"
+    },
+    {
+      "source": "../inputs/images/v07.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：描边圆头+豆眼+描边躯干豆人无填充黑团，四肢完整，橙笔笔尖朝向右下自画像起笔处",
+      "sha256": "f654891c8ebb2ce8612d5475044082b862d59d1027926e37a711441fa9808125",
+      "brief_file": "briefs/v07.md",
+      "prompt_file": "prompts/v07.md",
+      "approved_crops": [
+        [
+          58,
+          556,
+          967,
+          1366
+        ]
+      ],
+      "brief_sha256": "4c84cbb0281642b048a06a1164e48eba724b89794cab23e76cec76ecb81fdb9a",
+      "prompt_sha256": "cdda11ca674910d99bdb7f3a116a3604f909f9672ce218a251ad2a613cdb7443"
+    },
+    {
+      "source": "../inputs/images/v08.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：四行双列整表，四图标无压线，四枚橙色箭头（实心头）指向右列",
+      "sha256": "9e20e0df858257554c84b6bafcc0382b1b1f7d707a889dc51ce4568b7b8c6406",
+      "brief_file": "briefs/v08.md",
+      "prompt_file": "prompts/v08.md",
+      "approved_crops": [
+        [
+          76,
+          474,
+          1007,
+          1366
+        ]
+      ],
+      "brief_sha256": "dd3a132965942b6d79e6ca1d112b84ed5337a73393a0b24de249b927135cae2c",
+      "prompt_sha256": "412326c7e026deb6ae6072c2a1049e5032c37c85bfdbf8847795078504e43bd1"
+    },
+    {
+      "source": "../inputs/images/v10.png",
+      "status": "pass",
+      "method": "generated_under_guidance",
+      "evidence": "目检通过：清单纸两条横线+橙色回形针，无卷筒误读",
+      "sha256": "ed39cecb26a28a84356183147b99c2f41a1cea4f83176cd11d47f4d0594541e0",
+      "brief_file": "briefs/v10.md",
+      "prompt_file": "prompts/v10.md",
+      "approved_crops": [
+        [
+          300,
+          900,
+          920,
+          1450
+        ]
+      ],
+      "brief_sha256": "1fad1ef3af71981fdb129265bab62774f6dc5bd6b62dca34ffb34d7bf7b77547",
+      "prompt_sha256": "fb1e3f579555ae4ca846653820eefd419664e13adeaf94f2e975674d037149ca"
+    }
+  ]
+}

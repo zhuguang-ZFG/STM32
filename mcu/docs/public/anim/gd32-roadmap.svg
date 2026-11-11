@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>GD32 双系路线图：ARM 与 RISC-V 两条进化线</title>
+  <desc>GD32 导览路线图：G0 环境→G1-G4 ARM 线（F407）| V0-V4 RISC-V 线（VF103）</desc>
+
+  <rect width="720" height="380" fill="#f6f8fa"/>
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">GD32 双系路线图</text>
+
+  <!-- Starting point -->
+  <rect x="20" y="45" width="100" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="70" y="69" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">G0 环境</text>
+
+  <!-- Split into two branches -->
+  <path d="M120,55 L160,40" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+  <path d="M120,75 L160,120" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <!-- ARM branch (top) -->
+  <text x="250" y="35" font-size="12" font-weight="bold" fill="#3451b2">ARM Cortex-M4 线（GD32F407）</text>
+  <rect x="170" y="45" width="80" height="35" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="210" y="66" font-size="9" fill="#333" text-anchor="middle">G1 时钟</text>
+  <path d="M250,62 L265,62" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="265" y="45" width="80" height="35" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="305" y="66" font-size="9" fill="#333" text-anchor="middle" font-weight="bold">G2 GPIO</text>
+  <path d="M345,62 L360,62" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="360" y="45" width="80" height="35" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="400" y="66" font-size="9" fill="#333" text-anchor="middle">G3 USART</text>
+  <path d="M440,62 L455,62" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="455" y="45" width="100" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="505" y="66" font-size="9" fill="#333" text-anchor="middle">G4 外设差异</text>
+
+  <!-- RISC-V branch (bottom) -->
+  <text x="250" y="115" font-size="12" font-weight="bold" fill="#dc2626">RISC-V 线（GD32VF103）</text>
+  <rect x="170" y="125" width="80" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="210" y="146" font-size="9" fill="#333" text-anchor="middle" font-weight="bold">V0 工具链</text>
+  <path d="M250,142 L265,142" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="265" y="125" width="80" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="305" y="146" font-size="9" fill="#333" text-anchor="middle">V1 CLIC</text>
+  <path d="M345,142 L360,142" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="360" y="125" width="80" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="400" y="146" font-size="9" fill="#333" text-anchor="middle">V2 时钟</text>
+  <path d="M440,142 L455,142" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="455" y="125" width="80" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="495" y="146" font-size="9" fill="#333" text-anchor="middle">V3 MTIME</text>
+  <path d="M535,142 L550,142" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="550" y="125" width="80" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="590" y="146" font-size="9" fill="#333" text-anchor="middle">V4 GPIO</text>
+
+  <!-- Comparison -->
+  <rect x="20" y="185" width="330" height="90" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="205" font-size="12" font-weight="bold" fill="#3451b2">与 STM32 的关系</text>
+  <text x="30" y="225" font-size="11" fill="#333">
+    <tspan>GD32F407 ≈ STM32F407 国产替代</tspan>
+  </text>
+  <text x="30" y="245" font-size="11" fill="#333">
+    <tspan>寄存器大部分同名，</tspan>
+    <tspan fill="#d97706" font-weight="bold">编号差 1</tspan>
+  </text>
+  <text x="30" y="265" font-size="11" fill="#333">
+    <tspan>学完 STM32 线，GD32 ARM 线触类旁通</tspan>
+  </text>
+
+  <!-- Key difference -->
+  <rect x="370" y="185" width="330" height="90" rx="6" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="380" y="205" font-size="12" font-weight="bold" fill="#dc2626">RISC-V 线特色</text>
+  <text x="380" y="225" font-size="11" fill="#333">
+    <tspan>CLIC 中断（替代 NVIC）</tspan>
+  </text>
+  <text x="380" y="245" font-size="11" fill="#333">
+    <tspan>MTIME 时基（替代 SysTick）</tspan>
+  </text>
+  <text x="380" y="265" font-size="11" fill="#333">
+    <tspan>掌握 ARM 后，RISC-V 只需学差异</tspan>
+  </text>
+
+  <!-- Outcome -->
+  <rect x="20" y="295" width="680" height="40" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="315" font-size="12" font-weight="bold" fill="#d97706">学完能做到</text>
+  <text x="140" y="315" font-size="11" fill="#333">掌握国产 MCU 双架构开发，能从 STM32 无缝迁移到 GD32，理解 ARM 与 RISC-V 的异同</text>
+
+  <!-- Prerequisites -->
+  <rect x="20" y="350" width="680" height="20" rx="4" fill="#ffffff" stroke="#666" stroke-width="1"/>
+  <text x="360" y="364" font-size="10" fill="#666" text-anchor="middle">先修：STM32 主线（S0-S12）| RISC-V 线额外先修：B0 工具链</text>
+
+  <defs><marker id="a" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="#666"/></marker></defs>
+
+  <circle r="4" fill="#3451b2" opacity="0.7">
+    <animate attributeName="cx" values="70;210;305;400;505" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="65;62;62;62;62" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>一个全局变量的两地生活：初值在 Flash，本体在 RAM</title>
+  <desc>五阶段动画，数字全部来自标本 mem_probe.elf 的实测输出。①上电瞬间：Flash 里代码、常量、初值备份三样都在，RAM 里全是随机值——C 语言承诺的"全局变量自动有初值"还没发生。②Reset_Handler 把 .data 的初值备份从 0x080002a0 逐字搬进 0x20000000，三圈正好 12 字节（FileSiz=0x0c）。③接着把 .bss 从 0x2000000c 清到 0x2000002c，共 32 字节；这一段在文件里是 NOBITS，一个字节都不占，MemSiz 比 FileSiz 多出来的就是启动代码的工作量。④栈顶设成向量表第 0 项 _estack=0x20020000，堆从 _end=0x20000030 往高地址长、栈往低地址长，中间约 126.5 KB 是还没碰面的空地。⑤进了 main 之后对 g_init 的读写只落在 RAM，永不回写 Flash；掉电重启，那份初值原样回来。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">一个全局变量的两地生活：初值寄在 Flash，人住在 RAM</text>
+  <text x="24" y="50" font-size="12" fill="#666">标本 mem_probe.elf 的实测数字（readelf -l 与 nm 可复现）；两列都按地址从小到大、自上而下排。</text>
+
+  <defs>
+    <marker id="arrA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+    </marker>
+    <marker id="arrD" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#dc2626"/>
+    </marker>
+    <marker id="arrB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 左：FLASH ===== -->
+  <rect x="40" y="68" width="260" height="250" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="54" y="90" font-size="13" font-weight="bold" fill="#3451b2">FLASH · 0x0800_0000 · 只读</text>
+  <rect x="54" y="104" width="232" height="28" fill="#eef2ff" stroke="#cbd5e1"/>
+  <text x="62" y="122" font-size="11" font-family="Consolas,monospace" fill="#333">.isr_vector  0x08000000</text>
+  <rect x="54" y="136" width="232" height="48" fill="#eef2ff" stroke="#cbd5e1"/>
+  <text x="62" y="156" font-size="11" font-family="Consolas,monospace" fill="#333">.text  代码 + .rodata 常量</text>
+  <text x="62" y="174" font-size="11" fill="#666">g_ro 在 0x08000298，字母却标 T</text>
+  <rect x="54" y="188" width="232" height="40" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="62" y="206" font-size="11" font-family="Consolas,monospace" fill="#333">.data 初值备份 0x080002a0</text>
+  <text x="62" y="222" font-size="11" font-weight="bold" fill="#92400e">_sidata（LMA：行李寄放处）</text>
+  <text x="62" y="250" font-size="11" fill="#888">0x080002ac 之后是空着的 Flash</text>
+  <text x="62" y="270" font-size="11" fill="#888">断电不丢：这份备份一直在</text>
+
+  <!-- ===== 右：SRAM ===== -->
+  <rect x="430" y="68" width="250" height="250" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="444" y="90" font-size="13" font-weight="bold" fill="#3451b2">SRAM · 0x2000_0000 · 掉电即失</text>
+  <rect x="444" y="104" width="222" height="40" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="452" y="122" font-size="11" font-family="Consolas,monospace" fill="#333">.data  g_init @0x20000000</text>
+  <text x="452" y="138" font-size="11" fill="#666">_sdata → _edata：0x00 → 0x0c</text>
+  <rect x="444" y="148" width="222" height="40" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="452" y="166" font-size="11" font-family="Consolas,monospace" fill="#333">.bss  @0x2000000c..0x2c</text>
+  <text x="452" y="182" font-size="11" fill="#666">零初值：文件里是 NOBITS</text>
+  <rect x="444" y="192" width="222" height="28" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="452" y="210" font-size="11" font-family="Consolas,monospace" fill="#333">堆 从 _end 0x20000030 起</text>
+  <rect x="444" y="224" width="222" height="48" fill="#f6f8fa" stroke="#e2e8f0"/>
+  <text x="452" y="244" font-size="11" fill="#888">还没碰面的空地</text>
+  <text x="452" y="262" font-size="11" font-family="Consolas,monospace" fill="#888">≈ 126.5 KB</text>
+  <rect x="444" y="276" width="222" height="36" fill="#eef2ff" stroke="#cbd5e1"/>
+  <text x="452" y="298" font-size="11" font-family="Consolas,monospace" fill="#333">栈 顶 _estack = 0x20020000</text>
+
+  <!-- ===== ① 上电瞬间：RAM 里全是随机值 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="440" y="100" width="230" height="216" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="8 6">
+      <animate attributeName="stroke-dashoffset" values="0;28" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <text x="452" y="312" font-size="12" font-weight="bold" fill="#888">此刻里面是随机值</text>
+  </g>
+
+  <!-- ===== ② 搬运：_sidata → _sdata ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="446" y="106" width="218" height="36" fill="#d8f3e5" opacity="0.35">
+      <animate attributeName="opacity" values="0.2;0.5;0.2" dur="5s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M286,208 C360,208 370,124 440,124" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#arrA)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.7;1" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <text x="306" y="272" font-size="11" font-family="Consolas,monospace" fill="#333">ldr/str/adds #4</text>
+    <text x="306" y="290" font-size="11" fill="#92400e">三圈 = 12 字节</text>
+  </g>
+
+  <!-- ===== ③ 清零笔刷扫过 .bss ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="448" y="150" width="12" height="36" fill="#3eaf7c" opacity="0.55">
+      <animate attributeName="x" values="448;654;654" keyTimes="0;0.75;1" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <text x="306" y="152" font-size="12" font-weight="bold" fill="#1a7f56">扫成 0</text>
+    <text x="306" y="172" font-size="11" font-family="Consolas,monospace" fill="#333">str.w r3,[r2],#4</text>
+  </g>
+
+  <!-- ===== ④ 堆与栈相向生长 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <line x1="576" y1="222" x2="576" y2="222" stroke="#3451b2" stroke-width="3" marker-end="url(#arrB)">
+      <animate attributeName="y2" values="222;252;252" keyTimes="0;0.7;1" dur="5s" repeatCount="indefinite"/>
+    </line>
+    <line x1="606" y1="312" x2="606" y2="312" stroke="#3451b2" stroke-width="3" marker-end="url(#arrB)">
+      <animate attributeName="y2" values="312;258;258" keyTimes="0;0.7;1" dur="5s" repeatCount="indefinite"/>
+    </line>
+    <text x="306" y="240" font-size="12" font-weight="bold" fill="#3451b2">SP 来自向量表第 0 项</text>
+    <text x="306" y="260" font-size="11" fill="#333">堆向下、栈向上</text>
+  </g>
+
+  <!-- ===== ⑤ 写只落 RAM，永不回写 Flash ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <circle cx="646" cy="124" r="5" fill="#3451b2" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="272" cy="206" r="5" fill="#888" opacity="0.8"/>
+    <path d="M440,132 C370,132 360,222 292,222" fill="none" stroke="#dc2626" stroke-width="3" marker-end="url(#arrD)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;560;560" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <g stroke="#dc2626" stroke-width="3">
+      <line x1="352" y1="180" x2="368" y2="196"/>
+      <line x1="368" y1="180" x2="352" y2="196"/>
+      <animate attributeName="opacity" values="0.35;1;0.35" dur="1s" repeatCount="indefinite"/>
+    </g>
+    <text x="306" y="176" font-size="12" font-weight="bold" fill="#dc2626">永不回写</text>
+  </g>
+
+  <!-- ===== 阶段解说条 ===== -->
+  <rect x="40" y="330" width="640" height="50" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <g font-size="12" fill="#333">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="56" y="352">上电第一刻：Flash 的三样货都在，RAM 一个字节都不可信</text>
+      <text x="56" y="370">"全局变量天生有初值"是承诺，不是事实——兑现它的是启动代码</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="56" y="352">程序头第二行：VirtAddr=0x20000000 PhysAddr=0x080002a0 FileSiz=0x0c</text>
+      <text x="56" y="370">搬 (0x2000000c − 0x20000000) / 4 = 3 圈，一个字节不多、一个字节不少</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="56" y="352">同一条 LOAD 的 MemSiz=0x2c，比 FileSiz 多出的 0x20 正是 .bss 那 32 字节</text>
+      <text x="56" y="370">"有初值才占 Flash，为 0 只占 RAM"——两个数的差就是启动代码的工作量</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="56" y="352">栈顶取自向量表第 0 项 _estack=0x20020000，堆顶取自 _end=0x20000030</text>
+      <text x="56" y="370">相向生长，中间空地约 126.5 KB——碰头那天，就是溢出那天</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="56" y="352">进了 main，g_init 的读写全在 0x20000000；0x080002a0 那份备份不再被碰</text>
+      <text x="56" y="370">所以断电重启初值复原：你改的一直是 RAM 里那份，不是 Flash 里那份</text></g>
+  </g>
+
+  <!-- ===== 阶段字幕 ===== -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 上电瞬间：初值还躺在 Flash，RAM 里全是随机值</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="412">② Reset_Handler 逐字搬：0x080002a0 → 0x20000000，12 字节三圈</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ 顺手清 .bss：0x2000000c → 0x2000002c，它在文件里一个字节都不占</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 栈顶设成 _estack，堆与栈相向生长，中间 126.5 KB 是空地</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="412">⑤ 之后所有写只落在 RAM；掉电重来，Flash 那份初值还原样回来</text></g>
+  </g>
+
+  <!-- ===== 阶段指示点 ===== -->
+  <g transform="translate(612,432)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

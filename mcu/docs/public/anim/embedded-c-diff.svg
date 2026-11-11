@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>嵌入式 C vs 应用 C：四个维度的差异</title>
+  <desc>四象限对比：运行时环境、内存规模、错误后果、代码与硬件关系，展示为什么嵌入式 C 是"另一种 C"</desc>
+
+  <rect width="720" height="460" fill="#f6f8fa"/>
+
+  <!-- Dimension 1: Runtime environment (top-left) -->
+  <text x="20" y="22" font-size="13" font-weight="bold" fill="#3451b2">① 运行时环境</text>
+  <rect x="20" y="30" width="330" height="95" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="30" y="50" font-size="11" fill="#333">
+    <tspan x="30" dy="0" fill="#3451b2" font-weight="bold">PC</tspan>
+    <tspan>：装载器 + 动态链接 + CRT + OS</tspan>
+    <tspan x="30" dy="16" fill="#dc2626" font-weight="bold">裸机</tspan>
+    <tspan>：复位向量 → Reset_Handler → main</tspan>
+    <tspan x="30" dy="16" fill="#d97706" font-weight="bold">差异</tspan>
+    <tspan>：没有 OS，没有"运行时爸爸"</tspan>
+    <tspan x="30" dy="16" fill="#666" font-size="10">崩溃？PC 弹窗 / 裸机 HardFault</tspan>
+  </text>
+
+  <!-- Dimension 2: Memory scale (top-right) -->
+  <text x="370" y="22" font-size="13" font-weight="bold" fill="#3451b2">② 内存规模</text>
+  <rect x="370" y="30" width="330" height="95" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="380" y="50" font-size="11" fill="#333">
+    <tspan x="380" dy="0" fill="#3451b2" font-weight="bold">PC</tspan>
+    <tspan>：GB 级 RAM，malloc 随意</tspan>
+    <tspan x="380" dy="16" fill="#dc2626" font-weight="bold">F407</tspan>
+    <tspan>：128 KB RAM，堆 512 字节</tspan>
+    <tspan x="380" dy="16" fill="#d97706" font-weight="bold">后果</tspan>
+    <tspan>：malloc 慎用，栈是奢侈品</tspan>
+    <tspan x="380" dy="16" fill="#666" font-size="10">初值付两份钱：Flash + RAM</tspan>
+  </text>
+
+  <!-- Dimension 3: Error consequences (bottom-left) -->
+  <text x="20" y="148" font-size="13" font-weight="bold" fill="#3451b2">③ 错误后果</text>
+  <rect x="20" y="156" width="330" height="110" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="30" y="176" font-size="11" fill="#333">
+    <tspan x="30" dy="0" fill="#3451b2" font-weight="bold">PC 数组越界</tspan>
+    <tspan x="30" dy="15">MMU 拦截 → 段错误弹窗</tspan>
+    <tspan x="30" dy="16" fill="#dc2626" font-weight="bold">裸机数组越界</tspan>
+    <tspan x="30" dy="15">无 MMU → 写隔壁寄存器</tspan>
+    <tspan x="30" dy="15" fill="#666" font-size="10">电机突然转 / ADC 值突变</tspan>
+    <tspan x="30" dy="15" fill="#d97706" font-weight="bold">野指针</tspan>
+    <tspan fill="#666" font-size="10">→ 改向量表 → HardFault</tspan>
+  </text>
+
+  <!-- Dimension 4: Code-hardware relationship (bottom-right) -->
+  <text x="370" y="148" font-size="13" font-weight="bold" fill="#3451b2">④ 代码与硬件</text>
+  <rect x="370" y="156" width="330" height="110" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="380" y="176" font-size="11" fill="#333">
+    <tspan x="380" dy="0" fill="#3451b2" font-weight="bold">应用 C</tspan>
+    <tspan x="380" dy="15">通过 OS API 间接操作硬件</tspan>
+    <tspan x="380" dy="15" fill="#666" font-size="10">系统调用 → 驱动 → 硬件</tspan>
+    <tspan x="380" dy="16" fill="#dc2626" font-weight="bold">嵌入式 C</tspan>
+    <tspan x="380" dy="15">寄存器 = 有名字的地址</tspan>
+    <tspan x="380" dy="15" font-family="monospace" font-size="10">*(volatile uint32_t*)0x40021418</tspan>
+  </text>
+
+  <!-- Summary bar -->
+  <rect x="20" y="285" width="680" height="55" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="305" font-size="12" font-weight="bold" fill="#d97706">一句话</text>
+  <text x="100" y="305" font-size="11" fill="#333">应用 C 出错弹窗，裸机 C 出错冒烟——写每行前问：这行落在硬件哪个地址？</text>
+  <text x="30" y="325" font-size="11" fill="#666" font-style="italic">C 在嵌入式里是"高级汇编"：每行都能对应确定的机器行为——这正是选它写驱动的原因</text>
+
+  <!-- Toolchain context -->
+  <rect x="20" y="355" width="680" height="90" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="375" font-size="12" font-weight="bold" fill="#3451b2">工具链即世界观</text>
+  <text x="30" y="395" font-size="11" fill="#333">
+    <tspan x="30" dy="0">同一份 C 源码，换一组 -mcpu 和链接脚本，就是另一颗芯片的世界</tspan>
+    <tspan x="30" dy="16" font-family="monospace" fill="#3451b2">arm-none-eabi-gcc -mcpu=cortex-m4 -T stm32f407xx.ld</tspan>
+    <tspan x="30" dy="16" fill="#666">→ 目标是谁（-mcpu）、代码放哪（.ld）、初值谁搬（startup）、错了怎么看（GDB）</tspan>
+  </text>
+
+  <!-- Continuous animation: warning pulse on error box -->
+  <circle cx="340" cy="210" r="6" fill="#dc2626" opacity="0.3">
+    <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>
