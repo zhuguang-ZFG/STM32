@@ -30,8 +30,15 @@ jobs:
       - run: npm ci
       - run: npm run quality
       - name: 浏览器安装与交互回归
+        # runner 的 azure.archive.ubuntu.com DNS 会偶发长时间解析失败；有界重试 3 次
+        #（间隔 30s），装同一组包、判定不变，不把瞬时基建故障当代码失败。
         run: |
-          npx playwright install --with-deps chromium
+          ok=0
+          for i in 1 2 3; do
+            if npx playwright install --with-deps chromium; then ok=1; break; fi
+            sleep 30
+          done
+          [ "$ok" -eq 1 ] || exit 1
           npm run test:browser
       # 失败留证：trace.zip 能回放每一步的耗时与页面状态，比日志里的一行超时有用得多
       - uses: actions/upload-artifact@v4
@@ -58,7 +65,12 @@ jobs:
       - name: 构建整书 HTML/PDF（随站点发布到 /mcu/book/）
         run: |
           python -m pip install -r mcu-book/requirements.txt
-          python -m playwright install --with-deps chromium
+          ok=0
+          for i in 1 2 3; do
+            if python -m playwright install --with-deps chromium; then ok=1; break; fi
+            sleep 30
+          done
+          [ "$ok" -eq 1 ] || exit 1
           python mcu-book/build_html.py --pdf
           python mcu-book/build_print.py --html mcu-book/dist/mcu-deep-book.html
           mkdir -p docs/.vitepress/dist/book
@@ -96,9 +108,15 @@ jobs:
           cache-dependency-path: mcu/package-lock.json
       - run: npm ci
       - name: 安装编译器
+        # runner 的 azure.archive.ubuntu.com DNS 会偶发长时间解析失败；有界重试 3 次，
+        # 装同一组包、判定不变，不把瞬时基建故障当代码失败。
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+          ok=0
+          for i in 1 2 3; do
+            if sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib; then ok=1; break; fi
+            sleep 30
+          done
+          [ "$ok" -eq 1 ] || exit 1
           arm-none-eabi-gcc --version
       - name: 固定 FreeRTOS 内核
         run: git clone --depth 1 --branch V11.1.0 https://github.com/FreeRTOS/FreeRTOS-Kernel.git .trellis/ref/freertos-v11/kernel
