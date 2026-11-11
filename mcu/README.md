@@ -2,7 +2,7 @@
 
 > 把一颗芯片讲透：寄存器级 STM32F407 × ESP32-S3 双路线 · C 语言精髓 · RTOS 双精讲 · 全程实物实验
 
-> **迁移注记（2026-11-11）**：本目录已作为 `mcu/` 子目录并入 [zhuguang-ZFG/STM32](https://github.com/zhuguang-ZFG/STM32)（原独立仓库整树保留历史，快照 tag `mcu-pre-merge-archive`）。在线站新地址 <https://zhuguang-zfg.github.io/STM32/mcu/>（旧地址 `…/mcu/` 由归档壳仓重定向）。本目录整体适用 Apache-2.0（见 [`LICENSE`](LICENSE)），与外层仓库的双许可互不干涉。所有 npm/agent 命令在本目录（`mcu/`）内运行。
+> **迁移注记（2026-11-11）**：本目录已作为 `mcu/` 子目录并入 [zhuguang-ZFG/STM32](https://github.com/zhuguang-ZFG/STM32)（原独立仓库整树保留历史，快照 tag `mcu-pre-merge-archive`）。在线站新地址 <https://zhuguang-zfg.github.io/STM32/mcu/>（旧地址 `…/mcu/` 计划改为归档壳仓重定向，新站首部署后执行，届时旧站仅存跳转）。本目录整体适用 Apache-2.0（见 [`LICENSE`](LICENSE)），与外层仓库的双许可互不干涉。所有 npm/agent 命令在本目录（`mcu/`）内运行。
 
 受[通往AGI之路](https://waytoagi.feishu.cn/)启发——像它讲 AI 一样讲单片机：开源、体系化、面向初学者，但**不浅**。我们的信条是"挖掘精髓"：每一个知识点都要追到寄存器、追到源码、追到示波器上的波形。
 

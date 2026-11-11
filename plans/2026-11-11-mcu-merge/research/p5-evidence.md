@@ -1,0 +1,61 @@
+# P5 发布留证（AC8）
+
+日期：2026-11-11 · 目标：PR #106 合入 → CI 同 SHA 全绿 → 启用 Pages → 部署 → 线上回读关闭 AC8
+
+## 部署前快照（发布门 §7 要求）
+
+| 项 | 值 | 核查方式 |
+|---|---|---|
+| 目标仓 Pages 现状 | **无站**（`has_pages=false`） | `gh api repos/zhuguang-ZFG/STM32`（owner token，排除可见性歧义） |
+| 目标仓默认分支 | main | 同上 |
+| 分支保护 | 两分支均无 required checks | `gh api repos/.../branches/{main,feat/mcu-subtree-merge}/protection` → Branch not protected |
+| 旧站线上状态 | **存活**，`https://zhuguang-zfg.github.io/mcu/` → HTTP 200（86,299 B） | curl（首次探测 000 为本地网络抖动，复测确认） |
+| 旧仓状态 | `zhuguang-ZFG/mcu`：未归档、非 disabled、`has_pages=true`、`pushed_at=2026-11-11T06:59:36Z` | `gh api repos/zhuguang-ZFG/mcu` |
+| 旧仓归档快照 tag | `mcu-pre-merge-archive` **存在** | `gh api repos/zhuguang-ZFG/mcu/tags` |
+| 候选链 | `92fc917c`（基线）→ P1 `2e965db4` → P2 `27757966` → P3 `f6b039b6` → P4 `b6cddd64` → CI 修复 `f812a477`（PR HEAD） | git log |
+
+## CI 首轮暴露并修复的真问题（f812a477）
+
+| 失败 | 定性 | 处置 |
+|---|---|---|
+| Book CI book/book-en：slop 7 命中（p4-evidence 状态列的通过记号） | 真问题（自家文档） | 状态列改文字，slop 本地复跑干净 |
+| mcu-quality lint：B905/B007 ×3 于 stm32-book | 真问题（预存配置 bug） | ruff-action 会把 src（默认仓库根）追加到命令行，args 写死 mcu 仍扫全仓 → 显式 `src: mcu` |
+| 外链巡检 37 个 404 | 真问题（合并窗口必然 404） | `.lychee.toml` 放行三类：指向 main 的 blob/tree/workflows 引用 + 目标站首部署前；注明合入+首部署后删除 |
+| arm-host / checks / mcu-book | runner DNS 抖动（`azure.archive.ubuntu.com` 解析失败，14:40–14:51 UTC） | 重跑自愈 |
+
+## 同 SHA（701eb212，PR #106 候选）CI 证据 —— 全绿
+
+| 工作流 | run | 结论 | 关键证据 |
+|---|---|---|---|
+| mcu 质量闸门 | 43065842663 | success | lint / checks（quality 15 段+浏览器+动画+整书+GNU 双口径）/ **arm-host** / **esp32 15 用例** |
+| 外链巡检 | 43065842647 | success | 合并窗口放行后 0 失败 |
+| MCU Book CI | 43065842654 | success | 整书 PDF 1211 页契约 + **Linux GNU sha256 权威口径** |
+| Book CI（zh/en） | 43065842645 | success | SPL + **双语 PDF 构建 + audit_pdf_layout 版式审计** |
+
+main 复验（§7 第 3 条：合入产生新 SHA 需核对）：`9b5a63e`（#106 合并）与 `0a613bf`（#105 合并）树均与 `701eb212` **完全相同**（tree `ee76fbdd…`，diff 空）→ 候选验证可转移。main 首跑 43069392578 quality 门再次全绿（含 esp32 15 用例），deploy 步暴露 mount-smoke 竞态（见下）修后 43072886915 **全绿含 deploy-pages**。
+
+## 首部署抓到的真缺陷（已修）
+
+mount-smoke.mjs 根入口断言：`page.goto` 读 meta-refresh 重定向页 body，浏览器即刻跳转导致 `response.text()` 抛 Protocol error（CI 必现、本地侥幸）。改 `page.request.get`（无导航竞态）。PR #107 合入后 43072886915 全绿。
+
+## AC8 线上回读（2026-11-11 UTC 深夜 / 本地 11-12 凌晨）
+
+| 项 | 结果 |
+|---|---|
+| 根入口 `/STM32/` | HTTP 200，内容含 `url=./mcu/` 重定向标记 |
+| 首页 `/STM32/mcu/` | HTTP 200，含「通往单片机之路」 |
+| 深链 `…/stm32/07-usart.html` | HTTP 200 |
+| 导读 `…/guide/hardware.html` | HTTP 200 |
+| 整书 `…/book/mcu-deep-book.html` | HTTP 200 |
+| sitemap.xml | HTTP 200 |
+| downloads 4 文件 | 全部下载，sha256 与线上 SHA256SUMS **ALL_MATCH**（html 10,803,795 B；pdf 33,355,667 B） |
+| 旧站 `/mcu/` | HTTP 200 存活（处置决策项：归档壳仓重定向，README 已改为计划表述） |
+| Pages 配置 | build_type=workflow，站点 `zhuguang-zfg.github.io/STM32/` |
+
+**AC8 关闭。AC1–AC8 全部完成。**
+
+## 收尾事项
+
+- lychee 合并窗口三条放行已删除（本提交）；main 上外链门将全量复验这些 URL 200。
+- `feat/mcu-merge-p1` 远端分支可删（已全部合入 main）；本地 worktree 待用户确认后清理。
+- 旧仓 `zhuguang-ZFG/mcu`：保留存活 + tag `mcu-pre-merge-archive`；是否归档/壳仓重定向为后续独立决策。
