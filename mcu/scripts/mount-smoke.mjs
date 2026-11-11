@@ -91,8 +91,11 @@ export async function runSmoke({ root, mount }) {
   }
   try {
     // 1. 根入口（重定向页）
-    const rootRes = await page.goto(origin + mount + '/', { waitUntil: 'domcontentloaded' })
-    if (!rootRes || rootRes.status() !== 200) fails.push(`根入口 ${mount}/ → HTTP ${rootRes?.status()}`)
+    // 注意：这页带 meta refresh，真实 page.goto 后浏览器立刻跳转离开，
+    // 再读 response.text() 会抛 "No resource with given identifier found"
+    // （CI 上必现、本地时序侥幸）。改用 request.get：不做页面导航，没有竞态。
+    const rootRes = await page.request.get(origin + mount + '/')
+    if (rootRes.status() !== 200) fails.push(`根入口 ${mount}/ → HTTP ${rootRes.status()}`)
     else if (!(await rootRes.text()).includes('url=./mcu/')) fails.push('根入口未返回重定向页')
     else notes.push(`根入口 ${mount}/ → 200 重定向页`)
 
