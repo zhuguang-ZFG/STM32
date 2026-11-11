@@ -157,7 +157,11 @@ jobs:
         working-directory: mcu
     steps:
       - uses: actions/checkout@v7
+      # ruff-action 会把 src（默认仓库根）追加到命令行——args 里写死 mcu 时仍会
+      # 带上仓库根，用 mcu/ruff.toml 的规则扫到 stm32-book/ 存量代码（B905 等）。
+      # 显式 src: mcu，使命令恒为 `ruff check --config mcu/ruff.toml mcu`。
       - uses: astral-sh/ruff-action@v4.1.0
         with:
           version: "0.15.21"
-          args: check --config mcu/ruff.toml mcu
+          src: mcu
+          args: check --config mcu/ruff.toml

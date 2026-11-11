@@ -8,14 +8,14 @@
 
 | AC | 状态 | 证据 |
 |---|---|---|
-| AC1 基线与祖先 | ✅ | p0-gate.md：`merge-base --is-ancestor cf16153 HEAD` RC0；baseline.json 快照；目标 92fc917 → 候选 f6b039b6 |
-| AC2 双书维护入口 | ✅ | P1 提交：STRUCTURE/AGENTS/README；p1-evidence.md |
-| AC3 站点身份单源 | ✅ | P2 提交：site-config.mjs + 9 消费方；npm test 137；p2-evidence.md |
-| AC4 Pages 组装 | ✅ | P3 提交：assemble-pages + mount-smoke；真实产物 staging 655 文件/10015 引用；冒烟 12/12；p3-evidence.md |
-| AC5 两侧全部门 | ✅ 本地 / ⏳ CI 侧 | 下表全绿；ESP32 矩阵 + 双语 PDF 版式审计记 CI-pending（PR 合入后 run 留证） |
-| AC6 任务上下文可解析 | ✅ | p1-evidence.md：23 活动任务/256 file 条目 MCU 根可解析；skills 832 文件受控纳入 |
-| AC7 字符串分类纪律 | ✅ | p2-string-classification.md：A/B/C/D 四类全量处置；`.trellis` 零改写 |
-| AC8 发布关闭 | ⏳ P5 | 前置项见下「P5 发布前置」 |
+| AC1 基线与祖先 | 通过 | p0-gate.md：`merge-base --is-ancestor cf16153 HEAD` RC0；baseline.json 快照；目标 92fc917 → 候选 f6b039b6 |
+| AC2 双书维护入口 | 通过 | P1 提交：STRUCTURE/AGENTS/README；p1-evidence.md |
+| AC3 站点身份单源 | 通过 | P2 提交：site-config.mjs + 9 消费方；npm test 137；p2-evidence.md |
+| AC4 Pages 组装 | 通过 | P3 提交：assemble-pages + mount-smoke；真实产物 staging 655 文件/10015 引用；冒烟 12/12；p3-evidence.md |
+| AC5 两侧全部门 | 本地通过 / CI 待跑 | 下表全绿；ESP32 矩阵 + 双语 PDF 版式审计记 CI-pending（PR 合入后 run 留证） |
+| AC6 任务上下文可解析 | 通过 | p1-evidence.md：23 活动任务/256 file 条目 MCU 根可解析；skills 832 文件受控纳入 |
+| AC7 字符串分类纪律 | 通过 | p2-string-classification.md：A/B/C/D 四类全量处置；`.trellis` 零改写 |
+| AC8 发布关闭 | 待 P5 | 前置项见下「P5 发布前置」 |
 
 ## 门禁明细（全部在候选提交 f6b039b6 工作树执行）
 
