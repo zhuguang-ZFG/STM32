@@ -54,9 +54,25 @@ jobs:
         run: node scripts/pages-check.mjs --dist site
       - name: 上线物搜索可达性对账
         run: node scripts/search-check.mjs --dist site
+      # AC4：Pages 站点挂载在仓库根（/STM32/），本站 base 是 /STM32/mcu/——上传的
+      # artifact 根必须直接包含 mcu/ 子树，否则本站会被挂到 /STM32/ 顶掉仓库根。
+      # 组装逻辑在 scripts/assemble-pages.mjs（含缺首页失败/根入口防顶/资源落位三门），
+      # 单测 fixture 覆盖；根 index.html 只是临时重定向（STM32 书尚无站点产物），
+      # 将来根书入站时在此扩展组装，不要回退到上传裸站点目录。
+      - name: 组装 Pages staging（上传根含 mcu/ 子树）
+        run: node scripts/assemble-pages.mjs --dist site --out ../.temp/pages-site
+      # 对最终 staging 再对一次账：上线物是组装后的目录，检查对象必须是真正要上传的那一份。
+      - name: staging 锚点对账（对最终上传目录）
+        run: node scripts/pages-check.mjs --dist ../.temp/pages-site/mcu
+      - name: staging 搜索可达性对账
+        run: node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
+      - name: 安装 Chromium（挂载冒烟用）
+        run: npx playwright install --with-deps chromium
+      - name: 挂载冒烟（staging 按 /STM32/ 起服务，Chromium 回归首页/深链/资源/搜索/导读/book/downloads）
+        run: node scripts/mount-smoke.mjs --root ../.temp/pages-site --mount /STM32
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: mcu/site
+          path: .temp/pages-site
       - id: deployment
         uses: actions/deploy-pages@v5

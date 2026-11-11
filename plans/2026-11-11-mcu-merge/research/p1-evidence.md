@@ -98,7 +98,7 @@
 
 空清单记录：活动任务 `11-07-historical-spec-closure`（`planning`）的 `check.jsonl`/`implement.jsonl` 仅含 `_example` 模板行，0 条真实 `file` 条目——不算解析失败，该任务当前无活动上下文条目。
 
-**结论**：AC6「活动上下文清单逐项可解析」**已满足**（256/256 在 MCU 项目根可解析）；静态 token 统计不作为判定依据。
+**AC6 判定**——已满足：「活动上下文清单逐项可解析」（256/256 在 MCU 项目根可解析）；静态 token 统计不作为判定依据。
 
 ### 4.5 `needs_context_review` 处置
 
