@@ -34,6 +34,7 @@
 <body>
 
 <h1>目检台：30 张金句卡 + 整书导读页</h1>
+<p class="guide">2026-11-05 已完成布局收口：<a href="../../../../video/assets/social-cards/book/index.html">打开正式 30 图联系表</a> · <a href="../../../../docs/public/book-guide/index.html">查看当前同源导读</a>。下方保留第二轮历史图与讨论。</p>
 <p class="sub">一屏滚完，不用逐个开文件。每张下面标了编号、来源章节、卡面主句——核对只看四件事。</p>
 
 <div class="howto">
@@ -45,6 +46,7 @@
     <li><b>配色对不对</b>：站点三色 #3451b2 / #3eaf7c / #d97706，不许出现第三种强调色。</li>
   </ol>
   <p style="margin:10px 0 0; color:var(--mut)">回话方式：直接说「第几张改什么」，或「全过」。全过之后我按你定的平台与存放位置入库正式区。</p>
+  <p style="margin:10px 0 0"><b>当前状态（第二轮）</b>：口径 A 已采纳 · 5 张版式硬伤已改完并重渲（本台图已更新）· <b>26 张中部死白是新发现的系列级问题，等你在 A/B/C 里拍板</b>· 导读页 <a href="book-guide.html">book-guide.html</a> 还没签收 · 发布平台与正式存放位置还没定。</p>
 </div>
 
 <div class="guide">
@@ -68,34 +70,55 @@
       · <b>23 card-f6-notify</b>（F6 通知）：「回调里只办事不等待」——章节有逗号「只办事，不等待」，卡面归一掉了</li>
     <li>样张 <b>04 card-c3</b> 的钩子句把「就是把总线动作写进合同的那句话」截成「就是那句话」。</li>
   </ol>
-  <p style="margin:8px 0 0"><b>要你拍的板</b>：这些压缩语义都对，只是不像引文。要么 <b>A</b> 放宽口径（主句零改写、小注允许压缩，我把 specs 的声明改成这个说法）；要么 <b>B</b> 逐张改回原句重渲（改 5 张，批 7 那张要重跑生成器）。我倾向 A——卡片不是引文卡，读者看的是能不能一眼记住。</p>
+  <p style="margin:8px 0 0"><b>已拍板：口径 A</b>（主句零改写、行内小注允许压缩）。specs 的声明已改成这个说法，9 处压缩小注<b>不改回原句、不重渲</b>。</p>
+  <p style="margin:8px 0 0; color:var(--mut)">顺带记一句：样张 <b>04 card-c3</b> 的钩子句把「就是把总线动作写进合同的那句话」截成「就是那句话」，口径 A 下同样放行——它截的是自己那半句，意思没变。</p>
 </div>
 
-<div class="howto" style="border-left:4px solid var(--blue)">
-  <h2>版式预检：3 张有硬伤，建议改（我截图时逐张看到的）</h2>
+<div class="howto" style="border-left:4px solid var(--green)">
+  <h2>版式硬伤：5 张，已全部改完并重渲（本台里的图就是改后的）</h2>
+  <p style="margin:0 0 8px">根因同一个：<code>.row .mark</code> 是固定宽的一列，按 1 个汉字 / 2 个拉丁字符设计，塞进更长的角标就竖排或压到隔壁列。三处宽度 36px 太窄，两处是内容本身重复。</p>
   <ol>
-    <li><b>11 card-f0</b>（F0 RTOS 是什么）：三行把「RTOS 三件宝」<b>原样重复了三遍</b>，只有最右的小注在变（私栈 / 户口 / 换魂术）。改法：mark 列放「栈 / 宝 / 魂」，t 列放「私栈 / 户口 / 换魂术」，重复就没了。</li>
-    <li><b>08 card-c8</b>（C8 帧尾）：mark 列按 1–2 字设计，「序号」「丢了」被<b>竖着拆成两行</b>。改法：mark 换成「坏 / 对 / 等 / 数」四字，或把 mark 列宽从固定改成 auto。</li>
-    <li><b>10 card-b2</b>（B2 ELF）：同一毛病，「程序头」在 mark 列里<b>竖排成三个字</b>。改法：mark 用「头 / 节 / 程」或「段 / 节 / 装」两字以内。</li>
+    <li><b>11 card-f0</b>（F0 RTOS 是什么）：三行把「RTOS 三件宝」<b>原样重复了三遍</b>，只有最右的小注在变。✅ 已改为 mark「栈 / 户 / 魂」+ t「私栈 / TCB 户口本 / 换魂术」，d 列用章节原句（平行世界，卡住不污染别人 / 状态、优先级、栈顶都登记 / PendSV 保存 / 恢复现场）。</li>
+    <li><b>08 card-c8</b>（C8 帧尾）：mark 列「序号」「丢了」被<b>竖着拆成两行</b>。✅ mark 列宽 36px → 56px，四字以内横排不再拆。</li>
+    <li><b>10 card-b2</b>（B2 ELF）：「程序头」在 mark 列里<b>竖排成三个字</b>。✅ mark 收成「头」，与同列的「节 / 段」齐平。</li>
+    <li><b>04 card-c3</b>（volatile）：mark 列「不管」<b>竖排成两行</b>——原来这份没记进清单，是我重渲批 2 时回看样张才发现的。✅ 样张源 <code>.temp/…/cards.html</code> 的 mark 列宽 36px → 78px。</li>
+    <li><b>02 card-c1</b>（内存模型）：mark 列 <code>.data</code> / <code>.bss</code> / <code>Flash</code> 是等宽长串，<b>横向压进了 t 列</b>。✅ 同上，78px 后（<code>.data</code> 实测约 72px）不再重叠。</li>
   </ol>
-  <p style="margin:8px 0 0">其余 27 张没看到拆行、压角、留白失衡。批 2 的十张源在 <code>.temp/social-cards-2026-11-03/batch/batch.html</code>（一次性手写的，没有生成器），改 HTML 再用同目录 <code>shoot.mjs</code> 重渲即可。</p>
+  <p style="margin:8px 0 0; color:var(--mut)">重渲方式：改 HTML 后用 <code>.temp/social-cards-2026-11-03/shoot.mjs</code>（Playwright，deviceScaleFactor 2，元素截图）出 1500×2000。批 2 的十张源在 <code>.temp/social-cards-2026-11-03/batch/batch.html</code>（一次性手写，没有生成器），样张三张在 <code>.temp/social-cards-2026-11-03/cards.html</code>，13 张新图已覆盖回本目录同名文件。</p>
+</div>
+
+<div class="howto" style="border-left:4px solid var(--amber)">
+  <h2>我上一版写错的一条 + 一个系列级问题（这条要你拍板）</h2>
+  <p style="margin:0 0 8px">上一版我写了「其余 27 张没看到拆行、压角、<b>留白失衡</b>」。前半句成立，后半句<b>不成立</b>，而且漏了两张样张的毛病（就是上面第 4、5 条）。逐张重看后真实情况是：</p>
+  <ol>
+    <li><b>30 张里有 26 张中部有一整块死白</b>（约 40–45% 卡高，最典型是 11 card-f0、08 card-c8）。原因：<code>.rows</code> 用 <code>margin-top:auto</code> 钉在底部，而顶部只有 kicker + 一句 giant。</li>
+    <li><b>已签收的 3 张样张也有约 30% 死白</b>，只是它们多了一段 <code>.quote</code> 把上半填起来了。也就是说：批 2（10 张）和批 7（16 张）<b>根本没有 <code>.quote</code> 段</b>——两份源文件里 <code>quote=0</code>，样张源里 <code>quote=3</code>。系列内部本来就不统一。</li>
+  </ol>
+  <p style="margin:8px 0 0"><b>为什么我不直接填</b>：填死白要么加一段章节原文，要么改布局。加字就撞上本台第 1 条立身之本——「卡面每一句都必须与章节<b>『一句话记住』</b>原文一致」。可这些卡的 giant <b>已经就是</b>那一行的后半句了（例：F0 的 tip 整行是「超级循环一根轴，一人阻塞全家堵；RTOS 三件宝：私栈、户口、换魂术」，giant 吃了中段，rows 吃了末段）。再填就得从章节别处取证，那是<b>改口径</b>，不该我替你定，而且一次要重渲 26 张。</p>
+  <p style="margin:8px 0 0"><b>三个选项</b>：</p>
+  <ol>
+    <li><b>A 改布局不改内容（我推荐）</b>：把 <code>.rows</code> 的 <code>margin-top:auto</code> 去掉，让 giant + rows 成一个内容组整体居中，死白摊成上下留白。零文字风险、零事实风险，26 张 + 3 张样张一起重渲即可，卡片仍然只承载「一句话记住」。</li>
+    <li><b>B 放宽口径填 <code>.quote</code></b>：允许从同章取一句非重复的判据句（如 F0 的「裸机管顺序，RTOS 管期限」）。最像样张，但要先把「立身之本」那句话改掉，且每句都得过保真脚本。</li>
+    <li><b>C 就这样</b>：认定中部留白是瑞士风的呼吸。代价是 26 张和 3 张样张不是一套版式，读者能看出来。</li>
+  </ol>
+  <p style="margin:8px 0 0; color:var(--mut)">我倾向 A：它修的是真正的病因（内容组被钉底），又不动内容纪律。你点头我就一次改两份源 + 重渲 29 张，再逐张回看。</p>
 </div>
 
 <div class="sec">第一批 + 第二批 · 14 张（13 竖卡 + 1 横版封面）</div>
 <div class="grid">
-  <div class="card"><div class="meta"><span class="no">01</span><span class="ch">C0 · 学这门课要带的三样</span><div class="q">出错弹窗 vs 冒烟</div></div><img loading="lazy" src="card-c0.png" alt="C0 金句卡：出错弹窗与冒烟对照"></div>
-  <div class="card"><div class="meta"><span class="no">02</span><span class="ch">C1 · 内存模型</span><div class="q">一个全局变量的三段旅程</div></div><img loading="lazy" src="card-c1.png" alt="C1 金句卡：全局变量的三段旅程"></div>
-  <div class="card"><div class="meta"><span class="no">03</span><span class="ch">C2 · 指针</span><div class="q">指针三板斧</div></div><img loading="lazy" src="card-c2.png" alt="C2 金句卡：指针三板斧"></div>
-  <div class="card"><div class="meta"><span class="no">04</span><span class="ch">C3 · volatile</span><div class="q">把总线动作写进合同</div></div><img loading="lazy" src="card-c3.png" alt="C3 金句卡：volatile 把总线动作写进合同"></div>
-  <div class="card"><div class="meta"><span class="no">05</span><span class="ch">C4 · 结构体与 ABI</span><div class="q">结构体罩寄存器</div></div><img loading="lazy" src="card-c4.png" alt="C4 金句卡：结构体罩寄存器"></div>
-  <div class="card"><div class="meta"><span class="no">06</span><span class="ch">C5 · 中断的 C 写法</span><div class="q">中断只做快递分拣</div></div><img loading="lazy" src="card-c5.png" alt="C5 金句卡：中断只做快递分拣"></div>
-  <div class="card"><div class="meta"><span class="no">07</span><span class="ch">C6 · 调用约定 AAPCS</span><div class="q">AAPCS 口诀</div></div><img loading="lazy" src="card-c6.png" alt="C6 金句卡：AAPCS 调用约定口诀"></div>
-  <div class="card"><div class="meta"><span class="no">08</span><span class="ch">C8 · 字符串与缓冲区</span><div class="q">0 只当帧尾</div></div><img loading="lazy" src="card-c8.png" alt="C8 金句卡：0 只当帧尾"></div>
-  <div class="card"><div class="meta"><span class="no">09</span><span class="ch">B1 · 四步构建</span><div class="q">E·S·c·T 四步走</div></div><img loading="lazy" src="card-b1.png" alt="B1 金句卡：预处理编译汇编链接四步"></div>
-  <div class="card"><div class="meta"><span class="no">10</span><span class="ch">B2 · ELF 解剖</span><div class="q">头说我是谁</div></div><img loading="lazy" src="card-b2.png" alt="B2 金句卡：ELF 头说我是谁"></div>
-  <div class="card"><div class="meta"><span class="no">11</span><span class="ch">F0 · RTOS 是什么</span><div class="q">一人阻塞全家堵</div></div><img loading="lazy" src="card-f0.png" alt="F0 金句卡：一人阻塞全家堵"></div>
-  <div class="card"><div class="meta"><span class="no">12</span><span class="ch">P2 · S3 引脚矩阵</span><div class="q">专线与总机</div></div><img loading="lazy" src="card-p2.png" alt="P2 金句卡：GPIO 专线与外设总机"></div>
-  <div class="card"><div class="meta"><span class="no">13</span><span class="ch">S7 · USART</span><div class="q">起始拉低数据八位</div></div><img loading="lazy" src="card-s7.png" alt="S7 金句卡：USART 帧起始与八位数据"></div>
+  <div class="card"><div class="meta"><span class="no">01</span><span class="ch">C0 · 学这门课要带的三样</span><div class="q">出错弹窗 vs 冒烟</div></div><img loading="lazy" src="card-c0.png?v=2" alt="C0 金句卡：出错弹窗与冒烟对照"></div>
+  <div class="card"><div class="meta"><span class="no">02</span><span class="ch">C1 · 内存模型</span><div class="q">一个全局变量的三段旅程</div></div><img loading="lazy" src="card-c1.png?v=2" alt="C1 金句卡：全局变量的三段旅程"></div>
+  <div class="card"><div class="meta"><span class="no">03</span><span class="ch">C2 · 指针</span><div class="q">指针三板斧</div></div><img loading="lazy" src="card-c2.png?v=2" alt="C2 金句卡：指针三板斧"></div>
+  <div class="card"><div class="meta"><span class="no">04</span><span class="ch">C3 · volatile</span><div class="q">把总线动作写进合同</div></div><img loading="lazy" src="card-c3.png?v=2" alt="C3 金句卡：volatile 把总线动作写进合同"></div>
+  <div class="card"><div class="meta"><span class="no">05</span><span class="ch">C4 · 结构体与 ABI</span><div class="q">结构体罩寄存器</div></div><img loading="lazy" src="card-c4.png?v=2" alt="C4 金句卡：结构体罩寄存器"></div>
+  <div class="card"><div class="meta"><span class="no">06</span><span class="ch">C5 · 中断的 C 写法</span><div class="q">中断只做快递分拣</div></div><img loading="lazy" src="card-c5.png?v=2" alt="C5 金句卡：中断只做快递分拣"></div>
+  <div class="card"><div class="meta"><span class="no">07</span><span class="ch">C6 · 调用约定 AAPCS</span><div class="q">AAPCS 口诀</div></div><img loading="lazy" src="card-c6.png?v=2" alt="C6 金句卡：AAPCS 调用约定口诀"></div>
+  <div class="card"><div class="meta"><span class="no">08</span><span class="ch">C8 · 字符串与缓冲区</span><div class="q">0 只当帧尾</div></div><img loading="lazy" src="card-c8.png?v=2" alt="C8 金句卡：0 只当帧尾"></div>
+  <div class="card"><div class="meta"><span class="no">09</span><span class="ch">B1 · 四步构建</span><div class="q">E·S·c·T 四步走</div></div><img loading="lazy" src="card-b1.png?v=2" alt="B1 金句卡：预处理编译汇编链接四步"></div>
+  <div class="card"><div class="meta"><span class="no">10</span><span class="ch">B2 · ELF 解剖</span><div class="q">头说我是谁</div></div><img loading="lazy" src="card-b2.png?v=2" alt="B2 金句卡：ELF 头说我是谁"></div>
+  <div class="card"><div class="meta"><span class="no">11</span><span class="ch">F0 · RTOS 是什么</span><div class="q">一人阻塞全家堵</div></div><img loading="lazy" src="card-f0.png?v=2" alt="F0 金句卡：一人阻塞全家堵"></div>
+  <div class="card"><div class="meta"><span class="no">12</span><span class="ch">P2 · S3 引脚矩阵</span><div class="q">专线与总机</div></div><img loading="lazy" src="card-p2.png?v=2" alt="P2 金句卡：GPIO 专线与外设总机"></div>
+  <div class="card"><div class="meta"><span class="no">13</span><span class="ch">S7 · USART</span><div class="q">起始拉低数据八位</div></div><img loading="lazy" src="card-s7.png?v=2" alt="S7 金句卡：USART 帧起始与八位数据"></div>
   <div class="card wide"><div class="meta"><span class="no">14</span><span class="ch">C3 · B 站横版推广封面</span><div class="q">你的 volatile 白加了？（Swiss 亮色，与现有深底程序封面明暗对照）</div></div><img loading="lazy" src="cover-c3-bili.png" alt="C3 B 站横版推广封面：你的 volatile 白加了"></div>
 </div>
 

@@ -1,0 +1,30 @@
+{
+  "id": "book-depth-handdraw",
+  "name": "book-depth-handdraw",
+  "title": "全书知识讲透与手绘升级：逐点覆盖、通俗讲解与完整交付",
+  "description": "覆盖全书知识点，补全原理/推理/例子/边界，改为简单易懂的工程口语，按需补可观赏手绘机制图；保留告警、验证覆盖、固件硬件、PDF与发布收口。当前仅获规划授权。",
+  "status": "planning",
+  "dev_type": null,
+  "scope": "book-depth",
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "11-07-book-depth-rollout",
+    "11-07-book-delivery-closure",
+    "11-07-book-depth-pilot"
+  ],
+  "parent": null,
+  "relatedFiles": ["mcu-book/manifest.json", "docs/curriculum.json", "docs/public/figures", "docs/reference/changelog.md"],
+  "notes": "用户明确同意创建全书升级总任务并规划；101来源/814标题候选/24批路由、逐点教学与图形合同、六样章和研究草图、三个独立子任务齐备。当前只规划，不start生产实施，不把机械候选或草图验收冒充全书讲透；保留B7WIP与42用户文件、214验证输入。",
+  "meta": {}
+}

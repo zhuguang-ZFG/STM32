@@ -1,0 +1,211 @@
+{
+  "method": "actual managed Chromium; live existing site,390x844; measure SVG rendered width and font user unit scale; no production edits",
+  "samples": [
+    {
+      "url": "https://zhuguang-zfg.github.io/mcu/c/02-pointer.html",
+      "width": 390,
+      "documentWidth": 390,
+      "svgWidth": 310,
+      "svgHeight": 85.25,
+      "viewBox": "320x88",
+      "labelSizes": [
+        {
+          "text": "int *p",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "char *q",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2000",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2004",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2008",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x200C",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "+4",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "步长 = sizeof(*p)",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2000",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2001",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2002",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2003",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0x2004",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "+1",
+          "font": 7,
+          "effectivePx": 6.78125
+        }
+      ],
+      "labelCount": 14,
+      "theme": "dark"
+    },
+    {
+      "url": "https://zhuguang-zfg.github.io/mcu/stm32/11-i2c.html",
+      "width": 390,
+      "documentWidth": 390,
+      "svgWidth": 310,
+      "svgHeight": 85.25,
+      "viewBox": "320x88",
+      "labelSizes": [
+        {
+          "text": "SCL",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "SDA",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "START",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "地址 A6..A0 + R/W",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "ACK",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "STOP",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "SDA 只在 SCL 低时改；START/STOP 是唯一例外",
+          "font": 7,
+          "effectivePx": 6.78125
+        }
+      ],
+      "labelCount": 7,
+      "theme": "dark"
+    },
+    {
+      "url": "https://zhuguang-zfg.github.io/mcu/rtos/freertos/03-scheduler.html",
+      "width": 390,
+      "documentWidth": 390,
+      "svgWidth": 310,
+      "svgHeight": 85.25,
+      "viewBox": "320x88",
+      "labelSizes": [
+        {
+          "text": "就绪位图（优先级 7..0）",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "1",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "1",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "1",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "0",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "最高位 = 5",
+          "font": 7,
+          "effectivePx": 6.78125
+        },
+        {
+          "text": "CLZ",
+          "font": 8,
+          "effectivePx": 7.75
+        },
+        {
+          "text": "任务 5 运行",
+          "font": 7,
+          "effectivePx": 6.78125
+        }
+      ],
+      "labelCount": 12,
+      "theme": "dark"
+    }
+  ],
+  "limitations": [
+    "Only three existing drawings inspected, no whole-book visual pass",
+    "Dark theme sampled; light/print not exercised this planning turn",
+    "Measured font-size is readability risk evidence, not diagnosis of factual correctness"
+  ]
+}
