@@ -1,0 +1,137 @@
+{
+  "created_at": "2026-11-11T17:43:51.961970+08:00",
+  "files": [
+    {
+      "path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+      "bytes": 660,
+      "sha256": "79420458b3a71bc952136f9e148cee4dae9ed030d253daa1c3c765bf239c8eb7",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl"
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+      "bytes": 1146,
+      "sha256": "f13b9cf5fdb255341e2c37672599d45c999439f535ec06508927b2e9f3aaa616",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl",
+      "bytes": 2423,
+      "sha256": "5b39789591578e21718d221de479cd6b6dee1af1179a2521bf55b74cb9795ded",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl",
+      "bytes": 1757,
+      "sha256": "9745d63eb12e2b7367b02795e0c1891d8b3150e88e630ccca592a54a5cb2ff2b",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/prd.md",
+      "bytes": 4648,
+      "sha256": "3d58e4d0501b7d4c22e36b1d69d617a5c3ab3b507c26dcd284496ad96c407c87",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/prd.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-cards.md",
+      "bytes": 27551,
+      "sha256": "659963b8baa3ac0c5654b15ffbf9bc36ef4367de06a120cc7d11438de3f4558c",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-cards.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-ledger.json",
+      "bytes": 45776,
+      "sha256": "a4b756b39853f94943d521e5cc056e4b4bebc11596c2f6dc9cb40dd37e090564",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-ledger.json"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+      "bytes": 890,
+      "sha256": "a45aee9136983dcf3faf4b85c9e4a6cdbd6fc323ceb7501aa4ba179435663aa4",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/task.json"
+    },
+    {
+      "path": "mcu/CITATION.cff",
+      "bytes": 1012,
+      "sha256": "ba71dedc067838eee03f0ae379e36e51514373b5c42212c815a52b27bbd0ec44",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/CITATION.cff"
+    },
+    {
+      "path": ".qoder/settings.local.json",
+      "bytes": 647,
+      "sha256": "d07b398471a5ddbfbd84bb40220592c4aeb806a7914dd9f2aca230f296cf8a49",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/.qoder/settings.local.json"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/design.md",
+      "bytes": 8392,
+      "sha256": "c99a0feeb6583f5f24faaa4b72087cd6f3bdad6372758f3ee90db06125034c85",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/design.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.md",
+      "bytes": 9056,
+      "sha256": "df16d04d73fc9da970834e7af46740400f12cda5c8808b6dcb8dda7db52ee4e1",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/implement.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/baseline-drift-audit.md",
+      "bytes": 11530,
+      "sha256": "f217ff02d2c020ff6101a5ed3ade2bb6dd2e4dde948bdb63883ccafd2270de81",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/baseline-drift-audit.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/review-handoff.md",
+      "bytes": 9720,
+      "sha256": "9cb8b7deb26b1a4abfeaf81080ea26523dc128ecd71e285d54a4e21563a93e46",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/review-handoff.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-evidence.md",
+      "bytes": 4474,
+      "sha256": "525b0f198d61dcb03fd8ff2ab1e28cc13f64bd2fa3d7215d49a9f44609696510",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-evidence.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-language-diffs.md",
+      "bytes": 23885,
+      "sha256": "0c34cb4a918de90c4efe89a8d4c19bc15c49303afe5955c665ba465fd0dc7775",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-language-diffs.md"
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/research/wave0-evidence.md",
+      "bytes": 8173,
+      "sha256": "b294b1fcb7671dd193a3733990c91503e15161ee9dc4f6778e4cbfd782446dd8",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/mcu/.trellis/tasks/11-07-historical-spec-closure/research/wave0-evidence.md"
+    },
+    {
+      "path": "plans/2026-11-11-mcu-merge/design.md",
+      "bytes": 9168,
+      "sha256": "3d90e581588b54e41eb5df783168ded33ed48d0320a99ed2649b6fe1a71d7814",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/plans/2026-11-11-mcu-merge/design.md"
+    },
+    {
+      "path": "plans/2026-11-11-mcu-merge/implement.md",
+      "bytes": 9319,
+      "sha256": "2757728104e2ddbb8e232ba699385229c626a0aca077d190e9eabc788d621acb",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/plans/2026-11-11-mcu-merge/implement.md"
+    },
+    {
+      "path": "plans/2026-11-11-mcu-merge/prd.md",
+      "bytes": 5658,
+      "sha256": "068615f020a4bf27c3bce1e98c1dce48216c44f9d54c378cef28557ee53aed41",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/plans/2026-11-11-mcu-merge/prd.md"
+    },
+    {
+      "path": "plans/2026-11-11-mcu-merge/research/baseline.json",
+      "bytes": 8656,
+      "sha256": "f74dbfc1a737f8588ec03f4da834a491db9352e7362bee38b2b9ce0d642683de",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/plans/2026-11-11-mcu-merge/research/baseline.json"
+    },
+    {
+      "path": "plans/2026-11-11-mcu-merge/research/findings.md",
+      "bytes": 4646,
+      "sha256": "7ec00ffed746327b3b4b9de738193d9878c3760dfa0b246282565b96d5dcb815",
+      "backup": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/plans/2026-11-11-mcu-merge/research/findings.md"
+    }
+  ]
+}

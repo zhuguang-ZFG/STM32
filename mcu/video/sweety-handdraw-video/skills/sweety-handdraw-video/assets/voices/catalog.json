@@ -1,0 +1,148 @@
+{
+  "default": "magnetic-narrator",
+  "custom_voices": "Add any number in ~/.local/share/sweety-handdraw-video/voices/catalog.json or the job options/local-voices.json with name, reference_audio, reference_text and consent self|authorized.",
+  "voices": [
+    {
+      "id": "realistic-man",
+      "name": "逼真男声",
+      "description": "《那条死于愤怒的蛇》成片男声；参考取自原始录音并经人声分离、降噪清理。",
+      "reference_audio": null,
+      "reference_text": null,
+      "preview_audio": "previews/realistic-man.wav",
+      "preview_kind": "film_excerpt",
+      "preview_text": "一条蛇在爬行时，不小心被地上的锯子划了一道口子。它瞬间怒火中烧，回头狠狠一口咬向锯齿，结果反而被锋利的锯齿扎得满嘴鲜血。",
+      "source": "Original recording used for the snake film; the cleaned reference stays in the personal local voice library. Preview is an excerpt of the snake film after the v1.3 audio fix (DeepFilterNet3, 70 Hz high-pass, linear loudness).",
+      "requires_import": true,
+      "requires_original_reference": true,
+      "redistribution": "Original recording is not bundled; public preview contains only the already published generated narration.",
+      "acceptance": "pending_listening"
+    },
+    {
+      "id": "bilibili-outro",
+      "name": "逼真女声",
+      "description": "《快乐囚禁你的方式》当前女声；参考取自原片并经人声分离、降噪清理，听感待确认。",
+      "source_urls": [
+        "https://www.bilibili.com/video/BV1SXZyYtEVy/",
+        "https://www.bilibili.com/video/BV16UR1YuE6z/"
+      ],
+      "redistribution": "Original recording is not bundled; public preview contains only the already published generated narration.",
+      "reference_audio": null,
+      "reference_text": null,
+      "preview_audio": "previews/bilibili-outro.wav",
+      "preview_text": "猎人把一把匕首，刀刃朝上，埋进雪堆，只露出一截刀尖。他杀了一只海豹，把血淋在刀刃上。",
+      "source": "Original recording used for the wolf film; reference stays in the personal local voice library. Preview is an excerpt of the current generated film.",
+      "requires_import": true,
+      "requires_original_reference": true,
+      "preview_kind": "film_excerpt",
+      "acceptance": "pending_listening"
+    },
+    {
+      "id": "magnetic-narrator",
+      "name": "磁性解说男声",
+      "description": "低沉浑厚、有磁性，适合知识与故事解说。",
+      "reference_audio": "magnetic-narrator.wav",
+      "reference_text": "magnetic-narrator.txt",
+      "preview_audio": "previews/magnetic-narrator.wav",
+      "preview_text": "有时候，改变结果不需要更加用力。停下来，看清问题，再向前走一步。",
+      "preview_kind": "same_text",
+      "source": "Synthetic VoxCPM2 voice design from a text description only; no real person, creator or platform voice was cloned or used as reference",
+      "design_prompt": "中年男性解说员，声音低沉浑厚，富有磁性，吐字清晰，沉稳有力，语速适中，适合知识与故事解说",
+      "generation": {
+        "model": "VoxCPM2-8bit MLX (mlx-audio 0.5.8)",
+        "mode": "design",
+        "cfg_value": 2.0,
+        "timesteps": 10,
+        "seed": 303,
+        "preview": {
+          "mode": "combined",
+          "cfg_value": 2.0,
+          "timesteps": 10,
+          "seed": 2026
+        }
+      },
+      "redistribution": "Distributable: generated with Apache-2.0 VoxCPM2 weights; label as AI-generated when published",
+      "acceptance": "pending_listening"
+    },
+    {
+      "id": "scholarly-young-man",
+      "name": "儒雅青年",
+      "description": "清润温和、带书卷气，适合读书分享与人文讲述。",
+      "reference_audio": "scholarly-young-man.wav",
+      "reference_text": "scholarly-young-man.txt",
+      "preview_audio": "previews/scholarly-young-man.wav",
+      "preview_text": "有时候，改变结果不需要更加用力。停下来，看清问题，再向前走一步。",
+      "preview_kind": "same_text",
+      "source": "Synthetic VoxCPM2 voice design from a text description only; no real person, creator or platform voice was cloned or used as reference",
+      "design_prompt": "二十多岁的青年男性，声音清润温和，带着书卷气，语气平和亲切，娓娓道来，适合读书分享与人文讲述",
+      "generation": {
+        "model": "VoxCPM2-8bit MLX (mlx-audio 0.5.8)",
+        "mode": "design",
+        "cfg_value": 2.0,
+        "timesteps": 10,
+        "seed": 202,
+        "preview": {
+          "mode": "combined",
+          "cfg_value": 2.0,
+          "timesteps": 10,
+          "seed": 2026
+        }
+      },
+      "redistribution": "Distributable: generated with Apache-2.0 VoxCPM2 weights; label as AI-generated when published",
+      "acceptance": "pending_listening"
+    },
+    {
+      "id": "gentle-intellectual-woman",
+      "name": "温柔知性女声",
+      "description": "温柔清亮、从容亲切，适合情感与知识类讲述。",
+      "reference_audio": "gentle-intellectual-woman.wav",
+      "reference_text": "gentle-intellectual-woman.txt",
+      "preview_audio": "previews/gentle-intellectual-woman.wav",
+      "preview_text": "有时候，改变结果不需要更加用力。停下来，看清问题，再向前走一步。",
+      "preview_kind": "same_text",
+      "source": "Synthetic VoxCPM2 voice design from a text description only; no real person, creator or platform voice was cloned or used as reference",
+      "design_prompt": "三十岁左右的知性女性，声音温柔清亮，语气从容亲切，咬字清楚，语速适中，适合情感与知识类讲述",
+      "generation": {
+        "model": "VoxCPM2-8bit MLX (mlx-audio 0.5.8)",
+        "mode": "design",
+        "cfg_value": 2.0,
+        "timesteps": 10,
+        "seed": 202,
+        "preview": {
+          "mode": "combined",
+          "cfg_value": 2.0,
+          "timesteps": 10,
+          "seed": 2026
+        }
+      },
+      "redistribution": "Distributable: generated with Apache-2.0 VoxCPM2 weights; label as AI-generated when published",
+      "acceptance": "pending_listening"
+    },
+    {
+      "id": "suspense-storyteller",
+      "name": "悬疑故事解说",
+      "description": "低沉略沙哑、神秘克制，适合悬疑故事解说。",
+      "reference_audio": "suspense-storyteller.wav",
+      "reference_text": "suspense-storyteller.txt",
+      "preview_audio": "previews/suspense-storyteller.wav",
+      "preview_text": "有时候，改变结果不需要更加用力。停下来，看清问题，再向前走一步。",
+      "preview_kind": "same_text",
+      "source": "Synthetic VoxCPM2 voice design from a text description only; no real person, creator or platform voice was cloned or used as reference",
+      "design_prompt": "中年男性讲述者，声音低沉略带沙哑，语气神秘克制，节奏张弛有度，营造紧张悬疑的氛围，适合悬疑故事解说",
+      "generation": {
+        "model": "VoxCPM2-8bit MLX (mlx-audio 0.5.8)",
+        "mode": "design",
+        "cfg_value": 2.0,
+        "timesteps": 10,
+        "seed": 202,
+        "preview": {
+          "mode": "combined",
+          "cfg_value": 2.0,
+          "timesteps": 10,
+          "seed": 2027
+        }
+      },
+      "redistribution": "Distributable: generated with Apache-2.0 VoxCPM2 weights; label as AI-generated when published",
+      "acceptance": "pending_listening"
+    }
+  ]
+}

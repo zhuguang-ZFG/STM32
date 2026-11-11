@@ -1,0 +1,145 @@
+{
+  "generated_for": "P1 AC6 NCR resolution",
+  "count": 8,
+  "resolved": 8,
+  "items": [
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/design.md",
+      "owner_task_dir": "mcu/.trellis/tasks/10-25-bmsz-validation-depth",
+      "task_status": "in_progress",
+      "is_active_task": true,
+      "is_archived": false,
+      "token_hits": [
+        {
+          "line": 60,
+          "text": "export function collectMarkdown(root)            // docs/**/*.md + README.md + CONTRIBUTING.md + *.md（排除 node_modules/.temp/dist/mcu-book/book）"
+        },
+        {
+          "line": 63,
+          "text": "export function checkSelfBlobLinks(root)         // github.com/zhuguang-ZFG/mcu/blob/<ref>/<path> → 按工作树路径存在性校验"
+        },
+        {
+          "line": 92,
+          "text": "范围：`docs/.vitepress/dist/**/*.html`，href 以 `BASE`(`/mcu/`) 起头或以相对路径解析；跳过 `http(s):`、`mailto:`、纯 `#`。理由：`ignoreDeadLinks: false` 只保证**链接存在**，**锚点**无人管（BMS-Z 的 `check_pages.py` 同理）。"
+        },
+        {
+          "line": 108,
+          "text": "默认：mcu-book/dist/mcu-deep-book.pdf"
+        },
+        {
+          "line": 133,
+          "text": "`index.html`：自包含落地页（标题/版本/日期/两格式按钮/校验和入口），样式内联、无外部依赖、跟随站点 `BASE=/mcu/` 的相对路径。"
+        }
+      ],
+      "disposition": "active_task_historical_design_text_preserved",
+      "rationale": "活动任务文档中的 /mcu/ token 为历史 base/路径/仓库示例等设计与执行说明（非活动 cwd 指针、非会话指针）；P1 不改写任务历史，P2/P3 将按新身份收口运行时代码/测试并保留必要负例。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/implement.md",
+      "owner_task_dir": "mcu/.trellis/tasks/10-25-bmsz-validation-depth",
+      "task_status": "in_progress",
+      "is_active_task": true,
+      "is_archived": false,
+      "token_hits": [
+        {
+          "line": 91,
+          "text": "4. 站点入口：`docs/.vitepress/config.mts` 加\"下载\"导航（指向 `/mcu/downloads/`），并确认 `pages-check` 通过。"
+        }
+      ],
+      "disposition": "active_task_historical_design_text_preserved",
+      "rationale": "活动任务文档中的 /mcu/ token 为历史 base/路径/仓库示例等设计与执行说明（非活动 cwd 指针、非会话指针）；P1 不改写任务历史，P2/P3 将按新身份收口运行时代码/测试并保留必要负例。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/design.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 58,
+          "text": "- 既有 URL 不变，新资源走 /anim/ Markdown 引用；构建 base 为 /mcu/。"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/implement.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 25,
+          "text": "- 站点：npm run docs:build；浏览器抽查 /mcu/ 子路径、360/390px 窄屏和常见桌面宽度、深浅主题。"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/prd.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 41,
+          "text": "- [ ] A5 / R2/R5：宽屏与窄屏、深浅主题下核验章节与动画；720 宽图不截字，窄屏可阅读文字解说，/mcu/ 下资源加载正常。"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-08-ultimate-polish/implement.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-10/10-08-ultimate-polish",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 5,
+          "text": "- config.mts：sitemap（hostname 含 base + 尾斜杠，防丢 /mcu/ 前缀）、transformHead 注入每页 og/twitter/canonical、站点级 og:image(1200x630)/theme-color"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout/design.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 31,
+          "text": "旧卡片和旧导读均保留；新增入口和正式资源可独立撤回。当前 base `/mcu/` 必须通过构建产物实际访问验证。无远端部署或投稿。"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/implementation-evidence.md",
+      "owner_task_dir": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3",
+      "task_status": "completed",
+      "is_active_task": false,
+      "is_archived": true,
+      "token_hits": [
+        {
+          "line": 52,
+          "text": "本任务预览地址为 localhost:4196/mcu/，真实浏览器打开 B3/B4 页面，不以 HTTP 请求代替导航。"
+        }
+      ],
+      "disposition": "archived_or_completed_historical_record_preserved",
+      "rationale": "已归档/已完成历史任务记录；/mcu/ token 反映当时 base/预览/路径上下文，按 AC6/R1 保真不伪造。"
+    }
+  ],
+  "rechecked_after": "p1-ac6-recheck-after-controlled-skill-import",
+  "ncr_still_open": 0
+}

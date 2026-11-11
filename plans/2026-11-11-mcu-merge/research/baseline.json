@@ -1,0 +1,128 @@
+{
+    "captured_at":  "2026-11-11T17:35:10.6202886+08:00",
+    "planning_date":  "2026-11-11",
+    "timezone":  "Asia/Shanghai",
+    "evidence_scope":  "local_git_and_worktree_only",
+    "target":  {
+                   "path":  "D:\\Users\\STM32",
+                   "branch":  "feat/mcu-subtree-merge",
+                   "head":  "92fc917ca6f0c93f0fc736bf3ea1eab3f8c0aec6",
+                   "mcu_tree":  "93e40d58340884f4d0da88475c382b8f5400fba8"
+               },
+    "source":  {
+                   "path":  "D:\\Users\\mcu",
+                   "head":  "cf161532c823446016a9deb60d31e5263397b7d7",
+                   "tree":  "8624f6bcceb90bf8f26d2cc04cbf8f2e30d429fa",
+                   "status":  [
+                                  "?? .perch/"
+                              ]
+               },
+    "import_commit":  "9ff93300c379a80cf986381282b47e6b7fcb9bff",
+    "committed_subtree_delta":  [
+                                    "D\t.github/workflows/book.yml",
+                                    "D\t.github/workflows/deploy.yml",
+                                    "D\t.github/workflows/links.yml",
+                                    "D\t.github/workflows/quality.yml",
+                                    "M\tREADME.md",
+                                    "M\tdocs/.vitepress/config.mts",
+                                    "M\tscripts/docs-check.mjs",
+                                    "M\tscripts/measure-site.mjs",
+                                    "M\tscripts/search-check.mjs",
+                                    "M\tscripts/seo-check.mjs"
+                                ],
+    "protected_worktree_entries":  [
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+                                           "sha256":  "79420458b3a71bc952136f9e148cee4dae9ed030d253daa1c3c765bf239c8eb7"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+                                           "sha256":  "f13b9cf5fdb255341e2c37672599d45c999439f535ec06508927b2e9f3aaa616"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl",
+                                           "sha256":  "5b39789591578e21718d221de479cd6b6dee1af1179a2521bf55b74cb9795ded"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl",
+                                           "sha256":  "9745d63eb12e2b7367b02795e0c1891d8b3150e88e630ccca592a54a5cb2ff2b"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/prd.md",
+                                           "sha256":  "3d58e4d0501b7d4c22e36b1d69d617a5c3ab3b507c26dcd284496ad96c407c87"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-cards.md",
+                                           "sha256":  "659963b8baa3ac0c5654b15ffbf9bc36ef4367de06a120cc7d11438de3f4558c"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-ledger.json",
+                                           "sha256":  "a4b756b39853f94943d521e5cc056e4b4bebc11596c2f6dc9cb40dd37e090564"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+                                           "sha256":  "a45aee9136983dcf3faf4b85c9e4a6cdbd6fc323ceb7501aa4ba179435663aa4"
+                                       },
+                                       {
+                                           "status":  " M",
+                                           "path":  "mcu/CITATION.cff",
+                                           "sha256":  "ba71dedc067838eee03f0ae379e36e51514373b5c42212c815a52b27bbd0ec44"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  ".qoder/",
+                                           "kind":  "directory",
+                                           "note":  "Only directory status recorded; contents not inventoried."
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/design.md",
+                                           "sha256":  "c99a0feeb6583f5f24faaa4b72087cd6f3bdad6372758f3ee90db06125034c85"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.md",
+                                           "sha256":  "df16d04d73fc9da970834e7af46740400f12cda5c8808b6dcb8dda7db52ee4e1"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/baseline-drift-audit.md",
+                                           "sha256":  "f217ff02d2c020ff6101a5ed3ade2bb6dd2e4dde948bdb63883ccafd2270de81"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/review-handoff.md",
+                                           "sha256":  "9cb8b7deb26b1a4abfeaf81080ea26523dc128ecd71e285d54a4e21563a93e46"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-evidence.md",
+                                           "sha256":  "525b0f198d61dcb03fd8ff2ab1e28cc13f64bd2fa3d7215d49a9f44609696510"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-language-diffs.md",
+                                           "sha256":  "0c34cb4a918de90c4efe89a8d4c19bc15c49303afe5955c665ba465fd0dc7775"
+                                       },
+                                       {
+                                           "status":  "??",
+                                           "path":  "mcu/.trellis/tasks/11-07-historical-spec-closure/research/wave0-evidence.md",
+                                           "sha256":  "b294b1fcb7671dd193a3733990c91503e15161ee9dc4f6778e4cbfd782446dd8"
+                                       }
+                                   ],
+    "validation":  {
+                       "product_tests":  "NOT_RUN",
+                       "ci":  "NOT_QUERIED",
+                       "online_deployment":  "NOT_QUERIED",
+                       "ignored_source_assets":  "NOT_INVENTORIED",
+                       "trellis_readonly_context":  "PASS"
+                   }
+}

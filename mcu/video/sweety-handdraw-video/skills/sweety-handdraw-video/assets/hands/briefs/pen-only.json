@@ -1,0 +1,8 @@
+{
+ "deliverable": "The navy preset's own pen with the hand and arm removed, for the 'pen only' drawing tool",
+ "composition": "Same slim black brush pen, same 36.6 degree holding angle, same calibrated nib pixel (94,16) and same scale as navy.png, so switching presets only removes the arm",
+ "art_direction": "Keep the photographed held-pen perspective (tilted toward the viewer, end cap seen from above) instead of a flat product lay; the renderer adds a nib-anchored contact shadow so the pen reads as touching the paper",
+ "viewing_size": "About 320 px pen length in a 1920x1080 video, identical to the navy preset",
+ "drawability_reason": "Pen is a motion tool rather than revealed illustration; anchored to the measured nib; no semantic segmentation is required",
+ "text": "No text; the user's label is typeset on the same barrel segment as the navy preset"
+}
