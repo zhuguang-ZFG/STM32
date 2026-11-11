@@ -1,0 +1,2 @@
+# 故障构建专用 defaults（配合独立 build 目录使用；默认构建不带此文件）
+CONFIG_RELIABILITY_TEST_FAULTS=y

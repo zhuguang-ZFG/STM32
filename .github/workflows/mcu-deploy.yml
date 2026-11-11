@@ -1,0 +1,78 @@
+name: 部署 mcu 站点到 GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mcu/**'
+      - '.github/workflows/mcu-*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    uses: ./.github/workflows/mcu-quality.yml
+
+  deploy:
+    # 可复用工作流的所有 jobs 成功才算 quality 成功；失败/取消/跳过均不发布。
+    needs: quality
+    if: github.ref == 'refs/heads/main' && needs.quality.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: mcu
+    steps:
+      # 顺序有讲究：checkout 默认 clean=true，会 reset/clean 工作区——它必须排在
+      # download-artifact 之前，否则刚下载到 `site/` 的产物会被当成未跟踪文件清掉，
+      # 后面的 `--dist site` 就查了个空目录（不是"检查通过"，是没东西可查）。
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mcu/package-lock.json
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs-site
+          path: mcu/site
+      # 为什么在部署前再查一遍：前面 quality 的检查跑在**源文件与刚构建的 dist** 上，
+      # 而这里落地的是一路传过来的 artifact。检查对象必须是真正要上线的那一份。
+      - name: 上线物锚点对账（对 artifact，不对源文件）
+        run: node scripts/pages-check.mjs --dist site
+      - name: 上线物搜索可达性对账
+        run: node scripts/search-check.mjs --dist site
+      # AC4：Pages 站点挂载在仓库根（/STM32/），本站 base 是 /STM32/mcu/——上传的
+      # artifact 根必须直接包含 mcu/ 子树，否则本站会被挂到 /STM32/ 顶掉仓库根。
+      # 组装逻辑在 scripts/assemble-pages.mjs（含缺首页失败/根入口防顶/资源落位三门），
+      # 单测 fixture 覆盖；根 index.html 只是临时重定向（STM32 书尚无站点产物），
+      # 将来根书入站时在此扩展组装，不要回退到上传裸站点目录。
+      - name: 组装 Pages staging（上传根含 mcu/ 子树）
+        run: node scripts/assemble-pages.mjs --dist site --out ../.temp/pages-site
+      # 对最终 staging 再对一次账：上线物是组装后的目录，检查对象必须是真正要上传的那一份。
+      - name: staging 锚点对账（对最终上传目录）
+        run: node scripts/pages-check.mjs --dist ../.temp/pages-site/mcu
+      - name: staging 搜索可达性对账
+        run: node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
+      - name: 安装 Chromium（挂载冒烟用）
+        run: npx playwright install --with-deps chromium
+      - name: 挂载冒烟（staging 按 /STM32/ 起服务，Chromium 回归首页/深链/资源/搜索/导读/book/downloads）
+        run: node scripts/mount-smoke.mjs --root ../.temp/pages-site --mount /STM32
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .temp/pages-site
+      - id: deployment
+        uses: actions/deploy-pages@v5

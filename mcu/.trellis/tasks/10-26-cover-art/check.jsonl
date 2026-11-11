@@ -1,0 +1,4 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"现有层合同；保留原行为/保护和验证，不以旧计划放宽"}
+{"file":".trellis/spec/book/index.md","reason":"现有层合同；保留原行为/保护和验证，不以旧计划放宽"}
+{"file":".trellis/tasks/10-26-cover-art/prd.md","reason":"该任务原需求与AC完整保留，不用统筹卡缩减范围"}
+{"file":".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md","reason":"跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"}

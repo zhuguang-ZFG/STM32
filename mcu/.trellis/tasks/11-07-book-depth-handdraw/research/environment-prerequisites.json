@@ -1,0 +1,131 @@
+{
+  "toolDiscovery": [
+    {
+      "command": "arm-none-eabi-gcc",
+      "found": true,
+      "paths": [
+        "C:\\Users\\zhugu\\tools\\gcc-arm-none-eabi-10.3-2021.10\\bin\\arm-none-eabi-gcc.exe"
+      ]
+    },
+    {
+      "command": "arm-none-eabi-nm",
+      "found": true,
+      "paths": [
+        "C:\\Users\\zhugu\\tools\\gcc-arm-none-eabi-10.3-2021.10\\bin\\arm-none-eabi-nm.exe"
+      ]
+    },
+    {
+      "command": "openocd",
+      "found": true,
+      "paths": [
+        "D:\\zhugu-home\\.espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20260304\\openocd-esp32\\bin\\openocd.exe"
+      ]
+    },
+    {
+      "command": "mingw32-make",
+      "found": true,
+      "paths": [
+        "D:\\zhugu-home\\mingw64\\mingw64\\bin\\mingw32-make.exe"
+      ]
+    },
+    {
+      "command": "idf.py",
+      "found": true,
+      "paths": [
+        "D:\\zhugu-home\\.espressif\\tools\\idf-exe\\1.0.3\\idf.py.exe"
+      ]
+    },
+    {
+      "command": "cmake",
+      "found": true,
+      "paths": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "D:\\zhugu-home\\.espressif\\tools\\cmake\\3.30.2\\bin\\cmake.exe",
+        "D:\\zhugu-home\\.espressif\\tools\\cmake\\4.0.3\\bin\\cmake.exe"
+      ]
+    },
+    {
+      "command": "ninja",
+      "found": true,
+      "paths": [
+        "D:\\zhugu-home\\.espressif\\tools\\ninja\\1.12.1\\ninja.exe"
+      ]
+    },
+    {
+      "command": "python",
+      "found": true,
+      "paths": [
+        "C:\\Users\\zhugu\\scoop\\apps\\python313\\current\\python.exe"
+      ]
+    },
+    {
+      "command": "gh",
+      "found": true,
+      "paths": [
+        "C:\\Program Files\\GitHub CLI\\gh.exe"
+      ]
+    }
+  ],
+  "deviceDiscovery": {
+    "exitCode": 0,
+    "data": {
+      "debugCandidates": [
+        {
+          "Class": "Display",
+          "FriendlyName": "Todesk Virtual Display Adapter",
+          "Status": "OK"
+        },
+        {
+          "Class": "Ports",
+          "FriendlyName": "蓝牙链接上的标准串行 (COM5)",
+          "Status": "OK"
+        },
+        {
+          "Class": "Net",
+          "FriendlyName": "Microsoft Kernel Debug Network Adapter",
+          "Status": "OK"
+        },
+        {
+          "Class": "Bluetooth",
+          "FriendlyName": "MediaTek Bluetooth Adapter",
+          "Status": "OK"
+        },
+        {
+          "Class": "Ports",
+          "FriendlyName": "蓝牙链接上的标准串行 (COM4)",
+          "Status": "OK"
+        },
+        {
+          "Class": "Net",
+          "FriendlyName": "Microsoft Wi-Fi Direct Virtual Adapter",
+          "Status": "OK"
+        },
+        {
+          "Class": "Net",
+          "FriendlyName": "Microsoft Wi-Fi Direct Virtual Adapter #2",
+          "Status": "OK"
+        }
+      ],
+      "serial": [
+        {
+          "DeviceID": "COM5",
+          "Name": "蓝牙链接上的标准串行 (COM5)",
+          "PNPDeviceID": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\9&66014C1&0&000000000000_0000001E"
+        },
+        {
+          "DeviceID": "COM4",
+          "Name": "蓝牙链接上的标准串行 (COM4)",
+          "PNPDeviceID": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0046\\9&66014C1&0&704BCA8CDEEE_C00000000"
+        }
+      ]
+    },
+    "stderr": ""
+  },
+  "limitations": [
+    "where reports PATH availability,not successful firmware builds or correct SDK version",
+    "Only Bluetooth serial COM4/5 were found; no identified target board or ST-Link",
+    "Name filter also matched unrelated adapters; these are not hardware proof",
+    "No flash/reset/erase or serial communication performed",
+    "operator task_verify status unverified/no-checks-run; no policy changed"
+  ]
+}

@@ -1,0 +1,1930 @@
+{
+  "generated_for": "p1-ac6-recheck-after-controlled-skill-import",
+  "git_root": "D:\\Users\\STM32-mcu-merge-p1",
+  "mcu_project_root": "D:\\Users\\STM32-mcu-merge-p1\\mcu",
+  "cwd_for_resolution": "D:\\Users\\STM32-mcu-merge-p1\\mcu",
+  "summary": {
+    "active_task_count": 23,
+    "jsonl_files_scanned": 46,
+    "file_entries_total": 256,
+    "resolved_mcu_project_root": 256,
+    "resolved_any": 256,
+    "missing_count": 0,
+    "template_or_non_file_lines": 2
+  },
+  "missing_entries": [],
+  "tasks": [
+    {
+      "task": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/build-package-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/build-package-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-16-e04-board-measurement/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-16-e04-board-measurement/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/firmware-rtos/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/firmware-rtos/kernel-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/firmware-common/probe-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-16-e04-board-measurement/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/firmware-rtos/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/firmware-rtos/kernel-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/firmware-common/probe-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-22-video-v2-remaster/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-22-video-v2-remaster/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/layout-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".agents/skills/video-release/SKILL.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-22-video-v2-remaster/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/layout-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/spec/docs-site/structure.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-25-book-production/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-25-book-production/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-book-production/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-book-production/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-25-book-production/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-book-production/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-25-book-production/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-book-production/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": "mcu-book/manifest.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": "mcu-book/build_html.py",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-26-cover-art/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-26-cover-art/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-cover-art/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-26-cover-art/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-cover-art/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-26-de-ai-polish/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-26-de-ai-polish/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-de-ai-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-26-de-ai-polish/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-de-ai-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-26-oss-influence/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-26-oss-influence/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-oss-influence/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-26-oss-influence/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-oss-influence/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-26-prose-polish/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-26-prose-polish/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-26-prose-polish/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-27-ai-dev-deepen/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-27-ai-dev-deepen/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-27-ai-dev-deepen/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-27-book-interest-polish/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-27-book-interest-polish/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-book-interest-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-27-book-interest-polish/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-book-interest-polish/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-28-social-video-ai-tools/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/references/quality-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": "video/publish/wx-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": "video/research/v2-voice-probe.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/SKILL.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-06-animation-d2-closure/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-06-animation-d2-closure/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-06-animation-d2-closure/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-06-animation-reading-experience/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-06-animation-reading-experience/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-06-animation-reading-experience/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-06-language-batch2/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-06-language-batch2/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-batch2/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-language-batch2/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-06-language-batch2/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-language-batch2/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-06-language-release-pdf/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-06-language-release-pdf/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-release-pdf/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-06-language-release-pdf/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-release-pdf/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-06-spec-plan-continuation/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-06-spec-plan-continuation/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-06-spec-plan-continuation/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-book-delivery-closure/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-delivery-closure/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/spec/firmware-common/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-delivery-closure/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/spec/firmware-common/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-book-depth-handdraw/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-handdraw/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-handdraw/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-book-depth-pilot/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-pilot/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-pilot/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-book-depth-rollout/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-rollout/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-book-depth-rollout/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+      "status": "planning",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "kind": "template_or_non_file"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "kind": "template_or_non_file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task": "mcu/.trellis/tasks/11-07-language-batch5/task.json",
+      "status": "in_progress",
+      "jsonl": [
+        {
+          "path": "mcu/.trellis/tasks/11-07-language-batch5/check.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-language-batch5/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-language-batch5/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        },
+        {
+          "path": "mcu/.trellis/tasks/11-07-language-batch5/implement.jsonl",
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-language-batch5/prd.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-language-batch5/design.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-language-batch5/implement.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "resolved": true,
+              "resolved_via": "mcu_project_root"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

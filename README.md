@@ -92,8 +92,23 @@
 | 想看讲解视频怎么编号 | [assets/video/](assets/video/README.md) |
 | 想自己改图 / 生成素材 | [tools/](tools/)（纯 Python，零依赖） |
 | 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
+| 想看 MCU 寄存器级/双路线姊妹书（仓内子树） | [mcu/README.md](mcu/README.md)（MCU 项目根 `mcu/`，站点挂载 `/STM32/mcu/`） |
 
 > 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
+
+## 双书入口与维护边界
+
+本仓库采用 **单仓双书、分域维护**（subtree 收口中）：两本书正文、示例、构建与验收各自独立，互不覆盖、不改对方章节号。
+
+|维度|STM32 知识库（本书）|通往单片机之路（MCU 姊妹书）|
+|---|---|---|
+|读者入口|[README.md](README.md) / [docs/README.md](docs/README.md)|[mcu/README.md](mcu/README.md) / [mcu/docs/index.md](mcu/docs/index.md)|
+|Git 目录范围|`docs/`、`examples/`、`stm32-book/`、`cheatsheets/`、`assets/`、`tools/`、`labs/`、`sim/` 等根域|`mcu/` 子树（`mcu/docs/`、`mcu/code/`、`mcu/mcu-book/`、`mcu/scripts/`、`mcu/.trellis/` 等）|
+|维护边界|仅改根域 STM32 内容；MCU 内容在 `mcu/` 对应文件维护，保留其边界声明|仅改 `mcu/` 域；不覆盖本书 `docs/` 章节与根域内容；`mcu/README.md` 为 MCU 内容边界权威入口|
+|构建/验收|`make book` / `make book-pdf` / `make check`（见 [stm32-book/README.md](stm32-book/README.md)、[STRUCTURE.md](STRUCTURE.md)）|在 MCU 项目根 `mcu/` 执行其脚本与门禁，按 `/STM32/mcu/` 挂载语义验收；**既有门禁完整保留**|
+|身份/根|Git 仓库根即本仓根域|区分 Git 根、MCU 项目根 `mcu/`、对外站点根 `/STM32/mcu/`；命令与路径不可混用|
+
+合并计划与证据：[`plans/2026-11-11-mcu-merge/`](plans/2026-11-11-mcu-merge/)（PRD/设计/实施/research）。本轮未发布。
 
 ## 动画演示（GitHub 页面直接播放）
 

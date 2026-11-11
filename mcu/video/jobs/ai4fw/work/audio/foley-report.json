@@ -1,0 +1,40 @@
+{
+  "version": "foley-1",
+  "options": {
+    "gain_db": 0.0,
+    "duck_db": 4.0,
+    "tool": "auto",
+    "seed": 0,
+    "stereo": true,
+    "scope": "writing"
+  },
+  "tool": "marker",
+  "scope": "writing",
+  "events": 10,
+  "segments": {
+    "ink": 313
+  },
+  "contact_seconds": 15.96,
+  "duck_applied_db": {
+    "speech_mean": -3.76,
+    "pause_mean": -1.87
+  },
+  "levels": {
+    "peak_dbfs": -24.23,
+    "loudness_lufs": -38.3,
+    "active_rms_dbfs": -43.17,
+    "active_share": 0.284,
+    "duck_db": 4.0,
+    "duck_applied_db": {
+      "speech_mean": -3.76,
+      "pause_mean": -1.87
+    },
+    "speech_rms_dbfs": -44.16,
+    "pause_rms_dbfs": -42.14
+  },
+  "layer_gain": 0.25,
+  "reference_dbfs": -34.0,
+  "ceiling_dbfs": -24.0,
+  "sample_rate": 48000,
+  "source_sha256": "75ae2848df1a96231aeda2cdebbaaf06c06cd919be436358c6d143807dcfa72c"
+}

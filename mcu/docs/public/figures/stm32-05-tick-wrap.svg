@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="无符号回绕：then=0xFFFFFC18、now=2000 时 (now-then)=3000 仍正确，而 now>=then+timeout 漏报"><g transform="translate(+5.6,-2.6)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">uint32 毫秒计数</text>
+<path d="M12 34 L182 34" stroke-width="1.4"/> <path d="M200 34 L300 34" stroke-width="1.4"/>
+<path d="M182 34 C 186 18, 196 18, 200 34" stroke-width="1.8"/>
+<text x="190" y="14" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">回绕</text>
+<path d="M60 26 L60 40" stroke-width="1.4"/> <path d="M280 26 L280 40" stroke-width="1.4"/>
+<text x="8" y="20" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">then</text> <text x="8" y="30" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0xFFFFFC18</text>
+<text x="220" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">now=2000</text>
+<path d="M60 40 C 100 64, 230 64, 280 40" stroke-width="2.2" stroke-dasharray="4 3"/>
+<text x="155" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">(now-then)=3000 > 500</text>
+<text x="8" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">now >= then+timeout ×</text> <text x="176" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">(now-then) >= timeout ✓</text>
+</g></svg>

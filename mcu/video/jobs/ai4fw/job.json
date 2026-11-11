@@ -1,0 +1,1003 @@
+{
+ "version": 1,
+ "title": "369 个 AI 视频工具仓库，四个最能打",
+ "design_file": "design.json",
+ "art_direction": {
+  "record": "design/art-direction.json"
+ },
+ "canvas": {
+  "width": 1080,
+  "height": 1920,
+  "fps": 30
+ },
+ "cover": {
+  "source": "inputs/images/cover.png",
+  "seconds": 1.0
+ },
+ "hand": {
+  "preset": "pen-only",
+  "pen_text": ""
+ },
+ "narration": {
+  "source": "inputs/narration/master.wav",
+  "alignment": "inputs/narration/alignment.json"
+ },
+ "audio": {
+  "end_hold_seconds": 0.8,
+  "music": {
+   "source": "builtin:curious",
+   "user_instruction": "整集级：节奏音效铺满（用户 2026-10-28 要求）"
+  }
+ },
+ "font": {
+  "path": "C:/Windows/Fonts/simkai.ttf"
+ },
+ "captions": {
+  "font": {
+   "path": "C:/Windows/Fonts/msyh.ttc",
+   "index": 0
+  },
+  "keywords": [
+   "lemo-opuscar",
+   "huashu-art-motion",
+   "huashu-motion",
+   "sweety-handdraw-video",
+   "OPUSCAR",
+   "ABC"
+  ],
+  "highlight_numbers": true
+ },
+ "storyboard": "storyboard.json",
+ "edge_tts": {
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%"
+ },
+ "pages": [
+  {
+   "beats": [
+    {
+     "id": "b_hook",
+     "text": "不用视频大模型，一段代码直接出片。"
+    },
+    {
+     "id": "b_frame",
+     "text": "我盘了 369 个 AI 视频工具仓库，这四个框架最能打。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_hook",
+     "end_beat": "b_frame",
+     "lead": 0.2,
+     "hold": 0.5,
+     "actions": [
+      {
+       "type": "illustration",
+       "source": "inputs/images/v01.png",
+       "x": 100,
+       "y": 60,
+       "width": 880,
+       "visual": "v01",
+       "drawing_plan_id": "v01",
+       "parts": [
+        {
+         "id": "window",
+         "polygon": [
+          [
+           0.1093,
+           0.2229
+          ],
+          [
+           0.7981,
+           0.2229
+          ],
+          [
+           0.7981,
+           0.4958
+          ],
+          [
+           0.1093,
+           0.4958
+          ]
+         ]
+        },
+        {
+         "id": "arrow",
+         "polygon": [
+          [
+           0.5648,
+           0.3177
+          ],
+          [
+           0.9352,
+           0.3177
+          ],
+          [
+           0.9352,
+           0.6146
+          ],
+          [
+           0.5648,
+           0.6146
+          ]
+         ]
+        },
+        {
+         "id": "film",
+         "polygon": [
+          [
+           0.163,
+           0.5865
+          ],
+          [
+           0.8556,
+           0.5865
+          ],
+          [
+           0.8556,
+           0.7625
+          ],
+          [
+           0.163,
+           0.7625
+          ]
+         ]
+        }
+       ],
+       "height": 1564,
+       "drawing": {
+        "speed": 1.5
+       }
+      },
+      {
+       "type": "text",
+       "text": "369 个仓库 · 四个最能打",
+       "x": 145,
+       "y": 1290,
+       "size": 64,
+       "color": "#26221E",
+       "visual": "t01",
+       "weight": 0.2,
+       "from_beat": "b_frame"
+      }
+     ]
+    }
+   ],
+   "overlays": [
+    {
+     "recipe": "callout",
+     "params": {
+      "text": "猜一猜：是哪四个？",
+      "tail": "bottom-left",
+      "size": 56,
+      "color": "#26221E",
+      "stroke": "#F08900"
+     },
+     "x": 240,
+     "y": 80,
+     "width": 600,
+     "height": 170,
+     "at": "beat:b_frame",
+     "seconds": 3.6,
+     "space": "board"
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_lemo",
+     "text": "第一个 lemo-opuscar，8300 多星。59 套给 Claude 深度调优的代码风格，代表作 OPUSCAR 98，一支六分半的样片塞进 98 种视觉风格，全程不碰视频模型。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_lemo",
+     "lead": 0.2,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "text",
+       "text": "lemo-opuscar",
+       "x": 90,
+       "y": 110,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t02",
+       "weight": 0.2
+      },
+      {
+       "type": "illustration",
+       "source": "inputs/images/v02.png",
+       "x": 230,
+       "y": 200,
+       "width": 620,
+       "visual": "v02",
+       "drawing_plan_id": "v02",
+       "parts": [
+        {
+         "id": "wall",
+         "polygon": [
+          [
+           0.0154,
+           0.1865
+          ],
+          [
+           0.9846,
+           0.1865
+          ],
+          [
+           0.9846,
+           0.9868
+          ],
+          [
+           0.0154,
+           0.9868
+          ]
+         ]
+        },
+        {
+         "id": "arrow",
+         "polygon": [
+          [
+           0.4896,
+           0.03
+          ],
+          [
+           0.8815,
+           0.03
+          ],
+          [
+           0.8815,
+           0.5716
+          ],
+          [
+           0.4896,
+           0.5716
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        55,
+        115,
+        1025,
+        946
+       ],
+       "height": 531,
+       "weight": 16
+      },
+      {
+       "type": "text",
+       "text": "OPUSCAR 98",
+       "x": 620,
+       "y": 930,
+       "size": 56,
+       "color": "#26221E",
+       "visual": "t02",
+       "weight": 1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_art",
+     "text": "第二个 huashu-art-motion，花叔出品，5400 星。36 种艺术风格配 9 种解说语法，马里奥关卡 65 秒复原，连配乐都是代码合成的。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_art",
+     "lead": 0,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "text",
+       "text": "huashu-art-motion",
+       "x": 90,
+       "y": 110,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t03",
+       "weight": 2.0
+      },
+      {
+       "type": "illustration",
+       "source": "inputs/images/v04.png",
+       "x": 160,
+       "y": 190,
+       "width": 680,
+       "visual": "v04",
+       "drawing_plan_id": "v04",
+       "parts": [
+        {
+         "id": "palette",
+         "polygon": [
+          [
+           0,
+           0
+          ],
+          [
+           0.9415,
+           0
+          ],
+          [
+           0.9415,
+           0.4931
+          ],
+          [
+           0,
+           0.4931
+          ]
+         ]
+        },
+        {
+         "id": "card",
+         "polygon": [
+          [
+           0.2401,
+           0.5777
+          ],
+          [
+           0.9962,
+           0.5777
+          ],
+          [
+           0.9962,
+           1
+          ],
+          [
+           0.2401,
+           1
+          ]
+         ]
+        },
+        {
+         "id": "arrow",
+         "polygon": [
+          [
+           0.6431,
+           0.4532
+          ],
+          [
+           0.8918,
+           0.4532
+          ],
+          [
+           0.8918,
+           0.6244
+          ],
+          [
+           0.6431,
+           0.6244
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        53,
+        203,
+        857,
+        1079
+       ],
+       "height": 741,
+       "weight": 28
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_motion",
+     "text": "第三个 huashu-motion，1700 星，路线完全不同：像写简谱一样，用 ABC 记谱描述动画，直接合成成片。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_motion",
+     "lead": 0,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "text",
+       "text": "huashu-motion",
+       "x": 90,
+       "y": 110,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t04",
+       "weight": 0.2
+      },
+      {
+       "type": "illustration",
+       "source": "inputs/images/v06.png",
+       "x": 200,
+       "y": 190,
+       "width": 640,
+       "visual": "v06",
+       "drawing_plan_id": "v06",
+       "parts": [
+        {
+         "id": "staff",
+         "polygon": [
+          [
+           0.0153,
+           0.0495
+          ],
+          [
+           0.9661,
+           0.0495
+          ],
+          [
+           0.9661,
+           0.292
+          ],
+          [
+           0.0153,
+           0.292
+          ]
+         ]
+        },
+        {
+         "id": "arrow",
+         "polygon": [
+          [
+           0.6273,
+           0
+          ],
+          [
+           1,
+           0
+          ],
+          [
+           1,
+           0.6644
+          ],
+          [
+           0.6273,
+           0.6644
+          ]
+         ]
+        },
+        {
+         "id": "frame",
+         "polygon": [
+          [
+           0.2339,
+           0.616
+          ],
+          [
+           0.7913,
+           0.616
+          ],
+          [
+           0.7913,
+           0.9942
+          ],
+          [
+           0.2339,
+           0.9942
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        86,
+        505,
+        1001,
+        1536
+       ],
+       "height": 721,
+       "drawing": {
+        "speed": 1.8
+       },
+       "weight": 12
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_sweety",
+     "text": "第四个，你现在看到的这条手绘视频，就是 sweety-handdraw-video 做的，900 星，开源可复刻。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_sweety",
+     "lead": 0,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "text",
+       "text": "sweety-handdraw-video",
+       "x": 330,
+       "y": 970,
+       "size": 64,
+       "color": "#26221E",
+       "visual": "t05",
+       "weight": 0.2
+      },
+      {
+       "type": "illustration",
+       "source": "inputs/images/v07.png",
+       "x": 180,
+       "y": 110,
+       "width": 720,
+       "visual": "v07",
+       "drawing_plan_id": "v07",
+       "parts": [
+        {
+         "id": "head",
+         "polygon": [
+          [
+           0.2058,
+           0.1221
+          ],
+          [
+           0.5248,
+           0.1221
+          ],
+          [
+           0.5248,
+           0.4803
+          ],
+          [
+           0.2058,
+           0.4803
+          ]
+         ]
+        },
+        {
+         "id": "torso",
+         "polygon": [
+          [
+           0.2222,
+           0.4864
+          ],
+          [
+           0.5083,
+           0.4864
+          ],
+          [
+           0.5083,
+           0.7334
+          ],
+          [
+           0.2222,
+           0.7334
+          ]
+         ]
+        },
+        {
+         "id": "left_arm",
+         "polygon": [
+          [
+           0.0517,
+           0.4122
+          ],
+          [
+           0.2497,
+           0.4122
+          ],
+          [
+           0.2497,
+           0.5853
+          ],
+          [
+           0.0517,
+           0.5853
+          ]
+         ]
+        },
+        {
+         "id": "right_arm",
+         "polygon": [
+          [
+           0.4752,
+           0.3999
+          ],
+          [
+           0.6733,
+           0.3999
+          ],
+          [
+           0.6733,
+           0.5727
+          ],
+          [
+           0.4752,
+           0.5727
+          ]
+         ]
+        },
+        {
+         "id": "lower_body",
+         "polygon": [
+          [
+           0.2772,
+           0.7085
+          ],
+          [
+           0.4587,
+           0.7085
+          ],
+          [
+           0.4587,
+           0.8939
+          ],
+          [
+           0.2772,
+           0.8939
+          ]
+         ]
+        },
+        {
+         "id": "pen",
+         "polygon": [
+          [
+           0.6457,
+           0.3568
+          ],
+          [
+           0.8273,
+           0.3568
+          ],
+          [
+           0.8273,
+           0.5853
+          ],
+          [
+           0.6457,
+           0.5853
+          ]
+         ]
+        },
+        {
+         "id": "portrait",
+         "polygon": [
+          [
+           0.5853,
+           0.5357
+          ],
+          [
+           0.9813,
+           0.5357
+          ],
+          [
+           0.9813,
+           0.9925
+          ],
+          [
+           0.5853,
+           0.9925
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        58,
+        556,
+        967,
+        1366
+       ],
+       "height": 642,
+       "weight": 16,
+       "drawing": {
+        "speed": 2.0
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_select",
+     "text": "怎么选？要现成风格，上 lemo；要讲解语法，花叔艺术流；要记谱合成，huashu-motion；要手绘口播，sweety。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_select",
+     "lead": 0.2,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "illustration",
+       "source": "inputs/images/v08.png",
+       "x": 220,
+       "y": 330,
+       "width": 640,
+       "visual": "v08",
+       "drawing_plan_id": "v08",
+       "parts": [
+        {
+         "id": "table",
+         "polygon": [
+          [
+           0.0107,
+           0.0134
+          ],
+          [
+           0.9861,
+           0.0134
+          ],
+          [
+           0.9861,
+           0.9865
+          ],
+          [
+           0.0107,
+           0.9865
+          ]
+         ],
+         "exclude_boxes": [
+          [
+           0.1117,
+           0.064,
+           0.305,
+           0.926
+          ],
+          [
+           0.4296,
+           0.1311,
+           0.7175,
+           0.88
+          ]
+         ]
+        },
+        {
+         "id": "icons",
+         "polygon": [
+          [
+           0.1117,
+           0.0752
+          ],
+          [
+           0.305,
+           0.0752
+          ],
+          [
+           0.305,
+           0.926
+          ],
+          [
+           0.1117,
+           0.926
+          ]
+         ]
+        },
+        {
+         "id": "arrow",
+         "polygon": [
+          [
+           0.4351,
+           0.1367
+          ],
+          [
+           0.7122,
+           0.1367
+          ],
+          [
+           0.7122,
+           0.8744
+          ],
+          [
+           0.4351,
+           0.8744
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        76,
+        474,
+        1007,
+        1366
+       ],
+       "height": 613,
+       "drawing": {
+        "speed": 2.5
+       },
+       "weight": 24
+      },
+      {
+       "type": "text",
+       "text": "sweety",
+       "x": 660,
+       "y": 812,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t06",
+       "weight": 0.2
+      },
+      {
+       "type": "text",
+       "text": "motion",
+       "x": 660,
+       "y": 676,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t06",
+       "weight": 0.2
+      },
+      {
+       "type": "text",
+       "text": "花叔",
+       "x": 660,
+       "y": 564,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t06",
+       "weight": 0.2
+      },
+      {
+       "type": "text",
+       "text": "lemo",
+       "x": 660,
+       "y": 445,
+       "size": 72,
+       "color": "#26221E",
+       "visual": "t06",
+       "weight": 0.2
+      }
+     ]
+    }
+   ],
+   "overlays": [
+    {
+     "recipe": "callout",
+     "params": {
+      "text": "暂停想想：你要哪种？",
+      "tail": "bottom-left",
+      "size": 56,
+      "color": "#26221E",
+      "stroke": "#F08900"
+     },
+     "x": 580,
+     "y": 70,
+     "width": 440,
+     "height": 200,
+     "at": "beat:b_select",
+     "seconds": 4.0,
+     "space": "board"
+    }
+   ]
+  },
+  {
+   "beats": [
+    {
+     "id": "b_cta",
+     "text": "369 个仓库完整清单，评论区自取。"
+    }
+   ],
+   "visual_groups": [
+    {
+     "start_beat": "b_cta",
+     "lead": 0,
+     "hold": 0.45,
+     "actions": [
+      {
+       "type": "illustration",
+       "source": "inputs/images/v10.png",
+       "x": 330,
+       "y": 420,
+       "width": 420,
+       "visual": "v10",
+       "drawing_plan_id": "v10",
+       "parts": [
+        {
+         "id": "sheet",
+         "polygon": [
+          [
+           0.0323,
+           0.0546
+          ],
+          [
+           0.8064,
+           0.0546
+          ],
+          [
+           0.8064,
+           0.8181
+          ],
+          [
+           0.0323,
+           0.8181
+          ]
+         ]
+        },
+        {
+         "id": "clip",
+         "polygon": [
+          [
+           0.7742,
+           0.5636
+          ],
+          [
+           0.9839,
+           0.5636
+          ],
+          [
+           0.9839,
+           0.9637
+          ],
+          [
+           0.7742,
+           0.9637
+          ]
+         ]
+        }
+       ],
+       "crop": [
+        300,
+        900,
+        920,
+        1450
+       ],
+       "height": 372,
+       "weight": 100,
+       "drawing": {
+        "speed": 1.8
+       }
+      },
+      {
+       "type": "counter",
+       "from": 0,
+       "to": 369,
+       "suffix": " 个仓库",
+       "x": 440,
+       "y": 800,
+       "size": 120,
+       "decimals": 0,
+       "color": "#26221E",
+       "visual": "t07",
+       "weight": 0.2
+      }
+     ]
+    }
+   ],
+   "overlays": [
+    {
+     "recipe": "callout",
+     "params": {
+      "text": "评论区扣 369",
+      "tail": "bottom-left",
+      "size": 56,
+      "color": "#26221E",
+      "stroke": "#F08900"
+     },
+     "x": 290,
+     "y": 80,
+     "width": 500,
+     "height": 160,
+     "at": "beat:b_cta",
+     "seconds": 2.4,
+     "space": "board"
+    }
+   ]
+  }
+ ],
+ "drawing": {
+  "mode": "draw"
+ },
+ "drawing_plan": "design/drawing-plan.json",
+ "drawing_review": "design/drawing-review.json",
+ "watermark": {
+  "text": "本机实跑",
+  "opacity": 0.24,
+  "font": {
+   "path": "C:/Windows/Fonts/msyh.ttc",
+   "index": 0
+  }
+ }
+}

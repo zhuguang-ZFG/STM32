@@ -1,0 +1,32 @@
+{
+  "ep": "c7-ub",
+  "source": "code/c/07-ub-misra/probe.sh",
+  "evidence": {
+    "-2147483648": "probe 日志 L56：mvn r3, #-2147483648（-fwrapv 版用它造出 INT_MAX 再比较）",
+    "0": "probe 日志 L11/L18：-O2 与 -fwrapv 下 shift_oob(1u, 33u) = 0；L85/L93：$0（xorl %edx,%edx）；L4/L10/L17 的 1、1、0 三档对照",
+    "0x3F800000": "probe 日志 L6/L7/L12/L13/L19/L20：bits_union(1.0f) 与 bits_memcpy(1.0f) 三档均为 0x3F800000",
+    "1": "probe 日志 L4/L10：is_bigger_after_inc(INT_MAX) = 1；L68 movl $1, %eax；L52 movs r0, #1；L6 的 1.0f",
+    "1.0": "probe 日志 L6/L7：bits_union(1.0f) 与 bits_memcpy(1.0f) 的输入常量",
+    "1065353216": "probe 日志 L95/L98：movl $1065353216, %edx；L85 注释说明它等于 0x3F800000",
+    "12": "probe 日志 L41：note: while referencing 'table'，oob-static.c:8:12；L38 的 12:10 列号",
+    "13": "probe 日志 L26/L27/L39：alias-violate.c:13:13 的警告位置与源码行号",
+    "14": "probe 日志 L31：oob-static.c:19:14（'x' is used uninitialized）",
+    "15.2.1": "probe 日志 L49：交叉工具链：15.2.1",
+    "16": "probe 日志 L67/L75：movl %ecx, 16(%rbp)；L78：movl 16(%rbp), %edx",
+    "16.1.0": "probe 日志 L2：宿主工具链：gcc 16.1.0",
+    "18": "probe 日志 L34/L35：note: 'x' was declared here，oob-static.c:18:9",
+    "19": "probe 日志 L31/L32：oob-static.c:19:14 与源码第 19 行 return x + 1",
+    "2": "probe 日志 L5：-O0 下 shift_oob(1u, 33u) = 2；L8/L14/L21：每组 2/2 断言通过；L101/L102 movl $2",
+    "33": "probe 日志 L5/L11/L17：shift_oob(1u, 33u)；L71 注释『33 被移位器截成 1 → 结果 2』",
+    "4": "probe 日志 L38：array bounds of 'int[4]'；L45 第 4 步 UBSan（本次跳过）",
+    "7": "probe 日志 L38：array subscript 7 is above array bounds of 'int[4]'",
+    "8": "probe 日志 L41：note: while referencing 'table'，oob-static.c:8:12",
+    "9": "probe 日志 L34：note: 'x' was declared here，18:9 的行列号",
+    "10": "probe 日志 L38：oob-static.c:12:10 的列号（常量下标越界警告位置）"
+  },
+  "exceptions": {
+    "07": "复现路径 code/c/07-ub-misra 的章节号，不是测量值",
+    "31": "32 位移位器只取计数低 5 位（x86 sall / ARM lsl 的指令语义），等价于 & 31；日志只打印『33 被截成 1』，没有打印 31",
+    "32": "32 位操作数的位宽，也是移位计数的合法上限；属于语言与指令集常量，不是 probe 读数"
+  }
+}

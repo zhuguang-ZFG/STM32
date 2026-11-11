@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>御舆金句卡批 7 ×16</title>
+<style>
+:root {
+  --paper: #f7f8fa;
+  --ink: #16213a;
+  --muted: #6b7280;
+  --accent: #3451b2;   /* 站点动画主色 */
+  --ok: #3eaf7c;       /* 站点强调绿 */
+  --warn: #d97706;     /* 站点警示橙 */
+  --rule: #d5d9e0;
+  --mono: "JetBrains Mono", Consolas, "Microsoft YaHei", monospace;
+  --disp: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8eaee; font-family: var(--disp); padding:40px; display:flex; flex-direction:column; gap:40px; align-items:center; }
+
+.poster { width:750px; height:1000px; background:var(--paper); position:relative;
+  padding:72px 64px 56px; display:flex; flex-direction:column;
+  box-shadow:0 8px 30px rgba(22,33,58,.14); }
+.poster .corner { position:absolute; width:18px; height:18px; }
+.poster .corner::before, .poster .corner::after { content:""; position:absolute; background:var(--ink); }
+.poster .corner::before { width:18px; height:1.5px; }
+.poster .corner::after { width:1.5px; height:18px; }
+.c-tl { top:28px; left:28px; } .c-tr { top:28px; right:28px; transform:scaleX(-1); }
+.c-bl { bottom:28px; left:28px; transform:scaleY(-1); } .c-br { bottom:28px; right:28px; transform:scale(-1); }
+
+.kicker { font-family:var(--mono); font-size:15px; letter-spacing:.14em; color:var(--accent); font-weight:700; }
+.kicker .no { color:var(--muted); }
+.hr { height:1.5px; background:var(--ink); margin:26px 0 0; }
+.hr.thin { height:1px; background:var(--rule); }
+
+.giant { font-size:56px; font-weight:900; line-height:1.16; letter-spacing:.01em; color:var(--ink); margin-top:44px; }
+.giant .em { color:var(--accent); }
+.giant.small { font-size:64px; }
+
+.quote { margin-top:40px; font-size:27px; line-height:1.72; color:var(--ink); font-weight:600; }
+.quote .hl { background:linear-gradient(transparent 62%, rgba(52,81,178,.22) 0); }
+
+.rows { margin-top:auto; }
+.row { display:flex; align-items:baseline; gap:18px; padding:17px 0; border-top:1px solid var(--rule); }
+.row:first-child { border-top:1.5px solid var(--ink); }
+.row .mark { font-family:var(--mono); font-weight:700; font-size:24px; width:36px; flex:none; }
+.row .mark.yes { color:var(--ok); } .row .mark.no { color:var(--warn); }
+.row .t { font-size:24px; font-weight:700; color:var(--ink); }
+.row .d { font-size:17px; color:var(--muted); margin-left:auto; font-weight:400; }
+
+.foot { margin-top:34px; display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--mono); font-size:14px; color:var(--muted); letter-spacing:.08em; }
+.foot .brand { color:var(--accent); font-weight:700; }
+
+/* B站 16:9 封面 */
+.cover16 { width:1280px; height:720px; background:var(--paper); position:relative; padding:64px 72px;
+  display:flex; flex-direction:column; box-shadow:0 8px 30px rgba(22,33,58,.14); }
+.cover16 .grid-bg { position:absolute; inset:0;
+  background-image:linear-gradient(rgba(52,81,178,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(52,81,178,.055) 1px, transparent 1px);
+  background-size:64px 64px; }
+.cover16 > * { position:relative; }
+.cv-top { display:flex; justify-content:space-between; font-family:var(--mono); font-size:16px; font-weight:700; letter-spacing:.14em; }
+.cv-top .l { color:var(--ink); } .cv-top .r { color:var(--accent); }
+.cv-title { font-size:96px; font-weight:900; line-height:1.12; color:var(--ink); margin-top:64px; letter-spacing:.01em; }
+.cv-title .em { color:var(--accent); }
+.cv-sub { margin-top:30px; display:flex; align-items:center; gap:20px; }
+.cv-sub .bar { width:56px; height:6px; background:var(--accent); flex:none; }
+.cv-sub .t { font-size:30px; font-weight:600; color:var(--ink); }
+.cv-foot { margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end; }
+.cv-foot .badges { display:flex; gap:12px; }
+.cv-foot .badge { font-family:var(--mono); font-size:15px; font-weight:700; color:var(--ink);
+  border:1.5px solid var(--ink); padding:8px 16px; letter-spacing:.06em; }
+.cv-foot .badge.solid { background:var(--accent); border-color:var(--accent); color:#fff; }
+.cv-foot .src { font-family:var(--mono); font-size:15px; color:var(--muted); letter-spacing:.06em; }
+</style>
+</head>
+<body style="padding:40px;display:flex;flex-direction:column;gap:40px;align-items:center;">
+  <div class="poster" id="card-s2-rcc">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· STM32 · S2</span></div>
+    <div class="hr"></div>
+    <div class="giant">先电压、再等待<br>后<span class="em">切钟</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">先</span><span class="t">先降总线</span><span class="d">再提主频</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">验</span><span class="t">写完 SW</span><span class="d">要看 SWS</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">倍</span><span class="t">APB 分频不是一</span><span class="d">定时器时钟自己乘二</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/stm32/02-rcc-clock</span></div>
+  </div>
+  <div class="poster" id="card-s4-nvic">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· STM32 · S4</span></div>
+    <div class="hr"></div>
+    <div class="giant">先 SYSCFG 选门<br>再 EXTI <span class="em">设沿</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">放</span><span class="t">后 NVIC 放行</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">清</span><span class="t">ISR 进门先清挂起</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">诀</span><span class="t">四层口诀</span><span class="d">中断永不丢</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/stm32/04-nvic-exti</span></div>
+  </div>
+  <div class="poster" id="card-s14-pwr">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· STM32 · S14</span></div>
+    <div class="hr"></div>
+    <div class="giant">Sleep 停脑<br>Stop 停钟（<span class="em">记忆在</span>）</div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">深</span><span class="t">Standby 断电</span><span class="d">只留遗言</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">配</span><span class="t">唤醒源</span><span class="d">睡前配</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">查</span><span class="t">醒来</span><span class="d">先查钟</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/stm32/14-pwr</span></div>
+  </div>
+  <div class="poster" id="card-p3-idf">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· ESP32 · P3</span></div>
+    <div class="hr"></div>
+    <div class="giant">组件<span class="em">自报家门</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">声</span><span class="t">SRCS / INCLUDE_DIRS / REQUIRES</span><span class="d">自报三项</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">变</span><span class="t">Kconfig 三段变身</span><span class="d">菜单→sdkconfig→sdkconfig.h</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">令</span><span class="t">idf.py</span><span class="d">只当司令不搬砖</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/esp32/03-idf-anatomy</span></div>
+  </div>
+  <div class="poster" id="card-p8-wifi">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· ESP32 · P8</span></div>
+    <div class="hr"></div>
+    <div class="giant">Wi-Fi 是<span class="em">状态机</span><br>事件循环是播报员</div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">联</span><span class="t">GOT_IP</span><span class="d">才算联网</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">备</span><span class="t">DISCONNECTED</span><span class="d">必须安排后路</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/esp32/08-wifi</span></div>
+  </div>
+  <div class="poster" id="card-p10-flash">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· ESP32 · P10</span></div>
+    <div class="hr"></div>
+    <div class="giant">分区表是<span class="em">地产证</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">存</span><span class="t">NVS</span><span class="d">带掉电保护的抽屉</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">升</span><span class="t">OTA</span><span class="d">双槽轮流坐庄</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">保</span><span class="t">新固件不自证清白</span><span class="d">旧槽随时复位</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/esp32/10-flash-nvs-ota</span></div>
+  </div>
+  <div class="poster" id="card-f2-switch">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· FreeRTOS · F2</span></div>
+    <div class="hr"></div>
+    <div class="giant">PendSV <span class="em">最后上场</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">存</span><span class="t">r4-r11 手工进栈</span><span class="d">栈顶藏进 TCB</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">换</span><span class="t">换个指针换个魂</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">新</span><span class="t">异常返回</span><span class="d">新人生</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/rtos/freertos/02-context-switch</span></div>
+  </div>
+  <div class="poster" id="card-f5-sem">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· FreeRTOS · F5</span></div>
+    <div class="hr"></div>
+    <div class="giant">同步二值 · 资源计数<br>保护互斥 · <span class="em">嵌套递归</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">钥</span><span class="t">互斥锁出生带钥匙</span><span class="d">被等就继承 · 还锁即回落</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">裸</span><span class="t">二值信号量没有继承</span><span class="d">拿它护数据等于裸奔</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/rtos/freertos/05-sem-mutex</span></div>
+  </div>
+  <div class="poster" id="card-f6-notify">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· FreeRTOS · F6</span></div>
+    <div class="hr"></div>
+    <div class="giant">通知写 TCB<br><span class="em">一步到位</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">栏</span><span class="t">事件组</span><span class="d">位公告栏</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">守</span><span class="t">软定时器</span><span class="d">住守护任务 · 回调里只办事不等待</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">清</span><span class="t">清位</span><span class="d">是汇总清，不是先醒者独占</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/rtos/freertos/06-notify-event-timer</span></div>
+  </div>
+  <div class="poster" id="card-r2-ipc">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· RT-Thread · R2</span></div>
+    <div class="hr"></div>
+    <div class="giant">一副骨架<span class="em">五张皮</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">五</span><span class="t">令牌 · 带主令牌 · 旗语</span><span class="d">定长池 · 变长队</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">排</span><span class="t">排队要么 FIFO 要么 PRIO</span><span class="d">创建时一锤定音</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/rtos/rtthread/02-ipc</span></div>
+  </div>
+  <div class="poster" id="card-r4-device">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· RT-Thread · R4</span></div>
+    <div class="hr"></div>
+    <div class="giant">驱动填表（ops）<br>应用<span class="em">喊名</span>（find）</div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">换</span><span class="t">换板只换表</span><span class="d">应用纹丝不动</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">价</span><span class="t">解耦的代价是一张表</span><span class="d">回报是整个生态</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/rtos/rtthread/04-device</span></div>
+  </div>
+  <div class="poster" id="card-g1-rcu">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· GD32 · G1</span></div>
+    <div class="hr"></div>
+    <div class="giant">先电压三件套<br>再 FMC 等待、<span class="em">后切钟</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">验</span><span class="t">写完 SCS</span><span class="d">看 SCSS</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">量</span><span class="t">CK_OUT0 一量</span><span class="d">自欺现形</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/gd32/01-rcu-clock</span></div>
+  </div>
+  <div class="poster" id="card-b3-linker">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· 构建篇 · B3</span></div>
+    <div class="hr"></div>
+    <div class="giant">链接脚本不产代码<br>产三份<span class="em">地址契约</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">圈</span><span class="t">MEMORY</span><span class="d">圈地</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">房</span><span class="t">SECTIONS</span><span class="d">分房</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">牌</span><span class="t">符号</span><span class="d">留门牌</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/build/03-linker-script</span></div>
+  </div>
+  <div class="poster" id="card-b4-startup">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· 构建篇 · B4</span></div>
+    <div class="hr"></div>
+    <div class="giant">上电两读定生死<br>开门搬家再<span class="em">清零</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">进</span><span class="t">bl 一声进 main</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">栈</span><span class="t">向量表头不是代码</span><span class="d">是栈顶</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">口</span><span class="t">第二条</span><span class="d">才是入口</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/build/04-startup</span></div>
+  </div>
+  <div class="poster" id="card-b5-map">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· 构建篇 · B5</span></div>
+    <div class="hr"></div>
+    <div class="giant">Flash=text+data<br>RAM=<span class="em">data+bss</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">审</span><span class="t">优化先审账</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">排</span><span class="t">nm</span><span class="d">按大小排队</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">户</span><span class="t">map</span><span class="d">查户口本</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/build/05-map-size</span></div>
+  </div>
+  <div class="poster" id="card-c7-ub">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="kicker">御舆 <span class="no">· C 语言精髓 · C7</span></div>
+    <div class="hr"></div>
+    <div class="giant">UB <span class="em">三兄弟</span></div>
+    <div class="rows">
+      <div class="row"><span class="mark" style="color:var(--accent)">一</span><span class="t">溢出</span><span class="d">今天跑通不等于明天安全</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">二</span><span class="t">移位</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">三</span><span class="t">别名</span></div>
+      <div class="row"><span class="mark" style="color:var(--accent)">规</span><span class="t">加括号不丢人</span><span class="d">显式转换不寒碜</span></div>
+    </div>
+    <div class="foot"><span class="brand">一句话记住</span><span>docs/c/07-ub-misra</span></div>
+  </div>
+</body>
+</html>

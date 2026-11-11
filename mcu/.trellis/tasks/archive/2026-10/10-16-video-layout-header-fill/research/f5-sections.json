@@ -1,0 +1,17 @@
+{
+  "bilibili": [
+    { "at": "hook-01", "title": "先说结论" },
+    { "at": "code-01", "title": "宏的真身在哪" },
+    { "at": "card-02", "title": "一份结构体，五个名字" },
+    { "at": "hook-02", "title": "内核凭什么知道" },
+    { "at": "anim-02", "title": "三条泳道，一个反转" },
+    { "at": "punch-01", "title": "那 3500 拍谁执行" }
+  ],
+  "douyin": [
+    { "at": "hook-01", "title": "先说结论" },
+    { "at": "code-02", "title": "宏的真身在哪" },
+    { "at": "code-11", "title": "内核凭什么知道" },
+    { "at": "sim-binary", "title": "同一份剧本，两个数" },
+    { "at": "punch-01", "title": "那 3500 拍谁执行" }
+  ]
+}

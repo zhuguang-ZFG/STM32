@@ -1,0 +1,14 @@
+{
+  "source": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\audio\\music-curious-seed0.wav",
+  "source_sha256": "0c2adb6b6197f45629130e494bc2c6b09159eb58b467c639449337e25388662e",
+  "bed": "D:\\Users\\mcu\\video\\jobs\\ai4fw\\work\\music-bed.wav",
+  "bed_sha256": "8e72ff77565e35b5db731e9f16b0957cf438f56d95d5c5e59aed3c833f657ece",
+  "duration_seconds": 64.09,
+  "crossfade_seconds": 4.0,
+  "loop_method": "pcm_linear_crossfade",
+  "fade_in_seconds": 1.2,
+  "fade_out_seconds": 3.0,
+  "duck": true,
+  "dips": [],
+  "filter": "[0:a]atrim=end_sample=3076320,asetpts=PTS-STARTPTS,afade=t=in:d=1.2,afade=t=out:st=61.090:d=3[bed];[bed]apad=pad_dur=1[padded];[1:a]apad=pad_dur=1[sidechain];[padded][sidechain]sidechaincompress=threshold=0.05:ratio=3:attack=25:release=350:makeup=1:link=average,atrim=end_sample=3076320[ducked]"
+}

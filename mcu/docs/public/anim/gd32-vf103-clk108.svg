@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>GD32VF103 108MHz：殊途同归的 4MHz 家族</title>
+  <desc>五阶段动画：GD32VF103 的 108MHz 是 4MHz × 27，而三种时钟源殊途同归都到 4MHz。① 4MHz 家族：system_gd32vf103.c 顶部一排预设档——24/36/48/56/72/96/108 七个 HXTAL 档（乘数 ×6/×9/×12/×14/×18/×24/×27）加 IRC8M 三档，全部作用在 4MHz 的 PLL 输入上；选档 = 改一行宏重编译，是编译期开关不是运行时 API。② 8M 直路：8MHz 晶振 ÷ PREDV0_DIV2 = 4MHz——8M 是 2 的倍数、4 也是，整除链天然成立；8M 分支顺手配了 PLL1/PLL2_MUL20 却没使能，"配而不用"不等于有用。③ IRC8M：PLLSEL 选 IRC8M_DIV2，硬件固定 ÷2 = 4MHz；启动超时分档——IRC8M 0x0500、HXTAL 0xFFFF，片内 RC 起得快、晶振起得慢；注意 0x04 陷阱：VF103 的 RCU+0x04 是 CFG0 不是 PLL（F4xx 才是 PLL 寄存器），照搬 G1 的写法第一笔就写错地方。④ 25M 绕圈：PREDV0 只能整数分频 1~16，25 是 5 的倍数而 4 不是，任何整数分频都得不出 4MHz——官方借 PLL1 当频率整形器：25M ÷ PREDV1_DIV5 = 5M，× PLL1_MUL8 = 40M，÷ PREDV0_DIV10 = 4M，再 ×27 = 108M；PREDV0SEL（CFG1 bit16）选 CKPLL1 中转。⑤ 五步落位：等源稳 → 配分频/倍频 → 等 PLL 锁 → 切 SCS → 回读对账；官方代码 PLLSTB 与 SCSS 两处裸轮询无超时，晶振不起就死等，教学工程要加超时回退 IRC8M；账本不如 SCSS——SystemCoreClock 变量要代入 CFG0/CFG1 的回读公式手算对账。图中两颗频率珠持续沿 8M 直路与 25M 绕圈路流动到 108M，表示频率在链上被整形。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">GD32VF103 108MHz：殊途同归的 4MHz 家族</text>
+  <text x="24" y="50" font-size="12" fill="#666">8M 晶振 ÷2 · IRC8M 硬件 ÷2 · 25M 绕 PLL1 两圈——都到 4MHz，再 ×27 = 108M</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- 链 A：8M HXTAL 直路 -->
+  <rect x="40" y="62" width="104" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="38" y="60" width="108" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="92" y="82" font-size="12.5" font-weight="bold" fill="#333" text-anchor="middle">8M HXTAL</text>
+  <text x="92" y="98" font-size="11" fill="#666" text-anchor="middle">V_EVAL 板</text>
+  <line x1="144" y1="85" x2="192" y2="85" stroke="#666" marker-end="url(#arr)"/>
+  <text x="168" y="76" font-size="11" fill="#666" text-anchor="middle">PREDV0 ÷2</text>
+  <rect x="196" y="62" width="64" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="194" y="60" width="68" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="228" y="90" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">4M</text>
+
+  <!-- 链 B：IRC8M -->
+  <rect x="40" y="126" width="104" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="38" y="124" width="108" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="92" y="146" font-size="12.5" font-weight="bold" fill="#333" text-anchor="middle">IRC8M</text>
+  <text x="92" y="162" font-size="11" fill="#666" text-anchor="middle">片内 RC</text>
+  <line x1="144" y1="149" x2="192" y2="149" stroke="#666" marker-end="url(#arr)"/>
+  <text x="168" y="140" font-size="11" fill="#666" text-anchor="middle">÷2 硬件固定</text>
+  <rect x="196" y="126" width="64" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="194" y="124" width="68" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="228" y="154" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">4M</text>
+
+  <!-- 链 C：25M 绕 PLL1 两圈 -->
+  <rect x="40" y="190" width="104" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="38" y="188" width="108" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="92" y="210" font-size="12.5" font-weight="bold" fill="#333" text-anchor="middle">25M HXTAL</text>
+  <text x="92" y="226" font-size="11" fill="#666" text-anchor="middle">R_START 板</text>
+  <line x1="144" y1="213" x2="192" y2="213" stroke="#666" marker-end="url(#arr)"/>
+  <text x="168" y="204" font-size="11" fill="#666" text-anchor="middle">PREDV1 ÷5</text>
+  <rect x="196" y="190" width="64" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="228" y="218" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">5M</text>
+  <line x1="260" y1="213" x2="308" y2="213" stroke="#666" marker-end="url(#arr)"/>
+  <text x="284" y="204" font-size="11" fill="#666" text-anchor="middle">PLL1 ×8</text>
+  <rect x="312" y="190" width="64" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="310" y="188" width="68" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="344" y="218" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">40M</text>
+  <line x1="376" y1="213" x2="424" y2="213" stroke="#666" marker-end="url(#arr)"/>
+  <text x="400" y="204" font-size="11" fill="#666" text-anchor="middle">PREDV0 ÷10</text>
+  <rect x="428" y="190" width="64" height="46" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="426" y="188" width="68" height="50" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="460" y="218" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">4M</text>
+
+  <!-- 汇合塔与输出 -->
+  <line x1="260" y1="85" x2="524" y2="85" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="260" y1="149" x2="524" y2="149" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="492" y1="213" x2="524" y2="213" stroke="#666" marker-end="url(#arr)"/>
+  <rect x="530" y="62" width="96" height="174" rx="10" fill="#dbe7ff" stroke="#3451b2"/>
+  <rect x="527" y="59" width="102" height="180" rx="12" fill="none" stroke="#3451b2" stroke-width="3" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="578" y="112" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">PLLMF</text>
+  <text x="578" y="142" font-size="20" font-weight="bold" fill="#3451b2" text-anchor="middle">×27</text>
+  <text x="578" y="170" font-size="11" fill="#666" text-anchor="middle">CK_PLL 直出</text>
+  <text x="578" y="188" font-size="11" fill="#666" text-anchor="middle">无 VCO 概念</text>
+  <text x="578" y="206" font-size="11" fill="#666" text-anchor="middle">（F1 血统两步走）</text>
+  <line x1="626" y1="149" x2="642" y2="149" stroke="#666" marker-end="url(#arr)"/>
+  <rect x="648" y="110" width="56" height="78" rx="8" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="676" y="138" font-size="14" font-weight="bold" fill="#1a7f56" text-anchor="middle">108M</text>
+  <text x="676" y="156" font-size="11" fill="#666" text-anchor="middle">CK_SYS</text>
+  <text x="676" y="172" font-size="11" fill="#666" text-anchor="middle">AHB /1</text>
+  <text x="676" y="186" font-size="11" fill="#666" text-anchor="middle">APB1 /2</text>
+
+  <!-- 频率珠：沿 8M 直路与 25M 绕圈路流动 -->
+  <circle cx="144" cy="85" r="4.5" fill="#3451b2">
+    <animateTransform attributeName="transform" type="translate" values="0 0;382 0;434 33;500 55" keyTimes="0;0.74;0.86;1" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="144" cy="213" r="4.5" fill="#3451b2">
+    <animateTransform attributeName="transform" type="translate" values="0 0;348 0;434 -37;500 -73" keyTimes="0;0.67;0.85;1" dur="5s" begin="-2.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 五步条 -->
+  <text x="48" y="256" font-size="11.5" font-weight="bold" fill="#666">108M 五步落位（HXTAL 版，system_gd32vf103.c:751-830）</text>
+  <g font-size="11.5" font-weight="bold" fill="#333" text-anchor="middle">
+    <rect x="48" y="262" width="104" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="100" y="283">① 等源稳</text>
+    <rect x="170" y="262" width="124" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="232" y="283">② 配分频/倍频</text>
+    <rect x="312" y="262" width="100" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="362" y="283">③ 等 PLL 锁</text>
+    <rect x="430" y="262" width="88" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="474" y="283">④ 切 SCS</text>
+    <rect x="536" y="262" width="124" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/><text x="598" y="283">⑤ 回读对账</text>
+  </g>
+  <rect x="44" y="258" width="620" height="42" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <line x1="152" y1="279" x2="166" y2="279" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="294" y1="279" x2="308" y2="279" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="412" y1="279" x2="426" y2="279" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="518" y1="279" x2="532" y2="279" stroke="#666" marker-end="url(#arr)"/>
+
+  <text x="48" y="316" font-size="11.5" fill="#dc2626">注意 0x04 陷阱：VF103 的 RCU+0x04 是 CFG0 不是 PLL——照搬 F4xx 的 RCU_PLL 写法第一笔就写错地方</text>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① 4MHz 家族：七档 HXTAL + IRC8M 三档，乘数全作用在 4MHz</text>
+    <text x="56" y="380" font-size="12" fill="#333">48M×12 · 72M×18 · 108M×27——选档 = 改一行宏重编译（编译期开关）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">F1 血统的 PLL 输入要"凑得整"，官方把每个合法分频链写成独立档位函数</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">② 8M 直路：8MHz ÷ PREDV0_DIV2 = 4MHz，再 ×27——最短的一条链</text>
+    <text x="56" y="380" font-size="12" fill="#333">8M 是 2 的倍数、4 也是——整除关系天然成立，直路就够</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">8M 分支顺手配了 PLL1/PLL2_MUL20 却没使能——"配而不用"不等于有用</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">③ IRC8M：PLLSEL 选 IRC8M_DIV2，硬件固定 ÷2 = 4MHz</text>
+    <text x="56" y="380" font-size="12" fill="#333">启动超时分档：IRC8M 0x0500 / HXTAL 0xFFFF——片内 RC 起得快、晶振起得慢</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">RCU 基址 0x40021000 跟 STM32F103 的 RCC 同址——名字跟 F4xx，门牌跟 F1</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">④ 25M 绕圈：PREDV0 整数分频凑不出 4M——借 PLL1 当频率整形器</text>
+    <text x="56" y="380" font-size="12" fill="#333">25 是 5 的倍数而 4 不是：25M ÷5 = 5M → PLL1 ×8 = 40M → ÷10 = 4M → ×27</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">PREDV0SEL（CFG1 bit16）选 CKPLL1 中转；抄错板宏 PREDV0_DIV2 = 337.5MHz 超频一倍</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">⑤ 五步落位：等源稳 → 配分频 → 等 PLL 锁 → 切 SCS → 回读对账</text>
+    <text x="56" y="380" font-size="12" fill="#333">PLLSTB/SCSS 两处裸轮询无超时——晶振不起就死等；教学工程要超时回退 IRC8M</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">账本不如 SCSS：SystemCoreClock 要代入 CFG0/CFG1 回读公式手算对账（含 ×6.5 特例）</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">① 4MHz 家族：七档 + IRC 三档，乘数全作用在 4M</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">② 8M 直路：÷2 得 4M，整除链天然成立</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ IRC8M：硬件固定 ÷2；0x04 是 CFG0 不是 PLL</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ 25M 绕圈：÷5 ×8 ÷10 借 PLL1 整形到 4M</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ 五步落位：等锁切钟回读对账，裸轮询无超时要防</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

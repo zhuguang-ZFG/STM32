@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>提示词解剖：上下文、约束、验收三段式</title>
+  <desc>提示词模式三段式解剖。1 弱提示：「点亮 PF6 的 LED」一句话，模型的问号最多——总线归属、电平极性、输出类型、顺序全替你做主，答案是一堆悬而未决的决定。2 三段式：上下文（芯片型号 + RM0090 章节号 + 霸道者板卡事实）约束（时钟先行、禁用 HAL、不许假定电平极性）验收（可编译 + 红灯亮 + 逐寄存器给出手册出处），决定权回到人手里。3 同一模型、同一任务，差的是提示词里的判据密度；对账三问（A2）就是验收段的日常形态。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <defs>
+    <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#24292f">提示词解剖：三段式把决定权还给你</text>
+
+  <!-- 弱提示侧 -->
+  <rect x="36" y="60" width="240" height="150" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="156" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#57606a">弱提示</text>
+  <rect x="60" y="100" width="192" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="156" y="120" text-anchor="middle" font-size="11" fill="#24292f">「点亮 PF6 上的 LED」</text>
+  <text x="156" y="150" text-anchor="middle" font-size="12" fill="#92400e">模型替你做主：</text>
+  <g font-size="11" fill="#92400e">
+    <text x="76" y="172">总线？</text>
+    <text x="126" y="172">极性？</text>
+    <text x="176" y="172">类型？</text>
+    <text x="226" y="172">顺序？</text>
+  </g>
+
+  <!-- 三段式侧 -->
+  <rect x="444" y="60" width="240" height="268" rx="12" fill="#ffffff" stroke="#333" stroke-width="2.2"/>
+  <text x="564" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#24292f">三段式</text>
+  <rect x="464" y="98" width="200" height="64" rx="8" fill="#eef2ff" stroke="#3451b2" stroke-width="1.6"/>
+  <text x="474" y="116" font-size="11" font-weight="bold" fill="#3451b2">上下文</text>
+  <text x="474" y="134" font-size="11" fill="#24292f">F407 · RM0090 §2.3/§7.3/§8.4</text>
+  <text x="474" y="150" font-size="11" fill="#24292f">霸道者 PF6 红灯共阳接 3.3V</text>
+  <rect x="464" y="170" width="200" height="64" rx="8" fill="#eef7f1" stroke="#1a7f56" stroke-width="1.6"/>
+  <text x="474" y="188" font-size="11" font-weight="bold" fill="#1a7f56">约束</text>
+  <text x="474" y="206" font-size="11" fill="#24292f">时钟先行 · 禁用 HAL</text>
+  <text x="474" y="222" font-size="11" fill="#24292f">不许假定电平极性</text>
+  <rect x="464" y="242" width="200" height="72" rx="8" fill="#fdf0d5" stroke="#d97706" stroke-width="1.6"/>
+  <text x="474" y="260" font-size="11" font-weight="bold" fill="#92400e">验收</text>
+  <text x="474" y="278" font-size="11" fill="#24292f">可编译 + 红灯亮</text>
+  <text x="474" y="294" font-size="11" fill="#24292f">逐寄存器列出手册出处</text>
+  <text x="474" y="308" font-size="11" fill="#57606a">= A2 对账三问的日常形态</text>
+
+  <!-- 中间模型盒 -->
+  <rect x="304" y="170" width="112" height="64" rx="10" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="360" y="196" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">同一模型</text>
+  <text x="360" y="214" text-anchor="middle" font-size="11" fill="#57606a">同一任务</text>
+
+  <!-- 箭头与产出 -->
+  <path d="M276 135 H298" stroke="#cbd5e1" stroke-width="2.2" marker-end="url(#ah3)"/>
+  <path d="M416 202 H438" stroke="#333" stroke-width="2.2" marker-end="url(#ah3)"/>
+  <path d="M360 234 V290" stroke="#cbd5e1" stroke-width="2.2" marker-end="url(#ah3)"/>
+  <text x="156" y="250" text-anchor="middle" font-size="12" fill="#cf222e">输出：七行代码埋四颗雷</text>
+  <text x="156" y="268" text-anchor="middle" font-size="11" fill="#57606a">（A2 逐位对账见分晓）</text>
+  <text x="564" y="352" text-anchor="middle" font-size="12" fill="#1a7f56">输出：三行，决定权在你</text>
+  <path d="M360 296 q-40 10 -120 22" fill="none" stroke="#cbd5e1" stroke-width="1.8" marker-end="url(#ah3)"/>
+  <path d="M360 296 q40 10 120 22" fill="none" stroke="#333" stroke-width="1.8" marker-end="url(#ah3)"/>
+
+  <!-- 底部纪律 -->
+  <rect x="120" y="386" width="480" height="34" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="360" y="408" text-anchor="middle" font-size="11" fill="#57606a">每轮回喂证据三元组（实测 / 手册 / 板卡）——提示词是合同，不是咒语</text>
+
+  <!-- 流动令牌：弱侧灰、强侧绿 -->
+  <circle r="5" fill="#94a3b8" cx="276" cy="135">
+    <animate attributeName="cx" values="276;298" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#3eaf7c" cx="416" cy="202">
+    <animate attributeName="cx" values="416;438" dur="4s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="4" fill="#d97706" cx="360" cy="234">
+    <animate attributeName="cy" values="234;290" dur="4s" begin="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

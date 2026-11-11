@@ -1,0 +1,876 @@
+{
+  "id": "f5-sem-mutex",
+  "title": "信号量与互斥量：五个名字，零个函数",
+  "badge": "F5",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "xSemaphoreTakeFromISR": "x semaphore take from I S R",
+    "xQueueCreateCountingSemaphore": "x queue create counting semaphore",
+    "xTaskPriorityDisinherit": "x task priority disinherit",
+    "xTaskPriorityInherit": "x task priority inherit",
+    "xQueueReceiveFromISR": "x queue receive from I S R",
+    "xSemaphoreCreateCounting": "x semaphore create counting",
+    "xSemaphoreCreateBinary": "x semaphore create binary",
+    "xSemaphoreCreateMutex": "x semaphore create mutex",
+    "xQueueGenericCreate": "x queue generic create",
+    "xQueueSemaphoreTake": "x queue semaphore take",
+    "xQueueGenericSend": "x queue generic send",
+    "xQueueCreateMutex": "x queue create mutex",
+    "queueQUEUE_IS_MUTEX": "queue Q U E U E is mutex",
+    "configUSE_TRACE_FACILITY": "config use trace facility",
+    "configMAX_PRIORITIES": "config max priorities",
+    "configUSE_MUTEXES": "config use mutexes",
+    "prvInitialiseNewQueue": "p r v initialise new queue",
+    "prvInitialiseMutex": "p r v initialise mutex",
+    "prvAddTaskToReadyList": "p r v add task to ready list",
+    "portRESET_READY_PRIORITY": "port reset ready priority",
+    "listSET_LIST_ITEM_VALUE": "list set list item value",
+    "listINSERT_END": "list insert end",
+    "uxRecursiveCallCount": "u x recursive call count",
+    "uxMessagesWaiting": "u x messages waiting",
+    "uxMutexesHeld": "u x mutexes held",
+    "uxBasePriority": "u x base priority",
+    "uxQueueType": "u x queue type",
+    "uxQueueLength": "u x queue length",
+    "uxMutexLength": "u x mutex length",
+    "uxMutexSize": "u x mutex size",
+    "uxItemSize": "u x item size",
+    "uxPriority": "u x priority",
+    "uxLength": "u x length",
+    "uxListRemove": "u x list remove",
+    "xStateListItem": "x state list item",
+    "xEventListItem": "x event list item",
+    "xItemValue": "x item value",
+    "xMutexHolder": "x mutex holder",
+    "pxMutexHolderTCB": "p x mutex holder T C B",
+    "pxMutexHolder": "p x mutex holder",
+    "pxCurrentTCB": "p x current T C B",
+    "pxNewQueue": "p x new queue",
+    "pxNewTCB": "p x new T C B",
+    "pvContainer": "p v container",
+    "pvPortMalloc": "p v port malloc",
+    "SemaphoreHandle_t": "semaphore handle type",
+    "QueueHandle_t": "queue handle type",
+    "StaticQueue_t": "static queue type",
+    "ListItem_t": "list item type",
+    "UBaseType_t": "U base type",
+    "Queue_t": "queue type",
+    "List_t": "list type",
+    "TCB_t": "T C B type",
+    "pcReadFrom": "p c read from",
+    "pcWriteTo": "p c write to",
+    "pcHead": "p c head",
+    "pcTail": "p c tail",
+    "semphr.h": "semphr dot h",
+    "queue.c": "queue dot c",
+    "tasks.c": "tasks dot c",
+    "main.c": "main dot c",
+    "list.h": "list dot h",
+    "sim_invert": "sim invert",
+    "probe.sh": "probe dot sh",
+    "is_mutex": "is mutex",
+    "sizeof": "size of",
+    "typedef": "type def",
+    "NULL": "null",
+    "gcc": "g c c",
+    "bss": "B S S",
+    "rsb": "R S B",
+    "strb": "S T R B",
+    "nm": "n m"
+  },
+  "cover": {
+    "variant": "vs",
+    "kicker": "通往单片机之路 · F5",
+    "line1": "五种名字",
+    "line2": "零个函数",
+    "vs": {
+      "left": "选型表：三样东西",
+      "right": "展开后：剩 0 个",
+      "labels": [
+        "CLAIM",
+        "MEASURED"
+      ]
+    },
+    "tag": "本机 probe · 宏与符号对账",
+    "siteNote": "寄存器级 · 日志逐行可查",
+    "proof": "!gcc -E：xSemaphore 字样剩 0 个\n!nm -u：五个 xQueue* 未定义引用\n!queue.c:65  uxQueueType 就是 pcHead\n!sizeof(Queue_t) = 80，载荷 0 字节",
+    "proofShort": "!展开后 xSemaphore 剩 0 个\n!符号表只剩五个 xQueue*\n!80 字节，载荷 0",
+    "num": "80 B",
+    "numNote": "sizeof(Queue_t)；载荷 1×0 = 0 字节",
+    "sizes": {
+      "bilibili": [
+        1920,
+        1200
+      ],
+      "douyin": [
+        1080,
+        1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "code-01",
+          "title": "五种名字"
+        },
+        {
+          "at": "anim-01",
+          "title": "形状与账"
+        },
+        {
+          "at": "code-09",
+          "title": "出生与身份"
+        },
+        {
+          "at": "code-15",
+          "title": "继承三步"
+        },
+        {
+          "at": "anim-02",
+          "title": "模型与收束"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "五个名字，零个函数",
+          "sub": "选型表列成三行，展开后只剩队列",
+          "codeLabel": "本机头文件原文：五条全是 #define",
+          "code": "semphr.h:167   xSemaphoreCreateBinary\nsemphr.h:735   xSemaphoreCreateMutex\nsemphr.h:1025  xSemaphoreCreateCounting\nsemphr.h:298   xSemaphoreTake\nsemphr.h:460   xSemaphoreGive\n\n五个名字，零个函数符号",
+          "narration": "选型表把二值、计数、互斥列成三行；我把头文件摊开，五个 xSemaphore 名字全是 #define。这一集只查一件事：它们最后落到哪。",
+          "emphasis": [
+            "xSemaphore"
+          ]
+        },
+        {
+          "id": "card-01",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "先把结论放桌上",
+          "title": "名字是宏，身体是队列",
+          "bullets": [
+            "gcc -E 展开文本里 xSemaphore 剩 0 个",
+            "nm -u 的未定义引用只有五个 xQueue*",
+            "反向扫 queue.o 与 tasks.o：定义 0 个"
+          ],
+          "narration": "结论先放这儿：名字是宏，身体是队列。预处理器展开后，xSemaphore 这个字样一个不剩；链接器看到的未定义引用，只剩五个队列入口；反过来扫内核自己，也没有一个 xSemaphore 函数。",
+          "emphasis": [
+            "xSemaphore"
+          ]
+        },
+        {
+          "id": "code-01",
+          "kind": "code",
+          "title": "五条宏，五个队列入口",
+          "codeLabel": "semphr.h 原文行号 + 展开落点",
+          "code": "semphr.h:167  xSemaphoreCreateBinary\n  → xQueueGenericCreate( 1, 0, 3 )\nsemphr.h:735  xSemaphoreCreateMutex\n  → xQueueCreateMutex( 1 )\nsemphr.h:1025 xSemaphoreCreateCounting\n  → xQueueCreateCountingSemaphore( max, init )\nsemphr.h:298  xSemaphoreTake\n  → xQueueSemaphoreTake\nsemphr.h:460  xSemaphoreGive\n  → xQueueGenericSend",
+          "narration": "五条宏，五个入口。创建三条各走各的队列函数；拿和还各走一个。参数也一起露出来了：二值那条长度一、每项零、标签三，互斥那条只带标签一。名字在这里还是名字，下一屏看展开。",
+          "emphasis": [
+            "xQueueGenericCreate"
+          ]
+        },
+        {
+          "id": "code-02",
+          "kind": "code",
+          "title": "展开一次，数一遍",
+          "codeLabel": "gcc -E 展开文本的计数",
+          "code": "xSemaphore 字样剩余            0\n\nxQueueGenericCreate            2 ≥ 1\nxQueueCreateMutex              2 ≥ 1\nxQueueCreateCountingSemaphore  2 ≥ 1\nxQueueSemaphoreTake            2 ≥ 1\nxQueueGenericSend              3 ≥ 1",
+          "narration": "看到 #define 只能算线索，展开文本才算落点。编译器只展开不编译，产物里 xSemaphore 字样剩零个；五个队列入口每个都至少出现一次，其中泛型创建两次、泛型发送三次。",
+          "emphasis": [
+            "0"
+          ]
+        },
+        {
+          "id": "code-03",
+          "kind": "code",
+          "title": "展开后的调用点",
+          "codeLabel": "五个调用点（展开后原文）",
+          "code": "g_binary = xQueueGenericCreate( 1, 0U, 3U );\ng_mutex  = xQueueCreateMutex( 1U );\ng_counting = xQueueCreateCountingSemaphore( 4U, 2U );\n\nreturn xQueueSemaphoreTake( x, t );\nreturn xQueueGenericSend( x, NULL, 0U, 0 );",
+          "narration": "展开后的调用点就长这样。创建二值：长度一、每项零、类型标签三；创建互斥：只带一个类型标签；计数那条带着上限四和初值二。拿锁走专用入口，还锁走泛型发送，第二项传 NULL，也就是不拷贝数据。",
+          "emphasis": [
+            "NULL"
+          ]
+        },
+        {
+          "id": "code-04",
+          "kind": "code",
+          "title": "符号表只认这五个",
+          "codeLabel": "nm -u + 逐函数重定位配对",
+          "code": "U xQueueCreateCountingSemaphore\nU xQueueCreateMutex\nU xQueueGenericCreate\nU xQueueGenericSend\nU xQueueSemaphoreTake\n\n未定义 xSemaphore* = 0\n未定义 xQueue*     ≥ 5\n\ncreate_binary → xQueueGenericCreate\ncreate_mutex  → xQueueCreateMutex\ngive          → xQueueGenericSend",
+          "narration": "宏不留符号，函数才留。未定义清单里，五个队列函数到齐，xSemaphore 一条也没有。下面三行不是按名字猜的，是从重定位表逐个函数配对出来的：建二值、建互斥、还锁，各只调一个入口。",
+          "emphasis": [
+            "xSemaphore*"
+          ]
+        },
+        {
+          "id": "code-05",
+          "kind": "code",
+          "title": "反向扫内核：也是零",
+          "codeLabel": "queue.o 与 tasks.o 全扫",
+          "code": "queue.o + tasks.o 里 xSemaphore* 定义 = 0\n\nsemphr.h:38  typedef QueueHandle_t SemaphoreHandle_t;\n\n→ 句柄类型只是队列句柄的别名",
+          "narration": "只查用户这边不够，反向也扫一遍。内核自己的 queue.o 和 tasks.o 里，没有任何定义出来的符号叫 xSemaphore。那个 SemaphoreHandle_t 也没新东西，一行 typedef，它等于队列句柄。两边合起来，零对五。",
+          "emphasis": [
+            "SemaphoreHandle_t"
+          ]
+        },
+        {
+          "id": "card-02",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "第一段收口",
+          "title": "五种名字，一个结构体",
+          "bullets": [
+            "五个名字 → 五个队列入口",
+            "一把锁 = 80 字节，载荷 0",
+            "剩下唯一的问题：它怎么知道自己是锁"
+          ],
+          "narration": "第一段到这里收口：五个入口、一个结构体，名字和身体就这么多。锁的实际开销是八十字节，载荷一栏是零。接下来只剩一个问题：同一个身体，凭什么认得出自己正被当成锁。",
+          "emphasis": [
+            "80"
+          ]
+        },
+        {
+          "id": "anim-01",
+          "kind": "anim",
+          "anim": "semaphore-mutex",
+          "t0": 0,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "计数牌与钥匙",
+          "note": "信号量管几个，互斥量管谁的",
+          "narration": "这两种东西常被画成两件家具：左边停车场计数，管还能进几个；右边厕所钥匙，管现在在谁手上。可刚才的账说明它们在内存里同一副骨架。差别不在形状，在用法和那几行判断。",
+          "emphasis": [
+            "谁的"
+          ]
+        },
+        {
+          "id": "code-06",
+          "kind": "code",
+          "title": "八十字节怎么来的",
+          "codeLabel": "源码算式 + 机身立即数",
+          "code": "queue.c:521  xQueueSizeInBytes = uxQueueLength * uxItemSize\nqueue.c:526  pvPortMalloc( sizeof(Queue_t) + xQueueSizeInBytes )\n\n锁的输入：1 × 0 = 0 字节\n→ 一次分配只要结构体本身\n\nnm --print-size  probe_sizeof_Queue_t = 80\n机身  adds r3, #80",
+          "narration": "八十字节不是背的。源码先把长度乘每项大小，锁的两个输入是一和零，乘积零，所以一次分配只要结构体本身。另一半问机身：分配前那条加法加的立即数就是八十。符号表八十，反汇编八十，两条独立路子对上。",
+          "emphasis": [
+            "80"
+          ]
+        },
+        {
+          "id": "code-07",
+          "kind": "code",
+          "title": "孪生结构体也是八十",
+          "codeLabel": "同一把尺子量两个结构体",
+          "code": "sizeof(Queue_t)        = 80\nsizeof(StaticQueue_t)  = 80\nqueue.c:406  configASSERT( xSize == sizeof( Queue_t ) );\n\nList_t 20 ｜ ListItem_t 20\n指针 4 ｜ UBaseType_t 4 ｜ TCB_t 88",
+          "narration": "静态分配也有自己的孪生结构体，尺寸同样量到八十；内核在 queue.c 第 406 行用断言钉死：调用者给的内存必须正好装得下队列对象。尺子上其余的数也一并交出来：链表头与节点各二十字节，指针与无符号基类型各四字节，任务控制块八十八。",
+          "emphasis": [
+            "406"
+          ]
+        },
+        {
+          "id": "code-08",
+          "kind": "code",
+          "title": "偏移表：后面全靠它",
+          "codeLabel": "探针数组读回（bss 段）",
+          "code": "pcHead 0     pcWriteTo 4     u 8\n  u.pcQueuePointers  pcTail 8   pcReadFrom 12\n  u.xSemaphore       xMutexHolder 8   uxRecursiveCallCount 12\nuxMessagesWaiting 56   uxLength 60   uxItemSize 64\n\nTCB：uxPriority 44  uxBasePriority 72  uxMutexesHeld 76\n     xStateListItem 4  xEventListItem 24",
+          "narration": "这张偏移表是后面每一屏的地基，每个数都由探针数组落在 bss 段后读回，不是照文档抄的。先盯住中间两行：队列指针与互斥量字段占着同样的八和十二；再记住任务那边的四十四、七十二、七十六。",
+          "emphasis": [
+            "xMutexHolder"
+          ]
+        },
+        {
+          "id": "card-03",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "重叠不是画错",
+          "title": "同两个偏移，两套语义",
+          "bullets": [
+            "pcTail 与 xMutexHolder 都在 8",
+            "pcReadFrom 与 uxRecursiveCallCount 都在 12",
+            "两个联合成员各 8 字节：不可能同时成立"
+          ],
+          "narration": "同一偏移叠着两个名字，不是表画错了，是联合体：当队列用取指针那半，当锁用取持有者那半，物理上就是同样的字节。所以这个结构体里没有地方同时记住我是队列、我是锁。答案只能在别处。",
+          "emphasis": [
+            "12"
+          ]
+        },
+        {
+          "id": "code-09",
+          "kind": "code",
+          "title": "出生就满：创建时送一次",
+          "codeLabel": "源码凭据 + 机身顺序",
+          "code": "queue.c:647  uxMutexLength = 1, uxMutexSize = 0\nqueue.c:651  xQueueGenericCreate( uxMutexLength, uxMutexSize, tag )\nqueue.c:652  prvInitialiseMutex( xNewQueue )\nqueue.c:631  xQueueGenericSend( pxNewQueue, NULL, 0U, TO_BACK )\n\n机身 xQueueCreateMutex：\n  bl xQueueGenericCreate   第 16 行\n  bl prvInitialiseMutex    第 20 行",
+          "narration": "互斥量为什么生下来就能拿？看创建函数。长度写死一，每项写死零；建完队列立刻进初始化，而初始化最后一句就是发送一次，阻塞时间零。机身顺序也一致：建队列的调用在第十六行，贴标签的在第二十行，实参就是一和零。",
+          "emphasis": [
+            "prvInitialiseMutex"
+          ]
+        },
+        {
+          "id": "code-10",
+          "kind": "code",
+          "title": "对照组：二值出生是空的",
+          "codeLabel": "二值信号量的对照组",
+          "code": "xSemaphoreCreateBinary() → xQueueGenericCreate(1, 0, 3)\n                          ← 只建，不送\n\nmain.c:352  g_lock = xSemaphoreCreateBinary();\nmain.c:353  xSemaphoreGive(g_lock);\n\nxSemaphoreCreateMutex() → 出生计数 1，不用补",
+          "narration": "对照一下就清楚了。二值信号量那条只建队列，没有那一次发送，所以出生是空的；板子剧本只好自己补一句 give，否则第一个 take 当场堵住。互斥量不用补，它出生就是满的。差别不在结构体，在创建路径的最后一句。",
+          "emphasis": [
+            "main.c:353"
+          ]
+        },
+        {
+          "id": "hook-02",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "问题变了",
+          "title": "它怎么知道自己是锁",
+          "bullets": [
+            "没有一个 is_mutex 成员",
+            "偏移 76 的 ucQueueType 只是标签",
+            "TRACE=0 时连标签一起消失"
+          ],
+          "narration": "现在问题可以问得很窄：联合体占着同样的字节，结构体里也没有一个专门的成员，那内核怎么知道这一格是队列还是锁？别急着信偏移七十六那个类型字段，它太像给调试器看的标签了。",
+          "emphasis": [
+            "is_mutex"
+          ]
+        },
+        {
+          "id": "code-11",
+          "kind": "code",
+          "title": "答案是 pcHead 的别名",
+          "codeLabel": "两行宏就是全部答案",
+          "code": "queue.c:65  #define uxQueueType        pcHead\nqueue.c:66  #define queueQUEUE_IS_MUTEX  NULL\n\n→ 读 pcHead 这一格，和 NULL 比",
+          "codeB": "pcHead       偏移 0\nuxQueueType  只是别名",
+          "codeBLabel": "同一格的两个名字",
+          "narration": "答案藏在两行宏里。所谓 uxQueueType 并不是结构体成员，预处理器把它直接换成 pcHead；而互斥量对应的身份值正是 NULL。于是每次判断这是不是锁，读的都是偏移零那一格。没有新字段，只有新读法。",
+          "emphasis": [
+            "pcHead"
+          ]
+        },
+        {
+          "id": "code-12",
+          "kind": "code",
+          "title": "内核自己写在注释里",
+          "codeLabel": "queue.c 第 65 行上方的注释",
+          "code": "/* ... When the Queue_t structure is used to represent\n * a mutex pcHead and pcTail pointers are not necessary,\n * and the pcHead pointer is set to NULL to indicate that\n * the structure instead holds a pointer to the mutex holder\n * (if any). ... */",
+          "narration": "内核在 queue.c 第 65 行上方先替我们写好了答案：队列模式下，两个指针负责圈定存储区；换成锁，它们就没有用处，于是 pcHead 被填成 NULL，这一格转而保存持有者。偏移表推出来的结论，注释里早有原话。",
+          "emphasis": [
+            "NULL"
+          ]
+        },
+        {
+          "id": "code-13",
+          "kind": "code",
+          "title": "机身三发写零",
+          "codeLabel": "两条创建路径的最后一个写",
+          "code": "prvInitialiseNewQueue：\n  pxNewQueue->pcHead = ( int8_t * ) pxNewQueue;\n  ← 项大小 0 时自指（queue.c:582）\n\nprvInitialiseMutex：\n  pxNewQueue->uxQueueType = queueQUEUE_IS_MUTEX;\n  ← 写入 NULL（queue.c:623）",
+          "codeB": "偏移 0   pcHead = NULL\n偏移 8   xMutexHolder = NULL\n偏移 12  uxRecursiveCallCount = 0",
+          "codeBLabel": "机身三发写零的落点",
+          "narration": "机身上能看见这条分岔。普通队列那条路把偏移零写成自己的地址：项大小为零时它自指，注释特意说明这里不能是 NULL。互斥量这条路则把同一个槽覆盖成 NULL，再清掉偏移八的持有者、偏移十二的递归计数。三发写零，正好对上刚才那张表。",
+          "emphasis": [
+            "queue.c:623"
+          ]
+        },
+        {
+          "id": "code-14",
+          "kind": "code",
+          "title": "七处判断，读的是同一格",
+          "codeLabel": "queue.c 全文判断点行号",
+          "code": "if( uxQueueType == queueQUEUE_IS_MUTEX )\n\n705   737   1353   1699\n1784  1834  2405\n\n↑ take 失败那道门 / give 回落那道门\n\npcHead == NULL → 是互斥量",
+          "narration": "全文搜这种判断，正好七处，取锁、还锁、中断安全那几条路上都有；它们读的全是同一个 pcHead 槽。于是互斥量和信号量的差别，落到源码上就是一次与零的比较，不必停在概念比喻里。",
+          "emphasis": [
+            "2405"
+          ]
+        },
+        {
+          "id": "card-04",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "标签的账",
+          "title": "0/1/3 只是标签",
+          "bullets": [
+            "ucQueueType 在偏移 76，只在 TRACE=1 时存在",
+            "TRACE=0：Queue_t 从 80 掉到 72",
+            "标签税 8 字节，那句 strb 一起消失"
+          ],
+          "narration": "现在回头看零、一、三这三个类型标签。它们确实存在，可只是给调试器看的名字，位置在偏移七十六；跟踪功能一关，成员和那次按字节赋值都没了，尺寸也从八十缩到七十二。身份并不住在这里，它始终在第一格。",
+          "emphasis": [
+            "72"
+          ]
+        },
+        {
+          "id": "code-15",
+          "kind": "code",
+          "title": "继承第一步：判",
+          "codeLabel": "继承第一步：判",
+          "code": "tasks.c:6589  if( pxMutexHolder != NULL )\ntasks.c:6594  if( pxMutexHolderTCB->uxPriority\n                     < pxCurrentTCB->uxPriority )\n\n→ holder 为 NULL：没有要抬的对象\n→ 持锁者不比等待者低：也不抬",
+          "note": "机身：两次读偏移 44，再比一次",
+          "narration": "继承分三步，第一步是判。先问有没有持有者：holder 是 NULL，就没有要抬的对象；再比优先级：持锁那个必须真的比等待这个低，才谈得上抬。机身里就是两次读偏移四十四，再做一次寄存器之间的比较。",
+          "emphasis": [
+            "6589"
+          ]
+        },
+        {
+          "id": "code-16",
+          "kind": "code",
+          "title": "第二步：改两处",
+          "codeLabel": "继承第二步：改两处",
+          "code": "tasks.c:6601  listSET_LIST_ITEM_VALUE( xEventListItem,\n              configMAX_PRIORITIES - pxCurrentTCB->uxPriority );\ntasks.c:6625  pxMutexHolderTCB->uxPriority = pxCurrentTCB->uxPriority;",
+          "codeB": "configMAX_PRIORITIES = 5（探针量出）\nrsb r2, r3, #5\n写 xEventListItem.xItemValue（偏移 24）",
+          "codeBLabel": "机身里的改",
+          "narration": "第二步落在两个写上。等待者当前是几级，持有者的优先级就抄成几级；事件表那一格则存最大优先级减去等待者优先级，这样借来的排位会压过同级的普通事件。最大优先级等于五，不是抄配置，是探针量出来的；机身用一条 rsb 立即数把它钉住。",
+          "emphasis": [
+            "rsb r2, r3, #5"
+          ]
+        },
+        {
+          "id": "code-17",
+          "kind": "code",
+          "title": "第三步：搬表",
+          "codeLabel": "继承第三步：搬表",
+          "code": "tasks.c:6612  uxListRemove( xStateListItem )\ntasks.c:6617  portRESET_READY_PRIORITY( ... )\ntasks.c:6626  prvAddTaskToReadyList( pxMutexHolderTCB );",
+          "codeB": "函数调用 = 1（uxListRemove）\n挂表是宏：list.h:362 就地改指针\n机身顺序：摘 45 → 改 64 → 搬 110",
+          "codeBLabel": "为什么只有一发调用",
+          "narration": "第三步是搬。先从旧就绪表摘掉持锁者，复位位图，再挂到新优先级的表上。整个继承函数只有一次函数调用，就是摘表；挂表不是调用，插入宏在编译期直接改链。机身顺序是摘四十五、改六十四、写容器一百一十。",
+          "emphasis": [
+            "uxListRemove"
+          ]
+        },
+        {
+          "id": "code-18",
+          "kind": "code",
+          "title": "镜像：还锁时回落",
+          "codeLabel": "镜像回落：读 72，写 44",
+          "code": "queue.c:2408  xTaskPriorityDisinherit( xMutexHolder )\ntasks.c:6705  if( pxTCB->uxMutexesHeld == 0 )\ntasks.c:6724  pxTCB->uxPriority = pxTCB->uxBasePriority;\n\n机身：ldr [rX, #72] → str [rX, #44]\ntasks.c:1906  pxNewTCB->uxBasePriority = uxPriority;",
+          "narration": "抬起之后必须能落回去，否则继承就是半截机制。持有者的锁计数清零时，回落才发生：把创建时记下的基准优先级重新写回当前优先级。机身方向正好相反，偏移七十二读、偏移四十四写，并且同样先摘表。基准不是借来的，是任务出生时留的底账。",
+          "emphasis": [
+            "uxBasePriority"
+          ]
+        },
+        {
+          "id": "code-20",
+          "kind": "code",
+          "title": "中断那条路：一样都没有",
+          "codeLabel": "中断版 take 的落点与引用计数",
+          "code": "semphr.h:675  xSemaphoreTakeFromISR\n  → xQueueReceiveFromISR\n\n函数体：queue.c 2035 → 2132，共 98 行\n  xMutexHolder         引用 0 处\n  uxQueueType          引用 0 处\n  xTaskPriorityInherit 引用 0 处\n\n任务 take（1652 → 1874）：6 处",
+          "narration": "为什么中断里不该拿互斥锁？理由不是那两行判断，而是这条路径根本没有互斥量机制。中断版 take 展开成接收函数，函数体九十八行，持有者、类型、继承三样引用全是零；同一把尺子量任务那条 take，是六处。中断里就算取到，也不会登记持有者。",
+          "emphasis": [
+            "98"
+          ]
+        },
+        {
+          "id": "card-05",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "编译期也能拿掉",
+          "title": "关掉 MUTEX，整段消失",
+          "bullets": [
+            "MUTEX=0：Inherit 与 Disinherit 符号数都是 0",
+            ".text.xTaskPriorityInherit：320 字节 → 0 字节",
+            "xQueueSemaphoreTake 还在：拿锁照旧"
+          ],
+          "narration": "再把这件事做成一次可重编的检查：configUSE_MUTEXES 设成零，继承与回落这两个函数在符号表里一个都不剩，那段机身从三百二十字节缩成零。可是取锁入口还活着。结论：互斥量多出来的能力是编译期可拆的，所有权只在任务之间成立。",
+          "emphasis": [
+            "320"
+          ]
+        },
+        {
+          "id": "anim-02",
+          "kind": "anim",
+          "anim": "priority-inversion",
+          "t0": 0,
+          "t1": 9,
+          "smil": "stretch",
+          "title": "三条泳道，一个反转",
+          "note": "L 持锁 → H 等锁 → M 插队",
+          "narration": "这一屏是那出剧本的形状：低优先级拿着锁，高优先级来要，被挡在门外；这时中优先级插进来，把持锁那个挤下台。规则没人违反，最高优先级却排在最后，这就是反转。",
+          "emphasis": [
+            "反转"
+          ]
+        },
+        {
+          "id": "code-19",
+          "kind": "code",
+          "title": "剧本参数：都在源码里",
+          "codeLabel": "main.c 行号 + 模型护栏",
+          "code": "main.c:315  cpu_work_ms(3000);        L 临界区\nmain.c:324  vTaskDelay( 500 );       M 起跑\nmain.c:326  busy_until( 4500 );      M 占 CPU 到 4500\nmain.c:334  vTaskDelay( 1000 );      H 醒来要锁\nmain.c:356  L 优先级 1\nmain.c:358  H 优先级 3\n\nsim_invert.c 逐条核对这 6 处行号",
+          "narration": "模型不是凭空写的。剧本参数全在板子源码里：L 的临界区三千拍，M 从第五百拍起跑到四千五百拍，H 第一千拍醒来要锁；L 优先级一，H 优先级三。模型编译时旁边还站着一排护栏，行号一漂，取证当场报错。",
+          "emphasis": [
+            "3000"
+          ]
+        },
+        {
+          "id": "sim-binary",
+          "kind": "code",
+          "title": "二值档：模型值 6000 拍",
+          "codeLabel": "模型输出（模型值，不是板级毫秒）",
+          "code": "RES tag=binary  h_want=1000  h_got=7000  waited=6000\n              l_give=7000  m_end=4500\n              l_ran=3000   m_ran=4000\n\nEVT tag=binary t=1000 who=H  inherit_skipped=0\n\nl_give 7000 > m_end 4500：锁一直压在 L 手里",
+          "narration": "第一档是二值信号量，屏上全是模型值。H 第一千拍要锁被挡，直到第七千拍才拿到，模型算出等待六千拍；这期间 M 跑满四千拍，锁始终压在 L 手里。事件表里没有继承记录，只有一条表示跳过继承的标记。",
+          "emphasis": [
+            "6000"
+          ]
+        },
+        {
+          "id": "sim-mutex",
+          "kind": "code",
+          "title": "互斥量档：模型值 2500 拍",
+          "codeLabel": "模型输出（模型值，不是板级毫秒）",
+          "code": "RES tag=mutex   h_want=1000  h_got=3500  waited=2500\n              l_give=3500  m_end=4500\n              l_ran=3000   m_ran=1500\n\nEVT tag=mutex t=1000 who=L  prio_inherited=3\n\nl_give 3500 < m_end 4500：L 借到优先级，提前收工",
+          "narration": "换互斥量，同一出剧本，同一套参数。H 还是第一千拍要锁，模型算出只等二千五百拍：L 的优先级从一变三，M 拦不住它，L 跑满三千拍就在第三千五百拍还锁。两档的临界区工作量完全一致，三千拍由剧本写死，模型没有替它凑数。",
+          "emphasis": [
+            "2500"
+          ]
+        },
+        {
+          "id": "punch-01",
+          "kind": "card",
+          "tone": "gold",
+          "title": "差的 3500 拍是别人占的 CPU",
+          "bullets": [
+            "模型值：6000 − 2500 = 3500",
+            "二值档 m_ran = 4000，这一段是 M 的",
+            "所以叫无界反转：由谁插队决定"
+          ],
+          "narration": "两个模型值相减是三千五百拍，模型脚本把这条差写成了断言。差额来自哪里？M 占着处理器的那段时间，与锁无关。所以叫无界反转：高优先级要等多久，不由持锁者干多少活决定，而由谁恰好插队决定。",
+          "emphasis": [
+            "3500"
+          ]
+        },
+        {
+          "id": "card-06",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "这两个数的身份",
+          "title": "模型算的，不是板子量的",
+          "bullets": [
+            "E04 文档第 78 行：按剧本参数推的理论值",
+            "那张实测记录表：0 个数字",
+            "同一模型二进制两次，输出逐字节相同"
+          ],
+          "narration": "身份必须说清楚。E04 文档第七十八行承认，这是照剧本参数算出来的理论值，并非实测；那张实测记录表至今仍是空的，一个数字也没填。屏上的数只能叫模型值，谁把它说成串口毫秒，谁就在替文档撒谎。",
+          "emphasis": [
+            "理论值"
+          ]
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "一句话记住",
+          "title": "五种名字，一个指针槽",
+          "bullets": [
+            "名字是宏，符号只剩五个队列入口",
+            "一把锁 80 字节，载荷 0",
+            "身份 = pcHead 是不是 NULL",
+            "继承三步判改搬；中断那条路没有"
+          ],
+          "narration": "带走一句就够：入口有五个，身体只有一个，身份只占一格指针。宏负责名字，队列负责形状；锁多出来的从来不是字段，而是那格指针的解释方式，外加一小段抬优先级的代码。中断那条路连这段代码都没有。",
+          "emphasis": [
+            "pcHead"
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "一条命令，八步取证",
+          "sub": "sh code/rtos/05-sem-mutex/probe.sh",
+          "bullets": [
+            "宏与符号：0 对 5",
+            "账与身份：80 字节 / pcHead",
+            "继承：45 → 64 → 110",
+            "反转：6000 / 2500 是模型值"
+          ],
+          "narration": "屏上每个宏、每个偏移、七处判断、两档模型值，都出自同一条取证脚本，不需要开发板，只要交叉编译器、宿主机 gcc 和上游内核。反转那两个数再强调一次：模型值，板子上那张实测表还空着。",
+          "emphasis": [
+            "probe.sh"
+          ]
+        }
+      ]
+    },
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "code-11",
+          "title": "身份"
+        },
+        {
+          "at": "code-17",
+          "title": "继承"
+        },
+        {
+          "at": "sim-binary",
+          "title": "模型"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "card-01",
+        "code-02",
+        "code-11",
+        "code-13",
+        "code-17",
+        "code-20",
+        "card-05",
+        "sim-binary",
+        "sim-mutex",
+        "card-06",
+        "punch"
+      ],
+      "set": {
+        "hook-01": {
+          "title": "五个名字\n零个函数",
+          "sub": "选型表三行，展开后一行",
+          "codeLabel": "五条全是 #define",
+          "code": "xSemaphoreCreateBinary → #define\nxSemaphoreCreateMutex → #define\nxSemaphoreTake → #define",
+          "emphasis": [
+            "xSemaphoreCreateBinary"
+          ]
+        },
+        "card-01": {
+          "title": "名字是宏\n身体是队列",
+          "bullets": [
+            "展开后 xSemaphore 剩 0 个",
+            "未定义引用只有五个 xQueue*"
+          ],
+          "emphasis": [
+            "xSemaphore"
+          ]
+        },
+        "code-02": {
+          "title": "展开后\n剩 0 个",
+          "codeLabel": "gcc -E 计数",
+          "code": "xSemaphore 字样 = 0\n五个 xQueue* 各 ≥ 1",
+          "emphasis": [
+            "0"
+          ]
+        },
+        "code-11": {
+          "title": "身份就是\npcHead 这格",
+          "codeLabel": "queue.c 第 65、66 行",
+          "code": "queue.c:65  uxQueueType = pcHead\nqueue.c:66  互斥量 = NULL",
+          "codeB": "",
+          "codeBLabel": "",
+          "emphasis": [
+            "pcHead"
+          ]
+        },
+        "code-13": {
+          "title": "三发写零\n偏移 0 8 12",
+          "codeLabel": "机身三发写零",
+          "code": "pcHead = NULL（偏移 0）\nxMutexHolder = NULL（偏移 8）\nuxRecursiveCallCount = 0（偏移 12）",
+          "codeB": "",
+          "codeBLabel": "",
+          "emphasis": [
+            "NULL"
+          ]
+        },
+        "code-17": {
+          "title": "摘、复位、挂\n只有一发调用",
+          "codeLabel": "继承第三步",
+          "code": "uxListRemove 是唯一调用\n挂表是宏，就地改指针",
+          "codeB": "",
+          "codeBLabel": "",
+          "emphasis": [
+            "uxListRemove"
+          ]
+        },
+        "code-20": {
+          "title": "中断那条路\n三样都没有",
+          "codeLabel": "中断版 take 的引用计数",
+          "code": "xQueueReceiveFromISR\n98 行里三样引用各 0 处",
+          "emphasis": [
+            "0"
+          ]
+        },
+        "card-05": {
+          "title": "MUTEX=0\n整段消失",
+          "bullets": [
+            "继承与回落符号数都是 0",
+            "320 字节 → 0 字节",
+            "拿锁入口还在"
+          ],
+          "emphasis": [
+            "320"
+          ]
+        },
+        "sim-binary": {
+          "title": "二值档\n模型值 6000 拍",
+          "codeLabel": "模型输出（模型值）",
+          "code": "RES tag=binary\nwaited=6000\nl_give=7000  m_end=4500\nm_ran=4000",
+          "emphasis": [
+            "6000"
+          ]
+        },
+        "sim-mutex": {
+          "title": "互斥量档\n模型值 2500 拍",
+          "codeLabel": "模型输出（模型值）",
+          "code": "RES tag=mutex\nwaited=2500\nl_give=3500  m_end=4500\nprio_inherited=3",
+          "emphasis": [
+            "2500"
+          ]
+        },
+        "card-06": {
+          "title": "模型值\n不是板子毫秒",
+          "bullets": [
+            "E04 文档：理论值",
+            "实测表 0 个数字",
+            "同一二进制两次逐字节相同"
+          ],
+          "emphasis": [
+            "模型值"
+          ]
+        },
+        "punch": {
+          "title": "五种名字\n一个指针槽",
+          "bullets": [
+            "名字是宏，符号只剩五个队列入口",
+            "一把锁 80 字节，载荷 0",
+            "身份 = pcHead 是不是 NULL"
+          ],
+          "emphasis": [
+            "pcHead"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "bullets:0-2"
+            }
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "选型表列成三行；实际五个 xSemaphore 名字全是宏。",
+        "card-01": "名字是宏，身体是队列：展开后剩 0 个。",
+        "code-02": "展开文本里 xSemaphore 剩 0 个，五个队列入口都在。",
+        "code-11": "身份就是 pcHead 那一格：和 NULL 比。",
+        "code-13": "机身往 0、8、12 三个偏移写零。",
+        "code-17": "搬表只有一次函数调用，挂表是宏。",
+        "code-20": "中断那条路，持有者、类型、继承三样都没有。",
+        "card-05": "关掉 MUTEX，那段机身 320 字节变 0。",
+        "sim-binary": "二值档模型值：H 等 6000 拍。",
+        "sim-mutex": "互斥量档模型值：H 只等 2500 拍。",
+        "card-06": "6000 与 2500 是模型值，不是板子毫秒。",
+        "punch": "五个入口，一个身体，一格指针身份。"
+      }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "五个 xSemaphore 全是宏：展开后剩 0 个",
+        "一把锁 80 字节、载荷 0：互斥量的身份只有 pcHead 一格",
+        "继承三步：摘 45、改 64、搬 110；反转的 6000 与 2500 是模型值"
+      ],
+      "intro": "这一集只认一份日志：本机 probe 的宏与符号、形状与偏移、出生与身份、继承与模型。五个 xSemaphore 名字全是 #define，gcc -E 展开文本里 xSemaphore 字样剩 0 个，nm -u 的未定义引用正好五个队列入口；反向扫 queue.o 与 tasks.o，xSemaphore* 定义 0 个。一把锁 sizeof(Queue_t)=80，载荷 1×0=0；pcTail 与 xMutexHolder 同在偏移 8，pcReadFrom 与 uxRecursiveCallCount 同在偏移 12。身份是 queue.c:65 的 #define uxQueueType pcHead：判断互斥量就是 pcHead 与 NULL 比，queue.c 全文七处；TRACE=0 时结构体从 80 掉到 72，标签税 8 字节。\n\n出生那一发 give：queue.c:647 长度 1、项 0，queue.c:631 创建时发送一次，机身里建队列在第 16 行、初始化在第 20 行。继承三步：判（tasks.c:6589/6594）、改（6601/6625，最大优先级 5 来自探针，机身 rsb #5）、搬（6612/6617/6626，唯一一次函数调用是 uxListRemove，机身顺序摘 45 → 改 64 → 搬 110）。回落从偏移 72 读、往 44 写；configUSE_MUTEXES=0 时 .text.xTaskPriorityInherit 从 320 字节变 0，xQueueSemaphoreTake 还在。中断版 take 落点是 xQueueReceiveFromISR，函数体 queue.c 2035→2132 共 98 行，三样引用各 0 处；任务 take 是 6 处。\n\n反转的 6000/2500/3500 是模型值，不是板级毫秒：sim_invert 无真时钟、无随机数，同一二进制连跑两次逐字节相同；E04 文档第 78 行称其为理论值，实测记录表 0 个数字。两档里 L 都跑 3000 拍，二值档 M 跑 4000 拍。\n\n复现：sh code/rtos/05-sem-mutex/probe.sh。完整图文与代码在开源书《通往单片机之路》F5 章。",
+      "tags": [
+        "FreeRTOS",
+        "RTOS",
+        "单片机",
+        "嵌入式",
+        "互斥锁",
+        "信号量",
+        "优先级反转"
+      ],
+      "topics": [
+        "科技数码",
+        "知识",
+        "校园学习"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "五个 xSemaphore 全是宏",
+        "一把锁 80 字节，载荷 0",
+        "6000 与 2500 是模型值"
+      ],
+      "intro": "选型表列成三行的东西，其实是一个结构体：五个 xSemaphore 名字全是宏，展开后剩 0 个；一把锁 80 字节、载荷 0，身份就是 pcHead 那一格是不是 NULL。继承三步只有一次函数调用；中断那条路三样都没有。反转的 6000 与 2500 是模型值，不是板级毫秒。本机 probe，无开发板。",
+      "tags": [
+        "FreeRTOS",
+        "互斥锁",
+        "RTOS",
+        "嵌入式"
+      ],
+      "topics": [
+        "知识",
+        "科技数码"
+      ],
+      "caption": "五个名字，零个函数\n展开后 xSemaphore 剩 0 个\n#FreeRTOS #互斥量 #信号量",
+      "pinned": "完整图文在「通往单片机之路」F5《信号量与互斥量》。五个 xSemaphore 全是宏、展开后剩 0 个；一把锁 80 字节、载荷 0；身份 = queue.c:65 那一格 pcHead 是不是 NULL。继承与中断路径的账都在里面：sh code/rtos/05-sem-mutex/probe.sh",
+      "repro": "sh code/rtos/05-sem-mutex/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "五个 xSemaphore 全是宏：展开后 xSemaphore 剩 0 个",
+        "一把锁 80 字节、载荷 0：互斥量的身份是 pcHead"
+      ],
+      "intro": "选型表把二值、计数、互斥列成三行，像三种数据结构。把头文件展开：五个 xSemaphore 名字全是 #define（semphr.h:167/735/1025/298/460），gcc -E 展开文本里 xSemaphore 字样剩 0 个；nm -u 的未定义引用正好五个队列入口，反向扫 queue.o 与 tasks.o，xSemaphore* 定义 0 个；SemaphoreHandle_t 只是一行 typedef。\n\n形状也同一个：sizeof(Queue_t)=80，载荷 1×0=0；pcTail 与 xMutexHolder 同在偏移 8，pcReadFrom 与 uxRecursiveCallCount 同在偏移 12。身份是 queue.c:65 的 #define uxQueueType pcHead，queue.c:66 把 NULL 定为互斥量的身份值；全文七处判断读的都是 pcHead，偏移 76 的 ucQueueType 只是标签，TRACE=0 时 80 掉到 72。\n\n出生即满：queue.c:647 长度 1、项 0，queue.c:631 创建时发送一次；二值信号量没有这一发，main.c:352/353 自己补 give。继承三步：判（tasks.c:6589/6594）、改（6601/6625，configMAX_PRIORITIES=5 是探针量出的，机身 rsb #5）、搬（6612/6617/6626，唯一调用是 uxListRemove，机身顺序 摘 45 → 改 64 → 搬 110）；回落从 72 读、往 44 写，uxMutexesHeld--；configUSE_MUTEXES=0 时 .text.xTaskPriorityInherit 320 字节变 0。\n\n中断里不该拿互斥锁，凭据不是 tasks.c:6589 那一问：xSemaphoreTakeFromISR 展开成 xQueueReceiveFromISR，函数体 queue.c 2035→2132 共 98 行，xMutexHolder、uxQueueType、xTaskPriorityInherit 各 0 处；任务 take 是 6 处。\n\n6000/2500/3500 是模型值：sim_invert 无真时钟、无随机数，同一二进制连跑两次逐字节相同；E04 文档第 78 行称其为理论值，实测记录表 0 个数字。\n\n复现：sh code/rtos/05-sem-mutex/probe.sh，不需要开发板。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集沿用与已发章节一致的「个人观点仅供参考」。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "FreeRTOS",
+        "互斥锁",
+        "RTOS",
+        "嵌入式",
+        "优先级反转"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
+    },
+    "xiaohongshu": {
+      "title": "五个名字，零个函数",
+      "body": "选型表把二值信号量、计数信号量、互斥锁列成三行，像三种数据结构。本机把头文件展开一遍：五个 xSemaphore 名字全是 #define，gcc -E 展开文本里 xSemaphore 字样剩 0 个；nm -u 的未定义引用正好五个队列入口，反向扫内核也没有一个 xSemaphore* 定义。\n\n一把锁 sizeof(Queue_t)=80，载荷 1×0=0 字节。pcTail 与 xMutexHolder 同在偏移 8，pcReadFrom 与 uxRecursiveCallCount 同在偏移 12——同一格字节两套语义，结构体里没有一格专门记「我是锁」。身份是 queue.c:65 的 #define uxQueueType pcHead：是不是互斥量，就看 pcHead 那格指针等不等于 NULL，queue.c 全文七处判断读的都是这一条。\n\n出生那一发 give：长度 1、项 0，创建时发送一次；继承三步判、改、搬，摘表是唯一一次函数调用。中断版 take 落点 queue.c 2035→2132 共 98 行，三样引用各 0 处。\n\n反转的 6000 与 2500 是模型值，不是板子串口打出的毫秒；E04 文档第 78 行称其为理论值，实测记录表 0 个数字。\n\n复现：sh code/rtos/05-sem-mutex/probe.sh\n第 17 集 · 信号量与互斥量。完整图文全网同名「通往单片机之路」。",
+      "topics": [
+        "FreeRTOS",
+        "互斥量",
+        "信号量"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "五个 xSemaphore 全是宏、展开后剩 0 个；一把锁 sizeof(Queue_t)=80、载荷 0；互斥量的身份 = queue.c:65 那一格 pcHead 是不是 NULL。八步一条命令，不需要开发板：sh code/rtos/05-sem-mutex/probe.sh",
+      "repro": "sh code/rtos/05-sem-mutex/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

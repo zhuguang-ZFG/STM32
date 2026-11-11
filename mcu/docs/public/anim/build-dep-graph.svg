@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>构建系统：依赖图与局部重建</title>
+  <desc>四阶段动画：Make 依赖图（目标←依赖←规则）→ mtime 比对决定重建 → touch 改一个文件 → 只有受影响的路径重建，其余跳过</desc>
+  
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  
+  <!-- Stage 1: Dependency Graph -->
+  <g>
+    <text x="20" y="25" font-size="14" font-weight="bold" fill="#3451b2">① 依赖图：目标 ← 依赖 ← 规则</text>
+    
+    <!-- blink.elf -->
+    <rect x="80" y="50" width="100" height="35" rx="4" fill="#fff" stroke="#3451b2" stroke-width="2"/>
+    <text x="130" y="72" font-size="12" fill="#333" text-anchor="middle">blink.elf</text>
+    
+    <!-- main.o -->
+    <rect x="30" y="120" width="80" height="30" rx="4" fill="#fff" stroke="#3eaf7c" stroke-width="1.5"/>
+    <text x="70" y="140" font-size="11" fill="#333" text-anchor="middle">main.o</text>
+    
+    <!-- startup.o -->
+    <rect x="150" y="120" width="90" height="30" rx="4" fill="#fff" stroke="#3eaf7c" stroke-width="1.5"/>
+    <text x="195" y="140" font-size="11" fill="#333" text-anchor="middle">startup.o</text>
+    
+    <!-- main.c -->
+    <rect x="20" y="180" width="60" height="25" rx="3" fill="#ffffff" stroke="#666" stroke-width="1"/>
+    <text x="50" y="197" font-size="10" fill="#333" text-anchor="middle">main.c</text>
+    
+    <!-- stm32f407.h -->
+    <rect x="90" y="180" width="80" height="25" rx="3" fill="#ffffff" stroke="#666" stroke-width="1"/>
+    <text x="130" y="197" font-size="10" fill="#333" text-anchor="middle">stm32f407.h</text>
+    
+    <!-- startup.s -->
+    <rect x="180" y="180" width="70" height="25" rx="3" fill="#ffffff" stroke="#666" stroke-width="1"/>
+    <text x="215" y="197" font-size="10" fill="#333" text-anchor="middle">startup.s</text>
+    
+    <!-- Arrows -->
+    <line x1="70" y1="120" x2="110" y2="85" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="195" y1="120" x2="150" y2="85" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="50" y1="180" x2="65" y2="150" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="130" y1="180" x2="85" y2="150" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="215" y1="180" x2="200" y2="150" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+    
+    <text x="20" y="230" font-size="10" fill="#666">比 mtime：依赖比目标新 → 重建</text>
+  </g>
+  
+  <!-- Stage 2: mtime Comparison -->
+  <g>
+    <text x="280" y="25" font-size="14" font-weight="bold" fill="#3451b2">② mtime 比对</text>
+    
+    <rect x="280" y="50" width="180" height="90" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
+    <text x="290" y="70" font-size="11" fill="#333" font-family="monospace">
+      <tspan x="290" dy="0">main.o: 10:00</tspan>
+      <tspan x="290" dy="16">main.c: 10:05</tspan>
+      <tspan x="290" dy="16" fill="#dc2626" font-weight="bold">→ main.c 更新</tspan>
+      <tspan x="290" dy="16" fill="#dc2626" font-weight="bold">→ 重建 main.o</tspan>
+    </text>
+    
+    <rect x="280" y="160" width="180" height="70" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
+    <text x="290" y="180" font-size="11" fill="#333" font-family="monospace">
+      <tspan x="290" dy="0">startup.o: 10:00</tspan>
+      <tspan x="290" dy="16">startup.s: 09:50</tspan>
+      <tspan x="290" dy="16" fill="#3eaf7c" font-weight="bold">→ 目标更新，跳过</tspan>
+    </text>
+  </g>
+  
+  <!-- Stage 3: touch main.c -->
+  <g>
+    <text x="500" y="25" font-size="14" font-weight="bold" fill="#3451b2">③ touch main.c</text>
+    
+    <rect x="500" y="50" width="60" height="25" rx="3" fill="#d97706" stroke="#d97706" stroke-width="2"/>
+    <text x="530" y="67" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">main.c</text>
+    <text x="570" y="67" font-size="10" fill="#d97706">← 改 mtime</text>
+    
+    <rect x="500" y="90" width="180" height="60" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
+    <text x="510" y="110" font-size="11" fill="#333" font-family="monospace">
+      <tspan x="510" dy="0">make -n 干跑：</tspan>
+      <tspan x="510" dy="16" fill="#dc2626">gcc -c main.c -o main.o</tspan>
+      <tspan x="510" dy="16">gcc ... -o blink.elf</tspan>
+    </text>
+    
+    <text x="500" y="175" font-size="10" fill="#666">startup.o 不重建（依赖没变）</text>
+  </g>
+  
+  <!-- Bottom: Key Insight -->
+  <rect x="20" y="260" width="680" height="80" rx="6" fill="#fff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="30" y="285" font-size="13" font-weight="bold" fill="#3eaf7c">✓ 核心洞察：局部重建</text>
+  <text x="30" y="305" font-size="11" fill="#333">
+    <tspan x="30" dy="0">• 依赖图决定"谁影响谁"：改 main.c → 重建 main.o → 重建 blink.elf；startup.o 不受影响</tspan>
+    <tspan x="30" dy="18">• make -n 干跑看依赖图形状；make -d 调试看每次比对的细节</tspan>
+    <tspan x="30" dy="18">• 头文件改了不重建？检查 Makefile 里有没有写 .h 依赖——这是新手最常踩的坑</tspan>
+  </text>
+  
+  <!-- Bottom: Abstraction Layers -->
+  <rect x="20" y="360" width="680" height="60" rx="6" fill="#ffffff" stroke="#666" stroke-width="1"/>
+  <text x="30" y="380" font-size="12" font-weight="bold" fill="#3451b2">抽象层演进</text>
+  <text x="30" y="400" font-size="11" fill="#333" font-family="monospace">
+    Make（手写依赖图）→ CMake（生成依赖图）→ ESP-IDF/RT-Thread（组件化 + Kconfig 管编什么）
+  </text>
+  <text x="30" y="415" font-size="10" fill="#666" font-style="italic">构建系统管"怎么编"，Kconfig 管"编什么"——两件事分开</text>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#666"/>
+    </marker>
+  </defs>
+  
+  <!-- Continuous animation: pulse on main.c -->
+  <circle cx="530" cy="62" r="15" fill="#d97706" opacity="0.2">
+    <animate attributeName="r" values="15;20;15" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

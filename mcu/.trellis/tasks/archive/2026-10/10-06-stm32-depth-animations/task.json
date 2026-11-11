@@ -1,0 +1,30 @@
+{
+  "id": "stm32-depth-animations",
+  "name": "stm32-depth-animations",
+  "title": "三路线内容深化与教学动画",
+  "description": "用户已确认 STM32 外设、FreeRTOS 内核、ESP32-S3/ESP-IDF 三条路线都做；总任务负责规划、子任务映射和最终集成验收。",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-10-06",
+  "completedAt": "2026-10-16",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-06-stm32-peripheral-lessons",
+    "10-06-freertos-kernel-lessons",
+    "10-06-esp32-driver-lessons"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "三个子批次（STM32 外设、FreeRTOS 内核、ESP32-S3 驱动）全部交付并于 2026-10-10 集成验收：章节成稿、97 张动画、CI 构建矩阵绿、docs:build 零错误。",
+  "meta": {}
+}

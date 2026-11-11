@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/docs-site/logger-contract.md", "reason": "64B SAMPLE 帧/配置校验/INFO-STATUS TLV/并发契约——实现与测试对齐的规格源"}
+{"file": ".trellis/tasks/10-07-knowledge-capstone/design.md", "reason": "责任划分、数据流、对外合同、参数存储与失效处理设计"}
+{"file": ".trellis/tasks/10-07-knowledge-capstone/research/validation.md", "reason": "C-A1–C-A6 分平台验证记录（模型/编译/上板分列，硬件项 pending）"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "质量门禁与 CI 契约；收口时按此跑全量并修复搜索回归"}

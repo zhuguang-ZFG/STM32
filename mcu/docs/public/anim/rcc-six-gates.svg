@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>提频六步：顺序就是正确性</title>
+  <desc>六个闸门从左到右是：电压档 VOS=1、Flash 等待周期 5WS 与预取、HSE 起振并等 HSERDY、PLL 写入 0x07405408 并等 PLLRDY、SW=10b 并等 SWS、总线分频 HPRE/1 与 PPRE1/4、PPRE2/2。一条蓝色走线逐级爬过六个闸门：先降速（电压档、等待周期），再起振并等回执（HSERDY、PLLRDY），最后合闸并读 SWS 确认。反例是把这个顺序倒过来：先写 SW=10b 再补等待周期，新频率已经在跑，Flash 还没学会等，取指超时，芯片跑飞。</desc>
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="26" y="30" font-size="17" font-weight="bold" fill="#3451b2">提频六步：顺序就是正确性</text>
+  <text x="26" y="50" font-size="12" fill="#666">每一步只碰一处；前一步没站稳，后一步就是事故</text>
+
+  <!-- 六个闸门 -->
+  <g>
+    <rect x="26" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="43" cy="91" r="9" fill="#3451b2"/>
+    <text x="43" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+    <text x="58" y="95" font-size="12" font-weight="bold" fill="#3451b2">电压档</text>
+    <text x="38" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">PWR_CR</text>
+    <text x="38" y="134" font-size="11" font-weight="bold" fill="#333">VOS=1</text>
+    <text x="38" y="150" font-size="10.5" fill="#d97706">解锁 168MHz</text>
+  </g>
+  <g>
+    <rect x="139" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="156" cy="91" r="9" fill="#3451b2"/>
+    <text x="156" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+    <text x="171" y="95" font-size="12" font-weight="bold" fill="#3451b2">等待周期</text>
+    <text x="151" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">FLASH_ACR</text>
+    <text x="151" y="134" font-size="11" font-weight="bold" fill="#333">5WS+预取</text>
+    <text x="151" y="150" font-size="10.5" fill="#d97706">必须早于提速</text>
+  </g>
+  <g>
+    <rect x="252" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="269" cy="91" r="9" fill="#3451b2"/>
+    <text x="269" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+    <text x="284" y="95" font-size="12" font-weight="bold" fill="#3451b2">晶振起振</text>
+    <text x="264" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">RCC_CR</text>
+    <text x="264" y="134" font-size="11" font-weight="bold" fill="#333">HSEON=1</text>
+    <text x="264" y="150" font-size="10.5" fill="#d97706">等 HSERDY</text>
+  </g>
+  <g>
+    <rect x="365" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="382" cy="91" r="9" fill="#3451b2"/>
+    <text x="382" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+    <text x="397" y="95" font-size="12" font-weight="bold" fill="#3451b2">PLL 上岗</text>
+    <text x="377" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">PLLCFGR</text>
+    <text x="377" y="134" font-size="10.5" font-weight="bold" fill="#333" font-family="Consolas,'Courier New',monospace">0x07405408</text>
+    <text x="377" y="150" font-size="10.5" fill="#d97706">等 PLLRDY</text>
+  </g>
+  <g>
+    <rect x="478" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="495" cy="91" r="9" fill="#3451b2"/>
+    <text x="495" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">5</text>
+    <text x="510" y="95" font-size="12" font-weight="bold" fill="#3451b2">切总闸</text>
+    <text x="490" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">RCC_CFGR</text>
+    <text x="490" y="134" font-size="11" font-weight="bold" fill="#333">SW=10b</text>
+    <text x="490" y="150" font-size="10.5" fill="#d97706">等 SWS=10b</text>
+  </g>
+  <g>
+    <rect x="591" y="72" width="103" height="88" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <circle cx="608" cy="91" r="9" fill="#3451b2"/>
+    <text x="608" y="95" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">6</text>
+    <text x="623" y="95" font-size="12" font-weight="bold" fill="#3451b2">总线分频</text>
+    <text x="603" y="116" font-size="10.5" fill="#666" font-family="Consolas,'Courier New',monospace">HPRE/PPRE</text>
+    <text x="603" y="134" font-size="11" font-weight="bold" fill="#333">/1 /4 /2</text>
+    <text x="603" y="150" font-size="10.5" fill="#d97706">42 / 84 MHz</text>
+  </g>
+
+  <!-- 阶段高亮：第 1 阶段闸门 1-2，第 2 阶段 3-4，第 3 阶段 5-6 -->
+  <rect x="26" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <rect x="139" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <rect x="252" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <rect x="365" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <rect x="478" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <rect x="591" y="72" width="103" height="88" rx="8" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- 闸门之间的箭头 -->
+  <g stroke="#94a3b8" stroke-width="1.8" fill="none">
+    <path d="M129,116 L139,116"/>
+    <path d="M242,116 L252,116"/>
+    <path d="M355,116 L365,116"/>
+    <path d="M468,116 L478,116"/>
+    <path d="M581,116 L591,116"/>
+  </g>
+  <g fill="#94a3b8">
+    <polygon points="139,112 139,120 144,116"/>
+    <polygon points="252,112 252,120 257,116"/>
+    <polygon points="365,112 365,120 370,116"/>
+    <polygon points="478,112 478,120 483,116"/>
+    <polygon points="591,112 591,120 596,116"/>
+  </g>
+
+  <!-- 时间轴与逐级爬升的走线 -->
+  <path d="M32,186 H688" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
+  <polygon points="688,181 688,191 698,186" fill="#94a3b8"/>
+  <text x="644" y="204" font-size="10.5" fill="#666">时间 →</text>
+  <path d="M32,186 H688" stroke="#3451b2" stroke-width="2.5" fill="none" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.75;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+      <text x="36" y="226">① 先降速：VOS=1、5WS 与预取先就位</text></g>
+    <g opacity="0"><animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+      <text x="36" y="226">② 再起振：HSE 等 HSERDY，PLL 等 PLLRDY</text></g>
+    <g opacity="0"><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+      <text x="36" y="226">③ 后合闸：SW=10b 后读 SWS 确认真换了</text></g>
+    <g opacity="0"><animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+      <text x="36" y="226">④ 反例：先合闸后降速——取指超时，芯片跑飞</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,248)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- 正确次序 -->
+  <rect x="26" y="272" width="330" height="80" rx="8" fill="#d8f3e5" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="42" y="294" font-size="12" font-weight="bold" fill="#1a7f56">✓ 唯一安全次序：先降速，再提速</text>
+  <text x="42" y="315" font-size="10.5" fill="#333">先把电压档与等待周期摆到能承受 168MHz；</text>
+  <text x="42" y="334" font-size="10.5" fill="#333">再让 HSE、PLL 上岗，切钟后读 SWS 确认。</text>
+
+  <!-- 反例：第 4 阶段加一圈警示描边 -->
+  <rect x="364" y="272" width="330" height="80" rx="8" fill="#fff7ed" stroke="#dc2626" stroke-width="1.5"/>
+  <rect x="364" y="272" width="330" height="80" rx="8" fill="none" stroke="#dc2626" stroke-width="3" opacity="0">
+    <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" calcMode="discrete" repeatCount="indefinite"/>
+  </rect>
+  <text x="380" y="294" font-size="12" font-weight="bold" fill="#dc2626">✗ 倒过来就是事故：先合闸，后降速</text>
+  <text x="380" y="315" font-size="10.5" fill="#333">先写 SW=10b、再补等待周期：新频率已经在跑，</text>
+  <text x="380" y="334" font-size="10.5" fill="#333">Flash 还没学会等——取指超时，芯片跑飞。</text>
+
+  <text x="26" y="386" font-size="12" fill="#666">每一步的「等」都是读硬件回执位：写完寄存器 ≠ 已经生效。</text>
+</svg>

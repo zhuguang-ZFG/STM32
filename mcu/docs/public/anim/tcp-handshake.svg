@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>从 WiFi 握手到 TCP 三次握手：ESP32 上线全程</title>
+  <desc>从 WiFi 握手到 TCP 三次握手：ESP32 上线全程。先拿到"小区门禁卡"（WiFi 关联+DHCP），再和服务器"对暗号"（SYN/ACK）——三次才能确认彼此耳聪目明。三条握手箭头都从发端爬向收端，模拟报文真的在路上。</desc>
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">从 WiFi 握手到 TCP 三次握手：ESP32 上线全程</text>
+  <text x="24" y="50" font-size="12" fill="#666">先拿到"小区门禁卡"（WiFi 关联+DHCP），再和服务器"对暗号"（SYN/ACK）——三次才能确认彼此耳聪目明</text>
+
+  <!-- 双方生命线 -->
+  <rect x="80" y="80" width="140" height="56" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="150" y="104" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">ESP32-S3</text>
+  <text x="150" y="124" font-size="11" fill="#666" text-anchor="middle">Station（客户端）</text>
+  <rect x="500" y="80" width="140" height="56" fill="#ffffff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="570" y="104" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">路由器/服务器</text>
+  <text x="570" y="124" font-size="11" fill="#666" text-anchor="middle">AP + TCP Server</text>
+  <line x1="150" y1="136" x2="150" y2="330" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="570" y1="136" x2="570" y2="330" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 4"/>
+
+  <!-- WiFi 四步（左侧小字阶梯） -->
+  <g font-size="11" fill="#888">
+    <text x="40" y="160">WiFi ① 扫描 SSID</text>
+    <text x="40" y="176">WiFi ② 认证 Auth</text>
+    <text x="40" y="192">WiFi ③ 关联 Assoc</text>
+    <text x="40" y="208">WiFi ④ DHCP 拿 IP</text>
+  </g>
+  <rect x="30" y="146" width="104" height="70" fill="none" stroke="#d97706" stroke-width="2" rx="6" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- 消息箭头（阶段出现） -->
+  <!-- ① DHCP 完成通知 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+    <text x="360" y="166" font-size="12" fill="#3eaf7c" font-weight="bold" text-anchor="middle">拿到 IP：192.168.1.66 ✅</text>
+  </g>
+  <!-- ② SYN -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+    <!-- x2 从发端爬向收端：箭头是"packet 正在路上"，不是凭空画好的整条线 -->
+    <line x1="150" y1="190" x2="150" y2="190" stroke="#d97706" stroke-width="3" marker-end="url(#arrT)">
+      <animate attributeName="x2" values="150;150;560;560" keyTimes="0;0.14;0.22;1" dur="16s" repeatCount="indefinite"/>
+    </line>
+    <text x="360" y="182" font-size="12" fill="#d97706" font-weight="bold" text-anchor="middle" font-family="Consolas,monospace">SYN　seq=100（"听得到吗？"）</text>
+  </g>
+  <!-- ③ SYN+ACK -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+    <line x1="570" y1="226" x2="570" y2="226" stroke="#3451b2" stroke-width="3" marker-end="url(#arrT2)">
+      <animate attributeName="x2" values="570;570;160;160" keyTimes="0;0.28;0.36;1" dur="16s" repeatCount="indefinite"/>
+    </line>
+    <text x="360" y="218" font-size="12" fill="#3451b2" font-weight="bold" text-anchor="middle" font-family="Consolas,monospace">SYN+ACK　seq=300, ack=101（"听到你了，你呢？"）</text>
+  </g>
+  <!-- ④ ACK -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+    <line x1="150" y1="262" x2="150" y2="262" stroke="#d97706" stroke-width="3" marker-end="url(#arrT)">
+      <animate attributeName="x2" values="150;150;560;560" keyTimes="0;0.42;0.50;1" dur="16s" repeatCount="indefinite"/>
+    </line>
+    <text x="360" y="254" font-size="12" fill="#d97706" font-weight="bold" text-anchor="middle" font-family="Consolas,monospace">ACK　seq=101, ack=301（"我也听到你了！"）</text>
+  </g>
+  <!-- ⑤ 通道建立 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;1;1;1" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+    <rect x="150" y="284" width="420" height="34" fill="#dcfce7" stroke="#3eaf7c" stroke-width="2" rx="6"/>
+    <text x="360" y="306" font-size="13" fill="#166534" font-weight="bold" text-anchor="middle">连接建立 ESTABLISHED——可以传数据了（HTTP/MQTT 上场）</text>
+  </g>
+  <defs>
+    <marker id="arrT" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+    </marker>
+    <marker id="arrT2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">① 先上"小区"：扫描→认证→关联→DHCP，四步拿到 IP 门牌</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">② 第一握手 SYN：客户端带初始序号 100 敲门——"我要说话"</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">③ 第二握手 SYN+ACK：服务器回自己的序号 300，并确认 100 收到（ack=101）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">④ 第三握手 ACK：客户端确认 300 收到（ack=301）——双向耳朵都验过</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">⑤ 为什么非要三次？两次只能证明"我说你听"，证明不了"你说我听"</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;1;1;1" keyTimes="0;0.14;0.28;0.42;0.56;0.70;0.84;1" dur="16s" repeatCount="indefinite"/>
+      <text x="36" y="362">序号是防"迟到的旧报文"骗开门的——接下来去 P8 章配 WiFi →</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(594,386)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;1" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+    <circle cx="90" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;0.2;1;1" keyTimes="0;0.14;0.28;0.42;0.56;0.70;1" dur="16s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

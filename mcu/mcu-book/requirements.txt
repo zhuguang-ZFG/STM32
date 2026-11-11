@@ -1,0 +1,10 @@
+markdown>=3.7
+playwright>=1.40
+PyMuPDF>=1.24
+# 字体子集化（subset_fonts.py）与契约夹具嵌字体（tests/test_check_pdf.py）：
+# woff2 的读写要 brotli，PyMuPDF 不收 woff2，夹具靠 fontTools 解回 ttf。
+fonttools>=4.50
+brotli>=1.1
+# test_prose_guard.py 以 pytest 风格编写（unittest discover 也能收集，但 import pytest）：
+# CI 环境不装它 Book CI 必红（2026-10-26 起），本地 venv 已有所以此前未暴露。
+pytest>=8.0

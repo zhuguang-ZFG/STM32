@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8" /><title>单图定格</title>
+<style>body{margin:0;background:#fff}#s{position:relative}</style></head>
+<body>
+<div id="s"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const fig = q.get('fig'), t = parseFloat(q.get('t')), z = parseFloat(q.get('z') || '2');
+const marks = (q.get('mark') || '').split('||').filter(Boolean);
+(async () => {
+  const txt = await (await fetch(`anim/${fig}.svg`, { cache: 'no-store' })).text();
+  const box = document.getElementById('s');
+  box.innerHTML = txt;
+  const svg = box.querySelector('svg');
+  const vb = svg.getAttribute('viewBox').split(/\s+/).map(Number);
+  svg.setAttribute('width', vb[2] * z);
+  svg.setAttribute('height', vb[3] * z);
+  void svg.getBoundingClientRect();
+  svg.setCurrentTime(t);
+  // 把被怀疑的两行字描出盒子，便于肉眼判断是真压字还是包围盒相碰
+  for (const el of svg.querySelectorAll('text')) {
+    const s = el.textContent.trim();
+    if (marks.some(m => s.startsWith(m))) {
+      const r = el.getBoundingClientRect(), b = svg.getBoundingClientRect();
+      const o = document.createElement('div');
+      o.style.cssText = `position:absolute;border:1px solid #cf222e;background:rgba(207,34,46,.10);
+        left:${r.x-b.x}px;top:${r.y-b.y}px;width:${r.width}px;height:${r.height}px`;
+      box.appendChild(o);
+    }
+  }
+  document.title = 'READY';
+})();
+</script>
+</body>
+</html>

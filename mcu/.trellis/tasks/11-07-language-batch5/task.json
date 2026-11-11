@@ -1,0 +1,29 @@
+{
+  "id": "language-batch5",
+  "name": "language-batch5",
+  "title": "语言通俗化第五批：B7 构建系统收尾",
+  "description": "按已交付方案实施B7原27/51/116/134四处散文，保护事实与结构；本地验证后交文字验收。",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "docs-site",
+  "package": "docs-site",
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "docs/build/07-build-system.md",
+    "docs/reference/changelog.md"
+  ],
+  "notes": "用户在四处方案后要求继续改进优化；已按原27/51/116/134本地落盘，两阶段strict guard、语言/整书检查、含日志最终build48.78s与B7桌面手机真实交互通过。26冻结来源、214验证输入和42用户文件保持；task_verify仍unverified。待文字验收，不提交推送发布、不归档、不进入S篇。",
+  "meta": {}
+}

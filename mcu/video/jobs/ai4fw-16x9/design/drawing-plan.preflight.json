@@ -1,0 +1,16 @@
+{
+  "status": "ready_for_generation",
+  "plan_sha256": "9b433a3e75a2abaaeec3e0659b98e08d094bbb709ddacea6b7dd582091e120fd",
+  "style_sha256": "46448cf896325fc46c7573fbedb68ba529a6f630d239719d861552b1661d7ff3",
+  "illustrations": [
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v10"
+  ]
+}

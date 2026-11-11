@@ -1,0 +1,5 @@
+{"file": "CONTRIBUTING.md", "reason": "内容质量最高法：四件套、风格契约、动画与图片规范；旁白与屏上文案按它写"}
+{"file": ".trellis/spec/docs-site/content.md", "reason": "屏上术语与站内正文口径同源，S5 正文是唯一事实源"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "验收契约：死链、禁占位、事实必须有出处"}
+{"file": ".trellis/tasks/10-17-s5-systick-episode/research/probe-20261017.md", "reason": "本机实跑读数留档，屏上每个数的唯一来源（42/42 断言、toolchain 10.3.1）"}
+{"file": "video/series.json", "reason": "片单与 format.rule：no:18、badge、两平台时长与规格口径"}

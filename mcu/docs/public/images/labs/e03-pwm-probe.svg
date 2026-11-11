@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E03 探头接法与 PWM 波形：计数器锯齿越过 CCR 时输出翻转，CCR/(ARR+1) 即占空比">
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">E03 探头接法与读图：寄存器值如何变成波形</text>
+  <text x="24" y="50" font-size="12" fill="#666">探头尖钩 PWM 脚，地夹就近接 GND；两块板任选其一</text>
+
+  <!-- 示波器 -->
+  <rect x="30" y="70" width="170" height="86" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="115" y="92" font-size="13" font-weight="bold" fill="#1a7f56" text-anchor="middle">示波器 CH1</text>
+  <text x="115" y="114" font-size="12" fill="#666" text-anchor="middle">探头 ×10 档</text>
+  <text x="115" y="132" font-size="12" fill="#666" text-anchor="middle">与仪器 Probe 设置一致</text>
+  <!-- 探头线 -->
+  <line x1="200" y1="100" x2="330" y2="100" stroke="#3451b2" stroke-width="2"/>
+  <text x="265" y="94" font-size="12" fill="#3451b2" text-anchor="middle">探头尖</text>
+  <line x1="200" y1="132" x2="330" y2="132" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="265" y="148" font-size="12" fill="#333" text-anchor="middle">地夹</text>
+
+  <!-- 板子 -->
+  <rect x="330" y="70" width="360" height="86" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="344" y="92" font-size="13" font-weight="bold" fill="#3451b2">两板任选</text>
+  <text x="344" y="118" font-size="12" fill="#333">霸天虎：PA6 = TIM3_CH1（AF2），1 kHz</text>
+  <text x="344" y="140" font-size="12" fill="#333">立创 S3：GPIO10 = LEDC 通道 0，5 kHz，10 位</text>
+
+  <!-- 计数器锯齿 -->
+  <text x="24" y="188" font-size="13" font-weight="bold" fill="#3451b2">F407：计数器 CNT（1 MHz 计数，ARR = 999）</text>
+  <line x1="80" y1="290" x2="680" y2="290" stroke="#cfd6e4" stroke-width="1"/>
+  <line x1="80" y1="210" x2="680" y2="210" stroke="#cfd6e4" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="74" y="214" font-size="12" fill="#888" text-anchor="end">999</text>
+  <text x="74" y="294" font-size="12" fill="#888" text-anchor="end">0</text>
+  <path d="M80 290 L280 210 L280 290 L480 210 L480 290 L680 210" fill="none" stroke="#3451b2" stroke-width="2"/>
+  <line x1="80" y1="250" x2="680" y2="250" stroke="#d97706" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="686" y="254" font-size="12" fill="#a16207">CCR</text>
+  <text x="74" y="254" font-size="12" fill="#a16207" text-anchor="end">500</text>
+
+  <!-- 输出 -->
+  <text x="24" y="316" font-size="13" font-weight="bold" fill="#3451b2">PA6 输出（PWM 模式 1：CNT &lt; CCR 为高）</text>
+  <path d="M80 330 H180 V362 H280 V330 H380 V362 H480 V330 H580 V362 H680" fill="none" stroke="#c0392b" stroke-width="2.5"/>
+  <line x1="80" y1="372" x2="280" y2="372" stroke="#666" stroke-width="1"/>
+  <line x1="80" y1="368" x2="80" y2="376" stroke="#666"/><line x1="280" y1="368" x2="280" y2="376" stroke="#666"/>
+  <text x="180" y="386" font-size="12" fill="#666" text-anchor="middle">周期 1 ms</text>
+  <text x="130" y="350" font-size="12" fill="#c0392b" text-anchor="middle">高 0.5 ms</text>
+
+  <rect x="330" y="372" width="370" height="40" fill="#fdf0d5" stroke="#d97706" rx="6"/>
+  <text x="515" y="389" font-size="12" fill="#a16207" text-anchor="middle">频率 = 1 MHz ÷ (ARR+1)；占空比 = CCR ÷ (ARR+1)</text>
+  <text x="515" y="405" font-size="12" fill="#a16207" text-anchor="middle">ARR 999→499：周期减半、频率翻倍；CCR 250：25%</text>
+</svg>

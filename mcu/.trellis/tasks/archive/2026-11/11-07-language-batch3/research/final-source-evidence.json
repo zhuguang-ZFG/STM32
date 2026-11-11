@@ -1,0 +1,71 @@
+{
+  "baselineCommit": "a35ca6834b9419024470f42e7ddcd43184003025",
+  "chapters": [
+    {
+      "file": "docs/build/03-linker-script.md",
+      "sha256": "a7dab7dd9ce64f3126ed6be52166206d32fbc49ed35dbff965834062f1c4c3d4",
+      "changedLines": [
+        16,
+        83,
+        180,
+        236,
+        240
+      ],
+      "candidateMatches": true,
+      "metrics": {
+        "count": 147,
+        "longShare": 1.4,
+        "avg": 31.6
+      }
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "sha256": "96a9fd3a3e3d2bf2b600e67693234cfcbd73415b40bfee58511c72200e5d4735",
+      "changedLines": [
+        18,
+        98,
+        124
+      ],
+      "candidateMatches": true,
+      "metrics": {
+        "count": 77,
+        "longShare": 6.5,
+        "avg": 33.8
+      }
+    }
+  ],
+  "pinnedInputs": [
+    {
+      "file": ".prose-baseline.json",
+      "unchanged": true
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "unchanged": true
+    },
+    {
+      "file": "package.json",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "unchanged": true
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "unchanged": true
+    }
+  ]
+}

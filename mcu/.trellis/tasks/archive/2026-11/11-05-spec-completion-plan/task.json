@@ -1,0 +1,32 @@
+{
+  "id": "spec-completion-plan",
+  "name": "spec-completion-plan",
+  "title": "完善 spec 规范补全计划",
+  "description": "审计 spec 覆盖与接口漂移，形成分层设计、S01–S10 补全批次及可核验验收计划；本轮仅交付规划。",
+  "status": "completed",
+  "dev_type": "docs",
+  "scope": "spec",
+  "package": null,
+  "priority": "P2",
+  "creator": "zhuguang-ZFG",
+  "assignee": "zhuguang-ZFG",
+  "createdAt": "2026-11-05",
+  "completedAt": "2026-11-05",
+  "branch": null,
+  "base_branch": "feat/video-v2-remaster",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/tasks/11-05-spec-completion-plan/prd.md",
+    ".trellis/tasks/11-05-spec-completion-plan/design.md",
+    ".trellis/tasks/11-05-spec-completion-plan/implement.md",
+    ".trellis/tasks/11-05-spec-completion-plan/research/spec-audit.md",
+    ".trellis/tasks/11-05-spec-completion-plan/research/validation.md"
+  ],
+  "notes": "2026-11-05 用户已同意创建任务并完善计划，随后要求执行计划。B1–B6 规范实施已落地，轻量验证见 research/validation.md；重命令与产品回归未执行。Codex inline；保留已有工作区修改。",
+  "meta": {}
+}

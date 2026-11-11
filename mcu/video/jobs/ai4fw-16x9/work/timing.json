@@ -1,0 +1,92 @@
+{
+  "records": [
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793187778.0321546,
+      "end": 1793187778.8338673,
+      "seconds": 0.802,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793187784.9851031,
+      "end": 1793187842.7325702,
+      "seconds": 57.747,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793187872.193998,
+      "end": 1793187893.9982924,
+      "seconds": 21.804,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793187929.1558807,
+      "end": 1793187950.4987235,
+      "seconds": 21.343,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793188004.606997,
+      "end": 1793188037.3115573,
+      "seconds": 32.705,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793188114.2906137,
+      "end": 1793188139.7252622,
+      "seconds": 25.435,
+      "status": "failed"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793188236.8443277,
+      "end": 1793188260.7292056,
+      "seconds": 23.885,
+      "status": "ok"
+    },
+    {
+      "stage": "render",
+      "source": "tool",
+      "start": 1793188283.6002035,
+      "end": 1793188572.4671772,
+      "seconds": 288.867,
+      "status": "ok"
+    },
+    {
+      "stage": "verify",
+      "source": "tool",
+      "start": 1793188572.7545044,
+      "end": 1793188588.6041474,
+      "seconds": 15.85,
+      "status": "ok"
+    },
+    {
+      "stage": "finalize",
+      "source": "tool",
+      "start": 1793188766.1102462,
+      "end": 1793188767.4640512,
+      "seconds": 1.354,
+      "status": "ok"
+    },
+    {
+      "stage": "build",
+      "source": "tool",
+      "start": 1793189335.543576,
+      "end": 1793189369.0070376,
+      "seconds": 33.463,
+      "status": "ok"
+    }
+  ]
+}

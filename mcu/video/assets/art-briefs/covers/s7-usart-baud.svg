@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920">
+  <!-- s7-usart 封面手绘 · FA-013 · 两只小豆人举秒表对看，传送带送方块，错拍掉地上 -->
+  <rect width="1920" height="1920" fill="#ffffff"/>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M330 560 q-8 -110 120 -114 q128 4 120 116 q-2 66 -56 82 l-128 2 q-54 -18 -56 -86 z" fill="#3451b2"/>
+    <circle cx="404" cy="542" r="11" fill="#ffffff" stroke="none"/>
+    <circle cx="496" cy="542" r="11" fill="#ffffff" stroke="none"/>
+    <path d="M410 604 l50 0" stroke="#ffffff"/>
+    <path d="M420 646 q-40 60 -20 140 q30 40 160 40 q130 0 160 -40 q20 -80 -20 -140" fill="none"/>
+    <path d="M330 700 q-90 -60 -120 -140" fill="none"/>
+    <circle cx="190" cy="520" r="66" fill="#ffffff"/>
+    <path d="M190 520 l0 -34 M190 520 l24 14" stroke-width="10"/>
+    <path d="M470 826 l-8 110 M640 826 l8 110" fill="none"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M760 900 q200 -30 400 0 q200 30 400 0"/>
+    <circle cx="780" cy="906" r="18" fill="#ffffff"/>
+    <circle cx="1540" cy="898" r="18" fill="#ffffff"/>
+    <path d="M810 956 l730 4" stroke-width="10"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="12">
+    <rect x="880" y="828" width="52" height="52" fill="#3451b2"/>
+    <rect x="1010" y="824" width="52" height="52" fill="#3451b2"/>
+    <rect x="1140" y="822" width="52" height="52" fill="#3451b2"/>
+    <rect x="1270" y="824" width="52" height="52" fill="#3451b2"/>
+    <rect x="980" y="1150" width="56" height="56" fill="#ffffff" transform="rotate(18 1008 1178)"/>
+    <rect x="1150" y="1190" width="56" height="56" fill="#ffffff" transform="rotate(-14 1178 1218)"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1350 560 q-8 -110 120 -114 q128 4 120 116 q-2 66 -56 82 l-128 2 q-54 -18 -56 -86 z" fill="#ffffff"/>
+    <circle cx="1424" cy="542" r="11" fill="#1a1a1a" stroke="none"/>
+    <circle cx="1516" cy="542" r="11" fill="#1a1a1a" stroke="none"/>
+    <path d="M1430 604 l50 0"/>
+    <path d="M1440 646 q-40 60 -20 140 q30 40 160 40 q130 0 160 -40 q20 -80 -20 -140" fill="none"/>
+    <path d="M1590 700 q90 -60 120 -140" fill="none"/>
+    <circle cx="1730" cy="520" r="66" fill="#ffffff"/>
+    <path d="M1730 520 l0 -34 M1730 520 l24 14" stroke-width="10"/>
+    <path d="M1490 826 l-8 110 M1660 826 l8 110" fill="none"/>
+  </g>
+  <path d="M360 1290 q600 46 1200 4" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+</svg>

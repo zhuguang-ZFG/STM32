@@ -1,0 +1,195 @@
+{
+  "source": "D:\\Users\\mcu\\video\\sweety-handdraw-video\\skills\\sweety-handdraw-video\\dependencies\\hand-drawn-styles",
+  "styles_sha256": "a111040672a06188441b62fdbab71569476b937f73992ef5fc9792ba38789a5b",
+  "styles": [
+    {
+      "id": "1",
+      "name": "极简黑白线条讲解漫画(xkcd 火柴人)",
+      "preview": "previews/1.jpg",
+      "recipe": "recipes/1.md",
+      "recipe_sha256": "b7207c7cc1fbb6de9c35e2a81a7e54c6c9f4d956858edeb9d8d2e6114e543e33",
+      "drawing_mode": "draw",
+      "monochrome": true
+    },
+    {
+      "id": "2",
+      "name": "蜡笔童涂(5岁小孩坏画)",
+      "preview": "previews/2.jpg",
+      "recipe": "recipes/2.md",
+      "recipe_sha256": "7183357d70e240d1725b889330bb068bcdb1fce185a2edf32596582322a4669b",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "3",
+      "name": "吉卜力风",
+      "preview": "previews/3.jpg",
+      "recipe": "recipes/3.md",
+      "recipe_sha256": "a423a188561dc1ae368e1ffe4a09923a88f899c9480461f527a09b2b774b01fa",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "3.1",
+      "name": "蜡笔童涂-潦草自画版",
+      "preview": "previews/3.1.jpg",
+      "recipe": "recipes/3.1.md",
+      "recipe_sha256": "09442ae6001f9c1ee5602244a2c3b6a4ac896c0879008834bc047a94cfe568ee",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "4",
+      "name": "小豆人黑色涂鸦信息图",
+      "preview": "previews/4.jpg",
+      "recipe": "recipes/4.md",
+      "recipe_sha256": "53d8df7d02705a93e64ec692332f6cacb2d72e40513df84c758cd7e70219edf1",
+      "drawing_mode": "draw",
+      "monochrome": false
+    },
+    {
+      "id": "5",
+      "name": "MS Paint 烂涂鸦(the worse, the better)",
+      "preview": "previews/5.jpg",
+      "recipe": "recipes/5.md",
+      "recipe_sha256": "510ed347d975cf530d2b6247f77326641aa3222a53899cd15f7b8b9b342d40e6",
+      "drawing_mode": "draw",
+      "monochrome": false
+    },
+    {
+      "id": "6",
+      "name": "圆珠笔单线涂鸦(scribble)",
+      "preview": "previews/6.jpg",
+      "recipe": "recipes/6.md",
+      "recipe_sha256": "c6702b0864d580c4b16fce0093e1ef40b4ed613a2768267af8dbb35b19f845b5",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "7",
+      "name": "蜡笔实拍(真·儿童手涂纸张)",
+      "preview": "previews/7.jpg",
+      "recipe": "recipes/7.md",
+      "recipe_sha256": "eb6f1f012e8ab6ad29af351f28508c5fd1efddb4f86707e4bee9357726fb0eaf",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "8",
+      "name": "水墨写意",
+      "preview": "previews/8.jpg",
+      "recipe": "recipes/8.md",
+      "recipe_sha256": "0b1807f7ccd2bf0ac957f48f5cd7b8bfc39cd02fed62f5f3d90deeca24dc85e8",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "9",
+      "name": "复古像素",
+      "preview": "previews/9.jpg",
+      "recipe": "recipes/9.md",
+      "recipe_sha256": "5c272d9fc6a5e70edd482099a841c52543f96fe46211aa96dd8102f2d2fd1048",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "10",
+      "name": "情绪叙事淡彩速写",
+      "preview": "previews/10.jpg",
+      "recipe": "recipes/10.md",
+      "recipe_sha256": "54a4282eb0432565c00b04cd36dc6bef32475c40743ff500e7b5aca7f0047908",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "11",
+      "name": "二维水彩风格(复古动画概念稿)",
+      "preview": "previews/11.jpg",
+      "recipe": "recipes/11.md",
+      "recipe_sha256": "df1157dd504925a3f1024a7820c657630647a04d08377d4a963f964f8a299843",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "12",
+      "name": "暖光童画(动画概念暖绘)",
+      "preview": "previews/12.jpg",
+      "recipe": "recipes/12.md",
+      "recipe_sha256": "bd0099d6fd4de1d8e45b27e8535ecc9de679c020421b8c9d75b0a3993669bdef",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "13",
+      "name": "北欧纸雕(paper-folk)",
+      "preview": "previews/13.jpg",
+      "recipe": "recipes/13.md",
+      "recipe_sha256": "58a52b8e67cb2cad0baa397f143b926a6177b3e2f04a55d5b0c82af1247e63ef",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "14",
+      "name": "北欧绘本水粉(nordic-storybook)",
+      "preview": "previews/14.jpg",
+      "recipe": "recipes/14.md",
+      "recipe_sha256": "7d2bbaceead2d17cbf91265d5280d909ef6b72b756c365d00e4d9c64477401b4",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "15",
+      "name": "大鼻软偶(softnose-vinyl)",
+      "preview": "previews/15.jpg",
+      "recipe": "recipes/15.md",
+      "recipe_sha256": "599cb3b7bbec7d75875ffdb03193bff0dec5f2897df9648c8a68f11df5567ce1",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "16",
+      "name": "聚光水粉立绘(gouache-spotlight)",
+      "preview": "previews/16.jpg",
+      "recipe": "recipes/16.md",
+      "recipe_sha256": "d6ff685de94a3b9b4d53970526074f02e185e360a36d32414b8f5a6e256ae28a",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "17",
+      "name": "墨线绘本(inked-storybook)",
+      "preview": "previews/17.jpg",
+      "recipe": "recipes/17.md",
+      "recipe_sha256": "e53675cc01eb8e89f250e5b9f2dce1b5f1a4c0f342f06ed2066bdaf8c8b0382f",
+      "drawing_mode": "draw",
+      "monochrome": false
+    },
+    {
+      "id": "18",
+      "name": "暖色扁平绘本(warm-flat-storybook)",
+      "preview": "previews/18.jpg",
+      "recipe": "recipes/18.md",
+      "recipe_sha256": "2b032feb7dc1e61ed0e9e166a8031180124db22174a747dff1df9f3c4263d0c9",
+      "drawing_mode": "reveal",
+      "monochrome": false
+    },
+    {
+      "id": "19",
+      "name": "圆头红线极简童画(roundhead-redline)",
+      "preview": "previews/19.jpg",
+      "recipe": "recipes/19.md",
+      "recipe_sha256": "770815cac11236d6caec7c043a5aade42ef5754a9397e0b297dfd96da4075543",
+      "drawing_mode": "draw",
+      "monochrome": false
+    },
+    {
+      "id": "20",
+      "name": "暖黄墨线情绪小剧场(warm-yellow-ink-story)",
+      "preview": "previews/20.jpg",
+      "recipe": "recipes/20.md",
+      "recipe_sha256": "3835ff842aaaaecd785358313cf9039364cf82599151a8b19de5be6bb4c0b147",
+      "drawing_mode": "draw",
+      "monochrome": false
+    }
+  ]
+}

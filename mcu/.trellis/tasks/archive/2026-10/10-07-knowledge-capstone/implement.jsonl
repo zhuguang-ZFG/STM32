@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/docs-site/logger-contract.md", "reason": "共享 logger 核心对外合同（SAMPLE 布局/配置语义/状态 TLV）"}
+{"file": ".trellis/tasks/10-07-knowledge-capstone/design.md", "reason": "F407 外设选型约束与 S3 复用已核实地址/量程的决策依据"}
+{"file": ".trellis/tasks/10-07-knowledge-capstone/research/validation.md", "reason": "实现完成后逐条对照 C-A1–C-A6 的验证记录"}

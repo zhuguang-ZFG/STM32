@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>B2 ELF 解剖：节表与程序头的双重视角</title>
+  <desc>四阶段动画：同一个 ELF 文件有两套目录。① 节表视角：链接器按节（section）分抽屉——.isr_vector/.text/.rodata/.data/.bss 各归各，20 个节里只有 5 个带 A 标记真正占运行时内存；② 程序头视角：装载器按段（segment/PT_LOAD）装车——把若干节打包成两批，一批去 Flash 一批去 RAM；③ VMA/LMA 分家：.data 的人住 RAM（VMA=0x20000000），行李寄存 Flash（LMA=0x08000244），启动代码负责搬运；④ Thumb 位：入口地址末位 1 不是地址位，是 CPU 状态标志——nm 和 readelf 差 1 的原因。连续动效：一个数据包沿传送带从 Flash 搬向 RAM。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">ELF 双重视角：节表给链接器，程序头给装载器</text>
+  <text x="24" y="50" font-size="12" fill="#666">同一份 blink.elf（34,604 字节），烧进芯片只有 660 字节——差额是调试信息</text>
+
+  <!-- 文件示意（常驻） -->
+  <rect x="40" y="66" width="640" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="86" font-size="12" font-weight="bold" fill="#3451b2">blink.elf — 两套目录伺候两个人</text>
+  <text x="56" y="106" font-size="11" font-family="Consolas,monospace" fill="#333">节表（Section Header）→ 链接器按节分抽屉     程序头（Program Header）→ 装载器按段装车</text>
+
+  <!-- 传送带 -->
+  <line x1="80" y1="150" x2="640" y2="150" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5"/>
+  <circle cx="110" cy="150" r="6" fill="#3eaf7c">
+    <animate attributeName="cx" values="110;640;640;110" keyTimes="0;0.88;0.94;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 阶段一：节表视角 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="174" width="640" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="198" font-size="13" font-weight="bold" fill="#3451b2">① 节表视角：链接器按 section 分抽屉（readelf -S）</text>
+    <text x="56" y="222" font-size="12" font-family="Consolas,monospace" fill="#333">.isr_vector  00000188  08000000  A  ← 向量表，404 字节</text>
+    <text x="56" y="242" font-size="12" font-family="Consolas,monospace" fill="#333">.text        0000010c  08000188  AX ← 代码 + .rodata</text>
+    <text x="56" y="262" font-size="12" font-family="Consolas,monospace" fill="#333">.data        00000000  20000000  WA ← 有初值全局变量（空）</text>
+    <text x="56" y="282" font-size="12" font-family="Consolas,monospace" fill="#333">.bss         00000600  20000000  WA ← 零初始化，1536 字节</text>
+    <text x="56" y="306" font-size="12" fill="#666">20 个节里只有 5 个带 <tspan fill="#dc2626" font-weight="bold">A</tspan>（alloc）标记——其余 15 个（.debug_*、.symtab 等）</text>
+    <text x="56" y="322" font-size="12" fill="#666">写给活人看，不进芯片。这就是 34KB → 660 字节的差额。</text>
+  </g>
+
+  <!-- 阶段二：程序头视角 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="174" width="640" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="198" font-size="13" font-weight="bold" fill="#3451b2">② 程序头视角：装载器按 PT_LOAD 段装车（readelf -l）</text>
+    <text x="56" y="222" font-size="12" font-family="Consolas,monospace" fill="#333">LOAD  #1: Off 0x10000  VMA 0x08000000  FileSiz 0x00194</text>
+    <text x="56" y="242" font-size="12" font-family="Consolas,monospace" fill="#333">         → .isr_vector + .text → 装进 Flash</text>
+    <text x="56" y="268" font-size="12" font-family="Consolas,monospace" fill="#333">LOAD  #2: Off 0x10194  VMA 0x20000000  FileSiz 0x00000</text>
+    <text x="56" y="288" font-size="12" font-family="Consolas,monospace" fill="#333">         → .data + .bss → 装进 RAM（.data 空，.bss 清零）</text>
+    <text x="56" y="318" font-size="12" fill="#d97706">两段 PT_LOAD = 两批货：一批寄 Flash，一批寄 RAM。节是细粒度，段是粗粒度。</text>
+  </g>
+
+  <!-- 阶段三：VMA/LMA 分家 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="174" width="640" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="198" font-size="13" font-weight="bold" fill="#3451b2">③ VMA / LMA 分家：.data 的双重户籍</text>
+    <!-- Flash 侧 -->
+    <rect x="56" y="214" width="260" height="50" rx="6" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="72" y="234" font-size="12" font-weight="bold" fill="#3451b2">Flash (LMA = 0x08000244)</text>
+    <text x="72" y="252" font-size="11" font-family="Consolas,monospace" fill="#333">.data 的初值存在这里</text>
+    <!-- RAM 侧 -->
+    <rect x="404" y="214" width="260" height="50" rx="6" fill="#d8f3e5" stroke="#3eaf7c"/>
+    <text x="420" y="234" font-size="12" font-weight="bold" fill="#1a7f56">RAM (VMA = 0x20000000)</text>
+    <text x="420" y="252" font-size="11" font-family="Consolas,monospace" fill="#333">.data 运行时住这里</text>
+    <!-- 搬运箭头 -->
+    <line x1="320" y1="239" x2="398" y2="239" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="332" y="232" font-size="11" fill="#d97706" font-weight="bold">搬运</text>
+    <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#d97706"/></marker></defs>
+    <text x="56" y="286" font-size="12" fill="#666">启动代码（Reset_Handler）在进 main 之前执行 LoopCopyDataInitDone：</text>
+    <text x="56" y="304" font-size="12" fill="#666">从 _sidata（Flash）拷贝 FileSiz 字节到 _sdata（RAM），再 memset 清零 .bss。</text>
+    <text x="56" y="324" font-size="12" fill="#d97706">这对地址来自链接脚本：} &gt;RAM AT&gt; FLASH</text>
+  </g>
+
+  <!-- 阶段四：Thumb 位 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="174" width="640" height="160" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="198" font-size="13" font-weight="bold" fill="#3451b2">④ Thumb 位：为什么 readelf 和 nm 差 1</text>
+    <text x="56" y="224" font-size="12" font-family="Consolas,monospace" fill="#333">readelf -h:  Entry point address: 0x8000189</text>
+    <text x="56" y="246" font-size="12" font-family="Consolas,monospace" fill="#333">nm -n:       08000188 W Reset_Handler</text>
+    <text x="56" y="274" font-size="13" fill="#333">0x...<tspan fill="#dc2626" font-weight="bold">9</tspan> = 0x...<tspan fill="#3eaf7c" font-weight="bold">8</tspan> | <tspan fill="#d97706" font-weight="bold">1</tspan>  ← 最低位是 Thumb 状态标志，不是地址位</text>
+    <text x="56" y="300" font-size="12" fill="#666">Cortex-M 只跑 Thumb 态。向量表和函数指针里填地址必须带 1，</text>
+    <text x="56" y="318" font-size="12" fill="#666">告诉 CPU "跳过去之后用 Thumb 指令集"。GDB 断点用纯地址。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">① 节表：20 个节，5 个 A 标记——34KB 的固件烧进去只有 660 字节</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">② 程序头：两段 PT_LOAD——一批去 Flash，一批去 RAM</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">③ VMA/LMA：.data 住 RAM，初值存 Flash，启动代码负责搬运</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="396">④ Thumb 位：末位 1 是状态标志——往向量表填地址别忘了它</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,426)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

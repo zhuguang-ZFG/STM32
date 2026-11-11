@@ -1,0 +1,41 @@
+{
+  "ep": "s2-rcc",
+  "source": "code/stm32/01-rcc-clock/probe.sh (xPack GCC 15.2.1 -O2) + RM0090 Rev 18",
+  "evidence": {
+    "probe §1 晶振表第一行（8MHz）：8000000 0 8 336 2 7 1000000 336000000 168000000 48000000": "code/stm32/01-rcc-clock/probe.sh 第 1 段；.temp/v2-facts/s2-probe.log 表格第 1 行",
+    "probe §1 晶振表其余行：25000000 0 25；16000000 0 16；12000000 0 12；6000000 0 6；4000000 0 4；11059200 -2；64000000 -1": "同一张表第 2–8 行：六种晶振全部把 VCO 输入归一化到 1000000Hz；11059200 返回 -2，64000000 返回 -1",
+    "probe §1 第 4b 节：PPRE 字段只有 3 位，索引最大 7；0b000/0b001/0b010/0b011 都是 /1；旧 16 格表把 0b100/0b101/0b110/0b111 全读成 /1，新 8 格表分别读出 /2 /4 /8 /16": "PPRE 表长度陷阱的实跑对照；HPRE 才是 4 位字段",
+    "RM0090 Rev 18 Table 10（按 VDD 分列）：2.7~3.6V ≤30 ≤60 ≤90 ≤120 ≤150 ≤168；2.4~2.7V ≤24 ≤48 ≤72 ≤96 ≤120 ≤144 ≤168；2.1~2.4V ≤22 ≤44 ≤66 ≤88 ≤110 ≤132 ≤154 ≤168；1.8~2.1V（预取关）≤20 ≤40 ≤60 ≤80 ≤100 ≤120 ≤140 ≤160": "等待周期表原文；表号与 Rev 号一并引用",
+    "等待周期旁白：3.3V 供电 → 5 个等待周期；2.5V 供电 → 6 个；3.3 伏": "同一颗芯片 168MHz 在不同 VDD 分档下的行内读数（2.5V 落在 2.4~2.7V 行，168MHz 对应 6WS）",
+    "RCC_PLLCFGR 位段：M[5:0]=8、N[14:6]=336、P[17:16]=0（00=/2）、SRC[22]=1、Q[27:24]=7 → 0x07405408；word = 8 | (336 << 6) | (0 << 16) | (1 << 22) | (7 << 24)；P 字段 00=/2、01=/4，没有 10 和 11": "探针第 2 节独立拼字并断言等于反汇编字面量；P 的两位编码来自 RM0090",
+    "gcc 15.2.1 -O2 literal pool（text 944）：274 .word 0x40023000；278 .word 0x40021000；27c .word 0x40007000；284 .word 0x00100001；288 .word 0x07405408；28c .word 0x10624dd3（除以 1000 的魔数）；290 .word 0x0280de80 = 42000000（MCO1 目标）": "build/main_o2.o objdump；注意 274 即 .word 0x40023000 的地址（字面量池 274/278/27c/284/288/28c/290）",
+    "objdump main：a4 bic #16777216 @ 0x1000000；ac lsls #6；b2 bmi；b4 ldr r3,[pc,#464] @ 288；b6 str [r2,#2052] @ 0x804；ba ldr [r2,#2048] @ 0x800；c0 orr #16777216；bit25 PLLRDY；偏移 #2052 = RCC_BASE + 0x804": "关闭旧 PLL → 等停止 → 写 PLLCFGR → 开 PLL 的指令流；#2052 是 0x804 的十进制",
+    "objdump main 提频顺序地址：50 5a 66 72 7e 90 b6 c0 ce d8 ee f2 106 12e；值：orr #16384、bic #7、orr #5、orr #256、orr #65536、lsls #14、str #2052、orr #16777216、bic #3 / orr #2、and #12、cmp #8；SW = 10b；HPRE /1、PPRE1 /4、PPRE2 /2": "按地址从小到大：VOS → LATENCY+PRFTEN → HSEON → 等 HSERDY → 关旧 PLL → 写 PLLCFGR → PLLON → 等 PLLRDY → SW → 读 SWS → 总线分频",
+    "probe.sh 第 3 步 hse-poll：7a ldr [r1,#2048] @ 0x800；7e orr #65536 @ 0x10000；82 str；8c ldr；90 lsls #14；92 bpl；88 subs；8a beq；94；r3 = .word 0x00100001；timeout 0x00100000；bit16 HSEON、bit17 HSERDY；编出来六条": "带超时的轮询在 -O2 下的全部指令；超时上限 = 0x00100000 + 1",
+    "systick：SysTick_LOAD = hclk / 1000 - 1；CTRL = 0x7；传入 g_clock_tree[1]；按 16MHz 算则 168/16=10.5 倍；13c ldr [r4,#4]；13e ldr [pc,#332] @ 0x10624dd3；140 umull；148 lsrs #6；14e subs；154 str [r1,#20]；14c movs #7；158 str [r1,#16]；r1 = 0xe000e000": "LOAD 用回读出来的 HCLK；除以 1000 被编成 umull + lsrs #6",
+    "src-table：HSI 16MHz ±1%；HSE 4~26MHz；LSI ~32kHz；LSE 32.768kHz；USE_HSE_PLL=0；-O2 默认版字面量池 .word 0x00f42400=16000000、.word 0x007a1200=8000000；没有 .word 0x07405408、没有 orr #16777216；唯一一次碰偏移 #2052 是 ldr": "四个时钟源来自 RM0090；默认版对账来自 build/main_o2_nohse.o（text 536）",
+    "F405/407 没有 VOSRDY——那是 F42x/43x 的；VOS=0 时 fHCLK 上限 144MHz，VOS=1 才允许 168MHz": "RM0090 电压档天花板；本集翻案段",
+    "树动画第四幕：MCO1 把时钟送到 PA8，理论 42MHz": "168MHz / 4 = 42MHz，来自 MCO1PRE=/4 的正确编码",
+    "publish/封面文案：0x07405408；M=8/N=336/P=2/Q=7；30→0WS、31→1WS、150→4WS、151→5WS；回读 {168, 168, 42, 84, 84}；×2；/4；672MHz；504MHz；336MHz；25MHz / 8MHz；168000000 / 53760000 / 114240000；返回值 0；S2；S14": "发布文案复述的是本集已取证的同一批数字（含下一集 S14 的集号）",
+    "const-fold 反汇编：3a mov.w #336→g_pll_n；3e movs #8→g_pll_m；40 str [r4,#32]；42 str [r4,#36]；44 movs #2→g_pll_p；46 movs #7→g_pll_q；48 str [r4,#40]；4a str [r4,#44]；源码 return -1": "-O2 常量折叠：一次函数调用变成四个立即数，一条除法都没有",
+    "复现路径 code/stm32/01-rcc-clock 与文档 docs/stm32/02-rcc-clock.md": "路径与章节号，不是测量值",
+    "封面与标题：程序以为 168；引脚只有 53.76；引脚 53.76 MHz；差值 114240000 Hz": "与 hook-01 同源：probe 第 2 段 53760000Hz = 53.76MHz",
+    "probe §2 宏 25000000 Hz 对板上 8000000 Hz：PLLCFGR M=25 N=336 P=/2 Q=7 → 0x07405419；程序以为 168000000 Hz；VCO 输入 320000 Hz；引脚 53760000 Hz；USB 15360000 Hz（那一路 15.36MHz，要 48MHz）；差 114240000 Hz；返回值 0；宏填对时差值 = 0 Hz": "probe.sh 第 2 段（HSE_VALUE_HZ=25000000UL、BOARD_HSE_HZ=8000000UL）",
+    "RM0090 Rev 18 §7.2.3：M ∈ [2, 63]，VCO 输入 1~2 MHz；N ∈ [50, 432]，VCO 100~432 MHz；P=/2 或 /4；Q ∈ [2, 15]，USB 48 MHz；8MHz → M=8 → 1MHz；25MHz → M=25 → 1MHz": "PLL 约束原文；M 的职责是归一化参考输入",
+    "probe §1 等待周期 10 个边界：16 MHz → 0 WS；30 MHz → 0 WS；31 MHz → 1 WS；60 MHz → 1 WS；61 MHz → 2 WS；90 MHz → 2 WS；120 MHz → 3 WS；150 MHz → 4 WS；151 MHz → 5 WS；168 MHz → 5 WS；两侧边界 30/31、60/61、150/151": "flash_latency_ws_3v3() 实跑；每个边界各测两侧",
+    "sw-sws：SW=10b 写入 0x2；timeout 0x00100000；SWS 掩 #12 后比较 #8（字段在第 3:2 格）；写偏移 0x808 即 808；CFGR 的十进制偏移 2056；回退 SystemCoreClock = 16000000": "写 SW 与读 SWS 是两条指令之间的真实硬件切换；比较值 8 而不是 2",
+    "bus-div HPRE/PPRE 编码：HPRE [7:4] 0xxx=/1、1000=/2、1001=/4、1010=/8、1011=/16、1100=/64、1101=/128、1110=/256、1111=/512；F4 没有 /32；PPRE [12:10][15:13] 0xx=/1、100=/2、101=/4、110=/8、111=/16；PPRE1=0b101、PPRE2=0b100；APB1 上限 42MHz、APB2 上限 84MHz": "两张编码表不是一回事；APB1 上限 42MHz、APB2 上限 84MHz",
+    "probe §1 时钟树回读：SYSCLK=168000000 HCLK=168000000 PCLK1=42000000（不是 4200 万）PCLK2=84000000 TIM2CLK=84000000；PPRE1=/4 → 定时器时钟 = PCLK1 × 2；对照组 PPRE1=/1：PCLK1=168000000 TIM2CLK=168000000": "clock_tree_readback() 喂 SWS=PLL、PPRE1=0b101、PPRE2=0b100",
+    "probe §1 第 5 节 MCO1PRE[2:0]：真实编码 0/4/5/6/7；pre=0b110（6）→ PA8=42000000 Hz；按 div-1 写 pre=0b011（3）→ div=1 → PA8=168000000 Hz；读数乘 4 → 672000000 Hz，多出 504 MHz（504 兆）": "mco1_pre_for() 实跑；编码最高位为 0 表示不除"
+  },
+  "exceptions": {
+    "7.2.3": "RM0090 的章节号，不是测量值",
+    "18": "RM0090 的修订号 Rev 18，不是测量值",
+    "407": "芯片型号 F405/407，不是测量值（405 因前导字母不单独成 token）",
+    "42": "F42x/43x 芯片系列号；另有 42MHz 的测量值，见 MCO1 证据",
+    "43": "F42x/43x 芯片系列号，不是测量值",
+    "14": "下一集集号 S14，不是测量值",
+    "02": "章节文件 docs/stm32/02-rcc-clock.md 的序号，不是测量值",
+    "01": "复现路径 code/stm32/01-rcc-clock 的章号；另有 P 字段 01=/4，见位段证据"
+  }
+}

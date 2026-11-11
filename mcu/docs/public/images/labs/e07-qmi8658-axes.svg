@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E07 读数流程与姿态：WHO_AM_I 0x05，配置 ±4g/±512dps，从 0x35 连读 12 字节小端 int16，除以 8192 得 g、除以 64 得 dps；平放 Z 约 1g，竖立时重力换到 X 或 Y，摇晃时合加速度偏离 1g">
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">E07 从寄存器到物理量：QMI8658 读数流程与三种姿态</text>
+  <text x="24" y="50" font-size="12" fill="#666">板载器件零接线：I2C SDA=GPIO1、SCL=GPIO2，7 位地址 0x6A，100 kHz</text>
+
+  <!-- 流程 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="66" width="122" height="64" fill="#fff" stroke="#3451b2" stroke-width="2" rx="6"/>
+    <text x="85" y="86" font-weight="bold" fill="#3451b2">① 认人</text>
+    <text x="85" y="104" fill="#333">读 0x00</text>
+    <text x="85" y="120" fill="#333">应为 0x05</text>
+    <rect x="164" y="66" width="122" height="64" fill="#fff" stroke="#3451b2" stroke-width="2" rx="6"/>
+    <text x="225" y="86" font-weight="bold" fill="#3451b2">② 配置</text>
+    <text x="225" y="104" fill="#333">±4g / ±512dps</text>
+    <text x="225" y="120" fill="#333">250 Hz</text>
+    <rect x="304" y="66" width="122" height="64" fill="#fff" stroke="#3451b2" stroke-width="2" rx="6"/>
+    <text x="365" y="86" font-weight="bold" fill="#3451b2">③ 等就绪</text>
+    <text x="365" y="104" fill="#333">STATUS 0x2E</text>
+    <text x="365" y="120" fill="#333">低两位都为 1</text>
+    <rect x="444" y="66" width="122" height="64" fill="#fff" stroke="#3451b2" stroke-width="2" rx="6"/>
+    <text x="505" y="86" font-weight="bold" fill="#3451b2">④ 连读</text>
+    <text x="505" y="104" fill="#333">从 0x35 起</text>
+    <text x="505" y="120" fill="#333">12 字节</text>
+    <rect x="584" y="66" width="112" height="64" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="6"/>
+    <text x="640" y="86" font-weight="bold" fill="#1a7f56">⑤ 换算</text>
+    <text x="640" y="104" fill="#333">÷8192 → g</text>
+    <text x="640" y="120" fill="#333">÷64 → dps</text>
+  </g>
+  <g stroke="#3451b2" stroke-width="2">
+    <line x1="146" y1="98" x2="160" y2="98"/><line x1="286" y1="98" x2="300" y2="98"/>
+    <line x1="426" y1="98" x2="440" y2="98"/><line x1="566" y1="98" x2="580" y2="98"/>
+  </g>
+
+  <!-- 字节布局 -->
+  <text x="24" y="156" font-size="13" font-weight="bold" fill="#3451b2">12 字节怎么拼：低字节在前，两字节组成一个有符号 int16</text>
+  <g font-size="12" text-anchor="middle" font-family="Consolas,monospace">
+    <rect x="24" y="166" width="336" height="26" fill="#e8edfb" stroke="#3451b2"/>
+    <text x="80" y="184" fill="#3451b2">AX_L AX_H</text><text x="192" y="184" fill="#3451b2">AY_L AY_H</text><text x="304" y="184" fill="#3451b2">AZ_L AZ_H</text>
+    <line x1="136" y1="166" x2="136" y2="192" stroke="#3451b2"/><line x1="248" y1="166" x2="248" y2="192" stroke="#3451b2"/>
+    <rect x="360" y="166" width="336" height="26" fill="#e6f6ee" stroke="#3eaf7c"/>
+    <text x="416" y="184" fill="#1a7f56">GX_L GX_H</text><text x="528" y="184" fill="#1a7f56">GY_L GY_H</text><text x="640" y="184" fill="#1a7f56">GZ_L GZ_H</text>
+    <line x1="472" y1="166" x2="472" y2="192" stroke="#3eaf7c"/><line x1="584" y1="166" x2="584" y2="192" stroke="#3eaf7c"/>
+  </g>
+  <text x="192" y="210" font-size="12" fill="#666" text-anchor="middle">加速度：32768 ÷ 4g = 8192 LSB/g</text>
+  <text x="528" y="210" font-size="12" fill="#666" text-anchor="middle">角速度：32768 ÷ 512 = 64 LSB/dps</text>
+  <!-- 三种姿态 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="226" width="212" height="140" fill="#fff" stroke="#ccc" rx="8"/>
+    <text x="130" y="246" font-size="13" font-weight="bold" fill="#3451b2">静止平放</text>
+    <rect x="70" y="276" width="110" height="10" fill="#3451b2" rx="2"/>
+    <rect x="115" y="270" width="20" height="6" fill="#333"/>
+    <line x1="200" y1="262" x2="200" y2="304" stroke="#c0392b" stroke-width="2"/>
+    <path d="M194 298 L200 308 L206 298 Z" fill="#c0392b"/>
+    <text x="214" y="290" fill="#c0392b">g</text>
+    <text x="130" y="336" fill="#333">Z ≈ 1.0 g，X/Y ≈ 0</text>
+    <text x="130" y="354" fill="#666">三轴角速度 ≈ 0</text>
+
+    <rect x="254" y="226" width="212" height="140" fill="#fff" stroke="#ccc" rx="8"/>
+    <text x="360" y="246" font-size="13" font-weight="bold" fill="#3451b2">竖立</text>
+    <rect x="345" y="258" width="10" height="56" fill="#3451b2" rx="2"/>
+    <rect x="355" y="276" width="6" height="20" fill="#333"/>
+    <line x1="420" y1="262" x2="420" y2="304" stroke="#c0392b" stroke-width="2"/>
+    <path d="M414 298 L420 308 L426 298 Z" fill="#c0392b"/>
+    <text x="434" y="290" fill="#c0392b">g</text>
+    <text x="360" y="336" fill="#333">1 g 换到 X 或 Y，Z ≈ 0</text>
+    <text x="360" y="354" fill="#666">换哪根轴看你朝哪边立</text>
+
+    <rect x="484" y="226" width="212" height="140" fill="#fff" stroke="#ccc" rx="8"/>
+    <text x="590" y="246" font-size="13" font-weight="bold" fill="#3451b2">快速摇晃</text>
+    <rect x="535" y="278" width="110" height="10" fill="#3451b2" rx="2" transform="rotate(-18 590 283)"/>
+    <path d="M530 268 Q520 283 530 298" fill="none" stroke="#d97706" stroke-width="2"/>
+    <path d="M650 268 Q660 283 650 298" fill="none" stroke="#d97706" stroke-width="2"/>
+    <path d="M520 260 Q506 283 520 306" fill="none" stroke="#d97706" stroke-width="1.5" opacity="0.6"/>
+    <path d="M660 260 Q674 283 660 306" fill="none" stroke="#d97706" stroke-width="1.5" opacity="0.6"/>
+    <text x="590" y="336" fill="#333">各轴大幅波动，合值偏离 1 g</text>
+    <text x="590" y="354" fill="#666">角速度跟着冲高</text>
+  </g>
+
+  <rect x="24" y="378" width="672" height="32" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <text x="360" y="399" font-size="12" fill="#a16207" text-anchor="middle">正负号取决于芯片在板上的贴装方向，以自己的读数为准；静止时角速度的小残值是零偏，积分成角度就会漂</text>
+</svg>

@@ -1,0 +1,5 @@
+menu "Logger teaching tests"
+config RELIABILITY_TEST_FAULTS
+ bool "Allow explicit fault commands"
+ default n
+endmenu

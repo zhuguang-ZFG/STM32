@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RT-Thread 对象模型：万物继承 rt_object</title>
+  <desc>五阶段动画：RT-Thread 的统一世界观是"万物皆对象"。① 继承的 C 实现：rt_thread、rt_sem、rt_timer、rt_device 的第一个成员都是 rt_object（name/type/flag/list）——纯 C 结构体嵌套模拟继承，任何具体对象的指针都能安全地当 rt_object* 用，这是 finsh 统一遍历所有对象的物理基础。② 对象容器：每创建一个对象就挂进 rt_object_container[type] 对应类型的链表——线程归线程链、信号量归信号量链，创建即挂链、销毁时摘链。③ list 一把梭：list_thread/list_sem/list_timer/list_device 的本质就是遍历容器链表 + 格式化打印——把对象当 rt_object 读名字、当具体类型读字段；会写一个 list，就会给自己的子系统加自检命令。④ 三层楼：内核层打地基（src/+include/+libcpu/，调度/IPC/内存）、组件层当水电（components/，finsh/设备框架/dfs/lwip）、软件包是家具（packages/，menuconfig 即点即用）——FreeRTOS 没有组件层这一档，RTT 把它做进主线，生态是护城河。⑤ 自动初始化：INIT_BOARD_EXPORT 等宏把函数指针钉进特殊链接段，启动时 rt_components_board_init / rt_components_init 按段位依次调用——免调用链；段内顺序由链接顺序定，板级依赖关系靠选对段位（BOARD 最早 → DEVICE → COMPONENT → ENV → APP），不是靠"写在前面"。图中橙色遍历珠沿 thread 链持续移动，表示 list_thread 正在逐节点遍历。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RT-Thread 对象模型：万物继承 rt_object</text>
+  <text x="24" y="50" font-size="12" fill="#666">结构体嵌套当继承——首成员是对象头，容器按类型挂链，list 一把梭</text>
+
+  <defs>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3451b2"/>
+    </marker>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- rt_object 基类 -->
+  <rect x="48" y="64" width="230" height="112" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="50" y="66" width="226" height="4" rx="2" fill="#3451b2"/>
+  <rect x="46" y="62" width="234" height="116" rx="10" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="62" y="86" font-size="12.5" font-weight="bold" fill="#3451b2">struct rt_object（基类）</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333">
+    <text x="62" y="108">char name[RT_NAME_MAX];</text>
+    <text x="62" y="126">rt_uint8_t type;</text>
+    <text x="62" y="144">rt_uint8_t flag;</text>
+    <text x="62" y="162">rt_list_t list;</text>
+  </g>
+
+  <!-- rt_thread 子类：parent 首成员 = 继承 -->
+  <rect x="48" y="206" width="230" height="120" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="50" y="208" width="226" height="4" rx="2" fill="#3eaf7c"/>
+  <text x="62" y="228" font-size="12.5" font-weight="bold" fill="#1a7f56">struct rt_thread（子类）</text>
+  <rect x="56" y="238" width="214" height="17" rx="3" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="62" y="251" font-size="11" font-weight="bold" font-family="Consolas,monospace" fill="#3451b2">struct rt_object parent;</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333">
+    <text x="62" y="272">volatile rt_uint32_t sp;</text>
+    <text x="62" y="290">rt_uint8_t current_priority;</text>
+    <text x="62" y="308">rt_uint8_t stat;</text>
+  </g>
+  <text x="62" y="322" font-size="11" fill="#888">rt_sem · rt_timer · rt_device 同构</text>
+  <path d="M 48 251 L 34 251 L 34 120 L 44 120" fill="none" stroke="#3451b2" stroke-width="1.5" marker-end="url(#arrB)"/>
+
+  <!-- 对象容器：按类型分链 -->
+  <rect x="306" y="64" width="366" height="124" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="308" y="66" width="362" height="4" rx="2" fill="#d97706"/>
+  <rect x="304" y="62" width="370" height="128" rx="10" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="318" y="86" font-size="12.5" font-weight="bold" fill="#333">对象容器 rt_object_container[type]：按类型分链</text>
+  <g font-size="11" font-family="Consolas,monospace">
+    <text x="318" y="112" fill="#666">thread</text>
+    <rect x="372" y="96" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="400" y="113" fill="#333" text-anchor="middle">tshell</text>
+    <line x1="428" y1="109" x2="440" y2="109" stroke="#94a3b8"/>
+    <rect x="440" y="96" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="468" y="113" fill="#333" text-anchor="middle">worker</text>
+    <line x1="496" y1="109" x2="508" y2="109" stroke="#94a3b8"/>
+    <rect x="508" y="96" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="536" y="113" fill="#333" text-anchor="middle">tidle</text>
+    <text x="578" y="113" fill="#888">…</text>
+    <text x="318" y="144" fill="#666">sem</text>
+    <rect x="372" y="128" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="400" y="145" fill="#333" text-anchor="middle">sem_rx</text>
+    <line x1="428" y1="141" x2="440" y2="141" stroke="#94a3b8"/>
+    <rect x="440" y="128" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="468" y="145" fill="#333" text-anchor="middle">sem_tx</text>
+    <text x="578" y="145" fill="#888">…</text>
+    <text x="318" y="176" fill="#666">timer</text>
+    <rect x="372" y="160" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="400" y="177" fill="#333" text-anchor="middle">t_led</text>
+    <line x1="428" y1="173" x2="440" y2="173" stroke="#94a3b8"/>
+    <rect x="440" y="160" width="56" height="26" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="468" y="177" fill="#333" text-anchor="middle">t_sen</text>
+    <text x="578" y="177" fill="#888">…</text>
+  </g>
+
+  <!-- finsh list_thread -->
+  <rect x="306" y="208" width="366" height="118" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="308" y="210" width="362" height="4" rx="2" fill="#3eaf7c"/>
+  <rect x="304" y="206" width="370" height="122" rx="10" fill="none" stroke="#3eaf7c" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="318" y="230" font-size="12" font-family="Consolas,monospace" fill="#3451b2">msh&gt; list_thread</text>
+  <g font-size="11" font-family="Consolas,monospace">
+    <text x="318" y="252" fill="#666">thread    pri  status</text>
+    <text x="318" y="272" fill="#333">tshell     20  ready</text>
+    <text x="318" y="290" fill="#333">worker     12  running</text>
+    <text x="318" y="308" fill="#333">tidle      31  ready</text>
+  </g>
+  <circle cx="372" cy="109" r="5" fill="#d97706">
+    <animateTransform attributeName="transform" type="translate" values="0 0;192 0" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① 继承的 C 实现：rt_thread 第一个成员是 rt_object——指针当基类用</text>
+    <text x="56" y="380" font-size="12" fill="#333">纯 C 结构体嵌套（C4 ABI），不是 C++——任何对象指针都能安全当 rt_object* 用</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">rt_object 排在最前 → 这是 finsh 能统一遍历所有对象的物理基础</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">② 对象容器：创建即挂进对应类型链表——rt_object_container[type] 分家</text>
+    <text x="56" y="380" font-size="12" fill="#333">线程归线程链、信号量归信号量链——name/type/flag 都在对象头里，销毁时摘链</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">flag 标记静态/动态——静态初始化的对象同样要挂进容器才能被 list 看到</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">③ list 一把梭：list_thread / list_sem / list_device = 遍历链表 + 格式化打印</text>
+    <text x="56" y="380" font-size="12" fill="#333">把对象当 rt_object 读名字、当具体类型读字段——"万能"的来源</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">会写一个 list，就会给自己的子系统加自检命令——板子上的自检面板到手</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">④ 三层楼：内核打地基 · 组件当水电 · 软件包是家具</text>
+    <text x="56" y="380" font-size="12" fill="#333">src/+include/+libcpu/（调度/IPC/内存）· components/（finsh/设备/dfs）· packages/</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">FreeRTOS 没有组件层这一档——RTT 把它做进主线，生态是护城河（Apache-2.0）</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">⑤ 自动初始化：INIT_*_EXPORT 把函数指针钉进链接段，启动按段位排队</text>
+    <text x="56" y="380" font-size="12" fill="#333">BOARD（最早，板级）→ DEVICE → COMPONENT → ENV → APP——免调用链</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">段内顺序由链接顺序定——依赖关系靠选对段位，不是靠"写在前面"（回 B3 链接脚本）</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">① 万物继承 rt_object：首成员是对象头，指针当基类用</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">② 对象容器分家：创建即挂链，按类型各归各</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ list 一把梭：遍历链表 + 格式化打印，自检面板到手</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ 三层楼：内核地基、组件水电、软件包家具</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ INIT 段位排队：免调用链，依赖靠选对段位</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

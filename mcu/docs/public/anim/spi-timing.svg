@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Microsoft YaHei',sans-serif">
+  <title>SPI 时序（Mode 0）：边收边发的全双工一帧</title>
+  <desc>SPI 时序（Mode 0）：边收边发的全双工一帧。主机发 0xA5(1010 0101),同时收从机 0x3C(0011 1100)——每个上升沿,两根数据线各被采样 1 bit。四条波形按游标推进的速度被逻辑分析仪逐点画出，采样点在被采到的那一拍才亮起</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="360" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#24292f">SPI 时序（Mode 0）：边收边发的全双工一帧</text>
+  <text x="360" y="50" text-anchor="middle" font-size="12" fill="#57606a">主机发 0xA5(1010 0101),同时收从机 0x3C(0011 1100)——每个上升沿,两根数据线各被采样 1 bit</text>
+
+  <!-- 行标签 -->
+  <g font-size="13" font-weight="bold" fill="#24292f">
+    <text x="80" y="95" text-anchor="end">CS 片选</text>
+    <text x="80" y="140" text-anchor="end">SCK 时钟</text>
+    <!-- 数据线标签拆两行：13px 的「MOSI 主→从」靠右对齐到 x=80 时，宽字体下左端会跑出画布 -->
+    <text x="80" y="204" text-anchor="end">MOSI</text>
+    <text x="80" y="220" text-anchor="end" font-size="11" font-weight="normal" fill="#57606a">主 → 从</text>
+    <text x="80" y="274" text-anchor="end">MISO</text>
+    <text x="80" y="290" text-anchor="end" font-size="11" font-weight="normal" fill="#57606a">从 → 主</text>
+  </g>
+
+  <!-- 位序号 -->
+  <g font-size="11" fill="#57606a" text-anchor="middle">
+    <text x="127" y="68">D7</text><text x="202" y="68">D6</text><text x="277" y="68">D5</text><text x="352" y="68">D4</text>
+    <text x="427" y="68">D3</text><text x="502" y="68">D2</text><text x="577" y="68">D1</text><text x="652" y="68">D0</text>
+  </g>
+
+  <!-- CS: 高→拉低一整帧→拉高 -->
+  <!-- 爬线：dasharray = (真实弧长 L + 1200) ; L，dashoffset 从 1200+L(全隐) 走到 1200(全显)。
+       每拍的偏移量按 x 等比换算（可见弧长 = L·x进度），于是四条波形的笔尖互相齐平、也跟上离散游标。 -->
+  <path d="M90,75 L110,75 L110,95 L670,95 L670,75 L690,75" stroke="#cf222e" stroke-width="2.5" fill="none"
+        stroke-dasharray="1840;640" stroke-dashoffset="1800">
+    <animate attributeName="stroke-dashoffset" values="1800;1720;1640;1560;1480;1400;1320;1200;1200" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- SCK Mode0: 空闲低,每格后半格高,上升沿在格中央(采样点) -->
+  <path d="M90,130 L127.5,130 L127.5,110 L165,110 L165,130 L202.5,130 L202.5,110 L240,110 L240,130 L277.5,130 L277.5,110 L315,110 L315,130 L352.5,130 L352.5,110 L390,110 L390,130 L427.5,130 L427.5,110 L465,110 L465,130 L502.5,130 L502.5,110 L540,110 L540,130 L577.5,130 L577.5,110 L615,110 L615,130 L652.5,130 L652.5,110 L690,110" stroke="#3451b2" stroke-width="2.5" fill="none"
+        stroke-dasharray="2100;900" stroke-dashoffset="2044">
+    <animate attributeName="stroke-dashoffset" values="2044;1931;1819;1706;1594;1481;1369;1200;1200" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- MOSI 0xA5: 1 0 1 0 0 1 0 1 (高=180 低=200) -->
+  <path d="M90,180 L165,180 L165,200 L240,200 L240,180 L315,180 L315,200 L465,200 L465,180 L540,180 L540,200 L615,200 L615,180 L690,180" stroke="#3eaf7c" stroke-width="2.5" fill="none"
+        stroke-dasharray="1920;720" stroke-dashoffset="1875">
+    <animate attributeName="stroke-dashoffset" values="1875;1785;1695;1605;1515;1425;1335;1200;1200" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- MISO 0x3C: 0 0 1 1 1 1 0 0 (高=250 低=270) -->
+  <path d="M90,270 L240,270 L240,250 L540,250 L540,270 L690,270" stroke="#d97706" stroke-width="2.5" fill="none"
+        stroke-dasharray="1840;640" stroke-dashoffset="1800">
+    <animate attributeName="stroke-dashoffset" values="1800;1720;1640;1560;1480;1400;1320;1200;1200" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 采样点(8 个上升沿)：游标走到哪一拍，哪一拍的红点才亮 -->
+  <g fill="#cf222e">
+    <circle cx="127.5" cy="120" r="4"/><circle cx="202.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;1;1;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle><circle cx="277.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;1;1;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle><circle cx="352.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;1;1;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="427.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;1;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle><circle cx="502.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;1;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle><circle cx="577.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;0;1;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle><circle cx="652.5" cy="120" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;0;0;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+  </g>
+  <!-- 游标:8 拍离散,8s 一轮（每拍 1s，跟着 SCK 的边沿走） -->
+  <line x1="127.5" y1="60" x2="127.5" y2="300" stroke="#3451b2" stroke-width="2" opacity="0.6">
+    <animate attributeName="x1" values="127.5;202.5;277.5;352.5;427.5;502.5;577.5;652.5" calcMode="discrete" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="x2" values="127.5;202.5;277.5;352.5;427.5;502.5;577.5;652.5" calcMode="discrete" dur="8s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- 逐拍解说 -->
+  <g font-size="13" fill="#24292f" text-anchor="middle">
+    <text x="360" y="322" opacity="0">第 1 拍:上升沿!MOSI=1 进从机,MISO=0 进主机<animate attributeName="opacity" values="1;0;0;0;0;0;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 2 拍:MOSI=0 出,MISO=0 入<animate attributeName="opacity" values="0;1;0;0;0;0;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 3 拍:MOSI=1 出,MISO=1 入<animate attributeName="opacity" values="0;0;1;0;0;0;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 4 拍:MOSI=0 出,MISO=1 入<animate attributeName="opacity" values="0;0;0;1;0;0;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 5 拍:MOSI=0 出,MISO=1 入<animate attributeName="opacity" values="0;0;0;0;1;0;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 6 拍:MOSI=1 出,MISO=1 入<animate attributeName="opacity" values="0;0;0;0;0;1;0;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 7 拍:MOSI=0 出,MISO=0 入<animate attributeName="opacity" values="0;0;0;0;0;0;1;0" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+    <text x="360" y="322" opacity="0">第 8 拍:MOSI=1 出,MISO=0 入——CS 拉高,一帧结束<animate attributeName="opacity" values="0;0;0;0;0;0;0;1" calcMode="discrete" dur="8s" repeatCount="indefinite"/></text>
+  </g>
+
+  <!-- 阶段指示点：8 拍一排，落在字幕那一行的右侧（下方四模式对照占满了 y≥345，只能同排） -->
+  <g transform="translate(558,318)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="90" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="108" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+    <circle cx="126" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;0.2;0.2;0.2;1;1" keyTimes="0;0.125;0.25;0.375;0.5;0.625;0.75;0.875;1" dur="8s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- 四模式对照 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="90" y="345" width="140" height="66" rx="6" fill="#dbeafe" stroke="#3451b2" stroke-width="2"/>
+    <text x="160" y="366" font-weight="bold" fill="#3451b2">Mode 0 ★本章</text>
+    <text x="160" y="384" fill="#24292f">CPOL=0 CPHA=0</text>
+    <text x="160" y="401" fill="#24292f">空闲低·上升沿采样</text>
+    <rect x="245" y="345" width="140" height="66" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="315" y="366" font-weight="bold" fill="#24292f">Mode 1</text>
+    <text x="315" y="384" fill="#24292f">CPOL=0 CPHA=1</text>
+    <text x="315" y="401" fill="#24292f">空闲低·下降沿采样</text>
+    <rect x="400" y="345" width="140" height="66" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="470" y="366" font-weight="bold" fill="#24292f">Mode 2</text>
+    <text x="470" y="384" fill="#24292f">CPOL=1 CPHA=0</text>
+    <text x="470" y="401" fill="#24292f">空闲高·下降沿采样</text>
+    <rect x="555" y="345" width="140" height="66" rx="6" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="625" y="366" font-weight="bold" fill="#24292f">Mode 3</text>
+    <text x="625" y="384" fill="#24292f">CPOL=1 CPHA=1</text>
+    <text x="625" y="401" fill="#24292f">空闲高·上升沿采样</text>
+  </g>
+</svg>

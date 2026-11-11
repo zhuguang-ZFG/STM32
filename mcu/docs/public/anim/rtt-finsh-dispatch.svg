@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>finsh 命令分发：宏钉进段，shell 按名翻牌</title>
+  <desc>五阶段动画：finsh 的原理一句话——把函数名和地址编进一张符号表，运行时按名调用。① 编译期钉段：MSH_CMD_EXPORT 宏展开为定义一个 msh_cmd_entry 结构体 {名字, 描述, 函数指针}，用 SECTION("FSymTab") 把它放进专用链接段，used 防止编译器因"没人引用"而删除——引用由链接段在运行时建立；编译期收齐、启动即可用，免运行时注册的 RAM 开销和时序问题。② 界桩与 KEEP：链接脚本用 __fsymtab_start__ / __fsymtab_end__ 圈住段并打起止界桩，KEEP(*(FSymTab)) 是关键——没有它，gc-sections 会把"没人直接调用"的命令全清掉，症状是编译完全通过、烧进去 help 里一条命令都没有；这是链接段技术第三次立功（R0 自动初始化段、B3 链接脚本、这里 FSymTab）。③ 敲命令切词：用户敲 "led 1 on" 回车，按空格切成三段，首词是命令名；argc 含命令名本身——led 是 argv[0]，所以 argc=3；命令名别撞内核自带（help/list/ps）；finsh 线程要单独预算栈（默认 2~4KB），list 类深打印开小了爆栈。④ 查表与转换：拿 "led" 在 FSymTab 区间按名查找命中 entry，参数逐个转换——数字用 atoi（"1"→1）、字符串原样传（"on"）；finsh 只认整型和字符串，签名必须 int func(int argc, char **argv)——原型不符栈布局错位，一调就崩。⑤ 调用执行：entry-&gt;func(argc=3, argv)——与 C main 同型；错误路径要有提示和返回码（led 9 on → index out of range）；help 即文档、list 即自检——量产固件记得裁剪，finsh 对外暴露就是攻击面。图中终端光标持续闪烁，三个命令词依次飞向切词/查表/调用框，表示解析在流动。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">finsh 命令分发：宏钉进段，shell 按名翻牌</text>
+  <text x="24" y="50" font-size="12" fill="#666">MSH_CMD_EXPORT 把 {名字, 描述, 函数指针} 编进 FSymTab 段——敲命令 = 切词→查表→转换→调用</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- 编译期：宏展开 -->
+  <rect x="40" y="60" width="320" height="130" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="42" y="62" width="316" height="4" rx="2" fill="#3451b2"/>
+  <rect x="38" y="58" width="324" height="134" rx="10" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="54" y="82" font-size="12.5" font-weight="bold" fill="#3451b2">编译期：MSH_CMD_EXPORT 宏展开</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333">
+    <text x="54" y="104">MSH_CMD_EXPORT(led, "ctrl led");</text>
+    <text x="54" y="126" fill="#666">→ struct msh_cmd_entry _cmd_led =</text>
+    <text x="54" y="146">{ "led", desc, led };</text>
+    <text x="54" y="168" fill="#666">SECTION("FSymTab") + used 防删</text>
+  </g>
+
+  <!-- 链接期：FSymTab 段 -->
+  <rect x="40" y="200" width="320" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="42" y="202" width="316" height="4" rx="2" fill="#d97706"/>
+  <rect x="38" y="198" width="324" height="96" rx="10" fill="none" stroke="#d97706" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="54" y="220" font-size="11.5" font-weight="bold" fill="#666">链接期：FSymTab 段（界桩圈地）</text>
+  <rect x="46" y="228" width="8" height="44" fill="#888"/>
+  <g font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">
+    <rect x="60" y="232" width="72" height="36" rx="4" fill="#dbe7ff" stroke="#3451b2"/><text x="96" y="254">led</text>
+    <rect x="136" y="232" width="100" height="36" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="186" y="254">list_thread</text>
+    <rect x="240" y="232" width="60" height="36" rx="4" fill="#f8fafc" stroke="#cbd5e1"/><text x="270" y="254">ps</text>
+    <text x="326" y="254" fill="#888">…</text>
+  </g>
+  <rect x="346" y="228" width="8" height="44" fill="#888"/>
+  <text x="200" y="286" font-size="11" fill="#dc2626" text-anchor="middle">KEEP(*(FSymTab))——少了它 gc-sections 全清掉</text>
+
+  <!-- 签名警示条 -->
+  <rect x="40" y="300" width="320" height="32" rx="6" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="200" y="320" font-size="11" font-family="Consolas,monospace" fill="#dc2626" text-anchor="middle">签名铁律：int func(int argc, char **argv)</text>
+
+  <!-- 运行期：终端四步 -->
+  <rect x="380" y="60" width="300" height="270" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="382" y="62" width="296" height="4" rx="2" fill="#3eaf7c"/>
+  <text x="394" y="82" font-size="12.5" font-weight="bold" fill="#1a7f56">运行期：msh 解析四步</text>
+  <text x="394" y="104" font-size="12" font-family="Consolas,monospace" fill="#333">msh&gt; led 1 on</text>
+  <rect x="492" y="91" width="8" height="15" fill="#333">
+    <animate attributeName="opacity" values="1;0.15;1" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/>
+  </rect>
+
+  <rect x="394" y="124" width="230" height="44" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <rect x="392" y="122" width="234" height="48" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="408" y="142" font-size="12" font-weight="bold" fill="#3451b2">① 切词</text>
+  <text x="408" y="160" font-size="11" fill="#666">按空格切三段，首词 = 命令名（argc=3）</text>
+
+  <line x1="509" y1="168" x2="509" y2="174" stroke="#666" marker-end="url(#arr)"/>
+
+  <rect x="394" y="176" width="230" height="44" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="392" y="174" width="234" height="48" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="408" y="194" font-size="12" font-weight="bold" fill="#3451b2">② 查表</text>
+  <text x="408" y="212" font-size="11" fill="#666">拿 "led" 按名查 FSymTab → 命中 entry</text>
+
+  <line x1="509" y1="220" x2="509" y2="226" stroke="#666" marker-end="url(#arr)"/>
+
+  <rect x="394" y="228" width="230" height="44" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="392" y="226" width="234" height="48" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="408" y="246" font-size="12" font-weight="bold" fill="#3451b2">③ 转换</text>
+  <text x="408" y="264" font-size="11" fill="#666">atoi("1")=1 · "on" 原样——只认整型/字符串</text>
+
+  <line x1="509" y1="272" x2="509" y2="278" stroke="#666" marker-end="url(#arr)"/>
+
+  <rect x="394" y="280" width="230" height="44" rx="6" fill="#ffffff" stroke="#94a3b8"/>
+  <rect x="392" y="278" width="234" height="48" rx="8" fill="none" stroke="#3451b2" stroke-width="2.5" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="408" y="298" font-size="12" font-weight="bold" fill="#3451b2">④ 调用</text>
+  <text x="408" y="316" font-size="11" fill="#666">entry-&gt;func(argc=3, argv)——与 main 同型，灯亮</text>
+
+  <!-- 命令词飞行：走右侧走廊（水平→竖直），不穿文字 -->
+  <g>
+    <rect x="455" y="107" width="30" height="16" rx="3" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="470" y="119" font-size="11" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">led</text>
+    <animateTransform attributeName="transform" type="translate" values="0 0;182 0;182 83" keyTimes="0;0.45;1" dur="3s" repeatCount="indefinite"/>
+  </g>
+  <g>
+    <rect x="461" y="107" width="18" height="16" rx="3" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="470" y="119" font-size="11" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">1</text>
+    <animateTransform attributeName="transform" type="translate" values="0 0;182 0;182 135" keyTimes="0;0.45;1" dur="3s" begin="-1s" repeatCount="indefinite"/>
+  </g>
+  <g>
+    <rect x="457" y="107" width="26" height="16" rx="3" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="470" y="119" font-size="11" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">on</text>
+    <animateTransform attributeName="transform" type="translate" values="0 0;182 0;182 187" keyTimes="0;0.45;1" dur="3s" begin="-2s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① 编译期钉段：宏定义 {名字, 描述, 函数指针}，SECTION 钉进 FSymTab</text>
+    <text x="56" y="380" font-size="12" fill="#333">used 防止编译器因"没人引用"而删掉——引用由链接段在运行时建立</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">编译期收齐、启动即可用——免运行时注册的 RAM 开销和时序问题</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">② 界桩与 KEEP：__fsymtab_start__ / end__ 圈住段，KEEP 防回收</text>
+    <text x="56" y="380" font-size="12" fill="#333">少了 KEEP：gc-sections 把"没被直接调用"的命令全清——编译通过但 help 一条没有</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">链接段技术第三次立功：R0 自动初始化段、B3 链接脚本、这里 FSymTab</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">③ 敲命令切词：按空格切三段，首词 = 命令名；argc 含命令本身</text>
+    <text x="56" y="380" font-size="12" fill="#333">led 是 argv[0]，所以 "led 1 on" 的 argc=3——命令名别撞内核自带（help/list/ps）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">finsh 线程单独预算栈（默认 2~4KB）：list 类深打印，开小了爆栈</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">④ 查表与转换：按名查找命中 entry；数字 atoi、字符串原样</text>
+    <text x="56" y="380" font-size="12" fill="#333">finsh 只认整型和字符串——不支持浮点、结构体直接传参</text>
+    <text x="56" y="402" font-size="11.5" fill="#dc2626">签名必须 int func(int argc, char **argv)——原型不符栈布局错位，一调就崩</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">⑤ 调用执行：entry-&gt;func(argc=3, argv)——与 C main 同型</text>
+    <text x="56" y="380" font-size="12" fill="#333">错误路径给提示和返回码：led 9 on → "index out of range"，用户敲错能看清</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">help 即文档、list 即自检——量产固件记得裁剪：finsh 对外暴露就是攻击面</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">① 宏钉进段：{名字, 描述, 函数指针}，used 防删</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">② KEEP 界桩：少了它 gc-sections 全清，help 空空</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ 切词：首词是命令名，argc 含命令本身</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ 查表转换：只认整型和字符串，签名必须 argc/argv</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ 调用：与 C main 同型，错误要有提示和返回码</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

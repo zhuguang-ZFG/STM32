@@ -1,0 +1,3372 @@
+{
+  "mcu_cwd": "D:\\Users\\STM32-mcu-merge-p1\\mcu",
+  "git_root": "D:\\Users\\STM32-mcu-merge-p1",
+  "active_task_count": 23,
+  "active_statuses": [
+    "in_progress",
+    "planning"
+  ],
+  "tasks": [
+    {
+      "task_path": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-16-bili-season-after-unlock",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/build-package-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/build-package-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/build-package-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/build-package-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-16-e04-board-measurement/task.json",
+      "status": "planning",
+      "priority": "P1",
+      "dir": "mcu/.trellis/tasks/10-16-e04-board-measurement",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-16-e04-board-measurement/check.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/firmware-rtos/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-rtos/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/firmware-rtos/kernel-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-rtos/kernel-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/firmware-common/probe-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-common/probe-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-16-e04-board-measurement/implement.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/firmware-rtos/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-rtos/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/firmware-rtos/kernel-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-rtos/kernel-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/firmware-common/probe-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-common/probe-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-16-e04-board-measurement/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-22-video-v2-remaster/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-22-video-v2-remaster",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-22-video-v2-remaster/check.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对 check 不能假绿（跳过即未跑）、期望通过行数=平台数且跳过=0、成片时长按实测秒数过硬门；验收全量与单集时逐条对照"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/layout-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/layout-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对几何审计只查越界/相叠/进度杠/字号地板、v1 产物逐字节不变、改版必须看截图且跑 fill-sweep 与 md5 证明未碰已发布产物"
+            },
+            {
+              "line": 3,
+              "file": ".agents/skills/video-release/SKILL.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.agents/skills/video-release/SKILL.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对换新流程的五条红线：逐集授权闸、FORCE_RESUBMIT 只在明说后用、文字只出自 episode.json/out、不关共享浏览器、凭证不进 stdout/仓库"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-22-video-v2-remaster/implement.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/video/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "产线三处顺序闸（lint→build→check、series 登记在 build 后、时长不许贴上沿）、时长估测离散度与 S5 金样例；写 build/check/numbers 之前必读"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/video/layout-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/video/layout-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "页头分节契约、按场进度唯一性、v1 无 sections 时逐字节兼容线、每条新判据必须造一次故意失败；改 layout/pageHtml/审计前必读"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "事实纪律：板卡数值必须给第二来源、编译期结论不等于板上现象、C3 六变体与双工具链取证；重写 18 集旁白与做数字审计前必读"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-25-bmsz-validation-depth",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐期验收命令与故意失败样例——check 阶段按此逐条复跑并核对报错原文"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "Acceptance Criteria 三分验收基线"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/quality-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "契约变更后此文件必须已收录新门签名；缺失即视为未完成"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "对照物原文：判断某条约束是否被放宽时需要回到 BMS-Z 的原始语义"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/implement.jsonl",
+          "lines": 7,
+          "file_entries": 7,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "两个侦察的原文取证：mcu 现状（workflow/脚本/测试/mcu-book）+ BMS-Z 可移植机制的原文摘录（local-gates 语义、check_docs 规则、links 两轮制、ruff、check_pdf、publish_downloads、CHANGELOG 对账）"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/quality-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有质量契约的签名/契约/错误矩阵格式；新增门必须按同一格式追加，且不得放宽既有条目"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "docs-site 包规范入口与快速命令，确认新门挂在哪个层"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/spec/docs-site/structure.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/structure.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "目录约定与编号体系——docs-check 的 collectMarkdown 范围与 CLAIMS 的章节计数必须与之一致"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节页模板细则：手写数字声明与契约计数对账要落在正文的真实表述上"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "需求与分期验收标准"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/10-25-bmsz-validation-depth/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-bmsz-validation-depth/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口签名、CI 接线、失败语义、风险对策"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-25-book-production/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-25-book-production",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-25-book-production/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-book-production/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐期验收命令与故意失败样例；check 阶段按此复跑并核对报错原文"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-book-production/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "验收标准（含内容同一性 R7 与印前契约七条）"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/quality-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "新增书籍工艺契约必须已收录；缺失即视为未完成"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "判断某个断言是否被放宽时回到产物实测基线（A4/Type3/713-712）"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-25-book-production/implement.jsonl",
+          "lines": 8,
+          "file_entries": 8,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/research/book-production-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "实测基线：当前 PDF 是 A4/Type3位图/7.5-8.2pt/713-712，仓库无 EPUB 与印前能力；引擎与字体可用性核实（pagedjs 0.4.3、vivliostyle 11.4.0、NotoSerifSC、fontTools 4.66.1、JDK 17）"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-25-book-production/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "需求 R1-R8 与分期/全局验收标准"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-25-book-production/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "版式参数表、分页引擎选型判据、目录页码与页码生成方式、内容同一性算法、CI/回滚"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/10-25-book-production/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-25-book-production/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐期命令、判据、故意失败样例与复核门"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/spec/docs-site/quality-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/quality-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "既有质量契约的格式与严格度基线；书籍工艺契约要按同一格式追加，且不得放宽既有条目"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节结构契约（四件套/罗盘/图号）——印前排版与索引生成必须建立在同一结构认知上"
+            },
+            {
+              "line": 7,
+              "file": "mcu-book/manifest.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/mcu-book/manifest.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "书籍结构单一数据源：parts/appendices/sources/chapter_guides 与 version/date/author/license（版权页与 EPUB 元数据都取它）"
+            },
+            {
+              "line": 8,
+              "file": "mcu-book/build_html.py",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/mcu-book/build_html.py",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有内容装配与多级书签/页眉映射的实现；印前构建器复用其章节渲染与链接重写，避免第二套内容处理"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-26-cover-art/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-26-cover-art",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-cover-art/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-cover-art/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-cover-art/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-cover-art/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-cover-art/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-cover-art/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-26-de-ai-polish/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-26-de-ai-polish",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-de-ai-polish/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-de-ai-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-de-ai-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-de-ai-polish/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-de-ai-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-de-ai-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-26-oss-influence/task.json",
+      "status": "planning",
+      "priority": "P1",
+      "dir": "mcu/.trellis/tasks/10-26-oss-influence",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-oss-influence/check.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-oss-influence/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-oss-influence/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "历史18条事实记录，需与现G30条和原P1–P4对账，不冒充新取证"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-oss-influence/implement.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-oss-influence/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-oss-influence/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-oss-influence/research/verified-oss-projects.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "历史18条事实记录，需与现G30条和原P1–P4对账，不冒充新取证"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-26-prose-polish/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-26-prose-polish",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-prose-polish/check.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "原style与保护要求；回滚遵循本轮保留用户工作限制"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-26-prose-polish/implement.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "原style与保护要求；回滚遵循本轮保留用户工作限制"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-27-ai-dev-deepen/task.json",
+      "status": "in_progress",
+      "priority": "P1",
+      "dir": "mcu/.trellis/tasks/10-27-ai-dev-deepen",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-27-ai-dev-deepen/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-27-ai-dev-deepen/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-27-ai-dev-deepen/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-27-book-interest-polish/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-27-book-interest-polish",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-27-book-interest-polish/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-book-interest-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-27-book-interest-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-27-book-interest-polish/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-27-book-interest-polish/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-27-book-interest-polish/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/10-28-social-video-ai-tools",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-28-social-video-ai-tools/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "验收标准清单：doctor ready、四命令全绿、双母版、美术记录、字体覆盖、码率、文案限制"
+            },
+            {
+              "line": 2,
+              "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/references/quality-gates.md",
+              "resolved_root": null,
+              "resolved": null,
+              "exists_mcu_cwd": false,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": "missing_unclassified",
+              "entry_reason": "skill 官方质量门定义（黄金 5 秒、audio/image/lineart gate、字幕覆盖）——检查口径必须与官方一致"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对成片口播事实与星数口径不越快照"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+          "lines": 5,
+          "file_entries": 5,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-28-social-video-ai-tools/research/source-snapshot-369-repos.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "内容唯一事实源：369 仓库清单与四大框架全部数字/事实（2026-10-27 GitHub API 快照）"
+            },
+            {
+              "line": 2,
+              "file": "video/publish/wx-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/video/publish/wx-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "视频号投稿实测约束（码率≤10Mbps、封面 204px 可读、发布闸门）与 Playwright 自动化边界；修复不存在的旧 research 路径，未改变平台行为"
+            },
+            {
+              "line": 3,
+              "file": "video/research/v2-voice-probe.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/video/research/v2-voice-probe.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "云扬 edge-tts 语速探针（+0%/+2%/+4% 实测）与发音表机制，配音参数依据"
+            },
+            {
+              "line": 4,
+              "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/SKILL.md",
+              "resolved_root": null,
+              "resolved": null,
+              "exists_mcu_cwd": false,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": "missing_unclassified",
+              "entry_reason": "skill 主契约：job 结构、命令链、黄金 5 秒、旁白分段、美术记录与隐私清洗要求"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/10-28-social-video-ai-tools/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-28-social-video-ai-tools/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务技术设计：Windows 适配实证事实（shell 执行模型/字体显式路径/edge-tts boundary）、双画幅与语音注入路线"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-06-animation-d2-closure/task.json",
+      "status": "in_progress",
+      "priority": "P1",
+      "dir": "mcu/.trellis/tasks/11-06-animation-d2-closure",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-animation-d2-closure/check.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/animation.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保留两种作者入口与动画行为"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "旧实现代码块污染与真实 renderer 证据"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-d2-closure/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "按 R1–R5 验收；新增回归需审查，task_verify 独立报告"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-animation-d2-closure/implement.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/animation.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有动画渲染契约；仅修源码替换边界，不扩大语法"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-d2-closure/research/boundary-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本轮真实复现、before-inline token 形态与已拒绝假设"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-d2-closure/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-d2-closure/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "批准后采用 parser-aware 局部修正，保留用户工作"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-06-animation-reading-experience/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-06-animation-reading-experience",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-animation-reading-experience/check.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/animation.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-animation-reading-experience/implement.jsonl",
+          "lines": 4,
+          "file_entries": 4,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/animation.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/animation.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "现有层合同；保留原行为/保护和验证，不以旧计划放宽"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-animation-reading-experience/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "该任务原需求与AC完整保留，不用统筹卡缩减范围"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "跨任务唯一写者、合同冲突与具体权限门；不得照旧stash/全局正则或覆盖已发布"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-06-language-batch2/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-06-language-batch2",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-language-batch2/check.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对内容合同与保护规则"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-batch2/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-language-batch2/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "按AC1至AC6逐条验收"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-language-batch2/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-language-batch2/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "检查必须实跑、不得放宽基线"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-language-batch2/implement.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、直觉到实现顺序、事实纪律"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "严格保护区与数字事实合同"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-language-batch2/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-language-batch2/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本批允许段落与冻结疑点边界"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-06-language-release-pdf/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-06-language-release-pdf",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-language-release-pdf/check.jsonl",
+          "lines": 2,
+          "file_entries": 2,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/print-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "完整印前产物与13项校验"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-release-pdf/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-language-release-pdf/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "用户批准的发布范围与精确CI条件"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-language-release-pdf/implement.jsonl",
+          "lines": 2,
+          "file_entries": 2,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/print-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "完整印前产物与13项校验"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-language-release-pdf/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-language-release-pdf/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "用户批准的发布范围与精确CI条件"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-06-spec-plan-continuation/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-06-spec-plan-continuation",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-spec-plan-continuation/check.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核验章节合同与事实保护未退化"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-spec-plan-continuation/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "按AC1–AC5核验试点与未验证边界"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-spec-plan-continuation/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "窄保护检查、现有门禁与真实页面验证要求"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-06-spec-plan-continuation/implement.jsonl",
+          "lines": 3,
+          "file_entries": 3,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、技术事实与内容风格合同"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "既有不可动范围与事实token保护"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/11-06-spec-plan-continuation/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-06-spec-plan-continuation/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "B0单章试点边界与候选稿流程"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-book-delivery-closure/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-book-delivery-closure",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-delivery-closure/check.jsonl",
+          "lines": 14,
+          "file_entries": 14,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "全部工程收口、设备/基线前提与不绕过规则"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/print-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "完整16开PDF原13项合同"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/spec/firmware-common/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-common/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "host/交叉/固件与上板证据分级"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "子代理未完成与推论限制，不能冒充审阅证明"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "研究原型真实渲染与验证边界"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-delivery-closure/implement.jsonl",
+          "lines": 12,
+          "file_entries": 12,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-delivery-closure/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "全部工程收口、设备/基线前提与不绕过规则"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/spec/book/print-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/print-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "完整16开PDF原13项合同"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/spec/firmware-common/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/firmware-common/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "host/交叉/固件与上板证据分级"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-book-depth-handdraw/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-book-depth-handdraw",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-handdraw/check.jsonl",
+          "lines": 14,
+          "file_entries": 14,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "子代理未完成与推论限制，不能冒充审阅证明"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "研究原型真实渲染与验证边界"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-handdraw/implement.jsonl",
+          "lines": 12,
+          "file_entries": 12,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-book-depth-pilot/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-book-depth-pilot",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-pilot/check.jsonl",
+          "lines": 14,
+          "file_entries": 14,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "子代理未完成与推论限制，不能冒充审阅证明"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "研究原型真实渲染与验证边界"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-pilot/implement.jsonl",
+          "lines": 12,
+          "file_entries": 12,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-pilot/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-book-depth-rollout/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-book-depth-rollout",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-rollout/check.jsonl",
+          "lines": 14,
+          "file_entries": 14,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            },
+            {
+              "line": 13,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "子代理未完成与推论限制，不能冒充审阅证明"
+            },
+            {
+              "line": 14,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "研究原型真实渲染与验证边界"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-book-depth-rollout/implement.jsonl",
+          "lines": 12,
+          "file_entries": 12,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "章节骨架、事实纪律与阅读结构"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文/装配/印前职责与原守卫"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/spec/docs-site/architecture-diagram.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/architecture-diagram.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "动画架构题花分工与资产管线"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "本任务边界、需求和可核验AC"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "接口、保护、责任和依赖"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-rollout/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "顺序、审阅门与实际验证要求"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "逐点理解与说人话判据，不用代理指标代替"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "机制图复用、可读性和跨端/印前验收"
+            },
+            {
+              "line": 9,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保护现有全部来源、214runner与42用户文件"
+            },
+            {
+              "line": 10,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "101文件覆盖与真实审查深度，不虚构全审"
+            },
+            {
+              "line": 11,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "六样章具体源窗口/图文方向与风险"
+            },
+            {
+              "line": 12,
+              "file": ".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "24批101文件恰一次、不漏S篇附录"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+      "status": "planning",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-historical-spec-closure",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl",
+          "lines": 1,
+          "file_entries": 0,
+          "entries": []
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl",
+          "lines": 1,
+          "file_entries": 0,
+          "entries": []
+        }
+      ]
+    },
+    {
+      "task_path": "mcu/.trellis/tasks/11-07-language-batch5/task.json",
+      "status": "in_progress",
+      "priority": "P2",
+      "dir": "mcu/.trellis/tasks/11-07-language-batch5",
+      "jsonl_files": [
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-language-batch5/check.jsonl",
+          "lines": 7,
+          "file_entries": 7,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文结构与事实纪律复核"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "strict guard和整书装配检查口径"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "保留作者声音与受保护事实token"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-language-batch5/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "按需求与AC逐一验收，不将规划算实施"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-language-batch5/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "检查四行边界、冻结技术疑点和额外结构"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "核对四处真实理解收益和原句"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "来源和冻结输入是否漂移，用户工作是否完整保持"
+            }
+          ]
+        },
+        {
+          "jsonl": "mcu/.trellis/tasks/11-07-language-batch5/implement.jsonl",
+          "lines": 8,
+          "file_entries": 8,
+          "entries": [
+            {
+              "line": 1,
+              "file": ".trellis/spec/docs-site/content.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/docs-site/content.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "正文风格、固定章节骨架与事实边界"
+            },
+            {
+              "line": 2,
+              "file": ".trellis/spec/book/index.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/spec/book/index.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "原strict guard与整书装配验证边界"
+            },
+            {
+              "line": 3,
+              "file": ".trellis/tasks/10-26-prose-polish/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/10-26-prose-polish/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "作者口语、数字事实多重集和不可动字节合同"
+            },
+            {
+              "line": 4,
+              "file": ".trellis/tasks/11-07-language-batch5/prd.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/prd.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "R1-R6和AC1-AC7，不跨S篇"
+            },
+            {
+              "line": 5,
+              "file": ".trellis/tasks/11-07-language-batch5/design.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/design.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "精确四行白名单与五组冻结技术疑点"
+            },
+            {
+              "line": 6,
+              "file": ".trellis/tasks/11-07-language-batch5/implement.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/implement.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "先审后实施，候选与落盘双门以及真实页面证明"
+            },
+            {
+              "line": 7,
+              "file": ".trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "原句/方向/卡点/收益与规划验证边界"
+            },
+            {
+              "line": 8,
+              "file": ".trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "resolved_root": "mcu_cwd",
+              "resolved": "D:/Users/STM32-mcu-merge-p1/mcu/.trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+              "exists_mcu_cwd": true,
+              "exists_git_root": false,
+              "exists_task_dir": false,
+              "missing_reason": null,
+              "entry_reason": "merged基线27来源、214固定验证输入与42用户文件来源"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "jsonl_files": 46,
+    "lines_total": 258,
+    "file_entries_total": 256,
+    "exists_mcu_root": 254,
+    "exists_git_root": 0,
+    "exists_task_dir": 0,
+    "missing": 2,
+    "unparseable_lines": 0,
+    "non_file_entries": 2
+  },
+  "missing_entries": [
+    {
+      "task": "mcu/.trellis/tasks/10-28-social-video-ai-tools/task.json",
+      "status": "in_progress",
+      "jsonl": "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+      "line": 2,
+      "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/references/quality-gates.md",
+      "resolved_root": null,
+      "resolved": null,
+      "exists_mcu_cwd": false,
+      "exists_git_root": false,
+      "exists_task_dir": false,
+      "missing_reason": "missing_unclassified",
+      "entry_reason": "skill 官方质量门定义（黄金 5 秒、audio/image/lineart gate、字幕覆盖）——检查口径必须与官方一致"
+    },
+    {
+      "task": "mcu/.trellis/tasks/10-28-social-video-ai-tools/task.json",
+      "status": "in_progress",
+      "jsonl": "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+      "line": 4,
+      "file": "video/sweety-handdraw-video/skills/sweety-handdraw-video/SKILL.md",
+      "resolved_root": null,
+      "resolved": null,
+      "exists_mcu_cwd": false,
+      "exists_git_root": false,
+      "exists_task_dir": false,
+      "missing_reason": "missing_unclassified",
+      "entry_reason": "skill 主契约：job 结构、命令链、黄金 5 秒、旁白分段、美术记录与隐私清洗要求"
+    }
+  ]
+}

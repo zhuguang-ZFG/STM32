@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 390" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="J1/J2 记录器架构：采样输入经 sample 任务、滤波与 16 槽队列、comm 任务和串口到主机；supervisor 任务按期限检查 sample 与 comm 的进度并喂硬件看门狗；save 命令在锁外写配置存储；端口适配层两板各一份，任务层和核心共用">
+  <rect width="720" height="390" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">记录器架构：一条记录从外设走到 CSV</text>
+  <text x="24" y="50" font-size="12" fill="#666">两板共用任务层（runtime.c）与纯 C 核心，差异只在橙色的端口适配层</text>
+
+  <g font-size="12" text-anchor="middle">
+    <!-- 第一行：数据路径 -->
+    <rect x="24" y="70" width="96" height="80" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+    <text x="72" y="92" font-size="13" font-weight="bold" fill="#a16207">采样输入</text>
+    <text x="72" y="112" fill="#333">F407 ADC+DMA</text>
+    <text x="72" y="130" fill="#333">S3 QMI8658</text>
+
+    <rect x="140" y="70" width="104" height="80" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+    <text x="192" y="92" font-size="13" font-weight="bold" fill="#3451b2">sample 任务</text>
+    <text x="192" y="112" fill="#333">优先级 3</text>
+    <text x="192" y="130" fill="#333">按周期取样</text>
+
+    <rect x="266" y="70" width="100" height="80" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+    <text x="316" y="92" font-size="13" font-weight="bold" fill="#1a7f56">滤波 + 队列</text>
+    <text x="316" y="112" fill="#333">整数 IIR</text>
+    <text x="316" y="130" fill="#333">16 槽，满丢新</text>
+
+    <rect x="388" y="70" width="104" height="80" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+    <text x="440" y="92" font-size="13" font-weight="bold" fill="#3451b2">comm 任务</text>
+    <text x="440" y="112" fill="#333">优先级 2</text>
+    <text x="440" y="130" fill="#333">收命令·发帧</text>
+
+    <rect x="514" y="70" width="80" height="80" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+    <text x="554" y="92" font-size="13" font-weight="bold" fill="#a16207">串口</text>
+    <text x="554" y="112" fill="#333">F407 USART1</text>
+    <text x="554" y="130" fill="#333">S3 UART1</text>
+
+    <rect x="616" y="70" width="80" height="80" fill="#fff" stroke="#666" stroke-width="2" rx="8"/>
+    <text x="656" y="92" font-size="13" font-weight="bold" fill="#333">主机</text>
+    <text x="656" y="112" fill="#333">序号查缺口</text>
+    <text x="656" y="130" fill="#333">写 CSV</text>
+  </g>
+  <g stroke="#3451b2" stroke-width="2" fill="#3451b2">
+    <line x1="120" y1="110" x2="134" y2="110"/><path d="M132 105 L140 110 L132 115 Z" stroke="none"/>
+    <line x1="244" y1="110" x2="260" y2="110"/><path d="M258 105 L266 110 L258 115 Z" stroke="none"/>
+    <line x1="366" y1="110" x2="382" y2="110"/><path d="M380 105 L388 110 L380 115 Z" stroke="none"/>
+    <line x1="500" y1="110" x2="506" y2="110"/><path d="M500 105 L492 110 L500 115 Z" stroke="none"/><path d="M506 105 L514 110 L506 115 Z" stroke="none"/>
+    <line x1="602" y1="110" x2="608" y2="110"/><path d="M602 105 L594 110 L602 115 Z" stroke="none"/><path d="M608 105 L616 110 L608 115 Z" stroke="none"/>
+  </g>
+  <!-- 第二行：监督与配置 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="190" width="96" height="74" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+    <text x="72" y="212" font-size="13" font-weight="bold" fill="#a16207">硬件看门狗</text>
+    <text x="72" y="232" fill="#333">F407 IWDG</text>
+    <text x="72" y="250" fill="#333">S3 task WDT</text>
+
+    <rect x="140" y="190" width="226" height="74" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+    <text x="253" y="212" font-size="13" font-weight="bold" fill="#3451b2">supervisor 任务 · 优先级 4</text>
+    <text x="253" y="232" fill="#333">每 50ms 检查进度期限</text>
+    <text x="253" y="250" fill="#333">sample 2500ms，comm 1500ms</text>
+
+    <rect x="388" y="190" width="104" height="74" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+    <text x="440" y="212" font-size="13" font-weight="bold" fill="#a16207">配置存储</text>
+    <text x="440" y="232" fill="#333">F407 AT24C02</text>
+    <text x="440" y="250" fill="#333">S3 NVS blob</text>
+
+    <rect x="514" y="190" width="182" height="74" fill="#fff" stroke="#999" stroke-dasharray="5 3" rx="8"/>
+    <text x="605" y="212" fill="#333">configure → APPLIED</text>
+    <text x="605" y="230" fill="#333">只改运行配置</text>
+    <text x="605" y="250" fill="#333">save 写成功回读 → SAVED</text>
+  </g>
+  <!-- 监督 → 看门狗 -->
+  <line x1="140" y1="227" x2="128" y2="227" stroke="#3451b2" stroke-width="2"/>
+  <path d="M128 222 L120 227 L128 232 Z" fill="#3451b2"/>
+  <text x="130" y="182" font-size="12" fill="#3451b2" text-anchor="middle">喂狗</text>
+  <!-- 进度汇报 -->
+  <line x1="192" y1="150" x2="192" y2="190" stroke="#3451b2" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="M440 150 V170 H300 V190" fill="none" stroke="#3451b2" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="246" y="170" font-size="12" fill="#666" text-anchor="middle">进度</text>
+  <!-- comm → 存储 -->
+  <line x1="470" y1="150" x2="470" y2="182" stroke="#d97706" stroke-width="2"/>
+  <path d="M465 182 L470 190 L475 182 Z" fill="#d97706"/>
+  <text x="478" y="176" font-size="12" fill="#a16207">save（锁外）</text>
+
+  <!-- 规则 -->
+  <rect x="24" y="282" width="672" height="92" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <g font-size="12" fill="#a16207">
+    <text x="40" y="304">每条记录是 64 字节 SAMPLE：sequence · timestamp · generation · valid_mask · raw[6] · filtered[6]，全部小端</text>
+    <text x="40" y="324">队列满就丢新记录并计数；串口没有流控，主机靠 sequence 断号发现丢失，不承诺无限缓存</text>
+    <text x="40" y="344">"健康" = 每个任务在期限内完成有界工作；传感器报错但循环仍在走，不算卡死，不该触发复位</text>
+    <text x="40" y="364">任务层、滤波、队列、协议、配置镜像两板共用；橙色框各板一份 port 适配</text>
+  </g>
+</svg>

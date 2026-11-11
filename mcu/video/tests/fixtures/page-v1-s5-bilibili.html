@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN" class="dark"><head><meta charset="utf-8"><title>stage</title>
+<style>
+:root{
+  --u:10.800px; --sw:19.200px;
+  --bg:#0b1220; --bg2:#131c33; --anim-bg:#1e222a; --card:#262c36; --panel:#222831;
+  --line:#3b4453; --ink:#e6eaf2; --sub:#a9b3c1; --muted:#7b8696;
+  --brand:#8ab4ff; --accent:#4fd196; --accent-deep:#7ee0b4;
+  --warn:#f0b45c; --warn-deep:#f5c97a; --gold:#e6c95f; --danger:#ff8a80;
+  --wash-blue:rgba(138,180,255,0.14); --wash-green:rgba(79,209,150,0.14); --wash-amber:rgba(240,180,92,0.14);
+  --font:'Microsoft YaHei','PingFang SC','Noto Sans SC','Segoe UI',system-ui,sans-serif; --mono:'Cascadia Mono','Consolas','Microsoft YaHei Mono',monospace;
+}
+/* 下面这组类名与 docs/public/anim/*.svg 经 decorateAnim 后得到的类一一对应 */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+.frame{position:relative;width:1920px;height:1080px;
+  background:radial-gradient(120% 100% at 50% 0%,var(--bg2) 0%,var(--bg) 62%,#070c17 100%);
+  /* 底部留出一条字幕带：正文不能延伸进 .caps，否则渲染出来就是压字 */
+  padding:calc(var(--u)*6) calc(var(--sw)*6) calc(var(--u)*15);display:flex;flex-direction:column}
+.topbar{position:absolute;left:calc(var(--sw)*6);right:calc(var(--sw)*6);top:calc(var(--u)*3.2);
+  display:flex;align-items:center;justify-content:space-between;font-size:calc(var(--u)*1.7);color:var(--muted);letter-spacing:.06em}
+.topbar .badge{color:var(--brand);font-weight:600}
+/* 分节页头：左格把 badge 与系列名收成一个组，右格留给当前小节。
+   没 sections 的老集不会生成这两个元素，下面的规则也就不参与布局。 */
+.topbar .brandg{display:flex;align-items:center;gap:calc(var(--sw)*1.2)}
+.topbar .secchip{color:var(--sub);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.secbar{position:absolute;left:calc(var(--sw)*8);right:calc(var(--sw)*10);top:calc(var(--u)*8);
+  display:flex;gap:calc(var(--u)*.5)}
+.secbar i{flex:1;height:calc(var(--u)*.34);border-radius:99px;background:rgba(123,134,150,.22)}
+.secbar i.on{background:rgba(138,180,255,.5)}
+.secbar i.cur{background:var(--brand)}
+.step{position:absolute;right:0;bottom:calc(var(--u)*.4);font-size:calc(var(--u)*1.5);color:var(--muted);
+  font-variant-numeric:tabular-nums;letter-spacing:.08em}
+/* padding-bottom 给 .step 单独留一条带：不留的话 .lay 撑满 .body，最后一行 .note 正好压在页码上 */
+.body{flex:1;display:flex;min-height:0;min-width:0;position:relative;padding-top:calc(var(--u)*3);padding-bottom:calc(var(--u)*3.6)}
+.lay{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0;gap:calc(var(--u)*1.8)}
+.fit{overflow:hidden;min-height:0}
+/* 文字块一律 flex:none。.fit 自带 min-height:0，留着默认的 flex-shrink:1 时，
+   一旦整场内容超高，flex 会把 .title 的盒子挤成 7px 高——fitAll 只能顺着把字
+   缩到 6px 地板，抖音版三个 code 场景的标题就是这么变成一条细渣的。
+   该收缩的是 .cols/pre.code，它们本来就有 fitAll 兜着。 */
+.title,.sub,.note,.kicker,.url{flex:none}
+.title{font-size:calc(var(--u)*3.9);line-height:1.3;font-weight:700;letter-spacing:-.01em}
+.sub{font-size:calc(var(--u)*2.3);line-height:1.5;color:var(--sub)}
+.note{font-size:calc(var(--u)*1.75);color:var(--muted);border-left:calc(var(--u)*.4) solid var(--brand);
+  padding-left:calc(var(--sw)*1.4);line-height:1.45}
+.bullets{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*1.15);font-size:calc(var(--u)*2.1);line-height:1.42}
+.bullets li{position:relative;padding-left:calc(var(--sw)*2.2);color:var(--ink)}
+.bullets li::before{content:'';position:absolute;left:0;top:.52em;width:calc(var(--u)*.85);height:calc(var(--u)*.85);
+  border-radius:50%;background:var(--brand)}
+/* flex:0 1 auto —— 面板按内容收高，整组居中。写 flex:1 会把两个面板拉到满高，
+   于是 8 行代码配 800px 的框，下半屏全是空的。 */
+.cols{display:flex;gap:calc(var(--sw)*2);flex:0 1 auto;min-height:0;min-width:0}
+.cols.one{max-width:100%}
+/* min-height:0 是必须的：列向 flex 的子项默认 min-height:auto，抖音版 .cols 是 column，
+   两个 .col 拒绝对抗收缩，.cols 直接顶穿自己的格子，压在 .note 上。 */
+.col{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;gap:calc(var(--u)*.9)}
+.collabel{font-size:calc(var(--u)*1.7);color:var(--brand);font-weight:600;letter-spacing:.04em}
+.col.asm .collabel{color:var(--warn)}
+pre.code{flex:1;min-height:0;min-width:0;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:calc(var(--u)*.9);
+  padding:calc(var(--u)*1.5) calc(var(--sw)*1.6);font-family:var(--mono);font-size:calc(var(--u)*1.95);
+  line-height:1.5;color:var(--ink);white-space:pre;tab-size:4}
+pre.code .ln{display:block;min-height:1.5em;padding:0 calc(var(--sw)*.6);border-radius:3px}
+pre.code .ln.ev{background:rgba(255,138,128,.14);box-shadow:inset calc(var(--u)*.35) 0 0 var(--danger);color:#ffd9d5}
+pre.code .ln.dim{color:var(--muted)}
+pre.code .hl{font-style:normal;color:var(--accent);font-weight:700}
+pre.code .bad{font-style:normal;color:var(--danger);font-weight:700}
+pre.code b{color:var(--brand)}
+.lay-anim{gap:calc(var(--u)*1.4)}
+.lay-anim .side{display:flex;flex-direction:column;gap:calc(var(--u)*1.2)}
+.animbox{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* 卡片再包一层 .animcard 贴着画面收：.animbox 只当"可用区"量尺寸。
+   以前描边背景直接挂在 flex:1 的 .animbox 上，720×400 的画面在 9:16 上
+   上下各空出三百多像素，看着像渲染坏了。 */
+.animcard{display:flex;align-items:center;justify-content:center;max-width:100%;max-height:100%;
+  background:var(--anim-bg);border:1px solid var(--line);border-radius:calc(var(--u)*1.2);padding:calc(var(--u)*1.2);overflow:hidden}
+.animbox svg{display:block;flex-shrink:0;font-family:var(--font)}
+.lay-hook,.lay-card,.lay-outro{align-items:center;justify-content:center;text-align:center;gap:calc(var(--u)*2.4)}
+/* code/hook 的纵向空隙只加 gap，**justify-content 一律留 center**。
+   试过 space-between + padding-block:5u/9u：填充读数从 0.55 涨到 0.74 看着达标，
+   截图却是标题贴页头、代码贴下沿、中间空 250px——数字是被"拆开内容"刷上去的，画面更坏
+   （反例留档 .trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/lever-spacebetween-*.png）。
+   padding 那一半还有实伤：竖版加 3u/6u
+   把长代码场挤给 fitAll，19.1px 压到 13.3px，三集 8 场撞了审计的 16px 地板。
+   只加 gap 是居中一组重新呼吸，横版 code 0.64 / hook 0.59，18 集 694 场审计零新增失败。 */
+.lay-code,.lay-hook{justify-content:center;gap:calc(var(--u)*4)}
+/* line-height 不能按拉丁文的直觉写 1.18：中文字体的行盒比 line-height 高，
+   每行往下溢出 ~1.7px，四行就是 7px。fitAll 把这点溢出当成"放不下"，
+   于是片头大标题从 107px 一路砍到 24px——两个平台都中招，只是抖音看着更明显。 */
+.lay-hook .title,.lay-card .title{font-size:calc(var(--u)*6.2);line-height:1.34}
+/* 片头压一条品牌色横杠：整屏只有两行字时，这条杠是唯一的视觉锚点 */
+.lay-hook .title::before{content:'';display:block;width:calc(var(--u)*9);height:calc(var(--u)*.55);
+  border-radius:99px;background:var(--brand);margin:0 auto calc(var(--u)*2.4)}
+.lay-hook .cols{flex:0 1 auto;min-height:calc(var(--u)*16);max-width:76%}
+/* kind=card 过去只改标题颜色，屏幕上根本没有"卡"。给它真正的面板，
+   空白从"没排版"变成"卡片四周的留白"。
+   卡片是 .lay 的唯一子元素，"分布空隙"那条杠杆对它无效——实测把面板 padding、
+   内部 gap、列表字号连加三档也只到 0.66（最差场 0.56），短卡再怎么放大字都填不满。
+   所以改成让面板本身长满、内容在框内居中：面板是有底色描边投影的可见盒子，
+   "中间一条横幅"这件事由盒子回答，而不是靠把字吹大去凑面积。
+   这条与 design §4 的走法不同，是 Phase 2 量出来的，已回写 design。 */
+.lay-card{justify-content:stretch;padding-block:calc(var(--u)*3) calc(var(--u)*5)}
+.lay-card .cardpanel{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1 1 auto;text-align:center;
+  gap:calc(var(--u)*2.2);max-width:78%;
+  background:linear-gradient(160deg,rgba(38,44,54,.94),rgba(20,26,36,.86));
+  border:1px solid var(--line);border-left:calc(var(--u)*.75) solid var(--brand);
+  border-radius:calc(var(--u)*1.8);padding:calc(var(--u)*4.2) calc(var(--sw)*4.2);
+  box-shadow:0 calc(var(--u)*1.4) calc(var(--u)*5) rgba(0,0,0,.5)}
+.lay-card.danger .cardpanel{border-left-color:var(--danger)}
+.lay-card.good .cardpanel{border-left-color:var(--accent)}
+.lay-card.gold .cardpanel{border-left-color:var(--gold)}
+.lay-card.danger .title{color:var(--danger)}
+.lay-card.good .title{color:var(--accent)}
+.lay-card.gold .title{color:var(--gold)}
+.lay-card .kicker{font-size:calc(var(--u)*2);color:var(--warn);font-weight:700;letter-spacing:.2em}
+.lay-card .bullets,.lay-outro .bullets{text-align:left;align-items:flex-start}
+/* 「55 —— 说明」这类条目：数字单独一档字号，扫一眼就抓到数 */
+.bullets li{display:flex;align-items:baseline;gap:calc(var(--sw)*1.2)}
+.bullets .num{font-family:var(--mono);font-weight:800;font-size:calc(var(--u)*2.9);color:var(--brand);
+  line-height:1.1;white-space:nowrap}
+.bullets .num::after{content:'——';color:var(--muted);font-weight:400;font-size:calc(var(--u)*1.6);margin-left:calc(var(--sw)*.6)}
+.lay-card.danger .num{color:var(--danger)}
+.lay-card.gold .num{color:var(--gold)}
+.lay-card.good .num{color:var(--accent)}
+.lay-outro .url{font-family:var(--mono);font-size:calc(var(--u)*2.2);color:var(--brand);
+  border:1px solid var(--line);border-radius:999px;padding:calc(var(--u)*.9) calc(var(--sw)*2.6)}
+.watermark{position:absolute;right:calc(var(--sw)*2.4);bottom:calc(var(--u)*5);font-size:calc(var(--u)*24);
+  font-weight:800;line-height:1;letter-spacing:-.05em;color:rgba(138,180,255,.05);pointer-events:none}
+/* 分场进度条：只跟 index 有关，同一场内恒定，不会打穿逐帧去重 */
+.ticks{position:absolute;left:calc(var(--sw)*6);right:calc(var(--sw)*6);bottom:calc(var(--u)*1.6);
+  display:flex;gap:calc(var(--u)*.45)}
+.ticks i{flex:1;height:calc(var(--u)*.4);border-radius:99px;background:rgba(123,134,150,.22)}
+.ticks i.on{background:rgba(138,180,255,.5)}
+.ticks i.cur{background:var(--brand)}
+.caps{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--u)*8);max-width:86%;text-align:center;opacity:0}
+.caps span{display:inline-block;font-size:calc(var(--u)*2.85);line-height:1.42;font-weight:600;text-wrap:balance;
+  background:rgba(7,12,23,.82);border:1px solid rgba(138,180,255,.22);border-radius:calc(var(--u)*1.1);
+  padding:calc(var(--u)*.75) calc(var(--sw)*2.2);box-shadow:0 calc(var(--u)*.5) calc(var(--u)*2) rgba(0,0,0,.5)}
+
+svg .a-bg{fill:var(--anim-bg)}svg .a-card{fill:var(--card)}svg .a-panel{fill:var(--panel)}
+svg .a-line{fill:var(--line)}svg .a-ink{fill:var(--ink)}svg .a-sub{fill:var(--sub)}svg .a-muted{fill:var(--muted)}
+svg .a-brand{fill:var(--brand)}svg .a-accent{fill:var(--accent)}svg .a-accent-deep{fill:var(--accent-deep)}
+svg .a-warn{fill:var(--warn)}svg .a-warn-deep{fill:var(--warn-deep)}svg .a-gold{fill:var(--gold)}
+svg .a-danger{fill:var(--danger)}svg .a-wash-blue{fill:var(--wash-blue)}svg .a-wash-green{fill:var(--wash-green)}
+svg .a-wash-amber{fill:var(--wash-amber)}
+svg .s-brand{stroke:var(--brand)}svg .s-accent{stroke:var(--accent)}svg .s-accent-deep{stroke:var(--accent-deep)}
+svg .s-warn{stroke:var(--warn)}svg .s-danger{stroke:var(--danger)}svg .s-card{stroke:var(--card)}
+svg .s-line{stroke:var(--line)}svg .s-muted{stroke:var(--muted)}svg .s-sub{stroke:var(--sub)}svg .s-ink{stroke:var(--ink)}
+svg .a-mono{font-family:var(--mono)}
+</style></head>
+<body>
+<div class="frame">
+  <div class="watermark">S5</div>
+  <div class="topbar"><span class="brandg"><span class="badge">S5</span><span class="brand2">通往单片机之路</span></span><span class="secchip" id="secchip"></span></div>
+  <div class="body" id="body"></div>
+  <div class="ticks" id="ticks"></div>
+  <div class="caps" id="caps"><span id="captext"></span></div>
+</div>
+<script>
+window.PAYLOAD = [{"kind":"hook","html":"<div class=\"lay lay-hook\"><div class=\"title fit\">调度器每毫秒醒一次，谁在数那一毫秒？</div><div class=\"sub fit\">第 14 集整整一集把 tick 当成已知量。这一集把它拆开。</div><div class=\"cols one\" style=\"width:100%\"><div class=\"col \"><pre class=\"fit code\"><span class=\"ln \">FreeRTOS 那边：xTickCount 每 +1，任务就被挪一次</span><span class=\"ln \">STM32 这边：SysTick-&gt;LOAD = 167999</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">中间那一格，这一集补上：那 168000 个时钟是谁数的</span></pre></div></div></div><span class=\"step\">01 / 28</span>","anim":null,"slug":"bilibili-0","sec":null},{"kind":"hook","html":"<div class=\"lay lay-hook\"><div class=\"title fit\">这一集不要开发板</div><div class=\"sub fit\">一条命令，宿主机 gcc 跑完 42 条断言</div><div class=\"cols one\" style=\"width:100%\"><div class=\"col \"><pre class=\"fit code\"><span class=\"ln \">cd code/stm32/05-systick &amp;&amp; sh probe.sh</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">宿主工具链：gcc 16.1.0</span><span class=\"ln ev\">[宿主] 断言通过 42/42</span><span class=\"ln dim\">交叉段要 arm-none-eabi-gcc 在 PATH，不在就整段不跑</span></pre></div></div></div><span class=\"step\">02 / 28</span>","anim":null,"slug":"bilibili-1","sec":null},{"kind":"card","html":"<div class=\"lay lay-card gold\"><div class=\"cardpanel\"><div class=\"kicker\">版图</div><div class=\"title fit\">它不住在 ST 的地址表上</div><ul class=\"bullets fit\"><li>CTRL / LOAD / VAL / CALIB —— 偏移 0x0、0x4、0x8、0xC</li><li>SysTick_BASE = 0xE000E010，内核外设，所有 Cortex-M 一样</li><li>所以 RTOS 移植层的 tick 初始化只写一遍</li></ul></div></div><span class=\"step\">03 / 28</span>","anim":null,"slug":"bilibili-2","sec":{"i":1,"n":6,"title":"寄存器版图"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">先跑一遍：42 条断言怎么来的</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe.sh 第 1 段本机输出（长行折开排）</div><pre class=\"fit code\"><span class=\"ln \">$ cd code/stm32/05-systick &amp;&amp; sh probe.sh</span><span class=\"ln \">############ 1. 宿主：SysTick 模型 + 配置全貌（断言取证） ############</span><span class=\"ln \">宿主工具链：gcc 16.1.0</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">[1] 布局：CTRL/LOAD/VAL/CALIB 偏移 = 0x0/0x4/0x8/0xC</span><span class=\"ln \">     SysTick_BASE = 0xE000E010（内核外设，所有 Cortex-M 通用）</span><span class=\"ln ev\">[2] 168MHz：1ms → LOAD=167999，100us → LOAD=16799</span><span class=\"ln \">     10ms → LOAD=1679999（= 周期周期数-1）</span><span class=\"ln dim\">……[3] 到 [7] 是这一集后面五节，逐段展开……</span><span class=\"ln ev\">HOST_ASSERTS=42</span><span class=\"ln ev\">[宿主] 断言通过 42/42</span></pre></div></div></div><span class=\"step\">04 / 28</span>","anim":null,"slug":"bilibili-3","sec":{"i":1,"n":6,"title":"寄存器版图"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">头文件那四行，与 offsetof 对得上</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">core_cm4.h:764-770（字段与顺序照原文，注释压短）</div><pre class=\"fit code\"><span class=\"ln \">typedef struct</span><span class=\"ln \">{</span><span class=\"ln \">  __IOM uint32_t CTRL;   /*!&lt; Offset: 0x000 (R/W) 控制与状态 */</span><span class=\"ln \">  __IOM uint32_t LOAD;   /*!&lt; Offset: 0x004 (R/W) 重载值     */</span><span class=\"ln \">  __IOM uint32_t VAL;    /*!&lt; Offset: 0x008 (R/W) 当前值     */</span><span class=\"ln \">  __IM  uint32_t CALIB;  /*!&lt; Offset: 0x00C (R/ ) 校准       */</span><span class=\"ln \">} SysTick_Type;</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">offsetof 实测（probe [1]）：0x0 / 0x4 / 0x8 / 0xC</span><span class=\"ln \">→ 头文件写 0x00C，脚本打印成 0xC：同一个数两种写法</span><span class=\"ln \">→ CALIB 那个 R 斜杠不是排版缺字，它是真的写不进去</span></pre></div></div></div><span class=\"step\">05 / 28</span>","anim":null,"slug":"bilibili-4","sec":{"i":1,"n":6,"title":"寄存器版图"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">基址是拼出来的，合成结果才敢写死</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">前两行是头文件里的宏，第三行才是本机读数</div><pre class=\"fit code\"><span class=\"ln dim\">core_cm4.h:1550   SCS_BASE     = 0xE000E000</span><span class=\"ln dim\">core_cm4.h:1555   SysTick_BASE = SCS_BASE + 0x0010</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">probe [1] 打印的是合成结果：SysTick_BASE = 0xE000E010</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ SCS 是 ARM 内核的地盘，不是芯片厂的外设区</span><span class=\"ln \">→ STM32 / GD32 / nRF52 这一格地址一个字节都不差</span><span class=\"ln \">→ 所以 RTOS 移植层的 tick 初始化只需要写一遍</span></pre></div></div></div><span class=\"step\">06 / 28</span>","anim":null,"slug":"bilibili-5","sec":{"i":1,"n":6,"title":"寄存器版图"}},{"kind":"card","html":"<div class=\"lay lay-card warn\"><div class=\"cardpanel\"><div class=\"kicker\">四位数</div><div class=\"title fit\">三位是开关，一位会自己跑掉</div><ul class=\"bullets fit\"><li>bit0 ENABLE ｜ bit1 TICKINT ｜ bit2 CLKSOURCE（源码里的位定义）</li><li>bit16 COUNTFLAG：归零置 1，读 CTRL 这个动作本身把它清 0</li><li>所以读它不是看一眼，是拿一次</li></ul></div></div><span class=\"step\">07 / 28</span>","anim":null,"slug":"bilibili-6","sec":{"i":2,"n":6,"title":"CTRL 四个位"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">读清这件事，屏上是两次读的返回值</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [7] 第一行原文</div><pre class=\"fit code\"><span class=\"ln ev\">周期到后第一次读 CTRL = 0x00010005（有标志）</span><span class=\"ln ev\">紧接第二次读         = 0x00000005（标志已被上一次读清掉）</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">     0x00010005</span><span class=\"ln \">  vs 0x00000005</span><span class=\"ln \">     ↑ 只差 bit16 那一格；末尾那个 5 两次相同</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 计数器根本没停，只是标志被上一次读走</span><span class=\"ln dim\">（位定义取自 probe.c:37-40，脚本没打印它）</span></pre></div></div></div><span class=\"step\">08 / 28</span>","anim":null,"slug":"bilibili-7","sec":{"i":2,"n":6,"title":"CTRL 四个位"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">偷看一眼的代价：五次对零次</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe.c:247-255，两个循环只差一行</div><pre class=\"fit code\"><span class=\"ln \">for (int p = 0; p &lt; 5; p++) {</span><span class=\"ln \">    sim_run(&amp;b, 100UL);</span><span class=\"ln \">    if (sim_read_ctrl(&amp;b) &amp; CTRL_COUNTFLAG) got_right++;  /* 单次读 */</span><span class=\"ln \">}</span><span class=\"ln \">for (int p = 0; p &lt; 5; p++) {</span><span class=\"ln \">    sim_run(&amp;b, 100UL);</span><span class=\"ln \">    (void)sim_read_ctrl(&amp;b);                              /* 偷看一眼 */</span><span class=\"ln \">    if (sim_read_ctrl(&amp;b) &amp; CTRL_COUNTFLAG) got_wrong++;  /* 再查已没 */</span><span class=\"ln \">}</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">对照：5 个周期里单读法数到 5 次</span><span class=\"ln ev\">「先偷看再查」双读法数到 0 次</span></pre></div></div></div><span class=\"step\">09 / 28</span>","anim":null,"slug":"bilibili-8","sec":{"i":2,"n":6,"title":"CTRL 四个位"}},{"kind":"anim","html":"<div class=\"lay lay-anim\"><div class=\"title fit\">倒数、归零、重载</div><div class=\"animbox\" data-anim=\"systick-tick\"></div><div class=\"note\">「减一」和「读清」都是这一条语义的推论，不是口诀</div></div><span class=\"step\">10 / 28</span>","anim":"systick-tick","slug":"bilibili-9","sec":{"i":2,"n":6,"title":"CTRL 四个位"}},{"kind":"card","html":"<div class=\"lay lay-card gold\"><div class=\"cardpanel\"><div class=\"kicker\">为什么减一</div><div class=\"title fit\">从 LOAD 数到 0，是 LOAD+1 拍</div><ul class=\"bullets fit\"><li>168MHz、1ms → 168000 个时钟 → LOAD=167999</li><li>同族三例：100us → 16799，10ms → 1679999</li><li>模型：LOAD=167999 跑 1680000 周期 → 归零重载 10 次</li></ul></div></div><span class=\"step\">11 / 28</span>","anim":null,"slug":"bilibili-10","sec":{"i":3,"n":6,"title":"周期=LOAD+1"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">三例换算，加一次模型实测</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [2] 与 [3] 原文（长行折开排）</div><pre class=\"fit code\"><span class=\"ln ev\">[2] 168MHz：1ms → LOAD=167999，100us → LOAD=16799，</span><span class=\"ln \">     10ms → LOAD=1679999（= 周期周期数-1）</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">[3] 模型：LOAD=167999 跑 1680000 周期 → 归零重载 10 次</span><span class=\"ln \">     （周期 = LOAD+1 = 168000 周期 = 1.000000ms）</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 1680000 ÷ 168000 = 10：次数与周期两头都对上</span></pre></div></div></div><span class=\"step\">12 / 28</span>","anim":null,"slug":"bilibili-11","sec":{"i":3,"n":6,"title":"周期=LOAD+1"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">忘减一：次数一点不少，相位全错</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [3] 第二行</div><pre class=\"fit code\"><span class=\"ln ev\">忘减一：同跑 1680000 周期两者都重载 10 次</span><span class=\"ln \">     ——差别不在次数在相位</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">每个 tick 慢 1/168000（5.95ppm），日漂移 514ms</span><span class=\"ln \">&nbsp;</span><span class=\"ln dim\">按 LOAD 而不是 LOAD+1 算，每个周期多走一拍</span><span class=\"ln dim\">十次重载一次不少，刻度却整条歪了</span></pre></div></div></div><span class=\"step\">13 / 28</span>","anim":null,"slug":"bilibili-12","sec":{"i":3,"n":6,"title":"周期=LOAD+1"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">第 10 次重载落在哪一个时钟上</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [3] 第三行</div><pre class=\"fit code\"><span class=\"ln ev\">相位：第 10 次重载——</span><span class=\"ln ev\">  正确配置在第 1512001 个时钟</span><span class=\"ln ev\">  忘减一     在第 1512010 个</span><span class=\"ln ev\">9 个间隔共欠 9 个时钟</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 短延时里根本没有症状</span><span class=\"ln \">→ 数据记录器、日历时基这种长期计时才把它暴露出来</span></pre></div></div></div><span class=\"step\">14 / 28</span>","anim":null,"slug":"bilibili-13","sec":{"i":3,"n":6,"title":"周期=LOAD+1"}},{"kind":"card","html":"<div class=\"lay lay-card warn\"><div class=\"cardpanel\"><div class=\"kicker\">硬顶</div><div class=\"title fit\">LOAD 只有低 24 位</div><ul class=\"bullets fit\"><li><span class=\"num\">16777215</span><span>最大重载值（0xFFFFFF）</span></li><li>168MHz 下单次最长 99864us，约 99.86ms</li><li>1ms tick 无压力；想单次 100ms，就是装不下</li></ul></div></div><span class=\"step\">15 / 28</span>","anim":null,"slug":"bilibili-14","sec":{"i":4,"n":6,"title":"24 位装不下"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">正规路径：拒配，寄存器一个都不动</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">core_cm4.h:2022-2027 原文 + probe [4] 现场</div><pre class=\"fit code\"><span class=\"ln \">__STATIC_INLINE uint32_t SysTick_Config(uint32_t ticks)</span><span class=\"ln \">{</span><span class=\"ln \">  if ((ticks - 1UL) &gt; SysTick_LOAD_RELOAD_Msk)</span><span class=\"ln \">  {</span><span class=\"ln \">    return (1UL);              /* Reload value impossible */</span><span class=\"ln \">  }</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">probe [4]：请求 100ms（ticks=16800000）→ 返回 1 拒配</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 拒配时 LOAD / VAL / CTRL 一个都没被写</span><span class=\"ln \">→ 它不抛异常、也不打印：返回值不查，失败就是静默的</span></pre></div></div></div><span class=\"step\">16 / 28</span>","anim":null,"slug":"bilibili-15","sec":{"i":4,"n":6,"title":"24 位装不下"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">不查返回值：737 倍速打在中断里</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [4] 第二行后半</div><pre class=\"fit code\"><span class=\"ln ev\">若强行 &amp;0xFFFFFF → LOAD=22783，</span><span class=\"ln ev\">               tick 变成 135.6us，</span><span class=\"ln ev\">               ISR 狂跳 737 倍速</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 这就是不查返回值的下场：系统瘫在中断里</span><span class=\"ln dim\">另一条路是把时钟源切到参考时钟——数据手册写的，本集没测</span><span class=\"ln \">→ 还要更长就换 32 位定时器，那是定时器那一章的地盘</span></pre></div></div></div><span class=\"step\">17 / 28</span>","anim":null,"slug":"bilibili-16","sec":{"i":4,"n":6,"title":"24 位装不下"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">同一份源码，编进 Cortex-M4 的机身</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe.sh 第 2 段（要 arm-none-eabi-gcc 在 PATH）</div><pre class=\"fit code\"><span class=\"ln \">交叉工具链：10.3.1</span><span class=\"ln \">   text   data    bss    dec    hex  filename</span><span class=\"ln \">   3297      0      8   3305    ce9  build/probe-arm.o</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">3a:   f244 129f   movw  r2, #16799   ; 0x419f</span><span class=\"ln ev\">1a8:  f645 01ff   movw  r1, #22783   ; 0x58ff</span><span class=\"ln ev\">1d2:  f241 7670   movw  r6, #6000    ; 0x1770</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 16799 是 100us 那个 LOAD，22783 是刚才被截出来的值</span><span class=\"ln \">→ 常数真的进了机身，不是我在宿主机上算给你看</span></pre></div></div></div><span class=\"step\">18 / 28</span>","anim":null,"slug":"bilibili-17","sec":{"i":4,"n":6,"title":"24 位装不下"}},{"kind":"card","html":"<div class=\"lay lay-card gold\"><div class=\"cardpanel\"><div class=\"kicker\">单位与圈</div><div class=\"title fit\">一拍多长，第 49 天绕一圈</div><ul class=\"bullets fit\"><li>1 周期 = 125/21 ns ≈ 5.952ns</li><li>整数公式 ns=c*1000/168：c=1 → 5ns，c=1000 → 5us</li><li>uint32_t 毫秒计数 49 天绕一圈</li></ul></div></div><span class=\"step\">19 / 28</span>","anim":null,"slug":"bilibili-18","sec":{"i":5,"n":6,"title":"换算与回绕"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">截断这件事，脚本自己点过两个位置</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [5] 第一行原文</div><pre class=\"fit code\"><span class=\"ln ev\">[5] 换算：1 周期 = 125/21 ns ≈ 5.952ns</span><span class=\"ln \">     整数公式 ns=c*1000/168</span><span class=\"ln ev\">      c=1 → 5ns、c=1000 → 5us</span><span class=\"ln \">     （向零截断，整 us 时恰好无损）</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 168 除不尽 1000，所以这一定是一条截断的整数式</span><span class=\"ln \">→ 留档打印的是 5us，屏上就照写 5us</span></pre></div></div></div><span class=\"step\">20 / 28</span>","anim":null,"slug":"bilibili-19","sec":{"i":5,"n":6,"title":"换算与回绕"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">回绕不是这辈子遇不到，是第 49 天必爆</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">probe [5] 第二行原文</div><pre class=\"fit code\"><span class=\"ln ev\">回绕：uint32_t ms 计数 49 天绕一圈</span><span class=\"ln \">     then=0xFFFFFC18  now=5000</span><span class=\"ln ev\">      → (now-then)=6000ms（无符号减法跨回绕正确）</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">而 now&gt;=then+timeout 在 now=2000 时误报未超时</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 减法是天然的：跨没跨圈它都不管</span><span class=\"ln \">→ 比较会漏报——本该立刻报超时，它一路等着数爬完</span></pre></div></div></div><span class=\"step\">21 / 28</span>","anim":null,"slug":"bilibili-20","sec":{"i":5,"n":6,"title":"换算与回绕"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">超时判断只有一种写法是安全的</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">上半是 probe.c 的断言现场，不是打印行</div><pre class=\"fit code\"><span class=\"ln \">uint32_t then = 0xFFFFFC18UL;   /* 回绕前 1000ms */</span><span class=\"ln \">uint32_t now  = 5000UL;         /* 回绕后 */</span><span class=\"ln \">CHECK((uint32_t)(now - then) == 6000UL);</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">CHECK((now2 &gt;= then + timeout) == 0);   /* 朴素写法判不出 */</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">落到工程里就这一句：</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">if ((uint32_t)(g_tick - then) &gt;= timeout)   /* 先减再比 */</span><span class=\"ln \">    timeout_handler();</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 延时的超时、S9 的采样超时、F 篇的事件等待，统一这一句</span></pre></div></div></div><span class=\"step\">22 / 28</span>","anim":null,"slug":"bilibili-21","sec":{"i":5,"n":6,"title":"换算与回绕"}},{"kind":"card","html":"<div class=\"lay lay-card gold\"><div class=\"cardpanel\"><div class=\"kicker\">库函数全貌</div><div class=\"title fit\">三写寄存器，一次设优先级</div><ul class=\"bullets fit\"><li>SysTick_Config(168000) —— LOAD=167999  VAL=0  CTRL=0x00000007</li><li>SHP[11]=0xF0 → 逻辑优先级 15，4 位里的最低档</li><li>RTOS 要它最低：调度得给一切外设中断让路</li></ul></div></div><span class=\"step\">23 / 28</span>","anim":null,"slug":"bilibili-22","sec":{"i":6,"n":6,"title":"Config 与优先级"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">函数体就四行：LOAD、优先级、VAL、CTRL</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">core_cm4.h:2029-2034 原文 + probe [6] 现场</div><pre class=\"fit code\"><span class=\"ln \">  SysTick-&gt;LOAD  = (uint32_t)(ticks - 1UL);</span><span class=\"ln \">  NVIC_SetPriority (SysTick_IRQn, (1UL &lt;&lt; __NVIC_PRIO_BITS) - 1UL);</span><span class=\"ln \">  SysTick-&gt;VAL   = 0UL;</span><span class=\"ln \">  SysTick-&gt;CTRL  = SysTick_CTRL_CLKSOURCE_Msk |</span><span class=\"ln \">                   SysTick_CTRL_TICKINT_Msk   |</span><span class=\"ln \">                   SysTick_CTRL_ENABLE_Msk;</span><span class=\"ln \">&nbsp;</span><span class=\"ln ev\">probe [6]：LOAD=167999 VAL=0 CTRL=0x00000007，SHP[11]=0xF0</span><span class=\"ln \">→ 0x7 = bit0|bit1|bit2：ENABLE、TICKINT、CLKSOURCE=内核时钟</span><span class=\"ln \">  位定义在 probe.c:37-40，脚本不打印它</span><span class=\"ln \">→ 优先级 15 = (1&lt;&lt;4)-1，15&lt;&lt;4 = 0xF0；那个 4 在头文件里，没打印</span></pre></div></div></div><span class=\"step\">24 / 28</span>","anim":null,"slug":"bilibili-23","sec":{"i":6,"n":6,"title":"Config 与优先级"}},{"kind":"code","html":"<div class=\"lay lay-code\"><div class=\"title fit\">为什么 tick 必须排在全芯片最底下</div><div class=\"cols one\"><div class=\"col \"><div class=\"collabel\">这一场没有新读数，只接前两集的账</div><pre class=\"fit code\"><span class=\"ln \">tick 那一发中断里跑的是调度器</span><span class=\"ln \">调度器要给一切外设中断让路</span><span class=\"ln \">&nbsp;</span><span class=\"ln \">→ 串口字节不等人：高优先级的 tick 会把接收中断顶掉</span><span class=\"ln \">→ S4 那套数：数字越小越优先，15 是最低档</span><span class=\"ln \">→ F3（第 14 集）把这条让路的链逐行搬过源码</span><span class=\"ln \">&nbsp;</span><span class=\"ln dim\">这个 15 是库函数替你写的，不是你写的</span></pre></div></div></div><span class=\"step\">25 / 28</span>","anim":null,"slug":"bilibili-24","sec":{"i":6,"n":6,"title":"Config 与优先级"}},{"kind":"card","html":"<div class=\"lay lay-card warn\"><div class=\"cardpanel\"><div class=\"kicker\">这一集没拍的</div><div class=\"title fit\">板子上那两个数，今天不上屏</div><ul class=\"bullets fit\"><li>逻辑分析仪夹 PF6 测翻转周期——本集没拍，屏上一个数都不给</li><li>文档里那段带百分数的实测：板子不在位，就没有读数身份</li><li>双读坑同理：本机只证了数到 5 次和数到 0 次，没说板上复现过</li></ul></div></div><span class=\"step\">26 / 28</span>","anim":null,"slug":"bilibili-25","sec":{"i":6,"n":6,"title":"Config 与优先级"}},{"kind":"card","html":"<div class=\"lay lay-card gold\"><div class=\"cardpanel\"><div class=\"kicker\">一句话记住</div><div class=\"title fit\">频率除千再减一，标志一读就没</div><ul class=\"bullets fit\"><li>周期 = LOAD+1：167999 不是魔法数，是数出来的</li><li>忘减一：次数全对，日漂移 514ms</li><li>24 位是硬顶：拒配返回 1，硬写就 737 倍速</li><li>超时先减再比：49 天那一圈，第 49 天必爆</li></ul></div></div><span class=\"step\">27 / 28</span>","anim":null,"slug":"bilibili-26","sec":{"i":6,"n":6,"title":"Config 与优先级"}},{"kind":"outro","html":"<div class=\"lay lay-outro\"><div class=\"title fit\">不要板子，一条命令 42/42</div><div class=\"sub fit\">cd code/stm32/05-systick &amp;&amp; sh probe.sh</div><div class=\"url\">通往单片机之路 · 见简介</div></div><span class=\"step\">28 / 28</span>","anim":null,"slug":"bilibili-27","sec":{"i":6,"n":6,"title":"Config 与优先级"}}];
+window.ANIMS = {"bilibili-9":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 720 452\" font-family=\"'Segoe UI','Microsoft YaHei',sans-serif\">\n  <title>SysTick 的心跳：倒数归零重载，和一个\"读一次就清\"的标志</title>\n  <desc>四阶段动画：SysTick 是 24 位倒数秒表，LOAD 定周期、VAL 看进度、CTRL 开关机。计数从 LOAD 一路减到 0，第 LOAD+1 个时钟才归零重载并置 COUNTFLAG；COUNTFLAG 是 read-to-clear——读 CTRL 这个动作本身把它清 0。阶段三对比单读法（5 中 5）与\"先偷看再查\"的双读法（0 中）：标志被第一次读偷走，查询式延时死等。正确写法是读一次存进变量再判断。图上有一个真在跑的计数器：计数点沿 LOAD→0 一路递减、归零瞬间弹回 LOAD，COUNTFLAG 灯在每个 carry tick 点亮一次。</desc>\n  <rect class=\"a-bg\" width=\"720\" height=\"452\" fill=\"#f6f8fa\"/>\n  <text class=\"a-brand\" x=\"24\" y=\"30\" font-size=\"17\" font-weight=\"bold\" fill=\"#3451b2\">SysTick 的心跳：倒数归零重载，和一个\"读就清\"的标志</text>\n  <text class=\"a-sub\" x=\"24\" y=\"50\" font-size=\"12\" fill=\"#666\">周期 = LOAD + 1；COUNTFLAG 是 read-to-clear——读 CTRL 这个动作本身就把标志清掉</text>\n\n  <!-- ===== 定时器面板（常驻）：倒数计数轴 + COUNTFLAG 灯 ===== -->\n  <rect class=\"a-card s-line\" x=\"40\" y=\"66\" width=\"640\" height=\"110\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\"/>\n  <text class=\"a-brand\" x=\"56\" y=\"90\" font-size=\"13\" font-weight=\"bold\" fill=\"#3451b2\">24 位倒数秒表（内核外设 @ 0xE000E010）</text>\n  <text class=\"a-sub a-mono\" x=\"56\" y=\"112\" font-size=\"12\" font-family=\"Consolas,monospace\" fill=\"#666\">CTRL = ENABLE|TICKINT|CLKSOURCE   LOAD = 167999   VAL = 计数中...</text>\n  <!-- 倒数轴 -->\n  <text class=\"a-muted\" x=\"192\" y=\"134\" font-size=\"11\" fill=\"#888\">LOAD</text>\n  <line class=\"s-line\" x1=\"230\" y1=\"142\" x2=\"500\" y2=\"142\" stroke=\"#cbd5e1\" stroke-width=\"2\"/>\n  <text class=\"a-muted\" x=\"500\" y=\"134\" font-size=\"11\" fill=\"#888\" text-anchor=\"end\">0</text>\n  <text class=\"a-muted\" x=\"360\" y=\"158\" font-size=\"11\" fill=\"#94a3b8\" text-anchor=\"middle\">VAL 沿此轴一路减到底，到底即归零重载</text>\n  <!-- 跑动的计数点：LOAD→0 递减，到底瞬间弹回重载 -->\n  <circle class=\"a-brand\" cx=\"230\" cy=\"142\" r=\"6\" fill=\"#3451b2\">\n    <animate attributeName=\"cx\" values=\"230;500;500;230\" keyTimes=\"0;0.85;0.92;1\" dur=\"1.2s\" repeatCount=\"indefinite\"/>\n  </circle>\n  <!-- COUNTFLAG 灯：每个 carry tick 亮一次（与计数点同步） -->\n  <g transform=\"translate(560,142)\">\n    <circle class=\"a-warn\" r=\"6\" fill=\"#d97706\" opacity=\"0.15\">\n      <animate attributeName=\"opacity\" values=\"0.15;1;0.15\" keyTimes=\"0;0.04;0.1\" dur=\"1.2s\" repeatCount=\"indefinite\"/>\n    </circle>\n  </g>\n  <text class=\"a-warn\" x=\"560\" y=\"168\" font-size=\"11\" fill=\"#d97706\" text-anchor=\"middle\">COUNTFLAG</text>\n  <text class=\"a-warn-deep\" x=\"560\" y=\"150\" font-size=\"11\" fill=\"#a16207\" text-anchor=\"middle\">归零亮</text>\n\n  <!-- ===== 阶段一：倒数与归零重载 ===== -->\n  <g opacity=\"1\">\n    <animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"1;0;0;0;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n    <rect class=\"a-panel s-line\" x=\"40\" y=\"190\" width=\"640\" height=\"150\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#e2e8f0\"/>\n    <text class=\"a-brand\" x=\"56\" y=\"214\" font-size=\"13\" font-weight=\"bold\" fill=\"#3451b2\">周期 = LOAD + 1：数到 0 的那一拍才重载</text>\n    <text class=\"a-ink a-mono\" x=\"56\" y=\"238\" font-size=\"13\" font-family=\"Consolas,monospace\" fill=\"#333\">168MHz 要 1ms → 168000 个时钟 → LOAD = 168000 − 1 = 167999</text>\n    <text class=\"a-ink\" x=\"56\" y=\"262\" font-size=\"13\" fill=\"#333\">硬件语义：每个周期 VAL--；<tspan fill=\"#d97706\" font-weight=\"bold\">VAL 已经为 0 的那一拍</tspan>执行重载并置 COUNTFLAG</text>\n    <text class=\"a-sub\" x=\"56\" y=\"290\" font-size=\"12\" fill=\"#666\">从 LOAD 数到 0 再重载，一个完整周期是 LOAD+1 个时钟——\"减一\"不是口诀，是数出来的。</text>\n  </g>\n\n  <!-- ===== 阶段二：读就所见 / read-to-clear ===== -->\n  <g opacity=\"0\">\n    <animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;1;0;0;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n    <rect class=\"a-panel s-line\" x=\"40\" y=\"190\" width=\"640\" height=\"150\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#e2e8f0\"/>\n    <text class=\"a-brand\" x=\"56\" y=\"214\" font-size=\"13\" font-weight=\"bold\" fill=\"#3451b2\">COUNTFLAG 是 read-to-clear：读它本身有副作用</text>\n    <text class=\"a-ink a-mono\" x=\"56\" y=\"238\" font-size=\"13\" font-family=\"Consolas,monospace\" fill=\"#333\">软件读 CTRL 这个动作，会把 COUNTFLAG 直接清成 0</text>\n    <text class=\"a-ink\" x=\"56\" y=\"270\" font-size=\"13\" fill=\"#333\">清零之后 → 下一次归零才会再把它置 1；期间读多少次都是 0。</text>\n    <text class=\"a-warn\" x=\"56\" y=\"300\" font-size=\"12\" fill=\"#d97706\">调试器 watch 窗口点一下 CTRL 都算\"读\"——实地这个坑表现为延时偶发死等。</text>\n  </g>\n\n  <!-- ===== 阶段三：单读 vs 双读对照 ===== -->\n  <g opacity=\"0\">\n    <animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;0;1;0;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n    <rect class=\"a-wash-green s-accent\" x=\"40\" y=\"190\" width=\"310\" height=\"150\" rx=\"8\" fill=\"#d8f3e5\" stroke=\"#3eaf7c\"/>\n    <text class=\"a-accent-deep\" x=\"60\" y=\"214\" font-size=\"13\" font-weight=\"bold\" fill=\"#1a7f56\">单读法（正确）</text>\n    <text class=\"a-ink a-mono\" x=\"60\" y=\"238\" font-size=\"12\" font-family=\"Consolas,monospace\" fill=\"#333\">if (read() &amp; FLAG) n++</text>\n    <text class=\"a-accent-deep\" x=\"60\" y=\"268\" font-size=\"14\" font-weight=\"bold\" fill=\"#1a7f56\">5 个周期读到 5 次</text>\n    <text class=\"a-sub\" x=\"60\" y=\"292\" font-size=\"12\" fill=\"#666\">读一次就判断，标志不被别人碰。</text>\n    <text class=\"a-accent-deep\" x=\"60\" y=\"316\" font-size=\"12\" fill=\"#1a7f56\">✓ 全部命中</text>\n    <rect class=\"a-wash-amber s-warn\" x=\"374\" y=\"192\" width=\"306\" height=\"150\" rx=\"8\" fill=\"#fff7ed\" stroke=\"#d97706\"/>\n    <text class=\"a-warn\" x=\"394\" y=\"214\" font-size=\"13\" font-weight=\"bold\" fill=\"#d97706\">双读法（先偷看再查）</text>\n    <text class=\"a-ink a-mono\" x=\"394\" y=\"238\" font-size=\"12\" font-family=\"Consolas,monospace\" fill=\"#333\">(void)read(); if (read() &amp; flag)</text>\n    <text class=\"a-warn\" x=\"394\" y=\"268\" font-size=\"14\" font-weight=\"bold\" fill=\"#d97706\">5 个周期读到 0 次</text>\n    <text class=\"a-sub\" x=\"394\" y=\"292\" font-size=\"12\" fill=\"#666\">第一次读已把标志清掉，第二次读永远 0。</text>\n    <text class=\"a-warn-deep\" x=\"394\" y=\"316\" font-size=\"12\" fill=\"#92400e\">✗ 查询式延时死等</text>\n  </g>\n\n  <!-- ===== 阶段四：正确写法 ===== -->\n  <g opacity=\"0\">\n    <animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;0;0;1;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n    <rect class=\"a-panel s-line\" x=\"40\" y=\"190\" width=\"640\" height=\"150\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#e2e8f0\"/>\n    <text class=\"a-brand\" x=\"56\" y=\"214\" font-size=\"13\" font-weight=\"bold\" fill=\"#3451b2\">正确写法：读一次，存进变量，再判断</text>\n    <text class=\"a-ink a-mono\" x=\"56\" y=\"242\" font-size=\"13\" font-family=\"Consolas,monospace\" fill=\"#333\">uint32_t f = SysTick-&gt;CTRL;</text>\n    <text class=\"a-ink a-mono\" x=\"56\" y=\"264\" font-size=\"13\" font-family=\"Consolas,monospace\" fill=\"#333\">if (f &amp; SysTick_CTRL_COUNTFLAG_Msk) { n++; }</text>\n    <text class=\"a-sub\" x=\"56\" y=\"296\" font-size=\"12\" fill=\"#666\">一次性把\"读到并判断\"做完，不留下第二次读的机会——现场在判断前那一刻就冻结。</text>\n    <text class=\"a-accent\" x=\"56\" y=\"320\" font-size=\"12\" fill=\"#3eaf7c\">同一原则贯穿全站：S9 采样超时、F 篇事件等待，都是\"读一次用一次\"。</text>\n  </g>\n\n  <!-- 阶段字幕 -->\n  <g class=\"a-brand\" font-size=\"13\" font-weight=\"bold\" fill=\"#3451b2\">\n    <g opacity=\"1\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"1;0;0;0;1\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n      <text x=\"36\" y=\"410\">① 倒数 + 归零重载：周期 = LOAD+1，VAL 归零那一拍置 COUNTFLAG</text></g>\n    <g opacity=\"0\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;1;0;0;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n      <text x=\"36\" y=\"410\">② read-to-clear：读 CTRL 这个动作把 COUNTFLAG 清 0</text></g>\n    <g opacity=\"0\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;0;1;0;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n      <text x=\"36\" y=\"410\">③ 对照：单读 5 中 5 · 双读 0 中——标志被第一次读偷走，延时死等</text></g>\n    <g opacity=\"0\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0;0;0;1;0\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/>\n      <text x=\"36\" y=\"410\">④ 正解：读一次存进变量再判断，不留第二次读取的机会</text></g>\n  </g>\n\n  <!-- 阶段指示点 -->\n  <g class=\"a-brand\" transform=\"translate(630,432)\" fill=\"#3451b2\">\n    <circle cx=\"0\" cy=\"0\" r=\"5\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"1;0.2;0.2;0.2;0.2\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/></circle>\n    <circle cx=\"18\" cy=\"0\" r=\"5\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0.2;1;0.2;0.2;0.2\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/></circle>\n    <circle cx=\"36\" cy=\"0\" r=\"5\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0.2;0.2;1;0.2;0.2\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/></circle>\n    <circle cx=\"54\" cy=\"0\" r=\"5\"><animate attributeName=\"opacity\" calcMode=\"discrete\" values=\"0.2;0.2;0.2;1;0.2\" keyTimes=\"0;0.25;0.5;0.75;1\" dur=\"12s\" repeatCount=\"indefinite\"/></circle>\n  </g>\n</svg>"};
+window.MCU = (function () {
+  var body = document.getElementById('body');
+  var caps = document.getElementById('caps');
+  var captext = document.getElementById('captext');
+  var ticks = document.getElementById('ticks');
+  var secchip = document.getElementById('secchip');
+  var secbar = document.getElementById('secbar');
+  var current = -1, svg = null;
+
+  // 子孙的文字溢出不冒泡：pre.code 里超长那一行是 .ln（display:block、
+  // overflow:visible）自己的 scrollWidth 超了 18px，父级 .fit 的 pre 却报
+  // sw==cw——抖音 code-04 被切掉的那个 "B" 就是这么在 fitAll 和审计两轮里
+  // 都全绿的。横向裁切必须连着块级子孙一起量，纵向不用：块级子项撑高父盒，
+  // scrollHeight 本来就带上了。
+  function overX(el, bh) {
+    var v = el.scrollWidth - el.clientWidth - bh;
+    for (var i = 0; i < el.children.length; i++) {
+      var k = el.children[i];
+      var kcs = getComputedStyle(k);
+      if (kcs.overflowX !== 'visible') continue;
+      var kbh = parseFloat(kcs.borderLeftWidth) + parseFloat(kcs.borderRightWidth);
+      var kv = k.scrollWidth - k.clientWidth - kbh;
+      if (kv > v) v = kv;
+    }
+    return v;
+  }
+
+  function fitAll(root) {
+    root.querySelectorAll('.fit').forEach(function (el) {
+      var cs = getComputedStyle(el);
+      var fs = parseFloat(cs.fontSize);
+      var bv = parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
+      var bh = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth)
+      var guard = 0;
+      while (guard++ < 60 && fs > 6) {
+        // Chromium 把 border 折进 scrollHeight/scrollWidth：一圈 1px 描边让
+        // scrollHeight 恒比 clientHeight 大 2px，那不是裁切。
+        // 纵向再给 0.12fs 的容差：中文字体行盒高于 line-height，每行亚像素下溢，
+        // 四行能累计 7px，被当成"放不下"就会把大标题一路砍到地板。
+        // 真溢出至少是一整行（≈1.3fs），0.12fs 不可能吞掉它。
+        var slackV = 1 + bv + Math.ceil(fs * 0.12)
+        if (el.scrollHeight <= el.clientHeight + slackV && overX(el, bh) <= 1) break
+        // 步长跟着字号走。固定 1px 太粗：c3 抖音 var-C 只溢出 2px，一步就从
+        // 16.88 掉到 15.88，撞进审计 16px 的地板，把"缩一点就好"变成"报错"。
+        fs -= Math.max(0.25, fs * 0.02)
+        el.style.fontSize = fs.toFixed(2) + 'px'
+      }
+    });
+  }
+
+  function fitSvg(box, node) {
+    var vb = (node.getAttribute('viewBox') || '0 0 720 400').split(/\s+/).map(Number);
+    // 可用宽高 = 外层 .animbox 的净空，再减掉 .animcard 自己的 padding 和描边。
+    // 不能拿 .animcard 的 clientWidth 来量：它现在贴着 svg 收缩，量出来是循环依赖。
+    // 少了描边那两项也不行——一圈 2px 在 z≈2.3 的放大下会把画面顶出可用区。
+    var cs = getComputedStyle(node.parentElement);
+    var cutW = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight)
+      + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+    var cutH = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+      + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    var availW = box.clientWidth - cutW;
+    var availH = box.clientHeight - cutH;
+    if (!availW || !availH) return;
+    var z = Math.min(availW / vb[2], availH / vb[3]);
+    node.setAttribute('width', Math.floor(vb[2] * z));
+    node.setAttribute('height', Math.floor(vb[3] * z));
+  }
+
+  function setup(i) {
+    if (i === current) return;
+    var item = window.PAYLOAD[i];
+    body.innerHTML = item.html;
+    var box = body.querySelector('.animbox');
+    svg = null;
+    if (box && item.anim) {
+      box.innerHTML = '<div class="animcard">' + window.ANIMS[item.slug] + '</div>';
+      svg = box.querySelector('svg');
+      fitSvg(box, svg);
+      svg.pauseAnimations();
+      svg.setCurrentTime(0);
+    }
+    fitAll(body);
+    drawTicks(i);
+    drawHeader(item.sec);
+    current = i;
+  }
+
+  // 进度杠只跟场次号有关：同一场内 DOM 一字不变，逐帧去重才不会被打穿。
+  function drawTicks(i) {
+    var n = window.PAYLOAD.length;
+    if (ticks.childElementCount !== n) {
+      ticks.innerHTML = '';
+      for (var k = 0; k < n; k++) ticks.appendChild(document.createElement('i'));
+    }
+    for (var j = 0; j < n; j++) {
+      var el = ticks.children[j];
+      el.className = j === i ? 'cur' : j < i ? 'on' : '';
+    }
+  }
+
+  // 页头和小节杠继承同一条硬约束：只随场次号变，绝不随帧时间 t 变
+  //（见上面 drawTicks 那条注释——一集上万帧，DOM 在场内必须一字不变）。
+  // 没分节的集这两个元素根本不存在，函数直接返回，DOM 与改版前完全相同。
+  function drawHeader(sec) {
+    if (secchip) secchip.textContent = sec ? ('第 ' + sec.i + '/' + sec.n + ' 节 · ' + sec.title) : '';
+    if (!secbar) return;
+    var n = sec ? sec.n : 0;
+    secbar.style.display = sec ? 'flex' : 'none';
+    if (secbar.childElementCount !== n) {
+      secbar.innerHTML = '';
+      for (var k = 0; k < n; k++) secbar.appendChild(document.createElement('i'));
+    }
+    for (var j = 0; j < n; j++) {
+      secbar.children[j].className = j + 1 === sec.i ? 'cur' : j + 1 < sec.i ? 'on' : '';
+    }
+  }
+
+  function seek(t) {
+    if (!svg) return;
+    svg.setCurrentTime(t);
+    // Chromium 的 SMIL 更新是惰性的：setCurrentTime 只记时间，属性重算等到下一次
+    // 样式/布局才做。读一次几何量把它冲出来，否则截图会慢一帧。
+    void svg.getBoundingClientRect();
+  }
+
+  function caption(text, opacity) {
+    if (text === null) { caps.style.opacity = 0; return; }
+    if (captext.textContent !== text) captext.textContent = text;
+    caps.style.opacity = opacity;
+  }
+
+  // reveal：每场开头 0.27s 内容淡入并上移，硬切读起来就像有转场。
+  // 只作用于 .body，字幕带和进度杠不参与，它们各自已有淡入。
+  async function frame(i, t, cap, opacity, reveal) {
+    setup(i);
+    seek(t);
+    caption(cap, opacity);
+    var r = reveal === undefined ? 1 : reveal;
+    if (r >= 1) {
+      body.style.opacity = 1;
+      body.style.transform = 'none';
+    } else {
+      body.style.opacity = r.toFixed(3);
+      body.style.transform = 'translateY(' + ((1 - r) * 16).toFixed(2) + 'px)';
+    }
+    await raf(2);
+  }
+
+  // 双 rAF：seek 之后必须让 Chromium 真正走完一次样式重算 + 合成，
+  // 否则 page.screenshot 可能截到上一帧的画面。n=2 够，n=3 更稳。
+  function raf(n) {
+    return new Promise(function (resolve) {
+      var left = n || 2;
+      (function step() {
+        if (--left <= 0) return resolve();
+        requestAnimationFrame(step);
+      })();
+    });
+  }
+  return { setup: setup, seek: seek, caption: caption, frame: frame, raf: raf };
+})();
+</script>
+</body></html>

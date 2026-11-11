@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>环形缓冲两派：满/空判定与回绕安全</title>
+  <desc>四阶段动画：环形缓冲是"中断生产、主循环消费"的最小解。① 结构与规矩：8 格首尾相接，生产者（中断）只推进写指针 w、消费者（主循环）只推进读指针 r，谁也不能动对方的；② A 派（牺牲一格）：满=(w+1)%8==r、空=r==w——留一格空位当哨兵，判定直白，代价是 8 格物理容量只能用 7 格；③ B 派（单调索引）：指针永不取模，满=(uint8_t)(w-r)>=8 用"在飞数量"判定——w 到 255 自然回绕到 0，模 256 的无符号减法天然抗回绕，8 格全用、不用写任何回绕判断；④ 顺序即正确性：生产者先写数据、release 屏障、再发布 w；消费者先读 r、acquire 屏障、再取数据——顺序反了就是读到空槽的经典 bug。图上真在跑的东西：写指针沿环形轨道连续推进（数据在环里流转）。物理 8 格，A 派实测可用 7 格、B 派可用 8 格。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">环形缓冲两派：读写指针相等时，是空还是满？</text>
+  <text x="24" y="50" font-size="12" fill="#666">中断只 put 一字节、主循环循环 get——满/空判定两条路：牺牲一格 vs 单调索引</text>
+
+  <!-- ===== 左：环形图（常驻） ===== -->
+  <g font-size="11" font-family="Consolas,monospace">
+    <rect x="120" y="55" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="135" y="74" fill="#64748b" text-anchor="middle">7</text>
+    <rect x="235" y="80" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="250" y="99" fill="#64748b" text-anchor="middle">0</text>
+    <rect x="260" y="140" width="30" height="30" rx="4" fill="#dbe7ff" stroke="#3451b2"/><text x="275" y="159" fill="#3451b2" text-anchor="middle">1</text>
+    <rect x="235" y="200" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="250" y="219" fill="#64748b" text-anchor="middle">2</text>
+    <rect x="175" y="225" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="190" y="244" fill="#64748b" text-anchor="middle">3</text>
+    <rect x="115" y="200" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="130" y="219" fill="#64748b" text-anchor="middle">4</text>
+    <rect x="90" y="140" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="105" y="159" fill="#64748b" text-anchor="middle">5</text>
+    <rect x="115" y="80" width="30" height="30" rx="4" fill="#f1f5f9" stroke="#94a3b8"/><text x="130" y="99" fill="#64748b" text-anchor="middle">6</text>
+  </g>
+  <!-- 写指针：沿环连续推进（真在跑） -->
+  <g transform="translate(190,155)">
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="0;360" dur="4s" repeatCount="indefinite"/>
+      <circle cx="0" cy="-52" r="6" fill="#d97706"/>
+      <text x="0" y="-62" font-size="11" font-weight="bold" fill="#d97706" text-anchor="middle">w</text>
+    </g>
+  </g>
+  <text x="190" y="152" font-size="11" fill="#94a3b8" text-anchor="middle">物理 8 格</text>
+  <text x="190" y="166" font-size="11" fill="#94a3b8" text-anchor="middle">首尾相接</text>
+  <!-- 两行指针说明整体上提 3px：r 行与 y=290 的阶段标题墨迹只差 0.5px，Linux 字体下会碰上 -->
+  <text x="190" y="261" font-size="11" fill="#d97706" text-anchor="middle">w 由生产者（中断）推进</text>
+  <text x="190" y="275" font-size="11" fill="#3451b2" text-anchor="middle">r 由消费者（主循环）推进</text>
+
+  <!-- ===== 右：两派容量对照卡（常驻） ===== -->
+  <rect x="340" y="60" width="160" height="74" rx="8" fill="#fff7ed" stroke="#d97706"/>
+  <text x="420" y="80" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">A 派：牺牲一格</text>
+  <text x="420" y="102" font-size="15" font-weight="bold" fill="#d97706" text-anchor="middle">7 / 8 格</text>
+  <text x="420" y="124" font-size="11" fill="#92400e" text-anchor="middle">(w+1)%CAP==r 判满</text>
+  <rect x="520" y="60" width="160" height="74" rx="8" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="600" y="80" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">B 派：单调索引</text>
+  <text x="600" y="102" font-size="15" font-weight="bold" fill="#1a7f56" text-anchor="middle">8 / 8 格</text>
+  <text x="600" y="124" font-size="11" fill="#1a7f56" text-anchor="middle">(uint8_t)(w-r)>=CAP 判满</text>
+  <rect x="340" y="146" width="340" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="356" y="168" font-size="12" font-weight="bold" fill="#3451b2">指针相等时：空 or 满？</text>
+  <text x="356" y="190" font-size="11" fill="#333">起点必是空（r==w 且无数据）；塞满后追平也是 r==w——</text>
+  <text x="356" y="208" font-size="11" fill="#333">同一个状态两种含义，所以必须留出可区分的判据：</text>
+  <text x="356" y="226" font-size="11" fill="#d97706">要么少用一格，要么用"在飞数量"绕开相等歧义。</text>
+
+  <!-- ===== 阶段一：结构与规矩 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#3451b2">① 转运带的结构与规矩：单生产单消费</text>
+    <text x="56" y="314" font-size="12" font-family="Consolas,monospace" fill="#333">put: data[w % CAP] = v;  w++        get: v = data[r % CAP];  r++</text>
+    <text x="56" y="338" font-size="13" fill="#333">中断里只 put 一字节（快递分拣），主循环循环 get 慢慢处理——读写指针各归各的主人。</text>
+    <text x="56" y="364" font-size="12" fill="#666">回绕交给取模（A 派）或 uint8_t 自然溢出（B 派）；物理上永远只有 8 格。</text>
+  </g>
+
+  <!-- ===== 阶段二：A 派 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#d97706">② A 派：牺牲一格当哨兵——判定直白，容量 7/8</text>
+    <text x="56" y="314" font-size="12" font-family="Consolas,monospace" fill="#333">满: if ((w + 1) % CAP == r) 拒写        空: if (r == w) 读不到</text>
+    <text x="56" y="338" font-size="13" fill="#333">留一格永远空着：w 的下一格就是 r 时即满——所以物理 8 格永远只能用 7 格。</text>
+    <text x="56" y="364" font-size="12" fill="#92400e">实测：A 派可用 7 格；"满写被拒"路径确实触发（n_refused &gt; 0）。</text>
+  </g>
+
+  <!-- ===== 阶段三：B 派 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#1a7f56">③ B 派：单调索引——指针永不取模，容量 8/8</text>
+    <text x="56" y="314" font-size="12" font-family="Consolas,monospace" fill="#333">满: if ((uint8_t)(w - r) &gt;= CAP) 拒写      寻址: data[w % CAP]</text>
+    <text x="56" y="338" font-size="13" fill="#333">w 一路加到 255 再自然回绕到 0；模 256 的无符号减法让"在飞数"跨回绕依旧正确——不用写回绕判断。</text>
+    <text x="56" y="364" font-size="12" fill="#1a7f56">实测：B 派可用 8 格，长跑确实跨过 255→0，且 q.w == n_put % 256 逐拍吻合。</text>
+  </g>
+
+  <!-- ===== 阶段四：发布/获取顺序 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#3451b2">④ 顺序即正确性：发布与获取必须对称</text>
+    <text x="56" y="314" font-size="12" font-family="Consolas,monospace" fill="#333">生产: data[w%CAP]=v; fence(release); w++   /* 先写货，再发指针 */</text>
+    <text x="56" y="338" font-size="12" font-family="Consolas,monospace" fill="#333">消费: 读 r; fence(acquire); v=data[r%CAP]  /* 先见指针，再取货 */</text>
+    <text x="56" y="364" font-size="12" fill="#dc2626">顺序反了＝消费者读到还没写进去的空槽——单生产单消费 bug 的经典形态（C3 屏障）。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">① 规矩：生产者只动 w、消费者只动 r——指针各归各的主人</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">② A 派：满=(w+1)%8==r——牺牲一格当哨兵，直白但浪费一格</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">③ B 派：满=(uint8_t)(w-r)>=8——无符号减法天然抗回绕，8 格全用</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="420">④ 顺序即正确性：先货后指针（release）/ 先指针后货（acquire）</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,438)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

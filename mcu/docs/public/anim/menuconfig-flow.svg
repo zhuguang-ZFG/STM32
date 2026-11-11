@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440">
+<title>R6 menuconfig 点单流水线：Kconfig → .config → rtconfig.h → 构建</title>
+<desc>四阶段动画：Kconfig 定义菜单项 → menuconfig 勾选生成 .config → 转 rtconfig.h 宏 → scons 按宏编译。展示配置驱动开发的完整数据流。</desc>
+
+<rect width="720" height="440" fill="#f6f8fa"/>
+
+<!-- Stage title -->
+<text x="360" y="28" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">menuconfig 点单流水线：配置即代码</text>
+
+<!-- Stage 1: Kconfig file -->
+<g>
+  <rect x="40" y="50" width="160" height="180" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="120" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#3451b2">Kconfig</text>
+  <line x1="55" y1="80" x2="185" y2="80" stroke="#3451b2" stroke-width="1"/>
+  <text x="55" y="100" font-size="11" fill="#666">config PKG_USING_CJSON</text>
+  <text x="55" y="118" font-size="11" fill="#666">    bool "cJSON"</text>
+  <text x="55" y="136" font-size="11" fill="#666">    default n</text>
+  <text x="55" y="158" font-size="11" fill="#666">config PKG_USING_MQTT</text>
+  <text x="55" y="176" font-size="11" fill="#666">    bool "MQTT"</text>
+  <text x="55" y="194" font-size="11" fill="#666">    depends on PKG_USING_CJSON</text>
+  <text x="120" y="220" text-anchor="middle" font-size="11" fill="#3eaf7c">每个组件一份菜单描述</text>
+  <animate attributeName="opacity" values="1;1;0.3;0.3;0.3;1" keyTimes="0;0.24;0.25;0.49;0.74;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+</g>
+
+<!-- Stage 2: menuconfig UI + .config -->
+<g>
+  <rect x="280" y="50" width="160" height="180" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#d97706">menuconfig</text>
+  <line x1="295" y1="80" x2="425" y2="80" stroke="#d97706" stroke-width="1"/>
+  <text x="300" y="100" font-size="11" fill="#666">[*] cJSON ............</text>
+  <text x="300" y="118" font-size="11" fill="#666">[*] MQTT .............</text>
+  <text x="300" y="136" font-size="11" fill="#666">[ ] lwIP .............</text>
+  <text x="300" y="158" font-size="11" fill="#3eaf7c">空格勾选 → 保存</text>
+  <rect x="295" y="170" width="130" height="50" rx="4" fill="#f6f8fa" stroke="#666" stroke-width="1"/>
+  <text x="360" y="188" text-anchor="middle" font-size="11" fill="#666">.config</text>
+  <text x="305" y="205" font-size="10" fill="#3451b2">CONFIG_PKG_USING_CJSON=y</text>
+  <animate attributeName="opacity" values="0.3;0.3;1;1;0.3;0.3" keyTimes="0;0.24;0.25;0.49;0.5;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+</g>
+
+<!-- Stage 3: rtconfig.h -->
+<g>
+  <rect x="520" y="50" width="160" height="180" rx="8" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="600" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#3eaf7c">rtconfig.h</text>
+  <line x1="535" y1="80" x2="665" y2="80" stroke="#3eaf7c" stroke-width="1"/>
+  <text x="535" y="100" font-size="11" fill="#666">#define PKG_USING_CJSON</text>
+  <text x="535" y="118" font-size="11" fill="#666">#define PKG_USING_MQTT</text>
+  <text x="535" y="140" font-size="11" fill="#dc2626">/* 自动生成，勿手改 */</text>
+  <text x="535" y="162" font-size="11" fill="#666">#define RT_NAME_MAX 8</text>
+  <text x="535" y="180" font-size="11" fill="#666">#define RT_ALIGN_SIZE 4</text>
+  <text x="600" y="220" text-anchor="middle" font-size="11" fill="#3eaf7c">.config → C 宏</text>
+  <animate attributeName="opacity" values="0.3;0.3;0.3;0.3;1;1" keyTimes="0;0.24;0.49;0.5;0.74;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+</g>
+
+<!-- Stage 4: scons build -->
+<g>
+  <rect x="180" y="270" width="360" height="140" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="292" text-anchor="middle" font-size="13" font-weight="bold" fill="#dc2626">scons -j8 构建</text>
+  <line x1="195" y1="300" x2="525" y2="300" stroke="#dc2626" stroke-width="1"/>
+  <text x="200" y="320" font-size="11" fill="#666">main.c: #ifdef PKG_USING_CJSON → 编入</text>
+  <text x="200" y="338" font-size="11" fill="#666">mqtt.c: #ifdef PKG_USING_MQTT → 编入</text>
+  <text x="200" y="356" font-size="11" fill="#666">lwip.c: #ifdef PKG_USING_LWIP → 跳过</text>
+  <text x="360" y="390" text-anchor="middle" font-size="12" fill="#3eaf7c">菜单项 = 宏 = 编译开关</text>
+  <animate attributeName="opacity" values="0.3;0.3;0.3;0.3;0.3;0.3;1;1" keyTimes="0;0.24;0.49;0.5;0.74;0.75;0.76;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+</g>
+
+<!-- Flow arrows with continuous dash animation -->
+<g>
+  <line x1="200" y1="140" x2="275" y2="140" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="8 4">
+    <animate attributeName="stroke-dashoffset" values="12;0" dur="1s" repeatCount="indefinite"/>
+  </line>
+  <text x="237" y="132" text-anchor="middle" font-size="10" fill="#666">解析</text>
+
+  <line x1="440" y1="140" x2="515" y2="140" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="8 4">
+    <animate attributeName="stroke-dashoffset" values="12;0" dur="1s" repeatCount="indefinite"/>
+  </line>
+  <text x="477" y="132" text-anchor="middle" font-size="10" fill="#666">转换</text>
+
+  <line x1="600" y1="230" x2="600" y2="265" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="8 4">
+    <animate attributeName="stroke-dashoffset" values="12;0" dur="1s" repeatCount="indefinite"/>
+  </line>
+
+  <path d="M 360 230 Q 360 250 360 265" stroke="#666" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="8 4">
+    <animate attributeName="stroke-dashoffset" values="12;0" dur="1s" repeatCount="indefinite"/>
+  </path>
+</g>
+
+<!-- Moving dot along the flow -->
+<circle cy="140" r="5" fill="#d97706">
+  <animate attributeName="cx" values="40;680" dur="4s" repeatCount="indefinite"/>
+</circle>
+
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+    <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+  </marker>
+</defs>
+</svg>

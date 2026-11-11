@@ -1,0 +1,36 @@
+{
+  "guide": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "imageLoaded": true,
+      "toc": true,
+      "editable": 0
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "imageLoaded": true,
+      "toc": true,
+      "editable": 0
+    }
+  ],
+  "gallery": {
+    "images": 30
+  },
+  "ppt": {
+    "slides": 13,
+    "synced": true,
+    "navigation": true,
+    "grid": true,
+    "notes": true,
+    "timer": true,
+    "screenModes": true,
+    "preflight": true,
+    "reopen": true,
+    "rehearsal": true,
+    "annotations": true,
+    "autoAdvance": true
+  },
+  "guideEntry": "PASS"
+}

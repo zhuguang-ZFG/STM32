@@ -1,0 +1,14 @@
+{"file":".trellis/spec/docs-site/content.md","reason":"章节骨架、事实纪律与阅读结构"}
+{"file":".trellis/spec/book/index.md","reason":"正文/装配/印前职责与原守卫"}
+{"file":".trellis/spec/docs-site/architecture-diagram.md","reason":"动画架构题花分工与资产管线"}
+{"file":".trellis/tasks/11-07-book-depth-rollout/prd.md","reason":"本任务边界、需求和可核验AC"}
+{"file":".trellis/tasks/11-07-book-depth-rollout/design.md","reason":"接口、保护、责任和依赖"}
+{"file":".trellis/tasks/11-07-book-depth-rollout/implement.md","reason":"顺序、审阅门与实际验证要求"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/teaching-contract.md","reason":"逐点理解与说人话判据，不用代理指标代替"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/illustration-plan.md","reason":"机制图复用、可读性和跨端/印前验收"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/planning-baseline.json","reason":"保护现有全部来源、214runner与42用户文件"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/coverage-summary.md","reason":"101文件覆盖与真实审查深度，不虚构全审"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/pilot-proposals.md","reason":"六样章具体源窗口/图文方向与风险"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/batch-plan.md","reason":"24批101文件恰一次、不漏S篇附录"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md","reason":"子代理未完成与推论限制，不能冒充审阅证明"}
+{"file":".trellis/tasks/11-07-book-depth-handdraw/research/sketch-verification.json","reason":"研究原型真实渲染与验证边界"}

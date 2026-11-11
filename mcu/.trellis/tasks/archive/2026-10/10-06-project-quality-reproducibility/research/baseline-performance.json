@@ -1,0 +1,251 @@
+{
+  "stage": "baseline",
+  "assets": [
+    {
+      "file": "assets\\chunks\\@localSearchIndexroot.CR_2S-Wb.js",
+      "bytes": 1149535,
+      "gzip": 316463,
+      "brotli": 222765
+    },
+    {
+      "file": "assets\\stm32_02-rcc-clock.md.CjpnE4Tz.js",
+      "bytes": 184140,
+      "gzip": 22725,
+      "brotli": 16852
+    },
+    {
+      "file": "assets\\stm32_08-dma.md.CD9GvneE.js",
+      "bytes": 178063,
+      "gzip": 21088,
+      "brotli": 15915
+    },
+    {
+      "file": "assets\\stm32_07-usart.md.CYCEb_9f.js",
+      "bytes": 163779,
+      "gzip": 17510,
+      "brotli": 13120
+    },
+    {
+      "file": "assets\\c_03-volatile.md.BR5b57Jd.js",
+      "bytes": 156008,
+      "gzip": 26123,
+      "brotli": 19928
+    },
+    {
+      "file": "assets\\rtos_freertos_06-notify-event-timer.md.DlBVsspE.js",
+      "bytes": 144014,
+      "gzip": 18624,
+      "brotli": 13839
+    },
+    {
+      "file": "assets\\gd32_01-rcu-clock.md.C3sAAuGi.js",
+      "bytes": 142406,
+      "gzip": 15850,
+      "brotli": 11922
+    },
+    {
+      "file": "assets\\stm32_06-tim.md.CVOR4Ug0.js",
+      "bytes": 141102,
+      "gzip": 17439,
+      "brotli": 13199
+    },
+    {
+      "file": "assets\\c_01-memory-model.md.BXYe62vB.js",
+      "bytes": 138633,
+      "gzip": 26373,
+      "brotli": 20763
+    },
+    {
+      "file": "assets\\build_03-linker-script.md.DgRNPjNB.js",
+      "bytes": 137871,
+      "gzip": 21210,
+      "brotli": 16655
+    },
+    {
+      "file": "assets\\build_02-elf.md.DS2buqFo.js",
+      "bytes": 128456,
+      "gzip": 22369,
+      "brotli": 17529
+    },
+    {
+      "file": "assets\\rtos_freertos_01-task-tcb.md.CSy6RJzW.js",
+      "bytes": 123400,
+      "gzip": 14892,
+      "brotli": 11133
+    }
+  ],
+  "initial": [
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/style.BW09WufU.css",
+      "bytes": 19179
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/vp-icons.css",
+      "bytes": 1200
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/app.CCGB7JIn.js",
+      "bytes": 947
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/inter-roman-latin.Di8DUHzh.woff2",
+      "bytes": 68092
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/chunks/theme.Fud-ckeL.js",
+      "bytes": 18693
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/chunks/framework.C05il-um.js",
+      "bytes": 40617
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/index.md.3ZrPhtRs.lean.js",
+      "bytes": 1701
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/favicon.svg",
+      "bytes": 1058
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/guide_index.md.aRIs3oB8.js",
+      "bytes": 2736
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/c_index.md.fKNyRoYB.js",
+      "bytes": 1495
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/stm32_index.md.B-npPkmJ.js",
+      "bytes": 1856
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/build_index.md.C259kL-q.js",
+      "bytes": 1589
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/rtos_index.md.DZ8EWV0S.js",
+      "bytes": 2284
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/esp32_index.md.nM2GWJPi.js",
+      "bytes": 1789
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/gd32_index.md.BglbA84x.js",
+      "bytes": 2095
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/lab_index.md.Cn8DMggf.js",
+      "bytes": 1537
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_glossary.md.DpzpVmSf.js",
+      "bytes": 6697
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_faq.md.ClASUCfC.js",
+      "bytes": 3518
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_changelog.md.EG5-4vFs.js",
+      "bytes": 7157
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_about.md.CRtlnyYd.js",
+      "bytes": 3405
+    }
+  ],
+  "searched": [
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/style.BW09WufU.css",
+      "bytes": 19179
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/vp-icons.css",
+      "bytes": 1200
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/app.CCGB7JIn.js",
+      "bytes": 947
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/inter-roman-latin.Di8DUHzh.woff2",
+      "bytes": 68092
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/chunks/theme.Fud-ckeL.js",
+      "bytes": 18693
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/chunks/framework.C05il-um.js",
+      "bytes": 40617
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/index.md.3ZrPhtRs.lean.js",
+      "bytes": 1701
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/favicon.svg",
+      "bytes": 1058
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/guide_index.md.aRIs3oB8.js",
+      "bytes": 2736
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/c_index.md.fKNyRoYB.js",
+      "bytes": 1495
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/stm32_index.md.B-npPkmJ.js",
+      "bytes": 1856
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/build_index.md.C259kL-q.js",
+      "bytes": 1589
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/rtos_index.md.DZ8EWV0S.js",
+      "bytes": 2284
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/esp32_index.md.nM2GWJPi.js",
+      "bytes": 1789
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/gd32_index.md.BglbA84x.js",
+      "bytes": 2095
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/lab_index.md.Cn8DMggf.js",
+      "bytes": 1537
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_glossary.md.DpzpVmSf.js",
+      "bytes": 6697
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_faq.md.ClASUCfC.js",
+      "bytes": 3518
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_changelog.md.EG5-4vFs.js",
+      "bytes": 7157
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/reference_about.md.CRtlnyYd.js",
+      "bytes": 3405
+    },
+    {
+      "name": "http://127.0.0.1:43187/mcu/assets/chunks/VPLocalSearchBox.GjrQsaPp.js",
+      "bytes": 19794
+    }
+  ],
+  "results": 0,
+  "animationCount": 1,
+  "paused": true,
+  "playing": true,
+  "reduced": true,
+  "errors": []
+}

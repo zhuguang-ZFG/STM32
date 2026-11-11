@@ -1,0 +1,8 @@
+{"file": ".trellis/tasks/10-25-book-production/research/book-production-evidence.md", "reason": "实测基线：当前 PDF 是 A4/Type3位图/7.5-8.2pt/713-712，仓库无 EPUB 与印前能力；引擎与字体可用性核实（pagedjs 0.4.3、vivliostyle 11.4.0、NotoSerifSC、fontTools 4.66.1、JDK 17）"}
+{"file": ".trellis/tasks/10-25-book-production/prd.md", "reason": "需求 R1-R8 与分期/全局验收标准"}
+{"file": ".trellis/tasks/10-25-book-production/design.md", "reason": "版式参数表、分页引擎选型判据、目录页码与页码生成方式、内容同一性算法、CI/回滚"}
+{"file": ".trellis/tasks/10-25-book-production/implement.md", "reason": "逐期命令、判据、故意失败样例与复核门"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "既有质量契约的格式与严格度基线；书籍工艺契约要按同一格式追加，且不得放宽既有条目"}
+{"file": ".trellis/spec/docs-site/content.md", "reason": "章节结构契约（四件套/罗盘/图号）——印前排版与索引生成必须建立在同一结构认知上"}
+{"file": "mcu-book/manifest.json", "reason": "书籍结构单一数据源：parts/appendices/sources/chapter_guides 与 version/date/author/license（版权页与 EPUB 元数据都取它）"}
+{"file": "mcu-book/build_html.py", "reason": "现有内容装配与多级书签/页眉映射的实现；印前构建器复用其章节渲染与链接重写，避免第二套内容处理"}

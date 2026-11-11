@@ -1,0 +1,766 @@
+{
+  "id": "c6-abi-stack",
+  "title": "一次调用的四笔账：参数落在哪、归途记在哪、栈帧买了什么",
+  "badge": "C6",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "16.1.0": "十六点一点零",
+    "10.3.1": "十点三点一",
+    "0x100000007": "零 x 一，后面七个零七",
+    "0x300000001": "零 x 三，后面八个零一",
+    "0x200000001": "零 x 二，后面八个零一",
+    "0x100000000": "零 x 一，后面八个零",
+    "9/9": "九条全过",
+    "0x": "零 x ",
+    "non_leaf": "non leaf",
+    "add64": "add 六十四",
+    "add2": "add 二",
+    "sum6": "sum 六",
+    "AAPCS": "A A P C S",
+    "strd": "store double",
+    "ldr": "L D R",
+    "push": "push",
+    "pop": "pop",
+    "bx": "B X",
+    "lr": "L R",
+    "pc": "P C",
+    "sp": "S P",
+    "gcc": "g c c",
+    "Cortex-M4": "Cortex M 四",
+    "Cortex-M": "Cortex M",
+    "ABI": "A B I",
+    "prologue": "prologue",
+    "buf": "buffer"
+  },
+  "cover": {
+    "variant": "vs",
+    "kicker": "通往单片机之路 · C6",
+    "line1": "一次调用",
+    "line2": "四笔账",
+    "vs": {
+      "left": "宿主实测：一帧 64 字节",
+      "right": "M4 摘录：8 + 16 = 24",
+      "labels": [
+        "MEASURED",
+        "FROM ASM"
+      ]
+    },
+    "tag": "断言实跑 · 反汇编摘录",
+    "siteNote": "寄存器级 · 日志逐行可查",
+    "proof": "!non_leaf：宿主 sp 差 64 字节，buf 在 sp+32\n!sum6：@ args = 8，第 5、6 个读 [sp]、[sp,#4]\n!mix：调用方这四条只写 r0、r2、r3，这四条里 r1 没有赋值",
+    "proofShort": "!宿主帧差 64 字节，buf 在 sp+32\n!sum6 的 args = 8\n!mix 跳过 r1",
+    "num": "64 字节",
+    "numNote": "宿主 non_leaf 的 sp 实差；M4 那段是 8+16 的反汇编算术",
+    "sizes": {
+      "bilibili": [
+        1920,
+        1200
+      ],
+      "douyin": [
+        1080,
+        1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "reg-table",
+          "title": "参数落位"
+        },
+        {
+          "at": "a64-asm",
+          "title": "64 位与返回值"
+        },
+        {
+          "at": "sf-1",
+          "title": "栈帧与回家路"
+        },
+        {
+          "at": "counts",
+          "title": "字节账"
+        },
+        {
+          "at": "pit-isr",
+          "title": "坑与收束"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "一次调用，四笔账",
+          "sub": "同一个 non_leaf：宿主 sp 实差 64 字节",
+          "narration": "同一个 non_leaf，调用前后各读一次 sp，差出六十四字节。这六十四字节买了什么？一次调用拆开，只有四笔账要算。",
+          "emphasis": [
+            "64 字节"
+          ]
+        },
+        {
+          "id": "hook-02",
+          "kind": "code",
+          "title": "non_leaf：一个数组，两次调用",
+          "codeLabel": "probe.c：non_leaf 的函数体（略去掩码细节）",
+          "code": "int non_leaf(int x)\n{\n    char buf[16];\n    buf[0] = (char)x;          /* 写入首字节 */\n    sink(buf);                 /* 地址交出去 */\n    return add2(x, buf[0]) + 1; /* 回来还要加一 */\n}",
+          "narration": "这就是那笔账的源头。函数里有一个十六字节的数组，地址交给了 sink；后面还要调 add2，回来再加一。数组要落地，返回地址要保住，两件事都得动栈。",
+          "emphasis": [
+            "buf[16]"
+          ]
+        },
+        {
+          "id": "hook-03",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "先说结论",
+          "title": "一次调用，只有四个答案",
+          "bullets": [
+            "参数：前四个在 r0–r3",
+            "归途：lr 还是栈",
+            "栈帧：push 与 sub sp",
+            "结果：r0（64 位用一对）"
+          ],
+          "narration": "先把结论摆出来：参数往哪放、归途记在哪、栈帧开多大、结果从哪带走。这四件事都有明文规则，编译器不能即兴发挥；本集拿同一份日志，把这四笔账逐条对上。",
+          "emphasis": [
+            "四个答案"
+          ]
+        },
+        {
+          "id": "reg-table",
+          "kind": "code",
+          "title": "寄存器分工：谁装参数，谁必须还",
+          "codeLabel": "AAPCS 分工（后文逐行对上）",
+          "code": "r0–r3    参数 1–4；返回值走 r0（64 位走 r0:r1）\nr4–r8、r10、r11  被调方保存：想用就先压栈\nsp       栈指针：push 与 sub sp 都在改它\nlr       返回地址：bl 写入，下一次 bl 就覆盖\npc       pop 进它，函数就返回",
+          "narration": "先立一张分工表。r0 到 r3 装前四个参数，结果也从 r0 带出；r4 到 r8、r10、r11 归被调方保管，想用就先压栈；sp 管栈，lr 记归途，pc 被改写就返回。后面每一场，都能在这张表上找到落点。",
+          "emphasis": [
+            "r0–r3"
+          ]
+        },
+        {
+          "id": "sum-src",
+          "kind": "code",
+          "title": "六个 int：寄存器只够前四个",
+          "codeLabel": "probe.c：sum6",
+          "code": "int sum6(int a, int b, int c, int d, int e, int f)\n{\n    return a + b + c + d + e + f;\n}",
+          "narration": "第一个实验只做加法，六个 int。r0 到 r3 只有四个格子，第五、第六个参数没有寄存器可住。它们没有消失，只是换了一个地方住；下一场看两边怎么交接。",
+          "emphasis": [
+            "六个 int"
+          ]
+        },
+        {
+          "id": "sum-callee",
+          "kind": "code",
+          "title": "被调方：两条 ldr 把参数接回来",
+          "codeLabel": "10.3.1 -O2：sum6 反汇编",
+          "code": "sum6:\n    @ args = 8, pretend = 0, frame = 0\n    @ link register save eliminated.\n    add     r1, r1, r0\n    add     r2, r2, r1\n    add     r3, r3, r2\n    ldr     r2, [sp]        @ 第 5 个参数\n    ldr     r0, [sp, #4]    @ 第 6 个参数\n    add     r3, r3, r2\n    add     r0, r0, r3\n    bx      lr",
+          "narration": "被调方开头自己写了账：args 等于八，说明调用方在栈上放了八个字节；frame 等于零，它自己没有局部变量。前三个 add 先把 r0 到 r3 里的四个参数并起来，再用两条 ldr 从 [sp] 和 [sp,#4] 把第五、第六个接回来。",
+          "emphasis": [
+            "args = 8"
+          ]
+        },
+        {
+          "id": "sum-caller",
+          "kind": "code",
+          "title": "调用方：一条 strd 写两个栈参数",
+          "codeLabel": "同一份反汇编：bl sum6 之前的八条",
+          "code": "    bl      add2            @ 上一笔调用，先划界\n    movs    r3, #5\n    movs    r2, #6\n    strd    r3, r2, [sp]    @ 5 → [sp]，6 → [sp,#4]\n    movs    r2, #3\n    subs    r4, r0, r2      @ 核对上一个返回值\n    movs    r3, #4\n    movs    r0, #1\n    bl      sum6",
+          "narration": "调用方这边，先把五放进 r3、六放进 r2，一条 strd 同时写到 [sp] 和 [sp,#4]，跟被调方那两条 ldr 正好对上。窗口里那条 subs 是在核上一个返回值，跟传参无关；这八条里也没有写 r1，第二个参数在更早的指令里已经就位。",
+          "emphasis": [
+            "strd"
+          ]
+        },
+        {
+          "id": "sum-host",
+          "kind": "code",
+          "title": "走栈不等于走样：结果还是 21",
+          "codeLabel": "宿主 gcc 16.1.0 实跑",
+          "code": "sum6(1, 2, 3, 4, 5, 6) = 21\n== 断言通过 9/9 ==",
+          "narration": "宿主把六个参数送进去，拿回二十一，九条断言全过。第五、第六个参数走了栈，值一点没变，代价是多一次写、多一次读。这一节的结论：寄存器不够时，栈接得住参数，但每次都要付两次访存。",
+          "emphasis": [
+            "21"
+          ]
+        },
+        {
+          "id": "a64-asm",
+          "kind": "code",
+          "title": "64 位参数：一对寄存器抬一个数",
+          "codeLabel": "add64：x = r0:r1，y = r2:r3",
+          "code": "add64:\n    @ args = 0, pretend = 0, frame = 0\n    @ link register save eliminated.\n    adds    r0, r0, r2    @ 低 32 位相加，进位进 C\n    adc     r1, r1, r3    @ 高 32 位连进位一起加\n    bx      lr",
+          "narration": "换一组 64 位参数。第一个 long long 从 r0 起步，占 r0:r1；第二个接在 r2:r3；adds 加低半，adc 把高半连进位一起加。宿主送进去 0x100000000 和 0x200000001，拿回 0x300000001。返回值也走 r0:r1，两个 32 位寄存器合起来当一个 64 位用。",
+          "emphasis": [
+            "adc"
+          ]
+        },
+        {
+          "id": "mix-asm",
+          "kind": "code",
+          "title": "mix：入参 r1 从头到尾没被读",
+          "codeLabel": "mix(int tag, long long v) 被调方",
+          "code": "mix:\n    mov     r1, r0          @ 先给返回值高半让位\n    adds    r0, r0, r2      @ tag 在 r0，v 在 r2:r3\n    adc     r1, r3, r1, asr #31\n    bx      lr",
+          "narration": "更绕的是参数顺序：第一个是 int，第二个是 long long。tag 占 r0，v 不能从 r1 起步——64 位参数必须落在偶数号寄存器，于是 v 去 r2 和 r3。被调方只读 r0 和 r2:r3，入参 r1 它一次都没读；r1 在这里只轮得到返回值的高半。",
+          "emphasis": [
+            "r2:r3"
+          ]
+        },
+        {
+          "id": "mix-caller",
+          "kind": "code",
+          "title": "调用方：这四条不写 r1",
+          "codeLabel": "bl mix 之前：只写 r0、r2、r3（节选）",
+          "code": "    movs    r2, #0        @ v 低 32 位\n    movs    r3, #1        @ v 高 32 位 → 0x1_0000_0000\n    movs    r0, #7        @ tag\n    bl      mix           @ r1 没被赋值",
+          "narration": "调用方这四条给出铁证：只写 r2、r3、r0，没有一条给 r1 赋值。宿主算出来是 0x100000007，七加 0x100000000 一点不差。r1 里可能还躺着上一个调用的残值，mix 按规则当它不存在；这个空洞不是编译器忘了填，是 64 位对齐留下的。",
+          "emphasis": [
+            "r1"
+          ]
+        },
+        {
+          "id": "arg-order",
+          "kind": "card",
+          "kicker": "接口设计",
+          "title": "参数顺序是你定的，ABI 不会重排",
+          "bullets": [
+            "int 在前：tag 占 r0，v 从 r2 起，r1 空着",
+            "long long 在前：v 占 r0:r1，tag 去 r2，空洞少一个",
+            "ABI 只负责落位，不替你优化顺序"
+          ],
+          "narration": "所以参数顺序不是纯风格问题。把 int 放在前面，64 位参数从 r2 起步，r1 就空着；把 long long 放前面，它占 r0:r1，int 去 r2，空洞少一个。ABI 只按你写的顺序落位，不会替你重排；接口设计时，这条规则能省寄存器。",
+          "emphasis": [
+            "r0:r1"
+          ]
+        },
+        {
+          "id": "pair-rule",
+          "kind": "card",
+          "tone": "good",
+          "kicker": "这一节的结论",
+          "title": "偶数对是规矩，空洞不是 bug",
+          "bullets": [
+            "64 位参数从偶数号寄存器起步",
+            "r1 可以是空的，值仍然正确",
+            "返回值也用一对：r0 带低半，r1 带高半"
+          ],
+          "narration": "把这一节收成一句：64 位参数从偶数号寄存器起步，占一对；空出来的 r1 不是编译器漏填，是规则允许的洞。返回值同样用一对，r0 带低半，r1 带高半。记住位置，比记住某一次寄存器编号更有用。",
+          "emphasis": [
+            "偶数号"
+          ]
+        },
+        {
+          "id": "sf-1",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 0,
+          "t1": 3,
+          "smil": "stretch",
+          "title": "示意动画：bl 只做一件事",
+          "note": "示意用 add_two：两个参数，8 字节局部区；实测对象是后面的 non_leaf",
+          "narration": "现在把镜头拉远，用一段示意动画走一遍。main 把两个参数放进 r0、r1，sp 停在栈顶；bl 按下去，硬件只做一件事，把下一条指令的地址写进 lr。归途有了记录，函数才开始执行。"
+        },
+        {
+          "id": "sf-2",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 3,
+          "t1": 6,
+          "smil": "stretch",
+          "title": "push：借来的 r4 和归途一起落栈",
+          "note": "示意：push {r4, lr}，sp 向下两格",
+          "narration": "进门先 push。动画里把 r4 和 lr 一起压进栈：r4 是借来的，走前要还；lr 是回家地址，也得留一份。栈向低地址长，sp 往下走两格。真实函数里，lr 这一份不是每次都存——只有还要调用别人时，它才非存不可。",
+          "emphasis": [
+            "push"
+          ]
+        },
+        {
+          "id": "sf-3",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 6,
+          "t1": 9,
+          "smil": "stretch",
+          "title": "sub sp：给局部数组腾地方",
+          "note": "示意：sub sp 开 8 字节；non_leaf 实测开 16",
+          "narration": "第二笔是局部变量。sub sp 把栈顶再往下挪，挪出来的格子归数组。动画里是八字节，后面实测的 non_leaf 是十六字节；数字不同，动作一样：sp 减多少，就分配多少。结果算完，按约定放进 r0，这是出口。",
+          "emphasis": [
+            "sub sp"
+          ]
+        },
+        {
+          "id": "sf-4",
+          "kind": "anim",
+          "anim": "stack-frame",
+          "t0": 9,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "pop {r4, pc}：弹栈与返回合一",
+          "note": "示意：r4 归位，返回地址进 pc",
+          "narration": "收尾是 pop。它一次弹回两样：r4 恢复原值，返回地址直接进 pc。pc 一改，函数就回到 bl 的下一条；弹栈和跳转合成了一条指令。动画到这里闭环：进去时 sp 减，出来时 sp 加，中间那一段就是这一帧。",
+          "emphasis": [
+            "pop {r4, pc}"
+          ]
+        },
+        {
+          "id": "nl-src",
+          "kind": "code",
+          "title": "non_leaf：为什么它非开帧不可",
+          "codeLabel": "probe.c：数组地址交出去，返回后还有活（略去掩码细节）",
+          "code": "int non_leaf(int x)\n{\n    char buf[16];\n    buf[0] = (char)x;\n    sink(buf);                  /* noipa：地址必须真实存在 */\n    return add2(x, buf[0]) + 1; /* 返回后还要加一 */\n}",
+          "narration": "回到实测的 non_leaf。buf 的地址交给了 sink，编译器不敢把它塞进寄存器，数组必须真的在栈上；后面还要调 add2，回来再加一，所以也不能尾调用。两个条件一叠加，帧和 lr 都省不掉。",
+          "emphasis": [
+            "buf[16]"
+          ]
+        },
+        {
+          "id": "nl-asm",
+          "kind": "code",
+          "title": "交叉汇编前导：push 8 字节，sub 16 字节",
+          "codeLabel": "10.3.1 -O2：non_leaf 摘录（add sp 未被筛出）",
+          "code": "    push    {r4, lr}      @ 8 字节：r4 + 返回地址\n    sub     sp, sp, #16   @ 16 字节：buf[16]\n    bl      sink\n    bl      add2\n    pop     {r4, pc}      @ 返回地址直接进 pc",
+          "narration": "交叉汇编筛出五行：先 push，把 r4 和 lr 压进栈，占八个字节；再 sub sp 减十六，给 buf 留位置。八加十六是二十四，这是从两条指令的立即数算出来的，不是跑出来的读数。中间两次 bl 都会覆盖 lr，所以开头那一份 lr 必须存；收尾 pop 把 r4 和返回地址一起带回。",
+          "emphasis": [
+            "push"
+          ]
+        },
+        {
+          "id": "leaf-vs",
+          "kind": "code",
+          "title": "叶子函数：连 lr 都不用存",
+          "codeLabel": "add2 反汇编：不调用任何人",
+          "code": "add2:\n    @ link register save eliminated.\n    add     r0, r0, r1\n    bx      lr",
+          "narration": "对照组是 add2。它不调用任何人，lr 里的归途没人覆盖，所以编译器直接写 link register save eliminated；全身只有一条 add 和一条 bx lr。这一节的结论：叶子函数可以不碰栈，一旦函数体里出现 bl，返回地址就必须先落栈，这就是 push 里的第一笔。",
+          "emphasis": [
+            "link register save eliminated"
+          ]
+        },
+        {
+          "id": "counts",
+          "kind": "code",
+          "title": "计数：形状各出现一次，但这不等于全部",
+          "codeLabel": "probe.sh 的计数输出",
+          "code": "push {r4, lr} 出现次数 = 1\npop  {r4, pc}  出现次数 = 1\n调用方把第 5、6 个入参写上栈：strd , [sp] 次数 = 1\nstr 落盘到 [sp…] 总次数 = 1（含编译器溢出暂存，不都等于栈传参）",
+          "narration": "把整份汇编数一遍：push 一次，pop 一次，strd 写栈参数一次，落到 [sp] 的 str 也只有一次。最后那句是日志自己的警告：这个计数含编译器溢出暂存，不能把每一条 str 都当成参数。计数能证形状，不能替你解释每一格。",
+          "emphasis": [
+            "不都等于栈传参"
+          ]
+        },
+        {
+          "id": "bytes-host",
+          "kind": "code",
+          "title": "宿主的账：一帧 64 字节，buf 在 sp+32",
+          "codeLabel": "probe.exe 输出（gcc 16.1.0）",
+          "code": "sp(main, 调用前) − sp(non_leaf 体内) = 64 字节\nbuf 地址 − sp(non_leaf)          = 32 字节",
+          "narration": "宿主的账是实跑出来的。调用前后两次读 sp，相减是六十四字节；buf 的地址离 non_leaf 体内的 sp 三十二字节。日志自己注明，这六十四里包含返回地址、保存寄存器和 buf，不是单纯给数组的。",
+          "emphasis": [
+            "64 字节"
+          ]
+        },
+        {
+          "id": "bytes-both",
+          "kind": "card",
+          "title": "64 是宿主的实测，24 是 M4 的算术",
+          "bullets": [
+            "宿主：sp 实差 64 字节（本次构建）",
+            "Cortex-M4：push 8 + sub 16 = 24 字节（按指令算）",
+            "目标、编译器、优化档一换，数字就会变"
+          ],
+          "narration": "把两本账并排：宿主这六十四是实测，M4 那二十四是 push 八字节加 sub 十六字节算出来的。它们都不是常数。换目标、换编译器、换优化档，帧就会变；不变的是机制——sp 减多少，就分配多少。",
+          "emphasis": [
+            "24 字节"
+          ]
+        },
+        {
+          "id": "pit-lr",
+          "kind": "card",
+          "kicker": "常见坑 ①",
+          "title": "看见 bl，就先找 lr 的备份",
+          "bullets": [
+            "叶子函数：bx lr 就够，汇编会写 save eliminated",
+            "非叶子：push {r4, lr} 或单独存 lr",
+            "只存 r4 不存 lr，返回时地址已经没了"
+          ],
+          "narration": "第一个坑跟归途有关。判断函数是不是叶子，不用读完整体，先看有没有 bl：没有 bl，bx lr 就能回家；有 bl，lr 会被覆盖，prologue 必须给它留一份。只存了 r4 忘了 lr，返回时跳去哪就只能听天由命。",
+          "emphasis": [
+            "push {r4, lr}"
+          ]
+        },
+        {
+          "id": "pit-64",
+          "kind": "card",
+          "kicker": "常见坑 ②",
+          "title": "按 r1 去找 long long，会找错",
+          "bullets": [
+            "64 位参数从偶数号寄存器起步",
+            "int 在前时，r1 可能是空的",
+            "调试时先看类型，再决定读哪一对"
+          ],
+          "narration": "第二个坑在参数落位。调试 mix 时，如果按 r1 去找那个 long long，读到的不是 v；v 在 r2:r3，r1 空着。规则只有一条：64 位参数从偶数号寄存器起步。先看类型，再决定读哪一对，别按相邻编号猜。",
+          "emphasis": [
+            "r1"
+          ]
+        },
+        {
+          "id": "pit-isr",
+          "kind": "card",
+          "kicker": "常见坑 ③",
+          "title": "一帧 64 字节，不是整机栈预算",
+          "bullets": [
+            "日志量的是 non_leaf 这一帧",
+            "递归、中断嵌套会让栈一层层叠加",
+            "预算要按最坏路径算，不是按单个函数"
+          ],
+          "narration": "第三个坑是把一帧当成全部。日志量到的六十四字节只是 non_leaf 这一帧；递归会一层层叠，中断嵌套也会在同一个栈上继续压。算栈预算要按最坏路径，不是拿一个函数的帧乘一乘。",
+          "emphasis": [
+            "64 字节"
+          ]
+        },
+        {
+          "id": "lab-log",
+          "kind": "code",
+          "title": "复查顺序：先看注释，再看指令",
+          "codeLabel": "本机一条命令（不需要开发板）",
+          "code": "sh code/c/06-abi-stack/probe.sh\n# 宿主段：sp 差、buf 偏移、sum6/add64/mix 结果\n# 交叉段：add2、sum6、sum6 调用方、add64、mix、non_leaf 摘录\n# 计数段：push / pop / strd / str 各出现几次",
+          "narration": "想自己复查，顺序比工具重要。先读编译器自己写的注释：args 几字节、frame 多大、lr 存没存；再读指令，看参数从哪来、结果往哪去；最后看计数。一条命令跑完，宿主和交叉两段都在，不需要开发板。",
+          "emphasis": [
+            "probe.sh"
+          ]
+        },
+        {
+          "id": "link-next",
+          "kind": "card",
+          "kicker": "往回接，往下走",
+          "title": "C5 讲跳到哪，C6 讲跳过去之后",
+          "bullets": [
+            "C5：函数指针与 blx，决定目的地址",
+            "C6：参数、归途、栈帧、返回值",
+            "C7：编译器把哪些行为当成不存在"
+          ],
+          "narration": "把这集放回系列里：C5 讲 blx 怎么决定跳到哪，这一集讲跳过去之后参数怎么进、归途怎么记、帧怎么开；下一集 C7 换一个方向，看编译器把哪些未定义行为当成不可能发生。三集连起来，才是一条完整的调用链。"
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "一句话带走",
+          "title": "参数有位置，归途有备份",
+          "bullets": [
+            "前四个在 r0–r3，多余的走栈",
+            "64 位从偶数号起步，r1 可以空",
+            "叶子 bx lr，非叶子先存 lr",
+            "帧大小看目标，64 只是宿主这一份"
+          ],
+          "narration": "记四句就够：前四个参数在 r0 到 r3，多余的走栈；64 位从偶数号寄存器起步，r1 可以空着；叶子函数 bx lr 回家，非叶子先把 lr 存好；帧多大看目标，六十四只是宿主这一份。四句话，就是一次调用的全部账。",
+          "emphasis": [
+            "64"
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "9 条断言，一条命令跑绿",
+          "sub": "sh code/c/06-abi-stack/probe.sh",
+          "bullets": [
+            "宿主 gcc 16.1.0：sp 差、buf 偏移、四个返回值",
+            "交叉 10.3.1：六段摘录 + 四项计数",
+            "全部本机，不需要开发板"
+          ],
+          "narration": "屏上这些数字，都是本机一条命令跑出来的：宿主 gcc 16.1.0 打出 sp 差、buf 偏移和四个返回值，交叉 10.3.1 给出六段摘录和四项计数，最后九条断言全过。没有开发板，也不需要。脚本和全文在开源书里。",
+          "emphasis": [
+            "9 条"
+          ]
+        },
+        {
+          "id": "teaser",
+          "kind": "outro",
+          "title": "下一集 C7：未定义行为",
+          "sub": "编译器没报错，不等于代码没错",
+          "narration": "下一集进 C7，未定义行为。有符号溢出、空指针、数组越界，编译器不一定报错，却可能把它们当成不可能发生，据此把代码优化得面目全非。这一集把四笔账对完：参数有位置，归途有备份，帧有大小，结果有出口；下一集看这些账在优化器手里怎么被改写。",
+          "emphasis": [
+            "未定义行为"
+          ]
+        }
+      ]
+    },
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "sum-callee",
+          "title": "参数"
+        },
+        {
+          "at": "sf-2",
+          "title": "栈帧"
+        },
+        {
+          "at": "mix-caller",
+          "title": "64 位"
+        },
+        {
+          "at": "nl-asm",
+          "title": "叶子与帧"
+        },
+        {
+          "at": "punch",
+          "title": "收束"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "hook-02",
+        "sum-callee",
+        "sum-caller",
+        "sf-2",
+        "sf-4",
+        "mix-caller",
+        "nl-asm",
+        "leaf-vs",
+        "punch",
+        "cta"
+      ],
+      "set": {
+        "hook-01": {
+          "title": "一次调用\n四笔账",
+          "sub": "宿主 non_leaf：一帧 64 字节",
+          "emphasis": [
+            "64 字节"
+          ]
+        },
+        "hook-02": {
+          "title": "一个数组\n两次调用",
+          "code": "int non_leaf(int x)\n{\n  char buf[16];\n  sink(buf);\n  return add2(x, buf[0]) + 1;\n}",
+          "emphasis": [
+            "buf[16]"
+          ]
+        },
+        "sum-callee": {
+          "title": "第 5、6 个\n从栈上读",
+          "codeB": null,
+          "emphasis": [
+            "args = 8"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-10"
+            }
+          ]
+        },
+        "sum-caller": {
+          "title": "一条 strd\n写两个参数",
+          "code": "movs r3, #5\nmovs r2, #6\nstrd r3, r2, [sp]\nbl sum6",
+          "codeLabel": "同一份反汇编：节选四行",
+          "codeB": null,
+          "emphasis": [
+            "strd"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-3"
+            }
+          ]
+        },
+        "sf-2": {
+          "title": "push：r4\n和归途",
+          "note": "sp 向下两格"
+        },
+        "sf-4": {
+          "title": "pop 进 pc\n一步回家",
+          "note": "pop {r4, pc}：弹栈和返回合一",
+          "emphasis": [
+            "pop {r4, pc}"
+          ]
+        },
+        "mix-caller": {
+          "title": "r1 不装参数\n不是漏了",
+          "codeB": null,
+          "codeLabel": "bl mix 之前：节选四条",
+          "emphasis": [
+            "r1"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-3"
+            }
+          ]
+        },
+        "nl-asm": {
+          "title": "push 8\nsub 16",
+          "codeB": null,
+          "emphasis": [
+            "push"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-4"
+            }
+          ]
+        },
+        "leaf-vs": {
+          "title": "叶子函数\n不存 lr",
+          "codeB": null,
+          "emphasis": [
+            "bx      lr"
+          ],
+          "beatMap": [
+            {
+              "at": 1,
+              "reveal": "code:0-3"
+            }
+          ]
+        },
+        "punch": {
+          "title": "参数有位置\n归途有备份",
+          "bullets": [
+            "前四个在 r0–r3，多余的走栈",
+            "64 位从偶数号起步，r1 可以空",
+            "叶子 bx lr，非叶子先存 lr"
+          ],
+          "emphasis": [
+            "64"
+          ]
+        },
+        "cta": {
+          "title": "一条命令\n9 条断言",
+          "sub": "sh code/c/06-abi-stack/probe.sh",
+          "emphasis": [
+            "9 条"
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "同一个 non_leaf，宿主实测一帧六十四字节，先记账。",
+        "hook-02": "一个数组，两次调用，四笔账从这里展开。",
+        "sum-callee": "前四个参数进 r0 到 r3，第五第六从栈上接回来，不走样。",
+        "sum-caller": "一条 strd 把两个栈参数一起写上栈顶。",
+        "sf-2": "push 把 r4 和回家地址一起存进栈，归途有备份。",
+        "sf-4": "pop 进 pc，弹栈和返回合成一步。",
+        "mix-caller": "调用方这四条只写 r0、r2、r3，r1 不装参数。",
+        "nl-asm": "push 八字节，sub 十六字节，M4 前导二十四。",
+        "leaf-vs": "叶子函数不调用别人，连 lr 都不用存。",
+        "punch": "参数有位置，归途有备份，帧有大小，账就清了。",
+        "cta": "一条命令，九条断言全过，不用开发板。"
+      }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "一次调用四笔账：参数、归途、栈帧、返回值",
+        "sum6 的第 5、6 个参数，被一条 strd 写上栈",
+        "宿主一帧 64 字节，M4 前导 8+16：一次调用的账本"
+      ],
+      "intro": "同一个 non_leaf，宿主上调用前后两次读 sp，差出 64 字节；日志注明这 64 里含返回地址、保存寄存器和 buf，buf 离 sp 还有 32 字节。\n\n① 参数：sum6 的 @ args = 8，前四个在 r0–r3，第 5、6 个从 [sp]、[sp,#4] 读回；调用方用一条 strd 把两个栈参数一起写上栈。宿主结果 21；9/9 断言全过。\n\n② 64 位：add64 用 r0:r1 与 r2:r3，宿主得 0x300000001；mix(int, long long) 的调用方这四条只写 r0、r2、r3，这四条里 r1 没有赋值，宿主得 0x100000007。\n\n③ 栈帧：add2 是叶子，汇编写 link register save eliminated；non_leaf 摘录是 push {r4, lr} 与 sub sp, sp, #16；8+16 得 24 字节，这是按指令算的，不是实测。\n\n④ 计数：push、pop、strd 写 [sp]、str 落 [sp…] 各 1 次；最后一项含编译器溢出暂存，日志明确说“不都等于栈传参”。\n\n⚠️ 64 字节是宿主本次构建的实测帧；24 字节是 M4 摘录的算术结果，不是板上读数。本集没有开发板，全部来自本机 probe 日志。\n\n复现：sh code/c/06-abi-stack/probe.sh。完整图文在开源书《通往单片机之路》C6 章。",
+      "tags": [
+        "单片机",
+        "C语言",
+        "汇编",
+        "ARM",
+        "AAPCS",
+        "栈帧",
+        "STM32",
+        "嵌入式"
+      ],
+      "topics": [
+        "单片机",
+        "嵌入式开发",
+        "C语言"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "一次调用四笔账",
+        "第 5 个参数在哪？看 strd",
+        "push 8 + sub 16：M4 前导怎么算"
+      ],
+      "intro": "同一个 non_leaf，宿主一帧 64 字节；sum6 的第 5、6 个参数走栈；mix 的调用方这四条只写 r0、r2、r3，这四条里 r1 没有赋值。M4 的 non_leaf 摘录是 push {r4, lr} 加 sub sp, #16；8+16 是 24 字节，按指令算。全部本机一条命令，9/9 断言全过，不需要开发板。",
+      "tags": [
+        "单片机",
+        "C语言",
+        "汇编",
+        "嵌入式"
+      ],
+      "topics": [
+        "单片机",
+        "嵌入式开发"
+      ],
+      "caption": "一次调用四笔账：参数、归途、栈帧、返回值\n64 是宿主实测，24 是 M4 摘录算术\n#汇编 #调用约定 #栈帧",
+      "pinned": "完整图文在《通往单片机之路》C6：参数、归途、栈帧、返回值。9/9 断言一条命令全跑出来，不需要开发板：sh code/c/06-abi-stack/probe.sh",
+      "repro": "sh code/c/06-abi-stack/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "一次调用的四笔账：参数、归途、栈帧、返回值",
+        "sum6 的第 5、6 个参数去哪了？看两条 ldr 和一条 strd"
+      ],
+      "intro": "同一个 non_leaf，宿主上调用前后两次读 sp，差出 64 字节；日志注明这 64 里含返回地址、保存寄存器和 buf，buf 离 sp 还有 32 字节。\n\nsum6 的 @ args = 8：前四个参数在 r0–r3，第 5、6 个从 [sp]、[sp,#4] 读回；调用方用一条 strd 把两个栈参数一起写上栈。宿主结果 21；9/9 断言全过。\n\n64 位参数占一对寄存器：add64 用 r0:r1 与 r2:r3，宿主得 0x300000001；mix(int, long long) 的调用方这四条只写 r0、r2、r3，这四条里 r1 没有赋值，宿主得 0x100000007。\n\nadd2 是叶子，汇编写 link register save eliminated；non_leaf 摘录是 push {r4, lr} 与 sub sp, sp, #16；8+16 得 24 字节，这是按指令算的，不是实测。\n\n⚠️ 64 字节是宿主本次构建的实测帧；24 字节是 M4 摘录的算术结果，不是板上读数。本集没有开发板，全部来自本机 probe 日志。复现：sh code/c/06-abi-stack/probe.sh。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集选「个人观点仅供参考」与已发章节同口径。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "C语言",
+        "汇编",
+        "ARM",
+        "嵌入式",
+        "栈帧"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
+    },
+    "xiaohongshu": {
+      "title": "一次调用四笔账：参数、归途、栈帧、返回值",
+      "body": "同一个 non_leaf，宿主上调用前后两次读 sp，差出 64 字节；日志注明这 64 里含返回地址、保存寄存器和 buf，buf 离 sp 还有 32 字节。\n\nsum6 的 @ args = 8：前四个参数在 r0–r3，第 5、6 个从 [sp]、[sp,#4] 读回；调用方用一条 strd 把两个栈参数一起写上栈。宿主结果 21；9/9 断言全过。\n\n64 位参数占一对寄存器：add64 用 r0:r1 与 r2:r3；mix 的调用方这四条只写 r0、r2、r3，这四条里 r1 没有赋值。\n\nadd2 是叶子，汇编写 link register save eliminated；non_leaf 摘录是 push {r4, lr} 与 sub sp, sp, #16；8+16 得 24 字节，这是按指令算的，不是实测。\n\n64 字节是宿主本次构建的实测帧；24 字节是 M4 摘录的算术结果，不是板上读数。\n\n复现：sh code/c/06-abi-stack/probe.sh",
+      "topics": [
+        "单片机",
+        "C语言",
+        "汇编"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "参数、归途、栈帧、返回值——9/9 断言一条命令：sh code/c/06-abi-stack/probe.sh",
+      "repro": "sh code/c/06-abi-stack/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E02 接线与 'A' 帧波形：分析仪 CH0 接 PA9、共地；0x41 低位先行展开为 1000 0010">
+  <rect width="720" height="400" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">E02 接线与预期波形：抓一帧 'A'（0x41）</text>
+  <text x="24" y="50" font-size="12" fill="#666">USB-TTL 负责收发，分析仪只"旁听"PA9；两边都必须与板子共地，分析仪不接 3.3V</text>
+
+  <!-- USB-TTL -->
+  <rect x="30" y="76" width="150" height="104" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="105" y="96" font-size="13" font-weight="bold" fill="#a16207" text-anchor="middle">USB-TTL（3V3）</text>
+  <text x="170" y="122" font-size="12" fill="#333" text-anchor="end">TXD</text>
+  <text x="170" y="146" font-size="12" fill="#333" text-anchor="end">RXD</text>
+  <text x="170" y="170" font-size="12" fill="#333" text-anchor="end">GND</text>
+
+  <!-- 霸天虎 -->
+  <rect x="285" y="76" width="150" height="104" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="360" y="96" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">霸天虎 F407</text>
+  <text x="295" y="122" font-size="12" fill="#333" font-family="Consolas,monospace">PA10 RX</text>
+  <text x="295" y="146" font-size="12" fill="#333" font-family="Consolas,monospace">PA9  TX</text>
+  <text x="295" y="170" font-size="12" fill="#333" font-family="Consolas,monospace">GND</text>
+
+  <!-- 逻辑分析仪 -->
+  <rect x="540" y="76" width="150" height="104" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="615" y="96" font-size="13" font-weight="bold" fill="#1a7f56" text-anchor="middle">逻辑分析仪</text>
+  <text x="550" y="146" font-size="12" fill="#333">CH0</text>
+  <text x="550" y="170" font-size="12" fill="#333">GND</text>
+
+  <!-- 连线 -->
+  <line x1="180" y1="118" x2="285" y2="118" stroke="#333" stroke-width="2"/>
+  <text x="232" y="112" font-size="12" fill="#666" text-anchor="middle">发 'A'</text>
+  <line x1="180" y1="142" x2="285" y2="142" stroke="#c0392b" stroke-width="2"/>
+  <text x="232" y="136" font-size="12" fill="#666" text-anchor="middle">回显</text>
+  <line x1="180" y1="166" x2="285" y2="166" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <!-- PA9 网络延伸到分析仪 -->
+  <line x1="435" y1="142" x2="540" y2="142" stroke="#c0392b" stroke-width="2"/>
+  <circle cx="435" cy="142" r="4" fill="#c0392b"/>
+  <text x="488" y="136" font-size="12" fill="#c0392b" text-anchor="middle">同一根 PA9</text>
+  <line x1="435" y1="166" x2="540" y2="166" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="488" y="194" font-size="12" fill="#666" text-anchor="middle">虚线 = 共地</text>
+
+  <!-- 波形 -->
+  <text x="24" y="226" font-size="13" font-weight="bold" fill="#3451b2">PA9 上的一帧（115200-8-N-1）</text>
+  <g stroke="#cfd6e4" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="100" y1="236" x2="100" y2="300"/><line x1="152" y1="236" x2="152" y2="300"/>
+    <line x1="204" y1="236" x2="204" y2="300"/><line x1="256" y1="236" x2="256" y2="300"/>
+    <line x1="308" y1="236" x2="308" y2="300"/><line x1="360" y1="236" x2="360" y2="300"/>
+    <line x1="412" y1="236" x2="412" y2="300"/><line x1="464" y1="236" x2="464" y2="300"/>
+    <line x1="516" y1="236" x2="516" y2="300"/><line x1="568" y1="236" x2="568" y2="300"/>
+    <line x1="620" y1="236" x2="620" y2="300"/>
+  </g>
+  <path d="M60 250 H100 V290 H152 V250 H204 V290 H464 V250 H516 V290 H568 V250 H660" fill="none" stroke="#c0392b" stroke-width="2.5"/>
+  <text x="60" y="244" font-size="12" fill="#888">空闲 1</text>
+  <g font-size="12" text-anchor="middle" fill="#333">
+    <text x="126" y="314">起始</text><text x="178" y="314">D0</text><text x="230" y="314">D1</text>
+    <text x="282" y="314">D2</text><text x="334" y="314">D3</text><text x="386" y="314">D4</text>
+    <text x="438" y="314">D5</text><text x="490" y="314">D6</text><text x="542" y="314">D7</text>
+    <text x="594" y="314">停止</text>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#3451b2" font-family="Consolas,monospace">
+    <text x="126" y="332">0</text><text x="178" y="332">1</text><text x="230" y="332">0</text>
+    <text x="282" y="332">0</text><text x="334" y="332">0</text><text x="386" y="332">0</text>
+    <text x="438" y="332">0</text><text x="490" y="332">1</text><text x="542" y="332">0</text>
+    <text x="594" y="332">1</text>
+  </g>
+  <text x="96" y="276" font-size="12" fill="#1a7f56" text-anchor="end">触发 →</text>
+
+  <rect x="40" y="348" width="640" height="40" fill="#fdf0d5" stroke="#d97706" rx="6"/>
+  <text x="360" y="365" font-size="12" fill="#a16207" text-anchor="middle">线上读到 D0→D7 = 1000 0010，倒过来是 0100 0001 = 0x41 = 'A'（低位先行）</text>
+  <text x="360" y="381" font-size="12" fill="#a16207" text-anchor="middle">每位 1/115200 ≈ 8.68 µs，一帧 10 位 ≈ 86.8 µs；采样率 ≥ 2 MHz 才数得清每一位</text>
+</svg>

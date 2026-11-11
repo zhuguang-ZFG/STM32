@@ -1,0 +1,11 @@
+{"file": ".trellis/spec/index.md", "reason": "全局纪律：唯一维护位置、禁占位、事实纪律、验证分级；本任务所有跨层路由的总约束"}
+{"file": ".trellis/spec/guides/index.md", "reason": "跨包工作指南：先读再改、证据驱动、避免复制第二份真源"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "门禁集合与跳过语义；判定 E3 证据及 failed/unverified 的口径"}
+{"file": ".trellis/spec/book/build-contract.md", "reason": "整书 HTML/A4/印前构建合同；book-production 与 delivery 路由的事实层"}
+{"file": ".trellis/spec/book/print-contract.md", "reason": "16 开印前 PDF 的结构、字体、页码合同；当前 13 门与最终交付检查口径"}
+{"file": ".trellis/spec/video/index.md", "reason": "视频产线合同与 ai4fw 兼容 schema 缺口；18 正片与社媒视频的验收边界"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/task-cards.md", "reason": "22 项收口卡：原锚点、未满足 AC、下一动作与完成检查"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md", "reason": "依赖顺序、唯一实施归属、合同冲突和授权矩阵"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/task-ledger.json", "reason": "22 项机器账及 artifact/context/liveChecks 快照"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/artifact-checks.json", "reason": "36 母版与书/Job 身份 hash、EPUB 缺失、prose 候选同一性"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/turn-baseline.json", "reason": "本轮基线：22 任务、122 文件 hash、214 验证输入、101 书稿源、42 用户文件、7 源契约"}

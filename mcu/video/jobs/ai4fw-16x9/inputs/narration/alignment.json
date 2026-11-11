@@ -1,0 +1,250 @@
+{
+ "version": 1,
+ "source_sha256": "3aada69cc56cab25488fc6e2a13b5da4d20642213a04f748cc01ece107386908",
+ "script_sha256": "b768fd25b9945732c7e10096d17ec1b3ac707dedea95d5279de5e370fe3fa714",
+ "method": "semantic_chunks",
+ "beats": [
+  {
+   "id": "b_hook",
+   "text": "不用视频大模型，一段代码直接出片。",
+   "start": 0.0,
+   "end": 2.6515,
+   "caption_cues": [
+    {
+     "text": "不用视频大模型，",
+     "start": 0.0,
+     "end": 1.197
+    },
+    {
+     "text": "一段代码直接出片。",
+     "start": 1.319,
+     "end": 2.6515
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_frame",
+   "text": "我盘了 369 个 AI 视频工具仓库，这四个框架最能打。",
+   "start": 2.6515,
+   "end": 7.378,
+   "caption_cues": [
+    {
+     "text": "我盘了 369 个 AI 视频工具仓库，",
+     "start": 0.0,
+     "end": 2.9625
+    },
+    {
+     "text": "这四个框架最能打。",
+     "start": 3.1705,
+     "end": 4.7265
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_lemo",
+   "text": "第一个 lemo-opuscar，8300 多星。59 套给 Claude 深度调优的代码风格，代表作 OPUSCAR 98，一支六分半的样片塞进 98 种视觉风格，全程不碰视频模型。",
+   "start": 7.789,
+   "end": 21.072,
+   "caption_cues": [
+    {
+     "text": "第一个 lemo-opuscar，",
+     "start": 0.0,
+     "end": 1.311
+    },
+    {
+     "text": "8300 多星。",
+     "start": 1.458,
+     "end": 2.537
+    },
+    {
+     "text": "59 套给 Claude ",
+     "start": 3.087,
+     "end": 4.041
+    },
+    {
+     "text": "深度调优的代码风格，",
+     "start": 4.041,
+     "end": 6.126
+    },
+    {
+     "text": "代表作 OPUSCAR 98，",
+     "start": 6.384,
+     "end": 8.136
+    },
+    {
+     "text": "一支六分半的样片塞进 ",
+     "start": 8.332,
+     "end": 9.781
+    },
+    {
+     "text": "98 种视觉风格，",
+     "start": 9.781,
+     "end": 11.433
+    },
+    {
+     "text": "全程不碰视频模型。",
+     "start": 11.653,
+     "end": 13.283
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_art",
+   "text": "第二个 huashu-art-motion，花叔出品，5400 星。36 种艺术风格配 9 种解说语法，马里奥关卡 65 秒复原，连配乐都是代码合成的。",
+   "start": 21.489,
+   "end": 33.032,
+   "caption_cues": [
+    {
+     "text": "第二个 huashu-art-motion，",
+     "start": 0.0,
+     "end": 1.691
+    },
+    {
+     "text": "花叔出品，5400 星。",
+     "start": 1.851,
+     "end": 3.848
+    },
+    {
+     "text": "36 种艺术风格配 9 种解说语法，",
+     "start": 4.399,
+     "end": 7.651
+    },
+    {
+     "text": "马里奥关卡 65 秒复原，",
+     "start": 7.651,
+     "end": 9.423
+    },
+    {
+     "text": "连配乐都是代码合成的。",
+     "start": 9.595,
+     "end": 11.543
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_motion",
+   "text": "第三个 huashu-motion，1700 星，路线完全不同：像写简谱一样，用 ABC 记谱描述动画，直接合成成片。",
+   "start": 33.379,
+   "end": 41.97,
+   "caption_cues": [
+    {
+     "text": "第三个 huashu-motion，",
+     "start": 0.0,
+     "end": 1.275
+    },
+    {
+     "text": "1700 星，路线完全不同：",
+     "start": 1.434,
+     "end": 3.713
+    },
+    {
+     "text": "像写简谱一样，",
+     "start": 3.775,
+     "end": 4.914
+    },
+    {
+     "text": "用 ABC 记谱描述动画，",
+     "start": 5.086,
+     "end": 7.157
+    },
+    {
+     "text": "直接合成成片。",
+     "start": 7.304,
+     "end": 8.591
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_sweety",
+   "text": "第四个，你现在看到的这条手绘视频，就是 sweety-handdraw-video 做的，900 星，开源可复刻。",
+   "start": 42.209,
+   "end": 48.925,
+   "caption_cues": [
+    {
+     "text": "第四个，",
+     "start": 0.0,
+     "end": 0.527
+    },
+    {
+     "text": "你现在看到的这条手绘视频，",
+     "start": 0.674,
+     "end": 2.647
+    },
+    {
+     "text": "就是 sweety",
+     "start": 2.794,
+     "end": 3.583
+    },
+    {
+     "text": "-handdraw-video 做的，",
+     "start": 3.583,
+     "end": 4.718
+    },
+    {
+     "text": "900 星，开源可复刻。",
+     "start": 4.865,
+     "end": 6.716
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_select",
+   "text": "怎么选？要现成风格，上 lemo；要讲解语法，花叔艺术流；要记谱合成，huashu-motion；要手绘口播，sweety。",
+   "start": 49.029,
+   "end": 58.7265,
+   "caption_cues": [
+    {
+     "text": "怎么选？",
+     "start": 0.0,
+     "end": 0.588
+    },
+    {
+     "text": "要现成风格，上 lemo；",
+     "start": 1.127,
+     "end": 3.149
+    },
+    {
+     "text": "要讲解语法，花叔艺术流；",
+     "start": 3.332,
+     "end": 5.6
+    },
+    {
+     "text": "要记谱合成，huashu-motion；",
+     "start": 5.783,
+     "end": 7.818
+    },
+    {
+     "text": "要手绘口播，sweety。",
+     "start": 8.014,
+     "end": 9.6975
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  },
+  {
+   "id": "b_cta",
+   "text": "369 个仓库完整清单，评论区自取。",
+   "start": 58.7265,
+   "end": 62.04,
+   "caption_cues": [
+    {
+     "text": "369 个仓库完整清单，",
+     "start": 0.0,
+     "end": 2.1125
+    },
+    {
+     "text": "评论区自取。",
+     "start": 2.2355,
+     "end": 3.3135
+    }
+   ],
+   "cue_method": "timestamps (matched 100%)"
+  }
+ ]
+}

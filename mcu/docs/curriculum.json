@@ -1,0 +1,1032 @@
+[
+  {
+    "id": "C0",
+    "track": "c",
+    "path": "docs/c/00-c-in-mcu.md",
+    "title": "C0 为什么嵌入式 C 是另一种 C",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "C1",
+    "track": "c",
+    "path": "docs/c/01-memory-model.md",
+    "title": "C1 内存模型：一个全局变量的三段旅程",
+    "must": [
+      "C0"
+    ],
+    "parallel": [
+      "B1",
+      "B3"
+    ]
+  },
+  {
+    "id": "C2",
+    "track": "c",
+    "path": "docs/c/02-pointer.md",
+    "title": "C2 指针：点灯公式的全部秘密",
+    "must": [
+      "C1"
+    ],
+    "parallel": [
+      "S3"
+    ]
+  },
+  {
+    "id": "C3",
+    "track": "c",
+    "path": "docs/c/03-volatile.md",
+    "title": "C3 volatile：跟编译器约法三章",
+    "must": [
+      "C2",
+      "B1",
+      "S3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "C4",
+    "track": "c",
+    "path": "docs/c/04-struct-abi.md",
+    "title": "C4 结构体与 ABI：一个结构体罩住整组寄存器",
+    "must": [
+      "C2"
+    ],
+    "parallel": [
+      "C3"
+    ]
+  },
+  {
+    "id": "C5",
+    "track": "c",
+    "path": "docs/c/05-func-pointer.md",
+    "title": "C5 函数指针、状态机与环形缓冲",
+    "must": [
+      "C2"
+    ],
+    "parallel": [
+      "S4"
+    ]
+  },
+  {
+    "id": "C6",
+    "track": "c",
+    "path": "docs/c/06-abi-stack.md",
+    "title": "C6 调用约定与栈帧",
+    "must": [
+      "C2",
+      "C4"
+    ],
+    "parallel": [
+      "B4",
+      "C1"
+    ]
+  },
+  {
+    "id": "C7",
+    "track": "c",
+    "path": "docs/c/07-ub-misra.md",
+    "title": "C7 未定义行为与 MISRA-C 精要",
+    "must": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "B0",
+    "track": "build",
+    "path": "docs/build/00-toolchain.md",
+    "title": "B0 工具链全景：四个软件一台戏",
+    "must": [],
+    "parallel": [
+      "S0"
+    ]
+  },
+  {
+    "id": "B1",
+    "track": "build",
+    "path": "docs/build/01-four-steps.md",
+    "title": "B1 四步构建：从 main.c 到机器码",
+    "must": [
+      "C0"
+    ],
+    "parallel": [
+      "B0"
+    ]
+  },
+  {
+    "id": "B2",
+    "track": "build",
+    "path": "docs/build/02-elf.md",
+    "title": "B2 ELF 解剖：把固件放上解剖台",
+    "must": [
+      "B1"
+    ],
+    "parallel": [
+      "B3",
+      "B4",
+      "C1"
+    ]
+  },
+  {
+    "id": "B3",
+    "track": "build",
+    "path": "docs/build/03-linker-script.md",
+    "title": "B3 链接脚本：固件的建筑图纸",
+    "must": [
+      "B2",
+      "C1"
+    ],
+    "parallel": [
+      "B4"
+    ]
+  },
+  {
+    "id": "B4",
+    "track": "build",
+    "path": "docs/build/04-startup.md",
+    "title": "B4 启动过程：上电到 main 的每一条指令",
+    "must": [
+      "C6"
+    ],
+    "parallel": [
+      "B3"
+    ]
+  },
+  {
+    "id": "B5",
+    "track": "build",
+    "path": "docs/build/05-map-size.md",
+    "title": "B5 map 与体积：谁吃了我的 Flash",
+    "must": [
+      "B2",
+      "B3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "B6",
+    "track": "build",
+    "path": "docs/build/06-flash-debug.md",
+    "title": "B6 烧录与调试：SWD 与断点的真相",
+    "must": [
+      "B4",
+      "S0"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "B7",
+    "track": "build",
+    "path": "docs/build/07-build-system.md",
+    "title": "B7 构建系统：从手写 Makefile 到 CMake 与 scons",
+    "must": [
+      "B1",
+      "P0"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S0",
+    "track": "stm32",
+    "path": "docs/stm32/00-env.md",
+    "title": "S0 环境搭建：裸机工具链",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "S1",
+    "track": "stm32",
+    "path": "docs/stm32/01-arch.md",
+    "title": "S1 F407 架构总览：地址背后的故事",
+    "must": [
+      "S0",
+      "C2"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S2",
+    "track": "stm32",
+    "path": "docs/stm32/02-rcc-clock.md",
+    "title": "S2 RCC 时钟树：168MHz 是怎么算出来的",
+    "must": [
+      "S1",
+      "C4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S3",
+    "track": "stm32",
+    "path": "docs/stm32/03-gpio.md",
+    "title": "S3 GPIO：七个寄存器位级图解",
+    "must": [
+      "C2",
+      "C4"
+    ],
+    "parallel": [
+      "S0",
+      "S2"
+    ]
+  },
+  {
+    "id": "S4",
+    "track": "stm32",
+    "path": "docs/stm32/04-nvic-exti.md",
+    "title": "S4 NVIC 与 EXTI：打断的艺术",
+    "must": [
+      "S3",
+      "C6"
+    ],
+    "parallel": [
+      "C5"
+    ]
+  },
+  {
+    "id": "S5",
+    "track": "stm32",
+    "path": "docs/stm32/05-systick.md",
+    "title": "S5 SysTick：内核的心跳",
+    "must": [
+      "S4"
+    ],
+    "parallel": [
+      "C3"
+    ]
+  },
+  {
+    "id": "S6",
+    "track": "stm32",
+    "path": "docs/stm32/06-tim.md",
+    "title": "S6 定时器 TIM：一器多用的瑞士军刀",
+    "must": [
+      "S2",
+      "S3",
+      "S4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S7",
+    "track": "stm32",
+    "path": "docs/stm32/07-usart.md",
+    "title": "S7 USART：让芯片开口说话",
+    "must": [
+      "S2",
+      "S3",
+      "S4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S8",
+    "track": "stm32",
+    "path": "docs/stm32/08-dma.md",
+    "title": "S8 DMA：让数据自己搬家",
+    "must": [
+      "S7",
+      "S1",
+      "S4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S9",
+    "track": "stm32",
+    "path": "docs/stm32/09-adc.md",
+    "title": "S9 ADC：把模拟世界变成数字",
+    "must": [
+      "S8",
+      "S3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S10",
+    "track": "stm32",
+    "path": "docs/stm32/10-dac.md",
+    "title": "S10 DAC：芯片也能输出模拟量",
+    "must": [
+      "S2",
+      "S3"
+    ],
+    "parallel": [
+      "S6",
+      "S8",
+      "S9"
+    ]
+  },
+  {
+    "id": "S11",
+    "track": "stm32",
+    "path": "docs/stm32/11-i2c.md",
+    "title": "S11 I2C：两根线的社交礼仪",
+    "must": [
+      "S3",
+      "S7"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S12",
+    "track": "stm32",
+    "path": "docs/stm32/12-spi.md",
+    "title": "S12 SPI：全双工的移位艺术",
+    "must": [
+      "S11",
+      "S3",
+      "C7"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S13",
+    "track": "stm32",
+    "path": "docs/stm32/13-flash-iap.md",
+    "title": "S13 内部 Flash 与 IAP：固件给自己动手术",
+    "must": [
+      "B3",
+      "B4",
+      "S2"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S14",
+    "track": "stm32",
+    "path": "docs/stm32/14-pwr.md",
+    "title": "S14 低功耗：让电池活过一年",
+    "must": [
+      "S2",
+      "S4",
+      "S5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S15",
+    "track": "stm32",
+    "path": "docs/stm32/15-spl-anatomy.md",
+    "title": "S15 SPL 标准库解剖：库是怎么封装寄存器的",
+    "must": [
+      "S3",
+      "S2",
+      "C4",
+      "C7",
+      "B5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S16",
+    "track": "stm32",
+    "path": "docs/stm32/16-debug-hardfault.md",
+    "title": "S16 HardFault 与排错：崩溃现场的法医技术",
+    "must": [
+      "S4",
+      "C6",
+      "B2",
+      "C7",
+      "B6"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P0",
+    "track": "esp32",
+    "path": "docs/esp32/00-env.md",
+    "title": "P0 环境搭建：ESP-IDF 与小智板的第一次对话",
+    "must": [
+      "C0"
+    ],
+    "parallel": [
+      "S0"
+    ]
+  },
+  {
+    "id": "P1",
+    "track": "esp32",
+    "path": "docs/esp32/01-arch-boot.md",
+    "title": "P1 S3 架构与启动：从复位到 app_main",
+    "must": [
+      "P0",
+      "C1"
+    ],
+    "parallel": [
+      "B4"
+    ]
+  },
+  {
+    "id": "P2",
+    "track": "esp32",
+    "path": "docs/esp32/02-gpio-matrix.md",
+    "title": "P2 GPIO 与引脚矩阵：引脚自由换岗的秘密",
+    "must": [
+      "P1"
+    ],
+    "parallel": [
+      "S3"
+    ]
+  },
+  {
+    "id": "P3",
+    "track": "esp32",
+    "path": "docs/esp32/03-idf-anatomy.md",
+    "title": "P3 IDF 工程解剖：组件化构建流水线",
+    "must": [
+      "P0",
+      "B1"
+    ],
+    "parallel": [
+      "B7"
+    ]
+  },
+  {
+    "id": "P4",
+    "track": "esp32",
+    "path": "docs/esp32/04-irq-dualcore.md",
+    "title": "P4 中断与双核：IRAM 纪律与核间分工",
+    "must": [
+      "P1",
+      "F2",
+      "S4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P5",
+    "track": "esp32",
+    "path": "docs/esp32/05-uart-driver.md",
+    "title": "P5 UART 驱动解析：成熟驱动长什么样",
+    "must": [
+      "P4",
+      "S7"
+    ],
+    "parallel": [
+      "F4"
+    ]
+  },
+  {
+    "id": "P6",
+    "track": "esp32",
+    "path": "docs/esp32/06-spi-i2c-driver.md",
+    "title": "P6 SPI/I2C 驱动框架：板载外设当教材",
+    "must": [
+      "S11",
+      "S12",
+      "P2"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P7",
+    "track": "esp32",
+    "path": "docs/esp32/07-timer-ledc.md",
+    "title": "P7 定时器与 LEDC：各管一段时间",
+    "must": [
+      "S6",
+      "P2",
+      "P4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P8",
+    "track": "esp32",
+    "path": "docs/esp32/08-wifi.md",
+    "title": "P8 Wi-Fi 精髓：事件循环与连接状态机",
+    "must": [
+      "F6",
+      "P3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P9",
+    "track": "esp32",
+    "path": "docs/esp32/09-bt-espnow.md",
+    "title": "P9 蓝牙与 ESP-NOW：协议栈的另一种打开方式",
+    "must": [
+      "P8",
+      "F4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P10",
+    "track": "esp32",
+    "path": "docs/esp32/10-flash-nvs-ota.md",
+    "title": "P10 Flash、分区表、NVS 与 OTA",
+    "must": [
+      "P1"
+    ],
+    "parallel": [
+      "S13"
+    ]
+  },
+  {
+    "id": "P11",
+    "track": "esp32",
+    "path": "docs/esp32/11-lowpower.md",
+    "title": "P11 低功耗：睡眠矩阵与 ULP",
+    "must": [
+      "P10"
+    ],
+    "parallel": [
+      "S14"
+    ]
+  },
+  {
+    "id": "P12",
+    "track": "esp32",
+    "path": "docs/esp32/12-audio-path.md",
+    "title": "P12 音频链路：从 I2S 时序到\"hello 语音\"",
+    "must": [
+      "P6",
+      "S12",
+      "F4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "G1",
+    "track": "gd32",
+    "path": "docs/gd32/01-rcu-clock.md",
+    "title": "G1 RCU 时钟树：200MHz 是怎么算出来的",
+    "must": [
+      "G0"
+    ],
+    "parallel": [
+      "S2"
+    ]
+  },
+  {
+    "id": "F0",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/00-why-rtos.md",
+    "title": "F0 为什么需要 RTOS：先失败一次",
+    "must": [
+      "S5"
+    ],
+    "parallel": [
+      "C6",
+      "S7"
+    ]
+  },
+  {
+    "id": "F1",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/01-task-tcb.md",
+    "title": "F1 任务与 TCB：xTaskCreate 逐行走查",
+    "must": [
+      "F0",
+      "C6",
+      "B4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F2",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/02-context-switch.md",
+    "title": "F2 上下文切换：PendSV 换魂术",
+    "must": [
+      "F1",
+      "S4",
+      "C6"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F3",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/03-scheduler.md",
+    "title": "F3 调度器：一条 CLZ 选出下一个任务",
+    "must": [
+      "F1",
+      "F2",
+      "S5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F4",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/04-queue.md",
+    "title": "F4 队列：传送带的源码解剖",
+    "must": [
+      "F3",
+      "S7"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F5",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/05-sem-mutex.md",
+    "title": "F5 信号量与互斥量：优先级反转事件",
+    "must": [
+      "F4",
+      "F3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F6",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/06-notify-event-timer.md",
+    "title": "F6 任务通知、事件组与软件定时器",
+    "must": [
+      "F1",
+      "F4",
+      "F5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F7",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/07-heap.md",
+    "title": "F7 内存管理：heap_1 到 heap_5 的人生选择",
+    "must": [
+      "F1",
+      "C1",
+      "B3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "F8",
+    "track": "freertos",
+    "path": "docs/rtos/freertos/08-port-f407.md",
+    "title": "F8 移植 FreeRTOS 到霸天虎：三异常接管全记录",
+    "must": [
+      "F1",
+      "F2",
+      "S4",
+      "S16"
+    ],
+    "parallel": [
+      "B4",
+      "F7",
+      "S5"
+    ]
+  },
+  {
+    "id": "R0",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/00-arch.md",
+    "title": "R0 RT-Thread 架构：万物皆对象",
+    "must": [
+      "F1",
+      "C4"
+    ],
+    "parallel": [
+      "B3"
+    ]
+  },
+  {
+    "id": "R1",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/01-thread-sched.md",
+    "title": "R1 线程与调度：256 级位图的另一种写法",
+    "must": [
+      "R0",
+      "F1",
+      "F3"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R2",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/02-ipc.md",
+    "title": "R2 IPC 全家桶：一套范式五种武器",
+    "must": [
+      "R1",
+      "F4",
+      "F5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R3",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/03-mem.md",
+    "title": "R3 RT-Thread 内存管理：确定性之美",
+    "must": [
+      "F7",
+      "C1"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R4",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/04-device.md",
+    "title": "R4 设备框架：驱动与应用的解耦术",
+    "must": [
+      "R0",
+      "S7",
+      "F4"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R5",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/05-finsh.md",
+    "title": "R5 finsh 控制台：板子上的 shell",
+    "must": [
+      "R0",
+      "S7",
+      "C5"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R6",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/06-env-menuconfig.md",
+    "title": "R6 Env 与 menuconfig：RT-Thread 的点单系统",
+    "must": [
+      "B7"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "R7",
+    "track": "rtthread",
+    "path": "docs/rtos/rtthread/07-port-f407.md",
+    "title": "R7 移植 RT-Thread 到霸天虎：两步走",
+    "must": [
+      "R0",
+      "R6",
+      "F8"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "X0",
+    "track": "compare",
+    "path": "docs/rtos/compare/00-side-by-side.md",
+    "title": "对比 0 同概念双实现对照",
+    "must": [
+      "F1",
+      "R0"
+    ],
+    "parallel": [
+      "F3",
+      "R1"
+    ]
+  },
+  {
+    "id": "X1",
+    "track": "compare",
+    "path": "docs/rtos/compare/01-choose.md",
+    "title": "对比 1 选型决策树",
+    "must": [
+      "X0"
+    ],
+    "parallel": [
+      "F8",
+      "R7"
+    ]
+  },
+  {
+    "id": "G0",
+    "track": "gd32",
+    "path": "docs/gd32/00-env.md",
+    "title": "G0 环境与工具链",
+    "must": [
+      "C0",
+      "C2",
+      "S15"
+    ],
+    "parallel": [
+      "S0"
+    ]
+  },
+  {
+    "id": "G2",
+    "track": "gd32",
+    "path": "docs/gd32/02-gpio-af.md",
+    "title": "G2 GPIO 与 AF 对照",
+    "must": [
+      "G0",
+      "S15"
+    ],
+    "parallel": [
+      "S3"
+    ]
+  },
+  {
+    "id": "G3",
+    "track": "gd32",
+    "path": "docs/gd32/03-usart.md",
+    "title": "G3 USART 增强点",
+    "must": [
+      "G2"
+    ],
+    "parallel": [
+      "S7"
+    ]
+  },
+  {
+    "id": "G4",
+    "track": "gd32",
+    "path": "docs/gd32/04-periph-diff.md",
+    "title": "G4 GD32 外设差异",
+    "must": [
+      "G2",
+      "G3"
+    ],
+    "parallel": [
+      "S11",
+      "S12"
+    ]
+  },
+  {
+    "id": "V0",
+    "track": "gd32",
+    "path": "docs/gd32/05-riscv-toolchain.md",
+    "title": "V0 RISC-V 工具链与启动",
+    "must": [
+      "C0",
+      "C1"
+    ],
+    "parallel": [
+      "B0",
+      "B4",
+      "G0"
+    ]
+  },
+  {
+    "id": "V1",
+    "track": "gd32",
+    "path": "docs/gd32/06-clic-irq.md",
+    "title": "V1 CLIC 中断",
+    "must": [
+      "V0"
+    ],
+    "parallel": [
+      "S4"
+    ]
+  },
+  {
+    "id": "V2",
+    "track": "gd32",
+    "path": "docs/gd32/07-rcu-108m.md",
+    "title": "V2 RCU 时钟",
+    "must": [
+      "V0"
+    ],
+    "parallel": [
+      "S2"
+    ]
+  },
+  {
+    "id": "V3",
+    "track": "gd32",
+    "path": "docs/gd32/08-mtime-delay.md",
+    "title": "V3 MTIME 时基",
+    "must": [
+      "V2"
+    ],
+    "parallel": [
+      "S5"
+    ]
+  },
+  {
+    "id": "V4",
+    "track": "gd32",
+    "path": "docs/gd32/09-gpio-minimal.md",
+    "title": "V4 GPIO 最小系统",
+    "must": [
+      "V0"
+    ],
+    "parallel": [
+      "S3"
+    ]
+  },
+  {
+    "id": "C8",
+    "track": "c",
+    "path": "docs/c/08-framed-protocol.md",
+    "title": "C8 串口协议：从字节流到可恢复的消息",
+    "must": [
+      "C5",
+      "S7"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "S17",
+    "track": "stm32",
+    "path": "docs/stm32/17-watchdog-reset.md",
+    "title": "S17 看门狗：任务失去进展之后",
+    "must": [
+      "S5",
+      "F8"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "P13",
+    "track": "esp32",
+    "path": "docs/esp32/13-watchdog-health.md",
+    "title": "P13 看门狗与健康监督：不要喂反了",
+    "must": [
+      "P4",
+      "F8"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "J1",
+    "track": "projects",
+    "path": "docs/projects/01-f407-logger.md",
+    "title": "J1 STM32F407 传感器记录器",
+    "must": [
+      "C8",
+      "F8",
+      "S9",
+      "S17",
+      "S16",
+      "B5",
+      "B6",
+      "C7",
+      "S14"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "J2",
+    "track": "projects",
+    "path": "docs/projects/02-s3-logger.md",
+    "title": "J2 ESP32-S3 传感器记录器",
+    "must": [
+      "C8",
+      "F8",
+      "P6",
+      "P13",
+      "S16",
+      "B5",
+      "B6",
+      "C7",
+      "P11"
+    ],
+    "parallel": []
+  },
+  {
+    "id": "A0",
+    "track": "ai",
+    "path": "docs/ai/00-pair-not-ghost.md",
+    "title": "A0 为什么把大模型当结对工程师",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A1",
+    "track": "ai",
+    "path": "docs/ai/01-prompt-patterns.md",
+    "title": "A1 提示词模式：上下文、约束、验收三段式",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A2",
+    "track": "ai",
+    "path": "docs/ai/02-manual-reconciliation.md",
+    "title": "A2 手册对账：模型写的寄存器代码，逐位验证给它看",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A3",
+    "track": "ai",
+    "path": "docs/ai/03-toolflow-mcp.md",
+    "title": "A3 工具流：让模型读手册、跑构建、看串口",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A4",
+    "track": "ai",
+    "path": "docs/ai/04-hallucination-defense.md",
+    "title": "A4 幻觉防御：八类幻觉与验证决策树",
+    "must": [],
+    "parallel": []
+  },
+  {
+    "id": "A5",
+    "track": "ai",
+    "path": "docs/ai/05-this-book-pipeline.md",
+    "title": "A5 bisect-half",
+    "must": [],
+    "parallel": []
+  }
+]

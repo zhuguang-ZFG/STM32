@@ -51,6 +51,9 @@ SKIP_DIRS = {
     "wechat-mp",
     "final-videos",
     "superpowers",
+    # mcu/ 是并入的姊妹书（Apache-2.0），文风由其自有 prose 基线与
+    # mcu 质量闸门治理，不属于本书 slop 词表适用范围。
+    "mcu",
 }
 
 # Each group maps a human-readable name to the patterns that betray it.

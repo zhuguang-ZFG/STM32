@@ -1,0 +1,60 @@
+node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+.playwright-mcp/
+*.log
+__pycache__/
+.temp/
+
+# 上游参考源码(写作引用基准,不入库)
+.trellis/ref/
+
+# 暂缓入库的进行中工程（完工后移回 code/ 并登记 projects.json）
+.trellis/wip/
+
+# 固件构建产物（源码与 sdkconfig.defaults 入库；sdkconfig 是生成物，
+# 入库会带着本机上一次的 target，与 defaults 冲突）
+code/**/build/
+code/esp32/**/sdkconfig
+code/esp32/**/sdkconfig.old
+code/esp32/**/managed_components/
+code/esp32/**/dependencies.lock
+!code/esp32/05-audio-play/dependencies.lock
+
+# 由 npm run docs:gen 生成的全站进度数据（构建前置自动生成，不入库）；
+# quizzes/ 与 registers/ 是手写的源数据，必须入库，否则 CI 构建缺文件
+docs/.vitepress/data/*
+!docs/.vitepress/data/quizzes
+!docs/.vitepress/data/registers
+
+# volatile 取证脚本的产物（汇编与中间目标文件，随时可重跑）
+code/c/03-volatile/opt_probe.O*.s
+code/c/03-volatile/opt_probe.m4.O*.s
+code/c/03-volatile/blink-variants/
+code/c/03-volatile/opt_probe.exe
+code/c/03-volatile/opt_probe
+
+# Browser regression artifacts
+test-results/
+playwright-report/
+
+# Codex �Ự���䣨����⣩
+.workbuddy-ai/
+
+# 视频产物与原始素材（体积大，不进仓库；产线代码在 video/）
+# 这里按类型忽略、不整目录忽略：docs/video/ 下还放着两份要进版本管理的分镜，
+# 整目录吞掉会重演「题库 JSON 被 gitignore 吃掉」那次——只靠 force-add 兜住的分镜，
+# 以后往这个目录里新加任何文件都会静默不入库。
+docs/video/*.mp4
+docs/video/*.html
+docs/video/*.wav
+video/out/
+video/.cache/
+video/episodes/*/*.mp3
+
+# 本地工具配置
+.qoder/
+
+# 整书构建产物（CI 构建并作为 artifact 发布）
+mcu-book/dist/
+__pycache__/

@@ -1,0 +1,112 @@
+{
+  "id": "c3b-volatile",
+  "title": "三十七条塌成两条",
+  "badge": "C3",
+  "voice": "zh-CN-YunxiNeural",
+  "rate": "+4%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "cover": {
+    "kicker": "通往单片机之路 · C3",
+    "line1": "三十七条",
+    "line2": "塌成两条",
+    "vs": {
+      "left": "宏 + 参数 + nop",
+      "right": "三处 volatile 全删",
+      "motif": "asm"
+    },
+    "proof": "0: b.n 0 <main>\n2: nop",
+    "num": "8 → 0",
+    "numNote": "一次 -O2 优化之后，还剩几次外设写"
+  },
+  "platforms": {
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        22,
+        36
+      ],
+      "scenes": [
+        {
+          "id": "collapse",
+          "kind": "anim",
+          "anim": "volatile-main-collapse",
+          "t0": 0,
+          "t1": 8,
+          "smil": "stretch",
+          "tail": 0.9,
+          "note": "屏上每一条汇编都是本机 objdump 的原文",
+          "narration": "同一份代码，同一个 -O2，只删三处 volatile，main 从三十七条塌成两条。"
+        },
+        {
+          "id": "sites",
+          "kind": "code",
+          "title": "被删掉的就是这三个词",
+          "codeLabel": "code/stm32/00-blink/main.c",
+          "code": "!#define RCC_AHB1ENR         (*(volatile uint32_t *)(RCC_BASE + 0x30UL))\n!#define GPIOF_MODER         (*(volatile uint32_t *)(GPIOF_BASE + 0x00UL))\n!#define GPIOF_BSRR          (*(volatile uint32_t *)(GPIOF_BASE + 0x18UL))\n~…五处寄存器宏，同一个写法\n!static void delay(volatile uint32_t count)\n!    __asm__ volatile (\"nop\");",
+          "tail": 0.9,
+          "note": "变体 E：三处同时拿掉",
+          "narration": "删的就是这三个词：寄存器宏、delay 参数、循环体里的 nop。三处全删，八次写一次不剩。"
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "warn",
+          "kicker": "C3 · volatile",
+          "title": "编译器没写错",
+          "bullets": [
+            "as-if 规则：只对可观察行为负责",
+            "地址后面接着什么，它不知道",
+            "复现：sh code/c/03-volatile/blink-variants.sh"
+          ],
+          "tail": 1.2,
+          "narration": "编译器没写错：它只认可观察行为，不知道地址后面是灯。volatile 管登门，不管排队。",
+          "sub": "它只是认定：没人会再看这些值"
+        }
+      ]
+    }
+  },
+  "publish": {
+    "douyin": {
+      "titles": [
+        "三十七条指令，塌成两条",
+        "删掉三个 volatile，main 只剩一条跳转",
+        "编译器没坏，它只是不知道那是灯"
+      ],
+      "intro": "同一份 00-blink/main.c，同一个 -O2，只把三处 volatile 拿掉，main 从 37 条指令塌成 b.n 0 加一条 nop，八次外设写一次不剩。\n屏上每条汇编都是本机 objdump 的原文：sh code/c/03-volatile/blink-variants.sh\n",
+      "tags": [
+        "单片机",
+        "STM32",
+        "C语言",
+        "程序员",
+        "嵌入式"
+      ],
+      "topics": [
+        "知识",
+        "科技"
+      ],
+      "caption": "-O2 前后：37 条 → 2 条\n删掉的是三个 volatile，不是那行自增\n#C语言 #编译优化 #volatile #单片机",
+      "pinned": "完整图文在「通往单片机之路」C3《volatile：跟编译器约法三章》。六个变体、一份 -O2 反汇编，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/blink-variants.sh",
+      "repro": "sh code/c/03-volatile/blink-variants.sh"
+    },
+    "xiaohongshu": {
+      "title": "三十七条指令，塌成两条",
+      "body": "同一份 00-blink/main.c，同一个 -O2，只把三处 volatile 拿掉，main 从 37 条指令塌成 b.n 0 加一条 nop，八次外设写一次不剩。\n屏上每条汇编都是本机 objdump 的原文：sh code/c/03-volatile/blink-variants.sh\n\n复现：sh code/c/03-volatile/blink-variants.sh",
+      "topics": [
+        "单片机",
+        "STM32",
+        "C语言"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "六个变体、一份 -O2 反汇编，一条命令全跑出来，不需要开发板：sh code/c/03-volatile/blink-variants.sh",
+      "repro": "sh code/c/03-volatile/blink-variants.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

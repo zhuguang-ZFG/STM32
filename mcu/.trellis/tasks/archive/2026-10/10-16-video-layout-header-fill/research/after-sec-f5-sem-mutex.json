@@ -1,0 +1,1647 @@
+{
+ "epId": "f5-sem-mutex",
+ "episodePath": "D:\\Users\\mcu\\video\\episodes\\f5-sem-mutex\\episode.json",
+ "sections": {
+  "bilibili": [
+   {
+    "at": "hook-01",
+    "title": "先说结论"
+   },
+   {
+    "at": "code-01",
+    "title": "宏的真身在哪"
+   },
+   {
+    "at": "card-02",
+    "title": "一份结构体，五个名字"
+   },
+   {
+    "at": "hook-02",
+    "title": "内核凭什么知道"
+   },
+   {
+    "at": "anim-02",
+    "title": "三条泳道，一个反转"
+   },
+   {
+    "at": "punch-01",
+    "title": "那 3500 拍谁执行"
+   }
+  ],
+  "douyin": [
+   {
+    "at": "hook-01",
+    "title": "先说结论"
+   },
+   {
+    "at": "code-02",
+    "title": "宏的真身在哪"
+   },
+   {
+    "at": "code-11",
+    "title": "内核凭什么知道"
+   },
+   {
+    "at": "sim-binary",
+    "title": "同一份剧本，两个数"
+   },
+   {
+    "at": "punch-01",
+    "title": "那 3500 拍谁执行"
+   }
+  ]
+ },
+ "rows": [
+  {
+   "platform": "bilibili",
+   "index": 0,
+   "id": "hook-01",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 237.8,
+   "contentBottom": 738.5,
+   "usedPx": 500.7,
+   "bandPx": 853.2,
+   "fill": 0.587,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 1/6 节 · 先说结论"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 1/6 节 · 先说结论",
+    "left": 1617.953125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 1,
+   "id": "card-01",
+   "kind": "card",
+   "kicker": "先说结论",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 1/6 节 · 先说结论"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 1/6 节 · 先说结论",
+    "left": 1617.953125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 2,
+   "id": "code-01",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 2/6 节 · 宏的真身在哪"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 2/6 节 · 宏的真身在哪",
+    "left": 1579.03125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 3,
+   "id": "code-02",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 2/6 节 · 宏的真身在哪"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 2/6 节 · 宏的真身在哪",
+    "left": 1579.03125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 4,
+   "id": "code-03",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 2/6 节 · 宏的真身在哪"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 2/6 节 · 宏的真身在哪",
+    "left": 1579.03125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 5,
+   "id": "code-04",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 215.6,
+   "contentBottom": 760.7,
+   "usedPx": 545.2,
+   "bandPx": 853.2,
+   "fill": 0.639,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 2/6 节 · 宏的真身在哪"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 2/6 节 · 宏的真身在哪",
+    "left": 1579.03125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 6,
+   "id": "code-05",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 326.2,
+   "contentBottom": 650.2,
+   "usedPx": 324,
+   "bandPx": 853.2,
+   "fill": 0.38,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 2/6 节 · 宏的真身在哪"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 2/6 节 · 宏的真身在哪",
+    "left": 1579.03125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 7,
+   "id": "card-02",
+   "kind": "card",
+   "kicker": "所以前半集",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 8,
+   "id": "anim-01",
+   "kind": "anim",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 97.2,
+   "contentBottom": 879.1,
+   "usedPx": 781.9,
+   "bandPx": 853.2,
+   "fill": 0.916,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "animbox",
+    "note"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 9,
+   "id": "code-06",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 10,
+   "id": "code-07",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 310.4,
+   "contentBottom": 666,
+   "usedPx": 355.6,
+   "bandPx": 853.2,
+   "fill": 0.417,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 11,
+   "id": "code-08",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 12,
+   "id": "card-03",
+   "kind": "card",
+   "kicker": "重叠",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 13,
+   "id": "code-09",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 263,
+   "contentBottom": 713.3,
+   "usedPx": 450.4,
+   "bandPx": 853.2,
+   "fill": 0.528,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 14,
+   "id": "code-10",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 3/6 节 · 一份结构体，五个名字"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 3/6 节 · 一份结构体，五个名字",
+    "left": 1501.1875,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 15,
+   "id": "hook-02",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 269.4,
+   "contentBottom": 706.9,
+   "usedPx": 437.5,
+   "bandPx": 853.2,
+   "fill": 0.513,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 16,
+   "id": "code-11",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 17,
+   "id": "code-12",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 18,
+   "id": "code-13",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 19,
+   "id": "code-14",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 326.2,
+   "contentBottom": 650.2,
+   "usedPx": 324,
+   "bandPx": 853.2,
+   "fill": 0.38,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 20,
+   "id": "card-04",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 21,
+   "id": "code-15",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 247.2,
+   "contentBottom": 729.1,
+   "usedPx": 482,
+   "bandPx": 853.2,
+   "fill": 0.565,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 22,
+   "id": "code-16",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 23,
+   "id": "code-17",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 263,
+   "contentBottom": 713.3,
+   "usedPx": 450.4,
+   "bandPx": 853.2,
+   "fill": 0.528,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 24,
+   "id": "code-18",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 263,
+   "contentBottom": 713.3,
+   "usedPx": 450.4,
+   "bandPx": 853.2,
+   "fill": 0.528,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 25,
+   "id": "card-05",
+   "kind": "card",
+   "kicker": "编译期",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 4/6 节 · 内核凭什么知道"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 4/6 节 · 内核凭什么知道",
+    "left": 1559.578125,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 26,
+   "id": "anim-02",
+   "kind": "anim",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 97.2,
+   "contentBottom": 879.1,
+   "usedPx": 781.9,
+   "bandPx": 853.2,
+   "fill": 0.916,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 5/6 节 · 三条泳道，一个反转"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 5/6 节 · 三条泳道，一个反转",
+    "left": 1520.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "animbox",
+    "note"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 27,
+   "id": "code-19",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 294.6,
+   "contentBottom": 681.8,
+   "usedPx": 387.2,
+   "bandPx": 853.2,
+   "fill": 0.454,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 5/6 节 · 三条泳道，一个反转"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 5/6 节 · 三条泳道，一个反转",
+    "left": 1520.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 28,
+   "id": "code-20",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 310.4,
+   "contentBottom": 666,
+   "usedPx": 355.6,
+   "bandPx": 853.2,
+   "fill": 0.417,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 5/6 节 · 三条泳道，一个反转"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 5/6 节 · 三条泳道，一个反转",
+    "left": 1520.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 29,
+   "id": "sim-binary",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 278.8,
+   "contentBottom": 697.5,
+   "usedPx": 418.8,
+   "bandPx": 853.2,
+   "fill": 0.491,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 5/6 节 · 三条泳道，一个反转"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 5/6 节 · 三条泳道，一个反转",
+    "left": 1520.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 30,
+   "id": "sim-mutex",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 247.2,
+   "contentBottom": 729.1,
+   "usedPx": 482,
+   "bandPx": 853.2,
+   "fill": 0.565,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 5/6 节 · 三条泳道，一个反转"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 5/6 节 · 三条泳道，一个反转",
+    "left": 1520.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 31,
+   "id": "punch-01",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 6/6 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 6/6 节 · 那 3500 拍谁执行",
+    "left": 1535.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 32,
+   "id": "card-06",
+   "kind": "card",
+   "kicker": "这两个数的身份",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 6/6 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 6/6 节 · 那 3500 拍谁执行",
+    "left": 1535.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 33,
+   "id": "punch",
+   "kind": "card",
+   "kicker": "一句话记住",
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 129.6,
+   "contentBottom": 825.1,
+   "usedPx": 695.5,
+   "bandPx": 853.2,
+   "fill": 0.815,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 6/6 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 6/6 节 · 那 3500 拍谁执行",
+    "left": 1535.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "bilibili",
+   "index": 34,
+   "id": "cta",
+   "kind": "outro",
+   "kicker": null,
+   "bodyTop": 64.8,
+   "bodyBottom": 918,
+   "contentTop": 391.5,
+   "contentBottom": 584.8,
+   "usedPx": 193.3,
+   "bandPx": 853.2,
+   "fill": 0.227,
+   "topbar": {
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "text": "F5通往单片机之路第 6/6 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": true,
+   "chip": {
+    "text": "第 6/6 节 · 那 3500 拍谁执行",
+    "left": 1535.65625,
+    "right": 1804.8125,
+    "top": 34.546875,
+    "bottom": 58.546875,
+    "overX": 0
+   },
+   "barSegs": null,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "sub",
+    "url"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 0,
+   "id": "hook-01",
+   "kind": "hook",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 350.3,
+   "contentBottom": 1327.8,
+   "usedPx": 977.5,
+   "bandPx": 1305.6,
+   "fill": 0.749,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 1/5 节 · 先说结论"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 1/5 节 · 先说结论",
+    "left": 639.8125,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "sub",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 1,
+   "id": "card-01",
+   "kind": "card",
+   "kicker": "先说结论",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 367.7,
+   "contentBottom": 1310.4,
+   "usedPx": 942.7,
+   "bandPx": 1305.6,
+   "fill": 0.722,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 1/5 节 · 先说结论"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 1/5 节 · 先说结论",
+    "left": 639.8125,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 2,
+   "id": "code-02",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 582,
+   "contentBottom": 1096,
+   "usedPx": 514,
+   "bandPx": 1305.6,
+   "fill": 0.394,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 2/5 节 · 宏的真身在哪"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 2/5 节 · 宏的真身在哪",
+    "left": 570.625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 3,
+   "id": "code-11",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 582,
+   "contentBottom": 1096,
+   "usedPx": 514,
+   "bandPx": 1305.6,
+   "fill": 0.394,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 3/5 节 · 内核凭什么知道"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 3/5 节 · 内核凭什么知道",
+    "left": 536.015625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 4,
+   "id": "code-13",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 582,
+   "contentBottom": 1096,
+   "usedPx": 514,
+   "bandPx": 1305.6,
+   "fill": 0.394,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 3/5 节 · 内核凭什么知道"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 3/5 节 · 内核凭什么知道",
+    "left": 536.015625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 5,
+   "id": "code-17",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 561.9,
+   "contentBottom": 1116.2,
+   "usedPx": 554.3,
+   "bandPx": 1305.6,
+   "fill": 0.425,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 3/5 节 · 内核凭什么知道"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 3/5 节 · 内核凭什么知道",
+    "left": 536.015625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 6,
+   "id": "card-05",
+   "kind": "card",
+   "kicker": "编译期",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 283.9,
+   "contentBottom": 1394.2,
+   "usedPx": 1110.3,
+   "bandPx": 1305.6,
+   "fill": 0.85,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 3/5 节 · 内核凭什么知道"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 3/5 节 · 内核凭什么知道",
+    "left": 536.015625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 7,
+   "id": "sim-binary",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 489.1,
+   "contentBottom": 1189,
+   "usedPx": 699.8,
+   "bandPx": 1305.6,
+   "fill": 0.536,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 4/5 节 · 同一份剧本，两个数"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 4/5 节 · 同一份剧本，两个数",
+    "left": 466.828125,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 8,
+   "id": "sim-mutex",
+   "kind": "code",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 489.1,
+   "contentBottom": 1189,
+   "usedPx": 699.8,
+   "bandPx": 1305.6,
+   "fill": 0.536,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 4/5 节 · 同一份剧本，两个数"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 4/5 节 · 同一份剧本，两个数",
+    "left": 466.828125,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "title",
+    "cols"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 9,
+   "id": "punch-01",
+   "kind": "card",
+   "kicker": null,
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 386.4,
+   "contentBottom": 1291.7,
+   "usedPx": 905.3,
+   "bandPx": 1305.6,
+   "fill": 0.693,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 5/5 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 5/5 节 · 那 3500 拍谁执行",
+    "left": 493.515625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 10,
+   "id": "card-06",
+   "kind": "card",
+   "kicker": "这两个数的身份",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 367.7,
+   "contentBottom": 1310.4,
+   "usedPx": 942.7,
+   "bandPx": 1305.6,
+   "fill": 0.722,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 5/5 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 5/5 节 · 那 3500 拍谁执行",
+    "left": 493.515625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  },
+  {
+   "platform": "douyin",
+   "index": 11,
+   "id": "punch",
+   "kind": "card",
+   "kicker": "一句话记住",
+   "bodyTop": 192,
+   "bodyBottom": 1497.6,
+   "contentTop": 400.8,
+   "contentBottom": 1277.3,
+   "usedPx": 876.6,
+   "bandPx": 1305.6,
+   "fill": 0.671,
+   "topbar": {
+    "top": 96,
+    "bottom": 140,
+    "text": "F5通往单片机之路第 5/5 节 · 那 3500 拍谁执行"
+   },
+   "ticksVisible": false,
+   "chip": {
+    "text": "第 5/5 节 · 那 3500 拍谁执行",
+    "left": 493.515625,
+    "right": 972,
+    "top": 96,
+    "bottom": 140,
+    "overX": 0
+   },
+   "barSegs": 5,
+   "perSceneBarNodes": 1,
+   "blocks": [
+    "cardpanel"
+   ]
+  }
+ ]
+}

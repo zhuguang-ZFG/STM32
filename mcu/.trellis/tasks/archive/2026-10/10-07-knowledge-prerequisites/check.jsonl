@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/docs-site/structure.md", "reason": "18 项章节结构契约（精髓/自测/对照表/记忆锚点等）"}
+{"file": ".trellis/spec/docs-site/content.md", "reason": "frontmatter 必填与 `<<<` 源码内嵌相对路径契约"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "质量门禁判定口径（成稿/实验/动画/工程/死链）"}
+{"file": ".trellis/tasks/10-07-knowledge-prerequisites/prd.md", "reason": "批次范围（16 篇）与完成定义"}
+{"file": ".trellis/tasks/10-07-knowledge-prerequisites/design.md", "reason": "F 章证据源（freertos-v11 内核）与 P 章证据源（IDF v5.5.2）锁定"}

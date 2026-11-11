@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>超级循环里的接收死等：串口等一个字节，LED 也停止翻转</title>
+  <desc>四阶段机制示意（非实拍）。① 结果对照：上面一行 uart_echo 死等字节，红色等待环绕圈不返回，灰灯不闪；下面一行 uart_poll 查一眼没数据就返回，绿色往返点在收发型与灯之间来回，金灯按周期翻转。② 原因：主循环只有一条执行路线，执行指针在 uart_echo 的等待环里绕圈，走不到下面的 led_tick，灰灯保持不动。③ 改法：把接收换成先查状态、没数据就返回——蓝色执行点穿过写着 return 的绿色闸门一路走到灯，LED 重新亮灭。④ 边界：绿色对勾表示接收这一路不再死等，琥珀色等待环表示回显里的发送仍会阻塞，末端灰灯表示这只解决了接收等待，不保证所有任务都准时。图上真在跑的东西：等待环上的点始终绕圈（=不返回），执行点沿一条线行进（=只有一条时间轴）。</desc>
+  <rect width="720" height="760" fill="#f6f8fa"/>
+
+  <!-- ①结果对照（0–3s）：死等不闪 vs 返回照闪 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="40" y1="380" x2="680" y2="380" stroke="#e2e8f0" stroke-width="3"/>
+
+    <text x="56" y="112" font-size="52" font-weight="bold" fill="#dc2626">灯不闪</text>
+    <circle cx="300" cy="212" r="62" fill="none" stroke="#dc2626" stroke-width="7" stroke-dasharray="13 10"/>
+    <circle r="16" fill="#dc2626">
+      <animateMotion dur="1.5s" repeatCount="indefinite" path="M 300,150 A 62,62 0 1 1 300,274 A 62,62 0 1 1 300,150"/>
+    </circle>
+    <path d="M 372,212 H 470" fill="none" stroke="#94a3b8" stroke-width="8" stroke-dasharray="14 14"/>
+    <circle cx="560" cy="212" r="78" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4"/>
+    <text x="56" y="330" font-size="44" fill="#333">串口一直等</text>
+
+    <text x="56" y="452" font-size="52" font-weight="bold" fill="#1a7f56">灯在闪</text>
+    <circle cx="300" cy="552" r="62" fill="none" stroke="#3eaf7c" stroke-width="7"/>
+    <path d="M 372,552 H 470" fill="none" stroke="#3eaf7c" stroke-width="8"/>
+    <circle cx="300" cy="552" r="16" fill="#3eaf7c">
+      <animate attributeName="cx" values="300;470;300" keyTimes="0;0.5;1" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="560" cy="552" r="78" fill="#e7c54b" stroke="#d97706" stroke-width="4">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="56" y="690" font-size="44" fill="#1a7f56">没数据就返回</text>
+  </g>
+
+  <!-- ②原因（3–6s）：一根执行路线，卡在等待环里 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="360" y="96" font-size="48" font-weight="bold" fill="#3451b2" text-anchor="middle">只有一条执行路线</text>
+    <path d="M 360,140 V 236" fill="none" stroke="#94a3b8" stroke-width="10"/>
+    <circle cx="360" cy="316" r="66" fill="#ffffff" stroke="#dc2626" stroke-width="8" stroke-dasharray="14 10"/>
+    <circle r="18" fill="#dc2626">
+      <animateMotion dur="1.5s" repeatCount="indefinite" path="M 360,250 A 66,66 0 1 1 360,382 A 66,66 0 1 1 360,250"/>
+    </circle>
+    <text x="360" y="452" font-size="44" fill="#dc2626" text-anchor="middle">字节不来就不返回</text>
+    <text x="360" y="524" font-size="40" font-family="Consolas,monospace" fill="#666" text-anchor="middle">while (!rx_due()) { }</text>
+    <path d="M 360,556 V 596" fill="none" stroke="#94a3b8" stroke-width="10" stroke-dasharray="14 14"/>
+    <circle cx="360" cy="672" r="72" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4"/>
+    <text x="500" y="686" font-size="44" font-weight="bold" fill="#dc2626">灯不闪</text>
+  </g>
+
+  <!-- ③改法（6–9s）：查一眼没数据就返回，执行点一路走到灯 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="360" y="96" font-size="48" font-weight="bold" fill="#1a7f56" text-anchor="middle">没数据就返回</text>
+    <path d="M 360,140 V 196" fill="none" stroke="#94a3b8" stroke-width="10"/>
+    <text x="360" y="244" font-size="44" fill="#1a7f56" text-anchor="middle">查一眼</text>
+    <rect x="270" y="264" width="180" height="140" rx="14" fill="#eef7f1" stroke="#3eaf7c" stroke-width="4"/>
+    <path d="M 360,404 V 560" fill="none" stroke="#94a3b8" stroke-width="10"/>
+    <circle cx="360" cy="650" r="78" fill="#e7c54b" stroke="#d97706" stroke-width="4">
+      <animate attributeName="opacity" values="0.25;0.25;1;1;0.25" keyTimes="0;0.65;0.72;0.86;1" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="360" cy="150" r="18" fill="#3451b2">
+      <animate attributeName="cy" values="150;640;640;150" keyTimes="0;0.7;0.82;1" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="360" y="348" font-size="40" font-family="Consolas,monospace" fill="#1a7f56" text-anchor="middle">return</text>
+    <text x="500" y="664" font-size="44" font-weight="bold" fill="#1a7f56">灯继续闪</text>
+  </g>
+
+  <!-- ④边界（9–12s）：接收这一路通了，发送仍会等 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="360" y="96" font-size="48" font-weight="bold" fill="#1a7f56" text-anchor="middle">接收不死了</text>
+    <rect x="270" y="126" width="180" height="120" rx="14" fill="#eef7f1" stroke="#3eaf7c" stroke-width="4"/>
+    <path d="M 316,186 L 348,218 L 404,152" fill="none" stroke="#1a7f56" stroke-width="10"/>
+    <text x="360" y="330" font-size="48" font-weight="bold" fill="#d97706" text-anchor="middle">发送还要等</text>
+    <circle cx="360" cy="430" r="64" fill="#fff7ed" stroke="#d97706" stroke-width="8" stroke-dasharray="14 10"/>
+    <circle r="17" fill="#d97706">
+      <animateMotion dur="2s" repeatCount="indefinite" path="M 360,366 A 64,64 0 1 1 360,494 A 64,64 0 1 1 360,366"/>
+    </circle>
+    <path d="M 360,506 V 552" fill="none" stroke="#94a3b8" stroke-width="10" stroke-dasharray="14 14"/>
+    <circle cx="360" cy="628" r="72" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4"/>
+    <text x="560" y="644" font-size="40" font-weight="bold" fill="#333" text-anchor="middle">不保证都准时</text>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,736)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

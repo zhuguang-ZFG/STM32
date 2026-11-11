@@ -1,0 +1,61 @@
+
+> mcu-road@0.1.0 video:check
+> node video/src/cli.mjs check f5-sem-mutex
+
+
+🔎 f5-sem-mutex · bilibili  1920×1080  35 场
+        0s  hook-01                最小字号 21.1px pre.fit.code「semphr.h:167  」  
+  18.633333333333333s  card-01                最小字号 22.7px ul.bullets.fit「semphr.h 里那五个 」  
+  36.03333333333333s  code-01                最小字号 21.1px pre.fit.code「167   xSemapho」  
+     50.9s  code-02                最小字号 21.1px pre.fit.code「展开文本里 xSemapho」  
+     67.7s  code-03                最小字号 21.1px pre.fit.code「g_binary = xQu」  
+     85.6s  code-04                最小字号 21.1px pre.fit.code「U xQueueCreate」  
+  104.56666666666666s  code-05                最小字号 21.1px pre.fit.code「queue.o + task」  
+  122.76666666666667s  card-02                最小字号 22.7px ul.bullets.fit「五种名字 → 五个队列入口 」  
+    143.2s  anim-01                最小字号 42.1px div.title.fit「停车场计数 vs 厕所钥匙」  svg 1100×642
+  161.53333333333333s  code-06                最小字号 21.1px pre.fit.code「queue.c:521  x」  
+  180.96666666666667s  code-07                最小字号 21.1px pre.fit.code「sizeof(Queue_t」  
+    201.1s  code-08                最小字号 21.1px pre.fit.code「pcHead        」  
+  217.76666666666668s  card-03                最小字号 22.7px ul.bullets.fit「pcTail 与 xMute」  
+    238.4s  code-09                最小字号 21.1px pre.fit.code「queue.c:647  u」  
+    258.8s  code-10                最小字号 21.1px pre.fit.code「xSemaphoreCrea」  
+  278.03333333333336s  hook-02                最小字号 21.1px pre.fit.code「Queue_t 里没有一个 」  
+  299.3333333333333s  code-11                最小字号 21.1px pre.fit.code「queue.c:65  #d」  
+    320.7s  code-12                最小字号 21.1px pre.fit.code「/* When the Qu」  
+  340.06666666666666s  code-13                最小字号 21.1px pre.fit.code「prvInitialiseN」  
+  360.26666666666665s  code-14                最小字号 21.1px pre.fit.code「grep 'uxQueueT」  
+  378.76666666666665s  card-04                最小字号 22.7px ul.bullets.fit「ucQueueType 在偏」  
+    399.1s  code-15                最小字号 21.1px pre.fit.code「tasks.c:6589  」  
+  421.56666666666666s  code-16                最小字号 21.1px pre.fit.code「tasks.c:6601  」  
+  443.26666666666665s  code-17                最小字号 21.1px pre.fit.code「6612  uxListRe」  
+    466.7s  code-18                最小字号 21.1px pre.fit.code「queue.c:2408  」  
+    488.4s  card-05                最小字号 22.7px ul.bullets.fit「MUTEX=0 那批：nm 」  
+  508.53333333333336s  anim-02                最小字号 42.1px div.title.fit「三条泳道，一个反转」  svg 1155×642
+  528.9333333333333s  code-19                最小字号 21.1px pre.fit.code「main.c:315  cp」  
+  552.2333333333333s  code-20                最小字号 21.1px pre.fit.code「sim_invert.c：宿」  
+  576.9333333333333s  sim-binary             最小字号 21.1px pre.fit.code「RES tag=binary」  
+  599.3333333333334s  sim-mutex              最小字号 21.1px pre.fit.code「RES tag=mutex 」  
+  623.1333333333333s  punch-01               最小字号 22.7px ul.bullets.fit「6000 − 2500 = 」  
+    642.7s  card-06                最小字号 22.7px ul.bullets.fit「E04 文档自己写着：按剧本」  
+    663.9s  punch                  最小字号 22.7px ul.bullets.fit「xSemaphore* 没有」  
+    681.5s  cta                    最小字号 24.8px div.sub.fit「cd code/rtos/0」  
+  🔤 字幕字族：Microsoft YaHei(19)
+  🔍 排版审计通过：35 场，越界/裁切/压字幕/版式相叠/字号不可读/顶穿容器/标题孤字 0
+
+🔎 f5-sem-mutex · douyin  1080×1920  12 场
+        0s  hook-01                最小字号 26.9px pre.fit.code「semphr.h:167  」  
+  4.533333333333333s  card-01                最小字号 39.4px ul.bullets.fit「那五个名字全是 #defin」  
+  11.133333333333333s  code-02                最小字号 26.9px pre.fit.code「展开文本里 xSemapho」  
+     15.5s  code-11                最小字号 26.9px pre.fit.code「queue.c:65  #d」  
+  20.466666666666665s  code-13                最小字号 26.9px pre.fit.code「prvInitialiseN」  
+  26.633333333333333s  code-17                最小字号 26.9px pre.fit.code「6612  uxListRe」  
+  32.86666666666667s  card-05                最小字号 39.4px ul.bullets.fit「MUTEX=0：Inheri」  
+     39.5s  sim-binary             最小字号 26.9px pre.fit.code「RES tag=binary」  
+       45s  sim-mutex              最小字号 26.9px pre.fit.code「RES tag=mutexh」  
+  50.96666666666667s  punch-01               最小字号 39.4px ul.bullets.fit「6000 − 2500 = 」  
+  56.86666666666667s  card-06                最小字号 39.4px ul.bullets.fit「E04 自己写着：不是实测数」  
+  61.766666666666666s  punch                  最小字号 39.4px ul.bullets.fit「xSemaphore* 没有」  
+  🔤 字幕字族：Microsoft YaHei(6)
+  🔍 排版审计通过：12 场，越界/裁切/压字幕/版式相叠/字号不可读/顶穿容器/标题孤字 0
+
+✅ 全部通过

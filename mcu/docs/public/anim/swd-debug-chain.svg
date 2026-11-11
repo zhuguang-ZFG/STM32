@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 450" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>SWD 调试链路：从 GDB 到芯片内存</title>
+  <desc>四阶段动画：GDB 发命令 → OpenOCD 转发 → ST-Link 电平转换 → SWD 协议到 DP/AP → 总线矩阵读写内存，展示烧录与调试共用同一链路</desc>
+
+  <rect width="720" height="450" fill="#f6f8fa"/>
+
+  <!-- Stage 1: GDB + OpenOCD (PC side) -->
+  <text x="20" y="22" font-size="13" font-weight="bold" fill="#3451b2">① PC 端：GDB → OpenOCD</text>
+  <rect x="20" y="30" width="200" height="100" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="30" y="50" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="30" dy="0" fill="#666"># GDB 发读内存命令</tspan>
+    <tspan x="30" dy="15">(gdb) x/4xw 0x20000000</tspan>
+    <tspan x="30" dy="15" fill="#666"># TCP 3333 转发</tspan>
+    <tspan x="30" dy="15">OpenOCD → SWD 包</tspan>
+  </text>
+
+  <!-- Stage 2: ST-Link (probe) -->
+  <text x="240" y="22" font-size="13" font-weight="bold" fill="#3451b2">② 探针：ST-Link</text>
+  <rect x="240" y="30" width="200" height="100" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="250" y="50" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="250" dy="0" fill="#666"># USB 转 SWD 电平</tspan>
+    <tspan x="250" dy="15">SWDIO ← → 双向数据</tspan>
+    <tspan x="250" dy="15">SWCLK → 时钟</tspan>
+    <tspan x="250" dy="15" fill="#666"># 三根线通天</tspan>
+  </text>
+
+  <!-- Stage 3: DP + AP (debug port) -->
+  <text x="20" y="155" font-size="13" font-weight="bold" fill="#3451b2">③ 芯片内：DP → AP</text>
+  <rect x="20" y="163" width="330" height="100" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="30" y="183" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="30" dy="0" fill="#666"># DP（调试端口）接收 SWD 请求</tspan>
+    <tspan x="30" dy="15">DP → AP（访问端口）</tspan>
+    <tspan x="30" dy="15" fill="#666"># AP 直挂 AHB 总线矩阵</tspan>
+    <tspan x="30" dy="15">AP → 0x20000000（RAM）</tspan>
+    <tspan x="30" dy="15" fill="#3eaf7c">✓ 不经过 CPU</tspan>
+  </text>
+
+  <!-- Stage 4: Bus matrix → target -->
+  <text x="370" y="155" font-size="13" font-weight="bold" fill="#3451b2">④ 总线矩阵 → 目标地址</text>
+  <rect x="370" y="163" width="330" height="100" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="380" y="183" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="380" dy="0" fill="#666"># 地址解码</tspan>
+    <tspan x="380" dy="15">0x08000000 → Flash</tspan>
+    <tspan x="380" dy="15">0x20000000 → SRAM</tspan>
+    <tspan x="380" dy="15">0x40021418 → GPIOF</tspan>
+    <tspan x="380" dy="15" fill="#3eaf7c">✓ CPU 停不停都能读写</tspan>
+  </text>
+
+  <!-- Breakpoint divergence -->
+  <rect x="20" y="280" width="680" height="80" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="300" font-size="12" font-weight="bold" fill="#3451b2">断点分叉：硬件 vs 软件</text>
+  <text x="30" y="320" font-size="11" fill="#333">
+    <tspan x="30" dy="0" fill="#dc2626" font-weight="bold">hbreak</tspan>
+    <tspan> → FPB 比较器（6 个）比对取指地址，不改 Flash → </tspan>
+    <tspan fill="#3eaf7c" font-weight="bold">Flash 代码用这个</tspan>
+  </text>
+  <text x="30" y="340" font-size="11" fill="#333">
+    <tspan x="30" dy="0" fill="#dc2626" font-weight="bold">break</tspan>
+    <tspan> → 改写指令为 BKPT，需可写 → </tspan>
+    <tspan fill="#3eaf7c" font-weight="bold">RAM 代码用这个（不限量）</tspan>
+  </text>
+
+  <!-- Key insight -->
+  <rect x="20" y="375" width="680" height="60" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="395" font-size="12" font-weight="bold" fill="#d97706">核心洞察</text>
+  <text x="30" y="415" font-size="11" fill="#333">烧录 = 读写 Flash 寄存器（AP 代劳）；调试 = 读写 RAM/PC/寄存器（同一 AP 路径）——同一链路，两种用途</text>
+
+  <!-- Continuous animation: data packet flowing along the chain -->
+  <circle r="5" fill="#3451b2" opacity="0.8">
+    <animate attributeName="cx" values="100;230;185;185;100" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="80;80;213;213;80" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>

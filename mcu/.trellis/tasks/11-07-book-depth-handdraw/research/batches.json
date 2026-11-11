@@ -1,0 +1,300 @@
+{
+  "allSourceFiles": 101,
+  "chapterCount": 94,
+  "appendixCount": 7,
+  "method": "Each file exactly once. Pilot6, rest grouped by existing part, max6perbatch. Per-point semantic audit is mandatory before edits.",
+  "batches": [
+    {
+      "id": "PILOT",
+      "files": [
+        "docs/c/02-pointer.md",
+        "docs/build/07-build-system.md",
+        "docs/stm32/11-i2c.md",
+        "docs/rtos/freertos/03-scheduler.md",
+        "docs/esp32/02-gpio-matrix.md",
+        "docs/ai/02-manual-reconciliation.md"
+      ],
+      "dependsOn": "user-approval-of-concrete-pilot-design",
+      "goal": "图文一体代表样章；每章知识点须完整审查，不限当前候选片段"
+    },
+    {
+      "id": "B01",
+      "part": "pc",
+      "files": [
+        "docs/c/00-c-in-mcu.md",
+        "docs/c/01-memory-model.md",
+        "docs/c/03-volatile.md",
+        "docs/c/04-struct-abi.md",
+        "docs/c/05-func-pointer.md",
+        "docs/c/06-abi-stack.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B02",
+      "part": "pc",
+      "files": [
+        "docs/c/07-ub-misra.md",
+        "docs/c/08-framed-protocol.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B03",
+      "part": "pb",
+      "files": [
+        "docs/build/00-toolchain.md",
+        "docs/build/01-four-steps.md",
+        "docs/build/02-elf.md",
+        "docs/build/03-linker-script.md",
+        "docs/build/04-startup.md",
+        "docs/build/05-map-size.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B04",
+      "part": "pb",
+      "files": [
+        "docs/build/06-flash-debug.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B05",
+      "part": "ps",
+      "files": [
+        "docs/stm32/00-env.md",
+        "docs/stm32/01-arch.md",
+        "docs/stm32/02-rcc-clock.md",
+        "docs/stm32/03-gpio.md",
+        "docs/stm32/04-nvic-exti.md",
+        "docs/stm32/05-systick.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B06",
+      "part": "ps",
+      "files": [
+        "docs/stm32/06-tim.md",
+        "docs/stm32/07-usart.md",
+        "docs/stm32/08-dma.md",
+        "docs/stm32/09-adc.md",
+        "docs/stm32/10-dac.md",
+        "docs/stm32/12-spi.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B07",
+      "part": "ps",
+      "files": [
+        "docs/stm32/13-flash-iap.md",
+        "docs/stm32/14-pwr.md",
+        "docs/stm32/15-spl-anatomy.md",
+        "docs/stm32/16-debug-hardfault.md",
+        "docs/stm32/17-watchdog-reset.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B08",
+      "part": "pf",
+      "files": [
+        "docs/rtos/freertos/00-why-rtos.md",
+        "docs/rtos/freertos/01-task-tcb.md",
+        "docs/rtos/freertos/02-context-switch.md",
+        "docs/rtos/freertos/04-queue.md",
+        "docs/rtos/freertos/05-sem-mutex.md",
+        "docs/rtos/freertos/06-notify-event-timer.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B09",
+      "part": "pf",
+      "files": [
+        "docs/rtos/freertos/07-heap.md",
+        "docs/rtos/freertos/08-port-f407.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B10",
+      "part": "pr",
+      "files": [
+        "docs/rtos/rtthread/00-arch.md",
+        "docs/rtos/rtthread/01-thread-sched.md",
+        "docs/rtos/rtthread/02-ipc.md",
+        "docs/rtos/rtthread/03-mem.md",
+        "docs/rtos/rtthread/04-device.md",
+        "docs/rtos/rtthread/05-finsh.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B11",
+      "part": "pr",
+      "files": [
+        "docs/rtos/rtthread/06-env-menuconfig.md",
+        "docs/rtos/rtthread/07-port-f407.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B12",
+      "part": "px",
+      "files": [
+        "docs/rtos/compare/00-side-by-side.md",
+        "docs/rtos/compare/01-choose.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B13",
+      "part": "pe",
+      "files": [
+        "docs/esp32/00-env.md",
+        "docs/esp32/01-arch-boot.md",
+        "docs/esp32/03-idf-anatomy.md",
+        "docs/esp32/04-irq-dualcore.md",
+        "docs/esp32/05-uart-driver.md",
+        "docs/esp32/06-spi-i2c-driver.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B14",
+      "part": "pe",
+      "files": [
+        "docs/esp32/07-timer-ledc.md",
+        "docs/esp32/08-wifi.md",
+        "docs/esp32/09-bt-espnow.md",
+        "docs/esp32/10-flash-nvs-ota.md",
+        "docs/esp32/11-lowpower.md",
+        "docs/esp32/12-audio-path.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B15",
+      "part": "pe",
+      "files": [
+        "docs/esp32/13-watchdog-health.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B16",
+      "part": "pg",
+      "files": [
+        "docs/gd32/00-env.md",
+        "docs/gd32/01-rcu-clock.md",
+        "docs/gd32/02-gpio-af.md",
+        "docs/gd32/03-usart.md",
+        "docs/gd32/04-periph-diff.md",
+        "docs/gd32/05-riscv-toolchain.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B17",
+      "part": "pg",
+      "files": [
+        "docs/gd32/06-clic-irq.md",
+        "docs/gd32/07-rcu-108m.md",
+        "docs/gd32/08-mtime-delay.md",
+        "docs/gd32/09-gpio-minimal.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B18",
+      "part": "pl",
+      "files": [
+        "docs/lab/e01-blink.md",
+        "docs/lab/e02-logic-uart.md",
+        "docs/lab/e03-scope-pwm.md",
+        "docs/lab/e04-priority-inversion.md",
+        "docs/lab/e05-i2c-eeprom.md",
+        "docs/lab/e06-lowpower-current.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B19",
+      "part": "pl",
+      "files": [
+        "docs/lab/e07-qmi8658.md",
+        "docs/lab/e08-audio-play.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B20",
+      "part": "pj",
+      "files": [
+        "docs/projects/01-f407-logger.md",
+        "docs/projects/02-s3-logger.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B21",
+      "part": "pa",
+      "files": [
+        "docs/ai/00-pair-not-ghost.md",
+        "docs/ai/01-prompt-patterns.md",
+        "docs/ai/03-toolflow-mcp.md",
+        "docs/ai/04-hallucination-defense.md",
+        "docs/ai/05-this-book-pipeline.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "逐知识点审查、图文一体补齐、证据与边界验收"
+    },
+    {
+      "id": "B22",
+      "part": "appendices",
+      "files": [
+        "mcu-book/book/A-工程深读.md",
+        "mcu-book/book/B-例程索引.md",
+        "mcu-book/book/C-习题答案.md",
+        "mcu-book/book/D-术语表.md",
+        "mcu-book/book/E-参考资料.md",
+        "mcu-book/book/F-常见问题.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "来源/答案/术语与正文一致，专用附录不造第二真源"
+    },
+    {
+      "id": "B23",
+      "part": "appendices",
+      "files": [
+        "mcu-book/book/G-开源地图.md"
+      ],
+      "dependsOn": "pilot-acceptance-and-batch-specific-source-review",
+      "goal": "来源/答案/术语与正文一致，专用附录不造第二真源"
+    }
+  ]
+}

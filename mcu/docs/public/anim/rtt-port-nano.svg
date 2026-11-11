@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RT-Thread Nano 移植霸天虎：四件套装配</title>
+  <desc>RT-Thread Nano 手动移植到 STM32F407 的四件套装配过程：①内核源码（src/+libcpu/arm/cortex-m4，含调度器/IPC/内存/对象管理）就位——内核无关板卡；②rtconfig.h 裁剪配置（RT_USING_MUTEX 等开关决定编进哪些模块）；③board.c 实现 rt_hw_board_init（时钟/SysTick 1ms tick/堆边界符号——板卡知识全在这）；④三异常接管（PendSV/SysTick/HardFault，与 FreeRTOS F8 同款），SysTick 双重身份：rt_hw_board_init 配好 1ms tick，ISR 调 rt_tick_increase 喂调度器。装配顺序：源码→rtconfig→board.c→异常→startup→finsh 响=移植功成。图上有一个真在跑的装配零件：四件套从左侧依次飞入右侧的 Nano 内核装配槽，每件就位亮起一行。内核无关板卡，板卡全在 board.c——这是 Nano 的核心哲学。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RT-Thread Nano 移植：四件套装配</text>
+  <text x="24" y="50" font-size="12" fill="#666">内核无关板卡，板卡全在 board.c；finsh 一响，移植功成</text>
+
+  <!-- 四件套零件（常驻） -->
+  <rect x="40" y="70" width="180" height="60" rx="8" fill="#dbe7ff" stroke="#3451b2"/>
+  <text x="56" y="92" font-size="13" font-weight="bold" fill="#3451b2">① 内核源码</text>
+  <text x="56" y="110" font-size="11" fill="#666">src/ + libcpu/arm/cortex-m4</text>
+  <text x="56" y="124" font-size="11" fill="#94a3b8">调度器/IPC/内存/对象</text>
+
+  <rect x="40" y="140" width="180" height="60" rx="8" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="56" y="162" font-size="13" font-weight="bold" fill="#1a7f56">② rtconfig.h</text>
+  <text x="56" y="180" font-size="11" fill="#666">裁剪配置开关</text>
+  <text x="56" y="194" font-size="11" fill="#94a3b8">RT_USING_MUTEX 等</text>
+
+  <rect x="40" y="210" width="180" height="60" rx="8" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="56" y="232" font-size="13" font-weight="bold" fill="#d97706">③ board.c</text>
+  <text x="56" y="250" font-size="11" fill="#666">rt_hw_board_init</text>
+  <text x="56" y="264" font-size="11" fill="#94a3b8">时钟/SysTick/堆边界</text>
+
+  <rect x="40" y="280" width="180" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="56" y="302" font-size="13" font-weight="bold" fill="#333">④ 三异常接管</text>
+  <text x="56" y="320" font-size="11" fill="#666">PendSV/SysTick/HardFault</text>
+  <text x="56" y="334" font-size="11" fill="#94a3b8">与 F8 同款</text>
+
+  <!-- Nano 内核装配槽（常驻） -->
+  <rect x="440" y="70" width="240" height="270" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8 4"/>
+  <text x="560" y="92" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">Nano 内核装配槽</text>
+  <line x1="460" y1="100" x2="660" y2="100" stroke="#e2e8f0"/>
+
+  <!-- 装配进度条（连续运动：四件依次就位） -->
+  <line x1="220" y1="350" x2="440" y2="350" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="220" cy="350" r="7" fill="#3451b2">
+    <animate attributeName="cx" values="220;440;440;220" keyTimes="0;0.86;0.93;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="330" y="370" font-size="11" fill="#94a3b8" text-anchor="middle">装配零件飞入槽位</text>
+
+  <!-- 阶段一：内核源码就位 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="460" y="108" width="200" height="50" rx="6" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="560" y="128" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">① 内核源码就位</text>
+    <text x="560" y="145" font-size="11" fill="#666" text-anchor="middle">src/+libcpu——调度/IPC/内存/对象</text>
+    <text x="560" y="160" font-size="11" fill="#3eaf7c" text-anchor="middle">内核无关板卡，这是通用件</text>
+  </g>
+
+  <!-- 阶段二：rtconfig.h 裁剪配置 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="460" y="108" width="200" height="50" rx="6" fill="#dbe7ff" stroke="#3451b2" opacity="0.3"/>
+    <text x="560" y="128" font-size="11" fill="#94a3b8" text-anchor="middle">① 内核源码 ✓</text>
+    <rect x="460" y="166" width="200" height="50" rx="6" fill="#d8f3e5" stroke="#3eaf7c"/>
+    <text x="560" y="186" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">② rtconfig.h 裁剪</text>
+    <text x="560" y="203" font-size="11" fill="#666" text-anchor="middle">RT_USING_MUTEX/TIMER 等开关</text>
+    <text x="560" y="218" font-size="11" fill="#3eaf7c" text-anchor="middle">编进哪些模块，一文件定</text>
+  </g>
+
+  <!-- 阶段三：board.c 板卡知识 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="460" y="108" width="200" height="50" rx="6" fill="#dbe7ff" stroke="#3451b2" opacity="0.3"/>
+    <text x="560" y="128" font-size="11" fill="#94a3b8" text-anchor="middle">① 内核源码 ✓</text>
+    <rect x="460" y="166" width="200" height="50" rx="6" fill="#d8f3e5" stroke="#3eaf7c" opacity="0.3"/>
+    <text x="560" y="186" font-size="11" fill="#94a3b8" text-anchor="middle">② rtconfig.h ✓</text>
+    <rect x="460" y="224" width="200" height="50" rx="6" fill="#fdf0d5" stroke="#d97706"/>
+    <text x="560" y="244" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">③ board.c 板卡知识</text>
+    <text x="560" y="261" font-size="11" fill="#666" text-anchor="middle">rt_hw_board_init：时钟/SysTick/堆</text>
+    <text x="560" y="276" font-size="11" fill="#d97706" text-anchor="middle">板卡知识全在这——这是板件</text>
+  </g>
+
+  <!-- 阶段四：三异常接管 + finsh 响 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="460" y="108" width="200" height="50" rx="6" fill="#dbe7ff" stroke="#3451b2" opacity="0.3"/>
+    <text x="560" y="128" font-size="11" fill="#94a3b8" text-anchor="middle">① 内核源码 ✓</text>
+    <rect x="460" y="166" width="200" height="50" rx="6" fill="#d8f3e5" stroke="#3eaf7c" opacity="0.3"/>
+    <text x="560" y="186" font-size="11" fill="#94a3b8" text-anchor="middle">② rtconfig.h ✓</text>
+    <rect x="460" y="224" width="200" height="50" rx="6" fill="#fdf0d5" stroke="#d97706" opacity="0.3"/>
+    <text x="560" y="244" font-size="11" fill="#94a3b8" text-anchor="middle">③ board.c ✓</text>
+    <rect x="460" y="282" width="200" height="50" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="560" y="302" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">④ 三异常 + finsh 响</text>
+    <text x="560" y="319" font-size="11" fill="#666" text-anchor="middle">PendSV/SysTick/HardFault 接管</text>
+    <text x="560" y="334" font-size="11" fill="#3eaf7c" text-anchor="middle">msh /> 提示符出=移植功成</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">① 内核源码就位：通用件，与板卡无关</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">② rtconfig.h 裁剪：编进哪些模块一文件定</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">③ board.c 板卡知识：时钟/SysTick/堆边界</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">④ 三异常接管+finsh响：msh /> 出=移植功成</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,428)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

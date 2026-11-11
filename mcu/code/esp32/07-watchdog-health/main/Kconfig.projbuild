@@ -1,0 +1,5 @@
+menu "Reliability teaching"
+config RELIABILITY_TEST_FAULTS
+    bool "Allow explicit TEST_FAULT requests"
+    default n
+endmenu

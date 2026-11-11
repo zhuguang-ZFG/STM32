@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460">
+  <title>优先级继承：互斥量如何解决优先级反转</title>
+  <desc>四阶段动画展示优先级反转问题及互斥量的优先级继承机制：高优先级任务被低优先级任务阻塞时，低优先级任务临时继承高优先级，快速释放锁后恢复原优先级。</desc>
+  
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">优先级继承：互斥量如何解决优先级反转</text>
+  <text x="24" y="50" font-size="12" fill="#666">高优先级任务被阻塞时，低优先级任务临时继承高优先级</text>
+  
+  <!-- Stage indicators -->
+  <g transform="translate(648, 52)" fill="#3451b2">
+    <circle r="5" opacity="1">
+      <animate attributeName="opacity" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="18" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="36" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+    <circle cx="54" r="5" opacity="0.2">
+      <animate attributeName="opacity" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </circle>
+  </g>
+  
+  <!-- Stage titles -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1">
+      <text x="24" y="80">阶段 1：低优先级持有锁</text>
+      <animate attributeName="opacity" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 2：高优先级被阻塞</text>
+      <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 3：继承优先级</text>
+      <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    <g opacity="0">
+      <text x="24" y="80">阶段 4：释放锁恢复</text>
+      <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+  </g>
+  
+  <!-- Task L (Low priority) -->
+  <g transform="translate(80, 120)">
+    <rect x="0" y="0" width="180" height="80" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+    <text x="90" y="25" text-anchor="middle" font-size="14" fill="#333" font-weight="600">任务 L（低优先级）</text>
+    <text x="90" y="45" text-anchor="middle" font-size="12" fill="#666">优先级 = 5</text>
+    <g>
+      <text x="90" y="65" text-anchor="middle" font-size="12" fill="#3eaf7c" font-weight="600">持有锁 🔒</text>
+      <animate attributeName="opacity" values="1;1;1;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+  </g>
+  
+  <!-- Task M (Medium priority) -->
+  <g transform="translate(280, 120)">
+    <rect x="0" y="0" width="180" height="80" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+    <text x="90" y="25" text-anchor="middle" font-size="14" fill="#333" font-weight="600">任务 M（中优先级）</text>
+    <text x="90" y="45" text-anchor="middle" font-size="12" fill="#666">优先级 = 10</text>
+    <g opacity="0.3">
+      <text x="90" y="65" text-anchor="middle" font-size="12" fill="#d97706">就绪</text>
+    </g>
+  </g>
+  
+  <!-- Task H (High priority) -->
+  <g transform="translate(480, 120)">
+    <rect x="0" y="0" width="180" height="80" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="8"/>
+    <text x="90" y="25" text-anchor="middle" font-size="14" fill="#333" font-weight="600">任务 H（高优先级）</text>
+    <text x="90" y="45" text-anchor="middle" font-size="12" fill="#666">优先级 = 15</text>
+    <g>
+      <text x="90" y="65" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="600">
+        <animate attributeName="textContent" values="就绪;阻塞;阻塞;就绪;就绪" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+      </text>
+    </g>
+  </g>
+  
+  <!-- Priority inheritance visualization -->
+  <g transform="translate(80, 240)">
+    <rect x="0" y="0" width="580" height="100" fill="#fdf0d5" stroke="#d97706" stroke-width="2" rx="8"/>
+    <text x="290" y="25" text-anchor="middle" font-size="13" fill="#d97706" font-weight="600">优先级继承机制</text>
+    
+    <!-- Stage 1: Normal -->
+    <g opacity="1">
+      <text x="290" y="50" text-anchor="middle" font-size="12" fill="#333">任务 L 以优先级 5 运行</text>
+      <text x="290" y="70" text-anchor="middle" font-size="11" fill="#666">持有互斥量锁</text>
+      <animate attributeName="opacity" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    
+    <!-- Stage 2: Blocked -->
+    <g opacity="0">
+      <text x="290" y="50" text-anchor="middle" font-size="12" fill="#333">任务 H 请求锁 → 被阻塞</text>
+      <text x="290" y="70" text-anchor="middle" font-size="11" fill="#dc2626">优先级反转：M 抢占了 L，H 等待更久</text>
+      <animate attributeName="opacity" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    
+    <!-- Stage 3: Inheritance -->
+    <g opacity="0">
+      <text x="290" y="50" text-anchor="middle" font-size="12" fill="#333">任务 L 继承优先级 15</text>
+      <text x="290" y="70" text-anchor="middle" font-size="11" fill="#3eaf7c">L 以优先级 15 运行，M 无法抢占</text>
+      <animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+    
+    <!-- Stage 4: Release -->
+    <g opacity="0">
+      <text x="290" y="50" text-anchor="middle" font-size="12" fill="#333">任务 L 释放锁 → 恢复优先级 5</text>
+      <text x="290" y="70" text-anchor="middle" font-size="11" fill="#3451b2">任务 H 获得锁，继续执行</text>
+      <animate attributeName="opacity" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="16s" repeatCount="indefinite" calcMode="discrete"/>
+    </g>
+  </g>
+  
+  <!-- Timeline with continuous motion -->
+  <g transform="translate(80, 370)">
+    <text x="0" y="0" font-size="12" fill="#333" font-weight="600">时间线</text>
+    
+    <!-- Timeline bar -->
+    <rect x="0" y="10" width="580" height="8" fill="#e2e8f0" rx="4"/>
+    
+    <!-- Progress indicator -->
+    <rect x="0" y="10" width="0" height="8" fill="#3451b2" rx="4">
+      <animate attributeName="width" values="0;580;580" keyTimes="0;0.8;1" dur="16s" repeatCount="indefinite"/>
+    </rect>
+    
+    <!-- Key events -->
+    <circle cx="0" cy="14" r="6" fill="#3eaf7c"/>
+    <text x="0" y="35" text-anchor="middle" font-size="10" fill="#333">L 获锁</text>
+    
+    <circle cx="145" cy="14" r="6" fill="#dc2626"/>
+    <text x="145" y="35" text-anchor="middle" font-size="10" fill="#333">H 阻塞</text>
+    
+    <circle cx="290" cy="14" r="6" fill="#d97706"/>
+    <text x="290" y="35" text-anchor="middle" font-size="10" fill="#333">继承</text>
+    
+    <circle cx="435" cy="14" r="6" fill="#3451b2"/>
+    <text x="435" y="35" text-anchor="middle" font-size="10" fill="#333">释放</text>
+  </g>
+  
+  <!-- Key insight box -->
+  <g transform="translate(80, 420)">
+    <rect x="0" y="0" width="580" height="30" fill="#dbe7ff" stroke="#3451b2" stroke-width="2" rx="8"/>
+    <text x="290" y="20" text-anchor="middle" font-size="12" fill="#3451b2" font-weight="600">核心洞察：优先级继承让低优先级任务快速释放锁，避免高优先级任务长时间等待</text>
+  </g>
+</svg>

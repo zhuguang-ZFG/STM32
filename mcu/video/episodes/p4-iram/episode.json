@@ -1,0 +1,681 @@
+{
+  "id": "p4-iram",
+  "title": "Cache 一关，你的中断服务函数就不存在了：IRAM 纪律",
+  "badge": "P4",
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+2%",
+  "fps": 30,
+  "sampleRate": 44100,
+  "channels": 2,
+  "formatVersion": 2,
+  "ttsLexicon": {
+    "0x40374000": "四零三七四零零零",
+    "0x42000020": "四二零零零零二零",
+    "0x403766ac": "四零三七六六 ac",
+    "0x4037668c": "四零三七六六八 c",
+    "0x40376698": "四零三七六六九八",
+    "0x40376668": "四零三七六六六八",
+    "0x42008f08": "四二零零八 f 零八",
+    "0x42008f1c": "四二零零八 f 一 c",
+    "0x3c028810": "三 c 零二八八一零",
+    "0x3fc95710": "三 f c 九五七一零",
+    "0x57700": "五七七零零",
+    "0x7fffe0": "七 f f f e 零",
+    "0x3fc88000": "三 f c 八八零零零",
+    "0x53700": "五三七零零",
+    "0x3c000020": "三 c 零零零零二零",
+    "0x1ffffe0": "一 f f f f e 零",
+    "1<<10": "一左移十位",
+    "5.5.2": "五点五点二",
+    "IRAM_ATTR": "I RAM 属性",
+    "ESP_INTR_FLAG_IRAM": "ESP 中断标志 IRAM",
+    "ETS_MAX_INTR_SOURCE": "E T S max interrupt source",
+    "ETS_DMA_EXTMEM_REJECT_SOURCE": "E T S D M A 外部存储拒绝源",
+    "helper_far": "helper far",
+    "helper_near": "helper near",
+    "isr_plain": "I S R plain",
+    "isr_leaky": "I S R leaky",
+    "isr_tight": "I S R tight",
+    "isr_rodata": "I S R rodata",
+    "k_table": "k table",
+    "callx8": "call x 八",
+    "call8": "call 八",
+    "l32r": "L 三二 R",
+    "retw.n": "ret w",
+    "FromISR": "from I S R",
+    "DROM": "D ROM",
+    "DRAM": "D RAM",
+    "SRAM": "S RAM",
+    "IRAM": "I RAM",
+    "Cache": "缓存",
+    "IRAM-safe": "I RAM safe",
+    "objdump": "obj dump",
+    "nm": "N M",
+    "0x": "零 x "
+  },
+  "cover": {
+    "variant": "vs",
+    "kicker": "通往单片机之路 · P4",
+    "line1": "同一段 ISR",
+    "line2": "两个地址",
+    "vs": {
+      "left": "内部 SRAM：isr_tight 0x403766ac",
+      "right": "Flash 窗口：isr_plain 0x42008f08",
+      "labels": [
+        "FROM NM",
+        "FROM NM"
+      ]
+    },
+    "tag": "本次链接 · nm 与反汇编",
+    "siteNote": "链接器事实 · 日志逐行可查",
+    "proof": "! 0x403766ac  isr_tight  → iram0_0_seg\n! 0x42008f08  isr_plain  → iram0_2_seg\n! isr_leaky：l32r 取 42008f1c，callx8 跳过去",
+    "proofShort": "! 0x403766ac → IRAM\n! 0x42008f08 → Flash\n! l32r 42008f1c：断链",
+    "num": "0x42008f08",
+    "numNote": "本次链接 nm 的落址：iram0_2_seg，Flash 映射窗口",
+    "sizes": {
+      "bilibili": [
+        1920,
+        1200
+      ],
+      "douyin": [
+        1080,
+        1440
+      ],
+      "zhihu": [
+        1920,
+        1080
+      ],
+      "xiaohongshu": [
+        1440,
+        1080
+      ]
+    }
+  },
+  "platforms": {
+    "bilibili": {
+      "size": [
+        1920,
+        1080
+      ],
+      "targetSec": [
+        480,
+        720
+      ],
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "anim-normal",
+          "title": "两个地址"
+        },
+        {
+          "at": "seven-syms",
+          "title": "入场券"
+        },
+        {
+          "at": "promise",
+          "title": "承诺与矩阵"
+        },
+        {
+          "at": "size-bill",
+          "title": "账单与收束"
+        }
+      ],
+      "scenes": [
+        {
+          "id": "hook-01",
+          "kind": "hook",
+          "title": "同一段 ISR，两个地址",
+          "sub": "都编译通过、都进镜像；差别只在 Cache 关掉那一刻",
+          "codeLabel": "sh probe.sh 第 4 段 · 本次链接的 nm",
+          "code": "  0x403766ac  isr_tight   → iram0_0_seg\n! 0x42008f08  isr_plain   → iram0_2_seg\n\n  iram0_0_seg  从 0x40374000 起：内部 SRAM，可执行\n! iram0_2_seg  从 0x42000020 起：Flash 映射窗口\n\n[[ Cache 一关，0x42008f08 这段就取不到指 ]]\n~ 中断是异步的：它偏偏挑那一刻来",
+          "narration": "同一次链接，两个中断函数两个地址：一个在内部 SRAM，一个在 Flash 窗口。都编译通过、都进镜像；Cache 一关，后者就取不到指。",
+          "emphasis": [
+            "两个地址"
+          ]
+        },
+        {
+          "id": "three-nums",
+          "kind": "card",
+          "kicker": "先立三把尺子",
+          "title": "三个数管全片",
+          "bullets": [
+            "0x40374000 —— 本次链接 iram0_0_seg 的起点，nm 归类靠它",
+            "99 —— ETS_MAX_INTR_SOURCE，编译器打印，编号 0–98",
+            "16384 —— size 工具报的 IRAM 总量，已用 100.0%"
+          ],
+          "narration": "先记三个数。0x40374000 是本次链接内部可执行段的起点，判落址拿它撞区间表。99 是编译器打印的中断源上限，编号从 0 排到 98。16384 是 size 工具报的 IRAM 总量，已经用到 100.0%。三个都是工具链与链接器输出，不是板测。结论：落址、矩阵、预算，各一把尺子。",
+          "emphasis": [
+            "99"
+          ]
+        },
+        {
+          "id": "anim-normal",
+          "kind": "anim",
+          "anim": "iram-discipline",
+          "t0": 0,
+          "t1": 3,
+          "smil": "stretch",
+          "title": "常态：取指走映射窗口",
+          "note": "第一幕：代码在 Flash，经 Cache 映射执行",
+          "narration": "第一幕看常态。应用代码和常量大多住外部 Flash，经 Cache 映射窗口取指：命中直接拿到指令，未命中就去 Flash 读，慢一点但读得到。左边内部 SRAM 不经过窗口，永远可达。先把格局立住，下一幕关窗口。",
+          "emphasis": [
+            "窗口"
+          ]
+        },
+        {
+          "id": "anim-window",
+          "kind": "anim",
+          "anim": "iram-discipline",
+          "t0": 3,
+          "t1": 6,
+          "smil": "stretch",
+          "title": "窗口关上：写 Flash 的代价",
+          "note": "第二幕：写 Flash 时 Cache 暂时关闭",
+          "narration": "第二幕关窗口。闪存要写，就得先把映射窗口关掉；提交配置、空中升级、直接写分区，全走这条路。就在这段闭眼的时间里，按键中断来了。问题不是会不会遇到，而是你的哪个中断偏偏挑这一刻。",
+          "emphasis": [
+            "窗口"
+          ]
+        },
+        {
+          "id": "anim-fate",
+          "kind": "anim",
+          "anim": "iram-discipline",
+          "t0": 6,
+          "t1": 9,
+          "smil": "stretch",
+          "title": "两种命运：推迟，或者崩",
+          "note": "第三幕：声明与不声明，两条路",
+          "narration": "第三幕分岔。挂中断时没声明 IRAM 安全，系统会把这次中断按住，等 Cache 恢复再调用，安全，但延迟不由你控。声明了，系统不再推迟；链条上只要有一环还在 Flash，就不是变慢，是当场异常。",
+          "emphasis": [
+            "推迟"
+          ]
+        },
+        {
+          "id": "two-macros",
+          "kind": "code",
+          "title": "两个宏：一个搬家，一个承诺",
+          "codeLabel": "esp_attr.h:23 · 属性宏只改落址",
+          "code": "#define IRAM_ATTR \\\n  _SECTION_ATTR_IMPL(\".iram1\", __COUNTER__)\n\n→ 把函数塞进 .iram1 段\n→ 链接脚本把它排进内部 SRAM\n! 不是加速，是搬家\n~ 管不到被调函数，也管不到常量",
+          "codeBLabel": "esp_intr_alloc.h:42 · 标志位改的是调度",
+          "codeB": "#define ESP_INTR_FLAG_IRAM (1<<10)\n///< ISR can be called if cache is disabled\n\n! 注释就是承诺：关 Cache 也能调用\n~ 系统的回应：那就不推迟你\n\n  一个改落址，一个改调度\n! 两件事，别混成一件",
+          "narration": "两个宏从官方源码里现挖，文件行号都在屏幕上。属性宏展开只做一件事：把函数塞进 .iram1 段，位置交给链接脚本，是搬家不是加速。标志位注释写得很直白：Cache 关掉时这个中断仍可以被调用。一个改落址，一个改调度，很多人只写了前一个。",
+          "emphasis": [
+            "搬家"
+          ]
+        },
+        {
+          "id": "regions",
+          "kind": "code",
+          "title": "判据是一张区间表",
+          "codeLabel": "本次构建 .map 的 Memory Configuration（摘四段）",
+          "code": "  iram0_0_seg   0x40374000  +0x57700\n  iram0_2_seg   0x42000020  +0x7fffe0\n  dram0_0_seg   0x3fc88000  +0x53700\n  drom0_0_seg   0x3c000020  +0x1ffffe0\n\n  另有 rtc 三段与 extern_ram 一段（略）\n! 归类 = 符号地址撞区间，脚本不写死地址",
+          "narration": "函数住哪？问链接器。本次 .map 有节内存配置，列着真正用的区间：内部可执行段从 0x40374000 起，Flash 取指窗口从 0x42000020 起，常量窗口从 0x3c000020 起。脚本读这张表，拿符号地址去撞。结论：判据是地址落在哪段，不是名字。",
+          "emphasis": [
+            "0x42000020"
+          ]
+        },
+        {
+          "id": "seven-syms",
+          "kind": "code",
+          "title": "七个符号，四种写法",
+          "codeLabel": "nm 指认 + 按上一场区间归类",
+          "code": "  0x42008f08  isr_plain    → iram0_2_seg\n  0x42008f1c  helper_far   → iram0_2_seg\n  0x4037668c  isr_leaky    → iram0_0_seg\n  0x40376698  helper_near  → iram0_0_seg\n  0x403766ac  isr_tight    → iram0_0_seg\n  0x40376668  isr_rodata   → iram0_0_seg\n  0x3c028810  k_table      → drom0_0_seg\n\n! 不标 / 只标本体 / 整链标 / 常量没进",
+          "narration": "七个符号摆全四种写法。isr_plain 什么都不标，整个落在 Flash 映射段。isr_leaky 本体标了，地址在内部 SRAM，可它调的 helper_far 在 Flash。isr_tight 与 helper_near 都在内部。isr_rodata 本体也在内部，读的 k_table 却在 DROM。结论：标属性只决定自己，决定不了别人。",
+          "emphasis": [
+            "helper_far"
+          ]
+        },
+        {
+          "id": "disasm-chain",
+          "kind": "code",
+          "title": "断链藏在跳转目标里",
+          "codeLabel": "objdump：isr_leaky 的四条指令",
+          "code": "4037668c <isr_leaky>:\n  4037668c:  entry   a1, 32\n! 4037668f:  l32r    a8, 403746a0\n!            (42008f1c <helper_far>)\n! 40376692:  callx8  a8\n  40376695:  retw.n\n\n! 一条 l32r 取地址，一条 callx8 跳过去\n~ 目标 0x42008f1c 落在 iram0_2_seg",
+          "codeBLabel": "同一次链接：isr_tight 的三条指令",
+          "codeB": "403766ac <isr_tight>:\n  403766ac:  entry   a1, 32\n  403766af:  call8   40376698 <helper_near>\n  403766b2:  retw.n\n\n! 直接调用，目标就在 iram0_0_seg\n  没有取地址那一步\n\n! 两条指令序列，两种命运",
+          "narration": "这是本集最值钱的画面。isr_leaky 每条指令都在内部 SRAM，可它先 l32r 取字面池里的 0x42008f1c，正是 helper_far，再用 callx8 跳过去。Cache 关着，进门第一笔取指就落空。isr_tight 用 call8 直调 0x40376698，目标同段。结论：断链不写在段名里，藏在跳转目标里，只能反汇编。",
+          "emphasis": [
+            "callx8"
+          ]
+        },
+        {
+          "id": "plain-flash",
+          "kind": "code",
+          "title": "不标的那个：整段在 Flash",
+          "codeLabel": "objdump：isr_plain 的八条指令",
+          "code": "42008f08 <isr_plain>:\n  42008f08:  entry   a1, 32\n  42008f0b:  l32r    a9, 420009b0\n             (3fc95710 <g_hits>)\n  42008f0e:  memw\n  42008f11:  l32i.n  a8, a9, 0\n  42008f13:  addi.n  a8, a8, 1\n  42008f15:  memw\n  42008f18:  s32i.n  a8, a9, 0\n  42008f1a:  retw.n\n\n! 整段在 0x42008f08，iram0_2_seg\n~ 每一次取指都要过 Cache",
+          "narration": "不标的那个也拆开：整段住 0x42008f08，在 Flash 映射窗口；一条 l32r 取计数器地址，几条读写，一条 retw。单看代码完全正常。关 Cache 时，这整段取指都没有路。结论：它没进 IRAM，系统只能推迟这次中断，或者声明 IRAM 安全后撞上异常。",
+          "emphasis": [
+            "0x42008f08"
+          ]
+        },
+        {
+          "id": "reach-count",
+          "kind": "card",
+          "kicker": "体检单",
+          "title": "伸手次数：1、0、1",
+          "bullets": [
+            "isr_leaky —— 往 Flash 伸手 1 处：l32r 取出的 helper_far",
+            "isr_tight —— 往 Flash 伸手 0 处：call8 目标是 helper_near",
+            "isr_rodata —— 读 DROM 常量 1 处：k_table"
+          ],
+          "narration": "脚本把每条链的地址引用数了一遍。isr_leaky 一处，目标是 Flash 的 helper_far；isr_tight 零处，整条链都在内部；isr_rodata 一处，读的是 DROM 常量 k_table。这三个数不是估算，是数出来的。结论：伸手次数就是体检单，零处才算 IRAM-safe。",
+          "emphasis": [
+            "0 处"
+          ]
+        },
+        {
+          "id": "rodata-link",
+          "kind": "code",
+          "title": "代码进去了，数还留在外面",
+          "codeLabel": "objdump：isr_rodata 的取数与取常量",
+          "code": "40376668 <isr_rodata>:\n  40376668:  entry   a1, 32\n  4037666b:  l32r    a9, 40374698\n             (3fc95710 <g_hits>)\n  40376671:  l32i.n  a8, a9, 0\n  40376673:  extui   a8, a8, 0, 2\n! 40376676:  l32r    a10, 4037469c\n!            (3c028810 <k_table>)\n  40376679:  addx4   a8, a8, a10\n  4037667c:  l32i.n  a10, a8, 0\n\n! g_hits 在 0x3fc95710，按区间表归入 dram0_0_seg\n! k_table 在 0x3c028810，归入 drom0_0_seg",
+          "narration": "第四环最易漏。函数本体在内部 SRAM，进门先读计数器 g_hits，地址 0x3fc95710，按区间表在 DRAM，关 Cache 也读得到。紧接着 l32r 取出 0x3c028810 的 k_table，在 DROM 常量窗口。取指没问题，取常数还是要过同一扇被关掉的门。结论：函数进 IRAM，不等于它读的数据也进了。",
+          "emphasis": [
+            "k_table"
+          ]
+        },
+        {
+          "id": "section-names",
+          "kind": "code",
+          "title": "段名是搬家的回执",
+          "codeLabel": "map：每个符号真正所在的输入段",
+          "code": "  isr_plain     .text.isr_plain\n  helper_far    .text.helper_far\n  k_table       .rodata.k_table\n  isr_leaky     .iram1.0\n  helper_near   .iram1.1\n  isr_tight     .iram1.2\n  isr_rodata    .iram1.3\n\n! 宏里用了 __COUNTER__\n~ 每展开一次，后缀加一\n! 所以是 .iram1.0 .1 .2 .3，不是同名",
+          "narration": "宏展开成什么，段名记得最清楚。没标的三个在普通代码段和只读数据段；标了的四个，都带 .iram1 前缀和数字后缀。宏里用了编译器计数器，每展开一次加一，各自成段。结论：以后在 .map 里搜这个前缀，就能数出哪些函数被你钉进了 IRAM。",
+          "emphasis": [
+            ".iram1"
+          ]
+        },
+        {
+          "id": "anim-right",
+          "kind": "anim",
+          "anim": "iram-discipline",
+          "t0": 9,
+          "t1": 12,
+          "smil": "stretch",
+          "title": "正解：整条链一起搬",
+          "note": "第四幕：要么全搬，要么老实被推迟",
+          "narration": "第四幕给正解。要么承认它不需要在窗口里跑，不声明，让系统推迟；要么一次做全：本体、被调函数、读到的常量，整条链一起搬进内部 SRAM，再声明标志位。没有第三条路。结论：IRAM-safe 是整条链的属性，不是单个函数的事。",
+          "emphasis": [
+            "整条链"
+          ]
+        },
+        {
+          "id": "checklist",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "落地清单",
+          "title": "五关过完，还要验收",
+          "bullets": [
+            "本体标属性；被它调用的每个非内联函数也标，别赌内联",
+            "它读的 const 表和字符串一起搬，或放进内部数据区",
+            "里面不打印、不动态分配、不碰可能写 Flash 的接口",
+            "跨中断和任务传数据，只用带 FromISR 后缀的接口",
+            "改完反汇编一遍，拿每条跳转目标去撞区间表"
+          ],
+          "narration": "纪律收成五关。一，它调的每个未内联函数也要标，别赌编译器内联。二，它读的常量与字符串要么搬进去，要么放内部数据区。三，不打印、不动态分配、不碰任何可能写 Flash 的东西。四，跨中断与任务传话，只用带 FromISR 的接口。五最实际：改完别肉眼验收，反汇编一遍，拿每条跳转目标去撞区间表。结论：前四关是写代码，第五关是验收。",
+          "emphasis": [
+            "FromISR"
+          ]
+        },
+        {
+          "id": "promise",
+          "kind": "card",
+          "tone": "danger",
+          "kicker": "承诺的代价",
+          "title": "不声明与声明，两条路",
+          "bullets": [
+            "不声明 IRAM 安全：Cache 关着时系统推迟这次中断，安全，延迟不可控",
+            "声明了却没做到：系统不再推迟，链上一环在 Flash，就是当场异常",
+            "1<<10 只是声明，不是能力：它不会替你把函数搬进 IRAM"
+          ],
+          "narration": "这个标志位买的是延迟，抵押的是正确性。不声明 IRAM 安全，系统会在写 Flash 时按住这次中断，等 Cache 恢复再调用；安全，但延迟不由你控。声明了，系统不再推迟，链上任何一环留在 Flash，都变成当场异常。结论：1<<10 只是声明，不是能力。",
+          "emphasis": [
+            "1<<10"
+          ]
+        },
+        {
+          "id": "irq-sources",
+          "kind": "code",
+          "title": "中断矩阵：99 个槽位",
+          "codeLabel": "soc/esp32s3/include/soc/interrupts.h 第 18–117 行 · 编译器打印",
+          "code": "    0  ETS_WIFI_MAC_INTR_SOURCE\n   16  ETS_GPIO_INTR_SOURCE\n   57  ETS_SYSTIMER_TARGET0_INTR_SOURCE\n   57  ETS_SYSTIMER_TARGET0_EDGE_INTR_SOURCE\n   98  ETS_DMA_EXTMEM_REJECT_SOURCE\n   99  ETS_MAX_INTR_SOURCE  ← number of interrupt sources\n\n! 98 个名字，只覆盖 95 个编号\n! 23 / 33 / 34 / 46 没有名字（保留位）\n! 57、58、59 各被两个名字占用（EDGE 同值别名）",
+          "narration": "这芯片有多少条中断线？不数行，把枚举交给编译器打印。十六号是通用输入输出，最后一个有名字的排到九十八，上限常量打印是九十九。但九十八个名字只覆盖九十五个编号：二十三、三十三、三十四、四十六没有名字，是保留位；五十七、五十八、五十九各被两个名字占用，边沿别名和本体同值。结论：九十九是槽位数，不是名字数。",
+          "emphasis": [
+            "95"
+          ]
+        },
+        {
+          "id": "irq-levels",
+          "kind": "code",
+          "title": "七个级别：位号就是级别号",
+          "codeLabel": "esp_intr_alloc.h · LEVEL 与 NMI",
+          "code": "  LEVEL1  (1<<1)  ← 最低优先级\n  LEVEL2  (1<<2)\n  LEVEL3  (1<<3)\n  LEVEL4  (1<<4)\n  LEVEL5  (1<<5)\n  LEVEL6  (1<<6)\n! NMI     (1<<7)  ← 最高，Level 7\n\n! 六个 LEVELn 的位移量都等于 n\n~ 这不是巧合，是接口约定",
+          "codeBLabel": "同一批 flag：IRAM 在第 10 位",
+          "codeB": "  IRAM  (1<<10)  ← esp_intr_alloc.h:42\n        ///< ISR can be called if cache is disabled\n\n! 位号 1–6 是级别，7 是 NMI\n! 第 10 位是特性，不是第十级\n\n  级别管谁抢谁\n! 特性管关 Cache 时叫不叫你",
+          "narration": "级别一共七档。源码里有一行提醒实现者：位移量保持原样，就等于级别号。脚本对账，一到六的位移量都跟档号撞上，再加上不可屏蔽的第七档。同一串标志位里还有特性位，内部存储安全就在第十位。最容易犯的错是拿位号当级别。结论：一到七是级别，第十位是特性，两码事。",
+          "emphasis": [
+            "1<<10"
+          ]
+        },
+        {
+          "id": "vs-nvic",
+          "kind": "code",
+          "title": "和 STM32 摆在一起",
+          "codeLabel": "两种中断入口的对照（STM32 侧按 docs/stm32/04-nvic-exti.md）",
+          "code": "                STM32F407         ESP32-S3\n  入口          NVIC 固定向量      中断矩阵：源→核→级\n  数量          编译期定死         编号 0–98 可路由\n  优先级        按位分档           7 级，位号 = 级别\n  ISR 落址      Flash 原地执行     Flash 经 Cache 映射",
+          "narration": "把两颗芯片摆在一起，标题为什么只在 ESP 这边成立就清楚了。STM32 那边闪存原地执行，取指不过缓存，代码住在哪里不是生死问题；入口是编译期定死的固定向量。ESP32-S3 这边是中断矩阵，运行时把源路由到某个核的某一档，灵活，但每个中断要自己担保落址。结论：静态向量靠编译期，矩阵靠运行时，责任更重。",
+          "emphasis": [
+            "0–98"
+          ]
+        },
+        {
+          "id": "size-bill",
+          "kind": "code",
+          "title": "搬进去要付钱：这一集的账",
+          "codeLabel": "idf.py size 输出（本次构建）",
+          "code": "  IRAM       16384  100.0%  剩余 0\n    .text    15356   93.73%\n    .vectors  1028    6.27%\n  DIRAM      55463   16.23%  (341760)\n  Flash Code 78770\n  Flash Data 41324  (.rodata 41068)\n! Total image size: 189693 bytes",
+          "codeBLabel": "链接器同一份产物的段区间",
+          "codeB": "  iram0_0_seg  0x40374000  +0x57700\n  iram0_2_seg  0x42000020  +0x7fffe0\n  drom0_0_seg  0x3c000020  +0x1ffffe0\n  dram0_0_seg  0x3fc88000  +0x53700\n\n! size 的 IRAM 桶 = 16384\n! iram0_0_seg 的区间长度 = 0x57700\n  两个分母，不是同一本账",
+          "narration": "搬进内部存储不免费，看实跑的账。IRAM 报 16384 字节、100.0%，剩零；其中指令 15356，向量表 1028。DIRAM 用了 55463，占 341760 的 16.23%，绝大部分代码仍在外部 Flash。两个口径：16384 是 size 给本工程的 IRAM 桶，0x57700 是链接器给 iram0_0_seg 的区间长度。结论：看到 100.0% 先分清分母，两个数都不是板测。",
+          "emphasis": [
+            "0x57700"
+          ]
+        },
+        {
+          "id": "budget-math",
+          "kind": "code",
+          "title": "把账加回去：15356 加 1028",
+          "codeLabel": "size 输出的两行，做一次加法",
+          "code": "  15356  .text\n+  1028  .vectors\n= 16384  IRAM 总量 → 100.0%\n\n  15356 / 16384 = 93.73%\n   1028 / 16384 =  6.27%\n  93.73% + 6.27% = 100.00%\n\n! 体积账闭合：两行加起来就是总量\n~ 另一个分母是 0x57700，不是 16384",
+          "narration": "把这两行加回去。指令 15356 加向量表 1028，正好 16384，就是 size 报的 IRAM 总量；两个百分比 93.73 和 6.27 加起来正好 100.00。账是闭合的。但别把这总量当成芯片全部 SRAM：链接器给 iram0_0_seg 的区间长度是 0x57700。结论：这一页是 size 的除法，不是板测容量。",
+          "emphasis": [
+            "16384"
+          ]
+        },
+        {
+          "id": "audit",
+          "kind": "code",
+          "title": "每个数的来历：一条命令",
+          "codeLabel": "probe.sh 的八段（本机 Windows）",
+          "code": "$ sh code/esp32/09-iram-discipline/probe.sh\n\n① 现挖两个宏 + 打印整个中断源枚举\n② idf.py build（ESP-IDF v5.5.2 / esp32s3）\n③ 从 .map 读 Memory Configuration\n④ nm 七个符号，按③的区间归类\n⑤ 每个符号所在的输入段\n⑥ objdump 四条链的跳转目标\n⑦ idf.py size 整本账\n⑧ 断言：落址 + 伸手数 + 99\n\n! 断言错一条，脚本直接非零退出",
+          "narration": "屏幕上每个数的来历。一条命令跑八段：现挖两个宏，让编译器打印枚举，真构建一次，读 .map 的区间表，拿符号表撞区间，反汇编四条链，打出体积账，最后用断言收尾。工具链是 ESP-IDF v5.5.2，目标 esp32s3，全程没有开发板。结论：地址、段长和 16 KiB 预算都是工具链与链接器的输出，不是板测。",
+          "emphasis": [
+            "v5.5.2"
+          ]
+        },
+        {
+          "id": "punch",
+          "kind": "card",
+          "tone": "gold",
+          "kicker": "一句话带走",
+          "title": "整条链，才算数",
+          "bullets": [
+            "两个地址：一个内部 SRAM，一个 Flash 窗口",
+            "标属性只是入场券：断链在 callx8 的目标里",
+            "整条链搬进 IRAM，或者老实被推迟"
+          ],
+          "narration": "三句收口。第一，同一段代码可能两个地址，差别在 Flash 映射窗口关不关。第二，标属性只是入场券，断链藏在调用指令和常量地址里，段名看不出。第三，低延迟不是免费的：不声明只是慢一点，声明了没做到就是当场异常。结论：要么整条链搬进去，要么老实被推迟。",
+          "emphasis": [
+            "入场券"
+          ]
+        },
+        {
+          "id": "cta",
+          "kind": "outro",
+          "title": "想自己跑：一条命令，不要板子",
+          "sub": "code/esp32/09-iram-discipline · sh probe.sh",
+          "bullets": [
+            "ESP-IDF v5.5.2 / esp32s3",
+            "nm / objdump / idf.py size 全在日志里",
+            "没有板级读数，也不补"
+          ],
+          "narration": "想自己动手：进这个工程，一条脚本跑完八段取证和全部断言。不需要开发板，要查的是链接器怎么摆段，编译完直接问产物。通往单片机之路 P4，这一集就讲到这。",
+          "emphasis": [
+            "一条命令"
+          ]
+        },
+        {
+          "id": "teaser",
+          "kind": "outro",
+          "title": "下一集 · P10：谁在关这个 Cache",
+          "sub": "Flash、分区表、NVS 与 OTA——把窗口关上的人",
+          "narration": "整集都在绕开那扇关着的窗口。下一集追它的源头：分区表怎么排，一次提交为什么能卡住全场，升级写到一半坏了怎么办。这一集的落址先查清——整条链在不在 IRAM，反汇编说了算。",
+          "emphasis": [
+            "Cache"
+          ]
+        }
+      ]
+    },
+    "douyin": {
+      "size": [
+        1080,
+        1920
+      ],
+      "targetSec": [
+        45,
+        75
+      ],
+      "reuseFrom": "bilibili",
+      "sections": [
+        {
+          "at": "hook-01",
+          "title": "片头"
+        },
+        {
+          "at": "seven-syms",
+          "title": "落址与断链"
+        },
+        {
+          "at": "irq-sources",
+          "title": "矩阵与账"
+        },
+        {
+          "at": "budget-math",
+          "title": "收束"
+        }
+      ],
+      "pick": [
+        "hook-01",
+        "seven-syms",
+        "disasm-chain",
+        "rodata-link",
+        "irq-sources",
+        "size-bill",
+        "budget-math",
+        "promise",
+        "punch",
+        "cta"
+      ],
+      "set": {
+        "hook-01": {
+          "title": "两个地址\n一段 ISR",
+          "sub": "Cache 一关，后一个就没了",
+          "code": "  isr_tight\n! 0x403766ac\n  → IRAM ✓\n\n! isr_plain\n! 0x42008f08\n  → Flash ✗",
+          "emphasis": [
+            "0x42008f08"
+          ]
+        },
+        "seven-syms": {
+          "title": "四种写法\n一次摆全",
+          "code": "  isr_tight    0x403766ac  IRAM\n  helper_near  0x40376698  IRAM\n! isr_leaky    0x4037668c  IRAM\n! helper_far   0x42008f1c  Flash\n! isr_rodata   0x40376668  IRAM\n! k_table      0x3c028810  DROM",
+          "emphasis": [
+            "helper_far"
+          ]
+        },
+        "disasm-chain": {
+          "title": "断链藏在\n那条跳转里",
+          "code": "<isr_leaky>:\n  entry a1,32\n! l32r a8,\n!  (42008f1c\n!   <helper_far>)\n! callx8 a8\n\n<isr_tight>:\n  call8 40376698",
+          "codeB": "",
+          "emphasis": [
+            "callx8"
+          ]
+        },
+        "rodata-link": {
+          "title": "函数进去了\n数还在外面",
+          "code": "<isr_rodata>:\n  l32r a9, (3fc95710)\n  l32i.n a8, a9, 0\n! l32r a10,\n!  (3c028810 <k_table>)\n! addx4 a8, a8, a10",
+          "emphasis": [
+            "k_table"
+          ]
+        },
+        "irq-sources": {
+          "title": "99 个槽位\n不是 99 个名字",
+          "code": "  0  ETS_WIFI_MAC_INTR_SOURCE\n 57  TARGET0_INTR_SOURCE\n! 57  TARGET0_EDGE_INTR_SOURCE\n 98  ETS_DMA_EXTMEM_REJECT_SOURCE\n 99  ETS_MAX_INTR_SOURCE\n\n! 98 个名字 → 95 个编号\n! 23/33/34/46 保留\n! 57/58/59 是别名",
+          "emphasis": [
+            "95"
+          ]
+        },
+        "size-bill": {
+          "title": "IRAM 100.0%\n分母是谁",
+          "code": "IRAM     16384  100.0%\n  .text  15356   93.73%\n  .vec    1028    6.27%\nDIRAM    55463   16.23%",
+          "codeBLabel": "两个分母",
+          "codeB": "iram0_0_seg\n  0x40374000 +0x57700\n\n! 16384 是 size 桶\n! 0x57700 是链接器区间",
+          "emphasis": [
+            "0x57700"
+          ]
+        },
+        "budget-math": {
+          "title": "15356 加 1028\n正好 16384",
+          "code": "  15356  .text\n+  1028  .vectors\n= 16384\n\n  93.73% + 6.27% = 100.00%",
+          "emphasis": [
+            "16384"
+          ]
+        },
+        "promise": {
+          "title": "不声明推迟\n声明了会崩",
+          "bullets": [
+            "不声明：系统推迟，安全",
+            "声明没做到：当场异常",
+            "1<<10 只是声明"
+          ],
+          "emphasis": [
+            "1<<10"
+          ]
+        },
+        "punch": {
+          "title": "整条链\n才算数",
+          "bullets": [
+            "两个地址：SRAM 与 Flash",
+            "入场券不等于安全",
+            "全搬，或者被推迟"
+          ],
+          "emphasis": [
+            "入场券"
+          ]
+        },
+        "cta": {
+          "title": "一条脚本\n全部证据",
+          "sub": "code/esp32/09-iram-discipline · sh probe.sh",
+          "bullets": [
+            "ESP-IDF v5.5.2 / esp32s3",
+            "没有开发板",
+            "断言错一条就退出"
+          ],
+          "emphasis": [
+            "v5.5.2"
+          ]
+        }
+      },
+      "narration": {
+        "hook-01": "同一次链接，两个 ISR 两个地址：内部 SRAM、Flash。",
+        "seven-syms": "七个符号四种写法：不标、只标本体、整链标、常量没进。",
+        "disasm-chain": "本体在 IRAM，l32r 取的 helper_far 在 Flash，callx8 断链。",
+        "rodata-link": "函数进 IRAM，k_table 在 DROM；取常数一样过不去。",
+        "irq-sources": "99 个槽位，98 个名字，只覆盖 95 个编号。",
+        "size-bill": "IRAM 16384 字节、100.0%，剩 0。问分母。",
+        "budget-math": "15356 加 1028，正好 16384。",
+        "promise": "不声明只是被推迟，声明了没做到是当场崩。",
+        "punch": "整条链进 IRAM，或老实被推迟；标属性是入场券。",
+        "cta": "全部本机实跑，一条脚本，不要开发板。"
+      }
+    }
+  },
+  "publish": {
+    "bilibili": {
+      "titles": [
+        "同一段代码两个地址：Cache 一关，Flash 里那个就不存在",
+        "标了 IRAM_ATTR 还是会崩：断链藏在 l32r 与 callx8 里",
+        "IRAM 16384 字节用到 100.0%：一次本机链接的落址与账单"
+      ],
+      "intro": "这一次只认本机的一份链接产物：ESP-IDF v5.5.2，目标 esp32s3，没有开发板。七个符号一次摆全四种落址：isr_plain 在 0x42008f08（iram0_2_seg，Flash 映射窗口）；isr_leaky 本体在 0x4037668c（iram0_0_seg，内部 SRAM），可它 l32r 取出的 0x42008f1c 是 Flash 里的 helper_far，再用 callx8 跳过去；isr_tight 用 call8 直接调到 0x40376698，整条链都在内部；isr_rodata 本体在内部，读的 k_table 却在 0x3c028810 的 DROM。\n\n区间不写死：脚本读本次 .map 的 Memory Configuration，iram0_0_seg 从 0x40374000 起、长 0x57700，iram0_2_seg 从 0x42000020 起，drom0_0_seg 从 0x3c000020 起，再拿符号地址当场归类。\n\n账也摆平：idf.py size 报 IRAM 16384 字节、100.0%（.text 15356 + .vectors 1028），DIRAM 55463/341760（16.23%），Flash Code 78770，整镜像 189693 字节。中断矩阵那本账另算：ETS_MAX_INTR_SOURCE 打印 99，枚举里 98 个名字只覆盖 95 个编号，23/33/34/46 是保留位，57/58/59 各有两个同值名字。\n\n⚠️ 地址、段长与 16 KiB 预算都是工具链与链接器的输出，不是板测；这一集没有示波器读数，也没有跑过真正的 Cache 关闭窗口。\n\n复现：sh code/esp32/09-iram-discipline/probe.sh。完整图文在开源书《通往单片机之路》P4 章。",
+      "tags": [
+        "ESP32",
+        "ESP-IDF",
+        "中断",
+        "IRAM",
+        "嵌入式",
+        "单片机",
+        "反汇编",
+        "链接器",
+        "Cache"
+      ],
+      "topics": [
+        "嵌入式开发",
+        "ESP32 从寄存器学起",
+        "单片机学习"
+      ]
+    },
+    "douyin": {
+      "titles": [
+        "同一段 ISR，为什么两个地址",
+        "标了 IRAM_ATTR 还是会崩",
+        "IRAM 用到 100.0%，分母是谁"
+      ],
+      "intro": "同一次链接，isr_tight 在 0x403766ac，isr_plain 在 0x42008f08；后者在 Flash 映射窗口。isr_leaky 本体在 IRAM，可 l32r 取的 0x42008f1c 在 Flash，callx8 跳过去就断链。IRAM 报 16384 字节、100.0%。全部本机一条命令，不需要开发板；地址是链接器给的，不是板测。",
+      "tags": [
+        "ESP32",
+        "嵌入式",
+        "单片机",
+        "中断"
+      ],
+      "topics": [
+        "ESP32",
+        "嵌入式开发",
+        "单片机"
+      ],
+      "caption": "同一段 ISR，两个地址\n一个在内部 SRAM，一个在 Flash 窗口\n#ESP32 #IRAM #中断",
+      "pinned": "完整图文在「通往单片机之路」P4。isr_tight 在 0x403766ac，isr_plain 在 0x42008f08，isr_leaky 的 callx8 目标是 42008f1c——断链只能反汇编查。一条命令：sh code/esp32/09-iram-discipline/probe.sh",
+      "repro": "sh code/esp32/09-iram-discipline/probe.sh"
+    },
+    "zhihu": {
+      "titles": [
+        "同一段代码两个地址：ESP32 的 IRAM 纪律",
+        "标了 IRAM_ATTR 还是会崩：断链藏在跳转目标里"
+      ],
+      "intro": "这一次只认本机的一份链接产物：ESP-IDF v5.5.2，目标 esp32s3，没有开发板。七个符号一次摆全四种落址：isr_plain 在 0x42008f08（iram0_2_seg，Flash 映射窗口）；isr_leaky 本体在 0x4037668c（iram0_0_seg，内部 SRAM），可它 l32r 取出的 0x42008f1c 是 Flash 里的 helper_far，再用 callx8 跳过去；isr_tight 用 call8 直接调到 0x40376698，整条链都在内部；isr_rodata 本体在内部，读的 k_table 却在 0x3c028810 的 DROM。\n\n区间不写死：脚本读本次 .map 的 Memory Configuration，iram0_0_seg 从 0x40374000 起、长 0x57700，iram0_2_seg 从 0x42000020 起，drom0_0_seg 从 0x3c000020 起，再拿符号地址当场归类。\n\n账也摆平：idf.py size 报 IRAM 16384 字节、100.0%（.text 15356 + .vectors 1028），DIRAM 55463/341760（16.23%），Flash Code 78770，整镜像 189693 字节。中断矩阵那本账另算：ETS_MAX_INTR_SOURCE 打印 99，枚举里 98 个名字只覆盖 95 个编号，23/33/34/46 是保留位，57/58/59 各有两个同值名字。\n\n⚠️ 地址、段长与 16 KiB 预算都是工具链与链接器的输出，不是板测；这一集没有示波器读数，也没有跑过真正的 Cache 关闭窗口。复现：sh code/esp32/09-iram-discipline/probe.sh。",
+      "domain": "科学工程",
+      "mark": "个人观点仅供参考",
+      "original": true,
+      "markNote": "知乎的「视频标记」是必填内容声明；本集选「个人观点仅供参考」与已发章节同口径。原创声明为真：脚本、画面与文案均为本仓库自有产物。发布前仍需按当次平台口径复核。",
+      "tags": [
+        "ESP32",
+        "IRAM",
+        "中断",
+        "嵌入式",
+        "反汇编"
+      ],
+      "topics": [
+        "科技",
+        "编程"
+      ]
+    },
+    "xiaohongshu": {
+      "title": "Cache 一关，Flash 里没代码",
+      "body": "同一次链接，isr_tight 在 0x403766ac，isr_plain 在 0x42008f08。两个都编译通过，也都进了镜像；差别在 Cache 关掉那一刻：后者在 Flash 映射窗口，取指没有路。\n\n最阴的是 isr_leaky：本体 0x4037668c 确实在内部 SRAM，每条指令都在，可它先 l32r 取出 0x42008f1c 的 helper_far，再用 callx8 跳过去——目标在 Flash。断链不写在段名里，只能反汇编。\n\nisr_rodata 也一样：函数进去了，读的 k_table 还在 0x3c028810 的 DROM。取指和取数走同一扇门。\n\nidf.py size 报 IRAM 16384 字节、100.0%（.text 15356 + .vectors 1028）；iram0_0_seg 的链接器区间是 0x57700。两个分母，不是一本账。\n\n地址、段长与 16 KiB 预算都是工具链与链接器的输出，不是板测。\n\n复现：sh code/esp32/09-iram-discipline/probe.sh",
+      "topics": [
+        "ESP32",
+        "嵌入式",
+        "单片机"
+      ],
+      "topicsNote": "正文里直接打 #名字 只是普通文本，不成话题：要成 chip 得在 #名字 之后接住弹层（回车），所以话题单列一个字段、由 xhs-step.mjs 的 topics 步做。",
+      "pinned": "isr_tight 在 0x403766ac、isr_plain 在 0x42008f08、isr_leaky 的 callx8 目标是 42008f1c：断链只能反汇编查。一条命令：sh code/esp32/09-iram-discipline/probe.sh",
+      "repro": "sh code/esp32/09-iram-discipline/probe.sh",
+      "noLink": "按用户口径：标题、正文、评论一律不出现站外地址与 GitHub 字样（我们自己那个 github.io 地址从小红书这边看也算站外），导流只靠「全网同名：通往单片机之路」。复现命令用 sh code/... 这种纯文本形式。",
+      "collection": "通往单片机之路",
+      "collectionNote": "视频系列自己的合集（2026-10-17 用户点头新建，对齐抖音 mix 名与 series.json 的 series；章节品另有合集「STM32 零基础自学」）。发布表单上选好合集再点发布即可一并落盘；提交那颗 <xhs-publish-btn> 是 closed shadow，真实鼠标在宿主 rect 内坐标点能命中（2026-10-17 实测）。判据不认 toast 认服务端：重开编辑页那一行仍显示合集名才算数。"
+    }
+  }
+}

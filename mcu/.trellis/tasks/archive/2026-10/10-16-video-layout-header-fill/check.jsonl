@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/10-16-video-layout-header-fill/research/baseline-20261017.md", "reason": "验收判据的分母：每 kind/平台的基线填充数从这里取，AC 的 ≥0.70 是否达标必须和这份逐场读数并排出表"}
+{"file": ".trellis/tasks/10-16-video-layout-header-fill/implement.md", "reason": "步骤 0–8 的 ⛔ 闸门（out/ md5 基线、旧集 video:check 输出逐字节相同、审计新增断言与故意失败用例）就是验收清单本身"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "证据纪律：禁止把成稿数/理论值说成实测；验收不许用单帧代表值冒充逐场结论"}
+{"file": ".agents/skills/video-release/SKILL.md", "reason": "复核「已发布 18 条不回炉」时，哪些产物算发布稿、md5 该跟谁比，以投放线台账为准"}

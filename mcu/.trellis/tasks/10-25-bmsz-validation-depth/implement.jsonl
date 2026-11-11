@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md", "reason": "两个侦察的原文取证：mcu 现状（workflow/脚本/测试/mcu-book）+ BMS-Z 可移植机制的原文摘录（local-gates 语义、check_docs 规则、links 两轮制、ruff、check_pdf、publish_downloads、CHANGELOG 对账）"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "现有质量契约的签名/契约/错误矩阵格式；新增门必须按同一格式追加，且不得放宽既有条目"}
+{"file": ".trellis/spec/docs-site/index.md", "reason": "docs-site 包规范入口与快速命令，确认新门挂在哪个层"}
+{"file": ".trellis/spec/docs-site/structure.md", "reason": "目录约定与编号体系——docs-check 的 collectMarkdown 范围与 CLAIMS 的章节计数必须与之一致"}
+{"file": ".trellis/spec/docs-site/content.md", "reason": "章节页模板细则：手写数字声明与契约计数对账要落在正文的真实表述上"}
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/prd.md", "reason": "需求与分期验收标准"}
+{"file": ".trellis/tasks/10-25-bmsz-validation-depth/design.md", "reason": "接口签名、CI 接线、失败语义、风险对策"}

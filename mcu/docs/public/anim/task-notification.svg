@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>任务通知：计数语义 vs 覆盖语义</title>
+  <desc>四阶段动画：发送者 xTaskNotifyGive 把 TCB 里的 ulNotifiedValue +1；接收者 ulTaskNotifyTake 阻塞到非零并清零。对照路径：计数语义来 3 次取走得 3；覆盖语义 xTaskNotify eSetValueWithOverwrite 来 3 次只剩最新值。三次投递各画成一个从生产者爬进值格的脉冲，覆盖侧三个脉冲落进同一个格子（最后一个才是留下来的那个），Take 那一步用箭头把整格一次搬到消费者；没人通知时消费者按慢节拍阻塞等待。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">任务通知：写进对方 TCB 的 32 位邮箱</text>
+  <text x="24" y="50" font-size="12" fill="#666">零队列、零拷贝、一次写 · 计数语义攒欠账 · 覆盖语义只看最新 · 槽位数 = configTASK_NOTIFICATION_ARRAY_ENTRIES</text>
+
+  <!-- ===== 左：计数语义 ===== -->
+  <rect x="30" y="80" width="320" height="230" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="46" y="104" font-size="13" font-weight="bold" fill="#3eaf7c">计数语义：xTaskNotifyGive（+1）</text>
+  <text x="46" y="124" font-size="11" fill="#666">生产 3 次，消费 1 次——欠账攒着</text>
+
+  <rect x="56" y="140" width="120" height="40" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
+  <text x="116" y="165" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">生产者</text>
+  <rect x="224" y="140" width="110" height="40" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="4"/>
+  <text x="279" y="158" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">ulNotifiedValue</text>
+  <!-- 计数值动画：0→1→2→3→取走→0 -->
+  <text x="279" y="176" font-size="13" font-weight="bold" fill="#d97706" text-anchor="middle" font-family="Consolas,monospace">0
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="279" y="176" font-size="13" font-weight="bold" fill="#d97706" text-anchor="middle" font-family="Consolas,monospace" opacity="0">3
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+
+  <rect x="56" y="200" width="120" height="40" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="4"/>
+  <text x="116" y="225" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">消费者 take</text>
+  <text x="46" y="262" font-size="12" fill="#666">ulTaskNotifyTake 取走：<tspan font-weight="bold" fill="#3eaf7c">得到 3</tspan>（一次清零）</text>
+  <text x="46" y="284" font-size="12" fill="#666">欠的账全还了</text>
+
+  <!-- ===== 右：覆盖语义 ===== -->
+  <rect x="370" y="80" width="320" height="230" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="386" y="104" font-size="13" font-weight="bold" fill="#d97706">覆盖语义：xTaskNotify(eSetValueWithOverwrite)</text>
+  <text x="386" y="124" font-size="11" fill="#666">生产 3 次，消费 1 次——只剩最新值</text>
+
+  <rect x="396" y="140" width="120" height="40" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
+  <text x="456" y="165" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">生产者</text>
+  <rect x="564" y="140" width="110" height="40" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="4"/>
+  <text x="619" y="158" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">ulNotifiedValue</text>
+  <text x="619" y="176" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle" font-family="Consolas,monospace">0xAA
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+  <text x="619" y="176" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle" font-family="Consolas,monospace" opacity="0">0xCC
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </text>
+
+  <rect x="396" y="200" width="120" height="40" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="4"/>
+  <text x="456" y="225" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">消费者 take</text>
+  <text x="386" y="262" font-size="12" fill="#666">ulTaskNotifyTake 取走：<tspan font-weight="bold" fill="#dc2626">只有 0xCC</tspan></text>
+  <text x="386" y="284" font-size="12" fill="#666">0xAA、0xBB 被覆盖，丢了</text>
+
+  <!-- ===== 在跑的东西 ===== -->
+  <!-- ② 计数语义：三次 Give，每次一个脉冲从生产者爬进 TCB 的 ulNotifiedValue 格 -->
+  <circle cx="176" cy="138" r="5" fill="#3eaf7c" opacity="0">
+    <animate attributeName="cx" values="176;176;228;228" keyTimes="0;0.20;0.25;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.20;0.25;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.20;0.26;0.4;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="176" cy="138" r="5" fill="#3eaf7c" opacity="0">
+    <animate attributeName="cx" values="176;176;228;228" keyTimes="0;0.27;0.32;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.27;0.32;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.20;0.27;0.33;0.6;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="176" cy="138" r="5" fill="#3eaf7c" opacity="0">
+    <animate attributeName="cx" values="176;176;228;228" keyTimes="0;0.34;0.39;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.34;0.39;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.20;0.34;0.40;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- ③ 覆盖语义：三次写同一个格，前两次落进同一格里被盖掉（值只剩最后一次） -->
+  <circle cx="516" cy="138" r="5" fill="#d97706" opacity="0">
+    <animate attributeName="cx" values="516;516;572;572" keyTimes="0;0.40;0.45;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.40;0.45;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.40;0.46;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="516" cy="138" r="5" fill="#d97706" opacity="0">
+    <animate attributeName="cx" values="516;516;572;572" keyTimes="0;0.47;0.52;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.47;0.52;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.40;0.47;0.53;0.8;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="516" cy="138" r="5" fill="#dc2626" opacity="0">
+    <animate attributeName="cx" values="516;516;572;572" keyTimes="0;0.54;0.59;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="138;138;182;182" keyTimes="0;0.54;0.59;1" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.40;0.54;0.60;1" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <!-- ④ 一次 Take 拿走全部：箭头从值格爬到消费者 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+    <line x1="270" y1="182" x2="270" y2="182" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrN)">
+      <animate attributeName="x2" values="270;270;150;150" keyTimes="0;0.60;0.68;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="182;182;200;200" keyTimes="0;0.60;0.68;1" dur="10s" repeatCount="indefinite"/>
+    </line>
+    <line x1="610" y1="182" x2="610" y2="182" stroke="#d97706" stroke-width="3" marker-end="url(#arrN2)">
+      <animate attributeName="x2" values="610;610;490;490" keyTimes="0;0.60;0.68;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="182;182;200;200" keyTimes="0;0.60;0.68;1" dur="10s" repeatCount="indefinite"/>
+    </line>
+  </g>
+  <!-- ① 还没人来通知：两个消费者阻塞在等待列表里，按慢节拍等 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+    <rect x="56" y="200" width="120" height="40" fill="none" stroke="#3eaf7c" stroke-width="3" rx="4">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="2.5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="396" y="200" width="120" height="40" fill="none" stroke="#d97706" stroke-width="3" rx="4">
+      <animate attributeName="opacity" values="0.15;1;0.15" dur="2.5s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <defs>
+    <marker id="arrN" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3eaf7c"/>
+    </marker>
+    <marker id="arrN2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+      <text x="36" y="336">① 通知不走队列：写进对方 TCB 的两个字段（值 + 状态），零拷贝零队列对象</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+      <text x="36" y="336">② 计数语义：Give 一次 +1，Take 一次取走全部欠账——中断里攒事件的标准做法</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+      <text x="36" y="336">③ 覆盖语义：只看最新值（传感器读数这类场景）——旧值被盖掉是正常的</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+      <text x="36" y="336">④ 选型口诀：欠账要攒用 Give，只看最新用覆盖，多对多还是回队列</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/>
+      <text x="36" y="336">⑤ 函数名记准：是 ulTaskNotifyTake（返回计数值），不是 xTaskNotifyTake</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,320)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="10s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

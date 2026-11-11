@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>ESP32-S3 学习路线图：从环境到音频</title>
+  <desc>P 篇导览路线图：P0 环境→P1 架构→P2 GPIO→P3 IDF→P4 中断→P5-P12 外设与高级主题</desc>
+
+  <rect width="720" height="400" fill="#f6f8fa"/>
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">ESP32-S3 + ESP-IDF 路线图</text>
+
+  <!-- Row 1: Foundation -->
+  <rect x="20" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="60" y="64" font-size="10" fill="#333" text-anchor="middle">P0 环境</text>
+  <path d="M100,60 L115,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="115" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="155" y="64" font-size="10" fill="#333" text-anchor="middle">P1 架构</text>
+  <path d="M195,60 L210,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="210" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="250" y="64" font-size="10" fill="#333" text-anchor="middle" font-weight="bold">P2 GPIO</text>
+  <path d="M290,60 L305,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="305" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="345" y="64" font-size="10" fill="#333" text-anchor="middle">P3 IDF</text>
+  <path d="M385,60 L400,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <rect x="400" y="40" width="80" height="40" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="440" y="64" font-size="10" fill="#333" text-anchor="middle">P4 中断</text>
+  <path d="M480,60 L495,60" stroke="#666" stroke-width="1" marker-end="url(#a)"/>
+
+  <!-- Row 2: Drivers -->
+  <text x="30" y="105" font-size="11" fill="#666">驱动篇（P5-P7）</text>
+  <rect x="20" y="115" width="100" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="70" y="136" font-size="9" fill="#333" text-anchor="middle">P5 UART</text>
+
+  <rect x="130" y="115" width="100" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="180" y="136" font-size="9" fill="#333" text-anchor="middle">P6 SPI/I2C</text>
+
+  <rect x="240" y="115" width="100" height="35" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="290" y="136" font-size="9" fill="#333" text-anchor="middle">P7 定时器</text>
+
+  <!-- Row 3: Wireless -->
+  <text x="30" y="175" font-size="11" fill="#666">无线篇（P8-P9）</text>
+  <rect x="20" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="80" y="206" font-size="9" fill="#333" text-anchor="middle">P8 Wi-Fi</text>
+
+  <rect x="150" y="185" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="210" y="206" font-size="9" fill="#333" text-anchor="middle">P9 蓝牙/ESP-NOW</text>
+
+  <!-- Row 4: Advanced -->
+  <text x="30" y="245" font-size="11" fill="#666">进阶篇（P10-P13）</text>
+  <rect x="20" y="255" width="100" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="70" y="276" font-size="9" fill="#333" text-anchor="middle">P10 OTA</text>
+
+  <rect x="130" y="255" width="100" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="180" y="276" font-size="9" fill="#333" text-anchor="middle">P11 低功耗</text>
+
+  <rect x="240" y="255" width="100" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="290" y="276" font-size="9" fill="#333" text-anchor="middle">P12 音频</text>
+
+  <rect x="350" y="255" width="120" height="35" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="410" y="276" font-size="9" fill="#333" text-anchor="middle">P13 看门狗</text>
+
+  <!-- Key features -->
+  <rect x="490" y="115" width="210" height="100" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="500" y="135" font-size="12" font-weight="bold" fill="#3451b2">ESP32-S3 特色</text>
+  <text x="500" y="155" font-size="11" fill="#333">
+    <tspan>• GPIO 矩阵：引脚自由路由</tspan>
+  </text>
+  <text x="500" y="175" font-size="11" fill="#333">
+    <tspan>• USB-JTAG：内置调试</tspan>
+  </text>
+  <text x="500" y="195" font-size="11" fill="#333">
+    <tspan>• Wi-Fi + 蓝牙：无线全通</tspan>
+  </text>
+  <text x="500" y="210" font-size="10" fill="#666" font-style="italic">每章配动画 + 短自测</text>
+
+  <!-- Outcome -->
+  <rect x="20" y="310" width="680" height="45" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="30" y="330" font-size="12" font-weight="bold" fill="#d97706">学完能做到</text>
+  <text x="30" y="347" font-size="11" fill="#333">独立开发 ESP32-S3 Wi-Fi/蓝牙项目，掌握 IDF 驱动框架，能处理 OTA/低功耗/音频等高级主题</text>
+
+  <!-- Prerequisites -->
+  <rect x="20" y="370" width="680" height="20" rx="4" fill="#ffffff" stroke="#666" stroke-width="1"/>
+  <text x="360" y="384" font-size="10" fill="#666" text-anchor="middle">先修：STM32 主线（S0-S7）+ FreeRTOS 基础（F0-F4）</text>
+
+  <defs><marker id="a" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><polygon points="0 0, 6 2, 0 4" fill="#666"/></marker></defs>
+
+  <circle r="4" fill="#3451b2" opacity="0.7">
+    <animate attributeName="cx" values="60;155;250;345;440" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="60;60;60;60;60" dur="4s" repeatCount="indefinite"/>
+  </circle>
+</svg>

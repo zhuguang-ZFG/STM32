@@ -1,0 +1,279 @@
+{
+ "version": 1,
+ "presentation": {
+  "mode": "dense_infographic",
+  "reason": "工具盘点/选型对比：四个并列模块 + 累积选型表，观众预期结构化密度"
+ },
+ "max_hold_seconds": 7,
+ "shots": [
+  {
+   "id": "s01",
+   "beats": [
+    "b_hook",
+    "b_frame"
+   ],
+   "type": "process_sequence",
+   "purpose": "反常识开场：先看见代码窗口吐出胶片（结论画面化），再立住 369 仓库的盘点规模与四强名单",
+   "visuals": [
+    {
+     "id": "v01",
+     "kind": "illustration",
+     "subject": "代码窗口三行伪代码→红色手绘箭头→橙色胶片条带齿孔跑出（代码出片的生产线）",
+     "weight": 3
+    },
+    {
+     "id": "t01",
+     "kind": "text_group",
+     "subject": "369 大数字与「四强」名单",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "hero_with_context",
+    "focus": "v01",
+    "context": [
+     {
+      "visual": "v01",
+      "element": "代码窗口",
+      "explains": "一段代码直接出片——不用视频大模型的反常识主张"
+     },
+     {
+      "visual": "v01",
+      "element": "橙色胶片条",
+      "explains": "代码直出的成品，先给结论画面再展开盘点"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s02",
+   "beats": [
+    "b_lemo"
+   ],
+   "type": "closeup",
+   "purpose": "lemo 模块卡：风格格架墙（一格橙色高亮）配名称与代表作标签",
+   "visuals": [
+    {
+     "id": "v02",
+     "kind": "illustration",
+     "subject": "3×3 风格格架墙，中心格橙色高亮，蓝箭头指向",
+     "weight": 3,
+     "background": true
+    },
+    {
+     "id": "t02",
+     "kind": "text_group",
+     "subject": "lemo-opuscar 名称与 8,322★ / 59 风格 / OPUSCAR 98 标签",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "modules",
+    "focus": "v02",
+    "context": [
+     {
+      "visual": "v02",
+      "element": "3×3 格架墙与中心橙格",
+      "explains": "59 套风格成套可选，橙格呼应挑一套用"
+     },
+     {
+      "visual": "v02",
+      "element": "蓝箭头指向橙格",
+      "explains": "代表作 OPUSCAR 98 出自这套风格库"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s03",
+   "beats": [
+    "b_art"
+   ],
+   "type": "closeup",
+   "purpose": "huashu-art 模块卡：调色盘（一格橙）与语法清单小卡，红箭头相连",
+   "visuals": [
+    {
+     "id": "v04",
+     "kind": "illustration",
+     "subject": "huashu-art 模块卡上半：调色盘（一格橙色）+ 语法小卡（三条横线示意条目）",
+     "weight": 3,
+     "background": true
+    },
+    {
+     "id": "t03",
+     "kind": "text_group",
+     "subject": "huashu-art-motion 名称与 5,418★ / 36 风格 / 9 语法标签",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "modules",
+    "focus": "v04",
+    "context": [
+     {
+      "visual": "v04",
+      "element": "调色盘",
+      "explains": "36 种艺术风格"
+     },
+     {
+      "visual": "v04",
+      "element": "语法小卡",
+      "explains": "9 种解说语法，风格与语法双轴"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s04",
+   "beats": [
+    "b_motion"
+   ],
+   "type": "process_sequence",
+   "purpose": "huashu-motion 模块卡：ABC 谱线→箭头→成片帧，让「记谱即动画」这条独特路线一眼看懂",
+   "visuals": [
+    {
+     "id": "v06",
+     "kind": "illustration",
+     "subject": "huashu-motion 模块卡：ABC 谱线三小节 + 箭头 + 橙色成片帧",
+     "weight": 3
+    },
+    {
+     "id": "t04",
+     "kind": "text_group",
+     "subject": "huashu-motion 名称与 1,766★ / ABC 记谱标签",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "sequence",
+    "focus": "v06",
+    "context": [
+     {
+      "visual": "v06",
+      "element": "ABC 谱线",
+      "explains": "像写简谱一样用 ABC 记谱描述动画"
+     },
+     {
+      "visual": "v06",
+      "element": "橙色成片帧",
+      "explains": "谱面直接驱动合成成片，路线完全不同"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s05",
+   "beats": [
+    "b_sweety"
+   ],
+   "type": "closeup",
+   "purpose": "sweety 模块卡的自指钩子：小豆人拿笔画自己，正在画的就是这一页本身",
+   "visuals": [
+    {
+     "id": "v07",
+     "kind": "illustration",
+     "subject": "sweety 模块卡：小豆人持橙色画笔画自己，笔尖处纸面正在成线",
+     "weight": 3
+    },
+    {
+     "id": "t05",
+     "kind": "text_group",
+     "subject": "sweety-handdraw-video 名称与 903★ / 开源可复刻标签",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "hero_with_context",
+    "focus": "v07",
+    "context": [
+     {
+      "visual": "v07",
+      "element": "拿橙色笔的小豆人",
+      "explains": "这条视频本身就是 sweety-handdraw-video 做的，自指即证据"
+     },
+     {
+      "visual": "v07",
+      "element": "笔尖未完成的线",
+      "explains": "开源可复刻，观众照着也能画出同款"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s06",
+   "beats": [
+    "b_select"
+   ],
+   "type": "overview_recap",
+   "purpose": "选型表整表累积绘制：四行需求→框架（现成风格→lemo / 讲解语法→花叔 / 记谱合成→huashu-motion / 手绘口播→sweety），右列框架名随后由文字层落定，把全片压成一张可截图的表",
+   "visuals": [
+    {
+     "id": "v08",
+     "kind": "illustration",
+     "subject": "双列四行选型对照表：左列需求小图标（抽屉/调色盘/音符/画笔），四枚橙色箭头指向右列框架名",
+     "weight": 3
+    },
+    {
+     "id": "t06",
+     "kind": "text_group",
+     "subject": "四个需求短语标签",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "accumulating_board",
+    "focus": "v08",
+    "context": [
+     {
+      "visual": "v08",
+      "element": "左列四枚需求图标（抽屉/调色盘/音符/画笔）",
+      "explains": "四种需求：现成风格→lemo、讲解语法→花叔艺术流"
+     },
+     {
+      "visual": "v08",
+      "element": "四枚橙色箭头指向右列留白",
+      "explains": "记谱合成→huashu-motion、手绘口播→sweety，框架名由文字层落定"
+     }
+    ]
+   }
+  },
+  {
+   "id": "s07",
+   "beats": [
+    "b_cta"
+   ],
+   "type": "key_points",
+   "purpose": "收尾钩子回收：369 清单纸与评论区自取，短促收束不拖尾",
+   "visuals": [
+    {
+     "id": "v10",
+     "kind": "illustration",
+     "subject": "清单纸（三条横线）纸角别一枚橙色回形针（数字走文字层）",
+     "weight": 2
+    },
+    {
+     "id": "t07",
+     "kind": "text_group",
+     "subject": "「369 完整清单」「评论区自取」两行大字",
+     "weight": 1
+    }
+   ],
+   "composition": {
+    "layout": "hero_with_context",
+    "focus": "v10",
+    "context": [
+     {
+      "visual": "v10",
+      "element": "卷起的清单纸",
+      "explains": "369 个仓库完整清单的载体"
+     },
+     {
+      "visual": "v10",
+      "element": "橙色回形针",
+      "explains": "评论区自取的行动钩子"
+     }
+    ]
+   }
+  }
+ ]
+}

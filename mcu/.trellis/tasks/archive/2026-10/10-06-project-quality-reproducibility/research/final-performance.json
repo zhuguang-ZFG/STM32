@@ -1,0 +1,255 @@
+{
+  "stage": "final",
+  "assets": [
+    {
+      "file": "assets\\chunks\\@localSearchIndexroot.oXXSkL02.js",
+      "bytes": 1036133,
+      "gzip": 286827,
+      "brotli": 201662
+    },
+    {
+      "file": "assets\\stm32_02-rcc-clock.md.CjpnE4Tz.js",
+      "bytes": 184140,
+      "gzip": 22725,
+      "brotli": 16852
+    },
+    {
+      "file": "assets\\stm32_08-dma.md.CD9GvneE.js",
+      "bytes": 178063,
+      "gzip": 21088,
+      "brotli": 15915
+    },
+    {
+      "file": "assets\\stm32_07-usart.md.CYCEb_9f.js",
+      "bytes": 163779,
+      "gzip": 17510,
+      "brotli": 13120
+    },
+    {
+      "file": "assets\\c_03-volatile.md.BR5b57Jd.js",
+      "bytes": 156008,
+      "gzip": 26123,
+      "brotli": 19928
+    },
+    {
+      "file": "assets\\build_03-linker-script.md.CQ6D3oBb.js",
+      "bytes": 144332,
+      "gzip": 21598,
+      "brotli": 16871
+    },
+    {
+      "file": "assets\\rtos_freertos_06-notify-event-timer.md.DlBVsspE.js",
+      "bytes": 144014,
+      "gzip": 18624,
+      "brotli": 13839
+    },
+    {
+      "file": "assets\\gd32_01-rcu-clock.md.C3sAAuGi.js",
+      "bytes": 142406,
+      "gzip": 15850,
+      "brotli": 11922
+    },
+    {
+      "file": "assets\\stm32_11-i2c.md.eTWcobgf.js",
+      "bytes": 141177,
+      "gzip": 17765,
+      "brotli": 13616
+    },
+    {
+      "file": "assets\\stm32_06-tim.md.CVOR4Ug0.js",
+      "bytes": 141102,
+      "gzip": 17439,
+      "brotli": 13199
+    },
+    {
+      "file": "assets\\c_01-memory-model.md.bayG5D2y.js",
+      "bytes": 140076,
+      "gzip": 26455,
+      "brotli": 20779
+    },
+    {
+      "file": "assets\\build_02-elf.md.DS2buqFo.js",
+      "bytes": 128456,
+      "gzip": 22369,
+      "brotli": 17529
+    }
+  ],
+  "initial": [
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/style.BW09WufU.css",
+      "bytes": 19179
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/vp-icons.css",
+      "bytes": 1200
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/app.CnlxFApe.js",
+      "bytes": 948
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/inter-roman-latin.Di8DUHzh.woff2",
+      "bytes": 68092
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/theme.Oj8IQJkN.js",
+      "bytes": 19518
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/index.md.3ZrPhtRs.lean.js",
+      "bytes": 1701
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/framework.C05il-um.js",
+      "bytes": 40617
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/favicon.svg",
+      "bytes": 1058
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/guide_index.md.aRIs3oB8.js",
+      "bytes": 2736
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/c_index.md.fKNyRoYB.js",
+      "bytes": 1495
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/build_index.md.C259kL-q.js",
+      "bytes": 1589
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/stm32_index.md.B-npPkmJ.js",
+      "bytes": 1856
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/esp32_index.md.nM2GWJPi.js",
+      "bytes": 1789
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/rtos_index.md.DZ8EWV0S.js",
+      "bytes": 2284
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/gd32_index.md.BglbA84x.js",
+      "bytes": 2095
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/lab_index.md.F2KiBRMP.js",
+      "bytes": 1227
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_glossary.md.DpzpVmSf.js",
+      "bytes": 6697
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_about.md.CRtlnyYd.js",
+      "bytes": 3405
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_faq.md.ClASUCfC.js",
+      "bytes": 3518
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_changelog.md.ZRKizwda.js",
+      "bytes": 7585
+    }
+  ],
+  "searched": [
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/style.BW09WufU.css",
+      "bytes": 19179
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/vp-icons.css",
+      "bytes": 1200
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/app.CnlxFApe.js",
+      "bytes": 948
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/inter-roman-latin.Di8DUHzh.woff2",
+      "bytes": 68092
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/theme.Oj8IQJkN.js",
+      "bytes": 19518
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/index.md.3ZrPhtRs.lean.js",
+      "bytes": 1701
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/framework.C05il-um.js",
+      "bytes": 40617
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/favicon.svg",
+      "bytes": 1058
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/guide_index.md.aRIs3oB8.js",
+      "bytes": 2736
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/c_index.md.fKNyRoYB.js",
+      "bytes": 1495
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/build_index.md.C259kL-q.js",
+      "bytes": 1589
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/stm32_index.md.B-npPkmJ.js",
+      "bytes": 1856
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/esp32_index.md.nM2GWJPi.js",
+      "bytes": 1789
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/rtos_index.md.DZ8EWV0S.js",
+      "bytes": 2284
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/gd32_index.md.BglbA84x.js",
+      "bytes": 2095
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/lab_index.md.F2KiBRMP.js",
+      "bytes": 1227
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_glossary.md.DpzpVmSf.js",
+      "bytes": 6697
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_about.md.CRtlnyYd.js",
+      "bytes": 3405
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_faq.md.ClASUCfC.js",
+      "bytes": 3518
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/reference_changelog.md.ZRKizwda.js",
+      "bytes": 7585
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/VPLocalSearchBox.DxkCNq75.js",
+      "bytes": 19769
+    },
+    {
+      "name": "http://127.0.0.1:51023/mcu/assets/chunks/@localSearchIndexroot.oXXSkL02.js",
+      "bytes": 201962
+    }
+  ],
+  "results": 16,
+  "animationCount": 1,
+  "paused": true,
+  "playing": true,
+  "reduced": true,
+  "errors": []
+}

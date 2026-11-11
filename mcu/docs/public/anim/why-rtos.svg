@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 468" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>为什么需要 RTOS：超级循环的一根轴 vs 平行世界</title>
+  <desc>四阶段动画：左边是裸机超级循环——led/key/uart 三个任务共享一根时间轴，扫描指针沿传送带依次拜访；② 阻塞传染：uart_echo 死等 RXNE 时指针卡住不动，LED 与按键全部停摆（一人阻塞全家堵）；③ 时间片改良的极限：状态机 + tick 分片仍在同一根轴上腾挪，某个任务再阻塞就全盘陪葬；④ RTOS 三件宝：右边三条平行轨道各自跑一个任务（私栈 = 平行世界、TCB = 户口本、PendSV = 换魂术），三个任务仿佛独占 CPU。图上真在跑的东西：左侧扫描指针沿共享轴循环（裸机永远只有一根轴），右侧三个任务点各自独立闪烁（RTOS 的幻觉）。</desc>
+  <rect width="720" height="468" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">为什么需要 RTOS：超级循环的一根轴 vs 平行世界</text>
+  <text x="24" y="50" font-size="12" fill="#666">超级循环一根轴，一人阻塞全家堵；RTOS 三件宝：私栈、户口、换魂术</text>
+
+  <!-- 左面板：裸机超级循环 -->
+  <rect x="40" y="64" width="316" height="188" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="54" y="86" font-size="12" font-weight="bold" fill="#d97706">裸机：超级循环（一根时间轴）</text>
+  <g font-size="11" font-family="Consolas,monospace">
+    <rect x="54" y="98" width="88" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/><text x="98" y="119" fill="#3451b2" text-anchor="middle">led_tick</text>
+    <rect x="150" y="98" width="88" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/><text x="194" y="119" fill="#3451b2" text-anchor="middle">key_scan</text>
+    <rect x="246" y="98" width="88" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/><text x="290" y="119" fill="#3451b2" text-anchor="middle">uart_echo</text>
+  </g>
+  <text x="198" y="152" font-size="11" fill="#94a3b8" text-anchor="middle">按书写顺序排队，共享同一条时间轴</text>
+  <line x1="64" y1="168" x2="330" y2="168" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>
+  <!-- 阶段一/三 扫描指针：沿传送带循环（阶段二换成卡住的静态点） -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="64" cy="168" r="6" fill="#3451b2">
+      <animate attributeName="cx" values="64;330;330;64" keyTimes="0;0.85;0.95;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="290" cy="168" r="6" fill="#dc2626"/>
+    <rect x="246" y="98" width="88" height="34" fill="#fff7ed" stroke="#dc2626" stroke-width="2" rx="4"/>
+    <text x="290" y="186" font-size="11" fill="#dc2626" text-anchor="middle">卡死在 uart_echo</text>
+  </g>
+  <text x="198" y="226" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">for(;;){ led_tick(); key_scan(); uart_echo(); }</text>
+  <text x="198" y="242" font-size="11" fill="#94a3b8" text-anchor="middle">某任务最坏执行时间不可界定 → 整条循环的周期都不可界定</text>
+
+  <!-- 右面板：RTOS 平行世界 -->
+  <rect x="380" y="64" width="300" height="188" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="394" y="86" font-size="12" font-weight="bold" fill="#1a7f56">RTOS：每个任务仿佛独占 CPU</text>
+  <line x1="398" y1="112" x2="660" y2="112" stroke="#3eaf7c" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="398" y1="142" x2="660" y2="142" stroke="#3eaf7c" stroke-width="2" stroke-dasharray="5 4"/>
+  <line x1="398" y1="172" x2="660" y2="172" stroke="#3eaf7c" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="430" cy="102" r="6" fill="#3eaf7c"><animate attributeName="opacity" values="0.2;1;0.2" dur="1.2s" repeatCount="indefinite"/></circle>
+  <circle cx="520" cy="142" r="6" fill="#3eaf7c"><animate attributeName="opacity" values="0.2;1;0.2" dur="1.5s" repeatCount="indefinite"/></circle>
+  <circle cx="620" cy="172" r="6" fill="#3eaf7c"><animate attributeName="opacity" values="0.2;1;0.2" dur="2.0s" repeatCount="indefinite"/></circle>
+  <g font-size="11" fill="#1a7f56">
+    <text x="442" y="106">led 跑自己的栈</text>
+    <text x="534" y="136">key 跑自己的栈</text>
+    <text x="600" y="158">uart 阻塞不连累</text>
+  </g>
+  <rect x="398" y="196" width="264" height="52" rx="6" fill="#eef7f1" stroke="#3eaf7c"/>
+  <text x="412" y="214" font-size="11" fill="#1a7f56" font-weight="bold">PendSV 换魂术</text>
+  <text x="412" y="228" font-size="11" fill="#1a7f56">现场存进各自的 TCB，下个节拍换回来</text>
+  <text x="412" y="240" font-size="11" fill="#94a3b8">成本：每任务一栈（512B 起）+ 切换开销</text>
+
+  <!-- 阶段一：超级循环解剖 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="92" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#3451b2">共享时间轴的连锁反应</text>
+    <text x="56" y="312" font-size="13" fill="#333">前两个任务单次微秒级，第三个"不定"——最坏执行时间不可界定，整条循环的周期就不可界定。</text>
+    <text x="56" y="338" font-size="12" fill="#666">LED 晚点一两毫秒看不出；但按键响应、串口回显都跟着抖——互相拖累，任务越多越无解。</text>
+  </g>
+
+  <!-- 阶段二：阻塞传染 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="92" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#dc2626">② 阻塞的传染性：一人阻塞，全家堵</text>
+    <text x="56" y="312" font-size="13" font-family="Consolas,monospace" fill="#333">uart_getc():  while (!(USART2-&gt;SR &amp; USART_SR_RXNE)) { }</text>
+    <text x="56" y="336" font-size="13" fill="#333">收到下一个字节前不返回 → led_tick 与 key_scan 都不会被调用：你按住键盘，LED 就停摆。</text>
+  </g>
+
+  <!-- 阶段三：时间片改良的极限 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="92" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#d97706">③ 时间片改良的极限：还是同一根轴</text>
+    <text x="56" y="312" font-size="13" font-family="Consolas,monospace" fill="#333">if (tick % 2 == 0) key_scan();  /* 分片了，但谁先跑仍是书写顺序 */</text>
+    <text x="56" y="336" font-size="13" fill="#333">状态机解决"等待"，不解决"优先级"；某个任务再死锁，整个时间片一起陪葬。</text>
+  </g>
+
+  <!-- 阶段四：RTOS 三件宝 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="92" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13" font-weight="bold" fill="#3eaf7c">④ RTOS 三件宝：一个幻觉的三个零件</text>
+    <text x="56" y="312" font-size="13" fill="#333"><tspan font-weight="bold" fill="#1a7f56">私栈</tspan>（pxStack）= 平行世界地基；<tspan font-weight="bold" fill="#1a7f56">TCB</tspan>（pxTopOfStack 必须第一成员）= 户口本；<tspan font-weight="bold" fill="#1a7f56">PendSV</tspan> = 换魂术。</text>
+    <text x="56" y="336" font-size="12" fill="#666">成本实打实：栈 128 字（512B）起步、TCB 从 16KB heap 里切（FreeRTOSConfig.h）。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="400">① 超级循环：三个任务共享一根时间轴，最坏执行时间不可界定 → 周期不可界定</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="400">② 阻塞传染：uart_echo 死等 RXNE，LED 与按键全部停摆——一人阻塞全家堵</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="400">③ 时间片改良：仍在同一根轴上腾挪，一遇阻塞全盘陪葬</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="400">④ RTOS 三件宝：私栈 + TCB + PendSV 切换——每个任务仿佛独占 CPU</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,422)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

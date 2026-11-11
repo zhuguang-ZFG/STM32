@@ -1,0 +1,116 @@
+{
+  "baselineCommit": "a35ca6834b9419024470f42e7ddcd43184003025",
+  "stage": "planning-only",
+  "metricsMethod": "Existing metrics export from scripts/prose-readability.mjs; observational baseline, not a test verdict.",
+  "inputs": [
+    {
+      "file": "docs/build/03-linker-script.md",
+      "bytes": 25472,
+      "sha256": "99f0886a7c8042a54d8d30ae07dadac62579c60f17a494942412a1236870eeb6",
+      "metrics": {
+        "count": 143,
+        "longShare": 1.4,
+        "avg": 32.3
+      }
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "bytes": 12995,
+      "sha256": "a69e8d63db24498d29321de71dc17b3da3d7e8685774405cc5c9228a94223d99",
+      "metrics": {
+        "count": 75,
+        "longShare": 6.7,
+        "avg": 33.9
+      }
+    },
+    {
+      "file": ".prose-baseline.json",
+      "bytes": 6741,
+      "sha256": "83e955d97578633c8ac623fc389e53e2f4275aded6725eaec41907f253dd604b"
+    },
+    {
+      "file": "mcu-book/tools/prose_guard.py",
+      "bytes": 12473,
+      "sha256": "110636448d136b14057a1518c9767009d6f8c3b5431cacdd79ea40480e46a7a9"
+    },
+    {
+      "file": "scripts/prose-readability.mjs",
+      "bytes": 7047,
+      "sha256": "5a233eeea02e29a812fe0f4bcdc9d05dea7d4171db753b904d3b9a68bc8c8869"
+    },
+    {
+      "file": "scripts/reading-time.mjs",
+      "bytes": 6170,
+      "sha256": "8690b07ebbb0eb2ede0b846da2347686c2e3cea84da04aa810fa3c262d04d75c"
+    },
+    {
+      "file": "package.json",
+      "bytes": 3058,
+      "sha256": "c39c8c05dc340a5e4c6b1f49ca36ed222a17bd2755b5d1d6bfa2f6eada13ee86"
+    },
+    {
+      "file": ".github/workflows/quality.yml",
+      "bytes": 6833,
+      "sha256": "32380cd1b64440166b91d19af9c18d257da00b1d99186bdedee142e6853783ab"
+    },
+    {
+      "file": ".github/workflows/book.yml",
+      "bytes": 2324,
+      "sha256": "26d4e9c3cf0dd4aea7a1d7c3de24ab6c0a1507810d394afef17e3704e3ff787e"
+    },
+    {
+      "file": ".github/workflows/deploy.yml",
+      "bytes": 1864,
+      "sha256": "d4929d664c4512024bc5fd7c0cde72fc4cf629518de3e359a2f348d09e1c8504"
+    }
+  ],
+  "scope": [
+    {
+      "file": "docs/build/03-linker-script.md",
+      "allowedOriginalLines": [
+        {
+          "line": 16,
+          "text": "1. **图纸产出的不是代码，是三份地址契约**：`MEMORY` 圈地（哪块地能住人）、`SECTIONS` 分房（谁住哪间、谁住头排）、符号门牌（`_estack`/`_sidata`/`_sdata`……）留给启动代码兑现。契约写错，链接器多半不报错，它只按你说的做，做得很彻底。"
+        },
+        {
+          "line": 83,
+          "text": "- 两份 `_Min_*` 不是分配，是**额度**：稍后 `._user_heap_stack` 用 `. = . + _Min_Stack_Size;` 把它记在 RAM 的账上（`:122-123`）。"
+        },
+        {
+          "line": 180,
+          "text": "逐词读：`>RAM` 说**运行时住在 RAM**（VMA），`AT> FLASH` 说**初值行李寄存在 Flash**（LMA）。中间没有别的语法糖，两个住址就靠这一句绑起来。`LOADADDR(.data)` 取的是后一个（LMA），所以 `_sidata` 是\"去 Flash 哪里取货\"。"
+        },
+        {
+          "line": 236,
+          "text": "对着 `nm` 看，一个不差。三个细节值得留意："
+        },
+        {
+          "line": 240,
+          "text": "- 这些是**链接期算出来的常量**，不是运行期查询。改图纸、加数组，池子里的字面量跟着变，所以启动文件不需要\"知道\"你有几个全局变量。"
+        }
+      ]
+    },
+    {
+      "file": "docs/build/04-startup.md",
+      "allowedOriginalLines": [
+        {
+          "line": 18,
+          "text": "- **能理解**：为什么\"全局变量天生有初值\"是句善意的谎言（第三节的搬家现场）。"
+        },
+        {
+          "line": 98,
+          "text": "\"全局变量天生就有初值\"，这是 C 给你的承诺，但硬件不认账。初值**存**在 Flash（占空间、断电不丢），变量**用**在 RAM（可读写）；中间的搬运，得有人干。搬运工就是这段循环（启动文件原文）："
+        },
+        {
+          "line": 124,
+          "text": "三个符号全是链接脚本发的\"地址条\"：`_sidata = LOADADDR(.data)`（初值仓库在 Flash 的位置），`_sdata`/`_edata` 是 .data 段在 RAM 的头尾（`>RAM AT> FLASH` 就是说\"运行在 RAM，初值存 Flash\"）。"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "No chapter edits, firmware reproduction, browser preview, or build executed for this batch.",
+    "Planning hashes do not replace operator-configured verification baselines.",
+    "GitNexus has no current mcu index."
+  ]
+}

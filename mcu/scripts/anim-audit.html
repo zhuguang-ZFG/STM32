@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>动画版式审计（出界 / 压字 / 空幅）</title>
+<style>
+  body { font: 12px/1.5 system-ui, sans-serif; margin: 16px; }
+  #stage { position: fixed; left: -9999px; top: 0; }
+  .fig { position: relative; }
+  table { border-collapse: collapse; }
+  td, th { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+  .ok { color: #1a7f56; }
+  .bad { color: #cf222e; font-weight: bold; }
+</style>
+</head>
+<body>
+<h3>动画版式审计：逐阶段采样，报「出界 / 压字 / 整幅无可见文字」</h3>
+<div id="run">运行中…</div>
+<table id="out">
+  <thead><tr><th>图</th><th>画布</th><th>阶段</th><th>问题</th></tr></thead>
+  <tbody></tbody>
+</table>
+<div id="stage"></div>
+<script>
+const LIST = ['bitband-alias','boot-sequence','build-four-steps','bus-matrix','c08-frame-parse','context-switch',
+'dac-trio','data-vma-lma','dma-circular-buffer','dma-pingpong','dual-os-compare',
+'elf-two-views','esp32-audio-path','esp32-boot-relay','esp32-driver-layers','esp32-espnow-direct',
+'esp32-ota-rollback','esp32-sleep-matrix','esp32-twdt-chain','event-group-wait',
+'freertos-port','gd32-af-mux','gd32-rcu-clock','gd32-vf103-clk108','gpio-config','gpio-matrix-routing',
+'hardfault-forensics','heap4-coalesce','i2c-timing','iap-handoff','idf-uart-events',
+'iram-discipline','irq-entry','ledc-timer-channel','list-insert','memory-two-homes',
+'pointer-arrows','priority-inversion','queue-passing','rcc-clock-tree','ring-buffer',
+'riscv-blink-closed','riscv-clic-priority','riscv-mtime-tick','rtt-bitmap-256',
+'rtt-device-chain','rtt-finsh-dispatch','rtt-ipc-skeleton','rtt-mem-alloc','rtt-object-model',
+'rtt-port-nano','sar-successive',
+'semaphore-mutex','software-timer-service','spi-timing','stack-frame','stm32-pwr-three-modes',
+'struct-alignment','systick-tick','task-create-stack','task-notification','tcp-handshake',
+'tim-input-capture','tim-pwm-counter','uart-frame','usart-txe-tc','volatile-as-if',
+'watchdog-window','why-rtos'];
+
+const stage = document.getElementById('stage');
+const tbody = document.querySelector('#out tbody');
+const EPS = 0.5;
+
+function opacityOf(el) {
+  let p = el, acc = 1;
+  while (p && p.nodeType === 1) {
+    acc *= parseFloat(getComputedStyle(p).opacity);
+    p = p.parentElement;
+  }
+  return acc;
+}
+
+// 从所有 discrete 动画里收集阶段边界，取每个槽位中点作为采样时刻
+function sampleTimes(svg, master) {
+  const ts = new Set([master * 0.02, master * 0.9]);
+  for (const a of svg.querySelectorAll('animate')) {
+    if (a.getAttribute('calcMode') !== 'discrete') continue;
+    const kt = (a.getAttribute('keyTimes') || '').split(';').map(Number).filter(n => !isNaN(n));
+    for (let i = 0; i + 1 < kt.length; i++) ts.add(master * (kt[i] + kt[i + 1]) / 2);
+  }
+  return [...ts].filter(t => t >= 0 && t <= master).sort((a, b) => a - b);
+}
+
+async function audit(name) {
+  const txt = await (await fetch(`anim/${name}.svg`, { cache: 'no-store' })).text();
+  const box = document.createElement('div');
+  box.className = 'fig';
+  box.innerHTML = txt;
+  stage.appendChild(box);
+  const svg = box.querySelector('svg');
+  const vb = svg.getAttribute('viewBox').split(/\s+/).map(Number);
+  const W = vb[2], H = vb[3];
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  void svg.getBoundingClientRect();            // 后台标签页里 rAF 会冻结，用强制布局刷新
+  const durs = [...svg.querySelectorAll('animate,animateTransform,animateMotion')]
+    .map(a => parseFloat(a.getAttribute('dur'))).filter(n => !isNaN(n));
+  const master = Math.max(...durs);
+  const rect0 = svg.getBoundingClientRect();
+  const mctx = document.createElement('canvas').getContext('2d');
+  // 竖向用真实墨水范围（canvas actualBoundingBox*），横向沿用 anchor 正确的 em 盒。
+  // 为什么：getBBox/getBoundingClientRect 对 <text> 都给升部+降部盒子，
+  // 相邻两行必然"相碰" 4~10px，那是字体度量不是视觉压字。
+  const boxOf = el => {
+    const r = el.getBoundingClientRect();
+    const out = { x: r.x - rect0.x, y: r.y - rect0.y, w: r.width, h: r.height };
+    if (el.tagName === 'text') {
+      try {
+        const st = getComputedStyle(el);
+        mctx.font = `${st.fontStyle} ${st.fontWeight} ${st.fontSize} ${st.fontFamily}`;
+        const m = mctx.measureText(el.textContent);
+        const scale = r.height / (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent);
+        const baseline = out.y + m.fontBoundingBoxAscent * scale;
+        out.iy0 = baseline - m.actualBoundingBoxAscent * scale;
+        out.iy1 = baseline + m.actualBoundingBoxDescent * scale;
+      } catch (e) { /* 量不到就退回 em 盒 */ }
+    }
+    out.iy0 = out.iy0 ?? out.y;
+    out.iy1 = out.iy1 ?? out.y + out.h;
+    return out;
+  };
+
+  const problems = new Map();
+  const push = (key, t, detail) => {
+    if (!problems.has(key)) problems.set(key, { detail, ts: [] });
+    problems.get(key).ts.push(+t.toFixed(2));
+  };
+  for (const t of sampleTimes(svg, master)) {
+    svg.setCurrentTime(t);
+    const vis = [...svg.querySelectorAll('text')].filter(el =>
+      opacityOf(el) > 0.05 && el.textContent.trim() && el.getBoundingClientRect().width > 0);
+    if (!vis.length) push('blank', t, '整幅无可见文字');
+    const boxes = vis.map(el => ({ el, b: boxOf(el), s: el.textContent.trim().slice(0, 16) }));
+    for (const { el, b, s } of boxes) {
+      if (b.x < -EPS || b.y < -EPS || b.x + b.w > W + EPS || b.y + b.h > H + EPS)
+        push('out|' + s, t, `出界「${s}」box=${Math.round(b.x)},${Math.round(b.y)},${Math.round(b.w)}x${Math.round(b.h)}`);
+    }
+    for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+      if (boxes[i].s === boxes[j].s) continue;  // 遮罩上重画同一行字是刻意的
+      const a = boxes[i].b, c = boxes[j].b;
+      const ox = Math.min(a.x + a.w, c.x + c.w) - Math.max(a.x, c.x);
+      const oy = Math.min(a.iy1, c.iy1) - Math.max(a.iy0, c.iy0);   // 墨水对墨水
+      if (ox > 3 && oy > 1)
+        push('hit|' + boxes[i].s + '|' + boxes[j].s, t,
+          `压字「${boxes[i].s}」×「${boxes[j].s}」横向 ${Math.round(ox)}px、竖向墨水重叠 ${oy.toFixed(1)}px`);
+    }
+  }
+  stage.removeChild(box);
+  const tr = document.createElement('tr');
+  const list = [...problems.values()];
+  const uniq = list.map(p => `${p.detail}（${p.ts.length === 1 ? '' : '共' + p.ts.length + '个时刻 '}${p.ts.slice(0, 3).join('/')}s）`);
+  tr.innerHTML = `<td>${name}</td><td>${W}x${H}</td><td>${uniq.length ? uniq.length + '条' : '—'}</td>` +
+    `<td class="${uniq.length ? 'bad' : 'ok'}">${uniq.length ? uniq.join('<br>') : 'OK'}</td>`;
+  tbody.appendChild(tr);
+  return uniq.length;
+}
+
+(async () => {
+  let bad = 0, done = 0;
+  for (const n of LIST) {
+    try { bad += await audit(n); } catch (e) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${n}</td><td colspan="3" class="bad">异常 ${e}</td>`;
+      tbody.appendChild(tr); bad++;
+    }
+    document.getElementById('run').textContent = `已审 ${++done}/${LIST.length}，问题图累计 ${bad}`;
+  }
+  document.getElementById('run').textContent = `DONE ${LIST.length} 张，有问题 ${bad} 处`;
+})();
+</script>
+</body>
+</html>

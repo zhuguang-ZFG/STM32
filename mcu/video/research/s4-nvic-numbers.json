@@ -1,0 +1,31 @@
+{
+  "ep": "s4-nvic",
+  "source": "code/stm32/04-nvic-exti/probe.sh（宿主 gcc 16.1.0 断言 52/52；arm-none-eabi-gcc 10.3.1 交叉链接与反汇编）＋ .temp/v2-facts/s4-probe.log ＋ docs/stm32/04-nvic-exti.md",
+  "evidence": {
+    "probe §0 外设基址链：PERIPH_BASE 0x40000000（stm32f407xx.h:910）、APB2_OFFSET 0x00010000（:928）、SYSCFG_OFFSET 0x3800（:974）、EXTI_OFFSET 0x3C00（:975）": "第 0 节现挖，每行自带文件:行号",
+    "probe §0 内核基址链：SCS_BASE 0xE000E000（core_cm4.h:1550）、SYSTICK_OFFSET 0x0010（:1555）、NVIC_OFFSET 0x0100（:1556）、SCB_OFFSET 0x0D00（:1557）": "第 0 节现挖",
+    "probe §0 位号：NVIC_PRIO_BITS = 4（stm32f407xx.h:49）、PRIGROUP_Pos = 8（core_cm4.h:531）、RCC_SYSCFGEN_Pos = 14（stm32f407xx.h:10076）、EXTICR_EXTI0_PF = 0x0005（:11662）": "第 0 节位号对账",
+    "probe §0 AIRCR 写入键 0x5FA（core_cm4.h:1661 的魔数）": "第 0 节现挖",
+    "probe §0 IRQn 枚举：SysTick -1（stm32f407xx.h:75）、EXTI0 6（:83）、EXTI1 7（:84）、EXTI9_5 23（:100）、TIM2 28（:105）、USART1 37（:114）、EXTI15_10 40（:117）；NonMaskableInt -14（:68）、MemoryManagement -12（:69）、-13 被作者跳过": "第 0 节现挖；硬故障不可编程优先级",
+    "probe §0 EXTI 块偏移：IMR 0x00（stm32f407xx.h:444）、EMR 0x04（:445）、RTSR 0x08（:446）、FTSR 0x0C（:447）、SWIER 0x10（:448）、PR 0x14（:449）；SYSCFG_EXTICR 偏移 0x08（:547）": "第 0 节偏移表",
+    "probe §1 拼址：0x40010000 + 0x3800 = 0x40013800；再 + 0x08 = EXTICR 基址 0x40013808；0x40010000 + 0x3C00 = EXTI 基址 0x40013C00；PR = 0x40013C00 + 0x14 = 0x40013C14": "第 1 节 base + 偏移现场加",
+    "probe §1 IRQn→槽/ISER/IP：SysTick -1 槽 15 偏移 0x003c；EXTI0 6 槽 22 0x0058；EXTI1 7 槽 23 0x005c；EXTI9_5 23 槽 39 0x009c；TIM2 28 槽 44 0x00b0；USART1 37 槽 53 0x00d4，ISER[1] bit5 = 0xE000E104，IP 字节 0xE000E425；EXTI15_10 40 槽 56 0x00e0": "第 1 节映射表",
+    "probe §1 三条公式：槽号 = IRQn + 16；ISER 下标 = IRQn / 32；IP 字节地址 = 0xE000E400 + IRQn": "第 1 节公式",
+    "probe §1 优先级截断表：IP[IRQn] = (priority << 4) & 0xFF（core_cm4.h:1818）；0 → 0x00、1 → 0x10、5 → 0x50、10 → 0xA0、15 → 0xF0；越界 16 → 0x00、17 → 0x10、20 → 0x40、255 → 0xF0、256 → 0x00": "第 1 节逐格实测",
+    "probe §1 PRIGROUP 八种切法：组 0 → 0x05FA0000、1 → 0x05FA0100、2 → 0x05FA0200、3 → 0x05FA0300（4 抢占 + 0 子）；4 → 0x05FA0400、5 → 0x05FA0500、6 → 0x05FA0600、7 → 0x05FA0700": "第 1 节 AIRCR 写法表",
+    "probe §1 SysTick 走 SHP：core_cm4.h:1814-1824 分支，IRQn>=0 用 NVIC->IP[IRQn]，负数用 SCB->SHP[(IRQn & 0xF) - 4]；实测 SysTick = 0xE000ED23": "第 1 节实测地址",
+    "probe §1 EXTICR 选门表：EXTICR 基址 0x40013808；线 0 写 0x00000005、线 1 写 0x00000050、线 6 与线 10 都写 0x00000500（字段 [11:8]）": "第 1 节四位字段表",
+    "probe §2 向量表：数 .word 行数得总项数 98（16 内核 + 82 外设）；IRQn -1 → 槽 15、6 → 22、7 → 23、23 → 39、28 → 44、37 → 53、40 → 56 全部命中": "第 2 节启动文件逐行数",
+    "probe §2 5~9 号线共用一个向量 EXTI9_5（IRQn 23），ISR 里要按 PR 的位分辨是谁触发": "第 2 节共享向量说明",
+    "probe §3 交叉链接：.isr_vector 大小 0x188 = 392 字节 = 98 × 4，落在 0x08000000；objdump -h：0 .isr_vector 00000188 08000000 08000000 00010000；1 .text 00000084 08000188 08000188 00010188": "第 3 节 objdump -h",
+    "probe §3 符号表：08000188 g F .text 0000001c EXTI0_IRQHandler；08000204 l F .text 00000002 Default_Handler；槽 22 内容 = 08000189（最低位 1 = Thumb）": "第 3 节 nm 与向量槽读取",
+    "probe §3 nm 十六进制写法：EXTI0_IRQHandler = 0x08000188；Default_Handler = 0x08000204；向量槽 22 内容 = 0x08000189": "第 3 节同一份符号表的十六进制写法",
+    "probe §3 EXTI0_IRQHandler 反汇编：08000188 <EXTI0_IRQHandler>: 800018c 2101 movs r1,#1；800018e f8c3 1c14 str.w r1,[r3,#3092]（0xc14）；8000192 6813 ldr r3,[r2,#0]；8000194 440b add r3,r1；8000196 6013 str r3,[r2,#0]；8000198 4770 bx lr；字面量 0x40013000 与 0x20000000": "第 3 节反汇编全文",
+    "probe §1 编译期断言通过 52/52；正文数字与头文件提取值逐格对撞": "第 1 节尾部",
+    "工具链：宿主 gcc 16.1.0；交叉 arm-none-eabi-gcc 10.3.1": "probe 头部与第 3 节"
+  },
+  "exceptions": {
+    "04-nvic-exti": "章节编号（docs/stm32/04-nvic-exti.md 与代码目录同名），不是测量值",
+    "-3 / -2 / -1": "Reset / NMI / HardFault 的固定优先级，来自 ARM PM0214 架构定义，不是本机测量值"
+  }
+}

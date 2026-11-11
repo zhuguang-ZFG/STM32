@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/video/index.md", "reason": "产线三处顺序闸（lint→build→check、series 登记在 build 后、时长不许贴上沿）、时长估测离散度与 S5 金样例；写 build/check/numbers 之前必读"}
+{"file": ".trellis/spec/video/layout-contract.md", "reason": "页头分节契约、按场进度唯一性、v1 无 sections 时逐字节兼容线、每条新判据必须造一次故意失败；改 layout/pageHtml/审计前必读"}
+{"file": ".trellis/spec/docs-site/content.md", "reason": "事实纪律：板卡数值必须给第二来源、编译期结论不等于板上现象、C3 六变体与双工具链取证；重写 18 集旁白与做数字审计前必读"}
