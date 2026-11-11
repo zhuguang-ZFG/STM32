@@ -59,3 +59,7 @@ mount-smoke.mjs 根入口断言：`page.goto` 读 meta-refresh 重定向页 body
 - lychee 合并窗口三条放行已删除（本提交）；main 上外链门将全量复验这些 URL 200。
 - `feat/mcu-merge-p1` 远端分支与本地 worktree 已删除（2026-11-12 收尾执行）。
 - 旧仓 `zhuguang-ZFG/mcu`：已建归档壳仓——gh-pages 分支全部为跳转桩页（131 条路由含目录型 index），Pages 源切至 gh-pages，仓库已归档只读；整树历史与 tag `mcu-pre-merge-archive` 保留。
+
+## 壳仓 v2：sitemap 之外的发布产物（advisory 指正后补齐，2026-11-12）
+
+首轮壳仓只覆盖 sitemap 的 131 条页面路由，`/mcu/book/*` 与 `/mcu/downloads/*` 404。补齐口径：**PDF 保留可下载真字节**（从已部署新站原样取字节，sha256 与线上 SHA256SUMS 一致：主书 PDF `563cfd38…` 33,355,599 B、print PDF `9c8023ac…` 17,516,147 B），**HTML 入口与目录页用跳转桩**。实测：旧站 book pdf/print pdf → 200 + application/pdf + 字节哈希一致；book html/book 目录/downloads html → 跳转桩；SHA256SUMS.txt/book-downloads.json/downloads index 为真文件。旧仓随后重新归档（archived=true，Pages 仍服务）。表述纪律：壳仓覆盖 = 131 sitemap 路由（桩）+ book/downloads 产物（PDF 真字节、HTML 桩），非「旧站全部跳转」。
