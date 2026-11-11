@@ -108,12 +108,14 @@ jobs:
           cache-dependency-path: mcu/package-lock.json
       - run: npm ci
       - name: 安装编译器
-        # runner 的 azure.archive.ubuntu.com DNS 会偶发长时间解析失败；有界重试 3 次，
-        # 装同一组包、判定不变，不把瞬时基建故障当代码失败。
+        # runner 的 azure.archive.ubuntu.com DNS 会偶发长时间解析失败（2026-11-11 持续
+        # 2 小时以上）：先切回 canonical 源（archive.ubuntu.com 实测可达），再对单个
+        # 包的下载失败做 fetch 级重试；装同一组包、判定不变。
         run: |
+          sudo sed -i 's|http://azure\.archive\.ubuntu\.com|http://archive.ubuntu.com|g' /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null || true
           ok=0
           for i in 1 2 3; do
-            if sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib; then ok=1; break; fi
+            if sudo apt-get -o Acquire::Retries=8 update && sudo apt-get -o Acquire::Retries=8 install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib; then ok=1; break; fi
             sleep 30
           done
           [ "$ok" -eq 1 ] || exit 1
