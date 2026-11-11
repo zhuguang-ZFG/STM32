@@ -55,7 +55,7 @@ dist = vitepress 重建（49s，含 gd32/adc 修复）+ 整书链（PDF 契约 P
 | 缺陷 | 来源 | 修复 |
 |---|---|---|
 | `gd32/01-rcu-clock.html` 相对引用 `./02-gpio-af.md` | 源 md 187 行 raw HTML `<a href>`，vitepress 不改写 raw HTML——旧站线上即 404 | `.md`→`.html`（全仓唯一 1 处） |
-| 整书 HTML 3 处 `href="bit25:24, 1242-1246"` 坏链 | `docs/stm32/09-adc.md` 寄存器表 `RES[1:0](bit25:24, …)` 被 Python markdown 解析成链接（vitepress 侧因 URL 含逗号+空格不解析，故只烂在整书） | 转义 `RES\[1:0\]`、`EXTSEL\[3:0\]`、`EXTEN\[1:0\]`；重建后 `grep -c 'href="bit'` = 0 |
+| 整书 HTML 3 处坏链（href 指向 `bit25:24, 1242-1246` 这类文本） | `docs/stm32/09-adc.md` 寄存器表把字段位宽 `RES[1:0]` 与手册出处 `(bit25:24, …)` 连写，被 Python markdown 解析成链接（vitepress 侧因 URL 含逗号+空格不解析，故只烂在整书） | 位宽与出处分开写并转义括号；重建后坏 href 计数 = 0 |
 
 ## 触发矩阵核查（§5 条目）
 

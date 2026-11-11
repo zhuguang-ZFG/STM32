@@ -620,13 +620,18 @@ def check_links():
         # 不扫描这些目录，避免第三方包自己的 README 链接污染本书门禁。
         dirs[:] = [
             directory for directory in dirs
-            if directory not in {".git", ".claude", ".temp", "node_modules", "dist", "build"}
+            if directory not in {".git", ".claude", ".temp", "node_modules", "dist", "build", "mcu"}
             and not directory.startswith(".venv")
         ]
         for f in sorted(files):
             if not f.endswith(".md"):
                 continue
             p = os.path.join(root, f)
+            # mcu/ 是并入的姊妹书：其链接基准是 MCU 站点根（/stm32/07-usart.md），
+            # 且以本站根拼路径必失败；这些链接由 MCU 自有门禁在构建产物上校验
+            # （docs-check → pages-check → staging 资源落位），比源码文本启发式更严。
+            if os.path.relpath(p, ROOT).split(os.sep)[0] == "mcu":
+                continue
             with open(p, encoding="utf-8") as fh:
                 text = fh.read()
             # 去掉围栏代码块里的示例链接，避免误报
