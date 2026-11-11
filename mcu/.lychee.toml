@@ -56,13 +56,9 @@ exclude = [
   # 连续两轮复现，浏览器/curl --http1.1 均可开），非死链。月度复查；换稳定镜像或
   # lychee 修复该协商问题后删除本条。
   '^https?://www\.st\.com/resource/',
-  # 合并窗口放行（2026-11-11）：mcu/ 子树已进 PR 但尚未合入 main，指向
-  # main 的 blob/tree/workflows 引用与目标站 zhuguang-zfg.github.io/STM32/mcu/
-  # 在合入并首部署前必然 404。这些 URL 是本次迁移的目标地址本身（非死链），
-  # PR 合入 + 首部署完成后删除这三条（P5 发布回读时执行）。
-  '^https?://github\.com/zhuguang-ZFG/STM32/(blob|tree)/main/mcu/',
-  '^https?://github\.com/zhuguang-ZFG/STM32/actions/workflows/mcu-',
-  '^https?://zhuguang-zfg\.github\.io/STM32/mcu',
+  # 合并窗口放行已删除（2026-11-11 P5 收尾）：子树已合入 main、目标站已首部署，
+  # 原三类必然 404（blob/tree/workflows 的 main 引用 + zhuguang-zfg.github.io/STM32/mcu）
+  # 经线上回读全部 200。删除后外链门恢复全量巡检。
 ]
 
 # 外站常见 30x 链（doi → 出版社登录页、CDN 跳转）需要多于默认 5 跳。
