@@ -3,7 +3,13 @@ name: Book CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'mcu/**'
+      - '.github/workflows/mcu-*.yml'
   pull_request:
+    paths-ignore:
+      - 'mcu/**'
+      - '.github/workflows/mcu-*.yml'
   workflow_dispatch:
 
 permissions:

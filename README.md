@@ -94,6 +94,8 @@
 | 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
 
 > 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
+>
+> 姊妹书（本仓 `mcu/` 目录）：[**通往单片机之路**](mcu/README.md) —— 把一颗芯片讲透：寄存器级 STM32F407 × ESP32-S3 双路线 · C 语言精髓 · RTOS 双精讲。在线站 <https://zhuguang-zfg.github.io/STM32/mcu/>。与本书互补：它纵深（寄存器级单芯片），本书广度的多系列迁移与交付路径。
 
 ## 动画演示（GitHub 页面直接播放）
 

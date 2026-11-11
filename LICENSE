@@ -52,3 +52,13 @@ SOFTWARE.
 
 STM32、STM32Cube、Nucleo、Discovery、Keil、IAR、FreeRTOS 等名称与标识归各自
 权利人所有。本仓库仅用于学习与技术交流，与上述公司无隶属或合作关系。
+
+## 5. `mcu/` 目录 —— Apache-2.0
+
+`mcu/` 目录（《通往单片机之路》，原独立仓库
+[zhuguang-ZFG/mcu](https://github.com/zhuguang-ZFG/mcu) 整树并入）**整体适用
+Apache License 2.0**，完整文本见 [`mcu/LICENSE`](mcu/LICENSE)。
+
+该目录内的代码、文档、图片不受本文件第 1、2 节（MIT / CC BY 4.0）约束；
+反之，`mcu/` 之外的仓库内容不适用 Apache-2.0。跨目录复制内容时按来源目录
+的许可与署名要求执行。
