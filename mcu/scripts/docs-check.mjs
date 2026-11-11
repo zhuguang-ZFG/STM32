@@ -156,8 +156,8 @@ export function checkLinks(root) {
           if (!ownAnchors.has(target.slice(1))) problems.push(`${at} 本页锚点 ${target} 没有对应标题`)
           continue
         }
-        if (target.startsWith('/mcu/')) {
-          problems.push(`${at} ${target} 是站内绝对路径——/mcu/ 前缀只在部署后存在，源文件里必须写相对路径`)
+        if (target.startsWith('/STM32/mcu/') || target.startsWith('/mcu/')) {
+          problems.push(`${at} ${target} 是站内绝对路径——该前缀只在部署后存在，源文件里必须写相对路径`)
           continue
         }
         const hash = target.indexOf('#')

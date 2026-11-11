@@ -64,7 +64,7 @@ export function plainHeading(text) {
  * `/mcu/build/00-toolchain.html#…` 也算成"翻到了导览页"——那是这一门最容易出的伪绿，
  * 2147 全绿不能建立在这上面。
  */
-export function pageHrefPaths(docsRel, base = '/mcu/') {
+export function pageHrefPaths(docsRel, base = '/STM32/mcu/') {
   const noExt = docsRel.replace(/\.md$/, '')
   if (noExt === 'index') return [base, `${base}index.html`]
   if (noExt.endsWith('/index')) {
@@ -170,7 +170,7 @@ export function loadSearchable(indexJson) {
  *     所以这个决定必须写在这里，而不是靠一个不存在的参数默认值。
  * @returns {{ missing: {term: string, page: string, hits: number}[], checked: number }}
  */
-export function checkSearchHits(indexJson, entries, { base = '/mcu/' } = {}) {
+export function checkSearchHits(indexJson, entries, { base = '/STM32/mcu/' } = {}) {
   const ms = loadSearchable(indexJson)
   const missing = []
   for (const { term, page } of entries) {

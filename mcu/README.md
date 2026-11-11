@@ -2,14 +2,16 @@
 
 > 把一颗芯片讲透：寄存器级 STM32F407 × ESP32-S3 双路线 · C 语言精髓 · RTOS 双精讲 · 全程实物实验
 
+> **迁移注记（2026-11-11）**：本目录已作为 `mcu/` 子目录并入 [zhuguang-ZFG/STM32](https://github.com/zhuguang-ZFG/STM32)（原独立仓库整树保留历史，快照 tag `mcu-pre-merge-archive`）。在线站新地址 <https://zhuguang-zfg.github.io/STM32/mcu/>（旧地址 `…/mcu/` 由归档壳仓重定向）。本目录整体适用 Apache-2.0（见 [`LICENSE`](LICENSE)），与外层仓库的双许可互不干涉。所有 npm/agent 命令在本目录（`mcu/`）内运行。
+
 受[通往AGI之路](https://waytoagi.feishu.cn/)启发——像它讲 AI 一样讲单片机：开源、体系化、面向初学者，但**不浅**。我们的信条是"挖掘精髓"：每一个知识点都要追到寄存器、追到源码、追到示波器上的波形。
 
-[![站点部署](https://github.com/zhuguang-ZFG/mcu/actions/workflows/deploy.yml/badge.svg)](https://github.com/zhuguang-ZFG/mcu/actions/workflows/deploy.yml)
-[![质量闸门](https://github.com/zhuguang-ZFG/mcu/actions/workflows/quality.yml/badge.svg)](https://github.com/zhuguang-ZFG/mcu/actions/workflows/quality.yml)
+[![站点部署](https://github.com/zhuguang-ZFG/STM32/actions/workflows/mcu-deploy.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/mcu-deploy.yml)
+[![质量闸门](https://github.com/zhuguang-ZFG/STM32/actions/workflows/mcu-quality.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/mcu-quality.yml)
 [![许可：Apache-2.0](https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF-Apache--2.0-blue)](#许可)
-[![最近更新](https://img.shields.io/github/last-commit/zhuguang-ZFG/mcu)](https://github.com/zhuguang-ZFG/mcu/commits/main)
+[![最近更新](https://img.shields.io/github/last-commit/zhuguang-ZFG/STM32)](https://github.com/zhuguang-ZFG/STM32/commits/main)
 
-**在线站点：<https://zhuguang-zfg.github.io/mcu/>** —— 读书去那里。整书离线版（94 章单文件 HTML / A4 PDF，动画即播、断网可读）随站点发布在 [**/mcu/book/**](https://zhuguang-zfg.github.io/mcu/book/mcu-deep-book.html)，[入口页](docs/reference/book.md)有说明。本页是**仓库地图**：内容有入口、代码在哪、规范在哪、怎么在本地跑起来。
+**在线站点：<https://zhuguang-zfg.github.io/STM32/mcu/>** —— 读书去那里。整书离线版（94 章单文件 HTML / A4 PDF，动画即播、断网可读）随站点发布在 [**/mcu/book/**](https://zhuguang-zfg.github.io/STM32/mcu/book/mcu-deep-book.html)，[入口页](docs/reference/book.md)有说明。本页是**仓库地图**：内容有入口、代码在哪、规范在哪、怎么在本地跑起来。
 
 ⚠️ **这是学习材料，不是安全或选型依据。** 引脚、阈值、时序以芯片 datasheet 为准；凡是没接仪器量过的现象，页面上一律写「待上板实测」，请不要当已验证数据引用。
 

@@ -14,7 +14,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const HOST = 'https://zhuguang-zfg.github.io'
-export const BASE = '/mcu/'
+export const BASE = '/STM32/mcu/'
 
 /** 每页必需的 meta：属性名 + 键名。 */
 export const REQUIRED_META = [

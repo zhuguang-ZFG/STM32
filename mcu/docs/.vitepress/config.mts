@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HOST = 'https://zhuguang-zfg.github.io'
-const BASE = '/mcu/'
+const BASE = '/STM32/mcu/'
 const SITE_DESC = '寄存器级 STM32F407 × ESP32-S3 深度教学：C 语言精髓 · RTOS 双精讲 · 全程实物实验'
 const OG_IMAGE = `${HOST}${BASE}og-cover.png`
 

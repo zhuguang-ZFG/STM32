@@ -22,14 +22,14 @@ const server = spawn(process.execPath, ['node_modules/vitepress/bin/vitepress.js
 let browser
 try {
   for (let i=0;i<60;i++) {
-    try { if ((await fetch(origin+'/mcu/')).ok) break } catch {}
+    try { if ((await fetch(origin+'/STM32/mcu/')).ok) break } catch {}
     await new Promise(r => setTimeout(r, 250))
   }
   browser = await chromium.launch({ channel: process.env.PLAYWRIGHT_CHANNEL || undefined, headless: true })
   const page = await browser.newPage({ viewport: { width: 1365, height: 900 } })
   const errors=[]
   page.on('pageerror', e=>errors.push(e.message))
-  await page.goto(origin+'/mcu/', { waitUntil: 'networkidle' })
+  await page.goto(origin+'/STM32/mcu/', { waitUntil: 'networkidle' })
   const initial = await page.evaluate(() => performance.getEntriesByType('resource').map(r => ({name:r.name, bytes:r.transferSize})))
   await page.locator('.VPNavBarSearch button').click()
   try { await page.locator('#localsearch-input').fill('I2C', {timeout:10000}) }

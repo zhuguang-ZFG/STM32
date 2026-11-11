@@ -9,9 +9,9 @@ name: 外链巡检
 on:
   push:
     branches: [main]
-    paths: ['**/*.md', '.lychee.toml', '.github/workflows/links.yml']
+    paths: ['mcu/**/*.md', 'mcu/.lychee.toml', '.github/workflows/mcu-links.yml']
   pull_request:
-    paths: ['**/*.md', '.lychee.toml', '.github/workflows/links.yml']
+    paths: ['mcu/**/*.md', 'mcu/.lychee.toml', '.github/workflows/mcu-links.yml']
   # 月度复查：.lychee.toml 里的放行清单（证书链不全、反爬）要定期重看，
   # 站点修好之后就该把那条删掉，不能让放行清单变成化石。
   schedule:
@@ -38,8 +38,8 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
-            --config .lychee.toml --no-progress
-            './docs/**/*.md' './README.md' './CONTRIBUTING.md' './mcu-book/**/*.md' './code/**/*.md'
+            --config mcu/.lychee.toml --no-progress
+            './mcu/docs/**/*.md' './mcu/README.md' './mcu/CONTRIBUTING.md' './mcu/mcu-book/**/*.md' './mcu/code/**/*.md'
           output: lychee-report-1.md
           fail: true
 
@@ -56,8 +56,8 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
-            --config .lychee.toml --no-progress
-            './docs/**/*.md' './README.md' './CONTRIBUTING.md' './mcu-book/**/*.md' './code/**/*.md'
+            --config mcu/.lychee.toml --no-progress
+            './mcu/docs/**/*.md' './mcu/README.md' './mcu/CONTRIBUTING.md' './mcu/mcu-book/**/*.md' './mcu/code/**/*.md'
           output: lychee-report-2.md
           fail: true
 
