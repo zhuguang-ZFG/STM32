@@ -357,7 +357,7 @@ $5 = "sensor_task\000..."    ← 肇事者
 | heap_4 相邻合并 | 上游 V11.1.0 `portable/MemMang/heap_4.c:492`（prvInsertBlockIntoFreeList） |
 | 指标 API 可用性 | 同上逐文件核对：heap_1:149、heap_2:334、heap_4:413、heap_5:435/441 |
 | 动态任务栈来自堆 | 上游 V11.1.0 `tasks.c:1718`（xTaskCreate → pvPortMalloc） |
-| 碎片实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/mcu/tree/main/code/rtos/01-freertos-lab) 场景 5 |
+| 碎片实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/rtos/01-freertos-lab) 场景 5 |
 | 动画 | [heap4-coalesce.svg](/anim/heap4-coalesce.svg) |
 
 ## 延伸阅读

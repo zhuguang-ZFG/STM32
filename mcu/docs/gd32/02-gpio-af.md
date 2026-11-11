@@ -269,7 +269,7 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 ## 实物实验
 
 - **桌面点名（5 分钟）**：合上本文，对照 `.trellis/ref/gd32/gd32f4xx_gpio.h:52-63` 把 12 个寄存器的偏移从 0x00 默写到 0x2C，标出哪两个是 STM32 没有的。
-- **翻译练习（10 分钟）**：打开 [S3 的 00-blink main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/main.c)，把每行 STM32 寄存器操作翻译成 GD32 版（PF6→PF6，MODER→CTL……），再翻回本文核对。
+- **翻译练习（10 分钟）**：打开 [S3 的 00-blink main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/main.c)，把每行 STM32 寄存器操作翻译成 GD32 版（PF6→PF6，MODER→CTL……），再翻回本文核对。
 - **上板（待基准板）**：拿到 GD32F450 板后，用 TG 寄存器写最小 blink（`GPIOF_TG = 1UL<<6` 循环+延时），与 OCTL 读-改-写版对比，示波器上看边沿应完全一致；量 PF6 翻转频率还能顺手验证 G1 的 200MHz 时钟树（**待上板实测**）。
 
 ## 常见坑
@@ -316,7 +316,7 @@ GPIO_PUD(gpiox) |=  GPIO_PUPD_SET(pin, pupd);       /* 写上下拉            *
 | RCU_AHB1EN bit0~8（GPIOA~I） | gd32f4xx_rcu.h:53,209-217 |
 | 库函数 API 清单（mode_set/output_options_set/af_set/toggle） | gd32f4xx_gpio.h:372-404 |
 | PA8 AF0 配 CK_OUT0 实例 | example_ckout_main.c:135（G1 第五节引用） |
-| STM32 侧对照锚（MODER~AFRH 偏移与 PF6 流程） | [code/stm32/00-blink/main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/main.c)；RM0090 §8.4 |
+| STM32 侧对照锚（MODER~AFRH 偏移与 PF6 流程） | [code/stm32/00-blink/main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/main.c)；RM0090 §8.4 |
 
 ## 你做到了
 

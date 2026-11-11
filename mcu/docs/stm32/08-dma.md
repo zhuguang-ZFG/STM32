@@ -199,7 +199,7 @@ SPL 的 `DMA_Init()` 做的是同一组落位，但 StdPeriph 未随 ST 官方 G
 | 概念 | 落点 |
 |---|---|
 | DIR/CHSEL/CIRC/MINC 位定义 | ST CMSIS `stm32f407xx.h`（DMA_SxCR 段） |
-| USART1_RX → DMA2 Stream5 Ch4 | [code/stm32/03-uart-dma/main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/03-uart-dma/main.c)（取值依据与自检步骤见工程 README） |
+| USART1_RX → DMA2 Stream5 Ch4 | [code/stm32/03-uart-dma/main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/03-uart-dma/main.c)（取值依据与自检步骤见工程 README） |
 | HIFCR/LIFCR 清标志 | 同上 `DMA2_Stream5_IRQHandler()` |
 | 环形缓冲水位实验 | 同上 `g_rx_buf` + `g_half_events`/`g_full_events` |
 | 动画 | [dma-circular-buffer.svg](/anim/dma-circular-buffer.svg)、[dma-pingpong.svg](/anim/dma-pingpong.svg)（已修订）、[dma-hal-en-window.svg](/anim/dma-hal-en-window.svg)（§八对账） |

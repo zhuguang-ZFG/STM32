@@ -1,0 +1,829 @@
+{
+  "generated_for": "P1 AC6 mapping (candidate worktree)",
+  "git_root": "D:\\Users\\STM32-mcu-merge-p1",
+  "mcu_project_root": "D:\\Users\\STM32-mcu-merge-p1\\mcu",
+  "active_tasks_from_context": 23,
+  "notes": [
+    "Scanned json/jsonl/md under mcu/.trellis/tasks for absolute path tokens and /mcu/ references.",
+    "Classification is static evidence; no task status or history records were modified."
+  ],
+  "files_scanned": 373,
+  "files_with_absolute_paths": 50,
+  "files_with_mcu_path_token": 8,
+  "findings": [
+    {
+      "file": "mcu/.trellis/tasks/10-06-b3-linker-script/research/sources-and-evidence.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 14,
+          "text": "| RM0090 **Rev 22** 全文 | 本机 `D:\\Temp`/`/tmp/rm0090.pdf`，21,385,881 B，sha256 `f3ff2322eec21f4e49081f68481b764506eee81dba6031bc767e2f8955b27cca`；**PDF 不入库**，正文引原文+页码 | MEMORY 地块与 CCM 结论的裁决来源 |"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-06-gd32-tracks/research/baseline-and-sources.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 55,
+          "text": "   工具教训：Windows git.exe 不认 MSYS 路径 `/d/tmp/...`，会写到 `D:\\d\\tmp\\...`（与 curl -o 同类）；克隆命令须用 `D:/tmp/...` 或先 cd。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 32,
+          "text": "1. 封面已生成并上传过一次：`video/out/season-cover-bili.png`（1920×1200，走 `buildCover(browser, ep, 'bili', …)` 产线，`.temp/bili-season-cover.mjs`），URL `https://archive.biliimg.com/bfs/archive/4ab3266e20a3609f8a8d5aa44680959f6552a82b.png`。若隔太久失效，重跑 `node ."
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-22-video-v2-remaster/implement.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 180,
+          "text": "- Consumes: 常驻 Chromium `http://127.0.0.1:9223` 的登录态；各平台管理页。"
+        },
+        {
+          "line": 185,
+          "text": "`probe-platforms.mjs` 只用 `connectOverCDP('http://127.0.0.1:9223')` 与 `ctx.newPage()`；结束只 `page.close()`，不 `browser.close()`。每个平台打开下列页面，等待 6 秒，扫描**可见文本**里是否出现「删除 / 更换视频 / 换源 / 重新上传」；如果菜单默认收起，只点 `更多`/`⋯` 这类展开按钮，**绝不点最终删除/确认**。"
+        },
+        {
+          "line": 189,
+          "text": "  bilibili: 'https://member.bilibili.com/platform/upload-manager/article',"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/design.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/implement.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 5,
+          "text": "以姊妹项目 `D:\\Users\\BMS-Z` 的工程化做法为参照，把 mcu 仓库的**验证纵深**补齐：让\"提交前能自查、上线物被检查、发布物有凭据、手工写的结论被机器对账\"。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/research/bmsz-gap-analysis.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": "来源：两个只读侦察（`agent://BmszInfraAudit`、`agent://McuInfraAudit`，各 2.5–3.2 分钟，全文件级读证）。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/research/verification-log.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 17,
+          "text": "注意：本机 `bash` 指向未安装的 WSL（`C:\\Windows\\system32\\bash.exe`），Git Bash 侧要用 `sh` 调用。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-25-book-production/research/standards-and-community.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 7,
+          "text": "- 来源：*Requirements for Chinese Text Layout 中文排版需求*（W3C Working Draft，持续更新）<https://www.w3.org/TR/clreq>"
+        },
+        {
+          "line": 16,
+          "text": "  - 《图书出版印刷常用的开本成品尺寸以及常用术语》<https://m.douban.com/group/topic/34460755>：**787×1092 1/16（正 16 开）= 185×260 mm**，常见 40 行 × 41 字 ≈ 1640 字/面。"
+        },
+        {
+          "line": 27,
+          "text": "- **Pro Git 2nd（`progit/progit2`、`progit/progit2-zh`）** <https://github.com/progit/progit2>"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-26-chapter-art/research/reference-yuyu-style.md",
+      "type": "absolute_path",
+      "classification": "historical_local_absolute_path",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 1,
+          "text": "# 参考项目调研：御舆书（D:/Users/claude/claude-code-book-main）vs 现行手绘风"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-27-ai-dev-deepen/implement.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 70,
+          "text": "- 印前新坑四连（续前三连）：①其他任务未提交改动引入 庭/胆/讯 三字缺子集 → SimSun 回退（首见 36 页），子集重建 2144→2147 字解决；②`C:\\Windows\\Fonts\\CascadiaMono.ttf` 名为 static 实为可变字体（fvar/gvar/cvar 在），provenance 漂移成 axes=\"static\" 后子集未钉轴 → 全书代码（含行内 code）被 Chromium 嵌成无名 Type3（/DAAAAA+Cascad"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-27-ai-dev-deepen/research/external-sources.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 17,
+          "text": "    \"url\": \"https://code.visualstudio.com/docs/agents/overview\","
+        },
+        {
+          "line": 26,
+          "text": "    \"url\": \"https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode\","
+        },
+        {
+          "line": 35,
+          "text": "    \"url\": \"https://code.visualstudio.com/docs/languages/cpp\","
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/10-28-social-video-ai-tools/design.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 15,
+          "text": "运行入口统一：`PYTHONPATH=D:/Users/mcu/video/pydeps python <skill>/scripts/handdraw_video.py <cmd> <job>`（harness 只认裸 `python`，钉在 scoop 3.13 基座；基座 edge-tts/ffmpeg 仍可用，pydeps 遮蔽 PIL/numpy/scipy 版本）。"
+        },
+        {
+          "line": 53,
+          "text": "- harness 拒绝一切路径形式首 token（127）——只用裸命令名；MSYS `/d/…` 路径不进 Windows 程序 argv——一律 `D:/…`"
+        },
+        {
+          "line": 55,
+          "text": "- fonts.py 无 Windows 分支 → job.json 必须显式 `font.path`（手写 `C:/Windows/Fonts/simkai.ttf`、字幕 `C:/Windows/Fonts/msyh.ttc` index 0），否则 fontconfig 空链直接报错"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-02-skill-remaster/specs.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 95,
+          "text": "- 偏差记录：skill Step 0「启动前检查上游更新」未执行——`C:\\Users\\zhugu\\.agents\\skills\\guizang-ppt-skill` 不是 git 仓库（无 upstream 可 fetch），按本地版本继续；校验器 M2 标题间距会把非活动页的 `translateY(10px)` 前态算进去，凡按文档下限（32/14 px）贴线设置都会误报，需按真实间距 +10 px 预留"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-06-spec-plan-continuation/research/b0-before.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 40,
+          "text": "- 本站取证用 **xPack GNU Arm Embedded GCC 15.2.1**（`D:/zhugu-home/tools/armgcc/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin`），与 CI 的 arm-host job 同源；宿主侧 **MinGW-Builds gcc 16.1.0**（x86-64）。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-06-spec-plan-continuation/research/b0-candidate.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 40,
+          "text": "- 本站取证用 **xPack GNU Arm Embedded GCC 15.2.1**（`D:/zhugu-home/tools/armgcc/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin`），与 CI 的 arm-host job 同源；宿主侧 **MinGW-Builds gcc 16.1.0**（x86-64）。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-book-depth-handdraw/research/agent-recovery.md",
+      "type": "absolute_path",
+      "classification": "historical_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": "四个scout任务收到watchdog后已检查proc://与各自状态。原任务被运行保护停止；恢复后没有得到满足委托合同的完整报告。现proc://已无这四个研究任务运行，不再反复恢复或重新分派同一批。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-book-depth-handdraw/research/delivery-closure.md",
+      "type": "absolute_path",
+      "classification": "historical_pre_merge_workspace_path_needs_adaptation_if_reexecuted",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 19,
+          "text": "执行时对实际改动调用plan/run，记录原样reason、changes、checks。若仍无基线，交operator一个精确请求：为D:/Users/mcu和该用户回合建立合法项目/git baseline并提供配置检查；在其授权且可操作后再run。只读源码与repo中没有检索到该工具配置不等于整个宿主无配置。不访问未授权omp全局设置，不自行建第二套operator配置。手动/CI证据单列，未覆盖继续unverified。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-book-depth-handdraw/research/environment-prerequisites.json",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 7,
+          "text": "        \"C:\\\\Users\\\\zhugu\\\\tools\\\\gcc-arm-none-eabi-10.3-2021.10\\\\bin\\\\arm-none-eabi-gcc.exe\""
+        },
+        {
+          "line": 14,
+          "text": "        \"C:\\\\Users\\\\zhugu\\\\tools\\\\gcc-arm-none-eabi-10.3-2021.10\\\\bin\\\\arm-none-eabi-nm.exe\""
+        },
+        {
+          "line": 21,
+          "text": "        \"D:\\\\zhugu-home\\\\.espressif\\\\tools\\\\openocd-esp32\\\\v0.12.0-esp32-20260304\\\\openocd-esp32\\\\bin\\\\openocd.exe\""
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-book-depth-handdraw/research/visual-baseline.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 5,
+          "text": "      \"url\": \"https://zhuguang-zfg.github.io/mcu/c/02-pointer.html\","
+        },
+        {
+          "line": 87,
+          "text": "      \"url\": \"https://zhuguang-zfg.github.io/mcu/stm32/11-i2c.html\","
+        },
+        {
+          "line": 134,
+          "text": "      \"url\": \"https://zhuguang-zfg.github.io/mcu/rtos/freertos/03-scheduler.html\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-language-batch5/research/implementation-evidence.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 57,
+          "text": "bg_40成功后启动本任务preview4198。启动参数的ready.log误用Local:，而preview实际日志是Built site served，因此工具等待标记超时；未计ready通过。服务进程仍在，实际浏览器成功打开http://localhost:4198/mcu/build/07-build-system.html并读到正文，以实际加载/交互为证，不重新启动绕过或修改站点。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-language-batch5/research/reading-evidence.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 128,
+          "text": "- 第四批发布已独立完成：PR16的18项检查全SUCCESS后合并3083db1；该SHA的Book CI/外链/Pages三run均success，线上七处新文在、旧文无，四视口目录/答案与代码内部滚动正常。详细远端证据：https://github.com/zhuguang-ZFG/mcu/pull/16#issuecomment-6702978610 。这些是前批发布结果，不是本任务正文实施的通过项。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/11-07-language-batch5/research/source-evidence.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 513,
+          "text": "    \"url\": \"https://zhuguang-zfg.github.io/mcu/build/07-build-system.html\","
+        },
+        {
+          "line": 607,
+          "text": "    \"pr\": \"https://github.com/zhuguang-ZFG/mcu/pull/16\","
+        },
+        {
+          "line": 608,
+          "text": "    \"comment\": \"https://github.com/zhuguang-ZFG/mcu/pull/16#issuecomment-6702978610\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-01-site-foundation/design.md",
+      "type": "absolute_path",
+      "classification": "historical_pre_merge_workspace_path_needs_adaptation_if_reexecuted",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 8,
+          "text": "D:/Users/mcu"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/implement.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 58,
+          "text": "B3 与质量修复已提交推送。远端全部 9 个 jobs（含 Pages）成功：[运行记录](https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587)。上板测量仍为独立后续事项，不影响本次软件/CI 修复验收。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/task.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 24,
+          "text": "  \"notes\": \"25 unit + 3 browser tests, ARM/host, six ESP32-S3 projects, Pages all success. https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587. Hardware remains pending as documented.\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/research/baseline-performance.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 79,
+          "text": "      \"name\": \"http://127.0.0.1:43187/mcu/assets/style.BW09WufU.css\","
+        },
+        {
+          "line": 83,
+          "text": "      \"name\": \"http://127.0.0.1:43187/mcu/vp-icons.css\","
+        },
+        {
+          "line": 87,
+          "text": "      \"name\": \"http://127.0.0.1:43187/mcu/assets/app.CCGB7JIn.js\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/research/ci-first-success.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 6,
+          "text": "  \"url\": \"https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587\","
+        },
+        {
+          "line": 11,
+          "text": "      \"url\": \"https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369357124\""
+        },
+        {
+          "line": 16,
+          "text": "      \"url\": \"https://github.com/zhuguang-ZFG/mcu/actions/runs/37492733587/job/112369357981\""
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/research/final-performance.json",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 79,
+          "text": "      \"name\": \"http://127.0.0.1:51023/mcu/assets/style.BW09WufU.css\","
+        },
+        {
+          "line": 83,
+          "text": "      \"name\": \"http://127.0.0.1:51023/mcu/vp-icons.css\","
+        },
+        {
+          "line": 87,
+          "text": "      \"name\": \"http://127.0.0.1:51023/mcu/assets/app.CnlxFApe.js\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/research/validation.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 51,
+          "text": "- [立创板卡介绍](https://wiki.lckfb.com/zh-hans/szpi-esp32s3/beginner/introduction.html)：扩展口 GPIO10/11。"
+        },
+        {
+          "line": 52,
+          "text": "- [立创 QMI8658 教程](https://wiki.lckfb.com/zh-hans/szpi-esp32s3/beginner/attitude-sensor.html)：I2C GPIO1/2、0x6A、ID、寄存器图与读取路径；示例改用新 I2C master，配置关闭自测试。"
+        },
+        {
+          "line": 53,
+          "text": "- [立创 ES8311 教程](https://wiki.lckfb.com/zh-hans/szpi-esp32s3/beginner/audio-output-es8311.html)：I2S GPIO38/14/13/45、PCA9557 0x19 bit1 控功放。"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/design.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/implement.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/prd.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/research/baseline-and-sources.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 25,
+          "text": "1. ST CMSIS 头文件： https://raw.githubusercontent.com/STMicroelectronics/cmsis-device-f4/master/Include/stm32f407xx.h"
+        },
+        {
+          "line": 28,
+          "text": "2. FreeRTOS V11.1.0： https://github.com/FreeRTOS/FreeRTOS-Kernel/tree/V11.1.0"
+        },
+        {
+          "line": 31,
+          "text": "3. ESP-IDF v5.5 S3 LEDC 文档： https://docs.espressif.com/projects/esp-idf/en/v5.5/esp32s3/api-reference/peripherals/ledc.html"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-peripheral-lessons/design.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 7,
+          "text": "- 工具链：`arm-none-eabi-gcc`（scoop `gcc-arm-none-eabi10.3`，10.3-2021.10）+ `mingw32-make` 4.4.1（winlibs，`D:\\zhugu-home\\mingw64\\mingw64\\bin`）。Makefile 沿用 `00-blink` 结构；Windows 下需保证 mingw64 的 `sh`/`mkdir`/`rm` 在 PATH，否则 `make clean` 等规则不可用——READM"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-capstone/research/validation.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 7,
+          "text": "- 本机：Windows + `arm-none-eabi-gcc 15.2.1` + mingw64 `gcc` + Git Bash（`sh`/`mkdir -p`）；**ESP-IDF 未完整安装**（`C:\\Espressif` 仅 tools/dist），S3 依赖既有构建产物与 CI 构建。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-reliability/research/planning-evidence.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 31,
+          "text": "- [官方 Watchdogs 文档](https://docs.espressif.com/projects/esp-idf/en/v5.5.2/esp32s3/api-reference/system/wdts.html)，本轮已通过 curl 下载读取，缓存 .trellis/ref/idf-5.5.2-watchdogs.html。"
+        },
+        {
+          "line": 32,
+          "text": "- 本地源码根 C:/Users/zhugu/.espressif/v5.5.2/esp-idf，git describe 输出 v5.5.2。"
+        },
+        {
+          "line": 36,
+          "text": "- [立创官方板卡介绍](https://wiki.lckfb.com/zh-hans/szpi-esp32s3/beginner/introduction.html)：本地既有官方 HTML 缓存写明多功能口 GPIO10/11；现有 UART 工程相同引脚。本轮沿用，不宣称重新核对了所有板卡修订的端子顺序。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-reliability/research/validation.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 24,
+          "text": "Remote CI: https://github.com/zhuguang-ZFG/mcu/actions/runs/37657967783 — all 13 jobs succeeded for 76b619b."
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-08-premium-polish/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_pre_merge_workspace_path_needs_adaptation_if_reexecuted",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 5,
+          "text": "用户要求把 D:\\Users\\mcu（「通往单片机之路」VitePress 教程站）做成**精品项目**，并给出四个验收维度：**看得懂、找得到、学得下去、有兴趣钻研**。用户选择「全量四维打磨」范围，要求分批交付、每批可独立验收（2026-10-08）。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-08-ultimate-polish/implement.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-08-ultimate-polish/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 15,
+          "text": "| 传播力 = 0 | 线上 `https://zhuguang-zfg.github.io/mcu/`：`sitemap.xml` → 404、`robots.txt` → 404；`<head>` 仅 `<title>` + 站点级 description，**无任何 `og:` / `twitter:` / `canonical`** |"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_local_absolute_path",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 5,
+          "text": "对照 `D:/Users/STM32/final-videos`（同物种：1080p30、配音 + SRT、深色幻灯片、11–14 分钟）逐帧比过，"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/task.json",
+      "type": "absolute_path",
+      "classification": "historical_local_absolute_path",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 5,
+          "text": "  \"description\": \"对照 D:/Users/STM32/final-videos 抽帧实测的两处差距：常驻页头带小节信息、内容块纵向铺满；只对未发布新集生效\","
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/after-f5-sem-mutex.json",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": " \"episodePath\": \"D:\\\\Users\\\\mcu\\\\video\\\\episodes\\\\f5-sem-mutex\\\\episode.json\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/after-sec-f5-sem-mutex.json",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": " \"episodePath\": \"D:\\\\Users\\\\mcu\\\\video\\\\episodes\\\\f5-sem-mutex\\\\episode.json\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/baseline-f5-sem-mutex.json",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": " \"episodePath\": \"D:\\\\Users\\\\mcu\\\\video\\\\episodes\\\\f5-sem-mutex\\\\episode.json\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/research/header-f5-sem-mutex.json",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 3,
+          "text": " \"episodePath\": \"D:\\\\Users\\\\mcu\\\\video\\\\episodes\\\\f5-sem-mutex\\\\episode.json\","
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-17-s5-systick-episode/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_environment_or_execution_record",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 92,
+          "text": "- 交叉工具链 PATH 例：`/d/zhugu-home/tools/armgcc/xpack-arm-none-eabi-gcc-15.2.1-1.1/bin`"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-10/10-17-xhs-series-collection/prd.md",
+      "type": "absolute_path",
+      "classification": "historical_local_absolute_path",
+      "sample_count": 2,
+      "samples": [
+        {
+          "line": 20,
+          "text": "| 章节合集 | 「STM32 零基础自学」，24 章节已在里面 | ops 线 2026-10-17 批量入集（`D:/tmp/xhs_join_by_id.py` 等）；本任务不动它 |"
+        },
+        {
+          "line": 22,
+          "text": "| 建合集链路 | 编辑页 → 加入合集 → 弹层 footer「创建合集」→ 名称/简介 →「创建并加入」 | ops 线 `D:/tmp/xhs_make_collection.py` 建章节合集时验过整条 |"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout/design.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-05-spec-completion-plan/research/spec-audit.md",
+      "type": "absolute_path",
+      "classification": "historical_local_absolute_path",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 64,
+          "text": "`trellis-brainstorm` 的用户级目录为空，已从本机 Trellis 安装包读取 codex 模板：`C:/Users/zhugu/AppData/Roaming/npm/node_modules/@mindfoldhq/trellis/dist/templates/codex/skills/brainstorm/SKILL.md`。只读取模板，没有重装技能或更新框架。"
+        }
+      ],
+      "has_mcu_path_token": false
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/b3-before.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 429,
+          "text": "| 136 行图纸本体 | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld)（关键行：`:16` `_estack`、`:24/28` MEMORY、`:38` KEEP、`:91` `_sidata`、`:100` `AT> FLASH`、`:117-123` 检查段） |"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/b3-candidate.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 429,
+          "text": "| 136 行图纸本体 | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld)（关键行：`:16` `_estack`、`:24/28` MEMORY、`:38` KEEP、`:91` `_sidata`、`:100` `AT> FLASH`、`:117-123` 检查段） |"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/b4-before.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 19,
+          "text": "- **能用**：打开 [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) 逐行讲出每条指令在干什么，并在 GDB 里从复位单步验证。"
+        },
+        {
+          "line": 219,
+          "text": "| 向量表头两项 | [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) `g_pfnVectors` 开头 |"
+        },
+        {
+          "line": 222,
+          "text": "| `_estack` / `_sidata` / `_sdata` / `_edata` | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld) 第 16 / 88-97 行 |"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/b4-candidate.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 3,
+      "samples": [
+        {
+          "line": 19,
+          "text": "- **能用**：打开 [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) 逐行讲出每条指令在干什么，并在 GDB 里从复位单步验证。"
+        },
+        {
+          "line": 219,
+          "text": "| 向量表头两项 | [startup_stm32f407xx.s](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/startup_stm32f407xx.s) `g_pfnVectors` 开头 |"
+        },
+        {
+          "line": 222,
+          "text": "| `_estack` / `_sidata` / `_sdata` / `_edata` | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld) 第 16 / 88-97 行 |"
+        }
+      ],
+      "has_mcu_path_token": true
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/research/implementation-evidence.md",
+      "type": "mcu_path_token_only",
+      "classification": "needs_context_review"
+    },
+    {
+      "file": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch4/research/implementation-evidence.md",
+      "type": "absolute_path",
+      "classification": "historical_url_or_external_reference",
+      "sample_count": 1,
+      "samples": [
+        {
+          "line": 54,
+          "text": "bg_33完成后启动本任务preview服务，实际就绪URL为http://localhost:4197/mcu/。两页用真实浏览器打开，不以请求200或DOM存在替代交互。"
+        }
+      ],
+      "has_mcu_path_token": true
+    }
+  ]
+}

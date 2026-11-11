@@ -11,7 +11,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { BASE, collectHtmlPages } from './seo-check.mjs'
+import { collectHtmlPages } from './seo-check.mjs'
+import { BASE } from './site-config.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DEFAULT_DIST = path.join(ROOT, 'docs', '.vitepress', 'dist')
@@ -49,7 +50,7 @@ export function resolveHref(href, fromPage) {
   const fragment = href.slice(hash + 1)
   let p = href.slice(0, hash).split('?')[0]
   if (!p) return { target: fromPage, fragment }
-  if (p === BASE.slice(0, -1)) p = '' // 裸 base（"/mcu"），按站点根处理
+  if (p === BASE.slice(0, -1)) p = '' // 裸 base（"/STM32/mcu"），按站点根处理
   else if (p.startsWith(BASE)) p = p.slice(BASE.length) // 站内绝对路径按 base 解析
   else if (p.startsWith('/')) {
     // BASE 之外的绝对路径：产物里不该出现。站点挂在 BASE（/mcu/）下，浏览器会把这种

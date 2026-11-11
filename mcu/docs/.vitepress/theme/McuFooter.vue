@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { withBase } from 'vitepress'
+// @ts-ignore 纯 JS 站点身份单源（scripts/site-config.mjs）
+import { REPO } from '../../../scripts/site-config.mjs'
 
-const GH = 'https://github.com/zhuguang-ZFG/mcu'
+// 合并后仓库身份指向 STM32 单仓；blob 链接必须带 mcu/ 源码前缀。
+const GH = REPO
 
 const columns = [
   {
@@ -40,7 +43,7 @@ const columns = [
     links: [
       { text: 'GitHub 仓库', href: GH },
       { text: '提 Issue / 报错', href: `${GH}/issues` },
-      { text: '贡献指南', href: `${GH}/blob/main/CONTRIBUTING.md` },
+      { text: '贡献指南', href: `${GH}/blob/main/mcu/CONTRIBUTING.md` },
     ],
   },
 ]
@@ -71,7 +74,7 @@ const columns = [
         </p>
         <p class="mcu-footer__legal">
           内容以
-          <a :href="`${GH}/blob/main/LICENSE`" target="_blank" rel="noopener noreferrer">Apache-2.0</a>
+          <a :href="`${GH}/blob/main/mcu/LICENSE`" target="_blank" rel="noopener noreferrer">Apache-2.0</a>
           发布 · 标注"待核验 / 待实测"的结论尚未上板闭环，引用前请自行核对
         </p>
       </div>

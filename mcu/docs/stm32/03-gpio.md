@@ -16,7 +16,7 @@ minutes: 30
 3. 复用（AF）是引脚的第二人生：AFRL/AFRH 每脚 4 位选 AF0~AF15：引脚还是那个引脚，数据源从 ODR 换成外设；datasheet 的复用表是唯一的真值。
 
 - **能理解**：为什么改位要用 BSRR 而不是 ODR，第二节的翻车现场会回答你。
-- **能用**：把 [00-blink 的 main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/main.c) 每一行讲给同学听，讲不顺的地方回来重读。
+- **能用**：把 [00-blink 的 main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/main.c) 每一行讲给同学听，讲不顺的地方回来重读。
 
 ## 先修
 
@@ -213,7 +213,7 @@ for (pinpos = 0; pinpos < 16; pinpos++) {
 
 | 本章说的 | 仓库里哪一行 |
 |---|---|
-| 四张表 + BSRR 的地址 | [main.c:29-34](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/main.c) 的宏定义 |
+| 四张表 + BSRR 的地址 | [main.c:29-34](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/main.c) 的宏定义 |
 | 开时钟第一步 | main.c:49 `RCC_AHB1ENR |= RCC_AHB1ENR_GPIOFEN;` |
 | 先清零再置位 | main.c:52-56 |
 | BSRR 原子拉低/拉高 | main.c:60-62 |

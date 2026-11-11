@@ -1,0 +1,337 @@
+{
+  "note": "Files ship inside the package. URLs only repair a missing or damaged copy; jsDelivr is pinned to the release tag, GitHub Release is the last fallback.",
+  "files": {
+    "assets/hands/cardigan-fountain.png": {
+      "bytes": 991217,
+      "sha256": "795e40adba8aa5f35f8c28cc8a1e65efde53000be027e14c9b7ebc0d2910d110",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/cardigan-fountain.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/cardigan-fountain.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--cardigan-fountain.png"
+      ]
+    },
+    "assets/hands/child-pencil.png": {
+      "bytes": 1055249,
+      "sha256": "84f6c2b60a5d3c2e2d80a2c98731791f8d033a1334507d05968a781e0cbb1b91",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/child-pencil.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/child-pencil.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--child-pencil.png"
+      ]
+    },
+    "assets/hands/diamond-woman.png": {
+      "bytes": 828890,
+      "sha256": "8713dbb120a87dc98f2bfea2404b8418e452a24ce81d432168579d1ccca0e672",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/diamond-woman.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/diamond-woman.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--diamond-woman.png"
+      ]
+    },
+    "assets/hands/navy.png": {
+      "bytes": 1035863,
+      "sha256": "8be7a4ba993a3e668fdad5fbc7e76cd617d44e851c7da82dc2ffc29d3760fa0d",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/navy.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/navy.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--navy.png"
+      ]
+    },
+    "assets/hands/pen-only.png": {
+      "bytes": 105991,
+      "sha256": "db8773a6b20f76164e24a3f4f3310c8dfeacf151252229f4a8597561d383faca",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/pen-only.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/pen-only.png"
+      ]
+    },
+    "assets/hands/teacher-pen.png": {
+      "bytes": 957378,
+      "sha256": "2c035a0c900589f8650fed9fe6b863773e4496a3c1bb389dcb7dc35501bd1dd5",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/teacher-pen.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/teacher-pen.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--teacher-pen.png"
+      ]
+    },
+    "assets/hands/waner-brush.png": {
+      "bytes": 1070391,
+      "sha256": "3f9028c0a5dc41aa3a503b1f59059d12c0ffc7571f9aa9df24f23ac876578fb2",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/waner-brush.png",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/hands/waner-brush.png",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--hands--waner-brush.png"
+      ]
+    },
+    "assets/style-previews/1.jpg": {
+      "bytes": 78855,
+      "sha256": "baa12d70fdae7457915b34eb54f62dcf7a09ab2f686a6c89e0d7299493e79a17",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/1.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/1.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--1.jpg"
+      ]
+    },
+    "assets/style-previews/10.jpg": {
+      "bytes": 73923,
+      "sha256": "52dc5c3d4dbddb04567992050a858822da0a501ba25e87cc909f250efd354673",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/10.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/10.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--10.jpg"
+      ]
+    },
+    "assets/style-previews/11.jpg": {
+      "bytes": 83654,
+      "sha256": "34815bf92e641467a8f3f7d382896839bda9fac9eb7f431aa3e838fae3550bc5",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/11.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/11.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--11.jpg"
+      ]
+    },
+    "assets/style-previews/12.jpg": {
+      "bytes": 140842,
+      "sha256": "3b04691a4fc8faeeffcc8d5a6daf7e8e90bb892ab151d978443a468acf678828",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/12.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/12.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--12.jpg"
+      ]
+    },
+    "assets/style-previews/13.jpg": {
+      "bytes": 76067,
+      "sha256": "e21e2489aed2d3f14bc583ea16d155c59cf4b2509d48de8370ba79d66475f99f",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/13.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/13.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--13.jpg"
+      ]
+    },
+    "assets/style-previews/14.jpg": {
+      "bytes": 32373,
+      "sha256": "f10c7fa8c33056fea638da9c3de67a4336fff3241e046dd6c06284cfdc9a5f49",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/14.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/14.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--14.jpg"
+      ]
+    },
+    "assets/style-previews/15.jpg": {
+      "bytes": 41685,
+      "sha256": "c15a4891528c94d8bd0467855d39578a30ead0853b742457e59b61c030eb89b7",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/15.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/15.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--15.jpg"
+      ]
+    },
+    "assets/style-previews/16.jpg": {
+      "bytes": 92256,
+      "sha256": "4605b2bcc74aa7dc4690d6c9202a32173d2cd2293607492883cb7bf10f2d6c96",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/16.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/16.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--16.jpg"
+      ]
+    },
+    "assets/style-previews/17.jpg": {
+      "bytes": 114069,
+      "sha256": "af7f4ce6b8bcbe025ac21a127772b0cfb44060cce2d5022229eab893b36b48fb",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/17.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/17.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--17.jpg"
+      ]
+    },
+    "assets/style-previews/18.jpg": {
+      "bytes": 31772,
+      "sha256": "5822e8c05e0d6ef8c60b419a79c8214fcd19af85cc0e04ef6ff96c3f1f6be94b",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/18.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/18.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--18.jpg"
+      ]
+    },
+    "assets/style-previews/19.jpg": {
+      "bytes": 30100,
+      "sha256": "ba07bc199bf66095d882b99618f4a3993b505a4d924c63df7f13e430f7dc36c3",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/19.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/19.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--19.jpg"
+      ]
+    },
+    "assets/style-previews/2.jpg": {
+      "bytes": 168066,
+      "sha256": "8d4605b6d7e84e27b47b1e690473aaa683fa8fc61010543684e653f87a66b321",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/2.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/2.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--2.jpg"
+      ]
+    },
+    "assets/style-previews/20.jpg": {
+      "bytes": 54533,
+      "sha256": "387b6d924556bad7a3c5df7afec70db5dae5a8a07f196e91d5d59cd365b6a148",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/20.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/20.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--20.jpg"
+      ]
+    },
+    "assets/style-previews/3.1.jpg": {
+      "bytes": 76596,
+      "sha256": "395e05ecd07f1d167dcf27e1d88f6e610961175cf0d4edc91082d87db76c5731",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/3.1.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/3.1.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--3.1.jpg"
+      ]
+    },
+    "assets/style-previews/3.jpg": {
+      "bytes": 36651,
+      "sha256": "40eac20000fc963d4f97d7d7603b7b90f8bc115e1f05aac567fb6b20aae17869",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/3.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/3.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--3.jpg"
+      ]
+    },
+    "assets/style-previews/4.jpg": {
+      "bytes": 70437,
+      "sha256": "6baa8fb3b70b904371a0ae2d540b2d3785064c02bc19db03721ec4d4874a1b1f",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/4.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/4.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--4.jpg"
+      ]
+    },
+    "assets/style-previews/5.jpg": {
+      "bytes": 56012,
+      "sha256": "24c0d8718bde588156dbb8f8b989a287430fc8d935777b0f7f6886dd1341b0ac",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/5.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/5.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--5.jpg"
+      ]
+    },
+    "assets/style-previews/6.jpg": {
+      "bytes": 142229,
+      "sha256": "b22e8b5d30d27fc14df5c4607431c619ca28568dd01de287e28eec3765274660",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/6.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/6.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--6.jpg"
+      ]
+    },
+    "assets/style-previews/7.jpg": {
+      "bytes": 105904,
+      "sha256": "20dfdf4db06f8719da287a5ed7b08b4391f8ec35d49e2ef510f6b3f0cadc1855",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/7.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/7.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--7.jpg"
+      ]
+    },
+    "assets/style-previews/8.jpg": {
+      "bytes": 73475,
+      "sha256": "df86ce3e134b68c06eeef14b9eb1dc4af4253d3b0f7fb28c862982c17142cdd7",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/8.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/8.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--8.jpg"
+      ]
+    },
+    "assets/style-previews/9.jpg": {
+      "bytes": 47967,
+      "sha256": "6c7f99412f03ddd86ca4168a34d322ee6d1608f1f85a0ec96a69b811b08de9f9",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/9.jpg",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/style-previews/9.jpg",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2/assets--style-previews--9.jpg"
+      ]
+    },
+    "assets/voices/gentle-intellectual-woman.wav": {
+      "bytes": 1307564,
+      "sha256": "f04d07b6681600a97b4c165183bd0bbb4eea25794a9ed4c835e1eb621aa0a605",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/gentle-intellectual-woman.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/gentle-intellectual-woman.wav"
+      ]
+    },
+    "assets/voices/magnetic-narrator.wav": {
+      "bytes": 1427564,
+      "sha256": "3fbd724c6ba25ef90f2f741702543226639149937818d1172cd6b6d88dd56700",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/magnetic-narrator.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/magnetic-narrator.wav"
+      ]
+    },
+    "assets/voices/previews/bilibili-outro.wav": {
+      "bytes": 354318,
+      "sha256": "148a32a1f2f74a5d6adac8aa46fc9fe6b2f71d49519392c38a388211705d0c20",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/bilibili-outro.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/bilibili-outro.wav",
+        "https://github.com/threerocks/sweety-handdraw-video/releases/download/v1.2.3/assets--voices--previews--bilibili-outro.wav"
+      ]
+    },
+    "assets/voices/previews/gentle-intellectual-woman.wav": {
+      "bytes": 629820,
+      "sha256": "2c8188e4a01eb45a8bfde36dbc1bd89571e68a29d038ad1d4d38e95bf71ce893",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/gentle-intellectual-woman.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/gentle-intellectual-woman.wav"
+      ]
+    },
+    "assets/voices/previews/magnetic-narrator.wav": {
+      "bytes": 676844,
+      "sha256": "918db7d6dc73cdcccfa75666ce02e3d0fec28094bd41340c7c735411089132ee",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/magnetic-narrator.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/magnetic-narrator.wav"
+      ]
+    },
+    "assets/voices/previews/realistic-man.wav": {
+      "bytes": 453644,
+      "sha256": "fdffc60c72ea9d89642dda264a0ca69a70356b27421fca2a8e7b3d475ad5ea3a",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/realistic-man.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/realistic-man.wav"
+      ]
+    },
+    "assets/voices/previews/scholarly-young-man.wav": {
+      "bytes": 666300,
+      "sha256": "dd11d85715c21119a904fd6bf40d2929e5e48b7443e07ecc38c22e944c77fe3d",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/scholarly-young-man.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/scholarly-young-man.wav"
+      ]
+    },
+    "assets/voices/previews/suspense-storyteller.wav": {
+      "bytes": 563564,
+      "sha256": "0497e3d245b98917aa286f7a227934cd32f27c867314bceb40e7a6aec14fb5a7",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/suspense-storyteller.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/previews/suspense-storyteller.wav"
+      ]
+    },
+    "assets/voices/scholarly-young-man.wav": {
+      "bytes": 1201004,
+      "sha256": "567e2e48b803c6b6f92d57226b2d5c16648ddfa9eacd045b2b252eb2be0222c0",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/scholarly-young-man.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/scholarly-young-man.wav"
+      ]
+    },
+    "assets/voices/suspense-storyteller.wav": {
+      "bytes": 1032044,
+      "sha256": "eabcd71f98ee34e00928c496cb94ef9afed70c9bb3f3de180b350adca201484a",
+      "urls": [
+        "https://cdn.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/suspense-storyteller.wav",
+        "https://fastly.jsdelivr.net/gh/threerocks/sweety-handdraw-video@v1.3/skills/sweety-handdraw-video/assets/voices/suspense-storyteller.wav"
+      ]
+    }
+  }
+}

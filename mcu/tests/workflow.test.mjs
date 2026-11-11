@@ -4,13 +4,14 @@ import fs from 'node:fs'
 import { parse } from 'yaml'
 
 const read = (p) => parse(fs.readFileSync(p, 'utf8'))
-const quality = read('.github/workflows/quality.yml')
-const deploy = read('.github/workflows/deploy.yml')
-const book = read('.github/workflows/book.yml')
-const links = read('.github/workflows/links.yml')
+// 合并后 MCU 的 workflows 集中在仓库根（mcu-*.yml），测试从 mcu/ 内经 ../ 读取。
+const quality = read('../.github/workflows/mcu-quality.yml')
+const deploy = read('../.github/workflows/mcu-deploy.yml')
+const book = read('../.github/workflows/mcu-book.yml')
+const links = read('../.github/workflows/mcu-links.yml')
 
 test('deployment depends on the complete reusable gate for this commit', () => {
-  assert.equal(deploy.jobs.quality.uses, './.github/workflows/quality.yml')
+  assert.equal(deploy.jobs.quality.uses, './.github/workflows/mcu-quality.yml')
   assert.equal(deploy.jobs.deploy.needs, 'quality')
   assert.match(deploy.jobs.deploy.if, /needs\.quality\.result == 'success'/)
   assert.match(deploy.jobs.deploy.if, /refs\/heads\/main/)
@@ -42,7 +43,8 @@ test('Python 静态检查作为独立 job 存在，并钉住版本', () => {
   const ruff = steps.find((s) => String(s.uses || '').includes('ruff-action'))
   assert.ok(ruff, 'lint job 必须调用 ruff-action')
   assert.equal(ruff.with.version, '0.15.21', 'ruff 版本要钉住，否则规则集会在上游更新时变脸')
-  assert.equal(ruff.with.args, 'check')
+  assert.match(ruff.with.args, /^check/, 'lint 语义必须是 ruff check')
+  assert.ok(ruff.with.args.includes('mcu/ruff.toml'), '合并后配置集中在 mcu/ruff.toml，仍须显式 --config')
 })
 
 test('整书产物要被回收验证：构建之后必须跑 PDF 契约门与下载打包', () => {
@@ -75,6 +77,29 @@ test('部署前对 artifact 再对一次账，且在 upload-pages-artifact 之�
   // checkout 默认 clean=true，会 reset/clean 工作区：它排在 download-artifact 之后
   // 就会把刚下载的 site/ 当未跟踪文件清掉，后面的 --dist site 变成查空目录。
   assert.ok(checkout >= 0 && download > checkout, 'checkout 必须排在 download-artifact 之前，否则 site/ 会被清掉')
+})
+
+test('AC4：Pages staging 由 assemble-pages 组装，终检+挂载冒烟+upload 指向 staging', () => {
+  const steps = deploy.jobs.deploy.steps
+  const at = (pred) => steps.findIndex(pred)
+  const download = at((s) => String(s.uses || '').includes('download-artifact'))
+  const asmIdx = at((s) => String(s.run || '').includes('assemble-pages.mjs'))
+  assert.ok(asmIdx >= 0, 'deploy 必须调用 scripts/assemble-pages.mjs 组装 staging，不许内联散装 shell')
+  const asm = steps[asmIdx]
+  assert.match(asm.run, /--dist site/, '组装输入必须是下载的站点产物')
+  assert.match(asm.run, /--out \.\.\/\.temp\/pages-site/, 'staging 落仓库根 .temp/pages-site（上传根含 mcu/ 子树）')
+  const stagingAnchor = at((s) => String(s.run || '').includes('pages-check.mjs --dist ../.temp/pages-site/mcu'))
+  const stagingSearch = at((s) => String(s.run || '').includes('search-check.mjs --dist ../.temp/pages-site/mcu'))
+  assert.ok(stagingAnchor >= 0 && stagingSearch >= 0, '最终 staging/mcu 必须再过锚点与搜索两门（对真正上传的那一份）')
+  const smokeIdx = at((s) => String(s.run || '').includes('mount-smoke.mjs'))
+  assert.ok(smokeIdx >= 0, 'deploy 必须跑挂载冒烟（staging 按 /STM32/ 起服务，Chromium 回归）')
+  assert.match(steps[smokeIdx].run, /--mount \/STM32/, '冒烟挂载点必须是 /STM32/')
+  const uploadIdx = at((s) => String(s.uses || '').includes('upload-pages-artifact'))
+  const upload = steps[uploadIdx]
+  assert.equal(upload.with.path, '.temp/pages-site', '上传对象必须是组装后的 staging 根')
+  assert.ok(download >= 0 && download < asmIdx, '组装必须在 download 之后')
+  assert.ok(asmIdx < stagingAnchor && asmIdx < stagingSearch && asmIdx < smokeIdx, '组装先于终检与冒烟')
+  assert.ok(stagingAnchor < uploadIdx && smokeIdx < uploadIdx, '终检与冒烟必须先于上传')
 })
 
 test('外链巡检：两轮制 + 月度复查，且只允许第 1 轮 continue-on-error', () => {

@@ -25,7 +25,7 @@
 
 📕 [整书离线版（HTML/PDF）](mcu-book/) · 🧭 [导读：这条路怎么走](docs/guide/index.md) · 🗺️ [首页学习地图](docs/index.md) · 🔧 [实物装备清单](docs/guide/hardware.md) · 📖 [手册与资料地图](docs/guide/manuals.md) · 🔤 [术语速查](docs/reference/glossary.md) · ❓ [常见问题](docs/reference/faq.md) · 📣 [更新日志](docs/reference/changelog.md) · 🤝 [关于我们与致谢](docs/reference/about.md)
 
-💻 [示例代码目录](code/) · 🎬 [动画规范与自检](.trellis/spec/docs-site/animation.md) · ✍️ [写作结构规范](.trellis/spec/docs-site/structure.md) · 🧩 [实验报告模板](docs/lab/template.md) · 🛠️ [参与共建](CONTRIBUTING.md) · 🐛 [提 Issue](https://github.com/zhuguang-ZFG/mcu/issues)
+💻 [示例代码目录](code/) · 🎬 [动画规范与自检](.trellis/spec/docs-site/animation.md) · ✍️ [写作结构规范](.trellis/spec/docs-site/structure.md) · 🧩 [实验报告模板](docs/lab/template.md) · 🛠️ [参与共建](CONTRIBUTING.md) · 🐛 [提 Issue](https://github.com/zhuguang-ZFG/STM32/issues)
 
 ## 板块进度与入口
 
@@ -168,9 +168,9 @@ npm run site:measure     # 原始/压缩体积与搜索按需加载记录
 
 **Q3 页面上的数字可信吗？** 章节数、动画数、工程数由 `npm run docs:gen` 扫文件得出；正文里的字节数、地址、频率一律来自实测输出，能复跑。凡是没量过的现象标「待上板实测」。
 
-**Q4 动画怎么看？** 章节正文里的动画在**站点**上是内联 SVG（构建期由 `![…](/anim/xxx.svg)` 自动内联成 `<AnimFigure>`），打开即播，随深浅主题换色：<https://zhuguang-zfg.github.io/mcu/>。本地单独看某一张，用浏览器直接打开 `docs/public/anim/xxx.svg` 即可。想批量检查版式（出界/压字），用 [scripts/anim-audit.html](scripts/anim-audit.html)，用法见 [动画规范 §7](.trellis/spec/docs-site/animation.md)。
+**Q4 动画怎么看？** 章节正文里的动画在**站点**上是内联 SVG（构建期由 `![…](/anim/xxx.svg)` 自动内联成 `<AnimFigure>`），打开即播，随深浅主题换色：<https://zhuguang-zfg.github.io/STM32/mcu/>。本地单独看某一张，用浏览器直接打开 `docs/public/anim/xxx.svg` 即可。想批量检查版式（出界/压字），用 [scripts/anim-audit.html](scripts/anim-audit.html)，用法见 [动画规范 §7](.trellis/spec/docs-site/animation.md)。
 
-**Q5 发现写错了怎么办？** 欢迎提 [Issue](https://github.com/zhuguang-ZFG/mcu/issues) 或按 [CONTRIBUTING.md](CONTRIBUTING.md) 直接提 PR——注明文件与小节、原文、应为、依据。本站自己的勘误记录在 [更新日志](docs/reference/changelog.md)，不偷偷改掉。
+**Q5 发现写错了怎么办？** 欢迎提 [Issue](https://github.com/zhuguang-ZFG/STM32/issues) 或按 [CONTRIBUTING.md](CONTRIBUTING.md) 直接提 PR——注明文件与小节、原文、应为、依据。本站自己的勘误记录在 [更新日志](docs/reference/changelog.md)，不偷偷改掉。
 
 ## 参与共建
 

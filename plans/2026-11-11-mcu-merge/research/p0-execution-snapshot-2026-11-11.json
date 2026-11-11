@@ -1,0 +1,79 @@
+{
+  "captured_at": "2026-11-11T17:50:00+08:00",
+  "phase": "P0",
+  "baseline_reference": "plans/2026-11-11-mcu-merge/research/baseline.json",
+  "target": {
+    "path": "D:/Users/STM32",
+    "branch": "feat/mcu-subtree-merge",
+    "head": "92fc917ca6f0c93f0fc736bf3ea1eab3f8c0aec6",
+    "mcu_tree": "93e40d58340884f4d0da88475c382b8f5400fba8"
+  },
+  "source": {
+    "path": "D:/Users/mcu",
+    "branch": "main",
+    "head": "cf161532c823446016a9deb60d31e5263397b7d7",
+    "untracked_non_ignored": [".perch/PERCH.md", ".perch/mcp.json"],
+    "ignored_and_untracked_total_lines": 64673
+  },
+  "checks": {
+    "ancestor": {
+      "base": "cf161532c823446016a9deb60d31e5263397b7d7",
+      "is_ancestor_of_target_head": true,
+      "exit_code": 0
+    },
+    "committed_subtree_delta_source_to_head_mcu": [
+      "D\t.github/workflows/book.yml",
+      "D\t.github/workflows/deploy.yml",
+      "D\t.github/workflows/links.yml",
+      "D\t.github/workflows/quality.yml",
+      "M\tREADME.md",
+      "M\tdocs/.vitepress/config.mts",
+      "M\tscripts/docs-check.mjs",
+      "M\tscripts/measure-site.mjs",
+      "M\tscripts/search-check.mjs",
+      "M\tscripts/seo-check.mjs"
+    ],
+    "matches_planning_baseline": {
+      "target_head": true,
+      "source_head": true,
+      "committed_delta": true,
+      "protected_entry_hashes": true
+    }
+  },
+  "current_target_worktree": {
+    "tracked_modified": [
+      "mcu/.trellis/tasks/10-28-social-video-ai-tools/check.jsonl",
+      "mcu/.trellis/tasks/10-28-social-video-ai-tools/implement.jsonl",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/check.jsonl",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.jsonl",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/prd.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-cards.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/task-ledger.json",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+      "mcu/CITATION.cff"
+    ],
+    "untracked_preexisting_task_docs": [
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/design.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/implement.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/baseline-drift-audit.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/review-handoff.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-evidence.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/w1-language-diffs.md",
+      "mcu/.trellis/tasks/11-07-historical-spec-closure/research/wave0-evidence.md"
+    ],
+    "untracked_local_tooling": [".qoder/settings.local.json"],
+    "untracked_plan_artifacts_this_session": [
+      "plans/2026-11-11-mcu-merge/design.md",
+      "plans/2026-11-11-mcu-merge/implement.md",
+      "plans/2026-11-11-mcu-merge/prd.md",
+      "plans/2026-11-11-mcu-merge/research/baseline.json",
+      "plans/2026-11-11-mcu-merge/research/findings.md"
+    ],
+    "note": "Compared to baseline (17 protected entries including .qoder/ dir marker), .qoder now shows settings.local.json under -uall; all baseline-listed file hashes remain identical."
+  },
+  "wip_backup": {
+    "path": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11",
+    "manifest": "plans/2026-11-11-mcu-merge/research/wip-backup-2026-11-11/manifest.json",
+    "files_backed_up": 22
+  }
+}

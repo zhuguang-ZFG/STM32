@@ -24,4 +24,4 @@ title: B 篇导览
 ## 学习建议
 
 - B3+B4 是全站承上启下的枢纽：前面接 C 篇（段/符号），后面接裸机（启动文件）与 RTOS（栈/移植）；
-- 每条命令都可以在 [code/stm32/00-blink](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/00-blink) 工程上跟着敲——B 篇的全部实验零额外装备。
+- 每条命令都可以在 [code/stm32/00-blink](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/00-blink) 工程上跟着敲——B 篇的全部实验零额外装备。

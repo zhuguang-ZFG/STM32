@@ -1,0 +1,427 @@
+{
+  "count": 45,
+  "tasks": [
+    {
+      "path": "mcu/.trellis/tasks/10-16-bili-season-after-unlock/task.json",
+      "id": "bili-season-after-unlock",
+      "status": "planning",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-16-e04-board-measurement/task.json",
+      "id": "e04-board-measurement",
+      "status": "planning",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-22-video-v2-remaster/task.json",
+      "id": "video-v2-remaster",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-25-bmsz-validation-depth/task.json",
+      "id": "bmsz-validation-depth",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-25-book-production/task.json",
+      "id": "book-production",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-26-cover-art/task.json",
+      "id": "cover-art",
+      "status": "planning",
+      "priority": "P2",
+      "parent": "10-26-de-ai-polish",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-26-de-ai-polish/task.json",
+      "id": "de-ai-polish",
+      "status": "planning",
+      "priority": "P2",
+      "parent": null,
+      "children": [
+        "10-26-prose-polish",
+        "10-26-cover-art"
+      ],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-26-oss-influence/task.json",
+      "id": "oss-influence",
+      "status": "planning",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-26-prose-polish/task.json",
+      "id": "prose-polish",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": "10-26-de-ai-polish",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-27-ai-dev-deepen/task.json",
+      "id": "ai-dev-deepen",
+      "status": "in_progress",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-27-book-interest-polish/task.json",
+      "id": "book-interest-polish",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/10-28-social-video-ai-tools/task.json",
+      "id": "social-video-ai-tools",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-06-animation-d2-closure/task.json",
+      "id": "animation-d2-closure",
+      "status": "in_progress",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-06-animation-reading-experience/task.json",
+      "id": "animation-reading-experience",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-06-language-batch2/task.json",
+      "id": "language-batch2",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-06-language-release-pdf/task.json",
+      "id": "language-release-pdf",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-06-spec-plan-continuation/task.json",
+      "id": "spec-plan-continuation",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-book-delivery-closure/task.json",
+      "id": "book-delivery-closure",
+      "status": "planning",
+      "priority": "P2",
+      "parent": "11-07-book-depth-handdraw",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-book-depth-handdraw/task.json",
+      "id": "book-depth-handdraw",
+      "status": "planning",
+      "priority": "P2",
+      "parent": null,
+      "children": [
+        "11-07-book-depth-rollout",
+        "11-07-book-delivery-closure",
+        "11-07-book-depth-pilot"
+      ],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-book-depth-pilot/task.json",
+      "id": "book-depth-pilot",
+      "status": "planning",
+      "priority": "P2",
+      "parent": "11-07-book-depth-handdraw",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-book-depth-rollout/task.json",
+      "id": "book-depth-rollout",
+      "status": "planning",
+      "priority": "P2",
+      "parent": "11-07-book-depth-handdraw",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-historical-spec-closure/task.json",
+      "id": "historical-spec-closure",
+      "status": "planning",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/11-07-language-batch5/task.json",
+      "id": "language-batch5",
+      "status": "in_progress",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/00-bootstrap-guidelines/task.json",
+      "id": "00-bootstrap-guidelines",
+      "status": "completed",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-01-site-foundation/task.json",
+      "id": "01-site-foundation",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-esp32-driver-lessons/task.json",
+      "id": "esp32-driver-lessons",
+      "status": "completed",
+      "priority": "P2",
+      "parent": "10-06-stm32-depth-animations",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-freertos-kernel-lessons/task.json",
+      "id": "freertos-kernel-lessons",
+      "status": "completed",
+      "priority": "P2",
+      "parent": "10-06-stm32-depth-animations",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-project-quality-reproducibility/task.json",
+      "id": "project-quality-reproducibility",
+      "status": "completed",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-depth-animations/task.json",
+      "id": "stm32-depth-animations",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [
+        "10-06-stm32-peripheral-lessons",
+        "10-06-freertos-kernel-lessons",
+        "10-06-esp32-driver-lessons"
+      ],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-06-stm32-peripheral-lessons/task.json",
+      "id": "stm32-peripheral-lessons",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-capstone/task.json",
+      "id": "knowledge-capstone",
+      "status": "completed",
+      "priority": "P1",
+      "parent": "10-07-knowledge-closure",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-closure/task.json",
+      "id": "knowledge-closure",
+      "status": "completed",
+      "priority": "P1",
+      "parent": null,
+      "children": [
+        "10-07-knowledge-fact-corrections",
+        "10-07-knowledge-prerequisites",
+        "10-07-knowledge-reliability",
+        "10-07-knowledge-capstone"
+      ],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-fact-corrections/task.json",
+      "id": "knowledge-fact-corrections",
+      "status": "completed",
+      "priority": "P1",
+      "parent": "10-07-knowledge-closure",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-prerequisites/task.json",
+      "id": "knowledge-prerequisites",
+      "status": "completed",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-07-knowledge-reliability/task.json",
+      "id": "knowledge-reliability",
+      "status": "completed",
+      "priority": "P1",
+      "parent": "10-07-knowledge-closure",
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-08-premium-polish/task.json",
+      "id": "premium-polish",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-08-ultimate-polish/task.json",
+      "id": "ultimate-polish",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-16-video-layout-header-fill/task.json",
+      "id": "video-layout-header-fill",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-17-s5-systick-episode/task.json",
+      "id": "s5-systick-episode",
+      "status": "completed",
+      "priority": "P1",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-17-xhs-series-collection/task.json",
+      "id": "xhs-series-collection",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-10/10-17-xhs-series-upload/task.json",
+      "id": "xhs-series-upload",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-11/11-05-skill-remaster-closeout/task.json",
+      "id": "skill-remaster-closeout",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-11/11-05-spec-completion-plan/task.json",
+      "id": "spec-completion-plan",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch3/task.json",
+      "id": "language-batch3",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    },
+    {
+      "path": "mcu/.trellis/tasks/archive/2026-11/11-07-language-batch4/task.json",
+      "id": "language-batch4",
+      "status": "completed",
+      "priority": "P2",
+      "parent": null,
+      "children": [],
+      "subtasks": []
+    }
+  ],
+  "consistency_issues": []
+}

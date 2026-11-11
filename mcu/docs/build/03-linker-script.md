@@ -426,7 +426,7 @@ ENTRY(_start)
 
 | 本章说的 | 仓库里哪一行 |
 |---|---|
-| 136 行图纸本体 | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/00-blink/stm32f407xx.ld)（关键行：`:16` `_estack`、`:24/28` MEMORY、`:38` KEEP、`:91` `_sidata`、`:100` `AT> FLASH`、`:117-123` 检查段） |
+| 136 行图纸本体 | [stm32f407xx.ld](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/00-blink/stm32f407xx.ld)（关键行：`:16` `_estack`、`:24/28` MEMORY、`:38` KEEP、`:91` `_sidata`、`:100` `AT> FLASH`、`:117-123` 检查段） |
 | 六个门牌被谁读走 | `startup_stm32f407xx.s:23-27`（`.global`）、`:48-51`（搬运）、`:64-65`（清零） |
 | 六刀与实测输出 | `code/toolchain/03-linker/probe.sh`（`keep/at/overflow/flags/ccm/trace`） |
 | 标本的三个变量 | `code/toolchain/03-linker/link_probe.c`（4 + 4100 + 1536 = 5640 的出处） |

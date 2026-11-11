@@ -154,7 +154,7 @@ title: 术语速查：一句话讲透一个名词
 | 示波器 | 看真实电压波形、边沿与幅值 | 探头衰减比设错，读数会整倍偏掉 | [实验 E03 示波器看 PWM](/lab/e03-scope-pwm.md) |
 | 共阳 / 共阴 LED | 决定点亮是"输出低"还是"输出高" | 接反了灯不亮不代表 GPIO 坏 | [实验 E01 点亮 RGB 红灯](/lab/e01-blink.md) |
 
-> 词条不够用？本站的原则是每个名词第一次出现都配"类比 + 精确定义"双轨（见 [贡献指南](https://github.com/zhuguang-ZFG/mcu/blob/main/CONTRIBUTING.md)）。缺哪个词，去仓库开 Issue 点名。
+> 词条不够用？本站的原则是每个名词第一次出现都配"类比 + 精确定义"双轨（见 [贡献指南](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/CONTRIBUTING.md)）。缺哪个词，去仓库开 Issue 点名。
 
 ## 你做到了
 

@@ -225,7 +225,7 @@ $1 = (StackType_t *) 0x20001a80
 | 栈初始化化妆术 | 上游 V11.1.0 `portable/GCC/ARM_CM4F/port.c:202`（pxPortInitialiseStack）、`port.c:92`（portINITIAL_XPSR） |
 | 创建六步 | 上游 V11.1.0 `tasks.c:1718`（xTaskCreate）→ `tasks.c:1793`（prvInitialiseNewTask） |
 | 就绪链表数组 | 上游 V11.1.0 `tasks.c`（pxReadyTasksLists） |
-| 场景实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/mcu/tree/main/code/rtos/01-freertos-lab) 场景 1 |
+| 场景实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/rtos/01-freertos-lab) 场景 1 |
 | 动画 | [task-create-stack.svg](/anim/task-create-stack.svg) |
 
 ## 你做到了

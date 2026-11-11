@@ -13,8 +13,9 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-export const HOST = 'https://zhuguang-zfg.github.io'
-export const BASE = '/STM32/mcu/'
+// 身份单源在 site-config.mjs；这里 re-export 只为兼容既有 import 路径（如 tests/seo.test.mjs）。
+import { HOST, BASE } from './site-config.mjs'
+export { HOST, BASE }
 
 /** 每页必需的 meta：属性名 + 键名。 */
 export const REQUIRED_META = [

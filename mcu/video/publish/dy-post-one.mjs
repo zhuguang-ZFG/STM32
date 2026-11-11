@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 一条命令投完一集抖音竖版：复用 video/publish/douyin-step.mjs 里那套已验证过的选择器，
 // 自己不重写任何 DOM 逻辑（重写一次就多踩一次坑）。
 // 硬闸门：verify 读回来的六项不对，就不写放行标记、不点发布，直接非零退出。
@@ -8,7 +10,7 @@ import { rmSync, existsSync, appendFileSync, readFileSync } from 'node:fs'
 
 const EP = process.argv[2]
 if (!EP) throw new Error('用法：node video/publish/dy-post-one.mjs <episode-id> [--from=<步>]')
-const RUN = 'D:/Users/mcu/.temp/douyin-run'
+const RUN = `${MCU_ROOT}/.temp/douyin-run`
 const ORDER = ['nav', 'pick', 'retxt', 'cover', 'coveredit', 'coverup-v', 'coverset-v', 'coverup-h', 'coverset-h', 'seasonpick', 'declare', 'title', 'verify', 'publish']
 const argVal = (n) => { const a = process.argv.find((x) => x.startsWith(`${n}=`)); return a ? a.slice(n.length + 1) : null }
 const FROM = argVal('--from') ?? 'nav'
@@ -16,7 +18,7 @@ const fi = ORDER.indexOf(FROM)
 if (fi < 0) throw new Error(`--from 只认：${ORDER.join(' | ')}`)
 const step = (name, extra = []) => {
   const out = execFileSync('node', ['video/publish/douyin-step.mjs', name, '--ep', EP, ...extra], {
-    cwd: 'D:/Users/mcu', encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
+    cwd: `${MCU_ROOT}`, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024,
   })
   console.log(`── ${name} ──\n${out.split('\n').slice(0, 3).join('\n')}`)
   return out
@@ -33,7 +35,7 @@ if (existsSync(`${RUN}/${EP}-published.txt`) && !process.env.FREE_RESUBMIT) {
   process.exit(1)
 }
 
-const ep = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const ep = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const pub = ep.publish.douyin
 
 at('nav', 'nav', ['--url', 'https://creator.douyin.com/creator-micro/content/upload'])
@@ -55,7 +57,7 @@ at('title', 'title')
 // 而它是不可逆动作前的最后一道闸，跳过它的理由一个都不成立（它只读页面，不写任何东西）。
 const v = JSON.parse(step('verify').match(/^\{[\s\S]*?^\}/m)[0])
 
-const series = JSON.parse(readFileSync('D:/Users/mcu/video/series.json', 'utf8')).series
+const series = JSON.parse(readFileSync(`${MCU_ROOT}/video/series.json`, 'utf8')).series
 const want = {
   title: pub.titles[0],
   season: series,

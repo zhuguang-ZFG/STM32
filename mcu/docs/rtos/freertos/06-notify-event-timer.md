@@ -314,8 +314,8 @@ $3 = 5    # bit0 + bit2 置位
 | give/take/notify API | 上游 V11.1.0 `task.h:2984/3177/2611` → `tasks.c:7832/7717` |
 | 事件组汇总清位 | 上游 V11.1.0 `event_groups.c:547`（xEventGroupSetBits） |
 | 守护任务 | 上游 V11.1.0 `timers.c`（prvTimerTask） |
-| 定时器 RAM 账 + 分派规则实测 | [code/rtos/06-timers](https://github.com/zhuguang-ZFG/mcu/tree/main/code/rtos/06-timers) `sh probe.sh`（第 6 步总账、第 7 步五幕模拟，无需开发板） |
-| 场景实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/mcu/tree/main/code/rtos/01-freertos-lab) 场景 2/3/4 |
+| 定时器 RAM 账 + 分派规则实测 | [code/rtos/06-timers](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/rtos/06-timers) `sh probe.sh`（第 6 步总账、第 7 步五幕模拟，无需开发板） |
+| 场景实验 | [code/rtos/01-freertos-lab](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/rtos/01-freertos-lab) 场景 2/3/4 |
 | 动画 | [task-notification.svg](/anim/task-notification.svg)、[event-group-wait.svg](/anim/event-group-wait.svg)、[software-timer-service.svg](/anim/software-timer-service.svg) |
 
 ## 你做到了

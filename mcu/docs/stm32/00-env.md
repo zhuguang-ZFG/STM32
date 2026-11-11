@@ -17,7 +17,7 @@ minutes: 25
 
 1. 为什么坚持不用 CubeIDE/Keil 起步？因为 IDE 把"预处理→编译→汇编→链接→烧录"藏进一个按钮，而这条链路本身就是嵌入式的半壁江山（[B 篇](../build/index.md)整个都在讲它）。
 2. 交叉编译到底"交叉"在哪？在 x86 电脑上，产出 ARM Cortex-M4 的机器码。
-3. 一个能跑的固件最少需要几个文件？四个：启动文件、链接脚本、main、Makefile。我们已经备好：[code/stm32/00-blink](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/00-blink)。
+3. 一个能跑的固件最少需要几个文件？四个：启动文件、链接脚本、main、Makefile。我们已经备好：[code/stm32/00-blink](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/00-blink)。
 
 ## 先修
 

@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // B站网页投稿：连 9223 那个常驻浏览器，按名字执行一步，打印这一步看到了什么。
 // 为什么换这条路：biliup-rs 那份凭证只有 SESSDATA/bili_jct/…，没有 buvid3/buvid4/bili_ticket，
 // 投稿前检查一律回 21566（--submit client/app/web 三种口味都撞，31 秒就弹回，片源根本没传）。
@@ -10,7 +12,7 @@
 import { chromium } from 'playwright'
 import { readFileSync, existsSync, mkdirSync, appendFileSync, writeFileSync, unlinkSync } from 'node:fs'
 
-const RUN = 'D:/Users/mcu/.temp/bili-web-run'
+const RUN = `${MCU_ROOT}/.temp/bili-web-run`
 mkdirSync(RUN, { recursive: true })
 const step = process.argv[2]
 // 之前只认 "--ep c4"，写成 "--ep=c4" 会被静默忽略、掉回默认值——批量跑 15 条时
@@ -25,12 +27,12 @@ const EP = arg('--ep') ?? 'c2-pointer'
 const DECL = arg('--decl') ?? ''
 const TID_NAME = arg('--tid') ?? ''
 
-const CFG = `D:/Users/mcu/video/out/${EP}/bili-submit.yaml`
-const ep = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const CFG = `${MCU_ROOT}/video/out/${EP}/bili-submit.yaml`
+const ep = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const pub = ep.publish?.bilibili
 const F = {
-  video: `D:/Users/mcu/video/out/${EP}/bilibili.mp4`,
-  cover: `D:/Users/mcu/video/out/${EP}/bilibili-cover.png`,
+  video: `${MCU_ROOT}/video/out/${EP}/bilibili.mp4`,
+  cover: `${MCU_ROOT}/video/out/${EP}/bilibili-cover.png`,
 }
 // yaml 是"键: 值"的扁平结构 + 一段块标量 desc；这里只取要填的四个字段，取不到就停手，不猜默认值。
 function cfg(field) {
@@ -442,7 +444,7 @@ const V = {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error('--day=YYYY-MM-DD 缺失')
     if (!expect) throw new Error('--expect=用户授权原话 缺失')
     const gateA = `${RUN}/I_HAVE_USER_OK=${EP}`
-    const gateB = `D:/Users/mcu/.temp/repost/${day}/${EP}/I_HAVE_USER_OK_PUBLISH_${EP}`
+    const gateB = `${MCU_ROOT}/.temp/repost/${day}/${EP}/I_HAVE_USER_OK_PUBLISH_${EP}`
     for (const g of [gateA, gateB]) if (!existsSync(g)) throw new Error(`没有闸门文件 ${g} —— 用户对 ${EP} 这次换源点头之前不提交`)
     const ga = readFileSync(gateA, 'utf8').trim()
     const gb = readFileSync(gateB, 'utf8').trim()
@@ -533,7 +535,7 @@ const V = {
       await shot('replace')
       if (attempted) {
         const ev = { at: new Date().toISOString(), action: 'replace', platform: 'bilibili', gate: expect, oldId: bvid, newId: bvid, clicked: clickResolved, url: page.url(), response: seen, note: '编辑页换源提交（立即投稿），BV 不变' }
-        appendFileSync(`D:/Users/mcu/.temp/repost/${day}/${EP}/events.jsonl`, JSON.stringify(ev) + '\n')
+        appendFileSync(`${MCU_ROOT}/.temp/repost/${day}/${EP}/events.jsonl`, JSON.stringify(ev) + '\n')
         for (const g of [gateA, gateB]) {
           try { unlinkSync(g); console.log(`  已消耗闸门 ${g}`) } catch (e) { console.log(`  ⚠ 闸门没删掉 ${g}：${String(e).slice(0, 80)}`) }
         }

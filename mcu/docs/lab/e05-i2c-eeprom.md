@@ -100,6 +100,6 @@ START/STOP/ACK 的逐拍电平变化见 [S11 I2C](../stm32/11-i2c.md) 的时序�
 
 ## 附录：工程完整源码
 
-构建、接线与排查见[工程 README](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/04-i2c-eeprom)。
+构建、接线与排查见[工程 README](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/04-i2c-eeprom)。
 
 <<< ../../code/stm32/04-i2c-eeprom/main.c

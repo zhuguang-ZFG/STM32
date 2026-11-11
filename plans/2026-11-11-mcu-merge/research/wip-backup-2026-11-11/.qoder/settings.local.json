@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -a && find . -maxdepth 3 -iname \"*spec*\" -not -path \"*/node_modules/*\" -not -path \"*/.git/*\" | head -50)",
+      "Bash(ls -la .qoder 2>/dev/null; echo \"---\"; find .qoder .temp -maxdepth 3 -type f 2>/dev/null | head -50; echo \"---\"; ls -la stm32-book | head -40)",
+      "Bash(find . -maxdepth 3 -type d -name \".trellis\" 2>/dev/null; echo \"---\"; find . -maxdepth 4 -type d -iname \"*spec*\" -not -path \"*/node_modules/*\" -not -path \"*/.git/*\" 2>/dev/null | head -50)",
+      "Bash(ls -la mcu/ 2>/dev/null | head -30; echo \"---QODER---\"; ls -la .qoder/ 2>/dev/null)"
+    ]
+  }
+}

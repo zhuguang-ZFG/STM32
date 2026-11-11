@@ -105,26 +105,48 @@ const trackOf = (rel) => {
 }
 
 function collectUpdates() {
-  let raw
-  try {
-    raw = execFileSync(
-      'git',
-      ['log', '-n', '300', '--no-merges', '--name-only', '--date=short', '--pretty=format:@%ad'],
-      { cwd: ROOT, encoding: 'utf8', maxBuffer: 8 << 20, stdio: ['ignore', 'pipe', 'ignore'] }
-    )
-  } catch {
-    return []
+  // 合并进 STM32 单仓后，本站历史分两段、路径形态不同：
+  //  - post-import 提交：mcu/docs/**
+  //  - subtree 导入的 pre-import MCU 历史：路径仍是 docs/**，且与 STM32 书自己的
+  //    旧 docs/** 混在同一个 git 对象库里——所以 pre-import 段必须沿 MCU 血统
+  //    （导入 merge 的第二父）走，不能按路径前缀猜；漏网路径由存在性过滤挡掉。
+  const run = (args) => {
+    try {
+      return execFileSync('git', ['log', ...args], { cwd: ROOT, encoding: 'utf8', maxBuffer: 8 << 20, stdio: ['ignore', 'pipe', 'ignore'] })
+    } catch {
+      return ''
+    }
   }
+  const merges = run(['--merges', '--format=%H', '--', ':(top)mcu']).trim().split('\n').filter(Boolean)
+  const importMerge = merges[merges.length - 1] || null
+  const sources = importMerge
+    ? [
+        ['-n', '300', '--no-merges', '--name-only', '--date=short', '--pretty=format:@%ad', 'HEAD', '--', ':(top)mcu/docs'],
+        ['-n', '300', '--no-merges', '--name-only', '--date=short', '--pretty=format:@%ad', `${importMerge}^2`, '--', ':(top)docs'],
+      ]
+    : [['-n', '300', '--no-merges', '--name-only', '--date=short', '--pretty=format:@%ad', '--', ':(top)docs']]
+  const entries = []
+  for (const raw of sources.map(run)) {
+    let date = ''
+    for (const line of raw.split(/\r?\n/)) {
+      if (line.startsWith('@')) { date = line.slice(1).trim(); continue }
+      const f = line.trim()
+      let rel = null
+      if (f.startsWith('mcu/docs/')) rel = f.slice('mcu/docs/'.length)
+      else if (f.startsWith('docs/')) rel = f.slice('docs/'.length)
+      else continue
+      if (!rel.endsWith('.md') || rel.includes('/public/') || rel.includes('/.vitepress/')) continue
+      // 只收子目录章节页；根目录 index.md / 404.md 属于站点外壳，不是"内容更新"
+      if (!rel.includes('/')) continue
+      // 非本站章节（如 STM32 书自己的旧 docs/**）不挂"最近更新"
+      if (!fs.existsSync(path.join(DOCS, rel))) continue
+      entries.push({ date, rel })
+    }
+  }
+  entries.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
   const seen = new Set()
   const items = []
-  let date = ''
-  for (const line of raw.split(/\r?\n/)) {
-    if (line.startsWith('@')) { date = line.slice(1).trim(); continue }
-    const f = line.trim()
-    if (!f.startsWith('docs/') || !f.endsWith('.md') || f.includes('/public/') || f.includes('/.vitepress/')) continue
-    const rel = f.slice('docs/'.length)
-    // 只收子目录章节页；根目录 index.md / 404.md 属于站点外壳，不是"内容更新"
-    if (!rel.includes('/')) continue
+  for (const { date, rel } of entries) {
     const id = rel.replace(/\.md$/, '')
     if (seen.has(id)) continue
     seen.add(id)

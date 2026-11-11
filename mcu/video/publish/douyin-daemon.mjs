@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 常驻一个有头 chromium（持久 profile + 远程调试端口），上传驱动作为独立小进程连上来逐步操作。
 // 为什么要常驻：抖音发布表单的状态只在当前页面里，脚本一退、浏览器一关，选好的视频和填好的字就全没了。
 // 之前一次次 launch→close 探结构，每探一次就得重传一遍 6 MB，就是这个原因。
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
 
-const DIR = 'D:/Users/mcu/.temp/douyin-profile'
+const DIR = `${MCU_ROOT}/.temp/douyin-profile`
 mkdirSync(DIR, { recursive: true })
 
 const ctx = await chromium.launchPersistentContext(DIR, {

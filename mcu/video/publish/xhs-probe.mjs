@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 小红书可行性探针：只读。导航、取文本、截图，不点任何提交类按钮、不上传任何东西。
 // 为什么要先探：这条通道的字段上限（标题几个字、正文几个字、能不能挂外链）是台账的地基，
 // 照别的平台的数字猜会直接把第一次试发变成废稿。
@@ -5,7 +7,7 @@
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
 
-const OUT = 'D:/Users/mcu/.temp/xhs-probe'
+const OUT = `${MCU_ROOT}/.temp/xhs-probe`
 mkdirSync(OUT, { recursive: true })
 function arg(name, dflt) {
   const i = process.argv.findIndex((a) => a === name || a.startsWith(`${name}=`))

@@ -17,7 +17,7 @@ title: 实验中心
 - **先做实验再吵架**：对任何"我觉得应该是"的争议，先上板；
 - **上板前先猜一把**：对要量的数先押一注，猜错了不丢分，丢了直觉才丢分；
 - 实测记录表是实验的一部分：填上日期、板子、现象，下次复习就是财富；
-- 写新实验请复制 [实验模板](template.md)，规范见 [CONTRIBUTING](https://github.com/zhuguang-ZFG/mcu/blob/main/CONTRIBUTING.md)。
+- 写新实验请复制 [实验模板](template.md)，规范见 [CONTRIBUTING](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/CONTRIBUTING.md)。
 
 ## 板卡资料
 

@@ -2,7 +2,7 @@
 
 本书 [S7 USART](/stm32/07-usart.md)、[S8 DMA](/stm32/08-dma.md)、[C5 函数指针、状态机与环形缓冲](/c/05-func-pointer.md)、[C8 串口协议](/c/08-framed-protocol.md) 与 [J1 记录器](/projects/01-f407-logger.md) 各讲了这条链路的一段。这一附录把它们接成**一条完整的字节旅程**：从线路上的一个电平跳变，到业务层手里的一帧数据，中间每一段都签着一份"合同"。违反任何一条，链路都会以一种典型症状死给你看。而症状往往出现在离违约现场很远的地方。
 
-三份配套工程是本附录的证据源：[`code/stm32/03-uart-dma`](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/03-uart-dma)（IDLE+DMA 环形接收的寄存器级最小实现）、[`code/stm32/05-framed-protocol`](https://github.com/zhuguang-ZFG/mcu/tree/main/code/stm32/05-framed-protocol)（帧协议落地）与 [`code/common/reliability`](https://github.com/zhuguang-ZFG/mcu/tree/main/code/common/reliability)（双板共用的 codec 与传输层，测试在 `tests.c`）。
+三份配套工程是本附录的证据源：[`code/stm32/03-uart-dma`](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/03-uart-dma)（IDLE+DMA 环形接收的寄存器级最小实现）、[`code/stm32/05-framed-protocol`](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/stm32/05-framed-protocol)（帧协议落地）与 [`code/common/reliability`](https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/code/common/reliability)（双板共用的 codec 与传输层，测试在 `tests.c`）。
 
 ## 0. 全景：一个字节的三段旅程
 

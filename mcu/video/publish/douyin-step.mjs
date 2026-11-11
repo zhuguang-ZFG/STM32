@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 连到 video/publish/douyin-daemon.mjs 起的那个常驻浏览器，按名字执行一步，打印这一步看到了什么。
 // 每步都只做一件可逆的事；唯一不可逆的 publish 步要等 I_HAVE_USER_OK=<ep> 这个标记文件出现才动。
 // 事实源：video/episodes/<ep>/episode.json 与 video/out/<ep>/，脚本里不写任何一集的字。
 import { chromium } from 'playwright'
 import { readFileSync, existsSync, mkdirSync, writeFileSync, appendFileSync } from 'node:fs'
 
-const RUN = 'D:/Users/mcu/.temp/douyin-run'
+const RUN = `${MCU_ROOT}/.temp/douyin-run`
 mkdirSync(RUN, { recursive: true })
 const step = process.argv[2]
 function arg(name) {
@@ -18,13 +20,13 @@ function arg(name) {
 const EP = arg('--ep')
 if (!EP) throw new Error('缺 --ep <episode-id>（--ep x 和 --ep=x 都认）——不猜这是哪一集')
 
-const ep = JSON.parse(readFileSync(`D:/Users/mcu/video/episodes/${EP}/episode.json`, 'utf8'))
+const ep = JSON.parse(readFileSync(`${MCU_ROOT}/video/episodes/${EP}/episode.json`, 'utf8'))
 const pub = ep.publish.douyin
 const F = {
-  video: `D:/Users/mcu/video/out/${EP}/douyin.mp4`,
-  cover: `D:/Users/mcu/video/out/${EP}/douyin-cover.png`,
-  hcover: `D:/Users/mcu/video/out/${EP}/douyin-cover-1440x1080.png`,
-  square: 'D:/Users/mcu/video/out/season-cover-1080.png',
+  video: `${MCU_ROOT}/video/out/${EP}/douyin.mp4`,
+  cover: `${MCU_ROOT}/video/out/${EP}/douyin-cover.png`,
+  hcover: `${MCU_ROOT}/video/out/${EP}/douyin-cover-1440x1080.png`,
+  square: `${MCU_ROOT}/video/out/season-cover-1080.png`,
 }
 // 封面取证实验要拿减法版本喂平台检测，但不能覆盖 video/out/ 里已交付的那两张，所以留一个显式改道。
 if (arg('--cover')) F.cover = arg('--cover')
@@ -308,7 +310,7 @@ const STEPS = {
   async season() {
     // 合集标题框写死 0/20，清单里那个 22 字的名字塞不进去；标题用 series.json 的 series，
     // 口号那句移到合集简介（上限 200 字）。
-    const series = JSON.parse(readFileSync('D:/Users/mcu/video/series.json', 'utf8')).series
+    const series = JSON.parse(readFileSync(`${MCU_ROOT}/video/series.json`, 'utf8')).series
     const name = arg('--name') ?? series
     const desc = arg('--desc') ?? '屏上每个数都是本机跑的。80 章图文 + 101 张动画，每条视频配一条能重跑的无板命令。'
     if ([...name].length > 20) throw new Error(`合集标题 ${[...name].length} 字 > 20：${name}`)
@@ -540,7 +542,7 @@ const STEPS = {
   async seasonpick() {
     await page.getByText('请选择合集').first().click()
     await page.waitForTimeout(2500)
-    const name = JSON.parse(readFileSync('D:/Users/mcu/video/series.json', 'utf8')).series
+    const name = JSON.parse(readFileSync(`${MCU_ROOT}/video/series.json`, 'utf8')).series
     const opt = page.getByText(name, { exact: true }).last()
     if (!(await opt.count())) throw new Error(`下拉里没有合集「${name}」`)
     await opt.click()
@@ -595,7 +597,7 @@ const STEPS = {
     await shot('declare')
   },
   async publish() {
-    const gate = `D:/Users/mcu/.temp/douyin-run/I_HAVE_USER_OK=${EP}`
+    const gate = `${MCU_ROOT}/.temp/douyin-run/I_HAVE_USER_OK=${EP}`
     if (!existsSync(gate)) throw new Error(`没有 ${gate}——这一步只能在对话里拿到点头之后手动放行`)
     const before = page.url()
     // 平台真正的裁决在 create_v2 的响应里，页面上可能一个字都不显示：

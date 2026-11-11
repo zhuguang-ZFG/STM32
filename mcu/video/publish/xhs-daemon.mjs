@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 小红书创作平台的常驻浏览器：复用 video/publish/douyin-daemon.mjs 那个持久 profile 与 9223 端口，
 // 只是首页换成创作者中心。为什么复用同一个 profile：另外三条线已经共用这一个有头窗口，
 // 同一 user-data-dir 起第二个实例会被"profile 正在使用"直接挡掉。
 // 窗口挂着就是有用的——没登录时人要在这个窗口里扫码，扫码态只有留在这个 profile 里才认得。
 import { chromium } from 'playwright'
 
-const DIR = 'D:/Users/mcu/.temp/douyin-profile'
+const DIR = `${MCU_ROOT}/.temp/douyin-profile`
 // /creator/home 实测回「你访问的页面不见了」；/new/home 才是创作者中心真正落地的首页（笔记管理在它下面 /new/note-manager）
 const URL = 'https://creator.xiaohongshu.com/new/home'
 

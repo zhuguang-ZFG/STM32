@@ -246,7 +246,7 @@ SPL（StdPeriph）未随 ST 官方 GitHub 分发，本轮仍缺一手源码；�
 | Flash 等待周期按电压分列 | RM0090 Rev 18 Table 10 |
 | VOS 天花板 | 同章 Note（F405/407 VOS=0 → ≤144MHz） |
 | MCO1 = PA8 AF0 | DS8626 Rev 9 Table 9 |
-| 提频六步 + 回读确认 | [code/stm32/01-rcc-clock/main.c](https://github.com/zhuguang-ZFG/mcu/blob/main/code/stm32/01-rcc-clock/main.c) `clock_init()` |
+| 提频六步 + 回读确认 | [code/stm32/01-rcc-clock/main.c](https://github.com/zhuguang-ZFG/STM32/blob/main/mcu/code/stm32/01-rcc-clock/main.c) `clock_init()` |
 | 动画 | [rcc-clock-tree.svg](/anim/rcc-clock-tree.svg) |
 | PLLCFGR 那个字（源码 ↔ 反汇编同字对账） | `probe.sh` 第 1 步断言 + 第 3 步 `objdump` 字面量池 `0x07405408` |
 | 提频顺序在指令流里单调 | `probe.sh` 第 3 步 `-O2` 反汇编（`orr #16384 → bic #7/orr #5 → orr #65536 → str #2052 → cmp #8`） |

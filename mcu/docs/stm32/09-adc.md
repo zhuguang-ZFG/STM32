@@ -69,8 +69,8 @@ STM32F407 有 ADC1/2/3 三个独立 ADC，挂在 APB2 上，基址一个挨一�
 | 寄存器 | 偏移 | 干什么 |
 |---|---|---|
 | SR | 0x00 | 状态：EOC(bit1, 1181-1183 行)、STRT(bit4, 1190-1192)、OVR(bit5, 1193-1195) |
-| CR1 | 0x04 | SCAN(bit8, 1215-1217)、EOCIE(bit5, 1206-1208)、RES[1:0](bit25:24, 1242-1246) |
-| CR2 | 0x08 | ADON(bit0, 1252)、CONT(bit1, 1255)、DMA(bit8, 1258)、DDS(bit9, 1261)、EOCS(bit10, 1264)、ALIGN(bit11, 1267)、EXTSEL[3:0](bit27:24, 1285)、EXTEN[1:0](bit29:28, 1292)、SWSTART(bit30, 1297) |
+| CR1 | 0x04 | SCAN(bit8, 1215-1217)、EOCIE(bit5, 1206-1208)、RES\[1:0\](bit25:24, 1242-1246) |
+| CR2 | 0x08 | ADON(bit0, 1252)、CONT(bit1, 1255)、DMA(bit8, 1258)、DDS(bit9, 1261)、EOCS(bit10, 1264)、ALIGN(bit11, 1267)、EXTSEL\[3:0\](bit27:24, 1285)、EXTEN\[1:0\](bit29:28, 1292)、SWSTART(bit30, 1297) |
 | SMPR1 | 0x0C | 通道 10-18 采样时间，每通道 3 位（SMP10 在 bit2:0，1302-1307 行） |
 | SMPR2 | 0x10 | 通道 0-9 采样时间 |
 | SQR1/SQR2/SQR3 | 0x2C/0x30/0x34 | 规则序列：总长 L[3:0] 与第 1-16 名的通道号 |

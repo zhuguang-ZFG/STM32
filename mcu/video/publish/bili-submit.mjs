@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+const MCU_ROOT = fileURLToPath(new URL('../../', import.meta.url)).replace(/[\\/]$/, '')
 // 生成 biliup-rs 投稿配置：一条 master 一份 YAML，字段全部从既有事实源里取，不手抄。
 //   标题 ← video/out/<ep>/发布-bilibili.md 的「## 标题」第 1 候选
 //   简介 ← 同文件「## 简介」到「## 时间轴」之间
@@ -17,7 +19,7 @@ const tid = A.tid || '171'
 const titleStyle = A['title-style'] || 'punchy'
 const descMode = A.desc || 'full'
 const dry = flagOnly.has('dry')
-const ROOT = 'D:/Users/mcu'
+const ROOT = `${MCU_ROOT}`
 
 const s = JSON.parse(readFileSync('video/series.json', 'utf8'))
 const sec = (md, name) => {
