@@ -16,15 +16,15 @@ platforms: [f103, esp32]
 
 ## 先做出来
 
-不用开发板，只要有 `make` 和一个带 Makefile 的工程。进入来源书里的 `00-blink`（芯片是 F407，依赖图的形状与芯片无关，`mcu/code/stm32/00-blink/`），先押两个判断：`make clean && make -n` 会打印几条命令？只 `touch` 一下 `main.c` 再干跑，会全部重建，还是只重建受它影响的几个目标？
+不用开发板，只要有 `make` 和一个带 Makefile 的工程。进入来源书里的 `00-blink`（芯片是 F407，依赖图的形状与芯片无关，`mcu/code/stm32/00-blink/`），先押一个判断：真构建一次，再只 `touch` 一下 `main.c` 干跑，会列出整张图，还是只列出受 `main.c` 影响的那几个目标？
 
 ```bash
 cd mcu/code/stm32/00-blink
-make clean && make -n
-touch main.c && make -n
+make clean && make          # 先真构建，让 build/ 里每个目标都有产物
+touch main.c && make -n     # 只动 main.c，再干跑
 ```
 
-第一条把“从零开始”的整张图按顺序列出来，第二条只留下受 `main.c` 影响的目标；如果两次打印一样长，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了——它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
+顺序不能省：来源书只记了 `make clean && make -n` 接 `touch main.c && make -n` 两条连跑的干跑，但 `make clean` 刚删掉 `build/`，`make -n` 又不产出文件，第二次干跑看到每个目标都缺失，仍会打印全量命令；那不是局部重建失效，而是实验里没有可比较的旧产物，读者复现这个观察应先跑一次真的 `make`。干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了——它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
 
 ## 机制
 
@@ -322,7 +322,7 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 | 取证项 | 来源命令 | 来源记录里的读数 |
 | --- | --- | --- |
-| Make 干跑 | `make clean && make -n`；`touch main.c && make -n` | 列出将执行命令但不执行；只重建受 `main.c` 影响的目标（来源给方法与判读，未附逐行输出） |
+| Make 干跑 | `make clean && make`；`touch main.c && make -n` | 干跑列出将执行命令但不执行；真构建后再 `touch main.c`，干跑只出现 `main.o` 及依赖它的链接产物，启动文件目标不出现；按目标判读，不按输出长度（来源只记两条连跑的旧干跑序列，本章补一次真构建；未附逐行输出） |
 | 00-blink 依赖图 | 读 `mcu/code/stm32/00-blink/Makefile` | `blink.elf`、`blink.bin`、`flash`、`debug`、`gdb` 五个节点，后三个是伪目标 |
 | 头文件依赖 | 删掉依赖边后 `touch` 头文件 | `main.o` 只写 `main.c`，缺 `stm32f407.h` 的边；解法 `-MMD -MP` 生成 `.d` |
 | CMake 生成 | `cmake -B build`，再 `make -C build` | 两段式：先生成构建文件，再构建 |
@@ -356,11 +356,11 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 ## 跨平台边界
 
-构建系统这一层与芯片无关。F103 与 ESP32 共用同一副骨架：一张依赖图决定重建，一层生成器把源码翻译成构建文件，一维 Kconfig 决定编什么。Make 的三要素、CMake 的生成层、`idf_component_register` 的 `REQUIRES` 语义、Kconfig 到宏头的流向，都来自 B7 的记录，两边都能按同一套问题去读。两条栈的所有权不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。
+构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章][ch28]与[第 29 章][ch29]。
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
-| 依赖图、生成层、配置层 | B7，与芯片无关 | 两平台共用同一套读法 |
+| 依赖图、生成器、配置层 | 依赖图来自 B7 且与芯片无关；生成器记录属 CMake/IDF；配置层 F103 为 `stm32f10x_conf.h` + `STM32F10X_MD`/`USE_STDPERIPH_DRIVER`，ESP32 为 Kconfig → `sdkconfig` | 依赖图共用同一套读法；生成器只按 CMake/IDF 读，不外推到 F103；配置机制各按各的读，不互相搬 |
 | ESP-IDF 工作流 | B7 记录的组件、Kconfig、`idf.py` | ESP32 侧按此读工程；ESP32-S3 的地址、启动与分区见[第 30 章][ch30] |
 | SPL 版本与宏 | 仅 STM32F10x V3.5.0 | 不复制到其它系列；ESP32 没有 SPL |
 | GPIO 解剖 | S15 的 F4 V1.8.0；F1 的落点是 `GPIOx_CRL/CRH` | 方法复用，寄存器名逐版本对账 |
