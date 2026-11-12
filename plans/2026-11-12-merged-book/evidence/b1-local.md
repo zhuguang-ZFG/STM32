@@ -40,3 +40,10 @@
 `c03-volatile`、`s02-rcc-clock`、`s03-gpio`、`s04-nvic`、`s06-tim`、`s07-usart`、`s08-dma`、`s09-adc`、`s11-i2c`、`s12-spi`
 
 未验证：CI 远程运行结果；未执行任何远程推送或 Pages 切换。
+
+## 最终修复轮验证
+
+- commit：`8ba688a0f4e582284fb656ea06d6061b38ca0c10`（最终审阅修复轮 HEAD）
+- 内容：7 个章节文件、仅正文措辞（最终审阅 2 项 Important + 5 项次要项）；`book/checks.py` 未改动
+- 定向复审结论：全部 ADDRESSED，BSRR 重写技术正确，无新破坏
+- 上表 7 条命令在同一 HEAD 重跑，退出码全部为 0（`checks passed`；`built 17 pages, 35 planned chapters missing`；slop 无机械命中；30 tests OK）
