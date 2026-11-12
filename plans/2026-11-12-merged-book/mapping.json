@@ -43,7 +43,7 @@
         "ch09"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -578,7 +578,7 @@
         "ch09"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1160,7 +1160,7 @@
         "ch40"
       ],
       "purpose": "实验方法与证据",
-      "status": "planned",
+      "status": "partial",
       "note": "实验拆入ch09，方法→ch40"
     },
     {
