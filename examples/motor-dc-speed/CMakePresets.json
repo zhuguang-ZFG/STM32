@@ -1,0 +1,51 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 20 },
+  "configurePresets": [
+    {
+      "name": "host-tests",
+      "displayName": "Host tests (native)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/host-tests",
+      "cacheVariables": { "MOTOR_TARGET": "host" }
+    },
+    {
+      "name": "dc-openloop",
+      "displayName": "DC open loop (F103C8)",
+      "inherits": "arm-base"
+    },
+    {
+      "name": "dc-encoder",
+      "displayName": "DC encoder (F103C8)",
+      "inherits": "arm-base",
+      "cacheVariables": { "MOTOR_CONFIG": "encoder" }
+    },
+    {
+      "name": "dc-speed",
+      "displayName": "DC speed closed loop (F103C8)",
+      "inherits": "arm-base",
+      "cacheVariables": { "MOTOR_CONFIG": "speed" }
+    },
+    {
+      "name": "arm-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${sourceDir}/cmake/arm-none-eabi.cmake",
+      "cacheVariables": { "MOTOR_TARGET": "stm32f103" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "host-tests", "configurePreset": "host-tests" },
+    { "name": "dc-openloop", "configurePreset": "dc-openloop" },
+    { "name": "dc-encoder", "configurePreset": "dc-encoder" },
+    { "name": "dc-speed", "configurePreset": "dc-speed" }
+  ],
+  "testPresets": [
+    {
+      "name": "host-tests",
+      "configurePreset": "host-tests",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

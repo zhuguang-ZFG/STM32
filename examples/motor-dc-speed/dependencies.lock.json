@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "frozen_at": "2026-11-12",
+  "note": "固定版本，不写「最新版」。获取流程见 README；构建前校验哈希/提交。",
+  "dependencies": {
+    "STM32CubeF1": {
+      "upstream": "https://github.com/STMicroelectronics/STM32CubeF1.git",
+      "ref": "v1.8.6",
+      "verified_shas_2026-11-12": {
+        "cube_f1_top": "42472d6（Release v1.8.6）",
+        "hal_driver_submodule": "77fbb30b7a1d02533980400083e48c559aae5a4f",
+        "cmsis_device_submodule": "8a76309ed1250d817e9c888c4417171d2ba3ba63"
+      },
+      "used_components": [
+        "Drivers/CMSIS/Device/ST/STM32F1xx（启动/系统文件）",
+        "Drivers/STM32F1xx_HAL_Driver（HAL 模块子集）",
+        "Drivers/CMSIS/Include（core_cm3.h）"
+      ],
+      "license": "BSD-3-Clause（CMSIS/HAL 按 ST 许可；构建产物需随发布包附许可说明）",
+      "verify": "git checkout 后记录 commit SHA；CI 在构建日志输出"
+    },
+    "arm_toolchain": {
+      "local_windows": "arm-none-eabi-gcc 10.3.1（MinGW 环境实测 2026-11-12）",
+      "ci_linux": "apt gcc-arm-none-eabi（版本以首个 CI 运行日志为准并回填本文件）",
+      "flags": "-mcpu=cortex-m3 -mthumb，C11，无动态内存"
+    },
+    "host_toolchain": {
+      "any": "C11 编译器 + CMake≥3.20 + Ninja；本机 MinGW gcc 实测",
+      "libs": "libm"
+    },
+    "cmake": ">=3.20（本机 4.4.0 实测）"
+  }
+}

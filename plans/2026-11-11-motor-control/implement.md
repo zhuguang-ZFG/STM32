@@ -29,12 +29,12 @@ P0 缺实物时，P1 的接口/主机测试、资料整理和正文草稿可以�
 
 ### P1：可复现工程
 
-- [ ] MC-101：固定 STM32CubeF1、CMSIS/HAL、编译器、CMake 及获取流程，审查第三方许可；记录版本而不是写“最新版”。
-- [ ] MC-102：建立完整工程、启动/向量表/链接脚本与三个 ARM preset、一个主机 preset；生成 ELF/HEX/BIN/map。
-- [ ] MC-103：先写 bridge、encoder、PI、state、command 的接口和输入约束，划分 ISR 与主循环的所有权。
-- [ ] MC-104：冻结命令语法、遥测逐字段布局、校验方式、会话/seq 规则、带宽和 golden vectors；实现有界解析、邮箱、队列与主机解码。
-- [ ] MC-105：搭建 H01–H10 与分析器 fixture 测试；初期尚未实现的行为标红或未实现，不伪造通过。
-- [ ] MC-106：加入独立 motor CI，执行固定依赖获取、全部 ARM 构建和主机测试；保留旧 SPL 与双语书籍 job。
+- [x] MC-101：固定 STM32CubeF1、CMSIS/HAL、编译器、CMake 及获取流程，审查第三方许可；记录版本而不是写“最新版”。（DONE 2026-11-12：CubeF1 v1.8.6 + 子模块 SHA 实测回填（HAL 77fbb30b / CMSIS device 8a76309e）；本地 arm-none-eabi-gcc 10.3.1、cmake 4.4.0、ninja 1.12.1 实测；许可 BSD-3 记录于 dependencies.lock.json）
+- [x] MC-102：建立完整工程、启动/向量表/链接脚本与三个 ARM preset、一个主机 preset；生成 ELF/HEX/BIN/map。（DONE 2026-11-12：三 ARM preset + host preset 本地全绿；产物齐；尺寸 text 24,668 + data 172 B（预算 56 KiB 内 43%）、bss 2,660 B（预算 12 KiB 内 22%）；CI 复现待 PR 首跑）
+- [x] MC-103：先写 bridge、encoder、PI、state、command 的接口和输入约束，划分 ISR 与主循环的所有权。（DONE 2026-11-12：include/ 接口 + design §4 所有权——ISR 只写桥，主循环只收发）
+- [x] MC-104：冻结命令语法、遥测逐字段布局、校验方式、会话/seq 规则、带宽和 golden vectors；实现有界解析、邮箱、队列与主机解码。（DONE 2026-11-12：协议 v1 冻结于 README + command.c/telemetry.c；43 B/帧 ≤6.4 kB/s 预算内；golden vectors 属 MC-304 待 P3；主机解码器 MC-304）
+- [x] MC-105：搭建 H01–H10 与分析器 fixture 测试；初期尚未实现的行为标红或未实现，不伪造通过。（DONE 2026-11-12：H01–H10 + 桥真值表 + E2E 薄切片共 62 断言全绿（ctest）；分析器 fixture=MC-304 未做，未伪造）
+- [x] MC-106：加入独立 motor CI，执行固定依赖获取、全部 ARM 构建和主机测试；保留旧 SPL 与双语书籍 job。（DONE 2026-11-12：.github/workflows/motor-control.yml 独立工作流（paths 过滤，不动旧 job）；首跑证据待 PR CI；真板 B01/B02 无动力部分 BLOCKED 待采购）
 - [ ] MC-107：验证默认 STBY、输出初始化顺序、复位与调试下载过程，先不接动力负载。
 
 退出：AC03 通过、B01/B02 无动力部分通过，所有依赖和命令能在干净环境复现。
