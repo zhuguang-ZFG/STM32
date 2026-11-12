@@ -23,7 +23,7 @@ ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "assets", "animations")
 sys.path.insert(0, HERE)
 
-MODULES = ["anim_basics", "anim_gpio", "anim_comm", "anim_sys"]
+MODULES = ["anim_basics", "anim_gpio", "anim_comm", "anim_sys", "anim_motor"]
 
 
 def collect():

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="速度闭环：限幅位置就是合同位置">
+
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">速度闭环：限幅位置就是合同位置</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单位、限幅与积分条件全图一致（第 32 章冻结参数）</text>
+<rect x="729" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="803.5" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">32 速度闭环 · VIS05</text>
+<rect x="30" y="130" width="130" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="95" y="160" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">目标 rpm</text>
+<text x="95" y="188" font-size="8.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">20–300 / 冻结 300 上限</text>
+<rect x="190" y="130" width="130" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="255" y="160" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">斜坡 ramp</text>
+<text x="255" y="188" font-size="8.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">±600 rpm/s · 10 ms 节拍</text>
+<rect x="350" y="130" width="130" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="415" y="160" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">求和点</text>
+<text x="415" y="188" font-size="8.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">e = 目标 − 实测（带符号）</text>
+<rect x="510" y="130" width="130" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="575" y="160" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">PI</text>
+<text x="575" y="188" font-size="8.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Kp=2.0 Ki=0.5 / i_limit=500‰</text>
+<rect x="670" y="130" width="130" height="82" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="735" y="160" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">输出限幅</text>
+<text x="735" y="188" font-size="8.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">duty_limit = 900‰</text>
+<line x1="160" y1="171" x2="185" y2="171" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="190.00,171.00 185.00,173.50 185.00,168.50" fill="#5e6872" opacity="1"/>
+<line x1="320" y1="171" x2="345" y2="171" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="350.00,171.00 345.00,173.50 345.00,168.50" fill="#5e6872" opacity="1"/>
+<line x1="480" y1="171" x2="505" y2="171" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="510.00,171.00 505.00,173.50 505.00,168.50" fill="#5e6872" opacity="1"/>
+<line x1="640" y1="171" x2="665" y2="171" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="670.00,171.00 665.00,173.50 665.00,168.50" fill="#5e6872" opacity="1"/>
+<rect x="300" y="262" width="300" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="450" y="292" font-size="11.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">motor_bridge + 电机（20 kHz PWM）</text>
+<text x="450" y="318" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">五态真值表 · 换向走 REVERSING</text>
+<rect x="30" y="262" width="220" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="140" y="292" font-size="11" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">抗饱和（back-calc）</text>
+<text x="140" y="318" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">限幅时回算积分，防「憋着」</text>
+<rect x="650" y="262" width="220" height="80" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="760" y="292" font-size="11" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">编码器 → rpm</text>
+<text x="760" y="316" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM2 模式3 · CPR=440</text>
+<text x="760" y="334" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">量化下限 ≈13.6 rpm</text>
+<line x1="735" y1="212" x2="565.769" y2="260.352" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="560.00,262.00 564.94,257.47 566.59,263.24" fill="#1b5c45" opacity="1"/>
+<line x1="650" y1="302" x2="256" y2="302" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="250.00,302.00 256.00,299.00 256.00,305.00" fill="#075e84" opacity="1"/>
+<line x1="250" y1="302" x2="410.611" y2="214.394" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="415.00,212.00 411.81,216.59 409.41,212.20" fill="#075e84" opacity="1"/>
+<text x="440" y="250" font-size="9" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">实测 rpm 回授（10 ms 与串口分离）</text>
+<rect x="40" y="400" width="820" height="68" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="450" y="426" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先证明「看得到转速」（无反馈 500 ms 锁存 FAULT），再谈调得好不好。</text>
+<text x="450" y="450" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">限幅顺序：i_limit → duty_limit → 抗饱和回算；任何一步越界都要能说出单位。</text>
+<rect x="40" y="486" width="820" height="40" fill="#e5f3f8" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="450" y="511" font-size="10.5" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">调参阶梯六步，每步带通过判据与回退条件；换装置从第 1 步重做。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>

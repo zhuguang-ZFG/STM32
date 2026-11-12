@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="PWM 怎么变成转速——但不是线性变">
+<title>PWM 怎么变成转速——但不是线性变</title>
+<style>
+@keyframes d0{0%,0.00%,11.33%,100%{opacity:0.05}0.01%,11.32%{opacity:0.3}}.d0{animation:d0 6.0s infinite}
+@keyframes d1{0%,33.33%,44.67%,100%{opacity:0.05}33.34%,44.66%{opacity:0.3}}.d1{animation:d1 6.0s infinite}
+@keyframes d2{0%,66.67%,78.00%,100%{opacity:0.05}66.68%,77.99%{opacity:0.3}}.d2{animation:d2 6.0s infinite}
+@keyframes rpm{0%,100%{width:62px}45%{width:118px}70%{width:96px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PWM 怎么变成转速——但不是线性变</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">72 MHz / PSC=0 / ARR=3599 → 20 kHz；占空比决定平均电压，转速还受负载、VM 与电流限约束</text>
+<rect x="729" y="15" width="149" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="803.5" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">30 开环调速 · VIS03</text>
+<rect x="40" y="110" width="560" height="96" fill="#f1f5f7" opacity="0.06" rx="8" stroke="#075e84" stroke-width="1.5" class="d0"/>
+<text x="56" y="136" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">duty 25%</text>
+<text x="200" y="136" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CCR = 900</text>
+<path d="M 56 156.4 L 56.00 156.40 L 121.00 156.40 L 121.00 183.60 L 186.00 183.60 L 186.00 183.60 L 251.00 183.60 L 251.00 183.60 L 316.00 183.60 L 316.00 156.40 L 381.00 156.40 L 381.00 183.60 L 446.00 183.60 L 446.00 183.60 L 511.00 183.60 L 511.00 183.60 L 576.00 183.60" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<text x="604" y="176" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">50 µs</text>
+<rect x="40" y="220" width="560" height="96" fill="#f1f5f7" opacity="0.06" rx="8" stroke="#1b5c45" stroke-width="1.5" class="d1"/>
+<text x="56" y="246" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">duty 50%</text>
+<text x="200" y="246" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CCR = 1800</text>
+<path d="M 56 266.4 L 56.00 266.40 L 121.00 266.40 L 121.00 266.40 L 186.00 266.40 L 186.00 293.60 L 251.00 293.60 L 251.00 293.60 L 316.00 293.60 L 316.00 266.40 L 381.00 266.40 L 381.00 266.40 L 446.00 266.40 L 446.00 293.60 L 511.00 293.60 L 511.00 293.60 L 576.00 293.60" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
+<text x="604" y="286" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">50 µs</text>
+<rect x="40" y="330" width="560" height="96" fill="#f1f5f7" opacity="0.06" rx="8" stroke="#7a4e00" stroke-width="1.5" class="d2"/>
+<text x="56" y="356" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">duty 100%</text>
+<text x="200" y="356" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CCR = 3600 &gt; ARR</text>
+<path d="M 56 376.4 L 56.00 376.40 L 121.00 376.40 L 121.00 376.40 L 186.00 376.40 L 186.00 376.40 L 251.00 376.40 L 251.00 376.40 L 316.00 376.40 L 316.00 376.40 L 381.00 376.40 L 381.00 376.40 L 446.00 376.40 L 446.00 376.40 L 511.00 376.40 L 511.00 376.40 L 576.00 376.40" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<text x="604" y="396" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">恒有效</text>
+<rect x="640" y="110" width="220" height="306" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="750" y="140" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">电机得到什么</text>
+<text x="750" y="172" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">平均电压 ↑</text>
+<text x="750" y="196" font-size="10" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电流受三档约束</text>
+<text x="750" y="220" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">（连续 ≤1.0 A）</text>
+<rect x="672" y="244" width="156" height="20" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="672" y="244" width="62" height="20" fill="#1b5c45" opacity="1" rx="4" class="rpm"/>
+<text x="750" y="290" font-size="10" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">rpm 响应滞后且不线性</text>
+<line x1="672" y1="310" x2="828" y2="310" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="750" y="334" font-size="10.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">斜坡 ±50‰/10 ms</text>
+<text x="750" y="358" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">换向从零升速</text>
+<rect x="40" y="460" width="820" height="100" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="450" y="490" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700"> duty → RPM 不是无条件线性：VM 下降、负载变重、电流限顶死都会让同一条占空比曲线漂移。</text>
+<text x="450" y="518" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">开环只能保证「给定的占空比被忠实输出」；转速是否如愿，是第 32 章闭环才回答的问题。</text>
+<text x="450" y="544" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">100% 端点：CCR=ARR 只有 3599/3600 ≈ 99.97% —— 恒有效必须 CCR &gt; ARR（写 3600）。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-011 阶梯对比 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

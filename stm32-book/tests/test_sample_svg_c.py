@@ -34,6 +34,8 @@ animations/iwdg-window.svg 900x620 10861 deaa83198e6dd70c3397d07a852bedacdb1e447
 animations/l4-stop2-evidence.svg 900x620 14214 04228f72309b692ff19fdbccce10fe8a7fc1a1030af9f83bba0307fc7896bd1e
 animations/lowpower-wakeup.svg 900x620 14158 74877ea14b159ff4b98bea6b010877c7d5c4bdc29101de45ab892435c3e559f5
 animations/memory-map.svg 900x620 8004 82e9be18ac7ecbe388e478b995ef9bcf8e876a2373406565469fda41e911b11f
+animations/motor-encoder-count.svg 900x620 12176 5d9c57f8fbb286d1f47c64b1f2b39d4ba4318b72a85c12596b27b14dd5116d4f
+animations/motor-pwm-drive.svg 900x620 9344 28a8208ca26e5d73b1b5a142982ae9c7a18df186e17debb293bb6f8a10d40834
 animations/network-online-state.svg 900x620 12028 b411a492adbc81a722ace75d62461b5b21a8c97a364d0f253fb43e1b09df8fdb
 animations/network-packet-journey.svg 900x620 19675 bf0e59bfccaab4cd6979f22a731a6997fb5d3d3bca21b22d62e9191219748a2c
 animations/nvic-interrupt-flow.svg 900x620 16051 4d5c80108121e58ca5c236b0617b52ce212cfa76bee5d7c96ddf2e17008385cf
@@ -122,6 +124,10 @@ diagrams/l4-idd-bench.svg 900x560 8736 e7fb7cbbf8f803d0f622784493ecb16f059656560
 diagrams/layers-hal-ll-reg.svg 900x560 10453 2ce7570576e925d07d9451923568c2e1143152044e151a7d0e3a9125273f620f
 diagrams/lowpower-current-evidence.svg 900x560 6553 b179af76c293ac0d9ba059570b55a2b83bdc82f077d74387c85581f25765d3e6
 diagrams/manual-choice-map.svg 900x560 9687 75a6977234623a1b9e8edbd6129863f67cd9ab3ad4a4eeec7e55abe96fece3e9
+diagrams/motor-power-path.svg 900x560 11314 0b9bc746f73b879da41ea2c710505ce0ecf0ea8a5406c6d901aeb3549c17b469
+diagrams/motor-speed-loop.svg 900x560 9926 7555f65ef0516395d389769691a05c3ca66b3d2d0d194f63eab6a7689fd391e7
+diagrams/motor-state-machine.svg 900x560 9833 8bd21cb00b1d2df6001c5935525ea9a8a96b651de31c927dfb7914d12a31ee59
+diagrams/motor-stop-modes.svg 900x560 8347 1358058637f78267ca82702b412de3a5e699ae9c3e4111e559cbfaf6ecf05811
 diagrams/network-cache-ownership.svg 900x560 10014 5e743984bd7bf6e68f539020ac23d5a7498e89ac1788e6a3d1245c47b94daf85
 diagrams/network-debug-ladder.svg 900x560 11338 a1405054a5ba593090ad0bc6fdb104a5c8e513dd9695bd35767867faeeaec2e8
 diagrams/peripheral-bus.svg 900x560 14143 80d659d44758f54a352b8447fb4a49e6fa880a47cb981bc487c1d69aaa6ae2f6
@@ -376,6 +382,10 @@ STATIC_ADVANCED = {
     "diagrams/simulation-model-boundary.svg",
     "diagrams/simulator-comparison.svg",
     "diagrams/single-build-contract.svg",
+    "diagrams/motor-power-path.svg",
+    "diagrams/motor-stop-modes.svg",
+    "diagrams/motor-speed-loop.svg",
+    "diagrams/motor-state-machine.svg",
     "diagrams/spl-ownership-boundary.svg",
     "diagrams/tcp-byte-stream.svg",
     "diagrams/watchdog-reset-evidence.svg",
@@ -581,7 +591,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(336, len(found))
+        self.assertEqual(342, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)

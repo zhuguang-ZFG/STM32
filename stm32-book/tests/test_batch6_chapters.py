@@ -457,8 +457,8 @@ class Batch6StopChapterTests(unittest.TestCase):
             self.assertEqual(by_id[source_id]["authority_en"], card_en["authority"])
             self.assertEqual(scope_pair[0], card_zh["scope"])
             self.assertEqual(scope_pair[1], card_en["scope"])
-        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-5:-3])
-        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-5:-3])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(zh_manifest["sources"])[-11:-9])
+        self.assertEqual(["ds5319-pwr", "rm0008-pwr"], list(en_manifest["sources"])[-11:-9])
 
 class Batch6CfsrChapterTests(unittest.TestCase):
     def test_cfsr_chapters_have_four_blocks_and_the_same_numbers(self) -> None:
@@ -570,7 +570,7 @@ class Batch6CfsrChapterTests(unittest.TestCase):
         self.assertEqual(scope_en, card_en["scope"])
         self.assertEqual(by_id["pm0056-dwt"]["title_zh"], card_zh["title"])
         self.assertEqual(by_id["pm0056-dwt"]["title_en"], card_en["title"])
-        self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-3:-2])
+        self.assertEqual(["pm0056-dwt"], list(zh_manifest["sources"])[-9:-8])
 
 class Batch6BootChapterTests(unittest.TestCase):
     def test_boot_chapters_keep_38_rows_and_the_same_numbers(self) -> None:
@@ -727,8 +727,12 @@ class Batch6BootChapterTests(unittest.TestCase):
             self.assertEqual(scope_en, card_en["scope"])
             self.assertEqual(by_id[source_id]["title_zh"], card_zh["title"])
             self.assertEqual(by_id[source_id]["title_en"], card_en["title"])
-        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
-        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(en_manifest["sources"])[-2:])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse",
+             "tb6612-truth-table", "tb6612-electrical", "tb6612-current",
+             "rm0008-encoder", "rm0008-pwm", "ds5319-af"], list(zh_manifest["sources"])[-8:])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse",
+             "tb6612-truth-table", "tb6612-electrical", "tb6612-current",
+             "rm0008-encoder", "rm0008-pwm", "ds5319-af"], list(en_manifest["sources"])[-8:])
 
 class Batch6FlashFitChapterTests(unittest.TestCase):
     def test_project_chapters_keep_one_slot_and_the_same_numbers(self) -> None:
@@ -861,7 +865,9 @@ class Batch6FlashFitChapterTests(unittest.TestCase):
             guide["question"],
         )
         self.assertEqual("项目清单给出学习路径，不构成安全、EMC、量产测试或法规符合性声明。", guide["boundary"])
-        self.assertEqual(["ds5319-nrst", "ds5319-lse"], list(zh_manifest["sources"])[-2:])
+        self.assertEqual(["ds5319-nrst", "ds5319-lse",
+             "tb6612-truth-table", "tb6612-electrical", "tb6612-current",
+             "rm0008-encoder", "rm0008-pwm", "ds5319-af"], list(zh_manifest["sources"])[-8:])
         self.assertNotIn("ds5319-flash", zh_manifest["sources"])
 
 HANDRAW_BLOCK = re.compile(
