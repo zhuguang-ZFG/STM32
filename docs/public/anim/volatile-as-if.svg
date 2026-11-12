@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>volatile 的访存合同：读一次 vs 每次读</title>
+  <desc>四阶段动画：同一段轮询代码，在 -O2 下因为有没有 volatile 而走上两条路——没有 volatile 时优化器只读一次并把值缓存，循环退化成死转；加了 volatile 每轮都真实访存。第四阶段划出 volatile 的能力边界：它保证登门访存，不保证原子、不保证顺序。</desc>
+  <rect width="720" height="452" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">volatile 是一份"每次必登门"的合同：同一段轮询，两条命运</text>
+  <text x="24" y="50" font-size="12" fill="#666">as-if 规则：只要单线程可观察行为不变，编译器可以缓存、删除、合并你的访存——硬件寄存器偏偏会自己变。</text>
+
+  <!-- ===== 源码 ===== -->
+  <rect x="40" y="68" width="640" height="58" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="56" y="90" font-size="13" font-weight="bold" fill="#3451b2">轮询等硬件置位（等价于 while (!(USART1-&gt;SR &gt;&gt; RXNE位));）</text>
+  <text x="56" y="112" font-size="13" font-family="Consolas,monospace" fill="#333">while (!(status &amp; 1u)) { }   /* 唯一区别：status 有没有 volatile */</text>
+
+  <!-- ===== 左：无 volatile ===== -->
+  <rect x="40" y="140" width="310" height="150" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="195" y="164" font-size="14" font-weight="bold" fill="#d97706" text-anchor="middle">普通变量 -O2</text>
+  <text x="60" y="192" font-size="13" font-family="Consolas,monospace" fill="#333">testb $1, status(%rip)</text>
+  <text x="60" y="214" font-size="13" font-family="Consolas,monospace" fill="#333">je .L3</text>
+  <text x="60" y="236" font-size="13" font-family="Consolas,monospace" fill="#333">movl $42, %eax / ret</text>
+  <text x="60" y="266" font-size="13" font-family="Consolas,monospace" font-weight="bold" fill="#dc2626">.L3: jmp .L3<animate attributeName="opacity" values="0.35;1;0.35" dur="1.5s" repeatCount="indefinite"/></text>
+
+  <!-- ===== 右：有 volatile ===== -->
+  <rect x="370" y="140" width="310" height="150" rx="8" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="525" y="164" font-size="14" font-weight="bold" fill="#3eaf7c" text-anchor="middle">volatile -O2</text>
+  <text x="390" y="192" font-size="13" font-family="Consolas,monospace" fill="#333">.L6: testb $1, status(%rip)</text>
+  <text x="390" y="214" font-size="13" font-family="Consolas,monospace" fill="#333">       je .L6</text>
+  <text x="390" y="236" font-size="13" font-family="Consolas,monospace" fill="#333">       movl $42, %eax / ret</text>
+  <text x="390" y="266" font-size="13" font-weight="bold" fill="#3eaf7c">每转一圈都真的去读一次</text>
+
+  <!-- 阶段一：两条命运的分支箭头 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M195,126 L195,140" stroke="#d97706" stroke-width="3" fill="none"/>
+    <path d="M525,126 L525,140" stroke="#3eaf7c" stroke-width="3" fill="none"/>
+  </g>
+
+  <!-- 阶段二：左侧缓存标注 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="52" y="176" width="286" height="64" fill="#fdf0d5" rx="6"/>
+    <text x="195" y="300" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">读一次就"记住"了：硬件后来置位，代码再也不看</text>
+  </g>
+
+  <!-- 阶段三：右侧登门标注 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="382" y="176" width="286" height="64" fill="#d8f3e5" rx="6"/>
+    <text x="525" y="300" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">访存次数=源码写法次数，一条都没被省</text>
+  </g>
+
+  <!-- 阶段四：能力边界 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="306" width="640" height="76" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+    <text x="56" y="330" font-size="14" font-weight="bold" fill="#3451b2">但 volatile 只管"登门"，不管"排队"和"先后"</text>
+    <text x="56" y="352" font-size="13" font-family="Consolas,monospace" fill="#333">reg-&gt;cr |= 1; |= 2; |= 4;   无 volatile → orl $7（三次并一次）</text>
+    <text x="56" y="372" font-size="13" fill="#d97706">共享标志的"读-改-写"三步都在访存，三步之间照样能被中断插队 → 原子操作 / 关中断 / 优先级继承</text>
+  </g>
+
+  <!-- 访存脉冲：左边 12 秒里只亮一次（读完就缓存），右边每秒亮一次（每次都登门） -->
+  <circle cx="50" cy="188" r="4" fill="#d97706" opacity="0">
+    <animate attributeName="opacity" values="0;1;0;0" keyTimes="0;0.27;0.33;1" dur="12s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="380" cy="188" r="4" fill="#3eaf7c" opacity="0">
+    <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">① 编译器按 as-if 规则优化：它只对你的"内存值"负责，不知道地址后面是硬件</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">② 不加 volatile：循环里的值"没变过"，于是只读一次，之后原地空转</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">③ 加 volatile：每次使用都必须真实访存——不许缓存、不许删、不许凭空造</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="410">④ 边界：它不保证原子、不保证顺序；跨执行流的正确性要靠别的机制</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,432)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

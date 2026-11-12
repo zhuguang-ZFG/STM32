@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>NVIC 抢占判定：谁能打断谁（分组 4：3 位抢占 + 1 位子优先级）</title>
+  <desc>NVIC 抢占判定。EXTI0（抢占2）进 ISR 后：同抢占级的 EXTI9 请求只能挂起等待——同抢占级永不嵌套，子优先级只决定两条线同时挂起时谁先上，没有打断能力；而抢占号更小的 EXTI1（抢占1）到来时硬件立刻保存 ISR0 现场、跳进 ISR1，ISR1 退出后回到 ISR0 断点继续，ISR0 退出后挂起的 EXTI9 才补位。规则：数值越小越横；PRIGROUP 决定 4 位优先级怎么切成"抢占+子"，移植 RTOS 时"数值没变、行为全变"九成是这把尺子换了。</desc>
+  <rect width="720" height="400" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">NVIC 抢占判定：谁能打断谁</text>
+  <text x="24" y="50" font-size="12" fill="#666">以分组 4（3 位抢占 + 1 位子优先级）为例——数值越小越横；同抢占级永不嵌套（S4 §3.2）</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <g>
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  <!-- 左列：三条请求线（静态） -->
+  <text x="24" y="78" font-size="12" fill="#888">请求线（IP 字节 = 逻辑优先级 &lt;&lt; 4）</text>
+  <g>
+    <rect x="24" y="85" width="250" height="46" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="54" y="105" font-size="11" font-family="Consolas,monospace" fill="#333">EXTI1    IRQn=7</text>
+    <text x="54" y="122" font-size="11" font-family="Consolas,monospace" fill="#3451b2">抢占=1  子=0</text>
+    <g opacity="0">
+      <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <circle cx="38" cy="108" r="7" fill="#d97706">
+        <animate attributeName="opacity" values="0.15;1;0.15" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  <g>
+    <rect x="24" y="140" width="250" height="46" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="54" y="160" font-size="11" font-family="Consolas,monospace" fill="#333">EXTI0    IRQn=6</text>
+    <text x="54" y="177" font-size="11" font-family="Consolas,monospace" fill="#3451b2">抢占=2  子=0</text>
+    <g opacity="0">
+      <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <circle cx="38" cy="163" r="7" fill="#d97706">
+        <animate attributeName="opacity" values="0.15;1;0.15" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  <g>
+    <rect x="24" y="195" width="250" height="46" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="54" y="215" font-size="11" font-family="Consolas,monospace" fill="#333">EXTI9_5  IRQn=23</text>
+    <text x="54" y="232" font-size="11" font-family="Consolas,monospace" fill="#3451b2">抢占=2  子=1</text>
+    <g opacity="0">
+      <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <circle cx="38" cy="218" r="7" fill="#d97706">
+        <animate attributeName="opacity" values="0.15;1;0.15" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  <rect x="24" y="250" width="250" height="36" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="36" y="266" font-size="11" font-family="Consolas,monospace" fill="#666">PRIGROUP=4 → 3抢占+1子</text>
+  <text x="36" y="280" font-size="11" font-family="Consolas,monospace" fill="#888">AIRCR 写法 0x05FA0400</text>
+
+  <line x1="292" y1="85" x2="292" y2="286" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- 右列：CPU 栈（向上生长） -->
+  <text x="660" y="78" font-size="12" fill="#888" text-anchor="end">CPU 此刻在跑什么（栈向上生长） ↑</text>
+
+  <!-- BoxA：ISR EXTI1（仅阶段3） -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="85" width="340" height="46" rx="8" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="324" y="105" font-size="12" font-weight="bold" fill="#3451b2">ISR：EXTI1_IRQHandler（抢占1）</text>
+    <text x="324" y="122" font-size="11" fill="#666">把 ISR0 压在下面——硬件已替它保存现场</text>
+  </g>
+
+  <!-- BoxB：ISR EXTI0（阶段1–4） -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="140" width="340" height="46" rx="8" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="324" y="160" font-size="12" font-weight="bold" fill="#3451b2">ISR：EXTI0_IRQHandler（抢占2）</text>
+    <text x="324" y="177" font-size="11" fill="#666">进门先清 EXTI_PR，正在延时干活</text>
+  </g>
+
+  <!-- BoxC：主循环（阶段1–4） -->
+  <g>
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="195" width="340" height="46" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+    <text x="324" y="215" font-size="12" font-weight="bold" fill="#666">主循环</text>
+    <text x="324" y="232" font-size="11" fill="#888">被暂停——它不知道有人按了门铃</text>
+  </g>
+
+  <!-- 挂起芯片：EXTI9 排队（阶段2–4） -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="250" width="340" height="36" rx="8" fill="#fdf0d5" stroke="#d97706"/>
+    <text x="324" y="266" font-size="11" font-weight="bold" fill="#92400e">EXTI9 挂起中：同抢占级，插不进去</text>
+    <text x="324" y="280" font-size="11" fill="#92400e">等 ISR0 退出才轮到它（子优先级无打断能力）</text>
+  </g>
+
+  <!-- 请求箭头 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <line x1="274" y1="108" x2="308" y2="108" stroke="#666" stroke-width="2" marker-end="url(#arr)"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <line x1="274" y1="163" x2="308" y2="163" stroke="#666" stroke-width="2" marker-end="url(#arr)"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <line x1="274" y1="268" x2="308" y2="268" stroke="#d97706" stroke-width="2" marker-end="url(#arr)"/>
+  </g>
+
+  </g>
+
+  <!-- 阶段5：规则卡片 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="24" y="80" width="672" height="210" rx="8" fill="#ffffff" stroke="#3451b2"/>
+    <text x="44" y="112" font-size="15" font-weight="bold" fill="#3451b2">NVIC 仲裁三规则</text>
+    <text x="44" y="142" font-size="13" fill="#333">1. 数值越小越横：抢占 1 能打断抢占 2（EXTI1 插进 EXTI0 的 ISR）</text>
+    <text x="44" y="170" font-size="13" fill="#333">2. 同抢占级永不嵌套：EXTI9 与 EXTI0 同为抢占 2，只能挂起排队</text>
+    <text x="44" y="198" font-size="13" fill="#333">3. 子优先级只决定两条线同时挂起时谁先上——它没有打断能力</text>
+    <text x="44" y="232" font-size="12" fill="#92400e">尺子换了全变：PRIGROUP 决定 4 位怎么切，RTOS 要求 4 位全抢占（组 0~3）——</text>
+    <text x="44" y="250" font-size="12" fill="#92400e">移植 RTOS 后"优先级数值没变、行为全变"的灵异事件，九成是这里</text>
+    <text x="44" y="276" font-size="12" fill="#666">写 AIRCR 必须带钥匙 0x5FA，全家要用同一把尺子（S4 §3.2–3.3）</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g>
+      <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="24" y="320">① 主循环在跑：EXTI0（抢占2）按铃 → 进 ISR0</text>
+    </g>
+    <g>
+      <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="24" y="320">② EXTI9（同抢占2）也按铃：只能挂起，插不进去</text>
+    </g>
+    <g>
+      <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="24" y="320">③ EXTI1（抢占1）按铃：数字更小更横，抢占 ISR0</text>
+    </g>
+    <g>
+      <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="24" y="320">④ ISR1 先出栈返回 ISR0；EXTI9 等 ISR0 退出才轮到</text>
+    </g>
+    <g>
+      <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="24" y="320">⑤ 仲裁三规则：小=横 · 同抢占不嵌套 · 子只定次序</text>
+    </g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,342)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

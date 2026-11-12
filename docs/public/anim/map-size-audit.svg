@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>Map 文件与体积审计：谁吃了我的 Flash</title>
+  <desc>四阶段动画：size 三列（text/data/bss）→ Flash/RAM 占用公式 → map 文件三板斧（Archive/Memory Map/Discarded）→ nm --size-sort 找大户</desc>
+  
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  
+  <!-- Stage 1: size output -->
+  <g>
+    <text x="20" y="25" font-size="14" font-weight="bold" fill="#3451b2">① size 三列：三种资源</text>
+    
+    <rect x="20" y="40" width="200" height="100" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+    <text x="30" y="60" font-size="11" fill="#333" font-family="monospace">
+      <tspan x="30" dy="0">arm-none-eabi-size blink.elf</tspan>
+      <tspan x="30" dy="18" fill="#3451b2" font-weight="bold">   text    data     bss</tspan>
+      <tspan x="30" dy="16">   8432     320    1536</tspan>
+    </text>
+    
+    <text x="30" y="125" font-size="10" fill="#666">三列 = 三种资源占用</text>
+  </g>
+  
+  <!-- Stage 2: Flash/RAM formula -->
+  <g>
+    <text x="250" y="25" font-size="14" font-weight="bold" fill="#3451b2">② 占用公式</text>
+    
+    <rect x="250" y="40" width="200" height="100" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+    <text x="260" y="60" font-size="12" fill="#333">
+      <tspan x="260" dy="0" font-weight="bold" fill="#3451b2">Flash 占用</tspan>
+      <tspan x="260" dy="18">= text + data</tspan>
+      <tspan x="260" dy="18">= 8432 + 320</tspan>
+      <tspan x="260" dy="18" fill="#dc2626" font-weight="bold">= 8752 字节</tspan>
+    </text>
+    
+    <rect x="250" y="155" width="200" height="80" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+    <text x="260" y="175" font-size="12" fill="#333">
+      <tspan x="260" dy="0" font-weight="bold" fill="#d97706">RAM 占用</tspan>
+      <tspan x="260" dy="18">= data + bss</tspan>
+      <tspan x="260" dy="18">= 320 + 1536</tspan>
+      <tspan x="260" dy="18" fill="#dc2626" font-weight="bold">= 1856 字节</tspan>
+    </text>
+  </g>
+  
+  <!-- Stage 3: Map file three tools -->
+  <g>
+    <text x="480" y="25" font-size="14" font-weight="bold" fill="#3451b2">③ map 三板斧</text>
+    
+    <rect x="480" y="40" width="220" height="35" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
+    <text x="490" y="58" font-size="11" fill="#333">
+      <tspan font-weight="bold" fill="#3451b2">Archive member</tspan>：谁被从库里捞出来
+    </text>
+    <text x="490" y="72" font-size="12" fill="#666">libm.a:sinf.o → 引入 sin 函数</text>
+    
+    <rect x="480" y="85" width="220" height="35" rx="4" fill="#fff" stroke="#3eaf7c" stroke-width="1.5"/>
+    <text x="490" y="103" font-size="11" fill="#333">
+      <tspan font-weight="bold" fill="#3eaf7c">Memory Map</tspan>：每个符号住哪
+    </text>
+    <text x="490" y="117" font-size="12" fill="#666">0x08001234  main  (main.o)</text>
+    
+    <rect x="480" y="130" width="220" height="35" rx="4" fill="#fff" stroke="#d97706" stroke-width="1.5"/>
+    <text x="490" y="148" font-size="11" fill="#333">
+      <tspan font-weight="bold" fill="#d97706">Discarded</tspan>：被 gc-sections 辞退
+    </text>
+    <text x="490" y="162" font-size="12" fill="#666">.text.unused_func → 没被引用，删</text>
+  </g>
+  
+  <!-- Stage 4: nm size-sort -->
+  <g>
+    <text x="20" y="200" font-size="14" font-weight="bold" fill="#3451b2">④ nm --size-sort：找大户</text>
+    
+    <rect x="20" y="215" width="340" height="110" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+    <text x="30" y="235" font-size="11" fill="#333" font-family="monospace">
+      <tspan x="30" dy="0">arm-none-eabi-nm -S --size-sort blink.elf</tspan>
+      <tspan x="30" dy="18" fill="#dc2626" font-weight="bold">00001024 T HAL_UART_Transmit</tspan>
+      <tspan x="30" dy="16" fill="#dc2626">00000800 T SystemClock_Config</tspan>
+      <tspan x="30" dy="16" fill="#d97706">00000512 T main</tspan>
+      <tspan x="30" dy="16" fill="#666">00000256 T GPIO_Init</tspan>
+    </text>
+    
+    <text x="30" y="315" font-size="10" fill="#666">↑ 倒数五个就是"大尾巴"——优化先从这里下手</text>
+  </g>
+  
+  <!-- Bottom: Optimization strategy -->
+  <rect x="380" y="215" width="320" height="110" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="390" y="235" font-size="13" font-weight="bold" fill="#3eaf7c">✓ 瘦身顺序</text>
+  <text x="390" y="255" font-size="11" fill="#333">
+    <tspan x="390" dy="0">1. <tspan font-weight="bold" fill="#dc2626">先看大项</tspan>：库函数/大数组/查找表</tspan>
+    <tspan x="390" dy="18">2. <tspan font-weight="bold" fill="#d97706">再谈优化级别</tspan>：-Os 比 -O2 更省空间</tspan>
+    <tspan x="390" dy="18">3. <tspan font-weight="bold" fill="#3451b2">最后抠细节</tspan>：-ffunction-sections + gc-sections</tspan>
+  </text>
+  <text x="390" y="310" font-size="10" fill="#666" font-style="italic">方向错了，-O2 也救不了你</text>
+  
+  <!-- Footer: Key insight -->
+  <rect x="20" y="350" width="680" height="70" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="30" y="375" font-size="12" font-weight="bold" fill="#3451b2">核心洞察：先审账，再优化</text>
+  <text x="30" y="395" font-size="11" fill="#333">
+    <tspan x="30" dy="0">• size 告诉你"总共多少"，nm 告诉你"谁占最多"，map 告诉你"为什么在这"</tspan>
+    <tspan x="30" dy="18">• 加了一个库，固件涨 180KB？map 的 Archive 段一查便知——这是嵌入式工程师的基本功</tspan>
+  </text>
+  
+  <!-- Continuous animation: pulse on largest symbol -->
+  <circle cx="45" cy="253" r="10" fill="#dc2626" opacity="0.2">
+    <animate attributeName="r" values="10;15;10" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

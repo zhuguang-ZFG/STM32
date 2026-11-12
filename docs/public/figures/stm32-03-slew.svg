@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="GPIO 输出速度四档：上升沿越陡，翻转越快，但振铃与 EMI 越大"><g transform="translate(0,+2.9)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">OSPEEDR 四档</text>
+<path d="M30 18 L78 18 L110 12" stroke-width="1.8"/>
+<text x="8" y="22" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2M</text>
+<path d="M30 36 L84 36 L110 24" stroke-width="1.8"/>
+<text x="8" y="40" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">25M</text>
+<path d="M30 54 L92 54 L110 38" stroke-width="2.2"/>
+<text x="8" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">50M</text>
+<path d="M30 72 L100 72 L110 50" stroke-width="2.2"/>
+<text x="8" y="76" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">100M</text>
+<rect x="140" y="18" width="164" height="20" rx="3" stroke-width="1.4"/> <text x="144" y="31" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">上升沿越陡 → 越快</text>
+<text x="140" y="52" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">但振铃/EMI 越大</text>
+<text x="140" y="68" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">高速只在必要时开</text>
+</g></svg>

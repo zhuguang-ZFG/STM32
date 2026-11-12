@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>逐次逼近：12 刀把 4096 档砍到 1 档</title>
+  <desc>12 位 SAR ADC 的工作现场。采样保持电路先给 C_H 充电，把 Vin=2.00 V"拍照"定格；随后 SAR 寄存器从最高位开始逐位置 1，DAC 把这个码值换成电压反馈回来，比较器只回答"大了还是小了"：bit11 试探 2048→1.6500 V 保留，bit10 试探 3072→2.4750 V 丢弃，bit9 试探 2560→2.0625 V 也丢弃，如此 12 轮把 4096 档候选砍到 1 档，锁定 2482（0x9B2）对应 1.9997 V，与真值差 0.342 mV = 0.42 LSB。最后一个阶段演示精度天花板不在比较器，而在采样窗口：C_H 没充满就转，拍到的是一张虚焦的照片，读数系统性偏低。全部码值与电压由 code/stm32/09-adc/probe.sh 现场算出，宿主机一条命令复现。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">逐次逼近：12 刀把 4096 档砍到 1 档</text>
+  <text x="24" y="50" font-size="12" fill="#666">VREF=3.3 V、Vin=2.00 V；每个码值与电压都由 code/stm32/09-adc/probe.sh 算出，宿主 gcc 一条命令复现。</text>
+
+  <defs>
+    <marker id="arrB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+    <marker id="arrR" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 输入侧：采样保持 ===== -->
+  <rect x="40" y="64" width="640" height="84" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="84" font-size="12" font-weight="bold" fill="#3451b2">输入侧：采样保持先"拍照"</text>
+  <rect x="56" y="94" width="110" height="38" rx="6" fill="#f8fafc" stroke="#3451b2"/>
+  <text x="111" y="118" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">Vin 2.00 V</text>
+  <line x1="166" y1="113" x2="200" y2="113" stroke="#94a3b8" stroke-width="2"/>
+  <text x="168" y="104" font-size="11" fill="#666">S/H</text>
+  <rect x="200" y="94" width="70" height="38" rx="6" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="235" y="118" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">C_H</text>
+  <line x1="300" y1="132" x2="520" y2="132" stroke="#e2e8f0" stroke-width="2"/>
+  <line x1="300" y1="104" x2="520" y2="104" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5 4"/>
+  <path d="M300,132 C360,131 400,106 520,104" fill="none" stroke="#3eaf7c" stroke-width="3" pathLength="1000" stroke-dasharray="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.15;1" dur="15s" repeatCount="indefinite"/>
+  </path>
+  <text x="300" y="96" font-size="11" fill="#666">充电需要时间</text>
+  <text x="536" y="120" font-size="11" fill="#666">开关断开即定格</text>
+
+  <!-- ===== SAR 寄存器 ===== -->
+  <rect x="40" y="160" width="640" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="180" font-size="12" font-weight="bold" fill="#3451b2">SAR 寄存器</text>
+  <g fill="#f8fafc" stroke="#cbd5e1">
+    <rect x="108" y="186" width="36" height="28"/><rect x="150" y="186" width="36" height="28"/>
+    <rect x="192" y="186" width="36" height="28"/><rect x="234" y="186" width="36" height="28"/>
+    <rect x="276" y="186" width="36" height="28"/><rect x="318" y="186" width="36" height="28"/>
+    <rect x="360" y="186" width="36" height="28"/><rect x="402" y="186" width="36" height="28"/>
+    <rect x="444" y="186" width="36" height="28"/><rect x="486" y="186" width="36" height="28"/>
+    <rect x="528" y="186" width="36" height="28"/><rect x="570" y="186" width="36" height="28"/>
+  </g>
+  <text x="126" y="226" font-size="11" font-family="Consolas,monospace" fill="#888" text-anchor="middle">bit11</text>
+  <text x="588" y="226" font-size="11" font-family="Consolas,monospace" fill="#888" text-anchor="middle">bit0</text>
+
+  <!-- ===== 逼近环路 ===== -->
+  <rect x="40" y="240" width="640" height="100" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="56" y="258" font-size="11" font-weight="bold" fill="#3451b2">逼近环路：置位 → DAC 反馈 → 比较 → 下一位</text>
+  <rect x="56" y="266" width="150" height="46" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="66" y="282" font-size="11" fill="#666">SAR 置位</text>
+  <rect x="250" y="266" width="140" height="46" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="260" y="282" font-size="11" fill="#666">DAC 反馈</text>
+  <rect x="434" y="266" width="206" height="46" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="444" y="282" font-size="11" fill="#666">比较器只答大小</text>
+  <line x1="206" y1="289" x2="250" y2="289" stroke="#3451b2" stroke-width="2" marker-end="url(#arrB)"/>
+  <line x1="390" y1="289" x2="434" y2="289" stroke="#3451b2" stroke-width="2" marker-end="url(#arrB)"/>
+
+  <!-- ===== ② 第一刀：bit11 保留 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="108" y="186" width="36" height="28" fill="#dbe7ff" stroke="#3451b2" stroke-width="2"/>
+    <text x="126" y="206" font-size="11" font-family="Consolas,monospace" font-weight="bold" fill="#3451b2" text-anchor="middle">1</text>
+    <text x="66" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">bit11=1 → 2048</text>
+    <text x="260" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">1.6500 V</text>
+    <text x="444" y="302" font-size="11" font-family="Consolas,monospace" fill="#1a7f56">2.000 ≥ 1.650 保留</text>
+    <path d="M537,312 C537,332 131,332 131,312" fill="none" stroke="#3451b2" stroke-width="2" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.6;1" dur="5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ===== ③ 砍半：bit10 / bit9 丢弃 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="108" y="186" width="36" height="28" fill="#dbe7ff" stroke="#3451b2"/>
+    <text x="126" y="206" font-size="11" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">1</text>
+    <rect x="150" y="186" width="36" height="28" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="168" y="206" font-size="11" font-family="Consolas,monospace" fill="#dc2626" text-anchor="middle">0</text>
+    <rect x="192" y="186" width="36" height="28" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <text x="210" y="206" font-size="11" font-family="Consolas,monospace" fill="#dc2626" text-anchor="middle">0</text>
+    <text x="66" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">bit10=1 → 3072</text>
+    <text x="260" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">2.4750 V</text>
+    <text x="444" y="302" font-size="11" font-family="Consolas,monospace" fill="#dc2626">2.000 &lt; 2.475 丢弃</text>
+    <path d="M537,312 C537,332 131,332 131,312" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrR)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ===== ④ 第 12 轮锁定 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <g font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">
+      <text x="126" y="206">1</text><text x="168" y="206">0</text><text x="210" y="206">0</text>
+      <text x="252" y="206">1</text><text x="294" y="206">1</text><text x="336" y="206">0</text>
+      <text x="378" y="206">1</text><text x="420" y="206">1</text><text x="462" y="206">0</text>
+      <text x="504" y="206">0</text><text x="546" y="206">1</text><text x="588" y="206">0</text>
+    </g>
+    <text x="66" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">code = 2482</text>
+    <text x="260" y="302" font-size="11" font-family="Consolas,monospace" fill="#333">1.9997 V</text>
+    <text x="444" y="302" font-size="11" font-family="Consolas,monospace" fill="#92400e">差 0.342 mV = 0.42 LSB</text>
+    <rect x="434" y="266" width="206" height="46" rx="6" fill="none" stroke="#3eaf7c" stroke-width="2">
+      <animate attributeName="opacity" values="0.35;1;0.35" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- ===== ⑤ 精度天花板在采样窗口 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <path d="M300,132 C340,131 372,129 404,127" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="6 4">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="404" cy="127" r="3" fill="#dc2626"/>
+    <text x="414" y="128" font-size="11" font-weight="bold" fill="#dc2626">没充满就转</text>
+  </g>
+
+  <!-- ===== 每阶段解说 ===== -->
+  <g font-size="12" fill="#333">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="40" y="362">转换开始前 C_H 必须充到位：12 轮比较要跑几百个时钟，期间输入再变也与之无关。</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="40" y="362">第一刀砍正中：2048 对应 1.6500 V，比 Vin 小 → 这一位留 1，候选剩一半。</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="40" y="362">bit10 试探 3072→2.4750 V 太大、bit9 试探 2560→2.0625 V 也大 → 两位清 0，仍是 2048。</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="40" y="362">1001 1011 0010 = 2482 = 0x9B2 → 1.9997 V；量化误差 0.342 mV，不到半个 LSB。</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="40" y="362">采样窗口太短，红那条根本没爬到 2.00 V——逼近再精确也是在逼近一张虚焦的照片。</text></g>
+  </g>
+
+  <!-- ===== 阶段字幕 ===== -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="386">① 先拍照：采样保持把 Vin 存进 C_H，转换期间电压不再动</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="386">② 置最高位：DAC 反喂 1.6500 V，比较器说"小了"就留</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="386">③ 逐位二分：说"大了"就清 0，每轮候选对半砍</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="386">④ 12 轮锁定 0x9B2=2482，误差 0.42 LSB——这就是分辨率的下限</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="386">⑤ 真上限在采样窗口：高阻源没充满就转，读数系统性偏低</text></g>
+  </g>
+
+  <!-- ===== 阶段指示点 ===== -->
+  <g transform="translate(612,410)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

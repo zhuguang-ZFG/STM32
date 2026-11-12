@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>环境搭建五步闭环：安装→配置→编译→烧录→点灯</title>
+  <desc>四阶段流程图：工具链安装→工程配置→编译链接→烧录验证，展示 S0/P0/G0 通用的环境搭建闭环</desc>
+
+  <rect width="720" height="420" fill="#f6f8fa"/>
+
+  <!-- Step 1: Install -->
+  <text x="80" y="22" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">① 安装</text>
+  <rect x="20" y="30" width="120" height="80" rx="4" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="80" y="50" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="80" dy="0"> arm-none-eabi-</tspan>
+    <tspan x="80" dy="14">gcc 15.2.1</tspan>
+    <tspan x="80" dy="14" fill="#666" font-size="10">+ OpenOCD</tspan>
+    <tspan x="80" dy="14" fill="#666" font-size="10">+ ST-Link 驱动</tspan>
+  </text>
+
+  <!-- Arrow 1→2 -->
+  <path d="M140,70 L160,70" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Configure -->
+  <text x="240" y="22" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">② 配置</text>
+  <rect x="180" y="30" width="120" height="80" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="240" y="50" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="240" dy="0">Makefile 指定</tspan>
+    <tspan x="240" dy="14" font-family="monospace" font-size="10">-mcpu=cortex-m4</tspan>
+    <tspan x="240" dy="14" font-family="monospace" font-size="10">-T xxx.ld</tspan>
+    <tspan x="240" dy="14" fill="#666" font-size="10">链接脚本 + 启动文件</tspan>
+  </text>
+
+  <!-- Arrow 2→3 -->
+  <path d="M300,70 L320,70" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Build -->
+  <text x="400" y="22" font-size="13" font-weight="bold" fill="#d97706" text-anchor="middle">③ 编译</text>
+  <rect x="340" y="30" width="120" height="80" rx="4" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="400" y="50" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="400" dy="0" font-family="monospace" font-size="10">make</tspan>
+    <tspan x="400" dy="14" fill="#666" font-size="10">四步构建</tspan>
+    <tspan x="400" dy="14" fill="#666" font-size="10">E → S → c → T</tspan>
+    <tspan x="400" dy="14" fill="#3eaf7c" font-size="10">✓ firmware.elf</tspan>
+  </text>
+
+  <!-- Arrow 3→4 -->
+  <path d="M460,70 L480,70" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Flash -->
+  <text x="560" y="22" font-size="13" font-weight="bold" fill="#dc2626" text-anchor="middle">④ 烧录</text>
+  <rect x="500" y="30" width="120" height="80" rx="4" fill="#ffffff" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="560" y="50" font-size="11" fill="#333" text-anchor="middle">
+    <tspan x="560" dy="0" font-family="monospace" font-size="10">make flash</tspan>
+    <tspan x="560" dy="14" fill="#666" font-size="10">OpenOCD → SWD</tspan>
+    <tspan x="560" dy="14" fill="#666" font-size="10">→ Flash 0x08000000</tspan>
+    <tspan x="560" dy="14" fill="#3eaf7c" font-size="10">✓ 校验通过</tspan>
+  </text>
+
+  <!-- Arrow 4→5 -->
+  <path d="M620,70 L640,70" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Step 5: Verify -->
+  <text x="680" y="22" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">⑤ 验证</text>
+  <rect x="640" y="30" width="60" height="80" rx="4" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="670" y="55" font-size="11" fill="#3eaf7c" text-anchor="middle" font-weight="bold">LED</text>
+  <text x="670" y="80" font-size="10" fill="#666" text-anchor="middle">闪烁</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Verification commands -->
+  <rect x="20" y="130" width="680" height="80" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="30" y="150" font-size="12" font-weight="bold" fill="#3451b2">自查三命令</text>
+  <text x="30" y="170" font-size="11" fill="#333" font-family="monospace">
+    <tspan x="30" dy="0">arm-none-eabi-gcc --version</tspan>
+    <tspan fill="#666"> → 版本确认</tspan>
+    <tspan x="30" dy="16">arm-none-eabi-gcc -print-search-dirs</tspan>
+    <tspan fill="#666"> → 搜索路径</tspan>
+    <tspan x="30" dy="16">where arm-none-eabi-gcc</tspan>
+    <tspan fill="#666"> → PATH 优先级</tspan>
+  </text>
+
+  <!-- Platform-specific notes -->
+  <rect x="20" y="225" width="220" height="90" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="30" y="245" font-size="11" font-weight="bold" fill="#3451b2">STM32 (S0)</text>
+  <text x="30" y="263" font-size="10" fill="#333">
+    <tspan x="30" dy="0">野火 F407 霸天虎</tspan>
+    <tspan x="30" dy="14">ST-Link V2 板载</tspan>
+    <tspan x="30" dy="14" font-family="monospace" font-size="12">make MODE=0 flash</tspan>
+  </text>
+
+  <rect x="250" y="225" width="220" height="90" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
+  <text x="260" y="245" font-size="11" font-weight="bold" fill="#3eaf7c">ESP32 (P0)</text>
+  <text x="260" y="263" font-size="10" fill="#333">
+    <tspan x="260" dy="0">ESP32-S3 小智板</tspan>
+    <tspan x="260" dy="14">USB-JTAG 内置</tspan>
+    <tspan x="260" dy="14" font-family="monospace" font-size="12">idf.py flash monitor</tspan>
+  </text>
+
+  <rect x="480" y="225" width="220" height="90" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="1.5"/>
+  <text x="490" y="245" font-size="11" font-weight="bold" fill="#d97706">GD32 (G0)</text>
+  <text x="490" y="263" font-size="10" fill="#333">
+    <tspan x="490" dy="0">复用 STM32 工具链</tspan>
+    <tspan x="490" dy="14">换 GD32 DFP 包</tspan>
+    <tspan x="490" dy="14" font-family="monospace" font-size="12">make flash（同 S0）</tspan>
+  </text>
+
+  <!-- Common pitfalls -->
+  <rect x="20" y="330" width="680" height="75" rx="6" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="30" y="350" font-size="12" font-weight="bold" fill="#dc2626">常见坑</text>
+  <text x="30" y="370" font-size="11" fill="#333">
+    <tspan x="30" dy="0">1. PATH 混用多套工具链 → </tspan>
+    <tspan fill="#666" font-size="10">where gcc 查优先级</tspan>
+    <tspan x="30" dy="16">2. 目标芯片与工具链不匹配 → </tspan>
+    <tspan fill="#666" font-size="10">arm-none-eabi 编裸机，arm-linux 编 Linux</tspan>
+  </text>
+
+  <!-- Continuous animation: progress dot flowing through steps -->
+  <circle r="5" fill="#3451b2" opacity="0.8">
+    <animate attributeName="cx" values="80;240;400;560;670;80" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="70;70;70;70;70;70" dur="6s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="UART 一帧：空闲高、起始位拉低、8 个数据位低位在前、停止位拉高；波特率由 PCLK/BRR 决定"><g transform="translate(+5.4,+1.5)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="16" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">空闲</text>
+<text x="8" y="50" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">帧</text>
+<path d="M36 18 L64 18 L64 40 L86 40 L86 24 L104 24 L104 40 L122 40 L122 24 L140 24 L140 40 L158 40 L158 24 L176 24 L176 40 L194 40 L194 24 L212 24 L212 40 L230 40 L230 18 L300 18" stroke-width="2.2"/>
+<path d="M36 64 L300 64" stroke-width="1.2" stroke-dasharray="3 3"/>
+<text x="75" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">起始</text>
+<text x="95" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D0</text>
+<text x="113" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D1</text>
+<text x="131" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D2</text>
+<text x="149" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D3</text>
+<text x="167" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D4</text>
+<text x="185" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D5</text>
+<text x="203" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D6</text>
+<text x="221" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">D7</text>
+<text x="248" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">停止</text>
+<text x="20" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">baud = PCLK / BRR</text>
+<text x="190" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">低位先发</text>
+</g></svg>
