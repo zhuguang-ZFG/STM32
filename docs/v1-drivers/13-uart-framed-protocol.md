@@ -73,7 +73,7 @@ print(hex(crc16_ccitt_false(b"123456789")))   # 0x29b1
 
 ### 波特率：BRR 的整数值就是分母
 
-把 BRR 拆成两个字段看，`DIV_Mantissa[15:4]` 是整数部分，`DIV_Fraction[3:0]` 是小数部分，手册写的是 `USARTDIV = Mantissa + Fraction/16`、`baud = PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。字段定义见 RM0008 27.3.3 与 RM0090 30.3.4，仓库的寄存器速查表也按同一拆法登记；本章按这个定义复算了下面每一行。
+把 BRR 拆成两个字段看，`DIV_Mantissa[15:4]` 是整数部分，`DIV_Fraction[3:0]` 是小数部分，手册写的是 `USARTDIV = Mantissa + Fraction/16`、`baud = PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。字段定义见 RM0008 27.3.4（BRR 寄存器描述 27.6.3）与 RM0090 30.3.4，仓库的寄存器速查表也按同一拆法登记；本章按这个定义复算了下面每一行。
 
 ![BRR 的来历：PCLK 与 baud 相除后拆成整数 Mantissa 与小数 Fraction 两个字段](/figures/stm32-07-usart-brr.svg)
 
@@ -306,7 +306,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 步骤按 e02 的顺序：
 
-1. 进入 `mcu/code/stm32/03-uart-dma`，`make` 后 `make flash`；装 PulseView，采样率按 e02 的口径留足余量：115200 的 16 倍是 1.8432MHz，至少要 2MHz，24MHz 是这类分析仪的标称上限，不必顶满。
+1. 进入 `mcu/code/stm32/03-uart-dma`，`make` 后 `make flash`；装 PulseView，采样率按 e02 的步骤选 24MHz，e02 同时注明按 16 倍波特率留余量时 115200 至少要 2MHz。24MHz 是这类分析仪的标称上限、不必每次顶满，这是本章的建议，不是 e02 的步骤原文。
 2. 触发方式设 CH0 下降沿：起始位就是下降沿。
 3. 开始采集；USB-TTL 串口助手设 115200 8N1，发送单个 `A`，固件在 PA9 回显。复位时固件还会输出 `uart-dma ready`，它不含大写 `A`，别抓错帧。
 4. 添加 UART 解码器：115200、8 数据位、无校验、1 停止位。
@@ -336,8 +336,8 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 | F407 USART1 的 84MHz 与 729 | S7 表；本章复算 | 84e6/729=115226.3，+0.023% | 推导 |
 | S7 的八行误差表 | `probe.sh` 第 1 步宿主打印 | 本章按公式与 1..65535 穷举复算，八行 BRR 与误差一致 | 来源记录（宿主计算，非上板） |
 | 8N1 总容差 5.882%、每端 2.941% | 本章按 `0.5/8.5` 推导 | 输入是 8.5 位时刻与半位判据 | 推导 |
-| BRR 字段 `[15:4]`/`[3:0]` 与 USARTDIV 拆法 | RM0008 27.3.3、RM0090 30.3.4，转引根书；与仓库速查表一致 | `16×USARTDIV` 等于寄存器整数值 | 手册规则 |
-| CR1 位号 UE13/TE3/RE2/IDLEIE4/RXNEIE5/TCIE6/TXEIE7 | RM0008 27.6.2 转引；与 `main.c` 宏一致 | 位号逐项对上 | 手册规则（源码互证） |
+| BRR 字段 `[15:4]`/`[3:0]` 与 USARTDIV 拆法 | RM0008 27.3.4、27.6.3，RM0090 30.3.4，转引根书；与仓库速查表一致 | `16×USARTDIV` 等于寄存器整数值 | 手册规则 |
+| CR1 位号 UE13/TE3/RE2/IDLEIE4/RXNEIE5/TCIE6/TXEIE7 | RM0008 27.6.4 转引；与 `main.c` 宏一致 | 位号逐项对上 | 手册规则（源码互证） |
 | SR 位号 PE0/FE1/NE2/ORE3/IDLE4/RXNE5/TC6/TXE7 | RM0008 27.6.1 转引；与 S7、速查表一致 | 位号逐项对上 | 手册规则 |
 | IDLE/ORE/FE/NE 的清除序列 | RM0008，转引根书第 06 章与 S7 | 读 SR 再读 DR；只读 DR 不够 | 手册规则 |
 | F407 的 PA9/PA10 与 AF7 | DS8626 Table 9，转引 S7 | USART1 TX/RX | 来源记录，未核原件 |
@@ -354,6 +354,8 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 这些数能互相对上的只有公式、位定义与源码常量：公式能证明 115200 该写 625 或 729，不能证明板上的 PA9 真的跑出了 115200；CRC 检查值能证明实现与参数一致，不能证明某条线路上的数据没被篡改。要补上后者，得按 e02 的记录表留下仪器读数。
 
+本节测验原样复制自 MCU 书的 `s07-usart` 题库，其中一题把 1MHz 配 115200 的误差写作“probe 实测”，本章正文则把同一次运行标为待复核、未复跑。
+
 <QuizBank chapter="s07-usart" />
 
 ## 失败分支
@@ -363,7 +365,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 | 完全没有输出 | USART1 时钟门没开（F1 是 `RCC_APB2ENR` bit14），或 UE/TE 没置 | 读 `RCC_APB2ENR` 与 CR1 的 UE/TE；时钟没开时 BRR 写不进、SR 读回复位值 | 先开时钟，再置 UE/TE |
 | TX 有波形，电脑收不到 | TX/RX 没交叉，或没共地 | 把 PA9 与 PA10 短接做自环（先断开外部发送端），能收到自己发的字节就说明 MCU 侧正常 | 交叉接线、共地，再查 USB-TTL |
 | 满屏乱码 | BRR 与真实 PCLK 不匹配；时钟源回落到 HSI 8MHz 仍按 72MHz 算 | 读 BRR 与 `RCC_CFGR` 的 SWS；8e6/625 只有 12800 波特，慢 9 倍 | 先确认时钟源，再重算 BRR |
-| 波特率正好差一倍 | 把 APB1 的 USART2（36MHz）当成 APB2 的 USART1（72MHz） | 看外设基址：USART1 在 `0x4001_38xx`，USART2 在 `0x4000_44xx` | 按总线归属取 PCLK |
+| 波特率正好差一倍 | 把 APB1 的 USART2（36MHz）当成 APB2 的 USART1（72MHz） | 看外设基址：F103 的 USART1 在 `0x4001_38xx`、F407 的在 `0x4001_1000`，USART2 在 `0x4000_44xx` | 按总线归属取 PCLK |
 | FE 置位，收到坏字节 | 停止位采到 0，通常是波特率偏差或线路干扰 | 读 SR 的 FE；坏字节仍进了 DR | 读 SR 再读 DR 清 FE，再查波特率与接线 |
 | 接收停死，新字节被丢 | ORE：上一字节没取走，新字节又到了 | 读 SR 的 ORE；只读 DR 清不掉 | 读 SR 再读 DR，提高取数优先级 |
 | IDLE 中断反复进 | 没有按“读 SR 再读 DR”清 IDLE | 读 SR 的 IDLE；ISR 里是否只读了 DR | 改成读 SR 再读 DR |
@@ -379,7 +381,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ## 跨平台边界
 
-F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。USART2/3/6 与 UART4/5 挂在 APB1，换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
+F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。USART2/3 与 UART4/5 挂在 APB1，USART1/6 挂在 APB2（USART6 基址 `0x4001_1400`）；F103 只有 USART1 在 APB2、USART2/3 在 APB1，且没有 UART4/5。换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
 
 F103 一侧：USART1 同样在 APB2，72MHz 主频时 PCLK2=72MHz，115200 用 `0x271`；PA9 是 LQFP48 第 30 脚、PA10 第 31 脚，要换到 PB6/PB7 得先开 AFIO 时钟再配重映射。F103 的 CR1 没有 OVER8 位，只有 16 倍过采样，别把 F4 的 8 倍写法搬过去。USART1 的时钟门是 `RCC_APB2ENR` bit14；USART2/3 在 `RCC_APB1ENR` 的 bit17/18，PCLK1=36MHz 时同样 115200 要 `0x138`，误差 +0.16%。接收 DMA 用 DMA1 Channel5，发送用 DMA1 Channel4；SPL 的 `USART_Init()` 与 HAL 落位相同，但一手源码仍缺。
 
