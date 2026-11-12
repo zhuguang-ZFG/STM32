@@ -6,20 +6,28 @@ on:
       - 'book/**'
       - 'docs/**'
       - 'plans/2026-11-12-merged-book/**'
+      - 'plans/2026-11-11-motor-control/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'stm32-book/manifest.json'
+      - 'stm32-book/book/**'
       - 'mcu/mcu-book/manifest.json'
+      - 'mcu/mcu-book/book/**'
+      - 'mcu/docs/**'
   push:
     branches: [main]
     paths:
       - 'book/**'
       - 'docs/**'
       - 'plans/2026-11-12-merged-book/**'
+      - 'plans/2026-11-11-motor-control/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'stm32-book/manifest.json'
+      - 'stm32-book/book/**'
       - 'mcu/mcu-book/manifest.json'
+      - 'mcu/mcu-book/book/**'
+      - 'mcu/docs/**'
   workflow_dispatch:
 
 permissions:
