@@ -46,9 +46,9 @@ mcu	mcu/docs/c/08-framed-protocol.md	ch13	语言深潜	planned
 mcu	mcu/docs/build/00-toolchain.md	ch05	构建链深潜	migrated	
 mcu	mcu/docs/build/01-four-steps.md	ch05	构建链深潜	migrated	
 mcu	mcu/docs/build/02-elf.md	ch05	构建链深潜	migrated	
-mcu	mcu/docs/build/03-linker-script.md	ch06	构建链深潜	planned	
-mcu	mcu/docs/build/04-startup.md	ch06	构建链深潜	planned	
-mcu	mcu/docs/build/05-map-size.md	ch06	构建链深潜	planned	
+mcu	mcu/docs/build/03-linker-script.md	ch06	构建链深潜	migrated	
+mcu	mcu/docs/build/04-startup.md	ch06	构建链深潜	migrated	
+mcu	mcu/docs/build/05-map-size.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	planned	
 mcu	mcu/docs/build/07-build-system.md	ch07	构建链深潜	planned	
 mcu	mcu/docs/stm32/00-env.md	ch05	外设深潜	migrated	
