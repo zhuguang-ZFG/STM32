@@ -3,7 +3,7 @@
   "name": "historical-spec-closure",
   "title": "全部历史 spec 统筹收口：22项验收、依赖与授权计划",
   "description": "用户选定统筹全部22个未归档历史spec并同意创建总任务规划。逐项核实产物、证据时效、重叠与授权，补可执行计划和窄验；不以状态或旧记录冒充完成，不自动实施外部发布、硬件写入或策略修改。",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

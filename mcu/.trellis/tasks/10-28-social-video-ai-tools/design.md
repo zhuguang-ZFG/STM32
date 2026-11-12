@@ -12,7 +12,7 @@ video/
   out/ai4fw/                 # 平台交付文件（mp4/封面）
 ```
 
-运行入口统一：`PYTHONPATH=D:/Users/mcu/video/pydeps python <skill>/scripts/handdraw_video.py <cmd> <job>`（harness 只认裸 `python`，钉在 scoop 3.13 基座；基座 edge-tts/ffmpeg 仍可用，pydeps 遮蔽 PIL/numpy/scipy 版本）。
+运行入口统一：`PYTHONPATH=D:/Users/STM32/mcu/video/pydeps python <skill>/scripts/handdraw_video.py <cmd> <job>`（harness 只认裸 `python`，钉在 scoop 3.13 基座；基座 edge-tts/ffmpeg 仍可用，pydeps 遮蔽 PIL/numpy/scipy 版本）。
 
 ## 2. 内容结构（60–90s，~200 字旁白）
 

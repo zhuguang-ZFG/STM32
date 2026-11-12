@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><title>W2 封面隔离预览</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 28px; background: #202523; color: #e8efec;
+         font: 15px/1.6 "Noto Sans SC","Microsoft YaHei",sans-serif; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  p { margin: 0 0 22px; color: #a9b6b1; max-width: 980px; }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+  figure { margin: 0; background: #141a17; border: 1px solid #39463f; padding: 10px; }
+  img { width: 100%; height: auto; display: block; }
+  figcaption { padding-top: 8px; color: #c7d3ce; font-size: 13px; }
+  figure:hover { border-color: #6fc6ae; }
+</style>
+<h1>W2 封面隔离预览：两构图 × 两配色</h1>
+<p>均为 185×260 mm 比例（740×1040 viewBox）、纯矢量、无外部素材，复用 <code>mcu-book/print/art.py</code> 的开发板线稿。
+本目录不接生产构建；用户选定构图与配色后，才进入 <code>build_html.py</code> / <code>build_print.py</code> 的封面接入评审。</p>
+<div class="grid">
+  <figure><img src="A-light.svg" alt="构图 A 浅色"><figcaption>A · 字上图下 / 纸白墨绿</figcaption></figure>
+  <figure><img src="A-dark.svg" alt="构图 A 深色"><figcaption>A · 字上图下 / 夜墨青金</figcaption></figure>
+  <figure><img src="B-light.svg" alt="构图 B 浅色"><figcaption>B · 图右出血 / 纸白墨绿</figcaption></figure>
+  <figure><img src="B-dark.svg" alt="构图 B 深色"><figcaption>B · 图右出血 / 夜墨青金</figcaption></figure>
+</div>
+</html>
