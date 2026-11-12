@@ -1143,6 +1143,103 @@
       "command": "ffprobe existing ai4fw bilibili/wx",
       "result": "64.1s both, 30fps H264 yuv420p; 1920x1080 and 1080x1920; wx 954399bps",
       "limit": "not audio, visual, finalized gate or online acceptance"
+    },
+    {
+      "command": "node --test tests/animation-markdown.test.mjs",
+      "result": "12 pass, 0 fail",
+      "limit": "2026-11-12; parser boundary regression, not operator acceptance"
+    },
+    {
+      "command": "node --test tests/a11y.test.mjs",
+      "result": "6 pass, 0 fail",
+      "limit": "2026-11-12"
+    },
+    {
+      "command": "node --test tests/reading-time.test.mjs",
+      "result": "6 pass, 0 fail",
+      "limit": "2026-11-12"
+    },
+    {
+      "command": "npm run anim:lint",
+      "result": "111 images pass",
+      "limit": "2026-11-12; source SVGs unchanged"
+    },
+    {
+      "command": "npm run book:check",
+      "result": "PASS: 94 chapters, figures 94/94",
+      "limit": "2026-11-12; print-chain build, not PDF layout audit"
+    },
+    {
+      "command": "npm run docs:gen",
+      "result": "exit 0: 86/86 chapters, 8/8 labs, 111 animations, 47 examples",
+      "limit": "2026-11-12; after gen-progress.mjs --relative fix"
+    },
+    {
+      "command": "npm run docs:check",
+      "result": "exit 0: 138 Markdown files, 6 checks, 27 numeric claims",
+      "limit": "2026-11-12; CITATION fix still passes"
+    },
+    {
+      "command": "Playwright surface checks (dev server http://localhost:5173/STM32/mcu/)",
+      "result": "D1/D2/D3/D4 PASS per research/w1-evidence.md section 8; screenshots in .temp/w1-surface/",
+      "limit": "dev-server rendering of same components/CSS; docs:build OOM blocked; artifacts gitignored"
     }
-  ]
+  ],
+  "currentState": {
+    "verifiedAt": "2026-11-11",
+    "head": "92fc917c",
+    "planningArtifacts": "22/22 original tasks have prd.md, design.md, implement.md",
+    "contextRefs": "0 missing; 10-28 two stale sweety-handdraw-video refs replaced with video/jobs/ai4fw/job.json and review.json",
+    "validate": "22/22 original tasks + 11-07-historical-spec-closure pass task.py validate",
+    "productionChanges": "one authorized production edit on 2026-11-11: CITATION.cff url aligned from https://zhuguang-zfg.github.io/mcu/ to https://zhuguang-zfg.github.io/STM32/mcu/; plus one uncommitted migration-wiring fix on 2026-11-12: mcu/scripts/gen-progress.mjs git log now uses --relative -- . so the parent repo docs/ history no longer breaks docs:gen (ownership: merge P2, pending review); no body/image/code changes in this task",
+    "baselineDrift": {
+      "checkedAt": "2026-11-11",
+      "taskHashes": "60/122 drift; 0 missing",
+      "verification": "34/214 drift; 4 missing workflows renamed to root mcu-{book,deploy,links,quality}.yml by commit 92fc917c",
+      "sources": "1/101 drift (docs/ai/05-this-book-pipeline.md)",
+      "user": "2/42 drift (11-02 deliverables)",
+      "sourceContracts": "3/7 drift (manifest, curriculum, vitepress config)",
+      "workspace": "all drifted files clean at HEAD; no in-round production edits",
+      "disposition": "user chose B; per-file audit in research/baseline-drift-audit.md: 73 EOL variants, 10 version-matched, 21 uncommitted baseline variants; no unrecorded production change; AC5 accepted by user 2026-11-11",
+      "audit": "research/baseline-drift-audit.md"
+    },
+    "note": "The observation/planningGaps fields above are the creation-time snapshot. This currentState records the 2026-11-11 verification and does not mark any historical delivery as accepted. AC5 is accepted as the drift explanation only; W0 evidence is tracked in research/wave0-evidence.md.",
+    "wave0": {
+      "checkedAt": "2026-11-11",
+      "evidence": "research/wave0-evidence.md",
+      "proseCheck": "PASS: 78 chapters, 10.1% long sentences, within +1.5pt baseline",
+      "docsCheck": "FAIL: 1 issue, CITATION.cff url uses /mcu/ while site/manifest expects /STM32/mcu/",
+      "animationTest": "UNVERIFIED: exit 1, vite missing, no node_modules",
+      "ai4fwProbe": "PASS metadata: 1920x1080 and 1080x1920, h264, 30fps, 64.1s",
+      "masters": "UNVERIFIED: 0/36 present, video/out gitignored",
+      "bookDist": "UNVERIFIED: mcu-book/dist gitignored and absent",
+      "proseCandidates": "PASS: 4/4 byte-identical (B0/B1/B2/B7)",
+      "epub": "ABSENT: builder/checker/npm entry all missing"
+    },
+    "wave1": {
+      "checkedAt": "2026-11-11",
+      "evidence": "research/w1-evidence.md",
+      "languageChain": "PASS E1: B0/B1/B2/B7 before==parent commit, current==candidate==last commit blob; B7 exactly +4/-4",
+      "languageCommits": {
+        "B0_B1_B2": "de060be7 2026-11-06",
+        "B7": "cb3680ed 2026-11-07 (#17)"
+      },
+      "deployment": "E2 only: commits on mcu-upstream/main and feature branch; no merge-base with local main; root mcu-deploy/mcu-book trigger on main push mcu/**; no CI or live check",
+      "languageDiffs": "research/w1-language-diffs.md",
+      "userAcceptance": "ACCEPTED E4 2026-11-11: user replied \"接受，授权\" for B0/B1/B2/B7; scope is the diffs in research/w1-language-diffs.md, excluding publish/PDF/archive",
+      "animationTest": "PASS 2026-11-12: animation-markdown 12/12, a11y 6/6, reading-time 6/6; npm ci installed",
+      "readingSurface": "PASS 2026-11-12 (VitePress dev server base /STM32/mcu/, Chromium): D1 meta 12s round, getCurrentTime 10.8 (12x0.9), is-paused, final subtitle opacity 1; D3 inline 293px -> lightbox 680px, label effective 5.29px -> 12.28px in light and dark; D4 focus on close button inside dialog, Escape returns to zoom button, wheel and PageDown/ArrowDown keep scrollY 2794; programmatic scrollBy still moves document under overflow:hidden (native semantics, not user-reachable)",
+      "updatedAt": "2026-11-12",
+      "d2Pages": "PASS 2026-11-12: build/00-toolchain (toolchain-relay), build/06-flash-debug (swd-debug-chain), c/00-c-in-mcu (embedded-c-diff) each have 1 figure with svg, zoom and play control; anim:lint 111 images pass; book:check PASS 94 chapters 94/94",
+      "buildLimit": "NOT_RUN docs:build: local Node process memory ceiling ~550MB causes VitePress build OOM; NOT_RUN test:browser: needs dist plus playwright.config.mjs baseURL/webServer still /mcu/ (merge P2 item, not modified)",
+      "operator": "UNVERIFIED: verification-baseline-unavailable; no legal baseline, not claimed as pass"
+    },
+    "authorizedProductionEdits": [
+      "CITATION.cff (url only)"
+    ],
+    "updatedAt": "2026-11-12",
+    "pendingReviewEdits": [
+      "scripts/gen-progress.mjs (--relative -- .) applied 2026-11-12 during W1 verification; belongs to merge P2 wiring, not counted as this task acceptance change"
+    ]
+  }
 }

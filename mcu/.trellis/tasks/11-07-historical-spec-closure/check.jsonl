@@ -1,1 +1,13 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/index.md", "reason": "检查总纪律：证据分级、禁占位、事实出处、唯一真源；核对规划产物是否违反全局规则"}
+{"file": ".trellis/spec/docs-site/quality-contract.md", "reason": "质量门与跳过语义；检查时区分真实通过、跳过和未覆盖"}
+{"file": ".trellis/spec/book/print-contract.md", "reason": "印前 PDF 合同；核对 book-production 与最终交付的验收口径是否被降低"}
+{"file": ".trellis/spec/video/index.md", "reason": "视频产线合同；核对 18 正片与 ai4fw 的验收边界和已登记缺口"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/task-cards.md", "reason": "22 项原验收与完成检查；逐项核对有无漏项或缩水"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/dependencies-and-gates.md", "reason": "授权矩阵与唯一实施归属；检查是否越权修改生产、测试、平台或硬件"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/artifact-checks.json", "reason": "创建时产物 hash 与 EPUB 缺失事实；核对执行期是否发生未记录漂移"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/turn-baseline.json", "reason": "不可擅改基线：22 任务/122 文件/214 验证输入/101 书稿源/42 用户文件"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/review-handoff.md", "reason": "交审清单：W0–W5 执行波次、22 项前置授权、不可自动动作与基线漂移决策；AC6 检查与启动前门"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/baseline-drift-audit.md", "reason": "B 方案逐项漂移审计：104 文件分类（73 EOL / 10 历史版本 / 21 未提交变体）与 AC5 解释"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/wave0-evidence.md", "reason": "W0 只读证据：prose PASS、docs-check FAIL（CITATION URL）、animation test 依赖阻塞、两版 ai4fw ffprobe 通过、36 母版/dist 缺失、22 项 E0/E1/E2 表"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/w1-evidence.md", "reason": "W1 补齐：B0/B1/B2/B7 三方字节链、旧主线提交关联、部署路径、动画门依赖阻塞与 E4 开放项"}
+{"file": ".trellis/tasks/11-07-historical-spec-closure/research/w1-language-diffs.md", "reason": "B0/B1/B2/B7 完整 before→candidate diff，供用户逐批文字接受"}

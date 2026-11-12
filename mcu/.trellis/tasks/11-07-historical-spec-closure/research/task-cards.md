@@ -2,6 +2,8 @@
 
 这是规划账，不是22项全部完成证明。原PRD/状态和父子结构未改；每条原需求以所列源锚点为准，本文件给出当前证据和真正下一动作。外部、读者、硬件和operator门独立保留。
 
+> 2026-11-11 复核：22项均已补齐 `prd.md`/`design.md`/`implement.md` 与真实 context；`10-28-social-video-ai-tools` 两处旧 `sweety-handdraw-video` 引用已替换为现存 `video/jobs/ai4fw/job.json` 与 `review.json`，`task.py validate` 22/22 通过。下列“上下文为 seed / 缺 design”等描述保留为创建时快照，不是当前状态；原交付仍未验收。
+
 ## 01 10-16-bili-season-after-unlock
 
 **目标**：B站合集解锁后建集并挂 17 条。原状态`planning`仅作记录。

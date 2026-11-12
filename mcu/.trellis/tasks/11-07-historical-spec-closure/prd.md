@@ -8,7 +8,7 @@
 
 ## 已确认事实
 
-- 当前原任务9项planning、13项in_progress；其中5项没有design.md和implement.md，9项上下文仍为seed；社媒任务implement.jsonl引用不存在的video/research/wx-plan.md。
+- 创建时原任务9项planning、13项in_progress，其中5项缺design/implement、9项context为seed、社媒任务引用不存在的video/research/wx-plan.md；本轮复核时22项均已有prd/design/implement与真实context，wx-plan已指向video/publish/wx-plan.md，仅10-28仍余两处旧skill路径失效（随本任务规划补齐）。
 - 全书当前manifest为94章、11部、7附录；历史88章/6附录、11或12门口径不能直接作为当前验收范围或降低原13项印前合同。
 - 四个B0/B1/B2/B7候选与当前正文逐字节一致；其文字接受、发布/PDF等不同任务的条件仍须分别核实。
 - 印前任务原承诺PDF和EPUB3；当前EPUB构建器/检查器/npm入口均不存在。不能静默删掉EPUB需求，亦不在纯规划回合假装补完。
