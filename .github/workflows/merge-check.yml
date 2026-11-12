@@ -9,6 +9,7 @@ on:
       - 'plans/2026-11-11-motor-control/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
+      - 'tools/slop_lint.py'
       - 'stm32-book/manifest.json'
       - 'stm32-book/book/**'
       - 'mcu/mcu-book/manifest.json'
@@ -23,6 +24,7 @@ on:
       - 'plans/2026-11-11-motor-control/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
+      - 'tools/slop_lint.py'
       - 'stm32-book/manifest.json'
       - 'stm32-book/book/**'
       - 'mcu/mcu-book/manifest.json'
@@ -48,11 +50,16 @@ jobs:
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.13"
+      - name: Install book build deps
+        run: python -m pip install -r book/requirements.txt
       - name: Run book checks
         run: |
           python -m book.manifest --check
           python -m book.mapping --check
           python -m unittest discover book/tests -v
+          python -m book.checks --check
+          python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md
+          python -m book.build_html --check
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
