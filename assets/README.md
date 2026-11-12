@@ -11,7 +11,7 @@
 > python3 tools/gen_stack_diagrams.py --render  # stack HTML + 明暗 PNG（可选技能/Chromium）
 > python3 tools/gen_gpio_classic.py   # 11 张 GPIO 证据 SVG
 > python3 tools/gen_sample_figures.py   # 第 00 到第 19 章的静态主图
-> python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图与 manifest
+> python3 tools/gen_handdraw_illustrations.py   # 33 章首 + 33 章中 + 8 分部 + 6 附录手绘概念图与 manifest
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
@@ -19,7 +19,7 @@
 
 第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
 
-29 张章首、29 张章中、7 张分部与 6 张附录手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。附录图按附录 id 装配：中文版嵌 6 张，英文版附录 F 尚未翻译，嵌 5 张；某篇附录没有对应条目同样是构建错误。
+33 张章首、33 张章中、8 张分部与 6 张附录手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。附录图按附录 id 装配：中文版嵌 6 张，英文版附录 F 尚未翻译，嵌 5 张；某篇附录没有对应条目同样是构建错误。
 
 ## 一、动画演示 `assets/animations/`
 
