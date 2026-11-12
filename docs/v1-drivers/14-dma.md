@@ -12,7 +12,7 @@ platforms: [f407, f103]
 - **问题**：F407 上 USART1 的接收请求为什么必须落在 DMA2，F103 上同一个 USART1 却落在 DMA1 通道 5？F4 的“流 × 通道”两级选择与 F1 的“一条通道一个固定外设”差在哪，CHSEL 到底选了什么？PAR、M0AR、NDTR 各是什么，为什么“三地址一长度”严格讲只有两个地址？NDTR 数的是字节还是数据项，半字缓冲区里 NDTR 读回 3 表示已经搬了多少？DIR 为什么占两位，00/01/10 各是什么方向，为什么内存到内存只有 DMA2 能做？循环模式下 NDTR 归零后发生什么，`长度 − NDTR` 为什么不是累计进度？HT 与 TC 各在什么时候响，处理期限为什么是硬约束？双缓冲换的是哪一块，为什么它也不保证 CPU 来得及？CHSEL/CIRC/MINC 为什么必须在 EN=0 时改，HAL 的 Init 与 Start 各落哪些寄存器？DMA 的 TC 与 USART 的 TC 差在哪，IDLE 为什么不是帧边界，ADC 的 NDTR 为什么按半字算？F407 的 CCM 为什么 DMA 够不着？两个来源留下了哪些读数、哪些只是预期？
 - **交付**：能按“控制器→流→通道”写出 F4 的 USART1_RX 落位并说明每一级的选择依据；能在 F103 上把 USART1_TX/RX 落到 DMA1 的固定通道；能手算 NDTR 与字节数的换算并处理环形回绕；能写出循环模式的位置公式与半区消费的丢弃判据；能解释 DBM/CT 与 HT/TC 半区的差别和共同期限；能把 HAL 的 `HAL_DMA_Init`、`HAL_DMA_Start` 对回手写寄存器；能说清 UART 的 DMAT/DMAR、TC 边界和 ADC 的半字账；能按台架步骤留下 NDTR 轨迹与缓冲区比对记录。
 - **边界**：两平台章。F407 的 8 流 × 8 通道、SxCR 位号、FIFO、DBM、CCM 与 HAL 行号来自 S8《S8 DMA：让数据自己搬家》与根书第 10 章，并按 RM0090 §10.3.3 的语义复核；F103 的 7 通道、固定请求映射、CCR/CNDTR/CPAR/CMAR 与 C8 只有 DMA1 来自根书第 10 章、RM0008 第 13 章与 DS5319。两个来源都没有留下本章的上板读数：S8 的“GDB 里看 NDTR 倒数”是操作指令与预期，根书第 10 章的“动手实验”是待做清单，`03-uart-dma` 的注释也把流/通道取值标成待上板自检。F4 的 USART1_RX = DMA2 Stream5 Channel4（或 Stream2 Channel4）因来源自注未取得 RM0090 请求表正文，标为待复核；F1 的通道号按 RM0008 表 78 的映射使用。RM0090 的章号在不同修订版里会移动（S8 引 §10.3.3，根书第 10 章写“第 9 章”），本章引小节号 §10.3.3，不把表号钉死。GD32 与 ESP32 不在本章平台列表，只在“跨平台边界”里指路。
-- **依据锚点**：S8（`mcu/docs/stm32/08-dma.md`）、根书第 10 章（`docs/10-DMA.md`）、工程 `mcu/code/stm32/03-uart-dma/main.c` 与 `mcu/code/common/behavior/circular.h`（只读静态阅读）；[第 8 章](./08-architecture-memory-clock.md)的总线矩阵、CCM 与外设基址，[第 12 章](./12-timers-pwm.md)的定时器 DMA 请求，[第 13 章](./13-uart-framed-protocol.md)的 DMAT/DMAR 与 TC 边界、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090 §10.3.3、RM0008 第 13 章表 78/79、DS5319 与 HAL 源码行号均转引自上述来源。
+- **依据锚点**：S8（`mcu/docs/stm32/08-dma.md`）、根书第 10 章（`docs/10-DMA.md`）、工程 `mcu/code/stm32/03-uart-dma/main.c` 与 `mcu/code/common/behavior/circular.h`（只读静态阅读）；[第 8 章](./08-architecture-memory-clock.md)的总线矩阵、CCM 与外设基址，RM0008/RM0090 的定时器 DMA 请求位（`UDE/CCxDE`，第 12 章不展开），[第 13 章](./13-uart-framed-protocol.md)的 DMAT/DMAR 与 TC 边界、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090 §10.3.3、RM0008 第 13 章表 78/79、DS5319 与 HAL 源码行号均转引自上述来源。
 
 ## 先做出来
 
@@ -206,15 +206,15 @@ UART 侧的握手只有两个使能位：发送 `CR3.DMAT`（bit7），接收 `C
 
 发送侧最容易混的是两个 TC。DMA 的 TC 只说明最后一个字节已经写进 USART 的 `DR`，此时移位寄存器可能还在把停止位往外送；USART 的 TC 才说明包括停止位在内的整个字节已经发完。RS-485 切方向、断电、进低功耗之前等的是后者，不是前者。接收侧的 IDLE 只是“线空了一个帧时间”的通知，不是协议帧边界；把 IDLE 次数当帧数，主机两条命令之间稍一停顿就会多计一帧。这两条边界在[第 13 章](./13-uart-framed-protocol.md)里已经拆过，DMA 只是把“每字节一次中断”换成“每半圈/每圈一次中断”。
 
-ADC 侧的账在宽度上：转换结果是一个半字，NDTR 数的是采样个数，不是字节数。ADC 连续转换加 DMA 循环模式，HT/TC 把缓冲区切成两个半区；CPU 处理一个半区时，DMA 填另一个。定时器触发 ADC、ADC 再请求 DMA 的链路里，DMA 只负责搬结果，不负责启动转换；触发源与采样时间在[第 15 章][ch15]，定时器的 `UDE/CCxDE` 请求在[第 12 章](./12-timers-pwm.md)。
+ADC 侧的账在宽度上：转换结果是一个半字，NDTR 数的是采样个数，不是字节数。ADC 连续转换加 DMA 循环模式，HT/TC 把缓冲区切成两个半区；CPU 处理一个半区时，DMA 填另一个。定时器触发 ADC、ADC 再请求 DMA 的链路里，DMA 只负责搬结果，不负责启动转换；触发源与采样时间在[第 15 章][ch15]；定时器的 `UDE/CCxDE` 请求位定义查 RM0008 与 RM0090，[第 12 章](./12-timers-pwm.md)只把 DMA 交给本章，不展开这两位。
 
 UART 接收的环形缓冲还有一条软件边界：`NDTR` 给出的是“已经写到哪里”，不是“这次新收到多少字节”。两次快照之间若 DMA 转了一圈，模差会失真；要么按半区服务，要么像 `dma_consume()` 那样在边界事件积压时丢弃并计数。把 `Size` 或 `NDTR` 直接当帧长，等于让搬运进度冒充协议长度。
 
 ### 七、总线仲裁与够不着的地方
 
-DMA 是 AHB 上的总线主人，和 CPU、以太网 MAC 等一起挂在总线矩阵上。DMA 搬运密集时，CPU 取指与访存会排队，跑分变慢不是错觉，是仲裁；F4 的 FIFO 与突发能把多次小传输合并，减少占用，但不能让 DMA 消失。F1/F4 没有 D-Cache，DMA 写进 SRAM 的数据 CPU 直接读就是新值；带 Cache 的 H7/F7 才有维护问题，不在本章范围。
+DMA 是 AHB 上的总线主人，和 CPU、以太网 MAC 等一起挂在总线矩阵上。DMA 搬运不占 CPU 的指令周期，但要与 CPU 争总线；[第 8 章](./08-architecture-memory-clock.md)的访问路线表把这两面并排放：DMA 搬 SRAM 时 CPU 可以同时从 Flash 取指，抢的是同一块 SRAM。DMA 搬运密集时，CPU 取指与访存会排队，跑分变慢不是错觉，是仲裁；F4 的 FIFO 与突发能把多次小传输合并，减少占用，但不能让 DMA 消失。F1/F4 没有 D-Cache，DMA 写进 SRAM 的数据 CPU 直接读就是新值；带 Cache 的 H7/F7 才有维护问题，不在本章范围。
 
-F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CPU 的数据总线，不在总线矩阵上。把接收数组放进 CCM，DMA 写不进去，配置不报错、中断不触发、数据静默丢失。链接脚本默认不放，手动加 `.ccmram` 段或 `__attribute__((section(".ccmram")))` 才会遇到。F103 没有 CCM，这条边界不适用；但“缓冲区必须是静态或全局”的规矩两边一样，局部数组在函数返回后失效，DMA 还在往那块栈上写。
+F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CPU 的数据总线，不在总线矩阵上。把接收数组放进 CCM，DMA 访问就没有从机通路可走：这一拍不是搬成功，而是传输出错，`TEIF` 置位、`NDTR` 停在原地。程序若不查 TE、只等 HT/TC，看起来才像“什么都没报、数据静默丢失”——来源的写法只到“静默丢数据”，出错位这一层是本章按总线结构推的，标为待复核。链接脚本默认不放，手动加 `.ccmram` 段或 `__attribute__((section(".ccmram")))` 才会遇到。F103 没有 CCM，这条边界不适用；但“缓冲区必须是静态或全局”的规矩两边一样，局部数组在函数返回后失效，DMA 还在往那块栈上写。
 
 ## 测量与证据
 
@@ -228,9 +228,9 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 2. 串口助手连发一长串字符（例如 200 字节），观察 `g_rx_bytes` 与 `g_frames` 是否增长。`g_frames` 数的是 IDLE 通知次数，不是协议帧数，这个命名在工程里是历史遗留。
 3. 在主循环、`DMA2_Stream5_IRQHandler` 或 `USART1_IRQHandler` 里读 `DMA2_Stream5->NDTR`，看它从 64 递减到 0 再回装成 64。S8 把这写成预期现象；没有记录的情况下，它不能当读数。
 4. F103 一侧按根书第 10 章的实验 2：用 `DMA_MemCopy()` 搬 4KB 已知模式，逐字节比较目标数组并记录 TC/TE。4KB 能放进 C8 的 20KB SRAM；更大的块不要照搬。
-5. 把 `g_rx_buf` 临时挪到 CCM（仅 F407，链接脚本加 `.ccmram` 段或 `__attribute__`），复跑第 2 步，观察数据是否静默丢失。这是翻车实验，预期是失败，不是正常路径。
+5. 把 `g_rx_buf` 临时挪到 CCM（仅 F407，链接脚本加 `.ccmram` 段或 `__attribute__`），复跑第 2 步，先查 `HISR.TEIF5`、再看 `NDTR` 是否停在原地，最后比对数据是否静默丢失。这是翻车实验，预期是失败，不是正常路径。
 
-预期现象（来源写的是预期，不是读数）：NDTR 递减到 0 后回装；`g_rx_bytes` 持续增长；`g_frames` 随 IDLE 增加；4KB 内存搬运转发后逐字节相等、TC 置位；缓冲区挪进 CCM 后 NDTR 也可能在动，但 CPU 读不到新数据。最后一条尤其要说清：NDTR 在动只证明“有请求、流使能了”，不证明“字节写对了地方”。
+预期现象（来源写的是预期，不是读数）：NDTR 递减到 0 后回装；`g_rx_bytes` 持续增长；`g_frames` 随 IDLE 增加；4KB 内存搬运转发后逐字节相等、TC 置位；缓冲区挪进 CCM 后预期是 `TEIF` 置位、`NDTR` 停在原地，只有程序不查 TE 时才表现为数据静默丢失。最后一条尤其要说清：“静默”只说明没人查 TE，不证明 DMA 写对了地方；反过来，NDTR 在动也只证明“有请求、流使能了”，不证明“字节写对了地方”。
 
 记录表至少要有这些列；S8 与根书第 10 章都没有留下已填的记录：
 
@@ -261,6 +261,7 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | DMA 时钟门 | RM0090/RM0008、仓库速查表 | F4：`RCC_AHB1ENR` bit21/22；F1：`RCC_AHBENR` bit0/1 | 手册规则 |
 | DMA 基址与流偏移 | [第 8 章](./08-architecture-memory-clock.md)、RM0090 | F4：DMA1 `0x4002_6000`、DMA2 `0x4002_6400`，流 5 基址 +0x88；F1：DMA1 `0x4002_0000` | 手册规则（源码互证） |
 | F4 的 FIFO 与直接模式 | RM0090/AN4031 | 每流 4×32 位；直接模式下 PSIZE 必须等于 MSIZE | 手册规则 |
+| CCM 与 DMA 的失败症状 | S8、根书第 10 章、[第 8 章](./08-architecture-memory-clock.md)；TE 推断来自本章 | 来源只写“静默丢数据”；本章推断：DMA 访问 CCM 没有从机通路，应置 `TEIF`、`NDTR` 停在原地，不查 TE 时才像静默丢失 | 来源说法 + 本章推断，未上板，待复核 |
 | HAL 行号与行为 | S8 对 1f6451c 的行号记录；`DMA_SetConfig`/`Start_IT` 行为按 1f6451c 原文核对 | 行号见 S8 记录（L170/L208-227/L231-237/L250/L285/L1157/L1163-1175/L708）；`DMA_SetConfig` 先清 DBM，再写 NDTR/PAR/M0AR；`Start_IT` 开 TC/TE/DME，有半传输回调时加 HT | 行号来源记录，未逐条复核；行为已核原文 |
 | “清标志已在坑里验证过” | S8 正文与 `s08-dma` 题库 | 没有波形、日志或截图 | 来源说法，待复核 |
 | `dma_consume()` 的丢弃判据 | `mcu/code/common/behavior/circular.h` 静态阅读 | 错误、HT+TC 同时积压、位置不动却报 TC 时丢弃并计 `lost` | 源码静态，未复跑 |
@@ -285,7 +286,7 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | 中断进一次就风暴 | 清标志写到了只读的 `HISR/LISR` 或 `ISR` | 读代码里的清除语句；标志是否一直置位 | 改写 `HIFCR/LIFCR`（F4）或 `IFCR`（F1） |
 | F103 上照搬 F4 的 Stream 配置 | C8 没有 DMA2，也没有流 | 读 `RCC_AHBENR` bit1；写 `DMA2` 地址是否 HardFault | 改用 DMA1 的固定通道 |
 | USART1_RX 配到 DMA1 通道 4 | 通道 4 是 TX，RX 在通道 5 | 对照 RM0008 表 78；TX 能发、RX 不动 | 把 RX 改到通道 5 |
-| 数据静默丢失，NDTR 却像在动 | 缓冲区放进了 CCM（F407） | 地址在 `0x1000_xxxx`；CPU 读不到新值 | 搬到 `0x2000_0000` 的通用 SRAM |
+| 数据静默丢失，查 TE 才见错 | 缓冲区放进了 CCM（F407），DMA 访问没有从机通路 | 地址在 `0x1000_xxxx`；`HISR` 的 `TEIF5` 是否置位；`NDTR` 是否停在原地 | 搬到 `0x2000_0000` 的通用 SRAM |
 | 半区处理切错位置 | 把 HT 当成固定 4 字节，而不是“缓冲区一半的项数” | 读 NDTR；8 个半字的缓冲区在 HT 时应已写 4 个采样 = 8 字节 | 按项数×宽度换算 |
 | 循环模式下进度越算越大或跳回 0 | 用 `长度 − NDTR` 当累计进度 | 下一圈开始位置从 64 跳回 0 | 累计增量，或按半区服务 |
 | 双缓冲整块丢数据 | CPU 处理时间超过一块的填充时间 | `CT` 是否已切换；丢的是整块而不是零散字节 | 缩短处理，或加缓冲深度 |
