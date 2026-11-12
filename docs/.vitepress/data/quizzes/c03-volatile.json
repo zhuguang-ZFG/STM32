@@ -1,0 +1,61 @@
+{
+  "title": "C3 volatile 自测",
+  "chapter": "c03-volatile",
+  "questions": [
+    {
+      "q": "CMSIS 的 USART_TypeDef 寄存器字段本身带 volatile。轮询 `while (!(USART1->SR & RXNE))` 还需要再套 volatile 吗？",
+      "options": [
+        "A. 需要——轮询变量一律要 volatile 双保险",
+        "B. 不需要——字段自带 volatile，这个读已经是真访存；再套只会多出不必要的访存",
+        "C. 需要——不加 volatile 编译器会把整个循环删掉",
+        "D. 无所谓——寄存器读不受优化影响"
+      ],
+      "answer": 1,
+      "a": "volatile 是\"传染\"的：外设结构体字段自带 __IO 限定，`USART1->SR` 每次都会真读硬件。SPL 的 I2C_GetFlagStatus 里那两个 __IO 局部变量就是\"可加而不必加\"的活样本。"
+    },
+    {
+      "q": "软件延时循环 `for (i=0;i<N;i++);` 在 -O2 下被优化成一条 ret，为什么合法？",
+      "options": [
+        "A. 编译器 bug，升级版本就好",
+        "B. N 太小时硬件跑得太快，看起来像被优化",
+        "C. 没有副作用的空循环，标准允许编译器假定其终止（C11 起不终止按未定义处理）；非 volatile 的 i 又可被缓存折叠——两重权利叠加",
+        "D. for 循环在 C 里本来就不保证执行"
+      ],
+      "answer": 2,
+      "a": "as-if 规则（N1570 §5.1.2.3）：不可观察行为都可以删。i 非 volatile 则\"循环内没人能改它\"，比较结果可缓存；空循环本体按 C11 视为可假定终止。delay 想活着，计数变量必须 volatile。"
+    },
+    {
+      "q": "主循环 `flag ^= 1;`、中断里 `flag = 0;`，flag 已声明 volatile。这样安全吗？",
+      "options": [
+        "A. 安全——volatile 保证原子性",
+        "B. 不安全——volatile 只保证每步真访存，不保证读-改-写三步之间不被抢占",
+        "C. 安全——中断打断主循环是原子的",
+        "D. 不安全——volatile 变量根本不能在中断里访问"
+      ],
+      "answer": 1,
+      "a": "主循环读旧值后被中断抢占：中断写 0，主循环回来把基于旧值算出的结果写回，中断的更新丢了。对策：临界区包住读-改-写、改成\"只置位/只清位\"协议，或用外设侧原子寄存器（如 BSRR）。"
+    },
+    {
+      "q": "`volatile uint32_t buf[256]` 当 DMA 缓冲区，代价和边界是什么？",
+      "options": [
+        "A. 没有代价，volatile 是免费的保险",
+        "B. 每次普通访问都被强制真实访存，memcpy 无法块搬运优化；且 F407（无数据 cache）基本够用，ESP32-S3（有 cache）还必须做 cache 清理/无效化",
+        "C. volatile 会让 DMA 传输变慢，硬件直接不工作",
+        "D. 只在 -O0 下有代价，-O2 会自动撤销 volatile"
+      ],
+      "answer": 1,
+      "a": "volatile 管\"别优化掉访存\"，管不了 cache 一致性：Cortex-M4 没有数据 cache，volatile+屏障基本够；ESP32-S3 有数据 cache，DMA 与 CPU 共享的缓冲还要 cache clean/invalidate——光 volatile 不够。"
+    },
+    {
+      "q": "`asm volatile(\"nop\")` 里的 volatile 和变量上的 volatile 是一回事吗？",
+      "options": [
+        "A. 一回事，都是\"别优化掉\"，作用对象相同",
+        "B. 不是一回事：这是 inline asm 的属性，阻止的是汇编语句被删除/移动/合并，与内存可见性无关",
+        "C. asm 上的 volatile 已被标准废弃",
+        "D. 只有变量上的 volatile 有实际效果，asm 上的是装饰"
+      ],
+      "answer": 1,
+      "a": "两条独立防线：变量 volatile 管访存真实性；asm volatile 管这条汇编指令的存在与位置。实验对照过——只去掉 asm 参数里的 volatile（B 行），灯照闪；把 nop 也去掉（C 行），延时才消失：两道防线各管各的，谁也替代不了谁。"
+    }
+  ]
+}

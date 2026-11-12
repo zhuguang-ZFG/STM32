@@ -37,11 +37,11 @@ root	stm32-book/book/F-开源地图.md	apF	根书附录素材	planned
 mcu	mcu/docs/c/00-c-in-mcu.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/01-memory-model.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/02-pointer.md	ch01	语言深潜	migrated	
-mcu	mcu/docs/c/03-volatile.md	ch02	语言深潜	planned	
+mcu	mcu/docs/c/03-volatile.md	ch02	语言深潜	migrated	
 mcu	mcu/docs/c/04-struct-abi.md	ch03	语言深潜	planned	
 mcu	mcu/docs/c/05-func-pointer.md	ch04	语言深潜	planned	
 mcu	mcu/docs/c/06-abi-stack.md	ch04	语言深潜	planned	
-mcu	mcu/docs/c/07-ub-misra.md	ch02	语言深潜	planned	
+mcu	mcu/docs/c/07-ub-misra.md	ch02	语言深潜	migrated	
 mcu	mcu/docs/c/08-framed-protocol.md	ch13	语言深潜	planned	
 mcu	mcu/docs/build/00-toolchain.md	ch05	构建链深潜	planned	
 mcu	mcu/docs/build/01-four-steps.md	ch05	构建链深潜	planned	
