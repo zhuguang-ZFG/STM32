@@ -9,9 +9,9 @@ platforms: [f407, f103, esp32]
 
 ## 本章罗盘
 
-- **问题**：F407 的 1 MB 为什么要切成 12 个大小不等的扇区，扇区 11 从哪个地址开始，参数区为什么不能塞进代码扇区的空隙？F103C8 的 64 KB 为什么是 1 KB 一页、共 64 页，末页地址怎么算，换成大容量型号后 2 KB 一页会改掉哪几个数？两把钥匙 `0x45670123` 与 `0xCDEF89AB` 为什么必须按顺序写，写反了为什么只能等复位？F4 的 PSIZE 为什么必须和供电电压配对，F407 上为什么不能选 x64，F103 又为什么只认半字？擦写寿命的 1 万次与 20 年是谁的承诺，参数区怎样做才能在擦到一半断电时仍然读得回旧值？IAP 跳转前为什么要关中断、设 MSP、改 VTOR，跳复位入口而不是 `main` 的理由是什么，App 一侧为什么还要再写一次 VTOR？单槽升级为什么没有回头路，双槽的 A/B 记录、CRC 校验、原子切换与回滚各自管哪一段？ESP32 的分区表、NVS 与 OTA 状态机在来源里是怎么写的，哪些只是来源说法？三个来源里哪些数字是手册规则、哪些是本章的算术、哪些还没有人上板量过？
+- **问题**：F407 的 1 MB 为什么要切成 12 个大小不等的扇区，扇区 11 从哪个地址开始，参数区为什么不能塞进代码扇区的空隙？F103C8 的 64 KB 为什么是 1 KB 一页、共 64 页，末页地址怎么算，换成大容量型号后 2 KB 一页会改掉哪几个数？两把钥匙 `0x45670123` 与 `0xCDEF89AB` 为什么必须按顺序写，写反了为什么只能等复位？F4 的 PSIZE 为什么不能超过供电电压允许的最高档、又必须和写入宽度配对，F407 上为什么不能选 x64，F103 又为什么只认半字？擦写寿命的 1 万次与 20 年是谁的承诺，参数区怎样做才能在擦到一半断电时仍然读得回旧值？IAP 跳转前为什么要关中断、设 MSP、改 VTOR，跳复位入口而不是 `main` 的理由是什么，App 一侧为什么还要再写一次 VTOR？单槽升级为什么没有回头路，双槽的 A/B 记录、CRC 校验、原子切换与回滚各自管哪一段？ESP32 的分区表、NVS 与 OTA 状态机在来源里是怎么写的，哪些只是来源说法？三个来源里哪些数字是手册规则、哪些是本章的算术、哪些还没有人上板量过？
 - **交付**：能按 1 MB 总和复算 F407 的 12 个扇区，按 64 页复算 F103C8 的页边界；能说出两把钥匙的顺序、F4 的 PSIZE 三档与电压、F1 的半字粒度；能写出 F4 的解锁→扇区擦除→字写入→等 BSY→清 EOP→上锁序列，也能写出 F1 的解锁→页擦除→半字写入序列；能设计一个带魔数、版本、CRC 与默认回退的参数快照，并说清 A/B 两份为什么必须落在不同的擦除单位；能写出 IAP 跳转函数，按向量表第 0 字设 MSP、第 1 字跳复位入口，把 VTOR 指向 App 基址，并解释 PRIMASK 由谁打开；能按 F407 的 480 KB 槽与 F103C8 的 22 KB 槽各画一张双槽表，写出“先写备槽、校验、追加记录、下次启动确认”的切换顺序；能按现象把 LOCK、PSIZE、对齐、WRP、VTOR、MSP、PRIMASK、看门狗与半擦状态分到不同的检查动作；能读懂 ESP32 的分区表字段、NVS 追加写与 OTA 状态表，并指出它们只是 P10 的来源事实。
-- **边界**：两平台 STM32 章加 ESP32 对照。F407 的扇区表、PSIZE、CR/SR 位号、参数区与 IAP 双固件布局来自 S13《S13 内部 Flash 与 IAP》；F103C8 的 1 KB 页、64 页、16 KB Bootloader + 2 KB 参数区 + 46 KB APP 布局、半字编程、两把钥匙与 RDP `0xA5` 来自根书第 12 章；ESP32 的分区表、NVS、OTA 五步与回滚状态机只转写 P10《P10 Flash、分区表、NVS 与 OTA》，不往 STM32 上外推。三个来源都没有本章的上板读数：S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 的 boot_count 1→5 与回滚日志是来源描述。S13 正文写“11 个扇区”，同节表格却列出扇区 0–11 共 12 行，本章按 1 MB 总和复算后采用 12 个；根书表把 F4 的编程粒度写成“字节/半字/字/双字”，双字 x64 只在 F42x/F43x 上成立，F407 只有 x8/x16/x32；S13 说擦 128 KB 扇区“最坏几百毫秒”，根书表写 0.4–4 s，两处都未核数据手册原表；F1 的 CR/SR 位号两个来源都没有逐位列出，本章按 RM0008 语义标注为待复核；STM32 的双槽布局与记录格式是本章按扇区/页尺寸做的设计，不是来源里现成的实现；ESP32 的小节只写来源事实，没有核 IDF 原文。GD32 不在本章平台列表，只在跨平台边界里指一句。F407 的 512 KB 型号只用到扇区 7，扇区 8–11 是 1 MB 型号的版图，换芯片先查数据手册。
+- **边界**：两平台 STM32 章加 ESP32 对照。F407 的扇区表、PSIZE、CR/SR 位号、参数区与 IAP 双固件布局来自 S13《S13 内部 Flash 与 IAP》；F103C8 的 1 KB 页、64 页、16 KB Bootloader + 2 KB 参数区 + 46 KB APP 布局、半字编程、两把钥匙与 RDP `0xA5` 来自根书第 12 章；ESP32 的分区表、NVS、OTA 五步与回滚状态机只转写 P10《P10 Flash、分区表、NVS 与 OTA》，不往 STM32 上外推。三个来源都没有本章的上板读数：S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 的 boot_count 1→5 与回滚日志是 P10 的实物实验自述（声称日志存档，本仓库未见原始日志文件）。S13 正文写“11 个扇区”，同节表格却列出扇区 0–11 共 12 行，本章按 1 MB 总和复算后采用 12 个；根书表把 F4 的编程粒度写成“字节/半字/字/双字”，双字 x64 只在 F42x/F43x 上成立，F407 只有 x8/x16/x32；S13 说擦 128 KB 扇区“最坏几百毫秒”，根书表写 0.4–4 s，两处都未核数据手册原表；F1 的 CR/SR 位号两个来源都没有逐位列出，本章按 RM0008 语义标注为待复核；STM32 的双槽布局与记录格式是本章按扇区/页尺寸做的设计，不是来源里现成的实现；ESP32 的小节只写来源事实，没有核 IDF 原文。GD32 不在本章平台列表，只在跨平台边界里指一句。F407 的 512 KB 型号只用到扇区 7，扇区 8–11 是 1 MB 型号的版图，换芯片先查数据手册。
 - **依据锚点**：S13（`mcu/docs/stm32/13-flash-iap.md`）、根书第 12 章（`docs/12-Flash与IAP升级.md`）、P10（`mcu/docs/esp32/10-flash-nvs-ota.md`）；[第 6 章](../v0-foundations/06-linker-startup-map.md)的链接脚本与启动、[第 8 章](./08-architecture-memory-clock.md)的存储器地图与时钟、[第 16 章](./16-i2c-spi.md)的 W25Q 外部 Flash、[第 19 章][ch19]的看门狗与复位、[第 18 章][ch18]的低功耗。RM0008 第 3 章、RM0090 第 3 章、DS5319、PM0056 与 ESP-IDF 文档均转引自上述来源；本章没有取到这些手册与文档的原件，逐处标注“来源说法”或“待复核”。
 
 ## 先做出来
@@ -97,16 +97,16 @@ static void flash_lock(void)
 
 解锁只打开 Flash 控制器，不解写保护（WRP）和读保护（RDP）。WRP 开着的扇区或页，解锁后照样擦不动、写不进，SR 会置 WRPERR；RDP 管的是调试器能不能读，和擦写使能是两套闸。
 
-F4 擦写前还要设并行度 PSIZE（CR bits8–9），它决定一次往 Flash 写几个字节：
+F4 擦写前还要设并行度 PSIZE（CR bits8–9）。它有两层约束：不能超过当前供电允许的最高档，而且必须与每次写访问的宽度一致。下表列的是每个电压区间允许的最高并行度；低一档在高电压下仍然可用（3.3 V 选 x16 是合法的），高一档不能用在低电压：
 
-| 供电 VDD | PSIZE | 一次编程 | 说明 |
+| 供电 VDD | 最高 PSIZE | 该档写宽度 | 说明 |
 | --- | --- | --- | --- |
-| 2.7–3.6 V | `10`（x32） | 32 位 | 3.3 V 板子的常用档 |
-| 2.1–2.7 V | `01`（x16） | 16 位 | 低压档 |
+| 2.7–3.6 V | `10`（x32） | 32 位 | 3.3 V 板子的常用档；x8/x16 也可用 |
+| 2.1–2.7 V | `01`（x16） | 16 位 | 2.7 V 以上同样可用 |
 | 1.8–2.1 V | `00`（x8） | 8 位 | 最低压档 |
 | — | `11`（x64） | 64 位 | 仅 F42x/F43x；F407 不选 |
 
-PSIZE 必须在置 STRT 或 PG 之前设好；设错档（例如 3.3 V 系统选 x16）不会报错，但写入的字节数和目标位模式对不上，读回就是坏数据。根书表把 F4 的编程粒度笼统写成“字节/半字/字/双字”，双字那一档只属于 F42x/F43x；F407 的可用档就是上表前三行。
+PSIZE 必须在置 STRT 或 PG 之前设好，并且要和写入宽度配对：PSIZE 设 x16 却按 32 位字写，控制器会置 PGPERR（并行度错误）或 PGSERR（编程序列错误），这一次编程不生效；3.3 V 系统选 x16 并按 16 位写则是合法的，只是并行度低、速度慢。真正会“不报错却写坏数据”的是反方向：PSIZE 选得比供电允许的最高档还高（例如 2.5 V 系统选 x32）。根书表把 F4 的编程粒度笼统写成“字节/半字/字/双字”，双字那一档只属于 F42x/F43x；F407 的可用档就是上表前三行。
 
 F103 没有 PSIZE 这一档可选，中容量与高容量型号的编程粒度都是半字（16 位），地址要 2 字节对齐；一个 32 位值分两次半字写。F1 的擦除粒度是页，F4 是扇区，这是两家 Flash 控制器最根本的差别。
 
@@ -126,11 +126,14 @@ static int flash_erase_sector(uint8_t snb)
     FLASH->CR |= FLASH_CR_SER;                       /* SER = CR bit1 */
     FLASH->CR |= FLASH_CR_STRT;                      /* STRT = CR bit16，硬件自清 */
     while (FLASH->SR & FLASH_SR_BSY) { }             /* BSY = SR bit16 */
-    if (FLASH->SR & (FLASH_SR_WRPERR | FLASH_SR_PGAERR |
-                     FLASH_SR_PGPERR | FLASH_SR_PGSERR)) {
+    if (FLASH->SR & (FLASH_SR_WRPERR | FLASH_SR_OPERR |
+                     FLASH_SR_PGAERR | FLASH_SR_PGPERR | FLASH_SR_PGSERR)) {
+        FLASH->SR = FLASH_SR_WRPERR | FLASH_SR_OPERR |
+                    FLASH_SR_PGAERR | FLASH_SR_PGPERR |
+                    FLASH_SR_PGSERR;                 /* 写 1 清，重试前不能留旧错误 */
         FLASH->CR &= ~FLASH_CR_SER;
         flash_lock();
-        return -1;                                   /* 写保护或对齐错误 */
+        return -1;                                   /* 写保护、操作或对齐错误 */
     }
     FLASH->SR = FLASH_SR_EOP;                        /* EOP = SR bit0，写 1 清 */
     FLASH->CR &= ~FLASH_CR_SER;
@@ -139,7 +142,7 @@ static int flash_erase_sector(uint8_t snb)
 }
 ```
 
-F4 的字写入是：解锁 → 设 PSIZE 与 PG → 直接往目标 Flash 地址写 32 位 → 等 BSY → 清 EOP → 清 PG → 上锁。目标地址必须已经擦成 `0xFFFFFFFF`，否则硬件置 PGAERR，写不进去。
+F4 的字写入是：解锁 → 设 PSIZE 与 PG → 直接往目标 Flash 地址写 32 位 → 等 BSY → 清 EOP → 清 PG → 上锁。先擦后写这条规则对两家都成立：F1 往未擦除的半字再写会置 PGERR（SR bit2）；F4 的 PGAERR 则是编程对齐错误（地址没有按 PSIZE 的宽度对齐），不是“未擦除”错误，往未擦除单元再写在 F4 上会走 OPERR/PGSERR 一侧的报错路径还是只表现为读回不等于目标值，来源没有逐条写明，这句标待复核。可靠的做法仍是先把目标擦成 `0xFFFFFFFF`，写完读回比对。
 
 ```c
 /* F407：写一个 32 位字。addr 必须 4 字节对齐，且该字已擦除 */
@@ -150,7 +153,11 @@ static int flash_write_word(uint32_t addr, uint32_t data)
     FLASH->CR |= (0x2u << FLASH_CR_PSIZE_Pos) | FLASH_CR_PG;  /* PG = CR bit0 */
     *(volatile uint32_t *)addr = data;               /* 写地址即触发编程 */
     while (FLASH->SR & FLASH_SR_BSY) { }
-    if (FLASH->SR & (FLASH_SR_PGAERR | FLASH_SR_PGPERR | FLASH_SR_PGSERR)) {
+    if (FLASH->SR & (FLASH_SR_WRPERR | FLASH_SR_OPERR |
+                     FLASH_SR_PGAERR | FLASH_SR_PGPERR | FLASH_SR_PGSERR)) {
+        FLASH->SR = FLASH_SR_WRPERR | FLASH_SR_OPERR |
+                    FLASH_SR_PGAERR | FLASH_SR_PGPERR |
+                    FLASH_SR_PGSERR;                 /* 写 1 清，失败后不留错误位 */
         FLASH->CR &= ~FLASH_CR_PG;
         flash_lock();
         return -1;
@@ -174,6 +181,7 @@ static int f1_flash_erase_page(uint32_t page_addr)
     FLASH->CR |= FLASH_CR_STRT;                      /* STRT = CR bit6 */
     while (FLASH->SR & FLASH_SR_BSY) { }             /* BSY = SR bit0 */
     if (FLASH->SR & (FLASH_SR_PGERR | FLASH_SR_WRPRTERR)) {
+        FLASH->SR = FLASH_SR_PGERR | FLASH_SR_WRPRTERR;  /* 写 1 清 */
         FLASH->CR &= ~FLASH_CR_PER;
         flash_lock();
         return -1;
@@ -192,6 +200,7 @@ static int f1_flash_write_halfword(uint32_t addr, uint16_t data)
     *(volatile uint16_t *)addr = data;
     while (FLASH->SR & FLASH_SR_BSY) { }
     if (FLASH->SR & (FLASH_SR_PGERR | FLASH_SR_WRPRTERR)) {
+        FLASH->SR = FLASH_SR_PGERR | FLASH_SR_WRPRTERR;  /* 写 1 清 */
         FLASH->CR &= ~FLASH_CR_PG;
         flash_lock();
         return -1;
@@ -225,9 +234,9 @@ F4 的 PG/SER/MER/SNB/PSIZE/STRT/LOCK 与 SR 的 EOP/BSY/WRPERR 由 S13 列出�
 
 三条等待纪律：
 
-1. **擦写期间不要从 Flash 取指**。F4 在擦写时对主 Flash 的取指会被总线阻塞；如果中断处理函数也在 Flash 里，擦一个 128 KB 扇区的几百毫秒里，CPU 和中断都可能在等同一块 Flash。把关键路径放进 RAM 执行是稳妥做法：函数加 `__attribute__((section(".ramfunc")))`，链接脚本给 `.ramfunc` 分配 RAM 的 VMA 和 Flash 的 LMA，启动代码负责搬运。
+1. **擦写期间不要从 Flash 取指**。F4 在擦写时对主 Flash 的取指会被总线阻塞；如果中断处理函数也在 Flash 里，擦一个 128 KB 扇区的毫秒到秒级时间里，CPU 和中断都可能在等同一块 Flash。把关键路径放进 RAM 执行是稳妥做法：函数加 `__attribute__((section(".ramfunc")))`，链接脚本给 `.ramfunc` 分配 RAM 的 VMA 和 Flash 的 LMA，启动代码负责搬运。
 2. **BSY 必须等到底**。F4 擦扇区、F1 擦页都是毫秒到秒级，轮询期间要给看门狗喂狗；把超时写成固定循环次数时，先按最坏擦除时间算够。
-3. **EOP 写 1 清，错误位逐个查**。F4 的 EOP 在 SR bit0，F1 在 bit5；写完只清 EOP 不看 WRPERR/PGAERR，失败会被当成成功，下一行代码继续往坏数据上跑。
+3. **EOP 写 1 清，错误位逐个查**。F4 的 EOP 在 SR bit0，F1 在 bit5；写完只清 EOP 不看 WRPERR/OPERR/PGAERR 等错误位，失败会被当成成功，下一行代码继续往坏数据上跑。失败返回前要把错误位写 1 清掉，否则下一次调用拿旧错误误判。
 
 ```c
 /* 擦写关键路径放 RAM：函数属性 + 链接脚本 + 启动搬运 */
@@ -319,7 +328,8 @@ static void jump_to_app(void)
 {
     __disable_irq();                            /* PRIMASK = 1，焊住切换窗口 */
 
-    /* 清 NVIC 使能与挂起：F407 用 ICER[0..2]/ICPR[0..2]，F103 用 [0..1] */
+    /* 清 NVIC 使能与挂起：F407 用 ICER[0..2]/ICPR[0..2]，F103 用 [0..1]。
+       多写的那个寄存器在 F103 上是保留位，写入被忽略，所以这里统一循环 3 次 */
     for (uint32_t i = 0; i < 3U; i++) {
         NVIC->ICER[i] = 0xFFFFFFFFu;
         NVIC->ICPR[i] = 0xFFFFFFFFu;
@@ -330,7 +340,11 @@ static void jump_to_app(void)
     SCB->ICSR = SCB_ICSR_PENDSTCLR_Msk;
 
     SCB->VTOR = APP_ADDR;                       /* 向量表归位 App */
+    __DSB();                                    /* 等 VTOR 写入生效 */
+    __ISB();
     __set_MSP(*(volatile uint32_t *)APP_ADDR);  /* 第 0 字 = App 栈顶 */
+    __DSB();                                    /* 等 MSP 切换完成再取指 */
+    __ISB();
 
     reset_handler_t handler =
         (reset_handler_t)(*(volatile uint32_t *)(APP_ADDR + 4u));
@@ -466,7 +480,7 @@ nvs_commit(h);          /* P10：commit 之前不真正落盘 */
 nvs_close(h);
 ```
 
-P10 给的三条纪律：`nvs_commit` 是每批写入的句号；读不存在的 key 返回 `ESP_ERR_NVS_NOT_FOUND`，不是错误；初始化要接住 `ESP_ERR_NVS_NO_FREE_PAGES` 与 `ESP_ERR_NVS_NEW_VERSION_FOUND`，必要时 `nvs_flash_erase()` 后重新初始化。P10 的 boot_count 例是每次启动读旧值、加一、写回、commit；它说烧录后连续断电重启五次会看到 1→2→3→4→5。这是 P10 的操作描述，不是本章的实测记录。
+P10 给的三条纪律：`nvs_commit` 是每批写入的句号；读不存在的 key 返回 `ESP_ERR_NVS_NOT_FOUND`，不是错误；初始化要接住 `ESP_ERR_NVS_NO_FREE_PAGES` 与 `ESP_ERR_NVS_NEW_VERSION_FOUND`，必要时 `nvs_flash_erase()` 后重新初始化。P10 的 boot_count 例是每次启动读旧值、加一、写回、commit；它说烧录后连续断电重启五次会看到 1→2→3→4→5。这是 P10 的自述（它声称有实物实验留档），不是本章的实测记录。
 
 OTA 的 API 五步（P10 的写法，最后加 `esp_restart()`）：
 
@@ -517,7 +531,7 @@ F1 的 RDP 只有“保护/不保护”两态，`0xA5` 是不保护，改成别�
 
 ## 测量与证据
 
-本章没有上板读数。S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 的 boot_count 1→5 与回滚日志是操作描述，三处都没有附示波器、逻辑分析仪或串口日志。能拿出来的证据分四类：手册位与规则、按地址和位宽算出的账、来源自述与静态代码、待做的实验设计。下面的台架只写步骤、预期与记录模板，不替它们填数。
+本章没有上板读数。S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 声称 boot_count 1→5 与回滚日志有实物实验留档，但本仓库未见原始日志文件；本章手上没有示波器、逻辑分析仪或串口日志。能拿出来的证据分四类：手册位与规则、按地址和位宽算出的账、来源自述与静态代码、待做的实验设计。下面的台架只写步骤、预期与记录模板，不替它们填数。
 
 ### 台架一：F407 扇区 11 擦写读回（待做）
 
@@ -571,18 +585,18 @@ F1 的 RDP 只有“保护/不保护”两态，`0xA5` 是不保护，改成别�
 
 ### ESP32 侧：来源步骤，未复跑
 
-P10 的 boot_count 与 OTA 回滚是操作描述，不是本章的实测。如果手上有 ESP32-S3，按 P10 的步骤复跑：`nvs_rw_value` 连续断电五次看 1→5；开 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 后做一次“不 mark valid”的 OTA，看下次启动是否回滚。记录表另开，不与 STM32 台架混在一起。
+P10 的 boot_count 与 OTA 回滚是 P10 的自述（声称有实物实验与日志存档，本仓库未见原始日志文件），不是本章的实测。如果手上有 ESP32-S3，按 P10 的步骤复跑：`nvs_rw_value` 连续断电五次看 1→5；开 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 后做一次“不 mark valid”的 OTA，看下次启动是否回滚。记录表另开，不与 STM32 台架混在一起。
 
 ### 读数来路表
 
 | 取证项 | 来路 | 读数或结论 | 性质 |
 | --- | --- | --- | --- |
 | F407 扇区表 0–11 | S13 表格；本章按总和复算 | 4×16+64+7×128=1024 KB；扇区 11 从 `0x080E0000` 起 | 手册规则/复算（S13 正文“11 个扇区”是计数笔误） |
-| F407 512 KB 型号只到扇区 7 | RM0090 存储器映射的通行定义；三个来源都没有列 | 扇区 8–11 是 1 MB 型号的版图 | 手册规则，未核原件 |
+| F407 512 KB 型号只到扇区 7 | RM0090 存储器映射的通行定义；S13/P10 未列，根书第 12 章把 S0–S7 标在 F407VG 名下（`docs/12-Flash与IAP升级.md:138`，512 KB 的扇区表标错了型号） | 扇区 8–11 是 1 MB 型号的版图 | 手册规则，未核原件；来源标注冲突 |
 | F103C8 1 KB/64 页/末页 | 根书第 12 章；本章复算 | `0x08000000+63×0x400=0x0800FC00` | 手册规则/复算 |
 | F103 高密度 2 KB 页 | 根书第 12 章 | 页大小 2 KB，地址按 `n×0x800` | 来源说法（RM0008 转引，未核原件） |
 | 两把钥匙 | S13、根书第 12 章 | `0x45670123` → `0xCDEF89AB`；顺序错锁到复位 | 手册规则（两家一致；不是 CMSIS 宏） |
-| F4 PSIZE 三档与电压 | S13 只给 3.3 V→x32 与三档编码；电压区间按 RM0090 语义补 | x32/x16/x8；2.7–3.6/2.1–2.7/1.8–2.1 V | 手册规则，区间待复核 |
+| F4 PSIZE 三档与电压 | S13 只给 3.3 V→x32 与三档编码；电压区间按 RM0090 语义补 | x32/x16/x8；2.7–3.6/2.1–2.7/1.8–2.1 V（各区间的最高档） | 手册规则，区间待复核 |
 | F407 无 x64 | S13 | x64 仅 F42x/F43x | 手册规则（未核原件） |
 | F1 半字编程 | 根书第 12 章 | 16 位、2 字节对齐、无按字节编程 | 手册规则 |
 | F4 CR 位号 | S13 与本章代码注释对过 | PG0/SER1/MER2/SNB3–6/PSIZE8–9/STRT16/LOCK31 | 手册规则（S13 已列主位） |
@@ -603,7 +617,7 @@ P10 的 boot_count 与 OTA 回滚是操作描述，不是本章的实测。如�
 | ESP32 CSV 六字段与对齐 | P10 | `0x1000` 对齐、app `0x10000` 对齐、app 4 KB 对齐 | 来源说法 |
 | ESP32 NVS 页/条目/追加写 | P10 转述 IDF Internals | 4096 字节页、32 字节页头、126 条目、32 字节条目 | 来源说法 |
 | ESP32 OTA 五步与状态机 | P10 转述 IDF OTA | 默认未开回滚；otadata 两个扇区；只有 ota 槽回滚 | 来源说法 |
-| ESP32 boot_count 1→5 | P10 的操作描述 | 未附串口日志 | 来源说法，待复核 |
+| ESP32 boot_count 1→5 | P10 的实物实验自述，声称日志存档 | 本仓库未见原始日志文件 | 来源说法，待复核 |
 | 本章所有台架读数 | 本章未做 | 四张记录表为空 | 待做实验 |
 
 这些数能互相对上的只有手册位、算术与静态代码：1 MB 的总和能证明 12 个扇区，`0x08000000+63×0x400` 能证明末页地址，F407 的 480 KB+480 KB 能证明两个槽等大；它们都不能证明某块板上的扇区 11 真的擦成了 `0xFFFFFFFF`，也不能证明某次 OTA 断电后真的回到了旧槽。要补上后者，得按四个台架留下调试器读回、串口日志、GPIO 翻转时间和元数据区内容。
@@ -614,8 +628,8 @@ P10 的 boot_count 与 OTA 回滚是操作描述，不是本章的实测。如�
 | --- | --- | --- | --- |
 | 擦除或编程完全没反应，SR 只有 BSY 在动 | Flash 还锁着，或钥匙顺序写反 | 读 CR 的 LOCK 位；确认 KEY1/KEY2 的写入顺序 | 重新上电清掉错误序列，先 KEY1 后 KEY2；已解锁就不要重复写钥匙 |
 | 擦除返回 WRPERR | 目标页/扇区被 WRP 保护，或地址不在页/扇区边界 | 读 SR 的错误位；对照选项字节与页/扇区表 | 先解 WRP 或换未保护页；擦除地址按页/扇区边界对齐 |
-| 写进去读回不是目标值 | 目标没擦干净，PSIZE 档位不对，或 F1 没按半字/偶地址写 | 读回擦除态是不是 `0xFFFFFFFF`；查 PSIZE 与写入宽度 | 先擦后写；3.3 V 用 x32；F1 按 2 字节对齐写半字 |
-| 编程报 PGAERR/PGPERR/PGSERR | 往没擦除的字写，或地址/宽度不对齐 | 读目标字是否仍非 `0xFFFFFFFF`；查地址对齐与 PSIZE | 先擦目标扇区/页；按 PSIZE 的宽度与对齐写 |
+| 写进去读回不是目标值 | 目标没擦干净，PSIZE 高于供电允许的最高档，或 F1 没按半字/偶地址写 | 读回擦除态是不是 `0xFFFFFFFF`；查 PSIZE 与供电、写入宽度是否配对 | 先擦后写；PSIZE 按电压选不超过上限的档，写宽度与 PSIZE 一致；F1 按 2 字节对齐写半字 |
+| 编程报 PGAERR/PGPERR/PGSERR，或 F1 报 PGERR | PSIZE 与写宽度不符（PGPERR/PGSERR），地址或宽度与 PSIZE 不对齐（PGAERR）；F1 则是往未擦除的半字再写（PGERR） | 读 SR 错误位；读目标字是否仍非 `0xFFFFFFFF`；查地址对齐与 PSIZE | 先擦目标扇区/页；按 PSIZE 的宽度与对齐写；F4 往未擦除单元再写的具体报错路径待复核 |
 | 擦一个 128 KB 扇区时看门狗复位 | 擦除时间远超喂狗周期，或中断处理也在 Flash 里等总线 | 看复位前是否刚置 STRT；量 BSY 持续时间 | 擦写关键路径放 RAM；按最坏擦除时间喂狗或临时关狗 |
 | 跳转后立刻 HardFault | MSP 不在 SRAM，向量表第 1 字在槽外，或 Thumb 位为 0 | 读 App 基址第 0/1 字；对照 SRAM 区间与槽边界 | 修链接脚本与向量表；跳转前做 `app_vector_ok()` 检查 |
 | App 能跑，但中断全跑到 Bootloader | VTOR 还是 0，或 App 的 `SystemInit()` 把它写回 `0x08000000` | 读 `SCB->VTOR`；看 App 是否设置 `VECT_TAB_OFFSET` | Bootloader 跳转前设 VTOR；App 在 `main` 开头再设一次 |
@@ -639,7 +653,7 @@ F407 一侧：1 MB 主 Flash 从 `0x08000000` 起，12 个扇区按 16/64/128 KB
 
 F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑。ESP32 的启动、外设与驱动框架在[第 31 章][ch31]；低功耗与看门狗分别在[第 18 章][ch18]与[第 19 章][ch19]。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章][ch31]；低功耗与看门狗分别在[第 18 章][ch18]与[第 19 章][ch19]。
 
 其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章][ch19]；低功耗下的 Flash 掉电与唤醒在[第 18 章][ch18]。
 
@@ -660,11 +674,11 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 1. Flash 的位只能把 1 写成 0，目标位模式里只要有 0→1，就必须先擦。擦除的最小单位是页（F1，1/2 KB）或扇区（F4，16/64/128 KB），硬件不提供按字节擦除；所以改一个字节也要把整页/整扇区读出来、擦掉、再连同改过的字节写回去。
 2. 12 个扇区：扇区 0–3 各 16 KB，扇区 4 是 64 KB，扇区 5–11 各 128 KB；总数 4×16+64+7×128=1024 KB。扇区 11 从 `0x080E0000` 起，128 KB，到 `0x08100000`。512 KB 的 F407xE 只实现到扇区 7（16×4+64+128×3=512 KB），扇区 8–11 是 1 MB 型号才有的版图。
 3. F103C8 是 1 KB 一页、64 页，页 0 从 `0x08000000` 起，页 63 从 `0x08000000+63×0x400=0x0800FC00` 起，到 `0x08010000` 结束。高密度型号是 2 KB 一页，页号与地址的乘法改成 `n×0x800`，页数按容量重算；把 1 KB 表套过去会擦到页中间。
-4. 先写 `0x45670123`，再写 `0xCDEF89AB` 到 `FLASH_KEYR`；顺序或数值不对，Flash 保持锁定到下次复位。F4 在 2.7–3.6 V 选 x32，2.1–2.7 V 选 x16，1.8–2.1 V 选 x8；x64 只在 F42x/F43x 上存在，F407 的 CR 没有这一档可用。F1 没有 PSIZE，编程粒度固定为半字。
+4. 先写 `0x45670123`，再写 `0xCDEF89AB` 到 `FLASH_KEYR`；顺序或数值不对，Flash 保持锁定到下次复位。F4 在 2.7–3.6 V 最高选 x32，2.1–2.7 V 最高 x16，1.8–2.1 V 最高 x8；低档在高压下也能用，但写宽度必须与 PSIZE 一致。x64 只在 F42x/F43x 上存在，F407 的 CR 没有这一档可用。F1 没有 PSIZE，编程粒度固定为半字。
 5. 关中断；按芯片实际中断数清 NVIC 使能与挂起、关 SysTick；设 `SCB->VTOR` 指向 App 基址；从 App 基址第 0 字设 MSP；从第 1 字跳复位入口。跳 `main` 会跳过 `.data` 拷贝、`.bss` 清零与 `SystemInit` 时钟配置，App 会跑在半初始化状态。VTOR 由 Bootloader 先设、App 再设一次（HAL 的 `SystemInit()` 可能把它写回 `0x08000000`）；MSP 由跳转函数从 App 向量表第 0 字显式读入；PRIMASK 由 App 在启动早期 `__enable_irq()` 打开，或由 Bootloader 在跳转前最后一步打开，两边不能都不做。
 6. 单槽升级在擦掉旧 App 的那一刻就没有备份了：传输失败、CRC 不过、写一半断电，旧程序都不在，只能留在 Bootloader 等重传。双槽把新镜像写另一个槽，校验通过后追加一条带 CRC 和序号的“换槽”记录；这条记录是短事务，写完并通过 `meta_crc` 才算提交，写一半断电则上一条记录仍然有效。回滚发生在下一次启动：新槽处于“待确认”却没转“有效”，Bootloader 就追加一条回旧槽的记录。参数区的 A/B 两份要落在不同的擦除单位，否则擦除时一起没。
 7. 分区表管 Flash 的版图（factory/ota_0/ota_1/nvs/phy_init/spiffs 等分区的 offset/size）；NVS 管键值参数，按 4096 字节页追加写、带 CRC 与页满整理；OTA 管双槽升级，`esp_ota_*` 五步写备槽、校验、改 otadata、重启。默认不开 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 时，NEW 与 PENDING_VERIFY 不会被使用，`esp_ota_set_boot_partition()` 设的是 UNDEFINED，bootloader 直接启动新槽、立即视为有效，坏固件不会自动回滚；只有开了回滚，才有 NEW→PENDING_VERIFY→VALID/ABORTED 这套状态机。
-8. 手册规则：扇区/页结构、两把钥匙、PSIZE 与电压、CR/SR 的 F4 主位、向量表两字与 VTOR。本章算术：1 MB 总和、页 63 地址、双槽 480 KB/22 KB 的加减。来源说法：擦写寿命 1 万次/20 年、擦除时间、F1 的逐位位号、ESP32 的分区表/NVS/OTA 细节、P10 的 boot_count 1→5。还没有人量过：四个台架的全部读数，记录表为空；STM32 的双槽布局与记录格式是本章设计，也没有上板。
+8. 手册规则：扇区/页结构、两把钥匙、PSIZE 三档（电压区间待复核）、CR/SR 的 F4 主位、F1 的逐位位号（待复核）、向量表两字与 VTOR。本章算术：1 MB 总和、页 63 地址、双槽 480 KB/22 KB 的加减。来源说法：擦写寿命 1 万次/20 年、擦除时间、ESP32 的分区表/NVS/OTA 细节、P10 的 boot_count 1→5。还没有人量过：四个台架的全部读数，记录表为空；STM32 的双槽布局与记录格式是本章设计，也没有上板。
 
 </details>
 
