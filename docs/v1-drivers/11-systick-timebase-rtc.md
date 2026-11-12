@@ -11,7 +11,7 @@ platforms: [f407, f103]
 
 - **问题**：168MHz 下要 1ms，为什么 LOAD 填 167999 而不是 168000？忘减一为什么“次数不变、相位变慢”，5.95ppm 与日漂移 514ms 是怎么算出来的？为什么“先读一次 CTRL 打印、再读一次判断”的查询式延时会死等？`SysTick_Config(168000)` 之后 CTRL 为什么是 `0x00000007`，SHP[11] 为什么是 `0xF0`？168MHz 下 24 位计数器单次最长能撑多久，请求 100ms 为什么被拒、强行截断为什么会 737 倍速？49.7 天回绕时，哪种超时写法仍然正确？主电源拔掉后 RTC 靠什么继续走，F1 与 F4 各保存了什么，时间戳又落在哪一边？
 - **交付**：能按“时钟频率 ÷ 每秒 tick 数 − 1”算任意 LOAD，并先判断它是否超过 24 位；能说出 `SysTick_Config` 的三写一设与返回值含义；会把 COUNTFLAG 读一次存进变量再判断；会写 `(uint32_t)(now - then) >= timeout` 的回绕安全超时；能解释 SysTick 优先级为什么落在最低档；能按“电源、复位、写门”三道边界检查 RTC，会选 LSE 或 LSI、写 PRL = 32767、用 BKP 魔数判断首次上电，并分清 F1 的秒计数器与 F4 的 BCD 日历、时间戳。
-- **边界**：两平台章。F407 的地址、位段、probe 读数来自 S5《SysTick：内核的心跳》与 `core_cm4.h`、`stm32f407xx.h`；F103 的 72MHz 分母来自根书第 05 章与[第 8 章](./08-architecture-memory-clock.md)，RTC 的备份域、LSE、BKP 与时间戳边界来自根书第 11 章与 RM0008、DS5319。来源没有记录本章的上板读数（PF6 翻转、调试器偷看 CTRL、LSE 起振时间），本章把它们写成实验设计与判据。定时器 TIM 与 PWM 留给[第 12 章][ch12]，看门狗留给[第 19 章][ch19]，低功耗唤醒留给[第 18 章][ch18]，RTOS 的 tick 与上下文切换留给[第 21 章][ch21]、[第 23 章][ch23]，NVIC 的优先级分组与 EXTI 留给[第 10 章](./10-interrupts-nvic-exti.md)。
+- **边界**：两平台章。F407 的地址、位段、probe 读数来自 S5《SysTick：内核的心跳》与 `core_cm4.h`、`stm32f407xx.h`；F103 的 72MHz 分母来自根书第 05 章与[第 8 章](./08-architecture-memory-clock.md)，RTC 的备份域、LSE、BKP 与时间戳边界来自根书第 11 章与 RM0008、DS5319。来源没有记录本章的上板读数（PF6 翻转、调试器偷看 CTRL、LSE 起振时间），本章把它们写成实验设计与判据。定时器 TIM 与 PWM 留给[第 12 章](./12-timers-pwm.md)，看门狗留给[第 19 章][ch19]，低功耗唤醒留给[第 18 章][ch18]，RTOS 的 tick 与上下文切换留给[第 21 章][ch21]、[第 23 章][ch23]，NVIC 的优先级分组与 EXTI 留给[第 10 章](./10-interrupts-nvic-exti.md)。
 - **依据锚点**：S5《S5 SysTick：内核的心跳》（`mcu/docs/stm32/05-systick.md`）、根书第 05 章《定时器与 PWM》（`docs/05-定时器与PWM.md`）的时基部分、根书第 11 章《RTC 与看门狗》（`docs/11-RTC与看门狗.md`）的 RTC 部分；[第 8 章](./08-architecture-memory-clock.md)的 168MHz 与 72MHz 账、[第 10 章](./10-interrupts-nvic-exti.md)的 SHP 与中断约束、[第 9 章](./09-gpio.md)的 PC13 灌电流规则、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。PM0214、RM0090、RM0008、DS5319 的条文均转引自上述来源。
 
 ## 先做出来
@@ -146,7 +146,7 @@ if (sim_read_ctrl(&b) & CTRL_COUNTFLAG) got_wrong++;
 - **正规路径**：`SysTick_Config` 第一行就是 `(ticks - 1UL) > SysTick_LOAD_RELOAD_Msk` 则返回 1（`core_cm4.h:2024-2027`），即拒配，寄存器一个都没动。所以必须查返回值。
 - **经典 bug**：不查返回值，强行 `& 0xFFFFFF` 写进去 → `LOAD = 22783`，tick 变成 135.6µs，ISR 以 737 倍速狂跳（16800000 / 22784 = 737），系统直接瘫在中断里（`probe.c:176-186`）。
 
-更长的周期怎么办：要么 CLKSOURCE=0 走参考时钟（F407 上是 HCLK/8，单次上限拉到约 800ms），要么换 32 位的 TIM，那是[第 12 章][ch12]的地盘。F103 的参考时钟比例按对应编程手册的 SysTick 一节核对，本章不把 800ms 搬过去。
+更长的周期怎么办：要么 CLKSOURCE=0 走参考时钟（F407 上是 HCLK/8，单次上限拉到约 800ms），要么换 32 位的 TIM，那是[第 12 章](./12-timers-pwm.md)的地盘。F103 的参考时钟比例按对应编程手册的 SysTick 一节核对，本章不把 800ms 搬过去。
 
 ### 时间换算与回绕：先减再比
 
@@ -323,7 +323,7 @@ F103 一侧，内核计数器同名同址，分母换成 72MHz：1ms 是 71999�
 
 RTC 一侧，F1 是 32 位秒计数器加 10 个 16 位备份寄存器；F4 是 BCD 日历 `TR`/`DR`、20 个 32 位备份寄存器，还多了周期唤醒与硬件时间戳。LSE 的引脚、VBAT 的脚位、备份寄存器的个数与宽度都随封装与系列变，换芯片先查数据手册的引脚表与备份域章节。LSE 占用的 PC14/PC15 不能再当 GPIO，PC13 的灌电流限制见[第 9 章](./09-gpio.md)。
 
-GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章][ch29]。ESP32 不在本章平台范围，其架构与启动见[第 30 章][ch30]。定时器 TIM 与 PWM 见[第 12 章][ch12]，看门狗见[第 19 章][ch19]，低功耗唤醒见[第 18 章][ch18]。
+GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章][ch29]。ESP32 不在本章平台范围，其架构与启动见[第 30 章][ch30]。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章][ch19]，低功耗唤醒见[第 18 章][ch18]。
 
 ## 离开检查
 
@@ -342,7 +342,7 @@ GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一�
 1. 168000000 × 2 / 1000 = 336000 个时钟；`LOAD = 335999`，周期 = LOAD + 1 = 336000 个时钟 = 2.000ms。与 probe 第 2 段同一族：先算时钟数，再减一。
 2. 同样跑 1680000 个周期，两者都重载 10 次，差别在相位：每个 tick 慢 1/168000 ≈ 5.95ppm；第 10 次重载正确配置在第 1512001 个时钟，忘减一在第 1512010 个，9 个间隔共欠 9 个时钟；一天欠 514ms。短延时看不出，长期计时才暴露。
 3. COUNTFLAG 是 read-to-clear：第一次读（打印那次）已把标志清掉，第二次读永远看到 0。probe 第 7 段对照：单读法 5 个周期数到 5 次，双读法数到 0 次。正确写法是读一次存进变量再判断。
-4. ticks=16800000，(ticks−1) > 0xFFFFFF，`SysTick_Config` 返回 1 拒配，寄存器一个都没动。不查返回值强行 `& 0xFFFFFF` → LOAD=22783，tick 变 135.6µs，ISR 737 倍速。长周期两条路：CLKSOURCE=0 走参考时钟（F407 是 HCLK/8，约 800ms），或换 32 位 TIM（[第 12 章][ch12]）。
+4. ticks=16800000，(ticks−1) > 0xFFFFFF，`SysTick_Config` 返回 1 拒配，寄存器一个都没动。不查返回值强行 `& 0xFFFFFF` → LOAD=22783，tick 变 135.6µs，ISR 737 倍速。长周期两条路：CLKSOURCE=0 走参考时钟（F407 是 HCLK/8，约 800ms），或换 32 位 TIM（[第 12 章](./12-timers-pwm.md)）。
 5. 超时了：真实已过 3000ms。`(uint32_t)(2000 − 0xFFFFFC18) = 3000 >= 500` 判对；朴素写法 `then + timeout = 4294966796` 没回绕，而 `now = 2000` 已回绕，`now >= then + timeout` 判成未超时。只有先减再比跨回绕永远正确。
 6. `CTRL = 0x00000007`（ENABLE+TICKINT+CLKSOURCE）；优先级 15，因为 `(1 << 4) − 1 = 15`、`15 << 4 = 0xF0`，SHP 下标 `((−1)&0xF)−4 = 11`。RTOS 的 tick 中断里跑调度器，调度必须给外设中断让路，所以 tick 优先级放在最低档。
 7. 靠 VBAT 上的纽扣电池给备份域续电，秒计数器与备份寄存器继续工作。写备份域前要打开 PWR 与 BKP 时钟，并置位 `PWR_CR.DBP`。分频比是 `(PRL + 1)`，32768 Hz 要 1 Hz 就得写 32767；写 32768 会变成 32769 分频，慢 30.5ppm、约 2.6s/天。
@@ -350,7 +350,6 @@ GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一�
 
 </details>
 
-[ch12]: ./12-timers-pwm.md
 [ch18]: ../v2-reliability/18-low-power.md
 [ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
 [ch21]: ../v3-rtos/21-why-rtos.md

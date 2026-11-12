@@ -11,7 +11,7 @@ platforms: [generic]
 
 - **问题**：同一段轮询，`-O0` 能等到标志位，`-O2` 却原地死转；`flag ^= 1` 已经标了 `volatile`，中断里的一次更新还是会丢；`x + 1 > x` 在 `x = INT_MAX` 时返回 1，`1u << 33` 在 `-O0` 与 `-O2` 下给出两个答案。三个现象分别指向优化器的授权范围、`volatile` 的合同边界和未定义行为的代价。
 - **交付**：能给任意一段访存代码生成 `-O0` 与 `-O2` 两份汇编，指出哪次读被缓存、哪次写被删除、哪几次读-改-写被合并；能写对 `volatile` 与 `const` 的每个组合；能把掩码移位的计数证明到编译期或运行期；能用 `union` 或 `memcpy` 合法地看 `float` 的位模式。
-- **边界**：本章以单核 Cortex-M4 裸机为主，例子来自来源记录的 x86-64 宿主与 Cortex-M4 交叉两套产物；宿主读数只用于复现，板上的真相以 M4 那份为准。F407 没有数据 cache，`volatile` 加屏障基本够用；ESP32-S3 这类带数据 cache 的核，DMA 共享缓冲还要清理与无效化。MISRA 一节是自选十条，不是全量合规。结构体布局与寄存器映射见[第 3 章][ch03]，工具链与优化档见[第 5 章][ch05]，链接与启动见[第 6 章][ch06]，HardFault 现场见[第 19 章][ch19]。
+- **边界**：本章以单核 Cortex-M4 裸机为主，例子来自来源记录的 x86-64 宿主与 Cortex-M4 交叉两套产物；宿主读数只用于复现，板上的真相以 M4 那份为准。F407 没有数据 cache，`volatile` 加屏障基本够用；ESP32-S3 这类带数据 cache 的核，DMA 共享缓冲还要清理与无效化。MISRA 一节是自选十条，不是全量合规。结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)，工具链与优化档见[第 5 章](./05-toolchain-four-steps.md)，链接与启动见[第 6 章](./06-linker-startup-map.md)，HardFault 现场见[第 19 章][ch19]。
 - **依据锚点**：C3《volatile：跟编译器约法三章》（`mcu/docs/c/03-volatile.md`）、C7《未定义行为与 MISRA-C 精要》（`mcu/docs/c/07-ub-misra.md`）；ISO/IEC 9899:2018 §5.1.2.3（程序执行）、§6.7.3（类型限定符）与附录 J.2（未定义行为清单），均转引自上述来源；MISRA C:2012 的规则编号同样转引自 C7。变量的段归属与 `const` 的 RAM 账在[第 1 章](./01-c-memory-model.md)。
 
 ## 先做出来
@@ -393,7 +393,4 @@ arm-none-eabi-gcc -mcpu=cortex-m4 -E main.c | grep -c 'volatile uint32_t'
 
 动作验收：在自己的工程上把 `-O0` 与发布档各编一次，对同一段外设访问生成两份汇编，指出被缓存、被删、被合并的访存；再写一个掩码函数，让计数在编译期是枚举常量、运行期走范围检查，两版都过 `-Wall -Wextra -Werror`。
 
-[ch03]: ./03-struct-abi-registers.md
-[ch05]: ./05-toolchain-four-steps.md
-[ch06]: ./06-linker-startup-map.md
 [ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md

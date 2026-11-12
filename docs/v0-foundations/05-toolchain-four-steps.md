@@ -11,7 +11,7 @@ platforms: [generic]
 
 - **问题**：`arm-none-eabi-` 三段各管什么，为什么系统 `gcc` 编不了 F407？`gcc` 自己不做编译，它把活分给谁？`-E`、`-S`、`-c` 和链接各留下什么文件，报错时怎样一眼看出死在哪个阶段？ELF 头的五个字段与节表各自回答什么问题？裸机没有 Linux 系统调用，`printf` 的输出凭什么能接到串口？第一次装工具链、make、OpenOCD、ST-Link 驱动和 SWD 线，每一步验收什么？
 - **交付**：能用 build/host/target 说明“交叉”交叉在哪；能按 binutils 的分工查符号、段、体积与格式；能说清 newlib 钩子如何把 `printf` 接到串口；能用 `gcc -###` 读出 cc1、as、collect2 的调度链；能亲手跑完四步并在 `.i`、`.s`、`.o`、`.elf` 里找到对应证据；能读 ELF 头五字段与节表的 `Addr`/`Off`/`Size`/`Flg`；能按五步搭好环境，并用三条命令确认自己用的是哪套工具链。
-- **边界**：本章以 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录为证据，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章][ch06]；Makefile 与遗留构建栈留给[第 7 章][ch07]；GDB 与 SWD 调试留给[第 20 章][ch20]；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，本章明确标为未跑。
+- **边界**：本章以 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录为证据，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章][ch20]；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，本章明确标为未跑。
 - **依据锚点**：B0《工具链全景：四个软件一台戏》（`mcu/docs/build/00-toolchain.md`）、B1《四步构建：从 main.c 到机器码》（`mcu/docs/build/01-four-steps.md`）、B2《ELF 解剖：把固件放上解剖台》（`mcu/docs/build/02-elf.md`）、S0《环境搭建：裸机工具链》（`mcu/docs/stm32/00-env.md`）；根书第 01 章《开发环境搭建》（`docs/01-开发环境搭建.md`）的 SWD 接线、ST-Link 驱动与读保护部分。工具链版本、四步读数、ELF 数字均转引自上述来源。
 
 ## 先做出来
@@ -226,7 +226,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 08000230 W Reset_Handler
 ```
 
-- **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”焊死的效果，[第 6 章][ch06]整章讲这个。
+- **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”焊死的效果，[第 6 章](./06-linker-startup-map.md)整章讲这个。
 - `text 660` = 392（向量表）+ 268（代码）。`bss 1536` 是 `._user_heap_stack` 预留的栈与堆空间，不占 Flash。
 - `Reset_Handler` 是 **W（弱符号）**：启动文件里给了默认实现，用户可以覆盖。芯片复位后 CPU 从 `0x0800_0000` 取向量表第 2 个字跳到这里。
 - `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 把 Thumb 位抹掉了，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`——**`readelf -s` 保留这一位，`nm` 抹掉它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
@@ -288,7 +288,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 `blink.elf` 文件本身是 34,604 字节，`objcopy -O binary` 之后只剩 660 字节。34,604 − 660 = 33,944 字节，全是调试信息与符号表。这也是为什么“烧 bin 才谈第几字节”。
 
-节表回答“文件里有哪些抽屉”，程序头回答“装载器怎样装车”。`blink.elf` 的两条 `LOAD` 把 `.isr_vector` 与 `.text` 装进 `0x08000000`（`FileSiz=MemSiz=0x294`），把 `.bss` 与堆栈预留区装进 `0x20000000`（`FileSiz=0`，`MemSiz=0x600`）；它的 `.data` 是空的，看不出差值。来源另一具标本 `elf_probe.elf` 的 `.data` 有初值，第二条 `LOAD` 是 `FileSiz=0x0c`、`MemSiz=0x20`，差的 20 字节正是 `.bss`：有初值才占 Flash，为 0 只占 RAM，在 ELF 里就是这两个数的差。VMA 与 LMA 的完整故事在[第 6 章][ch06]。
+节表回答“文件里有哪些抽屉”，程序头回答“装载器怎样装车”。`blink.elf` 的两条 `LOAD` 把 `.isr_vector` 与 `.text` 装进 `0x08000000`（`FileSiz=MemSiz=0x294`），把 `.bss` 与堆栈预留区装进 `0x20000000`（`FileSiz=0`，`MemSiz=0x600`）；它的 `.data` 是空的，看不出差值。来源另一具标本 `elf_probe.elf` 的 `.data` 有初值，第二条 `LOAD` 是 `FileSiz=0x0c`、`MemSiz=0x20`，差的 20 字节正是 `.bss`：有初值才占 Flash，为 0 只占 RAM，在 ELF 里就是这两个数的差。VMA 与 LMA 的完整故事在[第 6 章](./06-linker-startup-map.md)。
 
 ### 环境搭建五步
 
@@ -392,7 +392,5 @@ make
 
 动作验收：在自己的机器上装好五步，用 `arm-none-eabi-gcc --version`、`where arm-none-eabi-gcc`（Linux 用 `which`）、`-print-search-dirs` 三条命令写下“我用的是哪套工具链”；再拿一个现成工程跑一遍 `-E`、`-S`、`-c`、链接，把四份中间产物和一条 `readelf -h` 输出留在构建目录里。
 
-[ch06]: ./06-linker-startup-map.md
-[ch07]: ./07-build-systems-legacy.md
 [ch08]: ../v1-drivers/08-architecture-memory-clock.md
 [ch20]: ../v2-reliability/20-debug-performance.md
