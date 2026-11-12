@@ -54,7 +54,7 @@
         "ch10"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "partial",
       "note": "驱动基本功→ch04，NVIC→ch10"
     },
     {
@@ -428,7 +428,7 @@
         "ch04"
       ],
       "purpose": "语言深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -438,7 +438,7 @@
         "ch04"
       ],
       "purpose": "语言深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
