@@ -23,7 +23,8 @@ jobs:
         run: |
           for i in 1 2 3; do
             sudo apt-get update -o Acquire::Retries=8 && \
-            sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi && break
+            sudo apt-get install -y --no-install-recommends \
+              gcc-arm-none-eabi libnewlib-arm-none-eabi-dev libnewlib-dev && break
             echo "apt attempt $i failed; sleeping 30s"; sleep 30
           done
           arm-none-eabi-gcc --version | head -1

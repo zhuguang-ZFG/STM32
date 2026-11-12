@@ -248,6 +248,81 @@ static void test_e2e(void)
     CHECK(s.out_duty == 0 && (s.state == MS_DISABLED || s.state == MS_ARMED), "E2E stopped output zero");
 }
 
+/* E2E-2（advisory 覆盖）：静止负向闭环起转——负 SET_RPM 从静止产生负输出、负转速 */
+static void test_e2e_negative_start(void)
+{
+    control_t c; control_params_t p = make_params();
+    control_init(&c, &p, 440, 600.f, 20);
+    tl_sample_t s;
+    uint32_t t = 0;
+    control_tick(&c, t += 10, 5000, 100, &s);       /* 基线 */
+    cmd_t cmd; cmd.type = CMD_HELLO;
+    char reply[32];
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    cmd.type = CMD_ARM;
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    cmd.type = CMD_SET_RPM; cmd.arg_int = -150;
+    c.last_fresh_cmd_ms = t;
+    CHECK(control_command(&c, &cmd, reply, sizeof(reply)), "E2E-neg set accepted");
+    int32_t enc = 5000;
+    bool neg_duty_seen = false, neg_rpm_seen = false;
+    for (int i = 0; i < 60; i++) {
+        /* 一阶物理模型：转速斜坡跟随（Δ/tick 从 0 渐变到 11），
+           保证 |rpm_filt| ≤ |ramped_rpm|，误差方向与目标一致 */
+        const int dec = (i < 3) ? 0 : ((i - 2) / 3 > 11 ? 11 : (i - 2) / 3);
+        enc -= dec;
+        control_tick(&c, t += 10, (uint32_t)enc, 100, &s);
+        c.last_fresh_cmd_ms = t;
+        if (s.out_duty < 0) neg_duty_seen = true;
+        if (s.rpm_filt < 0) neg_rpm_seen = true;
+    }
+    CHECK(neg_duty_seen, "E2E-neg duty becomes negative (not clamped to 0)");
+    CHECK(neg_rpm_seen, "E2E-neg rpm negative");
+}
+
+/* E2E-3（advisory 覆盖）：开环正转→反转命令必须经过 REVERSING 停稳合同 */
+static void test_e2e_openloop_reversal(void)
+{
+    control_t c; control_params_t p = make_params();
+    control_init(&c, &p, 440, 600.f, 20);
+    tl_sample_t s;
+    uint32_t t = 0;
+    control_tick(&c, t += 10, 1000, 100, &s);
+    cmd_t cmd; cmd.type = CMD_HELLO;
+    char reply[32];
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    cmd.type = CMD_ARM;
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    cmd.type = CMD_SET_DUTY; cmd.arg_int = 300;
+    c.last_fresh_cmd_ms = t;
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    int32_t enc = 1000;
+    for (int i = 0; i < 20; i++) {                   /* 正转建立 */
+        enc += 11;
+        control_tick(&c, t += 10, (uint32_t)enc, 100, &s);
+        c.last_fresh_cmd_ms = t;
+    }
+    CHECK(c.cur_duty > 0 && s.rpm_filt > 0, "E2E-rev fwd running");
+    /* 反转命令：不允许直接跳到负占空比 */
+    cmd.type = CMD_SET_DUTY; cmd.arg_int = -300;
+    c.last_fresh_cmd_ms = t;
+    (void)control_command(&c, &cmd, reply, sizeof(reply));
+    bool saw_reversing = false, saw_zero_coast = false, direct_flip = false;
+    for (int i = 0; i < 60; i++) {
+        if (i < 8) enc += 3;                          /* 惯性微增后停 */
+        control_tick(&c, t += 10, (uint32_t)enc, 100, &s);
+        c.last_fresh_cmd_ms = t;
+        if (s.state == MS_REVERSING) saw_reversing = true;
+        if (saw_reversing && s.out_duty == 0) saw_zero_coast = true;
+        /* 合同破坏检测：在未经历 REVERSING 的情况下出现负输出 */
+        if (!saw_reversing && s.out_duty < 0) direct_flip = true;
+    }
+    CHECK(saw_reversing, "E2E-rev enters REVERSING");
+    CHECK(!direct_flip, "E2E-rev no direct sign flip");
+    CHECK(s.out_duty < 0, "E2E-rev eventually negative duty after protocol");
+    CHECK(saw_zero_coast, "E2E-rev coast phase (duty=0) observed");
+}
+
 int main(void)
 {
     test_h01();
@@ -258,6 +333,8 @@ int main(void)
     test_h09();
     test_bridge();
     test_e2e();
+    test_e2e_negative_start();
+    test_e2e_openloop_reversal();
     printf("host_tests: %d passed, %d failed\n", g_pass, g_fail);
     return g_fail ? 1 : 0;
 }

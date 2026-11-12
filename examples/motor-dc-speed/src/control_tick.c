@@ -120,15 +120,30 @@ bool control_tick(control_t *c, uint32_t now_ms, uint32_t enc_count,
     bool feedback_invalid = false;
 
     switch (c->fsm.state) {
-    case MS_RUN_OPEN:
-        duty = c->target_duty;
+    case MS_RUN_OPEN: {
+        /* 方向反转必须走 REVERSING 停稳合同（design §5）；静止起步不受限 */
+        const int cur_s = (c->cur_duty > 0) ? 1 : (c->cur_duty < 0) ? -1 : 0;
+        const int tgt_s = (c->target_duty > 0) ? 1 : (c->target_duty < 0) ? -1 : 0;
+        if (cur_s != 0 && tgt_s != 0 && cur_s != tgt_s) {
+            c->fsm.state = MS_REVERSING;
+            c->fsm.rev_phase = RS_RAMP_DOWN;
+            c->fsm.rev_timer_ms = now_ms;
+        } else {
+            /* 占空比斜坡（±50‰/tick）：受控起动，兼作 REVERSING 后的从零升速 */
+            const int16_t step = 50;
+            int16_t d = c->cur_duty;
+            if (c->target_duty > d)      d = (int16_t)((d + step > c->target_duty) ? c->target_duty : d + step);
+            else if (c->target_duty < d) d = (int16_t)((d - step < c->target_duty) ? c->target_duty : d - step);
+            duty = d;
+        }
         break;
+    }
     case MS_RUN_SPEED: {
-        /* 反转检测 → 进入 REVERSING */
-        const float e_sign = (c->target_rpm >= 0.f) ? 1.f : -1.f;
-        const float cur_sign = (rpm_filt >= 0.f) ? 1.f : -1.f;
-        if (fabsf(c->target_rpm) > 0.f && fabsf(rpm_filt) > c->params.reverse_zero_rpm &&
-            e_sign != cur_sign) {
+        /* 反转判据：按当前转速方向 vs 目标符号；静止（|rpm|≤zero）直接起步（含负向起转） */
+        const int cur_s = (rpm_filt >  c->params.reverse_zero_rpm) ?  1 :
+                          (rpm_filt < -c->params.reverse_zero_rpm) ? -1 : 0;
+        const int tgt_s = (c->target_rpm > 0.f) ? 1 : (c->target_rpm < 0.f) ? -1 : 0;
+        if (cur_s != 0 && tgt_s != 0 && cur_s != tgt_s) {
             c->fsm.state = MS_REVERSING;
             c->fsm.rev_phase = RS_RAMP_DOWN;
             c->fsm.rev_timer_ms = now_ms;
@@ -136,9 +151,10 @@ bool control_tick(control_t *c, uint32_t now_ms, uint32_t enc_count,
             c->ramped_rpm = ramp_target(c->target_rpm, c->ramped_rpm,
                                         c->params.ramp_rpm_per_s, (float)dt_ms / 1000.f);
             if (fb_ok) {
-                int dir = (c->ramped_rpm >= 0.f) ? 1 : -1;
+                const int dir = (tgt_s != 0) ? tgt_s : ((c->ramped_rpm >= 0.f) ? 1 : -1);
                 float u = 0.f;
-                pi_update(&c->pi, fabsf(c->ramped_rpm), fabsf(rpm_filt),
+                /* 带符号输入：负目标产生负输出（fabsf 会把负向环钳死在 0） */
+                pi_update(&c->pi, c->ramped_rpm, rpm_filt,
                           (float)dt_ms / 1000.f, dir, &u);
                 duty = (int16_t)u;
             } else {
@@ -180,9 +196,8 @@ bool control_tick(control_t *c, uint32_t now_ms, uint32_t enc_count,
             if (now_ms - c->fsm.rev_timer_ms >= c->params.reverse_hold_ms) {
                 c->ramped_rpm = 0.f;
                 pi_reset(&c->pi);
-                c->fsm.rev_phase = RS_RAMP_UP;
-                c->fsm.state = MS_RUN_SPEED;   /* 换向完成，从零升速 */
-                c->fsm.rev_phase = RS_NONE;
+                c->fsm.state = c->speed_mode ? MS_RUN_SPEED : MS_RUN_OPEN;
+                c->fsm.rev_phase = RS_NONE;   /* 换向完成，各模式斜坡从零升速 */
             }
             break;
         default: break;
