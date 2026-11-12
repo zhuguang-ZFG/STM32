@@ -3,13 +3,13 @@ root	docs/01-开发环境搭建.md	ch05	根书原章	migrated
 root	docs/02-芯片选型与存储器时钟.md	ch01;ch08	根书原章	migrated	存储器→ch01，时钟→ch08
 root	docs/03-GPIO与LED.md	ch09	根书原章	migrated	
 root	docs/04-中断与NVIC.md	ch04;ch10	根书原章	migrated	驱动基本功→ch04，NVIC→ch10
-root	docs/05-定时器与PWM.md	ch11;ch12	根书原章	planned	时基→ch11，PWM→ch12
+root	docs/05-定时器与PWM.md	ch11;ch12	根书原章	partial	时基→ch11，PWM→ch12
 root	docs/06-串口UART.md	ch13	根书原章	planned	
 root	docs/07-I2C总线.md	ch16	根书原章	planned	
 root	docs/08-SPI总线.md	ch16	根书原章	planned	
 root	docs/09-ADC与DAC.md	ch15	根书原章	planned	
 root	docs/10-DMA.md	ch14	根书原章	planned	
-root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	planned	RTC→ch11，看门狗→ch19
+root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	partial	RTC→ch11，看门狗→ch19
 root	docs/12-Flash与IAP升级.md	ch17	根书原章	planned	
 root	docs/13-CAN总线.md	ch35	根书原章	planned	
 root	docs/14-USB.md	ch35	根书原章	planned	
@@ -56,7 +56,7 @@ mcu	mcu/docs/stm32/01-arch.md	ch08	外设深潜	migrated
 mcu	mcu/docs/stm32/02-rcc-clock.md	ch08	外设深潜	migrated	
 mcu	mcu/docs/stm32/03-gpio.md	ch09	外设深潜	migrated	
 mcu	mcu/docs/stm32/04-nvic-exti.md	ch10	外设深潜	migrated	
-mcu	mcu/docs/stm32/05-systick.md	ch11	外设深潜	planned	
+mcu	mcu/docs/stm32/05-systick.md	ch11	外设深潜	migrated	
 mcu	mcu/docs/stm32/06-tim.md	ch12	外设深潜	planned	
 mcu	mcu/docs/stm32/07-usart.md	ch13	外设深潜	planned	
 mcu	mcu/docs/stm32/08-dma.md	ch14	外设深潜	planned	

@@ -65,7 +65,7 @@
         "ch12"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "partial",
       "note": "时基→ch11，PWM→ch12"
     },
     {
@@ -126,7 +126,7 @@
         "ch19"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "partial",
       "note": "RTC→ch11，看门狗→ch19"
     },
     {
@@ -598,7 +598,7 @@
         "ch11"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
