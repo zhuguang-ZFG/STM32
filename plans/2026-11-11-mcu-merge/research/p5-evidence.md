@@ -62,4 +62,6 @@ mount-smoke.mjs 根入口断言：`page.goto` 读 meta-refresh 重定向页 body
 
 ## 壳仓 v2：sitemap 之外的发布产物（advisory 指正后补齐，2026-11-12）
 
-首轮壳仓只覆盖 sitemap 的 131 条页面路由，`/mcu/book/*` 与 `/mcu/downloads/*` 404。补齐口径：**PDF 保留可下载真字节**（从已部署新站原样取字节，sha256 与线上 SHA256SUMS 一致：主书 PDF `563cfd38…` 33,355,599 B、print PDF `9c8023ac…` 17,516,147 B），**HTML 入口与目录页用跳转桩**。实测：旧站 book pdf/print pdf → 200 + application/pdf + 字节哈希一致；book html/book 目录/downloads html → 跳转桩；SHA256SUMS.txt/book-downloads.json/downloads index 为真文件。旧仓随后重新归档（archived=true，Pages 仍服务）。表述纪律：壳仓覆盖 = 131 sitemap 路由（桩）+ book/downloads 产物（PDF 真字节、HTML 桩），非「旧站全部跳转」。
+首轮壳仓只覆盖 sitemap 的 131 条页面路由，`/mcu/book/*` 与 `/mcu/downloads/*` 404。补齐口径：**PDF 保留可下载真字节**（从已部署新站原样取字节，sha256 与线上 SHA256SUMS 一致：主书 PDF `563cfd38…` 33,355,599 B、print PDF `9c8023ac…` 17,516,147 B），**HTML 入口与目录页用跳转桩**。实测：旧站 book pdf/print pdf → 200 + application/pdf + 字节哈希一致；book html/book 目录/downloads html → 跳转桩；SHA256SUMS.txt/book-downloads.json/downloads index 为真文件。
+
+**壳仓 v3（2026-11-12 复核补正）**：v2 把 downloads/ 的两个 HTML 也做成桩，但 SHA256SUMS.txt 与 book-downloads.json 覆盖全部 4 文件——用户在旧站执行 `sha256sum -c` 必然失败。已改为：**downloads/ 整体为冻结的 v1.0.0 发布快照**（4 文件全真字节；二进制校验 sha256 全 OK，book-downloads.json 的 bytes/sha256 逐文件 ALL_MATCH）；book/ 的 HTML 仍为跳转桩（该目录无清单约束，PDF 为真字节）。注意环境坑：Git for Windows 的 sha256sum 以文本模式读文件，对 PDF 误报 FAILED（HTML 不受影响）——本仓 P4 阶段已记录同一现象；Windows 侧校验用 python/certutil 二进制读或 CI Linux 为准。旧仓已重新归档。表述纪律：壳仓覆盖 = 131 sitemap 路由（桩）+ book/（PDF 真字节、HTML 桩）+ downloads/（全真字节快照），非「旧站全部跳转」。
