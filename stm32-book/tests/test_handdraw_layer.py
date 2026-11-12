@@ -86,9 +86,9 @@ class HanddrawLayerTests(unittest.TestCase):
             output = self.builder.build_html(Path(tmp))
             html = output.read_text(encoding="utf-8")
 
-        self.assertEqual(29, html.count('class="chapter-plate"'))
+        self.assertEqual(33, html.count('class="chapter-plate"'))
         self.assertEqual(
-            29,
+            33,
             len(
                 re.findall(
                     r'<figure class="chapter-plate">\s*'
@@ -97,8 +97,8 @@ class HanddrawLayerTests(unittest.TestCase):
                 )
             ),
         )
-        self.assertEqual(29, html.count('alt="手绘概念图：'))
-        self.assertEqual(29, html.count("▲ 手绘概念图："))
+        self.assertEqual(33, html.count('alt="手绘概念图：'))
+        self.assertEqual(33, html.count("▲ 手绘概念图："))
         self.assertNotIn("Hand-drawn concept:", html)
         self.assertNotIn('src="../assets/illustrations', html)
 
@@ -118,9 +118,9 @@ class HanddrawLayerTests(unittest.TestCase):
             )
             html = output.read_text(encoding="utf-8")
 
-        self.assertEqual(29, html.count('class="chapter-plate"'))
-        self.assertEqual(29, html.count('alt="Hand-drawn concept:'))
-        self.assertEqual(29, html.count("▲ Hand-drawn concept:"))
+        self.assertEqual(33, html.count('class="chapter-plate"'))
+        self.assertEqual(33, html.count('alt="Hand-drawn concept:'))
+        self.assertEqual(33, html.count("▲ Hand-drawn concept:"))
         self.assertNotIn('alt="手绘概念图：', html)
         self.assertNotIn("▲ 手绘概念图：", html)
 
@@ -211,17 +211,17 @@ class PartHanddrawTests(unittest.TestCase):
     def test_build_inlines_one_localized_plate_per_part(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             html = self.builder.build_html(Path(tmp)).read_text(encoding="utf-8")
-        self.assertEqual(7, html.count('class="part-plate"'))
+        self.assertEqual(8, html.count('class="part-plate"'))
         self.assertEqual(
-            7,
+            8,
             len(re.findall(
                 r'<figure class="part-plate">\s*'
                 r'<img src="data:image/svg\+xml;base64,',
                 html,
             )),
         )
-        self.assertEqual(7, html.count('alt="分部概念图：'))
-        self.assertEqual(7, html.count("▲ 分部概念图："))
+        self.assertEqual(8, html.count('alt="分部概念图：'))
+        self.assertEqual(8, html.count("▲ 分部概念图："))
         section = html[html.index('id="part-p0"'):html.index('id="chapter-00"')]
         self.assertLess(section.index('class="part-goal"'),
                         section.index('class="part-plate"'))
@@ -231,8 +231,8 @@ class PartHanddrawTests(unittest.TestCase):
             html = self.builder.build_html(
                 Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
             ).read_text(encoding="utf-8")
-        self.assertEqual(7, html.count('class="part-plate"'))
-        self.assertEqual(7, html.count('alt="Part concept:'))
+        self.assertEqual(8, html.count('class="part-plate"'))
+        self.assertEqual(8, html.count('alt="Part concept:'))
         self.assertNotIn('alt="分部概念图：', html)
 
     def test_missing_part_inventory_is_a_build_error(self) -> None:
@@ -294,37 +294,24 @@ class MidHanddrawTests(unittest.TestCase):
     def test_build_inlines_one_plate_after_each_anchor(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             html = self.builder.build_html(Path(tmp)).read_text(encoding="utf-8")
-        self.assertEqual(29, html.count('class="mid-plate"'))
+        self.assertEqual(33, html.count('class="mid-plate"'))
         self.assertEqual(
-            29,
+            33,
             len(re.findall(
                 r'<figure class="mid-plate">\s*'
                 r'<img src="data:image/svg\+xml;base64,',
                 html,
             )),
         )
-        self.assertEqual(29, html.count('alt="本节概念图：'))
-        self.assertEqual(29, html.count("▲ 本节概念图："))
-        # plate 登记 33 章，但正文 29–32 尚在 plans/ 暂存（MC-406 落位），
-        # 渲染内嵌断言只对书籍 manifest 实际收录的章节生效。
-        book = json.loads(
-            (BOOK_DIR / "manifest.json").read_text(encoding="utf-8")
-        )
-        present = {
-            f"{int(m.group(1)):02d}"
-            for part in book["parts"]
-            for name in part["files"]
-            for m in [re.match(r"(\d+)-", name)]
-            if m
-        }
-        self.assertEqual({"29", "30", "31", "32"}, set(self.entries) - present)
+        self.assertEqual(33, html.count('alt="本节概念图：'))
+        self.assertEqual(33, html.count("▲ 本节概念图："))
+        # 落位后 33 章全部在书：渲染内嵌断言对全部章节生效（MC-406 收口）。
         for chapter, entry in self.entries.items():
-            if chapter not in present:
-                continue
             start = html.index(f'id="chapter-{chapter}"')
             end = html.find('id="chapter-', start + 10)
             if end < 0:
-                end = html.index('class="part-closing"', start)
+                closing = html.find('class="part-closing"', start)
+                end = closing if closing >= 0 else len(html)
             section = html[start:end]
             self.assertEqual(1, section.count('class="mid-plate"'), chapter)
             heading = f'>{entry["anchor_zh"]}</h2>'
@@ -338,28 +325,16 @@ class MidHanddrawTests(unittest.TestCase):
             html = self.builder.build_html(
                 Path(tmp), manifest_path=BOOK_DIR / "manifest-en.json"
             ).read_text(encoding="utf-8")
-        self.assertEqual(29, html.count('class="mid-plate"'))
-        self.assertEqual(29, html.count('alt="Section concept:'))
+        self.assertEqual(33, html.count('class="mid-plate"'))
+        self.assertEqual(33, html.count('alt="Section concept:'))
         self.assertNotIn('alt="本节概念图：', html)
-        # 同中文版：只对书籍 manifest 实际收录的章节做落点断言。
-        book = json.loads(
-            (BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8")
-        )
-        present = {
-            f"{int(m.group(1)):02d}"
-            for part in book["parts"]
-            for name in part["files"]
-            for m in [re.match(r"(\d+)-", name)]
-            if m
-        }
-        self.assertEqual({"29", "30", "31", "32"}, set(self.entries) - present)
+        # 同中文版：落位后 33 章全部在书。
         for chapter, entry in self.entries.items():
-            if chapter not in present:
-                continue
             start = html.index(f'id="chapter-{chapter}"')
             end = html.find('id="chapter-', start + 10)
             if end < 0:
-                end = html.index('class="part-closing"', start)
+                closing = html.find('class="part-closing"', start)
+                end = closing if closing >= 0 else len(html)
             section = html[start:end]
             heading = f'>{entry["anchor_en"]}</h2>'
             self.assertIn(heading, section, chapter)

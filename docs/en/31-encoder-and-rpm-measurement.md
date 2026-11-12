@@ -44,10 +44,20 @@ Fix the convention first: in this chapter, CPR = **counts per output-shaft revol
 
 ### 4x counting and direction
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch31-quadrature.png" width="760" alt="Handraw: 4x counting and direction (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). TIM2 encoder mode 3 (SMS=011) counts both edges on both channels → 4×PPR; frozen example 110×4 = 440 CPR; A leading B counts up; not a photo.</sub>
+</p>
 A quadrature encoder produces two channels 90° apart. In timer encoder mode (this project uses TIM2, SMS=011, encoder mode 3: counting on both edges), the counter increments when A leads B and decrements when B leads A — after 4x decoding, PPR pulses per channel per turn become 4×PPR counts. The full timing of edge counting and direction is in [RM0008 Rev 21](#source-rm0008-encoder) encoder-interface section.
 
 ### The fixed-window formula
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch31-rpm-formula.png" width="760" alt="Handraw: fixed-window formula and quantization floor (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). rpm = 60×Δ/(CPR×Δt); Δ=11, CPR=440, 10 ms → 150 rpm, checked backwards; quantization floor 60/(440×0.01) ≈ 13.6 rpm, stepwise low-speed readings are a measurement property; not a photo.</sub>
+</p>
 For a count delta Δ over the control period Δt (10 ms in this project):
 
 ```text
@@ -68,6 +78,11 @@ In the firmware, `se_quantization_rpm()` returns exactly this value. When the sp
 
 ### Wraparound and the maximum trustworthy speed
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch31-wrap-triage.png" width="760" alt="Handraw: 16-bit wrap disambiguation vs disconnect (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Signed delta of 65530 and 100 is +6, not −65430; rule |Δ|<32768/2; zero counts alone cannot prove a disconnect — distinguish by A/B waveforms; not a photo.</sub>
+</p>
 TIM2 is a 16-bit counter wrapping at 0→65535. Comparing two samples requires **signed disambiguation**: interpret the difference into the ±32767 range (`enc_delta()`, 16-bit convention). The rule: the true |Δ| must be < 32768/2. This project's ceiling of 600 rpm = 10 rev/s gives at most 4400 counts per 10 ms window — far below 32768, so disambiguation is comfortably safe. Change the encoder or raise the speed ceiling, and this must be recomputed.
 
 ### Filtering and validity

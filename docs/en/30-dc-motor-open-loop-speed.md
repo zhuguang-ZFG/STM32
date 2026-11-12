@@ -41,6 +41,11 @@ Because the duty cycle controls the **fraction of time the drive applies voltage
 
 ### A PWM configuration you can recompute
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch30-pwm-math.png" width="760" alt="Handraw: recomputable PWM setup and endpoints (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). 72 MHz/PSC=0/ARR=3599 → 20 kHz; CCR = duty‰×3600/1000; 100% requires CCR>ARR (=ARR leaves one tick, 99.97%); not a photo.</sub>
+</p>
 This project's frozen values (`boards/f103c8-tb6612/board_config.h`, CANDIDATE):
 
 | Item | Value | Recomputation |
@@ -56,12 +61,22 @@ Why 20 kHz: above the audible band (motor and supply whine), far below the TB661
 
 ### Signed duty: direction and magnitude separated
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch30-signed-duty.png" width="760" alt="Handraw: signed duty and ramp (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Sign = direction, absolute value = magnitude, one mapping in motor_bridge.c; ramp ±50‰ per 10 ms; duty_limit 900‰; not a photo.</sub>
+</p>
 Internally the firmware uses a **signed duty** (−1000…+1000, ‰) everywhere: the sign is direction, the absolute value is magnitude. The mapping to pins lives in exactly one place (`motor_bridge.c`): the sign decides which of AIN1/AIN2 is high, the magnitude decides CCR. Every command, PI output, and ramp uses this representation — avoiding the classic bug of a "direction register" and a "magnitude register" drifting apart.
 
 Both limits are applied before sign mapping: output limit |u| ≤ duty_limit (default 900‰; `params_valid` rejects any config ≥1000), and integral limit |I| ≤ i_limit (default 500‰). Chapter 32 shows why these two numbers must stay separate.
 
 ### Ramps and stop policy
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch30-stop-triage.png" width="760" alt="Handraw: stop semantics and REVERSING (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Two PWM=0 mappings (coast/short brake) plus standby; reversal must walk REVERSING (to 0 → standstill |rpm|≤5 → hold 100 ms); 500 ms silent command stream (F01) latches a stop; not a photo.</sub>
+</p>
 The duty does not jump the moment a command arrives. Frozen default behavior:
 
 - In open loop the duty ramps toward the target at **±50‰ per 10 ms** — controlled starts and zero-based re-acceleration after a direction change both rely on it;
@@ -85,6 +100,11 @@ Telemetry frames are fixed at 43 bytes (`AA 55` header + type + length + sequenc
 
 ## Failure branches and shortest diagnosis
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch30-no-spin-triage.png" width="760" alt="Handraw: motor-wont-spin triage order (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Triage: state machine → ramp → CCR table → current tier; telemetry frame first, hardware last; not a photo.</sub>
+</p>
 | Symptom | Distinguishing evidence | Next action |
 | --- | --- | --- |
 | Hums but does not turn at low duty | Does a higher duty start it? Is the supply at its current limit? | Starts = static-friction threshold; sweep upward with a ramp. At limit = load / jam |

@@ -146,7 +146,7 @@
 
 ## 五、章首手绘概念图 `assets/illustrations/`
 
-29 章各一张，900×560，网页端带轻量 CSS 动画，PDF 首帧完整可读。文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。
+33 章各一张，900×560，网页端带轻量 CSS 动画，PDF 首帧完整可读。文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。
 
 | 文件 | 章节 | 画面 |
 | --- | --- | --- |
@@ -179,8 +179,12 @@
 | `ch26-handdraw.svg` | 26 | 冻结的旧库一格一格迁移 |
 | `ch27-handdraw.svg` | 27 | 数据包穿过 ARP、TCP、TLS 与应用边界 |
 | `ch28-handdraw.svg` | 28 | 中断、任务、驱动、网络与应用组成一套系统 |
+| `ch29-handdraw.svg` | 29 | 小信号在功率桥上方指挥大电流（驱动与供电） |
+| `ch30-handdraw.svg` | 30 | 开环调速：斜坡上的带符号占空比 |
+| `ch31-handdraw.svg` | 31 | 编码器两路方波在定时器里数出转速 |
+| `ch32-handdraw.svg` | 32 | 速度闭环：PI、状态机与抗饱和一起稳住电机 |
 
-七个分部在章节手绘图之外另有一张分部概念图，同样由 `tools/gen_handdraw_illustrations.py` 生成，并嵌在各分部标题页的下半区：
+八个分部在章节手绘图之外另有一张分部概念图，同样由 `tools/gen_handdraw_illustrations.py` 生成，并嵌在各分部标题页的下半区：
 
 | 文件 | 分部 | 画面 |
 | --- | --- | --- |
@@ -191,6 +195,7 @@
 | `part-p4-handdraw.svg` | 第五部分 | 工作台把手册、项目盒和放大镜摆在一起 |
 | `part-p5-handdraw.svg` | 第六部分 | 三颗芯片在迁移路上交换手册和旧库 |
 | `part-p6-handdraw.svg` | 第七部分 | 硬件、内核、服务和应用叠成一套系统 |
+| `part-p7-handdraw.svg` | 第八部分 | 小信号按住大电流：从驱动桥到速度闭环 |
 
 每章另有一张章中概念图（`chNN-mid-handdraw.svg`），插在锚点小节标题之后、正文展开之前，帮读者先建立画面再读细节；锚点小节由 `manifest.json` 的双语锚点指定：
 
@@ -225,6 +230,10 @@
 | `ch26-mid-handdraw.svg` | 26 | 3. 统一调用模型：时钟、默认值、配置、使能 | 时钟、默认值、配置、使能，四级台阶 |
 | `ch27-mid-handdraw.svg` | 27 | TCP 是字节流：必须自己定义消息边界 | 字节流要切成有边界的消息 |
 | `ch28-mid-handdraw.svg` | 28 | ⏱️ 实时性来自预算，不来自 RTOS 名字 | 每件事都要装进自己的时间预算盒 |
+| `ch29-mid-handdraw.svg` | 29 | 核心机制：驱动桥在五个状态之间切换 | 小信号真值表决定大电流的五种去向 |
+| `ch30-mid-handdraw.svg` | 30 | 核心机制 | 20 kHz 脉宽与 ±50‰ 斜坡的合成结果 |
+| `ch31-mid-handdraw.svg` | 31 | 核心机制 | 两路方波的四倍频与回绕判据 |
+| `ch32-mid-handdraw.svg` | 32 | 核心机制 | 限幅之前先抗饱和：PI 才不会"憋着" |
 
 六篇附录各有一张开篇概念图（`app-X-handdraw.svg`），嵌在附录标题之后；英文版附录 F 尚未翻译，所以英文版嵌 5 张：
 

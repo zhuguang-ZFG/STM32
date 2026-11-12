@@ -35,7 +35,9 @@ TOKENS_PATH = ROOT / "styles" / "tokens.json"
 BOOK_CSS_PATH = ROOT / "styles" / "book.css"
 OUTPUT_NAME = "stm32-practical-book.html"
 PDF_NAME = "stm32-practical-book.pdf"
-CHAPTER_NAME = re.compile(r"^(?:0\d|1\d|2[0-8])-.+\.md$")
+# Chapter files 00-32 (motor topic 29-32 added 2026-11; keep in sync with the
+# manifest parts and test_build's glob/count contracts).
+CHAPTER_NAME = re.compile(r"^(?:[0-2]\d|3[0-2])-.+\.md$")
 VIDEO_OPEN = re.compile(r"<!--\s*video:(ch\d+)\s*-->")
 VIDEO_CLOSE = re.compile(r"<!--\s*/video:(ch\d+)\s*-->")
 VIDEO_BLOCK = re.compile(

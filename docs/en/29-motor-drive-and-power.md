@@ -39,6 +39,11 @@ This chapter makes the bridge layer precise: which states it has, which state is
 
 ## How the drive bridge switches among five states
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch29-five-states.png" width="760" alt="Handraw: five bridge states from four signal lines (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). PWM/AIN1/AIN2/STBY compose standby/coast/short-brake/CW/CCW (TB6612 p.4, row-by-row); STBY=L is the default safe state; PWM=L with a valid direction is brake, not coast; not a photo.</sub>
+</p>
 Four MCU signal lines (PWM, AIN1, AIN2, STBY) compose every state of the bridge. This table is the row-by-row verified version of the Toshiba TB6612FNG datasheet (2026-05-13 revision) H-SW Control Function table, page 4:
 
 | PWM | AIN1 | AIN2 | STBY | Output state (channel A shown) |
@@ -59,6 +64,11 @@ This chapter's firmware collects these semantics in `src/motor_bridge.c`: the up
 
 ### Logic supply and motor supply are two different things
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch29-two-supplies.png" width="760" alt="Handraw: logic Vcc vs motor VM rails (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Vcc 2.7–5.5 V (frozen 3.3 V) and VM 4.5–12 V (frozen 6–12 V) are separate rails sharing one ground; VIH ≥ 0.7×Vcc, PWM ceiling 100 kHz; not a photo.</sub>
+</p>
 | Supply rail | TB6612 allowed range | This project's frozen value | Source |
 | --- | --- | --- | --- |
 | Logic Vcc | 2.7–5.5 V | 3.3 V | MCU board |
@@ -68,6 +78,11 @@ The two supplies must share a ground, otherwise the PWM/direction signals have n
 
 ### Three current ratings: never read the maximum as continuous capability
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch29-current-tiers.png" width="760" alt="Handraw: three current tiers and purchase margin (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Only the ≤1.0 A/channel operating tier budgets continuous run; 1.2 A absolute maximum and 3.2 A pulse tier are not continuous bases; stall ≤0.8 A target keeps 20% margin; module dissipation is the BLK-P0-4 measurement item; not a photo.</sub>
+</p>
 A motor-driver chip carries three different current numbers for three different purposes:
 
 | Tier | TB6612 official value | What it is for |
@@ -88,6 +103,11 @@ During deceleration or braking the motor becomes a generator, and current flows 
 
 ## Failure branches and shortest diagnosis
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch29-fault-triage.png" width="760" alt="Handraw: bridge fault triage order (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Fixed order: VM → STBY → AIN logic → PWM scope, outside-in without backtracking; current-tier violation means unloading first; not a photo.</sub>
+</p>
 | Symptom | Distinguishing evidence | Next action |
 | --- | --- | --- |
 | Logic signals toggle but the motor does not turn | Measure STBY: low = standby not released; measure VM: no voltage = motor supply missing | Release STBY first (the firmware raises it after ARM), then check VM wiring |

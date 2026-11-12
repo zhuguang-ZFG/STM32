@@ -82,7 +82,7 @@ class ChapterAudit:
 
 def _chapter_files(folder: Path) -> dict[str, Path]:
     found: dict[str, Path] = {}
-    for path in sorted(folder.glob("[0-2][0-9]-*.md")):
+    for path in sorted(folder.glob("[0-9][0-9]-*.md")):
         chapter_id = path.name[:2]
         if chapter_id in found:
             raise ValueError(f"duplicate chapter id {chapter_id}: {path}")
@@ -283,9 +283,9 @@ def _parity(zh: ChapterAudit, en: ChapterAudit) -> dict[str, object]:
 def build_audit() -> dict[str, object]:
     zh_files = _chapter_files(DOCS)
     en_files = _chapter_files(EN_DOCS)
-    expected = {f"{index:02d}" for index in range(29)}
+    expected = {f"{index:02d}" for index in range(33)}
     if set(zh_files) != expected or set(en_files) != expected:
-        raise ValueError("Chinese and English docs must both contain chapter ids 00 through 28")
+        raise ValueError("Chinese and English docs must both contain chapter ids 00 through 32")
 
     chapters = []
     for chapter_id in sorted(expected):
