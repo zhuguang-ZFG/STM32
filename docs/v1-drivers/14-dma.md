@@ -168,7 +168,7 @@ F103 没有 `DBM`，只能用“半区所有权”模拟乒乓：DMA 填前半�
 
 ### 五、HAL 使能窗口：先关 EN，再落位，最后开
 
-`CHSEL`、`CIRC`、`MINC`、`DIR`、`PSIZE`、`MSIZE` 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入不生效，硬件也不会替你停流。要改配置，先清 `EN`，再轮询读回 0，等当前这一拍真正结束；然后落位，最后把 `EN` 置 1。这个“EN 可改窗口”是 DMA 初始化顺序的硬约束，和 USART 先关 `UE` 再改 `BRR` 是同一类规矩。
+`CHSEL`、`CIRC`、`MINC`、`DIR`、`PSIZE`、`MSIZE` 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入不生效，硬件也不会替你停流。`NDTR/PAR/M0AR/FCR` 同样在写保护范围内，改传输参数也要先关 EN。要改配置，先清 `EN`，再轮询读回 0，等当前这一拍真正结束；然后落位，最后把 `EN` 置 1。这个“EN 可改窗口”是 DMA 初始化顺序的硬约束，和 USART 先关 `UE` 再改 `BRR` 是同一类规矩。
 
 HAL 把同一组动作拆成两段。`HAL_DMA_Init()` 管流属性：先 `__HAL_DMA_DISABLE()` 并轮询 `CR.EN`，等不到就按 `HAL_GetTick` 超时返回；再把 `CHSEL`、优先级、宽度、增量、循环、方向、`CT`、`DBM` 等配置位清掉，按 `Init` 各字段拼成一笔写回 `CR`，FIFO 的 `DMDIS/FTH` 另写 `FCR`。`HAL_DMA_Start()` 管本次传输参数：调用 `DMA_SetConfig()` 先清 `DBM`，再写 `NDTR`，按方向写 `PAR` 与 `M0AR`，最后开 `EN`；双缓冲不走这条路径，要用 `stm32f4xx_hal_dma_ex.c` 里的 `HAL_DMAEx_MultiBufferStart()`（或手写 `M1AR` 与 `DBM`）。中断版 `HAL_DMA_Start_IT()` 打开 TC/TE/DME，有半传输回调时再加 HT，不打开 FE。行号来自 S8 对 ST 官方 `stm32f4xx_hal_driver` master@1f6451c 的记录；`DMA_SetConfig()` 与 `HAL_DMA_Start_IT()` 的行为已按 1f6451c 原文核对，行号未逐条复核：
 
@@ -261,7 +261,7 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | DMA 时钟门 | RM0090/RM0008、仓库速查表 | F4：`RCC_AHB1ENR` bit21/22；F1：`RCC_AHBENR` bit0/1 | 手册规则 |
 | DMA 基址与流偏移 | [第 8 章](./08-architecture-memory-clock.md)、RM0090 | F4：DMA1 `0x4002_6000`、DMA2 `0x4002_6400`，流 5 基址 +0x88；F1：DMA1 `0x4002_0000` | 手册规则（源码互证） |
 | F4 的 FIFO 与直接模式 | RM0090/AN4031 | 每流 4×32 位；直接模式下 PSIZE 必须等于 MSIZE | 手册规则 |
-| HAL 行号与行为 | S8 对 1f6451c 的行号记录；`DMA_SetConfig`/`Start_IT` 行为按 1f6451c 原文核对 | 行号同上；`DMA_SetConfig` 先清 DBM，再写 NDTR/PAR/M0AR；`Start_IT` 开 TC/TE/DME，有半传输回调时加 HT | 行号来源记录，未逐条复核；行为已核原文 |
+| HAL 行号与行为 | S8 对 1f6451c 的行号记录；`DMA_SetConfig`/`Start_IT` 行为按 1f6451c 原文核对 | 行号见 S8 记录（L170/L208-227/L231-237/L250/L285/L1157/L1163-1175/L708）；`DMA_SetConfig` 先清 DBM，再写 NDTR/PAR/M0AR；`Start_IT` 开 TC/TE/DME，有半传输回调时加 HT | 行号来源记录，未逐条复核；行为已核原文 |
 | “清标志已在坑里验证过” | S8 正文与 `s08-dma` 题库 | 没有波形、日志或截图 | 来源说法，待复核 |
 | `dma_consume()` 的丢弃判据 | `mcu/code/common/behavior/circular.h` 静态阅读 | 错误、HT+TC 同时积压、位置不动却报 TC 时丢弃并计 `lost` | 源码静态，未复跑 |
 | 上板读数 | S8、根书第 10 章 | 两边都没有记录；实验待做 | 待做实验 |
