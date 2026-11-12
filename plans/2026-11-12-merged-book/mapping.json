@@ -1,0 +1,1152 @@
+{
+  "version": 1,
+  "policy": {
+    "english": "archive",
+    "primary_target": "first"
+  },
+  "sources": [
+    {
+      "book": "root",
+      "source": "docs/00-如何学习STM32.md",
+      "targets": [
+        "ch46"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/01-开发环境搭建.md",
+      "targets": [
+        "ch05"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/02-芯片选型与存储器时钟.md",
+      "targets": [
+        "ch01",
+        "ch08"
+      ],
+      "note": "存储器→ch01，时钟→ch08"
+    },
+    {
+      "book": "root",
+      "source": "docs/03-GPIO与LED.md",
+      "targets": [
+        "ch09"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/04-中断与NVIC.md",
+      "targets": [
+        "ch04",
+        "ch10"
+      ],
+      "note": "驱动基本功→ch04，NVIC→ch10"
+    },
+    {
+      "book": "root",
+      "source": "docs/05-定时器与PWM.md",
+      "targets": [
+        "ch11",
+        "ch12"
+      ],
+      "note": "时基→ch11，PWM→ch12"
+    },
+    {
+      "book": "root",
+      "source": "docs/06-串口UART.md",
+      "targets": [
+        "ch13"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/07-I2C总线.md",
+      "targets": [
+        "ch16"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/08-SPI总线.md",
+      "targets": [
+        "ch16"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/09-ADC与DAC.md",
+      "targets": [
+        "ch15"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/10-DMA.md",
+      "targets": [
+        "ch14"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/11-RTC与看门狗.md",
+      "targets": [
+        "ch11",
+        "ch19"
+      ],
+      "note": "RTC→ch11，看门狗→ch19"
+    },
+    {
+      "book": "root",
+      "source": "docs/12-Flash与IAP升级.md",
+      "targets": [
+        "ch17"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/13-CAN总线.md",
+      "targets": [
+        "ch35"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/14-USB.md",
+      "targets": [
+        "ch35"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/15-FreeRTOS入门.md",
+      "targets": [
+        "ch21",
+        "ch22"
+      ],
+      "note": "入门→ch21，任务→ch22"
+    },
+    {
+      "book": "root",
+      "source": "docs/16-低功耗设计.md",
+      "targets": [
+        "ch18"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/17-调试与性能优化.md",
+      "targets": [
+        "ch20"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/18-常见问题FAQ.md",
+      "targets": [
+        "ch45"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/19-项目实战合集.md",
+      "targets": [
+        "ch42"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/20-学习资源与工具链.md",
+      "targets": [
+        "ch46"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/21-原理图与实物图鉴.md",
+      "targets": [
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/22-仿真实验Wokwi与Renode.md",
+      "targets": [
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/23-STM32G0引脚.md",
+      "targets": [
+        "ch28"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/24-STM32L4引脚.md",
+      "targets": [
+        "ch28"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/25-STM32H7引脚.md",
+      "targets": [
+        "ch28",
+        "ch34"
+      ],
+      "note": "Cache→ch34"
+    },
+    {
+      "book": "root",
+      "source": "docs/26-STM32F10x标准外设库SPL.md",
+      "targets": [
+        "ch07"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/27-网络与协议栈.md",
+      "targets": [
+        "ch33"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "docs/28-嵌入式系统与RTOS生态.md",
+      "targets": [
+        "ch27"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/A-工程深读.md",
+      "targets": [
+        "apA"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/B-例程索引.md",
+      "targets": [
+        "apB"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/C-习题答案.md",
+      "targets": [
+        "apC"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/D-术语表.md",
+      "targets": [
+        "apD"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/E-参考资料.md",
+      "targets": [
+        "apE"
+      ],
+      "note": ""
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/F-学习路线收束.md",
+      "targets": [
+        "apF"
+      ],
+      "note": "书稿专有收束页"
+    },
+    {
+      "book": "root",
+      "source": "stm32-book/book/F-开源地图.md",
+      "targets": [
+        "apF"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/00-c-in-mcu.md",
+      "targets": [
+        "ch01"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/01-memory-model.md",
+      "targets": [
+        "ch01"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/02-pointer.md",
+      "targets": [
+        "ch01"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/03-volatile.md",
+      "targets": [
+        "ch02"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/04-struct-abi.md",
+      "targets": [
+        "ch03"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/05-func-pointer.md",
+      "targets": [
+        "ch04"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/06-abi-stack.md",
+      "targets": [
+        "ch04"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/07-ub-misra.md",
+      "targets": [
+        "ch02"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/c/08-framed-protocol.md",
+      "targets": [
+        "ch13"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/00-toolchain.md",
+      "targets": [
+        "ch05"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/01-four-steps.md",
+      "targets": [
+        "ch05"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/02-elf.md",
+      "targets": [
+        "ch05"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/03-linker-script.md",
+      "targets": [
+        "ch06"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/04-startup.md",
+      "targets": [
+        "ch06"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/05-map-size.md",
+      "targets": [
+        "ch06"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/06-flash-debug.md",
+      "targets": [
+        "ch20"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/build/07-build-system.md",
+      "targets": [
+        "ch07"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/00-env.md",
+      "targets": [
+        "ch05"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/01-arch.md",
+      "targets": [
+        "ch08"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/02-rcc-clock.md",
+      "targets": [
+        "ch08"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/03-gpio.md",
+      "targets": [
+        "ch09"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/04-nvic-exti.md",
+      "targets": [
+        "ch10"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/05-systick.md",
+      "targets": [
+        "ch11"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/06-tim.md",
+      "targets": [
+        "ch12"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/07-usart.md",
+      "targets": [
+        "ch13"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/08-dma.md",
+      "targets": [
+        "ch14"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/09-adc.md",
+      "targets": [
+        "ch15"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/10-dac.md",
+      "targets": [
+        "ch15"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/11-i2c.md",
+      "targets": [
+        "ch16"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/12-spi.md",
+      "targets": [
+        "ch16"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/13-flash-iap.md",
+      "targets": [
+        "ch17"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/14-pwr.md",
+      "targets": [
+        "ch18"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/15-spl-anatomy.md",
+      "targets": [
+        "ch07"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/16-debug-hardfault.md",
+      "targets": [
+        "ch19"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/stm32/17-watchdog-reset.md",
+      "targets": [
+        "ch19"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/00-why-rtos.md",
+      "targets": [
+        "ch21"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/01-task-tcb.md",
+      "targets": [
+        "ch22"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/02-context-switch.md",
+      "targets": [
+        "ch23"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/03-scheduler.md",
+      "targets": [
+        "ch22"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/04-queue.md",
+      "targets": [
+        "ch24"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/05-sem-mutex.md",
+      "targets": [
+        "ch24"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/06-notify-event-timer.md",
+      "targets": [
+        "ch24"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/07-heap.md",
+      "targets": [
+        "ch25"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/freertos/08-port-f407.md",
+      "targets": [
+        "ch23"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/00-arch.md",
+      "targets": [
+        "ch23"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/01-thread-sched.md",
+      "targets": [
+        "ch22"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/02-ipc.md",
+      "targets": [
+        "ch24"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/03-mem.md",
+      "targets": [
+        "ch25"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/04-device.md",
+      "targets": [
+        "ch26"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/05-finsh.md",
+      "targets": [
+        "ch26"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/06-env-menuconfig.md",
+      "targets": [
+        "ch26"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/rtthread/07-port-f407.md",
+      "targets": [
+        "ch23"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/compare/00-side-by-side.md",
+      "targets": [
+        "ch27"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/rtos/compare/01-choose.md",
+      "targets": [
+        "ch27"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/00-env.md",
+      "targets": [
+        "ch30"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/01-arch-boot.md",
+      "targets": [
+        "ch30"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/02-gpio-matrix.md",
+      "targets": [
+        "ch31"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/03-idf-anatomy.md",
+      "targets": [
+        "ch30"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/04-irq-dualcore.md",
+      "targets": [
+        "ch10",
+        "ch34"
+      ],
+      "note": "双核→ch10，Cache→ch34"
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/05-uart-driver.md",
+      "targets": [
+        "ch31"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/06-spi-i2c-driver.md",
+      "targets": [
+        "ch31"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/07-timer-ledc.md",
+      "targets": [
+        "ch31"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/08-wifi.md",
+      "targets": [
+        "ch32"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/09-bt-espnow.md",
+      "targets": [
+        "ch32"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/10-flash-nvs-ota.md",
+      "targets": [
+        "ch17"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/11-lowpower.md",
+      "targets": [
+        "ch18"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/12-audio-path.md",
+      "targets": [
+        "ch31"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/esp32/13-watchdog-health.md",
+      "targets": [
+        "ch19"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/00-env.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/01-rcu-clock.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/02-gpio-af.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/03-usart.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/04-periph-diff.md",
+      "targets": [
+        "ch28"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/05-riscv-toolchain.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/06-clic-irq.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/07-rcu-108m.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/08-mtime-delay.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/gd32/09-gpio-minimal.md",
+      "targets": [
+        "ch29"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e01-blink.md",
+      "targets": [
+        "ch09",
+        "ch40"
+      ],
+      "note": "实验拆入ch09，方法→ch40"
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e02-logic-uart.md",
+      "targets": [
+        "ch13",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e03-scope-pwm.md",
+      "targets": [
+        "ch12",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e04-priority-inversion.md",
+      "targets": [
+        "ch24",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e05-i2c-eeprom.md",
+      "targets": [
+        "ch16",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e06-lowpower-current.md",
+      "targets": [
+        "ch18",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e07-qmi8658.md",
+      "targets": [
+        "ch16",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/lab/e08-audio-play.md",
+      "targets": [
+        "ch31",
+        "ch40"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/projects/01-f407-logger.md",
+      "targets": [
+        "ch41"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/projects/02-s3-logger.md",
+      "targets": [
+        "ch41"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/00-pair-not-ghost.md",
+      "targets": [
+        "ch43"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/01-prompt-patterns.md",
+      "targets": [
+        "ch43"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/02-manual-reconciliation.md",
+      "targets": [
+        "ch44"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/03-toolflow-mcp.md",
+      "targets": [
+        "ch43"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/04-hallucination-defense.md",
+      "targets": [
+        "ch44"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/docs/ai/05-this-book-pipeline.md",
+      "targets": [
+        "ch44"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/A-工程深读.md",
+      "targets": [
+        "apA"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/B-例程索引.md",
+      "targets": [
+        "apB"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/C-习题答案.md",
+      "targets": [
+        "apC"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/D-术语表.md",
+      "targets": [
+        "apD"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/E-参考资料.md",
+      "targets": [
+        "apE"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/F-常见问题.md",
+      "targets": [
+        "ch45"
+      ],
+      "note": ""
+    },
+    {
+      "book": "mcu",
+      "source": "mcu/mcu-book/book/G-开源地图.md",
+      "targets": [
+        "apF"
+      ],
+      "note": ""
+    },
+    {
+      "book": "motor",
+      "source": "plans/2026-11-11-motor-control/chapters-draft/29-电机驱动与供电.md",
+      "targets": [
+        "ch36"
+      ],
+      "note": ""
+    },
+    {
+      "book": "motor",
+      "source": "plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md",
+      "targets": [
+        "ch37"
+      ],
+      "note": ""
+    },
+    {
+      "book": "motor",
+      "source": "plans/2026-11-11-motor-control/chapters-draft/31-编码器与转速测量.md",
+      "targets": [
+        "ch38"
+      ],
+      "note": ""
+    },
+    {
+      "book": "motor",
+      "source": "plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md",
+      "targets": [
+        "ch39"
+      ],
+      "note": ""
+    }
+  ]
+}

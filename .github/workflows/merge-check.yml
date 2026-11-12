@@ -1,0 +1,61 @@
+name: Merge Check
+
+on:
+  pull_request:
+    paths:
+      - 'book/**'
+      - 'docs/**'
+      - 'plans/2026-11-12-merged-book/**'
+      - 'plans/2026-11-11-motor-control/**'
+      - 'scripts/legacy-redirects.mjs'
+      - 'scripts/tests/**'
+      - 'stm32-book/manifest.json'
+      - 'stm32-book/book/**'
+      - 'mcu/mcu-book/manifest.json'
+      - 'mcu/mcu-book/book/**'
+      - 'mcu/docs/**'
+  push:
+    branches: [main]
+    paths:
+      - 'book/**'
+      - 'docs/**'
+      - 'plans/2026-11-12-merged-book/**'
+      - 'plans/2026-11-11-motor-control/**'
+      - 'scripts/legacy-redirects.mjs'
+      - 'scripts/tests/**'
+      - 'stm32-book/manifest.json'
+      - 'stm32-book/book/**'
+      - 'mcu/mcu-book/manifest.json'
+      - 'mcu/mcu-book/book/**'
+      - 'mcu/docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: merge-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Run book checks
+        run: |
+          python -m book.manifest --check
+          python -m book.mapping --check
+          python -m unittest discover book/tests -v
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+      - name: Run redirect generator tests
+        run: node --test scripts/tests/legacy-redirects.test.mjs

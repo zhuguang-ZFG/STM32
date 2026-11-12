@@ -1,0 +1,550 @@
+{
+  "title": "通往单片机之路",
+  "subtitle": "从点亮一颗灯到交付一个系统",
+  "version": "0.1.0",
+  "language": "zh",
+  "parts": [
+    {
+      "id": "v0",
+      "title": "卷 0 · 语言与构建",
+      "goal": "把 C、工具链与固件构建的地基打牢：能解释一段代码如何变成可烧录的固件。",
+      "chapters": [
+        {
+          "id": "ch01",
+          "title": "嵌入式 C 的内存模型与指针",
+          "file": "v0-foundations/01-c-memory-model.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch02",
+          "title": "volatile、const 与未定义行为",
+          "file": "v0-foundations/02-c-volatile-ub.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch03",
+          "title": "结构体、ABI 与寄存器映射",
+          "file": "v0-foundations/03-struct-abi-registers.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch04",
+          "title": "函数指针、状态机与调用约定",
+          "file": "v0-foundations/04-function-pointer-state-machine.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch05",
+          "title": "工具链与四步构建",
+          "file": "v0-foundations/05-toolchain-four-steps.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch06",
+          "title": "链接脚本、启动与 map 体积审计",
+          "file": "v0-foundations/06-linker-startup-map.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch07",
+          "title": "构建系统与遗留栈",
+          "file": "v0-foundations/07-build-systems-legacy.md",
+          "status": "planned",
+          "platforms": [
+            "f103",
+            "esp32"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v1",
+      "title": "卷 1 · 裸机驱动",
+      "goal": "从寄存器与 HAL 两条路径驱动真实外设，并能用波形、寄存器读回与最小可见结果对账。",
+      "chapters": [
+        {
+          "id": "ch08",
+          "title": "架构、存储器地图与时钟树",
+          "file": "v1-drivers/08-architecture-memory-clock.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "gd32"
+          ]
+        },
+        {
+          "id": "ch09",
+          "title": "GPIO",
+          "file": "v1-drivers/09-gpio.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "gd32",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch10",
+          "title": "中断、NVIC/EXTI、CLIC 与双核",
+          "file": "v1-drivers/10-interrupts-nvic-exti.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "gd32",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch11",
+          "title": "SysTick 与时基（含 RTC）",
+          "file": "v1-drivers/11-systick-timebase-rtc.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch12",
+          "title": "定时器与 PWM",
+          "file": "v1-drivers/12-timers-pwm.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch13",
+          "title": "UART 与可恢复帧协议",
+          "file": "v1-drivers/13-uart-framed-protocol.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32",
+            "gd32"
+          ]
+        },
+        {
+          "id": "ch14",
+          "title": "DMA",
+          "file": "v1-drivers/14-dma.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch15",
+          "title": "ADC/DAC 与采样",
+          "file": "v1-drivers/15-adc-dac-sampling.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch16",
+          "title": "I2C 与 SPI",
+          "file": "v1-drivers/16-i2c-spi.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch17",
+          "title": "Flash、IAP 与 OTA",
+          "file": "v1-drivers/17-flash-iap-ota.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v2",
+      "title": "卷 2 · 可靠性与故障",
+      "goal": "处理掉电、升级、看门狗、低功耗与崩溃现场，能复现失败并留下可定位证据。",
+      "chapters": [
+        {
+          "id": "ch18",
+          "title": "低功耗设计",
+          "file": "v2-reliability/18-low-power.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch19",
+          "title": "看门狗、复位与 HardFault",
+          "file": "v2-reliability/19-watchdog-reset-hardfault.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch20",
+          "title": "调试、性能与测量",
+          "file": "v2-reliability/20-debug-performance.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v3",
+      "title": "卷 3 · RTOS",
+      "goal": "从内核源码理解任务、调度、IPC 与内存，能在 FreeRTOS 与 RT-Thread 之间做出有依据的选型。",
+      "chapters": [
+        {
+          "id": "ch21",
+          "title": "为什么需要 RTOS",
+          "file": "v3-rtos/21-why-rtos.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch22",
+          "title": "任务、TCB 与调度",
+          "file": "v3-rtos/22-tasks-tcb-scheduler.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch23",
+          "title": "上下文切换与移植",
+          "file": "v3-rtos/23-context-switch-porting.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch24",
+          "title": "队列、信号量与通知",
+          "file": "v3-rtos/24-queue-semaphore-notification.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch25",
+          "title": "内存管理",
+          "file": "v3-rtos/25-memory-management.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch26",
+          "title": "设备框架、shell 与配置系统",
+          "file": "v3-rtos/26-device-framework-shell.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        },
+        {
+          "id": "ch27",
+          "title": "双 OS 对照与选型",
+          "file": "v3-rtos/27-rtos-comparison-selection.md",
+          "status": "planned",
+          "platforms": [
+            "f407"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v4",
+      "title": "卷 4 · 多平台与连接",
+      "goal": "迁移芯片与软件栈：处理 GD32、ESP32-S3、多核、Cache、网络与现场总线的差异。",
+      "chapters": [
+        {
+          "id": "ch28",
+          "title": "芯片迁移方法论与引脚/外设差异",
+          "file": "v4-platforms/28-chip-migration-differences.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "f103"
+          ]
+        },
+        {
+          "id": "ch29",
+          "title": "GD32 系列对照（ARM + RISC-V）",
+          "file": "v4-platforms/29-gd32-arm-riscv.md",
+          "status": "planned",
+          "platforms": [
+            "gd32"
+          ]
+        },
+        {
+          "id": "ch30",
+          "title": "ESP32-S3 架构、启动与工程",
+          "file": "v4-platforms/30-esp32s3-architecture-boot.md",
+          "status": "planned",
+          "platforms": [
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch31",
+          "title": "ESP32 外设、驱动框架与音频链路",
+          "file": "v4-platforms/31-esp32-drivers-audio.md",
+          "status": "planned",
+          "platforms": [
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch32",
+          "title": "Wi-Fi、蓝牙与 ESP-NOW",
+          "file": "v4-platforms/32-esp32-wifi-ble-espnow.md",
+          "status": "planned",
+          "platforms": [
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch33",
+          "title": "网络与协议栈",
+          "file": "v4-platforms/33-network-protocol-stack.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch34",
+          "title": "多核、Cache 与内存一致性",
+          "file": "v4-platforms/34-multicore-cache.md",
+          "status": "planned",
+          "platforms": [
+            "esp32",
+            "f407"
+          ]
+        },
+        {
+          "id": "ch35",
+          "title": "现场总线与 USB",
+          "file": "v4-platforms/35-can-usb-fieldbus.md",
+          "status": "planned",
+          "platforms": [
+            "f103",
+            "f407"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v5",
+      "title": "卷 5 · 运动控制",
+      "goal": "完成电机驱动、开环调速、编码器测速与闭环控制的完整证据链。",
+      "chapters": [
+        {
+          "id": "ch36",
+          "title": "电机驱动与供电",
+          "file": "v5-motion/36-motor-driver-power.md",
+          "status": "planned",
+          "platforms": [
+            "f103"
+          ]
+        },
+        {
+          "id": "ch37",
+          "title": "直流电机开环调速",
+          "file": "v5-motion/37-dc-motor-openloop.md",
+          "status": "planned",
+          "platforms": [
+            "f103"
+          ]
+        },
+        {
+          "id": "ch38",
+          "title": "编码器与转速测量",
+          "file": "v5-motion/38-encoder-speed-measurement.md",
+          "status": "planned",
+          "platforms": [
+            "f103"
+          ]
+        },
+        {
+          "id": "ch39",
+          "title": "速度闭环与 PI",
+          "file": "v5-motion/39-speed-closed-loop-pi.md",
+          "status": "planned",
+          "platforms": [
+            "f103"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v6",
+      "title": "卷 6 · 实验与项目",
+      "goal": "用仪器与项目验收把“能跑”推进到“能测量、能交付”。",
+      "chapters": [
+        {
+          "id": "ch40",
+          "title": "实物实验方法与仪器证据",
+          "file": "v6-labs-projects/40-lab-method-instruments.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch41",
+          "title": "双板综合项目",
+          "file": "v6-labs-projects/41-dual-board-logger-project.md",
+          "status": "planned",
+          "platforms": [
+            "f407",
+            "esp32"
+          ]
+        },
+        {
+          "id": "ch42",
+          "title": "项目实战与交付验收",
+          "file": "v6-labs-projects/42-project-delivery-acceptance.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v7",
+      "title": "卷 7 · 交付与资料",
+      "goal": "用 AI 结对、手册对账与资料体系把学习与维护变成可持续的工程流程。",
+      "chapters": [
+        {
+          "id": "ch43",
+          "title": "AI 结对开发与提示词工作流",
+          "file": "v7-delivery/43-ai-pair-programming.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch44",
+          "title": "手册对账与幻觉防御",
+          "file": "v7-delivery/44-manual-reconciliation-hallucination.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch45",
+          "title": "常见故障排查手册",
+          "file": "v7-delivery/45-troubleshooting-handbook.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        },
+        {
+          "id": "ch46",
+          "title": "资料、学习路线与开源地图",
+          "file": "v7-delivery/46-resources-roadmap-open-source.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        }
+      ]
+    }
+  ],
+  "appendices": [
+    {
+      "id": "apA",
+      "title": "工程深读",
+      "file": "appendix/A-engineering-deep-read.md",
+      "status": "planned"
+    },
+    {
+      "id": "apB",
+      "title": "配套工程索引",
+      "file": "appendix/B-project-index.md",
+      "status": "planned"
+    },
+    {
+      "id": "apC",
+      "title": "习题与自测答案",
+      "file": "appendix/C-exercises-answers.md",
+      "status": "planned"
+    },
+    {
+      "id": "apD",
+      "title": "术语表",
+      "file": "appendix/D-glossary.md",
+      "status": "planned"
+    },
+    {
+      "id": "apE",
+      "title": "来源、版本与许可",
+      "file": "appendix/E-sources-version-license.md",
+      "status": "planned"
+    },
+    {
+      "id": "apF",
+      "title": "开源项目与社区地图",
+      "file": "appendix/F-open-source-community-map.md",
+      "status": "planned"
+    }
+  ]
+}

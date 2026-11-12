@@ -1,0 +1,52 @@
+ch01	v0	嵌入式 C 的内存模型与指针	v0-foundations/01-c-memory-model.md	generic
+ch02	v0	volatile、const 与未定义行为	v0-foundations/02-c-volatile-ub.md	generic
+ch03	v0	结构体、ABI 与寄存器映射	v0-foundations/03-struct-abi-registers.md	f407,f103
+ch04	v0	函数指针、状态机与调用约定	v0-foundations/04-function-pointer-state-machine.md	f407,f103
+ch05	v0	工具链与四步构建	v0-foundations/05-toolchain-four-steps.md	generic
+ch06	v0	链接脚本、启动与 map 体积审计	v0-foundations/06-linker-startup-map.md	f407
+ch07	v0	构建系统与遗留栈	v0-foundations/07-build-systems-legacy.md	f103,esp32
+ch08	v1	架构、存储器地图与时钟树	v1-drivers/08-architecture-memory-clock.md	f407,f103,gd32
+ch09	v1	GPIO	v1-drivers/09-gpio.md	f407,f103,gd32,esp32
+ch10	v1	中断、NVIC/EXTI、CLIC 与双核	v1-drivers/10-interrupts-nvic-exti.md	f407,f103,gd32,esp32
+ch11	v1	SysTick 与时基（含 RTC）	v1-drivers/11-systick-timebase-rtc.md	f407,f103
+ch12	v1	定时器与 PWM	v1-drivers/12-timers-pwm.md	f407,f103,esp32
+ch13	v1	UART 与可恢复帧协议	v1-drivers/13-uart-framed-protocol.md	f407,f103,esp32,gd32
+ch14	v1	DMA	v1-drivers/14-dma.md	f407,f103
+ch15	v1	ADC/DAC 与采样	v1-drivers/15-adc-dac-sampling.md	f407,f103
+ch16	v1	I2C 与 SPI	v1-drivers/16-i2c-spi.md	f407,f103,esp32
+ch17	v1	Flash、IAP 与 OTA	v1-drivers/17-flash-iap-ota.md	f407,f103,esp32
+ch18	v2	低功耗设计	v2-reliability/18-low-power.md	f407,f103,esp32
+ch19	v2	看门狗、复位与 HardFault	v2-reliability/19-watchdog-reset-hardfault.md	f407,f103,esp32
+ch20	v2	调试、性能与测量	v2-reliability/20-debug-performance.md	f407,f103
+ch21	v3	为什么需要 RTOS	v3-rtos/21-why-rtos.md	f407,f103
+ch22	v3	任务、TCB 与调度	v3-rtos/22-tasks-tcb-scheduler.md	f407
+ch23	v3	上下文切换与移植	v3-rtos/23-context-switch-porting.md	f407
+ch24	v3	队列、信号量与通知	v3-rtos/24-queue-semaphore-notification.md	f407
+ch25	v3	内存管理	v3-rtos/25-memory-management.md	f407
+ch26	v3	设备框架、shell 与配置系统	v3-rtos/26-device-framework-shell.md	f407
+ch27	v3	双 OS 对照与选型	v3-rtos/27-rtos-comparison-selection.md	f407
+ch28	v4	芯片迁移方法论与引脚/外设差异	v4-platforms/28-chip-migration-differences.md	f407,f103
+ch29	v4	GD32 系列对照（ARM + RISC-V）	v4-platforms/29-gd32-arm-riscv.md	gd32
+ch30	v4	ESP32-S3 架构、启动与工程	v4-platforms/30-esp32s3-architecture-boot.md	esp32
+ch31	v4	ESP32 外设、驱动框架与音频链路	v4-platforms/31-esp32-drivers-audio.md	esp32
+ch32	v4	Wi-Fi、蓝牙与 ESP-NOW	v4-platforms/32-esp32-wifi-ble-espnow.md	esp32
+ch33	v4	网络与协议栈	v4-platforms/33-network-protocol-stack.md	f407,esp32
+ch34	v4	多核、Cache 与内存一致性	v4-platforms/34-multicore-cache.md	esp32,f407
+ch35	v4	现场总线与 USB	v4-platforms/35-can-usb-fieldbus.md	f103,f407
+ch36	v5	电机驱动与供电	v5-motion/36-motor-driver-power.md	f103
+ch37	v5	直流电机开环调速	v5-motion/37-dc-motor-openloop.md	f103
+ch38	v5	编码器与转速测量	v5-motion/38-encoder-speed-measurement.md	f103
+ch39	v5	速度闭环与 PI	v5-motion/39-speed-closed-loop-pi.md	f103
+ch40	v6	实物实验方法与仪器证据	v6-labs-projects/40-lab-method-instruments.md	generic
+ch41	v6	双板综合项目	v6-labs-projects/41-dual-board-logger-project.md	f407,esp32
+ch42	v6	项目实战与交付验收	v6-labs-projects/42-project-delivery-acceptance.md	generic
+ch43	v7	AI 结对开发与提示词工作流	v7-delivery/43-ai-pair-programming.md	generic
+ch44	v7	手册对账与幻觉防御	v7-delivery/44-manual-reconciliation-hallucination.md	generic
+ch45	v7	常见故障排查手册	v7-delivery/45-troubleshooting-handbook.md	generic
+ch46	v7	资料、学习路线与开源地图	v7-delivery/46-resources-roadmap-open-source.md	generic
+apA	ap	工程深读	appendix/A-engineering-deep-read.md	generic
+apB	ap	配套工程索引	appendix/B-project-index.md	generic
+apC	ap	习题与自测答案	appendix/C-exercises-answers.md	generic
+apD	ap	术语表	appendix/D-glossary.md	generic
+apE	ap	来源、版本与许可	appendix/E-sources-version-license.md	generic
+apF	ap	开源项目与社区地图	appendix/F-open-source-community-map.md	generic
