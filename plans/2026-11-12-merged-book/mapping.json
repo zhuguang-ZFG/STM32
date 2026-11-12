@@ -136,7 +136,7 @@
         "ch17"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -678,7 +678,7 @@
         "ch17"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1019,7 +1019,7 @@
         "ch17"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {

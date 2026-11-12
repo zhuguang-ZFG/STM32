@@ -10,7 +10,7 @@ root	docs/08-SPI总线.md	ch16	根书原章	migrated
 root	docs/09-ADC与DAC.md	ch15	根书原章	migrated	
 root	docs/10-DMA.md	ch14	根书原章	migrated	
 root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	partial	RTC→ch11，看门狗→ch19
-root	docs/12-Flash与IAP升级.md	ch17	根书原章	planned	
+root	docs/12-Flash与IAP升级.md	ch17	根书原章	migrated	
 root	docs/13-CAN总线.md	ch35	根书原章	planned	
 root	docs/14-USB.md	ch35	根书原章	planned	
 root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	planned	入门→ch21，任务→ch22
@@ -64,7 +64,7 @@ mcu	mcu/docs/stm32/09-adc.md	ch15	外设深潜	migrated
 mcu	mcu/docs/stm32/10-dac.md	ch15	外设深潜	migrated	
 mcu	mcu/docs/stm32/11-i2c.md	ch16	外设深潜	migrated	
 mcu	mcu/docs/stm32/12-spi.md	ch16	外设深潜	migrated	
-mcu	mcu/docs/stm32/13-flash-iap.md	ch17	外设深潜	planned	
+mcu	mcu/docs/stm32/13-flash-iap.md	ch17	外设深潜	migrated	
 mcu	mcu/docs/stm32/14-pwr.md	ch18	外设深潜	planned	
 mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	migrated	
 mcu	mcu/docs/stm32/16-debug-hardfault.md	ch19	外设深潜	planned	
@@ -98,7 +98,7 @@ mcu	mcu/docs/esp32/06-spi-i2c-driver.md	ch31	平台对照（ESP32）	planned
 mcu	mcu/docs/esp32/07-timer-ledc.md	ch31	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/08-wifi.md	ch32	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/09-bt-espnow.md	ch32	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/10-flash-nvs-ota.md	ch17	平台对照（ESP32）	planned	
+mcu	mcu/docs/esp32/10-flash-nvs-ota.md	ch17	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/11-lowpower.md	ch18	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/12-audio-path.md	ch31	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/13-watchdog-health.md	ch19	平台对照（ESP32）	planned	
