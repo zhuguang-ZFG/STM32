@@ -33,7 +33,7 @@
         "ch08"
       ],
       "purpose": "根书原章",
-      "status": "partial",
+      "status": "migrated",
       "note": "存储器→ch01，时钟→ch08"
     },
     {
@@ -558,7 +558,7 @@
         "ch08"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -568,7 +568,7 @@
         "ch08"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
