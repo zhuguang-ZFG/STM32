@@ -144,11 +144,11 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
 | 6 | 1 | 3 | `0x05FA0600` |
 | 7 | 0 | 4 | `0x05FA0700` |
 
-抢占优先级决定能不能打断正在执行的 ISR，数值越小越横；子优先级只在两份请求**同时挂起**时决定谁先上，它没有打断能力。组 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在组 0~3 这一档；SPL 老代码常见组 2，效果同样是 4+0，但 AIRCR 的编码不同。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
+抢占优先级决定能不能打断正在执行的 ISR，数值越小越横；子优先级只在两份请求**同时挂起**时决定谁先上，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
 
 AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第三列每个值都是 `0x05FA0g00` 的形状，出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
 
-还有一条不能设的优先级：HardFault。打开 `stm32f407xx.h:68-69` 的 `IRQn_Type` 枚举，`NonMaskableInt_IRQn = -14` 之后直接跳到 `MemoryManagement_IRQn = -12`，**-13 被故意跳过**。Reset、NMI、HardFault 的优先级硬件固定（-3/-2/-1，越来越高），不在 SHP 里、不可编程。能设的只有 `IRQn` -12 到 -1 的内核异常（走 SHP）和全部 `IRQn ≥ 0` 的外设中断（走 IPR）。
+还有一条不能设的优先级：HardFault。打开 `stm32f407xx.h:68-69` 的 `IRQn_Type` 枚举，`NonMaskableInt_IRQn = -14` 之后直接跳到 `MemoryManagement_IRQn = -12`，**-13 被故意跳过**。Reset、NMI、HardFault 的优先级硬件固定：Reset 最高（-3）、NMI 次之（-2）、HardFault 最低（-1），数值从 -3 到 -1 递增、优先级正好递减，与“数值越小越横”一致。这三个不在 SHP 里、不可编程。能设的只有 `IRQn` -12 到 -1 的内核异常（走 SHP）和全部 `IRQn ≥ 0` 的外设中断（走 IPR）。
 
 把“谁能打断谁”演成五幕的是下面这张动画：EXTI0（抢占 2）在跑 ISR 时，同抢占级的 EXTI9 只能挂起排队；抢占号更小的 EXTI1 一到，硬件立刻压栈换人；ISR1 退出后回到 ISR0 的断点，ISR0 再退出才轮到 EXTI9 补位。
 
@@ -242,7 +242,7 @@ void EXTI9_5_IRQHandler(void)          /* 强符号顶替 weak 默认 */
 
 进异常的那一刻，内核硬件自动把 **8 个字**压进当前栈：xPSR、PC（返回地址）、LR、R12、R3~R0，正好是 AAPCS 里“调用者可破坏”的那批。ISR 如果还要用 R4~R11，由编译器在 prologue 里补压，所以 ISR 的机器码开头常有一串 `push`。这也是“ISR 要短”的硬约束，不只是风格建议。
 
-进去时 LR 被硬件换成魔法值 **EXC_RETURN = `0xFFFFFFFD`**（表示返回 Thread 模式、用 PSP/MSP 弹栈的组合编码，PM0214）。ISR 末尾一条普通的 `bx lr` 就完成异常返回：硬件认出 LR 里的魔法值，不做普通跳转，而是把之前压栈的 8 个字弹回去，主循环从断点处继续。被打断的代码毫无知觉，这正是共享变量要 `volatile` 的原因（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）。
+进去时 LR 被硬件换成魔法值 **EXC_RETURN**：裸机主循环用 MSP，值是 `0xFFFFFFF9`；若被打断的是跑在 PSP 上的任务（如 RTOS 线程），则是 `0xFFFFFFFD`，两者只差 bit2 的 SPSEL 位（返回 Thread 模式时用 MSP 还是 PSP 弹栈，PM0214）。ISR 末尾一条普通的 `bx lr` 就完成异常返回：硬件认出 LR 里的魔法值，不做普通跳转，而是把之前压栈的 8 个字弹回去，主循环从断点处继续。被打断的代码毫无知觉，这正是共享变量要 `volatile` 的原因（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）。
 
 ### F103：同一件事的另一套账
 
@@ -298,6 +298,7 @@ P4 的探针记录：
 0x4037668c  isr_leaky    → iram0_0_seg     # 标了，本体确实在 IRAM
 0x40376698  helper_near  → iram0_0_seg
 0x403766ac  isr_tight    → iram0_0_seg     # 整条链都标
+0x40376668  isr_rodata   → iram0_0_seg
 0x3c028810  k_table      → drom0_0_seg     # 常量还在 Flash
 ```
 
