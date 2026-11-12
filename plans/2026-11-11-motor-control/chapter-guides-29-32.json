@@ -1,0 +1,156 @@
+{
+  "status": "P4 候选草稿登记：29–32 章教学合同八项 + manifest chapter_guides 四字段 + 分部定义。MC-406 在 VIS01–VIS08 手绘版（MC-402）生成后合并进两份 manifest 并挂接分部；合并前章节不进书籍构建（build_html.py 的 29 章手绘版契约见 MC-407）。",
+  "planned_part_zh": {
+    "id": "p7",
+    "title": "第八部分 · 电机控制专题：从驱动桥到速度闭环",
+    "goal": "电机驱动与供电、开环调速、编码器测速、PI 速度闭环的完整链路；接线与参数以采购冻结 v1.2 为准，实验以真板证据验收。",
+    "files": [
+      "29-电机驱动与供电.md",
+      "30-直流电机开环调速.md",
+      "31-编码器与转速测量.md",
+      "32-直流电机速度闭环.md"
+    ]
+  },
+  "chapters": {
+    "29-电机驱动与供电.md": {
+      "进入问题": "程序输出了高电平，为什么电机不转，甚至板子复位？",
+      "先备知识": "第 02、03、05 章；补充电压、电流、负载和感性续流的最小定义。",
+      "最小胜利": "断开电机负载，按接线表连接逻辑侧，观察 STBY、方向和 PWM；上电、复位、下载时驱动保持关闭（M29-A，过硬件门后执行）。",
+      "核心机制": "MCU 输出控制信号，驱动桥切换电机电流路径；供电、回流和电平接口决定能否工作。",
+      "失败分支": "逻辑信号有波形但不转（区分 STBY 未释放/动力电源缺失/驱动保护/机械卡滞）；启动复位（区分 MCU 供电跌落与软件复位）。",
+      "迁移边界": "芯片额定值不等于模块连续散热能力（BLK-P0-4）；换驱动重查真值表与上电态；换编码器重查供电与电平。",
+      "记忆锚点": "驱动桥是电流的交通信号灯，MCU 只按按钮不搬货物；五种状态而非两种，灯灭还分滑行与制动（相似点/失效点见章内）。",
+      "离开检查": "解释三种停止状态；指出撤销使能后电机仍可能惯性旋转；按实物证明没有 GPIO 直驱负载。",
+      "manifest_guide": {
+        "question": "程序输出了高电平，为什么电机不转，甚至板子复位？",
+        "deliverable": "逻辑侧上电/复位/下载三时刻驱动保持关闭的测量记录（VM=0、STBY=低），接线表，以及限流条件下的短时试转记录（M29-B/C 过硬件门后）。",
+        "boundary": "TB6612 连续工作能力以 1.0 A 工作档为准，1.2 A 绝对最大与 3.2 A 脉冲档不得当连续依据；模块散热是 BLK-P0-4 未实测项；全部引脚/电气值为采购冻结 v1.2 候选值，P2 上板核验前不作已验证声明。",
+        "sources": [
+          "tb6612-truth-table",
+          "tb6612-electrical",
+          "tb6612-current",
+          "ds5319-af"
+        ]
+      }
+    },
+    "30-直流电机开环调速.md": {
+      "进入问题": "占空比设成 50%，为什么速度不是最高速度的一半？",
+      "先备知识": "29 章、05 章 PWM、06 章串口。",
+      "最小胜利": "低占空比启动、逐步增大、停止后反向；波形与命令对应（M30-A，过硬件门后执行）。",
+      "核心机制": "占空比控制驱动施加的电压/电流过程，转速还受负载与电机参数影响。",
+      "失败分支": "低占空比只响不转、反向命令导致尖峰、串口停止命令无效、PWM 已归零但仍短接制动。",
+      "迁移边界": "PWM 频率/电平/有效极性、桥内切换行为、模块使能端重查；不得拿 LED 呼吸灯延时循环替代控制时基。",
+      "记忆锚点": "占空比是踩油门的深度，不是速度表；路况变速度变，换向必须先刹停（REVERSING）。",
+      "离开检查": "复算 PWM 分频；指出 0%、100% 与 ARR 边界；演示 STOP 和通信超时（500 ms 租约）。",
+      "manifest_guide": {
+        "question": "占空比设成 50%，为什么速度不是最高速度的一半？",
+        "deliverable": "三档占空比转动证据（含 20 kHz 波形与遥测对照）、正转→停稳→反转全程记录、STOP 与 500 ms 租约超时退出使能的演示记录。",
+        "boundary": "开环给的是电压激励不是转速；PWM=0 语义由驱动真值表决定（制动/滑行/待机三态）；方向翻转必须走 REVERSING 停稳合同；20 kHz/ARR/CCR 为冻结候选值，随时钟树重算。",
+        "sources": [
+          "rm0008-pwm",
+          "tb6612-truth-table",
+          "tb6612-electrical"
+        ]
+      }
+    },
+    "31-编码器与转速测量.md": {
+      "进入问题": "示波器显示脉冲正确，为什么计算出的转速恰好差四倍或一个减速比？",
+      "先备知识": "30 章、定时器、中断、无符号整数。",
+      "最小胜利": "手转输出轴指定圈数，核对累计计数与方向，再用时间窗复算 RPM（M31-A）。",
+      "核心机制": "把一个机械转数映射为明确数量的计数，再除以真实采样时间。",
+      "失败分支": "计数为零、单方向计数、符号反、抖动过大、回绕突刺；每项给原始 A/B、CNT 或时间戳区分证据。",
+      "迁移边界": "定时器实际位宽与模式、引脚复用、滤波采样时钟、编码器推挽/开漏和电压；换减速比整体重算 CPR。",
+      "记忆锚点": "编码器是里程表不是速度表：先数格（Δ）再除以看的时间（Δt）；会回绕，停着不动读数为零不能单独证明断线。",
+      "离开检查": "跨回绕计数算有符号增量；按 CPR、采样周期算分辨率；解释静止零计数的断线歧义。",
+      "manifest_guide": {
+        "question": "示波器显示脉冲正确，为什么计算出的转速恰好差四倍或一个减速比？",
+        "deliverable": "手转 3 圈累计计数与 CPR 复算一致的标定记录、回绕有符号增量手算、低速量化分辨率计算，以及 CPR=0 时闭环被 F06 拒绝的默认行为证据。",
+        "boundary": "CPR 以输出轴为口径（示例 440）；测速分辨率 60/(CPR·Δt)≈13.6 rpm 以下逐格跳是量化特性；16 位回绕消歧要求 |Δ|<32768/2；换编码器/减速比/定时器须重做标定。",
+        "sources": [
+          "rm0008-encoder",
+          "rm0008-pwm",
+          "ds5319-af"
+        ]
+      }
+    },
+    "32-直流电机速度闭环.md": {
+      "进入问题": "加了负载转速掉下去，怎样让程序把它拉回目标值？",
+      "先备知识": "29–31 章；先定义误差、积分和饱和，离散公式随后给出。",
+      "最小胜利": "预先验证的一组硬件和参数上，完成一次速度阶跃并保存目标、测量和输出曲线（M32-A）。",
+      "核心机制": "周期性比较目标与反馈调整输出；有限执行能力与测量延迟约束闭环。",
+      "失败分支": "正反馈、积分饱和、低速来回跳、控制周期被打印拖慢、编码器异常时持续加力；分别观察误差/积分/限幅/周期/状态。",
+      "迁移边界": "采样周期或电机改变必须重做调参；RTOS 下维持控制任务唯一输出所有权和截止期；PID 的 D 项不直接照搬。",
+      "记忆锚点": "闭环是一杆秤：误差是秤砣差，Kp 手快 Ki 耐心，限幅是量程，抗饱和是不许秤砣滑出盘。",
+      "离开检查": "重算一个 PI 时间步；解释限幅与抗饱和区别；演示断开命令流、反馈异常及人工恢复。",
+      "manifest_guide": {
+        "question": "加了负载转速掉下去，怎样让程序把它拉回目标值？",
+        "deliverable": "±150 rpm 阶跃的目标/测量/输出同轴曲线与四指标（超调、上升时间、稳态误差、整定时间）、两次重复全保留、饱和恢复与受控反转记录。",
+        "boundary": "默认增益（Kp=2.0/Ki=0.5）是起步值非验收值，只适用于记录的装置；采样周期/电机/电源变化须从极性确认重做；实验结果待 P2/P3 真板数据回填，本章不含实测曲线。",
+        "sources": [
+          "rm0008-encoder",
+          "rm0008-pwm",
+          "tb6612-truth-table"
+        ]
+      }
+    }
+  },
+  "sources_to_register": {
+    "zh_manifest": {
+      "tb6612-truth-table": {
+        "title": "TB6612FNG 官方数据手册 H-SW 控制功能真值表（2026-05-13 版第 4 页）",
+        "authority": "Toshiba 官方数据手册（内容级核验）",
+        "url": "https://toshiba.semicon-storage.com/product/linear/motor-driver-ics/brushed-dc-motor-driver-ics/tb6612fng.html",
+        "snapshot": "TB6612FNG datasheet, footer 2026-05-13, p.4 H-SW Control Function, verified row by row: PWM=H/IN1=H/IN2=L/STBY=H CW; H/L/H/H CCW; H/L/L/H output off (coast); L/X/X/H short brake; X/X/X/L standby. PWM=L with a direction applied is short brake, NOT high-impedance. Default disabled state = STBY=L (internal ~200 kΩ pull-down).",
+        "accessed": "2026-11-12",
+        "license": "Manufacturer datasheet terms (facts restated; document not redistributed; byte-level fetch blocked HTTP 403, content verified via read tool)",
+        "scope": "Chapters 29/30 stop-semantics table and motor_bridge truth-table tests."
+      },
+      "tb6612-electrical": {
+        "title": "TB6612FNG 电气限制：电源范围、输入门限、PWM 频率",
+        "authority": "Toshiba 官方数据手册（内容级核验）",
+        "url": "https://toshiba.semicon-storage.com/product/linear/motor-driver-ics/brushed-dc-motor-driver-ics/tb6612fng.html",
+        "snapshot": "TB6612FNG datasheet 2026-05-13: Vcc(logic) 2.7–5.5 V; VM(motor) 4.5–12 V operating (guarantee to 13.5 V); VIH ≥ 0.7×Vcc, VIL ≤ 0.3×Vcc; input pull-down ≈200 kΩ; fPWM ≤ 100 kHz; application note decoupling 0.1 µF + 10 µF at VM.",
+        "accessed": "2026-11-12",
+        "license": "Manufacturer datasheet terms (facts restated; document not redistributed)",
+        "scope": "Chapter 29 power-rail table and chapter 30 20 kHz PWM margin claim."
+      },
+      "tb6612-current": {
+        "title": "TB6612FNG 电流三档：连续 ≤1.0 A vs 绝对最大 1.2 A vs 10 ms 脉冲 3.2 A",
+        "authority": "Toshiba 官方数据手册（内容级核验）",
+        "url": "https://toshiba.semicon-storage.com/product/linear/motor-driver-ics/brushed-dc-motor-driver-ics/tb6612fng.html",
+        "snapshot": "TB6612FNG datasheet 2026-05-13: output current operating range ≤1.0 A/channel (VM ≥ 4.5 V); absolute maximum 1.2 A/channel and 2 A @ 20 ms; peak 3.2 A single pulse t ≤ 10 ms. PD 0.78 W (IC only) to 1.36 W by mounting, derating p.6. Absolute-max and pulse ratings are not continuous capability; procurement margin uses the 1.0 A operating range.",
+        "accessed": "2026-11-12",
+        "license": "Manufacturer datasheet terms (facts restated; document not redistributed)",
+        "scope": "Chapter 29 current three-tier table and stall-current freeze (≤0.8 A target, BLK-P0-4)."
+      },
+      "rm0008-encoder": {
+        "title": "RM0008 Rev 21 编码器接口模式（SMS=011，TI1/TI2 上下沿计数）",
+        "authority": "ST 官方参考手册",
+        "url": "https://www.st.com/resource/en/reference_manual/cd00171190-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+        "snapshot": "RM0008 Rev 21 (1136 pages): TIMx SMCR SMS=011 encoder mode 3 counts on both TI1 and TI2 edges with direction from quadrature phase; encoder interface section p.392, overview pp.10/12/329. Board timer mapping TIM2_CH1/CH2 = PA0/PA1 per DS5319 p.29.",
+        "accessed": "2026-11-12",
+        "license": "ST document terms (link and restated facts only)",
+        "scope": "Chapters 31/32 quadrature counting, direction, reversal-contract speed evidence."
+      },
+      "rm0008-pwm": {
+        "title": "RM0008 Rev 21 PWM 模式：ARR/PSC/CCR 与边沿对齐输出",
+        "authority": "ST 官方参考手册",
+        "url": "https://www.st.com/resource/en/reference_manual/cd00171190-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+        "snapshot": "RM0008 Rev 21: PWM mode 1, ARR sets period, CCR sets duty, CNT < CCR active; edge-aligned. Frozen board values: TIM3 72 MHz, PSC=0, ARR=3599 → 20 kHz; TIM4 PSC=7199/ARR=99 → 10 ms control tick. CANDIDATE until P2 on-board clock verification.",
+        "accessed": "2026-11-12",
+        "license": "ST document terms (link and restated facts only)",
+        "scope": "Chapter 30 recomputable PWM table and chapter 32 control-period claims."
+      },
+      "ds5319-af": {
+        "title": "DS5319 Rev 20 引脚复用表（第 29 页）与 LQFP48 引脚定义",
+        "authority": "ST 官方数据手册",
+        "url": "https://www.st.com/resource/en/datasheet/stm32f103c8.pdf",
+        "snapshot": "DS5319 Rev 20 (114 pages): p.29 alternate-function table — PA0/PA1 TIM2_CH1/CH2, PA6 TIM3_CH1, PA9/PA10 USART1, PB0/PB1 GPIO, PB10/PB12 GPIO; pp.22–25 LQFP48 pinout. SWD PA13/PA14/NRST reserved for debug, not reused as motor IO.",
+        "accessed": "2026-11-12",
+        "license": "ST document terms (link and restated facts only)",
+        "scope": "Chapters 29–32 wiring table pin-conflict checks."
+      }
+    },
+    "note": "MC-406 合并进两份 manifest 的 sources 时，同步更新 stm32-book/tests/fixtures/ 的 source-list 吸收 fixture（该 fixture 枚举全部 source id，新增须一并登记）；英文 manifest 用英文 title/snapshot 表达同一事实。"
+  }
+}
